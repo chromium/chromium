@@ -28,47 +28,51 @@ static NSString* kDialogMessage = @"message";
 // Test fixture for JavaScript alert dialog overlays.
 class JavaScriptAlertDialogOverlayTest : public PlatformTest {
  protected:
-  JavaScriptAlertDialogOverlayTest() {}
+  JavaScriptAlertDialogOverlayTest() : url_(GURL("http://www.chromium.test")) {}
 
-  std::unique_ptr<OverlayRequest> CreateRequest(bool is_main_frame = true) {
+  std::unique_ptr<OverlayRequest> CreateMainFrameRequest() {
+    url::Origin main_frame_origin = url::Origin::Create(url_);
     return OverlayRequest::CreateWithConfig<JavaScriptAlertDialogRequest>(
-        &web_state_, GURL("http://www.chromium.test"), is_main_frame,
-        kDialogMessage);
+        &web_state_, url_, main_frame_origin, kDialogMessage);
   }
 
+  std::unique_ptr<OverlayRequest> CreateIframeRequest() {
+    url::Origin iframe_origin = url::Origin::Create(GURL("http://iframe.test"));
+    return OverlayRequest::CreateWithConfig<JavaScriptAlertDialogRequest>(
+        &web_state_, url_, iframe_origin, kDialogMessage);
+  }
+
+  GURL url_;
   web::FakeWebState web_state_;
 };
 
 // Tests that the alert config's values are set correctly for dialogs from the
 // main frame.
 TEST_F(JavaScriptAlertDialogOverlayTest, MainFrameDialogTitleAndMessage) {
-  std::unique_ptr<OverlayRequest> request = CreateRequest();
+  std::unique_ptr<OverlayRequest> request = CreateMainFrameRequest();
   AlertRequest* config = request->GetConfig<AlertRequest>();
   ASSERT_TRUE(config);
 
   // Check the title and message strings.
-  EXPECT_NSEQ(kDialogMessage, config->title());
-  EXPECT_FALSE(config->message());
+  EXPECT_NSEQ(@"www.chromium.test says", config->title());
+  EXPECT_EQ(kDialogMessage, config->message());
 }
 
 // Tests that the alert config's values are set correctly for dialogs from an
 // iframe.
 TEST_F(JavaScriptAlertDialogOverlayTest, IFrameDialogTitleAndMessage) {
-  std::unique_ptr<OverlayRequest> request =
-      CreateRequest(/*is_main_frame=*/false);
+  std::unique_ptr<OverlayRequest> request = CreateIframeRequest();
   AlertRequest* config = request->GetConfig<AlertRequest>();
   ASSERT_TRUE(config);
 
   // Check the title and message strings.
-  NSString* iframe_title = l10n_util::GetNSString(
-      IDS_JAVASCRIPT_MESSAGEBOX_TITLE_NONSTANDARD_URL_IFRAME);
-  EXPECT_NSEQ(iframe_title, config->title());
+  EXPECT_NSEQ(@"An embedded page at iframe.test says", config->title());
   EXPECT_NSEQ(kDialogMessage, config->message());
 }
 
 // Tests that the alert dialog has no text field.
 TEST_F(JavaScriptAlertDialogOverlayTest, TextFieldConfigSetup) {
-  std::unique_ptr<OverlayRequest> alert_request = CreateRequest();
+  std::unique_ptr<OverlayRequest> alert_request = CreateMainFrameRequest();
   AlertRequest* alert_config = alert_request->GetConfig<AlertRequest>();
   ASSERT_TRUE(alert_config);
   EXPECT_FALSE([alert_config->text_field_configs() firstObject]);
@@ -76,7 +80,7 @@ TEST_F(JavaScriptAlertDialogOverlayTest, TextFieldConfigSetup) {
 
 // Tests that the alert dialog buttons are set up correctly.
 TEST_F(JavaScriptAlertDialogOverlayTest, ButtonConfigSetup) {
-  std::unique_ptr<OverlayRequest> alert_request = CreateRequest();
+  std::unique_ptr<OverlayRequest> alert_request = CreateMainFrameRequest();
   AlertRequest* alert_config = alert_request->GetConfig<AlertRequest>();
   ASSERT_TRUE(alert_config);
   const std::vector<std::vector<ButtonConfig>>& alert_button_configs =
@@ -96,7 +100,7 @@ TEST_F(JavaScriptAlertDialogOverlayTest, BlockingOptionSetup) {
   NSString* blocking_option_title =
       l10n_util::GetNSString(IDS_IOS_JAVA_SCRIPT_DIALOG_BLOCKING_BUTTON_TEXT);
 
-  std::unique_ptr<OverlayRequest> alert_request = CreateRequest();
+  std::unique_ptr<OverlayRequest> alert_request = CreateMainFrameRequest();
   AlertRequest* alert_config = alert_request->GetConfig<AlertRequest>();
   ASSERT_TRUE(alert_config);
   const std::vector<std::vector<ButtonConfig>>& alert_button_configs =
@@ -110,7 +114,7 @@ TEST_F(JavaScriptAlertDialogOverlayTest, BlockingOptionSetup) {
 // Tests that an alert is correctly converted to a JavaScriptAlertDialogResponse
 // after tapping the OK button.
 TEST_F(JavaScriptAlertDialogOverlayTest, ResponseConversionOk) {
-  std::unique_ptr<OverlayRequest> request = CreateRequest();
+  std::unique_ptr<OverlayRequest> request = CreateMainFrameRequest();
   AlertRequest* config = request->GetConfig<AlertRequest>();
   ASSERT_TRUE(config);
 
@@ -139,7 +143,7 @@ TEST_F(JavaScriptAlertDialogOverlayTest, ResponseConversionBlockDialogs) {
   JavaScriptDialogBlockingState::FromWebState(&web_state_)
       ->JavaScriptDialogWasShown();
 
-  std::unique_ptr<OverlayRequest> request = CreateRequest();
+  std::unique_ptr<OverlayRequest> request = CreateMainFrameRequest();
   AlertRequest* config = request->GetConfig<AlertRequest>();
   ASSERT_TRUE(config);
 

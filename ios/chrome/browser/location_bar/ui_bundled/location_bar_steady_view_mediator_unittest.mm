@@ -72,8 +72,7 @@ TEST_F(LocationBarSteadyViewMediatorTest, DisableShareForOverlays) {
       web_state, OverlayModality::kWebContentArea);
   queue->AddRequest(
       OverlayRequest::CreateWithConfig<JavaScriptAlertDialogRequest>(
-          web_state, kUrl,
-          /*is_main_frame=*/true, @"message"));
+          web_state, kUrl, url::Origin::Create(kUrl), @"message"));
   EXPECT_FALSE(consumer_.locationShareable);
 
   // Cancel the request and verify that the location is shareable again.

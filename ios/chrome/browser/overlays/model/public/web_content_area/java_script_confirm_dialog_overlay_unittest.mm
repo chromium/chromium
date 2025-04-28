@@ -26,9 +26,16 @@ class JavaScriptConfirmDialogOverlayTest : public PlatformTest {
   JavaScriptConfirmDialogOverlayTest()
       : url_("http://www.chromium.test"), message_(@"message") {}
 
-  std::unique_ptr<OverlayRequest> CreateRequest(bool is_main_frame = true) {
+  std::unique_ptr<OverlayRequest> CreateMainFrameRequest() {
+    url::Origin main_frame_origin = url::Origin::Create(url_);
     return OverlayRequest::CreateWithConfig<JavaScriptConfirmDialogRequest>(
-        &web_state_, url_, is_main_frame, message_);
+        &web_state_, url_, main_frame_origin, message_);
+  }
+
+  std::unique_ptr<OverlayRequest> CreateIframeRequest() {
+    url::Origin iframe_origin = url::Origin::Create(GURL("http://iframe.test"));
+    return OverlayRequest::CreateWithConfig<JavaScriptConfirmDialogRequest>(
+        &web_state_, url_, iframe_origin, message_);
   }
 
   web::FakeWebState web_state_;
@@ -39,33 +46,30 @@ class JavaScriptConfirmDialogOverlayTest : public PlatformTest {
 // Tests that the alert config's values are set correctly for dialogs from the
 // main frame.
 TEST_F(JavaScriptConfirmDialogOverlayTest, MainFrameDialogTitleAndMessage) {
-  std::unique_ptr<OverlayRequest> request = CreateRequest();
+  std::unique_ptr<OverlayRequest> request = CreateMainFrameRequest();
   AlertRequest* config = request->GetConfig<AlertRequest>();
   ASSERT_TRUE(config);
 
   // Check the title and message strings.
-  EXPECT_NSEQ(message_, config->title());
-  EXPECT_FALSE(config->message());
+  EXPECT_NSEQ(@"www.chromium.test says", config->title());
+  EXPECT_EQ(message_, config->message());
 }
 
 // Tests that the alert config's values are set correctly for dialogs from an
 // iframe.
 TEST_F(JavaScriptConfirmDialogOverlayTest, IFrameDialogTitleAndMessage) {
-  std::unique_ptr<OverlayRequest> request =
-      CreateRequest(/*is_main_frame=*/false);
+  std::unique_ptr<OverlayRequest> request = CreateIframeRequest();
   AlertRequest* config = request->GetConfig<AlertRequest>();
   ASSERT_TRUE(config);
 
   // Check the title and message strings.
-  NSString* iframe_title = l10n_util::GetNSString(
-      IDS_JAVASCRIPT_MESSAGEBOX_TITLE_NONSTANDARD_URL_IFRAME);
-  EXPECT_NSEQ(iframe_title, config->title());
+  EXPECT_NSEQ(@"An embedded page at iframe.test says", config->title());
   EXPECT_NSEQ(message_, config->message());
 }
 
 // Tests that the confirm dialog has no text field.
 TEST_F(JavaScriptConfirmDialogOverlayTest, TextFieldConfigSetup) {
-  std::unique_ptr<OverlayRequest> confirm_request = CreateRequest();
+  std::unique_ptr<OverlayRequest> confirm_request = CreateMainFrameRequest();
   AlertRequest* confirm_config = confirm_request->GetConfig<AlertRequest>();
   ASSERT_TRUE(confirm_config);
   EXPECT_FALSE([confirm_config->text_field_configs() firstObject]);
@@ -73,7 +77,7 @@ TEST_F(JavaScriptConfirmDialogOverlayTest, TextFieldConfigSetup) {
 
 // Tests that the confirmation dialog buttons are set up correctly.
 TEST_F(JavaScriptConfirmDialogOverlayTest, ButtonConfigSetup) {
-  std::unique_ptr<OverlayRequest> confirm_request = CreateRequest();
+  std::unique_ptr<OverlayRequest> confirm_request = CreateMainFrameRequest();
   AlertRequest* confirm_config = confirm_request->GetConfig<AlertRequest>();
   ASSERT_TRUE(confirm_config);
   const std::vector<std::vector<ButtonConfig>>& confirm_button_configs =
@@ -95,7 +99,7 @@ TEST_F(JavaScriptConfirmDialogOverlayTest, BlockingOptionSetup) {
   NSString* blocking_option_title =
       l10n_util::GetNSString(IDS_IOS_JAVA_SCRIPT_DIALOG_BLOCKING_BUTTON_TEXT);
 
-  std::unique_ptr<OverlayRequest> confirm_request = CreateRequest();
+  std::unique_ptr<OverlayRequest> confirm_request = CreateMainFrameRequest();
   AlertRequest* confirm_config = confirm_request->GetConfig<AlertRequest>();
   ASSERT_TRUE(confirm_config);
   const std::vector<std::vector<ButtonConfig>>& confirm_button_configs =
@@ -109,7 +113,7 @@ TEST_F(JavaScriptConfirmDialogOverlayTest, BlockingOptionSetup) {
 // Tests that a confirmation alert is correctly converted to a
 // JavaScriptConfirmDialogResponse after tapping the OK button.
 TEST_F(JavaScriptConfirmDialogOverlayTest, ResponseConversionOk) {
-  std::unique_ptr<OverlayRequest> request = CreateRequest();
+  std::unique_ptr<OverlayRequest> request = CreateMainFrameRequest();
   AlertRequest* config = request->GetConfig<AlertRequest>();
   ASSERT_TRUE(config);
 
@@ -134,7 +138,7 @@ TEST_F(JavaScriptConfirmDialogOverlayTest, ResponseConversionOk) {
 // Tests that a confirmation alert response is correctly converted to a
 // JavaScriptConfirmDialogResponse after tapping the Cancel button.
 TEST_F(JavaScriptConfirmDialogOverlayTest, ResponseConversionCancel) {
-  std::unique_ptr<OverlayRequest> request = CreateRequest();
+  std::unique_ptr<OverlayRequest> request = CreateMainFrameRequest();
   AlertRequest* config = request->GetConfig<AlertRequest>();
   ASSERT_TRUE(config);
 
@@ -164,7 +168,7 @@ TEST_F(JavaScriptConfirmDialogOverlayTest,
   JavaScriptDialogBlockingState::FromWebState(&web_state_)
       ->JavaScriptDialogWasShown();
 
-  std::unique_ptr<OverlayRequest> request = CreateRequest();
+  std::unique_ptr<OverlayRequest> request = CreateMainFrameRequest();
   AlertRequest* config = request->GetConfig<AlertRequest>();
   ASSERT_TRUE(config);
 

@@ -27,6 +27,7 @@ source_set("web_content_area") {
   deps = [
     ":constants",
     "//base",
+    "//components/javascript_dialogs/core:util",
     "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/dialogs/ui_bundled",

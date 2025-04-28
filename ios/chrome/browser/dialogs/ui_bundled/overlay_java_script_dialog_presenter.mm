@@ -145,12 +145,9 @@ void OverlayJavaScriptDialogPresenter::RunJavaScriptAlertDialog(
     return;
   }
 
-  const GURL origin_url = origin.GetURL();
-  bool from_main_frame_origin =
-      origin_url == web_state->GetLastCommittedURL().DeprecatedGetOriginAsURL();
   std::unique_ptr<OverlayRequest> request =
       OverlayRequest::CreateWithConfig<JavaScriptAlertDialogRequest>(
-          web_state, origin_url, from_main_frame_origin, message_text);
+          web_state, web_state->GetLastCommittedURL(), origin, message_text);
   request->GetCallbackManager()->AddCompletionCallback(
       base::BindOnce(&HandleJavaScriptAlertDialogResponse, std::move(callback),
                      web_state->GetWeakPtr()));
@@ -170,12 +167,9 @@ void OverlayJavaScriptDialogPresenter::RunJavaScriptConfirmDialog(
     return;
   }
 
-  const GURL origin_url = origin.GetURL();
-  bool from_main_frame_origin =
-      origin_url == web_state->GetLastCommittedURL().DeprecatedGetOriginAsURL();
   std::unique_ptr<OverlayRequest> request =
       OverlayRequest::CreateWithConfig<JavaScriptConfirmDialogRequest>(
-          web_state, origin_url, from_main_frame_origin, message_text);
+          web_state, web_state->GetLastCommittedURL(), origin, message_text);
   request->GetCallbackManager()->AddCompletionCallback(
       base::BindOnce(&HandleJavaScriptConfirmDialogResponse,
                      std::move(callback), web_state->GetWeakPtr()));
@@ -196,12 +190,9 @@ void OverlayJavaScriptDialogPresenter::RunJavaScriptPromptDialog(
     return;
   }
 
-  const GURL origin_url = origin.GetURL();
-  bool from_main_frame_origin =
-      origin_url == web_state->GetLastCommittedURL().DeprecatedGetOriginAsURL();
   std::unique_ptr<OverlayRequest> request =
       OverlayRequest::CreateWithConfig<JavaScriptPromptDialogRequest>(
-          web_state, origin_url, from_main_frame_origin, message_text,
+          web_state, web_state->GetLastCommittedURL(), origin, message_text,
           default_prompt_text);
   request->GetCallbackManager()->AddCompletionCallback(
       base::BindOnce(&HandleJavaScriptPromptDialogResponse, std::move(callback),

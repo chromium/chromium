@@ -16,7 +16,6 @@ using alert_overlays::AlertRequest;
 using alert_overlays::AlertResponse;
 using alert_overlays::ButtonConfig;
 using java_script_dialog_overlay::BlockDialogsButtonConfig;
-using java_script_dialog_overlay::DialogMessage;
 using java_script_dialog_overlay::DialogTitle;
 using java_script_dialog_overlay::ShouldAddBlockDialogsButton;
 
@@ -49,20 +48,20 @@ std::unique_ptr<OverlayResponse> CreateDialogResponse(
 
 JavaScriptAlertDialogRequest::JavaScriptAlertDialogRequest(
     web::WebState* web_state,
-    const GURL& url,
-    bool is_main_frame,
+    const GURL& main_frame_url,
+    const url::Origin& alerting_frame_origin,
     NSString* message)
     : weak_web_state_(web_state->GetWeakPtr()),
-      url_(url),
-      is_main_frame_(is_main_frame),
+      main_frame_url_(main_frame_url),
+      alerting_frame_origin_(alerting_frame_origin),
       message_(message) {}
 
 JavaScriptAlertDialogRequest::~JavaScriptAlertDialogRequest() = default;
 
 void JavaScriptAlertDialogRequest::CreateAuxiliaryData(
     base::SupportsUserData* user_data) {
-  NSString* alert_title = DialogTitle(is_main_frame_, message());
-  NSString* alert_message = DialogMessage(is_main_frame_, message());
+  NSString* alert_title =
+      DialogTitle(main_frame_url(), alerting_frame_origin());
 
   std::vector<std::vector<ButtonConfig>> button_configs{
       {ButtonConfig(l10n_util::GetNSString(IDS_OK))}};
@@ -71,7 +70,7 @@ void JavaScriptAlertDialogRequest::CreateAuxiliaryData(
         std::vector<ButtonConfig>{BlockDialogsButtonConfig()});
   }
 
-  AlertRequest::CreateForUserData(user_data, alert_title, alert_message,
+  AlertRequest::CreateForUserData(user_data, alert_title, message(),
                                   kJavaScriptDialogAccessibilityIdentifier,
                                   /*text_field_configs=*/nil, button_configs,
                                   base::BindRepeating(&CreateDialogResponse));

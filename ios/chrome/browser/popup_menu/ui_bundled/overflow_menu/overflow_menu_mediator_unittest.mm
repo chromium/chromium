@@ -575,8 +575,7 @@ TEST_F(OverflowMenuMediatorTest, TestReadLaterDisabled) {
       web_state_, OverlayModality::kWebContentArea);
   queue->AddRequest(
       OverlayRequest::CreateWithConfig<JavaScriptAlertDialogRequest>(
-          web_state_, kUrl,
-          /*is_main_frame=*/true, @"message"));
+          web_state_, kUrl, url::Origin::Create(kUrl), @"message"));
   EXPECT_TRUE(HasItem(kToolsMenuReadLater, /*enabled=*/NO));
 
   // Cancel the request and verify that the "Add to Reading List" button is
