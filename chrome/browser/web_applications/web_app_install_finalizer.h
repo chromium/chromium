@@ -13,6 +13,8 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/clock.h"
+#include "base/time/default_clock.h"
 #include "build/build_config.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_integrity_block_data.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
@@ -138,6 +140,8 @@ class WebAppInstallFinalizer {
       GURL install_url,
       std::vector<std::string> additional_policy_ids);
 
+  void SetClockForTesting(base::Clock* clock);
+
  private:
   using CommitCallback = base::OnceCallback<void(bool success)>;
 
@@ -200,6 +204,7 @@ class WebAppInstallFinalizer {
 
   const raw_ptr<Profile> profile_;
   raw_ptr<WebAppProvider> provider_ = nullptr;
+  raw_ptr<base::Clock> clock_{base::DefaultClock::GetInstance()};
 
   bool started_ = false;
 
