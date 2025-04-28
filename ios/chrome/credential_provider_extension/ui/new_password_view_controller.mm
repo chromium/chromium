@@ -61,13 +61,13 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 @property(nonatomic, readonly) PasswordNoteCell* noteCell;
 
 // The value of the username text.
-@property(nonatomic, strong) NSString* usernameText;
+@property(nonatomic, copy) NSString* usernameText;
 
 // The value of the password text.
-@property(nonatomic, strong) NSString* passwordText;
+@property(nonatomic, copy) NSString* passwordText;
 
 // The value of the note text.
-@property(nonatomic, strong) NSString* noteText;
+@property(nonatomic, copy) NSString* noteText;
 
 // If yes, the footer informing about the max note length is shown.
 @property(nonatomic, assign) BOOL isNoteFooterShown;
