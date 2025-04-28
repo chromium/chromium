@@ -74,6 +74,10 @@ config("xnnpack_config") {
     "-Wno-deprecated-comma-subscript",
   ]
 
+  if (is_android && current_cpu == "arm64") {
+    asmflags = [ "-mmark-bti-property" ]
+  }
+
   defines = [
     "CHROMIUM",
     "XNN_ENABLE_ASSEMBLY=1",
@@ -226,11 +230,13 @@ class _Platform:
             return f'current_cpu == "{self.gn_cpu}"'
 
 
+# N.B. that XNNPACK's Bazel doesn't know about these platforms yet, they're
+# purely for the dummy toolchain in bazelroot/ to pull the file list out.
 _PLATFORMS = [
     _Platform(gn_cpu='x64', bazel_cpu='k8', bazel_platform='//:linux_x64'),
     _Platform(gn_cpu='arm64',
               bazel_cpu='aarch64',
-              bazel_platform='//:linux_aarch64'),
+              bazel_platform='//:linux_aarch64')
 ]
 
 
@@ -347,6 +353,7 @@ def _run_bazel_cmd(args: list[str]) -> str:
         raise Exception(
             "bazel is not installed. Please run `sudo apt-get install " +
             "bazel` or put the bazel executable in $PATH")
+
     cmd = [exec_path]
     cmd.extend(args)
     logging.info('Running: %s', cmd)
@@ -376,6 +383,7 @@ def _query_object_builds(platform: _Platform) -> list[ObjectBuild]:
     # Make sure we have a clean start, this is important if the Android NDK
     # version changed.
     _run_bazel_cmd(['clean'])
+
     logs = _run_bazel_cmd([
         'aquery',
         f'--platforms={platform.bazel_platform}',
