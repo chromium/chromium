@@ -125,10 +125,20 @@ if (enable_rust) {
   if (use_chromium_rust_toolchain) {
     toolchain_has_rust = chromium_toolchain_supports_platform
     if (toolchain_has_rust) {
-      update_rust_args = [ "--print-package-version" ]
-      rustc_revision = exec_script("//tools/rust/update_rust.py",
-                                   update_rust_args,
-                                   "trim string")
+      rustc_revision =
+          read_file("//third_party/rust-toolchain/VERSION", "trim string")
+
+      # Example:
+      # rustc 1.88.0 c8f94230282a8e8c1148f3e657f0199aad909228 (c8f94230282a8e8c1148f3e657f0199aad909228-1-llvmorg-21-init-9266-g09006611 chromium)
+      # Trim it down as much as we can using GN.
+      rustc_revision = string_replace(rustc_revision, "rustc ", "")
+      rustc_revision = string_replace(rustc_revision, " chromium", "")
+      rustc_revision = string_replace(rustc_revision, "init-", "")
+      rustc_revision = string_replace(rustc_revision, "llvmorg-", "")
+      rustc_revision = string_replace(rustc_revision, " ", "")
+      rustc_revision = string_replace(rustc_revision, ".", "")
+      rustc_revision = string_replace(rustc_revision, "(", "-")
+      rustc_revision = string_replace(rustc_revision, ")", "")
     }
 
     # The same as written in `config.toml.template`.

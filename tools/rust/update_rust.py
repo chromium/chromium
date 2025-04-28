@@ -31,6 +31,7 @@ sys.path.append(
 
 # These fields are written by //tools/clang/scripts/upload_revision.py, and
 # should not be changed manually.
+# They are also read by build/config/compiler/BUILD.gn.
 RUST_REVISION = 'c8f94230282a8e8c1148f3e657f0199aad909228'
 RUST_SUB_REVISION = 1
 
