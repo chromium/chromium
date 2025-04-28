@@ -12,12 +12,18 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.educational_tip.EducationTipModuleActionDelegate;
 import org.chromium.chrome.browser.educational_tip.EducationalTipCardProvider;
 import org.chromium.chrome.browser.educational_tip.R;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.components.signin.SigninFeatureMap;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.identitymanager.PrimaryAccountChangeEvent;
+import org.chromium.components.sync.SyncService;
+import org.chromium.components.sync.UserSelectableType;
+
+import java.util.Set;
 
 /**
  * A coordinator that is responsible for displaying the history sync education tip that is show on
@@ -25,7 +31,9 @@ import org.chromium.components.signin.identitymanager.PrimaryAccountChangeEvent;
  */
 @NullMarked
 public class HistorySyncPromoCoordinator
-        implements EducationalTipCardProvider, IdentityManager.Observer {
+        implements EducationalTipCardProvider,
+                IdentityManager.Observer,
+                SyncService.SyncStateChangedListener {
 
     private static final String HISTORY_OPT_IN_EDUCATIONAL_TIP_PARAM =
             "history_opt_in_educational_tip_param";
@@ -34,6 +42,7 @@ public class HistorySyncPromoCoordinator
     private final Runnable mOnClickedRunnable;
     private final Runnable mRemoveModuleRunnable;
     private final @Nullable IdentityManager mIdentityManager;
+    private final @Nullable SyncService mSyncService;
 
     public HistorySyncPromoCoordinator(
             Runnable onModuleClickedCallback,
@@ -58,13 +67,16 @@ public class HistorySyncPromoCoordinator
                             onModuleClickedCallback.run();
                         });
 
-        assert mActionDelegate.getProfileSupplier().hasValue();
-        mIdentityManager =
-                IdentityServicesProvider.get()
-                        .getIdentityManager(mActionDelegate.getProfileSupplier().get());
+        Profile profile = mActionDelegate.getProfileSupplier().get();
+        assert profile != null;
 
+        mIdentityManager = IdentityServicesProvider.get().getIdentityManager(profile);
         assert mIdentityManager != null;
         mIdentityManager.addObserver(this);
+
+        mSyncService = SyncServiceFactory.getForProfile(profile);
+        assert mSyncService != null;
+        mSyncService.addSyncStateChangedListener(this);
     }
 
     @Override
@@ -126,9 +138,23 @@ public class HistorySyncPromoCoordinator
         }
     }
 
+    /** Implements {@link SyncService.SyncStateChangedListener} */
+    @Override
+    public void syncStateChanged() {
+        assert mSyncService != null;
+        if (mSyncService
+                .getSelectedTypes()
+                .containsAll(Set.of(UserSelectableType.HISTORY, UserSelectableType.TABS))) {
+            mRemoveModuleRunnable.run();
+        }
+    }
+
     @Override
     public void destroy() {
         assert mIdentityManager != null;
+        assert mSyncService != null;
+
         mIdentityManager.removeObserver(this);
+        mSyncService.removeSyncStateChangedListener(this);
     }
 }

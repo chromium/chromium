@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 package org.chromium.chrome.browser.educational_tip;
 
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -22,9 +23,14 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.educational_tip.cards.HistorySyncPromoCoordinator;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.identitymanager.PrimaryAccountChangeEvent;
+import org.chromium.components.sync.SyncService;
+import org.chromium.components.sync.UserSelectableType;
+
+import java.util.Set;
 
 /** Test relating to {@link HistorySyncPromoCoordinator} */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -36,7 +42,9 @@ public class HistorySyncPromoCoordinatorUnitTest {
     @Mock private IdentityManager mIdentityManager;
     @Mock private Profile mProfile;
     @Mock private IdentityServicesProvider mIdentityServicesProvider;
+    @Mock private SyncService mSyncService;
     ObservableSupplierImpl<Profile> mProfileSupplier;
+
     private HistorySyncPromoCoordinator mHistorySyncPromoCoordinator;
 
     @Before
@@ -47,6 +55,8 @@ public class HistorySyncPromoCoordinatorUnitTest {
         when(mActionDelegate.getProfileSupplier()).thenReturn(mProfileSupplier);
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
         when(mIdentityServicesProvider.getIdentityManager(mProfile)).thenReturn(mIdentityManager);
+        SyncServiceFactory.setInstanceForTesting(mSyncService);
+
         mHistorySyncPromoCoordinator =
                 new HistorySyncPromoCoordinator(
                         mOnModuleClickedCallback,
@@ -63,5 +73,26 @@ public class HistorySyncPromoCoordinatorUnitTest {
                         PrimaryAccountChangeEvent.Type.CLEARED, ConsentLevel.SIGNIN));
 
         verify(mRemoveModuleCallback).run();
+    }
+
+    @Test
+    @SmallTest
+    public void testCardRemovedOnWhenHistorySyncUpdated() {
+        when(mSyncService.getSelectedTypes())
+                .thenReturn(Set.of(UserSelectableType.HISTORY, UserSelectableType.TABS));
+
+        mHistorySyncPromoCoordinator.syncStateChanged();
+
+        verify(mRemoveModuleCallback).run();
+    }
+
+    @Test
+    @SmallTest
+    public void testCardNotRemovedOnWhenOtherSyncTypeUpdated() {
+        when(mSyncService.getSelectedTypes()).thenReturn(Set.of(UserSelectableType.BOOKMARKS));
+
+        mHistorySyncPromoCoordinator.syncStateChanged();
+
+        verify(mRemoveModuleCallback, never()).run();
     }
 }
