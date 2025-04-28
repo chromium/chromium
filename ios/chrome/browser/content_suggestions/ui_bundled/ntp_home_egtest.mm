@@ -137,7 +137,7 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
 // the elements after interacting with the device.
 @interface NTPHomeTestCase : ChromeTestCase
 
-@property(nonatomic, strong) NSString* defaultSearchEngine;
+@property(nonatomic, copy) NSString* defaultSearchEngine;
 
 @end
 
