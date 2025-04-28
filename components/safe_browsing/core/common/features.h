@@ -337,6 +337,11 @@ extern const base::FeatureParam<int>
 extern const base::FeatureParam<double>
     kSafetyHubDisruptiveNotificationRevocationMaxEngagementScore;
 
+// Timeout in seconds for the Safety Hub OS notification informing users about
+// revoked notification permissions.
+extern const base::FeatureParam<int>
+    kSafetyHubDisruptiveNotificationRevocationNotificationTimeoutSeconds;
+
 // Enables saving gaia password hash from the Profile Picker sign-in flow.
 BASE_DECLARE_FEATURE(kSavePasswordHashFromProfilePicker);
 

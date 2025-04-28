@@ -468,7 +468,7 @@ void RevokedPermissionsService::OnContentSettingChanged(
                 : false;
         const bool is_disruptive_revocation_running =
             disruptive_notification_manager_
-                ? disruptive_notification_manager_->IsRevocationRunning()
+                ? disruptive_notification_manager_->IsRunning()
                 : false;
         should_clean_revoked_permission_data =
             !is_unused_site_revocation_running &&

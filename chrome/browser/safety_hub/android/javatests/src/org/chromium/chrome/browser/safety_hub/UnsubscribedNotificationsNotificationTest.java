@@ -40,7 +40,8 @@ import java.util.List;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Features.EnableFeatures({
     ChromeFeatureList.SAFETY_HUB,
-    NotificationFeatureMap.CACHE_NOTIIFICATIONS_ENABLED
+    NotificationFeatureMap.CACHE_NOTIIFICATIONS_ENABLED,
+    ChromeFeatureList.SAFETY_HUB_DISRUPTIVE_NOTIFICATION_REVOCATION + ":shadow_run/false"
 })
 @Batch(Batch.PER_CLASS)
 @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
@@ -51,7 +52,7 @@ public final class UnsubscribedNotificationsNotificationTest {
     @SmallTest
     @Feature({"SafetyHubNotification"})
     public void testReviewNotification() throws Exception {
-        UnsubscribedNotificationsNotificationManager.updateNotification(1);
+        UnsubscribedNotificationsNotificationManager.displayNotification(1);
         List<MockNotificationManagerProxy.NotificationEntry> notifications =
                 mNotificationTestRule.getNotificationEntries();
         assertEquals(1, notifications.size());
@@ -79,7 +80,7 @@ public final class UnsubscribedNotificationsNotificationTest {
     @SmallTest
     @Feature({"SafetyHubNotification"})
     public void testReviewNotificationClickingOnContent() throws Exception {
-        UnsubscribedNotificationsNotificationManager.updateNotification(1);
+        UnsubscribedNotificationsNotificationManager.displayNotification(1);
         List<MockNotificationManagerProxy.NotificationEntry> notifications =
                 mNotificationTestRule.getNotificationEntries();
         assertEquals(1, notifications.size());

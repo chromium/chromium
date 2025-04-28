@@ -38,7 +38,10 @@ source_set("safety_hub") {
   ]
 
   if (is_android) {
-    sources += [ "password_status_check_result_android.h" ]
+    sources += [
+      "notification_wrapper_android.h",
+      "password_status_check_result_android.h",
+    ]
 
     public_deps += [ "//components/prefs" ]
   } else {
@@ -101,7 +104,11 @@ source_set("impl") {
   ]
 
   if (is_android) {
-    sources += [ "password_status_check_result_android.cc" ]
+    sources += [
+      "notification_wrapper_android.cc",
+      "password_status_check_result_android.cc",
+    ]
+    deps += [ "//chrome/browser/safety_hub/android:jni_headers" ]
   } else {
     sources += [
       "card_data_helper.cc",

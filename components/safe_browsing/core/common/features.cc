@@ -347,6 +347,12 @@ constexpr base::FeatureParam<double>
         &kSafetyHubDisruptiveNotificationRevocation,
         /*name=*/"max_engagement_score", /*default_value=*/0.0};
 
+constexpr base::FeatureParam<int>
+    kSafetyHubDisruptiveNotificationRevocationNotificationTimeoutSeconds{
+        &kSafetyHubDisruptiveNotificationRevocation,
+        /*name=*/"notification_timeout_seconds",
+        /*default_value=*/7 * 24 * 3600};
+
 BASE_FEATURE(kSavePasswordHashFromProfilePicker,
              "SavePasswordHashFromProfilePicker",
              base::FEATURE_ENABLED_BY_DEFAULT);

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/safety_hub/disruptive_notification_permissions_manager.h"
 
+#include "base/auto_reset.h"
 #include "base/containers/map_util.h"
 #include "base/json/values_util.h"
 #include "base/metrics/histogram_functions.h"
@@ -12,7 +13,9 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_util.h"
+#include "components/content_settings/core/browser/content_settings_type_set.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/permissions/notifications_engagement_service.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -20,6 +23,10 @@
 #include "safety_hub_constants.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/safety_hub/notification_wrapper_android.h"
+#endif
 
 namespace {
 
@@ -77,20 +84,30 @@ void UpdateNotificationPermission(HostContentSettingsMap* hcsm,
 
 }  // namespace
 
+DisruptiveNotificationPermissionsManager::SafetyHubNotificationWrapper::
+    ~SafetyHubNotificationWrapper() = default;
+
 DisruptiveNotificationPermissionsManager::
     DisruptiveNotificationPermissionsManager(
         scoped_refptr<HostContentSettingsMap> hcsm,
         site_engagement::SiteEngagementService* site_engagement_service)
     : hcsm_(std::move(hcsm)),
-      site_engagement_service_(site_engagement_service) {}
+      site_engagement_service_(site_engagement_service)
+#if BUILDFLAG(IS_ANDROID)
+      ,
+      notification_wrapper_(std::make_unique<NotificationWrapperAndroid>())
+#endif
+{
+  content_settings_observation_.Observe(hcsm_.get());
+}
 
 DisruptiveNotificationPermissionsManager::
     ~DisruptiveNotificationPermissionsManager() = default;
 
 void DisruptiveNotificationPermissionsManager::RevokeDisruptiveNotifications() {
-  is_revocation_running_ = true;
+  base::AutoReset<bool> is_revocation_running(&is_revocation_running_, true);
 
-  int revoked_sites_count = 0;
+  int proposed_revoked_sites_count = 0;
   ContentSetting default_notification_setting =
       hcsm_->GetDefaultContentSetting(ContentSettingsType::NOTIFICATIONS);
 
@@ -99,6 +116,7 @@ void DisruptiveNotificationPermissionsManager::RevokeDisruptiveNotifications() {
       notification_count_map = permissions::NotificationsEngagementService::
           GetNotificationCountMapPerPatternPair(hcsm_.get());
 
+  bool revoked_anything = false;
   for (const auto& item :
        hcsm_->GetSettingsForOneType(ContentSettingsType::NOTIFICATIONS)) {
     // Skip default content setting.
@@ -151,7 +169,8 @@ void DisruptiveNotificationPermissionsManager::RevokeDisruptiveNotifications() {
         ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS,
         &info);
     if (!stored_value.is_none()) {
-      HandleExistingValue(url, std::move(stored_value), info);
+      revoked_anything |=
+          HandleExistingValueAndMaybeRevoke(url, std::move(stored_value), info);
       continue;
     }
     auto it = notification_count_map.find(
@@ -178,61 +197,65 @@ void DisruptiveNotificationPermissionsManager::RevokeDisruptiveNotifications() {
         notification_count);
     base::UmaHistogramEnumeration(kRevocationResultHistogram,
                                   RevocationResult::kProposedRevoke);
-    revoked_sites_count++;
+    proposed_revoked_sites_count++;
   }
   base::UmaHistogramCounts100(
       "Settings.SafetyHub.DisruptiveNotificationRevocations."
       "RevokedWebsitesCount",
-      revoked_sites_count);
+      proposed_revoked_sites_count);
 
-  is_revocation_running_ = false;
+  if (revoked_anything) {
+    DisplayNotification();
+  }
 }
 
-void DisruptiveNotificationPermissionsManager::HandleExistingValue(
-    const GURL& url,
-    base::Value stored_value,
-    const content_settings::SettingInfo& info) {
+bool DisruptiveNotificationPermissionsManager::
+    HandleExistingValueAndMaybeRevoke(
+        const GURL& url,
+        base::Value stored_value,
+        const content_settings::SettingInfo& info) {
   CHECK(stored_value.is_dict());
   base::Value::Dict dict = std::move(stored_value).TakeDict();
   auto recorded_score = dict.FindDouble(safety_hub::kSiteEngagementStr);
   if (!recorded_score.has_value()) {
-    return;
+    return false;
   }
   const std::string* revoked_status =
       dict.FindString(safety_hub::kRevokedStatusDictKeyStr);
   if (!revoked_status) {
-    return;
+    return false;
   }
   if (*revoked_status == safety_hub::kFalsePositiveStr) {
     base::UmaHistogramEnumeration(kRevocationResultHistogram,
                                   RevocationResult::kAlreadyFalsePositive);
-    return;
+    return false;
   }
 
   if (*revoked_status == safety_hub::kIgnoreStr) {
     base::UmaHistogramEnumeration(kRevocationResultHistogram,
                                   RevocationResult::kIgnore);
-    return;
+    return false;
   }
 
   if (*revoked_status != safety_hub::kProposedStr) {
-    return;
+    return false;
   }
 
   const double new_score = site_engagement_service_->GetScore(url);
   if (recorded_score.value() < new_score) {
     RecordFalsePositive(url, std::move(dict), info, new_score);
-    return;
+    return false;
   }
 
   if (!safe_browsing::kSafetyHubDisruptiveNotificationRevocationShadowRun
            .Get()) {
     RevokeNotifications(url, std::move(dict));
-    return;
+    return true;
   }
 
   base::UmaHistogramEnumeration(kRevocationResultHistogram,
                                 RevocationResult::kAlreadyInProposedRevokeList);
+  return false;
 }
 
 void DisruptiveNotificationPermissionsManager::RecordFalsePositive(
@@ -263,6 +286,34 @@ void DisruptiveNotificationPermissionsManager::RevokeNotifications(
                                ContentSetting::CONTENT_SETTING_DEFAULT);
   base::UmaHistogramEnumeration(kRevocationResultHistogram,
                                 RevocationResult::kRevoke);
+}
+
+void DisruptiveNotificationPermissionsManager::DisplayNotification() {
+  if (notification_wrapper_) {
+    notification_wrapper_->DisplayNotification(
+        GetRevokedNotifications().size());
+  }
+}
+
+void DisruptiveNotificationPermissionsManager::OnContentSettingChanged(
+    const ContentSettingsPattern& primary_pattern,
+    const ContentSettingsPattern& secondary_pattern,
+    ContentSettingsTypeSet content_type_set) {
+  if (content_type_set.ContainsAllTypes() ||
+      content_type_set.GetType() ==
+          ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS) {
+    UpdateNotificationCount();
+  }
+}
+
+void DisruptiveNotificationPermissionsManager::UpdateNotificationCount() {
+  // If revocation is currently running there is no point in updating, since
+  // the notification will be re-displayed when the revocation completes.
+  if (!safe_browsing::kSafetyHubDisruptiveNotificationRevocationShadowRun
+           .Get() &&
+      notification_wrapper_ && !is_revocation_running_) {
+    notification_wrapper_->UpdateNotification(GetRevokedNotifications().size());
+  }
 }
 
 ContentSettingsForOneType
@@ -296,8 +347,8 @@ DisruptiveNotificationPermissionsManager::GetRevokedNotifications() {
   return result;
 }
 
-bool DisruptiveNotificationPermissionsManager::IsRevocationRunning() {
-  return is_revocation_running_;
+bool DisruptiveNotificationPermissionsManager::IsRunning() {
+  return is_revocation_running_ || is_regrant_or_undo_running_;
 }
 
 void DisruptiveNotificationPermissionsManager::RegrantPermissionForUrl(
@@ -308,7 +359,8 @@ void DisruptiveNotificationPermissionsManager::RegrantPermissionForUrl(
   if (!safety_hub_util::IsUrlRevokedDisruptiveNotification(hcsm_.get(), url)) {
     return;
   }
-  is_revocation_running_ = true;
+
+  base::AutoReset<bool> is_regrant_running(&is_regrant_or_undo_running_, true);
 
   UpdateNotificationPermission(hcsm_.get(), url,
                                ContentSetting::CONTENT_SETTING_ALLOW);
@@ -321,8 +373,6 @@ void DisruptiveNotificationPermissionsManager::RegrantPermissionForUrl(
   // so the value won't expire.
   UpdateContentSettingValue(hcsm_.get(), url, std::move(dict),
                             /*constraints*/ {});
-
-  is_revocation_running_ = false;
 }
 
 void DisruptiveNotificationPermissionsManager::UndoRegrantPermissionForUrl(
@@ -343,14 +393,13 @@ void DisruptiveNotificationPermissionsManager::UndoRegrantPermissionForUrl(
     return;
   }
 
-  is_revocation_running_ = true;
+  base::AutoReset<bool> is_regrant_running(&is_regrant_or_undo_running_, true);
+
   UpdateNotificationPermission(hcsm_.get(), url,
                                ContentSetting::CONTENT_SETTING_DEFAULT);
   base::Value::Dict dict = std::move(stored_value).TakeDict();
   dict.Set(safety_hub::kRevokedStatusDictKeyStr, safety_hub::kRevokeStr);
   UpdateContentSettingValue(hcsm_.get(), url, std::move(dict), constraints);
-
-  is_revocation_running_ = false;
 }
 
 void DisruptiveNotificationPermissionsManager::ClearRevokedPermissionsList() {
@@ -484,4 +533,9 @@ void DisruptiveNotificationPermissionsManager::LogMetrics(
 void DisruptiveNotificationPermissionsManager::SetClockForTesting(
     base::Clock* clock) {
   clock_ = clock;
+}
+
+void DisruptiveNotificationPermissionsManager::SetNotificationWrapperForTesting(
+    std::unique_ptr<SafetyHubNotificationWrapper> wrapper) {
+  notification_wrapper_ = std::move(wrapper);
 }

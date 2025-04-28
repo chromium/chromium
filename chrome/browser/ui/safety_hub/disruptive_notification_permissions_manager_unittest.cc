@@ -20,12 +20,15 @@
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/browser_context.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+namespace {
 
 using RevocationResult =
     DisruptiveNotificationPermissionsManager::RevocationResult;
-
-namespace {
+using testing::ElementsAre;
+using testing::IsEmpty;
 
 constexpr char kRevocationResultHistogram[] =
     "Settings.SafetyHub.DisruptiveNotificationRevocations.RevocationResult";
@@ -38,6 +41,27 @@ constexpr char kFalsePositiveSiteEngagementHistogram[] =
     "Settings.SafetyHub.DisruptiveNotificationRevocations.FalsePositive."
     "SiteEngagement";
 
+class SafetyHubNotificationWrapperForTesting
+    : public DisruptiveNotificationPermissionsManager::
+          SafetyHubNotificationWrapper {
+ public:
+  SafetyHubNotificationWrapperForTesting(std::vector<int>& display_called_with,
+                                         std::vector<int>& update_called_with)
+      : display_called_with_(display_called_with),
+        update_called_with_(update_called_with) {}
+
+  void DisplayNotification(int num_revoked_permissions) override {
+    display_called_with_->push_back(num_revoked_permissions);
+  }
+  void UpdateNotification(int num_revoked_permissions) override {
+    update_called_with_->push_back(num_revoked_permissions);
+  }
+
+ private:
+  base::raw_ref<std::vector<int>> display_called_with_;
+  base::raw_ref<std::vector<int>> update_called_with_;
+};
+
 }  // namespace
 
 class DisruptiveNotificationPermissionsManagerTest : public ::testing::Test {
@@ -45,6 +69,10 @@ class DisruptiveNotificationPermissionsManagerTest : public ::testing::Test {
   void SetUp() override {
     manager_ = std::make_unique<DisruptiveNotificationPermissionsManager>(
         hcsm(), site_engagement_service());
+    manager_->SetNotificationWrapperForTesting(
+        std::make_unique<SafetyHubNotificationWrapperForTesting>(
+            display_notification_function_called_with_,
+            update_notification_function_called_with_));
   }
 
   HostContentSettingsMap* hcsm() {
@@ -75,6 +103,14 @@ class DisruptiveNotificationPermissionsManagerTest : public ::testing::Test {
         .size();
   }
 
+  const std::vector<int>& GetDisplayNotificationFunctionCalledWith() {
+    return display_notification_function_called_with_;
+  }
+
+  const std::vector<int>& GetUpdateNotificationFunctionCalledWith() {
+    return update_notification_function_called_with_;
+  }
+
   DisruptiveNotificationPermissionsManager* manager() { return manager_.get(); }
 
   TestingProfile* profile() { return &profile_; }
@@ -87,6 +123,8 @@ class DisruptiveNotificationPermissionsManagerTest : public ::testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   TestingProfile profile_;
 
+  std::vector<int> display_notification_function_called_with_;
+  std::vector<int> update_notification_function_called_with_;
   std::unique_ptr<DisruptiveNotificationPermissionsManager> manager_;
 };
 
@@ -133,6 +171,7 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
                       RevocationResult::kProposedRevoke, 1);
   t.ExpectBucketCount(kRevokedWebsitesCountHistogram, 1, 1);
   t.ExpectBucketCount(kNotificationCountHistogram, 3, 1);
+  EXPECT_THAT(GetDisplayNotificationFunctionCalledWith(), IsEmpty());
 
   // On the next run, site goes from proposed to actual revocation.
   manager()->RevokeDisruptiveNotifications();
@@ -143,6 +182,7 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
   t.ExpectBucketCount(kRevocationResultHistogram,
                       RevocationResult::kProposedRevoke, 1);
   t.ExpectBucketCount(kRevocationResultHistogram, RevocationResult::kRevoke, 1);
+  EXPECT_THAT(GetDisplayNotificationFunctionCalledWith(), ElementsAre(1));
 
   // After that, no new metrics are reported since there is no notification
   // content setting exception.
@@ -151,6 +191,7 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
   t.ExpectBucketCount(kRevocationResultHistogram,
                       RevocationResult::kProposedRevoke, 1);
   t.ExpectBucketCount(kRevocationResultHistogram, RevocationResult::kRevoke, 1);
+  EXPECT_THAT(GetDisplayNotificationFunctionCalledWith(), ElementsAre(1));
 }
 
 TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
@@ -242,7 +283,7 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
 }
 
 TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
-       NotEligableNotificationContentSettings) {
+       NotEligibleNotificationContentSettings) {
   base::HistogramTester t;
   // Already blocked notification.
   GURL url("https://www.example.com");
@@ -509,6 +550,9 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
       CONTENT_SETTING_ALLOW,
       hcsm()->GetContentSetting(url, url, ContentSettingsType::NOTIFICATIONS));
 
+  // The notification count has been updated.
+  EXPECT_THAT(GetUpdateNotificationFunctionCalledWith(), ElementsAre(1, 0));
+
   // The content setting was updated to "ignore" to prevent autorevoking in the
   // future.
   EXPECT_EQ(GetRevokedPermissionsCount(), 1);
@@ -732,6 +776,23 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
   EXPECT_FALSE(ignored_stored_value.is_none());
 }
 
+TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
+       UpdateNotificationContentSettingsChanged) {
+  GURL url("https://chrome.test/");
+  base::Value::Dict dict;
+  dict.Set(safety_hub::kRevokedStatusDictKeyStr, safety_hub::kRevokeStr);
+  dict.Set(safety_hub::kSiteEngagementStr, 0.0);
+  dict.Set(safety_hub::kDailyNotificationCountStr, 4);
+  dict.Set(safety_hub::kTimestampStr,
+           base::TimeToValue(base::Time::Now() - base::Days(3)));
+  hcsm()->SetWebsiteSettingCustomScope(
+      ContentSettingsPattern::FromURLNoWildcard(url),
+      ContentSettingsPattern::Wildcard(),
+      ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS,
+      base::Value(std::move(dict)));
+  EXPECT_THAT(GetUpdateNotificationFunctionCalledWith(), ElementsAre(1));
+}
+
 class DisruptiveNotificationPermissionsManagerShadowRunTest
     : public DisruptiveNotificationPermissionsManagerTest {
  public:
@@ -776,7 +837,7 @@ TEST_F(DisruptiveNotificationPermissionsManagerShadowRunTest,
   t.ExpectBucketCount(kNotificationCountHistogram, 3, 1);
 
   // Repeated runs during the shadow run don't revoke the notification but
-  // report the the site is already in proposed revocation list instead.
+  // report that the site is already in proposed revocation list instead.
   manager()->RevokeDisruptiveNotifications();
   EXPECT_EQ(
       CONTENT_SETTING_ALLOW,
@@ -786,6 +847,9 @@ TEST_F(DisruptiveNotificationPermissionsManagerShadowRunTest,
                       RevocationResult::kProposedRevoke, 1);
   t.ExpectBucketCount(kRevocationResultHistogram,
                       RevocationResult::kAlreadyInProposedRevokeList, 1);
+
+  // The shadow run should never display notifications.
+  EXPECT_THAT(GetDisplayNotificationFunctionCalledWith(), IsEmpty());
 }
 
 TEST_F(DisruptiveNotificationPermissionsManagerShadowRunTest,
@@ -849,4 +913,7 @@ TEST_F(DisruptiveNotificationPermissionsManagerShadowRunTest,
   manager()->RevokeDisruptiveNotifications();
   t.ExpectBucketCount(kRevocationResultHistogram,
                       RevocationResult::kAlreadyFalsePositive, 1);
+
+  // The shadow run should never display notifications.
+  EXPECT_THAT(GetDisplayNotificationFunctionCalledWith(), IsEmpty());
 }

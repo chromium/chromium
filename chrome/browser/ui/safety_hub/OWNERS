@@ -4,3 +4,5 @@ tov@chromium.org
 
 per-file disruptive_notification_permissions_manager*=olesiamarukhno@google.com
 per-file disruptive_notification_permissions_manager*=antoniosartori@chromium.org
+per-file notification_wrapper_android*=olesiamarukhno@google.com
+per-file notification_wrapper_android*=antoniosartori@chromium.org
