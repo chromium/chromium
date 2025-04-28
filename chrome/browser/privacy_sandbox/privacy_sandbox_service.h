@@ -214,6 +214,11 @@ class PrivacySandboxService : public KeyedService {
     kOpenMeasurementSettings,
   };
 
+  // Returns whether |url| is suitable to display the Privacy Sandbox prompt
+  // over. Only about:blank and certain chrome:// URLs are considered
+  // suitable.
+  static bool IsUrlSuitableForPrompt(const GURL& url);
+
   // Disables the display of the Privacy Sandbox prompt for testing. When
   // |disabled| is true, GetRequiredPromptType() will only ever return that
   // no prompt is required. NOTE: This is set to true in

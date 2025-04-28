@@ -37,11 +37,6 @@ class NavigationHandler : public EntryPointHandler {
       base::RepeatingCallback<void(BrowserWindowInterface*)>
           entry_point_callback);
 
-  // Returns whether |url| is suitable to display the Privacy Sandbox prompt
-  // over. Only about:blank and certain chrome:// URLs are considered
-  // suitable.
-  static bool IsUrlSuitableForPrompt(const GURL& url);
-
   // Performs checks required to determine whether a view can be shown on a
   // navigation.
   void HandleNewNavigation(content::NavigationHandle* navigation_handle,
