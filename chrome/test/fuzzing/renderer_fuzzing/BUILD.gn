@@ -123,7 +123,6 @@ if (renderer_ipc_fuzzing_enabled) {
 
     deps += _mojolpm_deps
 
-    proto_deps = [ ":renderer_in_process_mojolpm_fuzzer_generator" ]
-    proto_deps += _mojolpm_deps
+    proto_deps = _mojolpm_deps
   }
 }
