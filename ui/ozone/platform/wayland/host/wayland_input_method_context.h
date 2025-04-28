@@ -87,18 +87,9 @@ class WaylandInputMethodContext : public LinuxInputMethodContext,
                 uint32_t state,
                 uint32_t modifiers,
                 uint32_t time) override;
-  void OnSetPreeditRegion(int32_t index,
-                          uint32_t length,
-                          const std::vector<SpanStyle>& spans) override;
-  void OnClearGrammarFragments(const gfx::Range& range) override;
-  void OnAddGrammarFragment(const GrammarFragment& fragment) override;
-  void OnSetAutocorrectRange(const gfx::Range& range) override;
-  void OnSetVirtualKeyboardOccludedBounds(
-      const gfx::Rect& screen_bounds) override;
-  void OnConfirmPreedit(bool keep_selection) override;
+
   void OnInputPanelState(uint32_t state) override;
   void OnModifiersMap(std::vector<std::string> modifiers_map) override;
-  void OnInsertImage(const GURL& src) override;
 
   const SurroundingTextTracker::State& predicted_state_for_testing() const {
     return surrounding_text_tracker_.predicted_state();

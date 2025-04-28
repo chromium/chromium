@@ -43,16 +43,9 @@ class ZWPTextInputWrapperV3 : public ZWPTextInputWrapper {
   void SetSurroundingText(const std::string& text,
                           const gfx::Range& preedit_range,
                           const gfx::Range& selection_range) override;
-  bool HasAdvancedSurroundingTextSupport() const override;
-  void SetSurroundingTextOffsetUtf16(uint32_t offset_utf16) override;
   void SetContentType(TextInputType type,
-                      TextInputMode mode,
                       uint32_t flags,
-                      bool should_do_learning,
-                      bool can_compose_inline) override;
-  void SetGrammarFragmentAtCursor(const ui::GrammarFragment& fragment) override;
-  void SetAutocorrectInfo(const gfx::Range& autocorrect_range,
-                          const gfx::Rect& autocorrect_bounds) override;
+                      bool should_do_learning) override;
 
  private:
   struct ContentType {

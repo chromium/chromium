@@ -4,6 +4,7 @@
 
 #include "ui/ozone/platform/wayland/host/zwp_text_input_wrapper_v3.h"
 
+#include <text-input-unstable-v3-client-protocol.h>
 #include <text-input-unstable-v3-server-protocol.h>
 
 #include <memory>
@@ -40,10 +41,6 @@ class ZWPTextInputWrapperV3Test : public WaylandTestSimple {
 
  protected:
   void VerifyAndClearExpectations() {
-    PostToServerAndWait([](wl::TestWaylandServerThread* server) {
-      Mock::VerifyAndClearExpectations(
-          server->text_input_extension_v1()->extended_text_input());
-    });
     Mock::VerifyAndClearExpectations(&test_client_);
   }
 
@@ -116,14 +113,16 @@ TEST_F(ZWPTextInputWrapperV3Test, SetContentType) {
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
     InSequence s;
     auto* zwp_text_input = server->text_input_manager_v3()->text_input();
-    EXPECT_CALL(*zwp_text_input,
-                SetContentType(ZWP_TEXT_INPUT_V3_CONTENT_HINT_SPELLCHECK,
-                               ZWP_TEXT_INPUT_V3_CONTENT_PURPOSE_EMAIL))
+    EXPECT_CALL(
+        *zwp_text_input,
+        SetContentType(ZWP_TEXT_INPUT_V3_CONTENT_HINT_SPELLCHECK |
+                           ZWP_TEXT_INPUT_V3_CONTENT_HINT_SENSITIVE_DATA,
+                       ZWP_TEXT_INPUT_V3_CONTENT_PURPOSE_EMAIL))
         .Times(1);
     EXPECT_CALL(*zwp_text_input, Commit()).Times(1);
   });
-  wrapper_->SetContentType(TEXT_INPUT_TYPE_EMAIL, TEXT_INPUT_MODE_NONE,
-                           TEXT_INPUT_FLAG_AUTOCORRECT_ON, false, false);
+  wrapper_->SetContentType(TEXT_INPUT_TYPE_EMAIL,
+                           TEXT_INPUT_FLAG_AUTOCORRECT_ON, false);
   VerifyAndClearExpectations();
 
   // Calling again with the same values should be a no-op.
@@ -134,8 +133,8 @@ TEST_F(ZWPTextInputWrapperV3Test, SetContentType) {
     // Commit has been called once. So send done serial matching commit.
     zwp_text_input_v3_send_done(zwp_text_input->resource(), 1);
   });
-  wrapper_->SetContentType(TEXT_INPUT_TYPE_EMAIL, TEXT_INPUT_MODE_NONE,
-                           TEXT_INPUT_FLAG_AUTOCORRECT_ON, false, false);
+  wrapper_->SetContentType(TEXT_INPUT_TYPE_EMAIL,
+                           TEXT_INPUT_FLAG_AUTOCORRECT_ON, false);
   VerifyAndClearExpectations();
 
   // Calling with different values should work.
@@ -143,13 +142,14 @@ TEST_F(ZWPTextInputWrapperV3Test, SetContentType) {
     auto* zwp_text_input = server->text_input_manager_v3()->text_input();
     EXPECT_CALL(
         *zwp_text_input,
-        SetContentType(ZWP_TEXT_INPUT_V3_CONTENT_HINT_AUTO_CAPITALIZATION,
+        SetContentType(ZWP_TEXT_INPUT_V3_CONTENT_HINT_AUTO_CAPITALIZATION |
+                           ZWP_TEXT_INPUT_V3_CONTENT_HINT_SENSITIVE_DATA,
                        ZWP_TEXT_INPUT_V3_CONTENT_PURPOSE_NUMBER))
         .Times(1);
     EXPECT_CALL(*zwp_text_input, Commit()).Times(1);
   });
-  wrapper_->SetContentType(TEXT_INPUT_TYPE_NUMBER, TEXT_INPUT_MODE_NONE,
-                           TEXT_INPUT_FLAG_AUTOCAPITALIZE_WORDS, false, false);
+  wrapper_->SetContentType(TEXT_INPUT_TYPE_NUMBER,
+                           TEXT_INPUT_FLAG_AUTOCAPITALIZE_WORDS, false);
 }
 
 TEST_F(ZWPTextInputWrapperV3Test, SetCursorRect) {
@@ -401,8 +401,8 @@ TEST_F(ZWPTextInputWrapperV3Test, PendingRequestsSentOnDone) {
   });
   wrapper_->SetSurroundingText(text, kPreeditRange, kSelectionRange);
   wrapper_->SetCursorRect(kRect);
-  wrapper_->SetContentType(TEXT_INPUT_TYPE_EMAIL, TEXT_INPUT_MODE_NONE,
-                           TEXT_INPUT_FLAG_AUTOCORRECT_ON, false, false);
+  wrapper_->SetContentType(TEXT_INPUT_TYPE_EMAIL,
+                           TEXT_INPUT_FLAG_AUTOCORRECT_ON, true);
   VerifyAndClearExpectations();
 
   // Multiple pending requests should be sent when commit number finally
@@ -454,8 +454,8 @@ TEST_F(ZWPTextInputWrapperV3Test, PendingRequestsClearedOnEnable) {
   });
   wrapper_->SetSurroundingText(text, kPreeditRange, kSelectionRange);
   wrapper_->SetCursorRect(kRect);
-  wrapper_->SetContentType(TEXT_INPUT_TYPE_EMAIL, TEXT_INPUT_MODE_NONE,
-                           TEXT_INPUT_FLAG_AUTOCORRECT_ON, false, false);
+  wrapper_->SetContentType(TEXT_INPUT_TYPE_EMAIL,
+                           TEXT_INPUT_FLAG_AUTOCORRECT_ON, true);
   VerifyAndClearExpectations();
 
   // Enable should clear pending requests.
@@ -508,8 +508,8 @@ TEST_F(ZWPTextInputWrapperV3Test, PendingRequestsClearedOnDisable) {
   });
   wrapper_->SetSurroundingText(text, kPreeditRange, kSelectionRange);
   wrapper_->SetCursorRect(kRect);
-  wrapper_->SetContentType(TEXT_INPUT_TYPE_EMAIL, TEXT_INPUT_MODE_NONE,
-                           TEXT_INPUT_FLAG_AUTOCORRECT_ON, false, false);
+  wrapper_->SetContentType(TEXT_INPUT_TYPE_EMAIL,
+                           TEXT_INPUT_FLAG_AUTOCORRECT_ON, true);
   VerifyAndClearExpectations();
 
   // Disable should clear pending requests.
@@ -561,8 +561,8 @@ TEST_F(ZWPTextInputWrapperV3Test, PendingRequestsClearedOnReset) {
   });
   wrapper_->SetSurroundingText(text, kPreeditRange, kSelectionRange);
   wrapper_->SetCursorRect(kRect);
-  wrapper_->SetContentType(TEXT_INPUT_TYPE_EMAIL, TEXT_INPUT_MODE_NONE,
-                           TEXT_INPUT_FLAG_AUTOCORRECT_ON, false, false);
+  wrapper_->SetContentType(TEXT_INPUT_TYPE_EMAIL,
+                           TEXT_INPUT_FLAG_AUTOCORRECT_ON, true);
   VerifyAndClearExpectations();
 
   // Reset should clear pending requests.

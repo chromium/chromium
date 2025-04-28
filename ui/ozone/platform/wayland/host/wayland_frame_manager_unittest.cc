@@ -106,7 +106,6 @@ class WaylandFrameManagerTest : public WaylandTestSimple {
           EXPECT_CALL(*mock_surface, Commit()).Times(call_count);
         });
     frame_manager_->RecordFrame(std::move(frame));
-    VerifyAndClearExpectations();
     EXPECT_EQ(0u, NumPendingFrames());
     EXPECT_EQ(1u, NumSubmittedFrames());
     if (expect_surface_commits) {
@@ -134,13 +133,6 @@ class WaylandFrameManagerTest : public WaylandTestSimple {
 
   bool LastSubmittedFrameHasSubmittedBuffers() {
     return !frame_manager_->submitted_frames_.back()->submitted_buffers.empty();
-  }
-
-  void VerifyAndClearExpectations() {
-    PostToServerAndWait([](wl::TestWaylandServerThread* server) {
-      Mock::VerifyAndClearExpectations(
-          server->text_input_extension_v1()->extended_text_input());
-    });
   }
 
   void SendFrameCallback() {
@@ -335,7 +327,6 @@ TEST_F(WaylandFrameManagerTest,
     EXPECT_CALL(*mock_surface, Commit()).Times(0);
   });
   frame_manager_->RecordFrame(std::move(frame2));
-  VerifyAndClearExpectations();
   // The second frame should be submitted and ACK-ed and the first frame should
   // be cleared.
   EXPECT_EQ(0u, NumPendingFrames());

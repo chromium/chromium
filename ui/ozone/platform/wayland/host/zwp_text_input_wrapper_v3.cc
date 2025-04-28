@@ -273,13 +273,12 @@ void ZWPTextInputWrapperV3::SendSurroundingText(
 }
 
 void ZWPTextInputWrapperV3::SetContentType(ui::TextInputType type,
-                                           ui::TextInputMode mode,
                                            uint32_t flags,
-                                           bool should_do_learning,
-                                           bool can_compose_inline) {
-  // V3 is not used with chromium text-input extension protocol. So mode,
-  // should_do_learning and can_compose_inline are not used.
+                                           bool should_do_learning) {
   uint32_t content_hint = InputFlagsToContentHint(flags);
+  if (!should_do_learning) {
+    content_hint |= ZWP_TEXT_INPUT_V3_CONTENT_HINT_SENSITIVE_DATA;
+  }
   uint32_t content_purpose = InputTypeToContentPurpose(type);
   ContentType content_type{content_hint, content_purpose};
   if (last_sent_content_type_ == content_type) {
@@ -413,29 +412,6 @@ void ZWPTextInputWrapperV3::OnDone(void* data,
   if (self->last_done_serial_ == self->commit_count_) {
     self->ApplyPendingSetRequests();
   }
-}
-
-// The following methods are not applicable to text-input-v3 because they are
-// needed in Exo with text-input-v1 protocol + extended text input protocol.
-
-bool ZWPTextInputWrapperV3::HasAdvancedSurroundingTextSupport() const {
-  return false;
-}
-
-void ZWPTextInputWrapperV3::SetSurroundingTextOffsetUtf16(
-    uint32_t offset_utf16) {
-  NOTIMPLEMENTED_LOG_ONCE();
-}
-
-void ZWPTextInputWrapperV3::SetGrammarFragmentAtCursor(
-    const ui::GrammarFragment& fragment) {
-  NOTIMPLEMENTED_LOG_ONCE();
-}
-
-void ZWPTextInputWrapperV3::SetAutocorrectInfo(
-    const gfx::Range& autocorrect_range,
-    const gfx::Rect& autocorrect_bounds) {
-  NOTIMPLEMENTED_LOG_ONCE();
 }
 
 }  // namespace ui

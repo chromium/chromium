@@ -177,29 +177,6 @@ std::optional<OffsetText> TrimSurroundingTextForStandard(
                     truncated_range.start()};
 }
 
-std::optional<OffsetText> TrimSurroundingTextForExtension(
-    std::string_view text_utf8,
-    const base::span<size_t> offsets) {
-  // Heuristically, send leading/trailing (almost) 500 bytes in addition to
-  // offsets.
-  // Note: exo's implementation does not have 4000 bytes limit of the message.
-  static constexpr size_t kMaxSurroundingTextBytes = 500;
-  const auto& [min_offset, max_offset] = std::ranges::minmax(offsets);
-
-  size_t start_index =
-      min_offset - std::min(min_offset, kMaxSurroundingTextBytes);
-  size_t end_index = max_offset + kMaxSurroundingTextBytes;
-
-  gfx::Range truncated_range =
-      AdjustUtf8Alignment(text_utf8, gfx::Range(start_index, end_index));
-
-  return OffsetText{std::string(text_utf8.substr(truncated_range.start(),
-                                                 truncated_range.length())),
-                    truncated_range.start()};
-}
-
-// TODO(crbug.com/40251329): Add TrimSurroundingTextForExtension.
-
 }  // namespace
 
 WaylandInputMethodContext::WaylandInputMethodContext(
@@ -253,8 +230,7 @@ void WaylandInputMethodContext::CreateTextInputWrapper() {
   }
   if (connection_->text_input_manager_v1()) {
     text_input_ = std::make_unique<ZWPTextInputWrapperV1>(
-        connection_, this, connection_->text_input_manager_v1(),
-        connection_->text_input_extension_v1());
+        connection_, this, connection_->text_input_manager_v1());
   } else {
     LOG(WARNING) << "text-input-v1 not available.";
   }
@@ -432,20 +408,14 @@ void WaylandInputMethodContext::SetSurroundingText(
   // To ensure trimming around cursor position, selection is used and not
   // preedit.
   auto trimmed =
-      text_input_->HasAdvancedSurroundingTextSupport()
-          ? TrimSurroundingTextForExtension(text_utf8, offsets_for_adjustment)
-          : TrimSurroundingTextForStandard(text_utf8, selection_range_utf8);
+      TrimSurroundingTextForStandard(text_utf8, selection_range_utf8);
   if (!trimmed.has_value()) {
     surrounding_text_tracker_.Reset();
     return;
   }
 
-  const size_t extra_offset_utf16 =
-      base::UTF8ToUTF16(std::string_view(text_utf8).substr(0, trimmed->offset))
-          .length();
   text_utf8 = std::move(trimmed->text);
   surrounding_text_offset_ = trimmed->offset;
-  text_input_->SetSurroundingTextOffsetUtf16(utf16_offset + extra_offset_utf16);
 
   gfx::Range relocated_preedit_range;
   if (composition_range.IsValid()) {
@@ -649,31 +619,6 @@ void WaylandInputMethodContext::OnCursorPosition(int32_t index,
   const gfx::Range new_selection_range =
       gfx::Range(offsets[1] + utf16_offset, offsets[0] + utf16_offset);
 
-  // TODO(crbug.com/374244479): this might still be useful for Linux. If it's
-  // not, consider removing this. It was left here intentionally.
-  constexpr bool kWorkaroundSurroundingTextTimingIssue = false;
-  // Cursor position may have been wrong on Lacros due to timing issue for some
-  // scenario when surrounding text is longer than wayland message size
-  // limitation (4000 bytes) such as (does it apply to Wayland/Linux as well?):
-  // 1. Set surrounding text with 8000 bytes and send the selection adjusted to
-  // 4000 bytes (wayland message size maximum).
-  // 2. Exo requests to delete surrounding text sent from 1.
-  // 3. Before receiving OnDeleteSurrounding, move the selection to 4000 bytes
-  // (this implies that surrounding text sent to Exo is changed) on wayland and
-  // set surrounding text.
-  // In this case, Exo can only know the relative position to the offset trimmed
-  // on Wayland, so the position is mismatched to Wayland.
-  //
-  // This timing issue will be fixed by sending whole surrounding text instead
-  // of trimmed text.
-  if (kWorkaroundSurroundingTextTimingIssue) {
-    if (selection == new_selection_range) {
-      pending_keep_selection_ = true;
-    } else {
-      NOTIMPLEMENTED_LOG_ONCE();
-    }
-  }
-
   surrounding_text_tracker_.OnSetEditableSelectionRange(new_selection_range);
 }
 
@@ -724,30 +669,20 @@ void WaylandInputMethodContext::OnKeysym(uint32_t keysym,
   if (!layout_engine)
     return;
 
-  // TODO(crbug.com/40817413): This is for the backward compatibility with older
-  // ash-chrome (M101 and earlier). In that version of ash-chrome didn't send
-  // CapsLock so that we hit an issue on using it.
-  // Because newer ash-chrome always sends CapsLock modifier map, as short term
-  // workaround, check the condition to identify whether Lacros is running
-  // on top of enough newer ash-chrome.
-  // To avoid accident, we also check text_input_extension, which is available
-  // only on ash-chrome.
-  // We can remove this workaround check in M104 or later.
   std::optional<std::vector<std::string_view>> modifiers;
-  if (!connection_->text_input_extension_v1() ||
-      base::Contains(modifiers_map_, XKB_MOD_NAME_CAPS)) {
-    std::vector<std::string_view> modifier_content;
-    for (size_t i = 0; i < modifiers_map_.size(); ++i) {
-      if (modifiers_bits & (1 << i))
-        modifier_content.emplace_back(modifiers_map_[i]);
+  std::vector<std::string_view> modifier_content;
+  for (size_t i = 0; i < modifiers_map_.size(); ++i) {
+    if (modifiers_bits & (1 << i)) {
+      modifier_content.emplace_back(modifiers_map_[i]);
     }
-    modifiers = std::move(modifier_content);
   }
+  modifiers = std::move(modifier_content);
 
   DomCode dom_code = static_cast<XkbKeyboardLayoutEngine*>(layout_engine)
                          ->GetDomCodeByKeysym(keysym, modifiers);
-  if (dom_code == DomCode::NONE)
+  if (dom_code == DomCode::NONE) {
     return;
+  }
 
   // Keyboard might not exist.
   int device_id = connection_->seat()->keyboard()
@@ -766,115 +701,6 @@ void WaylandInputMethodContext::OnKeysym(uint32_t keysym,
 #endif
 }
 
-void WaylandInputMethodContext::OnSetPreeditRegion(
-    int32_t index,
-    uint32_t length,
-    const std::vector<SpanStyle>& spans) {
-  const auto& [surrounding_text, utf16_offset, selection,
-               unused_composition_text] =
-      surrounding_text_tracker_.predicted_state();
-
-  std::vector<size_t> selection_utf8_offsets = {
-      selection.start() - utf16_offset, selection.end() - utf16_offset};
-  std::string surrounding_text_utf8 = base::UTF16ToUTF8AndAdjustOffsets(
-      surrounding_text, &selection_utf8_offsets);
-
-  if (surrounding_text.empty() || !selection.IsValid()) {
-    LOG(ERROR) << "SetSurroundingText should run before OnSetPreeditRegion.";
-    return;
-  }
-
-  // |index| and |length| are expected to be in UTF8. |index| is relative to the
-  // current cursor position.
-
-  // Validation of index and length.
-  if (index < 0 && selection_utf8_offsets[1] < static_cast<uint32_t>(-index)) {
-    LOG(ERROR) << "Invalid starting point is specified";
-    return;
-  }
-  size_t begin_utf8 = static_cast<size_t>(
-      static_cast<ssize_t>(selection_utf8_offsets[1]) + index);
-  size_t end_utf8 = begin_utf8 + length;
-  if (end_utf8 > surrounding_text_utf8.size()) {
-    LOG(ERROR) << "Too long preedit range is specified";
-    return;
-  }
-
-  std::vector<size_t> offsets = {begin_utf8, end_utf8};
-  for (const auto& span : spans) {
-    offsets.push_back(begin_utf8 + span.index);
-    offsets.push_back(begin_utf8 + span.index + span.length);
-  }
-  base::UTF8ToUTF16AndAdjustOffsets(surrounding_text_utf8, &offsets);
-  if (offsets[0] == std::u16string::npos ||
-      offsets[1] == std::u16string::npos) {
-    LOG(ERROR) << "Invalid range is specified";
-    return;
-  }
-
-  std::vector<ImeTextSpan> ime_text_spans;
-  for (size_t i = 0; i < spans.size(); ++i) {
-    size_t begin_span = offsets[i * 2 + 2];
-    size_t end_span = offsets[i * 2 + 3];
-    if (begin_span == std::u16string::npos || end_span == std::u16string::npos)
-      continue;
-    if (begin_span < offsets[0] || end_span < offsets[0] ||
-        begin_span > offsets[1] || end_span > offsets[1]) {
-      // Out of composition range.
-      continue;
-    }
-
-    const auto& style = spans[i].style;
-    if (!style.has_value())
-      continue;
-    ime_text_spans.emplace_back(style->type, begin_span - offsets[0],
-                                end_span - offsets[0], style->thickness);
-  }
-
-  surrounding_text_tracker_.OnSetCompositionFromExistingText(
-      gfx::Range(offsets[0] + utf16_offset, offsets[1] + utf16_offset));
-  ime_delegate_->OnSetPreeditRegion(
-      gfx::Range(offsets[0] + utf16_offset, offsets[1] + utf16_offset),
-      ime_text_spans);
-}
-
-void WaylandInputMethodContext::OnClearGrammarFragments(
-    const gfx::Range& range) {
-  // TODO(crbug.com/374244479): remove these when cleaning Wayland code from
-  // Lacros. Grammar and autocorrect are features of CrOS.
-  NOTREACHED();
-}
-
-void WaylandInputMethodContext::OnAddGrammarFragment(
-    const GrammarFragment& fragment) {
-  // TODO(crbug.com/374244479): remove these when cleaning Wayland code from
-  // Lacros. Grammar and autocorrect are features of CrOS.
-  NOTREACHED();
-}
-
-void WaylandInputMethodContext::OnSetAutocorrectRange(const gfx::Range& range) {
-  // TODO(crbug.com/374244479): remove these when cleaning Wayland code from
-  // Lacros. Grammar and autocorrect are features of CrOS.
-  NOTREACHED();
-}
-
-void WaylandInputMethodContext::OnSetVirtualKeyboardOccludedBounds(
-    const gfx::Rect& screen_bounds) {
-  ime_delegate_->OnSetVirtualKeyboardOccludedBounds(screen_bounds);
-
-  for (auto& client : past_clients_) {
-    if (client.second)
-      client.second->EnsureCaretNotInRect(screen_bounds);
-  }
-  if (screen_bounds.IsEmpty())
-    past_clients_.clear();
-}
-
-void WaylandInputMethodContext::OnConfirmPreedit(bool keep_selection) {
-  surrounding_text_tracker_.OnConfirmCompositionText(keep_selection);
-  ime_delegate_->OnConfirmCompositionText(keep_selection);
-}
-
 void WaylandInputMethodContext::OnInputPanelState(uint32_t state) {
   virtual_keyboard_visible_ = (state & 1) != 0;
   // Note: Currently there's no support of VirtualKeyboardControllerObserver.
@@ -886,10 +712,6 @@ void WaylandInputMethodContext::OnInputPanelState(uint32_t state) {
 void WaylandInputMethodContext::OnModifiersMap(
     std::vector<std::string> modifiers_map) {
   modifiers_map_ = std::move(modifiers_map);
-}
-
-void WaylandInputMethodContext::OnInsertImage(const GURL& src) {
-  ime_delegate_->OnInsertImage(src);
 }
 
 void WaylandInputMethodContext::OnKeyboardFocusedWindowChanged() {
@@ -918,9 +740,8 @@ void WaylandInputMethodContext::MaybeUpdateActivated(
   activated_ = activated;
   if (activated) {
     text_input_->Activate(window, reason);
-    text_input_->SetContentType(
-        attributes_.input_type, attributes_.input_mode, attributes_.flags,
-        attributes_.should_do_learning, attributes_.can_compose_inline);
+    text_input_->SetContentType(attributes_.input_type, attributes_.flags,
+                                attributes_.should_do_learning);
     if (!skip_virtual_keyboard_update)
       DisplayVirtualKeyboard();
   } else {

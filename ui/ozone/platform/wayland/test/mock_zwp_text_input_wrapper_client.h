@@ -37,35 +37,11 @@ class MockZWPTextInputWrapperClient : public ZWPTextInputWrapperClient {
               OnKeysym,
               (uint32_t key, uint32_t state, uint32_t modifiers, uint32_t time),
               (override));
-  MOCK_METHOD(void,
-              OnSetPreeditRegion,
-              (int32_t index,
-               uint32_t length,
-               const std::vector<SpanStyle>& spans),
-              (override));
-  MOCK_METHOD(void,
-              OnClearGrammarFragments,
-              (const gfx::Range& range),
-              (override));
-  MOCK_METHOD(void,
-              OnAddGrammarFragment,
-              (const ui::GrammarFragment& fragment),
-              (override));
-  MOCK_METHOD(void,
-              OnSetAutocorrectRange,
-              (const gfx::Range& range),
-              (override));
-  MOCK_METHOD(void,
-              OnSetVirtualKeyboardOccludedBounds,
-              (const gfx::Rect& screen_bounds),
-              (override));
-  MOCK_METHOD(void, OnConfirmPreedit, (bool keep_selection), (override));
   MOCK_METHOD(void, OnInputPanelState, (uint32_t state), (override));
   MOCK_METHOD(void,
               OnModifiersMap,
               (std::vector<std::string> modifiers_map),
               (override));
-  MOCK_METHOD(void, OnInsertImage, (const GURL& src), (override));
 };
 
 }  // namespace ui
