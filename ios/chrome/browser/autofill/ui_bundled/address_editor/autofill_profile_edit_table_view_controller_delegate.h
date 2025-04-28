@@ -6,7 +6,7 @@
 #define IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_ADDRESS_EDITOR_AUTOFILL_PROFILE_EDIT_TABLE_VIEW_CONTROLLER_DELEGATE_H_
 
 #import "components/autofill/core/browser/field_types.h"
-#import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_profile_address_field.h"
+#import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_edit_profile_field.h"
 
 // Delegate manages viewing/editing the profile data.
 @protocol AutofillProfileEditTableViewControllerDelegate
@@ -42,8 +42,11 @@
 // Resets the container that stores the required fields with empty values.
 - (void)resetRequiredFieldsWithEmptyValuesCount;
 
+// Returns the list of the non-address fields such as name, company name etc.
+- (NSArray<AutofillEditProfileField*>*)inputNonAddressFields;
+
 // Returns the list of the address fields.
-- (NSArray<AutofillProfileAddressField*>*)inputAddressFields;
+- (NSArray<AutofillEditProfileField*>*)inputAddressFields;
 
 // Setter to store current field value for `autofillFieldType`.
 - (void)setCurrentValueForType:(NSString*)autofillFieldType
