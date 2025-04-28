@@ -1091,6 +1091,12 @@ inline constexpr char kGlicRolloutEligibility[] = "glic.rollout_eligibility";
 inline constexpr char kManagedAccessToGetAllScreensMediaAllowedForUrls[] =
     "profile.managed_access_to_get_all_screens_media_allowed_for_urls";
 
+#if BUILDFLAG(IS_ANDROID)
+// Deprecated 04/2025.
+constexpr char kObsoleteUserAcknowledgedLocalPasswordsMigrationWarning[] =
+    "user_acknowledged_local_passwords_migration_warning";
+#endif
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1529,6 +1535,12 @@ void RegisterProfilePrefsForMigration(
 
   // Deprecated 04/2025.
   registry->RegisterListPref(kManagedAccessToGetAllScreensMediaAllowedForUrls);
+
+#if BUILDFLAG(IS_ANDROID)
+  // Deprecated 04/2025.
+  registry->RegisterBooleanPref(
+      kObsoleteUserAcknowledgedLocalPasswordsMigrationWarning, false);
+#endif
 }
 
 }  // namespace
@@ -2812,6 +2824,12 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
 
   // Added 04/2025
   profile_prefs->ClearPref(kManagedAccessToGetAllScreensMediaAllowedForUrls);
+
+#if BUILDFLAG(IS_ANDROID)
+  // Added 04/2025
+  profile_prefs->ClearPref(
+      kObsoleteUserAcknowledgedLocalPasswordsMigrationWarning);
+#endif
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

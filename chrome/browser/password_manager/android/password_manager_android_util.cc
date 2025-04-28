@@ -59,8 +59,8 @@ enum class ActivationError {
   // (Deprecated) kLoginDbFileMoveFailed = 3,
   kOutdatedGmsCore = 4,
   // (Deprecated) kFlagDisabled = 5,
-  kMigrationWarningUnacknowledged = 6,
-  kMaxValue = kMigrationWarningUnacknowledged,
+  // (Deprecated) kMigrationWarningUnacknowledged = 6,
+  kMaxValue = kOutdatedGmsCore,
 };
 
 // Set on startup before the local passwords migration starts.
@@ -93,34 +93,6 @@ bool IsPasswordSyncEnabled(PrefService* pref_service) {
         kDontMigrateTypeDisabled:
       return false;
   }
-}
-
-bool ShouldDelayMigrationUntillMigrationWarningIsAcknowledged(
-    PrefService* pref_service) {
-  // The migration warning is only relevant for non-stable channels.
-  version_info::Channel channel = version_info::android::GetChannel();
-  if (channel == version_info::Channel::STABLE) {
-    return false;
-  }
-  // If there are no passwords to migrate and migration is still needed for
-  // settings, there is no need to acknowledge the password migration warning.
-  if (pref_service->GetBoolean(
-          password_manager::prefs::kEmptyProfileStoreLoginDatabase)) {
-    return false;
-  }
-
-  // There is no warning shown on automotive.
-  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
-    return false;
-  }
-
-  if (!base::FeatureList::IsEnabled(
-          password_manager::features::
-              kUnifiedPasswordManagerLocalPasswordsMigrationWarning)) {
-    return false;
-  }
-  return !pref_service->GetBoolean(
-      password_manager::prefs::kUserAcknowledgedLocalPasswordsMigrationWarning);
 }
 
 bool HasCustomPasswordSettings(PrefService* pref_service) {
@@ -200,16 +172,10 @@ void MaybeActivateSplitStoresAndLocalUpm(
   }
 
   UseUpmLocalAndSeparateStoresState state_to_set_on_success = kOn;
-  ActivationError error = ActivationError::kNone;
   switch (user_type) {
     case UserType::kNonSyncingAndNoMigrationNeeded:
       break;
     case UserType::kNonSyncingAndMigrationNeeded:
-      if (ShouldDelayMigrationUntillMigrationWarningIsAcknowledged(
-              pref_service)) {
-        error = ActivationError::kMigrationWarningUnacknowledged;
-        break;
-      }
       state_to_set_on_success = kOffAndMigrationPending;
       break;
     case UserType::kSyncing: {
@@ -225,12 +191,9 @@ void MaybeActivateSplitStoresAndLocalUpm(
       break;
     }
   }
-  RecordActivationError(user_type, error);
-
-  if (error == ActivationError::kNone) {
-    pref_service->SetInteger(kPasswordsUseUPMLocalAndSeparateStores,
-                             static_cast<int>(state_to_set_on_success));
-  }
+  RecordActivationError(user_type, ActivationError::kNone);
+  pref_service->SetInteger(kPasswordsUseUPMLocalAndSeparateStores,
+                           static_cast<int>(state_to_set_on_success));
 }
 
 #if !BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)

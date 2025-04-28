@@ -182,12 +182,6 @@ inline constexpr char kUnenrolledFromGoogleMobileServicesDueToErrors[] =
 // time interval (currently 24h).
 inline constexpr char kUPMErrorUIShownTimestamp[] =
     "profile.upm_error_ui_shown_timestamp";
-
-// Boolean value meant to record in the prefs if the user clicked "Got it" in
-// the UPM local passwords migration warning. When set to true, the warning
-// should not be displayed again.
-inline constexpr char kUserAcknowledgedLocalPasswordsMigrationWarning[] =
-    "user_acknowledged_local_passwords_migration_warning";
 #endif
 
 // Maintains a list of password hashes of enterprise passwords. This pref
