@@ -54,7 +54,8 @@ class DesktopBrowserFrameAura : public views::DesktopNativeWidgetAura,
                                const SkRegion& occluded_region) override;
 
   // Overridden from NativeBrowserFrame:
-  views::Widget::InitParams GetWidgetParams() override;
+  views::Widget::InitParams GetWidgetParams(
+      views::Widget::InitParams::Ownership ownership) override;
   bool UseCustomFrame() const override;
   bool UsesNativeSystemMenu() const override;
   int GetMinimizeButtonOffset() const override;

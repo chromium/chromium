@@ -180,9 +180,9 @@ bool BrowserFrameAsh::HandleKeyboardEvent(
   return false;
 }
 
-views::Widget::InitParams BrowserFrameAsh::GetWidgetParams() {
-  views::Widget::InitParams params(
-      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
+views::Widget::InitParams BrowserFrameAsh::GetWidgetParams(
+    views::Widget::InitParams::Ownership ownership) {
+  views::Widget::InitParams params(ownership);
   params.native_widget = this;
   params.context = ash::Shell::GetPrimaryRootWindow();
 

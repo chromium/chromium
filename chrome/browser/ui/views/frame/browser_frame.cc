@@ -128,7 +128,8 @@ BrowserFrame::~BrowserFrame() = default;
 void BrowserFrame::InitBrowserFrame() {
   native_browser_frame_ =
       NativeBrowserFrameFactory::CreateNativeBrowserFrame(this, browser_view_);
-  views::Widget::InitParams params = native_browser_frame_->GetWidgetParams();
+  views::Widget::InitParams params = native_browser_frame_->GetWidgetParams(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
   params.name = "BrowserFrame";
   params.delegate = browser_view_;
   params.headless_mode = headless::IsHeadlessMode();
