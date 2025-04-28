@@ -7,6 +7,9 @@
 
 #import "base/feature_list.h"
 
+// Feature flag to allow users to import passwords from Safari.
+BASE_DECLARE_FEATURE(kImportPasswordsFromSafari);
+
 // Enable crowdsourcing uploads for the Password Manager. Used as a kill switch,
 // enabled by default.
 BASE_DECLARE_FEATURE(kPasswordManagerEnableCrowdsourcingUploads);

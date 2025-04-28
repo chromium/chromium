@@ -327,6 +327,9 @@ extern const char kIdentityDiscAccountMenuDescription[];
 extern const char kIdentityConfirmationSnackbarName[];
 extern const char kIdentityConfirmationSnackbarDescription[];
 
+extern const char kImportPasswordsFromSafariName[];
+extern const char kImportPasswordsFromSafariDescription[];
+
 extern const char kIndicateIdentityErrorInOverflowMenuName[];
 extern const char kIndicateIdentityErrorInOverflowMenuDescription[];
 

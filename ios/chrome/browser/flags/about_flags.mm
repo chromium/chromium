@@ -98,6 +98,7 @@
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_ui_features.h"
 #import "ios/chrome/browser/page_info/ui_bundled/features.h"
+#import "ios/chrome/browser/passwords/model/features.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/popup_menu/ui_bundled/overflow_menu/feature_flags.h"
 #import "ios/chrome/browser/price_insights/model/price_insights_feature.h"
@@ -2742,6 +2743,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kUseFeedEligibilityServiceName,
      flag_descriptions::kUseFeedEligibilityServiceDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kUseFeedEligibilityService)},
+    {"import-passwords-from-safari",
+     flag_descriptions::kImportPasswordsFromSafariName,
+     flag_descriptions::kImportPasswordsFromSafariDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kImportPasswordsFromSafari)},
 
 };
 

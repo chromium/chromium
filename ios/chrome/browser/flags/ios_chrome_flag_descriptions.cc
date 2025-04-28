@@ -565,6 +565,10 @@ const char kIdentityConfirmationSnackbarName[] =
 const char kIdentityConfirmationSnackbarDescription[] =
     "When enabled, the identity confirmation snackbar will show on startup.";
 
+const char kImportPasswordsFromSafariName[] = "Import Passwords From Safari";
+const char kImportPasswordsFromSafariDescription[] =
+    "When enabled, allows users to import passwords from Safari.";
+
 const char kIndicateIdentityErrorInOverflowMenuName[] =
     "Indicate Identity Error in Overflow Menu";
 const char kIndicateIdentityErrorInOverflowMenuDescription[] =
