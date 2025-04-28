@@ -92,6 +92,8 @@ class AutofillImageFetcher : public AutofillImageFetcherBase {
                         ImageType image_type,
                         image_fetcher::ImageFetcherCallback callback);
 
+  // Keeps track of the number of fetch attempts for a given URL.
+  std::map<GURL, int> fetch_attempt_counter_;
   // An in-memory image cache which stores post-processed images.
   std::map<GURL, std::unique_ptr<gfx::Image>> cached_images_;
 };

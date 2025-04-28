@@ -210,6 +210,14 @@ BASE_FEATURE(kAutofillEnableVcn3dsAuthentication,
              "AutofillEnableVcn3dsAuthentication",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, Chrome will try to fetch payment account image resources again
+// upon failure. The number of attempts is a controllable parameter. This is a
+// kill-switch.
+// TODO(crbug.com/40276036): Clean up after M139 branch (June 23, 2025).
+BASE_FEATURE(kAutofillRetryImageFetchOnFailure,
+             "AutofillRetryImageFetchOnFailure",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_IOS)
 // When enabled, save card bottomsheet will be shown when the user has not
 // previously rejected the offer to save the card, and both a valid expiry date
