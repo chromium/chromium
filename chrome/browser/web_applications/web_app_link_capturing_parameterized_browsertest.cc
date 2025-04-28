@@ -48,6 +48,7 @@
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/link_capturing_features.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
+#include "chrome/browser/web_applications/navigation_capturing_metrics.h"
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
@@ -1160,6 +1161,22 @@ class NavCaptureParameterizedBrowserTest
         std::move(exclusive_file)));
   }
 
+  // Returns the values measured for `metric_name`, provided it only measures
+  // enums.
+  template <typename T>
+    requires(std::is_enum_v<T>)
+  base::Value GetMetricBuckets(std::string metric_name, T value) {
+    std::vector<base::Bucket> launch_source_buckets =
+        action_histogram_tester_->GetAllSamples(metric_name);
+    base::Value::List bucket_list;
+    for (const base::Bucket& bucket : launch_source_buckets) {
+      for (int count = 0; count < bucket.count; count++) {
+        bucket_list.Append(base::ToString(static_cast<T>(bucket.min)));
+      }
+    }
+    return base::Value(std::move(bucket_list));
+  }
+
   // Serializes the entire state of chrome that we're interested in in this test
   // to a dictionary. This state consists of the state of all Browser windows,
   // in creation order of the Browser.
@@ -1173,21 +1190,23 @@ class NavCaptureParameterizedBrowserTest
       browsers.Append(std::move(json_browser));
     }
 
-    // Checks whether the web app launch metrics have been measured for the
-    // current navigation.
-    std::vector<base::Bucket> buckets =
-        action_histogram_tester_->GetAllSamples("WebApp.LaunchSource");
-    base::Value::List bucket_list;
-    for (const base::Bucket& bucket : buckets) {
-      for (int count = 0; count < bucket.count; count++) {
-        bucket_list.Append(
-            base::ToString(static_cast<apps::LaunchSource>(bucket.min)));
-      }
-    }
-
+    // Measure the web app launch metrics as well as the navigation capturing
+    // metrics for the redirections and non-redirected navigations. It is
+    // expected that redirections should ALSO have non-redirected values
+    // measured.
     return base::Value::Dict()
         .Set("browsers", std::move(browsers))
-        .Set("launch_metric_buckets", std::move(bucket_list));
+        .Set("launch_metric_buckets",
+             GetMetricBuckets("WebApp.LaunchSource",
+                              apps::LaunchSource::kMaxValue))
+        .Set("navigation_capturing_result",
+             GetMetricBuckets(
+                 "Webapp.NavigationCapturing.Result",
+                 web_app::NavigationCapturingInitialResult::kMaxValue))
+        .Set("redirection_result",
+             GetMetricBuckets(
+                 "Webapp.NavigationCapturing.Redirection.FinalResult",
+                 web_app::NavigationCapturingRedirectionResult::kMaxValue));
   }
 
   // This function is used during rebaselining to record (to a file) the results
