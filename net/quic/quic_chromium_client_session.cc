@@ -4068,6 +4068,10 @@ quic::ParsedQuicVersion QuicChromiumClientSession::GetQuicVersion() const {
   return connection()->version();
 }
 
+void QuicChromiumClientSession::SendPing() {
+  return connection()->SendPing();
+}
+
 const std::set<std::string>&
 QuicChromiumClientSession::GetDnsAliasesForSessionKey(
     const QuicSessionKey& key) const {

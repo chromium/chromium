@@ -801,14 +801,20 @@ int QuicSessionPool::RequestSession(
 
   // Add the observer in the `management_config` for the
   // `ConnectionChangeNotifier`.
-  if (management_config.has_value() &&
-      management_config->connection_change_observer) {
-    if (!base::Contains(connection_change_notifier_, session_key)) {
-      connection_change_notifier_[session_key] =
-          std::make_unique<ConnectionChangeNotifier>();
+  bool connection_keep_alive_enabled = false;
+  if (management_config.has_value()) {
+    if (management_config->keep_alive_config.has_value()) {
+      connection_keep_alive_enabled =
+          management_config->keep_alive_config->enable_connection_keep_alive;
     }
-    connection_change_notifier_[session_key]->AddObserver(
-        management_config->connection_change_observer);
+    if (management_config->connection_change_observer) {
+      if (!base::Contains(connection_change_notifier_, session_key)) {
+        connection_change_notifier_[session_key] =
+            std::make_unique<ConnectionChangeNotifier>();
+      }
+      connection_change_notifier_[session_key]->AddObserver(
+          management_config->connection_change_observer);
+    }
   }
 
   // Use active session for `session_key` if such exists, or pool to active
@@ -824,6 +830,12 @@ int QuicSessionPool::RequestSession(
                                       std::move(dns_aliases));
     }
     request->SetSession(existing_session->CreateHandle(std::move(destination)));
+
+    // If the session exists and the connection keep alive is enabled, we send
+    // a ping to check the liveness of the existing connection.
+    if (connection_keep_alive_enabled) {
+      existing_session->SendPing();
+    }
     return OK;
   }
 

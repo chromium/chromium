@@ -952,6 +952,9 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
 
   quic::ParsedQuicVersion GetQuicVersion() const;
 
+  // Send a ping frame to the peer to check the liveness of the connection.
+  void SendPing();
+
   bool require_confirmation() const { return require_confirmation_; }
 
   // Retrieves any DNS aliases for the given session key from the map stored
