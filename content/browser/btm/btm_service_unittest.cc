@@ -91,14 +91,14 @@ class BtmServiceTest : public testing::Test {
 };
 
 TEST_F(BtmServiceTest, CreateServiceIfFeatureEnabled) {
-  ScopedInitBtmFeature init_dips(true);
+  ScopedInitBtmFeature init_btm(true);
 
   TestBrowserContext profile;
   EXPECT_NE(BtmServiceImpl::Get(&profile), nullptr);
 }
 
 TEST_F(BtmServiceTest, DontCreateServiceIfFeatureDisabled) {
-  ScopedInitBtmFeature init_dips(false);
+  ScopedInitBtmFeature init_btm(false);
 
   TestBrowserContext profile;
   EXPECT_EQ(BtmServiceImpl::Get(&profile), nullptr);
@@ -121,7 +121,7 @@ TEST_F(BtmServiceTest, CreateDbFilesIfBtmEnabled) {
   // Ensure the database files have been created since the BTM feature is
   // enabled.
   WaitOnStorage(service);
-  BrowserContextImpl::From(profile.get())->WaitForDipsCleanupForTesting();
+  BrowserContextImpl::From(profile.get())->WaitForBtmCleanupForTesting();
   EXPECT_TRUE(base::PathExists(GetBtmFilePath(profile.get())));
 }
 
@@ -142,7 +142,7 @@ TEST_F(BtmServiceTest, PreserveRegularProfileDbFiles) {
   // Ensure the regular profile's database files have been created since the
   // BTM feature is enabled.
   WaitOnStorage(service);
-  BrowserContextImpl::From(profile.get())->WaitForDipsCleanupForTesting();
+  BrowserContextImpl::From(profile.get())->WaitForBtmCleanupForTesting();
   ASSERT_TRUE(base::PathExists(GetBtmFilePath(profile.get())));
 
   // Build an off-the-record profile based on `profile`.
@@ -155,7 +155,7 @@ TEST_F(BtmServiceTest, PreserveRegularProfileDbFiles) {
   // Ensure the OTR profile's database has been initialized and any file
   // deletion tasks have finished (although there shouldn't be any).
   WaitOnStorage(otr_service);
-  BrowserContextImpl::From(otr_profile.get())->WaitForDipsCleanupForTesting();
+  BrowserContextImpl::From(otr_profile.get())->WaitForBtmCleanupForTesting();
 
   // Ensure the regular profile's database files were NOT deleted.
   EXPECT_TRUE(base::PathExists(GetBtmFilePath(profile.get())));
@@ -170,14 +170,14 @@ TEST_F(BtmServiceTest, DatabaseFileIsDeletedIfFeatureIsDisabled) {
   base::FilePath user_data_dir;
   base::FilePath db_path;
 
-  // First, create a browser context while DIPS is enabled, and confirm a
+  // First, create a browser context while BTM is enabled, and confirm a
   // database file is created.
   {
     TestBrowserContext browser_context;
     db_path = GetBtmFilePath(&browser_context);
     // Wait for the database to be created.
     BrowserContextImpl::From(&browser_context)
-        ->GetDipsService()
+        ->GetBtmService()
         ->storage()
         ->FlushPostedTasksForTesting();
     ASSERT_TRUE(base::PathExists(db_path));
@@ -185,22 +185,22 @@ TEST_F(BtmServiceTest, DatabaseFileIsDeletedIfFeatureIsDisabled) {
     // Take ownership of the browser context's directory so we can reuse it.
     user_data_dir = browser_context.TakePath();
 
-    // Confirm that WaitForDipsCleanupForTesting() returns even if the file is
+    // Confirm that WaitForBtmCleanupForTesting() returns even if the file is
     // not deleted.
-    BrowserContextImpl::From(&browser_context)->WaitForDipsCleanupForTesting();
+    BrowserContextImpl::From(&browser_context)->WaitForBtmCleanupForTesting();
     ASSERT_TRUE(base::PathExists(db_path));
   }
 
   // Confirm the file still exists after the browser context is destroyed.
   ASSERT_TRUE(base::PathExists(db_path));
 
-  // Create another browser context for the same directory, while DIPS is
+  // Create another browser context for the same directory, while BTM is
   // disabled. Confirm the database file is deleted.
   {
-    ScopedInitBtmFeature disable_dips(false);
+    ScopedInitBtmFeature disable_btm(false);
     TestBrowserContext browser_context(user_data_dir);
-    ASSERT_FALSE(BrowserContextImpl::From(&browser_context)->GetDipsService());
-    BrowserContextImpl::From(&browser_context)->WaitForDipsCleanupForTesting();
+    ASSERT_FALSE(BrowserContextImpl::From(&browser_context)->GetBtmService());
+    BrowserContextImpl::From(&browser_context)->WaitForBtmCleanupForTesting();
     ASSERT_FALSE(base::PathExists(db_path));
   }
 }
@@ -434,7 +434,7 @@ TEST_F(BtmServiceStateRemovalTest, DISABLED_BrowsingDataDeletion_Enabled) {
       net::CookiePartitionKeyCollection());
   delegate_.ExpectCall(
       base::Time::Min(), base::Time::Max(),
-      (ContentBrowserClient::kDefaultDipsRemoveMask &
+      (ContentBrowserClient::kDefaultBtmRemoveMask &
        ~BrowsingDataRemover::DATA_TYPE_PRIVACY_SANDBOX) |
           BrowsingDataRemover::DATA_TYPE_AVOID_CLOSING_CONNECTIONS,
       BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB |
@@ -775,7 +775,7 @@ TEST_F(BtmServiceStateRemovalTest, ImmediateEnforcement) {
       net::CookiePartitionKeyCollection());
   delegate_.ExpectCall(
       base::Time::Min(), base::Time::Max(),
-      (ContentBrowserClient::kDefaultDipsRemoveMask &
+      (ContentBrowserClient::kDefaultBtmRemoveMask &
        ~BrowsingDataRemover::DATA_TYPE_PRIVACY_SANDBOX) |
           BrowsingDataRemover::DATA_TYPE_AVOID_CLOSING_CONNECTIONS,
       BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB |

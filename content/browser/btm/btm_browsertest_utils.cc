@@ -26,8 +26,8 @@ void ContentBrowserTestTpcBlockingBrowserClient::
 }
 
 bool ContentBrowserTestTpcBlockingBrowserClient::
-    ShouldDipsDeleteInteractionRecords(uint64_t remove_mask) {
-  return impl_.ShouldDipsDeleteInteractionRecords(remove_mask);
+    ShouldBtmDeleteInteractionRecords(uint64_t remove_mask) {
+  return impl_.ShouldBtmDeleteInteractionRecords(remove_mask);
 }
 
 bool ContentBrowserTestTpcBlockingBrowserClient::

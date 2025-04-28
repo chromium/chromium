@@ -697,23 +697,23 @@ void BrowsingDataRemoverImpl::RemoveImpl(
     }
   }
 
-  // Different types of DIPS events are cleared for DATA_TYPE_HISTORY and
+  // Different types of BTM events are cleared for DATA_TYPE_HISTORY and
   // DATA_TYPE_COOKIES.
-  BtmEventRemovalType dips_mask = BtmEventRemovalType::kNone;
+  BtmEventRemovalType btm_mask = BtmEventRemovalType::kNone;
   if ((remove_mask & DATA_TYPE_COOKIES) &&
       !filter_builder->PartitionedCookiesOnly()) {
-    dips_mask |= BtmEventRemovalType::kStorage;
+    btm_mask |= BtmEventRemovalType::kStorage;
   }
-  if (GetContentClient()->browser()->ShouldDipsDeleteInteractionRecords(
+  if (GetContentClient()->browser()->ShouldBtmDeleteInteractionRecords(
           remove_mask)) {
-    dips_mask |= BtmEventRemovalType::kHistory;
+    btm_mask |= BtmEventRemovalType::kHistory;
   }
 
-  if (dips_mask != BtmEventRemovalType::kNone) {
-    if (BtmServiceImpl* dips_service = BtmServiceImpl::Get(browser_context_)) {
-      dips_service->RemoveEvents(delete_begin_, delete_end_,
-                                 filter_builder->BuildNetworkServiceFilter(),
-                                 dips_mask);
+  if (btm_mask != BtmEventRemovalType::kNone) {
+    if (BtmServiceImpl* btm_service = BtmServiceImpl::Get(browser_context_)) {
+      btm_service->RemoveEvents(delete_begin_, delete_end_,
+                                filter_builder->BuildNetworkServiceFilter(),
+                                btm_mask);
     }
   }
 

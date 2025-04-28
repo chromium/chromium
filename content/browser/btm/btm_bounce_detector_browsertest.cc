@@ -1233,7 +1233,7 @@ IN_PROC_BROWSER_TEST_F(BtmBounceDetectorBrowserTest,
 
   // Verify interaction was recorded for d.test, before proceeding.
   std::optional<StateValue> state =
-      GetBtmState(GetDipsService(web_contents), url);
+      GetBtmState(GetBtmService(web_contents), url);
   ASSERT_TRUE(state.has_value());
   ASSERT_TRUE(state->user_activation_times.has_value());
 
@@ -1266,7 +1266,7 @@ IN_PROC_BROWSER_TEST_F(BtmBounceDetectorBrowserTest,
           "title1.html"),
       embedded_test_server()->GetURL("g.test", "/title1.html")));
   EndRedirectChain();
-  WaitOnStorage(GetDipsService(web_contents));
+  WaitOnStorage(GetBtmService(web_contents));
 
   EXPECT_THAT(reports, ElementsAre(("b.test"), ("c.test"), ("e.test, f.test")));
 }
@@ -2036,7 +2036,7 @@ IN_PROC_BROWSER_TEST_P(RedirectHeuristicGrantTest,
   EndRedirectChain();
 
   // Wait on async tasks for the grants to be created.
-  WaitOnStorage(GetDipsService(web_contents));
+  WaitOnStorage(GetBtmService(web_contents));
 
   // Expect some cookie grants on `first_party_url` based on flags and criteria.
   EXPECT_EQ(browser_client().IsFullCookieAccessAllowed(
@@ -2088,7 +2088,7 @@ IN_PROC_BROWSER_TEST_P(
   EndRedirectChain();
 
   // Wait on async tasks for the grants to be created.
-  WaitOnStorage(GetDipsService(web_contents));
+  WaitOnStorage(GetBtmService(web_contents));
 
   // Expect some cookie grants on `first_party_url` based on flags and criteria.
   EXPECT_EQ(browser_client().IsFullCookieAccessAllowed(
@@ -2139,7 +2139,7 @@ IN_PROC_BROWSER_TEST_P(RedirectHeuristicGrantTest,
   EndRedirectChain();
 
   // Wait on async tasks for the grants to be created.
-  WaitOnStorage(GetDipsService(web_contents));
+  WaitOnStorage(GetBtmService(web_contents));
 
   // Expect some cookie grants on `first_party_url` based on flags and criteria.
   EXPECT_EQ(
@@ -2638,7 +2638,7 @@ IN_PROC_BROWSER_TEST_F(
   // Verify web authn assertion was recorded for `authn_hostname`, before
   // proceeding.
   std::optional<StateValue> state =
-      GetBtmState(GetDipsService(web_contents), url);
+      GetBtmState(GetBtmService(web_contents), url);
   ASSERT_TRUE(state.has_value());
   ASSERT_FALSE(state->user_activation_times.has_value());
   ASSERT_TRUE(state->web_authn_assertion_times.has_value());
@@ -2669,7 +2669,7 @@ IN_PROC_BROWSER_TEST_F(
       TestServer()->GetURL("g.test", "/title1.html")));
 
   EndRedirectChain();
-  WaitOnStorage(GetDipsService(web_contents));
+  WaitOnStorage(GetBtmService(web_contents));
 
   EXPECT_THAT(reports, ElementsAre(("d.test"), ("c.test"), ("e.test, f.test")));
 }
@@ -2903,7 +2903,7 @@ IN_PROC_BROWSER_TEST_F(BtmThrottlingBrowserTest,
   SimulateMouseClick();
   // Verify the interaction was recorded in the BTM DB.
   std::optional<StateValue> state =
-      GetBtmState(GetDipsService(web_contents), url);
+      GetBtmState(GetBtmService(web_contents), url);
   ASSERT_THAT(state->user_activation_times,
               testing::Optional(testing::Pair(start_time, start_time)));
 
@@ -2911,7 +2911,7 @@ IN_PROC_BROWSER_TEST_F(BtmThrottlingBrowserTest,
   test_clock_.Advance(kBtmTimestampUpdateInterval - base::Seconds(1));
   SimulateMouseClick();
   // Verify the second interaction was NOT recorded, due to throttling.
-  state = GetBtmState(GetDipsService(web_contents), url);
+  state = GetBtmState(GetBtmService(web_contents), url);
   ASSERT_THAT(state->user_activation_times,
               testing::Optional(testing::Pair(start_time, start_time)));
 
@@ -2920,7 +2920,7 @@ IN_PROC_BROWSER_TEST_F(BtmThrottlingBrowserTest,
   test_clock_.Advance(base::Seconds(1));
   SimulateMouseClick();
   // Verify the third interaction WAS recorded.
-  state = GetBtmState(GetDipsService(web_contents), url);
+  state = GetBtmState(GetBtmService(web_contents), url);
   ASSERT_THAT(state->user_activation_times,
               testing::Optional(testing::Pair(
                   start_time, start_time + kBtmTimestampUpdateInterval)));
@@ -2937,7 +2937,7 @@ IN_PROC_BROWSER_TEST_F(BtmThrottlingBrowserTest,
   SimulateMouseClick();
   // Verify the interaction was recorded in the BTM DB.
   std::optional<StateValue> state =
-      GetBtmState(GetDipsService(web_contents), url);
+      GetBtmState(GetBtmService(web_contents), url);
   ASSERT_THAT(state->user_activation_times,
               testing::Optional(testing::Pair(start_time, start_time)));
 
@@ -2947,7 +2947,7 @@ IN_PROC_BROWSER_TEST_F(BtmThrottlingBrowserTest,
   ASSERT_TRUE(NavigateToURL(web_contents, url2));
   SimulateMouseClick();
   // Verify the second interaction was also recorded (not throttled).
-  state = GetBtmState(GetDipsService(web_contents), url2);
+  state = GetBtmState(GetBtmService(web_contents), url2);
   ASSERT_THAT(state->user_activation_times,
               testing::Optional(testing::Pair(start_time + base::Seconds(1),
                                               start_time + base::Seconds(1))));
@@ -2965,7 +2965,7 @@ IN_PROC_BROWSER_TEST_F(BtmThrottlingBrowserTest,
   SimulateCookieWrite();
   // Verify the write was recorded in the BTM DB.
   std::optional<StateValue> state =
-      GetBtmState(GetDipsService(web_contents), url);
+      GetBtmState(GetBtmService(web_contents), url);
   ASSERT_THAT(state->site_storage_times,
               testing::Optional(testing::Pair(start_time, start_time)));
 
@@ -2973,7 +2973,7 @@ IN_PROC_BROWSER_TEST_F(BtmThrottlingBrowserTest,
   test_clock_.Advance(kBtmTimestampUpdateInterval - base::Seconds(1));
   SimulateCookieWrite();
   // Verify the second write was NOT recorded, due to throttling.
-  state = GetBtmState(GetDipsService(web_contents), url);
+  state = GetBtmState(GetBtmService(web_contents), url);
   ASSERT_THAT(state->site_storage_times,
               testing::Optional(testing::Pair(start_time, start_time)));
 
@@ -2982,7 +2982,7 @@ IN_PROC_BROWSER_TEST_F(BtmThrottlingBrowserTest,
   test_clock_.Advance(base::Seconds(1));
   SimulateCookieWrite();
   // Verify the third write WAS recorded.
-  state = GetBtmState(GetDipsService(web_contents), url);
+  state = GetBtmState(GetBtmService(web_contents), url);
   ASSERT_THAT(state->site_storage_times,
               testing::Optional(testing::Pair(
                   start_time, start_time + kBtmTimestampUpdateInterval)));
@@ -3000,7 +3000,7 @@ IN_PROC_BROWSER_TEST_F(BtmThrottlingBrowserTest,
   SimulateCookieWrite();
   // Verify the write was recorded in the BTM DB.
   std::optional<StateValue> state =
-      GetBtmState(GetDipsService(web_contents), url);
+      GetBtmState(GetBtmService(web_contents), url);
   ASSERT_THAT(state->site_storage_times,
               testing::Optional(testing::Pair(start_time, start_time)));
 
@@ -3011,7 +3011,7 @@ IN_PROC_BROWSER_TEST_F(BtmThrottlingBrowserTest,
   ASSERT_TRUE(NavigateToURL(web_contents, url2));
   SimulateCookieWrite();
   // Verify the second write was also recorded (not throttled).
-  state = GetBtmState(GetDipsService(web_contents), url2);
+  state = GetBtmState(GetBtmService(web_contents), url2);
   ASSERT_THAT(state->site_storage_times,
               testing::Optional(testing::Pair(start_time + base::Seconds(1),
                                               start_time + base::Seconds(1))));
@@ -3125,7 +3125,7 @@ class BtmPrivacySandboxApiInteractionTest : public ContentBrowserTest {
 
   void EndRedirectChain() {
     WebContents* web_contents = GetActiveWebContents();
-    BtmService* btm_service = GetDipsService(web_contents);
+    BtmService* btm_service = GetBtmService(web_contents);
     GURL expected_url = web_contents->GetLastCommittedURL();
 
     DipsRedirectChainObserver chain_observer(btm_service, expected_url);
@@ -3339,7 +3339,7 @@ IN_PROC_BROWSER_TEST_F(BtmPrivacySandboxApiInteractionTest,
 
   // Expect BTM to not have recorded user activation.
   std::optional<StateValue> state =
-      GetBtmState(GetDipsService(web_contents), bounce_url);
+      GetBtmState(GetBtmService(web_contents), bounce_url);
   ASSERT_TRUE(state.has_value());
   EXPECT_EQ(state->user_activation_times, std::nullopt);
 
@@ -3350,7 +3350,7 @@ IN_PROC_BROWSER_TEST_F(BtmPrivacySandboxApiInteractionTest,
 
   // Trigger BTM deletion, and expect BTM to not have deleted data for the
   // PAT-using site.
-  BtmService* btm_service = GetDipsService(web_contents);
+  BtmService* btm_service = GetBtmService(web_contents);
   base::test::TestFuture<const std::vector<std::string>&> deleted_sites;
   btm_service->DeleteEligibleSitesImmediately(deleted_sites.GetCallback());
   EXPECT_THAT(deleted_sites.Get(), IsEmpty());
@@ -3414,7 +3414,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Expect BTM to not have recorded user activation.
   std::optional<StateValue> state =
-      GetBtmState(GetDipsService(web_contents), bounce_url);
+      GetBtmState(GetBtmService(web_contents), bounce_url);
   ASSERT_TRUE(state.has_value());
   EXPECT_EQ(state->user_activation_times, std::nullopt);
 
@@ -3425,7 +3425,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Trigger BTM deletion, and expect BTM to not have deleted data for the
   // PAT-using site.
-  BtmService* btm_service = GetDipsService(web_contents);
+  BtmService* btm_service = GetBtmService(web_contents);
   base::test::TestFuture<const std::vector<std::string>&> deleted_sites;
   btm_service->DeleteEligibleSitesImmediately(deleted_sites.GetCallback());
   EXPECT_THAT(deleted_sites.Get(), IsEmpty());
@@ -3492,7 +3492,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Expect BTM to not have recorded user activation.
   std::optional<StateValue> state =
-      GetBtmState(GetDipsService(web_contents), bounce_url);
+      GetBtmState(GetBtmService(web_contents), bounce_url);
   ASSERT_TRUE(state.has_value());
   EXPECT_EQ(state->user_activation_times, std::nullopt);
 
@@ -3503,7 +3503,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Trigger BTM deletion, and expect BTM to not have deleted data for the
   // PAT-using site.
-  BtmService* btm_service = GetDipsService(web_contents);
+  BtmService* btm_service = GetBtmService(web_contents);
   base::test::TestFuture<const std::vector<std::string>&> deleted_sites;
   btm_service->DeleteEligibleSitesImmediately(deleted_sites.GetCallback());
   EXPECT_THAT(deleted_sites.Get(), IsEmpty());
@@ -3557,7 +3557,7 @@ IN_PROC_BROWSER_TEST_F(BtmPrivacySandboxApiInteractionTest,
 
   // Expect BTM to not have recorded user activation.
   std::optional<StateValue> state =
-      GetBtmState(GetDipsService(web_contents), bounce_url);
+      GetBtmState(GetBtmService(web_contents), bounce_url);
   ASSERT_TRUE(state.has_value());
   EXPECT_EQ(state->user_activation_times, std::nullopt);
 
@@ -3568,7 +3568,7 @@ IN_PROC_BROWSER_TEST_F(BtmPrivacySandboxApiInteractionTest,
 
   // Trigger BTM deletion, and expect BTM to not have deleted data for the
   // PAT-using site.
-  BtmService* btm_service = GetDipsService(web_contents);
+  BtmService* btm_service = GetBtmService(web_contents);
   base::test::TestFuture<const std::vector<std::string>&> deleted_sites;
   btm_service->DeleteEligibleSitesImmediately(deleted_sites.GetCallback());
   EXPECT_THAT(deleted_sites.Get(), IsEmpty());
@@ -4111,7 +4111,7 @@ IN_PROC_BROWSER_TEST_P(BtmBounceDetectorBFCacheTest, QuickEndChainTest) {
   EndRedirectChain();
 
   std::optional<StateValue> state =
-      GetBtmState(GetDipsService(web_contents), bounce_url);
+      GetBtmState(GetBtmService(web_contents), bounce_url);
   ASSERT_TRUE(state.has_value());
   ASSERT_TRUE(state->stateful_bounce_times.has_value());
 }

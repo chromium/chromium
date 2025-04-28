@@ -49,7 +49,7 @@ BtmBrowserSigninDetectorFactory::GetBrowserContextToUse(
     return nullptr;
   }
 
-  if (!ShouldBrowserContextEnableDips(context)) {
+  if (!ShouldBrowserContextEnableBtm(context)) {
     return nullptr;
   }
 

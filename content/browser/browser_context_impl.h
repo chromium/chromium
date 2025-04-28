@@ -117,13 +117,13 @@ class CONTENT_EXPORT BrowserContextImpl {
     return resource_context_.get();
   }
 
-  BtmServiceImpl* GetDipsService();
-  // If the DIPS database file should be deleted, wait for it. Otherwise, return
+  BtmServiceImpl* GetBtmService();
+  // If the BTM database file should be deleted, wait for it. Otherwise, return
   // immediately.
   //
-  // TODO: crbug.com/356624038 - delete this method when the DIPS feature flag
-  // is removed.
-  void WaitForDipsCleanupForTesting();
+  // TODO: crbug.com/356624038 - delete this method when the BTM feature flag is
+  // removed.
+  void WaitForBtmCleanupForTesting();
 
   // (See BrowserContext::BackfillPopupHeuristicGrants().)
   void BackfillPopupHeuristicGrants(base::OnceCallback<void(bool)> callback);
@@ -135,12 +135,12 @@ class CONTENT_EXPORT BrowserContextImpl {
   // exposed to the web directly, so privacy is not compromised.
   std::unique_ptr<media::WebrtcVideoPerfHistory> CreateWebrtcVideoPerfHistory();
 
-  // Delete any existing DIPS database file if DIPS is disabled (because it's
-  // not possible for the user to clear it through the browser UI).
+  // Delete any existing BTM database file if BTM is disabled (because it's not
+  // possible for the user to clear it through the browser UI).
   //
-  // TODO: crbug.com/356624038 - delete this method when the DIPS feature flag
-  // is removed.
-  void MaybeCleanupDips();
+  // TODO: crbug.com/356624038 - delete this method when the BTM feature flag is
+  // removed.
+  void MaybeCleanupBtm();
 
   // BrowserContextImpl is owned and build from BrowserContext constructor.
   // TODO(crbug.com/40169693): Invert the dependency. Make BrowserContext
@@ -170,15 +170,15 @@ class CONTENT_EXPORT BrowserContextImpl {
   std::unique_ptr<media::VideoDecodePerfHistory> video_decode_perf_history_;
   std::unique_ptr<media::WebrtcVideoPerfHistory> webrtc_video_perf_history_;
 
-  // Manages DIPS for all WebContentses using this browser context.
-  std::unique_ptr<BtmServiceImpl> dips_service_;
-  // If DIPS is disabled, any existing database file is asynchronously deleted
+  // Manages BTM for all WebContentses using this browser context.
+  std::unique_ptr<BtmServiceImpl> btm_service_;
+  // If BTM is disabled, any existing database file is asynchronously deleted
   // when the BrowserContextImpl is created. This RunLoop allows tests to wait
   // for the deletion to complete.
   //
-  // TODO: crbug.com/356624038 - delete this when the DIPS feature flag is
+  // TODO: crbug.com/356624038 - delete this when the BTM feature flag is
   // removed.
-  base::RunLoop dips_cleanup_loop_;
+  base::RunLoop btm_cleanup_loop_;
 
   // TODO(crbug.com/40604019): Get rid of ResourceContext.
   // Created on the UI thread, otherwise lives on and is destroyed on the IO

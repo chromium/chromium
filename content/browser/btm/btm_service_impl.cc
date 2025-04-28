@@ -170,7 +170,7 @@ class StateClearer : public BrowsingDataRemover::Observer {
   // clearing is complete.
   //
   // NOTE: This deletion task removing rows for `sites_to_clear` from the
-  // BtmStorage backend relies on the assumption that rows flagged as DIPS
+  // BtmStorage backend relies on the assumption that rows flagged as BTM
   // eligible don't have user activation time values. So even though 'remover'
   // will only clear the storage timestamps, that's sufficient to delete the
   // entire row.
@@ -326,7 +326,7 @@ BtmServiceImpl::~BtmServiceImpl() {
 
 /* static */
 BtmServiceImpl* BtmServiceImpl::Get(BrowserContext* context) {
-  return BrowserContextImpl::From(context)->GetDipsService();
+  return BrowserContextImpl::From(context)->GetBtmService();
 }
 
 scoped_refptr<base::SequencedTaskRunner> BtmServiceImpl::CreateTaskRunner() {
@@ -559,7 +559,7 @@ void BtmServiceImpl::HandleRedirect(
     return;
   }
 
-  // Record this bounce in the DIPS database.
+  // Record this bounce in the BTM database.
   if (redirect.access_type != BtmDataAccessType::kUnknown) {
     record_bounce.Run(
         redirect.redirecting_url.url, redirect.has_3pc_exception.value(),
@@ -649,7 +649,7 @@ void BtmServiceImpl::RunDeletionTaskOnUIThread(std::vector<std::string> sites,
                                                base::OnceClosure callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  uint64_t remove_mask = GetContentClient()->browser()->GetDipsRemoveMask();
+  uint64_t remove_mask = GetContentClient()->browser()->GetBtmRemoveMask();
 
   StateClearer::DeleteState(browser_context_->GetBrowsingDataRemover(),
                             std::move(sites), remove_mask, std::move(callback));

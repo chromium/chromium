@@ -44,7 +44,7 @@ class ContentBrowserTestTpcBlockingBrowserClient
                                        base::TimeDelta ttl,
                                        bool ignore_schemes) override;
 
-  bool ShouldDipsDeleteInteractionRecords(uint64_t remove_mask) override;
+  bool ShouldBtmDeleteInteractionRecords(uint64_t remove_mask) override;
 
   bool IsPrivacySandboxReportingDestinationAttested(
       BrowserContext* browser_context,

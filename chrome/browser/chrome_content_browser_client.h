@@ -1101,11 +1101,11 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       MultiCaptureChanged state) override;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-  bool ShouldEnableDips(content::BrowserContext* browser_context) override;
-  void OnDipsServiceCreated(content::BrowserContext* browser_context,
-                            content::BtmService* dips_service) override;
-  uint64_t GetDipsRemoveMask() override;
-  bool ShouldDipsDeleteInteractionRecords(uint64_t remove_mask) override;
+  bool ShouldEnableBtm(content::BrowserContext* browser_context) override;
+  void OnBtmServiceCreated(content::BrowserContext* browser_context,
+                           content::BtmService* dips_service) override;
+  uint64_t GetBtmRemoveMask() override;
+  bool ShouldBtmDeleteInteractionRecords(uint64_t remove_mask) override;
 
   bool ShouldSuppressAXLoadComplete(content::RenderFrameHost* rfh) override;
 
@@ -1415,8 +1415,8 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   base::WeakPtrFactory<ChromeContentBrowserClient> weak_factory_{this};
 };
 
-// The implementation of ChromeContentBrowserClient::ShouldEnableDips(), for use
+// The implementation of ChromeContentBrowserClient::ShouldEnableBtm(), for use
 // within //chrome.
-bool ShouldBrowserContextEnableDips(content::BrowserContext* browser_context);
+bool ShouldBrowserContextEnableBtm(content::BrowserContext* browser_context);
 
 #endif  // CHROME_BROWSER_CHROME_CONTENT_BROWSER_CLIENT_H_

@@ -8752,12 +8752,12 @@ void ChromeContentBrowserClient::NotifyMultiCaptureStateChanged(
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-bool ChromeContentBrowserClient::ShouldEnableDips(
+bool ChromeContentBrowserClient::ShouldEnableBtm(
     content::BrowserContext* browser_context) {
-  return ShouldBrowserContextEnableDips(browser_context);
+  return ShouldBrowserContextEnableBtm(browser_context);
 }
 
-bool ShouldBrowserContextEnableDips(content::BrowserContext* browser_context) {
+bool ShouldBrowserContextEnableBtm(content::BrowserContext* browser_context) {
   Profile* profile = Profile::FromBrowserContext(browser_context);
   Profile* result = GetHumanProfileSelections().ApplyProfileSelection(profile);
   CHECK(!result || result == profile)
@@ -8765,7 +8765,7 @@ bool ShouldBrowserContextEnableDips(content::BrowserContext* browser_context) {
   return result == profile;
 }
 
-void ChromeContentBrowserClient::OnDipsServiceCreated(
+void ChromeContentBrowserClient::OnBtmServiceCreated(
     content::BrowserContext* browser_context,
     content::BtmService* btm_service) {
   // Create BtmBrowserSigninDetector.
@@ -8773,18 +8773,18 @@ void ChromeContentBrowserClient::OnDipsServiceCreated(
   btm::StatefulBounceCounter::CreateFor(btm_service);
 }
 
-static_assert(content::ContentBrowserClient::kDefaultDipsRemoveMask ==
+static_assert(content::ContentBrowserClient::kDefaultBtmRemoveMask ==
                   (chrome_browsing_data_remover::FILTERABLE_DATA_TYPES &
                    ((content::BrowsingDataRemover::DATA_TYPE_CONTENT_END << 1) -
                     1)),
-              "kDefaultDipsRemoveMask must contain all the entries of "
+              "kDefaultBtmRemoveMask must contain all the entries of "
               "FILTERABLE_DATA_TYPES that are known in //content");
 
-uint64_t ChromeContentBrowserClient::GetDipsRemoveMask() {
+uint64_t ChromeContentBrowserClient::GetBtmRemoveMask() {
   return chrome_browsing_data_remover::FILTERABLE_DATA_TYPES;
 }
 
-bool ChromeContentBrowserClient::ShouldDipsDeleteInteractionRecords(
+bool ChromeContentBrowserClient::ShouldBtmDeleteInteractionRecords(
     uint64_t remove_mask) {
   return remove_mask & chrome_browsing_data_remover::DATA_TYPE_HISTORY;
 }

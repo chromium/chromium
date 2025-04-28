@@ -1834,15 +1834,15 @@ void ContentBrowserClient::NotifyMultiCaptureStateChanged(
     const std::string& label,
     MultiCaptureChanged state) {}
 
-bool ContentBrowserClient::ShouldEnableDips(BrowserContext* browser_context) {
+bool ContentBrowserClient::ShouldEnableBtm(BrowserContext* browser_context) {
   return true;
 }
 
-uint64_t ContentBrowserClient::GetDipsRemoveMask() {
-  return kDefaultDipsRemoveMask;
+uint64_t ContentBrowserClient::GetBtmRemoveMask() {
+  return kDefaultBtmRemoveMask;
 }
 
-bool ContentBrowserClient::ShouldDipsDeleteInteractionRecords(
+bool ContentBrowserClient::ShouldBtmDeleteInteractionRecords(
     uint64_t remove_mask) {
   return remove_mask & BrowsingDataRemover::DATA_TYPE_COOKIES;
 }

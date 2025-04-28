@@ -208,11 +208,11 @@ void CreateImageAndWaitForCookieAccess(WebContents* web_contents,
   observer.Wait();
 }
 
-std::optional<StateValue> GetBtmState(BtmServiceImpl* dips_service,
+std::optional<StateValue> GetBtmState(BtmServiceImpl* btm_service,
                                       const GURL& url) {
   std::optional<StateValue> state;
 
-  auto* storage = dips_service->storage();
+  auto* storage = btm_service->storage();
   DCHECK(storage);
   storage->AsyncCall(&BtmStorage::Read)
       .WithArgs(url)
@@ -221,7 +221,7 @@ std::optional<StateValue> GetBtmState(BtmServiceImpl* dips_service,
           state = loaded_state.ToStateValue();
         }
       }));
-  WaitOnStorage(dips_service);
+  WaitOnStorage(btm_service);
 
   return state;
 }
@@ -434,7 +434,7 @@ void TpcBlockingBrowserClient::GrantCookieAccessDueToHeuristic(
                                  /*metadata=*/{});
 }
 
-bool TpcBlockingBrowserClient::ShouldDipsDeleteInteractionRecords(
+bool TpcBlockingBrowserClient::ShouldBtmDeleteInteractionRecords(
     uint64_t remove_mask) {
   return remove_mask & TpcBlockingBrowserClient::DATA_TYPE_HISTORY;
 }

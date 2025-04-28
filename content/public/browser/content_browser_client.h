@@ -3106,20 +3106,20 @@ class CONTENT_EXPORT ContentBrowserClient {
       const std::string& label,
       MultiCaptureChanged state);
 
-  // DIPS will be enabled in browser contexts for which this returns true. The
+  // BTM will be enabled in browser contexts for which this returns true. The
   // default implementation returns true for all contexts.
-  virtual bool ShouldEnableDips(BrowserContext* browser_context);
+  virtual bool ShouldEnableBtm(BrowserContext* browser_context);
 
   // Called once for each BtmService instance when it's created.
   // BtmService::Get() is guaranteed to return the given instance if called
-  // i.e., BtmService::Get(browser_context) == dips_service.
-  virtual void OnDipsServiceCreated(BrowserContext* browser_context,
-                                    BtmService* dips_service) {}
+  // i.e., BtmService::Get(browser_context) == btm_service.
+  virtual void OnBtmServiceCreated(BrowserContext* browser_context,
+                                   BtmService* btm_service) {}
 
-  // The default value returned by ContentBrowserClient::GetDipsRemoveMask().
+  // The default value returned by ContentBrowserClient::GetBtmRemoveMask().
   // This should contain everything known to //content that can be deleted by
   // domain or origin.
-  static constexpr uint64_t kDefaultDipsRemoveMask =
+  static constexpr uint64_t kDefaultBtmRemoveMask =
       BrowsingDataRemover::DATA_TYPE_COOKIES |
       BrowsingDataRemover::DATA_TYPE_DOM_STORAGE |
       BrowsingDataRemover::DATA_TYPE_MEDIA_LICENSES |
@@ -3129,18 +3129,18 @@ class CONTENT_EXPORT ContentBrowserClient {
       BrowsingDataRemover::DATA_TYPE_RELATED_WEBSITE_SETS_PERMISSIONS |
       BrowsingDataRemover::DATA_TYPE_DEVICE_BOUND_SESSIONS;
 
-  // Get the `remove_mask` that DIPS will pass to BrowsingDataRemover::Remove()
-  // to delete storage for a site. This allows DIPS to clear types of storage
+  // Get the `remove_mask` that BTM will pass to BrowsingDataRemover::Remove()
+  // to delete storage for a site. This allows BTM to clear types of storage
   // added by embedders. The default implementation returns
-  // kDefaultDipsRemoveMask.
-  virtual uint64_t GetDipsRemoveMask();
+  // kDefaultBtmRemoveMask.
+  virtual uint64_t GetBtmRemoveMask();
 
-  // DIPS keeps separate records of storage and interactions for relevant sites.
+  // BTM keeps separate records of storage and interactions for relevant sites.
   // It clears storage records for sites when their cookies are deleted, and
   // clears interaction records for sites when this method returns true, given
   // the `remove_mask` that a client passed to BrowsingDataRemover::Remove().
   // The default implementation returns true when clearing cookies.
-  virtual bool ShouldDipsDeleteInteractionRecords(uint64_t remove_mask);
+  virtual bool ShouldBtmDeleteInteractionRecords(uint64_t remove_mask);
 
   // Allows the embedder to suppress the firing of the AXLoadComplete event.
   // Currently, this is only respected on Mac. Since VoiceOver on Mac will

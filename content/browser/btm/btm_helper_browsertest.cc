@@ -126,11 +126,11 @@ class BtmTabHelperBrowserTest : public ContentBrowserTest {
 
   void EndRedirectChain() {
     WebContents* web_contents = GetActiveWebContents();
-    BtmServiceImpl* dips_service =
+    BtmServiceImpl* btm_service =
         BtmServiceImpl::Get(web_contents->GetBrowserContext());
     GURL expected_url = web_contents->GetLastCommittedURL();
 
-    DipsRedirectChainObserver chain_observer(dips_service, expected_url);
+    DipsRedirectChainObserver chain_observer(btm_service, expected_url);
     // Performing a browser-based navigation terminates the current redirect
     // chain.
     ASSERT_TRUE(NavigateToURL(web_contents, embedded_test_server()->GetURL(
@@ -165,9 +165,9 @@ IN_PROC_BROWSER_TEST_F(BtmTabHelperBrowserTest,
   // The top-level page is on a.test.
   ASSERT_TRUE(NavigateToURL(web_contents, url_a));
 
-  // Before clicking, no DIPS state for either site.
-  EXPECT_FALSE(GetBtmState(GetDipsService(web_contents), url_a).has_value());
-  EXPECT_FALSE(GetBtmState(GetDipsService(web_contents), url_b).has_value());
+  // Before clicking, no BTM state for either site.
+  EXPECT_FALSE(GetBtmState(GetBtmService(web_contents), url_a).has_value());
+  EXPECT_FALSE(GetBtmState(GetBtmService(web_contents), url_b).has_value());
 
   // Click on the a.test top-level site.
   SetBtmTime(time);
@@ -178,7 +178,7 @@ IN_PROC_BROWSER_TEST_F(BtmTabHelperBrowserTest,
 
   // User activation is recorded for a.test (the top-level frame).
   std::optional<StateValue> state_a =
-      GetBtmState(GetDipsService(web_contents), url_a);
+      GetBtmState(GetBtmService(web_contents), url_a);
   ASSERT_TRUE(state_a.has_value());
   EXPECT_FALSE(state_a->site_storage_times.has_value());
   EXPECT_EQ(std::make_optional(time), state_a->user_activation_times->first);
@@ -207,14 +207,14 @@ IN_PROC_BROWSER_TEST_F(BtmTabHelperBrowserTest,
 
   // User activation on the top-level is updated by interacting with b.test
   // (the iframe).
-  state_a = GetBtmState(GetDipsService(web_contents), url_a);
+  state_a = GetBtmState(GetBtmService(web_contents), url_a);
   ASSERT_TRUE(state_a.has_value());
   EXPECT_FALSE(state_a->site_storage_times.has_value());
   EXPECT_EQ(std::make_optional(frame_interaction_time),
             state_a->user_activation_times->second);
 
   // The iframe site doesn't have any state.
-  EXPECT_FALSE(GetBtmState(GetDipsService(web_contents), url_b).has_value());
+  EXPECT_FALSE(GetBtmState(GetBtmService(web_contents), url_b).has_value());
 }
 
 IN_PROC_BROWSER_TEST_F(BtmTabHelperBrowserTest,
@@ -229,8 +229,8 @@ IN_PROC_BROWSER_TEST_F(BtmTabHelperBrowserTest,
   RenderFrameHost* frame = web_contents->GetPrimaryMainFrame();
   WaitForHitTestData(frame);  // Wait until we can click.
 
-  // Before clicking, there's no DIPS state for the site.
-  EXPECT_FALSE(GetBtmState(GetDipsService(web_contents), url).has_value());
+  // Before clicking, there's no BTM state for the site.
+  EXPECT_FALSE(GetBtmState(GetBtmService(web_contents), url).has_value());
 
   UserActivationObserver observer1(web_contents, frame);
   SimulateMouseClick(web_contents, 0, blink::WebMouseEvent::Button::kLeft);
@@ -238,7 +238,7 @@ IN_PROC_BROWSER_TEST_F(BtmTabHelperBrowserTest,
 
   // One instance of user activation is recorded.
   std::optional<StateValue> state_1 =
-      GetBtmState(GetDipsService(web_contents), url);
+      GetBtmState(GetBtmService(web_contents), url);
   ASSERT_TRUE(state_1.has_value());
   EXPECT_FALSE(state_1->site_storage_times.has_value());
   EXPECT_EQ(std::make_optional(time), state_1->user_activation_times->first);
@@ -253,7 +253,7 @@ IN_PROC_BROWSER_TEST_F(BtmTabHelperBrowserTest,
   // A second, different, instance of user activation is recorded for the same
   // site.
   std::optional<StateValue> state_2 =
-      GetBtmState(GetDipsService(web_contents), url);
+      GetBtmState(GetBtmService(web_contents), url);
   ASSERT_TRUE(state_2.has_value());
   EXPECT_FALSE(state_2->site_storage_times.has_value());
   EXPECT_NE(state_2->user_activation_times->second,
@@ -288,9 +288,9 @@ IN_PROC_BROWSER_TEST_F(BtmTabHelperBrowserTest, StorageRecordedInSingleFrame) {
       FrameMatchingPredicate(web_contents->GetPrimaryPage(),
                              base::BindRepeating(&FrameIsChildOfMainFrame));
 
-  // Initially, no DIPS state for either site.
-  EXPECT_FALSE(GetBtmState(GetDipsService(web_contents), url_a).has_value());
-  EXPECT_FALSE(GetBtmState(GetDipsService(web_contents), url_b).has_value());
+  // Initially, no BTM state for either site.
+  EXPECT_FALSE(GetBtmState(GetBtmService(web_contents), url_a).has_value());
+  EXPECT_FALSE(GetBtmState(GetBtmService(web_contents), url_b).has_value());
 
   // Write a cookie in the b.test iframe.
   SetBtmTime(time);
@@ -303,12 +303,12 @@ IN_PROC_BROWSER_TEST_F(BtmTabHelperBrowserTest, StorageRecordedInSingleFrame) {
 
   // Nothing recorded for a.test (the top-level frame).
   std::optional<StateValue> state_a =
-      GetBtmState(GetDipsService(web_contents), url_a);
+      GetBtmState(GetBtmService(web_contents), url_a);
   EXPECT_FALSE(state_a.has_value());
   // Nothing recorded for b.test (the iframe), since we don't record non main
-  // frame URLs to DIPS State.
+  // frame URLs to BTM state.
   std::optional<StateValue> state_b =
-      GetBtmState(GetDipsService(web_contents), url_b);
+      GetBtmState(GetBtmService(web_contents), url_b);
   EXPECT_FALSE(state_b.has_value());
 }
 
@@ -332,8 +332,8 @@ IN_PROC_BROWSER_TEST_F(BtmTabHelperBrowserTest,
   ASSERT_TRUE(NavigateToURL(
       web_contents, https_server.GetURL(
                         "b.test", "/set-cookie?foo=bar;Secure;SameSite=None")));
-  ASSERT_TRUE(GetBtmState(GetDipsService(web_contents), image_url).has_value());
-  EXPECT_EQ(GetBtmState(GetDipsService(web_contents), image_url)
+  ASSERT_TRUE(GetBtmState(GetBtmService(web_contents), image_url).has_value());
+  EXPECT_EQ(GetBtmState(GetBtmService(web_contents), image_url)
                 .value()
                 .site_storage_times->second,
             time);
@@ -358,12 +358,12 @@ IN_PROC_BROWSER_TEST_F(BtmTabHelperBrowserTest,
   observer.Wait();
 
   // Nothing recorded for a.test (the top-level frame).
-  EXPECT_FALSE(GetBtmState(GetDipsService(web_contents), page_url).has_value());
+  EXPECT_FALSE(GetBtmState(GetBtmService(web_contents), page_url).has_value());
 
   // The last site storage timestamp for b.test (the site hosting the image)
   // should be unchanged, since we don't record cookie accesses from loading
   // third-party resources.
-  EXPECT_EQ(GetBtmState(GetDipsService(web_contents), image_url)
+  EXPECT_EQ(GetBtmState(GetBtmService(web_contents), image_url)
                 .value()
                 .site_storage_times->second,
             time);
@@ -379,7 +379,7 @@ IN_PROC_BROWSER_TEST_F(BtmTabHelperBrowserTest, MultipleSiteStoragesRecorded) {
 
   // One instance of site storage is recorded.
   std::optional<StateValue> state_1 =
-      GetBtmState(GetDipsService(GetActiveWebContents()), url);
+      GetBtmState(GetBtmService(GetActiveWebContents()), url);
   ASSERT_TRUE(state_1.has_value());
   EXPECT_FALSE(state_1->user_activation_times.has_value());
   EXPECT_EQ(std::make_optional(time), state_1->site_storage_times->first);
@@ -393,7 +393,7 @@ IN_PROC_BROWSER_TEST_F(BtmTabHelperBrowserTest, MultipleSiteStoragesRecorded) {
   // A second, different, instance of site storage is recorded for the same
   // site.
   std::optional<StateValue> state_2 =
-      GetBtmState(GetDipsService(GetActiveWebContents()), url);
+      GetBtmState(GetBtmService(GetActiveWebContents()), url);
   ASSERT_TRUE(state_2.has_value());
   EXPECT_FALSE(state_2->user_activation_times.has_value());
   EXPECT_NE(state_2->site_storage_times->second,
@@ -424,7 +424,7 @@ bool ClearBrowsingData(BrowsingDataRemover* remover,
   remover->AddObserver(&observer);
   const base::Time now = base::Time::Now();
   remover->RemoveAndReply(now - time_period, now,
-                          ContentBrowserClient::kDefaultDipsRemoveMask |
+                          ContentBrowserClient::kDefaultBtmRemoveMask |
                               TpcBlockingBrowserClient::DATA_TYPE_HISTORY,
                           BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB,
                           &observer);
@@ -440,7 +440,7 @@ IN_PROC_BROWSER_TEST_F(BtmTabHelperBrowserTest,
   base::Time interaction_time = base::Time::Now() - base::Seconds(10);
   SetBtmTime(interaction_time);
 
-  // Perform a click to get a.test added to the DIPS DB.
+  // Perform a click to get a.test added to the BTM DB.
   ASSERT_TRUE(NavigateToURL(
       web_contents, embedded_test_server()->GetURL("a.test", "/title1.html")));
   UserActivationObserver observer(web_contents,
@@ -450,7 +450,7 @@ IN_PROC_BROWSER_TEST_F(BtmTabHelperBrowserTest,
 
   // Verify it was added.
   std::optional<StateValue> state_initial =
-      GetBtmState(GetDipsService(web_contents), GURL("http://a.test"));
+      GetBtmState(GetBtmService(web_contents), GURL("http://a.test"));
   ASSERT_TRUE(state_initial.has_value());
   ASSERT_TRUE(state_initial->user_activation_times.has_value());
   EXPECT_EQ(state_initial->user_activation_times->first, interaction_time);
@@ -460,9 +460,9 @@ IN_PROC_BROWSER_TEST_F(BtmTabHelperBrowserTest,
       GetActiveWebContents()->GetBrowserContext()->GetBrowsingDataRemover(),
       base::Days(1)));
 
-  // Verify that the user activation has been cleared from the DIPS DB.
+  // Verify that the user activation has been cleared from the BTM DB.
   std::optional<StateValue> state_final =
-      GetBtmState(GetDipsService(web_contents), GURL("http://a.test"));
+      GetBtmState(GetBtmService(web_contents), GURL("http://a.test"));
   EXPECT_FALSE(state_final.has_value());
 }
 
@@ -485,14 +485,14 @@ std::pair<GURL, GURL> MakeRedirectAndFinalUrl(net::EmbeddedTestServer* server) {
                         server->GetURL("d.test", final_dest));
 }
 
-// Attempt to detect flakiness in waiting for DIPS storage by repeatedly
+// Attempt to detect flakiness in waiting for BTM storage by repeatedly
 // visiting long redirect chains, deleting the relevant rows, and verifying the
 // rows don't come back.
 IN_PROC_BROWSER_TEST_F(BtmTabHelperBrowserTest,
                        DetectRedirectHandlingFlakiness) {
   WebContents* web_contents = GetActiveWebContents();
 
-  auto* dips_storage =
+  auto* btm_storage =
       BtmServiceImpl::Get(web_contents->GetBrowserContext())->storage();
 
   for (int i = 0; i < 10; i++) {
@@ -511,7 +511,7 @@ IN_PROC_BROWSER_TEST_F(BtmTabHelperBrowserTest,
 
     // Verify the bounces were recorded.
     std::optional<StateValue> b_state =
-        GetBtmState(GetDipsService(web_contents), GURL("http://b.test"));
+        GetBtmState(GetBtmService(web_contents), GURL("http://b.test"));
     ASSERT_TRUE(b_state.has_value());
     ASSERT_THAT(b_state->site_storage_times,
                 Optional(Pair(bounce_time, bounce_time)));
@@ -520,7 +520,7 @@ IN_PROC_BROWSER_TEST_F(BtmTabHelperBrowserTest,
     ASSERT_THAT(b_state->stateful_bounce_times,
                 Optional(Pair(bounce_time, bounce_time)));
 
-    dips_storage->AsyncCall(&BtmStorage::RemoveRows)
+    btm_storage->AsyncCall(&BtmStorage::RemoveRows)
         .WithArgs(std::vector<std::string>{"b.test"});
 
     // Verify the row was removed before repeating the test. If we did not
@@ -529,9 +529,8 @@ IN_PROC_BROWSER_TEST_F(BtmTabHelperBrowserTest,
     // (And if a write happens after this check, it will include a stale
     // timestamp and will cause one the of the checks above to fail on the next
     // loop iteration.)
-    ASSERT_FALSE(
-        GetBtmState(GetDipsService(web_contents), GURL("http://b.test"))
-            .has_value());
+    ASSERT_FALSE(GetBtmState(GetBtmService(web_contents), GURL("http://b.test"))
+                     .has_value());
   }
 }
 
@@ -547,7 +546,7 @@ IN_PROC_BROWSER_TEST_F(BtmTabHelperBrowserTest,
                        MAYBE_UserClearedSitesAreNotReportedToUKM) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   WebContents* web_contents = GetActiveWebContents();
-  BtmServiceImpl* dips_service =
+  BtmServiceImpl* btm_service =
       BtmServiceImpl::Get(web_contents->GetBrowserContext());
   // A time more than an hour ago.
   base::Time old_bounce_time = base::Time::Now() - base::Hours(2);
@@ -586,13 +585,13 @@ IN_PROC_BROWSER_TEST_F(BtmTabHelperBrowserTest,
 
   // Verify the bounces were recorded. b.test:
   std::optional<StateValue> state =
-      GetBtmState(GetDipsService(web_contents), GURL("http://b.test"));
+      GetBtmState(GetBtmService(web_contents), GURL("http://b.test"));
   ASSERT_TRUE(state.has_value());
   ASSERT_THAT(state->stateful_bounce_times,
               Optional(Pair(old_bounce_time, old_bounce_time)));
   ASSERT_EQ(state->user_activation_times, std::nullopt);
   // c.test:
-  state = GetBtmState(GetDipsService(web_contents), GURL("http://c.test"));
+  state = GetBtmState(GetBtmService(web_contents), GURL("http://c.test"));
   ASSERT_TRUE(state.has_value());
   ASSERT_THAT(state->stateful_bounce_times,
               Optional(Pair(recent_bounce_time, recent_bounce_time)));
@@ -604,23 +603,23 @@ IN_PROC_BROWSER_TEST_F(BtmTabHelperBrowserTest,
       web_contents->GetBrowserContext()->GetBrowsingDataRemover(),
       base::Hours(1)));
 
-  // Verify only the DIPS record for c.test was deleted.
-  ASSERT_TRUE(GetBtmState(GetDipsService(web_contents), GURL("http://b.test"))
+  // Verify only the BTM record for c.test was deleted.
+  ASSERT_TRUE(GetBtmState(GetBtmService(web_contents), GURL("http://b.test"))
                   .has_value());
-  ASSERT_FALSE(GetBtmState(GetDipsService(web_contents), GURL("http://c.test"))
+  ASSERT_FALSE(GetBtmState(GetBtmService(web_contents), GURL("http://c.test"))
                    .has_value());
 
-  // Trigger the DIPS timer which will delete tracker data.
+  // Trigger the BTM timer which will delete tracker data.
   SetBtmTime(recent_bounce_time + features::kBtmGracePeriod.Get() +
              base::Milliseconds(1));
-  dips_service->OnTimerFiredForTesting();
-  dips_service->storage()->FlushPostedTasksForTesting();
+  btm_service->OnTimerFiredForTesting();
+  btm_service->storage()->FlushPostedTasksForTesting();
   base::RunLoop().RunUntilIdle();
 
-  // Verify that both DIPS records are now gone.
-  ASSERT_FALSE(GetBtmState(GetDipsService(web_contents), GURL("http://b.test"))
+  // Verify that both BTM records are now gone.
+  ASSERT_FALSE(GetBtmState(GetBtmService(web_contents), GURL("http://b.test"))
                    .has_value());
-  ASSERT_FALSE(GetBtmState(GetDipsService(web_contents), GURL("http://c.test"))
+  ASSERT_FALSE(GetBtmState(GetBtmService(web_contents), GURL("http://c.test"))
                    .has_value());
 
   // Only b.test was reported to UKM.
@@ -629,7 +628,7 @@ IN_PROC_BROWSER_TEST_F(BtmTabHelperBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(BtmTabHelperBrowserTest, SitesInOpenTabsAreExempt) {
   WebContents* web_contents = GetActiveWebContents();
-  BtmServiceImpl* dips_service =
+  BtmServiceImpl* btm_service =
       BtmServiceImpl::Get(web_contents->GetBrowserContext());
 
   // A time within the past hour.
@@ -658,14 +657,14 @@ IN_PROC_BROWSER_TEST_F(BtmTabHelperBrowserTest, SitesInOpenTabsAreExempt) {
 
   // Verify the bounces through b.test and c.test were recorded.
   std::optional<StateValue> b_state =
-      GetBtmState(GetDipsService(web_contents), GURL("http://b.test"));
+      GetBtmState(GetBtmService(web_contents), GURL("http://b.test"));
   ASSERT_TRUE(b_state.has_value());
   ASSERT_THAT(b_state->stateful_bounce_times,
               Optional(Pair(bounce_time, bounce_time)));
   ASSERT_EQ(b_state->user_activation_times, std::nullopt);
 
   std::optional<StateValue> c_state =
-      GetBtmState(GetDipsService(web_contents), GURL("http://c.test"));
+      GetBtmState(GetBtmService(web_contents), GURL("http://c.test"));
   ASSERT_TRUE(c_state.has_value());
   ASSERT_THAT(c_state->stateful_bounce_times,
               Optional(Pair(bounce_time, bounce_time)));
@@ -680,28 +679,28 @@ IN_PROC_BROWSER_TEST_F(BtmTabHelperBrowserTest, SitesInOpenTabsAreExempt) {
   ASSERT_TRUE(NavigateToURL(
       *new_tab, embedded_test_server()->GetURL("c.test", "/title1.html")));
 
-  // Trigger the DIPS timer which would delete tracker data.
+  // Trigger the BTM timer which would delete tracker data.
   SetBtmTime(bounce_time + features::kBtmGracePeriod.Get() +
              base::Milliseconds(1));
-  dips_service->OnTimerFiredForTesting();
-  dips_service->storage()->FlushPostedTasksForTesting();
+  btm_service->OnTimerFiredForTesting();
+  btm_service->storage()->FlushPostedTasksForTesting();
   base::RunLoop().RunUntilIdle();
 
-  // Verify that the DIPS record for b.test is now gone, because there is no
+  // Verify that the BTM record for b.test is now gone, because there is no
   // open tab on b.test.
-  EXPECT_FALSE(GetBtmState(GetDipsService(web_contents), GURL("http://b.test"))
+  EXPECT_FALSE(GetBtmState(GetBtmService(web_contents), GURL("http://b.test"))
                    .has_value());
 
-  // Verify that the DIPS record for c.test is still present, because there is
+  // Verify that the BTM record for c.test is still present, because there is
   // an open tab on c.test.
-  EXPECT_TRUE(GetBtmState(GetDipsService(web_contents), GURL("http://c.test"))
+  EXPECT_TRUE(GetBtmState(GetBtmService(web_contents), GURL("http://c.test"))
                   .has_value());
 }
 
 IN_PROC_BROWSER_TEST_F(BtmTabHelperBrowserTest,
                        SitesInDestroyedTabsAreNotExempt) {
   WebContents* web_contents = GetActiveWebContents();
-  BtmServiceImpl* dips_service =
+  BtmServiceImpl* btm_service =
       BtmServiceImpl::Get(web_contents->GetBrowserContext());
 
   // A time within the past hour.
@@ -720,7 +719,7 @@ IN_PROC_BROWSER_TEST_F(BtmTabHelperBrowserTest,
 
   // Verify the bounce through b.test was recorded.
   std::optional<StateValue> b_state =
-      GetBtmState(GetDipsService(web_contents), GURL("http://b.test"));
+      GetBtmState(GetBtmService(web_contents), GURL("http://b.test"));
   ASSERT_TRUE(b_state.has_value());
   ASSERT_THAT(b_state->stateful_bounce_times,
               Optional(Pair(bounce_time, bounce_time)));
@@ -734,16 +733,16 @@ IN_PROC_BROWSER_TEST_F(BtmTabHelperBrowserTest,
   // Close the new tab with b.test.
   CloseTab(*new_tab);
 
-  // Trigger the DIPS timer which would delete tracker data.
+  // Trigger the BTM timer which would delete tracker data.
   SetBtmTime(bounce_time + features::kBtmGracePeriod.Get() +
              base::Milliseconds(1));
-  dips_service->OnTimerFiredForTesting();
-  dips_service->storage()->FlushPostedTasksForTesting();
+  btm_service->OnTimerFiredForTesting();
+  btm_service->storage()->FlushPostedTasksForTesting();
   base::RunLoop().RunUntilIdle();
 
-  // Verify that the DIPS record for b.test is now gone, because there is no
+  // Verify that the BTM record for b.test is now gone, because there is no
   // open tab on b.test.
-  EXPECT_FALSE(GetBtmState(GetDipsService(web_contents), GURL("http://b.test"))
+  EXPECT_FALSE(GetBtmState(GetBtmService(web_contents), GURL("http://b.test"))
                    .has_value());
 }
 
@@ -752,7 +751,7 @@ IN_PROC_BROWSER_TEST_F(BtmTabHelperBrowserTest,
 IN_PROC_BROWSER_TEST_F(BtmTabHelperBrowserTest,
                        SitesInOpenTabsForDifferentProfilesAreNotExempt) {
   WebContents* web_contents = GetActiveWebContents();
-  BtmServiceImpl* dips_service =
+  BtmServiceImpl* btm_service =
       BtmServiceImpl::Get(web_contents->GetBrowserContext());
 
   // A time within the past hour.
@@ -771,7 +770,7 @@ IN_PROC_BROWSER_TEST_F(BtmTabHelperBrowserTest,
 
   // Verify the bounce through c.test was recorded.
   std::optional<StateValue> c_state =
-      GetBtmState(GetDipsService(web_contents), GURL("http://c.test"));
+      GetBtmState(GetBtmService(web_contents), GURL("http://c.test"));
   ASSERT_TRUE(c_state.has_value());
   ASSERT_THAT(c_state->stateful_bounce_times,
               Optional(Pair(bounce_time, bounce_time)));
@@ -784,16 +783,16 @@ IN_PROC_BROWSER_TEST_F(BtmTabHelperBrowserTest,
       NavigateToURL(another_window->web_contents(),
                     embedded_test_server()->GetURL("c.test", "/title1.html")));
 
-  // Trigger the DIPS timer which would delete tracker data.
+  // Trigger the BTM timer which would delete tracker data.
   SetBtmTime(bounce_time + features::kBtmGracePeriod.Get() +
              base::Milliseconds(1));
-  dips_service->OnTimerFiredForTesting();
-  dips_service->storage()->FlushPostedTasksForTesting();
+  btm_service->OnTimerFiredForTesting();
+  btm_service->storage()->FlushPostedTasksForTesting();
   base::RunLoop().RunUntilIdle();
 
-  // The DIPS record for c.test was removed, because open tabs in a different
+  // The BTM record for c.test was removed, because open tabs in a different
   // profile are not exempt.
-  EXPECT_FALSE(GetBtmState(GetDipsService(web_contents), GURL("http://c.test"))
+  EXPECT_FALSE(GetBtmState(GetBtmService(web_contents), GURL("http://c.test"))
                    .has_value());
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)

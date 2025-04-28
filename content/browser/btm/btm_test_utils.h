@@ -154,16 +154,16 @@ bool NavigateToSetCookie(WebContents* web_contents,
 void CreateImageAndWaitForCookieAccess(WebContents* web_contents,
                                        const GURL& image_url);
 
-// Helper function to block until all DIPS storage requests are complete.
-inline void WaitOnStorage(BtmServiceImpl* dips_service) {
-  dips_service->storage()->FlushPostedTasksForTesting();
+// Helper function to block until all BTM storage requests are complete.
+inline void WaitOnStorage(BtmServiceImpl* btm_service) {
+  btm_service->storage()->FlushPostedTasksForTesting();
 }
 
-// Helper function to query the `url` state from DIPS storage.
-std::optional<StateValue> GetBtmState(BtmServiceImpl* dips_service,
+// Helper function to query the `url` state from BTM storage.
+std::optional<StateValue> GetBtmState(BtmServiceImpl* btm_service,
                                       const GURL& url);
 
-inline BtmServiceImpl* GetDipsService(WebContents* web_contents) {
+inline BtmServiceImpl* GetBtmService(WebContents* web_contents) {
   return BtmServiceImpl::Get(web_contents->GetBrowserContext());
 }
 
@@ -264,7 +264,7 @@ class ScopedInitFeature {
   base::test::ScopedFeatureList feature_list_;
 };
 
-// Enables/disables the DIPS Feature.
+// Enables/disables the BTM Feature.
 class ScopedInitBtmFeature {
  public:
   explicit ScopedInitBtmFeature(bool enable,
@@ -335,7 +335,7 @@ class TpcBlockingBrowserClient : public ContentBrowserClient,
                                        base::TimeDelta ttl,
                                        bool ignore_schemes) override;
 
-  bool ShouldDipsDeleteInteractionRecords(uint64_t remove_mask) override;
+  bool ShouldBtmDeleteInteractionRecords(uint64_t remove_mask) override;
 
   void AllowThirdPartyCookiesOnSite(const GURL& url);
   void GrantCookieAccessTo3pSite(const GURL& url);
