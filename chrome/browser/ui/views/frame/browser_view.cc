@@ -1702,10 +1702,10 @@ bool BrowserView::IsOnCurrentWorkspace() const {
 }
 
 bool BrowserView::IsVisibleOnScreen() const {
-#if BUILDFLAG(IS_MAC)
-  // TODO(crbug.com/405283740): currently only works for mac. See comments
-  // around Widget::IsVisibleOnScreen() for more details. Eventually this
-  // should work for all platforms.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  // TODO(crbug.com/405283740): currently only works for mac and windows. See
+  // comments around Widget::IsVisibleOnScreen() for more details. Eventually
+  // this should work for all platforms.
   return frame_->IsVisibleOnScreen();
 #else
   return IsOnCurrentWorkspace();

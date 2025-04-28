@@ -1016,12 +1016,11 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   bool IsVisible() const;
 
   // Returns true if the Widget is physically visible to the user on any screen.
-  // This is implemented only on macOS. On other platforms this is equivalent
-  // to IsVisible().
+  // This is implemented only on macOS and Windows. On other platforms this is
+  // equivalent to IsVisible().
   //
   // On some platforms (e.g., macOS), this is asynchronously updated, i.e.
   // calling Show() or Hide() will not synchronously update this.
-  // TODO(crbug.com/410938804): implement this on Windows.
   bool IsVisibleOnScreen() const;
 
   // Returns the ThemeProvider that provides theme resources for this Widget.
