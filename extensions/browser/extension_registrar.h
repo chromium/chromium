@@ -150,6 +150,9 @@ class ExtensionRegistrar : public KeyedService, public ProcessManagerObserver {
             const base::FilePath& install_directory,
             const base::FilePath& unpacked_install_directory);
 
+  // Returns true if the registrar has been initialized.
+  bool IsInitialized() const;
+
   // Returns a weak pointer to `this`.
   base::WeakPtr<ExtensionRegistrar> GetWeakPtr();
 

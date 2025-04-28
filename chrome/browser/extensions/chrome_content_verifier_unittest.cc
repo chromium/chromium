@@ -45,6 +45,8 @@ bool IsSuperset(const std::set<base::FilePath>& container,
 
 // Tests are run with //chrome layer so that manifest's //chrome specific bits
 // (e.g. browser images, default_icon in actions) are present.
+// TODO(crbug.com/408458901): Port tests to desktop Android once we have a
+// testing base class that approximates ExtensionServiceTestBase.
 class ChromeContentVerifierTest : public ExtensionServiceTestWithInstall {
  public:
   void SetUp() override {

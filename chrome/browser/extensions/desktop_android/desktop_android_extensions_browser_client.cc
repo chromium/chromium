@@ -297,7 +297,7 @@ void DesktopAndroidExtensionsBrowserClient::
 std::unique_ptr<RuntimeAPIDelegate>
 DesktopAndroidExtensionsBrowserClient::CreateRuntimeAPIDelegate(
     content::BrowserContext* context) const {
-  return std::make_unique<DesktopAndroidRuntimeApiDelegate>();
+  return std::make_unique<DesktopAndroidRuntimeApiDelegate>(context);
 }
 
 const ComponentExtensionResourceManager*

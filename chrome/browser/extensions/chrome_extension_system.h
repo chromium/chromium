@@ -138,10 +138,8 @@ class ChromeExtensionSystem : public ExtensionSystem {
     std::unique_ptr<AppSorting> app_sorting_;
     std::unique_ptr<InstallGate> update_install_gate_;
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
     // For verifying the contents of extensions read from disk.
     scoped_refptr<ContentVerifier> content_verifier_;
-#endif
 
     std::unique_ptr<UninstallPingSender> uninstall_ping_sender_;
 

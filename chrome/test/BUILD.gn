@@ -1505,6 +1505,9 @@ source_set("platform_browser_tests") {
       "../browser/extensions/api/webstore_private/webstore_private_apitest.cc",
       "../browser/extensions/background_script_executor_browsertest.cc",
       "../browser/extensions/content_security_policy_apitest.cc",
+      "../browser/extensions/content_verifier_browsertest.cc",
+      "../browser/extensions/content_verifier_test_utils.cc",
+      "../browser/extensions/content_verifier_test_utils.h",
       "../browser/extensions/cross_origin_isolation_browsertest.cc",
       "../browser/extensions/error_console/error_console_browsertest.cc",
       "../browser/extensions/error_console/error_console_test_observer.cc",
@@ -1542,6 +1545,7 @@ source_set("platform_browser_tests") {
       "//components/web_package",
       "//components/web_package/test_support",
       "//extensions:test_support",
+      "//extensions/browser/updater",
       "//ui/webui:test_support",
     ]
     data += [
@@ -4365,9 +4369,7 @@ if (!is_android) {
         "../browser/extensions/commands/command_service_browsertest.cc",
         "../browser/extensions/content_capabilities_browsertest.cc",
         "../browser/extensions/content_script_apitest.cc",
-        "../browser/extensions/content_verifier_browsertest.cc",
         "../browser/extensions/content_verifier_hash_fetch_behavior_browsertest.cc",
-        "../browser/extensions/content_verifier_test_utils.cc",
         "../browser/extensions/cross_origin_xhr_apitest.cc",
         "../browser/extensions/crx_installer_browsertest.cc",
         "../browser/extensions/event_metrics_browsertest.cc",

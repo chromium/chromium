@@ -5,23 +5,27 @@
 #include "chrome/browser/extensions/desktop_android/desktop_android_runtime_api_delegate.h"
 
 #include "base/notimplemented.h"
+#include "chrome/browser/extensions/updater/extension_updater.h"
 
 namespace extensions {
 
-DesktopAndroidRuntimeApiDelegate::DesktopAndroidRuntimeApiDelegate() = default;
+DesktopAndroidRuntimeApiDelegate::DesktopAndroidRuntimeApiDelegate(
+    content::BrowserContext* context)
+    : browser_context_(context) {}
 
 DesktopAndroidRuntimeApiDelegate::~DesktopAndroidRuntimeApiDelegate() = default;
 
 void DesktopAndroidRuntimeApiDelegate::AddUpdateObserver(
     UpdateObserver* observer) {
-  // TODO(crbug.com/373434594): Support update observation.
-  NOTIMPLEMENTED();
+  registered_for_updates_ = true;
+  ExtensionUpdater::Get(browser_context_)->AddObserver(observer);
 }
 
 void DesktopAndroidRuntimeApiDelegate::RemoveUpdateObserver(
     UpdateObserver* observer) {
-  // TODO(crbug.com/373434594): Support update observation.
-  NOTIMPLEMENTED();
+  if (registered_for_updates_) {
+    ExtensionUpdater::Get(browser_context_)->RemoveObserver(observer);
+  }
 }
 
 void DesktopAndroidRuntimeApiDelegate::ReloadExtension(

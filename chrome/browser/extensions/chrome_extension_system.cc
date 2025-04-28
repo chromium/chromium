@@ -19,6 +19,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/extensions/chrome_content_verifier_delegate.h"
 #include "chrome/browser/extensions/chrome_extension_system_factory.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/extensions/crx_installer.h"
@@ -41,6 +42,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/url_data_source.h"
 #include "extensions/browser/app_sorting.h"
+#include "extensions/browser/content_verifier/content_verifier.h"
 #include "extensions/browser/delayed_install_manager.h"
 #include "extensions/browser/extension_pref_store.h"
 #include "extensions/browser/extension_pref_value_map.h"
@@ -61,9 +63,7 @@
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/chrome_app_sorting.h"
-#include "chrome/browser/extensions/chrome_content_verifier_delegate.h"
 #include "chrome/browser/extensions/extension_sync_service.h"
-#include "extensions/browser/content_verifier/content_verifier.h"
 #else
 #include "chrome/browser/extensions/chrome_extension_registrar_delegate.h"
 #include "extensions/browser/null_app_sorting.h"
@@ -200,12 +200,8 @@ void ChromeExtensionSystem::Shared::Init(bool extensions_enabled) {
       !command_line->HasSwitch(::switches::kNoErrorDialogs);
   LoadErrorReporter::Init(allow_noisy_errors);
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  // TODO(crbug.com/413122584): Port ChromeContentVerifierDelegate to desktop
-  // Android.
   content_verifier_ = new ContentVerifier(
       profile_, std::make_unique<ChromeContentVerifierDelegate>(profile_));
-#endif
 
   service_worker_manager_ = std::make_unique<ServiceWorkerManager>(profile_);
 
@@ -235,7 +231,6 @@ void ChromeExtensionSystem::Shared::Init(bool extensions_enabled) {
   // load any extensions.
   {
     InstallVerifier::Get(profile_)->Init();
-#if BUILDFLAG(ENABLE_EXTENSIONS)
     ChromeContentVerifierDelegate::VerifyInfo::Mode mode =
         ChromeContentVerifierDelegate::GetDefaultMode();
 #if BUILDFLAG(IS_CHROMEOS)
@@ -245,7 +240,6 @@ void ChromeExtensionSystem::Shared::Init(bool extensions_enabled) {
     if (mode >= ChromeContentVerifierDelegate::VerifyInfo::Mode::BOOTSTRAP) {
       content_verifier_->Start();
     }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 #if BUILDFLAG(IS_CHROMEOS)
     // This class is used to check the permissions of the force-installed
     // extensions inside the managed guest session. It updates the local state
@@ -310,11 +304,9 @@ void ChromeExtensionSystem::Shared::Init(bool extensions_enabled) {
 }
 
 void ChromeExtensionSystem::Shared::Shutdown() {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
   if (content_verifier_.get()) {
     content_verifier_->Shutdown();
   }
-#endif
   if (extension_service_) {
     extension_service_->Shutdown();
   }
@@ -362,11 +354,7 @@ AppSorting* ChromeExtensionSystem::Shared::app_sorting() {
 }
 
 ContentVerifier* ChromeExtensionSystem::Shared::content_verifier() {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
   return content_verifier_.get();
-#else
-  return nullptr;
-#endif
 }
 
 //

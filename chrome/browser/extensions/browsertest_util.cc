@@ -40,16 +40,16 @@
 
 namespace extensions::browsertest_util {
 
-void CreateAndInitializeLocalCache() {
 #if BUILDFLAG(IS_CHROMEOS)
+void CreateAndInitializeLocalCache() {
   base::FilePath extension_cache_dir;
   CHECK(base::PathService::Get(ash::DIR_DEVICE_EXTENSION_LOCAL_CACHE,
                                &extension_cache_dir));
   base::FilePath cache_init_file = extension_cache_dir.Append(
       extensions::LocalExtensionCache::kCacheReadyFlagFileName);
   EXPECT_TRUE(base::WriteFile(cache_init_file, ""));
-#endif
 }
+#endif
 
 Browser* LaunchAppBrowser(Profile* profile, const Extension* extension_app) {
   ui_test_utils::BrowserChangeObserver browser_change_observer(
