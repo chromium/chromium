@@ -141,11 +141,6 @@ BASE_DECLARE_FEATURE(kTriggerPasswordResyncAfterDeletingUndecryptablePasswords);
 // authentication mandatory before password filling in untrusted locations.
 BASE_DECLARE_FEATURE(kBiometricAuthIdentityCheck);
 
-// If enabled, the profile login db will no longer be renamed to account
-// login db upon UPM with split stores activation. The db is cleared on
-// the following run anyway.
-BASE_DECLARE_FEATURE(kDropLoginDbRenameForUpmSyncingUsers);
-
 // If enabled, the password store no longer uses the Login DB as a backend.
 // Instead, it either uses the Android-specific storage or an empty backend
 // if the client isn't eligible for the former.

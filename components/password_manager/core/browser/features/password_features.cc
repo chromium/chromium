@@ -154,10 +154,6 @@ BASE_FEATURE(kBiometricAuthIdentityCheck,
              "BiometricAuthIdentityCheck",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kDropLoginDbRenameForUpmSyncingUsers,
-             "DropLoginDbRenameForUpmSyncingUsers",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kLoginDbDeprecationAndroid,
              "LoginDbDeprecationAndroid",
              base::FEATURE_DISABLED_BY_DEFAULT);
