@@ -289,7 +289,7 @@ DemoLoginController::ResultCode GetDemoAccountRequestResult(
   }
 
   if (response_body.empty()) {
-    return DemoLoginController::ResultCode::kEmptyReponse;
+    return DemoLoginController::ResultCode::kEmptyResponse;
   }
 
   // A request was successful if there is response body and the response code is

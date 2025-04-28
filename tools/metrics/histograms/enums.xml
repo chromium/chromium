@@ -3791,17 +3791,17 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
   <summary>
     The result of account cleanup request in demo mode signed in experience.
   </summary>
-  <int value="0" label="Success."/>
-  <int value="1" label="Malformat Http response."/>
-  <int value="2" label="Missing required credential for login."/>
-  <int value="3" label="Empty Http response."/>
-  <int value="4" label="Network error."/>
-  <int value="5" label="Server side error or out of quota."/>
-  <int value="6"
-      label="Unbale to obtain the DM Token and the Client ID due to the cloud
-             policy not connected."/>
-  <int value="7" label="Empty DM Token."/>
-  <int value="8" label="Empty Client ID."/>
+  <int value="0" label="Success"/>
+  <int value="1" label="Malformat Http response"/>
+  <int value="2" label="Missing required credential for login"/>
+  <int value="3" label="Empty Http response"/>
+  <int value="4" label="Network error"/>
+  <int value="5" label="Server side error or out of quota"/>
+  <int value="6" label="Cloud policy not connected"/>
+  <int value="7" label="Empty DM Token"/>
+  <int value="8" label="Empty Client ID"/>
+  <int value="9" label="Out of quota retriable"/>
+  <int value="10" label="Out of quota not retriable"/>
 </enum>
 
 <enum name="DeprecatedArcKioskUserStatus">
