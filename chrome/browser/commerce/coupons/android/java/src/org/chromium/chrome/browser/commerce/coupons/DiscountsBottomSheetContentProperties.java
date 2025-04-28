@@ -6,10 +6,12 @@ package org.chromium.chrome.browser.commerce.coupons;
 
 import android.view.View.OnClickListener;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 /** Properties for discounts bottom sheet content. */
+@NullMarked
 public class DiscountsBottomSheetContentProperties {
 
     public static final WritableObjectPropertyKey<String> DISCOUNT_CODE =

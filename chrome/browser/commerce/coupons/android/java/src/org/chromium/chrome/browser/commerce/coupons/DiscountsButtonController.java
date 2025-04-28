@@ -8,10 +8,10 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.view.View;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.commerce.CommerceBottomSheetContentController;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
@@ -23,21 +23,19 @@ import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 /** This class is responsible for providing UI resources for showing the Discounts action. */
+@NullMarked
 public class DiscountsButtonController extends BaseButtonDataProvider {
 
     private final BottomSheetController mBottomSheetController;
     private final BottomSheetObserver mBottomSheetObserver;
-    private @NonNull Supplier<CommerceBottomSheetContentController>
-            mCommerceBottomSheetContentController;
+    private Supplier<CommerceBottomSheetContentController> mCommerceBottomSheetContentController;
 
     public DiscountsButtonController(
             Context context,
             Supplier<Tab> activeTabSupplier,
             ModalDialogManager modalDialogManager,
             BottomSheetController bottomSheetController,
-            @NonNull
-                    Supplier<CommerceBottomSheetContentController>
-                            commerceBottomSheetContentController) {
+            Supplier<CommerceBottomSheetContentController> commerceBottomSheetContentController) {
         super(
                 activeTabSupplier,
                 modalDialogManager,

@@ -168,7 +168,7 @@ public class ShoppingService {
          * A notification that fetching discounts information for the URL has completed.
          *
          * @param url The URL the discounts info was fetched for.
-         * @param info A list of available discounts for the URL or empty if none is available.
+         * @param info A list of available discounts for the URL or null if none is available.
          */
         void onResult(GURL url, @Nullable List<DiscountInfo> info);
     }

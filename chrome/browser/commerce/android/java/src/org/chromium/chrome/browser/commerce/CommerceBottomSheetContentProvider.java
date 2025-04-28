@@ -8,6 +8,7 @@ import androidx.annotation.IntDef;
 
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.lang.annotation.Retention;
@@ -36,7 +37,7 @@ public interface CommerceBottomSheetContentProvider {
      *     the PropertyModel should contain the following PropertyKey: TYPE, HAS_TITLE, TITLE_TEXT,
      *     and CONTENT_VIEW.
      */
-    void requestContent(Callback<PropertyModel> contentReadyCallback);
+    void requestContent(Callback<@Nullable PropertyModel> contentReadyCallback);
 
     /** Called when the BottomSheet hides. */
     void hideContentView();

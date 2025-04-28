@@ -14,11 +14,11 @@ import static org.chromium.chrome.browser.commerce.coupons.DiscountsBottomSheetC
 import android.content.Context;
 import android.view.View.OnClickListener;
 
-import androidx.annotation.NonNull;
-
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.commerce.core.DiscountClusterType;
@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Locale;
 
 /** Mediator for discounts bottom sheet responsible for model list update. */
+@NullMarked
 public class DiscountsBottomSheetContentMediator {
     private final Context mContext;
     private final Supplier<Tab> mTabSupplier;
@@ -44,9 +45,7 @@ public class DiscountsBottomSheetContentMediator {
     private boolean mCopyButtonClickedHistogramRecorded;
 
     public DiscountsBottomSheetContentMediator(
-            @NonNull Context context,
-            @NonNull Supplier<Tab> tabSupplier,
-            @NonNull ModelList modelList) {
+            Context context, Supplier<Tab> tabSupplier, ModelList modelList) {
         mContext = context;
         mTabSupplier = tabSupplier;
         mModelList = modelList;
@@ -71,7 +70,10 @@ public class DiscountsBottomSheetContentMediator {
         mModelList.clear();
     }
 
-    private void updateModelList(List<DiscountInfo> infoList) {
+    private void updateModelList(@Nullable List<DiscountInfo> infoList) {
+        if (infoList == null) {
+            return;
+        }
         for (DiscountInfo info : infoList) {
             if (info == null || info.discountCode.isEmpty()) {
                 continue;

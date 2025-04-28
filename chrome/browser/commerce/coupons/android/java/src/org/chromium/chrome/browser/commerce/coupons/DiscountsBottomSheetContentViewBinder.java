@@ -16,11 +16,13 @@ import android.widget.TextView;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.widget.ButtonCompat;
 
 /** ViewBinder for the discounts bottom sheet content. */
+@NullMarked
 public class DiscountsBottomSheetContentViewBinder {
 
     public static void bind(PropertyModel model, View view, PropertyKey propertyKey) {
