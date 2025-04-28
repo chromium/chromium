@@ -109,7 +109,6 @@ found in the LICENSE file.
             android:visibility="gone" />
     </org.chromium.components.browser_ui.widget.BoundedLinearLayout>
 
-    <!-- TODO(crbug.com/400108297): Remove shadow -->
     <org.chromium.ui.widget.ChromeImageButton
         android:id="@+id/message_close_button"
         android:clickable="true"

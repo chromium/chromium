@@ -5,7 +5,13 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<ripple xmlns:android="http://schemas.android.com/apk/res/android"
-  android:color="?android:attr/colorControlHighlight">
-    <item android:drawable="@drawable/rounded_corner_card" />
-</ripple>
+<layer-list
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape
+            android:shape="oval">
+            <solid android:color="@macro/default_card_bg_color"/>
+        </shape>
+    </item>
+    <item android:drawable="@drawable/default_icon_background" />
+</layer-list>

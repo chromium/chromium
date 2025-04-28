@@ -10,6 +10,7 @@ import android.animation.LayoutTransition;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.ColorStateList;
+import android.graphics.Outline;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
@@ -35,6 +36,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
+import org.chromium.components.browser_ui.widget.RoundedCornerOutlineProvider;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.SwipeHandler;
 import org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables;
@@ -103,6 +105,9 @@ public class MessageBannerView extends RelativeLayout {
                     AppCompatResources.getDrawable(getContext(), R.drawable.dialog_bg_baseline));
         }
         mPrimaryButtonDrawable = mPrimaryButton.getBackground();
+        int radius = getResources().getDimensionPixelOffset(R.dimen.message_close_button_size) / 2;
+        mCloseButton.setOutlineProvider(new CloseButtonOutlineProvider(radius));
+        mCloseButton.setClipToOutline(true);
     }
 
     void enableA11y(boolean enabled) {
@@ -413,10 +418,10 @@ public class MessageBannerView extends RelativeLayout {
         // Remove the check once the fix lands.
         if (mEnableCloseButton && MotionEventUtils.isMouseEvent(event)) {
             if (event.getAction() == MotionEvent.ACTION_HOVER_ENTER) {
-                findViewById(R.id.message_close_button).setVisibility(VISIBLE);
+                mCloseButton.setVisibility(VISIBLE);
             } else if (event.getAction() == MotionEvent.ACTION_HOVER_EXIT
                     && MotionEventUtils.isPrimaryButton(event.getActionButton())) {
-                findViewById(R.id.message_close_button).setVisibility(GONE);
+                mCloseButton.setVisibility(GONE);
             }
         }
         return super.dispatchHoverEvent(event);
@@ -496,6 +501,19 @@ public class MessageBannerView extends RelativeLayout {
         @Override
         public boolean onDown(MotionEvent e) {
             return true;
+        }
+    }
+
+    // A circular view without shadow.
+    private static class CloseButtonOutlineProvider extends RoundedCornerOutlineProvider {
+        public CloseButtonOutlineProvider(int radius) {
+            super(radius);
+        }
+
+        @Override
+        public void getOutline(View view, Outline outline) {
+            super.getOutline(view, outline);
+            outline.setAlpha(0f);
         }
     }
 
