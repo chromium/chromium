@@ -182,6 +182,7 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
       "edit?ouid=103677288878638916900&usp=docs_home&ths=true";
 
   void SetUp() override {
+    EnableReadAloud();
     ChromeRenderViewTest::SetUp();
     content::RenderFrame* render_frame =
         content::RenderFrame::FromWebFrame(GetMainFrame());
@@ -324,8 +325,23 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
   }
 
   void EnableDocs() {
+    scoped_feature_list_.Reset();
     scoped_feature_list_.InitAndEnableFeature(
         features::kReadAnythingDocsIntegration);
+  }
+
+  void DisableReadAloud() {
+    scoped_feature_list_.Reset();
+    scoped_feature_list_.InitWithFeatures({},
+                                          {features::kReadAnythingReadAloud});
+  }
+
+  void EnablePhraseHighlighting() {
+    scoped_feature_list_.Reset();
+    scoped_feature_list_.InitWithFeatures(
+        {features::kReadAnythingReadAloud,
+         features::kReadAnythingReadAloudPhraseHighlighting},
+        {});
   }
 
   ui::AXTreeID tree_id_;
@@ -333,8 +349,8 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
   testing::StrictMock<MockReadAnythingUntrustedPageHandler> page_handler_;
   base::test::ScopedFeatureList scoped_feature_list_;
 
-  // ReadAnythingAppController constructor and destructor are protected so it's
-  // not accessible by std::make_unique.
+  // ReadAnythingAppController constructor and destructor are protected so
+  // it's not accessible by std::make_unique.
   raw_ptr<ReadAnythingAppController, DanglingUntriaged> controller_ = nullptr;
 };
 
@@ -344,10 +360,10 @@ TEST_F(ReadAnythingAppControllerTest, IsReadAloudEnabled) {
   EXPECT_TRUE(controller().IsReadAloudEnabled());
 
 #else
-  EXPECT_FALSE(controller().IsReadAloudEnabled());
-
-  EnableReadAloud();
   EXPECT_TRUE(controller().IsReadAloudEnabled());
+
+  DisableReadAloud();
+  EXPECT_FALSE(controller().IsReadAloudEnabled());
 #endif  // IS_CHROMEOS
 }
 
@@ -360,7 +376,6 @@ TEST_F(ReadAnythingAppControllerTest, OnDeviceLocked_OnlyLogsIfSpeechPlaying) {
   EXPECT_EQ(0, histogram_tester.GetTotalSum(
                    ReadAloudAppModel::kSpeechStopSourceHistogramName));
 
-  EnableReadAloud();
   controller().OnDeviceLocked();
   EXPECT_EQ(0, histogram_tester.GetTotalSum(
                    ReadAloudAppModel::kSpeechStopSourceHistogramName));
@@ -382,7 +397,6 @@ TEST_F(ReadAnythingAppControllerTest,
   EXPECT_EQ(0, histogram_tester.GetTotalSum(
                    ReadAloudAppModel::kSpeechStopSourceHistogramName));
 
-  EnableReadAloud();
   controller().OnReadingModeHidden();
   EXPECT_EQ(0, histogram_tester.GetTotalSum(
                    ReadAloudAppModel::kSpeechStopSourceHistogramName));
@@ -402,7 +416,6 @@ TEST_F(ReadAnythingAppControllerTest, OnTabWillDetach_OnlyLogsIfSpeechPlaying) {
   EXPECT_EQ(0, histogram_tester.GetTotalSum(
                    ReadAloudAppModel::kSpeechStopSourceHistogramName));
 
-  EnableReadAloud();
   controller().OnTabWillDetach();
   EXPECT_EQ(0, histogram_tester.GetTotalSum(
                    ReadAloudAppModel::kSpeechStopSourceHistogramName));
@@ -415,7 +428,6 @@ TEST_F(ReadAnythingAppControllerTest, OnTabWillDetach_OnlyLogsIfSpeechPlaying) {
 }
 
 TEST_F(ReadAnythingAppControllerTest, OnUrlInformationSet_LogsReload) {
-  EnableReadAloud();
   read_aloud_model().set_speech_playing(true);
   ui::AXTreeUpdate update1;
   ui::AXTreeID id_1 = ui::AXTreeID::CreateNewAXTreeID();
@@ -450,7 +462,6 @@ TEST_F(ReadAnythingAppControllerTest, OnUrlInformationSet_LogsReload) {
 }
 
 TEST_F(ReadAnythingAppControllerTest, OnUrlInformationSet_LogsNewPage) {
-  EnableReadAloud();
   read_aloud_model().set_speech_playing(true);
   ui::AXTreeUpdate update1;
   ui::AXTreeID id_1 = ui::AXTreeID::CreateNewAXTreeID();
@@ -616,13 +627,11 @@ TEST_F(ReadAnythingAppControllerTest,
 }
 
 TEST_F(ReadAnythingAppControllerTest, GetStoredVoice_NoVoices_ReturnsEmpty) {
-  scoped_feature_list_.InitWithFeatures({features::kReadAnythingReadAloud}, {});
   ASSERT_EQ(controller().GetStoredVoice(), "");
 }
 
 TEST_F(ReadAnythingAppControllerTest,
        GetStoredVoice_CurrentBaseLangStored_ReturnsExpectedVoice) {
-  scoped_feature_list_.InitWithFeatures({features::kReadAnythingReadAloud}, {});
   std::string base_lang = "fr";
   std::string expected_voice_name = "French voice 1";
 
@@ -635,7 +644,6 @@ TEST_F(ReadAnythingAppControllerTest,
 
 TEST_F(ReadAnythingAppControllerTest,
        GetStoredVoice_CurrentFullLangStored_ReturnsExpectedVoice) {
-  scoped_feature_list_.InitWithFeatures({features::kReadAnythingReadAloud}, {});
   std::string full_lang = "en-UK";
   std::string expected_voice_name = "British voice 45";
 
@@ -649,7 +657,6 @@ TEST_F(ReadAnythingAppControllerTest,
 TEST_F(
     ReadAnythingAppControllerTest,
     GetStoredVoice_BaseLangStoredButCurrentLangIsFull_ReturnsStoredBaseLang) {
-  scoped_feature_list_.InitWithFeatures({features::kReadAnythingReadAloud}, {});
   std::string base_lang = "zh";
   std::string full_lang = "zh-TW";
   std::string expected_voice_name = "Chinese voice";
@@ -663,7 +670,6 @@ TEST_F(
 
 TEST_F(ReadAnythingAppControllerTest,
        GetStoredVoice_CurrentLangNotStored_ReturnsEmpty) {
-  scoped_feature_list_.InitWithFeatures({features::kReadAnythingReadAloud}, {});
   std::string current_lang = "de-DE";
   std::string stored_lang = "it-IT";
 
@@ -1706,7 +1712,6 @@ TEST_F(ReadAnythingAppControllerTest, AddAndRemoveTrees) {
 
 TEST_F(ReadAnythingAppControllerTest,
        AccessiblityEvent_DuringSpeech_DoesNothing) {
-  EnableReadAloud();
   ui::AXTreeUpdate initial_update;
   test::SetUpdateTreeID(&initial_update, tree_id_);
   static constexpr int kInitialId = 2;
@@ -4742,10 +4747,7 @@ TEST_F(ReadAnythingAppControllerTest,
 TEST_F(
     ReadAnythingAppControllerTest,
     GetHighlightForCurrentSegmentIndex_PhrasesEnabled_NoModel_SentenceSpansMultipleNodes_ReturnsCorrectNodes) {
-  scoped_feature_list_.InitWithFeatures(
-      {features::kReadAnythingReadAloud,
-       features::kReadAnythingReadAloudPhraseHighlighting},
-      {});
+  EnablePhraseHighlighting();
 
   EXPECT_TRUE(controller().IsPhraseHighlightingEnabled());
   // Text indices:             0123456789012345678901234567890
@@ -4830,10 +4832,7 @@ TEST_F(
 TEST_F(
     ReadAnythingAppControllerTest,
     GetHighlightForCurrentSegmentIndex_PhrasesEnabled_ValidModel_SentenceSpansMultipleNodes_ReturnsCorrectNodes) {
-  scoped_feature_list_.InitWithFeatures(
-      {features::kReadAnythingReadAloud,
-       features::kReadAnythingReadAloudPhraseHighlighting},
-      {});
+  EnablePhraseHighlighting();
 
   controller().UpdateDependencyParserModel(GetValidModelFile());
   DependencyParserModel& model =
