@@ -23,7 +23,7 @@
 
 // FakePermissionsConsumer used for testing purpose.
 @interface FakePermissionsConsumer : NSObject <PermissionsConsumer>
-@property(nonatomic, strong) NSString* permissionsDescription;
+@property(nonatomic, copy) NSString* permissionsDescription;
 @property(nonatomic, strong) PermissionInfo* cameraInfo;
 @property(nonatomic, strong) PermissionInfo* microphoneInfo;
 @end
@@ -49,7 +49,7 @@
 }
 
 - (void)setPermissionsDescription:(NSString*)permissionsDescription {
-  _permissionsDescription = permissionsDescription;
+  _permissionsDescription = [permissionsDescription copy];
 }
 
 @end
