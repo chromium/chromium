@@ -21,8 +21,7 @@ PageActionMetricsRecorder::PageActionMetricsRecorder(
     PageActionModelInterface& model,
     VisibleEphemeralPageActionsCountCallback
         visible_ephemeral_page_actions_count_callback)
-    : is_ephemeral_(properties.is_ephemeral),
-      page_action_type_(properties.type),
+    : page_action_type_(properties.type),
       histogram_name_(properties.histogram_name),
       visible_ephemeral_page_actions_count_callback_(
           std::move(visible_ephemeral_page_actions_count_callback)),
@@ -34,9 +33,14 @@ PageActionMetricsRecorder::~PageActionMetricsRecorder() = default;
 
 void PageActionMetricsRecorder::OnPageActionModelChanged(
     const PageActionModelInterface& model) {
-  if (model.GetVisible()) {
-    OnPageActionVisible();
+  // Page action can be permanent or ephemeral. For the
+  // "PageActionController.ActionTypeShown2" metric, it should be recorded only
+  // for when the page action is ephemeral.
+  if (!model.GetVisible() || !model.IsEphemeral()) {
+    return;
   }
+
+  OnPageActionVisible();
 }
 
 void PageActionMetricsRecorder::OnPageActionModelWillBeDeleted(
@@ -45,13 +49,6 @@ void PageActionMetricsRecorder::OnPageActionModelWillBeDeleted(
 }
 
 void PageActionMetricsRecorder::OnPageActionVisible() {
-  // Page action can be permanent or ephemeral. For the
-  // "PageActionController.ActionTypeShown2" metric, it should be recorded only
-  // for when the page action is ephemeral.
-  if (!is_ephemeral_) {
-    return;
-  }
-
   CHECK(tab_interface_->GetContents());
 
   // Only record the "Shown" metric the first time the icon appears on a "page".

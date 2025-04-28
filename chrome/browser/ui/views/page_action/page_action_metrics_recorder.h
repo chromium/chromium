@@ -89,7 +89,6 @@ class PageActionMetricsRecorder : public PageActionMetricsRecorderInterface,
   std::set<GURL> page_action_recorded_urls_;
 
   // Properties associated with the specific page action being observed.
-  bool is_ephemeral_;
   PageActionIconType page_action_type_;
   std::string histogram_name_;
 

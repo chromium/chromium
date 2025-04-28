@@ -35,13 +35,15 @@ class PageActionMetricsRecorderTest : public testing::Test {
   }
 
   void SetUp() override {
-    // By default, let the page action be "not visible." Tests can override.
+    // By default, let the page action be "not visible". Tests can override.
     ON_CALL(mock_model_, GetVisible()).WillByDefault(Return(false));
+
+    // By default, let the page action be "ephemeral". Tests can override.
+    ON_CALL(mock_model_, IsEphemeral()).WillByDefault(Return(true));
   }
 
-  void CreateRecorder(bool is_ephemeral) {
+  void CreateRecorder() {
     properties_.type = PageActionIconType::kLensOverlay;
-    properties_.is_ephemeral = is_ephemeral;
     properties_.histogram_name = "LensOverlay";
     recorder_ = std::make_unique<PageActionMetricsRecorder>(
         tab_, properties_, mock_model_,
@@ -70,11 +72,12 @@ class PageActionMetricsRecorderTest : public testing::Test {
 
 TEST_F(PageActionMetricsRecorderTest, NoRecordIfNotEphemeral) {
   base::HistogramTester histogram_tester;
-  CreateRecorder(/*is_ephemeral=*/false);
+  CreateRecorder();
 
-  // Make the action "visible." Because it's not ephemeral, no metric is
+  // Make the page action "visible" and "non ephemeral". No metric will be
   // recorded.
   ON_CALL(mock_model_, GetVisible()).WillByDefault(Return(true));
+  ON_CALL(mock_model_, IsEphemeral()).WillByDefault(Return(false));
 
   FireModelChanged();
   // Because is_ephemeral=false, "PageActionController.ActionTypeShown2" is not
@@ -84,7 +87,7 @@ TEST_F(PageActionMetricsRecorderTest, NoRecordIfNotEphemeral) {
 
 TEST_F(PageActionMetricsRecorderTest, RecordOnlyOncePerUrlIfEphemeral) {
   base::HistogramTester histogram_tester;
-  CreateRecorder(/*is_ephemeral=*/true);
+  CreateRecorder();
 
   // Make the model "visible" and simulate the user visiting a particular URL.
   GURL url1("https://www.example.com/");
@@ -115,10 +118,9 @@ TEST_F(PageActionMetricsRecorderTest, RecordOnlyOncePerUrlIfEphemeral) {
 
 TEST_F(PageActionMetricsRecorderTest, NoRecordIfPageActionIsNotVisible) {
   base::HistogramTester histogram_tester;
-  CreateRecorder(/*is_ephemeral=*/true);
+  CreateRecorder();
 
-  // The action is ephemeral, but GetVisible() returns false.
-  ON_CALL(mock_model_, GetVisible()).WillByDefault(Return(false));
+  ON_CALL(mock_model_, IsEphemeral()).WillByDefault(Return(false));
 
   // Even if we call the model-changed event, because !GetVisible(),
   // we do nothing.
@@ -128,7 +130,7 @@ TEST_F(PageActionMetricsRecorderTest, NoRecordIfPageActionIsNotVisible) {
 
 TEST_F(PageActionMetricsRecorderTest, RecordShownMetricsGeneralAndSpecific) {
   base::HistogramTester histogram_tester;
-  CreateRecorder(/*is_ephemeral=*/true);
+  CreateRecorder();
 
   const std::string general_histogram = "PageActionController.Icon.CTR2";
   const std::string specific_histogram = base::StrCat(
@@ -170,7 +172,9 @@ TEST_F(PageActionMetricsRecorderTest, RecordShownMetricsGeneralAndSpecific) {
 
 TEST_F(PageActionMetricsRecorderTest, NoShownMetricsWhenNotEphemeral) {
   base::HistogramTester histogram_tester;
-  CreateRecorder(/*is_ephemeral=*/false);
+  CreateRecorder();
+
+  ON_CALL(mock_model_, IsEphemeral()).WillByDefault(Return(false));
 
   const std::string general_histogram = "PageActionController.Icon.CTR2";
   const std::string specific_histogram = base::StrCat(
@@ -178,7 +182,6 @@ TEST_F(PageActionMetricsRecorderTest, NoShownMetricsWhenNotEphemeral) {
 
   GURL url("https://www.example.com/");
   content::WebContentsTester::For(tab_.GetContents())->NavigateAndCommit(url);
-  ON_CALL(mock_model_, GetVisible()).WillByDefault(Return(true));
 
   FireModelChanged();
 
@@ -189,7 +192,7 @@ TEST_F(PageActionMetricsRecorderTest, NoShownMetricsWhenNotEphemeral) {
 
 TEST_F(PageActionMetricsRecorderTest, RecordClickMetric) {
   base::HistogramTester histogram_tester;
-  CreateRecorder(/*is_ephemeral=*/true);
+  CreateRecorder();
 
   const std::string general_histogram = "PageActionController.Icon.CTR2";
   const std::string specific_histogram = base::StrCat(
@@ -232,7 +235,7 @@ TEST_F(PageActionMetricsRecorderTest, RecordClickMetric) {
 TEST_F(PageActionMetricsRecorderTest,
        NumberActionsShownWhenClicked_OneVisibleAction) {
   base::HistogramTester histogram_tester;
-  CreateRecorder(/*is_ephemeral=*/true);
+  CreateRecorder();
 
   constexpr char kHistogram[] =
       "PageActionController.Icon.NumberActionsShownWhenClicked";
@@ -249,7 +252,7 @@ TEST_F(PageActionMetricsRecorderTest,
 TEST_F(PageActionMetricsRecorderTest,
        NumberActionsShownWhenClicked_VariousVisibleCounts) {
   base::HistogramTester histogram_tester;
-  CreateRecorder(/*is_ephemeral=*/true);
+  CreateRecorder();
 
   constexpr char kHistogram[] =
       "PageActionController.Icon.NumberActionsShownWhenClicked";
