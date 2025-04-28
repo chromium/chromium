@@ -4252,6 +4252,12 @@ int HttpCache::Transaction::RestartWithoutNoVarySearchCache(
   no_vary_search_cache_erase_handle_ = std::nullopt;
   // Don't try to use the NoVarySearchCache next time around.
   read_no_vary_search_cache_ = false;
+
+  // If we've locked `entry_` we need to unlock it and permit other transactions
+  // to proceed. `entry_is_complete` is true because we haven't modified the
+  // entry.
+  DoneWithEntry(/*entry_is_complete=*/true);
+
   // This will reset this object and send us back to the beginning of the
   // state machine to try again without using the NoVarySearchCache.
   TransitionToState(STATE_HEADERS_PHASE_CANNOT_PROCEED);

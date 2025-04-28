@@ -15,6 +15,7 @@
 #include <memory>
 #include <optional>
 #include <set>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -14020,6 +14021,7 @@ class HttpCacheNoVarySearchTest : public HttpCacheTest,
                                   public ::testing::WithParamInterface<bool> {
  protected:
   static constexpr int kMaxAgeOneDay = 24 * 60 * 60;  // seconds
+  static constexpr std::string_view kBaseURL = "https://example.com/search?";
 
   HttpCacheNoVarySearchTest() {
     using base::test::FeatureRef;
@@ -14054,7 +14056,7 @@ class HttpCacheNoVarySearchTest : public HttpCacheTest,
                       std::string_view no_vary_search,
                       int max_age = kMaxAgeOneDay) {
     MockTransaction& transaction =
-        CreateMockTransaction("q=fred&a=1", "params=(\"a\")", max_age);
+        CreateMockTransaction(query, no_vary_search, max_age);
     MockHttpRequest network_request(transaction);
 
     HttpResponseInfo info;
@@ -14072,7 +14074,7 @@ class HttpCacheNoVarySearchTest : public HttpCacheTest,
       std::string_view query,
       std::string_view no_vary_search,
       int max_age) {
-    GURL url(base::StrCat({"https://example.com/search?", query}));
+    GURL url(base::StrCat({kBaseURL, query}));
     std::string no_vary_search_string(no_vary_search);
     std::string response_headers = base::StringPrintf(
         "ETag: \"foo\"\n"
@@ -14159,6 +14161,91 @@ TEST_P(HttpCacheNoVarySearchTest, ClearNoVarySearchCache) {
   // param.
   EXPECT_FALSE(info.was_cached);
   EXPECT_TRUE(info.network_accessed);
+}
+
+TEST_P(HttpCacheNoVarySearchTest, ModeIsReadButRequiresValidation) {
+  // Insert a non-No-Vary-Search entry that the lookup will fallback to.
+  {
+    MockTransaction plain = kSimpleGET_Transaction;
+    const std::string url = base::StrCat({kBaseURL, "q=fred"});
+    plain.url = url.c_str();
+    ScopedMockTransaction scoped(plain);
+    RunTransactionTest(cache(), scoped);
+  }
+
+  // Insert a No-Vary-Search entry that will match but require validation.
+  FetchIntoCache("q=fred&a=1", "params=(\"a\")", /*max_age=*/0);
+
+  MockTransaction& from_cache = CreateMockTransaction("q=fred", "");
+  // Make the cache request have mode READ, so that it can't perform
+  // revalidation. This will cause it to fall back to the request URL.
+  from_cache.load_flags = LOAD_ONLY_FROM_CACHE;
+
+  auto create_and_start_transaction = [&](MockHttpRequest& request,
+                                          TestCompletionCallback& callback) {
+    std::unique_ptr<HttpTransaction> transaction;
+    EXPECT_THAT(cache()->CreateTransaction(DEFAULT_PRIORITY, &transaction),
+                IsOk());
+    EXPECT_TRUE(transaction);
+    // Avoid crashing even if CreateTransaction() failed for some reason.
+    // ASSERT_TRUE() cannot be used here because the lambda doesn't return
+    // void.
+    if (transaction) {
+      EXPECT_EQ(
+          transaction->Start(&request, callback.callback(), NetLogWithSource()),
+          ERR_IO_PENDING);
+    }
+    return transaction;
+  };
+
+  MockHttpRequest cache_request1(from_cache);
+  TestCompletionCallback callback1;
+  auto transaction1 = create_and_start_transaction(cache_request1, callback1);
+  ASSERT_TRUE(transaction1);
+
+  // At this point, `transaction1` is waiting for the cache lock for
+  // "q=fred&a=1", since the cache lock can only be acquired asynchronously.
+
+  // Add a second transaction to keep another reference to the ActiveEntry to
+  // keep it alive after the first transaction finishes.
+  MockHttpRequest cache_request2(from_cache);
+  TestCompletionCallback callback2;
+  auto transaction2 = create_and_start_transaction(cache_request2, callback2);
+  EXPECT_TRUE(transaction2);
+
+  // Now `transaction2` is waiting behind `transaction1` for the cache lock for
+  // "q=fred&a=1".
+
+  EXPECT_THAT(callback1.WaitForResult(), IsOk());
+
+  // Now `transaction1` has taken the cache lock for "q=fred&a=1", read the
+  // response headers, found that validation is required, released the cache
+  // lock for "q=fred&a=1", restarted, taken the cache lock for "q=fred" and
+  // read the response headers and found them to be usable. A task has been
+  // posted which will later give `transaction2` the cache lock.
+
+  static constexpr auto expect_fresh_response =
+      [](const HttpTransaction& transaction) {
+        const HttpResponseInfo* info = transaction.GetResponseInfo();
+        EXPECT_TRUE(info->was_cached);
+        EXPECT_FALSE(info->network_accessed);
+        EXPECT_EQ(info->cache_entry_status, HttpResponseInfo::ENTRY_USED);
+        EXPECT_EQ(info->headers->response_code(), 200);
+        EXPECT_EQ(info->headers->GetNormalizedHeader("No-Vary-Search"),
+                  std::nullopt);
+      };
+
+  expect_fresh_response(*transaction1);
+
+  // Destroy `transaction1` to ensure there are no dangling pointers to it and
+  // release the cache lock on "q=fred".
+  transaction1.reset();
+
+  EXPECT_THAT(callback2.WaitForResult(), IsOk());
+
+  // Now `transaction2` has caught up. It should also have used the fresh cache
+  // entry.
+  expect_fresh_response(*transaction2);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
