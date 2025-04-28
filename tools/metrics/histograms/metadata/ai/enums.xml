@@ -132,6 +132,53 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/services/on_device_translation/translate_kit_client.h:LoadTranslateKitResult) -->
 
+<!-- LINT.IfChange(WritingAssistanceMetricsOptionFormat) -->
+
+<enum name="WritingAssistanceMetricsOptionFormat">
+  <int value="0" label="ai.writingAssistance.createOption.format.plainText"/>
+  <int value="1" label="ai.writingAssistance.createOption.format.asIs"/>
+  <int value="2" label="ai.writingAssistance.createOption.format.markdown"/>
+</enum>
+
+<!-- LINT.ThenChange(//third_party/blink/renderer/modules/ai/ai_writing_assistance_base.h:WritingAssistanceMetricsOptionFormat) -->
+
+<!-- LINT.IfChange(WritingAssistanceMetricsOptionLength) -->
+
+<enum name="WritingAssistanceMetricsOptionLength">
+  <int value="0" label="ai.writingAssistance.createOption.length.short"/>
+  <int value="1" label="ai.writingAssistance.createOption.length.medium"/>
+  <int value="2" label="ai.writingAssistance.createOption.length.long"/>
+  <int value="3" label="ai.writingAssistance.createOption.length.asIs"/>
+  <int value="4" label="ai.writingAssistance.createOption.length.shorter"/>
+  <int value="5" label="ai.writingAssistance.createOption.length.longer"/>
+</enum>
+
+<!-- LINT.ThenChange(//third_party/blink/renderer/modules/ai/ai_writing_assistance_base.h:WritingAssistanceMetricsOptionLength) -->
+
+<!-- LINT.IfChange(WritingAssistanceMetricsOptionTone) -->
+
+<enum name="WritingAssistanceMetricsOptionTone">
+  <int value="0" label="ai.writingAssistance.createOption.tone.asIs"/>
+  <int value="1" label="ai.writingAssistance.createOption.tone.neutral"/>
+  <int value="2" label="ai.writingAssistance.createOption.tone.moreFormal"/>
+  <int value="3" label="ai.writingAssistance.createOption.tone.moreCasual"/>
+  <int value="4" label="ai.writingAssistance.createOption.tone.formal"/>
+  <int value="5" label="ai.writingAssistance.createOption.tone.casual"/>
+</enum>
+
+<!-- LINT.ThenChange(//third_party/blink/renderer/modules/ai/ai_writing_assistance_base.h:WritingAssistanceMetricsOptionTone) -->
+
+<!-- LINT.IfChange(WritingAssistanceMetricsOptionType) -->
+
+<enum name="WritingAssistanceMetricsOptionType">
+  <int value="0" label="ai.writingAssistance.createOption.type.tldr"/>
+  <int value="1" label="ai.writingAssistance.createOption.type.keyPoints"/>
+  <int value="2" label="ai.writingAssistance.createOption.type.teaser"/>
+  <int value="3" label="ai.writingAssistance.createOption.type.headline"/>
+</enum>
+
+<!-- LINT.ThenChange(//third_party/blink/renderer/modules/ai/ai_writing_assistance_base.h:WritingAssistanceMetricsOptionType) -->
+
 </enums>
 
 </histogram-configuration>

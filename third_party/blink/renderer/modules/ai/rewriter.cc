@@ -10,6 +10,14 @@
 
 namespace blink {
 
+using RewriterBase =
+    AIWritingAssistanceBase<Rewriter,
+                            mojom::blink::AIRewriter,
+                            mojom::blink::AIManagerCreateRewriterClient,
+                            RewriterCreateCoreOptions,
+                            RewriterCreateOptions,
+                            RewriterRewriteOptions>;
+
 template <>
 void AIWritingAssistanceCreateClient<
     mojom::blink::AIRewriter,
@@ -27,41 +35,78 @@ void AIWritingAssistanceCreateClient<
 
 // static
 template <>
-AIMetrics::AISessionType
-AIWritingAssistanceBase<Rewriter,
-                        mojom::blink::AIRewriter,
-                        mojom::blink::AIManagerCreateRewriterClient,
-                        RewriterCreateCoreOptions,
-                        RewriterCreateOptions,
-                        RewriterRewriteOptions>::GetSessionType() {
+AIMetrics::AISessionType RewriterBase::GetSessionType() {
   return AIMetrics::AISessionType::kRewriter;
 }
 
 // static
 template <>
-network::mojom::PermissionsPolicyFeature
-AIWritingAssistanceBase<Rewriter,
-                        mojom::blink::AIRewriter,
-                        mojom::blink::AIManagerCreateRewriterClient,
-                        RewriterCreateCoreOptions,
-                        RewriterCreateOptions,
-                        RewriterRewriteOptions>::GetPermissionsPolicy() {
+network::mojom::PermissionsPolicyFeature RewriterBase::GetPermissionsPolicy() {
   return network::mojom::PermissionsPolicyFeature::kRewriter;
 }
 
 // static
 template <>
-void AIWritingAssistanceBase<Rewriter,
-                             mojom::blink::AIRewriter,
-                             mojom::blink::AIManagerCreateRewriterClient,
-                             RewriterCreateCoreOptions,
-                             RewriterCreateOptions,
-                             RewriterRewriteOptions>::
-    RemoteCanCreate(HeapMojoRemote<mojom::blink::AIManager>& ai_manager_remote,
-                    RewriterCreateCoreOptions* options,
-                    CanCreateCallback callback) {
+void RewriterBase::RemoteCanCreate(
+    HeapMojoRemote<mojom::blink::AIManager>& ai_manager_remote,
+    RewriterCreateCoreOptions* options,
+    CanCreateCallback callback) {
   ai_manager_remote->CanCreateRewriter(ToMojoRewriterCreateOptions(options),
                                        std::move(callback));
+}
+
+// static
+template <>
+void RewriterBase::RecordCreateOptionMetrics(
+    const RewriterCreateCoreOptions& options,
+    std::string function_name) {
+  WritingAssistanceMetricsOptionTone tone_metric;
+  WritingAssistanceMetricsOptionFormat format_metric;
+  WritingAssistanceMetricsOptionLength length_metric;
+  switch (options.tone().AsEnum()) {
+    case V8RewriterTone::Enum::kAsIs:
+      tone_metric = WritingAssistanceMetricsOptionTone::kAsIs;
+      break;
+    case V8RewriterTone::Enum::kMoreFormal:
+      tone_metric = WritingAssistanceMetricsOptionTone::kMoreFormal;
+      break;
+    case V8RewriterTone::Enum::kMoreCasual:
+      tone_metric = WritingAssistanceMetricsOptionTone::kMoreCasual;
+      break;
+  }
+  switch (options.format().AsEnum()) {
+    case V8RewriterFormat::Enum::kAsIs:
+      format_metric = WritingAssistanceMetricsOptionFormat::kAsIs;
+      break;
+    case V8RewriterFormat::Enum::kPlainText:
+      format_metric = WritingAssistanceMetricsOptionFormat::kPlainText;
+      break;
+    case V8RewriterFormat::Enum::kMarkdown:
+      format_metric = WritingAssistanceMetricsOptionFormat::kMarkdown;
+      break;
+  }
+  switch (options.length().AsEnum()) {
+    case V8RewriterLength::Enum::kAsIs:
+      length_metric = WritingAssistanceMetricsOptionLength::kAsIs;
+      break;
+    case V8RewriterLength::Enum::kShorter:
+      length_metric = WritingAssistanceMetricsOptionLength::kShorter;
+      break;
+    case V8RewriterLength::Enum::kLonger:
+      length_metric = WritingAssistanceMetricsOptionLength::kLonger;
+      break;
+  }
+  std::string metric_name =
+      AIMetrics::GetAIAPIUsageMetricName(RewriterBase::GetSessionType());
+  base::UmaHistogramEnumeration(
+      base::StrCat({metric_name, ".", function_name, ".CoreOptionTone"}),
+      tone_metric);
+  base::UmaHistogramEnumeration(
+      base::StrCat({metric_name, ".", function_name, ".CoreOptionFormat"}),
+      format_metric);
+  base::UmaHistogramEnumeration(
+      base::StrCat({metric_name, ".", function_name, ".CoreOptionLength"}),
+      length_metric);
 }
 
 Rewriter::Rewriter(ExecutionContext* execution_context,
