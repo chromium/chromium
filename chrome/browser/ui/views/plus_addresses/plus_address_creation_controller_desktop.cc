@@ -15,9 +15,7 @@
 #include "chrome/browser/plus_addresses/plus_address_service_factory.h"
 #include "chrome/browser/plus_addresses/plus_address_setting_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/plus_addresses/plus_address_creation_dialog_delegate.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/constrained_window/constrained_window_views.h"
@@ -28,6 +26,7 @@
 #include "components/plus_addresses/plus_address_service.h"
 #include "components/plus_addresses/plus_address_types.h"
 #include "components/plus_addresses/settings/plus_address_setting_service.h"
+#include "components/prefs/pref_service.h"
 #include "components/url_formatter/elide_url.h"
 
 namespace plus_addresses {
@@ -260,8 +259,10 @@ void PlusAddressCreationControllerDesktop::OnPlusAddressConfirmed(
       Profile::FromBrowserContext(GetWebContents().GetBrowserContext())
           ->GetPrefs()
           ->SetTime(prefs::kFirstPlusAddressCreationTime, base::Time::Now());
-      if (Browser* browser = chrome::FindBrowserWithTab(&GetWebContents())) {
-        browser->window()->MaybeShowFeaturePromo(
+      if (auto* interface =
+              BrowserUserEducationInterface::MaybeGetForWebContentsInTab(
+                  &GetWebContents())) {
+        interface->MaybeShowFeaturePromo(
             feature_engagement::kIPHPlusAddressFirstSaveFeature);
       }
       TriggerUserPerceptionSurvey(hats::SurveyType::kAcceptedFirstTimeCreate);
