@@ -129,6 +129,7 @@ struct ContextualSearch : Config<ContextualSearch> {
   DECLARE_FEATURE(kSendContextualUrlSuggestParam);
   DECLARE_FEATURE(kOmniboxContextualSearchOnFocusSuggestions);
   DECLARE_FEATURE(kOmniboxContextualSearchActionsAtTop);
+  DECLARE_FEATURE(kOmniboxContextualSearchSingleLensAction);
 
   // Whether the starter pack page scope is enabled.
   bool starter_pack_page;
@@ -149,6 +150,9 @@ struct ContextualSearch : Config<ContextualSearch> {
 
   // Whether to show actions at top of zero suggest list: default false, bottom.
   bool actions_at_top;
+
+  // Whether to use the unified single action to open lens UI.
+  bool single_lens_action;
 };
 
 // If enabled, allow document provider requests when all other conditions are

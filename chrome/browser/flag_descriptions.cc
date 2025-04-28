@@ -2937,6 +2937,11 @@ const char kOmniboxContextualSearchOnFocusSuggestionsName[] =
 const char kOmniboxContextualSearchOnFocusSuggestionsDescription[] =
     "Enables omnibox contextual search suggestions in zero prefix suggest.";
 
+const char kOmniboxContextualSearchSingleLensActionName[] =
+    "Omnibox contextual search single lens action";
+const char kOmniboxContextualSearchSingleLensActionDescription[] =
+    "Enables single action UX for contextual search in the omnibox popup";
+
 const char kOmniboxContextualSuggestionsName[] =
     "Omnibox contextual suggestions";
 const char kOmniboxContextualSuggestionsDescription[] =

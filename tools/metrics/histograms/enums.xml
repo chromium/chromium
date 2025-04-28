@@ -12694,6 +12694,8 @@ from previous Chrome versions.
   <int value="-631614101" label="CameraSystemWebApp:enabled"/>
   <int value="-631136107"
       label="PageContentAnnotationsPersistSalientImageMetadata:disabled"/>
+  <int value="-630452160"
+      label="OmniboxContextualSearchSingleLensAction:enabled"/>
   <int value="-630256330" label="EnableDrDc:enabled"/>
   <int value="-629084845" label="UseToastManager:disabled"/>
   <int value="-629041881" label="MuteNotificationsDuringScreenShare:disabled"/>
@@ -16312,6 +16314,8 @@ from previous Chrome versions.
   <int value="752939691" label="disable-tab-for-desktop-share"/>
   <int value="753375390" label="ThrottleMainFrameTo60Hz:disabled"/>
   <int value="753474609" label="CanvasNoise:disabled"/>
+  <int value="753826639"
+      label="OmniboxContextualSearchSingleLensAction:disabled"/>
   <int value="756018202" label="CCTMinimized:enabled"/>
   <int value="756897997" label="PaintHoldingCrossOrigin:disabled"/>
   <int value="757645375" label="AndroidDarkSearch:disabled"/>

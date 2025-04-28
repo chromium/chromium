@@ -315,18 +315,18 @@ void ContextualSearchProvider::AddPageSearchActionMatches() {
   match.suggestion_group_id =
       omnibox::GroupId::GROUP_ZERO_SUGGEST_IN_PRODUCT_HELP;
 
-  match.takeover_action =
-      base::MakeRefCounted<ContextualSearchAskAboutPageAction>();
-  // TODO(crbug.com/399951524): Use action's label strings hint.
-  match.contents = u"Ask about this page";
-  matches_.push_back(match);
-
-  match.relevance--;
-  match.takeover_action =
-      base::MakeRefCounted<ContextualSearchSelectRegionAction>();
-  // TODO(crbug.com/399951524): Use action's label strings hint.
-  match.contents = u"Search with Google Lens";
-  matches_.push_back(match);
+  auto add_action = [&](auto action) {
+    match.relevance--;
+    match.takeover_action = std::move(action);
+    match.contents = match.takeover_action->GetLabelStrings().hint;
+    matches_.push_back(match);
+  };
+  if (omnibox_feature_configs::ContextualSearch::Get().single_lens_action) {
+    add_action(base::MakeRefCounted<ContextualSearchOpenLensAction>());
+  } else {
+    add_action(base::MakeRefCounted<ContextualSearchAskAboutPageAction>());
+    add_action(base::MakeRefCounted<ContextualSearchSelectRegionAction>());
+  }
 }
 
 void ContextualSearchProvider::AddDefaultVerbatimMatch(

@@ -6640,6 +6640,13 @@ const FeatureEntry kFeatureEntries[] = {
          kOmniboxContextualSearchOnFocusSuggestionsVariations,
          "OmniboxContextualSearchOnFocusSuggestions")},
 
+    {"omnibox-contextual-search-single-lens-action",
+     flag_descriptions::kOmniboxContextualSearchSingleLensActionName,
+     flag_descriptions::kOmniboxContextualSearchSingleLensActionDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(omnibox_feature_configs::ContextualSearch::
+                            kOmniboxContextualSearchSingleLensAction)},
+
     {"omnibox-contextual-suggestions",
      flag_descriptions::kOmniboxContextualSuggestionsName,
      flag_descriptions::kOmniboxContextualSuggestionsDescription, kOsDesktop,

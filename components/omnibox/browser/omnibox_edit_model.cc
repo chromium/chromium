@@ -2851,6 +2851,10 @@ void OmniboxEditModel::OpenMatch(OmniboxPopupSelection selection,
     // Actions aren't generally able to change omnibox state, but it may be
     // worth considering an extension to OmniboxAction::ExecutionContext
     // if more action types want to enter keyword modes, close the popup, etc.
+    // Note: The CONTEXTUAL_SEARCH_OPEN_LENS action does not enter the omnibox
+    // into '@page' keyword mode and the omnibox is committed and closed as
+    // normal in that case, with the lens UI managing its own state, so there's
+    // no need for the omnibox to close lens.
     if (action->ActionId() ==
             OmniboxActionId::CONTEXTUAL_SEARCH_ASK_ABOUT_PAGE ||
         action->ActionId() ==
