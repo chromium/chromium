@@ -16,7 +16,6 @@
 #include <utility>
 
 #include "base/debug/alias.h"
-#include "base/hash/md5_constexpr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
@@ -207,9 +206,12 @@ void IFaceWithTypemapProxy::Echo(
       typename decltype(params->param)::BaseType> param_fragment(
           params.message());
   mojo::internal::Serialize<::golden::TypemappedDataView>(
-      in_param, param_fragment);
+      in_param,
+      param_fragment);
+
   params->param.Set(
       param_fragment.is_null() ? nullptr : param_fragment.data());
+
   MOJO_INTERNAL_DLOG_SERIALIZATION_WARNING(
       params->param.is_null(),
       mojo::internal::VALIDATION_ERROR_UNEXPECTED_NULL_POINTER,
@@ -333,9 +335,12 @@ void IFaceWithTypemap_Echo_ProxyToResponder::Run(
       typename decltype(params->out)::BaseType> out_fragment(
           params.message());
   mojo::internal::Serialize<::golden::TypemappedDataView>(
-      in_out, out_fragment);
+      in_out,
+      out_fragment);
+
   params->out.Set(
       out_fragment.is_null() ? nullptr : out_fragment.data());
+
   MOJO_INTERNAL_DLOG_SERIALIZATION_WARNING(
       params->out.is_null(),
       mojo::internal::VALIDATION_ERROR_UNEXPECTED_NULL_POINTER,

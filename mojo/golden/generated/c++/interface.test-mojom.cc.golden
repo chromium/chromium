@@ -16,7 +16,6 @@
 #include <utility>
 
 #include "base/debug/alias.h"
-#include "base/hash/md5_constexpr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
@@ -151,6 +150,7 @@ void IFaceProxy::Method(
       ::golden::internal::IFace_Method_Params_Data> params(
           message);
   params.Allocate();
+
   params->param = in_param;
 
 #if defined(ENABLE_IPC_FUZZER)
@@ -271,9 +271,12 @@ void IFace_Method_ProxyToResponder::Run(
       typename decltype(params->result)::BaseType> result_fragment(
           params.message());
   mojo::internal::Serialize<mojo::StringDataView>(
-      in_result, result_fragment);
+      in_result,
+      result_fragment);
+
   params->result.Set(
       result_fragment.is_null() ? nullptr : result_fragment.data());
+
   MOJO_INTERNAL_DLOG_SERIALIZATION_WARNING(
       params->result.is_null(),
       mojo::internal::VALIDATION_ERROR_UNEXPECTED_NULL_POINTER,
