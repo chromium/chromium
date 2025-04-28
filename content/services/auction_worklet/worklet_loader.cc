@@ -18,6 +18,7 @@
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/public/cpp/auction_downloader.h"
 #include "content/services/auction_worklet/public/cpp/auction_network_events_delegate.h"
+#include "content/services/auction_worklet/public/mojom/in_progress_auction_download.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/http/structured_headers.h"
 #include "url/gurl.h"
@@ -82,13 +83,13 @@ WorkletLoaderBase::WorkletLoaderBase(
     network::mojom::URLLoaderFactory* url_loader_factory,
     mojo::PendingRemote<auction_worklet::mojom::AuctionNetworkEventsHandler>
         auction_network_events_handler,
-    const GURL& source_url,
+    mojom::InProgressAuctionDownloadPtr in_progress_load,
     AuctionDownloader::MimeType mime_type,
     std::vector<scoped_refptr<AuctionV8Helper>> v8_helpers,
     std::vector<scoped_refptr<AuctionV8Helper::DebugId>> debug_ids,
     AuctionDownloader::ResponseStartedCallback response_started_callback,
     LoadWorkletCallback load_worklet_callback)
-    : source_url_(source_url),
+    : source_url_(in_progress_load->url),
       mime_type_(mime_type),
       v8_helpers_(std::move(v8_helpers)),
       debug_ids_(std::move(debug_ids)),
@@ -99,6 +100,7 @@ WorkletLoaderBase::WorkletLoaderBase(
          mime_type == AuctionDownloader::MimeType::kWebAssembly);
   DCHECK(!v8_helpers_.empty());
   DCHECK_EQ(v8_helpers_.size(), debug_ids_.size());
+  DCHECK(in_progress_load);
 
   pending_results_.resize(v8_helpers_.size());
 
@@ -106,13 +108,13 @@ WorkletLoaderBase::WorkletLoaderBase(
 
   if (auction_network_events_handler.is_valid()) {
     network_events_delegate = std::make_unique<MojoNetworkEventsDelegate>(
-        std::move(auction_network_events_handler));
+        std::move(auction_network_events_handler),
+        in_progress_load->devtools_request_id);
   }
 
   auction_downloader_ = std::make_unique<AuctionDownloader>(
-      url_loader_factory, source_url,
+      url_loader_factory, std::move(in_progress_load),
       AuctionDownloader::DownloadMode::kActualDownload, mime_type,
-      /*post_body=*/std::nullopt, /*content_type=*/std::nullopt,
       /*num_igs_for_trusted_bidding_signals_kvv1=*/std::nullopt,
       std::move(response_started_callback),
       base::BindOnce(&WorkletLoaderBase::OnDownloadComplete,
@@ -335,14 +337,14 @@ WorkletLoader::WorkletLoader(
     network::mojom::URLLoaderFactory* url_loader_factory,
     mojo::PendingRemote<auction_worklet::mojom::AuctionNetworkEventsHandler>
         auction_network_events_handler,
-    const GURL& source_url,
+    mojom::InProgressAuctionDownloadPtr in_progress_load,
     std::vector<scoped_refptr<AuctionV8Helper>> v8_helpers,
     std::vector<scoped_refptr<AuctionV8Helper::DebugId>> debug_ids,
     AllowTrustedScoringSignalsCallback allow_trusted_scoring_signals_callback,
     LoadWorkletCallback load_worklet_callback)
     : WorkletLoaderBase(url_loader_factory,
                         std::move(auction_network_events_handler),
-                        source_url,
+                        std::move(in_progress_load),
                         AuctionDownloader::MimeType::kJavascript,
                         std::move(v8_helpers),
                         std::move(debug_ids),
@@ -424,13 +426,13 @@ WorkletWasmLoader::WorkletWasmLoader(
     network::mojom::URLLoaderFactory* url_loader_factory,
     mojo::PendingRemote<auction_worklet::mojom::AuctionNetworkEventsHandler>
         auction_network_events_handler,
-    const GURL& source_url,
+    mojom::InProgressAuctionDownloadPtr in_progress_load,
     std::vector<scoped_refptr<AuctionV8Helper>> v8_helpers,
     std::vector<scoped_refptr<AuctionV8Helper::DebugId>> debug_ids,
     LoadWorkletCallback load_worklet_callback)
     : WorkletLoaderBase(url_loader_factory,
                         std::move(auction_network_events_handler),
-                        source_url,
+                        std::move(in_progress_load),
                         AuctionDownloader::MimeType::kWebAssembly,
                         std::move(v8_helpers),
                         std::move(debug_ids),

@@ -126,8 +126,8 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
       mojo::PendingRemote<auction_worklet::mojom::AuctionNetworkEventsHandler>
           auction_network_events_handler,
       TrustedSignalsKVv2Manager* trusted_signals_kvv2_manager,
-      const GURL& script_source_url,
-      const std::optional<GURL>& bidding_wasm_helper_url,
+      mojom::InProgressAuctionDownloadPtr script_source_load,
+      mojom::InProgressAuctionDownloadPtr wasm_helper_load,
       const std::optional<GURL>& trusted_bidding_signals_url,
       const std::string& trusted_bidding_signals_slot_size_param,
       const url::Origin& top_window_origin,
@@ -910,7 +910,9 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
   // Values shared by all interest groups that the BidderWorklet can be used
   // for.
   const GURL script_source_url_;
+  mojom::InProgressAuctionDownloadPtr script_source_load_;
   std::optional<GURL> wasm_helper_url_;
+  mojom::InProgressAuctionDownloadPtr wasm_helper_load_;
 
   // Populated only if `this` was created with a non-null
   // `trusted_scoring_signals_url`.

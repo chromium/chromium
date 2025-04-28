@@ -28,11 +28,13 @@
 #include "components/cbor/writer.h"
 #include "content/public/test/shared_storage_test_utils.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
+#include "content/services/auction_worklet/public/cpp/auction_downloader.h"
 #include "content/services/auction_worklet/public/cpp/auction_worklet_features.h"
 #include "content/services/auction_worklet/public/cpp/cbor_test_util.h"
 #include "content/services/auction_worklet/public/cpp/real_time_reporting.h"
 #include "content/services/auction_worklet/public/mojom/auction_network_events_handler.mojom.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
+#include "content/services/auction_worklet/public/mojom/in_progress_auction_download.mojom.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
 #include "content/services/auction_worklet/public/mojom/real_time_reporting.mojom.h"
 #include "content/services/auction_worklet/public/mojom/seller_worklet.mojom.h"
@@ -810,12 +812,15 @@ class SellerWorkletTest : public testing::Test,
       SellerWorklet** out_seller_worklet_impl = nullptr,
       bool use_alternate_url_loader_factory = false) {
     mojo::PendingRemote<network::mojom::URLLoaderFactory> url_loader_factory;
+    network::mojom::URLLoaderFactory* used_factory;
     if (use_alternate_url_loader_factory) {
       alternate_url_loader_factory_.Clone(
           url_loader_factory.InitWithNewPipeAndPassReceiver());
+      used_factory = &alternate_url_loader_factory_;
     } else {
       url_loader_factory_.Clone(
           url_loader_factory.InitWithNewPipeAndPassReceiver());
+      used_factory = &url_loader_factory_;
     }
 
     CHECK_EQ(v8_helpers_.size(), shared_storage_hosts_.size());
@@ -825,11 +830,15 @@ class SellerWorkletTest : public testing::Test,
     load_seller_worklet_client_receivers_.Add(
         this, load_seller_worklet_client.InitWithNewPipeAndPassReceiver());
     mojo::Remote<mojom::SellerWorklet> seller_worklet;
+    auto load = AuctionDownloader::StartDownload(
+        *used_factory, decision_logic_url_,
+        AuctionDownloader::MimeType::kJavascript,
+        auction_network_events_handler_);
     auto seller_worklet_impl = std::make_unique<SellerWorklet>(
         v8_helpers_, std::move(shared_storage_hosts_),
         pause_for_debugger_on_start, std::move(url_loader_factory),
         auction_network_events_handler_.CreateRemote(),
-        trusted_signals_kvv2_manager_.get(), decision_logic_url_,
+        trusted_signals_kvv2_manager_.get(), std::move(load),
         trusted_scoring_signals_url_, top_window_origin_,
         permissions_policy_state_.Clone(), experiment_group_id_,
         send_creative_scanning_metadata_,
@@ -4572,8 +4581,8 @@ TEST_F(SellerWorkletTest, ReportResultLoadCompletionOrder) {
   // 2,0,1
   for (size_t offset = 0; offset < std::size(kResponses); ++offset) {
     SCOPED_TRACE(offset);
-    mojo::Remote<mojom::SellerWorklet> seller_worklet = CreateWorklet();
     url_loader_factory_.ClearResponses();
+    mojo::Remote<mojom::SellerWorklet> seller_worklet = CreateWorklet();
     auto run_loop = std::make_unique<base::RunLoop>();
     RunReportResultExpectingResultAsync(
         seller_worklet.get(), "1", GURL("https://foo.test/"),

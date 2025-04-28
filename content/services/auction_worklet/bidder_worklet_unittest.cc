@@ -35,6 +35,8 @@
 #include "content/public/common/content_features.h"
 #include "content/public/test/shared_storage_test_utils.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
+#include "content/services/auction_worklet/public/cpp/auction_downloader.h"
+#include "content/services/auction_worklet/public/cpp/auction_network_events_delegate.h"
 #include "content/services/auction_worklet/public/cpp/auction_worklet_features.h"
 #include "content/services/auction_worklet/public/cpp/cbor_test_util.h"
 #include "content/services/auction_worklet/public/cpp/private_model_training_reporting.h"
@@ -43,6 +45,7 @@
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom-forward.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom-forward.h"
+#include "content/services/auction_worklet/public/mojom/in_progress_auction_download.mojom.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
 #include "content/services/auction_worklet/public/mojom/real_time_reporting.mojom.h"
 #include "content/services/auction_worklet/public/mojom/trusted_signals_cache.mojom.h"
@@ -774,6 +777,19 @@ class BidderWorkletTest : public testing::Test {
             /*click_counts=*/blink::mojom::ViewOrClickCounts::New()));
   }
 
+  auction_worklet::mojom::InProgressAuctionDownloadPtr StartDownload(
+      network::mojom::URLLoaderFactory* url_loader_factory,
+      const std::optional<GURL>& url,
+      AuctionDownloader::MimeType mime_type) {
+    if (!url) {
+      // Only wasm scripts should have empty urls.
+      return nullptr;
+    }
+    return AuctionDownloader::StartDownload(*url_loader_factory, url.value(),
+                                            mime_type,
+                                            auction_network_events_handler_);
+  }
+
   // Create a BidderWorklet, returning the remote. If `out_bidder_worklet_impl`
   // is non-null, will also stash the actual implementation pointer there.
   // if `url` is empty, uses `interest_group_bidding_url_`.
@@ -784,24 +800,28 @@ class BidderWorkletTest : public testing::Test {
       bool use_alternate_url_loader_factory = false) {
     CHECK(!generate_bid_run_loop_);
 
-    mojo::PendingRemote<network::mojom::URLLoaderFactory> url_loader_factory;
-    if (use_alternate_url_loader_factory) {
-      alternate_url_loader_factory_.Clone(
-          url_loader_factory.InitWithNewPipeAndPassReceiver());
-    } else {
-      url_loader_factory_.Clone(
-          url_loader_factory.InitWithNewPipeAndPassReceiver());
-    }
+    network::mojom::URLLoaderFactory& url_loader_factory =
+        use_alternate_url_loader_factory ? alternate_url_loader_factory_
+                                         : url_loader_factory_;
+    mojo::PendingRemote<network::mojom::URLLoaderFactory>
+        url_loader_factory_remote;
+    url_loader_factory.Clone(
+        url_loader_factory_remote.InitWithNewPipeAndPassReceiver());
 
     CHECK_EQ(v8_helpers_.size(), shared_storage_hosts_.size());
 
+    auto script_load = StartDownload(
+        &url_loader_factory, url.is_empty() ? interest_group_bidding_url_ : url,
+        AuctionDownloader::MimeType::kJavascript);
+    auto wasm_load =
+        StartDownload(&url_loader_factory, interest_group_wasm_url_,
+                      AuctionDownloader::MimeType::kWebAssembly);
     auto bidder_worklet_impl = std::make_unique<BidderWorklet>(
         v8_helpers_, std::move(shared_storage_hosts_),
-        pause_for_debugger_on_start, std::move(url_loader_factory),
+        pause_for_debugger_on_start, std::move(url_loader_factory_remote),
         auction_network_events_handler_.CreateRemote(),
-        trusted_signals_kvv2_manager_.get(),
-        url.is_empty() ? interest_group_bidding_url_ : url,
-        interest_group_wasm_url_, interest_group_trusted_bidding_signals_url_,
+        trusted_signals_kvv2_manager_.get(), std::move(script_load),
+        std::move(wasm_load), interest_group_trusted_bidding_signals_url_,
         /*trusted_bidding_signals_slot_size_param=*/"", top_window_origin_,
         permissions_policy_state_.Clone(), experiment_group_id_,
         public_key_ ? public_key_.Clone() : nullptr);
@@ -5744,8 +5764,8 @@ TEST_P(BidderWorkletMultiThreadingTest, GenerateBidLoadCompletionOrder) {
   // 2,0,1
   for (size_t offset = 0; offset < std::size(kResponses); ++offset) {
     SCOPED_TRACE(offset);
-    mojo::Remote<mojom::BidderWorklet> bidder_worklet = CreateWorklet();
     url_loader_factory_.ClearResponses();
+    mojo::Remote<mojom::BidderWorklet> bidder_worklet = CreateWorklet();
     generate_bid_run_loop_ = std::make_unique<base::RunLoop>();
     GenerateBid(bidder_worklet.get());
     for (size_t i = 0; i < std::size(kResponses); ++i) {
@@ -8556,8 +8576,8 @@ TEST_F(BidderWorkletTest, ReportWinLoadCompletionOrder) {
   // 2,0,1
   for (size_t offset = 0; offset < std::size(kResponses); ++offset) {
     SCOPED_TRACE(offset);
-    mojo::Remote<mojom::BidderWorklet> bidder_worklet = CreateWorklet();
     url_loader_factory_.ClearResponses();
+    mojo::Remote<mojom::BidderWorklet> bidder_worklet = CreateWorklet();
     auto run_loop = std::make_unique<base::RunLoop>();
     RunReportWinExpectingResultAsync(
         bidder_worklet.get(), GURL("https://foo.test/"), {}, {}, {},
@@ -8992,9 +9012,8 @@ TEST_P(BidderWorkletMultiThreadingTest, ScriptIsolation) {
 }
 
 TEST_F(BidderWorkletTest, PauseOnStart) {
-  // If pause isn't working, this will be used and not the right script.
   AddJavascriptResponse(&url_loader_factory_, interest_group_bidding_url_,
-                        "nonsense;");
+                        CreateBasicGenerateBidScript());
 
   // No trusted signals to simplify spying on URL loading.
   interest_group_trusted_bidding_signals_keys_.reset();
@@ -9010,8 +9029,9 @@ TEST_F(BidderWorkletTest, PauseOnStart) {
   // Give it a chance to fetch.
   task_environment_.RunUntilIdle();
 
-  AddJavascriptResponse(&url_loader_factory_, interest_group_bidding_url_,
-                        CreateBasicGenerateBidScript());
+  // We're paused, so even though we added a script response, we can't generate
+  // bids.
+  ASSERT_EQ(0u, bids_.size());
 
   // Set up the event loop for the standard callback.
   generate_bid_run_loop_ = std::make_unique<base::RunLoop>();
@@ -9033,9 +9053,8 @@ TEST_F(BidderWorkletTest, PauseOnStart) {
 }
 
 TEST_F(BidderWorkletTwoThreadsTest, PauseOnStart) {
-  // If pause isn't working, this will be used and not the right script.
   AddJavascriptResponse(&url_loader_factory_, interest_group_bidding_url_,
-                        "nonsense;");
+                        CreateBasicGenerateBidScript());
 
   // No trusted signals to simplify spying on URL loading.
   interest_group_trusted_bidding_signals_keys_.reset();
@@ -9052,6 +9071,10 @@ TEST_F(BidderWorkletTwoThreadsTest, PauseOnStart) {
 
   // Give it a chance to fetch.
   task_environment_.RunUntilIdle();
+
+  // We're paused, so even though we added a script response, we can't generate
+  // bids.
+  ASSERT_EQ(0u, bids_.size());
 
   AddJavascriptResponse(&url_loader_factory_, interest_group_bidding_url_,
                         CreateBasicGenerateBidScript());

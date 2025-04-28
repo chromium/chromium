@@ -453,15 +453,11 @@ class InterestGroupAuctionReporterTest
   }
 
   // AuctionWorkletManager::Delegate implementation.
-  //
-  // Note that none of these matter for these tests, as the the mock worklet
-  // classes don't make network requests, but a real AuctionWorkletManager is
-  // used, which expects most of these methods to return non-null objects.
   network::mojom::URLLoaderFactory* GetFrameURLLoaderFactory() override {
-    NOTREACHED();
+    return &dummy_test_url_loader_factory_;
   }
   network::mojom::URLLoaderFactory* GetTrustedURLLoaderFactory() override {
-    NOTREACHED();
+    return &dummy_test_url_loader_factory_;
   }
   void PreconnectSocket(
       const GURL& url,

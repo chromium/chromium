@@ -26,6 +26,7 @@
 #include "content/services/auction_worklet/auction_worklet_service_impl.h"
 #include "content/services/auction_worklet/public/cpp/auction_downloader.h"
 #include "content/services/auction_worklet/public/cpp/auction_network_events_delegate.h"
+#include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "url/gurl.h"
@@ -126,7 +127,7 @@ class CONTENT_EXPORT WorkletLoaderBase {
       network::mojom::URLLoaderFactory* url_loader_factory,
       mojo::PendingRemote<auction_worklet::mojom::AuctionNetworkEventsHandler>
           auction_network_events_handler,
-      const GURL& source_url,
+      mojom::InProgressAuctionDownloadPtr in_progress_load,
       AuctionDownloader::MimeType mime_type,
       std::vector<scoped_refptr<AuctionV8Helper>> v8_helpers,
       std::vector<scoped_refptr<AuctionV8Helper::DebugId>> debug_ids,
@@ -225,7 +226,7 @@ class CONTENT_EXPORT WorkletLoader : public WorkletLoaderBase {
       network::mojom::URLLoaderFactory* url_loader_factory,
       mojo::PendingRemote<auction_worklet::mojom::AuctionNetworkEventsHandler>
           auction_network_events_handler,
-      const GURL& source_url,
+      mojom::InProgressAuctionDownloadPtr in_progress_load,
       std::vector<scoped_refptr<AuctionV8Helper>> v8_helpers,
       std::vector<scoped_refptr<AuctionV8Helper::DebugId>> debug_ids,
       AllowTrustedScoringSignalsCallback allow_trusted_scoring_signals_callback,
@@ -265,7 +266,7 @@ class CONTENT_EXPORT WorkletWasmLoader : public WorkletLoaderBase {
       network::mojom::URLLoaderFactory* url_loader_factory,
       mojo::PendingRemote<auction_worklet::mojom::AuctionNetworkEventsHandler>
           auction_network_events_handler,
-      const GURL& source_url,
+      mojom::InProgressAuctionDownloadPtr in_progress_load,
       std::vector<scoped_refptr<AuctionV8Helper>> v8_helpers,
       std::vector<scoped_refptr<AuctionV8Helper::DebugId>> debug_ids,
       LoadWorkletCallback load_worklet_callback);

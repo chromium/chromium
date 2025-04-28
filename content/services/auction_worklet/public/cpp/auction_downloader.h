@@ -17,6 +17,7 @@
 #include "base/types/optional_ref.h"
 #include "base/unguessable_token.h"
 #include "content/common/content_export.h"
+#include "content/services/auction_worklet/public/mojom/auction_network_events_handler.mojom.h"
 #include "content/services/auction_worklet/public/mojom/in_progress_auction_download.mojom-forward.h"
 #include "net/base/network_interfaces.h"
 #include "net/http/http_response_headers.h"
@@ -173,7 +174,7 @@ class CONTENT_EXPORT AuctionDownloader {
       network::mojom::URLLoaderFactory& url_loader_factory,
       const GURL& source_url,
       MimeType mime_type,
-      NetworkEventsDelegate& network_events_delegate,
+      mojom::AuctionNetworkEventsHandler& network_events_handler,
       std::optional<std::string> post_body = std::nullopt,
       std::optional<std::string> content_type = std::nullopt);
 

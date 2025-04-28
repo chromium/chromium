@@ -23,6 +23,7 @@
 #include "base/unguessable_token.h"
 #include "base/values.h"
 #include "content/services/auction_worklet/public/cpp/auction_worklet_features.h"
+#include "content/services/auction_worklet/public/mojom/auction_network_events_handler.mojom.h"
 #include "content/services/auction_worklet/public/mojom/in_progress_auction_download.mojom.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
@@ -537,7 +538,7 @@ mojom::InProgressAuctionDownloadPtr AuctionDownloader::StartDownload(
     network::mojom::URLLoaderFactory& url_loader_factory,
     const GURL& source_url,
     AuctionDownloader::MimeType mime_type,
-    AuctionDownloader::NetworkEventsDelegate& network_events_delegate,
+    mojom::AuctionNetworkEventsHandler& network_events_handler,
     std::optional<std::string> post_body,
     std::optional<std::string> content_type) {
   // We only use the content_type when we have a post body.
@@ -559,7 +560,8 @@ mojom::InProgressAuctionDownloadPtr AuctionDownloader::StartDownload(
     resource_request->headers.SetHeader(net::HttpRequestHeaders::kContentType,
                                         content_type.value());
   }
-  network_events_delegate.OnNetworkSendRequest(*resource_request);
+  network_events_handler.OnNetworkSendRequest(*resource_request,
+                                              base::TimeTicks::Now());
   url_loader_factory.CreateLoaderAndStart(
       script_url_loader_endpoints->url_loader.InitWithNewPipeAndPassReceiver(),
       /*request_id=*/0, network::mojom::kURLLoadOptionNone, *resource_request,

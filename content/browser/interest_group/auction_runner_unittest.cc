@@ -76,12 +76,15 @@
 #include "content/public/test/test_utils.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/auction_worklet_service_impl.h"
+#include "content/services/auction_worklet/public/cpp/auction_downloader.h"
+#include "content/services/auction_worklet/public/cpp/auction_network_events_delegate.h"
 #include "content/services/auction_worklet/public/cpp/cbor_test_util.h"
 #include "content/services/auction_worklet/public/cpp/real_time_reporting.h"
 #include "content/services/auction_worklet/public/cpp/test_bid_builder.h"
 #include "content/services/auction_worklet/public/mojom/auction_shared_storage_host.mojom.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
+#include "content/services/auction_worklet/public/mojom/in_progress_auction_download.mojom.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
 #include "content/services/auction_worklet/public/mojom/real_time_reporting.mojom.h"
 #include "content/services/auction_worklet/public/mojom/seller_worklet.mojom.h"
@@ -5160,11 +5163,15 @@ TEST_F(AuctionRunnerTest, BidderThreadPoolExpanded) {
       mojo::PendingRemote<auction_worklet::mojom::AuctionSharedStorageHost>>
       shared_storage_hosts1(10);
 
+  auto script_load = auction_worklet::AuctionDownloader::StartDownload(
+      test_url_loader_factory, GURL("https://ad1.com"),
+      auction_worklet::AuctionDownloader::MimeType::kJavascript,
+      auction_network_events_handler);
+
   auction_worklet_service->LoadBidderWorklet(
       std::move(worklet_receiver1), std::move(shared_storage_hosts1),
       /*pause_for_debugger_on_start=*/false, std::move(url_loader_factory1),
-      auction_network_events_handler.CreateRemote(),
-      /*script_source_url=*/GURL("https://ad1.com"),
+      auction_network_events_handler.CreateRemote(), std::move(script_load),
       /*wasm_helper_url=*/{}, /*trusted_bidding_signals_url=*/{},
       /*trusted_bidding_signals_slot_size_param=*/{},
       /*top_window_origin=*/url::Origin::Create(GURL("https://ad1.com")),
@@ -5189,11 +5196,15 @@ TEST_F(AuctionRunnerTest, BidderThreadPoolExpanded) {
       mojo::PendingRemote<auction_worklet::mojom::AuctionSharedStorageHost>>
       shared_storage_hosts2(20);
 
+  auto script_load2 = auction_worklet::AuctionDownloader::StartDownload(
+      test_url_loader_factory, GURL("https://ad1.com"),
+      auction_worklet::AuctionDownloader::MimeType::kJavascript,
+      auction_network_events_handler);
+
   auction_worklet_service->LoadBidderWorklet(
       std::move(worklet_receiver2), std::move(shared_storage_hosts2),
       /*pause_for_debugger_on_start=*/false, std::move(url_loader_factory2),
-      auction_network_events_handler.CreateRemote(),
-      /*script_source_url=*/GURL("https://ad1.com"),
+      auction_network_events_handler.CreateRemote(), std::move(script_load2),
       /*wasm_helper_url=*/{}, /*trusted_bidding_signals_url=*/{},
       /*trusted_bidding_signals_slot_size_param=*/{},
       /*top_window_origin=*/url::Origin::Create(GURL("https://ad1.com")),
@@ -5244,11 +5255,15 @@ TEST_F(AuctionRunnerTest, BidderThreadPoolPartiallyResetAndSubsequentlyReused) {
       mojo::PendingRemote<auction_worklet::mojom::AuctionSharedStorageHost>>
       shared_storage_hosts1(2);
 
+  auto script_load = auction_worklet::AuctionDownloader::StartDownload(
+      test_url_loader_factory, GURL("https://ad1.com"),
+      auction_worklet::AuctionDownloader::MimeType::kJavascript,
+      auction_network_events_handler);
+
   auction_worklet_service1->LoadBidderWorklet(
       std::move(worklet_receiver1), std::move(shared_storage_hosts1),
       /*pause_for_debugger_on_start=*/false, std::move(url_loader_factory1),
-      auction_network_events_handler.CreateRemote(),
-      /*script_source_url=*/GURL("https://ad1.com"),
+      auction_network_events_handler.CreateRemote(), std::move(script_load),
       /*wasm_helper_url=*/{}, /*trusted_bidding_signals_url=*/{},
       /*trusted_bidding_signals_slot_size_param=*/{},
       /*top_window_origin=*/url::Origin::Create(GURL("https://ad1.com")),
@@ -5283,11 +5298,15 @@ TEST_F(AuctionRunnerTest, BidderThreadPoolPartiallyResetAndSubsequentlyReused) {
       auction_worklet::AuctionWorkletServiceImpl::CreateForService(
           std::move(auction_worklet_service_receiver2));
 
+  auto script_load2 = auction_worklet::AuctionDownloader::StartDownload(
+      test_url_loader_factory, GURL("https://ad1.com"),
+      auction_worklet::AuctionDownloader::MimeType::kJavascript,
+      auction_network_events_handler);
+
   auction_worklet_service2->LoadBidderWorklet(
       std::move(worklet_receiver2), std::move(shared_storage_hosts2),
       /*pause_for_debugger_on_start=*/false, std::move(url_loader_factory2),
-      auction_network_events_handler.CreateRemote(),
-      /*script_source_url=*/GURL("https://ad1.com"),
+      auction_network_events_handler.CreateRemote(), std::move(script_load2),
       /*wasm_helper_url=*/{}, /*trusted_bidding_signals_url=*/{},
       /*trusted_bidding_signals_slot_size_param=*/{},
       /*top_window_origin=*/url::Origin::Create(GURL("https://ad1.com")),
@@ -5326,11 +5345,17 @@ TEST_F(AuctionRunnerTest, BidderThreadPoolPartiallyResetAndSubsequentlyReused) {
       mojo::PendingRemote<auction_worklet::mojom::AuctionSharedStorageHost>>
       shared_storage_hosts3(2);
 
+  auction_worklet::MojoNetworkEventsDelegate network_events_delegate3(
+      auction_network_events_handler.CreateRemote());
+  auto script_load3 = auction_worklet::AuctionDownloader::StartDownload(
+      test_url_loader_factory, GURL("https://ad1.com"),
+      auction_worklet::AuctionDownloader::MimeType::kJavascript,
+      auction_network_events_handler);
+
   auction_worklet_service3->LoadBidderWorklet(
       std::move(worklet_receiver3), std::move(shared_storage_hosts3),
       /*pause_for_debugger_on_start=*/false, std::move(url_loader_factory3),
-      auction_network_events_handler.CreateRemote(),
-      /*script_source_url=*/GURL("https://ad1.com"),
+      auction_network_events_handler.CreateRemote(), std::move(script_load3),
       /*wasm_helper_url=*/{}, /*trusted_bidding_signals_url=*/{},
       /*trusted_bidding_signals_slot_size_param=*/{},
       /*top_window_origin=*/url::Origin::Create(GURL("https://ad1.com")),
@@ -5347,13 +5372,16 @@ TEST_F(AuctionRunnerTest, BidderThreadPoolPartiallyResetAndSubsequentlyReused) {
 TEST_F(AuctionRunnerTest, PauseBidder) {
   pause_worklet_url_ = kBidder2Url;
 
-  // Have a 404 for script 2 until ready to resume.
-  url_loader_factory_.AddResponse(kBidder2Url.spec(), "", net::HTTP_NOT_FOUND);
   auction_worklet::AddJavascriptResponse(
       &url_loader_factory_, kBidder1Url,
       MakeBidScript(kSeller, "1", "https://ad1.com/", /*num_ad_components=*/2,
                     kBidder1, kBidder1Name,
                     /*has_signals=*/true, "k1", "a"));
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder2Url,
+      MakeBidScript(kSeller, "2", "https://ad2.com/", /*num_ad_components=*/2,
+                    kBidder2, kBidder2Name,
+                    /*has_signals=*/true, "l2", "b"));
   auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
                                          MakeAuctionScript());
   auction_worklet::AddBidderJsonResponse(
@@ -5372,11 +5400,7 @@ TEST_F(AuctionRunnerTest, PauseBidder) {
   StartStandardAuction();
   // Run all threads as far as they can get.
   task_environment()->RunUntilIdle();
-  auction_worklet::AddJavascriptResponse(
-      &url_loader_factory_, kBidder2Url,
-      MakeBidScript(kSeller, "2", "https://ad2.com/", /*num_ad_components=*/2,
-                    kBidder2, kBidder2Name,
-                    /*has_signals=*/true, "l2", "b"));
+  EXPECT_FALSE(auction_complete_);
 
   same_process_auction_process_manager_->ResumeAllPaused();
 
@@ -5386,6 +5410,7 @@ TEST_F(AuctionRunnerTest, PauseBidder) {
   same_process_auction_process_manager_->ResumeAllPaused();
 
   auction_run_loop_->Run();
+  EXPECT_TRUE(auction_complete_);
   EXPECT_THAT(result_.errors, testing::ElementsAre());
   EXPECT_EQ(kBidder2Key, result_.winning_group_id);
   EXPECT_EQ(GURL("https://ad2.com/"), result_.ad_descriptor->url);
@@ -5439,8 +5464,8 @@ TEST_F(AuctionRunnerTest, PauseBidder) {
 TEST_F(AuctionRunnerTest, PauseSeller) {
   pause_worklet_url_ = kSellerUrl;
 
-  // Have a 404 for seller until ready to resume.
-  url_loader_factory_.AddResponse(kSellerUrl.spec(), "", net::HTTP_NOT_FOUND);
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
+                                         MakeAuctionScript());
 
   auction_worklet::AddJavascriptResponse(
       &url_loader_factory_, kBidder1Url,
@@ -5468,12 +5493,13 @@ TEST_F(AuctionRunnerTest, PauseSeller) {
   StartStandardAuction();
   // Run all threads as far as they can get.
   task_environment()->RunUntilIdle();
-  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
-                                         MakeAuctionScript());
+
+  EXPECT_FALSE(auction_complete_);
 
   same_process_auction_process_manager_->ResumeAllPaused();
 
   auction_run_loop_->Run();
+  EXPECT_TRUE(auction_complete_);
   EXPECT_THAT(result_.errors, testing::ElementsAre());
   EXPECT_EQ(kBidder2Key, result_.winning_group_id);
   EXPECT_EQ(GURL("https://ad2.com/"), result_.ad_descriptor->url);

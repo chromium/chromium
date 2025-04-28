@@ -50,6 +50,7 @@
 #include "content/services/auction_worklet/public/cpp/private_model_training_reporting.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
+#include "content/services/auction_worklet/public/mojom/in_progress_auction_download.mojom.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
 #include "content/services/auction_worklet/public/mojom/real_time_reporting.mojom.h"
 #include "content/services/auction_worklet/public/mojom/trusted_signals_cache.mojom.h"
@@ -366,8 +367,8 @@ BidderWorklet::BidderWorklet(
     mojo::PendingRemote<auction_worklet::mojom::AuctionNetworkEventsHandler>
         auction_network_events_handler,
     TrustedSignalsKVv2Manager* trusted_signals_kvv2_manager,
-    const GURL& script_source_url,
-    const std::optional<GURL>& wasm_helper_url,
+    mojom::InProgressAuctionDownloadPtr script_source_load,
+    mojom::InProgressAuctionDownloadPtr wasm_helper_load,
     const std::optional<GURL>& trusted_bidding_signals_url,
     const std::string& trusted_bidding_signals_slot_size_param,
     const url::Origin& top_window_origin,
@@ -377,8 +378,12 @@ BidderWorklet::BidderWorklet(
     : thread_selector_(v8_helpers.size()),
       url_loader_factory_(std::move(pending_url_loader_factory)),
       trusted_signals_kvv2_manager_(trusted_signals_kvv2_manager),
-      script_source_url_(script_source_url),
-      wasm_helper_url_(wasm_helper_url),
+      script_source_url_(script_source_load->url),
+      script_source_load_(std::move(script_source_load)),
+      wasm_helper_url_(wasm_helper_load
+                           ? std::optional<GURL>(wasm_helper_load->url)
+                           : std::nullopt),
+      wasm_helper_load_(std::move(wasm_helper_load)),
       top_window_origin_(top_window_origin),
       auction_network_events_handler_(
           std::move(auction_network_events_handler)) {
@@ -2380,7 +2385,7 @@ void BidderWorklet::Start() {
       /*auction_network_events_handler=*/
       CreateNewAuctionNetworkEventsHandlerRemote(
           auction_network_events_handler_),
-      script_source_url_, v8_helpers_, debug_ids_,
+      std::move(script_source_load_), v8_helpers_, debug_ids_,
       WorkletLoader::AllowTrustedScoringSignalsCallback(),
       base::BindOnce(&BidderWorklet::OnScriptDownloaded,
                      base::Unretained(this)));
@@ -2394,7 +2399,7 @@ void BidderWorklet::Start() {
         /*auction_network_events_handler=*/
         CreateNewAuctionNetworkEventsHandlerRemote(
             auction_network_events_handler_),
-        wasm_helper_url_.value(), v8_helpers_, debug_ids_,
+        std::move(wasm_helper_load_), v8_helpers_, debug_ids_,
         base::BindOnce(&BidderWorklet::OnWasmDownloaded,
                        base::Unretained(this)));
   }
