@@ -62,10 +62,12 @@ FontPalette::BasePaletteValue StyleRuleFontPaletteValues::GetBasePaletteIndex()
     }
   }
 
-  const CSSPrimitiveValue& palette_primitive =
-      To<CSSPrimitiveValue>(*base_palette);
+  std::optional<double> index =
+      To<CSSPrimitiveValue>(*base_palette).GetValueIfKnown();
+  CHECK(index.has_value())
+      << "Non-simplified calc() expressions should be dropped at parse time";
   return FontPalette::BasePaletteValue(
-      {FontPalette::kIndexBasePalette, palette_primitive.GetIntValue()});
+      {FontPalette::kIndexBasePalette, ClampTo<int>(index.value())});
 }
 
 Vector<FontPalette::FontPaletteOverride>

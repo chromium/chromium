@@ -1646,7 +1646,11 @@ StyleRuleFontFeature* CSSParserImpl::ConsumeFontFeatureRule(
       if (!number_value) {
         return nullptr;
       }
-      parsed_numbers.push_back(number_value->GetIntValue());
+      std::optional<double> number = number_value->GetValueIfKnown();
+      if (!number.has_value()) {
+        return nullptr;
+      }
+      parsed_numbers.push_back(ClampTo<int>(number.value()));
     }
 
     const CSSParserToken& expected_semicolon = stream.Peek();
