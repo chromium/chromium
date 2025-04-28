@@ -55,8 +55,8 @@ NSArray<RecipientInfoForIOSDisplay*>* CreateRecipients(int amount) {
 
 @property(nonatomic, strong) UIImage* senderImage;
 @property(nonatomic, strong) UIImage* recipientImage;
-@property(nonatomic, strong) NSString* subtitleString;
-@property(nonatomic, strong) NSString* footerString;
+@property(nonatomic, copy) NSString* subtitleString;
+@property(nonatomic, copy) NSString* footerString;
 @property(nonatomic, readonly) GURL URL;
 
 @end
@@ -72,11 +72,11 @@ NSArray<RecipientInfoForIOSDisplay*>* CreateRecipients(int amount) {
 }
 
 - (void)setSubtitleString:(NSString*)subtitleString {
-  _subtitleString = subtitleString;
+  _subtitleString = [subtitleString copy];
 }
 
 - (void)setFooterString:(NSString*)footerString {
-  _footerString = footerString;
+  _footerString = [footerString copy];
 }
 
 - (void)setURL:(const GURL&)URL {
