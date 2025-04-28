@@ -16,7 +16,9 @@ export class TestBookmarksBrowserProxy extends TestBrowserProxy implements
       'getIncognitoAvailability',
       'getCanEditBookmarks',
       'recordInHistogram',
-      'showBookmarkEditorForCurrentUrl',
+      'getBatchUploadPromoInfo',
+      'onBatchUploadPromoClicked',
+      'onBatchUploadPromoDismissed',
     ]);
   }
 
@@ -34,7 +36,20 @@ export class TestBookmarksBrowserProxy extends TestBrowserProxy implements
     this.methodCalled('recordInHistogram', [histogram, bucket, maxBucket]);
   }
 
-  showBookmarkEditorForCurrentUrl() {
-    this.methodCalled('showBookmarkEditorForCurrentUrl');
+  getBatchUploadPromoInfo() {
+    this.methodCalled('getBatchUploadPromoInfo');
+    return Promise.resolve({
+      canShow: false,
+      localBookmarksCount: 0,
+      email: '',
+    });
+  }
+
+  onBatchUploadPromoClicked() {
+    this.methodCalled('onBatchUploadPromoClicked');
+  }
+
+  onBatchUploadPromoDismissed() {
+    this.methodCalled('onBatchUploadPromoDismissed');
   }
 }
