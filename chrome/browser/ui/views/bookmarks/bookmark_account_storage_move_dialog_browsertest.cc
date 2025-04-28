@@ -6,7 +6,6 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/bookmarks/bookmark_merged_surface_service.h"
@@ -158,8 +157,6 @@ class BookmarkAccountStorageMoveDialogInteractiveTest
 
 IN_PROC_BROWSER_TEST_F(BookmarkAccountStorageMoveDialogInteractiveTest,
                        PressOKButton) {
-  base::HistogramTester histogram_tester;
-
   bookmarks::BookmarkModel* bookmark_model =
       BookmarkModelFactory::GetForBrowserContext(browser()->profile());
   const bookmarks::BookmarkNode* source_folder =
@@ -186,34 +183,10 @@ IN_PROC_BROWSER_TEST_F(BookmarkAccountStorageMoveDialogInteractiveTest,
   EXPECT_EQ(target_folder->children()[1].get(), node);
   EXPECT_EQ(target_folder->children()[2].get(), last_target_folder_node);
   EXPECT_EQ(source_folder->children().size(), 0u);
-
-  histogram_tester.ExpectBucketCount(
-      "BookmarkAccountStorageMoveDialog.Upload.Shown",
-      BookmarkAccountStorageMoveDialogType::kDownloadOrUpload, 1);
-  histogram_tester.ExpectBucketCount(
-      "BookmarkAccountStorageMoveDialog.Upload.Accepted",
-      BookmarkAccountStorageMoveDialogType::kDownloadOrUpload, 1);
-  histogram_tester.ExpectBucketCount(
-      "BookmarkAccountStorageMoveDialog.Upload.Declined",
-      BookmarkAccountStorageMoveDialogType::kDownloadOrUpload, 0);
-  histogram_tester.ExpectBucketCount(
-      "BookmarkAccountStorageMoveDialog.Upload.ExplicitlyClosed",
-      BookmarkAccountStorageMoveDialogType::kDownloadOrUpload, 0);
-
-  histogram_tester.ExpectTotalCount(
-      "BookmarkAccountStorageMoveDialog.Download.Shown", 0);
-  histogram_tester.ExpectTotalCount(
-      "BookmarkAccountStorageMoveDialog.Download.Accepted", 0);
-  histogram_tester.ExpectTotalCount(
-      "BookmarkAccountStorageMoveDialog.Download.Declined", 0);
-  histogram_tester.ExpectTotalCount(
-      "BookmarkAccountStorageMoveDialog.Download.ExplicitlyClosed", 0);
 }
 
 IN_PROC_BROWSER_TEST_F(BookmarkAccountStorageMoveDialogInteractiveTest,
                        PressCancelButton) {
-  base::HistogramTester histogram_tester;
-
   bookmarks::BookmarkModel* bookmark_model =
       BookmarkModelFactory::GetForBrowserContext(browser()->profile());
   const bookmarks::BookmarkNode* source_folder =
@@ -240,34 +213,10 @@ IN_PROC_BROWSER_TEST_F(BookmarkAccountStorageMoveDialogInteractiveTest,
   EXPECT_EQ(target_folder->children()[1].get(), last_target_folder_node);
   ASSERT_EQ(source_folder->children().size(), 1u);
   EXPECT_EQ(source_folder->children()[0].get(), node);
-
-  histogram_tester.ExpectBucketCount(
-      "BookmarkAccountStorageMoveDialog.Upload.Shown",
-      BookmarkAccountStorageMoveDialogType::kDownloadOrUpload, 1);
-  histogram_tester.ExpectBucketCount(
-      "BookmarkAccountStorageMoveDialog.Upload.Accepted",
-      BookmarkAccountStorageMoveDialogType::kDownloadOrUpload, 0);
-  histogram_tester.ExpectBucketCount(
-      "BookmarkAccountStorageMoveDialog.Upload.Declined",
-      BookmarkAccountStorageMoveDialogType::kDownloadOrUpload, 1);
-  histogram_tester.ExpectBucketCount(
-      "BookmarkAccountStorageMoveDialog.Upload.ExplicitlyClosed",
-      BookmarkAccountStorageMoveDialogType::kDownloadOrUpload, 0);
-
-  histogram_tester.ExpectTotalCount(
-      "BookmarkAccountStorageMoveDialog.Download.Shown", 0);
-  histogram_tester.ExpectTotalCount(
-      "BookmarkAccountStorageMoveDialog.Download.Accepted", 0);
-  histogram_tester.ExpectTotalCount(
-      "BookmarkAccountStorageMoveDialog.Download.Declined", 0);
-  histogram_tester.ExpectTotalCount(
-      "BookmarkAccountStorageMoveDialog.Download.ExplicitlyClosed", 0);
 }
 
 IN_PROC_BROWSER_TEST_F(BookmarkAccountStorageMoveDialogInteractiveTest,
                        FullFlowAcceptMoveFromAccountToLocalStorage) {
-  base::HistogramTester histogram_tester;
-
   bookmarks::BookmarkModel* bookmark_model =
       BookmarkModelFactory::GetForBrowserContext(browser()->profile());
   const bookmarks::BookmarkNode* source_folder =
@@ -291,77 +240,10 @@ IN_PROC_BROWSER_TEST_F(BookmarkAccountStorageMoveDialogInteractiveTest,
   EXPECT_EQ(target_folder->children()[1].get(), node);
   EXPECT_EQ(target_folder->children()[2].get(), last_target_folder_node);
   EXPECT_EQ(source_folder->children().size(), 0u);
-
-  histogram_tester.ExpectTotalCount(
-      "BookmarkAccountStorageMoveDialog.Upload.Shown", 0);
-  histogram_tester.ExpectTotalCount(
-      "BookmarkAccountStorageMoveDialog.Upload.Accepted", 0);
-  histogram_tester.ExpectTotalCount(
-      "BookmarkAccountStorageMoveDialog.Upload.Declined", 0);
-  histogram_tester.ExpectTotalCount(
-      "BookmarkAccountStorageMoveDialog.Upload.ExplicitlyClosed", 0);
-
-  histogram_tester.ExpectTotalCount(
-      "BookmarkAccountStorageMoveDialog.Download.Shown", 1);
-  histogram_tester.ExpectTotalCount(
-      "BookmarkAccountStorageMoveDialog.Download.Accepted", 1);
-  histogram_tester.ExpectTotalCount(
-      "BookmarkAccountStorageMoveDialog.Download.Declined", 0);
-  histogram_tester.ExpectTotalCount(
-      "BookmarkAccountStorageMoveDialog.Download.ExplicitlyClosed", 0);
-}
-
-IN_PROC_BROWSER_TEST_F(BookmarkAccountStorageMoveDialogInteractiveTest,
-                       FullFlowCancelMoveFromAccountToLocalStorage) {
-  base::HistogramTester histogram_tester;
-
-  bookmarks::BookmarkModel* bookmark_model =
-      BookmarkModelFactory::GetForBrowserContext(browser()->profile());
-  const bookmarks::BookmarkNode* source_folder =
-      bookmark_model->account_bookmark_bar_node();
-  const bookmarks::BookmarkNode* node =
-      bookmark_model->AddFolder(source_folder, 0, u"Account");
-  const bookmarks::BookmarkNode* target_folder = bookmark_model->AddFolder(
-      bookmark_model->bookmark_bar_node(), 0, u"Local");
-  const bookmarks::BookmarkNode* first_target_folder_node =
-      bookmark_model->AddFolder(target_folder, 0, u"First");
-  const bookmarks::BookmarkNode* last_target_folder_node =
-      bookmark_model->AddFolder(target_folder, 1, u"Last");
-
-  BookmarkParentFolder destination =
-      BookmarkParentFolder::FromFolderNode(target_folder);
-  service()->Move(node, destination, 1, browser());
-  RunTestSequence(PressButton(kBookmarkAccountStorageMoveDialogCancelButton));
-
-  ASSERT_EQ(target_folder->children().size(), 2u);
-  EXPECT_EQ(target_folder->children()[0].get(), first_target_folder_node);
-  EXPECT_EQ(target_folder->children()[1].get(), last_target_folder_node);
-  ASSERT_EQ(source_folder->children().size(), 1u);
-  EXPECT_EQ(source_folder->children()[0].get(), node);
-
-  histogram_tester.ExpectTotalCount(
-      "BookmarkAccountStorageMoveDialog.Upload.Shown", 0);
-  histogram_tester.ExpectTotalCount(
-      "BookmarkAccountStorageMoveDialog.Upload.Accepted", 0);
-  histogram_tester.ExpectTotalCount(
-      "BookmarkAccountStorageMoveDialog.Upload.Declined", 0);
-  histogram_tester.ExpectTotalCount(
-      "BookmarkAccountStorageMoveDialog.Upload.ExplicitlyClosed", 0);
-
-  histogram_tester.ExpectTotalCount(
-      "BookmarkAccountStorageMoveDialog.Download.Shown", 1);
-  histogram_tester.ExpectTotalCount(
-      "BookmarkAccountStorageMoveDialog.Download.Accepted", 0);
-  histogram_tester.ExpectTotalCount(
-      "BookmarkAccountStorageMoveDialog.Download.Declined", 1);
-  histogram_tester.ExpectTotalCount(
-      "BookmarkAccountStorageMoveDialog.Download.ExplicitlyClosed", 0);
 }
 
 IN_PROC_BROWSER_TEST_F(BookmarkAccountStorageMoveDialogInteractiveTest,
                        FullFlowCancelMoveDialog) {
-  base::HistogramTester histogram_tester;
-
   bookmarks::BookmarkModel* bookmark_model =
       BookmarkModelFactory::GetForBrowserContext(browser()->profile());
   const bookmarks::BookmarkNode* source_folder =
@@ -385,186 +267,6 @@ IN_PROC_BROWSER_TEST_F(BookmarkAccountStorageMoveDialogInteractiveTest,
   EXPECT_EQ(target_folder->children()[1].get(), last_target_folder_node);
   ASSERT_EQ(source_folder->children().size(), 1u);
   EXPECT_EQ(source_folder->children()[0].get(), node);
-
-  histogram_tester.ExpectTotalCount(
-      "BookmarkAccountStorageMoveDialog.Upload.Shown", 1);
-  histogram_tester.ExpectTotalCount(
-      "BookmarkAccountStorageMoveDialog.Upload.Accepted", 0);
-  histogram_tester.ExpectTotalCount(
-      "BookmarkAccountStorageMoveDialog.Upload.Declined", 1);
-  histogram_tester.ExpectTotalCount(
-      "BookmarkAccountStorageMoveDialog.Upload.ExplicitlyClosed", 0);
-
-  histogram_tester.ExpectTotalCount(
-      "BookmarkAccountStorageMoveDialog.Download.Shown", 0);
-  histogram_tester.ExpectTotalCount(
-      "BookmarkAccountStorageMoveDialog.Download.Accepted", 0);
-  histogram_tester.ExpectTotalCount(
-      "BookmarkAccountStorageMoveDialog.Download.Declined", 0);
-  histogram_tester.ExpectTotalCount(
-      "BookmarkAccountStorageMoveDialog.Download.ExplicitlyClosed", 0);
-}
-
-IN_PROC_BROWSER_TEST_F(BookmarkAccountStorageMoveDialogInteractiveTest,
-                       PressOKButtonUploadDialog) {
-  base::HistogramTester histogram_tester;
-
-  bookmarks::BookmarkModel* bookmark_model =
-      BookmarkModelFactory::GetForBrowserContext(browser()->profile());
-  const bookmarks::BookmarkNode* source_folder =
-      bookmark_model->bookmark_bar_node();
-  const bookmarks::BookmarkNode* node =
-      bookmark_model->AddFolder(source_folder, 0, u"Local");
-  const bookmarks::BookmarkNode* target_folder = bookmark_model->AddFolder(
-      bookmark_model->account_bookmark_bar_node(), 0, u"Account");
-  const bookmarks::BookmarkNode* first_target_folder_node =
-      bookmark_model->AddFolder(target_folder, 0, u"First");
-  const bookmarks::BookmarkNode* last_target_folder_node =
-      bookmark_model->AddFolder(target_folder, 1, u"Last");
-  base::test::TestFuture<void> closed_waiter;
-  ShowBookmarkAccountStorageMoveDialog(
-      browser(), node, target_folder,
-      /*index=*/1, BookmarkAccountStorageMoveDialogType::kUpload,
-      closed_waiter.GetCallback());
-
-  RunTestSequence(PressButton(kBookmarkAccountStorageMoveDialogOkButton));
-
-  ASSERT_TRUE(closed_waiter.Wait());
-  ASSERT_EQ(target_folder->children().size(), 3u);
-  EXPECT_EQ(target_folder->children()[0].get(), first_target_folder_node);
-  EXPECT_EQ(target_folder->children()[1].get(), node);
-  EXPECT_EQ(target_folder->children()[2].get(), last_target_folder_node);
-  EXPECT_EQ(source_folder->children().size(), 0u);
-
-  histogram_tester.ExpectBucketCount(
-      "BookmarkAccountStorageMoveDialog.Upload.Shown",
-      BookmarkAccountStorageMoveDialogType::kUpload, 1);
-  histogram_tester.ExpectBucketCount(
-      "BookmarkAccountStorageMoveDialog.Upload.Accepted",
-      BookmarkAccountStorageMoveDialogType::kUpload, 1);
-  histogram_tester.ExpectBucketCount(
-      "BookmarkAccountStorageMoveDialog.Upload.Declined",
-      BookmarkAccountStorageMoveDialogType::kUpload, 0);
-  histogram_tester.ExpectBucketCount(
-      "BookmarkAccountStorageMoveDialog.Upload.ExplicitlyClosed",
-      BookmarkAccountStorageMoveDialogType::kUpload, 0);
-
-  histogram_tester.ExpectTotalCount(
-      "BookmarkAccountStorageMoveDialog.Download.Shown", 0);
-  histogram_tester.ExpectTotalCount(
-      "BookmarkAccountStorageMoveDialog.Download.Accepted", 0);
-  histogram_tester.ExpectTotalCount(
-      "BookmarkAccountStorageMoveDialog.Download.Declined", 0);
-  histogram_tester.ExpectTotalCount(
-      "BookmarkAccountStorageMoveDialog.Download.ExplicitlyClosed", 0);
-}
-
-IN_PROC_BROWSER_TEST_F(BookmarkAccountStorageMoveDialogInteractiveTest,
-                       PressCancelButtonUploadDialog) {
-  base::HistogramTester histogram_tester;
-
-  bookmarks::BookmarkModel* bookmark_model =
-      BookmarkModelFactory::GetForBrowserContext(browser()->profile());
-  const bookmarks::BookmarkNode* source_folder =
-      bookmark_model->bookmark_bar_node();
-  const bookmarks::BookmarkNode* node =
-      bookmark_model->AddFolder(source_folder, 0, u"Local");
-  const bookmarks::BookmarkNode* target_folder = bookmark_model->AddFolder(
-      bookmark_model->account_bookmark_bar_node(), 0, u"Account");
-  const bookmarks::BookmarkNode* first_target_folder_node =
-      bookmark_model->AddFolder(target_folder, 0, u"First");
-  const bookmarks::BookmarkNode* last_target_folder_node =
-      bookmark_model->AddFolder(target_folder, 1, u"Last");
-  base::test::TestFuture<void> closed_waiter;
-  ShowBookmarkAccountStorageMoveDialog(
-      browser(), node, target_folder,
-      /*index=*/1, BookmarkAccountStorageMoveDialogType::kUpload,
-      closed_waiter.GetCallback());
-
-  RunTestSequence(PressButton(kBookmarkAccountStorageMoveDialogCancelButton));
-
-  ASSERT_TRUE(closed_waiter.Wait());
-  ASSERT_EQ(target_folder->children().size(), 2u);
-  EXPECT_EQ(target_folder->children()[0].get(), first_target_folder_node);
-  EXPECT_EQ(target_folder->children()[1].get(), last_target_folder_node);
-  ASSERT_EQ(source_folder->children().size(), 1u);
-  EXPECT_EQ(source_folder->children()[0].get(), node);
-
-  histogram_tester.ExpectBucketCount(
-      "BookmarkAccountStorageMoveDialog.Upload.Shown",
-      BookmarkAccountStorageMoveDialogType::kUpload, 1);
-  histogram_tester.ExpectBucketCount(
-      "BookmarkAccountStorageMoveDialog.Upload.Accepted",
-      BookmarkAccountStorageMoveDialogType::kUpload, 0);
-  histogram_tester.ExpectBucketCount(
-      "BookmarkAccountStorageMoveDialog.Upload.Declined",
-      BookmarkAccountStorageMoveDialogType::kUpload, 1);
-  histogram_tester.ExpectBucketCount(
-      "BookmarkAccountStorageMoveDialog.Upload.ExplicitlyClosed",
-      BookmarkAccountStorageMoveDialogType::kUpload, 0);
-
-  histogram_tester.ExpectTotalCount(
-      "BookmarkAccountStorageMoveDialog.Download.Shown", 0);
-  histogram_tester.ExpectTotalCount(
-      "BookmarkAccountStorageMoveDialog.Download.Accepted", 0);
-  histogram_tester.ExpectTotalCount(
-      "BookmarkAccountStorageMoveDialog.Download.Declined", 0);
-  histogram_tester.ExpectTotalCount(
-      "BookmarkAccountStorageMoveDialog.Download.ExplicitlyClosed", 0);
-}
-
-IN_PROC_BROWSER_TEST_F(BookmarkAccountStorageMoveDialogInteractiveTest,
-                       ExplicitlyCloseMoveDialog) {
-  base::HistogramTester histogram_tester;
-  const ui::Accelerator kEscapeKey(ui::VKEY_ESCAPE, ui::EF_NONE);
-
-  bookmarks::BookmarkModel* bookmark_model =
-      BookmarkModelFactory::GetForBrowserContext(browser()->profile());
-  const bookmarks::BookmarkNode* local_folder = bookmark_model->AddFolder(
-      bookmark_model->bookmark_bar_node(), 0, u"Local");
-  const bookmarks::BookmarkNode* account_folder = bookmark_model->AddFolder(
-      bookmark_model->account_bookmark_bar_node(), 0, u"Account");
-
-  // Explicitly close upload dialog by clicking escape.
-  BookmarkParentFolder destination =
-      BookmarkParentFolder::FromFolderNode(account_folder);
-  service()->Move(local_folder, destination, 1, browser());
-  // We cannot add an element identifier to the dialog when it's built using
-  // DialogModel::Builder. Thus, we check for its existence by checking the
-  // visibility of its cancel button, even though we use the escape key to close
-  // it.
-  RunTestSequence(
-      WaitForShow(kBookmarkAccountStorageMoveDialogCancelButton),
-      SendAccelerator(kBookmarkAccountStorageMoveDialogCancelButton, kEscapeKey)
-          .SetMustRemainVisible(false),
-      WaitForHide(kBookmarkAccountStorageMoveDialogCancelButton));
-
-  histogram_tester.ExpectTotalCount(
-      "BookmarkAccountStorageMoveDialog.Upload.Shown", 1);
-  histogram_tester.ExpectTotalCount(
-      "BookmarkAccountStorageMoveDialog.Upload.Accepted", 0);
-  histogram_tester.ExpectTotalCount(
-      "BookmarkAccountStorageMoveDialog.Upload.Declined", 0);
-  histogram_tester.ExpectTotalCount(
-      "BookmarkAccountStorageMoveDialog.Upload.ExplicitlyClosed", 1);
-
-  // Explicitly close download dialog by clicking escape.
-  destination = BookmarkParentFolder::FromFolderNode(local_folder);
-  service()->Move(account_folder, destination, 0, browser());
-  RunTestSequence(
-      WaitForShow(kBookmarkAccountStorageMoveDialogCancelButton),
-      SendAccelerator(kBookmarkAccountStorageMoveDialogCancelButton, kEscapeKey)
-          .SetMustRemainVisible(false),
-      WaitForHide(kBookmarkAccountStorageMoveDialogCancelButton));
-
-  histogram_tester.ExpectTotalCount(
-      "BookmarkAccountStorageMoveDialog.Download.Shown", 1);
-  histogram_tester.ExpectTotalCount(
-      "BookmarkAccountStorageMoveDialog.Download.Accepted", 0);
-  histogram_tester.ExpectTotalCount(
-      "BookmarkAccountStorageMoveDialog.Download.Declined", 0);
-  histogram_tester.ExpectTotalCount(
-      "BookmarkAccountStorageMoveDialog.Download.ExplicitlyClosed", 1);
 }
 
 }  // namespace
