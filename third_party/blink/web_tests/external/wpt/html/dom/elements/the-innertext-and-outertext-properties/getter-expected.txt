@@ -1,10 +1,12 @@
 This is a testharness.js-based test.
-Found 3 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 4 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] <audio> contents ignored ("<audio style='display:block'>abc")
   assert_equals: innerText expected "" but got "abc"
 [FAIL] <svg><defs> text contents ignored ("<div><svg><defs><text>abc</text></defs></svg></div>")
   assert_equals: innerText expected "" but got "abc"
 [FAIL] <div> in <option> ("<select><option class='poke-div'>123</select>")
   assert_equals: innerText expected "123\\nabc" but got "123abc"
+[FAIL] <optgroup> in <div> ("<div>a<optgroup>123</optgroup>bc")
+  assert_equals: innerText expected "a\\nbc" but got "a\\n123\\nbc"
 Harness: the test ran to completion.
 

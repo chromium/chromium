@@ -9370,7 +9370,11 @@ bool Element::CanGeneratePseudoElement(PseudoId pseudo_id) const {
     auto is_option_in_appearance_base_select = [](const Element* e) {
       if (const auto* option = DynamicTo<HTMLOptionElement>(e)) {
         if (const HTMLSelectElement* select = option->OwnerSelectElement()) {
-          return select->IsAppearanceBasePicker();
+          if (select->UsesMenuList()) {
+            return select->IsAppearanceBasePicker();
+          } else {
+            return select->IsAppearanceBase();
+          }
         }
       }
       return false;

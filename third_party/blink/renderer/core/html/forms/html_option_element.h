@@ -147,6 +147,12 @@ class CORE_EXPORT HTMLOptionElement final : public HTMLElement {
 
   void RecalcOwnerSelectElement() const;
 
+  // Helper to choose the option for customizable select event handling in
+  // DefaultEventHandler. Depending on the state of OwnerSelectElement, it may
+  // toggle selectedness and dirtiness, deselect other options, close the
+  // select's picker, and set default handled on the event.
+  void ChooseOption(Event&);
+
   Member<OptionTextObserver> text_observer_;
 
   // The closest ancestor <select> in the DOM tree, without crossing any shadow

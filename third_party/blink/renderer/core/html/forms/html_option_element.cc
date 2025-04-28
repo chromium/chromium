@@ -133,19 +133,29 @@ void HTMLOptionElement::Trace(Visitor* visitor) const {
 
 FocusableState HTMLOptionElement::SupportsFocus(
     UpdateBehavior update_behavior) const {
-  HTMLSelectElement* select = OwnerSelectElement();
-  if (select && select->UsesMenuList()) {
+  // Run SupportsFocus from the parent class first so it can do a style update
+  // if appropriate, which we will make use of here.
+  FocusableState superclass_focusable =
+      HTMLElement::SupportsFocus(update_behavior);
+  if (auto* select = OwnerSelectElement()) {
     auto* popover = select->PopoverForAppearanceBase();
-    if (popover && popover->popoverOpen()) {
+    bool base_with_picker =
+        select->UsesMenuList() && popover && popover->popoverOpen();
+    bool base_in_page =
+        RuntimeEnabledFeatures::CustomizableSelectInPageEnabled() &&
+        !select->UsesMenuList() && select->IsAppearanceBase();
+    if (base_with_picker || base_in_page) {
       // If this option is being rendered as regular web content inside a
-      // base-select <select> popover, then we need this element to be
-      // focusable.
+      // base-select <select>, then we need this element to be focusable.
       return IsDisabledFormControl() ? FocusableState::kNotFocusable
                                      : FocusableState::kFocusable;
+    } else if (select->UsesMenuList()) {
+      // appearance:auto ListBox <select>s have focusable <option>s, and
+      // MenuList ones don't have focusable <option>s.
+      return FocusableState::kNotFocusable;
     }
-    return FocusableState::kNotFocusable;
   }
-  return HTMLElement::SupportsFocus(update_behavior);
+  return superclass_focusable;
 }
 
 bool HTMLOptionElement::MatchesDefaultPseudoClass() const {
@@ -619,36 +629,49 @@ bool OptionIsVisible(HTMLOptionElement& option) {
 
 void HTMLOptionElement::DefaultEventHandlerInternal(Event& event) {
   auto* select = OwnerSelectElement();
-  if (!select || !select->IsAppearanceBasePicker()) {
-    // We only want to apply mouse/keyboard behavior for appearance:base-select
-    // select pickers.
+  const bool appearance_base_in_page =
+      RuntimeEnabledFeatures::CustomizableSelectInPageEnabled() && select &&
+      !select->UsesMenuList() && select->IsAppearanceBase();
+
+  if (!appearance_base_in_page &&
+      (!select || !select->IsAppearanceBasePicker())) {
+    // Customizable selects do most of their event handling here.
+    // appearance:auto selects do all of their event handling in
+    // HTMLSelectElement::DefaultEventHandler.
     return;
   }
-  const auto* mouse_event = DynamicTo<MouseEvent>(event);
-  if (mouse_event && event.type() == event_type_names::kMouseup &&
-      mouse_event->button() ==
-          static_cast<int16_t>(WebPointerProperties::Button::kLeft)) {
-    // We leave the picker open, and do not "pick" an option, only if:
-    //  1. The mousedown was on the <select> button, so we have a mousedown
-    //     location stored, and
-    //  2. The mouseup on this <option> was within kEpsilon layout units
-    //     (post zoom, page-relative) of the location of the mousedown. I.e.
-    //     the mouse was not dragged between mousedown and mouseup.
-    std::optional<gfx::PointF> mouse_down_loc =
-        GetDocument().CustomizableSelectMousedownLocation();
-    constexpr float kEpsilon = 5;  // 5 pixels in any direction
-    bool mouse_moved = !mouse_down_loc.has_value() ||
-                       !mouse_down_loc->IsWithinDistance(
-                           mouse_event->AbsoluteLocation(), kEpsilon);
-    if (mouse_moved) {
-      select->SelectOptionByPopup(this);
-      select->HidePopup(SelectPopupHideBehavior::kNormal);
-      event.SetDefaultHandled();
+
+  if (appearance_base_in_page) {
+    // TODO(crbug.com/411598949): Consider using mouseup/mousedown instead of
+    // click here to support click and drag to select multiple options.
+    if (event.type() == event_type_names::kClick) {
+      ChooseOption(event);
     }
-    GetDocument().SetCustomizableSelectMousedownLocation(std::nullopt);
-    return;
-  } else if (event.type() == event_type_names::kMousedown) {
-    GetDocument().SetCustomizableSelectMousedownLocation(std::nullopt);
+  } else {
+    const auto* mouse_event = DynamicTo<MouseEvent>(event);
+    if (mouse_event && event.type() == event_type_names::kMouseup &&
+        mouse_event->button() ==
+            static_cast<int16_t>(WebPointerProperties::Button::kLeft)) {
+      // We leave the picker open, and do not "pick" an option, only if:
+      //  1. The mousedown was on the <select> button, so we have a mousedown
+      //     location stored, and
+      //  2. The mouseup on this <option> was within kEpsilon layout units
+      //     (post zoom, page-relative) of the location of the mousedown. I.e.
+      //     the mouse was not dragged between mousedown and mouseup.
+      std::optional<gfx::PointF> mouse_down_loc =
+          GetDocument().CustomizableSelectMousedownLocation();
+      constexpr float kEpsilon = 5;  // 5 pixels in any direction
+      bool mouse_moved = !mouse_down_loc.has_value() ||
+                         !mouse_down_loc->IsWithinDistance(
+                             mouse_event->AbsoluteLocation(), kEpsilon);
+      if (mouse_moved) {
+        ChooseOption(event);
+      }
+      GetDocument().SetCustomizableSelectMousedownLocation(std::nullopt);
+      return;
+    } else if (event.type() == event_type_names::kMousedown) {
+      GetDocument().SetCustomizableSelectMousedownLocation(std::nullopt);
+    }
   }
 
   auto* keyboard_event = DynamicTo<KeyboardEvent>(event);
@@ -661,9 +684,7 @@ void HTMLOptionElement::DefaultEventHandlerInternal(Event& event) {
     const AtomicString key(keyboard_event->key());
     if (!(keyboard_event->GetModifiers() & ignore_modifiers)) {
       if ((key == " " || key == keywords::kCapitalEnter)) {
-        select->SelectOptionByPopup(this);
-        select->HidePopup(SelectPopupHideBehavior::kNormal);
-        event.SetDefaultHandled();
+        ChooseOption(event);
         return;
       }
       OptionList options = select->GetOptionList();
@@ -755,12 +776,56 @@ void HTMLOptionElement::DefaultEventHandlerInternal(Event& event) {
     if (key == keywords::kTab &&
         !(keyboard_event->GetModifiers() & tab_ignore_modifiers) &&
         !select->IsInDialogMode()) {
-      // TODO(http://crbug.com/1511354): Consider focusing something in this
-      // case. https://github.com/openui/open-ui/issues/1016
-      select->HidePopup(SelectPopupHideBehavior::kNormal);
-      event.SetDefaultHandled();
+      if (appearance_base_in_page) {
+        // TODO(crbug.com/357649033): consider focusing the next focusable
+        // element after the owner select element, if possible. Maybe we could
+        // call KeyboardEventManager::DefaultTabEventHandler or something until
+        // focus has moved outside of this select? Or build something into
+        // FocusController to make it search for an element to focus which isn't
+        // one of the option elements inside this select?
+      } else {
+        // TODO(http://crbug.com/1511354): Consider focusing something in this
+        // case. https://github.com/openui/open-ui/issues/1016
+        select->HidePopup(SelectPopupHideBehavior::kNormal);
+        event.SetDefaultHandled();
+      }
       return;
     }
+  }
+}
+
+// TODO(crbug.com/357649033): This method has a lot of duplicated logic with
+// HTMLSelectElement::SelectOption. These two methods should probably be merged.
+void HTMLOptionElement::ChooseOption(Event& event) {
+  HTMLSelectElement* select = OwnerSelectElement();
+  CHECK(select);
+  if (IsDisabledFormControl() || select->IsDisabledFormControl()) {
+    return;
+  }
+  CHECK(HTMLSelectElement::CustomizableSelectEnabled(this));
+  CHECK(select->IsAppearanceBase());
+  if (!select->UsesMenuList()) {
+    CHECK(RuntimeEnabledFeatures::CustomizableSelectInPageEnabled());
+    SetSelectedState(!Selected());
+    SetDirty(true);
+    if (!select->IsMultiple()) {
+      // TODO(crbug.com/357649033): Consider using last_on_change_option_ in
+      // HTMLSelectElement to avoid needing to iterate options here. It
+      // currently only works for MenuList selects. Also consider using
+      // DeselectItemsWithoutValidation() from HTMLSelectElement.
+      for (HTMLOptionElement& option : select->GetOptionList()) {
+        if (option != this) {
+          option.SetSelectedState(false);
+        }
+      }
+    }
+    select->DispatchInputEvent();
+    select->DispatchChangeEvent();
+    event.SetDefaultHandled();
+  } else {
+    select->SelectOptionByPopup(this);
+    select->HidePopup(SelectPopupHideBehavior::kNormal);
+    event.SetDefaultHandled();
   }
 }
 

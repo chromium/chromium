@@ -1549,6 +1549,13 @@
       depends_on: ["CustomizableSelect"],
     },
     {
+      // appearance:base-select for <select multiple> and <select size=n>
+      // https://issues.chromium.org/issues/357649033
+      name: "CustomizableSelectInPage",
+      status: "experimental",
+      depends_on: ["CustomizableSelect"],
+    },
+    {
       // https://chromestatus.com/feature/5134293578285056
       name: "Database",
     },

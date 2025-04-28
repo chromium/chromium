@@ -959,7 +959,12 @@ select {
 }
 
 select:disabled {
-  opacity: 0.7;
+    @supports blink-feature(CustomizableSelectInPage) {
+        opacity: -internal-auto-base(0.7, unset);
+    }
+    @supports not blink-feature(CustomizableSelectInPage) {
+        opacity: 0.7;
+    }
 }
 
 /* -internal-list-box is how we specify select[multiple] */
@@ -977,7 +982,12 @@ select:-internal-list-box {
     overflow-block: scroll;
     vertical-align: text-bottom;
     white-space: nowrap;
-    border-radius: 2px;
+    @supports blink-feature(CustomizableSelectInPage) {
+      border-radius: -internal-auto-base(2px, 0);
+    }
+    @supports not blink-feature(CustomizableSelectInPage) {
+      border-radius: 2px;
+    }
 }
 
 select:not(:-internal-list-box) {
@@ -988,14 +998,25 @@ select:not(:-internal-list-box) {
    |extraPaddingForOptionInsideOptgroup| in list_picker.js, which is the
    padding for select optgroup option. */
 select:-internal-list-box optgroup option {
-    padding-inline-start: 20px;
+    @supports blink-feature(CustomizableSelectInPage) {
+        padding-inline-start: -internal-auto-base(20px, 0.5em);
+    }
+    @supports not blink-feature(CustomizableSelectInPage) {
+        padding-inline-start: 20px;
+    }
 }
 
+/* TODO(crbug.com/357649033): This line-height rule can't be undone for
+ * customizable select multiple because we can't put !important inside
+ * -internal-auto-base(). */
 select:-internal-list-box option,
 select:-internal-list-box optgroup {
     line-height: initial !important;
 }
 
+/* TODO(crbug.com/357649033): Consider undoing these styles for customizable
+ * select. It is unlikely that they will be hit because customizable select
+ * in-page is not focusable by default. */
 select:-internal-list-box:focus option:checked,
 select:-internal-list-box:focus option:checked:disabled,
 select:-internal-list-box:focus option:checked:hover {
@@ -1020,31 +1041,76 @@ select:-internal-list-box:focus option:checked:disabled {
 }
 
 /* option selected, list-box not focused */
-select:-internal-list-box option:checked,
-select:-internal-list-box option:checked:hover {
-    background-color: light-dark(#cecece, #545454);
-    color: light-dark(#101010, #FFFFFF);
+@supports blink-feature(CustomizableSelectInPage) {
+    select:-internal-list-box option:checked,
+    select:-internal-list-box option:checked:hover {
+        background-color: -internal-auto-base(light-dark(#cecece, #545454), transparent);
+        color: -internal-auto-base(light-dark(#101010, #FFFFFF), inherit);
+    }
+    select:-internal-list-box:not(:focus) option:checked:enabled:hover,
+    select:-internal-list-box:not(:focus) option:checked:enabled:active {
+        background-color: -internal-auto-base(
+            light-dark(#cecece, #545454),
+            color-mix(in lab, currentColor 10%, transparent));
+    }
+    select:-internal-list-box option:checked:disabled:hover,
+    select:-internal-list-box option:checked:disabled:active {
+        background-color: -internal-auto-base(
+            light-dark(#cecece, #545454),
+            color-mix(in lab, currentColor 50%, transparent));
+    }
+}
+@supports not blink-feature(CustomizableSelectInPage) {
+    select:-internal-list-box option:checked,
+    select:-internal-list-box option:checked:hover {
+        background-color: light-dark(#cecece, #545454);
+        color: light-dark(#101010, #FFFFFF);
+    }
 }
 
 select:-internal-list-box:disabled option:checked,
 select:-internal-list-box option:checked:disabled,
 select:-internal-list-box option:checked:disabled:hover {
-    color: light-dark(gray, #aaa);
+    @supports blink-feature(CustomizableSelectInPage) {
+        color: -internal-auto-base(light-dark(gray, #aaa), color-mix(in lab, currentColor 50%, transparent));
+    }
+    @supports not blink-feature(CustomizableSelectInPage) {
+        color: light-dark(gray, #aaa);
+    }
+}
+@supports blink-feature(CustomizableSelectInPage) {
+    select:-internal-list-box:disabled option:checked {
+        /* base color is set to inherit here because we are inheriting a color that
+         * is already 50% transparent from select:disabled. */
+       color: -internal-auto-base(light-dark(gray, #aaa), inherit);
+    }
 }
 
+/* TODO(crbug.com/406464760): decide on <hr> styles for customizable select
+ * multiple. */
 select:-internal-list-box hr {
     border-style: none;
     margin-block-start: 0.5em;
     margin-block-end: 0;
 }
 
+/* TODO(crbug.com/357649033): Consider undoing these styles for customizable
+ * select. It is unlikely that they will be hit because customizable select
+ * in-page is not focusable by default. */
 select:-internal-list-box:focus-visible option:-internal-multi-select-focus {
     outline: auto 1px -webkit-focus-ring-color;
     outline-offset: -1px;
 }
 
-select:-internal-list-box option:hover {
-    background-color: initial;
+@supports blink-feature(CustomizableSelectInPage) {
+    select:-internal-list-box option:enabled:hover {
+        background-color: -internal-auto-base(initial, color-mix(in lab, currentColor 10%, transparent));
+    }
+}
+@supports not blink-feature(CustomizableSelectInPage) {
+    select:-internal-list-box option:hover {
+        background-color: initial;
+    }
 }
 
 optgroup {
@@ -1058,13 +1124,27 @@ optgroup::-internal-optgroup-label {
 }
 
 option {
-    font-weight: normal;
-    display: block;
-    padding-inline: 2px;
-    padding-block-start: 0;
-    padding-block-end: 1px;
-    white-space: nowrap;
-    min-block-size: 1.2em;
+    @supports blink-feature(CustomizableSelectInPage) {
+        font-weight: -internal-auto-base(normal, inherit);
+        display: -internal-auto-base(block, flex);
+        padding-inline: -internal-auto-base(2px, 0.5em);
+        padding-block-start: 0;
+        padding-block-end: -internal-auto-base(1px, 0);
+        white-space: nowrap;
+        min-inline-size: -internal-auto-base(unset, 24px);
+        min-block-size: -internal-auto-base(1.2em, max(24px, 1lh));
+        gap: -internal-auto-base(unset, 0.5em);
+        align-items: -internal-auto-base(unset, center);
+    }
+    @supports not blink-feature(CustomizableSelectInPage) {
+        font-weight: normal;
+        display: block;
+        padding-inline: 2px;
+        padding-block-start: 0;
+        padding-block-end: 1px;
+        white-space: nowrap;
+        min-block-size: 1.2em;
+    }
 }
 
 /* The following select style rules have to go after the other
@@ -1085,16 +1165,40 @@ select:-internal-autofill-selected {
 }
 
 input:disabled,
-select:disabled,
 textarea:disabled {
   border-color: rgba(118, 118, 118, 0.3);
+}
+select:disabled {
+  @supports blink-feature(CustomizableSelectInPage) {
+    border-color: -internal-auto-base(rgba(118, 118, 118, 0.3), currentColor);
+  }
+  @supports not blink-feature(CustomizableSelectInPage) {
+    border-color: rgba(118, 118, 118, 0.3);
+  }
 }
 
 select:disabled,
 optgroup:disabled,
 option:disabled,
 select[disabled]>option {
-    color: light-dark(GrayText, #aaa);
+    @supports blink-feature(CustomizableSelectInPage) {
+        color: -internal-auto-base(
+            light-dark(GrayText, #aaa),
+            color-mix(in lab, currentColor 50%, transparent));
+    }
+    @supports not blink-feature(CustomizableSelectInPage) {
+        color: light-dark(GrayText, #aaa);
+    }
+}
+@supports blink-feature(CustomizableSelectInPage) {
+    /* base color is set to inherit here because we are inheriting a color that
+     * is already 50% transparent from select:disabled. */
+    select:disabled option,
+    optgroup:disabled option {
+        color: -internal-auto-base(
+            light-dark(GrayText, #aaa),
+            inherit);
+    }
 }
 
 output {
@@ -1919,6 +2023,105 @@ dialog:where(:modal) {
   }
   select:not(:-internal-list-box):not([multiple])
   option[label]:not([label=""])::-internal-option-slot {
+    display: none;
+  }
+}
+
+@supports blink-feature(CustomizableSelectInPage) {
+  select {
+    font: -internal-auto-base(-webkit-small-control, inherit);
+    text-shadow: -internal-auto-base(none, inherit);
+    text-transform: -internal-auto-base(none, initial);
+    text-rendering: -internal-auto-base(auto, inherit);
+    letter-spacing: -internal-auto-base(normal, inherit);
+    word-spacing: -internal-auto-base(normal, inherit);
+    text-align: -internal-auto-base(start, initial);
+    text-indent: -internal-auto-base(0px, initial);
+    -webkit-rtl-ordering: -internal-auto-base(logical, inherit);
+    cursor: -internal-auto-base(default, inherit);
+    white-space: -internal-auto-base(pre, inherit);
+    /* See note in CustomizableSelect feature block about text-autospace. */
+    text-autospace: -internal-auto-base(no-autospace !important, inherit);
+    color: -internal-auto-base(FieldText, inherit);
+    background-color: -internal-auto-base(Field, transparent);
+    border: 1px solid -internal-auto-base(light-dark(#767676, #858585), currentColor);
+    /* See notes about min-inline-size/min-block-size in CustomizableSelect feature block. */
+    min-inline-size: -internal-auto-base(auto, calc-size(auto, max(size, 24px)));
+    min-block-size: -internal-auto-base(auto, calc-size(auto, max(size, 24px, 1lh)));
+    /* https://github.com/whatwg/html/issues/10876 */
+    user-select: -internal-auto-base(auto, none);
+  }
+
+  select option:enabled:hover {
+    background-color: color-mix(in lab, currentColor 10%, transparent);
+  }
+  /* :-internal-list-box is needed here in order to get precedence over this
+   * selector: select:-internal-list-box option:enabled:hover */
+  select:-internal-list-box option:enabled:active {
+    background-color: color-mix(in lab, currentColor 20%, transparent);
+  }
+
+  select option::checkmark {
+    content: '\2713' / '';
+  }
+  select option:not(:checked)::checkmark {
+    visibility: hidden;
+  }
+
+  select optgroup option {
+    padding-inline-start: -internal-auto-base(20px, 0.5em);
+    font-weight: normal;
+  }
+
+  select optgroup::-internal-optgroup-label {
+    padding-inline: -internal-auto-base(2px, 0.5em);
+    padding-block: -internal-auto-base(0 1px, 0);
+    min-height: -internal-auto-base(1.2em, 0);
+  }
+
+  select optgroup legend {
+    padding-inline: -internal-auto-base(2px, 0.5em);
+    min-block-size: -internal-auto-base(initial, 1lh);
+  }
+
+  select option::-internal-option-label-container {
+    display: none;
+  }
+  select option::-internal-option-slot {
+    display: contents;
+  }
+  select option[label]:not([label=""])::-internal-option-label-container {
+    display: contents;
+  }
+  select option[label]:not([label=""])::-internal-option-slot {
+    display: none;
+  }
+
+  /* Don't allow nested <optgroup>s. */
+  select optgroup optgroup {
+    display: none;
+  }
+
+  select:-internal-list-box {
+    box-sizing: -internal-auto-base(border-box, initial);
+  }
+
+  select:-internal-list-box::picker-icon {
+    display: none !important;
+  }
+
+  select option::-internal-option-label-container {
+    display: -internal-auto-base(contents, none);
+  }
+  select option::-internal-option-slot {
+    display: -internal-auto-base(none, contents);
+  }
+  /* Render the label attribute when it is set. This should be kept in sync
+   * with the logic in HTMLOptionElement::DisplayLabel. */
+  select option[label]:not([label=""])::-internal-option-label-container {
+    display: contents;
+  }
+  select option[label]:not([label=""])::-internal-option-slot {
     display: none;
   }
 }

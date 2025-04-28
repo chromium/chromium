@@ -3008,6 +3008,14 @@
     "owners": ["jarhar@chromium.org", "dom-dev@google.com"]
   },
   {
+    "prefix": "customizable-select-in-page-disabled",
+    "platforms": ["Linux"],
+    "bases": [],
+    "args": ["--disable-features=CustomizableSelectInPage", "--enable-features=CustomizableSelect"],
+    "expires": "Aug 1, 2025",
+    "owners": ["jarhar@chromium.org", "dom-dev@google.com"]
+  },
+  {
     "prefix": "input-closes-select",
     "platforms": ["Linux"],
     "bases": [

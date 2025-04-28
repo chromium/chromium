@@ -108,7 +108,7 @@ class SelectDescendantsObserver : public MutationObserver::Delegate {
   explicit SelectDescendantsObserver(HTMLSelectElement& select)
       : select_(select), observer_(MutationObserver::Create(this)) {
     CHECK(HTMLSelectElement::CustomizableSelectEnabled(&select));
-    DCHECK(select_->IsAppearanceBaseButton());
+    DCHECK(select_->IsAppearanceBase());
 
     MutationObserverInit* init = MutationObserverInit::Create();
     init->setChildList(true);
@@ -866,7 +866,7 @@ void HTMLSelectElement::ParseAttribute(
 }
 
 bool HTMLSelectElement::MayTriggerVirtualKeyboard() const {
-  return !IsAppearanceBaseButton();
+  return !IsAppearanceBase();
 }
 
 bool HTMLSelectElement::ShouldHaveFocusAppearance() const {
@@ -1230,12 +1230,12 @@ HTMLOptionElement* HTMLSelectElement::SelectedOption() const {
 
 bool HTMLSelectElement::IsInDialogMode() const {
   return HTMLSelectElement::CustomizableSelectEnabled(this) &&
-         IsAppearanceBaseButton() && content_model_violations_count_ > 0U;
+         IsAppearanceBase() && content_model_violations_count_ > 0U;
 }
 
 void HTMLSelectElement::IncreaseContentModelViolationCount() {
   CHECK(HTMLSelectElement::CustomizableSelectEnabled(this));
-  DCHECK(IsAppearanceBaseButton());
+  DCHECK(IsAppearanceBase());
   bool dialog_mode_changed = !content_model_violations_count_;
   ++content_model_violations_count_;
   if (dialog_mode_changed) {
@@ -1247,7 +1247,7 @@ void HTMLSelectElement::IncreaseContentModelViolationCount() {
 
 void HTMLSelectElement::DecreaseContentModelViolationCount() {
   CHECK(HTMLSelectElement::CustomizableSelectEnabled(this));
-  DCHECK(IsAppearanceBaseButton());
+  DCHECK(IsAppearanceBase());
   bool dialog_mode_changed = content_model_violations_count_ == 1;
   if (content_model_violations_count_ > 0U) {
     --content_model_violations_count_;
@@ -1655,7 +1655,7 @@ void HTMLSelectElement::UpdateMutationObserver() {
   if (!HTMLSelectElement::CustomizableSelectEnabled(this)) {
     return;
   }
-  if (UsesMenuList() && isConnected() && IsAppearanceBaseButton()) {
+  if (UsesMenuList() && isConnected() && IsAppearanceBase()) {
     if (!descendants_observer_) {
       descendants_observer_ =
           MakeGarbageCollected<SelectDescendantsObserver>(*this);
@@ -2248,8 +2248,8 @@ bool HTMLSelectElement::IsPopoverForAppearanceBase(const Element* element) {
   return false;
 }
 
-bool HTMLSelectElement::IsAppearanceBaseButton() const {
-  return select_type_->IsAppearanceBaseButton();
+bool HTMLSelectElement::IsAppearanceBase() const {
+  return select_type_->IsAppearanceBase();
 }
 
 bool HTMLSelectElement::IsAppearanceBasePicker() const {
@@ -2438,6 +2438,27 @@ HTMLSelectElement* HTMLSelectElement::NearestAncestorSelectNoNesting(
     }
   }
   return nullptr;
+}
+
+FocusableState HTMLSelectElement::SupportsFocus(
+    UpdateBehavior update_behavior) const {
+  // Run SupportsFocus from the parent class first so it can do a style update
+  // if appropriate, which we will make use of here.
+  FocusableState superclass_focusable =
+      HTMLFormControlElementWithState::SupportsFocus(update_behavior);
+  if (RuntimeEnabledFeatures::CustomizableSelectInPageEnabled() &&
+      !UsesMenuList() && IsAppearanceBase()) {
+    // In this case, the child option elements are focusable and keyboard
+    // navigating to this element should just go straight to the options. Call
+    // HTMLElement::SupportsFocus instead of
+    // HTMLFormControlElement::SupportsFocus because the HTMLFormControlElement
+    // one will just make it focusable again.
+    // TODO(crbug.com/357649033): solicit feedback about this behavior.
+    return IsDisabledFormControl()
+               ? FocusableState::kNotFocusable
+               : HTMLElement::SupportsFocus(update_behavior);
+  }
+  return superclass_focusable;
 }
 
 }  // namespace blink

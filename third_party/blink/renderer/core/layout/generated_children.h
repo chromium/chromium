@@ -22,8 +22,7 @@ static bool CanHaveGeneratedChildren(const LayoutObject& layout_object) {
       layout_object.IsMenuList() || layout_object.IsInputButton()) {
     if (HTMLSelectElement::CustomizableSelectEnabled(layout_object.GetNode()) &&
         layout_object.IsMenuList() &&
-        To<HTMLSelectElement>(layout_object.GetNode())
-            ->IsAppearanceBaseButton()) {
+        To<HTMLSelectElement>(layout_object.GetNode())->IsAppearanceBase()) {
       // appearance:base-select <select>s should be allowed to have ::after etc.
       return true;
     }
