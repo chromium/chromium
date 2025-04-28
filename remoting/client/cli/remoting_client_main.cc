@@ -31,26 +31,28 @@ int main(int argc, char const* argv[]) {
 
   auto* command_line = base::CommandLine::ForCurrentProcess();
 
-  constexpr std::string_view kSupportIdSwitch = "support_id";
+  constexpr std::string_view kSupportAccessCodeSwitch = "support_access_code";
   constexpr std::string_view kAccessTokenSwitch = "access_token";
   constexpr std::string_view kUserEmailSwitch = "user_email";
 
-  if (!command_line->HasSwitch(kSupportIdSwitch)) {
-    LOG(ERROR) << kSupportIdSwitch << " arg is missing";
+  if (!command_line->HasSwitch(kSupportAccessCodeSwitch)) {
+    LOG(ERROR) << kSupportAccessCodeSwitch << " arg is missing";
   } else if (!command_line->HasSwitch(kAccessTokenSwitch)) {
     LOG(ERROR) << kAccessTokenSwitch << " arg is missing";
   } else if (!command_line->HasSwitch(kUserEmailSwitch)) {
     LOG(ERROR) << kUserEmailSwitch << " arg is missing";
   }
 
-  auto support_id = command_line->GetSwitchValueASCII(kSupportIdSwitch);
+  auto support_access_code =
+      command_line->GetSwitchValueASCII(kSupportAccessCodeSwitch);
   auto access_token = command_line->GetSwitchValueASCII(kAccessTokenSwitch);
   auto user_email = command_line->GetSwitchValueASCII(kUserEmailSwitch);
 
-  if (support_id.empty() || access_token.empty() || user_email.empty()) {
+  if (support_access_code.empty() || access_token.empty() ||
+      user_email.empty()) {
     return -1;
-  } else if (support_id.length() != 12) {
-    LOG(ERROR) << kSupportIdSwitch << " value must be 12 digits long.";
+  } else if (support_access_code.length() != 12) {
+    LOG(ERROR) << kSupportAccessCodeSwitch << " value must be 12 digits long.";
     return -1;
   }
 
@@ -74,7 +76,7 @@ int main(int argc, char const* argv[]) {
                          run_loop.QuitClosure()),
       url_loader_factory_owner.GetURLLoaderFactory());
 
-  remoting_client.StartSession(support_id, {access_token, user_email});
+  remoting_client.StartSession(support_access_code, {access_token, user_email});
 
   run_loop.Run();
 

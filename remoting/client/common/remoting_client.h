@@ -25,14 +25,17 @@ namespace remoting {
 
 namespace apis::v1 {
 class GetManagedChromeOsHostResponse;
+class HostInfo;
 }  // namespace apis::v1
 
 class DirectoryServiceClient;
 class OAuthTokenGetter;
 
 namespace protocol {
+class ConnectionToHost;
 class SessionManager;
 class TransportContext;
+class VideoRenderer;
 }  // namespace protocol
 
 // A simple, native chromoting client implementation.
@@ -49,7 +52,7 @@ class RemotingClient : public SignalStrategy::Listener,
 
   ~RemotingClient() override;
 
-  void StartSession(std::string_view support_id,
+  void StartSession(std::string_view support_access_code,
                     OAuthTokenInfo oauth_token_info);
 
  private:
@@ -81,9 +84,11 @@ class RemotingClient : public SignalStrategy::Listener,
       const HttpStatus& status,
       std::unique_ptr<apis::v1::GetManagedChromeOsHostResponse> response);
 
+  void StartConnection();
   void RunQuitClosure();
 
-  std::string chrome_os_host_id_;
+  std::string host_id_;
+  std::string host_secret_;
   OAuthTokenInfo oauth_token_info_;
   base::OnceClosure quit_closure_;
 
@@ -94,12 +99,18 @@ class RemotingClient : public SignalStrategy::Listener,
   // Used to retrieve details about the remote host to connect to.
   std::unique_ptr<DirectoryServiceClient> directory_service_client_;
 
+  // Information about the remote host being connected to.
+  std::unique_ptr<apis::v1::HostInfo> chrome_os_host_;
+
   // TODO: joedow - |Move FtlSignalingConnector| from //remoting/host into
   // //remoting/signaling so it can be used in the client.
   std::unique_ptr<SignalStrategy> signal_strategy_;
 
+  // Session related members.
   std::unique_ptr<protocol::SessionManager> session_manager_;
   scoped_refptr<protocol::TransportContext> transport_context_;
+  std::unique_ptr<protocol::ConnectionToHost> connection_;
+  std::unique_ptr<protocol::VideoRenderer> video_renderer_;
 
   // Used to make service requests.
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
