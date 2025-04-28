@@ -357,7 +357,9 @@ TEST_P(AuthenticationServiceTest, TestHandleForgottenIdentityNoPromptSignIn) {
 
 // The reauth prompt should be shown if the primary identity is removed from an
 // other app when the user was signed in.
-TEST_P(AuthenticationServiceTest, TestHandleForgottenIdentityPromptSignIn) {
+// TODO(crbug.com/413588295): Fix flaky test.
+TEST_P(AuthenticationServiceTest,
+       FLAKY_TestHandleForgottenIdentityPromptSignIn) {
   // Sign in.
   authentication_service()->SignIn(identity(0),
                                    signin_metrics::AccessPoint::kUnknown);
