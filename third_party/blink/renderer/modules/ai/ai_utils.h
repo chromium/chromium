@@ -97,6 +97,13 @@ std::optional<Vector<String>> GetBestFitLanguages(
   return languages;
 }
 
+// Validates and canonicalizes a list of BCP47 formatted language strings.
+// Returns nullopt if any of the languages are invalid, otherwise returns the
+// canonicalized languages.
+std::optional<Vector<String>> ValidateAndCanonicalizeBCP47Languages(
+    v8::Isolate* isolate,
+    const Vector<String>& languages);
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_AI_AI_UTILS_H_

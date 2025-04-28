@@ -226,4 +226,25 @@ mojom::blink::AIRewriterCreateOptionsPtr ToMojoRewriterCreateOptions(
   return ToMojoRewriterCreateOptionsImpl(core_options, g_empty_string);
 }
 
+std::optional<Vector<String>> ValidateAndCanonicalizeBCP47Languages(
+    v8::Isolate* isolate,
+    const Vector<String>& languages) {
+  Vector<String> canonicalized_languages;
+  for (const String& language : languages) {
+    // Throws RangeError if `language` is not a valid language tag.
+    v8::Maybe<std::string> maybe_canonical_language =
+        isolate->ValidateAndCanonicalizeUnicodeLocaleId(language.Ascii());
+    if (maybe_canonical_language.IsNothing()) {
+      return std::nullopt;
+    }
+
+    String canonical_language(maybe_canonical_language.FromJust());
+
+    if (!canonicalized_languages.Contains(canonical_language)) {
+      canonicalized_languages.emplace_back(std::move(canonical_language));
+    }
+  }
+  return canonicalized_languages;
+}
+
 }  // namespace blink

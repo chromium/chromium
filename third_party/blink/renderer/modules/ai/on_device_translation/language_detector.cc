@@ -210,24 +210,13 @@ bool ValidateAndCanonicalizeExpectedInputLanguages(
   if (!options->hasExpectedInputLanguages()) {
     return true;
   }
-
-  Vector<String> expected_input_languages;
-  for (const String& language : options->expectedInputLanguages()) {
-    // Throws RangeError if `language` is not a valid language tag.
-    v8::Maybe<std::string> maybe_canonical_language =
-        isolate->ValidateAndCanonicalizeUnicodeLocaleId(language.Ascii());
-    if (maybe_canonical_language.IsNothing()) {
-      return false;
-    }
-
-    String canonical_language(maybe_canonical_language.FromJust());
-
-    if (!expected_input_languages.Contains(canonical_language)) {
-      expected_input_languages.emplace_back(std::move(canonical_language));
-    }
+  std::optional<Vector<String>> expected_input_languages =
+      ValidateAndCanonicalizeBCP47Languages(isolate,
+                                            options->expectedInputLanguages());
+  if (!expected_input_languages.has_value()) {
+    return false;
   }
-
-  options->setExpectedInputLanguages(expected_input_languages);
+  options->setExpectedInputLanguages(*expected_input_languages);
   return true;
 }
 
