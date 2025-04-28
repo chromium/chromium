@@ -89,10 +89,7 @@ public class AutofillImageFetcher {
             for (@ImageSize int size : imageSizes) {
                 IconSpecs iconSpecs =
                         IconSpecs.create(context, ImageType.CREDIT_CARD_ART_IMAGE, size);
-                String resolvedUrl =
-                        AutofillUiUtils.getFifeIconUrlWithParams(
-                                        url, iconSpecs.getWidth(), iconSpecs.getHeight())
-                                .getSpec();
+                String resolvedUrl = iconSpecs.getResolvedIconUrl(url).getSpec();
                 Function<Bitmap, Bitmap> treatImageFunction =
                         bitmap ->
                                 AutofillUiUtils.resizeAndAddRoundedCornersAndGreyBorder(
@@ -163,9 +160,7 @@ public class AutofillImageFetcher {
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public Optional<Bitmap> getImageIfAvailable(GURL url, IconSpecs iconSpecs) {
-        GURL resolvedUrl =
-                AutofillUiUtils.getFifeIconUrlWithParams(
-                        url, iconSpecs.getWidth(), iconSpecs.getHeight());
+        GURL resolvedUrl = iconSpecs.getResolvedIconUrl(url);
         // If the card art image exists in the cache, return it.
         if (mImagesCache.containsKey(resolvedUrl.getSpec())) {
             return Optional.of(mImagesCache.get(resolvedUrl.getSpec()));

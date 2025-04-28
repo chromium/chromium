@@ -104,11 +104,7 @@ public class AutofillImageFetcherTest {
                         ContextUtils.getApplicationContext(),
                         ImageType.CREDIT_CARD_ART_IMAGE,
                         ImageSize.SMALL);
-        GURL imageCacheKeySmall =
-                AutofillUiUtils.getFifeIconUrlWithParams(
-                        TEST_IMAGE_URL,
-                        cardIconSpecsSmall.getWidth(),
-                        cardIconSpecsSmall.getHeight());
+        GURL imageCacheKeySmall = cardIconSpecsSmall.getResolvedIconUrl(TEST_IMAGE_URL);
         Bitmap treatedImageSmall =
                 AutofillUiUtils.resizeAndAddRoundedCornersAndGreyBorder(
                         TEST_IMAGE, cardIconSpecsSmall, true);
@@ -117,11 +113,7 @@ public class AutofillImageFetcherTest {
                         ContextUtils.getApplicationContext(),
                         ImageType.CREDIT_CARD_ART_IMAGE,
                         ImageSize.LARGE);
-        GURL imageCacheKeyLarge =
-                AutofillUiUtils.getFifeIconUrlWithParams(
-                        TEST_IMAGE_URL,
-                        cardIconSpecsLarge.getWidth(),
-                        cardIconSpecsLarge.getHeight());
+        GURL imageCacheKeyLarge = cardIconSpecsLarge.getResolvedIconUrl(TEST_IMAGE_URL);
         Bitmap treatedImageLarge =
                 AutofillUiUtils.resizeAndAddRoundedCornersAndGreyBorder(
                         TEST_IMAGE, cardIconSpecsLarge, true);
@@ -161,9 +153,7 @@ public class AutofillImageFetcherTest {
                         ContextUtils.getApplicationContext(),
                         ImageType.CREDIT_CARD_ART_IMAGE,
                         ImageSize.SMALL);
-        GURL imageCacheKey =
-                AutofillUiUtils.getFifeIconUrlWithParams(
-                        TEST_IMAGE_URL, cardIconSpecs.getWidth(), cardIconSpecs.getHeight());
+        GURL imageCacheKey = cardIconSpecs.getResolvedIconUrl(TEST_IMAGE_URL);
         mAutofillImageFetcher.addImageToCacheForTesting(imageCacheKey, TEST_IMAGE);
         // No histogram should be logged since no image fetching is done.
         HistogramWatcher expectedHistogram =
@@ -248,9 +238,7 @@ public class AutofillImageFetcherTest {
                         ContextUtils.getApplicationContext(),
                         ImageType.CREDIT_CARD_ART_IMAGE,
                         ImageSize.SMALL);
-        GURL imageCacheKey =
-                AutofillUiUtils.getFifeIconUrlWithParams(
-                        TEST_IMAGE_URL, cardIconSpecs.getWidth(), cardIconSpecs.getHeight());
+        GURL imageCacheKey = cardIconSpecs.getResolvedIconUrl(TEST_IMAGE_URL);
         Bitmap treatedImage =
                 AutofillUiUtils.resizeAndAddRoundedCornersAndGreyBorder(
                         TEST_IMAGE, cardIconSpecs, true);

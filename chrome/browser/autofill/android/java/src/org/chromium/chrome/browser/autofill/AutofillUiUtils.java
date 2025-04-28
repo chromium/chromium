@@ -216,6 +216,10 @@ public class AutofillUiUtils {
             return null;
         }
 
+        public GURL getResolvedIconUrl(GURL iconUrl) {
+            return getFifeIconUrlWithParams(iconUrl, getWidth(), getHeight());
+        }
+
         public @Px int getWidth() {
             return mContext.getResources().getDimensionPixelSize(mWidthId);
         }
@@ -631,7 +635,8 @@ public class AutofillUiUtils {
      * @param height in pixels.
      * @return {@link GURL} formatted with the icon dimensions to fetch the image.
      */
-    public static GURL getFifeIconUrlWithParams(GURL customIconUrl, @Px int width, @Px int height) {
+    @VisibleForTesting
+    static GURL getFifeIconUrlWithParams(GURL customIconUrl, @Px int width, @Px int height) {
         // Params can be added to a FIFE URL by appending them at the end like URL[=params]. "w"
         // option is used to set the width in pixels, and "h" is used to set the height in pixels.
         StringBuilder url = new StringBuilder(customIconUrl.getSpec());
