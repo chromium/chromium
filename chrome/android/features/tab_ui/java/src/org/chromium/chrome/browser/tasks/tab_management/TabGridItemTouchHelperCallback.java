@@ -263,8 +263,10 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
         SimpleRecyclerViewAdapter.ViewHolder simpleViewHolder =
                 (SimpleRecyclerViewAdapter.ViewHolder) viewHolder;
 
-        int tabId = simpleViewHolder.model.get(TabProperties.TAB_ID);
-        mRecentlySwipedTabIdSupplier.set(tabId);
+        if (simpleViewHolder.model.containsKey(TabProperties.TAB_ID)) {
+            int tabId = simpleViewHolder.model.get(TabProperties.TAB_ID);
+            mRecentlySwipedTabIdSupplier.set(tabId);
+        }
 
         if (simpleViewHolder.model.get(CARD_TYPE) == TAB) {
             mTabClosedListener.run(
