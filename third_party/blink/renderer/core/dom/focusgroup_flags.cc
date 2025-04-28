@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -90,8 +91,8 @@ FocusgroupFlags ParseFocusgroup(const Element* element,
         MakeGarbageCollected<ConsoleMessage>(
             mojom::blink::ConsoleMessageSource::kOther,
             mojom::blink::ConsoleMessageLevel::kError,
-            "Unrecognized focusgroup attribute values: " +
-                invalid_tokens.ReleaseString()));
+            WTF::StrCat({"Unrecognized focusgroup attribute values: ",
+                         invalid_tokens.ReleaseString()})));
   }
 
   FocusgroupFlags flags = FocusgroupFlags::kNone;

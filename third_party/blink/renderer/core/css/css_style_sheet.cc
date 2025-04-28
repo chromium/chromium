@@ -413,9 +413,9 @@ unsigned CSSStyleSheet::insertRule(const String& rule_string,
   if (index > length()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kIndexSizeError,
-        "The index provided (" + String::Number(index) +
-            ") is larger than the maximum index (" + String::Number(length()) +
-            ").");
+        WTF::StrCat({"The index provided (", String::Number(index),
+                     ") is larger than the maximum index (",
+                     String::Number(length()), ")."}));
     return 0;
   }
 
@@ -429,7 +429,7 @@ unsigned CSSStyleSheet::insertRule(const String& rule_string,
   if (!rule) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kSyntaxError,
-        "Failed to parse the rule '" + rule_string + "'.");
+        WTF::StrCat({"Failed to parse the rule '", rule_string, "'."}));
     return 0;
   }
   RuleMutationScope mutation_scope(this);

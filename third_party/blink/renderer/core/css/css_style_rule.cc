@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/platform/heap/disallow_new_wrapper.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -238,8 +239,9 @@ unsigned CSSStyleRule::insertRule(const ExecutionContext* execution_context,
     if (index > 0) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kIndexSizeError,
-          "the index " + String::Number(index) +
-              " must be less than or equal to the length of the rule list.");
+          WTF::StrCat(
+              {"the index ", String::Number(index),
+               " must be less than or equal to the length of the rule list."}));
       return 0;
     }
     style_rule_->EnsureChildRules();

@@ -30,13 +30,14 @@
 
 #include "third_party/blink/renderer/core/css/css_bracketed_value_list.h"
 
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 namespace cssvalue {
 
 String CSSBracketedValueList::CustomCSSText() const {
-  return "[" + CSSValueList::CustomCSSText() + "]";
+  return WTF::StrCat({"[", CSSValueList::CustomCSSText(), "]"});
 }
 
 CSSBracketedValueList::CSSBracketedValueList()

@@ -1132,7 +1132,7 @@ void Range::CheckNodeBA(Node* n, ExceptionState& exception_state) const {
     case Node::kDocumentNode:
       exception_state.ThrowDOMException(
           DOMExceptionCode::kInvalidNodeTypeError,
-          "The node provided is of type '" + n->nodeName() + "'.");
+          WTF::StrCat({"The node provided is of type '", n->nodeName(), "'."}));
       return;
     case Node::kCdataSectionNode:
     case Node::kCommentNode:
@@ -1160,7 +1160,7 @@ void Range::CheckNodeBA(Node* n, ExceptionState& exception_state) const {
     case Node::kTextNode:
       exception_state.ThrowDOMException(
           DOMExceptionCode::kInvalidNodeTypeError,
-          "The node provided is of type '" + n->nodeName() + "'.");
+          WTF::StrCat({"The node provided is of type '", n->nodeName(), "'."}));
       return;
   }
 }
@@ -1222,7 +1222,8 @@ void Range::selectNode(Node* ref_node, ExceptionState& exception_state) {
     case Node::kDocumentNode:
       exception_state.ThrowDOMException(
           DOMExceptionCode::kInvalidNodeTypeError,
-          "The node provided is of type '" + ref_node->nodeName() + "'.");
+          WTF::StrCat(
+              {"The node provided is of type '", ref_node->nodeName(), "'."}));
       return;
   }
 
@@ -1257,7 +1258,8 @@ void Range::selectNodeContents(Node* ref_node,
       case Node::kDocumentTypeNode:
         exception_state.ThrowDOMException(
             DOMExceptionCode::kInvalidNodeTypeError,
-            "The node provided is of type '" + ref_node->nodeName() + "'.");
+            WTF::StrCat({"The node provided is of type '", ref_node->nodeName(),
+                         "'."}));
         return;
     }
   }
@@ -1336,7 +1338,8 @@ void Range::surroundContents(Node* new_parent,
     case Node::kDocumentTypeNode:
       exception_state.ThrowDOMException(
           DOMExceptionCode::kInvalidNodeTypeError,
-          "The node provided is of type '" + new_parent->nodeName() + "'.");
+          WTF::StrCat({"The node provided is of type '", new_parent->nodeName(),
+                       "'."}));
       return;
     case Node::kCdataSectionNode:
     case Node::kCommentNode:

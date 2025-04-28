@@ -67,9 +67,9 @@ String CharacterData::substringData(unsigned offset,
   if (offset > length()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kIndexSizeError,
-        "The offset " + String::Number(offset) +
-            " is greater than the node's length (" + String::Number(length()) +
-            ").");
+        WTF::StrCat({"The offset ", String::Number(offset),
+                     " is greater than the node's length (",
+                     String::Number(length()), ")."}));
     return String();
   }
 
@@ -100,9 +100,9 @@ void CharacterData::insertData(unsigned offset,
   if (offset > length()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kIndexSizeError,
-        "The offset " + String::Number(offset) +
-            " is greater than the node's length (" + String::Number(length()) +
-            ").");
+        WTF::StrCat({"The offset ", String::Number(offset),
+                     " is greater than the node's length (",
+                     String::Number(length()), ")."}));
     return;
   }
 

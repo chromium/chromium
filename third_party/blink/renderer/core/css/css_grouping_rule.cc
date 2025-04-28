@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -243,8 +244,8 @@ void CSSGroupingRule::deleteRule(unsigned index,
   if (index >= group_rule_->ChildRules().size()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kIndexSizeError,
-        "the index " + String::Number(index) +
-            " is greated than the length of the rule list.");
+        WTF::StrCat({"the index ", String::Number(index),
+                     " is greated than the length of the rule list."}));
     return;
   }
 
