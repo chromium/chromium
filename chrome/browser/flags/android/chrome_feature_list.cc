@@ -295,6 +295,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kLegacyTabStateDeprecation,
     &kLockBackPressHandlerAtStart,
     &kIncognitoScreenshot,
+    &kKeyboardEscBackNavigation,
     &kLensOnQuickActionSearchWidget,
     &kMagicStackAndroid,
     &kMayLaunchUrlUsesSeparateStoragePartition,
@@ -940,6 +941,10 @@ BASE_FEATURE(kLockBackPressHandlerAtStart,
 
 BASE_FEATURE(kIncognitoScreenshot,
              "IncognitoScreenshot",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kKeyboardEscBackNavigation,
+             "KeyboardEscBackNavigation",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kMagicStackAndroid,

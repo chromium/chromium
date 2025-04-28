@@ -396,6 +396,7 @@ public abstract class ChromeFeatureList {
     public static final String HTTPS_FIRST_BALANCED_MODE = "HttpsFirstBalancedMode";
     public static final String INCOGNITO_SCREENSHOT = "IncognitoScreenshot";
     public static final String IP_PROTECTION_UX = "IpProtectionUx";
+    public static final String KEYBOARD_ESC_BACK_NAVIGAION = "KeyboardEscBackNavigation";
     public static final String LEGACY_TAB_STATE_DEPRECATION = "LegacyTabStateDeprecation";
     public static final String LENS_ON_QUICK_ACTION_SEARCH_WIDGET = "LensOnQuickActionSearchWidget";
     public static final String LINKED_SERVICES_SETTING = "LinkedServicesSetting";
@@ -752,6 +753,8 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sHideTabletToolbarDownloadButton =
             newCachedFlag(HIDE_TABLET_TOOLBAR_DOWNLOAD_BUTTON, true);
     public static final CachedFlag sHistoryPaneAndroid = newCachedFlag(HISTORY_PANE_ANDROID, false);
+    public static final CachedFlag sKeyboardEscBackNavigation =
+            newCachedFlag(KEYBOARD_ESC_BACK_NAVIGAION, false);
     public static final CachedFlag sLegacyTabStateDeprecation =
             newCachedFlag(
                     LEGACY_TAB_STATE_DEPRECATION,
@@ -909,6 +912,7 @@ public abstract class ChromeFeatureList {
                     sGridTabSwitcherUpdate,
                     sHideTabletToolbarDownloadButton,
                     sHistoryPaneAndroid,
+                    sKeyboardEscBackNavigation,
                     sLegacyTabStateDeprecation,
                     sLockBackPressHandlerAtStart,
                     sMagicStackAndroid,
