@@ -22,7 +22,7 @@
           "color": {"$ref": "Color", "description": "The group's color."},
           "title": {"type": "string", "optional": true, "description": "The title of the group."},
           "windowId": {"type": "integer", "minimum": 0, "description": "The ID of the window that contains the group."},
-          "shared": {"nodoc": true, "type": "boolean", "description": "Whether the group is shared."}
+          "shared": {"type": "boolean", "description": "Whether the group is shared."}
         }
       }
     ],
@@ -76,7 +76,6 @@
                 "description": "Match group titles against a pattern."
               },
               "shared": {
-                "nodoc": true,
                 "type": "boolean",
                 "optional": true,
                 "description": "Whether the group is shared."
