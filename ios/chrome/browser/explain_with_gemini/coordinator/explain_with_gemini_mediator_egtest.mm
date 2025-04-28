@@ -41,8 +41,11 @@ using ::base::test::ios::WaitUntilConditionOrTimeout;
 namespace {
 
 const char kElementToLongPress[] = "selectid";
-ElementSelector* kElementToLongPressSelector =
-    [ElementSelector selectorWithElementID:kElementToLongPress];
+
+// Returns an ElementSelector for `ElementToLongPress`.
+ElementSelector* ElementToLongPressSelector() {
+  return [ElementSelector selectorWithElementID:kElementToLongPress];
+}
 
 // An HTML template that puts some text in a simple span element.
 const char kBasicSelectionUrl[] = "/basic";
@@ -144,7 +147,7 @@ bool FindEditMenuAction(NSString* accessibility_label) {
 // `kCanUseModelExecutionFeaturesName` capability.
 - (void)testExplainWithGemini {
   [self loadPage];
-  [ChromeEarlGreyUI triggerEditMenu:kElementToLongPressSelector];
+  [ChromeEarlGreyUI triggerEditMenu:ElementToLongPressSelector()];
   bool found = FindEditMenuAction([NSString
       stringWithFormat:@"✦ %@", l10n_util::GetNSString(
                                     IDS_IOS_EXPLAIN_GEMINI_EDIT_MENU)]);
@@ -184,7 +187,7 @@ bool FindEditMenuAction(NSString* accessibility_label) {
 - (void)testExplainWithGeminiIncognito {
   [ChromeEarlGrey openNewIncognitoTab];
   [self loadPage];
-  [ChromeEarlGreyUI triggerEditMenu:kElementToLongPressSelector];
+  [ChromeEarlGreyUI triggerEditMenu:ElementToLongPressSelector()];
   bool found = FindEditMenuAction([NSString
       stringWithFormat:@"✦ %@", l10n_util::GetNSString(
                                     IDS_IOS_EXPLAIN_GEMINI_EDIT_MENU)]);
@@ -197,7 +200,7 @@ bool FindEditMenuAction(NSString* accessibility_label) {
   [SigninEarlGrey signOut];
   [SigninEarlGrey verifySignedOut];
   [self loadPage];
-  [ChromeEarlGreyUI triggerEditMenu:kElementToLongPressSelector];
+  [ChromeEarlGreyUI triggerEditMenu:ElementToLongPressSelector()];
   bool found = FindEditMenuAction([NSString
       stringWithFormat:@"✦ %@", l10n_util::GetNSString(
                                     IDS_IOS_EXPLAIN_GEMINI_EDIT_MENU)]);
@@ -216,7 +219,7 @@ bool FindEditMenuAction(NSString* accessibility_label) {
   [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
 
   [self loadPage];
-  [ChromeEarlGreyUI triggerEditMenu:kElementToLongPressSelector];
+  [ChromeEarlGreyUI triggerEditMenu:ElementToLongPressSelector()];
   bool found = FindEditMenuAction([NSString
       stringWithFormat:@"✦ %@", l10n_util::GetNSString(
                                     IDS_IOS_EXPLAIN_GEMINI_EDIT_MENU)]);
@@ -234,7 +237,7 @@ bool FindEditMenuAction(NSString* accessibility_label) {
   [SigninEarlGrey
       signinWithFakeManagedIdentityInPersonalProfile:fakeManagedIdentity];
   [self loadPage];
-  [ChromeEarlGreyUI triggerEditMenu:kElementToLongPressSelector];
+  [ChromeEarlGreyUI triggerEditMenu:ElementToLongPressSelector()];
   bool found = FindEditMenuAction([NSString
       stringWithFormat:@"✦ %@", l10n_util::GetNSString(
                                     IDS_IOS_EXPLAIN_GEMINI_EDIT_MENU)]);

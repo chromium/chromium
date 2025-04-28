@@ -92,13 +92,22 @@ const char kInitialPageDestinationLongLinkID[] = "LongLink";
 // The text of the long link to the destination page.
 const char kInitialPageDestinationLongLinkText[] = "LongLink";
 
-// ElementSelector for long press action.
-ElementSelector* kLogoPageChromiumImageIdSelector =
-    [ElementSelector selectorWithElementID:kLogoPageChromiumImageId];
-ElementSelector* kInitialPageDestinationLinkIdSelector =
-    [ElementSelector selectorWithElementID:kInitialPageDestinationLinkId];
-ElementSelector* kInitialPageDestinationLongLinkIDSelector =
-    [ElementSelector selectorWithElementID:kInitialPageDestinationLongLinkID];
+// Returns an ElementSelector for the chromium image on the logo page.
+ElementSelector* LogoPageChromiumImageIdSelector() {
+  return [ElementSelector selectorWithElementID:kLogoPageChromiumImageId];
+}
+
+// Returns an ElementSelector for the link to the destination page on the
+// initial page.
+ElementSelector* InitialPageDestinationLinkIdSelector() {
+  return [ElementSelector selectorWithElementID:kInitialPageDestinationLinkId];
+}
+
+// Returns an ElementSelector for the long link to the destination page.
+ElementSelector* InitialPageDestinationLongLinkIDSelector() {
+  return
+      [ElementSelector selectorWithElementID:kInitialPageDestinationLongLinkID];
+}
 
 // URL to a page with a link with a javascript: scheme.
 const char kJavaScriptPageUrl[] = "/scenarionContextMenuJavaScript";
@@ -338,7 +347,8 @@ void RelaunchApp() {
   [ChromeEarlGrey loadURL:pageURL];
   [ChromeEarlGrey waitForWebStateContainingText:kLogoPageText];
 
-  [ChromeEarlGreyUI longPressElementOnWebView:kLogoPageChromiumImageIdSelector];
+  [ChromeEarlGreyUI
+      longPressElementOnWebView:LogoPageChromiumImageIdSelector()];
 
   TapOnContextMenuButton(OpenImageButton());
   [ChromeEarlGrey waitForPageToFinishLoading];
@@ -356,7 +366,8 @@ void RelaunchApp() {
   [ChromeEarlGrey loadURL:pageURL];
   [ChromeEarlGrey waitForWebStateContainingText:kLogoPageText];
 
-  [ChromeEarlGreyUI longPressElementOnWebView:kLogoPageChromiumImageIdSelector];
+  [ChromeEarlGreyUI
+      longPressElementOnWebView:LogoPageChromiumImageIdSelector()];
 
   TapOnContextMenuButton(OpenImageInNewTabButton());
 
@@ -383,7 +394,7 @@ void RelaunchApp() {
   [ChromeEarlGrey waitForWebStateZoomScale:1.0];
 
   [ChromeEarlGreyUI
-      longPressElementOnWebView:kInitialPageDestinationLinkIdSelector];
+      longPressElementOnWebView:InitialPageDestinationLinkIdSelector()];
 
   TapOnContextMenuButton(OpenLinkInNewTabButton());
 
@@ -436,14 +447,15 @@ void RelaunchApp() {
   [ChromeEarlGrey waitForPageToFinishLoading];
   [ChromeEarlGrey waitForWebStateZoomScale:1.0];
 
-  [ChromeEarlGreyUI longPressElementOnWebView:kLogoPageChromiumImageIdSelector];
+  [ChromeEarlGreyUI
+      longPressElementOnWebView:LogoPageChromiumImageIdSelector()];
 
   [[EarlGrey selectElementWithMatcher:grey_text(kShortImgTitle)]
       assertWithMatcher:grey_notNil()];
   ClearContextMenu();
 
   [ChromeEarlGreyUI
-      longPressElementOnWebView:kInitialPageDestinationLinkIdSelector];
+      longPressElementOnWebView:InitialPageDestinationLinkIdSelector()];
 
   // Links get prefixed with the hostname, so check for partial text match
   [[EarlGrey selectElementWithMatcher:chrome_test_util::ContainsPartialText(
@@ -456,14 +468,15 @@ void RelaunchApp() {
   [ChromeEarlGrey waitForPageToFinishLoading];
   [ChromeEarlGrey waitForWebStateZoomScale:1.0];
 
-  [ChromeEarlGreyUI longPressElementOnWebView:kLogoPageChromiumImageIdSelector];
+  [ChromeEarlGreyUI
+      longPressElementOnWebView:LogoPageChromiumImageIdSelector()];
 
   [[EarlGrey selectElementWithMatcher:grey_text(kLongImgTitle)]
       assertWithMatcher:grey_notNil()];
   ClearContextMenu();
 
   [ChromeEarlGreyUI
-      longPressElementOnWebView:kInitialPageDestinationLinkIdSelector];
+      longPressElementOnWebView:InitialPageDestinationLinkIdSelector()];
 
   // But expect that some of the link is visible in the title.
   NSString* startOfTitle = [kLongLinkHref substringToIndex:30];
@@ -478,7 +491,8 @@ void RelaunchApp() {
   [ChromeEarlGrey loadURL:pageURL];
   [ChromeEarlGrey waitForWebStateContainingText:kLogoPageText];
 
-  [ChromeEarlGreyUI longPressElementOnWebView:kLogoPageChromiumImageIdSelector];
+  [ChromeEarlGreyUI
+      longPressElementOnWebView:LogoPageChromiumImageIdSelector()];
 
   TapOnContextMenuButton(OpenImageButton());
   [ChromeEarlGrey waitForPageToFinishLoading];
@@ -534,7 +548,7 @@ void RelaunchApp() {
   // Display the context menu twice.
   for (NSInteger i = 0; i < 2; i++) {
     [ChromeEarlGreyUI
-        longPressElementOnWebView:kInitialPageDestinationLinkIdSelector];
+        longPressElementOnWebView:InitialPageDestinationLinkIdSelector()];
 
     // Make sure the context menu appeared.
     [[EarlGrey selectElementWithMatcher:OpenLinkInNewTabButton()]
@@ -564,7 +578,7 @@ void RelaunchApp() {
 
   // Display the context menu one last time.
   [ChromeEarlGreyUI
-      longPressElementOnWebView:kInitialPageDestinationLinkIdSelector];
+      longPressElementOnWebView:InitialPageDestinationLinkIdSelector()];
 
   // Make sure the context menu appeared.
   [[EarlGrey selectElementWithMatcher:OpenLinkInNewTabButton()]
@@ -580,7 +594,7 @@ void RelaunchApp() {
   [ChromeEarlGrey waitForWebStateZoomScale:1.0];
 
   [ChromeEarlGreyUI
-      longPressElementOnWebView:kInitialPageDestinationLinkIdSelector];
+      longPressElementOnWebView:InitialPageDestinationLinkIdSelector()];
 
   // Check the different buttons.
   [[EarlGrey
@@ -633,7 +647,7 @@ void RelaunchApp() {
 
   // Display the context menu.
   [ChromeEarlGreyUI
-      longPressElementOnWebView:kInitialPageDestinationLinkIdSelector];
+      longPressElementOnWebView:InitialPageDestinationLinkIdSelector()];
 
   // Open link in new window.
   [[EarlGrey
@@ -666,7 +680,7 @@ void RelaunchApp() {
 
   // Display the context menu.
   [ChromeEarlGreyUI
-      longPressElementOnWebView:kInitialPageDestinationLinkIdSelector];
+      longPressElementOnWebView:InitialPageDestinationLinkIdSelector()];
 
   // Open link in new window.
   [[EarlGrey
@@ -690,7 +704,7 @@ void RelaunchApp() {
   [ChromeEarlGrey loadURL:initialURL];
 
   [ChromeEarlGreyUI
-      longPressElementOnWebView:kInitialPageDestinationLinkIdSelector];
+      longPressElementOnWebView:InitialPageDestinationLinkIdSelector()];
 
   // Check the different buttons.
   [[EarlGrey selectElementWithMatcher:ContextMenuItemWithAccessibilityLabelId(
@@ -709,7 +723,7 @@ void RelaunchApp() {
   [ChromeEarlGrey loadURL:initialURL];
 
   [ChromeEarlGreyUI
-      longPressElementOnWebView:kInitialPageDestinationLinkIdSelector];
+      longPressElementOnWebView:InitialPageDestinationLinkIdSelector()];
 
   // Check the different buttons.
   [[EarlGrey selectElementWithMatcher:ContextMenuItemWithAccessibilityLabelId(
@@ -729,7 +743,7 @@ void RelaunchApp() {
   [ChromeEarlGrey waitForWebStateZoomScale:1.0];
 
   [ChromeEarlGreyUI
-      longPressElementOnWebView:kInitialPageDestinationLinkIdSelector];
+      longPressElementOnWebView:InitialPageDestinationLinkIdSelector()];
 
   TapOnContextMenuButton(OpenLinkInNewTabButton());
 
@@ -773,7 +787,7 @@ void RelaunchApp() {
   [ChromeEarlGrey waitForWebStateZoomScale:1.0];
 
   [ChromeEarlGreyUI
-      longPressElementOnWebView:kInitialPageDestinationLinkIdSelector];
+      longPressElementOnWebView:InitialPageDestinationLinkIdSelector()];
 
   TapOnContextMenuButton(OpenLinkInNewGroupButton());
 
@@ -797,7 +811,7 @@ void RelaunchApp() {
       waitForWebStateContainingText:kInitialPageDestinationLinkText];
   [ChromeEarlGrey waitForWebStateZoomScale:1.0];
   [ChromeEarlGreyUI
-      longPressElementOnWebView:kInitialPageDestinationLinkIdSelector];
+      longPressElementOnWebView:InitialPageDestinationLinkIdSelector()];
 
   TapOnContextMenuButton(OpenLinkInGroupButton());
   TapOnContextMenuButton(OpenLinkInOneTabGroupButton());
@@ -827,7 +841,7 @@ void RelaunchApp() {
   [ChromeEarlGrey waitForWebStateZoomScale:1.0];
 
   [ChromeEarlGreyUI
-      longPressElementOnWebView:kInitialPageDestinationLinkIdSelector];
+      longPressElementOnWebView:InitialPageDestinationLinkIdSelector()];
 
   [ChromeEarlGrey verifyShareActionWithURL:pageURL pageTitle:pageTitle];
 
@@ -856,7 +870,7 @@ void RelaunchApp() {
   [ChromeEarlGrey waitForWebStateZoomScale:1.0];
 
   [ChromeEarlGreyUI
-      longPressElementOnWebView:kInitialPageDestinationLongLinkIDSelector];
+      longPressElementOnWebView:InitialPageDestinationLongLinkIDSelector()];
 
   std::u16string formattedURL = url_formatter::FormatUrl(longURL);
   NSString* stringURL = base::SysUTF16ToNSString(formattedURL);
@@ -887,7 +901,8 @@ void RelaunchApp() {
   [ChromeEarlGrey waitForPageToFinishLoading];
   [ChromeEarlGrey waitForWebStateZoomScale:1.0];
 
-  [ChromeEarlGreyUI longPressElementOnWebView:kLogoPageChromiumImageIdSelector];
+  [ChromeEarlGreyUI
+      longPressElementOnWebView:LogoPageChromiumImageIdSelector()];
 
   [ChromeEarlGrey waitForForegroundWindowCount:1];
   [[EarlGrey selectElementWithMatcher:grey_text(kShortImgTitle)]

@@ -25,8 +25,11 @@
 namespace {
 
 const char kElementToLongPress[] = "selectid";
-ElementSelector* kElementToLongPressSelector =
-    [ElementSelector selectorWithElementID:kElementToLongPress];
+
+// Returns an ElementSelector for `ElementToLongPress`.
+ElementSelector* ElementToLongPressSelector() {
+  return [ElementSelector selectorWithElementID:kElementToLongPress];
+}
 
 // An HTML template that puts some text in a simple span element.
 const char kBasicSelectionUrl[] = "/basic";
@@ -150,7 +153,7 @@ bool FindEditMenuAction(NSString* accessibility_label) {
 
 - (void)testSearchWith {
   [self loadPage];
-  [ChromeEarlGreyUI triggerEditMenu:kElementToLongPressSelector];
+  [ChromeEarlGreyUI triggerEditMenu:ElementToLongPressSelector()];
   bool found = FindEditMenuAction(@"Search with test");
   GREYAssertTrue(found, @"Search Web button not found");
   [[EarlGrey selectElementWithMatcher:
@@ -166,7 +169,7 @@ bool FindEditMenuAction(NSString* accessibility_label) {
 - (void)testSearchWithIncognito {
   [ChromeEarlGrey openNewIncognitoTab];
   [self loadPage];
-  [ChromeEarlGreyUI triggerEditMenu:kElementToLongPressSelector];
+  [ChromeEarlGreyUI triggerEditMenu:ElementToLongPressSelector()];
   bool found = FindEditMenuAction(@"Search with test");
   GREYAssertTrue(found, @"Search Web button not found");
   [[EarlGrey selectElementWithMatcher:
