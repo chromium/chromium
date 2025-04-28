@@ -24,11 +24,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer/array_buffer_contents.h"
 
 #include <cstring>
@@ -81,12 +76,14 @@ ArrayBufferContents::ArrayBufferContents(
   auto deleter = [](void* buffer, size_t length, void* data) {
     size_t offset = reinterpret_cast<uintptr_t>(buffer) %
                     base::SysInfo::VMAllocationGranularity();
-    uint8_t* base = static_cast<uint8_t*>(buffer) - offset;
-    auto mapping = base::span(base, length + offset);
+    // SAFETY: Memory that was allocated is VMAllocationGranularity() aligned.
+    // the overallocated bytes are at the beginning of the buffer.
+    uint8_t* base = UNSAFE_BUFFERS(static_cast<uint8_t*>(buffer) - offset);
+    auto mapping = UNSAFE_BUFFERS(base::span(base, length + offset));
     auto* mapper = gin::GetSharedMemoryMapperForArrayBuffers();
     base::subtle::PlatformSharedMemoryRegion::Unmap(mapping, mapper);
   };
-  void* base = result.value().data() + offset_rounding;
+  uint8_t* base = &result.value()[offset_rounding];
   backing_store_ =
       v8::ArrayBuffer::NewBackingStore(base, length, deleter, nullptr);
 }
@@ -211,7 +208,7 @@ void ArrayBufferContents::CopyTo(ArrayBufferContents& other) {
       DataLength(), 1, IsShared() ? kShared : kNotShared, kDontInitialize);
   if (!IsValid() || !other.IsValid())
     return;
-  std::memcpy(other.Data(), Data(), DataLength());
+  other.ByteSpan().copy_from(ByteSpan());
 }
 
 template <partition_alloc::AllocFlags flags>
