@@ -19,7 +19,7 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.ChromeStringConstants;
-import org.chromium.chrome.browser.autofill.AutofillUiUtils;
+import org.chromium.chrome.browser.autofill.AutofillUiUtils.IconSpecs;
 import org.chromium.chrome.browser.autofill.vcn.AutofillVcnEnrollBottomSheetProperties.Description;
 import org.chromium.chrome.browser.autofill.vcn.AutofillVcnEnrollBottomSheetProperties.IssuerIcon;
 import org.chromium.chrome.browser.autofill.vcn.AutofillVcnEnrollBottomSheetProperties.LegalMessages;
@@ -31,6 +31,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
 import org.chromium.components.autofill.AutofillFeatures;
 import org.chromium.components.autofill.ImageSize;
+import org.chromium.components.autofill.ImageType;
 import org.chromium.components.autofill.VirtualCardEnrollmentLinkType;
 import org.chromium.components.autofill.payments.LegalMessageLine;
 import org.chromium.content_public.browser.WebContents;
@@ -108,8 +109,8 @@ import java.util.List;
         if (mNativeAutofillVcnEnrollBottomSheetBridge != 0) return false;
         mNativeAutofillVcnEnrollBottomSheetBridge = nativeAutofillVcnEnrollBottomSheetBridge;
 
-        AutofillUiUtils.CardIconSpecs cardIconSpecs =
-                AutofillUiUtils.CardIconSpecs.create(mContext, ImageSize.LARGE);
+        IconSpecs iconSpecs =
+                IconSpecs.create(mContext, ImageType.CREDIT_CARD_ART_IMAGE, ImageSize.LARGE);
 
         PropertyModel.Builder modelBuilder =
                 new PropertyModel.Builder(AutofillVcnEnrollBottomSheetProperties.ALL_KEYS)
@@ -132,8 +133,8 @@ import java.util.List;
                                         ? new IssuerIcon(networkIconResource, issuerIconUrl)
                                         : new IssuerIcon(
                                                 issuerIconBitmap,
-                                                cardIconSpecs.getWidth(),
-                                                cardIconSpecs.getHeight()))
+                                                iconSpecs.getWidth(),
+                                                iconSpecs.getHeight()))
                         .with(AutofillVcnEnrollBottomSheetProperties.CARD_LABEL, cardLabel)
                         .with(
                                 AutofillVcnEnrollBottomSheetProperties.GOOGLE_LEGAL_MESSAGES,

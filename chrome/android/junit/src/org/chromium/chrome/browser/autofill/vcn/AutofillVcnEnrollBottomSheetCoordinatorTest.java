@@ -35,13 +35,14 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.autofill.AutofillImageFetcher;
 import org.chromium.chrome.browser.autofill.AutofillImageFetcherFactory;
-import org.chromium.chrome.browser.autofill.AutofillUiUtils.CardIconSpecs;
+import org.chromium.chrome.browser.autofill.AutofillUiUtils.IconSpecs;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.autofill.AutofillFeatures;
 import org.chromium.components.autofill.ImageSize;
+import org.chromium.components.autofill.ImageType;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerFactory;
 import org.chromium.components.browser_ui.bottomsheet.ManagedBottomSheetController;
@@ -106,9 +107,12 @@ public final class AutofillVcnEnrollBottomSheetCoordinatorTest {
         Bitmap bitmap = Bitmap.createBitmap(/* width= */ 5, /* height= */ 5, Config.ARGB_8888);
         when(mImageFetcher.getImageIfAvailable(
                         new GURL(cardArtUrl),
-                        CardIconSpecs.create(mWindow.getContext().get(), ImageSize.SMALL)))
+                        IconSpecs.create(
+                                mWindow.getContext().get(),
+                                ImageType.CREDIT_CARD_ART_IMAGE,
+                                ImageSize.SMALL)))
                 .thenReturn(Optional.of(bitmap));
-        when(mImageFetcher.getImageIfAvailable(/* url= */ any(), /* cardIconSpecs= */ any()))
+        when(mImageFetcher.getImageIfAvailable(/* url= */ any(), /* iconSpecs= */ any()))
                 .thenReturn(Optional.empty());
     }
 

@@ -21,9 +21,10 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.autofill.AutofillUiUtils.CardIconSpecs;
+import org.chromium.chrome.browser.autofill.AutofillUiUtils.IconSpecs;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.autofill.ImageSize;
+import org.chromium.components.autofill.ImageType;
 import org.chromium.components.embedder_support.simple_factory_key.SimpleFactoryKeyHandle;
 import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.components.image_fetcher.ImageFetcherConfig;
@@ -86,15 +87,16 @@ public class AutofillImageFetcher {
             }
 
             for (@ImageSize int size : imageSizes) {
-                CardIconSpecs cardIconSpecs = CardIconSpecs.create(context, size);
+                IconSpecs iconSpecs =
+                        IconSpecs.create(context, ImageType.CREDIT_CARD_ART_IMAGE, size);
                 String resolvedUrl =
                         AutofillUiUtils.getFifeIconUrlWithParams(
-                                        url, cardIconSpecs.getWidth(), cardIconSpecs.getHeight())
+                                        url, iconSpecs.getWidth(), iconSpecs.getHeight())
                                 .getSpec();
                 Function<Bitmap, Bitmap> treatImageFunction =
                         bitmap ->
                                 AutofillUiUtils.resizeAndAddRoundedCornersAndGreyBorder(
-                                        bitmap, cardIconSpecs, true);
+                                        bitmap, iconSpecs, true);
                 Callback<@Nullable Bitmap> onImageFetched =
                         bitmap ->
                                 treatAndCacheImage(
@@ -156,14 +158,14 @@ public class AutofillImageFetcher {
      * Returns the required image if it exists in the image cache, empty object otherwise.
      *
      * @param url The URL of the image.
-     * @param cardIconSpecs The sizing specifications for the image.
+     * @param iconSpecs The sizing specifications for the image.
      * @return Bitmap image for the passed in URL if it exists in cache, an empty object otherwise.
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-    public Optional<Bitmap> getImageIfAvailable(GURL url, CardIconSpecs cardIconSpecs) {
+    public Optional<Bitmap> getImageIfAvailable(GURL url, IconSpecs iconSpecs) {
         GURL resolvedUrl =
                 AutofillUiUtils.getFifeIconUrlWithParams(
-                        url, cardIconSpecs.getWidth(), cardIconSpecs.getHeight());
+                        url, iconSpecs.getWidth(), iconSpecs.getHeight());
         // If the card art image exists in the cache, return it.
         if (mImagesCache.containsKey(resolvedUrl.getSpec())) {
             return Optional.of(mImagesCache.get(resolvedUrl.getSpec()));

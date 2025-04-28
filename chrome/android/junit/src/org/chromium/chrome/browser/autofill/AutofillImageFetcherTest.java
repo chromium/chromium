@@ -43,9 +43,10 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
-import org.chromium.chrome.browser.autofill.AutofillUiUtils.CardIconSpecs;
+import org.chromium.chrome.browser.autofill.AutofillUiUtils.IconSpecs;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.autofill.ImageSize;
+import org.chromium.components.autofill.ImageType;
 import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.components.image_fetcher.ImageFetcher.Params;
 import org.chromium.url.GURL;
@@ -54,7 +55,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 // TODO(crbug.com/388217006): Add tests for {@link AutofillImageFetcher#getImageIfAvailable(GURL,
-// CardIconSpecs)} after refactor.
+// IconSpecs)} after refactor.
 /** Unit tests for {@link AutofillImageFetcher}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @LooperMode(LooperMode.Mode.LEGACY)
@@ -98,8 +99,11 @@ public class AutofillImageFetcherTest {
     @Test
     @SmallTest
     public void testPrefetchCardArtImages_validUrl_successfulImageFetch() {
-        CardIconSpecs cardIconSpecsSmall =
-                CardIconSpecs.create(ContextUtils.getApplicationContext(), ImageSize.SMALL);
+        IconSpecs cardIconSpecsSmall =
+                IconSpecs.create(
+                        ContextUtils.getApplicationContext(),
+                        ImageType.CREDIT_CARD_ART_IMAGE,
+                        ImageSize.SMALL);
         GURL imageCacheKeySmall =
                 AutofillUiUtils.getFifeIconUrlWithParams(
                         TEST_IMAGE_URL,
@@ -108,8 +112,11 @@ public class AutofillImageFetcherTest {
         Bitmap treatedImageSmall =
                 AutofillUiUtils.resizeAndAddRoundedCornersAndGreyBorder(
                         TEST_IMAGE, cardIconSpecsSmall, true);
-        CardIconSpecs cardIconSpecsLarge =
-                CardIconSpecs.create(ContextUtils.getApplicationContext(), ImageSize.LARGE);
+        IconSpecs cardIconSpecsLarge =
+                IconSpecs.create(
+                        ContextUtils.getApplicationContext(),
+                        ImageType.CREDIT_CARD_ART_IMAGE,
+                        ImageSize.LARGE);
         GURL imageCacheKeyLarge =
                 AutofillUiUtils.getFifeIconUrlWithParams(
                         TEST_IMAGE_URL,
@@ -149,8 +156,11 @@ public class AutofillImageFetcherTest {
     @Test
     @SmallTest
     public void testPrefetchCardArtImages_imageInCache_imageNotFetched() {
-        CardIconSpecs cardIconSpecs =
-                CardIconSpecs.create(ContextUtils.getApplicationContext(), ImageSize.SMALL);
+        IconSpecs cardIconSpecs =
+                IconSpecs.create(
+                        ContextUtils.getApplicationContext(),
+                        ImageType.CREDIT_CARD_ART_IMAGE,
+                        ImageSize.SMALL);
         GURL imageCacheKey =
                 AutofillUiUtils.getFifeIconUrlWithParams(
                         TEST_IMAGE_URL, cardIconSpecs.getWidth(), cardIconSpecs.getHeight());
@@ -233,8 +243,11 @@ public class AutofillImageFetcherTest {
                         })
                 .when(mMockImageFetcher)
                 .fetchImage(any(Params.class), any(Callback.class));
-        CardIconSpecs cardIconSpecs =
-                CardIconSpecs.create(ContextUtils.getApplicationContext(), ImageSize.SMALL);
+        IconSpecs cardIconSpecs =
+                IconSpecs.create(
+                        ContextUtils.getApplicationContext(),
+                        ImageType.CREDIT_CARD_ART_IMAGE,
+                        ImageSize.SMALL);
         GURL imageCacheKey =
                 AutofillUiUtils.getFifeIconUrlWithParams(
                         TEST_IMAGE_URL, cardIconSpecs.getWidth(), cardIconSpecs.getHeight());

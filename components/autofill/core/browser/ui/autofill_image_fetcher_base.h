@@ -40,9 +40,15 @@ namespace autofill {
 class AutofillImageFetcherBase {
  public:
   // The types of images supported by the `AutofillImageFetcher` API.
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.autofill
   enum class ImageType {
+    // Art image icons used for credit card display in the payments TTF bottom
+    // sheet.
     kCreditCardArtImage,
+    // Bank account icons used in the financial account management UI.
     kPixAccountImage,
+    // Icons for Google Wallet items that can't be used for payments (like
+    // loyalty cards, etc.).
     kValuableImage,
   };
 
