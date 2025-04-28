@@ -1288,6 +1288,9 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
   (*s_allowlist)[optimization_guide::prefs::
                      kProductSpecificationsEnterprisePolicyAllowed] =
       settings_api::PrefType::kNumber;
+  (*s_allowlist)[optimization_guide::prefs::
+                     kAutofillPredictionImprovementsEnterprisePolicyAllowed] =
+      settings_api::PrefType::kNumber;
 
   // Glic prefs
 #if BUILDFLAG(ENABLE_GLIC)
