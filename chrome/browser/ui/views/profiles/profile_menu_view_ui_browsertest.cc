@@ -106,26 +106,22 @@ const ProfileMenuViewPixelTestParam kPixelTestParams[] = {
         .pixel_test_param = {.test_suffix =
                                  "SignedOut_MultipleProfiles_Improved"},
         .use_multiple_profiles = true,
-        .extra_features_state_ = {{kOutlineSilhouetteIcon, true}},
     },
     {
         .pixel_test_param =
             {.test_suffix = "SignedOut_MultipleProfiles_DarkTheme_Improved",
              .use_dark_theme = true},
         .use_multiple_profiles = true,
-        .extra_features_state_ = {{kOutlineSilhouetteIcon, true}},
     },
     {
         .pixel_test_param = {.test_suffix = "WebSignedIn_Improved"},
         .signin_status = SigninStatusPixelTestParam::kWebSignedIn,
-        .extra_features_state_ = {{kOutlineSilhouetteIcon, true}},
     },
     {
         .pixel_test_param = {.test_suffix =
                                  "WebSignedIn_PlaceholderIcon_Improved"},
         .signin_status = SigninStatusPixelTestParam::kWebSignedIn,
         .account_image_available = false,
-        .extra_features_state_ = {{kOutlineSilhouetteIcon, true}},
     },
     {
         .pixel_test_param =
@@ -133,14 +129,12 @@ const ProfileMenuViewPixelTestParam kPixelTestParams[] = {
              .use_dark_theme = true},
         .signin_status = SigninStatusPixelTestParam::kWebSignedIn,
         .account_image_available = false,
-        .extra_features_state_ = {{kOutlineSilhouetteIcon, true}},
     },
     {
         .pixel_test_param = {.test_suffix =
                                  "SignedIn_MultipleProfiles_Improved"},
         .signin_status = SigninStatusPixelTestParam::kSignedInNoSync,
         .use_multiple_profiles = true,
-        .extra_features_state_ = {{kOutlineSilhouetteIcon, true}},
     },
     {
         .pixel_test_param = {.test_suffix =
@@ -148,15 +142,16 @@ const ProfileMenuViewPixelTestParam kPixelTestParams[] = {
                              .use_dark_theme = true},
         .signin_status = SigninStatusPixelTestParam::kSignedInNoSync,
         .use_multiple_profiles = true,
-        .extra_features_state_ = {{kOutlineSilhouetteIcon, true}},
     },
     {
         .pixel_test_param = {.test_suffix = "SignedIn_Sync_Improved"},
         .signin_status = SigninStatusPixelTestParam::kSignedInWithSync,
     },
-    {.pixel_test_param = {.test_suffix = "SignedIn_SyncPaused_Improved",
-                          .use_dark_theme = true},
-     .signin_status = SigninStatusPixelTestParam::kSignedInSyncPaused},
+    {
+        .pixel_test_param = {.test_suffix = "SignedIn_SyncPaused_Improved",
+                             .use_dark_theme = true},
+        .signin_status = SigninStatusPixelTestParam::kSignedInSyncPaused,
+    },
     {
         .pixel_test_param = {.test_suffix = "SignInPending_Improved"},
         .signin_status = SigninStatusPixelTestParam::kSignInPendingNoSync,
@@ -176,7 +171,6 @@ const ProfileMenuViewPixelTestParam kPixelTestParams[] = {
                              .use_dark_theme = true},
         .signin_status = SigninStatusPixelTestParam::kSignedOut,
         .management_status = ManagementStatus::kBrowserManaged,
-        .extra_features_state_ = {{kOutlineSilhouetteIcon, true}},
     },
     {
         .pixel_test_param =
@@ -242,8 +236,6 @@ class ProfileMenuViewPixelTest
   ProfileMenuViewPixelTest()
       : ProfilesPixelTestBaseT<DialogBrowserTest>(GetParam().pixel_test_param) {
     base::flat_map<base::test::FeatureRef, bool> features_state = {
-        // False by default but may be overridden by `extra_features_state_`.
-        {kOutlineSilhouetteIcon, false},
         {features::kEnterpriseProfileBadgingForMenu, true},
         {features::kEnterpriseProfileBadgingPolicies, true},
         // False by default but may be overridden by `extra_features_state_`.

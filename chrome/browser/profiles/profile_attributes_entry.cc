@@ -62,8 +62,6 @@ const char kProfileManagementId[] = "profile_management_id";
 const char kProfileManagementOidcState[] = "profile_management_oidc_state";
 const char kUserAcceptedAccountManagement[] =
     "user_accepted_account_management";
-const char kIsUsingNewPlaceholderAvatarIcon[] =
-    "is_using_new_placeholder_avatar_icon";
 
 // All accounts info. This is a dictionary containing sub-dictionaries of
 // account information, keyed by the gaia ID. The sub-dictionaries are empty for
@@ -814,16 +812,6 @@ void ProfileAttributesEntry::SetProfileThemeColors(
     profile_attributes_storage_->NotifyProfileThemeColorsChanged(GetPath());
   }
 
-  // If the kOutlineSilhouetteIcon feature state has changed, notify that the
-  // avatar icon has changed once so that cached avatar images will be updated
-  // (e.g. the application badge icon on Windows).
-  if (base::FeatureList::IsEnabled(kOutlineSilhouetteIcon) !=
-      GetBool(kIsUsingNewPlaceholderAvatarIcon)) {
-    SetBool(kIsUsingNewPlaceholderAvatarIcon,
-            base::FeatureList::IsEnabled(kOutlineSilhouetteIcon));
-    changed = true;
-  }
-
   // Only notify if the profile uses the placeholder avatar.
   if (changed &&
       GetAvatarIconIndex() == profiles::GetPlaceholderAvatarIndex()) {
@@ -924,13 +912,6 @@ gfx::Image ProfileAttributesEntry::GetPlaceholderAvatarIcon(
     int size,
     const PlaceholderAvatarIconParams& icon_params) const {
   ProfileThemeColors colors = GetProfileThemeColors();
-
-  // Filled Person Icon
-  if (!base::FeatureList::IsEnabled(kOutlineSilhouetteIcon)) {
-    return profiles::GetPlaceholderAvatarIconWithColors(
-        colors.default_avatar_fill_color, colors.default_avatar_stroke_color,
-        size, icon_params);
-  }
 
   // Outline Silhouette Person Icon
   if (icon_params.visibility_against_background.has_value()) {

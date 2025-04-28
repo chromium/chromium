@@ -45,7 +45,6 @@
   E_CPONLY(kColorAvatarButtonHighlightIncognitoForeground) \
   E_CPONLY(kColorAvatarButtonIncognitoHover) \
   E_CPONLY(kColorAvatarButtonNormalRipple) \
-  E_CPONLY(kColorAvatarStrokeLight) \
   E_CPONLY(kColorAvatarStroke) \
   E_CPONLY(kColorAvatarFillForContrast) \
   /* Bookmark bar colors. */ \

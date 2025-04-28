@@ -2185,10 +2185,6 @@ const char kObservableAPIDescription[] =
     "A reactive programming primitive for ergonomically handling streams of "
     "async data. See https://github.com/WICG/observable.";
 
-const char kOutlineSilhouetteIconName[] = "Outline Silhouette Icon";
-const char kOutlineSilhouetteIconDescription[] =
-    "Enables the improved silhouette icon for signed out profiles";
-
 const char kCastMessageLoggingName[] = "Enables logging of all Cast messages.";
 const char kCastMessageLoggingDescription[] =
     "Enables logging of all messages exchanged between websites, Chrome, "

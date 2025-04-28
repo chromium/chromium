@@ -125,7 +125,6 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
       kColorAvatarButtonHighlightNormal};
   mixer[kColorAvatarButtonHighlightExplicitText] = {
       kColorAvatarButtonHighlightNormal};
-  mixer[kColorAvatarStrokeLight] = {SK_ColorWHITE};
   mixer[kColorAvatarStroke] = {kColorToolbarButtonIcon};
   mixer[kColorAvatarFillForContrast] = {kColorToolbar};
   mixer[kColorBookmarkBarBackground] = {kColorToolbar};

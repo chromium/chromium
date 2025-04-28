@@ -7232,14 +7232,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "outline-silhouette-icon",
-    "owners": [
-      "uno-desktop@google.com",
-      "//components/signin/OWNERS"
-    ],
-    "expiry_milestone": 136
-  },
-  {
     "name": "overlay-scrollbars",
     "owners": [
       "zhzhliu@chromium.org",

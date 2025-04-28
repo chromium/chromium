@@ -1255,9 +1255,6 @@ extern const char kGoogleOneOfferFilesBannerDescription[];
 extern const char kObservableAPIName[];
 extern const char kObservableAPIDescription[];
 
-extern const char kOutlineSilhouetteIconName[];
-extern const char kOutlineSilhouetteIconDescription[];
-
 extern const char kCastMessageLoggingName[];
 extern const char kCastMessageLoggingDescription[];
 

@@ -11289,10 +11289,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsMac | kOsWin | kOsLinux,
      FEATURE_VALUE_TYPE(switches::kImprovedSigninUIOnDesktop)},
 
-    {"outline-silhouette-icon", flag_descriptions::kOutlineSilhouetteIconName,
-     flag_descriptions::kOutlineSilhouetteIconDescription,
-     kOsMac | kOsWin | kOsLinux, FEATURE_VALUE_TYPE(kOutlineSilhouetteIcon)},
-
     {"improved-settings-ui-on-desktop",
      flag_descriptions::kImprovedSettingsUIOnDesktopName,
      flag_descriptions::kImprovedSettingsUIOnDesktopDescription,

@@ -349,20 +349,6 @@ const gfx::ImageSkia CreatePaddedIcon(const gfx::VectorIcon& icon,
   return gfx::CanvasImageSource::CreatePadded(sized_icon, gfx::Insets(padding));
 }
 
-// Returns a filled person avatar icon.
-gfx::Image GetLegacyPlaceholderAvatarIconWithColors(SkColor fill_color,
-                                                    SkColor stroke_color,
-                                                    int size) {
-  CHECK(!base::FeatureList::IsEnabled(kOutlineSilhouetteIcon));
-
-  const gfx::VectorIcon& person_icon =
-      size >= 40 ? kPersonFilledPaddedLargeIcon : kPersonFilledPaddedSmallIcon;
-  const gfx::ImageSkia icon_without_background = gfx::CreateVectorIcon(
-      gfx::IconDescription(person_icon, size, stroke_color));
-  return gfx::Image(
-      profiles::AddBackgroundToImage(icon_without_background, fill_color));
-}
-
 class CircleImageSource : public gfx::CanvasImageSource {
  public:
   CircleImageSource(int size, SkColor color)
@@ -768,8 +754,6 @@ gfx::Image GetPlaceholderAvatarIconVisibleAgainstBackground(
     SkColor profile_color_seed,
     int size,
     AvatarVisibilityAgainstBackground visibility) {
-  CHECK(base::FeatureList::IsEnabled(kOutlineSilhouetteIcon));
-
   const gfx::VectorIcon& person_icon =
       vector_icons::kAccountCircleChromeRefreshIcon;
 
@@ -794,11 +778,6 @@ gfx::Image GetPlaceholderAvatarIconWithColors(
     SkColor stroke_color,
     int size,
     const PlaceholderAvatarIconParams& icon_params) {
-  if (!base::FeatureList::IsEnabled(kOutlineSilhouetteIcon)) {
-    return GetLegacyPlaceholderAvatarIconWithColors(fill_color, stroke_color,
-                                                    size);
-  }
-
   // If the icon should be an outline icon visible against the background, use
   // `GetPlaceholderAvatarIconVisibleAgainstBackground()` instead.
   CHECK(!icon_params.visibility_against_background.has_value());

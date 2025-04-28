@@ -283,10 +283,6 @@ BASE_FEATURE(kProfilesReordering,
              "ProfilesReordering",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kOutlineSilhouetteIcon,
-             "OutlineSilhouetteIcon",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kIgnoreMirrorHeadersInBackgoundTabs,
              "IgnoreMirrorHeadersInBackgoundTabs",

@@ -143,15 +143,13 @@ int GetPlaceholderAvatarIconResourceID();
 std::string GetPlaceholderAvatarIconUrl();
 
 // Returns the outline silhouette colored generic avatar, either visible against
-// a dark or a light theme background. This function is currently under
-// experiment and only used when `kOutlineSilhouetteIcon` is enabled.
+// a dark or a light theme background.
 gfx::Image GetPlaceholderAvatarIconVisibleAgainstBackground(
     SkColor profile_color_seed,
     int size,
     AvatarVisibilityAgainstBackground visibility);
 
-// Returns a filled person icon if `kOutlineSilhouetteIcon` is disabled, and the
-// outline silhouette colored generic avatar if it is enabled. Depending on the
+// Returns the outline silhouette colored generic avatar. Depending on the
 // `icon_params`, the outline silhouette avatar will have a background/padding
 // or not.
 //
