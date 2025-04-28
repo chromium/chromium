@@ -60,7 +60,8 @@ class FilledCardInformationBubbleControllerImpl
   void OnFieldClicked(FilledCardInformationBubbleField field) override;
   bool ShouldShowGooglePayIconInTitle() const override;
   std::u16string GetMaskedCardNameForDescriptionView() const override;
-  gfx::Image GetCardImageForDescriptionView() const override;
+  std::pair<ui::ImageModel, std::optional<ui::ImageModel>>
+  GetCardImageForDescriptionView() const override;
   bool EducationalBodyHasLearnMoreLink() const override;
 
  protected:

@@ -267,23 +267,23 @@ FilledCardInformationBubbleControllerImpl::GetMaskedCardNameForDescriptionView()
   return options_.masked_card_name;
 }
 
-gfx::Image
+std::pair<ui::ImageModel, std::optional<ui::ImageModel>>
 FilledCardInformationBubbleControllerImpl::GetCardImageForDescriptionView()
     const {
   if (!IsBnplFlow()) {
-    return options_.card_image;
+    return {ui::ImageModel::FromImage(options_.card_image), std::nullopt};
   }
   switch (ConvertToBnplIssuerIdEnum(options_.filled_card.issuer_id())) {
     case BnplIssuer::IssuerId::kBnplAffirm:
-      return ui::ResourceBundle::GetSharedInstance().GetImageNamed(
-          IDR_AUTOFILL_AFFIRM_LINKED);
+      return {ui::ImageModel::FromResourceId(IDR_AUTOFILL_AFFIRM_LINKED),
+              ui::ImageModel::FromResourceId(IDR_AUTOFILL_AFFIRM_LINKED_DARK)};
     case BnplIssuer::IssuerId::kBnplZip:
-      return ui::ResourceBundle::GetSharedInstance().GetImageNamed(
-          IDR_AUTOFILL_ZIP_LINKED);
+      return {ui::ImageModel::FromResourceId(IDR_AUTOFILL_ZIP_LINKED),
+              ui::ImageModel::FromResourceId(IDR_AUTOFILL_ZIP_LINKED_DARK)};
     // TODO(crbug.com/408268581): Handle Afterpay issuer enum value when adding
     // Afterpay to the BNPL flow.
     case BnplIssuer::IssuerId::kBnplAfterpay:
-      return options_.card_image;
+      return {ui::ImageModel::FromImage(options_.card_image), std::nullopt};
   }
   NOTREACHED();
 }

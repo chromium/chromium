@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/autofill/payments/filled_card_information_bubble_views.h"
 
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/ui/views/autofill/payments/payments_view_util.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -14,12 +15,14 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/controls/styled_label.h"
+#include "ui/views/controls/theme_tracking_image_view.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/style/typography.h"
@@ -201,9 +204,19 @@ void FilledCardInformationBubbleViews::AddCardDescriptionView(
       layout_provider->GetDistanceMetric(
           views::DISTANCE_RELATED_CONTROL_HORIZONTAL));
 
+  std::pair<ui::ImageModel, std::optional<ui::ImageModel>> card_images =
+      controller_->GetCardImageForDescriptionView();
   auto* card_image_view = card_information_container->AddChildView(
-      std::make_unique<views::ImageView>(ui::ImageModel::FromImage(
-          controller_->GetCardImageForDescriptionView())));
+      std::make_unique<views::ThemeTrackingImageView>(
+          /*light_image_model=*/card_images.first,
+          /*dark_image_model=*/card_images.second.value_or(card_images.first),
+          /*get_background_color_callback=*/
+          base::BindRepeating(
+              [](views::View* view) {
+                return ui::ColorVariant(view->GetColorProvider()->GetColor(
+                    ui::kColorDialogBackground));
+              },
+              base::Unretained(this))));
   card_image_view->SetID(kCardImage);
 
   // Add a child container view for the two-line text view.
