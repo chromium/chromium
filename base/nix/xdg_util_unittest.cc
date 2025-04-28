@@ -432,6 +432,17 @@ TEST(XDGUtilTest, ExtractXdgActivationTokenFromEnv) {
   EXPECT_EQ(kXdgActivationTokenFromEnv, TakeXdgActivationToken());
   // Should be cleared after the token is taken once.
   EXPECT_EQ(std::nullopt, TakeXdgActivationToken());
+
+  EXPECT_CALL(getter, GetVar(Eq("XDG_ACTIVATION_TOKEN")))
+      .WillOnce(Return(std::nullopt));
+  EXPECT_CALL(getter, GetVar(Eq("DESKTOP_STARTUP_ID")))
+      .WillOnce(Return(kXdgActivationTokenFromEnv));
+  EXPECT_CALL(getter, UnSetVar(Eq("DESKTOP_STARTUP_ID")));
+  EXPECT_EQ(kXdgActivationTokenFromEnv,
+            ExtractXdgActivationTokenFromEnv(getter));
+  EXPECT_EQ(kXdgActivationTokenFromEnv, TakeXdgActivationToken());
+  // Should be cleared after the token is taken once.
+  EXPECT_EQ(std::nullopt, TakeXdgActivationToken());
 }
 
 TEST(XDGUtilTest, ExtractXdgActivationTokenFromCmdLineNotSet) {

@@ -79,6 +79,9 @@ inline constexpr char kXdgSessionTypeEnvVar[] = "XDG_SESSION_TYPE";
 // The XDG activation token environment variable.
 inline constexpr char kXdgActivationTokenEnvVar[] = "XDG_ACTIVATION_TOKEN";
 
+// Desktop startup ID environment variable.
+inline constexpr char kDesktopStartupIdEnvVar[] = "DESKTOP_STARTUP_ID";
+
 // Internally used to communicate the activation token between a newly launched
 // process and an existing browser process.
 inline constexpr char kXdgActivationTokenSwitch[] = "xdg-activation-token";
