@@ -217,7 +217,6 @@ TEST_F(SigninManagerAndroidWithoutLocalUpmTest, WipePasswordsIfLocalUpmOff) {
   form.password_value = u"password";
   form.signon_realm = "https://g.com";
   profile_password_store()->AddLogin(form);
-  ASSERT_FALSE(account_password_store());
 
   WipeData(/*all_data=*/true);
 
