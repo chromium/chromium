@@ -247,7 +247,7 @@ mojolpm_fuzzer_test("webnn_graph_mojolpm_fuzzer") {
     "//base",
     "//base/test:test_support",
     "//content/test/fuzzer:mojolpm_fuzzer_support",
-    "//services/webnn/public/mojom",
+    "//services/webnn/public/mojom:mojom_mojolpm",
     "//third_party/libprotobuf-mutator",
   ]
 }
