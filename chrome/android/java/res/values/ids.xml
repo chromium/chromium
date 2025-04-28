@@ -28,6 +28,7 @@ found in the LICENSE file.
 
     <!-- Sync UI constants -->
     <item type="id" name="passphrase_type_list" />
+    <item type="id" name="history_and_tabs_toggle"/>
 
     <!-- Keyboard shortcuts -->
     <item type="id" name="print_id" />

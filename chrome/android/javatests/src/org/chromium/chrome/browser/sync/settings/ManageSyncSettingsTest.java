@@ -1196,12 +1196,22 @@ public class ManageSyncSettingsTest {
         mSyncTestRule.setUpAccountAndSignInForTesting();
         final ManageSyncSettings fragment = startManageSyncPreferences();
         RecyclerView recyclerView = fragment.getView().findViewById(R.id.recycler_view);
-        // There are 3 non-selectable preferences in the preference screen: account_section_header,
-        // account_section_footer, and account_advanced_header.
-        for (int i = 0; i < recyclerView.getAdapter().getItemCount() - 3; ++i) {
+        // There are 4 non-selectable preferences in the preference screen: central_account_card,
+        // account_section_header, account_section_footer, and account_advanced_header.
+        for (int i = 0; i < recyclerView.getAdapter().getItemCount() - 4; ++i) {
             onView(withId(R.id.recycler_view)).perform(pressKey(KeyEvent.KEYCODE_DPAD_DOWN));
         }
         onView(withId(R.id.sign_out_button)).check(matches(hasFocus()));
+    }
+
+    @Test
+    @SmallTest
+    public void testCentralAccountCardNotReceivingFocus() {
+        mSyncTestRule.setUpAccountAndSignInForTesting();
+        startManageSyncPreferences();
+        // Focus on the first element that can receive focus in the settings page.
+        onView(withId(R.id.recycler_view)).perform(pressKey(KeyEvent.KEYCODE_DPAD_DOWN));
+        onView(withId(R.id.history_and_tabs_toggle)).check(matches(hasFocus()));
     }
 
     // TODO(crbug.com/330438265): Extend this test for the identity error card.
