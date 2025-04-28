@@ -71,9 +71,6 @@ mod ffi {
         /// Permits unescaped \r and \n in strings. This is a subset of what
         /// allow_control_chars allows.
         allow_newlines: bool,
-        /// Permits unescaped ASCII control characters (such as unescaped \b,
-        /// \r, or \n) in the range [0x00,0x1F].
-        allow_control_chars: bool,
         /// Permits \\v vertical tab escapes.
         allow_vert_tab: bool,
         /// Permits \\xNN escapes as described above.
@@ -112,13 +109,8 @@ pub fn decode_json(
     let mut deserializer = serde_json_lenient::Deserializer::new(SliceRead::new(
         if json.starts_with(&UTF8_BOM) { &json[3..] } else { json },
         options.replace_invalid_characters,
-        // On the C++ side, allow_control_chars means "allow all control chars,
-        // including \r and \n", while in serde_json_lenient,
-        // allow_control_chars means "allow all controls chars, except \r and
-        // \n". To give the behavior that C++ client code is expecting, enable
-        // allow_newlines as well when allow_control_chars is supplied.
-        options.allow_newlines || options.allow_control_chars,
-        options.allow_control_chars,
+        options.allow_newlines,
+        /*allow_control_chars_in_string=*/false,
         options.allow_vert_tab,
         options.allow_x_escapes,
     ));
