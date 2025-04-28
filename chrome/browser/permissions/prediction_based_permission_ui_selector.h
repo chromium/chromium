@@ -108,9 +108,6 @@ class PredictionBasedPermissionUiSelector
       permissions::RequestType request_type,
       std::unique_ptr<content_extraction::InnerTextResult> result);
 
-  void OnModelExecutionComplete(
-      const std::optional<permissions::GeneratePredictionsResponse>& result);
-
   bool ShouldHoldBack(bool is_on_device, permissions::RequestType request_type);
 
   void InquireServerModel(
