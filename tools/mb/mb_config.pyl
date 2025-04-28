@@ -132,7 +132,7 @@
     },
 
     'client.devtools-frontend.integration': {
-      'DevTools Linux': 'release_trybot_blink_do_typecheck',
+      'DevTools Linux': 'release_trybot_blink_do_typecheck_siso',
       'DevTools Linux Fastbuild': 'release_trybot_blink_siso',
     },
 
@@ -246,9 +246,9 @@
 
     'tryserver.devtools-frontend': {
       # Align devtools blink builders with chromium linux-rel
-      'devtools_frontend_linux_blink_light_rel': 'release_trybot_blink_do_typecheck',
+      'devtools_frontend_linux_blink_light_rel': 'release_trybot_blink_do_typecheck_siso',
       'devtools_frontend_linux_blink_light_rel_fastbuild': 'release_trybot_blink_siso',
-      'devtools_frontend_linux_blink_rel': 'release_trybot_blink_do_typecheck',
+      'devtools_frontend_linux_blink_rel': 'release_trybot_blink_do_typecheck_siso',
     },
 
     'tryserver.internal.chrome.fyi': {
@@ -285,13 +285,13 @@
     },
 
     'tryserver.webrtc': {
-      'android_chromium_compile': 'android_release_trybot_remoteexec',
-      'linux_chromium_compile': 'release_trybot_remoteexec',
+      'android_chromium_compile': 'android_release_trybot_remoteexec_reclient',
+      'linux_chromium_compile': 'release_trybot_remoteexec_reclient',
       'linux_chromium_compile_dbg': 'debug_bot_remoteexec_reclient',
-      'mac_chromium_compile': 'gpu_tests_release_trybot_remoteexec',
-      'webrtc_linux_chromium': 'release_trybot_blink',
-      'win_chromium_compile': 'gpu_tests_release_trybot_resource_allowlisting_remoteexec',
-      'win_chromium_compile_dbg': 'gpu_tests_debug_bot_x86_no_symbols_remoteexec',
+      'mac_chromium_compile': 'gpu_tests_release_trybot_remoteexec_reclient',
+      'webrtc_linux_chromium': 'release_trybot_blink_reclient',
+      'win_chromium_compile': 'gpu_tests_release_trybot_resource_allowlisting_remoteexec_reclient',
+      'win_chromium_compile_dbg': 'gpu_tests_debug_bot_x86_no_symbols_remoteexec_reclient',
     },
   },
 
@@ -319,7 +319,7 @@
       'webview_shell',
     ],
 
-    'android_release_trybot_remoteexec': [
+    'android_release_trybot_remoteexec_reclient': [
       'android', 'release_trybot_remoteexec', 'strip_debug_info', 'reclient',
       'android_fastbuild',
     ],
@@ -412,7 +412,7 @@
       'gpu_tests', 'chromeos_jacuzzi_remoteexec', 'release_trybot_dcheck_off_remoteexec', 'no_symbols', 'is_skylab',
     ],
 
-    'gpu_tests_debug_bot_x86_no_symbols_remoteexec': [
+    'gpu_tests_debug_bot_x86_no_symbols_remoteexec_reclient': [
       'gpu_tests', 'debug_bot_remoteexec', 'x86', 'no_symbols', 'reclient',
     ],
 
@@ -428,11 +428,11 @@
       'gpu_tests', 'release_trybot_minimal_symbols_remoteexec', 'v8_pointer_compression', 'use_siso', 'reclient',
     ],
 
-    'gpu_tests_release_trybot_remoteexec': [
+    'gpu_tests_release_trybot_remoteexec_reclient': [
       'gpu_tests', 'release_trybot_remoteexec', 'reclient',
     ],
 
-    'gpu_tests_release_trybot_resource_allowlisting_remoteexec': [
+    'gpu_tests_release_trybot_resource_allowlisting_remoteexec_reclient': [
       'gpu_tests', 'release_trybot_remoteexec', 'reclient', 'resource_allowlisting',
     ],
 
@@ -657,24 +657,24 @@
       'release_bot_remoteexec', 'use_siso', 'reclient',
     ],
 
-    'release_trybot_blink': [
+    'release_trybot_blink_do_typecheck_siso': [
+      'release_trybot_blink', 'devtools_do_typecheck', 'use_siso',
+    ],
+
+    'release_trybot_blink_reclient': [
       'release_trybot_blink', 'reclient',
     ],
 
-    'release_trybot_blink_do_typecheck': [
-      'release_trybot_blink', 'devtools_do_typecheck', 'use_siso', 'reclient',
-    ],
-
     'release_trybot_blink_siso': [
-      'release_trybot_blink', 'use_siso', 'reclient',
+      'release_trybot_blink', 'use_siso',
     ],
 
-    'release_trybot_remoteexec': [
+    'release_trybot_remoteexec_reclient': [
       'release_trybot_remoteexec', 'reclient',
     ],
 
     'release_trybot_remoteexec_siso': [
-      'release_trybot_remoteexec', 'use_siso', 'reclient',
+      'release_trybot_remoteexec', 'use_siso',
     ],
   },
 
