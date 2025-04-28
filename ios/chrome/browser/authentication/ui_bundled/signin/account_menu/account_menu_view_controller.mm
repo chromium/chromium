@@ -653,26 +653,13 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
 }
 
 - (void)updatePrimaryAccount {
-  __weak __typeof(self) weakSelf = self;
-  ProceduralBlock manageYourAccountButtonAction = nil;
-  if (_hideEllipsisMenu) {
-    manageYourAccountButtonAction = ^{
-      base::RecordAction(
-          base::UserMetricsAction("Signin_AccountMenu_ManageAccount"));
-      [weakSelf.mutator didTapManageYourGoogleAccount];
-    };
-  }
   _identityAccountView = [[CentralAccountView alloc]
-                      initWithFrame:CGRectMake(0, 0,
-                                               self.tableView.frame.size.width,
-                                               0)
-                        avatarImage:self.dataSource.primaryAccountAvatar
-                               name:self.dataSource.primaryAccountUserFullName
-                              email:self.dataSource.primaryAccountEmail
-              managementDescription:self.dataSource.managementDescription
-                    useLargeMargins:NO
-         addManageYourAccountButton:_hideEllipsisMenu
-      manageYourAccountButtonAction:manageYourAccountButtonAction];
+              initWithFrame:CGRectMake(0, 0, self.tableView.frame.size.width, 0)
+                avatarImage:self.dataSource.primaryAccountAvatar
+                       name:self.dataSource.primaryAccountUserFullName
+                      email:self.dataSource.primaryAccountEmail
+      managementDescription:self.dataSource.managementDescription
+            useLargeMargins:NO];
   [_identityAccountView updateTopPadding:[self navigationBarHeight]];
   self.tableView.tableHeaderView = _identityAccountView;
   [self.tableView reloadData];

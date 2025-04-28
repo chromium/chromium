@@ -39,9 +39,7 @@ TEST_F(CentralAccountViewTest, ImageViewAndTextLabels) {
                                            name:mainText
                                           email:detailText
                           managementDescription:nil
-                                useLargeMargins:YES
-                     addManageYourAccountButton:NO
-                  manageYourAccountButtonAction:nil];
+                                useLargeMargins:YES];
 
   EXPECT_NSEQ(accountView.avatarImage, image);
   EXPECT_NSEQ(accountView.name, mainText);
@@ -65,9 +63,7 @@ TEST_F(CentralAccountViewTest, ImageViewAndTextLabelsWithoutGivenName) {
                                            name:nil
                                           email:mainText
                           managementDescription:nil
-                                useLargeMargins:YES
-                     addManageYourAccountButton:NO
-                  manageYourAccountButtonAction:nil];
+                                useLargeMargins:YES];
 
   EXPECT_NSEQ(accountView.avatarImage, image);
   EXPECT_NSEQ(accountView.name, mainText);
@@ -97,9 +93,7 @@ TEST_F(CentralAccountViewTest,
                                            name:mainText
                                           email:detailText
                           managementDescription:managementDescription
-                                useLargeMargins:YES
-                     addManageYourAccountButton:NO
-                  manageYourAccountButtonAction:nil];
+                                useLargeMargins:YES];
 
   EXPECT_NSEQ(accountView.avatarImage, image);
   EXPECT_NSEQ(accountView.name, mainText);
