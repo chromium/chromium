@@ -93,15 +93,17 @@ constexpr CGFloat kLogoSize = 22;
 #pragma mark - Private Methods
 
 - (void)sendPromoDismissalNotification {
-  switch (_promoType) {
-    case SignInPromoType::kPassword:
-      _tracker->Dismissed(
-          feature_engagement::kIPHiOSPromoNonModalSigninPasswordFeature);
-      break;
-    case SignInPromoType::kBookmark:
-      _tracker->Dismissed(
-          feature_engagement::kIPHiOSPromoNonModalSigninBookmarkFeature);
-      break;
+  if (self.bannerWasPresented) {
+    switch (_promoType) {
+      case SignInPromoType::kPassword:
+        _tracker->Dismissed(
+            feature_engagement::kIPHiOSPromoNonModalSigninPasswordFeature);
+        break;
+      case SignInPromoType::kBookmark:
+        _tracker->Dismissed(
+            feature_engagement::kIPHiOSPromoNonModalSigninBookmarkFeature);
+        break;
+    }
   }
 
   [_mediator stopTimeOutTimers];
