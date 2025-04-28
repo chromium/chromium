@@ -21,7 +21,7 @@
 
 // Detail text to be displayed. The detail text label is configured with
 // multiline (no limit).
-@property(nonatomic, strong) NSString* detailText;
+@property(nonatomic, copy) NSString* detailText;
 
 // The GUID used by the PersonalDataManager to identify profiles.
 @property(nonatomic, assign) std::string GUID;

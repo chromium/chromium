@@ -19,7 +19,7 @@
 @interface AutofillEditProfileButtonFooterItem : TableViewHeaderFooterItem
 
 // Text for cell button.
-@property(nonatomic, strong) NSString* buttonText;
+@property(nonatomic, copy) NSString* buttonText;
 
 // Enabled state of the button.
 @property(nonatomic, assign) BOOL enabled;
