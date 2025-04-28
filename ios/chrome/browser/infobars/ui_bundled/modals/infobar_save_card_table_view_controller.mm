@@ -68,7 +68,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 // Card Issuer icon image to be displayed.
 @property(nonatomic, strong) UIImage* cardIssuerIcon;
 // Card Network for accessibility label.
-@property(nonatomic, strong) NSString* cardNetwork;
+@property(nonatomic, copy) NSString* cardNetwork;
 // Card Number to be displayed.
 @property(nonatomic, copy) NSString* cardNumber;
 // Card Expiration Month to be displayed
