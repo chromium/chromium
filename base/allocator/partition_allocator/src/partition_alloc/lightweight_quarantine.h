@@ -269,6 +269,21 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) SchedulerLoopQuarantineBranch {
   const SchedulerLoopQuarantineConfig& GetConfigurationForTesting();
   LightweightQuarantineBranch& GetInternalBranchForTesting();
 
+  class ScopedQuarantineExclusion {
+    SchedulerLoopQuarantineBranch& branch_;
+
+   public:
+    PA_ALWAYS_INLINE explicit ScopedQuarantineExclusion(
+        SchedulerLoopQuarantineBranch& branch)
+        : branch_(branch) {
+      ++branch_.pause_quarantine_;
+    }
+    ScopedQuarantineExclusion(const ScopedQuarantineExclusion&) = delete;
+    PA_ALWAYS_INLINE ~ScopedQuarantineExclusion() {
+      --branch_.pause_quarantine_;
+    }
+  };
+
  private:
   PA_ALWAYS_INLINE void QuarantineEpilogue(
       void* object,
@@ -281,6 +296,10 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) SchedulerLoopQuarantineBranch {
 
   bool enable_quarantine_ = false;
   bool enable_zapping_ = false;
+
+  // When non-zero, this branch temporarily stops accepting incoming quarantine
+  // requests.
+  int pause_quarantine_ = 0;
 
   // Kept for testing purposes only.
   SchedulerLoopQuarantineConfig config_for_testing_;

@@ -427,6 +427,8 @@ if (is_clang_or_gcc) {
       "internal_allocator_forward.h",
       "lightweight_quarantine.cc",
       "lightweight_quarantine.h",
+      "lightweight_quarantine_support.cc",
+      "lightweight_quarantine_support.h",
       "memory_reclaimer.cc",
       "memory_reclaimer.h",
       "oom.cc",
