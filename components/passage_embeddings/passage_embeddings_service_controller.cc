@@ -294,10 +294,23 @@ void PassageEmbeddingsServiceController::OnGotEmbeddings(
   if (status == ComputeEmbeddingsStatus::kSuccess) {
     const base::TimeDelta duration = generate_embeddings_timer.Elapsed();
     base::UmaHistogramTimes("History.Embeddings.TaskDuration", duration);
-    const char* const priority_histogram =
-        priority == kUserInitiated
-            ? "History.Embeddings.TaskDuration.UserInitiated"
-            : "History.Embeddings.TaskDuration.Passive";
+    const char* priority_histogram = nullptr;
+    switch (priority) {
+      case kUserInitiated:
+        priority_histogram = "History.Embeddings.TaskDuration.UserInitiated";
+        break;
+
+      case kUrgent:
+        priority_histogram = "History.Embeddings.TaskDuration.Urgent";
+        break;
+
+      case kPassive:
+        priority_histogram = "History.Embeddings.TaskDuration.Passive";
+        break;
+
+      default:
+        priority_histogram = "History.Embeddings.TaskDuration.Other";
+    }
     base::UmaHistogramTimes(priority_histogram, duration);
   }
 }
