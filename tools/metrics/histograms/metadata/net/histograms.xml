@@ -7390,7 +7390,7 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Net.WebSocket.ErrorCodes{Protocol}" enum="NetErrorCodes"
+<histogram name="Net.WebSocket.ErrorCodes{ProtocolOrType}" enum="NetErrorCodes"
     expires_after="never">
 <!-- expires-never: needed for long-term tracking of ecosystem -->
 
@@ -7399,9 +7399,11 @@ chromium-metrics-reviews@google.com.
   <summary>
     Positive net error codes that WebSockets end with, including OK and ABORTED.
   </summary>
-  <token key="Protocol">
+  <token key="ProtocolOrType">
     <variant name="" summary="All protocols"/>
     <variant name=".Http2" summary="HTTP/2"/>
+    <variant name="_Localhost"/>
+    <variant name="_NotLocalhost"/>
   </token>
 </histogram>
 

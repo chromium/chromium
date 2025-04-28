@@ -308,16 +308,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Sharing.SendMessageResult{SharingDevicePlatform}"
+<histogram name="Sharing.SendMessageResult{DevicePlatform}{PulseInterval}"
     enum="SharingSendMessageResult" expires_after="2025-10-12">
   <owner>peter@chromium.org</owner>
   <owner>knollr@chromium.org</owner>
   <summary>
     Result of sending a SharingMessage by the Sharing service. Logged after the
     send message callback is run. Not logged for sending ack messages. All
-    platforms. {SharingDevicePlatform}
+    platforms. {DevicePlatform} {PulseInterval}
   </summary>
-  <token key="SharingDevicePlatform">
+  <token key="DevicePlatform">
     <variant name=""/>
     <variant name=".Android" summary="Android OS"/>
     <variant name=".ChromeOS" summary="Chrome OS"/>
@@ -327,6 +327,12 @@ chromium-metrics-reviews@google.com.
     <variant name=".Server" summary="Server"/>
     <variant name=".Unknown" summary="Device type unknown"/>
     <variant name=".Windows" summary="Windows OS"/>
+  </token>
+  <token key="PulseInterval">
+    <variant name=""/>
+    <variant name=".PulseIntervalLong" summary="Long pulse interval"/>
+    <variant name=".PulseIntervalMedium" summary="Medium pulse interval"/>
+    <variant name=".PulseIntervalShort" summary="Short pulse interval"/>
   </token>
 </histogram>
 
