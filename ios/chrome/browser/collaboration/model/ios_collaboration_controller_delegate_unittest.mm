@@ -131,12 +131,6 @@ class IOSCollaborationControllerDelegateTest : public PlatformTest {
     test_profile_builder.AddTestingFactory(
         IOSChromeFaviconLoaderFactory::GetInstance(),
         base::BindRepeating(&BuildTestFaviconLoader));
-    test_profile_builder.AddTestingFactory(
-        TabGroupServiceFactory::GetInstance(),
-        TabGroupServiceFactory::GetDefaultFactory());
-    test_profile_builder.AddTestingFactory(
-        TabGroupServiceFactory::GetInstance(),
-        TabGroupServiceFactory::GetDefaultFactory());
 
     profile_ = std::move(test_profile_builder).Build();
     browser_ = std::make_unique<TestBrowser>(profile_.get());

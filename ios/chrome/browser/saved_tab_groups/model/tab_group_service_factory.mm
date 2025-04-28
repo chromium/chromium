@@ -42,16 +42,9 @@ TabGroupService* TabGroupServiceFactory::GetForProfile(ProfileIOS* profile) {
       profile, /*create=*/true);
 }
 
-// static
-BrowserStateKeyedServiceFactory::TestingFactory
-TabGroupServiceFactory::GetDefaultFactory() {
-  return base::BindRepeating(&CreateService);
-}
-
 TabGroupServiceFactory::TabGroupServiceFactory()
     : ProfileKeyedServiceFactoryIOS("TabGroupService",
-                                    ServiceCreation::kCreateLazily,
-                                    TestingCreation::kNoServiceForTests) {
+                                    ServiceCreation::kCreateLazily) {
   DependsOn(collaboration::CollaborationServiceFactory::GetInstance());
   DependsOn(tab_groups::TabGroupSyncServiceFactory::GetInstance());
 }
