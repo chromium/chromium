@@ -63,7 +63,7 @@ template("system_image_stub_apk") {
     if (defined(_apk_or_bundle_target)) {
       deps = [ "$_apk_or_bundle_target$build_config_target_suffix" ]
       inputs = [ _build_config ]
-      args += [ "--use-permissions-from=@FileArg($_rebased_build_config:deps_info:lint_android_manifest)" ]
+      args += [ "--use-permissions-from=@FileArg($_rebased_build_config:android_manifest)" ]
     }
   }
 
@@ -165,9 +165,9 @@ template("system_image_stub_apk") {
     } else {
       deps += [ "${_apk_or_bundle_target}$build_config_target_suffix" ]
       inputs += [ _build_config ]
-      _package_name = "@FileArg($_rebased_build_config:deps_info:package_name)"
-      _version_code = "@FileArg($_rebased_build_config:deps_info:version_code)"
-      _version_name = "@FileArg($_rebased_build_config:deps_info:version_name)"
+      _package_name = "@FileArg($_rebased_build_config:package_name)"
+      _version_code = "@FileArg($_rebased_build_config:version_code)"
+      _version_name = "@FileArg($_rebased_build_config:version_name)"
 
       # TODO(crbug.com/40253411): Make static_library_version mandatory.
       # Pass this through to ensure that the version code in the build config is
