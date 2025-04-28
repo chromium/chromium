@@ -727,6 +727,25 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="CustomTabs.SpareRenderer" enum="Boolean"
+    expires_after="2025-10-28">
+  <owner>adelm@google.com</owner>
+  <owner>chrome-connective-tissue@google.com</owner>
+  <summary>
+    Android: Record whether a spare renderer was created when closing a custom
+    tab. There are two possible scenarios here: (1) The web page is opened in
+    the same browser by reparenting the tab into the browser and no spare
+    renderer is created. (2) Any other finish reason should result in the
+    creation of a spare renderer. This metric will help us determine whether
+    enabling predictive back gesture and deferring to the OS and letting it
+    handle the clean up process impacts the spare renderer creation process.
+    This will determine whether the behavior remains the same for the enabled
+    and control groups to ensure that the feature or change being tested in the
+    'enabled' group does not introduce unintended behavioral regressions or
+    deviations from the baseline.
+  </summary>
+</histogram>
+
 <histogram name="CustomTabs.Startup.EarlyNavFailureReason"
     enum="EarlyNavFailureReason" expires_after="2025-10-01">
   <owner>mthiesse@chromium.org</owner>

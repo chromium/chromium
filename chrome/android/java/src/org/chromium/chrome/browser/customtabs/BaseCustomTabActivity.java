@@ -783,10 +783,13 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
         }
 
         if (mWarmupOnDestroy) {
+            RecordHistogram.recordBooleanHistogram("CustomTabs.SpareRenderer", true);
             Profile profile = getProfileProviderSupplier().get().getOriginalProfile();
             PostTask.postTask(
                     TaskTraits.UI_DEFAULT,
                     () -> CustomTabsConnection.createSpareWebContents(profile));
+        } else {
+            RecordHistogram.recordBooleanHistogram("CustomTabs.SpareRenderer", false);
         }
 
         if (getCustomTabActivityTabController() != null) {
