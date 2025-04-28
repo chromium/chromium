@@ -28,6 +28,7 @@ source_set("headers") {
 
 group("privacy_sandbox") {
   public_deps = [
+    ":countries",
     "notice",
     "notice:core",
     "notice:interfaces",
@@ -39,6 +40,33 @@ group("privacy_sandbox") {
   }
 }
 
+source_set("countries") {
+  sources = [ "privacy_sandbox_countries_impl.cc" ]
+  public = [ "privacy_sandbox_countries.h" ]
+  deps = [
+    "//base",
+    "//chrome/browser:browser_process",
+    "//components/privacy_sandbox:features",
+    "//components/variations/service",
+  ]
+}
+
+source_set("countries_browser_test") {
+  testonly = true
+  sources = [ "privacy_sandbox_countries_browsertest.cc" ]
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  deps = [
+    ":countries",
+    "//base/test:test_support",
+    "//chrome/browser:browser_process",
+    "//chrome/test:test_support",
+    "//components/privacy_sandbox:features",
+    "//components/variations/service:service",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
 group("unit_tests") {
   testonly = true
   deps = [ "notice:unit_tests" ]
@@ -48,6 +76,11 @@ group("unit_tests") {
 group("browser_tests") {
   testonly = true
   deps = [ "notice:browser_tests" ]
+
+  # Tests that do not run on Android builds.
+  if (!is_android) {
+    deps += [ ":countries_browser_test" ]
+  }
 }
 # TODO(crbug.com/408801109) move other privacy_sandbox sources
 # from chrome/test/BUILD.gn here.
