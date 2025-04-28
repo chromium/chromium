@@ -57,13 +57,8 @@ constexpr char kNoticeActionTakenKey[] = "notice_action_taken";
 constexpr char kNoticeActionTakenTimeKey[] = "notice_action_taken_time";
 constexpr char kNoticeLastShownKey[] = "notice_last_shown";
 
-std::string CreatePrefPath(std::string_view notice,
-                           std::string_view pref_name) {
-  return base::StrCat({notice, ".", pref_name});
-}
-
 template <typename T>
-std::optional<T> ConvertTo(const base::Value::Dict* dict) {
+std::optional<T> ConvertTo(const base::DictValue* dict) {
   if (!dict) {
     return std::nullopt;
   }
@@ -102,23 +97,15 @@ NoticeActionTaken NoticeEventToNoticeAction(Event action) {
   }
 }
 
-void SetSchemaVersion(PrefService* pref_service, std::string_view notice) {
-  ScopedDictPrefUpdate update(pref_service, kNoticeDataPath);
-  update.Get().SetByDottedPath(CreatePrefPath(notice, kSchemaVersionKey),
-                               kCurrentSchemaVersion);
+base::DictValue BuildDictEntryEvent(Event event, base::Time event_time) {
+  return base::DictValue()
+      .Set(kEventKey, static_cast<int>(event))
+      .Set(kTimestampKey, base::TimeToValue(event_time));
 }
 
-base::Value::Dict BuildDictEntryEvent(Event event, base::Time event_time) {
-  base::Value::Dict params;
-  params.Set(kEventKey, static_cast<int>(event));
-  params.Set(kTimestampKey, base::TimeToValue(event_time));
-  return params;
-}
-
-void SetChromeVersion(PrefService* pref_service, std::string_view notice) {
-  ScopedDictPrefUpdate update(pref_service, kNoticeDataPath);
-  update.Get().SetByDottedPath(CreatePrefPath(notice, kChromeVersionKey),
-                               version_info::GetVersionNumber());
+base::DictValue BuildDictEntryEvent(NoticeEventTimestampPair* pair) {
+  CHECK(pair);
+  return BuildDictEntryEvent(pair->event, pair->timestamp);
 }
 
 const Notice& FindNotice(NoticeId notice_id, NoticeCatalog* catalog) {
@@ -160,23 +147,25 @@ void PopulateV2NoticeData(PrefService* pref_service,
                           std::string_view notice,
                           const NoticeStorageData& data) {
   ScopedDictPrefUpdate update(pref_service, kNoticeDataPath);
-  update.Get().SetByDottedPath(CreatePrefPath(notice, kSchemaVersionKey),
-                               data.schema_version);
-
-  for (const auto& event : data.notice_events) {
-    update.Get()
-        .EnsureDict(notice)
-        ->EnsureList(kEventsKey)
-        ->Append(
-            BuildDictEntryEvent(event.get()->event, event.get()->timestamp));
+  base::DictValue* dict = update->EnsureDict(notice);
+  dict->Set(kSchemaVersionKey, data.schema_version);
+  if (data.notice_events.empty()) {
+    return;
+  }
+  base::ListValue* event_list = dict->EnsureList(kEventsKey);
+  for (const auto& event_ptr : data.notice_events) {
+    event_list->Append(BuildDictEntryEvent(event_ptr.get()));
   }
 }
 
 void MaybeEraseV1Fields(PrefService* pref_service, std::string_view notice) {
   ScopedDictPrefUpdate update(pref_service, kNoticeDataPath);
-  update->RemoveByDottedPath(CreatePrefPath(notice, kNoticeActionTakenKey));
-  update->RemoveByDottedPath(CreatePrefPath(notice, kNoticeActionTakenTimeKey));
-  update->RemoveByDottedPath(CreatePrefPath(notice, kNoticeLastShownKey));
+  base::DictValue* dict = update->FindDict(notice);
+  CHECK(dict);
+  for (const char* key : {kNoticeActionTakenKey, kNoticeActionTakenTimeKey,
+                          kNoticeLastShownKey}) {
+    dict->Remove(key);
+  }
 }
 
 }  // namespace
@@ -361,7 +350,7 @@ void PrivacySandboxNoticeStorage::UpdateNoticeSchemaV2(
     return;
   }
 
-  const base::Value::Dict* data = notice_data_pref->GetIfDict();
+  const base::DictValue* data = notice_data_pref->GetIfDict();
 
   if (!data) {
     return;
@@ -441,7 +430,7 @@ void PrivacySandboxNoticeStorage::RecordStartupHistograms() const {
 
 std::optional<NoticeStorageData> PrivacySandboxNoticeStorage::ReadNoticeData(
     std::string_view notice) const {
-  const base::Value::Dict& pref_data = pref_service_->GetDict(kNoticeDataPath);
+  const base::DictValue& pref_data = pref_service_->GetDict(kNoticeDataPath);
   return ConvertTo<NoticeStorageData>(pref_data.FindDict(notice));
 }
 
@@ -462,7 +451,6 @@ void PrivacySandboxNoticeStorage::SetNoticeActionTaken(
   CHECK(notice_action_taken != kShown)
       << "Use `SetNoticeShown` to set a kShown PrivacySandboxNoticeEvent "
          "instead.";
-  ScopedDictPrefUpdate update(pref_service_, kNoticeDataPath);
   auto notice_data = ReadNoticeData(notice);
 
   // The notice should be shown first before action can be taken on it.
@@ -494,12 +482,11 @@ void PrivacySandboxNoticeStorage::SetNoticeActionTaken(
       base::StrCat({"PrivacySandbox.Notice.NoticeEvent.", notice}),
       notice_action_taken);
 
-  base::Value::Dict entry =
-      BuildDictEntryEvent(notice_action_taken, notice_action_taken_time);
-  update.Get()
-      .EnsureDict(notice)
+  ScopedDictPrefUpdate update(pref_service_, kNoticeDataPath);
+  update->EnsureDict(notice)
       ->EnsureList(kEventsKey)
-      ->Append(std::move(entry));
+      ->Append(
+          BuildDictEntryEvent(notice_action_taken, notice_action_taken_time));
 
   base::UmaHistogramEnumeration(
       base::StrCat(
@@ -536,14 +523,14 @@ void PrivacySandboxNoticeStorage::SetNoticeActionTaken(
 void PrivacySandboxNoticeStorage::SetNoticeShown(std::string_view notice,
                                                  base::Time notice_shown_time) {
   ScopedDictPrefUpdate update(pref_service_, kNoticeDataPath);
-  SetSchemaVersion(pref_service_, notice);
-  SetChromeVersion(pref_service_, notice);
+  base::DictValue* dict = update->EnsureDict(notice);
+  dict->Set(kSchemaVersionKey, kCurrentSchemaVersion);
+  dict->Set(kChromeVersionKey, version_info::GetVersionNumber());
+  dict->EnsureList(kEventsKey)
+      ->Append(BuildDictEntryEvent(kShown, notice_shown_time));
 
-  base::Value::Dict entry = BuildDictEntryEvent(kShown, notice_shown_time);
-  update->EnsureDict(notice)->EnsureList(kEventsKey)->Append(std::move(entry));
-
-  // TODO(chrstne): Deprecate NoticeShown histogram once it is no longer used
-  // in other codepaths.
+  // TODO(chrstne): Deprecate NoticeShown histogram once it is
+  // no longer used in other codepaths.
   base::UmaHistogramBoolean(
       base::StrCat({"PrivacySandbox.Notice.NoticeShown.", notice}), true);
   base::UmaHistogramEnumeration(
