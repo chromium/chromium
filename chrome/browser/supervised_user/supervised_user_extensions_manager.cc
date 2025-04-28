@@ -161,14 +161,7 @@ bool SupervisedUserExtensionsManager::CanInstallExtensions() const {
       SupervisedUserServiceFactory::GetForBrowserContext(context_);
   bool has_custodian = supervised_user_service->GetCustodian() ||
                        supervised_user_service->GetSecondCustodian();
-
-  if (supervised_user::
-          IsSupervisedUserSkipParentApprovalToInstallExtensionsEnabled()) {
     return has_custodian;
-  }
-  return has_custodian &&
-         user_prefs_->GetBoolean(
-             prefs::kSupervisedUserExtensionsMayRequestPermissions);
 }
 
 void SupervisedUserExtensionsManager::RecordExtensionEnablementUmaMetrics(
@@ -309,9 +302,7 @@ SupervisedUserExtensionsManager::GetExtensionState(
   if (base::Contains(approved_extensions_set_, extension.id())) {
     return SupervisedUserExtensionsManager::ExtensionState::ALLOWED;
   }
-  if (IsLocallyParentApprovedExtension(extension.id()) &&
-      supervised_user::
-          IsSupervisedUserSkipParentApprovalToInstallExtensionsEnabled()) {
+  if (IsLocallyParentApprovedExtension(extension.id())) {
     return SupervisedUserExtensionsManager::ExtensionState::ALLOWED;
   }
   return SupervisedUserExtensionsManager::ExtensionState::REQUIRE_APPROVAL;
@@ -453,26 +444,7 @@ void SupervisedUserExtensionsManager::ChangeExtensionStateIfNecessary(
 
 bool SupervisedUserExtensionsManager::ShouldBlockExtension(
     const std::string& extension_id) const {
-  if (supervised_user::
-          IsSupervisedUserSkipParentApprovalToInstallExtensionsEnabled()) {
-    // On this extension handling mode, the user is never blocked from
-    // installing extensions.
-    return false;
-  }
-  if (user_prefs_->GetBoolean(
-          prefs::kSupervisedUserExtensionsMayRequestPermissions)) {
-    return false;
-  }
-  if (!extension_registry_->GetInstalledExtension(extension_id)) {
-    // Block child users from installing new extensions. Already installed
-    // extensions should not be affected.
-    return true;
-  }
-  if (extension_prefs_->DidExtensionEscalatePermissions(extension_id)) {
-    // Block child users from approving existing extensions asking for
-    // additional permissions.
-    return true;
-  }
+  // Users can always install extensions.
   return false;
 }
 
@@ -487,11 +459,6 @@ void SupervisedUserExtensionsManager::
   if (migration_state ==
       supervised_user::LocallyParentApprovedExtensionsMigrationState::
           kComplete) {
-    return;
-  }
-
-  if (!supervised_user::
-          IsSupervisedUserSkipParentApprovalToInstallExtensionsEnabled()) {
     return;
   }
 
@@ -513,9 +480,6 @@ void SupervisedUserExtensionsManager::
 }
 
 void SupervisedUserExtensionsManager::DoExtensionsMigrationToParentApproved() {
-  CHECK(supervised_user::
-            IsSupervisedUserSkipParentApprovalToInstallExtensionsEnabled());
-
   base::Value::Dict unapproved_extensions_dict =
       GetExtensionsMissingApproval(*user_prefs_);
   user_prefs_->SetDict(prefs::kSupervisedUserLocallyParentApprovedExtensions,
@@ -539,10 +503,6 @@ void SupervisedUserExtensionsManager::DoExtensionsMigrationToParentApproved() {
 
 bool SupervisedUserExtensionsManager::IsLocallyParentApprovedExtension(
     const std::string& extension_id) const {
-  if (!supervised_user::
-          IsSupervisedUserSkipParentApprovalToInstallExtensionsEnabled()) {
-    return false;
-  }
   const base::Value::Dict& current_locally_approved_dict = user_prefs_->GetDict(
       prefs::kSupervisedUserLocallyParentApprovedExtensions);
   return base::Contains(current_locally_approved_dict, extension_id);
