@@ -464,11 +464,11 @@ constexpr std::array<autofill::FieldType, 3> kStaticFieldsTypes = {
       field.fieldType = [self fieldTypeToTypeName:item.field];
       field.fieldLabel = base::SysUTF8ToNSString(item.name);
 
-      if (GroupTypeOfFieldType(item.field) !=
+      if (GroupTypeOfFieldType(item.field) ==
           autofill::FieldTypeGroup::kAddress) {
-        [nonAddressFields addObject:field];
-      } else {
         [addressFields addObject:field];
+      } else {
+        [nonAddressFields addObject:field];
       }
     }
   } else {
