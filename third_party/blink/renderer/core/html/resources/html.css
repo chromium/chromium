@@ -1787,7 +1787,9 @@ dialog:where(:modal) {
     margin: 0;
     inset: auto;
     min-inline-size: anchor-size(self-inline);
-    min-block-size: 1lh;
+    /* TODO(crbug.com/409942762): Consider removing -internal-auto-base() here
+     * if underlying performance issues with lh units are fixed. */
+    min-block-size: -internal-auto-base(0, 1lh);
     /* Go to the edge of the viewport, and add scrollbars if needed. */
     max-block-size: -webkit-fill-available; /* Can be removed when stretch ships */
     max-block-size: stretch;
@@ -1812,7 +1814,9 @@ dialog:where(:modal) {
      * default select option rules at some point. This should be re-evaluted
      * before CustomizableSelect is shipped. */
     min-inline-size: 24px;
-    min-block-size: max(24px, 1lh);
+    /* TODO(crbug.com/409942762): Consider removing -internal-auto-base() here
+     * if underlying performance issues with lh units are fixed. */
+    min-block-size: -internal-auto-base(24px, max(24px, 1lh));
     font-weight: -internal-auto-base(normal, inherit);
     padding-inline: -internal-auto-base(2px, 0.5em);
     padding-block-end: -internal-auto-base(1px, 0);
