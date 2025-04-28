@@ -8,6 +8,7 @@
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/crx_installer.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
+#include "chrome/common/pref_names.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension_builder.h"
@@ -24,7 +25,7 @@ using extensions::mojom::ManifestLocation;
 
 namespace apps::chrome_app_deprecation {
 
-class DeprecationControllerTest : public extensions::ExtensionServiceTestBase {
+class ChromeAppDeprecationTest : public extensions::ExtensionServiceTestBase {
  protected:
   void SetUp() override {
     ExtensionServiceTestBase::SetUp();
@@ -66,18 +67,15 @@ class DeprecationControllerTest : public extensions::ExtensionServiceTestBase {
   scoped_refptr<const Extension> app_;
 };
 
-TEST_F(DeprecationControllerTest, HandleDeprecationDefaultFeatureFlag) {
+TEST_F(ChromeAppDeprecationTest, DefaultFeatureFlag) {
   scoped_feature_list_.InitWithEmptyFeatureAndFieldTrialLists();
   ASSERT_TRUE(base::FeatureList::IsEnabled(kAllowUserInstalledChromeApps));
 
   EXPECT_EQ(HandleDeprecation(app_->id(), profile()),
             DeprecationStatus::kLaunchAllowed);
-
-  EXPECT_EQ(HandleDeprecation(app_->id(), profile()),
-            DeprecationStatus::kLaunchAllowed);
 }
 
-TEST_F(DeprecationControllerTest, HandleDeprecationDisabledFeatureFlag) {
+TEST_F(ChromeAppDeprecationTest, DisabledFeatureFlag) {
   scoped_feature_list_.InitAndDisableFeature(kAllowUserInstalledChromeApps);
   ASSERT_FALSE(base::FeatureList::IsEnabled(kAllowUserInstalledChromeApps));
 
@@ -85,7 +83,7 @@ TEST_F(DeprecationControllerTest, HandleDeprecationDisabledFeatureFlag) {
             DeprecationStatus::kLaunchBlocked);
 }
 
-TEST_F(DeprecationControllerTest, HandleDeprecationEnabledFeatureFlag) {
+TEST_F(ChromeAppDeprecationTest, EnabledFeatureFlag) {
   scoped_feature_list_.InitAndEnableFeature(kAllowUserInstalledChromeApps);
   ASSERT_TRUE(base::FeatureList::IsEnabled(kAllowUserInstalledChromeApps));
 
@@ -93,10 +91,64 @@ TEST_F(DeprecationControllerTest, HandleDeprecationEnabledFeatureFlag) {
             DeprecationStatus::kLaunchAllowed);
 }
 
-class DeprecationControllerAllowlistTest : public DeprecationControllerTest {
+class ChromeAppDeprecationKioskTest : public ChromeAppDeprecationTest {
+  void SetUp() override {
+    ChromeAppDeprecationTest::SetUp();
+
+    SetKioskSessionForTesting();
+  }
+};
+
+TEST_F(ChromeAppDeprecationKioskTest, DefaultFeatureFlag) {
+  scoped_feature_list_.InitWithEmptyFeatureAndFieldTrialLists();
+  ASSERT_TRUE(base::FeatureList::IsEnabled(kAllowChromeAppsInKioskSessions));
+
+  EXPECT_EQ(HandleDeprecation(app_->id(), profile()),
+            DeprecationStatus::kLaunchAllowed);
+}
+
+TEST_F(ChromeAppDeprecationKioskTest, DisabledFeatureFlag) {
+  scoped_feature_list_.InitAndDisableFeature(kAllowChromeAppsInKioskSessions);
+  ASSERT_FALSE(base::FeatureList::IsEnabled(kAllowChromeAppsInKioskSessions));
+
+  EXPECT_EQ(HandleDeprecation(app_->id(), profile()),
+            DeprecationStatus::kLaunchBlocked);
+}
+
+TEST_F(ChromeAppDeprecationKioskTest, EnabledFeatureFlag) {
+  scoped_feature_list_.InitAndEnableFeature(kAllowChromeAppsInKioskSessions);
+  ASSERT_TRUE(base::FeatureList::IsEnabled(kAllowChromeAppsInKioskSessions));
+
+  EXPECT_EQ(HandleDeprecation(app_->id(), profile()),
+            DeprecationStatus::kLaunchAllowed);
+}
+
+TEST_F(ChromeAppDeprecationKioskTest, DisabledFeatureFlagDefaultPolicy) {
+  scoped_feature_list_.InitAndDisableFeature(kAllowChromeAppsInKioskSessions);
+  ASSERT_FALSE(base::FeatureList::IsEnabled(kAllowChromeAppsInKioskSessions));
+  ASSERT_FALSE(
+      profile()->GetPrefs()->GetBoolean(prefs::kKioskChromeAppsForceAllowed));
+
+  EXPECT_EQ(HandleDeprecation(app_->id(), profile()),
+            DeprecationStatus::kLaunchBlocked);
+}
+
+TEST_F(ChromeAppDeprecationKioskTest, DisabledFeatureFlagOverridenByPolicy) {
+  scoped_feature_list_.InitAndDisableFeature(kAllowChromeAppsInKioskSessions);
+  ASSERT_FALSE(base::FeatureList::IsEnabled(kAllowChromeAppsInKioskSessions));
+
+  profile()->GetPrefs()->SetBoolean(prefs::kKioskChromeAppsForceAllowed, true);
+  ASSERT_TRUE(
+      profile()->GetPrefs()->GetBoolean(prefs::kKioskChromeAppsForceAllowed));
+
+  EXPECT_EQ(HandleDeprecation(app_->id(), profile()),
+            DeprecationStatus::kLaunchAllowed);
+}
+
+class ChromeAppDeprecationAllowlistTest : public ChromeAppDeprecationTest {
  protected:
   void SetUp() override {
-    DeprecationControllerTest::SetUp();
+    ChromeAppDeprecationTest::SetUp();
 
     AddAppToAllowlistForTesting(app_->id());
   }
@@ -104,12 +156,11 @@ class DeprecationControllerAllowlistTest : public DeprecationControllerTest {
   void TearDown() override {
     ResetAllowlistForTesting();
 
-    DeprecationControllerTest::TearDown();
+    ChromeAppDeprecationTest::TearDown();
   }
 };
 
-TEST_F(DeprecationControllerAllowlistTest,
-       HandleDeprecationDefaultFeatureFlag) {
+TEST_F(ChromeAppDeprecationAllowlistTest, DefaultFeatureFlag) {
   scoped_feature_list_.InitWithEmptyFeatureAndFieldTrialLists();
   ASSERT_TRUE(base::FeatureList::IsEnabled(kAllowUserInstalledChromeApps));
 
@@ -117,8 +168,7 @@ TEST_F(DeprecationControllerAllowlistTest,
             DeprecationStatus::kLaunchAllowed);
 }
 
-TEST_F(DeprecationControllerAllowlistTest,
-       HandleDeprecationDisabledFeatureFlag) {
+TEST_F(ChromeAppDeprecationAllowlistTest, DisabledFeatureFlag) {
   scoped_feature_list_.InitAndDisableFeature(kAllowUserInstalledChromeApps);
   ASSERT_FALSE(base::FeatureList::IsEnabled(kAllowUserInstalledChromeApps));
 
@@ -126,8 +176,7 @@ TEST_F(DeprecationControllerAllowlistTest,
             DeprecationStatus::kLaunchAllowed);
 }
 
-TEST_F(DeprecationControllerAllowlistTest,
-       HandleDeprecationEnabledFeatureFlag) {
+TEST_F(ChromeAppDeprecationAllowlistTest, EnabledFeatureFlag) {
   scoped_feature_list_.InitAndEnableFeature(kAllowUserInstalledChromeApps);
   ASSERT_TRUE(base::FeatureList::IsEnabled(kAllowUserInstalledChromeApps));
 

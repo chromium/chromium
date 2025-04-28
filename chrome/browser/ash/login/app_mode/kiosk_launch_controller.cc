@@ -260,6 +260,7 @@ std::string ToString(KioskAppLaunchError::Error error) {
     CASE(kExtensionsLoadTimeout);
     CASE(kExtensionsPolicyInvalid);
     CASE(kUserNotAllowlisted);
+    CASE(kChromeAppDeprecated);
   }
   NOTREACHED();
 #undef CASE
@@ -589,6 +590,7 @@ void KioskLaunchController::OnLaunchFailed(KioskAppLaunchError::Error error) {
     case Error::kExtensionsLoadTimeout:
     case Error::kExtensionsPolicyInvalid:
     case Error::kUserNotAllowlisted:
+    case Error::kChromeAppDeprecated:
       if (KioskLaunchController::TestOverrides::block_exit_on_failure) {
         // Don't exit on launch failure if a test checks for Kiosk splash screen
         // after launch fails, which happens to MSan browser_tests since this

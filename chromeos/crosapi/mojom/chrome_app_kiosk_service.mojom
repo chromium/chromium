@@ -44,6 +44,8 @@ enum ChromeKioskLaunchResult {
   kUnableToLaunch = 2,
   // The primary app is not offline enabled, but network is not ready
   kNetworkMissing = 3,
+  // The primary app is a deprecated Chrome App.
+  kChromeAppDeprecated = 4,
 };
 
 // A client implemented in lacros-chrome for the DownloadController which is

@@ -29,7 +29,8 @@ BASE_FEATURE(kAllowChromeAppsInKioskSessions,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {
-constexpr auto kUserInstalledAndKiosk = base::MakeFixedFlatSet<
+// TODO(crbug.com/413912653): Split the allowlists per context.
+constexpr auto kUserInstalledAllowlist = base::MakeFixedFlatSet<
     std::string_view>(
     {"aakfkoilmhehmmadlkedfbcelkbamdkj", "aepgaekjheajlcifmpjcnpbjcencoefn",
      "afoipjmffplafpbfjopglheidddioiai", "afpnehpifljbjjplppeplamalioanmio",
@@ -104,17 +105,31 @@ constexpr auto kUserInstalledAndKiosk = base::MakeFixedFlatSet<
      "pifpopligmljinioeacaccciabhbbpjo", "plhmjahmpikllpphfaoopdhnkbpffccm",
      "pnclfbefcgmenbbbpljbhbdacgkgkjlh", "ppkfnjlimknmjoaemnpidmdlfchhehel"});
 
+// TODO(crbug.com/383754553): Add the finalised list only in M138 builds.
+constexpr auto kKioskSessionAllowlist =
+    base::MakeFixedFlatSet<std::string_view>({""});
+
 // The std::unordered_set<std::string_view> type has complex constructors and
 // for static variables it would require an exit-time destructor. For these
 // cases go/totw/110 suggests using NoDestructor to prevent the destructor from
 // running and avoid multi-thread race conditions. We do not risk memory leaks
 // because the allowlist are always valid while Chrome is running.
-static base::NoDestructor<std::unordered_set<std::string_view>>
-    kTestAllowlistedApps;
+static base::NoDestructor<std::unordered_set<std::string>> testAllowlistedApps;
 
-bool IsAllowlisted(std::string_view app_id) {
-  return kUserInstalledAndKiosk.contains(app_id) ||
-         kTestAllowlistedApps->contains(app_id);
+static bool fakeKioskSessionForTesting = false;
+
+enum class AllowlistContext { UserInstalled, KioskSession };
+
+bool IsAllowlisted(std::string_view app_id, AllowlistContext context) {
+  switch (context) {
+    case AllowlistContext::UserInstalled:
+      return kUserInstalledAllowlist.contains(app_id) ||
+             testAllowlistedApps->contains(app_id.data());
+    case AllowlistContext::KioskSession:
+      return kKioskSessionAllowlist.contains(app_id) ||
+             kUserInstalledAllowlist.contains(app_id) ||
+             testAllowlistedApps->contains(app_id.data());
+  }
 }
 
 void ShowNotification(const extensions::Extension& app, Profile* profile) {
@@ -155,7 +170,7 @@ bool IsUserInstalled(std::string_view app_id, Profile* profile) {
 DeprecationStatus HandleUserInstalledApp(const extensions::Extension& app,
                                          Profile* profile) {
   // TODO(crbug.com/379261516): Block the execution in M139.
-  if (IsAllowlisted(app.id())) {
+  if (IsAllowlisted(app.id(), AllowlistContext::UserInstalled)) {
     return DeprecationStatus::kLaunchAllowed;
   }
 
@@ -170,11 +185,15 @@ DeprecationStatus HandleUserInstalledApp(const extensions::Extension& app,
 DeprecationStatus HandleKioskSessionApp(const extensions::Extension& app,
                                         Profile* profile) {
   // TODO(crbug.com/379262711): Block the execution in M151.
-  if (base::FeatureList::IsEnabled(kAllowChromeAppsInKioskSessions)) {
+  if (IsAllowlisted(app.id(), AllowlistContext::KioskSession)) {
     return DeprecationStatus::kLaunchAllowed;
   }
 
   if (profile->GetPrefs()->GetBoolean(prefs::kKioskChromeAppsForceAllowed)) {
+    return DeprecationStatus::kLaunchAllowed;
+  }
+
+  if (base::FeatureList::IsEnabled(kAllowChromeAppsInKioskSessions)) {
     return DeprecationStatus::kLaunchAllowed;
   }
 
@@ -191,21 +210,27 @@ DeprecationStatus HandleDeprecation(std::string_view app_id, Profile* profile) {
     return DeprecationStatus::kLaunchAllowed;
   }
 
+  if (chromeos::IsKioskSession() || fakeKioskSessionForTesting) {
+    return HandleKioskSessionApp(*app, profile);
+  }
+
   if (IsUserInstalled(app_id, profile)) {
     return HandleUserInstalledApp(*app, profile);
-  } else if (chromeos::IsKioskSession()) {
-    return HandleKioskSessionApp(*app, profile);
   }
 
   return DeprecationStatus::kLaunchAllowed;
 }
 
 void AddAppToAllowlistForTesting(std::string_view app_id) {
-  kTestAllowlistedApps->emplace(app_id);
+  testAllowlistedApps->emplace(app_id.data());
 }
 
 void ResetAllowlistForTesting() {
-  kTestAllowlistedApps->clear();
+  testAllowlistedApps->clear();
+}
+
+void SetKioskSessionForTesting() {
+  fakeKioskSessionForTesting = true;
 }
 
 }  // namespace apps::chrome_app_deprecation

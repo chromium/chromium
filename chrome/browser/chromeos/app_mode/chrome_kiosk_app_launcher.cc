@@ -11,6 +11,7 @@
 #include "base/syslog_logging.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/publishers/chrome_app_deprecation.h"
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_app_service_launcher.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -50,12 +51,20 @@ void ChromeKioskAppLauncher::LaunchApp(LaunchCallback callback) {
   on_ready_callback_ = std::move(callback);
 
   const extensions::Extension* primary_app = GetPrimaryAppExtension();
+
   // Verify that required apps are installed. While the apps should be
   // present at this point, crash recovery flow skips app installation steps -
   // this means that the kiosk app might not yet be downloaded. If that is
   // the case, bail out from the app launch.
   if (!primary_app) {
     ReportLaunchFailure(LaunchResult::kUnableToLaunch);
+    return;
+  }
+
+  if (apps::chrome_app_deprecation::HandleDeprecation(primary_app->id(),
+                                                      profile_) ==
+      apps::chrome_app_deprecation::DeprecationStatus::kLaunchBlocked) {
+    ReportLaunchFailure(LaunchResult::kChromeAppDeprecated);
     return;
   }
 

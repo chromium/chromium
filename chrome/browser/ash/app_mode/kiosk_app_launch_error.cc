@@ -71,6 +71,9 @@ std::string KioskAppLaunchError::GetErrorMessage(Error error) {
     case Error::kExtensionsPolicyInvalid:
       return l10n_util::GetStringUTF8(
           IDS_KIOSK_APP_ERROR_EXTENSIONS_POLICY_INVALID);
+    case Error::kChromeAppDeprecated:
+      return l10n_util::GetStringUTF8(
+          IDS_KIOSK_APP_ERROR_UNABLE_TO_LAUNCH_CHROME_APP);
   }
 
   NOTREACHED() << "Unknown kiosk app launch error, error="
