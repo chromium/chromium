@@ -19480,7 +19480,8 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "AdAuctionEventRegistration"
+                        "AdAuctionEventRegistration",
+                        "FledgeClickiness"
                     ]
                 }
             ]
