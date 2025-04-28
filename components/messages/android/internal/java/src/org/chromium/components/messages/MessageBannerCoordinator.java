@@ -15,6 +15,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.accessibility.AccessibilityEventCompat;
 
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.MockedInTests;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.messages.MessageStateHandler.Position;
@@ -25,6 +26,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.util.RunnableTimer;
 
 /** Coordinator responsible for creating a message banner. */
+@MockedInTests
 @NullMarked
 class MessageBannerCoordinator {
     private final MessageBannerMediator mMediator;

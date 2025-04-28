@@ -25,6 +25,7 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.build.annotations.MockedInTests;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
@@ -46,6 +47,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /** Class containing functionality related to voice search. */
+@MockedInTests
 @NullMarked
 public class VoiceRecognitionHandler {
     private static final String TAG = "VoiceRecognition";

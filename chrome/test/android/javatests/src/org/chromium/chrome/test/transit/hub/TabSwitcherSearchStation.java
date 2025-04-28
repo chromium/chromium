@@ -11,7 +11,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.withParentIndex;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.Matchers.allOf;
 
 import static org.chromium.base.test.transit.ViewSpec.viewSpec;
@@ -26,7 +25,6 @@ import org.chromium.base.test.transit.Station;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.base.test.transit.ViewSpec;
 import org.chromium.chrome.browser.omnibox.UrlBar;
-import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionView;
 import org.chromium.chrome.browser.searchwidget.SearchActivity;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
@@ -81,7 +79,7 @@ public class TabSwitcherSearchStation extends Station<SearchActivity> {
                 .descendant(
                         allOf(
                                 withParentIndex(index),
-                                withClassName(equalTo(BaseSuggestionView.class.getName())),
+                                withClassName(containsString("BaseSuggestionView")),
                                 hasDescendant(
                                         allOf(
                                                 withId(R.id.line_1),

@@ -4,6 +4,7 @@
 
 package org.chromium.components.payments;
 
+import org.chromium.build.annotations.MockedInTests;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.payments.mojom.PaymentDetailsModifier;
@@ -14,6 +15,7 @@ import org.chromium.payments.mojom.PaymentOptions;
 import java.util.Map;
 
 /** The parameters of PaymentRequest specified by the merchant. */
+@MockedInTests // Tell R8 not to break the ability to mock the class.
 @NullMarked
 public interface PaymentRequestParams {
     /**
