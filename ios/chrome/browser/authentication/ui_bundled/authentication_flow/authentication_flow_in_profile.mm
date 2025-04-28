@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser/browser_observer_bridge.h"
 #import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
@@ -48,7 +49,8 @@ enum class AuthenticationFlowInProfileState {
 
 }  // namespace
 
-@interface AuthenticationFlowInProfile () <AuthenticationFlowPerformerDelegate>
+@interface AuthenticationFlowInProfile () <AuthenticationFlowPerformerDelegate,
+                                           BrowserObserving>
 @end
 
 @implementation AuthenticationFlowInProfile {
@@ -65,6 +67,7 @@ enum class AuthenticationFlowInProfileState {
   BOOL _isManagedIdentity;
   AuthenticationFlowPerformer* _performer;
   raw_ptr<Browser> _browser;
+  std::unique_ptr<BrowserObserverBridge> _browserObserver;
   signin_metrics::AccessPoint _accessPoint;
   BOOL _precedingHistorySync;
   PostSignInActionSet _postSignInActions;
@@ -94,6 +97,7 @@ enum class AuthenticationFlowInProfileState {
     CHECK(browser);
     CHECK(identity);
     _browser = browser;
+    _browserObserver = std::make_unique<BrowserObserverBridge>(_browser, self);
     _identityToSignIn = identity;
     _isManagedIdentity = isManagedIdentity;
     _accessPoint = accessPoint;
@@ -376,6 +380,13 @@ enum class AuthenticationFlowInProfileState {
 }
 
 - (void)switchBackToPersonalProfileIfNeededStep {
+  if (!_browser) {
+    // Browser was destroyed in the meantime. This can happen if a switch is
+    // already in progress, or if the window/scene got closed. Either way, no
+    // switching necessary here.
+    [self continueFlow];
+    return;
+  }
   // Note: It's theoretically possible that the originating profile was not the
   // personal one, but rather another managed profile. In that case, switching
   // back to that managed profile would be "more correct". However, that would
@@ -399,10 +410,11 @@ enum class AuthenticationFlowInProfileState {
 }
 
 - (void)failureCompleteFlowStep {
-  // None of the steps after signin can fail. If any failable steps after the
-  // signin step get added in the future, then a call to
+  // None of the steps after signin can fail (except for the case of the browser
+  // going away, which is more "abort" than "fail)"). If any failable steps
+  // after the signin step get added in the future, then a call to
   // `[_performer signOutImmediatelyFromProfile:...]` should be added here.
-  CHECK(!_didSignIn);
+  CHECK(!_browser || !_didSignIn, base::NotFatalUntil::M140);
   CHECK(_signInCompletion);
   signin_ui::SigninCompletionCallback signInCompletion = _signInCompletion;
   _signInCompletion = nil;
@@ -510,6 +522,14 @@ enum class AuthenticationFlowInProfileState {
 
 - (void)didFetchAccountCapabilities {
   [self continueFlow];
+}
+
+#pragma mark - BrowserObserving
+
+- (void)browserDestroyed:(Browser*)browser {
+  CHECK_EQ(browser, _browser);
+  _browser = nullptr;
+  _error = ios::provider::CreateUserCancelledSigninError();
 }
 
 @end

@@ -97,14 +97,15 @@ class AuthenticationFlowInProfileTest
   void CreateAuthenticationFlowInProfile(
       PostSignInActionSet post_sign_in_actions,
       id<SystemIdentity> identity,
-      signin_metrics::AccessPoint access_point) {
+      signin_metrics::AccessPoint access_point,
+      bool preceding_history_sync = false) {
     BOOL is_managed_identity = identity == managed_identity_;
     authentication_flow_in_profile_ = [[AuthenticationFlowInProfile alloc]
              initWithBrowser:browser_.get()
                     identity:identity
            isManagedIdentity:is_managed_identity
                  accessPoint:access_point
-        precedingHistorySync:NO
+        precedingHistorySync:preceding_history_sync
            postSignInActions:post_sign_in_actions];
     id<AuthenticationFlowPerformerDelegate> performer_delegate =
         GetAuthenticationFlowPerformerDelegate();
@@ -288,6 +289,133 @@ TEST_P(AuthenticationFlowInProfileTest, TestSignInWithManagedIdentity) {
   // Simulate the user policy fetch request.
   [GetAuthenticationFlowPerformerDelegate() didFetchUserPolicyWithSuccess:YES];
   EXPECT_TRUE(future.Wait());
+}
+
+// Tests that there is no crash if the browser is destroyed in the middle of the
+// flow, during `registerForUserPolicyIfNeededStep`.
+TEST_P(AuthenticationFlowInProfileTest,
+       BrowserDestroyedDuringRegisterForUserPolicy) {
+  const signin_metrics::AccessPoint access_point =
+      signin_metrics::AccessPoint::kStartPage;
+  CreateAuthenticationFlowInProfile(PostSignInActionSet(), managed_identity_,
+                                    access_point);
+  // Start `authentication_flow_in_profile_` for `managed_identity_`.
+  base::test::TestFuture<SigninCoordinatorResult> future;
+  [authentication_flow_in_profile_
+      startSignInWithCompletion:base::CallbackToBlock(future.GetCallback())];
+  // Expect to call the performer to sign-in.
+  OCMExpect([performer_mock_ signInIdentity:managed_identity_
+                              atAccessPoint:access_point
+                             currentProfile:profile_.get()]);
+  // Expect user policy register request.
+  __block auto run_loop = std::make_unique<base::RunLoop>();
+  OCMExpect([performer_mock_ registerUserPolicy:profile_.get()
+                                    forIdentity:managed_identity_])
+      .andDo(^(NSInvocation* invocation) {
+        // While the policy registration is ongoing, the browser gets destroyed.
+        browser_ = nil;
+        run_loop->Quit();
+      });
+  run_loop->Run();
+  // Simulate the user policy register request finishing.
+  [GetAuthenticationFlowPerformerDelegate()
+      didRegisterForUserPolicyWithDMToken:kFakeDMToken
+                                 clientID:kFakeClientID
+                       userAffiliationIDs:@[ kFakeUserAffiliationID ]];
+  // Since the browser was destroyed, no other steps should happen (e.g. no
+  // policy fetch, no post-signin actions).
+  EXPECT_TRUE(future.Wait());
+  EXPECT_EQ(future.Get(),
+            SigninCoordinatorResult::SigninCoordinatorResultInterrupted);
+}
+
+// Tests that there is no crash if the browser is destroyed in the middle of the
+// flow, during `fetchUserPolicyIfNeededStep`.
+TEST_P(AuthenticationFlowInProfileTest, BrowserDestroyedDuringFetchUserPolicy) {
+  const signin_metrics::AccessPoint access_point =
+      signin_metrics::AccessPoint::kStartPage;
+  CreateAuthenticationFlowInProfile(PostSignInActionSet(), managed_identity_,
+                                    access_point);
+  // Start `authentication_flow_in_profile_` for `managed_identity_`.
+  base::test::TestFuture<SigninCoordinatorResult> future;
+  [authentication_flow_in_profile_
+      startSignInWithCompletion:base::CallbackToBlock(future.GetCallback())];
+  // Expect to call the performer to sign-in.
+  OCMExpect([performer_mock_ signInIdentity:managed_identity_
+                              atAccessPoint:access_point
+                             currentProfile:profile_.get()]);
+  // Expect user policy register request.
+  __block auto run_loop = std::make_unique<base::RunLoop>();
+  OCMExpect([performer_mock_ registerUserPolicy:profile_.get()
+                                    forIdentity:managed_identity_])
+      .andDo(^(NSInvocation* invocation) {
+        run_loop->Quit();
+      });
+  run_loop->Run();
+
+  // Expect user policy fetch request.
+  OCMExpect([performer_mock_ fetchUserPolicy:profile_.get()
+                                 withDmToken:kFakeDMToken
+                                    clientID:kFakeClientID
+                          userAffiliationIDs:@[ kFakeUserAffiliationID ]
+                                    identity:managed_identity_])
+      .andDo(^(NSInvocation* invocation) {
+        // While the policy fetch is ongoing, the browser gets destroyed.
+        browser_ = nil;
+      });
+
+  // Simulate the user policy register request finishing.
+  [GetAuthenticationFlowPerformerDelegate()
+      didRegisterForUserPolicyWithDMToken:kFakeDMToken
+                                 clientID:kFakeClientID
+                       userAffiliationIDs:@[ kFakeUserAffiliationID ]];
+
+  // Simulate the user policy fetch request finishing.
+  [GetAuthenticationFlowPerformerDelegate() didFetchUserPolicyWithSuccess:NO];
+
+  // Since the browser was destroyed, no other steps should happen (e.g. no
+  // post-signin actions).
+  EXPECT_TRUE(future.Wait());
+  EXPECT_EQ(future.Get(),
+            SigninCoordinatorResult::SigninCoordinatorResultInterrupted);
+}
+
+// Tests that there is no crash if the browser is destroyed in the middle of the
+// flow, during `fetchCapabilitiesIfNeededStep`.
+TEST_P(AuthenticationFlowInProfileTest,
+       BrowserDestroyedDuringFetchCapabilities) {
+  const signin_metrics::AccessPoint access_point =
+      signin_metrics::AccessPoint::kStartPage;
+  CreateAuthenticationFlowInProfile(PostSignInActionSet(), identity1_,
+                                    access_point,
+                                    /*preceding_history_sync=*/true);
+  // Start `authentication_flow_in_profile_` for `identity1_`.
+  base::test::TestFuture<SigninCoordinatorResult> future;
+  [authentication_flow_in_profile_
+      startSignInWithCompletion:base::CallbackToBlock(future.GetCallback())];
+  // Expect to call the performer to sign-in.
+  OCMExpect([performer_mock_ signInIdentity:identity1_
+                              atAccessPoint:access_point
+                             currentProfile:profile_.get()]);
+
+  // Expect capabilities fetch request, and grab the completion callback.
+  __block auto run_loop = std::make_unique<base::RunLoop>();
+  OCMExpect([performer_mock_ fetchAccountCapabilities:profile_.get()])
+      .andDo(^(NSInvocation* invocation) {
+        // While the capabilities fetch is ongoing, the browser gets destroyed.
+        browser_ = nil;
+        run_loop->Quit();
+      });
+  run_loop->Run();
+
+  // Simulate the capabilities fetch request finishing.
+  [GetAuthenticationFlowPerformerDelegate() didFetchAccountCapabilities];
+
+  // Since the browser was destroyed, no other steps should happen (e.g. no
+  // post-signin actions).
+  EXPECT_TRUE(future.Wait());
+  EXPECT_EQ(future.Get(),
+            SigninCoordinatorResult::SigninCoordinatorResultInterrupted);
 }
 
 INSTANTIATE_TEST_SUITE_P(,
