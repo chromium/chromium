@@ -569,6 +569,13 @@ void ReadAnythingAppController::AccessibilityLocationChangesReceived(
 void ReadAnythingAppController::AccessibilityLocationChangesReceived(
     const ui::AXTreeID& tree_id,
     ui::AXLocationAndScrollUpdates& details) {
+  // AccessibilityLocationChangesReceived causes some unexpected crashes and
+  // AXNode behavior. Therefore, flag-guard this behind the
+  // IsReadAnythingDocsIntegration flag, since these changes were initially
+  // added to support Google Docs. See crbug.com/411776559.
+  if (!features::IsReadAnythingDocsIntegrationEnabled()) {
+    return;
+  }
   // If the AccessibilityLocationChangesReceived callback happens after
   // the current active tree has been destroyed, do nothing.
   DUMP_WILL_BE_CHECK(model_.active_tree_id() != ui::AXTreeIDUnknown());
