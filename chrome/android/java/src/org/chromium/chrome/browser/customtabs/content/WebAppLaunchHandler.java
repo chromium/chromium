@@ -49,8 +49,13 @@ public class WebAppLaunchHandler {
     }
 
     public WebAppLaunchHandler(
-            @ClientMode int clientMode, String targetUrl, String packageName, List<Uri> fileUris) {
-        mLaunchParams = getLaunchParams(clientMode, targetUrl, packageName, fileUris);
+            @ClientMode int clientMode,
+            String targetUrl,
+            String packageName,
+            List<Uri> fileUris,
+            boolean isInitialIntent) {
+        mLaunchParams =
+                getLaunchParams(clientMode, targetUrl, packageName, fileUris, isInitialIntent);
     }
 
     /** Returns whether this launch triggers a navigation */
@@ -85,10 +90,11 @@ public class WebAppLaunchHandler {
             @ClientMode int clientModeParam,
             String targetUrl,
             String packageName,
-            List<Uri> fileUris) {
+            List<Uri> fileUris,
+            boolean isInitialIntent) {
         @ClientMode int clientMode = getClientMode(clientModeParam);
 
-        boolean startedNewNavigation = clientMode != FOCUS_EXISTING;
+        boolean startedNewNavigation = clientMode != FOCUS_EXISTING || isInitialIntent;
         return new WebAppLaunchParams(startedNewNavigation, targetUrl, packageName, fileUris);
     }
 

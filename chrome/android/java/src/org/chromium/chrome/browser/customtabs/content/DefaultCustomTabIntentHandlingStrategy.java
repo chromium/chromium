@@ -110,7 +110,8 @@ public class DefaultCustomTabIntentHandlingStrategy implements CustomTabIntentHa
                         intentDataProvider.getLaunchHandlerClientMode(),
                         intentDataProvider.getUrlToLoad(),
                         intentDataProvider.getClientPackageName(),
-                        fileUris);
+                        fileUris,
+                        isInitialIntent);
 
         if (launchHandler.getStartNewNavigation() && !isInitialIntent) {
             loadUrl(intentDataProvider);

@@ -617,6 +617,7 @@ if (is_android) {
       "src/org/chromium/chrome/browser/customtabs/RequestThrottlerTest.java",
       "src/org/chromium/chrome/browser/customtabs/TrustedCdnTest.java",
       "src/org/chromium/chrome/browser/customtabs/content/CustomTabActivityContentTestEnvironment.java",
+      "src/org/chromium/chrome/browser/customtabs/content/CustomTabActivityLaunchHandlerTest.java",
       "src/org/chromium/chrome/browser/customtabs/content/CustomTabActivityNavigationControllerTest.java",
       "src/org/chromium/chrome/browser/customtabs/content/CustomTabActivityTabControllerUnitTest.java",
       "src/org/chromium/chrome/browser/customtabs/content/CustomTabActivityUrlLoadingTest.java",

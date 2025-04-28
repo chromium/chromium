@@ -12,7 +12,6 @@ import static org.mockito.Mockito.verify;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 
 import androidx.browser.customtabs.CustomTabsSessionToken;
 import androidx.browser.trusted.LaunchHandlerClientMode;
@@ -34,7 +33,6 @@ import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.url.JUnitTestGURLs;
 
-import java.util.List;
 import java.util.Objects;
 
 /** Tests for {@link WebAppLaunchHandler}. */
@@ -43,6 +41,7 @@ import java.util.Objects;
 @Config(manifest = Config.NONE)
 @Features.EnableFeatures({ChromeFeatureList.ANDROID_WEB_APP_LAUNCH_HANDLER})
 public class WebAppLaunchHandlerTest {
+    static final int WRONG_CLIENT_MODE = 65;
 
     @Test
     public void getClientMode() {
@@ -59,35 +58,61 @@ public class WebAppLaunchHandlerTest {
         clientMode = WebAppLaunchHandler.getClientMode(LaunchHandlerClientMode.AUTO);
         Assert.assertEquals(LaunchHandlerClientMode.NAVIGATE_EXISTING, clientMode);
 
-        clientMode = WebAppLaunchHandler.getClientMode(45); // Invalid argument
+        clientMode = WebAppLaunchHandler.getClientMode(WRONG_CLIENT_MODE);
         Assert.assertEquals(LaunchHandlerClientMode.NAVIGATE_EXISTING, clientMode);
+    }
+
+    private WebAppLaunchHandler createWebAppLaunchHandler(
+            @LaunchHandlerClientMode.ClientMode int clientMode, boolean isInitialIntent) {
+        String url = JUnitTestGURLs.INITIAL_URL.getSpec();
+        return new WebAppLaunchHandler(
+                clientMode, url, /* packageName= */ null, /* fileUris= */ null, isInitialIntent);
     }
 
     @Test
     public void getStartNewNavigation() {
-        String url = JUnitTestGURLs.INITIAL_URL.getSpec();
-        String packageName = null;
-        List<Uri> fileUris = null;
+        final boolean isInitialIntent = false;
         WebAppLaunchHandler launchHandler =
-                new WebAppLaunchHandler(
-                        LaunchHandlerClientMode.NAVIGATE_EXISTING, url, packageName, fileUris);
+                createWebAppLaunchHandler(
+                        LaunchHandlerClientMode.NAVIGATE_EXISTING, isInitialIntent);
         Assert.assertTrue(launchHandler.getStartNewNavigation());
 
         launchHandler =
-                new WebAppLaunchHandler(
-                        LaunchHandlerClientMode.FOCUS_EXISTING, url, packageName, fileUris);
+                createWebAppLaunchHandler(LaunchHandlerClientMode.FOCUS_EXISTING, isInitialIntent);
         Assert.assertFalse(launchHandler.getStartNewNavigation());
 
         launchHandler =
-                new WebAppLaunchHandler(
-                        LaunchHandlerClientMode.NAVIGATE_NEW, url, packageName, fileUris);
+                createWebAppLaunchHandler(LaunchHandlerClientMode.NAVIGATE_NEW, isInitialIntent);
+        Assert.assertTrue(launchHandler.getStartNewNavigation());
+
+        launchHandler = createWebAppLaunchHandler(LaunchHandlerClientMode.AUTO, isInitialIntent);
+        Assert.assertTrue(launchHandler.getStartNewNavigation());
+
+        launchHandler = createWebAppLaunchHandler(WRONG_CLIENT_MODE, isInitialIntent);
+        Assert.assertTrue(launchHandler.getStartNewNavigation());
+    }
+
+    @Test
+    public void getStartNewNavigationInitialIntent() {
+        // We always need to start navigation on initial intent.
+        final boolean isInitialIntent = true;
+        WebAppLaunchHandler launchHandler =
+                createWebAppLaunchHandler(
+                        LaunchHandlerClientMode.NAVIGATE_EXISTING, isInitialIntent);
         Assert.assertTrue(launchHandler.getStartNewNavigation());
 
         launchHandler =
-                new WebAppLaunchHandler(LaunchHandlerClientMode.AUTO, url, packageName, fileUris);
+                createWebAppLaunchHandler(LaunchHandlerClientMode.FOCUS_EXISTING, isInitialIntent);
         Assert.assertTrue(launchHandler.getStartNewNavigation());
 
-        launchHandler = new WebAppLaunchHandler(65, url, packageName, fileUris);
+        launchHandler =
+                createWebAppLaunchHandler(LaunchHandlerClientMode.NAVIGATE_NEW, isInitialIntent);
+        Assert.assertTrue(launchHandler.getStartNewNavigation());
+
+        launchHandler = createWebAppLaunchHandler(LaunchHandlerClientMode.AUTO, isInitialIntent);
+        Assert.assertTrue(launchHandler.getStartNewNavigation());
+
+        launchHandler = createWebAppLaunchHandler(WRONG_CLIENT_MODE, isInitialIntent);
         Assert.assertTrue(launchHandler.getStartNewNavigation());
     }
 

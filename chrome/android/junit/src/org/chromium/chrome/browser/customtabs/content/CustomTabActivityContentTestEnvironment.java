@@ -59,6 +59,8 @@ import org.chromium.chrome.browser.customtabs.shadows.ShadowExternalNavigationDe
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.preloading.PreloadingDataBridge;
+import org.chromium.chrome.browser.preloading.PreloadingDataBridgeJni;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.Tab;
@@ -120,6 +122,8 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
     @Mock WebContentsFactory.Natives mWebContentsFactoryJni;
     @Mock public Verifier verifier;
     @Mock public CurrentPageVerifier currentPageVerifier;
+    @Mock PreloadingDataBridge.Natives mPreloadingDataBridgeMock;
+    @Mock WebAppLaunchHandler.Natives mWebAppLaunchHandlerJniMock;
 
     public final CustomTabActivityTabProvider tabProvider =
             new CustomTabActivityTabProvider(SPECULATED_URL);
@@ -142,6 +146,8 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
         WarmupManager.setInstanceForTesting(warmupManager);
         CustomTabAuthUrlHeuristicsJni.setInstanceForTesting(mCustomTabAuthUrlHeuristicsJniMock);
         WebContentsFactoryJni.setInstanceForTesting(mWebContentsFactoryJni);
+        PreloadingDataBridgeJni.setInstanceForTesting(mPreloadingDataBridgeMock);
+        WebAppLaunchHandlerJni.setInstanceForTesting(mWebAppLaunchHandlerJniMock);
 
         tabFromFactory = prepareTab();
 
