@@ -62,7 +62,7 @@ using base::SysNSStringToUTF8;
 // The part of the cell's accessibility label that is used to indicate the
 // 1-based index at which the payment method represented by this item is
 // positioned in the list of payment methods to show.
-@property(nonatomic, strong) NSString* cellIndexAccessibilityLabel;
+@property(nonatomic, copy) NSString* cellIndexAccessibilityLabel;
 
 @end
 
@@ -86,7 +86,7 @@ using base::SysNSStringToUTF8;
     _card = card;
     _menuActions = menuActions;
     _cellIndex = cellIndex;
-    _cellIndexAccessibilityLabel = cellIndexAccessibilityLabel;
+    _cellIndexAccessibilityLabel = [cellIndexAccessibilityLabel copy];
     _showAutofillFormButton = showAutofillFormButton;
     self.cellClass = [ManualFillCardCell class];
   }

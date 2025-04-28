@@ -50,7 +50,7 @@ CGFloat GetFaviconSize() {
 // The part of the cell's accessibility label that is used to indicate the index
 // at which the plus address represented by this item is positioned in the list
 // of plus addresses to show.
-@property(nonatomic, strong) NSString* cellIndexAccessibilityLabel;
+@property(nonatomic, copy) NSString* cellIndexAccessibilityLabel;
 
 @end
 
@@ -71,7 +71,7 @@ CGFloat GetFaviconSize() {
     _manualFillPlusAddress = plusAddress;
     _contentInjector = contentInjector;
     _menuActions = menuActions;
-    _cellIndexAccessibilityLabel = cellIndexAccessibilityLabel;
+    _cellIndexAccessibilityLabel = [cellIndexAccessibilityLabel copy];
     _isAddressManualFallbackUI = isAddressManualFallbackUI;
     self.cellClass = [ManualFillPlusAddressCell class];
   }

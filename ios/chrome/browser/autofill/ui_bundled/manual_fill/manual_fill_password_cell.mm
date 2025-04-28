@@ -62,7 +62,7 @@ CGFloat GetFaviconSize() {
 // The part of the cell's accessibility label that is used to indicate the index
 // at which the password represented by this item is positioned in the list of
 // passwords to show.
-@property(nonatomic, strong) NSString* cellIndexAccessibilityLabel;
+@property(nonatomic, copy) NSString* cellIndexAccessibilityLabel;
 
 @end
 
@@ -97,7 +97,7 @@ CGFloat GetFaviconSize() {
     _contentInjector = contentInjector;
     _menuActions = menuActions;
     _cellIndex = cellIndex;
-    _cellIndexAccessibilityLabel = cellIndexAccessibilityLabel;
+    _cellIndexAccessibilityLabel = [cellIndexAccessibilityLabel copy];
     _showAutofillFormButton = showAutofillFormButton;
     _fromAllPasswordsContext = fromAllPasswordsContext;
     self.cellClass = [ManualFillPasswordCell class];
