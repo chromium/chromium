@@ -3900,6 +3900,17 @@ TEST_F(PaymentsDataManagerTest, ShouldShowBnplSettings) {
   EXPECT_FALSE(payments_data_manager().ShouldShowBnplSettings());
 }
 
+TEST_F(PaymentsDataManagerTest,
+       ShouldShowBnplSettings_BnplNotSeenButLinkedIssuerPresent) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillEnableBuyNowPayLater};
+  prefs_.get()->SetBoolean(prefs::kAutofillHasSeenBnpl, false);
+  test_api(payments_data_manager())
+      .AddBnplIssuer(test::GetTestLinkedBnplIssuer());
+
+  EXPECT_TRUE(payments_data_manager().ShouldShowBnplSettings());
+}
+
 TEST_F(PaymentsDataManagerTest, ShouldShowBnplSettings_FlagOff) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(features::kAutofillEnableBuyNowPayLater);
