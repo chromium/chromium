@@ -9,8 +9,6 @@
 
 namespace autofill::features {
 
-BASE_DECLARE_FEATURE(kAndroidAutofillBottomSheetWorkaround);
-
 BASE_DECLARE_FEATURE(kAndroidAutofillDeprecateAccessibilityApi);
 
 }  // namespace autofill::features

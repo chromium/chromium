@@ -45,8 +45,7 @@ class PrefillRequest {
         SparseArray<VirtualViewFillInfo> virtualViewsInfo;
 
         // Check the comment on SparseArrayWithWorkaround class.
-        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.UPSIDE_DOWN_CAKE
-                && AndroidAutofillFeatures.ANDROID_AUTOFILL_BOTTOM_SHEET_WORKAROUND.isEnabled()) {
+        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             virtualViewsInfo = new SparseArrayWithWorkaround();
         } else {
             virtualViewsInfo = new SparseArray<>();

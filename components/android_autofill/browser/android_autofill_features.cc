@@ -21,18 +21,9 @@ namespace autofill::features {
 namespace {
 
 const base::Feature* const kFeaturesExposedToJava[] = {
-    &kAndroidAutofillBottomSheetWorkaround,
     &kAndroidAutofillDeprecateAccessibilityApi};
 
 }  // namespace
-
-// If enabled, we send SparseArrayWithWorkaround class as the PrefillHints for
-// the platform API `AutofillManager.notifyViewReady()` as a workaround for the
-// platform bug, see the comment on the class. This works as a kill switch for
-// the workaround in case any unexpected thing goes wrong.
-BASE_FEATURE(kAndroidAutofillBottomSheetWorkaround,
-             "AndroidAutofillBottomSheetWorkaround",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, autofill calls are never falling back to the accessibility APIs.
 // This feature is meant to be enabled after AutofillVirtualViewStructureAndroid
