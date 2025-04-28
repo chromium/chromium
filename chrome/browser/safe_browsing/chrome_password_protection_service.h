@@ -189,12 +189,12 @@ class ChromePasswordProtectionService : public PasswordProtectionService,
   std::string GetOrganizationName(
       ReusedPasswordAccountType password_type) const;
 
-// The following functions are disabled on Android, because enterprise reporting
-// extension is not supported.
-#if !BUILDFLAG(IS_ANDROID)
   // If the browser is not incognito and the user is reusing their enterprise
   // password or is a GSuite user, triggers
-  // safeBrowsingPrivate.OnPolicySpecifiedPasswordReuseDetected.
+  // safeBrowsingPrivate.OnPolicySpecifiedPasswordReuseDetected (on desktop
+  // platforms) and a password reuse enterprise event report (on both desktop
+  // and Android platform).
+  //
   // |username| can be an email address or a username for a non-GAIA or
   // saved-password reuse. No validation has been done on it.
   void MaybeReportPasswordReuseDetected(const GURL& main_frame_url,
@@ -203,9 +203,10 @@ class ChromePasswordProtectionService : public PasswordProtectionService,
                                         bool is_phishing_url,
                                         bool warning_shown) override;
 
-  // Triggers "safeBrowsingPrivate.OnPolicySpecifiedPasswordChanged" API.
+  // Triggers "safeBrowsingPrivate.OnPolicySpecifiedPasswordChanged" (on desktop
+  // platforms) and a password changed enterprise event report (on both desktop
+  // and Android platform).
   void ReportPasswordChanged() override;
-#endif
 
   // Returns true if there's any enterprise password reuses unhandled in
   // |web_contents|. "Unhandled" is defined as user hasn't clicked on

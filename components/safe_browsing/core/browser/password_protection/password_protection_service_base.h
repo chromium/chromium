@@ -118,9 +118,6 @@ class PasswordProtectionServiceBase : public history::HistoryServiceObserver {
       const std::string& verdict_token,
       ReusedPasswordAccountType password_type) = 0;
 
-// The following functions are disabled on Android, because enterprise reporting
-// extension is not supported.
-#if !BUILDFLAG(IS_ANDROID)
   // Triggers the safeBrowsingPrivate.OnPolicySpecifiedPasswordReuseDetected.
   virtual void MaybeReportPasswordReuseDetected(const GURL& main_frame_url,
                                                 const std::string& username,
@@ -131,7 +128,6 @@ class PasswordProtectionServiceBase : public history::HistoryServiceObserver {
   // Called when a protected password change is detected. Must be called on
   // UI thread.
   virtual void ReportPasswordChanged() = 0;
-#endif
 
   scoped_refptr<SafeBrowsingDatabaseManager> database_manager();
 
