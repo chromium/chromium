@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.browserservices.ui.splashscreen;
 
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.graphics.PixelFormat;
 import android.os.SystemClock;
 import android.view.View;
@@ -279,6 +280,13 @@ public class SplashController extends CustomTabTabObserver
             method.setAccessible(true);
             method.invoke(mActivity);
         } catch (ReflectiveOperationException e) {
+        }
+
+        // When in desktop windowing mode (where Activities have a border and caption bar), we've
+        // got to update the task description for convertFromTranslucent to take effect. This was
+        // fixed in Android 16, see https://crbug.com/390368429.
+        if (android.os.Build.VERSION.SDK_INT <= android.os.Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+            mActivity.setTaskDescription(new ActivityManager.TaskDescription());
         }
 
         notifyTranslucencyRemoved();
