@@ -5,6 +5,8 @@
 #include "third_party/blink/renderer/modules/content_extraction/ai_page_content_agent.h"
 
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
+#include "base/trace_event/trace_id_helper.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom-blink.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
@@ -449,18 +451,30 @@ void AddForDomNodeId(const LayoutObject& object,
 }
 
 // Records latency metrics for the given latency and total latency.
-void RecordLatencyMetrics(base::TimeDelta latency,
-                          base::TimeDelta latency_with_scheduling_delay,
+void RecordLatencyMetrics(base::TimeTicks start_time,
+                          base::TimeTicks synchronous_execution_start_time,
+                          base::TimeTicks end_time,
                           bool is_main_frame,
                           const mojom::blink::AIPageContentOptions& options) {
+  const base::TimeDelta latency = end_time - synchronous_execution_start_time;
+  const base::TimeDelta latency_with_scheduling_delay = end_time - start_time;
+
+  const auto trace_track =
+      perfetto::Track(base::trace_event::GetNextGlobalTraceId());
+
   if (is_main_frame) {
     UMA_HISTOGRAM_TIMES(
         "OptimizationGuide.AIPageContent.RendererLatency.MainFrame", latency);
+    TRACE_EVENT_BEGIN("loading", "AIPageContentGenerationMainFrame",
+                      trace_track, synchronous_execution_start_time);
   } else {
     UMA_HISTOGRAM_TIMES(
         "OptimizationGuide.AIPageContent.RendererLatency.RemoteSubFrame",
         latency);
+    TRACE_EVENT_BEGIN("loading", "AIPageContentGenerationRemoteSubFrame",
+                      trace_track, synchronous_execution_start_time);
   }
+  TRACE_EVENT_END("loading", trace_track, end_time);
 
   if (options.on_critical_path) {
     if (is_main_frame) {
@@ -607,7 +621,7 @@ void AIPageContentAgent::GetAIPageContentSync(
   }
 
   const auto end_time = base::TimeTicks::Now();
-  RecordLatencyMetrics(end_time - sync_start_time, end_time - start_time,
+  RecordLatencyMetrics(start_time, sync_start_time, end_time,
                        GetSupplementable()->GetFrame()->IsOutermostMainFrame(),
                        *options);
   std::move(callback).Run(std::move(content));
