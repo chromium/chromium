@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/platform/wtf/hash_traits.h"
 #include "third_party/blink/renderer/platform/wtf/type_traits.h"
 #include "v8/include/cppgc/member.h"  // IWYU pragma: export
+#include "v8/include/cppgc/tagged-member.h"
 
 namespace blink {
 
@@ -27,8 +28,13 @@ template <typename T>
 using UntracedMember = cppgc::UntracedMember<T>;
 
 namespace subtle {
+
 template <typename T>
 using UncompressedMember = cppgc::subtle::UncompressedMember<T>;
+
+template <typename T, typename Tag1, typename Tag2>
+using TaggedUncompressedMember =
+    cppgc::subtle::TaggedUncompressedMember<T, Tag1, Tag2>;
 }
 
 template <typename T>
