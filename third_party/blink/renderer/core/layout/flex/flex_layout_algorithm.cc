@@ -1157,13 +1157,6 @@ ConstraintSpace FlexLayoutAlgorithm::BuildSpaceForIntrinsicBlockSize(
   space_builder.SetCacheSlot(LayoutResultCacheSlot::kMeasure);
   space_builder.SetIsPaintedAtomically(true);
 
-  if (WillChildCrossSizeBeContainerCrossSize(flex_item, alignment)) {
-    if (is_column_)
-      space_builder.SetInlineAutoBehavior(AutoSizeBehavior::kStretchExplicit);
-    else
-      space_builder.SetBlockAutoBehavior(AutoSizeBehavior::kStretchExplicit);
-  }
-
   // For determining the intrinsic block-size we make %-block-sizes resolve
   // against an indefinite size.
   LogicalSize child_percentage_size = child_percentage_size_;
@@ -1181,6 +1174,15 @@ ConstraintSpace FlexLayoutAlgorithm::BuildSpaceForIntrinsicBlockSize(
   } else {
     DCHECK(!override_inline_size);
   }
+
+  if (WillChildCrossSizeBeContainerCrossSize(flex_item, alignment)) {
+    if (is_column_) {
+      space_builder.SetInlineAutoBehavior(AutoSizeBehavior::kStretchExplicit);
+    } else {
+      space_builder.SetBlockAutoBehavior(AutoSizeBehavior::kStretchExplicit);
+    }
+  }
+
   space_builder.SetAvailableSize(available_size);
   space_builder.SetPercentageResolutionSize(child_percentage_size);
   return space_builder.ToConstraintSpace();
@@ -1231,10 +1233,6 @@ ConstraintSpace FlexLayoutAlgorithm::BuildSpaceForLayout(
     }
     available_size.block_size = item_main_axis_final_size;
     space_builder.SetIsFixedBlockSize(true);
-    if (line_cross_size_for_stretch ||
-        WillChildCrossSizeBeContainerCrossSize(flex_item_node, alignment)) {
-      space_builder.SetInlineAutoBehavior(AutoSizeBehavior::kStretchExplicit);
-    }
   } else {
     DCHECK(!override_inline_size);
     if (line_cross_size_for_stretch) {
@@ -1242,14 +1240,20 @@ ConstraintSpace FlexLayoutAlgorithm::BuildSpaceForLayout(
     }
     available_size.inline_size = item_main_axis_final_size;
     space_builder.SetIsFixedInlineSize(true);
-    if (line_cross_size_for_stretch ||
-        WillChildCrossSizeBeContainerCrossSize(flex_item_node, alignment)) {
-      space_builder.SetBlockAutoBehavior(AutoSizeBehavior::kStretchExplicit);
-    }
   }
   if (is_initial_block_size_indefinite) {
     space_builder.SetIsInitialBlockSizeIndefinite(true);
   }
+
+  if (line_cross_size_for_stretch ||
+      WillChildCrossSizeBeContainerCrossSize(flex_item_node, alignment)) {
+    if (is_column_) {
+      space_builder.SetInlineAutoBehavior(AutoSizeBehavior::kStretchExplicit);
+    } else {
+      space_builder.SetBlockAutoBehavior(AutoSizeBehavior::kStretchExplicit);
+    }
+  }
+
   if (!line_cross_size_for_stretch &&
       DoesItemStretch(flex_item_node, alignment)) {
     // For the first layout pass of stretched items, the goal is to determine
