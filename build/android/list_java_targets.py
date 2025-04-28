@@ -156,24 +156,16 @@ class _TargetEntry:
     subpath = ninja_target.replace(':', os.path.sep) + '.build_config.json'
     return os.path.join(constants.GetOutDirectory(), 'gen', subpath)
 
-  @property
-  def params_path(self):
-    """Returns the filepath of the project's .params.json."""
-    return self.build_config_path.replace('.build_config.json', '.params.json')
-
   def build_config(self):
     """Reads and returns the project's .build_config.json JSON."""
     if not self._build_config:
-      with open(self.params_path) as f:
-        config = json.load(f)
-      with open(self.build_config_path) as f:
-        config.update(json.load(f))
-      self._build_config = config
+      with open(self.build_config_path) as jsonfile:
+        self._build_config = json.load(jsonfile)
     return self._build_config
 
   def get_type(self):
     """Returns the target type from its .build_config.json."""
-    return self.build_config()['type']
+    return self.build_config()['deps_info']['type']
 
   def proguard_enabled(self):
     """Returns whether proguard runs for this target."""
@@ -181,7 +173,7 @@ class _TargetEntry:
     # bundle level.
     if self.get_type() == 'android_app_bundle_module':
       return False
-    return self.build_config().get('proguard_enabled', False)
+    return self.build_config()['deps_info'].get('proguard_enabled', False)
 
 
 def main():
@@ -205,9 +197,6 @@ def main():
       '--print-build-config-paths',
       action='store_true',
       help='Print path to the .build_config.json of each target')
-  parser.add_argument('--print-params-paths',
-                      action='store_true',
-                      help='Print path to the .params.json of each target')
   parser.add_argument('--build',
                       action='store_true',
                       help='Build all .build_config.json files.')
@@ -224,9 +213,9 @@ def main():
   parser.add_argument('--query',
                       help='A dot separated string specifying a query for a '
                       'build config json value of each target. Example: Use '
-                      '--query unprocessed_jar_path to show a list '
-                      'of all targets that have a non-empty '
-                      '"unprocessed_jar_path" value in that dict.')
+                      '--query deps_info.unprocessed_jar_path to show a list '
+                      'of all targets that have a non-empty deps_info dict and '
+                      'non-empty "unprocessed_jar_path" value in that dict.')
   parser.add_argument('-v', '--verbose', default=0, action='count')
   parser.add_argument('-q', '--quiet', default=0, action='count')
   args = parser.parse_args()
@@ -283,8 +272,6 @@ def main():
         to_print = f'{to_print}: {e.get_type()}'
       elif args.print_build_config_paths:
         to_print = f'{to_print}: {e.build_config_path}'
-      elif args.print_params_paths:
-        to_print = f'{to_print}: {e.params_path}'
       elif args.query:
         value = _query_json(json_dict=e.build_config(),
                             query=args.query,
