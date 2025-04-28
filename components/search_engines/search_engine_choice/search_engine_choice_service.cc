@@ -219,6 +219,24 @@ bool ShouldRepromptFromFeatureParams(
   return false;
 }
 
+// Writes the histogram that tracks choice screen completion date in a specific
+// format: YYYYMM (of type int).
+void RecordChoiceScreenCompletionDate(PrefService& profile_prefs) {
+  std::optional<base::Time> timestamp =
+      GetChoiceScreenCompletionTimestamp(profile_prefs);
+  if (!timestamp.has_value()) {
+    return;
+  }
+
+  // Take year and month in local time.
+  base::Time::Exploded exploded;
+  timestamp->LocalExplode(&exploded);
+
+  // Expected value space is 12 samples / year.
+  base::UmaHistogramSparse(kSearchEngineChoiceCompletedOnMonthHistogram,
+                           exploded.year * 100 + exploded.month);
+}
+
 }  // namespace
 
 // -- SearchEngineChoiceService::Client ---------------------------------------
@@ -254,6 +272,7 @@ SearchEngineChoiceService::SearchEngineChoiceService(
       prepopulate_data_resolver_(prepopulate_data_resolver) {
   ProcessPendingChoiceScreenDisplayState();
   PreprocessPrefsForReprompt();
+  RecordChoiceScreenCompletionDate(profile_prefs);
 }
 
 SearchEngineChoiceService::~SearchEngineChoiceService() = default;

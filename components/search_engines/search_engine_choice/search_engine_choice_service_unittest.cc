@@ -683,6 +683,36 @@ TEST_F(SearchEngineChoiceServiceTest,
       kSearchEngineChoiceScreenShowedEngineAtCountryMismatchHistogram, 0);
 }
 
+// Tests if choice screen completion date is not recorded if last choice date is
+// unknown.
+TEST_F(SearchEngineChoiceServiceTest, IgnoresChoiceScreenCompletionDateRecord) {
+  base::HistogramTester histogram_tester;
+  search_engine_choice_service();
+  histogram_tester.ExpectTotalCount(
+      kSearchEngineChoiceCompletedOnMonthHistogram, 0);
+}
+
+// Tests if choice screen completion date is recorded.
+TEST_F(SearchEngineChoiceServiceTest,
+       RecordsChoiceScreenCompletionDateHistogram) {
+  base::HistogramTester histogram_tester;
+
+  // April 18, 2025, 13:30 Europe/Warsaw. What is specific about this timestamp
+  // (in windows epoch seconds) is that in every known timezone,
+  // this was April 2025.
+  int64_t windows_epoch_timestamp = 13388103000;
+
+  pref_service()->SetString(
+      prefs::kDefaultSearchProviderChoiceScreenCompletionVersion, "1.0.0.0");
+  pref_service()->SetInt64(
+      prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp,
+      windows_epoch_timestamp);
+
+  search_engine_choice_service();
+  histogram_tester.ExpectUniqueSample(
+      kSearchEngineChoiceCompletedOnMonthHistogram, 202504, 1);
+}
+
 // Test that the user is not reprompted if the reprompt parameter is not a valid
 // JSON string.
 TEST_F(SearchEngineChoiceServiceTest, NoRepromptForSyntaxError) {

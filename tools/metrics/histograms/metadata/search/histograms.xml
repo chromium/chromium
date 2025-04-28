@@ -300,6 +300,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Search.ChoiceCompletedOnMonth.OnProfileLoad"
+    units="Year-Month" expires_after="2026-02-10">
+  <owner>dgn@google.com</owner>
+  <owner>tju@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Recorded on each profile load (tied to service construction), indicates the
+    last engine choice timestamp formatted as YYYYMM.
+
+    The value is serialized as sparse histogram with integer values.
+  </summary>
+</histogram>
+
 <histogram name="Search.ChoiceDebug.ScrollStateWithMoreButtonClick"
     enum="SearchEngineChoiceScrollState" expires_after="2025-08-24">
   <owner>dgn@chromium.org</owner>
