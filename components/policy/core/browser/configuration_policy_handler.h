@@ -589,6 +589,38 @@ class POLICY_EXPORT SimpleDeprecatingPolicyHandler
   std::unique_ptr<NamedPolicyHandler> new_policy_handler_;
 };
 
+// A policy handler that applies a deprecated policy only if none of the new
+// ones has been set. The new policies need their own handlers.
+class POLICY_EXPORT SingleDeprecatedPolicyToMultipleNewPolicyHandler
+    : public ConfigurationPolicyHandler {
+ public:
+  SingleDeprecatedPolicyToMultipleNewPolicyHandler(
+      std::unique_ptr<NamedPolicyHandler> legacy_policy_handler,
+      std::vector<std::string> new_policy_names);
+  SingleDeprecatedPolicyToMultipleNewPolicyHandler(
+      const SingleDeprecatedPolicyToMultipleNewPolicyHandler&) = delete;
+  SingleDeprecatedPolicyToMultipleNewPolicyHandler& operator=(
+      const SingleDeprecatedPolicyToMultipleNewPolicyHandler&) = delete;
+  ~SingleDeprecatedPolicyToMultipleNewPolicyHandler() override;
+
+  // ConfigurationPolicyHandler:
+  bool CheckPolicySettings(const PolicyMap& policies,
+                           PolicyErrorMap* errors) override;
+
+  void ApplyPolicySettingsWithParameters(
+      const PolicyMap& policies,
+      const PolicyHandlerParameters& parameters,
+      PrefValueMap* prefs) override;
+
+ protected:
+  void ApplyPolicySettings(const PolicyMap& policies,
+                           PrefValueMap* prefs) override;
+
+ private:
+  std::unique_ptr<NamedPolicyHandler> legacy_policy_handler_;
+  std::vector<std::string> new_policy_names_;
+};
+
 // A schema policy handler for complex policies that only accept cloud sources.
 class POLICY_EXPORT CloudOnlyPolicyHandler
     : public SchemaValidatingPolicyHandler {

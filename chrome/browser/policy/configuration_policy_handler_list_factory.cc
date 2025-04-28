@@ -1946,6 +1946,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kProfileSeparationDomainExceptionList,
     prefs::kProfileSeparationDomainExceptionList,
     base::Value::Type::LIST },
+  { key::kProfileSeparationSettings,
+    prefs::kProfileSeparationSettings,
+    base::Value::Type::INTEGER },
   { key::kLiveTranslateEnabled,
     prefs::kLiveTranslateEnabled,
     base::Value::Type::BOOLEAN },
@@ -2812,11 +2815,14 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
           key::kBrowserContextAwareAccessSignalsAllowlist,
           enterprise_connectors::kBrowserContextAwareAccessSignalsAllowlistPref,
           chrome_schema));
-  handlers->AddHandler(std::make_unique<SimpleDeprecatingPolicyHandler>(
-      std::make_unique<ManagedAccountRestrictionsPolicyHandler>(chrome_schema),
-      std::make_unique<SimplePolicyHandler>(key::kProfileSeparationSettings,
-                                            prefs::kProfileSeparationSettings,
-                                            base::Value::Type::INTEGER)));
+  handlers->AddHandler(
+      std::make_unique<SingleDeprecatedPolicyToMultipleNewPolicyHandler>(
+          std::make_unique<ManagedAccountRestrictionsPolicyHandler>(
+              chrome_schema),
+          std::vector<std::string>{
+              key::kProfileSeparationSettings,
+              key::kProfileSeparationDataMigrationSettings,
+              key::kProfileSeparationDomainExceptionList}));
 
   handlers->AddHandler(std::make_unique<SimpleDeprecatingPolicyHandler>(
       std::make_unique<SimplePolicyHandler>(
