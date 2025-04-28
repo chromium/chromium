@@ -31,6 +31,9 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
                                 PrefRegistry::LOSSY_PREF);
   registry->RegisterIntegerPref(kGlicPreviousPositionY, 0,
                                 PrefRegistry::LOSSY_PREF);
+
+  // Dict pref to store GlicUserStatus information.
+  registry->RegisterDictionaryPref(prefs::kGlicUserStatus);
 }
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
