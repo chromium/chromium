@@ -41,7 +41,7 @@ export class PrintPreviewHeaderElement extends PrintPreviewHeaderElementBase {
       error: {type: Number},
       state: {type: Number},
       managed: {type: Boolean},
-      sheetCount: {type: Number},
+      sheetCount_: {type: Number},
       summary_: {type: String},
     };
   }
@@ -50,16 +50,37 @@ export class PrintPreviewHeaderElement extends PrintPreviewHeaderElementBase {
   accessor error: Error;
   accessor state: State;
   accessor managed: boolean;
-  accessor sheetCount: number;
+  private accessor sheetCount_: number = 0;
   protected accessor summary_: string|null;
+
+  override connectedCallback() {
+    super.connectedCallback();
+
+    this.addSettingObserver('pages.*', this.updateSheetCount_.bind(this));
+    this.addSettingObserver('duplex.*', this.updateSheetCount_.bind(this));
+    this.addSettingObserver('copies.*', this.updateSheetCount_.bind(this));
+    this.updateSheetCount_();
+  }
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
 
-    if (changedProperties.has('sheetCount') || changedProperties.has('state') ||
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+
+    if (changedPrivateProperties.has('sheetCount_') ||
+        changedProperties.has('state') ||
         changedProperties.has('destination')) {
       this.updateSummary_();
     }
+  }
+
+  private updateSheetCount_() {
+    let sheets = (this.getSettingValue('pages') as number[]).length;
+    if (this.getSettingValue('duplex')) {
+      sheets = Math.ceil(sheets / 2);
+    }
+    this.sheetCount_ = sheets * (this.getSettingValue('copies') as number);
   }
 
   private isPdf_(): boolean {
@@ -98,7 +119,7 @@ export class PrintPreviewHeaderElement extends PrintPreviewHeaderElementBase {
   }
 
   private updateSheetsSummary_() {
-    if (this.sheetCount === 0) {
+    if (this.sheetCount_ === 0) {
       this.summary_ = '';
       return;
     }
@@ -106,7 +127,7 @@ export class PrintPreviewHeaderElement extends PrintPreviewHeaderElementBase {
     const pageOrSheet = this.isPdf_() ? 'Page' : 'Sheet';
     PluralStringProxyImpl.getInstance()
         .getPluralString(
-            `printPreview${pageOrSheet}SummaryLabel`, this.sheetCount)
+            `printPreview${pageOrSheet}SummaryLabel`, this.sheetCount_)
         .then(label => {
           this.summary_ = label;
         });

@@ -61,32 +61,4 @@ suite('PrintPreviewSidebarTest', function() {
               });
             });
       });
-
-  // Tests that number of sheets is correctly calculated if duplex setting is
-  // enabled.
-  test('SheetCountWithDuplex', function() {
-    const header = sidebar.shadowRoot!.querySelector('print-preview-header')!;
-    assertEquals(1, header.sheetCount);
-    sidebar.setSetting('pages', [1, 2, 3]);
-    assertEquals(3, header.sheetCount);
-    sidebar.setSetting('duplex', true);
-    assertEquals(2, header.sheetCount);
-    sidebar.setSetting('pages', [1, 2]);
-    assertEquals(1, header.sheetCount);
-  });
-
-  // Tests that number of sheets is correctly calculated if multiple copies
-  // setting is enabled.
-  test('SheetCountWithCopies', function() {
-    const header = sidebar.shadowRoot!.querySelector('print-preview-header')!;
-    assertEquals(1, header.sheetCount);
-    sidebar.setSetting('copies', 4);
-    assertEquals(4, header.sheetCount);
-    sidebar.setSetting('duplex', true);
-    assertEquals(4, header.sheetCount);
-    sidebar.setSetting('pages', [1, 2]);
-    assertEquals(4, header.sheetCount);
-    sidebar.setSetting('duplex', false);
-    assertEquals(8, header.sheetCount);
-  });
 });
