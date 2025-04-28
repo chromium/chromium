@@ -69,6 +69,7 @@ void RegisterBrowserPrefs(PrefRegistrySimple* registry) {
                                std::string());
   registry->RegisterStringPref(prefs::kEnterpriseLogoUrlForBrowser,
                                std::string());
+  registry->RegisterBooleanPref(prefs::kNTPFooterManagementNoticeEnabled, true);
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 }
 
@@ -191,5 +192,6 @@ void RegisterBrowserUserPrefs(user_prefs::PrefRegistrySyncable* registry) {
                                std::string());
   registry->RegisterIntegerPref(prefs::kEnterpriseProfileBadgeToolbarSettings,
                                 0);
+  registry->RegisterBooleanPref(prefs::kNTPFooterThemeAttributionEnabled, true);
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 }

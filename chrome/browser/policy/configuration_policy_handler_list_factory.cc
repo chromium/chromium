@@ -2400,6 +2400,15 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     policy_prefs::kBuiltInAIAPIsEnabled,
     base::Value::Type::BOOLEAN },
 #endif  // BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  { key::kNTPFooterThemeAttributionEnabled,
+    prefs::kNTPFooterThemeAttributionEnabled,
+    base::Value::Type::BOOLEAN },
+  { key::kNTPFooterManagementNoticeEnabled,
+    prefs::kNTPFooterManagementNoticeEnabled,
+    base::Value::Type::BOOLEAN },
+#endif // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+
 };
 // clang-format on
 

@@ -1,0 +1,26 @@
+caption:  Control the visibility of the extension theme attribution on the New Tab Page for managed browsers
+default: true
+desc: |-
+  This policy controls the visibility of extension theme attribution within the footer of the New Tab Page (NTP) when the NTP is controlled by an extension. By default, the NTP footer displays information about the extension controlling the NTP.
+
+  If this policy is left unset or set to true, browsers with an extension controlled NTP will show the extension name and a link to it.
+
+  If this policy is set to false, the theme atribution will be hidden.
+example_value: true
+features:
+  dynamic_refresh: true
+  per_profile: true
+future_on:
+- chrome.*
+items:
+- caption: Enable extension theme attribution on NTP Footer
+  value: true
+- caption: Disable extension theme attribution on NTP Footer
+  value: false
+owners:
+- file://components/policy/OWNERS
+- esalma@google.com
+schema:
+  type: boolean
+tags: []
+type: main

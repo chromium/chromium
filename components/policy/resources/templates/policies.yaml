@@ -1357,6 +1357,8 @@ policies:
   1356: DeviceUserInitiatedFirmwareUpdatesEnabled
   1357: BuiltInAIAPIsEnabled
   1358: TabGroupSharingSettings
+  1359: NTPFooterManagementNoticeEnabled
+  1360: NTPFooterThemeAttributionEnabled
 
 atomic_groups:
   1: Homepage

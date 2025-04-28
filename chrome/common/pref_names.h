@@ -4220,9 +4220,21 @@ inline constexpr char kEnterpriseCustomLabelForProfile[] =
 inline constexpr char kEnterpriseProfileBadgeToolbarSettings[] =
     "enterprise.profile_badging.toolbar_settings";
 
+// Boolean value that determine whether the management notice on the NTP footer
+// is enabled. This is false when disabled by the
+// `NTPFooterTManagementNoticeEnabled` policy.
+inline constexpr char kNTPFooterManagementNoticeEnabled[] =
+    "ntp_footer.settings.management_notice";
+
+// Boolean value that determine whether the NTP theme attribution on the NTP
+// footer is enabled. This is false when disabled by the
+// `NTPFooterThemeAttributionEnabled` policy.
+inline constexpr char kNTPFooterThemeAttributionEnabled[] =
+    "ntp_footer.settings.theme_attribution";
+
 #if BUILDFLAG(IS_ANDROID)
-// An integer count of how many account-level breached credentials were detected
-// by GMSCore.
+// An integer count of how many account-level breached credentials were
+// detected by GMSCore.
 inline constexpr char kBreachedCredentialsCount[] =
     "profile.safety_hub_breached_credentials_count";
 #endif  // BUILDFLAG(IS_ANDROID)

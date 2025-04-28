@@ -1,0 +1,17 @@
+[
+    {
+      "os": [
+        "win",
+        "linux",
+        "mac"
+      ],
+      "simple_policy_pref_mapping_test": {
+        "pref_name": "ntp_footer.settings.theme_attribution",
+        "default_value": true,
+        "values_to_test": [
+          true,
+          false
+        ]
+      }
+    }
+]

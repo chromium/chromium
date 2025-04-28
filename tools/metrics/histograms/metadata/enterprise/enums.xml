@@ -2227,6 +2227,8 @@ chromium-metrics-reviews@google.com.
   <int value="1356" label="DeviceUserInitiatedFirmwareUpdate"/>
   <int value="1357" label="BuiltInAIAPIsEnabled"/>
   <int value="1358" label="TabGroupSharingSettings"/>
+  <int value="1359" label="NTPFootermanagementNoticeEnabled"/>
+  <int value="1360" label="NTPFooterThemeAttributionEnabled"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">
