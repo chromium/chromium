@@ -168,9 +168,9 @@ void ExtensionAction::UndoDeclarativeSetIcon(int tab_id,
 }
 
 const gfx::Image ExtensionAction::GetDeclarativeIcon(int tab_id) const {
-  if (declarative_icon_.find(tab_id) != declarative_icon_.end() &&
-      !declarative_icon_.find(tab_id)->second.rbegin()->second.empty()) {
-    return declarative_icon_.find(tab_id)->second.rbegin()->second.back();
+  auto it = declarative_icon_.find(tab_id);
+  if (it != declarative_icon_.end() && !it->second.rbegin()->second.empty()) {
+    return it->second.rbegin()->second.back();
   }
   return gfx::Image();
 }
