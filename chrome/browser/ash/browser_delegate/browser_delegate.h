@@ -10,6 +10,7 @@
 #include "ui/gfx/geometry/rect.h"
 
 class Browser;
+class GURL;
 
 namespace aura {
 class Window;
@@ -63,6 +64,15 @@ class BrowserDelegate {
 
   // Closes the browser as soon as possible.
   virtual void Close() = 0;
+
+  // Navigates the browser to the given URL.
+  // The browser must be of `kApp` or `kAppPopup` type.
+  // In the case of a tabbed web app (e.g. ChromeOS Terminal), performs tab
+  // pinning as requested and ensures that home tab URL navigation happens in
+  // the home tab.
+  enum class TabPinning { kYes, kNo };
+  virtual content::WebContents* NavigateWebApp(const GURL& url,
+                                               TabPinning pin_tab) = 0;
 
  protected:
   ~BrowserDelegate() = default;

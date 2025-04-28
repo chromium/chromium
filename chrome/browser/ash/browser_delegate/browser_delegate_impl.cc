@@ -7,8 +7,10 @@
 #include "base/check_deref.h"
 #include "chrome/browser/ash/browser_delegate/browser_type_conversion.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 
 namespace ash {
 
@@ -60,6 +62,21 @@ void BrowserDelegateImpl::Minimize() {
 
 void BrowserDelegateImpl::Close() {
   browser_->window()->Close();
+}
+
+content::WebContents* BrowserDelegateImpl::NavigateWebApp(const GURL& url,
+                                                          TabPinning pin_tab) {
+  CHECK(GetType() == BrowserType::kApp || GetType() == BrowserType::kAppPopup)
+      << "Unexpected browser type " << static_cast<int>(GetType()) << "("
+      << browser_->type() << ")";
+
+  NavigateParams nav_params(&browser_.get(), url,
+                            ui::PAGE_TRANSITION_AUTO_BOOKMARK);
+  if (pin_tab == TabPinning::kYes) {
+    nav_params.tabstrip_add_types |= AddTabTypes::ADD_PINNED;
+  }
+
+  return web_app::NavigateWebAppUsingParams(nav_params);
 }
 
 }  // namespace ash

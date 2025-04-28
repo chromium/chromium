@@ -29,6 +29,8 @@ class BrowserDelegateImpl : public BrowserDelegate {
   void Show() override;
   void Minimize() override;
   void Close() override;
+  content::WebContents* NavigateWebApp(const GURL& url,
+                                       TabPinning pin_tab) override;
 
  private:
   const raw_ref<Browser> browser_;

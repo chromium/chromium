@@ -118,8 +118,7 @@ Browser* CreateWebAppWindowMaybeWithHomeTab(
     const webapps::AppId& app_id,
     const Browser::CreateParams& params);
 
-content::WebContents* NavigateWebAppUsingParams(const std::string& app_id,
-                                                NavigateParams& nav_params);
+content::WebContents* NavigateWebAppUsingParams(NavigateParams& nav_params);
 
 // RecordLaunchMetrics methods report UMA metrics. It shouldn't have other
 // side-effects (e.g. updating app launch time).

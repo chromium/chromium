@@ -355,9 +355,8 @@ WebAppLaunchProcess::NavigateResult WebAppLaunchProcess::MaybeNavigateBrowser(
     NavigateParams nav_params = NavigateParamsForShareTarget(
         browser, *share_target, *params_->intent, params_->launch_files);
     nav_params.disposition = navigation_disposition;
-    return {
-        .web_contents = NavigateWebAppUsingParams(params_->app_id, nav_params),
-        .did_navigate = true};
+    return {.web_contents = NavigateWebAppUsingParams(nav_params),
+            .did_navigate = true};
   }
 
   TabStripModel* const tab_strip = browser->tab_strip_model();
@@ -366,9 +365,8 @@ WebAppLaunchProcess::NavigateResult WebAppLaunchProcess::MaybeNavigateBrowser(
     NavigateParams nav_params(browser, launch_url,
                               ui::PAGE_TRANSITION_AUTO_BOOKMARK);
     nav_params.disposition = navigation_disposition;
-    return {
-        .web_contents = NavigateWebAppUsingParams(params_->app_id, nav_params),
-        .did_navigate = true};
+    return {.web_contents = NavigateWebAppUsingParams(nav_params),
+            .did_navigate = true};
   }
 
   content::WebContents* existing_tab = tab_strip->GetActiveWebContents();

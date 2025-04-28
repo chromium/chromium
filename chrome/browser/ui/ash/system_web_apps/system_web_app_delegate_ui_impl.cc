@@ -11,9 +11,6 @@
 #include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
@@ -84,14 +81,10 @@ BrowserDelegate* SystemWebAppDelegate::LaunchAndNavigateSystemWebApp(
   content::WebContents* web_contents = browser->GetWebContentsAt(0);
   if (!web_contents || web_contents->GetURL() != url ||
       GetType() == SystemWebAppType::HELP) {
-    NavigateParams nav_params(&browser->GetBrowser(), url,
-                              ui::PAGE_TRANSITION_AUTO_BOOKMARK);
-    // TODO(crbug.com/1308961): Migrate to use PWA pinned home tab when ready.
-    if (ShouldPinTab(url)) {
-      nav_params.tabstrip_add_types |= AddTabTypes::ADD_PINNED;
-    }
-    web_contents =
-        web_app::NavigateWebAppUsingParams(params.app_id, nav_params);
+    // TODO(crbug.com/1308962): Migrate to use PWA pinned home tab when ready.
+    web_contents = browser->NavigateWebApp(
+        url, ShouldPinTab(url) ? BrowserDelegate::TabPinning::kYes
+                               : BrowserDelegate::TabPinning::kNo);
     started_new_navigation = true;
   }
 
