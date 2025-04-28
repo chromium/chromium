@@ -3827,7 +3827,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.PasswordManager.BulkSavePasswordsInAccountCount"
-    units="passwords" expires_after="2025-06-01">
+    units="passwords" expires_after="2025-11-01">
   <owner>nicolasmacbeth@google.com</owner>
   <owner>tmartino@chromium.org</owner>
   <summary>
