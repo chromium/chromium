@@ -126,7 +126,7 @@ class SystemLiveCaptionService
   void BindToBrowserInterface();
   // Gets language code based on the preference this keyed_service
   // is listening to.
-  std::string GetPrimaryLanguageCode() const;
+  virtual std::string GetPrimaryLanguageCode() const;
   // The source language code of the audio stream.
   std::string source_language_;
   SpeechRecognizerStatus current_recognizer_status_ =

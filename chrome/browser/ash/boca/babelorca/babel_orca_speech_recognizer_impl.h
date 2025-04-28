@@ -25,7 +25,8 @@ class BabelOrcaSpeechRecognizerImpl : public BabelOrcaSpeechRecognizer,
  public:
   explicit BabelOrcaSpeechRecognizerImpl(Profile* profile,
                                          SodaInstaller* soda_installer,
-                                         const std::string& application_locale);
+                                         const std::string& application_locale,
+                                         const std::string& caption_language);
 
   BabelOrcaSpeechRecognizerImpl(const BabelOrcaSpeechRecognizerImpl&) = delete;
   BabelOrcaSpeechRecognizerImpl& operator=(
@@ -55,6 +56,9 @@ class BabelOrcaSpeechRecognizerImpl : public BabelOrcaSpeechRecognizer,
   media::mojom::RecognizerClientType GetRecognizerClientType() override;
 
  private:
+  // SystemLiveCaptionService:
+  std::string GetPrimaryLanguageCode() const override;
+
   void OnSpeechRecognitionAvailabilityChanged(
       SodaInstaller::InstallationStatus status);
 
@@ -63,6 +67,7 @@ class BabelOrcaSpeechRecognizerImpl : public BabelOrcaSpeechRecognizer,
   raw_ptr<SodaInstaller> soda_installer_;
   SpeechRecognitionEventHandler speech_recognition_event_handler_;
   raw_ptr<Profile> primary_profile_;
+  std::string caption_language_;
   base::WeakPtrFactory<BabelOrcaSpeechRecognizerImpl> weak_ptr_factory_{this};
 };
 

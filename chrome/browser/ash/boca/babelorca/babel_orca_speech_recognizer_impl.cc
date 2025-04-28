@@ -21,13 +21,15 @@ namespace ash::babelorca {
 BabelOrcaSpeechRecognizerImpl::BabelOrcaSpeechRecognizerImpl(
     Profile* profile,
     SodaInstaller* soda_installer,
-    const std::string& application_locale)
+    const std::string& application_locale,
+    const std::string& caption_language)
     : ash::SystemLiveCaptionService(
           profile,
           ash::SystemLiveCaptionService::AudioSource::kUserMicrophone),
       soda_installer_(soda_installer),
       speech_recognition_event_handler_(application_locale),
-      primary_profile_(profile) {}
+      primary_profile_(profile),
+      caption_language_(caption_language) {}
 BabelOrcaSpeechRecognizerImpl::~BabelOrcaSpeechRecognizerImpl() = default;
 
 void BabelOrcaSpeechRecognizerImpl::OnSpeechResult(
@@ -74,6 +76,10 @@ BabelOrcaSpeechRecognizerImpl::GetRecognizerClientType() {
   return features::IsBocaClientTypeForSpeechRecognitionEnabled()
              ? media::mojom::RecognizerClientType::kSchoolTools
              : SystemLiveCaptionService::GetRecognizerClientType();
+}
+
+std::string BabelOrcaSpeechRecognizerImpl::GetPrimaryLanguageCode() const {
+  return caption_language_;
 }
 
 void BabelOrcaSpeechRecognizerImpl::OnSpeechRecognitionAvailabilityChanged(

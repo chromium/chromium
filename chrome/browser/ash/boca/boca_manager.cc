@@ -85,7 +85,7 @@ std::unique_ptr<boca::BabelOrcaManager> CreateBabelOrcaManager(
 
   auto speech_recognizer =
       std::make_unique<babelorca::BabelOrcaSpeechRecognizerImpl>(
-          profile, soda_installer, application_locale);
+          profile, soda_installer, application_locale, caption_language);
   auto babel_orca_manager = boca::BabelOrcaManager::CreateAsProducer(
       IdentityManagerFactory::GetForProfile(profile),
       profile->GetURLLoaderFactory(), std::move(caption_bubble_context),
