@@ -8,11 +8,13 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ui/views/frame/native_browser_frame.h"
 #include "ui/aura/window.h"
 #include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/views/context_menu_controller.h"
 #include "ui/views/widget/desktop_aura/desktop_native_widget_aura.h"
+#include "ui/views/widget/widget_observer.h"
 
 class BrowserDesktopWindowTreeHost;
 class BrowserFrame;
@@ -29,7 +31,8 @@ class VisibilityController;
 //  the window frame for the Chrome browser window.
 //
 class DesktopBrowserFrameAura : public views::DesktopNativeWidgetAura,
-                                public NativeBrowserFrame {
+                                public NativeBrowserFrame,
+                                public views::WidgetObserver {
  public:
   DesktopBrowserFrameAura(BrowserFrame* browser_frame,
                           BrowserView* browser_view);
@@ -65,6 +68,9 @@ class DesktopBrowserFrameAura : public views::DesktopNativeWidgetAura,
   bool ShouldRestorePreviousBrowserWidgetState() const override;
   bool ShouldUseInitialVisibleOnAllWorkspaces() const override;
 
+  // views::WidgetObserver:
+  void OnWidgetDestroyed(views::Widget* widget) override;
+
  private:
   // The BrowserView is our ClientView. This is a pointer to it.
   raw_ptr<BrowserView> browser_view_;
@@ -75,6 +81,9 @@ class DesktopBrowserFrameAura : public views::DesktopNativeWidgetAura,
       browser_desktop_window_tree_host_;
 
   std::unique_ptr<wm::VisibilityController> visibility_controller_;
+
+  base::ScopedObservation<views::Widget, views::WidgetObserver>
+      widget_observation_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_DESKTOP_BROWSER_FRAME_AURA_H_
