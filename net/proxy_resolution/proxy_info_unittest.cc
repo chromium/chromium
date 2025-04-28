@@ -90,8 +90,8 @@ TEST(ProxyInfoTest, UseProxyChain) {
 TEST(ProxyInfoTest, SetAndGetHeaderValue) {
   ProxyInfo info;
   const std::string header_value = "some-arbitrary-string";
-  info.SetPRTHeaderValue(header_value);
-  EXPECT_EQ(info.PRTHeaderValue(), header_value);
+  info.set_prt_header_value(header_value);
+  EXPECT_EQ(info.prt_header_value(), header_value);
 }
 
 }  // namespace net

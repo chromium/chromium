@@ -131,9 +131,10 @@ void IpProtectionProxyDelegate::OnResolveProxy(
       is_prt_eligible &&
       !net::features::kProbabilisticRevealTokenFetchOnly.Get() &&
       top_frame_site.has_value()) {
-    result->SetPRTHeaderValue(GetPRTHeaderValue(url, top_frame_site.value()));
+    result->set_prt_header_value(
+        GetPRTHeaderValue(url, top_frame_site.value()));
   } else {
-    result->SetPRTHeaderValue(std::nullopt);
+    result->set_prt_header_value(std::nullopt);
   }
 
   if (resolution_result != ProxyResolutionResult::kAttemptProxy) {
@@ -306,7 +307,8 @@ std::optional<std::string> IpProtectionProxyDelegate::GetPRTHeaderValue(
     return std::nullopt;
   }
   auto item = net::structured_headers::Item(
-      prt.value(), net::structured_headers::Item::ItemType::kByteSequenceType);
+      std::move(prt).value(),
+      net::structured_headers::Item::ItemType::kByteSequenceType);
   return net::structured_headers::SerializeItem(item);
 }
 

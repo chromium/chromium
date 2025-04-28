@@ -27763,7 +27763,7 @@ class IpProtectionProxyDelegate : public TestProxyDelegate {
     result->UseProxyList(proxy_list);
 
     // Emulate delegate with a PRT header value.
-    result->SetPRTHeaderValue(":serializedPRT:");
+    result->set_prt_header_value(":serializedPRT:");
   }
 
   static std::string GetAuthorizationHeaderValue(

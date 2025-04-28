@@ -117,9 +117,13 @@ class NET_EXPORT ProxyInfo {
   // Sets `prt_header_value_` to given `prt_header_value`. This value will be
   // used in "Sec-Probabilistic-Reveal-Token" header if the right flags are
   // enabled.
-  void SetPRTHeaderValue(std::optional<std::string> prt_header_value);
+  void set_prt_header_value(std::optional<std::string> prt_header_value) {
+    prt_header_value_ = std::move(prt_header_value);
+  }
 
-  std::optional<std::string> PRTHeaderValue() const;
+  std::optional<std::string> prt_header_value() const {
+    return prt_header_value_;
+  }
 
   // Returns the first valid proxy chain. is_empty() must be false to be able
   // to call this function.

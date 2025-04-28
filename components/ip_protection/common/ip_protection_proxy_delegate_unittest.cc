@@ -274,9 +274,7 @@ base::Value::Dict CreateRegistryFromJson(const std::string& json_content) {
   std::optional<base::Value> json =
       base::JSONReader::Read(json_content, base::JSON_ALLOW_TRAILING_COMMAS);
   CHECK(json.has_value());
-  base::Value::Dict* json_dict = json->GetIfDict();
-  CHECK(json_dict);
-  return std::move(*json_dict);
+  return (*std::move(json)).TakeDict();
 }
 
 }  // namespace
@@ -371,10 +369,6 @@ class IpProtectionProxyDelegateTest : public testing::Test {
   }
 
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
-
-  void RunForTheSmallestTimeDelta() {
-    task_environment_.FastForwardBy(base::TimeDelta());
-  }
 
  protected:
   base::HistogramTester histogram_tester_;
@@ -1041,7 +1035,7 @@ TEST_F(IpProtectionProxyDelegateTest, OnResolveProxyIpProtectionSuccess) {
                            "GET", net::ProxyRetryInfoMap(), &result);
   EXPECT_FALSE(result.is_direct());
   EXPECT_TRUE(result.is_for_ip_protection());
-  EXPECT_FALSE(result.PRTHeaderValue().has_value());
+  EXPECT_FALSE(result.prt_header_value().has_value());
   histogram_tester_.ExpectUniqueSample(kProxyResolutionHistogram,
                                        ProxyResolutionResult::kAttemptProxy, 1);
   histogram_tester_.ExpectUniqueSample(kEligibilityHistogram,
@@ -1077,7 +1071,7 @@ TEST_F(IpProtectionProxyDelegateTest, OnResolveProxyPRTSuccess) {
                            net::NetworkAnonymizationKey::CreateCrossSite(
                                net::SchemefulSite(top_level_url)),
                            "GET", net::ProxyRetryInfoMap(), &result);
-  std::optional<std::string> maybe_header_value = result.PRTHeaderValue();
+  std::optional<std::string> maybe_header_value = result.prt_header_value();
   ASSERT_TRUE(maybe_header_value.has_value());
   EXPECT_EQ(maybe_header_value.value(),
             ":" + base::Base64Encode("serialized-prt") + ":");
@@ -1121,7 +1115,7 @@ TEST_F(IpProtectionProxyDelegateTest, NoPRTHeaderWhenFetchOnlyFeatureEnabled) {
                            net::NetworkAnonymizationKey::CreateCrossSite(
                                net::SchemefulSite(top_level_url)),
                            "GET", net::ProxyRetryInfoMap(), &result);
-  std::optional<std::string> maybe_header_value = result.PRTHeaderValue();
+  std::optional<std::string> maybe_header_value = result.prt_header_value();
   ASSERT_FALSE(maybe_header_value.has_value());
 }
 
@@ -1151,7 +1145,7 @@ TEST_F(IpProtectionProxyDelegateTest,
                            net::NetworkAnonymizationKey::CreateCrossSite(
                                net::SchemefulSite(top_level_url)),
                            "GET", net::ProxyRetryInfoMap(), &result);
-  std::optional<std::string> maybe_header_value = result.PRTHeaderValue();
+  std::optional<std::string> maybe_header_value = result.prt_header_value();
   ASSERT_FALSE(maybe_header_value.has_value());
 }
 
@@ -1187,7 +1181,7 @@ TEST_F(IpProtectionProxyDelegateTest,
                            net::NetworkAnonymizationKey::CreateCrossSite(
                                net::SchemefulSite(top_level_url)),
                            "GET", net::ProxyRetryInfoMap(), &result);
-  std::optional<std::string> maybe_header_value = result.PRTHeaderValue();
+  std::optional<std::string> maybe_header_value = result.prt_header_value();
   ASSERT_FALSE(maybe_header_value.has_value());
 }
 
@@ -1223,7 +1217,7 @@ TEST_F(IpProtectionProxyDelegateTest,
                            net::NetworkAnonymizationKey::CreateCrossSite(
                                net::SchemefulSite(top_level_url)),
                            "GET", net::ProxyRetryInfoMap(), &result);
-  std::optional<std::string> maybe_header_value = result.PRTHeaderValue();
+  std::optional<std::string> maybe_header_value = result.prt_header_value();
   ASSERT_TRUE(maybe_header_value.has_value());
   EXPECT_EQ(maybe_header_value.value(),
             ":" + base::Base64Encode("serialized-prt") + ":");
@@ -1261,7 +1255,7 @@ TEST_F(IpProtectionProxyDelegateTest, OnResolveProxyPRTNoToken) {
                            net::NetworkAnonymizationKey::CreateCrossSite(
                                net::SchemefulSite(top_level_url)),
                            "GET", net::ProxyRetryInfoMap(), &result);
-  EXPECT_FALSE(result.PRTHeaderValue().has_value());
+  EXPECT_FALSE(result.prt_header_value().has_value());
 }
 
 TEST_F(IpProtectionProxyDelegateTest, OnResolveProxyPRTNotInRegList) {
@@ -1285,7 +1279,7 @@ TEST_F(IpProtectionProxyDelegateTest, OnResolveProxyPRTNotInRegList) {
                            net::NetworkAnonymizationKey::CreateCrossSite(
                                net::SchemefulSite(top_level_url)),
                            "GET", net::ProxyRetryInfoMap(), &result);
-  EXPECT_FALSE(result.PRTHeaderValue().has_value());
+  EXPECT_FALSE(result.prt_header_value().has_value());
 }
 
 TEST_F(IpProtectionProxyDelegateTest, OnResolveProxyPRTIntegration) {
@@ -1362,7 +1356,7 @@ TEST_F(IpProtectionProxyDelegateTest, OnResolveProxyPRTIntegration) {
   ipp_core->SetProxyList({MakeChain({"proxya", "proxyb"})});
 
   // Advance time for PRT manager to fetch PRTs.
-  RunForTheSmallestTimeDelta();
+  RunUntilIdle();
 
   ASSERT_TRUE(manager->IsTokenAvailable())
       << "PRT manager is expected to have tokens to proceed";
@@ -1374,7 +1368,7 @@ TEST_F(IpProtectionProxyDelegateTest, OnResolveProxyPRTIntegration) {
                                net::SchemefulSite(top_level_url)),
                            "GET", net::ProxyRetryInfoMap(), &result);
 
-  std::optional<std::string> maybe_header_value = result.PRTHeaderValue();
+  std::optional<std::string> maybe_header_value = result.prt_header_value();
   ASSERT_TRUE(maybe_header_value.has_value());
 
   auto const get_etld_plus_one = [](const GURL& url) -> std::string {

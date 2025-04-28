@@ -116,12 +116,4 @@ bool ProxyInfo::AllChainProxiesAreHttps() const {
       [](const ProxyServer& proxy_server) { return proxy_server.is_https(); });
 }
 
-void ProxyInfo::SetPRTHeaderValue(std::optional<std::string> prt_header_value) {
-  prt_header_value_ = std::move(prt_header_value);
-}
-
-std::optional<std::string> ProxyInfo::PRTHeaderValue() const {
-  return prt_header_value_;
-}
-
 }  // namespace net
