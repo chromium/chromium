@@ -75,7 +75,10 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
         if (character.empty()) {
           break;
         }
-        seg_string.Push(character[0]);
+        // SegmentedString::Push() CHECKs if the input is non-NUL.
+        if (character[0]) {
+          seg_string.Push(character[0]);
+        }
         break;
       case kOpLookahead:
         seg_string.LookAhead(gen_str(10u));
