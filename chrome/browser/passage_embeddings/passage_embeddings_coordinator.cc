@@ -196,15 +196,15 @@ void PassageEmbeddingsCoordinator::OnPassageEmbeddingsComputed(
   VLOG(2) << "Got " << embeddings.size() << " embeddings with status "
           << static_cast<int>(status) << " for task " << task_id;
   const auto loc = web_contents_task_ids_.find(web_contents_id);
-  CHECK(loc != web_contents_task_ids_.end());
-  if (loc->second == task_id) {
-    web_contents_task_ids_.erase(loc);
-  } else {
+  if (loc == web_contents_task_ids_.end() || loc->second != task_id) {
     if (status == ComputeEmbeddingsStatus::kSuccess) {
       base::UmaHistogramCounts100("History.Embeddings.StaleComputedEmbeddings",
                                   embeddings.size());
     }
+    return;
   }
+
+  web_contents_task_ids_.erase(loc);
 }
 
 void PassageEmbeddingsCoordinator::OnOmniboxFocusChanged(bool is_focused) {
