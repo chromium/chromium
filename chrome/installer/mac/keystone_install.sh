@@ -1581,19 +1581,6 @@ framework_${update_version_app_old}_${update_version_app}.dirpatch"
 
   xattr -d -r "${QUARANTINE_ATTR}" "${installed_app}" 2> /dev/null
 
-  # macOS 14+ allows forcing an immediate Gatekeeper check (and caching the
-  # result) with gktool. Use it if available. Suppress both stdout and stderr as
-  # gktool is noisy.
-  #
-  # Do this as the very last step to reduce the chance that subsequent actions
-  # taken will invalidate the cached Gatekeeper result.
-  if [[ -x "/usr/bin/gktool" ]]; then
-    note "using gktool to force ahead-of-time Gatekeeper check"
-    /usr/bin/gktool scan "${installed_app}" >& /dev/null
-  else
-    note "gktool not available; skipping ahead-of-time Gatekeeper check"
-  fi
-
   # Great success!
   note "done!"
 
