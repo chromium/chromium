@@ -376,6 +376,7 @@ after discussions on the right group.
       <annotation id="baguette_image_download"/>
       <annotation id="chromeos_walrus_provider"/>
       <annotation id="forms_classifications_model_execution"/>
+      <annotation id="gemini_user_status"/>
     </sender>
   </group>
   <group name="Admin Features" hidden="true">

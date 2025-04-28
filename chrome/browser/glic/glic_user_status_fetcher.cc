@@ -29,6 +29,49 @@
 #include "url/gurl.h"
 
 namespace {
+
+constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
+    net::DefineNetworkTrafficAnnotation("gemini_user_status", R"(
+    semantics {
+      sender: "Chrome Gemini"
+      description:
+          "To decide whether an Enterprise primary account can access the "
+          "Gemini feature and see the Gemini UI surfaces (e.g. tab strip "
+          "button), Chrome sends a request to the Gemini API which is a "
+          "Google API to obtain the user status regarding Gemini. The "
+          "request is sent when an Enterprise primary account is signed in "
+          "or when Chrome is launched with an Enterprise primary account "
+          "signed in and every 23 hours afterwards. The access token of "
+          "the account is used for Oauth2 authentication."
+      trigger:
+          "upon an Enterprise primary account sign-in or Chrome launch with "
+          "a signed-in Enterprise primary account and periodically "
+          "afterwards"
+      data:
+          "None, other than the access token of the primary account used for"
+          "auth"
+      destination: GOOGLE_OWNED_SERVICE
+      internal {
+        contacts {
+          owners: "//chrome/browser/glic/OWNERS"
+        }
+      }
+      user_data {
+        type: ACCESS_TOKEN
+      }
+      last_reviewed: "2025-04-22"
+    }
+    policy {
+      cookies_allowed: NO
+      setting: "This feature can be disabled via GeminiSettings."
+      chrome_policy {
+        GeminiSettings {
+            GeminiSettings: 1
+        }
+      }
+    }
+   )");
+
 constexpr char kUserStatus[] = "user_status";
 constexpr char kUpdatedAt[] = "updated_at";
 constexpr char kAccountId[] = "account_id";
@@ -198,7 +241,6 @@ void GlicUserStatusFetcher::FetchNow() {
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile_);
 
-  // TODO(crbug.com/410890549): We need to define a NetworkTrafficAnnotation.
   request_sender_ = std::make_unique<google_apis::RequestSender>(
       std::make_unique<google_apis::AuthService>(
           identity_manager,
@@ -210,7 +252,7 @@ void GlicUserStatusFetcher::FetchNow() {
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
            base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN})
           .get(),
-      /*custom_user_agent=*/std::string(), MISSING_TRAFFIC_ANNOTATION);
+      /*custom_user_agent=*/std::string(), kTrafficAnnotation);
 
   auto request = std::make_unique<GlicUserStatusRequest>(
       request_sender_.get(), endpoint_,
