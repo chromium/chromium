@@ -8,6 +8,8 @@
 #import "base/memory/weak_ptr.h"
 #import "base/timer/timer.h"
 #import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/dom_distiller/model/distiller_service.h"
+#import "ios/chrome/browser/dom_distiller/model/distiller_viewer.h"
 #import "ios/chrome/browser/reader_mode/model/constants.h"
 #import "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
@@ -19,7 +21,9 @@
 class ReaderModeTabHelper : public web::WebStateObserver,
                             public web::WebStateUserData<ReaderModeTabHelper> {
  public:
-  ReaderModeTabHelper(web::WebState* web_state);
+  ReaderModeTabHelper(web::WebState* web_state,
+                      DistillerService* distiller_service,
+                      PrefService* prefs);
   ReaderModeTabHelper(const ReaderModeTabHelper&) = delete;
   ReaderModeTabHelper& operator=(const ReaderModeTabHelper&) = delete;
 
@@ -62,14 +66,22 @@ class ReaderModeTabHelper : public web::WebStateObserver,
  private:
   friend class web::WebStateUserData<ReaderModeTabHelper>;
 
+  // Hides the Reader Mode UI and stops any ongoing distillation tasks.
+  void HideReaderMode();
+
   // Determine if the page load is eligible for triggering the reader mode
   // heuristic.
   bool CanTriggerReaderModeHeuristic();
 
   // Callback for handling completion of the page distillation.
-  void PageDistillationCompleted(ReaderModeHeuristicResult heuristic_result,
-                                 base::TimeTicks start_time,
-                                 const base::Value* value);
+  void PageDistillationCompleted(
+      ReaderModeHeuristicResult heuristic_result,
+      base::TimeTicks start_time,
+      const GURL& page_url,
+      const std::string& html,
+      const std::vector<DistillerViewerInterface::ImageInfo>& images,
+      const std::string& title,
+      const std::string& csp_nonce);
 
   // Whether Reader mode is active in this tab.
   bool active_ = false;
@@ -78,8 +90,14 @@ class ReaderModeTabHelper : public web::WebStateObserver,
   id<SnackbarCommands> snackbar_handler_;
   id<ReaderModeCommands> reader_mode_handler_;
   base::TimeDelta heuristic_latency_;
-  raw_ptr<web::WebState> web_state_ = nullptr;
   base::OneShotTimer trigger_reader_mode_timer_;
+
+  raw_ptr<web::WebState> web_state_ = nullptr;
+  raw_ptr<DistillerService> distiller_service_;
+  raw_ptr<PrefService> pref_service_;
+
+  std::unique_ptr<DistillerViewer> distiller_viewer_;
+
   base::WeakPtrFactory<ReaderModeTabHelper> weak_ptr_factory_{this};
 };
 
