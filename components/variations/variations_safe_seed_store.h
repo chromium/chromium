@@ -41,12 +41,8 @@ class VariationsSafeSeedStore {
   // Getter and setter for the compressed and base64-encoded safe seed.
   virtual StoredSeed GetCompressedSeed() const = 0;
   virtual void SetCompressedSeed(const std::string& safe_compressed,
-                                 const std::string& base64_safe_compressed) = 0;
-
-  // Getter and setter for the b64-encoded safe seed signature in the
-  // underlying storage.
-  virtual std::string GetSignature() const = 0;
-  virtual void SetSignature(const std::string& safe_seed_signature) = 0;
+                                 const std::string& base64_safe_compressed,
+                                 const std::string& signature) = 0;
 
   // Getter and setter for the locale associated with the safe seed in the
   // underlying storage.

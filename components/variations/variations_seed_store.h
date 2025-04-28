@@ -323,12 +323,15 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedStore {
                                             std::string* base64_seed_signature);
 
   // Reads the variations seed data from prefs into |seed_data|, and returns the
-  // result of the load. The value stored into |seed_data| should only be used
-  // if the result is SUCCESS. Reads either the latest or the safe seed,
-  // according to the specified |seed_type|.
+  // result of the load. If a pointer for the signature is provided, the
+  // signature will be read and stored into |base64_seed_signature|. The value
+  // stored into |seed_data| should only be used if the result is SUCCESS. Reads
+  // either the latest or the safe seed, according to the specified |seed_type|.
   // Side-effect: If the read fails, clears the prefs associated with the seed.
-  [[nodiscard]] LoadSeedResult ReadSeedData(SeedType seed_type,
-                                            std::string* seed_data);
+  [[nodiscard]] LoadSeedResult ReadSeedData(
+      SeedType seed_type,
+      std::string* seed_data,
+      std::string* base64_seed_signature = nullptr);
 
   // Resolves a |delta_bytes| against the latest seed.
   // Returns success or an error, populating |seed_bytes| on success.

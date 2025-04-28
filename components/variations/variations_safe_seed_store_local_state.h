@@ -57,10 +57,8 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSafeSeedStoreLocalState
 
   StoredSeed GetCompressedSeed() const override;
   void SetCompressedSeed(const std::string& safe_compressed,
-                         const std::string& base64_safe_compressed) override;
-
-  std::string GetSignature() const override;
-  void SetSignature(const std::string& safe_seed_signature) override;
+                         const std::string& base64_safe_compressed,
+                         const std::string& signature) override;
 
   std::string GetLocale() const override;
   void SetLocale(const std::string& locale) override;

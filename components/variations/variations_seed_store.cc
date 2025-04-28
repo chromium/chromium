@@ -455,10 +455,10 @@ VariationsSeedStore::SeedProcessingResult::operator=(
 // for the next safe seed.
 void VariationsSeedStore::ClearPrefs(SeedType seed_type) {
   if (seed_type == SeedType::LATEST) {
-    seed_reader_writer_->ClearSeed();
+    // Seed and other related information is cleared by the SeedReaderWriter.
+    seed_reader_writer_->ClearSeedInfo();
     local_state_->ClearPref(prefs::kVariationsLastFetchTime);
     local_state_->ClearPref(prefs::kVariationsSeedDate);
-    local_state_->ClearPref(prefs::kVariationsSeedSignature);
     return;
   }
 
@@ -564,16 +564,10 @@ LoadSeedResult VariationsSeedStore::LoadSeedImpl(
     VariationsSeed* seed,
     std::string* seed_data,
     std::string* base64_seed_signature) {
-  LoadSeedResult read_result = ReadSeedData(seed_type, seed_data);
+  LoadSeedResult read_result =
+      ReadSeedData(seed_type, seed_data, base64_seed_signature);
   if (read_result != LoadSeedResult::kSuccess) {
     return read_result;
-  }
-
-  if (seed_type == SeedType::LATEST) {
-    *base64_seed_signature =
-        local_state_->GetString(prefs::kVariationsSeedSignature);
-  } else {
-    *base64_seed_signature = safe_seed_store_->GetSignature();
   }
 
   std::optional<VerifySignatureResult> verify_signature_result;
@@ -602,8 +596,10 @@ LoadSeedResult VariationsSeedStore::LoadSeedImpl(
   return result;
 }
 
-LoadSeedResult VariationsSeedStore::ReadSeedData(SeedType seed_type,
-                                                 std::string* seed_data) {
+LoadSeedResult VariationsSeedStore::ReadSeedData(
+    SeedType seed_type,
+    std::string* seed_data,
+    std::string* base64_seed_signature) {
   const StoredSeed loaded_seed = seed_type == SeedType::LATEST
                                      ? seed_reader_writer_->GetSeedData()
                                      : safe_seed_store_->GetCompressedSeed();
@@ -616,7 +612,7 @@ LoadSeedResult VariationsSeedStore::ReadSeedData(SeedType seed_type,
   // rather aliased to the safe seed.
   if (seed_type == SeedType::LATEST &&
       loaded_seed.data == kIdenticalToSafeSeedSentinel) {
-    return ReadSeedData(SeedType::SAFE, seed_data);
+    return ReadSeedData(SeedType::SAFE, seed_data, base64_seed_signature);
   }
 
   // If the decode process fails, assume the pref value is corrupt and clear it.
@@ -646,6 +642,11 @@ LoadSeedResult VariationsSeedStore::ReadSeedData(SeedType seed_type,
   if (!compression::GzipUncompress(compressed_data, seed_data)) {
     ClearPrefs(seed_type);
     return LoadSeedResult::kCorruptGzip;
+  }
+
+  // Copy the signature from the loaded seed.
+  if (base64_seed_signature) {
+    *base64_seed_signature = loaded_seed.signature;
   }
 
   return LoadSeedResult::kSuccess;
@@ -733,15 +734,15 @@ void VariationsSeedStore::StoreValidatedSeed(const ValidatedSeed& seed,
   // As a space optimization, store an alias to the safe seed if the contents
   // are identical.
   if (seed.MatchesStoredSeed(safe_seed_store_->GetCompressedSeed())) {
-    seed_reader_writer_->StoreValidatedSeed(kIdenticalToSafeSeedSentinel,
-                                            kIdenticalToSafeSeedSentinel);
+    seed_reader_writer_->StoreValidatedSeedInfo(kIdenticalToSafeSeedSentinel,
+                                                kIdenticalToSafeSeedSentinel,
+                                                seed.base64_seed_signature);
   } else {
-    seed_reader_writer_->StoreValidatedSeed(seed.compressed_seed_data,
-                                            seed.base64_seed_data);
+    seed_reader_writer_->StoreValidatedSeedInfo(seed.compressed_seed_data,
+                                                seed.base64_seed_data,
+                                                seed.base64_seed_signature);
   }
   UpdateSeedDateAndLogDayChange(date_fetched);
-  local_state_->SetString(prefs::kVariationsSeedSignature,
-                          seed.base64_seed_signature);
   latest_serial_number_ = seed.parsed.serial_number();
 }
 
@@ -780,19 +781,20 @@ void VariationsSeedStore::StoreValidatedSafeSeed(
       // to consider:
       //
       // 1. The client is in the SeedFile experiment's treatment group. In this
-      //    case, StoreValidatedSeed() updates the seed file and ignores the
+      //    case, StoreValidatedSeedInfo() updates the seed file and ignores the
       //    local state seed.
       // 2. The client is either not in the experiment or is in its control or
       //    default group. In this case, |previous_safe_seed.data| is ignored.
-      seed_reader_writer_->StoreValidatedSeed(
+      seed_reader_writer_->StoreValidatedSeedInfo(
           previous_safe_seed.data,
-          local_state_->GetString(prefs::kVariationsSafeCompressedSeed));
+          local_state_->GetString(prefs::kVariationsSafeCompressedSeed),
+          previous_safe_seed.signature);
     }
     safe_seed_store_->SetCompressedSeed(seed.compressed_seed_data,
-                                        seed.base64_seed_data);
+                                        seed.base64_seed_data,
+                                        seed.base64_seed_signature);
   }
 
-  safe_seed_store_->SetSignature(seed.base64_seed_signature);
   safe_seed_store_->SetTimeForStudyDateChecks(client_state.reference_date);
   safe_seed_store_->SetLocale(client_state.locale);
   safe_seed_store_->SetMilestone(seed_milestone);
@@ -804,8 +806,9 @@ void VariationsSeedStore::StoreValidatedSafeSeed(
   // As a space optimization, overwrite the stored latest seed data with an
   // alias to the safe seed, if they are identical.
   if (seed.MatchesStoredSeed(seed_reader_writer_->GetSeedData())) {
-    seed_reader_writer_->StoreValidatedSeed(kIdenticalToSafeSeedSentinel,
-                                            kIdenticalToSafeSeedSentinel);
+    seed_reader_writer_->StoreValidatedSeedInfo(kIdenticalToSafeSeedSentinel,
+                                                kIdenticalToSafeSeedSentinel,
+                                                seed.base64_seed_signature);
 
     // Moreover, in this case, the last fetch time for the safe seed should
     // match the latest seed's.

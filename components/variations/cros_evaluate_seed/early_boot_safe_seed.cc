@@ -36,19 +36,16 @@ void EarlyBootSafeSeed::SetTimeForStudyDateChecks(
     const base::Time& safe_seed_time) {}
 
 StoredSeed EarlyBootSafeSeed::GetCompressedSeed() const {
-  return {StoredSeed::StorageFormat::kCompressedAndBase64Encoded,
-          safe_seed_details_.b64_compressed_data()};
+  return {
+      .storage_format = StoredSeed::StorageFormat::kCompressedAndBase64Encoded,
+      .data = safe_seed_details_.b64_compressed_data(),
+      .signature = safe_seed_details_.signature()};
 }
 
 void EarlyBootSafeSeed::SetCompressedSeed(
     const std::string& safe_compressed,
-    const std::string& base64_safe_compressed) {}
-
-std::string EarlyBootSafeSeed::GetSignature() const {
-  return safe_seed_details_.signature();
-}
-
-void EarlyBootSafeSeed::SetSignature(const std::string& safe_seed_signature) {}
+    const std::string& base64_safe_compressed,
+    const std::string& signature) {}
 
 std::string EarlyBootSafeSeed::GetLocale() const {
   return safe_seed_details_.locale();
