@@ -52,7 +52,7 @@ void OpenManageAccountsView() {
                                        IDS_IOS_ACCOUNT_MENU_EDIT_ACCOUNT_LIST)),
                                    grey_interactable(), nil)]
       performAction:grey_tap()];
-  // Checks the manage accounts view is shown
+  // Checks the manage accounts view is shown.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
                                           kSettingsEditAccountListTableViewId)]
       assertWithMatcher:grey_sufficientlyVisible()];
