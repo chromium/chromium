@@ -21,7 +21,11 @@ TabEventTrackerImpl::TabEventTrackerImpl(
     OnNewEventCallback on_new_event_callback)
     : on_new_event_callback_(on_new_event_callback),
       tab_switcher_trigger_only_(
-          features::kGroupSuggestionEnableTabSwitcherOnly.Get()) {}
+          features::kGroupSuggestionEnableTabSwitcherOnly.Get()),
+      trigger_on_navigation_(
+          features::kGroupSuggestionEnableRecentlyOpened.Get() ||
+          features::kGroupSuggestionEnableSameOrigin.Get() ||
+          features::kGroupSuggestionTriggerCalculationOnPageLoad.Get()) {}
 TabEventTrackerImpl::~TabEventTrackerImpl() = default;
 
 TabEventTrackerImpl::TabSelection::TabSelection() = default;
@@ -89,7 +93,7 @@ void TabEventTrackerImpl::OnDidFinishNavigation(
     current_selection_.committed = true;
     tab_id_selection_map_[tab_id].emplace_back(current_selection_);
   }
-  if (!tab_switcher_trigger_only_) {
+  if (!tab_switcher_trigger_only_ && trigger_on_navigation_) {
     on_new_event_callback_.Run();
   }
 }

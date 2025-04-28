@@ -207,39 +207,32 @@ TEST_F(TabEventTrackerImplTest, SwitchedCount_IgnoreTypes) {
 
 TEST_F(TabEventTrackerImplTest, OnDidFinishNavigation_CommitsSelection) {
   const int kTabId = 1;
-  EXPECT_CALL(mock_callback_, Run()).Times(0);
   tab_event_tracker_->DidSelectTab(
       kTabId, GURL(kTestUrl),
       TabEventTracker::TabSelectionType::kFromCloseActiveTab, 2);
   EXPECT_EQ(0, tab_event_tracker_->GetSelectedCount(kTabId));
 
-  EXPECT_CALL(mock_callback_, Run());
   tab_event_tracker_->OnDidFinishNavigation(kTabId, ui::PAGE_TRANSITION_LINK);
   EXPECT_EQ(1, tab_event_tracker_->GetSelectedCount(kTabId));
 
-  EXPECT_CALL(mock_callback_, Run());
   tab_event_tracker_->OnDidFinishNavigation(kTabId, ui::PAGE_TRANSITION_LINK);
   EXPECT_EQ(1, tab_event_tracker_->GetSelectedCount(kTabId));
 }
 
 TEST_F(TabEventTrackerImplTest, OnDidFinishNavigation_IgnoreNavigationTypes) {
   const int kTabId = 1;
-  EXPECT_CALL(mock_callback_, Run()).Times(0);
   tab_event_tracker_->DidSelectTab(
       kTabId, GURL(kTestUrl),
       TabEventTracker::TabSelectionType::kFromCloseActiveTab, 2);
   EXPECT_EQ(0, tab_event_tracker_->GetSelectedCount(kTabId));
 
-  EXPECT_CALL(mock_callback_, Run()).Times(0);
   tab_event_tracker_->OnDidFinishNavigation(kTabId, ui::PAGE_TRANSITION_RELOAD);
   EXPECT_EQ(0, tab_event_tracker_->GetSelectedCount(kTabId));
 
-  EXPECT_CALL(mock_callback_, Run()).Times(0);
   tab_event_tracker_->OnDidFinishNavigation(kTabId,
                                             ui::PAGE_TRANSITION_AUTO_SUBFRAME);
   EXPECT_EQ(0, tab_event_tracker_->GetSelectedCount(kTabId));
 
-  EXPECT_CALL(mock_callback_, Run());
   tab_event_tracker_->OnDidFinishNavigation(
       kTabId, ui::PageTransitionFromInt(ui::PAGE_TRANSITION_LINK |
                                         ui::PAGE_TRANSITION_FROM_ADDRESS_BAR));
@@ -255,5 +248,33 @@ TEST_F(TabEventTrackerImplTest, OnDidFinishNavigation_NoRepeatCommit) {
   tab_event_tracker_->OnDidFinishNavigation(kTabId, ui::PAGE_TRANSITION_LINK);
   tab_event_tracker_->OnDidFinishNavigation(kTabId, ui::PAGE_TRANSITION_LINK);
   EXPECT_EQ(1, tab_event_tracker_->GetSelectedCount(kTabId));
+}
+
+TEST_F(TabEventTrackerImplTest, OnDidFinishNavigation_TriggerCallback) {
+  // Reset heuristics so that Recently Opened heuristics is enabled.
+  features_.InitAndEnableFeatureWithParameters(
+      features::kGroupSuggestionService,
+      {{"group_suggestion_enable_recently_opened", "true"}});
+  tab_event_tracker_.reset();
+  tab_event_tracker_ =
+      std::make_unique<TabEventTrackerImpl>(mock_callback_.Get());
+
+  EXPECT_CALL(mock_callback_, Run());
+
+  tab_event_tracker_->OnDidFinishNavigation(1, ui::PAGE_TRANSITION_LINK);
+}
+
+TEST_F(TabEventTrackerImplTest, OnDidFinishNavigation_NotTriggerCallback) {
+  // Reset heuristics so that trigger calculation on navigation is enabled.
+  features_.InitAndEnableFeatureWithParameters(
+      features::kGroupSuggestionService,
+      {{"group_suggestion_trigger_calculation_on_page_load", "false"}});
+  tab_event_tracker_.reset();
+  tab_event_tracker_ =
+      std::make_unique<TabEventTrackerImpl>(mock_callback_.Get());
+
+  EXPECT_CALL(mock_callback_, Run()).Times(0);
+
+  tab_event_tracker_->OnDidFinishNavigation(1, ui::PAGE_TRANSITION_LINK);
 }
 }  // namespace visited_url_ranking

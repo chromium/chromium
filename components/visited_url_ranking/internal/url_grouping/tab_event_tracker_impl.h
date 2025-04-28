@@ -62,6 +62,7 @@ class TabEventTrackerImpl : public TabEventTracker {
   TabSelection current_selection_;
   OnNewEventCallback on_new_event_callback_;
   bool tab_switcher_trigger_only_;
+  bool trigger_on_navigation_;
 };
 
 }  // namespace visited_url_ranking
