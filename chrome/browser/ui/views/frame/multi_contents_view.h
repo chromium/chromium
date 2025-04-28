@@ -103,6 +103,7 @@ class MultiContentsView : public views::View, public views::ResizeAreaDelegate {
   // views::View:
   void Layout(PassKey) override;
   void OnPaint(gfx::Canvas* canvas) override;
+  void OnThemeChanged() override;
 
   void SetMinWidthForTesting(int width) {
     min_contents_width_for_testing_ = std::make_optional(width);

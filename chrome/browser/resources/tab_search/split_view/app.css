@@ -34,6 +34,7 @@
 }
 
 .heading {
+  color: var(--cr-primary-text-color);
   font-size: 14px;
   font-weight: 500;
   line-height: 20px;
@@ -48,6 +49,7 @@
 
 .title {
   align-self: center;
+  color: var(--cr-primary-text-color);
   font-size: 16px;
   font-weight: 500;
   line-height: 24px;

@@ -444,6 +444,11 @@ base::RefCountedMemory* ChromeWebUIControllerFactory::GetFaviconResourceBytes(
     return ManagementUI::GetFaviconResourceBytes(scale_factor);
   }
 
+  // Tab Search hosts the split tab NTP and so leveraging the NTP favicon.
+  if (page_url.host_piece() == chrome::kChromeUITabSearchHost) {
+    return NewTabPageUI::GetFaviconResourceBytes(scale_factor);
+  }
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
   if (page_url.host_piece() == commerce::kChromeUICompareHost) {

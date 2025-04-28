@@ -204,6 +204,11 @@ void MultiContentsView::OnPaint(gfx::Canvas* canvas) {
   TopContainerBackground::PaintBackground(canvas, this, browser_view_);
 }
 
+void MultiContentsView::OnThemeChanged() {
+  views::View::OnThemeChanged();
+  UpdateContentsBorder();
+}
+
 void MultiContentsView::OnWebContentsFocused(views::WebView* web_view) {
   if (IsInSplitView()) {
     if (GetInactiveContentsView()->web_contents() == web_view->web_contents()) {
