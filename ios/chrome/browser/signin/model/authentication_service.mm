@@ -653,16 +653,9 @@ void AuthenticationService::HandleForgottenIdentity(
     return;
   }
 
-  // YES if the primary identity should be ignored to simulate a backup/restore
-  // of the device.
-  bool simulate_identity_lost_for_restore =
-      device_restore && SimulatePostDeviceRestore();
-  // If the restore shorty needs to be simulated, the primary identity should
-  // not be found.
+  // Tests if the primary identity still exists.
   id<SystemIdentity> authenticated_identity =
-      simulate_identity_lost_for_restore
-          ? nil
-          : GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+      GetPrimaryIdentity(signin::ConsentLevel::kSignin);
   if (authenticated_identity &&
       ![authenticated_identity isEqual:invalid_identity]) {
     // `authenticated_identity` exists and is a valid identity. Nothing to do
