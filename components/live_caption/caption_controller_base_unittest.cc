@@ -69,6 +69,7 @@ class MockCaptionBubbleContext : public CaptionBubbleContext {
   const std::string GetSessionId() const override { return {}; }
   MOCK_METHOD(void, Activate, (), (override));
   MOCK_METHOD(bool, IsActivatable, (), (const override));
+  MOCK_METHOD(bool, ShouldAvoidOverlap, (), (const override));
   MOCK_METHOD(std::unique_ptr<CaptionBubbleSessionObserver>,
               GetCaptionBubbleSessionObserver,
               (),

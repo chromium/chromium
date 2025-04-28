@@ -36,6 +36,7 @@ class CaptionBubbleContextRemote : public CaptionBubbleContext {
   const std::string GetSessionId() const override;
   void Activate() override;
   bool IsActivatable() const override;
+  bool ShouldAvoidOverlap() const override;
   std::unique_ptr<CaptionBubbleSessionObserver>
   GetCaptionBubbleSessionObserver() override;
   OpenCaptionSettingsCallback GetOpenCaptionSettingsCallback() override;

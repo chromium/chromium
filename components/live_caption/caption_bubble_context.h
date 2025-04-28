@@ -60,6 +60,11 @@ class CaptionBubbleContext {
   // in child classes, the child classes must set this to be true.
   virtual bool IsActivatable() const = 0;
 
+  // Whether the caption bubble should be positioned to avoid covering too much
+  // of the context area. For Live Caption, this should only be true for
+  // non-browser web contents.
+  virtual bool ShouldAvoidOverlap() const = 0;
+
   // Gets a session observer for the caption bubble context. On Chrome
   // browser, a caption bubble session is per-tab and resets when a user
   // navigates away or reloads the page.

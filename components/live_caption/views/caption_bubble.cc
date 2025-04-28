@@ -114,6 +114,7 @@ static constexpr double kDefaultRatioInParentX = 0.5;
 static constexpr double kDefaultRatioInParentY = 1;
 static constexpr int kErrorImageSizeDip = 20;
 static constexpr int kErrorMessageBetweenChildSpacingDip = 16;
+static constexpr double kContextSufficientOverlapRatio = .4;
 
 constexpr base::TimeDelta kAnimationDuration = base::Milliseconds(250);
 
@@ -1583,6 +1584,28 @@ void CaptionBubble::RepositionInContextRect(CaptionBubbleModel::Id model_id,
                                       bubble_bounds.height());
   if (!inset_rect.Contains(target_bounds)) {
     target_bounds.AdjustToFit(inset_rect);
+  }
+
+  if (model_->GetContext()->ShouldAvoidOverlap()) {
+    gfx::Rect intersection = context_rect;
+    intersection.Intersect(target_bounds);
+    if (intersection.size().GetArea() >
+        context_rect.size().GetArea() * kContextSufficientOverlapRatio) {
+      // Place below if there's room, otherwise place above.
+      std::optional<display::Display> display =
+          GetWidget()->GetNearestDisplay();
+      if (!display.has_value() ||
+          context_rect.bottom() + target_bounds.height() <
+              display->bounds().bottom()) {
+        target_bounds.Offset(0, context_rect.height());
+      } else {
+        target_bounds.Offset(0,
+                             -context_rect.height() - kMinAnchorMarginDip * 2);
+      }
+
+      GetWidget()->SetBoundsConstrained(target_bounds);
+      return;
+    }
   }
 
   GetWidget()->SetBounds(target_bounds);

@@ -43,7 +43,9 @@
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/webview/webview.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/fill_layout.h"
 #include "ui/views/test/views_test_utils.h"
 #include "ui/views/test/widget_activation_waiter.h"
 #include "ui/views/test/widget_test.h"
@@ -56,6 +58,26 @@
 #endif  // USE_AURA
 
 namespace captions {
+namespace {
+
+// Create a widget that contains only a views::WebView with an empty
+// WebContents.
+std::unique_ptr<views::Widget> MakeWebViewWidget(Profile* profile,
+                                                 const gfx::Rect& bounds) {
+  views::Widget::InitParams params(
+      views::Widget::InitParams::CLIENT_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+  params.bounds = bounds;
+  auto widget = std::make_unique<views::Widget>(std::move(params));
+  auto web_view = std::make_unique<views::WebView>(profile);
+  web_view->SetLayoutManager(std::make_unique<views::FillLayout>());
+  // Create the WebContents
+  web_view->GetWebContents();
+  widget->SetContentsView(std::move(web_view));
+  return widget;
+}
+
+}  // namespace
 
 class CaptionBubbleControllerViewsTest : public InProcessBrowserTest {
  public:
@@ -500,6 +522,34 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(GetBubble()->GetBoundsInScreen().width(), bubble_width);
   EXPECT_EQ(GetBubble()->margins(), bubble_margins);
+}
+
+IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
+                       BubblePositioningSmallBrowserContext) {
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  SetWindowBounds({{0, 0}, {300, 100}});
+
+  OnPartialTranscription("Mantis shrimp have 12-16 photoreceptors");
+  base::RunLoop().RunUntilIdle();
+
+  gfx::Rect web_contents_bounds_in_screen = web_contents->GetViewBounds();
+  gfx::Rect bubble_bounds = GetCaptionWidget()->GetWindowBoundsInScreen();
+  // We shouldn't be repositioning the bubble below the context if it's a tab.
+  EXPECT_LT(bubble_bounds.y(), web_contents_bounds_in_screen.bottom());
+}
+
+IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
+                       BubblePositioningSmallNonBrowserContext) {
+  auto context_widget =
+      MakeWebViewWidget(browser()->profile(), {{0, 0}, {300, 100}});
+
+  OnPartialTranscription("Mantis shrimp have 12-16 photoreceptors");
+  base::RunLoop().RunUntilIdle();
+
+  gfx::Rect widget_bounds_in_screen = context_widget->GetWindowBoundsInScreen();
+  gfx::Rect bubble_bounds = GetCaptionWidget()->GetWindowBoundsInScreen();
+  // Reposition the bubble below the widget.
+  EXPECT_GT(bubble_bounds.y(), widget_bounds_in_screen.bottom());
 }
 
 IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, ShowsAndHidesError) {

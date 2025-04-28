@@ -112,6 +112,11 @@ bool CaptionBubbleContextViews::IsActivatable() const {
          tab_strip_model->active_index();
 }
 
+bool CaptionBubbleContextViews::ShouldAvoidOverlap() const {
+  // Avoid overlap if web_contents_ doesn't belong to a tab.
+  return !chrome::FindBrowserWithTab(web_contents_);
+}
+
 std::unique_ptr<CaptionBubbleSessionObserver>
 CaptionBubbleContextViews::GetCaptionBubbleSessionObserver() {
   if (web_contents_observer_) {

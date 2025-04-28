@@ -94,6 +94,10 @@ bool CaptionBubbleContextRemote::IsActivatable() const {
   return true;
 }
 
+bool CaptionBubbleContextRemote::ShouldAvoidOverlap() const {
+  return false;
+}
+
 std::unique_ptr<CaptionBubbleSessionObserver>
 CaptionBubbleContextRemote::GetCaptionBubbleSessionObserver() {
   auto session_observer =
