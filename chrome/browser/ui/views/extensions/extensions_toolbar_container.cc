@@ -358,7 +358,7 @@ void ExtensionsToolbarContainer::UpdateRequestAccessButton(
 
   // Extensions are included in the request access button only when:
   //   - site allows customizing site access by extension
-  //   - extension added a request that has not been dismised
+  //   - extension added a request that has not been dismissed
   //   - requests can be shown in the toolbar
   std::vector<extensions::ExtensionId> extensions;
   if (site_setting ==
