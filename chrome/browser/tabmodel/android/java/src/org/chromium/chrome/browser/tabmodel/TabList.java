@@ -13,7 +13,7 @@ import org.chromium.chrome.browser.tab.Tab;
  * A read only list of {@link Tab}s. This list understands the concept of an incognito list as well
  * as a currently selected tab (see {@link #index}).
  */
-@MockedInTests
+@MockedInTests // Needed due to R8's computeDelayedInterfaceMethodSyntheticBridges. b/147584922
 @NullMarked
 public interface TabList {
     // Keep this in sync with chrome/browser/ui/android/tab_model/tab_model.cc

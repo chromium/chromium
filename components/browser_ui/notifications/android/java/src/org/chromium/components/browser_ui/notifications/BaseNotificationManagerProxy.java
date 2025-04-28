@@ -20,7 +20,7 @@ import java.util.function.Function;
  * Base interface for NofificationManagerProxy that only supports simple functionalities. Remove
  * this once AsyncNofificationManagerProxy is set to default.
  */
-@MockedInTests
+@MockedInTests // Needed due to R8's computeDelayedInterfaceMethodSyntheticBridges. b/147584922
 @NullMarked
 public interface BaseNotificationManagerProxy {
     /**
