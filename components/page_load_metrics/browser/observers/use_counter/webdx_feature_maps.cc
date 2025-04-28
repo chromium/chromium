@@ -380,6 +380,8 @@ UseCounterMetricsRecorder::GetWebFeatureToWebDXFeatureMap() {
           {WebFeature::kSpeculationRules, WebDXFeature::kSpeculationRules},
           {WebFeature::kElementCapture, WebDXFeature::kElementCapture},
           {WebFeature::kRegionCapture, WebDXFeature::kRegionCapture},
+          {WebFeature::kUnprefixedRequestAnimationFrame,
+           WebDXFeature::kRequestAnimationFrame},
           // Add new features above this line.
       }};
 

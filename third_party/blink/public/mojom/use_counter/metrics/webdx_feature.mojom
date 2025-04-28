@@ -378,6 +378,8 @@ enum WebDXFeature {
   kHasSlotted = 320,
   kElementCapture = 321,
   kRegionCapture = 322,
+  kRequestAnimationFrame = 323,
+  kRequestAnimationFrameWorkers= 324,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
