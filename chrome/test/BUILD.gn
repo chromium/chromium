@@ -2935,6 +2935,7 @@ if (!is_android) {
       "../browser/accessibility/page_colors_browsertest.cc",
       "../browser/accessibility/phrase_segmentation/dependency_parser_model_loader_browsertest.cc",
       "../browser/ai/ai_data_keyed_service_browsertest.cc",
+      "../browser/ai/ai_on_device_browsertest.cc",
       "../browser/attribution_reporting/chrome_attribution_browsertest.cc",
       "../browser/autocomplete/autocomplete_browsertest.cc",
       "../browser/autocomplete/chrome_autocomplete_provider_client_browsertest.cc",
