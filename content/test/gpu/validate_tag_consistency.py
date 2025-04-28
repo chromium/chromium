@@ -83,8 +83,10 @@ TAG_SPECIALIZATIONS = {
         'apple': [
             'apple-apple-m1',
             'apple-apple-m2',
+            'apple-apple-m3',
             'apple-angle-metal-renderer:-apple-m1',
             'apple-angle-metal-renderer:-apple-m2',
+            'apple-angle-metal-renderer:-apple-m3',
         ],
         'arm': [],
         'google': [

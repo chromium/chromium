@@ -2041,8 +2041,8 @@ ci.thin_tester(
     ),
     targets = targets.bundle(
         targets = [
-            # TODO(crbug.com/411164097): Enable actual tests.
-            "gpu_noop_sleep_telemetry_test",
+            "gpu_fyi_mac_release_gtests",
+            "gpu_fyi_only_mac_release_telemetry_tests",
         ],
         mixins = [
             "mac_arm64_apple_m3_retina_gpu_stable",

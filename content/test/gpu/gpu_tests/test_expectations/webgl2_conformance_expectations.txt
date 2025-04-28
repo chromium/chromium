@@ -29,9 +29,10 @@
 # GPU
 # tags: [ amd amd-0x6613 amd-0x679e amd-0x67ef amd-0x6821 amd-0x7340 amd-0x7480
 #         amd64
-#         apple apple-apple-m1 apple-apple-m2
+#         apple apple-apple-m1 apple-apple-m2 apple-apple-m3
 #             apple-angle-metal-renderer:-apple-m1
 #             apple-angle-metal-renderer:-apple-m2
+#             apple-angle-metal-renderer:-apple-m3
 #         arm
 #         google google-0xffff google-0xc0de
 #         imagination
@@ -637,6 +638,14 @@ crbug.com/328100306 [ amd angle-metal graphite-enabled sonoma ] conformance/glsl
 
 crbug.com/angleproject/6430 [ angle-metal intel mac passthrough ] deqp/functional/gles3/readpixel.html [ Failure ]
 
+## Metal Apple ##
+
+crbug.com/412955603 [ mac apple-angle-metal-renderer:-apple-m3 ] conformance2/wasm/bufferdata-16gb-wasm-memory.html [ Failure ]
+crbug.com/412955603 [ mac apple-angle-metal-renderer:-apple-m3 ] conformance2/wasm/buffersubdata-16gb-wasm-memory.html [ Failure ]
+crbug.com/412955603 [ mac apple-angle-metal-renderer:-apple-m3 ] conformance2/wasm/getbuffersubdata-16gb-wasm-memory.html [ Failure ]
+crbug.com/412955603 [ mac apple-angle-metal-renderer:-apple-m3 ] conformance2/wasm/teximage2d-16gb-wasm-memory.html [ Failure ]
+crbug.com/412955603 [ mac apple-angle-metal-renderer:-apple-m3 ] conformance2/wasm/texsubimage2d-16gb-wasm-memory.html [ Failure ]
+
 ######################################################################
 # Mac failures (mainly OpenGL; some need to be reevaluated on Metal) #
 ######################################################################
@@ -781,6 +790,15 @@ crbug.com/1130119 [ mac apple passthrough angle-opengl ] conformance2/textures/m
 crbug.com/1130119 [ mac apple passthrough angle-opengl ] conformance2/rendering/framebuffer-completeness-unaffected.html [ Failure ]
 crbug.com/1130119 [ mac apple passthrough angle-opengl ] conformance2/rendering/framebuffer-render-to-layer.html [ Failure ]
 crbug.com/1130119 [ mac apple passthrough angle-opengl ] deqp/functional/gles3/fbocompleteness.html [ Failure ]
+
+## Mac / M3 / OpenGL ##
+
+crbug.com/412955603 [ mac apple-apple-m3 angle-opengl ] conformance2/wasm/bufferdata-16gb-wasm-memory.html [ Failure ]
+crbug.com/412955603 [ mac apple-apple-m3 angle-opengl ] conformance2/wasm/buffersubdata-16gb-wasm-memory.html [ Failure ]
+crbug.com/412955603 [ mac apple-apple-m3 angle-opengl ] conformance2/wasm/getbuffersubdata-16gb-wasm-memory.html [ Failure ]
+crbug.com/412955603 [ mac apple-apple-m3 angle-opengl ] conformance2/wasm/teximage2d-16gb-wasm-memory.html [ Failure ]
+crbug.com/412955603 [ mac apple-apple-m3 angle-opengl ] conformance2/wasm/texsubimage2d-16gb-wasm-memory.html [ Failure ]
+crbug.com/413035866 [ mac apple-apple-m3 angle-opengl ] conformance2/canvas/drawingbuffer-storage-test.html [ Failure ]
 
 # Newly added tests on NVIDIA passthrough
 crbug.com/982292 [ mac nvidia angle-opengl passthrough ] conformance/extensions/webgl-multi-draw.html [ Failure ]

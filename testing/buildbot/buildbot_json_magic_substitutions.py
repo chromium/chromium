@@ -31,6 +31,7 @@ VENDOR_SUBSTITUTIONS = {
 DEVICE_SUBSTITUTIONS = {
     'm1': '0',
     'm2': '0',
+    'm3': '0',
     # Qualcomm Adreno 680/685/690 and 741 on Windows arm64. The approach
     # swarming uses to find GPUs (looking for all Win32_VideoController WMI
     # objects) results in different output than what Chrome sees.
