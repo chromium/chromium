@@ -24,6 +24,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabUngrouper;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupListBottomSheetCoordinator.TabMovedCallback;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupRowView.TabGroupRowViewTitleData;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -48,6 +49,7 @@ public class LocalTabGroupListBottomSheetRowMediatorUnitTest {
     @Mock private Runnable mOnClickRunnable;
     @Mock private TabMovedCallback mTabMovedCallback;
     @Mock private TabModel mTabModel;
+    @Mock private TabUngrouper mTabUngrouper;
     @Mock private Tab mTab1;
     @Mock private Tab mTab2;
 
@@ -62,6 +64,7 @@ public class LocalTabGroupListBottomSheetRowMediatorUnitTest {
         mTabs.add(mTab1);
 
         when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
+        when(mTabGroupModelFilter.getTabUngrouper()).thenReturn(mTabUngrouper);
         when(mTabGroupModelFilter.getTabsInGroup(mGroupId)).thenReturn(mTabs);
         when(mTabGroupModelFilter.getRootIdFromTabGroupId(mGroupId)).thenReturn(TEST_ROOT_ID);
         when(mTabGroupModelFilter.tabGroupExists(mGroupId)).thenReturn(true);

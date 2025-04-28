@@ -12,6 +12,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupFaviconCluster.ClusterData;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupListBottomSheetCoordinator.TabMovedCallback;
+import org.chromium.chrome.browser.tasks.tab_management.TabGroupListBottomSheetMediator.TabGroupListBottomSheetRowMergeOperation;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupRowView.TabGroupRowViewTitleData;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupTimeAgo.TimestampEvent;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
@@ -29,7 +30,7 @@ import java.util.Objects;
  * TabGroupSyncService} as its primary source of truth.
  */
 @NullMarked
-class TabGroupListBottomSheetRowMediator {
+class TabGroupListBottomSheetRowMediator implements TabGroupListBottomSheetRowMergeOperation {
     private final SavedTabGroup mSavedTabGroup;
     private final TabGroupModelFilter mTabGroupModelFilter;
     private final @Nullable TabGroupSyncService mTabGroupSyncService;
@@ -116,21 +117,7 @@ class TabGroupListBottomSheetRowMediator {
             return;
         }
 
-        Tab destTab = mTabGroupModelFilter.getTabModel().getTabById(localId);
-        if (destTab == null) {
-            return;
-        }
-
-        if (tabs.size() == 1) {
-            mTabGroupModelFilter
-                    .getTabUngrouper()
-                    .ungroupTabs(tabs, /* trailing= */ false, /* allowDialog= */ false);
-        }
-
-        mTabGroupModelFilter.mergeListOfTabsToGroup(tabs, destTab, true);
-        if (mTabMovedCallback != null) {
-            mTabMovedCallback.onTabMoved();
-        }
+        mergeTabsToDest(tabs, localId, mTabGroupModelFilter, mTabMovedCallback);
     }
 
     private boolean areTabsAlreadyInGroup(List<Tab> tabsToBeMoved) {

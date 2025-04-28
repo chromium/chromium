@@ -14,6 +14,7 @@ import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupFaviconCluster.ClusterData;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupListBottomSheetCoordinator.TabMovedCallback;
+import org.chromium.chrome.browser.tasks.tab_management.TabGroupListBottomSheetMediator.TabGroupListBottomSheetRowMergeOperation;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupRowView.TabGroupRowViewTitleData;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
@@ -26,7 +27,7 @@ import java.util.Objects;
  * TabGroupModelFilter} as its primary source of truth.
  */
 @NullMarked
-class LocalTabGroupListBottomSheetRowMediator {
+class LocalTabGroupListBottomSheetRowMediator implements TabGroupListBottomSheetRowMergeOperation {
     private final Token mGroupId;
     private final TabGroupModelFilter mTabGroupModelFilter;
     private final @Nullable TabMovedCallback mTabMovedCallback;
@@ -98,15 +99,7 @@ class LocalTabGroupListBottomSheetRowMediator {
         }
 
         @TabId int destTabId = mTabGroupModelFilter.getGroupLastShownTabId(mGroupId);
-        Tab destTab = mTabGroupModelFilter.getTabModel().getTabById(destTabId);
-        if (destTab == null) {
-            return;
-        }
-
-        mTabGroupModelFilter.mergeListOfTabsToGroup(tabs, destTab, true);
-        if (mTabMovedCallback != null) {
-            mTabMovedCallback.onTabMoved();
-        }
+        mergeTabsToDest(tabs, destTabId, mTabGroupModelFilter, mTabMovedCallback);
     }
 
     private boolean areTabsAlreadyInGroup(List<Tab> tabsToBeMoved) {

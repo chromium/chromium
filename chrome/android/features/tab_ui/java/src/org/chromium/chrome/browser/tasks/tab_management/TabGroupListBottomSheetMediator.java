@@ -11,6 +11,7 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupListBottomSheetCoordinator.RowType;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupListBottomSheetCoordinator.TabGroupCreationCallback;
@@ -38,6 +39,48 @@ import java.util.Set;
  */
 @NullMarked
 public class TabGroupListBottomSheetMediator {
+    /** Represents a operation to merge tabs to a destination. */
+    interface TabGroupListBottomSheetRowMergeOperation {
+        /**
+         * Merges tabs to a destination.
+         *
+         * @param tabs The tabs to be added to a tab group.
+         * @param destTabId The tab id of the destination tab group.
+         * @param tabGroupModelFilter Used to read current tab groups.
+         * @param tabMovedCallback Used to follow up on a tab being moved groups or ungrouped.
+         */
+        default void mergeTabsToDest(
+                List<Tab> tabs,
+                @TabId int destTabId,
+                TabGroupModelFilter tabGroupModelFilter,
+                @Nullable TabMovedCallback tabMovedCallback) {
+            Tab destTab = tabGroupModelFilter.getTabModel().getTabById(destTabId);
+            if (destTab == null) {
+                return;
+            }
+
+            // TODO(crbug.com/413724490): Replace the ungroup operation with a {@link
+            // TabGroupModelFilter}-based solution.
+            //
+            // Right now, it is only possible to move tabs in 2 ways:
+            // - Moving 1 tab within a group to another via the ctx menu 'Move to group' option
+            // - Selecting a whole group via the Tab List Editor
+            // In the first case, we want to ungroup, since the tab group card needs to be updated.
+            // In the second case, we do not want to since the card disappears. This means the
+            // 'undo' option will fully be able to undo this action.
+            if (tabs.size() == 1) {
+                tabGroupModelFilter
+                        .getTabUngrouper()
+                        .ungroupTabs(tabs, /* trailing= */ false, /* allowDialog= */ false);
+            }
+
+            tabGroupModelFilter.mergeListOfTabsToGroup(tabs, destTab, true);
+            if (tabMovedCallback != null) {
+                tabMovedCallback.onTabMoved();
+            }
+        }
+    }
+
     private final BottomSheetController mBottomSheetController;
     private final TabGroupListBottomSheetCoordinatorDelegate mDelegate;
     private final ModelList mModelList;
