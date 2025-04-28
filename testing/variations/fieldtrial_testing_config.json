@@ -10113,6 +10113,24 @@
             ]
         }
     ],
+    "FieldRankServerClassification": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "FieldRankServerClassification_Experiment_20250422"
+                }
+            ]
+        }
+    ],
     "FindRegistrationImprovements": [
         {
             "platforms": [
