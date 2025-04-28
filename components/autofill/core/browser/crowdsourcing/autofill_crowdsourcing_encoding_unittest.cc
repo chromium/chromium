@@ -447,14 +447,12 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequestWithFormatStrings) {
         *form_structure->field(1)->GetFieldSignature());
     {
       auto* added_format_string = upload_date_field->add_format_string();
-      added_format_string->set_type(
-          AutofillUploadContents_Field_FormatString_Type_DATE);
+      added_format_string->set_type(FormatString_Type_DATE);
       added_format_string->set_format_string("DD/MM/YYYY");
     }
     {
       auto* added_format_string = upload_date_field->add_format_string();
-      added_format_string->set_type(
-          AutofillUploadContents_Field_FormatString_Type_DATE);
+      added_format_string->set_type(FormatString_Type_DATE);
       added_format_string->set_format_string("MM/DD/YYYY");
     }
   }

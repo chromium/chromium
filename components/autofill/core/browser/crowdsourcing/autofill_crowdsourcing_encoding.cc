@@ -403,8 +403,7 @@ void EncodeFormFieldsForUpload(
       for (const std::u16string& format_string : it->second.format_strings) {
         DCHECK(data_util::IsValidDateFormat(format_string));
         auto* added_format_string = added_field->add_format_string();
-        added_format_string->set_type(
-            AutofillUploadContents_Field_FormatString_Type_DATE);
+        added_format_string->set_type(FormatString_Type_DATE);
         added_format_string->set_format_string(
             base::UTF16ToUTF8(format_string));
       }
