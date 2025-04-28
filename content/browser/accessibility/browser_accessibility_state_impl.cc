@@ -232,6 +232,10 @@ BrowserAccessibilityStateImpl::BrowserAccessibilityStateImpl() {
     }
   }
 
+  if (::features::IsAccessibilityOnScreenAXModeEnabled()) {
+    initial_mode |= ui::kAXModeOnScreen;
+  }
+
   // Create an initial process-wide ScopedAccessibilityMode whether any flags
   // are enabled or not. Always creating a ScopedAccessibilityMode
   // (even if it holds a mode with all flags off) allows us to avoid null
@@ -508,9 +512,6 @@ void BrowserAccessibilityStateImpl::OnInputEvent(
 
 std::unique_ptr<ScopedAccessibilityMode>
 BrowserAccessibilityStateImpl::CreateScopedModeForProcess(ui::AXMode mode) {
-  if (::features::IsAccessibilityOnScreenAXModeEnabled()) {
-    mode = ui::kAXModeOnScreen;
-  }
   return scoped_modes_for_process_.Add(mode);
 }
 
