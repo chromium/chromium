@@ -2616,10 +2616,6 @@ OAuth Multilogin call. -->
 
     Notes:
 
-    - This histogram is still in development and has a limited coverage of the
-    Signin access points for now. See go/chrome-signin-metrics-revamp for more
-    context on the planned work.
-
     - For the First Run, we log it once for the whole first run flow, it does
     not get recorded multiple times if the user steps back in the flow and
     chooses again to sign in.
@@ -2661,6 +2657,11 @@ OAuth Multilogin call. -->
   <summary>
     Logs the original access point of each completed sign in.
     {SigninAccountStatus}
+
+    Note: See also more modern metrics such as Signin.SignIn.Completed and
+    Signin.SyncOptIn.Completed that provide similar insights (but exclude
+    reauth). More information about modernization can be found in
+    http://go/chrome-signin-metrics-revamp.
   </summary>
   <token key="SigninAccountStatus" variants="SigninAccountStatus">
     <variant name=""/>
@@ -2768,6 +2769,11 @@ OAuth Multilogin call. -->
   <summary>
     Logs the original access point that displayed the signin or reauth Gaia
     page, before the page is displayed. {SigninAccountStatus}
+
+    Note: See also more modern metrics such as Signin.SignIn.Started and
+    Signin.SyncOptIn.Started that provide similar insights (but exclude reauth).
+    More information about modernization can be found in
+    http://go/chrome-signin-metrics-revamp.
   </summary>
   <token key="SigninAccountStatus" variants="SigninAccountStatus">
     <variant name=""/>
