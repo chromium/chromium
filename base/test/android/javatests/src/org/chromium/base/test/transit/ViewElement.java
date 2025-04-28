@@ -12,12 +12,15 @@ import androidx.test.espresso.Espresso;
 import androidx.test.espresso.ViewAction;
 import androidx.test.espresso.ViewAssertion;
 import androidx.test.espresso.action.ViewActions;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.hamcrest.Matcher;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.transit.ViewConditions.DisplayedCondition;
 import org.chromium.base.test.transit.ViewConditions.NotDisplayedAnymoreCondition;
 import org.chromium.base.test.util.ForgivingClickAction;
+import org.chromium.base.test.util.KeyUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
@@ -142,6 +145,15 @@ public class ViewElement<ViewT extends View> extends Element<ViewT> {
      */
     public Transition.Trigger getLongPressTrigger() {
         return getPerformTrigger(ViewActions.longClick());
+    }
+
+    /** Send keycodes to the View to type |text|. */
+    public Transition.Trigger getTypeTextTrigger(String text) {
+        return () ->
+                ThreadUtils.runOnUiThread(
+                        () ->
+                                KeyUtils.typeTextIntoView(
+                                        InstrumentationRegistry.getInstrumentation(), get(), text));
     }
 
     /** Trigger an Espresso ViewAssertion on this View. */

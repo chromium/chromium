@@ -13,7 +13,6 @@ import static org.chromium.base.test.transit.ViewSpec.viewSpec;
 import android.view.View;
 
 import androidx.test.espresso.Espresso;
-import androidx.test.espresso.action.ViewActions;
 
 import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.Facility;
@@ -92,7 +91,7 @@ public class OmniboxFacility extends Facility<PageStation> {
     public OmniboxEnteredTextFacility typeText(String textToTypeAndExpect) {
         return mHostStation.enterFacilitySync(
                 new OmniboxEnteredTextFacility(this, textToTypeAndExpect),
-                urlBarElement.getPerformTrigger(ViewActions.typeText(textToTypeAndExpect)));
+                urlBarElement.getTypeTextTrigger(textToTypeAndExpect));
     }
 
     /** Press back expecting the Omnibox to be closed. */

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.content_public.browser.test.util;
+package org.chromium.base.test.util;
 
 import android.app.Instrumentation;
 import android.os.SystemClock;
@@ -33,13 +33,14 @@ public class KeyUtils {
      * top of Chrome ("Injecting to another application requires INJECT_EVENTS permission"). So, we
      * should use this instead of {@link android.test.InstrumentationTestCase#sendKeys(int...)}.
      *
+     * <p>This is also significantly faster than Espresso's {@link ViewActions#typeText(String)}.
+     *
      * @param i The application being instrumented.
      * @param v The view to receive the key event.
      * @param keyCode The keycode for the event to be issued.
      * @param metaState The flags indicating which meta keys are currently pressed.
      */
-    public static void singleKeyEventView(
-            Instrumentation i, final View v, int keyCode, int metaState) {
+    public static void singleKeyEventView(Instrumentation i, View v, int keyCode, int metaState) {
         long downTime = SystemClock.uptimeMillis();
         long eventTime = SystemClock.uptimeMillis();
 
@@ -69,8 +70,7 @@ public class KeyUtils {
         }
     }
 
-    private static void dispatchKeyEventToView(
-            final Instrumentation i, final View v, final KeyEvent event) {
+    private static void dispatchKeyEventToView(Instrumentation i, View v, KeyEvent event) {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     if (!v.dispatchKeyEventPreIme(event)) {
