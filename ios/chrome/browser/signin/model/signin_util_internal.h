@@ -40,7 +40,10 @@ base::FilePath PathForSentinel(const base::FilePath::CharType* sentinel_name);
 // needs to be called for the first time before IO is disallowed on UI thread.
 // The value is cached. The result is cached for later calls.
 // `completion` is called once all sentinel files are created.
+// `simulate_device_restore` can be true only in dev/canary. If true,
+//     not backed up sentinel file is removed.
 signin::RestoreData LoadDeviceRestoreDataInternal(
-    base::OnceClosure completion = base::DoNothing());
+    base::OnceClosure completion = base::DoNothing(),
+    bool simulate_device_restore = false);
 
 #endif  // IOS_CHROME_BROWSER_SIGNIN_MODEL_SIGNIN_UTIL_INTERNAL_H_

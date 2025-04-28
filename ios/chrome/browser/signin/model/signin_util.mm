@@ -76,7 +76,8 @@ AccountInfo DictToAccountInfo(const base::Value::Dict& dict) {
 const signin::RestoreData& LoadDeviceRestoreData(
     base::OnceClosure completion = base::DoNothing()) {
   if (!g_restore_data.has_value()) {
-    g_restore_data = LoadDeviceRestoreDataInternal(std::move(completion));
+    g_restore_data = LoadDeviceRestoreDataInternal(std::move(completion),
+                                                   SimulatePostDeviceRestore());
   }
   return g_restore_data.value();
 }
@@ -117,9 +118,6 @@ CGSize GetSizeForIdentityAvatarSize(IdentityAvatarSize avatar_size) {
 }
 
 signin::Tribool IsFirstSessionAfterDeviceRestore(base::OnceClosure completion) {
-  if (SimulatePostDeviceRestore()) {
-    return signin::Tribool::kTrue;
-  }
   const signin::RestoreData& restore_data =
       LoadDeviceRestoreData(std::move(completion));
   return restore_data.is_first_session_after_device_restore;

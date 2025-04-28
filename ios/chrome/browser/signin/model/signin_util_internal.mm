@@ -17,9 +17,11 @@
 #import "base/task/thread_pool.h"
 #import "base/threading/scoped_blocking_call.h"
 #import "base/time/time.h"
+#import "base/version_info/channel.h"
 #import "components/signin/public/identity_manager/tribool.h"
 #import "ios/chrome/browser/shared/model/paths/paths.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
+#import "ios/chrome/common/channel_info.h"
 
 namespace {
 
@@ -118,7 +120,8 @@ base::FilePath PathForSentinel(const base::FilePath::CharType* sentinel_name) {
 }
 
 signin::RestoreData LoadDeviceRestoreDataInternal(
-    base::OnceClosure completion) {
+    base::OnceClosure completion,
+    bool simulate_device_restore) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::WILL_BLOCK);
   const base::FilePath backed_up_sentinel_path =
@@ -134,6 +137,15 @@ signin::RestoreData LoadDeviceRestoreDataInternal(
     restore_data.is_first_session_after_device_restore =
         signin::Tribool::kUnknown;
     return restore_data;
+  }
+  if (simulate_device_restore) {
+    // This simulate a device restore. This setting is accessible only in the
+    // experimental flags in Chrome settings. Therefore this should be avaible
+    // only in canary and dev.
+    auto current_channel = GetChannel();
+    CHECK(current_channel != version_info::Channel::STABLE,
+          base::NotFatalUntil::M140);
+    DeleteFile(not_backed_up_sentinel_path);
   }
   bool does_backed_up_sentinel_file_exist =
       base::PathExists(backed_up_sentinel_path);
