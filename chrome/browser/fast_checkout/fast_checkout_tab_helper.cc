@@ -22,7 +22,7 @@ namespace {
 
 BASE_FEATURE(kAsyncFastCheckout,
              "AsyncFastCheckout",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsCartOrCheckoutUrl(const GURL& url) {
   return commerce_heuristics::IsVisitCheckout(url) ||
