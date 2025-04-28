@@ -7,7 +7,7 @@
 #pragma allow_unsafe_buffers
 #endif
 
-#include "device/fido/enclave/icloud_recovery_key_mac.h"
+#include "components/trusted_vault/icloud_recovery_key_mac.h"
 
 #import <CoreFoundation/CoreFoundation.h>
 #import <Foundation/Foundation.h>
@@ -24,12 +24,11 @@
 #include "base/memory/ptr_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/thread_pool.h"
-#include "components/device_event_log/device_event_log.h"
 #include "components/trusted_vault/securebox.h"
 #include "components/trusted_vault/trusted_vault_server_constants.h"
 #include "crypto/apple_keychain_v2.h"
 
-namespace device::enclave {
+namespace trusted_vault {
 
 namespace {
 
@@ -106,7 +105,7 @@ RetrieveKeysInternal(std::string_view keychain_access_group,
     return ret;
   }
   if (status != errSecSuccess) {
-    FIDO_LOG(ERROR) << "Could not retrieve iCloud recovery key: " << status;
+    LOG(ERROR) << "Could not retrieve iCloud recovery key: " << status;
     return ret;
   }
   CFArrayRef items = base::apple::CFCastStrict<CFArrayRef>(result.get());
@@ -120,7 +119,7 @@ RetrieveKeysInternal(std::string_view keychain_access_group,
         trusted_vault::SecureBoxKeyPair::CreateByPrivateKeyImport(
             base::apple::CFDataToSpan(key));
     if (!key_pair) {
-      FIDO_LOG(ERROR) << "iCloud recovery key is corrupted, skipping";
+      LOG(ERROR) << "iCloud recovery key is corrupted, skipping";
       continue;
     }
     ret.emplace_back(std::move(key_pair));
@@ -197,7 +196,7 @@ std::unique_ptr<ICloudRecoveryKey> ICloudRecoveryKey::CreateAndStoreKeySlowly(
       crypto::AppleKeychainV2::GetInstance().ItemAdd(NSToCFPtrCast(attributes),
                                                      /*result=*/nil);
   if (result != errSecSuccess) {
-    FIDO_LOG(ERROR) << "Could not store iCloud recovery key: " << result;
+    LOG(ERROR) << "Could not store iCloud recovery key: " << result;
     return nullptr;
   }
   return base::WrapUnique(new ICloudRecoveryKey(std::move(key)));
@@ -225,4 +224,4 @@ ICloudRecoveryKey::RetrieveKeysSlowly(
   return ret;
 }
 
-}  // namespace device::enclave
+}  // namespace trusted_vault

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "device/fido/enclave/icloud_recovery_key_mac.h"
+#include "components/trusted_vault/icloud_recovery_key_mac.h"
 
 #import <CoreFoundation/CoreFoundation.h>
 #import <Foundation/Foundation.h>
@@ -26,7 +26,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace device::enclave {
+namespace trusted_vault {
 
 namespace {
 
@@ -305,4 +305,4 @@ TEST_F(ICloudRecoveryKeyTest, RetrieveCorrupted) {
 
 }  // namespace
 
-}  // namespace device::enclave
+}  // namespace trusted_vault

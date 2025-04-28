@@ -125,10 +125,10 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/webauthn/chrome_authenticator_request_delegate_mac.h"
 #include "chrome/common/chrome_version.h"
+#include "components/trusted_vault/icloud_recovery_key_mac.h"
 #include "components/trusted_vault/proto/vault.pb.h"
 #include "components/trusted_vault/proto_string_bytes_conversion.h"
 #include "crypto/scoped_fake_apple_keychain_v2.h"
-#include "device/fido/enclave/icloud_recovery_key_mac.h"
 #include "device/fido/mac/fake_icloud_keychain.h"
 #include "device/fido/mac/util.h"
 #endif  // BUILDFLAG(IS_MAC)
@@ -3305,16 +3305,16 @@ IN_PROC_BROWSER_TEST_F(EnclaveICloudRecoveryKeyTest, Enroll) {
 
   // Find the recovery key on iCloud keychain.
   base::test::TestFuture<
-      std::vector<std::unique_ptr<device::enclave::ICloudRecoveryKey>>>
+      std::vector<std::unique_ptr<trusted_vault::ICloudRecoveryKey>>>
       future;
-  device::enclave::ICloudRecoveryKey::Retrieve(
+  trusted_vault::ICloudRecoveryKey::Retrieve(
       future.GetCallback(), trusted_vault::SecurityDomainId::kPasskeys,
       kICloudKeychainRecoveryKeyAccessGroup);
   EXPECT_TRUE(future.Wait());
-  std::vector<std::unique_ptr<device::enclave::ICloudRecoveryKey>>
-      recovery_keys = future.Take();
+  std::vector<std::unique_ptr<trusted_vault::ICloudRecoveryKey>> recovery_keys =
+      future.Take();
   ASSERT_EQ(recovery_keys.size(), 1u);
-  std::unique_ptr<device::enclave::ICloudRecoveryKey> icloud_key =
+  std::unique_ptr<trusted_vault::ICloudRecoveryKey> icloud_key =
       std::move(recovery_keys.at(0));
 
   // Make sure they match.
@@ -3328,13 +3328,13 @@ IN_PROC_BROWSER_TEST_F(EnclaveICloudRecoveryKeyTest, Enroll) {
 IN_PROC_BROWSER_TEST_F(EnclaveICloudRecoveryKeyTest,
                        EnrollWithExistingKeyInICloud) {
   // Create an iCloud recovery key.
-  base::test::TestFuture<std::unique_ptr<device::enclave::ICloudRecoveryKey>>
+  base::test::TestFuture<std::unique_ptr<trusted_vault::ICloudRecoveryKey>>
       future;
-  device::enclave::ICloudRecoveryKey::Create(
+  trusted_vault::ICloudRecoveryKey::Create(
       future.GetCallback(), trusted_vault::SecurityDomainId::kPasskeys,
       kICloudKeychainRecoveryKeyAccessGroup);
   EXPECT_TRUE(future.Wait());
-  std::unique_ptr<device::enclave::ICloudRecoveryKey> existing_icloud_key =
+  std::unique_ptr<trusted_vault::ICloudRecoveryKey> existing_icloud_key =
       future.Take();
   ASSERT_TRUE(existing_icloud_key);
 
@@ -3383,14 +3383,14 @@ IN_PROC_BROWSER_TEST_F(EnclaveICloudRecoveryKeyTest,
 
   // Instead, a new key should have been created.
   base::test::TestFuture<
-      std::vector<std::unique_ptr<device::enclave::ICloudRecoveryKey>>>
+      std::vector<std::unique_ptr<trusted_vault::ICloudRecoveryKey>>>
       list_future;
-  device::enclave::ICloudRecoveryKey::Retrieve(
+  trusted_vault::ICloudRecoveryKey::Retrieve(
       list_future.GetCallback(), trusted_vault::SecurityDomainId::kPasskeys,
       kICloudKeychainRecoveryKeyAccessGroup);
   EXPECT_TRUE(list_future.Wait());
-  std::vector<std::unique_ptr<device::enclave::ICloudRecoveryKey>>
-      recovery_keys = list_future.Take();
+  std::vector<std::unique_ptr<trusted_vault::ICloudRecoveryKey>> recovery_keys =
+      list_future.Take();
   EXPECT_EQ(recovery_keys.size(), 2u);
 }
 
@@ -3431,9 +3431,9 @@ IN_PROC_BROWSER_TEST_F(EnclaveICloudRecoveryKeyTest, DISABLED_Recovery) {
 
     // Make sure a new recovery key was enrolled.
     base::test::TestFuture<
-        std::vector<std::unique_ptr<device::enclave::ICloudRecoveryKey>>>
+        std::vector<std::unique_ptr<trusted_vault::ICloudRecoveryKey>>>
         future;
-    device::enclave::ICloudRecoveryKey::Retrieve(
+    trusted_vault::ICloudRecoveryKey::Retrieve(
         future.GetCallback(), trusted_vault::SecurityDomainId::kPasskeys,
         kICloudKeychainRecoveryKeyAccessGroup);
     EXPECT_TRUE(future.Wait());
@@ -3526,9 +3526,9 @@ IN_PROC_BROWSER_TEST_F(EnclaveICloudRecoveryKeyTest, DISABLED_Recovery) {
 
     // Make sure no new recovery key was enrolled.
     base::test::TestFuture<
-        std::vector<std::unique_ptr<device::enclave::ICloudRecoveryKey>>>
+        std::vector<std::unique_ptr<trusted_vault::ICloudRecoveryKey>>>
         future;
-    device::enclave::ICloudRecoveryKey::Retrieve(
+    trusted_vault::ICloudRecoveryKey::Retrieve(
         future.GetCallback(), trusted_vault::SecurityDomainId::kPasskeys,
         kICloudKeychainRecoveryKeyAccessGroup);
     EXPECT_TRUE(future.Wait());

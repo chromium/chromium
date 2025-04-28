@@ -50,12 +50,6 @@ class ActiveSessionAuthController;
 }  // namespace ash
 #endif
 
-#if BUILDFLAG(IS_MAC)
-namespace device::enclave {
-class ICloudRecoveryKey;
-}  // namespace device::enclave
-#endif  // BUILDFLAG(IS_MAC)
-
 namespace network {
 class SharedURLLoaderFactory;
 }  // namespace network
@@ -79,6 +73,10 @@ namespace trusted_vault {
 struct GpmPinMetadata;
 class RecoveryKeyStoreConnection;
 class TrustedVaultAccessTokenFetcherFrontend;
+
+#if BUILDFLAG(IS_MAC)
+class ICloudRecoveryKey;
+#endif  // BUILDFLAG(IS_MAC)
 }  // namespace trusted_vault
 
 // EnclaveManager stores and manages the passkey enclave state. One instance
@@ -224,7 +222,7 @@ class EnclaveManager : public EnclaveManagerInterface {
   // immediately after enrollment while we still have the security domain secret
   // around.
   void AddICloudRecoveryKey(
-      std::unique_ptr<device::enclave::ICloudRecoveryKey> icloud_recovery_key,
+      std::unique_ptr<trusted_vault::ICloudRecoveryKey> icloud_recovery_key,
       Callback callback);
 #endif  // BUILDFLAG(IS_MAC)
   // Send a request to the enclave to delete the registration for the current

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef DEVICE_FIDO_ENCLAVE_ICLOUD_RECOVERY_KEY_MAC_H_
-#define DEVICE_FIDO_ENCLAVE_ICLOUD_RECOVERY_KEY_MAC_H_
+#ifndef COMPONENTS_TRUSTED_VAULT_ICLOUD_RECOVERY_KEY_MAC_H_
+#define COMPONENTS_TRUSTED_VAULT_ICLOUD_RECOVERY_KEY_MAC_H_
 
 #include <stdint.h>
 
@@ -11,22 +11,19 @@
 #include <string_view>
 #include <vector>
 
-#include "base/component_export.h"
 #include "base/functional/callback_forward.h"
 
 namespace trusted_vault {
+
 class SecureBoxKeyPair;
 
 enum class SecurityDomainId;
-}  // namespace trusted_vault
-
-namespace device::enclave {
 
 // A key pair backed and synced by iCloud keychain that can be used as a
 // (Google) keychain recovery factor. These keys are used as an additional
 // recovery mechanism for the cloud enclave authenticator, and they may also be
 // created and retrieved by other Google products.
-class COMPONENT_EXPORT(DEVICE_FIDO) ICloudRecoveryKey {
+class ICloudRecoveryKey {
  public:
   using CreateCallback =
       base::OnceCallback<void(std::unique_ptr<ICloudRecoveryKey>)>;
@@ -73,6 +70,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) ICloudRecoveryKey {
   const std::vector<uint8_t> id_;
 };
 
-}  // namespace device::enclave
+}  // namespace trusted_vault
 
-#endif  // DEVICE_FIDO_ENCLAVE_ICLOUD_RECOVERY_KEY_MAC_H_
+#endif  // COMPONENTS_TRUSTED_VAULT_ICLOUD_RECOVERY_KEY_MAC_H_
