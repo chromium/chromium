@@ -75,7 +75,8 @@ class ClientCertsTest(ChromeEnterpriseTestCase):
           args=[
               '--account=client-certs-test@chromepizzatest.com',
               f'--password={password}',
-          ])
+          ],
+          timeout=(15 * 60))
     raw_results = self.RunCommand(self.win_config['client'],
                                   r'Get-Content c:\temp\results.json')
     results = json.loads(raw_results)
