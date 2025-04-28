@@ -4338,6 +4338,11 @@ static_library("browser") {
       "//chrome/browser/ui/media_router",
       "//chrome/browser/ui/media_router:impl",
       "//chrome/browser/ui/page_action:icon_type",
+      "//chrome/browser/ui/privacy_sandbox",
+
+      # TODO(413315837): Remove this dependency when chrome/browser/privacy_sandbox
+      # gets modularized.
+      "//chrome/browser/ui/privacy_sandbox:impl",
       "//chrome/browser/ui/promos:impl",
       "//chrome/browser/ui/promos:utils",
       "//chrome/browser/ui/qrcode_generator",
@@ -4505,6 +4510,10 @@ static_library("browser") {
       # TODO(crbug.com/412608397): Remove this circular dependency when //c/b/upgrade_detector/
       # gets modularized.
       "//chrome/browser/ui/dialogs:impl",
+
+      # TODO(413315837): Remove this dependency when chrome/browser/privacy_sandbox
+      # gets modularized.
+      "//chrome/browser/ui/privacy_sandbox:impl",
 
       "//chrome/browser/ui/browser_window:impl",
       "//chrome/browser/ui/exclusive_access",

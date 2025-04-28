@@ -2287,6 +2287,11 @@ if (!is_android) {
       "//chrome/browser/ui/page_info",
       "//chrome/browser/ui/permission_bubble:browser_tests",
       "//chrome/browser/ui/prefs:browser_tests",
+
+      # TODO(413315837): Remove this dependency when
+      # c/b/ui/views/privacy_sandbox/privacy_sandbox_dialog_view_browsertest.cc gets modularized.
+      "//chrome/browser/ui/privacy_sandbox",
+      "//chrome/browser/ui/privacy_sandbox:browser_tests",
       "//chrome/browser/ui/promos:utils",
       "//chrome/browser/ui/qrcode_generator:browser_tests",
       "//chrome/browser/ui/safety_hub",
@@ -3381,8 +3386,6 @@ if (!is_android) {
       "../browser/ui/passwords/password_generation_popup_view_browsertest.cc",
       "../browser/ui/passwords/well_known_change_password_navigation_throttle_browsertest.cc",
       "../browser/ui/performance_controls/tab_resource_usage_collector_browsertest.cc",
-      "../browser/ui/privacy_sandbox/privacy_sandbox_prompt_helper_browsertest.cc",
-      "../browser/ui/privacy_sandbox/privacy_sandbox_queue_browsertest.cc",
       "../browser/ui/profiles/profile_error_browsertest.cc",
       "../browser/ui/promos/ios_promos_utils_browsertest.cc",
       "../browser/ui/renderer_event_injection_browsertest.cc",
@@ -10995,6 +10998,11 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/policy:test_support",
       "//chrome/browser/prefs",
       "//chrome/browser/prefs:util",
+
+      # TODO(413315837): Remove this dependency when
+      # c/b/ui/views/privacy_sandbox/privacy_sandbox_dialog_view_interactive_ui_test.cc
+      # gets modularized.
+      "//chrome/browser/ui/privacy_sandbox",
 
       # TODO(413315837): Remove this dep when browsing_topics_settings_interactive_uitest.cc
       # gets build off of c/b/privacy_sandbox/BUILD.gn.
