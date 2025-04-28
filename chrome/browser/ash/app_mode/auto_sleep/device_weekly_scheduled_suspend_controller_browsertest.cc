@@ -5,12 +5,11 @@
 #include "chrome/browser/ash/app_mode/auto_sleep/device_weekly_scheduled_suspend_controller.h"
 
 #include <cstddef>
-#include <functional>
 #include <memory>
 #include <utility>
 
-#include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_mock_time_message_loop_task_runner.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/time/time.h"
@@ -19,9 +18,11 @@
 #include "chrome/browser/ash/app_mode/auto_sleep/weekly_interval_timer.h"
 #include "chrome/browser/ash/app_mode/kiosk_controller.h"
 #include "chrome/browser/ash/app_mode/kiosk_system_session.h"
-#include "chrome/browser/ash/login/app_mode/test/web_kiosk_base_test.h"
+#include "chrome/browser/ash/app_mode/test/kiosk_mixin.h"
+#include "chrome/browser/ash/app_mode/test/kiosk_test_utils.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/policy/weekly_time/weekly_time.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
@@ -30,6 +31,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
+
+using kiosk::test::WaitKioskLaunched;
 
 namespace {
 
@@ -40,6 +43,13 @@ base::TimeDelta GetDuration(const base::Time& start,
   policy::WeeklyTime start_weekly_time =
       policy::WeeklyTime::GetLocalWeeklyTime(start);
   return start_weekly_time.GetDurationTo(end);
+}
+
+// Sets `schedule_list` as prefs for `kDeviceWeeklyScheduledSuspend` in local
+// state, simulating a policy change.
+void SetPrefInLocalState(base::Value::List schedule_list) {
+  g_browser_process->local_state()->SetList(
+      prefs::kDeviceWeeklyScheduledSuspend, std::move(schedule_list));
 }
 
 // Scoped test helper that is responsible for the following things:
@@ -95,58 +105,73 @@ class ScopedMockTimeScheduledSuspendTestHelper {
   base::ScopedMockTimeMessageLoopTaskRunner task_runner_;
 };
 
-}  // namespace
-
-class DeviceWeeklyScheduledSuspendControllerTest : public WebKioskBaseTest {
+// Helper mixin to encapsulate `FakePowerManagerClient` setup and functionality.
+class FakePowerManagerMixin : public InProcessBrowserTestMixin {
  public:
-  // WebKioskBaseTest:
-  void SetUpOnMainThread() override {
-    WebKioskBaseTest::SetUpOnMainThread();
-    chromeos::FakePowerManagerClient::Get()->set_user_activity_callback(
-        base::BindRepeating([](int& count) { ++count; },
-                            std::ref(user_activity_calls_)));
+  explicit FakePowerManagerMixin(InProcessBrowserTestMixinHost* host)
+      : InProcessBrowserTestMixin(host) {}
+  FakePowerManagerMixin(const FakePowerManagerMixin&) = delete;
+  FakePowerManagerMixin(FakePowerManagerMixin&&) = delete;
+  ~FakePowerManagerMixin() override = default;
 
-    InitializeRegularOnlineKiosk();
-    ASSERT_TRUE(KioskController::Get().GetKioskSystemSession());
+  void SetUpOnMainThread() override {
+    chromeos::FakePowerManagerClient::Get()->set_user_activity_callback(
+        base::BindLambdaForTesting([this] { ++user_activity_calls_; }));
   }
 
   void TearDownOnMainThread() override {
     chromeos::FakePowerManagerClient::Get()->set_user_activity_callback(
         base::NullCallback());
-    WebKioskBaseTest::TearDownOnMainThread();
-  }
-
-  // Updates the policy preferences which in turn trigger the pref observers in
-  // the controller.
-  void UpdatePolicyPref(base::Value::List schedule_list) {
-    g_browser_process->local_state()->SetList(
-        prefs::kDeviceWeeklyScheduledSuspend, std::move(schedule_list));
   }
 
   void SimulateResumeSuspend() {
     chromeos::FakePowerManagerClient::Get()->SendDarkSuspendImminent();
   }
 
-  int user_activity_calls() { return user_activity_calls_; }
+  int user_activity_calls() const { return user_activity_calls_; }
 
  private:
   int user_activity_calls_ = 0;
 };
 
-IN_PROC_BROWSER_TEST_F(DeviceWeeklyScheduledSuspendControllerTest,
+}  // namespace
+
+class DeviceWeeklyScheduledSuspendControllerTest
+    : public MixinBasedInProcessBrowserTest,
+      public testing::WithParamInterface<KioskMixin::Config> {
+ public:
+  DeviceWeeklyScheduledSuspendControllerTest() = default;
+  DeviceWeeklyScheduledSuspendControllerTest(
+      const DeviceWeeklyScheduledSuspendControllerTest&) = delete;
+  DeviceWeeklyScheduledSuspendControllerTest(
+      DeviceWeeklyScheduledSuspendControllerTest&&) = delete;
+  ~DeviceWeeklyScheduledSuspendControllerTest() override = default;
+
+  void SetUpOnMainThread() override {
+    MixinBasedInProcessBrowserTest::SetUpOnMainThread();
+    ASSERT_TRUE(WaitKioskLaunched());
+  }
+
+  FakePowerManagerMixin power_manager_{&mixin_host_};
+  KioskMixin kiosk_{&mixin_host_,
+                    /*cached_configuration=*/GetParam()};
+};
+
+IN_PROC_BROWSER_TEST_P(DeviceWeeklyScheduledSuspendControllerTest,
                        SuspendControllerExistOnKioskStartUp) {
   ASSERT_TRUE(KioskController::Get()
                   .GetKioskSystemSession()
                   ->device_weekly_scheduled_suspend_controller_for_testing());
 }
 
-IN_PROC_BROWSER_TEST_F(DeviceWeeklyScheduledSuspendControllerTest,
+IN_PROC_BROWSER_TEST_P(DeviceWeeklyScheduledSuspendControllerTest,
                        SuspendAndWakeTest) {
   ScopedMockTimeScheduledSuspendTestHelper helper;
 
   auto* power_client = chromeos::FakePowerManagerClient::Get();
   EXPECT_EQ(power_client->num_request_suspend_calls(), 0);
-  EXPECT_EQ(user_activity_calls(), 0);
+  EXPECT_EQ(power_manager_.user_activity_calls(), 0);
+
   auto policy_builder =
       DeviceWeeklyScheduledSuspendTestPolicyBuilder().AddWeeklySuspendInterval(
           DayOfWeek::MONDAY, base::Hours(0), DayOfWeek::MONDAY, base::Hours(9));
@@ -157,28 +182,28 @@ IN_PROC_BROWSER_TEST_F(DeviceWeeklyScheduledSuspendControllerTest,
       GetDuration(clock->Now(), intervals[0]->start()) - base::Minutes(5);
   helper.task_runner()->FastForwardBy(duration);
 
-  UpdatePolicyPref(policy_builder.GetAsPrefValue());
+  SetPrefInLocalState(policy_builder.GetAsPrefValue());
 
   EXPECT_EQ(power_client->num_request_suspend_calls(), 0);
-  EXPECT_EQ(user_activity_calls(), 0);
+  EXPECT_EQ(power_manager_.user_activity_calls(), 0);
 
   helper.FastForwardTimeTo(intervals[0]->start());
   EXPECT_EQ(power_client->num_request_suspend_calls(), 1);
 
   helper.FastForwardTimeTo(intervals[0]->end());
 
-  SimulateResumeSuspend();
+  power_manager_.SimulateResumeSuspend();
 
-  EXPECT_EQ(user_activity_calls(), 1);
+  EXPECT_EQ(power_manager_.user_activity_calls(), 1);
 }
 
-IN_PROC_BROWSER_TEST_F(DeviceWeeklyScheduledSuspendControllerTest,
+IN_PROC_BROWSER_TEST_P(DeviceWeeklyScheduledSuspendControllerTest,
                        MultipleSuspendAndWakeTest) {
   ScopedMockTimeScheduledSuspendTestHelper helper;
 
   auto* power_client = chromeos::FakePowerManagerClient::Get();
   EXPECT_EQ(power_client->num_request_suspend_calls(), 0);
-  EXPECT_EQ(user_activity_calls(), 0);
+  EXPECT_EQ(power_manager_.user_activity_calls(), 0);
   auto builder =
       DeviceWeeklyScheduledSuspendTestPolicyBuilder()
           .AddWeeklySuspendInterval(DayOfWeek::MONDAY, base::Hours(0),
@@ -195,35 +220,36 @@ IN_PROC_BROWSER_TEST_F(DeviceWeeklyScheduledSuspendControllerTest,
   helper.task_runner()->FastForwardBy(duration);
 
   EXPECT_EQ(power_client->num_request_suspend_calls(), 0);
-  UpdatePolicyPref(builder.GetAsPrefValue());
+  SetPrefInLocalState(builder.GetAsPrefValue());
 
   helper.FastForwardTimeTo(intervals[0]->start());
   EXPECT_EQ(power_client->num_request_suspend_calls(), 1);
 
   helper.FastForwardTimeTo(intervals[0]->end());
-  SimulateResumeSuspend();
-  EXPECT_EQ(user_activity_calls(), 1);
+  power_manager_.SimulateResumeSuspend();
+  EXPECT_EQ(power_manager_.user_activity_calls(), 1);
 
   helper.FastForwardTimeTo(intervals[1]->start());
   EXPECT_EQ(power_client->num_request_suspend_calls(), 2);
 
   helper.FastForwardTimeTo(intervals[1]->end());
-  SimulateResumeSuspend();
-  EXPECT_EQ(user_activity_calls(), 2);
+  power_manager_.SimulateResumeSuspend();
+  EXPECT_EQ(power_manager_.user_activity_calls(), 2);
 
   helper.FastForwardTimeTo(intervals[2]->start());
   EXPECT_EQ(power_client->num_request_suspend_calls(), 3);
 
   helper.FastForwardTimeTo(intervals[2]->end());
-  SimulateResumeSuspend();
-  EXPECT_EQ(user_activity_calls(), 3);
+  power_manager_.SimulateResumeSuspend();
+  EXPECT_EQ(power_manager_.user_activity_calls(), 3);
 
   EXPECT_EQ(power_client->num_request_suspend_calls(),
             static_cast<int>(intervals.size()));
-  EXPECT_EQ(user_activity_calls(), static_cast<int>(intervals.size()));
+  EXPECT_EQ(power_manager_.user_activity_calls(),
+            static_cast<int>(intervals.size()));
 }
 
-IN_PROC_BROWSER_TEST_F(DeviceWeeklyScheduledSuspendControllerTest,
+IN_PROC_BROWSER_TEST_P(DeviceWeeklyScheduledSuspendControllerTest,
                        ManualWakeDuringIntervalClearsState) {
   ScopedMockTimeScheduledSuspendTestHelper helper;
 
@@ -239,7 +265,7 @@ IN_PROC_BROWSER_TEST_F(DeviceWeeklyScheduledSuspendControllerTest,
       GetDuration(clock->Now(), intervals[0]->start()) - base::Minutes(5);
   helper.task_runner()->FastForwardBy(duration);
 
-  UpdatePolicyPref(policy_builder.GetAsPrefValue());
+  SetPrefInLocalState(policy_builder.GetAsPrefValue());
 
   EXPECT_EQ(power_client->num_request_suspend_calls(), 0);
 
@@ -258,18 +284,18 @@ IN_PROC_BROWSER_TEST_F(DeviceWeeklyScheduledSuspendControllerTest,
   // Confirm that subsequent resume events will not cause
   // unnecessary user activity calls to wake the device when we are at the end
   // of the interval.
-  SimulateResumeSuspend();
+  power_manager_.SimulateResumeSuspend();
 
-  EXPECT_EQ(user_activity_calls(), 0);
+  EXPECT_EQ(power_manager_.user_activity_calls(), 0);
 }
 
-IN_PROC_BROWSER_TEST_F(DeviceWeeklyScheduledSuspendControllerTest,
+IN_PROC_BROWSER_TEST_P(DeviceWeeklyScheduledSuspendControllerTest,
                        SuspendAndWakeRepeatsEveryWeekTest) {
   ScopedMockTimeScheduledSuspendTestHelper helper;
 
   auto* power_client = chromeos::FakePowerManagerClient::Get();
   EXPECT_EQ(power_client->num_request_suspend_calls(), 0);
-  EXPECT_EQ(user_activity_calls(), 0);
+  EXPECT_EQ(power_manager_.user_activity_calls(), 0);
   auto policy_builder =
       DeviceWeeklyScheduledSuspendTestPolicyBuilder().AddWeeklySuspendInterval(
           DayOfWeek::SATURDAY, base::Hours(0), DayOfWeek::SATURDAY,
@@ -281,10 +307,10 @@ IN_PROC_BROWSER_TEST_F(DeviceWeeklyScheduledSuspendControllerTest,
       GetDuration(clock->Now(), intervals[0]->start()) - base::Minutes(5);
   helper.task_runner()->FastForwardBy(duration);
 
-  UpdatePolicyPref(policy_builder.GetAsPrefValue());
+  SetPrefInLocalState(policy_builder.GetAsPrefValue());
 
   EXPECT_EQ(power_client->num_request_suspend_calls(), 0);
-  EXPECT_EQ(user_activity_calls(), 0);
+  EXPECT_EQ(power_manager_.user_activity_calls(), 0);
 
   helper.FastForwardTimeTo(intervals[0]->start());
   EXPECT_EQ(power_client->num_request_suspend_calls(), 1);
@@ -296,5 +322,11 @@ IN_PROC_BROWSER_TEST_F(DeviceWeeklyScheduledSuspendControllerTest,
   helper.task_runner()->FastForwardBy(base::Days(7));
   EXPECT_EQ(power_client->num_request_suspend_calls(), 2);
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    DeviceWeeklyScheduledSuspendControllerTest,
+    testing::ValuesIn(KioskMixin::ConfigsToAutoLaunchEachAppType()),
+    KioskMixin::ConfigName);
 
 }  // namespace ash
