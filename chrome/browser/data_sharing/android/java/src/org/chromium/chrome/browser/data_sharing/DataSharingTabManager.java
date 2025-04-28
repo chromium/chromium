@@ -58,6 +58,7 @@ import org.chromium.components.data_sharing.configs.DataSharingPreviewDetailsCon
 import org.chromium.components.data_sharing.configs.DataSharingRuntimeDataConfig;
 import org.chromium.components.data_sharing.configs.DataSharingStringConfig;
 import org.chromium.components.data_sharing.configs.DataSharingUiConfig;
+import org.chromium.components.data_sharing.configs.DataSharingUiConfig.DataSharingUserAction;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.SavedTabGroupTab;
@@ -833,6 +834,12 @@ public class DataSharingTabManager {
                     @Override
                     public void onClickOpenChromeCustomTab(Context context, GURL url) {
                         mDataSharingTabGroupsDelegate.openUrlInChromeCustomTab(context, url);
+                    }
+
+                    @Override
+                    public void recordUserActionClicks(
+                            @DataSharingUserAction int dataSharingUserAction) {
+                        DataSharingMetrics.recordUserActionClicks(dataSharingUserAction);
                     }
                 };
         DataSharingUiConfig.Builder commonConfig =

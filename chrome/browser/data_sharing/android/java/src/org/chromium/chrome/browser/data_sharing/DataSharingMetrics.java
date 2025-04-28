@@ -8,6 +8,7 @@ import androidx.annotation.IntDef;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.components.data_sharing.configs.DataSharingUiConfig.DataSharingUserAction;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -96,5 +97,10 @@ public class DataSharingMetrics {
     public static void recordJoinFlowLatency(String stepName, long durationMs) {
         RecordHistogram.recordTimesHistogram(
                 "DataSharing.Android.JoinFlow." + stepName, durationMs);
+    }
+
+    public static void recordUserActionClicks(@DataSharingUserAction int userAction) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "DataSharing.Android.UserAction", userAction, DataSharingUserAction.COUNT);
     }
 }

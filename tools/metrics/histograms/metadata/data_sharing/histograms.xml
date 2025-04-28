@@ -54,6 +54,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="DataSharing.Android.UserAction" enum="DataSharingUserAction"
+    expires_after="2026-04-24">
+  <owner>ritikagup@google.com</owner>
+  <owner>chrome-tab-group-eng@google.com</owner>
+  <summary>
+    Records the user actions for DataSharing UI. It is recorded when the user
+    makes the action in the UI. This histogram will show the number of clicks
+    for various UI actions in each flow.
+  </summary>
+</histogram>
+
 <histogram name="DataSharing.Android.{FlowName}.{FlowStep}.Latency" units="ms"
     expires_after="2025-09-03">
   <owner>haileywang@google.com</owner>
