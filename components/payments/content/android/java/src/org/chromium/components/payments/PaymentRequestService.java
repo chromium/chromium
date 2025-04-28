@@ -730,12 +730,6 @@ public class PaymentRequestService
                 case MethodStrings.SECURE_PAYMENT_CONFIRMATION:
                     methodTypes.add(PaymentMethodCategory.SECURE_PAYMENT_CONFIRMATION);
                     break;
-                case MethodStrings.BASIC_CARD:
-                    // Not to record requestedMethodBasicCard because JourneyLogger ignore the case
-                    // where the specified networks are unsupported.
-                    // mPaymentUiService.merchantSupportsAutofillCards() better captures this group
-                    // of interest than requestedMethodBasicCard.
-                    break;
                 default:
                     // "Other" includes https url, http url(when certificate check is bypassed) and
                     // the unlisted methods defined in {@link MethodStrings}.
