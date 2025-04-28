@@ -749,7 +749,7 @@ deps = {
       'packages': [
           {
               'package': 'chrome_internal/third_party/google3/data_sharing_sdk',
-              'version': '4xRv_baP8OEY1rN5HdD97NX75L8Qot1PiIVP5qOexO4C',
+              'version': 'BmL2YCZyicXbUzlB_Nv7oAsX_cphB8D9DeDeEnMX8fkC',
           },
       ],
       'condition': 'checkout_src_internal and non_git_source',
