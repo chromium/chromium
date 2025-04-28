@@ -1,0 +1,137 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/ui/tabs/split_tab_menu_model.h"
+
+#include <string>
+
+#include "base/check.h"
+#include "base/notreached.h"
+#include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/ui/tabs/split_tab_data.h"
+#include "chrome/browser/ui/tabs/split_tab_visual_data.h"
+#include "chrome/browser/ui/tabs/tab_model.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/grit/generated_resources.h"
+#include "components/tabs/public/tab_interface.h"
+#include "components/vector_icons/vector_icons.h"
+#include "ui/base/interaction/element_identifier.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/image_model.h"
+#include "ui/base/models/menu_separator_types.h"
+#include "ui/menus/simple_menu_model.h"
+
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SplitTabMenuModel, kSwapPositionMenuItem);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SplitTabMenuModel, kSwapLayoutMenuItem);
+
+SplitTabMenuModel::SplitTabMenuModel(TabStripModel* tab_strip_model)
+    : ui::SimpleMenuModel(this), tab_strip_model_(tab_strip_model) {
+  AddItem(static_cast<int>(CommandId::kSwapPosition), std::u16string());
+  AddItem(static_cast<int>(CommandId::kSwapLayout), std::u16string());
+  AddSeparator(ui::MenuSeparatorType::NORMAL_SEPARATOR);
+  AddItemWithStringIdAndIcon(
+      static_cast<int>(CommandId::kClose), IDS_SPLIT_TAB_CLOSE,
+      ui::ImageModel::FromVectorIcon(vector_icons::kCloseChromeRefreshIcon,
+                                     ui::kColorMenuIcon,
+                                     ui::SimpleMenuModel::kDefaultIconSize));
+  AddItemWithStringIdAndIcon(
+      static_cast<int>(CommandId::kExitSplit), IDS_SPLIT_TAB_SEPARATE_VIEWS,
+      ui::ImageModel::FromVectorIcon(kOpenInFullIcon, ui::kColorMenuIcon,
+                                     ui::SimpleMenuModel::kDefaultIconSize));
+
+  SetElementIdentifierAt(
+      GetIndexOfCommandId(static_cast<int>(CommandId::kSwapPosition)).value(),
+      kSwapPositionMenuItem);
+  SetElementIdentifierAt(
+      GetIndexOfCommandId(static_cast<int>(CommandId::kSwapLayout)).value(),
+      kSwapLayoutMenuItem);
+}
+
+SplitTabMenuModel::~SplitTabMenuModel() = default;
+
+bool SplitTabMenuModel::IsItemForCommandIdDynamic(int command_id) const {
+  const CommandId id = static_cast<CommandId>(command_id);
+  return id == CommandId::kSwapPosition || id == CommandId::kSwapLayout;
+}
+
+std::u16string SplitTabMenuModel::GetLabelForCommandId(int command_id) const {
+  const CommandId id = static_cast<CommandId>(command_id);
+  if (id == CommandId::kSwapPosition) {
+    return l10n_util::GetStringUTF16(IDS_SPLIT_TAB_REVERSE_VIEWS);
+  } else if (id == CommandId::kSwapLayout) {
+    return GetSwapLayoutString();
+  } else {
+    NOTREACHED() << "There are no other commands that are dynamic so this case "
+                    "should not be reached.";
+  }
+}
+
+ui::ImageModel SplitTabMenuModel::GetIconForCommandId(int command_id) const {
+  tabs::TabInterface* const active_tab = tab_strip_model_->GetActiveTab();
+  CHECK(active_tab->IsSplit());
+  split_tabs::SplitTabActiveLocation active_split_tab_location =
+      tab_strip_model_->GetSplitData(active_tab->GetSplit().value())
+          ->GetActiveTabLocation();
+
+  const CommandId id = static_cast<CommandId>(command_id);
+  const gfx::VectorIcon* icon = nullptr;
+  if (id == CommandId::kSwapPosition) {
+    icon = &GetSwapPositionIcon(active_split_tab_location);
+  } else if (id == CommandId::kSwapLayout) {
+    icon = &GetSwapLayoutIcon(active_split_tab_location);
+  }
+  CHECK(icon);
+  return ui::ImageModel::FromVectorIcon(*icon, ui::kColorMenuIcon,
+                                        ui::SimpleMenuModel::kDefaultIconSize);
+}
+
+void SplitTabMenuModel::ExecuteCommand(int command_id, int event_flags) {}
+
+const gfx::VectorIcon& SplitTabMenuModel::GetSwapPositionIcon(
+    split_tabs::SplitTabActiveLocation active_split_tab_location) const {
+  switch (active_split_tab_location) {
+    case split_tabs::SplitTabActiveLocation::kLeft:
+      return kSplitSceneRightIcon;
+    case split_tabs::SplitTabActiveLocation::kRight:
+      return kSplitSceneLeftIcon;
+    case split_tabs::SplitTabActiveLocation::kTop:
+      return kSplitSceneDownIcon;
+    case split_tabs::SplitTabActiveLocation::kBottom:
+      return kSplitSceneUpIcon;
+    case split_tabs::SplitTabActiveLocation::kNone:
+      NOTREACHED() << "Split tab menu should not show while the active tab is "
+                      "not in a split";
+  }
+}
+
+const gfx::VectorIcon& SplitTabMenuModel::GetSwapLayoutIcon(
+    split_tabs::SplitTabActiveLocation active_split_tab_location) const {
+  switch (active_split_tab_location) {
+    case split_tabs::SplitTabActiveLocation::kLeft:
+      return kSplitSceneUpIcon;
+    case split_tabs::SplitTabActiveLocation::kRight:
+      return kSplitSceneDownIcon;
+    case split_tabs::SplitTabActiveLocation::kTop:
+      return kSplitSceneLeftIcon;
+    case split_tabs::SplitTabActiveLocation::kBottom:
+      return kSplitSceneRightIcon;
+    case split_tabs::SplitTabActiveLocation::kNone:
+      NOTREACHED() << "Split tab menu should not show while the active tab is "
+                      "not in a split";
+  }
+}
+
+std::u16string SplitTabMenuModel::GetSwapLayoutString() const {
+  tabs::TabInterface* const active_tab = tab_strip_model_->GetActiveTab();
+  CHECK(active_tab->GetSplit().has_value());
+  split_tabs::SplitTabLayout layout =
+      tab_strip_model_->GetSplitData(active_tab->GetSplit().value())
+          ->visual_data()
+          ->split_layout();
+  if (layout == split_tabs::SplitTabLayout::kHorizontal) {
+    return l10n_util::GetStringUTF16(IDS_SPLIT_TAB_VERTICAL_LAYOUT);
+  } else {
+    return l10n_util::GetStringUTF16(IDS_SPLIT_TAB_HORIZONTAL_LAYOUT);
+  }
+}

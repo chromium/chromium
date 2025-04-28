@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "components/prefs/pref_member.h"
+#include "ui/base/interaction/element_identifier.h"
 
 class Browser;
 
@@ -22,10 +23,15 @@ class SplitTabsToolbarButton : public ToolbarButton, TabStripModelObserver {
   METADATA_HEADER(SplitTabsToolbarButton, ToolbarButton)
 
  public:
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kSplitTabButtonMenu);
+
   explicit SplitTabsToolbarButton(Browser* browser);
   SplitTabsToolbarButton(const SplitTabsToolbarButton&) = delete;
   SplitTabsToolbarButton& operator=(const SplitTabsToolbarButton&) = delete;
   ~SplitTabsToolbarButton() override;
+
+  // ToolbarButton override:
+  bool ShouldShowMenu() override;
 
   // TabStripModelObserver implementation:
   void OnTabStripModelChanged(

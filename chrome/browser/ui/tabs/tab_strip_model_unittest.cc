@@ -5665,9 +5665,9 @@ TEST_F(TabStripModelTest, AddSelectionFromAnchorTo_SplitTabs) {
   ASSERT_NO_FATAL_FAILURE(
       PrepareTabstripForSelectionTest(&tabstrip, 6, 0, "0"));
   tabstrip.ActivateTabAt(0);
-  tabstrip.AddToNewSplit({1}, split_tabs::SplitTabLayout::kHorizontal);
+  tabstrip.AddToNewSplit({1}, split_tabs::SplitTabLayout::kVertical);
   tabstrip.ActivateTabAt(4);
-  tabstrip.AddToNewSplit({5}, split_tabs::SplitTabLayout::kHorizontal);
+  tabstrip.AddToNewSplit({5}, split_tabs::SplitTabLayout::kVertical);
 
   tabstrip.ActivateTabAt(3);
   tabstrip.AddSelectionFromAnchorTo(4);

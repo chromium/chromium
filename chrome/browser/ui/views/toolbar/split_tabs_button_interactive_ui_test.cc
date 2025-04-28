@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/tabs/split_tab_collection.h"
+#include "chrome/browser/ui/tabs/split_tab_menu_model.h"
 #include "chrome/browser/ui/tabs/split_tab_visual_data.h"
 #include "chrome/browser/ui/tabs/tab_menu_model.h"
 #include "chrome/browser/ui/tabs/test/split_tabs_interactive_test_mixin.h"
@@ -18,6 +19,7 @@
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/toolbar/split_tabs_button.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
@@ -28,10 +30,12 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/interactive_test.h"
 #include "ui/base/interaction/state_observer.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/base/test/ui_controls.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/view_observer.h"
 
 namespace {
@@ -81,6 +85,36 @@ class SplitTabButtonInteractiveTest
           return tab->IsSplit();
         },
         expected_split_state);
+  }
+
+  auto CheckMenuString(ui::ElementIdentifier identifier,
+                       int expected_string_id) {
+    return CheckView(
+        identifier,
+        [](views::MenuItemView* menu_item_view) {
+          return menu_item_view->title();
+        },
+        l10n_util::GetStringUTF16(expected_string_id));
+  }
+
+  auto CheckMenuIcon(ui::ElementIdentifier identifier,
+                     const gfx::VectorIcon& icon) {
+    return CheckView(
+        identifier,
+        [](views::MenuItemView* menu_item_view) {
+          return menu_item_view->GetIcon().GetVectorIcon().vector_icon()->name;
+        },
+        icon.name);
+  }
+
+  auto ClickActiveTabInSplit() {
+    return Steps(MoveMouseTo(base::BindLambdaForTesting([this]() {
+                   return multi_contents_view()
+                       ->GetActiveContentsView()
+                       ->GetBoundsInScreen()
+                       .CenterPoint();
+                 })),
+                 ClickMouse());
   }
 };
 
@@ -132,4 +166,66 @@ IN_PROC_BROWSER_TEST_F(SplitTabButtonInteractiveTest, EnterSplitView) {
       WaitForShow(kToolbarSplitTabsToolbarButtonElementId), CheckTabCount(1),
       PressButton(kToolbarSplitTabsToolbarButtonElementId), CheckTabCount(2),
       CheckTabInSplit(0, true), CheckTabInSplit(1, true));
+}
+
+IN_PROC_BROWSER_TEST_F(SplitTabButtonInteractiveTest, OpenMenu) {
+  RunTestSequence(UpdateSplitTabButtonPinState(true),
+                  WaitForShow(kToolbarSplitTabsToolbarButtonElementId),
+                  CheckTabInSplit(0, false),
+                  // Since the active tab isn't in a split, the button press
+                  // should create an empty split tab.
+                  PressButton(kToolbarSplitTabsToolbarButtonElementId),
+                  CheckTabCount(2),
+                  // Pressing the button while we are in a split should open the
+                  // menu instead.
+                  PressButton(kToolbarSplitTabsToolbarButtonElementId),
+                  WaitForShow(SplitTabsToolbarButton::kSplitTabButtonMenu),
+                  CheckTabCount(2));
+}
+
+IN_PROC_BROWSER_TEST_F(SplitTabButtonInteractiveTest,
+                       SwapPositionMenuItemUpdates) {
+  const GURL url1 = embedded_test_server()->GetURL("/title1.html");
+  RunTestSequence(AddInstrumentedTab(kWebContents2Id, url1),
+                  SelectTab(kTabStripElementId, 0), EnterSplitView(0, 1),
+                  WaitForShow(kToolbarSplitTabsToolbarButtonElementId),
+                  PressButton(kToolbarSplitTabsToolbarButtonElementId),
+                  WaitForShow(SplitTabMenuModel::kSwapPositionMenuItem),
+                  CheckMenuString(SplitTabMenuModel::kSwapPositionMenuItem,
+                                  IDS_SPLIT_TAB_REVERSE_VIEWS),
+                  CheckMenuIcon(SplitTabMenuModel::kSwapPositionMenuItem,
+                                kSplitSceneRightIcon),
+                  ClickActiveTabInSplit(),
+                  WaitForHide(SplitTabsToolbarButton::kSplitTabButtonMenu),
+                  // Change the focus and reopen the menu
+                  FocusInactiveTabInSplit(),
+                  PressButton(kToolbarSplitTabsToolbarButtonElementId),
+                  WaitForShow(SplitTabMenuModel::kSwapPositionMenuItem),
+                  CheckMenuString(SplitTabMenuModel::kSwapPositionMenuItem,
+                                  IDS_SPLIT_TAB_REVERSE_VIEWS),
+                  CheckMenuIcon(SplitTabMenuModel::kSwapPositionMenuItem,
+                                kSplitSceneLeftIcon));
+}
+
+IN_PROC_BROWSER_TEST_F(SplitTabButtonInteractiveTest, LayoutMenuItemUpdates) {
+  const GURL url1 = embedded_test_server()->GetURL("/title1.html");
+  RunTestSequence(
+      AddInstrumentedTab(kWebContents2Id, url1),
+      SelectTab(kTabStripElementId, 0), EnterSplitView(0, 1),
+      WaitForShow(kToolbarSplitTabsToolbarButtonElementId),
+      PressButton(kToolbarSplitTabsToolbarButtonElementId),
+      WaitForShow(SplitTabsToolbarButton::kSplitTabButtonMenu),
+      CheckMenuString(SplitTabMenuModel::kSwapLayoutMenuItem,
+                      IDS_SPLIT_TAB_HORIZONTAL_LAYOUT),
+      CheckMenuIcon(SplitTabMenuModel::kSwapLayoutMenuItem, kSplitSceneUpIcon),
+      ClickActiveTabInSplit(),
+      WaitForHide(SplitTabsToolbarButton::kSplitTabButtonMenu),
+      // Change the focus and reopen the menu
+      FocusInactiveTabInSplit(),
+      PressButton(kToolbarSplitTabsToolbarButtonElementId),
+      WaitForShow(SplitTabsToolbarButton::kSplitTabButtonMenu),
+      CheckMenuString(SplitTabMenuModel::kSwapLayoutMenuItem,
+                      IDS_SPLIT_TAB_HORIZONTAL_LAYOUT),
+      CheckMenuIcon(SplitTabMenuModel::kSwapLayoutMenuItem,
+                    kSplitSceneDownIcon));
 }
