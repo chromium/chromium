@@ -825,15 +825,10 @@ const FeatureEntry::FeatureVariation kContextualPanelEntrypointArmVariations[] =
          std::size(kContextualPanelSmallIPHWithBlueHighlightArm), nullptr},
 };
 
-const FeatureEntry::FeatureParam kIdentityDiscAccountMenuNoEllipsis[] = {
-    {kDisableAccountMenuEllipsisParam, "true"},
-};
 const FeatureEntry::FeatureParam kIdentityDiscAccountMenuWithSettings[] = {
     {kShowSettingsInAccountMenuParam, "true"},
 };
 const FeatureEntry::FeatureVariation kIdentityDiscAccountMenuVariations[] = {
-    {" - without account menu ellipsis", kIdentityDiscAccountMenuNoEllipsis,
-     std::size(kIdentityDiscAccountMenuNoEllipsis), nullptr},
     {" - with settings button", kIdentityDiscAccountMenuWithSettings,
      std::size(kIdentityDiscAccountMenuWithSettings), nullptr},
 };

@@ -101,8 +101,6 @@ extern const char kDeprecateFeedHeaderParameterSearchFieldTopMargin[];
 extern const char kDeprecateFeedHeaderParameterSpaceBetweenModules[];
 extern const char kDeprecateFeedHeaderParameterHeaderBottomPadding[];
 
-// Parameter to remove the three-dot menu from the account menu.
-extern const char kDisableAccountMenuEllipsisParam[];
 // Parameter to show the settings button in the account menu.
 extern const char kShowSettingsInAccountMenuParam[];
 
@@ -139,9 +137,6 @@ bool ShouldEnlargeLogoAndFakebox();
 double GetDeprecateFeedHeaderParameterValueAsDouble(
     const std::string& param_name,
     double default_value);
-
-// YES if the account menu is enabled without the three-dot menu.
-bool IdentityDiscAccountMenuEnabledWithoutEllipsis();
 
 // YES if the account menu is enabled with the settings button.
 bool IdentityDiscAccountMenuEnabledWithSettings();

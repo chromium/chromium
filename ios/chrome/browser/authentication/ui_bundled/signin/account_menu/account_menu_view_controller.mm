@@ -504,11 +504,6 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
   [accountsIdentifiers addObject:@(RowIdentifierAddAccount)];
   [snapshot appendItemsWithIdentifiers:accountsIdentifiers
              intoSectionWithIdentifier:@(AccountsSectionIdentifier)];
-  if (_hideEllipsisMenu) {
-    [accountsIdentifiers addObject:@(RowIdentifierManageAccounts)];
-    [snapshot appendItemsWithIdentifiers:accountsIdentifiers
-               intoSectionWithIdentifier:@(AccountsSectionIdentifier)];
-  }
 
   if (_showSettingsButton) {
     // The sign-out button is grouped with the accounts section.
@@ -518,8 +513,12 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
     [snapshot appendItemsWithIdentifiers:@[ @(RowIdentifierSettings) ]
                intoSectionWithIdentifier:@(SettingsSectionIdentifier)];
   } else {
-    // The sign-out button has its own section.
     [snapshot appendSectionsWithIdentifiers:@[ @(SignOutSectionIdentifier) ]];
+    // The sign-out button has its own section.
+    if (_hideEllipsisMenu) {
+      [snapshot appendItemsWithIdentifiers:@[ @(RowIdentifierManageAccounts) ]
+                 intoSectionWithIdentifier:@(SignOutSectionIdentifier)];
+    }
     [snapshot appendItemsWithIdentifiers:@[ @(RowIdentifierSignOut) ]
                intoSectionWithIdentifier:@(SignOutSectionIdentifier)];
   }

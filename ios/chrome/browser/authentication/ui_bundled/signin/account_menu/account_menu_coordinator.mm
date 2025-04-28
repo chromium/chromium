@@ -136,7 +136,7 @@
   _identityManager = IdentityManagerFactory::GetForProfile(profile);
 
   _viewController = [[AccountMenuViewController alloc]
-      initWithHideEllipsisMenu:IdentityDiscAccountMenuEnabledWithoutEllipsis()
+      initWithHideEllipsisMenu:_accessPoint == AccountMenuAccessPoint::kWeb
             showSettingsButton:IdentityDiscAccountMenuEnabledWithSettings()];
 
   _navigationController = [[UINavigationController alloc]

@@ -279,14 +279,17 @@ TEST_P(AccountMenuViewControllerTest, TestAccountMenuWithoutEllipsis) {
 
   [view_controller_ updatePrimaryAccount];
   ExpectTextAtPath(
+      l10n_util::GetNSString(IDS_IOS_ACCOUNT_MENU_EDIT_ACCOUNT_LIST),
+      [NSIndexPath indexPathForRow:0 inSection:1]);
+  ExpectTextAtPath(
       l10n_util::GetNSString(IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_SIGN_OUT_ITEM),
-      path_for_sign_out_);
+      [NSIndexPath indexPathForRow:1 inSection:1]);
 
   EXPECT_EQ(2, TableView().numberOfSections);
-  // The secondary account, Add Account..., and Manage Accounts.
-  EXPECT_EQ(3, [TableView() numberOfRowsInSection:0]);
-  // Sign Out
-  EXPECT_EQ(1, [TableView() numberOfRowsInSection:1]);
+  // The secondary account, and Add Account....
+  EXPECT_EQ(2, [TableView() numberOfRowsInSection:0]);
+  // Manage Accounts, and Sign Out
+  EXPECT_EQ(2, [TableView() numberOfRowsInSection:1]);
 }
 
 // Test the account menu with Settings button.
