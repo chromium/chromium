@@ -30,17 +30,13 @@ namespace web_app {
 
 namespace {
 
-base::FilePath GetCacheBundleDirectory(
-    const base::FilePath& cache_dir,
-    const web_package::SignedWebBundleId& web_bundle_id) {
-  return cache_dir.AppendASCII(web_bundle_id.id());
-}
+using SessionType = IwaCacheClient::SessionType;
 
 base::FilePath GetCacheBundleDirectoryWithVersion(
     const base::FilePath& cache_dir,
     const web_package::SignedWebBundleId& web_bundle_id,
     const base::Version& version) {
-  return GetCacheBundleDirectory(cache_dir, web_bundle_id)
+  return IwaCacheClient::GetCacheDirectoryForBundle(cache_dir, web_bundle_id)
       .AppendASCII(version.GetString());
 }
 
@@ -94,7 +90,8 @@ std::optional<IwaCacheClient::CachedBundleData> GetCacheFilePathImpl(
     }
   }
   // When `version` is not provided, take the latest cached version.
-  base::FilePath bundle_dir = GetCacheBundleDirectory(cache_dir, web_bundle_id);
+  base::FilePath bundle_dir =
+      IwaCacheClient::GetCacheDirectoryForBundle(cache_dir, web_bundle_id);
   base::FileEnumerator bundle_files_iter(bundle_dir, /*recursive=*/true,
                                          base::FileEnumerator::FILES);
 
@@ -153,10 +150,12 @@ CopyBundleToCacheImpl(const base::FilePath& copy_from_bundle_path,
 base::FilePath GetIwaCacheDirectoryForCurrentSession(
     const base::FilePath& base = base::PathService::CheckedGet(
         ash::DIR_DEVICE_LOCAL_ACCOUNT_IWA_CACHE)) {
-  if (chromeos::IsManagedGuestSession()) {
-    return GetManagedGuestSessionBundleCacheDirectory(base);
-  } else if (chromeos::IsKioskSession()) {
-    return base.AppendASCII(IwaCacheClient::kKioskDirName);
+  if (chromeos::IsKioskSession()) {
+    return IwaCacheClient::GetCacheBaseDirectoryForSessionType(
+        SessionType::kKiosk, base);
+  } else if (chromeos::IsManagedGuestSession()) {
+    return IwaCacheClient::GetCacheBaseDirectoryForSessionType(
+        SessionType::kManagedGuestSession, base);
   }
   NOTREACHED() << "Unsupported session type for IWA caching";
 }
@@ -172,11 +171,6 @@ base::FilePath GetCacheBundleDirectory(
     const base::FilePath& main_cache_dir,
     const web_package::SignedWebBundleId& web_bundle_id) {
   return main_cache_dir.AppendASCII(web_bundle_id.id());
-}
-
-base::FilePath GetManagedGuestSessionBundleCacheDirectory(
-    const base::FilePath& base) {
-  return base.AppendASCII(IwaCacheClient::kMgsDirName);
 }
 
 // static
@@ -222,6 +216,39 @@ void IwaCacheClient::CopyBundleToCache(
 
 void IwaCacheClient::SetCacheDirForTesting(const base::FilePath& cache_dir) {
   cache_dir_ = GetIwaCacheDirectoryForCurrentSession(cache_dir);
+}
+
+// static
+base::FilePath IwaCacheClient::GetCacheBaseDirectoryForSessionType(
+    IwaCacheClient::SessionType session_type,
+    const base::FilePath& base) {
+  std::string_view session_dir;
+  switch (session_type) {
+    case SessionType::kKiosk:
+      session_dir = IwaCacheClient::kKioskDirName;
+      break;
+    case SessionType::kManagedGuestSession:
+      session_dir = IwaCacheClient::kMgsDirName;
+      break;
+  }
+  return base.AppendASCII(session_dir);
+}
+
+// static
+base::FilePath IwaCacheClient::GetCacheDirectoryForBundle(
+    const base::FilePath& cache_base_dir,
+    const web_package::SignedWebBundleId& web_bundle_id) {
+  return cache_base_dir.AppendASCII(web_bundle_id.id());
+}
+
+// static
+std::string IwaCacheClient::SessionTypeToString(SessionType session_type) {
+  switch (session_type) {
+    case SessionType::kKiosk:
+      return "Kiosk";
+    case SessionType::kManagedGuestSession:
+      return "Managed Guest Session";
+  }
 }
 
 }  // namespace web_app

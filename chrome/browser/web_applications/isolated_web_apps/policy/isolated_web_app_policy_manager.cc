@@ -19,7 +19,6 @@
 #include "base/containers/contains.h"
 #include "base/containers/map_util.h"
 #include "base/containers/to_value_list.h"
-#include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -60,7 +59,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_pref_names.h"
-#include "chrome/browser/web_applications/isolated_web_apps/commands/cleanup_bundle_cache_command.h"
 #include "chromeos/components/mgs/managed_guest_session_utils.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -476,15 +474,13 @@ void IsolatedWebAppPolicyManager::DoProcessPolicy(
       // Always asynchronously exit this method so that `lock` is released
       // before the next method is called.
       base::BindOnce(
-          [](base::WeakPtr<IsolatedWebAppPolicyManager> weak_ptr,
-             const std::vector<IsolatedWebAppExternalInstallOptions>&
-                 apps_in_policy) {
+          [](base::WeakPtr<IsolatedWebAppPolicyManager> weak_ptr) {
             base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
                 FROM_HERE,
                 base::BindOnce(&IsolatedWebAppPolicyManager::OnPolicyProcessed,
-                               std::move(weak_ptr), std::move(apps_in_policy)));
+                               std::move(weak_ptr)));
           },
-          weak_ptr_factory_.GetWeakPtr(), apps_in_policy));
+          weak_ptr_factory_.GetWeakPtr()));
   auto install_task_done_callback = base::BarrierCallback<IwaInstaller::Result>(
       number_of_install_tasks,
       base::BindOnce(&IsolatedWebAppPolicyManager::OnAllInstallTasksCompleted,
@@ -607,8 +603,7 @@ void IsolatedWebAppPolicyManager::MaybeStartNextInstallTask() {
   }
 }
 
-void IsolatedWebAppPolicyManager::OnPolicyProcessed(
-    const std::vector<IsolatedWebAppExternalInstallOptions>& apps_in_policy) {
+void IsolatedWebAppPolicyManager::OnPolicyProcessed() {
   process_logs_.AppendCompletedStep(
       std::exchange(current_process_log_, base::Value::Dict()));
 
@@ -617,29 +612,8 @@ void IsolatedWebAppPolicyManager::OnPolicyProcessed(
   if (reprocess_policy_needed_) {
     reprocess_policy_needed_ = false;
     ProcessPolicy();
-    return;
   }
-
-#if BUILDFLAG(IS_CHROMEOS)
-  if (ShouldCleanupManagedGuestSessionCache()) {
-    std::vector<web_package::SignedWebBundleId> iwas_in_policy = base::ToVector(
-        apps_in_policy, &IsolatedWebAppExternalInstallOptions::web_bundle_id);
-    provider_->scheduler().CleanupIsolatedWebAppCacheForManagedGuestSession(
-        iwas_in_policy,
-        base::BindOnce(&IsolatedWebAppPolicyManager::
-                           OnCleanIsolatedWebAppCacheForManagedGuestSession,
-                       weak_ptr_factory_.GetWeakPtr()));
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS)
 }
-
-#if BUILDFLAG(IS_CHROMEOS)
-void IsolatedWebAppPolicyManager::
-    OnCleanIsolatedWebAppCacheForManagedGuestSession(
-        CleanupBundleCacheResult result) {
-  // TODO(crbug.com/388728155): add result to log.
-}
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 void IsolatedWebAppPolicyManager::CleanupOrphanedBundles(
     base::OnceClosure finished_closure) {

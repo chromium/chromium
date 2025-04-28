@@ -14,7 +14,6 @@
 #include "base/types/expected.h"
 #include "base/version.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_downloader.h"
-#include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 
 namespace web_app {
@@ -23,19 +22,16 @@ namespace web_app {
 // and only when the feature flag is enabled.
 bool IsIwaBundleCacheEnabled();
 
-base::FilePath GetCacheBundleDirectory(
-    const base::FilePath& main_cache_dir,
-    const web_package::SignedWebBundleId& web_bundle_id);
-
-base::FilePath GetManagedGuestSessionBundleCacheDirectory(
-    const base::FilePath& base =
-        base::PathService::CheckedGet(ash::DIR_DEVICE_LOCAL_ACCOUNT_IWA_CACHE));
-
-// This class should be used only when `IsIwaBundleCacheEnabled()` returns true.
-// This is checked in the constructor. This class can be created multiple times
-// even for the same IWA.
+// This class should be used only when `IsIwaBundleCacheEnabled()` returns
+// true. This is checked in the constructor. This class can be created
+// multiple times even for the same IWA.
 class IwaCacheClient {
  public:
+  enum class SessionType {
+    kKiosk,
+    kManagedGuestSession,
+  };
+
   enum class CopyBundleToCacheError {
     kFailedToCreateDir = 0,
     kFailedToCopyFile = 1,
@@ -83,6 +79,17 @@ class IwaCacheClient {
   // TODO(crbug.com/392069400): clean cache for old IWA versions.
 
   void SetCacheDirForTesting(const base::FilePath& cache_dir);
+
+  static base::FilePath GetCacheBaseDirectoryForSessionType(
+      IwaCacheClient::SessionType session_type,
+      const base::FilePath& base = base::PathService::CheckedGet(
+          ash::DIR_DEVICE_LOCAL_ACCOUNT_IWA_CACHE));
+
+  static base::FilePath GetCacheDirectoryForBundle(
+      const base::FilePath& cache_base_dir,
+      const web_package::SignedWebBundleId& web_bundle_id);
+
+  static std::string SessionTypeToString(SessionType session_type);
 
   static constexpr base::FilePath::CharType kMgsDirName[] = "mgs";
   static constexpr base::FilePath::CharType kKioskDirName[] = "kiosk";

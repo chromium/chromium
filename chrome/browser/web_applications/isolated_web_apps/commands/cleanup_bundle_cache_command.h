@@ -7,14 +7,11 @@
 
 #include "base/types/expected.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
+#include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_cache_client.h"
 #include "chrome/browser/web_applications/locks/all_apps_lock.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 
 namespace web_app {
-
-// Cache Cleanup should happen only if `IsIwaBundleCacheEnabled` is true and
-// inside the Managed Guest Session.
-bool ShouldCleanupManagedGuestSessionCache();
 
 class CleanupBundleCacheSuccess {
  public:
@@ -65,14 +62,12 @@ class CleanupBundleCacheError {
 using CleanupBundleCacheResult =
     base::expected<CleanupBundleCacheSuccess, CleanupBundleCacheError>;
 
-// Cleans all IWA cached bundles for Managed Guest Session which are not in
-// the `iwas_to_keep_in_cache`.
-// During the cleanup, this class iterates through all cached directories for
-// Managed Guest Session. To avoid adding new directories during the iteration,
-// this class takes `AllAppsLock`.
-// This command will CHECK that `ShouldCleanupManagedGuestSessionCache` is true.
-// TODO(crbug.com/388729037): rename or update this class to unify with kiosk
-// implementation.
+using SessionType = IwaCacheClient::SessionType;
+
+// Cleans all IWA cached bundles for `session_type` which are not in the
+// `iwas_to_keep_in_cache`. During the cleanup, this class iterates through all
+// cached directories for Managed Guest Session or kiosk. To avoid adding new
+// directories during the iteration, this class takes `AllAppsLock`.
 class CleanupBundleCacheCommand
     : public WebAppCommand<AllAppsLock, CleanupBundleCacheResult> {
  public:
@@ -80,6 +75,7 @@ class CleanupBundleCacheCommand
 
   CleanupBundleCacheCommand(
       const std::vector<web_package::SignedWebBundleId>& iwas_to_keep_in_cache,
+      SessionType session_type,
       Callback callback);
   CleanupBundleCacheCommand(const CleanupBundleCacheCommand&) = delete;
   CleanupBundleCacheCommand& operator=(const CleanupBundleCacheCommand&) =
@@ -96,6 +92,7 @@ class CleanupBundleCacheCommand
 
   std::unique_ptr<AllAppsLock> lock_;
   const std::vector<web_package::SignedWebBundleId> iwas_to_keep_in_cache_;
+  const SessionType session_type_;
 
   base::WeakPtrFactory<CleanupBundleCacheCommand> weak_ptr_factory_{this};
 };

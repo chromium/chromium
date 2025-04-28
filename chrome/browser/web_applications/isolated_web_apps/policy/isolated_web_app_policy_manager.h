@@ -25,11 +25,6 @@
 
 namespace web_app {
 
-#if BUILDFLAG(IS_CHROMEOS)
-class CleanupBundleCacheSuccess;
-class CleanupBundleCacheError;
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 // Controls whether we attempt to fetch latest component data before processing
 // the policy for the first time.
 BASE_DECLARE_FEATURE(kIwaPolicyManagerOnDemandComponentUpdate);
@@ -69,14 +64,7 @@ class IsolatedWebAppPolicyManager
   void SetPendingInitCount(int pending_count);
   void ProcessPolicy();
   void DoProcessPolicy(AllAppsLock& lock, base::Value::Dict& debug_info);
-  void OnPolicyProcessed(
-      const std::vector<IsolatedWebAppExternalInstallOptions>& apps_in_policy);
-
-#if BUILDFLAG(IS_CHROMEOS)
-  void OnCleanIsolatedWebAppCacheForManagedGuestSession(
-      base::expected<CleanupBundleCacheSuccess, CleanupBundleCacheError>
-          result);
-#endif  // BUILDFLAG(IS_CHROMEOS)
+  void OnPolicyProcessed();
 
   void LogAddPolicyInstallSourceResult(
       web_package::SignedWebBundleId web_bundle_id);

@@ -14,7 +14,6 @@
 #include "base/task/thread_pool.h"
 #include "base/types/expected.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_cache_client.h"
-#include "chromeos/components/mgs/managed_guest_session_utils.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 
 namespace web_app {
@@ -23,19 +22,21 @@ namespace {
 
 // This function is blocking, should be called only by
 // `CleanupBundleCacheCommand::StartWithLock`.
-CleanupBundleCacheResult CleanupBundleCacheImpl(
-    const std::vector<web_package::SignedWebBundleId>& iwas_to_keep_in_cache) {
-  const base::FilePath cache_dir = GetManagedGuestSessionBundleCacheDirectory();
+CleanupBundleCacheResult CleanupBundleCacheCommandImpl(
+    const std::vector<web_package::SignedWebBundleId>& iwas_to_keep_in_cache,
+    SessionType session_type) {
+  const base::FilePath cache_base_dir =
+      IwaCacheClient::GetCacheBaseDirectoryForSessionType(session_type);
 
-  std::vector<base::FilePath> dirs_to_keep =
-      base::ToVector(iwas_to_keep_in_cache,
-                     [&cache_dir](const web_package::SignedWebBundleId& id) {
-                       return GetCacheBundleDirectory(cache_dir, id);
-                     });
+  std::vector<base::FilePath> dirs_to_keep = base::ToVector(
+      iwas_to_keep_in_cache,
+      [&cache_base_dir](const web_package::SignedWebBundleId& id) {
+        return IwaCacheClient::GetCacheDirectoryForBundle(cache_base_dir, id);
+      });
 
   // Remove all other caches except `dirs_to_keep`.
   std::vector<base::FilePath> dirs_to_delete;
-  base::FileEnumerator all_iwa_dirs_iter(cache_dir, /*recursive=*/false,
+  base::FileEnumerator all_iwa_dirs_iter(cache_base_dir, /*recursive=*/false,
                                          base::FileEnumerator::DIRECTORIES);
   all_iwa_dirs_iter.ForEach(
       [&dirs_to_keep, &dirs_to_delete](const base::FilePath& dir_path) {
@@ -61,7 +62,7 @@ CleanupBundleCacheResult CleanupBundleCacheImpl(
       failed_to_cleaned_up_directories});
 }
 
-std::string CleanupCacheForManagedGuestSessionCommandErrorToString(
+std::string CleanupBundleCacheCommandErrorToString(
     const CleanupBundleCacheError& error) {
   switch (error.type()) {
     case CleanupBundleCacheError::Type::kCouldNotDeleteAllBundles:
@@ -75,23 +76,19 @@ std::string CleanupCacheForManagedGuestSessionCommandErrorToString(
 
 }  // namespace
 
-bool ShouldCleanupManagedGuestSessionCache() {
-  return IsIwaBundleCacheEnabled() && chromeos::IsManagedGuestSession();
-}
-
 CleanupBundleCacheCommand::CleanupBundleCacheCommand(
     const std::vector<web_package::SignedWebBundleId>& iwas_to_keep_in_cache,
+    SessionType session_type,
     Callback callback)
     : WebAppCommand<AllAppsLock, CleanupBundleCacheResult>(
-          "CleanupCacheForManagedGuestSessionCommand",
+          "CleanupBundleCacheCommand",
           AllAppsLockDescription(),
           std::move(callback),
           /*args_for_shutdown=*/
           base::unexpected(CleanupBundleCacheError{
               CleanupBundleCacheError::Type::kSystemShutdown})),
-      iwas_to_keep_in_cache_(iwas_to_keep_in_cache) {
-  CHECK(ShouldCleanupManagedGuestSessionCache());
-}
+      iwas_to_keep_in_cache_(iwas_to_keep_in_cache),
+      session_type_(session_type) {}
 
 CleanupBundleCacheCommand::~CleanupBundleCacheCommand() = default;
 
@@ -103,7 +100,8 @@ void CleanupBundleCacheCommand::StartWithLock(
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-      base::BindOnce(&CleanupBundleCacheImpl, iwas_to_keep_in_cache_),
+      base::BindOnce(&CleanupBundleCacheCommandImpl, iwas_to_keep_in_cache_,
+                     session_type_),
       base::BindOnce(&CleanupBundleCacheCommand::CommandComplete,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -111,9 +109,10 @@ void CleanupBundleCacheCommand::StartWithLock(
 void CleanupBundleCacheCommand::CommandComplete(
     const CleanupBundleCacheResult& result) {
   if (!result.has_value()) {
-    LOG(ERROR) << "Cleanup cache for Managed Guest Session failed: "
-               << CleanupCacheForManagedGuestSessionCommandErrorToString(
-                      result.error());
+    LOG(ERROR) << "Cleanup bundle cache for "
+               << IwaCacheClient::SessionTypeToString(session_type_)
+               << " failed: "
+               << CleanupBundleCacheCommandErrorToString(result.error());
   }
   CompleteAndSelfDestruct(
       result.has_value() ? CommandResult::kSuccess : CommandResult::kFailure,

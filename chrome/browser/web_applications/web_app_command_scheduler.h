@@ -24,6 +24,10 @@
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/browser/uninstall_result_code.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_cache_client.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 class GURL;
 class Profile;
 class Browser;
@@ -281,11 +285,11 @@ class WebAppCommandScheduler {
       const base::Location& call_location = FROM_HERE);
 
 #if BUILDFLAG(IS_CHROMEOS)
-  // Cleans all IWA cached bundles for Managed Guest Session which are not in
-  // the `iwas_to_keep_in_cache`. This function will CHECK that
-  // `ShouldCleanupManagedGuestSessionCache` is true.
-  void CleanupIsolatedWebAppCacheForManagedGuestSession(
+  // Cleans all IWA cached bundles for `session_type` which are not in the
+  // `iwas_to_keep_in_cache`.
+  void CleanupIsolatedWebAppBundleCache(
       const std::vector<web_package::SignedWebBundleId>& iwas_to_keep_in_cache,
+      IwaCacheClient::SessionType session_type,
       base::OnceCallback<void(
           base::expected<CleanupBundleCacheSuccess, CleanupBundleCacheError>)>
           callback,
