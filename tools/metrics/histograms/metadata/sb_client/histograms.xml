@@ -859,6 +859,17 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
+<histogram name="SBClientPhishing.OnDeviceModelSuccessfulResponseCallbackAlive"
+    enum="BooleanExists" expires_after="2026-04-28">
+  <owner>andysjlim@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the state of the client side detection host callback object when we
+    respond after the on device model inquiry execution callback completed and
+    the parsing was successful.
+  </summary>
+</histogram>
+
 <histogram name="SBClientPhishing.OptimizationGuide.ModelFetchTime" units="ms"
     expires_after="2025-08-24">
   <owner>andysjlim@chromium.org</owner>
