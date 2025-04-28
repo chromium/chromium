@@ -22,6 +22,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.autofill.AutofillUiUtils.CardIconSpecs;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.autofill.ImageSize;
 import org.chromium.components.embedder_support.simple_factory_key.SimpleFactoryKeyHandle;
 import org.chromium.components.image_fetcher.ImageFetcher;
@@ -225,16 +226,19 @@ public class AutofillImageFetcher {
             return;
         }
 
-        // Image fetching failed, and max retry attempts not reached -> retry fetch after a delay.
-        Callback<@Nullable Bitmap> onImageFetched =
-                fetchedBitmap ->
-                        treatAndCacheImage(
-                                fetchedBitmap,
-                                resolvedUrl,
-                                treatImageFunction,
-                                overallSuccessHistogramName);
-        Handler handler = new Handler();
-        handler.postDelayed(() -> fetchImage(resolvedUrl, onImageFetched), REFETCH_DELAY_MS);
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_RETRY_IMAGE_FETCH_ON_FAILURE)) {
+            // Image fetching failed, and max retry attempts not reached -> retry fetch after a
+            // delay.
+            Callback<@Nullable Bitmap> onImageFetched =
+                    fetchedBitmap ->
+                            treatAndCacheImage(
+                                    fetchedBitmap,
+                                    resolvedUrl,
+                                    treatImageFunction,
+                                    overallSuccessHistogramName);
+            Handler handler = new Handler();
+            handler.postDelayed(() -> fetchImage(resolvedUrl, onImageFetched), REFETCH_DELAY_MS);
+        }
     }
 
     /**
