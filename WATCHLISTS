@@ -1085,6 +1085,10 @@
                   'chrome/browser/ui/webui/user_education_internals/|'\
                   'chrome/browser/ui/webui/whats_new/',
     },
+    'desktop_whats_new': {
+      'filepath': 'chrome/browser/resources/whats_new/|'\
+                  'chrome/browser/ui/webui/whats_new/',
+    },
     'device_bluetooth': {
       'filepath': 'device/.*bluetooth'
     },
@@ -2908,8 +2912,8 @@
     'data_decoder': ['mbarowsky+watch-data-decoder@chromium.org'],
     'dbus': ['hashimoto+watch@chromium.org'],
     'desktop_in_product_help': ['dfried+watch@chromium.org',
-                                'mickeyburks+watch@chromium.org',
                                 'estalin+watch@chromium.org'],
+    'desktop_whats_new': ['mickeyburks+watch@chromium.org'],
     'device_bluetooth': ['mattreynolds+watch@chromium.org'],
     'device_bound_sessions': ['drubery+watch@chromium.org'],
     'device_chooser': ['mattreynolds+watch@chromium.org',
