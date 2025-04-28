@@ -5634,18 +5634,18 @@ targets.bundle(
             ],
             variants = [
                 "SIM_IPAD_10TH_GEN_17_5",
-                "SIM_IPAD_10TH_GEN_18_0",
+                "SIM_IPAD_10TH_GEN_18_2",
                 "SIM_IPHONE_14_17_5",
-                "SIM_IPHONE_14_18_0",
+                "SIM_IPHONE_14_18_2",
             ],
         ),
         targets.bundle(
             targets = "ios_vm_unittests",
             variants = [
                 "SIM_IPAD_10TH_GEN_17_5",
-                "SIM_IPAD_10TH_GEN_18_0",
+                "SIM_IPAD_10TH_GEN_18_2",
                 "SIM_IPHONE_14_17_5",
-                "SIM_IPHONE_14_18_0",
+                "SIM_IPHONE_14_18_2",
             ],
         ),
     ],
@@ -5654,6 +5654,7 @@ targets.bundle(
 targets.bundle(
     name = "ios_vm_unittests",
     targets = [
+        "crashpad_tests",
         "ios_chrome_unittests",
     ],
 )
