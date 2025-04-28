@@ -441,7 +441,6 @@ class CORE_EXPORT CSSPrimitiveValue : public CSSValue {
   // Returns Double Value including infinity, -infinity, and NaN.
   double GetDoubleValueWithoutClamping() const;
 
-  float GetFloatValue() const { return GetValue<float>(); }
   int GetIntValue() const { return GetValue<int>(); }
 
   template <typename T>
