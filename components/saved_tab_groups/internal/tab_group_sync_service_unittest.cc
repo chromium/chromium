@@ -236,6 +236,18 @@ class TabGroupSyncServiceTest : public testing::Test {
         .WillByDefault(testing::Return(kDefaultGaiaId));
     ON_CALL(*collaboration_finder_, IsCollaborationAvailable(_))
         .WillByDefault(testing::Return(true));
+    ON_CALL(*decider_,
+            CanApplyOptimization(
+                _, optimization_guide::proto::SAVED_TAB_GROUP,
+                An<optimization_guide::OptimizationGuideDecisionCallback>()))
+        .WillByDefault(Invoke(
+            [](const GURL& url,
+               optimization_guide::proto::OptimizationType optimization_type,
+               optimization_guide::OptimizationGuideDecisionCallback callback) {
+              std::move(callback).Run(
+                  optimization_guide::OptimizationGuideDecision::kUnknown,
+                  optimization_guide::OptimizationMetadata());
+            }));
 
     auto coordinator =
         std::make_unique<testing::NiceMock<MockTabGroupSyncCoordinator>>();
@@ -984,7 +996,8 @@ TEST_F(TabGroupSyncServiceTest, NavigateTabIgnoresSameUrl) {
 }
 
 TEST_F(TabGroupSyncServiceTest, NavigateTabWithEmptyUrlRestriction) {
-  feature_list_.InitWithFeatures({tab_groups::kEnableUrlRestriction}, {});
+  feature_list_.InitWithFeatures({data_sharing::features::kDataSharingFeature},
+                                 {});
   optimization_guide::OptimizationMetadata metadata;
 
   // Update tab and verify observers.
@@ -1021,7 +1034,8 @@ TEST_F(TabGroupSyncServiceTest, NavigateTabWithEmptyUrlRestriction) {
 }
 
 TEST_F(TabGroupSyncServiceTest, NavigateTabNotBlockedByUrlRestriction) {
-  feature_list_.InitWithFeatures({tab_groups::kEnableUrlRestriction}, {});
+  feature_list_.InitWithFeatures({data_sharing::features::kDataSharingFeature},
+                                 {});
   optimization_guide::OptimizationMetadata metadata;
   std::u16string title_1 = u"tab title";
   GURL url_1 = GURL("http://www.example.com#1");
@@ -1083,7 +1097,8 @@ TEST_F(TabGroupSyncServiceTest, NavigateTabNotBlockedByUrlRestriction) {
 }
 
 TEST_F(TabGroupSyncServiceTest, NavigateTabBlockedDueToSameFragment) {
-  feature_list_.InitWithFeatures({tab_groups::kEnableUrlRestriction}, {});
+  feature_list_.InitWithFeatures({data_sharing::features::kDataSharingFeature},
+                                 {});
   optimization_guide::OptimizationMetadata metadata;
   std::u16string title_1 = u"tab title";
   GURL url_1 = GURL("http://www.example.com#1");
@@ -1169,7 +1184,8 @@ TEST_F(TabGroupSyncServiceTest, NavigateTabUpdatesAttributionForSharedGroup) {
 }
 
 TEST_F(TabGroupSyncServiceTest, NavigateTabBlockedDueToSamePath) {
-  feature_list_.InitWithFeatures({tab_groups::kEnableUrlRestriction}, {});
+  feature_list_.InitWithFeatures({data_sharing::features::kDataSharingFeature},
+                                 {});
   optimization_guide::OptimizationMetadata metadata;
   std::u16string title_1 = u"tab title";
   GURL url_1 = GURL("http://www.example.com/xyz#1");
@@ -1231,7 +1247,8 @@ TEST_F(TabGroupSyncServiceTest, NavigateTabBlockedDueToSamePath) {
 }
 
 TEST_F(TabGroupSyncServiceTest, NavigateTabBlockedDueToSameDomain) {
-  feature_list_.InitWithFeatures({tab_groups::kEnableUrlRestriction}, {});
+  feature_list_.InitWithFeatures({data_sharing::features::kDataSharingFeature},
+                                 {});
   optimization_guide::OptimizationMetadata metadata;
   std::u16string title_1 = u"tab title";
   GURL url_1 = GURL("http://www.example.com/abc#1");
