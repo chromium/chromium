@@ -1344,6 +1344,15 @@ void Browser::SetLockedForOnTask(bool locked) {
 #endif
 
 void Browser::OnWindowClosing() {
+  // There may be situations where async tasks, such as
+  // UnloadController::ProcessPendingTabs, may call into OnWindowClosing() after
+  // deletion has already been scheduled and closed notifications have been
+  // propagated. No-op in such cases to avoid duplicating browser-closed
+  // handling.
+  if (is_delete_scheduled_) {
+    return;
+  }
+
   if (const auto closing_status = HandleBeforeClose();
       closing_status != BrowserClosingStatus::kPermitted) {
     BrowserList::NotifyBrowserCloseCancelled(this, closing_status);
