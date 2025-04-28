@@ -202,6 +202,8 @@ UIButton* TopToolbarButton(NSString* symbol_name,
 - (void)contentWillAppearAnimated:(BOOL)animated {
   [self.view layoutIfNeeded];
   [_gridViewController contentWillAppearAnimated:YES];
+  // To be able to handle keyboard shortcuts.
+  [self becomeFirstResponder];
 }
 
 - (void)prepareForPresentation {
@@ -319,6 +321,20 @@ UIButton* TopToolbarButton(NSString* symbol_name,
     _blurView.translatesAutoresizingMaskIntoConstraints = NO;
     [self.view addSubview:_blurView];
     AddSameConstraints(self.view, _blurView);
+  }
+
+  if (IsContainedTabGroupEnabled()) {
+    // Add it after the blur to be sure the tap goes through.
+    UIButton* backgroundButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [backgroundButton addTarget:self
+                         action:@selector(didTapCloseButton)
+               forControlEvents:UIControlEventTouchUpInside];
+    // The background is not selectable by voice over as there is an explicit
+    // close button.
+    backgroundButton.accessibilityElementsHidden = YES;
+    backgroundButton.translatesAutoresizingMaskIntoConstraints = NO;
+    [self.view addSubview:backgroundButton];
+    AddSameConstraints(backgroundButton, self.view);
   }
 
   [self fadeBlurIn];
@@ -1238,9 +1254,15 @@ UIButton* TopToolbarButton(NSString* symbol_name,
 }
 
 - (void)keyCommand_close {
-  _backButtonTapped = YES;
   base::RecordAction(base::UserMetricsAction("MobileKeyCommandClose"));
-  [_handler hideTabGroup];
+  [self didTapCloseButton];
+}
+
+#pragma mark - UIAccessibilityAction
+
+- (BOOL)accessibilityPerformEscape {
+  [self didTapCloseButton];
+  return YES;
 }
 
 #pragma mark - GridViewDelegate
