@@ -348,12 +348,7 @@ void AnchorElementInteractionTracker::OnPointerEvent(
   }
 
   if (event_type == event_type_names::kPointerdown) {
-    // TODO(crbug.com/1297312): Check if user changed the default mouse
-    // settings
-    if (pointer_event.button() !=
-            static_cast<int>(WebPointerProperties::Button::kLeft) &&
-        pointer_event.button() !=
-            static_cast<int>(WebPointerProperties::Button::kMiddle)) {
+    if (!pointer_event.IsLinkClickButton()) {
       return;
     }
     interaction_host_->OnPointerDown(url);

@@ -345,6 +345,12 @@ bool MouseEvent::IsLeftButton() const {
   return button() == static_cast<int16_t>(WebPointerProperties::Button::kLeft);
 }
 
+bool MouseEvent::IsLinkClickButton() const {
+  int16_t b = button();
+  return b == static_cast<int16_t>(WebPointerProperties::Button::kLeft) ||
+         b == static_cast<int16_t>(WebPointerProperties::Button::kMiddle);
+}
+
 unsigned MouseEvent::which() const {
   // For the DOM, the return values for left, middle and right mouse buttons are
   // 0, 1, 2, respectively.
