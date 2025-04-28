@@ -130,6 +130,10 @@ const char kDisableHighResTimer[] = "disable-highres-timer";
 
 // Disables the USB keyboard detection for blocking the OSK on Windows.
 const char kDisableUsbKeyboardDetect[] = "disable-usb-keyboard-detect";
+
+// Forces the use of QPC for TimeTicks even if cpuid doesn't report the presence
+// of an invariant TSC.
+const char kForceHighResTimeTicks[] = "force-high-res-timeticks";
 #endif
 
 #if BUILDFLAG(IS_LINUX)
