@@ -556,29 +556,6 @@ class HttpStreamPool::AttemptManager
   ResolveErrorInfo resolve_error_info_;
   ConnectionAttempts connection_attempts_;
 
-  // TODO(crbug.com/403373872): Remove below fields once we identify the cause
-  // of the bug.
-  enum class AttemptAbortReason : int {
-    kEndpointResultsEmpty = 0,
-    kEndpointUnusable = 1,
-    kEndpointNotInResults = 2,
-  };
-  struct AbortedAttempt {
-    AbortedAttempt();
-    ~AbortedAttempt();
-
-    AbortedAttempt(AbortedAttempt&& other);
-    AbortedAttempt& operator=(AbortedAttempt&& other);
-
-    AttemptAbortReason reason;
-    bool service_endpoint_request_finished;
-    IPEndPoint endpoint;
-    std::vector<ServiceEndpoint> current_endpoints;
-    std::string service_endpoint_request_debug_string;
-  };
-  std::vector<AbortedAttempt> aborted_tcp_based_attempts_;
-  std::vector<std::vector<ServiceEndpoint>> service_endpoint_results_history_;
-
   // TODO(crbug.com/406936736): Remove this once we identify the cause of the
   // bug.
   bool ip_matching_spdy_session_found_ = false;

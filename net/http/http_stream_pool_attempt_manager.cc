@@ -152,14 +152,6 @@ std::string_view HttpStreamPool::AttemptManager::InitialAttemptStateToString(
   }
 }
 
-HttpStreamPool::AttemptManager::AbortedAttempt::AbortedAttempt() = default;
-HttpStreamPool::AttemptManager::AbortedAttempt::~AbortedAttempt() = default;
-HttpStreamPool::AttemptManager::AbortedAttempt::AbortedAttempt(
-    AbortedAttempt&& other) = default;
-HttpStreamPool::AttemptManager::AbortedAttempt&
-HttpStreamPool::AttemptManager::AbortedAttempt::operator=(
-    AbortedAttempt&& other) = default;
-
 HttpStreamPool::AttemptManager::AttemptManager(Group* group, NetLog* net_log)
     : group_(group),
       net_log_(NetLogWithSource::Make(
@@ -441,13 +433,9 @@ HttpStreamPool::AttemptManager::GetSSLConfig(TcpBasedAttempt* attempt) {
     return *ssl_config_;
   }
 
-  std::optional<AttemptAbortReason> abort_reason;
   const bool svcb_optional = IsSvcbOptional();
-  const std::vector<ServiceEndpoint>& current_endpoints =
-      service_endpoint_request_->GetEndpointResults();
-  for (auto& endpoint : current_endpoints) {
+  for (auto& endpoint : service_endpoint_request_->GetEndpointResults()) {
     if (!IsEndpointUsableForTcpBasedAttempt(endpoint, svcb_optional)) {
-      abort_reason = AttemptAbortReason::kEndpointUnusable;
       continue;
     }
     const std::vector<IPEndPoint>& ip_endpoints =
@@ -457,27 +445,8 @@ HttpStreamPool::AttemptManager::GetSSLConfig(TcpBasedAttempt* attempt) {
       SSLConfig ssl_config = *ssl_config_;
       ssl_config.ech_config_list = endpoint.metadata.ech_config_list;
       return ssl_config;
-    } else {
-      if (!abort_reason.has_value()) {
-        abort_reason = AttemptAbortReason::kEndpointNotInResults;
-      }
     }
   }
-
-  // TODO(crbug.com/403373872): Remove below once we identify the cause of the
-  // bug.
-  if (!abort_reason.has_value()) {
-    abort_reason = AttemptAbortReason::kEndpointResultsEmpty;
-  }
-  AbortedAttempt aborted;
-  aborted.reason = *abort_reason;
-  aborted.service_endpoint_request_finished =
-      service_endpoint_request_finished_;
-  aborted.endpoint = attempt->ip_endpoint();
-  aborted.current_endpoints = current_endpoints;
-  aborted.service_endpoint_request_debug_string =
-      service_endpoint_request_->DebugString();
-  aborted_tcp_based_attempts_.emplace_back(std::move(aborted));
 
   attempt->set_is_aborted(true);
 
@@ -920,10 +889,6 @@ void HttpStreamPool::AttemptManager::
 }
 
 void HttpStreamPool::AttemptManager::ProcessServiceEndpointChanges() {
-  // TODO(crbug.com/403373872): Remove once we identify the cause of the bug.
-  service_endpoint_results_history_.emplace_back(
-      service_endpoint_request_->GetEndpointResults());
-
   // The order of the following checks is important, see the following comments.
   // TODO(crbug.com/383606724): Figure out a better design and algorithms to
   // handle attempts and existing sessions.
@@ -1188,36 +1153,7 @@ void HttpStreamPool::AttemptManager::MaybeAttemptTcpBased(
               TcpBasedAttemptState::kAllEndpointsFailed &&
           !quic_task_) {
         // Tried all endpoints.
-        // TODO(crbug.com/403373872): Replace the following `if` with CHECK()
-        // once we identify the root cause.
-        if (!most_recent_tcp_error_.has_value()) {
-          std::vector<std::vector<ServiceEndpoint>>
-              service_endpoint_results_history =
-                  std::move(service_endpoint_results_history_);
-          std::vector<AbortedAttempt> aborted_attempts =
-              std::move(aborted_tcp_based_attempts_);
-          base::debug::Alias(&service_endpoint_results_history);
-          base::debug::Alias(service_endpoint_results_history.data());
-          for (const auto& endpoints : service_endpoint_results_history) {
-            base::debug::Alias(endpoints.data());
-            for (const auto& endpoint : endpoints) {
-              base::debug::Alias(endpoint.ipv4_endpoints.data());
-              for (const auto& ipv4_endpoint : endpoint.ipv4_endpoints) {
-                base::debug::Alias(&ipv4_endpoint);
-              }
-              base::debug::Alias(endpoint.ipv6_endpoints.data());
-              for (const auto& ipv6_endpoint : endpoint.ipv6_endpoints) {
-                base::debug::Alias(&ipv6_endpoint);
-              }
-            }
-          }
-          base::debug::Alias(&aborted_attempts);
-          base::debug::Alias(aborted_attempts.data());
-          for (const auto& aborted : aborted_attempts) {
-            base::debug::Alias(aborted.current_endpoints.data());
-          }
-          NOTREACHED();
-        }
+        CHECK(most_recent_tcp_error_.has_value());
         HandleFinalError(*most_recent_tcp_error_);
       }
       return;
