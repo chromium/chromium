@@ -42,30 +42,40 @@ def _get_crossbench_json_path(out_dir: pathlib.Path) -> pathlib.Path:
     raise FileNotFoundError(
         f'Missing crossbench results file: {cb_results_json_path}')
 
+  debug_info = ''
   with cb_results_json_path.open() as f:
     results_info = json.load(f)
+    debug_info += f'results_info={results_info}\n'
 
   browsers = results_info.get('browsers', {})
   if len(browsers) != 1:
     raise ValueError(
-        f'Expected to have one "browsers" in {cb_results_json_path}')
+        f'Expected to have one "browsers" in {cb_results_json_path}, '
+        f'debug_info={debug_info}')
   browser_info = list(browsers.values())[0]
+  debug_info += f'browser_info={browser_info}\n'
 
   probe_json_path = None
-  for probe, probe_data in browser_info.get('probes', {}).items():
-    if probe.startswith('cb.'):
-      continue
-    candidates = probe_data.get('json', [])
-    if len(candidates) > 1:
-      raise ValueError(f'Probe {probe} generated multiple json files')
-    if len(candidates) == 1:
-      if probe_json_path:
-        raise ValueError(
-            f'Multiple output json files found in {cb_results_json_path}')
-      probe_json_path = pathlib.Path(candidates[0])
+  try:
+    for probe, probe_data in browser_info.get('probes', {}).items():
+      if probe.startswith('cb.') or not probe_data:
+        continue
+      candidates = probe_data.get('json', [])
+      if len(candidates) > 1:
+        raise ValueError(f'Probe {probe} generated multiple json files, '
+                         f'debug_info={debug_info}')
+      if len(candidates) == 1:
+        if probe_json_path:
+          raise ValueError(
+              f'Multiple output json files found in {cb_results_json_path}, '
+              f'debug_info={debug_info}')
+        probe_json_path = pathlib.Path(candidates[0])
+  except AttributeError as e:
+    raise AttributeError(f'debug_info={debug_info}') from e
 
   if not probe_json_path:
-    raise ValueError(f'No output json file found in {cb_results_json_path}')
+    raise ValueError(f'No output json file found in {cb_results_json_path}, '
+                     f'debug_info={debug_info}')
 
   return probe_json_path
 
