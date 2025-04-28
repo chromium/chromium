@@ -115,11 +115,12 @@ TEST_F(SupervisedUserServiceTest, UrlIsBlockedForUser) {
 
 // Tests that allowing all site navigation is applied to supervised users.
 TEST_F(SupervisedUserServiceTest, UrlIsAllowedForUser) {
-  // Set "allow all sites" filter.
+  // This configuration sets URL Filter in WebFilterType::kAllowAllSites mode.
   syncable_pref_service_.SetInteger(
       prefs::kDefaultSupervisedUserFilteringBehavior,
       static_cast<int>(FilteringBehavior::kAllow));
-  syncable_pref_service_.SetBoolean(prefs::kSupervisedUserSafeSites, false);
+  syncable_pref_service_.SetSupervisedUserPref(prefs::kSupervisedUserSafeSites,
+                                               base::Value(false));
 
   ASSERT_FALSE(service_->IsBlockedURL(GURL("http://google.com")));
 }
@@ -128,11 +129,13 @@ TEST_F(SupervisedUserServiceTest, UrlIsAllowedForUser) {
 TEST_F(SupervisedUserServiceTest, WebFilterTypeOnPrefsChange) {
   base::HistogramTester histogram_tester;
 
-  // Tests filter "try to block mature sites".
+  // This configuration sets URL Filter in WebFilterType::kTryToBlockMatureSites
+  // mode.
   syncable_pref_service_.SetInteger(
       prefs::kDefaultSupervisedUserFilteringBehavior,
       static_cast<int>(FilteringBehavior::kAllow));
-  syncable_pref_service_.SetBoolean(prefs::kSupervisedUserSafeSites, true);
+  syncable_pref_service_.SetSupervisedUserPref(prefs::kSupervisedUserSafeSites,
+                                               base::Value(true));
 
   // This should not increase since only changes from the default are recorded.
   histogram_tester.ExpectUniqueSample(
@@ -141,8 +144,9 @@ TEST_F(SupervisedUserServiceTest, WebFilterTypeOnPrefsChange) {
       WebFilterType::kTryToBlockMatureSites,
       /*expected_bucket_count=*/0);
 
-  // Tests filter "allow all sites".
-  syncable_pref_service_.SetBoolean(prefs::kSupervisedUserSafeSites, false);
+  // This configuration sets URL Filter in WebFilterType::kAllowAllSites mode.
+  syncable_pref_service_.SetSupervisedUserPref(prefs::kSupervisedUserSafeSites,
+                                               base::Value(false));
   histogram_tester.ExpectBucketCount(
       SupervisedUserURLFilter::GetWebFilterTypeHistogramNameForTest(),
       /*sample=*/
@@ -171,15 +175,12 @@ TEST_F(SupervisedUserServiceTest, WebFilterTypeOnPrefsChange) {
 TEST_F(SupervisedUserServiceTest, ManagedSiteListTypeMetricOnPrefsChange) {
   base::HistogramTester histogram_tester;
 
-  // Overriding the value of prefs::kSupervisedUserSafeSites and
-  // prefs::kDefaultSupervisedUserFilteringBehavior in default storage is
-  // needed, otherwise no report could be triggered by policies change. Since
-  // the default values are the same of override values, the WebFilterType
-  // doesn't change and no report here.
+  // This configuration sets URL Filter in WebFilterType::kAllowAllSites mode.
   syncable_pref_service_.SetInteger(
       prefs::kDefaultSupervisedUserFilteringBehavior,
       static_cast<int>(FilteringBehavior::kAllow));
-  syncable_pref_service_.SetBoolean(prefs::kSupervisedUserSafeSites, true);
+  syncable_pref_service_.SetSupervisedUserPref(prefs::kSupervisedUserSafeSites,
+                                               base::Value(false));
 
   // Blocks `kExampleUrl0`.
   {

@@ -115,7 +115,9 @@ TEST_F(SupervisedUserPreferencesTest, FieldsAreClearedForNonChildAccounts) {
 }
 
 TEST_F(SupervisedUserPreferencesTest, IsSafeSitesEnabledSupervisedUser) {
-  pref_service_.SetBoolean(prefs::kSupervisedUserSafeSites, true);
+  // Enables parental controls with safe sites checks.
+  pref_service_.SetSupervisedUserPref(prefs::kSupervisedUserSafeSites,
+                                      base::Value(true));
   pref_service_.SetString(prefs::kSupervisedUserId,
                             supervised_user::kChildAccountSUID);
 
@@ -123,24 +125,30 @@ TEST_F(SupervisedUserPreferencesTest, IsSafeSitesEnabledSupervisedUser) {
 }
 
 TEST_F(SupervisedUserPreferencesTest, IsSafeSitesEnabledNonSupervisedUser) {
-  pref_service_.SetBoolean(prefs::kSupervisedUserSafeSites, true);
+  // Requests safe sites check without parental controls.
+  pref_service_.SetSupervisedUserPref(prefs::kSupervisedUserSafeSites,
+                                      base::Value(true));
   pref_service_.SetString(prefs::kSupervisedUserId, std::string());
 
   EXPECT_FALSE(supervised_user::IsSafeSitesEnabled(pref_service_));
 }
 
 TEST_F(SupervisedUserPreferencesTest, IsSafeSitesDisabled) {
-  pref_service_.SetBoolean(prefs::kSupervisedUserSafeSites, false);
-
+  // Sanity check for disabled safe sites (also gated by kSupervisedUserId).
+  pref_service_.SetSupervisedUserPref(prefs::kSupervisedUserSafeSites,
+                                      base::Value(false));
   EXPECT_FALSE(supervised_user::IsSafeSitesEnabled(pref_service_));
 }
 
 TEST_F(SupervisedUserPreferencesTest,
        IsSubjectToParentalControlsForSupervisedUser) {
-  // Set supervised user preference.
+  // Simply enables parental controls.
   pref_service_.SetString(prefs::kSupervisedUserId,
                           supervised_user::kChildAccountSUID);
   EXPECT_TRUE(supervised_user::IsSubjectToParentalControls(pref_service_));
+
+  // Safe sites is enabled by default.
+  EXPECT_TRUE(supervised_user::IsSafeSitesEnabled(pref_service_));
 }
 
 TEST_F(SupervisedUserPreferencesTest,

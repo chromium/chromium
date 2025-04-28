@@ -107,6 +107,9 @@ class FamilyLinkUserMetricsProviderTest : public testing::Test {
   }
 
   void AllowUnsafeSitesForSupervisedUser(Profile* profile) {
+    // Note: overrides the setting in the user pref store in the context of user
+    // managed by family link. In true environment, for these users, this
+    // happens in the supervised user pref store.
     profile->GetPrefs()->SetBoolean(prefs::kSupervisedUserSafeSites, false);
   }
 

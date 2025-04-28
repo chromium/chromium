@@ -705,8 +705,9 @@ class SupervisedUserURLFilterMetricsTest
  protected:
   void EnableSafeSites() {
     RegisterProfilePrefs(pref_service_.registry());
-    pref_service_.SetBoolean(prefs::kSupervisedUserSafeSites, true);
     pref_service_.SetString(prefs::kSupervisedUserId, kChildAccountSUID);
+    // No need to explicitly enable kSupervisedUserSafeSites, that's the default
+    // setting.
   }
 
   base::HistogramTester histogram_tester_;
