@@ -1104,6 +1104,9 @@ message BrowserExtensionInstallEvent {
 
     // Installed from outside the Chrome Web Store.
     EXTERNAL = 2;
+
+    // Component extension built into Chrome.
+    COMPONENT = 3;
   }
 
   ExtensionSource extension_source = 10;
