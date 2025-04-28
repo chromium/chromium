@@ -10,6 +10,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/core_probe_sink.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -437,6 +438,12 @@ void AdTracker::MaybeLinkKnownAdScriptToAncestor(
   auto it = context_known_ad_scripts_.find(execution_context);
   DCHECK(it != context_known_ad_scripts_.end());
 
+  // Skip linking if the current script has no script ID. This avoids
+  // introducing cycles within the `ancestor_ad_scripts_` graph.
+  if (script_id == v8::Message::kNoScriptIdInfo) {
+    return;
+  }
+
   const HashMap<String, std::optional<AdScriptIdentifier>>&
       known_ad_scripts_and_ancestor = it->value;
 
@@ -461,11 +468,26 @@ Vector<AdScriptIdentifier> AdTracker::GetAncestryChain(
     const AdScriptIdentifier& ad_script) {
   Vector<AdScriptIdentifier> ancestry_chain = {ad_script};
 
+  // Limits the ancestry chain length to protect against potential cycles in the
+  // ancestry graph (though unexpected).
+  constexpr size_t kMaxScriptAncestrySize = 50;
+  bool max_size_reached = false;
+
   auto ancestor_it = ancestor_ad_scripts_.find(ancestry_chain.back());
   while (ancestor_it != ancestor_ad_scripts_.end()) {
     ancestry_chain.push_back(ancestor_it->value);
+
+    if (ancestry_chain.size() >= kMaxScriptAncestrySize) {
+      max_size_reached = true;
+      break;
+    }
+
     ancestor_it = ancestor_ad_scripts_.find(ancestry_chain.back());
   }
+
+  base::UmaHistogramBoolean(
+      "Navigation.IframeCreated.AdTracker.MaxScriptAncestrySizeReached",
+      max_size_reached);
 
   return ancestry_chain;
 }

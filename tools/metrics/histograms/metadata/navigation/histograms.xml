@@ -1250,6 +1250,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Navigation.IframeCreated.AdTracker.MaxScriptAncestrySizeReached"
+    enum="Boolean" expires_after="2025-10-28">
+  <owner>jkarlin@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Records whether the maximum ad script ancestry length was reached when an
+    iframe was created.
+  </summary>
+</histogram>
+
 <histogram name="Navigation.IsGuest" enum="NavigationIsGuest"
     expires_after="2025-08-24">
   <owner>alexmos@chromium.org</owner>
