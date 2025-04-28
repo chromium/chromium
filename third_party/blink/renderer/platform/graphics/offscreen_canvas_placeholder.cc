@@ -24,15 +24,6 @@ PlaceholderIdMap& placeholderRegistry() {
   return s_placeholderRegistry;
 }
 
-void ReleaseFrameToDispatcher(
-    base::WeakPtr<CanvasResourceDispatcher> dispatcher,
-    scoped_refptr<CanvasResource> oldImage,
-    viz::ResourceId resourceId) {
-  if (dispatcher) {
-    dispatcher->OnPlaceholderReleasedResource(resourceId, std::move(oldImage));
-  }
-}
-
 void SetAnimationState(
     base::WeakPtr<CanvasResourceDispatcher> dispatcher,
     CanvasResourceDispatcher::AnimationState animation_state) {
@@ -49,37 +40,6 @@ OffscreenCanvasPlaceholder::~OffscreenCanvasPlaceholder() {
 
 namespace {
 
-// This function gets called when the last outstanding reference to a
-// CanvasResource is released.  This callback is only registered on
-// resources received via SetOffscreenCanvasResource(). When the resource
-// is received, its ref count may be 2 because the CanvasResourceProvider
-// that created it may be holding a cached snapshot that will be released when
-// copy-on-write kicks in. This is okay even if the resource provider is on a
-// different thread because concurrent read access is safe. By the time the
-// next frame is received by OffscreenCanvasPlaceholder, the reference held by
-// CanvasResourceProvider will have been released (otherwise there wouldn't be
-// a new frame). This means that all outstanding references are held on the
-// same thread as the OffscreenCanvasPlaceholder at the time when
-// 'placeholder_frame_' is assigned a new value.  Therefore, when the last
-// reference is released, we need to temporarily keep the object alive and send
-// it back to its thread of origin, where it can be safely destroyed or
-// recycled.
-void FrameLastUnrefCallback(
-    base::WeakPtr<CanvasResourceDispatcher> frame_dispatcher,
-    scoped_refptr<base::SingleThreadTaskRunner> frame_dispatcher_task_runner,
-    viz::ResourceId placeholder_frame_resource_id,
-    scoped_refptr<CanvasResource> placeholder_frame) {
-  DCHECK(placeholder_frame);
-  DCHECK(placeholder_frame->HasOneRef());
-  DCHECK(frame_dispatcher_task_runner);
-  placeholder_frame->Transfer();
-  PostCrossThreadTask(
-      *frame_dispatcher_task_runner, FROM_HERE,
-      CrossThreadBindOnce(ReleaseFrameToDispatcher, frame_dispatcher,
-                          std::move(placeholder_frame),
-                          placeholder_frame_resource_id));
-}
-
 }  // unnamed namespace
 
 void OffscreenCanvasPlaceholder::SetOffscreenCanvasResource(
@@ -91,9 +51,6 @@ void OffscreenCanvasPlaceholder::SetOffscreenCanvasResource(
   // CanvasResourceDispatcher, via FrameLastUnrefCallback if it was
   // the last outstanding reference on this thread.
   placeholder_frame_ = std::move(new_frame);
-  placeholder_frame_->SetLastUnrefCallback(
-      base::BindOnce(FrameLastUnrefCallback, frame_dispatcher_,
-                     frame_dispatcher_task_runner_, resource_id));
 
   if (deferred_animation_state_ &&
       current_animation_state_ != *deferred_animation_state_) {

@@ -109,7 +109,40 @@ CanvasResourceDispatcher::~CanvasResourceDispatcher() = default;
 
 namespace {
 
+void ReleaseFrameToDispatcher(
+    base::WeakPtr<CanvasResourceDispatcher> dispatcher,
+    scoped_refptr<CanvasResource> oldImage,
+    viz::ResourceId resourceId) {
+  if (dispatcher) {
+    dispatcher->OnPlaceholderReleasedResource(resourceId, std::move(oldImage));
+  }
+}
+
+// This function gets called when the last outstanding reference to a
+// CanvasResource that was sent to the OffscreenCanvasPlaceholder is released.
+// When that last reference is released, we need to keep the resource alive to
+// send it back to its thread of origin, where it will be held by FrameResource
+// to be safely destroyed or recycled once the compositor has also finished
+// accessing the resource.
+void FrameLastUnrefCallback(
+    base::WeakPtr<CanvasResourceDispatcher> frame_dispatcher,
+    scoped_refptr<base::SingleThreadTaskRunner> frame_dispatcher_task_runner,
+    viz::ResourceId placeholder_frame_resource_id,
+    scoped_refptr<CanvasResource> placeholder_frame) {
+  DCHECK(placeholder_frame);
+  DCHECK(placeholder_frame->HasOneRef());
+  DCHECK(frame_dispatcher_task_runner);
+  placeholder_frame->Transfer();
+  PostCrossThreadTask(
+      *frame_dispatcher_task_runner, FROM_HERE,
+      CrossThreadBindOnce(ReleaseFrameToDispatcher, frame_dispatcher,
+                          std::move(placeholder_frame),
+                          placeholder_frame_resource_id));
+}
+
 void UpdatePlaceholderImage(
+    base::WeakPtr<CanvasResourceDispatcher> dispatcher,
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     int placeholder_canvas_id,
     scoped_refptr<blink::CanvasResource>&& canvas_resource,
     viz::ResourceId resource_id) {
@@ -118,6 +151,8 @@ void UpdatePlaceholderImage(
       OffscreenCanvasPlaceholder::GetPlaceholderCanvasById(
           placeholder_canvas_id);
   if (placeholder_canvas) {
+    canvas_resource->SetLastUnrefCallback(base::BindOnce(
+        FrameLastUnrefCallback, dispatcher, task_runner, resource_id));
     placeholder_canvas->SetOffscreenCanvasResource(std::move(canvas_resource),
                                                    resource_id);
   }
@@ -177,8 +212,9 @@ void CanvasResourceDispatcher::PostImageToPlaceholder(
   CHECK(agent_group_scheduler_compositor_task_runner_);
   PostCrossThreadTask(
       *agent_group_scheduler_compositor_task_runner_, FROM_HERE,
-      CrossThreadBindOnce(UpdatePlaceholderImage, placeholder_canvas_id_,
-                          std::move(canvas_resource), resource_id));
+      CrossThreadBindOnce(UpdatePlaceholderImage, GetWeakPtr(), task_runner_,
+                          placeholder_canvas_id_, std::move(canvas_resource),
+                          resource_id));
 }
 
 void CanvasResourceDispatcher::DispatchFrameSync(
