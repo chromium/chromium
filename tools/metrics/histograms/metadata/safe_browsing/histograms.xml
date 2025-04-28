@@ -2163,6 +2163,28 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
+<histogram name="SafeBrowsing.NotificationTelemetry.NetworkResult"
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2026-04-27">
+  <owner>psarouthakis@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the net error or HTTP response code after sending a Notification
+    Telemetry report.
+  </summary>
+</histogram>
+
+<histogram
+    name="SafeBrowsing.NotificationTelemetry.ServiceWorkerScopeURL.IsAllowlisted"
+    enum="Boolean" expires_after="2026-04-27">
+  <owner>psarouthakis@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records whether the service worker's scope URL is present in the
+    SafeBrowsing High Confidence Allowlist. Logged each time a service service
+    worker's registration parameters are persisted to storage.
+  </summary>
+</histogram>
+
 <histogram name="SafeBrowsing.PageLoadToken.ClearReason"
     enum="SafeBrowsingPageLoadTokenClearReason" expires_after="2026-01-10">
   <owner>xinghuilu@chromium.org</owner>

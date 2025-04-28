@@ -50,8 +50,16 @@ class NotificationTelemetryServiceFactoryTest : public testing::Test {
 TEST_F(NotificationTelemetryServiceFactoryTest, EnabledForRegularProfile) {
   TestingProfile* profile =
       profile_manager_->CreateTestingProfile("testing_profile");
-  EXPECT_NE(nullptr,
-            NotificationTelemetryServiceFactory::GetForProfile(profile));
+#if !BUILDFLAG(IS_ANDROID) || (BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_ARM64))
+  bool expect_service_created = true;
+#else
+  // Service is not created for Android arm32 devices.
+  bool expect_service_created = false;
+#endif  // !(!BUILDFLAG(IS_ANDROID) || (BUILDFLAG(IS_ANDROID) &&
+        // defined(ARCH_CPU_ARM64)))
+  EXPECT_EQ(
+      NotificationTelemetryServiceFactory::GetForProfile(profile) != nullptr,
+      expect_service_created);
 }
 
 TEST_F(NotificationTelemetryServiceFactoryTest, DisabledForIncognitoMode) {
