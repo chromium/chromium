@@ -162,6 +162,7 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
 
 - (void)viewDidLayoutSubviews {
   [super viewDidLayoutSubviews];
+  [self updateCloseButton];
   // Update the bottom sheet height.
   [self resize];
 }
@@ -259,28 +260,17 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
 
 // Sets up the buttons.
 - (void)setUpTopButtons {
+  // Close button
+  [self updateCloseButton];
+
+  // Ellipsis button
+  if (_hideEllipsisMenu) {
+    return;
+  }
   UIImageSymbolConfiguration* symbolConfiguration = [UIImageSymbolConfiguration
       configurationWithPointSize:kButtonSize
                           weight:UIImageSymbolWeightRegular
                            scale:UIImageSymbolScaleMedium];
-  // Stop button
-  if (self.traitCollection.horizontalSizeClass ==
-          UIUserInterfaceSizeClassCompact ||
-      self.navigationController.sheetPresentationController) {
-    _closeButton = [self addTopButtonWithSymbolName:kXMarkCircleFillSymbol
-                                symbolConfiguration:symbolConfiguration
-                                          isLeading:NO
-                            accessibilityIdentifier:kAccountMenuCloseButtonId];
-    [_closeButton addTarget:self
-                     action:@selector(userTappedOnClose)
-           forControlEvents:UIControlEventTouchUpInside];
-  }
-
-  if (_hideEllipsisMenu) {
-    return;
-  }
-
-  // Ellipsis button
   UIAction* manageYourAccountAction = [UIAction
       actionWithTitle:
           l10n_util::GetNSString(
@@ -319,6 +309,42 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
   _ellipsisButton.showsMenuAsPrimaryAction = true;
   _ellipsisButton.accessibilityLabel =
       l10n_util::GetNSString(IDS_IOS_ICON_OPTION_MENU);
+}
+
+// Decides if the Close button should be shown.
+- (BOOL)shouldShowCloseButton {
+  UIUserInterfaceIdiom idiom = [[UIDevice currentDevice] userInterfaceIdiom];
+  return idiom == UIUserInterfaceIdiomPhone ||
+         self.presentingViewController.traitCollection.horizontalSizeClass ==
+             UIUserInterfaceSizeClassCompact;
+}
+
+// Adds or removes the Close button based on the device type and collection.
+- (void)updateCloseButton {
+  BOOL isCloseButtonShown = _closeButton;
+  BOOL shouldShowCloseButton = [self shouldShowCloseButton];
+  if (shouldShowCloseButton == isCloseButtonShown) {
+    return;
+  }
+  if (shouldShowCloseButton) {
+    // Add the Close button.
+    UIImageSymbolConfiguration* symbolConfiguration =
+        [UIImageSymbolConfiguration
+            configurationWithPointSize:kButtonSize
+                                weight:UIImageSymbolWeightRegular
+                                 scale:UIImageSymbolScaleMedium];
+    _closeButton = [self addTopButtonWithSymbolName:kXMarkCircleFillSymbol
+                                symbolConfiguration:symbolConfiguration
+                                          isLeading:NO
+                            accessibilityIdentifier:kAccountMenuCloseButtonId];
+    [_closeButton addTarget:self
+                     action:@selector(userTappedOnClose)
+           forControlEvents:UIControlEventTouchUpInside];
+  } else {
+    // Remove the Close button.
+    [_closeButton removeFromSuperview];
+    _closeButton = nil;
+  }
 }
 
 // Configures and returns a cell.
