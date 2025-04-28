@@ -80,6 +80,19 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/chrome/browser/profiles/batch_upload/batch_upload_service.h:EntryPoint) -->
 
+<!-- LINT.IfChange(BookmarkAccountStorageMoveDialogType) -->
+
+<enum name="BookmarkAccountStorageMoveDialogType">
+  <int value="0"
+      label="The version of the dialog for moving a bookmark between local
+             and account storage."/>
+  <int value="1"
+      label="The version of the dialog for uploading a bookmark to account
+             storage."/>
+</enum>
+
+<!-- LINT.ThenChange(/chrome/browser/ui/views/bookmarks/bookmark_account_storage_move_dialog.h:BookmarkAccountStorageMoveDialogType) -->
+
 <!-- LINT.IfChange(BookmarkGUIDSource) -->
 
 <enum name="BookmarkGUIDSource">
