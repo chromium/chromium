@@ -895,8 +895,9 @@ void HTMLCanvasElement::Reset() {
 }
 
 bool HTMLCanvasElement::PaintsIntoCanvasBuffer() const {
-  if (OffscreenCanvasFrame())
+  if (HasOffscreenCanvasFrame()) {
     return false;
+  }
   DCHECK(context_);
   if (!context_->IsComposited())
     return true;
@@ -1037,8 +1038,9 @@ void HTMLCanvasElement::Paint(GraphicsContext& context,
 
   // FIXME: crbug.com/438240; there is a bug with the new CSS blending and
   // compositing feature.
-  if (!context_ && !OffscreenCanvasFrame())
+  if (!context_ && !HasOffscreenCanvasFrame()) {
     return;
+  }
 
   // If the canvas is gpu composited, it has another way of getting to screen
   if (!PaintsIntoCanvasBuffer()) {
@@ -1049,7 +1051,7 @@ void HTMLCanvasElement::Paint(GraphicsContext& context,
     }
   }
 
-  if (OffscreenCanvasFrame()) {
+  if (HasOffscreenCanvasFrame()) {
     DCHECK(GetDocument().IsPrintingOrPaintingPreview());
     scoped_refptr<StaticBitmapImage> image_for_printing =
         OffscreenCanvasFrame()->Bitmap()->MakeUnaccelerated();
@@ -1189,7 +1191,7 @@ scoped_refptr<StaticBitmapImage> HTMLCanvasElement::Snapshot(
   }
 
   scoped_refptr<StaticBitmapImage> image_bitmap;
-  if (OffscreenCanvasFrame()) {  // Offscreen Canvas
+  if (HasOffscreenCanvasFrame()) {  // Offscreen Canvas
     DCHECK(OffscreenCanvasFrame()->OriginClean());
     image_bitmap = OffscreenCanvasFrame()->Bitmap();
   } else if (IsWebGL()) {
@@ -1442,8 +1444,9 @@ bool HTMLCanvasElement::OriginClean() const {
       GetDocument().GetSettings()->GetDisableReadingFromCanvas()) {
     return false;
   }
-  if (OffscreenCanvasFrame())
+  if (HasOffscreenCanvasFrame()) {
     return OffscreenCanvasFrame()->OriginClean();
+  }
   return origin_clean_;
 }
 
@@ -1811,7 +1814,7 @@ HTMLCanvasElement::GetSourceImageForCanvasInternal(FlushReason reason,
 
   scoped_refptr<StaticBitmapImage> image;
 
-  if (OffscreenCanvasFrame()) {
+  if (HasOffscreenCanvasFrame()) {
     // This may be false to set status to normal if a valid image can be got
     // even if this HTMLCanvasElement has been transferred
     // control to an offscreenCanvas. As offscreencanvas with the
@@ -1864,7 +1867,7 @@ gfx::SizeF HTMLCanvasElement::ElementSize(
     }
     return gfx::SizeF(0, 0);
   }
-  if (OffscreenCanvasFrame()) {
+  if (HasOffscreenCanvasFrame()) {
     return gfx::SizeF(OffscreenCanvasFrame()->Size());
   }
   return gfx::SizeF(width(), height());
