@@ -80,17 +80,18 @@ chrome.test.runTests([
     // Font is the first select.
     const fontSelect = toolbar.shadowRoot.querySelector('select');
     assert(fontSelect);
-    const initialFont = Ink2Manager.getInstance().getCurrentText().font;
-    chrome.test.assertEq(initialFont, fontSelect.value);
+    const initialTypeface =
+        Ink2Manager.getInstance().getCurrentTextAttributes().typeface;
+    chrome.test.assertEq(initialTypeface, fontSelect.value);
 
     const whenChanged =
-        eventToPromise('text-changed', Ink2Manager.getInstance());
+        eventToPromise('attributes-changed', Ink2Manager.getInstance());
     const newValue = 'Serif';
     fontSelect.focus();
     fontSelect.value = newValue;
     fontSelect.dispatchEvent(new CustomEvent('change'));
     const changedEvent = await whenChanged;
-    chrome.test.assertEq(newValue, changedEvent.detail.font);
+    chrome.test.assertEq(newValue, changedEvent.detail.typeface);
     await microtasksFinished();
     chrome.test.assertEq(newValue, fontSelect.value);
 
@@ -108,11 +109,12 @@ chrome.test.runTests([
     const selects = toolbar.shadowRoot.querySelectorAll('select');
     chrome.test.assertEq(2, selects.length);
     const sizeSelect = selects[1]!;
-    const initialSize = Ink2Manager.getInstance().getCurrentText().size;
+    const initialSize =
+        Ink2Manager.getInstance().getCurrentTextAttributes().size;
     chrome.test.assertEq(initialSize.toString(), sizeSelect.value);
 
     const whenChanged =
-        eventToPromise('text-changed', Ink2Manager.getInstance());
+        eventToPromise('attributes-changed', Ink2Manager.getInstance());
     sizeSelect.focus();
     sizeSelect.value = '20';
     sizeSelect.dispatchEvent(new CustomEvent('change'));
@@ -140,7 +142,7 @@ chrome.test.runTests([
     chrome.test.assertTrue(buttons[0]!.checked);
 
     const whenChanged =
-        eventToPromise('text-changed', Ink2Manager.getInstance());
+        eventToPromise('attributes-changed', Ink2Manager.getInstance());
     buttons[1]!.click();
     const changedEvent = await whenChanged;
     chrome.test.assertEq(TextAlignment.CENTER, changedEvent.detail.alignment);
@@ -177,7 +179,7 @@ chrome.test.runTests([
     const button = colorButtons[1];
     chrome.test.assertTrue(!!button);
     const whenChanged =
-        eventToPromise('text-changed', Ink2Manager.getInstance());
+        eventToPromise('attributes-changed', Ink2Manager.getInstance());
     button.click();
     const changedEvent = await whenChanged;
     assertColorsEqual(

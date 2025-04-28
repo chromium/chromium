@@ -16,10 +16,11 @@ import type {ViewerTextBottomToolbarElement} from './viewer_text_bottom_toolbar.
 export function getHtml(this: ViewerTextBottomToolbarElement) {
   // clang-format off
   return html`
-      <select class="md-select" @change="${this.onFontSelected}"=>
-        ${this.fonts.map(font => html`
-          <option value="${font}" ?selected="${this.isSelectedFont(font)}">
-            ${font}
+      <select class="md-select" @change="${this.onTypefaceSelected}"=>
+        ${this.fontNames.map(typeface => html`
+          <option value="${typeface}"
+              ?selected="${this.isSelectedTypeface(typeface)}">
+            ${typeface}
           </option>`)}
       </select>
       <select class="md-select size-select" @change="${this.onSizeSelected}">

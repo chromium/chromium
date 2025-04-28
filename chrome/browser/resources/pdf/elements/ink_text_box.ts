@@ -7,7 +7,7 @@ import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import type {AnnotationText, TextBoxRect} from '../constants.js';
+import type {TextAttributes, TextBoxRect} from '../constants.js';
 import {Ink2Manager} from '../ink2_manager.js';
 import type {ViewportParams} from '../ink2_manager.js';
 import {colorToHex} from '../pdf_viewer_utils.js';
@@ -308,24 +308,24 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
     });
   }
 
-  override onTextChanged(newTextStyles: AnnotationText) {
-    this.$.textbox.style.fontFamily = newTextStyles.font;
-    this.fontSize_ = newTextStyles.size;
+  override onTextAttributesChanged(newAttributes: TextAttributes) {
+    this.$.textbox.style.fontFamily = newAttributes.typeface;
+    this.fontSize_ = newAttributes.size;
     this.styleFontSize_();
-    this.$.textbox.style.textAlign = newTextStyles.alignment;
+    this.$.textbox.style.textAlign = newAttributes.alignment;
     this.$.textbox.style.fontStyle =
-        newTextStyles.styles.italic ? 'italic' : 'normal';
+        newAttributes.styles.italic ? 'italic' : 'normal';
     this.$.textbox.style.fontWeight =
-        newTextStyles.styles.bold ? 'bold' : 'normal';
+        newAttributes.styles.bold ? 'bold' : 'normal';
     let textDecoration = '';
-    if (newTextStyles.styles.underline) {
+    if (newAttributes.styles.underline) {
       textDecoration += 'underline ';
     }
-    if (newTextStyles.styles.strikethrough) {
+    if (newAttributes.styles.strikethrough) {
       textDecoration += 'line-through';
     }
     this.$.textbox.style.textDecoration = textDecoration || 'none';
-    this.$.textbox.style.color = colorToHex(newTextStyles.color);
+    this.$.textbox.style.color = colorToHex(newAttributes.color);
     this.updateMinimumHeight_();
   }
 }

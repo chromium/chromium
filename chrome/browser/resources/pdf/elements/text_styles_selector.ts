@@ -4,7 +4,7 @@
 
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import type {AnnotationText, TextStyles} from '../constants.js';
+import type {TextAttributes, TextStyles} from '../constants.js';
 import {TextStyle} from '../constants.js';
 import {Ink2Manager} from '../ink2_manager.js';
 
@@ -59,8 +59,8 @@ export class TextStylesSelectorElement extends TextStylesSelectorElementBase {
     return this.currentStyles_[style] ? 'true' : 'false';
   }
 
-  override onTextChanged(text: AnnotationText) {
-    this.currentStyles_ = text.styles;
+  override onTextAttributesChanged(attributes: TextAttributes) {
+    this.currentStyles_ = attributes.styles;
   }
 }
 

@@ -16,10 +16,10 @@ document.body.appendChild(styleSelector);
 chrome.test.runTests([
   // Test that the styles can be toggled.
   async function testSelectStyles() {
-    const initialStyles = manager.getCurrentText().styles;
+    const initialStyles = manager.getCurrentTextAttributes().styles;
 
     // Check that the button toggles its style and aria-pressed state and
-    // triggers a text-changed event when clicked.
+    // triggers a attributes-changed event when clicked.
     async function testButton(
         button: CrIconButtonElement, style: TextStyle, icon: string) {
       chrome.test.assertEq(icon, button.ironIcon);
@@ -28,7 +28,7 @@ chrome.test.runTests([
       chrome.test.assertEq(
           initialValue.toString(), button.getAttribute('aria-pressed'));
 
-      const whenChanged = eventToPromise('text-changed', manager);
+      const whenChanged = eventToPromise('attributes-changed', manager);
       button.click();
       const changedEvent = await whenChanged;
       chrome.test.assertEq(!initialValue, changedEvent.detail.styles[style]);

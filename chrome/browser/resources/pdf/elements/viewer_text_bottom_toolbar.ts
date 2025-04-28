@@ -6,7 +6,7 @@ import {assertNotReached} from 'chrome://resources/js/assert.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import type {AnnotationText} from '../constants.js';
+import type {TextAttributes} from '../constants.js';
 import {TextAlignment} from '../constants.js';
 import {colorToHex} from '../pdf_viewer_utils.js';
 
@@ -71,9 +71,9 @@ export class ViewerTextBottomToolbarElement extends
     }
   }
 
-  override onTextChanged(text: AnnotationText) {
-    super.onTextChanged(text);
-    this.currentAlignment_ = text.alignment;
+  override onTextAttributesChanged(attributes: TextAttributes) {
+    super.onTextAttributesChanged(attributes);
+    this.currentAlignment_ = attributes.alignment;
   }
 }
 

@@ -20,7 +20,7 @@ class TestElement extends TestElementBase {
 
   override render() {
     return html`
-      <select @change="${this.onFontSelected}">
+      <select @change="${this.onTypefaceSelected}">
         <option value="Roboto"></option>
         <option value="Serif"></option>
       </select>
@@ -32,7 +32,7 @@ class TestElement extends TestElementBase {
   }
 }
 
-const initializationPromise = eventToPromise('text-changed', manager);
+const initializationPromise = eventToPromise('attributes-changed', manager);
 customElements.define(TestElement.is, TestElement);
 const testElement = document.createElement('test-element') as TestElement;
 document.body.appendChild(testElement);
@@ -45,9 +45,10 @@ chrome.test.runTests([
     // plugin).
     const initEvent = await initializationPromise;
     const expectedFonts = ['Roboto', 'Serif', 'Sans', 'Monospace'];
-    assertDeepEquals(expectedFonts, testElement.fonts);
+    assertDeepEquals(expectedFonts, testElement.fontNames);
     assertDeepEquals(testElement.currentColor, initEvent.detail.color);
-    chrome.test.assertEq(testElement.currentFont, initEvent.detail.font);
+    chrome.test.assertEq(
+        testElement.currentTypeface, initEvent.detail.typeface);
     chrome.test.assertEq(testElement.currentSize, initEvent.detail.size);
 
     chrome.test.succeed();
@@ -59,26 +60,26 @@ chrome.test.runTests([
     const newColor = hexToColor(TEXT_COLORS[1]!.color);
     const colorEvent =
         new CustomEvent('current-color-changed', {detail: {value: newColor}});
-    let whenChanged = eventToPromise('text-changed', manager);
+    let whenChanged = eventToPromise('attributes-changed', manager);
     testElement.onCurrentColorChanged(colorEvent);
     let changedEvent = await whenChanged;
     assertDeepEquals(newColor, changedEvent.detail.color);
 
-    // Test firing a change event from a <select> with onFontSelected
+    // Test firing a change event from a <select> with onTypefaceSelected
     // registered as the listener calls the manager and results in an event.
     const selects = testElement.shadowRoot.querySelectorAll('select');
     chrome.test.assertEq(2, selects.length);
-    whenChanged = eventToPromise('text-changed', manager);
+    whenChanged = eventToPromise('attributes-changed', manager);
     const fontSelect = selects[0]!;
     fontSelect.value = 'Serif';
     fontSelect.dispatchEvent(
         new CustomEvent('change', {bubbles: true, composed: true}));
     changedEvent = await whenChanged;
-    chrome.test.assertEq('Serif', changedEvent.detail.font);
+    chrome.test.assertEq('Serif', changedEvent.detail.typeface);
 
     // Test firing a change event from a <select> with onSizeSelected
     // registered as the listener calls the manager and results in an event.
-    whenChanged = eventToPromise('text-changed', manager);
+    whenChanged = eventToPromise('attributes-changed', manager);
     const sizeSelect = selects[1]!;
     sizeSelect.value = `${TEXT_SIZES[1]!}`;
     sizeSelect.dispatchEvent(
@@ -89,17 +90,17 @@ chrome.test.runTests([
     chrome.test.succeed();
   },
 
-  function testOnTextChanged() {
+  function testOnTextAttributesChanged() {
     // Initial state
     const initialColor = hexToColor(TEXT_COLORS[0]!.color);
     assertDeepEquals(initialColor, testElement.currentColor);
     chrome.test.assertEq(12, testElement.currentSize);
     // First font returned by the current dummy code.
-    chrome.test.assertEq('Roboto', testElement.currentFont);
+    chrome.test.assertEq('Roboto', testElement.currentTypeface);
 
     const newColor = hexToColor(TEXT_COLORS[1]!.color);
-    testElement.onTextChanged({
-      font: 'Serif',
+    testElement.onTextAttributesChanged({
+      typeface: 'Serif',
       size: TEXT_SIZES[1]!,
       color: newColor,
       alignment: TextAlignment.LEFT,
@@ -112,7 +113,7 @@ chrome.test.runTests([
     });
     assertDeepEquals(newColor, testElement.currentColor);
     chrome.test.assertEq(TEXT_SIZES[1]!, testElement.currentSize);
-    chrome.test.assertEq('Serif', testElement.currentFont);
+    chrome.test.assertEq('Serif', testElement.currentTypeface);
 
     chrome.test.succeed();
   },
@@ -125,12 +126,12 @@ chrome.test.runTests([
     chrome.test.assertFalse(testElement.isSelectedSize(TEXT_SIZES[1]!));
     chrome.test.assertTrue(testElement.isSelectedSize(TEXT_SIZES[0]!));
 
-    // Test that isSelectedFont returns the expected value.
-    chrome.test.assertTrue(testElement.isSelectedFont('Serif'));
-    chrome.test.assertFalse(testElement.isSelectedFont('Roboto'));
-    testElement.currentFont = 'Roboto';
-    chrome.test.assertFalse(testElement.isSelectedFont('Serif'));
-    chrome.test.assertTrue(testElement.isSelectedFont('Roboto'));
+    // Test that isSelectedTypeface returns the expected value.
+    chrome.test.assertTrue(testElement.isSelectedTypeface('Serif'));
+    chrome.test.assertFalse(testElement.isSelectedTypeface('Roboto'));
+    testElement.currentTypeface = 'Roboto';
+    chrome.test.assertFalse(testElement.isSelectedTypeface('Serif'));
+    chrome.test.assertTrue(testElement.isSelectedTypeface('Roboto'));
 
     chrome.test.succeed();
   },

@@ -6,7 +6,7 @@ import {assertNotReached} from 'chrome://resources/js/assert.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import type {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import type {AnnotationText} from '../constants.js';
+import type {TextAttributes} from '../constants.js';
 import {Ink2Manager} from '../ink2_manager.js';
 
 type Constructor<T> = new (...args: any[]) => T;
@@ -18,15 +18,16 @@ export const InkTextObserverMixin = <T extends Constructor<CrLitElement>>(
     private tracker_: EventTracker = new EventTracker();
 
     override firstUpdated() {
-      this.onTextChanged(Ink2Manager.getInstance().getCurrentText());
+      this.onTextAttributesChanged(
+          Ink2Manager.getInstance().getCurrentTextAttributes());
     }
 
     override connectedCallback() {
       super.connectedCallback();
       this.tracker_.add(
-          Ink2Manager.getInstance(), 'text-changed',
-          (e: Event) =>
-              this.onTextChanged((e as CustomEvent<AnnotationText>).detail));
+          Ink2Manager.getInstance(), 'attributes-changed',
+          (e: Event) => this.onTextAttributesChanged(
+              (e as CustomEvent<TextAttributes>).detail));
     }
 
     override disconnectedCallback() {
@@ -35,7 +36,7 @@ export const InkTextObserverMixin = <T extends Constructor<CrLitElement>>(
     }
 
     // Should be overridden by clients.
-    onTextChanged(_text: AnnotationText) {
+    onTextAttributesChanged(_attributes: TextAttributes) {
       assertNotReached();
     }
   }
@@ -43,5 +44,5 @@ export const InkTextObserverMixin = <T extends Constructor<CrLitElement>>(
 };
 
 export interface InkTextObserverMixinInterface {
-  onTextChanged(text: AnnotationText): void;
+  onTextAttributesChanged(attributes: TextAttributes): void;
 }

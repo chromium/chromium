@@ -11,7 +11,7 @@ import {getRequiredElement, setupTestViewportAndMockPluginForInk} from './test_u
 setupTestViewportAndMockPluginForInk();
 const manager = Ink2Manager.getInstance();
 // Initialize a font, since this starts out empty.
-manager.setTextFont('Roboto');
+manager.setTextTypeface('Roboto');
 const textbox = document.createElement('ink-text-box');
 document.body.appendChild(textbox);
 
@@ -111,7 +111,7 @@ chrome.test.runTests([
     chrome.test.assertEq(colorStyle, textboxStyles.getPropertyValue('color'));
 
     // Confirm updating styles in the manager updates the style of the textbox.
-    manager.setTextFont('Serif');
+    manager.setTextTypeface('Serif');
     manager.setTextSize(20);
     manager.setTextStyles({
       [TextStyle.BOLD]: true,

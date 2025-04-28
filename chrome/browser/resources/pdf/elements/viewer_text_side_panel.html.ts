@@ -15,10 +15,11 @@ export function getHtml(this: ViewerTextSidePanelElement) {
   return html`<!--_html_template_start_-->
     <div class="side-panel-content">
       <h2>Font</h2>
-      <select class="md-select" @change="${this.onFontSelected}">
-        ${this.fonts.map(font => html`
-          <option value="${font}" ?selected="${this.isSelectedFont(font)}">
-            ${font}
+      <select class="md-select" @change="${this.onTypefaceSelected}">
+        ${this.fontNames.map(typeface => html`
+          <option value="${typeface}"
+              ?selected="${this.isSelectedTypeface(typeface)}">
+            ${typeface}
           </option>`)}
       </select>
       <select class="md-select" @change="${this.onSizeSelected}">

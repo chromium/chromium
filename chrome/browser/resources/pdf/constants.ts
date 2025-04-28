@@ -52,8 +52,8 @@ export type TextStyles = {
   [key in TextStyle]: boolean
 };
 
-export interface AnnotationText {
-  font: string;
+export interface TextAttributes {
+  typeface: string;
   size: number;
   color: Color;
   alignment: TextAlignment;

@@ -5,7 +5,7 @@
 import {assert} from 'chrome://resources/js/assert.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 
-import type {AnnotationBrush, AnnotationText, Color, TextBoxRect, TextStyles} from './constants.js';
+import type {AnnotationBrush, Color, TextAttributes, TextBoxRect, TextStyles} from './constants.js';
 import {AnnotationBrushType, TextAlignment, TextStyle} from './constants.js';
 import type {MessageData} from './controller.js';
 import {PluginController, PluginControllerEventType} from './controller.js';
@@ -19,8 +19,8 @@ export interface ViewportParams {
 
 export class Ink2Manager extends EventTarget {
   private brush_: AnnotationBrush = {type: AnnotationBrushType.PEN};
-  private text_: AnnotationText = {
-    font: '',
+  private attributes_: TextAttributes = {
+    typeface: '',
     size: 12,
     color: {r: 0, g: 0, b: 0},
     alignment: TextAlignment.LEFT,
@@ -32,7 +32,7 @@ export class Ink2Manager extends EventTarget {
     },
   };
   private brushResolver_: PromiseResolver<void>|null = null;
-  private fontsResolver_: PromiseResolver<string[]>|null = null;
+  private fontNamesResolver_: PromiseResolver<string[]>|null = null;
   private pluginController_: PluginController = PluginController.getInstance();
   private viewport_: Viewport|null = null;
   private viewportParams_: ViewportParams = {pageX: 0, pageY: 0, zoom: 1.0};
@@ -94,8 +94,8 @@ export class Ink2Manager extends EventTarget {
     return this.brush_;
   }
 
-  getCurrentText(): AnnotationText {
-    return this.text_;
+  getCurrentTextAttributes(): TextAttributes {
+    return this.attributes_;
   }
 
   initializeBrush(): Promise<void> {
@@ -140,67 +140,69 @@ export class Ink2Manager extends EventTarget {
     this.setAnnotationBrushInPlugin_();
   }
 
-  getTextAnnotationFonts(): Promise<string[]> {
-    if (this.fontsResolver_ === null) {
-      this.fontsResolver_ = new PromiseResolver();
+  getTextAnnotationFontNames(): Promise<string[]> {
+    if (this.fontNamesResolver_ === null) {
+      this.fontNamesResolver_ = new PromiseResolver();
       this.pluginController_.getTextAnnotFontNames().then(fontsMessage => {
-        assert(this.fontsResolver_);
-        this.fontsResolver_.resolve(fontsMessage.data);
+        assert(this.fontNamesResolver_);
+        this.fontNamesResolver_.resolve(fontsMessage.data);
         assert(fontsMessage.data.length > 0);
-        this.setTextFont(fontsMessage.data[0]!);
+        this.setTextTypeface(fontsMessage.data[0]!);
       });
     }
-    return this.fontsResolver_.promise;
+    return this.fontNamesResolver_.promise;
   }
 
-  setTextFont(font: string) {
-    if (this.text_.font === font) {
+  setTextTypeface(typeface: string) {
+    if (this.attributes_.typeface === typeface) {
       return;
     }
 
-    this.text_.font = font;
+    this.attributes_.typeface = typeface;
     this.updatedText_();
   }
 
   setTextSize(size: number) {
-    if (this.text_.size === size) {
+    if (this.attributes_.size === size) {
       return;
     }
 
-    this.text_.size = size;
+    this.attributes_.size = size;
     this.updatedText_();
   }
 
   setTextColor(color: Color) {
-    if (this.text_.color.r === color.r && this.text_.color.g === color.g &&
-        this.text_.color.b === color.b) {
+    if (this.attributes_.color.r === color.r &&
+        this.attributes_.color.g === color.g &&
+        this.attributes_.color.b === color.b) {
       return;
     }
 
-    this.text_.color = color;
+    this.attributes_.color = color;
     this.updatedText_();
   }
 
   setTextAlignment(alignment: TextAlignment) {
-    if (this.text_.alignment === alignment) {
+    if (this.attributes_.alignment === alignment) {
       return;
     }
 
-    this.text_.alignment = alignment;
+    this.attributes_.alignment = alignment;
     this.updatedText_();
   }
 
   setTextStyles(styles: TextStyles) {
-    if (this.text_.styles[TextStyle.BOLD] === styles[TextStyle.BOLD] &&
-        this.text_.styles[TextStyle.ITALIC] === styles[TextStyle.ITALIC] &&
-        this.text_.styles[TextStyle.UNDERLINE] ===
+    if (this.attributes_.styles[TextStyle.BOLD] === styles[TextStyle.BOLD] &&
+        this.attributes_.styles[TextStyle.ITALIC] ===
+            styles[TextStyle.ITALIC] &&
+        this.attributes_.styles[TextStyle.UNDERLINE] ===
             styles[TextStyle.UNDERLINE] &&
-        this.text_.styles[TextStyle.STRIKETHROUGH] ===
+        this.attributes_.styles[TextStyle.STRIKETHROUGH] ===
             styles[TextStyle.STRIKETHROUGH]) {
       return;
     }
 
-    this.text_.styles = styles;
+    this.attributes_.styles = styles;
     this.updatedText_();
   }
 
@@ -229,21 +231,22 @@ export class Ink2Manager extends EventTarget {
 
   private updatedText_(): void {
     this.setAnnotationTextInPlugin_();
-    this.fireTextChanged_();
+    this.fireFontChanged_();
   }
 
   private setAnnotationTextInPlugin_(): void {
     this.pluginController_.setTextAnnotationFont({
-      typeface: this.text_.font,
-      fontSize: this.text_.size,
-      alignment: this.text_.alignment,
-      style: this.text_.styles,
-      color: this.text_.color,
+      typeface: this.attributes_.typeface,
+      fontSize: this.attributes_.size,
+      alignment: this.attributes_.alignment,
+      style: this.attributes_.styles,
+      color: this.attributes_.color,
     });
   }
 
-  private fireTextChanged_() {
-    this.dispatchEvent(new CustomEvent('text-changed', {detail: this.text_}));
+  private fireFontChanged_() {
+    this.dispatchEvent(
+        new CustomEvent('attributes-changed', {detail: this.attributes_}));
   }
 
   static getInstance(): Ink2Manager {
