@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ACTOR_TOOLS_TOOL_H_
 #define CHROME_BROWSER_ACTOR_TOOLS_TOOL_H_
 
+#include <string>
+
 #include "base/functional/callback_forward.h"
 
 namespace actor {
@@ -28,6 +30,10 @@ class Tool {
   // Perform the action of the tool. The given callback must be invoked when the
   // tool has finished its actions.
   virtual void Invoke(InvokeCallback callback) = 0;
+
+  // Provides a human readable description of the tool useful for log and
+  // debugging purposes.
+  virtual std::string DebugString() const = 0;
 };
 
 }  // namespace actor

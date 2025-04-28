@@ -6,11 +6,13 @@
 
 #include <optional>
 
-#include "base/logging.h"
 #include "base/notimplemented.h"
+#include "base/strings/to_string.h"
 #include "base/time/time.h"
+#include "chrome/common/actor/actor_logging.h"
 #include "chrome/renderer/actor/tool_utils.h"
 #include "content/public/renderer/render_frame.h"
+#include "third_party/abseil-cpp/absl/strings/str_format.h"
 #include "third_party/blink/public/web/web_frame_widget.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_node.h"
@@ -28,7 +30,7 @@ ScrollTool::~ScrollTool() = default;
 void ScrollTool::Execute(ToolFinishedCallback callback) {
   blink::WebLocalFrame* web_frame = frame_->GetWebFrame();
   if (!web_frame || !web_frame->FrameWidget()) {
-    DLOG(ERROR) << "RenderFrame or FrameWidget is invalid.";
+    ACTOR_LOG() << "RenderFrame or FrameWidget is invalid.";
     std::move(callback).Run(false);
     return;
   }
@@ -43,7 +45,7 @@ void ScrollTool::Execute(ToolFinishedCallback callback) {
     int32_t dom_node_id = action_->target->get_dom_node_id();
     blink::WebNode node = GetNodeFromId(frame_.get(), dom_node_id);
     if (node.IsNull()) {
-      DLOG(ERROR) << "Cannot find dom node with id " << dom_node_id;
+      ACTOR_LOG() << "Cannot find dom node with id " << dom_node_id;
       std::move(callback).Run(false);
       return;
     }
@@ -88,6 +90,12 @@ void ScrollTool::Execute(ToolFinishedCallback callback) {
       gfx::PointF(offset.x() + scroll_offset_x, offset.y() + scroll_offset_y));
 
   std::move(callback).Run(did_scroll);
+}
+
+std::string ScrollTool::DebugString() const {
+  return absl::StrFormat("ScrollTool[%s;direction(%s);distance(%f)]",
+                         ToDebugString(action_->target),
+                         base::ToString(action_->direction), action_->distance);
 }
 
 }  // namespace actor

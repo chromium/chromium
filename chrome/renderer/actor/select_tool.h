@@ -20,9 +20,10 @@ class SelectTool : public ToolBase {
  public:
   SelectTool(mojom::SelectActionPtr action, content::RenderFrame& frame);
   ~SelectTool() override;
-  // Performs a select action on the specified node. Invoke callback with true
-  // if success and false otherwise.
+
+  // actor::ToolBase
   void Execute(ToolFinishedCallback callback) override;
+  std::string DebugString() const override;
 
  private:
   bool Validate() const;

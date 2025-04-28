@@ -31,9 +31,9 @@ class DragAndReleaseTool : public ToolBase {
 
   ~DragAndReleaseTool() override;
 
-  // Performs a drag and release on the specified node.
-  // Invoke callback with true if success and false otherwise.
+  // actor::ToolBase
   void Execute(ToolFinishedCallback callback) override;
+  std::string DebugString() const override;
 
  private:
   bool InjectMouseEvent(blink::WebInputEvent::Type type,

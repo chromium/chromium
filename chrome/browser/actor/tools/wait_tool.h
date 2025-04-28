@@ -16,8 +16,10 @@ class WaitTool : public Tool {
   WaitTool();
   ~WaitTool() override;
 
+  // actor::Tool
   void Validate(ValidateCallback callback) override;
   void Invoke(InvokeCallback callback) override;
+  std::string DebugString() const override;
 
   static void SetNoDelayForTesting();
 

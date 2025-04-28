@@ -18,6 +18,7 @@
 #include "chrome/browser/actor/tools/tool_invocation.h"
 #include "chrome/browser/actor/tools/wait_tool.h"
 #include "chrome/common/actor.mojom.h"
+#include "chrome/common/actor/actor_logging.h"
 #include "chrome/common/chrome_features.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "url/gurl.h"
@@ -96,6 +97,7 @@ void ToolController::Invoke(const ToolInvocation& invocation,
     return;
   }
 
+  ACTOR_LOG() << "Starting Tool Use: " << created_tool->DebugString();
   active_state_.emplace(std::move(created_tool), std::move(result_callback));
 
   active_state_->tool->Validate(base::BindOnce(
@@ -124,6 +126,8 @@ void ToolController::ValidationComplete(bool success) {
 
 void ToolController::CompleteToolRequest(bool result) {
   CHECK(active_state_);
+  ACTOR_LOG() << "Completed Tool[" << (result ? "SUCCESS" : "FAILURE")
+              << "]: " << active_state_->tool->DebugString();
   PostResponseTask(std::move(active_state_->completion_callback), result);
 
   active_state_.reset();

@@ -6,6 +6,7 @@
 #define CHROME_RENDERER_ACTOR_TYPE_TOOL_H_
 
 #include <cstdint>
+#include <string>
 
 #include "base/memory/raw_ref.h"
 #include "chrome/common/actor.mojom.h"
@@ -28,7 +29,9 @@ class TypeTool : public ToolBase {
   TypeTool(mojom::TypeActionPtr action, content::RenderFrame& frame);
   ~TypeTool() override;
 
+  // actor::ToolBase
   void Execute(ToolFinishedCallback callback) override;
+  std::string DebugString() const override;
 
  private:
   // Structure to hold all necessary parameters for generating keyboard events

@@ -7,6 +7,9 @@
 
 #include <cstdint>
 #include <optional>
+#include <string>
+
+#include "chrome/common/actor.mojom-forward.h"
 
 namespace blink {
 class WebNode;
@@ -37,6 +40,8 @@ bool IsNodeFocused(const content::RenderFrame& frame,
 // `point` is relative to the viewport origin.
 bool IsPointWithinViewport(const gfx::PointF& point,
                            const content::RenderFrame& frame);
+
+std::string ToDebugString(const mojom::ToolTargetPtr& target);
 
 }  // namespace actor
 

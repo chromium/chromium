@@ -10,6 +10,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "chrome/common/actor.mojom.h"
+#include "chrome/common/actor/actor_logging.h"
 #include "chrome/renderer/actor/click_tool.h"
 #include "chrome/renderer/actor/drag_and_release_tool.h"
 #include "chrome/renderer/actor/mouse_move_tool.h"
@@ -75,6 +76,9 @@ void ToolExecutor::InvokeTool(mojom::ToolInvocationPtr request,
       break;
     }
   }
+
+  ACTOR_LOG() << "Renderer InvokeTool: " << tool_->DebugString();
+
   // It's safe to use base::Unretained as tool_ is owned by this object and
   // tool_ has its own weak factory to manage the callback.
   tool_->Execute(base::BindOnce(&ToolExecutor::ToolFinished,

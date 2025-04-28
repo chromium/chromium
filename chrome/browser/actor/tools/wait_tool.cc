@@ -37,6 +37,10 @@ void WaitTool::Invoke(InvokeCallback callback) {
       no_delay_for_testing_ ? base::TimeDelta() : kWaitTime);
 }
 
+std::string WaitTool::DebugString() const {
+  return "WaitTool";
+}
+
 void WaitTool::OnDelayFinished(InvokeCallback callback) {
   // TODO(crbug.com/409566732): Add more robust methods for detecting that the
   // page has settled.

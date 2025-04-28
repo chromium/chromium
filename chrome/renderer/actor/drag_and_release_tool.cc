@@ -4,10 +4,11 @@
 
 #include "chrome/renderer/actor/drag_and_release_tool.h"
 
-#include "base/logging.h"
 #include "base/time/time.h"
+#include "chrome/common/actor/actor_logging.h"
 #include "chrome/renderer/actor/tool_utils.h"
 #include "content/public/renderer/render_frame.h"
+#include "third_party/abseil-cpp/absl/strings/str_format.h"
 #include "third_party/blink/public/common/input/web_coalesced_input_event.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
@@ -36,7 +37,7 @@ DragAndReleaseTool::~DragAndReleaseTool() = default;
 void DragAndReleaseTool::Execute(ToolFinishedCallback callback) {
   WebLocalFrame* web_frame = frame_->GetWebFrame();
   if (!web_frame || !web_frame->FrameWidget()) {
-    DLOG(ERROR) << "RenderFrame or FrameWidget is invalid.";
+    ACTOR_LOG() << "RenderFrame or FrameWidget is invalid.";
     std::move(callback).Run(false);
     return;
   }
@@ -56,7 +57,7 @@ void DragAndReleaseTool::Execute(ToolFinishedCallback callback) {
 
   if (!IsPointWithinViewport(from_point, frame_.get()) ||
       !IsPointWithinViewport(to_point, frame_.get())) {
-    DLOG(ERROR) << "Target point is outside of viewport";
+    ACTOR_LOG() << "Target point is outside of viewport";
     std::move(callback).Run(false);
     return;
   }
@@ -90,6 +91,12 @@ void DragAndReleaseTool::Execute(ToolFinishedCallback callback) {
   }
 
   std::move(callback).Run(true);
+}
+
+std::string DragAndReleaseTool::DebugString() const {
+  return absl::StrFormat("DragAndReleaseTool[from-%s -> to-%s]",
+                         ToDebugString(action_->from_target),
+                         ToDebugString(action_->to_target));
 }
 
 bool DragAndReleaseTool::InjectMouseEvent(WebInputEvent::Type type,

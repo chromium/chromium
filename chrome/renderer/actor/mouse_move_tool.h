@@ -25,9 +25,9 @@ class MouseMoveTool : public ToolBase {
 
   ~MouseMoveTool() override;
 
-  // Performs a mouse move on the specified node.
-  // Invoke callback with true if success and false otherwise.
+  // actor::ToolBase
   void Execute(ToolFinishedCallback callback) override;
+  std::string DebugString() const override;
 
  private:
   // Raw ref since this is owned by ToolExecutor whose lifetime is tied to

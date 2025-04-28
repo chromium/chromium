@@ -33,10 +33,12 @@ class HistoryTool : public Tool, content::WebContentsObserver {
   HistoryTool(tabs::TabInterface& tab, Direction direction);
   ~HistoryTool() override;
 
+  // actor::Tool
   void Validate(ValidateCallback callback) override;
   void Invoke(InvokeCallback callback) override;
+  std::string DebugString() const override;
 
-  // WebContentsObserver
+  // content::WebContentsObserver
   void DidStartNavigation(
       content::NavigationHandle* navigation_handle) override;
   void DidFinishNavigation(

@@ -10,6 +10,7 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/abseil-cpp/absl/strings/str_format.h"
 
 namespace actor {
 
@@ -69,6 +70,11 @@ void HistoryTool::Invoke(InvokeCallback callback) {
                  base::BindOnce(
                      &HistoryTool::LegacyBrowserBasedBeforeUnloadReplyComplete,
                      weak_ptr_factory_.GetWeakPtr()));
+}
+
+std::string HistoryTool::DebugString() const {
+  return absl::StrFormat("HistoryTool[%s]",
+                         direction_ == kBack ? "Back" : "Forward");
 }
 
 void HistoryTool::DidStartNavigation(NavigationHandle* navigation_handle) {

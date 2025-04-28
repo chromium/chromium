@@ -32,9 +32,9 @@ class ClickTool : public ToolBase {
   ClickTool(mojom::ClickActionPtr action, content::RenderFrame& frame);
   ~ClickTool() override;
 
-  // Performs a click on the specified node. Invoke callback with true if
-  // success and false otherwise.
+  // actor::ToolBase
   void Execute(ToolFinishedCallback callback) override;
+  std::string DebugString() const override;
 
  private:
   std::optional<gfx::PointF> ValidateAndGetClickPoint() const;

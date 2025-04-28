@@ -4,6 +4,9 @@
 
 #include "chrome/renderer/actor/tool_utils.h"
 
+#include <sstream>
+
+#include "chrome/common/actor.mojom.h"
 #include "content/public/renderer/render_frame.h"
 #include "third_party/blink/public/web/web_element.h"
 #include "third_party/blink/public/web/web_frame_widget.h"
@@ -61,6 +64,19 @@ bool IsPointWithinViewport(const gfx::PointF& point,
                            const content::RenderFrame& frame) {
   gfx::Rect viewport(frame.GetWebFrame()->FrameWidget()->VisibleViewportSize());
   return viewport.Contains(gfx::ToFlooredPoint(point));
+}
+
+std::string ToDebugString(const mojom::ToolTargetPtr& target) {
+  std::stringstream ss;
+  ss << "target(";
+  if (target->is_coordinate()) {
+    ss << "XY=" << target->get_coordinate().x() << ","
+       << target->get_coordinate().y();
+  } else {
+    ss << "ID=" << target->get_dom_node_id();
+  }
+  ss << ")";
+  return ss.str();
 }
 
 }  // namespace actor

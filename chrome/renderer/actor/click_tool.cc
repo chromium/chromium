@@ -7,10 +7,12 @@
 #include <cstdint>
 #include <optional>
 
-#include "base/logging.h"
+#include "base/strings/to_string.h"
 #include "base/time/time.h"
+#include "chrome/common/actor/actor_logging.h"
 #include "chrome/renderer/actor/tool_utils.h"
 #include "content/public/renderer/render_frame.h"
+#include "third_party/abseil-cpp/absl/strings/str_format.h"
 #include "third_party/blink/public/common/input/web_coalesced_input_event.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
@@ -119,9 +121,15 @@ void ClickTool::Execute(ToolFinishedCallback callback) {
   std::move(callback).Run(true);
 }
 
+std::string ClickTool::DebugString() const {
+  return absl::StrFormat(
+      "ClickTool[%s;type(%s);count(%s)]", ToDebugString(action_->target),
+      base::ToString(action_->type), base::ToString(action_->count));
+}
+
 std::optional<gfx::PointF> ClickTool::ValidateAndGetClickPoint() const {
   if (!frame_->GetWebFrame()->FrameWidget()) {
-    DLOG(ERROR) << "RenderWidget is invalid.";
+    ACTOR_LOG() << "RenderWidget is invalid.";
     return std::nullopt;
   }
 
@@ -134,24 +142,24 @@ std::optional<gfx::PointF> ClickTool::ValidateAndGetClickPoint() const {
   int32_t dom_node_id = action_->target->get_dom_node_id();
   WebNode node = GetNodeFromId(frame_.get(), dom_node_id);
   if (node.IsNull()) {
-    DLOG(ERROR) << "Cannot find dom node with id " << dom_node_id;
+    ACTOR_LOG() << "Cannot find dom node with id " << dom_node_id;
     return std::nullopt;
   }
 
   WebFormControlElement form_element = node.DynamicTo<WebFormControlElement>();
   if (!form_element.IsNull() && !form_element.IsEnabled()) {
-    DLOG(ERROR) << "Target is disabled.";
+    ACTOR_LOG() << "Target is disabled.";
     return std::nullopt;
   }
 
   std::optional<gfx::PointF> click_point = InteractionPointFromWebNode(node);
   if (!click_point.has_value()) {
-    DLOG(ERROR) << "Invalid target rect.";
+    ACTOR_LOG() << "Invalid target rect.";
     return std::nullopt;
   }
 
   if (!IsPointWithinViewport(click_point.value(), frame_.get())) {
-    DLOG(ERROR) << "Element is offscreen.";
+    ACTOR_LOG() << "Element is offscreen.";
     return std::nullopt;
   }
 

@@ -9,6 +9,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/abseil-cpp/absl/strings/str_format.h"
 #include "url/gurl.h"
 
 using content::NavigationHandle;
@@ -51,6 +52,10 @@ void NavigateTool::Invoke(InvokeCallback callback) {
   web_contents()->OpenURL(
       params, base::BindOnce(&NavigateTool::NavigationHandleCallback,
                              weak_ptr_factory_.GetWeakPtr()));
+}
+
+std::string NavigateTool::DebugString() const {
+  return absl::StrFormat("NavigateTool[%s]", url_.spec());
 }
 
 void NavigateTool::DidFinishNavigation(NavigationHandle* navigation_handle) {
