@@ -169,13 +169,12 @@
 
 - (void)didTapPrimaryButton {
   if (_didTapPrimaryButton) {
-    NOTREACHED(base::NotFatalUntil::M127)
-        << "Double tap on primary button [_firstRun = " << _firstRun
-        << " ; delay : "
-        << (base::Time::Now() - _lastCallToDidTapPrimaryButtonTimestamp)
-               .InMilliseconds()
-        << " ms]";
-    return;
+    NOTREACHED() << "Double tap on primary button [_firstRun = " << _firstRun
+                 << " ; delay : "
+                 << (base::Time::Now() -
+                     _lastCallToDidTapPrimaryButtonTimestamp)
+                        .InMilliseconds()
+                 << " ms]";
   }
   _didTapPrimaryButton = YES;
   _lastCallToDidTapPrimaryButtonTimestamp = base::Time::Now();

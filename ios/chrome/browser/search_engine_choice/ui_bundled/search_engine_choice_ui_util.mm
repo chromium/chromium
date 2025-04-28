@@ -14,7 +14,7 @@
 
 UIImage* SearchEngineFaviconFromTemplateURL(const TemplateURL& template_url) {
   // Only works for prepopulated search engines.
-  CHECK_GT(template_url.prepopulate_id(), 0, base::NotFatalUntil::M127)
+  CHECK_GT(template_url.prepopulate_id(), 0)
       << base::UTF16ToUTF8(template_url.short_name());
   std::u16string engine_keyword = template_url.data().keyword();
   int resource_id = search_engines::GetIconResourceId(engine_keyword);
