@@ -26,6 +26,7 @@ import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.widget.AnchoredPopupWindow;
 import org.chromium.ui.widget.RectProvider;
+import org.chromium.ui.widget.ViewRectProvider;
 
 /**
  * A coordinator for the menu on tab group cards in GTS. It is responsible for creating a list of
@@ -73,7 +74,12 @@ public class TabListGroupMenuCoordinator extends TabGroupOverflowMenuCoordinator
             if (tabGroupId == null) return;
 
             mShouldShowIcons = false;
-            createAndShowMenu(view, tabGroupId, (Activity) view.getContext());
+            createAndShowMenu(
+                    new ViewRectProvider(view),
+                    tabGroupId,
+                    /* animStyle= */ R.style.EndIconMenuAnim,
+                    /* verticalOverlapAnchor= */ true,
+                    (Activity) view.getContext());
         };
     }
 
@@ -89,16 +95,30 @@ public class TabListGroupMenuCoordinator extends TabGroupOverflowMenuCoordinator
         createAndShowMenu(
                 anchorViewRectProvider,
                 tabGroupId,
-                /* horizontalOverlapAnchor= */ true,
-                /* verticalOverlapAnchor= */ false,
                 /* animStyle= */ ResourcesCompat.ID_NULL,
-                AnchoredPopupWindow.HorizontalOrientation.LAYOUT_DIRECTION,
+                /* verticalOverlapAnchor= */ false,
                 mActivity);
+    }
+
+    private void createAndShowMenu(
+            RectProvider anchorRectProvider,
+            @NonNull Token tabGroupId,
+            int animStyle,
+            boolean verticalOverlapAnchor,
+            Activity activity) {
+        createAndShowMenu(
+                anchorRectProvider,
+                tabGroupId,
+                /* horizontalOverlapAnchor= */ true,
+                /* verticalOverlapAnchor= */ verticalOverlapAnchor,
+                /* animStyle= */ animStyle,
+                AnchoredPopupWindow.HorizontalOrientation.MAX_AVAILABLE_SPACE,
+                activity,
+                /* isIncognito= */ false);
     }
 
     @Override
     protected void buildMenuActionItems(ModelList itemList, Token tabGroupId) {
-        boolean isIncognito = mTabModelSupplier.get().isIncognitoBranded();
         @Nullable String collaborationId = getCollaborationIdOrNull(tabGroupId);
         boolean hasCollaborationData =
                 TabShareUtils.isCollaborationIdValid(collaborationId)
@@ -110,8 +130,8 @@ public class TabListGroupMenuCoordinator extends TabGroupOverflowMenuCoordinator
                         mShouldShowIcons ? R.drawable.ic_tab_close_24dp : Resources.ID_NULL,
                         /* iconTintColorStateList= */ Resources.ID_NULL,
                         R.style.TextAppearance_TextLarge_Primary_Baseline_Light,
-                        isIncognito,
-                        true));
+                        /* isIncognito= */ false,
+                        /* enabled= */ true));
         itemList.add(
                 BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
                         R.string.rename_tab_group_menu_item,
@@ -119,8 +139,10 @@ public class TabListGroupMenuCoordinator extends TabGroupOverflowMenuCoordinator
                         mShouldShowIcons ? R.drawable.ic_edit_24dp : Resources.ID_NULL,
                         /* iconTintColorStateList= */ Resources.ID_NULL,
                         R.style.TextAppearance_TextLarge_Primary_Baseline_Light,
-                        isIncognito,
-                        true));
+                        /* isIncognito= */ false,
+                        /* enabled= */ true));
+
+        boolean isIncognito = mTabModelSupplier.get().isIncognitoBranded();
         if (!hasCollaborationData) {
             itemList.add(
                     BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
@@ -129,8 +151,8 @@ public class TabListGroupMenuCoordinator extends TabGroupOverflowMenuCoordinator
                             mShouldShowIcons ? R.drawable.ic_ungroup_tabs_24dp : Resources.ID_NULL,
                             /* iconTintColorStateList= */ Resources.ID_NULL,
                             R.style.TextAppearance_TextLarge_Primary_Baseline_Light,
-                            isIncognito,
-                            true));
+                            /* isIncognito= */ false,
+                            /* enabled= */ true));
             if (!isIncognito && mCollaborationService.getServiceStatus().isAllowedToCreate()) {
                 itemList.add(buildShareMenuItem(R.string.share_tab_group_menu_item));
             }
@@ -150,8 +172,8 @@ public class TabListGroupMenuCoordinator extends TabGroupOverflowMenuCoordinator
                                     : Resources.ID_NULL,
                             /* iconTintColorStateList= */ Resources.ID_NULL,
                             R.style.TextAppearance_TextLarge_Primary_Baseline_Light,
-                            isIncognito,
-                            true));
+                            /* isIncognito= */ false,
+                            /* enabled= */ true));
         }
     }
 
@@ -174,7 +196,9 @@ public class TabListGroupMenuCoordinator extends TabGroupOverflowMenuCoordinator
                     BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
                             R.string.leave_tab_group_menu_item,
                             R.id.leave_group,
-                            /* startIconId= */ Resources.ID_NULL,
+                            mShouldShowIcons
+                                    ? R.drawable.material_ic_delete_24dp
+                                    : Resources.ID_NULL,
                             mShouldShowIcons
                                     ? R.drawable.material_ic_delete_24dp
                                     : Resources.ID_NULL,
