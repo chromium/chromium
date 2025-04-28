@@ -39,8 +39,12 @@ content::WebContents* BrowserDelegateImpl::GetActiveWebContents() const {
   return browser_->tab_strip_model()->GetActiveWebContents();
 }
 
+size_t BrowserDelegateImpl::GetWebContentsCount() const {
+  return browser_->tab_strip_model()->count();
+}
+
 content::WebContents* BrowserDelegateImpl::GetWebContentsAt(
-    unsigned int index) const {
+    size_t index) const {
   return browser_->tab_strip_model()->GetWebContentsAt(index);
 }
 

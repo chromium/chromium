@@ -45,9 +45,12 @@ class BrowserDelegate {
   // being initialized or destroyed.
   virtual content::WebContents* GetActiveWebContents() const = 0;
 
+  // Returns the number of web contents.
+  virtual size_t GetWebContentsCount() const = 0;
+
   // Returns the contents for the given index, or nullptr if out of bounds. Can
   // be nullptr even if index is in bounds, just like GetActiveWebContents().
-  virtual content::WebContents* GetWebContentsAt(unsigned int index) const = 0;
+  virtual content::WebContents* GetWebContentsAt(size_t index) const = 0;
 
   // Returns the native window. Can be nullptr, e.g. when the browser is being
   // closed.

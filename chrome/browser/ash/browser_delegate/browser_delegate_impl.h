@@ -23,7 +23,8 @@ class BrowserDelegateImpl : public BrowserDelegate {
   SessionID GetSessionID() const override;
   gfx::Rect GetBounds() const override;
   content::WebContents* GetActiveWebContents() const override;
-  content::WebContents* GetWebContentsAt(unsigned int index) const override;
+  size_t GetWebContentsCount() const override;
+  content::WebContents* GetWebContentsAt(size_t index) const override;
   aura::Window* GetNativeWindow() const override;
   bool IsClosing() const override;
   void Show() override;
