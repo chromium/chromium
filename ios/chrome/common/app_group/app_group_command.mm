@@ -28,7 +28,7 @@ void PutCommandInNSUserDefault(NSDictionary* command) {
 
 @interface AppGroupCommand ()
 // The identifier of the extension that sent the order.
-@property(nonatomic, strong) NSString* sourceApp;
+@property(nonatomic, copy) NSString* sourceApp;
 
 // A block that can be used to open a URL.
 @property(nonatomic, strong) URLOpenerBlock opener;
@@ -39,7 +39,7 @@ void PutCommandInNSUserDefault(NSDictionary* command) {
                    URLOpenerBlock:(URLOpenerBlock)opener {
   self = [super init];
   if (self) {
-    _sourceApp = sourceApp;
+    _sourceApp = [sourceApp copy];
     _opener = opener;
   }
   return self;

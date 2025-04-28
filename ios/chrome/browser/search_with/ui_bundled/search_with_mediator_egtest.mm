@@ -115,7 +115,7 @@ bool FindEditMenuAction(NSString* accessibility_label) {
 
 // Tests for the Search With Edit menu entry.
 @interface SearchWithMediatorTestCase : ChromeTestCase
-@property(nonatomic, strong) NSString* defaultSearchEngine;
+@property(nonatomic, copy) NSString* defaultSearchEngine;
 @end
 
 @implementation SearchWithMediatorTestCase
