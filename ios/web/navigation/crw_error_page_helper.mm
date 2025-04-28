@@ -47,8 +47,8 @@ NSString* InjectedErrorPageFilePath() {
 @interface CRWErrorPageHelper ()
 @property(nonatomic, strong) NSError* error;
 // The error page HTML to be injected into existing page.
-@property(nonatomic, strong) NSString* automaticReloadJavaScript;
-@property(nonatomic, strong, readonly) NSString* failedNavigationURLString;
+@property(nonatomic, copy) NSString* automaticReloadJavaScript;
+@property(nonatomic, copy, readonly) NSString* failedNavigationURLString;
 @end
 
 @implementation CRWErrorPageHelper

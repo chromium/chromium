@@ -143,7 +143,7 @@ void StartDownloadForWebState(__weak SharingCoordinator* coordinator,
 @property(nonatomic, strong) NSURL* fileNSURL;
 
 // String where the downloaded file is saved.
-@property(nonatomic, strong) NSString* filePath;
+@property(nonatomic, copy) NSString* filePath;
 
 // CRWWebViewDownload instance that handle download interactions.
 @property(nonatomic, strong) id<CRWWebViewDownload> download;

@@ -15,7 +15,7 @@
 @property(nonatomic, strong) UIImage* image;
 
 // The image's title.
-@property(nonatomic, strong) NSString* title;
+@property(nonatomic, copy) NSString* title;
 
 @end
 
@@ -26,7 +26,7 @@
   DCHECK(title);
   if ((self = [super init])) {
     _image = image;
-    _title = title;
+    _title = [title copy];
   }
   return self;
 }

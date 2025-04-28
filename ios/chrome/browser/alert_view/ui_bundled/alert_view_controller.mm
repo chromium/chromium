@@ -232,8 +232,8 @@ GrayHighlightButton* GetButtonForAction(AlertAction* action) {
 @property(nonatomic, assign) BOOL actionButtonsAreInitiallyDisabled;
 
 // The Lottie image names for the image in the alert.
-@property(nonatomic, strong) NSString* imageLottieName;
-@property(nonatomic, strong) NSString* imageDarkModeLottieName;
+@property(nonatomic, copy) NSString* imageLottieName;
+@property(nonatomic, copy) NSString* imageDarkModeLottieName;
 
 // Custom animation view used for the image in this alert.
 @property(nonatomic, strong) id<LottieAnimation> animationViewWrapper;
@@ -562,12 +562,12 @@ GrayHighlightButton* GetButtonForAction(AlertAction* action) {
   return _buttonAlertActionsDictionary;
 }
 
-#pragma mark - ALertConsumer
+#pragma mark - AlertConsumer
 
 - (void)setImageLottieName:(NSString*)imageLottieName
         darkModeLottieName:imageDarkModeLottieName {
-  _imageLottieName = imageLottieName;
-  _imageDarkModeLottieName = imageDarkModeLottieName;
+  _imageLottieName = [imageLottieName copy];
+  _imageDarkModeLottieName = [imageDarkModeLottieName copy];
 }
 
 #pragma mark - UIGestureRecognizerDelegate

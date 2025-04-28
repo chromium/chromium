@@ -38,7 +38,7 @@ enum DismissalReason {
 @property(nonatomic, readwrite) ScannerView* scannerView;
 
 // The scanned result.
-@property(nonatomic, strong) NSString* result;
+@property(nonatomic, copy) NSString* result;
 
 // Whether the scanned result should be immediately loaded.
 @property(nonatomic, assign) bool loadResultImmediately;

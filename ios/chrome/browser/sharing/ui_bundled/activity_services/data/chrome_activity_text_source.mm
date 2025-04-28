@@ -11,7 +11,7 @@
 @interface ChromeActivityTextSource ()
 
 // Text to be shared with share extensions.
-@property(nonatomic, strong) NSString* text;
+@property(nonatomic, copy) NSString* text;
 
 @end
 
