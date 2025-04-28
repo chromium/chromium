@@ -10,10 +10,12 @@ source_set("model") {
     "home_background_customization_service.mm",
     "home_background_customization_service_factory.h",
     "home_background_customization_service_factory.mm",
+    "home_background_customization_service_observer.h",
   ]
   deps = [
     "//base",
     "//components/keyed_service/core",
+    "//components/sync/protocol",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ui/base",
