@@ -622,7 +622,6 @@ source_set("web_applications") {
       "//chrome/browser/web_applications/ash/migrations",
       "//chrome/common/chromeos/extensions",
       "//chromeos/ash/components/browser_context_helper",
-      "//chromeos/ash/components/file_manager:constants",
       "//chromeos/ash/components/report:utils",
       "//chromeos/ash/experiences/arc:arc_base",
       "//chromeos/ash/experiences/system_web_apps/types",
