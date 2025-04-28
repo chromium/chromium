@@ -146,6 +146,7 @@ std::optional<BiddingAndAuctionResponse> BiddingAndAuctionResponse::TryParse(
   }
   output.is_chaff = false;
 
+  // By design, missing "adRenderURL" field means there is no winner.
   base::Value* maybe_render_url_value = input_dict->Find("adRenderURL");
   if (maybe_render_url_value) {
     std::string* maybe_render_url = maybe_render_url_value->GetIfString();

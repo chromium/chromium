@@ -654,10 +654,12 @@ MATCHER_P(EqualsBiddingAndAuctionResponse,
 
 TEST(BiddingAndAuctionResponseTest, ParseFails) {
   static const base::Value kTestCases[] = {
-      base::Value(1),                                          // Not a dict
-      base::Value(base::Value::Dict().Set("isChaff", 1)),      // wrong type
+      base::Value(1),                                      // Not a dict
+      base::Value(base::Value::Dict().Set("isChaff", 1)),  // wrong type
       base::Value(
           CreateValidResponseDict().Set("adRenderURL", 1)),  // not a string
+      base::Value(
+          CreateValidResponseDict().Set("adRenderURL", "")),  // empty string
       base::Value(
           CreateValidResponseDict().Set("adRenderURL", "not a valid URL")),
       base::Value(CreateValidResponseDict().Set("components", "not a list")),
