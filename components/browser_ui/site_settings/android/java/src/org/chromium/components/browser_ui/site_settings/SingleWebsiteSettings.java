@@ -1162,7 +1162,6 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
             row.setImageView(
                     R.drawable.ic_delete_white_24dp,
                     getContext()
-                            .getResources()
                             .getString(
                                     R.string.website_settings_file_editing_grant_revoke,
                                     grant.getDisplayName()),
@@ -1298,6 +1297,10 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
         @ContentSettingsType.EnumType
         int contentType = getContentSettingsTypeFromPreferenceKey(preference.getKey());
         int titleResourceId = ContentSettingsResources.getTitle(contentType);
+
+        if (contentType == ContentSettingsType.JAVASCRIPT_OPTIMIZER) {
+            titleResourceId = R.string.website_settings_single_website_javascript_optimizer_toggle;
+        }
 
         if (titleResourceId != 0) {
             preference.setTitle(titleResourceId);

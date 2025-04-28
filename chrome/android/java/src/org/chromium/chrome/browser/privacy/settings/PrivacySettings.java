@@ -60,7 +60,9 @@ import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.site_settings.ContentSettingsResources;
 import org.chromium.components.browser_ui.site_settings.SingleCategorySettings;
+import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
+import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.content_settings.CookieControlsMode;
 import org.chromium.components.permissions.OsAdditionalSecurityPermissionProvider;
 import org.chromium.components.permissions.OsAdditionalSecurityPermissionUtil;
@@ -453,6 +455,13 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
                             : ContentSettingsResources.getThirdPartyCookieListSummary(
                                     UserPrefs.get(getProfile()).getInteger(COOKIE_CONTROLS_MODE)));
         }
+
+        Preference javascriptOptimizerPref = findPreference(PREF_JAVASCRIPT_OPTIMIZER);
+        javascriptOptimizerPref.setSummary(
+                WebsitePreferenceBridge.isCategoryEnabled(
+                                getProfile(), ContentSettingsType.JAVASCRIPT_OPTIMIZER)
+                        ? R.string.website_settings_category_javascript_optimizer_allowed_list
+                        : R.string.website_settings_category_javascript_optimizer_blocked_list);
     }
 
     private boolean showTrackingProtectionUi() {

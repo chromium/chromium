@@ -81,6 +81,9 @@ import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.browser_ui.site_settings.SingleCategorySettings;
+import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
+import org.chromium.components.content_settings.ContentSettingValues;
+import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
@@ -565,6 +568,42 @@ public class PrivacySettingsFragmentTest {
             mSettingsActivityTestRule.startSettingsActivity();
             SettingsNavigationFactory.setInstanceForTesting(mSettingsNavigation);
         }
+    }
+
+    @Test
+    @LargeTest
+    public void testJavascriptOptimizerSummary_ToggleAllowed() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    WebsitePreferenceBridge.setDefaultContentSetting(
+                            ProfileManager.getLastUsedRegularProfile(),
+                            ContentSettingsType.JAVASCRIPT_OPTIMIZER,
+                            ContentSettingValues.ALLOW);
+                });
+        mSettingsActivityTestRule.startSettingsActivity();
+        int javascriptOptimizerLabel =
+                R.string.website_settings_privacy_and_security_javascript_optimizer_row_label;
+        scrollToSetting(withText(javascriptOptimizerLabel));
+        onView(withText(R.string.website_settings_category_javascript_optimizer_allowed_list))
+                .check(matches(isDisplayed()));
+    }
+
+    @Test
+    @LargeTest
+    public void testJavascriptOptimizerSummary_ToggleBlocked() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    WebsitePreferenceBridge.setDefaultContentSetting(
+                            ProfileManager.getLastUsedRegularProfile(),
+                            ContentSettingsType.JAVASCRIPT_OPTIMIZER,
+                            ContentSettingValues.BLOCK);
+                });
+        mSettingsActivityTestRule.startSettingsActivity();
+        int javascriptOptimizerLabel =
+                R.string.website_settings_privacy_and_security_javascript_optimizer_row_label;
+        scrollToSetting(withText(javascriptOptimizerLabel));
+        onView(withText(R.string.website_settings_category_javascript_optimizer_blocked_list))
+                .check(matches(isDisplayed()));
     }
 
     /**
