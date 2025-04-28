@@ -851,4 +851,34 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
         Mockito.verify(mWebContentsDataJniMock, Mockito.times(1))
                 .recordActivationlessShow(Mockito.any());
     }
+
+    @Test
+    @Feature({"Payments"})
+    @EnableFeatures({PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION_FALLBACK})
+    public void
+            disconnectFromClientWithDebugMessage_userCancelPaymentErrorReason_whenSpcFallbackEnabled() {
+        PaymentRequestService service =
+                defaultBuilder().setOnlySpcMethodWithoutPaymentOptions().build();
+
+        service.disconnectFromClientWithDebugMessage(
+                ErrorStrings.USER_CANCELLED, PaymentErrorReason.USER_CANCEL);
+
+        assertErrorAndReason(ErrorStrings.USER_CANCELLED, PaymentErrorReason.USER_CANCEL);
+    }
+
+    @Test
+    @Feature({"Payments"})
+    @DisableFeatures({PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION_FALLBACK})
+    public void
+            disconnectFromClientWithDebugMessage_userCancelPaymentErrorReason_whenSpcFallbackDisabled() {
+        PaymentRequestService service =
+                defaultBuilder().setOnlySpcMethodWithoutPaymentOptions().build();
+
+        service.disconnectFromClientWithDebugMessage(
+                ErrorStrings.USER_CANCELLED, PaymentErrorReason.USER_CANCEL);
+
+        assertErrorAndReason(
+                ErrorStrings.WEB_AUTHN_OPERATION_TIMED_OUT_OR_NOT_ALLOWED,
+                PaymentErrorReason.NOT_ALLOWED_ERROR);
+    }
 }
