@@ -202,9 +202,16 @@ ParseServerPredictionOverrideJson(const base::Value& value) {
             }
           }
         }
+        if (const std::string* format_string_type =
+                suggestion_dict.FindString("format_string_type")) {
+          FormatString_Type type;
+          if (FormatString_Type_Parse(*format_string_type, &type)) {
+            suggestion.mutable_format_string()->set_type(type);
+          }
+        }
         if (const std::string* format_string =
                 suggestion_dict.FindString("format_string")) {
-          suggestion.set_format_string(*format_string);
+          suggestion.mutable_format_string()->set_format_string(*format_string);
         }
       }
     }

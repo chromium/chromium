@@ -915,9 +915,16 @@ void ProcessServerPredictionsQueryResponse(
             field_suggestion->password_requirements());
       }
       if (field_suggestion->has_format_string()) {
-        field->set_format_string_unless_overruled(
-            base::UTF8ToUTF16(field_suggestion->format_string()),
-            AutofillField::FormatStringSource::kServer);
+        switch (field_suggestion->format_string().type()) {
+          case FormatString_Type_DATE:
+            field->set_format_string_unless_overruled(
+                base::UTF8ToUTF16(
+                    field_suggestion->format_string().format_string()),
+                AutofillField::FormatStringSource::kServer);
+            break;
+          default:
+            break;
+        }
       }
       ++field_rank_map[field->GetFieldSignature()];
 
