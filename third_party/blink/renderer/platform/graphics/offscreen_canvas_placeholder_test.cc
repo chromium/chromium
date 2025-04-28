@@ -145,9 +145,9 @@ TEST_F(OffscreenCanvasPlaceholderTest, OldFrameSentBack) {
 
   EXPECT_CALL(*(dispatcher()), PlaceholderReleasedResource(_)).Times(0);
   // Run task that propagates the frame to the placeholder canvas.
-  EXPECT_EQ(placeholder()->OffscreenCanvasFrame().get(), nullptr);
+  EXPECT_EQ(placeholder()->OffscreenCanvasFrame(), nullptr);
   platform->RunUntilIdle();
-  EXPECT_EQ(placeholder()->OffscreenCanvasFrame().get(), frame1_raw_ptr);
+  EXPECT_EQ(placeholder()->OffscreenCanvasFrame(), frame1_raw_ptr);
   Mock::VerifyAndClearExpectations(dispatcher());
 
   EXPECT_CALL(*(dispatcher()), PlaceholderReleasedResource(_)).Times(0);
@@ -158,9 +158,9 @@ TEST_F(OffscreenCanvasPlaceholderTest, OldFrameSentBack) {
   EXPECT_CALL(*(dispatcher()), PlaceholderReleasedResource(frame1_id)).Times(1);
   // Propagate second frame to the placeholder, causing frame 1 to be
   // reclaimed.
-  EXPECT_EQ(placeholder()->OffscreenCanvasFrame().get(), frame1_raw_ptr);
+  EXPECT_EQ(placeholder()->OffscreenCanvasFrame(), frame1_raw_ptr);
   platform->RunUntilIdle();
-  EXPECT_EQ(placeholder()->OffscreenCanvasFrame().get(), frame2_raw_ptr);
+  EXPECT_EQ(placeholder()->OffscreenCanvasFrame(), frame2_raw_ptr);
   Mock::VerifyAndClearExpectations(dispatcher());
 }
 
@@ -179,9 +179,9 @@ TEST_F(OffscreenCanvasPlaceholderTest, OldFrameNotReclaimedUntilUnref) {
 
   EXPECT_CALL(*(dispatcher()), PlaceholderReleasedResource(_)).Times(0);
   // Run task that propagates the frame to the placeholder canvas.
-  EXPECT_EQ(placeholder()->OffscreenCanvasFrame().get(), nullptr);
+  EXPECT_EQ(placeholder()->OffscreenCanvasFrame(), nullptr);
   platform->RunUntilIdle();
-  EXPECT_EQ(placeholder()->OffscreenCanvasFrame().get(), frame1_raw_ptr);
+  EXPECT_EQ(placeholder()->OffscreenCanvasFrame(), frame1_raw_ptr);
   scoped_refptr<CanvasResource> extra_ref =
       placeholder()->OffscreenCanvasFrame();
   Mock::VerifyAndClearExpectations(dispatcher());
@@ -194,9 +194,9 @@ TEST_F(OffscreenCanvasPlaceholderTest, OldFrameNotReclaimedUntilUnref) {
   EXPECT_CALL(*(dispatcher()), PlaceholderReleasedResource(_)).Times(0);
   // Propagate second frame to the placeholder.  First frame will not be
   // reclaimed due to extra_ref.
-  EXPECT_EQ(placeholder()->OffscreenCanvasFrame().get(), frame1_raw_ptr);
+  EXPECT_EQ(placeholder()->OffscreenCanvasFrame(), frame1_raw_ptr);
   platform->RunUntilIdle();
-  EXPECT_EQ(placeholder()->OffscreenCanvasFrame().get(), frame2_raw_ptr);
+  EXPECT_EQ(placeholder()->OffscreenCanvasFrame(), frame2_raw_ptr);
   Mock::VerifyAndClearExpectations(dispatcher());
 
   EXPECT_CALL(*(dispatcher()), PlaceholderReleasedResource(_)).Times(0);
