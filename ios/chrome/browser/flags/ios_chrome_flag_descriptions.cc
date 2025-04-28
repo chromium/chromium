@@ -1269,7 +1269,7 @@ const char kSeparateProfilesForManagedAccountsName[] =
     "Put each managed account into its own profile";
 const char kSeparateProfilesForManagedAccountsDescription[] =
     "If enabled, each managed account will be assigned to its own separate "
-    "profile. Requires #use-account-list-from-identity-manager";
+    "profile.";
 
 const char kSharedHighlightingIOSName[] = "Enable Shared Highlighting features";
 const char kSharedHighlightingIOSDescription[] =
