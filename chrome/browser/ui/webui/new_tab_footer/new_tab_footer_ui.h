@@ -14,6 +14,7 @@
 
 class NewTabFooterHandler;
 class NewTabFooterUI;
+class PrefRegistrySimple;
 class Profile;
 
 class NewTabFooterUIConfig
@@ -34,6 +35,8 @@ class NewTabFooterUI
   ~NewTabFooterUI() override;
 
   static constexpr std::string GetWebUIName() { return "NewTabFooter"; }
+
+  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   // Instantiates the implementor of the mojom::NewTabFooterHandlerFactory mojo
   // interface passing the pending receiver that will be internally bound.

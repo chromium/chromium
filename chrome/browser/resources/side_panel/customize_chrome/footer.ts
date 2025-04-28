@@ -5,9 +5,12 @@
 import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 
 import type {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {CustomizeChromeAction, recordCustomizeChromeAction} from './common.js';
+import type {CustomizeChromePageCallbackRouter, CustomizeChromePageHandlerInterface} from './customize_chrome.mojom-webui.js';
+import {CustomizeChromeApiProxy} from './customize_chrome_api_proxy.js';
 import {getCss} from './footer.css.js';
 import {getHtml} from './footer.html.js';
 
@@ -38,10 +41,37 @@ export class FooterElement extends CrLitElement {
 
   protected accessor show_: boolean = false;
 
+  private callbackRouter_: CustomizeChromePageCallbackRouter;
+  private pageHandler_: CustomizeChromePageHandlerInterface;
+  private setFooterSettingsListenerId_: number|null = null;
+
+  constructor() {
+    super();
+    this.pageHandler_ = CustomizeChromeApiProxy.getInstance().handler;
+    this.callbackRouter_ = CustomizeChromeApiProxy.getInstance().callbackRouter;
+  }
+
+  override connectedCallback() {
+    super.connectedCallback();
+    this.setFooterSettingsListenerId_ =
+        this.callbackRouter_.setFooterSettings.addListener(
+            (footerVisible: boolean) => {
+              this.show_ = footerVisible;
+            });
+    this.pageHandler_.updateFooterSettings();
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    assert(this.setFooterSettingsListenerId_);
+    this.callbackRouter_.removeListener(this.setFooterSettingsListenerId_);
+  }
+
   private setShow_(show: boolean) {
     recordCustomizeChromeAction(
         CustomizeChromeAction.SHOW_FOOTER_TOGGLE_CLICKED);
     this.show_ = show;
+    this.setFooterVisible_();
   }
 
   protected onShowToggleChange_(e: CustomEvent<boolean>) {
@@ -52,6 +82,10 @@ export class FooterElement extends CrLitElement {
   // added.
   protected onShowToggleClick_() {
     this.setShow_(!this.show_);
+  }
+
+  private setFooterVisible_() {
+    this.pageHandler_.setFooterVisible(this.show_);
   }
 }
 

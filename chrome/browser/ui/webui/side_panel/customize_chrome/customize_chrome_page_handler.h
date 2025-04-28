@@ -128,6 +128,8 @@ class CustomizeChromePageHandler
   void OpenNtpManagedByPage() override;
   void SetMostVisitedSettings(bool custom_links_enabled, bool visible) override;
   void UpdateMostVisitedSettings() override;
+  void SetFooterVisible(bool visible) override;
+  void UpdateFooterSettings() override;
   void SetModulesVisible(bool visible) override;
   void SetModuleDisabled(const std::string& module_id, bool disabled) override;
   void UpdateModulesSettings() override;

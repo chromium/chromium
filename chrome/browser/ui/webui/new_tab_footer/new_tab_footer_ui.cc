@@ -10,9 +10,11 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/new_tab_footer/new_tab_footer.mojom.h"
 #include "chrome/browser/ui/webui/new_tab_footer/new_tab_footer_handler.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/new_tab_footer_resources.h"
 #include "chrome/grit/new_tab_footer_resources_map.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "components/search/ntp_features.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
@@ -49,6 +51,11 @@ NewTabFooterUI::NewTabFooterUI(content::WebUI* web_ui)
 }
 
 NewTabFooterUI::~NewTabFooterUI() = default;
+
+// static
+void NewTabFooterUI::RegisterProfilePrefs(PrefRegistrySimple* registry) {
+  registry->RegisterBooleanPref(prefs::kNtpFooterVisible, true);
+}
 
 void NewTabFooterUI::BindInterface(
     mojo::PendingReceiver<new_tab_footer::mojom::NewTabFooterHandlerFactory>

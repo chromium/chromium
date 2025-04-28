@@ -1456,6 +1456,8 @@ static_library("ui") {
       "webui/metrics_reporter/metrics_reporter.h",
       "webui/metrics_reporter/metrics_reporter_service.cc",
       "webui/metrics_reporter/metrics_reporter_service.h",
+      "webui/new_tab_footer/new_tab_footer_ui.cc",
+      "webui/new_tab_footer/new_tab_footer_ui.h",
       "webui/new_tab_page/new_tab_page_handler.cc",
       "webui/new_tab_page/new_tab_page_handler.h",
       "webui/new_tab_page/new_tab_page_ui.cc",

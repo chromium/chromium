@@ -171,6 +171,7 @@ class MockPage : public side_panel::mojom::CustomizeChromePage {
               (side_panel::mojom::CustomizeChromeSection));
   MOCK_METHOD(void, AttachedTabStateUpdated, (bool));
   MOCK_METHOD(void, NtpManagedByNameUpdated, (const std::string&));
+  MOCK_METHOD(void, SetFooterSettings, (bool visible));
 
   mojo::Receiver<side_panel::mojom::CustomizeChromePage> receiver_{this};
 };
@@ -841,6 +842,40 @@ TEST_F(CustomizeChromePageHandlerTest, UpdateScrollToSection) {
   mock_page_.FlushForTesting();
 
   EXPECT_EQ(side_panel::mojom::CustomizeChromeSection::kAppearance, section);
+}
+
+TEST_F(CustomizeChromePageHandlerTest, SetFooterVisible_True) {
+  bool visible = true;
+  EXPECT_CALL(mock_page_, SetFooterSettings)
+      .Times(2)
+      .WillRepeatedly(SaveArg<0>(&visible));
+
+  profile().GetPrefs()->SetBoolean(prefs::kNtpFooterVisible, false);
+  mock_page_.FlushForTesting();
+  EXPECT_FALSE(visible);
+
+  handler().SetFooterVisible(true);
+  mock_page_.FlushForTesting();
+
+  EXPECT_TRUE(visible);
+  EXPECT_TRUE(profile().GetPrefs()->GetBoolean(prefs::kNtpFooterVisible));
+}
+
+TEST_F(CustomizeChromePageHandlerTest, SetFooterVisible_False) {
+  bool visible = false;
+  EXPECT_CALL(mock_page_, SetFooterSettings)
+      .Times(2)
+      .WillRepeatedly(SaveArg<0>(&visible));
+
+  profile().GetPrefs()->SetBoolean(prefs::kNtpFooterVisible, true);
+  mock_page_.FlushForTesting();
+  EXPECT_TRUE(visible);
+
+  handler().SetFooterVisible(false);
+  mock_page_.FlushForTesting();
+
+  EXPECT_FALSE(visible);
+  EXPECT_FALSE(profile().GetPrefs()->GetBoolean(prefs::kNtpFooterVisible));
 }
 
 class CustomizeChromePageHandlerWallpaperSearchTest

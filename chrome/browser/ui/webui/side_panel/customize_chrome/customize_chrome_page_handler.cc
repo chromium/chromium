@@ -130,6 +130,10 @@ CustomizeChromePageHandler::CustomizeChromePageHandler(
       prefs::kNtpHiddenModules,
       base::BindRepeating(&CustomizeChromePageHandler::UpdateModulesSettings,
                           base::Unretained(this)));
+  pref_change_registrar_.Add(
+      prefs::kNtpFooterVisible,
+      base::BindRepeating(&CustomizeChromePageHandler::UpdateFooterSettings,
+                          base::Unretained(this)));
 
   ntp_custom_background_service_observation_.Observe(
       ntp_custom_background_service_.get());
@@ -465,6 +469,15 @@ void CustomizeChromePageHandler::SetMostVisitedSettings(
 
 void CustomizeChromePageHandler::UpdateMostVisitedSettings() {
   page_->SetMostVisitedSettings(IsCustomLinksEnabled(), IsShortcutsVisible());
+}
+
+void CustomizeChromePageHandler::SetFooterVisible(bool visible) {
+  profile_->GetPrefs()->SetBoolean(prefs::kNtpFooterVisible, visible);
+}
+
+void CustomizeChromePageHandler::UpdateFooterSettings() {
+  page_->SetFooterSettings(
+      profile_->GetPrefs()->GetBoolean(prefs::kNtpFooterVisible));
 }
 
 void CustomizeChromePageHandler::SetModulesVisible(bool visible) {

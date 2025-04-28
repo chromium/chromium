@@ -2463,6 +2463,8 @@ inline constexpr char kNtpWallpaperSearchHistory[] =
 // panel across NTP tabs. Incremented at most once per NTP tab.
 inline constexpr char kSeedColorChangeCount[] =
     "colorpicker.SeedColorChangeCount";
+// Whether the NTP footer is visible.
+inline constexpr char kNtpFooterVisible[] = "NewTabPage.FooterVisible";
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // A private RSA key for ADB handshake.
