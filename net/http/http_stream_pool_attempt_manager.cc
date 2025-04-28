@@ -1896,18 +1896,6 @@ void HttpStreamPool::AttemptManager::OnTcpBasedAttemptComplete(
                                  std::move(connect_timing));
 }
 
-void HttpStreamPool::AttemptManager::OnTcpBasedAttemptTcpHandshakeComplete(
-    TcpBasedAttempt* raw_attempt,
-    int rv) {
-  auto it = tcp_based_attempts_.find(raw_attempt);
-  CHECK(it != tcp_based_attempts_.end());
-  if (raw_attempt->is_slow() || !raw_attempt->slow_timer().IsRunning()) {
-    return;
-  }
-
-  raw_attempt->slow_timer().Stop();
-}
-
 void HttpStreamPool::AttemptManager::OnTcpBasedAttemptSlow(
     TcpBasedAttempt* raw_attempt) {
   auto it = tcp_based_attempts_.find(raw_attempt);

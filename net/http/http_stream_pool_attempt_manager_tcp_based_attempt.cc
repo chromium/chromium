@@ -77,7 +77,6 @@ HttpStreamPool::AttemptManager::TcpBasedAttempt::TcpBasedAttempt(
     bool using_tls,
     IPEndPoint ip_endpoint)
     : manager_(manager),
-      using_tls_(using_tls),
       track_(base::trace_event::GetNextGlobalTraceId()),
       flow_(perfetto::Flow::ProcessScoped(
           base::trace_event::GetNextGlobalTraceId())) {
@@ -85,12 +84,12 @@ HttpStreamPool::AttemptManager::TcpBasedAttempt::TcpBasedAttempt(
                       flow_);
   TRACE_EVENT_BEGIN("net.stream", "TcpBasedAttempt::TcpBasedAttempt", track_,
                     flow_, "ip_endpoint", ip_endpoint.ToString());
-  if (using_tls_) {
+  if (using_tls) {
     attempt_ = std::make_unique<TlsStreamAttempt>(
         manager_->pool()->stream_attempt_params(), std::move(ip_endpoint),
         track_,
         HostPortPair::FromSchemeHostPort(manager_->stream_key().destination()),
-        /*ssl_config_provider=*/this);
+        /*delegate=*/this);
   } else {
     attempt_ = std::make_unique<TcpStreamAttempt>(
         manager_->pool()->stream_attempt_params(), std::move(ip_endpoint),
@@ -136,8 +135,6 @@ HttpStreamPool::AttemptManager::TcpBasedAttempt::~TcpBasedAttempt() {
 
 void HttpStreamPool::AttemptManager::TcpBasedAttempt::Start() {
   CHECK(attempt_);
-  TlsStreamAttempt* tls_attempt_ptr =
-      using_tls_ ? static_cast<TlsStreamAttempt*>(attempt_.get()) : nullptr;
   start_time_ = base::TimeTicks::Now();
   int rv = attempt_->Start(base::BindOnce(&TcpBasedAttempt::OnAttemptComplete,
                                           weak_ptr_factory_.GetWeakPtr()));
@@ -160,14 +157,6 @@ void HttpStreamPool::AttemptManager::TcpBasedAttempt::Start() {
     slow_timer_.Start(FROM_HERE, HttpStreamPool::GetConnectionAttemptDelay(),
                       base::BindOnce(&AttemptManager::OnTcpBasedAttemptSlow,
                                      base::Unretained(manager_), this));
-    if (tls_attempt_ptr && !tls_attempt_ptr->IsTcpHandshakeCompleted()) {
-      // SAFETY: Unretained `manager_` is fine since the passed callback runs
-      // is invoked synchronously (without PostTask) when the TCP handshake
-      // completes. See TlsStreamAttempt::DoTcpAttemptComplete.
-      tls_attempt_ptr->SetTcpHandshakeCompletionCallback(
-          base::BindOnce(&AttemptManager::OnTcpBasedAttemptTcpHandshakeComplete,
-                         base::Unretained(manager_), this));
-    }
   } else {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&TcpBasedAttempt::OnAttemptComplete,
@@ -232,6 +221,12 @@ HttpStreamPool::AttemptManager::TcpBasedAttempt::GetInfoAsValue() const {
   }
   manager_->net_log().source().AddToEventParameters(dict);
   return dict;
+}
+
+void HttpStreamPool::AttemptManager::TcpBasedAttempt::OnTcpHandshakeComplete() {
+  // Pause the slow timer until `attempt_` starts a TLS handshake to exclude the
+  // time spent waiting for SSLConfig from the time `this` is considered slow.
+  slow_timer_.Stop();
 }
 
 void HttpStreamPool::AttemptManager::TcpBasedAttempt::OnAttemptComplete(

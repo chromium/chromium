@@ -24,7 +24,7 @@ namespace net {
 
 // Represents a TCP based attempt.
 class HttpStreamPool::AttemptManager::TcpBasedAttempt
-    : public TlsStreamAttempt::SSLConfigProvider {
+    : public TlsStreamAttempt::Delegate {
  public:
   TcpBasedAttempt(AttemptManager* manager,
                   bool using_tls,
@@ -58,7 +58,8 @@ class HttpStreamPool::AttemptManager::TcpBasedAttempt
   bool is_aborted() const { return is_aborted_; }
   void set_is_aborted(bool is_aborted) { is_aborted_ = is_aborted; }
 
-  // TlsStreamAttempt::SSLConfigProvider implementation:
+  // TlsStreamAttempt::Delegate implementation:
+  void OnTcpHandshakeComplete() override;
   int WaitForSSLConfigReady(CompletionOnceCallback callback) override;
   base::expected<SSLConfig, TlsStreamAttempt::GetSSLConfigError> GetSSLConfig()
       override;
@@ -75,7 +76,6 @@ class HttpStreamPool::AttemptManager::TcpBasedAttempt
   void OnAttemptComplete(int rv);
 
   const raw_ptr<AttemptManager> manager_;
-  const bool using_tls_;
   const perfetto::Track track_;
   const perfetto::Flow flow_;
   std::unique_ptr<StreamAttempt> attempt_;

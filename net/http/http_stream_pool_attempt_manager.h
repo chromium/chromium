@@ -454,8 +454,6 @@ class HttpStreamPool::AttemptManager
   raw_ptr<Job> RemoveJobFromQueue(JobQueue::Pointer job_pointer);
 
   void OnTcpBasedAttemptComplete(TcpBasedAttempt* raw_attempt, int rv);
-  void OnTcpBasedAttemptTcpHandshakeComplete(TcpBasedAttempt* raw_attempt,
-                                             int rv);
   void OnTcpBasedAttemptSlow(TcpBasedAttempt* raw_attempt);
 
   void HandleTcpBasedAttemptFailure(
