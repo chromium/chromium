@@ -149,7 +149,7 @@ public class UnsubscribedNotificationsNotificationManager {
                 createNotificationBuilder()
                         .setSilent(true)
                         .setSmallIcon(R.drawable.ic_chrome)
-                        .setAutoCancel(false)
+                        .setAutoCancel(true)
                         .setLocalOnly(true)
                         .setContentTitle(title)
                         .setContentText(contents)

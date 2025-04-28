@@ -73,7 +73,6 @@ public final class UnsubscribedNotificationsNotificationTest {
                             }
                         });
         assertTrue(settingsActivity.getMainFragment() instanceof SafetyHubPermissionsFragment);
-        assertEquals(1, mNotificationTestRule.getNotificationEntries().size());
     }
 
     @Test
@@ -100,6 +99,5 @@ public final class UnsubscribedNotificationsNotificationTest {
                             }
                         });
         assertTrue(settingsActivity.getMainFragment() instanceof SafetyHubPermissionsFragment);
-        assertEquals(1, mNotificationTestRule.getNotificationEntries().size());
     }
 }
