@@ -98,10 +98,13 @@ public class CollaborationControllerDelegateImpl implements CollaborationControl
         mStartAccountRefreshCallback = startAccountRefreshCallback;
 
         if (mFlowType == FlowType.JOIN) {
+            // The screen should not animate in order to hide all ongoing transitions immediately
+            // after this call.
             loadingFullscreenCoordinator.startLoading(
                     () -> {
                         destroy();
-                    });
+                    },
+                    /* animate= */ false);
         }
     }
 
@@ -258,6 +261,10 @@ public class CollaborationControllerDelegateImpl implements CollaborationControl
                                 intent,
                                 (resultCode, data) -> onSigninResult(resultCode, resultCallback),
                                 /* errorId= */ null);
+        if (mFlowType == FlowType.JOIN) {
+            // Animate in the sign in screen.
+            mActivity.overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+        }
 
         mCloseScreenRunnable =
                 () -> {

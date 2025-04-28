@@ -42,8 +42,9 @@ public class LoadingFullscreenCoordinator {
      * Start showing the loading screen.
      *
      * @param onFinishCallback The callback to call when the loading screen exits.
+     * @param animate If the screen should animate.
      */
-    public void startLoading(Runnable onFinishCallback) {
+    public void startLoading(Runnable onFinishCallback, boolean animate) {
         @ColorInt int backgroundColor = SemanticColorUtils.getDefaultBgColor(mActivity);
         View.OnClickListener cancelButtonClickListener =
                 (view) -> {
@@ -66,6 +67,9 @@ public class LoadingFullscreenCoordinator {
                         .build();
 
         mScrimManager.showScrim(mPropertyModel);
+        if (!animate) {
+            mScrimManager.forceAnimationToFinish(mPropertyModel);
+        }
         mContainer.setVisibility(View.VISIBLE);
     }
 
