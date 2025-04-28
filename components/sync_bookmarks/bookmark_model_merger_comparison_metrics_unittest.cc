@@ -732,6 +732,20 @@ TEST_F(BookmarkModelMergerComparisonMetricsTest,
       "UnderBookmarksBar.ByUrlAndTitleAndPath.Between1And19LocalUrlBookmarks",
       /*sample=*/SetComparisonOutcome::kLocalDataIsStrictSubsetOfAccountData,
       /*expected_bucket_count=*/1);
+
+  // Sanity-check the recording of a few metrics without the gaia ID info
+  // breakdown.
+  histogram_tester.ExpectUniqueSample(
+      "Sync.BookmarkModelMerger.Comparison."
+      "ConsideringAllBookmarks.ByUrlAndTitle",
+      /*sample=*/SetComparisonOutcome::kExactMatchNonEmpty,
+      /*expected_bucket_count=*/1);
+
+  histogram_tester.ExpectUniqueSample(
+      "Sync.BookmarkModelMerger.Comparison."
+      "ConsideringAllBookmarks.ByUrlAndUuid",
+      /*sample=*/SetComparisonOutcome::kIntersectionEmpty,
+      /*expected_bucket_count=*/1);
 }
 
 }  // namespace

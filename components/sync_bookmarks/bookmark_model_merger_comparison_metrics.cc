@@ -85,13 +85,13 @@ std::string_view BookmarkCountSuffixToString(BookmarkCountSuffix value) {
   // LINT.IfChange(BookmarkComparisonBookmarkCount)
   switch (value) {
     case kZeroLocalUrlBookmarks:
-      return "ZeroLocalUrlBookmarks";
+      return ".ZeroLocalUrlBookmarks";
     case kBetween1And19LocalUrlBookmarks:
-      return "Between1And19LocalUrlBookmarks";
+      return ".Between1And19LocalUrlBookmarks";
     case kBetween20and999LocalUrlBookmarks:
-      return "Between20and999LocalUrlBookmarks";
+      return ".Between20and999LocalUrlBookmarks";
     case k1000OrMoreLocalUrlBookmarks:
-      return "1000OrMoreLocalUrlBookmarks";
+      return ".1000OrMoreLocalUrlBookmarks";
   }
   // LINT.ThenChange(/tools/metrics/histograms/metadata/sync/histograms.xml:BookmarkComparisonBookmarkCount)
   NOTREACHED();
@@ -105,16 +105,16 @@ std::string_view PreviouslySyncingGaiaIdInfoToInfix(
       NOTREACHED();
     case syncer::PreviouslySyncingGaiaIdInfoForMetrics::
         kNotEnoughInformationToTell:
-      return "UnknownPreviousGaiaId";
+      return ".UnknownPreviousGaiaId";
     case syncer::PreviouslySyncingGaiaIdInfoForMetrics::
         kSyncFeatureNeverPreviouslyTurnedOn:
-      return "NoPreviousGaiaId";
+      return ".NoPreviousGaiaId";
     case syncer::PreviouslySyncingGaiaIdInfoForMetrics::
         kCurrentGaiaIdMatchesPreviousWithSyncFeatureOn:
-      return "MatchesPreviousGaiaId";
+      return ".MatchesPreviousGaiaId";
     case syncer::PreviouslySyncingGaiaIdInfoForMetrics::
         kCurrentGaiaIdIfDiffersPreviousWithSyncFeatureOn:
-      return "DiffersPreviousGaiaId";
+      return ".DiffersPreviousGaiaId";
   }
   // LINT.ThenChange(/tools/metrics/histograms/metadata/sync/histograms.xml:BookmarkComparisonPreviouslySyncingGaiaId)
   NOTREACHED();
@@ -495,22 +495,28 @@ void CompareAndLogHistogramsWithKey(
   const base::flat_set<Key> account_data_set =
       ExtractAccountDataSet<Key>(relevant_account_subtrees);
 
-  const std::string bookmark_count_suffix_string =
-      base::StrCat({".", BookmarkCountSuffixToString(bookmark_count_suffix)});
+  // When recording the metric, always record four metrics, resulting from
+  // the combinatorial cases for:
+  // 1. With and without the infix representing
+  //    PreviouslySyncingGaiaIdInfoForMetrics.
+  // 2. With and without the suffix representing the number of local URL
+  //    bookmarks.
+  for (std::string_view optional_previously_syncing_gaia_id_info_infix :
+       {std::string_view(),
+        PreviouslySyncingGaiaIdInfoToInfix(previously_syncing_gaia_id_info)}) {
+    for (std::string_view optional_bookmark_count_suffix :
+         {std::string_view(),
+          BookmarkCountSuffixToString(bookmark_count_suffix)}) {
+      const std::string histogram_name =
+          base::StrCat({"Sync.BookmarkModelMerger.Comparison",
+                        optional_previously_syncing_gaia_id_info_infix, ".",
+                        SubtreeSelectionToInfix(subtree_selection), ".",
+                        GroupingKeyInfixToString(Key::kGroupingKeyInfix),
+                        optional_bookmark_count_suffix});
 
-  // When recording the metric, always record two metrics, with and without the
-  // suffix representing the number of local URL bookmarks.
-  for (std::string_view optional_bookmark_count_suffix_string :
-       {std::string(), bookmark_count_suffix_string}) {
-    const std::string histogram_name = base::StrCat(
-        {"Sync.BookmarkModelMerger.Comparison.",
-         PreviouslySyncingGaiaIdInfoToInfix(previously_syncing_gaia_id_info),
-         ".", SubtreeSelectionToInfix(subtree_selection), ".",
-         GroupingKeyInfixToString(Key::kGroupingKeyInfix),
-         optional_bookmark_count_suffix_string});
-
-    base::UmaHistogramEnumeration(
-        histogram_name, CompareSets(local_data_set, account_data_set));
+      base::UmaHistogramEnumeration(
+          histogram_name, CompareSets(local_data_set, account_data_set));
+    }
   }
 }
 
