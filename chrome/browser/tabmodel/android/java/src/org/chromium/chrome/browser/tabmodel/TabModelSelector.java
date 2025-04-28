@@ -124,7 +124,10 @@ public interface TabModelSelector {
      * @return The newly opened tab.
      */
     Tab openNewTab(
-            LoadUrlParams loadUrlParams, @TabLaunchType int type, Tab parent, boolean incognito);
+            LoadUrlParams loadUrlParams,
+            @TabLaunchType int type,
+            @Nullable Tab parent,
+            boolean incognito);
 
     /**
      * Searches through all children models for the specified Tab and closes the tab if it exists.

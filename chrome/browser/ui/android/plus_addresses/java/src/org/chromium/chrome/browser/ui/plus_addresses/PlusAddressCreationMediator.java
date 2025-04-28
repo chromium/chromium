@@ -19,8 +19,9 @@ import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationP
 
 import android.content.Context;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
 import org.chromium.chrome.browser.layouts.LayoutType;
@@ -47,6 +48,7 @@ import org.chromium.url.GURL;
  *
  * <p>This mediator sends UI events (OnUiShown, OnUiAccepted, etc.) to the bridge.
  */
+@NullMarked
 /*package*/ class PlusAddressCreationMediator extends EmptyBottomSheetObserver
         implements PlusAddressCreationDelegate, TabModelObserver, LayoutStateObserver {
     private final Context mContext;
@@ -56,8 +58,8 @@ import org.chromium.url.GURL;
     private final TabModel mTabModel;
     private final PlusAddressCreationViewBridge mBridge;
     private PropertyModel mModel;
-    @Nullable private String mProposedPlusAddress;
-    @Nullable private PlusAddressCreationErrorStateInfo mErrorStateInfo;
+    private @Nullable String mProposedPlusAddress;
+    private @Nullable PlusAddressCreationErrorStateInfo mErrorStateInfo;
 
     /**
      * Creates the mediator.
@@ -90,6 +92,7 @@ import org.chromium.url.GURL;
         mTabModel.addObserver(this);
     }
 
+    @Initializer
     void setModel(PropertyModel model) {
         mModel = model;
     }

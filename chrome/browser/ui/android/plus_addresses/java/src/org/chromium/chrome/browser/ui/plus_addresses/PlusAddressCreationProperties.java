@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.ui.plus_addresses;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
@@ -11,6 +12,7 @@ import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 /** Defines the data model for the {@code PlusAddressCreationView}. */
+@NullMarked
 class PlusAddressCreationProperties {
     static final ReadableObjectPropertyKey<PlusAddressCreationNormalStateInfo> NORMAL_STATE_INFO =
             new ReadableObjectPropertyKey<>("normal_state_info");

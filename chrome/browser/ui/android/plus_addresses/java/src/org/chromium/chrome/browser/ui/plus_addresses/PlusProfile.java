@@ -8,10 +8,13 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.util.Objects;
 
 // Android plain old Java object class that is used to display the user's plus addresses in the all
 // plus addresses bottom sheet.
+@NullMarked
 @JNINamespace("plus_addresses")
 class PlusProfile {
     // Plus address email address.

@@ -4,9 +4,10 @@
 
 package org.chromium.chrome.browser.ui.plus_addresses;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
@@ -14,6 +15,8 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.layouts.LayoutManagerProvider;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -24,6 +27,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvi
 import org.chromium.ui.base.WindowAndroid;
 
 /** JNI wrapper for C++ PlusAddressCreationViewAndroid. */
+@NullMarked
 @JNINamespace("plus_addresses")
 public class PlusAddressCreationViewBridge {
     private long mNativePlusAddressCreationPromptAndroid;
@@ -78,8 +82,8 @@ public class PlusAddressCreationViewBridge {
         return new PlusAddressCreationViewBridge(
                 nativePlusAddressCreationPromptAndroid,
                 window.getActivity().get(),
-                BottomSheetControllerProvider.from(window),
-                LayoutManagerProvider.from(window),
+                assumeNonNull(BottomSheetControllerProvider.from(window)),
+                assumeNonNull(LayoutManagerProvider.from(window)),
                 tabModel,
                 tabModelSelector,
                 PlusAddressCreationCoordinator::new);

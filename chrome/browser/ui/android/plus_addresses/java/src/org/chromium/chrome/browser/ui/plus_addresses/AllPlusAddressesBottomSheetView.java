@@ -13,13 +13,14 @@ import android.widget.SearchView;
 import android.widget.SearchView.OnQueryTextListener;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.MonotonicNonNull;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
@@ -27,6 +28,7 @@ import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.ui.base.LocalizationUtils;
 
 /** Implements the bottom sheet content for the all plus addresses bottom sheet. */
+@NullMarked
 class AllPlusAddressesBottomSheetView implements BottomSheetContent {
     private final BottomSheetController mBottomSheetController;
     private final RecyclerView mSheetItemListView;
@@ -48,13 +50,14 @@ class AllPlusAddressesBottomSheetView implements BottomSheetContent {
                         @BottomSheetController.StateChangeReason int reason) {
                     super.onSheetStateChanged(newState, reason);
                     if (newState != BottomSheetController.SheetState.HIDDEN) return;
+                    assert mOnDismissed != null;
                     // This is a fail-safe for cases where onSheetClosed isn't triggered.
                     mOnDismissed.run();
                     mBottomSheetController.removeObserver(mBottomSheetObserver);
                 }
             };
 
-    private Runnable mOnDismissed;
+    private @MonotonicNonNull Runnable mOnDismissed;
 
     public AllPlusAddressesBottomSheetView(
             Context context, BottomSheetController bottomSheetController) {
@@ -93,7 +96,7 @@ class AllPlusAddressesBottomSheetView implements BottomSheetContent {
         if (isVisible) {
             mBottomSheetController.addObserver(mBottomSheetObserver);
             if (!mBottomSheetController.requestShowContent(this, true)) {
-                assert (mOnDismissed != null);
+                assert mOnDismissed != null;
                 mOnDismissed.run();
                 mBottomSheetController.removeObserver(mBottomSheetObserver);
             }
@@ -184,7 +187,7 @@ class AllPlusAddressesBottomSheetView implements BottomSheetContent {
     }
 
     @Override
-    public @NonNull String getSheetContentDescription(Context context) {
+    public String getSheetContentDescription(Context context) {
         return context.getString(
                 R.string.plus_address_all_plus_addresses_bottomsheet_ax_description);
     }

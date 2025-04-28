@@ -4,9 +4,11 @@
 
 package org.chromium.chrome.browser.ui.plus_addresses;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.url.GURL;
 
 /** The set of operations to inform the view delegate about UI events. */
+@NullMarked
 public interface PlusAddressCreationDelegate {
     /** Called when the sninner before the generated plus address gets hidden. */
     public void onPlusAddressLoadingViewHidden();

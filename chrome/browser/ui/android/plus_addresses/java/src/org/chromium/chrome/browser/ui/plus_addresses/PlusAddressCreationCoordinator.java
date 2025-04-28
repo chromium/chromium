@@ -21,6 +21,7 @@ import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationP
 
 import android.content.Context;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -29,6 +30,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /** Coordinator of the plus address creation UI. */
+@NullMarked
 public class PlusAddressCreationCoordinator {
     private PlusAddressCreationMediator mMediator;
 

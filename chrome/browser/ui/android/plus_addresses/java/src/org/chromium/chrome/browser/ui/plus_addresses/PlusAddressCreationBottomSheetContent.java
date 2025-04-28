@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.ui.plus_addresses;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Typeface;
@@ -17,10 +19,11 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
+import org.chromium.build.annotations.MonotonicNonNull;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
@@ -34,6 +37,7 @@ import org.chromium.ui.widget.TextViewWithClickableSpans;
 import org.chromium.url.GURL;
 
 /** Implements the content for the plus address creation bottom sheet. */
+@NullMarked
 public class PlusAddressCreationBottomSheetContent extends EmptyBottomSheetObserver
         implements BottomSheetContent {
     private final Context mContext;
@@ -73,7 +77,7 @@ public class PlusAddressCreationBottomSheetContent extends EmptyBottomSheetObser
     // hidden.
     final ViewStub mErrorContentStub;
 
-    private PlusAddressCreationDelegate mDelegate;
+    private @MonotonicNonNull PlusAddressCreationDelegate mDelegate;
 
     /**
      * Creates the BottomSheetContent and inflates the view given a delegate responding to actions.
@@ -122,10 +126,12 @@ public class PlusAddressCreationBottomSheetContent extends EmptyBottomSheetObser
         mRefreshIcon = mContentView.findViewById(R.id.refresh_plus_address_icon);
 
         mPlusAddressConfirmButton = mContentView.findViewById(R.id.plus_address_confirm_button);
-        mPlusAddressConfirmButton.setOnClickListener(unused -> mDelegate.onConfirmRequested());
+        mPlusAddressConfirmButton.setOnClickListener(
+                unused -> assumeNonNull(mDelegate).onConfirmRequested());
 
         mPlusAddressCancelButton = mContentView.findViewById(R.id.plus_address_cancel_button);
-        mPlusAddressCancelButton.setOnClickListener(unused -> mDelegate.onCanceled());
+        mPlusAddressCancelButton.setOnClickListener(
+                unused -> assumeNonNull(mDelegate).onCanceled());
 
         mLoadingView = mContentView.findViewById(R.id.plus_address_creation_loading_view);
         // {@link LoadingView} is shown and hidden with a delay. This prevents the bottom sheet to
@@ -173,7 +179,7 @@ public class PlusAddressCreationBottomSheetContent extends EmptyBottomSheetObser
                 new ChromeClickableSpan(
                         mContext,
                         v -> {
-                            mDelegate.openUrl(learnMoreUrl);
+                            assumeNonNull(mDelegate).openUrl(learnMoreUrl);
                         });
         SpannableString spannableString =
                 SpanApplier.applySpans(
@@ -209,7 +215,7 @@ public class PlusAddressCreationBottomSheetContent extends EmptyBottomSheetObser
     void setRefreshIconEnabled(boolean enabled) {
         mRefreshIcon.setEnabled(enabled);
         if (enabled) {
-            mRefreshIcon.setOnClickListener(unused -> mDelegate.onRefreshClicked());
+            mRefreshIcon.setOnClickListener(unused -> assumeNonNull(mDelegate).onRefreshClicked());
         } else {
             mRefreshIcon.setOnClickListener(null);
         }
@@ -295,7 +301,7 @@ public class PlusAddressCreationBottomSheetContent extends EmptyBottomSheetObser
     }
 
     @Override
-    public @NonNull String getSheetContentDescription(Context context) {
+    public String getSheetContentDescription(Context context) {
         // TODO(crbug.com/40276862): Replace with final version.
         return context.getString(R.string.plus_address_bottom_sheet_content_description);
     }

@@ -26,8 +26,8 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.plus_addresses.PlusAddressCreationBottomSheetErrorType;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -37,6 +37,7 @@ import org.chromium.ui.text.SpanApplier.SpanInfo;
 /**
  * Binds the {@code PlusAddressCreationProperties} to the {@PlusAddressCreationBottomSheetContent}.
  */
+@NullMarked
 class PlusAddressCreationViewBinder {
 
     static void bindPlusAddressCreationBottomSheet(

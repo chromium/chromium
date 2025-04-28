@@ -9,8 +9,8 @@ import static org.chromium.chrome.browser.ui.plus_addresses.AllPlusAddressesBott
 import static org.chromium.chrome.browser.ui.plus_addresses.AllPlusAddressesBottomSheetProperties.PLUS_PROFILES;
 import static org.chromium.chrome.browser.ui.plus_addresses.AllPlusAddressesBottomSheetProperties.VISIBLE;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ui.plus_addresses.AllPlusAddressesBottomSheetProperties.ItemType;
 import org.chromium.chrome.browser.ui.plus_addresses.AllPlusAddressesBottomSheetProperties.PlusProfileProperties;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Locale;
 
 /** Mediator for the all plus addresses bottom sheet UI component. */
+@NullMarked
 class AllPlusAddressesBottomSheetMediator {
     private final PropertyModel mModel;
     private final AllPlusAddressesBottomSheetCoordinator.Delegate mDelegate;

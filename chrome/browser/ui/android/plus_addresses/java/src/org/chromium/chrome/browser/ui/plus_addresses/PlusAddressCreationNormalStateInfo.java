@@ -10,11 +10,13 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.url.GURL;
 
 import java.util.Objects;
 
 /** Contains necessary information to show a meaningful error message to the user. */
+@NullMarked
 @JNINamespace("plus_addresses")
 class PlusAddressCreationNormalStateInfo {
     private final String mTitle;

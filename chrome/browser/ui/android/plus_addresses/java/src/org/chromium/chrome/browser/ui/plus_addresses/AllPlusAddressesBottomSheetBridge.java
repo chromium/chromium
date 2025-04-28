@@ -6,13 +6,13 @@ package org.chromium.chrome.browser.ui.plus_addresses;
 
 import android.content.Context;
 
-import androidx.annotation.Nullable;
-
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.autofill.helpers.FaviconHelper;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -21,6 +21,7 @@ import org.chromium.ui.base.WindowAndroid;
 
 import java.util.List;
 
+@NullMarked
 @JNINamespace("plus_addresses")
 public class AllPlusAddressesBottomSheetBridge
         implements AllPlusAddressesBottomSheetCoordinator.Delegate {

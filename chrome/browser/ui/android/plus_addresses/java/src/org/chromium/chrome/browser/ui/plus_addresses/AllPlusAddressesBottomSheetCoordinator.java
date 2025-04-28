@@ -12,6 +12,7 @@ import android.content.Context;
 import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.autofill.helpers.FaviconHelper;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -29,6 +30,7 @@ import java.util.List;
  *
  * <p>This coordinator manages the lifecycle of the bottom sheet mediator and view.
  */
+@NullMarked
 class AllPlusAddressesBottomSheetCoordinator {
     private final AllPlusAddressesBottomSheetMediator mMeditor;
 
