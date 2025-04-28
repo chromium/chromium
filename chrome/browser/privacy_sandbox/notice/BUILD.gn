@@ -76,6 +76,7 @@ if (!is_android) {
       "//base",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui/browser_window:browser_window",
+      "//chrome/common",
       "//components/tabs:public",
       "//content/public/browser",
     ]
