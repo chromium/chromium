@@ -4,29 +4,34 @@
 
 #include "chrome/browser/metrics/tab_stats/tab_stats_tracker.h"
 
-#include <algorithm>
+#include <map>
+#include <memory>
+#include <ostream>
+#include <string>
+#include <string_view>
+#include <utility>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_samples.h"
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/power_monitor_test.h"
+#include "base/time/time.h"
 #include "chrome/browser/resource_coordinator/test_lifecycle_unit.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
-#include "chrome/browser/ui/tabs/tab_group.h"
-#include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/test_browser_window.h"
+#include "components/metrics/daily_event.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
-#include "components/tab_groups/tab_group_color.h"
-#include "components/tab_groups/tab_group_id.h"
-#include "components/tab_groups/tab_group_visual_data.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/web_contents_tester.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace metrics {
@@ -41,6 +46,30 @@ std::string GetHistogramNameWithBatteryStateSuffix(const char* histogram_name) {
                            : ".PluggedIn";
 
   return base::StrCat({histogram_name, suffix});
+}
+
+// Like Bucket from histogram_tester.h, but includes the max value so it's
+// easier to test whether samples fall inside the bucket.
+struct HistogramBucket {
+  int32_t min = 0;  // Inclusive
+  int64_t max = 0;  // Exclusive
+  int32_t count = 0;
+};
+
+std::ostream& operator<<(std::ostream& os, const HistogramBucket& bucket) {
+  return os << "Bucket[" << bucket.min << "," << bucket.max
+            << "):" << bucket.count;
+}
+
+// A GMock matcher that matches a HistogramBucket if `sample` is between `min`
+// and `max`, and `count` matches exactly.
+auto SampleCountInBucketMatcher(int sample, int count) {
+  using ::testing::Field;
+  using ::testing::Gt;
+  using ::testing::Le;
+  return ::testing::AllOf(Field("min", &HistogramBucket::min, Le(sample)),
+                          Field("max", &HistogramBucket::max, Gt(sample)),
+                          Field("count", &HistogramBucket::count, count));
 }
 
 class TestTabStatsObserver : public TabStatsObserver {
@@ -63,7 +92,6 @@ class TestTabStatsTracker : public TabStatsTracker {
  public:
   using TabStatsTracker::OnHeartbeatEvent;
   using TabStatsTracker::OnInitialOrInsertedTab;
-  using TabStatsTracker::TabChangedAt;
   using UmaStatsReportingDelegate = TabStatsTracker::UmaStatsReportingDelegate;
 
   explicit TestTabStatsTracker(PrefService* pref_service);
@@ -201,11 +229,70 @@ class TabStatsTrackerTest : public ChromeRenderViewHostTestHarness {
 
   void TearDown() override {
     tab_stats_tracker_->RemoveTabs(tab_strip_model_->count(), tab_strip_model_);
+    tab_stats_tracker_.reset();
 
-    tab_stats_tracker_.reset(nullptr);
+    // Everything depending on `profile()` must be destroyed before it's deleted
+    // in TearDown.
     tab_strip_model_ = nullptr;
-    browser_.reset(nullptr);
+    browser_.reset();
     ChromeRenderViewHostTestHarness::TearDown();
+  }
+
+  std::vector<HistogramBucket> GetHistogramBuckets(
+      std::string_view histogram_name) {
+    auto samples =
+        histogram_tester_.GetHistogramSamplesSinceCreation(histogram_name);
+    auto iterator = samples->Iterator();
+    std::vector<HistogramBucket> buckets;
+    while (!iterator->Done()) {
+      HistogramBucket bucket;
+      iterator->Get(&bucket.min, &bucket.max, &bucket.count);
+      buckets.push_back(bucket);
+      iterator->Next();
+    }
+    return buckets;
+  }
+
+  // Expects that `histogram_name` has a bucket containing `sample`, with count
+  // `expected_count`. There may be samples in other buckets.
+  void ExpectBucketedSample(
+      std::string_view histogram_name,
+      int sample,
+      int expected_count,
+      const base::Location& location = base::Location::Current()) {
+    SCOPED_TRACE(location.ToString());
+    EXPECT_THAT(GetHistogramBuckets(histogram_name),
+                ::testing::Contains(
+                    SampleCountInBucketMatcher(sample, expected_count)));
+  }
+
+  // Expects that `histogram_name` has exactly one bucket containing `sample`,
+  // with count `expected_count`.
+  void ExpectUniqueBucketedSample(
+      std::string_view histogram_name,
+      int sample,
+      int expected_count,
+      const base::Location& location = base::Location::Current()) {
+    SCOPED_TRACE(location.ToString());
+    EXPECT_THAT(GetHistogramBuckets(histogram_name),
+                ::testing::ElementsAre(
+                    SampleCountInBucketMatcher(sample, expected_count)));
+  }
+
+  // Expects that `histogram_name` contains an exact list of buckets. Each entry
+  // in `expected_sample_counts` is a sample mapped to the expected count in the
+  // bucket containing that sample.
+  void ExpectExactBucketedSamples(
+      std::string_view histogram_name,
+      const std::map<int, int>& expected_sample_counts,
+      const base::Location& location = base::Location::Current()) {
+    SCOPED_TRACE(location.ToString());
+    std::vector<::testing::Matcher<HistogramBucket>> matchers;
+    for (const auto& [sample, count] : expected_sample_counts) {
+      matchers.push_back(SampleCountInBucketMatcher(sample, count));
+    }
+    EXPECT_THAT(GetHistogramBuckets(histogram_name),
+                ::testing::UnorderedElementsAreArray(matchers));
   }
 
   // The tabs stat tracker instance, it should be created in the SetUp
@@ -237,11 +324,6 @@ TestTabStatsTracker::TestTabStatsTracker(PrefService* pref_service)
   heartbeat_timer_for_testing()->Stop();
 }
 
-// Comparator for base::Bucket values.
-bool CompareHistogramBucket(const base::Bucket& l, const base::Bucket& r) {
-  return l.min < r.min;
-}
-
 }  // namespace
 
 TEST_F(TabStatsTrackerTest, MainFrameCommittedNavigationTriggersUpdate) {
@@ -259,10 +341,11 @@ TEST_F(TabStatsTrackerTest, MainFrameCommittedNavigationTriggersUpdate) {
   // Commit a main frame navigation on the observed tab.
   auto* parent = content::NavigationSimulator::NavigateAndCommitFromBrowser(
       web_contents.get(), GURL(kFirstUrl));
-  DCHECK(parent);
+  ASSERT_TRUE(parent);
 
   // Navigation registered.
   ASSERT_EQ(tab_stats_observer.main_frame_committed_navigations_count(), 1u);
+  tab_stats_tracker_->RemoveObserver(&tab_stats_observer);
 }
 
 TEST_F(TabStatsTrackerTest, OnResume) {
@@ -274,9 +357,6 @@ TEST_F(TabStatsTrackerTest, OnResume) {
   size_t expected_tab_count =
       tab_stats_tracker_->AddTabs(12, this, tab_strip_model_);
 
-  std::vector<base::Bucket> count_buckets;
-  count_buckets.emplace_back(base::Bucket(expected_tab_count, 1));
-
   EXPECT_EQ(power_monitor_source_.GetBatteryPowerStatus(),
             base::PowerStateObserver::BatteryPowerStatus::kUnknown);
 
@@ -286,25 +366,17 @@ TEST_F(TabStatsTrackerTest, OnResume) {
   power_monitor_source_.GenerateResumeEvent();
 
   // There should be only one sample for the |kNumberOfTabsOnResume| histogram.
-  histogram_tester_.ExpectTotalCount(
+  ExpectUniqueBucketedSample(
       UmaStatsReportingDelegate::kNumberOfTabsOnResumeHistogramName,
-      count_buckets.size());
-  histogram_tester_.ExpectTotalCount(
+      expected_tab_count, 1);
+  ExpectUniqueBucketedSample(
       GetHistogramNameWithBatteryStateSuffix(
           UmaStatsReportingDelegate::kNumberOfTabsOnResumeHistogramName),
-      count_buckets.size());
-  EXPECT_EQ(histogram_tester_.GetAllSamples(
-                UmaStatsReportingDelegate::kNumberOfTabsOnResumeHistogramName),
-            count_buckets);
-  EXPECT_EQ(
-      histogram_tester_.GetAllSamples(GetHistogramNameWithBatteryStateSuffix(
-          UmaStatsReportingDelegate::kNumberOfTabsOnResumeHistogramName)),
-      count_buckets);
+      expected_tab_count, 1);
 
   // Removes some tabs and update the expectations.
-  expected_tab_count = tab_stats_tracker_->RemoveTabs(5, tab_strip_model_);
-  count_buckets.emplace_back(base::Bucket(expected_tab_count, 1));
-  std::sort(count_buckets.begin(), count_buckets.end(), CompareHistogramBucket);
+  size_t expected_tab_count2 =
+      tab_stats_tracker_->RemoveTabs(5, tab_strip_model_);
 
   power_monitor_source_.GeneratePowerStateEvent(
       base::PowerStateObserver::BatteryPowerStatus::kBatteryPower);
@@ -315,20 +387,14 @@ TEST_F(TabStatsTrackerTest, OnResume) {
   power_monitor_source_.GenerateResumeEvent();
 
   // There should be 2 samples for this metric now.
-  histogram_tester_.ExpectTotalCount(
+  ExpectExactBucketedSamples(
       UmaStatsReportingDelegate::kNumberOfTabsOnResumeHistogramName,
-      count_buckets.size());
-  histogram_tester_.ExpectTotalCount(
+      {{expected_tab_count, 1}, {expected_tab_count2, 1}});
+  // This metric should only contain the newer sample.
+  ExpectUniqueBucketedSample(
       GetHistogramNameWithBatteryStateSuffix(
           UmaStatsReportingDelegate::kNumberOfTabsOnResumeHistogramName),
-      1);
-  EXPECT_EQ(histogram_tester_.GetAllSamples(
-                UmaStatsReportingDelegate::kNumberOfTabsOnResumeHistogramName),
-            count_buckets);
-  histogram_tester_.ExpectUniqueSample(
-      GetHistogramNameWithBatteryStateSuffix(
-          UmaStatsReportingDelegate::kNumberOfTabsOnResumeHistogramName),
-      expected_tab_count, 1);
+      expected_tab_count2, 1);
 }
 
 TEST_F(TabStatsTrackerTest, StatsGetReportedDaily) {
@@ -355,26 +421,25 @@ TEST_F(TabStatsTrackerTest, StatsGetReportedDaily) {
   tab_stats_tracker_->TriggerDailyEvent();
 
   // Ensures that the histograms have been properly updated.
-  histogram_tester_.ExpectUniqueSample(
+  ExpectUniqueBucketedSample(
       UmaStatsReportingDelegate::kMaxTabsInADayHistogramName,
       stats.total_tab_count_max, 1);
-  histogram_tester_.ExpectUniqueSample(
+  ExpectUniqueBucketedSample(
       GetHistogramNameWithBatteryStateSuffix(
           UmaStatsReportingDelegate::kMaxTabsInADayHistogramName),
       stats.total_tab_count_max, 1);
-  histogram_tester_.ExpectUniqueSample(
+  ExpectUniqueBucketedSample(
       UmaStatsReportingDelegate::kMaxTabsPerWindowInADayHistogramName,
       stats.max_tab_per_window, 1);
-  histogram_tester_.ExpectUniqueSample(
+  ExpectUniqueBucketedSample(
       GetHistogramNameWithBatteryStateSuffix(
           UmaStatsReportingDelegate::kMaxTabsPerWindowInADayHistogramName),
       stats.max_tab_per_window, 1);
-  histogram_tester_.ExpectUniqueSample(
+  ExpectUniqueBucketedSample(
       UmaStatsReportingDelegate::kMaxWindowsInADayHistogramName,
       stats.window_count_max, 1);
-  histogram_tester_.ExpectUniqueSample(
-      GetHistogramNameWithBatteryStateSuffix(
-          UmaStatsReportingDelegate::kMaxWindowsInADayHistogramName),
+  ExpectUniqueBucketedSample(
+      UmaStatsReportingDelegate::kMaxWindowsInADayHistogramName,
       stats.window_count_max, 1);
 
   // Manually call the function to update the maximum number of tabs in a single
@@ -406,24 +471,23 @@ TEST_F(TabStatsTrackerTest, StatsGetReportedDaily) {
   tab_stats_tracker_->TriggerDailyEvent();
 
   // The values in the histograms should now be equal to the current state.
-  histogram_tester_.ExpectBucketCount(
-      UmaStatsReportingDelegate::kMaxTabsInADayHistogramName,
-      stats.total_tab_count_max, 1);
-  histogram_tester_.ExpectBucketCount(
+  ExpectBucketedSample(UmaStatsReportingDelegate::kMaxTabsInADayHistogramName,
+                       stats.total_tab_count_max, 1);
+  ExpectBucketedSample(
       GetHistogramNameWithBatteryStateSuffix(
           UmaStatsReportingDelegate::kMaxTabsInADayHistogramName),
       stats.total_tab_count_max, 1);
-  histogram_tester_.ExpectBucketCount(
+  ExpectBucketedSample(
       UmaStatsReportingDelegate::kMaxTabsPerWindowInADayHistogramName,
       stats.max_tab_per_window, 1);
-  histogram_tester_.ExpectBucketCount(
+  ExpectBucketedSample(
       GetHistogramNameWithBatteryStateSuffix(
           UmaStatsReportingDelegate::kMaxTabsPerWindowInADayHistogramName),
       stats.max_tab_per_window, 1);
-  histogram_tester_.ExpectBucketCount(
+  ExpectBucketedSample(
       UmaStatsReportingDelegate::kMaxWindowsInADayHistogramName,
       stats.window_count_max, 1);
-  histogram_tester_.ExpectBucketCount(
+  ExpectBucketedSample(
       GetHistogramNameWithBatteryStateSuffix(
           UmaStatsReportingDelegate::kMaxWindowsInADayHistogramName),
       stats.window_count_max, 1);
@@ -493,35 +557,35 @@ TEST_F(TabStatsTrackerTest, DailyDiscards) {
   tab_stats_tracker_->TriggerDailyEvent();
 
   // Checks that the histograms have been properly updated.
-  histogram_tester_.ExpectUniqueSample(
+  ExpectUniqueBucketedSample(
       UmaStatsReportingDelegate::kDailyDiscardsExternalHistogramName,
       kExpectedDiscardsExternal, 1);
-  histogram_tester_.ExpectUniqueSample(
+  ExpectUniqueBucketedSample(
       UmaStatsReportingDelegate::kDailyDiscardsUrgentHistogramName,
       kExpectedDiscardsUrgent, 1);
-  histogram_tester_.ExpectUniqueSample(
+  ExpectUniqueBucketedSample(
       UmaStatsReportingDelegate::kDailyDiscardsProactiveHistogramName,
       kExpectedDiscardsProactive, 1);
-  histogram_tester_.ExpectUniqueSample(
+  ExpectUniqueBucketedSample(
       UmaStatsReportingDelegate::kDailyDiscardsSuggestedHistogramName,
       kExpectedDiscardsSuggested, 1);
-  histogram_tester_.ExpectUniqueSample(
+  ExpectUniqueBucketedSample(
       UmaStatsReportingDelegate::
           kDailyDiscardsFrozenWithGrowingMemoryHistogramName,
       kExpectedDiscardsFrozenWithGrowingMemory, 1);
-  histogram_tester_.ExpectUniqueSample(
+  ExpectUniqueBucketedSample(
       UmaStatsReportingDelegate::kDailyReloadsExternalHistogramName,
       kExpectedReloadsExternal, 1);
-  histogram_tester_.ExpectUniqueSample(
+  ExpectUniqueBucketedSample(
       UmaStatsReportingDelegate::kDailyReloadsUrgentHistogramName,
       kExpectedReloadsUrgent, 1);
-  histogram_tester_.ExpectUniqueSample(
+  ExpectUniqueBucketedSample(
       UmaStatsReportingDelegate::kDailyReloadsProactiveHistogramName,
       kExpectedReloadsProactive, 1);
-  histogram_tester_.ExpectUniqueSample(
+  ExpectUniqueBucketedSample(
       UmaStatsReportingDelegate::kDailyReloadsSuggestedHistogramName,
       kExpectedReloadsSuggested, 1);
-  histogram_tester_.ExpectUniqueSample(
+  ExpectUniqueBucketedSample(
       UmaStatsReportingDelegate::
           kDailyReloadsFrozenWithGrowingMemoryHistogramName,
       kExpectedReloadsFrozenWithGrowingMemory, 1);
@@ -584,38 +648,36 @@ TEST_F(TabStatsTrackerTest, DailyDiscards) {
   tab_stats_tracker_->TriggerDailyEvent();
 
   // Checks that the histograms have been properly updated.
-  histogram_tester_.ExpectBucketCount(
+  ExpectBucketedSample(
       UmaStatsReportingDelegate::kDailyDiscardsExternalHistogramName,
       kExpectedDiscardsExternal2, 1);
-  histogram_tester_.ExpectBucketCount(
+  ExpectBucketedSample(
       UmaStatsReportingDelegate::kDailyDiscardsUrgentHistogramName,
       kExpectedDiscardsUrgent2, 1);
-  histogram_tester_.ExpectBucketCount(
+  ExpectBucketedSample(
       UmaStatsReportingDelegate::kDailyDiscardsProactiveHistogramName,
       kExpectedDiscardsProactive2, 1);
-  histogram_tester_.ExpectBucketCount(
+  ExpectBucketedSample(
       UmaStatsReportingDelegate::kDailyDiscardsSuggestedHistogramName,
       kExpectedDiscardsSuggested2, 1);
-  histogram_tester_.ExpectBucketCount(
-      UmaStatsReportingDelegate::
-          kDailyDiscardsFrozenWithGrowingMemoryHistogramName,
-      kExpectedDiscardsFrozenWithGrowingMemory2, 1);
-  histogram_tester_.ExpectBucketCount(
+  ExpectBucketedSample(UmaStatsReportingDelegate::
+                           kDailyDiscardsFrozenWithGrowingMemoryHistogramName,
+                       kExpectedDiscardsFrozenWithGrowingMemory2, 1);
+  ExpectBucketedSample(
       UmaStatsReportingDelegate::kDailyReloadsExternalHistogramName,
       kExpectedReloadsExternal2, 1);
-  histogram_tester_.ExpectBucketCount(
+  ExpectBucketedSample(
       UmaStatsReportingDelegate::kDailyReloadsUrgentHistogramName,
       kExpectedReloadsUrgent2, 1);
-  histogram_tester_.ExpectBucketCount(
+  ExpectBucketedSample(
       UmaStatsReportingDelegate::kDailyReloadsProactiveHistogramName,
       kExpectedReloadsProactive2, 1);
-  histogram_tester_.ExpectBucketCount(
+  ExpectBucketedSample(
       UmaStatsReportingDelegate::kDailyReloadsSuggestedHistogramName,
       kExpectedReloadsSuggested2, 1);
-  histogram_tester_.ExpectBucketCount(
-      UmaStatsReportingDelegate::
-          kDailyReloadsFrozenWithGrowingMemoryHistogramName,
-      kExpectedReloadsFrozenWithGrowingMemory2, 1);
+  ExpectBucketedSample(UmaStatsReportingDelegate::
+                           kDailyReloadsFrozenWithGrowingMemoryHistogramName,
+                       kExpectedReloadsFrozenWithGrowingMemory2, 1);
 }
 
 TEST_F(TabStatsTrackerTest, HeartbeatMetrics) {
@@ -625,32 +687,18 @@ TEST_F(TabStatsTrackerTest, HeartbeatMetrics) {
 
   tab_stats_tracker_->OnHeartbeatEvent();
 
-  histogram_tester_.ExpectBucketCount(
-      UmaStatsReportingDelegate::kTabCountHistogramName, expected_tab_count, 1);
-  histogram_tester_.ExpectBucketCount(
-      UmaStatsReportingDelegate::kWindowCountHistogramName,
-      expected_window_count, 1);
+  ExpectBucketedSample(UmaStatsReportingDelegate::kTabCountHistogramName,
+                       expected_tab_count, 1);
+  ExpectBucketedSample(UmaStatsReportingDelegate::kWindowCountHistogramName,
+                       expected_window_count, 1);
 
   expected_tab_count = tab_stats_tracker_->RemoveTabs(4, tab_strip_model_);
   expected_window_count = tab_stats_tracker_->RemoveWindows(3);
 
-  ASSERT_TRUE(tab_strip_model_->SupportsTabGroups());
-  tab_groups::TabGroupId group_id1 = tab_strip_model_->AddToNewGroup({0, 1});
-  tab_groups::TabGroupId group_id2 = tab_strip_model_->AddToNewGroup({5});
-  const tab_groups::TabGroupVisualData visual_data(
-      u"Foo", tab_groups::TabGroupColorId::kCyan, /* is_collapsed = */ true);
-  TabGroup* group1 = tab_strip_model_->group_model()->GetTabGroup(group_id1);
-  TabGroup* group2 = tab_strip_model_->group_model()->GetTabGroup(group_id2);
-  group1->SetVisualData(visual_data);
-  group2->SetVisualData(visual_data);
-  ASSERT_TRUE(tab_strip_model_->IsGroupCollapsed(group_id1));
-  ASSERT_TRUE(tab_strip_model_->IsGroupCollapsed(group_id2));
-
   tab_stats_tracker_->OnHeartbeatEvent();
 
-  histogram_tester_.ExpectBucketCount(
-      UmaStatsReportingDelegate::kWindowCountHistogramName,
-      expected_window_count, 1);
+  ExpectBucketedSample(UmaStatsReportingDelegate::kWindowCountHistogramName,
+                       expected_window_count, 1);
 }
 
 }  // namespace metrics
