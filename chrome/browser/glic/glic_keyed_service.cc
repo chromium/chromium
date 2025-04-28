@@ -97,6 +97,7 @@ GlicKeyedService::GlicKeyedService(
       glic_profile_manager_(glic_profile_manager),
       contextual_cueing_service_(contextual_cueing_service) {
   CHECK(GlicEnabling::IsProfileEligible(Profile::FromBrowserContext(profile)));
+  host_->Initialize(window_controller_.get());
   metrics_->SetControllers(window_controller_.get(), &focused_tab_manager_);
 
   memory_pressure_listener_ = std::make_unique<base::MemoryPressureListener>(
@@ -127,6 +128,7 @@ GlicKeyedService::GlicKeyedService(
 }
 
 GlicKeyedService::~GlicKeyedService() {
+  host().Shutdown();
   metrics_->SetControllers(nullptr, nullptr);
 }
 

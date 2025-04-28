@@ -583,7 +583,12 @@ export declare interface PanelOpeningData {
    * The state of the panel as it's being opened.
    */
   panelState?: PanelState;
-  /** Indicates the entry point used to trigger the opening of the panel. */
+  /**
+   * Indicates the entry point used to trigger the opening of the panel.
+   * In the event the web client's page is reloaded, the new web client will
+   * receive a notifyPanelWillOpen call with the same invocation source as
+   * before, even though the user did not, for example, click a button again.
+   */
   invocationSource?: InvocationSource;
 }
 

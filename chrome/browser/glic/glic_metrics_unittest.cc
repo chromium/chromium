@@ -43,35 +43,23 @@
 namespace glic {
 namespace {
 
-// This mock is a wrapper around the API in GlicWindowController which is
-// exposed to GlicMetrics. It doesn't do anything.
-class MockWindowController : public GlicWindowController {
+class MockDelegate : public GlicMetrics::Delegate {
  public:
-  MockWindowController(Profile* profile,
-                       signin::IdentityManager* identity_manager,
-                       GlicEnabling* enabling)
-      : GlicWindowController(profile,
-                             identity_manager,
-                             /*service=*/nullptr,
-                             enabling) {}
-  ~MockWindowController() override = default;
+  MockDelegate() = default;
+  ~MockDelegate() override = default;
 
-  bool IsShowing() const override { return showing_; }
-  bool IsAttached() const override { return attached_; }
-  bool showing_ = false;
-  bool attached_ = false;
-};
-
-class MockTabManager : public GlicFocusedTabManager {
- public:
-  MockTabManager(Profile* profile, GlicWindowController& window_controller)
-      : GlicFocusedTabManager(profile, window_controller) {}
-  ~MockTabManager() override = default;
+  bool IsWindowShowing() const override { return showing_; }
+  bool IsWindowAttached() const override { return attached_; }
+  gfx::Size GetWindowSize() const override { return gfx::Size(); }
   FocusedTabData GetFocusedTabData() override {
     return FocusedTabData(contents_ ? contents_->GetWeakPtr() : nullptr);
   }
+
   void SetWebContents(content::WebContents* contents) { contents_ = contents; }
   raw_ptr<content::WebContents> contents_;
+
+  bool showing_ = false;
+  bool attached_ = false;
 };
 
 class MockStatusIcon : public StatusIcon {
@@ -142,18 +130,15 @@ class GlicMetricsTest : public testing::Test {
     enabling_ = std::make_unique<GlicEnabling>(
         profile_, &testing_profile_manager_->profile_manager()
                        ->GetProfileAttributesStorage());
-    controller_ = std::make_unique<MockWindowController>(
-        profile_, identity_env_.identity_manager(), enabling_.get());
-    tab_manager_ = std::make_unique<MockTabManager>(profile_, *controller_);
-
     metrics_ = std::make_unique<GlicMetrics>(profile_, enabling_.get());
-    metrics_->SetControllers(controller_.get(), tab_manager_.get());
+    auto delegate = std::make_unique<MockDelegate>();
+    delegate_ = delegate.get();
+    metrics_->SetDelegateForTesting(std::move(delegate));
   }
 
   void TearDown() override {
+    delegate_ = nullptr;
     metrics_.reset();
-    tab_manager_.reset();
-    controller_.reset();
     enabling_.reset();
     TestingBrowserProcess::GetGlobal()->GetFeatures()->Shutdown();
     profile_ = nullptr;
@@ -188,10 +173,9 @@ class GlicMetricsTest : public testing::Test {
   raw_ptr<TestingProfile> profile_ = nullptr;
   signin::IdentityTestEnvironment identity_env_;
   std::unique_ptr<TestingProfileManager> testing_profile_manager_;
-
+  // Owned by `metrics_`.
+  raw_ptr<MockDelegate> delegate_;
   std::unique_ptr<GlicEnabling> enabling_;
-  std::unique_ptr<MockWindowController> controller_;
-  std::unique_ptr<MockTabManager> tab_manager_;
   std::unique_ptr<GlicMetrics> metrics_;
 };
 
@@ -210,8 +194,8 @@ TEST_F(GlicMetricsTest, Basic) {
 }
 
 TEST_F(GlicMetricsTest, BasicVisible) {
-  controller_->showing_ = true;
-  controller_->attached_ = true;
+  delegate_->showing_ = true;
+  delegate_->attached_ = true;
 
   metrics_->OnGlicWindowOpen(/*attached=*/true,
                              mojom::InvocationSource::kOsButton);
@@ -230,7 +214,7 @@ TEST_F(GlicMetricsTest, BasicVisible) {
 }
 
 TEST_F(GlicMetricsTest, BasicUkm) {
-  controller_->showing_ = true;
+  delegate_->showing_ = true;
   metrics_->OnGlicWindowOpen(/*attached=*/false, mojom::InvocationSource::kFre);
   for (int i = 0; i < 2; ++i) {
     metrics_->OnUserInputSubmitted(mojom::WebClientMode::kText);
@@ -282,9 +266,9 @@ TEST_F(GlicMetricsTest, BasicUkmWithTarget) {
   GURL url("https://www.google.com");
   tester->NavigateAndCommit(url);
 
-  tab_manager_->SetWebContents(web_contents.get());
+  delegate_->SetWebContents(web_contents.get());
 
-  controller_->showing_ = true;
+  delegate_->showing_ = true;
   metrics_->DidRequestContextFromFocusedTab();
   metrics_->OnGlicWindowOpen(/*attached=*/false, mojom::InvocationSource::kFre);
   metrics_->OnUserInputSubmitted(mojom::WebClientMode::kText);
@@ -308,12 +292,12 @@ TEST_F(GlicMetricsTest, BasicUkmWithTarget) {
     EXPECT_EQ(entry->source_id, ukm_id);
   }
 
-  tab_manager_->SetWebContents(nullptr);
+  delegate_->SetWebContents(nullptr);
 }
 
 TEST_F(GlicMetricsTest, SegmentationOsButtonAttachedText) {
-  controller_->showing_ = true;
-  controller_->attached_ = true;
+  delegate_->showing_ = true;
+  delegate_->attached_ = true;
 
   metrics_->OnGlicWindowOpen(/*attached=*/true,
                              mojom::InvocationSource::kOsButton);
@@ -329,8 +313,8 @@ TEST_F(GlicMetricsTest, SegmentationOsButtonAttachedText) {
 }
 
 TEST_F(GlicMetricsTest, Segmentation3DotsMenuDetachedAudio) {
-  controller_->showing_ = true;
-  controller_->attached_ = false;
+  delegate_->showing_ = true;
+  delegate_->attached_ = false;
 
   metrics_->OnGlicWindowOpen(/*attached=*/false,
                              mojom::InvocationSource::kThreeDotsMenu);

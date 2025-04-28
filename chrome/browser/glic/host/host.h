@@ -9,6 +9,9 @@
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
+#include "chrome/browser/glic/host/glic.mojom-forward.h"
 #include "chrome/browser/glic/host/glic_web_client_access.h"
 
 class Profile;
@@ -25,10 +28,37 @@ class WebUIContentsContainer;
 // TODO(crbug.com/409332639): Better encapsulate details here.
 class Host {
  public:
+  class Delegate {
+   public:
+    // Returns the current panel state.
+    virtual const mojom::PanelState& GetPanelState() const = 0;
+  };
+
+  class Observer : public base::CheckedObserver {
+   public:
+    // Called when the client is ready to show, invoked sometime after
+    // `Host::PanelWillOpen()` is called.
+    virtual void ClientReadyToShow(const mojom::OpenPanelInfo&) {}
+
+    // TODO(b/409332639): These signals are dubious, is this what window
+    // controller really wants to know?
+
+    // Called when the web client initialize has failed.
+    virtual void WebClientInitializeFailed() {}
+    // The webview reached a login page.
+    virtual void LoginPageCommitted() {}
+  };
+
   explicit Host(Profile* profile);
   ~Host();
 
-  // Delete the owned web contents.
+  void Initialize(Delegate* delegate);
+
+  void PanelWillOpen(mojom::InvocationSource invocation_source);
+
+  void PanelWasClosed();
+
+  // Delete the owned web contents and prepare for destruction.
   void Shutdown();
 
   // Creates the web contents that will own the Glic WebUI.
@@ -39,6 +69,9 @@ class Host {
 
   // Called when a `GlicPageHandler` is about to be destroyed.
   void WebUIPageHandlerRemoved(GlicPageHandler* page_handler);
+
+  // Called when a login page was committed in a glic webview.
+  void LoginPageCommitted(GlicPageHandler* page_handler);
 
   // Called when a glic guest (webview web contents) is added.
   void GuestAdded(content::WebContents* guest_contents);
@@ -53,6 +86,7 @@ class Host {
   // Called when a page handler's web client is created or destroyed.
   void SetWebClient(GlicPageHandler* page_handler,
                     GlicWebClientAccess* web_client);
+  void WebClientInitializeFailed(GlicWebClientAccess* web_client);
 
   WebUIContentsContainer* contents_container() { return contents_.get(); }
   // Returns the WebUI web contents. May be null.
@@ -67,17 +101,49 @@ class Host {
   // Returns the list of page handlers for glic WebUI pages.
   std::vector<GlicPageHandler*> GetPageHandlersForTesting();
 
+  // TODO(b/409332639): Hide direct access to the web client.
+  GlicWebClientAccess* GetPrimaryWebClient();
+
+  // Whether the primary client is alive and has returned from PanelWillOpen().
+  // This transitions to false after PanelWasClosed() is called.
+  bool IsPrimaryClientOpen();
+
+  // Whether the primary web client is connected.
+  bool IsReady() const;
+
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
+
  private:
   GlicKeyedService& glic_service();
 
   struct PageHandlerInfo {
+    PageHandlerInfo();
+    ~PageHandlerInfo();
+    PageHandlerInfo(PageHandlerInfo&&);
+    PageHandlerInfo& operator=(PageHandlerInfo&&);
+
     raw_ptr<GlicPageHandler> page_handler = nullptr;
+    // True if the response to PanelWillOpen was received. Cleared when
+    // PanelWasClosed() is called.
+    bool open_complete = false;
     raw_ptr<GlicWebClientAccess> web_client = nullptr;
   };
+  void PanelWillOpenComplete(GlicWebClientAccess* client,
+                             mojom::OpenPanelInfoPtr open_info);
   PageHandlerInfo* FindInfo(GlicPageHandler* handler);
+  PageHandlerInfo* FindInfoForClient(GlicWebClientAccess* client);
   PageHandlerInfo* FindInfoForWebUiContents(content::WebContents* web_contents);
 
   raw_ptr<Profile> profile_;
+  // Null before `Initialize()` and after `Shutdown()`.
+  raw_ptr<Delegate> delegate_;
+  base::ObserverList<Observer> observers_;
+
+  // The invocation source if the panel is open. nullopt while the panel is
+  // closed.
+  std::optional<mojom::InvocationSource> invocation_source_;
+
   // The set of live `GlicPageHandler`s.
   std::vector<PageHandlerInfo> page_handlers_;
   // Keep profile alive as long as the glic web contents. This object should be

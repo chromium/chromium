@@ -353,7 +353,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   }
 
   void WebClientInitializeFailed() override {
-    glic_service_->window_controller().WebClientInitializeFailed();
+    glic_service_->host().WebClientInitializeFailed(this);
   }
 
   void WebClientInitialized() override {
@@ -812,7 +812,7 @@ void GlicPageHandler::WebviewCommitted(const GURL& url) {
   // out.
   if (url.DomainIs("login.corp.google.com") ||
       url.DomainIs("accounts.google.com")) {
-    GetGlicService()->window_controller().LoginPageCommitted();
+    GetGlicService()->host().LoginPageCommitted(this);
   }
 }
 

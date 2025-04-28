@@ -7,8 +7,10 @@
 #include "base/containers/to_vector.h"
 #include "chrome/browser/glic/glic_keyed_service.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
+#include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/glic_page_handler.h"
 #include "chrome/browser/glic/host/webui_contents_container.h"
+#include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "components/guest_view/browser/guest_view_base.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
@@ -16,12 +18,23 @@
 
 namespace glic {
 
+Host::PageHandlerInfo::PageHandlerInfo() = default;
+Host::PageHandlerInfo::~PageHandlerInfo() = default;
+Host::PageHandlerInfo::PageHandlerInfo(PageHandlerInfo&&) = default;
+Host::PageHandlerInfo& Host::PageHandlerInfo::operator=(PageHandlerInfo&&) =
+    default;
+
 Host::Host(Profile* profile) : profile_(profile) {}
 
 Host::~Host() = default;
 
+void Host::Initialize(Delegate* delegate) {
+  delegate_ = delegate;
+}
+
 void Host::Shutdown() {
   contents_.reset();
+  delegate_ = nullptr;
 }
 
 void Host::CreateContents() {
@@ -33,8 +46,44 @@ void Host::CreateContents() {
   }
 }
 
+void Host::PanelWillOpen(mojom::InvocationSource invocation_source) {
+  CHECK(delegate_);
+  invocation_source_ = invocation_source;
+  for (auto& entry : page_handlers_) {
+    if (!entry.web_client) {
+      continue;
+    }
+    entry.web_client->PanelWillOpen(
+        mojom::PanelOpeningData::New(delegate_->GetPanelState().Clone(),
+                                     invocation_source),
+        base::BindOnce(
+            &Host::PanelWillOpenComplete,
+            // Unretained is safe because web client is owned by `contents_`.
+            base::Unretained(this),
+            // Unretained is safe because web_client is calling us.
+            base::Unretained(entry.web_client)));
+  }
+}
+
+void Host::PanelWasClosed() {
+  invocation_source_ = std::nullopt;
+  for (auto& entry : page_handlers_) {
+    entry.open_complete = false;
+  }
+}
+
+void Host::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void Host::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
 void Host::WebUIPageHandlerAdded(GlicPageHandler* page_handler) {
-  page_handlers_.push_back({.page_handler = page_handler});
+  PageHandlerInfo info;
+  info.page_handler = page_handler;
+  page_handlers_.push_back(std::move(info));
 }
 
 void Host::WebUIPageHandlerRemoved(GlicPageHandler* page_handler) {
@@ -45,6 +94,10 @@ void Host::WebUIPageHandlerRemoved(GlicPageHandler* page_handler) {
   }
 }
 
+void Host::LoginPageCommitted(GlicPageHandler* page_handler) {
+  observers_.Notify(&Observer::LoginPageCommitted);
+}
+
 GlicKeyedService& Host::glic_service() {
   return *GlicKeyedService::Get(profile_);
 }
@@ -52,6 +105,15 @@ GlicKeyedService& Host::glic_service() {
 Host::PageHandlerInfo* Host::FindInfo(GlicPageHandler* handler) {
   for (auto& info : page_handlers_) {
     if (info.page_handler == handler) {
+      return &info;
+    }
+  }
+  return nullptr;
+}
+
+Host::PageHandlerInfo* Host::FindInfoForClient(GlicWebClientAccess* client) {
+  for (auto& info : page_handlers_) {
+    if (info.web_client == client) {
       return &info;
     }
   }
@@ -111,13 +173,38 @@ void Host::SetWebClient(GlicPageHandler* page_handler,
   if (web_client && !primary_page_handler_) {
     primary_page_handler_ = page_handler;
   }
-  if (primary_page_handler_ == page_handler) {
-    if (!web_client) {
-      primary_page_handler_ = nullptr;
-    }
-    // TODO(crbug.com/409332639): Hide direct access to the web client.
-    glic_service().window_controller().SetWebClient(web_client);
+  if (!web_client && primary_page_handler_ == page_handler) {
+    primary_page_handler_ = nullptr;
   }
+
+  if (invocation_source_ && web_client) {
+    web_client->PanelWillOpen(
+        mojom::PanelOpeningData::New(delegate_->GetPanelState().Clone(),
+                                     *invocation_source_),
+        base::BindOnce(
+            &Host::PanelWillOpenComplete,
+            // Unretained is safe because web client is owned by `contents_`.
+            base::Unretained(this),
+            // Unretained is safe because web_client is calling us.
+            base::Unretained(web_client)));
+  }
+}
+
+void Host::WebClientInitializeFailed(GlicWebClientAccess* web_client) {
+  auto* primary_info = FindInfo(primary_page_handler_);
+  if (primary_info && primary_info->web_client == web_client) {
+    observers_.Notify(&Observer::WebClientInitializeFailed);
+  }
+}
+
+GlicWebClientAccess* Host::GetPrimaryWebClient() {
+  Host::PageHandlerInfo* info = FindInfo(primary_page_handler_);
+  return info ? info->web_client : nullptr;
+}
+
+bool Host::IsPrimaryClientOpen() {
+  Host::PageHandlerInfo* info = FindInfo(primary_page_handler_);
+  return info ? info->open_complete : false;
 }
 
 content::WebContents* Host::webui_contents() {
@@ -143,6 +230,30 @@ std::vector<GlicPageHandler*> Host::GetPageHandlersForTesting() {
   return base::ToVector(
       page_handlers_,
       [](PageHandlerInfo& e) -> GlicPageHandler* { return e.page_handler; });
+}
+
+void Host::PanelWillOpenComplete(GlicWebClientAccess* client,
+                                 mojom::OpenPanelInfoPtr open_info) {
+  CHECK(client);
+  // If the panel was closed before opening finished, return early.
+  if (!invocation_source_) {
+    return;
+  }
+  PageHandlerInfo* info = FindInfoForClient(client);
+  CHECK(info);
+  if (info->page_handler == primary_page_handler_) {
+    info->open_complete = true;
+    observers_.Notify(&Observer::ClientReadyToShow, *open_info);
+  }
+}
+
+bool Host::IsReady() const {
+  for (auto& entry : page_handlers_) {
+    if (entry.page_handler == primary_page_handler_) {
+      return entry.web_client != nullptr;
+    }
+  }
+  return false;
 }
 
 }  // namespace glic

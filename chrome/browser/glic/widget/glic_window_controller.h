@@ -18,6 +18,7 @@
 #include "chrome/browser/glic/glic_enabling.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/glic_web_client_access.h"
+#include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/widget/application_hotkey_delegate.h"
 #include "chrome/browser/glic/widget/glic_modal_manager.h"
 #include "chrome/browser/glic/widget/glic_window_hotkey_delegate.h"
@@ -62,7 +63,9 @@ class GlicModalManager;
 // See the |State| enum below for the lifecycle of the window. When the glic
 // window is open |attached_browser_| indicates if the window is attached or
 // standalone. See |IsAttached|
-class GlicWindowController : public views::WidgetObserver {
+class GlicWindowController : public views::WidgetObserver,
+                             public Host::Observer,
+                             public Host::Delegate {
  public:
   // Observes the state of the glic window.
   class StateObserver : public base::CheckedObserver {
@@ -161,7 +164,9 @@ class GlicWindowController : public views::WidgetObserver {
   // could attach to a browser window when a drag ends.
   void HandleWindowDragWithOffset(gfx::Vector2d mouse_offset);
 
-  const mojom::PanelState& GetPanelState() const { return panel_state_; }
+  // Host::Delegate implementation.
+  const mojom::PanelState& GetPanelState() const override;
+
   void AddStateObserver(StateObserver* observer);
   void RemoveStateObserver(StateObserver* observer);
 
@@ -211,12 +216,6 @@ class GlicWindowController : public views::WidgetObserver {
   // Returns a WeakPtr to this instance. It can be destroyed at any time if the
   // profile is deleted or if the browser shuts down.
   base::WeakPtr<GlicWindowController> GetWeakPtr();
-
-  void WebClientInitializeFailed();
-  // The webview reached a login page.
-  void LoginPageCommitted();
-  void SetWebClient(GlicWebClientAccess* web_client);
-  GlicWebClientAccess* web_client() const { return web_client_; }
 
   // views::WidgetObserver implementation, monitoring the glic window widget.
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
@@ -326,10 +325,10 @@ class GlicWindowController : public views::WidgetObserver {
   void SetupGlicWidgetAccessibilityText();
   void StartAttachedAnimation(GlicButton* glic_button);
 
-  // This sends a message to glic to get ready to show. This will eventually
-  // result in the callback GlicLoaded().
-  void WaitForGlicToLoad();
-  void GlicLoaded(mojom::OpenPanelInfoPtr open_info);
+  // Host::Observer implementation.
+  void WebClientInitializeFailed() override;
+  void LoginPageCommitted() override;
+  void ClientReadyToShow(const mojom::OpenPanelInfo& open_info) override;
 
   // Called when the open animation is finished.
   void OpenAnimationFinished();
@@ -471,9 +470,6 @@ class GlicWindowController : public views::WidgetObserver {
   // window, or standalone. That is tracked by this member.
   raw_ptr<Browser> attached_browser_ = nullptr;
 
-  // Set to true when glic is ready.
-  bool glic_loaded_ = false;
-
   base::ObserverList<StateObserver> state_observers_;
 
   mojom::WebUiState webui_state_ = mojom::WebUiState::kUninitialized;
@@ -503,6 +499,7 @@ class GlicWindowController : public views::WidgetObserver {
 
   raw_ptr<GlicKeyedService> glic_service_;  // Owns this.
   raw_ptr<GlicEnabling> enabling_;
+  base::ScopedObservation<Host, Host::Observer> host_observation_{this};
 
   base::WeakPtrFactory<GlicWindowController> weak_ptr_factory_{this};
 };

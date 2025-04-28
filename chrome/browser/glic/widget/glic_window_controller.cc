@@ -93,18 +93,6 @@ mojom::PanelState CreatePanelState(bool widget_visible,
   return panel_state;
 }
 
-mojom::PanelOpeningDataPtr CreatePanelOpeningData(
-    bool widget_visible,
-    Browser* attached_browser,
-    mojom::InvocationSource source) {
-  mojom::PanelOpeningDataPtr panel_opening_data =
-      mojom::PanelOpeningData::New();
-  panel_opening_data->panel_state =
-      CreatePanelState(widget_visible, attached_browser).Clone();
-  panel_opening_data->invocation_source = source;
-  return panel_opening_data;
-}
-
 GlicButton* GetGlicButton(const Browser& browser) {
   return browser.window()
       ->AsBrowserView()
@@ -313,6 +301,7 @@ GlicWindowController::GlicWindowController(
       enabling_(enabling) {
   previous_position_ = GetPreviousPositionFromPrefs(profile_->GetPrefs());
   application_hotkey_manager_ = MakeApplicationHotkeyManager(GetWeakPtr());
+  host_observation_.Observe(&glic_service_->host());
 }
 
 GlicWindowController::~GlicWindowController() = default;
@@ -335,53 +324,11 @@ void GlicWindowController::LoginPageCommitted() {
   login_page_committed_ = true;
   if ((state_ == State::kOpenAnimation ||
        state_ == State::kWaitingForGlicToLoad) &&
-      !web_client_) {
+      !host().IsReady()) {
     // TODO(crbug.com/388328847): Temporarily allow showing the UI when a login
     // page is reached.
     glic_service_->metrics()->set_show_start_time(base::TimeTicks());
     GlicLoadedAndAnimationDone();
-  }
-}
-
-void GlicWindowController::SetWebClient(GlicWebClientAccess* web_client) {
-  // If state_ == kClosed, then store web_client_ for a future call to Show().
-  // Once we get crash/error flows, this can theoretically happen with state_ ==
-  // kOpen, but those will those need to handled alongside the crash/error
-  // flows.
-  web_client_ = web_client;
-
-  // Always reset `glic_loaded_` since the web client has changed.
-  glic_loaded_ = false;
-  switch (state_) {
-    case State::kOpenAnimation:
-    case State::kWaitingForGlicToLoad:
-      if (web_client_) {
-        WaitForGlicToLoad();
-      } else {
-        // TODO(crbug.com/388328847): The web client could disconnect without a
-        // WebClientInitializeFailed() call, for example, if the renderer
-        // crashes. Determine the correct behavior in this case.
-        LOG(ERROR) << "Glic web client disconnected before showing the window.";
-        glic_service_->metrics()->set_show_start_time(base::TimeTicks());
-        GlicLoadedAndAnimationDone();
-      }
-      break;
-    case State::kOpen:
-    case State::kDetaching:
-    case State::kClosingToReopenDetached:
-      if (web_client_) {
-        // If the web client reloads while it's already shown, we need to signal
-        // the web client so that it can be shown.
-        mojom::InvocationSource source =
-            opening_source_.value_or(mojom::InvocationSource::kUnsupported);
-        web_client_->PanelWillOpen(
-            CreatePanelOpeningData(true, attached_browser_, source),
-            base::BindOnce(&GlicWindowController::GlicLoaded, GetWeakPtr()));
-      }
-      break;
-    case State::kClosed:
-    case State::kCloseAnimation:
-      break;
   }
 }
 
@@ -429,15 +376,15 @@ void GlicWindowController::OnWidgetBoundsChanged(views::Widget* widget,
 
 void GlicWindowController::OnWidgetUserResizeStarted() {
   glic_service_->metrics()->OnWidgetUserResizeStarted();
-  if (web_client_) {
-    web_client_->ManualResizeChanged(true);
+  if (GlicWebClientAccess* client = host().GetPrimaryWebClient()) {
+    client->ManualResizeChanged(true);
   }
 }
 
 void GlicWindowController::OnWidgetUserResizeEnded() {
   glic_service_->metrics()->OnWidgetUserResizeEnded();
-  if (web_client_) {
-    web_client_->ManualResizeChanged(false);
+  if (GlicWebClientAccess* client = host().GetPrimaryWebClient()) {
+    client->ManualResizeChanged(false);
   }
 
   if (GetGlicView()) {
@@ -681,10 +628,14 @@ void GlicWindowController::Show(Browser* browser,
     SetWindowState(State::kWaitingForGlicToLoad);
   }
 
-  // If the web client is already initialized, wait for it to load in parallel.
-  if (web_client_) {
-    WaitForGlicToLoad();
-  } else if (login_page_committed_) {
+  // Notify the web client that the panel will open, and wait for the response
+  // to actually show the window. Note that we have to call
+  // `NotifyIfPanelStateChanged()` first, so that the host will receive the
+  // correct panel state.
+  NotifyIfPanelStateChanged();
+  host().PanelWillOpen(source);
+
+  if (login_page_committed_) {
     // This indicates that we've warmed the web client and it has hit a login
     // page. See LoginPageCommitted.
     GlicLoadedAndAnimationDone();
@@ -693,8 +644,6 @@ void GlicWindowController::Show(Browser* browser,
     // offline, loading).
     SetDraggingAreasAndWatchForMouseEvents();
   }
-
-  NotifyIfPanelStateChanged();
   glic_service_->metrics()->OnGlicWindowShown();
 }
 
@@ -862,31 +811,15 @@ void GlicWindowController::StartAttachedAnimation(GlicButton* glic_button) {
                      GetWeakPtr()));
 }
 
-// This happens after the web client is initialized. It signals the web client
-// that it will be shown, and waits for the response before actually showing the
-// widget.
-void GlicWindowController::WaitForGlicToLoad() {
-  DCHECK(web_client_);
-  mojom::InvocationSource source =
-      opening_source_.value_or(mojom::InvocationSource::kUnsupported);
-  opening_source_.reset();
-  // Notify the web client that the panel will open, and wait for the response
-  // to actually show the window.
-  web_client_->PanelWillOpen(
-      CreatePanelOpeningData(true, attached_browser_, source),
-      base::BindOnce(&GlicWindowController::GlicLoaded, GetWeakPtr()));
-}
-
-void GlicWindowController::GlicLoaded(mojom::OpenPanelInfoPtr open_info) {
-  DVLOG(1) << "GlicLoaded with " << open_info->web_client_mode;
-  glic_service_->metrics()->set_starting_mode(open_info->web_client_mode);
-  if (open_info->panelSize.has_value()) {
-    Resize(*open_info->panelSize, open_info->resizeDuration, base::DoNothing());
+void GlicWindowController::ClientReadyToShow(
+    const mojom::OpenPanelInfo& open_info) {
+  DVLOG(1) << "Glic client ready to show " << open_info.web_client_mode;
+  glic_service_->metrics()->set_starting_mode(open_info.web_client_mode);
+  if (open_info.panelSize.has_value()) {
+    Resize(*open_info.panelSize, open_info.resizeDuration, base::DoNothing());
   }
+  EnableDragResize(open_info.can_user_resize);
 
-  EnableDragResize(open_info->can_user_resize);
-
-  glic_loaded_ = true;
   if (state_ == State::kWaitingForGlicToLoad) {
     GlicLoadedAndAnimationDone();
   }
@@ -900,7 +833,7 @@ void GlicWindowController::OpenAnimationFinished() {
     // open animation is finished (or cancelled).
     glic_window_animator_->FadeInWebView();
 
-    if (glic_loaded_) {
+    if (host().IsPrimaryClientOpen()) {
       GlicLoadedAndAnimationDone();
     }
   }
@@ -1164,10 +1097,7 @@ void GlicWindowController::CloseFinish(
   scoped_glic_button_indicator_.reset();
   NotifyIfPanelStateChanged();
 
-  if (web_client_) {
-    // The webview is kept alive by default, no need to use this callback.
-    web_client_->PanelWasClosed(base::DoNothing());
-  }
+  host().PanelWasClosed();
 
   if (reopen_detached) {
     Show(nullptr, *reopen_detached_source);
@@ -1251,6 +1181,10 @@ void GlicWindowController::HandleWindowDragWithOffset(
       OnDragComplete();
     }
   }
+}
+
+const mojom::PanelState& GlicWindowController::GetPanelState() const {
+  return panel_state_;
 }
 
 gfx::Vector2d GlicWindowController::GetClampedMouseDragOffset(
@@ -1542,8 +1476,7 @@ void GlicWindowController::SetWindowState(State new_state) {
 }
 
 bool GlicWindowController::IsWindowOpenAndReady() {
-  return web_client_ && state_ == State::kOpen &&
-         webui_state_ == mojom::WebUiState::kReady;
+  return host().IsReady() && state_ == State::kOpen;
 }
 
 }  // namespace glic
