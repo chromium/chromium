@@ -79,8 +79,7 @@ id<GREYMatcher> ProactivePasswordGenerationUseKeyboardButton() {
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
 
   // Sign in to a chrome account.
-  [SigninEarlGrey signinAndWaitForSyncTransportStateActive:[FakeSystemIdentity
-                                                               fakeIdentity1]];
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
 
   // Also reset the dismiss count pref to 0 to make sure the bottom sheet is
   // enabled by default.

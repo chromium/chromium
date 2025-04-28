@@ -119,8 +119,6 @@ id<GREYMatcher> SignOutSnackbarLabelMatcher() {
     [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
     [ChromeEarlGreyUI waitForAppToIdle];
     CloseHistorySyncSheet(enableHistorySync);
-    [ChromeEarlGrey
-        waitForSyncTransportStateActiveWithTimeout:base::Seconds(10)];
     return;
   }
   // TODO(crbug.com/335592853): There's no good reason why the with-history vs
@@ -136,10 +134,6 @@ id<GREYMatcher> SignOutSnackbarLabelMatcher() {
     GREYAssert(isSigned,
                @"Signed in failed. Expected: %@, Currently signed: %@",
                fakeIdentity.gaiaID, [SigninEarlGrey primaryAccountGaiaID]);
-
-    [ChromeEarlGrey
-        waitForSyncTransportStateActiveWithTimeout:base::Seconds(10)];
-
     return;
   }
 

@@ -78,17 +78,22 @@ class GURL;
 // app fails to sign out.
 - (void)signOut;
 
-// Signs in with the fake identity and access point Settings.
+// Signs in with the fake identity and, if `waitForSync` is true, waits for the
+// Sync machinery to become active.
 // Adds the fake-identity to the identity manager if necessary.
 // Only intended for tests requiring sign-in but not covering the sign-in UI
 // behavior to speed up and simplify those tests.
 // Will bypass the usual verifications before signin and other
 // entry-point-implemented behavior (e.g. history & tabs sync will be disabled,
-// no check for management status, sign-in related
-// metrics will not be sent)
+// no check for management status, sign-in related metrics will not be sent).
+- (void)signinWithFakeIdentity:(FakeSystemIdentity*)identity
+    waitForSyncTransportActive:(BOOL)waitForSync;
+
+// Same as `signinWithFakeIdentity:identity waitForSyncTransportActive:YES`.
 - (void)signinWithFakeIdentity:(FakeSystemIdentity*)identity;
 
-// Signs in with the fake identity and access point Settings.
+// Signs in with the fake identity and, if `waitForSync` is true, waits for the
+// Sync machinery to become active.
 // Adds the fake-identity to the identity manager if necessary.
 // If separate profiles for managed accounts are enabled, converts the personal
 // profile into a managed one.
@@ -96,14 +101,15 @@ class GURL;
 // behavior to speed up and simplify those tests.
 // Will bypass the usual verifications before signin and other
 // entry-point-implemented behavior (e.g. history & tabs sync will be disabled,
-// no check for management status, sign-in related
-// metrics will not be sent)
+// no check for management status, sign-in related metrics will not be sent).
+- (void)signinWithFakeManagedIdentityInPersonalProfile:
+            (FakeSystemIdentity*)identity
+                            waitForSyncTransportActive:(BOOL)waitForSync;
+
+// Same as `signinWithFakeManagedIdentityInPersonalProfile:identity
+// waitForSyncTransportActive:YES`.
 - (void)signinWithFakeManagedIdentityInPersonalProfile:
     (FakeSystemIdentity*)identity;
-
-// Calls `[self signinWithFakeIdentity:identity]` and then waits for sync
-// transport state to become active.
-- (void)signinAndWaitForSyncTransportStateActive:(FakeSystemIdentity*)identity;
 
 // Triggers the web sign-in consistency dialog. This is done by calling
 // directly the current SceneController.

@@ -80,23 +80,38 @@ using base::test::ios::WaitUntilConditionOrTimeout;
   [self verifySignedOut];
 }
 
-- (void)signinWithFakeIdentity:(FakeSystemIdentity*)identity {
+- (void)signinWithFakeIdentity:(FakeSystemIdentity*)identity
+    waitForSyncTransportActive:(BOOL)waitForSync {
   [SigninEarlGreyAppInterface signinWithFakeIdentity:identity];
   [self closeManagedAccountSignInDialogIfAny:identity];
   [self verifySignedInWithFakeIdentity:identity];
+  if (waitForSync) {
+    [ChromeEarlGrey
+        waitForSyncTransportStateActiveWithTimeout:base::Seconds(10)];
+  }
+}
+
+- (void)signinWithFakeIdentity:(FakeSystemIdentity*)identity {
+  [self signinWithFakeIdentity:identity waitForSyncTransportActive:YES];
 }
 
 - (void)signinWithFakeManagedIdentityInPersonalProfile:
-    (FakeSystemIdentity*)identity {
+            (FakeSystemIdentity*)identity
+                            waitForSyncTransportActive:(BOOL)waitForSync {
   [SigninEarlGreyAppInterface
       signinWithFakeManagedIdentityInPersonalProfile:identity];
   [self closeManagedAccountSignInDialogIfAny:identity];
   [self verifySignedInWithFakeIdentity:identity];
+  if (waitForSync) {
+    [ChromeEarlGrey
+        waitForSyncTransportStateActiveWithTimeout:base::Seconds(10)];
+  }
 }
 
-- (void)signinAndWaitForSyncTransportStateActive:(FakeSystemIdentity*)identity {
-  [self signinWithFakeIdentity:identity];
-  [ChromeEarlGrey waitForSyncTransportStateActiveWithTimeout:base::Seconds(10)];
+- (void)signinWithFakeManagedIdentityInPersonalProfile:
+    (FakeSystemIdentity*)identity {
+  [self signinWithFakeManagedIdentityInPersonalProfile:identity
+                            waitForSyncTransportActive:YES];
 }
 
 - (void)triggerReauthDialogWithFakeIdentity:(FakeSystemIdentity*)identity {

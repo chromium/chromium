@@ -610,7 +610,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
   // Sign in.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
-  [SigninEarlGrey signinAndWaitForSyncTransportStateActive:fakeIdentity];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
 
   // Open the account settings.
   [ChromeEarlGreyUI openSettingsMenu];
@@ -739,7 +739,8 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
   // Sign in.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
-  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity
+              waitForSyncTransportActive:NO];
 
   // Disable the policy dynamically.
   policy_test_utils::ClearPolicies();
@@ -752,7 +753,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
   [[EarlGrey selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
                                           kSyncPasswordsIdentifier,
                                           /*is_toggled_on=*/NO,
-                                          /*enabled=*/YES)]
+                                          /*is_enabled=*/YES)]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
