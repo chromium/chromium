@@ -25,8 +25,9 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.annotation.Config;
 
-import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -36,14 +37,13 @@ import org.chromium.chrome.browser.autofill.CreditCardScanner.Delegate;
 import org.chromium.chrome.browser.autofill.settings.CreditCardScannerManager.FieldType;
 import org.chromium.chrome.browser.autofill.settings.CreditCardScannerManager.ScanResult;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.ui.base.IntentRequestTracker;
 
 import java.util.Set;
 
-/** Test relating to {@link CreditCardScannerManager} */
-@RunWith(ChromeJUnit4ClassRunner.class)
-@Batch(Batch.PER_CLASS) // PER_CLASS required for the UserActionTester.
+/** Unit tests for {@link CreditCardScannerManager}. */
+@RunWith(BaseRobolectricTestRunner.class)
+@Config(manifest = Config.NONE)
 @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_PAYMENT_SETTINGS_CARD_PROMO_AND_SCAN_CARD})
 public class CreditCardScannerManagerTest {
     @Rule public final MockitoRule mockito = MockitoJUnit.rule();
@@ -51,6 +51,7 @@ public class CreditCardScannerManagerTest {
     @Mock private CreditCardScanner mScanner;
     @Mock private CreditCardScannerManager.Delegate mDelegate;
     @Mock private IntentRequestTracker mTracker;
+
     private UserActionTester mActionTester;
 
     @Before
