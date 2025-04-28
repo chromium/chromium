@@ -74,6 +74,7 @@ import org.robolectric.annotation.LooperMode.Mode;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackUtils;
+import org.chromium.base.MathUtils;
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
@@ -1802,7 +1803,16 @@ public class StripLayoutHelperTest {
 
     @Test
     public void testTabCreated_NonRestoredTab_Autoscrolls() {
-        initializeTest(false, true, 3);
+        testTabCreated_NonRestoredTab_Autoscrolls(/* isRtl= */ false);
+    }
+
+    @Test
+    public void testTabCreated_NonRestoredTab_Autoscrolls_Rtl() {
+        testTabCreated_NonRestoredTab_Autoscrolls(/* isRtl= */ true);
+    }
+
+    private void testTabCreated_NonRestoredTab_Autoscrolls(boolean isRtl) {
+        initializeTest(isRtl, true, 3);
         StripLayoutTab[] tabs = getMockedStripLayoutTabs(TAB_WIDTH_MEDIUM);
         mStripLayoutHelper.setStripLayoutTabsForTesting(tabs);
         mStripLayoutHelper.onSizeChanged(
@@ -1815,41 +1825,88 @@ public class StripLayoutHelperTest {
         mModel.addTab("new tab");
         mStripLayoutHelper.tabCreated(TIMESTAMP, 5, 3, false, closureCancelled, false);
 
-        // Assert: scroller position is not modified.
+        // Assert: scroller position is modified.
         assertNotEquals(1200, mStripLayoutHelper.getScrollerForTesting().getFinalX());
     }
 
     @Test
     public void testTabCreated_BringSelectedTabToVisibleArea_StartupRestoredUnselectedTab() {
-        initializeTest(false, false, 1, 11);
+        testTabCreated_BringSelectedTabToVisibleArea_StartupRestoredUnselectedTab(
+                /* isRtl= */ false);
+    }
+
+    @Test
+    public void testTabCreated_BringSelectedTabToVisibleArea_StartupRestoredUnselectedTab_Rtl() {
+        testTabCreated_BringSelectedTabToVisibleArea_StartupRestoredUnselectedTab(
+                /* isRtl= */ true);
+    }
+
+    private void testTabCreated_BringSelectedTabToVisibleArea_StartupRestoredUnselectedTab(
+            boolean isRtl) {
+        // Setup:
+        int selectedTabIndex = 1;
+        initializeTest(isRtl, false, selectedTabIndex, 11);
         mStripLayoutHelper.onSizeChanged(
                 SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
-        // Set initial scroller position to -500.
+
+        // Set initial scroller position to -500 under ScrollDelegate's dynamic coordinate system
+        // (not the static window coordinate system), which means:
+        // * For LTR layouts: scroll the tab strip to the left by 500dp.
+        // * For RTL layouts: scroll the tab strip to the right by 500dp.
+        // In both cases, the selected tab (selectedTabIndex) should not be visible, which means:
+        // * For LTR layouts: the selected tab's ideal X is to the left of the window's left edge.
+        // * For RTL layouts: the selected tab's ideal X is to the right of the window's right edge.
         mStripLayoutHelper.setScrollOffsetForTesting(-500);
         mStripLayoutHelper.updateLayout(TIMESTAMP);
-        float scrollOffsetBefore = mStripLayoutHelper.getScrollOffset();
-        StripLayoutTab selectedTab = mStripLayoutHelper.getStripLayoutTabsForTesting()[1];
+
+        // mStripLayoutHelper.getScrollOffset() returns a vector under ScrollDelegate's dynamic
+        // coordinate system, so we need to convert it to the static window coordinate system for
+        // consistency in the test.
+        float scrollOffsetBefore =
+                MathUtils.flipSignIf(mStripLayoutHelper.getScrollOffset(), isRtl);
+        StripLayoutTab selectedTab =
+                mStripLayoutHelper.getStripLayoutTabsForTesting()[selectedTabIndex];
 
         // Act: Tab was restored during startup.
         mModel.addTab("new tab");
         mStripLayoutHelper.tabCreated(
                 TIMESTAMP, 12, 12, /* selected= */ false, false, /* onStartup= */ true);
 
-        // Assert: We don't scroll to the created tab. The selected tab is not already visible, so
-        // we scroll to it.
-        // deltaToOptimalStart = optimalStart - scrollOffset
-        //        = ((mLeftFadeWidth + mLeftMargin) - (selectedTab.getIdealX() - scrollOffset)) -
-        // scrollOffset
-        // ExpectedOffset = scrollOffsetBefore + deltaToOptimalStart
-        float expectedOffset =
-                scrollOffsetBefore
-                        + (StripLayoutHelperManager.FADE_SHORT_WIDTH_DP
-                                + PADDING_LEFT
-                                - selectedTab.getIdealX());
+        // Assert: We don't scroll to the newly created tab because the selected tab is not visible,
+        // so we should scroll to the selected tab.
+        // First, calculate the expected scroll offset under the static window coordinate system.
+        float expectedScrollOffset;
+        if (isRtl) {
+            // Width reserved on the right side of the window.
+            float reservedWidthRight = PADDING_RIGHT + StripLayoutHelperManager.FADE_SHORT_WIDTH_DP;
+
+            // The setup moved the selected tab beyond the window's right edge. To make the tab
+            // visible, we should scroll the tab strip to the left, i.e., "scrollDelta" below should
+            // be negative.
+            float expectedTabX = SCREEN_WIDTH - reservedWidthRight - selectedTab.getWidth();
+            float scrollDelta = expectedTabX - selectedTab.getIdealX();
+            expectedScrollOffset = scrollOffsetBefore + scrollDelta;
+        } else {
+            // Width reserved on the left side of the window.
+            // This is also the expected X position for the tab to be visible.
+            float reservedWidthLeft = PADDING_LEFT + StripLayoutHelperManager.FADE_SHORT_WIDTH_DP;
+
+            // The setup moved the selected tab beyond the window's left edge. To make the tab
+            // visible, we should scroll the tab to the right, i.e., "scrollDelta" below should be
+            // positive.
+            float scrollDelta = reservedWidthLeft - selectedTab.getIdealX();
+            expectedScrollOffset = scrollOffsetBefore + scrollDelta;
+        }
+
+        // mStripLayoutHelper.getScrollOffset() returns a vector under ScrollDelegate's dynamic
+        // coordinate system, so we need to convert it to the static window coordinate system for
+        // consistency in the test.
+        float actualScrollOffset =
+                MathUtils.flipSignIf(mStripLayoutHelper.getScrollOffset(), isRtl);
         assertEquals(
                 "We should scroll to the selected tab",
-                expectedOffset,
-                mStripLayoutHelper.getScrollOffset(),
+                expectedScrollOffset,
+                actualScrollOffset,
                 EPSILON);
     }
 
@@ -5842,65 +5899,116 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    public void testScroll_verticalAxis() {
-        initializeTest(false, false, 2, 22);
+    public void testScroll_VerticalAxis() {
+        // verticalAxisScroll below is positive, so scroll to the right towards the last tab,
+        // by SCROLL_SPEED_FACTOR.
+        testScroll(
+                /* horizontalAxisScroll= */ 0.0f,
+                /* verticalAxisScroll= */ 2.4f,
+                /* isRtl= */ false,
+                /* expectedScrollDelta= */ StripLayoutHelper.SCROLL_SPEED_FACTOR);
+    }
+
+    @Test
+    public void testScroll_VerticalAxis_Rtl() {
+        // verticalAxisScroll below is positive, so scroll to the left towards the last tab
+        // (RTL layouts), by SCROLL_SPEED_FACTOR.
+        testScroll(
+                /* horizontalAxisScroll= */ 0.0f,
+                /* verticalAxisScroll= */ 2.4f,
+                /* isRtl= */ true,
+                /* expectedScrollDelta= */ -StripLayoutHelper.SCROLL_SPEED_FACTOR);
+    }
+
+    @Test
+    public void testScroll_HorizontalAxis() {
+        // horizontalAxisScroll below is positive, so scroll to the right by SCROLL_SPEED_FACTOR.
+        testScroll(
+                /* horizontalAxisScroll= */ 2.4f,
+                /* verticalAxisScroll= */ 0.0f,
+                /* isRtl= */ false,
+                /* expectedScrollDelta= */ StripLayoutHelper.SCROLL_SPEED_FACTOR);
+    }
+
+    @Test
+    public void testScroll_HorizontalAxis_Rtl() {
+        // horizontalAxisScroll below is positive, so scroll to the right by SCROLL_SPEED_FACTOR.
+        // Note that this is still true for RTL layouts. We should respect the user's
+        // scrolling direction.
+        testScroll(
+                /* horizontalAxisScroll= */ 2.4f,
+                /* verticalAxisScroll= */ 0.0f,
+                /* isRtl= */ true,
+                /* expectedScrollDelta= */ StripLayoutHelper.SCROLL_SPEED_FACTOR);
+    }
+
+    @Test
+    public void testScroll_BothVerticalAndHorizontalAxes() {
+        // Only honor horizontalAxisScroll, which is positive, so scroll to the right by
+        // SCROLL_SPEED_FACTOR.
+        testScroll(
+                /* horizontalAxisScroll= */ 2.4f,
+                /* verticalAxisScroll= */ -2.4f,
+                /* isRtl= */ false,
+                /* expectedScrollDelta= */ StripLayoutHelper.SCROLL_SPEED_FACTOR);
+    }
+
+    @Test
+    public void testScroll_BothVerticalAndHorizontalAxes_Rtl() {
+        // Only honor horizontalAxisScroll, which is positive, so scroll to the right by
+        // SCROLL_SPEED_FACTOR.
+        // Note that this is still true for RTL layouts. We should respect the user's
+        // scrolling direction.
+        testScroll(
+                /* horizontalAxisScroll= */ 2.4f,
+                /* verticalAxisScroll= */ -2.4f,
+                /* isRtl= */ true,
+                /* expectedScrollDelta= */ StripLayoutHelper.SCROLL_SPEED_FACTOR);
+    }
+
+    /**
+     * Tests {@link StripLayoutHelper#onScroll(float, float)}
+     *
+     * @param horizontalAxisScroll parameter to pass to {@link StripLayoutHelper#onScroll(float,
+     *     float)}
+     * @param verticalAxisScroll parameter to pass to {@link StripLayoutHelper#onScroll(float,
+     *     float)}
+     * @param isRtl whether to test RTL layouts
+     * @param expectedScrollDelta a 1-D vector on the X axis under the window coordinate system,
+     *     representing the direction and distance the tab strip should be scrolled
+     */
+    private void testScroll(
+            float horizontalAxisScroll,
+            float verticalAxisScroll,
+            boolean isRtl,
+            float expectedScrollDelta) {
+        initializeTest(isRtl, false, 2, 22);
         mStripLayoutHelper.onSizeChanged(
                 SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
+
+        // Set initial scroll offset under ScrollDelegate's dynamic coordinate system
+        // (not the static window coordinate system), which means:
+        // * For LTR layouts: scroll the tab strip to the left by 1000dp.
+        // * For RTL layouts: scroll the tab strip to the right by 1000dp.
         mStripLayoutHelper.setScrollOffsetForTesting(-1000);
         mStripLayoutHelper.updateLayout(TIMESTAMP);
-        float originalOffset = mStripLayoutHelper.getScrollOffset();
 
-        mStripLayoutHelper.onScroll(0.0f, 2.4f);
+        // mStripLayoutHelper.getScrollOffset() returns a vector under ScrollDelegate's dynamic
+        // coordinate system, so we need to convert it to the static window coordinate system for
+        // consistency in the test.
+        float originalOffset = MathUtils.flipSignIf(mStripLayoutHelper.getScrollOffset(), isRtl);
+
+        mStripLayoutHelper.onScroll(horizontalAxisScroll, verticalAxisScroll);
         mStripLayoutHelper.finishScrollForTesting();
         mStripLayoutHelper.updateLayout(TIMESTAMP);
 
-        // Assert scroll offset position.
+        // Assert scroll offset position (under the window coordinate system).
+        float expectedOffset = originalOffset + expectedScrollDelta;
+        float actualOffset = MathUtils.flipSignIf(mStripLayoutHelper.getScrollOffset(), isRtl);
         assertEquals(
                 "StripLayoutHelper scrolled to the wrong offset.",
-                originalOffset + 40.0,
-                mStripLayoutHelper.getScrollOffset(),
-                0.0);
-    }
-
-    @Test
-    public void testScroll_horizontalAxis() {
-        initializeTest(false, false, 11, 11);
-        mStripLayoutHelper.onSizeChanged(
-                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
-        mStripLayoutHelper.setScrollOffsetForTesting(500);
-        mStripLayoutHelper.updateLayout(TIMESTAMP);
-        float originalOffset = mStripLayoutHelper.getScrollOffset();
-
-        mStripLayoutHelper.onScroll(-4.0f, 0.0f);
-        mStripLayoutHelper.finishScrollForTesting();
-        mStripLayoutHelper.updateLayout(TIMESTAMP);
-
-        // Assert scroll offset position.
-        assertEquals(
-                "StripLayoutHelper scrolled to the wrong offset.",
-                originalOffset - 40.0,
-                mStripLayoutHelper.getScrollOffset(),
-                0.0);
-    }
-
-    @Test
-    public void testScroll_bothVerticalAndHorizontalAxes() {
-        initializeTest(false, false, 11, 11);
-        mStripLayoutHelper.onSizeChanged(
-                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
-        mStripLayoutHelper.setScrollOffsetForTesting(500);
-        mStripLayoutHelper.updateLayout(TIMESTAMP);
-        float originalOffset = mStripLayoutHelper.getScrollOffset();
-
-        mStripLayoutHelper.onScroll(-2.4f, 2.0f);
-        mStripLayoutHelper.finishScrollForTesting();
-        mStripLayoutHelper.updateLayout(TIMESTAMP);
-
-        // Assert scroll offset position.
-        assertEquals(
-                "StripLayoutHelper scrolled to the wrong offset.",
-                originalOffset - 40.0,
-                mStripLayoutHelper.getScrollOffset(),
+                expectedOffset,
+                actualOffset,
                 0.0);
     }
 

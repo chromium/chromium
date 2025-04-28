@@ -190,7 +190,7 @@ public class StripLayoutHelper
     private static final float INITIATE_REORDER_DRAG_THRESHOLD = 30.f;
 
     // Scrolling constants.
-    private static final int SCROLL_SPEED_FACTOR = 40;
+    @VisibleForTesting static final int SCROLL_SPEED_FACTOR = 40;
 
     // Histogram Constants
     private static final String PLACEHOLDER_LEFTOVER_TABS_HISTOGRAM_NAME =
@@ -884,7 +884,8 @@ public class StripLayoutHelper
     }
 
     /**
-     * @return The strip's current scroll offset.
+     * @return The strip's current scroll offset. It's a 1-D vector on the X axis under the dynamic
+     *     coordinate system used by {@link ScrollDelegate}.
      */
     float getScrollOffset() {
         return mScrollDelegate.getScrollOffset();
@@ -1546,7 +1547,8 @@ public class StripLayoutHelper
             boolean animate = !onStartup;
             if (selected) {
                 float delta = calculateDeltaToMakeTabVisible(stripTab);
-                setScrollForScrollingTabStacker(delta, animate, time);
+                setScrollForScrollingTabStacker(
+                        delta, /* isDeltaHorizontal= */ true, animate, time);
             } else {
                 bringSelectedTabToVisibleArea(time, animate);
             }
@@ -2383,19 +2385,21 @@ public class StripLayoutHelper
         // We want mouse scrolls and trackpad scrolls, both vertical and horizontal, to map to
         // scrolling the tab strip. If the user scrolls diagonally, presenting both a
         // horizontal and vertical scroll component, we will defer to the horizontal value. We will
-        // scroll by an set amount of dp, regardless of how much 'force' the user scrolls with such
-        // as flinging a mouse wheel, i.e. all that matters is the sign of the scroll value.
-        float scrollAmount =
-                Math.abs(horizontalAxisScroll) > MathUtils.EPSILON
-                        ? horizontalAxisScroll
-                        : verticalAxisScroll;
-        float scrollOffsetDelta =
+        // scroll by a set amount of dp, regardless of how much 'force' the user scrolls with such
+        // as flinging a mouse wheel, i.e. all that matters is the sign of the scroll vector.
+        boolean useHorizontalAxisScroll = Math.abs(horizontalAxisScroll) > MathUtils.EPSILON;
+        float userScrollDelta = useHorizontalAxisScroll ? horizontalAxisScroll : verticalAxisScroll;
+        float tabScrollDelta =
                 TypedValue.applyDimension(
                         TypedValue.COMPLEX_UNIT_DIP,
-                        Math.signum(scrollAmount) * SCROLL_SPEED_FACTOR,
+                        Math.signum(userScrollDelta) * SCROLL_SPEED_FACTOR,
                         mContext.getResources().getDisplayMetrics());
 
-        setScrollForScrollingTabStacker(scrollOffsetDelta, true, LayoutManagerImpl.time());
+        setScrollForScrollingTabStacker(
+                tabScrollDelta,
+                useHorizontalAxisScroll,
+                /* shouldAnimate= */ true,
+                LayoutManagerImpl.time());
         mUpdateHost.requestUpdate();
     }
 
@@ -4236,7 +4240,8 @@ public class StripLayoutHelper
     /**
      * Sets the current scroll offset of the TabStrip.
      *
-     * @param offset The offset to set the TabStrip's scroll state to.
+     * @param offset The offset to set the TabStrip's scroll position to; it's a 1-D vector on the X
+     *     axis under the dynamic coordinate system used by {@link ScrollDelegate}.
      */
     public void setScrollOffsetForTesting(float offset) {
         mScrollDelegate.setNonClampedScrollOffsetForTesting(offset); // IN-TEST
@@ -4277,9 +4282,29 @@ public class StripLayoutHelper
         mCloseButtonMenu.show();
     }
 
-    private void setScrollForScrollingTabStacker(float delta, boolean shouldAnimate, long time) {
+    /**
+     * Sets the direction and distance for scrolling the tab strip.
+     *
+     * @param delta a 1-D vector under the window coordinate system; it can be on the X axis or the
+     *     Y axis, depending on {@code isDeltaHorizontal}
+     * @param isDeltaHorizontal whether {@code delta} is on the X axis
+     * @param shouldAnimate whether to animate the scrolling
+     * @param time the current time of the app, in ms
+     */
+    private void setScrollForScrollingTabStacker(
+            float delta, boolean isDeltaHorizontal, boolean shouldAnimate, long time) {
         if (delta == 0.f) return;
-        mScrollDelegate.startScroll(time, delta, shouldAnimate);
+
+        // The "delta" parameter is a 1-D vector under the window coordinate system.
+        // Before passing it to ScrollDelegate, we must transform it in accordance with
+        // ScrollDelegate's dynamic coordinate system.
+        // Please see ScrollDelegate's class doc for details on the two coordinate systems.
+        float deltaForScrollDelegate =
+                isDeltaHorizontal
+                        ? MathUtils.flipSignIf(delta, LocalizationUtils.isLayoutRtl())
+                        : delta;
+
+        mScrollDelegate.startScroll(time, deltaForScrollDelegate, shouldAnimate);
     }
 
     /** Scrolls to the selected tab if it's not fully visible. */
@@ -4292,9 +4317,9 @@ public class StripLayoutHelper
         if (selectedLayoutTab == null || isViewCompletelyVisible(selectedLayoutTab)) {
             return;
         }
-        float delta = calculateDeltaToMakeIndexVisible(index);
 
-        setScrollForScrollingTabStacker(delta, animate, time);
+        float delta = calculateDeltaToMakeIndexVisible(index);
+        setScrollForScrollingTabStacker(delta, /* isDeltaHorizontal= */ true, animate, time);
     }
 
     private boolean isViewCompletelyVisible(StripLayoutView view) {

@@ -674,12 +674,31 @@ public class TabStripTest {
         helper.waitForCallback(0);
     }
 
-    /** This verifies that the strip scrolls correctly when last tab is selected. */
     @Test
     @LargeTest
     @Restriction(DeviceFormFactor.TABLET)
     @Feature({"TabStrip"})
     public void testScrollingStripStackersWithLastTabSelected() throws Exception {
+        testScrollingStripStackersWithLastTabSelected(/* isRtl= */ false);
+    }
+
+    @Test
+    @LargeTest
+    @Restriction(DeviceFormFactor.TABLET)
+    @Feature({"TabStrip", "RTL"})
+    public void testScrollingStripStackersWithLastTabSelectedRtl() throws Exception {
+        testScrollingStripStackersWithLastTabSelected(/* isRtl= */ true);
+    }
+
+    /**
+     * This verifies that the strip scrolls correctly when last tab is selected.
+     *
+     * @param isRtl whether to test RTL layouts.
+     */
+    private void testScrollingStripStackersWithLastTabSelected(boolean isRtl)
+            throws ExecutionException {
+        LocalizationUtils.setRtlForTesting(isRtl);
+
         // Open enough regular tabs to cause the strip to scroll
         ChromeTabUtils.newTabsFromMenu(
                 InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity(), 20);
