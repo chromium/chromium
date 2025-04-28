@@ -37,6 +37,7 @@ include_rules = [
   "+chrome/browser/browser_process_platform_part.h",
   "+chrome/browser/extensions/policy_handlers.h",
   "+chrome/browser/extensions/updater",
+  "+chrome/browser/web_applications/web_app_utils.h",
   "+chrome/browser/lifetime",
   "+chrome/browser/media/webrtc",
   "+chrome/browser/notifications",

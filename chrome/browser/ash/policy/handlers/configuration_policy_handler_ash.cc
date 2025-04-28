@@ -29,6 +29,7 @@
 #include "chrome/browser/apps/app_service/policy_util.h"
 #include "chrome/browser/ash/accessibility/magnifier_type.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_prefs.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "chromeos/components/onc/onc_signature.h"
@@ -155,10 +156,10 @@ base::Value CalculateIdleActionValue(const base::Value* idle_action_value,
 bool IsSupportedAppTypePolicyId(std::string_view policy_id) {
   return apps_util::IsChromeAppPolicyId(policy_id) ||
          apps_util::IsArcAppPolicyId(policy_id) ||
-         apps_util::IsSystemWebAppPolicyId(policy_id) ||
-         apps_util::IsWebAppPolicyId(policy_id) ||
-         apps_util::IsPreinstalledWebAppPolicyId(policy_id) ||
-         apps_util::IsIsolatedWebAppPolicyId(policy_id);
+         web_app::IsSystemWebAppPolicyId(policy_id) ||
+         web_app::IsWebAppPolicyId(policy_id) ||
+         web_app::IsPreinstalledWebAppPolicyId(policy_id) ||
+         web_app::IsIsolatedWebAppPolicyId(policy_id);
 }
 
 }  // namespace

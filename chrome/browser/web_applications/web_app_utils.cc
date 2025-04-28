@@ -16,7 +16,11 @@
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/containers/enum_set.h"
+#include "base/containers/extend.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/containers/map_util.h"
+#include "base/containers/to_vector.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -63,12 +67,78 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
+#include "chromeos/ash/components/file_manager/app_id.h"
 #include "components/user_manager/user_manager.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace web_app {
 
 namespace {
+
+#if BUILDFLAG(IS_CHROMEOS)
+
+// This mapping excludes SWAs not included in official builds (like SAMPLE).
+// These app Id constants need to be kept in sync with java/com/
+// google/chrome/cros/policyconverter/ChromePolicySettingsProcessor.java
+constexpr auto kSystemWebAppsMapping =
+    base::MakeFixedFlatMap<std::string_view, ash::SystemWebAppType>(
+        {{"file_manager", ash::SystemWebAppType::FILE_MANAGER},
+         {"settings", ash::SystemWebAppType::SETTINGS},
+         {"camera", ash::SystemWebAppType::CAMERA},
+         {"terminal", ash::SystemWebAppType::TERMINAL},
+         {"media", ash::SystemWebAppType::MEDIA},
+         {"help", ash::SystemWebAppType::HELP},
+         {"print_management", ash::SystemWebAppType::PRINT_MANAGEMENT},
+         {"scanning", ash::SystemWebAppType::SCANNING},
+         {"diagnostics", ash::SystemWebAppType::DIAGNOSTICS},
+         {"connectivity_diagnostics",
+          ash::SystemWebAppType::CONNECTIVITY_DIAGNOSTICS},
+         {"eche", ash::SystemWebAppType::ECHE},
+         {"crosh", ash::SystemWebAppType::CROSH},
+         {"personalization", ash::SystemWebAppType::PERSONALIZATION},
+         {"shortcut_customization",
+          ash::SystemWebAppType::SHORTCUT_CUSTOMIZATION},
+         {"shimless_rma", ash::SystemWebAppType::SHIMLESS_RMA},
+         {"demo_mode", ash::SystemWebAppType::DEMO_MODE},
+         {"os_feedback", ash::SystemWebAppType::OS_FEEDBACK},
+         {"os_sanitize", ash::SystemWebAppType::OS_SANITIZE},
+         {"projector", ash::SystemWebAppType::PROJECTOR},
+         {"firmware_update", ash::SystemWebAppType::FIRMWARE_UPDATE},
+         {"os_flags", ash::SystemWebAppType::OS_FLAGS},
+         {"vc_background", ash::SystemWebAppType::VC_BACKGROUND},
+         {"print_preview_cros", ash::SystemWebAppType::PRINT_PREVIEW_CROS},
+         {"boca", ash::SystemWebAppType::BOCA},
+         {"app_mall", ash::SystemWebAppType::MALL},
+         {"recorder", ash::SystemWebAppType::RECORDER},
+         {"graduation", ash::SystemWebAppType::GRADUATION}});
+
+constexpr ash::SystemWebAppType GetMaxSystemWebAppType() {
+  return std::ranges::max_element(
+             kSystemWebAppsMapping, std::ranges::less{},
+             &decltype(kSystemWebAppsMapping)::value_type::second)
+      ->second;
+}
+
+static_assert(GetMaxSystemWebAppType() == ash::SystemWebAppType::kMaxValue,
+              "Not all SWA types are listed in |system_web_apps_mapping|.");
+
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+// Note that this mapping lists only selected Preinstalled Web Apps
+// actively used in policies and is not meant to be exhaustive.
+// These app Id constants need to be kept in sync with java/com/
+// google/chrome/cros/policyconverter/ChromePolicySettingsProcessor.java
+constexpr auto kPreinstalledWebAppsMapping =
+    base::MakeFixedFlatMap<std::string_view, std::string_view>(
+        {{"cursive", ash::kCursiveAppId}, {"canvas", ash::kCanvasAppId}});
+
+std::optional<base::flat_map<std::string_view, std::string_view>>&
+GetPreinstalledWebAppsMappingForTesting() {
+  static base::NoDestructor<
+      std::optional<base::flat_map<std::string_view, std::string_view>>>
+      preinstalled_web_apps_mapping_for_testing;
+  return *preinstalled_web_apps_mapping_for_testing;
+}
 
 GURL EncodeIconAsUrl(const SkBitmap& bitmap) {
   std::optional<std::vector<uint8_t>> output =
@@ -265,6 +335,32 @@ DisplayMode ResolveNonIsolatedEffectiveDisplayMode(
 }
 
 }  // namespace
+
+std::optional<std::string_view> GetPolicyIdForPreinstalledWebApp(
+    std::string_view app_id) {
+  if (const auto& test_mapping = GetPreinstalledWebAppsMappingForTesting()) {
+    for (const auto& [policy_id, mapped_app_id] : *test_mapping) {
+      if (mapped_app_id == app_id) {
+        return policy_id;
+      }
+    }
+    return {};
+  }
+
+  for (const auto& [policy_id, mapped_app_id] : kPreinstalledWebAppsMapping) {
+    if (mapped_app_id == app_id) {
+      return policy_id;
+    }
+  }
+  return {};
+}
+
+void SetPreinstalledWebAppsMappingForTesting(  // IN-TEST
+    std::optional<base::flat_map<std::string_view, std::string_view>>
+        preinstalled_web_apps_mapping_for_testing) {
+  GetPreinstalledWebAppsMappingForTesting() =                // IN-TEST
+      std::move(preinstalled_web_apps_mapping_for_testing);  // IN-TEST
+}
 
 constexpr base::FilePath::CharType kManifestResourcesDirectoryName[] =
     FILE_PATH_LITERAL("Manifest Resources");
@@ -506,6 +602,97 @@ webapps::AppId GetAppIdFromAppSettingsUrl(const GURL& url) {
     return webapps::AppId();
   }
   return path.substr(1);
+}
+
+#if BUILDFLAG(IS_CHROMEOS)
+std::optional<std::string_view> GetPolicyIdForSystemWebAppType(
+    ash::SystemWebAppType swa_type) {
+  for (const auto& [policy_id, mapped_swa_type] : kSystemWebAppsMapping) {
+    if (mapped_swa_type == swa_type) {
+      return policy_id;
+    }
+  }
+  return {};
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+bool IsWebAppPolicyId(std::string_view policy_id) {
+  return GURL{policy_id}.is_valid();
+}
+
+#if BUILDFLAG(IS_CHROMEOS)
+bool IsSystemWebAppPolicyId(std::string_view policy_id) {
+  return base::Contains(web_app::kSystemWebAppsMapping, policy_id);
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+bool IsPreinstalledWebAppPolicyId(std::string_view policy_id) {
+  if (auto& mapping = GetPreinstalledWebAppsMappingForTesting()) {  // IN-TEST
+    return base::Contains(*mapping, policy_id);
+  }
+  return base::Contains(kPreinstalledWebAppsMapping, policy_id);
+}
+
+bool IsIsolatedWebAppPolicyId(std::string_view policy_id) {
+  return web_package::SignedWebBundleId::Create(policy_id).has_value();
+}
+
+std::vector<std::string> GetPolicyIds(Profile* profile, const WebApp& web_app) {
+  const auto& app_id = web_app.app_id();
+  WebAppRegistrar& web_app_registrar =
+      WebAppProvider::GetForWebApps(profile)->registrar_unsafe();
+
+  if (web_app_registrar.IsIsolated(app_id) &&
+      web_app_registrar.IsInstalledByPolicy(app_id)) {
+    // This is an IWA - and thus, web_bundle_id == policy_id == URL hostname
+    return {web_app.start_url().host()};
+  }
+
+  std::vector<std::string> policy_ids;
+
+  if (std::optional<std::string_view> preinstalled_web_app_policy_id =
+          web_app::GetPolicyIdForPreinstalledWebApp(app_id)) {
+    policy_ids.emplace_back(*preinstalled_web_app_policy_id);
+  }
+
+#if BUILDFLAG(IS_CHROMEOS)
+  const auto& swa_data = web_app.client_data().system_web_app_data;
+  if (swa_data) {
+    const ash::SystemWebAppType swa_type = swa_data->system_app_type;
+    const std::optional<std::string_view> swa_policy_id =
+        web_app::GetPolicyIdForSystemWebAppType(swa_type);
+    if (swa_policy_id) {
+      policy_ids.emplace_back(*swa_policy_id);
+    }
+
+    // File Manager SWA uses File Manager Extension's ID for policy.
+    if (swa_type == ash::SystemWebAppType::FILE_MANAGER) {
+      policy_ids.push_back(file_manager::kFileManagerAppId);
+    }
+  }
+#endif  // BUIDLFLAG(IS_CHROMEOS)
+
+  for (const auto& [source, external_config] :
+       web_app.management_to_external_config_map()) {
+    if (!external_config.additional_policy_ids.empty()) {
+      base::Extend(policy_ids, external_config.additional_policy_ids);
+    }
+  }
+
+  if (!web_app_registrar.HasExternalAppWithInstallSource(
+          app_id, ExternalInstallSource::kExternalPolicy)) {
+    return policy_ids;
+  }
+
+  base::flat_map<webapps::AppId, base::flat_set<GURL>> installed_apps =
+      web_app_registrar.GetExternallyInstalledApps(
+          ExternalInstallSource::kExternalPolicy);
+  if (auto* install_urls = base::FindOrNull(installed_apps, app_id)) {
+    DCHECK(!install_urls->empty());
+    base::Extend(policy_ids, base::ToVector(*install_urls, &GURL::spec));
+  }
+
+  return policy_ids;
 }
 
 bool IsInScope(const GURL& url, const GURL& scope) {
