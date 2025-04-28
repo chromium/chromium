@@ -9,9 +9,11 @@ import android.content.Context;
 import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
+import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.theme.SurfaceColorUpdateUtils;
 import org.chromium.chrome.browser.ui.theme.ChromeSemanticColorUtils;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
@@ -43,10 +45,9 @@ public class TabUiThemeUtil {
             boolean isIncognito,
             boolean isInDesktopWindow,
             boolean isActivityFocused) {
-        return isInDesktopWindow
-                ? getTabStripBackgroundColorForActivityState(
-                        context, isIncognito, isActivityFocused)
-                : getTabStripBackgroundColor(context, isIncognito);
+        return isInDesktopWindow && !isActivityFocused
+                ? getTabStripBackgroundColorUnfocused(context, isIncognito)
+                : getTabStripBackgroundColorDefault(context, isIncognito);
     }
 
     /**
@@ -58,34 +59,30 @@ public class TabUiThemeUtil {
      * @return The {@link ColorInt} for the tab strip background.
      */
     public static @ColorInt int getTabStripBackgroundColor(Context context, boolean isIncognito) {
-        return getTabStripBackgroundColorForActivityState(
-                context, isIncognito, /* isActivityFocused= */ true);
+        return getTabStripBackgroundColorDefault(context, isIncognito);
     }
 
-    private static @ColorInt int getTabStripBackgroundColorForActivityState(
-            Context context, boolean isIncognito, boolean isActivityFocused) {
-        // Default spec for incognito, dark and light themes, used when not in desktop windowing
-        // mode or when the activity is focused in desktop windowing mode.
-        @ColorRes int incognitoColor = R.color.tab_strip_tablet_bg_incognito;
-        @ColorInt int darkThemeColor = SemanticColorUtils.getColorSurfaceContainer(context);
-        @ColorInt int lightThemeColor = SemanticColorUtils.getColorSurfaceContainerHigh(context);
-
-        // Spec for when the activity is in an unfocused desktop window.
-        if (!isActivityFocused) {
-            incognitoColor = R.color.tab_strip_tablet_bg_unfocused_incognito;
-            darkThemeColor = SemanticColorUtils.getColorSurfaceContainerLow(context);
-            lightThemeColor = SemanticColorUtils.getColorSurfaceContainer(context);
-        }
-
+    private static @ColorInt int getTabStripBackgroundColorDefault(
+            Context context, boolean isIncognito) {
+        // TODO(https://crbug.com/413067043): Update for incognito.
         if (isIncognito) {
-            return context.getColor(incognitoColor);
+            return ContextCompat.getColor(context, R.color.tab_strip_tablet_bg_incognito);
         }
-        return ColorUtils.inNightMode(context) ? darkThemeColor : lightThemeColor;
+        return SurfaceColorUpdateUtils.getTabStripBackgroundColorDefault(context);
+    }
+
+    private static @ColorInt int getTabStripBackgroundColorUnfocused(
+            Context context, boolean isIncognito) {
+        // TODO(https://crbug.com/413067043): Update for incognito.
+        if (isIncognito) {
+            return ContextCompat.getColor(context, R.color.tab_strip_tablet_bg_unfocused_incognito);
+        }
+        return SurfaceColorUpdateUtils.getTabStripBackgroundColorUnfocused(context);
     }
 
     /** Returns the tab strip selected tab color. */
     public static @ColorInt int getTabStripSelectedTabColor(Context context, boolean isIncognito) {
-        return ChromeColors.getDefaultThemeColor(context, isIncognito);
+        return SurfaceColorUpdateUtils.getDefaultThemeColor(context, isIncognito);
     }
 
     /** Returns the tab strip title text color. */
