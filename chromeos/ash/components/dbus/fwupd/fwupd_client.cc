@@ -506,12 +506,13 @@ class FwupdClientImpl : public FwupdClient {
       }
 
       const std::string* id = dict.FindString("DeviceId");
-
-      // The keys "DeviceId" and "Name" must exist in the dictionary.
-      const bool success = id && name;
-      if (!success) {
-        FIRMWARE_LOG(ERROR) << "No device id or name found.";
-        return;
+      if (!id) {
+        FIRMWARE_LOG(ERROR) << "No device id found.";
+        continue;
+      }
+      if (!name) {
+        FIRMWARE_LOG(ERROR) << "No name found for device: " << *id;
+        continue;
       }
 
       std::optional<bool> needs_reboot = dict.FindBool(kNeedsRebootKey);
