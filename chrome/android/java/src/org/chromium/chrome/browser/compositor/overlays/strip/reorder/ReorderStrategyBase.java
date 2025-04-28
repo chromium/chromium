@@ -223,9 +223,10 @@ abstract class ReorderStrategyBase implements ReorderStrategy {
         if (stripView.getTrailingMargin() == trailingMargin) return;
 
         // Update group title bottom indicator width if needed.
-        if (groupTitle != null
-                && !groupTitle.isCollapsed()
-                && TabDragSource.canMergeIntoGroupOnDrop()) {
+        boolean isExpandedGroup = groupTitle != null && !groupTitle.isCollapsed();
+        boolean shouldAnimateBottomIndicator =
+                !shouldHaveTrailingMargin || TabDragSource.canMergeIntoGroupOnDrop();
+        if (isExpandedGroup && shouldAnimateBottomIndicator) {
             float startWidth = groupTitle.getBottomIndicatorWidth();
             float endWidth =
                     StripLayoutUtils.calculateBottomIndicatorWidth(
