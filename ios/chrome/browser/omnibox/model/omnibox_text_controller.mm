@@ -429,7 +429,7 @@
   [textField becomeFirstResponder];
   if (@available(iOS 17, *)) {
     // Set the caret pos to the end of the text (crbug.com/331622199).
-    _omniboxViewIOS->SetCaretPos(text.length());
+    [self setCaretPos:text.length()];
   }
 }
 
@@ -453,6 +453,18 @@
       setTextAlignment:[textField bestTextAlignment]];
   [self.omniboxAutocompleteController
       setSemanticContentAttribute:[textField bestSemanticContentAttribute]];
+}
+
+/// Sets the caret position. Removes any selection. Clamps the requested caret
+/// position to the length of the current text.
+- (void)setCaretPos:(NSUInteger)caretPos {
+  OmniboxTextFieldIOS* textField = self.textField;
+  DCHECK(caretPos <= textField.text.length || caretPos == 0);
+  UITextPosition* start = textField.beginningOfDocument;
+  UITextPosition* newPosition = [textField positionFromPosition:start
+                                                         offset:caretPos];
+  textField.selectedTextRange = [textField textRangeFromPosition:newPosition
+                                                      toPosition:newPosition];
 }
 
 /// Returns the omnibox client.

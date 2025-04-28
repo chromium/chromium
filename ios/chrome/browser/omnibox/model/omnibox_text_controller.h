@@ -133,6 +133,8 @@ class OmniboxViewIOS;
 
 - (void)updatePopupLayoutDirection;
 
+- (void)setCaretPos:(NSUInteger)caretPos;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_OMNIBOX_MODEL_OMNIBOX_TEXT_CONTROLLER_H_
