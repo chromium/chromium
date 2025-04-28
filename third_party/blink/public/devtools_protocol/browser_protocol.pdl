@@ -13354,6 +13354,21 @@ experimental domain BluetoothEmulation
       connection
       discovery
 
+  # Indicates the various types of characteristic write.
+  type CharacteristicWriteType extends string
+    enum
+      write-default-deprecated
+      write-with-response
+      write-without-response
+
+  # Indicates the various types of characteristic operation.
+  type CharacteristicOperationType extends string
+    enum
+      read
+      write
+      subscribe-to-notifications
+      unsubscribe-from-notifications
+
   # Stores the manufacturer data
   type ManufacturerData extends object
     properties
@@ -13438,6 +13453,18 @@ experimental domain BluetoothEmulation
       GATTOperationType type
       integer code
 
+  # Simulates the response from the characteristic with |characteristicId| for a
+  # characteristic operation of |type|. The |code| value follows the Error
+  # Codes from Bluetooth Core Specification Vol 3 Part F 3.4.1.1 Error Response.
+  # The |data| is expected to exist when simulating a successful read operation
+  # response.
+  command simulateCharacteristicOperationResponse
+    parameters
+      string characteristicId
+      CharacteristicOperationType type
+      integer code
+      optional binary data
+
   # Adds a service with |serviceUuid| to the peripheral with |address|.
   command addService
     parameters
@@ -13490,3 +13517,13 @@ experimental domain BluetoothEmulation
     parameters
       string address
       GATTOperationType type
+
+  # Event for when a characteristic operation of |type| to the characteristic
+  # respresented by |characteristicId| happened. |data| and |writeType| is
+  # expected to exist when |type| is write.
+  event characteristicOperationReceived
+    parameters
+      string characteristicId
+      CharacteristicOperationType type
+      optional binary data
+      optional CharacteristicWriteType writeType

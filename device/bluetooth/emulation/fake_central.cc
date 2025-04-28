@@ -224,6 +224,44 @@ void FakeCentral::SimulateGATTOperationResponse(
   }
 }
 
+void FakeCentral::SimulateCharacteristicOperationResponse(
+    mojom::CharacteristicOperationType type,
+    const std::string& characteristic_id,
+    const std::string& service_id,
+    const std::string& peripheral_address,
+    uint16_t code,
+    const std::optional<std::vector<uint8_t>>& data,
+    SimulateCharacteristicOperationResponseCallback callback) {
+  FakeRemoteGattCharacteristic* fake_remote_gatt_characteristic =
+      GetFakeRemoteGattCharacteristic(peripheral_address, service_id,
+                                      characteristic_id);
+  if (fake_remote_gatt_characteristic == nullptr) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  switch (type) {
+    case mojom::CharacteristicOperationType::kRead:
+      fake_remote_gatt_characteristic->SimulateReadResponse(code, data);
+      std::move(callback).Run(true);
+      break;
+    case mojom::CharacteristicOperationType::kWrite:
+      fake_remote_gatt_characteristic->SimulateWriteResponse(code);
+      std::move(callback).Run(true);
+      break;
+    case mojom::CharacteristicOperationType::kSubscribeToNotifications:
+      fake_remote_gatt_characteristic->SimulateSubscribeToNotificationsResponse(
+          code);
+      std::move(callback).Run(true);
+      break;
+    case mojom::CharacteristicOperationType::kUnsubscribeFromNotifications:
+      fake_remote_gatt_characteristic
+          ->SimulateUnsubscribeFromNotificationsResponse(code);
+      std::move(callback).Run(true);
+      break;
+  }
+}
+
 bool FakeCentral::AllResponsesConsumed() {
   return std::ranges::all_of(devices_, [](const auto& e) {
     // static_cast is safe because the parent class's devices_ is only
@@ -800,6 +838,17 @@ void FakeCentral::DispatchGATTOperationEvent(
     const std::string& peripheral_address) {
   if (client_.is_bound()) {
     client_->DispatchGATTOperationEvent(type, peripheral_address);
+  }
+}
+
+void FakeCentral::DispatchCharacteristicOperationEvent(
+    mojom::CharacteristicOperationType type,
+    const std::optional<std::vector<uint8_t>>& data,
+    const std::optional<mojom::WriteType> write_type,
+    const std::string& characteristic_id) {
+  if (client_.is_bound()) {
+    client_->DispatchCharacteristicOperationEvent(type, data, write_type,
+                                                  characteristic_id);
   }
 }
 

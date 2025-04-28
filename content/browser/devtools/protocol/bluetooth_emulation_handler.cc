@@ -11,7 +11,10 @@
 #include <vector>
 
 #include "base/containers/span.h"
+#include "base/containers/to_vector.h"
+#include "base/notreached.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "content/browser/bluetooth/bluetooth_adapter_factory_wrapper.h"
 #include "content/browser/devtools/protocol/bluetooth_emulation.h"
 #include "device/bluetooth/emulation/fake_central.h"
@@ -22,18 +25,12 @@ namespace content::protocol {
 
 namespace {
 
-constexpr std::string_view kConnect = "connect";
-constexpr std::string_view kDiscovery = "discovery";
-
 base::flat_map<uint16_t, std::vector<uint8_t>> ToManufacturerData(
     protocol::Array<protocol::BluetoothEmulation::ManufacturerData>*
         in_manufacturer_data) {
   base::flat_map<uint16_t, std::vector<uint8_t>> out_manufacturer_data;
   for (auto& data : *in_manufacturer_data) {
-    const auto& binary_data = data->GetData();
-    auto span = base::as_byte_span(binary_data);
-    out_manufacturer_data[data->GetKey()] =
-        std::vector<uint8_t>(span.begin(), span.end());
+    out_manufacturer_data[data->GetKey()] = base::ToVector(data->GetData());
   }
   return out_manufacturer_data;
 }
@@ -110,20 +107,74 @@ constexpr std::string_view ToGATTOperation(
     bluetooth::mojom::GATTOperationType type) {
   switch (type) {
     case bluetooth::mojom::GATTOperationType::kConnect:
-      return kConnect;
+      return BluetoothEmulation::GATTOperationTypeEnum::Connection;
     case bluetooth::mojom::GATTOperationType::kDiscovery:
-      return kDiscovery;
+      return BluetoothEmulation::GATTOperationTypeEnum::Discovery;
   }
 }
 
 std::optional<bluetooth::mojom::GATTOperationType> ToGATTOperation(
     std::string_view type) {
-  if (type == kConnect) {
+  if (type == BluetoothEmulation::GATTOperationTypeEnum::Connection) {
     return bluetooth::mojom::GATTOperationType::kConnect;
-  } else if (type == kDiscovery) {
+  } else if (type == BluetoothEmulation::GATTOperationTypeEnum::Discovery) {
     return bluetooth::mojom::GATTOperationType::kDiscovery;
   } else {
     return std::nullopt;
+  }
+}
+
+constexpr std::string_view ToCharacteristicOperation(
+    bluetooth::mojom::CharacteristicOperationType type) {
+  switch (type) {
+    case bluetooth::mojom::CharacteristicOperationType::kRead:
+      return BluetoothEmulation::CharacteristicOperationTypeEnum::Read;
+    case bluetooth::mojom::CharacteristicOperationType::kWrite:
+      return BluetoothEmulation::CharacteristicOperationTypeEnum::Write;
+    case bluetooth::mojom::CharacteristicOperationType::
+        kSubscribeToNotifications:
+      return BluetoothEmulation::CharacteristicOperationTypeEnum::
+          SubscribeToNotifications;
+    case bluetooth::mojom::CharacteristicOperationType::
+        kUnsubscribeFromNotifications:
+      return BluetoothEmulation::CharacteristicOperationTypeEnum::
+          UnsubscribeFromNotifications;
+  }
+}
+
+std::optional<bluetooth::mojom::CharacteristicOperationType>
+ToCharacteristicOperation(std::string_view type) {
+  if (type == BluetoothEmulation::CharacteristicOperationTypeEnum::Read) {
+    return bluetooth::mojom::CharacteristicOperationType::kRead;
+  } else if (type ==
+             BluetoothEmulation::CharacteristicOperationTypeEnum::Write) {
+    return bluetooth::mojom::CharacteristicOperationType::kWrite;
+  } else if (type == BluetoothEmulation::CharacteristicOperationTypeEnum::
+                         SubscribeToNotifications) {
+    return bluetooth::mojom::CharacteristicOperationType::
+        kSubscribeToNotifications;
+  } else if (type == BluetoothEmulation::CharacteristicOperationTypeEnum::
+                         UnsubscribeFromNotifications) {
+    return bluetooth::mojom::CharacteristicOperationType::
+        kUnsubscribeFromNotifications;
+  } else {
+    return std::nullopt;
+  }
+}
+
+constexpr std::string_view ToCharacteristicWriteType(
+    bluetooth::mojom::WriteType type) {
+  switch (type) {
+    case bluetooth::mojom::WriteType::kNone:
+      NOTREACHED();
+    case bluetooth::mojom::WriteType::kWriteDefaultDeprecated:
+      return BluetoothEmulation::CharacteristicWriteTypeEnum::
+          WriteDefaultDeprecated;
+    case bluetooth::mojom::WriteType::kWriteWithResponse:
+      return BluetoothEmulation::CharacteristicWriteTypeEnum::WriteWithResponse;
+    case bluetooth::mojom::WriteType::kWriteWithoutResponse:
+      return BluetoothEmulation::CharacteristicWriteTypeEnum::
+          WriteWithoutResponse;
   }
 }
 
@@ -317,6 +368,54 @@ void BluetoothEmulationHandler::SimulateGATTOperationResponse(
             std::move(callback)->sendSuccess();
           },
           std::move(callback), in_type));
+}
+
+void BluetoothEmulationHandler::SimulateCharacteristicOperationResponse(
+    const std::string& in_characteristicId,
+    const std::string& in_type,
+    int in_code,
+    std::optional<Binary> in_data,
+    std::unique_ptr<SimulateCharacteristicOperationResponseCallback> callback) {
+  if (!is_enabled()) {
+    std::move(callback)->sendFailure(
+        Response::ServerError("BluetoothEmulation not enabled"));
+    return;
+  }
+  auto operation_type = ToCharacteristicOperation(in_type);
+  if (!operation_type) {
+    std::move(callback)->sendFailure(Response::InvalidParams(
+        base::StrCat({"Unknown characteristic operation type ", in_type})));
+    return;
+  }
+  if (operation_type == bluetooth::mojom::CharacteristicOperationType::kRead &&
+      ((in_code == bluetooth::mojom::kGATTSuccess) != in_data.has_value())) {
+    std::move(callback)->sendFailure(Response::InvalidParams(
+        base::StrCat({"Characteristic operation type ", in_type, " with code ",
+                      base::NumberToString(in_code),
+                      in_data ? " does not expect" : " expects", " data"})));
+    return;
+  }
+
+  std::string serviceId = getParentId(in_characteristicId);
+  std::string address = getParentId(serviceId);
+  fake_central_->SimulateCharacteristicOperationResponse(
+      *operation_type, in_characteristicId, serviceId, address, in_code,
+      in_data ? std::optional(base::ToVector(*in_data)) : std::nullopt,
+      base::BindOnce(
+          [](std::unique_ptr<SimulateCharacteristicOperationResponseCallback>
+                 callback,
+             const std::string& error_message, bool success) {
+            if (!success) {
+              std::move(callback)->sendFailure(
+                  Response::ServerError(error_message));
+              return;
+            }
+            std::move(callback)->sendSuccess();
+          },
+          std::move(callback),
+          base::StrCat(
+              {"Failed to simulate characteristic response for operation type ",
+               in_type})));
 }
 
 void BluetoothEmulationHandler::AddService(
@@ -522,6 +621,19 @@ void BluetoothEmulationHandler::DispatchGATTOperationEvent(
     const std::string& peripheral_address) {
   frontend_->GattOperationReceived(peripheral_address,
                                    std::string(ToGATTOperation(type)));
+}
+
+void BluetoothEmulationHandler::DispatchCharacteristicOperationEvent(
+    bluetooth::mojom::CharacteristicOperationType type,
+    const std::optional<std::vector<uint8_t>>& data,
+    const std::optional<bluetooth::mojom::WriteType> write_type,
+    const std::string& characteristic_id) {
+  frontend_->CharacteristicOperationReceived(
+      characteristic_id, std::string(ToCharacteristicOperation(type)),
+      data ? std::optional(Binary::fromVector(*data)) : std::nullopt,
+      write_type
+          ? std::optional(std::string(ToCharacteristicWriteType(*write_type)))
+          : std::nullopt);
 }
 
 }  // namespace content::protocol

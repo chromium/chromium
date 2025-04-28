@@ -14,6 +14,7 @@ class BluetoothHelper {
       '00002902-0000-1000-8000-00805f9b34fb';
 
   static HCI_SUCCESS = 0x0000;
+  static HCI_CONNECTION_TIMEOUT = 0x0008;
 
   constructor(testRunner, protocol, session) {
     this.testRunner_ = testRunner;

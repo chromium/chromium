@@ -180,12 +180,12 @@
             },
             {
                 "domain": "BluetoothEmulation",
-                "include_events": ["gattOperationReceived"],
                 "async": [
                     "setSimulatedCentralState",
                     "simulatePreconnectedPeripheral",
                     "simulateAdvertisement",
                     "simulateGATTOperationResponse",
+                    "simulateCharacteristicOperationResponse",
                     "addService",
                     "removeService",
                     "addCharacteristic",
