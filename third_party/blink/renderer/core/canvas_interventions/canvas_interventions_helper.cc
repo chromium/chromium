@@ -127,8 +127,8 @@ bool CanvasInterventionsHelper::MaybeNoiseSnapshot(
   // of all channels, including the alpha channel.
   auto info = SkImageInfo::Make(
       snapshot->GetSize().width(), snapshot->GetSize().height(),
-      snapshot->GetSkColorType(), kUnpremul_SkAlphaType,
-      snapshot->GetSkColorSpace());
+      viz::ToClosestSkColorType(snapshot->GetSharedImageFormat()),
+      kUnpremul_SkAlphaType, snapshot->GetSkColorSpace());
   SkBitmap bm;
   if (!bm.tryAllocPixels(info)) {
     return false;

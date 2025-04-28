@@ -49,9 +49,7 @@ class PLATFORM_EXPORT UnacceleratedStaticBitmapImage final
   SkAlphaType GetAlphaType() const override {
     return GetSkImageInfo().alphaType();
   }
-  SkColorType GetSkColorType() const override {
-    return GetSkImageInfo().colorType();
-  }
+  SkColorType GetSkColorType() const { return GetSkImageInfo().colorType(); }
   sk_sp<SkColorSpace> GetSkColorSpace() const override {
     return GetSkImageInfo().refColorSpace();
   }
