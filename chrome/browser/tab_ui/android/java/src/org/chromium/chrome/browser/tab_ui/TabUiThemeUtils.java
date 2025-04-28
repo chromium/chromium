@@ -13,6 +13,7 @@ import androidx.core.content.ContextCompat;
 import com.google.android.material.color.MaterialColors;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.theme.SurfaceColorUpdateUtils;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 
 /**
@@ -101,18 +102,13 @@ public class TabUiThemeUtils {
      */
     public static @ColorInt int getCardViewBackgroundColor(
             Context context, boolean isIncognito, boolean isSelected) {
-        if (isIncognito) {
+        if (isSelected) {
             // Incognito does not use dynamic colors, so it can use colors from resources.
-            @ColorRes
-            int colorRes =
-                    isSelected
-                            ? R.color.incognito_tab_bg_selected_color
-                            : R.color.incognito_tab_bg_color;
-            return ContextCompat.getColor(context, colorRes);
+            return isIncognito
+                    ? ContextCompat.getColor(context, R.color.incognito_tab_bg_selected_color)
+                    : MaterialColors.getColor(context, R.attr.colorPrimary, TAG);
         } else {
-            return isSelected
-                    ? MaterialColors.getColor(context, R.attr.colorPrimary, TAG)
-                    : ContextCompat.getColor(context, R.color.tab_card_view_bg_color);
+            return SurfaceColorUpdateUtils.getCardViewBackgroundColor(context, isIncognito);
         }
     }
 }

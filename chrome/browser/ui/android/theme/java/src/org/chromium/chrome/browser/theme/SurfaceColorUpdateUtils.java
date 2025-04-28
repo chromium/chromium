@@ -84,4 +84,51 @@ public class SurfaceColorUpdateUtils {
         @ColorInt int lightThemeColor = SemanticColorUtils.getColorSurfaceContainer(context);
         return ColorUtils.inNightMode(context) ? darkThemeColor : lightThemeColor;
     }
+
+    /**
+     * Returns the background color for the grid tab switcher based on the enabled flag and
+     * incognito.
+     *
+     * @param context {@link Context} used to retrieve colors.
+     * @return The background color.
+     */
+    public static @ColorInt int getGridTabSwitcherBackgroundColor(
+            Context context, boolean isIncognito) {
+        if (ChromeFeatureList.sGridTabSwitcherSurfaceColorUpdate.isEnabled()) {
+            return isIncognito
+                    ? ContextCompat.getColor(
+                            context, R.color.gm3_baseline_surface_container_high_dark)
+                    : SemanticColorUtils.getColorSurfaceContainerHigh(context);
+        }
+        return isIncognito
+                ? ContextCompat.getColor(context, R.color.default_bg_color_dark)
+                : SemanticColorUtils.getDefaultBgColor(context);
+    }
+
+    /**
+     * Returns the background color for the card view in grid tab switcher on the enabled flag and
+     * incognito.
+     *
+     * @param context {@link Context} used to retrieve colors.
+     * @return The background color.
+     */
+    public static @ColorInt int getCardViewBackgroundColor(Context context, boolean isIncognito) {
+        if (ChromeFeatureList.sGridTabSwitcherSurfaceColorUpdate.isEnabled()) {
+            // TODO(crbug.com/414404094): Add semantic color for incognito tab card view.
+            return isIncognito
+                    ? ContextCompat.getColor(
+                            context, R.color.gm3_baseline_surface_container_high_dark)
+                    : SemanticColorUtils.getColorSurfaceDim(context);
+        }
+        // Checking night mode to keep color behaviour the same as in tab_card_view_bg_color.
+        @ColorInt
+        int defaultBackground =
+                ColorUtils.inNightMode(context)
+                        ? SemanticColorUtils.getColorSurfaceContainerHighest(context)
+                        : SemanticColorUtils.getColorSurfaceContainerHigh(context);
+        return isIncognito
+                ? ContextCompat.getColor(
+                        context, R.color.gm3_baseline_surface_container_highest_dark)
+                : defaultBackground;
+    }
 }

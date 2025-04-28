@@ -12,6 +12,5 @@ found in the LICENSE file.
   <color name="incognito_tab_thumbnail_placeholder_color">@color/gm3_baseline_surface_container_low_dark</color>
   <color name="incognito_tab_thumbnail_placeholder_selected_color">@color/baseline_primary_20_alpha_38</color>
 
-  <color name="incognito_tab_bg_color">@color/gm3_baseline_surface_container_highest_dark</color>
   <color name="incognito_tab_bg_selected_color">@color/baseline_primary_80</color>
 </resources>

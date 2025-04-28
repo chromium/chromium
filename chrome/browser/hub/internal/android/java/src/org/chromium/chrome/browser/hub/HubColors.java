@@ -18,6 +18,7 @@ import com.google.android.material.color.MaterialColors;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.theme.SurfaceColorUpdateUtils;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.util.ColorUtils;
 import org.chromium.ui.util.ValueUtils;
@@ -47,9 +48,11 @@ public final class HubColors {
 
         switch (colorScheme) {
             case HubColorScheme.DEFAULT:
-                return SemanticColorUtils.getDefaultBgColor(context);
+                return SurfaceColorUpdateUtils.getGridTabSwitcherBackgroundColor(
+                        context, /* isIncognito= */ false);
             case HubColorScheme.INCOGNITO:
-                return ContextCompat.getColor(context, R.color.default_bg_color_dark);
+                return SurfaceColorUpdateUtils.getGridTabSwitcherBackgroundColor(
+                        context, /* isIncognito= */ true);
             default:
                 assert false;
                 return Color.TRANSPARENT;
