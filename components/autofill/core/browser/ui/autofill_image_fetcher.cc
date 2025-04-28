@@ -141,12 +141,15 @@ void AutofillImageFetcher::OnCardArtImageFetched(
   // Unlike the `CachedImageFetcher`, the `AutofillImageFetcher` stores the
   // post-processed image in the in-memory cache.
   if (!resolved_image.IsEmpty()) {
+    AutofillMetrics::LogImageFetchOverallResult(/* succeeded= */ true);
+
     cached_images_[resolved_url] = std::make_unique<gfx::Image>(resolved_image);
     return;
   }
 
   // Image fetching failed, and max retry attempts reached.
   if (fetch_attempt_counter_[resolved_url] >= kMaxFetchAttempts) {
+    AutofillMetrics::LogImageFetchOverallResult(/* succeeded= */ false);
     return;
   }
 

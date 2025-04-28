@@ -1396,6 +1396,13 @@ void AutofillMetrics::LogImageFetchResult(bool succeeded) {
 }
 
 // static
+void AutofillMetrics::LogImageFetchOverallResult(bool succeeded) {
+  base::UmaHistogramBoolean(
+      "Autofill.ImageFetcher.CreditCardArt.OverallResultOnBrowserStart",
+      succeeded);
+}
+
+// static
 void AutofillMetrics::LogAutocompletePredictionCollisionState(
     PredictionState prediction_state,
     AutocompleteState autocomplete_state) {

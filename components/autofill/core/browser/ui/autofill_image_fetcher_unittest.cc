@@ -121,8 +121,8 @@ TEST_F(AutofillImageFetcherTest, FetchImage_Success) {
   gfx::Image fake_image2 = GetTestImage(IDR_DEFAULT_FAVICON);
   GURL fake_url1 = GURL("https://www.example.com/fake_image1");
   GURL fake_url2 = GURL(kCapitalOneCardArtUrl);
-
   base::HistogramTester histogram_tester;
+
   // Expect to be called twice. The 'normal' URL should have a size appended to
   // it, whilst the capitalone image is 'special' and does not.
   EXPECT_CALL(
@@ -152,6 +152,10 @@ TEST_F(AutofillImageFetcherTest, FetchImage_Success) {
           AutofillImageFetcherBase::ImageType::kCreditCardArtImage)));
   EXPECT_THAT(histogram_tester.GetAllSamples("Autofill.ImageFetcher.Result"),
               BucketsAre(Bucket(false, 0), Bucket(true, 2)));
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          "Autofill.ImageFetcher.CreditCardArt.OverallResultOnBrowserStart"),
+      BucketsAre(Bucket(false, 0), Bucket(true, 2)));
 }
 
 TEST_F(AutofillImageFetcherTest, FetchImage_ResolveCardArtImage) {
@@ -195,6 +199,11 @@ TEST_F(AutofillImageFetcherTest, FetchImage_Failure_RetryFailure) {
   // Verify one failure logged.
   EXPECT_THAT(histogram_tester.GetAllSamples("Autofill.ImageFetcher.Result"),
               BucketsAre(Bucket(false, 1), Bucket(true, 0)));
+  // Verify overall histogram is not logged yet.
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          "Autofill.ImageFetcher.CreditCardArt.OverallResultOnBrowserStart"),
+      BucketsAre(Bucket(false, 0), Bucket(true, 0)));
 
   // Expect the second fetch attempt after the delay.
   EXPECT_CALL(*mock_image_fetcher(), FetchImageAndData_);
@@ -211,6 +220,11 @@ TEST_F(AutofillImageFetcherTest, FetchImage_Failure_RetryFailure) {
   // Verify two failures logged.
   EXPECT_THAT(histogram_tester.GetAllSamples("Autofill.ImageFetcher.Result"),
               BucketsAre(Bucket(false, 2), Bucket(true, 0)));
+  // Verify a single overall failure logged.
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          "Autofill.ImageFetcher.CreditCardArt.OverallResultOnBrowserStart"),
+      BucketsAre(Bucket(false, 1), Bucket(true, 0)));
 
   // Verify a maximum of 2 attempts are made. Fast-forward time to verify this.
   EXPECT_CALL(*mock_image_fetcher(), FetchImageAndData_).Times(0);
@@ -239,6 +253,11 @@ TEST_F(AutofillImageFetcherTest, FetchImage_Failure_RetrySuccess) {
   // Verify one failure logged.
   EXPECT_THAT(histogram_tester.GetAllSamples("Autofill.ImageFetcher.Result"),
               BucketsAre(Bucket(false, 1), Bucket(true, 0)));
+  // Verify the overall histogram is not logged yet.
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          "Autofill.ImageFetcher.CreditCardArt.OverallResultOnBrowserStart"),
+      BucketsAre(Bucket(false, 0), Bucket(true, 0)));
 
   // Expect the second fetch attempt after the delay.
   EXPECT_CALL(*mock_image_fetcher(), FetchImageAndData_);
@@ -256,6 +275,11 @@ TEST_F(AutofillImageFetcherTest, FetchImage_Failure_RetrySuccess) {
   // Verify one failure and one success logged.
   EXPECT_THAT(histogram_tester.GetAllSamples("Autofill.ImageFetcher.Result"),
               BucketsAre(Bucket(false, 1), Bucket(true, 1)));
+  // Verify a single overall success logged.
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          "Autofill.ImageFetcher.CreditCardArt.OverallResultOnBrowserStart"),
+      BucketsAre(Bucket(false, 0), Bucket(true, 1)));
 }
 
 TEST_F(AutofillImageFetcherTest, FetchImage_Failure_RetryDisabled) {
@@ -283,6 +307,11 @@ TEST_F(AutofillImageFetcherTest, FetchImage_Failure_RetryDisabled) {
   // Verify one failure logged.
   EXPECT_THAT(histogram_tester.GetAllSamples("Autofill.ImageFetcher.Result"),
               BucketsAre(Bucket(false, 1), Bucket(true, 0)));
+  // Verify the overall histogram is not logged.
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          "Autofill.ImageFetcher.CreditCardArt.OverallResultOnBrowserStart"),
+      BucketsAre(Bucket(false, 0), Bucket(true, 0)));
 
   // Verify no more fetch attempts since retry is disabled.
   EXPECT_CALL(*mock_image_fetcher(), FetchImageAndData_).Times(0);
