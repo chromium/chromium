@@ -3530,6 +3530,12 @@ def CheckNoProductIconsAddedToPublicRepo(input_api, output_api):
     """Heuristically identifies product icons based on their file name and reminds
     contributors not to add them to the Chromium repository.
     """
+
+    if input_api.change.RepositoryRoot().endswith('clank'):
+      # TODO(crbug.com/414435241): Change check to compute whether change
+      # belongs to internal repository instead of relying on string matching.
+      return []
+
     errors = []
     files_to_check = [r'.*google.*\.png$|.*google.*\.svg$|.*google.*\.icon$']
     file_filter = lambda f: input_api.FilterSourceFile(
