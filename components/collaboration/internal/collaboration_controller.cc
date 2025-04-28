@@ -714,13 +714,23 @@ class AddingUserToGroupState : public ControllerState {
     }
 
     // Handle preview failures first.
-    if (!preview_outcome.has_value() &&
-        preview_outcome.error() == data_sharing::DataSharingService::
-                                       DataPreviewActionFailure::kGroupFull) {
-      RecordJoinEvent(GetLogger(),
-                      CollaborationServiceJoinEvent::kPreviewGroupFullError);
-      HandleErrorWithType(ErrorInfo::Type::kGroupFull);
-      return;
+    if (!preview_outcome.has_value()) {
+      switch (preview_outcome.error()) {
+        case data_sharing::DataSharingService::DataPreviewActionFailure::
+            kGroupFull:
+          RecordJoinEvent(
+              GetLogger(),
+              CollaborationServiceJoinEvent::kPreviewGroupFullError);
+          HandleErrorWithType(ErrorInfo::Type::kGroupFull);
+          return;
+        case data_sharing::DataSharingService::DataPreviewActionFailure::
+            kGroupClosedByOrganizationPolicy:
+          HandleErrorWithType(
+              ErrorInfo::Type::kGroupClosedByOrganizationPolicy);
+          return;
+        default:
+          break;
+      }
     }
 
     if (!preview_outcome.has_value() ||

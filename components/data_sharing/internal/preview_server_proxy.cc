@@ -25,6 +25,7 @@
 #include "components/sync/base/unique_position.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/shared_tab_group_data_specifics.pb.h"
+#include "google_apis/common/base_requests.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -76,6 +77,7 @@ constexpr char kSharedTabGroupGuidKey[] = "sharedTabGroupGuid";
 constexpr char kUniquePositionKey[] = "uniquePosition";
 constexpr char kCustomCompressedV1Key[] = "customCompressedV1";
 constexpr char kColorKey[] = "color";
+constexpr char kGroupVialoationError[] = "SAME_CUSTOMER_DASHER_POLICY_VIOLATED";
 
 struct TabData {
   std::string url;
@@ -355,6 +357,12 @@ void PreviewServerProxy::HandleServerResponse(
       failure = DataSharingService::DataPreviewActionFailure::kGroupFull;
     } else if (response->http_status_code == net::HTTP_FORBIDDEN) {
       failure = DataSharingService::DataPreviewActionFailure::kPermissionDenied;
+      std::optional<std::string> reason =
+          google_apis::MapJsonErrorToReason(response->response);
+      if (reason.has_value() && reason.value() == kGroupVialoationError) {
+        failure = DataSharingService::DataPreviewActionFailure::
+            kGroupClosedByOrganizationPolicy;
+      }
     }
     std::move(callback).Run(base::unexpected(failure));
     return;

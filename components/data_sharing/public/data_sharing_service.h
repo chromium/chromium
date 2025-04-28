@@ -49,7 +49,8 @@ class DataSharingService : public KeyedService, public base::SupportsUserData {
     kUnknown = 0,
     kPermissionDenied = 1,
     kGroupFull = 2,
-    kOtherFailure = 3
+    kGroupClosedByOrganizationPolicy = 3,
+    kOtherFailure = 4
   };
 
   // GENERATED_JAVA_ENUM_PACKAGE: (

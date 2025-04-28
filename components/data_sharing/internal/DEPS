@@ -6,6 +6,7 @@ include_rules = [
   "+components/sync/base",
   "+components/sync/protocol",
   "+components/sync/test",
+  "+google_apis/common/base_requests.h",
   "+net/http",
   "+net/base",
   "+services/data_decoder/public/cpp",

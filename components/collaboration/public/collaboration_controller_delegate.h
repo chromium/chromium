@@ -35,6 +35,8 @@ class CollaborationControllerDelegate {
       kSyncDisabledByPolicy = 4,
       // Show the group full error dialog.
       kGroupFull = 5,
+      // Show the group closed error dialog.
+      kGroupClosedByOrganizationPolicy = 6,
     };
 
     explicit ErrorInfo(Type type) : type_(type) { GetStringForErrorType(); }
@@ -61,6 +63,8 @@ class CollaborationControllerDelegate {
           return "Signin Disabled By Policy";
         case Type::kGroupFull:
           return "Group Is Full";
+        case Type::kGroupClosedByOrganizationPolicy:
+          return "Group Is Closed By Organization Policy";
       }
     }
 
@@ -90,6 +94,12 @@ class CollaborationControllerDelegate {
               IDS_COLLABORATION_GROUP_IS_FULL_ERROR_DIALOG_HEADER);
           error_body = l10n_util::GetStringUTF8(
               IDS_COLLABORATION_GROUP_IS_FULL_ERROR_DIALOG_BODY);
+          break;
+        case Type::kGroupClosedByOrganizationPolicy:
+          error_header = l10n_util::GetStringUTF8(
+              IDS_COLLABORATION_ENTREPRISE_GROUP_CLOSED_HEADER);
+          error_body = l10n_util::GetStringUTF8(
+              IDS_COLLABORATION_ENTREPRISE_GROUP_CLOSED_BODY);
           break;
         case Type::kGenericError:
         case Type::kUnknown:
