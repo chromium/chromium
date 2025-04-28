@@ -19,6 +19,7 @@
 
 #include "third_party/blink/renderer/core/svg/svg_view_spec.h"
 
+#include "base/containers/span.h"
 #include "third_party/blink/renderer/core/svg/svg_animated_preserve_aspect_ratio.h"
 #include "third_party/blink/renderer/core/svg/svg_animated_rect.h"
 #include "third_party/blink/renderer/core/svg/svg_parser_utilities.h"
@@ -168,9 +169,14 @@ bool SVGViewSpec::ParseViewSpecInternal(base::span<const CharType> chars) {
       case kPreserveAspectRatio: {
         auto* preserve_aspect_ratio =
             MakeGarbageCollected<SVGPreserveAspectRatio>();
-        if (!preserve_aspect_ratio->Parse(ptr, end, false)) {
+        // TODO(crbug.com/351564777): This file is relying on the
+        // behavior of the `preserve_aspect_ratio->Parse` mutating the
+        // first argument. Set ptr to span.data() for now.
+        auto span = UNSAFE_TODO(base::span(ptr, end));
+        if (!preserve_aspect_ratio->Parse(span, false)) {
           return false;
         }
+        ptr = span.data();
         preserve_aspect_ratio_ = preserve_aspect_ratio;
         break;
       }

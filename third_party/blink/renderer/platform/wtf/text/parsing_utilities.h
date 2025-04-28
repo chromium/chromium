@@ -36,6 +36,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_PARSING_UTILITIES_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_PARSING_UTILITIES_H_
 
+#include <string_view>
+
 #include "base/containers/span.h"
 
 namespace WTF {
@@ -84,6 +86,19 @@ bool SkipToken(const CharType*& position,
     return false;
 
   position = current;
+  return true;
+}
+
+template <typename CharType>
+bool SkipToken(base::span<const CharType>& chars, std::string_view token) {
+  if (chars.size() < token.size()) {
+    return false;
+  }
+  if (chars.first(token.size()) != base::span(token)) {
+    return false;
+  }
+
+  chars = chars.subspan(token.size());
   return true;
 }
 

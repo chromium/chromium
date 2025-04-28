@@ -83,8 +83,8 @@ class SVGPreserveAspectRatio final : public SVGPropertyBase {
 
   String ValueAsString() const override;
   SVGParsingError SetValueAsString(const String&);
-  bool Parse(const UChar*& ptr, const UChar* end, bool validate);
-  bool Parse(const LChar*& ptr, const LChar* end, bool validate);
+  bool Parse(base::span<const UChar>& span, bool validate);
+  bool Parse(base::span<const LChar>& span, bool validate);
 
   void Add(const SVGPropertyBase*, const SVGElement*) override;
   void CalculateAnimatedValue(
@@ -107,9 +107,7 @@ class SVGPreserveAspectRatio final : public SVGPropertyBase {
 
  private:
   template <typename CharType>
-  SVGParsingError ParseInternal(const CharType*& ptr,
-                                const CharType* end,
-                                bool validate);
+  SVGParsingError ParseInternal(base::span<CharType>& span, bool validate);
 
   SVGPreserveAspectRatioType align_;
   SVGMeetOrSliceType meet_or_slice_;

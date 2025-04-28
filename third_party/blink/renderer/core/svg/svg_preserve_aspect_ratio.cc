@@ -19,13 +19,9 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/svg/svg_preserve_aspect_ratio.h"
 
+#include "base/containers/span.h"
 #include "base/notreached.h"
 #include "third_party/blink/renderer/core/svg/svg_parser_utilities.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -57,106 +53,124 @@ SVGPreserveAspectRatio* SVGPreserveAspectRatio::Clone() const {
 }
 
 template <typename CharType>
-SVGParsingError SVGPreserveAspectRatio::ParseInternal(const CharType*& ptr,
-                                                      const CharType* end,
-                                                      bool validate) {
+SVGParsingError SVGPreserveAspectRatio::ParseInternal(
+    base::span<CharType>& span_inout,
+    bool validate) {
   SVGPreserveAspectRatioType align = kSvgPreserveaspectratioXmidymid;
   SVGMeetOrSliceType meet_or_slice = kSvgMeetorsliceMeet;
 
   SetAlign(align);
   SetMeetOrSlice(meet_or_slice);
 
-  const CharType* start = ptr;
-  if (!SkipOptionalSVGSpaces(ptr, end))
-    return SVGParsingError(SVGParseStatus::kExpectedEnumeration, ptr - start);
+  auto* start = span_inout.data();
 
-  if (*ptr == 'n') {
-    if (!SkipToken(ptr, end, "none"))
-      return SVGParsingError(SVGParseStatus::kExpectedEnumeration, ptr - start);
+  if (!SkipOptionalSVGSpaces(span_inout)) {
+    return SVGParsingError(SVGParseStatus::kExpectedEnumeration,
+                           span_inout.data() - start);
+  }
+
+  if (span_inout[0] == 'n') {
+    if (!SkipToken(span_inout, "none")) {
+      return SVGParsingError(SVGParseStatus::kExpectedEnumeration,
+                             span_inout.data() - start);
+    }
     align = kSvgPreserveaspectratioNone;
-    SkipOptionalSVGSpaces(ptr, end);
-  } else if (*ptr == 'x') {
-    if ((end - ptr) < 8)
-      return SVGParsingError(SVGParseStatus::kExpectedEnumeration, ptr - start);
-    if (ptr[1] != 'M' || ptr[4] != 'Y' || ptr[5] != 'M')
-      return SVGParsingError(SVGParseStatus::kExpectedEnumeration, ptr - start);
-    if (ptr[2] == 'i') {
-      if (ptr[3] == 'n') {
-        if (ptr[6] == 'i') {
-          if (ptr[7] == 'n')
+    SkipOptionalSVGSpaces(span_inout);
+  } else if (span_inout[0] == 'x') {
+    if (span_inout.size() < 8) {
+      return SVGParsingError(SVGParseStatus::kExpectedEnumeration,
+                             span_inout.data() - start);
+    }
+    if (span_inout[1] != 'M' || span_inout[4] != 'Y' || span_inout[5] != 'M') {
+      return SVGParsingError(SVGParseStatus::kExpectedEnumeration,
+                             span_inout.data() - start);
+    }
+    if (span_inout[2] == 'i') {
+      if (span_inout[3] == 'n') {
+        if (span_inout[6] == 'i') {
+          if (span_inout[7] == 'n') {
             align = kSvgPreserveaspectratioXminymin;
-          else if (ptr[7] == 'd')
+          } else if (span_inout[7] == 'd') {
             align = kSvgPreserveaspectratioXminymid;
-          else
+          } else {
             return SVGParsingError(SVGParseStatus::kExpectedEnumeration,
-                                   ptr - start);
-        } else if (ptr[6] == 'a' && ptr[7] == 'x') {
+                                   span_inout.data() - start);
+          }
+        } else if (span_inout[6] == 'a' && span_inout[7] == 'x') {
           align = kSvgPreserveaspectratioXminymax;
         } else {
           return SVGParsingError(SVGParseStatus::kExpectedEnumeration,
-                                 ptr - start);
+                                 span_inout.data() - start);
         }
-      } else if (ptr[3] == 'd') {
-        if (ptr[6] == 'i') {
-          if (ptr[7] == 'n')
+      } else if (span_inout[3] == 'd') {
+        if (span_inout[6] == 'i') {
+          if (span_inout[7] == 'n') {
             align = kSvgPreserveaspectratioXmidymin;
-          else if (ptr[7] == 'd')
+          } else if (span_inout[7] == 'd') {
             align = kSvgPreserveaspectratioXmidymid;
-          else
+          } else {
             return SVGParsingError(SVGParseStatus::kExpectedEnumeration,
-                                   ptr - start);
-        } else if (ptr[6] == 'a' && ptr[7] == 'x') {
+                                   span_inout.data() - start);
+          }
+        } else if (span_inout[6] == 'a' && span_inout[7] == 'x') {
           align = kSvgPreserveaspectratioXmidymax;
         } else {
           return SVGParsingError(SVGParseStatus::kExpectedEnumeration,
-                                 ptr - start);
+                                 span_inout.data() - start);
         }
       } else {
         return SVGParsingError(SVGParseStatus::kExpectedEnumeration,
-                               ptr - start);
+                               span_inout.data() - start);
       }
-    } else if (ptr[2] == 'a' && ptr[3] == 'x') {
-      if (ptr[6] == 'i') {
-        if (ptr[7] == 'n')
+    } else if (span_inout[2] == 'a' && span_inout[3] == 'x') {
+      if (span_inout[6] == 'i') {
+        if (span_inout[7] == 'n') {
           align = kSvgPreserveaspectratioXmaxymin;
-        else if (ptr[7] == 'd')
+        } else if (span_inout[7] == 'd') {
           align = kSvgPreserveaspectratioXmaxymid;
-        else
+        } else {
           return SVGParsingError(SVGParseStatus::kExpectedEnumeration,
-                                 ptr - start);
-      } else if (ptr[6] == 'a' && ptr[7] == 'x') {
+                                 span_inout.data() - start);
+        }
+      } else if (span_inout[6] == 'a' && span_inout[7] == 'x') {
         align = kSvgPreserveaspectratioXmaxymax;
       } else {
         return SVGParsingError(SVGParseStatus::kExpectedEnumeration,
-                               ptr - start);
+                               span_inout.data() - start);
       }
     } else {
-      return SVGParsingError(SVGParseStatus::kExpectedEnumeration, ptr - start);
+      return SVGParsingError(SVGParseStatus::kExpectedEnumeration,
+                             span_inout.data() - start);
     }
-    ptr += 8;
-    SkipOptionalSVGSpaces(ptr, end);
+    span_inout = span_inout.subspan(8ul);
+    SkipOptionalSVGSpaces(span_inout);
   } else {
-    return SVGParsingError(SVGParseStatus::kExpectedEnumeration, ptr - start);
+    return SVGParsingError(SVGParseStatus::kExpectedEnumeration,
+                           span_inout.data() - start);
   }
 
-  if (ptr < end) {
-    if (*ptr == 'm') {
-      if (!SkipToken(ptr, end, "meet"))
+  if (!span_inout.empty()) {
+    if (span_inout[0] == 'm') {
+      if (!SkipToken(span_inout, "meet")) {
         return SVGParsingError(SVGParseStatus::kExpectedEnumeration,
-                               ptr - start);
-      SkipOptionalSVGSpaces(ptr, end);
-    } else if (*ptr == 's') {
-      if (!SkipToken(ptr, end, "slice"))
+                               span_inout.data() - start);
+      }
+      SkipOptionalSVGSpaces(span_inout);
+    } else if (span_inout[0] == 's') {
+      if (!SkipToken(span_inout, "slice")) {
         return SVGParsingError(SVGParseStatus::kExpectedEnumeration,
-                               ptr - start);
-      SkipOptionalSVGSpaces(ptr, end);
+                               span_inout.data() - start);
+      }
+      SkipOptionalSVGSpaces(span_inout);
       if (align != kSvgPreserveaspectratioNone)
         meet_or_slice = kSvgMeetorsliceSlice;
     }
   }
 
-  if (end != ptr && validate)
-    return SVGParsingError(SVGParseStatus::kTrailingGarbage, ptr - start);
+  if (!span_inout.empty() && validate) {
+    return SVGParsingError(SVGParseStatus::kTrailingGarbage,
+                           span_inout.data() - start);
+  }
 
   SetAlign(align);
   SetMeetOrSlice(meet_or_slice);
@@ -170,22 +184,18 @@ SVGParsingError SVGPreserveAspectRatio::SetValueAsString(const String& string) {
   if (string.empty())
     return SVGParseStatus::kNoError;
 
-  return WTF::VisitCharacters(string, [&](auto chars) {
-    const auto* start = chars.data();
-    return ParseInternal(start, start + chars.size(), true);
-  });
+  return WTF::VisitCharacters(
+      string, [&](auto chars) { return ParseInternal(chars, true); });
 }
 
-bool SVGPreserveAspectRatio::Parse(const LChar*& ptr,
-                                   const LChar* end,
+bool SVGPreserveAspectRatio::Parse(base::span<const UChar>& span,
                                    bool validate) {
-  return ParseInternal(ptr, end, validate) == SVGParseStatus::kNoError;
+  return ParseInternal(span, validate) == SVGParseStatus::kNoError;
 }
 
-bool SVGPreserveAspectRatio::Parse(const UChar*& ptr,
-                                   const UChar* end,
+bool SVGPreserveAspectRatio::Parse(base::span<const LChar>& span,
                                    bool validate) {
-  return ParseInternal(ptr, end, validate) == SVGParseStatus::kNoError;
+  return ParseInternal(span, validate) == SVGParseStatus::kNoError;
 }
 
 void SVGPreserveAspectRatio::TransformRect(gfx::RectF& dest_rect,
