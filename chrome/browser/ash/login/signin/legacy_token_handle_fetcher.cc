@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/login/signin/token_handle_fetcher.h"
+#include "chrome/browser/ash/login/signin/legacy_token_handle_fetcher.h"
 
 #include <memory>
 
@@ -42,28 +42,29 @@ const char kAccessTokenFetchId[] = "token_handle_fetcher";
 // hash of the OAuth refresh token from which the token handle was derived.
 constexpr char kTokenHandleMap[] = "ash.token_handle_map";
 
-class TokenHandleFetcherShutdownNotifierFactory
+class LegacyTokenHandleFetcherShutdownNotifierFactory
     : public BrowserContextKeyedServiceShutdownNotifierFactory {
  public:
-  static TokenHandleFetcherShutdownNotifierFactory* GetInstance() {
-    return base::Singleton<TokenHandleFetcherShutdownNotifierFactory>::get();
+  static LegacyTokenHandleFetcherShutdownNotifierFactory* GetInstance() {
+    return base::Singleton<
+        LegacyTokenHandleFetcherShutdownNotifierFactory>::get();
   }
 
-  TokenHandleFetcherShutdownNotifierFactory(
-      const TokenHandleFetcherShutdownNotifierFactory&) = delete;
-  TokenHandleFetcherShutdownNotifierFactory& operator=(
-      const TokenHandleFetcherShutdownNotifierFactory&) = delete;
+  LegacyTokenHandleFetcherShutdownNotifierFactory(
+      const LegacyTokenHandleFetcherShutdownNotifierFactory&) = delete;
+  LegacyTokenHandleFetcherShutdownNotifierFactory& operator=(
+      const LegacyTokenHandleFetcherShutdownNotifierFactory&) = delete;
 
  private:
   friend struct base::DefaultSingletonTraits<
-      TokenHandleFetcherShutdownNotifierFactory>;
+      LegacyTokenHandleFetcherShutdownNotifierFactory>;
 
-  TokenHandleFetcherShutdownNotifierFactory()
+  LegacyTokenHandleFetcherShutdownNotifierFactory()
       : BrowserContextKeyedServiceShutdownNotifierFactory(
-            "TokenHandleFetcher") {
+            "LegacyTokenHandleFetcher") {
     DependsOn(IdentityManagerFactory::GetInstance());
   }
-  ~TokenHandleFetcherShutdownNotifierFactory() override = default;
+  ~LegacyTokenHandleFetcherShutdownNotifierFactory() override = default;
 };
 
 account_manager::AccountManager* GetAccountManager(Profile* profile) {
@@ -74,9 +75,10 @@ account_manager::AccountManager* GetAccountManager(Profile* profile) {
 
 }  // namespace
 
-TokenHandleFetcher::TokenHandleFetcher(Profile* profile,
-                                       TokenHandleStore* token_handle_store,
-                                       const AccountId& account_id)
+LegacyTokenHandleFetcher::LegacyTokenHandleFetcher(
+    Profile* profile,
+    TokenHandleStore* token_handle_store,
+    const AccountId& account_id)
     : profile_(profile),
       token_handle_store_(token_handle_store),
       account_id_(account_id) {
@@ -84,9 +86,9 @@ TokenHandleFetcher::TokenHandleFetcher(Profile* profile,
   CHECK(token_handle_store_.get());
 }
 
-TokenHandleFetcher::~TokenHandleFetcher() = default;
+LegacyTokenHandleFetcher::~LegacyTokenHandleFetcher() = default;
 
-void TokenHandleFetcher::BackfillToken(TokenFetchingCallback callback) {
+void LegacyTokenHandleFetcher::BackfillToken(TokenFetchingCallback callback) {
   callback_ = std::move(callback);
 
   if (account_id_.GetAccountType() != AccountType::GOOGLE) {
@@ -99,11 +101,11 @@ void TokenHandleFetcher::BackfillToken(TokenFetchingCallback callback) {
           identity_manager_->GetPrimaryAccountId(
               signin::ConsentLevel::kSignin))) {
     profile_shutdown_subscription_ =
-        TokenHandleFetcherShutdownNotifierFactory::GetInstance()
+        LegacyTokenHandleFetcherShutdownNotifierFactory::GetInstance()
             ->Get(profile_)
-            ->Subscribe(
-                base::BindRepeating(&TokenHandleFetcher::OnProfileDestroyed,
-                                    base::Unretained(this)));
+            ->Subscribe(base::BindRepeating(
+                &LegacyTokenHandleFetcher::OnProfileDestroyed,
+                base::Unretained(this)));
   }
 
   // Now we can request the token, knowing that it will be immediately requested
@@ -119,13 +121,13 @@ void TokenHandleFetcher::BackfillToken(TokenFetchingCallback callback) {
   access_token_fetcher_ =
       std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
           kAccessTokenFetchId, identity_manager_, scopes,
-          base::BindOnce(&TokenHandleFetcher::OnAccessTokenFetchComplete,
+          base::BindOnce(&LegacyTokenHandleFetcher::OnAccessTokenFetchComplete,
                          base::Unretained(this)),
           signin::PrimaryAccountAccessTokenFetcher::Mode::kWaitUntilAvailable,
           signin::ConsentLevel::kSignin);
 }
 
-void TokenHandleFetcher::OnAccessTokenFetchComplete(
+void LegacyTokenHandleFetcher::OnAccessTokenFetchComplete(
     GoogleServiceAuthError error,
     signin::AccessTokenInfo token_info) {
   access_token_fetcher_.reset();
@@ -139,24 +141,25 @@ void TokenHandleFetcher::OnAccessTokenFetchComplete(
 
   GetAccountManager(profile_)->GetTokenHash(
       account_manager::AccountKey::FromGaiaId(account_id_.GetGaiaId()),
-      base::BindOnce(&TokenHandleFetcher::FillForAccessToken,
+      base::BindOnce(&LegacyTokenHandleFetcher::FillForAccessToken,
                      weak_factory_.GetWeakPtr(),
                      /*access_token=*/token_info.token));
 }
 
 // static
-void TokenHandleFetcher::RegisterPrefs(PrefRegistrySimple* registry) {
+void LegacyTokenHandleFetcher::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(/*path=*/kTokenHandleMap);
 }
 
-void TokenHandleFetcher::FillForNewUser(const std::string& access_token,
-                                        const std::string& refresh_token_hash,
-                                        TokenFetchingCallback callback) {
+void LegacyTokenHandleFetcher::FillForNewUser(
+    const std::string& access_token,
+    const std::string& refresh_token_hash,
+    TokenFetchingCallback callback) {
   callback_ = std::move(callback);
   FillForAccessToken(access_token, refresh_token_hash);
 }
 
-void TokenHandleFetcher::FillForAccessToken(
+void LegacyTokenHandleFetcher::FillForAccessToken(
     const std::string& access_token,
     const std::string& refresh_token_hash) {
   refresh_token_hash_ = refresh_token_hash;
@@ -168,15 +171,15 @@ void TokenHandleFetcher::FillForAccessToken(
   gaia_client_->GetTokenInfo(access_token, kMaxRetries, this);
 }
 
-void TokenHandleFetcher::OnOAuthError() {
+void LegacyTokenHandleFetcher::OnOAuthError() {
   std::move(callback_).Run(account_id_, false);
 }
 
-void TokenHandleFetcher::OnNetworkError(int response_code) {
+void LegacyTokenHandleFetcher::OnNetworkError(int response_code) {
   std::move(callback_).Run(account_id_, false);
 }
 
-void TokenHandleFetcher::OnGetTokenInfoResponse(
+void LegacyTokenHandleFetcher::OnGetTokenInfoResponse(
     const base::Value::Dict& token_info) {
   bool success = false;
   if (!token_info.Find("error")) {
@@ -193,7 +196,7 @@ void TokenHandleFetcher::OnGetTokenInfoResponse(
   std::move(callback_).Run(account_id_, success);
 }
 
-void TokenHandleFetcher::StoreTokenHandleMapping(
+void LegacyTokenHandleFetcher::StoreTokenHandleMapping(
     const std::string& token_handle) {
   PrefService* prefs = profile_->GetPrefs();
   ScopedDictPrefUpdate update(prefs, kTokenHandleMap);
@@ -201,15 +204,16 @@ void TokenHandleFetcher::StoreTokenHandleMapping(
   update->Set(token_handle, refresh_token_hash_);
 }
 
-void TokenHandleFetcher::DiagnoseTokenHandleMapping(const AccountId& account_id,
-                                                    const std::string& token) {
+void LegacyTokenHandleFetcher::DiagnoseTokenHandleMapping(
+    const AccountId& account_id,
+    const std::string& token) {
   GetAccountManager(profile_)->GetTokenHash(
       account_manager::AccountKey::FromGaiaId(account_id.GetGaiaId()),
-      base::BindOnce(&TokenHandleFetcher::OnGetTokenHash,
+      base::BindOnce(&LegacyTokenHandleFetcher::OnGetTokenHash,
                      weak_factory_.GetWeakPtr(), token));
 }
 
-void TokenHandleFetcher::OnGetTokenHash(
+void LegacyTokenHandleFetcher::OnGetTokenHash(
     const std::string& token,
     const std::string& account_manager_stored_hash) {
   PrefService* prefs = profile_->GetPrefs();
@@ -228,13 +232,13 @@ void TokenHandleFetcher::OnGetTokenHash(
                             hashes_match);
 }
 
-void TokenHandleFetcher::OnProfileDestroyed() {
+void LegacyTokenHandleFetcher::OnProfileDestroyed() {
   std::move(callback_).Run(account_id_, false);
 }
 
 // static
-void TokenHandleFetcher::EnsureFactoryBuilt() {
-  TokenHandleFetcherShutdownNotifierFactory::GetInstance();
+void LegacyTokenHandleFetcher::EnsureFactoryBuilt() {
+  LegacyTokenHandleFetcherShutdownNotifierFactory::GetInstance();
 }
 
 }  // namespace ash

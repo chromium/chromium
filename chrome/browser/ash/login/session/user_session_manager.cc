@@ -84,10 +84,10 @@
 #include "chrome/browser/ash/login/session/user_session_initializer.h"
 #include "chrome/browser/ash/login/signin/auth_error_observer.h"
 #include "chrome/browser/ash/login/signin/auth_error_observer_factory.h"
+#include "chrome/browser/ash/login/signin/legacy_token_handle_fetcher.h"
 #include "chrome/browser/ash/login/signin/oauth2_login_manager_factory.h"
 #include "chrome/browser/ash/login/signin/offline_signin_limiter.h"
 #include "chrome/browser/ash/login/signin/offline_signin_limiter_factory.h"
-#include "chrome/browser/ash/login/signin/token_handle_fetcher.h"
 #include "chrome/browser/ash/login/signin/token_handle_store_factory.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
@@ -2138,7 +2138,7 @@ void UserSessionManager::OnUserProfileLoaded(Profile* profile,
       // regardless of the state of the previous token handle, if any.
       if (!token_handle_store_->HasToken(user_context_.GetAccountId())) {
         // New user.
-        token_handle_fetcher_ = std::make_unique<TokenHandleFetcher>(
+        token_handle_fetcher_ = std::make_unique<LegacyTokenHandleFetcher>(
             profile, token_handle_store_.get(), user_context_.GetAccountId());
         token_handle_fetcher_->FillForNewUser(
             user_context_.GetAccessToken(),
@@ -2650,7 +2650,7 @@ void UserSessionManager::UpdateTokenHandleIfRequired(
 
 void UserSessionManager::UpdateTokenHandle(Profile* const profile,
                                            const AccountId& account_id) {
-  token_handle_fetcher_ = std::make_unique<TokenHandleFetcher>(
+  token_handle_fetcher_ = std::make_unique<LegacyTokenHandleFetcher>(
       profile, token_handle_store_.get(), account_id);
   token_handle_fetcher_->BackfillToken(
       base::BindOnce(&UserSessionManager::OnTokenHandleObtained,

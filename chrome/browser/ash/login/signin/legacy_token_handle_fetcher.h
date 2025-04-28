@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_LOGIN_SIGNIN_TOKEN_HANDLE_FETCHER_H_
-#define CHROME_BROWSER_ASH_LOGIN_SIGNIN_TOKEN_HANDLE_FETCHER_H_
+#ifndef CHROME_BROWSER_ASH_LOGIN_SIGNIN_LEGACY_TOKEN_HANDLE_FETCHER_H_
+#define CHROME_BROWSER_ASH_LOGIN_SIGNIN_LEGACY_TOKEN_HANDLE_FETCHER_H_
 
 #include <string>
 
@@ -29,16 +29,16 @@ class TokenHandleStore;
 // It can be used in two ways. When a user has just used Gaia signin there is
 // an OAuth2 token available. If there is profile already loaded, then
 // minting additional access token might be required.
-class TokenHandleFetcher : public gaia::GaiaOAuthClient::Delegate {
+class LegacyTokenHandleFetcher : public gaia::GaiaOAuthClient::Delegate {
  public:
-  TokenHandleFetcher(Profile* profile,
-                     TokenHandleStore* token_handle_store,
-                     const AccountId& account_id);
+  LegacyTokenHandleFetcher(Profile* profile,
+                           TokenHandleStore* token_handle_store,
+                           const AccountId& account_id);
 
-  TokenHandleFetcher(const TokenHandleFetcher&) = delete;
-  TokenHandleFetcher& operator=(const TokenHandleFetcher&) = delete;
+  LegacyTokenHandleFetcher(const LegacyTokenHandleFetcher&) = delete;
+  LegacyTokenHandleFetcher& operator=(const LegacyTokenHandleFetcher&) = delete;
 
-  ~TokenHandleFetcher() override;
+  ~LegacyTokenHandleFetcher() override;
 
   using TokenFetchingCallback =
       base::OnceCallback<void(const AccountId&, bool success)>;
@@ -90,9 +90,9 @@ class TokenHandleFetcher : public gaia::GaiaOAuthClient::Delegate {
       access_token_fetcher_;
   base::CallbackListSubscription profile_shutdown_subscription_;
 
-  base::WeakPtrFactory<TokenHandleFetcher> weak_factory_{this};
+  base::WeakPtrFactory<LegacyTokenHandleFetcher> weak_factory_{this};
 };
 
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_ASH_LOGIN_SIGNIN_TOKEN_HANDLE_FETCHER_H_
+#endif  // CHROME_BROWSER_ASH_LOGIN_SIGNIN_LEGACY_TOKEN_HANDLE_FETCHER_H_

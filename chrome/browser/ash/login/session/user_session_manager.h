@@ -58,7 +58,7 @@ namespace ash {
 class AuthStatusConsumer;
 class OnboardingUserActivityCounter;
 class AuthenticatorBuilder;
-class TokenHandleFetcher;
+class LegacyTokenHandleFetcher;
 class EolNotification;
 class InputEventsBlocker;
 class U2FNotification;
@@ -583,7 +583,7 @@ class UserSessionManager
   bool should_obtain_handles_;
 
   raw_ptr<TokenHandleStore> token_handle_store_;
-  std::unique_ptr<TokenHandleFetcher> token_handle_fetcher_;
+  std::unique_ptr<LegacyTokenHandleFetcher> token_handle_fetcher_;
   std::map<Profile*, std::unique_ptr<DeviceAccountGaiaTokenObserver>>
       token_observers_;
 
