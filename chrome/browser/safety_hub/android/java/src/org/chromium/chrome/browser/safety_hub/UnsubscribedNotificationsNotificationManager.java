@@ -95,7 +95,8 @@ public class UnsubscribedNotificationsNotificationManager {
         SettingsNavigation settingsNavigation =
                 SettingsNavigationFactory.createSettingsNavigation();
         Intent settingsIntent =
-                settingsNavigation.createSettingsIntent(context, SafetyHubFragment.class);
+                settingsNavigation.createSettingsIntent(
+                        context, SafetyHubPermissionsFragment.class);
 
         PendingIntentProvider settingsIntentProvider =
                 PendingIntentProvider.getActivity(
