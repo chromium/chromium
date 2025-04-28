@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/data_sharing/collaboration_controller_delegate_desktop.h"
 
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/collaboration/collaboration_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_ui_util.h"
@@ -123,7 +124,7 @@ void CollaborationControllerDelegateDesktop::ShowError(const ErrorInfo& error,
     return;
   }
 
-  ShowErrorDialog();
+  ShowErrorDialog(error);
   error_ui_callback_ = std::move(result);
 }
 
@@ -155,9 +156,9 @@ void CollaborationControllerDelegateDesktop::ShowJoinDialog(
   controller->SetOnCloseCallback(base::BindOnce(
       &CollaborationControllerDelegateDesktop::OnJoinDialogClosing,
       weak_ptr_factory_.GetWeakPtr(), std::move(result)));
-  controller->SetShowErrorDialogCallback(
-      base::BindOnce(&CollaborationControllerDelegateDesktop::ShowErrorDialog,
-                     weak_ptr_factory_.GetWeakPtr()));
+  controller->SetShowErrorDialogCallback(base::BindOnce(
+      &CollaborationControllerDelegateDesktop::ShowErrorDialog,
+      weak_ptr_factory_.GetWeakPtr(), ErrorInfo(ErrorInfo::Type::kUnknown)));
 
   data_sharing::RequestInfo request_info(token, data_sharing::FlowType::kJoin);
   controller->Show(request_info);
@@ -339,17 +340,17 @@ void CollaborationControllerDelegateDesktop::OnManageDialogClosing(
   }
 }
 
-void CollaborationControllerDelegateDesktop::ShowErrorDialog() {
+void CollaborationControllerDelegateDesktop::ShowErrorDialog(
+    const ErrorInfo& error) {
   if (error_dialog_widget_) {
     return;
   }
 
-  // TODO(crbug.com/366057481): Show more detail errors based on ErrorInfo.
   std::unique_ptr<ui::DialogModel> dialog_model =
       ui::DialogModel::Builder()
-          .SetTitle(l10n_util::GetStringUTF16(IDS_DATA_SHARING_SOMETHING_WRONG))
-          .AddParagraph(ui::DialogModelLabel(
-              l10n_util::GetStringUTF16(IDS_DATA_SHARING_SOMETHING_WRONG_BODY)))
+          .SetTitle(base::UTF8ToUTF16(error.error_header))
+          .AddParagraph(
+              ui::DialogModelLabel(base::UTF8ToUTF16(error.error_body)))
           .AddOkButton(
               base::BindOnce(
                   &CollaborationControllerDelegateDesktop::OnErrorDialogOk,
