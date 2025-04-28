@@ -10,6 +10,7 @@
 #include "components/enterprise/connectors/core/realtime_reporting_client_base.h"
 #include "components/enterprise/connectors/core/reporting_constants.h"
 #include "components/enterprise/connectors/core/reporting_utils.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/prefs/pref_service.h"
 #include "components/url_matcher/url_matcher.h"
 
@@ -165,7 +166,8 @@ void ReportingEventRouter::OnPasswordChanged(const std::string& user_name) {
 void ReportingEventRouter::OnUrlFilteringInterstitial(
     const GURL& url,
     const std::string& threat_type,
-    const safe_browsing::RTLookupResponse& response) {
+    const safe_browsing::RTLookupResponse& response,
+    const ReferrerChain& referrer_chain) {
   std::optional<ReportingSettings> settings =
       reporting_client_->GetReportingSettings();
   if (!settings.has_value() || settings->enabled_event_names.count(
@@ -184,6 +186,10 @@ void ReportingEventRouter::OnUrlFilteringInterstitial(
   AddTriggeredRuleInfoToUrlFilteringInterstitialEvent(response, event);
   event.Set(kKeyEventResult,
             enterprise_connectors::EventResultToString(event_result));
+
+  if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedFieldsForSecOps)) {
+    AddReferrerChainToEvent(referrer_chain, event);
+  }
 
   reporting_client_->ReportEventWithTimestampDeprecated(
       kKeyUrlFilteringInterstitialEvent, std::move(settings.value()),

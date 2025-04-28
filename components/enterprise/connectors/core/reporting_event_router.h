@@ -17,6 +17,9 @@ namespace enterprise_connectors {
 // An event router that collects safe browsing events and then sends
 // events to reporting server.
 class ReportingEventRouter : public KeyedService {
+  using ReferrerChain =
+      google::protobuf::RepeatedPtrField<safe_browsing::ReferrerChainEntry>;
+
  public:
   explicit ReportingEventRouter(RealtimeReportingClientBase* reporting_client);
 
@@ -55,7 +58,8 @@ class ReportingEventRouter : public KeyedService {
   void OnUrlFilteringInterstitial(
       const GURL& url,
       const std::string& threat_type,
-      const safe_browsing::RTLookupResponse& response);
+      const safe_browsing::RTLookupResponse& response,
+      const ReferrerChain& referrer_chain);
 
   // Notifies listeners that the user clicked-through a security interstitial.
   void OnSecurityInterstitialProceeded(const GURL& url,

@@ -155,6 +155,7 @@ void AddTriggeredRuleInfoToUrlFilteringInterstitialEvent(
   }
   event.Set(kKeyTriggeredRuleInfo, std::move(triggered_rule_info));
 }
+
 std::optional<proto::PasswordBreachEvent> GetPasswordBreachEvent(
     const std::string& trigger,
     const std::vector<std::pair<GURL, std::u16string>>& identities,
@@ -267,6 +268,20 @@ std::vector<std::string> GetLocalIpAddresses() {
     ip_addresses.push_back(network_interface.address.ToString());
   }
   return ip_addresses;
+}
+
+void AddReferrerChainToEvent(
+    const google::protobuf::RepeatedPtrField<safe_browsing::ReferrerChainEntry>&
+        referrer_chain,
+    base::Value::Dict& event) {
+  base::Value::List referrers;
+  for (const auto& referrer : referrer_chain) {
+    base::Value::Dict referrer_dict;
+    referrer_dict.Set("url", referrer.url());
+    referrer_dict.Set("ip", referrer.ip_addresses()[0]);
+    referrers.Append(std::move(referrer_dict));
+  }
+  event.Set(kKeyReferrers, std::move(referrers));
 }
 
 }  // namespace enterprise_connectors

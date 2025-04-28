@@ -26,21 +26,13 @@ namespace {
 
 // Alias to reduce verbosity when using TriggeredRuleInfo.
 using TriggeredRuleInfo = ::chrome::cros::reporting::proto::TriggeredRuleInfo;
+// Alias to reduce verbosity when using the repeated ReferrerChainEntry field.
+using ReferrerChain =
+    google::protobuf::RepeatedPtrField<safe_browsing::ReferrerChainEntry>;
+// Alias to reduce verbosity when using UrlInfo.
+using UrlInfo = ::chrome::cros::reporting::proto::UrlInfo;
 
 constexpr char kFakeProfileUsername[] = "Fakeuser";
-
-TriggeredRuleInfo MakeTriggeredRuleInfo(TriggeredRuleInfo::Action action,
-                                        bool has_watermark) {
-  TriggeredRuleInfo info;
-  info.set_action(action);
-  info.set_rule_id(123);
-  info.set_rule_name("test rule name");
-  info.set_url_category("test rule category");
-  if (has_watermark) {
-    info.set_has_watermarking(true);
-  }
-  return info;
-}
 
 }  // namespace
 
@@ -88,6 +80,11 @@ class ReportingEventRouterTest : public testing::Test {
     return profile_->GetPath().AsUTF8Unsafe();
   }
 
+  void EnableEnhancedFieldsForSecOps() {
+    scoped_feature_list_.InitAndEnableFeature(
+        safe_browsing::kEnhancedFieldsForSecOps);
+  }
+
  protected:
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<policy::MockCloudPolicyClient> client_;
@@ -95,6 +92,7 @@ class ReportingEventRouterTest : public testing::Test {
   raw_ptr<TestingProfile> profile_;
   std::unique_ptr<ReportingEventRouter> reporting_event_router_;
   signin::IdentityTestEnvironment identity_test_environment_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(ReportingEventRouterTest, CheckEventEnabledReturnsFalse) {
@@ -247,6 +245,7 @@ TEST_F(ReportingEventRouterTest,
 }
 
 TEST_F(ReportingEventRouterTest, TestOnUrlFilteringInterstitial_Blocked) {
+  EnableEnhancedFieldsForSecOps();
   test::SetOnSecurityEventReporting(
       profile_->GetPrefs(), /*enabled=*/true,
       /*enabled_event_names=*/{kKeyUrlFilteringInterstitialEvent},
@@ -258,8 +257,10 @@ TEST_F(ReportingEventRouterTest, TestOnUrlFilteringInterstitial_Blocked) {
       chrome::cros::reporting::proto::EVENT_RESULT_BLOCKED);
   expected_event.set_profile_user_name(profile_->GetProfileUserName());
   expected_event.set_profile_identifier(GetProfileIdentifier());
-  *expected_event.add_triggered_rule_info() = MakeTriggeredRuleInfo(
+  *expected_event.add_triggered_rule_info() = test::MakeTriggeredRuleInfo(
       /*action=*/TriggeredRuleInfo::BLOCK, /*has_watermark=*/false);
+  // Referrer chain is empty for blocked URL filtering events.
+  *expected_event.add_referrers() = UrlInfo();
 
   test::EventReportValidatorBase validator(client_.get());
   validator.ExpectURLFilteringInterstitialEvent(expected_event);
@@ -273,12 +274,15 @@ TEST_F(ReportingEventRouterTest, TestOnUrlFilteringInterstitial_Blocked) {
   matched_url_navigation_rule->set_rule_id("123");
   matched_url_navigation_rule->set_rule_name("test rule name");
   matched_url_navigation_rule->set_matched_url_category("test rule category");
+  ReferrerChain referrer_chain;
 
   reporting_event_router_->OnUrlFilteringInterstitial(
-      GURL("https://filteredurl.com"), "ENTERPRISE_BLOCKED_SEEN", response);
+      GURL("https://filteredurl.com"), "ENTERPRISE_BLOCKED_SEEN", response,
+      referrer_chain);
 }
 
 TEST_F(ReportingEventRouterTest, TestOnUrlFilteringInterstitial_Warned) {
+  EnableEnhancedFieldsForSecOps();
   test::SetOnSecurityEventReporting(
       profile_->GetPrefs(), /*enabled=*/true,
       /*enabled_event_names=*/{kKeyUrlFilteringInterstitialEvent},
@@ -290,11 +294,13 @@ TEST_F(ReportingEventRouterTest, TestOnUrlFilteringInterstitial_Warned) {
       chrome::cros::reporting::proto::EVENT_RESULT_WARNED);
   expected_event.set_profile_user_name(profile_->GetProfileUserName());
   expected_event.set_profile_identifier(GetProfileIdentifier());
-  *expected_event.add_triggered_rule_info() = MakeTriggeredRuleInfo(
+  *expected_event.add_triggered_rule_info() = test::MakeTriggeredRuleInfo(
       /*action=*/TriggeredRuleInfo::WARN, /*has_watermark=*/true);
+  // Referrer chain is empty for warned URL filtering events.
+  *expected_event.add_referrers() = UrlInfo();
 
   test::EventReportValidatorBase validator(client_.get());
-  validator.ExpectURLFilteringInterstitialEvent(expected_event);
+  validator.ExpectURLFilteringInterstitialEventWithReferrers(expected_event);
 
   safe_browsing::RTLookupResponse response;
   auto* threat_info = response.add_threat_info();
@@ -307,12 +313,15 @@ TEST_F(ReportingEventRouterTest, TestOnUrlFilteringInterstitial_Warned) {
   matched_url_navigation_rule->set_matched_url_category("test rule category");
   matched_url_navigation_rule->mutable_watermark_message()
       ->set_watermark_message("watermark message");
+  ReferrerChain referrer_chain;
 
   reporting_event_router_->OnUrlFilteringInterstitial(
-      GURL("https://filteredurl.com"), "ENTERPRISE_WARNED_SEEN", response);
+      GURL("https://filteredurl.com"), "ENTERPRISE_WARNED_SEEN", response,
+      referrer_chain);
 }
 
 TEST_F(ReportingEventRouterTest, TestOnUrlFilteringInterstitial_Bypassed) {
+  EnableEnhancedFieldsForSecOps();
   test::SetOnSecurityEventReporting(
       profile_->GetPrefs(), /*enabled=*/true,
       /*enabled_event_names=*/{kKeyUrlFilteringInterstitialEvent},
@@ -324,11 +333,13 @@ TEST_F(ReportingEventRouterTest, TestOnUrlFilteringInterstitial_Bypassed) {
       chrome::cros::reporting::proto::EVENT_RESULT_BYPASSED);
   expected_event.set_profile_user_name(profile_->GetProfileUserName());
   expected_event.set_profile_identifier(GetProfileIdentifier());
-  *expected_event.add_triggered_rule_info() = MakeTriggeredRuleInfo(
+  *expected_event.add_triggered_rule_info() = test::MakeTriggeredRuleInfo(
       /*action=*/TriggeredRuleInfo::WARN, /*has_watermark=*/true);
+  // Referrer chain is empty for bypassed URL filtering events.
+  *expected_event.add_referrers() = UrlInfo();
 
   test::EventReportValidatorBase validator(client_.get());
-  validator.ExpectURLFilteringInterstitialEvent(expected_event);
+  validator.ExpectURLFilteringInterstitialEventWithReferrers(expected_event);
 
   safe_browsing::RTLookupResponse response;
   auto* threat_info = response.add_threat_info();
@@ -341,13 +352,16 @@ TEST_F(ReportingEventRouterTest, TestOnUrlFilteringInterstitial_Bypassed) {
   matched_url_navigation_rule->set_matched_url_category("test rule category");
   matched_url_navigation_rule->mutable_watermark_message()
       ->set_watermark_message("confidential");
+  ReferrerChain referrer_chain;
 
   reporting_event_router_->OnUrlFilteringInterstitial(
-      GURL("https://filteredurl.com"), "ENTERPRISE_WARNED_BYPASS", response);
+      GURL("https://filteredurl.com"), "ENTERPRISE_WARNED_BYPASS", response,
+      referrer_chain);
 }
 
 TEST_F(ReportingEventRouterTest,
        TestOnUrlFilteringInterstitial_WatermarkAudit) {
+  EnableEnhancedFieldsForSecOps();
   test::SetOnSecurityEventReporting(
       profile_->GetPrefs(), /*enabled=*/true,
       /*enabled_event_names=*/{kKeyUrlFilteringInterstitialEvent},
@@ -359,11 +373,12 @@ TEST_F(ReportingEventRouterTest,
       chrome::cros::reporting::proto::EVENT_RESULT_ALLOWED);
   expected_event.set_profile_user_name(profile_->GetProfileUserName());
   expected_event.set_profile_identifier(GetProfileIdentifier());
-  *expected_event.add_triggered_rule_info() = MakeTriggeredRuleInfo(
+  *expected_event.add_triggered_rule_info() = test::MakeTriggeredRuleInfo(
       /*action=*/TriggeredRuleInfo::ACTION_UNKNOWN, /*has_watermark=*/true);
+  *expected_event.add_referrers() = test::MakeUrlInfoReferrer();
 
   test::EventReportValidatorBase validator(client_.get());
-  validator.ExpectURLFilteringInterstitialEvent(expected_event);
+  validator.ExpectURLFilteringInterstitialEventWithReferrers(expected_event);
 
   safe_browsing::RTLookupResponse response;
   auto* threat_info = response.add_threat_info();
@@ -374,9 +389,11 @@ TEST_F(ReportingEventRouterTest,
   matched_url_navigation_rule->set_matched_url_category("test rule category");
   matched_url_navigation_rule->mutable_watermark_message()
       ->set_watermark_message("confidential");
+  ReferrerChain referrer_chain;
+  referrer_chain.Add(test::MakeReferrerChainEntry());
 
   reporting_event_router_->OnUrlFilteringInterstitial(
-      GURL("https://filteredurl.com"), "", response);
+      GURL("https://filteredurl.com"), "", response, referrer_chain);
 }
 
 }  // namespace enterprise_connectors

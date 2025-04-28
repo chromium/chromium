@@ -14,6 +14,9 @@
 
 namespace enterprise_connectors {
 
+// The maximum number of referrers to include in the referrer chain.
+inline constexpr int kReferrerUserGestureLimit = 5;
+
 // Helper functions that compiles information into event protos. The
 // logic is shared across platforms to ensure event consistency.
 //
@@ -83,6 +86,11 @@ chrome::cros::reporting::proto::BrowserCrashEvent GetBrowserCrashEvent(
 
 // Returns a list of the local IPv4 and IPv6 addresses of the device.
 std::vector<std::string> GetLocalIpAddresses();
+
+void AddReferrerChainToEvent(
+    const google::protobuf::RepeatedPtrField<safe_browsing::ReferrerChainEntry>&
+        referrer_chain,
+    base::Value::Dict& event);
 
 }  // namespace enterprise_connectors
 
