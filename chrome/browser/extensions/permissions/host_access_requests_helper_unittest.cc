@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/permissions/active_tab_permission_granter.h"
@@ -453,8 +452,8 @@ TEST_F(HostAccessRequestsHelperUnittest,
       tab_id, extension_B->id()));
 
   // Disable extension B. Verify no extension should have a host access request.
-  service()->DisableExtension(extension_B->id(),
-                              extensions::disable_reason::DISABLE_USER_ACTION);
+  registrar()->DisableExtension(
+      extension_B->id(), {extensions::disable_reason::DISABLE_USER_ACTION});
   EXPECT_FALSE(permissions_manager()->HasActiveHostAccessRequest(
       tab_id, extension_A->id()));
   EXPECT_FALSE(permissions_manager()->HasActiveHostAccessRequest(
@@ -463,7 +462,7 @@ TEST_F(HostAccessRequestsHelperUnittest,
   // Enable extension B. Verify no extension has a host access request. Request
   // is not persisted when extension is re-enabled, the extension needs to add
   // the request again.
-  service()->EnableExtension(extension_B->id());
+  registrar()->EnableExtension(extension_B->id());
   EXPECT_FALSE(permissions_manager()->HasActiveHostAccessRequest(
       tab_id, extension_A->id()));
   EXPECT_FALSE(permissions_manager()->HasActiveHostAccessRequest(

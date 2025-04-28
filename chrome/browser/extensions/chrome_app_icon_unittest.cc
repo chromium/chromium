@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/extensions/chrome_app_icon.h"
+
 #include <memory>
 #include <utility>
 #include <vector>
@@ -9,7 +11,6 @@
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/extensions/chrome_app_icon.h"
 #include "chrome/browser/extensions/chrome_app_icon_delegate.h"
 #include "chrome/browser/extensions/chrome_app_icon_loader.h"
 #include "chrome/browser/extensions/chrome_app_icon_service.h"
@@ -19,6 +20,8 @@
 #include "chrome/browser/ui/app_icon_loader_delegate.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/test/base/testing_profile.h"
+#include "extensions/browser/disable_reason.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/common/constants.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/image/image_skia_operations.h"
@@ -238,7 +241,8 @@ TEST_F(ChromeAppIconTest, IconLifeCycle) {
   const gfx::ImageSkia image_before_disable = reference_icon.image_skia();
   // Disable extension. This should update icon and provide grayed image inline.
   // Note update might be sent twice in CrOS.
-  service()->DisableExtension(kTestAppId, disable_reason::DISABLE_CORRUPTED);
+  registrar()->DisableExtension(kTestAppId,
+                                {disable_reason::DISABLE_CORRUPTED});
   const size_t update_count_after_disable = reference_icon.icon_update_count();
   EXPECT_NE(2U, update_count_after_disable);
   EXPECT_FALSE(IsBlankImage(reference_icon.image_skia()));
@@ -251,7 +255,7 @@ TEST_F(ChromeAppIconTest, IconLifeCycle) {
 #endif
 
   // Reenable extension. It should match previous enabled image
-  service()->EnableExtension(kTestAppId);
+  registrar()->EnableExtension(kTestAppId);
   EXPECT_NE(update_count_after_disable, reference_icon.icon_update_count());
   EXPECT_TRUE(AreEqual(reference_icon.image_skia(), image_before_disable));
 }

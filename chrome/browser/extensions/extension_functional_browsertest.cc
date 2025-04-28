@@ -11,7 +11,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/extensions/crx_installer.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -23,6 +22,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/download_test_observer.h"
 #include "content/public/test/test_utils.h"
+#include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_util.h"
@@ -76,24 +76,23 @@ IN_PROC_BROWSER_TEST_F(ExtensionFunctionalTest, TestSetExtensionsState) {
 
   // Disable the extension and verify.
   util::SetIsIncognitoEnabled(last_loaded_extension_id(), profile(), false);
-  ExtensionService* service = extension_service();
-  service->DisableExtension(last_loaded_extension_id(),
-                            disable_reason::DISABLE_USER_ACTION);
   auto* registrar = ExtensionRegistrar::Get(profile());
+  registrar->DisableExtension(last_loaded_extension_id(),
+                              {disable_reason::DISABLE_USER_ACTION});
   EXPECT_FALSE(registrar->IsExtensionEnabled(last_loaded_extension_id()));
 
   // Enable the extension and verify.
   util::SetIsIncognitoEnabled(last_loaded_extension_id(), profile(), false);
-  service->EnableExtension(last_loaded_extension_id());
+  registrar->EnableExtension(last_loaded_extension_id());
   EXPECT_TRUE(registrar->IsExtensionEnabled(last_loaded_extension_id()));
 
   // Allow extension in incognito mode and verify.
-  service->EnableExtension(last_loaded_extension_id());
+  registrar->EnableExtension(last_loaded_extension_id());
   util::SetIsIncognitoEnabled(last_loaded_extension_id(), profile(), true);
   EXPECT_TRUE(util::IsIncognitoEnabled(last_loaded_extension_id(), profile()));
 
   // Disallow extension in incognito mode and verify.
-  service->EnableExtension(last_loaded_extension_id());
+  registrar->EnableExtension(last_loaded_extension_id());
   util::SetIsIncognitoEnabled(last_loaded_extension_id(), profile(), false);
   EXPECT_FALSE(util::IsIncognitoEnabled(last_loaded_extension_id(), profile()));
 }

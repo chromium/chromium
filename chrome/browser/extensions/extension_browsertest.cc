@@ -479,7 +479,7 @@ const Extension* ExtensionBrowserTest::InstallExtension(
   return InstallOrUpdateExtension(
       std::string(), path, InstallUIType::kNone, std::move(expected_change),
       mojom::ManifestLocation::kInternal, GetActiveWebContents(),
-      Extension::NO_FLAGS, /*install_immediately=*/true,
+      Extension::NO_FLAGS, /*wait_for_idle=*/true,
       /*grant_permissions=*/false);
 }
 
@@ -490,7 +490,7 @@ const Extension* ExtensionBrowserTest::InstallExtension(
   return InstallOrUpdateExtension(
       std::string(), path, InstallUIType::kNone, std::move(expected_change),
       install_source, GetActiveWebContents(), Extension::NO_FLAGS,
-      /*install_immediately=*/true, /*grant_permissions=*/false);
+      /*wait_for_idle=*/true, /*grant_permissions=*/false);
 }
 
 const Extension* ExtensionBrowserTest::InstallExtensionWithPermissionsGranted(
@@ -500,7 +500,7 @@ const Extension* ExtensionBrowserTest::InstallExtensionWithPermissionsGranted(
       std::string(), file_path, InstallUIType::kNone,
       std::move(expected_change), mojom::ManifestLocation::kInternal,
       GetActiveWebContents(), Extension::NO_FLAGS,
-      /*install_immediately=*/false, /*grant_permissions=*/true);
+      /*wait_for_idle=*/false, /*grant_permissions=*/true);
 }
 
 const Extension* ExtensionBrowserTest::InstallExtensionFromWebstore(
@@ -510,7 +510,7 @@ const Extension* ExtensionBrowserTest::InstallExtensionFromWebstore(
       std::string(), path, InstallUIType::kAutoConfirm,
       std::move(expected_change), mojom::ManifestLocation::kInternal,
       GetActiveWebContents(), Extension::FROM_WEBSTORE,
-      /*install_immediately=*/true, /*grant_permissions=*/false);
+      /*wait_for_idle=*/true, /*grant_permissions=*/false);
 }
 
 const Extension* ExtensionBrowserTest::InstallExtensionWithUIAutoConfirm(
@@ -519,7 +519,7 @@ const Extension* ExtensionBrowserTest::InstallExtensionWithUIAutoConfirm(
   return InstallOrUpdateExtension(
       std::string(), path, InstallUIType::kAutoConfirm,
       std::move(expected_change), mojom::ManifestLocation::kInternal,
-      GetActiveWebContents(), Extension::NO_FLAGS, /*install_immediately=*/true,
+      GetActiveWebContents(), Extension::NO_FLAGS, /*wait_for_idle=*/true,
       /*grant_permissions=*/false);
 }
 
@@ -531,7 +531,7 @@ const Extension* ExtensionBrowserTest::InstallExtensionWithSourceAndFlags(
   return ExtensionBrowserTest::InstallOrUpdateExtension(
       std::string(), path, InstallUIType::kNone, std::move(expected_change),
       install_source, GetActiveWebContents(), creation_flags,
-      /*install_immediatey=*/false, /*grant_permissions=*/false);
+      /*wait_for_idle=*/false, /*grant_permissions=*/false);
 }
 
 const Extension* ExtensionBrowserTest::StartInstallButCancel(
@@ -539,7 +539,7 @@ const Extension* ExtensionBrowserTest::StartInstallButCancel(
   return InstallOrUpdateExtension(std::string(), path, InstallUIType::kCancel,
                                   0, mojom::ManifestLocation::kInternal,
                                   GetActiveWebContents(), Extension::NO_FLAGS,
-                                  /*install_immediately=*/true,
+                                  /*wait_for_idle=*/true,
                                   /*grant_permissions=*/false);
 }
 
@@ -551,7 +551,7 @@ const Extension* ExtensionBrowserTest::UpdateExtension(
       id, path, InstallUIType::kNone, std::move(expected_change),
       mojom::ManifestLocation::kInternal, GetActiveWebContents(),
       Extension::NO_FLAGS,
-      /*install_immediately=*/true, /*grant_permissions=*/false);
+      /*wait_for_idle=*/true, /*grant_permissions=*/false);
 }
 
 const Extension* ExtensionBrowserTest::UpdateExtensionWaitForIdle(
@@ -562,7 +562,7 @@ const Extension* ExtensionBrowserTest::UpdateExtensionWaitForIdle(
       id, path, InstallUIType::kNone, std::move(expected_change),
       mojom::ManifestLocation::kInternal, GetActiveWebContents(),
       Extension::NO_FLAGS,
-      /*install_immediately=*/false, /*grant_permissions=*/false);
+      /*wait_for_idle=*/false, /*grant_permissions=*/false);
 }
 
 const Extension* ExtensionBrowserTest::InstallOrUpdateExtension(

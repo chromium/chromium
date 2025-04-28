@@ -10,6 +10,7 @@
 #include "components/safe_browsing/buildflags.h"
 #include "extensions/browser/blocklist_extension_prefs.h"
 #include "extensions/browser/blocklist_state.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/test/extension_state_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -348,7 +349,7 @@ TEST_F(
       extension_prefs()));
 
   // The extension is manually re-enabled.
-  service()->EnableExtension(kTestExtensionId);
+  registrar()->EnableExtension(kTestExtensionId);
   EXPECT_TRUE(state_tester.ExpectEnabled(kTestExtensionId));
 
   SetOmahaBlocklistStateForExtension(kTestExtensionId, "_policy_violation",

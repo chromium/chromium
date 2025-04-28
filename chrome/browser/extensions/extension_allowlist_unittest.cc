@@ -562,7 +562,7 @@ TEST_F(ExtensionAllowlistUnitTest,
             allowlist()->GetExtensionAllowlistAcknowledgeState(kExtensionId1));
 
   // Re-enable the extension.
-  service()->EnableExtension(kExtensionId1);
+  registrar()->EnableExtension(kExtensionId1);
 
   // The extensions should now be marked with
   // `ALLOWLIST_ACKNOWLEDGE_ENABLED_BY_USER'.

@@ -28,7 +28,6 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/api/gcm/gcm_api.h"
 #include "chrome/browser/extensions/crx_installer.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/extensions/updater/extension_updater.h"
@@ -173,12 +172,7 @@ class Waiter {
 class FakeExtensionGCMAppHandler : public ExtensionGCMAppHandler {
  public:
   FakeExtensionGCMAppHandler(Profile* profile, Waiter* waiter)
-      : ExtensionGCMAppHandler(profile),
-        waiter_(waiter),
-        unregistration_result_(gcm::GCMClient::UNKNOWN_ERROR),
-        delete_id_result_(instance_id::InstanceID::UNKNOWN_ERROR),
-        app_handler_count_drop_to_zero_(false) {
-  }
+      : ExtensionGCMAppHandler(profile), waiter_(waiter) {}
 
   FakeExtensionGCMAppHandler(const FakeExtensionGCMAppHandler&) = delete;
   FakeExtensionGCMAppHandler& operator=(const FakeExtensionGCMAppHandler&) =
@@ -226,9 +220,10 @@ class FakeExtensionGCMAppHandler : public ExtensionGCMAppHandler {
 
  private:
   raw_ptr<Waiter> waiter_;
-  gcm::GCMClient::Result unregistration_result_;
-  instance_id::InstanceID::Result delete_id_result_;
-  bool app_handler_count_drop_to_zero_;
+  gcm::GCMClient::Result unregistration_result_ = gcm::GCMClient::UNKNOWN_ERROR;
+  instance_id::InstanceID::Result delete_id_result_ =
+      instance_id::InstanceID::UNKNOWN_ERROR;
+  bool app_handler_count_drop_to_zero_ = false;
 };
 
 class ExtensionGCMAppHandlerTest : public testing::Test {
@@ -257,9 +252,7 @@ class ExtensionGCMAppHandlerTest : public testing::Test {
   }
 
   ExtensionGCMAppHandlerTest()
-      : task_environment_(content::BrowserTaskEnvironment::REAL_IO_THREAD),
-        registration_result_(gcm::GCMClient::UNKNOWN_ERROR),
-        unregistration_result_(gcm::GCMClient::UNKNOWN_ERROR) {
+      : task_environment_(content::BrowserTaskEnvironment::REAL_IO_THREAD) {
     // Allow unpacked extensions without developer mode for testing.
     scoped_feature_list_.InitAndDisableFeature(
         extensions_features::kExtensionDisableUnsupportedDeveloper);
@@ -341,10 +334,6 @@ class ExtensionGCMAppHandlerTest : public testing::Test {
     return extension;
   }
 
-  ExtensionService* extension_service() {
-    return ExtensionSystem::Get(profile())->extension_service();
-  }
-
   ExtensionRegistrar* extension_registrar() {
     return ExtensionRegistrar::Get(profile());
   }
@@ -388,16 +377,16 @@ class ExtensionGCMAppHandlerTest : public testing::Test {
   }
 
   void DisableExtension(const Extension* extension) {
-    extension_service()->DisableExtension(extension->id(),
-                                          disable_reason::DISABLE_USER_ACTION);
+    extension_registrar()->DisableExtension(
+        extension->id(), {disable_reason::DISABLE_USER_ACTION});
   }
 
   void EnableExtension(const Extension* extension) {
-    extension_service()->EnableExtension(extension->id());
+    extension_registrar()->EnableExtension(extension->id());
   }
 
   void UninstallExtension(const Extension* extension) {
-    ExtensionRegistrar::Get(profile())->UninstallExtension(
+    extension_registrar()->UninstallExtension(
         extension->id(), extensions::UNINSTALL_REASON_FOR_TESTING, nullptr);
   }
 
@@ -451,8 +440,8 @@ class ExtensionGCMAppHandlerTest : public testing::Test {
 
   Waiter waiter_;
   std::unique_ptr<FakeExtensionGCMAppHandler> gcm_app_handler_;
-  gcm::GCMClient::Result registration_result_;
-  gcm::GCMClient::Result unregistration_result_;
+  gcm::GCMClient::Result registration_result_ = gcm::GCMClient::UNKNOWN_ERROR;
+  gcm::GCMClient::Result unregistration_result_ = gcm::GCMClient::UNKNOWN_ERROR;
 };
 
 TEST_F(ExtensionGCMAppHandlerTest, AddAndRemoveAppHandler) {

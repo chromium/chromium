@@ -12,6 +12,7 @@
 #include "extensions/browser/blocklist_extension_prefs.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/test/extension_state_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -186,7 +187,7 @@ TEST_F(OmahaAttributesHandlerUnitTest, MultipleGreylistStates) {
       kTestExtensionId, disable_reason::DISABLE_GREYLIST));
 
   // Now user enables kTestExtensionId.
-  service()->EnableExtension(kTestExtensionId);
+  registrar()->EnableExtension(kTestExtensionId);
   EXPECT_TRUE(state_tester.ExpectEnabled(kTestExtensionId));
 
   // Another greylist state is added to Omaha attribute.

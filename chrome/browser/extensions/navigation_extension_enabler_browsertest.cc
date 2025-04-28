@@ -11,7 +11,6 @@
 #include "base/run_loop.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -24,6 +23,7 @@
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
@@ -77,8 +77,8 @@ IN_PROC_BROWSER_TEST_F(
     DisableExtensionBrowserTest,
     PromptToReEnableExtensionsOnNavigation_PermissionsIncrease) {
   // Disable the extension due to a permissions increase.
-  extension_service()->DisableExtension(
-      extension_id_, disable_reason::DISABLE_PERMISSIONS_INCREASE);
+  extension_registrar()->DisableExtension(
+      extension_id_, {disable_reason::DISABLE_PERMISSIONS_INCREASE});
   EXPECT_TRUE(registry_->disabled_extensions().Contains(extension_id_));
 
   EXPECT_THAT(prefs_->GetDisableReasons(extension_id_),
@@ -114,8 +114,8 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(DisableExtensionBrowserTest,
                        PromptToReEnableExtensionsOnNavigation_UserAction) {
   // Disable the extension for something other than a permissions increase.
-  extension_service()->DisableExtension(extension_id_,
-                                        disable_reason::DISABLE_USER_ACTION);
+  extension_registrar()->DisableExtension(
+      extension_id_, {disable_reason::DISABLE_USER_ACTION});
   EXPECT_TRUE(registry_->disabled_extensions().Contains(extension_id_));
   EXPECT_THAT(
       prefs_->GetDisableReasons(extension_id_),
@@ -148,8 +148,8 @@ IN_PROC_BROWSER_TEST_F(DisableExtensionBrowserTest,
   EXPECT_EQ(hosted_app, registry_->enabled_extensions().GetExtensionOrAppByURL(
                             kHostedAppUrl));
 
-  extension_service()->DisableExtension(
-      kHostedAppId, disable_reason::DISABLE_PERMISSIONS_INCREASE);
+  extension_registrar()->DisableExtension(
+      kHostedAppId, {disable_reason::DISABLE_PERMISSIONS_INCREASE});
   EXPECT_TRUE(registry_->disabled_extensions().Contains(kHostedAppId));
   EXPECT_THAT(prefs_->GetDisableReasons(kHostedAppId),
               testing::UnorderedElementsAre(
@@ -211,8 +211,8 @@ IN_PROC_BROWSER_TEST_F(DisableExtensionBrowserTest,
   EXPECT_TRUE(subframe->GetProcess()->IsProcessLockedToSiteForTesting());
 
   // Disable the extension.
-  extension_service()->DisableExtension(extension->id(),
-                                        disable_reason::DISABLE_USER_ACTION);
+  extension_registrar()->DisableExtension(
+      extension->id(), {disable_reason::DISABLE_USER_ACTION});
   EXPECT_TRUE(registry_->disabled_extensions().Contains(extension->id()));
 
   // Go back and then forward.  This should go back to the original URL in the
@@ -255,7 +255,7 @@ IN_PROC_BROWSER_TEST_F(DisableExtensionBrowserTest,
 #endif  // !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_WIN)
 
   // Re-enable the extension.
-  extension_service()->EnableExtension(extension->id());
+  extension_registrar()->EnableExtension(extension->id());
   EXPECT_TRUE(registry_->enabled_extensions().Contains(extension->id()));
 
   // Navigate the subframe to the extension URL again.  This shouldn't

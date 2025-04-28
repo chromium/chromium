@@ -290,7 +290,7 @@ TEST_F(ManagementApiUnitTest, ComponentPolicyDisabling) {
         // If the extension was disabled, re-enable it.
         if (did_disable) {
           EXPECT_TRUE(registry()->disabled_extensions().Contains(id));
-          service()->EnableExtension(id);
+          registrar()->EnableExtension(id);
         } else {
           EXPECT_TRUE(registry()->enabled_extensions().Contains(id));
         }
@@ -687,8 +687,8 @@ TEST_F(ManagementApiUnitTest, ExtensionInfo_MayEnable) {
 
   // Disable the extension with a normal user action. Verify the extension shows
   // as disabled with |may_enable| as true.
-  service()->DisableExtension(extension->id(),
-                              disable_reason::DISABLE_USER_ACTION);
+  registrar()->DisableExtension(extension->id(),
+                                {disable_reason::DISABLE_USER_ACTION});
   EXPECT_TRUE(registry()->disabled_extensions().Contains(extension->id()));
   {
     auto function = base::MakeRefCounted<ManagementGetFunction>();
@@ -925,8 +925,8 @@ TEST_F(ManagementApiUnitTestMV2DisableWithReEnableUnitTest,
       ExtensionBuilder("Test").SetManifestVersion(2).Build();
   const ExtensionId& extension_id = extension->id();
   registrar()->AddExtension(extension.get());
-  service()->DisableExtension(
-      extension_id, disable_reason::DISABLE_UNSUPPORTED_MANIFEST_VERSION);
+  registrar()->DisableExtension(
+      extension_id, {disable_reason::DISABLE_UNSUPPORTED_MANIFEST_VERSION});
 
   // 1) Deny re-enable prompt without user gesture, expect the extension to
   // stay disabled.
@@ -1006,8 +1006,8 @@ TEST_F(ManagementApiUnitTestMV2DisableWithReEnableUnitTest,
 
   // Disable extension due to MV2 deprecation. Since extension is already
   // disabled, this will add another disable reason.
-  service()->DisableExtension(
-      extension_id, disable_reason::DISABLE_UNSUPPORTED_MANIFEST_VERSION);
+  registrar()->DisableExtension(
+      extension_id, {disable_reason::DISABLE_UNSUPPORTED_MANIFEST_VERSION});
 
   // management.setEnabled will trigger two dialogs (permissions increase and
   // mv2 deprecation). Since we have tested each individually, this test
@@ -1652,8 +1652,8 @@ TEST_F(ManagementApiSupervisedUserTestWithSetup, SetEnabled_ParentApproves) {
   ASSERT_EQ(0, supervised_user_delegate_->show_dialog_count());
 
   // Start with a disabled extension that needs parent permission.
-  service()->DisableExtension(
-      extension_->id(), disable_reason::DISABLE_CUSTODIAN_APPROVAL_REQUIRED);
+  registrar()->DisableExtension(
+      extension_->id(), {disable_reason::DISABLE_CUSTODIAN_APPROVAL_REQUIRED});
 
   // The parent will approve.
   supervised_user_delegate_->set_next_parent_permission_dialog_result(
@@ -1676,8 +1676,8 @@ TEST_F(ManagementApiSupervisedUserTestWithSetup, SetEnabled_ParentApproves) {
 
 TEST_F(ManagementApiSupervisedUserTestWithSetup, SetEnabled_ParentDenies) {
   // Start with a disabled extension that needs parent permission.
-  service()->DisableExtension(
-      extension_->id(), disable_reason::DISABLE_CUSTODIAN_APPROVAL_REQUIRED);
+  registrar()->DisableExtension(
+      extension_->id(), {disable_reason::DISABLE_CUSTODIAN_APPROVAL_REQUIRED});
 
   // The parent will deny the next dialog.
   supervised_user_delegate_->set_next_parent_permission_dialog_result(
@@ -1700,8 +1700,8 @@ TEST_F(ManagementApiSupervisedUserTestWithSetup, SetEnabled_ParentDenies) {
 
 TEST_F(ManagementApiSupervisedUserTestWithSetup, SetEnabled_DialogFails) {
   // Start with a disabled extension that needs parent permission.
-  service()->DisableExtension(
-      extension_->id(), disable_reason::DISABLE_CUSTODIAN_APPROVAL_REQUIRED);
+  registrar()->DisableExtension(
+      extension_->id(), {disable_reason::DISABLE_CUSTODIAN_APPROVAL_REQUIRED});
 
   // The next dialog will close due to a failure (e.g. network failure while
   // looking up parent information).
@@ -1722,8 +1722,8 @@ TEST_F(ManagementApiSupervisedUserTestWithSetup, SetEnabled_DialogFails) {
 
 TEST_F(ManagementApiSupervisedUserTestWithSetup, SetEnabled_PreviouslyAllowed) {
   // Disable the extension.
-  service()->DisableExtension(extension_->id(),
-                              disable_reason::DISABLE_USER_ACTION);
+  registrar()->DisableExtension(extension_->id(),
+                                {disable_reason::DISABLE_USER_ACTION});
 
   // Simulate previous parent approval.
   GetSupervisedUserExtensionsDelegate()->AddExtensionApproval(*extension_);
@@ -1748,8 +1748,8 @@ TEST_F(ManagementApiSupervisedUserTestWithSetup,
   ASSERT_TRUE(profile()->IsChild());
 
   // Start with a disabled extension that needs parent permission.
-  service()->DisableExtension(
-      extension_->id(), disable_reason::DISABLE_CUSTODIAN_APPROVAL_REQUIRED);
+  registrar()->DisableExtension(
+      extension_->id(), {disable_reason::DISABLE_CUSTODIAN_APPROVAL_REQUIRED});
 
   // The parent will approve.
   supervised_user_delegate_->set_next_parent_permission_dialog_result(
@@ -1780,8 +1780,8 @@ TEST_F(ManagementApiSupervisedUserTestWithSetup,
   ASSERT_TRUE(profile()->IsChild());
 
   // Start with a disabled extension that needs parent permission.
-  service()->DisableExtension(
-      extension_->id(), disable_reason::DISABLE_CUSTODIAN_APPROVAL_REQUIRED);
+  registrar()->DisableExtension(
+      extension_->id(), {disable_reason::DISABLE_CUSTODIAN_APPROVAL_REQUIRED});
 
   // The parent will cancel.
   supervised_user_delegate_->set_next_parent_permission_dialog_result(
@@ -1813,8 +1813,8 @@ TEST_F(ManagementApiSupervisedUserTestWithSetup,
   ASSERT_TRUE(profile()->IsChild());
 
   // Start with a disabled extension that needs parent permission.
-  service()->DisableExtension(
-      extension_->id(), disable_reason::DISABLE_CUSTODIAN_APPROVAL_REQUIRED);
+  registrar()->DisableExtension(
+      extension_->id(), {disable_reason::DISABLE_CUSTODIAN_APPROVAL_REQUIRED});
 
   // The request will fail.
   supervised_user_delegate_->set_next_parent_permission_dialog_result(

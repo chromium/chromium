@@ -79,7 +79,7 @@ TEST_F(SafeBrowsingVerdictHandlerUnitTest, GreylistedExtensionDisabled) {
                       BLOCKLISTED_POTENTIALLY_UNWANTED);
 
   // Now user enables kGood0.
-  service()->EnableExtension(kGood0);
+  registrar()->EnableExtension(kGood0);
 
   EXPECT_TRUE(state_tester.ExpectEnabled(kGood0));
   EXPECT_TRUE(state_tester.ExpectDisabledWithSingleReason(
@@ -107,7 +107,7 @@ TEST_F(SafeBrowsingVerdictHandlerUnitTest, GreylistDontEnableManuallyDisabled) {
   service()->Init();
 
   // Manually disable.
-  service()->DisableExtension(kGood0, disable_reason::DISABLE_USER_ACTION);
+  registrar()->DisableExtension(kGood0, {disable_reason::DISABLE_USER_ACTION});
 
   test_blocklist.SetBlocklistState(kGood0, BLOCKLISTED_CWS_POLICY_VIOLATION,
                                    true);
@@ -129,11 +129,11 @@ TEST_F(SafeBrowsingVerdictHandlerUnitTest, GreylistDontEnableManuallyDisabled) {
       kGood2, disable_reason::DISABLE_GREYLIST));
 
   // Greylisted extension can be enabled.
-  service()->EnableExtension(kGood1);
+  registrar()->EnableExtension(kGood1);
   EXPECT_TRUE(state_tester.ExpectEnabled(kGood1));
 
   // kGood1 is now manually disabled.
-  service()->DisableExtension(kGood1, disable_reason::DISABLE_USER_ACTION);
+  registrar()->DisableExtension(kGood1, {disable_reason::DISABLE_USER_ACTION});
   EXPECT_TRUE(state_tester.ExpectDisabledWithSingleReason(
       kGood1, disable_reason::DISABLE_USER_ACTION));
 
