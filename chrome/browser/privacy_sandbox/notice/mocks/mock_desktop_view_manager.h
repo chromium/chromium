@@ -22,6 +22,8 @@ class MockDesktopViewManager : public DesktopViewManagerInterface {
               HandleChromeOwnedPageNavigation,
               (BrowserWindowInterface* browser_interface),
               (override));
+  MOCK_METHOD(void, AddObserver, (Observer*), (override));
+  MOCK_METHOD(void, RemoveObserver, (Observer*), (override));
 
  private:
   std::unique_ptr<NavigationHandler> test_navigation_handler_;

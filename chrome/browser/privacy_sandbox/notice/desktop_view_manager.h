@@ -26,6 +26,13 @@ class PrivacySandboxNoticeServiceInterface;
 // 3. Manage sticky behavior of notices across tabs
 class DesktopViewManagerInterface {
  public:
+  class Observer {
+   public:
+    // Fired whenever observers are required to proceed to the next step.
+    virtual void MaybeNavigateToNextStep(
+        std::optional<notice::mojom::PrivacySandboxNotice> next_id) = 0;
+  };
+
   virtual ~DesktopViewManagerInterface();
 
   // Returns handler responsible for tracking navigations.
@@ -34,6 +41,9 @@ class DesktopViewManagerInterface {
   // been found. All suitable URLs are chrome-owned.
   virtual void HandleChromeOwnedPageNavigation(
       BrowserWindowInterface* browser_interface) = 0;
+
+  virtual void AddObserver(Observer* observer) = 0;
+  virtual void RemoveObserver(Observer* observer) = 0;
 };
 
 class DesktopViewManager : public DesktopViewManagerInterface {
@@ -46,26 +56,19 @@ class DesktopViewManager : public DesktopViewManagerInterface {
       PrivacySandboxNoticeServiceInterface* notice_service);
   ~DesktopViewManager() override;
 
-  class Observer {
-   public:
-    // Fired whenever observers are required to proceed to the next step.
-    virtual void MaybeNavigateToNextStep(
-        std::optional<notice::mojom::PrivacySandboxNotice> next_id) {}
-  };
-
   // Triggered by the WebUI handler once an event occurs on a |notice|.
   void OnEventOccurred(notice::mojom::PrivacySandboxNotice notice,
                        notice::mojom::PrivacySandboxNoticeEvent event);
 
   // Accessors
   std::vector<notice::mojom::PrivacySandboxNotice> GetPendingNoticesToShow();
-  // DesktopViewManagerInterface
+
+  // DesktopViewManagerInterface:
   NavigationHandler* GetNavigationHandler() override;
   void HandleChromeOwnedPageNavigation(
       BrowserWindowInterface* browser_interface) override;
-
-  void AddObserver(Observer* observer);
-  void RemoveObserver(Observer* observer);
+  void AddObserver(Observer* observer) override;
+  void RemoveObserver(Observer* observer) override;
 
  private:
   friend class DesktopViewManagerTestPeer;
