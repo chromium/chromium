@@ -326,7 +326,7 @@ class ExtensionService : public ExtensionServiceInterface,
   // Hold the set of pending extensions. Not owned.
   raw_ptr<PendingExtensionManager> pending_extension_manager_ = nullptr;
 
-  // Manages external providers. Not ownedd.
+  // Manages external providers. Not owned.
   raw_ptr<ExternalProviderManager> external_provider_manager_ = nullptr;
 
   // Signaled when all extensions are loaded.
