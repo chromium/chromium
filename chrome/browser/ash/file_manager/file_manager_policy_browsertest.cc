@@ -8,6 +8,7 @@
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "build/config/coverage/buildflags.h"
 #include "chrome/browser/ash/file_manager/file_manager_browsertest_base.h"
@@ -42,6 +43,7 @@
 #include "components/file_access/test/mock_scoped_file_access_delegate.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/prefs/pref_service.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/test/browser_test.h"
 #include "storage/browser/file_system/external_mount_points.h"
@@ -413,7 +415,7 @@ const std::set<std::string>* JpgMimeTypes() {
   return &set;
 }
 
-// Base class for Enterprise connectrs setup needed for browsertests.
+// Base class for Enterprise connectors setup needed for browsertests.
 class FileTransferConnectorFilesAppBrowserTestBase {
  public:
   FileTransferConnectorFilesAppBrowserTestBase(
@@ -460,7 +462,7 @@ class FileTransferConnectorFilesAppBrowserTestBase {
   }
 
   void ScanningHasCompletedCallback() {
-    DCHECK(run_loop_)
+    DCHECK(scanning_run_loop_)
         << "run loop not configured, missing call to `setupScanningRunLoop`";
     ++finished_file_transfer_analysis_delegates_;
     DCHECK_LE(finished_file_transfer_analysis_delegates_,
@@ -470,7 +472,7 @@ class FileTransferConnectorFilesAppBrowserTestBase {
         expected_number_of_file_transfer_analysis_delegates_) {
       // If all FileTransferAnalysisDelegates finished, scanning has been
       // completed.
-      run_loop_->QuitClosure().Run();
+      scanning_run_loop_->QuitClosure().Run();
     }
   }
 
@@ -547,7 +549,7 @@ class FileTransferConnectorFilesAppBrowserTestBase {
                   base::Unretained(this), *source, *destination)));
 
       // Setup FileTransferAnalysisDelegate mock.
-      enterprise_connectors::FileTransferAnalysisDelegate::SetFactorForTesting(
+      enterprise_connectors::FileTransferAnalysisDelegate::SetFactoryForTesting(
           base::BindRepeating(
               [](base::RepeatingCallback<void(
                      enterprise_connectors::MockFileTransferAnalysisDelegate*)>
@@ -577,6 +579,9 @@ class FileTransferConnectorFilesAppBrowserTestBase {
     if (name == "issueFileTransferResponses") {
       // Issue all saved responses and issue all future responses directly.
       IssueResponses();
+      if (reporting_run_loop_) {
+        reporting_run_loop_->Run();
+      }
       return true;
     }
     if (name == "isReportOnlyFileTransferConnector") {
@@ -605,14 +610,14 @@ class FileTransferConnectorFilesAppBrowserTestBase {
       auto maybe_int = value.FindInt("number_of_expected_delegates");
       DCHECK(maybe_int.has_value());
       expected_number_of_file_transfer_analysis_delegates_ = maybe_int.value();
-      DCHECK(!run_loop_);
-      run_loop_ = std::make_unique<base::RunLoop>();
+      DCHECK(!scanning_run_loop_);
+      scanning_run_loop_ = std::make_unique<base::RunLoop>();
       return true;
     }
     if (name == "waitForFileTransferScanningToComplete") {
-      DCHECK(run_loop_);
+      DCHECK(scanning_run_loop_);
       // Wait until the scanning is complete.
-      run_loop_->Run();
+      scanning_run_loop_->Run();
       return true;
     }
     if (name == "expectFileTransferReports") {
@@ -678,7 +683,7 @@ class FileTransferConnectorFilesAppBrowserTestBase {
           }
         }
 
-        // For report-only mode, the transfer is always allowed. It's blocked,
+        // For report-only mode, the transfer is always allowed. It's blocked
         // otherwise.
         expected_results.push_back(enterprise_connectors::EventResultToString(
             options.file_transfer_connector_report_only
@@ -691,9 +696,11 @@ class FileTransferConnectorFilesAppBrowserTestBase {
         expected_scan_ids.push_back(GetScanIDForFileName(file_name));
       }
 
+      reporting_run_loop_ = std::make_unique<base::RunLoop>();
       validator_ =
           std::make_unique<enterprise_connectors::test::EventReportValidator>(
               cloud_policy_client());
+      validator_->SetDoneClosure(reporting_run_loop_->QuitClosure());
       validator_->ExpectSensitiveDataEvents(
           /*url*/ "",
           /*tab_url*/ "",
@@ -820,7 +827,14 @@ class FileTransferConnectorFilesAppBrowserTestBase {
   std::vector<std::string> expected_blocked_files_;
   std::vector<std::string> expected_warned_files_;
 
-  std::unique_ptr<base::RunLoop> run_loop_;
+  // Used to wait for scanning to finish. This can be run from TS
+  // by using the "waitForFileTransferScanningToComplete" command name.
+  std::unique_ptr<base::RunLoop> scanning_run_loop_;
+
+  // Used to wait for event reporting to be done. This is run by
+  // the "issueFileTransferResponses" command as event reporting
+  // happens after DLP responses are received.
+  std::unique_ptr<base::RunLoop> reporting_run_loop_;
 };
 
 }  // namespace
@@ -1071,7 +1085,10 @@ class DlpAndEnterpriseConnectorsFilesAppBrowserTest
       const DlpAndEnterpriseConnectorsFilesAppBrowserTest&) = delete;
 
  protected:
-  DlpAndEnterpriseConnectorsFilesAppBrowserTest() = default;
+  DlpAndEnterpriseConnectorsFilesAppBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        safe_browsing::kLocalIpAddressInEvents);
+  }
   ~DlpAndEnterpriseConnectorsFilesAppBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -1118,6 +1135,9 @@ class DlpAndEnterpriseConnectorsFilesAppBrowserTest
   FileManagerBrowserTestBase::Options GetOptions() const override {
     return GetParam().options;
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_P(DlpAndEnterpriseConnectorsFilesAppBrowserTest, Test) {

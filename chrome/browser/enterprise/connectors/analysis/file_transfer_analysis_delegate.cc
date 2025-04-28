@@ -250,7 +250,7 @@ FileTransferAnalysisDelegate::Create(
 }
 
 // static
-void FileTransferAnalysisDelegate::SetFactorForTesting(
+void FileTransferAnalysisDelegate::SetFactoryForTesting(
     FileTransferAnalysisDelegateFactory factory) {
   GetFactoryStorage() = factory;
 }

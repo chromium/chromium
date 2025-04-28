@@ -4,6 +4,7 @@
 
 #include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"
 
+#include "base/barrier_closure.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/json/json_reader.h"
@@ -316,12 +317,24 @@ void EventReportValidator::ExpectSensitiveDataEvents(
   content_transfer_method_ = expected_content_transfer_method;
   user_justification_ = expected_user_justification;
 
+  base::RepeatingClosure barrier_closure = base::BarrierClosure(
+      expected_filenames.size(), base::BindOnce(
+                                     [](base::RepeatingClosure closure) {
+                                       if (!closure.is_null()) {
+                                         closure.Run();
+                                       }
+                                     },
+                                     std::move(done_closure_)));
+
   EXPECT_CALL(*client_, UploadSecurityEventReport)
       .Times(expected_filenames.size())
       .WillRepeatedly(
-          [this](bool include_device_info, base::Value::Dict report,
+          [this, barrier_closure](bool include_device_info, base::Value::Dict report,
                  base::OnceCallback<void(policy::CloudPolicyClient::Result)>
-                     callback) { ValidateReport(&report); });
+                     callback) {
+            ValidateReport(&report);
+            barrier_closure.Run();
+          });
 }
 
 void EventReportValidator::
@@ -546,7 +559,7 @@ void EventReportValidator::ValidateIdentities(const base::Value::Dict* value) {
         const std::string* url =
             actual_identity_dict.FindString(kKeyPasswordBreachIdentitiesUrl);
         const std::string* actual_username = actual_identity_dict.FindString(
-                kKeyPasswordBreachIdentitiesUsername);
+            kKeyPasswordBreachIdentitiesUsername);
         EXPECT_NE(nullptr, actual_username);
         const std::u16string username = base::UTF8ToUTF16(*actual_username);
         EXPECT_NE(nullptr, url);
