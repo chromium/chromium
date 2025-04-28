@@ -23,13 +23,12 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-
 import androidx.annotation.ColorInt;
-
 import org.chromium.chrome.browser.readaloud.player.Colors;
 import org.chromium.chrome.browser.readaloud.player.InteractionHandler;
 import org.chromium.chrome.browser.readaloud.player.R;
 import org.chromium.chrome.browser.readaloud.player.TouchDelegateUtil;
+import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackMode;
 import org.chromium.chrome.modules.readaloud.PlaybackListener;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.interpolators.Interpolators;
@@ -40,8 +39,10 @@ public class MiniPlayerLayout extends LinearLayout {
     private static final Interpolator FADE_INTERPOLATOR =
             Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR;
 
+    private final Context mContext;
+
     private TextView mTitle;
-    private TextView mPublisher;
+    private TextView mSubtitle;
     private ProgressBar mProgressBar;
     private ImageView mPlayPauseView;
     private FrameLayout mBackdrop;
@@ -63,6 +64,7 @@ public class MiniPlayerLayout extends LinearLayout {
     /** Constructor for inflating from XML. */
     public MiniPlayerLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
+        this.mContext = context;
     }
 
     void destroy() {
@@ -75,7 +77,7 @@ public class MiniPlayerLayout extends LinearLayout {
 
         // Cache important views.
         mTitle = (TextView) findViewById(R.id.title);
-        mPublisher = (TextView) findViewById(R.id.publisher);
+        mSubtitle = (TextView) findViewById(R.id.subtitle);
         mProgressBar = (ProgressBar) findViewById(R.id.progress_bar);
         mPlayPauseView = (ImageView) findViewById(R.id.play_button);
 
@@ -168,8 +170,11 @@ public class MiniPlayerLayout extends LinearLayout {
         mTitle.setText(title);
     }
 
-    void setPublisher(String publisher) {
-        mPublisher.setText(publisher);
+  void setPlaybackMode(PlaybackMode playbackMode) {
+    mSubtitle.setText(
+        playbackMode == PlaybackMode.OVERVIEW
+            ? mContext.getString(R.string.readaloud_chrome_now_playing_audio_overview)
+            : mContext.getString(R.string.readaloud_chrome_now_playing));
     }
 
     /**

@@ -41,6 +41,7 @@ import org.chromium.chrome.browser.readaloud.player.VisibilityState;
 import org.chromium.chrome.browser.user_education.IphCommand;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.chrome.modules.readaloud.PlaybackListener;
+import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackMode;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Unit tests for {@link MiniPlayerCoordinator}. */
@@ -48,7 +49,6 @@ import org.chromium.ui.modelutil.PropertyModel;
 @Config(manifest = Config.NONE)
 public class MiniPlayerCoordinatorUnitTest {
     private static final String TITLE = "Title";
-    private static final String PUBLISHER = "Publisher";
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock ReadAloudMiniPlayerSceneLayer.Natives mSceneLayerNativeMock;
 
@@ -162,10 +162,10 @@ public class MiniPlayerCoordinatorUnitTest {
     }
 
     @Test
-    public void testBindPublisher() {
+    public void testBindSubtitle() {
         mCoordinator.show(/* animate= */ true);
-        mSharedModel.set(PlayerProperties.PUBLISHER, PUBLISHER);
-        verify(mLayout).setPublisher(eq(PUBLISHER));
+        mSharedModel.set(PlayerProperties.PLAYBACK_MODE, PlaybackMode.OVERVIEW.getValue());
+        verify(mLayout).setPlaybackMode(eq(PlaybackMode.OVERVIEW));
     }
 
     @Test
