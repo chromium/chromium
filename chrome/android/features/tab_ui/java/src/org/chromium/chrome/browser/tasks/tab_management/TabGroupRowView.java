@@ -12,6 +12,7 @@ import android.graphics.drawable.GradientDrawable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.Space;
@@ -98,6 +99,18 @@ public class TabGroupRowView extends LinearLayout {
         mSubtitleTextView = findViewById(R.id.tab_group_subtitle);
         mImageTilesContainer = findViewById(R.id.image_tiles_container);
         mListMenuButton = findViewById(R.id.tab_group_menu);
+    }
+
+    void setupForContainment() {
+        Resources res = getContext().getResources();
+        ViewGroup.LayoutParams params = getLayoutParams();
+        params.height = res.getDimensionPixelSize(R.dimen.tab_group_row_height_containment);
+        setLayoutParams(params);
+        FrameLayout.MarginLayoutParams clusterParams =
+                (FrameLayout.MarginLayoutParams) mTabGroupFaviconCluster.getLayoutParams();
+        clusterParams.setMarginStart(
+                res.getDimensionPixelSize(R.dimen.tab_group_list_first_element_margin_containment));
+        mTabGroupFaviconCluster.setLayoutParams(clusterParams);
     }
 
     void updateCornersForClusterData(ClusterData clusterData) {

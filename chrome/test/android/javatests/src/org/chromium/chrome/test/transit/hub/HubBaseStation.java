@@ -59,11 +59,14 @@ public abstract class HubBaseStation extends Station<ChromeTabbedActivity> {
     public @Nullable ViewElement<View> incognitoTabsButtonElement;
     protected final boolean mIncognitoTabsExist;
     protected final boolean mRegularTabsExist;
+    private final boolean mHasMenuButton;
 
-    public HubBaseStation(boolean regularTabsExist, boolean incognitoTabsExist) {
+    public HubBaseStation(
+            boolean regularTabsExist, boolean incognitoTabsExist, boolean hasMenuButton) {
         super(ChromeTabbedActivity.class);
         mRegularTabsExist = regularTabsExist;
         mIncognitoTabsExist = incognitoTabsExist;
+        mHasMenuButton = hasMenuButton;
     }
 
     /** Returns the station's {@link PaneId}. */
@@ -78,7 +81,9 @@ public abstract class HubBaseStation extends Station<ChromeTabbedActivity> {
 
         toolbarElement = elements.declareView(HUB_TOOLBAR);
         paneHostElement = elements.declareView(HUB_PANE_HOST);
-        menuButtonElement = elements.declareView(HUB_MENU_BUTTON);
+        if (mHasMenuButton) {
+            menuButtonElement = elements.declareView(HUB_MENU_BUTTON);
+        }
 
         paneSwitcherElement = elements.declareView(HUB_PANE_SWITCHER);
 

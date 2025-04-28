@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import androidx.core.util.Consumer;
 
 import org.chromium.ui.modelutil.PropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.ReadableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 
@@ -14,11 +15,13 @@ import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 public class TabGroupListProperties {
     public static final ReadableObjectPropertyKey<Consumer<Boolean>> ON_IS_SCROLLED_CHANGED =
             new ReadableObjectPropertyKey<>();
+    public static final ReadableBooleanPropertyKey ENABLE_CONTAINMENT =
+            new ReadableBooleanPropertyKey();
     public static final WritableBooleanPropertyKey EMPTY_STATE_VISIBLE =
             new WritableBooleanPropertyKey();
     public static final WritableBooleanPropertyKey SYNC_ENABLED = new WritableBooleanPropertyKey();
 
     public static final PropertyKey[] ALL_KEYS = {
-        ON_IS_SCROLLED_CHANGED, EMPTY_STATE_VISIBLE, SYNC_ENABLED
+        ON_IS_SCROLLED_CHANGED, ENABLE_CONTAINMENT, EMPTY_STATE_VISIBLE, SYNC_ENABLED
     };
 }

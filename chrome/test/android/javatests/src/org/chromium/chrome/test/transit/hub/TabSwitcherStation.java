@@ -79,7 +79,7 @@ public abstract class TabSwitcherStation extends HubBaseStation {
 
     public TabSwitcherStation(
             boolean isIncognito, boolean regularTabsExist, boolean incognitoTabsExist) {
-        super(regularTabsExist, incognitoTabsExist);
+        super(regularTabsExist, incognitoTabsExist, /* hasMenuButton= */ true);
         mIsIncognito = isIncognito;
     }
 

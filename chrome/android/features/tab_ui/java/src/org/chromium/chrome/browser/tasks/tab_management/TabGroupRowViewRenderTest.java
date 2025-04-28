@@ -71,7 +71,7 @@ public class TabGroupRowViewRenderTest {
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(Component.UI_BROWSER_MOBILE_TAB_GROUPS)
-                    .setRevision(3)
+                    .setRevision(4)
                     .build();
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -263,5 +263,17 @@ public class TabGroupRowViewRenderTest {
                             mPropertyModel, mTabGroupRowView, TabGroupRowViewBinder::bind);
                 });
         mRenderTestRule.render(mTabGroupRowView, "subtitle_disabled");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testRenderWithContainment() throws Exception {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mTabGroupRowView.setupForContainment();
+                });
+        remakeWithUrls(JUnitTestGURLs.RED_1);
+        mRenderTestRule.render(mTabGroupRowView, "containment");
     }
 }

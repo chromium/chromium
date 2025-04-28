@@ -105,7 +105,10 @@ found in the LICENSE file.
     <dimen name="tab_card_label_elev">6dp</dimen>
 
     <!-- Dimens for TabGroupSync features -->
+    <dimen name="tab_group_list_first_item_top_margin">24dp</dimen>
+    <dimen name="tab_group_recycler_view_min_padding">16dp</dimen>
     <dimen name="tab_group_row_height">96dp</dimen>
+    <dimen name="tab_group_row_height_containment">104dp</dimen>
     <dimen name="tab_group_cluster_size">80dp</dimen>
     <dimen name="tab_group_start_icon_size">34dp</dimen>
     <dimen name="tab_group_favicon_image_size">16dp</dimen>
@@ -150,7 +153,11 @@ found in the LICENSE file.
     <!-- tab_group_list_new_group_icon_button_height = tab_group_list_new_group_row_height - (tab_group_row_height-tab_group_cluster_size) -->
     <dimen name="tab_group_list_new_group_icon_button_height">44dp</dimen>
     <dimen name="tab_group_list_new_group_icon_height">30dp</dimen>
-    <dimen name="tab_group_list_first_element_left_right_margin">16dp</dimen>
+    <dimen name="tab_group_list_first_element_horizontal_margin">16dp</dimen>
+    <dimen name="tab_group_list_first_element_margin_containment">12dp</dimen>
+    <dimen name="tab_group_list_vertical_item_gap">2dp</dimen>
+    <dimen name="tab_group_list_item_small_radius">3dp</dimen>
+    <dimen name="tab_group_list_item_large_radius">24dp</dimen>
 
     <!-- Dimens for tab switcher context menu. -->
     <dimen name="tab_switcher_context_menu_max_width">225dp</dimen>

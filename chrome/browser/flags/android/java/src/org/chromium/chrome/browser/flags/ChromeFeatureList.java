@@ -1300,6 +1300,10 @@ public abstract class ChromeFeatureList {
     public static final BooleanCachedFeatureParam sEdgeToEdgeEverywhereIsDebugging =
             newBooleanCachedFeatureParam(EDGE_TO_EDGE_EVERYWHERE, "e2e_everywhere_debug", false);
 
+    public static final BooleanCachedFeatureParam sTabGroupListContainment =
+            newBooleanCachedFeatureParam(
+                    GRID_TAB_SWITCHER_SURFACE_COLOR_UPDATE, "tab_group_list_containment", true);
+
     public static final BooleanCachedFeatureParam sMagicStackAndroidShowAllModules =
             newBooleanCachedFeatureParam(MAGIC_STACK_ANDROID, "show_all_modules", false);
     public static final BooleanCachedFeatureParam sMostVisitedTilesReselectLaxSchemeHost =
@@ -1438,6 +1442,7 @@ public abstract class ChromeFeatureList {
                     sSearchinCctApplyReferrerId,
                     sSearchinCctOmniboxAllowedPackageNames,
                     sStartSurfaceReturnTimeTabletSecs,
+                    sTabGroupListContainment,
                     sTabStateFlatBufferMigrateStaleTabs,
                     sTabWindowManagerReportIndicesMismatchTimeDiffThresholdMs,
                     sUseChimeAndroidSdkAlwaysRegister,
