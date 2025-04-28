@@ -8455,6 +8455,7 @@ domain Page
 
   # All Permissions Policy features. This enum should match the one defined
   # in services/network/public/cpp/permissions_policy/permissions_policy_features.json5.
+  # LINT.IfChange(PermissionsPolicyFeature)
   experimental type PermissionsPolicyFeature extends string
     enum
       accelerometer
@@ -8521,6 +8522,7 @@ domain Page
       keyboard-map
       language-detector
       local-fonts
+      local-network-access
       magnetometer
       media-playback-while-not-visible
       microphone
@@ -8558,6 +8560,7 @@ domain Page
       window-management
       writer
       xr-spatial-tracking
+  # LINT.ThenChange(//services/network/public/cpp/permissions_policy/permissions_policy_features.json5:PermissionsPolicy)
 
   # Reason for a permissions policy feature to be disabled.
   experimental type PermissionsPolicyBlockReason extends string

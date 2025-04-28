@@ -440,6 +440,10 @@ PermissionDescriptorPtr ParsePermissionDescriptor(
     }
     return CreatePermissionDescriptor(PermissionName::WEB_APP_INSTALLATION);
   }
+
+  if (name == V8PermissionName::Enum::kLocalNetworkAccess) {
+    return CreatePermissionDescriptor(PermissionName::LOCAL_NETWORK_ACCESS);
+  }
   return nullptr;
 }
 

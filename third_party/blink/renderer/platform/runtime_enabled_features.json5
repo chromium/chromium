@@ -2771,6 +2771,13 @@
       name: "ListOwnerMustHaveCSSBox",
       status: "stable",
     },
+    // Enables Local Network Access Permission Policy. Does nothing without
+    // also enabling network::features::kLocalNetworkAccessChecks. See
+    // https://crbug.com/394009026.
+    {
+      name: "LocalNetworkAccessPermissionPolicy",
+      status: "experimental",
+    },
     {
       name: "LockedMode",
       status: "test",

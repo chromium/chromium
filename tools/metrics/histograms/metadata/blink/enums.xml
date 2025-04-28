@@ -6322,6 +6322,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="133" label="Translator"/>
   <int value="134" label="LanguageDetector"/>
   <int value="135" label="DeviceAttributes"/>
+  <int value="136" label="LocalNetworkAccess"/>
 </enum>
 
 <enum name="FedCmAccountChooserResult">

@@ -322,6 +322,10 @@ enum PermissionsPolicyFeature {
   // See https://wicg.github.io/WebApiDevice/device_attributes
   kDeviceAttributes = 135,
 
+  // Allows a site to make local network access requests.
+  // See https://github.com/explainers-by-googlers/local-network-access
+  kLocalNetworkAccess = 136,
+
   // Don't change assigned numbers of any item, and don't reuse removed slots.
   // Add new features at the end of the enum.
   // Also, run update_permissions_policy_enum.py in
