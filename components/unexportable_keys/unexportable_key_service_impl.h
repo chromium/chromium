@@ -23,9 +23,7 @@
 
 namespace unexportable_keys {
 
-namespace {
 class MaybePendingUnexportableKeyId;
-}
 
 class UnexportableKeyTaskManager;
 
