@@ -87,10 +87,7 @@ namespace extensions {
 
 namespace {
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Helper to serve as an UninstallPingSender::Filter callback.
-// TODO(crbug.com/413460628): This depends on initialization of ExtensionUpdater
-// performed by ExtensionService.
 UninstallPingSender::FilterResult ShouldSendUninstallPing(
     Profile* profile,
     const Extension* extension,
@@ -103,7 +100,6 @@ UninstallPingSender::FilterResult ShouldSendUninstallPing(
   }
   return UninstallPingSender::DO_NOT_SEND_PING;
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 }  // namespace
 
@@ -231,11 +227,9 @@ void ChromeExtensionSystem::Shared::Init(bool extensions_enabled) {
       ExtensionErrorController::Get(profile_), autoupdate_enabled,
       extensions_enabled, &ready_);
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
   uninstall_ping_sender_ = std::make_unique<UninstallPingSender>(
       ExtensionRegistry::Get(profile_),
       base::BindRepeating(&ShouldSendUninstallPing, profile_));
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
   // These services must be registered before the ExtensionService tries to
   // load any extensions.
