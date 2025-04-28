@@ -74,7 +74,10 @@ class SigninErrorNotifierTest : public BrowserWithTestWindowTest {
     // will be destroyed as part of the TearDown() process.
     identity_test_env_profile_adaptor_.reset();
 
+    token_handle_store_ = nullptr;
     ash::UserDataAuthClient::Shutdown();
+    SigninErrorNotifierFactory::GetForProfile(GetProfile())->Shutdown();
+    TokenHandleStoreFactory::Get()->DestroyTokenHandleStore();
     BrowserWithTestWindowTest::TearDown();
   }
 

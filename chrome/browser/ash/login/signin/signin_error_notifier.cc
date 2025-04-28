@@ -242,8 +242,13 @@ void SigninErrorNotifier::RegisterPrefs(PrefRegistrySimple* registry) {
 }
 
 void SigninErrorNotifier::Shutdown() {
-  error_controller_->RemoveObserver(this);
+  if (error_controller_) {
+    error_controller_->RemoveObserver(this);
+  }
   error_controller_ = nullptr;
+  if (token_handle_fetcher_) {
+    token_handle_fetcher_.reset();
+  }
   token_handle_store_ = nullptr;
 }
 

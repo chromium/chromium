@@ -104,7 +104,7 @@ class SigninErrorNotifier : public SigninErrorController::Observer,
   // `TokenHandleStore` instance which is created early, prior to profile
   // loading, and never destroyed.
   raw_ptr<TokenHandleStore> token_handle_store_;
-  const std::unique_ptr<TokenHandleFetcher> token_handle_fetcher_;
+  std::unique_ptr<TokenHandleFetcher> token_handle_fetcher_;
 
   // Used to keep track of the message center notifications.
   std::string device_account_notification_id_;
