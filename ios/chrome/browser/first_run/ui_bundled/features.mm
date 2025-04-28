@@ -73,6 +73,11 @@ WelcomeBackScreenVariationType GetWelcomeBackScreenVariationType() {
                                              kWelcomeBackInFirstRunParam, 1));
 }
 
+bool IsWelcomeBackInFirstRunEnabled() {
+  return base::FeatureList::IsEnabled(kWelcomeBackInFirstRun) &&
+         !base::FeatureList::IsEnabled(kBestFeaturesScreenInFirstRun);
+}
+
 bool IsAnimatedDefaultBrowserPromoInFREEnabled() {
   return base::FeatureList::IsEnabled(kAnimatedDefaultBrowserPromoInFRE) &&
          !base::FeatureList::IsEnabled(first_run::kUpdatedFirstRunSequence);
