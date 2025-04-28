@@ -589,6 +589,7 @@ third_party/mediapipe/src/third_party/com_google_audio_tools/external 1 1
 third_party/metrics_proto 2 1
 third_party/microsoft_webauthn 1 1
 third_party/ocmock/OCMock 2 1
+third_party/opus/src/celt/x86 1 1
 third_party/opus/src/doc 1 1
 third_party/ots 3 2
 third_party/ply 8 2
@@ -857,7 +858,7 @@ ui/gfx 2 1
 ui/gfx/geometry 1 1
 ui/gfx/x 1 1
 ui/gfx/x/generated_protos 6 2
-ui/gtk 2 1
+ui/gtk 1 1
 ui/ozone/platform/drm/common 6 2
 ui/ozone/platform/drm/gpu 5 3
 ui/ozone/platform/drm/host 2 2
