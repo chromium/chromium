@@ -16,7 +16,6 @@
 #import "google_apis/gaia/core_account_id.h"
 #import "google_apis/gaia/gaia_auth_util.h"
 #import "google_apis/gaia/gaia_id.h"
-#import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
@@ -76,8 +75,7 @@ AccountInfo DictToAccountInfo(const base::Value::Dict& dict) {
 const signin::RestoreData& LoadDeviceRestoreData(
     base::OnceClosure completion = base::DoNothing()) {
   if (!g_restore_data.has_value()) {
-    g_restore_data = LoadDeviceRestoreDataInternal(std::move(completion),
-                                                   SimulatePostDeviceRestore());
+    g_restore_data = LoadDeviceRestoreDataInternal(std::move(completion));
   }
   return g_restore_data.value();
 }
@@ -178,13 +176,6 @@ void RunSystemCapabilitiesPrefetch(NSArray<id<SystemIdentity>>* identities) {
             // Ignore the result.
         }));
   }
-}
-
-bool SimulatePostDeviceRestore() {
-  // We simulate post device restore if required either by experimental settings
-  // or test flag.
-  return tests_hook::SimulatePostDeviceRestore() ||
-         experimental_flags::SimulatePostDeviceRestore();
 }
 
 void ResetDeviceRestoreDataForTesting() {

@@ -199,7 +199,6 @@ source_set("signin_util") {
     "//base",
     "//components/prefs",
     "//components/signin/public/identity_manager",
-    "//ios/chrome/app:tests_hook",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/public/features:system_flags",
@@ -237,6 +236,7 @@ source_set("signin_util_internal") {
   deps = [
     "//base",
     "//components/signin/public/identity_manager",
+    "//ios/chrome/app:tests_hook",
     "//ios/chrome/browser/shared/model/paths",
     "//ios/chrome/browser/shared/public/features:system_flags",
     "//ios/chrome/common",
