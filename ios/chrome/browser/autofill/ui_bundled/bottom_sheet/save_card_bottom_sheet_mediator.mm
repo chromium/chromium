@@ -12,6 +12,8 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
 #import "base/timer/timer.h"
+#import "components/autofill/core/browser/metrics/payments/credit_card_save_metrics.h"
+#import "components/autofill/ios/browser/credit_card_save_metrics_ios.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/save_card_bottom_sheet_model.h"
 #import "ios/chrome/browser/autofill/model/message/save_card_message_with_links.h"
 #import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/bottom_sheet_constants.h"
@@ -69,6 +71,9 @@ static constexpr base::TimeDelta kConfirmationDismissDelayIfVoiceOverRunning =
   // Timer that controls auto dismissal of bottomsheet after success
   // confirmation is shown.
   base::OneShotTimer _autoDismissConfirmationTimer;
+
+  // Indicates whether bottom sheet is already in the process of dismissing.
+  BOOL _dismissing;
 }
 
 - (instancetype)initWithUIModel:
@@ -86,6 +91,58 @@ static constexpr base::TimeDelta kConfirmationDismissDelayIfVoiceOverRunning =
 - (void)disconnect {
   _modelObserverBridge.reset();
   _saveCardBottomSheetModel.reset();
+}
+
+- (void)onBottomSheetDismissedWithLinkClicked:(BOOL)linkClicked {
+  // `_dismissing` would be `YES` if the bottomsheet was dismissed due `No
+  // thanks` button in offer state or autodismissed in confirmation state or was
+  // dismissed on link clicked.
+  if (_dismissing) {
+    return;
+  }
+  switch (_saveCardBottomSheetModel->save_card_state()) {
+      // Bottomsheet is being dismissed before being accepted due to being
+      // swiped away, tab changed or link clicked. Dismissal due to swipe or tab
+      // change cannot be distinguished, both the actions are logged under the
+      // same bottomsheet result `kSwiped`, reasoning that users are more likely
+      // to dismiss the bottomsheet with a swipe than by switching tabs (e.g by
+      // opening a link from another app).
+    case autofill::SaveCardBottomSheetModel::SaveCardState::kOffered:
+      _saveCardBottomSheetModel->OnCanceled();
+      autofill::autofill_metrics::LogSaveCreditCardPromptResultIOS(
+          linkClicked ? autofill::autofill_metrics::
+                            SaveCreditCardPromptResultIOS::kLinkClicked
+                      : autofill::autofill_metrics::
+                            SaveCreditCardPromptResultIOS::kSwiped,
+          _saveCardBottomSheetModel->save_card_delegate()->is_for_upload(),
+          _saveCardBottomSheetModel->save_card_delegate()
+              ->GetSaveCreditCardOptions(),
+          autofill::autofill_metrics::SaveCreditCardPromptOverlayType::
+              kBottomSheet);
+      break;
+    // Bottomsheet is being dismissed while showing loading state due to being
+    // swiped away, tab changed or link clicked.
+    case autofill::SaveCardBottomSheetModel::SaveCardState::kSaveInProgress:
+      autofill::autofill_metrics::LogCreditCardUploadLoadingViewResultMetric(
+          autofill::autofill_metrics::SaveCardPromptResult::kClosed);
+      break;
+    // Bottomsheet is being dismissed while showing success confirmation state
+    // due to being swiped away, tab changed or link clicked.
+    case autofill::SaveCardBottomSheetModel::SaveCardState::kSaved:
+      autofill::autofill_metrics::
+          LogCreditCardUploadConfirmationViewResultMetric(
+              autofill::autofill_metrics::SaveCardPromptResult::kClosed,
+              /*is_card_uploaded=*/true);
+      break;
+    // Bottomsheet would have already been dismissed on failure.
+    case autofill::SaveCardBottomSheetModel::SaveCardState::kFailed:
+      NOTREACHED();
+  }
+  _dismissing = YES;
+}
+
+- (BOOL)isDismissingForTesting {
+  return _dismissing;
 }
 
 - (void)setConsumer:(id<SaveCardBottomSheetConsumer>)consumer {
@@ -129,28 +186,60 @@ static constexpr base::TimeDelta kConfirmationDismissDelayIfVoiceOverRunning =
          andCardAccessibilityLabel:base::SysUTF16ToNSString(
                                        _saveCardBottomSheetModel
                                            ->card_accessibility_description())];
+
+  autofill::autofill_metrics::LogSaveCreditCardPromptResultIOS(
+      autofill::autofill_metrics::SaveCreditCardPromptResultIOS::kShown,
+      _saveCardBottomSheetModel->save_card_delegate()->is_for_upload(),
+      _saveCardBottomSheetModel->save_card_delegate()
+          ->GetSaveCreditCardOptions(),
+      autofill::autofill_metrics::SaveCreditCardPromptOverlayType::
+          kBottomSheet);
 }
 
 #pragma mark - SaveCardBottomSheetMutator
 
 - (void)didAccept {
   _saveCardBottomSheetModel->OnAccepted();
+  autofill::autofill_metrics::LogSaveCreditCardPromptResultIOS(
+      autofill::autofill_metrics::SaveCreditCardPromptResultIOS::kAccepted,
+      _saveCardBottomSheetModel->save_card_delegate()->is_for_upload(),
+      _saveCardBottomSheetModel->save_card_delegate()
+          ->GetSaveCreditCardOptions(),
+      autofill::autofill_metrics::SaveCreditCardPromptOverlayType::
+          kBottomSheet);
+
   [_consumer
       showLoadingStateWithAccessibilityLabel:
           base::SysUTF16ToNSString(
               _saveCardBottomSheetModel->loading_accessibility_description())];
+  autofill::autofill_metrics::LogCreditCardUploadLoadingViewShownMetric(
+      /*is_shown=*/true);
 }
 
 - (void)didCancel {
   _saveCardBottomSheetModel->OnCanceled();
+  autofill::autofill_metrics::LogSaveCreditCardPromptResultIOS(
+      autofill::autofill_metrics::SaveCreditCardPromptResultIOS::kDenied,
+      _saveCardBottomSheetModel->save_card_delegate()->is_for_upload(),
+      _saveCardBottomSheetModel->save_card_delegate()
+          ->GetSaveCreditCardOptions(),
+      autofill::autofill_metrics::SaveCreditCardPromptOverlayType::
+          kBottomSheet);
+  _dismissing = YES;
   [_autofillCommandsHandler dismissSaveCardBottomSheet];
 }
 
 #pragma mark - SaveCardBottomSheetModel Observer
 
 - (void)onCreditCardUploadCompleted:(BOOL)cardSaved {
+  autofill::autofill_metrics::LogCreditCardUploadLoadingViewResultMetric(
+      autofill::autofill_metrics::SaveCardPromptResult::kNotInteracted);
+
   if (cardSaved) {
     [_consumer showConfirmationState];
+    autofill::autofill_metrics::LogCreditCardUploadConfirmationViewShownMetric(
+        /*is_shown=*/true, /*is_card_uploaded=*/true);
+
     // Auto dismiss bottomsheet after showing successful save card confirmation.
     __weak __typeof(self) weakSelf = self;
     _autoDismissConfirmationTimer.Start(
@@ -166,6 +255,7 @@ static constexpr base::TimeDelta kConfirmationDismissDelayIfVoiceOverRunning =
             },
             weakSelf));
   } else {
+    _dismissing = YES;
     [_autofillCommandsHandler dismissSaveCardBottomSheet];
   }
 }
@@ -174,6 +264,10 @@ static constexpr base::TimeDelta kConfirmationDismissDelayIfVoiceOverRunning =
 
 - (void)dimissConfirmationStateOnTimeout {
   _autoDismissConfirmationTimer.Stop();
+  autofill::autofill_metrics::LogCreditCardUploadConfirmationViewResultMetric(
+      autofill::autofill_metrics::SaveCardPromptResult::kNotInteracted,
+      /*is_card_uploaded=*/true);
+  _dismissing = YES;
   [_autofillCommandsHandler dismissSaveCardBottomSheet];
 }
 

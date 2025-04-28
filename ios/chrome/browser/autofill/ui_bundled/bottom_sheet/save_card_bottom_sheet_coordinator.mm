@@ -7,6 +7,7 @@
 #import <memory>
 #import <utility>
 
+#import "components/autofill/ios/browser/credit_card_save_metrics_ios.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/save_card_bottom_sheet_model.h"
 #import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/save_card_bottom_sheet_delegate.h"
@@ -76,6 +77,7 @@
 #pragma mark - SaveCardBottomSheetDelegate
 
 - (void)didTapLinkURL:(CrURL*)URL {
+  [_mediator onBottomSheetDismissedWithLinkClicked:YES];
   id<ApplicationCommands> applicationHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), ApplicationCommands);
   [applicationHandler
@@ -83,6 +85,7 @@
 }
 
 - (void)onViewDisappeared {
+  [_mediator onBottomSheetDismissedWithLinkClicked:NO];
   id<AutofillCommands> autofillHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), AutofillCommands);
   [autofillHandler dismissSaveCardBottomSheet];

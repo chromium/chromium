@@ -136,11 +136,15 @@ class SaveCardBottomSheetModel {
     return weak_ptr_factory_.GetWeakPtr();
   }
 
- private:
   AutofillSaveCardDelegate* save_card_delegate() {
     return save_card_delegate_.get();
   }
 
+  void SetSaveCardStateForTesting(SaveCardState state) {
+    save_card_state_ = state;
+  }
+
+ private:
   // Holds resources for the save card UI.
   const AutofillSaveCardUiInfo ui_info_;
 
@@ -152,8 +156,6 @@ class SaveCardBottomSheetModel {
   payments::PaymentsAutofillClient::OnConfirmationClosedCallback
       on_confirmation_closed_callback_;
 
-  // TODO(crbug.com/412631591): Use SaveCardState to log result metrics for the
-  // bottomsheet's state.
   SaveCardState save_card_state_{SaveCardState::kOffered};
 
   base::ObserverList<Observer> observer_list_;

@@ -35,6 +35,7 @@
 #import "components/autofill/core/browser/ui/payments/card_unmask_prompt_view.h"
 #import "components/autofill/core/browser/ui/payments/virtual_card_enroll_ui_model.h"
 #import "components/autofill/core/common/autofill_payments_features.h"
+#import "components/autofill/ios/browser/credit_card_save_metrics_ios.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
 #import "ios/chrome/browser/autofill/model/credit_card/autofill_save_card_infobar_delegate_ios.h"
 #import "ios/chrome/browser/autofill/ui_bundled/card_expiration_date_fix_flow_view_bridge.h"
@@ -136,6 +137,16 @@ void IOSChromePaymentsAutofillClient::ShowSaveCreditCardToCloud(
     save_card_bottom_sheet_model_ = model->GetWeakPtr();
     bottom_sheet_tab_helper->ShowSaveCardBottomSheet(std::move(model));
     return;
+  }
+  if (base::FeatureList::IsEnabled(features::kAutofillSaveCardBottomSheet)) {
+    // Logs the decision to not show the bottomsheet for users with flag
+    // enabled.
+    autofill_metrics::LogSaveCreditCardPromptResultIOS(
+        autofill::autofill_metrics::SaveCreditCardPromptResultIOS::kNotShown,
+        common_delegate->is_for_upload(),
+        common_delegate->GetSaveCreditCardOptions(),
+        autofill::autofill_metrics::SaveCreditCardPromptOverlayType::
+            kBottomSheet);
   }
 
   infobar_manager_->AddInfoBar(CreateSaveCardInfoBarMobile(

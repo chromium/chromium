@@ -5531,10 +5531,11 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     {OverlayType} is shown and user's subsequent action (accepted, denied or
     ignored) taken for that prompt for a card to be saved as a {SaveDestination}
     card with {Strikes} and which required {FixFlow}. Is emitted every time the
-    prompt is shown and for any action taken on it.
+    prompt is shown or not shown and for any action taken when shown.
   </summary>
   <token key="OverlayType">
     <variant name="Banner" summary="InfoBar Banner"/>
+    <variant name="BottomSheet" summary="BottomSheet"/>
     <variant name="Modal" summary="InfoBar Modal"/>
   </token>
   <token key="SaveDestination">

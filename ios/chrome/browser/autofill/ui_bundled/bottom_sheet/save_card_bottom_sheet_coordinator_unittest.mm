@@ -8,8 +8,10 @@
 
 #import <string>
 
+#import "base/test/metrics/histogram_tester.h"
 #import "components/autofill/core/browser/payments/autofill_save_card_delegate.h"
 #import "components/autofill/core/browser/payments/autofill_save_card_ui_info.h"
+#import "components/autofill/ios/browser/credit_card_save_metrics_ios.h"
 #import "components/grit/components_scaled_resources.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_java_script_feature.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
@@ -64,7 +66,8 @@ class SaveCardBottomSheetCoordinatorTest : public PlatformTest {
                         autofill::payments::PaymentsAutofillClient::
                             UploadSaveCardPromptCallback>(base::DoNothing()),
                     autofill::payments::PaymentsAutofillClient::
-                        SaveCreditCardOptions{})));
+                        SaveCreditCardOptions()
+                            .with_num_strikes(0))));
 
     window_ = [[UIWindow alloc] init];
     window_.rootViewController = [[UIViewController alloc] init];
@@ -97,7 +100,11 @@ class SaveCardBottomSheetCoordinatorTest : public PlatformTest {
   SaveCardBottomSheetCoordinator* coordinator_;
 };
 
+// Test when link is clicked, new tab is opened and bottomsheet
+// result `kLinkClicked` is logged.
 TEST_F(SaveCardBottomSheetCoordinatorTest, OpensNewTabForLinkClicked) {
+  base::HistogramTester histogram_tester;
+
   [coordinator_ start];
   CrURL* url = [[CrURL alloc]
       initWithNSURL:[NSURL URLWithString:@"https://example.test"]];
@@ -110,14 +117,29 @@ TEST_F(SaveCardBottomSheetCoordinatorTest, OpensNewTabForLinkClicked) {
   [coordinator_ didTapLinkURL:url];
 
   [coordinator_ stop];
+
+  histogram_tester.ExpectBucketCount(
+      "Autofill.SaveCreditCardPromptResult.IOS.Server.BottomSheet.NumStrikes.0."
+      "NoFixFlow",
+      autofill::autofill_metrics::SaveCreditCardPromptResultIOS::kLinkClicked,
+      /*expected_count=*/1);
 }
 
+// Test `OnViewDisappeared` dismisses bottomsheet and bottomsheet result
+// `kSwiped` is logged.
 TEST_F(SaveCardBottomSheetCoordinatorTest, OnViewDisappeared) {
+  base::HistogramTester histogram_tester;
+
   [coordinator_ start];
 
   OCMExpect([autofill_commands_handler_ dismissSaveCardBottomSheet]);
-
   [coordinator_ onViewDisappeared];
 
   [coordinator_ stop];
+
+  histogram_tester.ExpectBucketCount(
+      "Autofill.SaveCreditCardPromptResult.IOS.Server.BottomSheet.NumStrikes.0."
+      "NoFixFlow",
+      autofill::autofill_metrics::SaveCreditCardPromptResultIOS::kSwiped,
+      /*expected_count=*/1);
 }

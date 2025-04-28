@@ -14,33 +14,37 @@
 
 namespace autofill::autofill_metrics {
 
-// Metrics to track events when a credit card dialog (banner, modal) is offered
-// on iOS. These values are persisted to logs. Entries should not be renumbered
-// and numeric values should never be reused.
+// Metrics to track events when a credit card dialog (banner, modal or
+// bottomsheet) is offered on iOS. These values are persisted to logs. Entries
+// should not be renumbered and numeric values should never be reused.
 // LINT.IfChange(SaveCreditCardPromptResultIOS)
 enum class SaveCreditCardPromptResultIOS {
   // Dialog shown to user.
   kShown = 0,
   // Dialog accepted.
   kAccepted = 1,
-  // User explicitly denied the modal by tapping the `Close` button.
+  // User explicitly denied the modal by tapping the `Close` button or the
+  // bottomsheet by tapping the `No thanks` button.
   kDenied = 2,
   // Banner swiped away.
   kSwiped = 3,
   // Banner timed out.
   KTimedOut = 4,
-  // User clicked a link on the modal, which caused the dialog to close.
+  // User clicked a link on the modal or the bottomsheet, which caused the
+  // dialog to close.
   kLinkClicked = 5,
   // User did not interact with the modal.
   kIgnored = 6,
-  kMaxValue = kIgnored,
+  // Dialog not shown to user.
+  kNotShown = 7,
+  kMaxValue = kNotShown,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/autofill/enums.xml:SaveCreditCardPromptResultIOS)
 
 // Enum describing the types of overlays displayed for saving a card on iOS.
 enum class SaveCreditCardPromptOverlayType {
-  // TODO(crbug.com/391366699): Add `kBottomSheet` as an overlay type
   kBanner,
+  kBottomSheet,
   kModal,
 };
 

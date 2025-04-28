@@ -190,6 +190,7 @@ source_set("save_card_bottom_sheet_coordinator") {
     ":save_card_bottom_sheet_mediator",
     ":save_card_bottom_sheet_view_controller",
     "//base",
+    "//components/autofill/ios/browser",
     "//ios/chrome/browser/autofill/model/bottom_sheet",
     "//ios/chrome/browser/autofill/model/bottom_sheet:save_card_bottom_sheet_model",
     "//ios/chrome/browser/net/model:crurl",
@@ -207,6 +208,9 @@ source_set("save_card_bottom_sheet_coordinator_unittest") {
   sources = [ "save_card_bottom_sheet_coordinator_unittest.mm" ]
   deps = [
     ":save_card_bottom_sheet_coordinator",
+    ":save_card_bottom_sheet_mediator",
+    "//base/test:test_support",
+    "//components/autofill/ios/browser",
     "//ios/chrome/browser/autofill/model/bottom_sheet",
     "//ios/chrome/browser/autofill/model/bottom_sheet:save_card_bottom_sheet_model",
     "//ios/chrome/browser/net/model:crurl",
@@ -285,6 +289,7 @@ source_set("save_card_bottom_sheet_mediator") {
     ":save_card_bottom_sheet_consumer",
     ":save_card_bottom_sheet_mutator",
     "//base",
+    "//components/autofill/ios/browser",
     "//ios/chrome/browser/autofill/model/bottom_sheet:save_card_bottom_sheet_model",
     "//ios/chrome/browser/autofill/model/message",
     "//ios/chrome/browser/shared/public/commands",
@@ -304,6 +309,7 @@ source_set("save_card_bottom_sheet_mediator_unittest") {
     "//base/test:test_support",
     "//components/autofill/core/browser",
     "//components/autofill/core/browser:test_support",
+    "//components/autofill/ios/browser",
     "//components/resources:components_scaled_resources_grit",
     "//components/strings:components_strings_grit",
     "//ios/chrome/browser/autofill/model/bottom_sheet:save_card_bottom_sheet_model",

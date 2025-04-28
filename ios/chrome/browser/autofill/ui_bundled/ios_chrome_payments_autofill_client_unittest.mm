@@ -364,6 +364,8 @@ TEST_F(IOSChromePaymentsAutofillClientWithSaveCardBottomSheetTest,
 
 TEST_F(IOSChromePaymentsAutofillClientWithSaveCardBottomSheetTest,
        DoNoShowSaveCardBottomSheet_CardWithMoreThan0Strike) {
+  base::HistogramTester histogram_tester;
+
   payments_client()->ShowSaveCreditCardToCloud(
       CreditCard(), LegalMessageLines(),
       payments::PaymentsAutofillClient::SaveCreditCardOptions()
@@ -371,10 +373,18 @@ TEST_F(IOSChromePaymentsAutofillClientWithSaveCardBottomSheetTest,
           .with_show_prompt(true),
       base::DoNothing());
   EXPECT_FALSE([autofill_commands() showSaveCardBottomSheetCalled]);
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.SaveCreditCardPromptResult.IOS.Server.BottomSheet.NumStrikes.1."
+      "NoFixFlow",
+      autofill::autofill_metrics::SaveCreditCardPromptResultIOS::kNotShown,
+      /*expected_count=*/1);
 }
 
 TEST_F(IOSChromePaymentsAutofillClientWithSaveCardBottomSheetTest,
        DoNoShowSaveCardBottomSheet_ForRequestingCardHolderName) {
+  base::HistogramTester histogram_tester;
+
   payments_client()->ShowSaveCreditCardToCloud(
       CreditCard(), LegalMessageLines(),
       payments::PaymentsAutofillClient::SaveCreditCardOptions()
@@ -383,10 +393,18 @@ TEST_F(IOSChromePaymentsAutofillClientWithSaveCardBottomSheetTest,
           .with_show_prompt(true),
       base::DoNothing());
   EXPECT_FALSE([autofill_commands() showSaveCardBottomSheetCalled]);
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.SaveCreditCardPromptResult.IOS.Server.BottomSheet.NumStrikes.0."
+      "RequestingCardHolderName",
+      autofill::autofill_metrics::SaveCreditCardPromptResultIOS::kNotShown,
+      /*expected_count=*/1);
 }
 
 TEST_F(IOSChromePaymentsAutofillClientWithSaveCardBottomSheetTest,
        DoNoShowSaveCardBottomSheet_ForRequestingExpiryDate) {
+  base::HistogramTester histogram_tester;
+
   payments_client()->ShowSaveCreditCardToCloud(
       CreditCard(), LegalMessageLines(),
       payments::PaymentsAutofillClient::SaveCreditCardOptions()
@@ -395,6 +413,33 @@ TEST_F(IOSChromePaymentsAutofillClientWithSaveCardBottomSheetTest,
           .with_show_prompt(true),
       base::DoNothing());
   EXPECT_FALSE([autofill_commands() showSaveCardBottomSheetCalled]);
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.SaveCreditCardPromptResult.IOS.Server.BottomSheet.NumStrikes.0."
+      "RequestingExpiryDate",
+      autofill::autofill_metrics::SaveCreditCardPromptResultIOS::kNotShown,
+      /*expected_count=*/1);
+}
+
+TEST_F(IOSChromePaymentsAutofillClientWithSaveCardBottomSheetTest,
+       DoNoShowSaveCardBottomSheet_ForRequestingCardHolderNameAndExpiryDate) {
+  base::HistogramTester histogram_tester;
+
+  payments_client()->ShowSaveCreditCardToCloud(
+      CreditCard(), LegalMessageLines(),
+      payments::PaymentsAutofillClient::SaveCreditCardOptions()
+          .with_should_request_name_from_user(true)
+          .with_should_request_expiration_date_from_user(true)
+          .with_num_strikes(0)
+          .with_show_prompt(true),
+      base::DoNothing());
+  EXPECT_FALSE([autofill_commands() showSaveCardBottomSheetCalled]);
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.SaveCreditCardPromptResult.IOS.Server.BottomSheet.NumStrikes.0."
+      "RequestingCardHolderNameAndExpiryDate",
+      autofill::autofill_metrics::SaveCreditCardPromptResultIOS::kNotShown,
+      /*expected_count=*/1);
 }
 
 // Test that on save card success, the save card bottomsheet model's state is
