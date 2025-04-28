@@ -1245,6 +1245,8 @@ source_set("browser") {
     "interest_group/dwa_auction_metrics.h",
     "interest_group/for_debugging_only_report_util.cc",
     "interest_group/for_debugging_only_report_util.h",
+    "interest_group/group_by_origin_key.cc",
+    "interest_group/group_by_origin_key.h",
     "interest_group/header_direct_from_seller_signals.cc",
     "interest_group/header_direct_from_seller_signals.h",
     "interest_group/interest_group_auction.cc",

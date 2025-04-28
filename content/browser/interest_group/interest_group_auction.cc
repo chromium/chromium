@@ -62,6 +62,7 @@
 #include "content/browser/interest_group/bidding_and_auction_response.h"
 #include "content/browser/interest_group/debuggable_auction_worklet.h"
 #include "content/browser/interest_group/for_debugging_only_report_util.h"
+#include "content/browser/interest_group/group_by_origin_key.h"
 #include "content/browser/interest_group/header_direct_from_seller_signals.h"
 #include "content/browser/interest_group/interest_group_auction_reporter.h"
 #include "content/browser/interest_group/interest_group_caching_storage.h"
@@ -380,9 +381,9 @@ struct BidStatesDescByPriority {
 struct BidStatesDescByPriorityAndGroupByJoinOrigin {
   bool operator()(const std::unique_ptr<InterestGroupAuction::BidState>& a,
                   const std::unique_ptr<InterestGroupAuction::BidState>& b) {
-    return std::tie(a->calculated_priority, a->bidder->joining_origin,
+    return std::tie(a->calculated_priority, a->group_by_origin_id,
                     a->bidder->interest_group.execution_mode) >
-           std::tie(b->calculated_priority, b->bidder->joining_origin,
+           std::tie(b->calculated_priority, b->group_by_origin_id,
                     b->bidder->interest_group.execution_mode);
   }
 };
@@ -2289,6 +2290,10 @@ class InterestGroupAuction::BuyerHelper
           true;
     }
 
+    bid_state->group_by_origin_id =
+        bid_state->worklet_handle->GetGroupByOriginKeyMapper()
+            .LookupGroupByOriginId(bid_state->bidder);
+
     bool browser_signal_for_debugging_only_sampling = ShouldSampleDebugReport();
     bid_state->worklet_handle->GetBidderWorklet()->BeginGenerateBid(
         auction_worklet::mojom::BidderWorkletNonSharedParams::New(
@@ -2314,7 +2319,8 @@ class InterestGroupAuction::BuyerHelper
         browser_signal_for_debugging_only_sampling,
         bid_state->bidder->bidding_browser_signals.Clone(),
         auction_->auction_start_time_, auction_->RequestedAdSize(),
-        multi_bid_limit_, *bid_state->trace_id, std::move(pending_remote),
+        multi_bid_limit_, bid_state->group_by_origin_id, *bid_state->trace_id,
+        std::move(pending_remote),
         bid_state->bid_finalizer.BindNewEndpointAndPassReceiver());
 
     // TODO(morlovich): This should arguably be merged into BeginGenerateBid

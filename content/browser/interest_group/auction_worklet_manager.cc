@@ -36,6 +36,7 @@
 #include "content/browser/interest_group/auction_shared_storage_host.h"
 #include "content/browser/interest_group/auction_url_loader_factory_proxy.h"
 #include "content/browser/interest_group/debuggable_auction_worklet.h"
+#include "content/browser/interest_group/group_by_origin_key.h"
 #include "content/browser/interest_group/interest_group_features.h"
 #include "content/browser/interest_group/subresource_url_authorizations.h"
 #include "content/browser/interest_group/subresource_url_builder.h"
@@ -127,6 +128,10 @@ class AuctionWorkletManager::WorkletOwner
       return nullptr;
     }
     return &url_loader_factory_proxy_->subresource_url_authorizations();
+  }
+
+  GroupByOriginKeyMapper& group_by_origin_key_mapper() {
+    return group_by_origin_key_mapper_;
   }
 
   std::vector<std::string> ComputeDevtoolsAuctionIds();
@@ -223,6 +228,10 @@ class AuctionWorkletManager::WorkletOwner
   std::vector<uint64_t> trace_ids_;
 
   AuctionProcessManager::ProcessHandle process_handle_;
+
+  // Assignment of integer IDs for things that can share contexts in
+  // group-by-origin mode for this worklet.
+  GroupByOriginKeyMapper group_by_origin_key_mapper_;
 
   std::set<HandleKey> handles_waiting_for_process_assignment_;
 
@@ -911,6 +920,11 @@ bool AuctionWorkletManager::WorkletHandle::TrustedScoringSignalsUrlAllowed()
 const auction_worklet::mojom::TrustedSignalsPublicKey*
 AuctionWorkletManager::WorkletHandle::GetTrustedSignalsPublicKey() const {
   return worklet_owner_->GetTrustedSignalsPublicKey();
+}
+
+GroupByOriginKeyMapper&
+AuctionWorkletManager::WorkletHandle::GetGroupByOriginKeyMapper() {
+  return worklet_owner_->group_by_origin_key_mapper();
 }
 
 const SubresourceUrlAuthorizations& AuctionWorkletManager::WorkletHandle::

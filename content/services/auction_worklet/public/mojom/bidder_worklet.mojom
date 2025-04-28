@@ -419,7 +419,7 @@ interface BidderWorklet {
   //  details.
   //
   // `interest_group_join_origin` is the origin from which the interest group
-  //  was joined; can affect context reuse in certain execution modes.
+  //  was joined; can affect KVv2 trusted signals fetches.
   //
   // `direct_from_seller_per_buyer_signals` The subresource URL of the
   //  DirectFromSellerSignals for the specific owner of this interest group, as
@@ -472,6 +472,11 @@ interface BidderWorklet {
   //  generateBid() got re-run after returning exactly one bid that's
   //  non-k-anon.
   //
+  //  Calls with the same values for `group_by_origin_id` can reuse execution
+  //  contexts in group-by-origin mode. `group_by_origin_id` is not used in
+  //  other execution modes; 0 will be passed as a matter of convention, but
+  //  nothing will actually look at it.
+  //
   // `trace_id` ID of a nestable asynchronous trace event of category `fledge`
   //  to use with tracing calls.
   //
@@ -495,6 +500,7 @@ interface BidderWorklet {
       mojo_base.mojom.Time auction_start_time,
       blink.mojom.AdSize? requested_ad_size,
       uint16 multi_bid_limit,
+      uint64 group_by_origin_id,
       uint64 trace_id,
       pending_associated_remote<GenerateBidClient> generate_bid_client,
       pending_associated_receiver<GenerateBidFinalizer> bid_finalizer);

@@ -97,6 +97,7 @@
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -14247,6 +14248,74 @@ TEST_F(AuctionRunnerTest, ExecutionModeGroupByOrigin) {
   auction_run_loop_->Run();
   EXPECT_THAT(result_.errors, testing::ElementsAre());
   ASSERT_TRUE(result_.winning_group_id);
+  EXPECT_THAT(result_.report_urls,
+              testing::ElementsAre(GURL("https://adplatform.com/metrics/6")));
+}
+
+TEST_F(AuctionRunnerTest, ExecutionModeGroupByOriginClickiness) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{network::features::kAdAuctionEventRegistration,
+                            blink::features::kFledgeClickiness},
+      /*disabled_features=*/{});
+  // Test of group-by-origin execution mode at AuctionRunner level;
+  // this primarily shows that the sorting actually groups things, and that
+  // distinct groups are kept separate.
+  const char kScript[] = R"(
+    if (!('count' in globalThis))
+      globalThis.count = 0;
+    function generateBid() {
+      ++count;
+      return {ad: ["ad"], bid:count, render:"https://response.test/"};
+    }
+    function reportWin(auctionSignals, perBuyerSignals, sellerSignals,
+                       browserSignals) {
+      sendReportTo("https://adplatform.com/metrics/" + browserSignals.bid);
+    }
+  )";
+
+  const char kSellerScript[] = R"(
+    function scoreAd(adMetadata, bid, auctionConfig, trustedScoringSignals,
+                     browserSignals) {
+      return {desirability: bid,
+              ad: adMetadata};
+    }
+    function reportResult() {}
+  )";
+
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kBidder1Url,
+                                         kScript);
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
+                                         kSellerScript);
+
+  std::vector<StorageInterestGroup> bidders;
+  // We have 6 IGs that use one value of view_and_click_counts_providers,
+  // and 4 another.
+  for (int i = 0; i < 10; ++i) {
+    StorageInterestGroup ig = MakeInterestGroup(
+        kBidder1, kBidder1Name + base::NumberToString(i), kBidder1Url,
+        /* trusted_bidding_signals_url=*/std::nullopt,
+        /* trusted_bidding_signals_keys=*/{}, GURL("https://response.test/"));
+    ig.joining_origin = url::Origin::Create(GURL("https://sports.example.org"));
+    ig.interest_group.execution_mode =
+        blink::InterestGroup::ExecutionMode::kGroupedByOriginMode;
+    ig.interest_group.view_and_click_counts_providers.emplace();
+    ig.interest_group.view_and_click_counts_providers->push_back(
+        url::Origin::Create(GURL("https://view_me.test")));
+    if (i < 4) {
+      ig.interest_group.view_and_click_counts_providers->push_back(
+          url::Origin::Create(GURL("https://click_me.test")));
+    }
+    bidders.push_back(std::move(ig));
+  }
+
+  StartAuction(kSellerUrl, std::move(bidders));
+  auction_run_loop_->Run();
+  EXPECT_THAT(result_.errors, testing::ElementsAre());
+  ASSERT_TRUE(result_.winning_group_id);
+  // Each execution bids the number of times the context has been used.
+  // Since we expect one context to be used 6 times, another 4, 6 should
+  // be the winning bid.
   EXPECT_THAT(result_.report_urls,
               testing::ElementsAre(GURL("https://adplatform.com/metrics/6")));
 }

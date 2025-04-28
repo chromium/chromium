@@ -516,6 +516,7 @@ void BidderWorklet::BeginGenerateBid(
     base::Time auction_start_time,
     const std::optional<blink::AdSize>& requested_ad_size,
     uint16_t multi_bid_limit,
+    uint64_t group_by_origin_id,
     uint64_t trace_id,
     mojo::PendingAssociatedRemote<mojom::GenerateBidClient> generate_bid_client,
     mojo::PendingAssociatedReceiver<mojom::GenerateBidFinalizer>
@@ -528,7 +529,6 @@ void BidderWorklet::BeginGenerateBid(
   generate_bid_task->bidder_worklet_non_shared_params =
       std::move(bidder_worklet_non_shared_params);
   generate_bid_task->kanon_mode = kanon_mode;
-  generate_bid_task->interest_group_join_origin = interest_group_join_origin;
   generate_bid_task->browser_signal_seller_origin =
       browser_signal_seller_origin;
   generate_bid_task->browser_signal_top_level_seller_origin =
@@ -541,6 +541,7 @@ void BidderWorklet::BeginGenerateBid(
   generate_bid_task->auction_start_time = auction_start_time;
   generate_bid_task->requested_ad_size = requested_ad_size;
   generate_bid_task->multi_bid_limit = multi_bid_limit;
+  generate_bid_task->group_by_origin_id = group_by_origin_id;
   generate_bid_task->trace_id = trace_id;
   generate_bid_task->generate_bid_client.Bind(std::move(generate_bid_client));
   // Deleting `generate_bid_task` will destroy `generate_bid_client` and thus
@@ -584,8 +585,7 @@ void BidderWorklet::BeginGenerateBid(
       generate_bid_task->trusted_bidding_signals_request =
           trusted_signals_request_manager_->RequestKVv2BiddingSignals(
               generate_bid_task->bidder_worklet_non_shared_params->name,
-              trusted_bidding_signals_keys,
-              generate_bid_task->interest_group_join_origin,
+              trusted_bidding_signals_keys, interest_group_join_origin,
               generate_bid_task->bidder_worklet_non_shared_params
                   ->execution_mode,
               base::BindOnce(&BidderWorklet::OnTrustedBiddingSignalsDownloaded,
@@ -1427,7 +1427,6 @@ void BidderWorklet::V8State::ReportWin(
 void BidderWorklet::V8State::GenerateBid(
     mojom::BidderWorkletNonSharedParamsPtr bidder_worklet_non_shared_params,
     mojom::KAnonymityBidMode kanon_mode,
-    const url::Origin& interest_group_join_origin,
     const std::optional<std::string>& auction_signals_json,
     const std::optional<std::string>& per_buyer_signals_json,
     DirectFromSellerSignalsRequester::Result
@@ -1448,6 +1447,7 @@ void BidderWorklet::V8State::GenerateBid(
     base::Time auction_start_time,
     const std::optional<blink::AdSize>& requested_ad_size,
     uint16_t multi_bid_limit,
+    uint64_t group_by_origin_id,
     scoped_refptr<TrustedSignals::Result> trusted_bidding_signals_result,
     bool trusted_bidding_signals_fetch_failed,
     uint64_t trace_id,
@@ -1462,7 +1462,7 @@ void BidderWorklet::V8State::GenerateBid(
 
   base::TimeTicks bidding_start = base::TimeTicks::Now();
   std::optional<SingleGenerateBidResult> result = RunGenerateBidOnce(
-      *bidder_worklet_non_shared_params, interest_group_join_origin,
+      *bidder_worklet_non_shared_params,
       base::OptionalToPtr(auction_signals_json),
       base::OptionalToPtr(per_buyer_signals_json),
       direct_from_seller_result_per_buyer_signals,
@@ -1473,7 +1473,8 @@ void BidderWorklet::V8State::GenerateBid(
       base::OptionalToPtr(browser_signal_top_level_seller_origin),
       browser_signal_recency, browser_signal_for_debugging_only_sampling,
       bidding_browser_signals, auction_start_time, requested_ad_size,
-      multi_bid_limit, trusted_bidding_signals_result, trace_id,
+      multi_bid_limit, group_by_origin_id, trusted_bidding_signals_result,
+      trace_id,
       /*context_recycler_for_rerun=*/nullptr,
       /*restrict_to_kanon_ads=*/false);
 
@@ -1533,7 +1534,7 @@ void BidderWorklet::V8State::GenerateBid(
       std::optional<SingleGenerateBidResult> restricted_result;
       if (has_kanon_ads) {
         restricted_result = RunGenerateBidOnce(
-            *bidder_worklet_non_shared_params.get(), interest_group_join_origin,
+            *bidder_worklet_non_shared_params.get(),
             base::OptionalToPtr(auction_signals_json),
             base::OptionalToPtr(per_buyer_signals_json),
             direct_from_seller_result_per_buyer_signals,
@@ -1545,7 +1546,8 @@ void BidderWorklet::V8State::GenerateBid(
             base::OptionalToPtr(browser_signal_top_level_seller_origin),
             browser_signal_recency, browser_signal_for_debugging_only_sampling,
             bidding_browser_signals, auction_start_time, requested_ad_size,
-            /* multi_bid_limit=*/1, trusted_bidding_signals_result, trace_id,
+            /* multi_bid_limit=*/1, group_by_origin_id,
+            trusted_bidding_signals_result, trace_id,
             std::move(result->context_recycler_for_rerun),
             /*restrict_to_kanon_ads=*/true);
       } else {
@@ -1630,7 +1632,6 @@ void BidderWorklet::V8State::GenerateBid(
 std::optional<BidderWorklet::V8State::SingleGenerateBidResult>
 BidderWorklet::V8State::RunGenerateBidOnce(
     const mojom::BidderWorkletNonSharedParams& bidder_worklet_non_shared_params,
-    const url::Origin& interest_group_join_origin,
     const std::string* auction_signals_json,
     const std::string* per_buyer_signals_json,
     const DirectFromSellerSignalsRequester::Result&
@@ -1651,6 +1652,7 @@ BidderWorklet::V8State::RunGenerateBidOnce(
     base::Time auction_start_time,
     const std::optional<blink::AdSize>& requested_ad_size,
     uint16_t multi_bid_limit,
+    uint64_t group_by_origin_id,
     const scoped_refptr<TrustedSignals::Result>& trusted_bidding_signals_result,
     uint64_t trace_id,
     std::unique_ptr<ContextRecycler> context_recycler_for_rerun,
@@ -1695,14 +1697,15 @@ BidderWorklet::V8State::RunGenerateBidOnce(
   bool reused_context = false;
   bool should_deep_freeze = false;
   std::string_view execution_mode_string;
+
   // See if we can reuse an existing context, and determine string to use for
   // `executionMode`.
   switch (bidder_worklet_non_shared_params.execution_mode) {
     case blink::mojom::InterestGroup::ExecutionMode::kGroupedByOriginMode:
       execution_mode_string = "group-by-origin";
       {
-        auto it = context_recyclers_for_origin_group_mode_.Get(
-            interest_group_join_origin);
+        auto it =
+            context_recyclers_for_origin_group_mode_.Get(group_by_origin_id);
         if (it != context_recyclers_for_origin_group_mode_.end()) {
           context_recycler = it->second.get();
           reused_context = true;
@@ -1799,7 +1802,7 @@ BidderWorklet::V8State::RunGenerateBidOnce(
       switch (bidder_worklet_non_shared_params.execution_mode) {
         case blink::mojom::InterestGroup::ExecutionMode::kGroupedByOriginMode:
           context_recyclers_for_origin_group_mode_.Put(
-              interest_group_join_origin, std::move(fresh_context_recycler));
+              group_by_origin_id, std::move(fresh_context_recycler));
           break;
         case blink::mojom::InterestGroup::ExecutionMode::kFrozenContext:
           context_recycler_for_frozen_context_ =
@@ -2531,7 +2534,7 @@ void BidderWorklet::MaybePrepareContexts() {
   }
 
   // Estimate the maximum number of contexts we'll need.
-  std::set<url::Origin> joining_origins;
+  std::set<uint64_t> group_by_origin_partitions;
   size_t compatibility_mode_tasks = 0;
   bool frozen_mode_tasks = false;
   for (auto generate_bid_task = generate_bid_tasks_.begin();
@@ -2542,7 +2545,8 @@ void BidderWorklet::MaybePrepareContexts() {
     switch (
         generate_bid_task->bidder_worklet_non_shared_params->execution_mode) {
       case blink::mojom::InterestGroup::ExecutionMode::kGroupedByOriginMode:
-        joining_origins.insert(generate_bid_task->interest_group_join_origin);
+        group_by_origin_partitions.insert(
+            generate_bid_task->group_by_origin_id);
         break;
       case blink::mojom::InterestGroup::ExecutionMode::kFrozenContext:
         frozen_mode_tasks = true;
@@ -2555,7 +2559,7 @@ void BidderWorklet::MaybePrepareContexts() {
 
   size_t contexts_to_prepare_per_thread =
       CalculateNumberOfContextsToPreparePerThread(
-          /*max_expected_required_contexts=*/joining_origins.size() +
+          /*max_expected_required_contexts=*/group_by_origin_partitions.size() +
               compatibility_mode_tasks + frozen_mode_tasks,
           /*threads=*/v8_helpers_.size());
 
@@ -2804,14 +2808,14 @@ void BidderWorklet::GenerateBidIfReady(GenerateBidTaskList::iterator task) {
           base::BindOnce(&BidderWorklet::CleanUpBidTaskOnUserThread,
                          weak_ptr_factory_.GetWeakPtr(), task));
 
-  // The thread selector only needs to worry about grouping tasks by origin
+  // The thread selector only needs to worry about grouping tasks
   // when they're in group-by-origin mode.
-  std::optional<url::Origin> maybe_joining_origin;
+  std::optional<uint64_t> maybe_group_by_origin_key;
   if (task->bidder_worklet_non_shared_params->execution_mode ==
       blink::mojom::InterestGroup::ExecutionMode::kGroupedByOriginMode) {
-    maybe_joining_origin = task->interest_group_join_origin;
+    maybe_group_by_origin_key = task->group_by_origin_id;
   }
-  size_t thread_index = thread_selector_.GetThread(maybe_joining_origin);
+  size_t thread_index = thread_selector_.GetThread(maybe_group_by_origin_key);
 
   // Other than the `generate_bid_client` and `task_id` fields, no fields of
   // `task` are needed after this point, so can consume them instead of copying
@@ -2829,7 +2833,6 @@ void BidderWorklet::GenerateBidIfReady(GenerateBidTaskList::iterator task) {
           &BidderWorklet::V8State::GenerateBid,
           base::Unretained(v8_state_[thread_index].get()),
           std::move(task->bidder_worklet_non_shared_params), task->kanon_mode,
-          std::move(task->interest_group_join_origin),
           std::move(task->auction_signals_json),
           std::move(task->per_buyer_signals_json),
           std::move(task->direct_from_seller_result_per_buyer_signals),
@@ -2844,6 +2847,7 @@ void BidderWorklet::GenerateBidIfReady(GenerateBidTaskList::iterator task) {
           task->browser_signal_for_debugging_only_sampling,
           std::move(task->bidding_browser_signals), task->auction_start_time,
           std::move(task->requested_ad_size), task->multi_bid_limit,
+          task->group_by_origin_id,
           std::move(task->trusted_bidding_signals_result),
           task->trusted_bidding_signals_fetch_failed, task->trace_id,
           base::ScopedClosureRunner(std::move(cleanup_generate_bid_task)),

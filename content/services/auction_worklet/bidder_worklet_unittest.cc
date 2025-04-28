@@ -808,8 +808,8 @@ class BidderWorkletTest : public testing::Test {
 
     shared_storage_hosts_.resize(NumThreads());
 
-    last_bidder_join_origin_hash_salt_ =
-        bidder_worklet_impl->join_origin_hash_salt_for_testing();
+    last_group_by_origin_key_hash_salt_ =
+        bidder_worklet_impl->group_by_origin_key_hash_salt_for_testing();
 
     auto* bidder_worklet_ptr = bidder_worklet_impl.get();
     mojo::Remote<mojom::BidderWorklet> bidder_worklet;
@@ -855,7 +855,7 @@ class BidderWorkletTest : public testing::Test {
         browser_signal_recency_generate_bid_,
         browser_signal_for_debugging_only_sampling_,
         CreateBiddingBrowserSignals(), auction_start_time_, requested_ad_size_,
-        multi_bid_limit_,
+        multi_bid_limit_, group_by_origin_id_,
         /*trace_id=*/1, std::move(generate_bid_client), std::move(finalizer));
     bidder_worklet->SendPendingSignalsRequests();
   }
@@ -914,7 +914,7 @@ class BidderWorkletTest : public testing::Test {
         browser_signal_recency_generate_bid_,
         browser_signal_for_debugging_only_sampling_,
         CreateBiddingBrowserSignals(), auction_start_time_, requested_ad_size_,
-        multi_bid_limit_,
+        multi_bid_limit_, group_by_origin_id_,
         /*trace_id=*/1, GenerateBidClientWithCallbacks::CreateNeverCompletes(),
         bid_finalizer.BindNewEndpointAndPassReceiver());
     bidder_worklet->SendPendingSignalsRequests();
@@ -1156,6 +1156,8 @@ class BidderWorkletTest : public testing::Test {
   // How many bids can be returned from multi bid (if on).
   uint16_t multi_bid_limit_ = 1;
 
+  uint64_t group_by_origin_id_ = 1;
+
   // Reusable run loop for waiting until the GenerateBid() callback has been
   // invoked. It's populated and later cleared by the
   // CreateWorkletAndGenerateBid() series of methods, which wait for a bid to be
@@ -1187,7 +1189,7 @@ class BidderWorkletTest : public testing::Test {
 
   std::unique_ptr<TrustedSignalsKVv2Manager> trusted_signals_kvv2_manager_;
 
-  std::string last_bidder_join_origin_hash_salt_;
+  uint64_t last_group_by_origin_key_hash_salt_;
 
   TestAuctionNetworkEventsHandler auction_network_events_handler_;
 
@@ -5086,7 +5088,7 @@ TEST_P(BidderWorkletMultiThreadingTest, GenerateBidParallel) {
           browser_signal_recency_generate_bid_,
           browser_signal_for_debugging_only_sampling_,
           CreateBiddingBrowserSignals(), auction_start_time_,
-          requested_ad_size_, multi_bid_limit_,
+          requested_ad_size_, multi_bid_limit_, group_by_origin_id_,
           /*trace_id=*/1,
           GenerateBidClientWithCallbacks::Create(base::BindLambdaForTesting(
               [&run_loop, &num_generate_bid_calls, bid_value](
@@ -5228,7 +5230,7 @@ TEST_P(BidderWorkletMultiThreadingTest,
         browser_signal_recency_generate_bid_,
         browser_signal_for_debugging_only_sampling_,
         CreateBiddingBrowserSignals(), auction_start_time_, requested_ad_size_,
-        multi_bid_limit_,
+        multi_bid_limit_, group_by_origin_id_,
         /*trace_id=*/1,
         GenerateBidClientWithCallbacks::Create(base::BindLambdaForTesting(
             [&run_loop, &num_generate_bid_calls, i](
@@ -5355,7 +5357,7 @@ TEST_P(BidderWorkletMultiThreadingTest,
         browser_signal_recency_generate_bid_,
         browser_signal_for_debugging_only_sampling_,
         CreateBiddingBrowserSignals(), auction_start_time_, requested_ad_size_,
-        multi_bid_limit_,
+        multi_bid_limit_, group_by_origin_id_,
         /*trace_id=*/1,
         GenerateBidClientWithCallbacks::Create(base::BindLambdaForTesting(
             [&run_loop, &num_generate_bid_calls, i](
@@ -5494,7 +5496,7 @@ TEST_P(BidderWorkletMultiThreadingTest,
         browser_signal_recency_generate_bid_,
         browser_signal_for_debugging_only_sampling_,
         CreateBiddingBrowserSignals(), auction_start_time_, requested_ad_size_,
-        multi_bid_limit_,
+        multi_bid_limit_, group_by_origin_id_,
         /*trace_id=*/1,
         GenerateBidClientWithCallbacks::Create(base::BindLambdaForTesting(
             [&run_loop, &num_generate_bid_calls, i](
@@ -5605,8 +5607,7 @@ TEST_P(BidderWorkletMultiThreadingTest,
         browser_signal_recency_generate_bid_,
         browser_signal_for_debugging_only_sampling_,
         CreateBiddingBrowserSignals(), auction_start_time_, requested_ad_size_,
-        multi_bid_limit_,
-        /*trace_id=*/1,
+        multi_bid_limit_, group_by_origin_id_, /*trace_id=*/1,
         GenerateBidClientWithCallbacks::Create(base::BindLambdaForTesting(
             [&run_loop, &num_generate_bid_calls, i](
                 std::vector<mojom::BidderWorkletBidPtr> bids,
@@ -9515,13 +9516,12 @@ TEST_P(BidderWorkletMultiThreadingTest, CreatesCorrectNumberOfPremadeContexts) {
         });
     for (size_t mode_idx = 0; mode_idx < 4; ++mode_idx) {
       execution_mode_ = execution_modes[mode_idx];
-      join_origin_ = url::Origin::Create(GURL("https://url.test/"));
+      group_by_origin_id_ = 0;
       total_generate_bid_tasks += tasks_by_mode[mode_idx];
       for (size_t task_idx = 0; task_idx < tasks_by_mode[mode_idx];
            ++task_idx) {
         if (use_distinct_origins[mode_idx]) {
-          join_origin_ = url::Origin::Create(
-              GURL(base::StringPrintf("https://%i.test", task_idx)));
+          group_by_origin_id_ = task_idx + 1;
         }
         GenerateBid(
             bidder_worklet.get(),
@@ -10310,7 +10310,7 @@ TEST_F(BidderWorkletTest, ExecutionModeGroupByOrigin) {
   // Run 1, start group.
   execution_mode_ =
       blink::mojom::InterestGroup::ExecutionMode::kGroupedByOriginMode;
-  join_origin_ = url::Origin::Create(GURL("https://url.test/"));
+  group_by_origin_id_ = 0;
   GenerateBid(bidder_worklet.get());
   generate_bid_run_loop_ = std::make_unique<base::RunLoop>();
   generate_bid_run_loop_->Run();
@@ -10327,7 +10327,7 @@ TEST_F(BidderWorkletTest, ExecutionModeGroupByOrigin) {
   // Run 3, not in group.
   execution_mode_ =
       blink::mojom::InterestGroup::ExecutionMode::kCompatibilityMode;
-  join_origin_ = url::Origin::Create(GURL("https://url2.test/"));
+  group_by_origin_id_ = 1;
   GenerateBid(bidder_worklet.get());
   generate_bid_run_loop_ = std::make_unique<base::RunLoop>();
   generate_bid_run_loop_->Run();
@@ -10337,7 +10337,7 @@ TEST_F(BidderWorkletTest, ExecutionModeGroupByOrigin) {
   // Run 4, back to group.
   execution_mode_ =
       blink::mojom::InterestGroup::ExecutionMode::kGroupedByOriginMode;
-  join_origin_ = url::Origin::Create(GURL("https://url.test/"));
+  group_by_origin_id_ = 0;
   GenerateBid(bidder_worklet.get());
   generate_bid_run_loop_ = std::make_unique<base::RunLoop>();
   generate_bid_run_loop_->Run();
@@ -10345,7 +10345,7 @@ TEST_F(BidderWorkletTest, ExecutionModeGroupByOrigin) {
   EXPECT_EQ(3, bids_[0]->bid);
 
   // Run 5, different group.
-  join_origin_ = url::Origin::Create(GURL("https://url2.test/"));
+  group_by_origin_id_ = 2;
   GenerateBid(bidder_worklet.get());
   generate_bid_run_loop_ = std::make_unique<base::RunLoop>();
   generate_bid_run_loop_->Run();
@@ -10383,7 +10383,7 @@ TEST_F(BidderWorkletTest, ExecutionModeGroupByOriginSaveMultipleGroups) {
   // Save origin 1 context.
   execution_mode_ =
       blink::mojom::InterestGroup::ExecutionMode::kGroupedByOriginMode;
-  join_origin_ = url::Origin::Create(GURL("https://url.test/"));
+  group_by_origin_id_ = 1;
   GenerateBid(bidder_worklet.get());
   generate_bid_run_loop_ = std::make_unique<base::RunLoop>();
   generate_bid_run_loop_->Run();
@@ -10391,7 +10391,7 @@ TEST_F(BidderWorkletTest, ExecutionModeGroupByOriginSaveMultipleGroups) {
   EXPECT_EQ(1, bids_[0]->bid);
 
   // Save origin 2 context.
-  join_origin_ = url::Origin::Create(GURL("https://url2.test/"));
+  group_by_origin_id_ = 2;
   GenerateBid(bidder_worklet.get());
   generate_bid_run_loop_ = std::make_unique<base::RunLoop>();
   generate_bid_run_loop_->Run();
@@ -10399,7 +10399,7 @@ TEST_F(BidderWorkletTest, ExecutionModeGroupByOriginSaveMultipleGroups) {
   EXPECT_EQ(1, bids_[0]->bid);
 
   // Save origin 3 context. This will overwrite origin 1's context.
-  join_origin_ = url::Origin::Create(GURL("https://url3.test/"));
+  group_by_origin_id_ = 3;
   GenerateBid(bidder_worklet.get());
   generate_bid_run_loop_ = std::make_unique<base::RunLoop>();
   generate_bid_run_loop_->Run();
@@ -10407,7 +10407,7 @@ TEST_F(BidderWorkletTest, ExecutionModeGroupByOriginSaveMultipleGroups) {
   EXPECT_EQ(1, bids_[0]->bid);
 
   // Access origin 2 context which should still be saved.
-  join_origin_ = url::Origin::Create(GURL("https://url2.test/"));
+  group_by_origin_id_ = 2;
   GenerateBid(bidder_worklet.get());
   generate_bid_run_loop_ = std::make_unique<base::RunLoop>();
   generate_bid_run_loop_->Run();
@@ -10415,7 +10415,7 @@ TEST_F(BidderWorkletTest, ExecutionModeGroupByOriginSaveMultipleGroups) {
   EXPECT_EQ(2, bids_[0]->bid);
 
   // Access origin 3 context which should still be saved.
-  join_origin_ = url::Origin::Create(GURL("https://url3.test/"));
+  group_by_origin_id_ = 3;
   GenerateBid(bidder_worklet.get());
   generate_bid_run_loop_ = std::make_unique<base::RunLoop>();
   generate_bid_run_loop_->Run();
@@ -10424,7 +10424,7 @@ TEST_F(BidderWorkletTest, ExecutionModeGroupByOriginSaveMultipleGroups) {
 
   // Origin 1's context is not still saved. This will save it and overwrite
   // origin 2's context.
-  join_origin_ = url::Origin::Create(GURL("https://url.test/"));
+  group_by_origin_id_ = 1;
   GenerateBid(bidder_worklet.get());
   generate_bid_run_loop_ = std::make_unique<base::RunLoop>();
   generate_bid_run_loop_->Run();
@@ -10432,7 +10432,7 @@ TEST_F(BidderWorkletTest, ExecutionModeGroupByOriginSaveMultipleGroups) {
   EXPECT_EQ(1, bids_[0]->bid);
 
   // Access origin 3 context which should still be saved.
-  join_origin_ = url::Origin::Create(GURL("https://url3.test/"));
+  group_by_origin_id_ = 3;
   GenerateBid(bidder_worklet.get());
   generate_bid_run_loop_ = std::make_unique<base::RunLoop>();
   generate_bid_run_loop_->Run();
@@ -10440,7 +10440,7 @@ TEST_F(BidderWorkletTest, ExecutionModeGroupByOriginSaveMultipleGroups) {
   EXPECT_EQ(3, bids_[0]->bid);
 
   // Access origin 2 context which is no longer saved.
-  join_origin_ = url::Origin::Create(GURL("https://url2.test/"));
+  group_by_origin_id_ = 2;
   GenerateBid(bidder_worklet.get());
   generate_bid_run_loop_ = std::make_unique<base::RunLoop>();
   generate_bid_run_loop_->Run();
@@ -10473,7 +10473,6 @@ TEST_F(BidderWorkletTest, ExecutionModeFrozenContext) {
 
   // Run 1, frozen.
   execution_mode_ = blink::mojom::InterestGroup::ExecutionMode::kFrozenContext;
-  join_origin_ = url::Origin::Create(GURL("https://url.test/"));
   GenerateBid(bidder_worklet.get());
   generate_bid_run_loop_ = std::make_unique<base::RunLoop>();
   generate_bid_run_loop_->Run();
@@ -10553,7 +10552,6 @@ TEST_F(BidderWorkletTest, ExecutionModeFrozenContextFails) {
                         kScript);
 
   execution_mode_ = blink::mojom::InterestGroup::ExecutionMode::kFrozenContext;
-  join_origin_ = url::Origin::Create(GURL("https://url.test/"));
   GenerateBid(bidder_worklet.get());
   generate_bid_run_loop_ = std::make_unique<base::RunLoop>();
   generate_bid_run_loop_->Run();
@@ -10584,7 +10582,7 @@ TEST_F(BidderWorkletTest, AlwaysReuseBidderContext) {
   // This will not fail because the execution mode is ignored. A frozen context
   // is not actually used.
   execution_mode_ = blink::mojom::InterestGroup::ExecutionMode::kFrozenContext;
-  join_origin_ = url::Origin::Create(GURL("https://url.test/"));
+  group_by_origin_id_ = 1;
   GenerateBid(bidder_worklet.get());
   generate_bid_run_loop_ = std::make_unique<base::RunLoop>();
   generate_bid_run_loop_->Run();
@@ -10609,7 +10607,7 @@ TEST_F(BidderWorkletTest, AlwaysReuseBidderContext) {
 
   // The context will still be reused when using a different origin in
   // kGroupedByOriginMode.
-  join_origin_ = url::Origin::Create(GURL("https://url2.test/"));
+  group_by_origin_id_ = 2;
   GenerateBid(bidder_worklet.get());
   generate_bid_run_loop_ = std::make_unique<base::RunLoop>();
   generate_bid_run_loop_->Run();
@@ -10643,7 +10641,6 @@ TEST_F(BidderWorkletTwoThreadsTest, AlwaysReuseBidderContext) {
   // This will not fail because the execution mode is ignored. A frozen context
   // is not actually used.
   execution_mode_ = blink::mojom::InterestGroup::ExecutionMode::kFrozenContext;
-  join_origin_ = url::Origin::Create(GURL("https://url.test/"));
   GenerateBid(bidder_worklet.get());
   generate_bid_run_loop_ = std::make_unique<base::RunLoop>();
   generate_bid_run_loop_->Run();
@@ -10678,10 +10675,11 @@ TEST_F(BidderWorkletTwoThreadsTest, AlwaysReuseBidderContext) {
   generate_bid_run_loop_->Run();
   ASSERT_EQ(1u, bids_.size());
 
-  int generate_bid_therad =
-      base::FastHash(last_bidder_join_origin_hash_salt_ + "https://url.test") %
+  int generate_bid_thread =
+      base::HashCombine(last_group_by_origin_key_hash_salt_,
+                        group_by_origin_id_) %
       2;
-  int expected_bid = (generate_bid_therad == 0) ? 4 : 3;
+  int expected_bid = (generate_bid_thread == 0) ? 4 : 3;
   EXPECT_EQ(expected_bid, bids_[0]->bid);
 }
 
