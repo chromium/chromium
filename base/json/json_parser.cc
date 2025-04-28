@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <cmath>
 #include <iterator>
+#include <memory>
 #include <string_view>
 #include <utility>
 #include <vector>
@@ -24,6 +25,7 @@
 #include "base/strings/utf_string_conversion_utils.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/third_party/icu/icu_utf.h"
+#include "base/types/pass_key.h"
 
 namespace base::internal {
 
@@ -373,7 +375,7 @@ std::optional<Value> JSONParser::ConsumeDictionary() {
     return std::nullopt;
   }
 
-  std::vector<std::pair<std::string, Value>> values;
+  std::vector<std::pair<std::string, std::unique_ptr<Value>>> values;
 
   Token token = GetNextToken();
   while (token != T_OBJECT_END) {
@@ -403,7 +405,8 @@ std::optional<Value> JSONParser::ConsumeDictionary() {
       return std::nullopt;
     }
 
-    values.emplace_back(std::move(*key), std::move(*value));
+    values.emplace_back(std::move(*key),
+                        std::make_unique<Value>(std::move(*value)));
 
     token = GetNextToken();
     if (token == T_LIST_SEPARATOR) {
@@ -423,8 +426,7 @@ std::optional<Value> JSONParser::ConsumeDictionary() {
   // Reverse |dict_storage| to keep the last of elements with the same key in
   // the input.
   std::ranges::reverse(values);
-  return Value(Value::Dict(std::make_move_iterator(values.begin()),
-                           std::make_move_iterator(values.end())));
+  return Value(Value::Dict(PassKey<JSONParser>(), std::move(values)));
 }
 
 std::optional<Value> JSONParser::ConsumeList() {
