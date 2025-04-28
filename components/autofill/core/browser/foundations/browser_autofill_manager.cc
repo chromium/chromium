@@ -1119,7 +1119,80 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
   const FormFieldData& field = CHECK_DEREF(form.FindFieldByGlobalId(field_id));
   external_delegate_->OnQuery(form, field, caret_bounds, trigger_source,
                               /*update_datalist=*/true);
-  GenerateSuggestionsAndMaybeShowUIPhase1(form, field, trigger_source);
+  // TODO(crbug.com/409962888): Cleanup once the new logic is launched.
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillNewSuggestionGeneration)) {
+    GenerateSuggestionsAndMaybeShowUIPhase1(form, field, trigger_source);
+    return;
+  }
+  // Suggestion generators lifespan should be limited to only when they are
+  // needed.
+  CHECK(suggestion_generators_.empty());
+  // TODO(crbug.com/409962888): Populate `suggestion_generators_` here.
+
+  SuggestionsContext context = BuildSuggestionsContext(
+      form, form_structure, field, autofill_field, trigger_source);
+
+  auto barrier_callback = base::BarrierCallback<std::pair<
+      FillingProduct, std::vector<SuggestionGenerator::SuggestionData>>>(
+      suggestion_generators_.size(),
+      base::BindOnce(&BrowserAutofillManager::OnSuggestionDataFetched,
+                     weak_ptr_factory_.GetWeakPtr(), form, field,
+                     trigger_source, context));
+
+  for (const auto& suggestion_generator : suggestion_generators_) {
+    suggestion_generator->FetchSuggestionData(*form_structure, *autofill_field,
+                                              client(), barrier_callback);
+  }
+}
+
+void BrowserAutofillManager::OnSuggestionDataFetched(
+    const FormData& form,
+    const FormFieldData& field,
+    AutofillSuggestionTriggerSource trigger_source,
+    SuggestionsContext context,
+    std::vector<std::pair<FillingProduct,
+                          std::vector<SuggestionGenerator::SuggestionData>>>
+        suggestion_data) {
+  auto barrier_callback =
+      base::BarrierCallback<SuggestionGenerator::ReturnedSuggestions>(
+          suggestion_generators_.size(),
+          base::BindOnce(
+              &BrowserAutofillManager::OnIndividualSuggestionsGenerated,
+              weak_ptr_factory_.GetWeakPtr(), form, field, trigger_source,
+              context));
+
+  FormStructure* form_structure = nullptr;
+  AutofillField* autofill_field = nullptr;
+  if (!GetCachedFormAndField(form.global_id(), field.global_id(),
+                             &form_structure, &autofill_field)) {
+    // Form is not autofillable, or either the form or the field cannot be
+    // found.
+    return;
+  }
+
+  for (const auto& suggestion_generator : suggestion_generators_) {
+    suggestion_generator->GenerateSuggestions(*form_structure, *autofill_field,
+                                              client(), suggestion_data,
+                                              barrier_callback);
+  }
+}
+
+void BrowserAutofillManager::OnIndividualSuggestionsGenerated(
+    const FormData& form,
+    const FormFieldData& field,
+    AutofillSuggestionTriggerSource trigger_source,
+    SuggestionsContext context,
+    std::vector<SuggestionGenerator::ReturnedSuggestions>
+        returned_suggestions) {
+  // TODO(crbug.com/409962888): Add logic to discard/merge
+  // `returned_suggestions` into a single list.
+  std::vector<Suggestion> suggestions;
+  OnGenerateSuggestionsComplete(form, field, trigger_source, context, true,
+                                suggestions, std::nullopt);
+  // Suggestion generators lifespan should be limited to only when they are
+  // needed.
+  suggestion_generators_.clear();
 }
 
 void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase1(

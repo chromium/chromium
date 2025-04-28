@@ -408,6 +408,12 @@ BASE_FEATURE(kAutofillIncludeUrlInCrowdsourcing,
              "AutofillIncludeUrlInCrowdsourcing",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// If enabled, the new suggestion generation logic is used.
+// TODO(crbug.com/409962888): Remove once launched.
+BASE_FEATURE(kAutofillNewSuggestionGeneration,
+             "AutofillNewSuggestionGeneration",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, we start forwarding submissions with source
 // DOM_MUTATION_AFTER_AUTOFILL, even for non-password forms.
 BASE_FEATURE(kAutofillAcceptDomMutationAfterAutofillSubmission,

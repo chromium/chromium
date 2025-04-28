@@ -592,6 +592,7 @@ static_library("browser") {
     "suggestions/payments/payments_suggestion_generator.h",
     "suggestions/suggestion.cc",
     "suggestions/suggestion.h",
+    "suggestions/suggestion_generator.h",
     "suggestions/suggestion_hiding_reason.h",
     "suggestions/suggestion_type.cc",
     "suggestions/suggestion_type.h",
