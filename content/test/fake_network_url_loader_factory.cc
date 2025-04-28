@@ -32,6 +32,32 @@ void FakeNetworkURLLoaderFactory::CreateLoaderAndStart(
     const network::ResourceRequest& url_request,
     mojo::PendingRemote<network::mojom::URLLoaderClient> client,
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
+  auto params = MakeRequestParams(request_id, options, url_request,
+                                  std::move(client), traffic_annotation);
+  if (defer_handle_request_) {
+    deferred_request_params_.emplace(std::move(params));
+  } else {
+    fake_network_.HandleRequest(&params);
+  }
+}
+
+void FakeNetworkURLLoaderFactory::Clone(
+    mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver) {
+  receivers_.Add(this, std::move(receiver));
+}
+
+void FakeNetworkURLLoaderFactory::HandleDeferredRequest() {
+  CHECK(defer_handle_request_);
+  fake_network_.HandleRequest(&deferred_request_params_.value());
+}
+
+URLLoaderInterceptor::RequestParams
+FakeNetworkURLLoaderFactory::MakeRequestParams(
+    int32_t request_id,
+    uint32_t options,
+    const network::ResourceRequest& url_request,
+    mojo::PendingRemote<network::mojom::URLLoaderClient> client,
+    const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
   URLLoaderInterceptor::RequestParams params;
   params.process_id = ChildProcessHost::kInvalidUniqueID;  // unused
   params.request_id = request_id;
@@ -40,12 +66,6 @@ void FakeNetworkURLLoaderFactory::CreateLoaderAndStart(
   params.client.Bind(std::move(client));
   params.traffic_annotation = traffic_annotation;
 
-  fake_network_.HandleRequest(&params);
+  return params;
 }
-
-void FakeNetworkURLLoaderFactory::Clone(
-    mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver) {
-  receivers_.Add(this, std::move(receiver));
-}
-
 }  // namespace content

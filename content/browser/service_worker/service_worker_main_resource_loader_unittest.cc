@@ -655,6 +655,16 @@ class ServiceWorkerMainResourceLoaderTest : public testing::Test {
             fake_url_loader_factory_.get());
   }
 
+  void SetupNon2xxResponse() {
+    fake_url_loader_factory_ = std::make_unique<FakeNetworkURLLoaderFactory>(
+        "HTTP/1.1 429 Too Many Requests\nRetry-After: 3600\n\n",
+        "Too Many Requests",
+        /* network_accessed=*/true, net::OK);
+    network_loader_factory_ =
+        base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+            fake_url_loader_factory_.get());
+  }
+
   void SetupStoragePartition() {
     helper_->context_wrapper()->set_storage_partition(
         static_cast<StoragePartitionImpl*>(
@@ -844,6 +854,13 @@ class ServiceWorkerMainResourceLoaderTest : public testing::Test {
  protected:
   ServiceWorkerClient* service_worker_client() const {
     return service_worker_client_->get();
+  }
+
+  void DeferRequestHandling() {
+    fake_url_loader_factory_->DeferHandleRequest();
+  }
+  void HandleDeferedRequest() {
+    fake_url_loader_factory_->HandleDeferredRequest();
   }
 
   // Declare test_elapsed_timer_ earlier so that it is created before other
@@ -1611,6 +1628,49 @@ TEST_F(ServiceWorkerMainResourceLoaderTest, StaticRoutingRaceNetworkWin) {
   }
 }
 
+// Matching race static routing rule and the network request wins, but the
+// response is not 2xx.
+TEST_F(ServiceWorkerMainResourceLoaderTest,
+       StaticRoutingRaceNetworkWinWithNon2xx) {
+  base::HistogramTester histogram_tester;
+
+  SetupStaticRoutingRules(
+      network::mojom::ServiceWorkerRouterSourceType::kRaceNetworkAndFetchEvent);
+
+  SetupNon2xxResponse();
+
+  StartRequest(CreateRequest());
+  client_.RunUntilComplete();
+
+  // There's no event to wait for, just pump the message loop and the test
+  // passes if there is no error or crash.
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(net::OK, client_.completion_status().error_code);
+  auto& info = client_.response_head();
+  EXPECT_EQ(200, info->headers->response_code());
+  auto expected_info = CreateResponseInfoFromServiceWorker();
+  auto expected_router_info = CreateExpectedMatchingServiceWorkerRouterInfo(
+      network::mojom::ServiceWorkerRouterSourceType::kRaceNetworkAndFetchEvent);
+  expected_router_info->actual_source_type =
+      network::mojom::ServiceWorkerRouterSourceType::kFetchEvent;
+  expected_info->service_worker_router_info = std::move(expected_router_info);
+  ExpectResponseInfo(*info, *expected_info);
+
+  histogram_tester.ExpectUniqueSample(kHistogramMainResourceFetchEvent,
+                                      blink::ServiceWorkerStatusCode::kOk, 1);
+  if (LoaderRecordsTimingMetrics()) {
+    histogram_tester.ExpectTotalCount(
+        "ServiceWorker.LoadTiming.MainFrame.MainResource."
+        "ResponseReceivedToCompleted2",
+        1);
+    histogram_tester.ExpectTotalCount(
+        "ServiceWorker.LoadTiming.MainFrame.MainResource."
+        "FetchHandlerEndToFallbackNetwork",
+        0);
+  }
+}
+
 // Similar to Basic test setup, but with matching race static routing rule and
 // fetch event wins.
 TEST_F(ServiceWorkerMainResourceLoaderTest, StaticRoutingRaceFetchWin) {
@@ -1621,8 +1681,16 @@ TEST_F(ServiceWorkerMainResourceLoaderTest, StaticRoutingRaceFetchWin) {
 
   SetupErrorNetworkResponse();
 
+  // Defer the race network request processing to receive the fetch handler
+  // response first.
+  DeferRequestHandling();
+
   StartRequest(CreateRequest());
   client_.RunUntilComplete();
+
+  // After receiving the fetch handler response, resume the network request
+  // processing.
+  HandleDeferedRequest();
 
   // There's no event to wait for, just pump the message loop and the test
   // passes if there is no error or crash.
