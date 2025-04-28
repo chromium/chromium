@@ -147,6 +147,17 @@ struct AIPageContentNodeInteractionInfo {
   // If this node is a label associated with an input node, provides the
   // dom_node_id for the corresponding input node.
   int32 for_dom_node_id;
+
+  // The z-order of the content node relative to other nodes in the same
+  // Document. A higher value means the node is in front of other nodes with
+  // lower values.
+  //
+  // Since all content within a Document is rendered as a single layer, nodes
+  // behind the iframe in the embedder draw behind all nodes inside the
+  // iframe's Document (similar for nodes on top of the iframe node).
+  //
+  // Note: This value is only set for nodes in the viewport.
+  int32? document_scoped_z_order;
 };
 
 // The coordinate space for the dimensions here is physical coordinates (not
@@ -234,16 +245,6 @@ struct AIPageContentMeta {
   string content;
 };
 
-// Represents a DOM node which is eligible for hit testing.
-struct AIPageContentHitTestNode {
-  // The ID to uniquely identify this node. If the DOM node generates a
-  // ContentNode, this ID is consisted with the ContentNode's ID.
-  int32 dom_node_id;
-
-  // The bounds in viewport coordinates where this is rendered.
-  gfx.mojom.Rect visible_bounding_box;
-};
-
 // Data common to frames (main and embedded).
 struct AIPageContentFrameData {
   // Interaction information for the frame.
@@ -259,11 +260,6 @@ struct AIPageContentFrameData {
   // Whether the frame contains paid content. The value exists
   // if the document was checked.
   bool? contains_paid_content;
-
-  // The ordered list of DOM nodes which are eligible for hit testing in the
-  // viewport. This list is ordered back-to-front, i.e., in the given list
-  // [0, 1], node 1 draws on top of node 0.
-  array<AIPageContentHitTestNode> hit_test_nodes_in_viewport;
 };
 
 // Provides metadata for frames (local and remote) accessible from the

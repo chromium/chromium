@@ -289,6 +289,16 @@ class PageContentProtoProviderBrowserTestActionableElements
   PageContentProtoProviderBrowserTestActionableElements()
       : features_(features::kAnnotatedPageContentWithActionableElements) {}
 
+  const optimization_guide::proto::ContentNode& ContentRootNode() {
+    EXPECT_EQ(page_content().root_node().children_nodes().size(), 1);
+    const auto& html = page_content().root_node().children_nodes().at(0);
+
+    EXPECT_EQ(html.children_nodes().size(), 1);
+    const auto& body = html.children_nodes().at(0);
+
+    return body;
+  }
+
  private:
   base::test::ScopedFeatureList features_;
 };
@@ -310,17 +320,30 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTestActionableElements,
   EXPECT_EQ(page_content().version(),
             optimization_guide::proto::
                 ANNOTATED_PAGE_CONTENT_VERSION_ONLY_ACTIONABLE_ELEMENTS_1_0);
-  EXPECT_EQ(page_content().root_node().children_nodes().size(), 2);
 
-  const auto& input = page_content().root_node().children_nodes()[0];
+  EXPECT_EQ(ContentRootNode().children_nodes().size(), 2);
+
+  const auto& input = ContentRootNode().children_nodes()[0];
   ASSERT_TRUE(input.content_attributes().has_interaction_info());
   EXPECT_TRUE(input.content_attributes().interaction_info().is_clickable());
 
-  const auto& label = page_content().root_node().children_nodes()[1];
+  const auto& label = ContentRootNode().children_nodes()[1];
   ASSERT_TRUE(label.content_attributes().has_interaction_info());
   EXPECT_TRUE(label.content_attributes().interaction_info().is_clickable());
   EXPECT_EQ(label.content_attributes().interaction_info().for_dom_node_id(),
             input.content_attributes().common_ancestor_dom_node_id());
+}
+
+IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTestActionableElements,
+                       ZOrder) {
+  LoadPage(https_server()->GetURL("/simple.html"));
+
+  EXPECT_EQ(page_content()
+                .root_node()
+                .content_attributes()
+                .interaction_info()
+                .document_scoped_z_order(),
+            1);
 }
 
 IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
@@ -335,30 +358,6 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
   EXPECT_EQ(page_content().root_node().children_nodes().size(), 1);
   AssertHasText(page_content().root_node(), "Non empty simple page\n\n");
   EXPECT_FALSE(page_content().root_node().content_attributes().has_geometry());
-}
-
-IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest, HitTestNodes) {
-  LoadPage(https_server()->GetURL("/paragraph.html"));
-
-  const auto& hit_test_nodes =
-      page_content().main_frame_data().hit_test_nodes();
-  EXPECT_EQ(hit_test_nodes.size(), 5);
-
-  // The paragraph node is sized to occlude the root, document and body nodes.
-  const auto& p = page_content().root_node().children_nodes()[0];
-  for (int i = 0; i < 4; i++) {
-    SCOPED_TRACE(i);
-    AssertRectsEqual(hit_test_nodes[i].visible_bounding_box(),
-                     p.content_attributes().geometry().visible_bounding_box());
-  }
-  EXPECT_EQ(hit_test_nodes[3].dom_node_id(),
-            p.content_attributes().common_ancestor_dom_node_id());
-
-  const auto& text = p.children_nodes()[0];
-  EXPECT_EQ(hit_test_nodes[4].dom_node_id(),
-            text.content_attributes().common_ancestor_dom_node_id());
-  AssertRectsEqual(hit_test_nodes[4].visible_bounding_box(),
-                   text.content_attributes().geometry().visible_bounding_box());
 }
 
 IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,

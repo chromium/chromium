@@ -138,17 +138,6 @@ void ConvertGeometry(const blink::mojom::AIPageContentGeometry& mojom_geometry,
       mojom_geometry.is_fixed_or_sticky_position);
 }
 
-void ConvertHitTestNodes(
-    const blink::mojom::AIPageContentFrameData& mojom_frame_data,
-    optimization_guide::proto::FrameData* proto_frame_data) {
-  for (const auto& hit_node : mojom_frame_data.hit_test_nodes_in_viewport) {
-    auto* proto_hit_node = proto_frame_data->add_hit_test_nodes();
-    proto_hit_node->set_dom_node_id(hit_node->dom_node_id);
-    ConvertRect(hit_node->visible_bounding_box,
-                proto_hit_node->mutable_visible_bounding_box());
-  }
-}
-
 void ConvertScrollerInfo(
     const blink::mojom::AIPageContentScrollerInfo& mojom_scroller_info,
     optimization_guide::proto::ScrollerInfo* proto_scroller_info) {
@@ -186,6 +175,11 @@ void ConvertNodeInteractionInfo(
       mojom_node_interaction_info.is_clickable);
   proto_interaction_info->set_for_dom_node_id(
       mojom_node_interaction_info.for_dom_node_id);
+
+  if (mojom_node_interaction_info.document_scoped_z_order) {
+    proto_interaction_info->set_document_scoped_z_order(
+        *mojom_node_interaction_info.document_scoped_z_order);
+  }
 }
 
 void ConvertPoint(const gfx::Point& mojom_point,
@@ -592,8 +586,6 @@ void ConvertFrameData(
     paid_content_metadata->set_contains_paid_content(
         mojom_frame_data.contains_paid_content.value());
   }
-
-  ConvertHitTestNodes(mojom_frame_data, proto_frame_data);
 }
 
 // `mojom_iframe_data` holds information about the iframe provided by the

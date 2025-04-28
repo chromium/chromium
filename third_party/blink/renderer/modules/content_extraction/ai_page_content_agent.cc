@@ -675,16 +675,20 @@ mojom::blink::AIPageContentPtr AIPageContentAgent::ContentBuilder::Build(
 
   auto* layout_view = document.GetLayoutView();
   auto* document_style = layout_view->Style();
-  auto root_node = MaybeGenerateContentNode(*layout_view, *document_style);
-  CHECK(root_node);
 
-  // Add interaction metadata before walking the tree to ensure we promote
-  // interactive DOM nodes to ContentNodes.
+  // Add nodes which have a currently active user interaction (selection, focus
+  // etc) before walking the tree to ensure we promote interactive DOM nodes to
+  // ContentNodes.
+  //
+  // Note: This is different from `NodeInteractionInfo` which tracks whether a
+  // node supports any interaction.
   AddPageInteractionInfo(document, *page_content);
   auto frame_data = mojom::blink::AIPageContentFrameData::New();
   AddFrameData(frame, *frame_data);
   page_content->frame_data = std::move(frame_data);
 
+  auto root_node = MaybeGenerateContentNode(*layout_view, *document_style);
+  CHECK(root_node);
   WalkChildren(*layout_view, *root_node, *document_style);
   page_content->root_node = std::move(root_node);
 
@@ -1131,13 +1135,7 @@ void AIPageContentAgent::ContentBuilder::AddNodeGeometry(
 
   geometry.outer_bounding_box =
       object.AbsoluteBoundingBoxRect(kMapCoordinatesFlags);
-
-  auto it = dom_node_to_visible_bounding_box_.find(attributes.dom_node_id);
-  if (it != dom_node_to_visible_bounding_box_.end()) {
-    geometry.visible_bounding_box = it->second;
-  } else {
-    geometry.visible_bounding_box = ComputeVisibleBoundingBox(object);
-  }
+  geometry.visible_bounding_box = ComputeVisibleBoundingBox(object);
 
   geometry.is_fixed_or_sticky_position =
       object.Style()->GetPosition() == EPosition::kFixed ||
@@ -1147,7 +1145,7 @@ void AIPageContentAgent::ContentBuilder::AddNodeGeometry(
 void AIPageContentAgent::ContentBuilder::ComputeHitTestableNodesInViewport(
     const LocalFrame& frame,
     mojom::blink::AIPageContentFrameData& frame_data) {
-  if (!options_->include_geometry) {
+  if (!options_->enable_experimental_actionable_data) {
     return;
   }
 
@@ -1178,23 +1176,21 @@ void AIPageContentAgent::ContentBuilder::ComputeHitTestableNodesInViewport(
   HitTestResult result(request, location);
   document.GetLayoutView()->HitTest(location, result);
 
+  int32_t next_z_order = 1;
   std::for_each(hit_nodes.rbegin(), hit_nodes.rend(), [&](auto node_id) {
-    if (dom_node_to_visible_bounding_box_.contains(node_id)) {
+    if (dom_node_to_z_order_.contains(node_id)) {
       return;
     }
 
-    const auto visible_bounding_box = ComputeVisibleBoundingBox(
-        *DOMNodeIds::NodeForId(node_id)->GetLayoutObject());
-    dom_node_to_visible_bounding_box_[node_id] = visible_bounding_box;
+    auto* node = DOMNodeIds::NodeForId(node_id);
+    CHECK(node);
 
-    if (visible_bounding_box.IsEmpty()) {
+    if (!node->IsDocumentNode() &&
+        !document.ElementForHitTest(node,
+                                    TreeScope::HitTestPointType::kInternal)) {
       return;
     }
-
-    auto hit_test_node = mojom::blink::AIPageContentHitTestNode::New();
-    hit_test_node->dom_node_id = node_id;
-    hit_test_node->visible_bounding_box = visible_bounding_box;
-    frame_data.hit_test_nodes_in_viewport.push_back(std::move(hit_test_node));
+    dom_node_to_z_order_[node_id] = next_z_order++;
   });
 }
 
@@ -1285,7 +1281,16 @@ void AIPageContentAgent::ContentBuilder::AddFrameInteractionInfo(
 void AIPageContentAgent::ContentBuilder::AddNodeInteractionInfo(
     const LayoutObject& object,
     mojom::blink::AIPageContentAttributes& attributes) const {
-  auto* node = object.GetNode();
+  const ComputedStyle& style = *object.Style();
+  if (style.UsedPointerEvents() == EPointerEvents::kNone) {
+    return;
+  }
+
+  const auto* node = object.GetNode();
+  if (!node) {
+    return;
+  }
+
   auto* form_control_element = DynamicTo<HTMLFormControlElement>(node);
   if (form_control_element && form_control_element->IsActuallyDisabled()) {
     return;
@@ -1304,12 +1309,14 @@ void AIPageContentAgent::ContentBuilder::AddNodeInteractionInfo(
     return;
   }
 
-  const ComputedStyle& style = *object.Style();
   node_interaction_info->is_selectable =
       style.UsedUserSelect() != EUserSelect::kNone;
 
-  if (node) {
-    node_interaction_info->is_editable = IsEditable(*node);
+  node_interaction_info->is_editable = IsEditable(*node);
+
+  auto it = dom_node_to_z_order_.find(DOMNodeIds::ExistingIdForNode(node));
+  if (it != dom_node_to_z_order_.end()) {
+    node_interaction_info->document_scoped_z_order = it->second;
   }
 
   if (auto* box = DynamicTo<LayoutBox>(object)) {
@@ -1322,10 +1329,13 @@ void AIPageContentAgent::ContentBuilder::AddNodeInteractionInfo(
     }
   }
 
-  if (auto* element = DynamicTo<HTMLElement>(object.GetNode())) {
+  if (auto* element = DynamicTo<Element>(object.GetNode())) {
     node_interaction_info->is_focusable = element->IsFocusable();
-    node_interaction_info->is_draggable = element->draggable();
     node_interaction_info->is_clickable = element->IsMaybeClickable();
+
+    if (auto* html_element = DynamicTo<HTMLElement>(element)) {
+      node_interaction_info->is_draggable = html_element->draggable();
+    }
   }
 
   const bool needs_interaction_info =
@@ -1339,7 +1349,8 @@ void AIPageContentAgent::ContentBuilder::AddNodeInteractionInfo(
       node_interaction_info->can_resize_vertical ||
       node_interaction_info->is_focusable ||
       node_interaction_info->is_draggable ||
-      node_interaction_info->is_clickable;
+      node_interaction_info->is_clickable ||
+      node_interaction_info->document_scoped_z_order;
 
   if (!needs_interaction_info) {
     return;

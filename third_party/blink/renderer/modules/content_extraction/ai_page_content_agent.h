@@ -122,7 +122,7 @@ class MODULES_EXPORT AIPageContentAgent final
 
     const raw_ref<const mojom::blink::AIPageContentOptions> options_;
 
-    base::flat_map<DOMNodeId, gfx::Rect> dom_node_to_visible_bounding_box_;
+    base::flat_map<DOMNodeId, int32_t> dom_node_to_z_order_;
 
     // The current depth of the tree being walked.
     int stack_depth_ = 0;
