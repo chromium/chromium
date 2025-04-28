@@ -141,7 +141,7 @@ def run_and_parse_list_java_targets(build_output_dir: pathlib.Path,
         str(build_output_dir),
         '--gn-labels',  # Adds the // prefix.
         '--query',
-        'deps_info.unprocessed_jar_path',
+        'unprocessed_jar_path',
     ]
     if not show_ninja:
         cmd.append('-q')
