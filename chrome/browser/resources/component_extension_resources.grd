@@ -73,11 +73,6 @@
         <include name="IDR_ARC_SUPPORT_ICON_HEADER" file="chromeos/arc_support/images/header.png" type="BINDATA" />
         <include name="IDR_ARC_SUPPORT_UI_JS" file="chromeos/arc_support/ui.js" type="chrome_html" />
       </if>
-      <include name="IDS_READING_MODE_DEFAULT_PNG" file="side_panel/read_anything/images/read_anything_default.png" type="BINDATA" />
-      <include name="IDS_READING_MODE_LIGHT_PNG" file="side_panel/read_anything/images/read_anything_light.png" type="BINDATA" />
-      <include name="IDS_READING_MODE_DARK_PNG" file="side_panel/read_anything/images/read_anything_dark.png" type="BINDATA" />
-      <include name="IDS_READING_MODE_YELLOW_PNG" file="side_panel/read_anything/images/read_anything_yellow.png" type="BINDATA" />
-      <include name="IDS_READING_MODE_BLUE_PNG" file="side_panel/read_anything/images/read_anything_blue.png" type="BINDATA" />
     </includes>
 
     <!-- Game Controls lottie json files -->
