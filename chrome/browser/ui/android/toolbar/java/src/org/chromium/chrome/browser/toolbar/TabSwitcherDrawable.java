@@ -107,7 +107,8 @@ public class TabSwitcherDrawable extends TintedDrawable {
 
         mTextPaint = new TextPaint();
         mTextPaint.setAntiAlias(true);
-        mTextPaint.setTextAlign(Align.CENTER);
+        mTextPaint.setSubpixelText(true);
+        mTextPaint.setTextAlign(Align.LEFT);
         mTextPaint.setTypeface(Typeface.create("google-sans-medium", Typeface.BOLD));
         mTextPaint.setColor(getColorForState());
 
@@ -151,12 +152,11 @@ public class TabSwitcherDrawable extends TintedDrawable {
         if (!textString.isEmpty()) {
             mTextPaint.getTextBounds(textString, 0, textString.length(), mTextBounds);
 
-            float textX = drawableBounds.width() / 2f;
+            float textX = (drawableBounds.width() - mTextBounds.width()) / 2f - mTextBounds.left;
             float textY =
-                    (drawableBounds.height() + mTextBounds.bottom - mTextBounds.top) / 2f
-                            - mTextBounds.bottom;
+                    (drawableBounds.height() - mTextPaint.ascent() - mTextPaint.descent()) / 2f;
 
-            mIconCanvas.drawText(textString, textX, textY, mTextPaint);
+            mIconCanvas.drawText(textString, textX, (int) Math.ceil(textY), mTextPaint);
         }
 
         // Do not show the notification icon in tab view incognito.
