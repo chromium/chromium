@@ -460,7 +460,15 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider,
     if (!raster) {
       return false;
     }
-    auto dst_client_si = GetBackingClientSharedImageForOverwrite();
+
+    if (IsGpuContextLost()) {
+      return false;
+    }
+
+    EndWriteAccess();
+    WillDrawInternal(false);
+
+    auto dst_client_si = resource()->GetClientSharedImage();
     if (!dst_client_si) {
       return false;
     }
