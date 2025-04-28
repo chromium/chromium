@@ -205,7 +205,7 @@ bool AreMatchingCredentials(const CredentialUIEntry& credential,
         usernamesWithSameDomainDict;
 
 // Display name to use for the Password Details view.
-@property(nonatomic, strong) NSString* displayName;
+@property(nonatomic, copy) NSString* displayName;
 
 // The context in which the password details are accessed.
 @property(nonatomic, assign) DetailsContext context;
@@ -233,7 +233,7 @@ bool AreMatchingCredentials(const CredentialUIEntry& credential,
   _passwordCheckObserver =
       std::make_unique<PasswordCheckObserverBridge>(self, _manager.get());
   _credentials = credentials;
-  _displayName = displayName;
+  _displayName = [displayName copy];
   _context = context;
   _prefService = prefService;
   _syncService = syncService;

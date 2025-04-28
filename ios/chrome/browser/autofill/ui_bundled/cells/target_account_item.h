@@ -16,7 +16,7 @@
 // Avatar displayed by the item's cell.
 @property(nonatomic, strong) UIImage* avatar;
 // Email displayed by the item's cell.
-@property(nonatomic, strong) NSString* email;
+@property(nonatomic, copy) NSString* email;
 
 @end
 

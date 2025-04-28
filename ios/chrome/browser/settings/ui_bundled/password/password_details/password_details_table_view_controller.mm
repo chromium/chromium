@@ -157,7 +157,7 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
 // Array of credentials that are shown on the screen.
 @property(nonatomic, strong) NSArray<CredentialDetails*>* credentials;
 
-@property(nonatomic, strong) NSString* pageTitle;
+@property(nonatomic, copy) NSString* pageTitle;
 
 // Whether the password is shown in plain text form or in masked form.
 @property(nonatomic, assign, getter=isPasswordShown) BOOL passwordShown;
@@ -886,7 +886,7 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
               andTitle:(NSString*)title {
   BOOL hadCredentials = [_credentials count];
   _credentials = credentials;
-  _pageTitle = title;
+  _pageTitle = [title copy];
 
   [self updateNavigationTitle];
   // Update the model even if all credentials are deleted and the view
