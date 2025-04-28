@@ -340,6 +340,40 @@ bool CanShowEnterpriseProfileUI(Profile* profile) {
   return true;
 }
 
+bool CanShowEnterpriseBadgingForNTPFooter(Profile* profile) {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
+  auto* management_service =
+      policy::ManagementServiceFactory::GetForProfile(profile);
+  // Return false if the browser is not managed or managed by a low trusted
+  // authority (i.e. EnterpriseManagementAuthority::COMPUTER_LOCAL).
+  if (!management_service->IsBrowserManaged() ||
+      management_service->GetManagementAuthorityTrustworthiness() <=
+          policy::ManagementAuthorityTrustworthiness::LOW) {
+    return false;
+  }
+  if (!g_browser_process->local_state()->GetBoolean(
+          prefs::kNTPFooterManagementNoticeEnabled)) {
+    return false;
+  }
+  if (base::FeatureList::IsEnabled(features::kEnterpriseBadgingForNtpFooter)) {
+    return true;
+  }
+  if (!base::FeatureList::IsEnabled(features::kNTPFooterBadgingPolicies)) {
+    return false;
+  }
+
+  return !g_browser_process->local_state()
+              ->GetString(prefs::kEnterpriseCustomLabelForBrowser)
+              .empty() ||
+         !g_browser_process->local_state()
+              ->GetString(prefs::kEnterpriseLogoUrlForBrowser)
+              .empty();
+#else
+  return false;
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+}
+
 bool IsKnownConsumerDomain(const std::string& email_domain) {
   return !signin::AccountManagedStatusFinder::MayBeEnterpriseDomain(
       email_domain);
