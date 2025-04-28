@@ -360,6 +360,7 @@ mojolpm_fuzzer_test("webrtc_video_perf_mojolpm_fuzzer") {
     "//components/leveldb_proto:test_support",
     "//media",
     "//media/capabilities:webrtc_video_stats_proto",
+    "//media/mojo/mojom:mojom_mojolpm",
     "//third_party/blink/public:blink",
     "//third_party/blink/public/common",
     "//third_party/libprotobuf-mutator",
