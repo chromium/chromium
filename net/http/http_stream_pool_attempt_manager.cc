@@ -1175,30 +1175,9 @@ void HttpStreamPool::AttemptManager::MaybeAttemptTcpBased(
   size_t num_attempts = 0;
   const bool using_tls = UsingTls();
   while (IsTcpBasedAttemptReady()) {
-    // TODO(crbug.com/346835898, crbug.com/406932139, crbug.com/406936736):
-    // Change to DCHECK once we identify the cause of bugs.
-    if (HasAvailableSpdySession()) {
-      base::WeakPtr<SpdySession> spdy_session =
-          pool()->FindAvailableSpdySession(stream_key(), spdy_session_key(),
-                                           IsIpBasedPoolingEnabled());
-      CHECK(spdy_session);
-      std::string destination = stream_key().destination().Serialize();
-      SpdySessionInitiator spdy_session_initiator =
-          spdy_session->spdy_session_initiator();
-      std::string spdy_session_host_port =
-          spdy_session->host_port_pair().ToString();
-      std::vector<std::string> pooled_aliases;
-      for (const auto& alias : spdy_session->pooled_aliases()) {
-        pooled_aliases.emplace_back(alias.host_port_pair().ToString());
-      }
-      bool ip_matching_spdy_session_found = ip_matching_spdy_session_found_;
-      base::debug::Alias(&destination);
-      base::debug::Alias(&spdy_session_initiator);
-      base::debug::Alias(&spdy_session_host_port);
-      base::debug::Alias(&pooled_aliases);
-      base::debug::Alias(&ip_matching_spdy_session_found);
-      NOTREACHED();
-    }
+    // TODO(crbug.com/346835898): Change to DCHECK once we stabilize the
+    // implementation.
+    CHECK(!HasAvailableSpdySession());
     std::optional<IPEndPoint> ip_endpoint =
         GetIPEndPointToAttemptTcpBased(exclude_ip_endpoint);
     if (!ip_endpoint.has_value()) {
