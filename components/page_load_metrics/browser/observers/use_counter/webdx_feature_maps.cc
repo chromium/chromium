@@ -382,6 +382,16 @@ UseCounterMetricsRecorder::GetWebFeatureToWebDXFeatureMap() {
           {WebFeature::kRegionCapture, WebDXFeature::kRegionCapture},
           {WebFeature::kUnprefixedRequestAnimationFrame,
            WebDXFeature::kRequestAnimationFrame},
+          {WebFeature::kAnonymousIframe, WebDXFeature::kIframeCredentialless},
+          {WebFeature::kV8URLPattern_Constructor, WebDXFeature::kUrlpattern},
+          {WebFeature::kV8URLPattern_Test_Method, WebDXFeature::kUrlpattern},
+          {WebFeature::kV8URLPattern_Exec_Method, WebDXFeature::kUrlpattern},
+          {WebFeature::kV8URLPattern_CompareComponent_Method,
+           WebDXFeature::kUrlpattern},
+          {WebFeature::kV8AuthenticatorAttestationResponse_GetPublicKey_Method,
+           WebDXFeature::kWebauthnPublicKeyEasy},
+          {WebFeature::kDisplayNames, WebDXFeature::kIntlDisplayNames},
+          {WebFeature::kCSSSelectorPseudoState, WebDXFeature::kState},
           // Add new features above this line.
       }};
 

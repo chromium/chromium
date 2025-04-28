@@ -8182,6 +8182,11 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="322" label="RegionCapture"/>
   <int value="323" label="RequestAnimationFrame"/>
   <int value="324" label="RequestAnimationFrameWorkers"/>
+  <int value="325" label="IframeCredentialless"/>
+  <int value="326" label="Urlpattern"/>
+  <int value="327" label="WebauthnPublicKeyEasy"/>
+  <int value="328" label="IntlDisplayNames"/>
+  <int value="329" label="State"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom:WebDXFeature) -->
