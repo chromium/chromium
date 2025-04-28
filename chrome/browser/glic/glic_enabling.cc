@@ -36,7 +36,7 @@ bool IsNonEnterpriseEnabled(Profile* profile) {
 
   // Check whether profile is eligible for tiered ollout.
   if (!base::FeatureList::IsEnabled(features::kGlicRollout) &&
-      !profile->GetPrefs()->GetBoolean(prefs::kGlicRolloutEligibility)) {
+      !GlicEnabling::IsEligibleForGlicTieredRollout(profile)) {
     return false;
   }
 
@@ -126,6 +126,11 @@ mojom::ProfileReadyState GlicEnabling::GetProfileReadyState(Profile* profile) {
     return mojom::ProfileReadyState::kSignInRequired;
   }
   return mojom::ProfileReadyState::kReady;
+}
+
+bool GlicEnabling::IsEligibleForGlicTieredRollout(Profile* profile) {
+  return base::FeatureList::IsEnabled(features::kGlicTieredRollout) &&
+         profile->GetPrefs()->GetBoolean(prefs::kGlicRolloutEligibility);
 }
 
 bool GlicEnabling::ShouldShowSettingsPage(Profile* profile) {
