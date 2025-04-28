@@ -124,7 +124,7 @@ TabStripItemData* CreateTabItemData(
     WebStateList* web_state_list,
     std::set<tab_groups::LocalTabID> dirty_tabs) {
   CHECK(web_state_list);
-  CHECK(web_state_list->ContainsIndex(index), base::NotFatalUntil::M128);
+  CHECK(web_state_list->ContainsIndex(index));
   const TabGroup* group = web_state_list->GetGroupOfWebStateAt(index);
   const web::WebState* web_state = web_state_list->GetWebStateAt(index);
   TabStripItemData* data = [[TabStripItemData alloc] init];
@@ -169,7 +169,7 @@ NSMutableArray<TabStripItemData*>* CreateItemData(
   for (int index : range) {
     const TabGroup* group_of_web_state = nullptr;
     if ([TabStripFeaturesUtils isModernTabStripWithTabGroups]) {
-      CHECK(web_state_list->ContainsIndex(index), base::NotFatalUntil::M128);
+      CHECK(web_state_list->ContainsIndex(index));
       group_of_web_state = web_state_list->GetGroupOfWebStateAt(index);
       if (including_group_items) {
         const TabGroup* group_starting_at_index =
@@ -213,7 +213,7 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
   for (int index : range) {
     const TabGroup* group_of_web_state = nullptr;
     if ([TabStripFeaturesUtils isModernTabStripWithTabGroups]) {
-      CHECK(web_state_list->ContainsIndex(index), base::NotFatalUntil::M128);
+      CHECK(web_state_list->ContainsIndex(index));
       group_of_web_state = web_state_list->GetGroupOfWebStateAt(index);
       if (including_group_items) {
         const TabGroup* group_starting_at_index =
@@ -1756,7 +1756,7 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
   CHECK([self webStateIsCollapsedAtIndex:index]);
   // If the tab for WebState at `index` is collapsed, then it must be in a group
   // that is collapsed.
-  CHECK(self.webStateList->ContainsIndex(index), base::NotFatalUntil::M128);
+  CHECK(self.webStateList->ContainsIndex(index));
   const TabGroup* groupAtIndex = self.webStateList->GetGroupOfWebStateAt(index);
   CHECK(groupAtIndex);
   CHECK(groupAtIndex->visual_data().is_collapsed());
