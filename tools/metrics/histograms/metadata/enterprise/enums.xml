@@ -2210,7 +2210,6 @@ chromium-metrics-reviews@google.com.
   <int value="1339" label="ClassManagementCaptionsEnabled"/>
   <int value="1340" label="ClassManagementClassroomIntegrationEnabled"/>
   <int value="1341" label="ClassManagementNetworkRestrictionEnabled"/>
-  <int value="1342" label="ClassManagementSendingContentEnabled"/>
   <int value="1343" label="ClassManagementViewScreenEnabled"/>
   <int value="1344" label="KioskChromeAppsForceAllowed"/>
   <int value="1345" label="ReduceAcceptLanguageEnabled"/>

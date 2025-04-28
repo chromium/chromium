@@ -3,9 +3,9 @@ default: true
 desc: |-
   Setting the policy specifies if the selected teachers can remotely view students' screens.
 
-     If set to true or unset they can view students' screens.
+  If set to true or unset they can view students' screens.
 
-     If set to false they cannot access the feature.
+  If set to false they cannot access the feature.
 example_value: true
 features:
   dynamic_refresh: true

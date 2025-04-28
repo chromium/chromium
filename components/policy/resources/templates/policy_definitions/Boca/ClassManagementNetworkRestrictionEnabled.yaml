@@ -3,12 +3,12 @@ default: true
 desc: |-
   Setting the policy specifies if selected users' devices must be on a managed network in order to be part of <ph name="CLASS_TOOLS_NAME">Class Tools</ph> class.
 
-    If value set to true or unset, they must be on a managed network.
+  If value set to true or unset, they must be on a managed network.
 
-    If set to false they can join without being on a managed network.
+  If set to false they can join without being on a managed network.
 example_value: True
 features:
-  dynamic_refresh: true
+  dynamic_refresh: false
   per_profile: true
 items:
 - caption: Require users' devices to be on a managed network in order to be part of <ph name="CLASS_TOOLS_NAME">Class Tools</ph> class

@@ -1340,7 +1340,7 @@ policies:
   1339: ClassManagementCaptionsEnabled
   1340: ClassManagementClassroomIntegrationEnabled
   1341: ClassManagementNetworkRestrictionEnabled
-  1342: ClassManagementSendingContentEnabled
+  1342: ''
   1343: ClassManagementViewScreenEnabled
   1344: KioskChromeAppsForceAllowed
   1345: ReduceAcceptLanguageEnabled

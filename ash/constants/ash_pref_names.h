@@ -2632,11 +2632,6 @@ inline constexpr char kClassManagementToolsNavRuleSetting[] =
 inline constexpr char kClassManagementToolsCaptionEnablementSetting[] =
     "ash.class_management_tools.caption_enablement_setting";
 
-// A boolean pref indicating user's eligibility to sending content feature in
-// class management tools.
-inline constexpr char kClassManagementToolsSendingContentEligibilitySetting[] =
-    "ash.class_management_tools.sending_content_setting";
-
 // A boolean pref indicating user's eligibility to caption feature in class
 // management tools.
 inline constexpr char kClassManagementToolsCaptionEligibilitySetting[] =

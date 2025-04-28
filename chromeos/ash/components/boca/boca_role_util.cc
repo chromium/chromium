@@ -35,8 +35,6 @@ void RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(
       ash::prefs::kClassManagementToolsClassroomEligibilitySetting, true);
   registry->RegisterBooleanPref(
-      ash::prefs::kClassManagementToolsSendingContentEligibilitySetting, true);
-  registry->RegisterBooleanPref(
       ash::prefs::kClassManagementToolsViewScreenEligibilitySetting, true);
   registry->RegisterBooleanPref(
       ash::prefs::kClassManagementToolsNetworkRestrictionSetting, true);
