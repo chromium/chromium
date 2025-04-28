@@ -188,7 +188,7 @@ ExtensionFunction::ResponseAction ExtensionActionFunction::Run() {
       ExtensionActionManager::Get(browser_context());
   extension_action_ = manager->GetExtensionAction(*extension());
   if (!extension_action_) {
-    // TODO(kalman): ideally the browserAction/pageAction APIs wouldn't event
+    // TODO(kalman): Ideally the browserAction/pageAction APIs wouldn't even
     // exist for extensions that don't have one declared. This should come as
     // part of the Feature system.
     return RespondNow(Error(kNoExtensionActionError));

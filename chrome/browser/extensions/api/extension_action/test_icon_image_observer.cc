@@ -32,6 +32,7 @@ void TestIconImageObserver::OnExtensionIconImageChanged(IconImage* icon) {
 void TestIconImageObserver::WaitForIcon(IconImage* icon) {
   TestIconImageObserver().Wait(icon);
 }
+
 void TestIconImageObserver::WaitForExtensionActionIcon(
     const Extension* extension,
     content::BrowserContext* context) {
