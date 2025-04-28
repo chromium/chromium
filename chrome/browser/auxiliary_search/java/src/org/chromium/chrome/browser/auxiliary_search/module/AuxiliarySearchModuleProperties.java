@@ -6,11 +6,13 @@ package org.chromium.chrome.browser.auxiliary_search.module;
 
 import android.view.View.OnClickListener;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 /** Properties for the auxiliary search module. */
+@NullMarked
 interface AuxiliarySearchModuleProperties {
     WritableObjectPropertyKey<OnClickListener> MODULE_FIRST_BUTTON_ON_CLICK_LISTENER =
             new WritableObjectPropertyKey<>();

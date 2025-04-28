@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.auxiliary_search;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
@@ -14,6 +13,7 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.Callback;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchProvider.Observer;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -25,9 +25,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /** Java bridge to provide information for the auxiliary search. */
+@NullMarked
 public class AuxiliarySearchBridge {
     private long mNativeBridge;
-    private AuxiliarySearchProvider.Observer mObserver;
+    private @Nullable Observer mObserver;
     private int mObserverId;
 
     /**
@@ -35,7 +36,7 @@ public class AuxiliarySearchBridge {
      *
      * @param profile The Profile to retrieve the corresponding information.
      */
-    public AuxiliarySearchBridge(@NonNull Profile profile) {
+    public AuxiliarySearchBridge(Profile profile) {
         if ((!ChromeFeatureList.sAndroidAppIntegration.isEnabled()
                         && !ChromeFeatureList.sAndroidAppIntegrationV2.isEnabled())
                 || profile.isOffTheRecord()) {
@@ -51,7 +52,7 @@ public class AuxiliarySearchBridge {
      * @param tabs A list of {@link Tab}s to check if they are sensitive.
      * @param callback {@link Callback} to pass back the list of non-sensitive {@link Tab}s.
      */
-    public void getNonSensitiveTabs(List<Tab> tabs, Callback<List<Tab>> callback) {
+    public void getNonSensitiveTabs(List<Tab> tabs, Callback<@Nullable List<Tab>> callback) {
         if (mNativeBridge == 0) {
             PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> callback.onResult(null));
             return;
@@ -83,7 +84,8 @@ public class AuxiliarySearchBridge {
      * @param callback {@link Callback} to pass back the list of non-sensitive {@link
      *     AuxiliarySearchDataEntry}s.
      */
-    public void getNonSensitiveHistoryData(Callback<List<AuxiliarySearchDataEntry>> callback) {
+    public void getNonSensitiveHistoryData(
+            Callback<@Nullable List<AuxiliarySearchDataEntry>> callback) {
         if (mNativeBridge == 0) {
             PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> callback.onResult(null));
             return;
@@ -113,7 +115,9 @@ public class AuxiliarySearchBridge {
     /** Starts a fetch of the current most visited sites suggestions. */
     public void getMostVisitedSites() {
         if (mNativeBridge == 0) {
-            mObserver.onSiteSuggestionsAvailable(null);
+            if (mObserver != null) {
+                mObserver.onSiteSuggestionsAvailable(null);
+            }
             return;
         }
 
@@ -153,15 +157,17 @@ public class AuxiliarySearchBridge {
     @VisibleForTesting
     void onMostVisitedSitesURLsAvailable(
             @JniType("std::vector") List<AuxiliarySearchDataEntry> entries) {
+        if (mObserver == null) return;
         mObserver.onSiteSuggestionsAvailable(entries);
     }
 
     @CalledByNative
     void onIconMadeAvailable(@JniType("GURL") GURL siteUrl) {
+        if (mObserver == null) return;
         mObserver.onIconMadeAvailable(siteUrl);
     }
 
-    AuxiliarySearchProvider.Observer getObserverForTesting() {
+    @Nullable Observer getObserverForTesting() {
         return mObserver;
     }
 
@@ -179,7 +185,7 @@ public class AuxiliarySearchBridge {
 
         void getNonSensitiveHistoryData(
                 long nativeAuxiliarySearchProvider,
-                Callback<List<AuxiliarySearchDataEntry>> callback);
+                Callback<@Nullable List<AuxiliarySearchDataEntry>> callback);
 
         int setObserverAndTrigger(long nativeAuxiliarySearchProvider, AuxiliarySearchBridge self);
 

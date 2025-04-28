@@ -4,17 +4,19 @@
 
 package org.chromium.chrome.browser.auxiliary_search;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+
 import android.content.Context;
 import android.os.PersistableBundle;
 import android.text.TextUtils;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.util.AtomicFile;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchController.AuxiliarySearchHostType;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchGroupProto.AuxiliarySearchEntry;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -37,11 +39,13 @@ import java.io.IOException;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /** This class provides information for the auxiliary search. */
+@NullMarked
 public class AuxiliarySearchProvider {
     /** The version of tab donation's metadata. */
     @IntDef({MetaDataVersion.V1, MetaDataVersion.MULTI_TYPE_V2, MetaDataVersion.NUM_ENTRIES})
@@ -111,7 +115,12 @@ public class AuxiliarySearchProvider {
     }
 
     /** Returns a list of non sensitive Tabs. */
-    public void getTabsSearchableDataProtoAsync(@NonNull Callback<List<Tab>> callback) {
+    public void getTabsSearchableDataProtoAsync(Callback<@Nullable List<Tab>> callback) {
+        if (mAuxiliarySearchBridge == null) {
+            callback.onResult(null);
+            return;
+        }
+
         long minAccessTime = System.currentTimeMillis() - mTabMaxAgeMillis;
         List<Tab> listTab = getTabsByMinimalAccessTime(minAccessTime);
 
@@ -122,7 +131,11 @@ public class AuxiliarySearchProvider {
 
     /** Returns a list of non sensitive data from supported data types. */
     public void getHistorySearchableDataProtoAsync(
-            Callback<List<AuxiliarySearchDataEntry>> callback) {
+            Callback<@Nullable List<AuxiliarySearchDataEntry>> callback) {
+        if (mAuxiliarySearchBridge == null) {
+            callback.onResult(null);
+            return;
+        }
         // We will get up to 100 tabs as default. This is controlled by feature
         // AuxiliarySearchDonation.
         mAuxiliarySearchBridge.getNonSensitiveHistoryData(callback);
@@ -133,13 +146,13 @@ public class AuxiliarySearchProvider {
      *
      * @param observer The observer to receive suggestions when they are ready.
      */
-    public void setObserver(AuxiliarySearchProvider.Observer observer) {
-        mAuxiliarySearchBridge.setObserver(observer);
+    public void setObserver(@Nullable Observer observer) {
+        assertNonNull(mAuxiliarySearchBridge).setObserver(observer);
     }
 
     @VisibleForTesting
     static @Nullable AuxiliarySearchEntry createAuxiliarySearchEntry(
-            int id, @NonNull String title, @NonNull String url, long timestamp) {
+            int id, String title, String url, long timestamp) {
         if (TextUtils.isEmpty(title) || url == null) return null;
 
         var tabBuilder = AuxiliarySearchEntry.newBuilder().setTitle(title).setUrl(url).setId(id);
@@ -160,11 +173,7 @@ public class AuxiliarySearchProvider {
      * @param <T> The type of the entry data for donation.
      */
     <T> void saveTabMetadataToFile(
-            @NonNull File metadataFile,
-            int version,
-            @NonNull List<T> entries,
-            int startIndex,
-            int entryCountToSave) {
+            File metadataFile, int version, List<T> entries, int startIndex, int entryCountToSave) {
         synchronized (SAVE_LIST_LOCK) {
             AtomicFile file = new AtomicFile(metadataFile);
             FileOutputStream output = null;
@@ -217,8 +226,8 @@ public class AuxiliarySearchProvider {
      * @param stream The stream pointing to the tab donation metadata file to be parsed.
      * @param <T> The type of the entry data for donation.
      */
-    @Nullable
-    static <T> List<T> readSavedMetadataFile(@Nullable DataInputStream stream) throws IOException {
+    static <T> @Nullable List<T> readSavedMetadataFile(@Nullable DataInputStream stream)
+            throws IOException {
         if (stream == null) return null;
 
         final int version = stream.readInt();
@@ -281,15 +290,16 @@ public class AuxiliarySearchProvider {
      * @return List of {@link Tab} which is accessed after 'minAccessTime'.
      */
     @VisibleForTesting
-    @NonNull
     List<Tab> getTabsByMinimalAccessTime(long minAccessTime) {
+        if (mTabModelSelector == null) return Collections.emptyList();
+
         TabList allTabs = mTabModelSelector.getModel(false).getComprehensiveModel();
         List<Tab> recentAccessedTabs = new ArrayList<>();
 
         for (int i = 0; i < allTabs.getCount(); i++) {
-            Tab tab = allTabs.getTabAt(i);
+            Tab tab = allTabs.getTabAtChecked(i);
             if (tab.getTimestampMillis() >= minAccessTime) {
-                recentAccessedTabs.add(allTabs.getTabAt(i));
+                recentAccessedTabs.add(tab);
             }
         }
 

@@ -4,5 +4,8 @@
 
 package org.chromium.chrome.browser.auxiliary_search.schema;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Document representing a Top site entity. */
+@NullMarked
 public class TopSiteWebPage {}

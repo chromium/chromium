@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.auxiliary_search;
 
 import android.text.TextUtils;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.url.GURL;
 
@@ -15,6 +16,7 @@ import java.util.Objects;
  * A single data entry for data shared with system. This class can be used for multiple data
  * sources, e.g., Tabs, custom Tabs, or MV tiles.
  */
+@NullMarked
 public class AuxiliarySearchDataEntry {
     public final @AuxiliarySearchEntryType int type;
     public final GURL url;

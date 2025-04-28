@@ -7,9 +7,9 @@ package org.chromium.chrome.browser.auxiliary_search;
 import android.graphics.Bitmap;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 
@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 /** This Controller for the auxiliary search. */
+@NullMarked
 public interface AuxiliarySearchController extends PauseResumeWithNativeObserver {
     @IntDef({
         AuxiliarySearchDataType.ALL,
@@ -74,9 +75,9 @@ public interface AuxiliarySearchController extends PauseResumeWithNativeObserver
      * @param <T> The type of the entry data for donation.
      */
     default <T> void onBackgroundTaskStart(
-            @NonNull List<T> entries,
-            @NonNull Map<T, Bitmap> entryToFaviconMap,
-            @NonNull Callback<Boolean> callback,
+            List<T> entries,
+            Map<T, Bitmap> entryToFaviconMap,
+            Callback<Boolean> callback,
             long startTimeMs) {}
 
     /**

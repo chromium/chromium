@@ -4,9 +4,8 @@
 
 package org.chromium.chrome.browser.auxiliary_search.module;
 
-import androidx.annotation.NonNull;
-
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchConfigManager;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchMetrics;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchMetrics.ClickInfo;
@@ -19,6 +18,7 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Mediator for the auxiliary search opt in module. */
+@NullMarked
 public class AuxiliarySearchModuleMediator {
     private final PropertyModel mModel;
     private final ModuleDelegate mModuleDelegate;
@@ -34,9 +34,7 @@ public class AuxiliarySearchModuleMediator {
      * @param openSettingsRunnable The runnable to open the app's settings.
      */
     public AuxiliarySearchModuleMediator(
-            @NonNull PropertyModel model,
-            @NonNull ModuleDelegate moduleDelegate,
-            @NonNull Runnable openSettingsRunnable) {
+            PropertyModel model, ModuleDelegate moduleDelegate, Runnable openSettingsRunnable) {
         mModel = model;
         mModuleDelegate = moduleDelegate;
         mOpenSettingsRunnable = openSettingsRunnable;

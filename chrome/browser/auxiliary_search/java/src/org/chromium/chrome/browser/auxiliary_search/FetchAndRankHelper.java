@@ -6,9 +6,11 @@ package org.chromium.chrome.browser.auxiliary_search;
 
 import org.jni_zero.CalledByNative;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.url.GURL;
 
+@NullMarked
 class FetchAndRankHelper {
     /**
      * Helper to create a new {@link AuxiliarySearchDataEntry} instance.

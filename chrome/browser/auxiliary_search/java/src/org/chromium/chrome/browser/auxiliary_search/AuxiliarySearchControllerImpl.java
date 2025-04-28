@@ -11,12 +11,13 @@ import static org.chromium.chrome.browser.flags.ChromeFeatureList.sAndroidAppInt
 import android.content.Context;
 import android.graphics.Bitmap;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.TimeUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchMetrics.RequestStatus;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -33,6 +34,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /** The Controller to handle the communication between Chrome and {@link AuxiliarySearchDonor}. */
+@NullMarked
 public class AuxiliarySearchControllerImpl
         implements AuxiliarySearchController,
                 AuxiliarySearchConfigManager.ShareTabsWithOsStateListener,
@@ -50,13 +52,13 @@ public class AuxiliarySearchControllerImpl
     private final long mHistoryTtlMillis;
     private final @AuxiliarySearchHostType int mHostType;
 
-    private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
+    private @Nullable ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     private boolean mHasDeletingTask;
     private int mTaskFinishedCount;
     private boolean mIsObserving;
     private CallbackController mCallbackController = new CallbackController();
     private long mTopSiteLastFetchTimestamp;
-    @Nullable private List<AuxiliarySearchDataEntry> mCurrentSiteSuggestionEntries;
+    private @Nullable List<AuxiliarySearchDataEntry> mCurrentSiteSuggestionEntries;
 
     @VisibleForTesting
     public AuxiliarySearchControllerImpl(
@@ -126,6 +128,7 @@ public class AuxiliarySearchControllerImpl
     }
 
     @Override
+    @SuppressWarnings("NullAway")
     public void destroy() {
         if (mCallbackController == null) return;
 
@@ -321,8 +324,7 @@ public class AuxiliarySearchControllerImpl
 
     /** Merges the fetched list of Tabs and CCTs with list of the most visited sites together. */
     @VisibleForTesting
-    @Nullable
-    List<AuxiliarySearchDataEntry> getMergedList(
+    @Nullable List<AuxiliarySearchDataEntry> getMergedList(
             @Nullable List<AuxiliarySearchDataEntry> historyEntryList) {
         if (historyEntryList == null && mCurrentSiteSuggestionEntries == null) return null;
 

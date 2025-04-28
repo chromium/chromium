@@ -12,6 +12,7 @@ import androidx.annotation.IntDef;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.content_public.browser.BrowserStartupController;
 
@@ -204,10 +205,10 @@ public abstract class NativeBackgroundTask implements BackgroundTask {
     /**
      * Method that should be implemented in derived classes to provide implementation of {@link
      * BackgroundTask#onStartTask(Context, TaskParameters, TaskFinishedCallback)} when native is
-     * loaded.
-     * This method will not be called unless {@link #onStartTaskBeforeNativeLoaded} returns
+     * loaded. This method will not be called unless {@link #onStartTaskBeforeNativeLoaded} returns
      * LOAD_NATIVE.
      */
+    @Initializer
     protected abstract void onStartTaskWithNative(
             Context context, TaskParameters taskParameters, TaskFinishedCallback callback);
 

@@ -6,14 +6,14 @@ package org.chromium.chrome.browser.auxiliary_search.module;
 
 import android.content.Context;
 
-import androidx.annotation.NonNull;
-
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.auxiliary_search.R;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleProvider;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Coordinator for the auxiliary search opt in module. */
+@NullMarked
 public class AuxiliarySearchModuleCoordinator implements ModuleProvider {
     private final AuxiliarySearchModuleMediator mMediator;
 
@@ -22,7 +22,7 @@ public class AuxiliarySearchModuleCoordinator implements ModuleProvider {
      * @param openSettingsRunnable The runnable to open the Tabs settings.
      */
     public AuxiliarySearchModuleCoordinator(
-            @NonNull ModuleDelegate moduleDelegate, @NonNull Runnable openSettingsRunnable) {
+            ModuleDelegate moduleDelegate, Runnable openSettingsRunnable) {
         PropertyModel model = new PropertyModel(AuxiliarySearchModuleProperties.ALL_KEYS);
         mMediator = new AuxiliarySearchModuleMediator(model, moduleDelegate, openSettingsRunnable);
     }
