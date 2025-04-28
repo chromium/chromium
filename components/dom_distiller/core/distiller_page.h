@@ -48,6 +48,10 @@ class DistillerPage {
   virtual void OnDistillationDone(const GURL& page_url,
                                   const base::Value* value);
 
+  // Returns true if the distiller page should fetch distillation data for
+  // offline consumption.
+  virtual bool ShouldFetchOfflineData() = 0;
+
   DistillerPage(const DistillerPage&) = delete;
   DistillerPage& operator=(const DistillerPage&) = delete;
 

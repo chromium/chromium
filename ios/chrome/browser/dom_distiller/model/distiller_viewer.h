@@ -96,6 +96,8 @@ class DistillerViewer : public DistillerViewerInterface {
   std::string js_buffer_;
   // CSP nonce value.
   std::string csp_nonce_;
+  // Whether offline data should be injected in the viewer.
+  bool use_offline_data_;
   // Callback to run once distillation is complete.
   DistillationFinishedCallback callback_;
 

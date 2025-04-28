@@ -28,6 +28,7 @@ DistillerViewer::DistillerViewer(
     : DistillerViewerInterface(prefs),
       url_(url),
       csp_nonce_(base::Base64Encode(base::RandBytesAsVector(16))),
+      use_offline_data_(page->ShouldFetchOfflineData()),
       callback_(std::move(callback)) {
   DCHECK(url.is_valid());
   SendCommonJavaScript();
@@ -66,7 +67,7 @@ void DistillerViewer::OnArticleReady(
 
     const std::string html = dom_distiller::viewer::GetArticleTemplateHtml(
         distilled_page_prefs_->GetTheme(),
-        distilled_page_prefs_->GetFontFamily(), csp_nonce_);
+        distilled_page_prefs_->GetFontFamily(), csp_nonce_, use_offline_data_);
 
     std::string html_and_script(html);
     html_and_script += "<script nonce=\"" + csp_nonce_ + "\">" +

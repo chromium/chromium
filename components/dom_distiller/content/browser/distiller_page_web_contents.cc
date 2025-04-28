@@ -80,6 +80,10 @@ DistillerPageWebContents::DistillerPageWebContents(
 
 DistillerPageWebContents::~DistillerPageWebContents() = default;
 
+bool DistillerPageWebContents::ShouldFetchOfflineData() {
+  return false;
+}
+
 void DistillerPageWebContents::DistillPageImpl(const GURL& url,
                                                const std::string& script) {
   DCHECK(browser_context_);
