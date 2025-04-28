@@ -51,7 +51,6 @@ class DocumentScanAsh;
 class FileChangeServiceBridgeAsh;
 class FileSystemAccessCloudIdentifierProviderAsh;
 class FileSystemProviderServiceAsh;
-class FullRestoreAsh;
 class FullscreenControllerAsh;
 class IdentityManagerAsh;
 class KeystoreServiceAsh;
@@ -113,8 +112,6 @@ class CrosapiAsh : public mojom::Crosapi {
   void BindFileSystemProviderService(
       mojo::PendingReceiver<mojom::FileSystemProviderService> receiver)
       override;
-  void BindFullRestore(
-      mojo::PendingReceiver<mojom::FullRestore> receiver) override;
   void BindFullscreenController(
       mojo::PendingReceiver<mojom::FullscreenController> receiver) override;
   void BindHidManager(
@@ -215,8 +212,6 @@ class CrosapiAsh : public mojom::Crosapi {
     return file_system_provider_service_ash_.get();
   }
 
-  FullRestoreAsh* full_restore_ash() { return full_restore_ash_.get(); }
-
   FullscreenControllerAsh* fullscreen_controller_ash() {
     return fullscreen_controller_ash_.get();
   }
@@ -287,7 +282,6 @@ class CrosapiAsh : public mojom::Crosapi {
       file_system_access_cloud_identifier_provider_ash_;
   std::unique_ptr<FileSystemProviderServiceAsh>
       file_system_provider_service_ash_;
-  std::unique_ptr<FullRestoreAsh> full_restore_ash_;
   std::unique_ptr<FullscreenControllerAsh> fullscreen_controller_ash_;
   std::unique_ptr<IdentityManagerAsh> identity_manager_ash_;
   std::unique_ptr<KeystoreServiceAsh> keystore_service_ash_;

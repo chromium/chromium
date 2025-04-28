@@ -193,11 +193,7 @@ interface Crosapi {
       pending_receiver<FileSystemProviderService> receiver);
 
   // BindForceInstalledTracker@57 was removed.
-
-  // Binds the full restore interface for getting session restore data needed
-  // to display the pine dialog.
-  [MinVersion=135] BindFullRestore@137(
-      pending_receiver<FullRestore> receiver);
+  // BindFullRestore@137 was removed.
 
   // Binds the full screen controller which determines whether to keep or exit
   // full screen mode.

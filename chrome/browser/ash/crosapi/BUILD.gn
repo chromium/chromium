@@ -41,8 +41,6 @@ static_library("crosapi") {
     "file_system_provider_service_ash.h",
     "files_app_launcher.cc",
     "files_app_launcher.h",
-    "full_restore_ash.cc",
-    "full_restore_ash.h",
     "fullscreen_controller_ash.cc",
     "fullscreen_controller_ash.h",
     "identity_manager_ash.cc",

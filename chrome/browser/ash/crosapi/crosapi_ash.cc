@@ -22,7 +22,6 @@
 #include "chrome/browser/ash/crosapi/file_change_service_bridge_ash.h"
 #include "chrome/browser/ash/crosapi/file_system_access_cloud_identifier_provider_ash.h"
 #include "chrome/browser/ash/crosapi/file_system_provider_service_ash.h"
-#include "chrome/browser/ash/crosapi/full_restore_ash.h"
 #include "chrome/browser/ash/crosapi/fullscreen_controller_ash.h"
 #include "chrome/browser/ash/crosapi/identity_manager_ash.h"
 #include "chrome/browser/ash/crosapi/keystore_service_ash.h"
@@ -118,7 +117,6 @@ CrosapiAsh::CrosapiAsh()
           std::make_unique<FileSystemAccessCloudIdentifierProviderAsh>()),
       file_system_provider_service_ash_(
           std::make_unique<FileSystemProviderServiceAsh>()),
-      full_restore_ash_(std::make_unique<FullRestoreAsh>()),
       fullscreen_controller_ash_(std::make_unique<FullscreenControllerAsh>()),
       identity_manager_ash_(std::make_unique<IdentityManagerAsh>()),
       keystore_service_ash_(std::make_unique<KeystoreServiceAsh>()),
@@ -243,11 +241,6 @@ void CrosapiAsh::BindFileSystemAccessCloudIdentifierProvider(
 void CrosapiAsh::BindFileSystemProviderService(
     mojo::PendingReceiver<crosapi::mojom::FileSystemProviderService> receiver) {
   file_system_provider_service_ash_->BindReceiver(std::move(receiver));
-}
-
-void CrosapiAsh::BindFullRestore(
-    mojo::PendingReceiver<crosapi::mojom::FullRestore> receiver) {
-  full_restore_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindFullscreenController(
