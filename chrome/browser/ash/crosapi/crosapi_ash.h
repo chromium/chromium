@@ -64,7 +64,6 @@ class NetworkingAttributesAsh;
 class NetworkingPrivateAsh;
 class ParentAccessAsh;
 class PaymentAppInstanceAsh;
-class PolicyServiceAsh;
 class RemotingAsh;
 class StructuredMetricsServiceAsh;
 class VpnServiceAsh;
@@ -157,8 +156,6 @@ class CrosapiAsh : public mojom::Crosapi {
   void BindPaymentAppInstance(
       mojo::PendingReceiver<chromeos::payments::mojom::PaymentAppInstance>
           receiver) override;
-  void BindPolicyService(
-      mojo::PendingReceiver<mojom::PolicyService> receiver) override;
   void BindPrintPreviewCrosDelegate(
       mojo::PendingReceiver<mojom::PrintPreviewCrosDelegate> receiver) override;
   void BindRemoteAppsLacrosBridge(
@@ -295,7 +292,6 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<NetworkingPrivateAsh> networking_private_ash_;
   std::unique_ptr<ParentAccessAsh> parent_access_ash_;
   std::unique_ptr<PaymentAppInstanceAsh> payment_app_instance_ash_;
-  std::unique_ptr<PolicyServiceAsh> policy_service_ash_;
   std::unique_ptr<ash::TelemetryDiagnosticsRoutineServiceAsh>
       telemetry_diagnostic_routine_service_ash_;
   std::unique_ptr<ash::TelemetryEventServiceAsh> telemetry_event_service_ash_;

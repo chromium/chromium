@@ -69,8 +69,6 @@ static_library("crosapi") {
     "parent_access_ash.h",
     "payment_app_instance_ash.cc",
     "payment_app_instance_ash.h",
-    "policy_service_ash.cc",
-    "policy_service_ash.h",
     "primary_profile_creation_waiter.cc",
     "primary_profile_creation_waiter.h",
     "remoting_ash.cc",

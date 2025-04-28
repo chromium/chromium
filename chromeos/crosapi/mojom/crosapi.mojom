@@ -285,11 +285,7 @@ interface Crosapi {
   [MinVersion=113] BindPaymentAppInstance@116(
     pending_receiver<chromeos.payments.mojom.PaymentAppInstance> receiver);
 
-  // Binds the Policy service to allow Lacros request policy data from Ash when
-  // needed.
-  [MinVersion=56] BindPolicyService@60(
-      pending_receiver<PolicyService> receiver);
-
+  // BindPolicyService@60 was removed.
   // BindPrefs@16 was removed.
   // BindNonclosableAppToastService@131 was removed.
 
