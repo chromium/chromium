@@ -1067,6 +1067,31 @@
     <message name="IDS_BATCH_UPLOAD_SCREEN_READER_SELECT_NONE" desc="Text read by the screen reader when focusing the toggle button of a section in the Batch Upload dialog and that toggle is turned on. Notifies that the action on the toggle would select no items in this section.">
       Select none
     </message>
+    <message name="IDS_BATCH_UPLOAD_PROMO_TITLE" desc="Title of the Batch Upload promo. This promo appears to inform the user that there are items saved only to their device. If the user chooses to save items in their Google Account, the user can access them on any device where they’re signed in to Chrome. This promo leads to the Batch Upload dialog, where the user can select the checkboxes for the items that they want to save in their Google Account. The tone should be motivating.">
+      Get your bookmarks and more on all your devices
+    </message>
+    <if expr="use_titlecase">
+      <message name="IDS_BATCH_UPLOAD_PROMO_TITLE_OK_BUTTON_LABEL" desc="Affirmative button of the Batch Upload promo. This promo appears to inform the user that there are items saved only to their device; this subtitle mentions how many bookmarks (and other items, if any) are on the device. If the user chooses to save items in their Google Account, the user can access them on any device where they’re signed in to Chrome. When the user clicks this button, the items aren’t saved yet: the user first sees the Batch Upload dialog, where the user can select the checkboxes for the items that they want to save in their Google Account. The tone should be motivating.">
+        Save in Account
+      </message>
+    </if>
+    <if expr="not use_titlecase">
+      <message name="IDS_BATCH_UPLOAD_PROMO_TITLE_OK_BUTTON_LABEL" desc="Affirmative button of the Batch Upload promo. This promo appears to inform the user that there are items saved only to their device; this subtitle mentions how many bookmarks (and other items, if any) are on the device. If the user chooses to save items in their Google Account, the user can access them on any device where they’re signed in to Chrome. When the user clicks this button, the items aren’t saved yet: the user first sees the Batch Upload dialog, where the user can select the checkboxes for the items that they want to save in their Google Account. The tone should be motivating.">
+        Save in account
+      </message>
+    </if>
+    <message name="IDS_BATCH_UPLOAD_PROMO_SUBTITLE_BOOKMARKS" desc="Subtitle of the Batch Upload promo. This promo appears to inform the user that there are items saved only to their device; this subtitle mentions how many bookmarks are on the device. If the user chooses to save items in their Google Account, the user can access them on any device where they’re signed in to Chrome. This promo leads to the Batch Upload dialog, where the user can select the checkboxes for the items that they want to save in their Google Account. The tone should be motivating.">
+      {BOOKMARK_COUNT, plural,
+      =1 {1 bookmark is saved only to this device. To use it on your other devices, save it in your Google Account.}
+      other {{BOOKMARK_COUNT} bookmarks are saved only to this device. To use them on your other devices, save them in your Google Account.}
+      }
+    </message>
+    <message name="IDS_BATCH_UPLOAD_PROMO_SUBTITLE_BOOKMARKS_COMBO" desc="Subtitle of the Batch Upload promo. This promo appears to inform the user that there are items saved only to their device; this subtitle mentions how many bookmarks and other items are on the device. If the user chooses to save items in their Google Account, the user can access them on any device where they’re signed in to Chrome. This promo leads to the Batch Upload dialog, where the user can select the checkboxes for the items that they want to save in their Google Account. The tone should be motivating.">
+      {BOOKMARK_COUNT, plural,
+      =1 {1 bookmark and other items are saved only to this device. To use them on your other devices, save them in your Google Account.}
+      other {{BOOKMARK_COUNT} bookmarks and other items are saved only to this device. To use them on your other devices, save them in your Google Account.}
+      }
+    </message>
 
     <!-- Signout Confirmation Dialog Desktop -->
     <message name="IDS_SIGNOUT_CONFIRMATION_EXTENSIONS_SECTION_TITLE" desc="Title of the Extensions section in the Signout Confirmation dialog which allows users to remove extensions linked to their account when signing out.">
