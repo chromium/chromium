@@ -49,7 +49,6 @@ class PLATFORM_EXPORT UnacceleratedStaticBitmapImage final
   SkAlphaType GetAlphaType() const override {
     return GetSkImageInfo().alphaType();
   }
-  SkColorType GetSkColorType() const { return GetSkImageInfo().colorType(); }
   sk_sp<SkColorSpace> GetSkColorSpace() const override {
     return GetSkImageInfo().refColorSpace();
   }
@@ -57,7 +56,8 @@ class PLATFORM_EXPORT UnacceleratedStaticBitmapImage final
     return SkColorSpaceToGfxColorSpace(GetSkColorSpace());
   }
   viz::SharedImageFormat GetSharedImageFormat() const override {
-    return viz::SkColorTypeToSinglePlaneSharedImageFormat(GetSkColorType());
+    return viz::SkColorTypeToSinglePlaneSharedImageFormat(
+        GetSkImageInfo().colorType());
   }
 
  private:
