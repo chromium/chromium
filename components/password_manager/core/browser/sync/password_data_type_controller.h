@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/base/data_type.h"
@@ -20,14 +19,9 @@ class PrefService;
 
 namespace syncer {
 class DataTypeControllerDelegate;
-class SyncService;
 }  // namespace syncer
 
 namespace password_manager {
-
-namespace prefs {
-enum class UseUpmLocalAndSeparateStoresState;
-}
 
 // A class that manages the startup and shutdown of password sync.
 class PasswordDataTypeController : public syncer::DataTypeController,
@@ -42,8 +36,7 @@ class PasswordDataTypeController : public syncer::DataTypeController,
           delegate_for_transport_mode,
       std::unique_ptr<syncer::DataTypeLocalDataBatchUploader> batch_uploader,
       PrefService* pref_service,
-      signin::IdentityManager* identity_manager,
-      syncer::SyncService* sync_service);
+      signin::IdentityManager* identity_manager);
 
   PasswordDataTypeController(const PasswordDataTypeController&) = delete;
   PasswordDataTypeController& operator=(const PasswordDataTypeController&) =
@@ -65,14 +58,11 @@ class PasswordDataTypeController : public syncer::DataTypeController,
  private:
   const raw_ptr<PrefService> pref_service_;
   const raw_ptr<signin::IdentityManager> identity_manager_;
-  const raw_ptr<syncer::SyncService> sync_service_;
   syncer::SyncMode sync_mode_ = syncer::SyncMode::kFull;
 
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
       identity_manager_observation_{this};
-
-  base::WeakPtrFactory<PasswordDataTypeController> weak_ptr_factory_{this};
 };
 
 }  // namespace password_manager

@@ -10,7 +10,6 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -18,13 +17,11 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
-#include "components/sync/base/features.h"
 #include "components/sync/base/sync_mode.h"
 #include "components/sync/engine/configure_reason.h"
 #include "components/sync/service/configure_context.h"
 #include "components/sync/test/mock_data_type_controller_delegate.h"
 #include "components/sync/test/mock_data_type_local_data_batch_uploader.h"
-#include "components/sync/test/test_sync_service.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -52,7 +49,7 @@ class PasswordDataTypeControllerTest : public ::testing::Test {
     controller_ = std::make_unique<PasswordDataTypeController>(
         std::move(full_sync_delegate), std::move(transport_only_delegate),
         std::make_unique<syncer::MockDataTypeLocalDataBatchUploader>(),
-        &pref_service_, identity_test_env_.identity_manager(), &sync_service_);
+        &pref_service_, identity_test_env_.identity_manager());
   }
 
   PasswordDataTypeController* controller() { return controller_.get(); }
@@ -73,10 +70,10 @@ class PasswordDataTypeControllerTest : public ::testing::Test {
   }
 
  private:
+  // Needed by IdentityTestEnvironment.
   base::test::SingleThreadTaskEnvironment task_environment_;
   TestingPrefServiceSimple pref_service_;
   signin::IdentityTestEnvironment identity_test_env_;
-  syncer::TestSyncService sync_service_;
   std::unique_ptr<PasswordDataTypeController> controller_;
   raw_ptr<syncer::MockDataTypeControllerDelegate> full_sync_delegate_;
   raw_ptr<syncer::MockDataTypeControllerDelegate> transport_only_delegate_;
@@ -118,27 +115,12 @@ TEST_F(PasswordDataTypeControllerTest,
   controller()->LoadModels(context, base::DoNothing());
 }
 
-TEST_F(PasswordDataTypeControllerTest,
-       SetNoticePrefOnSigninIfSyncToSigninEnabled) {
-  base::test::ScopedFeatureList enable_sync_to_signin(
-      syncer::kReplaceSyncPromosWithSignInPromos);
+TEST_F(PasswordDataTypeControllerTest, SetNoticePrefOnSignin) {
   ASSERT_FALSE(pref_service()->GetBoolean(prefs::kAccountStorageNoticeShown));
 
   SignIn();
 
   EXPECT_TRUE(pref_service()->GetBoolean(prefs::kAccountStorageNoticeShown));
-}
-
-TEST_F(PasswordDataTypeControllerTest,
-       DoNotSetNoticePrefOnSigninIfSyncToSigninDisabled) {
-  base::test::ScopedFeatureList disable_sync_to_signin;
-  disable_sync_to_signin.InitAndDisableFeature(
-      syncer::kReplaceSyncPromosWithSignInPromos);
-  ASSERT_FALSE(pref_service()->GetBoolean(prefs::kAccountStorageNoticeShown));
-
-  SignIn();
-
-  EXPECT_FALSE(pref_service()->GetBoolean(prefs::kAccountStorageNoticeShown));
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
