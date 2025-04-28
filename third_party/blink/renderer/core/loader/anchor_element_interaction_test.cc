@@ -11,6 +11,7 @@
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
+#include "base/test/with_feature_override.h"
 #include "base/time/time.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "third_party/blink/public/common/features.h"
@@ -130,6 +131,53 @@ TEST_F(AnchorElementInteractionTest, SingleAnchor) {
   SendMouseDownEvent();
   base::RunLoop().RunUntilIdle();
   KURL expected_url = KURL("https://anchor1.com/");
+  EXPECT_EQ(1u, hosts_.size());
+  std::optional<KURL> url_received = hosts_[0]->url_received_;
+  EXPECT_TRUE(url_received.has_value());
+  EXPECT_EQ(expected_url, url_received);
+  EXPECT_EQ(PointerEventType::kOnPointerDown, hosts_[0]->event_type_);
+}
+
+class AnchorElementInteractionFragmentTest
+    : public base::test::WithFeatureOverride,
+      public AnchorElementInteractionTest {
+ public:
+  AnchorElementInteractionFragmentTest()
+      : base::test::WithFeatureOverride(
+            blink::kNoSamePageFragmentPreloadingAnchorTracking) {}
+};
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(AnchorElementInteractionFragmentTest);
+
+TEST_P(AnchorElementInteractionFragmentTest, SamePageFragment) {
+  String source("https://example.com/p1");
+  SimRequest main_resource(source, "text/html");
+  LoadURL(source);
+  main_resource.Complete(R"HTML(
+    <a href='#foo'>
+      <div style='padding: 0px; width: 400px; height: 400px;'></div>
+    </a>
+  )HTML");
+  SendMouseDownEvent();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(1u, hosts_.size());
+  EXPECT_EQ(1u, hosts_.size());
+  std::optional<KURL> url_received = hosts_[0]->url_received_;
+  EXPECT_EQ(url_received.has_value(), !IsParamFeatureEnabled());
+}
+
+TEST_F(AnchorElementInteractionTest, OtherPageFragment) {
+  String source("https://example.com/p1");
+  SimRequest main_resource(source, "text/html");
+  LoadURL(source);
+  main_resource.Complete(R"HTML(
+    <a href='bar.html#foo'>
+      <div style='padding: 0px; width: 400px; height: 400px;'></div>
+    </a>
+  )HTML");
+  SendMouseDownEvent();
+  base::RunLoop().RunUntilIdle();
+  KURL expected_url = KURL("https://example.com/bar.html#foo");
   EXPECT_EQ(1u, hosts_.size());
   std::optional<KURL> url_received = hosts_[0]->url_received_;
   EXPECT_TRUE(url_received.has_value());
