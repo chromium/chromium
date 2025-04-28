@@ -313,8 +313,7 @@ if (use_fuzzing_engine_with_lpm) {
 
     import_dirs = [ "//components/variations/proto" ]
 
-    proto_deps = [ "//components/variations/proto" ]
-    link_deps = [ "//components/variations/proto" ]
+    deps = [ "//components/variations/proto" ]
   }
   fuzzer_test("create_trial_from_study_fuzzer") {
     sources = [ "fuzzers/create_trial_from_study_fuzzer.cc" ]
