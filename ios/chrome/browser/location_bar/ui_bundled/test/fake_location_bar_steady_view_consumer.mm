@@ -7,14 +7,14 @@
 @implementation FakeLocationBarSteadyViewConsumer
 
 - (void)updateLocationText:(NSString*)string clipTail:(BOOL)clipTail {
-  _locationText = string;
+  _locationText = [string copy];
   _clipTail = clipTail;
 }
 
 - (void)updateLocationIcon:(UIImage*)icon
         securityStatusText:(NSString*)statusText {
   _icon = icon;
-  _statusText = statusText;
+  _statusText = [statusText copy];
 }
 
 - (void)updateLocationShareable:(BOOL)shareable {
