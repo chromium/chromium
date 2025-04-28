@@ -29,15 +29,17 @@ const NON_CDP_EVENTS = ['log', 'log.entryAdded'];
 
 describe('event', () => {
   describe('isCdpEvent', () => {
-    for (const cdpEvent of CDP_EVENTS)
+    for (const cdpEvent of CDP_EVENTS) {
       it(`should return true for CDP event '${cdpEvent}'`, () => {
         expect(isCdpEvent(cdpEvent)).to.be.true;
       });
+    }
 
-    for (const nonCdpEvent of NON_CDP_EVENTS)
+    for (const nonCdpEvent of NON_CDP_EVENTS) {
       it(`should return false for non-CDP event '${nonCdpEvent}'`, () => {
         expect(isCdpEvent(nonCdpEvent)).to.be.false;
       });
+    }
   });
 
   describe('assertSupportedEvent', () => {

@@ -61,7 +61,7 @@ export default [
   eslint.configs.recommended,
   eslintPrettierPluginRecommended,
   importPlugin.flatConfigs.typescript,
-  mochaPlugin.configs.flat.recommended,
+  mochaPlugin.configs.recommended,
   promisePlugin.configs['flat/recommended'],
   {
     name: 'JavaScript rules',
