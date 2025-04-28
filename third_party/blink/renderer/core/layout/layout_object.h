@@ -1067,7 +1067,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   inline bool IsCheckContent() const;
   inline bool IsBeforeContent() const;
   inline bool IsAfterContent() const;
-  inline bool IsPickerIconContent() const;
   inline bool IsMarkerContent() const;
   inline bool IsScrollButtonContent() const;
   inline bool IsScrollMarkerContent() const;
@@ -1075,9 +1074,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   inline bool IsBeforeOrAfterContent() const;
   static inline bool IsAfterContent(const LayoutObject* obj) {
     return obj && obj->IsAfterContent();
-  }
-  static inline bool IsPickerIconContent(const LayoutObject* obj) {
-    return obj && obj->IsPickerIconContent();
   }
 
   // Returns true if the text is generated (from, e.g., list marker,
@@ -4205,11 +4201,6 @@ inline bool LayoutObject::IsBeforeContent() const {
 inline bool LayoutObject::IsAfterContent() const {
   NOT_DESTROYED();
   return IsPseudoElementContent(kPseudoIdAfter);
-}
-
-inline bool LayoutObject::IsPickerIconContent() const {
-  NOT_DESTROYED();
-  return IsPseudoElementContent(kPseudoIdPickerIcon);
 }
 
 inline bool LayoutObject::IsMarkerContent() const {
