@@ -366,16 +366,6 @@ bool FFmpegAudioDecoder::ConfigureDecoder(const AudioDecoderConfig& config) {
   // Success!
   av_sample_format_ = codec_context_->sample_fmt;
 
-  if (codec_context_->ch_layout.nb_channels != config.channels()) {
-    MEDIA_LOG(ERROR, media_log_)
-        << "Audio configuration specified " << config.channels()
-        << " channels, but FFmpeg thinks the file contains "
-        << codec_context_->ch_layout.nb_channels << " channels";
-    ReleaseFFmpegResources();
-    state_ = DecoderState::kUninitialized;
-    return false;
-  }
-
   decoding_loop_ =
       std::make_unique<FFmpegDecodingLoop>(codec_context_.get(), true);
   ResetTimestampState(config);
