@@ -11,6 +11,11 @@ class AudioHandler {
         'canplaythrough', () => this.onCanPlayThrough_(), false);
     this.audioElement_.addEventListener('ended', () => this.onEnded_(), false);
 
+    // The extension system does not keep the main service worker awake even if
+    // we're doing work in this offscreen doc. Keep it awake while we're playing
+    // speech via this interval.
+    this.heartbeatId_ = 0;
+
     chrome.runtime.onMessage.addListener(message => {
       switch (message['command']) {
         case 'pause':
@@ -47,11 +52,18 @@ class AudioHandler {
     }
     this.audioElement_.play();
     chrome.runtime.sendMessage({command: 'onCanPlayThrough'});
+
+    this.heartbeatId_ = setInterval(this.onHeartbeat_, 1000);
   }
 
   onEnded_() {
     this.currentUtterance_ = null;
     chrome.runtime.sendMessage({command: 'onEnded'});
+    clearInterval(this.heartbeatId_);
+  }
+
+  onHeartbeat_() {
+    chrome.runtime.sendMessage({command: 'heartbeat'});
   }
 }
 
