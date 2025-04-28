@@ -107,7 +107,7 @@ struct NoticeStorageData {
   NoticeStorageData(const NoticeStorageData& data) = delete;
   NoticeStorageData(NoticeStorageData&& data);
   NoticeStorageData& operator=(NoticeStorageData&& data);
-  bool operator==(const NoticeStorageData& other) const = default;
+  bool operator==(const NoticeStorageData& other) const;
 
   static void RegisterJSONConverter(
       base::JSONValueConverter<NoticeStorageData>* converter);

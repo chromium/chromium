@@ -172,6 +172,13 @@ void PopulateV2NoticeData(PrefService* pref_service,
   }
 }
 
+void MaybeEraseV1Fields(PrefService* pref_service, std::string_view notice) {
+  ScopedDictPrefUpdate update(pref_service, kNoticeDataPath);
+  update->RemoveByDottedPath(CreatePrefPath(notice, kNoticeActionTakenKey));
+  update->RemoveByDottedPath(CreatePrefPath(notice, kNoticeActionTakenTimeKey));
+  update->RemoveByDottedPath(CreatePrefPath(notice, kNoticeLastShownKey));
+}
+
 }  // namespace
 
 std::optional<base::Time> GetNoticeFirstShownFromEvents(
@@ -228,6 +235,28 @@ NoticeStorageData::~NoticeStorageData() = default;
 NoticeStorageData::NoticeStorageData(NoticeStorageData&& data) = default;
 NoticeStorageData& NoticeStorageData::operator=(NoticeStorageData&& data) =
     default;
+
+bool NoticeStorageData::operator==(const NoticeStorageData& other) const {
+  if (schema_version != other.schema_version ||
+      chrome_version != other.chrome_version ||
+      notice_events.size() != other.notice_events.size()) {
+    return false;
+  }
+  for (size_t i = 0; i < notice_events.size(); ++i) {
+    const auto& lhs_event_ptr = notice_events[i];
+    const auto& rhs_event_ptr = other.notice_events[i];
+    if (!lhs_event_ptr && !rhs_event_ptr) {
+      continue;
+    }
+    if (!lhs_event_ptr || !rhs_event_ptr) {
+      return false;
+    }
+    if (!(*lhs_event_ptr == *rhs_event_ptr)) {
+      return false;
+    }
+  }
+  return true;
+}
 
 void NoticeStorageData::RegisterJSONConverter(
     base::JSONValueConverter<NoticeStorageData>* converter) {
@@ -343,12 +372,17 @@ void PrivacySandboxNoticeStorage::UpdateNoticeSchemaV2(
 
   for (const auto [notice, notice_value] : *data) {
     auto data_v1 = ConvertTo<V1MigrationData>(&notice_value);
-    if (!data_v1 || data_v1->schema_version != 1) {
+    if (!data_v1) {
       continue;
     }
-    PopulateV2NoticeData(pref_service, notice, ToV2Schema(*data_v1));
 
-    // TODO(boujane) Erase V1 Only fields.
+    if (data_v1->schema_version == 1) {
+      PopulateV2NoticeData(pref_service, notice, ToV2Schema(*data_v1));
+    }
+
+    // We always erase V1 fields. Even if the current version isn't V1. This is
+    // because the previously migration to V2 didn't erase the V1 fields.
+    MaybeEraseV1Fields(pref_service, notice);
   }
 }
 

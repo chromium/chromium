@@ -4,6 +4,7 @@
 
 #include "chrome/browser/privacy_sandbox/notice/notice_storage.h"
 
+#include "base/json/json_reader.h"
 #include "base/json/values_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -51,8 +52,26 @@ constexpr NoticeId kNotice2InCatalog = {
 constexpr NoticeId kNoticeIdNotInCatalog = {
     PrivacySandboxNotice::kMeasurementNotice, SurfaceType::kClankCustomTab};
 
-base::Time UnixMs(int64_t ms) {
-  return base::Time::FromMillisecondsSinceUnixEpoch(ms);
+base::Time TimeFromMs(int64_t ms) {
+  return base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(ms));
+}
+
+void ParseDict(base::Value::Dict* dict, std::string&& json_string) {
+  auto parsed_json_data = base::JSONReader::ReadDict(json_string);
+  ASSERT_TRUE(parsed_json_data.has_value());
+  *dict = std::move(*parsed_json_data);
+}
+
+std::vector<std::unique_ptr<EventTimePair>> BuildEvents(
+    std::initializer_list<std::pair<PrivacySandboxNoticeEvent, int64_t>>
+        raw_events) {
+  std::vector<std::unique_ptr<EventTimePair>> events;
+  events.reserve(raw_events.size());
+  for (const auto& raw_event : raw_events) {
+    events.emplace_back(std::make_unique<EventTimePair>(
+        EventTimePair{raw_event.first, TimeFromMs(raw_event.second)}));
+  }
+  return events;
 }
 
 // TODO(crbug.com/333406690): Make a test notice name list injectable so tests
@@ -96,6 +115,14 @@ class PrivacySandboxNoticeStorageTest : public testing::Test {
     map.emplace(kNotice2InCatalog, std::move(notice_2));
 
     return map;
+  }
+
+  void SetNoticeStateFromJSON(const std::string& notice_name,
+                              std::string&& json_data_string) {
+    base::Value::Dict notice_data_dict;
+    ParseDict(&notice_data_dict, std::move(json_data_string));
+    ScopedDictPrefUpdate update(prefs(), "privacy_sandbox.notices");
+    update->Set(notice_name, std::move(notice_data_dict));
   }
 
   base::HistogramTester histogram_tester_;
@@ -151,7 +178,7 @@ TEST_F(PrivacySandboxNoticeStorageTest, StartupStateEmitsUnknownState) {
                                static_cast<int>(NoticeActionTaken::kAck));
   update.Get().SetByDottedPath(
       "TopicsConsentDesktopModal.notice_action_taken_time",
-      base::TimeToValue(UnixMs(200)));
+      base::TimeToValue(TimeFromMs(200)));
   PrivacySandboxNoticeStorage::UpdateNoticeSchemaV2(prefs());
 
   notice_storage()->RecordStartupHistograms();
@@ -398,12 +425,12 @@ TEST_F(PrivacySandboxNoticeStorageV2Test,
   ScopedDictPrefUpdate update(prefs(), "privacy_sandbox.notices");
   update.Get().SetByDottedPath("TopicsConsentDesktopModal.schema_version", 1);
   update.Get().SetByDottedPath("TopicsConsentDesktopModal.notice_last_shown",
-                               base::TimeToValue(UnixMs(100)));
+                               base::TimeToValue(TimeFromMs(100)));
   update.Get().SetByDottedPath("TopicsConsentDesktopModal.notice_action_taken",
                                static_cast<int>(NoticeActionTaken::kAck));
   update.Get().SetByDottedPath(
       "TopicsConsentDesktopModal.notice_action_taken_time",
-      base::TimeToValue(UnixMs(200)));
+      base::TimeToValue(TimeFromMs(200)));
 
   PrivacySandboxNoticeStorage::UpdateNoticeSchemaV2(prefs());
 
@@ -419,12 +446,12 @@ TEST_F(PrivacySandboxNoticeStorageV2Test,
   ScopedDictPrefUpdate update(prefs(), "privacy_sandbox.notices");
   update.Get().SetByDottedPath("TopicsConsentDesktopModal.schema_version", 1);
   update.Get().SetByDottedPath("TopicsConsentDesktopModal.notice_last_shown",
-                               base::TimeToValue(UnixMs(100)));
+                               base::TimeToValue(TimeFromMs(100)));
   update.Get().SetByDottedPath("TopicsConsentDesktopModal.notice_action_taken",
                                static_cast<int>(NoticeActionTaken::kAck));
   update.Get().SetByDottedPath(
       "TopicsConsentDesktopModal.notice_action_taken_time",
-      base::TimeToValue(UnixMs(200)));
+      base::TimeToValue(TimeFromMs(200)));
 
   PrivacySandboxNoticeStorage::UpdateNoticeSchemaV2(prefs());
 
@@ -435,8 +462,8 @@ TEST_F(PrivacySandboxNoticeStorageV2Test,
 
   const NoticeEvents& events = notice_data->notice_events;
   EXPECT_THAT(events,
-              ElementsAre(Pointee(Eq(EventTimePair{kShown, UnixMs(100)})),
-                          Pointee(Eq(EventTimePair{kAck, UnixMs(200)}))));
+              ElementsAre(Pointee(Eq(EventTimePair{kShown, TimeFromMs(100)})),
+                          Pointee(Eq(EventTimePair{kAck, TimeFromMs(200)}))));
 }
 
 TEST_F(PrivacySandboxNoticeStorageV2Test,
@@ -444,7 +471,7 @@ TEST_F(PrivacySandboxNoticeStorageV2Test,
   ScopedDictPrefUpdate update(prefs(), "privacy_sandbox.notices");
   update.Get().SetByDottedPath("TopicsConsentDesktopModal.schema_version", 1);
   update.Get().SetByDottedPath("TopicsConsentDesktopModal.notice_last_shown",
-                               base::TimeToValue(UnixMs(500)));
+                               base::TimeToValue(TimeFromMs(500)));
 
   PrivacySandboxNoticeStorage::UpdateNoticeSchemaV2(prefs());
 
@@ -454,7 +481,7 @@ TEST_F(PrivacySandboxNoticeStorageV2Test,
   EXPECT_EQ(notice_data->schema_version, 2);
 
   EXPECT_THAT(notice_data->notice_events,
-              ElementsAre(Pointee(Eq(EventTimePair{kShown, UnixMs(500)}))));
+              ElementsAre(Pointee(Eq(EventTimePair{kShown, TimeFromMs(500)}))));
 }
 
 TEST_F(PrivacySandboxNoticeStorageV2Test, SchemaAlreadyUpToDateDoesNotMigrate) {
@@ -482,7 +509,7 @@ TEST_P(PrivacySandboxNoticeStorageV2ActionsTest,
                                static_cast<int>(std::get<0>(GetParam())));
   update.Get().SetByDottedPath(
       "TopicsConsentDesktopModal.notice_action_taken_time",
-      base::TimeToValue(UnixMs(200)));
+      base::TimeToValue(TimeFromMs(200)));
   PrivacySandboxNoticeStorage::UpdateNoticeSchemaV2(prefs());
 
   auto notice_data =
@@ -493,9 +520,8 @@ TEST_P(PrivacySandboxNoticeStorageV2ActionsTest,
   const NoticeEvents& events = notice_data->notice_events;
   auto notice_event = std::get<1>(GetParam());
   if (notice_event) {
-    EXPECT_THAT(
-        events,
-        ElementsAre(Pointee(Eq(EventTimePair{*notice_event, UnixMs(200)}))));
+    EXPECT_THAT(events, ElementsAre(Pointee(Eq(
+                            EventTimePair{*notice_event, TimeFromMs(200)}))));
   } else {
     EXPECT_THAT(events, ElementsAre());
   }
@@ -543,16 +569,115 @@ INSTANTIATE_TEST_SUITE_P(
             {NoticeActionTaken::kUnknownActionPreMigration, std::nullopt},
             {NoticeActionTaken::kTimedOut, std::nullopt}}));
 
-std::vector<std::unique_ptr<EventTimePair>> BuildEvents(
-    std::initializer_list<std::pair<PrivacySandboxNoticeEvent, int64_t>>
-        raw_events) {
-  std::vector<std::unique_ptr<EventTimePair>> events;
-  events.reserve(raw_events.size());
-  for (const auto& raw_event : raw_events) {
-    events.emplace_back(std::make_unique<EventTimePair>(
-        EventTimePair{raw_event.first, UnixMs(raw_event.second)}));
-  }
-  return events;
+TEST_F(PrivacySandboxNoticeStorageV2Test,
+       V1FieldsPresentSchemaV2_ErasesV1Fields) {
+  SetNoticeStateFromJSON("TopicsConsentDesktopModal", R"({
+    "schema_version": 2,
+    "notice_action_taken": 1,
+    "notice_action_taken_time": "333333",
+    "notice_last_shown": "222222",
+    "events": [{"event": 5, "timestamp": "333333"}]
+    })");
+
+  PrivacySandboxNoticeStorage::UpdateNoticeSchemaV2(prefs());
+
+  base::Value::Dict expected_stored_prefs;
+  ParseDict(&expected_stored_prefs, R"({
+    "schema_version": 2,
+    "events": [{"event": 5, "timestamp": "333333"}]
+    })");
+
+  const base::Value::Dict* actual_stored_prefs =
+      prefs()
+          ->GetDict("privacy_sandbox.notices")
+          .FindDict("TopicsConsentDesktopModal");
+  ASSERT_NE(nullptr, actual_stored_prefs);
+  EXPECT_EQ(*actual_stored_prefs, expected_stored_prefs);
+}
+
+TEST_F(PrivacySandboxNoticeStorageV2Test,
+       V1FieldsPresentAndDefaultWithSchemaV1_V1FieldsErased_MigratesToEmptyV2) {
+  SetNoticeStateFromJSON("TopicsConsentDesktopModal", R"({
+    "schema_version": 1,
+    "chrome_version": "1.2.3",
+    "notice_action_taken": 0,    // NoticeActionTaken::kNotSet
+    "notice_action_taken_time": "0",
+    "notice_last_shown": "0"
+    })");
+
+  PrivacySandboxNoticeStorage::UpdateNoticeSchemaV2(prefs());
+
+  base::Value::Dict expected_stored_prefs;
+  ParseDict(&expected_stored_prefs,
+            R"({"schema_version": 2, "chrome_version": "1.2.3"})");
+
+  const base::Value::Dict* actual_stored_prefs =
+      prefs()
+          ->GetDict("privacy_sandbox.notices")
+          .FindDict("TopicsConsentDesktopModal");
+  ASSERT_NE(nullptr, actual_stored_prefs);
+  EXPECT_EQ(*actual_stored_prefs, expected_stored_prefs);
+}
+
+TEST_F(
+    PrivacySandboxNoticeStorageV2Test,
+    V1FieldsAllDefaultAndAbsentWithSchemaV1_NoFieldsErased_MigratesToEmptyV2) {
+  SetNoticeStateFromJSON("TopicsConsentDesktopModal",
+                         R"({"schema_version": 1})");
+
+  PrivacySandboxNoticeStorage::UpdateNoticeSchemaV2(prefs());
+
+  base::Value::Dict expected_stored_prefs;
+  ParseDict(&expected_stored_prefs, R"({"schema_version": 2})");
+
+  const base::Value::Dict* actual_stored_prefs =
+      prefs()
+          ->GetDict("privacy_sandbox.notices")
+          .FindDict("TopicsConsentDesktopModal");
+  ASSERT_NE(nullptr, actual_stored_prefs);
+  EXPECT_EQ(*actual_stored_prefs, expected_stored_prefs);
+}
+
+TEST_F(PrivacySandboxNoticeStorageV2Test, NoNoticeData_UpdateDoesNothing) {
+  ASSERT_TRUE(prefs()->GetDict("privacy_sandbox.notices").empty());
+
+  PrivacySandboxNoticeStorage::UpdateNoticeSchemaV2(prefs());
+
+  EXPECT_TRUE(prefs()->GetDict("privacy_sandbox.notices").empty());
+  const base::Value::Dict* actual_stored_prefs =
+      prefs()
+          ->GetDict("privacy_sandbox.notices")
+          .FindDict("TopicsConsentDesktopModal");
+  EXPECT_EQ(nullptr, actual_stored_prefs);
+}
+
+TEST_F(PrivacySandboxNoticeStorageV2Test,
+       NonDefaultV1FieldsPresentSchemaV1_ErasesV1Fields_Migrates) {
+  SetNoticeStateFromJSON("TopicsConsentDesktopModal", R"({
+    "schema_version": 1,
+    "notice_action_taken": 4,    // NoticeActionTaken::kOptIn
+    "notice_last_shown": "100100",
+    "notice_action_taken_time": "222222"
+    })");
+
+  PrivacySandboxNoticeStorage::UpdateNoticeSchemaV2(prefs());
+
+  base::Value::Dict expected_stored_prefs;
+  // V1 fields are erased. Events are migrated.
+  ParseDict(&expected_stored_prefs, R"({
+    "schema_version": 2,
+    "events": [
+      { "event": 5, "timestamp": "100100" }, // kShown event
+      { "event": 2, "timestamp": "222222" }  // kOptIn event
+    ]
+    })");
+
+  const base::Value::Dict* actual_stored_prefs =
+      prefs()
+          ->GetDict("privacy_sandbox.notices")
+          .FindDict("TopicsConsentDesktopModal");
+  ASSERT_NE(nullptr, actual_stored_prefs);
+  EXPECT_EQ(*actual_stored_prefs, expected_stored_prefs);
 }
 
 class PrivacySandboxNoticeDataTest : public testing::Test {};
@@ -573,7 +698,7 @@ TEST_F(PrivacySandboxNoticeDataTest,
       {kShown, 200},
   });
 
-  EXPECT_EQ(GetNoticeFirstShownFromEvents(data), UnixMs(100));
+  EXPECT_EQ(GetNoticeFirstShownFromEvents(data), TimeFromMs(100));
 }
 
 TEST_F(PrivacySandboxNoticeDataTest,
@@ -585,7 +710,7 @@ TEST_F(PrivacySandboxNoticeDataTest,
       {kShown, 200},
   });
 
-  EXPECT_EQ(GetNoticeLastShownFromEvents(data), UnixMs(200));
+  EXPECT_EQ(GetNoticeLastShownFromEvents(data), TimeFromMs(200));
 }
 
 TEST_F(PrivacySandboxNoticeDataTest,
@@ -610,7 +735,7 @@ TEST_F(PrivacySandboxNoticeDataTest,
   });
 
   EXPECT_EQ(GetNoticeActionTakenForFirstShownFromEvents(data),
-            (EventTimePair{kAck, UnixMs(120)}));
+            (EventTimePair{kAck, TimeFromMs(120)}));
 }
 
 TEST_F(
@@ -626,7 +751,7 @@ TEST_F(
   });
 
   EXPECT_EQ(GetNoticeActionTakenForFirstShownFromEvents(data),
-            (EventTimePair{kSettings, UnixMs(150)}));
+            (EventTimePair{kSettings, TimeFromMs(150)}));
 }
 
 TEST_F(
@@ -644,7 +769,7 @@ TEST_F(
   });
 
   EXPECT_EQ(GetNoticeActionTakenForFirstShownFromEvents(data),
-            (EventTimePair{kSettings, UnixMs(150)}));
+            (EventTimePair{kSettings, TimeFromMs(150)}));
 }
 
 }  // namespace
