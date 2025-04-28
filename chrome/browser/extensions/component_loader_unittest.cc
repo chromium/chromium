@@ -20,6 +20,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/chrome_extension_registrar_delegate.h"
+#include "chrome/browser/extensions/extension_service_user_test_base.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
@@ -33,6 +34,7 @@
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/unloaded_extension_reason.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_set.h"
@@ -40,9 +42,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/test/test_screen.h"
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/browser/extensions/extension_service_user_test_base.h"
-#endif
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 class ExtensionUnloadedObserver : public ExtensionRegistryObserver {
@@ -255,10 +255,6 @@ TEST_F(ComponentLoaderTest, Remove) {
   EXPECT_EQ(0u, registry->enabled_extensions().size());
 }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-// TODO(crbug.com/408458901): Enable on Android when we have an extensions test
-// base class that works on Android. This test seems to depend on how
-// TestExtensionSystem initializes components.
 TEST_F(ComponentLoaderTest, LoadAll) {
   ExtensionRegistry* registry = ExtensionRegistry::Get(profile());
 
@@ -278,11 +274,7 @@ TEST_F(ComponentLoaderTest, LoadAll) {
 
   EXPECT_EQ(default_count + 1, registry->enabled_extensions().size());
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-// TODO(crbug.com/408458901): Port these to desktop Android when we have an
-// extensions unit test base class where we can move MaybeSetupTestUser().
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 class ComponentLoaderExtensionServiceTest
     : public ExtensionServiceUserTestBase {
  public:
@@ -321,7 +313,6 @@ TEST_F(ComponentLoaderExtensionServiceTest, LoadAll_NonUserEmitHistograms) {
   RunEmitUserHistogramsTest(/*nonuser_expected_total_count=*/1,
                             /*user_expected_total_count=*/0);
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Test is flaky. https://crbug.com/1306983
 TEST_F(ComponentLoaderTest, DISABLED_AddOrReplace) {

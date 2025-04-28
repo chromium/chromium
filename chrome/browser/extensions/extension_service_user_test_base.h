@@ -7,11 +7,14 @@
 
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
+#include "extensions/buildflags/buildflags.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #endif
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
