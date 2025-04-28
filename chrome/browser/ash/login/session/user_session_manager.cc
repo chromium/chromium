@@ -17,6 +17,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/metrics/login_unlock_throughput_recorder.h"
+#include "ash/public/cpp/token_handle_store.h"
 #include "ash/shell.h"
 #include "ash/wm/window_util.h"
 #include "base/base_paths.h"
@@ -87,6 +88,7 @@
 #include "chrome/browser/ash/login/signin/offline_signin_limiter.h"
 #include "chrome/browser/ash/login/signin/offline_signin_limiter_factory.h"
 #include "chrome/browser/ash/login/signin/token_handle_fetcher.h"
+#include "chrome/browser/ash/login/signin/token_handle_store_factory.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/net/alwayson_vpn_pre_connect_url_allowlist_service.h"
@@ -2134,10 +2136,10 @@ void UserSessionManager::OnUserProfileLoaded(Profile* profile,
       // If the user has gone through an online Gaia flow, then their LST is
       // guaranteed to have changed/created. We need to update the token handle,
       // regardless of the state of the previous token handle, if any.
-      if (!token_handle_util_->HasToken(user_context_.GetAccountId())) {
+      if (!token_handle_store_->HasToken(user_context_.GetAccountId())) {
         // New user.
         token_handle_fetcher_ = std::make_unique<TokenHandleFetcher>(
-            profile, token_handle_util_.get(), user_context_.GetAccountId());
+            profile, token_handle_store_.get(), user_context_.GetAccountId());
         token_handle_fetcher_->FillForNewUser(
             user_context_.GetAccessToken(),
             Sha1Digest(user_context_.GetRefreshToken()),
@@ -2563,7 +2565,6 @@ bool UserSessionManager::TokenHandlesEnabled() {
 
 void UserSessionManager::Shutdown() {
   token_handle_fetcher_.reset();
-  token_handle_util_.reset();
   token_observers_.clear();
   always_on_vpn_manager_.reset();
   child_policy_observer_.reset();
@@ -2572,6 +2573,7 @@ void UserSessionManager::Shutdown() {
   password_service_voted_.reset();
   password_was_saved_ = false;
   xdr_manager_.reset();
+  token_handle_store_ = nullptr;
 }
 
 void UserSessionManager::SetSwitchesForUser(
@@ -2629,15 +2631,17 @@ UserSessionManager::GetUserSessionManagerAsWeakPtr() {
 }
 
 void UserSessionManager::CreateTokenUtilIfMissing() {
-  if (!token_handle_util_.get())
-    token_handle_util_ = std::make_unique<TokenHandleUtil>();
+  if (!token_handle_store_) {
+    token_handle_store_ = TokenHandleStoreFactory::Get()->GetTokenHandleStore();
+  }
 }
 
 void UserSessionManager::UpdateTokenHandleIfRequired(
     Profile* const profile,
     const AccountId& account_id) {
-  if (!token_handle_util_->ShouldObtainHandle(account_id))
+  if (!token_handle_store_->ShouldObtainHandle(account_id)) {
     return;
+  }
   if (token_handle_fetcher_.get())
     return;
 
@@ -2647,7 +2651,7 @@ void UserSessionManager::UpdateTokenHandleIfRequired(
 void UserSessionManager::UpdateTokenHandle(Profile* const profile,
                                            const AccountId& account_id) {
   token_handle_fetcher_ = std::make_unique<TokenHandleFetcher>(
-      profile, token_handle_util_.get(), account_id);
+      profile, token_handle_store_.get(), account_id);
   token_handle_fetcher_->BackfillToken(
       base::BindOnce(&UserSessionManager::OnTokenHandleObtained,
                      GetUserSessionManagerAsWeakPtr()));

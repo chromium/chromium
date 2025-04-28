@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
@@ -112,11 +113,18 @@ TokenHandleStoreFactory::CreateTokenHandleStoreImpl() {
 
 TokenHandleStore* TokenHandleStoreFactory::GetTokenHandleStore() {
   if (token_handle_store_ == nullptr) {
-    // TODO(b/383733245): switch based on feature flag state.
-    token_handle_store_ = std::make_unique<TokenHandleUtil>();
+    if (features::IsUseTokenHandleStoreEnabled()) {
+      token_handle_store_ = CreateTokenHandleStoreImpl();
+    } else {
+      token_handle_store_ = std::make_unique<TokenHandleUtil>();
+    }
   }
 
   return token_handle_store_.get();
+}
+
+void TokenHandleStoreFactory::DestroyTokenHandleStore() {
+  token_handle_store_.reset();
 }
 
 }  // namespace ash

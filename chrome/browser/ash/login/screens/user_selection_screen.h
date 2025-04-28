@@ -9,12 +9,12 @@
 #include <string>
 #include <vector>
 
+#include "ash/public/cpp/token_handle_store.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/login/saml/password_sync_token_checkers_collection.h"
-#include "chrome/browser/ash/login/signin/token_handle_util.h"
 #include "chrome/browser/ash/login/user_online_signin_notifier.h"
 #include "chrome/browser/ash/system/system_clock.h"
 #include "chromeos/ash/components/dbus/cryptohome/rpc.pb.h"
@@ -130,8 +130,8 @@ class UserSelectionScreen
   // contained in the map, it is using the default authentication type.
   std::map<AccountId, proximity_auth::mojom::AuthType> user_auth_type_map_;
 
-  // Token handler util for checking user OAuth token status.
-  std::unique_ptr<TokenHandleUtil> token_handle_util_;
+  // Used for checking user OAuth token status.
+  raw_ptr<TokenHandleStore> token_handle_store_;
 
   // Helper to check whether a user needs dircrypto migration.
   std::unique_ptr<DircryptoMigrationChecker> dircrypto_migration_checker_;

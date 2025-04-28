@@ -244,6 +244,7 @@ void SigninErrorNotifier::RegisterPrefs(PrefRegistrySimple* registry) {
 void SigninErrorNotifier::Shutdown() {
   error_controller_->RemoveObserver(this);
   error_controller_ = nullptr;
+  token_handle_store_ = nullptr;
 }
 
 void SigninErrorNotifier::OnErrorChanged() {
