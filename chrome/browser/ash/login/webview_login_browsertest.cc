@@ -1276,7 +1276,18 @@ class ReauthTokenWebviewLoginTest : public ReauthWebviewLoginTest {
     user_with_invalid_token_ = login_manager_mixin_.users().back().account_id;
     cryptohome_mixin_.MarkUserAsExisting(user_with_invalid_token_);
     UserDataAuthClient::InitializeFake();
+  }
+
+  void SetUpOnMainThread() override {
+    ReauthWebviewLoginTest::SetUpOnMainThread();
     token_handle_store_ = TokenHandleStoreFactory::Get()->GetTokenHandleStore();
+    token_handle_store_->SetInvalidTokenForTesting(kTestTokenHandle);
+  }
+
+  void TearDownOnMainThread() override {
+    token_handle_store_->SetInvalidTokenForTesting(nullptr);
+    token_handle_store_ = nullptr;
+    ReauthWebviewLoginTest::TearDownOnMainThread();
   }
 
   void ShowReauthDialog() {
@@ -1300,16 +1311,6 @@ class ReauthTokenWebviewLoginTest : public ReauthWebviewLoginTest {
   }
 
  protected:
-  void SetUpInProcessBrowserTestFixture() override {
-    ReauthWebviewLoginTest::SetUpInProcessBrowserTestFixture();
-    token_handle_store_->SetInvalidTokenForTesting(kTestTokenHandle);
-  }
-
-  void TearDownInProcessBrowserTestFixture() override {
-    token_handle_store_->SetInvalidTokenForTesting(nullptr);
-    ReauthWebviewLoginTest::TearDownInProcessBrowserTestFixture();
-  }
-
   AccountId user_with_invalid_token_;
   CryptohomeMixin cryptohome_mixin_{&mixin_host_};
   FakeRecoveryServiceMixin fake_recovery_service_{&mixin_host_,
