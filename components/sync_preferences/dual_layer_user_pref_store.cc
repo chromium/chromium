@@ -11,10 +11,12 @@
 
 #include "base/auto_reset.h"
 #include "base/barrier_closure.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/observer_list.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
+#include "components/sync/base/features.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
 #include "components/sync_preferences/pref_model_associator_client.h"
@@ -22,6 +24,16 @@
 #include "components/sync_preferences/syncable_prefs_database.h"
 
 namespace sync_preferences {
+namespace {
+
+// This is the set of user selectable types that are relevant to
+// `DualLayerUserPrefStore`. This is used to detect no-op changes to the user
+// selected types efficiently.
+constexpr syncer::UserSelectableTypeSet kInterestingUserSelectableTypes = {
+    syncer::UserSelectableType::kPreferences,
+    syncer::UserSelectableType::kHistory};
+
+}  // namespace
 
 DualLayerUserPrefStore::UnderlyingPrefStoreObserver::
     UnderlyingPrefStoreObserver(DualLayerUserPrefStore* outer,
@@ -464,6 +476,20 @@ bool DualLayerUserPrefStore::ShouldGetValueFromAccountStore(
   if (metadata->is_history_opt_in_required() && !IsHistorySyncEnabled()) {
     return false;
   }
+  // Priority pref type is always active. This adds check to avoid syncing them
+  // if the user toggle is off. This however skips all the allowlisted priority
+  // prefs.
+  // TODO(crbug.com/412602018): This blocks account priorityprefs from being
+  // applied before Sync is initialized. Look for another way to handle this.
+  if (base::FeatureList::IsEnabled(
+          syncer::kSyncSupportAlwaysSyncingPriorityPreferences) &&
+      metadata->data_type() == syncer::PRIORITY_PREFERENCES &&
+      !interesting_user_selected_types_.Has(
+          syncer::UserSelectableType::kPreferences) &&
+      !pref_model_associator_client_->GetSyncablePrefsDatabase()
+           .IsPreferenceAlwaysSyncing(key)) {
+    return false;
+  }
   return true;
 }
 
@@ -701,7 +727,8 @@ base::flat_set<syncer::DataType> DualLayerUserPrefStore::GetActiveTypesForTest()
 }
 
 bool DualLayerUserPrefStore::IsHistorySyncEnabled() const {
-  return is_history_sync_enabled_;
+  return interesting_user_selected_types_.Has(
+      syncer::UserSelectableType::kHistory);
 }
 
 bool DualLayerUserPrefStore::IsHistorySyncEnabledForTest() const {
@@ -710,7 +737,17 @@ bool DualLayerUserPrefStore::IsHistorySyncEnabledForTest() const {
 
 void DualLayerUserPrefStore::SetIsHistorySyncEnabledForTest(
     bool is_history_sync_enabled) {
-  is_history_sync_enabled_ = is_history_sync_enabled;
+  if (is_history_sync_enabled) {
+    interesting_user_selected_types_.Put(syncer::UserSelectableType::kHistory);
+  } else {
+    interesting_user_selected_types_.Remove(
+        syncer::UserSelectableType::kHistory);
+  }
+}
+
+void DualLayerUserPrefStore::SetUserSelectedTypesForTest(
+    syncer::UserSelectableTypeSet user_selected_types) {
+  interesting_user_selected_types_ = user_selected_types;
 }
 
 void DualLayerUserPrefStore::OnSyncServiceInitialized(
@@ -721,19 +758,21 @@ void DualLayerUserPrefStore::OnSyncServiceInitialized(
 }
 
 void DualLayerUserPrefStore::OnStateChanged(syncer::SyncService* sync_service) {
-  bool is_history_sync_enabled =
-      sync_service->GetUserSettings()->GetSelectedTypes().Has(
-          syncer::UserSelectableType::kHistory);
-  if (is_history_sync_enabled == is_history_sync_enabled_) {
+  syncer::UserSelectableTypeSet user_selected_types =
+      sync_service->GetUserSettings()->GetSelectedTypes();
+  // Only retain the concerning types.
+  user_selected_types.RetainAll(kInterestingUserSelectableTypes);
+
+  if (user_selected_types == interesting_user_selected_types_) {
     return;
   }
 
   if (!pref_model_associator_client_) {
-    is_history_sync_enabled_ = is_history_sync_enabled;
+    interesting_user_selected_types_ = user_selected_types;
     return;
   }
 
-  // Store the old values for sensitive prefs in a map and only inform the
+  // Store the old values for account prefs in a map and only inform the
   // observers if the effective values change.
   // Note: std::optional is used as the value type since it makes the
   // comparison with the new values easier.
@@ -742,22 +781,19 @@ void DualLayerUserPrefStore::OnStateChanged(syncer::SyncService* sync_service) {
     auto metadata = pref_model_associator_client_->GetSyncablePrefsDatabase()
                         .GetSyncablePrefMetadata(pref_name);
     CHECK(metadata.has_value());
-    // Add effective value for sensitive prefs to `old_values`.
-    if (metadata->is_history_opt_in_required()) {
-      if (const base::Value* value = nullptr; GetValue(pref_name, &value)) {
-        old_values.emplace(pref_name, value->Clone());
-      } else {
-        // Put in std::nullopt to mark pref not existing in the store. This
-        // helps avoid an extra call to GetPrefNamesInAccount() later.
-        old_values.emplace(pref_name, std::nullopt);
-      }
+    if (const base::Value* value = nullptr; GetValue(pref_name, &value)) {
+      old_values.emplace(pref_name, value->Clone());
+    } else {
+      // Put in std::nullopt to mark pref not existing in the store. This
+      // helps avoid an extra call to GetPrefNamesInAccount() later.
+      old_values.emplace(pref_name, std::nullopt);
     }
   }
 
-  is_history_sync_enabled_ = is_history_sync_enabled;
+  interesting_user_selected_types_ = user_selected_types;
 
-  // The history sync state has changed. Check for any change in the effective
-  // values of any of the sensitive prefs as a consequence.
+  // The sync state change might have changed the effective value. Compare the
+  // old and new values and notify the observers if they change.
   for (const auto& [pref_name, old_value] : old_values) {
     std::optional<base::Value> new_value;
     if (const base::Value* value = nullptr; GetValue(pref_name, &value)) {

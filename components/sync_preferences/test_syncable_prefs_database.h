@@ -7,6 +7,7 @@
 
 #include <functional>
 #include <map>
+#include <set>
 #include <string>
 #include <string_view>
 
@@ -27,8 +28,12 @@ class TestSyncablePrefsDatabase : public SyncablePrefsDatabase {
 
   bool IsPreferenceAlwaysSyncing(std::string_view pref_name) const override;
 
+  void SetAlwaysSyncingPrefs(
+      const std::set<std::string_view>& always_syncing_prefs);
+
  private:
   PrefsMap syncable_prefs_map_;
+  std::set<std::string_view> always_syncing_prefs_;
 };
 
 }  // namespace sync_preferences

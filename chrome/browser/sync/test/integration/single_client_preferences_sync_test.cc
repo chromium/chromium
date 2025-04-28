@@ -1865,8 +1865,11 @@ class SingleClientDecouplePriorityPreferencesSyncTestWithFlagDisabled
     : public SingleClientPreferencesWithAccountStorageSyncTest {
  public:
   SingleClientDecouplePriorityPreferencesSyncTestWithFlagDisabled() {
-    feature_list_.InitAndDisableFeature(
-        syncer::kSyncSupportAlwaysSyncingPriorityPreferences);
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{syncer::kSeparateLocalAndAccountSearchEngines},
+        // This is needed to enable prefs in transport mode.
+        /*disabled_features=*/{
+            syncer::kSyncSupportAlwaysSyncingPriorityPreferences});
   }
 
  private:
@@ -1880,8 +1883,17 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().empty());
 
   ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+  ASSERT_TRUE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
+    syncer::UserSelectableType::kPreferences));
+  ASSERT_TRUE(
+      GetSyncService(0)->GetActiveDataTypes().Has(syncer::PREFERENCES));
+  ASSERT_TRUE(
+      GetSyncService(0)->GetActiveDataTypes().Has(syncer::PRIORITY_PREFERENCES));
+
   // Disable all user selectable types.
-  ASSERT_TRUE(GetClient(0)->DisableSyncForAllDatatypes());
+  GetSyncService(0)->GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false, syncer::UserSelectableTypeSet());
   ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
 
   // User toggle is off.
@@ -1896,8 +1908,19 @@ IN_PROC_BROWSER_TEST_F(
 
 class SingleClientDecouplePriorityPreferencesSyncTest
     : public SingleClientPreferencesWithAccountStorageSyncTest {
-  base::test::ScopedFeatureList feature_list_{
-      syncer::kSyncSupportAlwaysSyncingPriorityPreferences};
+ public:
+  SingleClientDecouplePriorityPreferencesSyncTest() {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{syncer::
+                                  kSyncSupportAlwaysSyncingPriorityPreferences,
+                              // This is needed to enable prefs in transport
+                              // mode.
+                              syncer::kSeparateLocalAndAccountSearchEngines},
+        /*disabled_features=*/{});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(SingleClientDecouplePriorityPreferencesSyncTest,
@@ -1906,8 +1929,17 @@ IN_PROC_BROWSER_TEST_F(SingleClientDecouplePriorityPreferencesSyncTest,
   ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().empty());
 
   ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+  ASSERT_TRUE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
+    syncer::UserSelectableType::kPreferences));
+  ASSERT_TRUE(
+      GetSyncService(0)->GetActiveDataTypes().Has(syncer::PREFERENCES));
+  ASSERT_TRUE(
+      GetSyncService(0)->GetActiveDataTypes().Has(syncer::PRIORITY_PREFERENCES));
+
   // Disable all user selectable types.
-  ASSERT_TRUE(GetClient(0)->DisableSyncForAllDatatypes());
+  GetSyncService(0)->GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false, syncer::UserSelectableTypeSet());
   ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
 
   // User toggle is off.
@@ -1919,6 +1951,117 @@ IN_PROC_BROWSER_TEST_F(SingleClientDecouplePriorityPreferencesSyncTest,
   // Priority preferences is still active.
   EXPECT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(
       syncer::PRIORITY_PREFERENCES));
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientDecouplePriorityPreferencesSyncTest,
+                       ShouldSyncAllowlistedPriorityPrefWithoutOptIn) {
+  ASSERT_TRUE(SetupClients());
+  // Regular priority pref.
+  GetRegistry(GetProfile(0))
+      ->RegisterStringPref(
+          sync_preferences::kSyncablePriorityPrefForTesting, "",
+          user_prefs::PrefRegistrySyncable::SYNCABLE_PRIORITY_PREF);
+  // Always syncing priority pref.
+  GetRegistry(GetProfile(0))
+      ->RegisterStringPref(
+          sync_preferences::kSyncableAlwaysSyncingPriorityPrefForTesting, "",
+          user_prefs::PrefRegistrySyncable::SYNCABLE_PRIORITY_PREF);
+
+  ASSERT_FALSE(GetSyncService(0)->GetActiveDataTypes().Has(
+      syncer::PRIORITY_PREFERENCES));
+
+  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
+  // Disable all user selectable types.
+  GetSyncService(0)->GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false, syncer::UserSelectableTypeSet());
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+
+  ASSERT_FALSE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
+      syncer::UserSelectableType::kPreferences));
+  // Priority preferences is still active.
+  EXPECT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(
+      syncer::PRIORITY_PREFERENCES));
+
+  InjectPreferenceToFakeServer(
+      syncer::PRIORITY_PREFERENCES,
+      sync_preferences::kSyncablePriorityPrefForTesting, base::Value("value1"));
+  InjectPreferenceToFakeServer(
+      syncer::PRIORITY_PREFERENCES,
+      sync_preferences::kSyncableAlwaysSyncingPriorityPrefForTesting,
+      base::Value("value1"));
+
+  // Only the allowlisted priority pref is synced.
+  EXPECT_TRUE(
+      PrefValueChecker(
+          GetPrefs(0),
+          sync_preferences::kSyncableAlwaysSyncingPriorityPrefForTesting,
+          base::Value("value1"))
+          .Wait());
+  // The regular priority pref is not synced.
+  EXPECT_EQ(
+      GetPrefs(0)->GetString(sync_preferences::kSyncablePriorityPrefForTesting),
+      "");
+
+  GetPrefs(0)->SetString(sync_preferences::kSyncablePriorityPrefForTesting,
+                         "value2");
+  GetPrefs(0)->SetString(
+      sync_preferences::kSyncableAlwaysSyncingPriorityPrefForTesting, "value2");
+  EXPECT_TRUE(
+      FakeServerPrefMatchesValueChecker(
+          syncer::PRIORITY_PREFERENCES,
+          sync_preferences::kSyncableAlwaysSyncingPriorityPrefForTesting,
+          ConvertPrefValueToValueInSpecifics(base::Value("value2")))
+          .Wait());
+  // The regular priority pref is not synced, remote is set to the old value.
+  EXPECT_THAT(
+      preferences_helper::GetPreferenceInFakeServer(
+          syncer::PRIORITY_PREFERENCES,
+          sync_preferences::kSyncablePriorityPrefForTesting, GetFakeServer())
+          ->value(),
+      ConvertPrefValueToValueInSpecifics(base::Value("value1")));
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientDecouplePriorityPreferencesSyncTest,
+                       ShouldSyncRegularPriorityPrefWithOptIn) {
+  ASSERT_TRUE(SetupClients());
+  // Regular syncable pref.
+  GetRegistry(GetProfile(0))
+      ->RegisterStringPref(
+          sync_preferences::kSyncablePriorityPrefForTesting, "",
+          user_prefs::PrefRegistrySyncable::SYNCABLE_PRIORITY_PREF);
+
+  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
+  // Disable all user selectable types except preferences.
+  GetSyncService(0)->GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false,
+      syncer::UserSelectableTypeSet(
+          {syncer::UserSelectableType::kPreferences}));
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+
+  ASSERT_TRUE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
+      syncer::UserSelectableType::kPreferences));
+  ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(
+      syncer::PRIORITY_PREFERENCES));
+
+  InjectPreferenceToFakeServer(
+      syncer::PRIORITY_PREFERENCES,
+      sync_preferences::kSyncablePriorityPrefForTesting, base::Value("value1"));
+
+  // The regular syncable pref is  synced.
+  EXPECT_TRUE(
+      PrefValueChecker(GetPrefs(0),
+                       sync_preferences::kSyncablePriorityPrefForTesting,
+                       base::Value("value1"))
+          .Wait());
+
+  GetPrefs(0)->SetString(sync_preferences::kSyncablePriorityPrefForTesting,
+                         "value2");
+  // The regular syncable pref is  synced.
+  EXPECT_TRUE(FakeServerPrefMatchesValueChecker(
+                  syncer::PRIORITY_PREFERENCES,
+                  sync_preferences::kSyncablePriorityPrefForTesting,
+                  ConvertPrefValueToValueInSpecifics(base::Value("value2")))
+                  .Wait());
 }
 
 }  // namespace
