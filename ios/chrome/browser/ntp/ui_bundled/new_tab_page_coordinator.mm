@@ -265,7 +265,7 @@
   // Indicates whether the fakebox was tapped as part of an omnibox focus event.
   BOOL _fakeboxTapped;
   // The account menu coordinator.
-  SigninCoordinator<StopAnimatedChromeCoordinator>* _accountMenuCoordinator;
+  SigninCoordinator* _accountMenuCoordinator;
   // Whether the signin menu is displayed on top of this NTP.
   BOOL _showSigninCommandInProgress;
 }

@@ -13,8 +13,7 @@ enum class AccessPoint : int;
 
 // Coordinates various Identity options in Chrome including signing in
 // using accounts on the device, opening Incognito, and adding an account.
-@interface ConsistencyPromoSigninCoordinator
-    : SigninCoordinator <StopAnimatedChromeCoordinator>
+@interface ConsistencyPromoSigninCoordinator : SigninCoordinator
 
 - (instancetype)
     initWithBaseViewController:(UIViewController*)viewController

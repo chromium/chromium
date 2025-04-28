@@ -55,7 +55,7 @@ enum class SignInHistorySyncStep {
 
 @implementation SignInAndHistorySyncCoordinator {
   // Sign-in or history sync coordinator, according to `_currentStep`.
-  ChromeCoordinator<StopAnimatedChromeCoordinator>* _childCoordinator;
+  AnimatedCoordinator* _childCoordinator;
   // The current step.
   SignInHistorySyncStep _currentStep;
   // Promo button used to trigger the sign-in.
@@ -108,7 +108,7 @@ enum class SignInHistorySyncStep {
   [self presentNextStepWithPreviousResult:SigninCoordinatorResultSuccess];
 }
 
-#pragma mark - StopAnimatedChromeCoordinator
+#pragma mark - AnimatedCoordinator
 
 - (void)stopAnimated:(BOOL)animated {
   [_childCoordinator stopAnimated:animated];
@@ -181,20 +181,17 @@ enum class SignInHistorySyncStep {
 }
 
 // Creates the current step coordinator according to `_currentStep`.
-- (ChromeCoordinator<StopAnimatedChromeCoordinator>*)
-    createPresentStepChildCoordinator {
+- (AnimatedCoordinator*)createPresentStepChildCoordinator {
   switch (_currentStep) {
     case SignInHistorySyncStep::kFullscreenSignin: {
       // TODO(crbug.com/375605572) Sends an actual continuation.
-      SigninCoordinator<StopAnimatedChromeCoordinator>* coordinator =
-          [[FullscreenSigninCoordinator alloc]
-                     initWithBaseViewController:self.baseViewController
-                                        browser:self.browser
-                                 screenProvider:[[SigninScreenProvider alloc]
-                                                    init]
-                                   contextStyle:self.contextStyle
-                                    accessPoint:self.accessPoint
-              changeProfileContinuationProvider:_continuationProvider];
+      SigninCoordinator* coordinator = [[FullscreenSigninCoordinator alloc]
+                 initWithBaseViewController:self.baseViewController
+                                    browser:self.browser
+                             screenProvider:[[SigninScreenProvider alloc] init]
+                               contextStyle:self.contextStyle
+                                accessPoint:self.accessPoint
+          changeProfileContinuationProvider:_continuationProvider];
       __weak __typeof(self) weakSelf = self;
       coordinator.signinCompletion =
           ^(SigninCoordinatorResult result, id<SystemIdentity>) {
@@ -203,7 +200,7 @@ enum class SignInHistorySyncStep {
       return coordinator;
     }
     case SignInHistorySyncStep::kBottomSheetSignin: {
-      SigninCoordinator<StopAnimatedChromeCoordinator>* coordinator =
+      SigninCoordinator* coordinator =
           [[ConsistencyPromoSigninCoordinator alloc]
               initWithBaseViewController:self.baseViewController
                                  browser:self.browser
@@ -220,15 +217,14 @@ enum class SignInHistorySyncStep {
     }
     case SignInHistorySyncStep::kInstantSignin: {
       // TODO(crbug.com/375605572) Sends an actual continuation.
-      SigninCoordinator<StopAnimatedChromeCoordinator>* coordinator =
-          [[InstantSigninCoordinator alloc]
-              initWithBaseViewController:self.baseViewController
-                                 browser:self.browser
-                                identity:nil
-                            contextStyle:self.contextStyle
-                             accessPoint:self.accessPoint
-                             promoAction:_promoAction
-                    continuationProvider:_continuationProvider];
+      SigninCoordinator* coordinator = [[InstantSigninCoordinator alloc]
+          initWithBaseViewController:self.baseViewController
+                             browser:self.browser
+                            identity:nil
+                        contextStyle:self.contextStyle
+                         accessPoint:self.accessPoint
+                         promoAction:_promoAction
+                continuationProvider:_continuationProvider];
       __weak __typeof(self) weakSelf = self;
       coordinator.signinCompletion =
           ^(SigninCoordinatorResult result, id<SystemIdentity>) {

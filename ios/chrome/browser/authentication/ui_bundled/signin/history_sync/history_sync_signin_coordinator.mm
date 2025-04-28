@@ -50,7 +50,7 @@
   [_syncPopupCoordinator start];
 }
 
-#pragma mark - StopAnimatedChromeCoordinator
+#pragma mark - AnimatedCoordinator
 
 - (void)stopAnimated:(BOOL)animated {
   [_syncPopupCoordinator stopAnimated:animated];

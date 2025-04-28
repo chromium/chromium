@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_HISTORY_SYNC_HISTORY_SYNC_POPUP_COORDINATOR_H_
 #define IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_HISTORY_SYNC_HISTORY_SYNC_POPUP_COORDINATOR_H_
 
-#import "ios/chrome/browser/authentication/ui_bundled/signin/stop_animated_chrome_coordinator.h"
+#import "ios/chrome/browser/shared/coordinator/chrome_coordinator/animated_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
 enum class SigninContextStyle;
@@ -28,8 +28,7 @@ typedef NS_ENUM(NSUInteger, SigninCoordinatorResult);
 @end
 
 // Coordinator to present the History Sync Opt-In screen.
-@interface HistorySyncPopupCoordinator
-    : ChromeCoordinator <StopAnimatedChromeCoordinator>
+@interface HistorySyncPopupCoordinator : AnimatedCoordinator
 
 // delegate for HistorySyncCoordinator.
 @property(nonatomic, weak) id<HistorySyncPopupCoordinatorDelegate> delegate;

@@ -9,8 +9,7 @@
 
 // Coordinator to present the History Sync Opt-In screen.
 // This requires the user to be signed in already.
-@interface HistorySyncSigninCoordinator
-    : SigninCoordinator <StopAnimatedChromeCoordinator>
+@interface HistorySyncSigninCoordinator : SigninCoordinator
 
 @end
 

@@ -31,7 +31,6 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator+protected.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin/stop_animated_chrome_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signout_action_sheet/signout_action_sheet_coordinator.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_service.h"
@@ -41,6 +40,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/settings_root_view_controlling.h"
 #import "ios/chrome/browser/settings/ui_bundled/sync/sync_encryption_passphrase_table_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/sync/sync_encryption_table_view_controller.h"
+#import "ios/chrome/browser/shared/coordinator/chrome_coordinator/animated_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -96,7 +96,7 @@
   base::ScopedClosureRunner _activityOverlayCallback;
   // The child signin coordinator if it’s open. It may be presented by the
   // Manage Account’s coordinator view controller.
-  SigninCoordinator<StopAnimatedChromeCoordinator>* _signinCoordinator;
+  SigninCoordinator* _signinCoordinator;
   // Clicked view, used to anchor the menu to it when using
   // UIModalPresentationPopover mode
   UIView* _anchorView;
@@ -175,6 +175,8 @@
                                       completion:nil];
 }
 
+#pragma mark - AnimatedCoordinator
+
 - (void)stopAnimated:(BOOL)animated {
   // TODO(crbug.com/336719423): Change condition to CHECK(_mediator). But
   // first inform the parent coordinator at didTapClose that this view was
@@ -198,7 +200,7 @@
   _identityManager = nil;
   _syncService = nullptr;
   _accountManagerService = nullptr;
-  [super stop];
+  [super stopAnimated:animated];
 }
 
 #pragma mark - UIAdaptivePresentationControllerDelegate

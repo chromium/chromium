@@ -27,8 +27,8 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator+protected.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin/stop_animated_chrome_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
+#import "ios/chrome/browser/shared/coordinator/chrome_coordinator/animated_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -67,8 +67,7 @@
 // `self.defaultAccountCoordinator.selectedIdentity`.
 @property(nonatomic, strong, readonly) id<SystemIdentity> selectedIdentity;
 // Coordinator to add an account to the device.
-@property(nonatomic, strong)
-    SigninCoordinator<StopAnimatedChromeCoordinator>* addAccountCoordinator;
+@property(nonatomic, strong) SigninCoordinator* addAccountCoordinator;
 
 @property(nonatomic, strong)
     ConsistencyPromoSigninMediator* consistencyPromoSigninMediator;
@@ -82,6 +81,7 @@
 }
 
 #pragma mark - Public
+
 - (instancetype)
     initWithBaseViewController:(UIViewController*)viewController
                        browser:(Browser*)browser
@@ -133,7 +133,7 @@
             continuationProvider:continuationProvider];
 }
 
-#pragma mark - SigninCoordinator
+#pragma mark - ChromeCoordinator
 
 - (void)start {
   [super start];
@@ -185,6 +185,8 @@
                                         animated:YES
                                       completion:nil];
 }
+
+#pragma mark - SigninCoordinator
 
 - (void)runCompletionWithSigninResult:(SigninCoordinatorResult)signinResult
                    completionIdentity:(id<SystemIdentity>)completionIdentity {

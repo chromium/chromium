@@ -6,7 +6,7 @@
 #define IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_FULLSCREEN_SIGNIN_SCREEN_COORDINATOR_FULLSCREEN_SIGNIN_SCREEN_COORDINATOR_H_
 
 #import "ios/chrome/browser/authentication/ui_bundled/change_profile_continuation_provider.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin/stop_animated_chrome_coordinator.h"
+#import "ios/chrome/browser/shared/coordinator/chrome_coordinator/animated_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
 @protocol FirstRunScreenDelegate;
@@ -18,8 +18,7 @@ enum class PromoAction : int;
 
 // Coordinator responsible for presenting the fullscreen sign-in UI.
 // It is a child coordinator managed by the FullscreenSigninCoordinator.
-@interface FullscreenSigninScreenCoordinator
-    : ChromeCoordinator <StopAnimatedChromeCoordinator>
+@interface FullscreenSigninScreenCoordinator : AnimatedCoordinator
 
 // Initiates a FullscreenSigninScreenCoordinator with `navigationController`,
 // `browser` and `delegate`.

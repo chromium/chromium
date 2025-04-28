@@ -79,8 +79,7 @@ TEST_F(TrustedVaultReauthenticationCoordinatorTest, TestCancel) {
       syncer::TrustedVaultUserActionTriggerForUMA::kSettings;
   signin_metrics::AccessPoint accessPoint =
       signin_metrics::AccessPoint::kStartPage;
-  SigninCoordinator<
-      StopAnimatedChromeCoordinator>* signinCoordinator = [SigninCoordinator
+  SigninCoordinator* signinCoordinator = [SigninCoordinator
       trustedVaultReAuthenticationCoordinatorWithBaseViewController:
           base_view_controller_
                                                             browser:browser()

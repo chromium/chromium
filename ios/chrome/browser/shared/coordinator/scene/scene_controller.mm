@@ -465,8 +465,7 @@ SystemIdentityManager::IteratorResult IdentitiesOnDevice(
 // The coordinator used to control sign-in UI flows. Lazily created the first
 // time it is accessed. Use -[startSigninCoordinatorWithCompletion:] to start
 // the coordinator.
-@property(nonatomic, strong)
-    SigninCoordinator<StopAnimatedChromeCoordinator>* signinCoordinator;
+@property(nonatomic, strong) SigninCoordinator* signinCoordinator;
 
 // YES if the process of dismissing the sign-in prompt is from an external
 // trigger and is currently ongoing. An external trigger isn't done from the
@@ -1439,9 +1438,6 @@ SystemIdentityManager::IteratorResult IdentitiesOnDevice(
 - (void)teardownUI {
   // The UI should be stopped before the models they observe are stopped.
   [self stopSigninCoordinatorAnimated:NO fromExternalTrigger:NO];
-  // `self.signinCoordinator.signinCompletion()` was called in the interrupt
-  // method. Therefore now `self.signinCoordinator` is now stopped, and
-  // `self.signinCoordinator` is now nil.
   DCHECK(!self.signinCoordinator)
       << base::SysNSStringToUTF8([self.signinCoordinator description]);
 
@@ -2234,14 +2230,12 @@ using UserFeedbackDataCallback =
       << base::SysNSStringToUTF8([self.signinCoordinator description]);
   Browser* browser = self.mainInterface.browser;
   UIViewController* baseViewController = self.mainInterface.viewController;
-  SigninCoordinator<StopAnimatedChromeCoordinator>* accountMenuCoordinator =
-      [SigninCoordinator
-          accountMenuCoordinatorWithBaseViewController:baseViewController
-                                               browser:browser
-                                          contextStyle:SigninContextStyle::
-                                                           kDefault
-                                            anchorView:nil
-                                           accessPoint:accessPoint];
+  SigninCoordinator* accountMenuCoordinator = [SigninCoordinator
+      accountMenuCoordinatorWithBaseViewController:baseViewController
+                                           browser:browser
+                                      contextStyle:SigninContextStyle::kDefault
+                                        anchorView:nil
+                                       accessPoint:accessPoint];
   self.signinCoordinator = accountMenuCoordinator;
   // TODO(crbug.com/336719423): Record signin metrics based on the
   // selected action from the account switcher.
@@ -4015,7 +4009,7 @@ using UserFeedbackDataCallback =
   }
 }
 
-// Interrupts the sign-in coordinator actions and dismisses its views either
+// Stops the sign-in coordinator actions and dismisses its views either
 // with or without animation.
 - (void)stopSigninCoordinatorAnimated:(BOOL)animated
                   fromExternalTrigger:(BOOL)external {
@@ -4026,8 +4020,6 @@ using UserFeedbackDataCallback =
     self.dismissingSigninPromptFromExternalTrigger = YES;
   }
 
-  CHECK([self.signinCoordinator
-      conformsToProtocol:@protocol(StopAnimatedChromeCoordinator)]);
   [self.signinCoordinator stopAnimated:animated];
   SigninCoordinatorCompletionCallback signinCompletion =
       self.signinCoordinator.signinCompletion;

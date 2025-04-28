@@ -7,13 +7,11 @@
 
 #import "ios/chrome/browser/authentication/ui_bundled/signin/add_account_signin/add_account_signin_enums.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin/stop_animated_chrome_coordinator.h"
 
 // Coordinates adding an account with different intents:
 //  + adding account from the settings
 //  + reauthentication
-@interface AddAccountSigninCoordinator
-    : SigninCoordinator <StopAnimatedChromeCoordinator>
+@interface AddAccountSigninCoordinator : SigninCoordinator
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser

@@ -20,9 +20,9 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_history_sync/signin_and_history_sync_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_screen_provider.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin/stop_animated_chrome_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/trusted_vault_reauthentication/trusted_vault_reauthentication_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/two_screens_signin/two_screens_signin_coordinator.h"
+#import "ios/chrome/browser/shared/coordinator/chrome_coordinator/animated_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -54,7 +54,7 @@ using signin_metrics::PromoAction;
   registry->RegisterDictionaryPref(prefs::kSigninHasAcceptedManagementDialog);
 }
 
-+ (SigninCoordinator<StopAnimatedChromeCoordinator>*)
++ (SigninCoordinator*)
     instantSigninCoordinatorWithBaseViewController:
         (UIViewController*)viewController
                                            browser:(Browser*)browser
@@ -79,7 +79,7 @@ using signin_metrics::PromoAction;
             continuationProvider:continuationProvider];
 }
 
-+ (SigninCoordinator<StopAnimatedChromeCoordinator>*)
++ (SigninCoordinator*)
     fullscreenSigninCoordinatorWithBaseViewController:
         (UIViewController*)viewController
                                               browser:(Browser*)browser
@@ -101,7 +101,7 @@ using signin_metrics::PromoAction;
       changeProfileContinuationProvider:changeProfileContinuationProvider];
 }
 
-+ (SigninCoordinator<StopAnimatedChromeCoordinator>*)
++ (SigninCoordinator*)
     upgradeSigninPromoCoordinatorWithBaseViewController:
         (UIViewController*)viewController
                                                 browser:(Browser*)browser
@@ -122,7 +122,7 @@ using signin_metrics::PromoAction;
             continuationProvider:changeProfileContinuationProvider];
 }
 
-+ (SigninCoordinator<StopAnimatedChromeCoordinator>*)
++ (SigninCoordinator*)
     addAccountCoordinatorWithBaseViewController:
         (UIViewController*)viewController
                                         browser:(Browser*)browser
@@ -142,7 +142,7 @@ using signin_metrics::PromoAction;
             continuationProvider:continuationProvider];
 }
 
-+ (SigninCoordinator<StopAnimatedChromeCoordinator>*)
++ (SigninCoordinator*)
     primaryAccountReauthCoordinatorWithBaseViewController:
         (UIViewController*)viewController
                                                   browser:(Browser*)browser
@@ -166,7 +166,7 @@ using signin_metrics::PromoAction;
             continuationProvider:continuationProvider];
 }
 
-+ (SigninCoordinator<StopAnimatedChromeCoordinator>*)
++ (SigninCoordinator*)
     signinAndSyncReauthCoordinatorWithBaseViewController:
         (UIViewController*)viewController
                                                  browser:(Browser*)browser
@@ -190,7 +190,7 @@ using signin_metrics::PromoAction;
             continuationProvider:continuationProvider];
 }
 
-+ (SigninCoordinator<StopAnimatedChromeCoordinator>*)
++ (SigninCoordinator*)
     trustedVaultReAuthenticationCoordinatorWithBaseViewController:
         (UIViewController*)viewController
                                                           browser:
@@ -220,7 +220,7 @@ using signin_metrics::PromoAction;
                      accessPoint:accessPoint];
 }
 
-+ (SigninCoordinator<StopAnimatedChromeCoordinator>*)
++ (SigninCoordinator*)
     consistencyPromoSigninCoordinatorWithBaseViewController:
         (UIViewController*)viewController
                                                     browser:(Browser*)browser
@@ -243,7 +243,7 @@ using signin_metrics::PromoAction;
                    continuationProvider:continuationProvider];
 }
 
-+ (SigninCoordinator<StopAnimatedChromeCoordinator>*)
++ (SigninCoordinator*)
     signinAndHistorySyncCoordinatorWithBaseViewController:
         (UIViewController*)viewController
                                                   browser:(Browser*)browser
@@ -272,7 +272,7 @@ using signin_metrics::PromoAction;
             continuationProvider:continuationProvider];
 }
 
-+ (SigninCoordinator<StopAnimatedChromeCoordinator>*)
++ (SigninCoordinator*)
     accountMenuCoordinatorWithBaseViewController:
         (UIViewController*)viewController
                                          browser:(Browser*)browser
@@ -289,7 +289,7 @@ using signin_metrics::PromoAction;
                                                      accessPoint:accessPoint];
 }
 
-+ (SigninCoordinator<StopAnimatedChromeCoordinator>*)
++ (SigninCoordinator*)
     historySyncCoordinatorWithBaseViewController:
         (UIViewController*)viewController
                                          browser:(Browser*)browser
@@ -314,24 +314,7 @@ using signin_metrics::PromoAction;
   DCHECK(self.signinCompletion);
 }
 
-- (void)stop {
-  // If you are an user of a SigninCoordinator<StopAnimatedChromeCoordinator>
-  // subclass, you can stop it by calling -stop or -stopAnimated.
-  CHECK([self conformsToProtocol:@protocol(StopAnimatedChromeCoordinator)],
-        base::NotFatalUntil::M145);
-  SigninCoordinator<StopAnimatedChromeCoordinator>* stopAnimatedSelf =
-      base::apple::ObjCCast<SigninCoordinator<StopAnimatedChromeCoordinator>>(
-          self);
-  [stopAnimatedSelf stopAnimated:NO];
-}
-
 #pragma mark - Protected
-
-// TODO(crbug.com/381444097): implements this protocol in the header file once
-// each class inheriting SigninCoordinator implements this protocol.
-- (void)stopAnimated:(BOOL)animated {
-  [super stop];
-}
 
 - (void)runCompletionWithSigninResult:(SigninCoordinatorResult)signinResult
                    completionIdentity:(id<SystemIdentity>)completionIdentity {

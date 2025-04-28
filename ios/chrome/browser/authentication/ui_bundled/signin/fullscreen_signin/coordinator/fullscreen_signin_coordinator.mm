@@ -11,11 +11,11 @@
 #import "ios/chrome/browser/authentication/ui_bundled/fullscreen_signin_screen/coordinator/fullscreen_signin_screen_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator+protected.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin/stop_animated_chrome_coordinator.h"
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_screen_delegate.h"
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_util.h"
 #import "ios/chrome/browser/screen/ui_bundled/screen_provider.h"
 #import "ios/chrome/browser/screen/ui_bundled/screen_type.h"
+#import "ios/chrome/browser/shared/coordinator/chrome_coordinator/animated_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
@@ -24,8 +24,7 @@
 @interface FullscreenSigninCoordinator () <FirstRunScreenDelegate>
 
 @property(nonatomic, strong) ScreenProvider* screenProvider;
-@property(nonatomic, strong)
-    ChromeCoordinator<StopAnimatedChromeCoordinator>* childCoordinator;
+@property(nonatomic, strong) AnimatedCoordinator* childCoordinator;
 
 // The view controller used by FullscreenSigninCoordinator.
 @property(nonatomic, strong) UINavigationController* navigationController;
@@ -75,7 +74,7 @@
                                       completion:nil];
 }
 
-#pragma mark - StopAnimatedChromeCoordinator
+#pragma mark - AnimatedCoordinator
 
 - (void)stopAnimated:(BOOL)animated {
   // Stop the child coordinator UI first before dismissing the forced
@@ -130,8 +129,7 @@
 }
 
 // Creates a screen coordinator according to `type`.
-- (ChromeCoordinator<StopAnimatedChromeCoordinator>*)
-    createChildCoordinatorWithScreenType:(ScreenType)type {
+- (AnimatedCoordinator*)createChildCoordinatorWithScreenType:(ScreenType)type {
   switch (type) {
     case kSignIn:
       return [[FullscreenSigninScreenCoordinator alloc]
