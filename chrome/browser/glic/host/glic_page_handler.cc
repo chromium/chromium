@@ -418,10 +418,6 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     glic_service_->ResizePanel(size, duration, std::move(callback));
   }
 
-  void EnableDragResize(bool enabled) override {
-    glic_service_->window_controller().EnableDragResize(enabled);
-  }
-
   void GetContextFromFocusedTab(
       glic::mojom::GetTabContextOptionsPtr options,
       GetContextFromFocusedTabCallback callback) override {
@@ -849,6 +845,10 @@ void GlicPageHandler::ResizeWidget(const gfx::Size& size,
                                    base::TimeDelta duration,
                                    ResizeWidgetCallback callback) {
   GetGlicService()->ResizePanel(size, duration, std::move(callback));
+}
+
+void GlicPageHandler::EnableDragResize(bool enabled) {
+  GetGlicService()->window_controller().EnableDragResize(enabled);
 }
 
 void GlicPageHandler::WebUiStateChanged(glic::mojom::WebUiState new_state) {

@@ -108,6 +108,11 @@ interface PageHandler {
   // If `duration` is 0 or less, instantly resize, otherwise run an animation.
   ResizeWidget(gfx.mojom.Size size, mojo_base.mojom.TimeDelta duration) => ();
 
+  // Set whether the panel can be manually resized, or if the panel hasn't been
+  // created yet, whether it should be resizable when created. No effect if the
+  // GlicUserResize feature flag is disabled.
+  EnableDragResize(bool enabled);
+
   // Notifies the PageHandler that the state of the WebUI has changed.
   WebUiStateChanged(WebUiState new_state);
 };
@@ -395,11 +400,6 @@ interface WebClientHandler {
   // If the widget doesn't exist yet, `size` will be used as its initial size
   // when it's created later.
   ResizeWidget(gfx.mojom.Size size, mojo_base.mojom.TimeDelta duration) => ();
-
-  // Set whether the panel can be manually resized, or if the panel hasn't been
-  // created yet, whether it should be resizable when created. No effect if the
-  // GlicUserResize feature flag is disabled.
-  EnableDragResize(bool enabled);
 
   // Returns the screenshot result or error reason. 'screenshot' is null when an
   // error occurs during capture. This can also fail if the user cancels the

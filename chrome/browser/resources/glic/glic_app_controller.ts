@@ -68,6 +68,11 @@ export class GlicAppController implements PageInterface, WebviewDelegate,
   private simulateNoConnection: boolean =
       loadTimeData.getBoolean('simulateNoConnection');
 
+  private guestResizeEnabled: boolean = false;
+
+  // Width for non-resizable panel.
+  private defaultWidth: number = 352;
+
   // Last seen width and height of guest panel.
   private lastWidth: number = 400;
   private lastHeight: number = 80;
@@ -167,6 +172,8 @@ export class GlicAppController implements PageInterface, WebviewDelegate,
     this.state = newState;
     this.states.get(this.state)!.onEnter?.call(this);
     this.browserProxy.handler.webUiStateChanged(this.state);
+    this.browserProxy.handler.enableDragResize(
+        this.state === WebUiState.kReady && this.guestResizeEnabled);
   }
 
   private stateDescriptor(): StateDescriptor|undefined {
@@ -375,9 +382,12 @@ export class GlicAppController implements PageInterface, WebviewDelegate,
       this.browserProxy.handler.resizeWidget(
           {width: this.lastWidth, height: this.lastHeight}, transitionDuration);
     } else {
-      const newRect = $[id].getBoundingClientRect();
       this.browserProxy.handler.resizeWidget(
-          {width: newRect.width, height: newRect.height}, transitionDuration);
+          {
+            width: this.defaultWidth,
+            height: $[id].getBoundingClientRect().height,
+          },
+          transitionDuration);
     }
   }
 
@@ -432,6 +442,14 @@ export class GlicAppController implements PageInterface, WebviewDelegate,
     this.lastHeight = request.height;
   }
 
+  // Called when the web client requests to enable manual drag resize.
+  enableDragResize(enabled: boolean) {
+    this.guestResizeEnabled = enabled;
+    if (this.state === WebUiState.kReady) {
+      this.browserProxy.handler.enableDragResize(this.guestResizeEnabled);
+    }
+  }
+
   // Called when the notifyPanelWillOpen promise resolves to open the panel
   // when triggered from the browser.
   webClientReady(): void {
@@ -460,6 +478,7 @@ export class GlicAppController implements PageInterface, WebviewDelegate,
         this.setState(WebUiState.kUnresponsive);
         break;
       case WebClientState.ERROR:
+        this.guestResizeEnabled = false;
         this.setState(WebUiState.kError);
         break;
     }

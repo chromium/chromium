@@ -42,6 +42,9 @@ export interface ApiHostEmbedder {
   // Called when the guest requests resize.
   onGuestResizeRequest(size: {width: number, height: number}): void;
 
+  // Called when the guest requests to enable manual drag resize.
+  enableDragResize(enabled: boolean): void;
+
   // Called when the notifyPanelWillOpen promise resolves to open the panel
   // when triggered from the browser.
   webClientReady(): void;
@@ -345,7 +348,7 @@ class HostMessageHandler implements HostMessageHandlerInterface {
   }
 
   glicBrowserEnableDragResize(request: {enabled: boolean}) {
-    return this.handler.enableDragResize(request.enabled);
+    return this.embedder.enableDragResize(request.enabled);
   }
 
   async glicBrowserCaptureScreenshot(_request: void, extras: ResponseExtras):

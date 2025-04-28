@@ -71,6 +71,8 @@ class GlicPageHandler : public glic::mojom::PageHandler {
                     base::TimeDelta duration,
                     ResizeWidgetCallback callback) override;
 
+  void EnableDragResize(bool enabled) override;
+
   void WebUiStateChanged(glic::mojom::WebUiState new_state) override;
 
  private:
