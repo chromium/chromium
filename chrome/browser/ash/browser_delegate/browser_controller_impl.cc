@@ -158,6 +158,27 @@ BrowserDelegate* BrowserControllerImpl::CreateWebApp(
       web_app::CreateWebAppWindowMaybeWithHomeTab(app_id, cparams));
 }
 
+BrowserDelegate* BrowserControllerImpl::CreateCustomTab(
+    const user_manager::User& user,
+    std::unique_ptr<content::WebContents> contents) {
+  Profile* profile = Profile::FromBrowserContext(
+      BrowserContextHelper::Get()->GetBrowserContextByUser(&user));
+  CHECK(profile);
+
+  if (Browser::GetCreationStatusForProfile(profile) !=
+      Browser::CreationStatus::kOk) {
+    return nullptr;
+  }
+
+  Browser::CreateParams params(Browser::TYPE_CUSTOM_TAB, profile,
+                               /*user_gesture=*/true);
+  params.omit_from_session_restore = true;
+  Browser* browser = Browser::Create(params);
+  browser->tab_strip_model()->AppendWebContents(std::move(contents),
+                                                /*foreground=*/true);
+  return GetDelegate(browser);
+}
+
 void BrowserControllerImpl::OnBrowserRemoved(Browser* browser) {
   browsers_.erase(browser);
   // The corresponding BrowserDelegateImpl, if any, is now dead.

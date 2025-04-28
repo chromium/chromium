@@ -40,6 +40,9 @@ class BrowserControllerImpl : public BrowserController,
                                 webapps::AppId app_id,
                                 BrowserType browser_type,
                                 const CreateParams& params) override;
+  BrowserDelegate* CreateCustomTab(
+      const user_manager::User& user,
+      std::unique_ptr<content::WebContents> contents) override;
 
   // BrowserListObserver:
   void OnBrowserRemoved(Browser* browser) override;
