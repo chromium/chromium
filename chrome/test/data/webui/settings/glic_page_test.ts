@@ -471,4 +471,46 @@ suite('GlicPage', function() {
           AiPageActions.GLIC_SHORTCUTS_LEARN_MORE_CLICKED);
     });
   });
+
+  suite('LauncherToggleLearnMoreEnabled', () => {
+    test('LauncherToggleLearnMoreShown', async () => {
+      const learnMoreElement =
+          page.shadowRoot!.querySelector<HTMLElement>('#launcherToggle')!
+              .shadowRoot!.querySelector<HTMLAnchorElement>('#learn-more');
+      assertTrue(!!learnMoreElement);
+      assertEquals(learnMoreElement.href, 'https://google.com/');
+
+      learnMoreElement.click();
+      await assertFeatureInteractionMetrics(
+          AiPageActions.GLIC_SHORTCUTS_LAUNCHER_TOGGLE_LEARN_MORE_CLICKED);
+    });
+  });
+
+  suite('LocationToggleLearnMoreEnabled', () => {
+    test('locationToggleLearnMoreShown', async () => {
+      const learnMoreElement =
+          page.shadowRoot!.querySelector<HTMLElement>('#geolocationToggle')!
+              .shadowRoot!.querySelector<HTMLAnchorElement>('#learn-more');
+      assertTrue(!!learnMoreElement);
+      assertEquals(learnMoreElement.href, 'https://google.com/');
+
+      learnMoreElement.click();
+      await assertFeatureInteractionMetrics(
+          AiPageActions.GLIC_SHORTCUTS_LOCATION_TOGGLE_LEARN_MORE_CLICKED);
+    });
+  });
+
+  suite('TabAccessToggleLearnMoreEnabled', () => {
+    test('tabAccessToggleLearnMoreShown', async () => {
+      const learnMoreElement =
+          page.shadowRoot!.querySelector<HTMLElement>('#tabAccessToggle')!
+              .shadowRoot!.querySelector<HTMLAnchorElement>('#learn-more');
+      assertTrue(!!learnMoreElement);
+      assertEquals(learnMoreElement.href, 'https://google.com/');
+
+      learnMoreElement.click();
+      await assertFeatureInteractionMetrics(
+          AiPageActions.GLIC_SHORTCUTS_TAB_ACCESS_TOGGLE_LEARN_MORE_CLICKED);
+    });
+  });
 });

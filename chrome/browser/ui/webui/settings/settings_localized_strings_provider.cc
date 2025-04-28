@@ -775,6 +775,12 @@ void AddGlicStrings(content::WebUIDataSource* html_source) {
                                         ::switches::kGlicShortcutsLearnMoreURL)
                                   : features::kGlicLearnMoreURL.Get();
   html_source->AddString("glicKeyboardShortcutLearnMoreUrl", url);
+  html_source->AddString("glicLauncherToggleLearnMoreUrl",
+                         features::kGlicLauncherToggleLearnMoreURL.Get());
+  html_source->AddString("glicLocationToggleLearnMoreUrl",
+                         features::kGlicLocationToggleLearnMoreURL.Get());
+  html_source->AddString("glicTabAccessToggleLearnMoreUrl",
+                         features::kGlicTabAccessToggleLearnMoreURL.Get());
 }
 #endif  // BUILDFLAG(ENABLE_GLIC)
 

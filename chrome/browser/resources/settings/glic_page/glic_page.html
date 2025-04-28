@@ -71,6 +71,8 @@
               id="launcherToggle" pref="{{prefs.glic.launcher_enabled}}"
               label="$i18n{glicOsWidgetToggle}"
               sub-label="$i18n{glicOsWidgetToggleSublabel}"
+              learn-more-url="$i18n{glicLauncherToggleLearnMoreUrl}"
+              on-learn-more-clicked="onLauncherToggleLearnMoreClick_"
               checked="{{launcherToggleOn_}}"
               on-settings-boolean-control-change="onLauncherToggleChange_">
           </settings-toggle-button>
@@ -134,6 +136,8 @@
               id="geolocationToggle" pref="{{prefs.glic.geolocation_enabled}}"
               label="$i18n{glicLocationToggle}"
               sub-label="$i18n{glicLocationToggleSublabel}"
+              learn-more-url="$i18n{glicLocationToggleLearnMoreUrl}"
+              on-learn-more-clicked="onLocationToggleLearnMoreClick_"
               on-settings-boolean-control-change="onGeolocationToggleChange_">
           </settings-toggle-button>
           <settings-toggle-button
@@ -146,6 +150,8 @@
               id="tabAccessToggle" pref="{{prefs.glic.tab_context_enabled}}"
               label="$i18n{glicTabAccessToggle}"
               sub-label="$i18n{glicTabAccessToggleSublabel}"
+              learn-more-url="$i18n{glicTabAccessToggleLearnMoreUrl}"
+              on-learn-more-clicked="onTabAccessToggleLearnMoreClick_"
               on-settings-boolean-control-change="onTabAccessToggleChange_">
             <div id="tabAccessToggleActions" slot="more-actions">
               <cr-expand-button id="tabAccessExpandButton" no-hover

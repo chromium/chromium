@@ -383,6 +383,73 @@ IN_PROC_BROWSER_TEST_F(SettingsGlicPageLearnMoreTest,
   RunTest("settings/glic_page_test.js",
           "runMochaSuite('GlicPage LearnMoreEnabled')");
 }
+
+class SettingsGlicPageLauncherToggleLearnMoreTest : public SettingsBrowserTest {
+ public:
+  SettingsGlicPageLauncherToggleLearnMoreTest() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{features::kGlicLearnMoreURLConfig,
+          {
+              {"glic-shortcuts-launcher-toggle-learn-more-url",
+               "https://google.com/"},
+          }}},
+        /*disabled_features=*/{});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SettingsGlicPageLauncherToggleLearnMoreTest,
+                       GlicSettingsLauncherToggleLearnMoreEnabled) {
+  RunTest("settings/glic_page_test.js",
+          "runMochaSuite('GlicPage LauncherToggleLearnMoreEnabled')");
+}
+
+class SettingsGlicPageLocationToggleLearnMoreTest : public SettingsBrowserTest {
+ public:
+  SettingsGlicPageLocationToggleLearnMoreTest() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{features::kGlicLearnMoreURLConfig,
+          {
+              {"glic-shortcuts-location-toggle-learn-more-url",
+               "https://google.com/"},
+          }}},
+        /*disabled_features=*/{});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SettingsGlicPageLocationToggleLearnMoreTest,
+                       GlicSettingsLocationToggleLearnMoreEnabled) {
+  RunTest("settings/glic_page_test.js",
+          "runMochaSuite('GlicPage LocationToggleLearnMoreEnabled')");
+}
+
+class SettingsGlicPageTabAccessToggleLearnMoreTest
+    : public SettingsBrowserTest {
+ public:
+  SettingsGlicPageTabAccessToggleLearnMoreTest() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{features::kGlicLearnMoreURLConfig,
+          {
+              {"glic-shortcuts-tab-access-toggle-learn-more-url",
+               "https://google.com/"},
+          }}},
+        /*disabled_features=*/{});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SettingsGlicPageTabAccessToggleLearnMoreTest,
+                       GlicSettingsTabAccessToggleLearnMoreEnabled) {
+  RunTest("settings/glic_page_test.js",
+          "runMochaSuite('GlicPage TabAccessToggleLearnMoreEnabled')");
+}
 #endif
 
 class PeoplePageSyncPageTest : public SettingsBrowserTest {

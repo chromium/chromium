@@ -211,6 +211,21 @@ export class SettingsGlicPageElement extends SettingsGlicPageElementBase {
     this.metricsBrowserProxy_.recordAction(
         AiPageActions.GLIC_SHORTCUTS_LEARN_MORE_CLICKED);
   }
+
+  private onLauncherToggleLearnMoreClick_() {
+    this.metricsBrowserProxy_.recordAction(
+        AiPageActions.GLIC_SHORTCUTS_LAUNCHER_TOGGLE_LEARN_MORE_CLICKED);
+  }
+
+  private onLocationToggleLearnMoreClick_() {
+    this.metricsBrowserProxy_.recordAction(
+        AiPageActions.GLIC_SHORTCUTS_LOCATION_TOGGLE_LEARN_MORE_CLICKED);
+  }
+
+  private onTabAccessToggleLearnMoreClick_() {
+    this.metricsBrowserProxy_.recordAction(
+        AiPageActions.GLIC_SHORTCUTS_TAB_ACCESS_TOGGLE_LEARN_MORE_CLICKED);
+  }
 }
 
 declare global {

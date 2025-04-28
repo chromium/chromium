@@ -409,6 +409,21 @@ BASE_FEATURE_PARAM(std::string,
                    &kGlicLearnMoreURLConfig,
                    "glic-shortcuts-learn-more-url",
                    "");
+BASE_FEATURE_PARAM(std::string,
+                   kGlicLauncherToggleLearnMoreURL,
+                   &kGlicLearnMoreURLConfig,
+                   "glic-shortcuts-launcher-toggle-learn-more-url",
+                   "");
+BASE_FEATURE_PARAM(std::string,
+                   kGlicLocationToggleLearnMoreURL,
+                   &kGlicLearnMoreURLConfig,
+                   "glic-shortcuts-location-toggle-learn-more-url",
+                   "");
+BASE_FEATURE_PARAM(std::string,
+                   kGlicTabAccessToggleLearnMoreURL,
+                   &kGlicLearnMoreURLConfig,
+                   "glic-shortcuts-tab-access-toggle-learn-more-url",
+                   "");
 
 BASE_FEATURE(kGlicCSPConfig,
              "GlicCSPConfig",
