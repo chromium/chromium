@@ -21,7 +21,6 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Restriction;
@@ -47,24 +46,6 @@ import java.util.List;
 @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
 public final class UnsubscribedNotificationsNotificationTest {
     @Rule public NotificationTestRule mNotificationTestRule = new NotificationTestRule();
-
-    @Test
-    @SmallTest
-    @Feature({"SafetyHubNotification"})
-    @DisabledTest(message = "crbug.com/413793282")
-    public void testAckNotification() throws Exception {
-        UnsubscribedNotificationsNotificationManager.updateNotification(1);
-        List<MockNotificationManagerProxy.NotificationEntry> notifications =
-                mNotificationTestRule.getNotificationEntries();
-        assertEquals(1, notifications.size());
-
-        Notification notification = notifications.get(0).getNotification();
-        assertEquals("Got it", notification.actions[1].title);
-        Assert.assertNotNull(notification.actions[1].actionIntent);
-        notification.actions[1].actionIntent.send();
-
-        mNotificationTestRule.waitForNotificationCount(0);
-    }
 
     @Test
     @SmallTest

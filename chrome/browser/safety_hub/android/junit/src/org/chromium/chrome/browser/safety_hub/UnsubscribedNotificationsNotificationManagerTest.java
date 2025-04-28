@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.safety_hub;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import android.app.Notification;
 
@@ -46,6 +47,12 @@ public class UnsubscribedNotificationsNotificationManagerTest {
         assertEquals(
                 "Removed notification permissions from one site you haven’t visited recently",
                 notifications.get(0).notification.extras.getString(Notification.EXTRA_TEXT));
+
+        Notification notification = notifications.get(0).getNotification();
+        assertEquals("Review", notification.actions[0].title);
+        assertNotNull(notification.actions[0].actionIntent);
+        assertEquals("Got it", notification.actions[1].title);
+        assertNotNull(notification.actions[1].actionIntent);
     }
 
     @Test
