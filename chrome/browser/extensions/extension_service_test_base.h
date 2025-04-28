@@ -16,7 +16,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/extensions/scoped_test_mv2_enabler.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_profile.h"
@@ -26,6 +25,7 @@
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/sandboxed_unpacker.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -34,6 +34,12 @@
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "components/user_manager/scoped_user_manager.h"
 #endif
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/extensions/scoped_test_mv2_enabler.h"
+#endif
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 class Profile;
 class TestingProfile;
@@ -267,8 +273,10 @@ class ExtensionServiceTestBase : public testing::Test {
   SandboxedUnpacker::ScopedVerifierFormatOverrideForTest
       verifier_format_override_;
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   // An override that allows MV2 extensions to be loaded.
   std::optional<ScopedTestMV2Enabler> mv2_enabler_;
+#endif
 };
 
 }  // namespace extensions
