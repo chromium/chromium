@@ -35,8 +35,7 @@ MetricsLogStore::MetricsLogStore(PrefService* local_state,
           UnsentLogStore::UnsentLogStoreLimits{
               storage_limits.initial_log_queue_limits.min_log_count,
               storage_limits.initial_log_queue_limits.min_queue_size_bytes,
-              // Each individual initial log can be any size.
-              /*max_log_size_bytes=*/0},
+              storage_limits.initial_log_queue_limits.max_log_size_bytes},
           signing_key,
           logs_event_manager),
       ongoing_log_queue_(std::make_unique<UnsentLogStoreMetricsImpl>(),

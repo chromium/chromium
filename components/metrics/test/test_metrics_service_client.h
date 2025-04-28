@@ -91,6 +91,10 @@ class TestMetricsServiceClient : public MetricsServiceClient {
   void set_min_ongoing_log_queue_size_bytes(size_t bytes) {
     storage_limits_.ongoing_log_queue_limits.min_queue_size_bytes = bytes;
   }
+
+  void set_max_initial_log_size_bytes(size_t bytes) {
+    storage_limits_.initial_log_queue_limits.max_log_size_bytes = bytes;
+  }
   void set_synthetic_trial_registry(
       variations::SyntheticTrialRegistry* registry) {
     synthetic_trial_registry_ = registry;
