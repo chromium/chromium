@@ -2862,7 +2862,7 @@ TEST_F(ExtensionServiceTest, DefaultUnpackedFileAccess) {
 // Tests that adding a packed extension grants file access if the appropriate
 // creation flag is set. Note: This doesn't normally happen in practice but it
 // is tested here to document the behavior.
-// TODO(crbug.com/40263865): The werid behavior here should be cleared up and we
+// TODO(crbug.com/40263865): The weird behavior here should be cleared up and we
 // should simplify how we're storing and checking if file access has been
 // granted to an extension.
 TEST_F(ExtensionServiceTest, DefaultPackedFileAccessWithCreationFlag) {
@@ -2890,7 +2890,7 @@ TEST_F(ExtensionServiceTest, DefaultPackedFileAccessWithCreationFlag) {
       extension->permissions_data()->CanAccessPage(file_url, -1, nullptr));
 
   // If the extension gets reloaded in this state, the (lack of) pref will take
-  // presedence and the computed creation flags on the extension object will
+  // precedence and the computed creation flags on the extension object will
   // mean that it will not longer have file access. Again this is weird.
   service()->ReloadExtensionsForTest();
   extension = registry()->GetInstalledExtension(id);
@@ -2904,7 +2904,7 @@ TEST_F(ExtensionServiceTest, DefaultPackedFileAccessWithCreationFlag) {
 }
 
 // Tests that if an extension is created with creation flags granting file
-// access, but the assocaited pref for file access becomes mismatched to say
+// access, but the associated pref for file access becomes mismatched to say
 // that the extension shouldn't have file access, then on the next reload of the
 // extension (e.g. on Chrome startup) the pref will take precedence.
 // Regression test for crbug.com/1414398.
@@ -4699,7 +4699,7 @@ TEST_F(ExtensionServiceTest, PolicyBlockedPermissionPolicyUpdate) {
 
   PackCRX(path2, pem_path, crx_path);
 
-  // Install two arbitary extensions with specified manifest.
+  // Install two arbitrary extensions with specified manifest.
   std::string ext1 = PackAndInstallCRX(path, INSTALL_NEW)->id();
   std::string ext2 = PackAndInstallCRX(path2, INSTALL_NEW)->id();
   ASSERT_NE(ext1, permissions_blocklist);
@@ -7369,7 +7369,7 @@ class ExtensionSourcePriorityTest : public ExtensionServiceTest {
 
  protected:
   // All tests use a single extension.  Making the id and path member
-  // vars avoids pasing the same argument to every method.
+  // vars avoids passing the same argument to every method.
   std::string crx_id_;
   base::FilePath crx_path_;
 };
