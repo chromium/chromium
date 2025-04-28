@@ -38,11 +38,12 @@ class CORE_EXPORT FlexLayoutAlgorithm
  private:
   const LayoutResult* LayoutInternal();
 
-  void PlaceFlexItems(
-      FlexLineVector* flex_lines,
-      HeapVector<Member<LayoutBox>>* oof_children,
-      LayoutUnit* total_intrinsic_block_size,
-      bool is_computing_multiline_column_intrinsic_size = false);
+  enum class Phase { kLayout, kRowIntrinsicSize, kColumnWrapIntrinsicSize };
+
+  void PlaceFlexItems(Phase phase,
+                      FlexLineVector* flex_lines,
+                      HeapVector<Member<LayoutBox>>* oof_children = nullptr,
+                      LayoutUnit* total_intrinsic_block_size_out = nullptr);
 
   bool DoesItemComputedCrossSizeHaveAuto(const BlockNode& child) const;
   bool DoesItemStretch(const BlockNode& child, ItemPosition alignment) const;
@@ -54,7 +55,6 @@ class CORE_EXPORT FlexLayoutAlgorithm
 
   bool IsContainerCrossSizeDefinite() const;
 
-  enum class Phase { kLayout, kRowIntrinsicSize, kColumnWrapIntrinsicSize };
   ConstraintSpace BuildSpaceForIntrinsicInlineSize(
       const BlockNode& flex_item,
       ItemPosition alignment) const;

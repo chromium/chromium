@@ -1684,7 +1684,8 @@ const LayoutResult* FlexLayoutAlgorithm::LayoutInternal() {
     break_before_row = flex_data->break_before_row;
     oof_children = flex_data->oof_children;
   } else {
-    PlaceFlexItems(&flex_lines, &oof_children, &total_intrinsic_block_size);
+    PlaceFlexItems(Phase::kLayout, &flex_lines, &oof_children,
+                   &total_intrinsic_block_size);
   }
 
   total_block_size_ = ComputeBlockSizeForFragment(
@@ -1796,15 +1797,12 @@ const LayoutResult* FlexLayoutAlgorithm::LayoutInternal() {
 }
 
 void FlexLayoutAlgorithm::PlaceFlexItems(
+    Phase phase,
     FlexLineVector* flex_lines,
     HeapVector<Member<LayoutBox>>* oof_children,
-    LayoutUnit* total_intrinsic_block_size,
-    bool is_computing_multiline_column_intrinsic_size) {
-  DCHECK(oof_children || is_computing_multiline_column_intrinsic_size);
-  ConstructAndAppendFlexItems(is_computing_multiline_column_intrinsic_size
-                                  ? Phase::kColumnWrapIntrinsicSize
-                                  : Phase::kLayout,
-                              oof_children);
+    LayoutUnit* total_intrinsic_block_size_out) {
+  DCHECK(oof_children || phase != Phase::kLayout);
+  ConstructAndAppendFlexItems(phase, oof_children);
 
   const LayoutUnit line_break_size = MainAxisContentExtent(LayoutUnit::Max());
   const FlexLineBreakerResult result =
@@ -1917,7 +1915,7 @@ void FlexLayoutAlgorithm::PlaceFlexItems(
                                               border_padding);
         }
 
-        if (is_computing_multiline_column_intrinsic_size) {
+        if (phase == Phase::kColumnWrapIntrinsicSize) {
           return *flex_item.max_content_contribution;
         }
 
@@ -1970,8 +1968,8 @@ void FlexLayoutAlgorithm::PlaceFlexItems(
   }
 
   // Determine the intrinsic block-size if within the layout-pass.
-  if (total_intrinsic_block_size) {
-    *total_intrinsic_block_size = ([&]() {
+  if (total_intrinsic_block_size_out) {
+    *total_intrinsic_block_size_out = ([&]() {
       LayoutUnit size = BorderScrollbarPadding().BlockSum();
       if (!flex_lines->empty()) {
         if (is_column_) {
@@ -3009,9 +3007,7 @@ FlexLayoutAlgorithm::ComputeMinMaxSizeOfMultilineColumnContainer() {
   // item, when they are laid out. The container's max-content width is then
   // the farthest outer inline-end point of all the items.
   FlexLineVector flex_lines;
-  PlaceFlexItems(&flex_lines, /* oof_children */ nullptr,
-                 /* total_intrinsic_block_size */ nullptr,
-                 /* is_computing_multiline_column_intrinsic_size */ true);
+  PlaceFlexItems(Phase::kColumnWrapIntrinsicSize, &flex_lines);
   min_max_sizes.min_size = largest_min_content_contribution_;
   if (!flex_lines.empty()) {
     for (const auto& line : flex_lines) {
