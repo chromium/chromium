@@ -14350,6 +14350,33 @@
             ]
         }
     ],
+    "LobsterI18n": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "LobsterI18n"
+                    ],
+                    "disable_features": [
+                        "LobsterDisabledByInvalidIME"
+                    ]
+                },
+                {
+                    "name": "Enabled_Dogfood",
+                    "enable_features": [
+                        "LobsterI18n"
+                    ],
+                    "disable_features": [
+                        "LobsterDisabledByInvalidIME"
+                    ]
+                }
+            ]
+        }
+    ],
     "LobsterQueryRewrittenDogfood": [
         {
             "platforms": [

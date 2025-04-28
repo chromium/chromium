@@ -39,7 +39,7 @@ class LobsterImageProviderFromSnapperTest : public testing::Test {
   void SetUp() override {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{ash::features::kLobsterUseRewrittenQuery},
-        /*disabled_features=*/{});
+        /*disabled_features=*/{ash::features::kLobsterI18n});
   }
 
  private:
