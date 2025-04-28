@@ -349,10 +349,9 @@ struct ChromeMLTokenizerParams {
   // lengths from elements of token_lens.
   const uint8_t* token_bytes;
 
-  // Instead of passing token_lens and token_bytes, this can be set to
-  // model's path location where the content of tokenizer.json file will be
-  // used.
-  const char* model_path;
+  // Instead of passing token_lens and token_bytes, this can be set to model's
+  // tokenizer.json file content.
+  const char* tokenizer_json_file_content;
 
   // Function for tokenizing a string. Will be passed `tokenize_user_data`.
   ChromeMLTokenizeFn tokenize_fn;

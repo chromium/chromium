@@ -481,7 +481,7 @@ ChromeMLConstraint OnDeviceModelExecutor::CreateConstraint(
               .tok_eos = params.eos_token_id,
               .token_lens = params.token_lens,
               .token_bytes = params.token_bytes,
-              .tokenizer_json = params.model_path,
+              .tokenizer_json = params.tokenizer_json_file_content,
               .tokenize_fn = params.tokenize_fn,
               .tokenize_user_data = params.tokenize_user_data,
           };
