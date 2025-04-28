@@ -22,7 +22,7 @@ class PasswordEditDialogBridgeDelegate {
                                             const std::u16string& password) = 0;
 
   // Returns true if the specified credential will be saved/updated in the
-  // profile store.
+  // account storage.
   virtual bool IsUsingAccountStorage(const std::u16string& username) = 0;
 };
 
