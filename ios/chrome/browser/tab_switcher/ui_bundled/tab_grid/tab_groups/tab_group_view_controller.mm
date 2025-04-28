@@ -31,6 +31,7 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_group_action_type.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/tab_groups/tab_group_indicator_features_utils.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/elements/gradient_view.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -44,9 +45,12 @@ constexpr CGFloat kSwipeAnimationDuration = 0.1;
 // Background.
 constexpr CGFloat kBackgroundAlpha = 0.6;
 
-// Top toolbar
+// Top toolbar.
 constexpr CGFloat kTopToolbarHeight = 58;
 constexpr CGFloat kTopToolbarMargin = 16;
+
+// Bottom toolbar.
+constexpr CGFloat kGradientHeight = 86;
 
 // Button.
 constexpr CGFloat kButtonSpacing = 10;
@@ -152,6 +156,8 @@ UIButton* TopToolbarButton(NSString* symbol_name,
   SharingState _sharingState;
   // The bottom toolbar.
   TabGridBottomToolbar* _bottomToolbar;
+  // Gradient displayed at the bottom to show that there are other tabs below.
+  UIView* _bottomGradient;
   // The face pile view that displays the share button or the face pile.
   UIView* _facePileView;
   // Constraints for the container on narrow vs large windows.
@@ -202,6 +208,10 @@ UIButton* TopToolbarButton(NSString* symbol_name,
   [self fadeBlurOut];
 
   [self contentWillAppearAnimated:YES];
+
+  // Provide a change for the top/bottom toolbar to react to the real content
+  // size of the collection view.
+  [self gridViewControllerDidScroll];
 
   if (IsContainedTabGroupEnabled()) {
     _topToolbar.alpha = 0;
@@ -278,8 +288,12 @@ UIButton* TopToolbarButton(NSString* symbol_name,
 }
 
 - (void)gridViewControllerDidScroll {
-  [_bottomToolbar
-      setScrollViewScrolledToEdge:self.gridViewController.scrolledToBottom];
+  if (IsContainedTabGroupEnabled()) {
+    _bottomGradient.hidden = self.gridViewController.scrolledToBottom;
+  } else {
+    [_bottomToolbar
+        setScrollViewScrolledToEdge:self.gridViewController.scrolledToBottom];
+  }
   _topToolbarBackground.hidden = self.gridViewController.scrolledToTop;
 }
 
@@ -393,6 +407,22 @@ UIButton* TopToolbarButton(NSString* symbol_name,
   }
 
   // Add the toolbar after the grid to make sure it is above it.
+  if (IsContainedTabGroupEnabled()) {
+    _bottomGradient =
+        [[GradientView alloc] initWithTopColor:UIColor.clearColor
+                                   bottomColor:UIColor.blackColor];
+    _bottomGradient.translatesAutoresizingMaskIntoConstraints = NO;
+    _bottomGradient.userInteractionEnabled = NO;
+    [_container addSubview:_bottomGradient];
+    AddSameConstraintsToSides(
+        _container, _bottomGradient,
+        LayoutSides::kBottom | LayoutSides::kLeading | LayoutSides::kTrailing);
+    [_bottomGradient.heightAnchor constraintEqualToConstant:kGradientHeight]
+        .active = YES;
+
+    // Hide the default background of the bottom toolbar.
+    [_bottomToolbar setScrollViewScrolledToEdge:YES];
+  }
   [self configureBottomToolbar];
 
   if (@available(iOS 17, *)) {
