@@ -12266,14 +12266,13 @@ TEST_F(AdAuctionServiceImplTest, SerializesAuctionBlobWithClickiness) {
       }));
   run_loop.Run();
   std::string expected =
-      "AgAAAQ+"
-      "mZ3ZlcnNpb24AaXB1Ymxpc2hlcmZhLnRlc3RsZ2VuZXJhdGlvbklkeCQwMDAwMDAwMC0wMDA"
+      "AgAAAQ6m"
+      "Z3ZlcnNpb24AaXB1Ymxpc2hlcmZhLnRlc3RsZ2VuZXJhdGlvbklkeCQwMDAwMDAwMC0wMDA"
       "wLTAwMDAtMDAwMC0wMDAwMDAwMDAwMDBuaW50ZXJlc3RHcm91cHOhbmh0dHBzOi8vYS50ZXN"
-      "0WHYfiwgAAAAAAAAALci7DYNADADQ80gQNqCmokh92FYwEB+y+"
-      "YguFEwSiTkjUF759i9G8p2y/"
-      "FGQxjcTRnNtLK3OVstL4+Bn2wiVadYptKPx8hT1j3RJ9E4QY2TFrfLQLcLrvX6ES4+"
-      "DYP8fAIDwA5l1ceBzAAAAcnJlcXVlc3RUaW1lc3RhbXBNcwp0ZW5hYmxlRGVidWdSZXBvcnR"
-      "pbmf1AAAAAAA";
+      "0WHUfiwgAAAAAAAAALcg7DsIwDADQ5Eh8bsDMxMCc2FbrpDjIhlTdmqEnQeKcqBFvfO0DAa3"
+      "h4Xg6o4QHIQQ1iVpmI73xIGGy7xgZL+UtLzc+leqdxVZOhaWnZyUggeVqLlWmua9tbpdhYsj"
+      "/8bsfD0V2l3MAAABycmVxdWVzdFRpbWVzdGFtcE1zCnRlbmFibGVEZWJ1Z1JlcG9ydGluZ/"
+      "UAAAAAAAAAA";
   EXPECT_THAT(base::Base64Encode(msg), testing::StartsWith(expected));
 }
 

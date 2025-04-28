@@ -1085,10 +1085,12 @@ async function testClickiness(
             browserSignals.clickCounts.pastDay ${clicksBadTest} ||
             browserSignals.clickCounts.pastWeek ${clicksBadTest} ||
             browserSignals.clickCounts.past30Days ${clicksBadTest} ||
+            browserSignals.clickCounts.past90Days ${clicksBadTest} ||
             browserSignals.viewCounts.pastHour ${viewsBadTest} ||
             browserSignals.viewCounts.pastDay ${viewsBadTest} ||
             browserSignals.viewCounts.pastWeek ${viewsBadTest} ||
-            browserSignals.viewCounts.past30Days ${viewsBadTest}) {
+            browserSignals.viewCounts.past30Days ${viewsBadTest} ||
+            browserSignals.viewCounts.past90Days ${viewsBadTest}) {
           return -1;
         }
     `

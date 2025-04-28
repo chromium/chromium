@@ -8248,7 +8248,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, Clickiness_CaptureView) {
                                 .past_day = 1,
                                 .past_week = 1,
                                 .past_30_days = 1,
-                                .past_90_days = 0},
+                                .past_90_days = 1},
       /*expected_click_counts=*/{.past_hour = 0,
                                  .past_day = 0,
                                  .past_week = 0,
@@ -8328,7 +8328,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, Clickiness_CaptureClick) {
                                  .past_day = 1,
                                  .past_week = 1,
                                  .past_30_days = 1,
-                                 .past_90_days = 0});
+                                 .past_90_days = 1});
 }
 
 // Test where permissions policy blocks click reporting. This test uses a
