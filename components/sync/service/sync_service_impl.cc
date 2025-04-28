@@ -1325,12 +1325,6 @@ void SyncServiceImpl::SyncAuthCredentialsChanged() {
   NotifyObservers();
 }
 
-GaiaId SyncServiceImpl::SyncAuthGetLastSyncingGaiaId() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return GaiaId(sync_client_->GetPrefService()->GetString(
-      prefs::kGoogleServicesLastSyncingGaiaId));
-}
-
 void SyncServiceImpl::CryptoStateChanged() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOG(2) << "Notify observers on CryptoStateChanged";
@@ -2261,14 +2255,18 @@ SyncServiceImpl::DeterminePreviouslySyncingGaiaIdInfoForMetrics() const {
     return PreviouslySyncingGaiaIdInfoForMetrics::kUnspecified;
   }
 
-  const std::optional<GaiaId> previously_syncing_gaia_id_if_known =
-      auth_manager_->GetPreviouslySyncingGaiaIdIfKnown();
+  // Depending on whether sync the feature is currently on or not, the gaia ID
+  // corresponding to the previous user is stored in one pref or another. That's
+  // because `kGoogleServicesLastSyncingGaiaId` is updated early, as soon as
+  // the sync consent is granted, and before the notification reaches
+  // SyncServiceImpl.
+  const GaiaId previously_syncing_gaia_id = GaiaId(
+      HasSyncConsent() ? sync_client_->GetPrefService()->GetString(
+                             prefs::kGoogleServicesSecondLastSyncingGaiaId)
+                       : sync_client_->GetPrefService()->GetString(
+                             prefs::kGoogleServicesLastSyncingGaiaId));
 
-  if (!previously_syncing_gaia_id_if_known.has_value()) {
-    return PreviouslySyncingGaiaIdInfoForMetrics::kNotEnoughInformationToTell;
-  }
-
-  if (previously_syncing_gaia_id_if_known->empty()) {
+  if (previously_syncing_gaia_id.empty()) {
     // It is known that no previous gaia ID existed that turned sync on.
     return PreviouslySyncingGaiaIdInfoForMetrics::
         kSyncFeatureNeverPreviouslyTurnedOn;
@@ -2276,7 +2274,7 @@ SyncServiceImpl::DeterminePreviouslySyncingGaiaIdInfoForMetrics() const {
 
   const GaiaId current_gaia_id = GetAccountInfo().gaia;
 
-  return current_gaia_id == *previously_syncing_gaia_id_if_known
+  return current_gaia_id == previously_syncing_gaia_id
              ? PreviouslySyncingGaiaIdInfoForMetrics::
                    kCurrentGaiaIdMatchesPreviousWithSyncFeatureOn
              : PreviouslySyncingGaiaIdInfoForMetrics::

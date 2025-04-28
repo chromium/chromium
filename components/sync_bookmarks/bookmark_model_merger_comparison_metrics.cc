@@ -104,9 +104,6 @@ std::string_view PreviouslySyncingGaiaIdInfoToInfix(
     case syncer::PreviouslySyncingGaiaIdInfoForMetrics::kUnspecified:
       NOTREACHED();
     case syncer::PreviouslySyncingGaiaIdInfoForMetrics::
-        kNotEnoughInformationToTell:
-      return ".UnknownPreviousGaiaId";
-    case syncer::PreviouslySyncingGaiaIdInfoForMetrics::
         kSyncFeatureNeverPreviouslyTurnedOn:
       return ".NoPreviousGaiaId";
     case syncer::PreviouslySyncingGaiaIdInfoForMetrics::

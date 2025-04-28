@@ -190,7 +190,6 @@ class SyncServiceImpl : public SyncService,
   // SyncAuthManager::Delegate implementation.
   void SyncAuthAccountStateChanged() override;
   void SyncAuthCredentialsChanged() override;
-  GaiaId SyncAuthGetLastSyncingGaiaId() override;
 
   // SyncServiceCrypto::Delegate implementation.
   void CryptoStateChanged() override;

@@ -284,7 +284,7 @@ chromium-metrics-reviews@google.com.
 
 <enum name="PreviouslySyncingGaiaIdInfoForMetrics">
   <int value="0" label="Unspecified"/>
-  <int value="1" label="Not enough information"/>
+  <int value="1" label="(deprecated) Not enough information"/>
   <int value="2" label="Sync feature never previously turned on"/>
   <int value="3" label="Current Gaia ID matches previous with Sync on"/>
   <int value="4" label="Current Gaia ID differs previous with Sync on"/>

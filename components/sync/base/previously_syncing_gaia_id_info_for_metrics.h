@@ -19,7 +19,7 @@ enum class PreviouslySyncingGaiaIdInfoForMetrics {
   // or datatypes being reconfigured as a result of the user customizing sync
   // settings.
   kUnspecified = 0,
-  kNotEnoughInformationToTell = 1,
+  // Deprecated: kNotEnoughInformationToTell = 1,
   kSyncFeatureNeverPreviouslyTurnedOn = 2,
   kCurrentGaiaIdMatchesPreviousWithSyncFeatureOn = 3,
   kCurrentGaiaIdIfDiffersPreviousWithSyncFeatureOn = 4,

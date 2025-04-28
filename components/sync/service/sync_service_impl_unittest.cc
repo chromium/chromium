@@ -1653,12 +1653,44 @@ TEST_F(SyncServiceImplTest, PreviouslySyncingGaiaIdInfoWithLocalSync) {
                 ->previously_syncing_gaia_id_info());
 }
 
-TEST_F(SyncServiceImplTest,
-       PreviouslySyncingGaiaIdInfoWithSyncFeatureAlreadyEnabledUponStartup) {
+TEST_F(
+    SyncServiceImplTest,
+    DifferentPreviouslySyncingGaiaIdInfoWithSyncFeatureAlreadyEnabledUponStartup) {
   PopulatePrefsForInitialSyncFeatureSetupComplete();
   SignInWithSyncConsent();
   // If sync is on, the pref is already populated with the current gaia ID.
   prefs()->SetString(::prefs::kGoogleServicesLastSyncingGaiaId,
+                     identity_test_env()
+                         ->identity_manager()
+                         ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+                         .gaia.ToString());
+  // In this case the second pref becomes relevant and is different to the
+  // current one.
+  prefs()->SetString(::prefs::kGoogleServicesSecondLastSyncingGaiaId, "other");
+  InitializeService();
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_EQ(SyncService::TransportState::ACTIVE,
+            service()->GetTransportState());
+  EXPECT_EQ(
+      PreviouslySyncingGaiaIdInfoForMetrics::
+          kCurrentGaiaIdIfDiffersPreviousWithSyncFeatureOn,
+      get_controller(DEVICE_INFO)->model()->previously_syncing_gaia_id_info());
+}
+
+TEST_F(
+    SyncServiceImplTest,
+    SamePreviouslySyncingGaiaIdInfoWithSyncFeatureAlreadyEnabledUponStartup) {
+  PopulatePrefsForInitialSyncFeatureSetupComplete();
+  SignInWithSyncConsent();
+  // If sync is on, the pref is already populated with the current gaia ID.
+  prefs()->SetString(::prefs::kGoogleServicesLastSyncingGaiaId,
+                     identity_test_env()
+                         ->identity_manager()
+                         ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+                         .gaia.ToString());
+  // In this case the second pref becomes relevant and matches the current one.
+  prefs()->SetString(::prefs::kGoogleServicesSecondLastSyncingGaiaId,
                      identity_test_env()
                          ->identity_manager()
                          ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
@@ -1669,7 +1701,8 @@ TEST_F(SyncServiceImplTest,
   ASSERT_EQ(SyncService::TransportState::ACTIVE,
             service()->GetTransportState());
   EXPECT_EQ(
-      PreviouslySyncingGaiaIdInfoForMetrics::kNotEnoughInformationToTell,
+      PreviouslySyncingGaiaIdInfoForMetrics::
+          kCurrentGaiaIdMatchesPreviousWithSyncFeatureOn,
       get_controller(DEVICE_INFO)->model()->previously_syncing_gaia_id_info());
 }
 

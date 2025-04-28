@@ -375,9 +375,6 @@ chromium-metrics-reviews@google.com.
     <variant name=".NoPreviousGaiaId"
         summary="sync was never turned on before in the current browser
                  profile"/>
-    <variant name=".UnknownPreviousGaiaId"
-        summary="it is impossible to determine which user (gaia ID), if any,
-                 had turned sync on previously"/>
   </token>
 <!-- LINT.ThenChange(//components/sync_bookmarks/bookmark_model_merger_comparison_metrics.cc:BookmarkComparisonPreviouslySyncingGaiaId) -->
 
