@@ -240,6 +240,7 @@ struct ScrollToParams {
 union ScrollToSelector {
   ScrollToTextSelector exact_text_selector;
   ScrollToTextFragmentSelector text_fragment_selector;
+  ScrollToNodeSelector node_selector;
 };
 
 // Used to specify exact text to scroll to and highlight.
@@ -264,6 +265,13 @@ struct ScrollToTextFragmentSelector {
   // the end of the document). If not specified, the search range will be the
   // entire document.
   int32? search_range_start_node_id;
+};
+
+// Used to specify a node to scroll to and highlight. All text within the node
+// will be highlighted.
+struct ScrollToNodeSelector {
+  // DOMNodeId of the node whose text will be highlighted (and scrolled to).
+  int32 node_id;
 };
 
 // Note: This must be kept in sync with the corresponding enum (same name) in

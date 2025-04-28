@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
+#include "third_party/blink/renderer/platform/graphics/dom_node_id.h"
 
 namespace blink {
 
@@ -216,10 +217,11 @@ TEST_F(AnnotationAgentContainerImplTest, CreateBoundAgent) {
 
   auto* container = AnnotationAgentContainerImpl::CreateIfNeeded(GetDocument());
   ASSERT_TRUE(container);
-  container->CreateAgent(std::move(remote_receiver_pair.first),
-                         std::move(remote_receiver_pair.second),
-                         mojom::blink::AnnotationType::kSharedHighlight,
-                         "MockAnnotationSelector");
+  container->CreateAgent(
+      std::move(remote_receiver_pair.first),
+      std::move(remote_receiver_pair.second),
+      mojom::blink::AnnotationType::kSharedHighlight,
+      mojom::blink::Selector::NewSerializedSelector("MockAnnotationSelector"));
 
   EXPECT_EQ(GetAgentCount(*container), 1ul);
 
@@ -252,10 +254,11 @@ TEST_F(AnnotationAgentContainerImplTest, DeferAttachmentUntilFinishedParsing) {
 
   auto* container = AnnotationAgentContainerImpl::CreateIfNeeded(GetDocument());
   ASSERT_TRUE(container);
-  container->CreateAgent(std::move(remote_receiver_pair.first),
-                         std::move(remote_receiver_pair.second),
-                         mojom::blink::AnnotationType::kUserNote,
-                         "MockAnnotationSelector");
+  container->CreateAgent(
+      std::move(remote_receiver_pair.first),
+      std::move(remote_receiver_pair.second),
+      mojom::blink::AnnotationType::kUserNote,
+      mojom::blink::Selector::NewSerializedSelector("MockAnnotationSelector"));
 
   // The agent should be created and bound.
   EXPECT_EQ(GetAgentCount(*container), 1ul);
@@ -327,10 +330,11 @@ TEST_F(AnnotationAgentContainerImplTest, NavigationRemovesBoundAgents) {
   auto remote_receiver_pair = host.BindForCreateAgent();
 
   auto* container = AnnotationAgentContainerImpl::CreateIfNeeded(GetDocument());
-  container->CreateAgent(std::move(remote_receiver_pair.first),
-                         std::move(remote_receiver_pair.second),
-                         mojom::blink::AnnotationType::kSharedHighlight,
-                         "MockAnnotationSelector");
+  container->CreateAgent(
+      std::move(remote_receiver_pair.first),
+      std::move(remote_receiver_pair.second),
+      mojom::blink::AnnotationType::kSharedHighlight,
+      mojom::blink::Selector::NewSerializedSelector("MockAnnotationSelector"));
   ASSERT_EQ(GetAgentCount(*container), 1ul);
   ASSERT_FALSE(host.did_disconnect_);
 
@@ -688,6 +692,71 @@ TEST_F(AnnotationAgentContainerImplTest, ShutdownDocumentWhileGenerating) {
       AnnotationAgentContainerImpl::CreateIfNeeded(GetDocument());
   ASSERT_NE(new_container, container);
   EXPECT_EQ(GetAgentCount(*new_container), 0ul);
+}
+
+// Test that the container can create a bound agent using a node id selector. It
+// should automatically perform attachment at creation time.
+TEST_F(AnnotationAgentContainerImplTest, CreateBoundAgentWithNodeId) {
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <body>
+      <p id="text">some text</p>
+    </body>
+  )HTML");
+  Compositor().BeginFrame();
+
+  MockAnnotationAgentHost host;
+  auto remote_receiver_pair = host.BindForCreateAgent();
+
+  auto* container = AnnotationAgentContainerImpl::CreateIfNeeded(GetDocument());
+  ASSERT_TRUE(container);
+  container->CreateAgent(
+      std::move(remote_receiver_pair.first),
+      std::move(remote_receiver_pair.second),
+      mojom::blink::AnnotationType::kSharedHighlight,
+      mojom::blink::Selector::NewNodeId(DOMNodeIds::IdForNode(
+          GetDocument().getElementById(AtomicString("text")))));
+
+  EXPECT_EQ(GetAgentCount(*container), 1ul);
+  EXPECT_TRUE(host.agent_.is_connected());
+
+  Compositor().BeginFrame();
+  host.FlushForTesting();
+  EXPECT_EQ(host.attachment_result_, mojom::blink::AttachmentResult::kSuccess);
+  EXPECT_FALSE(host.did_finish_attachment_rect_->IsEmpty());
+  EXPECT_FALSE(host.did_disconnect_);
+}
+
+TEST_F(AnnotationAgentContainerImplTest,
+       CreateBoundAgentWithNonExistentNodeId) {
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML()HTML");
+  Compositor().BeginFrame();
+
+  MockAnnotationAgentHost host;
+  auto remote_receiver_pair = host.BindForCreateAgent();
+
+  auto* container = AnnotationAgentContainerImpl::CreateIfNeeded(GetDocument());
+  ASSERT_TRUE(container);
+  const int non_existent_node_id = 9999;
+  container->CreateAgent(
+      std::move(remote_receiver_pair.first),
+      std::move(remote_receiver_pair.second),
+      mojom::blink::AnnotationType::kSharedHighlight,
+      mojom::blink::Selector::NewNodeId(non_existent_node_id));
+
+  EXPECT_EQ(GetAgentCount(*container), 1ul);
+  EXPECT_TRUE(host.agent_.is_connected());
+
+  Compositor().BeginFrame();
+  host.FlushForTesting();
+  EXPECT_EQ(host.attachment_result_,
+            mojom::blink::AttachmentResult::kSelectorNotMatched);
+  EXPECT_TRUE(host.did_finish_attachment_rect_->IsEmpty());
+  EXPECT_FALSE(host.did_disconnect_);
 }
 
 }  // namespace blink

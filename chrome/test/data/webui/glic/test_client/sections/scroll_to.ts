@@ -57,8 +57,7 @@ async function scrollTo(selector: ScrollToSelector): Promise<void> {
   logMessage('scrollTo succeeded!');
 }
 
-function getSearchRangeStartNodeId(selectElement: HTMLSelectElement): number|
-    undefined {
+function getNodeId(selectElement: HTMLSelectElement): number|undefined {
   let searchRangeStartNodeId: number|undefined = undefined;
   if (!selectElement.disabled) {
     searchRangeStartNodeId = parseInt(selectElement.value) || undefined;
@@ -94,7 +93,7 @@ $.scrollToFetchAPCBn.addEventListener('click', async () => {
 
   for (const selectElement
            of [$.scrollToExactTextSearchStart,
-               $.scrollToTextFragmentSearchStart]) {
+               $.scrollToTextFragmentSearchStart, $.scrollToNode]) {
     selectElement.innerHTML = '';
     selectElement.disabled = false;
 
@@ -128,8 +127,7 @@ $.scrollToBn.addEventListener('click', async () => {
   try {
     const exactText = $.scrollToExactText.value;
     if (exactText) {
-      const searchRangeStartNodeId =
-          getSearchRangeStartNodeId($.scrollToExactTextSearchStart);
+      const searchRangeStartNodeId = getNodeId($.scrollToExactTextSearchStart);
       await scrollTo({exactText: {text: exactText, searchRangeStartNodeId}});
       return;
     }
@@ -138,9 +136,15 @@ $.scrollToBn.addEventListener('click', async () => {
     const textEnd = $.scrollToTextFragmentTextEnd.value;
     if (textStart && textEnd) {
       const searchRangeStartNodeId =
-          getSearchRangeStartNodeId($.scrollToTextFragmentSearchStart);
+          getNodeId($.scrollToTextFragmentSearchStart);
       await scrollTo(
           {textFragment: {textStart, textEnd, searchRangeStartNodeId}});
+      return;
+    }
+
+    const nodeId = getNodeId($.scrollToNode);
+    if (nodeId) {
+      await scrollTo({node: {nodeId}});
       return;
     }
 

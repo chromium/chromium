@@ -10,6 +10,7 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/glic/host/context/glic_page_context_fetcher.h"
 #include "chrome/browser/glic/host/glic.mojom-shared.h"
 #include "chrome/browser/glic/test_support/interactive_glic_test.h"
@@ -63,7 +64,7 @@ class FakeAnnotationAgentContainer
           pending_host_remote,
       mojo::PendingReceiver<blink::mojom::AnnotationAgent> agent_receiver,
       blink::mojom::AnnotationType type,
-      const std::string& serialized_selector,
+      const blink::mojom::SelectorPtr selector,
       std::optional<int> search_range_start_node_id) override {
     if (agent_receiver_.is_bound()) {
       agent_disconnected_ = false;
@@ -359,6 +360,16 @@ class GlicAnnotationManagerUiTest : public InteractiveGlicTest {
           return base::Value::Dict().Set("textFragment", std::move(dict));
         },
         std::move(text_start), std::move(text_end), std::move(node_id_cb));
+  }
+
+  Selector NodeIdSelector(NodeIdCallback node_id_cb) {
+    return base::BindOnce(
+        [](NodeIdCallback node_id_cb) {
+          return base::Value::Dict().Set(
+              "node",
+              base::Value::Dict().Set("nodeId", std::move(node_id_cb).Run()));
+        },
+        std::move(node_id_cb));
   }
 
   FakeAnnotationAgentContainer* fake_service() { return fake_service_.get(); }
@@ -727,6 +738,37 @@ IN_PROC_BROWSER_TEST_F(GlicAnnotationManagerUiTest,
                   ScrollToWithDocumentIdExpectingError(
                       ExactTextSelector("Some text", std::move(invalid_id_cb)),
                       mojom::ScrollToErrorReason::kSearchRangeInvalid));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicAnnotationManagerUiTest, NodeIdSelector) {
+  NodeIdCallback text_node = base::BindLambdaForTesting([&]() {
+    return actor::FindContentNodeId(*browser()
+                                         ->tab_strip_model()
+                                         ->GetActiveWebContents()
+                                         ->GetPrimaryMainFrame(),
+                                    "p#text")
+        .value();
+  });
+  RunTestSequence(InstrumentTab(kActiveTabId),
+                  NavigateWebContents(
+                      kActiveTabId, embedded_test_server()->GetURL(
+                                        "/scrollable_page_with_content.html")),
+                  OpenGlicWindow(GlicWindowMode::kDetached),
+                  GetPageContextFromFocusedTab(),  //
+                  ScrollToWithDocumentId(NodeIdSelector(std::move(text_node))));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicAnnotationManagerUiTest,
+                       NodeIdSelectorWithInvalidNode) {
+  RunTestSequence(InstrumentTab(kActiveTabId),
+                  NavigateWebContents(
+                      kActiveTabId, embedded_test_server()->GetURL(
+                                        "/scrollable_page_with_content.html")),
+                  OpenGlicWindow(GlicWindowMode::kDetached),
+                  GetPageContextFromFocusedTab(),  //
+                  ScrollToWithDocumentIdExpectingError(
+                      NodeIdSelector(base::BindOnce([]() { return -1; })),
+                      mojom::ScrollToErrorReason::kNoMatchFound));
 }
 
 class GlicAnnotationManagerWithScrollToDisabledUiTest

@@ -106,7 +106,7 @@ class CORE_EXPORT AnnotationAgentContainerImpl final
       mojo::PendingRemote<mojom::blink::AnnotationAgentHost> host_remote,
       mojo::PendingReceiver<mojom::blink::AnnotationAgent> agent_receiver,
       mojom::blink::AnnotationType type,
-      const String& serialized_selector,
+      mojom::blink::SelectorPtr selector,
       std::optional<DOMNodeId> search_range_start_node_id =
           std::nullopt) override;
   void CreateAgentFromSelection(

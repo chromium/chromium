@@ -39,6 +39,7 @@ void GlicAnnotationManager::ScrollTo(
   mojom::ScrollToSelector* selector = params->selector.get();
   std::optional<shared_highlighting::TextFragment> text_fragment;
   std::optional<int> search_range_start_node_id = std::nullopt;
+  std::optional<int> node_id = std::nullopt;
 
   if (selector->is_exact_text_selector()) {
     auto* exact_text_selector = selector->get_exact_text_selector().get();
@@ -83,6 +84,13 @@ void GlicAnnotationManager::ScrollTo(
     text_fragment = shared_highlighting::TextFragment(text_start, text_end,
                                                       /*prefix=*/std::string(),
                                                       /*suffix=*/std::string());
+  } else if (selector->is_node_selector()) {
+    if (!params->document_id) {
+      mojo::ReportBadMessage(
+          "When node_id is set, document_id should be set as well.");
+      return;
+    }
+    node_id = selector->get_node_selector()->node_id;
   } else {
     mojo::ReportBadMessage(
         "The client should have verified that one of the selector types was "
@@ -90,9 +98,9 @@ void GlicAnnotationManager::ScrollTo(
     return;
   }
 
-  // The only support selector types currently are text and text fragment, so
-  // this must have a non-empty value.
-  CHECK(text_fragment.has_value());
+  // "exact_text" and "text_fragment" selectors will set `text_fragment`, "node"
+  // selector will set `node_id`.
+  CHECK(text_fragment.has_value() || node_id.has_value());
 
   auto focused_tab_data = service_->GetFocusedTabData();
   content::Page* focused_primary_page = nullptr;
@@ -137,15 +145,22 @@ void GlicAnnotationManager::ScrollTo(
     }
   }
 
+  blink::mojom::SelectorPtr blink_mojom_selector;
+  if (text_fragment) {
+    blink_mojom_selector = blink::mojom::Selector::NewSerializedSelector(
+        text_fragment->ToEscapedString(
+            shared_highlighting::TextFragment::EscapedStringFormat::
+                kWithoutTextDirective));
+  } else {
+    blink_mojom_selector = blink::mojom::Selector::NewNodeId(node_id.value());
+  }
+
   mojo::PendingReceiver<blink::mojom::AnnotationAgentHost> agent_host_receiver;
   mojo::Remote<blink::mojom::AnnotationAgent> agent_remote;
   annotation_agent_container_->remote->CreateAgent(
       agent_host_receiver.InitWithNewPipeAndPassRemote(),
       agent_remote.BindNewPipeAndPassReceiver(),
-      blink::mojom::AnnotationType::kGlic,
-      text_fragment->ToEscapedString(
-          shared_highlighting::TextFragment::EscapedStringFormat::
-              kWithoutTextDirective),
+      blink::mojom::AnnotationType::kGlic, std::move(blink_mojom_selector),
       search_range_start_node_id);
   annotation_task_ = std::make_unique<AnnotationTask>(
       this, std::move(agent_remote), std::move(agent_host_receiver),

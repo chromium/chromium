@@ -29,7 +29,8 @@ void TextHighlighter::InitializeAndBindToAnnotationAgent(
   // Create an annotation agent and bind to it.
   agent_container->CreateAgent(
       receiver_.BindNewPipeAndPassRemote(), agent_.BindNewPipeAndPassReceiver(),
-      blink::mojom::AnnotationType::kSharedHighlight, text_directive_,
+      blink::mojom::AnnotationType::kSharedHighlight,
+      blink::mojom::Selector::NewSerializedSelector(text_directive_),
       /*search_range_start_node_id=*/std::nullopt);
 }
 

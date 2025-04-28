@@ -74,6 +74,15 @@ enum AttachmentResult {
   kRangeInvalid,
 };
 
+union Selector {
+  // A text fragment selector (that uses the syntax defined in
+  // https://wicg.github.io/scroll-to-text-fragment/#syntax).
+  string serialized_selector;
+  // DOMNodeId corresponding to a node (which will be converted to a Range
+  // encompassing its subtree).
+  int32 node_id;
+};
+
 // Allows the browser process to receive events for a single annotation in the
 // renderer.
 interface AnnotationAgentHost {
@@ -98,15 +107,15 @@ interface AnnotationAgentContainer {
   // `agent_receiver`: A binding that the caller will use to send messages to
   //    and control the life time of the agent.
   // `type`: The use case the annotation agent is being used for.
-  // `serialized_selector`: A selector that will be used to attach the agent to
-  //    a Range of DOM in the Document.
+  // `selector`: A selector that will be used to attach the agent to a Range of
+ //     DOM in the Document.
   // `search_range_start_node_id`: The DOMNodeId of the start node for the
   //    search range to the end of the document. If DOMNodeId is not given, the
   //    search range will be the whole document.
   CreateAgent(pending_remote<blink.mojom.AnnotationAgentHost> host_remote,
               pending_receiver<blink.mojom.AnnotationAgent> agent_receiver,
               AnnotationType type,
-              string serialized_selector,
+              Selector selector,
               int32? search_range_start_node_id);
 
   // Creates an agent from the document's current text selection and returns

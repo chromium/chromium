@@ -76,6 +76,7 @@ export interface PageElementTypes {
   scrollToTextFragmentTextStart: HTMLInputElement;
   scrollToTextFragmentTextEnd: HTMLInputElement;
   scrollToTextFragmentSearchStart: HTMLSelectElement;
+  scrollToNode: HTMLSelectElement;
   scrollToBn: HTMLButtonElement;
   fileDrop: HTMLDivElement;
   fileDropList: HTMLDivElement;

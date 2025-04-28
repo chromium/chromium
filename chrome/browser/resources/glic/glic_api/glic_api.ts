@@ -941,9 +941,12 @@ export declare interface ScrollToSelector {
   exactText?: ScrollToTextSelector;
 
   /**
-   * Text fragment selector, see ScrollToTextFragmentSelector for more details
+   * Text fragment selector, see ScrollToTextFragmentSelector for more details.
    */
   textFragment?: ScrollToTextFragmentSelector;
+
+  /** Node selector, see ScrollToNodeSelector for more details. */
+  node?: ScrollToNodeSelector;
 }
 
 /**
@@ -982,6 +985,20 @@ export declare interface ScrollToTextFragmentSelector {
    * in components/optimization_guide/proto/features/common_quality_data.proto.
    */
   searchRangeStartNodeId?: number;
+}
+
+/**
+ * scrollTo() selector to select all text inside a specific node (corresponding
+ * to the provided nodeId). documentId must also be specified in ScrollToParams
+ * when this selector is used.
+ */
+export declare interface ScrollToNodeSelector {
+  /**
+   * Value should be obtained from common_ancestor_dom_node_id in
+   * ContentAttributes (see
+   * components/optimization_guide/proto/features/common_quality_data.proto)
+   */
+  nodeId: number;
 }
 
 /** Error type used for scrollTo(). */

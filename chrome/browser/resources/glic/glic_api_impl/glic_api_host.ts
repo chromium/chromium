@@ -479,6 +479,18 @@ class HostMessageHandler implements HostMessageHandlerInterface {
           },
         };
       }
+      if (selector.node !== undefined) {
+        if (params.documentId === undefined) {
+          throw new ErrorWithReasonImpl(
+              'scrollTo', ScrollToErrorReason.NOT_SUPPORTED,
+              'nodeId without documentId');
+        }
+        return {
+          nodeSelector: {
+            nodeId: selector.node.nodeId,
+          },
+        };
+      }
       throw new ErrorWithReasonImpl(
           'scrollTo', ScrollToErrorReason.NOT_SUPPORTED);
     }

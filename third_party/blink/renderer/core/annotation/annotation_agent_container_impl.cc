@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/annotation/annotation_agent_generator.h"
 #include "third_party/blink/renderer/core/annotation/annotation_agent_impl.h"
 #include "third_party/blink/renderer/core/annotation/annotation_selector.h"
+#include "third_party/blink/renderer/core/annotation/node_annotation_selector.h"
 #include "third_party/blink/renderer/core/annotation/text_annotation_selector.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/editing/visible_selection.h"
@@ -20,6 +21,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -34,6 +36,15 @@ const char* ToString(mojom::blink::AnnotationType type) {
       return "TextFinder";
     case mojom::blink::AnnotationType::kGlic:
       return "Glic";
+  }
+}
+
+String ToString(const mojom::blink::Selector& selector) {
+  switch (selector.which()) {
+    case mojom::blink::Selector::Tag::kSerializedSelector:
+      return selector.get_serialized_selector();
+    case mojom::blink::Selector::Tag::kNodeId:
+      return String::Number(selector.get_node_id());
   }
 }
 }  // namespace
@@ -180,26 +191,34 @@ void AnnotationAgentContainerImpl::CreateAgent(
     mojo::PendingRemote<mojom::blink::AnnotationAgentHost> host_remote,
     mojo::PendingReceiver<mojom::blink::AnnotationAgent> agent_receiver,
     mojom::blink::AnnotationType type,
-    const String& serialized_selector,
+    mojom::blink::SelectorPtr selector,
     std::optional<DOMNodeId> search_range_start_node_id) {
   TRACE_EVENT("blink", "AnnotationAgentContainerImpl::CreateAgent", "type",
-              ToString(type), "selector", serialized_selector);
+              ToString(type), "selector", ToString(*selector));
   DCHECK(GetSupplementable());
 
-  AnnotationSelector* selector =
-      AnnotationSelector::Deserialize(serialized_selector);
-
-  // If the selector was invalid, we should drop the bindings which the host
-  // will see as a disconnect.
-  // TODO(bokan): We could support more graceful fallback/error reporting by
-  // calling an error method on the host.
-  if (!selector) {
-    TRACE_EVENT_INSTANT("blink", "Failed to deserialize selector");
-    return;
+  AnnotationSelector* annotation_selector;
+  switch (selector->which()) {
+    case mojom::blink::Selector::Tag::kSerializedSelector:
+      annotation_selector =
+          AnnotationSelector::Deserialize(selector->get_serialized_selector());
+      // If the selector was invalid, we should drop the bindings which the host
+      // will see as a disconnect.
+      // TODO(bokan): We could support more graceful fallback/error reporting by
+      // calling an error method on the host.
+      if (!annotation_selector) {
+        TRACE_EVENT_INSTANT("blink", "Failed to deserialize selector");
+        return;
+      }
+      break;
+    case mojom::blink::Selector::Tag::kNodeId:
+      annotation_selector =
+          MakeGarbageCollected<NodeAnnotationSelector>(selector->get_node_id());
+      break;
   }
 
-  auto* agent_impl =
-      CreateUnboundAgent(type, *selector, search_range_start_node_id);
+  auto* agent_impl = CreateUnboundAgent(type, *annotation_selector,
+                                        search_range_start_node_id);
   agent_impl->Bind(std::move(host_remote), std::move(agent_receiver));
 }
 
