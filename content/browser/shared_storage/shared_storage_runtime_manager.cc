@@ -128,6 +128,29 @@ void SharedStorageRuntimeManager::NotifySharedStorageAccessed(
   }
 }
 
+void SharedStorageRuntimeManager::NotifyWorkletOperationExecutionFinished(
+    base::TimeDelta execution_time,
+    SharedStorageObserverInterface::AccessMethod method,
+    int operation_id,
+    int worklet_id,
+    std::optional<FrameTreeNodeId> main_frame_id,
+    const std::string& owner_origin) {
+  // Don't bother getting the time if there are no observers.
+  if (observers_.empty()) {
+    return;
+  }
+  base::Time now = base::Time::Now();
+  for (SharedStorageObserverInterface& observer : observers_) {
+    // TODO(crbug.com/401011862): Consider sending start time as well as
+    // "finish" time/report time as part of the DevTools notification. Note,
+    // however, that there may be a discrepancy between `execution_time` and
+    // `finished_time - start-time`.
+    observer.OnWorkletOperationExecutionFinished(now, execution_time, method,
+                                                 operation_id, worklet_id,
+                                                 main_frame_id, owner_origin);
+  }
+}
+
 std::unique_ptr<SharedStorageWorkletHost>
 SharedStorageRuntimeManager::CreateWorkletHostHelper(
     SharedStorageDocumentServiceImpl& document_service,

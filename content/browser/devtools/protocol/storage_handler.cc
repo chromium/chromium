@@ -348,6 +348,10 @@ class StorageHandler::IndexedDBObserver
 // Observer that listens on the UI thread for shared storage notifications and
 // informs the StorageHandler on the UI thread for origins of interest.
 // Created and used exclusively on the UI thread.
+// TODO(crbug.com/401011862): Investigate whether a separate observer class is
+// still necessary, or whether `StorageHandler` could now implement
+// `content::SharedStorageRuntimeManager::SharedStorageObserverInterface`
+// directly.
 class StorageHandler::SharedStorageObserver
     : content::SharedStorageRuntimeManager::SharedStorageObserverInterface {
  public:
@@ -365,8 +369,12 @@ class StorageHandler::SharedStorageObserver
   ~SharedStorageObserver() override { DCHECK_CURRENTLY_ON(BrowserThread::UI); }
 
   // content::SharedStorageObserverInterface
+
+  // TODO(crbug.com/401011862): Update this and all other shared storage
+  // notifications to filter by frames, so that only the handlers in the
+  // relevant frame subtrees receive notifications.
   void OnSharedStorageAccessed(
-      const base::Time& access_time,
+      base::Time access_time,
       blink::SharedStorageAccessScope scope,
       AccessMethod method,
       FrameTreeNodeId main_frame_id,
@@ -381,6 +389,20 @@ class StorageHandler::SharedStorageObserver
 
   void OnConfigPopulated(
       const std::optional<FencedFrameConfig>& config) override {}
+
+  void OnWorkletOperationExecutionFinished(
+      base::Time finished_time,
+      base::TimeDelta execution_time,
+      AccessMethod method,
+      int operation_id,
+      int worklet_id,
+      std::optional<FrameTreeNodeId> main_frame_id,
+      const std::string& owner_origin) override {
+    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    owner_->NotifySharedStorageWorkletOperationExecutionFinished(
+        finished_time, execution_time, method, operation_id, worklet_id,
+        main_frame_id, owner_origin);
+  }
 
  private:
   raw_ptr<StorageHandler> const owner_;
@@ -1506,7 +1528,7 @@ std::string GetFrameTokenFromFrameTreeNodeId(FrameTreeNodeId frame_id) {
 }  // namespace
 
 void StorageHandler::NotifySharedStorageAccessed(
-    const base::Time& access_time,
+    base::Time access_time,
     blink::SharedStorageAccessScope scope,
     SharedStorageRuntimeManager::SharedStorageObserverInterface::AccessMethod
         method,
@@ -1686,6 +1708,23 @@ void StorageHandler::NotifySharedStorageAccessed(
       GetFrameTokenFromFrameTreeNodeId(main_frame_id), owner_origin,
       net::SchemefulSite(GURL(owner_origin)).Serialize(),
       std::move(protocol_params));
+}
+
+void StorageHandler::NotifySharedStorageWorkletOperationExecutionFinished(
+    base::Time finished_time,
+    base::TimeDelta execution_time,
+    SharedStorageRuntimeManager::SharedStorageObserverInterface::AccessMethod
+        method,
+    int operation_id,
+    int worklet_id,
+    std::optional<FrameTreeNodeId> main_frame_id,
+    const std::string& owner_origin) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  // TODO(crbug.com/401011862): Add a new
+  // `sharedStorageWorkletOperationExecutionFinished` event to the DevTools
+  // Protocol. Call the generated code here to send an event notification to
+  // DevTools Frontend.
 }
 
 DispatchResponse StorageHandler::SetStorageBucketTracking(

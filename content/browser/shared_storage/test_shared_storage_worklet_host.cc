@@ -158,17 +158,19 @@ void TestSharedStorageWorkletHost::OnCreateWorkletScriptLoadingFinishedHelper(
 }
 
 void TestSharedStorageWorkletHost::OnRunOperationOnWorkletFinished(
-    base::TimeTicks start_time,
+    base::TimeTicks run_start_time,
+    base::TimeTicks execution_start_time,
     int operation_id,
     bool success,
     const std::string& error_message) {
-  OnRunOperationOnWorkletFinishedHelper(start_time, operation_id, success,
-                                        error_message,
+  OnRunOperationOnWorkletFinishedHelper(run_start_time, execution_start_time,
+                                        operation_id, success, error_message,
                                         /*initial_message=*/true);
 }
 
 void TestSharedStorageWorkletHost::OnRunOperationOnWorkletFinishedHelper(
-    base::TimeTicks start_time,
+    base::TimeTicks run_start_time,
+    base::TimeTicks execution_start_time,
     int operation_id,
     bool success,
     const std::string& error_message,
@@ -177,12 +179,13 @@ void TestSharedStorageWorkletHost::OnRunOperationOnWorkletFinishedHelper(
   if (should_defer_worklet_messages_ && initial_message) {
     pending_worklet_messages_.push_back(base::BindOnce(
         &TestSharedStorageWorkletHost::OnRunOperationOnWorkletFinishedHelper,
-        weak_ptr_factory_.GetWeakPtr(), start_time, operation_id, success,
-        error_message,
+        weak_ptr_factory_.GetWeakPtr(), run_start_time, execution_start_time,
+        operation_id, success, error_message,
         /*initial_message=*/false));
   } else {
     SharedStorageWorkletHost::OnRunOperationOnWorkletFinished(
-        start_time, operation_id, success, error_message);
+        run_start_time, execution_start_time, operation_id, success,
+        error_message);
   }
 
   if (initial_message) {
@@ -195,7 +198,8 @@ void TestSharedStorageWorkletHost::OnRunOperationOnWorkletFinishedHelper(
 
 void TestSharedStorageWorkletHost::OnRunURLSelectionOperationOnWorkletFinished(
     const GURL& urn_uuid,
-    base::TimeTicks start_time,
+    base::TimeTicks select_url_start_time,
+    base::TimeTicks execution_start_time,
     int operation_id,
     const std::string& operation_name,
     const std::u16string& saved_query_name_to_cache,
@@ -205,8 +209,8 @@ void TestSharedStorageWorkletHost::OnRunURLSelectionOperationOnWorkletFinished(
     bool use_page_budgets,
     BudgetResult budget_result) {
   OnRunURLSelectionOperationOnWorkletFinishedHelper(
-      urn_uuid, start_time, operation_id, operation_name,
-      saved_query_name_to_cache, script_execution_success,
+      urn_uuid, select_url_start_time, execution_start_time, operation_id,
+      operation_name, saved_query_name_to_cache, script_execution_success,
       script_execution_error_message, index, use_page_budgets,
       std::move(budget_result), /*initial_message=*/true);
 }
@@ -214,7 +218,8 @@ void TestSharedStorageWorkletHost::OnRunURLSelectionOperationOnWorkletFinished(
 void TestSharedStorageWorkletHost::
     OnRunURLSelectionOperationOnWorkletFinishedHelper(
         const GURL& urn_uuid,
-        base::TimeTicks start_time,
+        base::TimeTicks select_url_start_time,
+        base::TimeTicks execution_start_time,
         int operation_id,
         const std::string& operation_name,
         const std::u16string& saved_query_name_to_cache,
@@ -229,14 +234,15 @@ void TestSharedStorageWorkletHost::
     pending_worklet_messages_.push_back(base::BindOnce(
         &TestSharedStorageWorkletHost::
             OnRunURLSelectionOperationOnWorkletFinishedHelper,
-        weak_ptr_factory_.GetWeakPtr(), urn_uuid, start_time, operation_id,
-        operation_name, saved_query_name_to_cache, script_execution_success,
+        weak_ptr_factory_.GetWeakPtr(), urn_uuid, select_url_start_time,
+        execution_start_time, operation_id, operation_name,
+        saved_query_name_to_cache, script_execution_success,
         script_execution_error_message, index, use_page_budgets,
         std::move(budget_result), /*initial_message=*/false));
   } else {
     SharedStorageWorkletHost::OnRunURLSelectionOperationOnWorkletFinished(
-        urn_uuid, start_time, operation_id, operation_name,
-        saved_query_name_to_cache, script_execution_success,
+        urn_uuid, select_url_start_time, execution_start_time, operation_id,
+        operation_name, saved_query_name_to_cache, script_execution_success,
         script_execution_error_message, index, use_page_budgets,
         std::move(budget_result));
   }

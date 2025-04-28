@@ -217,13 +217,22 @@ class StorageHandler
                         const CreateReportResult&) override;
 
   void NotifySharedStorageAccessed(
-      const base::Time& access_time,
+      base::Time access_time,
       blink::SharedStorageAccessScope scope,
       SharedStorageRuntimeManager::SharedStorageObserverInterface::AccessMethod
           method,
       FrameTreeNodeId main_frame_id,
       const std::string& owner_origin,
       const SharedStorageEventParams& params);
+  void NotifySharedStorageWorkletOperationExecutionFinished(
+      base::Time finished_time,
+      base::TimeDelta execution_time,
+      SharedStorageRuntimeManager::SharedStorageObserverInterface::AccessMethod
+          method,
+      int operation_id,
+      int worklet_id,
+      std::optional<FrameTreeNodeId> main_frame_id,
+      const std::string& owner_origin);
 
   void NotifyCacheStorageListChanged(
       const storage::BucketLocator& bucket_locator);

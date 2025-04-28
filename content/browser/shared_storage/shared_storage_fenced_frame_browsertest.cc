@@ -82,6 +82,7 @@ using SharedStorageUrlSpecWithMetadata =
 using Access = TestSharedStorageObserver::Access;
 using AccessScope = blink::SharedStorageAccessScope;
 using AccessMethod = TestSharedStorageObserver::AccessMethod;
+using OperationFinishedInfo = TestSharedStorageObserver::OperationFinishedInfo;
 
 namespace {
 
@@ -3077,6 +3078,8 @@ IN_PROC_BROWSER_TEST_F(SharedStorageSelectURLSavedQueryBrowserTest,
        SharedStorageEventParams::CreateForAddModule(
            https_server()->GetURL("a.test", "/shared_storage/simple_module.js"),
            /*worklet_id=*/0)});
+
+  std::vector<OperationFinishedInfo> expected_finished_infos;
   for (int call = 0; call < call_limit; call++) {
     expected_accesses.push_back(
         {AccessScope::kWindow, AccessMethod::kSelectURL, MainFrameId(),
@@ -3090,6 +3093,9 @@ IN_PROC_BROWSER_TEST_F(SharedStorageSelectURLSavedQueryBrowserTest,
              /*saved_query=*/
              base::StrCat({"query", base::NumberToString(call)}),
              urn_uuids_observed()[call], /*worklet_id=*/0)});
+    expected_finished_infos.push_back(
+        {base::TimeDelta(), AccessMethod::kSelectURL, /*operation_id=*/call,
+         /*worklet_id=*/0, MainFrameId(), origin_str});
   }
   expected_accesses.push_back(
       {AccessScope::kWindow, AccessMethod::kSelectURL, MainFrameId(),
@@ -3102,6 +3108,9 @@ IN_PROC_BROWSER_TEST_F(SharedStorageSelectURLSavedQueryBrowserTest,
            ResolveSelectURLToConfig(),
            /*saved_query=*/std::string(), urn_uuids_observed()[call_limit],
            /*worklet_id=*/0)});
+  expected_finished_infos.push_back(
+      {base::TimeDelta(), AccessMethod::kSelectURL, /*operation_id=*/call_limit,
+       /*worklet_id=*/0, MainFrameId(), origin_str});
   for (int call = 0; call < call_limit; call++) {
     expected_accesses.push_back(
         {AccessScope::kWindow, AccessMethod::kSelectURL, MainFrameId(),
@@ -3116,9 +3125,14 @@ IN_PROC_BROWSER_TEST_F(SharedStorageSelectURLSavedQueryBrowserTest,
              /*saved_query=*/
              base::StrCat({"query", base::NumberToString(call)}),
              urn_uuids_observed()[call_limit + 1 + call], /*worklet_id=*/0)});
+    expected_finished_infos.push_back(
+        {base::TimeDelta(), AccessMethod::kSelectURL,
+         /*operation_id=*/call_limit + 1 + call, /*worklet_id=*/0,
+         MainFrameId(), origin_str});
   }
 
   ExpectAccessObserved(expected_accesses);
+  ExpectOperationFinishedInfosObserved(expected_finished_infos);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -3211,18 +3225,21 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_EQ(static_cast<int>(urn_uuids_observed().size()), 2 * call_limit + 1);
 
   std::vector<Access> expected_accesses;
+  std::vector<OperationFinishedInfo> expected_finished_infos;
+  std::string host;
+  std::string origin_str;
   for (int call = 0; call < call_limit; call++) {
-    std::string host =
-        base::StrCat({"subdomain", base::NumberToString(call), ".b.test"});
+    host = base::StrCat({"subdomain", base::NumberToString(call), ".b.test"});
+    origin_str = https_server()->GetOrigin(host).Serialize();
     expected_accesses.push_back(
         {AccessScope::kWindow, AccessMethod::kAddModule, MainFrameId(),
-         https_server()->GetOrigin(host).Serialize(),
+         origin_str,
          SharedStorageEventParams::CreateForAddModule(
              https_server()->GetURL(host, "/shared_storage/simple_module.js"),
              /*worklet_id=*/call)});
     expected_accesses.push_back(
         {AccessScope::kWindow, AccessMethod::kSelectURL, MainFrameId(),
-         https_server()->GetOrigin(host).Serialize(),
+         origin_str,
          SharedStorageEventParams::CreateForSelectURLForTesting(
              "test-url-selection-operation", /*operation_id=*/0,
              /*keep_alive=*/true,
@@ -3233,16 +3250,20 @@ IN_PROC_BROWSER_TEST_F(
              /*saved_query=*/
              base::StrCat({"query", base::NumberToString(call)}),
              urn_uuids_observed()[call], /*worklet_id=*/call)});
+    expected_finished_infos.push_back(
+        {base::TimeDelta(), AccessMethod::kSelectURL, /*operation_id=*/0,
+         /*worklet_id=*/call, MainFrameId(), origin_str});
   }
+  origin_str = https_server()->GetOrigin("b.test").Serialize();
   expected_accesses.push_back(
       {AccessScope::kWindow, AccessMethod::kAddModule, MainFrameId(),
-       https_server()->GetOrigin("b.test").Serialize(),
+       origin_str,
        SharedStorageEventParams::CreateForAddModule(
            https_server()->GetURL("b.test", "/shared_storage/simple_module.js"),
            /*worklet_id=*/call_limit)});
   expected_accesses.push_back(
       {AccessScope::kWindow, AccessMethod::kSelectURL, MainFrameId(),
-       https_server()->GetOrigin("b.test").Serialize(),
+       origin_str,
        SharedStorageEventParams::CreateForSelectURLForTesting(
            "test-url-selection-operation", /*operation_id=*/0,
            /*keep_alive=*/true,
@@ -3252,18 +3273,21 @@ IN_PROC_BROWSER_TEST_F(
            ResolveSelectURLToConfig(),
            /*saved_query=*/std::string(), urn_uuids_observed()[call_limit],
            /*worklet_id=*/call_limit)});
+  expected_finished_infos.push_back(
+      {base::TimeDelta(), AccessMethod::kSelectURL, /*operation_id=*/0,
+       /*worklet_id=*/call_limit, MainFrameId(), origin_str});
   for (int call = 0; call < call_limit; call++) {
-    std::string host =
-        base::StrCat({"subdomain", base::NumberToString(call), ".b.test"});
+    host = base::StrCat({"subdomain", base::NumberToString(call), ".b.test"});
+    origin_str = https_server()->GetOrigin(host).Serialize();
     expected_accesses.push_back(
         {AccessScope::kWindow, AccessMethod::kAddModule, MainFrameId(),
-         https_server()->GetOrigin(host).Serialize(),
+         origin_str,
          SharedStorageEventParams::CreateForAddModule(
              https_server()->GetURL(host, "/shared_storage/simple_module.js"),
              /*worklet_id=*/call_limit + 1 + call)});
     expected_accesses.push_back(
         {AccessScope::kWindow, AccessMethod::kSelectURL, MainFrameId(),
-         https_server()->GetOrigin(host).Serialize(),
+         origin_str,
          SharedStorageEventParams::CreateForSelectURLForTesting(
              "test-url-selection-operation", /*operation_id=*/0,
              /*keep_alive=*/true,
@@ -3275,6 +3299,9 @@ IN_PROC_BROWSER_TEST_F(
              base::StrCat({"query", base::NumberToString(call)}),
              urn_uuids_observed()[call_limit + 1 + call],
              /*worklet_id=*/call_limit + 1 + call)});
+    expected_finished_infos.push_back(
+        {base::TimeDelta(), AccessMethod::kSelectURL, /*operation_id=*/0,
+         /*worklet_id=*/call_limit + 1 + call, MainFrameId(), origin_str});
   }
 
   ExpectAccessObserved(expected_accesses);

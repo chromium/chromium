@@ -32,13 +32,21 @@ class TestSharedStorageObserver
     std::string owner_origin;
     SharedStorageEventParams params;
     friend bool operator==(const Access& lhs, const Access& rhs);
-    friend std::ostream& operator<<(std::ostream& os, const Access& access);
+  };
+
+  struct OperationFinishedInfo {
+    base::TimeDelta execution_time;
+    AccessMethod method;
+    int operation_id;
+    int worklet_id;
+    std::optional<FrameTreeNodeId> main_frame_id;
+    std::string owner_origin;
   };
 
   TestSharedStorageObserver();
   ~TestSharedStorageObserver() override;
 
-  void OnSharedStorageAccessed(const base::Time& access_time,
+  void OnSharedStorageAccessed(base::Time access_time,
                                AccessScope scope,
                                AccessMethod method,
                                FrameTreeNodeId main_frame_id,
@@ -50,7 +58,19 @@ class TestSharedStorageObserver
   void OnConfigPopulated(
       const std::optional<FencedFrameConfig>& config) override;
 
+  void OnWorkletOperationExecutionFinished(
+      base::Time finished_time,
+      base::TimeDelta execution_time,
+      AccessMethod method,
+      int operation_id,
+      int worklet_id,
+      std::optional<FrameTreeNodeId> main_frame_id,
+      const std::string& owner_origin) override;
+
   void ExpectAccessObserved(const std::vector<Access>& expected_accesses);
+
+  void ExpectOperationFinishedInfosObserved(
+      const std::vector<OperationFinishedInfo>& expected_infos);
 
   const std::vector<GURL>& urn_uuids_observed() const {
     return urn_uuids_observed_;
@@ -59,7 +79,18 @@ class TestSharedStorageObserver
  private:
   std::vector<Access> accesses_;
   std::vector<GURL> urn_uuids_observed_;
+  std::vector<OperationFinishedInfo> operation_finished_infos_;
 };
+
+std::ostream& operator<<(std::ostream& os,
+                         const TestSharedStorageObserver::Access& access);
+
+bool operator==(const TestSharedStorageObserver::OperationFinishedInfo& lhs,
+                const TestSharedStorageObserver::OperationFinishedInfo& rhs);
+
+std::ostream& operator<<(
+    std::ostream& os,
+    const TestSharedStorageObserver::OperationFinishedInfo& info);
 
 }  // namespace content
 

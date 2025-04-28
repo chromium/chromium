@@ -20,7 +20,7 @@ class TestSelectURLFencedFrameConfigObserverImpl
   TestSelectURLFencedFrameConfigObserverImpl();
   ~TestSelectURLFencedFrameConfigObserverImpl() override;
 
-  void OnSharedStorageAccessed(const base::Time& access_time,
+  void OnSharedStorageAccessed(base::Time access_time,
                                AccessScope scope,
                                AccessMethod method,
                                FrameTreeNodeId main_frame_id,
@@ -29,6 +29,15 @@ class TestSelectURLFencedFrameConfigObserverImpl
   void OnUrnUuidGenerated(const GURL& urn_uuid) override;
   void OnConfigPopulated(
       const std::optional<FencedFrameConfig>& config) override;
+
+  void OnWorkletOperationExecutionFinished(
+      base::Time finished_time,
+      base::TimeDelta execution_time,
+      AccessMethod method,
+      int operation_id,
+      int worklet_id,
+      std::optional<FrameTreeNodeId> main_frame_id,
+      const std::string& owner_origin) override;
 
   const std::optional<GURL>& GetUrnUuid() const;
   const std::optional<FencedFrameConfig>& GetConfig() const;

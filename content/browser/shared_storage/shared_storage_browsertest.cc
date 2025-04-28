@@ -600,6 +600,10 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, RunOperation_Success) {
             /*keep_alive=*/false,
             SharedStorageEventParams::PrivateAggregationConfigWrapper(),
             blink::CloneableMessage(), /*worklet_id=*/0)}});
+
+  ExpectOperationFinishedInfosObserved(
+      {{base::TimeDelta(), AccessMethod::kRun, /*operation_id=*/0,
+        /*worklet_id=*/0, MainFrameId(), origin_str}});
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
@@ -889,6 +893,10 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
             "test-operation", /*operation_id=*/0, /*keep_alive=*/false,
             SharedStorageEventParams::PrivateAggregationConfigWrapper(),
             blink::CloneableMessage(), /*worklet_id=*/0)}});
+
+  ExpectOperationFinishedInfosObserved(
+      {{base::TimeDelta(), AccessMethod::kRun, /*operation_id=*/0,
+        /*worklet_id=*/0, MainFrameId(), origin_str}});
 }
 
 IN_PROC_BROWSER_TEST_P(
@@ -980,6 +988,12 @@ IN_PROC_BROWSER_TEST_P(
             "test-operation", /*operation_id=*/1, /*keep_alive=*/false,
             SharedStorageEventParams::PrivateAggregationConfigWrapper(),
             blink::CloneableMessage(), /*worklet_id=*/0)}});
+
+  ExpectOperationFinishedInfosObserved(
+      {{base::TimeDelta(), AccessMethod::kRun, /*operation_id=*/0,
+        /*worklet_id=*/0, MainFrameId(), origin_str},
+       {base::TimeDelta(), AccessMethod::kRun, /*operation_id=*/1,
+        /*worklet_id=*/0, MainFrameId(), origin_str}});
 }
 
 IN_PROC_BROWSER_TEST_P(
@@ -1447,6 +1461,10 @@ IN_PROC_BROWSER_TEST_P(
             "test-operation", /*operation_id=*/0, /*keep_alive=*/false,
             SharedStorageEventParams::PrivateAggregationConfigWrapper(),
             blink::CloneableMessage(), /*worklet_id=*/0)}});
+
+  ExpectOperationFinishedInfosObserved(
+      {{base::TimeDelta(), AccessMethod::kRun, /*operation_id=*/0,
+        /*worklet_id=*/0, /*main_frame_id=*/std::nullopt, origin_str}});
 }
 
 IN_PROC_BROWSER_TEST_P(
@@ -1584,6 +1602,10 @@ IN_PROC_BROWSER_TEST_P(
             ResolveSelectURLToConfig(),
             /*saved_query=*/std::string(), urn_uuids_observed()[0],
             /*worklet_id=*/0)}});
+
+  ExpectOperationFinishedInfosObserved(
+      {{base::TimeDelta(), AccessMethod::kSelectURL, /*operation_id=*/0,
+        /*worklet_id=*/0, /*main_frame_id=*/std::nullopt, origin_str}});
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, KeepAlive_SubframeWorklet) {
@@ -9499,6 +9521,12 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
        {AccessScope::kSharedStorageWorklet, AccessMethod::kLength,
         MainFrameId(), origin_str,
         SharedStorageEventParams::CreateWithWorkletId(/*worklet_id=*/1)}});
+
+  ExpectOperationFinishedInfosObserved(
+      {{base::TimeDelta(), AccessMethod::kRun, /*operation_id=*/0,
+        /*worklet_id=*/0, MainFrameId(), origin_str},
+       {base::TimeDelta(), AccessMethod::kRun, /*operation_id=*/0,
+        /*worklet_id=*/1, MainFrameId(), origin_str}});
 }
 
 }  // namespace content

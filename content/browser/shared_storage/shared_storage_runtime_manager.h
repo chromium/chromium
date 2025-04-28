@@ -60,7 +60,7 @@ class CONTENT_EXPORT SharedStorageRuntimeManager {
     };
 
     virtual void OnSharedStorageAccessed(
-        const base::Time& access_time,
+        base::Time access_time,
         AccessScope scope,
         AccessMethod method,
         FrameTreeNodeId main_frame_id,
@@ -71,6 +71,15 @@ class CONTENT_EXPORT SharedStorageRuntimeManager {
 
     virtual void OnConfigPopulated(
         const std::optional<FencedFrameConfig>& config) = 0;
+
+    virtual void OnWorkletOperationExecutionFinished(
+        base::Time finished_time,
+        base::TimeDelta execution_time,
+        AccessMethod method,
+        int operation_id,
+        int worklet_id,
+        std::optional<FrameTreeNodeId> main_frame_id,
+        const std::string& owner_origin) = 0;
   };
 
   void OnDocumentServiceDestroyed(
@@ -105,6 +114,14 @@ class CONTENT_EXPORT SharedStorageRuntimeManager {
       FrameTreeNodeId main_frame_id,
       const std::string& owner_origin,
       const SharedStorageEventParams& params);
+
+  void NotifyWorkletOperationExecutionFinished(
+      base::TimeDelta execution_time,
+      SharedStorageObserverInterface::AccessMethod method,
+      int operation_id,
+      int worklet_id,
+      std::optional<FrameTreeNodeId> main_frame_id,
+      const std::string& owner_origin);
 
   std::map<SharedStorageDocumentServiceImpl*, WorkletHosts>&
   GetAttachedWorkletHostsForTesting() {

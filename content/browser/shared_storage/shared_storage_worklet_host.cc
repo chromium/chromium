@@ -590,6 +590,7 @@ void SharedStorageWorkletHost::SelectURL(
     blink::mojom::PrivateAggregationConfigPtr private_aggregation_config,
     bool resolve_to_config,
     const std::u16string& saved_query_name,
+    base::TimeTicks start_time,
     SelectURLCallback callback) {
   CHECK(private_aggregation_config);
   // `page_` can be null. See test
@@ -826,7 +827,7 @@ void SharedStorageWorkletHost::SelectURL(
   if (saved_queries_enabled_ && !saved_query_name.empty()) {
     auto saved_query_callback =
         base::BindOnce(&SharedStorageWorkletHost::OnSelectURLSavedQueryFound,
-                       weak_ptr_factory_.GetWeakPtr(), urn_uuid,
+                       weak_ptr_factory_.GetWeakPtr(), urn_uuid, start_time,
                        base::TimeTicks::Now(), operation_id, name);
     int32_t index = page_->GetSavedQueryResultIndexOrStoreCallback(
         shared_storage_origin_, script_source_url_, name, saved_query_name,
@@ -834,8 +835,8 @@ void SharedStorageWorkletHost::SelectURL(
     if (index >= 0) {
       // The result index has been stored from a previously resolved worklet
       // operation.
-      OnSelectURLSavedQueryFound(urn_uuid, base::TimeTicks::Now(), operation_id,
-                                 name, index);
+      OnSelectURLSavedQueryFound(urn_uuid, start_time, base::TimeTicks::Now(),
+                                 operation_id, name, index);
       return;
     }
     if (index == -1) {
@@ -858,8 +859,8 @@ void SharedStorageWorkletHost::SelectURL(
       base::BindOnce(
           &SharedStorageWorkletHost::
               OnRunURLSelectionOperationOnWorkletScriptExecutionFinished,
-          weak_ptr_factory_.GetWeakPtr(), urn_uuid, base::TimeTicks::Now(),
-          operation_id, name, saved_query_name));
+          weak_ptr_factory_.GetWeakPtr(), urn_uuid, start_time,
+          base::TimeTicks::Now(), operation_id, name, saved_query_name));
 }
 
 void SharedStorageWorkletHost::Run(
@@ -867,6 +868,7 @@ void SharedStorageWorkletHost::Run(
     blink::CloneableMessage serialized_data,
     bool keep_alive_after_operation,
     blink::mojom::PrivateAggregationConfigPtr private_aggregation_config,
+    base::TimeTicks start_time,
     RunCallback callback) {
   CHECK(private_aggregation_config);
   // `page_` can be null. See test
@@ -986,8 +988,8 @@ void SharedStorageWorkletHost::Run(
       MaybeConstructPrivateAggregationOperationDetails(
           private_aggregation_config),
       base::BindOnce(&SharedStorageWorkletHost::OnRunOperationOnWorkletFinished,
-                     weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now(),
-                     operation_id));
+                     weak_ptr_factory_.GetWeakPtr(), start_time,
+                     base::TimeTicks::Now(), operation_id));
 }
 
 bool SharedStorageWorkletHost::HasPendingOperations() {
@@ -1396,7 +1398,8 @@ void SharedStorageWorkletHost::MaybeFinishCreateWorklet() {
 }
 
 void SharedStorageWorkletHost::OnRunOperationOnWorkletFinished(
-    base::TimeTicks start_time,
+    base::TimeTicks run_start_time,
+    base::TimeTicks execution_start_time,
     int operation_id,
     bool success,
     const std::string& error_message) {
@@ -1415,19 +1418,27 @@ void SharedStorageWorkletHost::OnRunOperationOnWorkletFinished(
         blink::SharedStorageWorkletErrorType::kSuccess);
   }
 
-  // TODO(crbug.com/401011862): Use `operation_id`, along with timing
-  // information, to send a timing report to DevTools.
+  std::optional<FrameTreeNodeId> maybe_main_frame_id;
+  if (document_service_) {
+    DCHECK(!IsInKeepAlivePhase());
+    maybe_main_frame_id = document_service_->main_frame_id();
+  }
+
+  shared_storage_runtime_manager_->NotifyWorkletOperationExecutionFinished(
+      base::TimeTicks::Now() - run_start_time, AccessMethod::kRun, operation_id,
+      worklet_id_, maybe_main_frame_id, shared_storage_origin_.Serialize());
 
   base::UmaHistogramLongTimes(
       "Storage.SharedStorage.Document.Timing.Run.ExecutedInWorklet",
-      base::TimeTicks::Now() - start_time);
+      base::TimeTicks::Now() - execution_start_time);
   DecrementPendingOperationsCount();
 }
 
 void SharedStorageWorkletHost::
     OnRunURLSelectionOperationOnWorkletScriptExecutionFinished(
         const GURL& urn_uuid,
-        base::TimeTicks start_time,
+        base::TimeTicks select_url_start_time,
+        base::TimeTicks execution_start_time,
         int operation_id,
         const std::string& operation_name,
         const std::u16string& saved_query_name_to_cache,
@@ -1455,14 +1466,16 @@ void SharedStorageWorkletHost::
       shared_storage_site_,
       base::BindOnce(&SharedStorageWorkletHost::
                          OnRunURLSelectionOperationOnWorkletFinished,
-                     weak_ptr_factory_.GetWeakPtr(), urn_uuid, start_time,
-                     operation_id, operation_name, saved_query_name_to_cache,
-                     success, error_message, index, /*use_page_budgets=*/true));
+                     weak_ptr_factory_.GetWeakPtr(), urn_uuid,
+                     select_url_start_time, execution_start_time, operation_id,
+                     operation_name, saved_query_name_to_cache, success,
+                     error_message, index, /*use_page_budgets=*/true));
 }
 
 void SharedStorageWorkletHost::OnRunURLSelectionOperationOnWorkletFinished(
     const GURL& urn_uuid,
-    base::TimeTicks start_time,
+    base::TimeTicks select_url_start_time,
+    base::TimeTicks execution_start_time,
     int operation_id,
     const std::string& operation_name,
     const std::u16string& saved_query_name_to_cache,
@@ -1477,6 +1490,8 @@ void SharedStorageWorkletHost::OnRunURLSelectionOperationOnWorkletFinished(
   std::vector<blink::mojom::SharedStorageUrlWithMetadataPtr>
       urls_with_metadata = std::move(it->second);
   unresolved_urns_.erase(it);
+
+  std::optional<FrameTreeNodeId> maybe_main_frame_id;
 
   if (page_) {
     blink::SharedStorageSelectUrlBudgetStatus budget_status =
@@ -1506,6 +1521,7 @@ void SharedStorageWorkletHost::OnRunURLSelectionOperationOnWorkletFinished(
 
     if (document_service_) {
       DCHECK(!IsInKeepAlivePhase());
+      maybe_main_frame_id = document_service_->main_frame_id();
 
       // Let the insufficient-budget failure supersede the script failure.
       if (budget_status !=
@@ -1544,18 +1560,21 @@ void SharedStorageWorkletHost::OnRunURLSelectionOperationOnWorkletFinished(
         blink::SharedStorageWorkletErrorType::kSelectURLWebVisible);
   }
 
-  // TODO(crbug.com/401011862): Use `operation_id`, along with timing
-  // information, to send a timing report to DevTools.
+  shared_storage_runtime_manager_->NotifyWorkletOperationExecutionFinished(
+      base::TimeTicks::Now() - select_url_start_time, AccessMethod::kSelectURL,
+      operation_id, worklet_id_, maybe_main_frame_id,
+      shared_storage_origin_.Serialize());
 
   base::UmaHistogramLongTimes(
       "Storage.SharedStorage.Document.Timing.SelectURL.ExecutedInWorklet",
-      base::TimeTicks::Now() - start_time);
+      base::TimeTicks::Now() - execution_start_time);
   DecrementPendingOperationsCount();
 }
 
 void SharedStorageWorkletHost::OnSelectURLSavedQueryFound(
     const GURL& urn_uuid,
-    base::TimeTicks start_time,
+    base::TimeTicks select_url_start_time,
+    base::TimeTicks execution_start_time,
     int operation_id,
     const std::string& operation_name,
     uint32_t index) {
@@ -1572,8 +1591,9 @@ void SharedStorageWorkletHost::OnSelectURLSavedQueryFound(
       shared_storage_site_,
       base::BindOnce(&SharedStorageWorkletHost::
                          OnRunURLSelectionOperationOnWorkletFinished,
-                     weak_ptr_factory_.GetWeakPtr(), urn_uuid, start_time,
-                     operation_id, operation_name,
+                     weak_ptr_factory_.GetWeakPtr(), urn_uuid,
+                     select_url_start_time, execution_start_time, operation_id,
+                     operation_name,
                      /*saved_query_name_to_cache=*/std::u16string(),
                      /*script_execution_succeeded=*/true,
                      /*script_execution_error_message=*/std::string(), index,

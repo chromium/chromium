@@ -105,11 +105,13 @@ class CONTENT_EXPORT SharedStorageWorkletHost
       blink::mojom::PrivateAggregationConfigPtr private_aggregation_config,
       bool resolve_to_config,
       const std::u16string& saved_query_name,
+      base::TimeTicks start_time,
       SelectURLCallback callback) override;
   void Run(const std::string& name,
            blink::CloneableMessage serialized_data,
            bool keep_alive_after_operation,
            blink::mojom::PrivateAggregationConfigPtr private_aggregation_config,
+           base::TimeTicks start_time,
            RunCallback callback) override;
 
   // Whether there are unfinished worklet operations (i.e. `addModule()`,
@@ -176,14 +178,16 @@ class CONTENT_EXPORT SharedStorageWorkletHost
       const std::string& error_message);
 
   virtual void OnRunOperationOnWorkletFinished(
-      base::TimeTicks start_time,
+      base::TimeTicks run_start_time,
+      base::TimeTicks execution_start_time,
       int operation_id,
       bool success,
       const std::string& error_message);
 
   virtual void OnRunURLSelectionOperationOnWorkletFinished(
       const GURL& urn_uuid,
-      base::TimeTicks start_time,
+      base::TimeTicks select_url_start_time,
+      base::TimeTicks execution_start_time,
       int operation_id,
       const std::string& operation_name,
       const std::u16string& saved_query_name_to_cache,
@@ -222,7 +226,8 @@ class CONTENT_EXPORT SharedStorageWorkletHost
 
   void OnRunURLSelectionOperationOnWorkletScriptExecutionFinished(
       const GURL& urn_uuid,
-      base::TimeTicks start_time,
+      base::TimeTicks select_url_start_time,
+      base::TimeTicks execution_start_time,
       int operation_id,
       const std::string& operation_name,
       const std::u16string& saved_query_name_to_cache,
@@ -231,7 +236,8 @@ class CONTENT_EXPORT SharedStorageWorkletHost
       uint32_t index);
 
   void OnSelectURLSavedQueryFound(const GURL& urn_uuid,
-                                  base::TimeTicks start_time,
+                                  base::TimeTicks select_url_start_time,
+                                  base::TimeTicks execution_start_time,
                                   int operation_id,
                                   const std::string& operation_name,
                                   uint32_t index);
