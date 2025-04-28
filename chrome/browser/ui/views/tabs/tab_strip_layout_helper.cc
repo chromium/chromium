@@ -170,11 +170,21 @@ void TabStripLayoutHelper::SetActiveTab(
     const int prev_slot_index =
         GetSlotIndexForExistingTab(prev_active_index.value());
     slots_[prev_slot_index].state.set_active(TabActive::kInactive);
+    // We are assuming that when a tabs active state is changed, it can't be in
+    // the middle of a move or something that would make them non-contiguous.
+    std::optional<int> adjacent_split = GetAdjacentSplitTab(prev_slot_index);
+    if (adjacent_split.has_value()) {
+      slots_[adjacent_split.value()].state.set_active(TabActive::kInactive);
+    }
   }
   if (new_active_index.has_value()) {
     const int new_slot_index =
         GetSlotIndexForExistingTab(new_active_index.value());
     slots_[new_slot_index].state.set_active(TabActive::kActive);
+    std::optional<int> adjacent_split = GetAdjacentSplitTab(new_slot_index);
+    if (adjacent_split.has_value()) {
+      slots_[adjacent_split.value()].state.set_active(TabActive::kActive);
+    }
   }
 }
 
@@ -247,6 +257,10 @@ std::vector<gfx::Rect> TabStripLayoutHelper::CalculateIdealBounds(
           ? std::optional<int>(
                 GetSlotIndexForExistingTab(active_tab_model_index.value()))
           : std::nullopt;
+  const std::optional<int> active_split_tab_slot_index =
+      active_tab_slot_index.has_value()
+          ? GetAdjacentSplitTab(active_tab_model_index.value())
+          : std::nullopt;
   const int pinned_tab_count = GetPinnedTabCount();
   const std::optional<int> last_pinned_tab_slot_index =
       pinned_tab_count > 0
@@ -256,7 +270,9 @@ std::vector<gfx::Rect> TabStripLayoutHelper::CalculateIdealBounds(
   std::vector<TabWidthConstraints> tab_widths;
   for (int i = 0; i < static_cast<int>(slots_.size()); i++) {
     auto active =
-        i == active_tab_slot_index ? TabActive::kActive : TabActive::kInactive;
+        (i == active_tab_slot_index || i == active_split_tab_slot_index)
+            ? TabActive::kActive
+            : TabActive::kInactive;
     auto pinned = last_pinned_tab_slot_index.has_value() &&
                           i <= last_pinned_tab_slot_index
                       ? TabPinned::kPinned
@@ -390,6 +406,21 @@ int TabStripLayoutHelper::GetSlotIndexForGroupHeader(
   });
   CHECK(it != slots_.end());
   return it - slots_.begin();
+}
+
+std::optional<int> TabStripLayoutHelper::GetAdjacentSplitTab(
+    int tab_index) const {
+  const std::optional<split_tabs::SplitTabId> split_id =
+      slots_[tab_index].view->split();
+  if (!split_id.has_value()) {
+    return std::nullopt;
+  } else if (tab_index > 0 && slots_[tab_index - 1].view->split() == split_id) {
+    return tab_index - 1;
+  } else if (tab_index < static_cast<int>(slots_.size()) - 1 &&
+             slots_[tab_index + 1].view->split() == split_id) {
+    return tab_index + 1;
+  }
+  return std::nullopt;
 }
 
 void TabStripLayoutHelper::UpdateCachedTabWidth(int tab_index,
