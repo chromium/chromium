@@ -1350,6 +1350,10 @@ void NativeWidgetMacNSWindowHost::OnWindowFullscreenTransitionComplete(
 
   ui::NSWindowFullscreenNotificationWaiter::NotifyFullscreenTransitionComplete(
       native_widget_mac_->GetNativeWindow(), actual_fullscreen_state);
+
+  if (Widget* widget = GetWidget()) {
+    widget->OnNativeWidgetWindowShowStateChanged();
+  }
 }
 
 void NativeWidgetMacNSWindowHost::OnWindowMiniaturizedChanged(
@@ -1362,6 +1366,9 @@ void NativeWidgetMacNSWindowHost::OnWindowMiniaturizedChanged(
 
 void NativeWidgetMacNSWindowHost::OnWindowZoomedChanged(bool zoomed) {
   is_zoomed_ = zoomed;
+  if (Widget* widget = GetWidget()) {
+    widget->OnNativeWidgetWindowShowStateChanged();
+  }
 }
 
 void NativeWidgetMacNSWindowHost::OnWindowDisplayChanged(
