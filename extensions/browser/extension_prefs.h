@@ -574,9 +574,9 @@ class ExtensionPrefs : public KeyedService {
   // permissions should call PermissionsManager::HasWithheldHostPermissions
   // instead. This is because host permission prefs are only used if host
   // permissions can affect the extension. E.g. Say user installs extension with
-  // host permissions and withhelds them (pref is set). Then the extension
+  // host permissions and withholds them (pref is set). Then the extension
   // updates to no longer need host permissions. Pref still appears as
-  // witholding permissions, but extension cannot be affected by host
+  // withholding permissions, but extension cannot be affected by host
   // permissions.
   void SetWithholdingPermissions(const ExtensionId& extension_id,
                                  bool should_withhold);
