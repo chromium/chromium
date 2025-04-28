@@ -158,6 +158,8 @@ UIButton* TopToolbarButton(NSString* symbol_name,
   TabGridBottomToolbar* _bottomToolbar;
   // Gradient displayed at the bottom to show that there are other tabs below.
   UIView* _bottomGradient;
+  // The button containing the facepile.
+  UIButton* _facePileContainer;
   // The face pile view that displays the share button or the face pile.
   UIView* _facePileView;
   // Constraints for the container on narrow vs large windows.
@@ -384,6 +386,14 @@ UIButton* TopToolbarButton(NSString* symbol_name,
     _topToolbar = [self configuredTopToolbar];
     [_container addSubview:_topToolbar];
 
+    _facePileContainer = [self configuredFacePileContainer];
+    if (_facePileView) {
+      CHECK(_topToolbarButtonsStackView);
+      [_topToolbarButtonsStackView insertArrangedSubview:_facePileContainer
+                                                 atIndex:0];
+    }
+    [self updateFacePileAccessibilityLabel];
+
     [NSLayoutConstraint activateConstraints:@[
       [_topToolbar.topAnchor constraintEqualToAnchor:_container.topAnchor],
       [_topToolbar.leadingAnchor
@@ -528,6 +538,7 @@ UIButton* TopToolbarButton(NSString* symbol_name,
   _gridViewController.shared = _sharingState != SharingState::kNotShared;
   if (IsContainedTabGroupEnabled()) {
     _menuButton.menu = [self configuredTabGroupMenu];
+    [self updateFacePileAccessibilityLabel];
   } else {
     [self configureNavigationBarItems];
   }
@@ -539,13 +550,12 @@ UIButton* TopToolbarButton(NSString* symbol_name,
   }
 
   if (IsContainedTabGroupEnabled()) {
-    if (_facePileView.superview == _topToolbarButtonsStackView) {
+    if (_facePileView.superview == _facePileContainer) {
       [_facePileView removeFromSuperview];
     }
+    [_facePileContainer removeFromSuperview];
   } else {
-    if (_facePileView.superview == self.view) {
-      [_facePileView removeFromSuperview];
-    }
+    [_facePileView removeFromSuperview];
   }
 
   _facePileView = facePileView;
@@ -555,7 +565,13 @@ UIButton* TopToolbarButton(NSString* symbol_name,
   }
 
   if (IsContainedTabGroupEnabled()) {
-    [_topToolbarButtonsStackView insertArrangedSubview:_facePileView atIndex:0];
+    if (!_facePileContainer) {
+      return;
+    }
+    [self updateFacePileContainer:_facePileContainer
+                     withFacePile:_facePileView];
+    [_topToolbarButtonsStackView insertArrangedSubview:_facePileContainer
+                                               atIndex:0];
   } else {
     [self configureNavigationBarItems];
   }
@@ -607,13 +623,28 @@ UIButton* TopToolbarButton(NSString* symbol_name,
   return button;
 }
 
+// Returns the UIButton container for the facepile.
+- (UIButton*)configuredFacePileContainer {
+  UIButtonConfiguration* facePileContainerConfiguration =
+      [UIButtonConfiguration plainButtonConfiguration];
+  facePileContainerConfiguration.cornerStyle =
+      UIButtonConfigurationCornerStyleCapsule;
+  __weak __typeof(self) weakSelf = self;
+  UIButton* container = [UIButton
+      buttonWithConfiguration:facePileContainerConfiguration
+                primaryAction:[UIAction actionWithHandler:^(UIAction* action) {
+                  [weakSelf didTapFacePileButton];
+                }]];
+  [self updateFacePileContainer:container withFacePile:_facePileView];
+  return container;
+}
+
 // Returns the stack view containing the top toolbar buttons.
 - (UIStackView*)configuredTopToolbarStackView {
   CHECK(IsContainedTabGroupEnabled());
   UIStackView* stackView = [[UIStackView alloc] init];
   stackView.translatesAutoresizingMaskIntoConstraints = NO;
   stackView.alignment = UIStackViewAlignmentCenter;
-  stackView.distribution = UIStackViewDistributionFill;
   stackView.spacing = kButtonSpacing;
 
   if (_facePileView) {
@@ -1156,6 +1187,29 @@ UIButton* TopToolbarButton(NSString* symbol_name,
     [NSLayoutConstraint deactivateConstraints:_narrowWidthConstraints];
     [NSLayoutConstraint activateConstraints:_largeWidthConstraints];
   }
+}
+
+// Updates the facepile accessibility label based on sharing state.
+- (void)updateFacePileAccessibilityLabel {
+  if (_sharingState == SharingState::kNotShared) {
+    _facePileContainer.accessibilityLabel =
+        l10n_util::GetNSString(IDS_IOS_SHARED_GROUP_SHARE_GROUP);
+  } else {
+    _facePileContainer.accessibilityLabel =
+        l10n_util::GetNSString(IDS_IOS_SHARED_GROUP_MANAGE_GROUP);
+  }
+}
+
+// Updates the `facePileContainer` by adding the `facePile` to it.
+- (void)updateFacePileContainer:(UIButton*)facePileContainer
+                   withFacePile:(UIView*)facePile {
+  if (!facePile) {
+    return;
+  }
+  facePile.userInteractionEnabled = NO;
+  facePile.translatesAutoresizingMaskIntoConstraints = NO;
+  [facePileContainer addSubview:facePile];
+  AddSameConstraints(facePile, facePileContainer);
 }
 
 // Starts managing the shared group.
