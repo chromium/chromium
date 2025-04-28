@@ -37,6 +37,6 @@ WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="ro
 ++View supplementalDescription:"doc-prologue" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="docPrologue", roleDescription="prologue"]
 ++View supplementalDescription:"doc-pullquote" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="docPullquote", roleDescription="pullquote"]
 ++View supplementalDescription:"doc-qna" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="docQna", roleDescription="Q&A"]
-++View supplementalDescription:"doc-subtitle" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="docSubtitle", roleDescription="subtitle"]
+++View supplementalDescription:"doc-subtitle" heading actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="docSubtitle", roleDescription="subtitle"]
 ++View supplementalDescription:"doc-tip" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="docTip", roleDescription="tip"]
 ++View supplementalDescription:"doc-toc" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="docToc", roleDescription="table of contents"]
