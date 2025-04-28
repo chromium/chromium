@@ -1836,7 +1836,7 @@ BASE_FEATURE(kLobsterRightClickMenu,
 // returned from the server.
 BASE_FEATURE(kLobsterUseRewrittenQuery,
              "LobsterUseRewrittenQuery",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables / Disables the lobster feature from the feature management module.
 BASE_FEATURE(kFeatureManagementLobster,
