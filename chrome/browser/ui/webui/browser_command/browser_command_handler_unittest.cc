@@ -52,6 +52,7 @@ std::vector<Command> supported_commands = {
     Command::kOpenSafetyCheckFromWhatsNew,
     Command::kOpenPaymentsSettings,
     Command::kOpenGlic,
+    Command::kOpenGlicSettings,
 };
 
 const ui::ElementContext kTestContext1(1);
@@ -219,6 +220,8 @@ class MockCommandHandler : public TestCommandHandler {
   MOCK_METHOD(void, ShowCustomizeChromeToolbar, ());
 
   MOCK_METHOD(void, OpenGlic, ());
+
+  MOCK_METHOD(void, OpenGlicSettings, ());
 };
 
 class MockCommandUpdater : public CommandUpdaterImpl {
@@ -679,4 +682,15 @@ TEST_F(BrowserCommandHandlerTest, OpenGlicCommand) {
   // The OpenGlic command opens glic.
   EXPECT_CALL(*command_handler_, OpenGlic());
   EXPECT_TRUE(ExecuteCommand(Command::kOpenGlic, std::move(info)));
+}
+
+TEST_F(BrowserCommandHandlerTest, OpenGlicSettingsCommand) {
+  // The OpenGlicSettings command opens a new settings window
+  // with the Glic settings sub page, and the correct disposition.
+  EXPECT_TRUE(CanExecuteCommand(Command::kOpenGlicSettings));
+  ClickInfoPtr info = ClickInfo::New();
+  info->middle_button = true;
+  info->meta_key = true;
+  EXPECT_CALL(*command_handler_, OpenGlicSettings());
+  EXPECT_TRUE(ExecuteCommand(Command::kOpenGlicSettings, std::move(info)));
 }
