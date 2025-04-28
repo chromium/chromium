@@ -11,6 +11,7 @@ use rustc_ast::ast::AngleBracketedArgs;
 use rustc_ast::ast::AnonConst;
 use rustc_ast::ast::Arm;
 use rustc_ast::ast::AsmMacro;
+use rustc_ast::ast::AssignOpKind;
 use rustc_ast::ast::AssocItemConstraint;
 use rustc_ast::ast::AssocItemConstraintKind;
 use rustc_ast::ast::AssocItemKind;
@@ -167,10 +168,9 @@ use rustc_ast::ast::WhereEqPredicate;
 use rustc_ast::ast::WherePredicate;
 use rustc_ast::ast::WherePredicateKind;
 use rustc_ast::ast::WhereRegionPredicate;
+use rustc_ast::ast::YieldKind;
 use rustc_ast::ptr::P;
-use rustc_ast::token::{
-    self, CommentKind, Delimiter, IdentIsRaw, Lit, Nonterminal, Token, TokenKind,
-};
+use rustc_ast::token::{self, CommentKind, Delimiter, IdentIsRaw, Lit, Token, TokenKind};
 use rustc_ast::tokenstream::{
     AttrTokenStream, AttrTokenTree, AttrsTarget, DelimSpacing, DelimSpan, LazyAttrTokenStream,
     Spacing, TokenStream, TokenTree,
@@ -488,11 +488,11 @@ spanless_eq_struct!(Attribute; kind id style span);
 spanless_eq_struct!(AttrsTarget; attrs tokens);
 spanless_eq_struct!(BareFnTy; safety ext generic_params decl decl_span);
 spanless_eq_struct!(BindingMode; 0 1);
-spanless_eq_struct!(Block; stmts id rules span tokens could_be_bare_literal);
+spanless_eq_struct!(Block; stmts id rules span tokens);
 spanless_eq_struct!(Closure; binder capture_clause constness coroutine_kind movability fn_decl body !fn_decl_span !fn_arg_span);
-spanless_eq_struct!(ConstItem; defaultness generics ty expr);
+spanless_eq_struct!(ConstItem; defaultness ident generics ty expr define_opaque);
 spanless_eq_struct!(Crate; attrs items spans id is_placeholder);
-spanless_eq_struct!(Delegation; id qself path rename body from_glob);
+spanless_eq_struct!(Delegation; id qself path ident rename body from_glob);
 spanless_eq_struct!(DelegationMac; qself prefix suffixes body);
 spanless_eq_struct!(DelimArgs; dspan delim tokens);
 spanless_eq_struct!(DelimSpacing; open close);
@@ -500,7 +500,7 @@ spanless_eq_struct!(EnumDef; variants);
 spanless_eq_struct!(Expr; id kind span attrs !tokens);
 spanless_eq_struct!(ExprField; attrs id span ident expr is_shorthand is_placeholder);
 spanless_eq_struct!(FieldDef; attrs id span vis safety ident ty default is_placeholder);
-spanless_eq_struct!(Fn; defaultness generics sig contract body);
+spanless_eq_struct!(Fn; defaultness ident generics sig contract define_opaque body);
 spanless_eq_struct!(FnContract; requires ensures);
 spanless_eq_struct!(FnDecl; inputs output);
 spanless_eq_struct!(FnHeader; constness coroutine_kind safety ext);
@@ -516,11 +516,11 @@ spanless_eq_struct!(Generics; params where_clause span);
 spanless_eq_struct!(Impl; defaultness safety generics constness polarity of_trait self_ty items);
 spanless_eq_struct!(InlineAsm; asm_macro template template_strs operands clobber_abis options line_spans);
 spanless_eq_struct!(InlineAsmSym; id qself path);
-spanless_eq_struct!(Item<K>; attrs id span vis ident kind !tokens);
+spanless_eq_struct!(Item<K>; attrs id span vis kind !tokens);
 spanless_eq_struct!(Label; ident);
 spanless_eq_struct!(Lifetime; id ident);
 spanless_eq_struct!(Lit; kind symbol suffix);
-spanless_eq_struct!(Local; id pat ty kind span colon_sp attrs !tokens);
+spanless_eq_struct!(Local; id super_ pat ty kind span colon_sp attrs !tokens);
 spanless_eq_struct!(MacCall; path args);
 spanless_eq_struct!(MacCallStmt; mac style attrs tokens);
 spanless_eq_struct!(MacroDef; body macro_rules);
@@ -537,16 +537,16 @@ spanless_eq_struct!(Path; span segments tokens);
 spanless_eq_struct!(PathSegment; ident id args);
 spanless_eq_struct!(PolyTraitRef; bound_generic_params modifiers trait_ref span);
 spanless_eq_struct!(QSelf; ty path_span position);
-spanless_eq_struct!(StaticItem; ty safety mutability expr);
+spanless_eq_struct!(StaticItem; ident ty safety mutability expr define_opaque);
 spanless_eq_struct!(Stmt; id kind span);
 spanless_eq_struct!(StrLit; symbol suffix symbol_unescaped style span);
 spanless_eq_struct!(StructExpr; qself path fields rest);
 spanless_eq_struct!(Token; kind span);
-spanless_eq_struct!(Trait; safety is_auto generics bounds items);
+spanless_eq_struct!(Trait; safety is_auto ident generics bounds items);
 spanless_eq_struct!(TraitBoundModifiers; constness asyncness polarity);
 spanless_eq_struct!(TraitRef; path ref_id);
 spanless_eq_struct!(Ty; id kind span tokens);
-spanless_eq_struct!(TyAlias; defaultness generics where_clauses bounds ty);
+spanless_eq_struct!(TyAlias; defaultness ident generics where_clauses bounds ty);
 spanless_eq_struct!(TyAliasWhereClause; !has_where_token span);
 spanless_eq_struct!(TyAliasWhereClauses; before after !split);
 spanless_eq_struct!(TyPat; id kind span tokens);
@@ -632,6 +632,9 @@ spanless_eq_enum!(UseTreeKind; Simple(0) Nested(items span) Glob);
 spanless_eq_enum!(VariantData; Struct(fields recovered) Tuple(0 1) Unit(0));
 spanless_eq_enum!(VisibilityKind; Public Restricted(path id shorthand) Inherited);
 spanless_eq_enum!(WherePredicateKind; BoundPredicate(0) RegionPredicate(0) EqPredicate(0));
+spanless_eq_enum!(YieldKind; Prefix(0) Postfix(0));
+spanless_eq_enum!(AssignOpKind; AddAssign SubAssign MulAssign DivAssign
+    RemAssign BitXorAssign BitAndAssign BitOrAssign ShlAssign ShrAssign);
 spanless_eq_enum!(CoroutineKind; Async(span closure_id return_impl_trait_id)
     Gen(span closure_id return_impl_trait_id)
     AsyncGen(span closure_id return_impl_trait_id));
@@ -647,15 +650,15 @@ spanless_eq_enum!(ExprKind; Array(0) ConstBlock(0) Call(0 1) MethodCall(0)
 spanless_eq_enum!(InlineAsmOperand; In(reg expr) Out(reg late expr)
     InOut(reg late expr) SplitInOut(reg late in_expr out_expr) Const(anon_const)
     Sym(sym) Label(block));
-spanless_eq_enum!(ItemKind; ExternCrate(0) Use(0) Static(0) Const(0) Fn(0)
-    Mod(0 1) ForeignMod(0) GlobalAsm(0) TyAlias(0) Enum(0 1) Struct(0 1)
-    Union(0 1) Trait(0) TraitAlias(0 1) Impl(0) MacCall(0) MacroDef(0)
+spanless_eq_enum!(ItemKind; ExternCrate(0 1) Use(0) Static(0) Const(0) Fn(0)
+    Mod(0 1 2) ForeignMod(0) GlobalAsm(0) TyAlias(0) Enum(0 1 2) Struct(0 1 2)
+    Union(0 1 2) Trait(0) TraitAlias(0 1 2) Impl(0) MacCall(0) MacroDef(0 1)
     Delegation(0) DelegationMac(0));
 spanless_eq_enum!(LitKind; Str(0 1) ByteStr(0 1) CStr(0 1) Byte(0) Char(0)
     Int(0 1) Float(0 1) Bool(0) Err(0));
-spanless_eq_enum!(PatKind; Wild Ident(0 1 2) Struct(0 1 2 3) TupleStruct(0 1 2)
-    Or(0) Path(0 1) Tuple(0) Box(0) Deref(0) Ref(0 1) Expr(0) Range(0 1 2)
-    Slice(0) Rest Never Guard(0 1) Paren(0) MacCall(0) Err(0));
+spanless_eq_enum!(PatKind; Missing Wild Ident(0 1 2) Struct(0 1 2 3)
+    TupleStruct(0 1 2) Or(0) Path(0 1) Tuple(0) Box(0) Deref(0) Ref(0 1) Expr(0)
+    Range(0 1 2) Slice(0) Rest Never Guard(0 1) Paren(0) MacCall(0) Err(0));
 spanless_eq_enum!(TyKind; Slice(0) Array(0 1) Ptr(0) Ref(0 1) PinnedRef(0 1)
     BareFn(0) UnsafeBinder(0) Never Tup(0) Path(0 1) TraitObject(0 1)
     ImplTrait(0 1) Paren(0) Typeof(0) Infer ImplicitSelf MacCall(0) CVarArgs
@@ -711,16 +714,6 @@ impl SpanlessEq for TokenKind {
                 TokenKind::DotDotEq | TokenKind::DotDotDot => true,
                 _ => false,
             },
-            (TokenKind::Interpolated(this), TokenKind::Interpolated(other)) => {
-                let this = this.as_ref();
-                let other = other.as_ref();
-                match (this, other) {
-                    (Nonterminal::NtExpr(this), Nonterminal::NtExpr(other)) => {
-                        SpanlessEq::eq(this, other)
-                    }
-                    _ => this == other,
-                }
-            }
             _ => self == other,
         }
     }
@@ -824,16 +817,6 @@ fn is_escaped_literal_token(token: &Token, unescaped: Symbol) -> bool {
         } => match MetaItemLit::from_token_lit(*lit, DUMMY_SP) {
             Ok(lit) => is_escaped_literal_meta_item_lit(&lit, unescaped),
             Err(_) => false,
-        },
-        Token {
-            kind: TokenKind::Interpolated(nonterminal),
-            span: _,
-        } => match nonterminal.as_ref() {
-            Nonterminal::NtExpr(expr) => match &expr.kind {
-                ExprKind::Lit(lit) => is_escaped_lit(lit, unescaped),
-                _ => false,
-            },
-            _ => false,
         },
         _ => false,
     }

@@ -344,7 +344,7 @@ generics_wrapper_impls!(Turbofish);
 #[cfg(feature = "printing")]
 impl<'a> TypeGenerics<'a> {
     /// Turn a type's generics like `<X, Y>` into a turbofish like `::<X, Y>`.
-    pub fn as_turbofish(&self) -> Turbofish {
+    pub fn as_turbofish(&self) -> Turbofish<'a> {
         Turbofish(self.0)
     }
 }
