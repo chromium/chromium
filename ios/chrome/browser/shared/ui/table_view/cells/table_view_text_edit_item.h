@@ -49,7 +49,7 @@ typedef NS_ENUM(NSInteger, TableViewTextEditItemIconType) {
 @property(nonatomic, copy) NSString* identifyingIconAccessibilityLabel;
 
 // Accessibility label override for the cell.
-@property(nonatomic, strong) NSString* cellAccessibilityLabel;
+@property(nonatomic, copy) NSString* cellAccessibilityLabel;
 
 // Whether to hide or display the trailing icon.
 // Changing this value can change the text color for the text field.
@@ -113,7 +113,7 @@ typedef NS_ENUM(NSInteger, TableViewTextEditItemIconType) {
 @property(nonatomic, strong) UIImageView* iconView;
 
 // Accessibility label override for the cell.
-@property(nonatomic, strong) NSString* accessibilityLabelValue;
+@property(nonatomic, copy) NSString* accessibilityLabelValue;
 
 // Sets `self.identifyingIconButton` icon.
 - (void)setIdentifyingIcon:(UIImage*)icon;

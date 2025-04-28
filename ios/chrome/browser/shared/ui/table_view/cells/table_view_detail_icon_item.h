@@ -77,7 +77,7 @@ enum class BadgeType {
     UILayoutConstraintAxis textLayoutConstraintAxis;
 
 // Custom label defined via the setter, if any.
-@property(nonatomic, strong) NSString* customAccessibilityLabel;
+@property(nonatomic, copy) NSString* customAccessibilityLabel;
 
 // Maximum number of lines for the `detailText`. It sets the numberOfLines of
 // the detailText UILabel. Value is ignored if the layout constraint axis is set

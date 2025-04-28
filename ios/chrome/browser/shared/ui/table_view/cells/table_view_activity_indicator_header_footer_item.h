@@ -11,9 +11,9 @@
 @interface TableViewActivityIndicatorHeaderFooterItem
     : TableViewHeaderFooterItem
 // Title of Header.
-@property(nonatomic, readwrite, strong) NSString* text;
+@property(nonatomic, readwrite, copy) NSString* text;
 // Header subtitle displayed as a smaller font under title.
-@property(nonatomic, readwrite, strong) NSString* subtitleText;
+@property(nonatomic, readwrite, copy) NSString* subtitleText;
 @end
 
 // UITableViewHeaderFooterView that displays a text label, subtitle, and an

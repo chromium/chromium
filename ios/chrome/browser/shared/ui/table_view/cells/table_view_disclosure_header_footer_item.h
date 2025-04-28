@@ -13,9 +13,9 @@
 // TableViewDisclosureHeaderFooterView.
 @interface TableViewDisclosureHeaderFooterItem : TableViewHeaderFooterItem
 // Title of Header.
-@property(nonatomic, readwrite, strong) NSString* text;
+@property(nonatomic, readwrite, copy) NSString* text;
 // Header subtitle displayed as a smaller font under title.
-@property(nonatomic, readwrite, strong) NSString* subtitleText;
+@property(nonatomic, readwrite, copy) NSString* subtitleText;
 // Determines the direction of the disclosure view.
 @property(nonatomic, readwrite, assign) BOOL collapsed;
 // Determines if the header is shown has disabled.

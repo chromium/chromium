@@ -26,7 +26,7 @@
 @property(nonatomic, strong) UIColor* detailTextColor;
 // Detail text to be displayed. The detail text label is configured with
 // multiline (no limit).
-@property(nonatomic, strong) NSString* detailText;
+@property(nonatomic, copy) NSString* detailText;
 
 // Whether the item is enabled. When it is not enabled, the associated cell
 // cannot be interacted with.

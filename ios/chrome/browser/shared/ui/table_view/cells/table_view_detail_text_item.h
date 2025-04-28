@@ -33,13 +33,13 @@ typedef NS_ENUM(NSInteger, TableViewDetailTextCellAccessorySymbol) {
 // `textColor`.
 @property(nonatomic, strong) UIColor* textColor;
 // Main text to be displayed.
-@property(nonatomic, strong) NSString* text;
+@property(nonatomic, copy) NSString* text;
 
 // UIColor for the cell's detailTextLabel. Default is
 // [UIColor colorNamed:kTextSecondaryColor].
 @property(nonatomic, strong) UIColor* detailTextColor;
 // Detail text to be displayed.
-@property(nonatomic, strong) NSString* detailText;
+@property(nonatomic, copy) NSString* detailText;
 
 // The accessory symbol associated with this item.
 // The default color is `kTextQuaternaryColor` and is not currently
