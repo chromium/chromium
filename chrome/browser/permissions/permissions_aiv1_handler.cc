@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/permissions/permissions_ai_handler.h"
+#include "chrome/browser/permissions/permissions_aiv1_handler.h"
 
 #include "base/check_is_test.h"
 #include "base/containers/fixed_flat_set.h"
@@ -90,7 +90,7 @@ bool IsOnDeviceModelAvailable(EligibilityReason reason) {
 // same time and also to easily cancel session without fearing asynchronous
 // calls to OnModelExecutionComplete meddling with a potentially new permission
 // request.
-class PermissionsAiHandler::EvaluationTask {
+class PermissionsAiv1Handler::EvaluationTask {
  public:
   explicit EvaluationTask(OptimizationGuideKeyedService* optimization_guide) {
     DETACH_FROM_SEQUENCE(sequence_checker_);
@@ -131,7 +131,7 @@ class PermissionsAiHandler::EvaluationTask {
     session_->ExecuteModel(
         request,
         base::BindRepeating(
-            &PermissionsAiHandler::EvaluationTask::OnModelExecutionComplete,
+            &PermissionsAiv1Handler::EvaluationTask::OnModelExecutionComplete,
             weak_ptr_factory_.GetWeakPtr(), execution_timer));
   }
 
@@ -197,24 +197,24 @@ class PermissionsAiHandler::EvaluationTask {
   base::OnceCallback<void(
       std::optional<optimization_guide::proto::PermissionsAiResponse>)>
       inquire_on_device_model_callback_;
-  base::WeakPtrFactory<PermissionsAiHandler::EvaluationTask> weak_ptr_factory_{
-      this};
+  base::WeakPtrFactory<PermissionsAiv1Handler::EvaluationTask>
+      weak_ptr_factory_{this};
 };
 
-PermissionsAiHandler::PermissionsAiHandler(
+PermissionsAiv1Handler::PermissionsAiv1Handler(
     OptimizationGuideKeyedService* optimization_guide)
     : optimization_guide_(optimization_guide),
       execution_timer_(std::make_unique<base::OneShotTimer>()) {}
 
-PermissionsAiHandler::~PermissionsAiHandler() {
+PermissionsAiv1Handler::~PermissionsAiv1Handler() {
   execution_timer_->Stop();
 }
 
-bool PermissionsAiHandler::IsModelExecutionInProgress() {
+bool PermissionsAiv1Handler::IsModelExecutionInProgress() {
   return evaluation_task_ && evaluation_task_->IsActive();
 }
 
-void PermissionsAiHandler::InquireAiOnDeviceModel(
+void PermissionsAiv1Handler::InquireAiOnDeviceModel(
     std::string rendered_text,
     permissions::RequestType request_type,
     base::OnceCallback<void(std::optional<PermissionsAiResponse>)> callback) {
@@ -260,7 +260,7 @@ void PermissionsAiHandler::InquireAiOnDeviceModel(
     if (evaluation_task_->IsActive()) {
       execution_timer_->Start(
           FROM_HERE, kMaxModelExecutionDuration,
-          base::BindOnce(&PermissionsAiHandler::CancelModelExecution,
+          base::BindOnce(&PermissionsAiv1Handler::CancelModelExecution,
                          weak_ptr_factory_.GetWeakPtr()));
     }
     return;
@@ -274,13 +274,13 @@ void PermissionsAiHandler::InquireAiOnDeviceModel(
   std::move(callback).Run(std::nullopt);
 }
 
-void PermissionsAiHandler::CancelModelExecution() {
+void PermissionsAiv1Handler::CancelModelExecution() {
   evaluation_task_.reset();
   execution_timer_->Stop();
   LogOnDeviceModelExecutionTimedOut(/*timed_out=*/true);
 }
 
-void PermissionsAiHandler::set_execution_timer_for_testing(
+void PermissionsAiv1Handler::set_execution_timer_for_testing(
     std::unique_ptr<base::OneShotTimer> execution_timer) {
   CHECK_IS_TEST();
   execution_timer_ = std::move(execution_timer);

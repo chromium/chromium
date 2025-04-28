@@ -13,7 +13,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/permissions/permission_actions_history_factory.h"
-#include "chrome/browser/permissions/permissions_ai_handler.h"
+#include "chrome/browser/permissions/permissions_aiv1_handler.h"
 #include "chrome/browser/permissions/prediction_model_handler_provider.h"
 #include "chrome/browser/permissions/prediction_service_factory.h"
 #include "chrome/browser/permissions/prediction_service_request.h"
@@ -47,7 +47,7 @@
 namespace {
 
 using ::permissions::PermissionRequest;
-using ::permissions::PermissionsAiHandler;
+using ::permissions::PermissionsAiv1Handler;
 using ::permissions::PredictionModelHandlerProvider;
 using ::permissions::PredictionRequestFeatures;
 using QuietUiReason = PredictionBasedPermissionUiSelector::QuietUiReason;
@@ -286,10 +286,10 @@ void PredictionBasedPermissionUiSelector::OnGetInnerTextForOnDeviceModel(
     if (PredictionModelHandlerProvider* prediction_model_handler_provider =
             PredictionModelHandlerProviderFactory::GetForBrowserContext(
                 profile_)) {
-      if (PermissionsAiHandler* gen_ai_model_handler =
-              prediction_model_handler_provider->GetPermissionsAiHandler()) {
+      if (PermissionsAiv1Handler* aiv1_model_handler =
+              prediction_model_handler_provider->GetPermissionsAiv1Handler()) {
         VLOG(1) << "[PermissionsAIv1] Inquire model.";
-        gen_ai_model_handler->InquireAiOnDeviceModel(
+        aiv1_model_handler->InquireAiOnDeviceModel(
             std::move(inner_text), request_type,
             base::BindRepeating(&PredictionBasedPermissionUiSelector::
                                     AiOnDeviceModelExecutionCallback,

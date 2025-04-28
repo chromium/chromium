@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_PERMISSIONS_PERMISSIONS_AI_HANDLER_H_
-#define CHROME_BROWSER_PERMISSIONS_PERMISSIONS_AI_HANDLER_H_
+#ifndef CHROME_BROWSER_PERMISSIONS_PERMISSIONS_AIV1_HANDLER_H_
+#define CHROME_BROWSER_PERMISSIONS_PERMISSIONS_AIV1_HANDLER_H_
 
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
@@ -16,13 +16,13 @@
 namespace permissions {
 
 // Handles all interactions with the Permissions AI on-device model.
-class PermissionsAiHandler {
+class PermissionsAiv1Handler {
  public:
-  explicit PermissionsAiHandler(
+  explicit PermissionsAiv1Handler(
       OptimizationGuideKeyedService* optimization_guide);
-  ~PermissionsAiHandler();
-  PermissionsAiHandler(const PermissionsAiHandler&) = delete;
-  PermissionsAiHandler& operator=(const PermissionsAiHandler&) = delete;
+  ~PermissionsAiv1Handler();
+  PermissionsAiv1Handler(const PermissionsAiv1Handler&) = delete;
+  PermissionsAiv1Handler& operator=(const PermissionsAiv1Handler&) = delete;
 
   // Asynchronously inquires the on-device model, if available. If necessary,
   // the model download will be initiated.
@@ -59,8 +59,8 @@ class PermissionsAiHandler {
   std::unique_ptr<base::OneShotTimer> execution_timer_;
   std::unique_ptr<EvaluationTask> evaluation_task_;
 
-  base::WeakPtrFactory<PermissionsAiHandler> weak_ptr_factory_{this};
+  base::WeakPtrFactory<PermissionsAiv1Handler> weak_ptr_factory_{this};
 };
 }  // namespace permissions
 
-#endif  // CHROME_BROWSER_PERMISSIONS_PERMISSIONS_AI_HANDLER_H_
+#endif  // CHROME_BROWSER_PERMISSIONS_PERMISSIONS_AIV1_HANDLER_H_

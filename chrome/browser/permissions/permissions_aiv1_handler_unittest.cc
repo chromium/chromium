@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/permissions/permissions_ai_handler.h"
+#include "chrome/browser/permissions/permissions_aiv1_handler.h"
 
 #include <memory>
 
@@ -129,9 +129,9 @@ void CallCounter(int& cnt, std::optional<PermissionsAiResponse> _) {
   ++cnt;
 }
 
-class PermissionsAiHandlerTestBase : public testing::Test {
+class PermissionsAiv1HandlerTestBase : public testing::Test {
  protected:
-  PermissionsAiHandlerTestBase()
+  PermissionsAiv1HandlerTestBase()
       : profile_manager_(TestingBrowserProcess::GetGlobal()) {
     CHECK(profile_manager_.SetUp());
     profile_ = profile_manager_.CreateTestingProfile("test-user");
@@ -142,9 +142,9 @@ class PermissionsAiHandlerTestBase : public testing::Test {
 
     auto mock_execution_timer = std::make_unique<MockTimer>();
     mock_execution_timer_ = mock_execution_timer.get();
-    permissions_ai_handler_ = std::make_unique<PermissionsAiHandler>(
+    permissions_aiv1_handler_ = std::make_unique<PermissionsAiv1Handler>(
         mock_optimization_guide_keyed_service_.get());
-    permissions_ai_handler_->set_execution_timer_for_testing(
+    permissions_aiv1_handler_->set_execution_timer_for_testing(
         std::move(mock_execution_timer));
   }
 
@@ -228,41 +228,41 @@ class PermissionsAiHandlerTestBase : public testing::Test {
   TestingProfileManager profile_manager_;
   raw_ptr<TestingProfile> profile_;
 
-  std::unique_ptr<PermissionsAiHandler> permissions_ai_handler_;
+  std::unique_ptr<PermissionsAiv1Handler> permissions_aiv1_handler_;
   raw_ptr<MockTimer> mock_execution_timer_ = nullptr;
   raw_ptr<MockOptimizationGuideKeyedService>
       mock_optimization_guide_keyed_service_;
   NiceMock<MockSession> session_;
 };
 
-class PermissionsAiHandlerTest : public PermissionsAiHandlerTestBase {};
+class PermissionsAiv1HandlerTest : public PermissionsAiv1HandlerTestBase {};
 
-struct PermissionsAiHandlerTestCase {
+struct PermissionsAiv1HandlerTestCase {
   PermissionType permission_type;
   RequestType request_type;
   bool is_permission_relevant;
 };
 
-class ParametrizedPermissionsAiHandlerTest
-    : public PermissionsAiHandlerTestBase,
-      public testing::WithParamInterface<PermissionsAiHandlerTestCase> {};
+class ParametrizedPermissionsAiv1HandlerTest
+    : public PermissionsAiv1HandlerTestBase,
+      public testing::WithParamInterface<PermissionsAiv1HandlerTestCase> {};
 
 INSTANTIATE_TEST_SUITE_P(
     RequestTypes,
-    ParametrizedPermissionsAiHandlerTest,
-    testing::ValuesIn<PermissionsAiHandlerTestCase>({
+    ParametrizedPermissionsAiv1HandlerTest,
+    testing::ValuesIn<PermissionsAiv1HandlerTestCase>({
         {PermissionType::PERMISSION_TYPE_NOTIFICATIONS,
          RequestType::kNotifications, /*is_permission_relevant=*/true},
         {PermissionType::PERMISSION_TYPE_GEOLOCATION, RequestType::kGeolocation,
          /*is_permission_relevant=*/false},
     }));
 
-TEST_P(ParametrizedPermissionsAiHandlerTest,
+TEST_P(ParametrizedPermissionsAiv1HandlerTest,
        CanDealWithNullptrOptimizationGuide) {
-  PermissionsAiHandler permissions_ai_handler(nullptr);
+  PermissionsAiv1Handler permissions_aiv1_handler(nullptr);
 
   ModelCallbackFuture future;
-  permissions_ai_handler.InquireAiOnDeviceModel(
+  permissions_aiv1_handler.InquireAiOnDeviceModel(
       kRenderedText, GetParam().request_type, future.GetCallback());
   EXPECT_EQ(future.Take(), std::nullopt);
 
@@ -273,7 +273,7 @@ TEST_P(ParametrizedPermissionsAiHandlerTest,
   CheckHistogramsAreEmptyExcept(histogram_tester(), {});
 }
 
-TEST_F(PermissionsAiHandlerTest, DealsWithModelInavailability) {
+TEST_F(PermissionsAiv1HandlerTest, DealsWithModelInavailability) {
   // We assume here, that model download was already start but did not finish
   // yet or a transient error is happening.
   ExpectGetOnDeviceModelEligibilityAndReturn(
@@ -284,7 +284,7 @@ TEST_F(PermissionsAiHandlerTest, DealsWithModelInavailability) {
   ExpectStartSessionAndReturn(nullptr);
 
   ModelCallbackFuture future;
-  permissions_ai_handler_->InquireAiOnDeviceModel(
+  permissions_aiv1_handler_->InquireAiOnDeviceModel(
       kRenderedText, RequestType::kNotifications, future.GetCallback());
   EXPECT_EQ(future.Take(), std::nullopt);
 
@@ -301,13 +301,13 @@ TEST_F(PermissionsAiHandlerTest, DealsWithModelInavailability) {
                                  kSessionCreationSuccessHistogram});
 }
 
-TEST_F(PermissionsAiHandlerTest, StartsModelDownload) {
+TEST_F(PermissionsAiv1HandlerTest, StartsModelDownload) {
   ExpectGetOnDeviceModelEligibilityAndReturn(
       EligibilityReason::kNoOnDeviceFeatureUsed);
   // First StartSession call triggers model download;
   ExpectStartSessionAndReturn(nullptr);
   ModelCallbackFuture future;
-  permissions_ai_handler_->InquireAiOnDeviceModel(
+  permissions_aiv1_handler_->InquireAiOnDeviceModel(
       kRenderedText, RequestType::kNotifications, future.GetCallback());
   EXPECT_EQ(future.Take(), std::nullopt);
 
@@ -324,7 +324,7 @@ TEST_F(PermissionsAiHandlerTest, StartsModelDownload) {
                                  kSessionCreationSuccessHistogram});
 }
 
-TEST_P(ParametrizedPermissionsAiHandlerTest,
+TEST_P(ParametrizedPermissionsAiv1HandlerTest,
        SendsValidRequestAndReceivesValidResponse) {
   ExpectGetOnDeviceModelEligibilityAndReturn(EligibilityReason::kSuccess);
   ExpectStartSessionAndReturn(&session_);
@@ -338,7 +338,7 @@ TEST_P(ParametrizedPermissionsAiHandlerTest,
           })));
 
   ModelCallbackFuture future;
-  permissions_ai_handler_->InquireAiOnDeviceModel(
+  permissions_aiv1_handler_->InquireAiOnDeviceModel(
       kRenderedText, GetParam().request_type, future.GetCallback());
 
   ASSERT_TRUE(mock_execution_timer_->IsRunning());
@@ -367,7 +367,7 @@ TEST_P(ParametrizedPermissionsAiHandlerTest,
        kExecutionTimedOutHistogram});
 }
 
-TEST_F(PermissionsAiHandlerTest, IncompleResponseIsIgnored) {
+TEST_F(PermissionsAiv1HandlerTest, IncompleResponseIsIgnored) {
   ExpectGetOnDeviceModelEligibilityAndReturn(EligibilityReason::kSuccess);
   ExpectStartSessionAndReturn(&session_);
 
@@ -386,7 +386,7 @@ TEST_F(PermissionsAiHandlerTest, IncompleResponseIsIgnored) {
           })));
 
   int call_count = 0;
-  permissions_ai_handler_->InquireAiOnDeviceModel(
+  permissions_aiv1_handler_->InquireAiOnDeviceModel(
       kRenderedText, RequestType::kNotifications,
       BindOnce(&CallCounter, std::ref(call_count)));
 
@@ -434,7 +434,7 @@ TEST_F(PermissionsAiHandlerTest, IncompleResponseIsIgnored) {
        kResponseParseSuccessHistogram, kExecutionSuccessHistogram});
 }
 
-TEST_F(PermissionsAiHandlerTest,
+TEST_F(PermissionsAiv1HandlerTest,
        OldSessionGetsNotInterruptedByNewInquiryRequest) {
   ExpectGetOnDeviceModelEligibilityAndReturn(EligibilityReason::kSuccess);
   ExpectStartSessionAndReturn(&session_);
@@ -449,7 +449,7 @@ TEST_F(PermissionsAiHandlerTest,
           })));
 
   ModelCallbackFuture future_first_request;
-  permissions_ai_handler_->InquireAiOnDeviceModel(
+  permissions_aiv1_handler_->InquireAiOnDeviceModel(
       kRenderedText, RequestType::kNotifications,
       future_first_request.GetCallback());
   ASSERT_TRUE(mock_execution_timer_->IsRunning());
@@ -459,7 +459,7 @@ TEST_F(PermissionsAiHandlerTest,
   ExpectGetOnDeviceModelEligibilityAndReturn(EligibilityReason::kSuccess);
 
   ModelCallbackFuture future_second_request;
-  permissions_ai_handler_->InquireAiOnDeviceModel(
+  permissions_aiv1_handler_->InquireAiOnDeviceModel(
       kRenderedText, RequestType::kNotifications,
       future_second_request.GetCallback());
   EXPECT_EQ(future_second_request.Take(), std::nullopt);
@@ -495,13 +495,13 @@ TEST_F(PermissionsAiHandlerTest,
                                 });
 }
 
-TEST_F(PermissionsAiHandlerTest, OldSessionGetsCancelledByTimer) {
+TEST_F(PermissionsAiv1HandlerTest, OldSessionGetsCancelledByTimer) {
   ExpectGetOnDeviceModelEligibilityAndReturn(EligibilityReason::kSuccess);
   ExpectStartSessionAndReturn(&session_);
   EXPECT_CALL(session_, ExecuteModel(_, _));
 
   ModelCallbackFuture future_first_request;
-  permissions_ai_handler_->InquireAiOnDeviceModel(
+  permissions_aiv1_handler_->InquireAiOnDeviceModel(
       kRenderedText, RequestType::kNotifications,
       future_first_request.GetCallback());
   ASSERT_TRUE(mock_execution_timer_->IsRunning());
@@ -531,7 +531,7 @@ TEST_F(PermissionsAiHandlerTest, OldSessionGetsCancelledByTimer) {
 
   // Second request will not get rejected and starts a new timer interval.
   ModelCallbackFuture future_second_request;
-  permissions_ai_handler_->InquireAiOnDeviceModel(
+  permissions_aiv1_handler_->InquireAiOnDeviceModel(
       kRenderedText, RequestType::kNotifications,
       future_second_request.GetCallback());
   ASSERT_TRUE(mock_execution_timer_->IsRunning());
@@ -551,7 +551,7 @@ TEST_F(PermissionsAiHandlerTest, OldSessionGetsCancelledByTimer) {
        kExecutionSuccessHistogram, kResponseParseSuccessHistogram});
 }
 
-TEST_F(PermissionsAiHandlerTest, IncompleteResultsDoNotCancelTimer) {
+TEST_F(PermissionsAiv1HandlerTest, IncompleteResultsDoNotCancelTimer) {
   ExpectGetOnDeviceModelEligibilityAndReturn(EligibilityReason::kSuccess);
   ExpectStartSessionAndReturn(&session_);
 
@@ -564,7 +564,7 @@ TEST_F(PermissionsAiHandlerTest, IncompleteResultsDoNotCancelTimer) {
 
   // Timer gets started for inquiry request.
   ModelCallbackFuture future;
-  permissions_ai_handler_->InquireAiOnDeviceModel(
+  permissions_aiv1_handler_->InquireAiOnDeviceModel(
       kRenderedText, RequestType::kNotifications, future.GetCallback());
   ASSERT_TRUE(mock_execution_timer_->IsRunning());
 
