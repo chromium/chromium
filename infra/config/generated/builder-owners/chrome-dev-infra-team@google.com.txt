@@ -1,4 +1,5 @@
 ci/linux-chromeos-dbg-oslogin
+infra/autosharder_test
 try/linux-chromeos-dbg-oslogin
 try/linux-utr-tester
 try/win-utr-tester
