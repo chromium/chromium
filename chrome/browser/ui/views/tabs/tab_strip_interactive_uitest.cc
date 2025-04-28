@@ -82,20 +82,14 @@ IN_PROC_BROWSER_TEST_F(TabStripInteractiveUiTest,
       NavigateWebContents(kFirstTabContents, test_url),
       AddInstrumentedTab(kSecondTabContents, test_url),
       AddInstrumentedTab(kThirdTabContents, test_url),
-      SelectTab(kTabStripElementId, 0), HoverTabAt(1), Do([]() {
-        const int accelerator_key =
+      SelectTab(kTabStripElementId, 0), HoverTabAt(1),
+      ClickMouse(ui_controls::LEFT, /*release =*/true,
 #if BUILDFLAG(IS_MAC)
-            ui_controls::AcceleratorState::kCommand;
+                 ui_controls::AcceleratorState::kCommand
 #else
-            ui_controls::AcceleratorState::kControl;
+                 ui_controls::AcceleratorState::kControl
 #endif
-        ui_controls::SendMouseEvents(ui_controls::LEFT,
-                                     ui_controls::MouseButtonState::DOWN,
-                                     accelerator_key);
-        ui_controls::SendMouseEvents(ui_controls::LEFT,
-                                     ui_controls::MouseButtonState::UP,
-                                     accelerator_key);
-      }),
+                 ),
       HoverTabAt(2),
       PollState(
           kTabSelectedState,

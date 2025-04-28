@@ -140,27 +140,30 @@ InteractiveViewsTestApi::StepBuilder InteractiveViewsTestApi::MoveMouseTo(
 
 InteractiveViewsTestApi::StepBuilder InteractiveViewsTestApi::ClickMouse(
     ui_controls::MouseButton button,
-    bool release) {
+    bool release,
+    int modifier_keys) {
   RequireInteractiveTest();
   StepBuilder step;
   step.SetDescription("ClickMouse()");
   step.SetElementID(kInteractiveTestPivotElementId);
   step.SetStartCallback(base::BindOnce(
       [](InteractiveViewsTestApi* test, ui_controls::MouseButton button,
-         bool release, ui::InteractionSequence* seq, ui::TrackedElement* el) {
+         bool release, int modifier_keys, ui::InteractionSequence* seq,
+         ui::TrackedElement* el) {
         test->test_impl().mouse_error_message_.clear();
         const auto weak_seq = seq->AsWeakPtr();
         if (!test->mouse_util().PerformGestures(
                 test->test_impl().GetGestureParamsForStep(el, seq),
-                release ? InteractionTestUtilMouse::Click(button)
+                release ? InteractionTestUtilMouse::Click(button, modifier_keys)
                         : InteractionTestUtilMouse::MouseGestures{
-                              InteractionTestUtilMouse::MouseDown(button)})) {
+                              InteractionTestUtilMouse::MouseDown(
+                                  button, modifier_keys)})) {
           if (weak_seq) {
             weak_seq->FailForTesting();
           }
         }
       },
-      base::Unretained(this), button, release));
+      base::Unretained(this), button, release, modifier_keys));
   step.SetMustRemainVisible(false);
   return step;
 }
@@ -201,25 +204,27 @@ InteractiveViewsTestApi::StepBuilder InteractiveViewsTestApi::DragMouseTo(
 }
 
 InteractiveViewsTestApi::StepBuilder InteractiveViewsTestApi::ReleaseMouse(
-    ui_controls::MouseButton button) {
+    ui_controls::MouseButton button,
+    int modifier_keys) {
   RequireInteractiveTest();
   StepBuilder step;
   step.SetDescription("ReleaseMouse()");
   step.SetElementID(kInteractiveTestPivotElementId);
   step.SetStartCallback(base::BindOnce(
       [](InteractiveViewsTestApi* test, ui_controls::MouseButton button,
-         ui::InteractionSequence* seq, ui::TrackedElement* el) {
+         int modifier_keys, ui::InteractionSequence* seq,
+         ui::TrackedElement* el) {
         test->test_impl().mouse_error_message_.clear();
         const auto weak_seq = seq->AsWeakPtr();
         if (!test->mouse_util().PerformGestures(
                 test->test_impl().GetGestureParamsForStep(el, seq),
-                InteractionTestUtilMouse::MouseUp(button))) {
+                InteractionTestUtilMouse::MouseUp(button, modifier_keys))) {
           if (weak_seq) {
             weak_seq->FailForTesting();
           }
         }
       },
-      base::Unretained(this), button));
+      base::Unretained(this), button, modifier_keys));
   step.SetMustRemainVisible(false);
   return step;
 }
