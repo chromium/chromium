@@ -34,7 +34,6 @@ class OAuthTokenGetter;
 namespace protocol {
 class ConnectionToHost;
 class SessionManager;
-class TransportContext;
 class VideoRenderer;
 }  // namespace protocol
 
@@ -108,7 +107,6 @@ class RemotingClient : public SignalStrategy::Listener,
 
   // Session related members.
   std::unique_ptr<protocol::SessionManager> session_manager_;
-  scoped_refptr<protocol::TransportContext> transport_context_;
   std::unique_ptr<protocol::ConnectionToHost> connection_;
   std::unique_ptr<protocol::VideoRenderer> video_renderer_;
 

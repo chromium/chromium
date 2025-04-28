@@ -33,6 +33,7 @@
 #include "remoting/protocol/jingle_session.h"
 #include "remoting/protocol/jingle_session_manager.h"
 #include "remoting/protocol/negotiating_client_authenticator.h"
+#include "remoting/protocol/network_settings.h"
 #include "remoting/protocol/session_config.h"
 #include "remoting/protocol/transport.h"
 #include "remoting/protocol/transport_context.h"
@@ -143,7 +144,7 @@ void RemotingClient::OnGetManagedChromeOsHostRetrieved(
       FROM_HERE,
       base::BindOnce(&SignalStrategy::Disconnect,
                      base::Unretained(signal_strategy_.get())),
-      base::Seconds(10));
+      base::Seconds(20));
 }
 
 void RemotingClient::StartConnection() {
@@ -194,7 +195,10 @@ void RemotingClient::StartConnection() {
   connection_->set_client_stub(this);
   connection_->set_clipboard_stub(this);
   connection_->set_video_renderer(video_renderer_.get());
-  connection_->Connect(std::move(session), transport_context_, this);
+  connection_->Connect(std::move(session), transport_context, this);
+  protocol::NetworkSettings network_settings{
+      protocol::NetworkSettings::NAT_TRAVERSAL_FULL};
+  connection_->ApplyNetworkSettings(network_settings);
 }
 
 void RemotingClient::SetCapabilities(
@@ -268,13 +272,17 @@ void RemotingClient::OnSignalStrategyStateChange(SignalStrategy::State state) {
       break;
     case SignalStrategy::DISCONNECTED:
       auto error = signal_strategy_->GetError();
+      auto error_code = ErrorCode::OK;
       if (error != SignalStrategy::Error::OK) {
         LOG(ERROR) << "Signaling channel has been closed due to error: "
                    << error;
+        // TODO: joedow - Map error to error_code.
       } else {
         CLIENT_LOG << "Signaling channel has been closed.";
       }
-
+      if (connection_) {
+        connection_->Disconnect(error_code);
+      }
       RunQuitClosure();
       break;
   }
