@@ -661,11 +661,7 @@ export class BrowsingContextImpl {
     });
 
     this.#cdpTarget.cdpClient.on('Page.javascriptDialogClosed', (params) => {
-      if (this.cdpTarget === this.parent?.cdpTarget) {
-        // The CDP event `Page.javascriptDialogClosed` does not have a frameId. This
-        // heuristic emits the event only for top-level per-cdp target context, ignoring
-        // the event for same-process iframes. So the event will be emitted only once per
-        // CDP target.
+      if (this.id !== params.frameId) {
         return;
       }
       const accepted = params.result;
@@ -680,8 +676,6 @@ export class BrowsingContextImpl {
           type: 'event',
           method: ChromiumBidi.BrowsingContext.EventNames.UserPromptClosed,
           params: {
-            // TODO: provide proper context id:
-            // https://github.com/GoogleChromeLabs/chromium-bidi/issues/3324
             context: this.id,
             accepted,
             // `lastUserPromptType` should never be undefined here, so fallback to
@@ -701,11 +695,7 @@ export class BrowsingContextImpl {
     });
 
     this.#cdpTarget.cdpClient.on('Page.javascriptDialogOpening', (params) => {
-      if (this.cdpTarget === this.parent?.cdpTarget) {
-        // The CDP event `Page.javascriptDialogOpening` does not have a frameId. This
-        // heuristic emits the event only for top-level per-cdp target context, ignoring
-        // the event for same-process iframes. So the event will be emitted only once per
-        // CDP target.
+      if (this.id !== params.frameId) {
         return;
       }
       const promptType = BrowsingContextImpl.#getPromptType(params.type);
@@ -717,8 +707,6 @@ export class BrowsingContextImpl {
           type: 'event',
           method: ChromiumBidi.BrowsingContext.EventNames.UserPromptOpened,
           params: {
-            // TODO: provide proper context id:
-            // https://github.com/GoogleChromeLabs/chromium-bidi/issues/3324
             context: this.id,
             handler: promptHandler,
             type: promptType,
