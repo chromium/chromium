@@ -120,6 +120,9 @@ void AutofillImageFetcher::OnCardArtImageFetched(
     const GURL& card_art_url,
     const gfx::Image& card_art_image,
     const image_fetcher::RequestMetadata& metadata) {
+  AutofillMetrics::LogImageFetchResult(
+      /* succeeded= */ !card_art_image.IsEmpty());
+
   // Allow subclasses to specialize the card art image if desired.
   gfx::Image resolved_image = ResolveCardArtImage(card_art_url, card_art_image);
 
@@ -130,17 +133,6 @@ void AutofillImageFetcher::OnCardArtImageFetched(
     GURL resolved_url =
         ResolveImageURL(card_art_url, ImageType::kCreditCardArtImage);
     cached_images_[resolved_url] = std::make_unique<gfx::Image>(resolved_image);
-  }
-
-  // Log metrics on card fetch success/failure. We only log metrics on either
-  // the first attempt to fetch a given URL (whether it succeeded or failed) or
-  // on the first success after a previously failed fetch. The goal is to
-  // minimize bias in the metrics due to repeated fetches.
-  bool succeeded = !card_art_image.IsEmpty();
-  if (!url_to_image_fetch_result_map_.contains(card_art_url.spec()) ||
-      (!url_to_image_fetch_result_map_[card_art_url.spec()] && succeeded)) {
-    url_to_image_fetch_result_map_[card_art_url.spec()] = succeeded;
-    AutofillMetrics::LogImageFetchResult(succeeded);
   }
 }
 

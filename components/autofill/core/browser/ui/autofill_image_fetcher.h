@@ -92,11 +92,6 @@ class AutofillImageFetcher : public AutofillImageFetcherBase {
                         ImageType image_type,
                         image_fetcher::ImageFetcherCallback callback);
 
-  // Stores the result of fetching images for card art URLs. It's used to
-  // mitigate the issue of inflated failure metrics caused by repeated fetch
-  // attempts.
-  std::map<std::string, bool> url_to_image_fetch_result_map_;
-
   // An in-memory image cache which stores post-processed images.
   std::map<GURL, std::unique_ptr<gfx::Image>> cached_images_;
 };
