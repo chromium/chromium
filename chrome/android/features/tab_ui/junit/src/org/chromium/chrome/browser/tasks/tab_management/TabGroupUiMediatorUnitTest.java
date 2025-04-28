@@ -18,6 +18,7 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isA;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.inOrder;
@@ -218,6 +219,9 @@ public class TabGroupUiMediatorUnitTest {
 
     private void verifyResetStrip(boolean isVisible, @Nullable List<Tab> tabs) {
         mResetHandlerInOrder.verify(mResetHandler).resetStripWithListOfTabs(tabs);
+        if (mDialogControllerSupplier.hasValue()) {
+            verify(mTabGridDialogController, atLeastOnce()).hideDialog(false);
+        }
         mVisibilityControllerInOrder
                 .verify(mVisibilityController)
                 .setBottomControlsVisible(isVisible);
@@ -899,8 +903,10 @@ public class TabGroupUiMediatorUnitTest {
     @Test
     public void layoutStateChange_TabGroup() {
         initAndAssertProperties(mTab2);
+        mDialogControllerSupplier.get();
 
         mLayoutStateObserverCaptor.getValue().onStartedShowing(LayoutType.TAB_SWITCHER);
+        verify(mTabGridDialogController, atLeastOnce()).hideDialog(false);
         verifyResetStrip(false, null);
 
         mLayoutStateObserverCaptor.getValue().onFinishedHiding(LayoutType.TAB_SWITCHER);
