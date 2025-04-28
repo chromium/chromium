@@ -11,7 +11,8 @@ found in the LICENSE file.
     xmlns:tools="http://schemas.android.com/tools"
     style="@style/PreferenceLayout"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:descendantFocusability="afterDescendants">
 
     <org.chromium.components.browser_ui.widget.MaterialCardViewNoShadow
         style="@style/MaterialCardStyle"

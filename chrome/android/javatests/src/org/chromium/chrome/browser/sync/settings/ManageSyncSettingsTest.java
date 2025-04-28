@@ -1214,6 +1214,59 @@ public class ManageSyncSettingsTest {
         onView(withId(R.id.history_and_tabs_toggle)).check(matches(hasFocus()));
     }
 
+    @Test
+    @SmallTest
+    public void testBatchUploadCardNotReceivingFocus() {
+        setupMockSyncService();
+        doAnswer(
+                        args -> {
+                            HashMap<Integer, LocalDataDescription> localDataDescription =
+                                    new HashMap<>();
+                            localDataDescription.put(
+                                    DataType.PASSWORDS,
+                                    new LocalDataDescription(0, new String[] {}, 0));
+                            localDataDescription.put(
+                                    DataType.BOOKMARKS,
+                                    new LocalDataDescription(1, new String[] {"example.com"}, 1));
+                            localDataDescription.put(
+                                    DataType.READING_LIST,
+                                    new LocalDataDescription(0, new String[] {}, 0));
+                            args.getArgument(1, Callback.class).onResult(localDataDescription);
+                            return null;
+                        })
+                .when(mSyncService)
+                .getLocalDataDescriptions(
+                        eq(Set.of(DataType.BOOKMARKS, DataType.PASSWORDS, DataType.READING_LIST)),
+                        any(Callback.class));
+
+        mSyncTestRule.setUpAccountAndSignInForTesting();
+        startManageSyncPreferences();
+        ViewUtils.waitForVisibleView(withId(R.id.signin_settings_card));
+
+        // Focus on the first element that can receive focus in the settings page.
+        onView(withId(R.id.recycler_view)).perform(pressKey(KeyEvent.KEYCODE_DPAD_DOWN));
+        onView(withId(R.id.signin_settings_card_button)).check(matches(hasFocus()));
+    }
+
+    @Test
+    @SmallTest
+    public void testIdentityErrorCardNotReceivingFocus() {
+        mSyncTestRule.getFakeServerHelper().setCustomPassphraseNigori("passphrase");
+
+        mSyncTestRule.setUpAccountAndSignInForTesting();
+        SyncTestUtil.waitForSyncTransportActive();
+
+        CriteriaHelper.pollUiThread(
+                () -> mSyncTestRule.getSyncService().isPassphraseRequiredForPreferredDataTypes());
+
+        startManageSyncPreferences();
+        ViewUtils.waitForVisibleView(withId(R.id.signin_settings_card));
+
+        // Focus on the first element that can receive focus in the settings page.
+        onView(withId(R.id.recycler_view)).perform(pressKey(KeyEvent.KEYCODE_DPAD_DOWN));
+        onView(withId(R.id.signin_settings_card_button)).check(matches(hasFocus()));
+    }
+
     // TODO(crbug.com/330438265): Extend this test for the identity error card.
     @Test
     @SmallTest
