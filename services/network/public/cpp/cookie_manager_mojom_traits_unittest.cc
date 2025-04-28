@@ -381,7 +381,7 @@ TEST(CookieManagerTraitsTest, Roundtrips_CookiePartitionKey) {
            net::CookiePartitionKey::FromURLForTesting(url, kCrossSite),
            net::CookiePartitionKey::FromURLForTesting(url, kSameSite, nonce),
            net::CookiePartitionKey::FromURLForTesting(url, kCrossSite, nonce),
-           net::CookiePartitionKey::FromScript().value(),
+           net::CookiePartitionKey::FromScript(),
        }) {
     // `copied` is about to be overwritten so it doesn't matter what it is,
     // but CookiePartitionKey doesn't provide a default ctor, so we have to

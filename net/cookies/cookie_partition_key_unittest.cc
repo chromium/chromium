@@ -331,16 +331,14 @@ TEST(CookiePartitionKeyTest, FromStorageKeyComponents) {
 
 TEST(CookiePartitionKeyTest, FromScript) {
   auto key = CookiePartitionKey::FromScript();
-  EXPECT_TRUE(key);
-  EXPECT_TRUE(key->from_script());
-  EXPECT_TRUE(key->site().opaque());
-  EXPECT_TRUE(key->IsThirdParty());
+  EXPECT_TRUE(key.from_script());
+  EXPECT_TRUE(key.site().opaque());
+  EXPECT_TRUE(key.IsThirdParty());
 
   auto key2 = CookiePartitionKey::FromScript();
-  EXPECT_TRUE(key2);
-  EXPECT_TRUE(key2->from_script());
-  EXPECT_TRUE(key2->site().opaque());
-  EXPECT_TRUE(key2->IsThirdParty());
+  EXPECT_TRUE(key2.from_script());
+  EXPECT_TRUE(key2.site().opaque());
+  EXPECT_TRUE(key2.IsThirdParty());
 
   EXPECT_EQ(key, key2);
 }
