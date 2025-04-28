@@ -102,6 +102,19 @@ enum class TrustedVaultDownloadKeysStatusForUMA {
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// LINT.IfChange(TrustedVaultRecoverKeysOutcome)
+enum class TrustedVaultRecoverKeysOutcomeForUMA {
+  kSuccess = 0,
+  kNoNewKeys = 1,
+  kFailure = 2,
+  kNoPrimaryAccount = 3,
+  kAborted = 4,
+  kMaxValue = kAborted
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/trusted_vault/enums.xml:TrustedVaultRecoverKeysOutcome)
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 // LINT.IfChange(TrustedVaultFileReadStatus)
 enum class TrustedVaultFileReadStatusForUMA {
   kSuccess = 0,
@@ -164,6 +177,7 @@ void RecordRecoveryKeyStoreURLFetchResponse(
 
 // Records the outcome of trying to download keys from the server.
 void RecordTrustedVaultDownloadKeysStatus(
+    LocalRecoveryFactorType local_recovery_factor_type,
     SecurityDomainId security_domain_id,
     TrustedVaultDownloadKeysStatusForUMA status);
 
@@ -171,6 +185,10 @@ void RecordTrustedVaultDownloadKeysStatus(
 // downstream) and delete this one.
 void RecordTrustedVaultDownloadKeysStatus(
     TrustedVaultDownloadKeysStatusForUMA status);
+
+void RecordTrustedVaultRecoverKeysOutcome(
+    SecurityDomainId security_domain_id,
+    TrustedVaultRecoverKeysOutcomeForUMA status);
 
 void RecordTrustedVaultFileReadStatus(SecurityDomainId security_domain_id,
                                       TrustedVaultFileReadStatusForUMA status);

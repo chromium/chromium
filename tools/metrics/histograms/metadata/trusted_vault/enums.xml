@@ -120,6 +120,18 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/components/trusted_vault/trusted_vault_connection.h:TrustedVaultRecoverabilityStatus) -->
 
+<!-- LINT.IfChange(TrustedVaultRecoverKeysOutcome) -->
+
+<enum name="TrustedVaultRecoverKeysOutcome">
+  <int value="0" label="Success"/>
+  <int value="1" label="No new keys"/>
+  <int value="2" label="Failure"/>
+  <int value="3" label="No primary account"/>
+  <int value="4" label="Aborted"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/trusted_vault/trusted_vault_histograms.h:TrustedVaultRecoverKeysOutcome) -->
+
 </enums>
 
 </histogram-configuration>

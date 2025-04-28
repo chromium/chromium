@@ -24,8 +24,7 @@ LocalRecoveryFactorType ICloudKeychainRecoveryFactor::GetRecoveryFactorType()
 
 void ICloudKeychainRecoveryFactor::AttemptRecovery(
     TrustedVaultThrottlingConnection* connection,
-    AttemptRecoveryCallback cb,
-    AttemptRecoveryFailureCallback failure_cb) {
+    AttemptRecoveryCallback cb) {
   NOTIMPLEMENTED();
 }
 

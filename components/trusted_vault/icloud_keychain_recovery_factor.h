@@ -33,8 +33,7 @@ class ICloudKeychainRecoveryFactor : public LocalRecoveryFactor {
   LocalRecoveryFactorType GetRecoveryFactorType() const override;
 
   void AttemptRecovery(TrustedVaultThrottlingConnection* connection,
-                       AttemptRecoveryCallback cb,
-                       AttemptRecoveryFailureCallback failure_cb) override;
+                       AttemptRecoveryCallback cb) override;
 
   bool IsRegistered() override;
   void MarkAsNotRegistered() override;

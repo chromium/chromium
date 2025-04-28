@@ -23,6 +23,7 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/trusted_vault/features.h"
+#include "components/trusted_vault/local_recovery_factor.h"
 #include "components/trusted_vault/physical_device_recovery_factor.h"
 #include "components/trusted_vault/proto/local_trusted_vault.pb.h"
 #include "components/trusted_vault/proto_string_bytes_conversion.h"
@@ -69,6 +70,21 @@ bool PersistentAuthErrorWasResolved(
                  kNoPersistentAuthErrors;
 }
 
+TrustedVaultRecoverKeysOutcomeForUMA
+GetRecoverKeysOutcomeForUMAFromRecoveryStatus(
+    LocalRecoveryFactor::RecoveryStatus recovery_status) {
+  switch (recovery_status) {
+    case LocalRecoveryFactor::RecoveryStatus::kSuccess:
+      return TrustedVaultRecoverKeysOutcomeForUMA::kSuccess;
+    case LocalRecoveryFactor::RecoveryStatus::kNoNewKeys:
+      return TrustedVaultRecoverKeysOutcomeForUMA::kNoNewKeys;
+    case LocalRecoveryFactor::RecoveryStatus::kFailure:
+      return TrustedVaultRecoverKeysOutcomeForUMA::kFailure;
+  }
+
+  NOTREACHED();
+}
+
 TrustedVaultDeviceRegistrationOutcomeForUMA
 GetDeviceRegistrationOutcomeForUMAFromResponse(
     TrustedVaultRegistrationStatus response_status) {
@@ -109,12 +125,13 @@ class LocalRecoveryFactorsFactoryImpl
       const LocalRecoveryFactorsFactoryImpl&) = delete;
 
   std::vector<std::unique_ptr<LocalRecoveryFactor>> CreateLocalRecoveryFactors(
+      SecurityDomainId security_domain_id,
       StandaloneTrustedVaultStorage* storage,
       const std::optional<CoreAccountInfo>& primary_account) override {
     std::vector<std::unique_ptr<LocalRecoveryFactor>> local_recovery_factors;
     local_recovery_factors.emplace_back(
-        std::make_unique<PhysicalDeviceRecoveryFactor>(storage,
-                                                       primary_account));
+        std::make_unique<PhysicalDeviceRecoveryFactor>(
+            security_domain_id, storage, primary_account));
 #if BUILDFLAG(IS_MAC)
     if (base::FeatureList::IsEnabled(kEnableICloudKeychainRecoveryFactor)) {
       // Note: The iCloud Keychain recovery factor needs to come after the
@@ -172,36 +189,6 @@ StandaloneTrustedVaultBackend::OngoingFetchKeys::operator=(OngoingFetchKeys&&) =
     default;
 
 StandaloneTrustedVaultBackend::OngoingFetchKeys::~OngoingFetchKeys() = default;
-
-// static
-TrustedVaultDownloadKeysStatusForUMA
-StandaloneTrustedVaultBackend::GetDownloadKeysStatusForUMAFromResponse(
-    TrustedVaultDownloadKeysStatus response_status) {
-  switch (response_status) {
-    case TrustedVaultDownloadKeysStatus::kSuccess:
-      return TrustedVaultDownloadKeysStatusForUMA::kSuccess;
-    case TrustedVaultDownloadKeysStatus::kMemberNotFound:
-      return TrustedVaultDownloadKeysStatusForUMA::kMemberNotFound;
-    case TrustedVaultDownloadKeysStatus::kMembershipNotFound:
-      return TrustedVaultDownloadKeysStatusForUMA::kMembershipNotFound;
-    case TrustedVaultDownloadKeysStatus::kMembershipCorrupted:
-      return TrustedVaultDownloadKeysStatusForUMA::kMembershipCorrupted;
-    case TrustedVaultDownloadKeysStatus::kMembershipEmpty:
-      return TrustedVaultDownloadKeysStatusForUMA::kMembershipEmpty;
-    case TrustedVaultDownloadKeysStatus::kNoNewKeys:
-      return TrustedVaultDownloadKeysStatusForUMA::kNoNewKeys;
-    case TrustedVaultDownloadKeysStatus::kKeyProofsVerificationFailed:
-      return TrustedVaultDownloadKeysStatusForUMA::kKeyProofsVerificationFailed;
-    case TrustedVaultDownloadKeysStatus::kAccessTokenFetchingFailure:
-      return TrustedVaultDownloadKeysStatusForUMA::kAccessTokenFetchingFailure;
-    case TrustedVaultDownloadKeysStatus::kNetworkError:
-      return TrustedVaultDownloadKeysStatusForUMA::kNetworkError;
-    case TrustedVaultDownloadKeysStatus::kOtherError:
-      return TrustedVaultDownloadKeysStatusForUMA::kOtherError;
-  }
-
-  NOTREACHED();
-}
 
 StandaloneTrustedVaultBackend::StandaloneTrustedVaultBackend(
     SecurityDomainId security_domain_id,
@@ -296,7 +283,7 @@ void StandaloneTrustedVaultBackend::FetchKeys(
     // Keys download attempt is not possible because there is no primary
     // account.
     FulfillFetchKeys(account_info.gaia, std::move(callback),
-                     TrustedVaultDownloadKeysStatusForUMA::kNoPrimaryAccount);
+                     TrustedVaultRecoverKeysOutcomeForUMA::kNoPrimaryAccount);
     return;
   }
   if (ongoing_fetch_keys_.has_value()) {
@@ -327,30 +314,8 @@ void StandaloneTrustedVaultBackend::AttemptRecoveryFactor(
       connection_.get(),
       // |this| outlives |local_recovery_factors_|, and destroying
       // |local_recovery_factors_| guarantees cancellation of all callbacks.
-      base::BindOnce(&StandaloneTrustedVaultBackend::OnKeysDownloaded,
-                     base::Unretained(this), local_recovery_factor),
-      base::BindOnce(&StandaloneTrustedVaultBackend::AttemptNextRecoveryFactor,
+      base::BindOnce(&StandaloneTrustedVaultBackend::OnKeysRecovered,
                      base::Unretained(this), local_recovery_factor));
-}
-
-void StandaloneTrustedVaultBackend::AttemptNextRecoveryFactor(
-    size_t current_local_recovery_factor,
-    std::optional<TrustedVaultDownloadKeysStatusForUMA> status_for_uma) {
-  // Callbacks are cancelled if |primary_account_| changes before they're
-  // executed.
-  CHECK(ongoing_fetch_keys_);
-  CHECK(primary_account_.has_value() &&
-        ongoing_fetch_keys_->gaia_id == primary_account_->gaia);
-
-  const size_t next_local_recovery_factor = current_local_recovery_factor + 1;
-  if (next_local_recovery_factor < local_recovery_factors_.size()) {
-    AttemptRecoveryFactor(next_local_recovery_factor);
-    return;
-  }
-
-  // We ran out of local recovery factors to try, give up with the status from
-  // the last recovery factor.
-  FulfillOngoingFetchKeys(status_for_uma);
 }
 
 void StandaloneTrustedVaultBackend::StoreKeys(
@@ -419,7 +384,7 @@ void StandaloneTrustedVaultBackend::SetPrimaryAccount(
   RemoveNonPrimaryAccountKeysIfMarkedForDeletion();
   // Make sure to call pending callbacks, now that ongoing recoveries were
   // aborted.
-  FulfillOngoingFetchKeys(TrustedVaultDownloadKeysStatusForUMA::kAborted);
+  FulfillOngoingFetchKeys(TrustedVaultRecoverKeysOutcomeForUMA::kAborted);
 
   if (!primary_account_.has_value()) {
     return;
@@ -651,7 +616,7 @@ void StandaloneTrustedVaultBackend::ResetLocalRecoveryFactors() {
   // ok.
   local_recovery_factors_ =
       local_recovery_factors_factory_->CreateLocalRecoveryFactors(
-          storage_.get(), primary_account_);
+          security_domain_id_, storage_.get(), primary_account_);
 }
 
 void StandaloneTrustedVaultBackend::MaybeRegisterLocalRecoveryFactors() {
@@ -764,16 +729,20 @@ void StandaloneTrustedVaultBackend::OnDeviceRegistered(
   }
 }
 
-void StandaloneTrustedVaultBackend::OnKeysDownloaded(
+void StandaloneTrustedVaultBackend::OnKeysRecovered(
     size_t current_local_recovery_factor,
-    TrustedVaultDownloadKeysStatus status,
+    LocalRecoveryFactor::RecoveryStatus recovery_status,
     const std::vector<std::vector<uint8_t>>& downloaded_vault_keys,
     int last_vault_key_version) {
-  DCHECK(primary_account_.has_value());
+  CHECK(primary_account_.has_value());
+  // This method should be called only as a result of fetching keys attributed
+  // to current |ongoing_fetch_keys_|.
+  CHECK(ongoing_fetch_keys_);
+  CHECK_EQ(ongoing_fetch_keys_->gaia_id, primary_account_->gaia);
 
   bool should_attempt_next_recovery_factor = true;
-  switch (status) {
-    case TrustedVaultDownloadKeysStatus::kSuccess: {
+  switch (recovery_status) {
+    case LocalRecoveryFactor::RecoveryStatus::kSuccess: {
       // |downloaded_vault_keys| doesn't necessary have all keys known to the
       // backend, because some old keys may have been deleted from the server
       // already. Not preserving old keys is acceptable and desired here, since
@@ -784,28 +753,9 @@ void StandaloneTrustedVaultBackend::OnKeysDownloaded(
       should_attempt_next_recovery_factor = false;
       break;
     }
-    case TrustedVaultDownloadKeysStatus::kMemberNotFound:
-    case TrustedVaultDownloadKeysStatus::kMembershipNotFound:
-    case TrustedVaultDownloadKeysStatus::kMembershipCorrupted:
-    case TrustedVaultDownloadKeysStatus::kMembershipEmpty:
-    case TrustedVaultDownloadKeysStatus::kKeyProofsVerificationFailed: {
-      // Unable to download new keys due to known protocol errors. The only way
-      // to go out of these states is to receive new vault keys through external
-      // StoreKeys() call. It's safe to mark device as not registered regardless
-      // of the cause (device registration will be triggered once new vault keys
-      // are available).
-      local_recovery_factors_[current_local_recovery_factor]
-          ->MarkAsNotRegistered();
-      break;
-    }
-    case TrustedVaultDownloadKeysStatus::kNoNewKeys: {
-      // The registration itself exists, but there's no additional keys to
-      // download. This is bad because key download attempts are triggered for
-      // the case where local keys have been marked as stale, which means the
-      // user is likely in an unrecoverable state.
-      connection_->RecordFailedRequestForThrottling(*primary_account_);
-      // Persist the keys anyway, since some old keys could be removed from the
-      // server.
+    case LocalRecoveryFactor::RecoveryStatus::kNoNewKeys: {
+      // Persist the keys even though there are no new ones, since some old keys
+      // could be removed from the server.
       StoreKeys(primary_account_->gaia, downloaded_vault_keys,
                 last_vault_key_version);
       // The server state for different recovery factors is guaranteed to be the
@@ -814,26 +764,23 @@ void StandaloneTrustedVaultBackend::OnKeysDownloaded(
       should_attempt_next_recovery_factor = false;
       break;
     }
-    case TrustedVaultDownloadKeysStatus::kAccessTokenFetchingFailure:
-    case TrustedVaultDownloadKeysStatus::kNetworkError:
-      // Request wasn't sent to the server, so there is no need for throttling.
-      break;
-    case TrustedVaultDownloadKeysStatus::kOtherError:
-      connection_->RecordFailedRequestForThrottling(*primary_account_);
+    case LocalRecoveryFactor::RecoveryStatus::kFailure:
       break;
   }
-
-  // This method should be called only as a result of keys downloading
-  // attributed to current |ongoing_fetch_keys_|.
-  DCHECK(ongoing_fetch_keys_);
-  DCHECK_EQ(ongoing_fetch_keys_->gaia_id, primary_account_->gaia);
 
   if (should_attempt_next_recovery_factor) {
-    AttemptNextRecoveryFactor(current_local_recovery_factor,
-                              GetDownloadKeysStatusForUMAFromResponse(status));
-  } else {
-    FulfillOngoingFetchKeys(GetDownloadKeysStatusForUMAFromResponse(status));
+    const size_t next_local_recovery_factor = current_local_recovery_factor + 1;
+    if (next_local_recovery_factor < local_recovery_factors_.size()) {
+      AttemptRecoveryFactor(next_local_recovery_factor);
+      return;
+    }
   }
+
+  // We don't want to attempt the next recovery factor, or we ran out of local
+  // recovery factors to try. Give up with the status from the last recovery
+  // factor.
+  FulfillOngoingFetchKeys(
+      GetRecoverKeysOutcomeForUMAFromRecoveryStatus(recovery_status));
 }
 
 void StandaloneTrustedVaultBackend::OnTrustedRecoveryMethodAdded(
@@ -849,7 +796,7 @@ void StandaloneTrustedVaultBackend::OnTrustedRecoveryMethodAdded(
 }
 
 void StandaloneTrustedVaultBackend::FulfillOngoingFetchKeys(
-    std::optional<TrustedVaultDownloadKeysStatusForUMA> status_for_uma) {
+    std::optional<TrustedVaultRecoverKeysOutcomeForUMA> status_for_uma) {
   if (!ongoing_fetch_keys_.has_value()) {
     return;
   }
@@ -868,12 +815,12 @@ void StandaloneTrustedVaultBackend::FulfillOngoingFetchKeys(
 void StandaloneTrustedVaultBackend::FulfillFetchKeys(
     const GaiaId& gaia_id,
     FetchKeysCallback callback,
-    std::optional<TrustedVaultDownloadKeysStatusForUMA> status_for_uma) {
+    std::optional<TrustedVaultRecoverKeysOutcomeForUMA> status_for_uma) {
   const trusted_vault_pb::LocalTrustedVaultPerUser* per_user_vault =
       storage_->FindUserVault(gaia_id);
 
   if (status_for_uma.has_value()) {
-    RecordTrustedVaultDownloadKeysStatus(security_domain_id_, *status_for_uma);
+    RecordTrustedVaultRecoverKeysOutcome(security_domain_id_, *status_for_uma);
   }
 
   std::vector<std::vector<uint8_t>> vault_keys;

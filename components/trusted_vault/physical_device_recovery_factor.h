@@ -29,7 +29,8 @@ class PhysicalDeviceRecoveryFactor : public LocalRecoveryFactor {
   // `storage` must not be null and must outlive this object.
   // TODO(crbug.com/405381481): Refactor / remove the usage of
   // StandaloneTrustedVaultStorage in this class.
-  PhysicalDeviceRecoveryFactor(StandaloneTrustedVaultStorage* storage,
+  PhysicalDeviceRecoveryFactor(SecurityDomainId security_domain_id,
+                               StandaloneTrustedVaultStorage* storage,
                                std::optional<CoreAccountInfo> primary_account);
   PhysicalDeviceRecoveryFactor(const PhysicalDeviceRecoveryFactor&) = delete;
   PhysicalDeviceRecoveryFactor& operator=(PhysicalDeviceRecoveryFactor&) =
@@ -39,8 +40,7 @@ class PhysicalDeviceRecoveryFactor : public LocalRecoveryFactor {
   LocalRecoveryFactorType GetRecoveryFactorType() const override;
 
   void AttemptRecovery(TrustedVaultThrottlingConnection* connection,
-                       AttemptRecoveryCallback cb,
-                       AttemptRecoveryFailureCallback failure_cb) override;
+                       AttemptRecoveryCallback cb) override;
 
   bool IsRegistered() override;
   void MarkAsNotRegistered() override;
@@ -54,16 +54,21 @@ class PhysicalDeviceRecoveryFactor : public LocalRecoveryFactor {
  private:
   trusted_vault_pb::LocalTrustedVaultPerUser* GetPrimaryAccountVault();
 
-  void OnKeysDownloaded(AttemptRecoveryCallback cb,
+  void OnKeysDownloaded(TrustedVaultThrottlingConnection* connection,
+                        AttemptRecoveryCallback cb,
                         TrustedVaultDownloadKeysStatus status,
                         const std::vector<std::vector<uint8_t>>& new_vault_keys,
                         int last_vault_key_version);
+  void FulfillRecoveryWithFailure(
+      TrustedVaultDownloadKeysStatusForUMA status_for_uma,
+      AttemptRecoveryCallback cb);
 
   void OnRegistered(RegisterCallback cb,
                     bool had_local_keys,
                     TrustedVaultRegistrationStatus status,
                     int key_version);
 
+  const SecurityDomainId security_domain_id_;
   const raw_ptr<StandaloneTrustedVaultStorage> storage_;
   const std::optional<CoreAccountInfo> primary_account_;
 

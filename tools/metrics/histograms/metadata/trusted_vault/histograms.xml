@@ -51,10 +51,17 @@ chromium-metrics-reviews@google.com.
   <owner>mastiz@chromium.org</owner>
   <owner>thomasth@google.com</owner>
   <summary>
-    Simplified version of TrustedVault.DeviceRegistrationState. Records whether
-    a recovery factor is registered (and ignores whether re-registration was
-    completed/pending/in-flight) upon startup (if signed in) or upon first
-    signin.
+    Simplified version of TrustedVault.DeviceRegistrationState. Records whether,
+    according to information on this device, a recovery factor is registered
+    (and ignores whether re-registration was completed/pending/in-flight) upon
+    startup (if signed in) or upon first signin.
+
+    Recorded at most once for every recovery factor / security domain
+    combination per profile within the browser process lifetime.
+
+    Recovery factor: {LocalRecoveryFactorType}
+
+    Security domain: {SecurityDomainId}
   </summary>
   <token key="LocalRecoveryFactorType" variants="LocalRecoveryFactorType"/>
   <token key="SecurityDomainId" variants="SecurityDomainId"/>
@@ -67,8 +74,10 @@ chromium-metrics-reviews@google.com.
   <owner>mastiz@chromium.org</owner>
   <owner>thomasth@google.com</owner>
   <summary>
-    Records the outcome of device registration attempt upon request completion
-    or failure.
+    Records the outcome of a device registration attempt for a private key
+    stored in/on {LocalRecoveryFactorType} upon request completion or failure.
+
+    Security domain: {SecurityDomainId}
   </summary>
   <token key="LocalRecoveryFactorType" variants="LocalRecoveryFactorType"/>
   <token key="SecurityDomainId" variants="SecurityDomainId"/>
@@ -79,9 +88,14 @@ chromium-metrics-reviews@google.com.
   <owner>mmoskvitin@google.com</owner>
   <owner>mastiz@chromium.org</owner>
   <summary>
-    Records whether the local device is registered on the server upon startup
-    (if signed in) or upon first signin, and if not registered, provides
-    insights into why.
+    Records whether, according to information on this device, a recovery factor
+    is registered on the server upon startup (if signed in) or upon first
+    signin, and if not registered, provides insights into why.
+
+    Recorded at most once for every recovery factor / security domain
+    combination per browser process lifetime.
+
+    Security domain: {SecurityDomainId}
   </summary>
   <token key="SecurityDomainId" variants="SecurityDomainId"/>
 </histogram>
@@ -99,18 +113,27 @@ chromium-metrics-reviews@google.com.
     It is recorded whenever DownloadAuthenticationFactorsRegistrationState is
     called. For passkeys this happens during WebAuthn calls, in some cases
     without a Google Password Manager passkey being selected, only present.
+
+    Security domain: {SecurityDomainId}
   </summary>
   <token key="SecurityDomainId" variants="SecurityDomainId"/>
 </histogram>
 
-<histogram name="TrustedVault.DownloadKeysStatus{SecurityDomainId}"
-    enum="TrustedVaultDownloadKeysStatus" expires_after="2025-09-14">
+<histogram
+    name="TrustedVault.DownloadKeysStatus{LocalRecoveryFactorType}{SecurityDomainId}"
+    enum="TrustedVaultDownloadKeysStatus" expires_after="2026-05-05">
   <owner>mmoskvitin@google.com</owner>
   <owner>mastiz@chromium.org</owner>
+  <owner>thomasth@google.com</owner>
   <summary>
     Records the result of an attempt to download trusted vault keys from the
-    server (includes all registration versions).
+    server for {SecurityDomainId}. &quot;Downloading&quot; here refers to
+    fetching a private member key from {LocalRecoveryFactorType}, fetching
+    wrapped member keys from the backend and validating / decrypting the keys.
+
+    Note: This histogram covers all registration versions.
   </summary>
+  <token key="LocalRecoveryFactorType" variants="LocalRecoveryFactorType"/>
   <token key="SecurityDomainId" variants="SecurityDomainId"/>
 </histogram>
 
@@ -118,7 +141,9 @@ chromium-metrics-reviews@google.com.
     enum="TrustedVaultFileReadStatus" expires_after="2025-09-28">
   <owner>mmoskvitin@google.com</owner>
   <owner>mastiz@chromium.org</owner>
-  <summary>Recorded when reading local trusted vault file.</summary>
+  <summary>
+    Recorded when reading local trusted vault file for {SecurityDomainId}.
+  </summary>
   <token key="SecurityDomainId" variants="SecurityDomainId"/>
 </histogram>
 
@@ -127,7 +152,8 @@ chromium-metrics-reviews@google.com.
   <owner>mmoskvitin@google.com</owner>
   <owner>mastiz@chromium.org</owner>
   <summary>
-    Records whether writing local trusted vault file upon each write.
+    Records whether writing local trusted vault file for {SecurityDomainId} was
+    successful upon each write.
   </summary>
   <token key="SecurityDomainId" variants="SecurityDomainId"/>
 </histogram>
@@ -180,6 +206,20 @@ chromium-metrics-reviews@google.com.
     completion. Note that this is the status on the server side, which could be
     error if the request was failed.
   </summary>
+</histogram>
+
+<histogram name="TrustedVault.RecoverKeysOutcome{SecurityDomainId}"
+    enum="TrustedVaultRecoverKeysOutcome" expires_after="2026-05-05">
+  <owner>mmoskvitin@google.com</owner>
+  <owner>mastiz@chromium.org</owner>
+  <owner>thomasth@google.com</owner>
+  <summary>
+    Records the outcome of an attempt to recover trusted vault keys for
+    {SecurityDomainId} using all available local recovery factors.
+
+    Note: If this fails, then user interaction is required to fetch keys.
+  </summary>
+  <token key="SecurityDomainId" variants="SecurityDomainId"/>
 </histogram>
 
 <histogram name="TrustedVault.RecoveryKeyStoreURLFetchResponse{Reason}"

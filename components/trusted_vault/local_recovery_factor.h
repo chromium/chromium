@@ -27,7 +27,7 @@ enum class LocalRecoveryFactorType {
 
 // Interface for a local recovery factor.
 // Classes that implement this interface are used by
-// StandaloneTrustedVaultBackend to retrieve keys without user interaction when
+// StandaloneTrustedVaultBackend to recover keys without user interaction when
 // required.
 // StandaloneTrustedVaultBackend also makes sure to register local recovery
 // factors with available keys when possible.
@@ -35,12 +35,19 @@ enum class LocalRecoveryFactorType {
 // sequence as StandaloneTrustedVaultBackend.
 class LocalRecoveryFactor {
  public:
+  enum class RecoveryStatus {
+    // Keys were successfully recovered.
+    kSuccess,
+    // Failed to recover keys.
+    kFailure,
+    // Keys were successfully recovered and verified, but no new keys exist.
+    kNoNewKeys,
+  };
+
   using AttemptRecoveryCallback = base::OnceCallback<void(
-      TrustedVaultDownloadKeysStatus /* status */,
+      RecoveryStatus /* status */,
       const std::vector<std::vector<uint8_t>>& /* new_vault_keys */,
       int /* last_vault_key_version */)>;
-  using AttemptRecoveryFailureCallback = base::OnceCallback<void(
-      std::optional<TrustedVaultDownloadKeysStatusForUMA> /* status */)>;
   using RegisterCallback =
       base::OnceCallback<void(TrustedVaultRegistrationStatus /* status */,
                               int /* key_version */,
@@ -56,8 +63,7 @@ class LocalRecoveryFactor {
 
   // Attempts a key recovery.
   virtual void AttemptRecovery(TrustedVaultThrottlingConnection* connection,
-                               AttemptRecoveryCallback cb,
-                               AttemptRecoveryFailureCallback failure_cb) = 0;
+                               AttemptRecoveryCallback cb) = 0;
 
   // Returns whether the recovery factor is marked as registered.
   virtual bool IsRegistered() = 0;

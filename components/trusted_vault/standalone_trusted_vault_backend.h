@@ -68,6 +68,7 @@ class StandaloneTrustedVaultBackend
     // |storage_|.
     virtual std::vector<std::unique_ptr<LocalRecoveryFactor>>
     CreateLocalRecoveryFactors(
+        SecurityDomainId security_domain_id,
         StandaloneTrustedVaultStorage* storage,
         const std::optional<CoreAccountInfo>& primary_account) = 0;
   };
@@ -205,13 +206,10 @@ class StandaloneTrustedVaultBackend
                           bool had_local_keys);
 
   void AttemptRecoveryFactor(size_t local_recovery_factor);
-  void AttemptNextRecoveryFactor(
-      size_t current_local_recovery_factor,
-      std::optional<TrustedVaultDownloadKeysStatusForUMA> status_for_uma);
-  void OnKeysDownloaded(size_t current_local_recovery_factor,
-                        TrustedVaultDownloadKeysStatus status,
-                        const std::vector<std::vector<uint8_t>>& new_vault_keys,
-                        int last_vault_key_version);
+  void OnKeysRecovered(size_t current_local_recovery_factor,
+                       LocalRecoveryFactor::RecoveryStatus status,
+                       const std::vector<std::vector<uint8_t>>& new_vault_keys,
+                       int last_vault_key_version);
 
   void OnTrustedRecoveryMethodAdded(base::OnceClosure cb);
 
@@ -219,12 +217,12 @@ class StandaloneTrustedVaultBackend
   void FulfillFetchKeys(
       const GaiaId& gaia_id,
       FetchKeysCallback callback,
-      std::optional<TrustedVaultDownloadKeysStatusForUMA> status_for_uma);
+      std::optional<TrustedVaultRecoverKeysOutcomeForUMA> status_for_uma);
 
   // Same as above, but takes parameters from |ongoing_fetch_keys|, used when
   // keys are fetched asynchronously, after keys downloading attempt.
   void FulfillOngoingFetchKeys(
-      std::optional<TrustedVaultDownloadKeysStatusForUMA> status_for_uma);
+      std::optional<TrustedVaultRecoverKeysOutcomeForUMA> status_for_uma);
 
   // Removes all data for non-primary accounts if they were previously marked
   // for deletion due to accounts in cookie jar changes.
