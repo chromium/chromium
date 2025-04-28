@@ -44,6 +44,20 @@ class LensSearchController {
                   syncer::SyncService* sync_service,
                   ThemeService* theme_service);
 
+  // A simple utility that gets the the LensSearchController TabFeature set by
+  // the embedding tab of a lens WebUI hosted in `webui_web_contents`.
+  // May return nullptr if no LensSearchController TabFeature is associated
+  // with `webui_web_contents`.
+  static LensSearchController* FromWebUIWebContents(
+      content::WebContents* webui_web_contents);
+
+  // A simple utility that gets the the LensSearchController TabFeature set by
+  // the instances of WebContents associated with a tab.
+  // May return nullptr if no LensSearchController TabFeature is associated
+  // with `tab_web_contents`.
+  static LensSearchController* FromTabWebContents(
+      content::WebContents* tab_web_contents);
+
   // Returns the tab interface that owns this controller.
   tabs::TabInterface* GetTabInterface();
 

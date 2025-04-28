@@ -651,13 +651,6 @@ void LensOverlayController::BindOverlayGhostLoader(
   overlay_ghost_loader_page_.Bind(std::move(page));
 }
 
-void LensOverlayController::BindSidePanel(
-    mojo::PendingReceiver<lens::mojom::LensSidePanelPageHandler> receiver,
-    mojo::PendingRemote<lens::mojom::LensSidePanelPage> page) {
-  results_side_panel_coordinator_->BindSidePanel(std::move(receiver),
-                                                 std::move(page));
-}
-
 void LensOverlayController::BindSidePanelGhostLoader(
     mojo::PendingRemote<lens::mojom::LensGhostLoaderPage> page) {
   side_panel_ghost_loader_page_.reset();

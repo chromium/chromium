@@ -8,6 +8,17 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_side_panel_coordinator.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/webui/webui_embedding_context.h"
+
+namespace {
+LensSearchController* GetLensSearchControllerFromTabInterface(
+    tabs::TabInterface* tab_interface) {
+  return tab_interface
+             ? tab_interface->GetTabFeatures()->lens_search_controller()
+             : nullptr;
+}
+}  // namespace
 
 LensSearchController::LensSearchController(tabs::TabInterface* tab)
     : tab_(tab) {}
@@ -28,6 +39,20 @@ void LensSearchController::Initialize(
 
   lens_overlay_side_panel_coordinator_ =
       CreateLensOverlaySidePanelCoordinator();
+}
+
+// static.
+LensSearchController* LensSearchController::FromWebUIWebContents(
+    content::WebContents* webui_web_contents) {
+  return GetLensSearchControllerFromTabInterface(
+      webui::GetTabInterface(webui_web_contents));
+}
+
+// static.
+LensSearchController* LensSearchController::FromTabWebContents(
+    content::WebContents* tab_web_contents) {
+  return GetLensSearchControllerFromTabInterface(
+      tabs::TabInterface::GetFromContents(tab_web_contents));
 }
 
 tabs::TabInterface* LensSearchController::GetTabInterface() {

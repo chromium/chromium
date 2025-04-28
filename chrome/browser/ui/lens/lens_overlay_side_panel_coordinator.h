@@ -153,6 +153,13 @@ class LensOverlaySidePanelCoordinator
   void GetIsContextualSearchbox(
       GetIsContextualSearchboxCallback callback) override;
 
+  // This method is used to set up communication between this instance and the
+  // side panel WebUI. This is called by the WebUIController when the WebUI is
+  // executing javascript and ready to bind.
+  void BindSidePanel(
+      mojo::PendingReceiver<lens::mojom::LensSidePanelPageHandler> receiver,
+      mojo::PendingRemote<lens::mojom::LensSidePanelPage> page);
+
   enum CommandID {
     COMMAND_MY_ACTIVITY,
     COMMAND_LEARN_MORE,
@@ -199,13 +206,6 @@ class LensOverlaySidePanelCoordinator
   friend class lens::LensOverlaySidePanelNavigationThrottle;
 
  protected:
-  // This method is used to set up communication between this instance and the
-  // side panel WebUI. This is called by the WebUIController when the WebUI is
-  // executing javascript and ready to bind.
-  void BindSidePanel(
-      mojo::PendingReceiver<lens::mojom::LensSidePanelPageHandler> receiver,
-      mojo::PendingRemote<lens::mojom::LensSidePanelPage> page);
-
   // Returns whether the side panel is bound to the WebUI.
   bool IsSidePanelBound();
 

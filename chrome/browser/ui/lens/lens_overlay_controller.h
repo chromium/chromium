@@ -240,13 +240,6 @@ class LensOverlayController : public LensSearchboxClient,
       mojo::PendingRemote<lens::mojom::LensPage> page);
 
   // This method is used to set up communication between this instance and the
-  // side panel WebUI. This is called by the WebUIController when the WebUI is
-  // executing javascript and ready to bind.
-  void BindSidePanel(
-      mojo::PendingReceiver<lens::mojom::LensSidePanelPageHandler> receiver,
-      mojo::PendingRemote<lens::mojom::LensSidePanelPage> page);
-
-  // This method is used to set up communication between this instance and the
   // overlay ghost loader's WebUI. This is called by the WebUIController when
   // the WebUI is executing javascript and ready to bind.
   void BindOverlayGhostLoader(
