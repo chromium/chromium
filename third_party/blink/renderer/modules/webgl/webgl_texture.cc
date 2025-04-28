@@ -58,7 +58,8 @@ void WebGLTexture::SetTarget(GLenum target) {
 }
 
 void WebGLTexture::DeleteObjectImpl(gpu::gles2::GLES2Interface* gl) {
-  gl->DeleteTextures(1, &Object());
+  gl->DeleteTextures(1, &object_);
+  object_ = 0;
 }
 
 int WebGLTexture::MapTargetToIndex(GLenum target) const {

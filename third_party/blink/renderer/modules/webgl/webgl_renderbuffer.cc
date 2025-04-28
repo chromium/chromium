@@ -47,7 +47,8 @@ WebGLRenderbuffer::WebGLRenderbuffer(WebGLRenderingContextBase* ctx)
 WebGLRenderbuffer::~WebGLRenderbuffer() = default;
 
 void WebGLRenderbuffer::DeleteObjectImpl(gpu::gles2::GLES2Interface* gl) {
-  gl->DeleteRenderbuffers(1, &Object());
+  gl->DeleteRenderbuffers(1, &object_);
+  object_ = 0;
 }
 
 int WebGLRenderbuffer::UpdateMultisampleState(bool multisampled) {

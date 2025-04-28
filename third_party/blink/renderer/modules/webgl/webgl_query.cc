@@ -28,13 +28,14 @@ WebGLQuery::WebGLQuery(WebGL2RenderingContextBase* ctx)
 WebGLQuery::~WebGLQuery() = default;
 
 void WebGLQuery::SetTarget(GLenum target) {
-  DCHECK(HasObject());
+  DCHECK(Object());
   DCHECK(!target_);
   target_ = target;
 }
 
 void WebGLQuery::DeleteObjectImpl(gpu::gles2::GLES2Interface* gl) {
-  gl->DeleteQueriesEXT(1, &Object());
+  gl->DeleteQueriesEXT(1, &object_);
+  object_ = 0;
 }
 
 void WebGLQuery::ResetCachedResult() {

@@ -42,7 +42,8 @@ WebGLBuffer::WebGLBuffer(WebGLRenderingContextBase* ctx)
 WebGLBuffer::~WebGLBuffer() = default;
 
 void WebGLBuffer::DeleteObjectImpl(gpu::gles2::GLES2Interface* gl) {
-  gl->DeleteBuffers(1, &Object());
+  gl->DeleteBuffers(1, &object_);
+  object_ = 0;
 }
 
 void WebGLBuffer::SetInitialTarget(GLenum target) {

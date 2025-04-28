@@ -209,14 +209,13 @@ WebGLFramebuffer* WebGLFramebuffer::CreateOpaque(WebGLRenderingContextBase* ctx,
 
 WebGLFramebuffer::WebGLFramebuffer(WebGLRenderingContextBase* ctx, bool opaque)
     : WebGLContextObject(ctx),
+      object_(0),
       has_ever_been_bound_(false),
       web_gl1_depth_stencil_consistent_(true),
       opaque_(opaque),
       read_buffer_(GL_COLOR_ATTACHMENT0) {
   if (!ctx->isContextLost()) {
-    GLuint fbo;
-    ctx->ContextGL()->GenFramebuffers(1, &fbo);
-    SetObject(fbo);
+    ctx->ContextGL()->GenFramebuffers(1, &object_);
   }
 }
 
@@ -229,7 +228,7 @@ void WebGLFramebuffer::SetAttachmentForBoundFramebuffer(GLenum target,
                                                         GLint level,
                                                         GLint layer,
                                                         GLsizei num_views) {
-  DCHECK(HasObject());
+  DCHECK(object_);
   DCHECK(IsBound(target));
 
   if (Context()->isContextLost()) {
@@ -292,7 +291,7 @@ void WebGLFramebuffer::SetAttachmentForBoundFramebuffer(
     GLenum target,
     GLenum attachment,
     WebGLRenderbuffer* renderbuffer) {
-  DCHECK(HasObject());
+  DCHECK(object_);
   DCHECK(IsBound(target));
 
   if (Context()->isContextLost()) {
@@ -326,9 +325,8 @@ void WebGLFramebuffer::SetAttachmentForBoundFramebuffer(
 
 WebGLSharedObject* WebGLFramebuffer::GetAttachmentObject(
     GLenum attachment) const {
-  if (!HasObject()) {
+  if (!object_)
     return nullptr;
-  }
   WebGLAttachment* attachment_object = GetAttachment(attachment);
   return attachment_object ? attachment_object->Object() : nullptr;
 }
@@ -343,9 +341,8 @@ void WebGLFramebuffer::RemoveAttachmentFromBoundFramebuffer(
     GLenum target,
     WebGLSharedObject* attachment) {
   DCHECK(IsBound(target));
-  if (!HasObject()) {
+  if (!object_)
     return;
-  }
   if (!attachment)
     return;
 
@@ -437,7 +434,8 @@ void WebGLFramebuffer::DeleteObjectImpl(gpu::gles2::GLES2Interface* gl) {
   }
 
   // "gl" is null-checked at higher levels.
-  gl->DeleteFramebuffers(1, &Object());
+  gl->DeleteFramebuffers(1, &object_);
+  object_ = 0;
 }
 
 bool WebGLFramebuffer::IsBound(GLenum target) const {
@@ -454,7 +452,7 @@ bool WebGLFramebuffer::IsBound(GLenum target) const {
     default:
       NOTREACHED();
   }
-  return GLuint(bound_fbo) == Object();
+  return GLuint(bound_fbo) == object_;
 }
 
 void WebGLFramebuffer::DrawBuffers(const Vector<GLenum>& bufs) {
@@ -501,7 +499,7 @@ void WebGLFramebuffer::SetAttachmentInternal(GLenum target,
                                              GLint level,
                                              GLint layer) {
   DCHECK(IsBound(target));
-  DCHECK(HasObject());
+  DCHECK(object_);
   RemoveAttachmentInternal(target, attachment);
   if (texture && texture->Object()) {
     attachments_.insert(attachment,
@@ -516,7 +514,7 @@ void WebGLFramebuffer::SetAttachmentInternal(GLenum target,
                                              GLenum attachment,
                                              WebGLRenderbuffer* renderbuffer) {
   DCHECK(IsBound(target));
-  DCHECK(HasObject());
+  DCHECK(object_);
   RemoveAttachmentInternal(target, attachment);
   if (renderbuffer && renderbuffer->Object()) {
     attachments_.insert(
@@ -530,7 +528,7 @@ void WebGLFramebuffer::SetAttachmentInternal(GLenum target,
 void WebGLFramebuffer::RemoveAttachmentInternal(GLenum target,
                                                 GLenum attachment) {
   DCHECK(IsBound(target));
-  DCHECK(HasObject());
+  DCHECK(object_);
 
   WebGLAttachment* attachment_object = GetAttachment(attachment);
   if (attachment_object) {

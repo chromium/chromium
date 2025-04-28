@@ -14,6 +14,7 @@ namespace blink {
 WebGLTimerQueryEXT::WebGLTimerQueryEXT(WebGLRenderingContextBase* ctx)
     : WebGLContextObject(ctx),
       target_(0),
+      query_id_(0),
       can_update_availability_(false),
       query_result_available_(false),
       query_result_(0),
@@ -22,9 +23,7 @@ WebGLTimerQueryEXT::WebGLTimerQueryEXT(WebGLRenderingContextBase* ctx)
     return;
   }
 
-  GLuint query = 0;
-  Context()->ContextGL()->GenQueriesEXT(1, &query);
-  SetObject(query);
+  Context()->ContextGL()->GenQueriesEXT(1, &query_id_);
 }
 
 WebGLTimerQueryEXT::~WebGLTimerQueryEXT() = default;
@@ -75,7 +74,8 @@ GLuint64 WebGLTimerQueryEXT::GetQueryResult() {
 }
 
 void WebGLTimerQueryEXT::DeleteObjectImpl(gpu::gles2::GLES2Interface* gl) {
-  gl->DeleteQueriesEXT(1, &Object());
+  gl->DeleteQueriesEXT(1, &query_id_);
+  query_id_ = 0;
 }
 
 void WebGLTimerQueryEXT::ScheduleAllowAvailabilityUpdate() {

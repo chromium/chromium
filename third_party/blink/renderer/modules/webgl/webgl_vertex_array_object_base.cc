@@ -14,6 +14,7 @@ WebGLVertexArrayObjectBase::WebGLVertexArrayObjectBase(
     VaoType type,
     GLint max_vertex_attribs)
     : WebGLContextObject(ctx),
+      object_(0),
       type_(type),
       has_ever_been_bound_(false),
       is_all_enabled_attrib_buffer_bound_(true) {
@@ -30,12 +31,9 @@ WebGLVertexArrayObjectBase::WebGLVertexArrayObjectBase(
   switch (type_) {
     case kVaoTypeDefault:
       break;
-    default: {
-      GLuint vao = 0;
-      ctx->ContextGL()->GenVertexArraysOES(1, &vao);
-      SetObject(vao);
+    default:
+      Context()->ContextGL()->GenVertexArraysOES(1, &object_);
       break;
-    }
   }
 }
 
@@ -58,7 +56,8 @@ void WebGLVertexArrayObjectBase::DeleteObjectImpl(
     case kVaoTypeDefault:
       break;
     default:
-      gl->DeleteVertexArraysOES(1, &Object());
+      gl->DeleteVertexArraysOES(1, &object_);
+      object_ = 0;
       break;
   }
 

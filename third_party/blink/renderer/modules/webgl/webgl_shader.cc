@@ -40,7 +40,8 @@ WebGLShader::WebGLShader(WebGLRenderingContextBase* ctx, GLenum type)
 WebGLShader::~WebGLShader() = default;
 
 void WebGLShader::DeleteObjectImpl(gpu::gles2::GLES2Interface* gl) {
-  gl->DeleteShader(Object());
+  gl->DeleteShader(object_);
+  object_ = 0;
 }
 
 }  // namespace blink
