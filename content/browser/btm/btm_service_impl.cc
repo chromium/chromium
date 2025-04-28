@@ -56,11 +56,6 @@ namespace content {
 
 namespace {
 
-// Controls whether the database requests are executed on a foreground sequence.
-BASE_FEATURE(kDipsOnForegroundSequence,
-             "DipsOnForegroundSequence",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BtmRedirectCategory ClassifyRedirect(BtmDataAccessType access,
                                      bool has_user_activation) {
   using enum BtmRedirectCategory;
@@ -335,9 +330,6 @@ BtmServiceImpl* BtmServiceImpl::Get(BrowserContext* context) {
 }
 
 scoped_refptr<base::SequencedTaskRunner> BtmServiceImpl::CreateTaskRunner() {
-  if (base::FeatureList::IsEnabled(kDipsOnForegroundSequence)) {
-    return base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()});
-  }
   return base::ThreadPool::CreateSequencedTaskRunner(
       {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
        base::ThreadPolicy::PREFER_BACKGROUND});
@@ -345,10 +337,6 @@ scoped_refptr<base::SequencedTaskRunner> BtmServiceImpl::CreateTaskRunner() {
 
 scoped_refptr<base::SequencedTaskRunner>
 BtmServiceImpl::CreateTaskRunnerForResource(const base::FilePath& path) {
-  if (base::FeatureList::IsEnabled(kDipsOnForegroundSequence)) {
-    return base::ThreadPool::CreateSequencedTaskRunnerForResource(
-        {base::MayBlock()}, path);
-  }
   return base::ThreadPool::CreateSequencedTaskRunnerForResource(
       {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
        base::ThreadPolicy::PREFER_BACKGROUND},
