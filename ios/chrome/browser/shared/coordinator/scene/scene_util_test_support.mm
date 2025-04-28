@@ -10,7 +10,7 @@
 
 - (instancetype)initWithIdentifier:(NSString*)identifier;
 
-@property(nonatomic, strong, readonly) NSString* persistentIdentifier;
+@property(nonatomic, copy, readonly) NSString* persistentIdentifier;
 
 @property(nonatomic, copy) NSDictionary<NSString*, id>* userInfo;
 
