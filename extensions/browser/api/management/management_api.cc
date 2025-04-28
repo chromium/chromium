@@ -283,12 +283,9 @@ void AddExtensionInfo(const Extension* source_extension,
 }
 
 bool PlatformSupportsApprovalFlowForExtensions() {
-#if BUILDFLAG(IS_CHROMEOS)
-  // ChromeOS devices have this feature already shipped.
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_WIN)
   return true;
-#elif BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
-  return base::FeatureList::IsEnabled(
-      supervised_user::kEnableExtensionsPermissionsForSupervisedUsersOnDesktop);
 #else
   return false;
 #endif
