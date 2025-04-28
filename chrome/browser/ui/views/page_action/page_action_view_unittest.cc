@@ -118,7 +118,6 @@ class PageActionViewWithControllerTest : public ChromeViewsTestBase {
 
   void TearDown() override {
     ChromeViewsTestBase::TearDown();
-    page_action_view_.reset();
     action_item_ = nullptr;
     actions::ActionManager::Get().ResetActions();
     pinned_actions_model_.reset();
@@ -140,7 +139,6 @@ class PageActionViewWithControllerTest : public ChromeViewsTestBase {
   TestingProfile profile_;
 
  private:
-  std::unique_ptr<PageActionView> page_action_view_;
   std::unique_ptr<PageActionView> test_page_action_view_;
   raw_ptr<actions::ActionItem> action_item_;
 
