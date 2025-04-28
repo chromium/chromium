@@ -65,7 +65,8 @@ void OESVertexArrayObject::deleteVertexArrayOES(
 
   // ValidateWebGLObject generates an error if the object has already been
   // deleted, so we must replicate most of its checks here.
-  if (!array_object->Validate(scoped.Context())) {
+  if (!array_object->Validate(scoped.Context()->ContextGroup(),
+                              scoped.Context())) {
     scoped.Context()->SynthesizeGLError(
         GL_INVALID_OPERATION, "deleteVertexArrayOES",
         "object does not belong to this context");
@@ -86,9 +87,9 @@ bool OESVertexArrayObject::isVertexArrayOES(
     WebGLVertexArrayObjectOES* array_object) {
   WebGLExtensionScopedContext scoped(this);
   if (scoped.IsLost() || !array_object ||
-      !array_object->Validate(scoped.Context())) {
+      !array_object->Validate(scoped.Context()->ContextGroup(),
+                              scoped.Context()))
     return false;
-  }
 
   if (!array_object->HasEverBeenBound())
     return false;

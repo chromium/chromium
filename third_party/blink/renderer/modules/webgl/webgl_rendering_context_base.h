@@ -103,6 +103,7 @@ class WebGLCompressedTextureETC1;
 class WebGLCompressedTexturePVRTC;
 class WebGLCompressedTextureS3TC;
 class WebGLCompressedTextureS3TCsRGB;
+class WebGLContextGroup;
 class WebGLContextObject;
 class WebGLDebugShaders;
 class WebGLDrawBuffers;
@@ -596,6 +597,7 @@ class MODULES_EXPORT WebGLRenderingContextBase : public ScriptWrappable,
     return d->ContextProvider()->SharedImageInterface();
   }
 
+  WebGLContextGroup* ContextGroup() const { return context_group_.Get(); }
   Extensions3DUtil* ExtensionsUtil();
 
   void Reshape(int width, int height) override;
@@ -832,6 +834,8 @@ class MODULES_EXPORT WebGLRenderingContextBase : public ScriptWrappable,
   // Structure for rendering to a DrawingBuffer, instead of directly
   // to the back-buffer of m_context.
   scoped_refptr<DrawingBuffer> drawing_buffer_;
+
+  Member<WebGLContextGroup> context_group_;
 
   LostContextMode context_lost_mode_ = kNotLostContext;
   AutoRecoveryMethod auto_recovery_method_ = kManual;
@@ -2019,8 +2023,6 @@ class MODULES_EXPORT WebGLRenderingContextBase : public ScriptWrappable,
   int number_of_user_allocated_multisampled_renderbuffers_;
 
   bool has_been_drawn_to_ = false;
-
-  uint32_t number_of_context_losses_ = 0;
 
   // Tracks if the context has ever called glBeginPixelLocalStorageANGLE. If it
   // has, we need to start using the pixel local storage interrupt mechanism
