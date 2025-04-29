@@ -59,6 +59,7 @@
 /mocha/mocha.js
 /mocha/package.json
 /svgo/.svgo.yml
+/@bufbuild/**/*.d.ts
 /typescript/lib/lib.d.ts
 /typescript/lib/lib.*.d.ts
 /typescript/lib/tsc.js
