@@ -4,16 +4,18 @@
 
 package org.chromium.chrome.browser.collaboration;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.content.Intent;
-
-import androidx.annotation.Nullable;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.data_sharing.DataSharingMetrics;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -51,6 +53,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
 /** An interface to manage collaboration flow UI screens. */
+@NullMarked
 @JNINamespace("collaboration")
 public class CollaborationControllerDelegateImpl implements CollaborationControllerDelegate {
     private final @FlowType int mFlowType;
@@ -67,7 +70,7 @@ public class CollaborationControllerDelegateImpl implements CollaborationControl
     private Callback<Callback<Boolean>> mStartAccountRefreshCallback;
 
     // Stores the runnable to close the current showing UI. Is null when there's no UI showing.
-    private Runnable mCloseScreenRunnable;
+    private @Nullable Runnable mCloseScreenRunnable;
 
     /**
      * Constructor for a new {@link CollaborationControllerDelegateImpl} object.
@@ -100,11 +103,7 @@ public class CollaborationControllerDelegateImpl implements CollaborationControl
         if (mFlowType == FlowType.JOIN) {
             // The screen should not animate in order to hide all ongoing transitions immediately
             // after this call.
-            loadingFullscreenCoordinator.startLoading(
-                    () -> {
-                        destroy();
-                    },
-                    /* animate= */ false);
+            loadingFullscreenCoordinator.startLoading(this::destroy, /* animate= */ false);
         }
     }
 
@@ -213,6 +212,8 @@ public class CollaborationControllerDelegateImpl implements CollaborationControl
         assert profile != null;
 
         SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(profile);
+        assumeNonNull(signinManager);
+
         ServiceStatus serviceStatus =
                 CollaborationServiceFactory.getForProfile(profile).getServiceStatus();
 
@@ -337,7 +338,7 @@ public class CollaborationControllerDelegateImpl implements CollaborationControl
                 };
     }
 
-    private Intent createBottomSheetSigninIntent() {
+    private @Nullable Intent createBottomSheetSigninIntent() {
         AccountPickerBottomSheetStrings strings =
                 new AccountPickerBottomSheetStrings.Builder(
                                 R.string.collaboration_signin_bottom_sheet_title)
@@ -360,10 +361,13 @@ public class CollaborationControllerDelegateImpl implements CollaborationControl
             accessPoint = SigninAccessPoint.COLLABORATION_LEAVE_OR_DELETE_TAB_GROUP;
         }
         return mSigninAndHistorySyncActivityLauncher.createBottomSheetSigninIntentOrShowError(
-                mActivity, mDataSharingTabManager.getProfile(), bottomSheetConfig, accessPoint);
+                mActivity,
+                assumeNonNull(mDataSharingTabManager.getProfile()),
+                bottomSheetConfig,
+                accessPoint);
     }
 
-    private Intent createFullscreenSigninIntent() {
+    private @Nullable Intent createFullscreenSigninIntent() {
         FullscreenSigninAndHistorySyncConfig fullscreenConfig =
                 new FullscreenSigninAndHistorySyncConfig.Builder()
                         .historyOptInMode(HistorySyncConfig.OptInMode.REQUIRED)
@@ -377,7 +381,7 @@ public class CollaborationControllerDelegateImpl implements CollaborationControl
 
         return mSigninAndHistorySyncActivityLauncher.createFullscreenSigninIntentOrShowError(
                 mActivity,
-                mDataSharingTabManager.getProfile(),
+                assumeNonNull(mDataSharingTabManager.getProfile()),
                 fullscreenConfig,
                 SigninAccessPoint.COLLABORATION_JOIN_TAB_GROUP);
     }
@@ -450,10 +454,11 @@ public class CollaborationControllerDelegateImpl implements CollaborationControl
         String sessionId =
                 mDataSharingTabManager.showJoinScreenWithPreview(
                         mActivity, token, previewData, joinCallback);
+        assumeNonNull(sessionId);
 
         mCloseScreenRunnable =
                 () -> {
-                    mDataSharingTabManager.getUiDelegate().destroyFlow(sessionId);
+                    assumeNonNull(mDataSharingTabManager.getUiDelegate()).destroyFlow(sessionId);
                 };
     }
 
@@ -518,10 +523,11 @@ public class CollaborationControllerDelegateImpl implements CollaborationControl
         String sessionId =
                 mDataSharingTabManager.showShareDialog(
                         mActivity, existingGroup.title, existingGroup, createCallback);
+        assumeNonNull(sessionId);
 
         mCloseScreenRunnable =
                 () -> {
-                    mDataSharingTabManager.getUiDelegate().destroyFlow(sessionId);
+                    assumeNonNull(mDataSharingTabManager.getUiDelegate()).destroyFlow(sessionId);
                 };
     }
 
@@ -562,15 +568,16 @@ public class CollaborationControllerDelegateImpl implements CollaborationControl
         String sessionId =
                 mDataSharingTabManager.showManageSharing(
                         mActivity,
-                        existingGroup.collaborationId,
+                        assumeNonNull(existingGroup.collaborationId),
                         (outcome) -> {
                             CollaborationControllerDelegateImplJni.get()
                                     .runResultCallback(outcome, resultCallback);
                         });
+        assumeNonNull(sessionId);
 
         mCloseScreenRunnable =
                 () -> {
-                    mDataSharingTabManager.getUiDelegate().destroyFlow(sessionId);
+                    assumeNonNull(mDataSharingTabManager.getUiDelegate()).destroyFlow(sessionId);
                 };
     }
 
@@ -647,6 +654,7 @@ public class CollaborationControllerDelegateImpl implements CollaborationControl
         CollaborationControllerDelegateImplJni.get().runExitCallback(tempCallback);
     }
 
+    @SuppressWarnings("NullAway")
     private void cleanUpPointers() {
         mActivity = null;
         mDataSharingTabManager = null;
@@ -677,8 +685,8 @@ public class CollaborationControllerDelegateImpl implements CollaborationControl
 
         void runResultWithGroupTokenCallback(
                 int joutcome,
-                String groupId,
-                String accessToken,
+                @Nullable String groupId,
+                @Nullable String accessToken,
                 long resultWithGroupTokenCallback);
 
         long createNativeObject(CollaborationControllerDelegateImpl jdelegate);

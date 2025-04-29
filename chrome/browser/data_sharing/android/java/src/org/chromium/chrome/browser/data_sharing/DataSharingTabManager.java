@@ -567,7 +567,7 @@ public class DataSharingTabManager {
      */
     public @Nullable String showShareDialog(
             Activity activity,
-            String tabGroupDisplayName,
+            @Nullable String tabGroupDisplayName,
             SavedTabGroup existingGroup,
             DataSharingCreateUiConfig.CreateCallback createCallback) {
         assumeNonNull(mDataSharingService);
