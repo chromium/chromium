@@ -202,6 +202,8 @@ void BnplIssuerView::AddedToWidget() {
                                        background_color, std::nullopt);
     }
   }
+  CHECK(!children().empty());
+  children()[0]->RequestFocus();
 }
 
 void BnplIssuerView::IssuerSelected(BnplIssuer issuer, const ui::Event& event) {
