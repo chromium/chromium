@@ -10,6 +10,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/safe_ref.h"
 #include "base/notimplemented.h"
+#include "chrome/browser/actor/actor_coordinator.h"
 #include "chrome/browser/actor/tools/history_tool.h"
 #include "chrome/browser/actor/tools/navigate_tool.h"
 #include "chrome/browser/actor/tools/page_tool.h"
@@ -128,7 +129,15 @@ void ToolController::CompleteToolRequest(bool result) {
   CHECK(active_state_);
   ACTOR_LOG() << "Completed Tool[" << (result ? "SUCCESS" : "FAILURE")
               << "]: " << active_state_->tool->DebugString();
-  PostResponseTask(std::move(active_state_->completion_callback), result);
+
+  // TODO(crbug.com/409564704): Delay the callback to give the page a chance to
+  // react to the tool's effects. Temporary until we can do this more reliably
+  // in the renderer.
+  auto delay = active_state_->tool->ShouldAddCompletionDelay()
+                   ? actor::ActorCoordinator::GetActionObservationDelay()
+                   : base::Seconds(0);
+  PostResponseTask(std::move(active_state_->completion_callback), result,
+                   delay);
 
   active_state_.reset();
 }

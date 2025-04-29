@@ -316,6 +316,9 @@ BASE_FEATURE(kGlic, "Glic", base::FEATURE_DISABLED_BY_DEFAULT);
 // Controls whether the actor component of Glic is enabled.
 BASE_FEATURE(kGlicActor, "GlicActor", base::FEATURE_DISABLED_BY_DEFAULT);
 
+const base::FeatureParam<base::TimeDelta> kGlicActorActorObservationDelay{
+    &kGlicActor, "glic-actor-observation-delay", base::Seconds(3)};
+
 // Controls whether the Glic feature is always detached.
 BASE_FEATURE(kGlicDetached, "GlicDetached", base::FEATURE_ENABLED_BY_DEFAULT);
 

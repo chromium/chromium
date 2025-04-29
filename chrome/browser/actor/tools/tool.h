@@ -34,6 +34,10 @@ class Tool {
   // Provides a human readable description of the tool useful for log and
   // debugging purposes.
   virtual std::string DebugString() const = 0;
+
+  // Returns true if the completion of this tool should be artificially delayed
+  // to allow async work triggered by the tool to finish.
+  virtual bool ShouldAddCompletionDelay() const;
 };
 
 }  // namespace actor

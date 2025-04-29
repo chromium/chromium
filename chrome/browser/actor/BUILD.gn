@@ -24,6 +24,7 @@ source_set("actor") {
     "tools/navigate_tool.h",
     "tools/page_tool.cc",
     "tools/page_tool.h",
+    "tools/tool.cc",
     "tools/tool.h",
     "tools/tool_callbacks.cc",
     "tools/tool_callbacks.h",

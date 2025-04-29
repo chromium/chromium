@@ -116,7 +116,7 @@ class ActorCoordinator {
 
   base::WeakPtr<ActorCoordinator> GetWeakPtr();
 
-  static base::TimeDelta action_observation_delay_;
+  static std::optional<base::TimeDelta> action_observation_delay_for_testing_;
 
   bool initializing_new_task_ = false;
   raw_ptr<Profile> profile_;
