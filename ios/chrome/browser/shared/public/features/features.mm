@@ -803,16 +803,6 @@ BASE_FEATURE(kMagicStack, "MagicStack", base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTabResumption, "TabResumption", base::FEATURE_ENABLED_BY_DEFAULT);
 
-
-const char kMagicStackMostVisitedModuleParam[] = "MagicStackMostVisitedModule";
-
-const char kReducedSpaceParam[] = "ReducedNTPTopSpace";
-
-const char kHideIrrelevantModulesParam[] = "HideIrrelevantModules";
-
-const char kSetUpListCompactedTimeThresholdDays[] =
-    "SetUpListCompactedTimeThresholdDays";
-
 // A parameter to indicate whether the native UI is enabled for the discover
 // feed.
 const char kDiscoverFeedIsNativeUIEnabled[] = "DiscoverFeedIsNativeUIEnabled";
@@ -862,46 +852,19 @@ bool IsTabResumptionImagesThumbnailsEnabled() {
 
 bool ShouldPutMostVisitedSitesInMagicStack(
     FeedActivityBucket feed_activity_bucket) {
-  if (base::GetFieldTrialParamByFeatureAsBool(
-          kMagicStack, kMagicStackMostVisitedModuleParam, false)) {
-    return true;
-  }
-  if (base::FeatureList::IsEnabled(kNewFeedPositioning)) {
-    std::string mvt_state_param_name;
-    switch (feed_activity_bucket) {
-      case FeedActivityBucket::kNoActivity:
-        mvt_state_param_name = kNewFeedPositioningCombinedMVTForLowEngaged;
-        break;
-      case FeedActivityBucket::kLowActivity:
-        mvt_state_param_name = kNewFeedPositioningCombinedMVTForMidEngaged;
-        break;
-      case FeedActivityBucket::kMediumActivity:
-      case FeedActivityBucket::kHighActivity:
-        mvt_state_param_name = kNewFeedPositioningCombinedMVTForHighEngaged;
-        break;
-      default:
-        NOTREACHED() << "Should not reach engagement level: "
-                     << static_cast<int>(feed_activity_bucket);
-    }
-    return base::GetFieldTrialParamByFeatureAsBool(
-        kNewFeedPositioning, mvt_state_param_name, /*default_value=*/true);
-  }
   return false;
 }
 
 double ReducedNTPTopMarginSpaceForMagicStack() {
-  return base::GetFieldTrialParamByFeatureAsDouble(kMagicStack,
-                                                   kReducedSpaceParam, 20);
+  return 20;
 }
 
 bool ShouldHideIrrelevantModules() {
-  return base::GetFieldTrialParamByFeatureAsBool(
-      kMagicStack, kHideIrrelevantModulesParam, false);
+  return NO;
 }
 
 int TimeUntilShowingCompactedSetUpList() {
-  return base::GetFieldTrialParamByFeatureAsInt(
-      kMagicStack, kSetUpListCompactedTimeThresholdDays, 0);
+  return 0;
 }
 
 BASE_FEATURE(kInactiveNavigationAfterAppLaunchKillSwitch,
@@ -1108,16 +1071,6 @@ BASE_FEATURE(kProvisionalNotificationAlert,
 bool IsProvisionalNotificationAlertEnabled() {
   return base::FeatureList::IsEnabled(kProvisionalNotificationAlert);
 }
-
-BASE_FEATURE(kNewFeedPositioning,
-             "IOSNewFeedPositioning",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-const char kNewFeedPositioningCombinedMVTForHighEngaged[] =
-    "high_engagement_combined_mvt";
-const char kNewFeedPositioningCombinedMVTForMidEngaged[] =
-    "medium_engagement_combined_mvt";
-const char kNewFeedPositioningCombinedMVTForLowEngaged[] =
-    "low_engagement_combined_mvt";
 
 BASE_FEATURE(kDefaultBrowserBannerPromo,
              "DefaultBrowserBannerPromo",

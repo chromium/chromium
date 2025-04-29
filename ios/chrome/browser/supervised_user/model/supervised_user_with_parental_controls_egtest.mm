@@ -96,9 +96,6 @@ static const char* kInterstitialDetails = "Details";
       config.features_enabled_and_params.push_back(
           {supervised_user::kSupervisedUserBlockInterstitialV3, {}});
   }
-
-  // Makes sure the MVT is the top ranking magic stack module.
-  config.additional_args.push_back("--test-ios-module-ranker=mvt");
   return config;
 }
 

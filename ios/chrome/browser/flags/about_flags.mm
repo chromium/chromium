@@ -277,28 +277,6 @@ const FeatureEntry::FeatureVariation kStartSurfaceVariations[] = {
      std::size(kStartSurfaceOneHour), nullptr},
 };
 
-const FeatureEntry::FeatureParam kMagicStackMostVisitedModule[] = {
-    {kMagicStackMostVisitedModuleParam, "true"},
-    {kReducedSpaceParam, "-80"}};
-const FeatureEntry::FeatureParam
-    kMagicStackMostVisitedModuleHideIrrelevantModules[] = {
-        {kMagicStackMostVisitedModuleParam, "true"},
-        {kReducedSpaceParam, "-80"},
-        {kHideIrrelevantModulesParam, "true"}};
-const FeatureEntry::FeatureParam kMagicStackHidIrrelevantModules[] = {
-    {kMagicStackMostVisitedModuleParam, "false"},
-    {kHideIrrelevantModulesParam, "true"}};
-
-const FeatureEntry::FeatureVariation kMagicStackVariations[]{
-    {"Most Visited Tiles in Magic Stack", kMagicStackMostVisitedModule,
-     std::size(kMagicStackMostVisitedModule), nullptr},
-    {"Most Visited Tiles in Magic Stack and hide irrelevant modules",
-     kMagicStackMostVisitedModuleHideIrrelevantModules,
-     std::size(kMagicStackMostVisitedModuleHideIrrelevantModules), nullptr},
-    {"Hide irrelevant modules", kMagicStackHidIrrelevantModules,
-     std::size(kMagicStackHidIrrelevantModules), nullptr},
-};
-
 const FeatureEntry::FeatureParam kEnableDefaultModel[] = {
     {segmentation_platform::kDefaultModelEnabledParam, "true"}};
 
@@ -1166,25 +1144,6 @@ constexpr flags_ui::FeatureEntry::FeatureVariation
          std::size(kAutofillThrottleFilteredDocFormScanLongPeriodParam),
          nullptr}};
 
-const FeatureEntry::FeatureParam kNewFeedPositioningArm2[] = {
-    {kNewFeedPositioningCombinedMVTForHighEngaged, "true"},
-    {kNewFeedPositioningCombinedMVTForMidEngaged, "false"},
-    {kNewFeedPositioningCombinedMVTForLowEngaged, "false"},
-};
-
-const FeatureEntry::FeatureParam kNewFeedPositioningArm3[] = {
-    {kNewFeedPositioningCombinedMVTForHighEngaged, "true"},
-    {kNewFeedPositioningCombinedMVTForMidEngaged, "true"},
-    {kNewFeedPositioningCombinedMVTForLowEngaged, "false"},
-};
-
-const FeatureEntry::FeatureVariation kNewFeedPositioningVariations[] = {
-    {"- update for high feed engagement", kNewFeedPositioningArm2,
-     std::size(kNewFeedPositioningArm2), nullptr},
-    {"- update for high and mid feed engagement", kNewFeedPositioningArm3,
-     std::size(kNewFeedPositioningArm3), nullptr},
-};
-
 const FeatureEntry::FeatureParam
     kIOSStartTimeBackgroundRemediationsAvoidNTPCleanupArm[] = {
         {kIOSStartTimeBackgroundRemediationsAvoidNTPCleanup, "true"},
@@ -1802,9 +1761,7 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
          enterprise_connectors::kEnterpriseRealtimeEventReportingOnIOS)},
     {"content-suggestions-magic-stack", flag_descriptions::kMagicStackName,
      flag_descriptions::kMagicStackDescription, flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(kMagicStack,
-                                    kMagicStackVariations,
-                                    flag_descriptions::kMagicStackName)},
+     FEATURE_VALUE_TYPE(kMagicStack)},
     {"ios-keyboard-accessory-upgrade-for-ipad",
      flag_descriptions::kIOSKeyboardAccessoryUpgradeForIPadName,
      flag_descriptions::kIOSKeyboardAccessoryUpgradeForIPadDescription,
@@ -2424,13 +2381,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
          kAutofillThrottleFilteredDocumentFormScanIos,
          kAutofillThrottleFilteredDocFormScanVariations,
          "AutofillThrottleFilteredDocumentFormScan")},
-    {"ios-new-feed-positioning",
-     flag_descriptions::kNewFeedPositioningExperimentName,
-     flag_descriptions::kNewFeedPositioningExperimentDescription,
-     flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(kNewFeedPositioning,
-                                    kNewFeedPositioningVariations,
-                                    "IOSNewFeedPositioningStudy")},
     {"autofill-payments-sheet-v2",
      flag_descriptions::kAutofillPaymentsSheetV2Name,
      flag_descriptions::kAutofillPaymentsSheetV2Description, flags_ui::kOsIos,

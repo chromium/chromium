@@ -12507,21 +12507,6 @@
             ]
         }
     ],
-    "IOSNewFeedPositioningStudy": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "IOSNewFeedPositioning"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSOmahaResyncTimerOnForeground": [
         {
             "platforms": [

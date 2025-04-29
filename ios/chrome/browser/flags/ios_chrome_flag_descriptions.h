@@ -394,9 +394,6 @@ extern const char kIOSSaveToPhotosImprovementsDescription[];
 extern const char kIOSEnterpriseRealtimeUrlFilteringName[];
 extern const char kIOSEnterpriseRealtimeUrlFilteringDescription[];
 
-extern const char kNewFeedPositioningExperimentName[];
-extern const char kNewFeedPositioningExperimentDescription[];
-
 extern const char kNewShareExtensionName[];
 extern const char kNewShareExtensionDescription[];
 

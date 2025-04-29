@@ -107,13 +107,6 @@ GREYElementInteraction* RequestDesktopButton() {
   testOpenTabInTabStripBeforePrerenderedTab
 #endif  // defined(OFFICIAL_BUILD)
 
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config;
-  // Put MVT as the top magic stack module for easier tapping.
-  config.additional_args.push_back("--test-ios-module-ranker=mvt");
-  return config;
-}
-
 - (void)addURLToHistory {
   if (![ChromeTestCase forceRestartAndWipe]) {
     [ChromeEarlGrey clearBrowsingHistory];

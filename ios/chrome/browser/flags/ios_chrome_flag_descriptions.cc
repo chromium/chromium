@@ -683,11 +683,6 @@ const char kIOSEnterpriseRealtimeUrlFilteringDescription[] =
     "When enabled, Enterprise admins can block navigations to urls matching "
     "rules defined by their organization.";
 
-const char kNewFeedPositioningExperimentName[] =
-    "New Personalized Feed Positioning for iOS";
-const char kNewFeedPositioningExperimentDescription[] =
-    "Positions the most visited tiles based on user frequency.";
-
 const char kNewShareExtensionName[] = "New Share Extension for iOS";
 const char kNewShareExtensionDescription[] =
     "Update the share extension UI and add new share entries";

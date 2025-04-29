@@ -5682,11 +5682,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "ios-new-feed-positioning",
-    "owners": [ "ginnyhuang@chromium.org", "thegreenfrog@google.com" ],
-    "expiry_milestone": 136
-  },
-  {
     "name": "ios-new-share-extension",
     "owners": [ "erahmaoui@google.com", "olivierrobin@google.com", "bling-flags@google.com" ],
     "expiry_milestone": 140

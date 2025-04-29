@@ -705,22 +705,6 @@ extern const char kTabResumptionImagesTypesSalient[];
 // images images for tab resumption.
 extern const char kTabResumptionImagesTypesThumbnails[];
 
-// A parameter to indicate whether the Most Visited Tiles should be in the Magic
-// Stack.
-extern const char kMagicStackMostVisitedModuleParam[];
-
-// A parameter representing how much to reduce the NTP top space margin. If it
-// is negative, it will increase the top space margin.
-extern const char kReducedSpaceParam[];
-
-// A parameter representing whether modules should not be added to the Magic
-// Stack if their content is irrelevant.
-extern const char kHideIrrelevantModulesParam[];
-
-// A parameter representing how many days before showing the compacted Set Up
-// List module in the Magic Stack.
-extern const char kSetUpListCompactedTimeThresholdDays[];
-
 // A parameter to indicate whether the native UI is enabled for the discover
 // feed.
 // TODO(crbug.com/40246814): Remove this.
@@ -936,14 +920,6 @@ BASE_DECLARE_FEATURE(kProvisionalNotificationAlert);
 
 // Returns whether `kIOSReactivationNotifications` is enabled.
 bool IsProvisionalNotificationAlertEnabled();
-
-// Feature and parameters for the feed positioning experiment, which will
-// determine two things: 1) whether the MVT should be combined with the magic
-// stack 2) whether homestack should be enabled.
-BASE_DECLARE_FEATURE(kNewFeedPositioning);
-extern const char kNewFeedPositioningCombinedMVTForHighEngaged[];
-extern const char kNewFeedPositioningCombinedMVTForMidEngaged[];
-extern const char kNewFeedPositioningCombinedMVTForLowEngaged[];
 
 // Feature flag to control whether the Default Browser banner promo is enabled.
 BASE_DECLARE_FEATURE(kDefaultBrowserBannerPromo);

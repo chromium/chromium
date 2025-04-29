@@ -25,7 +25,6 @@
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/chrome/test/scoped_eg_synchronization_disabler.h"
-#import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -57,10 +56,6 @@ const char kSecondURLText[] = "You've arrived";
 - (void)testPageInteractable {
   // Put MVT as the top magic stack module for easier tapping.
   [NewTabPageAppInterface disableSetUpList];
-  AppLaunchConfiguration config = [self appConfigurationForTestCase];
-  config.relaunch_policy = ForceRelaunchByCleanShutdown;
-  config.additional_args.push_back("--test-ios-module-ranker=mvt");
-  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
   // Ensures that the first favicon in Most Visited row is the test URL.
   if (![ChromeTestCase forceRestartAndWipe]) {
