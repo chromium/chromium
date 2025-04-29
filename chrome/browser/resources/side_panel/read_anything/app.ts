@@ -22,6 +22,7 @@ import {AppStyleUpdater} from './app_style_updater.js';
 import type {SettingsPrefs} from './common.js';
 import {getCurrentSpeechRate, isHtmlElementVisible, minOverflowLengthToScroll, playFromSelectionTimeout} from './common.js';
 import type {LanguageToastElement} from './language_toast.js';
+import {NodeStore} from './node_store.js';
 import {WordBoundaries} from './read_aloud/word_boundaries.js';
 import type {WordBoundaryState} from './read_aloud/word_boundaries.js';
 import {ReadAnythingLogger, TimeFrom} from './read_anything_logger.js';
@@ -54,37 +55,6 @@ const IGNORED_HIGHLIGHT_CHARACTERS_REGEX: RegExp = /^[.,!?'"(){}\[\]]+$/;
 // The maximum speech length that should be used with remote voices
 // due to a TTS engine bug with voices timing out on too-long text.
 export const MAX_SPEECH_LENGTH: number = 175;
-
-// A two-way map where each key is unique and each value is unique. The keys are
-// DOM nodes and the values are numbers, representing AXNodeIDs.
-class TwoWayMap<K, V> extends Map<K, V> {
-  #reverseMap: Map<V, K>;
-  constructor() {
-    super();
-    this.#reverseMap = new Map();
-  }
-  override set(key: K, value: V) {
-    super.set(key, value);
-    this.#reverseMap.set(value, key);
-    return this;
-  }
-  keyFrom(value: V) {
-    return this.#reverseMap.get(value);
-  }
-  override clear() {
-    super.clear();
-    this.#reverseMap.clear();
-  }
-  override delete(key: K): boolean {
-    const v = this.get(key);
-    let wasReverseDeleted = false;
-    if (v) {
-      wasReverseDeleted = this.#reverseMap.delete(v);
-    }
-
-    return wasReverseDeleted && super.delete(key);
-  }
-}
 
 export enum PauseActionSource {
   DEFAULT,
@@ -177,23 +147,12 @@ export class AppElement extends AppElementBase {
   private startTime = Date.now();
   private constructorTime: number;
 
-  // Maps a DOM node to the AXNodeID that was used to create it. DOM nodes and
-  // AXNodeIDs are unique, so this is a two way map where either DOM node or
-  // AXNodeID can be used to access the other.
-  private domNodeToAxNodeIdMap_: TwoWayMap<Node, number> = new TwoWayMap();
   // Key: a DOM node that's already been read aloud
   // Value: the index offset at which this node's text begins within its parent
   // text. For reading aloud we sometimes split up nodes so the speech sounds
   // more natural. When that text is then selected we need to pass the correct
   // index down the pipeline, so we store that info here.
   private highlightedNodeToOffsetInParent: Map<Node, number> = new Map();
-  // IDs of the text nodes that are hidden when images are hidden. This is
-  // usually the figcaption elements which we want to keep distilled for quick
-  // turnaround when enabling/disabling images, but we don't want read aloud to
-  // read out text that's not showing, so keep track of which nodes are not
-  // showing.
-  private hiddenImageNodesIds_: Set<number> = new Set();
-  private imageNodeIdsToFetch_: Set<number> = new Set();
 
   private allowAutoScroll_ = true;
   private scrollingOnSelection_ = false;
@@ -286,6 +245,7 @@ export class AppElement extends AppElementBase {
   private styleUpdater_: AppStyleUpdater;
   private speech_: SpeechBrowserProxy;
   private wordBoundaries_: WordBoundaries;
+  private nodeStore_: NodeStore;
   protected accessor settingsPrefs_: SettingsPrefs = {
     letterSpacing: 0,
     lineSpacing: 0,
@@ -341,6 +301,8 @@ export class AppElement extends AppElementBase {
     this.notificationManager_ = VoiceNotificationManager.getInstance();
     this.speech_ = SpeechBrowserProxyImpl.getInstance();
     this.wordBoundaries_ = WordBoundaries.getInstance();
+    this.nodeStore_ = NodeStore.getInstance();
+    this.nodeStore_.clear();
     ColorChangeUpdater.forDocument().start();
   }
 
@@ -376,7 +338,7 @@ export class AppElement extends AppElementBase {
       this.hasContent_ = false;
       this.firstUtteranceSpoken_ = false;
       this.firstTextNodeSetForReadAloud = null;
-      this.domNodeToAxNodeIdMap_.clear();
+      this.nodeStore_.clearDomNodes();
       this.clearReadAloudState();
 
       this.speech_.setOnVoicesChanged(this.onVoicesChanged.bind(this));
@@ -415,9 +377,9 @@ export class AppElement extends AppElementBase {
       // Only send this selection to the main panel if it is different than the
       // current main panel selection.
       const mainPanelAnchor =
-          this.domNodeToAxNodeIdMap_.keyFrom(chrome.readingMode.startNodeId);
+          this.nodeStore_.getDomNode(chrome.readingMode.startNodeId);
       const mainPanelFocus =
-          this.domNodeToAxNodeIdMap_.keyFrom(chrome.readingMode.endNodeId);
+          this.nodeStore_.getDomNode(chrome.readingMode.endNodeId);
       if (!mainPanelAnchor || !mainPanelAnchor.contains(selection.anchorNode) ||
           !mainPanelFocus || !mainPanelFocus.contains(selection.focusNode) ||
           selection.anchorOffset !== chrome.readingMode.startOffset ||
@@ -548,7 +510,7 @@ export class AppElement extends AppElementBase {
       ancestor = node.parentNode.parentNode;
     }
 
-    return ancestor ? this.domNodeToAxNodeIdMap_.get(ancestor) : undefined;
+    return ancestor ? this.nodeStore_.getAxId(ancestor) : undefined;
   }
 
   private buildSubtree_(nodeId: number): Node {
@@ -604,14 +566,14 @@ export class AppElement extends AppElementBase {
     for (const [attr, val] of dataAttributes) {
       element.dataset[attr] = val;
     }
-    this.domNodeToAxNodeIdMap_.set(element, nodeId);
+    this.nodeStore_.setDomNode(element, nodeId);
     const direction = chrome.readingMode.getTextDirection(nodeId);
     if (direction) {
       element.setAttribute('dir', direction);
     }
 
     if (element.nodeName === 'CANVAS') {
-      this.imageNodeIdsToFetch_.add(nodeId);
+      this.nodeStore_.addImageToFetch(nodeId);
       const altText = chrome.readingMode.getAltText(nodeId);
       element.setAttribute('alt', altText);
       element.style.display = chrome.readingMode.imagesEnabled ? '' : 'none';
@@ -659,7 +621,7 @@ export class AppElement extends AppElementBase {
 
     const textContent = chrome.readingMode.getTextContent(nodeId);
     const textNode = document.createTextNode(textContent);
-    this.domNodeToAxNodeIdMap_.set(textNode, nodeId);
+    this.nodeStore_.setDomNode(textNode, nodeId);
     const isOverline = chrome.readingMode.isOverline(nodeId);
     const shouldBold = chrome.readingMode.shouldBold(nodeId);
 
@@ -728,7 +690,7 @@ export class AppElement extends AppElementBase {
     // Remove all children from container. Use `replaceChildren` rather than
     // setting `innerHTML = ''` in order to remove all listeners, too.
     container.replaceChildren();
-    this.domNodeToAxNodeIdMap_.clear();
+    this.nodeStore_.clearDomNodes();
 
     // Construct a dom subtree starting with the display root and append it to
     // the container. The display root may be invalid if there are no content
@@ -746,7 +708,7 @@ export class AppElement extends AppElementBase {
     const node = this.buildSubtree_(rootId);
     // If there is no text or images in the tree, do not proceed. The empty
     // state container will show instead.
-    if (!node.textContent && this.imageNodeIdsToFetch_.size === 0) {
+    if (!node.textContent && !this.nodeStore_.hasImagesToFetch()) {
       // Sometimes the controller thinks there will be content and redraws
       // without showing the empty page, but we end up not actually having any
       // content and also not showing the empty page sometimes. In this case,
@@ -790,7 +752,7 @@ export class AppElement extends AppElementBase {
       return;
     }
 
-    if (this.domNodeToAxNodeIdMap_.keyFrom(this.lastReadingId_)) {
+    if (this.nodeStore_.getDomNode(this.lastReadingId_)) {
       this.movePlaybackToNode_(this.lastReadingId_, this.lastReadingOffset_);
       this.speechPlayingState = {...previousSpeechPlayingState};
       this.wordBoundaries_.state = {...previousWordBoundaryState};
@@ -806,7 +768,7 @@ export class AppElement extends AppElementBase {
 
   async onImageDownloaded(nodeId: number) {
     const data = chrome.readingMode.getImageBitmap(nodeId);
-    const element = this.domNodeToAxNodeIdMap_.keyFrom(nodeId);
+    const element = this.nodeStore_.getDomNode(nodeId);
     if (data && element && element instanceof HTMLCanvasElement) {
       element.width = data.width;
       element.height = data.height;
@@ -838,11 +800,7 @@ export class AppElement extends AppElementBase {
       return;
     }
 
-    for (const nodeId of this.imageNodeIdsToFetch_) {
-      chrome.readingMode.requestImageData(nodeId);
-    }
-
-    this.imageNodeIdsToFetch_.clear();
+    this.nodeStore_.fetchImages();
   }
 
   getSelection(): any {
@@ -859,8 +817,8 @@ export class AppElement extends AppElementBase {
     const endNodeId = chrome.readingMode.endNodeId;
     let startOffset = chrome.readingMode.startOffset;
     let endOffset = chrome.readingMode.endOffset;
-    let startNode = this.domNodeToAxNodeIdMap_.keyFrom(startNodeId);
-    let endNode = this.domNodeToAxNodeIdMap_.keyFrom(endNodeId);
+    let startNode = this.nodeStore_.getDomNode(startNodeId);
+    let endNode = this.nodeStore_.getDomNode(endNodeId);
     if (!startNode || !endNode) {
       return;
     }
@@ -944,10 +902,10 @@ export class AppElement extends AppElementBase {
 
     for (const elem of elements) {
       assert(elem instanceof HTMLElement, 'link is not an HTMLElement');
-      const nodeId = this.domNodeToAxNodeIdMap_.get(elem);
+      const nodeId = this.nodeStore_.getAxId(elem);
       assert(nodeId !== undefined, 'link node id is undefined');
       const replacement = this.buildSubtree_(nodeId);
-      this.replaceElement(elem, replacement);
+      this.nodeStore_.replaceDomNode(elem, replacement);
     }
 
     // Rehighlight the current granularity text after links have been
@@ -966,7 +924,7 @@ export class AppElement extends AppElementBase {
 
     this.imagesEnabled = chrome.readingMode.imagesEnabled;
     if (this.imagesEnabled) {
-      this.hiddenImageNodesIds_.clear();
+      this.nodeStore_.clearHiddenImageNodes();
     }
     // There is some strange issue where the HTML css application does not work
     // on canvases.
@@ -988,10 +946,10 @@ export class AppElement extends AppElementBase {
     // Do this asynchronously so we don't block the UI on large pages.
     await new Promise(() => {
       setTimeout(() => {
-        const id = this.domNodeToAxNodeIdMap_.get(node);
+        const id = this.nodeStore_.getAxId(node);
         if (node.nodeType === Node.TEXT_NODE) {
           if (id) {
-            this.hiddenImageNodesIds_.add(id);
+            this.nodeStore_.hideImageNode(id);
           }
           return;
         }
@@ -1001,10 +959,9 @@ export class AppElement extends AppElementBase {
         const startTreeWalker =
             document.createTreeWalker(node, NodeFilter.SHOW_ALL);
         while (startTreeWalker.nextNode()) {
-          const id =
-              this.domNodeToAxNodeIdMap_.get(startTreeWalker.currentNode);
+          const id = this.nodeStore_.getAxId(startTreeWalker.currentNode);
           if (id) {
-            this.hiddenImageNodesIds_.add(id);
+            this.nodeStore_.hideImageNode(id);
           }
         }
       });
@@ -1367,18 +1324,6 @@ export class AppElement extends AppElementBase {
     }
   }
 
-  private replaceElement(current: HTMLElement, replacer: Node) {
-    const nodeId = this.domNodeToAxNodeIdMap_.get(current);
-    assert(
-        nodeId !== undefined,
-        'trying to replace an element that doesn\'t exist');
-    // Update map.
-    this.domNodeToAxNodeIdMap_.delete(current);
-    this.domNodeToAxNodeIdMap_.set(replacer, nodeId);
-    // Replace element in DOM.
-    current.replaceWith(replacer);
-  }
-
   protected onPreviewVoice_(
       event: CustomEvent<{previewVoice: SpeechSynthesisVoice}>) {
     event.preventDefault();
@@ -1652,8 +1597,8 @@ export class AppElement extends AppElementBase {
   } {
     const {anchorNode, anchorOffset, focusNode, focusOffset} =
         this.getSelection();
-    let anchorNodeId = this.domNodeToAxNodeIdMap_.get(anchorNode);
-    let focusNodeId = this.domNodeToAxNodeIdMap_.get(focusNode);
+    let anchorNodeId = this.nodeStore_.getAxId(anchorNode);
+    let focusNodeId = this.nodeStore_.getAxId(focusNode);
     let adjustedAnchorOffset = anchorOffset;
     let adjustedFocusOffset = focusOffset;
     if (!anchorNodeId) {
@@ -1769,7 +1714,7 @@ export class AppElement extends AppElementBase {
       return false;
     }
 
-    if (axNodeIds.every(id => this.hiddenImageNodesIds_.has(id))) {
+    if (this.nodeStore_.areNodesAllHidden(axNodeIds)) {
       return this.skipCurrentPosition_(isInterrupted, isMovingBackward);
     }
 
@@ -2084,7 +2029,7 @@ export class AppElement extends AppElementBase {
     for (const nodeId of axNodeIds) {
       const startIndex = chrome.readingMode.getCurrentTextStartIndex(nodeId);
       const endIndex = chrome.readingMode.getCurrentTextEndIndex(nodeId);
-      const element = this.domNodeToAxNodeIdMap_.keyFrom(nodeId);
+      const element = this.nodeStore_.getDomNode(nodeId);
       if (!element || startIndex < 0 || endIndex < 0) {
         continue;
       }
@@ -2126,7 +2071,7 @@ export class AppElement extends AppElementBase {
       const highlightLength: number = length ? length : highlightNode.length;
       const highlightStartIndex = highlightNode.start;
       const endIndex = highlightStartIndex + highlightLength;
-      const element = this.domNodeToAxNodeIdMap_.keyFrom(nodeId);
+      const element = this.nodeStore_.getDomNode(nodeId);
       if (!element ||
           isInvalidHighlightForWordHighlighting(
               element.textContent?.substring(highlightStartIndex, endIndex)
@@ -2151,7 +2096,7 @@ export class AppElement extends AppElementBase {
 
     this.resetPreviousHighlight_();
     for (const nodeId of nextTextIds) {
-      const element = this.domNodeToAxNodeIdMap_.keyFrom(nodeId) as HTMLElement;
+      const element = this.nodeStore_.getDomNode(nodeId) as HTMLElement;
       if (!element) {
         continue;
       }
@@ -2283,7 +2228,7 @@ export class AppElement extends AppElementBase {
     // Replace the current node in the tree with the split up version of the
     // node.
     this.previousHighlights_.push(readingHighlight);
-    this.replaceElement(currentNode, parentOfHighlight);
+    this.nodeStore_.replaceDomNode(currentNode, parentOfHighlight);
   }
 
   private onSpeechFinished() {
@@ -2659,12 +2604,12 @@ export class AppElement extends AppElementBase {
   }
 
   onNodeWillBeDeleted(nodeId: number) {
-    const deletedNode = this.domNodeToAxNodeIdMap_.keyFrom(nodeId) as ChildNode;
+    const deletedNode = this.nodeStore_.getDomNode(nodeId) as ChildNode;
     if (deletedNode) {
-      this.domNodeToAxNodeIdMap_.delete(deletedNode);
+      this.nodeStore_.removeDomNode(deletedNode);
       deletedNode.remove();
     }
-    const root = this.domNodeToAxNodeIdMap_.keyFrom(chrome.readingMode.rootId);
+    const root = this.nodeStore_.getDomNode(chrome.readingMode.rootId);
     if (this.hasContent_ && !root?.textContent) {
       this.hasContent_ = false;
       chrome.readingMode.onNoTextContent();

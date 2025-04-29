@@ -35,6 +35,7 @@ build_webui("build") {
     "menus/menu_util.ts",
     "menus/simple_action_menu.html.ts",
     "menus/simple_action_menu.ts",
+    "node_store.ts",
     "read_aloud/word_boundaries.ts",
     "metrics_browser_proxy.ts",
     "read_anything.ts",

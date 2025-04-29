@@ -81,6 +81,8 @@ export class FakeReadingMode {
 
   private maxNodeId: number = 5;
 
+  fetchedImages: number[] = [];
+
   // Returns whether the reading highlight is currently on.
   isHighlightOn(): boolean {
     return this.highlightGranularity !== this.noHighlighting;
@@ -387,6 +389,12 @@ export class FakeReadingMode {
 
   // Signal that the page language has changed.
   languageChanged(): void {}
+
+  // Requests the image in the form of bitmap. onImageDownloaded will be
+  // called when the image has been downloaded.
+  requestImageData(nodeId: number): void {
+    this.fetchedImages.push(nodeId);
+  }
 
   // Returns the index of the next sentence of the given text, such that the
   // next sentence is equivalent to text.substr(0, <returned_index>).

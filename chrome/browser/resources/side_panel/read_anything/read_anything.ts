@@ -22,6 +22,7 @@ export type {LineSpacingMenuElement} from './menus/line_spacing_menu.js';
 export {MenuStateItem} from './menus/menu_util.js';
 export type {SimpleActionMenuElement} from './menus/simple_action_menu.js';
 export {MetricsBrowserProxy, MetricsBrowserProxyImpl, ReadAloudHighlightState, ReadAloudSettingsChange, ReadAnythingNewPage, ReadAnythingSettingsChange, ReadAnythingSpeechError, ReadAnythingVoiceType} from './metrics_browser_proxy.js';
+export {NodeStore} from './node_store.js';
 export type {WordBoundaryState} from './read_aloud/word_boundaries.js';
 export {WordBoundaries} from './read_aloud/word_boundaries.js';
 export {ReadAnythingLogger, SpeechControls, TimeFrom} from './read_anything_logger.js';
