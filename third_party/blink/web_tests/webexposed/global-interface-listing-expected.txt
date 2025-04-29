@@ -3713,6 +3713,7 @@ interface HTMLButtonElement : HTMLElement
 interface HTMLCanvasElement : HTMLElement
     attribute @@toStringTag
     getter height
+    getter layoutSubtree
     getter width
     method captureStream
     method configureHighDynamicRange
@@ -3722,6 +3723,7 @@ interface HTMLCanvasElement : HTMLElement
     method toDataURL
     method transferControlToOffscreen
     setter height
+    setter layoutSubtree
     setter width
 interface HTMLCollection
     attribute @@toStringTag

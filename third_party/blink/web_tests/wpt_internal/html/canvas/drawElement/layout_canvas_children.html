@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style>
+  #child {
+    width: 100px;
+    height: 100px;
+  }
+  #parent {
+    width: 100px;
+    height: 100px;
+    background: grey;
+  }
+</style>
+<canvas id=parent layoutsubtree=true>
+  <div id=child></div>
+</canvas>
+
+<script>
+
+promise_test(async () => {
+  let child = document.getElementById('child');
+  assert_equals(child.clientWidth, 100);
+
+  let parent = document.getElementById('parent');
+  parent.layoutSubtree = false;
+  assert_equals(child.clientWidth, 0);
+}, 'canvas children have layout');
+</script>

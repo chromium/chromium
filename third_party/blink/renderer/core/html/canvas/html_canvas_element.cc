@@ -61,6 +61,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_image_encode_options.h"
 #include "third_party/blink/renderer/core/canvas_interventions/canvas_interventions_helper.h"
 #include "third_party/blink/renderer/core/css/css_font_selector.h"
+#include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
@@ -383,6 +384,9 @@ void HTMLCanvasElement::ParseAttribute(
       params.name == html_names::kHeightAttr) {
     Reset();
   }
+  if (params.name == html_names::kLayoutsubtreeAttr) {
+    setLayoutSubtree(EqualIgnoringASCIICase(params.new_value, "true"));
+  }
   HTMLElement::ParseAttribute(params);
 }
 
@@ -430,6 +434,25 @@ void HTMLCanvasElement::setWidth(unsigned value,
     SetUnsignedIntegralAttribute(html_names::kWidthAttr, value,
                                  kDefaultCanvasWidth);
   }
+}
+
+void HTMLCanvasElement::setLayoutSubtree(bool value) {
+  if (layoutSubtree() == value) {
+    return;
+  }
+
+  SetBooleanAttribute(html_names::kLayoutsubtreeAttr, value);
+  SetNeedsStyleRecalc(
+      kSubtreeStyleChange,
+      StyleChangeReasonForTracing::Create(style_change_reason::kAttribute));
+  SetForceReattachLayoutTree();
+  if (auto* object = GetLayoutObject()) {
+    object->SetNeedsLayout(layout_invalidation_reason::kAttributeChanged);
+  }
+}
+
+bool HTMLCanvasElement::layoutSubtree() const {
+  return FastHasAttribute(html_names::kLayoutsubtreeAttr);
 }
 
 void HTMLCanvasElement::SetSize(gfx::Size new_size) {

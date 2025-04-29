@@ -538,6 +538,7 @@ html element canvas
     property configureHighDynamicRange
     property getContext
     property height
+    property layoutSubtree
     property toBlob
     property toDataURL
     property transferControlToOffscreen

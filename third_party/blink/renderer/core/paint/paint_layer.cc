@@ -62,6 +62,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
+#include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/anchor_position_scroll_data.h"
@@ -2399,6 +2400,12 @@ void InvalidateParentCanvasForPlacedElement(PaintLayer* layer) {
   PaintLayer* child_layer;
   while (layer) {
     if (layer->GetLayoutObject().IsCanvas()) {
+      auto* html_canvas =
+          DynamicTo<HTMLCanvasElement>(layer->GetLayoutObject().GetNode());
+      if (!html_canvas || !html_canvas->HasPlacedElements()) {
+        return;
+      }
+
       layer->SetNeedsRepaint();
       Element* placed_element =
           To<Element>(child_layer->GetLayoutObject().GetNode());

@@ -135,9 +135,14 @@ void LayoutHTMLCanvas::Trace(Visitor* visitor) const {
 bool LayoutHTMLCanvas::IsChildAllowed(LayoutObject* child,
                                       const ComputedStyle& style) const {
   NOT_DESTROYED();
-  return IsA<Element>(GetNode()) && !child->IsText() &&
-         To<HTMLCanvasElement>(GetNode())->HasPlacedElements() &&
-         RuntimeEnabledFeatures::CanvasPlaceElementEnabled();
+  if (!IsA<Element>(GetNode()) || child->IsText()) {
+    return false;
+  }
+
+  const auto* canvas = To<HTMLCanvasElement>(GetNode());
+  return canvas->layoutSubtree() ||
+         (canvas->HasPlacedElements() &&
+          RuntimeEnabledFeatures::CanvasPlaceElementEnabled());
 }
 
 }  // namespace blink
