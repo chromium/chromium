@@ -11,6 +11,6 @@
 // https://w3c.github.io/webauthn/#sctn-attested-credential-data
 dictionary AuthenticationExtensionsPaymentBrowserBoundSignature {
   // Output of the signature algorithm.
-  ArrayBuffer signature_output;
+  ArrayBuffer signature;
 };
 

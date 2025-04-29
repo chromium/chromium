@@ -313,7 +313,7 @@ TypeConverter<blink::AuthenticationExtensionsPaymentOutputs*,
   if (!payment_response->browser_bound_signature.empty()) {
     auto* browser_bound_signature =
         blink::AuthenticationExtensionsPaymentBrowserBoundSignature::Create();
-    browser_bound_signature->setSignatureOutput(blink::DOMArrayBuffer::Create(
+    browser_bound_signature->setSignature(blink::DOMArrayBuffer::Create(
         std::move(payment_response->browser_bound_signature)));
     payment_outputs->setBrowserBoundSignature(browser_bound_signature);
   }
