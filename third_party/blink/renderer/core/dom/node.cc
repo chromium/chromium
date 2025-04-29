@@ -325,7 +325,7 @@ void Node::DumpStatistics() {
 
 Node::Node(TreeScope* tree_scope, ConstructionType type)
     : node_flags_(type),
-      parent_or_shadow_host_node_(kParentNodeTag, nullptr),
+      parent_or_shadow_host_node_(nullptr),
       tree_scope_(tree_scope),
       previous_(nullptr),
       next_(nullptr),

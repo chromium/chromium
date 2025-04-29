@@ -5408,7 +5408,7 @@ ShadowRoot& Element::CreateAndAttachShadowRoot(ShadowRootMode type,
     }
   }
   EnsureElementRareData().SetShadowRoot(*shadow_root);
-  shadow_root->SetShadowHostNode(this);
+  shadow_root->SetParentOrShadowHostNode(this);
   shadow_root->SetParentTreeScope(GetTreeScope());
   shadow_root->InsertedInto(*this);
 

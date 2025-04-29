@@ -285,7 +285,7 @@ PseudoElement::PseudoElement(Element* parent,
       view_transition_name_(view_transition_name) {
   DCHECK_NE(pseudo_id, kPseudoIdNone);
   parent->GetTreeScope().AdoptIfNeeded(*this);
-  SetParentNode(parent);
+  SetParentOrShadowHostNode(parent);
   SetHasCustomStyleCallbacks();
   if ((pseudo_id == kPseudoIdBefore || pseudo_id == kPseudoIdAfter) &&
       parent->HasTagName(html_names::kInputTag)) {
@@ -395,7 +395,7 @@ void PseudoElement::Dispose() {
   DetachLayoutTree();
   Element* parent = ParentOrShadowHostElement();
   GetDocument().AdoptIfNeeded(*this);
-  SetParentNode(nullptr);
+  SetParentOrShadowHostNode(nullptr);
   RemovedFrom(*parent);
 }
 

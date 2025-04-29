@@ -557,7 +557,7 @@ void ContainerNode::InsertBeforeCommon(Node& next_child, Node& new_child) {
     DCHECK(firstChild() == next_child);
     SetFirstChild(&new_child);
   }
-  new_child.SetParentNode(this);
+  new_child.SetParentOrShadowHostNode(this);
   new_child.SetPreviousSibling(prev);
   new_child.SetNextSibling(&next_child);
 }
@@ -568,7 +568,7 @@ void ContainerNode::AppendChildCommon(Node& child) {
 #endif
   DCHECK(ScriptForbiddenScope::IsScriptForbidden());
 
-  child.SetParentNode(this);
+  child.SetParentOrShadowHostNode(this);
   if (last_child_) {
     child.SetPreviousSibling(last_child_);
     last_child_->SetNextSibling(&child);
@@ -1030,7 +1030,7 @@ void ContainerNode::RemoveBetween(Node* previous_child,
 
   old_child.SetPreviousSibling(nullptr);
   old_child.SetNextSibling(nullptr);
-  old_child.SetParentNode(nullptr);
+  old_child.SetParentOrShadowHostNode(nullptr);
 
   GetDocument().AdoptIfNeeded(old_child);
 }
