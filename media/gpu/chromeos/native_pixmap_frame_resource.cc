@@ -469,17 +469,6 @@ NativePixmapFrameResource::GetGpuMemoryBufferHandleForTesting() const {
   return gfx::GpuMemoryBufferHandle();
 }
 
-scoped_refptr<VideoFrame> NativePixmapFrameResource::CreateVideoFrame(
-    VideoFrame::StorageType storage_type) const {
-  CHECK(VideoFrame::STORAGE_DMABUFS == storage_type ||
-        VideoFrame::STORAGE_GPU_MEMORY_BUFFER == storage_type);
-
-  if (VideoFrame::STORAGE_DMABUFS == storage_type) {
-    return CreateDmabufVideoFrame();
-  }
-  return CreateGmbVideoFrame();
-}
-
 scoped_refptr<VideoFrame> NativePixmapFrameResource::CreateDmabufVideoFrame()
     const {
   std::vector<base::ScopedFD> duped_fds;

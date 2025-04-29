@@ -31,8 +31,7 @@ void GmbVideoFrameConverter::ConvertFrameImpl(
   LOG_ASSERT(frame->AsNativePixmapFrameResource())
       << "|frame| is expected to be a NativePixmapFrameResource";
   scoped_refptr<VideoFrame> video_frame =
-      frame->AsNativePixmapFrameResource()->CreateVideoFrame(
-          VideoFrame::STORAGE_GPU_MEMORY_BUFFER);
+      frame->AsNativePixmapFrameResource()->CreateGmbVideoFrame();
   if (!video_frame) {
     return OnError(FROM_HERE, "Failed to convert FrameResource to VideoFrame.");
   }
