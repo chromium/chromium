@@ -138,6 +138,12 @@ std::optional<NoticeEventTimestampPair>
 GetNoticeActionTakenForFirstShownFromEvents(
     const NoticeStorageData& notice_data);
 
+std::string GetNoticeActionStringFromEvent(
+    notice::mojom::PrivacySandboxNoticeEvent event);
+
+std::optional<notice::mojom::PrivacySandboxNoticeEvent> NoticeActionToEvent(
+    NoticeActionTaken action);
+
 class NoticeStorage {
  public:
   virtual ~NoticeStorage();
@@ -184,15 +190,6 @@ class PrivacySandboxNoticeStorage : public NoticeStorage {
 
   // Migrates fields in the notice data v1 schema to the notice data v2 schema.
   static NoticeStorageData ToV2Schema(const V1MigrationData& data_v1);
-
-  // Converts the schema v1 NoticeActionTaken to the schema v2
-  // PrivacySandboxNoticeEvent.
-  static std::optional<notice::mojom::PrivacySandboxNoticeEvent>
-  NoticeActionToNoticeEvent(NoticeActionTaken action);
-
-  // Gets the string used for histogram naming from PrivacySandboxNoticeEvent.
-  static std::string GetNoticeActionStringFromEvent(
-      notice::mojom::PrivacySandboxNoticeEvent event);
 
   PrivacySandboxNoticeStorage(const PrivacySandboxNoticeStorage&) = delete;
   PrivacySandboxNoticeStorage& operator=(const PrivacySandboxNoticeStorage&) =
