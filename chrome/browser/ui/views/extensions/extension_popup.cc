@@ -76,7 +76,6 @@ class ExtensionPopup::ScopedDevToolsAgentHostObservation {
 
 // static
 ExtensionPopup* ExtensionPopup::last_popup_for_testing() {
-  CHECK_IS_TEST();
   return g_last_popup_for_testing;
 }
 

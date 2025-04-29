@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/extensions/mv2_disabled_dialog_controller.h"
 
 #include "base/barrier_closure.h"
-#include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
@@ -119,7 +118,6 @@ void Mv2DisabledDialogController::TearDown() {
 }
 
 void Mv2DisabledDialogController::MaybeShowDisabledDialogForTesting() {
-  CHECK_IS_TEST();
   ComputeAffectedExtensions();
 }
 

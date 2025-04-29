@@ -7,7 +7,6 @@
 
 #include <optional>
 
-#include "base/check_is_test.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_chip_button.h"
@@ -77,7 +76,6 @@ class ExtensionsRequestAccessButton : public ToolbarChipButton,
     return hover_card_coordinator_.get();
   }
   void remove_confirmation_for_testing(bool remove_confirmation) {
-    CHECK_IS_TEST();
     remove_confirmation_for_testing_ = remove_confirmation;
   }
 

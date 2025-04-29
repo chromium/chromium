@@ -7,7 +7,6 @@
 #include <algorithm>
 
 #include "base/auto_reset.h"
-#include "base/check_is_test.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/i18n/case_conversion.h"
@@ -497,18 +496,15 @@ void ExtensionsMenuView::OnToolbarPinnedActionsChanged() {
 
 base::flat_set<raw_ptr<ExtensionMenuItemView, CtnExperimental>>
 ExtensionsMenuView::extensions_menu_items_for_testing() {
-  CHECK_IS_TEST();
   return extensions_menu_items_;
 }
 
 views::Button* ExtensionsMenuView::manage_extensions_button_for_testing() {
-  CHECK_IS_TEST();
   return manage_extensions_button_;
 }
 
 // static
 base::AutoReset<bool> ExtensionsMenuView::AllowInstancesForTesting() {
-  CHECK_IS_TEST();
   return base::AutoReset<bool>(&g_allow_testing_dialogs, true);
 }
 
