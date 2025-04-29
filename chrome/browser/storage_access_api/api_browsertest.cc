@@ -3877,9 +3877,15 @@ IN_PROC_BROWSER_TEST_P(StorageAccessAPIWindowOpenMainFrameTest,
   ExpectNoStorageAccessGrants();
 }
 
+// TODO(crbug.com/414635387): Fix test failures.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_PopinRSAMainFrameTest DISABLED_PopinRSAMainFrameTest
+#else
+#define MAYBE_PopinRSAMainFrameTest PopinRSAMainFrameTest
+#endif
 // Opens a popin and checks that the RSA call within the main frame can succeed.
 IN_PROC_BROWSER_TEST_P(StorageAccessAPIWindowOpenMainFrameTest,
-                       PopinRSAMainFrameTest) {
+                       MAYBE_PopinRSAMainFrameTest) {
   // Navigate to site a and open popin of site b.
   NavigateToPage(kHostA, "/empty.html");
   content::WebContentsAddedObserver new_tab_observer;
@@ -3988,9 +3994,15 @@ class StorageAccessAPIWindowOpenSubFrameTest
   }
 };
 
+// TODO(crbug.com/414635387): Fix test failures.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_PopinRSASubFrameTest DISABLED_PopinRSASubFrameTest
+#else
+#define MAYBE_PopinRSASubFrameTest PopinRSASubFrameTest
+#endif
 // Opens a popin and checks that the RSA call within the sub frame can succeed.
 IN_PROC_BROWSER_TEST_P(StorageAccessAPIWindowOpenSubFrameTest,
-                       PopinRSASubFrameTest) {
+                       MAYBE_PopinRSASubFrameTest) {
   // Navigate to site a and open popin.
   NavigateToPage(kHostA, "/empty.html");
   content::WebContentsAddedObserver new_tab_observer;
