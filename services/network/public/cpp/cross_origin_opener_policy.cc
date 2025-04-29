@@ -77,15 +77,6 @@ void AugmentCoopWithCoep(CrossOriginOpenerPolicy* coop,
         mojom::CrossOriginOpenerPolicyValue::kSameOriginPlusCoep;
   }
 
-  // "COOP: restrict-properties" case.
-  if (coop->value == mojom::CrossOriginOpenerPolicyValue::kRestrictProperties &&
-      CompatibleWithCrossOriginIsolated(coep.value)) {
-    coop->value =
-        mojom::CrossOriginOpenerPolicyValue::kRestrictPropertiesPlusCoep;
-    coop->soap_by_default_value =
-        mojom::CrossOriginOpenerPolicyValue::kRestrictPropertiesPlusCoep;
-  }
-
   // COOP-Report-Only:
   //
   // [spec]: 6.1.2. If coep's value is compatible with cross-origin isolation or
@@ -98,22 +89,6 @@ void AugmentCoopWithCoep(CrossOriginOpenerPolicy* coop,
     coop->report_only_value =
         mojom::CrossOriginOpenerPolicyValue::kSameOriginPlusCoep;
   }
-
-  // COOP: restrict-properties report-only case.
-  if (coop->report_only_value ==
-          mojom::CrossOriginOpenerPolicyValue::kRestrictProperties &&
-      (CompatibleWithCrossOriginIsolated(coep.value) ||
-       CompatibleWithCrossOriginIsolated(coep.report_only_value))) {
-    coop->report_only_value =
-        mojom::CrossOriginOpenerPolicyValue::kRestrictPropertiesPlusCoep;
-  }
-}
-
-bool IsRelatedToCoopRestrictProperties(
-    mojom::CrossOriginOpenerPolicyValue value) {
-  return value == mojom::CrossOriginOpenerPolicyValue::kRestrictProperties ||
-         value ==
-             mojom::CrossOriginOpenerPolicyValue::kRestrictPropertiesPlusCoep;
 }
 
 }  // namespace network

@@ -53,13 +53,8 @@ std::string ToString(network::mojom::CrossOriginOpenerPolicyValue coop_value) {
       return "same-origin";
     case network::mojom::CrossOriginOpenerPolicyValue::kSameOriginAllowPopups:
       return "same-origin-allow-popups";
-    case network::mojom::CrossOriginOpenerPolicyValue::kRestrictProperties:
-      return "restrict-properties";
     case network::mojom::CrossOriginOpenerPolicyValue::kSameOriginPlusCoep:
       return "same-origin-plus-coep";
-    case network::mojom::CrossOriginOpenerPolicyValue::
-        kRestrictPropertiesPlusCoep:
-      return "restrict-properties-plus-coep";
     case network::mojom::CrossOriginOpenerPolicyValue::kNoopenerAllowPopups:
       return "noopener-allow-popups";
   }

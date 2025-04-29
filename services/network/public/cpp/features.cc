@@ -99,22 +99,6 @@ BASE_FEATURE(kCoopNoopenerAllowPopups,
              "CoopNoopenerAllowPopups",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Introduce a new COOP value: restrict-properties. It restricts window
-// properties that can be accessed by other pages. This also grants
-// crossOriginIsolated if coupled with an appropriate COEP header.
-// This used solely for testing the process model and should not be enabled in
-// any production code. See https://crbug.com/1221127.
-BASE_FEATURE(kCoopRestrictProperties,
-             "CoopRestrictProperties",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enables the origin trial for COOP: restrict-properties. We need a new feature
-// because token validation is not possible in the network process. This also
-// allows us to keep using CoopRestrictProperties to enable COOP: RP for WPTs.
-BASE_FEATURE(kCoopRestrictPropertiesOriginTrial,
-             "CoopRestrictPropertiesOriginTrial",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables or defaults splittup up server (not proxy) entries in the
 // HttpAuthCache.
 BASE_FEATURE(kSplitAuthCacheByNetworkIsolationKey,

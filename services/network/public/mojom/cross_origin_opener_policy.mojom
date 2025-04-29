@@ -65,15 +65,6 @@ enum CrossOriginOpenerPolicyValue {
   // COOP: same-origin with a COEP value compatible with crossOriginIsolation.
   kSameOriginPlusCoep,
 
-  // Restrict which window properties other pages can interact with and vice
-  // versa. Access of "closed" and "postMessage" remains possible across
-  // openers.
-  kRestrictProperties,
-
-  // COOP: restrict-properties with a COEP value compatible with
-  // crossOriginIsolation.
-  kRestrictPropertiesPlusCoep,
-
   // COOP: noopener-allow-popups severs the opener relationship with any opener.
   kNoopenerAllowPopups,
 };

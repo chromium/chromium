@@ -18,51 +18,6 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "third_party/blink/public/common/origin_trials/trial_token_validator.h"
 
-namespace {
-
-void SanitizeCoopRestrictPropertiesHeadersIfDisabled(
-    network::CrossOriginOpenerPolicy& coop,
-    const GURL& url,
-    net::HttpResponseHeaders* headers) {
-  if (base::FeatureList::IsEnabled(
-          network::features::kCoopRestrictProperties)) {
-    return;
-  }
-
-  bool is_coop_restrict_properties_origin_trial_enabled =
-      base::FeatureList::IsEnabled(
-          network::features::kCoopRestrictPropertiesOriginTrial);
-  if (is_coop_restrict_properties_origin_trial_enabled && headers &&
-      blink::TrialTokenValidator().RequestEnablesFeature(
-          url, headers, "CoopRestrictProperties", base::Time::Now())) {
-    return;
-  }
-
-  if (coop.value ==
-          network::mojom::CrossOriginOpenerPolicyValue::kRestrictProperties ||
-      coop.value == network::mojom::CrossOriginOpenerPolicyValue::
-                        kRestrictPropertiesPlusCoep) {
-    coop.value = network::mojom::CrossOriginOpenerPolicyValue::kUnsafeNone;
-  }
-  if (coop.report_only_value ==
-          network::mojom::CrossOriginOpenerPolicyValue::kRestrictProperties ||
-      coop.report_only_value == network::mojom::CrossOriginOpenerPolicyValue::
-                                    kRestrictPropertiesPlusCoep) {
-    coop.report_only_value =
-        network::mojom::CrossOriginOpenerPolicyValue::kUnsafeNone;
-  }
-  if (coop.soap_by_default_value ==
-          network::mojom::CrossOriginOpenerPolicyValue::kRestrictProperties ||
-      coop.soap_by_default_value ==
-          network::mojom::CrossOriginOpenerPolicyValue::
-              kRestrictPropertiesPlusCoep) {
-    coop.soap_by_default_value =
-        network::mojom::CrossOriginOpenerPolicyValue::kUnsafeNone;
-  }
-}
-
-}  // namespace
-
 namespace content {
 
 // This function returns whether the BrowsingInstance should change following
@@ -88,27 +43,6 @@ CoopSwapResult ShouldSwapBrowsingInstanceForCrossOriginOpenerPolicy(
       switch (destination_coop) {
         case CrossOriginOpenerPolicyValue::kUnsafeNone:
           return CoopSwapResult::kNoSwap;
-        case CrossOriginOpenerPolicyValue::kRestrictProperties:
-        case CrossOriginOpenerPolicyValue::kRestrictPropertiesPlusCoep:
-          return CoopSwapResult::kSwapRelated;
-        case CrossOriginOpenerPolicyValue::kSameOriginAllowPopups:
-        case CrossOriginOpenerPolicyValue::kSameOrigin:
-        case CrossOriginOpenerPolicyValue::kSameOriginPlusCoep:
-        case CrossOriginOpenerPolicyValue::kNoopenerAllowPopups:
-          return CoopSwapResult::kSwap;
-      }
-
-    case CrossOriginOpenerPolicyValue::kRestrictProperties:
-    case CrossOriginOpenerPolicyValue::kRestrictPropertiesPlusCoep:
-      switch (destination_coop) {
-        case CrossOriginOpenerPolicyValue::kUnsafeNone:
-          return CoopSwapResult::kSwapRelated;
-        case CrossOriginOpenerPolicyValue::kRestrictProperties:
-        case CrossOriginOpenerPolicyValue::kRestrictPropertiesPlusCoep:
-          return (initiator_coop == destination_coop &&
-                  initiator_origin.IsSameOriginWith(destination_origin))
-                     ? CoopSwapResult::kNoSwap
-                     : CoopSwapResult::kSwapRelated;
         case CrossOriginOpenerPolicyValue::kSameOriginAllowPopups:
         case CrossOriginOpenerPolicyValue::kSameOrigin:
         case CrossOriginOpenerPolicyValue::kSameOriginPlusCoep:
@@ -123,11 +57,6 @@ CoopSwapResult ShouldSwapBrowsingInstanceForCrossOriginOpenerPolicy(
         case CrossOriginOpenerPolicyValue::kUnsafeNone:
           return is_navigation_from_initial_empty_document
                      ? CoopSwapResult::kNoSwap
-                     : CoopSwapResult::kSwap;
-        case CrossOriginOpenerPolicyValue::kRestrictProperties:
-        case CrossOriginOpenerPolicyValue::kRestrictPropertiesPlusCoep:
-          return is_navigation_from_initial_empty_document
-                     ? CoopSwapResult::kSwapRelated
                      : CoopSwapResult::kSwap;
         case CrossOriginOpenerPolicyValue::kSameOriginAllowPopups:
           return initiator_origin.IsSameOriginWith(destination_origin)
@@ -149,8 +78,6 @@ CoopSwapResult ShouldSwapBrowsingInstanceForCrossOriginOpenerPolicy(
                      ? CoopSwapResult::kSwap
                      : CoopSwapResult::kNoSwap;
         case CrossOriginOpenerPolicyValue::kSameOriginAllowPopups:
-        case CrossOriginOpenerPolicyValue::kRestrictProperties:
-        case CrossOriginOpenerPolicyValue::kRestrictPropertiesPlusCoep:
         case CrossOriginOpenerPolicyValue::kSameOrigin:
         case CrossOriginOpenerPolicyValue::kSameOriginPlusCoep:
           return CoopSwapResult::kSwap;
@@ -556,8 +483,6 @@ void CrossOriginOpenerPolicyStatus::SanitizeCoopHeaders(
       // frames, portals, etc.) should not be able to specify their own COOP
       // header value. Therefore we use IsOutermostMainFrame.
       frame_tree_node_->IsOutermostMainFrame()) {
-    SanitizeCoopRestrictPropertiesHeadersIfDisabled(
-        coop, response_url, response_head->headers.get());
     return;
   }
 

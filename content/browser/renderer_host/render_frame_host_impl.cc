@@ -1178,9 +1178,6 @@ bool CoopSuppressOpener(const RenderFrameHostImpl* opener) {
   switch (opener->GetMainFrame()->cross_origin_opener_policy().value) {
     case network::mojom::CrossOriginOpenerPolicyValue::kUnsafeNone:
     case network::mojom::CrossOriginOpenerPolicyValue::kSameOriginAllowPopups:
-    case network::mojom::CrossOriginOpenerPolicyValue::kRestrictProperties:
-    case network::mojom::CrossOriginOpenerPolicyValue::
-        kRestrictPropertiesPlusCoep:
     case network::mojom::CrossOriginOpenerPolicyValue::kNoopenerAllowPopups:
       return false;
 
@@ -15650,14 +15647,11 @@ void RenderFrameHostImpl::DidCommitNewDocument(
   TakeNewDocumentPropertiesFromNavigation(navigation_request);
 
   // Set embedded documents' cross-origin-opener-policy from their top level:
-  //  - Use top level's policy if they are same-origin or the policy is
-  //    restrict-properties
+  //  - Use top level's policy if they are same-origin.
   //  - Use the default policy otherwise.
   // This COOP value is not used to enforce anything on this frame, but will be
   // inherited to every local-scheme document created from them.
   // It will also be inherited by the initial empty document from its opener.
-  // TODO(crbug.com/40266995): Always inherit COOP since it's now tied
-  // to an origin that set it.
 
   // TODO(crbug.com/40092527) Computing and assigning the
   // cross-origin-opener-policy of an embedded frame should be done in
@@ -15665,19 +15659,11 @@ void RenderFrameHostImpl::DidCommitNewDocument(
   // possible because we need the origin for the computation. The linked bug
   // moves the origin computation earlier in the navigation request, which will
   // enable the move to |NavigationRequest::ComputePoliciesToCommit|.
-
-  // TODO(crbug.com/40879437): See if the above is possible after we
-  // bundle the COOP origin.
   if (parent_) {
     const network::CrossOriginOpenerPolicy& top_level_coop =
         GetMainFrame()->cross_origin_opener_policy();
     if (GetMainFrame()->GetLastCommittedOrigin().IsSameOriginWith(
-            params.origin) ||
-        network::IsRelatedToCoopRestrictProperties(top_level_coop.value) ||
-        (top_level_coop.value ==
-             network::mojom::CrossOriginOpenerPolicyValue::kUnsafeNone &&
-         network::IsRelatedToCoopRestrictProperties(
-             top_level_coop.report_only_value))) {
+            params.origin)) {
       policy_container_host_->set_cross_origin_opener_policy(top_level_coop);
     } else {
       policy_container_host_->set_cross_origin_opener_policy(

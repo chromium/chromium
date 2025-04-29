@@ -4052,9 +4052,6 @@ bool NavigationRequest::ShouldRequestSiteIsolationForCOOP() {
     case network::mojom::CrossOriginOpenerPolicyValue::kSameOrigin:
     case network::mojom::CrossOriginOpenerPolicyValue::kSameOriginPlusCoep:
     case network::mojom::CrossOriginOpenerPolicyValue::kSameOriginAllowPopups:
-    case network::mojom::CrossOriginOpenerPolicyValue::kRestrictProperties:
-    case network::mojom::CrossOriginOpenerPolicyValue::
-        kRestrictPropertiesPlusCoep:
     case network::mojom::CrossOriginOpenerPolicyValue::kNoopenerAllowPopups:
       should_header_value_trigger_isolation = true;
       break;
@@ -10656,10 +10653,7 @@ NavigationRequest::ComputeWebExposedIsolationInfo() {
   // We consider navigations to be cross-origin isolated if the response
   // asserts proper COOP and COEP headers.
   if ((coop_status().current_coop().value !=
-       network::mojom::CrossOriginOpenerPolicyValue::kSameOriginPlusCoep) &&
-      (coop_status().current_coop().value !=
-       network::mojom::CrossOriginOpenerPolicyValue::
-           kRestrictPropertiesPlusCoep)) {
+       network::mojom::CrossOriginOpenerPolicyValue::kSameOriginPlusCoep)) {
     return WebExposedIsolationInfo::CreateNonIsolated();
   }
 
@@ -10693,9 +10687,7 @@ std::optional<url::Origin> NavigationRequest::ComputeCommonCoopOrigin() {
   switch (coop_status().current_coop().value) {
     case CoopValue::kSameOrigin:
     case CoopValue::kSameOriginPlusCoep:
-    case CoopValue::kRestrictProperties:
     case CoopValue::kNoopenerAllowPopups:
-    case CoopValue::kRestrictPropertiesPlusCoep:
       // If we're early in the navigation process and the PolicyContainer was
       // not yet computed, use a best effort origin.
       // TODO(crbug.com/40879437): This is probably not very helpful. If

@@ -21,7 +21,6 @@ TEST(CrossOriginOpenerPolicyTest, Parse) {
   scoped_feature_list.InitWithFeatures(
       {
           features::kCrossOriginOpenerPolicy,
-          features::kCoopRestrictProperties,
           features::kCoopNoopenerAllowPopups,
       },
       {});
@@ -30,13 +29,9 @@ TEST(CrossOriginOpenerPolicyTest, Parse) {
   constexpr auto kSameOrigin = CrossOriginOpenerPolicyValue::kSameOrigin;
   constexpr auto kSameOriginAllowPopups =
       CrossOriginOpenerPolicyValue::kSameOriginAllowPopups;
-  constexpr auto kRestrictProperties =
-      CrossOriginOpenerPolicyValue::kRestrictProperties;
   constexpr auto kUnsafeNone = CrossOriginOpenerPolicyValue::kUnsafeNone;
   constexpr auto kSameOriginPlusCoep =
       CrossOriginOpenerPolicyValue::kSameOriginPlusCoep;
-  constexpr auto kRestrictPropertiesPlusCoep =
-      CrossOriginOpenerPolicyValue::kRestrictPropertiesPlusCoep;
   constexpr auto kCoepNone = mojom::CrossOriginEmbedderPolicyValue::kNone;
   constexpr auto kCoepCorp =
       mojom::CrossOriginEmbedderPolicyValue::kRequireCorp;
@@ -62,8 +57,6 @@ TEST(CrossOriginOpenerPolicyTest, Parse) {
       {"same-origin-allow-popups", kCoepNone, kNoHeader, kCoepNone, kNoEndpoint,
        kSameOriginAllowPopups, kSameOriginAllowPopups, kNoEndpoint,
        kUnsafeNone},
-      {"restrict-properties", kCoepNone, kNoHeader, kCoepNone, kNoEndpoint,
-       kRestrictProperties, kRestrictProperties, kNoEndpoint, kUnsafeNone},
       {"unsafe-none", kCoepNone, kNoHeader, kCoepNone, kNoEndpoint, kUnsafeNone,
        kUnsafeNone, kNoEndpoint, kUnsafeNone},
 
@@ -196,21 +189,6 @@ TEST(CrossOriginOpenerPolicyTest, Parse) {
       // reporting Same-origin with reporting COEP
       {kNoHeader, kCoepNone, "same-origin", kCoepCorp, kNoEndpoint, kUnsafeNone,
        kSameOriginAllowPopups, kNoEndpoint, kSameOriginPlusCoep},
-      // restrict-properties with COEP
-      {"restrict-properties", kCoepCorp, kNoHeader, kCoepNone, kNoEndpoint,
-       kRestrictPropertiesPlusCoep, kRestrictPropertiesPlusCoep, kNoEndpoint,
-       kUnsafeNone},
-      // restrict-properties with report only COEP
-      {"restrict-properties", kCoepNone, kNoHeader, kCoepCorp, kNoEndpoint,
-       kRestrictProperties, kRestrictProperties, kNoEndpoint, kUnsafeNone},
-      // reporting restrict-properties with COEP
-      {kNoHeader, kCoepCorp, "restrict-properties", kCoepNone, kNoEndpoint,
-       kUnsafeNone, kSameOriginAllowPopups, kNoEndpoint,
-       kRestrictPropertiesPlusCoep},
-      // reporting restrict-properties with reporting COEP
-      {kNoHeader, kCoepNone, "restrict-properties", kCoepCorp, kNoEndpoint,
-       kUnsafeNone, kSameOriginAllowPopups, kNoEndpoint,
-       kRestrictPropertiesPlusCoep},
       {"noopener-allow-popups", kCoepNone, kNoHeader, kCoepNone, kNoEndpoint,
        kNoopenerAllowPopups, kNoopenerAllowPopups, kNoEndpoint, kUnsafeNone},
   };
