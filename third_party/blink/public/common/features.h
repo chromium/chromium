@@ -228,6 +228,10 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kCaptureJSExecutionLocation);
 // is a no-op if kTimedHTMLParserBudget is disabled.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kCheckHTMLParserBudgetLessOften);
 
+// If enabled, the Clear-Site-Data header will handle "prefetchCache" and
+// "prerenderCache" to clear the Prefetch and Prerender caches respectively.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kClearSiteDataPrefetchPrerenderCache);
+
 // We do intend to deprecate these when possible, do not remove the feature
 // until they can be disabled by default.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kClientHintsDeviceMemory_DEPRECATED);

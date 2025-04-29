@@ -19,7 +19,7 @@
   // Trigger clearing the prefetch cache through Clear-Site-Data response headers
   // on different origin and then navigate to the target prefetch page.
   session.evaluate(`
-    window.open('http://127.0.0.1:8000/inspector-protocol/prefetch/resources/clear-site-data.php');
+    window.open('http://127.0.0.1:8000/inspector-protocol/prefetch/resources/clear-site-data-prefetchCache.php');
     setTimeout(() => {
       window.location.href = 'https://127.0.0.1:8443/inspector-protocol/prefetch/resources/target_prefetch.html';
     }, 1000);

@@ -1661,7 +1661,7 @@
     ],
     "exclusive_tests": "ALL",
     "args": [
-      "--enable-features=PrefetchUseContentRefactor:block_until_head_timeout_eager_prefetch/0,PrefetchCookieIndices,CookieIndicesHeader",
+      "--enable-features=PrefetchUseContentRefactor:block_until_head_timeout_eager_prefetch/0,PrefetchCookieIndices,CookieIndicesHeader,ClearSiteDataPrefetchPrerenderCache",
       "--disable-features=PrefetchServiceWorker",
       "--bypass-prefetch-proxy-for-host=not-web-platform.test"
     ],
@@ -1677,7 +1677,7 @@
     ],
     "exclusive_tests": "ALL",
     "args": [
-      "--enable-features=PrefetchUseContentRefactor:block_until_head_timeout_eager_prefetch/0,PrefetchCookieIndices,CookieIndicesHeader,Prerender2FallbackPrefetchSpecRules,PrefetchServiceWorker",
+      "--enable-features=PrefetchUseContentRefactor:block_until_head_timeout_eager_prefetch/0,PrefetchCookieIndices,CookieIndicesHeader,Prerender2FallbackPrefetchSpecRules,PrefetchServiceWorker,ClearSiteDataPrefetchPrerenderCache",
       "--bypass-prefetch-proxy-for-host=not-web-platform.test"
     ],
     "expires": "Oct 1, 2025"
@@ -1692,7 +1692,7 @@
     ],
     "exclusive_tests": "ALL",
     "args": [
-      "--enable-features=SharedStorageAPI,PrivacySandboxAdsAPIsOverride,Prerender2AllowActivationInBackground,LCPTimingPredictorPrerender2",
+      "--enable-features=SharedStorageAPI,PrivacySandboxAdsAPIsOverride,Prerender2AllowActivationInBackground,LCPTimingPredictorPrerender2,ClearSiteDataPrefetchPrerenderCache",
       "--disable-features=KeepAliveInBrowserMigration,Prerender2FallbackPrefetchSpecRules"
     ],
     "owners": ["nhiroki@chromium.org", "yoichio@chromium.org"],
@@ -1728,7 +1728,7 @@
     ],
     "exclusive_tests": "ALL",
     "args": [
-      "--enable-features=PrefetchUseContentRefactor:block_until_head_timeout_eager_prefetch/0,PrefetchCookieIndices,CookieIndicesHeader,Prerender2FallbackPrefetchSpecRules",
+      "--enable-features=PrefetchUseContentRefactor:block_until_head_timeout_eager_prefetch/0,PrefetchCookieIndices,CookieIndicesHeader,Prerender2FallbackPrefetchSpecRules,ClearSiteDataPrefetchPrerenderCache",
       "--disable-features=PrefetchServiceWorker",
       "--bypass-prefetch-proxy-for-host=not-web-platform.test",
       "--disable-threaded-compositing", "--disable-threaded-animation"

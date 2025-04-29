@@ -24,6 +24,7 @@
 #include "net/cookies/cookie_partition_key.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/features_generated.h"
 
 using ::testing::_;
@@ -36,6 +37,10 @@ using Message = ClearSiteDataHandler::ConsoleMessagesDelegate::Message;
 namespace {
 
 const char kClearCookiesHeader[] = "\"cookies\"";
+const char kClearPrefetchCacheHeader[] = "\"prefetchCache\"";
+const char kClearPrerenderCacheHeader[] = "\"prerenderCache\"";
+const char kClearPrefetchAndPrerenderCacheHeader[] =
+    "\"prefetchCache\", \"prerenderCache\"";
 
 const StoragePartitionConfig kTestStoragePartitionConfig;
 
@@ -655,4 +660,76 @@ TEST_F(ClearSiteDataHandlerTest, CorrectStoragePartition) {
   }
 }
 
+TEST_F(ClearSiteDataHandlerTest, ClearPrefetchCacheSuccess) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(
+      blink::features::kClearSiteDataPrefetchPrerenderCache);
+
+  std::vector<Message> message_buffer;
+  TestHandler handler(
+      nullptr, nullptr, kTestStoragePartitionConfig,
+      GURL("https://example.com"), kClearPrefetchCacheHeader, net::LOAD_NORMAL,
+      /*cookie_partition_key=*/std::nullopt, /*storage_key=*/std::nullopt,
+      /*partitioned_state_allowed_only=*/false, base::DoNothing(),
+      std::make_unique<VectorConsoleMessagesDelegate>(&message_buffer));
+
+  EXPECT_CALL(handler, ClearSiteData(_, _, _, _, _, _, _, _));
+  bool defer = handler.DoHandleHeader();
+  EXPECT_TRUE(defer);
+  EXPECT_EQ(1u, message_buffer.size());
+  EXPECT_EQ("Cleared data types: \"prefetchCache\".",
+            message_buffer.front().text);
+  EXPECT_EQ(message_buffer.front().level,
+            blink::mojom::ConsoleMessageLevel::kInfo);
+  testing::Mock::VerifyAndClearExpectations(&handler);
+}
+
+TEST_F(ClearSiteDataHandlerTest, ClearPrerenderCacheSuccess) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(
+      blink::features::kClearSiteDataPrefetchPrerenderCache);
+
+  std::vector<Message> message_buffer;
+  TestHandler handler(
+      nullptr, nullptr, kTestStoragePartitionConfig,
+      GURL("https://example.com"), kClearPrerenderCacheHeader, net::LOAD_NORMAL,
+      /*cookie_partition_key=*/std::nullopt, /*storage_key=*/std::nullopt,
+      /*partitioned_state_allowed_only=*/false, base::DoNothing(),
+      std::make_unique<VectorConsoleMessagesDelegate>(&message_buffer));
+
+  EXPECT_CALL(handler, ClearSiteData(_, _, _, _, _, _, _, _));
+  bool defer = handler.DoHandleHeader();
+  EXPECT_TRUE(defer);
+  EXPECT_EQ(1u, message_buffer.size());
+  EXPECT_EQ("Cleared data types: \"prerenderCache\".",
+            message_buffer.front().text);
+  EXPECT_EQ(message_buffer.front().level,
+            blink::mojom::ConsoleMessageLevel::kInfo);
+  testing::Mock::VerifyAndClearExpectations(&handler);
+}
+
+TEST_F(ClearSiteDataHandlerTest, ClearPrefetchAndPrerenderCacheSuccess) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(
+      blink::features::kClearSiteDataPrefetchPrerenderCache);
+
+  std::vector<Message> message_buffer;
+  TestHandler handler(
+      nullptr, nullptr, kTestStoragePartitionConfig,
+      GURL("https://example.com"), kClearPrefetchAndPrerenderCacheHeader,
+      net::LOAD_NORMAL,
+      /*cookie_partition_key=*/std::nullopt, /*storage_key=*/std::nullopt,
+      /*partitioned_state_allowed_only=*/false, base::DoNothing(),
+      std::make_unique<VectorConsoleMessagesDelegate>(&message_buffer));
+
+  EXPECT_CALL(handler, ClearSiteData(_, _, _, _, _, _, _, _));
+  bool defer = handler.DoHandleHeader();
+  EXPECT_TRUE(defer);
+  EXPECT_EQ(1u, message_buffer.size());
+  EXPECT_EQ("Cleared data types: \"prefetchCache\", \"prerenderCache\".",
+            message_buffer.front().text);
+  EXPECT_EQ(message_buffer.front().level,
+            blink::mojom::ConsoleMessageLevel::kInfo);
+  testing::Mock::VerifyAndClearExpectations(&handler);
+}
 }  // namespace content

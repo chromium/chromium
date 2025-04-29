@@ -1059,10 +1059,10 @@ const char kImplHistogramPrefix[] = "History.ClearBrowsingData.Duration.Task.";
 // Add data types here that support filtering and only delete data that matches
 // the BrowsingDataFilterBuilder.
 const std::vector<std::string_view> kSupportsOriginFilteringImpl{
-    "AuthCache",           "EmbedderData",     "HttpCache",
-    "NetworkErrorLogging", "PreflightCache",   "ReportingCache",
-    "SharedDictionary",    "StoragePartition", "Synchronous",
-    "TrustTokens",
+    "AuthCache",           "EmbedderData",   "HttpCache",
+    "NetworkErrorLogging", "PrefetchCache",  "PreflightCache",
+    "PrerenderCache",      "ReportingCache", "SharedDictionary",
+    "StoragePartition",    "Synchronous",    "TrustTokens",
 };
 const std::vector<std::string_view> kSupportsOriginFilteringDelegate{
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)

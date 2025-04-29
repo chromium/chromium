@@ -3127,7 +3127,9 @@ class CONTENT_EXPORT ContentBrowserClient {
       BrowsingDataRemover::DATA_TYPE_CACHE |
       BrowsingDataRemover::DATA_TYPE_DOWNLOADS |
       BrowsingDataRemover::DATA_TYPE_RELATED_WEBSITE_SETS_PERMISSIONS |
-      BrowsingDataRemover::DATA_TYPE_DEVICE_BOUND_SESSIONS;
+      BrowsingDataRemover::DATA_TYPE_DEVICE_BOUND_SESSIONS |
+      BrowsingDataRemover::DATA_TYPE_PREFETCH_CACHE |
+      BrowsingDataRemover::DATA_TYPE_PRERENDER_CACHE;
 
   // Get the `remove_mask` that BTM will pass to BrowsingDataRemover::Remove()
   // to delete storage for a site. This allows BTM to clear types of storage

@@ -242,7 +242,9 @@ chromium-metrics-reviews@google.com.
     <variant name="HttpCache" summary="HttpCache"/>
     <variant name="NetworkErrorLogging" summary="NetworkErrorLogging"/>
     <variant name="NetworkHistory" summary="NetworkHistory"/>
+    <variant name="PrefetchCache" summary="PrefetchCache"/>
     <variant name="PreflightCache" summary="PreflightCache"/>
+    <variant name="PrerenderCache" summary="PrerenderCache"/>
     <variant name="ReportingCache" summary="ReportingCache"/>
     <variant name="SharedDictionary" summary="SharedDictionary"/>
     <variant name="SharedStorage" summary="SharedStorage"/>

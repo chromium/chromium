@@ -441,6 +441,10 @@ BASE_FEATURE(kCheckHTMLParserBudgetLessOften,
              "CheckHTMLParserBudgetLessOften",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kClearSiteDataPrefetchPrerenderCache,
+             "ClearSiteDataPrefetchPrerenderCache",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enable legacy `dpr` client hint.
 BASE_FEATURE(kClientHintsDPR_DEPRECATED,
              "ClientHintsDPR_DEPRECATED",

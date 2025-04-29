@@ -610,23 +610,53 @@ void BrowsingDataRemoverImpl::RemoveImpl(
 
     // Clears the BFCache entries that match the removal filter for the current
     // browser context.
-    // Clears the Prerender and Prefetch Cache for the current browser context.
     auto storage_key_filter = filter_builder->BuildStorageKeyFilter();
     for (WebContentsImpl* web_contents : WebContentsImpl::GetAllWebContents()) {
       if (web_contents->GetBrowserContext() == browser_context_) {
         web_contents->GetController().GetBackForwardCache().Flush(
             storage_key_filter);
-        web_contents->GetPrerenderHostRegistry()->CancelHostsByOriginFilter(
-            storage_key_filter, PrerenderFinalStatus::kBrowsingDataRemoved);
-        if (base::FeatureList::IsEnabled(
-                features::kPrefetchBrowsingDataRemoval)) {
-          PrefetchService* prefetch_service =
-              BrowserContextImpl::From(browser_context_)->GetPrefetchService();
-          prefetch_service->EvictPrefetchesForBrowsingDataRemoval(
-              storage_key_filter,
-              PrefetchStatus::kPrefetchEvictedAfterBrowsingDataRemoved);
+      }
+    }
+  }
+
+  // Clears the Prerender Cache as part of Clear-Site-Data prerenderCache header
+  // and Browsing Data Cache Removal.
+  if (remove_mask & (DATA_TYPE_PRERENDER_CACHE | DATA_TYPE_CACHE)) {
+    auto storage_key_filter = filter_builder->BuildStorageKeyFilter();
+    for (WebContentsImpl* web_contents : WebContentsImpl::GetAllWebContents()) {
+      if (web_contents->GetBrowserContext() == browser_context_) {
+        PrerenderHostRegistry* prerender_host_registry =
+            web_contents->GetPrerenderHostRegistry();
+        if (prerender_host_registry) {
+          prerender_host_registry->CancelHostsByOriginFilter(
+              storage_key_filter, PrerenderFinalStatus::kBrowsingDataRemoved);
         }
       }
+    }
+    // We need task completion closures for prefetch/prerender cache clearing to
+    // prevent premature destruction of the SiteDataClearer object. Without
+    // these closures, the kSynchronous task may complete first and trigger
+    // OnBrowsingDataRemoverDone before these operations finish,
+    // causing state to be reset while operations are still pending.
+    GetUIThreadTaskRunner({})->PostTaskAndReply(
+        FROM_HERE, base::DoNothing(),
+        CreateTaskCompletionClosure(TracingDataType::kPrerenderCache));
+  }
+
+  // Clears the Prefetch Cache as part of Clear-Site-Data prefetchCache header
+  // and Browsing Data Cache Removal.
+  if ((remove_mask & (DATA_TYPE_PREFETCH_CACHE | DATA_TYPE_CACHE)) &&
+      base::FeatureList::IsEnabled(features::kPrefetchBrowsingDataRemoval)) {
+    if (auto* prefetch_service =
+            BrowserContextImpl::From(browser_context_)->GetPrefetchService()) {
+      auto storage_key_filter = filter_builder->BuildStorageKeyFilter();
+      GetUIThreadTaskRunner({})->PostTaskAndReply(
+          FROM_HERE,
+          base::BindOnce(
+              &PrefetchService::EvictPrefetchesForBrowsingDataRemoval,
+              prefetch_service->GetWeakPtr(), storage_key_filter,
+              PrefetchStatus::kPrefetchEvictedAfterBrowsingDataRemoved),
+          CreateTaskCompletionClosure(TracingDataType::kPrefetchCache));
     }
   }
 
@@ -1000,6 +1030,10 @@ const char* BrowsingDataRemoverImpl::GetHistogramSuffix(TracingDataType task) {
       return "PreflightCache";
     case TracingDataType::kSharedDictionary:
       return "SharedDictionary";
+    case TracingDataType::kPrefetchCache:
+      return "PrefetchCache";
+    case TracingDataType::kPrerenderCache:
+      return "PrerenderCache";
   }
 }
 

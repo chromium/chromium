@@ -2035,7 +2035,9 @@ void PrerenderHostRegistry::CancelHostsByOriginFilter(
     }
   }
 
-  CancelHosts(ids_to_be_deleted, PrerenderCancellationReason(final_status));
+  if (!ids_to_be_deleted.empty()) {
+    CancelHosts(ids_to_be_deleted, PrerenderCancellationReason(final_status));
+  }
 }
 
 }  // namespace content

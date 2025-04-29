@@ -21,6 +21,8 @@ NET_EXPORT extern const char kDatatypeStorageBucketPrefix[];
 NET_EXPORT extern const char kDatatypeStorageBucketSuffix[];
 NET_EXPORT extern const char kDatatypeCache[];
 NET_EXPORT extern const char kDatatypeClientHints[];
+NET_EXPORT extern const char kDatatypePrefetchCache[];
+NET_EXPORT extern const char kDatatypePrerenderCache[];
 
 NET_EXPORT std::vector<std::string> ClearSiteDataHeaderContents(
     std::string header);
