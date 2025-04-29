@@ -213,7 +213,7 @@ typedef uint32_t MojoSendInvitationFlags;
 
 // Indicates that the invitation is being sent from a non-broker to another
 // non-broker and that the sender is referring its broker to the recipient.
-// The recipient must except this and accept the invitation with
+// The recipient must expect this and accept the invitation with
 // MOJO_ACCEPT_INVITATION_FLAG_INHERIT_BROKER.
 #define MOJO_SEND_INVITATION_FLAG_SHARE_BROKER ((MojoSendInvitationFlags)8)
 
