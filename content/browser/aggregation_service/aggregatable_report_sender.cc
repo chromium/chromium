@@ -177,7 +177,7 @@ void AggregatableReportSender::SendReport(GURL url,
   // TODO(crbug.com/40195940): Check for required fields of contents.
   bool succeeded = base::JSONWriter::Write(contents, &contents_json);
   CHECK(succeeded);
-  simple_url_loader_ptr->AttachStringForUpload(contents_json,
+  simple_url_loader_ptr->AttachStringForUpload(std::move(contents_json),
                                                "application/json");
 
   const int kMaxRetries = 1;
