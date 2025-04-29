@@ -708,7 +708,9 @@ bool PdfInkModule::FinishStroke(const gfx::PointF& position,
   state.page_index = -1;
   state.input_last_event.reset();
 
-  MaybeSetDrawingBrushAndCursor();
+  if (MaybeSetDrawingBrush()) {
+    MaybeSetCursor();
+  }
 
   return true;
 }
@@ -798,7 +800,9 @@ bool PdfInkModule::FinishEraseStroke(const gfx::PointF& position,
   state.input_last_event_position.reset();
   state.tool_type = ink::StrokeInput::ToolType::kUnknown;
 
-  MaybeSetDrawingBrushAndCursor();
+  if (MaybeSetDrawingBrush()) {
+    MaybeSetCursor();
+  }
 
   return true;
 }
@@ -1027,7 +1031,9 @@ void PdfInkModule::HandleSetAnnotationBrushMessage(
     return;
   }
 
-  MaybeSetDrawingBrushAndCursor();
+  if (MaybeSetDrawingBrush()) {
+    MaybeSetCursor();
+  }
 }
 
 void PdfInkModule::HandleSetAnnotationModeMessage(
@@ -1340,9 +1346,9 @@ void PdfInkModule::ApplyUndoRedoDiscards(
   }
 }
 
-void PdfInkModule::MaybeSetDrawingBrushAndCursor() {
+bool PdfInkModule::MaybeSetDrawingBrush() {
   if (!pending_drawing_brush_state_.has_value()) {
-    return;
+    return false;
   }
 
   current_tool_state_.emplace<DrawingStrokeState>();
@@ -1354,8 +1360,7 @@ void PdfInkModule::MaybeSetDrawingBrushAndCursor() {
 
   pending_drawing_brush_state_.reset();
 
-  // If the brush could have changed, reflect that in the cursor as well.
-  MaybeSetCursor();
+  return true;
 }
 
 void PdfInkModule::MaybeSetCursor() {

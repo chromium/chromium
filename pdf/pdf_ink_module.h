@@ -393,7 +393,8 @@ class PdfInkModule {
 
   void MaybeSetCursor();
 
-  void MaybeSetDrawingBrushAndCursor();
+  // Returns whether the drawing brush was set or not.
+  bool MaybeSetDrawingBrush();
 
   // Helper that calls GenerateAndSendInkThumbnail() without needing to specify
   // the thumbnail size. This helper determines the size by asking
