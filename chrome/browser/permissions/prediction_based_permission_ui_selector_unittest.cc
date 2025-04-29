@@ -31,11 +31,18 @@
 namespace {
 using Decision = PredictionBasedPermissionUiSelector::Decision;
 using PredictionSource = PredictionBasedPermissionUiSelector::PredictionSource;
+using base::test::FeatureRef;
+
+#define BASIC_CPSS_FEATURES                                              \
+  permissions::features::kPermissionPredictionsV2,                       \
+      permissions::features::kPermissionOnDeviceNotificationPredictions, \
+      permissions::features::kPermissionOnDeviceGeolocationPredictions,  \
+      features::kQuietNotificationPrompts
 }  // namespace
 
-class PredictionBasedPermissionUiSelectorTest : public testing::Test {
+class PredictionBasedPermissionUiSelectorTestBase : public testing::Test {
  public:
-  PredictionBasedPermissionUiSelectorTest()
+  PredictionBasedPermissionUiSelectorTestBase()
       : testing_profile_(std::make_unique<TestingProfile>()) {}
 
   void SetUp() override {
@@ -103,38 +110,49 @@ class PredictionBasedPermissionUiSelectorTest : public testing::Test {
   std::unique_ptr<TestingProfile> testing_profile_;
 };
 
-TEST_F(PredictionBasedPermissionUiSelectorTest,
-       CommandLineMocksDecisionCorrectly) {
-  struct {
-    const char* command_line_value;
-    const Decision expected_decision;
-  } const kTests[] = {
-      {"very-unlikely",
-       Decision(PredictionBasedPermissionUiSelector::QuietUiReason::
-                    kServicePredictedVeryUnlikelyGrant,
-                Decision::ShowNoWarning())},
-      {"unlikely", Decision::UseNormalUiAndShowNoWarning()},
-      {"neutral", Decision::UseNormalUiAndShowNoWarning()},
-      {"likely", Decision::UseNormalUiAndShowNoWarning()},
-      {"very-likely", Decision::UseNormalUiAndShowNoWarning()},
-  };
+class PredictionBasedPermissionUiSelectorTest
+    : public PredictionBasedPermissionUiSelectorTestBase {};
 
+struct CmdLineDecisionTestCase {
+  const char* command_line_value;
+  const Decision expected_decision;
+};
+
+class PredictionBasedPermissionUiDecisionTest
+    : public PredictionBasedPermissionUiSelectorTestBase,
+      public testing::WithParamInterface<CmdLineDecisionTestCase> {};
+
+INSTANTIATE_TEST_SUITE_P(
+    CmdLineValueToDecision,
+    PredictionBasedPermissionUiDecisionTest,
+    testing::ValuesIn<CmdLineDecisionTestCase>(
+        {{"very-unlikely",
+          Decision(PredictionBasedPermissionUiSelector::QuietUiReason::
+                       kServicePredictedVeryUnlikelyGrant,
+                   Decision::ShowNoWarning())},
+         {"unlikely", Decision::UseNormalUiAndShowNoWarning()},
+         {"neutral", Decision::UseNormalUiAndShowNoWarning()},
+         {"likely", Decision::UseNormalUiAndShowNoWarning()},
+         {"very-likely", Decision::UseNormalUiAndShowNoWarning()}}));
+
+TEST_P(PredictionBasedPermissionUiDecisionTest,
+       CommandLineMocksDecisionCorrectly) {
   RecordHistoryActions(/*action_count=*/4,
                        permissions::RequestType::kNotifications);
 
-  for (const auto& test : kTests) {
-    base::test::ScopedCommandLine scoped_command_line;
-    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-        "prediction-service-mock-likelihood", test.command_line_value);
+  base::test::ScopedCommandLine scoped_command_line;
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      "prediction-service-mock-likelihood", GetParam().command_line_value);
 
-    PredictionBasedPermissionUiSelector prediction_selector(profile());
+  PredictionBasedPermissionUiSelector prediction_selector(profile());
 
-    Decision decision = SelectUiToUseAndGetDecision(
-        &prediction_selector, permissions::RequestType::kNotifications);
+  Decision decision = SelectUiToUseAndGetDecision(
+      &prediction_selector, permissions::RequestType::kNotifications);
 
-    EXPECT_EQ(test.expected_decision.quiet_ui_reason, decision.quiet_ui_reason);
-    EXPECT_EQ(test.expected_decision.warning_reason, decision.warning_reason);
-  }
+  EXPECT_EQ(GetParam().expected_decision.quiet_ui_reason,
+            decision.quiet_ui_reason);
+  EXPECT_EQ(GetParam().expected_decision.warning_reason,
+            decision.warning_reason);
 }
 
 TEST_F(PredictionBasedPermissionUiSelectorTest, RequestsWithFewPromptsAreSent) {
@@ -218,14 +236,9 @@ TEST_F(PredictionBasedPermissionUiSelectorTest, GetPredictionTypeToUseTFLite) {
 
   feature_list_->Reset();
   feature_list_->InitWithFeatures(
-      {
-          permissions::features::kPermissionPredictionsV2,
-          permissions::features::kPermissionsAIv1,
-          permissions::features::kPermissionOnDeviceNotificationPredictions,
-          permissions::features::kPermissionOnDeviceGeolocationPredictions,
-          features::kQuietNotificationPrompts,
-      },
-      {});
+      /*enabled_features=*/{BASIC_CPSS_FEATURES,
+                            permissions::features::kPermissionsAIv1},
+      /*disabled_features=*/{});
 
   PredictionBasedPermissionUiSelector prediction_selector(profile());
 
@@ -246,83 +259,65 @@ TEST_F(PredictionBasedPermissionUiSelectorTest, GetPredictionTypeToUseTFLite) {
 }
 #endif
 
-TEST_F(PredictionBasedPermissionUiSelectorTest, GetPredictionTypeToUse) {
+struct PredictionSourceTestCase {
+  std::string test_name;
+  const std::vector<FeatureRef> enabled_features;
+  const std::vector<FeatureRef> disabled_features;
+  PredictionSource expected_prediction_source;
+};
+
+class PredictionBasedPermissionUiExpectedPredictionSourceTest
+    : public PredictionBasedPermissionUiSelectorTestBase,
+      public testing::WithParamInterface<PredictionSourceTestCase> {};
+
+INSTANTIATE_TEST_SUITE_P(
+    PredictionSourceTest,
+    PredictionBasedPermissionUiExpectedPredictionSourceTest,
+    testing::ValuesIn<PredictionSourceTestCase>({
+#if BUILDFLAG(IS_ANDROID)
+        {/*test_name=*/"UseCpssV1OnAndroid",
+         /*enabled_features=*/{BASIC_CPSS_FEATURES},
+         /*disabled_features=*/
+         {permissions::features::kPermissionDedicatedCpssSettingAndroid},
+         /*expected_prediction_source=*/PredictionSource::USE_ONDEVICE_TFLITE},
+        {/*test_name=*/"UseServerSideOnAndroid",
+         /*enabled_features=*/
+         {BASIC_CPSS_FEATURES,
+          permissions::features::kPermissionDedicatedCpssSettingAndroid},
+         /*disabled_features=*/{},
+         /*expected_prediction_source=*/PredictionSource::USE_SERVER_SIDE},
+#else
+        {/*test_name=*/"UseServerSideOnDesktop",
+         /*enabled_features=*/{BASIC_CPSS_FEATURES},
+         /*disabled_features=*/{},
+         /*expected_prediction_source=*/PredictionSource::USE_SERVER_SIDE},
+        {/*test_name=*/"UsePermissionsAiv1OnDesktop",
+         /*enabled_features=*/
+         {BASIC_CPSS_FEATURES, permissions::features::kPermissionsAIv1},
+         /*disabled_features=*/{},
+         /*expected_prediction_source=*/
+         PredictionSource::USE_ONDEVICE_AI_AND_SERVER_SIDE},
+#endif
+    }),
+    /*name_generator=*/
+    [](const testing::TestParamInfo<
+        PredictionBasedPermissionUiExpectedPredictionSourceTest::ParamType>&
+           info) { return info.param.test_name; });
+
+TEST_P(PredictionBasedPermissionUiExpectedPredictionSourceTest,
+       GetPredictionTypeToUse) {
   PredictionBasedPermissionUiSelector prediction_selector(profile());
 
-  // All desktop CPSS related flags enabled, android cpssv2 flag disabled.
   feature_list_->Reset();
-  feature_list_->InitWithFeatures(
-      {
-          permissions::features::kPermissionPredictionsV2,
-          permissions::features::kPermissionOnDeviceNotificationPredictions,
-          permissions::features::kPermissionOnDeviceGeolocationPredictions,
-          features::kQuietNotificationPrompts,
-      },
-      {
-#if BUILDFLAG(IS_ANDROID)
-          permissions::features::kPermissionDedicatedCpssSettingAndroid,
-#endif
-      });
-// Use server side for desktop but not for android
-#if BUILDFLAG(IS_ANDROID)
-  EXPECT_EQ(PredictionSource::USE_ONDEVICE_TFLITE,
-            prediction_selector.GetPredictionTypeToUse(
-                permissions::RequestType::kNotifications));
-  EXPECT_EQ(PredictionSource::USE_ONDEVICE_TFLITE,
-            prediction_selector.GetPredictionTypeToUse(
-                permissions::RequestType::kGeolocation));
-#else
-  EXPECT_EQ(PredictionSource::USE_SERVER_SIDE,
-            prediction_selector.GetPredictionTypeToUse(
-                permissions::RequestType::kNotifications));
-  EXPECT_EQ(PredictionSource::USE_SERVER_SIDE,
-            prediction_selector.GetPredictionTypeToUse(
-                permissions::RequestType::kGeolocation));
-#endif
+  feature_list_->InitWithFeatures(GetParam().enabled_features,
+                                  GetParam().disabled_features);
 
-  // All desktop and android CPSS flags enabled
-  feature_list_->Reset();
-  feature_list_->InitWithFeatures(
-      {
-          permissions::features::kPermissionPredictionsV2,
-          permissions::features::kPermissionOnDeviceNotificationPredictions,
-          permissions::features::kPermissionOnDeviceGeolocationPredictions,
-          features::kQuietNotificationPrompts,
-#if BUILDFLAG(IS_ANDROID)
-          permissions::features::kPermissionDedicatedCpssSettingAndroid,
-#endif
-      },
-      {});
-
-  // Use server side for both desktop and android
-  EXPECT_EQ(PredictionSource::USE_SERVER_SIDE,
+  EXPECT_EQ(GetParam().expected_prediction_source,
             prediction_selector.GetPredictionTypeToUse(
                 permissions::RequestType::kNotifications));
-  EXPECT_EQ(PredictionSource::USE_SERVER_SIDE,
+  EXPECT_EQ(GetParam().expected_prediction_source,
             prediction_selector.GetPredictionTypeToUse(
                 permissions::RequestType::kGeolocation));
-
-#if !BUILDFLAG(IS_ANDROID)
-  // All CPSS related flags enabled + the one for using the on-device AI
-  // model.
-  feature_list_->Reset();
-  feature_list_->InitWithFeatures(
-      {
-          permissions::features::kPermissionsAIv1,
-          permissions::features::kPermissionPredictionsV2,
-          permissions::features::kPermissionOnDeviceNotificationPredictions,
-          permissions::features::kPermissionOnDeviceGeolocationPredictions,
-          features::kQuietNotificationPrompts,
-      },
-      /*disabled_features=*/{});
-  // Use on-device AI model.
-  EXPECT_EQ(PredictionSource::USE_ONDEVICE_AI_AND_SERVER_SIDE,
-            prediction_selector.GetPredictionTypeToUse(
-                permissions::RequestType::kNotifications));
-  EXPECT_EQ(PredictionSource::USE_ONDEVICE_AI_AND_SERVER_SIDE,
-            prediction_selector.GetPredictionTypeToUse(
-                permissions::RequestType::kGeolocation));
-#endif
 }
 
 TEST_F(PredictionBasedPermissionUiSelectorTest, HoldbackHistogramTest) {

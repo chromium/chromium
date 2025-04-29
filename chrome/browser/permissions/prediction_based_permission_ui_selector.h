@@ -73,8 +73,9 @@ class PredictionBasedPermissionUiSelector
   std::optional<bool> WasSelectorDecisionHeldback() override;
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(PredictionBasedPermissionUiSelectorTest,
-                           GetPredictionTypeToUse);
+  FRIEND_TEST_ALL_PREFIXES(
+      PredictionBasedPermissionUiExpectedPredictionSourceTest,
+      GetPredictionTypeToUse);
   FRIEND_TEST_ALL_PREFIXES(PredictionBasedPermissionUiSelectorTest,
                            GetPredictionTypeToUseTFLite);
   FRIEND_TEST_ALL_PREFIXES(PredictionBasedPermissionUiSelectorTest,
