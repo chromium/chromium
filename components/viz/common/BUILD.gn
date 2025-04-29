@@ -32,16 +32,11 @@ viz_component("shared_image_format") {
   deps = [
     "//base",
     "//cc/base",
-    "//gpu/vulkan:buildflags",
     "//skia",
     "//third_party/angle:includes",
-    "//third_party/dawn/include/dawn:cpp_headers",
     "//ui/gfx:buffer_types",
     "//ui/gfx/geometry",
   ]
-  if (enable_vulkan) {
-    deps += [ "//third_party/vulkan-headers/src:vulkan_headers" ]
-  }
 }
 
 always_enable_blending_for_primary = is_castos || is_cast_android
