@@ -1201,9 +1201,11 @@ mojom::XRViewPtr OpenXrApiWrapper::CreateView(
 
   mojom::XRViewPtr view = mojom::XRView::New();
   view->eye = eye;
-  view->mojo_from_view = XrPoseToGfxTransform(xr_view.pose);
 
-  view->field_of_view = XrFovToMojomFov(xr_view.fov);
+  view->geometry = mojom::XRViewGeometry::New();
+  view->geometry->mojo_from_view = XrPoseToGfxTransform(xr_view.pose);
+
+  view->geometry->field_of_view = XrFovToMojomFov(xr_view.fov);
 
   view->viewport =
       gfx::Rect(x_offset, 0, view_config.Properties()[view_index].Width(),
@@ -1270,7 +1272,9 @@ std::vector<mojom::XRViewPtr> OpenXrApiWrapper::GetDefaultViews() const {
     view->eye = GetEyeFromIndex(i);
     view->viewport = gfx::Rect(x_offset, 0, view_properties[i].Width(),
                                view_properties[i].Height());
-    view->field_of_view = mojom::VRFieldOfView::New(45.0f, 45.0f, 45.0f, 45.0f);
+    view->geometry = mojom::XRViewGeometry::New();
+    view->geometry->field_of_view =
+        mojom::VRFieldOfView::New(45.0f, 45.0f, 45.0f, 45.0f);
 
     x_offset += view_properties[i].Width();
   }

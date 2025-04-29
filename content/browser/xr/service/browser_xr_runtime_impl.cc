@@ -74,34 +74,33 @@ device::mojom::XRViewPtr ValidateXRView(const device::mojom::XRView* view) {
   ret->eye = view->eye;
   // FOV
   float kDefaultFOV = 45;
-  ret->field_of_view = device::mojom::VRFieldOfView::New();
-  if (view->field_of_view->up_degrees < 90 &&
-      view->field_of_view->up_degrees > -90 &&
-      view->field_of_view->up_degrees > -view->field_of_view->down_degrees &&
-      view->field_of_view->down_degrees < 90 &&
-      view->field_of_view->down_degrees > -90 &&
-      view->field_of_view->down_degrees > -view->field_of_view->up_degrees &&
-      view->field_of_view->left_degrees < 90 &&
-      view->field_of_view->left_degrees > -90 &&
-      view->field_of_view->left_degrees > -view->field_of_view->right_degrees &&
-      view->field_of_view->right_degrees < 90 &&
-      view->field_of_view->right_degrees > -90 &&
-      view->field_of_view->right_degrees > -view->field_of_view->left_degrees) {
-    ret->field_of_view->up_degrees = view->field_of_view->up_degrees;
-    ret->field_of_view->down_degrees = view->field_of_view->down_degrees;
-    ret->field_of_view->left_degrees = view->field_of_view->left_degrees;
-    ret->field_of_view->right_degrees = view->field_of_view->right_degrees;
+  ret->geometry = device::mojom::XRViewGeometry::New();
+  ret->geometry->field_of_view = device::mojom::VRFieldOfView::New();
+  auto& view_fov = view->geometry->field_of_view;
+  auto& ret_fov = ret->geometry->field_of_view;
+  if (view_fov->up_degrees < 90 && view_fov->up_degrees > -90 &&
+      view_fov->up_degrees > -view_fov->down_degrees &&
+      view_fov->down_degrees < 90 && view_fov->down_degrees > -90 &&
+      view_fov->down_degrees > -view_fov->up_degrees &&
+      view_fov->left_degrees < 90 && view_fov->left_degrees > -90 &&
+      view_fov->left_degrees > -view_fov->right_degrees &&
+      view_fov->right_degrees < 90 && view_fov->right_degrees > -90 &&
+      view_fov->right_degrees > -view_fov->left_degrees) {
+    ret_fov->up_degrees = view_fov->up_degrees;
+    ret_fov->down_degrees = view_fov->down_degrees;
+    ret_fov->left_degrees = view_fov->left_degrees;
+    ret_fov->right_degrees = view_fov->right_degrees;
   } else {
-    ret->field_of_view->up_degrees = kDefaultFOV;
-    ret->field_of_view->down_degrees = kDefaultFOV;
-    ret->field_of_view->left_degrees = kDefaultFOV;
-    ret->field_of_view->right_degrees = kDefaultFOV;
+    ret_fov->up_degrees = kDefaultFOV;
+    ret_fov->down_degrees = kDefaultFOV;
+    ret_fov->left_degrees = kDefaultFOV;
+    ret_fov->right_degrees = kDefaultFOV;
   }
 
-  if (IsValidTransform(view->mojo_from_view)) {
-    ret->mojo_from_view = view->mojo_from_view;
+  if (IsValidTransform(view->geometry->mojo_from_view)) {
+    ret->geometry->mojo_from_view = view->geometry->mojo_from_view;
   }
-  // else, ret->mojo_from_view remains the identity transform
+  // else, ret->geometry->mojo_from_view remains the identity transform
 
   // Renderwidth/height
   int kMaxSize = 16384;

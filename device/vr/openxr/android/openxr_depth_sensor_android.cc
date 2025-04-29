@@ -182,7 +182,7 @@ void CopyDepthData(base::span<const float> input,
   const size_t width = image_size.width();
   const size_t height = image_size.height();
   const gfx::Transform view_from_eye_screen =
-      GetScreenFromCamera(view->field_of_view).GetCheckedInverse();
+      GetScreenFromCamera(view->geometry->field_of_view).GetCheckedInverse();
   const gfx::Transform depth_screen_from_depth =
       GetScreenFromCamera(XrFovToMojomFov(depth_view.fov));
 
@@ -193,7 +193,7 @@ void CopyDepthData(base::span<const float> input,
   const auto depth_from_mojom =
       XrPoseToGfxTransform(depth_view.pose).GetCheckedInverse() *
       local_from_mojom;
-  const auto& mojom_from_view = view->mojo_from_view;
+  const auto& mojom_from_view = view->geometry->mojo_from_view;
   const gfx::Transform depth_screen_from_eye_screen =
       depth_screen_from_depth * depth_from_mojom * mojom_from_view *
       view_from_eye_screen;

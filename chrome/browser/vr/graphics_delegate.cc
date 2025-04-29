@@ -37,15 +37,16 @@ CameraModel CameraModelViewProjFromXRView(
 
   // TODO(crbug.com/40684534): mojo space is currently equivalent to
   // world space, so the view matrix is world_from_view.
-  model.view_matrix = view->mojo_from_view;
+  model.view_matrix = view->geometry->mojo_from_view;
 
   bool is_invertible = model.view_matrix.GetInverse(&model.view_matrix);
   DCHECK(is_invertible);
 
-  float up_tan = tanf(base::DegToRad(view->field_of_view->up_degrees));
-  float left_tan = tanf(base::DegToRad(view->field_of_view->left_degrees));
-  float right_tan = tanf(base::DegToRad(view->field_of_view->right_degrees));
-  float down_tan = tanf(base::DegToRad(view->field_of_view->down_degrees));
+  const auto& fov = view->geometry->field_of_view;
+  float up_tan = tanf(base::DegToRad(fov->up_degrees));
+  float left_tan = tanf(base::DegToRad(fov->left_degrees));
+  float right_tan = tanf(base::DegToRad(fov->right_degrees));
+  float down_tan = tanf(base::DegToRad(fov->down_degrees));
   float x_scale = 2.0f / (left_tan + right_tan);
   float y_scale = 2.0f / (up_tan + down_tan);
   // clang-format off
@@ -114,17 +115,17 @@ FovRectangles GraphicsDelegate::GetRecommendedFovs() {
   DCHECK(left_);
   DCHECK(right_);
   FovRectangle left = {
-      left_->field_of_view->left_degrees,
-      left_->field_of_view->right_degrees,
-      left_->field_of_view->down_degrees,
-      left_->field_of_view->up_degrees,
+      left_->geometry->field_of_view->left_degrees,
+      left_->geometry->field_of_view->right_degrees,
+      left_->geometry->field_of_view->down_degrees,
+      left_->geometry->field_of_view->up_degrees,
   };
 
   FovRectangle right = {
-      right_->field_of_view->left_degrees,
-      right_->field_of_view->right_degrees,
-      right_->field_of_view->down_degrees,
-      right_->field_of_view->up_degrees,
+      right_->geometry->field_of_view->left_degrees,
+      right_->geometry->field_of_view->right_degrees,
+      right_->geometry->field_of_view->down_degrees,
+      right_->geometry->field_of_view->up_degrees,
   };
 
   return std::pair<FovRectangle, FovRectangle>(left, right);

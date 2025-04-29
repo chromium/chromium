@@ -191,8 +191,10 @@ void ArCoreGl::Initialize(
   // mojo_from_view is set on every frame in ArCoreGl::GetFrameData and
   // field_of_view is set in ArCoreGl::RecalculateUvsAndProjection, which is
   // called one time on the first frame.
-  view_.mojo_from_view = gfx::Transform();
-  view_.field_of_view = mojom::VRFieldOfView::New(0.0f, 0.0f, 0.0f, 0.0f);
+  view_.geometry = mojom::XRViewGeometry::New();
+  view_.geometry->mojo_from_view = gfx::Transform();
+  view_.geometry->field_of_view =
+      mojom::VRFieldOfView::New(0.0f, 0.0f, 0.0f, 0.0f);
 
   if (!InitializeGl()) {
     std::move(callback).Run(
@@ -567,7 +569,7 @@ void ArCoreGl::RecalculateUvsAndProjection() {
            << " left=" << field_of_view->left_degrees
            << " right=" << field_of_view->right_degrees;
 
-  view_.field_of_view = std::move(field_of_view);
+  view_.geometry->field_of_view = std::move(field_of_view);
 }
 
 void ArCoreGl::GetFrameData(
@@ -729,7 +731,7 @@ void ArCoreGl::GetFrameData(
     // The view properties besides the transform are calculated by
     // ArCoreGl::RecalculateUvsAndProjection() as needed. IF we don't have a
     // pose, the transform from the previous frame is used.
-    view_.mojo_from_view = vr_utils::VrPoseToTransform(pose.get());
+    view_.geometry->mojo_from_view = vr_utils::VrPoseToTransform(pose.get());
   }
 
   frame_data->render_info->views.push_back(view_.Clone());
