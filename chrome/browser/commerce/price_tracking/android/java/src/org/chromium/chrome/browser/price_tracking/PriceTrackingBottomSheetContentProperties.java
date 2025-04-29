@@ -6,11 +6,13 @@ package org.chromium.chrome.browser.price_tracking;
 
 import android.view.View.OnClickListener;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 /** Properties for price tracking bottom sheet content. */
+@NullMarked
 public class PriceTrackingBottomSheetContentProperties {
 
     public static final WritableObjectPropertyKey<String> PRICE_TRACKING_TITLE =
