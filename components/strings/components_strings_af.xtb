@@ -12,7 +12,7 @@
 <translation id="1014509239502131234">Resultaat word ontdoen</translation>
 <translation id="1015730422737071372">Verskaf bykomende besonderhede</translation>
 <translation id="1019413721762100891">Af</translation>
-<translation id="1021753677514347426">Hierdie probleem word veroorsaak deur 'n sertifikaat wat jy of iemand anders op jou toestel geïnstalleer het. Dit is bekend dat hierdie sertifikaat gebruik word om netwerke te monitor en te onderskep, en dit word nie deur Chromium vertrou nie. Terwyl sommige wettige gevalle vir monitering wel bestaan, soos op 'n skool- of maatskappynetwerk, wil Chromium seker maak dat jy weet dit gebeur, selfs al kan jy dit nie keer nie. Monitering kan in enige blaaier of program met toegang tot die web plaasvind.</translation>
+<translation id="1021753677514347426">Hierdie probleem word veroorsaak deur 'n sertifikaat wat jy of iemand anders op jou toestel geïnstalleer het. Dit is bekend dat hierdie sertifikaat gebruik word om netwerke te monitor en te onderskep, en dit word nie deur Chromium vertrou nie. Terwyl sommige wettige gevalle vir monitering wel bestaan, soos op 'n skool- of maatskappynetwerk, wil Chromium seker maak dat jy weet dit gebeur, selfs al kan jy dit nie keer nie. Monitering kan in enige blaaier of app met toegang tot die web plaasvind.</translation>
 <translation id="1024111578869940408">Aanvallers boots soms werwe na deur veranderinge aan die webadres te maak wat moeilik is om te sien.</translation>
 <translation id="1024913885641459127">Produkresensies en prysvergelykings</translation>
 <translation id="102916930470544692">Wagwoordsleutel</translation>
@@ -191,7 +191,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="1314784609072437689">sleutelbordtersydestelling</translation>
 <translation id="1316805916535763484">Oop aanlyn kursusse</translation>
 <translation id="1318023360584041678">Gestoor in oortjiegroep</translation>
-<translation id="1319245136674974084">Moenie weer vir hierdie program vra nie</translation>
+<translation id="1319245136674974084">Moenie weer vir hierdie app vra nie</translation>
 <translation id="1322083935398004629">Politiek</translation>
 <translation id="132301787627749051">Soek vir knipbordprent</translation>
 <translation id="1323433172918577554">Wys meer</translation>
@@ -1057,7 +1057,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="28618371182701850">Elektriese en inpropvoertuie</translation>
 <translation id="287387905105155974">Hulpborrel</translation>
 <translation id="28761159517501904">Flieks</translation>
-<translation id="2876489322757410363">Verlaat tans Incognitomodus om deur 'n eksterne program te betaal. Gaan voort?</translation>
+<translation id="2876489322757410363">Verlaat tans Incognitomodus om deur 'n eksterne app te betaal. Gaan voort?</translation>
 <translation id="2876949457278336305"><ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk Tab en dan Enter om jou Veiligblaai en meer in Chrome-instellings te bestuur</translation>
 <translation id="2878197950673342043">Plakkaatvou</translation>
 <translation id="2878424575911748999">A1</translation>
@@ -1500,7 +1500,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3600492954573979888">Knoppie om Google se privaatheidinstellings te bestuur; aktiveer om na jou Google-rekening se privaatheidinstellings toe te gaan</translation>
 <translation id="3602695245205338770">Kies afbetaalverskaffer</translation>
-<translation id="3603507503523709">Jou administrateur blokkeer die program</translation>
+<translation id="3603507503523709">Jou administrateur blokkeer die app</translation>
 <translation id="3605899229568538311">5x5 dm.</translation>
 <translation id="3606917451836803637">TV-programme</translation>
 <translation id="3608932978122581043">Stroomoriëntasie</translation>
@@ -1528,7 +1528,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3638102297696182302">Hervat Help my skryf. Tab-sleutel en druk Enter om oop te maak</translation>
 <translation id="3641116835972736297">Amerikaanse voetbal</translation>
 <translation id="3642196846309122856">Probeer jou lêers weer aflaai.</translation>
-<translation id="3642638418806704195">Program:</translation>
+<translation id="3642638418806704195">App:</translation>
 <translation id="3646643500201740985">Meet hoe goed ’n advertensie vaar</translation>
 <translation id="3647286794400715637">Elke URL-stringinskrywing moet 1 tot 2 URL'e bevat.</translation>
 <translation id="3647400963805615193">Maak Chrome-wenkknoppie toe, druk Enter om toe te maak, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
@@ -2144,7 +2144,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="4728558894243024398">Platform</translation>
 <translation id="4729147136006144950">Liefdadigheid en filantropie</translation>
 <translation id="4730977633786878901">Resensies</translation>
-<translation id="4731638775147756694">Jou administrateur het hierdie program geblokkeer</translation>
+<translation id="4731638775147756694">Jou administrateur het hierdie app geblokkeer</translation>
 <translation id="4732860731866514038">Laai tans taalpakket vir <ph name="LANGUAGE" /> af … <ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992"><ph name="URL" /> wil jou toestel se ligging gebruik</translation>
 <translation id="473414950835101501">Gebruik jou kameras</translation>
@@ -2289,7 +2289,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="4961708452830821006">Gee in <ph name="LINK" /> vir Chrome toegang om jou mikrofoon te gebruik.</translation>
 <translation id="4963413887558778009">Landskapontwerp</translation>
 <translation id="4967366744630699583">Wysig adres</translation>
-<translation id="4968522289500246572">Hierdie program is vir mobiele toestelle ontwerp en sy grootte is dalk nie maklik om te verander nie. Die program sal dalk kwessies ervaar of herbegin.</translation>
+<translation id="4968522289500246572">Hierdie app is vir mobiele toestelle ontwerp en sy grootte is dalk nie maklik om te verander nie. Die app sal dalk kwessies ervaar of herbegin.</translation>
 <translation id="4968665849807487749">Kan vra om vensters op al jou skerms te bestuur</translation>
 <translation id="4969341057194253438">Vee opname uit</translation>
 <translation id="4973922308112707173">Dubbelpons bo</translation>
@@ -2377,7 +2377,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="5123433949759960244">Basketbal</translation>
 <translation id="5125751979347152379">Ongeldige URL.</translation>
 <translation id="512592033764059484">Sokker</translation>
-<translation id="512670116361803001"><ph name="APP_NAME" /> se grootte is dalk nie maklik om te verander nie. Gebruik voorafgestelde venstergroottes om te verhoed dat die program kwessies ervaar.</translation>
+<translation id="512670116361803001"><ph name="APP_NAME" /> se grootte is dalk nie maklik om te verander nie. Gebruik voorafgestelde venstergroottes om te verhoed dat die app kwessies ervaar.</translation>
 <translation id="512756860033933700">Sleutelbordsluiting word toegelaat</translation>
 <translation id="5127934926273826089">Blomme</translation>
 <translation id="5129094684098010260">Kaart is net op toestel gestoor</translation>
@@ -2502,7 +2502,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="5332769172018416402">Vra in ’n boodskap</translation>
 <translation id="533323551986281710">Handel se onderste blad het teen volle hoogte oopgemaak</translation>
 <translation id="5334013548165032829">Gedetailleerde stelselloglêers</translation>
-<translation id="5340250774223869109">Program word geblokkeer</translation>
+<translation id="5340250774223869109">App word geblokkeer</translation>
 <translation id="5342693890921195472">min. gelede</translation>
 <translation id="534295439873310000">NFC-toestelle</translation>
 <translation id="5344522958567249764">Bestuur advertensieprivaatheid</translation>
@@ -3177,7 +3177,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="6487678699866233349">Wêreldmusiek</translation>
 <translation id="6489534406876378309">Begin om omvalle op te laai</translation>
 <translation id="6490119919181773296">Babas en kleuters</translation>
-<translation id="6493924760403974580">Hierdie program steun net hierdie grootte.</translation>
+<translation id="6493924760403974580">Hierdie app steun net hierdie grootte.</translation>
 <translation id="6494750904506170417">opspringers en herleidings</translation>
 <translation id="6495664197699704593">Hierdie wagwoord word net op hierdie toestel gestoor. Om dit op jou ander toestelle te gebruik, <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="6499038740797743453">Stel wagwoord terug?</translation>
@@ -3656,7 +3656,7 @@ Bykomende besonderhede:
 <translation id="7372526636730851647">Foto (glans)</translation>
 <translation id="7372973238305370288">soekresultaat</translation>
 <translation id="7374461526650987610">Protokolhanteerders</translation>
-<translation id="7374733840632556089">Hierdie probleem word veroorsaak deur 'n sertifikaat wat jy of iemand anders op jou toestel geïnstalleer het. Dit is bekend dat hierdie sertifikaat gebruik word om netwerke te monitor en te onderskep, en dit word nie deur Chrome vertrou nie. Terwyl sommige wettige gevalle vir monitering wel bestaan, soos op 'n skool- of maatskappynetwerk, wil Chrome seker maak dat jy weet dit gebeur, selfs al kan jy dit nie keer nie. Monitering kan in enige blaaier of program met toegang tot die web plaasvind.</translation>
+<translation id="7374733840632556089">Hierdie probleem word veroorsaak deur 'n sertifikaat wat jy of iemand anders op jou toestel geïnstalleer het. Dit is bekend dat hierdie sertifikaat gebruik word om netwerke te monitor en te onderskep, en dit word nie deur Chrome vertrou nie. Terwyl sommige wettige gevalle vir monitering wel bestaan, soos op 'n skool- of maatskappynetwerk, wil Chrome seker maak dat jy weet dit gebeur, selfs al kan jy dit nie keer nie. Monitering kan in enige blaaier of app met toegang tot die web plaasvind.</translation>
 <translation id="7375532151824574023">{NUM_COOKIES,plural, =0{Geen werwe toegelaat nie}=1{1 werf toegelaat}other{# werwe toegelaat}}</translation>
 <translation id="7375818412732305729">Lêer is aangeheg</translation>
 <translation id="7376031331622621328">Handel se onderste blad</translation>
@@ -3785,7 +3785,7 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="755597522379497407">Biologiese wetenskappe</translation>
 <translation id="7556328470713619625">Gebruik ’n toegangsleutel</translation>
 <translation id="7557077170802745837">Samesmeltings en verkrygings</translation>
-<translation id="7559278538486662777">Hierdie program se grootte kan nie verander word nie.</translation>
+<translation id="7559278538486662777">Hierdie app se grootte kan nie verander word nie.</translation>
 <translation id="7561784249784255101">Digitale veelsydige disket</translation>
 <translation id="7564049878696755256">Jy kan toegang tot jou <ph name="ORG_NAME" />-rekening verloor of identiteitdiefstal ervaar. Chrome beveel aan dat jy jou wagwoord nou verander.</translation>
 <translation id="7564667064360547717">Hemde en boklere</translation>
@@ -4174,7 +4174,7 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="8251493595871259082">Vul jou adres in met minder tikwerk</translation>
 <translation id="8252991034201168845">Knoppie om toeganklikheidsinstellings te bestuur. Druk Enter om jou toeganklikheidsnutsgoed in Chrome-bedryfstelselinstellings te personaliseer</translation>
 <translation id="8253091569723639551">Faktureringadres word vereis</translation>
-<translation id="8257387598443225809">Hierdie program is vir mobiele toestelle ontwerp</translation>
+<translation id="8257387598443225809">Hierdie app is vir mobiele toestelle ontwerp</translation>
 <translation id="8259239120149678929">TV-dokumentêr en -niefiksie</translation>
 <translation id="825929999321470778">Wys alle gestoorde wagwoorde</translation>
 <translation id="8261506727792406068">Vee uit</translation>
@@ -4569,7 +4569,7 @@ Bykomende besonderhede:
 <translation id="8975012916872825179">Sluit inligting soos foonnommers, e-posadresse en versendingadresse in</translation>
 <translation id="8975263830901772334">Name van lêers wat jy druk</translation>
 <translation id="8982884016487650216">Het PDF klaar gelaai</translation>
-<translation id="8983369100812962543">Jy kan nou die grootte van die program verander</translation>
+<translation id="8983369100812962543">Jy kan nou die grootte van die app verander</translation>
 <translation id="8985112471026018799">Stoor kaart om vinniger deur die betaalpunt te gaan</translation>
 <translation id="8987245424886630962"><ph name="VIEW_CHROME_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk Tab en dan Enter om jou blaaigeskiedenis in Chrome te bekyk</translation>
 <translation id="8987663052629670333">Fotodrukdienste</translation>

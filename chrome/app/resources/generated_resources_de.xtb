@@ -1054,7 +1054,7 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1709762881904163296">Netzwerkeinstellungen</translation>
 <translation id="1709916727352927457">Passkey löschen</translation>
 <translation id="1709972045049031556">Teilen nicht möglich</translation>
-<translation id="1712143791363119140">Gestartet</translation>
+<translation id="1712143791363119140">Läuft</translation>
 <translation id="1714326320203665217">Dateien zur Annotation von Hauptknoten wurden heruntergeladen</translation>
 <translation id="1714644264617423774">Aktiviere die Bedienungshilfen, damit dein Gerät leichter zu verwenden ist. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
 <translation id="1716034099915639464">Websitedaten und Berechtigungen für <ph name="SITE_NAME" /> und die auf ihr installierten Apps löschen?</translation>
@@ -2147,7 +2147,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="2464075479326723132">Dir werden Dateien vorgeschlagen, mit denen du bei Microsoft SharePoint und OneDrive einfacher dort weitermachen kannst, wo du zuletzt aufgehört hast.
         <ph name="BREAK" />
         <ph name="BREAK" />
-        Du kannst Einstellungen über das Kartenmenü verwalten oder weitere Optionen unter „Chrome anpassen“ aufrufen.</translation>
+        Über das Kartenmenü kannst du die Einstellungen verwalten und unter „Chrome anpassen“ kannst du weitere Optionen aufrufen.</translation>
 <translation id="2464079411014186876">Eiscreme</translation>
 <translation id="2467755475704469005">Kein Gerät erkannt. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="2467933879189426525">Tabgruppe mit <ph name="OWNER_FIRST_NAME" /> und <ph name="NUM_OTHER_MEMBERS" /> weiteren Personen beitreten</translation>
@@ -2223,7 +2223,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="251425554130284360">Du siehst von dir besuchte Seiten und vorgeschlagene Suchanfragen, damit du deine letzte Aktivität schnell fortsetzen kannst.
         <ph name="BREAK" />
         <ph name="BREAK" />
-        Du kannst Einstellungen über das Kartenmenü verwalten oder weitere Optionen unter „Chrome anpassen“ aufrufen.</translation>
+        Über das Kartenmenü kannst du die Einstellungen verwalten und unter „Chrome anpassen“ kannst du weitere Optionen aufrufen.</translation>
 <translation id="2514326558286966059">Mit dem Fingerabdruck schneller entsperren</translation>
 <translation id="2514465118223423406">Wenn eine Maus angeschlossen ist</translation>
 <translation id="2514938842036917377">Dadurch werden <ph name="TOTAL_USAGE" /> Daten gelöscht, die von <ph name="SITE_NAME" />, ähnlichen Websites oder installierten Apps gespeichert wurden</translation>
@@ -3314,7 +3314,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3307283429759317478">Hier siehst du Tabs von anderen Geräten, damit du schnell dort weitermachen kannst, wo du zuletzt aufgehört hast.
         <ph name="BREAK" />
         <ph name="BREAK" />
-        Du kannst Einstellungen über das Kartenmenü verwalten oder weitere Optionen unter „Chrome anpassen“ aufrufen.</translation>
+        Über das Kartenmenü kannst du die Einstellungen verwalten und unter „Chrome anpassen“ kannst du weitere Optionen aufrufen.</translation>
 <translation id="3308134619352333507">Schaltfläche ausblenden</translation>
 <translation id="3308604065765626613">{GROUP_COUNT,plural, =1{Die Tabs bleiben auf diesem Gerät geöffnet, aber die Gruppe wird endgültig gelöscht.}other{Die Tabs bleiben auf diesem Gerät geöffnet, aber die Gruppen werden endgültig gelöscht.}}</translation>
 <translation id="3308852433423051161">Google Assistant wird geladen...</translation>
@@ -4509,7 +4509,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4114524937989710624">Dir werden Dateivorschläge angezeigt, damit du bei Google Drive einfacher dort weitermachen kannst, wo du zuletzt aufgehört hast.
         <ph name="BREAK" />
         <ph name="BREAK" />
-        Du kannst Einstellungen über das Kartenmenü verwalten oder weitere Optionen unter „Chrome anpassen“ aufrufen.</translation>
+        Über das Kartenmenü kannst du die Einstellungen verwalten und unter „Chrome anpassen“ kannst du weitere Optionen aufrufen.</translation>
 <translation id="4115002065223188701">Netzwerk außer Reichweite</translation>
 <translation id="4115378294792113321">Magenta</translation>
 <translation id="4116480382905329353">1‑mal erkannt</translation>
@@ -8248,7 +8248,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="6830787477693252535">Du siehst deinen Kalender, damit du leichter deinen nächsten Termin in Google Kalender finden kannst.
         <ph name="BREAK" />
         <ph name="BREAK" />
-        Du kannst Einstellungen über das Kartenmenü verwalten oder weitere Optionen unter „Chrome anpassen“ aufrufen.</translation>
+        Über das Kartenmenü kannst du die Einstellungen verwalten und unter „Chrome anpassen“ kannst du weitere Optionen aufrufen.</translation>
 <translation id="6831043979455480757">Übersetzen</translation>
 <translation id="6832218595502288407">Linksbündig</translation>
 <translation id="6832815922179448173">{MULTI_GROUP_TAB_COUNT,plural, =0{Tab entfernen und Gruppe löschen?}=1{Tabs entfernen und Gruppe löschen?}other{Tabs entfernen und Gruppen löschen?}}</translation>
@@ -10830,7 +10830,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8660288500924118793">Du siehst deinen Kalender, damit du leichter deinen nächsten Termin im Outlook-Kalender finden kannst.
        <ph name="BREAK" />
        <ph name="BREAK" />
-       Du kannst Einstellungen über das Kartenmenü verwalten oder weitere Optionen unter „Chrome anpassen“ aufrufen.</translation>
+       Über das Kartenmenü kannst du die Einstellungen verwalten und unter „Chrome anpassen“ kannst du weitere Optionen aufrufen.</translation>
 <translation id="8661290697478713397">Link in Inko&amp;gnitofenster öffnen</translation>
 <translation id="8662474268934425487">In <ph name="SITE_ETLD_PLUS_ONE" /> anmelden</translation>
 <translation id="8662671328352114214">Mit <ph name="TYPE" /> verbinden</translation>

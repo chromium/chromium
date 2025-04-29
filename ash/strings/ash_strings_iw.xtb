@@ -217,7 +217,7 @@
 <translation id="1677507110654891115">התכונה <ph name="FEATURE_NAME" /> לא מחוברת.</translation>
 <translation id="1677582821739292812">מישהו מביט במסך שלך</translation>
 <translation id="1679841710523778799">הגברת הבהירות</translation>
-<translation id="1680659827022803830">לחצנים לשיחות וידאו</translation>
+<translation id="1680659827022803830">כפתורים לשיחות וידאו</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1696984622403682083">אפשר להשבית את התכונה הזו בכל שלב בהגדרות. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="1698080062160024910">טיימר של <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
@@ -1911,7 +1911,7 @@
 <translation id="7219573373513695352">אין מכשירים מחוברים</translation>
 <translation id="7228968829656641943">‏בחירה כדי לחפש במסך שלי. כדי לנווט באמצעות המקלדת, מקישים על מקש Tab ואז על מקש הרווח.</translation>
 <translation id="7229029500464092426">זיכרון פנוי: <ph name="AVAILABLE_MEMORY" /> | סה"כ: <ph name="TOTAL_MEMORY" /></translation>
-<translation id="7239814253344511868">שני לחצני העכבר</translation>
+<translation id="7239814253344511868">שני כפתורי העכבר</translation>
 <translation id="7240636904654154599">‏נוצר גיליון אלקטרוני ב-Google Sheets</translation>
 <translation id="7244725679040769470">רמת הטעינה שנותרה בסוללה: %<ph name="PERCENTAGE" />. צריך לחבר את המכשיר למקור חשמל.</translation>
 <translation id="7246071203293827765">‏<ph name="UPDATE_TEXT" />. יש להפעיל את ה-Chromebook מחדש כדי להחיל עדכון. התהליך עשוי להימשך עד דקה אחת.</translation>
@@ -2041,7 +2041,7 @@
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (בעלים)</translation>
 <translation id="7647488630410863958">יש לבטל את נעילת המכשיר כדי להציג את ההודעות</translation>
 <translation id="7649070708921625228">עזרה</translation>
-<translation id="7654687942625752712">כדי להשבית את קורא המסך הקולי, צריך ללחוץ על שני לחצני עוצמת הקול למשך חמש שניות.</translation>
+<translation id="7654687942625752712">כדי להשבית את קורא המסך הקולי, צריך ללחוץ על שני כפתורי עוצמת הקול למשך חמש שניות.</translation>
 <translation id="7654916369822103315">‏‫<ph name="DISPLAY_NAME" /> השתנה לרזולוציה של <ph name="FALLBACK_RESOLUTION" /> (‎<ph name="FALLBACK_REFRESH_RATE" /> Hz). בגלל מגבלות רוחב הפס של היציאה, המסך לא יכול לתמוך ברזולוציה של <ph name="SPECIFIED_RESOLUTION" /> (‎<ph name="SPECIFIED_REFRESH_RATE" /> Hz). בלי אישור, ההגדרות הקודמות ישוחזרו בעוד <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="7658239707568436148">ביטול</translation>
 <translation id="7659861092419699379">שולחן העבודה הווירטואלי והחלונות שלו נסגרו</translation>
