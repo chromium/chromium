@@ -33,6 +33,7 @@ class OAuthTokenGetter;
 
 namespace protocol {
 class ConnectionToHost;
+class FrameConsumer;
 class SessionManager;
 class VideoRenderer;
 }  // namespace protocol
@@ -44,6 +45,7 @@ class RemotingClient : public SignalStrategy::Listener,
  public:
   RemotingClient(
       base::OnceClosure quit_closure,
+      protocol::FrameConsumer* frame_consumer,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
   RemotingClient(const RemotingClient&) = delete;
@@ -107,9 +109,12 @@ class RemotingClient : public SignalStrategy::Listener,
   // //remoting/signaling so it can be used in the client.
   std::unique_ptr<SignalStrategy> signal_strategy_;
 
+  // |frame_consumer_| must outlive |video_renderer_|.
+  const raw_ptr<protocol::FrameConsumer> frame_consumer_;
+
   // Session related members.
-  std::unique_ptr<protocol::SessionManager> session_manager_;
   std::unique_ptr<protocol::ConnectionToHost> connection_;
+  std::unique_ptr<protocol::SessionManager> session_manager_;
   std::unique_ptr<protocol::VideoRenderer> video_renderer_;
 
   // Used to make service requests.

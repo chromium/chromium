@@ -16,6 +16,7 @@
 #include "mojo/core/embedder/embedder.h"
 #include "net/url_request/url_request_context_getter.h"
 #include "remoting/base/url_request_context_getter.h"
+#include "remoting/client/cli/logging_frame_consumer.h"
 #include "remoting/client/common/remoting_client.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/transitional_url_loader_factory_owner.h"
@@ -71,10 +72,12 @@ int main(int argc, char const* argv[]) {
 
   base::RunLoop run_loop;
 
+  remoting::LoggingFrameConsumer frame_consumer;
+
   remoting::RemotingClient remoting_client(
       base::BindPostTask(io_task_executor.task_runner(),
                          run_loop.QuitClosure()),
-      url_loader_factory_owner.GetURLLoaderFactory());
+      &frame_consumer, url_loader_factory_owner.GetURLLoaderFactory());
 
   remoting_client.StartSession(support_access_code, {access_token, user_email});
 

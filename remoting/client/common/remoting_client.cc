@@ -47,9 +47,13 @@ namespace remoting {
 
 RemotingClient::RemotingClient(
     base::OnceClosure quit_closure,
+    protocol::FrameConsumer* frame_consumer,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : quit_closure_(std::move(quit_closure)),
-      url_loader_factory_(url_loader_factory) {}
+      frame_consumer_(frame_consumer),
+      url_loader_factory_(url_loader_factory) {
+  CHECK(frame_consumer_);
+}
 
 RemotingClient::~RemotingClient() {
   if (signal_strategy_) {
@@ -158,8 +162,7 @@ void RemotingClient::StartConnection() {
           std::move(client_auth_config)));
 
   CLIENT_LOG << "Creating video renderer...";
-  // TODO: joedow - Provide a real FrameConsumer instance.
-  video_renderer_ = std::make_unique<SoftwareVideoRenderer>(nullptr);
+  video_renderer_ = std::make_unique<SoftwareVideoRenderer>(frame_consumer_);
 
   CLIENT_LOG << "Establishing connection to host...";
   connection_ = std::make_unique<protocol::IceConnectionToHost>();

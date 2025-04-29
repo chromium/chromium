@@ -6,7 +6,11 @@ import("//remoting/remoting_options.gni")
 
 if (is_linux) {
   executable("remoting_client_main") {
-    sources = [ "remoting_client_main.cc" ]
+    sources = [
+      "logging_frame_consumer.cc",
+      "logging_frame_consumer.h",
+      "remoting_client_main.cc",
+    ]
 
     deps = [
       "//base",
@@ -14,6 +18,7 @@ if (is_linux) {
       "//net",
       "//remoting/base",
       "//remoting/client/common",
+      "//remoting/protocol",
       "//remoting/resources",
       "//services/network:network_service",
       "//services/network/public/cpp",
