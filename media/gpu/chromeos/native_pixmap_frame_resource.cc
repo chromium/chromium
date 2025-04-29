@@ -91,7 +91,7 @@ scoped_refptr<NativePixmapFrameResource> NativePixmapFrameResource::Create(
   return Create(visible_rect, natural_size, timestamp, buffer_usage,
                 base::MakeRefCounted<gfx::NativePixmapDmaBuf>(
                     coded_size, *buffer_format,
-                    std::move(gmb_handle.native_pixmap_handle)));
+                    std::move(gmb_handle).native_pixmap_handle()));
 }
 
 scoped_refptr<NativePixmapFrameResource> NativePixmapFrameResource::Create(
@@ -310,12 +310,10 @@ NativePixmapFrameResource::CreateGpuMemoryBufferHandle() const {
     return gfx::GpuMemoryBufferHandle();  // Invalid
   }
 
-  gfx::GpuMemoryBufferHandle gmb_handle;
-  gmb_handle.type = gfx::GpuMemoryBufferType::NATIVE_PIXMAP;
+  gfx::GpuMemoryBufferHandle gmb_handle(std::move(native_pixmap_handle));
   // |gmb_handle.id| is set to the GenericSharedMemoryId from |this|. This
   // allows for more predictable caching when converting to a VideoFrame.
   gmb_handle.id = id_;
-  gmb_handle.native_pixmap_handle = std::move(native_pixmap_handle);
   return gmb_handle;
 }
 

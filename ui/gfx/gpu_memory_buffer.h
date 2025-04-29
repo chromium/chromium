@@ -154,6 +154,9 @@ struct COMPONENT_EXPORT(GFX) GpuMemoryBufferHandle {
 #if BUILDFLAG(IS_WIN)
   explicit GpuMemoryBufferHandle(DXGIHandle handle);
 #endif
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
+  explicit GpuMemoryBufferHandle(gfx::NativePixmapHandle native_pixmap_handle);
+#endif
 #if BUILDFLAG(IS_ANDROID)
   explicit GpuMemoryBufferHandle(
       base::android::ScopedHardwareBufferHandle handle);
@@ -193,6 +196,18 @@ struct COMPONENT_EXPORT(GFX) GpuMemoryBufferHandle {
     return std::move(region_);
   }
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
+  const NativePixmapHandle& native_pixmap_handle() const& {
+    CHECK_EQ(type, NATIVE_PIXMAP);
+    return native_pixmap_handle_;
+  }
+  NativePixmapHandle native_pixmap_handle() && {
+    CHECK_EQ(type, NATIVE_PIXMAP);
+    type = EMPTY_BUFFER;
+    return std::move(native_pixmap_handle_);
+  }
+#endif
+
 #if BUILDFLAG(IS_WIN)
   const DXGIHandle& dxgi_handle() const& {
     CHECK_EQ(type, DXGI_SHARED_HANDLE);
@@ -210,9 +225,8 @@ struct COMPONENT_EXPORT(GFX) GpuMemoryBufferHandle {
 
   uint32_t offset = 0;
   uint32_t stride = 0;
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
-  NativePixmapHandle native_pixmap_handle;
-#elif BUILDFLAG(IS_APPLE)
+
+#if BUILDFLAG(IS_APPLE)
   ScopedIOSurface io_surface;
 #elif BUILDFLAG(IS_ANDROID)
   base::android::ScopedHardwareBufferHandle android_hardware_buffer;
@@ -225,6 +239,11 @@ struct COMPONENT_EXPORT(GFX) GpuMemoryBufferHandle {
   // This naming isn't entirely styleguide-compliant, but per the TODO, the end
   // goal is to make `this` an encapsulated class.
   base::UnsafeSharedMemoryRegion region_;
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
+  NativePixmapHandle native_pixmap_handle_;
+#endif
+
 #if BUILDFLAG(IS_WIN)
   DXGIHandle dxgi_handle_;
 #endif  // BUILDFLAG(IS_WIN)

@@ -350,9 +350,7 @@ ExternalVkImageBacking::CreateWithPixmap(
   }
 
   // Create a handle from pixmap.
-  gfx::GpuMemoryBufferHandle handle;
-  handle.type = gfx::GpuMemoryBufferType::NATIVE_PIXMAP;
-  handle.native_pixmap_handle = pixmap->ExportHandle();
+  gfx::GpuMemoryBufferHandle handle(pixmap->ExportHandle());
 
   // Create backing from the handle.
   return CreateFromGMB(std::move(context_state), command_pool, mailbox,
@@ -403,7 +401,7 @@ ExternalVkImageBacking::ExternalVkImageBacking(
                   ->GetSurfaceFactoryOzone()
                   ->CreateNativePixmapFromHandle(
                       kNullSurfaceHandle, size, ToBufferFormat(format),
-                      std::move(handle.native_pixmap_handle));
+                      std::move(handle).native_pixmap_handle());
   }
 #endif  // BUILDFLAG(IS_OZONE)
 }
@@ -676,10 +674,7 @@ scoped_refptr<gfx::NativePixmap> ExternalVkImageBacking::GetNativePixmap() {
 
 gfx::GpuMemoryBufferHandle ExternalVkImageBacking::GetGpuMemoryBufferHandle() {
 #if BUILDFLAG(IS_OZONE)
-  gfx::GpuMemoryBufferHandle handle;
-  handle.type = gfx::GpuMemoryBufferType::NATIVE_PIXMAP;
-  handle.native_pixmap_handle = pixmap_->ExportHandle();
-  return handle;
+  return gfx::GpuMemoryBufferHandle(pixmap_->ExportHandle());
 #else
   NOTREACHED() << "Illegal access to GetGpuMemoryBufferHandle for non OZONE "
                   "platforms from this backing.";

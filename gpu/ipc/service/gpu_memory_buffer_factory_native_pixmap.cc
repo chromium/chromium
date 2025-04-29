@@ -124,13 +124,13 @@ GpuMemoryBufferFactoryNativePixmap::CreateGpuMemoryBufferFromNativePixmap(
     return gfx::GpuMemoryBufferHandle();
   }
 
-  gfx::GpuMemoryBufferHandle new_handle;
-  new_handle.type = gfx::NATIVE_PIXMAP;
-  new_handle.id = id;
-  new_handle.native_pixmap_handle = pixmap->ExportHandle();
-
-  if (new_handle.native_pixmap_handle.planes.empty())
+  gfx::NativePixmapHandle native_pixmap_handle = pixmap->ExportHandle();
+  if (native_pixmap_handle.planes.empty()) {
     return gfx::GpuMemoryBufferHandle();
+  }
+
+  gfx::GpuMemoryBufferHandle new_handle(std::move(native_pixmap_handle));
+  new_handle.id = id;
 
   // TODO(reveman): Remove this once crbug.com/628334 has been fixed.
   {

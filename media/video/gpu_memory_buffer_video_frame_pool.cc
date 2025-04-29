@@ -1059,7 +1059,8 @@ scoped_refptr<VideoFrame> GpuMemoryBufferVideoFramePool::PoolImpl::
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   is_webgpu_compatible =
-      handle.native_pixmap_handle.supports_zero_copy_webgpu_import;
+      handle.type == gfx::NATIVE_PIXMAP &&
+      handle.native_pixmap_handle().supports_zero_copy_webgpu_import;
 #endif
 
   // Bind the texture and create or rebind the image. This image may be read

@@ -193,8 +193,7 @@ void VaapiImageDecodeAcceleratorWorker::DecodeTask(
   }
   auto result =
       std::make_unique<gpu::ImageDecodeAcceleratorWorker::DecodeResult>();
-  result->handle.type = gfx::GpuMemoryBufferType::NATIVE_PIXMAP;
-  result->handle.native_pixmap_handle = std::move(pixmap_handle);
+  result->handle = gfx::GpuMemoryBufferHandle(std::move(pixmap_handle));
   result->visible_size = exported_pixmap->pixmap->GetBufferSize();
   result->buffer_format = exported_pixmap->pixmap->GetBufferFormat();
   result->buffer_byte_size = exported_pixmap->byte_size;

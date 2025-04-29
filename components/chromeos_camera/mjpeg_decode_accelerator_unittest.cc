@@ -342,8 +342,9 @@ MjpegDecodeAcceleratorTestEnvironment::CreateDmaBufVideoFrame(
     return nullptr;
   }
 
+  auto native_pixmap_handle = gmb_handle.Clone().native_pixmap_handle();
   const size_t num_planes = media::VideoFrame::NumPlanes(format);
-  if (gmb_handle.native_pixmap_handle.planes.size() != num_planes) {
+  if (native_pixmap_handle.planes.size() != num_planes) {
     LOG(ERROR) << "The number of planes of NativePixmapHandle doesn't match "
                   "the pixel format";
     return nullptr;
@@ -355,7 +356,7 @@ MjpegDecodeAcceleratorTestEnvironment::CreateDmaBufVideoFrame(
     return nullptr;
   }
   for (size_t i = 0; i < num_planes; i++) {
-    gfx::NativePixmapPlane& plane = gmb_handle.native_pixmap_handle.planes[i];
+    gfx::NativePixmapPlane& plane = native_pixmap_handle.planes[i];
     memset(gmb->memory(i), 0, plane.size);
   }
   gmb->Unmap();
@@ -364,7 +365,7 @@ MjpegDecodeAcceleratorTestEnvironment::CreateDmaBufVideoFrame(
   std::vector<media::ColorPlaneLayout> planes;
   std::vector<base::ScopedFD> dmabuf_fds;
   for (size_t i = 0; i < num_planes; i++) {
-    gfx::NativePixmapPlane& plane = gmb_handle.native_pixmap_handle.planes[i];
+    gfx::NativePixmapPlane& plane = native_pixmap_handle.planes[i];
     planes.emplace_back(base::checked_cast<int32_t>(plane.stride),
                         base::checked_cast<size_t>(plane.offset),
                         base::checked_cast<size_t>(plane.size));
@@ -374,7 +375,7 @@ MjpegDecodeAcceleratorTestEnvironment::CreateDmaBufVideoFrame(
       media::VideoFrameLayout::CreateWithPlanes(
           format, coded_size, std::move(planes),
           media::VideoFrameLayout::kBufferAddressAlignment,
-          gmb_handle.native_pixmap_handle.modifier);
+          native_pixmap_handle.modifier);
   if (!layout) {
     LOG(ERROR) << "Failed to create VideoFrameLayout";
     return nullptr;
@@ -439,12 +440,13 @@ base::ScopedFD MjpegDecodeAcceleratorTestEnvironment::CreateDmaBufFd(
     LOG(ERROR) << "The GpuMemoryBufferHandle doesn't have type NATIVE_PIXMAP";
     return base::ScopedFD();
   }
-  if (gmb_handle.native_pixmap_handle.planes.size() != 1) {
+  auto native_pixmap_handle = std::move(gmb_handle).native_pixmap_handle();
+  if (native_pixmap_handle.planes.size() != 1) {
     LOG(ERROR) << "The number of planes of NativePixmapHandle is not 1 for R_8 "
                   "format";
     return base::ScopedFD();
   }
-  if (gmb_handle.native_pixmap_handle.planes[0].offset != 0) {
+  if (native_pixmap_handle.planes[0].offset != 0) {
     LOG(ERROR) << "The memory offset is not zero";
     return base::ScopedFD();
   }
@@ -457,7 +459,7 @@ base::ScopedFD MjpegDecodeAcceleratorTestEnvironment::CreateDmaBufFd(
   memcpy(gmb->memory(0), data, size);
   gmb->Unmap();
 
-  return std::move(gmb_handle.native_pixmap_handle.planes[0].fd);
+  return std::move(native_pixmap_handle.planes[0].fd);
 }
 
 std::vector<media::VideoPixelFormat>

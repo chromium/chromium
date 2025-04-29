@@ -130,13 +130,13 @@ VulkanImplementationFlatland::CreateImageFromGpuMemoryHandle(
   if (gmb_handle.type != gfx::NATIVE_PIXMAP)
     return nullptr;
 
-  if (!gmb_handle.native_pixmap_handle.buffer_collection_handle) {
+  if (!gmb_handle.native_pixmap_handle().buffer_collection_handle) {
     DLOG(ERROR) << "NativePixmapHandle.buffer_collection_handle is not set.";
     return nullptr;
   }
 
   auto collection = flatland_sysmem_buffer_manager_->GetCollectionByHandle(
-      gmb_handle.native_pixmap_handle.buffer_collection_handle);
+      gmb_handle.native_pixmap_handle().buffer_collection_handle);
   if (!collection) {
     DLOG(ERROR) << "Tried to use an unknown buffer collection ID.";
     return nullptr;
@@ -145,7 +145,7 @@ VulkanImplementationFlatland::CreateImageFromGpuMemoryHandle(
   VkImageCreateInfo vk_image_info = {VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO};
   VkDeviceMemory vk_device_memory = VK_NULL_HANDLE;
   VkDeviceSize vk_device_size = 0;
-  if (!collection->CreateVkImage(gmb_handle.native_pixmap_handle.buffer_index,
+  if (!collection->CreateVkImage(gmb_handle.native_pixmap_handle().buffer_index,
                                  device_queue->GetVulkanDevice(), size,
                                  &vk_image, &vk_image_info, &vk_device_memory,
                                  &vk_device_size)) {
@@ -185,7 +185,7 @@ VulkanImplementationFlatland::CreateImageFromGpuMemoryHandle(
 
   image->set_queue_family_index(VK_QUEUE_FAMILY_EXTERNAL);
   image->set_native_pixmap(collection->CreateNativePixmap(
-      std::move(gmb_handle.native_pixmap_handle), size));
+      std::move(gmb_handle).native_pixmap_handle(), size));
   return image;
 }
 

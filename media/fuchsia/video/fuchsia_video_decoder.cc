@@ -598,17 +598,16 @@ void FuchsiaVideoDecoder::OnStreamProcessorOutputPacket(
   }
 
   if (!output_mailboxes_[buffer_index]) {
-    gfx::GpuMemoryBufferHandle gmb_handle;
-    gmb_handle.type = gfx::NATIVE_PIXMAP;
+    gfx::NativePixmapHandle native_pixmap_handle;
     auto status = output_buffer_collection_handle_.duplicate(
-        ZX_RIGHT_SAME_RIGHTS,
-        &gmb_handle.native_pixmap_handle.buffer_collection_handle);
+        ZX_RIGHT_SAME_RIGHTS, &native_pixmap_handle.buffer_collection_handle);
     ZX_DCHECK(status == ZX_OK, status);
-    gmb_handle.native_pixmap_handle.buffer_index = buffer_index;
+    native_pixmap_handle.buffer_index = buffer_index;
 
     output_mailboxes_[buffer_index] = new OutputMailbox(
-        raster_context_provider_, std::move(gmb_handle), coded_size, si_format,
-        client_native_pixmap_factory_.get(),
+        raster_context_provider_,
+        gfx::GpuMemoryBufferHandle(std::move(native_pixmap_handle)), coded_size,
+        si_format, client_native_pixmap_factory_.get(),
         current_config_.color_space_info().ToGfxColorSpace());
   } else {
     raster_context_provider_->SharedImageInterface()->UpdateSharedImage(

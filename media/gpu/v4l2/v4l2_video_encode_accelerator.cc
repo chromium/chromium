@@ -1505,7 +1505,7 @@ bool V4L2VideoEncodeAccelerator::EnqueueInputRecord(
 
       case V4L2_MEMORY_DMABUF: {
         const std::vector<gfx::NativePixmapPlane>& planes =
-            gmb_handle.native_pixmap_handle.planes;
+            gmb_handle.native_pixmap_handle().planes;
         // TODO(crbug.com/901264): The way to pass an offset within a DMA-buf is
         // not defined in V4L2 specification, so we abuse data_offset for now.
         // Fix it when we have the right interface, including any necessary
@@ -1556,7 +1556,7 @@ bool V4L2VideoEncodeAccelerator::EnqueueInputRecord(
     }
     case V4L2_MEMORY_DMABUF: {
       if (!std::move(input_buf).QueueDMABuf(
-              gmb_handle.native_pixmap_handle.planes)) {
+              gmb_handle.native_pixmap_handle().planes)) {
         SetErrorState(
             {EncoderStatus::Codes::kEncoderHardwareDriverError,
              base::StrCat(

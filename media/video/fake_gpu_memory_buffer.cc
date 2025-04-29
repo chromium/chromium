@@ -83,18 +83,18 @@ gfx::GpuMemoryBufferHandle CreatePixmapHandleForTesting(
       GfxBufferFormatToVideoPixelFormat(format);
   CHECK(video_pixel_format);
 
-  gfx::GpuMemoryBufferHandle handle;
-  handle.type = gfx::NATIVE_PIXMAP;
-  handle.id = gfx::GpuMemoryBufferId(buffer_id_generator.GetNext());
-
+  gfx::NativePixmapHandle native_pixmap_handle;
   for (size_t i = 0; i < VideoFrame::NumPlanes(*video_pixel_format); i++) {
     const gfx::Size plane_size_in_bytes =
         VideoFrame::PlaneSize(*video_pixel_format, i, size);
-    handle.native_pixmap_handle.planes.emplace_back(
-        plane_size_in_bytes.width(), 0, plane_size_in_bytes.GetArea(),
-        GetDummyFD());
+    native_pixmap_handle.planes.emplace_back(plane_size_in_bytes.width(), 0,
+                                             plane_size_in_bytes.GetArea(),
+                                             GetDummyFD());
   }
-  handle.native_pixmap_handle.modifier = modifier;
+  native_pixmap_handle.modifier = modifier;
+
+  gfx::GpuMemoryBufferHandle handle(std::move(native_pixmap_handle));
+  handle.id = gfx::GpuMemoryBufferId(buffer_id_generator.GetNext());
   return handle;
 }
 #endif

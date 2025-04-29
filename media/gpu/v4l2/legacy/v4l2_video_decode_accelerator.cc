@@ -452,7 +452,7 @@ void V4L2VideoDecodeAccelerator::AssignPictureBuffersTask(
         // duplicates FD's, when a NativePixmap-based FrameResource is
         // available.
         native_pixmap =
-            frame->CreateGpuMemoryBufferHandle().native_pixmap_handle;
+            frame->CreateGpuMemoryBufferHandle().native_pixmap_handle();
       }
 
       ImportBufferForPictureTask(output_record.picture_id,
@@ -484,7 +484,7 @@ void V4L2VideoDecodeAccelerator::ImportBufferForPicture(
       base::BindOnce(
           &V4L2VideoDecodeAccelerator::ImportBufferForPictureForImportTask,
           base::Unretained(this), picture_buffer_id, pixel_format,
-          std::move(gpu_memory_buffer_handle.native_pixmap_handle)));
+          std::move(gpu_memory_buffer_handle).native_pixmap_handle()));
 }
 
 void V4L2VideoDecodeAccelerator::ImportBufferForPictureForImportTask(

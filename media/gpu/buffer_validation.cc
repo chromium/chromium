@@ -71,24 +71,24 @@ bool VerifyGpuMemoryBufferHandle(
     return false;
   }
   const size_t num_planes = media::VideoFrame::NumPlanes(pixel_format);
-  if (num_planes != gmb_handle.native_pixmap_handle.planes.size() ||
-      num_planes == 0) {
+  const auto& native_pixmap_handle = gmb_handle.native_pixmap_handle();
+  if (num_planes != native_pixmap_handle.planes.size() || num_planes == 0) {
     VLOG(1) << "Invalid number of dmabuf planes passed: "
-            << gmb_handle.native_pixmap_handle.planes.size()
+            << gmb_handle.native_pixmap_handle().planes.size()
             << ", expected: " << num_planes;
     return false;
   }
 
   // Strides monotonically decrease.
   for (size_t i = 1; i < num_planes; i++) {
-    if (gmb_handle.native_pixmap_handle.planes[i - 1].stride <
-        gmb_handle.native_pixmap_handle.planes[i].stride) {
+    if (native_pixmap_handle.planes[i - 1].stride <
+        native_pixmap_handle.planes[i].stride) {
       return false;
     }
   }
 
   for (size_t i = 0; i < num_planes; i++) {
-    const auto& plane = gmb_handle.native_pixmap_handle.planes[i];
+    const auto& plane = native_pixmap_handle.planes[i];
     DVLOG(4) << "Plane " << i << ", offset: " << plane.offset
              << ", stride: " << plane.stride;
 

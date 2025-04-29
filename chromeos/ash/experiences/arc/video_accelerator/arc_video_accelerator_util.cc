@@ -95,9 +95,8 @@ std::optional<gfx::GpuMemoryBufferHandle> CreateGpuMemoryBufferHandle(
     return std::nullopt;
   }
 
-  gfx::GpuMemoryBufferHandle gmb_handle;
-  gmb_handle.type = gfx::NATIVE_PIXMAP;
-  gmb_handle.native_pixmap_handle.modifier = modifier;
+  gfx::NativePixmapHandle native_pixmap_handle;
+  native_pixmap_handle.modifier = modifier;
   for (size_t i = 0; i < num_planes; ++i) {
     // NOTE: planes[i].stride and planes[i].offset both are int32_t. stride and
     // offset in NativePixmapPlane are uint32_t and uint64_t, respectively.
@@ -112,10 +111,11 @@ std::optional<gfx::GpuMemoryBufferHandle> CreateGpuMemoryBufferHandle(
     uint32_t stride = base::checked_cast<uint32_t>(planes[i].stride);
     uint64_t offset = base::checked_cast<uint64_t>(planes[i].offset);
     uint64_t size = base::checked_cast<uint64_t>(planes[i].size);
-    gmb_handle.native_pixmap_handle.planes.emplace_back(
-        stride, offset, size, std::move(scoped_fds[i]));
+    native_pixmap_handle.planes.emplace_back(stride, offset, size,
+                                             std::move(scoped_fds[i]));
   }
 
+  gfx::GpuMemoryBufferHandle gmb_handle(std::move(native_pixmap_handle));
   if (!media::VerifyGpuMemoryBufferHandle(pixel_format, coded_size,
                                           gmb_handle)) {
     return std::nullopt;

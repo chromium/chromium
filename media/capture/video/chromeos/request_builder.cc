@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/check_is_test.h"
 #include "media/capture/video/chromeos/camera_device_context.h"
 #include "mojo/public/cpp/platform/platform_handle.h"
 #include "mojo/public/cpp/system/platform_handle.h"
@@ -80,24 +81,28 @@ cros::mojom::CameraBufferHandlePtr RequestBuilder::CreateCameraBufferHandle(
   buffer_handle->width = buffer_info.dimension.width();
   buffer_handle->height = buffer_info.dimension.height();
 
-  gfx::NativePixmapHandle& native_pixmap_handle =
-      buffer_info.gpu_memory_buffer_handle.native_pixmap_handle;
+  if (buffer_info.gpu_memory_buffer_handle.type == gfx::NATIVE_PIXMAP) {
+    gfx::NativePixmapHandle native_pixmap_handle =
+        std::move(buffer_info.gpu_memory_buffer_handle).native_pixmap_handle();
 
-  size_t num_planes = native_pixmap_handle.planes.size();
-  std::vector<StreamCaptureInterface::Plane> planes(num_planes);
-  for (size_t i = 0; i < num_planes; ++i) {
-    mojo::ScopedHandle mojo_fd = mojo::WrapPlatformHandle(
-        mojo::PlatformHandle(std::move(native_pixmap_handle.planes[i].fd)));
-    if (!mojo_fd.is_valid()) {
-      device_context_->SetErrorState(
-          media::VideoCaptureError::
-              kCrosHalV3BufferManagerFailedToWrapGpuMemoryHandle,
-          FROM_HERE, "Failed to wrap gpu memory handle");
-      return nullptr;
+    size_t num_planes = native_pixmap_handle.planes.size();
+    std::vector<StreamCaptureInterface::Plane> planes(num_planes);
+    for (size_t i = 0; i < num_planes; ++i) {
+      mojo::ScopedHandle mojo_fd = mojo::WrapPlatformHandle(
+          mojo::PlatformHandle(std::move(native_pixmap_handle.planes[i].fd)));
+      if (!mojo_fd.is_valid()) {
+        device_context_->SetErrorState(
+            media::VideoCaptureError::
+                kCrosHalV3BufferManagerFailedToWrapGpuMemoryHandle,
+            FROM_HERE, "Failed to wrap gpu memory handle");
+        return nullptr;
+      }
+      buffer_handle->fds.push_back(std::move(mojo_fd));
+      buffer_handle->strides.push_back(native_pixmap_handle.planes[i].stride);
+      buffer_handle->offsets.push_back(native_pixmap_handle.planes[i].offset);
     }
-    buffer_handle->fds.push_back(std::move(mojo_fd));
-    buffer_handle->strides.push_back(native_pixmap_handle.planes[i].stride);
-    buffer_handle->offsets.push_back(native_pixmap_handle.planes[i].offset);
+  } else {
+    CHECK_IS_TEST(base::NotFatalUntil::M139);
   }
 
   return buffer_handle;

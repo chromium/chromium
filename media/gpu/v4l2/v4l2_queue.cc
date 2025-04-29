@@ -752,7 +752,7 @@ bool V4L2WritableBufferRef::QueueDMABuf(scoped_refptr<FrameResource> frame,
     return false;
   }
   const std::vector<gfx::NativePixmapPlane>& planes =
-      gmb_handle.native_pixmap_handle.planes;
+      gmb_handle.native_pixmap_handle().planes;
 
   if (!self.buffer_data_->CheckNumFDsForFormat(planes.size())) {
     return false;

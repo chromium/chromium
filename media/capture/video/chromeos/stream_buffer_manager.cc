@@ -12,6 +12,7 @@
 #include <memory>
 #include <string>
 
+#include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/posix/safe_strerror.h"
 #include "base/strings/string_number_conversions.h"
@@ -352,8 +353,12 @@ std::optional<BufferInfo> StreamBufferManager::RequestBufferForCaptureRequest(
       it->second.shared_image->CloneGpuMemoryBufferHandle();
   buffer_info.drm_format = drm_format;
   buffer_info.hal_pixel_format = stream_context_[stream_type]->stream->format;
-  buffer_info.modifier =
-      buffer_info.gpu_memory_buffer_handle.native_pixmap_handle.modifier;
+  if (buffer_info.gpu_memory_buffer_handle.type == gfx::NATIVE_PIXMAP) {
+    buffer_info.modifier =
+        buffer_info.gpu_memory_buffer_handle.native_pixmap_handle().modifier;
+  } else {
+    CHECK_IS_TEST(base::NotFatalUntil::M139);
+  }
   return buffer_info;
 }
 
@@ -491,10 +496,13 @@ void StreamBufferManager::ReserveBufferFromPool(StreamType stream_type) {
 
   if (kEnableBufferSynchronizationWithCameraService &&
       require_new_buffer_id != VideoCaptureBufferPool::kInvalidId) {
-    gfx::GpuMemoryBufferHandle gpu_memory_buffer_handle =
-        shared_image->CloneGpuMemoryBufferHandle();
-    gfx::NativePixmapHandle& native_pixmap_handle =
-        gpu_memory_buffer_handle.native_pixmap_handle;
+    gfx::NativePixmapHandle native_pixmap_handle;
+    if (auto gmb_handle = shared_image->CloneGpuMemoryBufferHandle();
+        gmb_handle.type == gfx::NATIVE_PIXMAP) {
+      native_pixmap_handle = std::move(gmb_handle).native_pixmap_handle();
+    } else {
+      CHECK_IS_TEST(base::NotFatalUntil::M139);
+    }
     auto buffer_handle = cros::mojom::CameraBufferHandle::New();
     buffer_handle->buffer_id = GetBufferIpcId(stream_type, vcd_buffer.id);
     buffer_handle->drm_format =

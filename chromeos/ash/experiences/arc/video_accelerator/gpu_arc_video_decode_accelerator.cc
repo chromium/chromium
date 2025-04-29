@@ -777,7 +777,7 @@ void GpuArcVideoDecodeAccelerator::ImportBufferForPicture(
 
     ContinueImportBufferForPicture(
         picture_buffer_id, pixel_format,
-        std::move(buffer_handle->native_pixmap_handle));
+        std::move(*buffer_handle).native_pixmap_handle());
   }
 }
 
@@ -813,9 +813,7 @@ void GpuArcVideoDecodeAccelerator::ContinueImportBufferForPicture(
     return;
   }
 
-  gfx::GpuMemoryBufferHandle gmb_handle;
-  gmb_handle.type = gfx::NATIVE_PIXMAP;
-  gmb_handle.native_pixmap_handle = std::move(native_pixmap_handle);
+  gfx::GpuMemoryBufferHandle gmb_handle(std::move(native_pixmap_handle));
   gmb_handle.id = media::GetNextGpuMemoryBufferId();
   // Explicitly verify the GPU Memory Buffer Handle here.
   if (!media::VerifyGpuMemoryBufferHandle(pixel_format, coded_size_,

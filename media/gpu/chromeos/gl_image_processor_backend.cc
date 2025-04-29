@@ -111,7 +111,7 @@ std::unique_ptr<ui::NativePixmapGLBinding> CreateAndBindImage(
   if (!should_split_planes) {
     auto native_pixmap = base::MakeRefCounted<gfx::NativePixmapDmaBuf>(
         frame->coded_size(), *buffer_format,
-        std::move(gpu_memory_buffer_handle.native_pixmap_handle));
+        std::move(gpu_memory_buffer_handle).native_pixmap_handle());
     DCHECK(native_pixmap->AreDmaBufFdsValid());
 
     // Import the NativePixmap into GL.
@@ -143,7 +143,7 @@ std::unique_ptr<ui::NativePixmapGLBinding> CreateAndBindImage(
 
   auto native_pixmap = base::MakeRefCounted<gfx::NativePixmapDmaBuf>(
       plane_size, plane_format,
-      std::move(gpu_memory_buffer_handle.native_pixmap_handle));
+      std::move(gpu_memory_buffer_handle).native_pixmap_handle());
   DCHECK(native_pixmap->AreDmaBufFdsValid());
 
   // Import the NativePixmap into GL.

@@ -45,7 +45,7 @@ bool VulkanImage::InitializeFromGpuMemoryBufferHandle(
   }
 
   queue_family_index_ = queue_family_index;
-  auto& native_pixmap_handle = gmb_handle.native_pixmap_handle;
+  auto native_pixmap_handle = std::move(gmb_handle).native_pixmap_handle();
 
   auto& scoped_fd = native_pixmap_handle.planes[0].fd;
   if (!scoped_fd.is_valid()) {

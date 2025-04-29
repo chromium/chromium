@@ -162,7 +162,7 @@ struct COMPONENT_EXPORT(GFX_NATIVE_HANDLE_TYPES_SHARED_MOJOM_TRAITS)
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_OZONE)
   static gfx::NativePixmapHandle& native_pixmap_handle(
       gfx::GpuMemoryBufferHandle& handle) {
-    return handle.native_pixmap_handle;
+    return handle.native_pixmap_handle_;
   }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_OZONE)
 

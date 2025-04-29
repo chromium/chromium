@@ -394,7 +394,9 @@ scoped_refptr<VideoFrame> CreateDmabufVideoFrame(
   DCHECK_EQ(gmb_handle.type, gfx::GpuMemoryBufferType::NATIVE_PIXMAP);
   std::vector<ColorPlaneLayout> planes;
   std::vector<base::ScopedFD> dmabuf_fds;
-  for (auto& plane : gmb_handle.native_pixmap_handle.planes) {
+  gfx::NativePixmapHandle native_pixmap_handle =
+      std::move(gmb_handle).native_pixmap_handle();
+  for (auto& plane : native_pixmap_handle.planes) {
     planes.emplace_back(plane.stride, plane.offset, plane.size);
     dmabuf_fds.emplace_back(plane.fd.release());
   }
