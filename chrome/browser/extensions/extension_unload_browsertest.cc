@@ -7,7 +7,6 @@
 #include "base/run_loop.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
@@ -20,6 +19,7 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/disable_reason.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/test/test_extension_dir.h"
@@ -189,8 +189,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionUnloadBrowserTest, OpenedOpaqueWindows) {
 
   TestTabStripModelObserver test_tab_strip_model_observer(
       browser()->tab_strip_model());
-  extension_service()->DisableExtension(extension->id(),
-                                        disable_reason::DISABLE_USER_ACTION);
+  extension_registrar()->DisableExtension(
+      extension->id(), {disable_reason::DISABLE_USER_ACTION});
   test_tab_strip_model_observer.WaitForTabCount(1);
 
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
@@ -240,8 +240,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionUnloadBrowserTest, CrashedTabs) {
   // still the extension's origin.
   TestTabStripModelObserver test_tab_strip_model_observer(
       browser()->tab_strip_model());
-  extension_service()->DisableExtension(extension->id(),
-                                        disable_reason::DISABLE_USER_ACTION);
+  extension_registrar()->DisableExtension(
+      extension->id(), {disable_reason::DISABLE_USER_ACTION});
   test_tab_strip_model_observer.WaitForTabCount(1);
 
   EXPECT_EQ(1, browser()->tab_strip_model()->count());

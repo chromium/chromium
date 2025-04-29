@@ -11,6 +11,7 @@
 #include "components/safe_browsing/buildflags.h"
 #include "extensions/browser/blocklist_extension_prefs.h"
 #include "extensions/browser/blocklist_state.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/test/extension_state_tester.h"
 
 // The blocklist tests rely on the safe-browsing database.
@@ -235,7 +236,7 @@ TEST_F(SafeBrowsingVerdictHandlerUnitTest,
       extension_prefs));
 
   // Now user enables kGood0.
-  service()->EnableExtension(kGood0);
+  registrar()->EnableExtension(kGood0);
   EXPECT_TRUE(state_tester.ExpectEnabled(kGood0));
   // The acknowledged state should not be cleared when the extension is
   // re-enabled.
@@ -279,7 +280,7 @@ TEST_F(SafeBrowsingVerdictHandlerUnitTest,
       extension_prefs));
 
   // Now user enables kGood0.
-  service()->EnableExtension(kGood0);
+  registrar()->EnableExtension(kGood0);
   EXPECT_TRUE(state_tester.ExpectEnabled(kGood0));
   // The acknowledged state should not be cleared when the extension is
   // re-enabled.
@@ -335,7 +336,7 @@ TEST_F(SafeBrowsingVerdictHandlerUnitTest,
       extension_prefs));
 
   // Now user enables kGood0.
-  service()->EnableExtension(kGood0);
+  registrar()->EnableExtension(kGood0);
   EXPECT_TRUE(state_tester.ExpectEnabled(kGood0));
 
   // Set the blocklist to another greylist state.
@@ -386,7 +387,7 @@ TEST_F(SafeBrowsingVerdictHandlerUnitTest,
       extension_prefs));
 
   // Now user enables kGood0.
-  service()->EnableExtension(kGood0);
+  registrar()->EnableExtension(kGood0);
   EXPECT_TRUE(state_tester.ExpectEnabled(kGood0));
 
   // Set the blocklist to the original blocklist state.
@@ -425,7 +426,7 @@ TEST_F(SafeBrowsingVerdictHandlerUnitTest, AcknowledgedStateBackFilled) {
       kGood0, disable_reason::DISABLE_GREYLIST));
 
   // Now user enables kGood0.
-  service()->EnableExtension(kGood0);
+  registrar()->EnableExtension(kGood0);
   EXPECT_TRUE(state_tester.ExpectEnabled(kGood0));
 
   // To simulate an old Chrome version, the acknowledged state is cleared.

@@ -8,7 +8,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/extensions/api/scripting/scripting_api.h"
 #include "chrome/browser/extensions/extension_apitest.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -26,6 +25,7 @@
 #include "extensions/browser/api_test_utils.h"
 #include "extensions/browser/background_script_executor.h"
 #include "extensions/browser/disable_reason.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/script_executor.h"
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/common/utils/content_script_utils.h"
@@ -341,9 +341,9 @@ IN_PROC_BROWSER_TEST_F(ScriptingAPITest, MAYBE_RapidLoadUnload) {
   // which yields control of the thread so TriggerOnUnloaded is called
   // immediately, which unloads the extension before the Statestore fetch can
   // finish.
-  extension_service()->EnableExtension(extension->id());
-  extension_service()->DisableExtension(extension->id(),
-                                        disable_reason::DISABLE_USER_ACTION);
+  extension_registrar()->EnableExtension(extension->id());
+  extension_registrar()->DisableExtension(
+      extension->id(), {disable_reason::DISABLE_USER_ACTION});
 
   // Verify that the navigation to google.com, which matches a script in the
   // css_injection extension, will complete.

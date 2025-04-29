@@ -268,6 +268,7 @@ void ChromeContentVerifierDelegate::VerifyFailed(
     return;
   }
 
+  auto* registrar = ExtensionRegistrar::Get(context_);
   if (info.should_repair) {
     if (corrupted_extension_reinstaller->IsReinstallForCorruptionExpected(
             extension_id))

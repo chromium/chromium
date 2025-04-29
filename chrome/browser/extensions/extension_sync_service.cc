@@ -508,14 +508,14 @@ void ExtensionSyncService::ApplySyncData(
               extension->permissions_data()->active_permissions(),
               extension->GetType());
       if (has_all_permissions)
-        extension_service()->EnableExtension(id);
+        extension_registrar->EnableExtension(id);
       else if (extension_sync_data.supports_disable_reasons())
         reenable_after_update = true;
     } else {
       // The extension is not installed yet. Set it to enabled; we'll check for
       // permission increase (more accurately, for a version change) when it's
       // actually installed.
-      extension_service()->EnableExtension(id);
+      extension_registrar->EnableExtension(id);
     }
   } else if (!should_be_enabled) {
     // Note that |disable_reasons| includes any pre-existing reasons that
@@ -589,7 +589,7 @@ void ExtensionSyncService::ApplySyncData(
   }
 
   if (check_for_updates)
-    extension_service()->CheckForUpdatesSoon();
+    system_->extension_service()->CheckForUpdatesSoon();
 }
 
 void ExtensionSyncService::SetSyncStartFlareForTesting(
@@ -601,10 +601,6 @@ void ExtensionSyncService::DeleteThemeDoNotUse(const Extension& theme) {
   DCHECK(theme.is_theme());
   GetSyncBundle(syncer::EXTENSIONS)->PushSyncDeletion(
       theme.id(), CreateSyncData(theme).GetSyncData());
-}
-
-extensions::ExtensionService* ExtensionSyncService::extension_service() const {
-  return system_->extension_service();
 }
 
 void ExtensionSyncService::OnExtensionInstalled(
