@@ -500,10 +500,17 @@ ValidateDrawQuadResult ValidateDrawQuad(
     return {.code = DC_LAYER_FAILED_UNSUPPORTED_QUAD};
   }
 
-  ValidateDrawQuadResult result;
-
   const TextureDrawQuad* quad = TextureDrawQuad::MaterialCast(quad_to_promote);
 
+  // `DCLayerOverlayProcessor` is only used for video overlays and low-latency
+  // canvas overlays. This avoid promoting random DComp texture-backed quads
+  // in the case that delegated compositing is enabled, but failed this frame.
+  if (!(quad->is_video_frame ||
+        resource_provider->IsLowLatencyRendering(quad->resource_id))) {
+    return {.code = DC_LAYER_FAILED_UNSUPPORTED_QUAD};
+  }
+
+  ValidateDrawQuadResult result;
   result.is_yuv_overlay = quad->is_video_frame;
 
   if (allow_promotion_hinting) {
