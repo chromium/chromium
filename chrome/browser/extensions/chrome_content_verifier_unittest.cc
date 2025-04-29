@@ -16,8 +16,11 @@
 #include "chrome/test/base/testing_profile.h"
 #include "extensions/browser/content_verifier/test_utils.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/file_util.h"
 #include "extensions/common/switches.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -45,8 +48,6 @@ bool IsSuperset(const std::set<base::FilePath>& container,
 
 // Tests are run with //chrome layer so that manifest's //chrome specific bits
 // (e.g. browser images, default_icon in actions) are present.
-// TODO(crbug.com/408458901): Port tests to desktop Android once we have a
-// testing base class that approximates ExtensionServiceTestBase.
 class ChromeContentVerifierTest : public ExtensionServiceTestWithInstall {
  public:
   void SetUp() override {

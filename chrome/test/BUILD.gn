@@ -8901,6 +8901,7 @@ test("unit_tests") {
     sources += [
       "../browser/extensions/api/webstore_private/extension_install_status_unittest.cc",
       "../browser/extensions/api/webstore_private/webstore_private_unittest.cc",
+      "../browser/extensions/chrome_content_verifier_unittest.cc",
       "../browser/extensions/chrome_extension_test.cc",
       "../browser/extensions/chrome_extension_test.h",
       "../browser/extensions/chrome_extension_test_unittest.cc",
@@ -9077,7 +9078,6 @@ test("unit_tests") {
       "../browser/extensions/chrome_app_icon_unittest.cc",
       "../browser/extensions/chrome_app_sorting_unittest.cc",
       "../browser/extensions/chrome_component_extension_resource_manager_unittest.cc",
-      "../browser/extensions/chrome_content_verifier_unittest.cc",
       "../browser/extensions/chrome_extension_function_unittest.cc",
       "../browser/extensions/context_menu_matcher_unittest.cc",
       "../browser/extensions/convert_user_script_unittest.cc",
