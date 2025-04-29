@@ -112,17 +112,16 @@
 namespace blink {
 namespace {
 
-wgpu::TextureFormat AsDawnType(SkColorType color_type) {
+wgpu::TextureFormat AsDawnType(const viz::SharedImageFormat& format) {
   // NOTE: Canvas2D can be only RGBA_8888, BGRA_8888, or F16.
-  switch (color_type) {
-    case SkColorType::kRGBA_8888_SkColorType:
-      return wgpu::TextureFormat::RGBA8Unorm;
-    case SkColorType::kBGRA_8888_SkColorType:
-      return wgpu::TextureFormat::BGRA8Unorm;
-    case SkColorType::kRGBA_F16_SkColorType:
-      return wgpu::TextureFormat::RGBA16Float;
-    default:
-      return wgpu::TextureFormat::Undefined;
+  if (format == viz::SinglePlaneFormat::kRGBA_8888) {
+    return wgpu::TextureFormat::RGBA8Unorm;
+  } else if (format == viz::SinglePlaneFormat::kBGRA_8888) {
+    return wgpu::TextureFormat::BGRA8Unorm;
+  } else if (format == viz::SinglePlaneFormat::kRGBA_F16) {
+    return wgpu::TextureFormat::RGBA16Float;
+  } else {
+    return wgpu::TextureFormat::Undefined;
   }
 }
 
@@ -1479,8 +1478,7 @@ UniqueFontSelector* BaseRenderingContext2D::GetFontSelector() const {
 }
 
 V8GPUTextureFormat BaseRenderingContext2D::getTextureFormat() const {
-  return FromDawnEnum(
-      AsDawnType(viz::ToClosestSkColorType(GetSharedImageFormat())));
+  return FromDawnEnum(AsDawnType(GetSharedImageFormat()));
 }
 
 GPUTexture* BaseRenderingContext2D::transferToGPUTexture(
@@ -1592,8 +1590,7 @@ GPUTexture* BaseRenderingContext2D::transferToGPUTexture(
     return nullptr;
   }
 
-  wgpu::TextureFormat dawn_format =
-      AsDawnType(viz::ToClosestSkColorType(client_si->format()));
+  wgpu::TextureFormat dawn_format = AsDawnType(client_si->format());
   wgpu::TextureDescriptor desc = {
       .usage = tex_usage,
       .size = {base::checked_cast<uint32_t>(client_si->size().width()),
