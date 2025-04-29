@@ -11,9 +11,11 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/tabs/split_tab_data.h"
 #include "chrome/browser/ui/tabs/split_tab_visual_data.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/tabs/public/split_tab_id.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -24,6 +26,8 @@
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SplitTabMenuModel, kSwapPositionMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SplitTabMenuModel, kSwapLayoutMenuItem);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SplitTabMenuModel, kCloseMenuItem);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SplitTabMenuModel, kExitSplitMenuItem);
 
 SplitTabMenuModel::SplitTabMenuModel(TabStripModel* tab_strip_model)
     : ui::SimpleMenuModel(this), tab_strip_model_(tab_strip_model) {
@@ -46,6 +50,12 @@ SplitTabMenuModel::SplitTabMenuModel(TabStripModel* tab_strip_model)
   SetElementIdentifierAt(
       GetIndexOfCommandId(static_cast<int>(CommandId::kSwapLayout)).value(),
       kSwapLayoutMenuItem);
+  SetElementIdentifierAt(
+      GetIndexOfCommandId(static_cast<int>(CommandId::kClose)).value(),
+      kCloseMenuItem);
+  SetElementIdentifierAt(
+      GetIndexOfCommandId(static_cast<int>(CommandId::kExitSplit)).value(),
+      kExitSplitMenuItem);
 }
 
 SplitTabMenuModel::~SplitTabMenuModel() = default;
@@ -86,7 +96,28 @@ ui::ImageModel SplitTabMenuModel::GetIconForCommandId(int command_id) const {
                                         ui::SimpleMenuModel::kDefaultIconSize);
 }
 
-void SplitTabMenuModel::ExecuteCommand(int command_id, int event_flags) {}
+void SplitTabMenuModel::ExecuteCommand(int command_id, int event_flags) {
+  std::optional<split_tabs::SplitTabId> split_id =
+      tab_strip_model_->GetActiveTab()->GetSplit();
+  CHECK(split_id.has_value());
+  switch (static_cast<CommandId>(command_id)) {
+    case CommandId::kSwapPosition:
+      tab_strip_model_->SwapTabsInSplit(split_id.value());
+      break;
+    case CommandId::kSwapLayout:
+      // TODO(crbug.com/406792003): Implement switching layout
+      break;
+    case CommandId::kClose:
+      tab_strip_model_->CloseWebContentsAt(
+          tab_strip_model_->active_index(),
+          TabCloseTypes::CLOSE_USER_GESTURE |
+              TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB);
+      break;
+    case CommandId::kExitSplit:
+      tab_strip_model_->RemoveSplit(split_id.value());
+      break;
+  }
+}
 
 const gfx::VectorIcon& SplitTabMenuModel::GetSwapPositionIcon(
     split_tabs::SplitTabActiveLocation active_split_tab_location) const {

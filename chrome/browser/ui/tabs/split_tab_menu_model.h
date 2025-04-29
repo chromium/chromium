@@ -27,6 +27,8 @@ class SplitTabMenuModel : public ui::SimpleMenuModel,
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kSwapPositionMenuItem);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kSwapLayoutMenuItem);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kCloseMenuItem);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kExitSplitMenuItem);
 
   explicit SplitTabMenuModel(TabStripModel* tab_strip_model);
   ~SplitTabMenuModel() override;

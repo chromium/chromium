@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/profiles/profile.h"
@@ -12,6 +13,8 @@
 #include "chrome/browser/ui/tabs/split_tab_menu_model.h"
 #include "chrome/browser/ui/tabs/split_tab_visual_data.h"
 #include "chrome/browser/ui/tabs/tab_menu_model.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/tabs/test/split_tabs_interactive_test_mixin.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -31,17 +34,39 @@
 #include "ui/base/interaction/interactive_test.h"
 #include "ui/base/interaction/state_observer.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/base/test/ui_controls.h"
 #include "ui/base/ui_base_types.h"
-#include "ui/gfx/geometry/rect.h"
 #include "ui/views/controls/menu/menu_item_view.h"
-#include "ui/views/view_observer.h"
+#include "url/gurl.h"
 
 namespace {
+class ActiveTabObserver : public TabStripModelObserver,
+                          public ui::test::StateObserver<bool> {
+ public:
+  explicit ActiveTabObserver(TabStripModel* tab_strip_model)
+      : tab_strip_model_(tab_strip_model) {
+    tab_strip_model_->AddObserver(this);
+  }
+
+  ~ActiveTabObserver() override { tab_strip_model_->RemoveObserver(this); }
+
+  void OnTabStripModelChanged(
+      TabStripModel* tab_strip_model,
+      const TabStripModelChange& change,
+      const TabStripSelectionChange& selection) override {
+    if (change.type() == TabStripModelChange::kMoved) {
+      OnStateObserverStateChanged(true);
+    }
+  }
+
+ private:
+  raw_ptr<TabStripModel> tab_strip_model_;
+};
+
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContents1Id);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContents2Id);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContents3Id);
+DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ActiveTabObserver, kActiveTabChanged);
 }  // namespace
 
 class SplitTabButtonInteractiveTest
@@ -51,6 +76,10 @@ class SplitTabButtonInteractiveTest
     SplitTabsInteractiveTestMixin::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
+  }
+
+  GURL GetTestUrl(std::string relative_url = "/title1.html") const {
+    return embedded_test_server()->GetURL(relative_url);
   }
 
   auto UpdateSplitTabButtonPinState(bool should_pin) {
@@ -228,4 +257,63 @@ IN_PROC_BROWSER_TEST_F(SplitTabButtonInteractiveTest, LayoutMenuItemUpdates) {
                       IDS_SPLIT_TAB_HORIZONTAL_LAYOUT),
       CheckMenuIcon(SplitTabMenuModel::kSwapLayoutMenuItem,
                     kSplitSceneDownIcon));
+}
+
+IN_PROC_BROWSER_TEST_F(SplitTabButtonInteractiveTest, SwapSplitTabPosition) {
+  RunTestSequence(
+      InstrumentTab(kWebContents1Id),
+      AddInstrumentedTab(kWebContents2Id, GetTestUrl("/links.html")),
+      SelectTab(kTabStripElementId, 0), EnterSplitView(0, 1),
+      WaitForShow(kToolbarSplitTabsToolbarButtonElementId),
+      // The newly created split tab should be active
+      CheckSplitTabButtonIcon(kSplitSceneLeftIcon),
+      NavigateWebContents(kWebContents1Id, GetTestUrl()),
+      // Swapping the tab positions should move the active tab to the left.
+      PressButton(kToolbarSplitTabsToolbarButtonElementId),
+      WaitForShow(SplitTabsToolbarButton::kSplitTabButtonMenu),
+      ObserveState(kActiveTabChanged, browser()->tab_strip_model()),
+      SelectMenuItem(SplitTabMenuModel::kSwapPositionMenuItem),
+      WaitForState(kActiveTabChanged, true),
+      CheckSplitTabButtonIcon(kSplitSceneRightIcon),
+      CheckResult(
+          [this]() {
+            TabStripModel* const tab_strip_model = browser()->tab_strip_model();
+            return tab_strip_model
+                ->GetWebContentsAt(tab_strip_model->active_index())
+                ->GetURL();
+          },
+          GetTestUrl()));
+}
+
+IN_PROC_BROWSER_TEST_F(SplitTabButtonInteractiveTest, CloseActiveTab) {
+  RunTestSequence(AddInstrumentedTab(kWebContents2Id, GetTestUrl()),
+                  SelectTab(kTabStripElementId, 0), EnterSplitView(0, 1),
+                  FocusInactiveTabInSplit(),
+                  WaitForShow(kToolbarSplitTabsToolbarButtonElementId),
+                  // Open the button's context menu.
+                  PressButton(kToolbarSplitTabsToolbarButtonElementId),
+                  WaitForShow(SplitTabsToolbarButton::kSplitTabButtonMenu),
+                  // Selecting close menu item should close the active tab
+                  SelectMenuItem(SplitTabMenuModel::kCloseMenuItem),
+                  WaitForHide(kWebContents2Id),
+                  WaitForHide(kToolbarSplitTabsToolbarButtonElementId),
+                  CheckTabCount(1));
+}
+
+IN_PROC_BROWSER_TEST_F(SplitTabButtonInteractiveTest, ExitSplit) {
+  RunTestSequence(
+      AddInstrumentedTab(kWebContents2Id, GetTestUrl()),
+      SelectTab(kTabStripElementId, 0), EnterSplitView(0, 1),
+      WaitForShow(kToolbarSplitTabsToolbarButtonElementId),
+      // Open the button's context menu.
+      PressButton(kToolbarSplitTabsToolbarButtonElementId),
+      WaitForShow(SplitTabsToolbarButton::kSplitTabButtonMenu),
+      CheckTabInSplit(0, true), CheckTabInSplit(1, true),
+      // The split tabs should be separated after selecting the menu item.
+      SelectMenuItem(SplitTabMenuModel::kExitSplitMenuItem),
+      WaitForHide(kToolbarSplitTabsToolbarButtonElementId),
+      CheckTabInSplit(0, false), CheckTabInSplit(1, false),
+      CheckResult(
+          [this]() { return browser()->tab_strip_model()->active_index(); },
+          0));
 }
