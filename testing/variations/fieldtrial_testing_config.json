@@ -2698,6 +2698,30 @@
             ]
         }
     ],
+    "AutofillVcnEnrollStrikeExpiryTime": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "autofill_vcn_strike_expiry_time_days": "180"
+                    },
+                    "enable_features": [
+                        "AutofillVcnEnrollStrikeExpiryTime"
+                    ]
+                }
+            ]
+        }
+    ],
     "AvatarsCloudMigration": [
         {
             "platforms": [
