@@ -72,23 +72,10 @@ void OmniboxViewIOS::SetWindowTextAndCaretPos(const std::u16string& text,
                                               size_t caret_pos,
                                               bool update_popup,
                                               bool notify_text_changed) {
-  // Do not call SetUserText() here, as the user has not triggered this change.
-  // Instead, set the field's text directly.
-  [field_ setText:base::SysUTF16ToNSString(text)];
-
-  NSAttributedString* as = [[NSMutableAttributedString alloc]
-      initWithString:base::SysUTF16ToNSString(text)];
-  [field_ setText:as userTextLength:[as length]];
-
-  if (update_popup) {
-    UpdatePopup();
-  }
-
-  if (notify_text_changed && model()) {
-    model()->OnChanged();
-  }
-
-  SetCaretPos(caret_pos);
+  [omnibox_text_controller_ setWindowText:text
+                                 caretPos:caret_pos
+                        startAutocomplete:update_popup
+                        notifyTextChanged:notify_text_changed];
 }
 
 void OmniboxViewIOS::SetCaretPos(size_t caret_pos) {
@@ -110,7 +97,10 @@ void OmniboxViewIOS::OnTemporaryTextMaybeChanged(
     const AutocompleteMatch& match,
     bool save_original_selection,
     bool notify_text_changed) {
-  SetWindowTextAndCaretPos(display_text, display_text.size(), false, false);
+  [omnibox_text_controller_ setWindowText:display_text
+                                 caretPos:display_text.length()
+                        startAutocomplete:NO
+                        notifyTextChanged:NO];
   if (model()) {
     model()->OnChanged();
   }

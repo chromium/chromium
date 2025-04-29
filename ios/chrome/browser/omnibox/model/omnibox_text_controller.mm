@@ -492,6 +492,32 @@
   [self updatePopupLayoutDirection];
 }
 
+/// Sets the window text and the caret position. `notifyTextChanged` is true if
+/// the model should be notified of the change. Clears the additional text.
+- (void)setWindowText:(const std::u16string&)text
+             caretPos:(size_t)caretPos
+    startAutocomplete:(BOOL)startAutocomplete
+    notifyTextChanged:(BOOL)notifyTextChanged {
+  OmniboxTextFieldIOS* textField = self.textField;
+  // Do not call SetUserText() here, as the user has not triggered this change.
+  // Instead, set the field's text directly.
+  [textField setText:[NSString cr_fromString16:text]];
+
+  NSAttributedString* as = [[NSMutableAttributedString alloc]
+      initWithString:[NSString cr_fromString16:text]];
+  [textField setText:as userTextLength:[as length]];
+
+  if (startAutocomplete) {
+    [self startAutocompleteAfterEdit];
+  }
+
+  if (notifyTextChanged && _omniboxEditModel) {
+    _omniboxEditModel->OnChanged();
+  }
+
+  [self setCaretPos:caretPos];
+}
+
 /// Returns the omnibox client.
 - (OmniboxClient*)client {
   return _omniboxController ? _omniboxController->client() : nullptr;
