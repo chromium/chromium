@@ -1462,6 +1462,7 @@ chromium-metrics-reviews@google.com.
   <int value="16" label="GetProfileName: Missing or Empty Gaia ID"/>
   <int value="17" label="GetProfileName: Gaia ID Not Mapped"/>
   <int value="18" label="GetProfileName: Mapped Name Not Found In Storage"/>
+  <int value="19" label="GetClientManager: Profile Load Failed"/>
 </enum>
 
 <!-- LINT.ThenChange(/ios/chrome/browser/push_notification/model/constants.h:PushNotificationClientManagerFailurePoint) -->

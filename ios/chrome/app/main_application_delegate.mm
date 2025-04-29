@@ -201,6 +201,10 @@ constexpr base::TimeDelta kMainIntentCheckDelay = base::Seconds(1);
   // application. In that case, the user must relaunch the application or must
   // restart the device before the system will launch the application and invoke
   // this function.
+  //
+  // TODO(crbug.com/412624110): Retrieve Profile-specific
+  // `UIBackgroundFetchResult` from
+  // `-applicationWillProcessIncomingRemoteNotification:`.
   UIBackgroundFetchResult result = [self.pushNotificationDelegate
       applicationWillProcessIncomingRemoteNotification:userInfo];
   if (completionHandler) {

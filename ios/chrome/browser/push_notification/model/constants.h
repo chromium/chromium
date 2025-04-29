@@ -114,7 +114,11 @@ enum class PushNotificationClientManagerFailurePoint {
   // successfully obtained by mapping a Gaia ID, was not found in
   // `ProfileAttributesStorageIOS` (e.g., stale mapping).
   kGetProfileNameMappedNameNotFoundInStorage = 18,
-  kMaxValue = kGetProfileNameMappedNameNotFoundInStorage,
+  // Failed inside `GetClientManagerForUserInfo()` because the attempt to load
+  // an existing (but unloaded) Profile via `LoadProfileAsync()` failed
+  // (the completion callback received `nullptr`).
+  kGetClientManagerProfileLoadFailed = 19,
+  kMaxValue = kGetClientManagerProfileLoadFailed,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:PushNotificationClientManagerFailurePoint)
 
