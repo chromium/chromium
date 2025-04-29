@@ -2128,6 +2128,52 @@ void AddIssueToIssueStorage(
 
 }  // namespace
 
+namespace {
+
+std::unique_ptr<protocol::Audits::InspectorIssue>
+BuildUserReidentificationIssue(
+    const blink::mojom::UserReidentificationIssueDetailsPtr& issue_details) {
+  auto affected_request = issue_details->request.is_null()
+                              ? nullptr
+                              : protocol::Audits::AffectedRequest::Create()
+                                    .SetUrl(issue_details->request->url)
+                                    .Build();
+  std::string issue_type;
+  switch (issue_details->type) {
+    case blink::mojom::UserReidentificationIssueType::kBlockedFrameNavigation:
+      issue_type = protocol::Audits::UserReidentificationIssueTypeEnum::
+          BlockedFrameNavigation;
+      break;
+    case blink::mojom::UserReidentificationIssueType::kBlockedSubresource:
+      issue_type = protocol::Audits::UserReidentificationIssueTypeEnum::
+          BlockedSubresource;
+      break;
+    default:
+      NOTREACHED();
+  }
+  auto reidentification_issue_details =
+      protocol::Audits::UserReidentificationIssueDetails::Create()
+          .SetType(issue_type)
+          .SetRequest(std::move(affected_request))
+          .Build();
+
+  auto protocol_issue_details =
+      protocol::Audits::InspectorIssueDetails::Create()
+          .SetUserReidentificationIssueDetails(
+              std::move(reidentification_issue_details))
+          .Build();
+
+  auto issue = protocol::Audits::InspectorIssue::Create()
+                   .SetCode(protocol::Audits::InspectorIssueCodeEnum::
+                                UserReidentificationIssue)
+                   .SetDetails(std::move(protocol_issue_details))
+                   .Build();
+
+  return issue;
+}
+
+}  // namespace
+
 void ReportBrowserInitiatedIssue(RenderFrameHostImpl* frame,
                                  protocol::Audits::InspectorIssue* issue) {
   FrameTreeNode* ftn = frame->frame_tree_node();
@@ -2172,6 +2218,10 @@ void BuildAndReportBrowserInitiatedIssue(
              blink::mojom::InspectorIssueCode::kAttributionReportingIssue) {
     issue = BuildAttributionReportingIssue(
         info->details->attribution_reporting_issue_details);
+  } else if (info->code ==
+             blink::mojom::InspectorIssueCode::kUserReidentificationIssue) {
+    issue = BuildUserReidentificationIssue(
+        info->details->user_reidentification_issue_details);
   } else {
     NOTREACHED() << "Unsupported type of browser-initiated issue";
   }

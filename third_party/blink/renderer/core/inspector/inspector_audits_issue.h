@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <optional>
+#include <string>
 
 #include "base/unguessable_token.h"
 #include "services/network/public/mojom/blocked_by_response_reason.mojom-forward.h"
@@ -203,6 +204,11 @@ class CORE_EXPORT AuditsIssue {
       DOMNodeId node_id,
       SelectElementAccessibilityIssueReason issue_reason,
       bool has_disallowed_attributes);
+
+  static void ReportUserReidentificationIssue(
+      LocalFrame* frame,
+      std::optional<std::string> devtools_request_id,
+      const KURL& affected_request_url);
 
  private:
 

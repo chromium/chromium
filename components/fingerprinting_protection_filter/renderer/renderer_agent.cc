@@ -239,6 +239,7 @@ void RendererAgent::GetActivationState(ActivationCallback callback) {
 }
 
 void RendererAgent::CheckURL(const GURL& url,
+                             std::optional<std::string> devtools_request_id,
                              url_pattern_index::proto::ElementType element_type,
                              FilterCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -246,6 +247,12 @@ void RendererAgent::CheckURL(const GURL& url,
       subresource_filter::LoadPolicy::ALLOW;
   if (filter_) {
     load_policy = filter_->GetLoadPolicy(url, element_type);
+  }
+
+  if (load_policy == subresource_filter::LoadPolicy::DISALLOW) {
+    // Report a DevTools Inspector issue for disallowed subresource loads.
+    render_frame()->GetWebFrame()->AddUserReidentificationIssue(
+        devtools_request_id, url);
   }
   std::move(callback).Run(load_policy);
 }

@@ -91,6 +91,8 @@
 #include <cmath>
 #include <memory>
 #include <numeric>
+#include <optional>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -3179,6 +3181,14 @@ void WebLocalFrameImpl::AddInspectorIssueImpl(
   GetFrame()->AddInspectorIssue(
       AuditsIssue(ConvertInspectorIssueToProtocolFormat(
           InspectorIssue::Create(std::move(info)))));
+}
+
+void WebLocalFrameImpl::AddUserReidentificationIssueImpl(
+    std::optional<std::string> devtools_request_id,
+    const WebURL& affected_request_url) {
+  DCHECK(GetFrame());
+  AuditsIssue::ReportUserReidentificationIssue(GetFrame(), devtools_request_id,
+                                               affected_request_url);
 }
 
 void WebLocalFrameImpl::AddGenericIssueImpl(

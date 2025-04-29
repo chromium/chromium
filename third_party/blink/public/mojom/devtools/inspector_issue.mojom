@@ -28,6 +28,7 @@ enum InspectorIssueCode {
   kDeprecationIssue,
   kFederatedAuthUserInfoRequestIssue,
   kPartitioningBlobURLIssue,
+  kUserReidentificationIssue,
 };
 
 // Information about a cookie that is affected by an issue.
@@ -341,6 +342,18 @@ struct DeprecationIssueDetails {
   AffectedLocation affected_location;
 };
 
+enum UserReidentificationIssueType {
+  kBlockedFrameNavigation,
+  kBlockedSubresource,
+};
+
+// Information for an issue notifying on subresources or navigations that may be
+// blocked for suspected user reidentification.
+struct UserReidentificationIssueDetails {
+  UserReidentificationIssueType type;
+  AffectedRequest? request;
+};
+
 // A collection of optional fields that may store additional data depending
 // on the issue code.
 struct InspectorIssueDetails {
@@ -359,6 +372,7 @@ struct InspectorIssueDetails {
   GenericIssueDetails? generic_issue_details;
   DeprecationIssueDetails? deprecation_issue_details;
   FederatedAuthUserInfoRequestIssueDetails? federated_auth_user_info_request_details;
+  UserReidentificationIssueDetails? user_reidentification_issue_details;
   mojo_base.mojom.UnguessableToken? issue_id;
 };
 

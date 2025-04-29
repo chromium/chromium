@@ -32,6 +32,7 @@
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "third_party/blink/public/mojom/devtools/inspector_issue.mojom.h"
 
 namespace content {
 class NavigationHandle;
@@ -254,13 +255,35 @@ void FingerprintingProtectionWebContentsHelper::
     NotifyChildFrameNavigationEvaluated(
         content::NavigationHandle* navigation_handle,
         subresource_filter::LoadPolicy load_policy) {
-  // TODO(https://crbug.com/40280666): Notify throttle manager after blink
-  // communication is implemented.
   if (load_policy == subresource_filter::LoadPolicy::WOULD_DISALLOW ||
       load_policy == subresource_filter::LoadPolicy::DISALLOW) {
+    // Notify the `ThrottleManager` to log UKM.
     if (ThrottleManager* throttle_manager =
             GetThrottleManager(*navigation_handle)) {
       throttle_manager->NotifyDisallowLoadPolicy(navigation_handle);
+    }
+  }
+
+  if (load_policy == subresource_filter::LoadPolicy::DISALLOW) {
+    // Report a DevTools Inspector issue for disallowed navigations.
+    if (navigation_handle &&
+        navigation_handle->GetParentFrameOrOuterDocument()) {
+      auto issue = blink::mojom::InspectorIssueInfo::New();
+      issue->code =
+          blink::mojom::InspectorIssueCode::kUserReidentificationIssue;
+      issue->details = blink::mojom::InspectorIssueDetails::New();
+      auto reidentification_issue_details =
+          blink::mojom::UserReidentificationIssueDetails::New();
+      reidentification_issue_details->type =
+          blink::mojom::UserReidentificationIssueType::kBlockedFrameNavigation;
+      reidentification_issue_details->request =
+          blink::mojom::AffectedRequest::New();
+      reidentification_issue_details->request->url =
+          navigation_handle->GetURL().possibly_invalid_spec();
+      issue->details->user_reidentification_issue_details =
+          std::move(reidentification_issue_details);
+      navigation_handle->GetParentFrameOrOuterDocument()->ReportInspectorIssue(
+          std::move(issue));
     }
   }
 }

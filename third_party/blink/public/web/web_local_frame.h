@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <set>
+#include <string>
 
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
@@ -477,6 +478,14 @@ class BLINK_EXPORT WebLocalFrame : public WebFrame {
 
   void AddInspectorIssue(mojom::InspectorIssueCode code) {
     AddInspectorIssueImpl(code);
+  }
+
+  // Adds a user re-identification issue to DevTools, which is a specific type
+  // of `InspectorIssue` with required details.
+  void AddUserReidentificationIssue(
+      std::optional<std::string> devtools_request_id,
+      const WebURL& affected_request_url) {
+    AddUserReidentificationIssueImpl(devtools_request_id, affected_request_url);
   }
 
   void AddGenericIssue(mojom::GenericIssueErrorType error_type,
@@ -985,6 +994,9 @@ class BLINK_EXPORT WebLocalFrame : public WebFrame {
   virtual void AddMessageToConsoleImpl(const WebConsoleMessage&,
                                        bool discard_duplicates) = 0;
   virtual void AddInspectorIssueImpl(blink::mojom::InspectorIssueCode code) = 0;
+  virtual void AddUserReidentificationIssueImpl(
+      std::optional<std::string> devtools_request_id,
+      const WebURL& affected_request_url) = 0;
   virtual void AddGenericIssueImpl(
       blink::mojom::GenericIssueErrorType error_type,
       int violating_node_id) = 0;
