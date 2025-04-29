@@ -10,7 +10,6 @@ import re
 from grit.node import base
 
 from grit import clique
-from grit import constants
 from grit import exception
 from grit import lazy_re
 from grit import tclib
@@ -279,10 +278,9 @@ class MessageNode(base.ContentNode):
     '''We always expand variables on Messages.'''
     return True
 
-  def GetDataPackValue(self, lang, encoding):
+  def GetDataPackValue(self, lang, gender, encoding):
     '''Returns a str represenation for a data_pack entry.'''
-    message = self.ws_at_start + self.Translate(
-        lang, constants.DEFAULT_GENDER) + self.ws_at_end
+    message = self.ws_at_start + self.Translate(lang, gender) + self.ws_at_end
     return util.Encode(message, encoding)
 
   def IsResourceMapSource(self):

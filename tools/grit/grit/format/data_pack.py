@@ -87,7 +87,7 @@ def Format(root, lang='en', gender=constants.DEFAULT_GENDER, output_dir='.'):
     with node:
       if isinstance(node, (include.IncludeNode, message.MessageNode,
                            structure.StructureNode)):
-        value = node.GetDataPackValue(lang, util.BINARY)
+        value = node.GetDataPackValue(lang, gender, util.BINARY)
         if value is not None:
           resource_id = id_map[node.GetTextualIds()[0]]
           data[resource_id] = value
