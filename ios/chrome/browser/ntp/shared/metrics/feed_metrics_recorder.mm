@@ -59,7 +59,7 @@ using feed::FeedUserActionType;
 
 // Tracking property to avoid duplicate recordings of the Activity Buckets
 // metric.
-@property(nonatomic, assign) NSDate* activityBucketLastReportedDate;
+@property(nonatomic, strong) NSDate* activityBucketLastReportedDate;
 
 // Tracks whether user has engaged with the latest refreshed content. The term
 // "engaged" is defined by its usage in this file. For example, it may be
