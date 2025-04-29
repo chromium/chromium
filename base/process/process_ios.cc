@@ -4,6 +4,8 @@
 
 #include "base/process/process.h"
 
+#include <algorithm>
+
 #include "base/threading/thread_restrictions.h"
 
 namespace base {
@@ -51,6 +53,7 @@ bool Process::Terminate(int exit_code, bool wait) const {
 }
 
 bool Process::WaitForExitWithTimeout(TimeDelta timeout, int* exit_code) const {
+  timeout = std::max(timeout, TimeDelta());
   if (!timeout.is_zero()) {
     // Assert that this thread is allowed to wait below. This intentionally
     // doesn't use ScopedBlockingCallWithBaseSyncPrimitives because the process

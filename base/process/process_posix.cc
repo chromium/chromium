@@ -10,8 +10,10 @@
 #include <sys/resource.h>
 #include <sys/wait.h>
 
+#include <algorithm>
 #include <utility>
 
+#include "base/check_op.h"
 #include "base/clang_profiling_buildflags.h"
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
@@ -41,6 +43,8 @@ namespace {
 bool WaitpidWithTimeout(base::ProcessHandle handle,
                         int* status,
                         base::TimeDelta wait) {
+  DCHECK_GE(wait, base::TimeDelta());
+
   // This POSIX version of this function only guarantees that we wait no less
   // than |wait| for the process to exit.  The child process may
   // exit sometime before the timeout has ended but we may still block for up
@@ -107,6 +111,7 @@ bool WaitpidWithTimeout(base::ProcessHandle handle,
 bool WaitForSingleNonChildProcess(base::ProcessHandle handle,
                                   base::TimeDelta wait) {
   DCHECK_GT(handle, 0);
+  DCHECK_GE(wait, base::TimeDelta());
 
   base::ScopedFD kq(kqueue());
   if (!kq.is_valid()) {
@@ -343,6 +348,7 @@ bool Process::WaitForExit(int* exit_code) const {
 
 #if !BUILDFLAG(IS_IOS)
 bool Process::WaitForExitWithTimeout(TimeDelta timeout, int* exit_code) const {
+  timeout = std::max(timeout, TimeDelta());
   if (!timeout.is_zero()) {
     // Assert that this thread is allowed to wait below. This intentionally
     // doesn't use ScopedBlockingCallWithBaseSyncPrimitives because the process
@@ -367,6 +373,8 @@ bool Process::WaitForExitWithTimeout(TimeDelta timeout, int* exit_code) const {
 bool Process::WaitForExitWithTimeoutImpl(base::ProcessHandle handle,
                                          int* exit_code,
                                          base::TimeDelta timeout) const {
+  DCHECK_GE(timeout, TimeDelta());
+
   const base::ProcessHandle our_pid = base::GetCurrentProcessHandle();
   if (handle == our_pid) {
     // We won't be able to wait for ourselves to exit.
