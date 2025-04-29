@@ -2583,3 +2583,11 @@ targets.mixin(
         "--xctest",
     ],
 )
+
+targets.mixin(
+    name = "force-main-user",
+    generate_pyl_entry = False,
+    args = [
+        "--force-main-user",
+    ],
+)

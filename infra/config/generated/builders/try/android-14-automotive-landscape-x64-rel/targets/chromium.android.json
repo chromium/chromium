@@ -3,6 +3,7 @@
     "gtest_tests": [
       {
         "args": [
+          "--force-main-user",
           "--avd-config=../../tools/android/avd/proto/android_34_automotive_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -49,6 +50,7 @@
       },
       {
         "args": [
+          "--force-main-user",
           "--avd-config=../../tools/android/avd/proto/android_34_automotive_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"

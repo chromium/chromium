@@ -162,6 +162,9 @@ targets.bundle(
         "android_trichrome_smoke_tests",
         "android_smoke_tests",
     ],
+    mixins = [
+        "force-main-user",
+    ],
 )
 
 targets.bundle(
