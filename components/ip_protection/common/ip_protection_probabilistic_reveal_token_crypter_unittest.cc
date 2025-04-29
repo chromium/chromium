@@ -13,394 +13,308 @@
 
 #include "base/strings/string_number_conversions.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
+#include "components/ip_protection/common/probabilistic_reveal_token_test_issuer.h"
+#include "components/ip_protection/get_probabilistic_reveal_token.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/status/status.h"
-#include "third_party/abseil-cpp/absl/status/statusor.h"
-#include "third_party/private-join-and-compute/src/crypto/context.h"
-#include "third_party/private-join-and-compute/src/crypto/ec_group.h"
-#include "third_party/private-join-and-compute/src/crypto/elgamal.h"
 
 namespace ip_protection {
 
-namespace {
-
-using ::private_join_and_compute::BigNum;
-using ::private_join_and_compute::Context;
-using ::private_join_and_compute::ECGroup;
-using ::private_join_and_compute::ECPoint;
-using ::private_join_and_compute::ElGamalDecrypter;
-using ::private_join_and_compute::ElGamalEncrypter;
-using ::private_join_and_compute::elgamal::Ciphertext;
-using ::private_join_and_compute::elgamal::PrivateKey;
-using ::private_join_and_compute::elgamal::PublicKey;
-
-// Return serialized g^private_key where g is group generator for curve
-// NID_X9_62_prime256v1.
-absl::StatusOr<std::string> GetSerializedPublicKey(uint64_t private_key) {
-  Context context;
-  PJC_ASSIGN_OR_RETURN(ECGroup group,
-                       ECGroup::Create(NID_X9_62_prime256v1, &context));
-  PJC_ASSIGN_OR_RETURN(ECPoint g, group.GetFixedGenerator());
-  PJC_ASSIGN_OR_RETURN(ECPoint y, g.Mul(context.CreateBigNum(private_key)));
-  return y.ToBytesCompressed();
-}
-
-absl::StatusOr<ProbabilisticRevealToken> CreateTokenFromPlaintext(
-    uint64_t private_key,
-    const std::string& plaintext) {
-  Context context;
-  PJC_ASSIGN_OR_RETURN(ECGroup group,
-                       ECGroup::Create(NID_X9_62_prime256v1, &context));
-  PJC_ASSIGN_OR_RETURN(ECPoint plaintext_point,
-                       group.GetPointByHashingToCurveSha256(plaintext));
-
-  PJC_ASSIGN_OR_RETURN(ECPoint g, group.GetFixedGenerator());
-  PJC_ASSIGN_OR_RETURN(ECPoint y, g.Mul(context.CreateBigNum(private_key)));
-  ElGamalEncrypter encrypter(&group, std::make_unique<PublicKey>(PublicKey{
-                                         std::move(g), std::move(y)}));
-  PJC_ASSIGN_OR_RETURN(Ciphertext ciphertext,
-                       encrypter.Encrypt(plaintext_point));
-  PJC_ASSIGN_OR_RETURN(std::string u_compressed,
-                       ciphertext.u.ToBytesCompressed());
-  PJC_ASSIGN_OR_RETURN(std::string e_compressed,
-                       ciphertext.e.ToBytesCompressed());
-  return ProbabilisticRevealToken{1, std::move(u_compressed),
-                                  std::move(e_compressed)};
-}
-
-absl::StatusOr<std::vector<ProbabilisticRevealToken>> CreateTokens(
-    uint64_t private_key,
-    std::size_t num_tokens) {
-  std::vector<ProbabilisticRevealToken> tokens(num_tokens);
-  for (std::size_t i = 0; i < num_tokens; ++i) {
-    PJC_ASSIGN_OR_RETURN(tokens[i],
-                         CreateTokenFromPlaintext(
-                             private_key, "token-" + base::NumberToString(i)));
+class IpProtectionProbabilisticRevealTokenCrypterTest : public testing::Test {
+ public:
+  // Encrypt given plaintexts with the given private key. Store resulting tokens
+  // in `issuer_->Tokens()`.
+  void CreateTokens(uint64_t private_key, std::vector<std::string> plaintexts) {
+    base::expected<
+        std::unique_ptr<ip_protection::ProbabilisticRevealTokenTestIssuer>,
+        absl::Status>
+        maybe_issuer =
+            ip_protection::ProbabilisticRevealTokenTestIssuer::Create(
+                private_key);
+    ASSERT_TRUE(maybe_issuer.has_value())
+        << "creating test issuer failed with error: " << maybe_issuer.error();
+    issuer_ = std::move(maybe_issuer).value();
+    base::expected<ip_protection::GetProbabilisticRevealTokenResponse,
+                   absl::Status>
+        maybe_response = issuer_->Issue(plaintexts,
+                                        /*expiration=*/base::Time::Now(),
+                                        /*next_epoch_start=*/base::Time::Now(),
+                                        /*num_tokens_with_signal=*/0,
+                                        /*epoch_id=*/"epoch-id");
+    ASSERT_TRUE(maybe_response.has_value())
+        << "creating tokens failed with error: " << maybe_response.error();
+    ASSERT_THAT(issuer_->Tokens(), testing::SizeIs(plaintexts.size()));
   }
-  return tokens;
-}
 
-absl::StatusOr<ECPoint> DecryptToken(uint64_t private_key,
-                                     const ProbabilisticRevealToken& token) {
-  Context context;
-  PJC_ASSIGN_OR_RETURN(ECGroup group,
-                       ECGroup::Create(NID_X9_62_prime256v1, &context));
-  PJC_ASSIGN_OR_RETURN(ECPoint u, group.CreateECPoint(token.u));
-  PJC_ASSIGN_OR_RETURN(ECPoint e, group.CreateECPoint(token.e));
-  Ciphertext ciphertext{std::move(u), std::move(e)};
-  ElGamalDecrypter decrypter(std::make_unique<PrivateKey>(
-      PrivateKey{context.CreateBigNum(private_key)}));
-  return decrypter.Decrypt(ciphertext);
-}
+  std::string GetPublicKey() const { return issuer_->GetSerializedPublicKey(); }
 
-}  // namespace
+  std::vector<ProbabilisticRevealToken> GetTokens() const {
+    return issuer_->Tokens();
+  }
 
-TEST(IpProtectionProbabilisticRevealTokenCrypter, CreateSuccess) {
-  const uint64_t private_key = 12345;
-  auto maybe_serialized_public_key = GetSerializedPublicKey(private_key);
-  ASSERT_TRUE(maybe_serialized_public_key.ok());
-  auto& serialized_public_key = maybe_serialized_public_key.value();
+  std::unique_ptr<ProbabilisticRevealTokenTestIssuer> issuer_ = nullptr;
+};
 
-  const std::size_t num_tokens = 3;
-  const auto maybe_tokens = CreateTokens(private_key, num_tokens);
-  ASSERT_TRUE(maybe_tokens.ok());
-  const auto& tokens = maybe_tokens.value();
+TEST_F(IpProtectionProbabilisticRevealTokenCrypterTest, CreateSuccess) {
+  const std::vector<std::string> plaintexts = {
+      "An algorithm must be seen to ", "be believed.-----------------",
+      "Computers are useless. They  ", "can only give you answers.---",
+      "------------Code never lies, ", "comments sometimes do.-------",
+  };
+  CreateTokens(/*private_key=*/12345, plaintexts);
 
   auto maybe_crypter = IpProtectionProbabilisticRevealTokenCrypter::Create(
-      serialized_public_key, tokens);
+      GetPublicKey(), GetTokens());
   EXPECT_TRUE(maybe_crypter.ok());
   const auto& crypter = maybe_crypter.value();
   EXPECT_TRUE(crypter->IsTokenAvailable());
-  EXPECT_EQ(crypter->NumTokens(), num_tokens);
+  EXPECT_EQ(crypter->NumTokens(), plaintexts.size());
 }
 
-TEST(IpProtectionProbabilisticRevealTokenCrypter, CreateEmptyTokens) {
-  const uint64_t private_key = 12345;
-  auto maybe_serialized_public_key = GetSerializedPublicKey(private_key);
-  ASSERT_TRUE(maybe_serialized_public_key.ok());
-  auto& serialized_public_key = maybe_serialized_public_key.value();
+TEST_F(IpProtectionProbabilisticRevealTokenCrypterTest, CreateEmptyTokens) {
+  const std::vector<std::string> plaintexts = {
+      "An algorithm must be seen to ", "be believed.-----------------",
+      "Computers are useless. They  ", "can only give you answers.---",
+      "------------Code never lies, ", "comments sometimes do.-------",
+  };
+  CreateTokens(/*private_key=*/12345, plaintexts);
 
-  auto maybe_crypter = IpProtectionProbabilisticRevealTokenCrypter::Create(
-      serialized_public_key, {});
+  auto maybe_crypter =
+      IpProtectionProbabilisticRevealTokenCrypter::Create(GetPublicKey(), {});
   EXPECT_TRUE(maybe_crypter.ok());
   const auto& crypter = maybe_crypter.value();
   EXPECT_FALSE(crypter->IsTokenAvailable());
   EXPECT_EQ(crypter->NumTokens(), std::size_t(0));
 }
 
-TEST(IpProtectionProbabilisticRevealTokenCrypter, CreateInvalidPublicKey) {
+TEST_F(IpProtectionProbabilisticRevealTokenCrypterTest,
+       CreateInvalidPublicKey) {
   const auto& serialized_public_key = "invalid-public-key";
   auto maybe_crypter = IpProtectionProbabilisticRevealTokenCrypter::Create(
       serialized_public_key, {});
   EXPECT_EQ(maybe_crypter.status().code(), absl::StatusCode::kInvalidArgument);
 }
 
-TEST(IpProtectionProbabilisticRevealTokenCrypter, CreateInvalidTokenU) {
-  const uint64_t private_key = 12345;
-  auto maybe_serialized_public_key = GetSerializedPublicKey(private_key);
-  ASSERT_TRUE(maybe_serialized_public_key.ok());
-  auto& serialized_public_key = maybe_serialized_public_key.value();
-
-  const std::size_t num_tokens = 7;
-  auto maybe_tokens = CreateTokens(private_key, num_tokens);
-  ASSERT_TRUE(maybe_tokens.ok());
-  auto& tokens = maybe_tokens.value();
-  tokens[num_tokens - 1].u = "invalid-u";
+TEST_F(IpProtectionProbabilisticRevealTokenCrypterTest, CreateInvalidTokenU) {
+  const std::vector<std::string> plaintexts = {
+      "An algorithm must be seen to ", "be believed.-----------------",
+      "Computers are useless. They  ", "can only give you answers.---",
+      "------------Code never lies, ", "comments sometimes do.-------",
+  };
+  CreateTokens(/*private_key=*/12345, plaintexts);
+  std::vector<ProbabilisticRevealToken> tokens = GetTokens();
+  tokens.back().u = "invalid-u";
 
   auto maybe_crypter = IpProtectionProbabilisticRevealTokenCrypter::Create(
-      serialized_public_key, tokens);
+      GetPublicKey(), tokens);
   EXPECT_EQ(maybe_crypter.status().code(), absl::StatusCode::kInvalidArgument);
 }
 
-TEST(IpProtectionProbabilisticRevealTokenCrypter, CreateInvalidTokenE) {
-  const uint64_t private_key = 12345;
-  auto maybe_serialized_public_key = GetSerializedPublicKey(private_key);
-  ASSERT_TRUE(maybe_serialized_public_key.ok());
-  auto& serialized_public_key = maybe_serialized_public_key.value();
-
-  const std::size_t num_tokens = 3;
-  auto maybe_tokens = CreateTokens(private_key, num_tokens);
-  ASSERT_TRUE(maybe_tokens.ok());
-  auto& tokens = maybe_tokens.value();
-  tokens[num_tokens - 1].e = "invalid-e";
+TEST_F(IpProtectionProbabilisticRevealTokenCrypterTest, CreateInvalidTokenE) {
+  const std::vector<std::string> plaintexts = {
+      "An algorithm must be seen to ", "be believed.-----------------",
+      "Computers are useless. They  ", "can only give you answers.---",
+      "------------Code never lies, ", "comments sometimes do.-------",
+  };
+  CreateTokens(/*private_key=*/12345, plaintexts);
+  std::vector<ProbabilisticRevealToken> tokens = GetTokens();
+  tokens.back().e = "invalid-e";
 
   auto maybe_crypter = IpProtectionProbabilisticRevealTokenCrypter::Create(
-      serialized_public_key, tokens);
+      GetPublicKey(), tokens);
   EXPECT_EQ(maybe_crypter.status().code(), absl::StatusCode::kInvalidArgument);
 }
 
-TEST(IpProtectionProbabilisticRevealTokenCrypter,
-     SetNewPublicKeyAndTokensSuccess) {
-  auto maybe_serialized_public_key =
-      GetSerializedPublicKey(/* private_key = */ 11111);
-  ASSERT_TRUE(maybe_serialized_public_key.ok());
-  auto& serialized_public_key = maybe_serialized_public_key.value();
+TEST_F(IpProtectionProbabilisticRevealTokenCrypterTest,
+       SetNewPublicKeyAndTokensSuccess) {
+  const std::vector<std::string> plaintexts = {
+      "An algorithm must be seen to ", "be believed.-----------------",
+      "Computers are useless. They  ", "can only give you answers.---",
+      "------------Code never lies, ", "comments sometimes do.-------",
+  };
+  CreateTokens(/*private_key=*/11111, plaintexts);
 
   // Create a crypter with no tokens.
-  auto maybe_crypter = IpProtectionProbabilisticRevealTokenCrypter::Create(
-      serialized_public_key, {});
+  auto maybe_crypter =
+      IpProtectionProbabilisticRevealTokenCrypter::Create(GetPublicKey(), {});
   EXPECT_TRUE(maybe_crypter.ok());
   auto& crypter = maybe_crypter.value();
   EXPECT_FALSE(crypter->IsTokenAvailable());
   EXPECT_EQ(crypter->NumTokens(), std::size_t(0));
 
-  // Create a new key.
-  const uint64_t private_key = 22222;
-  maybe_serialized_public_key = GetSerializedPublicKey(private_key);
-  ASSERT_TRUE(maybe_serialized_public_key.ok());
-  serialized_public_key = maybe_serialized_public_key.value();
+  // Create new tokens with a new key.
+  CreateTokens(/*private_key=*/22222, plaintexts);
 
-  // Create tokens with the new key.
-  const std::size_t num_tokens = 12;
-  const auto maybe_tokens = CreateTokens(private_key, num_tokens);
-  ASSERT_TRUE(maybe_tokens.ok());
-  const auto& tokens = maybe_tokens.value();
-
-  auto status =
-      crypter->SetNewPublicKeyAndTokens(serialized_public_key, tokens);
+  auto status = crypter->SetNewPublicKeyAndTokens(GetPublicKey(), GetTokens());
 
   EXPECT_TRUE(status.ok());
   EXPECT_TRUE(crypter->IsTokenAvailable());
-  EXPECT_EQ(crypter->NumTokens(), num_tokens);
+  EXPECT_EQ(crypter->NumTokens(), plaintexts.size());
 }
 
-TEST(IpProtectionProbabilisticRevealTokenCrypter,
-     SetNewPublicKeyAndTokensEmptyTokens) {
-  auto maybe_serialized_public_key =
-      GetSerializedPublicKey(/* private_key = */ 11111);
-  ASSERT_TRUE(maybe_serialized_public_key.ok());
-  auto& serialized_public_key = maybe_serialized_public_key.value();
-  auto maybe_crypter = IpProtectionProbabilisticRevealTokenCrypter::Create(
-      serialized_public_key, {});
+TEST_F(IpProtectionProbabilisticRevealTokenCrypterTest,
+       SetNewPublicKeyAndTokensEmptyTokens) {
+  const std::vector<std::string> plaintexts = {
+      "An algorithm must be seen to ", "be believed.-----------------",
+      "Computers are useless. They  ", "can only give you answers.---",
+      "------------Code never lies, ", "comments sometimes do.-------",
+  };
+  CreateTokens(/*private_key=*/11111, plaintexts);
+  auto maybe_crypter =
+      IpProtectionProbabilisticRevealTokenCrypter::Create(GetPublicKey(), {});
   EXPECT_TRUE(maybe_crypter.ok());
   auto& crypter = maybe_crypter.value();
   EXPECT_FALSE(crypter->IsTokenAvailable());
   EXPECT_EQ(crypter->NumTokens(), std::size_t(0));
 
-  // Create a new key.
-  const uint64_t private_key = 22222;
-  maybe_serialized_public_key = GetSerializedPublicKey(private_key);
-  ASSERT_TRUE(maybe_serialized_public_key.ok());
-  serialized_public_key = maybe_serialized_public_key.value();
+  // Create new tokens with a new key.
+  CreateTokens(/*private_key=*/22222, plaintexts);
 
-  auto status = crypter->SetNewPublicKeyAndTokens(serialized_public_key, {});
+  auto status = crypter->SetNewPublicKeyAndTokens(GetPublicKey(), {});
   EXPECT_TRUE(status.ok());
   EXPECT_FALSE(crypter->IsTokenAvailable());
   EXPECT_EQ(crypter->NumTokens(), std::size_t(0));
 }
 
-TEST(IpProtectionProbabilisticRevealTokenCrypter,
-     SetNewPublicKeyAndTokensInvalidPublicKey) {
-  const uint64_t private_key = 42;
-  auto maybe_serialized_public_key = GetSerializedPublicKey(private_key);
-  ASSERT_TRUE(maybe_serialized_public_key.ok());
-  auto& serialized_public_key = maybe_serialized_public_key.value();
-
-  const std::size_t num_tokens = 10;
-  const auto maybe_tokens = CreateTokens(private_key, num_tokens);
-  ASSERT_TRUE(maybe_tokens.ok());
-  const auto& tokens = maybe_tokens.value();
+TEST_F(IpProtectionProbabilisticRevealTokenCrypterTest,
+       SetNewPublicKeyAndTokensInvalidPublicKey) {
+  const std::vector<std::string> plaintexts = {
+      "------------Code never lies, ",
+      "comments sometimes do.-------",
+  };
+  CreateTokens(/*private_key=*/42, plaintexts);
 
   auto maybe_crypter = IpProtectionProbabilisticRevealTokenCrypter::Create(
-      serialized_public_key, tokens);
+      GetPublicKey(), GetTokens());
   EXPECT_TRUE(maybe_crypter.ok());
   auto& crypter = maybe_crypter.value();
   EXPECT_TRUE(crypter->IsTokenAvailable());
-  EXPECT_EQ(crypter->NumTokens(), num_tokens);
+  EXPECT_EQ(crypter->NumTokens(), plaintexts.size());
 
   // Should fail and crypter should keep its state.
   auto status = crypter->SetNewPublicKeyAndTokens("invalid-pk", {});
   EXPECT_EQ(status.code(), absl::StatusCode::kInvalidArgument);
   EXPECT_TRUE(crypter->IsTokenAvailable());
-  EXPECT_EQ(crypter->NumTokens(), num_tokens);
+  EXPECT_EQ(crypter->NumTokens(), plaintexts.size());
 }
 
-TEST(IpProtectionProbabilisticRevealTokenCrypter,
-     SetNewPublicKeyAndTokensInvalidTokenU) {
-  const uint64_t private_key = 42;
-  auto maybe_serialized_public_key = GetSerializedPublicKey(private_key);
-  ASSERT_TRUE(maybe_serialized_public_key.ok());
-  auto& serialized_public_key = maybe_serialized_public_key.value();
-
-  const std::size_t num_tokens = 10;
-  const auto maybe_tokens = CreateTokens(private_key, num_tokens);
-  ASSERT_TRUE(maybe_tokens.ok());
-  const auto& tokens = maybe_tokens.value();
+TEST_F(IpProtectionProbabilisticRevealTokenCrypterTest,
+       SetNewPublicKeyAndTokensInvalidTokenU) {
+  const std::vector<std::string> plaintexts = {
+      "An algorithm must be seen to ", "be believed.-----------------",
+      "Computers are useless. They  ", "can only give you answers.---",
+      "------------Code never lies, ", "comments sometimes do.-------",
+  };
+  CreateTokens(/*private_key=*/42, plaintexts);
 
   auto maybe_crypter = IpProtectionProbabilisticRevealTokenCrypter::Create(
-      serialized_public_key, tokens);
+      GetPublicKey(), GetTokens());
   EXPECT_TRUE(maybe_crypter.ok());
   auto& crypter = maybe_crypter.value();
   EXPECT_TRUE(crypter->IsTokenAvailable());
-  EXPECT_EQ(crypter->NumTokens(), num_tokens);
+  EXPECT_EQ(crypter->NumTokens(), plaintexts.size());
 
-  // Get a new public key.
-  const uint64_t new_private_key = 23;
-  maybe_serialized_public_key = GetSerializedPublicKey(new_private_key);
-  ASSERT_TRUE(maybe_serialized_public_key.ok());
-  serialized_public_key = maybe_serialized_public_key.value();
-
-  // Get new tokens with new public key.
-  const std::size_t new_num_tokens = 2;
-  auto maybe_new_tokens = CreateTokens(new_private_key, new_num_tokens);
-  ASSERT_TRUE(maybe_new_tokens.ok());
-  auto& new_tokens = maybe_new_tokens.value();
+  // Create new tokens with a new key.
+  CreateTokens(
+      /*private_key=*/23,
+      std::vector<std::string>(plaintexts.begin(), plaintexts.begin() + 2));
+  std::vector<ProbabilisticRevealToken> new_tokens = GetTokens();
   new_tokens[1].u = "not-a-valid-token-u";
 
   // Should fail and crypter should keep its state.
-  auto status =
-      crypter->SetNewPublicKeyAndTokens(serialized_public_key, new_tokens);
+  auto status = crypter->SetNewPublicKeyAndTokens(GetPublicKey(), new_tokens);
   EXPECT_EQ(status.code(), absl::StatusCode::kInvalidArgument);
   EXPECT_TRUE(crypter->IsTokenAvailable());
-  // NumTokens() should remain as num_tokens not new_num_tokens
-  EXPECT_EQ(crypter->NumTokens(), num_tokens);
+  // NumTokens() should remain as plaintexts.size() not 2.
+  EXPECT_EQ(crypter->NumTokens(), plaintexts.size());
 }
 
-TEST(IpProtectionProbabilisticRevealTokenCrypter,
-     SetNewPublicKeyAndTokensInvalidTokenE) {
-  const uint64_t private_key = 42;
-  auto maybe_serialized_public_key = GetSerializedPublicKey(private_key);
-  ASSERT_TRUE(maybe_serialized_public_key.ok());
-  auto& serialized_public_key = maybe_serialized_public_key.value();
-
-  const std::size_t num_tokens = 10;
-  auto maybe_tokens = CreateTokens(private_key, num_tokens);
-  ASSERT_TRUE(maybe_tokens.ok());
-  auto& tokens = maybe_tokens.value();
+TEST_F(IpProtectionProbabilisticRevealTokenCrypterTest,
+       SetNewPublicKeyAndTokensInvalidTokenE) {
+  const std::vector<std::string> plaintexts = {
+      "An algorithm must be seen to ", "be believed.-----------------",
+      "Computers are useless. They  ", "can only give you answers.---",
+      "------------Code never lies, ", "comments sometimes do.-------",
+  };
+  CreateTokens(/*private_key=*/42, plaintexts);
 
   auto maybe_crypter = IpProtectionProbabilisticRevealTokenCrypter::Create(
-      serialized_public_key, tokens);
+      GetPublicKey(), GetTokens());
   EXPECT_TRUE(maybe_crypter.ok());
   auto& crypter = maybe_crypter.value();
   EXPECT_TRUE(crypter->IsTokenAvailable());
-  EXPECT_EQ(crypter->NumTokens(), num_tokens);
+  EXPECT_EQ(crypter->NumTokens(), plaintexts.size());
 
-  // Get a new public key.
-  const uint64_t new_private_key = 23;
-  maybe_serialized_public_key = GetSerializedPublicKey(new_private_key);
-  ASSERT_TRUE(maybe_serialized_public_key.ok());
-  serialized_public_key = maybe_serialized_public_key.value();
-
-  // Get new tokens with new public key.
-  const std::size_t new_num_tokens = 2;
-  auto maybe_new_tokens = CreateTokens(new_private_key, new_num_tokens);
-  ASSERT_TRUE(maybe_new_tokens.ok());
-  auto& new_tokens = maybe_new_tokens.value();
+  // Create new tokens with a new key.
+  CreateTokens(
+      /*private_key=*/23,
+      std::vector<std::string>(plaintexts.begin(), plaintexts.begin() + 2));
+  std::vector<ProbabilisticRevealToken> new_tokens = GetTokens();
   new_tokens[1].e = "not-a-valid-token-e";
 
   // Should fail and crypter should keep its state.
-  auto status =
-      crypter->SetNewPublicKeyAndTokens(serialized_public_key, new_tokens);
+  auto status = crypter->SetNewPublicKeyAndTokens(GetPublicKey(), new_tokens);
   EXPECT_EQ(status.code(), absl::StatusCode::kInvalidArgument);
   EXPECT_TRUE(crypter->IsTokenAvailable());
-  // NumTokens() should remain as num_tokens not new_num_tokens
-  EXPECT_EQ(crypter->NumTokens(), num_tokens);
+  // NumTokens() should remain as plaintexts.size() not 2.
+  EXPECT_EQ(crypter->NumTokens(), plaintexts.size());
 }
 
-TEST(IpProtectionProbabilisticRevealTokenCrypter, ClearTokens) {
-  const uint64_t private_key = 7654;
-  auto maybe_serialized_public_key = GetSerializedPublicKey(private_key);
-  ASSERT_TRUE(maybe_serialized_public_key.ok());
-  auto& serialized_public_key = maybe_serialized_public_key.value();
-
-  const std::size_t num_tokens = 27;
-  const auto maybe_tokens = CreateTokens(private_key, num_tokens);
-  ASSERT_TRUE(maybe_tokens.ok());
-  const auto& tokens = maybe_tokens.value();
-
+TEST_F(IpProtectionProbabilisticRevealTokenCrypterTest, ClearTokens) {
+  const std::vector<std::string> plaintexts = {
+      "An algorithm must be seen to ", "be believed.-----------------",
+      "Computers are useless. They  ", "can only give you answers.---",
+      "------------Code never lies, ", "comments sometimes do.-------",
+  };
+  CreateTokens(/*private_key=*/7654, plaintexts);
   auto maybe_crypter = IpProtectionProbabilisticRevealTokenCrypter::Create(
-      serialized_public_key, tokens);
+      GetPublicKey(), GetTokens());
   EXPECT_TRUE(maybe_crypter.ok());
   auto& crypter = maybe_crypter.value();
   EXPECT_TRUE(crypter->IsTokenAvailable());
-  EXPECT_EQ(crypter->NumTokens(), num_tokens);
+  EXPECT_EQ(crypter->NumTokens(), plaintexts.size());
 
   crypter->ClearTokens();
   EXPECT_FALSE(crypter->IsTokenAvailable());
   EXPECT_EQ(crypter->NumTokens(), std::size_t(0));
 }
 
-TEST(IpProtectionProbabilisticRevealTokenCrypter, Randomize) {
-  const uint64_t private_key = 2025;
-  const auto maybe_serialized_public_key = GetSerializedPublicKey(private_key);
-  ASSERT_TRUE(maybe_serialized_public_key.ok());
-  const auto& serialized_public_key = maybe_serialized_public_key.value();
-
-  const std::size_t num_tokens = 12;
-  const auto maybe_tokens = CreateTokens(private_key, num_tokens);
-  ASSERT_TRUE(maybe_tokens.ok());
-  const auto& tokens = maybe_tokens.value();
+TEST_F(IpProtectionProbabilisticRevealTokenCrypterTest, Randomize) {
+  const std::vector<std::string> plaintexts = {
+      "An algorithm must be seen to ", "be believed.-----------------",
+      "Computers are useless. They  ", "can only give you answers.---",
+      "------------Code never lies, ", "comments sometimes do.-------",
+      "----random-string----------, ", "--another-random-str---------",
+      "some-prob-reveal-token-----, ", "--another-random-pr-token----",
+  };
+  CreateTokens(/*private_key=*/2025, plaintexts);
 
   const auto maybe_crypter =
-      IpProtectionProbabilisticRevealTokenCrypter::Create(serialized_public_key,
-                                                          tokens);
+      IpProtectionProbabilisticRevealTokenCrypter::Create(GetPublicKey(),
+                                                          GetTokens());
   EXPECT_TRUE(maybe_crypter.ok());
   const auto& crypter = maybe_crypter.value();
   EXPECT_TRUE(crypter->IsTokenAvailable());
-  EXPECT_EQ(crypter->NumTokens(), num_tokens);
+  EXPECT_EQ(crypter->NumTokens(), plaintexts.size());
 
-  // Decrypt tokens and randomized tokens, compare results.
-  for (std::size_t i = 0; i < num_tokens; ++i) {
+  // Decrypting randomized tokens should yield starting plaintexts.
+  for (std::size_t i = 0; i < plaintexts.size(); ++i) {
     const auto maybe_randomized_token = crypter->Randomize(i);
     ASSERT_TRUE(maybe_randomized_token.ok());
     const auto& randomized_token = maybe_randomized_token.value();
 
     EXPECT_EQ(randomized_token.version, 1);
-
-    const auto maybe_decrypted_randomized_token =
-        DecryptToken(private_key, randomized_token);
-    ASSERT_TRUE(maybe_decrypted_randomized_token.ok());
-
-    const auto maybe_decrypted_token = DecryptToken(private_key, tokens[i]);
-    ASSERT_TRUE(maybe_decrypted_token.ok());
-
-    EXPECT_EQ(maybe_decrypted_token.value(),
-              maybe_decrypted_randomized_token.value());
+    base::expected<std::string, absl::Status> maybe_revealed_token =
+        issuer_->RevealToken(randomized_token);
+    ASSERT_TRUE(maybe_revealed_token.has_value())
+        << "decrypting randomized token failed, error: "
+        << maybe_revealed_token.error();
+    EXPECT_EQ(maybe_revealed_token.value(), plaintexts[i]);
   }
 
   // Try to randomize a token that does not exist.
-  const auto maybe_token = crypter->Randomize(num_tokens);
+  const auto maybe_token = crypter->Randomize(plaintexts.size());
   ASSERT_FALSE(maybe_token.ok());
   EXPECT_EQ(maybe_token.status().code(), absl::StatusCode::kInvalidArgument);
 }

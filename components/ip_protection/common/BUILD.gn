@@ -678,11 +678,12 @@ source_set("ip_protection_probabilistic_reveal_token_crypter_unittest") {
   sources = [ "ip_protection_probabilistic_reveal_token_crypter_unittest.cc" ]
   deps = [
     ":ip_protection_probabilistic_reveal_token_crypter",
+    ":probabilistic_reveal_token_test_issuer",
     "//base",
     "//base/test:test_support",
+    "//components/ip_protection:get_probabilistic_reveal_token_proto",
     "//testing/gmock",
     "//testing/gtest",
-    "//third_party/private-join-and-compute/src:ec_commutative_cipher",
   ]
 }
 
