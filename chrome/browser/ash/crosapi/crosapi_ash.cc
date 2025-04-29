@@ -23,7 +23,6 @@
 #include "chrome/browser/ash/crosapi/file_system_access_cloud_identifier_provider_ash.h"
 #include "chrome/browser/ash/crosapi/file_system_provider_service_ash.h"
 #include "chrome/browser/ash/crosapi/fullscreen_controller_ash.h"
-#include "chrome/browser/ash/crosapi/identity_manager_ash.h"
 #include "chrome/browser/ash/crosapi/keystore_service_ash.h"
 #include "chrome/browser/ash/crosapi/kiosk_session_service_ash.h"
 #include "chrome/browser/ash/crosapi/local_printer_ash.h"
@@ -116,7 +115,6 @@ CrosapiAsh::CrosapiAsh()
       file_system_provider_service_ash_(
           std::make_unique<FileSystemProviderServiceAsh>()),
       fullscreen_controller_ash_(std::make_unique<FullscreenControllerAsh>()),
-      identity_manager_ash_(std::make_unique<IdentityManagerAsh>()),
       keystore_service_ash_(std::make_unique<KeystoreServiceAsh>()),
       kiosk_session_service_ash_(std::make_unique<KioskSessionServiceAsh>()),
       local_printer_ash_(std::make_unique<LocalPrinterAsh>()),
@@ -247,11 +245,6 @@ void CrosapiAsh::BindFullscreenController(
 void CrosapiAsh::BindHidManager(
     mojo::PendingReceiver<device::mojom::HidManager> receiver) {
   content::GetDeviceService().BindHidManager(std::move(receiver));
-}
-
-void CrosapiAsh::BindIdentityManager(
-    mojo::PendingReceiver<crosapi::mojom::IdentityManager> receiver) {
-  identity_manager_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindInSessionAuth(

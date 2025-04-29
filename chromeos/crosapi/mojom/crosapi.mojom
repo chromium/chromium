@@ -196,12 +196,7 @@ interface Crosapi {
       pending_receiver<FullscreenController> receiver);
 
   // BindGeolocationService@48 was removed.
-
-  // Binds the IdentityManager interface for reading identity information.
-  // Added in M96.
-  [MinVersion=51]
-  BindIdentityManager@55(pending_receiver<IdentityManager> receiver);
-
+  // BindIdentityManager@55 was removed.
   // BindIdleService@21 was removed.
   // BindImageWriter@42 was removed.
 
