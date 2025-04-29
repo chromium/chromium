@@ -1834,6 +1834,7 @@ Status BackingStore::Transaction::SetDatabaseVersion(
     int64_t row_id,
     int64_t version,
     blink::IndexedDBDatabaseMetadata* metadata) {
+  CHECK_EQ(mode(), blink::mojom::IDBTransactionMode::VersionChange);
   if (version == IndexedDBDatabaseMetadata::NO_VERSION) {
     version = IndexedDBDatabaseMetadata::DEFAULT_VERSION;
   }
@@ -1852,6 +1853,7 @@ Status BackingStore::Transaction::CreateObjectStore(
     blink::IndexedDBKeyPath key_path,
     bool auto_increment,
     blink::IndexedDBObjectStoreMetadata* metadata) {
+  CHECK_EQ(mode(), blink::mojom::IDBTransactionMode::VersionChange);
   TransactionalLevelDBTransaction* leveldb_transaction = transaction();
   if (!KeyPrefix::ValidIds(database_id, object_store_id)) {
     return InvalidDBKeyStatus();
@@ -1933,6 +1935,7 @@ Status BackingStore::Transaction::CreateObjectStore(
 Status BackingStore::Transaction::DeleteObjectStore(
     int64_t database_id,
     const blink::IndexedDBObjectStoreMetadata& object_store) {
+  CHECK_EQ(mode(), blink::mojom::IDBTransactionMode::VersionChange);
   if (!KeyPrefix::ValidIds(database_id, object_store.id)) {
     return InvalidDBKeyStatus();
   }
@@ -1991,6 +1994,7 @@ Status BackingStore::Transaction::RenameObjectStore(
     std::u16string new_name,
     std::u16string* old_name,
     blink::IndexedDBObjectStoreMetadata* metadata) {
+  CHECK_EQ(mode(), blink::mojom::IDBTransactionMode::VersionChange);
   if (!KeyPrefix::ValidIds(database_id, metadata->id)) {
     return InvalidDBKeyStatus();
   }
@@ -2044,6 +2048,7 @@ Status BackingStore::Transaction::CreateIndex(
     bool is_unique,
     bool is_multi_entry,
     blink::IndexedDBIndexMetadata* metadata) {
+  CHECK_EQ(mode(), blink::mojom::IDBTransactionMode::VersionChange);
   if (!KeyPrefix::ValidIds(database_id, object_store_id, index_id)) {
     return InvalidDBKeyStatus();
   }
@@ -2094,6 +2099,7 @@ Status BackingStore::Transaction::DeleteIndex(
     int64_t database_id,
     int64_t object_store_id,
     const blink::IndexedDBIndexMetadata& metadata) {
+  CHECK_EQ(mode(), blink::mojom::IDBTransactionMode::VersionChange);
   if (!KeyPrefix::ValidIds(database_id, object_store_id, metadata.id)) {
     return InvalidDBKeyStatus();
   }
@@ -2113,6 +2119,7 @@ Status BackingStore::Transaction::RenameIndex(
     std::u16string new_name,
     std::u16string* old_name,
     blink::IndexedDBIndexMetadata* metadata) {
+  CHECK_EQ(mode(), blink::mojom::IDBTransactionMode::VersionChange);
   if (!KeyPrefix::ValidIds(database_id, object_store_id, metadata->id)) {
     return InvalidDBKeyStatus();
   }

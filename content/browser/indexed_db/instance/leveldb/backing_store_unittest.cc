@@ -1339,7 +1339,7 @@ TEST_F(BackingStoreTest, CreateDatabase) {
     BackingStore::Transaction transaction(
         backing_store()->AsWeakPtr(),
         blink::mojom::IDBTransactionDurability::Relaxed,
-        blink::mojom::IDBTransactionMode::ReadWrite);
+        blink::mojom::IDBTransactionMode::VersionChange);
     transaction.Begin(CreateDummyLock());
 
     IndexedDBObjectStoreMetadata object_store;
@@ -1773,7 +1773,7 @@ TEST_F(BackingStoreTestWithBlobs, SchemaUpgradeV3ToV4) {
     BackingStore::Transaction transaction(
         backing_store()->AsWeakPtr(),
         blink::mojom::IDBTransactionDurability::Relaxed,
-        blink::mojom::IDBTransactionMode::ReadWrite);
+        blink::mojom::IDBTransactionMode::VersionChange);
     transaction.Begin(CreateDummyLock());
 
     IndexedDBObjectStoreMetadata object_store;
@@ -1923,7 +1923,7 @@ TEST_F(BackingStoreTestWithBlobs, SchemaUpgradeV4ToV5) {
     BackingStore::Transaction transaction(
         backing_store()->AsWeakPtr(),
         blink::mojom::IDBTransactionDurability::Relaxed,
-        blink::mojom::IDBTransactionMode::ReadWrite);
+        blink::mojom::IDBTransactionMode::VersionChange);
     transaction.Begin(CreateDummyLock());
 
     IndexedDBObjectStoreMetadata object_store;
