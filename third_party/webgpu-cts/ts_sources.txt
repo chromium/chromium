@@ -170,9 +170,6 @@ src/webgpu/api/operation/buffers/threading.spec.ts
 src/webgpu/api/operation/command_buffer/basic.spec.ts
 src/webgpu/api/operation/command_buffer/clearBuffer.spec.ts
 src/webgpu/api/operation/command_buffer/copyBufferToBuffer.spec.ts
-src/webgpu/shader/types.ts
-src/webgpu/shader/validation/decl/util.ts
-src/webgpu/shader/execution/expression/call/builtin/texture_utils.ts
 src/webgpu/util/texture/data_generation.ts
 src/webgpu/api/operation/command_buffer/copyTextureToTexture.spec.ts
 src/webgpu/api/operation/command_buffer/image_copy.spec.ts
@@ -371,6 +368,9 @@ src/webgpu/compat/api/validation/createBindGroup.spec.ts
 src/webgpu/compat/api/validation/createBindGroupLayout.spec.ts
 src/webgpu/compat/api/validation/createBindGroupLayout_limits.spec.ts
 src/webgpu/compat/api/validation/createPipelineLayout.spec.ts
+src/webgpu/shader/types.ts
+src/webgpu/shader/validation/decl/util.ts
+src/webgpu/shader/execution/expression/call/builtin/texture_utils.ts
 src/webgpu/compat/api/validation/pipeline_creation.spec.ts
 src/webgpu/compat/api/validation/encoding/cmds/copyTextureToBuffer.spec.ts
 src/webgpu/compat/api/validation/encoding/cmds/copyTextureToTexture.spec.ts
