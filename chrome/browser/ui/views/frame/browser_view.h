@@ -234,8 +234,7 @@ class BrowserView : public BrowserWindow,
   // In tabbed mode the tab strip is contained within the window's titlebar. In
   // non-tabbed mode the tab strip is positioned below the titlebar.
   // The return value is determined based on the state of
-  // `features::kImmersiveFullscreen` and `features::kImmersiveFullscreenTabs`
-  // as well as the type of browser.
+  // `features::kImmersiveFullscreen` as well as the type of browser.
   bool UsesImmersiveFullscreenTabbedMode() const;
 #endif
 

@@ -301,8 +301,7 @@ interface NativeWidgetNSWindow {
 
   // Enables immersive fullscreen. |fullscreen_overlay_widget_id| is the id of
   // the overlay widget which is hosting top chrome.
-  // |tab_widget_id| is provided when the ImmersiveFullscreenTabs feature is
-  // enabled. It holds the id of the tab hosting widget.
+  // |tab_widget_id| holds the id of the tab hosting widget.
   EnableImmersiveFullscreen(uint64 fullscreen_overlay_widget_id,
                             uint64 tab_widget_id);
 

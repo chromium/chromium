@@ -1334,8 +1334,7 @@ bool BrowserView::UsesImmersiveFullscreenMode() const {
 
 bool BrowserView::UsesImmersiveFullscreenTabbedMode() const {
   return (GetSupportsTabStrip() &&
-          base::FeatureList::IsEnabled(features::kImmersiveFullscreen) &&
-          base::FeatureList::IsEnabled(features::kImmersiveFullscreenTabs)) &&
+          base::FeatureList::IsEnabled(features::kImmersiveFullscreen)) &&
          !GetIsWebAppType();
 }
 #endif

@@ -859,12 +859,6 @@ BASE_FEATURE(kImmersiveFullscreen,
              "ImmersiveFullscreen",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Moves the tab strip into the titlebar. kImmersiveFullscreen must be enabled
-// for this feature to have an effect.
-BASE_FEATURE(kImmersiveFullscreenTabs,
-             "ImmersiveFullscreenTabs",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables immersive fullscreen mode for PWA windows. PWA windows will use
 // immersive fullscreen mode if and only if both this and kImmersiveFullscreen
 // are enabled. PWA windows currently do not use ImmersiveFullscreenTabs even if
