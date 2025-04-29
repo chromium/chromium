@@ -2606,6 +2606,10 @@ void AXObject::SerializeUnignoredAttributes(ui::AXNodeData* node_data,
       node_data->AddIntListAttribute(
           ax::mojom::blink::IntListAttribute::kControlsIds,
           {static_cast<int32_t>(listbox->AXObjectID())});
+    } else if (AXObject* scroller = GetControlsForOverflowNavigation()) {
+      node_data->AddIntListAttribute(
+          ax::mojom::blink::IntListAttribute::kControlsIds,
+          {static_cast<int32_t>(scroller->AXObjectID())});
     }
   }
 
@@ -2957,6 +2961,22 @@ AXObject* AXObject::GetControlsListboxForTextfieldCombobox() const {
   }
 
   return listbox_candidate;
+}
+
+AXObject* AXObject::GetControlsForOverflowNavigation() const {
+  if (!GetElement()) {
+    return nullptr;
+  }
+  if (!GetElement()->IsScrollButtonPseudoElement() &&
+      !GetElement()->IsScrollMarkerGroupPseudoElement()) {
+    return nullptr;
+  }
+
+  // The parent element of a ::scroll-button(*) or a ::scroll-marker-group
+  // is the originating scrolling container element which is scrolled
+  // (i.e. controlled) when you interact with these pseudo-element controls.
+  // https://www.w3.org/TR/css-overflow-5/#scroll-navigation
+  return AXObjectCache().Get(GetElement()->parentElement());
 }
 
 const AtomicString& AXObject::GetRoleStringForSerialization(
