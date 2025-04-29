@@ -350,6 +350,6 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest,
                      GURL(chrome::kChromeUISettingsURL);
                  return first_web_contents_set && second_web_contents_set;
                }),
-      WaitForState(kMultiContentsViewSwapObserver, true),
-      CheckResult([this]() { return tab_strip_model()->active_index(); }, 1));
+      WaitForState(kMultiContentsViewSwapObserver, true), CheckTabIsActive(1),
+      CheckActiveContentsHasFocus());
 }

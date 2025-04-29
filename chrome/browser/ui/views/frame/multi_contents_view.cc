@@ -117,11 +117,6 @@ void MultiContentsView::SetActiveIndex(int index) {
   active_index_ = index;
   GetActiveContentsView()->set_is_primary_web_contents_for_window(true);
   GetInactiveContentsView()->set_is_primary_web_contents_for_window(false);
-  // If inactive contents view currently has focus, then request focus for the
-  // active contents view.
-  if (GetInactiveContentsView()->HasFocus()) {
-    GetActiveContentsView()->RequestFocus();
-  }
   UpdateContentsBorder();
 }
 

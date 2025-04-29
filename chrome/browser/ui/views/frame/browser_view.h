@@ -477,7 +477,7 @@ class BrowserView : public BrowserWindow,
 
   // Display the current active split view as a series of multiple side-by-side
   // web contents.
-  void ShowSplitView();
+  void ShowSplitView(bool focus_active_view);
 
   // Display only the current active tab's web contents, hiding any previous
   // side-by-side display.

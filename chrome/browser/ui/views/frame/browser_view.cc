@@ -1468,7 +1468,7 @@ views::Widget* BrowserView::GetWidgetForAnchoring() {
   return GetWidget();
 }
 
-void BrowserView::ShowSplitView() {
+void BrowserView::ShowSplitView(bool focus_active_view) {
   CHECK(multi_contents_view_);
   const int active_index = browser_->tab_strip_model()->active_index();
 
@@ -1488,6 +1488,10 @@ void BrowserView::ShowSplitView() {
       browser_->tab_strip_model()->GetIndexOfTab(split_tabs[0]);
   const int relative_active_position = active_index - first_split_tab_index;
   multi_contents_view_->SetActiveIndex(relative_active_position);
+
+  if (focus_active_view) {
+    multi_contents_view_->GetActiveContentsView()->RequestFocus();
+  }
 
   // Update visual information for the split.
   multi_contents_view_->UpdateSplitRatio(
@@ -2066,7 +2070,7 @@ void BrowserView::OnActiveTabChanged(content::WebContents* old_contents,
       const tabs::TabInterface* active_tab =
           tabs::TabInterface::GetFromContents(new_contents);
       if (active_tab->IsSplit()) {
-        ShowSplitView();
+        ShowSplitView(/*focus_active_view=*/false);
       } else {
         if (multi_contents_view_->IsInSplitView()) {
           HideSplitView();
@@ -3843,6 +3847,10 @@ void BrowserView::OnSplitTabContentsUpdated(
       browser_->tab_strip_model()->GetSplitData(split_id);
   const int first_split_tab_index =
       browser_->tab_strip_model()->GetIndexOfTab(split_data->ListTabs()[0]);
+
+  const bool active_view_has_focus =
+      multi_contents_view_->GetActiveContentsView()->HasFocus();
+
   // Clear web contents for prev_tabs in preparation to reset for new_tabs.
   for (std::pair<tabs::TabInterface*, int> split_tab_with_index : prev_tabs) {
     int relative_index = split_tab_with_index.second - first_split_tab_index;
@@ -3858,20 +3866,10 @@ void BrowserView::OnSplitTabContentsUpdated(
       multi_contents_view_->SetActiveIndex(relative_index);
     }
   }
-}
-
-void BrowserView::TabChangedAt(content::WebContents* contents,
-                               int index,
-                               TabChangeType change_type) {
-  if (change_type != TabChangeType::kLoadingOnly || contents->IsLoading()) {
-    return;
+  // Focus the active contents view if it previously had focus prior to swap.
+  if (active_view_has_focus) {
+    multi_contents_view_->GetActiveContentsView()->RequestFocus();
   }
-
-  if (contents != GetActiveWebContents()) {
-    return;
-  }
-
-  UpdateAccessibleURLForRootView(contents->GetURL());
 }
 
 void BrowserView::OnSplitTabCreated(
@@ -3882,7 +3880,7 @@ void BrowserView::OnSplitTabCreated(
   const tabs::TabInterface* active_tab =
       browser_->tab_strip_model()->GetActiveTab();
   if (active_tab->IsSplit()) {
-    ShowSplitView();
+    ShowSplitView(GetContentsView()->HasFocus());
   }
 }
 
@@ -3912,6 +3910,20 @@ void BrowserView::OnSplitTabVisualsChanged(
       multi_contents_view_->UpdateSplitRatio(new_visual_data.split_ratio());
     }
   }
+}
+
+void BrowserView::TabChangedAt(content::WebContents* contents,
+                               int index,
+                               TabChangeType change_type) {
+  if (change_type != TabChangeType::kLoadingOnly || contents->IsLoading()) {
+    return;
+  }
+
+  if (contents != GetActiveWebContents()) {
+    return;
+  }
+
+  UpdateAccessibleURLForRootView(contents->GetURL());
 }
 
 void BrowserView::OnTabStripModelChanged(
