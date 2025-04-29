@@ -110,6 +110,8 @@ source_set("test_support") {
     ":interfaces",
     ":notice_mojom",
     "//base",
+    "//components/keyed_service/core:core",
+    "//content/public/browser:browser",
     "//testing/gmock",
   ]
 

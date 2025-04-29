@@ -17,7 +17,6 @@ namespace privacy_sandbox {
 namespace {
 
 using ::testing::Mock;
-using ::testing::NiceMock;
 
 class PrivacySandboxNoticeEntryPointHandlersTest : public InProcessBrowserTest {
  public:
@@ -26,11 +25,7 @@ class PrivacySandboxNoticeEntryPointHandlersTest : public InProcessBrowserTest {
         PrivacySandboxNoticeServiceFactory::GetInstance()
             ->SetTestingFactoryAndUse(
                 browser()->profile(),
-                base::BindRepeating([](content::BrowserContext*)
-                                        -> std::unique_ptr<KeyedService> {
-                  return std::make_unique<
-                      NiceMock<MockPrivacySandboxNoticeService>>();
-                })));
+                base::BindRepeating(&BuildMockPrivacySandboxNoticeService)));
 
     mock_view_manager_ = std::make_unique<MockDesktopViewManager>();
 

@@ -2697,16 +2697,13 @@ class PrivacySandboxNoticeServiceInteractionTest
   }
 
   void SetUp() override {
-    mock_notice_service_ =
-        static_cast<privacy_sandbox::MockPrivacySandboxNoticeService*>(
-            PrivacySandboxNoticeServiceFactory::GetInstance()
-                ->SetTestingFactoryAndUse(
-                    profile(),
-                    base::BindRepeating([](content::BrowserContext*)
-                                            -> std::unique_ptr<KeyedService> {
-                      return std::make_unique<NiceMock<
-                          privacy_sandbox::MockPrivacySandboxNoticeService>>();
-                    })));
+    mock_notice_service_ = static_cast<
+        privacy_sandbox::MockPrivacySandboxNoticeService*>(
+        PrivacySandboxNoticeServiceFactory::GetInstance()
+            ->SetTestingFactoryAndUse(
+                profile(),
+                base::BindRepeating(
+                    &privacy_sandbox::BuildMockPrivacySandboxNoticeService)));
     PrivacySandboxServiceTest::SetUp();
   }
 
