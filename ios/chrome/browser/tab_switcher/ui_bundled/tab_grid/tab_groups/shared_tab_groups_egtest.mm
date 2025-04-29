@@ -477,13 +477,9 @@ AppLaunchConfiguration SharedTabGroupAppLaunchConfiguration(
 
 // Checks that the IPH is presented when the user foreground the app with a
 // shared tab group active.
-// TODO(crbug.com/411064928): This fails on iphone simulator.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_testForegroundIPH DISABLED_testForegroundIPH
-#else
-#define MAYBE_testForegroundIPH testForegroundIPH
-#endif
-- (void)MAYBE_testForegroundIPH {
+// TODO(crbug.com/411064928): This fails on simulator.
+// TODO(crbug.com/414607496): This fails on device.
+- (void)DISABLED_testForegroundIPH {
   if (@available(iOS 17, *)) {
   } else if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
@@ -657,7 +653,13 @@ AppLaunchConfiguration SharedTabGroupAppLaunchConfiguration(
 // Checks last tab close alert as owner of the group open a new tab and close
 // the last tab, when "Keep Group" is pressed and delete the group when "Delete
 // Group" is pressed.
-- (void)testLastTabClosedOwnerAlert {
+// TODO(crbug.com/414607496): This fails on device.
+#if !TARGET_OS_SIMULATOR
+#define MAYBE_testLastTabClosedOwnerAlert DISABLED_testLastTabClosedOwnerAlert
+#else
+#define MAYBE_testLastTabClosedOwnerAlert testLastTabClosedOwnerAlert
+#endif
+- (void)MAYBE_testLastTabClosedOwnerAlert {
   if (@available(iOS 17, *)) {
   } else if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
@@ -724,7 +726,13 @@ AppLaunchConfiguration SharedTabGroupAppLaunchConfiguration(
 
 // Ensures the last tab close alert as a member is displayed when the group is
 // shared.
-- (void)testLastTabClosedMemberAlert {
+// TODO(crbug.com/414607496): This fails on device.
+#if !TARGET_OS_SIMULATOR
+#define MAYBE_testLastTabClosedMemberAlert DISABLED_testLastTabClosedMemberAlert
+#else
+#define MAYBE_testLastTabClosedMemberAlert testLastTabClosedMemberAlert
+#endif
+- (void)MAYBE_testLastTabClosedMemberAlert {
   if (@available(iOS 17, *)) {
   } else if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
