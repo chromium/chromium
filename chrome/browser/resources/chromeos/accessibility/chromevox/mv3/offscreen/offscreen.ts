@@ -5,8 +5,12 @@
 import {InternalKeyEvent} from '../common/internal_key_event.js';
 import {OffscreenCommandType} from '../common/offscreen_command_type.js';
 
+type MessageSender = chrome.runtime.MessageSender;
+type SendResponse = (value: any) => void;
+
 /**
- * Offscreen analog to BackgroundKeyboardHandler.
+ * Handles keydown and keyup events on the document and sends serialized key
+ * event data to be processed in the service worker's BackgroundKeyboardHandler.
  */
 class OffscreenBackgroundKeyboardHandler {
   static instance?: OffscreenBackgroundKeyboardHandler;
@@ -58,4 +62,83 @@ class OffscreenBackgroundKeyboardHandler {
   }
 }
 
+/**
+ * Handles DOM interactions when accessing and tracking access to the clipboard,
+ * used by ClipboardHandler instance within the service worker.
+ */
+class OffscreenClipboardHandler {
+  static instance?: OffscreenClipboardHandler;
+  private lastClipboardEvent_?: string;
+
+  constructor() {
+    document.addEventListener(
+        'copy', event => this.onClipboardCopyEvent_(event));
+
+    chrome.runtime.onMessage.addListener(
+        (message: any|undefined, _sender: MessageSender,
+         sendResponse: SendResponse) =>
+            this.handleMessageFromServiceWorker_(message, sendResponse));
+  }
+
+  private handleMessageFromServiceWorker_(
+      message: any|undefined, sendResponse: SendResponse) {
+    switch (message['command']) {
+      case OffscreenCommandType.ON_CLIPBOARD_DATA_CHANGED:
+        const forceRead = message['forceRead'] as boolean;
+        this.onClipboardDataChanged_(sendResponse, forceRead);
+        break;
+    }
+    return false;
+  }
+
+  static init(): void {
+    if (OffscreenClipboardHandler.instance) {
+      throw 'Error: trying to create two instances of singleton ' +
+          'OffscreenClipboardHandler.';
+    }
+    OffscreenClipboardHandler.instance = new OffscreenClipboardHandler();
+  }
+
+  /** Processes the copy clipboard event. */
+  private onClipboardCopyEvent_(evt: ClipboardEvent): void {
+    // This should always be 'copy', but is still important to set for the below
+    // extension event.
+    this.lastClipboardEvent_ = evt.type;
+  }
+
+
+  /**
+   * Called in response to the chrome API call
+   * chrome.clipboard.onClipboardDataChanged. There are two scenarios where the
+   * most recently copied string should be processed and the text of the change
+   * sent back to the service worker:
+   * 1. Immediately after a DOM-based clipboard 'copy' event. A DOM-based
+   * clipboard event always comes before the chrome API call, and that event is
+   * listened for and sets this.lastClipboardEvent_ in
+   * OffscreenClipboardHandler.
+   * 2. When the 'forceRead' argument is true. 'forceRead' is set in response to
+   * the call to ClipboardHandler.instance.readNextClipboardDataChange in the
+   * service worker.
+   */
+  private onClipboardDataChanged_(
+      sendResponse: SendResponse, forceRead: boolean): void {
+    if (!forceRead && !this.lastClipboardEvent_) {
+      return;
+    }
+
+    const eventType = this.lastClipboardEvent_;
+    this.lastClipboardEvent_ = undefined;
+
+    const textarea = document.createElement('textarea');
+    document.body.appendChild(textarea);
+    textarea.focus();
+    document.execCommand('paste');
+    const clipboardContent = textarea.value;
+    textarea.remove();
+
+    sendResponse({eventType, clipboardContent});
+  }
+}
+
 OffscreenBackgroundKeyboardHandler.init();
+OffscreenClipboardHandler.init();

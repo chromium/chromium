@@ -11,4 +11,5 @@
 export enum OffscreenCommandType {
   ON_KEY_DOWN = 'onKeyDown',
   ON_KEY_UP = 'onKeyUp',
+  ON_CLIPBOARD_DATA_CHANGED = 'onClipboardDataChanged',
 }
