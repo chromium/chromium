@@ -128,7 +128,7 @@ GlicKeyedService::GlicKeyedService(
 }
 
 GlicKeyedService::~GlicKeyedService() {
-  host().Shutdown();
+  host().Destroy();
   metrics_->SetControllers(nullptr, nullptr);
 }
 

@@ -32,9 +32,13 @@ void Host::Initialize(Delegate* delegate) {
   delegate_ = delegate;
 }
 
+void Host::Destroy() {
+  Shutdown();
+  delegate_ = nullptr;
+}
+
 void Host::Shutdown() {
   contents_.reset();
-  delegate_ = nullptr;
 }
 
 void Host::CreateContents() {
