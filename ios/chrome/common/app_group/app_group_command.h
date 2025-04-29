@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/ios/block_types.h"
+
 typedef void (^URLOpenerBlock)(NSURL* URL);
 
 // This class contains helper functions to prepare dictionary commands, place
@@ -36,10 +38,12 @@ typedef void (^URLOpenerBlock)(NSURL* URL);
 - (void)prepareToIncognitoSearchText:(NSString*)text;
 
 // Prepares a command to search for `image`.
-- (void)prepareToSearchImage:(UIImage*)image;
+- (void)prepareToSearchImageData:(NSData*)imageData
+                      completion:(ProceduralBlock)completion;
 
 // Prepares a command to incognito search for `image`.
-- (void)prepareToIncognitoSearchImage:(UIImage*)image;
+- (void)prepareToIncognitoSearchImageData:(NSData*)imageData
+                               completion:(ProceduralBlock)completion;
 
 // Launches the main app and execute the receiver.
 - (void)executeInApp;
