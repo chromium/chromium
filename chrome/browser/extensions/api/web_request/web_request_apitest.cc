@@ -5842,9 +5842,12 @@ class ProxyCORSWebRequestApiTest
  protected:
   void SetUpOnMainThread() override {
     ExtensionApiTest::SetUpOnMainThread();
+    host_resolver()->AddRule("*", "127.0.0.1");
+
     ASSERT_TRUE(StartEmbeddedTestServer());
     proxy_cors_server_.RegisterRequestHandler(base::BindRepeating(
-        &ProxyCORSWebRequestApiTest::HandleProxiedCORSRequest));
+        &ProxyCORSWebRequestApiTest::HandleProxiedCORSRequest,
+        base::Unretained(this)));
     ASSERT_TRUE(proxy_cors_server_.Start());
 
     PrefService* pref_service = browser()->profile()->GetPrefs();
@@ -5859,10 +5862,10 @@ class ProxyCORSWebRequestApiTest
     profile()->GetDefaultStoragePartition()->FlushNetworkInterfaceForTesting();
   }
 
-  static std::unique_ptr<net::test_server::HttpResponse>
-  HandleProxiedCORSRequest(const net::test_server::HttpRequest& request) {
+  std::unique_ptr<net::test_server::HttpResponse> HandleProxiedCORSRequest(
+      const net::test_server::HttpRequest& request) {
     std::string request_url;
-    // Request url with be replaced by host:port pair of embedded proxy server
+    // Request url will be replaced by host:port pair of embedded proxy server
     // in HttpRequest, extract requested url from request line instead.
     std::vector<std::string> request_lines =
         base::SplitString(request.all_headers, "\r\n", base::TRIM_WHITESPACE,
@@ -5929,6 +5932,9 @@ class ProxyCORSWebRequestApiTest
       response->AddCustomHeader("Access-Control-Allow-Headers",
                                 kCustomPreflightHeader);
       response->set_code(net::HTTP_NO_CONTENT);
+      if (preflight_waiter_) {
+        preflight_waiter_->Quit();
+      }
       return response;
     }
     EXPECT_EQ(net::test_server::METHOD_GET, request.method);
@@ -5942,8 +5948,43 @@ class ProxyCORSWebRequestApiTest
     return response;
   }
 
+  // Executes a CORS preflight request on the main frame with a custom preflight
+  // header.
+  void ExecuteCorsPreflightedRequest() {
+    content::WebContents* web_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    ASSERT_TRUE(web_contents);
+    static constexpr char kCORSPreflightedRequest[] = R"(
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', '%s');
+        xhr.setRequestHeader('%s', 'testvalue');
+        new Promise(resolve => {
+          xhr.onload = () => { resolve(true); };
+          xhr.onerror = () => { resolve(false); };
+          xhr.send();
+        });
+        )";
+
+    ExecuteScriptAsyncWithoutUserGesture(
+        web_contents->GetPrimaryMainFrame(),
+        base::StringPrintf(kCORSPreflightedRequest, kCORSUrl,
+                           kCustomPreflightHeader));
+  }
+
+  void WaitForPreflightResponse() {
+    DCHECK(preflight_waiter_);
+    preflight_waiter_->Run();
+    preflight_waiter_.reset();
+  }
+
+  // A waiter for a preflight request to complete.
+  std::unique_ptr<base::RunLoop> preflight_waiter_;
+
+ private:
   net::EmbeddedTestServer proxy_cors_server_;
 };
+
+using ProxyCORSDeclarativeNetRequestApiTest = ProxyCORSWebRequestApiTest;
 
 INSTANTIATE_TEST_SUITE_P(PersistentBackground,
                          ProxyCORSWebRequestApiTest,
@@ -5953,9 +5994,15 @@ INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          ProxyCORSWebRequestApiTest,
                          ::testing::Values(ContextType::kServiceWorker));
 
+INSTANTIATE_TEST_SUITE_P(/* No prefix */,
+                         ProxyCORSDeclarativeNetRequestApiTest,
+                         ::testing::Values(ContextType::kFromManifest));
+
 // Regression test for crbug.com/1212625
 // Test that CORS preflight request which requires proxy auth completes
 // successfully instead of being cancelled after proxy auth required response.
+// This case requires an extension with a webRequest extraHeaders listener that
+// matches the preflight request.
 IN_PROC_BROWSER_TEST_P(ProxyCORSWebRequestApiTest,
                        PreflightCompletesSuccessfully) {
   ExtensionTestMessageListener ready_listener("ready");
@@ -5965,28 +6012,14 @@ IN_PROC_BROWSER_TEST_P(ProxyCORSWebRequestApiTest,
   ASSERT_TRUE(ready_listener.WaitUntilSatisfied());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/empty.html")));
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(web_contents);
-  ExtensionTestMessageListener preflight_listener("cors-preflight-succeeded");
-  static constexpr char kCORSPreflightedRequest[] = R"(
-      var xhr = new XMLHttpRequest();
-      xhr.open('GET', '%s');
-      xhr.setRequestHeader('%s', 'testvalue');
-      new Promise(resolve => {
-        xhr.onload = () => {resolve(true);};
-        xhr.onerror = () => {resolve(false);};
-        xhr.send();
-      });
-      )";
 
-  ExecuteScriptAsyncWithoutUserGesture(
-      web_contents->GetPrimaryMainFrame(),
-      base::StringPrintf(kCORSPreflightedRequest, kCORSUrl,
-                         kCustomPreflightHeader));
+  ExtensionTestMessageListener preflight_listener("cors-preflight-succeeded");
+
+  ExecuteCorsPreflightedRequest();
 
   ASSERT_TRUE(base::test::RunUntil(
       []() { return LoginHandler::GetAllLoginHandlersForTest().size() == 1; }));
+
   LoginHandler::GetAllLoginHandlersForTest().front()->SetAuth(
       base::ASCIIToUTF16(std::string(kCORSProxyUser)),
       base::ASCIIToUTF16(std::string(kCORSProxyPass)));
@@ -6002,6 +6035,69 @@ IN_PROC_BROWSER_TEST_P(ProxyCORSWebRequestApiTest,
   EXPECT_EQ(1, GetCountFromBackgroundScript(
                    extension, profile(),
                    "self.preflightResponseStartedSuccessfullyCount"));
+}
+
+// Regression for crbug.com/369836605
+// Similar to the above test, except the "listener" in this case is a DNR rule
+// that would require extraHeaders information but does NOT match on the
+// preflight request.
+IN_PROC_BROWSER_TEST_P(ProxyCORSDeclarativeNetRequestApiTest,
+                       PreflightCompletesWithNonMatchingDNRRule) {
+  static constexpr char kManifest[] = R"({
+    "name": "Simple DNR ModifyHeaders",
+    "version": "0.1",
+    "manifest_version": 3,
+    "permissions": [ "declarativeNetRequest" ],
+    "host_permissions": [ "https://nomatch.com/*" ],
+    "declarative_net_request" : {
+      "rule_resources" : [{
+        "id": "ruleset",
+        "enabled": true,
+        "path": "rules.json"
+      }]
+    }
+  })";
+  static constexpr char kRules[] = R"([{
+    "id": 1,
+    "action": {
+      "requestHeaders": [
+        {
+          "header": "referer",
+          "operation": "remove"
+        }
+      ],
+      "type": "modifyHeaders"
+    },
+    "condition": {
+      "urlFilter": "nomatch.com",
+      "resourceTypes": ["main_frame"]
+    }
+  }])";
+
+  // Load an extension with one declarativeNetRequest modifyHeaders rule that
+  // removes the referer header but will not match any requests from this test.
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("rules.json"), kRules);
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  preflight_waiter_ = std::make_unique<base::RunLoop>();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/empty.html")));
+  ExecuteCorsPreflightedRequest();
+
+  ASSERT_TRUE(base::test::RunUntil(
+      []() { return LoginHandler::GetAllLoginHandlersForTest().size() == 1; }));
+
+  LoginHandler::GetAllLoginHandlersForTest().front()->SetAuth(
+      base::ASCIIToUTF16(std::string(kCORSProxyUser)),
+      base::ASCIIToUTF16(std::string(kCORSProxyPass)));
+
+  // Wait for the proxy server to return a response for the preflight request
+  // after auth is provided. If the preflight request was cancelled, then this
+  // test will not finish.
+  WaitForPreflightResponse();
 }
 
 class ExtensionWebRequestApiFencedFrameTest
