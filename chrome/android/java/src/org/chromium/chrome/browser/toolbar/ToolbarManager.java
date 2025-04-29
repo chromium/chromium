@@ -15,6 +15,7 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Handler;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnAttachStateChangeListener;
@@ -23,7 +24,6 @@ import android.view.View.OnLayoutChangeListener;
 import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
 import android.view.ViewStub;
-import android.widget.ImageButton;
 
 import androidx.activity.BackEventCompat;
 import androidx.annotation.NonNull;
@@ -199,6 +199,7 @@ import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.util.TokenHolder;
+import org.chromium.ui.widget.ChromeImageButton;
 import org.chromium.ui.widget.ViewRectProvider;
 import org.chromium.url.GURL;
 
@@ -984,16 +985,12 @@ public class ToolbarManager
                             HomepagePolicyManager::isHomepageManagedByPolicy);
         }
 
-        ImageButton backButton = mControlContainer.findViewById(R.id.back_button);
+        ChromeImageButton backButton = mControlContainer.findViewById(R.id.back_button);
         if (backButton != null) {
             mBackButtonCoordinator =
                     new BackButtonCoordinator(
                             backButton,
-                            () -> {
-                                setUrlBarFocus(false, OmniboxFocusReason.UNFOCUS);
-                                final boolean isSuccess = mToolbarTabController.back();
-                                if (isSuccess) RecordUserAction.record("MobileToolbarBack");
-                            },
+                            this::back,
                             browsingModeThemeColorProvider,
                             mActivityTabProvider,
                             historyDelegate);
@@ -1596,6 +1593,33 @@ public class ToolbarManager
         initializeToolbarPositionController();
 
         TraceEvent.end("ToolbarManager.ToolbarManager");
+    }
+
+    private void back(int metaState) {
+        setUrlBarFocus(false, OmniboxFocusReason.UNFOCUS);
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_META_CLICK_HISTORY_NAVIGATION)) {
+            boolean hasControl = (metaState & KeyEvent.META_CTRL_ON) != 0;
+            boolean hasShift = (metaState & KeyEvent.META_SHIFT_ON) != 0;
+            if (hasControl && hasShift) {
+                // Holding ALT is allowed as well (reference desktop behavior).
+                final boolean isSuccess =
+                        mToolbarTabController.backInNewTab(/* foregroundNewTab= */ true);
+                if (isSuccess) RecordUserAction.record("MobileToolbarBackInNewForegroundTab");
+            } else if (hasControl) {
+                final boolean isSuccess =
+                        mToolbarTabController.backInNewTab(/* foregroundNewTab= */ false);
+                if (isSuccess) RecordUserAction.record("MobileToolbarBackInNewBackgroundTab");
+            } else if (hasShift) {
+                final boolean isSuccess = mToolbarTabController.backInNewWindow();
+                if (isSuccess) RecordUserAction.record("MobileToolbarBackInNewForegroundWindow");
+            } else {
+                final boolean isSuccess = mToolbarTabController.back();
+                if (isSuccess) RecordUserAction.record("MobileToolbarBack");
+            }
+        } else {
+            final boolean isSuccess = mToolbarTabController.back();
+            if (isSuccess) RecordUserAction.record("MobileToolbarBack");
+        }
     }
 
     private void initializeToolbarPositionController() {

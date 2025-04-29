@@ -131,4 +131,7 @@ public class MockNavigationController implements NavigationController {
 
     @Override
     public void setEntryExtraData(int index, String key, String value) {}
+
+    @Override
+    public void copyStateFrom(NavigationController sourceNavigationController) {}
 }

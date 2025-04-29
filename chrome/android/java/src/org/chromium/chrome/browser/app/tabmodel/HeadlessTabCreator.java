@@ -93,4 +93,9 @@ public class HeadlessTabCreator extends TabCreator implements NeedsTabModel {
             boolean addTabToModel) {
         throw new RuntimeException("Headless does not support live web contents.");
     }
+
+    @Override
+    public @Nullable Tab createTabWithHistory(@Nullable Tab parent, int type) {
+        throw new RuntimeException("Headless does not support live web contents.");
+    }
 }

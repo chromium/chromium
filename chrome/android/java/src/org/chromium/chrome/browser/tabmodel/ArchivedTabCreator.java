@@ -107,4 +107,10 @@ public class ArchivedTabCreator extends TabCreator implements NeedsTabModel {
         assert false : "Not reached.";
         return null;
     }
+
+    @Override
+    public Tab createTabWithHistory(@Nullable Tab parent, int type) {
+        assert false : "Not reached.";
+        return null;
+    }
 }

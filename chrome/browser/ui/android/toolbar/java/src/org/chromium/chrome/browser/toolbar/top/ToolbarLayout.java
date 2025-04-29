@@ -12,6 +12,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Build.VERSION;
 import android.util.AttributeSet;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -28,11 +29,13 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.lifetime.DestroyChecker;
 import org.chromium.base.lifetime.Destroyable;
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.omnibox.LocationBar;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
@@ -721,9 +724,34 @@ public abstract class ToolbarLayout extends FrameLayout
      *
      * @return Whether or not the current Tab did go forward.
      */
-    boolean forward() {
+    protected boolean forward(int metaState, String reportingTagPrefix) {
         maybeUnfocusUrlBar();
-        return mToolbarTabController != null ? mToolbarTabController.forward() : false;
+        if (mToolbarTabController == null) return false;
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_META_CLICK_HISTORY_NAVIGATION)) {
+            boolean hasControl = (metaState & KeyEvent.META_CTRL_ON) != 0;
+            boolean hasShift = (metaState & KeyEvent.META_SHIFT_ON) != 0;
+            if (hasControl && hasShift) {
+                // Holding ALT is allowed as well (reference desktop behavior).
+
+                // Note on recording user actions: "forward" is recorded regardless of whether it
+                // was successful. See
+                // https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ui/android/toolbar/java/src/org/chromium/chrome/browser/toolbar/top/ToolbarTablet.java;l=196;drc=14aab80e079b7db3e85a8302da6d660bafeddfbc
+                RecordUserAction.record(reportingTagPrefix + "InNewForegroundTab");
+                return mToolbarTabController.forwardInNewTab(/* foregroundNewTab= */ true);
+            } else if (hasControl) {
+                RecordUserAction.record(reportingTagPrefix + "InNewBackgroundTab");
+                return mToolbarTabController.forwardInNewTab(/* foregroundNewTab= */ false);
+            } else if (hasShift) {
+                RecordUserAction.record(reportingTagPrefix + "InNewWindow");
+                return mToolbarTabController.forwardInNewWindow();
+            } else {
+                RecordUserAction.record(reportingTagPrefix);
+                return mToolbarTabController.forward();
+            }
+        } else {
+            RecordUserAction.record(reportingTagPrefix);
+            return mToolbarTabController.forward();
+        }
     }
 
     private void maybeUnfocusUrlBar() {

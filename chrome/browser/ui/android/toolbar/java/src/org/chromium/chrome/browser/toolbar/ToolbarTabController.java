@@ -27,10 +27,41 @@ public interface ToolbarTabController {
     boolean back();
 
     /**
+     * Goes to the "back" history item, opening it in a new tab.
+     *
+     * @param foregroundNewTab Whether the new tab should be foregrounded.
+     * @return Whether this action was handled successfully.
+     */
+    boolean backInNewTab(boolean foregroundNewTab);
+
+    /**
+     * Goes to the "back" history item, opening it in a new foreground window.
+     *
+     * @return Whether this action was handled successfully.
+     */
+    boolean backInNewWindow();
+
+    /**
      * Navigates the current Tab forward.
+     *
      * @return Whether or not the current Tab did go forward.
      */
     boolean forward();
+
+    /**
+     * Goes to the "forward" history item, opening it in a new tab.
+     *
+     * @param foregroundNewTab Whether the new tab should be foregrounded.
+     * @return Whether this action was handled successfully.
+     */
+    boolean forwardInNewTab(boolean foregroundNewTab);
+
+    /**
+     * Goes to the "forward" history item, opening it in a new foreground window.
+     *
+     * @return Whether this action was handled successfully.
+     */
+    boolean forwardInNewWindow();
 
     /** Opens hompage in the current tab. */
     void openHomepage();

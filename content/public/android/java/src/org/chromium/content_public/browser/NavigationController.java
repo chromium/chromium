@@ -175,9 +175,17 @@ public interface NavigationController {
 
     /**
      * Sets extra data on the {@link NavigationEntry} at {@code index}.
+     *
      * @param index The index of the navigation entry.
      * @param key The data key.
      * @param value The data value.
      */
     void setEntryExtraData(int index, String key, String value);
+
+    /**
+     * Copies the navigation controller state from {@param sourceNavigationController} to this.
+     *
+     * @param sourceNavigationController The {@link NavigationController} to copy from.
+     */
+    void copyStateFrom(NavigationController sourceNavigationController);
 }

@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.toolbar;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -91,28 +89,27 @@ public class ToolbarTabControllerImpl implements ToolbarTabController {
         return false;
     }
 
-    public boolean backInNewTab() {
-        // TODO(crbug.com/409631603): Implement.
+    @Override
+    public boolean backInNewTab(boolean foregroundNewTab) {
         Tab tab = mTabSupplier.get();
         if (tab != null && tab.canGoBack()) {
-            mTabCreatorManager.getTabCreator(tab.isIncognitoBranded());
+            @Nullable Tab newTab = createTabWithHistory(tab, foregroundNewTab);
+            if (newTab == null) return false;
+            newTab.goBack();
             // Don't run mOnSuccessRunnable since nothing happened in the current tab.
             return true;
         }
         return false;
     }
 
+    @Override
     public boolean backInNewWindow() {
-        // TODO(crbug.com/409631603): Implement.
         Tab tab = mTabSupplier.get();
         if (tab != null && tab.canGoBack()) {
-            Tab newTab =
-                    mTabCreatorManager
-                            .getTabCreator(tab.isIncognitoBranded())
-                            .createNewTab(
-                                    new LoadUrlParams(tab.getUrl()), TabLaunchType.UNSET, tab);
+            @Nullable Tab newTab = createTabWithHistory(tab, /* foregroundNewTab= */ false);
+            if (newTab == null) return false;
+            newTab.goBack();
             if (mMultiInstanceManager == null) return false;
-            assumeNonNull(newTab);
             mMultiInstanceManager.moveTabToNewWindow(newTab);
             // Don't run mOnSuccessRunnable since nothing happened in the current tab.
             return true;
@@ -129,6 +126,44 @@ public class ToolbarTabControllerImpl implements ToolbarTabController {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public boolean forwardInNewTab(boolean foregroundNewTab) {
+        Tab tab = mTabSupplier.get();
+        if (tab != null && tab.canGoForward()) {
+            @Nullable Tab newTab = createTabWithHistory(tab, foregroundNewTab);
+            if (newTab == null) return false;
+            newTab.goForward();
+            // Don't run mOnSuccessRunnable since nothing happened in the current tab.
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean forwardInNewWindow() {
+        Tab tab = mTabSupplier.get();
+        if (tab != null && tab.canGoForward()) {
+            @Nullable Tab newTab = createTabWithHistory(tab, /* foregroundNewTab= */ false);
+            if (newTab == null) return false;
+            newTab.goForward();
+            if (mMultiInstanceManager == null) return false;
+            mMultiInstanceManager.moveTabToNewWindow(newTab);
+            // Don't run mOnSuccessRunnable since nothing happened in the current tab.
+            return true;
+        }
+        return false;
+    }
+
+    private @Nullable Tab createTabWithHistory(Tab tab, boolean foregroundNewTab) {
+        return mTabCreatorManager
+                .getTabCreator(tab.isIncognitoBranded())
+                .createTabWithHistory(
+                        tab,
+                        foregroundNewTab
+                                ? TabLaunchType.FROM_HISTORY_NAVIGATION_FOREGROUND
+                                : TabLaunchType.FROM_HISTORY_NAVIGATION_BACKGROUND);
     }
 
     @Override

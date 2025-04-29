@@ -31,6 +31,7 @@ import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.display.DisplayUtil;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
+import org.chromium.ui.widget.ChromeImageButton;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -141,11 +142,13 @@ public class WebAppHeaderLayoutCoordinator implements DesktopWindowStateManager.
                         new ObservableSupplierImpl<>(),
                         mThemeColorProvider);
 
-        final ImageButton backButton = mView.findViewById(R.id.back_button);
+        final ChromeImageButton backButton = mView.findViewById(R.id.back_button);
         mBackButtonCoordinator =
                 new BackButtonCoordinator(
                         backButton,
-                        mMediator::goBack,
+                        (ignored) -> {
+                            if (mMediator != null) mMediator.goBack();
+                        },
                         mThemeColorProvider,
                         mTabSupplier,
                         mHistoryDelegate);

@@ -209,7 +209,8 @@ public class ChromeTabCreator extends TabCreator
     @Override
     public Tab createNewTab(
             LoadUrlParams loadUrlParams, @TabLaunchType int type, Tab parent, int position) {
-        return createNewTab(loadUrlParams, null, type, parent, position, null);
+        return createNewTab(
+                loadUrlParams, null, type, parent, position, null, /* copyHistory= */ false);
     }
 
     /**
@@ -229,7 +230,8 @@ public class ChromeTabCreator extends TabCreator
             @TabLaunchType int type,
             Tab parent,
             int position) {
-        return createNewTab(loadUrlParams, title, type, parent, position, null);
+        return createNewTab(
+                loadUrlParams, title, type, parent, position, null, /* copyHistory= */ false);
     }
 
     /**
@@ -254,7 +256,8 @@ public class ChromeTabCreator extends TabCreator
             if (index != TabModel.INVALID_TAB_INDEX) position = index + 1;
         }
 
-        return createNewTab(loadUrlParams, null, type, parent, position, intent);
+        return createNewTab(
+                loadUrlParams, null, type, parent, position, intent, /* copyHistory= */ false);
     }
 
     /**
@@ -266,6 +269,7 @@ public class ChromeTabCreator extends TabCreator
      * @param parent the parent tab, if present.
      * @param position the requested position (index in the tab model)
      * @param intent the source of the url if it isn't null.
+     * @param copyHistory Whether the new tab should have the same history stack as {@param parent}.
      * @return The new tab.
      */
     private Tab createNewTab(
@@ -274,7 +278,8 @@ public class ChromeTabCreator extends TabCreator
             @TabLaunchType int type,
             Tab parent,
             int position,
-            Intent intent) {
+            Intent intent,
+            boolean copyHistory) {
         // Measure tab creation duration for different launch types to understand tab creation
         // performance.
         try (TraceEvent te = TraceEvent.scoped("ChromeTabCreator.createNewTab");
@@ -409,6 +414,12 @@ public class ChromeTabCreator extends TabCreator
                                 .setDelegateFactory(delegateFactory)
                                 .setInitiallyHidden(!openInForeground)
                                 .build();
+                if (copyHistory && parent != null) {
+                    // History must be copied immediately after tab is created.
+                    tab.getWebContents()
+                            .getNavigationController()
+                            .copyStateFrom(parent.getWebContents().getNavigationController());
+                }
                 RedirectHandlerTabHelper.updateIntentInTab(tab, intent);
                 tab.loadUrl(loadUrlParams);
                 TraceEvent.end("ChromeTabCreator.loadUrl");
@@ -488,6 +499,21 @@ public class ChromeTabCreator extends TabCreator
     }
 
     @Override
+    public @Nullable Tab createTabWithHistory(Tab parent, @TabLaunchType int tabLaunchType) {
+        int position = TabModel.INVALID_TAB_INDEX;
+        int index = mTabModel.indexOf(parent);
+        if (index != TabModel.INVALID_TAB_INDEX) position = index + 1;
+        return createNewTab(
+                new LoadUrlParams(parent.getUrl()),
+                /* title= */ null,
+                tabLaunchType,
+                parent,
+                position,
+                /* intent= */ null,
+                /* copyHistory= */ true);
+    }
+
+    @Override
     public Tab launchUrl(String url, @TabLaunchType int type) {
         return launchUrl(url, type, null, 0);
     }
@@ -563,7 +589,8 @@ public class ChromeTabCreator extends TabCreator
                                 TabLaunchType.FROM_EXTERNAL_APP,
                                 null,
                                 i,
-                                intent);
+                                intent,
+                                /* copyHistory= */ false);
                 TabAssociatedApp.from(newTab).setAppId(appId);
                 mTabModel
                         .getTabRemover()

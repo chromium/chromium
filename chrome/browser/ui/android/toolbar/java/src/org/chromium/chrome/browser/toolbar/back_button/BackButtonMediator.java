@@ -41,16 +41,16 @@ class BackButtonMediator implements ThemeColorProvider.TintObserver {
      * Create an instance of {@link BackButtonMediator}.
      *
      * @param model a model that represents back button state.
-     * @param onBackPressed a callback that is invoked on back button click event. Allows parent
-     *     components to intercept click and navigate back in the history or hide custom UI
-     *     components.
+     * @param onBackPressed a {@link Callback<Integer>} (taking a parameter of meta key state) that
+     *     is invoked on back button click event. Allows parent components to intercept click and
+     *     navigate back in the history or hide custom UI components.
      * @param themeColorProvider a provider that notifies about theme changes.
      * @param tabSupplier a supplier that provides current active tab.
      * @param showNavigationPopup a callback that displays history navigation popup.
      */
     public BackButtonMediator(
             PropertyModel model,
-            Runnable onBackPressed,
+            Callback<Integer> onBackPressed,
             ThemeColorProvider themeColorProvider,
             ObservableSupplier<Tab> tabSupplier,
             Callback<Tab> showNavigationPopup) {
@@ -59,8 +59,8 @@ class BackButtonMediator implements ThemeColorProvider.TintObserver {
 
         mModel.set(
                 BackButtonProperties.CLICK_LISTENER,
-                () -> {
-                    onBackPressed.run();
+                (metaState) -> {
+                    onBackPressed.onResult(metaState);
                     updateButtonEnabledState();
                 });
         mModel.set(

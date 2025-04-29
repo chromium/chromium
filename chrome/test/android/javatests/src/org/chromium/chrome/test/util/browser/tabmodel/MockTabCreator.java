@@ -7,6 +7,7 @@ package org.chromium.chrome.test.util.browser.tabmodel;
 import android.util.SparseArray;
 
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.MockTabAttributes;
 import org.chromium.chrome.browser.tab.Tab;
@@ -95,6 +96,11 @@ public class MockTabCreator extends TabCreator {
             @TabLaunchType int type,
             GURL url,
             boolean addTabToModel) {
+        return null;
+    }
+
+    @Override
+    public Tab createTabWithHistory(@Nullable Tab parent, int type) {
         return null;
     }
 

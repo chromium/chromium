@@ -17,7 +17,6 @@ import android.content.res.ColorStateList;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewStub;
 import android.view.accessibility.AccessibilityEvent;
 import android.widget.ImageButton;
@@ -32,7 +31,6 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.view.ViewCompat;
 import androidx.core.widget.ImageViewCompat;
 
-import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
@@ -64,6 +62,7 @@ import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorLi
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.interpolators.Interpolators;
+import org.chromium.ui.widget.ChromeImageButton;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -71,13 +70,13 @@ import java.util.Collection;
 /** The Toolbar object for Tablet screens. */
 @SuppressLint("Instantiatable")
 @NullMarked
-public class ToolbarTablet extends ToolbarLayout implements OnClickListener {
+public class ToolbarTablet extends ToolbarLayout {
     private static final int ICON_FADE_IN_ANIMATION_DELAY_MS = 75;
     private static final int ICON_FADE_ANIMATION_DURATION_MS = 150;
 
     private ImageButton mHomeButton;
     private ImageButton mBackButton;
-    private ImageButton mForwardButton;
+    private ChromeImageButton mForwardButton;
     private ImageButton mReloadButton;
     private ImageButton mBookmarkButton;
     private ImageButton mSaveOfflineButton;
@@ -151,7 +150,7 @@ public class ToolbarTablet extends ToolbarLayout implements OnClickListener {
     @Override
     public void onNativeLibraryReady() {
         super.onNativeLibraryReady();
-        mForwardButton.setOnClickListener(this);
+        mForwardButton.setClickCallback(metaState -> forward(metaState, "MobileToolbarForward"));
         mForwardButton.setLongClickable(true);
     }
 
@@ -187,14 +186,6 @@ public class ToolbarTablet extends ToolbarLayout implements OnClickListener {
                         getToolbarDataProvider()::getTab,
                         mHistoryDelegate);
         mNavigationPopup.show(anchorView);
-    }
-
-    @Override
-    public void onClick(View v) {
-        if (mForwardButton == v) {
-            forward();
-            RecordUserAction.record("MobileToolbarForward");
-        }
     }
 
     @Override

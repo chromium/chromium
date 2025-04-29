@@ -4,12 +4,16 @@
 
 package org.chromium.ui.widget;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.PorterDuff.Mode;
 import android.util.AttributeSet;
+import android.view.KeyEvent;
+import android.view.MotionEvent;
 
 import androidx.appcompat.widget.AppCompatImageButton;
 
+import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
@@ -20,6 +24,10 @@ import org.chromium.build.annotations.Nullable;
  */
 @NullMarked
 public class ChromeImageButton extends AppCompatImageButton {
+
+    // Used to keep track of meta state so that things like shift+click and ctrl+click can work.
+    private int mLastEventMetaState;
+
     public ChromeImageButton(Context context) {
         super(context);
     }
@@ -41,5 +49,44 @@ public class ChromeImageButton extends AppCompatImageButton {
         if (getImageTintList() != null && getImageTintMode() == Mode.SRC_ATOP) {
             setImageTintMode(Mode.SRC_IN);
         }
+    }
+
+    @Override
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
+        // NOTE: Update `mLastEventMetaState` in anticipation of a potential click.
+        // This handles button activations with keyboard. The way it works is as follows:
+        // 1) User has keyboard focus on button and lifts finger from activation key (space/enter).
+        // 2) This method is triggered.
+        // 3) The current meta state is saved.
+        // 4) The button is clicked because user lifted finger from activation key in (1).
+        // 5) The OnClickListener is called, which calls the callback set in setClickCallback and
+        // provides the meta state saved in (3).
+        mLastEventMetaState = event.getMetaState();
+        return super.onKeyUp(keyCode, event);
+    }
+
+    @Override
+    @SuppressLint("ClickableViewAccessibility")
+    public boolean onTouchEvent(MotionEvent event) {
+        // NOTE: Update `mLastEventMetaState` in anticipation of a potential click.
+        // This handles button activations with touch/mouse. The way it works is as follows:
+        // 1) User clicks/touches button.
+        // 2) This method is triggered.
+        // 3) The current meta state is saved.
+        // 4) The button is clicked because user clicked button in (1).
+        // 5) The OnClickListener is called, which calls the callback set in setClickCallback and
+        // provides the meta state saved in (3).
+        mLastEventMetaState = event.getMetaState();
+        return super.onTouchEvent(event);
+    }
+
+    /**
+     * Sets the callback to notify of button click events. The callback is provided the meta state
+     * of the most recent key/touch event.
+     *
+     * @param callback the callback to notify.
+     */
+    public void setClickCallback(@Nullable Callback<Integer> callback) {
+        setOnClickListener(callback != null ? (v) -> callback.onResult(mLastEventMetaState) : null);
     }
 }

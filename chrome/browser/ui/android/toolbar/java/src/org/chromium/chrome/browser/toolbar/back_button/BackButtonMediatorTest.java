@@ -40,7 +40,7 @@ public class BackButtonMediatorTest {
     private static final int TAB_ID = 0;
 
     @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
-    @Mock public Runnable mOnBackPressed;
+    @Mock public Callback<Integer> mOnBackPressed;
     @Mock public ThemeColorProvider mThemeColorProvider;
     @Mock public Callback<Tab> mShowNavigationPopup;
     @Mock public Profile mProfile;
@@ -146,8 +146,8 @@ public class BackButtonMediatorTest {
 
     @Test
     public void testClick_shouldForwardCallToParent() {
-        mModel.get(BackButtonProperties.CLICK_LISTENER).run();
-        verify(mOnBackPressed).run();
+        mModel.get(BackButtonProperties.CLICK_LISTENER).onResult(0);
+        verify(mOnBackPressed).onResult(0);
     }
 
     @Test

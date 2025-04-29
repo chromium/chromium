@@ -146,6 +146,9 @@ class CONTENT_EXPORT NavigationControllerAndroid {
                          jint index,
                          const base::android::JavaParamRef<jstring>& jkey,
                          const base::android::JavaParamRef<jstring>& jvalue);
+  void CopyStateFrom(JNIEnv* env,
+                     jlong source_navigation_controller_ptr,
+                     jboolean needs_reload);
 
  private:
   void SetUseDesktopUserAgentInternal(bool enabled,
