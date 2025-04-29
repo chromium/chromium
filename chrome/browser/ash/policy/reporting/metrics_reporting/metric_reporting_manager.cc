@@ -37,6 +37,7 @@
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/cros_healthd_sampler_handlers/cros_healthd_psr_sampler_handler.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/cros_healthd_sampler_handlers/cros_healthd_sampler_handler.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/device_activity/device_activity_sampler.h"
+#include "chrome/browser/ash/policy/reporting/metrics_reporting/external_display/display_events_observer.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/fatal_crash/chrome_fatal_crash_events_observer.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/fatal_crash/fatal_crash_events_observer.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/kiosk_heartbeat/kiosk_heartbeat_telemetry_sampler.h"
@@ -736,6 +737,15 @@ void MetricReportingManager::InitPeripheralsCollectors() {
       user_peripheral_events_and_telemetry_report_queue_.get(),
       &reporting_settings_, ::ash::kReportDevicePeripherals,
       metrics::kReportDevicePeripheralsDefaultValue,
+      /*collector_pool=*/this));
+
+  // External display events falls under peripheral events group as well, but
+  // has to be tracked separately as graphics status events.
+  event_observer_managers_.emplace_back(delegate_->CreateEventObserverManager(
+      std::make_unique<DisplayEventsObserver>(),
+      user_peripheral_events_and_telemetry_report_queue_.get(),
+      &reporting_settings_, ::ash::kReportDeviceGraphicsStatus,
+      metrics::kReportDeviceGraphicsStatusDefaultValue,
       /*collector_pool=*/this));
 
   // Peripheral telemetry
