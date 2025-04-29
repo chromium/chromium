@@ -468,13 +468,14 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(
       GetSyncService(0)->GetActiveDataTypes().Has(syncer::USER_EVENTS));
 
-  // Without `kReplaceSyncPromosWithSignInPromos`, neither PREFERENCES nor
-  // PRIORITY_PREFERENCES should be active in transport mode (even if the user
-  // has opted in).
+  // Without `kReplaceSyncPromosWithSignInPromos`, PREFERENCES should not be
+  // active in transport mode (even if the user has opted in).
   EXPECT_FALSE(
       GetSyncService(0)->GetActiveDataTypes().Has(syncer::PREFERENCES));
-  EXPECT_FALSE(GetSyncService(0)->GetActiveDataTypes().Has(
-      syncer::PRIORITY_PREFERENCES));
+  // TODO(crbug.com/412602018): With
+  // `kSyncSupportAlwaysSyncingPriorityPreferences` enabled,
+  // PRIORITY_PREFERENCES are active in transport mode and decoupled from user
+  // toggle. Update or add new test to cover PRIORITY_PREFERENCES.
 }
 
 // SingleClientStandaloneTransportReplaceSyncWithSigninMigrationSyncTest is
