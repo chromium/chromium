@@ -81,6 +81,7 @@ source_set("sync") {
     "//chrome/app:generated_resources",
     "//chrome/app:generated_resources_grit",
     "//chrome/browser:browser_process",
+    "//chrome/browser/plus_addresses",
 
     # TODO(crbug.com/374910357): Investigate for a better dependency injection.
     "//chrome/browser/autofill",

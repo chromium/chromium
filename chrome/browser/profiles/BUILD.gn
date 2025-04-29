@@ -238,6 +238,7 @@ source_set("profiles_extra_parts_impl") {
     "//chrome/browser/optimization_guide",
     "//chrome/browser/permissions",
     "//chrome/browser/persisted_state_db",
+    "//chrome/browser/plus_addresses",
     "//chrome/browser/prefs",
     "//chrome/browser/preloading/search_preload",
     "//chrome/browser/reading_list",

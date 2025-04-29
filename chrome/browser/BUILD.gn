@@ -1052,10 +1052,6 @@ static_library("browser") {
     "platform_util_internal.h",
     "plugins/pdf_iframe_navigation_throttle.cc",
     "plugins/pdf_iframe_navigation_throttle.h",
-    "plus_addresses/plus_address_service_factory.cc",
-    "plus_addresses/plus_address_service_factory.h",
-    "plus_addresses/plus_address_setting_service_factory.cc",
-    "plus_addresses/plus_address_setting_service_factory.h",
     "policy/chrome_browser_policy_connector.cc",
     "policy/chrome_browser_policy_connector.h",
     "policy/chrome_policy_conversions_client.cc",
@@ -1843,6 +1839,10 @@ static_library("browser") {
     # includes c/b/enterprise/connectors/analysis/content_analysis_delegate.h
     # and c/b/translate/chrome_translate_client.h.
     "//chrome/browser/ui/tab_contents:impl",
+
+    # TODO(crbug.com/413572035): Remove once c/b/{metrics,signin,webdata_services}
+    # get fully modularized.
+    "//chrome/browser/plus_addresses:impl",
   ]
 
   public_deps = [
@@ -1946,6 +1946,8 @@ static_library("browser") {
     "//chrome/browser/persisted_state_db:persisted_state_db",
     "//chrome/browser/picture_in_picture",
     "//chrome/browser/picture_in_picture:impl",
+    "//chrome/browser/plus_addresses",
+    "//chrome/browser/plus_addresses:impl",
     "//chrome/browser/policy:path_parser",
     "//chrome/browser/policy:policy_util",
     "//chrome/browser/policy/messaging_layer/storage_selector",
