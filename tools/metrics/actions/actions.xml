@@ -27293,6 +27293,21 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="MobileToolbarBackInNewBackgroundTab">
+  <owner>jhimawan@google.com</owner>
+  <description>TBD(jhimawan)</description>
+</action>
+
+<action name="MobileToolbarBackInNewForegroundTab">
+  <owner>jhimawan@google.com</owner>
+  <description>TBD(jhimawan)</description>
+</action>
+
+<action name="MobileToolbarBackInNewForegroundWindow">
+  <owner>jhimawan@google.com</owner>
+  <description>TBD(jhimawan)</description>
+</action>
+
 <action name="MobileToolbarCloseAllIncognitoTabsButtonTap">
   <owner>mdjones@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>
