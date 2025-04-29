@@ -1473,8 +1473,8 @@ static base::span<const char, N - 1> CopyToEntityBuffer(
     base::span<const char, N> expanded_entity_chars) {
   auto entity_buffer =
       base::as_writable_chars(base::span(g_shared_xhtml_entity_result));
-  entity_buffer.first<N>().copy_from(expanded_entity_chars);
-  return entity_buffer.first<N - 1>();
+  entity_buffer.template first<N>().copy_from(expanded_entity_chars);
+  return entity_buffer.template first<N - 1>();
 }
 
 static base::span<const char> ConvertUTF16EntityToUTF8(
