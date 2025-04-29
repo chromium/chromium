@@ -12,7 +12,10 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/values.h"
 #include "chrome/test/base/testing_profile.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/mojom/manifest.mojom-shared.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 class ExtensionPrefValueMap;
 class PrefService;

@@ -364,6 +364,8 @@ static_library("test_support") {
       "../browser/extensions/mixin_based_extension_apitest.h",
       "../browser/extensions/permissions/permissions_test_util.cc",
       "../browser/extensions/permissions/permissions_test_util.h",
+      "../browser/extensions/test_extension_prefs.cc",
+      "../browser/extensions/test_extension_prefs.h",
       "../common/extensions/manifest_tests/chrome_manifest_test.cc",
       "../common/extensions/manifest_tests/chrome_manifest_test.h",
     ]
@@ -388,8 +390,6 @@ static_library("test_support") {
       "../browser/extensions/test_extension_environment.h",
       "../browser/extensions/test_extension_menu_icon_loader.cc",
       "../browser/extensions/test_extension_menu_icon_loader.h",
-      "../browser/extensions/test_extension_prefs.cc",
-      "../browser/extensions/test_extension_prefs.h",
       "../browser/extensions/user_scripts_test_util.cc",
       "../browser/extensions/user_scripts_test_util.h",
       "../browser/policy/extension_force_install_mixin.cc",
@@ -8917,6 +8917,9 @@ test("unit_tests") {
       "../browser/extensions/permissions_based_management_policy_provider_unittest.cc",
       "../browser/extensions/policy_handlers_unittest.cc",
       "../browser/extensions/standard_management_policy_provider_unittest.cc",
+      "../browser/extensions/updater/extension_update_client_command_line_config_policy_unittest.cc",
+      "../browser/extensions/updater/extension_updater_switches_unittest.cc",
+      "../browser/extensions/updater/extension_updater_unittest.cc",
       "../common/extensions/chrome_manifest_url_handlers_unittest.cc",
       "../common/extensions/manifest_handlers/automation_unittest.cc",
       "../common/extensions/manifest_handlers/background_scripts_manifest_unittest.cc",
@@ -8960,6 +8963,7 @@ test("unit_tests") {
       "//chrome/browser/extensions:cws_item_service_proto",
       "//chrome/browser/extensions:test_support",
       "//components/crx_file",
+      "//extensions/browser/updater",
     ]
   }
 
@@ -9127,9 +9131,6 @@ test("unit_tests") {
       "../browser/extensions/tab_helper_unittest.cc",
       "../browser/extensions/unpacked_installer_unittest.cc",
       "../browser/extensions/update_install_gate_unittest.cc",
-      "../browser/extensions/updater/extension_update_client_command_line_config_policy_unittest.cc",
-      "../browser/extensions/updater/extension_updater_switches_unittest.cc",
-      "../browser/extensions/updater/extension_updater_unittest.cc",
       "../browser/extensions/user_script_listener_unittest.cc",
       "../browser/extensions/user_script_world_configuration_manager_unittest.cc",
       "../browser/extensions/warning_badge_service_unittest.cc",
@@ -9279,7 +9280,6 @@ test("unit_tests") {
       "//extensions/browser:test_support",
       "//extensions/browser/api/content_settings",
       "//extensions/browser/api/storage:settings_observer",
-      "//extensions/browser/updater",
       "//extensions/buildflags",
       "//extensions/common",
       "//extensions/common:mojom",
