@@ -5321,12 +5321,14 @@
       name: "WebPrinting",
       status: {"Android": "", "default": "test"},
     },
-    // WebShare is enabled by default on Android.
+    // WebShare is enabled by default on Android (non-WebView), Win, ChromeOS, and Mac.
+    // This is done in chrome/renderer/chrome_content_renderer_client.cc to prevent
+    // making the API available to Linux and WebView. Ideally we would set the status
+    // below to "stable" once we can do so without significant test expectation duplication.
     {
       name: "WebShare",
       public: true,
       status: "test",
-      base_feature: "none",
     },
     {
       name: "WebSocketStream",

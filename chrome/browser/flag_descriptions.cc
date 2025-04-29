@@ -8015,13 +8015,6 @@ const char kUseOutOfProcessVideoDecodingDescription[] =
     "Start utility processes to do hardware video decoding.";
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
-const char kWebShareName[] = "Web Share";
-const char kWebShareDescription[] =
-    "Enables the Web Share (navigator.share) APIs on experimentally supported "
-    "platforms.";
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
-
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 const char kWebBluetoothConfirmPairingSupportName[] =
     "Web Bluetooth confirm pairing support";

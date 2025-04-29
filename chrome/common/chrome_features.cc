@@ -1639,16 +1639,6 @@ BASE_FEATURE(kWebAppManifestPolicyAppIdentityUpdate,
              "WebAppManifestPolicyAppIdentityUpdate",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
-// Enables Web Share (navigator.share)
-BASE_FEATURE(kWebShare, "WebShare", base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
-#if BUILDFLAG(IS_MAC)
-// Enables Web Share (navigator.share) for macOS
-BASE_FEATURE(kWebShare, "WebShare", base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
 // Restricts the WebUI scripts able to use the generated code cache according to
 // embedder-specified heuristics.
 BASE_FEATURE(kRestrictedWebUICodeCache,

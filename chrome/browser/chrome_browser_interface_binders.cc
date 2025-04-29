@@ -467,8 +467,6 @@ void PopulateChromeFrameBinders(
     map->Add<payments::mojom::PaymentRequest>(base::BindRepeating(
         &ForwardToJavaFrame<payments::mojom::PaymentRequest>));
   }
-  map->Add<blink::mojom::ShareService>(base::BindRepeating(
-      &ForwardToJavaWebContents<blink::mojom::ShareService>));
 
 #if BUILDFLAG(ENABLE_UNHANDLED_TAP)
   map->Add<blink::mojom::UnhandledTapNotifier>(
@@ -495,10 +493,12 @@ void PopulateChromeFrameBinders(
 #endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
-  if (base::FeatureList::IsEnabled(features::kWebShare)) {
     map->Add<blink::mojom::ShareService>(
         base::BindRepeating(&ShareServiceImpl::Create));
-  }
+#endif
+#if BUILDFLAG(IS_ANDROID)
+    map->Add<blink::mojom::ShareService>(base::BindRepeating(
+        &ForwardToJavaWebContents<blink::mojom::ShareService>));
 #endif
 
   map->Add<network_hints::mojom::NetworkHintsHandler>(

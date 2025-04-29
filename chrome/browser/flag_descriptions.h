@@ -4685,11 +4685,6 @@ extern const char kZeroCopyVideoCaptureName[];
 extern const char kZeroCopyVideoCaptureDescription[];
 #endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
-extern const char kWebShareName[];
-extern const char kWebShareDescription[];
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
-
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 extern const char kWebBluetoothConfirmPairingSupportName[];
 extern const char kWebBluetoothConfirmPairingSupportDescription[];
