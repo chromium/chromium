@@ -35,6 +35,7 @@ enum TestSyncServiceState {
   SYNC_FEATURE_ENABLED,
   SYNC_FEATURE_ENABLED_BUT_PAUSED,
   SYNC_FEATURE_DISABLED_BUT_PREFERENCES_ENABLED,
+  SYNC_FEATURE_ENABLED_BUT_PREFERENCES_NOT_SELECTED,
 #if BUILDFLAG(IS_CHROMEOS)
   // Represents the user clearing sync data via dashboard. On all platforms
   // except ChromeOS, this clears the primary account (which is basically
@@ -93,6 +94,17 @@ class TestProfileClient : public DemographicMetricsProvider::ProfileClient {
         CHECK(sync_service_->GetUserSettings()->GetSelectedTypes().Has(
             syncer::UserSelectableType::kPreferences));
         CHECK(!sync_service_->IsSyncFeatureEnabled());
+        CHECK(sync_service_->GetDisableReasons().empty());
+        CHECK_EQ(syncer::SyncService::TransportState::ACTIVE,
+                 sync_service_->GetTransportState());
+        break;
+
+      case SYNC_FEATURE_ENABLED_BUT_PREFERENCES_NOT_SELECTED:
+        sync_service_ = std::make_unique<syncer::TestSyncService>();
+        sync_service_->GetUserSettings()->SetSelectedTypes(
+            /*sync_everything=*/false,
+            /*types=*/{});
+        CHECK(sync_service_->IsSyncFeatureEnabled());
         CHECK(sync_service_->GetDisableReasons().empty());
         CHECK_EQ(syncer::SyncService::TransportState::ACTIVE,
                  sync_service_->GetTransportState());
@@ -443,6 +455,29 @@ TEST(DemographicMetricsProviderTest,
   EXPECT_EQ(kTestBirthYear + kBirthYearOffset,
             report.user_demographics().birth_year());
   EXPECT_EQ(kTestGender, report.user_demographics().gender());
+}
+
+TEST(DemographicMetricsProviderTest,
+     ProvideSyncedUserNoisedBirthYearAndGender_PreferencesSyncNotSelected) {
+  base::HistogramTester histogram;
+
+  auto client = std::make_unique<TestProfileClient>(
+      /*number_of_profiles=*/1,
+      SYNC_FEATURE_ENABLED_BUT_PREFERENCES_NOT_SELECTED);
+
+  // Run demographics provider.
+  DemographicMetricsProvider provider(
+      std::move(client), MetricsLogUploader::MetricServiceType::UMA);
+  ChromeUserMetricsExtension uma_proto;
+  provider.ProvideSyncedUserNoisedBirthYearAndGender(&uma_proto);
+
+  // Expect the proto fields to be not set and left to default.
+  EXPECT_FALSE(uma_proto.user_demographics().has_birth_year());
+  EXPECT_FALSE(uma_proto.user_demographics().has_gender());
+
+  // Verify histograms.
+  histogram.ExpectUniqueSample("UMA.UserDemographics.Status",
+                               UserDemographicsStatus::kSyncNotEnabled, 1);
 }
 
 }  // namespace
