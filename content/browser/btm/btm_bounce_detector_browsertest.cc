@@ -455,7 +455,7 @@ class BtmBounceDetectorBrowserTest : public ContentBrowserTest {
         BtmService::Get(web_contents->GetBrowserContext());
     GURL expected_url = web_contents->GetLastCommittedURL();
 
-    DipsRedirectChainObserver chain_observer(btm_service, expected_url);
+    BtmRedirectChainObserver chain_observer(btm_service, expected_url);
     // Performing a browser-based navigation terminates the current redirect
     // chain.
     ASSERT_TRUE(NavigateToURL(
@@ -2874,7 +2874,7 @@ IN_PROC_BROWSER_TEST_F(BtmBounceTriggerBrowserTest, NoContent) {
   GURL committed_url = embedded_test_server()->GetURL("a.test", "/title1.html");
   ASSERT_TRUE(NavigateToURL(web_contents, committed_url));
 
-  DipsRedirectChainObserver observer(
+  BtmRedirectChainObserver observer(
       BtmService::Get(web_contents->GetBrowserContext()), committed_url);
   GURL nocontent_url = embedded_test_server()->GetURL("b.test", "/nocontent");
   ASSERT_TRUE(NavigateToURL(web_contents, nocontent_url, committed_url));
@@ -3133,7 +3133,7 @@ class BtmPrivacySandboxApiInteractionTest : public ContentBrowserTest {
     BtmService* btm_service = GetBtmService(web_contents);
     GURL expected_url = web_contents->GetLastCommittedURL();
 
-    DipsRedirectChainObserver chain_observer(btm_service, expected_url);
+    BtmRedirectChainObserver chain_observer(btm_service, expected_url);
     // Performing a browser-based navigation terminates the current redirect
     // chain.
     ASSERT_TRUE(NavigateToURL(

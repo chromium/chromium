@@ -345,7 +345,7 @@ class RedirectChainCounter : public BtmService::Observer {
 }  // namespace
 
 TEST_F(BtmServiceStateRemovalTest,
-       CompleteChain_NotifiesDipsRedirectChainObservers) {
+       CompleteChain_NotifiesBtmRedirectChainObservers) {
   GetService()->SetStorageClockForTesting(base::DefaultClock::GetInstance());
   RedirectChainCounter chain_counter(GetService());
 
@@ -374,7 +374,7 @@ TEST_F(BtmServiceStateRemovalTest,
 }
 
 TEST_F(BtmServiceStateRemovalTest,
-       PartialChain_DoesNotNotifyDipsRedirectChainObservers) {
+       PartialChain_DoesNotNotifyBtmRedirectChainObservers) {
   GetService()->SetStorageClockForTesting(base::DefaultClock::GetInstance());
   RedirectChainCounter chain_counter(GetService());
 
@@ -990,7 +990,7 @@ TEST_F(BtmServiceHistogramTest, ServerBounceDelay) {
   UrlAndSourceId first_redirect_url = MakeUrlAndId("http://b.test/");
   UrlAndSourceId second_redirect_url = MakeUrlAndId("http://c.test/");
 
-  DipsRedirectChainObserver observer(service, GURL());
+  BtmRedirectChainObserver observer(service, GURL());
   std::vector<BtmRedirectInfoPtr> redirects;
   redirects.push_back(BtmRedirectInfo::CreateForServer(
       first_redirect_url,
@@ -1055,7 +1055,7 @@ TEST_F(BtmServiceUkmTest, BothChainBeginAndChainEnd) {
   UrlAndSourceId redirect_url2 = MakeUrlAndId("http://c.test/first");
   UrlAndSourceId final_url = MakeUrlAndId("http://c.test/second");
 
-  DipsRedirectChainObserver observer(service, final_url.url);
+  BtmRedirectChainObserver observer(service, final_url.url);
   std::vector<BtmRedirectInfoPtr> redirects;
   redirects.push_back(BtmRedirectInfo::CreateForServer(
       redirect_url1,
@@ -1116,7 +1116,7 @@ TEST_F(BtmServiceUkmTest, InitialAndFinalSitesSame_True) {
   UrlAndSourceId redirect_url = MakeUrlAndId("http://b.test/");
   UrlAndSourceId final_url = MakeUrlAndId("http://a.test/different-path");
 
-  DipsRedirectChainObserver observer(service, final_url.url);
+  BtmRedirectChainObserver observer(service, final_url.url);
   std::vector<BtmRedirectInfoPtr> redirects;
   redirects.push_back(BtmRedirectInfo::CreateForServer(
       redirect_url,
@@ -1162,7 +1162,7 @@ TEST_F(BtmServiceUkmTest, DontReportEmptyChainsAtAll) {
   UrlAndSourceId initial_url = MakeUrlAndId("http://a.test/");
   UrlAndSourceId final_url = MakeUrlAndId("http://b.test/");
 
-  DipsRedirectChainObserver observer(service, final_url.url);
+  BtmRedirectChainObserver observer(service, final_url.url);
   BtmRedirectChainInfoPtr chain = std::make_unique<BtmRedirectChainInfo>(
       initial_url, final_url,
       /*length=*/0, /*is_partial_chain=*/false);
@@ -1183,7 +1183,7 @@ TEST_F(BtmServiceUkmTest, DontReportChainBeginIfInvalidSourceId) {
   UrlAndSourceId redirect_url = MakeUrlAndId("http://b.test/");
   UrlAndSourceId final_url = MakeUrlAndId("http://c.test/");
 
-  DipsRedirectChainObserver observer(service, final_url.url);
+  BtmRedirectChainObserver observer(service, final_url.url);
   std::vector<BtmRedirectInfoPtr> redirects;
   redirects.push_back(BtmRedirectInfo::CreateForServer(
       redirect_url,
@@ -1219,7 +1219,7 @@ TEST_F(BtmServiceUkmTest, DontReportChainEndIfInvalidSourceId) {
   UrlAndSourceId initial_url = MakeUrlAndId("http://a.test/");
   UrlAndSourceId redirect_url = MakeUrlAndId("http://b.test/");
 
-  DipsRedirectChainObserver observer(service, GURL());
+  BtmRedirectChainObserver observer(service, GURL());
   std::vector<BtmRedirectInfoPtr> redirects;
   redirects.push_back(BtmRedirectInfo::CreateForServer(
       redirect_url,
