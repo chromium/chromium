@@ -1382,15 +1382,13 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
         }
       }
 
-      LayoutUnit intrinsic_size;
-      if (child.ShouldApplyBlockSizeContainment()) {
-        // If we have block-size containment we can avoid layout for
-        // determining the intrinsic size.
-        intrinsic_size = ClampIntrinsicBlockSize(
-            child_space, child, /* break_token */ nullptr,
-            border_padding_in_child_writing_mode,
-            /* current_intrinsic_block_size */ LayoutUnit());
-      } else {
+      // We may be able to avoid layout if we have size-containment, or a
+      // default size.
+      LayoutUnit intrinsic_size = CalculateIntrinsicBlockSizeIgnoringChildren(
+          child, border_padding_in_child_writing_mode +
+                     ComputeScrollbarsForNonAnonymous(child));
+
+      if (intrinsic_size == kIndefiniteSize) {
         if (!layout_result) {
           std::optional<DisableLayoutSideEffectsScope> disable_side_effects;
           if (phase != Phase::kLayout &&

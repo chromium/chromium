@@ -730,6 +730,10 @@ std::optional<MinMaxSizesResult> CalculateMinMaxSizesIgnoringChildren(
     const BlockNode&,
     const BoxStrut& border_scrollbar_padding);
 
+LayoutUnit CalculateIntrinsicBlockSizeIgnoringChildren(
+    const BlockNode&,
+    const BoxStrut& border_scrollbar_padding);
+
 // Determine which scrollbars to freeze in the next layout pass. Scrollbars that
 // appear will be frozen (while scrollbars that disappear will not). Input is
 // the scrollbar situation before and after the previous layout pass, and the

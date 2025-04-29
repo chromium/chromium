@@ -1858,31 +1858,16 @@ LayoutUnit ClampIntrinsicBlockSize(
     std::optional<LayoutUnit> body_margin_block_sum) {
   // Tables don't respect size containment, or apply the "fill viewport" quirk.
   DCHECK(!node.IsTable());
-  const ComputedStyle& style = node.Style();
 
-  // Check if the intrinsic size was overridden.
-  LayoutUnit override_intrinsic_size = node.OverrideIntrinsicContentBlockSize();
-  if (override_intrinsic_size != kIndefiniteSize)
-    return override_intrinsic_size + border_scrollbar_padding.BlockSum();
-
-  // Check if we have a "default" block-size (e.g. a <textarea>).
-  LayoutUnit default_intrinsic_size = node.DefaultIntrinsicContentBlockSize();
-  if (default_intrinsic_size != kIndefiniteSize) {
-    // <textarea>'s intrinsic size should ignore scrollbar existence.
-    if (node.IsTextArea()) {
-      return default_intrinsic_size -
-             ComputeScrollbars(space, node).BlockSum() +
-             border_scrollbar_padding.BlockSum();
-    }
-    return default_intrinsic_size + border_scrollbar_padding.BlockSum();
+  const LayoutUnit intrinsic_block_size =
+      CalculateIntrinsicBlockSizeIgnoringChildren(node,
+                                                  border_scrollbar_padding);
+  if (intrinsic_block_size != kIndefiniteSize) {
+    return intrinsic_block_size;
   }
 
-  // If we have size containment, we ignore child contributions to intrinsic
-  // sizing.
-  if (node.ShouldApplyBlockSizeContainment())
-    return border_scrollbar_padding.BlockSum();
-
   // Apply the "fills viewport" quirk if needed.
+  const ComputedStyle& style = node.Style();
   if (!IsBreakInside(break_token) && node.IsQuirkyAndFillsViewport() &&
       style.LogicalHeight().IsAuto() &&
       space.AvailableSize().block_size != kIndefiniteSize) {
@@ -1904,23 +1889,23 @@ std::optional<MinMaxSizesResult> CalculateMinMaxSizesIgnoringChildren(
   MinMaxSizes sizes;
   sizes += border_scrollbar_padding.InlineSum();
 
-  // If intrinsic size was overridden, then use that.
-  const LayoutUnit intrinsic_size_override =
-      node.OverrideIntrinsicContentInlineSize();
-  if (intrinsic_size_override != kIndefiniteSize) {
-    sizes += intrinsic_size_override;
+  // Check if the intrinsic size was overridden.
+  const LayoutUnit override_size = node.OverrideIntrinsicContentInlineSize();
+  if (override_size != kIndefiniteSize) {
+    sizes += override_size;
+    return MinMaxSizesResult{sizes, /* depends_on_block_constraints */ false};
+  }
+
+  // Check if we have a "default" size (a <textarea>).
+  const LayoutUnit default_size = node.DefaultIntrinsicContentInlineSize();
+  if (default_size != kIndefiniteSize) {
+    sizes += default_size;
+    // <textarea>'s intrinsic size should ignore scrollbar existence.
+    if (node.IsTextArea()) {
+      sizes -= ComputeScrollbarsForNonAnonymous(node).InlineSum();
+    }
     return MinMaxSizesResult{sizes,
                              /* depends_on_block_constraints */ false};
-  } else {
-    LayoutUnit default_inline_size = node.DefaultIntrinsicContentInlineSize();
-    if (default_inline_size != kIndefiniteSize) {
-      sizes += default_inline_size;
-      // <textarea>'s intrinsic size should ignore scrollbar existence.
-      if (node.IsTextArea())
-        sizes -= ComputeScrollbarsForNonAnonymous(node).InlineSum();
-      return MinMaxSizesResult{sizes,
-                               /* depends_on_block_constraints */ false};
-    }
   }
 
   // Size contained elements don't consider children for intrinsic sizing.
@@ -1931,6 +1916,34 @@ std::optional<MinMaxSizesResult> CalculateMinMaxSizesIgnoringChildren(
   }
 
   return std::nullopt;
+}
+
+LayoutUnit CalculateIntrinsicBlockSizeIgnoringChildren(
+    const BlockNode& node,
+    const BoxStrut& border_scrollbar_padding) {
+  // Check if the intrinsic size was overridden.
+  const LayoutUnit override_size = node.OverrideIntrinsicContentBlockSize();
+  if (override_size != kIndefiniteSize) {
+    return override_size + border_scrollbar_padding.BlockSum();
+  }
+
+  // Check if we have a "default" size (a <textarea>).
+  const LayoutUnit default_block_size = node.DefaultIntrinsicContentBlockSize();
+  if (default_block_size != kIndefiniteSize) {
+    // <textarea>'s intrinsic size should ignore scrollbar existence.
+    if (node.IsTextArea()) {
+      return default_block_size -
+             ComputeScrollbarsForNonAnonymous(node).BlockSum() +
+             border_scrollbar_padding.BlockSum();
+    }
+    return default_block_size + border_scrollbar_padding.BlockSum();
+  }
+
+  if (node.ShouldApplyBlockSizeContainment()) {
+    return border_scrollbar_padding.BlockSum();
+  }
+
+  return kIndefiniteSize;
 }
 
 void AddScrollbarFreeze(const BoxStrut& scrollbars_before,
