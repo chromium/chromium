@@ -307,6 +307,14 @@ SnapGroup* SnapGroupController::GetTopmostVisibleSnapGroup(
   return nullptr;
 }
 
+SplitViewDivider* SnapGroupController::GetSnapGroupDividerForWindow(
+    const aura::Window* window) {
+  if (SnapGroup* snap_group = GetSnapGroupForGivenWindow(window)) {
+    return snap_group->snap_group_divider();
+  }
+  return nullptr;
+}
+
 SnapGroup* SnapGroupController::GetTopmostSnapGroup() const {
   // Use `BuildMruWindowList()` to include all windows on the active desk across
   // all root windows.

@@ -2409,11 +2409,13 @@ TEST_F(SnapGroupTest, DragSnappedWindowExitPointTest) {
   event_generator->PressLeftButton();
   event_generator->MoveMouseBy(50, 200);
   EXPECT_TRUE(WindowState::Get(w1.get())->is_dragged());
-  EXPECT_FALSE(GetTopmostSnapGroupDivider());
+  // It should still be in snap group until dropped.
+  EXPECT_TRUE(GetTopmostSnapGroupDivider());
 
   event_generator->ReleaseLeftButton();
   EXPECT_FALSE(
       snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
+  EXPECT_FALSE(GetTopmostSnapGroupDivider());
 
   MaximizeToClearTheSession(w2.get());
   SnapTwoTestWindows(w1.get(), w2.get(), /*horizontal=*/true, event_generator);
@@ -2425,16 +2427,17 @@ TEST_F(SnapGroupTest, DragSnappedWindowExitPointTest) {
   event_generator->PressTouch();
   event_generator->MoveTouchBy(50, 200);
   EXPECT_TRUE(WindowState::Get(w1.get())->is_dragged());
-  EXPECT_FALSE(GetTopmostSnapGroupDivider());
+  EXPECT_TRUE(GetTopmostSnapGroupDivider());
 
   event_generator->ReleaseTouch();
   EXPECT_FALSE(
       snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
+  EXPECT_FALSE(GetTopmostSnapGroupDivider());
 }
 
-// Tests that dragging a window within a Snap Group to the same snap position
-// will break the existing Snap Group. See regression at http://b/335311879.
-TEST_F(SnapGroupTest, DragSnappedWindowToSnapWithDifferentSnapRatio) {
+// Tests that dragging a snapped window can be dragged out and re-join the
+// same snap group w/o breaking the snap group.
+TEST_F(SnapGroupTest, DragSnappedWindowAndRejoin) {
   UpdateDisplay("1200x900");
 
   std::unique_ptr<aura::Window> w1(CreateAppWindow());
@@ -2447,30 +2450,29 @@ TEST_F(SnapGroupTest, DragSnappedWindowToSnapWithDifferentSnapRatio) {
 
   SnapGroupController* snap_group_controller = SnapGroupController::Get();
   ASSERT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
-
-  aura::test::TestWindowDelegate test_window_delegate;
+  EXPECT_EQ(WindowStateType::kSecondarySnapped,
+            WindowState::Get(w2.get())->GetStateType());
 
   // Drag a snapped window out by mouse to exit the group.
   auto* event_generator = GetEventGenerator();
   event_generator->MoveMouseTo(w2->GetBoundsInScreen().top_center());
-  test_window_delegate.set_window_component(HTCAPTION);
+  event_generator->MoveMouseBy(0, 5);
   event_generator->PressLeftButton();
   event_generator->MoveMouseBy(50, 200);
   EXPECT_TRUE(WindowState::Get(w2.get())->is_dragged());
-  // The existing Snap Group will break.
-  EXPECT_FALSE(
-      snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
+  EXPECT_EQ(WindowState::Get(w2.get())->drag_details()->bounds_change,
+            WindowResizer::kBoundsChange_Repositions);
+  // The existing Snap Group will stay until dropped.
+  EXPECT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
 
-  // Drag to re-snap `w2` to the same snap position but with
-  // `chromeos::kDefaultSnapRatio`.
+  // Drag to re-snap `w2` to the same snap type.
   event_generator->MoveMouseTo(gfx::Point(1250, 0));
   event_generator->ReleaseLeftButton();
   EXPECT_EQ(WindowStateType::kSecondarySnapped,
             WindowState::Get(w2.get())->GetStateType());
 
-  // Two windows remain not in a Snap Group.
-  EXPECT_FALSE(
-      snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
+  // w2 should stay in the original snap group.
+  EXPECT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
 }
 
 // Tests that when snapping the snapped window to the opposite side, partial
@@ -10373,11 +10375,12 @@ TEST_F(SnapGroupMetricsTest, SnapGroupExitPoint) {
 
   SCOPED_TRACE("Test case 1: drag window out to exit");
   event_generator->MoveMouseTo(w1->GetBoundsInScreen().top_center());
-  aura::test::TestWindowDelegate test_window_delegate;
-  test_window_delegate.set_window_component(HTCAPTION);
+  event_generator->MoveMouseBy(0, 5);
   event_generator->PressLeftButton();
   event_generator->MoveMouseBy(50, 200);
   EXPECT_TRUE(WindowState::Get(w1.get())->is_dragged());
+  EXPECT_EQ(WindowState::Get(w1.get())->drag_details()->bounds_change,
+            WindowResizer::kBoundsChange_Repositions);
   event_generator->ReleaseLeftButton();
   EXPECT_FALSE(snap_group_controller->GetSnapGroupForGivenWindow(w1.get()));
   EXPECT_FALSE(snap_group_controller->GetSnapGroupForGivenWindow(w2.get()));
