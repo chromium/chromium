@@ -4,6 +4,7 @@
 
 #include "content/browser/media/media_web_contents_observer.h"
 
+#include <algorithm>
 #include <memory>
 #include <tuple>
 
@@ -362,6 +363,14 @@ void MediaWebContentsObserver::RequestPersistentVideo(bool value) {
   GetMediaPlayerRemote(*fullscreen_player_)->SetPersistentState(value);
 }
 
+int MediaWebContentsObserver::GetCurrentlyPlayingVideoCount() const {
+  return std::ranges::count_if(
+      player_info_map_, [](const PlayerInfoMap::value_type& id_and_info) {
+        const PlayerInfo& info = *id_and_info.second;
+        return info.is_playing() && info.has_video();
+      });
+}
+
 bool MediaWebContentsObserver::IsPlayerActive(
     const MediaPlayerId& player_id) const {
   if (const PlayerInfo* player_info = GetPlayerInfo(player_id))
@@ -440,6 +449,9 @@ void MediaWebContentsObserver::MediaPlayerObserverHostImpl::
     OnMediaMetadataChanged(bool has_audio,
                            bool has_video,
                            media::MediaContentType media_content_type) {
+  media_web_contents_observer_->web_contents_impl()->MediaMetadataChanged(
+      WebContentsObserver::MediaPlayerInfo(has_video, has_audio),
+      media_player_id_);
   media_web_contents_observer_->OnMediaMetadataChanged(
       media_player_id_, has_audio, has_video, media_content_type);
 

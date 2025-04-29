@@ -11136,10 +11136,6 @@ void WebContentsImpl::MediaStartedPlaying(
     const WebContentsObserver::MediaPlayerInfo& media_info,
     const MediaPlayerId& id) {
   OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::MediaStartedPlaying");
-  if (media_info.has_video) {
-    currently_playing_video_count_++;
-  }
-
   observers_.NotifyObservers(&WebContentsObserver::MediaStartedPlaying,
                              media_info, id);
 }
@@ -11149,12 +11145,15 @@ void WebContentsImpl::MediaStoppedPlaying(
     const MediaPlayerId& id,
     WebContentsObserver::MediaStoppedReason reason) {
   OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::MediaStoppedPlaying");
-  if (media_info.has_video) {
-    currently_playing_video_count_--;
-  }
-
   observers_.NotifyObservers(&WebContentsObserver::MediaStoppedPlaying,
                              media_info, id, reason);
+}
+
+void WebContentsImpl::MediaMetadataChanged(
+    const WebContentsObserver::MediaPlayerInfo& media_info,
+    const MediaPlayerId& id) {
+  observers_.NotifyObservers(&WebContentsObserver::MediaMetadataChanged,
+                             media_info, id);
 }
 
 void WebContentsImpl::MediaResized(const gfx::Size& size,
@@ -11183,8 +11182,8 @@ void WebContentsImpl::MediaSessionCreated(MediaSession* media_session) {
                              media_session);
 }
 
-int WebContentsImpl::GetCurrentlyPlayingVideoCount() {
-  return currently_playing_video_count_;
+int WebContentsImpl::GetCurrentlyPlayingVideoCount() const {
+  return media_web_contents_observer_->GetCurrentlyPlayingVideoCount();
 }
 
 std::optional<gfx::Size> WebContentsImpl::GetFullscreenVideoSize() {

@@ -74,6 +74,9 @@ class TabStatsTracker : public TabStripModelObserver,
   // Accessors.
   const TabStatsDataStore::TabsStats& tab_stats() const;
 
+  content::WebContentsObserver* GetWebContentsUsageObserverForTesting(
+      content::WebContents* web_contents);
+
  protected:
   FRIEND_TEST_ALL_PREFIXES(TabStatsTrackerBrowserTest,
                            TabDeletionGetsHandledProperly);
