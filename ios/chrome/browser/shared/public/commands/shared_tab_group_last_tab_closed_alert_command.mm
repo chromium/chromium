@@ -25,8 +25,11 @@
                       browser:(Browser*)browser
                         group:(const TabGroup*)group
            baseViewController:(UIViewController*)baseViewController
-                   sourceView:(UIView*)sourceView {
+                   sourceView:(UIView*)sourceView
+                      closing:(BOOL)closing {
   if ((self = [super init])) {
+    _closing = closing;
+    _canCancel = closing;
     _tabID = tabID;
     _group = group;
     _groupTitle = group->GetTitle();

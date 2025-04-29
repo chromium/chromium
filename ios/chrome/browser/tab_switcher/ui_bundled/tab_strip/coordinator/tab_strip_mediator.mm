@@ -872,8 +872,10 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
   const TabGroup* group = self.webStateList->GetGroupOfWebStateAt(index);
   if (groupService && groupService->ShouldDisplayLastTabCloseAlert(group)) {
     web::WebState* webState = self.webStateList->GetWebStateAt(index);
-    [_tabStripHandler showAlertForLastTabClosed:webState->GetUniqueIdentifier()
-                                          group:group];
+    [_tabStripHandler
+        showAlertForLastTabRemovedFromGroup:group
+                                      tabID:webState->GetUniqueIdentifier()
+                                    closing:YES];
     return;
   } else {
     self.webStateList->CloseWebStateAt(index, WebStateList::CLOSE_USER_ACTION);
@@ -1182,14 +1184,28 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
   // asynchronous drops.
   if ([dragItem.localObject isKindOfClass:[TabInfo class]]) {
     TabInfo* tabInfo = static_cast<TabInfo*>(dragItem.localObject);
-    if (IsTabGroupSyncEnabled()) {
-      BrowserAndIndex browserAndIndex = FindBrowserAndIndex(
+    BrowserAndIndex browserAndIndex;
+    if (tabInfo.incognito) {
+      browserAndIndex = FindBrowserAndIndex(
+          tabInfo.tabID,
+          _browserList->BrowsersOfType(BrowserList::BrowserType::kIncognito));
+    } else {
+      browserAndIndex = FindBrowserAndIndex(
           tabInfo.tabID,
           _browserList->BrowsersOfType(BrowserList::BrowserType::kRegular));
-      if (browserAndIndex.browser) {
-        const TabGroup* group =
-            browserAndIndex.browser->GetWebStateList()->GetGroupOfWebStateAt(
-                browserAndIndex.tab_index);
+    }
+
+    if (browserAndIndex.browser) {
+      const TabGroup* group =
+          browserAndIndex.browser->GetWebStateList()->GetGroupOfWebStateAt(
+              browserAndIndex.tab_index);
+      TabGroupService* groupService =
+          TabGroupServiceFactory::GetForProfile(self.profile);
+      if (groupService && groupService->ShouldDisplayLastTabCloseAlert(group)) {
+        [_tabStripHandler showAlertForLastTabRemovedFromGroup:group
+                                                        tabID:tabInfo.tabID
+                                                      closing:NO];
+      } else if (IsTabGroupSyncEnabled()) {
         if (group && group->range().count() == 1) {
           // `_tabGroupSyncService` is nullptr in incognito.
           const tab_groups::TabGroupId& localID = group->tab_group_id();

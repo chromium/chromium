@@ -517,7 +517,8 @@ constexpr CGFloat kTabGroupBackgroundElementDurationFactor = 0.75;
                   sourceView:ui::GetDeviceFormFactor() ==
                                      ui::DEVICE_FORM_FACTOR_PHONE
                                  ? self.viewController.view
-                                 : nil];
+                                 : nil
+                     closing:YES];
   id<SharedTabGroupLastTabAlertCommands> lastTabAlertHandler =
       HandlerForProtocol(self.browser->GetCommandDispatcher(),
                          SharedTabGroupLastTabAlertCommands);

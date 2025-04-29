@@ -2291,7 +2291,8 @@ enum class ToolbarKind {
                        browser:self.browser
                          group:group
             baseViewController:self.viewController
-                    sourceView:isTablet ? nil : self.viewController.view];
+                    sourceView:isTablet ? nil : self.viewController.view
+                       closing:YES];
 
     id<SharedTabGroupLastTabAlertCommands> lastTabAlertHandler =
         HandlerForProtocol(self.browser->GetCommandDispatcher(),
@@ -3439,11 +3440,14 @@ enum class ToolbarKind {
                           viewController:viewController];
   };
   _lastTabClosingAlert.secondaryAction = ^{
-    [weakSelf runKeepGroup:command.group lastTabID:command.tabID];
+    if (command.closing) {
+      [weakSelf runKeepGroup:command.group lastTabID:command.tabID];
+    }
   };
 
   _lastTabClosingAlert.tabGroupName = command.groupTitle;
   _lastTabClosingAlert.showAsAlert = command.displayAsAlert;
+  _lastTabClosingAlert.canCancel = command.canCancel;
   [_lastTabClosingAlert start];
 }
 

@@ -20,11 +20,15 @@ class WebStateID;
 // alert.
 @interface SharedTabGroupLastTabAlertCommand : NSObject
 
+// Creates the command with the last tab's information (`tabID`, `browser`,
+// `group`) and a boolean `closing` to indicate if the alert is due a tab
+// closure by setting it to YES and NO when it's due to a tab move.
 - (instancetype)initWithTabID:(web::WebStateID)tabID
                       browser:(Browser*)browser
                         group:(const TabGroup*)group
            baseViewController:(UIViewController*)baseViewController
-                   sourceView:(UIView*)sourceView;
+                   sourceView:(UIView*)sourceView
+                      closing:(BOOL)closing;
 - (instancetype)init NS_UNAVAILABLE;
 
 // Group to potentially delete, leave or keep.
@@ -42,6 +46,10 @@ class WebStateID;
 // YES if it should be display as an alert instead of being anchored to the
 // source view.
 @property(nonatomic, readonly, assign) BOOL displayAsAlert;
+// YES if the alert should offer the possibility to cancel the action.
+@property(nonatomic, readonly, assign) BOOL canCancel;
+// YES if the alert is coming from a closing action, NO if it is a move action.
+@property(nonatomic, readonly, assign) BOOL closing;
 
 @end
 

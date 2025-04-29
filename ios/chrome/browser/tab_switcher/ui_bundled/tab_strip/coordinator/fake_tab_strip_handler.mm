@@ -31,8 +31,9 @@
   self.lastTabDraggedCommand = command;
 }
 
-- (void)showAlertForLastTabClosed:(web::WebStateID)itemID
-                            group:(const TabGroup*)group {
+- (void)showAlertForLastTabRemovedFromGroup:(const TabGroup*)group
+                                      tabID:(web::WebStateID)itemID
+                                    closing:(BOOL)closing {
 }
 
 - (void)showTabGroupConfirmationForAction:(TabGroupActionType)actionType

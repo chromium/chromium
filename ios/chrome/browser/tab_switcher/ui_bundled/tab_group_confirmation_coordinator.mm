@@ -39,6 +39,7 @@
   if (self) {
     _actionType = actionType;
     _sourceView = sourceView;
+    _canCancel = YES;
   }
   return self;
 }
@@ -51,6 +52,7 @@
   if (self) {
     _actionType = actionType;
     _sourceButtonItem = sourceButtonItem;
+    _canCancel = YES;
   }
   return self;
 }
@@ -84,6 +86,7 @@
   _actionSheetCoordinator.alertStyle = _showAsAlert
                                            ? UIAlertControllerStyleAlert
                                            : UIAlertControllerStyleActionSheet;
+
   _actionSheetCoordinator.popoverArrowDirection =
       UIPopoverArrowDirectionDown | UIPopoverArrowDirectionUp;
 
@@ -94,17 +97,21 @@
                                      }
                                       style:UIAlertActionStyleDestructive];
   if ([self shouldHaveSecondaryAction]) {
+    UIAlertActionStyle secondaryStyle =
+        self.canCancel ? UIAlertActionStyleDefault : UIAlertActionStyleCancel;
     [_actionSheetCoordinator addItemWithTitle:[self secondaryItemTitle]
                                        action:^{
                                          [weakSelf handleSecondaryAction];
                                        }
-                                        style:UIAlertActionStyleDefault];
+                                        style:secondaryStyle];
   }
-  [_actionSheetCoordinator addItemWithTitle:l10n_util::GetNSString(IDS_CANCEL)
-                                     action:^{
-                                       [weakSelf stop];
-                                     }
-                                      style:UIAlertActionStyleCancel];
+  if (self.canCancel) {
+    [_actionSheetCoordinator addItemWithTitle:l10n_util::GetNSString(IDS_CANCEL)
+                                       action:^{
+                                         [weakSelf stop];
+                                       }
+                                        style:UIAlertActionStyleCancel];
+  }
   [_actionSheetCoordinator start];
 }
 

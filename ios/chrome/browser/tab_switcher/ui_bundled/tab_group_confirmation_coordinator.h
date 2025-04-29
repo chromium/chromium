@@ -38,6 +38,9 @@ typedef void (^TabGroupActionBlock)();
 // YES to display an alert instead of an action sheet. Default is NO.
 @property(nonatomic, assign) BOOL showAsAlert;
 
+// YES if the cancel button should be available. Default is YES.
+@property(nonatomic, assign) BOOL canCancel;
+
 // Designated initializer with a parameter for anchoring the popover to a
 // UIView.
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController

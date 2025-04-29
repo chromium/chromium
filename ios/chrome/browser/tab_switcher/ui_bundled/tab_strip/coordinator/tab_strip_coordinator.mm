@@ -273,8 +273,9 @@ using collaboration::CollaborationControllerDelegate;
   [_alertCoordinator start];
 }
 
-- (void)showAlertForLastTabClosed:(web::WebStateID)itemID
-                            group:(const TabGroup*)group {
+- (void)showAlertForLastTabRemovedFromGroup:(const TabGroup*)group
+                                      tabID:(web::WebStateID)itemID
+                                    closing:(BOOL)closing {
   UIView* sourceView = self.tabStripViewController.closedTabGroupView;
   SharedTabGroupLastTabAlertCommand* command =
       [[SharedTabGroupLastTabAlertCommand alloc]
@@ -282,7 +283,8 @@ using collaboration::CollaborationControllerDelegate;
                      browser:self.browser
                        group:group
           baseViewController:self.baseViewController
-                  sourceView:sourceView ? sourceView : nil];
+                  sourceView:sourceView
+                     closing:closing];
   self.tabStripViewController.closedTabGroupView = nil;
 
   id<SharedTabGroupLastTabAlertCommands> lastTabAlertHandler =
