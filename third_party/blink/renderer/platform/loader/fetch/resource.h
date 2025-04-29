@@ -362,7 +362,7 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
   // attributes.
   bool ForceIntegrityChecks() const;
 
-  const IntegrityReport& IntegrityReport() const { return integrity_report_; }
+  const blink::IntegrityReport& IntegrityReport() const { return integrity_report_; }
   bool MustRefetchDueToIntegrityMetadata(const FetchParameters&) const;
 
   bool IsAlive() const { return is_alive_; }
