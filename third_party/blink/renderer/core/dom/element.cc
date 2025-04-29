@@ -561,25 +561,6 @@ const AtomicString& V8ShadowRootModeToString(V8ShadowRootMode::Enum mode) {
   return keywords::kClosed;
 }
 
-bool IsInsideLayoutSVGHiddenContainer(const LayoutObject* object) {
-  if (!RuntimeEnabledFeatures::
-          RestrictGetBoundingClientRectForHiddenSVGElementsEnabled()) {
-    return false;
-  }
-
-  for (; object; object = object->Parent()) {
-    // Check if the Element's LayoutObject or any ancestor is a
-    // LayoutSVGHiddenContainer
-    if (object->IsSVGHiddenContainer()) {
-      return true;
-    }
-
-    if (IsA<LayoutSVGRoot>(*object)) {
-      break;
-    }
-  }
-  return false;
-}
 }  // namespace
 
 Element::Element(const QualifiedName& tag_name,
@@ -2847,8 +2828,14 @@ void Element::ClientQuads(Vector<gfx::QuadF>& quads) const {
     // TODO(pdr): ObjectBoundingBox does not include stroke and the spec is not
     // clear (see: https://github.com/w3c/svgwg/issues/339, crbug.com/529734).
     // If stroke is desired, we can update this to use AbsoluteQuads, below.
-    if (IsA<SVGGraphicsElement>(svg_element) &&
-        !IsInsideLayoutSVGHiddenContainer(element_layout_object)) {
+    if (const auto* svg_graphics_element =
+            DynamicTo<SVGGraphicsElement>(this)) {
+      if (RuntimeEnabledFeatures::
+              RestrictGetBoundingClientRectForHiddenSVGElementsEnabled() &&
+          svg_graphics_element->IsNonRendered(element_layout_object)) {
+        return;
+      }
+
       quads.push_back(element_layout_object->LocalToAbsoluteQuad(
           gfx::QuadF(element_layout_object->ObjectBoundingBox())));
     }

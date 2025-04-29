@@ -55,12 +55,19 @@ class CORE_EXPORT SVGGraphicsElement : public SVGTransformableElement,
 
   void Trace(Visitor*) const override;
 
+  bool IsNonRendered(const LayoutObject* object) const;
+
  protected:
   SVGGraphicsElement(const QualifiedName&,
                      Document&,
                      ConstructionType = kCreateSVGElement);
 
   FocusableState SupportsFocus(UpdateBehavior update_behavior) const override {
+    if (RuntimeEnabledFeatures::RestrictTabFocusForHiddenSVGElementsEnabled() &&
+        IsNonRendered(GetLayoutObject())) {
+      return FocusableState::kNotFocusable;
+    }
+
     if (HasFocusEventListeners()) {
       return FocusableState::kFocusable;
     }
