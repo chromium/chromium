@@ -830,7 +830,6 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                         /* supportsShowNewGroup= */ true,
                         /* destroyOnHide= */ false);
 
-        TabBookmarker tabBookmarker = mTabBookmarkerSupplier.get();
         ShowTabListEditor showTabListEditor =
                 tabId -> {
                     mTabListEditorManager.showTabListEditor();
@@ -843,7 +842,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
         mContextMenuCoordinator =
                 TabGridContextMenuCoordinator.createContextMenuCoordinator(
                         mActivity,
-                        tabBookmarker,
+                        mTabBookmarkerSupplier,
                         filter,
                         mTabGroupListBottomSheetCoordinator,
                         tabGroupCreationDialogManager,

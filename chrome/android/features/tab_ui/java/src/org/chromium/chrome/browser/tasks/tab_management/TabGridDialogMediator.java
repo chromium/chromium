@@ -591,7 +591,7 @@ public class TabGridDialogMediator
                 mTabGridContextMenuCoordinator =
                         new TabGridContextMenuCoordinator(
                                 activity,
-                                tabBookmarkerSupplier.get(),
+                                tabBookmarkerSupplier,
                                 profile,
                                 filter,
                                 mTabGroupListBottomSheetCoordinator,
