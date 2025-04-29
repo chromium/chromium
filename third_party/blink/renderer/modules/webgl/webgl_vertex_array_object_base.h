@@ -21,8 +21,6 @@ class WebGLVertexArrayObjectBase : public WebGLContextObject {
 
   ~WebGLVertexArrayObjectBase() override;
 
-  GLuint Object() const { return object_; }
-
   bool IsDefaultObject() const { return type_ == kVaoTypeDefault; }
 
   bool HasEverBeenBound() const { return Object() && has_ever_been_bound_; }
@@ -53,12 +51,9 @@ class WebGLVertexArrayObjectBase : public WebGLContextObject {
 
  private:
   void DispatchDetached(gpu::gles2::GLES2Interface*);
-  bool HasObject() const override { return object_ != 0; }
   void DeleteObjectImpl(gpu::gles2::GLES2Interface*) override;
 
   void UpdateAttribBufferBoundStatus();
-
-  GLuint object_;
 
   VaoType type_;
   bool has_ever_been_bound_;

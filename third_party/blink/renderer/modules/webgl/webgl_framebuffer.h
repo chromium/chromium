@@ -79,8 +79,6 @@ class WebGLFramebuffer final : public WebGLContextObject {
                                         bool has_depth,
                                         bool has_stencil);
 
-  GLuint Object() const { return object_; }
-
   // For a non-multiview attachment, set the num_views parameter to 0. For a
   // multiview attachment, set the layer to the base view index.
   void SetAttachmentForBoundFramebuffer(GLenum target,
@@ -137,7 +135,6 @@ class WebGLFramebuffer final : public WebGLContextObject {
   const char* NameInHeapSnapshot() const override { return "WebGLFramebuffer"; }
 
  protected:
-  bool HasObject() const override { return object_ != 0; }
   void DeleteObjectImpl(gpu::gles2::GLES2Interface*) override;
 
  private:
@@ -164,8 +161,6 @@ class WebGLFramebuffer final : public WebGLContextObject {
   void RemoveAttachmentInternal(GLenum target, GLenum attachment);
 
   void CommitWebGL1DepthStencilIfConsistent(GLenum target);
-
-  GLuint object_;
 
   typedef HeapHashMap<GLenum, Member<WebGLAttachment>> AttachmentMap;
 

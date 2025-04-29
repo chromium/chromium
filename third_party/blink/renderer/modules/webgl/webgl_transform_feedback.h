@@ -29,14 +29,12 @@ class WebGLTransformFeedback : public WebGLContextObject {
       GLint max_transform_feedback_separate_attribs);
   ~WebGLTransformFeedback() override;
 
-  GLuint Object() const { return object_; }
-
   bool IsDefaultObject() const { return type_ == TFType::kDefault; }
 
   GLenum GetTarget() const { return target_; }
   void SetTarget(GLenum);
 
-  bool HasEverBeenBound() const { return object_ && target_; }
+  bool HasEverBeenBound() const { return HasObject() && target_; }
 
   WebGLProgram* GetProgram() const { return program_.Get(); }
   void SetProgram(WebGLProgram*);
@@ -77,10 +75,7 @@ class WebGLTransformFeedback : public WebGLContextObject {
 
  private:
   void DispatchDetached(gpu::gles2::GLES2Interface*);
-  bool HasObject() const override { return object_ != 0; }
   void DeleteObjectImpl(gpu::gles2::GLES2Interface*) override;
-
-  GLuint object_;
 
   TFType type_;
   GLenum target_;

@@ -20,9 +20,6 @@ class WebGLSampler : public WebGLSharedPlatform3DObject {
 
  protected:
   void DeleteObjectImpl(gpu::gles2::GLES2Interface*) override;
-
- private:
-  bool IsSampler() const override { return true; }
 };
 
 }  // namespace blink

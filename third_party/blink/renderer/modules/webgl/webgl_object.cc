@@ -32,10 +32,7 @@
 namespace blink {
 
 WebGLObject::WebGLObject(WebGLRenderingContextBase* context)
-    : cached_number_of_context_losses_(std::numeric_limits<uint32_t>::max()),
-      attachment_count_(0),
-      marked_for_deletion_(false),
-      destruction_in_progress_(false) {
+    : cached_number_of_context_losses_(std::numeric_limits<uint32_t>::max()) {
   if (context) {
     cached_number_of_context_losses_ = context->NumberOfContextLosses();
   }
@@ -45,6 +42,19 @@ WebGLObject::~WebGLObject() = default;
 
 uint32_t WebGLObject::CachedNumberOfContextLosses() const {
   return cached_number_of_context_losses_;
+}
+
+void WebGLObject::SetObject(GLuint object) {
+  // SetObject may only be called when this container is in the
+  // uninitialized state: object==0 && marked_for_deletion==false.
+  DCHECK(!object_);
+  DCHECK(!MarkedForDeletion());
+  object_ = object;
+}
+
+void WebGLObject::ResetUnownedObject() {
+  DCHECK(object_);
+  object_ = 0;
 }
 
 void WebGLObject::DeleteObject(gpu::gles2::GLES2Interface* gl) {
@@ -65,8 +75,7 @@ void WebGLObject::DeleteObject(gpu::gles2::GLES2Interface* gl) {
       gl = GetAGLInterface();
     if (gl) {
       DeleteObjectImpl(gl);
-      // Ensure the inherited class no longer claims to have a valid object
-      DCHECK(!HasObject());
+      object_ = 0;
     }
   }
 }

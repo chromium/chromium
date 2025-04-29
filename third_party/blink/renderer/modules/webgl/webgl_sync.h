@@ -25,8 +25,6 @@ class WebGLSync : public WebGLSharedObject {
  public:
   ~WebGLSync() override;
 
-  GLuint Object() const { return object_; }
-
   void UpdateCache(gpu::gles2::GLES2Interface*);
   GLint GetCachedResult(GLenum pname);
   bool IsSignaled() const;
@@ -34,14 +32,9 @@ class WebGLSync : public WebGLSharedObject {
  protected:
   WebGLSync(WebGL2RenderingContextBase*, GLuint, GLenum object_type);
 
-  bool HasObject() const override { return object_ != 0; }
   void DeleteObjectImpl(gpu::gles2::GLES2Interface*) override;
 
-  GLenum ObjectType() const { return object_type_; }
-
  private:
-  bool IsSync() const override { return true; }
-
   void ScheduleAllowCacheUpdate();
   void AllowCacheUpdate();
 
@@ -49,7 +42,6 @@ class WebGLSync : public WebGLSharedObject {
   // Initialized in cpp file to avoid including gl3.h in this header.
   GLint sync_status_;
 
-  GLuint object_;
   GLenum object_type_;
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;

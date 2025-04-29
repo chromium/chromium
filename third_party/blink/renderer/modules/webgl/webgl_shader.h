@@ -47,8 +47,6 @@ class WebGLShader final : public WebGLSharedPlatform3DObject {
  private:
   void DeleteObjectImpl(gpu::gles2::GLES2Interface*) override;
 
-  bool IsShader() const override { return true; }
-
   GLenum type_;
   String source_;
 };
