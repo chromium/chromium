@@ -111,6 +111,7 @@ include_rules = [
   # Background tracing support
   "+services/tracing/public/cpp",
 
+  "+storage/browser/blob",
   "+storage/browser/quota",
   "+storage/common/quota",
 

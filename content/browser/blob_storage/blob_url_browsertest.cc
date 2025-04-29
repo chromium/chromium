@@ -60,7 +60,6 @@ class MockContentBrowserClient : public ContentBrowserTestContentBrowserClient {
 class BlobUrlBrowserTest : public ContentBrowserTest {
  public:
   BlobUrlBrowserTest() = default;
-
   BlobUrlBrowserTest(const BlobUrlBrowserTest&) = delete;
   BlobUrlBrowserTest& operator=(const BlobUrlBrowserTest&) = delete;
 
@@ -76,6 +75,7 @@ class BlobUrlBrowserTest : public ContentBrowserTest {
   void TearDownOnMainThread() override { client_.reset(); }
 
  private:
+  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<MockContentBrowserClient> client_;
 };
 
