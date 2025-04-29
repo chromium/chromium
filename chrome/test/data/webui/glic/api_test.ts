@@ -654,6 +654,22 @@ class ApiTests extends ApiTestFixtureBase {
     await observeSequence(this.host.isManuallyResizing()).waitForValue(false);
   }
 
+  async testResizeWindowTooSmall() {
+    assertTrue(!!this.host.resizeWindow);
+    await this.host.resizeWindow(0, 0);
+  }
+
+  async testResizeWindowTooLarge() {
+    assertTrue(!!this.host.resizeWindow);
+    await this.host.resizeWindow(2000, 2000);
+  }
+
+  async testResizeWindowWithinBounds() {
+    assertTrue(!!this.host.resizeWindow);
+    assertTrue(!!this.testParams);
+    await this.host.resizeWindow(this.testParams.width, this.testParams.height);
+  }
+
   async testOpenOsMediaPermissionSettings() {
     assertTrue(!!this.host.openOsPermissionSettingsMenu);
     this.host.openOsPermissionSettingsMenu('media');
