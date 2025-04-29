@@ -803,6 +803,28 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestDSF2, ScrollTool_ScrollDSF) {
   }
 }
 
+IN_PROC_BROWSER_TEST_F(ActorToolsTest, ScrollTool_ZeroIdTargetsViewport) {
+  const GURL url =
+      embedded_test_server()->GetURL("/actor/scrollable_page.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  // DOMNodeIDs start at 1 so 0 should be interpreted as viewport.
+  constexpr int kViewportId = 0;
+  float scroll_offset_y = 50;
+  BrowserAction action = MakeScroll(kViewportId,
+                                    /*scroll_offset_x=*/0, scroll_offset_y);
+
+  TestFuture<bool> result;
+  actor_coordinator().Act(action, result.GetCallback());
+  EXPECT_TRUE(result.Get());
+
+  // Not sure why, since all zooms should be exactly 1.0, but some numerical
+  // instability seems to creep in. Using ExtractDouble and EXPECT_FLOAT_EQ for
+  // that reason.
+  EXPECT_FLOAT_EQ(scroll_offset_y,
+                  EvalJs(web_contents(), "window.scrollY").ExtractDouble());
+}
+
 // ===============================================
 // Drag and Release Tool
 // ===============================================

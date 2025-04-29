@@ -67,6 +67,10 @@ bool IsPointWithinViewport(const gfx::PointF& point,
 }
 
 std::string ToDebugString(const mojom::ToolTargetPtr& target) {
+  if (target.is_null()) {
+    return "target(null)";
+  }
+
   std::stringstream ss;
   ss << "target(";
   if (target->is_coordinate()) {

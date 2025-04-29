@@ -29,8 +29,12 @@ void SetMojoTarget(const ActionTarget& target,
     out_mojo_target = actor::mojom::ToolTarget::NewCoordinate(
         gfx::Point(target.coordinate().x(), target.coordinate().y()));
   } else {
-    out_mojo_target =
-        actor::mojom::ToolTarget::NewDomNodeId(target.content_node_id());
+    // A ContentNodeId of 0 indicates the viewport. The mojo message indicates
+    // viewport by omitting a target.
+    if (target.content_node_id() > 0) {
+      out_mojo_target =
+          actor::mojom::ToolTarget::NewDomNodeId(target.content_node_id());
+    }
   }
 }
 
