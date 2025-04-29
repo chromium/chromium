@@ -99,7 +99,7 @@ class NavigationState
 
     // TODO - crbug.com/406841434: `CHECK` the result of `filter_.Filter`.
     bool were_all_accesses_matched = filter_.Filter(urls, accesses);
-    if (!were_all_accesses_matched) {
+    if (!were_all_accesses_matched && !navigation_handle.IsErrorPage()) {
       DEBUG_ALIAS_FOR_GURL(
           committed_url_alias,
           navigation_handle.GetRenderFrameHost()->GetLastCommittedURL());
