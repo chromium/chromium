@@ -1366,7 +1366,7 @@ def main():
 
       if target_arch == 'aarch64':
         # Use PAC/BTI instructions for AArch64
-        android_cflags += ['-mbranch-protection=standard']
+        android_cflags += ['-mbranch-protection=bti+pac-ret']
 
       android_args = [
           'LLVM_ENABLE_RUNTIMES=compiler-rt',

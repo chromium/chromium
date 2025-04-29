@@ -58,6 +58,9 @@ config("compiler") {
     if (arm_control_flow_integrity == "standard") {
       cflags += [ "-mbranch-protection=standard" ]
       rustflags = [ "-Zbranch-protection=pac-ret,bti" ]
+    } else if (arm_control_flow_integrity == "bti+pac") {
+      cflags += [ "-mbranch-protection=bti+pac-ret" ]
+      rustflags = [ "-Zbranch-protection=pac-ret,bti" ]
     } else if (arm_control_flow_integrity == "pac") {
       cflags += [ "-mbranch-protection=pac-ret" ]
       rustflags = [ "-Zbranch-protection=pac-ret" ]
@@ -123,7 +126,8 @@ config("lld_branch_target_hardening") {
   # is an opt-in config (rather than default-enabled) to avoid
   # interfering with the V8 CFI bots (crbug.com/1334614).
   if (current_cpu == "arm64") {
-    if (arm_control_flow_integrity == "standard") {
+    if (arm_control_flow_integrity == "standard" ||
+        arm_control_flow_integrity == "bti+pac") {
       # Linking objects without GNU_PROPERTY_AARCH64_FEATURE_1_BTI
       # in their .gnu.note section implicitly results in the final
       # binary losing Branch Target Identification (BTI) support.
