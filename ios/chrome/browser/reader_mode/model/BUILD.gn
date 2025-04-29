@@ -89,6 +89,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/web/model:feature_flags",
     "//ios/chrome/browser/web/model:web_internal",
     "//ios/chrome/test/fakes",
+    "//ios/web/js_messaging:java_script_feature_manager_header",
     "//ios/web/public/js_messaging",
     "//ios/web/public/test",
     "//testing/gtest",

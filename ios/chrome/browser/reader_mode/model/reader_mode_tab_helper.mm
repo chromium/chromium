@@ -193,6 +193,8 @@ void ReaderModeTabHelper::SetActive(bool active) {
     // destruction of the Reader mode WebState while its view is inside the view
     // hierarchy.
     reader_mode_web_state_.reset();
+    // Cancel any ongoing distillation task.
+    distiller_viewer_.reset();
     HideReaderMode();
   }
 }
@@ -244,24 +246,19 @@ void ReaderModeTabHelper::DidStartNavigation(
   if (trigger_reader_mode_timer_.IsRunning()) {
     trigger_reader_mode_timer_.Stop();
   }
-  if (IsReaderModeAvailable()) {
-    HideReaderMode();
-  }
+  HideReaderMode();
 }
 
 void ReaderModeTabHelper::WebStateDestroyed(web::WebState* web_state) {
   CHECK_EQ(web_state_, web_state);
-  // TODO(crbug.com/409940117): Ensure ongoing page distillation and other state
-  // is cleaned up when web state is destroyed.
+  HideReaderMode();
   web_state_->RemoveObserver(this);
   web_state_ = nullptr;
 }
 
 void ReaderModeTabHelper::WasHidden(web::WebState* web_state) {
-  if (IsReaderModeAvailable()) {
-    // Ensure the Reader mode UI is hidden when the tab is hidden.
-    HideReaderMode();
-  }
+  // Ensure the Reader mode UI is hidden when the tab is hidden.
+  HideReaderMode();
 }
 
 void ReaderModeTabHelper::HandleReaderModeHeuristicResult(
@@ -306,9 +303,9 @@ void ReaderModeTabHelper::RecordReaderModeHeuristicLatency(
 }
 
 void ReaderModeTabHelper::HideReaderMode() {
-  [reader_mode_handler_ hideReaderMode];
-  // Cancel any ongoing distillation task.
-  distiller_viewer_.reset();
+  if (IsReaderModeAvailable()) {
+    [reader_mode_handler_ hideReaderMode];
+  }
 }
 
 bool ReaderModeTabHelper::CanTriggerReaderModeHeuristic() {

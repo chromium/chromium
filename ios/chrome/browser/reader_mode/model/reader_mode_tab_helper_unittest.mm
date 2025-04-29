@@ -16,10 +16,10 @@
 #import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_java_script_feature.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/web/js_messaging/java_script_feature_manager.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
-#import "ios/web/public/test/fakes/fake_web_client.h"
 #import "ios/web/public/test/fakes/fake_web_frame.h"
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -43,36 +43,50 @@ using IOS_ReaderMode_Heuristic_Result =
 class ReaderModeTabHelperTest : public PlatformTest {
  public:
   ReaderModeTabHelperTest()
-      : web_client_(std::make_unique<web::FakeWebClient>()) {}
+      : web_state_(std::make_unique<web::FakeWebState>()),
+        test_url_(GURL("https://test.url/")) {}
 
   void SetUp() override {
     PlatformTest::SetUp();
 
     profile_ = TestProfileIOS::Builder().Build();
 
-    web::WebState::CreateParams params(profile_.get());
-    web_state_ = web::WebState::Create(params);
-    web_state_->GetView();
-    web_state_->SetKeepRenderProcessAlive(true);
+    web_state_->SetVisibleURL(test_url_);
 
-    web::FakeWebClient* web_client =
-        static_cast<web::FakeWebClient*>(web_client_.Get());
-    web_client->SetJavaScriptFeatures(
-        {ReaderModeJavaScriptFeature::GetInstance()});
+    // Set up the fake web frames manager.
+    auto frames_manager = std::make_unique<web::FakeWebFramesManager>();
+    web_frames_manager_ = frames_manager.get();
+    web_state_->SetWebFramesManager(
+        std::make_unique<web::FakeWebFramesManager>());
+    web_state_->SetWebFramesManager(web::ContentWorld::kIsolatedWorld,
+                                    std::move(frames_manager));
 
+    // Set up the fake web frame to return a custom result after executing
+    // the heuristic Javascript callback.
+    auto main_frame = web::FakeWebFrame::CreateMainWebFrame(test_url_);
+    main_frame->set_browser_state(profile_.get());
+    web_frame_ = main_frame.get();
+    web_frames_manager_->AddWebFrame(std::move(main_frame));
+    web_frame()->set_call_java_script_function_callback(base::BindRepeating(^{
+      reader_mode_tab_helper()->HandleReaderModeHeuristicResult(
+          test_url_, ReaderModeHeuristicResult::kReaderModeEligible);
+    }));
+
+    // Set up the fake web frame to return a custom result after executing
+    // the DOM distiller Javascript.
+    dom_distiller::proto::DomDistillerOptions options;
+    std::u16string script = base::UTF8ToUTF16(
+        dom_distiller::GetDistillerScriptWithOptions(options));
+    web_frame()->AddResultForExecutedJs(&empty_distiller_result_, script);
+
+    // Configure the web state resources.
+    web::JavaScriptFeatureManager::FromBrowserState(profile_.get())
+        ->ConfigureFeatures({ReaderModeJavaScriptFeature::GetInstance()});
     CreateTabHelperForWebState(web_state_.get());
     ukm::InitializeSourceUrlRecorderForWebState(web_state());
   }
 
   void TearDown() override { test_ukm_recorder_.Purge(); }
-
-  void WaitForMainFrame() {
-    EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
-      web::WebFramesManager* frames_manager =
-          web_state()->GetPageWorldWebFramesManager();
-      return frames_manager->GetMainWebFrame() != nullptr;
-    }));
-  }
 
   void CreateTabHelperForWebState(web::WebState* web_state) {
     ReaderModeTabHelper::CreateForWebState(
@@ -85,10 +99,12 @@ class ReaderModeTabHelperTest : public PlatformTest {
   }
 
   void LoadWebpage() {
-    GURL test_url("https://test.url/");
-    web::test::LoadHtml(@"<html><body>Content</body></html>", test_url,
-                        web_state());
-    WaitForMainFrame();
+    web::FakeNavigationContext navigation_context;
+    navigation_context.SetHasCommitted(true);
+    web_state()->OnNavigationStarted(&navigation_context);
+    web_state()->LoadSimulatedRequest(test_url_,
+                                      @"<html><body>Content</body></html>");
+    web_state()->OnNavigationFinished(&navigation_context);
   }
 
   // Expects the recorded distiller latency UKM event entries to have
@@ -118,35 +134,23 @@ class ReaderModeTabHelperTest : public PlatformTest {
   }
 
  protected:
-  web::WebState* web_state() { return web_state_.get(); }
+  web::FakeWebState* web_state() { return web_state_.get(); }
+  web::FakeWebFrame* web_frame() { return web_frame_.get(); }
 
-  web::ScopedTestingWebClient web_client_;
+  raw_ptr<web::FakeWebFramesManager> web_frames_manager_;
+  raw_ptr<web::FakeWebFrame> web_frame_;
+
+  std::unique_ptr<web::FakeWebState> web_state_;
+  GURL test_url_;
+
   web::WebTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<TestProfileIOS> profile_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  std::unique_ptr<web::WebState> web_state_;
   base::HistogramTester histogram_tester_;
   ukm::TestAutoSetUkmRecorder test_ukm_recorder_;
+  base::Value empty_distiller_result_;
 };
-
-// Tests that the TabHelper that triggers Reader Mode heuristics records
-// metrics on page load.
-TEST_F(ReaderModeTabHelperTest, TriggerHeuristicOnPageLoaded) {
-  scoped_feature_list_.InitAndEnableFeatureWithParameters(
-      kEnableReaderModeDistillerHeuristicForMetrics,
-      {
-          {kReaderModeDistillerPageLoadProbabilityName, "1.0"},
-          {kReaderModeDistillerPageLoadDelayDurationStringName, "0"},
-      });
-
-  histogram_tester_.ExpectTotalCount(kReaderModeHeuristicResultHistogram, 0);
-  ExpectHeuristicResultEntriesCount(0u);
-  LoadWebpage();
-
-  histogram_tester_.ExpectTotalCount(kReaderModeHeuristicResultHistogram, 1);
-  ExpectHeuristicResultEntriesCount(1u);
-}
 
 // Tests that a misconfigured page load probability does not trigger a
 // heuristic.
@@ -161,6 +165,7 @@ TEST_F(ReaderModeTabHelperTest, TriggerHeuristicMisconfiguredProbabilityLow) {
   histogram_tester_.ExpectTotalCount(kReaderModeHeuristicResultHistogram, 0);
   ExpectHeuristicResultEntriesCount(0u);
   LoadWebpage();
+  task_environment_.RunUntilIdle();
 
   histogram_tester_.ExpectTotalCount(kReaderModeHeuristicResultHistogram, 0);
   ExpectHeuristicResultEntriesCount(0u);
@@ -179,6 +184,7 @@ TEST_F(ReaderModeTabHelperTest, TriggerHeuristicMisconfiguredProbabilityHigh) {
   histogram_tester_.ExpectTotalCount(kReaderModeHeuristicResultHistogram, 0);
   ExpectHeuristicResultEntriesCount(0u);
   LoadWebpage();
+  task_environment_.RunUntilIdle();
 
   histogram_tester_.ExpectTotalCount(kReaderModeHeuristicResultHistogram, 0);
   ExpectHeuristicResultEntriesCount(0u);
@@ -209,20 +215,16 @@ TEST_F(ReaderModeTabHelperTest, TriggerHeuristicSkippedOnNewNavigation) {
   task_environment_.RunUntilIdle();
   task_environment_.AdvanceClock(base::Seconds(20));
 
-  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^{
-    task_environment_.RunUntilIdle();
-    return histogram_tester_.GetAllSamples(kReaderModeHeuristicResultHistogram)
-                   .size() == 1 &&
-           test_ukm_recorder_
-                   .GetEntriesByName(
-                       IOS_ReaderMode_Heuristic_Result::kEntryName)
-                   .size() == 1u;
-  }));
+  task_environment_.RunUntilIdle();
+  ExpectHeuristicResultEntriesCount(1u);
+  histogram_tester_.ExpectTotalCount(kReaderModeHeuristicResultHistogram, 1);
 }
 
 // Tests that histograms related to distillation results are recorded after the
-// JavaScript execution.
-TEST_F(ReaderModeTabHelperTest, TriggerDistillerJs) {
+// JavaScript execution. For feature `EnableReaderMode`, the entry point must
+// be selected to turn on distillation.
+// TODO(crbug.com/409940117): Decouple the heuristic and distillation.
+TEST_F(ReaderModeTabHelperTest, TriggerDistillerOnPageLoaded) {
   scoped_feature_list_.InitWithFeaturesAndParameters(
       /*enabled_features=*/
       {{kEnableReaderModeDistillerHeuristicForMetrics,
@@ -233,40 +235,7 @@ TEST_F(ReaderModeTabHelperTest, TriggerDistillerJs) {
        {kEnableReaderModeDistillerForMetrics, {}}},
       /*disabled_features=*/{});
 
-  auto test_web_state = std::make_unique<web::FakeWebState>();
-  auto frames_manager = std::make_unique<web::FakeWebFramesManager>();
-  web::FakeWebFramesManager* frames_manager_ptr = frames_manager.get();
-  test_web_state->SetWebFramesManager(
-      std::make_unique<web::FakeWebFramesManager>());
-  test_web_state->SetWebFramesManager(web::ContentWorld::kIsolatedWorld,
-                                      std::move(frames_manager));
-  const GURL test_url = GURL("https://test.url/");
-  test_web_state->SetVisibleURL(test_url);
-
-  // Use a fake web frame to return a custom result after JS execution.
-  auto main_frame = web::FakeWebFrame::CreateMainWebFrame(test_url);
-  web::FakeWebFrame* main_frame_ptr = main_frame.get();
-  frames_manager_ptr->AddWebFrame(std::move(main_frame));
-
-  CreateTabHelperForWebState(test_web_state.get());
-  ukm::InitializeSourceUrlRecorderForWebState(test_web_state.get());
-
-  // Record committed navigation so the UKM URL recorder works.
-  web::FakeNavigationContext navigation_context;
-  navigation_context.SetHasCommitted(true);
-  test_web_state->OnNavigationStarted(&navigation_context);
-  test_web_state->OnNavigationFinished(&navigation_context);
-
-  // Recreate DOM distiller script with empty result on execution.
-  dom_distiller::proto::DomDistillerOptions options;
-  std::u16string script =
-      base::UTF8ToUTF16(dom_distiller::GetDistillerScriptWithOptions(options));
-  base::Value empty_value;
-  main_frame_ptr->AddResultForExecutedJs(&empty_value, script);
-
-  ReaderModeTabHelper::FromWebState(test_web_state.get())
-      ->HandleReaderModeHeuristicResult(
-          test_url, ReaderModeHeuristicResult::kReaderModeEligible);
+  LoadWebpage();
   task_environment_.RunUntilIdle();
 
   histogram_tester_.ExpectTotalCount(kReaderModeHeuristicResultHistogram, 1);
@@ -277,6 +246,29 @@ TEST_F(ReaderModeTabHelperTest, TriggerDistillerJs) {
   histogram_tester_.ExpectTotalCount(kReaderModeAmpClassificationHistogram, 1);
   ExpectDistillerLatencyEntriesCount(1u);
   ExpectDistillerResultEntriesCount(1u);
+}
+
+// Tests that distillation heuristic is canceled after a web state is destroyed.
+TEST_F(ReaderModeTabHelperTest, WebStateDestructionCancelsDistill) {
+  scoped_feature_list_.InitWithFeaturesAndParameters(
+      /*enabled_features=*/
+      {{kEnableReaderModeDistillerHeuristicForMetrics,
+        {
+            {kReaderModeDistillerPageLoadProbabilityName, "1.0"},
+            {kReaderModeDistillerPageLoadDelayDurationStringName, "10s"},
+        }},
+       {kEnableReaderModeDistillerForMetrics, {}}},
+      /*disabled_features=*/{});
+
+  LoadWebpage();
+  task_environment_.RunUntilIdle();
+
+  // Destroy the web state.
+  web_state_.reset();
+  task_environment_.AdvanceClock(base::Seconds(20));
+  task_environment_.RunUntilIdle();
+
+  histogram_tester_.ExpectTotalCount(kReaderModeHeuristicResultHistogram, 0);
 }
 
 // TODO(crbug.com/399378832): Add tests for individual heuristic values that
