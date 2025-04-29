@@ -162,7 +162,11 @@ std::u16string CollaborationGroupInfoBarDelegate::GetButtonLabel(
   switch (instant_message_.collaboration_event) {
     case CollaborationEvent::TAB_UPDATED:
     case CollaborationEvent::TAB_REMOVED:
+      return l10n_util::GetStringUTF16(
+          IDS_IOS_COLLABORATION_GROUP_TAB_REOPEN_PRIMARY_TOOLBAR_BUTTON);
     case CollaborationEvent::COLLABORATION_MEMBER_ADDED:
+      return l10n_util::GetStringUTF16(
+          IDS_IOS_COLLABORATION_GROUP_MEMBER_ADDED_PRIMARY_TOOLBAR_BUTTON);
     case CollaborationEvent::UNDEFINED:
     case CollaborationEvent::TAB_ADDED:
     case CollaborationEvent::TAB_GROUP_REMOVED:
