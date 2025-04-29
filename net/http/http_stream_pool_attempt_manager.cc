@@ -183,6 +183,29 @@ HttpStreamPool::AttemptManager::AttemptManager(Group* group, NetLog* net_log)
       net_log_.source());
   base::UmaHistogramTimes("Net.HttpStreamPool.TcpBasedAttemptDelay",
                           tcp_based_attempt_delay_);
+
+  if (UsingTls()) {
+    SSLConfig ssl_config;
+    ssl_config.privacy_mode = stream_key().privacy_mode();
+    ssl_config.disable_cert_verification_network_fetches =
+        stream_key().disable_cert_network_fetches();
+    ssl_config.early_data_enabled =
+        http_network_session()->params().enable_early_data;
+
+    ssl_config.alpn_protos = http_network_session()->GetAlpnProtos();
+    ssl_config.application_settings =
+        http_network_session()->GetApplicationSettings();
+    http_network_session()->http_server_properties()->MaybeForceHTTP11(
+        stream_key().destination(), stream_key().network_anonymization_key(),
+        &ssl_config);
+
+    ssl_config.ignore_certificate_errors =
+        http_network_session()->params().ignore_certificate_errors;
+    ssl_config.network_anonymization_key =
+        stream_key().network_anonymization_key();
+
+    base_ssl_config_.emplace(std::move(ssl_config));
+  }
 }
 
 HttpStreamPool::AttemptManager::~AttemptManager() {
@@ -264,7 +287,9 @@ void HttpStreamPool::AttemptManager::StartJob(Job* job) {
     return;
   }
 
-  allowed_bad_certs_ = job->allowed_bad_certs();
+  if (base_ssl_config_.has_value()) {
+    base_ssl_config_->allowed_bad_certs = job->allowed_bad_certs();
+  }
   quic_version_ = job->quic_version();
 
   StartInternal(job);
@@ -416,21 +441,13 @@ void HttpStreamPool::AttemptManager::SetInitialAttemptState() {
                                 *initial_attempt_state_);
 }
 
-int HttpStreamPool::AttemptManager::WaitForSSLConfigReady() {
-  if (ssl_config_.has_value()) {
-    return OK;
-  }
-  return ERR_IO_PENDING;
-}
-
 base::expected<SSLConfig, TlsStreamAttempt::GetSSLConfigError>
-HttpStreamPool::AttemptManager::GetSSLConfig(TcpBasedAttempt* attempt) {
-  CHECK(ssl_config_.has_value());
+HttpStreamPool::AttemptManager::GetSSLConfig(const IPEndPoint& ip_endpoint) {
   CHECK(service_endpoint_request_);
-  CHECK(!attempt->is_aborted());
+  CHECK(service_endpoint_request_->EndpointsCryptoReady());
 
   if (!IsEchEnabled()) {
-    return *ssl_config_;
+    return *base_ssl_config_;
   }
 
   const bool svcb_optional = IsSvcbOptional();
@@ -438,17 +455,15 @@ HttpStreamPool::AttemptManager::GetSSLConfig(TcpBasedAttempt* attempt) {
     if (!IsEndpointUsableForTcpBasedAttempt(endpoint, svcb_optional)) {
       continue;
     }
-    const std::vector<IPEndPoint>& ip_endpoints =
-        attempt->ip_endpoint().address().IsIPv4() ? endpoint.ipv4_endpoints
-                                                  : endpoint.ipv6_endpoints;
-    if (base::Contains(ip_endpoints, attempt->ip_endpoint())) {
-      SSLConfig ssl_config = *ssl_config_;
+    const std::vector<IPEndPoint>& ip_endpoints = ip_endpoint.address().IsIPv4()
+                                                      ? endpoint.ipv4_endpoints
+                                                      : endpoint.ipv6_endpoints;
+    if (base::Contains(ip_endpoints, ip_endpoint)) {
+      SSLConfig ssl_config = *base_ssl_config_;
       ssl_config.ech_config_list = endpoint.metadata.ech_config_list;
       return ssl_config;
     }
   }
-
-  attempt->set_is_aborted(true);
 
   return base::unexpected(TlsStreamAttempt::GetSSLConfigError::kAbort);
 }
@@ -787,8 +802,6 @@ base::Value::Dict HttpStreamPool::AttemptManager::GetInfoAsValue() const {
            static_cast<int>(tcp_based_attempt_delay_.InMilliseconds()));
   dict.Set("should_block_tcp_based_attempt", should_block_tcp_based_attempt_);
 
-  dict.Set("ssl_config_is_avaliable", ssl_config_.has_value());
-
   int ssl_config_num_waiting_callbacks = 0;
   if (!tcp_based_attempts_.empty()) {
     base::Value::List tcp_based_attempts;
@@ -900,11 +913,6 @@ void HttpStreamPool::AttemptManager::ProcessServiceEndpointChanges() {
       !service_endpoint_request_finished_) {
     return;
   }
-
-  // Try to calculate SSLConfig before checking existing SPDY/QUIC sessions,
-  // since `this` may make TCP attempts even after using an existing session
-  // as the session could become inactive later.
-  MaybeCalculateSSLConfig();
 
   if (CanUseExistingQuicSessionAfterEndpointChanges()) {
     CHECK(tcp_based_attempts_.empty());
@@ -1025,79 +1033,19 @@ bool HttpStreamPool::AttemptManager::
   return false;
 }
 
-void HttpStreamPool::AttemptManager::MaybeCalculateSSLConfig() {
-  if (!UsingTls() || ssl_config_.has_value()) {
-    return;
-  }
-
-  CHECK(service_endpoint_request_);
-  if (!service_endpoint_request_->EndpointsCryptoReady()) {
-    CHECK(!service_endpoint_request_finished_);
-    return;
-  }
-
-  SSLConfig ssl_config;
-
-  ssl_config.allowed_bad_certs = allowed_bad_certs_;
-  ssl_config.privacy_mode = stream_key().privacy_mode();
-  ssl_config.disable_cert_verification_network_fetches =
-      stream_key().disable_cert_network_fetches();
-  ssl_config.early_data_enabled =
-      http_network_session()->params().enable_early_data;
-
-  ssl_config.alpn_protos = http_network_session()->GetAlpnProtos();
-  ssl_config.application_settings =
-      http_network_session()->GetApplicationSettings();
-  http_network_session()->http_server_properties()->MaybeForceHTTP11(
-      stream_key().destination(), stream_key().network_anonymization_key(),
-      &ssl_config);
-
-  ssl_config.ignore_certificate_errors =
-      http_network_session()->params().ignore_certificate_errors;
-  ssl_config.network_anonymization_key =
-      stream_key().network_anonymization_key();
-
-  ssl_config_.emplace(std::move(ssl_config));
-}
-
 void HttpStreamPool::AttemptManager::MaybeNotifySSLConfigReady() {
-  if (!ssl_config_.has_value()) {
+  if (!service_endpoint_request_->EndpointsCryptoReady()) {
     return;
   }
 
-  if (ssl_config_ready_notified_) {
-    // Ensure that there is no in-flight stream attempts that are waiting for
-    // SSLConfig.
-    // TODO(crbug.com/383220402): Put this check behind DCHECK_ALWAYS_ON or
-    // remove this check once we have stabilized the implementation.
-    for (const auto& tcp_based_attempt : tcp_based_attempts_) {
-      CHECK(!tcp_based_attempt->IsWaitingSSLConfig());
-    }
-    return;
-  }
-  ssl_config_ready_notified_ = true;
-
-  // Restart slow timer for in-flight attempts that have already completed
-  // TCP handshakes. Also collect callbacks from in-flight attempts to invoke
-  // these callbacks later. Transferring callback ownership is important to
-  // avoid accessing in-flight attempts that could be destroyed while invoking
-  // callbacks.
+  // Collect callbacks from TCP based attempts and invoke them later.
+  // Transferring callback ownership is important to avoid accessing TCP based
+  // attempts that could be destroyed while invoking callbacks.
   std::vector<CompletionOnceCallback> callbacks;
-  for (auto& tcp_based_attempt : tcp_based_attempts_) {
-    if (!tcp_based_attempt->is_slow() &&
-        !tcp_based_attempt->slow_timer().IsRunning()) {
-      // TODO(crbug.com/346835898): Should we use a different delay other than
-      // the connection attempt delay?
-      // base::Unretained() is safe here because `this` owns the
-      // `tcp_based_attempt` and `slow_timer`.
-      tcp_based_attempt->slow_timer().Start(
-          FROM_HERE, HttpStreamPool::GetConnectionAttemptDelay(),
-          base::BindOnce(&AttemptManager::OnTcpBasedAttemptSlow,
-                         base::Unretained(this), tcp_based_attempt.get()));
-    }
-
-    if (tcp_based_attempt->IsWaitingSSLConfig()) {
-      callbacks.emplace_back(tcp_based_attempt->TakeSSLConfigWaitingCallback());
+  for (const auto& attempt : tcp_based_attempts_) {
+    auto callback = attempt->MaybeTakeSSLConfigWaitingCallback();
+    if (callback.has_value()) {
+      callbacks.emplace_back(std::move(*callback));
     }
   }
 

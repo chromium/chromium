@@ -3281,11 +3281,6 @@ TEST_F(HttpStreamPoolAttemptManagerTest,
           ServiceEndpointBuilder().add_ip_endpoint(kCommonEndPoint).endpoint())
       .CallOnServiceEndpointsUpdated()
       .CallOnServiceEndpointRequestFinished(OK);
-  // SSLConfig should be calculated even when an existing session is used.
-  ASSERT_TRUE(pool()
-                  .GetGroupForTesting(requester_b.GetStreamKey())
-                  ->GetAttemptManagerForTesting()
-                  ->HasSSLConfigForTesting());
 
   requester_b.WaitForResult();
 

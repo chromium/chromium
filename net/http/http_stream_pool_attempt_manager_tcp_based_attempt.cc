@@ -174,24 +174,46 @@ void HttpStreamPool::AttemptManager::TcpBasedAttempt::SetCancelReason(
 
 int HttpStreamPool::AttemptManager::TcpBasedAttempt::WaitForSSLConfigReady(
     CompletionOnceCallback callback) {
-  int rv = manager_->WaitForSSLConfigReady();
-  if (rv == ERR_IO_PENDING) {
-    ssl_config_wait_start_time_ = base::TimeTicks::Now();
-    ssl_config_waiting_callback_ = std::move(callback);
+  if (manager_->service_endpoint_request()->EndpointsCryptoReady()) {
+    return OK;
   }
-  return rv;
+
+  ssl_config_wait_start_time_ = base::TimeTicks::Now();
+  ssl_config_waiting_callback_ = std::move(callback);
+  return ERR_IO_PENDING;
 }
 
 base::expected<SSLConfig, TlsStreamAttempt::GetSSLConfigError>
 HttpStreamPool::AttemptManager::TcpBasedAttempt::GetSSLConfig() {
-  return manager_->GetSSLConfig(this);
+  base::expected<SSLConfig, TlsStreamAttempt::GetSSLConfigError> result =
+      manager_->GetSSLConfig(ip_endpoint());
+  if (!result.has_value()) {
+    is_aborted_ = true;
+  }
+
+  return result;
 }
 
-CompletionOnceCallback HttpStreamPool::AttemptManager::TcpBasedAttempt::
-    TakeSSLConfigWaitingCallback() {
+std::optional<CompletionOnceCallback> HttpStreamPool::AttemptManager::
+    TcpBasedAttempt::MaybeTakeSSLConfigWaitingCallback() {
+  if (ssl_config_waiting_callback_.is_null()) {
+    return std::nullopt;
+  }
+
   CHECK(!ssl_config_wait_start_time_.is_null());
   base::UmaHistogramTimes("Net.HttpStreamPool.TcpBasedAttemptSSLConfigWaitTime",
                           base::TimeTicks::Now() - ssl_config_wait_start_time_);
+
+  if (!is_slow_ && !slow_timer_.IsRunning()) {
+    // Resume the slow timer as `attempt_` will start a TLS handshake.
+    // TODO(crbug.com/346835898): Should we use a different delay other than
+    // the connection attempt delay?
+    // base::Unretained() is safe here because `manager_` owns `this` and
+    // `slow_timer_`.
+    slow_timer_.Start(FROM_HERE, HttpStreamPool::GetConnectionAttemptDelay(),
+                      base::BindOnce(&AttemptManager::OnTcpBasedAttemptSlow,
+                                     base::Unretained(manager_), this));
+  }
 
   return std::move(ssl_config_waiting_callback_);
 }

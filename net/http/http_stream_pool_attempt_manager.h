@@ -197,8 +197,6 @@ class HttpStreamPool::AttemptManager
     return ip_endpoint_states_;
   }
 
-  bool HasSSLConfigForTesting() const { return ssl_config_.has_value(); }
-
  private:
   FRIEND_TEST_ALL_PREFIXES(HttpStreamPoolAttemptManagerTest,
                            GetIPEndPointToAttempt);
@@ -290,13 +288,11 @@ class HttpStreamPool::AttemptManager
     return service_endpoint_request_finished_;
   }
 
-  int WaitForSSLConfigReady();
-
   void SetInitialAttemptState();
   InitialAttemptState CalculateInitialAttemptState();
 
   base::expected<SSLConfig, TlsStreamAttempt::GetSSLConfigError> GetSSLConfig(
-      TcpBasedAttempt* attempt);
+      const IPEndPoint& endpoint);
 
   bool UsingTls() const;
 
@@ -319,12 +315,8 @@ class HttpStreamPool::AttemptManager
   bool CanUseExistingQuicSessionAfterEndpointChanges();
   bool CanUseExistingSpdySessionAfterEndpointChanges();
 
-  // Calculate SSLConfig if it's not calculated yet and `this` has received
-  // enough information to calculate it.
-  void MaybeCalculateSSLConfig();
-
-  // When SSLConfig is ready and the notification has not yet been sent,
-  // notifies in-flight TCP based attempts that SSLConfig is ready.
+  // If `this` is ready to start cryptographic handshakes, notifies TCP based
+  // attempts that SSLConfigs are ready.
   void MaybeNotifySSLConfigReady();
 
   // Attempts QUIC sessions if QUIC can be used and `this` is ready to start
@@ -576,14 +568,9 @@ class HttpStreamPool::AttemptManager
   // Used to notify jobs.
   scoped_refptr<SSLCertRequestInfo> client_auth_cert_info_;
 
-  // Allowed bad certificates from the newest job.
-  std::vector<SSLConfig::CertAndStatus> allowed_bad_certs_;
-  // SSLConfig for all TLS connection attempts. Calculated after the service
-  // endpoint request is ready to proceed cryptographic handshakes.
-  // TODO(crbug.com/40812426): We need to have separate SSLConfigs when we
-  // support multiple HTTPS RR that have different service endpoints.
-  std::optional<SSLConfig> ssl_config_;
-  bool ssl_config_ready_notified_ = false;
+  // Base SSLConfig for TCP based attempts, Allowed bad certificates are set
+  // from the newest job.
+  std::optional<SSLConfig> base_ssl_config_;
 
   std::set<std::unique_ptr<TcpBasedAttempt>, base::UniquePtrComparator>
       tcp_based_attempts_;
