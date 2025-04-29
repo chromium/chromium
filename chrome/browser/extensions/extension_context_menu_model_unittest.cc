@@ -191,9 +191,9 @@ class MenuBuilder {
   int cur_id_;
 };
 
-// Returns the number of extension menu items that show up in |model|.
+// Returns the number of extension menu items that show up in `model`.
 // For this test, all the extension items have same label
-// |kTestExtensionItemLabel|.
+// `kTestExtensionItemLabel`.
 int CountExtensionItems(const ExtensionContextMenuModel& model) {
   std::u16string expected_label = base::ASCIIToUTF16(kTestExtensionItemLabel);
   int num_items_found = 0;
@@ -203,9 +203,9 @@ int CountExtensionItems(const ExtensionContextMenuModel& model) {
     int command_id = model.GetCommandIdAt(i);
     // If the command id is not visible, it should not be counted.
     if (model.IsCommandIdVisible(command_id)) {
-      // The last character of |expected_label| can be the item number (e.g
+      // The last character of `expected_label` can be the item number (e.g
       // "test-ext-item" -> "test-ext-item1"). In checking that extensions items
-      // have the same label |kTestExtensionItemLabel|, the specific item number
+      // have the same label `kTestExtensionItemLabel`, the specific item number
       // is ignored, [0, expected_label.size).
       if (base::StartsWith(actual_label, expected_label,
                            base::CompareCase::SENSITIVE))
@@ -221,7 +221,7 @@ int CountExtensionItems(const ExtensionContextMenuModel& model) {
 }
 
 // Checks that the model has the extension items in the exact order specified by
-// |item_number|.
+// `item_number`.
 void VerifyItems(const ExtensionContextMenuModel& model,
                  std::vector<std::string> item_number) {
   size_t j = 0;
@@ -255,7 +255,7 @@ class ExtensionContextMenuModelTest : public ExtensionServiceTestBase {
       const ExtensionContextMenuModelTest&) = delete;
 
   // Build an extension to pass to the menu constructor, with the action
-  // specified by |action_key|.
+  // specified by `action_key`.
   const Extension* AddExtension(const std::string& name,
                                 const char* action_key,
                                 ManifestLocation location);
@@ -271,7 +271,7 @@ class ExtensionContextMenuModelTest : public ExtensionServiceTestBase {
 
   MenuManager* CreateMenuManager();
 
-  // Adds a new tab with |url| to the tab strip, and returns the WebContents
+  // Adds a new tab with `url` to the tab strip, and returns the WebContents
   // associated with it.
   content::WebContents* AddTab(const GURL& url);
 
@@ -279,14 +279,14 @@ class ExtensionContextMenuModelTest : public ExtensionServiceTestBase {
   CommandState GetCommandState(const ExtensionContextMenuModel& menu,
                                int command) const;
 
-  // Returns the current state for the specified page access |command|.
+  // Returns the current state for the specified page access `command`.
   CommandState GetPageAccessCommandState(const ExtensionContextMenuModel& menu,
                                          int command) const;
 
-  // Returns true if the |menu| has the page access submenu at all.
+  // Returns true if the `menu` has the page access submenu at all.
   bool HasPageAccessSubmenu(const ExtensionContextMenuModel& menu) const;
 
-  // Returns true if the |menu| has a valid entry for the "can't access page"
+  // Returns true if the `menu` has a valid entry for the "can't access page"
   // item.
   bool HasCantAccessPageEntry(const ExtensionContextMenuModel& menu) const;
 
@@ -499,7 +499,7 @@ TEST_F(ExtensionContextMenuModelTest, RequiredInstallationsDisablesItems) {
     EXPECT_EQ(GetCommandState(menu, kPolicyInstalled), CommandState::kDisabled);
   }
 
-  // Don't leave |policy_provider| dangling.
+  // Don't leave `policy_provider` dangling.
   system->management_policy()->UnregisterProvider(&policy_provider);
 }
 
