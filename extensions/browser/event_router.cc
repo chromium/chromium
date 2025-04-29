@@ -383,7 +383,6 @@ void EventRouter::BindForRenderer(
 
 void EventRouter::SwapReceiverForTesting(int render_process_id,
                                          mojom::EventRouter* new_impl) {
-  CHECK_IS_TEST();
   std::map<mojo::ReceiverId, int*> receiver_contexts =
       receivers_.GetAllContexts();
 

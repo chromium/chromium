@@ -559,7 +559,6 @@ void RendererStartupHelper::BindForRenderer(
 }
 
 void RendererStartupHelper::FlushAllForTesting() {
-  CHECK_IS_TEST();
   for (auto& it : process_mojo_map_) {
     it.second.FlushForTesting();  // IN-TEST
   }
