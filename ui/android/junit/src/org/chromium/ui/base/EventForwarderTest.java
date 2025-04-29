@@ -11,6 +11,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -159,7 +160,8 @@ public class EventForwarderTest {
                         0,
                         dragEvent.getButtonState(),
                         dragEvent.getMetaState(),
-                        false);
+                        false,
+                        null);
     }
 
     @Test
@@ -200,7 +202,8 @@ public class EventForwarderTest {
                         anyInt(),
                         anyInt(),
                         anyInt(),
-                        anyBoolean());
+                        anyBoolean(),
+                        nullable(Boolean.class));
         verify(mNativeMock, never())
                 .onMouseEvent(
                         anyLong(),
