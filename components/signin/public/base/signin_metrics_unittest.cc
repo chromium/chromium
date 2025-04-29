@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -251,6 +252,18 @@ TEST_F(SigninMetricsTest, RecordSigninImpressionUserAction) {
     EXPECT_EQ(1, user_action_tester.GetActionCount(
                      "Signin_Impression_From" + GetAccessPointDescription(ap)));
   }
+}
+
+TEST(LogSyncOptInOfferedTest, RecordsHistogram) {
+  base::HistogramTester histogram_tester;
+  const AccessPoint access_point =
+      AccessPoint::kHistorySyncOptinExpansionPillOnInactivity;
+  LogSyncOptInOffered(access_point);
+  LogSyncOptInOffered(access_point);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SyncOptIn.Offered",
+      AccessPoint::kHistorySyncOptinExpansionPillOnInactivity,
+      /*expected_bucket_count=*/2);
 }
 
 }  // namespace

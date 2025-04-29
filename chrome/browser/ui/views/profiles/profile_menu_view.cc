@@ -641,6 +641,10 @@ ProfileMenuView::GetIdentitySectionParams(const ProfileAttributesEntry& entry) {
             IDS_PROFILE_MENU_SIGNIN_PROMO_DESCRIPTION);
         params.button_text =
             l10n_util::GetStringUTF16(IDS_PROFILE_MENU_SIGNIN_PROMO_BUTTON);
+        signin_metrics::LogSignInOffered(
+            explicit_signin_access_point_.value_or(access_point),
+            signin_metrics::PromoAction::
+                PROMO_ACTION_NEW_ACCOUNT_NO_EXISTING_ACCOUNT);
       }
       break;
     case signin_util::SignedInState::kWebOnlySignedIn: {
@@ -678,12 +682,17 @@ ProfileMenuView::GetIdentitySectionParams(const ProfileAttributesEntry& entry) {
               account_image,
               /*width=*/kIdentityImageSizeForButton,
               /*height=*/kIdentityImageSizeForButton, profiles::SHAPE_CIRCLE));
+      signin_metrics::LogSignInOffered(
+          explicit_signin_access_point_.value_or(access_point),
+          signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT);
       break;
     }
     case signin_util::SignedInState::kSignedIn:
       params.subtitle = l10n_util::GetStringUTF16(IDS_PROFILES_DICE_SYNC_PROMO);
       params.button_text =
           l10n_util::GetStringUTF16(IDS_PROFILES_DICE_SIGNIN_BUTTON);
+      signin_metrics::LogSyncOptInOffered(
+          explicit_signin_access_point_.value_or(access_point));
       break;
     case signin_util::SignedInState::kSyncing:
       // No button.
@@ -704,12 +713,10 @@ ProfileMenuView::GetIdentitySectionParams(const ProfileAttributesEntry& entry) {
   }
 
   if (!params.button_text.empty()) {
-    if (explicit_signin_access_point_.has_value()) {
-      access_point = *explicit_signin_access_point_;
-    }
     params.button_action = base::BindRepeating(
         &ProfileMenuView::OnSigninButtonClicked, base::Unretained(this),
-        account_info_for_signin_action, button_type, access_point);
+        account_info_for_signin_action, button_type,
+        explicit_signin_access_point_.value_or(access_point));
   }
 
   return params;

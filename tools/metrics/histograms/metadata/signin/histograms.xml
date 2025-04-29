@@ -3026,6 +3026,19 @@ kept as long as profile signout is possible -->
   </summary>
 </histogram>
 
+<histogram name="Signin.SyncOptIn.Offered" enum="SigninAccessPoint"
+    expires_after="2026-01-12">
+  <owner>ernn@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records that the sync opt-in was offered to the user and logs the original
+    access point associated with this event. Recorded whenever the sync opt-in
+    promo is shown (e.g. in the profile menu).
+
+    Note: This is not recorded for every access point yet.
+  </summary>
+</histogram>
+
 <histogram name="Signin.SyncOptIn.OpenedSyncSettings" enum="SigninAccessPoint"
     expires_after="2025-07-13">
   <owner>bsazonov@chromium.org</owner>
