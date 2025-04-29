@@ -98,17 +98,14 @@
 #include "components/chromeos_camera/mojo_jpeg_encode_accelerator_service.h"
 #include "components/chromeos_camera/mojo_mjpeg_decode_accelerator_service.h"
 
-#if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+#if BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
 #include "chromeos/ash/experiences/arc/video_accelerator/gpu_arc_video_decode_accelerator.h"
-#if BUILDFLAG(USE_VAAPI) || BUILDFLAG(USE_V4L2_CODEC)
 #include "chromeos/ash/experiences/arc/video_accelerator/gpu_arc_video_decoder.h"
-#endif
 #include "chromeos/ash/experiences/arc/video_accelerator/gpu_arc_video_encode_accelerator.h"
 #include "chromeos/ash/experiences/arc/video_accelerator/gpu_arc_video_protected_buffer_allocator.h"
 #include "chromeos/ash/experiences/arc/video_accelerator/protected_buffer_manager.h"
 #include "chromeos/ash/experiences/arc/video_accelerator/protected_buffer_manager_proxy.h"
-#endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
-
+#endif  // BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN)
@@ -349,10 +346,10 @@ GpuServiceImpl::GpuServiceImpl(
           features::kClearGrShaderDiskCacheOnInvalidPrefix)) {
   DCHECK(!io_runner_->BelongsToCurrentThread());
 
-#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
   protected_buffer_manager_ = new arc::ProtectedBufferManager();
 #endif  // BUILDFLAG(IS_CHROMEOS) &&
-        // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+        // BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
 
 #if BUILDFLAG(ENABLE_VULKAN)
   if (vulkan_implementation_) {
@@ -756,7 +753,7 @@ void GpuServiceImpl::RecordLogMessage(int severity,
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
-#if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+#if BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
 void GpuServiceImpl::CreateArcVideoDecodeAccelerator(
     mojo::PendingReceiver<arc::mojom::VideoDecodeAccelerator> vda_receiver) {
   DCHECK(io_runner_->BelongsToCurrentThread());
@@ -858,7 +855,7 @@ void GpuServiceImpl::CreateArcProtectedBufferManagerOnMainThread(
           protected_buffer_manager_),
       std::move(pbm_receiver));
 }
-#endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+#endif  // BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
 
 void GpuServiceImpl::CreateJpegDecodeAccelerator(
     mojo::PendingReceiver<chromeos_camera::mojom::MjpegDecodeAccelerator>

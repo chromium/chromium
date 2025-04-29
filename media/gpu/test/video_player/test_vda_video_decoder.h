@@ -111,11 +111,11 @@ class TestVDAVideoDecoder : public media::VideoDecoder,
   // Frame renderer used to manage GL context.
   const raw_ptr<FrameRendererDummy> frame_renderer_;
 
-#if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+#if BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
   // Whether the decoder output buffers should be allocated with a linear
   // layout.
   const bool linear_output_;
-#endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+#endif  // BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
 
   // Map of video frames the decoder uses as output, keyed on picture buffer id.
   std::map<int32_t, scoped_refptr<VideoFrame>> video_frames_;

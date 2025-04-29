@@ -71,9 +71,9 @@ buildflag_header("media_buildflags") {
   ]
 
   if (use_vaapi || use_v4l2_codec) {
-    flags += [ "USE_CHROMEOS_MEDIA_ACCELERATION=true" ]
+    flags += [ "USE_LINUX_VIDEO_ACCELERATION=true" ]
   } else {
-    flags += [ "USE_CHROMEOS_MEDIA_ACCELERATION=false" ]
+    flags += [ "USE_LINUX_VIDEO_ACCELERATION=false" ]
   }
 
   if (enable_library_cdms) {

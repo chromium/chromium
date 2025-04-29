@@ -38,9 +38,9 @@
 #include "media/media_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+#if BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
 #include "media/gpu/chromeos/video_decoder_pipeline.h"
-#endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+#endif  // BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
 
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 #include "media/gpu/chromeos/platform_video_frame_pool.h"
@@ -122,12 +122,12 @@ class VideoDecoderTest : public ::testing::Test {
 
 // Set the frame rate for the decoder. This is required for the
 // VideoDecoderPipeline to work.
-#if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+#if BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
     base::CommandLine& command_line = *base::CommandLine::ForCurrentProcess();
     command_line.AppendSwitchASCII(
         switches::kHardwareVideoDecodeFrameRate,
         base::NumberToString(g_env->Video()->FrameRate()));
-#endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+#endif  // BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
 
     config.implementation = g_env->GetDecoderImplementation();
     config.linear_output = g_env->ShouldOutputLinearBuffers();
@@ -275,7 +275,7 @@ class VideoDecoderTest : public ::testing::Test {
 
 }  // namespace
 
-#if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+#if BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
 TEST_F(VideoDecoderTest, GetSupportedConfigs) {
   if (g_env->GetDecoderImplementation() != DecoderImplementation::kVD) {
     GTEST_SKIP() << "Re-initialization is only supported by the "
@@ -302,7 +302,7 @@ TEST_F(VideoDecoderTest, GetSupportedConfigs) {
   // Every hardware video decoder in ChromeOS supports some kind of H.264.
   EXPECT_TRUE(contains_h264);
 }
-#endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+#endif  // BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
 
 // Test initializing the video decoder for the specified video. Initialization
 // will be successful if the video decoder is capable of decoding the test

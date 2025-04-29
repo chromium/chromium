@@ -23,9 +23,9 @@
 #include "media/media_buildflags.h"
 #include "ui/gfx/buffer_format_util.h"
 
-#if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+#if BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
-#endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+#endif  // BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
 
 namespace arc {
 

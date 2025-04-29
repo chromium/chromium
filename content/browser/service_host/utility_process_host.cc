@@ -388,7 +388,7 @@ bool UtilityProcessHost::StartProcess() {
         switches::kSchedulerBoostUrgent,
 #endif
         switches::kFakeBackgroundBlurTogglePeriod,
-#if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+#if BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
         switches::kHardwareVideoDecodeFrameRate,
 #endif
 #if BUILDFLAG(IS_OZONE)

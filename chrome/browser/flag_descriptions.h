@@ -4622,7 +4622,7 @@ extern const char kSingleCaCertVerificationPhase2Name[];
 extern const char kSingleCaCertVerificationPhase2Description[];
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
 extern const char kChromeOSHWVBREncodingName[];
 extern const char kChromeOSHWVBREncodingDescription[];
 #if defined(ARCH_CPU_ARM_FAMILY)
@@ -4641,7 +4641,7 @@ extern const char kEnableArmHwdrmName[];
 extern const char kEnableArmHwdrmDescription[];
 #endif  // BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
 #endif  // defined(ARCH_CPU_ARM_FAMILY
-#endif  // BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+#endif  // BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
 
 // Linux ---------------------------------------------------------------------
 

@@ -157,7 +157,7 @@ void VideoFrameValidator::ProcessVideoFrameTask(
 
   scoped_refptr<const VideoFrame> frame = video_frame;
   // If this is a DMABuf-backed memory frame we need to map it before accessing.
-#if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+#if BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
   if (frame->storage_type() == VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
     // TODO(andrescj): This is a workaround. ClientNativePixmapFactoryDmabuf
     // creates ClientNativePixmapOpaque for SCANOUT_VDA_WRITE buffers which
@@ -188,7 +188,7 @@ void VideoFrameValidator::ProcessVideoFrameTask(
       return;
     }
   }
-#endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+#endif  // BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
 
   ASSERT_TRUE(frame->IsMappable());
 

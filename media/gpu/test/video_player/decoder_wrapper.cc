@@ -28,10 +28,10 @@
 #include "media/media_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+#if BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
 #include "media/gpu/chromeos/platform_video_frame_pool.h"
 #include "media/gpu/chromeos/video_decoder_pipeline.h"
-#endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+#endif  // BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
 
 namespace media {
 namespace test {
@@ -163,13 +163,13 @@ void DecoderWrapper::CreateDecoderTask(base::WaitableEvent* done) {
 
   switch (decoder_wrapper_config_.implementation) {
     case DecoderImplementation::kVD:
-#if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+#if BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
       decoder_ = VideoDecoderPipeline::CreateForTesting(
           base::SingleThreadTaskRunner::GetCurrentDefault(),
           GmbVideoFrameConverter::CreateForTesting(),
           std::make_unique<NullMediaLog>(),
           decoder_wrapper_config_.ignore_resolution_changes_to_smaller_vp9);
-#endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+#endif  // BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
       break;
     case DecoderImplementation::kVDA:
     case DecoderImplementation::kVDVDA:

@@ -7858,7 +7858,7 @@ const char kWebPrintingApiDescription[] =
     "https://github.com/WICG/web-printing for details.";
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
 const char kChromeOSHWVBREncodingName[] =
     "ChromeOS Hardware Variable Bitrate Encoding";
 const char kChromeOSHWVBREncodingDescription[] =
@@ -7893,7 +7893,7 @@ const char kEnableArmHwdrmName[] = "Enable ARM HW DRM";
 const char kEnableArmHwdrmDescription[] = "Enable HW backed Widevine L1 DRM";
 #endif  // BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
 #endif  // defined(ARCH_CPU_ARM_FAMILY)
-#endif  // BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+#endif  // BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
 
 // Linux -----------------------------------------------------------------------
 

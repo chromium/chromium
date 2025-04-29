@@ -321,7 +321,7 @@ static const char* const kSwitchNames[] = {
     ash::switches::kRevenBranding,
     switches::kSchedulerBoostUrgent,
 #endif
-#if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+#if BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
     switches::kHardwareVideoDecodeFrameRate,
 #endif
 #if BUILDFLAG(WEBNN_USE_TFLITE)

@@ -72,7 +72,7 @@ class TestGpuService : public viz::mojom::GpuService {
       const gpu::GpuDiskCacheHandle& handle) override {}
   void CloseChannel(int32_t client_id) override {}
 #if BUILDFLAG(IS_CHROMEOS)
-#if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+#if BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
   void CreateArcVideoDecodeAccelerator(
       mojo::PendingReceiver<arc::mojom::VideoDecodeAccelerator> vda_receiver)
       override {}
@@ -87,7 +87,7 @@ class TestGpuService : public viz::mojom::GpuService {
   void CreateArcProtectedBufferManager(
       mojo::PendingReceiver<arc::mojom::ProtectedBufferManager> pbm_receiver)
       override {}
-#endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+#endif  // BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
   void CreateJpegDecodeAccelerator(
       mojo::PendingReceiver<chromeos_camera::mojom::MjpegDecodeAccelerator>
           jda_receiver) override {}

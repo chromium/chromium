@@ -25,11 +25,13 @@
 #include "media/gpu/test/video_player/frame_renderer_dummy.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+#if BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
+// These includes are used for non-ChromeOS platforms as well.
+// TODO(crbug.com/414455717): Consider renaming them.
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
 #include "media/gpu/chromeos/vd_video_decode_accelerator.h"
 #include "media/gpu/chromeos/video_decoder_pipeline.h"
-#endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+#endif
 
 namespace media {
 namespace test {
@@ -49,9 +51,10 @@ TestVDAVideoDecoder::TestVDAVideoDecoder(
       on_provide_picture_buffers_cb_(std::move(on_provide_picture_buffers_cb)),
       target_color_space_(target_color_space),
       frame_renderer_(frame_renderer),
-#if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+// TODO(crbug.com/414430336): Consider restricting to IS_CHROMEOS.
+#if BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
       linear_output_(linear_output),
-#endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+#endif  // BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
       decode_start_timestamps_(kTimestampCacheSize) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(vda_wrapper_sequence_checker_);
 
@@ -101,13 +104,14 @@ void TestVDAVideoDecoder::Initialize(const VideoDecoderConfig& config,
   vda_config.hdr_metadata = config.hdr_metadata();
 
   if (use_vd_vda_) {
-#if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+// TODO(crbug.com/414430336): Consider restricting to IS_CHROMEOS.
+#if BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
     DVLOGF(2) << "Use VdVideoDecodeAccelerator";
     vda_config.is_deferred_initialization_allowed = true;
     decoder_ = media::VdVideoDecodeAccelerator::Create(
         base::BindRepeating(&media::VideoDecoderPipeline::CreateForARC), this,
         vda_config, base::SequencedTaskRunner::GetCurrentDefault());
-#endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+#endif  // BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
   } else {
     DVLOGF(2) << "Use original VDA";
     decoder_ = GpuVideoDecodeAcceleratorFactory::CreateVDA(
@@ -200,7 +204,8 @@ void TestVDAVideoDecoder::ProvidePictureBuffersWithVisibleRect(
 
   decoder_->AssignPictureBuffers(picture_buffers);
 
-#if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+// TODO(crbug.com/414430336): Consider restricting to IS_CHROMEOS.
+#if BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
   // Create a video frame for each of the picture buffers and provide memory
   // handles to the video frame's data to the decoder.
   for (const PictureBuffer& picture_buffer : picture_buffers) {
@@ -222,7 +227,7 @@ void TestVDAVideoDecoder::ProvidePictureBuffersWithVisibleRect(
   }
 #else
   FAIL();
-#endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+#endif  // BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
 }
 
 void TestVDAVideoDecoder::DismissPictureBuffer(int32_t picture_buffer_id) {

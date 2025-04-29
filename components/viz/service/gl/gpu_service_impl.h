@@ -183,7 +183,7 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl
       const gpu::GpuDiskCacheHandle& handle) override;
   void CloseChannel(int32_t client_id) override;
 #if BUILDFLAG(IS_CHROMEOS)
-#if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+#if BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
   void CreateArcVideoDecodeAccelerator(
       mojo::PendingReceiver<arc::mojom::VideoDecodeAccelerator> vda_receiver)
       override;
@@ -198,7 +198,7 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl
   void CreateArcProtectedBufferManager(
       mojo::PendingReceiver<arc::mojom::ProtectedBufferManager> pbm_receiver)
       override;
-#endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+#endif  // BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
   void CreateJpegDecodeAccelerator(
       mojo::PendingReceiver<chromeos_camera::mojom::MjpegDecodeAccelerator>
           jda_receiver) override;
@@ -454,7 +454,7 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl
                         const std::string& header,
                         const std::string& message);
 
-#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
   void CreateArcVideoDecodeAcceleratorOnMainThread(
       mojo::PendingReceiver<arc::mojom::VideoDecodeAccelerator> vda_receiver);
   void CreateArcVideoDecoderOnMainThread(
@@ -467,7 +467,7 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl
   void CreateArcProtectedBufferManagerOnMainThread(
       mojo::PendingReceiver<arc::mojom::ProtectedBufferManager> pbm_receiver);
 #endif  // BUILDFLAG(IS_CHROMEOS) &&
-        // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+        // BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
 
 #if BUILDFLAG(IS_WIN)
   void RequestDXGIInfoOnMainThread(RequestDXGIInfoCallback callback);
@@ -611,10 +611,10 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl
   gpu::GpuMemoryBufferConfigurationSet supported_gmb_configurations_;
   bool supported_gmb_configurations_inited_ = false;
 
-#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
   scoped_refptr<arc::ProtectedBufferManager> protected_buffer_manager_;
 #endif  // BUILDFLAG(IS_CHROMEOS) &&
-        // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+        // BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
 
   VisibilityChangedCallback visibility_changed_callback_;
 
