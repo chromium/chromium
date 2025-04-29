@@ -3342,6 +3342,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_NOTIFICATION_PROVISIONALLY_UNSUBSCRIBED_BODY" desc="Body text of a system notification informing the user that they have successfully unsubscribed from receiving notifications from a web site.">
         You'll no longer receive notifications from <ph name="DOMAIN">%1$s<ex>example.com</ex></ph>.
       </message>
+      <message name="IDS_NOTIFICATION_PROVISIONALLY_UNSUBSCRIBED_BODY_NEW" desc="Body text of a system notification informing the user that they can report their notification contents to Google.">
+        Help improve spam protection by sending notification content and the site's URL to Google.
+      </message>
       <message name="IDS_NOTIFICATION_UNDO_UNSUBSCRIBE_BUTTON" desc="Label for an action button on a system notification informing the user that they have successfully unsubscribed from receiving notifications from a web site. Clicking the button allows the user to undo unsubscribing, and continue receiving notifications instead.">
         Undo
       </message>
@@ -3362,6 +3365,12 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       </message>
       <message name="IDS_NOTIFICATION_ALWAYS_ALLOW_BUTTON" desc="Text of a button shown on original notifications that were displayed after the warning notifications. Clicking the button allows the user to always receive notifications from their origin without warning notifications.">
         Always allow
+      </message>
+      <message name="IDS_NOTIFICATION_REPORT_SAFE_BUTTON" desc="Text of a button shown on always allow confirmation notification, allowing the user to report notification contents to Google signaling that it contains safe contents.">
+        Report as not spam
+      </message>
+      <message name="IDS_NOTIFICATION_REPORT_SPAM_BUTTON" desc="Text of a button shown on unsubscribe confirmation notification, allowing the user to report notification contents to Google signaling that it contains spam contents.">
+        Report spam
       </message>
 
       <!-- Download UI -->

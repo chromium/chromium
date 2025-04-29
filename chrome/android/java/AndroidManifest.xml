@@ -1002,6 +1002,9 @@ by a child template that "extends" this file.
                 <action android:name="org.chromium.chrome.browser.notifications.PRE_UNSUBSCRIBE" />
                 <action android:name="org.chromium.chrome.browser.notifications.SHOW_ORIGINAL_NOTIFICATION" />
                 <action android:name="org.chromium.chrome.browser.notifications.UNDO_UNSUBSCRIBE" />
+                <action android:name="org.chromium.chrome.browser.notifications.REPORT_AS_SAFE" />
+                <action android:name="org.chromium.chrome.browser.notifications.REPORT_WARNED_NOTIFICATION_AS_SPAM" />
+                <action android:name="org.chromium.chrome.browser.notifications.REPORT_UNWARNED_NOTIFICATION_AS_SPAM" />
             </intent-filter>
         </receiver>
 

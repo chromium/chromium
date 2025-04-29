@@ -24,6 +24,12 @@ public class NotificationConstants {
             "org.chromium.chrome.browser.notifications.SHOW_ORIGINAL_NOTIFICATION";
     static final String ACTION_ALWAYS_ALLOW =
             "org.chromium.chrome.browser.notifications.ALWAYS_ALLOW";
+    static final String ACTION_REPORT_AS_SAFE =
+            "org.chromium.chrome.browser.notifications.REPORT_AS_SAFE";
+    static final String ACTION_REPORT_WARNED_NOTIFICATION_AS_SPAM =
+            "org.chromium.chrome.browser.notifications.REPORT_WARNED_NOTIFICATION_AS_SPAM";
+    static final String ACTION_REPORT_UNWARNED_NOTIFICATION_AS_SPAM =
+            "org.chromium.chrome.browser.notifications.REPORT_UNWARNED_NOTIFICATION_AS_SPAM";
 
     /**
      * Name of the Intent extra set by the framework when a notification preferences intent has been

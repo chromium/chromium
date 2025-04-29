@@ -558,6 +558,11 @@ chromium-metrics-reviews@google.com.
   <int value="33" label="Commit provisional unsubscribe implicitly."/>
   <int value="34" label="Show original notification button."/>
   <int value="35" label="Always allow notification button."/>
+  <int value="36" label="Safety hub unsubscribed notifications ack button."/>
+  <int value="37" label="Safety hub unsubscribed notifications review button."/>
+  <int value="38" label="Report as safe notification button"/>
+  <int value="39" label="Report warned notification as spam button."/>
+  <int value="40" label="Report unwarned notification as spam button."/>
 </enum>
 
 <enum name="SystemNotificationType">

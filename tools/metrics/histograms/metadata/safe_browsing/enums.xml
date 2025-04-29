@@ -697,6 +697,9 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="UNSUBSCRIBE"/>
   <int value="3" label="ALWAYS_ALLOW"/>
   <int value="4" label="DISMISS"/>
+  <int value="5" label="REPORT_AS_SAFE"/>
+  <int value="6" label="REPORT_WARNED_NOTIFICATION_AS_SPAM"/>
+  <int value="7" label="REPORT_UNWARNED_NOTIFICATION_AS_SPAM"/>
 </enum>
 
 <enum name="SuspiciousSiteTriggerEvent">

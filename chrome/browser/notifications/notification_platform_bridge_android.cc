@@ -33,6 +33,7 @@
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/safe_browsing/content/browser/notification_content_detection/notification_content_detection_constants.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/url_formatter/url_formatter.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -497,17 +498,35 @@ void NotificationPlatformBridgeAndroid::AlwaysAllowNotifications(
 
   // Send a new notification to tell the user that Chrome will no longer hide
   // notifications from `url`.
+  std::u16string notification_title =
+      base::FeatureList::IsEnabled(
+          safe_browsing::kReportNotificationContentDetectionData)
+          ? l10n_util::GetStringFUTF16(
+                IDS_CHROME_NO_LONGER_SHOW_WARNINGS_NOTIFICATION_TITLE_NEW,
+                url_formatter::FormatUrl(
+                    url,
+                    url_formatter::kFormatUrlOmitDefaults |
+                        url_formatter::kFormatUrlOmitHTTPS |
+                        url_formatter::kFormatUrlOmitTrivialSubdomains |
+                        url_formatter::kFormatUrlTrimAfterHost,
+                    base::UnescapeRule::SPACES, nullptr, nullptr, nullptr))
+          : l10n_util::GetStringUTF16(
+                IDS_CHROME_NO_LONGER_SHOW_WARNINGS_NOTIFICATION_TITLE);
+  std::u16string notification_body =
+      base::FeatureList::IsEnabled(
+          safe_browsing::kReportNotificationContentDetectionData)
+          ? l10n_util::GetStringUTF16(
+                IDS_CHROME_NO_LONGER_SHOW_WARNINGS_NOTIFICATION_BODY_NEW)
+          : l10n_util::GetStringUTF16(
+                IDS_CHROME_NO_LONGER_SHOW_WARNINGS_NOTIFICATION_BODY);
   message_center::Notification notification(
       message_center::NOTIFICATION_TYPE_SIMPLE,
       base::NumberToString(
           PlatformNotificationServiceFactory::GetForProfile(profile)
               ->ReadNextPersistentNotificationId()),
-      l10n_util::GetStringUTF16(
-          IDS_CHROME_NO_LONGER_SHOW_WARNINGS_NOTIFICATION_TITLE),
-      l10n_util::GetStringUTF16(
-          IDS_CHROME_NO_LONGER_SHOW_WARNINGS_NOTIFICATION_BODY),
-      ui::ImageModel(), std::u16string(), url, message_center::NotifierId(),
-      message_center::RichNotificationData(), nullptr);
+      notification_title, notification_body, ui::ImageModel(), std::u16string(),
+      url, message_center::NotifierId(), message_center::RichNotificationData(),
+      nullptr);
   // Create new `PersistentNotificationMetadata`, where `is_suspicious` is set
   // to false by default. Set `skip_ua_buttons` to true so the confirmation
   // notification does not restore any UA buttons.

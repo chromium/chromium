@@ -230,7 +230,14 @@ public class NotificationIntentInterceptor {
                                 == NotificationUmaTracker.ActionType.COMMIT_UNSUBSCRIBE_EXPLICIT
                         || actionType
                                 == NotificationUmaTracker.ActionType.SHOW_ORIGINAL_NOTIFICATION
-                        || actionType == NotificationUmaTracker.ActionType.ALWAYS_ALLOW;
+                        || actionType == NotificationUmaTracker.ActionType.ALWAYS_ALLOW
+                        || actionType == NotificationUmaTracker.ActionType.REPORT_AS_SAFE
+                        || actionType
+                                == NotificationUmaTracker.ActionType
+                                        .REPORT_WARNED_NOTIFICATION_AS_SPAM
+                        || actionType
+                                == NotificationUmaTracker.ActionType
+                                        .REPORT_UNWARNED_NOTIFICATION_AS_SPAM;
 
         Context applicationContext = ContextUtils.getApplicationContext();
         Intent intent = null;

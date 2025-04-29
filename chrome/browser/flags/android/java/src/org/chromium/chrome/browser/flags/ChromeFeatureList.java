@@ -500,6 +500,8 @@ public abstract class ChromeFeatureList {
     public static final String REMOVE_TAB_FOCUS_ON_SHOWING_AND_SELECT =
             "RemoveTabFocusOnShowingAndSelect";
     public static final String RENAME_JOURNEYS = "RenameJourneys";
+    public static final String REPORT_NOTIFICATION_CONTENT_DETECTION_DATA =
+            "ReportNotificationContentDetectionData";
     public static final String RIGHT_EDGE_GOES_FORWARD_GESTURE_NAV =
             "RightEdgeGoesForwardGestureNav";
     public static final String SAFETY_HUB = "SafetyHub";
