@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.price_history;
 
+import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.chrome.browser.price_history.PriceHistoryBottomSheetContentProperties.OPEN_URL_BUTTON_ON_CLICK_LISTENER;
 import static org.chromium.chrome.browser.price_history.PriceHistoryBottomSheetContentProperties.OPEN_URL_BUTTON_VISIBLE;
 import static org.chromium.chrome.browser.price_history.PriceHistoryBottomSheetContentProperties.PRICE_HISTORY_CHART;
@@ -14,12 +15,14 @@ import static org.chromium.chrome.browser.price_history.PriceHistoryBottomSheetC
 
 import android.content.Context;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.Contract;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.price_insights.PriceInsightsBottomSheetCoordinator.PriceInsightsDelegate;
 import org.chromium.chrome.browser.tab.Tab;
@@ -33,6 +36,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
 /** Mediator for price history bottom sheet responsible for property model update. */
+@NullMarked
 public class PriceHistoryBottomSheetContentMediator {
     private final Context mContext;
     private final Supplier<Tab> mTabSupplier;
@@ -43,11 +47,11 @@ public class PriceHistoryBottomSheetContentMediator {
     private @PriceBucket int mPriceBucket;
 
     public PriceHistoryBottomSheetContentMediator(
-            @NonNull Context context,
-            @NonNull Supplier<Tab> tabSupplier,
-            @NonNull Supplier<TabModelSelector> tabModelSelectorSupplier,
-            @NonNull PropertyModel propertyModel,
-            @NonNull PriceInsightsDelegate priceInsightsDelegate) {
+            Context context,
+            Supplier<Tab> tabSupplier,
+            Supplier<TabModelSelector> tabModelSelectorSupplier,
+            PropertyModel propertyModel,
+            PriceInsightsDelegate priceInsightsDelegate) {
         mContext = context;
         mTabSupplier = tabSupplier;
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
@@ -66,13 +70,14 @@ public class PriceHistoryBottomSheetContentMediator {
                 (url, info) -> {
                     boolean hasPriceInsightInfo = isValidPriceInsightsInfo(info);
                     if (hasPriceInsightInfo) {
-                        updatePriceInsightsInfo(info);
+                        updatePriceInsightsInfo(assertNonNull(info));
                     }
                     contentReadyCallback.onResult(hasPriceInsightInfo);
                 });
     }
 
-    private boolean isValidPriceInsightsInfo(PriceInsightsInfo info) {
+    @Contract("null -> false")
+    private boolean isValidPriceInsightsInfo(@Nullable PriceInsightsInfo info) {
         return info != null
                 && !info.currencyCode.isEmpty()
                 && info.catalogHistoryPrices != null

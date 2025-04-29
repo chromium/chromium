@@ -18,10 +18,12 @@ import android.view.ViewGroup.LayoutParams;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** ViewBinder for the price history bottom sheet content. */
+@NullMarked
 public class PriceHistoryBottomSheetContentViewBinder {
 
     private static final int PRICE_HISTORY_CHART_ID = View.generateViewId();
