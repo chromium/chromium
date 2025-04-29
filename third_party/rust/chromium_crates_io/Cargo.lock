@@ -26,11 +26,6 @@ version = "1.0.98"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
-name = "arrayvec"
-version = "0.7.6"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-
-[[package]]
 name = "autocfg"
 version = "1.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -130,7 +125,6 @@ dependencies = [
  "read-fonts",
  "rustc-demangle-capi",
  "serde_json_lenient",
- "sfv",
  "skrifa",
  "small_ctor",
  "static_assertions",
@@ -1065,15 +1059,6 @@ version = "0.8.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
-name = "rust_decimal"
-version = "1.37.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-dependencies = [
- "arrayvec",
- "num-traits",
-]
-
-[[package]]
 name = "rustc-demangle"
 version = "0.1.24"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1135,16 +1120,6 @@ dependencies = [
  "memchr",
  "ryu",
  "serde",
-]
-
-[[package]]
-name = "sfv"
-version = "0.10.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-dependencies = [
- "base64",
- "indexmap",
- "rust_decimal",
 ]
 
 [[package]]

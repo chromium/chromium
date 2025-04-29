@@ -53,9 +53,6 @@ criteria = ["crypto-safe", "safe-to-run"]
 [policy."anyhow:1.0.98"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."arrayvec:0.7.6"]
-criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
-
 [policy."autocfg:1.4.0"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
@@ -368,9 +365,6 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 [policy."regex-syntax:0.8.5"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."rust_decimal:1.37.1"]
-criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
-
 [policy."rustc-demangle-capi:0.1.0"]
 criteria = ["crypto-safe", "safe-to-run"]
 
@@ -393,9 +387,6 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."serde_json_lenient:0.2.4"]
-criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
-
-[policy."sfv:0.10.4"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."shlex:1.3.0"]
