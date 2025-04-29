@@ -42,6 +42,10 @@ class WebStateID;
 // Shows an alert for moving the last tab of a group in this tab strip.
 - (void)showAlertForLastTabDragged:(TabStripLastTabDraggedAlertCommand*)command;
 
+// Shows an alert for the last tab close in
+- (void)showAlertForLastTabClosed:(web::WebStateID)itemID
+                            group:(const TabGroup*)group;
+
 // Displays a confirmation dialog anchoring to `sourceView` to confirm that
 // selected `groupItem` is going to take an `actionType`.
 - (void)showTabGroupConfirmationForAction:(TabGroupActionType)actionType

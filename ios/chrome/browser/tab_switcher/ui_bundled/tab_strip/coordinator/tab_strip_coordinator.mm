@@ -29,6 +29,8 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/shared_tab_group_last_tab_closed_alert_command.h"
+#import "ios/chrome/browser/shared/public/commands/shared_tab_group_last_tab_closed_alert_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_grid_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_groups_commands.h"
@@ -271,14 +273,27 @@ using collaboration::CollaborationControllerDelegate;
   [_alertCoordinator start];
 }
 
+- (void)showAlertForLastTabClosed:(web::WebStateID)itemID
+                            group:(const TabGroup*)group {
+  UIView* sourceView = self.tabStripViewController.closedTabGroupView;
+  SharedTabGroupLastTabAlertCommand* command =
+      [[SharedTabGroupLastTabAlertCommand alloc]
+               initWithTabID:itemID
+                     browser:self.browser
+                       group:group
+          baseViewController:self.baseViewController
+                  sourceView:sourceView ? sourceView : nil];
+  self.tabStripViewController.closedTabGroupView = nil;
+
+  id<SharedTabGroupLastTabAlertCommands> lastTabAlertHandler =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(),
+                         SharedTabGroupLastTabAlertCommands);
+  [lastTabAlertHandler showLastTabInSharedGroupAlert:command];
+}
+
 - (void)showTabGroupConfirmationForAction:(TabGroupActionType)actionType
                                 groupItem:(TabGroupItem*)tabGroupItem
                                sourceView:(UIView*)sourceView {
-  if (actionType == TabGroupActionType::kLeaveOrKeepSharedTabGroup ||
-      actionType == TabGroupActionType::kDeleteOrKeepSharedTabGroup) {
-    sourceView = self.tabStripViewController.closedTabGroupView;
-  }
-
   _tabGroupConfirmationCoordinator = [[TabGroupConfirmationCoordinator alloc]
       initWithBaseViewController:self.baseViewController
                          browser:self.browser
@@ -288,20 +303,6 @@ using collaboration::CollaborationControllerDelegate;
   __weak TabStripCoordinator* weakSelf = self;
   _tabGroupConfirmationCoordinator.primaryAction = ^{
     [weakSelf takeActionForActionType:actionType tabGroupItem:tabGroupItem];
-  };
-  _tabGroupConfirmationCoordinator.secondaryAction = ^{
-    switch (actionType) {
-      case TabGroupActionType::kUngroupTabGroup:
-      case TabGroupActionType::kDeleteTabGroup:
-      case TabGroupActionType::kLeaveSharedTabGroup:
-      case TabGroupActionType::kDeleteSharedTabGroup:
-        NOTREACHED();
-
-      case TabGroupActionType::kLeaveOrKeepSharedTabGroup:
-      case TabGroupActionType::kDeleteOrKeepSharedTabGroup:
-        [weakSelf replaceLastTabByNewTabInGroup:tabGroupItem];
-        break;
-    }
   };
   _tabGroupConfirmationCoordinator.dismissAction = ^{
     [weakSelf clearLeaveOrDeleteCompletion];
@@ -481,15 +482,12 @@ using collaboration::CollaborationControllerDelegate;
     case TabGroupActionType::kLeaveSharedTabGroup:
       [self runLeaveOrDeleteCompletion];
       break;
-    case TabGroupActionType::kLeaveOrKeepSharedTabGroup:
-      [_mediator leaveSharedGroup:tabGroupItem];
-      break;
     case TabGroupActionType::kDeleteSharedTabGroup:
       [self runLeaveOrDeleteCompletion];
       break;
     case TabGroupActionType::kDeleteOrKeepSharedTabGroup:
-      [_mediator deleteSharedGroup:tabGroupItem];
-      break;
+    case TabGroupActionType::kLeaveOrKeepSharedTabGroup:
+      NOTREACHED();
   }
 
   [_tabGroupConfirmationCoordinator stop];

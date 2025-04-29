@@ -260,6 +260,7 @@ using collaboration::CollaborationControllerDelegate;
 
   [_tabGroupCoordinator stop];
   _tabGroupCoordinator = nil;
+  self.mediator.baseDelegate = nil;
 }
 
 - (void)showTabGroupCreationForTabs:
@@ -502,6 +503,7 @@ using collaboration::CollaborationControllerDelegate;
   _tabGroupCoordinator.modeHolder = self.modeHolder;
 
   [_tabGroupCoordinator start];
+  self.mediator.baseDelegate = _tabGroupCoordinator;
 }
 
 // Combines two arrays of inactive items into one. The `primaryInactiveItems`

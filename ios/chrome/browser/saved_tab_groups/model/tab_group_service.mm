@@ -73,3 +73,7 @@ bool TabGroupService::IsSharedGroup(const TabGroup* group) {
   CHECK(group);
   return tab_groups::utils::IsTabGroupShared(group, tab_group_sync_service_);
 }
+
+bool TabGroupService::ShouldDisplayLastTabCloseAlert(const TabGroup* group) {
+  return group && IsSharedGroup(group) && group->range().count() == 1;
+}

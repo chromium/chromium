@@ -104,9 +104,9 @@ source_set("commands") {
     "//ios/chrome/browser/lens_overlay/model:entrypoint",
     "//ios/chrome/browser/shared/ui/util:url_with_title",
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid:tab_grid_paging",
-    "//ios/chrome/browser/tabs/model",
     "//ios/public/provider/chrome/browser/user_feedback:user_feedback_api",
     "//ios/web/public",
+    "//ios/web/public/navigation:referrer",
     "//net",
     "//url",
   ]
@@ -123,6 +123,27 @@ source_set("commands") {
     "//ios/chrome/browser/google_one/shared",
     "//ios/chrome/browser/promos_manager/model:constants",
     "//ios/web/public/annotations:custom_text_check_result",
+  ]
+}
+
+source_set("shared_group_last_tab_commands") {
+  sources = [
+    "shared_tab_group_last_tab_closed_alert_command.h",
+    "shared_tab_group_last_tab_closed_alert_command.mm",
+    "shared_tab_group_last_tab_closed_alert_commands.h",
+  ]
+  deps = [
+    "//base",
+    "//components/collaboration/public",
+    "//ios/chrome/browser/collaboration/model",
+    "//ios/chrome/browser/collaboration/model:collaboration_delegate",
+    "//ios/chrome/browser/saved_tab_groups/model",
+    "//ios/chrome/browser/saved_tab_groups/model:tab_group_service",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/model/web_state_list:utils",
+    "//ios/chrome/browser/tab_switcher/ui_bundled:tab_group_confirmation",
+    "//ios/web/public",
   ]
 }
 

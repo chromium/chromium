@@ -73,6 +73,7 @@
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_presenter_delegate.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_view_controller_presenter.h"
 #import "ios/chrome/browser/collaboration/model/collaboration_service_factory.h"
+#import "ios/chrome/browser/collaboration/model/ios_collaboration_controller_delegate.h"
 #import "ios/chrome/browser/commerce/model/push_notification/push_notification_feature.h"
 #import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
 #import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
@@ -171,6 +172,10 @@
 #import "ios/chrome/browser/safe_browsing/ui_bundled/safe_browsing_coordinator.h"
 #import "ios/chrome/browser/save_to_drive/ui_bundled/save_to_drive_coordinator.h"
 #import "ios/chrome/browser/save_to_photos/ui_bundled/save_to_photos_coordinator.h"
+#import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_util.h"
+#import "ios/chrome/browser/saved_tab_groups/model/tab_group_service.h"
+#import "ios/chrome/browser/saved_tab_groups/model/tab_group_service_factory.h"
+#import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/send_tab_to_self/ui_bundled/send_tab_to_self_coordinator.h"
 #import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_add_credit_card_coordinator.h"
 #import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_add_credit_card_coordinator_delegate.h"
@@ -189,6 +194,7 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
+#import "ios/chrome/browser/shared/model/web_state_list/tab_utils.h"
 #import "ios/chrome/browser/shared/public/commands/activity_service_commands.h"
 #import "ios/chrome/browser/shared/public/commands/activity_service_share_url_command.h"
 #import "ios/chrome/browser/shared/public/commands/add_contacts_commands.h"
@@ -232,6 +238,8 @@
 #import "ios/chrome/browser/shared/public/commands/save_to_photos_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/share_highlight_command.h"
+#import "ios/chrome/browser/shared/public/commands/shared_tab_group_last_tab_closed_alert_command.h"
+#import "ios/chrome/browser/shared/public/commands/shared_tab_group_last_tab_closed_alert_commands.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/shared/public/commands/text_zoom_commands.h"
 #import "ios/chrome/browser/shared/public/commands/toolbar_commands.h"
@@ -262,6 +270,7 @@
 #import "ios/chrome/browser/supervised_user/coordinator/parent_access_coordinator.h"
 #import "ios/chrome/browser/sync/model/sync_error_browser_agent.h"
 #import "ios/chrome/browser/tab_insertion/model/tab_insertion_browser_agent.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_group_confirmation_coordinator.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_strip/coordinator/tab_strip_coordinator.h"
 #import "ios/chrome/browser/tabs/model/tab_title_util.h"
 #import "ios/chrome/browser/text_zoom/ui_bundled/text_zoom_coordinator.h"
@@ -665,6 +674,10 @@ enum class ToolbarKind {
 
   // The coordinator for the page action menu.
   PageActionMenuCoordinator* _pageActionMenuCoordinator;
+
+  // Coordinator that handles confirmation dialog when the last tab of a shared
+  // group is closed.
+  TabGroupConfirmationCoordinator* _lastTabClosingAlert;
 }
 
 #pragma mark - ChromeCoordinator
@@ -859,6 +872,9 @@ enum class ToolbarKind {
 
   [_countryCodePickerCoordinator stop];
   _countryCodePickerCoordinator = nil;
+
+  [_lastTabClosingAlert stop];
+  _lastTabClosingAlert = nil;
 
   [self hideGoogleOne];
   [self updateLensUIForBackground];
@@ -1078,6 +1094,7 @@ enum class ToolbarKind {
     @protocol(QuickDeleteCommands),
     @protocol(SaveToDriveCommands),
     @protocol(SaveToPhotosCommands),
+    @protocol(SharedTabGroupLastTabAlertCommands),
     @protocol(TextZoomCommands),
     @protocol(WebContentCommands),
     @protocol(DefaultBrowserGenericPromoCommands),
@@ -1657,6 +1674,9 @@ enum class ToolbarKind {
 
   [_enhancedCalendarCoordinator stop];
   _enhancedCalendarCoordinator = nil;
+
+  [_lastTabClosingAlert stop];
+  _lastTabClosingAlert = nil;
 
   [self hideDriveFilePicker];
   [self hideContextualSheet];
@@ -2256,6 +2276,27 @@ enum class ToolbarKind {
 
   int active_index = webStateList->active_index();
   if (active_index == WebStateList::kInvalidIndex) {
+    return;
+  }
+
+  TabGroupService* groupService =
+      TabGroupServiceFactory::GetForProfile(self.profile);
+  const TabGroup* group = webStateList->GetGroupOfWebStateAt(active_index);
+  if (groupService->ShouldDisplayLastTabCloseAlert(group)) {
+    web::WebState* webState = webStateList->GetWebStateAt(active_index);
+    BOOL isTablet = ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET;
+    SharedTabGroupLastTabAlertCommand* command =
+        [[SharedTabGroupLastTabAlertCommand alloc]
+                 initWithTabID:webState->GetUniqueIdentifier()
+                       browser:self.browser
+                         group:group
+            baseViewController:self.viewController
+                    sourceView:isTablet ? nil : self.viewController.view];
+
+    id<SharedTabGroupLastTabAlertCommands> lastTabAlertHandler =
+        HandlerForProtocol(self.browser->GetCommandDispatcher(),
+                           SharedTabGroupLastTabAlertCommands);
+    [lastTabAlertHandler showLastTabInSharedGroupAlert:command];
     return;
   }
 
@@ -3374,6 +3415,98 @@ enum class ToolbarKind {
 - (void)stopSaveToPhotos {
   [self.saveToPhotosCoordinator stop];
   self.saveToPhotosCoordinator = nil;
+}
+
+#pragma mark - SharedTabGroupLastTabAlertCommands
+
+- (void)showLastTabInSharedGroupAlert:
+    (SharedTabGroupLastTabAlertCommand*)command {
+  UIViewController* viewController = command.baseViewController
+                                         ? command.baseViewController
+                                         : self.viewController;
+  UIView* sourceView =
+      command.sourceView ? command.sourceView : self.viewController.view;
+
+  _lastTabClosingAlert = [[TabGroupConfirmationCoordinator alloc]
+      initWithBaseViewController:viewController
+                         browser:self.browser
+                      actionType:command.actionType
+                      sourceView:sourceView];
+
+  __weak BrowserCoordinator* weakSelf = self;
+  _lastTabClosingAlert.primaryAction = ^{
+    [weakSelf runLeaveOrDeleteCompletion:command.group
+                          viewController:viewController];
+  };
+  _lastTabClosingAlert.secondaryAction = ^{
+    [weakSelf runKeepGroup:command.group lastTabID:command.tabID];
+  };
+
+  _lastTabClosingAlert.tabGroupName = command.groupTitle;
+  _lastTabClosingAlert.showAsAlert = command.displayAsAlert;
+  [_lastTabClosingAlert start];
+}
+
+#pragma mark - SharedTabGroupLastTabAlertCommands helpers
+
+// Runs `leaveOrDeleteCompletion`. If not nil, calls it with `kSuccess`.
+- (void)runLeaveOrDeleteCompletion:(const TabGroup*)group
+                    viewController:(UIViewController*)viewController {
+  __weak BrowserCoordinator* weakSelf = self;
+  base::OnceCallback<void(
+      collaboration::CollaborationControllerDelegate::ResultCallback)>
+      completionCallback = base::BindOnce(
+          ^(collaboration::CollaborationControllerDelegate::ResultCallback
+                resultCallback) {
+            BrowserCoordinator* strongSelf = weakSelf;
+            if (!strongSelf) {
+              std::move(resultCallback)
+                  .Run(collaboration::CollaborationControllerDelegate::Outcome::
+                           kCancel);
+              return;
+            }
+            std::move(resultCallback)
+                .Run(collaboration::CollaborationControllerDelegate::Outcome::
+                         kSuccess);
+          });
+
+  TabGroupService* groupService =
+      TabGroupServiceFactory::GetForProfile(self.profile);
+  std::unique_ptr<collaboration::IOSCollaborationControllerDelegate> delegate =
+      std::make_unique<collaboration::IOSCollaborationControllerDelegate>(
+          self.browser, viewController, groupService,
+          collaboration::FlowType::kLeaveOrDelete);
+  delegate->SetLeaveOrDeleteConfirmationCallback(std::move(completionCallback));
+
+  collaboration::CollaborationService* collaborationService =
+      collaboration::CollaborationServiceFactory::GetForProfile(self.profile);
+  collaboration::CollaborationServiceLeaveOrDeleteEntryPoint entryPoint =
+      collaboration::CollaborationServiceLeaveOrDeleteEntryPoint::kUnknown;
+  collaborationService->StartLeaveOrDeleteFlow(
+      std::move(delegate), group->tab_group_id(), entryPoint);
+  _lastTabClosingAlert = nil;
+}
+
+// Replaces the last tab with a New Tab Page (NTP).
+- (void)runKeepGroup:(const TabGroup*)group lastTabID:(web::WebStateID)tabID {
+  TabGroupService* groupService =
+      TabGroupServiceFactory::GetForProfile(self.profile);
+  WebStateList* webStateList = self.browser->GetWebStateList();
+  std::unique_ptr<web::WebState> webState =
+      groupService->WebStateToAddToEmptyGroup();
+  webStateList->InsertWebState(
+      std::move(webState),
+      WebStateList::InsertionParams::Automatic().InGroup(group));
+
+  const WebStateSearchCriteria& searchCriteria = WebStateSearchCriteria{
+      .identifier = tabID,
+  };
+
+  int index = GetWebStateIndex(webStateList, searchCriteria);
+  if (index != WebStateList::kInvalidIndex) {
+    webStateList->CloseWebStateAt(index, WebStateList::CLOSE_USER_ACTION);
+  }
+  _lastTabClosingAlert = nil;
 }
 
 #pragma mark - WebContentCommands

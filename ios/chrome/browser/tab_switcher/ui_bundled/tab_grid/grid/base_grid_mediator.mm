@@ -32,6 +32,8 @@
 #import "ios/chrome/browser/reading_list/model/reading_list_browser_agent.h"
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_action_context.h"
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_util.h"
+#import "ios/chrome/browser/saved_tab_groups/model/tab_group_service.h"
+#import "ios/chrome/browser/saved_tab_groups/model/tab_group_service_factory.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
@@ -50,6 +52,7 @@
 #import "ios/chrome/browser/shared/public/commands/bookmarks_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/reading_list_add_command.h"
+#import "ios/chrome/browser/shared/public/commands/shared_tab_group_last_tab_closed_alert_command.h"
 #import "ios/chrome/browser/shared/public/commands/tab_grid_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_grid_toolbar_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_groups_commands.h"
@@ -1058,7 +1061,17 @@ void LogPriceDropMetrics(web::WebState* web_state) {
   };
   int index = GetWebStateIndex(self.webStateList, searchCriteria);
   if (index != WebStateList::kInvalidIndex) {
-    self.webStateList->CloseWebStateAt(index, WebStateList::CLOSE_USER_ACTION);
+    TabGroupService* groupService =
+        TabGroupServiceFactory::GetForProfile(self.profile);
+    const TabGroup* group = self.webStateList->GetGroupOfWebStateAt(index);
+    if (groupService && groupService->ShouldDisplayLastTabCloseAlert(group)) {
+      [self.baseDelegate displayLastTabInSharedGroupAlert:self
+                                                  lastTab:itemID
+                                                    group:group];
+    } else {
+      self.webStateList->CloseWebStateAt(index,
+                                         WebStateList::CLOSE_USER_ACTION);
+    }
     return;
   }
 

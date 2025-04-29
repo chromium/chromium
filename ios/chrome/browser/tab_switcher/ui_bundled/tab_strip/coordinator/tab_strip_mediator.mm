@@ -25,6 +25,8 @@
 #import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_util.h"
+#import "ios/chrome/browser/saved_tab_groups/model/tab_group_service.h"
+#import "ios/chrome/browser/saved_tab_groups/model/tab_group_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -37,6 +39,8 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/shared_tab_group_last_tab_closed_alert_command.h"
 #import "ios/chrome/browser/shared/public/commands/tab_strip_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_strip_last_tab_dragged_alert_command.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -863,45 +867,16 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
     return;
   }
 
-  // A confirmation prompt is shown to the user upon the manual closure of the
-  // final tab in a shared group.
-  BOOL displayAlert = NO;
+  TabGroupService* groupService =
+      TabGroupServiceFactory::GetForProfile(self.profile);
   const TabGroup* group = self.webStateList->GetGroupOfWebStateAt(index);
-  if (group) {
-    BOOL isSharedGroup =
-        tab_groups::utils::IsTabGroupShared(group, _tabGroupSyncService);
-    displayAlert = group->range().count() == 1 && isSharedGroup;
-  }
-
-  if (!displayAlert) {
-    self.webStateList->CloseWebStateAt(index, WebStateList::CLOSE_USER_ACTION);
+  if (groupService && groupService->ShouldDisplayLastTabCloseAlert(group)) {
+    web::WebState* webState = self.webStateList->GetWebStateAt(index);
+    [_tabStripHandler showAlertForLastTabClosed:webState->GetUniqueIdentifier()
+                                          group:group];
     return;
-  }
-
-  data_sharing::MemberRole userRole = tab_groups::utils::GetUserRoleForGroup(
-      group, _tabGroupSyncService, _collaborationService);
-
-  TabGroupItem* groupItem =
-      [[TabGroupItem alloc] initWithTabGroup:group
-                                webStateList:self.webStateList];
-  _tabToClose = item;
-  switch (userRole) {
-    case data_sharing::MemberRole::kOwner:
-      [_tabStripHandler showTabGroupConfirmationForAction:
-                            TabGroupActionType::kDeleteOrKeepSharedTabGroup
-                                                groupItem:groupItem
-                                               sourceView:nil];
-      break;
-    case data_sharing::MemberRole::kMember:
-      [_tabStripHandler showTabGroupConfirmationForAction:
-                            TabGroupActionType::kLeaveOrKeepSharedTabGroup
-                                                groupItem:groupItem
-                                               sourceView:nil];
-      break;
-    case data_sharing::MemberRole::kInvitee:
-    case data_sharing::MemberRole::kFormerMember:
-    case data_sharing::MemberRole::kUnknown:
-      NOTREACHED(base::NotFatalUntil::M140);
+  } else {
+    self.webStateList->CloseWebStateAt(index, WebStateList::CLOSE_USER_ACTION);
   }
 }
 

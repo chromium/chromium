@@ -85,7 +85,7 @@ class TabStripViewController: UIViewController,
   public weak var tabGroupConfirmationHandler: TabGroupConfirmationCommands?
 
   /// Group cell of the closed tab. Nil if the tab is not from a group.
-  private(set) weak var closedTabGroupView: TabStripGroupCell?
+  public weak var closedTabGroupView: TabStripGroupCell?
 
   /// The LayoutGuideCenter.
   @objc public var layoutGuideCenter: LayoutGuideCenter? {

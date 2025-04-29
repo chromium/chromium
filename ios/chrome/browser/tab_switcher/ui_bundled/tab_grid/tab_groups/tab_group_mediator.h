@@ -35,28 +35,8 @@ class TabGroup;
 @class TabGroupMediator;
 class WebStateList;
 
-// Delegate for the mediator.
-@protocol TabGroupMediatorDelegate
-
-// Called when the:
-// * last tab is closed,
-// * user is the OWNER of the tab group.
-- (void)tabGroupMediatorCloseLastTabAsOwner:(TabGroupMediator*)mediator
-                          lastTabIdentifier:(web::WebStateID)identifier;
-
-// Called when the:
-// * last tab is closed,
-// * user is a MEMBER of the tab group.
-- (void)tabGroupMediatorCloseLastTabAsMember:(TabGroupMediator*)mediator
-                           lastTabIdentifier:(web::WebStateID)identifier;
-
-@end
-
 // Tab group mediator in charge to handle model update for one group.
 @interface TabGroupMediator : BaseGridMediator <TabGroupMutator>
-
-// The delegate for this mediator.
-@property(nonatomic, weak) id<TabGroupMediatorDelegate> tabGroupDelegate;
 
 - (instancetype)
     initWithWebStateList:(WebStateList*)webStateList
