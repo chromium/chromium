@@ -12,6 +12,7 @@
 @protocol HomeCustomizationDelegate;
 @protocol HomeCustomizationMutator;
 @protocol HomeCustomizationBackgroundPickerPresentationDelegate;
+@protocol HomeCustomizationLogoVendorProvider;
 
 // The view controller representing the first page of the Home customization
 // menu.
@@ -28,6 +29,10 @@
 @property(nonatomic, weak)
     id<HomeCustomizationBackgroundPickerPresentationDelegate>
         backgroundPickerPresentationDelegate;
+
+// A provider responsible for supplying a logo vendor object.
+@property(nonatomic, weak) id<HomeCustomizationLogoVendorProvider>
+    logoVendorProvider;
 
 @end
 

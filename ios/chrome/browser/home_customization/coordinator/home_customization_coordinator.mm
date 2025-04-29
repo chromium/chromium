@@ -10,14 +10,17 @@
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_color_picker_view_controller.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_picker_presentation_delegate.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_discover_view_controller.h"
+#import "ios/chrome/browser/home_customization/ui/home_customization_logo_vendor_provider.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_magic_stack_view_controller.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_main_view_controller.h"
 #import "ios/chrome/browser/home_customization/utils/home_customization_constants.h"
+#import "ios/chrome/browser/ntp/ui_bundled/logo_vendor.h"
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
+#import "ios/public/provider/chrome/browser/ui_utils/ui_utils_api.h"
 
 namespace {
 
@@ -32,7 +35,8 @@ CGFloat const kSheetCornerRadius = 30;
 
 @interface HomeCustomizationCoordinator () <
     UISheetPresentationControllerDelegate,
-    HomeCustomizationBackgroundPickerPresentationDelegate> {
+    HomeCustomizationBackgroundPickerPresentationDelegate,
+    HomeCustomizationLogoVendorProvider> {
   // Displays the background picker action sheet.
   HomeCustomizationBackgroundPickerActionSheetCoordinator*
       _backgroundPickerActionSheetCoordinator;
@@ -172,6 +176,7 @@ CGFloat const kSheetCornerRadius = 30;
           [[HomeCustomizationMainViewController alloc] init];
       self.mainViewController.backgroundPickerPresentationDelegate = self;
       self.mainViewController.mutator = _mediator;
+      self.mainViewController.logoVendorProvider = self;
       self.mediator.mainPageConsumer = self.mainViewController;
       [self.mediator configureMainPageData];
       menuPage = self.mainViewController;
@@ -245,6 +250,13 @@ CGFloat const kSheetCornerRadius = 30;
                              browser:self.browser];
 
   [_backgroundPickerActionSheetCoordinator start];
+}
+
+#pragma mark - HomeCustomizationLogoVendorProvider
+
+- (id<LogoVendor>)provideLogoVendor {
+  return ios::provider::CreateLogoVendor(
+      self.browser, self.browser->GetWebStateList()->GetActiveWebState());
 }
 
 @end

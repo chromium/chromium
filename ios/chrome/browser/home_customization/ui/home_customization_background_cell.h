@@ -9,6 +9,7 @@
 
 #import "ios/chrome/browser/home_customization/model/background_customization_configuration.h"
 
+@protocol LogoVendor;
 @protocol HomeCustomizationMutator;
 
 // Represents a mini preview of how the NTP will look with a particular
@@ -22,7 +23,8 @@
 
 // Configures the cell using the given background customization configuration.
 - (void)configureWithBackgroundOption:
-    (BackgroundCustomizationConfiguration*)backgroundConfiguration;
+            (BackgroundCustomizationConfiguration*)backgroundConfiguration
+                           logoVendor:(id<LogoVendor>)logoVendor;
 
 @end
 
