@@ -6,7 +6,7 @@ import type {CrButtonElement, PrintPreviewLinkContainerElement, PrintPreviewSide
 import {NativeLayerImpl, PluginProxyImpl, ScalingType, whenReady} from 'chrome://print/print_preview.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {NativeLayerStub} from './native_layer_stub.js';
 import {getDefaultInitialSettings, selectOption} from './print_preview_test_utils.js';
@@ -81,7 +81,7 @@ suite('SystemDialogTest', function() {
     });
   });
 
-  test('InvalidSettingsDisableLink', function() {
+  test('InvalidSettingsDisableLink', async function() {
     assertFalse(linkContainer.disabled);
     assertFalse(link.hidden);
 
@@ -95,35 +95,31 @@ suite('SystemDialogTest', function() {
     let previewCalls = 0;
 
     // Set scaling settings to custom.
-    return selectOption(scalingSettings, ScalingType.CUSTOM.toString())
-        .then(() => {
-          previewCalls = nativeLayer.getCallCount('getPreview');
+    await selectOption(scalingSettings, ScalingType.CUSTOM.toString());
+    previewCalls = nativeLayer.getCallCount('getPreview');
 
-          // Set an invalid input.
-          const scalingSettingsInput =
-              scalingSettings.shadowRoot
-                  .querySelector('print-preview-number-settings-section')!.$
-                  .userValue.inputElement;
-          scalingSettingsInput.value = '0';
-          scalingSettingsInput.dispatchEvent(
-              new CustomEvent('input', {composed: true, bubbles: true}));
+    // Set an invalid input.
+    const scalingSettingsInput =
+        scalingSettings.shadowRoot
+            .querySelector('print-preview-number-settings-section')!.$.userValue
+            .inputElement;
+    scalingSettingsInput.value = '0';
+    scalingSettingsInput.dispatchEvent(
+        new CustomEvent('input', {composed: true, bubbles: true}));
 
-          return eventToPromise('input-change', scalingSettings);
-        })
-        .then(() => {
-          // Expect disabled print button
-          const parentElement =
-              sidebar.shadowRoot!.querySelector('print-preview-button-strip')!;
-          const printButton =
-              parentElement.shadowRoot.querySelector<CrButtonElement>(
-                  '.action-button')!;
-          assertTrue(printButton.disabled);
-          assertTrue(linkContainer.disabled);
-          assertFalse(link.hidden);
-          assertTrue(link.querySelector('cr-icon-button')!.disabled);
+    await eventToPromise('input-change', scalingSettings);
+    await microtasksFinished();
+    // Expect disabled print button
+    const parentElement =
+        sidebar.shadowRoot!.querySelector('print-preview-button-strip')!;
+    const printButton = parentElement.shadowRoot.querySelector<CrButtonElement>(
+        '.action-button')!;
+    assertTrue(printButton.disabled);
+    assertTrue(linkContainer.disabled);
+    assertFalse(link.hidden);
+    assertTrue(link.querySelector('cr-icon-button')!.disabled);
 
-          // No new preview
-          assertEquals(previewCalls, nativeLayer.getCallCount('getPreview'));
-        });
+    // No new preview
+    assertEquals(previewCalls, nativeLayer.getCallCount('getPreview'));
   });
 });

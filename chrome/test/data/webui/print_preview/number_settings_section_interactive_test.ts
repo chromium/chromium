@@ -7,6 +7,7 @@ import 'chrome://print/print_preview.js';
 import type {PrintPreviewNumberSettingsSectionElement} from 'chrome://print/print_preview.js';
 import {getTrustedHTML} from 'chrome://print/print_preview.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {triggerInputEvent} from './print_preview_test_utils.js';
 
@@ -30,7 +31,6 @@ suite('NumberSettingsSectionInteractiveTest', function() {
     // Initial value is 10.
     const crInput = numberSettings.getInput();
     const input = crInput.inputElement;
-    await crInput.updateComplete;
     assertEquals('10', input.value);
 
     // Set something invalid in the input.
@@ -42,7 +42,7 @@ suite('NumberSettingsSectionInteractiveTest', function() {
     // Blurring the input does not clear it or clear the error if there
     // is an explicit invalid value.
     input.blur();
-    await crInput.updateComplete;
+    await microtasksFinished();
     assertEquals('0', input.value);
     assertTrue(crInput.invalid);
 
@@ -55,7 +55,7 @@ suite('NumberSettingsSectionInteractiveTest', function() {
 
     // Blurring the input clears it to the default when it is empty.
     input.blur();
-    await crInput.updateComplete;
+    await microtasksFinished();
     assertEquals('50', input.value);
     assertFalse(crInput.invalid);
   });

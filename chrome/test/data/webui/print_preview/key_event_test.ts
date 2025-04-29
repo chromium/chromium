@@ -71,7 +71,7 @@ suite('KeyEventTest', function() {
     keyEventOn(
         page.shadowRoot!.querySelector('print-preview-sidebar')!.shadowRoot!
             .querySelector('print-preview-copies-settings')!.shadowRoot
-            .querySelector('print-preview-number-settings-section')!.shadowRoot!
+            .querySelector('print-preview-number-settings-section')!.shadowRoot
             .querySelector('cr-input')!.inputElement,
         'keydown', 0, [], 'Enter');
     return whenPrintCalled;

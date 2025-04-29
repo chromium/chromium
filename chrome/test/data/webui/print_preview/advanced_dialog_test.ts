@@ -8,7 +8,7 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {keyEventOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import {fakeDataBind} from 'chrome://webui-test/polymer_test_util.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {getCddTemplateWithAdvancedSettings} from './print_preview_test_utils.js';
 
@@ -171,34 +171,36 @@ suite('AdvancedDialogTest', function() {
 
   // Tests that the dialog correctly shows and hides settings based on the
   // value of the search query.
-  test(
-      'AdvancedSettingsFilter', function() {
-        setupDialog(3);
-        const searchBox = dialog.$.searchBox;
-        const items = dialog.shadowRoot!.querySelectorAll(
-            'print-preview-advanced-settings-item');
-        const noMatchHint = dialog.shadowRoot!.querySelector<HTMLElement>(
-            '.no-settings-match-hint')!;
+  test('AdvancedSettingsFilter', async function() {
+    setupDialog(3);
+    const searchBox = dialog.$.searchBox;
+    const items = dialog.shadowRoot!.querySelectorAll(
+        'print-preview-advanced-settings-item');
+    const noMatchHint = dialog.shadowRoot!.querySelector<HTMLElement>(
+        '.no-settings-match-hint')!;
 
-        // Query is initialized to null. All items are shown and the hint is
-        // hidden.
-        items.forEach(item => assertFalse(item.hidden));
-        assertTrue(noMatchHint.hidden);
+    // Query is initialized to null. All items are shown and the hint is
+    // hidden.
+    items.forEach(item => assertFalse(item.hidden));
+    assertTrue(noMatchHint.hidden);
 
-        // Searching for Watermark should show only the watermark setting.
-        searchBox.searchQuery = /(Watermark)/ig;
-        items.forEach((item, index) => assertEquals(index !== 2, item.hidden));
-        assertTrue(noMatchHint.hidden);
+    // Searching for Watermark should show only the watermark setting.
+    searchBox.searchQuery = /(Watermark)/ig;
+    await microtasksFinished();
+    items.forEach((item, index) => assertEquals(index !== 2, item.hidden));
+    assertTrue(noMatchHint.hidden);
 
-        // Searching for A4 should show only the print area setting.
-        searchBox.searchQuery = /(A4)/ig;
-        items.forEach((item, index) => assertEquals(index !== 0, item.hidden));
-        assertTrue(noMatchHint.hidden);
+    // Searching for A4 should show only the print area setting.
+    searchBox.searchQuery = /(A4)/ig;
+    await microtasksFinished();
+    items.forEach((item, index) => assertEquals(index !== 0, item.hidden));
+    assertTrue(noMatchHint.hidden);
 
-        // Searching for WXYZ should show no settings and display the "no match"
-        // hint.
-        searchBox.searchQuery = /(WXYZ)/ig;
-        items.forEach(item => assertTrue(item.hidden));
-        assertFalse(noMatchHint.hidden);
-      });
+    // Searching for WXYZ should show no settings and display the "no match"
+    // hint.
+    searchBox.searchQuery = /(WXYZ)/ig;
+    await microtasksFinished();
+    items.forEach(item => assertTrue(item.hidden));
+    assertFalse(noMatchHint.hidden);
+  });
 });

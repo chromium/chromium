@@ -7,6 +7,7 @@ import 'chrome://print/print_preview.js';
 import type {PrintPreviewModelElement, PrintPreviewScalingSettingsElement} from 'chrome://print/print_preview.js';
 import {ScalingType} from 'chrome://print/print_preview.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {selectOption, triggerInputEvent} from './print_preview_test_utils.js';
 
@@ -109,7 +110,7 @@ suite('ScalingSettingsTest', function() {
     setDocumentPdf(true);
 
     // Default is 100
-    await scalingCrInput.updateComplete;
+    await microtasksFinished();
     validateState('100', true, ScalingType.DEFAULT, ScalingType.DEFAULT, '100');
     assertFalse(scalingSection.getSetting('scaling').setFromUi);
     assertFalse(scalingSection.getSetting('scalingType').setFromUi);
@@ -146,7 +147,7 @@ suite('ScalingSettingsTest', function() {
 
     // Select fit to page. Should clear the invalid value.
     await selectOption(scalingSection, ScalingType.FIT_TO_PAGE.toString());
-    await scalingCrInput.updateComplete;
+    await microtasksFinished();
     validateState(
         '105', true, ScalingType.CUSTOM, ScalingType.FIT_TO_PAGE, '105');
 
@@ -161,7 +162,7 @@ suite('ScalingSettingsTest', function() {
 
     // Pick default scaling. This should clear the error.
     await selectOption(scalingSection, ScalingType.DEFAULT.toString());
-    await scalingCrInput.updateComplete;
+    await microtasksFinished();
     validateState('105', true, ScalingType.DEFAULT, ScalingType.DEFAULT, '105');
 
     // Custom scaling should set to last valid.
