@@ -294903,7 +294903,7 @@
         ]
        ],
        "marquee-with-trusted-types.html": [
-        "57f4985032165e989ba261c32c11c9acf0491908",
+        "f16c58bb85d71b011e4ee524dfb63184a5fca81a",
         [
          null,
          [
@@ -300320,19 +300320,6 @@
           }
          ]
         ],
-        "select-multiple-base-appearance.html": [
-         "48673b446bc8e6e6cce72e6c4d29671bed313779",
-         [
-          null,
-          [
-           [
-            "/html/semantics/forms/the-select-element/customizable-select/select-multiple-base-appearance-ref.html",
-            "=="
-           ]
-          ],
-          {}
-         ]
-        ],
         "select-only-button-opt-in.tentative.html": [
          "b010d15e8adab1ebfe448842e195e29b24d332fb",
          [
@@ -300567,6 +300554,21 @@
           {
            "testdriver": true
           }
+         ]
+        ]
+       },
+       "customizable-select-in-page": {
+        "customizable-select-in-page-appearance.tentative.html": [
+         "b3bf75eb0ff25df6d4737326940a498a11d264d2",
+         [
+          null,
+          [
+           [
+            "/html/semantics/forms/the-select-element/customizable-select-in-page/customizable-select-in-page-appearance-ref.html",
+            "=="
+           ]
+          ],
+          {}
          ]
         ]
        },
@@ -334433,11 +334435,11 @@
      },
      "parsing": {
       "margin-trim-computed-expected.txt": [
-       "296ad5270b87440bb4dd945337d4c30e5e86fba8",
+       "66500cfc2ac64d278e2c8c0c1bef0cc9fe0e538d",
        []
       ],
       "margin-trim-expected.txt": [
-       "e3b13be018fa5998778375ea2c9696151ce96df6",
+       "4e9e27b979d833ec94e467d1f5a1033f00172c42",
        []
       ]
      }
@@ -355636,7 +355638,7 @@
       []
      ],
      "cssom-expected.txt": [
-      "83dc6c57ab16ffbe8201757e6a9d757918d60125",
+      "6ac7e3874c8b576923e9ea1204aa08eaed91f3e7",
       []
      ],
      "has-nesting-ref.html": [
@@ -387267,7 +387269,7 @@
        []
       ],
       "fledge-util.sub.js": [
-       "0a18ea40d3d25e22acef6a7c32f0e644989294cf",
+       "49ebfd1c596c102970f0062592284b14da3841f9",
        []
       ],
       "fledge_http_server_util.py": [
@@ -387284,6 +387286,14 @@
       ],
       "real-time-report.py": [
        "54873674eb58783731237dde5ef299ce15947638",
+       []
+      ],
+      "record-click.py": [
+       "b4e76873d9b12227e350e2d4d01321cab05a44ce",
+       []
+      ],
+      "record-view.py": [
+       "d423b2d9c72930a1302738418eef197f28dfb661",
        []
       ],
       "redirect-to-trusted-signals.py": [
@@ -396218,7 +396228,7 @@
       },
       "the-innertext-and-outertext-properties": {
        "getter-expected.txt": [
-        "bf3fde6e97ddec57ab6ba66c16faad35a23916a5",
+        "af2d8162dd780566bbaf6a19248d231958f1fb01",
         []
        ],
        "getter-tests.js": [
@@ -400136,7 +400146,7 @@
         []
        ],
        "marquee-with-trusted-types-ref.html": [
-        "b177f47b757cc278abe79f5b59d9063f6911dbd3",
+        "5042557212e58741859ad6750543540cff563493",
         []
        ]
       }
@@ -403446,10 +403456,6 @@
          "b351c80c273940c8422db8f66da959fb36e962cb",
          []
         ],
-        "select-multiple-base-appearance-ref.html": [
-         "45a74da7559c72ee5840c00842aef4fc23915e0e",
-         []
-        ],
         "select-only-picker-opt-in-ref.html": [
          "67a0abe43f2d1aad0b1d82da8b8cdfc77a25b549",
          []
@@ -403486,6 +403492,22 @@
          "027f0db784c2b2a21de2d6e28680c05c062ccebe",
          []
         ]
+       },
+       "customizable-select-in-page": {
+        "customizable-select-in-page-appearance-ref.html": [
+         "57ea51e367cfad284ed80e71870698dfed0b26e4",
+         []
+        ],
+        "resources": {
+         "customizable-select-in-page.css": [
+          "deb080b4756cf51d2ece9d2b132e9fff6ccd6f7c",
+          []
+         ],
+         "customizable-select-in-page.js": [
+          "1323094332135c46297a1df5c9fed1922efe8f4a",
+          []
+         ]
+        }
        },
        "reset-algorithm-rendering-ref.html": [
         "acf192d1d55b7da110d04651093e3ebe0cd48214",
@@ -409001,6 +409023,12 @@
          ],
          "simulate_preconnected_peripheral.https.html.ini": [
           "b2c823097f63695eb3567355bcd65bea7df2be7b",
+          []
+         ]
+        },
+        "emulation": {
+         "set_geolocation_override.https.html.ini": [
+          "7de34991442711cd389fe324dabd6005605268af",
           []
          ]
         },
@@ -416320,10 +416348,6 @@
      "a9b817ec4e51ba4b29149ab81d112c8dec732f87",
      []
     ],
-    "pointerevent_pointerout_no_pointer_movement-expected.txt": [
-     "896c84eff0ff75e9ad3ee041c8ed86e136cf4fd3",
-     []
-    ],
     "pointerevent_pointerrawupdate_flush_pointercapture.https-expected.txt": [
      "9cdf228ea2c1b889ad58bb80f2e0274f13e031ae",
      []
@@ -419359,7 +419383,7 @@
      []
     ],
     "testdriver.js": [
-     "f127e2b2c8d9091a767b1ead849af1d18167070f",
+     "6e8410b7ea46064438c8d276274b6fbb689f81d2",
      []
     ],
     "testdriver.js.headers": [
@@ -434013,7 +434037,7 @@
      []
     ],
     "supported-stats.https-expected.txt": [
-     "ba2f3a0f9285eee8aa47d2d60b280212c5b19bfd",
+     "6ae34466677c6565baecdb7c4df5ad9c3da71bf8",
      []
     ]
    },
@@ -495499,14 +495523,14 @@
        ]
       ],
       "margin-trim-computed.html": [
-       "ad2d17f2ef01d2f870a4f07cd3eccb226e4de0f2",
+       "c38adea9a68e1eeee53e8a42ba9d745546624f88",
        [
         null,
         {}
        ]
       ],
       "margin-trim.html": [
-       "0d92f80b9b96ee409b141487f26cb664ce67f8df",
+       "e8679f9cbf3fb606c542ae8ccc653e0b90b96bbc",
        [
         null,
         {}
@@ -502501,7 +502525,7 @@
        ]
       ],
       "font-palette-values-invalid.html": [
-       "a3a0a88ba68c8fcc1f8b00054d7b12bc08d4b7af",
+       "32c9c4c5efeec345c24261b7bb0aa237f11d25e0",
        [
         null,
         {}
@@ -502922,7 +502946,7 @@
       ]
      ],
      "test_font_feature_values_parsing.html": [
-      "7a5844d56008eae798652b59a335d08d24b34032",
+      "08c20142449646123ebdecde6f023511b45feed4",
       [
        null,
        {}
@@ -528705,6 +528729,13 @@
         {}
        ]
       ],
+      "run_in_parallel.html": [
+       "1afdae2be9d8092953746d360d2a77ea1a538ba1",
+       [
+        null,
+        {}
+       ]
+      ],
       "start-view-transition.html": [
        "a1bc95891956e6678c8ee2ecd51be7d6e94b70ca",
        [
@@ -541966,6 +541997,13 @@
     ],
     "style_attribute_html.html": [
      "f7f057d2d862497ca4030c76ed1a3ab9c5df5d9f",
+     [
+      null,
+      {}
+     ]
+    ],
+    "xml-parse-serialize-roundtrip.html": [
+     "5195b9f04b5dd9f47937a5d11d2e82f09fdb9204",
      [
       null,
       {}
@@ -584109,7 +584147,7 @@
       ]
      ],
      "generate-bid-browser-signals.https.window.js": [
-      "e472fccdc4da37c1a2cebb80921809cab5788b54",
+      "ee0cdd84efa4a3307bb674015c3eb5a8211fe962",
       [
        "fledge/tentative/generate-bid-browser-signals.https.window.html?1-4",
        {
@@ -584168,7 +584206,15 @@
          ],
          [
           "variant",
-          "?29-last"
+          "?29-32"
+         ],
+         [
+          "variant",
+          "?33-36"
+         ],
+         [
+          "variant",
+          "?37-last"
          ]
         ],
         "timeout": "long"
@@ -584232,7 +584278,15 @@
          ],
          [
           "variant",
-          "?29-last"
+          "?29-32"
+         ],
+         [
+          "variant",
+          "?33-36"
+         ],
+         [
+          "variant",
+          "?37-last"
          ]
         ],
         "timeout": "long"
@@ -584296,7 +584350,15 @@
          ],
          [
           "variant",
-          "?29-last"
+          "?29-32"
+         ],
+         [
+          "variant",
+          "?33-36"
+         ],
+         [
+          "variant",
+          "?37-last"
          ]
         ],
         "timeout": "long"
@@ -584360,7 +584422,15 @@
          ],
          [
           "variant",
-          "?29-last"
+          "?29-32"
+         ],
+         [
+          "variant",
+          "?33-36"
+         ],
+         [
+          "variant",
+          "?37-last"
          ]
         ],
         "timeout": "long"
@@ -584424,14 +584494,22 @@
          ],
          [
           "variant",
-          "?29-last"
+          "?29-32"
+         ],
+         [
+          "variant",
+          "?33-36"
+         ],
+         [
+          "variant",
+          "?37-last"
          ]
         ],
         "timeout": "long"
        }
       ],
       [
-       "fledge/tentative/generate-bid-browser-signals.https.window.html?29-last",
+       "fledge/tentative/generate-bid-browser-signals.https.window.html?29-32",
        {
         "script_metadata": [
          [
@@ -584488,7 +584566,159 @@
          ],
          [
           "variant",
-          "?29-last"
+          "?29-32"
+         ],
+         [
+          "variant",
+          "?33-36"
+         ],
+         [
+          "variant",
+          "?37-last"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "fledge/tentative/generate-bid-browser-signals.https.window.html?33-36",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver-vendor.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/fledge-util.sub.js"
+         ],
+         [
+          "script",
+          "/common/subset-tests.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "variant",
+          "?1-4"
+         ],
+         [
+          "variant",
+          "?5-8"
+         ],
+         [
+          "variant",
+          "?9-12"
+         ],
+         [
+          "variant",
+          "?13-16"
+         ],
+         [
+          "variant",
+          "?17-20"
+         ],
+         [
+          "variant",
+          "?21-24"
+         ],
+         [
+          "variant",
+          "?25-28"
+         ],
+         [
+          "variant",
+          "?29-32"
+         ],
+         [
+          "variant",
+          "?33-36"
+         ],
+         [
+          "variant",
+          "?37-last"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "fledge/tentative/generate-bid-browser-signals.https.window.html?37-last",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver-vendor.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/fledge-util.sub.js"
+         ],
+         [
+          "script",
+          "/common/subset-tests.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "variant",
+          "?1-4"
+         ],
+         [
+          "variant",
+          "?5-8"
+         ],
+         [
+          "variant",
+          "?9-12"
+         ],
+         [
+          "variant",
+          "?13-16"
+         ],
+         [
+          "variant",
+          "?17-20"
+         ],
+         [
+          "variant",
+          "?21-24"
+         ],
+         [
+          "variant",
+          "?25-28"
+         ],
+         [
+          "variant",
+          "?29-32"
+         ],
+         [
+          "variant",
+          "?33-36"
+         ],
+         [
+          "variant",
+          "?37-last"
          ]
         ],
         "timeout": "long"
@@ -584552,7 +584782,15 @@
          ],
          [
           "variant",
-          "?29-last"
+          "?29-32"
+         ],
+         [
+          "variant",
+          "?33-36"
+         ],
+         [
+          "variant",
+          "?37-last"
          ]
         ],
         "timeout": "long"
@@ -584616,7 +584854,15 @@
          ],
          [
           "variant",
-          "?29-last"
+          "?29-32"
+         ],
+         [
+          "variant",
+          "?33-36"
+         ],
+         [
+          "variant",
+          "?37-last"
          ]
         ],
         "timeout": "long"
@@ -647633,6 +647879,26 @@
          ]
         ]
        },
+       "customizable-select-in-page": {
+        "customizable-select-in-page-keyboard-behavior.tentative.html": [
+         "24e6e39ea48236fc7b72604860913247b5f5f05c",
+         [
+          null,
+          {
+           "testdriver": true
+          }
+         ]
+        ],
+        "customizable-select-in-page-mouse-behavior.tentative.html": [
+         "d5b93693cf7d65b1202f459223a8cf6b8cff581a",
+         [
+          null,
+          {
+           "testdriver": true
+          }
+         ]
+        ]
+       },
        "inserted-or-removed.html": [
         "0db2bf0e77a4a8a76ebcef1b0879cac9bb8c3fea",
         [
@@ -662020,6 +662286,20 @@
        ],
        "simulate_preconnected_peripheral.https.html": [
         "318bd29cf4ee77dd34bb0a2f5fc91e54d29fc189",
+        [
+         null,
+         {
+          "testdriver": true,
+          "testdriver_features": [
+           "bidi"
+          ]
+         }
+        ]
+       ]
+      },
+      "emulation": {
+       "set_geolocation_override.https.html": [
+        "5cbcf546423c772a98fd3725531754c366ab7b91",
         [
          null,
          {
@@ -683021,7 +683301,7 @@
      ]
     ],
     "pointerevent_pointerout_no_pointer_movement.html": [
-     "856f2ce37cec59f70dc1a9ad4d3fe0436da3e4cd",
+     "1af166593266f671b1b4705e1911e46eb4c4b990",
      [
       null,
       {
@@ -794865,7 +795145,7 @@
      ]
     ],
     "supported-stats.https.html": [
-     "677736f3cd8f33963c53d4fa9bee0c52f4826a5f",
+     "81aef5f94b90da1ee83de617ecabf0d3e11ad21d",
      [
       null,
       {
@@ -833508,7 +833788,7 @@
          ]
         ],
         "before_request_sent_cached.py": [
-         "9483a707eab1d4caa561a193d641611cf92ffa2e",
+         "e8119d29d9e259208a11bed7c330a9ecbca49886",
          [
           null,
           {}
