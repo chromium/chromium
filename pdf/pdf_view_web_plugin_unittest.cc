@@ -90,6 +90,7 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_PDF_INK2)
+#include "base/files/file_path.h"
 #include "pdf/pdf_ink_brush.h"
 #include "pdf/pdf_ink_metrics_handler.h"
 #include "pdf/pdf_ink_module_client.h"
@@ -2842,6 +2843,89 @@ class PdfViewWebPluginInkTest
         Thumbnail(page_size, /*device_pixel_ratio=*/1));
   }
 
+  void TestInProgressDraw(base::FilePath::StringViewType expected_filename,
+                          const gfx::PointF& start_position,
+                          const gfx::PointF& end_position) {
+    plugin_->set_in_paint_for_testing(true);
+    constexpr gfx::Rect kScreenRect(kCanvasSize);
+    constexpr gfx::SizeF kPageSizeInPoints(
+        kCanvasSize.width() * kUnitConversionFactorPixelsToPoints,
+        kCanvasSize.height() * kUnitConversionFactorPixelsToPoints);
+    ON_CALL(*engine_ptr_, GetPageContentsRect)
+        .WillByDefault(Return(kScreenRect));
+    ON_CALL(*engine_ptr_, GetPageSizeInPoints)
+        .WillByDefault(Return(kPageSizeInPoints));
+    ON_CALL(*engine_ptr_, GetThumbnailSize)
+        .WillByDefault(Return(gfx::Size(50, 50)));
+    ON_CALL(*engine_ptr_, IsPageVisible).WillByDefault(Return(true));
+
+    UpdatePluginGeometry(/*device_scale=*/1.0f, kScreenRect);
+
+    // The canvas starts blank.
+    canvas_.DrawColor(SK_ColorWHITE);
+    plugin_->Paint(canvas_.sk_canvas(), kScreenRect);
+    SkBitmap blank_bitmap =
+        GenerateExpectedBitmapForPaint(kScreenRect, SK_ColorWHITE);
+    EXPECT_TRUE(cc::MatchesBitmap(canvas_.GetBitmap(), blank_bitmap,
+                                  cc::ExactPixelComparator()));
+
+    // Start to draw a stroke.  There should not be a call to apply the stroke
+    // until drawing is finished.
+    EXPECT_CALL(*engine_ptr_, ApplyStroke(_, _, _)).Times(0);
+    // The final imaging for a stroke saved to a PDF should match what was final
+    // drawn result when it was in-progress.
+    TestSendInputEvent(
+        MouseEventBuilder().CreateLeftClickAtPosition(start_position).Build(),
+        blink::WebInputEventResult::kHandledApplication);
+    TestSendInputEvent(
+        MouseEventBuilder()
+            .SetType(blink::WebInputEvent::Type::kMouseMove)
+            .SetPosition(end_position)
+            .SetButton(blink::WebPointerProperties::Button::kLeft)
+            .Build(),
+        blink::WebInputEventResult::kHandledApplication);
+
+    // Draw the canvas for the in-progress stroke.
+    plugin_->Paint(canvas_.sk_canvas(), kScreenRect);
+    const base::FilePath stroked_image_png_file =
+        GetInkTestDataFilePath(expected_filename);
+    EXPECT_TRUE(MatchesPngFile(canvas_.GetBitmap().asImage().get(),
+                               stroked_image_png_file));
+
+    // Finish the stroke.  After a stroke is finished there is nothing more to
+    // be drawn by PdfInkModule, as the completed stroke is provided by a
+    // callback to be applied to a PDF page.
+    testing::Mock::VerifyAndClearExpectations(engine_ptr_);
+    EXPECT_CALL(*engine_ptr_, ApplyStroke(/*page_index=*/0, InkStrokeId(0), _));
+    TestSendInputEvent(
+        MouseEventBuilder().CreateLeftMouseUpAtPosition(end_position).Build(),
+        blink::WebInputEventResult::kHandledApplication);
+
+    // Updating of `PdfViewWebPlugin::snapshot_` does not happen automatically
+    // on the invalidate call, but later after the tasks PaintManager posted
+    // have a chance to run.  This means painting uses the last snapshot, which
+    // does not include the last Ink stroke.  This results in the most recent
+    // stroke disappearing, causing a flash for the user unless the snapshot
+    // from the most recent stroke is reused.
+    plugin_->Paint(canvas_.sk_canvas(), kScreenRect);
+    EXPECT_TRUE(MatchesPngFile(canvas_.GetBitmap().asImage().get(),
+                               stroked_image_png_file));
+    EXPECT_TRUE(plugin_->HasInkInputsSnapshotForTesting());
+
+    // Simulate how the snapshot eventually gets updated, after all necessary
+    // tasks that normally happen from the PaintManager finally complete.  That
+    // results in a blank canvas here for this test, as PdfViewWebPlugin no
+    // longer uses the last Ink rendering snapshot for painting, and
+    // ApplyStroke() was mocked out so there is nothing to draw from the PDF
+    // engine.
+    plugin_->UpdateSnapshot(CreateSkiaImageForTesting(
+        plugin_->GetPluginRectForTesting().size(), SK_ColorWHITE));
+    plugin_->Paint(canvas_.sk_canvas(), kScreenRect);
+    EXPECT_TRUE(cc::MatchesBitmap(canvas_.GetBitmap(), blank_bitmap,
+                                  cc::ExactPixelComparator()));
+    EXPECT_FALSE(plugin_->HasInkInputsSnapshotForTesting());
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
 };
@@ -3155,85 +3239,11 @@ TEST_P(PdfViewWebPluginInkTest, AnnotationModeSetsFormAndClearsText) {
 }
 
 TEST_P(PdfViewWebPluginInkTest, DrawInProgressStroke) {
-  plugin_->set_in_paint_for_testing(true);
-  constexpr gfx::Rect kScreenRect(kCanvasSize);
-  constexpr gfx::SizeF kPageSizeInPoints(
-      kCanvasSize.width() * kUnitConversionFactorPixelsToPoints,
-      kCanvasSize.height() * kUnitConversionFactorPixelsToPoints);
-  ON_CALL(*engine_ptr_, GetPageContentsRect).WillByDefault(Return(kScreenRect));
-  ON_CALL(*engine_ptr_, GetPageSizeInPoints)
-      .WillByDefault(Return(kPageSizeInPoints));
-  ON_CALL(*engine_ptr_, GetThumbnailSize)
-      .WillByDefault(Return(gfx::Size(50, 50)));
-  ON_CALL(*engine_ptr_, IsPageVisible).WillByDefault(Return(true));
-
-  UpdatePluginGeometry(/*device_scale=*/1.0f, kScreenRect);
-
-  // The canvas starts blank.
-  canvas_.DrawColor(SK_ColorWHITE);
-  plugin_->Paint(canvas_.sk_canvas(), kScreenRect);
-  SkBitmap blank_bitmap =
-      GenerateExpectedBitmapForPaint(kScreenRect, SK_ColorWHITE);
-  EXPECT_TRUE(cc::MatchesBitmap(canvas_.GetBitmap(), blank_bitmap,
-                                cc::ExactPixelComparator()));
-
-  // Start to draw a stroke.  There should not be a call to apply the stroke
-  // until drawing is finished.
-  EXPECT_CALL(*engine_ptr_, ApplyStroke(_, _, _)).Times(0);
   plugin_->OnMessage(CreateSetAnnotationModeMessageForTesting(/*enable=*/true));
-  // The final imaging for a stroke saved to a PDF should match what was final
-  // drawn result when it was in-progress.
-  TestSendInputEvent(
-      MouseEventBuilder().CreateLeftClickAtPosition({95, 85}).Build(),
-      blink::WebInputEventResult::kHandledApplication);
-  static constexpr gfx::PointF kStrokeEndingPosition(50, 45);
-  TestSendInputEvent(MouseEventBuilder()
-                         .SetType(blink::WebInputEvent::Type::kMouseMove)
-                         .SetPosition(kStrokeEndingPosition)
-                         .SetButton(blink::WebPointerProperties::Button::kLeft)
-                         .Build(),
-                     blink::WebInputEventResult::kHandledApplication);
-
-  // Draw the canvas for the in-progress stroke.
-  plugin_->Paint(canvas_.sk_canvas(), kScreenRect);
-  const base::FilePath stroked_image_png_file =
-      GetInkTestDataFilePath(FILE_PATH_LITERAL("diagonal_stroke.png"));
-  EXPECT_TRUE(MatchesPngFile(canvas_.GetBitmap().asImage().get(),
-                             stroked_image_png_file));
-
-  // Finish the stroke.  After a stroke is finished there is nothing more to
-  // be drawn by PdfInkModule, as the completed stroke is provided by a
-  // callback to be applied to a PDF page.
-  testing::Mock::VerifyAndClearExpectations(engine_ptr_);
-  EXPECT_CALL(*engine_ptr_, ApplyStroke(/*page_index=*/0, InkStrokeId(0), _));
-  TestSendInputEvent(MouseEventBuilder()
-                         .CreateLeftMouseUpAtPosition(kStrokeEndingPosition)
-                         .Build(),
-                     blink::WebInputEventResult::kHandledApplication);
-
-  // Updating of `PdfViewWebPlugin::snapshot_` does not happen automatically
-  // on the invalidate call, but later after the tasks PaintManager posted have
-  // a chance to run.  This means painting uses the last snapshot, which does
-  // not include the last Ink stroke.  This results in the most recent stroke
-  // disappearing, causing a flash for the user unless the snapshot from the
-  // most recent stroke is reused.
-  plugin_->Paint(canvas_.sk_canvas(), kScreenRect);
-  EXPECT_TRUE(MatchesPngFile(canvas_.GetBitmap().asImage().get(),
-                             stroked_image_png_file));
-  EXPECT_TRUE(plugin_->HasInkInputsSnapshotForTesting());
-
-  // Simulate how the snapshot eventually gets updated, after all necessary
-  // tasks that normally happen from the PaintManager finally complete.  That
-  // results in a blank canvas here for this test, as PdfViewWebPlugin no
-  // longer uses the last Ink rendering snapshot for painting, and
-  // ApplyStroke() was mocked out so there is nothing to draw from the PDF
-  // engine.
-  plugin_->UpdateSnapshot(CreateSkiaImageForTesting(
-      plugin_->GetPluginRectForTesting().size(), SK_ColorWHITE));
-  plugin_->Paint(canvas_.sk_canvas(), kScreenRect);
-  EXPECT_TRUE(cc::MatchesBitmap(canvas_.GetBitmap(), blank_bitmap,
-                                cc::ExactPixelComparator()));
-  EXPECT_FALSE(plugin_->HasInkInputsSnapshotForTesting());
+  TestInProgressDraw(
+      /*expected_filename=*/FILE_PATH_LITERAL("diagonal_stroke.png"),
+      /*start_position=*/gfx::PointF(95, 85),
+      /*end_position=*/gfx::PointF(50, 45));
 }
 
 class PdfViewWebPluginInk2SaveTest : public PdfViewWebPluginSaveTest {
