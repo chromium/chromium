@@ -15,6 +15,7 @@
 #include "base/timer/timer.h"
 #include "components/performance_manager/scenario_api/performance_scenario_observer.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/process_allocation_context.h"
 #include "content/public/browser/render_process_host_observer.h"
 #include "content/public/browser/spare_render_process_host_manager.h"
@@ -205,6 +206,12 @@ class CONTENT_EXPORT SpareRenderProcessHostManagerImpl
 #if BUILDFLAG(IS_ANDROID)
   void OnApplicationStateChange(base::android::ApplicationState state);
 #endif
+
+  // Checks various conditions that could prevent an embedder from using the
+  // spare.
+  std::optional<ContentBrowserClient::SpareProcessRefusedByEmbedderReason>
+  DoesEmbedderAllowSpareUsage(BrowserContext* browser_context,
+                              SiteInstanceImpl* site_instance);
 
   base::MemoryPressureListener memory_pressure_listener_;
 
