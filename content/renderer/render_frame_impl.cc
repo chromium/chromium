@@ -279,6 +279,7 @@ using blink::WebFrameSerializer;
 using blink::WebFrameSerializerClient;
 using blink::WebHistoryItem;
 using blink::WebHTTPBody;
+using blink::WebInputMethodController;
 using blink::WebLocalFrame;
 using blink::WebMediaPlayer;
 using blink::WebMediaPlayerClient;
@@ -6107,15 +6108,14 @@ void RenderFrameImpl::SyncSelectionIfRequired(blink::SyncCondition force_sync) {
   } else
 #endif
   {
-    WebRange selection =
-        frame_->GetInputMethodController()->GetSelectionOffsets();
+    WebInputMethodController* controller = frame_->GetInputMethodController();
+    WebRange selection = controller->GetSelectionOffsets();
     if (selection.IsNull())
       return;
 
     range = gfx::Range(selection.StartOffset(), selection.EndOffset());
 
-    if (frame_->GetInputMethodController()->TextInputType() !=
-        blink::kWebTextInputTypeNone) {
+    if (controller->TextInputType() != blink::kWebTextInputTypeNone) {
       // If current focused element is editable, we will send 100 more chars
       // before and after selection. It is for input method surrounding text
       // feature.
@@ -6125,7 +6125,13 @@ void RenderFrameImpl::SyncSelectionIfRequired(blink::SyncCondition force_sync) {
         offset = 0;
       size_t length =
           selection.EndOffset() - offset + kExtraCharsBeforeAndAfterSelection;
-      text = frame_->RangeAsText(WebRange(offset, length)).Utf16();
+      if (base::FeatureList::IsEnabled(blink::features::kFastSelectionSync)) {
+        WebString value = controller->TextInputInfo().value;
+        text = value.IsNull() ? value.Utf16()
+                              : value.Substring(offset, length).Utf16();
+      } else {
+        text = frame_->RangeAsText(WebRange(offset, length)).Utf16();
+      }
     } else {
       offset = selection.StartOffset();
       text = frame_->SelectionAsText().Utf16();
