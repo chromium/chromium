@@ -82,21 +82,6 @@
       "use_siso": true
     }
   },
-  "V8 Android GN (dbg)": {
-    "gn_args": {
-      "android_static_analysis": "off",
-      "debuggable_apks": false,
-      "ffmpeg_branding": "Chrome",
-      "is_component_build": true,
-      "is_debug": true,
-      "proprietary_codecs": true,
-      "symbol_level": 1,
-      "target_os": "android",
-      "use_reclient": false,
-      "use_remoteexec": true,
-      "use_siso": true
-    }
-  },
   "V8 Blink Linux": {
     "gn_args": {
       "dcheck_always_on": false,
@@ -153,16 +138,6 @@
       "is_component_build": false,
       "is_debug": false,
       "proprietary_codecs": true,
-      "use_reclient": true,
-      "use_remoteexec": true,
-      "use_siso": true
-    }
-  },
-  "V8 Linux GN": {
-    "gn_args": {
-      "dcheck_always_on": false,
-      "is_component_build": false,
-      "is_debug": false,
       "use_reclient": true,
       "use_remoteexec": true,
       "use_siso": true
