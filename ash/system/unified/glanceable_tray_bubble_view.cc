@@ -87,6 +87,7 @@ class TimeManagementContainer : public views::FlexLayoutView {
     if (chromeos::features::IsSystemBlurEnabled()) {
       layer()->SetFillsBoundsOpaquely(false);
       layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
+      layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
     }
 
     layer()->SetRoundedCornerRadius(
