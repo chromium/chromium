@@ -168,8 +168,9 @@ TEST_P(PersistentCacheTest, MetadataIsRetrievable) {
   auto cache = OpenCache();
   cache->Insert(kKey, base::byte_span_from_cstring("1"), metadata);
 
-  EXPECT_EQ(cache->Find(kKey)->GetMetadata().input_signature,
-            metadata.input_signature);
+  auto entry = cache->Find(kKey);
+  EXPECT_EQ(entry->GetMetadata().input_signature, metadata.input_signature);
+  EXPECT_NE(entry->GetMetadata().write_timestamp, 0);
 }
 
 TEST_P(PersistentCacheTest, OverwritingChangesMetadata) {

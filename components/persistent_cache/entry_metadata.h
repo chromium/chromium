@@ -21,6 +21,9 @@ namespace persistent_cache {
 struct COMPONENT_EXPORT(PERSISTENT_CACHE) EntryMetadata {
   // Opaque token indicating whether the cached entry is still valid
   int64_t input_signature = 0;
+
+  // Time at which the entry was inserted into the cache.
+  int64_t write_timestamp = 0;
 };
 
 }  // namespace persistent_cache
