@@ -75,10 +75,12 @@ group("unit_tests") {
 
 group("browser_tests") {
   testonly = true
-  deps = [
-    ":countries_browser_test",
-    "notice:browser_tests",
-  ]
+  deps = [ "notice:browser_tests" ]
+
+  # Tests that do not run on Android builds.
+  if (!is_android) {
+    deps += [ ":countries_browser_test" ]
+  }
 }
 # TODO(crbug.com/408801109) move other privacy_sandbox sources
 # from chrome/test/BUILD.gn here.

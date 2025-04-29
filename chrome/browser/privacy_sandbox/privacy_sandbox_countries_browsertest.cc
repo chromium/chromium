@@ -8,7 +8,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_countries.h"
-#include "chrome/test/base/platform_browser_test.h"
+#include "chrome/test/base/in_process_browser_test.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/variations/service/variations_service.h"
 #include "components/variations/variations_switches.h"
@@ -27,7 +27,7 @@ struct PrivacySandboxCountriesTestData {
   bool is_variation_stored_permanent_country_empty;
 };
 
-class PrivacySandboxCountriesBrowserTestBase : public PlatformBrowserTest {
+class PrivacySandboxCountriesBrowserTestBase : public InProcessBrowserTest {
  public:
   PrivacySandboxCountriesBrowserTestBase() {
     privacy_sandbox_countries_ = GetSingletonPrivacySandboxCountries();
