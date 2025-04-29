@@ -1,0 +1,28 @@
+<!--
+@BLINK-ALLOW:setSize*
+@BLINK-ALLOW:posInSet*
+@BLINK-ALLOW:focusable*
+-->
+<!doctype html>
+<style>
+  #scroller {
+    width: 600px;
+    height: 300px;
+    overflow: auto;
+    white-space: nowrap;
+  }
+
+  #scroller::scroll-button(inline-start) {
+    content: "x";
+    background: blue;
+    display: flex;
+    height: 20px;
+    width: 20px;
+  }
+
+  #scroller::scroll-button(inline-start):disabled {
+    background: gray;
+  }
+</style>
+<div id="scroller">
+</div>

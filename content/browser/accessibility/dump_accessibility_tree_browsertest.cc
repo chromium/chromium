@@ -4581,6 +4581,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeWithCarouselTest,
   RunCSSTest(FILE_PATH_LITERAL("reading-flow-scroll-marker.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeWithCarouselTest,
+                       ScrollButtonsDisabledStatus) {
+  RunCSSTest(FILE_PATH_LITERAL("scroll-buttons-disabled-status.html"));
+}
+
 //
 // These tests cover features of the testing infrastructure itself.
 //

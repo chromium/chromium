@@ -1,7 +1,7 @@
 rootWebArea focusable
 ++genericContainer ignored
 ++++genericContainer ignored
-++++++button focusable name='Scroll left'
+++++++button name='Scroll left' restriction=disabled
 ++++++button focusable name='Scroll right'
 ++++++genericContainer focusable detailsIds=button
 ++++++++genericContainer

@@ -1,10 +1,10 @@
 rootWebArea focusable
 ++genericContainer ignored
 ++++genericContainer ignored
-++++++button focusable name='up'
-++++++button focusable name='prev'
+++++++button name='up' restriction=disabled
+++++++button name='prev' restriction=disabled
 ++++++button focusable name='next'
-++++++button focusable name='down'
+++++++button name='down' restriction=disabled
 ++++++genericContainer focusable
 ++++++++genericContainer
 ++++++++++staticText name='One'
