@@ -3335,17 +3335,17 @@ TEST_F(BookmarkModelPeriodicLoggingTest, LogOnlyIfAccountNodes) {
   SimulatePersistentLogIntervalTriggered();
 
   histogram_tester()->ExpectTotalCount(
-      "Bookmarks.BookmarksExistInStorageType.BookmarkBar", 0);
+      "Bookmarks.BookmarksExistInStorageType.UnderBookmarksBar", 0);
   histogram_tester()->ExpectTotalCount(
-      "Bookmarks.BookmarksExistInStorageType.AllBookmarks", 0);
+      "Bookmarks.BookmarksExistInStorageType.ConsideringAllBookmarks", 0);
 
   model()->CreateAccountPermanentFolders();
   SimulatePersistentLogIntervalTriggered();
 
   histogram_tester()->ExpectTotalCount(
-      "Bookmarks.BookmarksExistInStorageType.BookmarkBar", 1);
+      "Bookmarks.BookmarksExistInStorageType.UnderBookmarksBar", 1);
   histogram_tester()->ExpectTotalCount(
-      "Bookmarks.BookmarksExistInStorageType.AllBookmarks", 1);
+      "Bookmarks.BookmarksExistInStorageType.ConsideringAllBookmarks", 1);
 }
 
 TEST_F(BookmarkModelPeriodicLoggingTest, LogOnlyIfHaveBookmarks) {
@@ -3354,18 +3354,18 @@ TEST_F(BookmarkModelPeriodicLoggingTest, LogOnlyIfHaveBookmarks) {
   SimulatePersistentLogIntervalTriggered();
 
   histogram_tester()->ExpectTotalCount(
-      "Bookmarks.BookmarksExistInStorageType.BookmarkBar", 0);
+      "Bookmarks.BookmarksExistInStorageType.UnderBookmarksBar", 0);
   histogram_tester()->ExpectTotalCount(
-      "Bookmarks.BookmarksExistInStorageType.AllBookmarks", 0);
+      "Bookmarks.BookmarksExistInStorageType.ConsideringAllBookmarks", 0);
 
   model()->AddURL(model()->bookmark_bar_node(), 0, u"title",
                   GURL("http://foo.com"));
   SimulatePersistentLogIntervalTriggered();
 
   histogram_tester()->ExpectTotalCount(
-      "Bookmarks.BookmarksExistInStorageType.BookmarkBar", 1);
+      "Bookmarks.BookmarksExistInStorageType.UnderBookmarksBar", 1);
   histogram_tester()->ExpectTotalCount(
-      "Bookmarks.BookmarksExistInStorageType.AllBookmarks", 1);
+      "Bookmarks.BookmarksExistInStorageType.ConsideringAllBookmarks", 1);
 }
 
 TEST_F(BookmarkModelPeriodicLoggingTest, LogAllBookmarks) {
@@ -3376,10 +3376,10 @@ TEST_F(BookmarkModelPeriodicLoggingTest, LogAllBookmarks) {
   SimulatePersistentLogIntervalTriggered();
 
   histogram_tester()->ExpectUniqueSample(
-      "Bookmarks.BookmarksExistInStorageType.AllBookmarks",
+      "Bookmarks.BookmarksExistInStorageType.ConsideringAllBookmarks",
       metrics::BookmarksExistInStorageType::kLocalOnly, 1);
   histogram_tester()->ExpectTotalCount(
-      "Bookmarks.BookmarksExistInStorageType.BookmarkBar", 0);
+      "Bookmarks.BookmarksExistInStorageType.UnderBookmarksBar", 0);
 
   // Add an account bookmark in a different permanent folder.
   model()->AddURL(model()->account_mobile_node(), 0, u"account",
@@ -3387,32 +3387,32 @@ TEST_F(BookmarkModelPeriodicLoggingTest, LogAllBookmarks) {
   SimulatePersistentLogIntervalTriggered();
 
   histogram_tester()->ExpectBucketCount(
-      "Bookmarks.BookmarksExistInStorageType.AllBookmarks",
+      "Bookmarks.BookmarksExistInStorageType.ConsideringAllBookmarks",
       metrics::BookmarksExistInStorageType::kLocalOnly, 1);
   histogram_tester()->ExpectBucketCount(
-      "Bookmarks.BookmarksExistInStorageType.AllBookmarks",
+      "Bookmarks.BookmarksExistInStorageType.ConsideringAllBookmarks",
       metrics::BookmarksExistInStorageType::kLocalAndAccount, 1);
   histogram_tester()->ExpectTotalCount(
-      "Bookmarks.BookmarksExistInStorageType.AllBookmarks", 2);
+      "Bookmarks.BookmarksExistInStorageType.ConsideringAllBookmarks", 2);
   histogram_tester()->ExpectTotalCount(
-      "Bookmarks.BookmarksExistInStorageType.BookmarkBar", 0);
+      "Bookmarks.BookmarksExistInStorageType.UnderBookmarksBar", 0);
 
   model()->Remove(local_node, metrics::BookmarkEditSource::kOther, FROM_HERE);
   SimulatePersistentLogIntervalTriggered();
 
   histogram_tester()->ExpectBucketCount(
-      "Bookmarks.BookmarksExistInStorageType.AllBookmarks",
+      "Bookmarks.BookmarksExistInStorageType.ConsideringAllBookmarks",
       metrics::BookmarksExistInStorageType::kLocalOnly, 1);
   histogram_tester()->ExpectBucketCount(
-      "Bookmarks.BookmarksExistInStorageType.AllBookmarks",
+      "Bookmarks.BookmarksExistInStorageType.ConsideringAllBookmarks",
       metrics::BookmarksExistInStorageType::kLocalAndAccount, 1);
   histogram_tester()->ExpectBucketCount(
-      "Bookmarks.BookmarksExistInStorageType.AllBookmarks",
+      "Bookmarks.BookmarksExistInStorageType.ConsideringAllBookmarks",
       metrics::BookmarksExistInStorageType::kAccountOnly, 1);
   histogram_tester()->ExpectTotalCount(
-      "Bookmarks.BookmarksExistInStorageType.AllBookmarks", 3);
+      "Bookmarks.BookmarksExistInStorageType.ConsideringAllBookmarks", 3);
   histogram_tester()->ExpectTotalCount(
-      "Bookmarks.BookmarksExistInStorageType.BookmarkBar", 0);
+      "Bookmarks.BookmarksExistInStorageType.UnderBookmarksBar", 0);
 }
 
 TEST_F(BookmarkModelPeriodicLoggingTest, LogBookmarksBarAndAllBookmarks) {
@@ -3424,10 +3424,10 @@ TEST_F(BookmarkModelPeriodicLoggingTest, LogBookmarksBarAndAllBookmarks) {
   SimulatePersistentLogIntervalTriggered();
 
   histogram_tester()->ExpectUniqueSample(
-      "Bookmarks.BookmarksExistInStorageType.BookmarkBar",
+      "Bookmarks.BookmarksExistInStorageType.UnderBookmarksBar",
       metrics::BookmarksExistInStorageType::kAccountOnly, 1);
   histogram_tester()->ExpectUniqueSample(
-      "Bookmarks.BookmarksExistInStorageType.AllBookmarks",
+      "Bookmarks.BookmarksExistInStorageType.ConsideringAllBookmarks",
       metrics::BookmarksExistInStorageType::kAccountOnly, 1);
 
   // Add a local bookmark in the bookmark bar node.
@@ -3436,47 +3436,47 @@ TEST_F(BookmarkModelPeriodicLoggingTest, LogBookmarksBarAndAllBookmarks) {
   SimulatePersistentLogIntervalTriggered();
 
   histogram_tester()->ExpectBucketCount(
-      "Bookmarks.BookmarksExistInStorageType.BookmarkBar",
+      "Bookmarks.BookmarksExistInStorageType.UnderBookmarksBar",
       metrics::BookmarksExistInStorageType::kAccountOnly, 1);
   histogram_tester()->ExpectBucketCount(
-      "Bookmarks.BookmarksExistInStorageType.BookmarkBar",
+      "Bookmarks.BookmarksExistInStorageType.UnderBookmarksBar",
       metrics::BookmarksExistInStorageType::kLocalAndAccount, 1);
   histogram_tester()->ExpectTotalCount(
-      "Bookmarks.BookmarksExistInStorageType.BookmarkBar", 2);
+      "Bookmarks.BookmarksExistInStorageType.UnderBookmarksBar", 2);
   histogram_tester()->ExpectBucketCount(
-      "Bookmarks.BookmarksExistInStorageType.AllBookmarks",
+      "Bookmarks.BookmarksExistInStorageType.ConsideringAllBookmarks",
       metrics::BookmarksExistInStorageType::kAccountOnly, 1);
   histogram_tester()->ExpectBucketCount(
-      "Bookmarks.BookmarksExistInStorageType.AllBookmarks",
+      "Bookmarks.BookmarksExistInStorageType.ConsideringAllBookmarks",
       metrics::BookmarksExistInStorageType::kLocalAndAccount, 1);
   histogram_tester()->ExpectTotalCount(
-      "Bookmarks.BookmarksExistInStorageType.AllBookmarks", 2);
+      "Bookmarks.BookmarksExistInStorageType.ConsideringAllBookmarks", 2);
 
   model()->Remove(account_node, metrics::BookmarkEditSource::kOther, FROM_HERE);
   SimulatePersistentLogIntervalTriggered();
 
   histogram_tester()->ExpectBucketCount(
-      "Bookmarks.BookmarksExistInStorageType.BookmarkBar",
+      "Bookmarks.BookmarksExistInStorageType.UnderBookmarksBar",
       metrics::BookmarksExistInStorageType::kLocalOnly, 1);
   histogram_tester()->ExpectBucketCount(
-      "Bookmarks.BookmarksExistInStorageType.BookmarkBar",
+      "Bookmarks.BookmarksExistInStorageType.UnderBookmarksBar",
       metrics::BookmarksExistInStorageType::kLocalAndAccount, 1);
   histogram_tester()->ExpectBucketCount(
-      "Bookmarks.BookmarksExistInStorageType.BookmarkBar",
+      "Bookmarks.BookmarksExistInStorageType.UnderBookmarksBar",
       metrics::BookmarksExistInStorageType::kAccountOnly, 1);
   histogram_tester()->ExpectTotalCount(
-      "Bookmarks.BookmarksExistInStorageType.BookmarkBar", 3);
+      "Bookmarks.BookmarksExistInStorageType.UnderBookmarksBar", 3);
   histogram_tester()->ExpectBucketCount(
-      "Bookmarks.BookmarksExistInStorageType.AllBookmarks",
+      "Bookmarks.BookmarksExistInStorageType.ConsideringAllBookmarks",
       metrics::BookmarksExistInStorageType::kLocalOnly, 1);
   histogram_tester()->ExpectBucketCount(
-      "Bookmarks.BookmarksExistInStorageType.AllBookmarks",
+      "Bookmarks.BookmarksExistInStorageType.ConsideringAllBookmarks",
       metrics::BookmarksExistInStorageType::kLocalAndAccount, 1);
   histogram_tester()->ExpectBucketCount(
-      "Bookmarks.BookmarksExistInStorageType.AllBookmarks",
+      "Bookmarks.BookmarksExistInStorageType.ConsideringAllBookmarks",
       metrics::BookmarksExistInStorageType::kAccountOnly, 1);
   histogram_tester()->ExpectTotalCount(
-      "Bookmarks.BookmarksExistInStorageType.AllBookmarks", 3);
+      "Bookmarks.BookmarksExistInStorageType.ConsideringAllBookmarks", 3);
 }
 
 }  // namespace bookmarks

@@ -207,7 +207,8 @@ void RecordBookmarksExistInStorageType(
     BookmarksExistInStorageType storage_type) {
   base::UmaHistogramEnumeration(
       base::StrCat({"Bookmarks.BookmarksExistInStorageType.",
-                    bookmark_bar_only ? "BookmarkBar" : "AllBookmarks"}),
+                    bookmark_bar_only ? "UnderBookmarksBar"
+                                      : "ConsideringAllBookmarks"}),
       storage_type);
 }
 
