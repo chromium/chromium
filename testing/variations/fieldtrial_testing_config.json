@@ -8314,6 +8314,9 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "max_parallel_requests": "15"
+                    },
                     "enable_features": [
                         "EnableAsyncUploadAfterVerdict"
                     ]
