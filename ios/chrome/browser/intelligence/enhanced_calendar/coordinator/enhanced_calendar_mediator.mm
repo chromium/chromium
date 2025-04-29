@@ -256,9 +256,9 @@ constexpr std::string kCalendarEventTitleTemplate = "{} {}";
 
   summary = [summary
       stringByAppendingString:[self optionalLocationField:eventLocation]];
-  summary = [summary stringByAppendingString:[self descriptionURL]];
   summary = [summary stringByAppendingString:
                          [self optionalConfirmationCodeField:confirmationCode]];
+  summary = [summary stringByAppendingString:[self descriptionURL]];
 
   return summary;
 }
