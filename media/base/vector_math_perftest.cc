@@ -30,7 +30,7 @@ perf_test::PerfResultReporter SetUpReporter(const std::string& story_name) {
   perf_test::PerfResultReporter reporter("vector_math", story_name);
   reporter.RegisterImportantMetric("_fmac", "runs/s");
   reporter.RegisterImportantMetric("_fmul", "runs/s");
-  reporter.RegisterImportantMetric("_clamp", "runs/s");
+  reporter.RegisterImportantMetric("_fclamp", "runs/s");
   reporter.RegisterImportantMetric("_ewma_and_max_power", "runs/s");
   return reporter;
 }
