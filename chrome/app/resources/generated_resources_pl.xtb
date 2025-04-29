@@ -83,7 +83,6 @@
 <translation id="1053898984916097744">Zacznij coś nowego lub uzyskaj pomoc.</translation>
 <translation id="1054048317165655285">Zakończ konfigurację na telefonie</translation>
 <translation id="1054153489933238809">Otwórz oryginalny &amp;obraz w nowej karcie</translation>
-<translation id="1054187194995068149">Cześć, tak brzmi mój głos</translation>
 <translation id="1054502481659725522">Aplikacje, strony internetowe i usługi systemowe mogą używać Twojej lokalizacji</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{Zaktualizuj urządzenie <ph name="DEVICE_TYPE" /> w ciągu tygodnia}few{Zaktualizuj urządzenie <ph name="DEVICE_TYPE" /> w ciągu {NUM_WEEKS} tygodni}many{Zaktualizuj urządzenie <ph name="DEVICE_TYPE" /> w ciągu {NUM_WEEKS} tygodni}other{Zaktualizuj urządzenie <ph name="DEVICE_TYPE" /> w ciągu {NUM_WEEKS} tygodnia}}</translation>
 <translation id="1055606969515662982">Aby zatrzymać przesyłanie, użyj pilota</translation>

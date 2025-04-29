@@ -83,7 +83,6 @@
 <translation id="1053898984916097744">Находите то, что вам нужно, не закрывая клавиатуру.</translation>
 <translation id="1054048317165655285">Завершите настройку на телефоне</translation>
 <translation id="1054153489933238809">Открыть оригинальное изображение в новой вкладке</translation>
-<translation id="1054187194995068149">Привет. Это проверка голоса</translation>
 <translation id="1054502481659725522">Сайты, приложения и системные службы могут использовать данные о вашем местоположении</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{Обновите <ph name="DEVICE_TYPE" /> в течение 1 недели}one{Обновите <ph name="DEVICE_TYPE" /> в течение {NUM_WEEKS} недели}few{Обновите <ph name="DEVICE_TYPE" /> в течение {NUM_WEEKS} недель}many{Обновите <ph name="DEVICE_TYPE" /> в течение {NUM_WEEKS} недель}other{Обновите <ph name="DEVICE_TYPE" /> в течение {NUM_WEEKS} недели}}</translation>
 <translation id="1055606969515662982">Чтобы остановить трансляцию, используйте пульт ДУ</translation>

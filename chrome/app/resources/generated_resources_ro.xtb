@@ -83,7 +83,6 @@
 <translation id="1053898984916097744">Începe ceva nou sau primește ajutor în flux.</translation>
 <translation id="1054048317165655285">Finalizează configurarea pe telefon</translation>
 <translation id="1054153489933238809">Deschide &amp;imaginea originală într-o filă nouă</translation>
-<translation id="1054187194995068149">Bună! Aceasta este o previzualizare</translation>
 <translation id="1054502481659725522">Aplicațiile, site-urile și serviciile de sistem pot folosi locația ta</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{Actualizează acest <ph name="DEVICE_TYPE" /> în cel mult o săptămână}few{Actualizează acest <ph name="DEVICE_TYPE" /> în cel mult {NUM_WEEKS} săptămâni}other{Actualizează acest <ph name="DEVICE_TYPE" /> în cel mult {NUM_WEEKS} de săptămâni}}</translation>
 <translation id="1055606969515662982">Folosește telecomanda pentru a opri proiectarea</translation>

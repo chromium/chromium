@@ -83,7 +83,6 @@
 <translation id="1053898984916097744">Start et nyt projekt, eller få hjælp undervejs.</translation>
 <translation id="1054048317165655285">Gennemfør konfigurationen på din telefon</translation>
 <translation id="1054153489933238809">Åbn originalbillede på ny fane</translation>
-<translation id="1054187194995068149">Hej! Dette er et preview</translation>
 <translation id="1054502481659725522">Apps, websites og systemtjenester kan bruge din lokation</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{Opdater <ph name="DEVICE_TYPE" /> inden for 1 uge}one{Opdater <ph name="DEVICE_TYPE" /> inden for {NUM_WEEKS} uge}other{Opdater <ph name="DEVICE_TYPE" /> inden for {NUM_WEEKS} uger}}</translation>
 <translation id="1055606969515662982">Brug fjernbetjeningen til at stoppe med at caste</translation>

@@ -83,7 +83,6 @@
 <translation id="1053898984916097744">ابدأ مَهمَة جديدة أو احصل على مساعدة أثناء إنجاز المهام.</translation>
 <translation id="1054048317165655285">إكمال الإعداد على هاتفك</translation>
 <translation id="1054153489933238809">فتح الصورة الأصلية في علامة تبويب جديدة</translation>
-<translation id="1054187194995068149">مرحبًا، هذه معاينة</translation>
 <translation id="1054502481659725522">بإمكان التطبيقات والمواقع الإلكترونية وخدمات النظام استخدام موقعك الجغرافي</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{يجب تحديث جهاز <ph name="DEVICE_TYPE" /> خلال أسبوع واحد}zero{يجب تحديث جهاز <ph name="DEVICE_TYPE" /> خلال {NUM_WEEKS} أسبوع}two{يجب تحديث جهاز <ph name="DEVICE_TYPE" /> خلال أسبوعَين ({NUM_WEEKS})}few{يجب تحديث جهاز <ph name="DEVICE_TYPE" /> خلال {NUM_WEEKS} أسابيع}many{يجب تحديث جهاز <ph name="DEVICE_TYPE" /> خلال {NUM_WEEKS} أسبوعًا}other{يجب تحديث جهاز <ph name="DEVICE_TYPE" /> خلال {NUM_WEEKS} أسبوع}}</translation>
 <translation id="1055606969515662982">يجب استخدام جهاز التحكّم عن بُعد لإيقاف البث</translation>

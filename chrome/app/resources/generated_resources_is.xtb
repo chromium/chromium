@@ -83,7 +83,6 @@
 <translation id="1053898984916097744">Byrjaðu á nýju verkefni eða fáðu aðstoð við að komast í gírinn.</translation>
 <translation id="1054048317165655285">Ljúka uppsetningu í símanum</translation>
 <translation id="1054153489933238809">Opna upprunalega &amp;mynd á nýjum flipa</translation>
-<translation id="1054187194995068149">Hæ. Þetta er forskoðun</translation>
 <translation id="1054502481659725522">Forrit, vefsvæði og kerfisþjónustur geta notað staðsetninguna þína</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{Uppfærðu <ph name="DEVICE_TYPE" /> tækið innan 1 viku}one{Uppfærðu <ph name="DEVICE_TYPE" /> tækið innan {NUM_WEEKS} viku}other{Uppfærðu <ph name="DEVICE_TYPE" /> tækið innan {NUM_WEEKS} vikna}}</translation>
 <translation id="1055606969515662982">Notaðu fjarstýringuna til að hætta vörpun</translation>

@@ -83,7 +83,6 @@
 <translation id="1053898984916097744">Iesāciet ko jaunu vai saņemiet palīdzību, kamēr esat plūsmas stāvoklī.</translation>
 <translation id="1054048317165655285">Pabeidziet iestatīšanu tālrunī</translation>
 <translation id="1054153489933238809">Atvērt sākotnējo &amp;attēlu jaunā cilnē</translation>
-<translation id="1054187194995068149">Labdien! Šis ir priekšskatījums</translation>
 <translation id="1054502481659725522">Jūsu atrašanās vietas datus var izmantot lietotnes, vietnes un sistēmas pakalpojumi.</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{<ph name="DEVICE_TYPE" /> ierīce ir jāatjaunina vienas nedēļas laikā}zero{<ph name="DEVICE_TYPE" /> ierīce ir jāatjaunina {NUM_WEEKS} nedēļu laikā}one{<ph name="DEVICE_TYPE" /> ierīce ir jāatjaunina {NUM_WEEKS} nedēļas laikā}other{<ph name="DEVICE_TYPE" /> ierīce ir jāatjaunina {NUM_WEEKS} nedēļu laikā}}</translation>
 <translation id="1055606969515662982">Izmantojiet tālvadības ierīci, lai apturētu apraidi</translation>
