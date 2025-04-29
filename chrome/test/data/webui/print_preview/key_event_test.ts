@@ -121,7 +121,7 @@ suite('KeyEventTest', function() {
         keyEventOn(
             page.shadowRoot!.querySelector('print-preview-sidebar')!.shadowRoot!
                 .querySelector('print-preview-other-options-settings')!
-                .shadowRoot!.querySelector('cr-checkbox')!,
+                .shadowRoot.querySelector('cr-checkbox')!,
             'keydown', 0, [], 'Enter');
         return whenKeyEventFired.then(
             () => assertEquals(0, nativeLayer.getCallCount('doPrint')));

@@ -105,7 +105,7 @@ suite('PolicyTest', function() {
 
   function getCheckbox(settingName: string): CrCheckboxElement {
     return page.shadowRoot!.querySelector('print-preview-sidebar')!.shadowRoot!
-        .querySelector('print-preview-other-options-settings')!.shadowRoot!
+        .querySelector('print-preview-other-options-settings')!.shadowRoot
         .querySelector<CrCheckboxElement>(`#${settingName}`)!;
   }
 

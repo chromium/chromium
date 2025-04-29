@@ -2,22 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
-import './print_preview_shared.css.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {getCss} from './settings_section.css.js';
+import {getHtml} from './settings_section.html.js';
 
-import {getTemplate} from './settings_section.html.js';
-
-export class PrintPreviewSettingsSectionElement extends PolymerElement {
+export class PrintPreviewSettingsSectionElement extends CrLitElement {
   static get is() {
     return 'print-preview-settings-section';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
+  }
+
+  override render() {
+    return getHtml.bind(this)();
   }
 }
+
+export type SettingsSectionElement = PrintPreviewSettingsSectionElement;
 
 customElements.define(
     PrintPreviewSettingsSectionElement.is, PrintPreviewSettingsSectionElement);
