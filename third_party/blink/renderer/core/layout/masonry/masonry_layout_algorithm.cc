@@ -160,19 +160,23 @@ void MasonryLayoutAlgorithm::PlaceMasonryItems(
     running_positions.UpdateRunningPositionsForSpan(item_span,
                                                     new_running_position);
 
-    intrinsic_block_size_ =
-        std::max(intrinsic_block_size_, new_running_position);
-
     container_builder_.AddResult(
         *result, containing_rect.offset,
         ComputeMarginsFor(space, item_node.Style(), container_space));
   }
-
-  // Remove last gap that was added, since there is not item after it.
-  intrinsic_block_size_ +=
-      (is_for_columns ? border_scrollbar_padding.block_end
-                      : border_scrollbar_padding.inline_end) -
-      stacking_axis_gap;
+  if (is_for_columns) {
+    // Remove last gap that was added, since there is no item after it.
+    intrinsic_block_size_ =
+        running_positions.GetMaxPositionForSpan(
+            GridSpan::TranslatedDefiniteGridSpan(
+                /*start_line=*/0,
+                /*end_line=*/track_collection.EndLineOfImplicitGrid())) +
+        border_scrollbar_padding.block_end - stacking_axis_gap;
+  } else {
+    // Set `intrinsic_block_size_` to be the size of the tracks.
+    intrinsic_block_size_ = track_collection.CalculateSetSpanSize() +
+                            border_scrollbar_padding.BlockSum();
+  }
 }
 
 GridItems MasonryLayoutAlgorithm::BuildVirtualMasonryItems(
