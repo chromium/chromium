@@ -522,7 +522,7 @@ crbug.com/949249 [ fuchsia fuchsia-board-qemu-x64 ] conformance2/extensions/ovr_
 crbug.com/angleproject/6358 [ no-passthrough ] conformance/programs/program-test.html [ Failure ]
 
 # Persistent flaking on Windows and Mac/M1
-crbug.com/365680830 [ win angle-d3d11 ] deqp/functional/gles3/occlusionquery_strict.html [ Failure ]
+crbug.com/365680830 [ amd64 angle-d3d11 graphite-enabled win ] deqp/functional/gles3/occlusionquery_strict.html [ Failure ]
 crbug.com/365680830 [ mac angle-metal apple ] deqp/functional/gles3/occlusionquery_strict.html [ RetryOnFailure ]
 
 
@@ -807,8 +807,6 @@ crbug.com/982292 [ mac nvidia angle-opengl passthrough ] deqp/functional/gles3/i
 
 ## Mac ASAN ##
 
-# Flaky glyph cache miss
-crbug.com/396434680 [ asan mac amd-0x7340 passthrough ] deqp/functional/gles3/fbocolorbuffer/tex2darray_02.html [ Failure ]
 
 # Flaky failure due to possible synchronization issues
 crbug.com/412679364 [ mac mac-arm64 ] conformance/textures/canvas/tex-2d-alpha-alpha-unsigned_byte.html [ RetryOnFailure ]
@@ -868,8 +866,6 @@ crbug.com/402726806 [ android android-pixel-2 angle-disabled no-passthrough ] de
 
 ## Pixel 4 ##
 
-# Failing test when experiment DrDc is enabled via fieldtrial_testing_config.json.
-crbug.com/1289303 [ android-pixel-4 android-r ] conformance/textures/misc/texture-video-transparent.html [ Failure ] # finder:disable-narrowing
 
 crbug.com/1175232 [ android android-pixel-4 angle-opengles passthrough ] conformance2/reading/read-pixels-from-fbo-test.html [ Failure ]
 
@@ -1045,10 +1041,6 @@ crbug.com/332743717 [ chromeos chromeos-board-amd64-generic ] conformance2/canva
 crbug.com/332743717 [ android android-pixel-2 ] conformance2/canvas/drawingbuffer-storage-test.html [ Failure ]
 crbug.com/332743717 [ win intel-0x4680 ] conformance2/query/occlusion-query-scissor.html [ Failure ]
 
-#################################################################
-# Temporary suppressions for introduction of drawingBufferStorage
-#################################################################
-crbug.com/1230619 conformance2/offscreencanvas/methods-2.html [ Failure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
