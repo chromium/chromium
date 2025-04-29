@@ -1268,6 +1268,17 @@ bool TabStripModel::IsTabSelected(int index) const {
 
 void TabStripModel::SetSelectionFromModel(ui::ListSelectionModel source) {
   CHECK(source.active().has_value());
+  const ui::ListSelectionModel::SelectedIndices sel = source.selected_indices();
+  for (auto& source_sel_index : sel) {
+    if (std::optional<split_tabs::SplitTabId> split_id =
+            GetSplitForTab(source_sel_index);
+        split_id.has_value()) {
+      gfx::Range index_range = GetIndexRangeOfSplit(split_id.value());
+      source.AddIndexRangeToSelection(index_range.start(),
+                                      index_range.end() - 1);
+    }
+  }
+
   SetSelection(std::move(source), TabStripModelObserver::CHANGE_REASON_NONE,
                /*triggered_by_other_operation=*/false);
 }

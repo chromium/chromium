@@ -1,6 +1,7 @@
 // Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+#include "ui/base/models/list_selection_model.h"
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
 #pragma allow_unsafe_buffers
@@ -5434,6 +5435,38 @@ TEST_F(TabStripModelTest, RemoveSplitUnselectsNonActiveTab) {
   // Verify that only the active tab (1) is selected.
   EXPECT_EQ(tabstrip()->active_index(), 1);
   ExpectSelectionIsExactly(tabstrip(), {1});
+}
+
+TEST_F(TabStripModelTest, SplitSelectionTestFromModel) {
+  scoped_feature_list()->InitAndEnableFeature(features::kSideBySide);
+  TestTabStripModelDelegate delegate;
+  TabStripModel tabstrip(&delegate, profile());
+  EXPECT_TRUE(tabstrip.empty());
+
+  ASSERT_NO_FATAL_FAILURE(
+      PrepareTabstripForSelectionTest(&tabstrip, 10, 5, "2 3 6 7"));
+
+  tabstrip.ActivateTabAt(6,
+                         TabStripUserGestureDetails(
+                             TabStripUserGestureDetails::GestureType::kOther));
+
+  tabstrip.AddToNewSplit({7}, split_tabs::SplitTabLayout::kHorizontal);
+
+  tabstrip.ActivateTabAt(2,
+                         TabStripUserGestureDetails(
+                             TabStripUserGestureDetails::GestureType::kOther));
+  tabstrip.AddToNewSplit({1}, split_tabs::SplitTabLayout::kHorizontal);
+
+  // Pass in only one of the selected tabs in the splits.
+  PrepareTabstripForSelectionTest(&tabstrip, 0, 0, "6 2");
+  ui::ListSelectionModel::SelectedIndices expected_sel_indices;
+  expected_sel_indices.insert(6);
+  expected_sel_indices.insert(7);
+  expected_sel_indices.insert(1);
+  expected_sel_indices.insert(2);
+
+  EXPECT_EQ(tabstrip.selection_model().selected_indices(),
+            expected_sel_indices);
 }
 
 TEST_F(TabStripModelTest, RemoveLeftTabInSplitActivatesRemainingTab) {
