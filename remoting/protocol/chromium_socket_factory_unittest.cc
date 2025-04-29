@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "remoting/protocol/chromium_socket_factory.h"
 
 #include <stddef.h>
@@ -79,8 +74,8 @@ class ChromiumSocketFactoryTest : public testing::Test,
     EXPECT_EQ(socket, socket_.get());
 
     received_packets_.push_back(
-        {packet.payload().data(),
-         packet.payload().data() + packet.payload().size()});
+        std::string(reinterpret_cast<const char*>(packet.payload().data()),
+                    packet.payload().size()));
     last_address_ = packet.source_address();
     last_packet_time_ = packet.arrival_time()->us();
     if (received_packets_.size() >= expected_packet_count_) {
