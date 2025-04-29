@@ -44,12 +44,12 @@ public class AccountUtils {
         return new Account(name, GOOGLE_ACCOUNT_TYPE);
     }
 
-    /** Converts a list of {@link CoreAccountInfo}s to a list of account emails. */
-    public static List<String> toAccountEmails(final List<CoreAccountInfo> coreAccountInfos) {
-        int size = coreAccountInfos.size();
+    /** Converts a list of {@link AccountInfo}s to a list of account emails. */
+    public static List<String> toAccountEmails(final List<AccountInfo> accounts) {
+        int size = accounts.size();
         String[] emails = new String[size];
         for (int i = 0; i < size; ++i) {
-            emails[i] = coreAccountInfos.get(i).getEmail();
+            emails[i] = accounts.get(i).getEmail();
         }
         return Arrays.asList(emails);
     }
@@ -100,8 +100,22 @@ public class AccountUtils {
     }
 
     /**
-     * Gets the cached list of {@link CoreAccountInfo} from the given {@link Promise}.
-     * If the cache is not yet populated, return an empty list.
+     * Finds the first {@link AccountInfo} among `accounts` whose Gaia ID is equal to
+     * `accountGaiaId`; null if there is no match.
+     */
+    public static @Nullable AccountInfo findAccountByGaiaId(
+            final List<AccountInfo> accounts, GaiaId accountGaiaId) {
+        for (AccountInfo account : accounts) {
+            if (account.getGaiaId().equals(accountGaiaId)) {
+                return account;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Gets the cached list of {@link CoreAccountInfo} from the given {@link Promise}. If the cache
+     * is not yet populated, return an empty list.
      */
     public static List<CoreAccountInfo> getCoreAccountInfosIfFulfilledOrEmpty(
             Promise<List<CoreAccountInfo>> promise) {
@@ -120,20 +134,39 @@ public class AccountUtils {
     }
 
     /**
+     * Gets the cached list of {@link AccountInfo} from the given `promise`. If the cache is not yet
+     * populated, return an empty list.
+     */
+    public static List<AccountInfo> getAccountsIfFulfilledOrEmpty(
+            Promise<List<AccountInfo>> promise) {
+        return promise.isFulfilled() ? promise.getResult() : Collections.emptyList();
+    }
+
+    /**
+     * Gets the cached default {@link AccountInfo} from the given {@link Promise}. If the cache is
+     * not yet populated or no accounts exist, return null.
+     */
+    public static @Nullable AccountInfo getDefaultAccountIfFulfilled(
+            Promise<List<AccountInfo>> promise) {
+        final List<AccountInfo> accounts = getAccountsIfFulfilledOrEmpty(promise);
+        return accounts.isEmpty() ? null : accounts.get(0);
+    }
+
+    /**
      * Checks the child account status on device based on the list of (zero or more) provided
      * {@param coreAccountInfos}.
      *
-     * If there are no child coreAccountInfo on the device, the listener will be invoked with
-     * isChild = false. If there is a child account on device, the listener
-     * will be called with that account and isChild = true. Note that it is not currently possible
-     * to have more than one child account on device.
+     * <p>If there are no child coreAccountInfo on the device, the listener will be invoked with
+     * isChild = false. If there is a child account on device, the listener will be called with that
+     * account and isChild = true. Note that it is not currently possible to have more than one
+     * child account on device.
      *
-     * It should be safe to invoke this method before the native library is initialized.
+     * <p>It should be safe to invoke this method before the native library is initialized.
      *
      * @param accountManagerFacade The singleton instance of {@link AccountManagerFacade}.
      * @param coreAccountInfos The list of {@link CoreAccountInfo} on device.
-     * @param listener The listener is called when the status of the account
-     *                 (whether it is a child one) is ready.
+     * @param listener The listener is called when the status of the account (whether it is a child
+     *     one) is ready.
      */
     public static void checkChildAccountStatus(
             AccountManagerFacade accountManagerFacade,

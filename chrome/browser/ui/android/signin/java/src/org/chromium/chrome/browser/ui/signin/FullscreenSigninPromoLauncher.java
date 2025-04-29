@@ -18,7 +18,6 @@ import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
-import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.user_prefs.UserPrefs;
 
@@ -60,11 +59,11 @@ public final class FullscreenSigninPromoLauncher {
 
         context.startActivity(intent);
         prefManager.setSigninPromoLastShownVersion(currentMajorVersion);
-        final List<CoreAccountInfo> coreAccountInfos =
-                AccountUtils.getCoreAccountInfosIfFulfilledOrEmpty(
-                        AccountManagerFacadeProvider.getInstance().getCoreAccountInfos());
+        var accounts =
+                AccountUtils.getAccountsIfFulfilledOrEmpty(
+                        AccountManagerFacadeProvider.getInstance().getAccounts());
         prefManager.setSigninPromoLastAccountEmails(
-                new HashSet<>(AccountUtils.toAccountEmails(coreAccountInfos)));
+                new HashSet<>(AccountUtils.toAccountEmails(accounts)));
         return true;
     }
 
@@ -97,10 +96,9 @@ public final class FullscreenSigninPromoLauncher {
 
         final AccountManagerFacade accountManagerFacade =
                 AccountManagerFacadeProvider.getInstance();
-        final List<CoreAccountInfo> coreAccountInfos =
-                AccountUtils.getCoreAccountInfosIfFulfilledOrEmpty(
-                        accountManagerFacade.getCoreAccountInfos());
-        if (coreAccountInfos.isEmpty()) {
+        var accounts =
+                AccountUtils.getAccountsIfFulfilledOrEmpty(accountManagerFacade.getAccounts());
+        if (accounts.isEmpty()) {
             // Don't show if the account list isn't available yet or there are no accounts in it.
             return false;
         }
@@ -109,7 +107,7 @@ public final class FullscreenSigninPromoLauncher {
             return false;
         }
 
-        final List<String> currentAccountEmails = AccountUtils.toAccountEmails(coreAccountInfos);
+        final List<String> currentAccountEmails = AccountUtils.toAccountEmails(accounts);
         final Set<String> previousAccountEmails = prefManager.getSigninPromoLastAccountEmails();
         // Don't show if no new accounts have been added after the last time promo was shown.
         return previousAccountEmails == null
