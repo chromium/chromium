@@ -1223,8 +1223,8 @@ TEST_F(ExtensionInfoGeneratorUnitTest, IsPinnedToToolbar) {
 
   // Disable the extension. Since disabled extensions have no action, the
   // `pinned_to_toolbar` field should not exist.
-  registrar()->DisableExtension(extension->id(),
-                                {disable_reason::DISABLE_USER_ACTION});
+  service()->DisableExtension(extension->id(),
+                              disable_reason::DISABLE_USER_ACTION);
   info = GenerateExtensionInfo(extension->id());
   EXPECT_FALSE(info->pinned_to_toolbar.has_value());
 }

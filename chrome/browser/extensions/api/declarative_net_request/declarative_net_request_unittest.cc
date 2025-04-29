@@ -31,6 +31,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/extensions/api/declarative_net_request/dnr_test_base.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
+#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/load_error_reporter.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
@@ -49,7 +50,6 @@
 #include "extensions/browser/api_test_utils.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_prefs.h"
-#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/common/api/declarative_net_request/constants.h"
 #include "extensions/common/api/declarative_net_request/test_utils.h"
@@ -1193,8 +1193,8 @@ TEST_P(SingleRulesetTest, DynamicRulesetRace) {
   ruleset_waiter.WaitForExtensionsWithRulesetsCount(1);
 
   const ExtensionId extension_id = extension()->id();
-  registrar()->DisableExtension(extension_id,
-                                {disable_reason::DISABLE_USER_ACTION});
+  service()->DisableExtension(extension_id,
+                              disable_reason::DISABLE_USER_ACTION);
   ruleset_waiter.WaitForExtensionsWithRulesetsCount(0);
 
   // Simulate indexed ruleset format version change. This will cause a re-index
@@ -1206,7 +1206,7 @@ TEST_P(SingleRulesetTest, DynamicRulesetRace) {
 
   TestExtensionRegistryObserver registry_observer(registry());
 
-  registrar()->EnableExtension(extension_id);
+  service()->EnableExtension(extension_id);
   scoped_refptr<const Extension> extension =
       registry_observer.WaitForExtensionLoaded();
   ASSERT_TRUE(extension);
@@ -1239,8 +1239,8 @@ TEST_P(SingleRulesetTest, UpdateEnabledRulesetsRace) {
   ruleset_waiter.WaitForExtensionsWithRulesetsCount(1);
 
   const ExtensionId extension_id = extension()->id();
-  registrar()->DisableExtension(extension_id,
-                                {disable_reason::DISABLE_USER_ACTION});
+  service()->DisableExtension(extension_id,
+                              disable_reason::DISABLE_USER_ACTION);
   ruleset_waiter.WaitForExtensionsWithRulesetsCount(0);
 
   // Simulate indexed ruleset format version change. This will cause a re-index
@@ -1251,7 +1251,7 @@ TEST_P(SingleRulesetTest, UpdateEnabledRulesetsRace) {
       CreateScopedIncrementRulesetVersionForTesting();
 
   TestExtensionRegistryObserver registry_observer(registry());
-  registrar()->EnableExtension(extension_id);
+  service()->EnableExtension(extension_id);
   scoped_refptr<const Extension> extension =
       registry_observer.WaitForExtensionLoaded();
   ASSERT_TRUE(extension);
@@ -1428,8 +1428,8 @@ TEST_P(SingleRulesetTest, AllocationWhenDisabled) {
   // prefs.
   CheckExtensionAllocationInPrefs(extension()->id(), 200);
 
-  registrar()->DisableExtension(extension()->id(),
-                                {disable_reason::DISABLE_GREYLIST});
+  service()->DisableExtension(extension()->id(),
+                              disable_reason::DISABLE_GREYLIST);
   ruleset_waiter.WaitForExtensionsWithRulesetsCount(0);
 
   // The extension's last known extra rule count should be persisted after it is
@@ -1439,15 +1439,15 @@ TEST_P(SingleRulesetTest, AllocationWhenDisabled) {
 
   // Now re-enable the extension. The extension should load all of its rules
   // without any problems.
-  registrar()->EnableExtension(extension()->id());
+  service()->EnableExtension(extension()->id());
   ruleset_waiter.WaitForExtensionsWithRulesetsCount(1);
 
   EXPECT_EQ(200u, global_rules_tracker.GetAllocatedGlobalRuleCountForTesting());
   CheckExtensionAllocationInPrefs(extension()->id(), 200);
 
   // Disable the extension via user action. This should release its allocation.
-  registrar()->DisableExtension(extension()->id(),
-                                {disable_reason::DISABLE_USER_ACTION});
+  service()->DisableExtension(extension()->id(),
+                              disable_reason::DISABLE_USER_ACTION);
   ruleset_waiter.WaitForExtensionsWithRulesetsCount(0);
 
   EXPECT_EQ(0u, global_rules_tracker.GetAllocatedGlobalRuleCountForTesting());
@@ -2227,11 +2227,11 @@ TEST_P(MultipleRulesetsTest, UpdateAndGetEnabledRulesets_Success) {
 
   // Ensure the set of enabled rulesets persists across extension reloads.
   const ExtensionId extension_id = extension()->id();
-  registrar()->DisableExtension(extension_id,
-                                {disable_reason::DISABLE_USER_ACTION});
+  service()->DisableExtension(extension_id,
+                              disable_reason::DISABLE_USER_ACTION);
   ruleset_waiter.WaitForExtensionsWithRulesetsCount(0);
 
-  registrar()->EnableExtension(extension_id);
+  service()->EnableExtension(extension_id);
   ruleset_waiter.WaitForExtensionsWithRulesetsCount(1);
   const Extension* extension =
       registry()->enabled_extensions().GetByID(extension_id);
@@ -2450,13 +2450,13 @@ TEST_P(MultipleRulesetsTest, MultipleExtensionsRuleLimitExceeded) {
   // Since the ID of the second extension is known only after it was installed,
   // disable then enable the extension so the ID can be used for the
   // WarningServiceObserver.
-  registrar()->DisableExtension(second_extension_id,
-                                {disable_reason::DISABLE_USER_ACTION});
+  service()->DisableExtension(second_extension_id,
+                              disable_reason::DISABLE_USER_ACTION);
   ruleset_waiter.WaitForExtensionsWithRulesetsCount(1);
 
   WarningService* warning_service = WarningService::Get(browser_context());
   WarningServiceObserver warning_observer(warning_service, second_extension_id);
-  registrar()->EnableExtension(second_extension_id);
+  service()->EnableExtension(second_extension_id);
 
   // Wait until we surface a warning.
   warning_observer.WaitForWarning();
@@ -2471,13 +2471,13 @@ TEST_P(MultipleRulesetsTest, MultipleExtensionsRuleLimitExceeded) {
                                   UNINSTALL_REASON_FOR_TESTING, nullptr);
   ruleset_waiter.WaitForExtensionsWithRulesetsCount(1);
 
-  registrar()->DisableExtension(second_extension_id,
-                                {disable_reason::DISABLE_USER_ACTION});
+  service()->DisableExtension(second_extension_id,
+                              disable_reason::DISABLE_USER_ACTION);
   ruleset_waiter.WaitForExtensionsWithRulesetsCount(0);
   CheckExtensionAllocationInPrefs(first_extension_id, std::nullopt);
   CheckExtensionAllocationInPrefs(second_extension_id, std::nullopt);
 
-  registrar()->EnableExtension(second_extension_id);
+  service()->EnableExtension(second_extension_id);
   ruleset_waiter.WaitForExtensionsWithRulesetsCount(1);
 
   // Once the first extension is uninstalled, both |kId2| and |kId3| should be
@@ -2603,12 +2603,12 @@ TEST_P(MultipleRulesetsTest,
   // Ensure the set of enabled rulesets persists across extension reloads.
   // Regression test for crbug.com/1346185.
   const ExtensionId extension_id = extension()->id();
-  registrar()->DisableExtension(extension_id,
-                                {disable_reason::DISABLE_USER_ACTION});
+  service()->DisableExtension(extension_id,
+                              disable_reason::DISABLE_USER_ACTION);
 
   ruleset_waiter.WaitForExtensionsWithRulesetsCount(0);
 
-  registrar()->EnableExtension(extension_id);
+  service()->EnableExtension(extension_id);
 
   ruleset_waiter.WaitForExtensionsWithRulesetsCount(1);
 
@@ -2944,11 +2944,11 @@ TEST_P(MultipleRulesetsTest,
 
   // Check disabled rules after disabling and enabling extension.
   auto extension_id = extension()->id();
-  registrar()->DisableExtension(extension_id,
-                                {disable_reason::DISABLE_USER_ACTION});
+  service()->DisableExtension(extension_id,
+                              disable_reason::DISABLE_USER_ACTION);
   ruleset_waiter.WaitForExtensionsWithRulesetsCount(0);
   TestExtensionRegistryObserver registry_observer(registry());
-  registrar()->EnableExtension(extension_id);
+  service()->EnableExtension(extension_id);
   scoped_refptr<const Extension> extension =
       registry_observer.WaitForExtensionLoaded();
   ASSERT_TRUE(extension);
@@ -2993,7 +2993,7 @@ TEST_P(MultipleRulesetsTest, ReclaimAllocationOnUnload) {
       [this, &ext_1_allocation, &global_rules_tracker, &ruleset_waiter,
        &first_extension_id](const DisableReasonSet& disable_reasons,
                             bool expect_allocation_released) {
-        registrar()->DisableExtension(first_extension_id, disable_reasons);
+        service()->DisableExtension(first_extension_id, disable_reasons);
         ruleset_waiter.WaitForExtensionsWithRulesetsCount(0);
 
         size_t expected_tracker_allocation =
@@ -3007,7 +3007,7 @@ TEST_P(MultipleRulesetsTest, ReclaimAllocationOnUnload) {
         CheckExtensionAllocationInPrefs(first_extension_id,
                                         expected_pref_allocation);
 
-        registrar()->EnableExtension(first_extension_id);
+        service()->EnableExtension(first_extension_id);
         ruleset_waiter.WaitForExtensionsWithRulesetsCount(1);
 
         EXPECT_EQ(ext_1_allocation,
@@ -3035,7 +3035,7 @@ TEST_P(MultipleRulesetsTest, ReclaimAllocationOnUnload) {
       true);
 
   // We should reclaim the extension's allocation if it is blocklisted.
-  registrar()->BlocklistExtensionForTest(first_extension_id);
+  service()->BlocklistExtensionForTest(first_extension_id);
   ruleset_waiter.WaitForExtensionsWithRulesetsCount(0);
   EXPECT_EQ(0u, global_rules_tracker.GetAllocatedGlobalRuleCountForTesting());
   CheckExtensionAllocationInPrefs(first_extension_id, std::nullopt);

@@ -9,6 +9,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "extensions/browser/extension_function.h"
@@ -94,8 +95,8 @@ TEST_F(ChromeExtensionFunctionUnitTest, DestructionWithoutResponseOnUnload) {
   function->set_extension(extension);
   function->SetBrowserContextForTesting(browser_context());
 
-  registrar()->DisableExtension(extension->id(),
-                                {disable_reason::DISABLE_USER_ACTION});
+  service()->DisableExtension(extension->id(),
+                              disable_reason::DISABLE_USER_ACTION);
   ASSERT_TRUE(registry()->disabled_extensions().Contains(extension->id()));
 
   // Destroying the extension function without responding if the extension has

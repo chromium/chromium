@@ -31,6 +31,7 @@ class Profile;
 
 namespace extensions {
 class Extension;
+class ExtensionService;
 class ExtensionSet;
 class ExtensionSyncData;
 }  // namespace extensions
@@ -85,6 +86,8 @@ class ExtensionSyncService : public syncer::SyncableService,
                            UnexpectedLaunchType);
   FRIEND_TEST_ALL_PREFIXES(ExtensionDisabledGlobalErrorTest,
                            HigherPermissionsFromSync);
+
+  extensions::ExtensionService* extension_service() const;
 
   // extensions::ExtensionRegistryObserver:
   void OnExtensionInstalled(content::BrowserContext* browser_context,

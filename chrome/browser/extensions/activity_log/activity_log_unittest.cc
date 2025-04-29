@@ -18,6 +18,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/extensions/activity_log/activity_action_constants.h"
 #include "chrome/browser/extensions/activity_log/activity_log_task_runner.h"
+#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
 #include "chrome/common/chrome_constants.h"
@@ -29,7 +30,6 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_render_process_host.h"
-#include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/renderer_startup_helper.h"
@@ -156,8 +156,9 @@ class ActivityLogTest : public ChromeRenderViewHostTestHarness {
     }
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         switches::kEnableExtensionActivityLogTesting);
-    static_cast<TestExtensionSystem*>(ExtensionSystem::Get(profile()))
-        ->CreateExtensionService(&command_line, base::FilePath(), false);
+    extension_service_ = static_cast<TestExtensionSystem*>(
+        ExtensionSystem::Get(profile()))->CreateExtensionService
+            (&command_line, base::FilePath(), false);
 
     RendererStartupHelperFactory::GetForBrowserContext(profile())
         ->OnRenderProcessHostCreated(
@@ -289,6 +290,8 @@ class ActivityLogTest : public ChromeRenderViewHostTestHarness {
       ASSERT_EQ(DomActionType::SETTER, dom_verb);
     }
   }
+
+  raw_ptr<ExtensionService, DanglingUntriaged> extension_service_;
 };
 
 TEST_F(ActivityLogTest, Construct) {
@@ -517,8 +520,8 @@ TEST_F(ActivityLogTestWithoutSwitch, TestShouldLog) {
   // ... or activities from the browser/extensions page, represented by an empty
   // extension ID.
   EXPECT_FALSE(activity_log->ShouldLog(std::string()));
-  ExtensionRegistrar::Get(profile())->DisableExtension(
-      activity_log_extension->id(), {disable_reason::DISABLE_USER_ACTION});
+  extension_service_->DisableExtension(activity_log_extension->id(),
+                                       disable_reason::DISABLE_USER_ACTION);
   // Disabling the watchdog app means that we're back to never logging anything.
   EXPECT_FALSE(activity_log->ShouldLog(empty_extension->id()));
 }

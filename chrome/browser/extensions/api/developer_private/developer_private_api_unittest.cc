@@ -1562,8 +1562,7 @@ TEST_F(DeveloperPrivateApiUnitTest, RepairPolicyExtension) {
 
   // Corrupt the extension, still expect repair failure because this is a
   // policy extension.
-  registrar()->DisableExtension(extension_id,
-                                {disable_reason::DISABLE_CORRUPTED});
+  service()->DisableExtension(extension_id, disable_reason::DISABLE_CORRUPTED);
   args = base::Value::List().Append(extension_id);
   function =
       base::MakeRefCounted<api::DeveloperPrivateRepairExtensionFunction>();
@@ -1583,8 +1582,8 @@ TEST_F(DeveloperPrivateApiUnitTest, RepairNonCWSExtension) {
 
   // Corrupt the extension, still expect repair failure because `good.crx` does
   // not update from the web store.
-  registrar()->DisableExtension(extension->id(),
-                                {disable_reason::DISABLE_CORRUPTED});
+  service()->DisableExtension(extension->id(),
+                              disable_reason::DISABLE_CORRUPTED);
 
   base::Value::List args = base::Value::List().Append(extension->id());
   auto function =
@@ -2795,8 +2794,8 @@ TEST_F(DeveloperPrivateApiUnitTest,
                   extension_2->id(), developer::HostAccess::kOnSpecificSites,
                   /*can_request_all_sites=*/false)));
 
-  registrar()->DisableExtension(extension_2->id(),
-                                {disable_reason::DISABLE_USER_ACTION});
+  service()->DisableExtension(extension_2->id(),
+                              disable_reason::DISABLE_USER_ACTION);
   GetMatchingExtensionsForSite(profile(), "*://*.google.com/", &infos);
 
   // "*://*.google.com/" should match with `extension_1` but not `extension_2`

@@ -16,7 +16,6 @@
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "extensions/browser/allowlist_state.h"
 #include "extensions/browser/blocklist_extension_prefs.h"
-#include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension_builder.h"
@@ -229,8 +228,8 @@ TEST_F(ExtensionAllowlistUnitTest, DisabledItemStaysDisabledWhenAllowlisted) {
   service()->Init();
 
   // Start with an extension disabled by user.
-  registrar()->DisableExtension(kExtensionId1,
-                                {disable_reason::DISABLE_USER_ACTION});
+  service()->DisableExtension(kExtensionId1,
+                              disable_reason::DISABLE_USER_ACTION);
   EXPECT_TRUE(IsDisabled(kExtensionId1));
 
   // Disable the extension with allowlist enforcement.
@@ -524,8 +523,8 @@ TEST_F(ExtensionAllowlistUnitTest, AcknowledgeNotNeededIfAlreadyDisabled) {
   CreateExtensionService(/*enhanced_protection_enabled=*/true);
 
   service()->Init();
-  registrar()->DisableExtension(kExtensionId1,
-                                {disable_reason::DISABLE_USER_ACTION});
+  service()->DisableExtension(kExtensionId1,
+                              disable_reason::DISABLE_USER_ACTION);
   EXPECT_TRUE(IsDisabled(kExtensionId1));
   EXPECT_EQ(ALLOWLIST_ACKNOWLEDGE_NONE,
             allowlist()->GetExtensionAllowlistAcknowledgeState(kExtensionId1));

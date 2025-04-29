@@ -12,6 +12,7 @@
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
+#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/permissions/active_tab_permission_granter.h"
@@ -90,12 +91,12 @@ class ActiveTabTest : public ChromeRenderViewHostTestHarness {
     static_cast<TestExtensionSystem*>(ExtensionSystem::Get(profile()))
         ->CreateExtensionService(base::CommandLine::ForCurrentProcess(),
                                  base::FilePath(), false);
-
-    auto* extension_registrar = ExtensionRegistrar::Get(profile());
-    extension_registrar->AddExtension(extension);
-    extension_registrar->AddExtension(another_extension);
-    extension_registrar->AddExtension(extension_without_active_tab);
-    extension_registrar->AddExtension(extension_with_tab_capture);
+    ExtensionRegistrar::Get(profile())->AddExtension(extension);
+    ExtensionRegistrar::Get(profile())->AddExtension(another_extension);
+    ExtensionRegistrar::Get(profile())->AddExtension(
+        extension_without_active_tab);
+    ExtensionRegistrar::Get(profile())->AddExtension(
+        extension_with_tab_capture);
   }
 
   int tab_id() {
@@ -337,9 +338,9 @@ TEST_F(ActiveTabTest, Unloading) {
   EXPECT_TRUE(IsAllowed(extension, google));
 
   // Unloading the extension should clear its tab permissions.
-  ExtensionRegistrar::Get(web_contents()->GetBrowserContext())
-      ->DisableExtension(extension->id(),
-                         {disable_reason::DISABLE_USER_ACTION});
+  ExtensionSystem::Get(web_contents()->GetBrowserContext())
+      ->extension_service()
+      ->DisableExtension(extension->id(), disable_reason::DISABLE_USER_ACTION);
 
   // Note: can't EXPECT_FALSE(IsAllowed) here because uninstalled extensions
   // are just that... considered to be uninstalled, and the manager might

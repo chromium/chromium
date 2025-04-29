@@ -26,6 +26,7 @@
 #include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_management_test_util.h"
+#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/profiles/profile.h"
@@ -56,9 +57,7 @@
 #include "content/public/test/url_loader_interceptor.h"
 #include "extensions/browser/api_test_utils.h"
 #include "extensions/browser/browsertest_util.h"
-#include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_host.h"
-#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/permissions_manager.h"
 #include "extensions/browser/service_worker/service_worker_test_utils.h"
@@ -746,8 +745,8 @@ IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
   // Unload the extension and try fetching again.  The content script should
   // still be present and work, but after the extension is unloaded, the fetch
   // should always fail.  See also https://crbug.com/843381.
-  extension_registrar()->DisableExtension(
-      extension->id(), {disable_reason::DISABLE_USER_ACTION});
+  extension_service()->DisableExtension(extension->id(),
+                                        disable_reason::DISABLE_USER_ACTION);
   EXPECT_FALSE(ExtensionRegistry::Get(profile())->enabled_extensions().GetByID(
       extension->id()));
   {
