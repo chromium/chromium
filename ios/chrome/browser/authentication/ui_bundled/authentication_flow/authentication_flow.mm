@@ -662,17 +662,19 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
       identityManager->GetAccountsOnDevice();
   BOOL isValidIdentityOnDevice = base::Contains(
       accountsOnDevice, GaiaId(_identityToSignIn.gaiaID), &AccountInfo::gaia);
-  if (!isValidIdentityOnDevice) {
-    // Handle the case where the identity is no longer valid.
-    NSError* error = ios::provider::CreateMissingIdentitySigninError();
-    [self handleAuthenticationError:error];
-    return;
-  }
   std::vector<CoreAccountInfo> accountsInProfile =
       identityManager->GetAccountsWithRefreshTokens();
   BOOL isValidIdentityInProfile =
       base::Contains(accountsInProfile, GaiaId(_identityToSignIn.gaiaID),
                      &CoreAccountInfo::gaia);
+  if (!isValidIdentityOnDevice ||
+      (!isValidIdentityInProfile &&
+       !AreSeparateProfilesForManagedAccountsEnabled())) {
+    // Handle the case where the identity is no longer valid.
+    NSError* error = ios::provider::CreateMissingIdentitySigninError();
+    [self handleAuthenticationError:error];
+    return;
+  }
   if (isValidIdentityInProfile) {
     // If the identity is in the current profile, the flow should continue,
     // without switching profile.
