@@ -54,6 +54,8 @@ class RemotingClient : public SignalStrategy::Listener,
   void StartSession(std::string_view support_access_code,
                     OAuthTokenInfo oauth_token_info);
 
+  void StopSession();
+
  private:
   // ClientStub implementation.
   void SetCapabilities(const protocol::Capabilities& capabilities) override;

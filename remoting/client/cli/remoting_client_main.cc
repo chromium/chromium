@@ -78,6 +78,13 @@ int main(int argc, char const* argv[]) {
 
   remoting_client.StartSession(support_access_code, {access_token, user_email});
 
+  // Allow the client to remain connected for a while before disconnecting.
+  io_task_executor.task_runner()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&remoting::RemotingClient::StopSession,
+                     base::Unretained(&remoting_client)),
+      base::Seconds(20));
+
   run_loop.Run();
 
   // Block until tasks blocking shutdown have completed their execution.

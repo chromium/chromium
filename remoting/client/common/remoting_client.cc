@@ -22,6 +22,7 @@
 #include "remoting/client/common/logging.h"
 #include "remoting/proto/remoting/v1/host_info.pb.h"
 #include "remoting/proto/remoting/v1/remote_support_host_messages.pb.h"
+#include "remoting/proto/video.pb.h"
 #include "remoting/protocol/chromium_port_allocator_factory.h"
 #include "remoting/protocol/chromium_socket_factory.h"
 #include "remoting/protocol/client_authentication_config.h"
@@ -48,6 +49,30 @@ namespace remoting {
 class ClientContext;
 
 namespace {
+
+class LoggingVideoStub : public protocol::VideoStub {
+ public:
+  LoggingVideoStub() = default;
+  ~LoggingVideoStub() override = default;
+
+  void ProcessVideoPacket(std::unique_ptr<VideoPacket> packet,
+                          base::OnceClosure done) override {
+    if (!packet) {
+      LOG(ERROR) << "Received null packet";
+    } else if (!packet->has_data() || packet->data().size() == 0) {
+      CLIENT_LOG << "Received empty video packet";
+    } else {
+      auto& format = packet->format();
+      CLIENT_LOG << "Received video packet: " << format.screen_width() << "x"
+                 << format.screen_height() << "@" << format.x_dpi() << " for "
+                 << "encoder: " << format.encoding()
+                 << " frame_id: " << packet->frame_id()
+                 << " with dirty rect count: " << packet->dirty_rects_size();
+    }
+    std::move(done).Run();
+  }
+};
+
 // TODO: joedow - Delete this stub and replace with a working VideoRenderer.
 class StubVideoRenderer : public protocol::VideoRenderer {
  public:
@@ -60,11 +85,14 @@ class StubVideoRenderer : public protocol::VideoRenderer {
     return false;
   }
   void OnSessionConfig(const protocol::SessionConfig& config) override {}
-  protocol::VideoStub* GetVideoStub() override { return nullptr; }
+  protocol::VideoStub* GetVideoStub() override { return &video_stub_; }
   protocol::FrameConsumer* GetFrameConsumer() override { return nullptr; }
   protocol::FrameStatsConsumer* GetFrameStatsConsumer() override {
     return nullptr;
   }
+
+ private:
+  LoggingVideoStub video_stub_;
 };
 }  // namespace
 
@@ -139,12 +167,6 @@ void RemotingClient::OnGetManagedChromeOsHostRetrieved(
       url_loader_factory_, std::make_unique<FtlClientUuidDeviceIdProvider>());
   signal_strategy_->AddListener(this);
   signal_strategy_->Connect();
-
-  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&SignalStrategy::Disconnect,
-                     base::Unretained(signal_strategy_.get())),
-      base::Seconds(20));
 }
 
 void RemotingClient::StartConnection() {
@@ -199,6 +221,24 @@ void RemotingClient::StartConnection() {
   protocol::NetworkSettings network_settings{
       protocol::NetworkSettings::NAT_TRAVERSAL_FULL};
   connection_->ApplyNetworkSettings(network_settings);
+}
+
+void RemotingClient::StopSession() {
+  CLIENT_LOG << "Shutting down connection to host...";
+  if (connection_) {
+    connection_->Disconnect(ErrorCode::OK);
+    connection_.reset();
+  }
+  if (signal_strategy_) {
+    // Delay tearing down the signaling channel to increase the likelihood that
+    // the host processes the connection state change.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&SignalStrategy::Disconnect,
+                       base::Unretained(signal_strategy_.get())),
+        base::Seconds(2));
+  }
+  return;
 }
 
 void RemotingClient::SetCapabilities(

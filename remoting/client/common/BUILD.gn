@@ -16,6 +16,7 @@ if (is_linux) {
       "//base",
       "//net",
       "//remoting/base",
+      "//remoting/proto",
       "//remoting/proto/remoting/v1:remote_support_host_messages",
       "//remoting/protocol",
       "//remoting/signaling",
