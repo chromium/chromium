@@ -17,8 +17,12 @@ namespace tabs {
 class TabInterface;
 class TabCollection;
 
-using ChildrenVector = std::vector<std::variant<std::unique_ptr<TabCollection>,
-                                                std::unique_ptr<TabInterface>>>;
+using Child =
+    std::variant<std::unique_ptr<TabCollection>, std::unique_ptr<TabInterface>>;
+using ChildrenVector = std::vector<Child>;
+
+using ChildPtr = std::variant<tabs::TabInterface*, tabs::TabCollection*>;
+using ChildrenPtrs = std::vector<ChildPtr>;
 
 // Provides reusable functionality useful to most TabCollections for storing
 // and manipulating a vector of child tabs and collections.

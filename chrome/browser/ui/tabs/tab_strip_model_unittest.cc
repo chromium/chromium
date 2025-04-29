@@ -3378,6 +3378,87 @@ TEST_F(TabStripModelTest, MoveSelectedTabsTo) {
   }
 }
 
+TEST_F(TabStripModelTest, MoveSelectedTabsToWithEntireGroupSelected) {
+  ASSERT_NO_FATAL_FAILURE(
+      PrepareTabstripForSelectionTest(tabstrip(), 10, 5, {2, 3, 6, 7}));
+
+  tab_groups::TabGroupId group_id = tabstrip()->AddToNewGroup({6, 7});
+  tabstrip()->SelectTabAt(6);
+  tabstrip()->SelectTabAt(7);
+  tabstrip()->SelectTabAt(9);
+
+  tabstrip()->MoveSelectedTabsTo(3, std::nullopt);
+  EXPECT_EQ("0p 1p 4p 2p 3p 6 7 9 5 8", GetTabStripStateString(tabstrip()));
+  EXPECT_FALSE(tabstrip()->group_model()->ContainsTabGroup(group_id));
+  tabstrip()->CloseAllTabs();
+}
+
+TEST_F(TabStripModelTest, MoveSelectedTabsToWithPartGroupSelected) {
+  ASSERT_NO_FATAL_FAILURE(
+      PrepareTabstripForSelectionTest(tabstrip(), 10, 5, {2, 3}));
+
+  tab_groups::TabGroupId group_id = tabstrip()->AddToNewGroup({6, 7});
+  tabstrip()->SelectTabAt(6);
+
+  tabstrip()->MoveSelectedTabsTo(3, std::nullopt);
+  EXPECT_EQ("0p 1p 4p 2p 3p 6 5 7 8 9", GetTabStripStateString(tabstrip()));
+  EXPECT_EQ(
+      tabstrip()->group_model()->GetTabGroup(group_id)->ListTabs().length(),
+      1u);
+}
+
+TEST_F(TabStripModelTest, MoveSelectedTabsToWithSplit) {
+  scoped_feature_list()->InitAndEnableFeature(features::kSideBySide);
+  ASSERT_NO_FATAL_FAILURE(
+      PrepareTabstripForSelectionTest(tabstrip(), 10, 5, {2, 3, 6, 7}));
+
+  tabstrip()->ActivateTabAt(
+      6, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
+
+  tabstrip()->AddToNewSplit({7}, split_tabs::SplitTabLayout::kHorizontal);
+
+  PrepareTabstripForSelectionTest(tabstrip(), 0, 0, {6, 7});
+
+  tabstrip()->MoveSelectedTabsTo(3, std::nullopt);
+  EXPECT_EQ("0p 1p 2p 3p 4p 6s 7s 5 8 9", GetTabStripStateString(tabstrip()));
+}
+
+TEST_F(TabStripModelTest, MoveSelectedTabsToWithGroupAndSplit) {
+  scoped_feature_list()->InitAndEnableFeature(features::kSideBySide);
+  ASSERT_NO_FATAL_FAILURE(
+      PrepareTabstripForSelectionTest(tabstrip(), 13, 5, {2, 3}));
+
+  tab_groups::TabGroupId group_id_one = tabstrip()->AddToNewGroup({6, 7, 8});
+  tab_groups::TabGroupId group_id_two = tabstrip()->AddToNewGroup({10});
+
+  // Create splits in group, ungrouped and pinned states.
+  tabstrip()->ActivateTabAt(
+      1, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
+  tabstrip()->AddToNewSplit({0}, split_tabs::SplitTabLayout::kHorizontal);
+
+  tabstrip()->ActivateTabAt(
+      6, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
+  tabstrip()->AddToNewSplit({7}, split_tabs::SplitTabLayout::kHorizontal);
+
+  tabstrip()->ActivateTabAt(
+      11, TabStripUserGestureDetails(
+              TabStripUserGestureDetails::GestureType::kOther));
+  tabstrip()->AddToNewSplit({12}, split_tabs::SplitTabLayout::kHorizontal);
+
+  // Move all the split tabs along with some other tabs.
+  PrepareTabstripForSelectionTest(tabstrip(), 0, 0,
+                                  {0, 1, 6, 7, 8, 10, 11, 12});
+
+  tabstrip()->MoveSelectedTabsTo(3, std::nullopt);
+  EXPECT_EQ("2p 3p 4p 0ps 1ps 6s 7s 8 10 11s 12s 5 9",
+            GetTabStripStateString(tabstrip()));
+  EXPECT_FALSE(tabstrip()->group_model()->ContainsTabGroup(group_id_one));
+  EXPECT_FALSE(tabstrip()->group_model()->ContainsTabGroup(group_id_two));
+}
+
 // Tests that moving a tab forgets all openers referencing it.
 TEST_F(TabStripModelTest, MoveSelectedTabsTo_ForgetOpeners) {
 

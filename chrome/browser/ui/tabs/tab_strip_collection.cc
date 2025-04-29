@@ -7,6 +7,7 @@
 #include <cstddef>
 #include <memory>
 #include <optional>
+#include <variant>
 
 #include "base/containers/adapters.h"
 #include "base/memory/ptr_util.h"
@@ -110,7 +111,7 @@ void TabStripCollection::MoveTabRecursive(
         final_index - pinned_collection_->TabCountRecursive(),
         old_group_collection);
   } else {
-    std::unique_ptr<tabs::TabInterface> moved_data =
+    std::unique_ptr<TabInterface> moved_data =
         RemoveTabRecursive(tab, old_group != new_group_id);
     AddTabRecursive(std::move(moved_data), final_index, new_group_id,
                     new_pinned_state);
@@ -123,20 +124,153 @@ void TabStripCollection::MoveTabsRecursive(
     std::optional<tab_groups::TabGroupId> new_group_id,
     bool new_pinned_state) {
   CHECK(destination_index >= 0);
+  ChildrenVector moved_datas;
 
-  std::vector<std::unique_ptr<tabs::TabInterface>> moved_datas;
-  // Remove all the tabs from the model.
-  for (int tab_index : base::Reversed(tab_indices)) {
-    std::unique_ptr<tabs::TabInterface> moved_data =
-        RemoveTabAtIndexRecursive(tab_index);
-    moved_datas.insert(moved_datas.begin(), std::move(moved_data));
+  // Removes the tabs and collections needed to be moved.
+  for (auto& tab_or_collection : GetTabsAndCollectionsForMove(tab_indices)) {
+    TabCollection* parent_collection;
+    if (std::holds_alternative<TabInterface*>(tab_or_collection)) {
+      TabInterface* tab_to_remove = std::get<TabInterface*>(tab_or_collection);
+      parent_collection = tab_to_remove->GetParentCollection(GetPassKey());
+      moved_datas.push_back(parent_collection->MaybeRemoveTab(tab_to_remove));
+    } else {
+      TabCollection* collection_to_remove =
+          std::get<TabCollection*>(tab_or_collection);
+      parent_collection = collection_to_remove->GetParentCollection();
+      moved_datas.push_back(
+          parent_collection->MaybeRemoveCollection(collection_to_remove));
+    }
+
+    // TODO(406529289): Remove this once groups collections can be moved by
+    // dragging. This is needed as a group can be left in an empty state here if
+    // all the tabs in the subcollection is removed.
+    if (parent_collection->type() == TabCollection::Type::GROUP) {
+      MaybeRemoveGroupCollection(
+          static_cast<TabGroupTabCollection*>(parent_collection));
+    }
   }
 
-  //  Add all the tabs back to the model.
+  // `insert_collection` is the final collection to directly insert
+  // `moved_datas`. `direct_dst_index` refers to the index within
+  // `insert_collection` to start inserting `moved_datas`.
+  size_t direct_dst_index;
+  TabCollection* insert_collection = nullptr;
+
+  // The `insert_collection` can only either be `pinned_collection_` ,
+  // `unpinned_collection_` or `group_collection_`. The `insert_collection` will
+  // be `group_collection_` if the tabs need to be moved to a new group.
+  // Otherwise depending on `new_pinned_state` they will either be in the
+  // `pinned_collection_` or `unpinned_collection_`.
+  if (new_pinned_state) {
+    direct_dst_index = pinned_collection_->ToDirectIndex(destination_index);
+    insert_collection = pinned_collection_;
+  } else if (new_group_id.has_value()) {
+    TabGroupTabCollection* group_collection =
+        GetTabGroupCollection(new_group_id.value());
+    CHECK(group_collection);
+
+    size_t offset =
+        GetIndexOfTabRecursive(group_collection->GetTabAtIndexRecursive(0))
+            .value();
+
+    direct_dst_index =
+        group_collection->ToDirectIndex(destination_index - offset);
+    insert_collection = group_collection;
+  } else {
+    size_t offset = pinned_collection_->TabCountRecursive();
+    direct_dst_index =
+        unpinned_collection_->ToDirectIndex(destination_index - offset);
+    insert_collection = unpinned_collection_;
+  }
+
+  // Insert tabs and collections left to right so destination index can be used
+  // in an incremental manner from `direct_dst_index`.
   for (size_t i = 0; i < moved_datas.size(); i++) {
-    AddTabRecursive(std::move(moved_datas[i]), destination_index + i,
-                    new_group_id, new_pinned_state);
+    if (std::holds_alternative<std::unique_ptr<TabInterface>>(moved_datas[i])) {
+      insert_collection->AddTab(
+          std::move(std::get<std::unique_ptr<TabInterface>>(moved_datas[i])),
+          direct_dst_index + i);
+    } else {
+      insert_collection->AddCollection(
+          std::move(std::get<std::unique_ptr<TabCollection>>(moved_datas[i])),
+          direct_dst_index + i);
+    }
   }
+}
+
+ChildrenPtrs TabStripCollection::GetTabsAndCollectionsForMove(
+    const std::vector<int>& tab_indices) {
+  std::set<const TabInterface*> selected_tabs;
+  for (int index : tab_indices) {
+    selected_tabs.insert(GetTabAtIndexRecursive(index));
+  }
+
+  // Contains set of all the collections fully covered by `tab_indices`. This
+  // does not include `pinned_collection_` or `unpinned_collection_` as they
+  // cannot be moved.
+  std::set<const TabCollection*> selected_collections;
+
+  // TODO(406529289): Find selected group collections for dragging groups.
+  for (const auto& [split_id, split_collection] : split_mapping_) {
+    bool fully_selected = true;
+    for (const TabInterface* tab : *split_collection) {
+      if (!selected_tabs.contains(tab)) {
+        fully_selected = false;
+        break;
+      }
+    }
+
+    if (fully_selected) {
+      selected_collections.insert(split_collection);
+    }
+  }
+
+  ChildrenPtrs move_datas;
+
+  // Iterates through `tab_indices`. If the tab is a direct child of
+  // `pinned_collection_` or `unpinned_collection_` return it directly as it
+  // needs to be removed directly. Otherwise potentially return the biggest
+  // subcollection that contains the tab to be removed.
+  int array_index = 0;
+  while (array_index < static_cast<int>(tab_indices.size())) {
+    TabInterface* tab = GetTabAtIndexRecursive(tab_indices[array_index]);
+    TabCollection* collection = tab->GetParentCollection(GetPassKey());
+    if (collection == pinned_collection_ ||
+        collection == unpinned_collection_) {
+      TabInterface* move_data =
+          GetTabAtIndexRecursive(tab_indices[array_index]);
+      move_datas.push_back(move_data);
+      array_index++;
+      continue;
+    } else {
+      TabCollection* candidate_subtree_collection = collection;
+      TabCollection* subtree_to_remove = nullptr;
+
+      // Finds the largest subcollection containing `tab`. `subtree_to_remove`
+      // is the current valid subcollection to remove while
+      // `candidate_subtree_collection` is the next potential subcollection to
+      // remove.
+      while ((candidate_subtree_collection != pinned_collection_ &&
+              candidate_subtree_collection != unpinned_collection_) &&
+             selected_collections.contains(candidate_subtree_collection)) {
+        subtree_to_remove = candidate_subtree_collection;
+        candidate_subtree_collection =
+            candidate_subtree_collection->GetParentCollection();
+      }
+
+      if (subtree_to_remove) {
+        move_datas.push_back(subtree_to_remove);
+        array_index += subtree_to_remove->TabCountRecursive();
+      } else {
+        TabInterface* move_data =
+            GetTabAtIndexRecursive(tab_indices[array_index]);
+        move_datas.push_back(move_data);
+        array_index++;
+      }
+    }
+  }
+
+  return move_datas;
 }
 
 TabGroupTabCollection* TabStripCollection::AddTabGroup(
@@ -208,7 +342,7 @@ std::unique_ptr<TabInterface> TabStripCollection::RemoveTabRecursive(
   CHECK(removed_tab);
 
   if (group.has_value() && close_empty_group_collection) {
-    MaybeRemoveGroupCollection(group.value());
+    MaybeRemoveGroupCollection(GetTabGroupCollection(group.value()));
   }
 
   return removed_tab;
@@ -330,9 +464,7 @@ TabStripCollection::PopDetachedGroupCollection(
 }
 
 void TabStripCollection::MaybeRemoveGroupCollection(
-    const tab_groups::TabGroupId& group) {
-  TabGroupTabCollection* group_collection = GetTabGroupCollection(group);
-
+    TabGroupTabCollection* group_collection) {
   if (group_collection && group_collection->TabCountRecursive() == 0) {
     detached_group_collections_.push_back(RemoveGroup(group_collection));
   }
