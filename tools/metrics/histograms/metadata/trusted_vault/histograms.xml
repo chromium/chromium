@@ -83,10 +83,12 @@ chromium-metrics-reviews@google.com.
   <token key="SecurityDomainId" variants="SecurityDomainId"/>
 </histogram>
 
-<histogram name="TrustedVault.DeviceRegistrationState{SecurityDomainId}"
+<histogram
+    name="TrustedVault.DeviceRegistrationState{LocalRecoveryFactorType}{SecurityDomainId}"
     enum="TrustedVaultDeviceRegistrationState" expires_after="2026-05-09">
   <owner>mmoskvitin@google.com</owner>
   <owner>mastiz@chromium.org</owner>
+  <owner>thomasth@google.com</owner>
   <summary>
     Records whether, according to information on this device, a recovery factor
     is registered on the server upon startup (if signed in) or upon first
@@ -95,8 +97,11 @@ chromium-metrics-reviews@google.com.
     Recorded at most once for every recovery factor / security domain
     combination per browser process lifetime.
 
+    Recovery factor: {LocalRecoveryFactorType}
+
     Security domain: {SecurityDomainId}
   </summary>
+  <token key="LocalRecoveryFactorType" variants="LocalRecoveryFactorType"/>
   <token key="SecurityDomainId" variants="SecurityDomainId"/>
 </histogram>
 
