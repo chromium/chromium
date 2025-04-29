@@ -224,6 +224,10 @@ std::vector<WebFormElement> WebDocument::Forms() const {
   return form_elements;
 }
 
+WebElement WebDocument::ScrollingElement() {
+  return WebElement(Unwrap<Document>()->scrollingElement());
+}
+
 std::vector<WebFormElement> WebDocument::GetTopLevelForms() const {
   Vector<WebFormElement> web_forms;
   HeapVector<Member<HTMLFormElement>> forms =

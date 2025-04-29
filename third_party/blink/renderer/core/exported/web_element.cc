@@ -53,12 +53,15 @@
 #include "third_party/blink/renderer/core/html/forms/text_control_element.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
+#include "third_party/blink/renderer/core/layout/layout_box.h"
+#include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace blink {
 
@@ -347,6 +350,43 @@ gfx::Size WebElement::GetScrollSize() const {
   return gfx::Size(element->scrollWidth(), element->scrollHeight());
 }
 
+gfx::Vector2dF WebElement::GetScrollOffset() const {
+  Element* element = const_cast<Element*>(ConstUnwrap<Element>());
+  return gfx::Vector2dF(element->scrollLeft(), element->scrollTop());
+}
+
+void WebElement::SetScrollOffset(const gfx::Vector2dF& offset) {
+  Element* element = Unwrap<Element>();
+  element->setScrollLeft(offset.x());
+  element->setScrollTop(offset.y());
+}
+
+bool WebElement::IsUserScrollableX() const {
+  LayoutBox* box = GetScrollingBox();
+  if (!box) {
+    return false;
+  }
+
+  return box->HasScrollableOverflowX();
+}
+
+bool WebElement::IsUserScrollableY() const {
+  LayoutBox* box = GetScrollingBox();
+  if (!box) {
+    return false;
+  }
+
+  return box->HasScrollableOverflowY();
+}
+
+float WebElement::GetEffectiveZoom() const {
+  const Element* element = ConstUnwrap<Element>();
+  if (const auto* layout_object = element->GetLayoutObject()) {
+    return layout_object->StyleRef().EffectiveZoom();
+  }
+  return 1.0f;
+}
+
 WebString WebElement::GetComputedValue(const WebString& property_name) {
   if (IsNull())
     return WebString();
@@ -380,6 +420,18 @@ Image* WebElement::GetImage() {
   if (IsNull())
     return nullptr;
   return Unwrap<Element>()->ImageContents();
+}
+
+LayoutBox* WebElement::GetScrollingBox() const {
+  Element* element = const_cast<Element*>(ConstUnwrap<Element>());
+
+  // The viewport is a special case as it is scrolled by the layout view, rather
+  // than body or html elements.
+  if (element == element->GetDocument().scrollingElement()) {
+    return element->GetDocument().GetLayoutView();
+  }
+
+  return blink::DynamicTo<LayoutBox>(element->GetLayoutObject());
 }
 
 }  // namespace blink

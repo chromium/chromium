@@ -87,6 +87,8 @@ BrowserAction MakeType(int content_node_id,
 BrowserAction MakeScroll(std::optional<int> content_node_id,
                          float scroll_offset_x,
                          float scroll_offset_y) {
+  CHECK(!scroll_offset_x || !scroll_offset_y)
+      << "Scroll action supports only one axis at a time.";
   BrowserAction action;
   ScrollAction* scroll = action.add_action_information()->mutable_scroll();
   if (content_node_id.has_value()) {

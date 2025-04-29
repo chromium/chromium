@@ -123,6 +123,7 @@ class BLINK_EXPORT WebDocument : public WebNode {
   WebString ContentAsTextForTesting() const;
   WebElementCollection All() const;
   std::vector<WebFormElement> Forms() const;
+  WebElement ScrollingElement();
 
   // Returns all form elements that have no shadow-tree including ancestor that
   // is also a form element. This includes form elements inside shadow trees.

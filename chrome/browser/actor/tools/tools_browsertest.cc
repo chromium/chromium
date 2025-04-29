@@ -4,6 +4,7 @@
 
 #include <string_view>
 
+#include "base/command_line.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -14,6 +15,7 @@
 #include "chrome/browser/actor/tools/wait_tool.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/zoom/chrome_zoom_level_prefs.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
 #include "chrome/common/chrome_switches.h"
@@ -29,6 +31,8 @@
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "net/dns/mock_host_resolver.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "third_party/blink/public/common/page/page_zoom.h"
+#include "ui/display/display_switches.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/vector2d.h"
 
@@ -115,6 +119,11 @@ class ActorToolsTest : public InProcessBrowserTest {
     actor_coordinator_ =
         std::make_unique<ActorCoordinator>(browser()->profile());
     actor_coordinator().StartTaskForTesting(browser()->GetActiveTabInterface());
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    InProcessBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitchASCII(switches::kForceDeviceScaleFactor, "1");
   }
 
   void TearDownOnMainThread() override {
@@ -509,7 +518,25 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, MouseMoveTool_TargetOutsideViewport) {
 // Scroll Tool
 // ===============================================
 
-IN_PROC_BROWSER_TEST_F(ActorToolsTest, ScrollTool_ScrollOnPage) {
+IN_PROC_BROWSER_TEST_F(ActorToolsTest, ScrollTool_FailOnInvalidNodeID) {
+  const GURL url =
+      embedded_test_server()->GetURL("/actor/scrollable_page.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  // Use a random node id that doesn't exist.
+  float scroll_offset_y = 50;
+  BrowserAction action = MakeScroll(kNonExistentContentNodeId,
+                                    /*scroll_offset_x=*/0, scroll_offset_y);
+
+  TestFuture<bool> result_fail;
+  actor_coordinator().Act(action, result_fail.GetCallback());
+  EXPECT_FALSE(result_fail.Get());
+
+  EXPECT_EQ(0, EvalJs(web_contents(), "window.scrollY"));
+}
+
+// Test scrolling the viewport vertically.
+IN_PROC_BROWSER_TEST_F(ActorToolsTest, ScrollTool_ScrollPageVertical) {
   const GURL url =
       embedded_test_server()->GetURL("/actor/scrollable_page.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
@@ -536,21 +563,225 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, ScrollTool_ScrollOnPage) {
   }
 }
 
-IN_PROC_BROWSER_TEST_F(ActorToolsTest, ScrollTool_FailOnInvalidNodeID) {
+// Test scrolling the viewport horizontally.
+IN_PROC_BROWSER_TEST_F(ActorToolsTest, ScrollTool_ScrollPageHorizontal) {
   const GURL url =
       embedded_test_server()->GetURL("/actor/scrollable_page.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
-  // Use a random node id that doesn't exist.
-  float scroll_offset_y = 50;
-  BrowserAction action = MakeScroll(kNonExistentContentNodeId,
-                                    /*scroll_offset_x=*/0, scroll_offset_y);
+  int scroll_offset_x = 50;
 
-  TestFuture<bool> result_fail;
-  actor_coordinator().Act(action, result_fail.GetCallback());
-  EXPECT_FALSE(result_fail.Get());
+  {
+    // If no node id is passed, it will scroll the page's viewport.
+    BrowserAction action =
+        MakeScroll(/*content_node_id=*/std::nullopt, scroll_offset_x,
+                   /*scroll_offset_y=*/0);
+    TestFuture<bool> result_success;
+    actor_coordinator().Act(action, result_success.GetCallback());
+    EXPECT_TRUE(result_success.Get());
+    EXPECT_EQ(scroll_offset_x, EvalJs(web_contents(), "window.scrollX"));
+  }
 
-  EXPECT_EQ(0, EvalJs(web_contents(), "window.scrollY"));
+  {
+    BrowserAction action =
+        MakeScroll(/*content_node_id=*/std::nullopt, scroll_offset_x,
+                   /*scroll_offset_y=*/0);
+    TestFuture<bool> result_success;
+    actor_coordinator().Act(action, result_success.GetCallback());
+    EXPECT_TRUE(result_success.Get());
+    EXPECT_EQ(2 * scroll_offset_x, EvalJs(web_contents(), "window.scrollX"));
+  }
+}
+
+// Test scrolling in a sub-scroller on the page.
+IN_PROC_BROWSER_TEST_F(ActorToolsTest, ScrollTool_ScrollElement) {
+  const GURL url =
+      embedded_test_server()->GetURL("/actor/scrollable_page.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  int scroll_offset_x = 50;
+  int scroll_offset_y = 80;
+
+  int scroller = FindContentNodeId(*main_frame(), "#scroller").value();
+
+  {
+    BrowserAction action = MakeScroll(scroller, scroll_offset_x,
+                                      /*scroll_offset_y=*/0);
+    TestFuture<bool> result_success;
+    actor_coordinator().Act(action, result_success.GetCallback());
+    EXPECT_TRUE(result_success.Get());
+    EXPECT_EQ(scroll_offset_x,
+              EvalJs(web_contents(),
+                     "document.getElementById('scroller').scrollLeft"));
+  }
+
+  {
+    BrowserAction action = MakeScroll(scroller,
+                                      /*scroll_offset_x=*/0, scroll_offset_y);
+    TestFuture<bool> result_success;
+    actor_coordinator().Act(action, result_success.GetCallback());
+    EXPECT_TRUE(result_success.Get());
+    EXPECT_EQ(scroll_offset_y,
+              EvalJs(web_contents(),
+                     "document.getElementById('scroller').scrollTop"));
+  }
+}
+
+// Test scrolling over a non-scrollable element returns failure.
+IN_PROC_BROWSER_TEST_F(ActorToolsTest, ScrollTool_NonScrollable) {
+  const GURL url =
+      embedded_test_server()->GetURL("/actor/scrollable_page.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  int scroll_offset_y = 80;
+
+  int scroller = FindContentNodeId(*main_frame(), "#nonscroll").value();
+
+  {
+    BrowserAction action = MakeScroll(scroller,
+                                      /*scroll_offset_x=*/0, scroll_offset_y);
+    TestFuture<bool> result_success;
+    actor_coordinator().Act(action, result_success.GetCallback());
+    EXPECT_FALSE(result_success.Get());
+    EXPECT_EQ(0, EvalJs(web_contents(),
+                        "document.getElementById('nonscroll').scrollTop"));
+    EXPECT_EQ(0, EvalJs(web_contents(), "window.scrollY"));
+  }
+}
+
+// Test that a scrolling over a scroller with overflow in one axis only works
+// correctly.
+IN_PROC_BROWSER_TEST_F(ActorToolsTest, ScrollTool_OneAxisScroller) {
+  const GURL url =
+      embedded_test_server()->GetURL("/actor/scrollable_page.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  int scroll_offset = 80;
+
+  int scroller =
+      FindContentNodeId(*main_frame(), "#horizontalscroller").value();
+
+  // Try a vertical scroll - it should fail since the scroller has only
+  // horizontal overflow.
+  {
+    BrowserAction action = MakeScroll(scroller,
+                                      /*scroll_offset_x=*/0, scroll_offset);
+    TestFuture<bool> result_success;
+    actor_coordinator().Act(action, result_success.GetCallback());
+    EXPECT_FALSE(result_success.Get());
+    EXPECT_EQ(
+        0, EvalJs(web_contents(),
+                  "document.getElementById('horizontalscroller').scrollTop"));
+    EXPECT_EQ(0, EvalJs(web_contents(), "window.scrollY"));
+  }
+
+  // Horizontal scroll should succeed.
+  {
+    BrowserAction action = MakeScroll(scroller, scroll_offset,
+                                      /*scroll_offset_y=*/0);
+    TestFuture<bool> result_success;
+    actor_coordinator().Act(action, result_success.GetCallback());
+    EXPECT_TRUE(result_success.Get());
+    EXPECT_EQ(
+        scroll_offset,
+        EvalJs(web_contents(),
+               "document.getElementById('horizontalscroller').scrollLeft"));
+  }
+}
+
+// Ensure scroll distances are correctly scaled when browser zoom is applied.
+IN_PROC_BROWSER_TEST_F(ActorToolsTest, ScrollTool_BrowserZoom) {
+  // Set the default browser page zoom to 150%.
+  double level = blink::ZoomFactorToZoomLevel(1.5);
+  browser()->profile()->GetZoomLevelPrefs()->SetDefaultZoomLevelPref(level);
+
+  const GURL url =
+      embedded_test_server()->GetURL("/actor/scrollable_page.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  // 60 physical pixels translates to 40 CSS pixels when the zoom factor is 1.5
+  // (3 physical pixels : 2 CSS Pixels)
+  int scroll_offset_physical = 60;
+  int expected_offset_css = 40;
+  int scroller = FindContentNodeId(*main_frame(), "#scroller").value();
+
+  {
+    BrowserAction action =
+        MakeScroll(scroller,
+                   /*scroll_offset_x=*/0, scroll_offset_physical);
+    TestFuture<bool> result_success;
+    actor_coordinator().Act(action, result_success.GetCallback());
+    EXPECT_TRUE(result_success.Get());
+    EXPECT_EQ(expected_offset_css,
+              EvalJs(web_contents(),
+                     "document.getElementById('scroller').scrollTop"));
+  }
+}
+
+// Ensure scroll distances are correctly scaled when applied to a CSS zoomed
+// scroller.
+IN_PROC_BROWSER_TEST_F(ActorToolsTest, ScrollTool_CSSZoom) {
+  const GURL url =
+      embedded_test_server()->GetURL("/actor/scrollable_page.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  // 60 physical pixels translates to 120 CSS pixels since the scroller is
+  // inside a `zoom:0.5` subtree (1 physical pixels : 2 CSS Pixels)
+  int scroll_offset_physical = 60;
+  int expected_offset_css = 120;
+  int scroller = FindContentNodeId(*main_frame(), "#zoomedscroller").value();
+
+  {
+    BrowserAction action =
+        MakeScroll(scroller,
+                   /*scroll_offset_x=*/0, scroll_offset_physical);
+    TestFuture<bool> result_success;
+    actor_coordinator().Act(action, result_success.GetCallback());
+    EXPECT_TRUE(result_success.Get());
+    EXPECT_EQ(expected_offset_css,
+              EvalJs(web_contents(),
+                     "document.getElementById('zoomedscroller').scrollTop"));
+  }
+}
+
+class ActorToolsTestDSF2 : public ActorToolsTest {
+ public:
+  ActorToolsTestDSF2() = default;
+  explicit ActorToolsTestDSF2(const ActorToolsTest&) = delete;
+  ActorToolsTestDSF2& operator=(const ActorToolsTestDSF2&) = delete;
+
+  ~ActorToolsTestDSF2() override = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    InProcessBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitchASCII(switches::kForceDeviceScaleFactor, "2");
+  }
+};
+
+// Ensure scroll distances are correctly scaled when using a non-1 device scale
+// factor
+IN_PROC_BROWSER_TEST_F(ActorToolsTestDSF2, ScrollTool_ScrollDSF) {
+  const GURL url =
+      embedded_test_server()->GetURL("/actor/scrollable_page.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  // 80 physical pixels translates to 40 CSS pixels when the device scale factor
+  // = 2 (2 physical pixels : 1 CSS pixel);
+  int scroll_offset_physical = 80;
+  int expected_offset_css = 40;
+  int scroller = FindContentNodeId(*main_frame(), "#scroller").value();
+
+  {
+    BrowserAction action =
+        MakeScroll(scroller,
+                   /*scroll_offset_x=*/0, scroll_offset_physical);
+    TestFuture<bool> result_success;
+    actor_coordinator().Act(action, result_success.GetCallback());
+    EXPECT_TRUE(result_success.Get());
+    EXPECT_EQ(expected_offset_css,
+              EvalJs(web_contents(),
+                     "document.getElementById('scroller').scrollTop"));
+  }
 }
 
 // ===============================================
