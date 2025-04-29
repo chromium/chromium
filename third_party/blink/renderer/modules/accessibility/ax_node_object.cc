@@ -55,7 +55,6 @@
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
 #include "third_party/blink/renderer/core/dom/qualified_name.h"
-#include "third_party/blink/renderer/core/dom/range.h"
 #include "third_party/blink/renderer/core/dom/scroll_marker_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/text.h"
@@ -579,17 +578,6 @@ VectorOf<Node> UnpackScrollerWithSiblingControls(Element* element) {
   // We should have at least added the element itself.
   CHECK(!result.empty());
   return result;
-}
-
-void CollectLayoutTextContentRecursive(StringBuilder& builder,
-                                       const LayoutObject* object) {
-  if (auto* text_object = DynamicTo<LayoutText>(object)) {
-    builder.Append(text_object->TransformedText());
-  }
-  for (auto* child = object->SlowFirstChild(); child;
-       child = child->NextSibling()) {
-    CollectLayoutTextContentRecursive(builder, child);
-  }
 }
 
 }  // namespace
@@ -1429,16 +1417,6 @@ std::optional<String> AXNodeObject::GetCSSAltText(const Element* element) {
   }
 
   return std::nullopt;
-}
-
-std::optional<String> AXNodeObject::GetCSSContentText(const Element* element) {
-  if (!element || !element->IsPseudoElement() || !element->GetLayoutObject()) {
-    return std::nullopt;
-  }
-
-  StringBuilder builder;
-  CollectLayoutTextContentRecursive(builder, element->GetLayoutObject());
-  return builder.ToString();
 }
 
 // The following lists are for deciding whether the tags aside,
@@ -4881,28 +4859,6 @@ String AXNodeObject::GetName(ax::mojom::blink::NameFrom& name_from,
           return element->GetLocale().QueryString(IDS_AX_CAROUSEL_SCROLL_UP);
       }
     }
-  }
-
-  // Handle ::scroll-marker names. Pick the first one that matches:
-  //  - Use CSS alt text if one is available.
-  //  - Use CSS content (from LayoutText descendants) if specified and
-  //    non-empty.
-  //  - Use scroll target's accessibility name is it has one.
-  if (element && element->IsScrollMarkerPseudoElement()) {
-    std::optional<String> alt_text = GetCSSAltText(element);
-    if (alt_text && !alt_text->empty()) {
-      return *alt_text;
-    }
-
-    std::optional<String> content = GetCSSContentText(element);
-    if (content && !content->empty()) {
-      return *content;
-    }
-
-    const AXObject* scroll_target =
-        AXObjectCache().Get(element->parentElement());
-    ax::mojom::blink::NameFrom name_source;
-    return scroll_target ? scroll_target->GetName(name_source, nullptr) : "";
   }
 
   return name;
