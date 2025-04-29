@@ -137,7 +137,9 @@ class WebUIContentsPreloadManager : public ProfileObserver,
   // Sets the current preloaded WebContents and performs necessary bookkepping.
   // The bookkeeping includes monitoring for the shutdown of the browser context
   // and handling the "ready-to-show" event emitted by the WebContents.
-  void SetPreloadedContents(std::unique_ptr<content::WebContents> web_contents);
+  // Returns the previous preloaded WebContents.
+  std::unique_ptr<content::WebContents> SetPreloadedContents(
+      std::unique_ptr<content::WebContents> web_contents);
 
   std::unique_ptr<content::WebContents> CreateNewContents(
       content::BrowserContext* browser_context,
@@ -149,6 +151,8 @@ class WebUIContentsPreloadManager : public ProfileObserver,
   // `browser_context`.
   bool ShouldPreloadForBrowserContext(
       content::BrowserContext* browser_context) const;
+
+  bool IsDelayPreloadEnabled() const;
 
   // Cleans up preloaded contents on browser context shutdown.
   void OnBrowserContextShutdown(content::BrowserContext* browser_context);
@@ -166,6 +170,10 @@ class WebUIContentsPreloadManager : public ProfileObserver,
   // Disable navigations for views unittests because they don't initialize
   // //content properly.
   bool is_navigation_disabled_for_test_ = false;
+
+  // Used in tests to disable delay preload.
+  // If not delayed, preloading waits for non-empty paint or a deadline.
+  bool is_delay_preload_disabled_for_test_ = false;
 
   // Used to prevent the preload re-entrance due to destroying the old preload
   // contents.

@@ -79,7 +79,7 @@ constexpr base::FeatureParam<PdfInfoBarTrigger> kPdfInfoBarTrigger = {
 // so that it can be shown instantly at a later time when necessary.
 BASE_FEATURE(kPreloadTopChromeWebUI,
              "PreloadTopChromeWebUI",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const char kPreloadTopChromeWebUIModeName[] = "preload-mode";
 const char kPreloadTopChromeWebUIModePreloadOnWarmupName[] =
@@ -100,11 +100,11 @@ const base::FeatureParam<PreloadTopChromeWebUIMode> kPreloadTopChromeWebUIMode{
 
 const char kPreloadTopChromeWebUISmartPreloadName[] = "smart-preload";
 const base::FeatureParam<bool> kPreloadTopChromeWebUISmartPreload{
-    &kPreloadTopChromeWebUI, kPreloadTopChromeWebUISmartPreloadName, false};
+    &kPreloadTopChromeWebUI, kPreloadTopChromeWebUISmartPreloadName, true};
 
 const char kPreloadTopChromeWebUIDelayPreloadName[] = "delay-preload";
 const base::FeatureParam<bool> kPreloadTopChromeWebUIDelayPreload{
-    &kPreloadTopChromeWebUI, kPreloadTopChromeWebUIDelayPreloadName, false};
+    &kPreloadTopChromeWebUI, kPreloadTopChromeWebUIDelayPreloadName, true};
 
 const char kPreloadTopChromeWebUIExcludeOriginsName[] = "exclude-origins";
 const base::FeatureParam<std::string> kPreloadTopChromeWebUIExcludeOrigins{

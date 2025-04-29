@@ -91,11 +91,6 @@ bool IsSmartPreloadEnabled() {
          features::kPreloadTopChromeWebUISmartPreload.Get();
 }
 
-bool IsDelayPreloadEnabled() {
-  return IsFeatureEnabled() &&
-         features::kPreloadTopChromeWebUIDelayPreload.Get();
-}
-
 content::WebContents::CreateParams GetWebContentsCreateParams(
     const GURL& webui_url,
     content::BrowserContext* browser_context) {
@@ -375,13 +370,17 @@ void WebUIContentsPreloadManager::MaybePreloadForBrowserContextLater(
     content::BrowserContext* browser_context,
     content::WebContents* busy_web_contents_to_watch,
     base::TimeDelta deadline) {
+  CHECK(!is_delay_preload_disabled_for_test_);
   pending_preload_ = std::make_unique<PendingPreload>(
       this, Profile::FromBrowserContext(browser_context),
       busy_web_contents_to_watch, deadline);
 }
 
-void WebUIContentsPreloadManager::SetPreloadedContents(
+std::unique_ptr<content::WebContents>
+WebUIContentsPreloadManager::SetPreloadedContents(
     std::unique_ptr<content::WebContents> web_contents) {
+  std::unique_ptr<content::WebContents> previous_preloaded_web_contents =
+      std::move(preloaded_web_contents_);
   webui_controller_embedder_stub_->Detach();
   profile_observation_.Reset();
 
@@ -395,6 +394,8 @@ void WebUIContentsPreloadManager::SetPreloadedContents(
     WebUIContentsPreloadState::FromWebContents(preloaded_web_contents_.get())
         ->preloaded = true;
   }
+
+  return previous_preloaded_web_contents;
 }
 
 RequestResult WebUIContentsPreloadManager::Request(
@@ -540,6 +541,15 @@ bool WebUIContentsPreloadManager::ShouldPreloadForBrowserContext(
   }
 
   return true;
+}
+
+bool WebUIContentsPreloadManager::IsDelayPreloadEnabled() const {
+  if (is_delay_preload_disabled_for_test_) {
+    return false;
+  }
+
+  return IsFeatureEnabled() &&
+         features::kPreloadTopChromeWebUIDelayPreload.Get();
 }
 
 void WebUIContentsPreloadManager::OnProfileWillBeDestroyed(Profile* profile) {
