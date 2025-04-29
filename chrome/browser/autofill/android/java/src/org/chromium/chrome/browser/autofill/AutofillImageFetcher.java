@@ -51,6 +51,11 @@ public class AutofillImageFetcher {
     // #MAX_FETCH_ATTEMPTS} attempts.
     private static final String PIX_ACCOUNT_IMAGE_OVERALL_SUCCESS_HISTOGRAM =
             "Autofill.ImageFetcher.PixAccountImage.OverallResultOnBrowserStart";
+    // Logs the overall success rate of fetching valuable images. For a given valuable image URL,
+    // logs "true" if image was fetched, "false" if the image was not fetched after {@link
+    // #MAX_FETCH_ATTEMPTS} attempts.
+    private static final String VALUABLE_IMAGE_OVERALL_SUCCESS_HISTOGRAM =
+            "Autofill.ImageFetcher.ValuableImage.OverallResultOnBrowserStart";
 
     private final Map<String, Integer> mFetchAttemptCounter = new HashMap<>();
     private final Map<String, Bitmap> mImagesCache = new HashMap<>();
@@ -131,6 +136,30 @@ public class AutofillImageFetcher {
                                     treatImageFunction,
                                     PIX_ACCOUNT_IMAGE_OVERALL_SUCCESS_HISTOGRAM);
             fetchImage(resolvedUrl, onImageFetched);
+        }
+    }
+
+    /**
+     * Fetches images for the passed in valuable image URLs, treats and stores them in cache.
+     *
+     * @param urls The URLs to fetch the images.
+     */
+    @CalledByNative
+    void prefetchValuableImages(@JniType("base::span<const GURL>") GURL[] urls) {
+        for (GURL url : urls) {
+            if (url == null || !url.isValid()) {
+                continue;
+            }
+
+            Function<Bitmap, Bitmap> treatImageFunction = bitmap -> bitmap;
+            Callback<@Nullable Bitmap> onImageFetched =
+                    bitmap ->
+                            treatAndCacheImage(
+                                    bitmap,
+                                    url.getSpec(),
+                                    treatImageFunction,
+                                    VALUABLE_IMAGE_OVERALL_SUCCESS_HISTOGRAM);
+            fetchImage(url.getSpec(), onImageFetched);
         }
     }
 

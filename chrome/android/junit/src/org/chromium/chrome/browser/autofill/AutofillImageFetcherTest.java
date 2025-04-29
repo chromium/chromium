@@ -560,6 +560,92 @@ public class AutofillImageFetcherTest {
                 drawableToBitmap(genericBankAccountIcon).sameAs(drawableToBitmap(pixAccountIcon)));
     }
 
+    @Test
+    @SmallTest
+    public void testPrefetchValuableImages_successfulImageFetch() {
+        HistogramWatcher expectedHistogram =
+                HistogramWatcher.newBuilder()
+                        .expectBooleanRecordTimes(
+                                "Autofill.ImageFetcher.Result", /* value= */ true, /* times= */ 1)
+                        .expectBooleanRecordTimes(
+                                "Autofill.ImageFetcher.ValuableImage.OverallResultOnBrowserStart",
+                                /* value= */ true,
+                                /* times= */ 1)
+                        .build();
+
+        mAutofillImageFetcher.prefetchValuableImages(new GURL[] {TEST_IMAGE_URL});
+        Map<String, Bitmap> cachedImages = mAutofillImageFetcher.getCachedImagesForTesting();
+
+        // Verify that fetchImage was called once.
+        verify(mMockImageFetcher).fetchImage(any(Params.class), any(Callback.class));
+
+        // Verify that the images are successfully fetched and cached.
+        assertEquals(1, cachedImages.size());
+        assertTrue(TEST_IMAGE.sameAs(cachedImages.get(TEST_IMAGE_URL.getSpec())));
+
+        expectedHistogram.assertExpected();
+    }
+
+    @Test
+    @SmallTest
+    public void testPrefetchValuableImages_unsuccessfulImageFetch() {
+        doAnswer(
+                        invocation -> {
+                            Callback callback = invocation.getArgument(1);
+                            callback.onResult(null);
+                            return null;
+                        })
+                .when(mMockImageFetcher)
+                .fetchImage(any(Params.class), any(Callback.class));
+        HistogramWatcher expectedHistogram =
+                HistogramWatcher.newBuilder()
+                        .expectBooleanRecordTimes(
+                                "Autofill.ImageFetcher.Result", /* value= */ false, /* times= */ 2)
+                        .expectBooleanRecordTimes(
+                                "Autofill.ImageFetcher.ValuableImage.OverallResultOnBrowserStart",
+                                /* value= */ false,
+                                /* times= */ 1)
+                        .build();
+        mAutofillImageFetcher.prefetchValuableImages(new GURL[] {TEST_IMAGE_URL});
+
+        // Advance the clock to trigger the retry.
+        mShadowLooper.runOneTask();
+        // Advance the task again to make sure image fetching is retried only once.
+        mShadowLooper.runOneTask();
+
+        // Verify that fetchImage was called twice.
+        verify(mMockImageFetcher, times(2)).fetchImage(any(Params.class), any(Callback.class));
+
+        // Verify that the cache is empty since image fetching failed.
+        assertTrue(mAutofillImageFetcher.getCachedImagesForTesting().isEmpty());
+
+        expectedHistogram.assertExpected();
+    }
+
+    @Test
+    @SmallTest
+    public void testPrefetchValuableImages_invalidOrEmptyUrl() {
+        GURL invalidUrl = new GURL("invalid-image-url");
+        GURL emptyUrl = new GURL("");
+
+        HistogramWatcher expectedHistogram =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("Autofill.ImageFetcher.Result")
+                        .expectNoRecords(
+                                "Autofill.ImageFetcher.ValuableImage.OverallResultOnBrowserStart")
+                        .build();
+        mAutofillImageFetcher.prefetchValuableImages(new GURL[] {invalidUrl, emptyUrl});
+
+        // Verify that fetchImage was not called for invalid URLs.
+        verify(mMockImageFetcher, never()).fetchImage(any(Params.class), any(Callback.class));
+
+        // Verify that the cache is empty since the image URLs weren't valid and no images were
+        // fetched.
+        assertTrue(mAutofillImageFetcher.getCachedImagesForTesting().isEmpty());
+
+        expectedHistogram.assertExpected();
+    }
+
     private @Nullable Bitmap drawableToBitmap(Drawable drawable) {
         if (drawable == null) {
             return null;
