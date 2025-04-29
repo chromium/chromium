@@ -138,22 +138,28 @@ void ZeroStateSuggestionsPageData::OnReceivedInnerText(
   RequestSuggestionsIfComplete();
 }
 
-void ZeroStateSuggestionsPageData::OnReceivedOptimizationMetadata(
+void ZeroStateSuggestionsPageData::OnReceivedOptimizationMetadataOnDemand(
     const GURL& url,
     const base::flat_map<
         optimization_guide::proto::OptimizationType,
         optimization_guide::OptimizationGuideDecisionWithMetadata>& decisions) {
-  optimization_metadata_done_ = true;
   auto it =
       decisions.find(optimization_guide::proto::GLIC_ZERO_STATE_SUGGESTIONS);
   if (it == decisions.end()) {
     // If not found, treat it as no metadata.
-    optimization_decision_ =
-        optimization_guide::OptimizationGuideDecision::kFalse;
+    OnReceivedOptimizationMetadata(
+        optimization_guide::OptimizationGuideDecision::kFalse, {});
   } else {
-    optimization_metadata_ = it->second.metadata;
-    optimization_decision_ = it->second.decision;
+    OnReceivedOptimizationMetadata(it->second.decision, it->second.metadata);
   }
+}
+
+void ZeroStateSuggestionsPageData::OnReceivedOptimizationMetadata(
+    optimization_guide::OptimizationGuideDecision decision,
+    const optimization_guide::OptimizationMetadata& metadata) {
+  optimization_metadata_done_ = true;
+  optimization_decision_ = decision;
+  optimization_metadata_ = metadata;
 
   ProcessSuggestionsIfComplete();
 }
@@ -193,42 +199,37 @@ void ZeroStateSuggestionsPageData::RequestSuggestionsIfComplete() {
     return;
   }
 
-  content::WebContents* web_contents =
-      content::WebContents::FromRenderFrameHost(&(page().GetMainDocument()));
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  bool can_request_metadata =
-      optimization_guide::IsUserPermittedToFetchFromRemoteOptimizationGuide(
-          profile->IsOffTheRecord(), profile->GetPrefs());
-
-  if (!optimization_metadata_done_ && can_request_metadata) {
-    optimization_decision_ =
-        optimization_guide_keyed_service_->CanApplyOptimization(
-            web_contents->GetLastCommittedURL(),
-            optimization_guide::proto::GLIC_ZERO_STATE_SUGGESTIONS,
-            &optimization_metadata_);
-    optimization_metadata_done_ = true;
-  }
-  if (ReturnSuggestionsFromOptimizationMetadataIfPossible()) {
-    return;
-  }
-
   if (!has_page_context) {
     suggestions_callbacks_.Notify(std::nullopt);
     cached_suggestions_ = std::make_optional(std::vector<std::string>({}));
     return;
   }
 
-  if (!optimization_metadata_done_ && !can_request_metadata) {
-    optimization_guide_keyed_service_->CanApplyOptimizationOnDemand(
-        {content::WebContents::FromRenderFrameHost(&(page().GetMainDocument()))
-             ->GetLastCommittedURL()},
-        {optimization_guide::proto::GLIC_ZERO_STATE_SUGGESTIONS},
-        optimization_guide::proto::RequestContext::
-            CONTEXT_GLIC_ZERO_STATE_SUGGESTIONS,
-        base::BindRepeating(
-            &ZeroStateSuggestionsPageData::OnReceivedOptimizationMetadata,
-            weak_ptr_factory_.GetWeakPtr()));
+  content::WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(&(page().GetMainDocument()));
+  if (!optimization_metadata_done_) {
+    Profile* profile =
+        Profile::FromBrowserContext(web_contents->GetBrowserContext());
+    bool can_request_metadata =
+        optimization_guide::IsUserPermittedToFetchFromRemoteOptimizationGuide(
+            profile->IsOffTheRecord(), profile->GetPrefs());
+    if (can_request_metadata) {
+      optimization_guide_keyed_service_->CanApplyOptimization(
+          web_contents->GetLastCommittedURL(),
+          optimization_guide::proto::GLIC_ZERO_STATE_SUGGESTIONS,
+          base::BindOnce(
+              &ZeroStateSuggestionsPageData::OnReceivedOptimizationMetadata,
+              weak_ptr_factory_.GetWeakPtr()));
+    } else {
+      optimization_guide_keyed_service_->CanApplyOptimizationOnDemand(
+          {web_contents->GetLastCommittedURL()},
+          {optimization_guide::proto::GLIC_ZERO_STATE_SUGGESTIONS},
+          optimization_guide::proto::RequestContext::
+              CONTEXT_GLIC_ZERO_STATE_SUGGESTIONS,
+          base::BindRepeating(&ZeroStateSuggestionsPageData::
+                                  OnReceivedOptimizationMetadataOnDemand,
+                              weak_ptr_factory_.GetWeakPtr()));
+    }
   }
 
   optimization_guide::proto::PageContext* page_context =

@@ -65,12 +65,17 @@ class ZeroStateSuggestionsPageData
       std::optional<optimization_guide::AIPageContentResult> content);
 
   // Called when on-demand metadata is received.
-  void OnReceivedOptimizationMetadata(
+  void OnReceivedOptimizationMetadataOnDemand(
       const GURL& url,
       const base::flat_map<
           optimization_guide::proto::OptimizationType,
           optimization_guide::OptimizationGuideDecisionWithMetadata>&
           decisions);
+
+  // Called when optimization metadata is received.
+  void OnReceivedOptimizationMetadata(
+      optimization_guide::OptimizationGuideDecision decision,
+      const optimization_guide::OptimizationMetadata& metadata);
 
   // Send out suggestions request, if all necessary fetches are complete.
   void RequestSuggestionsIfComplete();
