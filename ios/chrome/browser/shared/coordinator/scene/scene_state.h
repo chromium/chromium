@@ -106,10 +106,10 @@
 @property(nonatomic, assign) BOOL signinInProgress;
 
 // Accessibility identifier of the window.
-@property(nonatomic, assign, readonly) NSString* windowAccessibilityIdentifier;
+@property(nonatomic, copy, readonly) NSString* windowAccessibilityIdentifier;
 
 // Root view controller's view.
-@property(nonatomic, assign, readonly) UIView* rootView;
+@property(nonatomic, strong, readonly) UIView* rootView;
 
 // Adds an observer to this scene state. The observers will be notified about
 // scene state changes per SceneStateObserver protocol.
