@@ -142,9 +142,11 @@ void SecurePaymentConfirmationApp::InvokePaymentApp(
 #if BUILDFLAG(IS_ANDROID)
   if (passkey_browser_binder_) {
     std::vector<device::PublicKeyCredentialParams::CredentialInfo>
-        credential_parameters =
-            options->extensions->payment_browser_bound_key_parameters.value_or(
-                base::ToVector(kDefaultBrowserBoundKeyCredentialParameters));
+        credential_parameters = request_->browser_bound_pub_key_cred_params;
+    if (credential_parameters.empty()) {
+      credential_parameters =
+          base::ToVector(kDefaultBrowserBoundKeyCredentialParameters);
+    }
     passkey_browser_binder_->GetOrCreateBoundKeyForPasskey(
         credential_id_, effective_relying_party_identity_,
         credential_parameters,

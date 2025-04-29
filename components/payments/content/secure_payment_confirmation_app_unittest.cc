@@ -88,9 +88,7 @@ class SecurePaymentConfirmationAppTest : public testing::Test,
     request->challenge =
         std::vector<uint8_t>(challenge_bytes_.begin(), challenge_bytes_.end());
     if (credential_parameters) {
-      request->extensions =
-          blink::mojom::AuthenticationExtensionsClientInputs::New();
-      request->extensions->payment_browser_bound_key_parameters =
+      request->browser_bound_pub_key_cred_params =
           std::move(*credential_parameters);
     }
     return request;
