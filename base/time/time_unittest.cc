@@ -15,6 +15,7 @@
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/environment.h"
+#include "base/numerics/safe_math.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/to_string.h"
 #include "base/test/gtest_util.h"
@@ -1941,6 +1942,33 @@ TEST(TimeDelta, TimeSpecConversion) {
   EXPECT_EQ(result.tv_sec, 1);
   EXPECT_EQ(result.tv_nsec, 1000);
   EXPECT_EQ(delta, TimeDelta::FromTimeSpec(result));
+
+  delta = Milliseconds(10600) - Seconds(20);
+  EXPECT_TRUE(delta.is_negative());
+  result = delta.ToTimeSpec();
+  EXPECT_EQ(result.tv_sec, 0);
+  EXPECT_EQ(result.tv_nsec, 0);
+  EXPECT_NE(delta, TimeDelta::FromTimeSpec(result));
+
+  delta = TimeDelta::Max();
+  result = delta.ToTimeSpec();
+  EXPECT_EQ(result.tv_sec,
+            saturated_cast<time_t>(TimeDelta::Max().InSeconds()));
+  const int64_t expected_extra_microseconds =
+      TimeDelta::Max().InMicroseconds() % Time::kMicrosecondsPerSecond;
+  EXPECT_EQ(result.tv_nsec,
+            static_cast<long>(expected_extra_microseconds *
+                              Time::kNanosecondsPerMicrosecond));
+  if (TimeDelta::Max().InSeconds() <= std::numeric_limits<time_t>::max()) {
+    EXPECT_EQ(delta, TimeDelta::FromTimeSpec(result));
+  }
+
+  delta = TimeDelta::Min();
+  EXPECT_TRUE(delta.is_negative());
+  result = delta.ToTimeSpec();
+  EXPECT_EQ(result.tv_sec, 0);
+  EXPECT_EQ(result.tv_nsec, 0);
+  EXPECT_NE(delta, TimeDelta::FromTimeSpec(result));
 }
 #endif  // BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 

@@ -9,27 +9,39 @@
 #include <limits>
 
 #include "base/check_op.h"
+#include "base/numerics/safe_math.h"
 #include "base/time/time.h"
 
 namespace base {
 
 // static
 TimeDelta TimeDelta::FromTimeSpec(const timespec& ts) {
-  return TimeDelta(ts.tv_sec * Time::kMicrosecondsPerSecond +
-                   ts.tv_nsec / Time::kNanosecondsPerMicrosecond);
+  // TODO(crbug.com/41405098): Convert the max possible `timespec` explicitly to
+  // `TimeDelta::Max()`, similar to `Time::FromTimeVal`.
+
+  const TimeDelta delta = Seconds(ts.tv_sec) + Nanoseconds(ts.tv_nsec);
+  return delta.is_positive() ? delta : TimeDelta();
 }
 
 struct timespec TimeDelta::ToTimeSpec() const {
-  int64_t microseconds = InMicroseconds();
-  time_t seconds = 0;
-  if (microseconds >= Time::kMicrosecondsPerSecond) {
-    seconds = static_cast<time_t>(InSeconds());
-    microseconds -= seconds * Time::kMicrosecondsPerSecond;
+  if (is_negative()) {
+    return {
+        .tv_sec = 0,
+        .tv_nsec = 0,
+    };
   }
-  struct timespec result = {
-      seconds,
-      static_cast<long>(microseconds * Time::kNanosecondsPerMicrosecond)};
-  return result;
+
+  // TODO(crbug.com/41405098): If `time_t` is 32-bit, out of range values should
+  // be converted to the max possible `timespec`, specifically with `tv_nsec =
+  // kNanosecondsPerSecond-1`.
+
+  const int64_t extra_microseconds =
+      InMicroseconds() % Time::kMicrosecondsPerSecond;
+  return {
+      .tv_sec = saturated_cast<time_t>(InSeconds()),
+      .tv_nsec = saturated_cast<long>(extra_microseconds *
+                                      Time::kNanosecondsPerMicrosecond),
+  };
 }
 
 // static
