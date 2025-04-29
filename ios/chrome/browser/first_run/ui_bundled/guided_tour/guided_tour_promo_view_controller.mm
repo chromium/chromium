@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/first_run/ui_bundled/guided_tour/guided_tour_promo_view_controller.h"
 
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -11,8 +12,6 @@
 namespace {
 // Spacing above the title.
 const CGFloat kTitleTopMarginWhenNoHeaderImage = 24;
-// Name of banner at the top of the view.
-NSString* const kGuidedTourBannerName = @"chrome_guided_tour_banner";
 }  // namespace
 
 @implementation GuidedTourPromoViewController
@@ -21,7 +20,12 @@ NSString* const kGuidedTourBannerName = @"chrome_guided_tour_banner";
 
 - (void)viewDidLoad {
   self.bannerSize = BannerImageSizeType::kTall;
-  self.bannerName = kGuidedTourBannerName;
+#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+  self.bannerName = kChromeGuidedTourBannerImage;
+#else
+  self.bannerName = kChromiumGuidedTourBannerImage;
+#endif  // BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+
   self.shouldBannerFillTopSpace = YES;
   self.titleTopMarginWhenNoHeaderImage = kTitleTopMarginWhenNoHeaderImage;
   self.titleText =

@@ -11,8 +11,11 @@ source_set("guided_tour") {
   ]
   deps = [
     "//base",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/common/ui/promo_style",
+    "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]
 }

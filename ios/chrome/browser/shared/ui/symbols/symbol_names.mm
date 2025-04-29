@@ -11,6 +11,7 @@ NSString* const kChromeDefaultBrowserIllustrationImage =
     @"chrome_default_browser_illustration";
 NSString* const kChromeDefaultBrowserScreenBannerImage =
     @"chrome_default_browser_screen_banner";
+NSString* const kChromeGuidedTourBannerImage = @"chrome_guided_tour_banner";
 NSString* const kChromeNotificationsOptInBannerImage =
     @"chrome_notifications_opt_in_banner";
 NSString* const kChromeNotificationsOptInBannerLandscapeImage =
@@ -41,6 +42,7 @@ NSString* const kUSPSCarrierImage = @"parcel_tracking_carrier_usps";
 #else
 NSString* const kChromiumDefaultBrowserScreenBannerImage =
     @"chromium_default_browser_screen_banner";
+NSString* const kChromiumGuidedTourBannerImage = @"chromium_guided_tour_banner";
 NSString* const kChromiumNotificationsOptInBannerImage =
     @"chromium_notifications_opt_in_banner";
 NSString* const kChromiumNotificationsOptInBannerLandscapeImage =
