@@ -65,10 +65,9 @@ class MessageBannerMediator implements SwipeHandler {
     private static final int ENTER_DURATION_MS = 550;
     private static final int EXIT_DURATION_MS = 350;
     private static final TimeInterpolator TRANSLATION_ENTER_INTERPOLATOR =
-            Interpolators.EMPHASIZED_DECELERATE;
-    private static final TimeInterpolator ALPHA_ENTER_INTERPOLATOR =
-            Interpolators.EMPHASIZED_DECELERATE;
-    private static final TimeInterpolator EXIT_INTERPOLATOR = Interpolators.EMPHASIZED_DECELERATE;
+            Interpolators.DEFAULT_SPATIAL;
+    private static final TimeInterpolator ALPHA_ENTER_INTERPOLATOR = Interpolators.DEFAULT_SPATIAL;
+    private static final TimeInterpolator EXIT_INTERPOLATOR = Interpolators.DEFAULT_SPATIAL;
 
     private static long sTapProtectionDurationMsForTesting;
 
