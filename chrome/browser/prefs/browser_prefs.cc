@@ -1096,6 +1096,10 @@ inline constexpr char kManagedAccessToGetAllScreensMediaAllowedForUrls[] =
 // Deprecated 04/2025.
 constexpr char kObsoleteUserAcknowledgedLocalPasswordsMigrationWarning[] =
     "user_acknowledged_local_passwords_migration_warning";
+
+// Deprecated 04/2025.
+constexpr char kObsoleteLocalPasswordMigrationWarningPrefsVersion[] =
+    "local_passwords_migration_warning_reset_count";
 #endif
 
 // Register local state used only for migration (clearing or moving to a new
@@ -1541,6 +1545,10 @@ void RegisterProfilePrefsForMigration(
   // Deprecated 04/2025.
   registry->RegisterBooleanPref(
       kObsoleteUserAcknowledgedLocalPasswordsMigrationWarning, false);
+
+  // Deprecated 04/2025.
+  registry->RegisterIntegerPref(
+      kObsoleteLocalPasswordMigrationWarningPrefsVersion, 0);
 #endif
 }
 
@@ -2831,6 +2839,9 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   // Added 04/2025
   profile_prefs->ClearPref(
       kObsoleteUserAcknowledgedLocalPasswordsMigrationWarning);
+
+  // Added 04/2025.
+  profile_prefs->ClearPref(kObsoleteLocalPasswordMigrationWarningPrefsVersion);
 #endif
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.

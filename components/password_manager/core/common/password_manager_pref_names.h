@@ -192,10 +192,6 @@ inline constexpr char kLocalPasswordHashDataList[] =
     "local.password_hash_data_list";
 
 #if BUILDFLAG(IS_ANDROID)
-// The version of the password migration warning prefs.
-inline constexpr char kLocalPasswordMigrationWarningPrefsVersion[] =
-    "local_passwords_migration_warning_reset_count";
-
 // How many times the password generation bottom sheet was dismissed by the user
 // in a row. The counter resets when the user applies password generation.
 inline constexpr char kPasswordGenerationBottomSheetDismissCount[] =

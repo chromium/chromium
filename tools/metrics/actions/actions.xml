@@ -40059,6 +40059,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Signin_Signin_FromPasswordMigrationWarning">
+  <obsolete>Removed 04/2025.</obsolete>
   <owner>ioanap@chromium.org</owner>
   <owner>izuzic@google.com</owner>
   <owner>chrome-signin-team@chromium.org</owner>
@@ -40070,6 +40071,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Signin_Signin_FromPasswordMigrationWarningAndroid">
+  <obsolete>Removed 04/2025.</obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of the metric.</description>
 </action>

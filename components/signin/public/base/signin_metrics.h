@@ -206,7 +206,7 @@ enum class AccessPoint : int {
   // Access point for the IOS Set Up List on the NTP.
   kSetUpList = 51,
   // Access point for the local password migration warning on Android.
-  kPasswordMigrationWarningAndroid = 52,
+  // Deprecated: kPasswordMigrationWarningAndroid = 52,
   // Access point for the Save to Photos feature on iOS.
   kSaveToPhotosIos = 53,
   // Access point for the Chrome Signin Intercept Bubble.

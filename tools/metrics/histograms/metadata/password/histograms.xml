@@ -2979,30 +2979,6 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
-<histogram name="PasswordManager.PasswordMigrationWarning.Export.Event"
-    enum="PasswordExportEvent" expires_after="2024-08-25">
-  <owner>ioanap@chromium.org</owner>
-  <owner>atsvirchkova@google.com</owner>
-  <summary>
-    Measures the frequency of various password export events. Recorded when the
-    user chooses the option to export passwords in the password migration
-    warning. Logged only on Android.
-  </summary>
-</histogram>
-
-<histogram name="PasswordManager.PasswordMigrationWarning.Export.Result2"
-    enum="HistogramExportResult" expires_after="2025-03-23">
-  <owner>ioanap@chromium.org</owner>
-  <owner>atsvirchkova@google.com</owner>
-  <summary>
-    Records whether the export flow finished successfully or the type of error
-    for passwords export started from local passwords migration warning.
-    Recorded when the export flow finishes. Logged only on Android. This is an
-    updated version of PasswordManager.PasswordMigrationWarning.Export.Result,
-    which logs more possible export flow results in adition to the old values.
-  </summary>
-</histogram>
-
 <histogram name="PasswordManager.PasswordNoteActionInSettings2"
     enum="PasswordNoteAction" expires_after="2025-10-12">
   <owner>derinel@google.com</owner>

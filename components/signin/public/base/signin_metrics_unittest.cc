@@ -173,8 +173,6 @@ class SigninMetricsTest : public ::testing::Test {
         return "SearchCompanion";
       case AccessPoint::kSetUpList:
         return "SetUpList";
-      case AccessPoint::kPasswordMigrationWarningAndroid:
-        return "PasswordMigrationWarning";
       case AccessPoint::kSaveToDriveIos:
         return "SaveToDrive";
       case AccessPoint::kSaveToPhotosIos:

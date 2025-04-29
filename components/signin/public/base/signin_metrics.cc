@@ -531,10 +531,6 @@ void RecordSigninUserActionForAccessPoint(AccessPoint access_point) {
       base::RecordAction(
           base::UserMetricsAction("Signin_Signin_FromSetUpList"));
       break;
-    case AccessPoint::kPasswordMigrationWarningAndroid:
-      base::RecordAction(base::UserMetricsAction(
-          "Signin_Signin_FromPasswordMigrationWarningAndroid"));
-      break;
     case AccessPoint::kChromeSigninInterceptBubble:
       base::RecordAction(base::UserMetricsAction(
           "Signin_Signin_FromChromeSigninInterceptBubble"));
@@ -743,7 +739,6 @@ void RecordSigninImpressionUserActionForAccessPoint(AccessPoint access_point) {
     case AccessPoint::kSaveToPhotosIos:
     case AccessPoint::kReauthInfoBar:
     case AccessPoint::kAccountConsistencyService:
-    case AccessPoint::kPasswordMigrationWarningAndroid:
     case AccessPoint::kRestorePrimaryAccountOnProfileLoad:
     case AccessPoint::kTabOrganization:
     case AccessPoint::kProfileMenuSignoutConfirmationPrompt:

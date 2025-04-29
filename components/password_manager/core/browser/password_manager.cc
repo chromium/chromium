@@ -470,8 +470,6 @@ void PasswordManager::RegisterProfilePrefs(
       prefs::kUnenrolledFromGoogleMobileServicesDueToErrors, false);
   registry->RegisterStringPref(prefs::kUPMErrorUIShownTimestamp, "0");
   registry->RegisterIntegerPref(
-      prefs::kLocalPasswordMigrationWarningPrefsVersion, 0);
-  registry->RegisterIntegerPref(
       prefs::kPasswordGenerationBottomSheetDismissCount, 0);
   registry->RegisterBooleanPref(
       prefs::kShouldShowPostPasswordMigrationSheetAtStartup, false);

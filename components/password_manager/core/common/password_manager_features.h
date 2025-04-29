@@ -24,21 +24,7 @@ BASE_DECLARE_FEATURE(kNoPasswordSuggestionFiltering);
 BASE_DECLARE_FEATURE(kShowSuggestionsOnAutofocus);
 BASE_DECLARE_FEATURE(kDelaySuggestionsOnAutofocusWaitingForPasskeys);
 
-#if BUILDFLAG(IS_ANDROID)
-BASE_DECLARE_FEATURE(kUnifiedPasswordManagerLocalPasswordsMigrationWarning);
-#endif
-
 // All features parameters are in alphabetical order.
-
-#if BUILDFLAG(IS_ANDROID)
-// Whether to ignore the 1 month timeout in between migration warning prompts.
-// Used for manual testing.
-inline constexpr base::FeatureParam<bool> kIgnoreMigrationWarningTimeout = {
-    &kUnifiedPasswordManagerLocalPasswordsMigrationWarning,
-    "ignore_migration_warning_timeout", false};
-
-extern const base::FeatureParam<int> kLocalPasswordMigrationWarningPrefsVersion;
-#endif
 
 // Field trial and corresponding parameters.
 // To manually override this, start Chrome with the following parameters:

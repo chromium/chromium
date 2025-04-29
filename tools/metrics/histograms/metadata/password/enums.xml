@@ -428,10 +428,10 @@ chromium-metrics-reviews@google.com.
 
 <enum name="HistogramExportResult">
   <int value="0" label="Success"/>
-  <int value="1" label="User aborted"/>
+  <int value="1" label="(obsolete) User aborted"/>
   <int value="2" label="Writing to disk failed"/>
   <int value="3" label="Could not find consumer for exporting"/>
-  <int value="4" label="Screen lock is not set up"/>
+  <int value="4" label="(obsolete) Screen lock is not set up"/>
   <int value="5" label="Activity destroyed while not visible"/>
 </enum>
 

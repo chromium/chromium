@@ -150,7 +150,6 @@ public class PasswordAccessoryIntegrationTest {
     @Test
     @MediumTest
     @DisableIf.Device(DeviceFormFactor.TABLET) // https://crbug.com/1111770
-    @DisableFeatures({ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_LOCAL_PWD_MIGRATION_WARNING})
     public void testFillsPasswordOnTap() throws TimeoutException {
         preparePasswordBridge();
         ThreadUtils.runOnUiThreadBlocking(

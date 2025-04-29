@@ -665,7 +665,7 @@ chromium-metrics-reviews@google.com.
   <int value="49" label="Account consistency service"/>
   <int value="50" label="(Obsolete) Search companion"/>
   <int value="51" label="Set Up List (iOS only)"/>
-  <int value="52" label="Password migration warning (Android only)"/>
+  <int value="52" label="(obsolete) Password migration warning (Android only)"/>
   <int value="53" label="Save to photos (iOS only)"/>
   <int value="54" label="Chrome Sign-in intercept bubble."/>
   <int value="55" label="Restore primary account on profile load"/>
