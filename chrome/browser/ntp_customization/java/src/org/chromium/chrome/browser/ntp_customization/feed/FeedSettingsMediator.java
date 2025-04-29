@@ -225,7 +225,7 @@ public class FeedSettingsMediator {
             case HIDDEN:
                 return resources.getString(R.string.feed_manage_hidden_description);
             case INTERESTS:
-                return resources.getString(R.string.feed_manage_following_description);
+                return resources.getString(R.string.feed_manage_interests_description);
             default:
                 assert false : "Section type not supported!";
                 return null;

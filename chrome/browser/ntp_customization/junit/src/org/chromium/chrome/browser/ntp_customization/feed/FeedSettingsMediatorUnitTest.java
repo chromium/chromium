@@ -214,7 +214,7 @@ public class FeedSettingsMediatorUnitTest {
                 mContext.getString(R.string.feed_manage_hidden_description),
                 delegateForWebFeedEnabled.getListItemSubtitle(HIDDEN, mContext));
         assertEquals(
-                mContext.getString(R.string.feed_manage_following_description),
+                mContext.getString(R.string.feed_manage_interests_description),
                 delegateForWebFeedDisabled.getListItemSubtitle(INTERESTS, mContext));
     }
 

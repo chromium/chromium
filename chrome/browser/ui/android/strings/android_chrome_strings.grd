@@ -4066,6 +4066,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_FEED_MANAGE_INTERESTS" desc="Title of the list item Interests in the new tab page customization feed settings bottom sheet.">
         Interests
       </message>
+      <message name="IDS_FEED_MANAGE_INTERESTS_DESCRIPTION" desc="Content description to manage interested sites.">
+        Manage content you follow and suggested topics and searches
+      </message>
       <message name="IDS_FOLLOW_MANAGE_FOLLOWING" desc="Header for Following Management activity.">
         Following
       </message>
