@@ -483,13 +483,13 @@ void WaylandToplevelWindow::HandleToplevelConfigureWithOrigin(
   is_suspended_ = window_states.is_suspended;
 
   // The tiled state affects the window geometry, so apply it here.
-  if (window_states.tiled_edges != tiled_state_) {
+  if (window_states.tiled_edges != applied_state().tiled_edges) {
     // This configure changes the decoration insets.  We should adjust the
     // bounds appropriately.
-    tiled_state_ = window_states.tiled_edges;
     delegate()->OnWindowTiledStateChanged(window_states.tiled_edges);
   }
 
+  pending_configure_state_.tiled_edges = window_states.tiled_edges;
   pending_configure_state_.window_state = window_state;
 
   // Width or height set to 0 means that we should decide on width and height by
