@@ -627,23 +627,8 @@ class HistorySyncOptinStateProvider : public StateProvider,
   void Accept(StateVisitor& visitor) const override { visitor.visit(this); }
 
   void OnButtonClick() {
-    switch (switches::kHistorySyncOptinExpansionPillOption.Get()) {
-      case switches::HistorySyncOptinExpansionPillOption::kBrowseAcrossDevices:
-      case switches::HistorySyncOptinExpansionPillOption::kSyncHistory:
-      case switches::HistorySyncOptinExpansionPillOption::
-          kSeeTabsFromOtherDevices:
-        signin_ui_util::EnableSyncFromSingleAccountPromo(
-            &profile_.get(),
-            identity_manager_->GetPrimaryAccountInfo(
-                signin::ConsentLevel::kSignin),
-            access_point_);
-        break;
-      case switches::HistorySyncOptinExpansionPillOption::
-          kSyncHistoryProfileMenu:
-        ProfileMenuCoordinator::GetOrCreateForBrowser(&browser_.get())
-            ->Show(/*is_source_accelerator=*/false, access_point_);
-        break;
-    }
+    ProfileMenuCoordinator::GetOrCreateForBrowser(&browser_.get())
+        ->Show(/*is_source_accelerator=*/false, access_point_);
     sync_promo_identity_pill_manager_.RecordPromoUsed();
     Clear();
   }
@@ -1672,8 +1657,6 @@ AvatarToolbarButtonDelegate::GetTextAndColor(
               IDS_AVATAR_BUTTON_BROWSE_ACROSS_DEVICES);
           break;
         case switches::HistorySyncOptinExpansionPillOption::kSyncHistory:
-        case switches::HistorySyncOptinExpansionPillOption::
-            kSyncHistoryProfileMenu:
           text = l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SYNC_HISTORY);
           break;
         case switches::HistorySyncOptinExpansionPillOption::
