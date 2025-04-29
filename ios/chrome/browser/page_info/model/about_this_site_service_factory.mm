@@ -28,6 +28,7 @@ AboutThisSiteServiceFactory* AboutThisSiteServiceFactory::GetInstance() {
 
 AboutThisSiteServiceFactory::AboutThisSiteServiceFactory()
     : ProfileKeyedServiceFactoryIOS("AboutThisSiteServiceFactory",
+                                    TestingCreation::kNoServiceForTests,
                                     ServiceCreation::kCreateWithProfile) {
   DependsOn(OptimizationGuideServiceFactory::GetInstance());
   DependsOn(ios::TemplateURLServiceFactory::GetInstance());
