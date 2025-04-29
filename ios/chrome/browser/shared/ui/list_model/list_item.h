@@ -16,7 +16,7 @@
 @property(nonatomic, readonly, assign) NSInteger type;
 
 // The cell class to use in conjunction with this item.
-@property(nonatomic, assign) Class cellClass;
+@property(nonatomic, strong) Class cellClass;
 
 - (instancetype)initWithType:(NSInteger)type NS_DESIGNATED_INITIALIZER;
 
