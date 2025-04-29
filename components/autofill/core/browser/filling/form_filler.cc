@@ -703,9 +703,9 @@ void FormFiller::FillOrPreviewForm(
                        : std::map<FieldGlobalId, std::u16string>();
 
     bool allow_suggestion_swapping =
+        form.fields()[i].is_autofilled() &&
         AllowPaymentSwapping(autofill_trigger_field, autofill_field,
-                             refill_trigger_reason.has_value()) &&
-        form.fields()[i].is_autofilled();
+                             refill_trigger_reason.has_value());
 
     // Fill the data from `filling_payload` into `result_form`, which will be
     // sent to the renderer.
