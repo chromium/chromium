@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGL_WEBGL_TRANSFORM_FEEDBACK_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGL_WEBGL_TRANSFORM_FEEDBACK_H_
 
-#include "third_party/blink/renderer/modules/webgl/webgl_context_object.h"
+#include "third_party/blink/renderer/modules/webgl/webgl_object.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_program.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 
@@ -14,7 +14,7 @@ namespace blink {
 class WebGL2RenderingContextBase;
 class WebGLBuffer;
 
-class WebGLTransformFeedback : public WebGLContextObject {
+class WebGLTransformFeedback : public WebGLObject {
   DEFINE_WRAPPERTYPEINFO();
 
  public:

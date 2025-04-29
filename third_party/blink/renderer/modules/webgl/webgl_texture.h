@@ -29,12 +29,12 @@
 #include "base/time/time.h"
 #include "media/base/video_frame.h"
 #include "third_party/blink/public/platform/web_media_player.h"
-#include "third_party/blink/renderer/modules/webgl/webgl_shared_platform_3d_object.h"
+#include "third_party/blink/renderer/modules/webgl/webgl_object.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace blink {
 
-class WebGLTexture : public WebGLSharedPlatform3DObject {
+class WebGLTexture : public WebGLObject {
   DEFINE_WRAPPERTYPEINFO();
 
  public:

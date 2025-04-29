@@ -31,7 +31,7 @@
 namespace blink {
 
 WebGLTexture::WebGLTexture(WebGLRenderingContextBase* ctx)
-    : WebGLSharedPlatform3DObject(ctx), target_(0) {
+    : WebGLObject(ctx), target_(0) {
   if (!ctx->isContextLost()) {
     GLuint texture;
     ctx->ContextGL()->GenTextures(1, &texture);
@@ -42,7 +42,7 @@ WebGLTexture::WebGLTexture(WebGLRenderingContextBase* ctx)
 WebGLTexture::WebGLTexture(WebGLRenderingContextBase* ctx,
                            GLuint texture,
                            GLenum target)
-    : WebGLSharedPlatform3DObject(ctx), target_(target) {
+    : WebGLObject(ctx), target_(target) {
   SetObject(texture);
 }
 

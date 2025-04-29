@@ -75,9 +75,10 @@ class WebGLObject : public ScriptWrappable {
   // subclasses via Dispose().
   ~WebGLObject() override;
 
+  WebGLRenderingContextBase* Context() const { return context_.Get(); }
+
   // deleteObject may not always delete the OpenGL resource.  For programs and
   // shaders, deletion is delayed until they are no longer attached.
-  // FIXME: revisit this when resource sharing between contexts are implemented.
   void DeleteObject(gpu::gles2::GLES2Interface*);
 
   void OnAttached() { ++attachment_count_; }
@@ -89,8 +90,8 @@ class WebGLObject : public ScriptWrappable {
   bool MarkedForDeletion() { return marked_for_deletion_; }
 
   // True if this object belongs to the group or context.
-  virtual bool Validate(const WebGLContextGroup*,
-                        const WebGLRenderingContextBase*) const = 0;
+  bool Validate(const WebGLContextGroup*,
+                const WebGLRenderingContextBase*) const;
 
   // A reference is returned so it can be made a pointer for glDelete* calls
   const GLuint& Object() const { return object_; }
@@ -98,6 +99,8 @@ class WebGLObject : public ScriptWrappable {
 
   virtual bool IsRenderbuffer() const { return false; }
   virtual bool IsTexture() const { return false; }
+
+  void Trace(Visitor*) const override;
 
  protected:
   explicit WebGLObject(WebGLRenderingContextBase*);
@@ -109,19 +112,8 @@ class WebGLObject : public ScriptWrappable {
   // DeleteObjectImpl is called exactly once to delete the OpenGL resource.
   virtual void DeleteObjectImpl(gpu::gles2::GLES2Interface*) = 0;
 
-  virtual bool HasGroupOrContext() const = 0;
-
-  // Return the current number of context losses associated with this
-  // object's context group (if it's a shared object), or its
-  // context's context group (if it's a per-context object).
-  virtual uint32_t CurrentNumberOfContextLosses() const = 0;
-
-  uint32_t CachedNumberOfContextLosses() const;
-
   void Detach();
   void DetachAndDeleteObject();
-
-  virtual gpu::gles2::GLES2Interface* GetAGLInterface() const = 0;
 
   // Runs the pre-finalization sequence -- what would be in the destructor
   // of the base class, if it could be. Must be called no more than once.
@@ -131,6 +123,8 @@ class WebGLObject : public ScriptWrappable {
   bool DestructionInProgress() const;
 
  private:
+  Member<WebGLRenderingContextBase> context_;
+
   GLuint object_ = 0;
 
   // This was the number of context losses of the object's associated

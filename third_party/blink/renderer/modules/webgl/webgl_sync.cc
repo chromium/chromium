@@ -14,7 +14,7 @@ namespace blink {
 WebGLSync::WebGLSync(WebGL2RenderingContextBase* ctx,
                      GLuint object,
                      GLenum object_type)
-    : WebGLSharedObject(ctx),
+    : WebGLObject(ctx),
       sync_status_(GL_UNSIGNALED),
       object_type_(object_type),
       task_runner_(ctx->GetContextTaskRunner()) {
