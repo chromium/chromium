@@ -14,16 +14,15 @@
 #include "chrome/browser/apps/app_service/publishers/chrome_app_deprecation.h"
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_app_service_launcher.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/extensions/application_launch.h"
 #include "chrome/common/chrome_features.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/app_window_registry.h"
+#include "extensions/browser/delayed_install_manager.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_registrar.h"
-#include "extensions/browser/extension_system.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/manifest_handlers/kiosk_mode_info.h"
 #include "extensions/common/manifest_handlers/offline_enabled_info.h"
@@ -183,8 +182,7 @@ bool ChromeKioskAppLauncher::AreSecondaryAppsInstalled() const {
 }
 
 bool ChromeKioskAppLauncher::PrimaryAppHasPendingUpdate() const {
-  return extensions::ExtensionSystem::Get(profile_)
-      ->extension_service()
+  return extensions::DelayedInstallManager::Get(profile_)
       ->GetPendingExtensionUpdate(app_id_);
 }
 
@@ -206,8 +204,6 @@ void ChromeKioskAppLauncher::SetSecondaryAppsEnabledState(
 void ChromeKioskAppLauncher::SetAppEnabledState(
     const extensions::ExtensionId& id,
     bool new_enabled_state) {
-  extensions::ExtensionService* service =
-      extensions::ExtensionSystem::Get(profile_)->extension_service();
   auto* registrar = extensions::ExtensionRegistrar::Get(profile_);
   extensions::ExtensionPrefs* prefs = extensions::ExtensionPrefs::Get(profile_);
 
@@ -222,11 +218,11 @@ void ChromeKioskAppLauncher::SetAppEnabledState(
     prefs->RemoveDisableReason(id,
                                extensions::disable_reason::DISABLE_USER_ACTION);
     if (prefs->GetDisableReasons(id).empty()) {
-      service->EnableExtension(id);
+      registrar->EnableExtension(id);
     }
   } else {
-    service->DisableExtension(id,
-                              extensions::disable_reason::DISABLE_USER_ACTION);
+    registrar->DisableExtension(
+        id, {extensions::disable_reason::DISABLE_USER_ACTION});
   }
 }
 

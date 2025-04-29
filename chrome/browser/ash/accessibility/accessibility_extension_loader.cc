@@ -8,9 +8,10 @@
 
 #include "base/functional/callback.h"
 #include "chrome/browser/extensions/component_loader.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/user_manager/user.h"
+#include "extensions/browser/disable_reason.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_system.h"
 
 namespace ash {
@@ -90,17 +91,16 @@ void AccessibilityExtensionLoader::LoadExtension(
   DCHECK(manifest_filename_);
   DCHECK(guest_manifest_filename_);
 
-  extensions::ExtensionService* extension_service =
-      extensions::ExtensionSystem::Get(browser_context)->extension_service();
-
+  auto* extension_registrar =
+      extensions::ExtensionRegistrar::Get(browser_context);
   // In Kiosk mode, we should reinstall the extension upon first load. This way,
   // no state from the previous session is preserved.
   const user_manager::User* user =
       BrowserContextHelper::Get()->GetUserByBrowserContext(browser_context);
   if (user && user->IsKioskType() && !was_reset_for_kiosk_) {
     was_reset_for_kiosk_ = true;
-    extension_service->DisableExtension(
-        extension_id_, extensions::disable_reason::DISABLE_REINSTALL);
+    extension_registrar->DisableExtension(
+        extension_id_, {extensions::disable_reason::DISABLE_REINSTALL});
     done_cb = base::BindOnce(
         &AccessibilityExtensionLoader::ReinstallExtensionForKiosk,
         weak_ptr_factory_.GetWeakPtr(), browser_context, std::move(done_cb));

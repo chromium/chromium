@@ -8,10 +8,10 @@
 #include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/boca/on_task/on_task_prefs.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/management_policy.h"
@@ -21,8 +21,8 @@
 using extensions::Extension;
 using extensions::ExtensionId;
 using extensions::ExtensionIdList;
+using extensions::ExtensionRegistrar;
 using extensions::ExtensionRegistry;
-using extensions::ExtensionService;
 using extensions::ExtensionSystem;
 using extensions::ManagementPolicy;
 
@@ -41,8 +41,7 @@ OnTaskExtensionsManagerImpl::OnTaskExtensionsManagerImpl(Profile* profile)
 OnTaskExtensionsManagerImpl::~OnTaskExtensionsManagerImpl() = default;
 
 void OnTaskExtensionsManagerImpl::DisableExtensions() {
-  ExtensionService* const extension_service =
-      ExtensionSystem::Get(profile_)->extension_service();
+  auto* extension_registrar = ExtensionRegistrar::Get(profile_);
   const ExtensionRegistry* const extension_registry =
       ExtensionRegistry::Get(profile_);
   ExtensionIdList disabled_extension_ids;
@@ -55,8 +54,8 @@ void OnTaskExtensionsManagerImpl::DisableExtensions() {
       // extension sync for now. This remains consistent with extension
       // management through the Assessment Assistant extension used with locked
       // quizzes. This may be adjusted for both components accordingly.
-      extension_service->DisableExtension(
-          extension_id, extensions::disable_reason::DISABLE_USER_ACTION);
+      extension_registrar->DisableExtension(
+          extension_id, {extensions::disable_reason::DISABLE_USER_ACTION});
       disabled_extension_ids.push_back(extension_id);
     }
   }
@@ -68,8 +67,7 @@ void OnTaskExtensionsManagerImpl::DisableExtensions() {
 }
 
 void OnTaskExtensionsManagerImpl::ReEnableExtensions() {
-  ExtensionService* const extension_service =
-      ExtensionSystem::Get(profile_)->extension_service();
+  auto* extension_registrar = ExtensionRegistrar::Get(profile_);
   const ExtensionRegistry* const extension_registry =
       ExtensionRegistry::Get(profile_);
   const base::Value::List& disabled_extension_ids =
@@ -80,7 +78,7 @@ void OnTaskExtensionsManagerImpl::ReEnableExtensions() {
     const Extension* const extension =
         extension_registry->disabled_extensions().GetByID(extension_id);
     if (extension && CanEnableExtension(extension)) {
-      extension_service->EnableExtension(extension_id);
+      extension_registrar->EnableExtension(extension_id);
     }
   }
 
