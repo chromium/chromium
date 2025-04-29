@@ -39,6 +39,8 @@ class RecentlyUsedFoldersComboModel : public ui::ComboboxModel,
   bool IsItemSeparatorAt(size_t index) const override;
   bool IsItemTitleAt(size_t index) const override;
   std::optional<size_t> GetDefaultIndex() const override;
+  std::optional<ui::ColorId> GetDropdownForegroundColorIdAt(
+      size_t index) const override;
 
   // Overridden from bookmarks::BookmarkModelObserver:
   void BookmarkModelLoaded(bool ids_reassigned) override;
