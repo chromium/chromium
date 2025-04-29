@@ -675,7 +675,9 @@ IN_PROC_BROWSER_TEST_F(GlicApiTest, testEnableDragResize) {
   RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
                                  GlicInstrumentMode::kHostAndContents));
   ExecuteJsTest();
-  RunTestSequence(InAnyContext(ExpectUserCanResize(true)));
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return window_controller().GetGlicWidget()->widget_delegate()->CanResize();
+  }));
 }
 
 // This test is flaky on Mac (crbug.com/414584725).
@@ -690,7 +692,9 @@ IN_PROC_BROWSER_TEST_F(GlicApiTest, MAYBE_testDisableDragResize) {
                                  GlicInstrumentMode::kHostAndContents),
                   ExpectUserCanResize(true));
   ExecuteJsTest();
-  RunTestSequence(InAnyContext(ExpectUserCanResize(false)));
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return !window_controller().GetGlicWidget()->widget_delegate()->CanResize();
+  }));
 }
 
 IN_PROC_BROWSER_TEST_F(GlicApiTest, testInitiallyNotResizable) {
