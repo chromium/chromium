@@ -67,6 +67,7 @@ class LoyaltyCard final {
   bool IsValid() const;
 
   friend bool operator==(const LoyaltyCard&, const LoyaltyCard&) = default;
+  friend auto operator<=>(const LoyaltyCard&, const LoyaltyCard&) = default;
 
  private:
   // A unique identifier coming from the server, which is used as a primary key

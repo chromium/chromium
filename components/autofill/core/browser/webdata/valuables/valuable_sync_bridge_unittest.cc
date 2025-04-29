@@ -319,4 +319,20 @@ TEST_F(ValuableSyncBridgeTest,
             specifics_with_only_unknown_fields.SerializePartialAsString());
 }
 
+// Tests that when the server sends the same data as the client has, nothing
+// changes on the client.
+TEST_F(ValuableSyncBridgeTest, MergeFullSyncData_SameValuablesData) {
+  const LoyaltyCard card1 = TestLoyaltyCard(kId1);
+  const LoyaltyCard card2 = TestLoyaltyCard(kId2);
+  AddLoyaltyCardsToTheTable({card1, card2});
+
+  EXPECT_CALL(backend(),
+              NotifyOnAutofillChangedBySync(syncer::AUTOFILL_VALUABLE))
+      .Times(0);
+  // We still need to commit the updated progress marker on the client.
+  EXPECT_CALL(backend(), CommitChanges());
+  StartSyncing({card1, card2});
+  EXPECT_THAT(GetAllDataFromTable(), UnorderedElementsAre(card1, card2));
+}
+
 }  // namespace autofill
