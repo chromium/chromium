@@ -27,7 +27,7 @@
 // Sets the name of the Lottie light-mode `imageLottieName` and
 // `imageDarkModeLottieName` for this alert.
 - (void)setImageLottieName:(NSString*)imageLottieName
-        darkModeLottieName:imageDarkModeLottieName;
+        darkModeLottieName:(NSString*)imageDarkModeLottieName;
 
 // Sets the actions for this alert. The double array of actions would be
 // represented visually with each sub-array being a row of buttons, unless the

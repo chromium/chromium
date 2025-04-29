@@ -565,7 +565,7 @@ GrayHighlightButton* GetButtonForAction(AlertAction* action) {
 #pragma mark - AlertConsumer
 
 - (void)setImageLottieName:(NSString*)imageLottieName
-        darkModeLottieName:imageDarkModeLottieName {
+        darkModeLottieName:(NSString*)imageDarkModeLottieName {
   _imageLottieName = [imageLottieName copy];
   _imageDarkModeLottieName = [imageDarkModeLottieName copy];
 }
