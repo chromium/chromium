@@ -394,10 +394,7 @@ public class BluetoothChooserDialogTest {
                 new TestAndroidPermissionDelegate(dialog);
         mWindowAndroid.setAndroidPermissionDelegate(permissionDelegate);
 
-        ThreadUtils.runOnUiThreadBlocking(
-                () ->
-                        mChooserDialog.notifyDiscoveryState(
-                                BluetoothChooserDialog.DiscoveryMode.DISCOVERY_FAILED_TO_START));
+        ThreadUtils.runOnUiThreadBlocking(() -> mChooserDialog.notifyAdapterUnauthorized());
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             Assert.assertEquals(
@@ -485,11 +482,7 @@ public class BluetoothChooserDialogTest {
         permissionDelegate.mLocationGranted = true;
         mLocationUtils.mSystemLocationSettingsEnabled = false;
 
-        ThreadUtils.runOnUiThreadBlocking(
-                () ->
-                        mChooserDialog.notifyDiscoveryState(
-                                BluetoothChooserDialog.DiscoveryMode.DISCOVERY_FAILED_TO_START));
-
+        ThreadUtils.runOnUiThreadBlocking(() -> mChooserDialog.notifyAdapterUnauthorized());
         Assert.assertEquals(
                 removeLinkTags(
                         mActivityTestRule

@@ -124,9 +124,6 @@ public class BluetoothChooserDialog
     // The status message to show when the bluetooth adapter is turned off.
     private final SpannableString mAdapterOffStatus;
 
-    // Should the "adapter off" message be shown once Bluetooth permission is granted?
-    private boolean mAdapterOff;
-
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     public final BroadcastReceiver mLocationModeBroadcastReceiver =
             new BroadcastReceiver() {
@@ -137,11 +134,6 @@ public class BluetoothChooserDialog
                     if (!checkLocationServicesAndPermission()) return;
 
                     mItemChooserDialog.clear();
-
-                    if (mAdapterOff) {
-                        notifyAdapterTurnedOff();
-                        return;
-                    }
 
                     Natives jni = BluetoothChooserDialogJni.get();
                     jni.restartSearch(mNativeBluetoothChooserDialogPtr);
@@ -316,11 +308,6 @@ public class BluetoothChooserDialog
         if (!checkLocationServicesAndPermission()) return;
 
         mItemChooserDialog.clear();
-
-        if (mAdapterOff) {
-            notifyAdapterTurnedOff();
-            return;
-        }
 
         Natives jni = BluetoothChooserDialogJni.get();
         jni.restartSearch(mNativeBluetoothChooserDialogPtr);
@@ -519,41 +506,35 @@ public class BluetoothChooserDialog
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     @CalledByNative
     public void notifyAdapterTurnedOff() {
-        mAdapterOff = true;
+        SpannableString adapterOffMessage =
+                SpanApplier.applySpans(
+                        mContext.getString(R.string.bluetooth_adapter_off),
+                        new SpanInfo("<link>", "</link>", createLinkSpan(LinkType.ADAPTER_OFF)));
 
-        // Permission is required to turn the adapter on so make sure to ask for that first.
-        if (checkLocationServicesAndPermission()) {
-            SpannableString adapterOffMessage =
-                    SpanApplier.applySpans(
-                            mContext.getString(R.string.bluetooth_adapter_off),
-                            new SpanInfo(
-                                    "<link>", "</link>", createLinkSpan(LinkType.ADAPTER_OFF)));
-
-            mItemChooserDialog.setErrorState(adapterOffMessage, mAdapterOffStatus);
-        }
+        mItemChooserDialog.setErrorState(adapterOffMessage, mAdapterOffStatus);
     }
 
     @CalledByNative
     private void notifyAdapterTurnedOn() {
-        mAdapterOff = false;
         mItemChooserDialog.clear();
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @CalledByNative
+    public void notifyAdapterUnauthorized() {
+        checkLocationServicesAndPermission();
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     @CalledByNative
     public void notifyDiscoveryState(@DiscoveryMode int discoveryState) {
         switch (discoveryState) {
-            case DiscoveryMode.DISCOVERY_FAILED_TO_START:
-                // FAILED_TO_START might be caused by a missing Location
-                // permission or by the Location service being turned off.
-                // Check, and show a request if so.
-                checkLocationServicesAndPermission();
-                break;
             case DiscoveryMode.DISCOVERY_IDLE:
                 mItemChooserDialog.setIdleState();
                 break;
             default:
                 // TODO(jyasskin): Report the new state to the user.
+                Log.e(TAG, "Unexpected discovery state: " + discoveryState);
                 break;
         }
     }
