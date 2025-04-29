@@ -73,10 +73,6 @@
 -KeyboardLockBrowserTest.LockCalledBeforeFullscreen
 -KeyboardLockBrowserTest.LockRequestBeforeCrossOriginIFrameIsFullscreen
 -KeyboardLockBrowserTest.LockRequestWhileCrossOriginIFrameIsFullscreen
--MSE_ClearKey/EncryptedMediaTest.Playback_VideoOnly_MP4_VP9Profile2/0
--MSE_ClearKey/EncryptedMediaTest.Playback_VideoOnly_WebM_VP9Profile2/0
--MediaColorTest.Yuv420pTheora
--MediaColorTest.Yuv420pVp8
 -MemoryInstrumentationTest.PrivateFootprintComputation
 -MojoSandboxTest.IsProcessSandboxed
 -NetworkResponseProtocolECHTest.SecurityDetailsECH
@@ -95,7 +91,6 @@
 -RenderWidgetHostSitePerProcessTest.BrowserClosesSelectPopup
 -RenderWidgetHostTouchEmulatorBrowserTest.TouchEmulatorPinchWithGestureFling
 -RenderWidgetHostViewChildFrameBrowserTest.VisualPropertiesPropagation_RootViewportSegments
--SRC_ClearKey/EncryptedMediaTest.Playback_VideoOnly_WebM_VP9Profile2/0
 -ScrollBehaviorBrowserTest.InstantScriptScrollAdjustsSmoothWheelScroll
 -ScrollBehaviorBrowserTest.SmoothWheelScrollCompletesWithScriptedMirror
 -SignedExchangeSubresourcePrefetchBrowserTest.IntegrityMismatchSendsReport
@@ -115,33 +110,8 @@
 -WebRtcGetUserMediaBrowserTest.TestGetUserMediaAspectRatio1To1
 -WebRtcGetUserMediaBrowserTest.TestGetUserMediaAspectRatio4To3
 
-# TODO(crbug.com/40276544): cannot create shared image.
--MediaColorTest.Yuv420pH264
--MediaColorTest.Yuv420pHighBitDepth
--MediaColorTest.Yuv420pRec709H264
--MediaColorTest.Yuvj420pH264
--MediaSourceTest.Playback_Video_MP4_Audio_WEBM
-
 # TODO(crbug.com/41482069): these flakily timeout.
 -All/BackForwardCacheNetworkLimitBrowserTest.ImageStillLoading*
-
-# TODO(crbug.com/40276545): hitting unexpected driver errors.
--ProprietaryCodec/WebRtcMediaRecorderTest.RecordWithTransparency/0
--ProprietaryCodec/WebRtcMediaRecorderTest.RecordWithTransparency/1
--ProprietaryCodec/WebRtcMediaRecorderTest.RecordWithTransparency/2
--ProprietaryCodec/WebRtcMediaRecorderTest.RecordWithTransparency/3
--ProprietaryCodec/WebRtcMediaRecorderTest.ResumeAndDataAvailable/0
--ProprietaryCodec/WebRtcMediaRecorderTest.ResumeAndDataAvailable/1
--ProprietaryCodec/WebRtcMediaRecorderTest.ResumeAndDataAvailable/2
--ProprietaryCodec/WebRtcMediaRecorderTest.ResumeAndDataAvailable/3
--ProprietaryCodec/WebRtcMediaRecorderTest.StartAndDataAvailable/0
--ProprietaryCodec/WebRtcMediaRecorderTest.StartAndDataAvailable/1
--ProprietaryCodec/WebRtcMediaRecorderTest.StartAndDataAvailable/2
--ProprietaryCodec/WebRtcMediaRecorderTest.StartAndDataAvailable/3
--ProprietaryCodec/WebRtcMediaRecorderTest.StartWithTimeSlice/0
--ProprietaryCodec/WebRtcMediaRecorderTest.StartWithTimeSlice/1
--ProprietaryCodec/WebRtcMediaRecorderTest.StartWithTimeSlice/2
--ProprietaryCodec/WebRtcMediaRecorderTest.StartWithTimeSlice/3
 
 # TODO(crbug.com/40276556): unexpected `fallback_after_restore` ID.
 # Resize-while-hidden should give the `DelegatedFrameHost` a new primary ID
@@ -152,9 +122,6 @@
 # `WC::GetRenderWidgetHostView()->GetViewBounds()`; `ui::GrabViewSnapshot` isn't
 # implemented for IOS.
 -RenderFrameHostImplBrowserTestWithBFCacheAndViewTransition.NewContentTimeoutIsSetWhenLeavingBFCacheWithViewTransition
-
-# TODO(crbug.com/40276565): unexpected level of support for codec.
--MediaCanPlayTypeTest.CodecSupportTest_mp4
 
 # TODO(crbug.com/40276950): This test is flaky.
 -BackForwardCacheBrowserTest.NavigateToTwoPagesOnSameSiteWithSubframes
@@ -191,14 +158,6 @@
 -MSE_ClearKey/EncryptedMediaTest.ConfigChangeVideo_ClearToClear/0
 -MSE_ClearKey/EncryptedMediaTest.Playback_Encryption_CENC/0
 -MediaRedirectTest.CanPlayHiddenWebm
--MediaSourceTest.ConfigChangeVideo
--MediaSourceTest.Playback_AudioOnly_AAC_ADTS
--MediaSourceTest.Playback_AudioOnly_FLAC_MP4
--MediaSourceTest.Playback_AudioOnly_MP3
--MediaSourceTest.Playback_AudioOnly_Opus_WebM
--MediaSourceTest.Playback_AudioOnly_WebM
--MediaSourceTest.Playback_VideoAudio_WebM
--MediaSourceTest.Playback_Video_WEBM_Audio_MP4
 -MediaSuspendTest.ForcedSrcSuspend
 -OpenCodec/WebRtcMediaRecorderTest.PeerConnection/0
 -OpenCodec/WebRtcMediaRecorderTest.PeerConnection/1
@@ -210,10 +169,6 @@
 -OpenCodec/WebRtcMediaRecorderTest.TwoChannelAudioRecording/2
 -OpenCodec/WebRtcMediaRecorderTest.TwoChannelAudioRecording/3
 -OpenCodec/WebRtcMediaRecorderTest.TwoChannelAudioRecording/4
--ProprietaryCodec/WebRtcMediaRecorderTest.PeerConnection/0
--ProprietaryCodec/WebRtcMediaRecorderTest.PeerConnection/1
--ProprietaryCodec/WebRtcMediaRecorderTest.TwoChannelAudioRecording/0
--ProprietaryCodec/WebRtcMediaRecorderTest.TwoChannelAudioRecording/1
 -WebRtcAudioBrowserTest.CanMakeVideoCallAndThenRenegotiateToAudio
 -WebRtcAudioBrowserTest.EnsureLocalVideoMuteDoesntMuteAudio
 -WebRtcAudioBrowserTest.EnsureRemoteVideoMuteDoesntMuteAudio
@@ -752,10 +707,6 @@
 # https://crrev.com/c/6000136.
 -All/AccessibilityHitTestingBrowserTest.HitTestingInStitchedChildTree/ZoomFactor1
 -All/AccessibilityHitTestingBrowserTest.HitTestingInStitchedChildTree/ZoomFactor2
-
-# TODO(crbug.com/381127650): This test has been failing on the bot.
--ProprietaryCodec/WebRtcMediaRecorderTest.PeerConnection/2
--ProprietaryCodec/WebRtcMediaRecorderTest.PeerConnection/3
 
 # TODO(crbug.com/381282539): This test has been failing since
 # https://crrev.com/c/6013928.
