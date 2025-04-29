@@ -558,7 +558,6 @@
 #include "chrome/browser/safe_browsing/chrome_ping_manager_factory.h"
 #include "chrome/browser/safe_browsing/client_side_detection_service_factory.h"
 #include "chrome/browser/safe_browsing/notification_content_detection/notification_content_detection_service_factory.h"
-#include "chrome/browser/safe_browsing/notification_telemetry/notification_telemetry_service_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_metrics_collector_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
 #include "chrome/browser/safe_browsing/tailored_security/tailored_security_service_factory.h"
@@ -1224,7 +1223,6 @@ void ChromeBrowserMainExtraPartsProfiles::
 #endif
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   safe_browsing::NotificationContentDetectionServiceFactory::GetInstance();
-  safe_browsing::NotificationTelemetryServiceFactory::GetInstance();
   safe_browsing::RealTimeUrlLookupServiceFactory::GetInstance();
   safe_browsing::SafeBrowsingMetricsCollectorFactory::GetInstance();
   safe_browsing::SafeBrowsingNavigationObserverManagerFactory::GetInstance();

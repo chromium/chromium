@@ -10,14 +10,12 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "chrome/browser/download/download_item_warning_data.h"
-#include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/safe_browsing/chrome_ping_manager_factory.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/mock_download_item.h"
-#include "components/prefs/testing_pref_service.h"
 #include "components/safe_browsing/content/browser/safe_browsing_service_interface.h"
 #include "components/safe_browsing/core/browser/ping_manager.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -89,8 +87,7 @@ class SafeBrowsingServiceTest : public testing::Test {
 #if BUILDFLAG(IS_CHROMEOS)
     // Local state is needed to construct ProxyConfigService, which is a
     // dependency of PingManager on ChromeOS.
-    TestingBrowserProcess::GetGlobal()->SetLocalState(&local_state_);
-    RegisterLocalState(local_state_.registry());
+    TestingBrowserProcess::GetGlobal()->SetLocalState(profile_->GetPrefs());
 #endif
   }
 
@@ -219,7 +216,6 @@ class SafeBrowsingServiceTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   raw_ptr<TestingBrowserProcess> browser_process_;
   scoped_refptr<SafeBrowsingService> sb_service_;
-  TestingPrefServiceSimple local_state_;
   TestingProfile::Builder profile_builder_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<TestingProfile> profile2_;

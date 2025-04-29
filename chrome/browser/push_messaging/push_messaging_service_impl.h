@@ -204,11 +204,6 @@ class PushMessagingServiceImpl : public content::PushMessagingService,
   void OnRefreshFinished(
       const PushMessagingAppIdentifier& app_identifier) override;
 
-  // Sets a callback that can be used to listen for service worker
-  // subscription events.
-  void SetSubscribeFromWorkerCallback(
-      base::RepeatingCallback<void(/*registration id=*/int64_t)> callback);
-
   void SetMessageCallbackForTesting(const base::RepeatingClosure& callback);
   void SetUnsubscribeCallbackForTesting(base::OnceClosure callback);
   void SetInvalidationCallbackForTesting(base::OnceClosure callback);
@@ -502,10 +497,6 @@ class PushMessagingServiceImpl : public content::PushMessagingService,
 #endif
 
   base::CallbackListSubscription on_app_terminating_subscription_;
-
-  // Callback used to be alerted of a new service worker subscription.
-  std::optional<base::RepeatingCallback<void(int64_t)>>
-      subscribe_from_worker_callback_;
 
   // True when shutdown has started. Do not allow processing of incoming
   // messages when this is true.

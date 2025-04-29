@@ -65,19 +65,18 @@ class NotificationTelemetryService
 
   ~NotificationTelemetryService() override;
 
+  void OnRegistrationStoredForTest(
+      int64_t registration_id,
+      const GURL& scope,
+      const content::ServiceWorkerRegistrationInformation&
+          service_worker_registration_info);
+
+ private:
   // ServiceWorkerContextObserver:
   void OnRegistrationStored(int64_t registration_id,
                             const GURL& scope,
                             const content::ServiceWorkerRegistrationInformation&
-                                service_worker_registration_info) override;
-
-  static int ServiceWorkerInfoCacheSizeForTest();
-
- private:
-  FRIEND_TEST_ALL_PREFIXES(NotificationTelemetryServiceTest,
-                           SendsTelemetryReport);
-  FRIEND_TEST_ALL_PREFIXES(NotificationTelemetryServiceTest,
-                           EnforcesServiceWorkerInfoCacheSize);
+                                service_worker_info) override;
 
   // Callback used for checking the Safe Browsing allowlist.
   void DatabaseCheckDone(
@@ -92,14 +91,14 @@ class NotificationTelemetryService
 
   // Check if a notifications service worker ID matches any of the stored
   // service worker origins.
-  void OnNewNotificationServiceWorkerSubscription(int64_t registration_id);
+  void OnNewNotificationServiceWorkerSubscription(int notification_id);
 
   // Returns the URL to which telemetry reports are to be sent.
   static GURL GetTelemetryReportUrl();
 
   // Stored service worker info whose size is based on
   // `kNotificationTelemetryServiceWorkerInfoMaxCount`
-  std::vector<ServiceWorkerTelemetryInfo> service_worker_infos_;
+  std::vector<ServiceWorkerTelemetryInfo> service_worker_info_;
 
   // Accessor for an URLLoaderFactory with which reports will be sent.
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;

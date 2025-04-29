@@ -832,21 +832,12 @@ void PushMessagingServiceImpl::SubscribeFromDocument(
                      render_frame_id));
 }
 
-void PushMessagingServiceImpl::SetSubscribeFromWorkerCallback(
-    base::RepeatingCallback<void(int64_t)> callback) {
-  subscribe_from_worker_callback_ = callback;
-}
-
 void PushMessagingServiceImpl::SubscribeFromWorker(
     const GURL& requesting_origin,
     int64_t service_worker_registration_id,
     int render_process_id,
     blink::mojom::PushSubscriptionOptionsPtr options,
     RegisterCallback register_callback) {
-  if (subscribe_from_worker_callback_) {
-    subscribe_from_worker_callback_->Run(service_worker_registration_id);
-  }
-
   render_process_id_ = render_process_id;
   PushMessagingAppIdentifier app_identifier =
       PushMessagingAppIdentifier::FindByServiceWorker(
