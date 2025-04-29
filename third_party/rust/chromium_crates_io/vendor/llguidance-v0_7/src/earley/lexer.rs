@@ -221,8 +221,8 @@ impl Lexer {
         if enable_logging {
             let info = self.state_info(state);
             debug!(
-                "lex: {:?} -{:?}-> {:?}, acpt={:?}",
-                prev, byte as char, state, info.greedy_accepting
+                "lex: {:?} -{:?}-> {:?}, acpt={:?}/{:?}",
+                prev, byte as char, state, info.greedy_accepting, info.lazy_accepting
             );
         }
 

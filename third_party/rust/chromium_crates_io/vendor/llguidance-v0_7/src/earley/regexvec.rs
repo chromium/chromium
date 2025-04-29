@@ -407,14 +407,18 @@ impl RegexVec {
         for (idx, e) in iter_state(&self.rx_sets, desc.state) {
             // If this lexeme is not a match.  (If the derivative at this point is nullable,
             // there is a match, so if it is not nullable, there is no match.)
+            // println!("idx: {:?} e: {:?} {:?}", idx, e,self.special_token_rx);
             if !self.exprs.is_nullable(e) {
                 // No match, so not at end of lexeme
                 all_eoi = false;
                 continue;
-            } else if Some(e) == self.special_token_rx {
+            } else if Some(self.get_rx(idx)) == self.special_token_rx {
                 // the regex is /\xFF\[[0-9]+\]/ so it's guaranteed not to conflict with anything
                 // else (starts with non-unicode byte); thus we ignore the rest of processing
+                // when has_special_token is set, we just need to make sure lazy_accepting is non-empty,
+                // the actual value is not important
                 desc.lazy_accepting = MatchingLexemes::One(idx);
+                desc.has_special_token = true;
                 return;
             }
 
@@ -424,9 +428,6 @@ impl RegexVec {
                 if lazies.is_none() {
                     all_eoi = false;
                     hidden_len = self.exprs.possible_lookahead_len(e) as u32;
-                    if Some(self.get_rx(idx)) == self.special_token_rx {
-                        desc.has_special_token = true;
-                    }
                 }
                 lazies.add(idx);
                 continue;
@@ -711,7 +712,8 @@ impl RegexVec {
 
         self.lowest_match_inner(&mut res);
 
-        // debug!("state {:?} desc: {:?}", state, res);
+        // println!("state {:?} desc: {:?}", state, res);
+
         res
     }
 
