@@ -1,6 +1,7 @@
 {
   "Android V8 FYI Release": {
     "gn_args": {
+      "android_static_analysis": "off",
       "dcheck_always_on": true,
       "debuggable_apks": false,
       "ffmpeg_branding": "Chrome",
@@ -10,7 +11,7 @@
       "symbol_level": 1,
       "target_cpu": "arm64",
       "target_os": "android",
-      "use_reclient": true,
+      "use_reclient": false,
       "use_remoteexec": true,
       "use_siso": true,
       "use_static_angle": true
@@ -83,6 +84,7 @@
   },
   "V8 Android GN (dbg)": {
     "gn_args": {
+      "android_static_analysis": "off",
       "debuggable_apks": false,
       "ffmpeg_branding": "Chrome",
       "is_component_build": true,
@@ -90,7 +92,7 @@
       "proprietary_codecs": true,
       "symbol_level": 1,
       "target_os": "android",
-      "use_reclient": true,
+      "use_reclient": false,
       "use_remoteexec": true,
       "use_siso": true
     }
