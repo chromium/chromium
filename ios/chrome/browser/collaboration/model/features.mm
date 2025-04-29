@@ -10,7 +10,8 @@
 
 bool IsSharedTabGroupsJoinEnabled(
     collaboration::CollaborationService* collaboration_service) {
-  if (!collaboration_service || !IsTabGroupSyncEnabled()) {
+  CHECK(collaboration_service);
+  if (!IsTabGroupSyncEnabled()) {
     return false;
   }
   return collaboration_service->GetServiceStatus().IsAllowedToJoin();
@@ -18,7 +19,8 @@ bool IsSharedTabGroupsJoinEnabled(
 
 bool IsSharedTabGroupsCreateEnabled(
     collaboration::CollaborationService* collaboration_service) {
-  if (!collaboration_service || !IsTabGroupSyncEnabled()) {
+  CHECK(collaboration_service);
+  if (!IsTabGroupSyncEnabled()) {
     return false;
   }
   return collaboration_service->GetServiceStatus().IsAllowedToCreate();
