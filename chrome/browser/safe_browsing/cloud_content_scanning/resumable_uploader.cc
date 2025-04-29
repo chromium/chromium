@@ -161,6 +161,9 @@ std::string ResumableUploadRequest::GetUploadInfo() {
     case METADATA_ONLY:
       scan_info = "Metadata only scan";
       break;
+    case ASYNC:
+      scan_info = "Async content upload";
+      break;
   }
 
   return base::StrCat({"Resumable - ", scan_info});
@@ -282,6 +285,7 @@ void ResumableUploadRequest::OnMetadataUploadCompleted(
         return;
       }
 
+      scan_type_ = ASYNC;
       std::move(verdict_received_callback_)
           .Run(IsSuccess(url_loader_->NetError(), response_code), response_code,
                output);
@@ -380,7 +384,12 @@ void ResumableUploadRequest::OnSendContentCompleted(
     base::TimeTicks start_time,
     std::optional<std::string> response_body) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  scan_type_ = FULL_CONTENT;
+
+  // If this has already been called after the metadata check, that means that
+  // we have set the value to ASYNC.
+  if (!verdict_received_callback_.is_null()) {
+    scan_type_ = FULL_CONTENT;
+  }
 
   base::UmaHistogramCustomTimes(
       base::StrCat({"Enterprise.ResumableRequest.ContentCheck.",
