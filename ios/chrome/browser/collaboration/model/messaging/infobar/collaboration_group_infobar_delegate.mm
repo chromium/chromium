@@ -14,12 +14,15 @@
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
 #import "ios/chrome/browser/infobars/model/infobar_type.h"
 #import "ios/chrome/browser/infobars/model/infobar_utils.h"
+#import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_util.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -35,28 +38,28 @@ std::optional<tab_groups::LocalTabGroupID> GetLocalTabGroupId(
   }
   // For an InstantMessage, even if it aggregates multiple underlying events,
   // they should all be related to the same tab or tab group.
-  if (instant_message.attributions[0].tab_group_metadata.has_value()) {
-    return instant_message.attributions[0]
+  if (instant_message.attributions.front().tab_group_metadata.has_value()) {
+    return instant_message.attributions.front()
         .tab_group_metadata->local_tab_group_id;
   }
   return std::nullopt;
 }
 
-// Returns the local tab group for the given `local_tab_group_id` and `browser`.
-const TabGroup* GetLocalTabGroup(
+// Returns wether the `local_tab_group_id` is contained in `browser`.
+bool ContainsLocalTabGroup(
     std::optional<tab_groups::LocalTabGroupID> local_tab_group_id,
     Browser* browser) {
   if (!local_tab_group_id.has_value()) {
-    return nullptr;
+    return false;
   }
 
   WebStateList* web_state_list = browser->GetWebStateList();
   for (const TabGroup* group : web_state_list->GetGroups()) {
     if (group->tab_group_id() == local_tab_group_id.value()) {
-      return group;
+      return true;
     }
   }
-  return nullptr;
+  return false;
 }
 
 // Returns the Browser on which to display the infobar for the given
@@ -98,7 +101,7 @@ Browser* GetBrowserFromInstantMessage(
       source_browser = browser;
       break;
     }
-    if (GetLocalTabGroup(local_tab_group_id, browser)) {
+    if (ContainsLocalTabGroup(local_tab_group_id, browser)) {
       source_browser = browser;
     }
   }
@@ -182,7 +185,25 @@ std::u16string CollaborationGroupInfoBarDelegate::GetButtonLabel(
 }
 
 bool CollaborationGroupInfoBarDelegate::Accept() {
-  // TODO(crbug.com/375595834): Implement this.
+  switch (instant_message_.collaboration_event) {
+    case CollaborationEvent::TAB_UPDATED:
+    case CollaborationEvent::TAB_REMOVED:
+      ReopenTab();
+      break;
+    case CollaborationEvent::COLLABORATION_MEMBER_ADDED:
+      break;
+    case CollaborationEvent::UNDEFINED:
+    case CollaborationEvent::TAB_ADDED:
+    case CollaborationEvent::TAB_GROUP_REMOVED:
+    case CollaborationEvent::TAB_GROUP_ADDED:
+    case CollaborationEvent::TAB_GROUP_NAME_UPDATED:
+    case CollaborationEvent::TAB_GROUP_COLOR_UPDATED:
+    case CollaborationEvent::COLLABORATION_ADDED:
+    case CollaborationEvent::COLLABORATION_REMOVED:
+    case CollaborationEvent::COLLABORATION_MEMBER_REMOVED:
+      break;
+  }
+
   return true;
 }
 
@@ -193,4 +214,48 @@ void CollaborationGroupInfoBarDelegate::InfoBarDismissed() {
 UIImage* CollaborationGroupInfoBarDelegate::GetAvatarImage() {
   // TODO(crbug.com/375595834): Update this to show avatars when needed.
   return nil;
+}
+
+void CollaborationGroupInfoBarDelegate::ReopenTab() {
+  std::optional<tab_groups::LocalTabGroupID> local_tab_group_id =
+      GetLocalTabGroupId(instant_message_);
+  if (!local_tab_group_id.has_value()) {
+    return;
+  }
+
+  BrowserList* browser_list = BrowserListFactory::GetForProfile(profile_);
+  tab_groups::utils::LocalTabGroupInfo group_info =
+      tab_groups::utils::GetLocalTabGroupInfo(browser_list,
+                                              local_tab_group_id.value());
+  if (!group_info.tab_group) {
+    return;
+  }
+
+  // Configure `params` for the reopen updated tab flow.
+  UrlLoadParams params;
+  if (instant_message_.collaboration_event == CollaborationEvent::TAB_UPDATED &&
+      instant_message_.attributions.front().tab_metadata.has_value() &&
+      instant_message_.attributions.front()
+          .tab_metadata->previous_url.has_value()) {
+    // Extract the previous URL.
+    GURL previous_url = GURL(instant_message_.attributions.front()
+                                 .tab_metadata->previous_url.value());
+    params = UrlLoadParams::InCurrentTab(previous_url);
+
+    // Configure `params` for the reopen closed tab flow.
+  } else if (instant_message_.collaboration_event ==
+                 CollaborationEvent::TAB_REMOVED &&
+             instant_message_.attributions.front().tab_metadata.has_value() &&
+             instant_message_.attributions.front()
+                 .tab_metadata->last_known_url.has_value()) {
+    GURL last_known_url = GURL(instant_message_.attributions.front()
+                                   .tab_metadata->last_known_url.value());
+    params = UrlLoadParams::InNewTab(last_known_url);
+    params.load_in_group = true;
+    params.tab_group = group_info.tab_group->GetWeakPtr();
+  } else {
+    NOTREACHED();
+  }
+
+  UrlLoadingBrowserAgent::FromBrowser(group_info.browser)->Load(params);
 }

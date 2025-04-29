@@ -16,9 +16,12 @@ source_set("infobar") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/infobars/model",
     "//ios/chrome/browser/infobars/model:public",
+    "//ios/chrome/browser/saved_tab_groups/model",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/url_loading/model",
+    "//ios/chrome/browser/url_loading/model:url_loading_params_header",
     "//ui/base",
   ]
 }

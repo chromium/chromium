@@ -50,6 +50,10 @@ class CollaborationGroupInfoBarDelegate : public ConfirmInfoBarDelegate {
   UIImage* GetAvatarImage();
 
  private:
+  // Reopens the previous tab or the latest closed tab contained in
+  // `instant_message_`.
+  void ReopenTab();
+
   raw_ptr<ProfileIOS> profile_;
   collaboration::messaging::InstantMessage instant_message_;
 };
