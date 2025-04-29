@@ -1535,7 +1535,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Conversions.{ContextType}HttpResponseOrNetErrorCodeAggregatable"
+    name="Conversions.{ContextType}HttpResponseOrNetErrorCodeAggregatable2"
     enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-10-26">
   <owner>apaseltiner@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
@@ -1549,22 +1549,7 @@ chromium-metrics-reviews@google.com.
       variants="AttributionReportingAggregatableContextType"/>
 </histogram>
 
-<histogram
-    name="Conversions.{ContextType}HttpResponseOrNetErrorCodeAggregatableNull"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-10-26">
-  <owner>linnan@chromium.org</owner>
-  <owner>measurement-api-dev+metrics@google.com</owner>
-  <summary>
-    Error info for sending a null aggregatable report, recorded for each sent
-    null aggregatable report. The HTTP response code is recorded if there is no
-    net error code for the request, or the net error code indicates there was a
-    response code failure.
-  </summary>
-  <token key="ContextType"
-      variants="AttributionReportingAggregatableContextType"/>
-</histogram>
-
-<histogram name="Conversions.{ContextType}ReportRetrySucceedAggregatable"
+<histogram name="Conversions.{ContextType}ReportRetrySucceedAggregatable2"
     enum="BooleanSuccess" expires_after="2025-09-23">
   <owner>linnan@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
@@ -1576,7 +1561,7 @@ chromium-metrics-reviews@google.com.
       variants="AttributionReportingAggregatableContextType"/>
 </histogram>
 
-<histogram name="Conversions.{ContextType}ReportStatusAggregatable"
+<histogram name="Conversions.{ContextType}ReportStatusAggregatable2"
     enum="ConversionReportStatus" expires_after="2025-08-20">
   <owner>linnan@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
@@ -1584,19 +1569,6 @@ chromium-metrics-reviews@google.com.
     Records the high-level request status of an attribution report. Recorded for
     every aggregatable attribution report sent. For attribution report that has
     been retried, every retry will be counted.
-  </summary>
-  <token key="ContextType"
-      variants="AttributionReportingAggregatableContextType"/>
-</histogram>
-
-<histogram name="Conversions.{ContextType}ReportStatusAggregatableNull"
-    enum="ConversionReportStatus" expires_after="2025-08-20">
-  <owner>linnan@chromium.org</owner>
-  <owner>measurement-api-dev+metrics@google.com</owner>
-  <summary>
-    Records the high-level request status of a null aggregatable report.
-    Recorded for every null aggregatable report sent. For null aggregatable
-    report that has been retried, every retry will be counted.
   </summary>
   <token key="ContextType"
       variants="AttributionReportingAggregatableContextType"/>

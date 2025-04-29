@@ -688,9 +688,9 @@ TEST_F(AttributionReportNetworkSenderTest,
     }
   };
 
-  static constexpr char kStatusMetric[] = "ReportStatusAggregatable";
+  static constexpr char kStatusMetric[] = "ReportStatusAggregatable2";
   static constexpr char kErrorCodeMetric[] =
-      "HttpResponseOrNetErrorCodeAggregatable";
+      "HttpResponseOrNetErrorCodeAggregatable2";
   static constexpr char kReportSizeMetric[] =
       "Conversions.AggregatableReport.ReportBodySize";
 
@@ -770,7 +770,7 @@ TEST_F(AttributionReportNetworkSenderTest,
       ASSERT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
           kAggregatableReportUrl, ""));
 
-      verify_histogram(histograms, "ReportRetrySucceedAggregatable",
+      verify_histogram(histograms, "ReportRetrySucceedAggregatable2",
                        has_trigger_context_id, 1, 1);
       histograms.ExpectTotalCount(kReportSizeMetric, 1);
     }
@@ -789,9 +789,9 @@ TEST_F(AttributionReportNetworkSenderTest,
         kDebugAggregatableReportUrl, ""));
     // kOk = 0.
     histograms.ExpectUniqueSample(
-        "Conversions.DebugReport.ReportStatusAggregatable", 0, 1);
+        "Conversions.DebugReport.ReportStatusAggregatable2", 0, 1);
     histograms.ExpectUniqueSample(
-        "Conversions.DebugReport.HttpResponseOrNetErrorCodeAggregatable",
+        "Conversions.DebugReport.HttpResponseOrNetErrorCodeAggregatable2",
         net::HTTP_OK, 1);
   }
 
@@ -807,9 +807,9 @@ TEST_F(AttributionReportNetworkSenderTest,
         network::mojom::URLResponseHead::New(), ""));
     // kInternalError = 1.
     histograms.ExpectUniqueSample(
-        "Conversions.DebugReport.ReportStatusAggregatable", 1, 1);
+        "Conversions.DebugReport.ReportStatusAggregatable2", 1, 1);
     histograms.ExpectUniqueSample(
-        "Conversions.DebugReport.HttpResponseOrNetErrorCodeAggregatable",
+        "Conversions.DebugReport.HttpResponseOrNetErrorCodeAggregatable2",
         net::ERR_FAILED, 1);
   }
   // External error
@@ -822,9 +822,9 @@ TEST_F(AttributionReportNetworkSenderTest,
         kDebugAggregatableReportUrl, "", net::HTTP_UNAUTHORIZED));
     // kExternalError = 2.
     histograms.ExpectUniqueSample(
-        "Conversions.DebugReport.ReportStatusAggregatable", 2, 1);
+        "Conversions.DebugReport.ReportStatusAggregatable2", 2, 1);
     histograms.ExpectUniqueSample(
-        "Conversions.DebugReport.HttpResponseOrNetErrorCodeAggregatable",
+        "Conversions.DebugReport.HttpResponseOrNetErrorCodeAggregatable2",
         net::HTTP_UNAUTHORIZED, 1);
   }
   // Retried network change error
@@ -843,7 +843,7 @@ TEST_F(AttributionReportNetworkSenderTest,
         kDebugAggregatableReportUrl, ""));
 
     histograms.ExpectUniqueSample(
-        "Conversions.DebugReport.ReportRetrySucceedAggregatable", true, 1);
+        "Conversions.DebugReport.ReportRetrySucceedAggregatable2", true, 1);
   }
 }
 
@@ -1104,9 +1104,9 @@ TEST_F(AttributionReportNetworkSenderTest,
     EXPECT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
         kAggregatableReportUrl, ""));
     // kOk = 0.
-    verify_histogram(histograms, "ReportStatusAggregatableNull",
+    verify_histogram(histograms, "ReportStatusAggregatable2",
                      has_trigger_context_id, 0, 1);
-    verify_histogram(histograms, "HttpResponseOrNetErrorCodeAggregatableNull",
+    verify_histogram(histograms, "HttpResponseOrNetErrorCodeAggregatable2",
                      has_trigger_context_id, net::HTTP_OK, 1);
     histograms.ExpectTotalCount("Conversions.AggregatableReport.ReportBodySize",
                                 1);
