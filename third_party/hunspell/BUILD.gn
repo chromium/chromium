@@ -65,7 +65,10 @@ static_library("hunspell") {
   ]
   public_configs = [ ":hunspell_config" ]
 
-  defines = [ "OPENOFFICEORG" ]
+  defines = [
+    "OPENOFFICEORG",
+    "MAXSUGGESTION=5",
+  ]
 
   deps = [
     "//base",
