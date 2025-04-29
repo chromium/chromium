@@ -268,7 +268,7 @@ UILabel* BubbleTitleLabelWithText(NSString* text,
 // The constraint between the tip of the arrow and the edge of bubble view the
 // arrow is anchored to. Saved for "arrow emerge" animation purpose so the
 // constant can be updated to produce animation.
-@property(nonatomic, assign) NSLayoutConstraint* arrowTipToEdgeConstraint;
+@property(nonatomic, strong) NSLayoutConstraint* arrowTipToEdgeConstraint;
 
 // Controls if there is a close button in the view.
 @property(nonatomic, readonly) BOOL showsCloseButton;
