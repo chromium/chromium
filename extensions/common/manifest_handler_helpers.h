@@ -40,6 +40,10 @@ bool LoadIconsFromDictionary(const base::Value::Dict& icons_value,
                              std::u16string* error,
                              std::vector<std::string>* warnings);
 
+// Returns true if the given path's mime type is supported to be used as an
+// extension image, such as an icon or a theme.
+bool IsSupportedExtensionImageMimeType(const base::FilePath& relative_path);
+
 // Returns true if the given path's mime type can be used for an icon.
 bool IsIconMimeTypeValid(const base::FilePath& relative_path);
 

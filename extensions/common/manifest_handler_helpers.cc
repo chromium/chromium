@@ -99,6 +99,20 @@ bool LoadIconsFromDictionary(const base::Value::Dict& icons_value,
   return true;
 }
 
+bool IsSupportedExtensionImageMimeType(const base::FilePath& relative_path) {
+  std::string mime_type;
+  if (!net::GetWellKnownMimeTypeFromFile(relative_path, &mime_type)) {
+    return false;
+  }
+
+  // SVG is text-based XML, even though it has an "image/" type. Allow it
+  // explicitly.
+  constexpr char kSvgMimeType[] = "image/svg+xml";
+
+  return blink::IsSupportedImageMimeType(mime_type) ||
+         mime_type == kSvgMimeType;
+}
+
 bool IsIconMimeTypeValid(const base::FilePath& relative_path) {
   // TODO(crbug.com/40059598): Remove this if-check and always validate the mime
   // type in M140.
@@ -106,17 +120,7 @@ bool IsIconMimeTypeValid(const base::FilePath& relative_path) {
     return true;
   }
 
-  std::string mime_type;
-  if (!net::GetWellKnownMimeTypeFromFile(relative_path, &mime_type)) {
-    return false;
-  }
-
-  // SVG is text-based XML, even though it has an "image/" type. Nevertheless,
-  // it's supported by some icon types, so we need to allow it.
-  constexpr char kSvgMimeType[] = "image/svg+xml";
-
-  return blink::IsSupportedImageMimeType(mime_type) ||
-         mime_type == kSvgMimeType;
+  return IsSupportedExtensionImageMimeType(relative_path);
 }
 
 }  // namespace manifest_handler_helpers
