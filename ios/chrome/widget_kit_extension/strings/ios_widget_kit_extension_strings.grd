@@ -182,6 +182,9 @@
   </translations>
   <release seq="1">
     <messages fallback_to_english="true">
+      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_DELETED_ACCOUNT" desc="Accessibility label for the deleted account ui on widget" meaning="String used in the deleted account ui to tell the user to change the account used in the widget. [iOS only]">
+        The account used with the widget was removed. To select a different account, tap Edit Widget.
+      </message>
       <message name="IDS_IOS_WIDGET_KIT_EXTENSION_GAME_A11Y_LABEL" desc="Accessibility label for the dino game widget" meaning="Accessibility label for the dino game widget [CHAR_LIMIT=40][iOS only]">
         Jump into Chrome Dino Game
       </message>

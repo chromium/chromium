@@ -24,14 +24,11 @@ func SmallWidgetDeletedAccountView() -> some View {
         )
         .foregroundColor(Color("widget_search_bar_color"))
         .overlay(
-          // TODO(crbug.com/408987116): Add string to ios_widget_kit_extension_strings.
-          Text(
-            "Account removed from device. Edit the widget to select a new account."
-          )
-          .font(.subheadline)
-          .foregroundColor(Color("widget_text_color"))
-          .multilineTextAlignment(.center)
-          .padding(DeletedAccountUIConstants.padding)
+          Text("IDS_IOS_WIDGET_KIT_EXTENSION_DELETED_ACCOUNT")
+            .font(.subheadline)
+            .foregroundColor(Color("widget_text_color"))
+            .multilineTextAlignment(.center)
+            .padding(DeletedAccountUIConstants.padding)
         )
     }
   }
@@ -54,14 +51,11 @@ func MediumWidgetDeletedAccountView() -> some View {
               .clipShape(Circle())
               .padding(.top, DeletedAccountUIConstants.padding)
               .unredacted()
-            // TODO(crbug.com/408987116): Add string to ios_widget_kit_extension_strings.
-            Text(
-              "Account removed from device. Edit the widget to select a new account."
-            )
-            .font(.subheadline)
-            .foregroundColor(Color("widget_text_color"))
-            .multilineTextAlignment(.center)
-            .padding(DeletedAccountUIConstants.padding)
+            Text("IDS_IOS_WIDGET_KIT_EXTENSION_DELETED_ACCOUNT")
+              .font(.subheadline)
+              .foregroundColor(Color("widget_text_color"))
+              .multilineTextAlignment(.center)
+              .padding(DeletedAccountUIConstants.padding)
           }
         )
     }
