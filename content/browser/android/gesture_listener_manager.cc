@@ -192,18 +192,9 @@ void GestureListenerManager::OnInputEvent(const RenderWidgetHost& widget,
     web_contents_->GetNativeView()->RequestFocus();
   }
 
-  if (WebInputEvent::IsTouchEventType(event_type)) {
-    if (event_type == blink::mojom::EventType::kTouchStart) {
-      active_pointers_++;
-      if (active_pointers_ == 1) {
-        UpdateOnTouchDown();
-      }
-    } else if (event_type == blink::mojom::EventType::kTouchCancel) {
-      active_pointers_ = 0;
-    } else if (event_type == blink::mojom::EventType::kTouchEnd) {
-      active_pointers_--;
-      DCHECK(active_pointers_ >= 0);
-    }
+  if (WebInputEvent::IsTouchEventType(event_type) &&
+      static_cast<const blink::WebTouchEvent&>(event).IsTouchSequenceStart()) {
+    UpdateOnTouchDown();
     return;
   }
 

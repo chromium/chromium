@@ -113,7 +113,6 @@ class CONTENT_EXPORT GestureListenerManager
   std::unique_ptr<ResetScrollObserver> reset_scroll_observer_;
   raw_ptr<WebContentsImpl> web_contents_;
   raw_ptr<RenderWidgetHostViewAndroid> rwhva_ = nullptr;
-  int active_pointers_ = 0;
   bool is_in_a_fling_ = false;
 
   // A weak reference to the Java GestureListenerManager object.
