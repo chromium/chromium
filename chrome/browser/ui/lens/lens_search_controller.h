@@ -12,6 +12,7 @@ class LensOverlayController;
 
 namespace lens {
 class LensOverlaySidePanelCoordinator;
+class LensSearchboxController;
 }  // namespace lens
 
 namespace variations {
@@ -84,6 +85,11 @@ class LensSearchController {
   virtual std::unique_ptr<lens::LensOverlaySidePanelCoordinator>
   CreateLensOverlaySidePanelCoordinator();
 
+  // Override these methods to be able to track calls made to the side panel
+  // coordinator.
+  virtual std::unique_ptr<lens::LensSearchboxController>
+  CreateLensSearchboxController();
+
  private:
   // Whether the LensSearchController has been initialized.
   bool initialized_ = false;
@@ -94,6 +100,11 @@ class LensSearchController {
   // The side panel coordinator for the Lens Search feature on this tab.
   std::unique_ptr<lens::LensOverlaySidePanelCoordinator>
       lens_overlay_side_panel_coordinator_;
+
+  // The searchbox controller for the Lens Search feature on this tab.
+  // TODO(crbug.com/413138792): Hook up this controller to handle searchbox
+  // interactions, without a dependency on the overlay controller.
+  std::unique_ptr<lens::LensSearchboxController> lens_searchbox_controller_;
 
   // Owns this class.
   raw_ptr<tabs::TabInterface> tab_;

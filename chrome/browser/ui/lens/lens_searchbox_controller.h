@@ -5,21 +5,26 @@
 #ifndef CHROME_BROWSER_UI_LENS_LENS_SEARCHBOX_CONTROLLER_H_
 #define CHROME_BROWSER_UI_LENS_LENS_SEARCHBOX_CONTROLLER_H_
 
+#include "chrome/browser/ui/webui/searchbox/lens_searchbox_client.h"
 #include "components/lens/proto/server/lens_overlay_response.pb.h"
 #include "components/sessions/core/session_id.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "url/gurl.h"
-#include "chrome/browser/ui/webui/searchbox/lens_searchbox_client.h"
+
+class LensSearchController;
+
+namespace lens {
 
 // Controller for the Lens searchbox. This class is responsible for handling
 // communications between the Lens WebUI searchbox and other Lens components.
 // This class is responsible for both the overlay and side panel searchboxes.
 class LensSearchboxController : public LensSearchboxClient {
  public:
-  LensSearchboxController();
+  explicit LensSearchboxController(
+      LensSearchController* lens_search_controller);
   ~LensSearchboxController() override;
 
-  private:
+ private:
   // Overridden from LensSearchboxClient:
   const GURL& GetPageURL() const override;
   SessionID GetTabId() const override;
@@ -38,7 +43,12 @@ class LensSearchboxController : public LensSearchboxClient {
   void ShowGhostLoaderErrorState() override;
   void OnZeroSuggestShown() override;
 
+  // Owns this.
+  const raw_ptr<LensSearchController> lens_search_controller_;
+
   // TODO(crbug.com/413138792): Implement temporary placeholder.
   std::string selected_region_thumbnail_uri_;
 };
+}  // namespace lens
+
 #endif  // CHROME_BROWSER_UI_LENS_LENS_SEARCHBOX_CONTROLLER_H_

@@ -4,12 +4,17 @@
 
 #include "chrome/browser/ui/lens/lens_searchbox_controller.h"
 
+#include "chrome/browser/ui/lens/lens_search_controller.h"
 #include "components/lens/proto/server/lens_overlay_response.pb.h"
 #include "components/sessions/core/session_id.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "url/gurl.h"
 
-LensSearchboxController::LensSearchboxController() = default;
+namespace lens {
+
+LensSearchboxController::LensSearchboxController(
+    LensSearchController* lens_search_controller)
+    : lens_search_controller_(lens_search_controller) {}
 LensSearchboxController::~LensSearchboxController() = default;
 
 const GURL& LensSearchboxController::GetPageURL() const {
@@ -69,3 +74,5 @@ void LensSearchboxController::ShowGhostLoaderErrorState() {
 void LensSearchboxController::OnZeroSuggestShown() {
   // TODO(crbug.com/413138792): Implement this method.
 }
+
+}  // namespace lens

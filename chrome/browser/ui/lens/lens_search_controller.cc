@@ -8,6 +8,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_side_panel_coordinator.h"
+#include "chrome/browser/ui/lens/lens_searchbox_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 
@@ -39,6 +40,8 @@ void LensSearchController::Initialize(
 
   lens_overlay_side_panel_coordinator_ =
       CreateLensOverlaySidePanelCoordinator();
+
+  lens_searchbox_controller_ = CreateLensSearchboxController();
 }
 
 // static.
@@ -91,4 +94,9 @@ LensSearchController::CreateLensOverlayController(
 std::unique_ptr<lens::LensOverlaySidePanelCoordinator>
 LensSearchController::CreateLensOverlaySidePanelCoordinator() {
   return std::make_unique<lens::LensOverlaySidePanelCoordinator>(this);
+}
+
+std::unique_ptr<lens::LensSearchboxController>
+LensSearchController::CreateLensSearchboxController() {
+  return std::make_unique<lens::LensSearchboxController>(this);
 }
