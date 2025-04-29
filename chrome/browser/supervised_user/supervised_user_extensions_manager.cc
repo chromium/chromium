@@ -25,7 +25,9 @@
 #include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
+#include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/pref_names.h"
@@ -417,8 +419,7 @@ void SupervisedUserExtensionsManager::ChangeExtensionStateIfNecessary(
     return;
   }
 
-  extensions::ExtensionService* service =
-      extension_system_->extension_service();
+  auto* registrar = extensions::ExtensionRegistrar::Get(context_);
   ExtensionState state = GetExtensionState(*extension);
   switch (state) {
     // BLOCKED extensions should be already disabled and we don't need to change
@@ -426,9 +427,9 @@ void SupervisedUserExtensionsManager::ChangeExtensionStateIfNecessary(
     case ExtensionState::BLOCKED:
       break;
     case ExtensionState::REQUIRE_APPROVAL:
-      service->DisableExtension(
+      registrar->DisableExtension(
           extension_id,
-          extensions::disable_reason::DISABLE_CUSTODIAN_APPROVAL_REQUIRED);
+          {extensions::disable_reason::DISABLE_CUSTODIAN_APPROVAL_REQUIRED});
       break;
     case ExtensionState::ALLOWED:
       extension_prefs_->RemoveDisableReason(
@@ -436,7 +437,7 @@ void SupervisedUserExtensionsManager::ChangeExtensionStateIfNecessary(
           extensions::disable_reason::DISABLE_CUSTODIAN_APPROVAL_REQUIRED);
       // If not disabled for other reasons, enable it.
       if (extension_prefs_->GetDisableReasons(extension_id).empty()) {
-        service->EnableExtension(extension_id);
+        registrar->EnableExtension(extension_id);
       }
       break;
   }

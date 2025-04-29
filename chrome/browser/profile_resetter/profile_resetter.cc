@@ -356,8 +356,9 @@ void ProfileResetter::ResetExtensions() {
         extensions::mojom::ManifestLocation::kExternalComponent)
       extension_ids_to_reenable.push_back(extension->id());
   }
+  auto* extension_registrar = extensions::ExtensionRegistrar::Get(profile_);
   for (const auto& extension_id : extension_ids_to_reenable) {
-    extension_service->EnableExtension(extension_id);
+    extension_registrar->EnableExtension(extension_id);
   }
 
   MarkAsDone(EXTENSIONS);

@@ -19,7 +19,6 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -503,8 +502,8 @@ TEST_F(ExtensionMetricsProviderInstallsTest,
   scoped_refptr<const Extension> app =
       ExtensionBuilder("app", ExtensionBuilder::Type::PLATFORM_APP).Build();
   registrar()->AddExtension(app);
-  service()->DisableExtension(app->id(),
-                              extensions::disable_reason::DISABLE_USER_ACTION);
+  registrar()->DisableExtension(
+      app->id(), {extensions::disable_reason::DISABLE_USER_ACTION});
 
   std::vector<ExtensionInstallProto> installs = GetInstallsForProfile();
   // There should be two installs total.

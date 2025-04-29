@@ -16,7 +16,6 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/uuid.h"
 #include "base/values.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/test/integration/sync_datatype_helper.h"
@@ -109,17 +108,15 @@ std::vector<std::string> SyncExtensionHelper::GetInstalledExtensionNames(
 
 void SyncExtensionHelper::EnableExtension(Profile* profile,
                                           const std::string& name) {
-  extensions::ExtensionSystem::Get(profile)
-      ->extension_service()
-      ->EnableExtension(crx_file::id_util::GenerateId(name));
+  extensions::ExtensionRegistrar::Get(profile)->EnableExtension(
+      crx_file::id_util::GenerateId(name));
 }
 
 void SyncExtensionHelper::DisableExtension(Profile* profile,
                                            const std::string& name) {
-  extensions::ExtensionSystem::Get(profile)
-      ->extension_service()
-      ->DisableExtension(crx_file::id_util::GenerateId(name),
-                         extensions::disable_reason::DISABLE_USER_ACTION);
+  extensions::ExtensionRegistrar::Get(profile)->DisableExtension(
+      crx_file::id_util::GenerateId(name),
+      {extensions::disable_reason::DISABLE_USER_ACTION});
 }
 
 bool SyncExtensionHelper::IsExtensionEnabled(Profile* profile,

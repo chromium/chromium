@@ -354,13 +354,11 @@ void ThemeService::RevertToExtensionTheme(const std::string& extension_id) {
                               ->disabled_extensions()
                               .GetByID(extension_id);
   if (extension && extension->is_theme()) {
-    DCHECK(!extensions::ExtensionRegistrar::Get(profile_)->IsExtensionEnabled(
-        extension->id()));
+    auto* registrar = extensions::ExtensionRegistrar::Get(profile_);
+    DCHECK(!registrar->IsExtensionEnabled(extension->id()));
     // |extension| is disabled when reverting to the previous theme via an
     // infobar.
-    extensions::ExtensionService* service =
-        extensions::ExtensionSystem::Get(profile_)->extension_service();
-    service->EnableExtension(extension->id());
+    registrar->EnableExtension(extension->id());
     // Enabling the extension will call back to SetTheme().
   }
 }
@@ -1013,22 +1011,14 @@ void ThemeService::SetThemePrefsForColor(SkColor color) {
 }
 
 bool ThemeService::DisableExtension(const std::string& extension_id) {
-  extensions::ExtensionService* service =
-      extensions::ExtensionSystem::Get(profile_)->extension_service();
-  if (!service) {
-    return false;
-  }
-
-  extensions::ExtensionRegistry* registry =
-      extensions::ExtensionRegistry::Get(profile_);
-
+  auto* registry = extensions::ExtensionRegistry::Get(profile_);
   if (registry->GetInstalledExtension(extension_id)) {
     // Do not disable the previous theme if it is already uninstalled. Sending
     // |ThemeServiceObserver::OnThemeChanged()| causes the previous theme to be
     // uninstalled when the notification causes the remaining infobar to close
     // and does not open any new infobars. See crbug.com/468280.
-    service->DisableExtension(extension_id,
-                              extensions::disable_reason::DISABLE_USER_ACTION);
+    extensions::ExtensionRegistrar::Get(profile_)->DisableExtension(
+        extension_id, {extensions::disable_reason::DISABLE_USER_ACTION});
     return true;
   }
   return false;

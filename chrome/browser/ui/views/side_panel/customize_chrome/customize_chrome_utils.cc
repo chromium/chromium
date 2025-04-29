@@ -12,6 +12,8 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/search/ntp_features.h"
+#include "extensions/browser/disable_reason.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/extension.h"
 
@@ -43,17 +45,14 @@ void MaybeDisableExtensionOverridingNtp(
     return;
   }
 
-  // Get extension service.
-  extensions::ExtensionSystem* extension_system =
-      extensions::ExtensionSystem::Get(browser_context);
-  extensions::ExtensionService* extension_service =
-      extension_system->extension_service();
-  if (!extension_service) {
+  // Ensure that the extension service has not already shut down.
+  if (!extensions::ExtensionSystem::Get(browser_context)->extension_service()) {
     return;
   }
 
-  extension_service->DisableExtension(
-      extension->id(), extensions::disable_reason::DISABLE_USER_ACTION);
+  extensions::ExtensionRegistrar::Get(browser_context)
+      ->DisableExtension(extension->id(),
+                         {extensions::disable_reason::DISABLE_USER_ACTION});
 }
 
 }  // namespace customize_chrome

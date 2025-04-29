@@ -8,7 +8,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
@@ -107,8 +106,9 @@ TEST_F(SupervisedUserExtensionsMetricsDelegateImplTest,
   auto extension2 = MakeExtension("Extension 2");
   registrar()->AddExtension(extension1);
   registrar()->AddExtension(extension2);
-  service()->DisableExtension(
-      extension1->id(), extensions::disable_reason::DISABLE_BLOCKED_BY_POLICY);
+  registrar()->DisableExtension(
+      extension1->id(),
+      {extensions::disable_reason::DISABLE_BLOCKED_BY_POLICY});
 
   // Move to the next day and ensure the extension histograms are recorded.
   task_environment()->FastForwardBy(base::Days(1));
