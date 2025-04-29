@@ -24,7 +24,7 @@
 @interface FullscreenSigninCoordinator () <FirstRunScreenDelegate>
 
 @property(nonatomic, strong) ScreenProvider* screenProvider;
-@property(nonatomic, strong) AnimatedCoordinator* childCoordinator;
+@property(nonatomic, strong) ChromeCoordinator* childCoordinator;
 
 // The view controller used by FullscreenSigninCoordinator.
 @property(nonatomic, strong) UINavigationController* navigationController;
@@ -129,7 +129,7 @@
 }
 
 // Creates a screen coordinator according to `type`.
-- (AnimatedCoordinator*)createChildCoordinatorWithScreenType:(ScreenType)type {
+- (ChromeCoordinator*)createChildCoordinatorWithScreenType:(ScreenType)type {
   switch (type) {
     case kSignIn:
       return [[FullscreenSigninScreenCoordinator alloc]

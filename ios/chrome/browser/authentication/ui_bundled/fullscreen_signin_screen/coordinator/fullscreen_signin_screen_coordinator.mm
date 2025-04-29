@@ -152,9 +152,7 @@
                                            animated:animated];
 }
 
-#pragma mark - AnimatedCoordinator
-
-- (void)stopAnimated:(BOOL)animated {
+- (void)stop {
   [self.browser->GetCommandDispatcher()
       stopDispatchingForProtocol:@protocol(TOSCommands)];
   [self stopAddAccountCoordinator];
@@ -165,7 +163,7 @@
   self.mediator = nil;
   self.accountManagerService = nil;
   self.authenticationService = nil;
-  [super stopAnimated:animated];
+  [super stop];
 }
 
 #pragma mark - UIAdaptivePresentationControllerDelegate
