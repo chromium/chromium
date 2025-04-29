@@ -229,12 +229,12 @@ class CORE_EXPORT FragmentBuilder {
       bool allow_top_layer_nodes = false);
 
   // This should only be used for inline-level OOF-positioned nodes.
-  // |inline_container_direction| is the current text direction for determining
-  // the correct static-position.
+  // |inline_container_writing_direction| is the current writing mode direction
+  // for determining the correct static-position.
   void AddOutOfFlowInlineChildCandidate(
       BlockNode,
       const LogicalOffset& child_offset,
-      TextDirection inline_container_direction,
+      WritingDirectionMode inline_container_writing_direction,
       bool is_hidden_for_paint = false);
 
   void AddOutOfFlowFragmentainerDescendant(

@@ -127,10 +127,10 @@ struct LogicalLineItem {
   // Create an out-of-flow positioned object.
   LogicalLineItem(LayoutObject* out_of_flow_positioned_box,
                   UBiDiLevel bidi_level,
-                  TextDirection container_direction)
+                  WritingDirectionMode container_writing_direction)
       : out_of_flow_positioned_box(out_of_flow_positioned_box),
         bidi_level(bidi_level),
-        container_direction(container_direction) {}
+        container_writing_direction(container_writing_direction) {}
   // Create an unpositioned float.
   LogicalLineItem(LayoutObject* unpositioned_float,
                   UBiDiLevel bidi_level,
@@ -267,8 +267,9 @@ struct LogicalLineItem {
   // inline box. Available only after |CreateBoxFragments()|.
   unsigned children_count = 0;
   UBiDiLevel bidi_level = 0xff;
-  // The current text direction for OOF positioned items.
-  TextDirection container_direction = TextDirection::kLtr;
+  // The current writing direction for OOF positioned items.
+  WritingDirectionMode container_writing_direction =
+      WritingDirectionMode(WritingMode::kHorizontalTb, TextDirection::kLtr);
   // When an item contains only trailing spaces, the original bidi level needs
   // to be ignored, and just use paragraph direction (UAX#9 L1)
   bool has_only_bidi_trailing_spaces = false;

@@ -989,7 +989,7 @@ const LayoutResult* InlineLayoutStateStack::BoxData::CreateBoxFragment(
       LogicalOffset static_offset = child.rect.offset - rect.offset;
 
       box.AddOutOfFlowInlineChildCandidate(oof_box, static_offset,
-                                           child.container_direction,
+                                           child.container_writing_direction,
                                            child.is_hidden_for_paint);
       child.out_of_flow_positioned_box = nullptr;
       return;

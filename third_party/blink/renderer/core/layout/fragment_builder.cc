@@ -470,7 +470,7 @@ void FragmentBuilder::AddOutOfFlowChildCandidate(
 void FragmentBuilder::AddOutOfFlowInlineChildCandidate(
     BlockNode child,
     const LogicalOffset& child_offset,
-    TextDirection inline_container_direction,
+    WritingDirectionMode inline_container_writing_direction,
     bool is_hidden_for_paint) {
   DCHECK(node_.IsInline() || layout_object_->IsLayoutInline());
 
@@ -479,8 +479,9 @@ void FragmentBuilder::AddOutOfFlowInlineChildCandidate(
   // parent element to correctly determine an OOF childs static position.
   AddOutOfFlowChildCandidate(
       child, child_offset,
-      IsLtr(inline_container_direction) ? LogicalStaticPosition::kInlineStart
-                                        : LogicalStaticPosition::kInlineEnd,
+      IsLtr(inline_container_writing_direction.Direction())
+          ? LogicalStaticPosition::kInlineStart
+          : LogicalStaticPosition::kInlineEnd,
       LogicalStaticPosition::kBlockStart, LogicalStaticPosition::kBlock,
       is_hidden_for_paint);
 }
