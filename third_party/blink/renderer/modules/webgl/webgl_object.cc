@@ -41,8 +41,7 @@ WebGLObject::WebGLObject(WebGLRenderingContextBase* context)
 
 WebGLObject::~WebGLObject() = default;
 
-bool WebGLObject::Validate(const WebGLContextGroup*,
-                           const WebGLRenderingContextBase* context) const {
+bool WebGLObject::Validate(const WebGLRenderingContextBase* context) const {
   // The contexts and context groups no longer maintain references to all
   // the objects they ever created, so there's no way to invalidate them
   // eagerly during context loss. The invalidation is discovered lazily.

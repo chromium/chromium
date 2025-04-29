@@ -104,7 +104,6 @@
 #include "third_party/blink/renderer/modules/webgl/webgl_compressed_texture_s3tc_srgb.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_context_attribute_helpers.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_context_event.h"
-#include "third_party/blink/renderer/modules/webgl/webgl_context_group.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_debug_renderer_info.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_debug_shaders.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_depth_texture.h"
@@ -1264,7 +1263,6 @@ WebGLRenderingContextBase::WebGLRenderingContextBase(
                              context_type == Platform::kWebGL2ContextType
                                  ? CanvasRenderingAPI::kWebgl2
                                  : CanvasRenderingAPI::kWebgl),
-      context_group_(MakeGarbageCollected<WebGLContextGroup>()),
       dispatch_context_lost_event_timer_(
           task_runner,
           this,
@@ -1279,8 +1277,6 @@ WebGLRenderingContextBase::WebGLRenderingContextBase(
   DCHECK(context_provider);
 
   xr_compatible_ = requested_attributes.xr_compatible;
-
-  context_group_->AddContext(this);
 
   max_viewport_dims_ = {};
   context_provider->ContextGL()->GetIntegerv(GL_MAX_VIEWPORT_DIMS,
@@ -2796,7 +2792,7 @@ void WebGLRenderingContextBase::cullFace(GLenum mode) {
 bool WebGLRenderingContextBase::DeleteObject(WebGLObject* object) {
   if (isContextLost() || !object)
     return false;
-  if (!object->Validate(ContextGroup(), this)) {
+  if (!object->Validate(this)) {
     SynthesizeGLError(GL_INVALID_OPERATION, "delete",
                       "object does not belong to this context");
     return false;
@@ -3017,7 +3013,7 @@ bool WebGLRenderingContextBase::ValidateWebGLObject(const char* function_name,
                       "attempt to use a deleted object");
     return false;
   }
-  if (!object->Validate(ContextGroup(), this)) {
+  if (!object->Validate(this)) {
     SynthesizeGLError(GL_INVALID_OPERATION, function_name,
                       "object does not belong to this context");
     return false;
@@ -3045,7 +3041,7 @@ bool WebGLRenderingContextBase::ValidateWebGLProgramOrShader(
                       "attempt to use a deleted object");
     return false;
   }
-  if (!object->Validate(ContextGroup(), this)) {
+  if (!object->Validate(this)) {
     SynthesizeGLError(GL_INVALID_OPERATION, function_name,
                       "object does not belong to this context");
     return false;
@@ -4666,8 +4662,9 @@ void WebGLRenderingContextBase::hint(GLenum target, GLenum mode) {
 }
 
 bool WebGLRenderingContextBase::isBuffer(WebGLBuffer* buffer) {
-  if (!buffer || isContextLost() || !buffer->Validate(ContextGroup(), this))
+  if (!buffer || isContextLost() || !buffer->Validate(this)) {
     return false;
+  }
 
   if (!buffer->HasEverBeenBound())
     return false;
@@ -4694,9 +4691,9 @@ bool WebGLRenderingContextBase::isEnabled(GLenum cap) {
 }
 
 bool WebGLRenderingContextBase::isFramebuffer(WebGLFramebuffer* framebuffer) {
-  if (!framebuffer || isContextLost() ||
-      !framebuffer->Validate(ContextGroup(), this))
+  if (!framebuffer || isContextLost() || !framebuffer->Validate(this)) {
     return false;
+  }
 
   if (!framebuffer->HasEverBeenBound())
     return false;
@@ -4707,8 +4704,9 @@ bool WebGLRenderingContextBase::isFramebuffer(WebGLFramebuffer* framebuffer) {
 }
 
 bool WebGLRenderingContextBase::isProgram(WebGLProgram* program) {
-  if (!program || isContextLost() || !program->Validate(ContextGroup(), this))
+  if (!program || isContextLost() || !program->Validate(this)) {
     return false;
+  }
 
   // OpenGL ES special-cases the behavior of program objects; if they're deleted
   // while attached to the current context state, glIsProgram is supposed to
@@ -4719,9 +4717,9 @@ bool WebGLRenderingContextBase::isProgram(WebGLProgram* program) {
 
 bool WebGLRenderingContextBase::isRenderbuffer(
     WebGLRenderbuffer* renderbuffer) {
-  if (!renderbuffer || isContextLost() ||
-      !renderbuffer->Validate(ContextGroup(), this))
+  if (!renderbuffer || isContextLost() || !renderbuffer->Validate(this)) {
     return false;
+  }
 
   if (!renderbuffer->HasEverBeenBound())
     return false;
@@ -4732,8 +4730,9 @@ bool WebGLRenderingContextBase::isRenderbuffer(
 }
 
 bool WebGLRenderingContextBase::isShader(WebGLShader* shader) {
-  if (!shader || isContextLost() || !shader->Validate(ContextGroup(), this))
+  if (!shader || isContextLost() || !shader->Validate(this)) {
     return false;
+  }
 
   // OpenGL ES special-cases the behavior of shader objects; if they're deleted
   // while attached to a program, glIsShader is supposed to still return true.
@@ -4743,8 +4742,9 @@ bool WebGLRenderingContextBase::isShader(WebGLShader* shader) {
 }
 
 bool WebGLRenderingContextBase::isTexture(WebGLTexture* texture) {
-  if (!texture || isContextLost() || !texture->Validate(ContextGroup(), this))
+  if (!texture || isContextLost() || !texture->Validate(this)) {
     return false;
+  }
 
   if (!texture->HasEverBeenBound())
     return false;
@@ -7118,12 +7118,14 @@ void WebGLRenderingContextBase::ForceLostContext(
     return;
   }
 
-  context_group_->LoseContextGroup(mode, auto_recovery_method);
+  LoseContextImpl(mode, auto_recovery_method);
 }
 
 void WebGLRenderingContextBase::LoseContextImpl(
     WebGLRenderingContextBase::LostContextMode mode,
     AutoRecoveryMethod auto_recovery_method) {
+  number_of_context_losses_++;
+
   if (isContextLost())
     return;
 
@@ -7215,7 +7217,7 @@ void WebGLRenderingContextBase::ForceRestoreContext() {
 }
 
 uint32_t WebGLRenderingContextBase::NumberOfContextLosses() const {
-  return context_group_->NumberOfContextLosses();
+  return number_of_context_losses_;
 }
 
 cc::Layer* WebGLRenderingContextBase::CcLayer() const {
@@ -8873,7 +8875,6 @@ void WebGLRenderingContextBase::TextureUnitState::Trace(
 }
 
 void WebGLRenderingContextBase::Trace(Visitor* visitor) const {
-  visitor->Trace(context_group_);
   visitor->Trace(dispatch_context_lost_event_timer_);
   visitor->Trace(restore_timer_);
   visitor->Trace(bound_array_buffer_);

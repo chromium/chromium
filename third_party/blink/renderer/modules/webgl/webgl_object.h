@@ -39,7 +39,6 @@ class GLES2Interface;
 
 namespace blink {
 
-class WebGLContextGroup;
 class WebGLRenderingContextBase;
 
 template <typename T>
@@ -90,8 +89,7 @@ class WebGLObject : public ScriptWrappable {
   bool MarkedForDeletion() { return marked_for_deletion_; }
 
   // True if this object belongs to the group or context.
-  bool Validate(const WebGLContextGroup*,
-                const WebGLRenderingContextBase*) const;
+  bool Validate(const WebGLRenderingContextBase*) const;
 
   // A reference is returned so it can be made a pointer for glDelete* calls
   const GLuint& Object() const { return object_; }
@@ -128,9 +126,7 @@ class WebGLObject : public ScriptWrappable {
   GLuint object_ = 0;
 
   // This was the number of context losses of the object's associated
-  // WebGLContextGroup at the time this object was created. Contexts
-  // no longer refer to all the objects that they ever created, so
-  // it's necessary to check this count when validating each object.
+  // WebGLContext at the time this object was created.
   uint32_t cached_number_of_context_losses_;
 
   unsigned attachment_count_ = 0;
