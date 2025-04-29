@@ -87,6 +87,8 @@ build_webui("build") {
   # Files that are passed as input to css_to_wrapper().
   css_files = [
     "ui/advanced_options_settings.css",
+    "ui/advanced_settings_dialog.css",
+    "ui/advanced_settings_item.css",
     "ui/button_strip.css",
     "ui/copies_settings.css",
     "ui/destination_dialog_style.css",

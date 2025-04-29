@@ -4,24 +4,25 @@
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
 import './advanced_settings_item.js';
 import './print_preview_search_box.js';
-import './print_preview_shared.css.js';
-import './print_preview_vars.css.js';
 import '/strings.m.js';
 
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {removeHighlights} from 'chrome://resources/js/search_highlight_utils.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
+import type {VendorCapability} from '../data/cdd.js';
 import type {Destination} from '../data/destination.js';
+import type {Settings} from '../data/model.js';
 import {MetricsContext, PrintSettingsUiBucket} from '../metrics.js';
 
-import {getTemplate} from './advanced_settings_dialog.html.js';
+import {getCss} from './advanced_settings_dialog.css.js';
+import {getHtml} from './advanced_settings_dialog.html.js';
 import type {PrintPreviewSearchBoxElement} from './print_preview_search_box.js';
-import {SettingsMixin} from './settings_mixin.js';
+import {SettingsMixinLit} from './settings_mixin_lit.js';
 
 export interface PrintPreviewAdvancedSettingsDialogElement {
   $: {
@@ -31,7 +32,7 @@ export interface PrintPreviewAdvancedSettingsDialogElement {
 }
 
 const PrintPreviewAdvancedSettingsDialogElementBase =
-    I18nMixin(SettingsMixin(PolymerElement));
+    I18nMixinLit(SettingsMixinLit(CrLitElement));
 
 export class PrintPreviewAdvancedSettingsDialogElement extends
     PrintPreviewAdvancedSettingsDialogElementBase {
@@ -39,37 +40,51 @@ export class PrintPreviewAdvancedSettingsDialogElement extends
     return 'print-preview-advanced-settings-dialog';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
-    return {
-      destination: Object,
+  override render() {
+    return getHtml.bind(this)();
+  }
 
-      searchQuery_: {
-        type: Object,
-        value: null,
-      },
+  static override get properties() {
+    return {
+      destination: {type: Object},
+      searchQuery_: {type: Object},
 
       hasMatching_: {
         type: Boolean,
         notify: true,
-        computed: 'computeHasMatching_(searchQuery_)',
       },
+
+      settings: {type: Object},
     };
   }
 
-  declare destination: Destination;
-  declare private searchQuery_: RegExp|null;
-  declare private hasMatching_: boolean;
+  accessor destination: Destination;
+  protected accessor searchQuery_: RegExp|null = null;
+  private accessor hasMatching_: boolean;
+  accessor settings: Settings;
+
   private highlights_: HTMLElement[] = [];
   private bubbles_: Map<HTMLElement, number> = new Map();
   private metrics_: MetricsContext = MetricsContext.printSettingsUi();
 
-  override ready() {
-    super.ready();
+  override updated(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
 
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+
+    if (changedPrivateProperties.has('searchQuery_')) {
+      // Note: computeHasMatching_() updates the DOM in addition to calculating
+      // the hasMatching_ value, so needs to be done in updated().
+      this.hasMatching_ = this.computeHasMatching_();
+    }
+  }
+
+  override firstUpdated() {
     this.addEventListener('keydown', e => this.onKeydown_(e));
   }
 
@@ -105,7 +120,7 @@ export class PrintPreviewAdvancedSettingsDialogElement extends
   /**
    * @return Whether there is more than one vendor item to display.
    */
-  private hasMultipleItems_(): boolean {
+  protected hasMultipleItems_(): boolean {
     return this.destination.capabilities!.printer.vendor_capability!.length > 1;
   }
 
@@ -138,11 +153,11 @@ export class PrintPreviewAdvancedSettingsDialogElement extends
   /**
    * @return Whether the no matching settings hint should be shown.
    */
-  private shouldShowHint_(): boolean {
+  protected shouldShowHint_(): boolean {
     return !!this.searchQuery_ && !this.hasMatching_;
   }
 
-  private onCloseOrCancel_() {
+  protected onCloseOrCancel_() {
     if (this.searchQuery_) {
       this.$.searchBox.setValue('');
     }
@@ -152,13 +167,13 @@ export class PrintPreviewAdvancedSettingsDialogElement extends
     }
   }
 
-  private onCancelButtonClick_() {
+  protected onCancelButtonClick_() {
     this.$.dialog.cancel();
   }
 
-  private onApplyButtonClick_() {
+  protected onApplyButtonClick_() {
     const settingsValues: {[settingName: string]: any} = {};
-    const itemList = this.shadowRoot!.querySelectorAll(
+    const itemList = this.shadowRoot.querySelectorAll(
         'print-preview-advanced-settings-item');
     itemList.forEach(item => {
       settingsValues[item.capability.id] = item.getCurrentValue();
@@ -171,10 +186,21 @@ export class PrintPreviewAdvancedSettingsDialogElement extends
     this.$.dialog.close();
   }
 
-  private isSearching_(): string {
+  protected isSearching_(): string {
     return this.searchQuery_ ? 'searching' : '';
   }
+
+  protected getVendorCapabilities_(): VendorCapability[] {
+    return this.destination.capabilities?.printer.vendor_capability || [];
+  }
+
+  protected onSearchQueryChanged_(e: CustomEvent<{value: RegExp | null}>) {
+    this.searchQuery_ = e.detail.value;
+  }
 }
+
+export type AdvancedSettingsDialogElement =
+    PrintPreviewAdvancedSettingsDialogElement;
 
 declare global {
   interface HTMLElementTagNameMap {
