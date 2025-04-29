@@ -57,13 +57,6 @@ namespace viz {
 
 namespace {
 
-// Allow skipping Begin/EndDraw on the shared image backing for non-root render
-// passes if the computed update rect would mean nothing would be drawn.
-// This is a kill switch in case something depends on an empty update.
-BASE_FEATURE(kAllowSkipEmptyNonrootRenderPassDraws,
-             "AllowSkipEmptyNonrootRenderPassDraws",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enum used for UMA histogram. These enum values must not be changed or
 // reused.
 enum class RenderPassDrawRectAssign {
@@ -727,8 +720,7 @@ void DirectRenderer::DrawRenderPass(const AggregatedRenderPass* render_pass) {
     render_pass_scissor_in_draw_space.Intersect(*output_surface_clip_rect_);
   }
 
-  if (!is_root_render_pass && render_pass_scissor_in_draw_space.IsEmpty() &&
-      base::FeatureList::IsEnabled(kAllowSkipEmptyNonrootRenderPassDraws)) {
+  if (!is_root_render_pass && render_pass_scissor_in_draw_space.IsEmpty()) {
     // If the scissor rect is empty, we will end up skipping all the draw quads,
     // so there is no work to do.
     return;
