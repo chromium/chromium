@@ -421,9 +421,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PrefetchProxy.Prefetch.ExistingPrefetchWithMatchingURL"
     enum="Boolean" expires_after="2024-01-14">
-  <owner>liviutinta@chromium.org</owner>
-  <owner>jbroman@chromium.org</owner>
-  <owner>curranmax@chromium.org</owner>
+  <owner>kouhei@chromium.org</owner>
+  <owner>chrome-loading@chromium.org</owner>
   <summary>
     Records whether or not there was an existing prefetch with a matching URL
     from a different referring document when a new prefetch is requested. This
@@ -448,9 +447,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PrefetchProxy.Prefetch.Mainframe.ConnectTime" units="ms"
     expires_after="2025-09-07">
-  <owner>liviutinta@chromium.org</owner>
-  <owner>jbroman@chromium.org</owner>
-  <owner>curranmax@chromium.org</owner>
+  <owner>kouhei@chromium.org</owner>
+  <owner>chrome-loading@chromium.org</owner>
   <summary>
     Records the time taken to establish a socket connection when prefetching a
     mainframe HTML resource. Recorded for non-network error prefetches only.
@@ -582,9 +580,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PrefetchProxy.Prefetch.RedirectChainSize" units="count"
     expires_after="2025-09-14">
-  <owner>liviutinta@chromium.org</owner>
-  <owner>jbroman@chromium.org</owner>
-  <owner>curranmax@chromium.org</owner>
+  <owner>kouhei@chromium.org</owner>
+  <owner>chrome-loading@chromium.org</owner>
   <summary>
     The redirect chain size of a prefetch. This histogram is recorded once for
     each prefetch.
