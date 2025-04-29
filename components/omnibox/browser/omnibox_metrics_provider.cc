@@ -8,10 +8,9 @@
 #include <string_view>
 #include <vector>
 
-#include "base/containers/flat_map.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -185,9 +184,9 @@ void OmniboxMetricsProvider::ProvideCurrentSessionData(
 ClientSummarizedResultType
 OmniboxMetricsProvider::GetClientSummarizedResultType(
     metrics::OmniboxEventProto::Suggestion::ResultType type) {
-  static const base::NoDestructor<base::flat_map<
-      OmniboxEventProto::Suggestion::ResultType, ClientSummarizedResultType>>
-      kResultTypesToClientSummarizedResultTypes({
+  static constexpr auto kResultTypesToClientSummarizedResultTypes =
+      base::MakeFixedFlatMap<OmniboxEventProto::Suggestion::ResultType,
+                             ClientSummarizedResultType>({
           {OmniboxEventProto::Suggestion::URL_WHAT_YOU_TYPED,
            ClientSummarizedResultType::kUrl},
           {OmniboxEventProto::Suggestion::HISTORY_URL,
@@ -266,8 +265,8 @@ OmniboxMetricsProvider::GetClientSummarizedResultType(
            ClientSummarizedResultType::kUrl},
       });
 
-  const auto it = kResultTypesToClientSummarizedResultTypes->find(type);
-  return it == kResultTypesToClientSummarizedResultTypes->cend()
+  const auto it = kResultTypesToClientSummarizedResultTypes.find(type);
+  return it == kResultTypesToClientSummarizedResultTypes.cend()
              ? ClientSummarizedResultType::kUnknown
              : it->second;
 }
