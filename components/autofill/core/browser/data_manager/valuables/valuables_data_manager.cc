@@ -15,8 +15,8 @@ namespace autofill {
 ValuablesDataManager::ValuablesDataManager(
     scoped_refptr<AutofillWebDataService> webdata_service,
     AutofillImageFetcherBase* image_fetcher)
-    : webdata_service_(std::move(webdata_service)),
-      image_fetcher_(image_fetcher) {
+    : image_fetcher_(image_fetcher),
+      webdata_service_(std::move(webdata_service)) {
   if (!webdata_service_) {
     // In some tests, there are no dbs.
     return;

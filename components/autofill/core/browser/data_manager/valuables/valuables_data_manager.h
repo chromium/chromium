@@ -65,6 +65,10 @@ class ValuablesDataManager : public KeyedService,
   // AutofillWebDataServiceObserverOnUISequence:
   void OnAutofillChangedBySync(syncer::DataType data_type) override;
 
+ protected:
+  // The image fetcher to fetch customized images for Autofill data.
+  raw_ptr<AutofillImageFetcherBase> image_fetcher_ = nullptr;
+
  private:
   friend class ValuablesDataManagerTestApi;
 
@@ -94,9 +98,6 @@ class ValuablesDataManager : public KeyedService,
 
   // The result of the last successful `LoadLoyaltyCards()` query.
   std::vector<LoyaltyCard> loyalty_cards_;
-
-  // The image fetcher to fetch customized images for Autofill data.
-  const raw_ptr<AutofillImageFetcherBase> image_fetcher_ = nullptr;
 
   base::WeakPtrFactory<ValuablesDataManager> weak_ptr_factory_{this};
 };

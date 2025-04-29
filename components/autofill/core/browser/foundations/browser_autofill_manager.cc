@@ -3081,10 +3081,10 @@ std::vector<Suggestion> BrowserAutofillManager::GetAvailableSuggestions(
           base::FeatureList::IsEnabled(syncer::kSyncAutofillLoyaltyCard)) {
         // Only loyalty card numbers filling is supported.
         if (autofill_field->Type().GetStorableType() == LOYALTY_MEMBERSHIP_ID) {
-          if (ValuablesDataManager* manager =
+          if (ValuablesDataManager* valuables_manager =
                   client().GetValuablesDataManager()) {
             suggestions = GetLoyaltyCardSuggestions(
-                manager->GetLoyaltyCards(),
+                *valuables_manager,
                 client().GetLastCommittedPrimaryMainFrameURL());
           }
         }
