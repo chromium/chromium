@@ -93,6 +93,10 @@ message ContentMetaData {
   optional CopiedTextSource copied_text_source = 13;
 
   repeated safe_browsing.ReferrerChainEntry referrer_chain = 14;
+
+  // The email of the currently active user in the content area. Only populated
+  // for Workspace sites.
+  optional string content_area_account_email = 15;
 }
 
 message ClientMetadata {
