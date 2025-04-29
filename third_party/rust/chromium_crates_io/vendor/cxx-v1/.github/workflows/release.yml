@@ -15,9 +15,10 @@ jobs:
 
   publish-to-bcr:
     needs: upload
-    uses: bazel-contrib/publish-to-bcr/.github/workflows/publish.yaml@47913235f61615d02c989d652c4d10c45c0c4f0b
+    uses: bazel-contrib/publish-to-bcr/.github/workflows/publish.yaml@92ae43f10e552721931f98b61fe5506bbdf32ce6
     with:
       tag_name: ${{github.event.release.tag_name}}
       registry_fork: dtolnay-contrib/bazel-central-registry
+      attest: false
     secrets:
       publish_token: ${{secrets.PUBLISH_TOKEN}}

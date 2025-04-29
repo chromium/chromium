@@ -1,6 +1,6 @@
 [package]
 name = "cxxbridge-flags"
-version = "1.0.157"
+version = "1.0.158"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 categories = ["development-tools::ffi", "compilers"]
 description = "Compiler configuration of the `cxx` crate (implementation detail)"

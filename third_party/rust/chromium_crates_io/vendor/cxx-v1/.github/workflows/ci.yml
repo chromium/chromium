@@ -91,7 +91,7 @@ jobs:
         env:
           RUSTFLAGS: --cfg compile_error_if_alloc --cfg cxx_experimental_no_alloc ${{env.RUSTFLAGS}}
       - uses: actions/upload-artifact@v4
-        if: matrix.os == 'ubuntu' && matrix.rust == 'nightly' && always()
+        if: matrix.os == 'ubuntu' && matrix.rust == 'nightly' && matrix.cc == '' && matrix.flags == '' && always()
         with:
           name: Cargo.lock
           path: Cargo.lock

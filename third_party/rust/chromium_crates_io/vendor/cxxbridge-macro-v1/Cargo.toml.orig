@@ -1,6 +1,6 @@
 [package]
 name = "cxxbridge-macro"
-version = "1.0.157"
+version = "1.0.158"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 categories = ["development-tools::ffi"]
 description = "Implementation detail of the `cxx` crate."

@@ -427,7 +427,7 @@ fn check_api_fn(cx: &mut Check, efn: &ExternFn) {
         }
     }
 
-    check_generics(cx, &efn.sig.generics);
+    check_generics(cx, &efn.generics);
 
     if let Some(receiver) = &efn.receiver {
         let ref span = span_for_receiver_error(receiver);
@@ -472,7 +472,7 @@ fn check_api_fn(cx: &mut Check, efn: &ExternFn) {
                 );
             }
         } else if let Type::Ptr(_) = arg.ty {
-            if efn.sig.unsafety.is_none() {
+            if efn.unsafety.is_none() {
                 cx.error(
                     arg,
                     "pointer argument requires that the function be marked unsafe",
@@ -540,7 +540,7 @@ fn check_api_impl(cx: &mut Check, imp: &Impl) {
 }
 
 fn check_mut_return_restriction(cx: &mut Check, efn: &ExternFn) {
-    if efn.sig.unsafety.is_some() {
+    if efn.unsafety.is_some() {
         // Unrestricted as long as the function is made unsafe-to-call.
         return;
     }

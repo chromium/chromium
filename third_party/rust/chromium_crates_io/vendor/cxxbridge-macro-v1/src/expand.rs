@@ -138,7 +138,7 @@ fn expand(ffi: Module, doc: Doc, attrs: OtherAttrs, apis: &[Api], types: &Types)
         #doc
         #attrs
         #[deny(improper_ctypes, improper_ctypes_definitions)]
-        #[allow(clippy::unknown_clippy_lints)]
+        #[allow(clippy::unknown_lints)]
         #[allow(
             non_camel_case_types,
             non_snake_case,
@@ -650,90 +650,89 @@ fn expand_cxx_function_shim(efn: &ExternFn, types: &Types) -> TokenStream {
         }
     };
     let mut expr;
-    if efn.throws && efn.sig.ret.is_none() {
-        expr = call;
-    } else {
-        expr = match &efn.ret {
-            None => call,
-            Some(ret) => match ret {
-                Type::Ident(ident) if ident.rust == RustString => {
-                    quote_spanned!(span=> #call.into_string())
+    if let Some(ret) = &efn.ret {
+        expr = match ret {
+            Type::Ident(ident) if ident.rust == RustString => {
+                quote_spanned!(span=> #call.into_string())
+            }
+            Type::RustBox(ty) => {
+                if types.is_considered_improper_ctype(&ty.inner) {
+                    quote_spanned!(span=> ::cxx::alloc::boxed::Box::from_raw(#call.cast()))
+                } else {
+                    quote_spanned!(span=> ::cxx::alloc::boxed::Box::from_raw(#call))
                 }
-                Type::RustBox(ty) => {
-                    if types.is_considered_improper_ctype(&ty.inner) {
-                        quote_spanned!(span=> ::cxx::alloc::boxed::Box::from_raw(#call.cast()))
-                    } else {
-                        quote_spanned!(span=> ::cxx::alloc::boxed::Box::from_raw(#call))
-                    }
+            }
+            Type::RustVec(vec) => {
+                if vec.inner == RustString {
+                    quote_spanned!(span=> #call.into_vec_string())
+                } else {
+                    quote_spanned!(span=> #call.into_vec())
                 }
-                Type::RustVec(vec) => {
-                    if vec.inner == RustString {
-                        quote_spanned!(span=> #call.into_vec_string())
-                    } else {
-                        quote_spanned!(span=> #call.into_vec())
-                    }
+            }
+            Type::UniquePtr(ty) => {
+                if types.is_considered_improper_ctype(&ty.inner) {
+                    quote_spanned!(span=> ::cxx::UniquePtr::from_raw(#call.cast()))
+                } else {
+                    quote_spanned!(span=> ::cxx::UniquePtr::from_raw(#call))
                 }
-                Type::UniquePtr(ty) => {
-                    if types.is_considered_improper_ctype(&ty.inner) {
-                        quote_spanned!(span=> ::cxx::UniquePtr::from_raw(#call.cast()))
-                    } else {
-                        quote_spanned!(span=> ::cxx::UniquePtr::from_raw(#call))
-                    }
-                }
-                Type::Ref(ty) => match &ty.inner {
-                    Type::Ident(ident) if ident.rust == RustString => match ty.mutable {
-                        false => quote_spanned!(span=> #call.as_string()),
-                        true => quote_spanned!(span=> #call.as_mut_string()),
-                    },
-                    Type::RustVec(vec) if vec.inner == RustString => match ty.mutable {
-                        false => quote_spanned!(span=> #call.as_vec_string()),
-                        true => quote_spanned!(span=> #call.as_mut_vec_string()),
-                    },
-                    Type::RustVec(_) => match ty.mutable {
-                        false => quote_spanned!(span=> #call.as_vec()),
-                        true => quote_spanned!(span=> #call.as_mut_vec()),
-                    },
-                    inner if types.is_considered_improper_ctype(inner) => {
-                        let mutability = ty.mutability;
-                        let deref_mut = quote_spanned!(span=> &#mutability *#call.cast());
-                        match ty.pinned {
-                            false => deref_mut,
-                            true => {
-                                quote_spanned!(span=> ::cxx::core::pin::Pin::new_unchecked(#deref_mut))
-                            }
-                        }
-                    }
-                    _ => call,
+            }
+            Type::Ref(ty) => match &ty.inner {
+                Type::Ident(ident) if ident.rust == RustString => match ty.mutable {
+                    false => quote_spanned!(span=> #call.as_string()),
+                    true => quote_spanned!(span=> #call.as_mut_string()),
                 },
-                Type::Ptr(ty) => {
-                    if types.is_considered_improper_ctype(&ty.inner) {
-                        quote_spanned!(span=> #call.cast())
-                    } else {
-                        call
-                    }
-                }
-                Type::Str(_) => quote_spanned!(span=> #call.as_str()),
-                Type::SliceRef(slice) => {
-                    let inner = &slice.inner;
-                    match slice.mutable {
-                        false => quote_spanned!(span=> #call.as_slice::<#inner>()),
-                        true => quote_spanned!(span=> #call.as_mut_slice::<#inner>()),
+                Type::RustVec(vec) if vec.inner == RustString => match ty.mutable {
+                    false => quote_spanned!(span=> #call.as_vec_string()),
+                    true => quote_spanned!(span=> #call.as_mut_vec_string()),
+                },
+                Type::RustVec(_) => match ty.mutable {
+                    false => quote_spanned!(span=> #call.as_vec()),
+                    true => quote_spanned!(span=> #call.as_mut_vec()),
+                },
+                inner if types.is_considered_improper_ctype(inner) => {
+                    let mutability = ty.mutability;
+                    let deref_mut = quote_spanned!(span=> &#mutability *#call.cast());
+                    match ty.pinned {
+                        false => deref_mut,
+                        true => {
+                            quote_spanned!(span=> ::cxx::core::pin::Pin::new_unchecked(#deref_mut))
+                        }
                     }
                 }
                 _ => call,
             },
+            Type::Ptr(ty) => {
+                if types.is_considered_improper_ctype(&ty.inner) {
+                    quote_spanned!(span=> #call.cast())
+                } else {
+                    call
+                }
+            }
+            Type::Str(_) => quote_spanned!(span=> #call.as_str()),
+            Type::SliceRef(slice) => {
+                let inner = &slice.inner;
+                match slice.mutable {
+                    false => quote_spanned!(span=> #call.as_slice::<#inner>()),
+                    true => quote_spanned!(span=> #call.as_mut_slice::<#inner>()),
+                }
+            }
+            _ => call,
         };
         if efn.throws {
             expr = quote_spanned!(span=> ::cxx::core::result::Result::Ok(#expr));
         }
+    } else if efn.throws {
+        expr = call;
+    } else {
+        expr = quote! { #call; };
     }
     let dispatch = quote_spanned!(span=> unsafe { #setup #expr });
     let visibility = efn.visibility;
-    let unsafety = &efn.sig.unsafety;
-    let fn_token = efn.sig.fn_token;
+    let unsafety = &efn.unsafety;
+    let fn_token = efn.fn_token;
     let ident = &efn.name.rust;
     let generics = &efn.generics;
-    let arg_list = quote_spanned!(efn.sig.paren_token.span=> (#(#all_args,)*));
+    let arg_list = quote_spanned!(efn.paren_token.span=> (#(#all_args,)*));
     let fn_body = quote_spanned!(span=> {
         #UnsafeExtern extern "C" {
             #decl
@@ -1463,6 +1462,11 @@ fn expand_unique_ptr(
 
     let can_construct_from_value = types.is_maybe_trivial(ident);
     let new_method = if can_construct_from_value {
+        let raw_mut = if rustversion::cfg!(since(1.82)) {
+            quote!(&raw mut)
+        } else {
+            quote!(&mut)
+        };
         Some(quote! {
             fn __new(value: Self) -> ::cxx::core::mem::MaybeUninit<*mut ::cxx::core::ffi::c_void> {
                 #UnsafeExtern extern "C" {
@@ -1471,7 +1475,7 @@ fn expand_unique_ptr(
                 }
                 let mut repr = ::cxx::core::mem::MaybeUninit::uninit();
                 unsafe {
-                    __uninit(&mut repr).cast::<#ident #ty_generics>().write(value);
+                    __uninit(#raw_mut repr).cast::<#ident #ty_generics>().write(value);
                 }
                 repr
             }
@@ -1483,6 +1487,16 @@ fn expand_unique_ptr(
     let begin_span = explicit_impl.map_or(key.begin_span, |explicit| explicit.impl_token.span);
     let end_span = explicit_impl.map_or(key.end_span, |explicit| explicit.brace_token.span.join());
     let unsafe_token = format_ident!("unsafe", span = begin_span);
+    let raw_const = if rustversion::cfg!(since(1.82)) {
+        quote_spanned!(end_span=> &raw const)
+    } else {
+        quote_spanned!(end_span=> &)
+    };
+    let raw_mut = if rustversion::cfg!(since(1.82)) {
+        quote_spanned!(end_span=> &raw mut)
+    } else {
+        quote_spanned!(end_span=> &mut)
+    };
 
     quote_spanned! {end_span=>
         #[automatically_derived]
@@ -1497,7 +1511,7 @@ fn expand_unique_ptr(
                 }
                 let mut repr = ::cxx::core::mem::MaybeUninit::uninit();
                 unsafe {
-                    __null(&mut repr);
+                    __null(#raw_mut repr);
                 }
                 repr
             }
@@ -1509,7 +1523,7 @@ fn expand_unique_ptr(
                 }
                 let mut repr = ::cxx::core::mem::MaybeUninit::uninit();
                 unsafe {
-                    __raw(&mut repr, raw.cast());
+                    __raw(#raw_mut repr, raw.cast());
                 }
                 repr
             }
@@ -1518,14 +1532,14 @@ fn expand_unique_ptr(
                     #[link_name = #link_get]
                     fn __get(this: *const ::cxx::core::mem::MaybeUninit<*mut ::cxx::core::ffi::c_void>) -> *const ::cxx::core::ffi::c_void;
                 }
-                unsafe { __get(&repr).cast() }
+                unsafe { __get(#raw_const repr).cast() }
             }
             unsafe fn __release(mut repr: ::cxx::core::mem::MaybeUninit<*mut ::cxx::core::ffi::c_void>) -> *mut Self {
                 #UnsafeExtern extern "C" {
                     #[link_name = #link_release]
                     fn __release(this: *mut ::cxx::core::mem::MaybeUninit<*mut ::cxx::core::ffi::c_void>) -> *mut ::cxx::core::ffi::c_void;
                 }
-                unsafe { __release(&mut repr).cast() }
+                unsafe { __release(#raw_mut repr).cast() }
             }
             unsafe fn __drop(mut repr: ::cxx::core::mem::MaybeUninit<*mut ::cxx::core::ffi::c_void>) {
                 #UnsafeExtern extern "C" {
@@ -1533,7 +1547,7 @@ fn expand_unique_ptr(
                     fn __drop(this: *mut ::cxx::core::mem::MaybeUninit<*mut ::cxx::core::ffi::c_void>);
                 }
                 unsafe {
-                    __drop(&mut repr);
+                    __drop(#raw_mut repr);
                 }
             }
         }
@@ -1769,6 +1783,17 @@ fn expand_cxx_vector(
         None
     };
 
+    let raw_const = if rustversion::cfg!(since(1.82)) {
+        quote_spanned!(end_span=> &raw const)
+    } else {
+        quote_spanned!(end_span=> &)
+    };
+    let raw_mut = if rustversion::cfg!(since(1.82)) {
+        quote_spanned!(end_span=> &raw mut)
+    } else {
+        quote_spanned!(end_span=> &mut)
+    };
+
     quote_spanned! {end_span=>
         #[automatically_derived]
         #unsafe_token impl #impl_generics ::cxx::private::VectorElement for #elem #ty_generics {
@@ -1807,7 +1832,7 @@ fn expand_cxx_vector(
                 }
                 let mut repr = ::cxx::core::mem::MaybeUninit::uninit();
                 unsafe {
-                    __unique_ptr_null(&mut repr);
+                    __unique_ptr_null(#raw_mut repr);
                 }
                 repr
             }
@@ -1818,7 +1843,7 @@ fn expand_cxx_vector(
                 }
                 let mut repr = ::cxx::core::mem::MaybeUninit::uninit();
                 unsafe {
-                    __unique_ptr_raw(&mut repr, raw);
+                    __unique_ptr_raw(#raw_mut repr, raw);
                 }
                 repr
             }
@@ -1827,14 +1852,14 @@ fn expand_cxx_vector(
                     #[link_name = #link_unique_ptr_get]
                     fn __unique_ptr_get #impl_generics(this: *const ::cxx::core::mem::MaybeUninit<*mut ::cxx::core::ffi::c_void>) -> *const ::cxx::CxxVector<#elem #ty_generics>;
                 }
-                unsafe { __unique_ptr_get(&repr) }
+                unsafe { __unique_ptr_get(#raw_const repr) }
             }
             unsafe fn __unique_ptr_release(mut repr: ::cxx::core::mem::MaybeUninit<*mut ::cxx::core::ffi::c_void>) -> *mut ::cxx::CxxVector<Self> {
                 #UnsafeExtern extern "C" {
                     #[link_name = #link_unique_ptr_release]
                     fn __unique_ptr_release #impl_generics(this: *mut ::cxx::core::mem::MaybeUninit<*mut ::cxx::core::ffi::c_void>) -> *mut ::cxx::CxxVector<#elem #ty_generics>;
                 }
-                unsafe { __unique_ptr_release(&mut repr) }
+                unsafe { __unique_ptr_release(#raw_mut repr) }
             }
             unsafe fn __unique_ptr_drop(mut repr: ::cxx::core::mem::MaybeUninit<*mut ::cxx::core::ffi::c_void>) {
                 #UnsafeExtern extern "C" {
@@ -1842,7 +1867,7 @@ fn expand_cxx_vector(
                     fn __unique_ptr_drop(this: *mut ::cxx::core::mem::MaybeUninit<*mut ::cxx::core::ffi::c_void>);
                 }
                 unsafe {
-                    __unique_ptr_drop(&mut repr);
+                    __unique_ptr_drop(#raw_mut repr);
                 }
             }
         }

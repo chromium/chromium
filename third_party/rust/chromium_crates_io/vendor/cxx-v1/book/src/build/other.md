@@ -36,6 +36,16 @@ But the C++ side of the bindings needs to be generated. Your options are:
 - Or, build your own code generator frontend on top of the [cxx-gen] crate. This
   is currently unofficial and unsupported.
 
+<div class="warning">
+
+**Important:** The Rust side and C++ side of a binding must always be created
+using the same release of CXX. If using `cxxbridge-cmd` for the C++ side, the
+version number of `cxxbridge-cmd` must be identical to the version number of
+`cxx` used for the Rust side. If using `cxx-gen` for the C++ side, its patch
+number must be identical to the patch number of `cxx`.
+
+</div>
+
 [cxx-gen]: https://docs.rs/cxx-gen
 
 ### Compiling C++

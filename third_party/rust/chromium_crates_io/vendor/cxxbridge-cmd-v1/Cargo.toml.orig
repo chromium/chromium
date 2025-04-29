@@ -1,6 +1,6 @@
 [package]
 name = "cxxbridge-cmd"
-version = "1.0.157"
+version = "1.0.158"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 categories = ["development-tools::build-utils", "development-tools::ffi"]
 description = "C++ code generator for integrating `cxx` crate into a non-Cargo build."

@@ -213,7 +213,7 @@ impl ToTokens for ExternFn {
     fn to_tokens(&self, tokens: &mut TokenStream) {
         // Notional token range for error reporting purposes.
         self.unsafety.to_tokens(tokens);
-        self.sig.fn_token.to_tokens(tokens);
+        self.fn_token.to_tokens(tokens);
         self.semi_token.to_tokens(tokens);
     }
 }
