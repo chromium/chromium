@@ -95,6 +95,7 @@ ContentIdentityCredentialDelegate::GetVerifiedAutofillSuggestions(
 
 void ContentIdentityCredentialDelegate::NotifySuggestionAccepted(
     const Suggestion& suggestion,
+    bool show_modal,
     OnFederatedTokenReceivedCallback callback) const {
   content::FederatedAuthAutofillSource* source = source_.Run();
 
@@ -106,7 +107,7 @@ void ContentIdentityCredentialDelegate::NotifySuggestionAccepted(
       suggestion.GetPayload<Suggestion::IdentityCredentialPayload>();
 
   source->NotifyAutofillSuggestionAccepted(
-      payload.config_url, payload.account_id, std::move(callback));
+      payload.config_url, payload.account_id, show_modal, std::move(callback));
 }
 
 }  // namespace autofill

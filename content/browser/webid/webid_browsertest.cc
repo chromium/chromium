@@ -2125,7 +2125,7 @@ IN_PROC_BROWSER_TEST_F(WebIdDelegationBrowserTest, ConditionalMediation) {
   auto account = (*suggestions)[0];
   source->NotifyAutofillSuggestionAccepted(
       account->identity_provider->idp_metadata.config_url, account->id,
-      base::NullCallback());
+      /*show_modal=*/true, base::NullCallback());
 
   // Wait for the user to accept the prompt.
   modal_loop.Run();

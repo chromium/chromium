@@ -32,6 +32,7 @@ class ContentIdentityCredentialDelegate : public IdentityCredentialDelegate {
 
   void NotifySuggestionAccepted(
       const Suggestion& suggestion,
+      bool show_modal,
       OnFederatedTokenReceivedCallback callback) const override;
 
  private:

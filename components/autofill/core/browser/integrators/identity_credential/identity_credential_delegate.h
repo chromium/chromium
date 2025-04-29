@@ -32,8 +32,12 @@ class IdentityCredentialDelegate {
  public:
   // For 3P logins usually the identity provider needs to issue a federated
   // token such as ID token, access token etc. to complete the flow. This
-  // callback is triggered when the browser receives such a token.
-  using OnFederatedTokenReceivedCallback = base::OnceClosure;
+  // callback is triggered when the browser receives such a token or fails
+  // to produce one (e.g. the request is aborted or the user dismisses the
+  // modal dialog).
+  // The boolean parameter passed to the callback tells the caller whether
+  // the request was successful or not.
+  using OnFederatedTokenReceivedCallback = base::OnceCallback<void(bool)>;
   virtual ~IdentityCredentialDelegate() = default;
 
   // Generates verified Autofill suggestions from identity credential requests.
@@ -47,12 +51,20 @@ class IdentityCredentialDelegate {
       const FieldType& field_type) const = 0;
 
   // Notifies the delegate that a suggestion from an identity credential
-  // conditional request was accepted. After a user selects the suggestion from
+  // conditional request was accepted.
+  // The `callback` will be called when a federated token is received or fails
+  // to be provided.
+  // When `show_modal` is used, the user gets shown a modal dialog that gathers
+  // further confirmation (e.g. while providing a verified email address). The
+  // suggestion is filled (or not) when the callback is called (successfully
+  // or not).
+  // When `show_modal` is false, after a user selects the suggestion from
   // the autofill dropdown UI, we should enter a loading state similar to the
-  // selecting passkeys UX.The callback will be called when a federated token is
-  // received. Once it's called, the loading menu will be hidden.
+  // selecting passkeys UX. Once the callback is called, the loading menu will
+  // be hidden.
   virtual void NotifySuggestionAccepted(
       const Suggestion& suggestion,
+      bool show_modal,
       OnFederatedTokenReceivedCallback callback) const = 0;
 };
 

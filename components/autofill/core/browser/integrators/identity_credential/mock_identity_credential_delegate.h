@@ -24,6 +24,7 @@ class MockIdentityCredentialDelegate : public IdentityCredentialDelegate {
   MOCK_METHOD(void,
               NotifySuggestionAccepted,
               (const Suggestion& suggestion,
+               bool show_modal,
                OnFederatedTokenReceivedCallback callback),
               (const override));
 };

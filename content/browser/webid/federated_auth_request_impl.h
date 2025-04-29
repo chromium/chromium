@@ -137,6 +137,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   void NotifyAutofillSuggestionAccepted(
       const GURL& idp,
       const std::string& account_id,
+      bool show_modal,
       OnFederatedTokenReceivedCallback callback) override;
 
   // To be called on the FederatedAuthRequest object corresponding to a

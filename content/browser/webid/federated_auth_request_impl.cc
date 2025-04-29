@@ -1934,15 +1934,17 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
 void FederatedAuthRequestImpl::NotifyAutofillSuggestionAccepted(
     const GURL& idp,
     const std::string& account_id,
+    bool show_modal,
     OnFederatedTokenReceivedCallback callback) {
+  token_received_callback_for_autofill_ = std::move(callback);
+
   // Currently the verified email flow opens a modal UI upon notification and
   // the autofill dropdown UI gets dismissed immediately. i.e. it doesn't need a
   // valid callback. However, if a user is presented a full federated account,
   // upon the account selection we'd proceed with fetching tokens directly and
   // update he autofill dropdown UI to a loading UI.
-  if (!callback.is_null()) {
+  if (!show_modal) {
     OnAccountSelected(idp, account_id, true);
-    token_received_callback_for_autofill_ = std::move(callback);
     return;
   }
   // TODO(crbug.com/380367784): The third argument of OnAccountSelected checks
@@ -3196,6 +3198,11 @@ void FederatedAuthRequestImpl::CompleteRequest(
     devtools_instrumentation::DidCloseFedCmDialog(render_frame_host());
   }
 
+  if (token_received_callback_for_autofill_) {
+    std::move(token_received_callback_for_autofill_)
+        .Run(result == FederatedAuthRequestResult::kSuccess);
+  }
+
   if (!should_delay_callback || should_complete_request_immediately_) {
     CleanUp();
     webid::GetPageData(render_frame_host().GetPage())
@@ -3312,9 +3319,6 @@ void FederatedAuthRequestImpl::CleanUp() {
   rp_mode_ = RpMode::kPassive;
   private_key_.reset();
   disclosures_.clear();
-  if (token_received_callback_for_autofill_) {
-    std::move(token_received_callback_for_autofill_).Run();
-  }
 }
 
 void FederatedAuthRequestImpl::AddDevToolsIssue(

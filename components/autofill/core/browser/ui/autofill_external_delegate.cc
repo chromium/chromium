@@ -845,19 +845,28 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
       }
       break;
     case SuggestionType::kIdentityCredential: {
-      // TODO(crbug.com/380367784): support filling and loading state.
       if (const IdentityCredentialDelegate* identity_credential_delegate =
               manager_->client().GetIdentityCredentialDelegate()) {
         identity_credential_delegate->NotifySuggestionAccepted(
-            suggestion, base::NullCallback());
+            suggestion, /*show_modal=*/true,
+            base::BindOnce(
+                [](base::WeakPtr<AutofillExternalDelegate> delegate,
+                   const Suggestion& suggestion, bool accepted) {
+                  if (!delegate || !accepted) {
+                    return;
+                  }
 
-        VerifiedProfile profile =
-            suggestion.GetPayload<Suggestion::IdentityCredentialPayload>()
-                .fields;
-        manager_->FillOrPreviewForm(
-            mojom::ActionPersistence::kFill, query_form_,
-            query_field_.global_id(), &profile,
-            TriggerSourceFromSuggestionTriggerSource(trigger_source_));
+                  VerifiedProfile profile =
+                      suggestion
+                          .GetPayload<Suggestion::IdentityCredentialPayload>()
+                          .fields;
+                  delegate->manager_->FillOrPreviewForm(
+                      mojom::ActionPersistence::kFill, delegate->query_form_,
+                      delegate->query_field_.global_id(), &profile,
+                      TriggerSourceFromSuggestionTriggerSource(
+                          delegate->trigger_source_));
+                },
+                GetWeakPtr(), suggestion));
       }
       break;
     }

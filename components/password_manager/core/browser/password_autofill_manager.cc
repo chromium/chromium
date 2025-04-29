@@ -234,8 +234,19 @@ void PasswordAutofillManager::DidAcceptSuggestion(
               identity_credential_delegate =
                   autofill_client_->GetIdentityCredentialDelegate()) {
         identity_credential_delegate->NotifySuggestionAccepted(
-            suggestion, base::BindOnce(&PasswordAutofillManager::HidePopup,
-                                       weak_ptr_factory_.GetWeakPtr()));
+            suggestion, /*show_modal=*/false,
+            base::BindOnce(
+                [](base::WeakPtr<PasswordAutofillManager> manager,
+                   bool accepted) {
+                  if (!manager) {
+                    return;
+                  }
+                  // When notifying the delegate, no extra permission prompts
+                  // are requested. The pop-up in its loading state is hidden
+                  // regardless of the accepted result.
+                  manager->HidePopup();
+                },
+                weak_ptr_factory_.GetWeakPtr()));
       }
       UpdatePopup(PrepareLoadingStateSuggestions(
           std::move(last_popup_open_args_).suggestions, suggestion));

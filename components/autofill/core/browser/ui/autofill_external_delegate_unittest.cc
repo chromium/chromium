@@ -1283,7 +1283,46 @@ TEST_F(AutofillExternalDelegateTest, TestVerifiedEmailSuggestion_Fill) {
               FillOrPreviewForm(mojom::ActionPersistence::kFill,
                                 HasQueriedFormId(), IsQueriedFieldId(), _, _));
   // Expect that the delegate gets notified.
-  EXPECT_CALL(mock, NotifySuggestionAccepted(suggestion, _));
+  EXPECT_CALL(mock, NotifySuggestionAccepted)
+      .WillOnce(::testing::WithArgs<1, 2>(
+          [](bool show_modal,
+             IdentityCredentialDelegate::OnFederatedTokenReceivedCallback
+                 callback) {
+            // Email verifications prompt the user
+            EXPECT_TRUE(show_modal);
+            // Pretend that the user has accepted the prompt
+            std::move(callback).Run(/*accepted=*/true);
+          }));
+
+  // Test fill.
+  external_delegate().DidAcceptSuggestion(suggestion,
+                                          SuggestionPosition{.row = 0});
+}
+
+// Test that an accepted verified email autofill suggestion will not fill the
+// form if the user later rejects the prompt.
+TEST_F(AutofillExternalDelegateTest,
+       TestVerifiedEmailSuggestion_PromptRejectedNoFill) {
+  IssueOnQuery();
+  const Suggestion suggestion = test::CreateAutofillSuggestion(
+      SuggestionType::kIdentityCredential, u"John Legend",
+      Suggestion::IdentityCredentialPayload());
+
+  // Set up a mock identity credential delegate.
+  MockIdentityCredentialDelegate mock;
+  ON_CALL(client(), GetIdentityCredentialDelegate).WillByDefault(Return(&mock));
+
+  // Expect that the delegate gets notified.
+  EXPECT_CALL(mock, NotifySuggestionAccepted)
+      .WillOnce(::testing::WithArgs<1, 2>(
+          [](bool show_modal,
+             IdentityCredentialDelegate::OnFederatedTokenReceivedCallback
+                 callback) {
+            // Email verifications prompt the user
+            EXPECT_TRUE(show_modal);
+            // Pretend that the user has rejected the prompt
+            std::move(callback).Run(/*accepted=*/false);
+          }));
 
   // Test fill.
   external_delegate().DidAcceptSuggestion(suggestion,

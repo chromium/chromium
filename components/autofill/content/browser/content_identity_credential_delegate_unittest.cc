@@ -35,6 +35,7 @@ class MockFederatedAuthAutofillSource
               NotifyAutofillSuggestionAccepted,
               (const GURL& idp,
                const std::string& account_id,
+               bool show_modal,
                OnFederatedTokenReceivedCallback callback),
               (override));
 };
