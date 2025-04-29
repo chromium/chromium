@@ -1949,35 +1949,6 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
       "cross-site=b.test");
 }
 
-// Regression test for https://crbug.com/409838513.
-IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
-                       DedicatedWorker_ABA_InheritsStorageAccessFromDocument) {
-  SetBlockThirdPartyCookies(true);
-  prompt_factory()->set_response_type(
-      permissions::PermissionRequestManager::DENY_ALL);
-
-  NavigateToPageWithFrame(kHostA);
-  NavigateFrameTo(kHostB, "/iframe.html");
-  NavigateNestedFrameTo(EchoCookiesURL(kHostA));
-  ASSERT_TRUE(
-      storage::test::RequestAndCheckStorageAccessForFrame(GetNestedFrame()));
-  ASSERT_TRUE(content::NavigateToURLFromRenderer(
-      GetNestedFrame(),
-      https_server().GetURL(
-          kHostA,
-          "/workers/fetch_from_worker.html?script=fetch_from_worker.js")));
-  ASSERT_TRUE(storage::test::HasStorageAccessForFrame(GetNestedFrame()));
-
-  // When the worker's parent document has storage access at the time the worker
-  // is created, the worker should inherit that access and be able to use it.
-  //
-  // This should work despite the fact that this is an ABA context, and
-  // therefore there is no explicit permission grant.
-  EXPECT_EQ(content::EvalJs(GetNestedFrame(),
-                            "fetch_from_worker('/echoheader?cookie');"),
-            "cross-site=a.test");
-}
-
 IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
                        WebsocketRequestsUseStorageAccessGrants) {
   SetBlockThirdPartyCookies(true);

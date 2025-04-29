@@ -12,7 +12,6 @@
 #include "content/browser/devtools/devtools_throttle_handle.h"
 #include "content/browser/devtools/worker_devtools_manager.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
-#include "content/browser/storage_access/storage_access_handle.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/browser/worker_host/dedicated_worker_host.h"
 #include "content/browser/worker_host/dedicated_worker_service_impl.h"
@@ -99,8 +98,9 @@ void DedicatedWorkerHostFactoryImpl::CreateWorkerHostAndStartScriptLoad(
     RenderFrameHostImpl* ancestor_render_frame_host =
         RenderFrameHostImpl::FromID(ancestor_render_frame_host_id_);
     if (!ancestor_render_frame_host ||
-        !StorageAccessHandle::DoesDocumentHaveStorageAccess(
-            ancestor_render_frame_host)) {
+        ancestor_render_frame_host->GetPermissionStatus(
+            blink::PermissionType::STORAGE_ACCESS_GRANT) !=
+            blink::mojom::PermissionStatus::GRANTED) {
       mojo::ReportBadMessage("DWH_STORAGE_ACCESS_NOT_GRANTED");
       return;
     }
