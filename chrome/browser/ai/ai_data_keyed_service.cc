@@ -32,6 +32,7 @@
 #include "chrome/browser/content_extraction/inner_text.h"
 #include "chrome/browser/history_embeddings/history_embeddings_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/browser/form_processing/optimization_guide_proto_util.h"
@@ -47,6 +48,7 @@
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/optimization_guide/proto/features/model_prototyping.pb.h"
 #include "components/site_engagement/content/site_engagement_service.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -68,7 +70,6 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -417,7 +418,8 @@ void GetTabDataForModelPrototyping(
   // Get the browser window that contains the web contents the extension is
   // being targeted on. If there isn't a window, or there isn't a tab strip
   // model, return an empty AiData.
-  Browser* browser = chrome::FindBrowserWithTab(web_contents);
+  tabs::TabInterface* tab = tabs::TabInterface::GetFromContents(web_contents);
+  BrowserWindowInterface* browser = tab->GetBrowserWindowInterface();
   if (!browser || !browser->GetTabStripModel()) {
     return concurrent.CreateCallback().Run(std::nullopt);
   }
