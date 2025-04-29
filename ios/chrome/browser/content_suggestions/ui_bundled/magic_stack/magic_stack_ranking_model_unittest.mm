@@ -155,7 +155,6 @@ std::unique_ptr<KeyedService> BuildFeatureEngagementMockTracker(
     _config = [[MostVisitedTilesConfig alloc] init];
     _config.mostVisitedItems =
         @[ [[ContentSuggestionsMostVisitedItem alloc] init] ];
-    _config.inMagicStack = NO;
   }
   return _config;
 }
@@ -206,7 +205,6 @@ std::unique_ptr<KeyedService> BuildFeatureEngagementMockTracker(
 
 // Expose -hasReceivedMagicStackResponse for waiting for ranking to return.
 @interface MagicStackRankingModel (Testing) <
-    MostVisitedTilesMediatorDelegate,
     SafetyCheckMagicStackMediatorDelegate,
     TipsMagicStackMediatorDelegate,
     TabResumptionHelperDelegate>

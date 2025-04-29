@@ -73,7 +73,6 @@ source_set("most_visited_tiles") {
     "most_visited_tiles_stack_view.h",
     "most_visited_tiles_stack_view.mm",
     "most_visited_tiles_stack_view_consumer.h",
-    "most_visited_tiles_stack_view_consumer_source.h",
   ]
   deps = [
     ":cells",

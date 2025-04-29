@@ -499,7 +499,7 @@ CGFloat SpaceBetweenModules() {
     [self addViewControllerAboveFeed:self.magicStackCollectionView];
   }
 
-  if (self.contentSuggestionsViewController && self.mostVisitedVisible) {
+  if (self.mostVisitedVisible) {
     [self addViewControllerAboveFeed:self.contentSuggestionsViewController];
   }
 
@@ -587,10 +587,7 @@ CGFloat SpaceBetweenModules() {
 
   [self removeFromViewHierarchy:self.feedWrapperViewController];
   [self removeFromViewHierarchy:self.magicStackCollectionView];
-  if (self.contentSuggestionsViewController) {
-    [self removeFromViewHierarchy:self.contentSuggestionsViewController];
-  }
-
+  [self removeFromViewHierarchy:self.contentSuggestionsViewController];
   for (UIViewController* viewController in self.viewControllersAboveFeed) {
     [self removeFromViewHierarchy:viewController];
   }
@@ -1419,7 +1416,7 @@ CGFloat SpaceBetweenModules() {
     [[self containerView].safeAreaLayoutGuide.trailingAnchor
         constraintEqualToAnchor:self.headerViewController.view.trailingAnchor],
   ]];
-  if (self.contentSuggestionsViewController && self.mostVisitedVisible) {
+  if (self.mostVisitedVisible) {
     [NSLayoutConstraint activateConstraints:@[
       [self.contentSuggestionsViewController.view.leadingAnchor
           constraintEqualToAnchor:self.moduleLayoutGuide.leadingAnchor],
@@ -1589,10 +1586,6 @@ CGFloat SpaceBetweenModules() {
 
 #pragma mark - Helpers
 
-- (UIViewController*)contentSuggestionsViewController {
-  return _contentSuggestionsViewController;
-}
-
 - (CGFloat)minimumNTPHeight {
   CGFloat collectionViewHeight = self.collectionView.bounds.size.height;
   CGFloat headerHeight = [self.headerViewController headerHeight];
@@ -1668,33 +1661,29 @@ CGFloat SpaceBetweenModules() {
   // self.feedWrapperViewController.view ->
   // self.feedWrapperViewController.feedViewController.view ->
   // self.collectionView -> self.contentSuggestionsViewController.view.
-  if (self.contentSuggestionsViewController) {
-    if (![self.collectionView.subviews
-            containsObject:self.contentSuggestionsViewController.view]) {
-      // Remove child VC from old parent.
+  if (![self.collectionView.subviews
+          containsObject:self.contentSuggestionsViewController.view]) {
+    // Remove child VC from old parent.
+    [self.contentSuggestionsViewController willMoveToParentViewController:nil];
+    [self.contentSuggestionsViewController removeFromParentViewController];
+    [self.contentSuggestionsViewController.view removeFromSuperview];
+    [self.contentSuggestionsViewController didMoveToParentViewController:nil];
+
+    if (self.mostVisitedVisible) {
+      // Add child VC to new parent.
       [self.contentSuggestionsViewController
-          willMoveToParentViewController:nil];
-      [self.contentSuggestionsViewController removeFromParentViewController];
-      [self.contentSuggestionsViewController.view removeFromSuperview];
-      [self.contentSuggestionsViewController didMoveToParentViewController:nil];
-
-      if (self.mostVisitedVisible) {
-        // Add child VC to new parent.
-        [self.contentSuggestionsViewController
-            willMoveToParentViewController:self.feedWrapperViewController
-                                               .feedViewController];
-        [self.feedWrapperViewController.feedViewController
-            addChildViewController:self.contentSuggestionsViewController];
-        [self.collectionView
-            addSubview:self.contentSuggestionsViewController.view];
-        [self.contentSuggestionsViewController
-            didMoveToParentViewController:self.feedWrapperViewController
-                                              .feedViewController];
-
-        [self.feedMetricsRecorder
-            recordBrokenNTPHierarchy:BrokenNTPHierarchyRelationship::
-                                         kContentSuggestionsParent];
-      }
+          willMoveToParentViewController:self.feedWrapperViewController
+                                             .feedViewController];
+      [self.feedWrapperViewController.feedViewController
+          addChildViewController:self.contentSuggestionsViewController];
+      [self.collectionView
+          addSubview:self.contentSuggestionsViewController.view];
+      [self.contentSuggestionsViewController
+          didMoveToParentViewController:self.feedWrapperViewController
+                                            .feedViewController];
+      [self.feedMetricsRecorder
+          recordBrokenNTPHierarchy:BrokenNTPHierarchyRelationship::
+                                       kContentSuggestionsParent];
     }
   }
 
@@ -1702,7 +1691,6 @@ CGFloat SpaceBetweenModules() {
              isSubviewOf:self.collectionView
       withRelationshipID:BrokenNTPHierarchyRelationship::
                              kContentSuggestionsHeaderParent];
-
   [self ensureView:self.feedHeaderViewController.view
              isSubviewOf:self.collectionView
       withRelationshipID:BrokenNTPHierarchyRelationship::kFeedHeaderParent];

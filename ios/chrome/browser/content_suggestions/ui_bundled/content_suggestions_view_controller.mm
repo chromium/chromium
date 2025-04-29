@@ -82,7 +82,6 @@
   ]];
 
   if (_mostVisitedTileConfig.mostVisitedItems.count > 0) {
-    CHECK(!_mostVisitedTileConfig.inMagicStack);
     [self createAndInsertMostVisitedModule];
   }
 }
@@ -115,7 +114,6 @@
 #pragma mark - ContentSuggestionsConsumer
 
 - (void)setMostVisitedTilesConfig:(MostVisitedTilesConfig*)config {
-  CHECK(!config.inMagicStack);
   _mostVisitedTileConfig = config;
   if (self.mostVisitedModuleContainer) {
     [self.mostVisitedModuleContainer removeFromSuperview];

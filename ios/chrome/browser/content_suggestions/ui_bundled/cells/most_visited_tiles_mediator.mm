@@ -25,7 +25,6 @@
 #import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_tile_saver.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/cells/most_visited_tiles_config.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/cells/most_visited_tiles_stack_view_consumer.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/cells/most_visited_tiles_stack_view_consumer_source.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_constants.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_consumer.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_delegate.h"
@@ -38,7 +37,6 @@
 #import "ios/chrome/browser/ntp_tiles/model/most_visited_sites_observer_bridge.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/prefs/pref_backed_boolean.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/utils/observable_boolean.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
@@ -61,10 +59,8 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
 
 }  // namespace
 
-@interface MostVisitedTilesMediator () <BooleanObserver,
-                                        ContentSuggestionsMenuElementsProvider,
-                                        MostVisitedSitesObserving,
-                                        MostVisitedTilesStackViewConsumerSource>
+@interface MostVisitedTilesMediator () <ContentSuggestionsMenuElementsProvider,
+                                        MostVisitedSitesObserving>
 @end
 
 @implementation MostVisitedTilesMediator {
@@ -81,13 +77,8 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
   raw_ptr<PrefService> _prefService;
   PrefChangeRegistrar _prefChangeRegistrar;
   raw_ptr<UrlLoadingBrowserAgent> _URLLoadingBrowserAgent;
-  // Consumer of model updates when MVTs are in the Magic Stack.
-  id<MostVisitedTilesStackViewConsumer> _stackViewConsumer;
-  PrefBackedBoolean* _mostVisitedTilesInMagicStackEnabled;
   raw_ptr<ChromeAccountManagerService> _accountManagerService;
 }
-
-@synthesize inMagicStack = _inMagicStack;
 
 - (instancetype)
     initWithMostVisitedSite:
@@ -105,7 +96,6 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
     _URLLoadingBrowserAgent = URLLoadingBrowserAgent;
     _accountManagerService = accountManagerService;
     _incognitoAvailable = !IsIncognitoModeDisabled(prefService);
-    _inMagicStack = NO;
     _mostVisitedAttributesProvider = [[FaviconAttributesProvider alloc]
         initWithFaviconSize:kMagicStackFaviconWidth
              minFaviconSize:kMagicStackMostVisitedFaviconMinimalSize
@@ -120,19 +110,11 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
         std::make_unique<ntp_tiles::MostVisitedSitesObserverBridge>(self);
     _mostVisitedSites->AddMostVisitedURLsObserver(_mostVisitedBridge.get(),
                                                   kMaxNumMostVisitedTiles);
-
-    if (_inMagicStack) {
-      _mostVisitedTilesInMagicStackEnabled = [[PrefBackedBoolean alloc]
-          initWithPrefService:_prefService
-                     prefName:prefs::kHomeCustomizationMostVisitedEnabled];
-      [_mostVisitedTilesInMagicStackEnabled setObserver:self];
-    }
   }
   return self;
 }
 
 - (void)disconnect {
-  [_mostVisitedTilesInMagicStackEnabled stop];
   _prefChangeRegistrar.RemoveAll();
   _mostVisitedBridge.reset();
   _mostVisitedSites.reset();
@@ -204,20 +186,6 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
                               completion:completion];
       }
       return;
-    }
-  }
-}
-
-#pragma mark - Boolean Observer
-
-- (void)booleanDidChange:(id<ObservableBoolean>)observableBoolean {
-  if (observableBoolean == _mostVisitedTilesInMagicStackEnabled) {
-    CHECK(_inMagicStack);
-    [self useFreshMostVisited];
-    if (observableBoolean.value) {
-      [self.delegate didReceiveInitialMostVistedTiles];
-    } else {
-      [self.delegate removeMostVisitedTilesModule];
     }
   }
 }
@@ -343,15 +311,6 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
   return menuElements;
 }
 
-#pragma mark - MostVisitedTilesStackViewConsumerSource
-
-- (void)addConsumer:(id<MostVisitedTilesStackViewConsumer>)consumer {
-  if (_stackViewConsumer == consumer) {
-    return;
-  }
-  _stackViewConsumer = consumer;
-}
-
 #pragma mark - Private
 
 // Replaces the Most Visited items currently displayed by the most recent ones.
@@ -375,34 +334,18 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
                         std::move(freshMostVisitedSites));
 
   _mostVisitedConfig = [[MostVisitedTilesConfig alloc] init];
-  _mostVisitedConfig.inMagicStack = self.inMagicStack;
   _mostVisitedConfig.imageDataSource = self;
   _mostVisitedConfig.commandHandler = self;
   _mostVisitedConfig.mostVisitedItems = _freshMostVisitedItems;
-  _mostVisitedConfig.consumerSource = self;
-  if (self.inMagicStack) {
-    if ([_freshMostVisitedItems count] == 0 ||
-        !_mostVisitedTilesInMagicStackEnabled.value) {
-      [self.delegate removeMostVisitedTilesModule];
-    } else if (!oldMostVisitedSites.empty()) {
-      [_stackViewConsumer updateWithConfig:_mostVisitedConfig];
-    } else {
-      [self.delegate didReceiveInitialMostVistedTiles];
-    }
-  } else {
-    [self.consumer setMostVisitedTilesConfig:_mostVisitedConfig];
-    [self.contentSuggestionsDelegate contentSuggestionsWasUpdated];
-  }
+
+  [self.consumer setMostVisitedTilesConfig:_mostVisitedConfig];
+  [self.contentSuggestionsDelegate contentSuggestionsWasUpdated];
 }
 
 // Logs a histogram due to a Most Visited item being opened.
 - (void)logMostVisitedOpening:(ContentSuggestionsMostVisitedItem*)item
                       atIndex:(NSInteger)mostVisitedIndex {
   [self.NTPActionsDelegate mostVisitedTileOpened];
-  if (self.inMagicStack) {
-    [self.delegate logMagicStackEngagementForType:ContentSuggestionsModuleType::
-                                                      kMostVisited];
-  }
   [self.contentSuggestionsMetricsRecorder
       recordMostVisitedTileOpened:item
                           atIndex:mostVisitedIndex];
