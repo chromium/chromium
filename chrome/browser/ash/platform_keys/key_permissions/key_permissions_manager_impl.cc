@@ -78,9 +78,14 @@ chaps::KeyPermissions CreateKeyPermissions(bool corporate_usage_allowed,
   return key_permissions;
 }
 
-void OnArcKeyPermissionsInChapsUpdated(Status update_status) {
-  if (update_status != Status::kSuccess) {
-    LOG(ERROR) << "Updating arc key permissions in chaps failed.";
+void OnArcKeyPermissionsInChapsUpdated(size_t keys_updated,
+                                       Status update_status) {
+  if (update_status == Status::kSuccess) {
+    LOG(WARNING) << "Updating arc key permissions in chaps succeeded, "
+                 << keys_updated << " key(s) updated.";
+  } else {
+    LOG(ERROR) << "Updating arc key permissions in chaps failed, "
+               << keys_updated << " key(s) updated.";
   }
 }
 
@@ -131,7 +136,7 @@ void KeyPermissionsManagerImpl::KeyPermissionsInChapsUpdater::UpdateWithAllKeys(
 
 void KeyPermissionsManagerImpl::KeyPermissionsInChapsUpdater::UpdateNextKey() {
   if (public_key_spki_der_queue_.empty()) {
-    std::move(callback_).Run(Status::kSuccess);
+    std::move(callback_).Run(keys_updated_, Status::kSuccess);
     return;
   }
 
@@ -174,7 +179,7 @@ void KeyPermissionsManagerImpl::KeyPermissionsInChapsUpdater::
         Status corporate_usage_retrieval_status) {
   if (corporate_usage_retrieval_status != Status::kSuccess) {
     LOG(ERROR) << "Couldn't retrieve corporate usage flag for a key.";
-    std::move(callback_).Run(corporate_usage_retrieval_status);
+    std::move(callback_).Run(keys_updated_, corporate_usage_retrieval_status);
     return;
   }
 
@@ -207,8 +212,10 @@ void KeyPermissionsManagerImpl::KeyPermissionsInChapsUpdater::
   } else if (permissions_update_status != Status::kSuccess) {
     LOG(ERROR) << "Couldn't update permissions for a key: "
                << StatusToString(permissions_update_status);
-    std::move(callback_).Run(permissions_update_status);
+    std::move(callback_).Run(keys_updated_, permissions_update_status);
     return;
+  } else {
+    keys_updated_++;
   }
 
   UpdateNextKey();
@@ -470,6 +477,7 @@ void KeyPermissionsManagerImpl::StartOneTimeMigration() {
 }
 
 void KeyPermissionsManagerImpl::OnOneTimeMigrationDone(
+    size_t keys_udpated,
     Status migration_status) {
   if (migration_status != Status::kSuccess) {
     VLOG(0) << "One-time key permissions migration failed for token: "
@@ -480,7 +488,8 @@ void KeyPermissionsManagerImpl::OnOneTimeMigrationDone(
   }
 
   VLOG(0) << "One-time key permissions migration succeeded for token: "
-          << static_cast<int>(token_id_) << ".";
+          << static_cast<int>(token_id_) << ", keys updated: " << keys_udpated
+          << ".";
   base::UmaHistogramEnumeration(kMigrationStatusHistogramName,
                                 MigrationStatus::kSucceeded);
 

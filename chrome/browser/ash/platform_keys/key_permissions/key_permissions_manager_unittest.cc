@@ -482,24 +482,38 @@ INSTANTIATE_TEST_SUITE_P(
         std::make_tuple(/*initial_global_arc_allowed=*/false,
                         /*new_global_arc_allowed=*/true,
                         /*key_is_corporate=*/true,
-                        /*expected_key_arc_allowed*/ true),
+                        /*expected_key_arc_allowed=*/true),
         // Test that corporate keys become not allowed for ARC++ when it becomes
         // globally not allowed.
         std::make_tuple(/*initial_global_arc_allowed=*/true,
                         /*new_global_arc_allowed=*/false,
                         /*key_is_corporate=*/true,
-                        /*expected_key_arc_allowed*/ false),
+                        /*expected_key_arc_allowed=*/false),
         // Test that non-corporate keys do NOT become allowed for ARC++ when it
         // becomes globally allowed.
         std::make_tuple(/*initial_global_arc_allowed=*/false,
                         /*new_global_arc_allowed=*/true,
                         /*key_is_corporate=*/false,
-                        /*expected_key_arc_allowed*/ false)));
+                        /*expected_key_arc_allowed=*/false)));
 
 // Test that corporate keys become allowed for ARC++ when global ARC++
 // permissions change.
 TEST_P(KeyPermissionsManagerArcAllowedChangesTest,
        ArcAllowanceChangedCorporateKeysAreUpdated) {
+  // Use a static because only captureless lambdas can be converted to a
+  // function pointer for SetLogMessageHandler().
+  static const char kExpectedErrorLog[] =
+      "Updating arc key permissions in chaps succeeded, 1 key(s) updated";
+  static base::NoDestructor<std::string> log_string;
+  logging::SetLogMessageHandler([](int severity, const char* file, int line,
+                                   size_t start,
+                                   const std::string& str) -> bool {
+    if (base::Contains(str, kExpectedErrorLog)) {
+      *log_string = str;
+    }
+    return false;
+  });
+
   get_all_keys_result_ = {key_0_};
   UpdateStoredKeyPermissions(key_0_, KeyIsCorporateParam(),
                              InitialGlobalArcAllowedParam());
@@ -537,6 +551,7 @@ TEST_P(KeyPermissionsManagerArcAllowedChangesTest,
   EXPECT_EQ(is_allowed_after.Get<Status>(), Status::kSuccess);
   EXPECT_EQ(is_allowed_after.Get<0>(),
             std::optional<bool>(ExpectedKeyArcAllowedParam()));
+  EXPECT_FALSE(log_string->empty());
 }
 
 // Test that KeyPermissionsManager continues updating keys even when for one of
@@ -574,6 +589,20 @@ TEST_F(KeyPermissionsManagerTest, NotFoundKeysAreSkipped) {
 // Test that KeyPermissionsManager stops updating the keys when for one of them
 // it receives an error different from kErrorKeyNotFound.
 TEST_F(KeyPermissionsManagerTest, FailsUpdatingKeysAndStops) {
+  // Use a static because only captureless lambdas can be converted to a
+  // function pointer for SetLogMessageHandler().
+  static const char kExpectedErrorLog[] =
+      "Updating arc key permissions in chaps failed, 0 key(s) updated";
+  static base::NoDestructor<std::string> log_string;
+  logging::SetLogMessageHandler([](int severity, const char* file, int line,
+                                   size_t start,
+                                   const std::string& str) -> bool {
+    if (base::Contains(str, kExpectedErrorLog)) {
+      *log_string = str;
+    }
+    return false;
+  });
+
   InitKeyPermissionsManager(/*arc_allowed=*/false);
 
   get_all_keys_result_ = {key_0_, key_1_};
@@ -598,6 +627,8 @@ TEST_F(KeyPermissionsManagerTest, FailsUpdatingKeysAndStops) {
       /*allowed=*/true);
 
   MakeACallAndWaitForResult(permissions_manager_);
+
+  EXPECT_FALSE(log_string->empty());
 
   // EXPECT_CALLs are checked here. Specifically check that an update for the
   // second key doesn't happen if the first one fails.
