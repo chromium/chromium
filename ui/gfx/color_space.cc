@@ -1131,27 +1131,20 @@ bool ColorSpace::ToSkYUVColorSpace(int bit_depth, SkYUVColorSpace* out) const {
       return true;
 
     case MatrixID::BT2020_NCL:
-      if (bit_depth == 8) {
+      if (bit_depth <= 8) {
         *out = range_ == RangeID::FULL ? kBT2020_8bit_Full_SkYUVColorSpace
                                        : kBT2020_8bit_Limited_SkYUVColorSpace;
-        return true;
-      }
-      if (bit_depth == 10) {
+      } else if (bit_depth <= 10) {
         *out = range_ == RangeID::FULL ? kBT2020_10bit_Full_SkYUVColorSpace
                                        : kBT2020_10bit_Limited_SkYUVColorSpace;
-        return true;
-      }
-      if (bit_depth == 12) {
+      } else if (bit_depth <= 12) {
         *out = range_ == RangeID::FULL ? kBT2020_12bit_Full_SkYUVColorSpace
                                        : kBT2020_12bit_Limited_SkYUVColorSpace;
-        return true;
-      }
-      if (bit_depth == 16) {
+      } else {
         *out = range_ == RangeID::FULL ? kBT2020_16bit_Full_SkYUVColorSpace
                                        : kBT2020_16bit_Limited_SkYUVColorSpace;
-        return true;
       }
-      return false;
+      return true;
 
     case MatrixID::FCC:
       *out = range_ == RangeID::FULL ? kFCC_Full_SkYUVColorSpace
@@ -1174,27 +1167,20 @@ bool ColorSpace::ToSkYUVColorSpace(int bit_depth, SkYUVColorSpace* out) const {
       return true;
 
     case MatrixID::YCOCG:
-      if (bit_depth == 8) {
+      if (bit_depth <= 8) {
         *out = range_ == RangeID::FULL ? kYCgCo_8bit_Full_SkYUVColorSpace
                                        : kYCgCo_8bit_Limited_SkYUVColorSpace;
-        return true;
-      }
-      if (bit_depth == 10) {
+      } else if (bit_depth <= 10) {
         *out = range_ == RangeID::FULL ? kYCgCo_10bit_Full_SkYUVColorSpace
                                        : kYCgCo_10bit_Limited_SkYUVColorSpace;
-        return true;
-      }
-      if (bit_depth == 12) {
+      } else if (bit_depth <= 12) {
         *out = range_ == RangeID::FULL ? kYCgCo_12bit_Full_SkYUVColorSpace
                                        : kYCgCo_12bit_Limited_SkYUVColorSpace;
-        return true;
-      }
-      if (bit_depth == 16) {
+      } else {
         *out = range_ == RangeID::FULL ? kYCgCo_16bit_Full_SkYUVColorSpace
                                        : kYCgCo_16bit_Limited_SkYUVColorSpace;
-        return true;
       }
-      return false;
+      return true;
     default:
       break;
   }
