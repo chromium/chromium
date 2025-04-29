@@ -160,7 +160,6 @@ class DragWindowController::DragWindowDetails {
     gfx::Rect bounds = original_window->bounds();
     wm::ConvertRectToScreen(original_window->parent(), &bounds);
     window->SetBounds(bounds);
-    wm::SetShadowElevation(window, wm::kShadowElevationActiveWindow);
 
     // Show the widget the setup is done.
     widget_->Show();
