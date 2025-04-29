@@ -3115,6 +3115,17 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Net.HttpStreamPool.SwitchesToPoolPostTaskTime" units="ms"
+    expires_after="2025-07-27">
+  <owner>bashi@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    Record the time between when a task to switch to the HttpStreamPool is
+    posted and when it is executed. Recorded when an HttpStreamRequest switched
+    to the HttpStreamPool.
+  </summary>
+</histogram>
+
 <histogram name="Net.HttpStreamPool.TcpBasedAttemptCancelCount.{Reason}"
     units="attempts" expires_after="2025-07-13">
   <owner>bashi@chromium.org</owner>
