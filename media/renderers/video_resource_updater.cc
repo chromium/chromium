@@ -753,8 +753,13 @@ void VideoResourceUpdater::CopyHardwareResource(
   auto* ri = RasterInterface();
   // Wait on sync tokens for both source (video frame) and destination (shared
   // image).
-  ri->WaitSyncTokenCHROMIUM(video_frame->acquire_sync_token().GetConstData());
-  ri->WaitSyncTokenCHROMIUM(hardware_resource->sync_token().GetConstData());
+  std::unique_ptr<gpu::RasterScopedAccess> src_ri_access =
+      shared_image->BeginRasterAccess(ri, video_frame->acquire_sync_token(),
+                                      /*readonly=*/true);
+  std::unique_ptr<gpu::RasterScopedAccess> dst_ri_access =
+      hardware_resource->shared_image()->BeginRasterAccess(
+          ri, hardware_resource->sync_token(),
+          /*readonly=*/false);
 
   ri->CopySharedImage(
       shared_image->mailbox(), hardware_resource->shared_image()->mailbox(),
@@ -762,9 +767,10 @@ void VideoResourceUpdater::CopyHardwareResource(
       output_resource_size.width(), output_resource_size.height());
 
   // Wait (if the existing token isn't null) and replace it with a new one.
-  WaitAndReplaceSyncTokenClient client(ri);
+  WaitAndReplaceSyncTokenClient client(ri, std::move(src_ri_access));
   gpu::SyncToken sync_token = video_frame->UpdateReleaseSyncToken(&client);
   hardware_resource->UpdateSyncToken(sync_token);
+  gpu::RasterScopedAccess::EndAccess(std::move(dst_ri_access));
 
   auto transferable_resource = viz::TransferableResource::MakeGpu(
       hardware_resource->shared_image(), GL_TEXTURE_2D,
