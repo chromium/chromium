@@ -4,19 +4,15 @@
 
 import {Msgs} from '../common/msgs.js';
 import {SettingsManager} from '../common/settings_manager.js';
-import * as ttsTypes from '../common/tts_types.js';
+import {CharacterDictionary, Personality, QueueMode, SubstitutionDictionary, TtsAudioProperty, TtsSettings, TtsSpeechProperties} from '../common/tts_types.js';
 
 import type {TtsCapturingEventListener, TtsInterface} from './tts_interface.js';
 
 interface PropertyValues {
-  pitch: number;
-  rate: number;
-  volume: number;
+  [TtsAudioProperty.PITCH]: number;
+  [TtsAudioProperty.RATE]: number;
+  [TtsAudioProperty.VOLUME]: number;
 
-  [key: string]: number | undefined;
-}
-
-interface Properties {
   [key: string]: number | undefined;
 }
 
@@ -38,7 +34,7 @@ export class AbstractTts implements TtsInterface {
   /** Step value for TTS properties. */
   protected propertyStep: PropertyValues;
   /** Default TTS properties for this TTS engine. */
-  protected ttsProperties: Properties = {};
+  protected ttsProperties: TtsSpeechProperties = new TtsSpeechProperties();
 
   /** Substitution dictionary regexp. */
   private static substitutionDictionaryRegexp_: RegExp;
@@ -89,7 +85,7 @@ export class AbstractTts implements TtsInterface {
       // Create an expression that matches all words in the substitution
       // dictionary.
       const symbols: string[] = [];
-      for (const symbol in ttsTypes.SubstitutionDictionary) {
+      for (const symbol in SubstitutionDictionary) {
         symbols.push(symbol);
       }
       const expr = '(' + symbols.join('|') + ')';
@@ -99,8 +95,8 @@ export class AbstractTts implements TtsInterface {
 
   /** TtsInterface implementation. */
   speak(
-      _textString: string, _queueMode: ttsTypes.QueueMode,
-      _properties?: ttsTypes.TtsSpeechProperties): AbstractTts {
+      _textString: string, _queueMode: QueueMode,
+      _properties?: TtsSpeechProperties): TtsInterface {
     return this;
   }
 
@@ -119,7 +115,8 @@ export class AbstractTts implements TtsInterface {
   removeCapturingEventListener(_listener: TtsCapturingEventListener): void {}
 
   /** TtsInterface implementation. */
-  increaseOrDecreaseProperty(propertyName: string, increase: boolean): void {
+  increaseOrDecreaseProperty(propertyName: TtsAudioProperty, increase: boolean):
+      void {
     // TODO(b/314203187): Not null asserted, check that this is correct.
     const step = this.propertyStep[propertyName]!;
     let current = this.ttsProperties[propertyName]!;
@@ -128,7 +125,7 @@ export class AbstractTts implements TtsInterface {
   }
 
   /** TtsInterface implementation. */
-  setProperty(propertyName: string, value: number): void {
+  setProperty(propertyName: TtsAudioProperty, value: number): void {
     // TODO(b/314203187): Not null asserted, check that this is correct.
     const min = this.propertyMin[propertyName]!;
     const max = this.propertyMax[propertyName]!;
@@ -140,9 +137,9 @@ export class AbstractTts implements TtsInterface {
    * @param property The property to convert.
    * @return The percentage of the property.
    */
-  propertyToPercentage(property: string): number|null {
+  propertyToPercentage(property: TtsAudioProperty): number|null {
     // TODO(b/314203187): Not null asserted, check that this is correct.
-    return (this.ttsProperties[property]! - this.propertyMin[property]!) /
+    return ((this.ttsProperties[property]!) - this.propertyMin[property]!) /
         Math.abs(this.propertyMax[property]! - this.propertyMin[property]!);
   }
 
@@ -153,31 +150,33 @@ export class AbstractTts implements TtsInterface {
    * @param properties The properties to merge with the current ones.
    * @return The merged properties.
    */
-  protected mergeProperties(properties: Properties): Properties {
-    const mergedProperties: Properties = {};
-    let p;
+  protected mergeProperties(properties: TtsSpeechProperties):
+      TtsSpeechProperties {
+    const mergedProperties: TtsSpeechProperties = new TtsSpeechProperties();
+
     if (this.ttsProperties) {
-      for (p in this.ttsProperties) {
-        mergedProperties[p] = this.ttsProperties[p];
+      for (const [key, value] of Object.entries(this.ttsProperties)) {
+        mergedProperties[key] = value;
       }
     }
     if (properties) {
-      const tts = ttsTypes.TtsSettings;
-      if (typeof (properties[tts.VOLUME]) === 'number') {
-        mergedProperties[tts.VOLUME] = properties[tts.VOLUME];
+      // const tts = TtsSettings;
+      if (typeof (properties[TtsSettings.VOLUME]) === 'number') {
+        mergedProperties[TtsSettings.VOLUME] = properties[TtsSettings.VOLUME];
       }
-      if (typeof (properties[tts.PITCH]) === 'number') {
-        mergedProperties[tts.PITCH] = properties[tts.PITCH];
+      if (typeof (properties[TtsSettings.PITCH]) === 'number') {
+        mergedProperties[TtsSettings.PITCH] = properties[TtsSettings.PITCH];
       }
-      if (typeof (properties[tts.RATE]) === 'number') {
-        mergedProperties[tts.RATE] = properties[tts.RATE];
+      if (typeof (properties[TtsSettings.RATE]) === 'number') {
+        mergedProperties[TtsSettings.RATE] = properties[TtsSettings.RATE];
       }
-      if (typeof (properties[tts.LANG]) === 'string') {
-        mergedProperties[tts.LANG] = properties[tts.LANG];
+      if (typeof (properties[TtsSettings.LANG]) === 'string') {
+        mergedProperties[TtsSettings.LANG] = properties[TtsSettings.LANG];
       }
 
       const context = this;
-      const mergeRelativeProperty = function(abs: string, rel: string): void {
+      const mergeRelativeProperty = function(
+          abs: TtsAudioProperty, rel: string): void {
         if (typeof (properties[rel]) === 'number' &&
             typeof (mergedProperties[abs]) === 'number') {
           mergedProperties[abs] += properties[rel];
@@ -192,14 +191,16 @@ export class AbstractTts implements TtsInterface {
         }
       };
 
-      mergeRelativeProperty(tts.VOLUME, tts.RELATIVE_VOLUME);
-      mergeRelativeProperty(tts.PITCH, tts.RELATIVE_PITCH);
-      mergeRelativeProperty(tts.RATE, tts.RELATIVE_RATE);
+      mergeRelativeProperty(
+          TtsAudioProperty.VOLUME, TtsSettings.RELATIVE_VOLUME);
+      mergeRelativeProperty(TtsAudioProperty.PITCH, TtsSettings.RELATIVE_PITCH);
+      mergeRelativeProperty(TtsAudioProperty.RATE, TtsSettings.RELATIVE_RATE);
     }
 
-    for (p in properties) {
-      if (!mergedProperties.hasOwnProperty(p)) {
-        mergedProperties[p] = properties[p];
+    for (const [key, value] of Object.entries(properties)) {
+      if (mergedProperties[key] === undefined &&
+          properties[key] !== undefined) {
+        mergedProperties[key] = value;
       }
     }
 
@@ -220,13 +221,15 @@ export class AbstractTts implements TtsInterface {
    * @return The text formatted in a way that will sound better by most speech
    *     engines.
    */
-  protected preprocess(text: string, properties: Properties = {}): string {
+  protected preprocess(
+      text: string,
+      properties: TtsSpeechProperties = new TtsSpeechProperties()): string {
     if (text.length === 1 && text.toLowerCase() !== text) {
       // Describe capital letters according to user's setting.
       if (SettingsManager.getString('capitalStrategy') === 'increasePitch') {
         // Closure doesn't allow the use of for..in or [] with structs, so
         // convert to a pure JSON object.
-        const CAPITAL = ttsTypes.Personality.CAPITAL.toJSON() as PropertyValues;
+        const CAPITAL = Personality.CAPITAL.toJSON() as PropertyValues;
         for (const prop in CAPITAL) {
           if (properties[prop] === undefined) {
             properties[prop] = CAPITAL[prop];
@@ -258,13 +261,13 @@ export class AbstractTts implements TtsInterface {
     // simultaneously.
     text = text.replace(
         AbstractTts.substitutionDictionaryRegexp_, function(symbol) {
-          return ' ' + ttsTypes.SubstitutionDictionary[symbol] + ' ';
+          return ' ' + SubstitutionDictionary[symbol] + ' ';
         });
 
     // Handle single characters that we want to make sure we pronounce.
     if (text.length === 1) {
-      return ttsTypes.CharacterDictionary[text] ?
-          Msgs.getMsgWithCount(ttsTypes.CharacterDictionary[text], 1) :
+      return CharacterDictionary[text] ?
+          Msgs.getMsgWithCount(CharacterDictionary[text], 1) :
           text.toUpperCase();
     }
 
@@ -283,8 +286,7 @@ export class AbstractTts implements TtsInterface {
    */
   private static repetitionReplace_(match: string): string {
     const count = match.length;
-    return ' ' +
-        Msgs.getMsgWithCount(ttsTypes.CharacterDictionary[match[0]], count) +
+    return ' ' + Msgs.getMsgWithCount(CharacterDictionary[match[0]], count) +
         ' ';
   }
 

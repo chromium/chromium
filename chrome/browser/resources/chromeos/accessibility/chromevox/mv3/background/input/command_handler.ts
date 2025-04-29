@@ -28,7 +28,7 @@ import {ChromeVoxKbHandler} from '../../common/keyboard_handler.js';
 import {Msgs} from '../../common/msgs.js';
 import {PanelCommand, PanelCommandType} from '../../common/panel_command.js';
 import {PermissionChecker} from '../../common/permission_checker.js';
-import {QueueMode, TtsSettings, TtsSpeechProperties} from '../../common/tts_types.js';
+import {QueueMode, TtsAudioProperty, TtsSpeechProperties} from '../../common/tts_types.js';
 import {AutoScrollHandler} from '../auto_scroll_handler.js';
 import {BrailleCaptionsBackground} from '../braille/braille_captions_background.js';
 import {BrailleTranslatorManager} from '../braille/braille_translator_manager.js';
@@ -129,22 +129,23 @@ export class CommandHandler implements CommandHandlerInterface {
         LogManager.logTreeDump();
         break;
       case Command.DECREASE_TTS_RATE:
-        ChromeVox.tts.increaseOrDecreaseProperty(TtsSettings.RATE, false);
+        ChromeVox.tts.increaseOrDecreaseProperty(TtsAudioProperty.RATE, false);
         return false;
       case Command.INCREASE_TTS_RATE:
-        ChromeVox.tts.increaseOrDecreaseProperty(TtsSettings.RATE, true);
+        ChromeVox.tts.increaseOrDecreaseProperty(TtsAudioProperty.RATE, true);
         return false;
       case Command.DECREASE_TTS_PITCH:
-        ChromeVox.tts.increaseOrDecreaseProperty(TtsSettings.PITCH, false);
+        ChromeVox.tts.increaseOrDecreaseProperty(TtsAudioProperty.PITCH, false);
         return false;
       case Command.INCREASE_TTS_PITCH:
-        ChromeVox.tts.increaseOrDecreaseProperty(TtsSettings.PITCH, true);
+        ChromeVox.tts.increaseOrDecreaseProperty(TtsAudioProperty.PITCH, true);
         return false;
       case Command.DECREASE_TTS_VOLUME:
-        ChromeVox.tts.increaseOrDecreaseProperty(TtsSettings.VOLUME, false);
+        ChromeVox.tts.increaseOrDecreaseProperty(
+            TtsAudioProperty.VOLUME, false);
         return false;
       case Command.INCREASE_TTS_VOLUME:
-        ChromeVox.tts.increaseOrDecreaseProperty(TtsSettings.VOLUME, true);
+        ChromeVox.tts.increaseOrDecreaseProperty(TtsAudioProperty.VOLUME, true);
         return false;
       case Command.STOP_SPEECH:
         ChromeVox.tts.stop();
@@ -1475,7 +1476,7 @@ export class CommandHandler implements CommandHandlerInterface {
 
   private showLearnModePage_(): void {
     const explorerPage = {
-      url: 'chromevox/mv3/learn_mode/learn_mode.html',
+      url: 'chromevox/mv2/learn_mode/learn_mode.html',
       type: 'panel' as CreateType,
     };
     // Use chrome.windows API to ensure page is opened in Ash-chrome.

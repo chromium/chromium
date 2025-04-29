@@ -13,7 +13,7 @@ import {TestImportManager} from '/common/testing/test_import_manager.js';
 import {BridgeConstants} from '../common/bridge_constants.js';
 import {Msgs} from '../common/msgs.js';
 import {SettingsManager} from '../common/settings_manager.js';
-import {Personality, QueueMode, TtsSpeechProperties} from '../common/tts_types.js';
+import {Personality, QueueMode, TtsAudioProperty, TtsSpeechProperties} from '../common/tts_types.js';
 
 import {ChromeVox} from './chromevox.js';
 import {CompositeTts} from './composite_tts.js';
@@ -81,9 +81,9 @@ export class TtsBackground {
     const rate = ChromeVox.tts.getDefaultProperty('rate');
     const pitch = ChromeVox.tts.getDefaultProperty('pitch');
     const volume = ChromeVox.tts.getDefaultProperty('volume');
-    ChromeVox.tts.setProperty('rate', rate ? rate : 1);
-    ChromeVox.tts.setProperty('pitch', pitch ? pitch : 1);
-    ChromeVox.tts.setProperty('volume', volume ? volume : 1);
+    ChromeVox.tts.setProperty(TtsAudioProperty.RATE, rate ? rate : 1);
+    ChromeVox.tts.setProperty(TtsAudioProperty.PITCH, pitch ? pitch : 1);
+    ChromeVox.tts.setProperty(TtsAudioProperty.VOLUME, volume ? volume : 1);
     SettingsManager.set('voiceName', constants.SYSTEM_VOICE);
     TtsBackground.primary.updateVoice('', () => {
       // Ensure this announcement doesn't get cut off by speech triggered by
