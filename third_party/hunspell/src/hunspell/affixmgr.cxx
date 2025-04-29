@@ -1,7 +1,7 @@
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
- * Copyright (C) 2002-2017 Németh László
+ * Copyright (C) 2002-2022 Németh László
  *
  * The contents of this file are subject to the Mozilla Public License Version
  * 1.1 (the "License"); you may not use this file except in compliance with
@@ -75,6 +75,7 @@
 #include <time.h>
 
 #include <algorithm>
+#include <chrono>
 #include <limits>
 #include <string>
 #include <vector>
@@ -1109,7 +1110,7 @@ int AffixMgr::encodeit(AffEntry& entry, const char* cs) {
     } else if (cs[MAXCONDLEN]) {
       //there is more conditions than fit in fixed space, so its
       //a long condition
-      entry.opts += aeLONGCOND;
+      entry.opts |= aeLONGCOND;
       entry.c.l.conds2 = mystrdup(cs + MAXCONDLEN_1);
       if (!entry.c.l.conds2)
         return 1;
@@ -1674,13 +1675,20 @@ struct hentry* AffixMgr::compound_check(const std::string& word,
   // add a time limit to handle possible
   // combinatorical explosion of the overlapping words
 
-  HUNSPELL_THREAD_LOCAL clock_t timelimit;
+  HUNSPELL_THREAD_LOCAL std::chrono::steady_clock::time_point clock_time_start;
+  HUNSPELL_THREAD_LOCAL bool timelimit_exceeded;
 
-  if (wordnum == 0)
-      timelimit = clock();
-  else if (timelimit != 0 && (clock() > timelimit + TIMELIMIT)) {
-      timelimit = 0;
+  // get the current time
+  std::chrono::steady_clock::time_point clock_now = std::chrono::steady_clock::now();
+
+  if (wordnum == 0) {
+      // set the start time
+      clock_time_start = clock_now;
+      timelimit_exceeded = false;
   }
+  else if (std::chrono::duration_cast<std::chrono::milliseconds>(clock_now - clock_time_start).count()
+            > static_cast<double>(TIMELIMIT) * CLOCKS_PER_SEC * 1000)
+      timelimit_exceeded = true;
 
   setcminmax(&cmin, &cmax, word.c_str(), len);
 
@@ -1706,7 +1714,7 @@ struct hentry* AffixMgr::compound_check(const std::string& word,
 
       do {  // simplified checkcompoundpattern loop
 
-        if (timelimit == 0)
+        if (timelimit_exceeded)
           return 0;
 
         if (scpd > 0) {
@@ -2280,13 +2288,20 @@ int AffixMgr::compound_check_morph(const char* word,
   // add a time limit to handle possible
   // combinatorical explosion of the overlapping words
 
-  HUNSPELL_THREAD_LOCAL clock_t timelimit;
+  HUNSPELL_THREAD_LOCAL std::chrono::steady_clock::time_point clock_time_start;
+  HUNSPELL_THREAD_LOCAL bool timelimit_exceeded;
 
-  if (wordnum == 0)
-      timelimit = clock();
-  else if (timelimit != 0 && (clock() > timelimit + TIMELIMIT)) {
-      timelimit = 0;
+  // get the current time
+  std::chrono::steady_clock::time_point clock_now = std::chrono::steady_clock::now();
+
+  if (wordnum == 0) {
+      // set the start time
+      clock_time_start = clock_now;
+      timelimit_exceeded = false;
   }
+  else if (std::chrono::duration_cast<std::chrono::milliseconds>(clock_now - clock_time_start).count()
+            > static_cast<double>(TIMELIMIT) * CLOCKS_PER_SEC * 1000)
+      timelimit_exceeded = true;
 
   setcminmax(&cmin, &cmax, word, len);
 
@@ -2306,7 +2321,7 @@ int AffixMgr::compound_check_morph(const char* word,
 
     do {  // onlycpdrule loop
 
-      if (timelimit == 0)
+      if (timelimit_exceeded)
         return 0;
 
       oldnumsyllable = numsyllable;
@@ -2350,8 +2365,6 @@ int AffixMgr::compound_check_morph(const char* word,
         rv = rv->next_homonym;
       }
 
-      if (timelimit == 0)
-        return 0;
 
       if (rv)
         affixed = 0;
@@ -4570,11 +4583,11 @@ bool AffixMgr::parse_affix(const std::string& line,
 
         char opts = ff;
         if (utf8)
-          opts += aeUTF8;
+          opts |= aeUTF8;
         if (pHMgr->is_aliasf())
-          opts += aeALIASF;
+          opts |= aeALIASF;
         if (pHMgr->is_aliasm())
-          opts += aeALIASM;
+          opts |= aeALIASM;
         affentries.initialize(numents, opts, aflag);
       }
 

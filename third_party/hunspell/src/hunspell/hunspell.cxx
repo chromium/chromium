@@ -1,7 +1,7 @@
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
- * Copyright (C) 2002-2017 Németh László
+ * Copyright (C) 2002-2022 Németh László
  *
  * The contents of this file are subject to the Mozilla Public License Version
  * 1.1 (the "License"); you may not use this file except in compliance with
@@ -176,10 +176,10 @@ private:
   void insert_sug(std::vector<std::string>& slst, const std::string& word);
   void cat_result(std::string& result, const std::string& st);
   std::vector<std::string> spellml(const std::string& word);
-  std::string get_xml_par(const char* par);
-  const char* get_xml_pos(const char* s, const char* attr);
-  std::vector<std::string> get_xml_list(const char* list, const char* tag);
-  int check_xml_par(const char* q, const char* attr, const char* value);
+  std::string get_xml_par(const std::string& par, std::string::size_type pos);
+  std::string::size_type get_xml_pos(const std::string& s, std::string::size_type pos, const char* attr);
+  std::vector<std::string> get_xml_list(const std::string& list, std::string::size_type pos, const char* tag);
+  int check_xml_par(const std::string& q, std::string::size_type pos, const char* attr, const char* value);
 private:
   HunspellImpl(const HunspellImpl&);
   HunspellImpl& operator=(const HunspellImpl&);
@@ -567,7 +567,7 @@ bool HunspellImpl::spell_internal(const std::string& word, int* info, std::strin
     case HUHCAP:
     /* FALLTHROUGH */
     case HUHINITCAP:
-      *info += SPELL_ORIGCAP;
+      *info |= SPELL_ORIGCAP;
     /* FALLTHROUGH */
     case NOCAP:
       rv = checkword(scw, info, root);
@@ -578,7 +578,7 @@ bool HunspellImpl::spell_internal(const std::string& word, int* info, std::strin
       }
       break;
     case ALLCAP: {
-      *info += SPELL_ORIGCAP;
+      *info |= SPELL_ORIGCAP;
       rv = checkword(scw, info, root);
       if (rv)
         break;
@@ -649,7 +649,7 @@ bool HunspellImpl::spell_internal(const std::string& word, int* info, std::strin
     case INITCAP: {
       // handle special capitalization of dotted I
       bool Idot = (utf8 && (unsigned char) scw[0] == 0xc4 && (unsigned char) scw[1] == 0xb0);
-      *info += SPELL_ORIGCAP;
+      *info |= SPELL_ORIGCAP;
       if (captype == ALLCAP) {
           mkallsmall2(scw, sunicw);
           mkinitcap2(scw, sunicw);
@@ -657,10 +657,10 @@ bool HunspellImpl::spell_internal(const std::string& word, int* info, std::strin
              scw.replace(0, 1, "\xc4\xb0");
       }
       if (captype == INITCAP)
-        *info += SPELL_INITCAP;
+        *info |= SPELL_INITCAP;
       rv = checkword(scw, info, root);
       if (captype == INITCAP)
-        *info -= SPELL_INITCAP;
+        *info &= ~SPELL_INITCAP;
       // forbid bad capitalization
       // (for example, ijs -> Ijs instead of IJs in Dutch)
       // use explicit forms in dic: Ijs/F (F = FORBIDDENWORD flag)
@@ -685,10 +685,10 @@ bool HunspellImpl::spell_internal(const std::string& word, int* info, std::strin
           u8buffer = scw;
           u8buffer.push_back('.');
           if (captype == INITCAP)
-            *info += SPELL_INITCAP;
+            *info |= SPELL_INITCAP;
           rv = checkword(u8buffer, info, root);
           if (captype == INITCAP)
-            *info -= SPELL_INITCAP;
+            *info &= ~SPELL_INITCAP;
           if (rv && is_keepcase(rv) && (captype == ALLCAP))
             rv = NULL;
           break;
@@ -709,7 +709,7 @@ bool HunspellImpl::spell_internal(const std::string& word, int* info, std::strin
   if (rv) {
     if (pAMgr && pAMgr->get_warn() && rv->astr &&
         TESTAFF(rv->astr, pAMgr->get_warn(), rv->alen)) {
-      *info += SPELL_WARN;
+      *info |= SPELL_WARN;
       if (pAMgr->get_forbidwarn())
         return false;
       return true;
@@ -855,13 +855,13 @@ struct hentry* HunspellImpl::checkword(const std::string& w, int* info, std::str
     if ((he) && (he->astr) && (pAMgr) &&
         TESTAFF(he->astr, pAMgr->get_forbiddenword(), he->alen)) {
       if (info)
-        *info += SPELL_FORBIDDEN;
+        *info |= SPELL_FORBIDDEN;
       // LANG_hu section: set dash information for suggestions
       if (langnum == LANG_hu) {
         if (pAMgr->get_compoundflag() &&
             TESTAFF(he->astr, pAMgr->get_compoundflag(), he->alen)) {
           if (info)
-            *info += SPELL_COMPOUND;
+            *info |= SPELL_COMPOUND;
         }
       }
       return NULL;
@@ -896,7 +896,7 @@ struct hentry* HunspellImpl::checkword(const std::string& w, int* info, std::str
       if ((he->astr) && (pAMgr) &&
           TESTAFF(he->astr, pAMgr->get_forbiddenword(), he->alen)) {
         if (info)
-          *info += SPELL_FORBIDDEN;
+          *info |= SPELL_FORBIDDEN;
         return NULL;
       }
       if (root) {
@@ -929,7 +929,7 @@ struct hentry* HunspellImpl::checkword(const std::string& w, int* info, std::str
           }
         }
         if (info)
-          *info += SPELL_COMPOUND;
+          *info |= SPELL_COMPOUND;
       }
     }
   }
@@ -1780,10 +1780,11 @@ std::vector<std::string> HunspellImpl::generate(const std::string& word, const s
 }
 
 // minimal XML parser functions
-std::string HunspellImpl::get_xml_par(const char* par) {
+std::string HunspellImpl::get_xml_par(const std::string& in_par, std::string::size_type pos) {
   std::string dest;
-  if (!par)
+  if (pos == std::string::npos)
     return dest;
+  const char* par = in_par.c_str() + pos;
   char end = *par;
   if (end == '>')
     end = '<';
@@ -1811,42 +1812,47 @@ bool HunspellImpl::input_conv(const std::string& word, std::string& dest) {
 }
 
 // return the beginning of the element (attr == NULL) or the attribute
-const char* HunspellImpl::get_xml_pos(const char* s, const char* attr) {
-  const char* end = strchr(s, '>');
+std::string::size_type HunspellImpl::get_xml_pos(const std::string& s, std::string::size_type pos, const char* attr) {
+  if (pos == std::string::npos)
+    return std::string::npos;
+
+  std::string::size_type endpos = s.find('>', pos);
   if (attr == NULL)
-    return end;
-  const char* p = s;
-  while (1) {
-    p = strstr(p, attr);
-    if (!p || p >= end)
-      return 0;
-    if (*(p - 1) == ' ' || *(p - 1) == '\n')
+    return endpos;
+  while (true) {
+    pos = s.find(attr, pos);
+    if (pos == std::string::npos || pos >= endpos)
+      return std::string::npos;
+    if (s[pos - 1] == ' ' || s[pos - 1] == '\n')
       break;
-    p += strlen(attr);
+    pos += strlen(attr);
   }
-  return p + strlen(attr);
+  return pos + strlen(attr);
 }
 
-int HunspellImpl::check_xml_par(const char* q,
-                            const char* attr,
-                            const char* value) {
-  std::string cw = get_xml_par(get_xml_pos(q, attr));
+int HunspellImpl::check_xml_par(const std::string& q, std::string::size_type pos,
+                                const char* attr,
+                                const char* value) {
+  std::string cw = get_xml_par(q, get_xml_pos(q, pos, attr));
   if (cw == value)
     return 1;
   return 0;
 }
 
-std::vector<std::string> HunspellImpl::get_xml_list(const char* list, const char* tag) {
+std::vector<std::string> HunspellImpl::get_xml_list(const std::string& list, std::string::size_type pos, const char* tag) {
   std::vector<std::string> slst;
-  if (!list)
+  if (pos == std::string::npos)
     return slst;
-  const char* p = list;
-  for (size_t n = 0; ((p = strstr(p, tag)) != NULL); ++p, ++n) {
-    std::string cw = get_xml_par(p + strlen(tag) - 1);
+  while (true) {
+    pos = list.find(tag, pos);
+    if (pos == std::string::npos)
+        break;
+    std::string cw = get_xml_par(list, pos + strlen(tag) - 1);
     if (cw.empty()) {
       break;
     }
     slst.push_back(cw);
+    ++pos;
   }
   return slst;
 }
@@ -1854,19 +1860,20 @@ std::vector<std::string> HunspellImpl::get_xml_list(const char* list, const char
 std::vector<std::string> HunspellImpl::spellml(const std::string& in_word) {
   std::vector<std::string> slst;
 
-  const char* word = in_word.c_str();
+  std::string::size_type qpos = in_word.find("<query");
+  if (qpos == std::string::npos)
+    return slst;  // bad XML input
 
-  const char* q = strstr(word, "<query");
-  if (!q)
+  std::string::size_type q2pos = in_word.find('>', qpos);
+  if (q2pos == std::string::npos)
     return slst;  // bad XML input
-  const char* q2 = strchr(q, '>');
-  if (!q2)
+
+  q2pos = in_word.find("<word", q2pos);
+  if (q2pos == std::string::npos)
     return slst;  // bad XML input
-  q2 = strstr(q2, "<word");
-  if (!q2)
-    return slst;  // bad XML input
-  if (check_xml_par(q, "type=", "analyze")) {
-    std::string cw = get_xml_par(strchr(q2, '>'));
+
+  if (check_xml_par(in_word, qpos, "type=", "analyze")) {
+    std::string cw = get_xml_par(in_word, in_word.find('>', q2pos));
     if (!cw.empty())
       slst = analyze(cw);
     if (slst.empty())
@@ -1889,23 +1896,24 @@ std::vector<std::string> HunspellImpl::spellml(const std::string& in_word) {
     slst.clear();
     slst.push_back(r);
     return slst;
-  } else if (check_xml_par(q, "type=", "stem")) {
-    std::string cw = get_xml_par(strchr(q2, '>'));
+  } else if (check_xml_par(in_word, qpos, "type=", "stem")) {
+    std::string cw = get_xml_par(in_word, in_word.find('>', q2pos));
     if (!cw.empty())
       return stem(cw);
-  } else if (check_xml_par(q, "type=", "generate")) {
-    std::string cw = get_xml_par(strchr(q2, '>'));
+  } else if (check_xml_par(in_word, qpos, "type=", "generate")) {
+    std::string cw = get_xml_par(in_word, in_word.find('>', q2pos));
     if (cw.empty())
       return slst;
-    const char* q3 = strstr(q2 + 1, "<word");
-    if (q3) {
-      std::string cw2 = get_xml_par(strchr(q3, '>'));
+    std::string::size_type q3pos = in_word.find("<word", q2pos + 1);
+    if (q3pos != std::string::npos) {
+      std::string cw2 = get_xml_par(in_word, in_word.find('>', q3pos));
       if (!cw2.empty()) {
         return generate(cw, cw2);
       }
     } else {
-      if ((q2 = strstr(q2 + 1, "<code")) != NULL) {
-        std::vector<std::string> slst2 = get_xml_list(strchr(q2, '>'), "<a>");
+      q2pos = in_word.find("<code", q2pos + 1);
+      if (q2pos != std::string::npos) {
+        std::vector<std::string> slst2 = get_xml_list(in_word, in_word.find('>', q2pos), "<a>");
         if (!slst2.empty()) {
           slst = generate(cw, slst2);
           uniqlist(slst);
@@ -1913,13 +1921,13 @@ std::vector<std::string> HunspellImpl::spellml(const std::string& in_word) {
         }
       }
     }
-  } else if (check_xml_par(q, "type=", "add")) {
-    std::string cw = get_xml_par(strchr(q2, '>'));
+  } else if (check_xml_par(in_word, qpos, "type=", "add")) {
+    std::string cw = get_xml_par(in_word, in_word.find('>', q2pos));
     if (cw.empty())
       return slst;
-    const char* q3 = strstr(q2 + 1, "<word");
-    if (q3) {
-      std::string cw2 = get_xml_par(strchr(q3, '>'));
+    std::string::size_type q3pos = in_word.find("<word", q2pos + 1);
+    if (q3pos != std::string::npos) {
+      std::string cw2 = get_xml_par(in_word, in_word.find('>', q3pos));
       if (!cw2.empty()) {
         add_with_affix(cw, cw2);
       } else {
