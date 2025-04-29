@@ -6,6 +6,7 @@
 
 #include "base/test/trace_event_analyzer.h"
 #include "third_party/blink/public/web/web_css_origin.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_css_style_sheet_init.h"
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
 #include "third_party/blink/renderer/core/css/invalidation/invalidation_set.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
@@ -569,10 +570,9 @@ TEST_F(InvalidationSetToSelectorMapTest,
 
   StartTracing();
 
-  DummyExceptionStateForTesting exception_state;
   CSSStyleSheet* sheet =
       To<HTMLStyleElement>(GetElementById("target"))->sheet();
-  sheet->insertRule(".c .d { color: green; }", 0, exception_state);
+  sheet->insertRule(".c .d { color: green; }", 0, ASSERT_NO_EXCEPTION);
   UpdateAllLifecyclePhasesForTest();
   GetElementById("parent")->removeAttribute(html_names::kClassAttr);
   UpdateAllLifecyclePhasesForTest();
@@ -611,10 +611,9 @@ TEST_F(InvalidationSetToSelectorMapTest,
 
   StartTracing();
 
-  DummyExceptionStateForTesting exception_state;
   CSSStyleSheet* sheet =
       To<HTMLStyleElement>(GetElementById("target"))->sheet();
-  sheet->insertRule(".a + .b { color: green; }", 0, exception_state);
+  sheet->insertRule(".a + .b { color: green; }", 0, ASSERT_NO_EXCEPTION);
   UpdateAllLifecyclePhasesForTest();
   GetElementById("first")->removeAttribute(html_names::kClassAttr);
   UpdateAllLifecyclePhasesForTest();
@@ -661,10 +660,9 @@ TEST_F(InvalidationSetToSelectorMapTest,
   // Insert the first rule and perform a mutation to trigger a revisit.
   // If we complete the revisit without crashing, this part of the test is
   // considered to have passed.
-  DummyExceptionStateForTesting exception_state;
   CSSStyleSheet* sheet =
       To<HTMLStyleElement>(GetElementById("target"))->sheet();
-  sheet->insertRule("* + .x { color: red }", 0, exception_state);
+  sheet->insertRule("* + .x { color: red }", 0, ASSERT_NO_EXCEPTION);
   Element* first = GetElementById("first");
   first->classList().Remove(AtomicString("a"));
   first->removeAttribute(html_names::kClassAttr);
@@ -681,7 +679,7 @@ TEST_F(InvalidationSetToSelectorMapTest,
   // Insert the second rule, exercising the case where we have an indexed
   // universal sibling rule and a pending sibling-descendant rule, and
   // perform another mutation to trigger another revisit.
-  sheet->insertRule("* + .b li span { color: red }", 0, exception_state);
+  sheet->insertRule("* + .b li span { color: red }", 0, ASSERT_NO_EXCEPTION);
   first->classList().Add(AtomicString("a"));
   UpdateAllLifecyclePhasesForTest();
 
@@ -1053,6 +1051,90 @@ TEST_F(InvalidationSetToSelectorMapTest, MultipleTreeScopes) {
         EXPECT_EQ(StyleSheetIdAtIndex(selector_list, 0),
                   IdentifiersFactory::IdForCSSStyleSheet(sheet).Utf8());
         found_event_count++;
+      }
+    }
+    EXPECT_EQ(found_event_count, 1u);
+  }
+}
+
+TEST_F(InvalidationSetToSelectorMapTest, AdoptedStylesheets) {
+  SetBodyInnerHTML(R"HTML(
+    <template id="custom-template">
+      <div class="a">Shadow Outer
+        <div class="b">Shadow Inner</div>
+      </div>
+    </template>
+    <div id="parent1"></div>
+    <div id="parent2"></div>
+  )HTML");
+
+  struct TestElement {
+    STACK_ALLOCATED();
+
+   public:
+    const char* id;
+    const char* color;
+    CSSStyleSheet* sheet;
+  };
+  TestElement test_elements[] = {{"parent1", "red", nullptr},
+                                 {"parent2", "blue", nullptr}};
+
+  CSSStyleSheetInit* init = CSSStyleSheetInit::Create();
+  for (TestElement& test_element : test_elements) {
+    ShadowRoot& shadow_root =
+        GetElementById(test_element.id)
+            ->AttachShadowRootForTesting(ShadowRootMode::kOpen);
+    shadow_root.appendChild(
+        To<HTMLTemplateElement>(GetElementById("custom-template"))
+            ->content()
+            ->cloneNode(true));
+    test_element.sheet =
+        CSSStyleSheet::Create(GetDocument(), init, ASSERT_NO_EXCEPTION);
+    test_element.sheet->insertRule(
+        String::Format(".a .b {background: %s;}", test_element.color), 0,
+        ASSERT_NO_EXCEPTION);
+    HeapVector<Member<CSSStyleSheet>> stylesheets;
+    stylesheets.push_back(test_element.sheet);
+    shadow_root.SetAdoptedStyleSheetsForTesting(stylesheets);
+  }
+
+  UpdateAllLifecyclePhasesForTest();
+
+  for (TestElement& test_element : test_elements) {
+    SCOPED_TRACE(testing::Message()
+                 << "Parent element id: " << test_element.id);
+    StartTracing();
+    ShadowRoot* shadow_root = GetElementById(test_element.id)->GetShadowRoot();
+    shadow_root->QuerySelector(AtomicString(".a"))
+        ->removeAttribute(html_names::kClassAttr);
+    UpdateAllLifecyclePhasesForTest();
+    auto analyzer = StopTracing();
+
+    trace_analyzer::TraceEventVector invalidation_events;
+    analyzer->FindEvents(trace_analyzer::Query::EventNameIs(
+                             "StyleInvalidatorInvalidationTracking"),
+                         &invalidation_events);
+    size_t found_event_count = 0;
+    for (auto event : invalidation_events) {
+      ASSERT_TRUE(event->HasDictArg("data"));
+      base::Value::Dict data_dict = event->GetKnownArgAsDict("data");
+      std::string* reason = data_dict.FindString("reason");
+      if (reason != nullptr && *reason == "Invalidation set matched class") {
+        base::Value::List* selector_list = data_dict.FindList("selectors");
+        ASSERT_NE(selector_list, nullptr);
+        // `selector_list->size()` can be 2 rather than 1 because invalidation
+        // sets are not tree-scoped. If both shadow roots have been revisited,
+        // the `.a .b` selectors in the two adopted stylesheets both contribute
+        // to the same invalidation set entry.
+        EXPECT_GE(selector_list->size(), 1u);
+        for (int i = 0; i < selector_list->size(); i++) {
+          EXPECT_EQ(SelectorAtIndex(selector_list, i), ".a .b");
+          if (StyleSheetIdAtIndex(selector_list, i) ==
+              IdentifiersFactory::IdForCSSStyleSheet(test_element.sheet)
+                  .Utf8()) {
+            found_event_count++;
+          }
+        }
       }
     }
     EXPECT_EQ(found_event_count, 1u);
