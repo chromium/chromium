@@ -3347,7 +3347,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Tabs.TabState.LoadTime" units="ms" expires_after="2025-08-24">
+<histogram name="Tabs.TabState.LoadTime" units="ms" expires_after="2025-10-26">
   <owner>yusufo@chromium.org</owner>
   <owner>nyquist@chromium.org</owner>
   <owner>dtrainor@chromium.org</owner>
