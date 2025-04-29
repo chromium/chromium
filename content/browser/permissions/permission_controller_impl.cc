@@ -179,7 +179,7 @@ bool IsRequestAllowed(
               blink::GetPermissionString(permission_type) +
                   " permission has been blocked because of a permissions "
                   "policy applied to the current document. See "
-                  "https://goo.gl/EuHzyv for more details.");
+                  "https://crbug.com/414348233 for more details.");
           break;
 #endif
         default:
@@ -351,8 +351,9 @@ void PermissionControllerImpl::NotifyChangedSubscriptions(
                                          /*ignore_status_override=*/true));
     }
   }
-  for (auto& callback : callbacks)
+  for (auto& callback : callbacks) {
     std::move(callback).Run();
+  }
 }
 
 PermissionControllerImpl::OverrideStatus

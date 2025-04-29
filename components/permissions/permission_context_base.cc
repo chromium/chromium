@@ -185,7 +185,7 @@ void PermissionContextBase::RequestPermission(
       case content::PermissionStatusSource::FEATURE_POLICY:
         static constexpr char kPermissionBlockedPermissionsPolicyReason[] =
             " because of a permissions policy applied to the current document. "
-            "See https://goo.gl/EuHzyv for more details.";
+            "See https://crbug.com/414348233 for more details.";
         LogPermissionBlockedMessage(rfh,
                                     kPermissionBlockedPermissionsPolicyReason,
                                     content_settings_type_);
