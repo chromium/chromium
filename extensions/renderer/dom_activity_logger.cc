@@ -49,6 +49,8 @@ void AppendV8Value(v8::Isolate* isolate,
 
 DOMActivityLogger::DOMActivityLogger(const ExtensionId& extension_id)
     : extension_id_(extension_id) {
+  // TODO(crbug.com/414486674): upgrade to CHECK once we ensure that validation
+  // is always working.
   DCHECK(!extension_id_.empty());
 }
 
