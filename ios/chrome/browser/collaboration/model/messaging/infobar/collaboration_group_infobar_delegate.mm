@@ -7,6 +7,7 @@
 #import "base/check.h"
 #import "base/memory/ptr_util.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/collaboration/public/collaboration_flow_entry_point.h"
 #import "components/infobars/core/infobar.h"
 #import "components/infobars/core/infobar_delegate.h"
 #import "components/infobars/core/infobar_manager.h"
@@ -21,6 +22,8 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/public/commands/collaboration_group_commands.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -191,6 +194,7 @@ bool CollaborationGroupInfoBarDelegate::Accept() {
       ReopenTab();
       break;
     case CollaborationEvent::COLLABORATION_MEMBER_ADDED:
+      ManageGroup();
       break;
     case CollaborationEvent::UNDEFINED:
     case CollaborationEvent::TAB_ADDED:
@@ -258,4 +262,28 @@ void CollaborationGroupInfoBarDelegate::ReopenTab() {
   }
 
   UrlLoadingBrowserAgent::FromBrowser(group_info.browser)->Load(params);
+}
+
+void CollaborationGroupInfoBarDelegate::ManageGroup() {
+  std::optional<tab_groups::LocalTabGroupID> local_tab_group_id =
+      GetLocalTabGroupId(instant_message_);
+  if (!local_tab_group_id.has_value()) {
+    return;
+  }
+
+  BrowserList* browser_list = BrowserListFactory::GetForProfile(profile_);
+  tab_groups::utils::LocalTabGroupInfo group_info =
+      tab_groups::utils::GetLocalTabGroupInfo(browser_list,
+                                              local_tab_group_id.value());
+  if (!group_info.tab_group) {
+    return;
+  }
+
+  id<CollaborationGroupCommands> collaborationGroupHandler = HandlerForProtocol(
+      group_info.browser->GetCommandDispatcher(), CollaborationGroupCommands);
+  [collaborationGroupHandler
+      shareOrManageTabGroup:group_info.tab_group
+                 entryPoint:collaboration::
+                                CollaborationServiceShareOrManageEntryPoint::
+                                    kiOSMessage];
 }
