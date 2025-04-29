@@ -261,8 +261,10 @@ bool ZipReader::OpenEntry() {
 
 #if defined(OS_POSIX)
   entry_.posix_mode = (info.external_fa >> 16L) & (S_IRWXU | S_IRWXG | S_IRWXO);
+  entry_.is_symbolic_link = S_ISLNK(info.external_fa >> 16L);
 #else
   entry_.posix_mode = 0;
+  entry_.is_symbolic_link = false;
 #endif
 
   return true;
