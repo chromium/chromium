@@ -10,7 +10,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Android FYI Release (Pixel 6)",
-              "project": "chromium"
+              "project": "chromium-m137"
             },
             "builder_spec": {
               "builder_group": "chromium.gpu.fyi",
@@ -38,7 +38,7 @@
               "parent": {
                 "bucket": "ci",
                 "builder": "GPU FYI Android arm64 Builder",
-                "project": "chromium"
+                "project": "chromium-m137"
               },
               "run_tests_serially": true
             }
@@ -47,7 +47,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "GPU FYI Android arm64 Builder",
-              "project": "chromium"
+              "project": "chromium-m137"
             },
             "builder_spec": {
               "builder_group": "chromium.gpu.fyi",
@@ -80,14 +80,14 @@
         {
           "bucket": "ci",
           "builder": "GPU FYI Android arm64 Builder",
-          "project": "chromium"
+          "project": "chromium-m137"
         }
       ],
       "builder_ids_in_scope_for_testing": [
         {
           "bucket": "ci",
           "builder": "Android FYI Release (Pixel 6)",
-          "project": "chromium"
+          "project": "chromium-m137"
         }
       ],
       "retry_failed_shards": false,
