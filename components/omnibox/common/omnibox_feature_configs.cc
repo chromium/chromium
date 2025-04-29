@@ -177,7 +177,7 @@ SearchAggregatorProvider::SearchAggregatorProvider() {
           .Get();
   use_discovery_engine_oauth_scope =
       base::FeatureParam<bool>(&kSearchAggregatorProvider,
-                               "use_discovery_engine_oauth_scope", false)
+                               "use_discovery_engine_oauth_scope", true)
           .Get();
   disable_drive = base::FeatureParam<bool>(&kSearchAggregatorProvider,
                                            "disable_drive", true)
