@@ -8340,6 +8340,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "save-passwords-contextual-ui",
+    "owners": [ "dfried@chromium.org", "cjgrant@chromium.org" ],
+    "expiry_milestone": 145
+  },
+  {
     "name": "scalable-iph-debug",
     "owners": [
       "//chromeos/ash/components/scalable_iph/OWNERS",

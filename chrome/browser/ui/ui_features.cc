@@ -381,6 +381,10 @@ const base::FeatureParam<bool> kPageActionsMigrationPwaInstall{
 const base::FeatureParam<bool> kPageActionsMigrationPriceInsights{
     &kPageActionsMigration, "price_insights", false};
 
+BASE_FEATURE(kSavePasswordsContextualUi,
+             "SavePasswordsContextualUi",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kCompositorLoadingAnimations,
              "CompositorLoadingAnimations",
              base::FEATURE_DISABLED_BY_DEFAULT);

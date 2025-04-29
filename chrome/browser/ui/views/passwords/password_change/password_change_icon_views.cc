@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/passwords/password_bubble_view_base.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/feature_constants.h"
@@ -74,8 +75,13 @@ PasswordChangeIconViews::PasswordChangeIconViews(
 
 PasswordChangeIconViews::~PasswordChangeIconViews() = default;
 
-void PasswordChangeIconViews::SetState(password_manager::ui::State state) {
+void PasswordChangeIconViews::SetState(password_manager::ui::State state,
+                                       bool is_blocklisted) {
+  const bool password_change_blocked =
+      is_blocklisted &&
+      base::FeatureList::IsEnabled(features::kSavePasswordsContextualUi);
   bool should_be_visible =
+      !password_change_blocked &&
       state == password_manager::ui::State::PASSWORD_CHANGE_STATE &&
       !delegate()->ShouldHidePageActionIcon(this);
   SetVisible(should_be_visible);

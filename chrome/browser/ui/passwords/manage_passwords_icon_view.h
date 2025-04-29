@@ -15,7 +15,8 @@ class ManagePasswordsIconView {
   ManagePasswordsIconView(const ManagePasswordsIconView&) = delete;
   ManagePasswordsIconView& operator=(const ManagePasswordsIconView&) = delete;
 
-  virtual void SetState(password_manager::ui::State state) = 0;
+  virtual void SetState(password_manager::ui::State state,
+                        bool is_blocklisted) = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_PASSWORDS_MANAGE_PASSWORDS_ICON_VIEW_H_

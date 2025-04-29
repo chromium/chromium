@@ -28,7 +28,8 @@ class ManagePasswordsIconViews : public ManagePasswordsIconView,
   ~ManagePasswordsIconViews() override;
 
   // ManagePasswordsIconView:
-  void SetState(password_manager::ui::State state) override;
+  void SetState(password_manager::ui::State state,
+                bool is_blocklisted) override;
 
   // PageActionIconView:
   views::BubbleDialogDelegate* GetBubble() const override;
@@ -48,6 +49,7 @@ class ManagePasswordsIconViews : public ManagePasswordsIconView,
   void UpdateUiForState();
 
   password_manager::ui::State state_ = password_manager::ui::INACTIVE_STATE;
+  bool is_blocklisted_ = false;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PASSWORDS_MANAGE_PASSWORDS_ICON_VIEWS_H_

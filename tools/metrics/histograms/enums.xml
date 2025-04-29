@@ -12228,6 +12228,7 @@ from previous Chrome versions.
   <int value="-809640965" label="ShelfAutoHideSeparation:enabled"/>
   <int value="-809456392" label="WebViewVulkanIntermediateBuffer:enabled"/>
   <int value="-809443221" label="ThrottleMainFrameTo60Hz:enabled"/>
+  <int value="-808726145" label="SavePasswordsContextualUi:disabled"/>
   <int value="-808486493" label="NewWallpaperPicker:disabled"/>
   <int value="-807352944" label="IppFirstSetupForUsbPrinters:disabled"/>
   <int value="-806549905"
@@ -15720,6 +15721,7 @@ from previous Chrome versions.
   <int value="533814676" label="CCTResizableForFirstParties:enabled"/>
   <int value="534614617" label="QuickAnswersMaterialNextUI:disabled"/>
   <int value="534825129" label="ReducedWifiPollingInterval:disabled"/>
+  <int value="535038105" label="SavePasswordsContextualUi:enabled"/>
   <int value="535131384" label="OmniboxTailSuggestions:enabled"/>
   <int value="535194142" label="TemporaryHoldingSpacePreviews:enabled"/>
   <int value="535390916"

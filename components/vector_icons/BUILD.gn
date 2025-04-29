@@ -176,6 +176,7 @@ if (current_toolchain == default_toolchain) {
       "page_info_content_paste.icon",
       "passkey.icon",
       "password_manager.icon",
+      "password_manager_off.icon",
       "pause.icon",
       "pause_chrome_refresh.icon",
       "photo.icon",

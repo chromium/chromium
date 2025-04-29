@@ -655,13 +655,14 @@ void ManagePasswordsUIController::OnLoginsRetained(
 
 void ManagePasswordsUIController::UpdateIconAndBubbleState(
     ManagePasswordsIconView* icon) {
+  const bool is_blocklisted = IsExplicitlyBlocklisted();
   if (IsAutomaticallyOpeningBubble() ||
       bubble_status_ == BubbleStatus::SHOULD_POP_UP_WITH_FOCUS) {
     // This will detach any existing bubble so OnBubbleHidden() isn't called.
     weak_ptr_factory_.InvalidateWeakPtrs();
     // We must display the icon before showing the bubble, as the bubble would
     // be otherwise unanchored.
-    icon->SetState(GetState());
+    icon->SetState(GetState(), is_blocklisted);
     ShowBubbleWithoutUserInteraction();
     // If the bubble appeared then the status is updated in OnBubbleShown().
     ClearPopUpFlagForBubble();
@@ -672,7 +673,7 @@ void ManagePasswordsUIController::UpdateIconAndBubbleState(
         state == password_manager::ui::CREDENTIAL_REQUEST_STATE) {
       state = password_manager::ui::INACTIVE_STATE;
     }
-    icon->SetState(state);
+    icon->SetState(state, is_blocklisted);
   }
 }
 
@@ -1053,11 +1054,8 @@ void ManagePasswordsUIController::OnLeakDialogHidden() {
 
 ManagePasswordsUIController::SavingPromptStatus
 ManagePasswordsUIController::GetSavingPromptStatus() const {
-  PasswordFormManagerForUI* form_manager = passwords_data_.form_manager();
-  DCHECK(form_manager);
   auto logger = GetSaveProgressLogger(passwords_data_.client());
-
-  if (form_manager->IsBlocklisted()) {
+  if (IsExplicitlyBlocklisted()) {
     if (logger.has_value()) {
       logger->LogMessage(Logger::STRING_SAVING_BLOCKLISTED_EXPLICITLY);
     }
@@ -1075,6 +1073,14 @@ ManagePasswordsUIController::GetSavingPromptStatus() const {
   }
   return is_implicitly_blocked ? SavingPromptStatus::kImplicitlyBlocked
                                : SavingPromptStatus::kCanShow;
+}
+
+bool ManagePasswordsUIController::IsExplicitlyBlocklisted() const {
+  if (PasswordFormManagerForUI* const form_manager =
+          passwords_data_.form_manager()) {
+    return form_manager->IsBlocklisted();
+  }
+  return false;
 }
 
 void ManagePasswordsUIController::AuthenticateUserWithMessage(

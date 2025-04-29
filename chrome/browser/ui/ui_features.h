@@ -246,6 +246,10 @@ extern const base::FeatureParam<bool> kPageActionsMigrationFileSystemAccess;
 extern const base::FeatureParam<bool> kPageActionsMigrationPwaInstall;
 extern const base::FeatureParam<bool> kPageActionsMigrationPriceInsights;
 
+// Determines whether the "save password" page action displays different UI if
+// the user has said to never save passwords for that site.
+BASE_DECLARE_FEATURE(kSavePasswordsContextualUi);
+
 // Controls whether browser tab loading animations are driven by the compositor
 // vs. a repeating timer.
 BASE_DECLARE_FEATURE(kCompositorLoadingAnimations);

@@ -312,6 +312,9 @@ class ManagePasswordsUIController
   // prompts.
   SavingPromptStatus GetSavingPromptStatus() const;
 
+  // Returns whether the current site is explicitly blocklisted.
+  bool IsExplicitlyBlocklisted() const;
+
   // Returns the timeout for the manual save fallback.
   static base::TimeDelta GetTimeoutForSaveFallback();
 
