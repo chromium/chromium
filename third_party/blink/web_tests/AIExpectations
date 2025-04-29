@@ -8,4 +8,4 @@
 
 # Temporarily disable Language Detector iframe tests until Permissions Policy
 # and individual test setup is updated.
-(crbug.com/414403946) external/wpt/ai/language_detection/detector-iframe.https.html [ Skip ]
+crbug.com/414403946 external/wpt/ai/language_detection/detector-iframe.https.html [ Skip ]
