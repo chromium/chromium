@@ -20,6 +20,7 @@
 #include "components/prefs/pref_service.h"
 #include "extensions/browser/browsertest_util.h"
 #include "extensions/browser/extension_host_test_helper.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/display/screen.h"
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/gfx/geometry/point.h"
@@ -32,12 +33,18 @@ using MediapipeGesture = FaceGazeTestUtils::MediapipeGesture;
 namespace {
 
 const char* kDefaultDisplaySize = "1200x800";
-constexpr char kMediapipeTestFilePath[] =
+constexpr char kMediapipeMV2TestFilePath[] =
     "resources/chromeos/accessibility/accessibility_common/mv2/third_party/"
     "mediapipe_task_vision";
+constexpr char kMediapipeMV3TestFilePath[] =
+    "resources/chromeos/accessibility/accessibility_common/mv3/third_party/"
+    "mediapipe_task_vision";
 const int kMouseDeviceId = 1;
-constexpr char kTestSupportPath[] =
+constexpr char kTestSupportMV2Path[] =
     "chrome/browser/resources/chromeos/accessibility/accessibility_common/mv2/"
+    "facegaze/facegaze_test_support.js";
+constexpr char kTestSupportMV3Path[] =
+    "chrome/browser/resources/chromeos/accessibility/accessibility_common/mv3/"
     "facegaze/facegaze_test_support.js";
 
 PrefService* GetPrefs() {
@@ -278,7 +285,10 @@ void FaceGazeTestUtils::EnableFaceGaze(const Config& config) {
       prefs::kAccessibilityFaceGazeAcceleratorDialogHasBeenAccepted,
       config.dialog_accepted());
 
-  FaceGazeTestUtils::SetUpMediapipeDir();
+  const bool v3_manifest =
+      ::features::IsAccessibilityManifestV3EnabledForAccessibilityCommon();
+  FaceGazeTestUtils::SetUpMediapipeDir(v3_manifest ? kMediapipeMV3TestFilePath
+                                                   : kMediapipeMV2TestFilePath);
   ASSERT_FALSE(AccessibilityManager::Get()->IsFaceGazeEnabled());
 
   // Use ExtensionHostTestHelper to detect when the accessibility common
@@ -290,7 +300,7 @@ void FaceGazeTestUtils::EnableFaceGaze(const Config& config) {
   host_helper.WaitForHostCompletedFirstLoad();
 
   WaitForJSReady();
-  SetUpJSTestSupport();
+  SetUpJSTestSupport(v3_manifest ? kTestSupportMV3Path : kTestSupportMV2Path);
   if (config.dialog_accepted()) {
     // The FaceLandmarker will be automatically initialized after the dialog has
     // been accepted.
@@ -357,13 +367,12 @@ void FaceGazeTestUtils::ExecuteAccessibilityCommonScript(
       /*script=*/script);
 }
 
-void FaceGazeTestUtils::SetUpMediapipeDir() {
+void FaceGazeTestUtils::SetUpMediapipeDir(const char* mediapipe_dir) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::FilePath gen_root_dir;
   ASSERT_TRUE(
       base::PathService::Get(base::DIR_OUT_TEST_DATA_ROOT, &gen_root_dir));
-  base::FilePath test_file_path =
-      gen_root_dir.AppendASCII(kMediapipeTestFilePath);
+  base::FilePath test_file_path = gen_root_dir.AppendASCII(mediapipe_dir);
   ASSERT_TRUE(base::PathExists(test_file_path));
   AccessibilityManager::Get()->SetDlcPathForTest(test_file_path);
 }
@@ -380,11 +389,11 @@ void FaceGazeTestUtils::WaitForJSReady() {
   ExecuteAccessibilityCommonScript(script);
 }
 
-void FaceGazeTestUtils::SetUpJSTestSupport() {
+void FaceGazeTestUtils::SetUpJSTestSupport(const char* test_support_dir) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::FilePath source_dir;
   CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &source_dir));
-  auto test_support_path = source_dir.AppendASCII(kTestSupportPath);
+  auto test_support_path = source_dir.AppendASCII(test_support_dir);
   std::string script;
   ASSERT_TRUE(base::ReadFileToString(test_support_path, &script))
       << test_support_path;
