@@ -12307,7 +12307,9 @@ interface XRDepthInformation
     attribute @@toStringTag
     getter height
     getter normDepthBufferFromNormView
+    getter projectionMatrix
     getter rawValueToMeters
+    getter transform
     getter width
     method constructor
 interface XRFrame

@@ -13,10 +13,13 @@ namespace blink {
 class XRViewGeometry {
  public:
   explicit XRViewGeometry(XRGraphicsBinding::Api graphics_api);
+  XRViewGeometry(const device::mojom::blink::XRViewGeometryPtr& view_geometry,
+                 XRGraphicsBinding::Api graphics_api);
 
-  void UpdateViewGeometry(device::mojom::blink::XRViewGeometryPtr view_geometry,
-                          double depth_near,
-                          double depth_far);
+  void UpdateViewGeometry(
+      const device::mojom::blink::XRViewGeometryPtr& view_geometry,
+      double depth_near,
+      double depth_far);
 
   void UpdateProjectionMatrixFromFoV(float up_rad,
                                      float down_rad,

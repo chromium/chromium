@@ -109,10 +109,12 @@ class MODULES_EXPORT XRViewData final : public GarbageCollected<XRViewData>,
 
   XRCPUDepthInformation* GetCpuDepthInformation(
       const XRFrame* xr_frame,
+      const gfx::Transform& ref_space_from_mojo,
       ExceptionState& exception_state) const;
 
   XRWebGLDepthInformation* GetWebGLDepthInformation(
       const XRFrame* xr_frame,
+      const gfx::Transform& ref_space_from_mojo,
       ExceptionState& exception_state) const;
 
   std::optional<double> recommendedViewportScale() const;

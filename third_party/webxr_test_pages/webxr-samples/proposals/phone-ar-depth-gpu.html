@@ -70,6 +70,9 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
           <br/>
           <input id="requestSmoothDepth" type="checkbox">
           <label for="requestSmoothDepth">Request smooth depth buffer (will be requested after raw if both are requested)</label>
+          <br/>
+          <input id="matchDepthView" type="checkbox" checked>
+          <label for="matchDepthView">Align Depth and XRViews</label>
         </p>
       </details>
     </header>
@@ -153,6 +156,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
         if (useFrontFacing.checked) {
           options.optionalFeatures.push('front-facing');
         }
+
+        options.depthSensing.matchDepthView = matchDepthView.checked;
 
         if (requestRawDepth.checked || requestSmoothDepth.checked) {
           options.depthSensing.depthTypeRequest = [];

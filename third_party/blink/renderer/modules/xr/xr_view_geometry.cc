@@ -14,6 +14,9 @@
 
 namespace {
 const double kDegToRad = M_PI / 180.0;
+
+constexpr float kDefaultNearDepth = 0.0001;
+constexpr float kDefaultFarDepth = 10000;
 }
 
 namespace blink {
@@ -21,8 +24,16 @@ namespace blink {
 XRViewGeometry::XRViewGeometry(XRGraphicsBinding::Api graphics_api)
     : graphics_api_(graphics_api) {}
 
+XRViewGeometry::XRViewGeometry(
+    const device::mojom::blink::XRViewGeometryPtr& view_geometry,
+    XRGraphicsBinding::Api graphics_api)
+    : graphics_api_(graphics_api) {
+  CHECK(view_geometry);
+  UpdateViewGeometry(view_geometry, kDefaultNearDepth, kDefaultFarDepth);
+}
+
 void XRViewGeometry::UpdateViewGeometry(
-    device::mojom::blink::XRViewGeometryPtr view_geometry,
+    const device::mojom::blink::XRViewGeometryPtr& view_geometry,
     double depth_near,
     double depth_far) {
   CHECK(view_geometry);

@@ -149,7 +149,7 @@ inline void WriteToSpanStart(base::span<uint8_t> output, T val) {
   base::span<const uint8_t> val_span;
   if constexpr (std::floating_point<T>) {
     // Floating point types do not have unique object representations, but this
-    // code does not appear to be hashing them, so allow it.
+    // code is just serializing them, so allow it.
     val_span = base::byte_span_from_ref(base::allow_nonunique_obj, val);
   } else {
     val_span = base::byte_span_from_ref(val);
@@ -170,6 +170,7 @@ void CopyDepthData(base::span<const float> input,
                    gfx::Size image_size,
                    XrDepthViewANDROID depth_view,
                    const mojom::XRViewPtr& view,
+                   bool reproject_depth_view,
                    FunctionType&& conversion_fn) {
   TRACE_EVENT0("xr", "CopyDepthData");
   // We should've handled an invalid image_size before getting to this point.
@@ -178,6 +179,17 @@ void CopyDepthData(base::span<const float> input,
   CHECK_EQ(input.size(), num_pixels);
   CHECK_EQ(output.size_bytes(), num_pixels * sizeof(T));
 
+  // If we don't need to reproject, we just need to copy and convert each
+  // element in the order their currently in.
+  if (!reproject_depth_view) {
+    for (const auto& val : input) {
+      WriteToSpanStart(output, conversion_fn(val));
+      output = output.subspan(sizeof(T));
+    }
+    return;
+  }
+
+  // Otherwise, we need to reproject the depth data to align with the XRView.
   // Extract width/height for readability (and to use size_t).
   const size_t width = image_size.width();
   const size_t height = image_size.height();
@@ -316,6 +328,8 @@ OpenXrDepthSensorAndroid::OpenXrDepthSensorAndroid(
               ? mojom::XRDepthType::kSmooth
               : mojom::XRDepthType::kRaw;
     }
+
+    match_depth_view_ = depth_options.match_depth_view;
   } else {
     DVLOG(1) << __func__ << " Cannot support depth";
   }
@@ -511,33 +525,60 @@ mojom::XRDepthDataPtr OpenXrDepthSensorAndroid::GetDepthDataForEye(
   base::span<const float> depth_image_span =
       full_depth_image_span.subspan(pixel_offset, num_pixels);
   mojom::XRDepthDataUpdatedPtr result = mojom::XRDepthDataUpdated::New();
-  mojo_base::BigBuffer pixels(buffer_size);
+  result->size = image_size;
+
+  // If we don't have to match our depth view, then we need to send up the
+  // information about the depth camera's geometry.
+  if (!match_depth_view_) {
+    result->view_geometry = mojom::XRViewGeometry::New();
+    auto& geometry = result->view_geometry;
+    geometry->field_of_view = XrFovToMojomFov(depth_view.fov);
+
+    // TOOD(crbug.com/40684534): Define mojo space.
+    gfx::Transform mojo_from_local;
+    // |depth_view.pose| is local_from_view
+    geometry->mojo_from_view =
+        mojo_from_local * XrPoseToGfxTransform(depth_view.pose);
+  }
+
   switch (depth_config_->depth_data_format) {
     case mojom::XRDepthDataFormat::kFloat32:
+      CHECK(GetByteSize(data_format) == sizeof(float));
       // Results are already in meters.
       result->raw_value_to_meters = 1;
-      CHECK(GetByteSize(data_format) == sizeof(float));
-      CopyDepthData<float>(depth_image_span, pixels, image_size, depth_view,
-                           view, [](float val) { return val; });
+
+      // SPECIAL CASE: If we don't need to reproject use big_buffer's "copy"
+      // constructor, since we already have the data in the format we need.
+      // Otherwise, allocate a BigBuffer of the appropriate size and perform the
+      // reprojection and copy.
+      if (!match_depth_view_) {
+        // Floating point types do not have unique object representations, but
+        // we're using the byte span for serialization, which is allowed.
+        result->pixel_data = mojo_base::BigBuffer(
+            base::as_byte_span(base::allow_nonunique_obj, depth_image_span));
+      } else {
+        result->pixel_data = mojo_base::BigBuffer(buffer_size);
+        CopyDepthData<float>(depth_image_span, result->pixel_data, image_size,
+                             depth_view, view, match_depth_view_,
+                             [](float val) { return val; });
+      }
       break;
-    // Luminance alpha needs to be converted
     case mojom::XRDepthDataFormat::kLuminanceAlpha:
     case mojom::XRDepthDataFormat::kUnsignedShort:
+      CHECK(GetByteSize(data_format) == sizeof(uint16_t));
       // We'll be converting to millimeters.
       result->raw_value_to_meters = 1 / 1000.0f;
+      result->pixel_data = mojo_base::BigBuffer(buffer_size);
 
-      CHECK(GetByteSize(data_format) == sizeof(uint16_t));
       CopyDepthData<uint16_t>(
-          depth_image_span, pixels, image_size, depth_view, view,
-          [](float val) {
+          depth_image_span, result->pixel_data, image_size, depth_view, view,
+          match_depth_view_, [](float val) {
             // val is in meters, so convert to mm to avoid losing precision.
             return base::saturated_cast<uint16_t>(std::nearbyint(val * 1000));
           });
       break;
   }
 
-  result->pixel_data = std::move(pixels);
-  result->size = image_size;
   return mojom::XRDepthData::NewUpdatedDepthData(std::move(result));
 }
 

@@ -11,6 +11,10 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 
+namespace gfx {
+class Transform;
+}
+
 namespace blink {
 
 class ExceptionState;
@@ -32,10 +36,12 @@ class XRDepthManager : public GarbageCollected<XRDepthManager> {
 
   XRCPUDepthInformation* GetCpuDepthInformation(
       const XRFrame* xr_frame,
+      const gfx::Transform& ref_space_from_mojo,
       ExceptionState& exception_state);
 
   XRWebGLDepthInformation* GetWebGLDepthInformation(
       const XRFrame* xr_frame,
+      const gfx::Transform& ref_space_from_mojo,
       ExceptionState& exception_state);
 
   void Trace(Visitor* visitor) const;

@@ -41,6 +41,7 @@ class OpenXrDepthSensorAndroid : public OpenXrDepthSensor {
   std::vector<XrDepthSwapchainImageANDROID> depth_images_;
 
   mojom::XRDepthConfigPtr depth_config_ = nullptr;
+  bool match_depth_view_ = true;
   bool initialized_ = false;
 };
 

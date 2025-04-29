@@ -729,6 +729,7 @@ device::mojom::blink::XRSessionOptionsPtr XRSystem::XRSessionOptionsFromQuery(
         query.PreferredFormat();
     session_options->depth_options->depth_type_request =
         query.DepthTypeRequest();
+    session_options->depth_options->match_depth_view = query.MatchDepthView();
   }
 
   session_options->trace_id = query.TraceId();
@@ -1341,15 +1342,23 @@ ScriptPromise<XRSession> XRSystem::requestSession(
                            std::back_inserter(preferred_format),
                            ParseDepthFormat);
 
+    // `match_depth_view` is true if it is not set.
+    bool match_depth_view = true;
     Vector<device::mojom::XRDepthType> type_request;
-    if (session_init->depthSensing()->hasDepthTypeRequest() &&
-        RuntimeEnabledFeatures::WebXRDepthPerformanceEnabled()) {
-      std::ranges::transform(session_init->depthSensing()->depthTypeRequest(),
-                             std::back_inserter(type_request), ParseDepthType);
+    if (RuntimeEnabledFeatures::WebXRDepthPerformanceEnabled()) {
+      if (session_init->depthSensing()->hasMatchDepthView()) {
+        match_depth_view = session_init->depthSensing()->matchDepthView();
+      }
+
+      if (session_init->depthSensing()->hasDepthTypeRequest()) {
+        std::ranges::transform(session_init->depthSensing()->depthTypeRequest(),
+                               std::back_inserter(type_request),
+                               ParseDepthType);
+      }
     }
 
     query->SetDepthSensingConfiguration(preferred_usage, preferred_format,
-                                        type_request);
+                                        type_request, match_depth_view);
   }
 
   // Defer to request the session until the prerendering page is activated.

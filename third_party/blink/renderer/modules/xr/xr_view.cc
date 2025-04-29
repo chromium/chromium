@@ -89,12 +89,14 @@ NotShared<DOMFloat32Array> XRView::projectionMatrix() const {
 
 XRCPUDepthInformation* XRView::GetCpuDepthInformation(
     ExceptionState& exception_state) const {
-  return view_data_->GetCpuDepthInformation(frame(), exception_state);
+  return view_data_->GetCpuDepthInformation(frame(), ref_space_from_mojo_,
+                                            exception_state);
 }
 
 XRWebGLDepthInformation* XRView::GetWebGLDepthInformation(
     ExceptionState& exception_state) const {
-  return view_data_->GetWebGLDepthInformation(frame(), exception_state);
+  return view_data_->GetWebGLDepthInformation(frame(), ref_space_from_mojo_,
+                                              exception_state);
 }
 
 XRRigidTransform* XRView::viewGeometryTransform() const {
@@ -183,7 +185,7 @@ void XRViewData::UpdateView(device::mojom::blink::XRViewPtr view,
                             double depth_far) {
   DCHECK_EQ(eye_, view->eye);
 
-  UpdateViewGeometry(std::move(view->geometry), depth_near, depth_far);
+  UpdateViewGeometry(view->geometry, depth_near, depth_far);
 
   viewport_ = view->viewport;
   is_first_person_observer_ = view->is_first_person_observer;
@@ -194,6 +196,7 @@ void XRViewData::UpdateView(device::mojom::blink::XRViewPtr view,
 
 XRCPUDepthInformation* XRViewData::GetCpuDepthInformation(
     const XRFrame* xr_frame,
+    const gfx::Transform& ref_space_from_mojo,
     ExceptionState& exception_state) const {
   if (!depth_manager_) {
     exception_state.ThrowDOMException(
@@ -202,11 +205,13 @@ XRCPUDepthInformation* XRViewData::GetCpuDepthInformation(
     return nullptr;
   }
 
-  return depth_manager_->GetCpuDepthInformation(xr_frame, exception_state);
+  return depth_manager_->GetCpuDepthInformation(xr_frame, ref_space_from_mojo,
+                                                exception_state);
 }
 
 XRWebGLDepthInformation* XRViewData::GetWebGLDepthInformation(
     const XRFrame* xr_frame,
+    const gfx::Transform& ref_space_from_mojo,
     ExceptionState& exception_state) const {
   if (!depth_manager_) {
     exception_state.ThrowDOMException(
@@ -215,7 +220,8 @@ XRWebGLDepthInformation* XRViewData::GetWebGLDepthInformation(
     return nullptr;
   }
 
-  return depth_manager_->GetWebGLDepthInformation(xr_frame, exception_state);
+  return depth_manager_->GetWebGLDepthInformation(xr_frame, ref_space_from_mojo,
+                                                  exception_state);
 }
 
 std::optional<double> XRViewData::recommendedViewportScale() const {

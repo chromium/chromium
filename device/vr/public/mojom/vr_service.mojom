@@ -636,6 +636,10 @@ struct XRDepthDataUpdated {
   // Factor that needs to be applied when converting from raw values in the
   // |pixel_data| buffer into meters.
   float raw_value_to_meters;
+
+  // A description of the piece of hardware responsible for capturing this depth
+  // data. If null, the hardware is aligned with the XRView that contains it.
+  XRViewGeometry? view_geometry;
 };
 
 // Depth data may be the same as the one returned in the previous frame - it is
