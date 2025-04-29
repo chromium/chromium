@@ -62,6 +62,7 @@
 #include "media/mojo/mojom/media_service.mojom.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "net/base/isolation_info.h"
+#include "net/cookies/cookie_setting_override.h"
 #include "net/cookies/site_for_cookies.h"
 #include "net/ssl/client_cert_identity.h"
 #include "net/ssl/client_cert_store.h"
@@ -699,7 +700,8 @@ bool ContentBrowserClient::IsFullCookieAccessAllowed(
     content::BrowserContext* browser_context,
     content::WebContents* web_contents,
     const GURL& url,
-    const blink::StorageKey& storage_key) {
+    const blink::StorageKey& storage_key,
+    net::CookieSettingOverrides overrides) {
   return true;
 }
 

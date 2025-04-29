@@ -43,6 +43,7 @@
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "net/cookies/canonical_cookie.h"
+#include "net/cookies/cookie_setting_override.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -537,12 +538,12 @@ void Populate3PcExceptions(BrowserContext* browser_context,
   ContentBrowserClient* browser_client = GetContentClient()->browser();
   for (BtmRedirectInfoPtr& redirect : redirects) {
     redirect->has_3pc_exception =
-        browser_client->IsFullCookieAccessAllowed(browser_context, web_contents,
-                                                  redirect->redirecting_url.url,
-                                                  initial_url_key) ||
-        browser_client->IsFullCookieAccessAllowed(browser_context, web_contents,
-                                                  redirect->redirecting_url.url,
-                                                  final_url_key);
+        browser_client->IsFullCookieAccessAllowed(
+            browser_context, web_contents, redirect->redirecting_url.url,
+            initial_url_key, /*overrides=*/{}) ||
+        browser_client->IsFullCookieAccessAllowed(
+            browser_context, web_contents, redirect->redirecting_url.url,
+            final_url_key, /*overrides=*/{});
   }
 }
 }  // namespace btm

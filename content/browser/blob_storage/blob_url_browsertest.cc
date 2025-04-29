@@ -49,7 +49,8 @@ class MockContentBrowserClient : public ContentBrowserTestContentBrowserClient {
       content::BrowserContext* browser_context,
       content::WebContents* web_contents,
       const GURL& url,
-      const blink::StorageKey& storage_key) override {
+      const blink::StorageKey& storage_key,
+      net::CookieSettingOverrides overrides) override {
     return false;
   }
 };

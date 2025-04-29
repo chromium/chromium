@@ -297,11 +297,13 @@ class BtmServiceStateRemovalTest : public testing::Test {
     EXPECT_TRUE(client->IsFullCookieAccessAllowed(
         profile_.get(), nullptr, third_party_url,
         blink::StorageKey::CreateFirstParty(
-            url::Origin::Create(first_party_url))));
+            url::Origin::Create(first_party_url)),
+        /*overrides=*/{}));
     EXPECT_FALSE(client->IsFullCookieAccessAllowed(
         profile_.get(), nullptr, first_party_url,
         blink::StorageKey::CreateFirstParty(
-            url::Origin::Create(third_party_url))));
+            url::Origin::Create(third_party_url)),
+        /*overrides=*/{}));
   }
 
   void RecordBounce(

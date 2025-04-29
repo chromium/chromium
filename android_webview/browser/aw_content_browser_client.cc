@@ -111,6 +111,7 @@
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "net/android/network_library.h"
+#include "net/cookies/cookie_setting_override.h"
 #include "net/cookies/site_for_cookies.h"
 #include "net/http/http_util.h"
 #include "net/net_buildflags.h"
@@ -1476,7 +1477,8 @@ bool AwContentBrowserClient::IsFullCookieAccessAllowed(
     content::BrowserContext* browser_context,
     content::WebContents* web_contents,
     const GURL& url,
-    const blink::StorageKey& storage_key) {
+    const blink::StorageKey& storage_key,
+    net::CookieSettingOverrides overrides) {
   if (!web_contents) {
     // We do not allow third-party cookie access from service workers.
     return false;

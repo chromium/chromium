@@ -60,7 +60,8 @@ bool StorageAccessHandle::DoesDocumentHaveStorageAccess(RenderFrameHost* host) {
   bool has_full_cookie_access =
       GetContentClient()->browser()->IsFullCookieAccessAllowed(
           host->GetBrowserContext(), WebContents::FromRenderFrameHost(host),
-          host->GetLastCommittedURL(), host->GetStorageKey());
+          host->GetLastCommittedURL(), host->GetStorageKey(),
+          host->GetCookieSettingOverrides());
   if (has_full_cookie_access) {
     return true;
   }

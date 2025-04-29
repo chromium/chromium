@@ -763,8 +763,8 @@ bool IsFullCookieAccessAllowed(WebContents* web_contents,
                                const GURL& first_party_url) {
   return GetContentClientForTesting()->browser()->IsFullCookieAccessAllowed(
       web_contents->GetBrowserContext(), web_contents, url,
-      blink::StorageKey::CreateFirstParty(
-          url::Origin::Create(first_party_url)));
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(first_party_url)),
+      /*overrides=*/{});
 }
 }  // namespace
 

@@ -1825,12 +1825,14 @@ TEST_P(GrantCookieAccessDueToHeuristicTest,
   GURL url("https://www.subresource.test/favicon.ico");
 
   ASSERT_FALSE(client.IsFullCookieAccessAllowed(
-      profile(), web_contents(), url, FirstPartyStorageKey(top_level_url)));
+      profile(), web_contents(), url, FirstPartyStorageKey(top_level_url),
+      /*overrides=*/{}));
   client.GrantCookieAccessDueToHeuristic(
       profile(), SchemefulSite(top_level_url), SchemefulSite(url),
       base::Hours(1), IgnoreSchemes());
   ASSERT_TRUE(client.IsFullCookieAccessAllowed(
-      profile(), web_contents(), url, FirstPartyStorageKey(top_level_url)));
+      profile(), web_contents(), url, FirstPartyStorageKey(top_level_url),
+      /*overrides=*/{}));
 }
 
 TEST_P(GrantCookieAccessDueToHeuristicTest, SchemeMismatch_AccessMayBeGranted) {
@@ -1843,10 +1845,11 @@ TEST_P(GrantCookieAccessDueToHeuristicTest, SchemeMismatch_AccessMayBeGranted) {
       profile(), SchemefulSite(top_level_url), SchemefulSite(url),
       base::Hours(1), IgnoreSchemes());
   // Cookie access granted iff ignore_schemes=true:
-  ASSERT_EQ(client.IsFullCookieAccessAllowed(
-                profile(), web_contents(), WithHttp(url),
-                FirstPartyStorageKey(WithHttp(top_level_url))),
-            IgnoreSchemes());
+  ASSERT_EQ(
+      client.IsFullCookieAccessAllowed(
+          profile(), web_contents(), WithHttp(url),
+          FirstPartyStorageKey(WithHttp(top_level_url)), /*overrides=*/{}),
+      IgnoreSchemes());
 }
 
 TEST_P(GrantCookieAccessDueToHeuristicTest, PortMismatch_AccessAlwaysGranted) {
@@ -1860,7 +1863,7 @@ TEST_P(GrantCookieAccessDueToHeuristicTest, PortMismatch_AccessAlwaysGranted) {
       base::Hours(1), IgnoreSchemes());
   ASSERT_TRUE(client.IsFullCookieAccessAllowed(
       profile(), web_contents(), WithPort999(url),
-      FirstPartyStorageKey(WithPort999(top_level_url))));
+      FirstPartyStorageKey(WithPort999(top_level_url)), /*overrides=*/{}));
 }
 
 TEST_P(GrantCookieAccessDueToHeuristicTest,
@@ -1875,7 +1878,8 @@ TEST_P(GrantCookieAccessDueToHeuristicTest,
       profile(), SchemefulSite(top_level_url), SchemefulSite(url1),
       base::Hours(1), IgnoreSchemes());
   ASSERT_FALSE(client.IsFullCookieAccessAllowed(
-      profile(), web_contents(), url2, FirstPartyStorageKey(top_level_url)));
+      profile(), web_contents(), url2, FirstPartyStorageKey(top_level_url),
+      /*overrides=*/{}));
 }
 
 TEST_P(GrantCookieAccessDueToHeuristicTest,
@@ -1890,7 +1894,8 @@ TEST_P(GrantCookieAccessDueToHeuristicTest,
       profile(), SchemefulSite(top_level_url1), SchemefulSite(url),
       base::Hours(1), IgnoreSchemes());
   ASSERT_FALSE(client.IsFullCookieAccessAllowed(
-      profile(), web_contents(), url, FirstPartyStorageKey(top_level_url2)));
+      profile(), web_contents(), url, FirstPartyStorageKey(top_level_url2),
+      /*overrides=*/{}));
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

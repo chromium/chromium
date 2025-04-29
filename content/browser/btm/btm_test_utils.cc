@@ -21,6 +21,7 @@
 #include "content/public/test/test_frame_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "net/base/schemeful_site.h"
+#include "net/cookies/cookie_setting_override.h"
 #include "net/cookies/site_for_cookies.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -406,9 +407,10 @@ bool TpcBlockingBrowserClient::IsFullCookieAccessAllowed(
     BrowserContext* browser_context,
     WebContents* web_contents,
     const GURL& url,
-    const blink::StorageKey& storage_key) {
+    const blink::StorageKey& storage_key,
+    net::CookieSettingOverrides overrides) {
   return IsFullCookieAccessAllowed(url, storage_key.ToNetSiteForCookies(),
-                                   storage_key.origin(), /*overrides=*/{});
+                                   storage_key.origin(), overrides);
 }
 
 void TpcBlockingBrowserClient::GrantCookieAccessDueToHeuristic(

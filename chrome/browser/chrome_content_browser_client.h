@@ -41,6 +41,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/network_handle.h"
+#include "net/cookies/cookie_setting_override.h"
 #include "pdf/buildflags.h"
 #include "services/device/public/cpp/geolocation/buildflags.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -426,10 +427,12 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       content::BrowserContext* browser_context,
       const url::Origin& top_frame_origin,
       const url::Origin& context_origin) override;
-  bool IsFullCookieAccessAllowed(content::BrowserContext* browser_context,
-                                 content::WebContents* web_contents,
-                                 const GURL& url,
-                                 const blink::StorageKey& storage_key) override;
+  bool IsFullCookieAccessAllowed(
+      content::BrowserContext* browser_context,
+      content::WebContents* web_contents,
+      const GURL& url,
+      const blink::StorageKey& storage_key,
+      net::CookieSettingOverrides overrides) override;
   void GrantCookieAccessDueToHeuristic(content::BrowserContext* browser_context,
                                        const net::SchemefulSite& top_frame_site,
                                        const net::SchemefulSite& accessing_site,

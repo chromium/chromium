@@ -3753,7 +3753,8 @@ bool ChromeContentBrowserClient::IsFullCookieAccessAllowed(
     content::BrowserContext* browser_context,
     content::WebContents* web_contents,
     const GURL& url,
-    const blink::StorageKey& storage_key) {
+    const blink::StorageKey& storage_key,
+    net::CookieSettingOverrides overrides) {
   Profile* profile = Profile::FromBrowserContext(browser_context);
   scoped_refptr<content_settings::CookieSettings> cookie_settings =
       CookieSettingsFactory::GetForProfile(profile);
@@ -3762,8 +3763,7 @@ bool ChromeContentBrowserClient::IsFullCookieAccessAllowed(
   }
   return cookie_settings->IsFullCookieAccessAllowed(
       url, storage_key.ToNetSiteForCookies(),
-      url::Origin::Create(storage_key.top_level_site().GetURL()),
-      cookie_settings->SettingOverridesForStorage());
+      url::Origin::Create(storage_key.top_level_site().GetURL()), overrides);
 }
 
 void ChromeContentBrowserClient::GrantCookieAccessDueToHeuristic(

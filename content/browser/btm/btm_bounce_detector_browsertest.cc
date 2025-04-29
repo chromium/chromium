@@ -2043,13 +2043,14 @@ IN_PROC_BROWSER_TEST_P(RedirectHeuristicGrantTest,
                 web_contents->GetBrowserContext(), web_contents,
                 aba_current_interaction_url,
                 blink::StorageKey::CreateFirstParty(
-                    url::Origin::Create(first_party_url))),
+                    url::Origin::Create(first_party_url)),
+                /*overrides=*/{}),
             GetParam().write_redirect_grants);
 
   EXPECT_FALSE(browser_client().IsFullCookieAccessAllowed(
       web_contents->GetBrowserContext(), web_contents, no_interaction_url,
-      blink::StorageKey::CreateFirstParty(
-          url::Origin::Create(first_party_url))));
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(first_party_url)),
+      /*overrides=*/{}));
 }
 
 IN_PROC_BROWSER_TEST_P(
@@ -2095,14 +2096,16 @@ IN_PROC_BROWSER_TEST_P(
                 web_contents->GetBrowserContext(), web_contents,
                 aba_past_interaction_url,
                 blink::StorageKey::CreateFirstParty(
-                    url::Origin::Create(first_party_url))),
+                    url::Origin::Create(first_party_url)),
+                /*overrides=*/{}),
             GetParam().write_redirect_grants &&
                 !GetParam().require_current_interaction);
   EXPECT_EQ(browser_client().IsFullCookieAccessAllowed(
                 web_contents->GetBrowserContext(), web_contents,
                 no_aba_current_interaction_url,
                 blink::StorageKey::CreateFirstParty(
-                    url::Origin::Create(first_party_url))),
+                    url::Origin::Create(first_party_url)),
+                /*overrides=*/{}),
             GetParam().write_redirect_grants && !GetParam().require_aba_flow);
 }
 
@@ -2146,14 +2149,16 @@ IN_PROC_BROWSER_TEST_P(RedirectHeuristicGrantTest,
       browser_client().IsFullCookieAccessAllowed(
           web_contents->GetBrowserContext(), web_contents, past_interaction_url,
           blink::StorageKey::CreateFirstParty(
-              url::Origin::Create(first_party_url))),
+              url::Origin::Create(first_party_url)),
+          /*overrides=*/{}),
       GetParam().write_redirect_grants &&
           !GetParam().require_current_interaction);
   EXPECT_EQ(browser_client().IsFullCookieAccessAllowed(
                 web_contents->GetBrowserContext(), web_contents,
                 current_interaction_url,
                 blink::StorageKey::CreateFirstParty(
-                    url::Origin::Create(first_party_url))),
+                    url::Origin::Create(first_party_url)),
+                /*overrides=*/{}),
             GetParam().write_redirect_grants && !GetParam().require_aba_flow);
 }
 

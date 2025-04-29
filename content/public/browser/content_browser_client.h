@@ -1209,7 +1209,8 @@ class CONTENT_EXPORT ContentBrowserClient {
       content::BrowserContext* browser_context,
       content::WebContents* web_contents,
       const GURL& url,
-      const blink::StorageKey& storage_key);
+      const blink::StorageKey& storage_key,
+      net::CookieSettingOverrides overrides);
 
   // Temporarily allow `accessing_site` to access cookies when embedded on
   // `top_frame_site` when third-party cookies are otherwise blocked. After

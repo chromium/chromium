@@ -4,15 +4,18 @@
 
 #include "content/browser/btm/btm_browsertest_utils.h"
 
+#include "net/cookies/cookie_setting_override.h"
+
 namespace content {
 
 bool ContentBrowserTestTpcBlockingBrowserClient::IsFullCookieAccessAllowed(
     BrowserContext* browser_context,
     WebContents* web_contents,
     const GURL& url,
-    const blink::StorageKey& storage_key) {
+    const blink::StorageKey& storage_key,
+    net::CookieSettingOverrides overrides) {
   return impl_.IsFullCookieAccessAllowed(browser_context, web_contents, url,
-                                         storage_key);
+                                         storage_key, overrides);
 }
 
 void ContentBrowserTestTpcBlockingBrowserClient::

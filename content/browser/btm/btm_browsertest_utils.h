@@ -8,6 +8,7 @@
 #include "base/time/time.h"
 #include "content/browser/btm/btm_test_utils.h"
 #include "content/public/test/content_browser_test_content_browser_client.h"
+#include "net/cookies/cookie_setting_override.h"
 
 class GURL;
 
@@ -33,10 +34,12 @@ class WebContents;
 class ContentBrowserTestTpcBlockingBrowserClient
     : public ContentBrowserTestContentBrowserClient {
  public:
-  bool IsFullCookieAccessAllowed(BrowserContext* browser_context,
-                                 WebContents* web_contents,
-                                 const GURL& url,
-                                 const blink::StorageKey& storage_key) override;
+  bool IsFullCookieAccessAllowed(
+      BrowserContext* browser_context,
+      WebContents* web_contents,
+      const GURL& url,
+      const blink::StorageKey& storage_key,
+      net::CookieSettingOverrides overrides) override;
 
   void GrantCookieAccessDueToHeuristic(BrowserContext* browser_context,
                                        const net::SchemefulSite& top_frame_site,
