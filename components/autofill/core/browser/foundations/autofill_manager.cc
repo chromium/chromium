@@ -16,6 +16,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/thread_pool.h"
+#include "base/types/optional_ref.h"
 #include "base/types/zip.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_encoding.h"
@@ -388,7 +389,8 @@ void AutofillManager::OnAskForValuesToFill(
     const FormData& form,
     const FieldGlobalId& field_id,
     const gfx::Rect& caret_bounds,
-    AutofillSuggestionTriggerSource trigger_source) {
+    AutofillSuggestionTriggerSource trigger_source,
+    base::optional_ref<const PasswordSuggestionRequest> password_request) {
   if (!IsValidFormData(form)) {
     return;
   }

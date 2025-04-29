@@ -1178,7 +1178,8 @@ class BrowserAutofillManagerTest : public testing::Test {
       AutofillSuggestionTriggerSource trigger_source =
           AutofillSuggestionTriggerSource::kTextFieldValueChanged) {
     manager().OnAskForValuesToFill(form, field.global_id(),
-                                   GetFakeCaretBounds(field), trigger_source);
+                                   GetFakeCaretBounds(field), trigger_source,
+                                   std::nullopt);
   }
 
   void DidShowSuggestions(const FormData& form,
@@ -1195,7 +1196,8 @@ class BrowserAutofillManagerTest : public testing::Test {
         form, field.global_id(), GetFakeCaretBounds(field),
         form_element_was_clicked
             ? AutofillSuggestionTriggerSource::kFormControlElementClicked
-            : AutofillSuggestionTriggerSource::kTextFieldValueChanged);
+            : AutofillSuggestionTriggerSource::kTextFieldValueChanged,
+        std::nullopt);
   }
 
   void FormsSeen(const std::vector<FormData>& forms) {
@@ -1216,7 +1218,8 @@ class BrowserAutofillManagerTest : public testing::Test {
       AutofillTriggerSource trigger_source = AutofillTriggerSource::kPopup) {
     manager().OnAskForValuesToFill(
         form, field.global_id(), GetFakeCaretBounds(field),
-        AutofillSuggestionTriggerSource::kTextFieldDidReceiveKeyDown);
+        AutofillSuggestionTriggerSource::kTextFieldDidReceiveKeyDown,
+        std::nullopt);
     if (const AutofillProfile* profile =
             personal_data().address_data_manager().GetProfileByGUID(guid)) {
       manager().FillOrPreviewForm(mojom::ActionPersistence::kFill, form,

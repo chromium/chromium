@@ -111,7 +111,8 @@ interface AutofillDriver {
   AskForValuesToFill(FormData form,
                      FieldRendererId field_id,
                      gfx.mojom.Rect caret_bounds,
-                     AutofillSuggestionTriggerSource trigger_source);
+                     AutofillSuggestionTriggerSource trigger_source,
+                     PasswordSuggestionRequest? password_request);
 
   // Instructs the browser to hide the Autofill popup if it is open.
   HidePopup();

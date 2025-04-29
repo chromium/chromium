@@ -618,7 +618,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, AutofillInOOPIFs) {
           autofill::ContentAutofillDriver::GetForRenderFrameHost(rfh));
       driver->AskForValuesToFill(
           form, form.fields()[0].renderer_id(), gfx::Rect(0, 10),
-          ::autofill::mojom::AutofillSuggestionTriggerSource::kUnspecified);
+          ::autofill::mojom::AutofillSuggestionTriggerSource::kUnspecified,
+          std::nullopt);
     }
   });
 

@@ -17,6 +17,7 @@
 #import "base/metrics/histogram.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/observer_list.h"
+#import "base/types/optional_ref.h"
 #import "components/autofill/core/browser/filling/form_filler.h"
 #import "components/autofill/core/browser/form_structure.h"
 #import "components/autofill/core/browser/foundations/autofill_driver_router.h"
@@ -404,23 +405,24 @@ web::WebFrame* AutofillDriverIOS::web_frame() const {
 
 void AutofillDriverIOS::AskForValuesToFill(const FormData& form,
                                            const FieldGlobalId& field_id) {
-  auto callback = [](AutofillDriver& driver, const FormData& form,
-                     const FieldGlobalId& field_id,
-                     const gfx::Rect& bounding_box,
-                     AutofillSuggestionTriggerSource trigger_source) {
-    driver.GetAutofillManager().OnAskForValuesToFill(
-        form, field_id, bounding_box, trigger_source);
-  };
+  auto callback =
+      [](AutofillDriver& driver, const FormData& form,
+         const FieldGlobalId& field_id, const gfx::Rect& bounding_box,
+         AutofillSuggestionTriggerSource trigger_source,
+         base::optional_ref<const PasswordSuggestionRequest> request) {
+        driver.GetAutofillManager().OnAskForValuesToFill(
+            form, field_id, bounding_box, trigger_source, request);
+      };
   // The caret position is currently not extracted on iOS.
   gfx::Rect caret_bounds;
   if (IsAcrossIframesEnabled()) {
     // TODO(crbug.com/40269303): Distinguish between different trigger sources.
-    router_->AskForValuesToFill(
-        callback, *this, form, field_id, caret_bounds,
-        autofill::AutofillSuggestionTriggerSource::kiOS);
+    router_->AskForValuesToFill(callback, *this, form, field_id, caret_bounds,
+                                autofill::AutofillSuggestionTriggerSource::kiOS,
+                                std::nullopt);
   } else {
     callback(*this, form, field_id, caret_bounds,
-             autofill::AutofillSuggestionTriggerSource::kiOS);
+             autofill::AutofillSuggestionTriggerSource::kiOS, std::nullopt);
   }
 }
 

@@ -99,11 +99,12 @@ class FakeContentAutofillDriver : public mojom::AutofillDriver {
       FieldRendererId field_id,
       const std::u16string& old_value) override {}
 
-  void AskForValuesToFill(
-      const FormData& form,
-      FieldRendererId field_id,
-      const gfx::Rect& caret_bounds,
-      AutofillSuggestionTriggerSource trigger_source) override {}
+  void AskForValuesToFill(const FormData& form,
+                          FieldRendererId field_id,
+                          const gfx::Rect& caret_bounds,
+                          AutofillSuggestionTriggerSource trigger_source,
+                          const std::optional<PasswordSuggestionRequest>&
+                              password_request) override {}
 
   void HidePopup() override {}
 

@@ -13,9 +13,11 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
+#include "base/types/optional_ref.h"
 #include "base/types/zip.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
+#include "components/autofill/core/common/password_form_fill_data.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/autofill/core/common/unique_ids.h"
 
@@ -323,12 +325,15 @@ void AutofillDriverRouter::AskForValuesToFill(
     RoutedCallback<const FormData&,
                    const FieldGlobalId&,
                    const gfx::Rect&,
-                   AutofillSuggestionTriggerSource> callback,
+                   AutofillSuggestionTriggerSource,
+                   base::optional_ref<const PasswordSuggestionRequest>>
+        callback,
     AutofillDriver& source,
     FormData form,
     const FieldGlobalId& field_id,
     const gfx::Rect& caret_bounds,
-    AutofillSuggestionTriggerSource trigger_source) {
+    AutofillSuggestionTriggerSource trigger_source,
+    base::optional_ref<const PasswordSuggestionRequest> password_request) {
   FormGlobalId form_id = form.global_id();
   form_forest_.UpdateTreeOfRendererForm(std::move(form), source);
 
@@ -345,7 +350,7 @@ void AutofillDriverRouter::AskForValuesToFill(
   }
   auto* target = DriverOfFrame(browser_form.host_frame());
   callback(CHECK_DEREF(target), browser_form, field_id, caret_bounds,
-           trigger_source);
+           trigger_source, password_request);
 }
 
 void AutofillDriverRouter::HidePopup(RoutedCallback<> callback,

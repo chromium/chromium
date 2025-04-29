@@ -329,7 +329,8 @@ class MockBrowserAutofillManager : public BrowserAutofillManager {
               (const FormData&,
                const FieldGlobalId&,
                const gfx::Rect&,
-               AutofillSuggestionTriggerSource),
+               AutofillSuggestionTriggerSource,
+               base::optional_ref<const PasswordSuggestionRequest>),
               (override));
   MOCK_METHOD(void,
               OnFormsSeen,
@@ -945,7 +946,8 @@ TEST_F(ContentAutofillDriverTest, AskForValuesToFillChecksTriggerSource) {
                   "trigger source in the renderer"));
   driver().renderer_events().AskForValuesToFill(
       FormData(), FieldRendererId(), gfx::Rect(),
-      AutofillSuggestionTriggerSource::kPlusAddressUpdatedInBrowserProcess);
+      AutofillSuggestionTriggerSource::kPlusAddressUpdatedInBrowserProcess,
+      std::nullopt);
 }
 
 // Test that the inactive render frame does not trigger the DOM search and
@@ -1035,7 +1037,8 @@ TEST_F(ContentAutofillDriverTest, BadMessageIfFieldWithoutForm) {
   FormData form = test::CreateTestAddressFormData();
   FieldRendererId field = test::MakeFieldRendererId();
   driver().renderer_events().AskForValuesToFill(
-      form, field, gfx::Rect(), AutofillSuggestionTriggerSource::kUnspecified);
+      form, field, gfx::Rect(), AutofillSuggestionTriggerSource::kUnspecified,
+      std::nullopt);
 }
 
 }  // namespace
