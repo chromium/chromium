@@ -14,7 +14,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "components/image_fetcher/core/fake_image_decoder.h"
@@ -31,7 +30,6 @@
 #include "components/signin/public/base/avatar_icon_util.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/base/test_signin_client.h"
 #include "components/signin/public/identity_manager/account_capabilities.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
@@ -205,8 +203,6 @@ class AccountTrackerServiceTest : public testing::Test {
     // Mock AccountManagerFacade in java code for tests that require its
     // initialization.
     signin::SetUpMockAccountManagerFacade();
-    feature_list_.InitAndEnableFeature(
-        switches::kForceSupervisedSigninWithCapabilities);
 #endif
 
     AccountTrackerService::RegisterPrefs(pref_service_.registry());
@@ -432,7 +428,6 @@ class AccountTrackerServiceTest : public testing::Test {
   raw_ptr<FakeAccountCapabilitiesFetcherFactory>
       fake_account_capabilities_fetcher_factory_;
   std::vector<TrackingEvent> account_tracker_events_;
-  base::test::ScopedFeatureList feature_list_;
 };
 
 void AccountTrackerServiceTest::ReturnFetchResults(

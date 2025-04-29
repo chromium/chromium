@@ -11159,12 +11159,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(switches::kHistoryOptInEducationalTip,
                                     kHistoryOptInEducationalTipVariations,
                                     "HistoryOptInEducationalTipVariations")},
-
-    {"supervised-force-signin-with-capabilities",
-     flag_descriptions::kSupervisedUserForceSigninWithCapabilitiesName,
-     flag_descriptions::kSupervisedUserForceSigninWithCapabilitiesDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(switches::kForceSupervisedSigninWithCapabilities)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)

@@ -14,7 +14,6 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features;
 import org.chromium.components.signin.AccountManagerFacade.ChildAccountStatusListener;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.base.GaiaId;
@@ -48,52 +47,6 @@ public class AccountUtilsTest {
     @Mock private ChildAccountStatusListener mListenerMock;
 
     @Test
-    @Features.DisableFeatures(SigninFeatures.FORCE_SUPERVISED_SIGNIN_WITH_CAPABILITIES)
-    public void testChildAccountStatusWhenNoAccountsOnDevice() {
-        AccountUtils.checkChildAccountStatus(mFakeFacade, Collections.emptyList(), mListenerMock);
-        verify(mListenerMock).onStatusReady(/* isChild= */ false, null);
-    }
-
-    @Test
-    @Features.DisableFeatures(SigninFeatures.FORCE_SUPERVISED_SIGNIN_WITH_CAPABILITIES)
-    public void testChildAccountStatusWhenFirstAccountIsChildAndSecondIsEdu() {
-        // This is a supported configuration (where the second account might be an EDU account).
-        AccountUtils.checkChildAccountStatus(mFakeFacade, List.of(CHILD, EDU), mListenerMock);
-        verify(mListenerMock).onStatusReady(/* isChild= */ true, CHILD);
-    }
-
-    @Test
-    @Features.DisableFeatures(SigninFeatures.FORCE_SUPERVISED_SIGNIN_WITH_CAPABILITIES)
-    public void testChildAccountStatusWhenFirstAccountIsEduAndSecondIsChild() {
-        // This is an unsupported configuration (the Kids Module ensures that if a child account
-        // is present then it must be the default one).  This test is here for completeness.
-        AccountUtils.checkChildAccountStatus(mFakeFacade, List.of(EDU, CHILD), mListenerMock);
-        verify(mListenerMock).onStatusReady(/* isChild= */ false, null);
-    }
-
-    @Test
-    @Features.DisableFeatures(SigninFeatures.FORCE_SUPERVISED_SIGNIN_WITH_CAPABILITIES)
-    public void testChildAccountStatusWhenTwoAdultAccountsOnDevice() {
-        AccountUtils.checkChildAccountStatus(mFakeFacade, List.of(ADULT_1, ADULT_2), mListenerMock);
-        verify(mListenerMock).onStatusReady(/* isChild= */ false, null);
-    }
-
-    @Test
-    @Features.DisableFeatures(SigninFeatures.FORCE_SUPERVISED_SIGNIN_WITH_CAPABILITIES)
-    public void testChildAccountStatusWhenOnlyOneAdultAccountOnDevice() {
-        AccountUtils.checkChildAccountStatus(mFakeFacade, List.of(ADULT_1), mListenerMock);
-        verify(mListenerMock).onStatusReady(/* isChild= */ false, null);
-    }
-
-    @Test
-    @Features.DisableFeatures(SigninFeatures.FORCE_SUPERVISED_SIGNIN_WITH_CAPABILITIES)
-    public void testChildAccountStatusWhenOnlyOneChildAccountOnDevice() {
-        AccountUtils.checkChildAccountStatus(mFakeFacade, List.of(CHILD), mListenerMock);
-        verify(mListenerMock).onStatusReady(/* isChild= */ true, CHILD);
-    }
-
-    @Test
-    @Features.EnableFeatures(SigninFeatures.FORCE_SUPERVISED_SIGNIN_WITH_CAPABILITIES)
     public void testIsSubjectToParentalControlsWhenNoAccountsOnDevice() {
         AccountUtils.checkIsSubjectToParentalControls(
                 mFakeFacade, Collections.emptyList(), mListenerMock);
@@ -101,7 +54,6 @@ public class AccountUtilsTest {
     }
 
     @Test
-    @Features.EnableFeatures(SigninFeatures.FORCE_SUPERVISED_SIGNIN_WITH_CAPABILITIES)
     public void testIsSubjectToParentalControlsWhenFirstAccountIsChildAndSecondIsEdu() {
         mFakeFacade.addAccount(TestAccounts.CHILD_ACCOUNT);
         mFakeFacade.addAccount(TestAccounts.ACCOUNT1);
@@ -114,7 +66,6 @@ public class AccountUtilsTest {
     }
 
     @Test
-    @Features.EnableFeatures(SigninFeatures.FORCE_SUPERVISED_SIGNIN_WITH_CAPABILITIES)
     public void testIsSubjectToParentalControlsWhenFirstAccountIsEduAndSecondIsChild() {
         mFakeFacade.addAccount(TestAccounts.ACCOUNT1);
         mFakeFacade.addAccount(TestAccounts.CHILD_ACCOUNT);
@@ -128,7 +79,6 @@ public class AccountUtilsTest {
     }
 
     @Test
-    @Features.EnableFeatures(SigninFeatures.FORCE_SUPERVISED_SIGNIN_WITH_CAPABILITIES)
     public void testIsSubjectToParentalControlsWhenTwoAdultAccountsOnDevice() {
         mFakeFacade.addAccount(TestAccounts.ACCOUNT1);
         mFakeFacade.addAccount(TestAccounts.ACCOUNT2);
@@ -139,7 +89,6 @@ public class AccountUtilsTest {
     }
 
     @Test
-    @Features.EnableFeatures(SigninFeatures.FORCE_SUPERVISED_SIGNIN_WITH_CAPABILITIES)
     public void testIsSubjectToParentalControlsWhenOnlyOneAdultAccountOnDevice() {
         mFakeFacade.addAccount(TestAccounts.ACCOUNT1);
         AccountUtils.checkIsSubjectToParentalControls(
@@ -148,7 +97,6 @@ public class AccountUtilsTest {
     }
 
     @Test
-    @Features.EnableFeatures(SigninFeatures.FORCE_SUPERVISED_SIGNIN_WITH_CAPABILITIES)
     public void testIsSubjectToParentalControlsWhenOnlyOneChildAccountOnDevice() {
         mFakeFacade.addAccount(TestAccounts.CHILD_ACCOUNT);
         AccountUtils.checkIsSubjectToParentalControls(

@@ -34,10 +34,6 @@ class PrefRegistrySimple;
 class SigninClient;
 struct CoreAccountInfo;
 
-#if BUILDFLAG(IS_ANDROID)
-class ChildAccountInfoFetcherAndroid;
-#endif
-
 namespace gfx {
 class Image;
 }
@@ -112,10 +108,6 @@ class AccountFetcherService : public ProfileOAuth2TokenServiceObserver {
 #if BUILDFLAG(IS_ANDROID)
   // Refresh the AccountInfo if the existing one is stale
   void RefreshAccountInfoIfStale(const CoreAccountId& account_id);
-
-  // Called by ChildAccountInfoFetcherAndroid.
-  void SetIsChildAccount(const CoreAccountId& account_id,
-                         bool is_child_account);
 #endif
 
   // Destroy any fetchers created for the specified account.
@@ -187,11 +179,6 @@ class AccountFetcherService : public ProfileOAuth2TokenServiceObserver {
   bool refresh_tokens_loaded_ = false;
   bool enable_account_removal_for_test_ = false;
   std::unique_ptr<signin::PersistentRepeatingTimer> repeating_timer_;
-
-#if BUILDFLAG(IS_ANDROID)
-  CoreAccountId child_request_account_id_;
-  std::unique_ptr<ChildAccountInfoFetcherAndroid> child_info_request_;
-#endif
 
   // Holds references to account info fetchers keyed by account_id.
   std::unordered_map<CoreAccountId, std::unique_ptr<AccountInfoFetcher>>

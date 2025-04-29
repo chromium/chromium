@@ -58,10 +58,6 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "components/signin/internal/identity_manager/child_account_info_fetcher_android.h"
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/ash/components/account_manager/account_manager_factory.h"
 #include "components/account_manager_core/account.h"
@@ -356,10 +352,6 @@ class IdentityManagerTest : public testing::Test {
 
     ASSERT_TRUE(temp_profile_dir_.CreateUniqueTempDir());
 
-#if BUILDFLAG(IS_ANDROID)
-    // Required to create AccountTrackerService on Android.
-    SetUpMockAccountManagerFacade();
-#endif
     auto account_tracker_service = std::make_unique<AccountTrackerService>();
     account_tracker_service->Initialize(&pref_service_,
                                         temp_profile_dir_.GetPath());
@@ -2418,11 +2410,6 @@ TEST_F(IdentityManagerTest, TestPickAccountIdForAccount) {
 
 #if BUILDFLAG(IS_ANDROID)
 TEST_F(IdentityManagerTest, RefreshAccountInfoIfStale) {
-  // The flow of this test results in an interaction with
-  // ChildAccountInfoFetcherAndroid, which requires initialization of
-  // AccountManagerFacade in java code to avoid a crash.
-  SetUpMockAccountManagerFacade();
-
   identity_manager()->GetAccountFetcherService()->OnNetworkInitialized();
   AccountInfo account_info =
       MakeAccountAvailable(identity_manager(), kTestEmail2);

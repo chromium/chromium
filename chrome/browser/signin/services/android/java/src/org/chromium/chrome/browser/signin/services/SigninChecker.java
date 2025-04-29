@@ -15,8 +15,6 @@ import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.AccountsChangeObserver;
-import org.chromium.components.signin.SigninFeatureMap;
-import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
@@ -69,13 +67,8 @@ public class SigninChecker implements AccountsChangeObserver, Destroyable {
     }
 
     private void checkChildAccount(List<CoreAccountInfo> coreAccountInfos) {
-        if (SigninFeatureMap.isEnabled(SigninFeatures.FORCE_SUPERVISED_SIGNIN_WITH_CAPABILITIES)) {
-            AccountUtils.checkIsSubjectToParentalControls(
-                    mAccountManagerFacade, coreAccountInfos, this::onChildAccountStatusReady);
-        } else {
-            AccountUtils.checkChildAccountStatus(
-                    mAccountManagerFacade, coreAccountInfos, this::onChildAccountStatusReady);
-        }
+        AccountUtils.checkIsSubjectToParentalControls(
+                mAccountManagerFacade, coreAccountInfos, this::onChildAccountStatusReady);
     }
 
     private void onChildAccountStatusReady(boolean isChild, @Nullable CoreAccountInfo childInfo) {
@@ -87,23 +80,18 @@ public class SigninChecker implements AccountsChangeObserver, Destroyable {
         assert childInfo != null;
         mSigninManager.runAfterOperationInProgress(
                 () -> {
-                    if (SigninFeatureMap.isEnabled(
-                            SigninFeatures.FORCE_SUPERVISED_SIGNIN_WITH_CAPABILITIES)) {
-                        CoreAccountInfo accountInfo =
-                                mSigninManager
-                                        .getIdentityManager()
-                                        .getPrimaryAccountInfo(ConsentLevel.SIGNIN);
+                    CoreAccountInfo accountInfo =
+                            mSigninManager
+                                    .getIdentityManager()
+                                    .getPrimaryAccountInfo(ConsentLevel.SIGNIN);
 
-                        if (accountInfo == null || childInfo.getId().equals(accountInfo.getId())) {
-                            signInSupervisedUser(childInfo);
-                        } else {
-                            mSigninManager.signOut(
-                                    SignoutReason.SIGNOUT_BEFORE_SUPERVISED_SIGNIN,
-                                    () -> onChildAccountStatusReady(isChild, childInfo),
-                                    /* forceWipeUserData= */ false);
-                        }
-                    } else {
+                    if (accountInfo == null || childInfo.getId().equals(accountInfo.getId())) {
                         signInSupervisedUser(childInfo);
+                    } else {
+                        mSigninManager.signOut(
+                                SignoutReason.SIGNOUT_BEFORE_SUPERVISED_SIGNIN,
+                                () -> onChildAccountStatusReady(isChild, childInfo),
+                                /* forceWipeUserData= */ false);
                     }
                 });
     }

@@ -38,17 +38,12 @@
 #include "components/signin/internal/identity_manager/account_info_util.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_capabilities.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/tribool.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "ui/gfx/image/image.h"
-
-#if !BUILDFLAG(IS_CHROMEOS)
-#include "components/supervised_user/core/common/features.h"
-#endif
 
 namespace {
 const char kAccountKeyKey[] = "account_id";
@@ -397,20 +392,7 @@ void AccountTrackerService::SetAccountCapabilities(
 
   bool modified = account_info.capabilities.UpdateWith(account_capabilities);
 
-#if BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(
-          switches::kForceSupervisedSigninWithCapabilities)) {
-    // Set the child account status based on the account capabilities.
-    // TODO(crbug.com/355388109): Merge with the statement below when experiment
-    // is launched.
-    modified =
-        UpdateAccountInfoChildStatus(
-            account_info,
-            account_info.capabilities.is_subject_to_parental_controls() ==
-                signin::Tribool::kTrue) ||
-        modified;
-  }
-#elif !(BUILDFLAG(IS_CHROMEOS))
+#if !(BUILDFLAG(IS_CHROMEOS))
   // Set the child account status based on the account capabilities.
   modified = UpdateAccountInfoChildStatus(
                  account_info,

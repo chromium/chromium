@@ -4978,9 +4978,6 @@ extern const char kHistoryOptInEducationalTipDescription[];
 
 extern const char kWebSerialOverBluetoothName[];
 extern const char kWebSerialOverBluetoothDescription[];
-
-extern const char kSupervisedUserForceSigninWithCapabilitiesName[];
-extern const char kSupervisedUserForceSigninWithCapabilitiesDescription[];
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)

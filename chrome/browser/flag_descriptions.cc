@@ -8433,12 +8433,6 @@ const char kWebSerialOverBluetoothName[] = "Enable Web Serial over Bluetooth";
 const char kWebSerialOverBluetoothDescription[] =
     "Provides a way for websites to interact with a serial device over "
     "Bluetooth";
-
-const char kSupervisedUserForceSigninWithCapabilitiesName[] =
-    "Use capabilities for supervised user forced sign-in";
-const char kSupervisedUserForceSigninWithCapabilitiesDescription[] =
-    "Migrate the usage of USM flags to force supervised user accounts to be "
-    "signed in to Chrome to instead use account capabilities.";
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)

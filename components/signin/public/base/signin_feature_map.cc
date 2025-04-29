@@ -21,7 +21,6 @@ namespace {
 const base::Feature* const kFeaturesExposedToJava[] = {
     &switches::kCctSignInPrompt,
     &switches::kDeferWebSigninTrackerCreation,
-    &switches::kForceSupervisedSigninWithCapabilities,
     &switches::kHistoryPageHistorySyncPromo,
     &switches::kHistoryPagePromoCtaStringVariation,
     &switches::kSkipCheckForAccountManagementOnSignin,

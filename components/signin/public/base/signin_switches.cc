@@ -17,12 +17,6 @@ BASE_FEATURE(kCctSignInPrompt,
              "CctSignInPrompt",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Migrate usages of USM flag to force child account sign-in to use the account
-// capability `IsSubjectToParentalControls`.
-BASE_FEATURE(kForceSupervisedSigninWithCapabilities,
-             "ForceSupervisedSigninWithCapabilities",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Add history sync opt-in promo in the History Page.
 BASE_FEATURE(kHistoryPageHistorySyncPromo,
              "HistoryPageHistorySyncPromo",
