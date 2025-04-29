@@ -15017,7 +15017,7 @@
             ]
         }
     ],
-    "OmniboxOnFocusZPS": [
+    "OmniboxOnFocusZPSV1": [
         {
             "platforms": [
                 "chromeos",
