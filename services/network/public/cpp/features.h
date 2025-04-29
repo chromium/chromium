@@ -174,9 +174,6 @@ BASE_DECLARE_FEATURE(kCloneDevToolsConnectionOnlyIfRequested);
 COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
 BASE_DECLARE_FEATURE(kSRIMessageSignatureEnforcement);
 
-COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
-BASE_DECLARE_FEATURE(kCreateURLLoaderPipeAsync);
-
 // Should Sec-Ad-Auction-Event-Recording-Eligible be sent on requests made
 // with attributionsrc, and should Ad-Auction-Register-Event responses on
 // those requests be processed?

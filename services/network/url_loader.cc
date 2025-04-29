@@ -31,7 +31,6 @@
 #include "base/sequence_checker.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
-#include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -445,28 +444,6 @@ URLLoader::URLLoader(
       permissions_policy_(request.permissions_policy) {
   DCHECK(delete_callback_);
 
-  // crbug.com/387537990: Experiment with creating the mojo data pipe
-  // asynchronously to evaluate the impact of removing a small amount of work
-  // per-resource from the main network service sequence. This isn't meant to
-  // ship as-is, rather it'll allow us to understand the potential payoff of
-  // investing in URLLoader optimization.
-  create_data_pipe_async_ =
-      base::FeatureList::IsEnabled(features::kCreateURLLoaderPipeAsync);
-  if (create_data_pipe_async_ &&
-      !(options_ & mojom::kURLLoadOptionReadAndDiscardBody)) {
-    // If the data pipe is created asynchronously, post the task to do so here
-    // so it can start being created while other things are happening.
-    base::ThreadPool::PostTask(
-        FROM_HERE,
-        base::BindOnce(&URLLoader::PrepareDataPipe,
-                       base::BindPostTaskToCurrentDefault(
-                           base::BindOnce(&URLLoader::OnPrepareDataPipeSuccess,
-                                          weak_ptr_factory_.GetWeakPtr())),
-                       base::BindPostTaskToCurrentDefault(
-                           base::BindOnce(&URLLoader::OnPrepareDataPipeError,
-                                          weak_ptr_factory_.GetWeakPtr()))));
-  }
-
   if (options_ & mojom::kURLLoadOptionReadAndDiscardBody) {
     if (!factory_params_->is_orb_enabled) {
       discard_buffer_ =
@@ -736,86 +713,10 @@ void URLLoader::ScheduleStart() {
         base::BindOnce(&URLLoader::ResumeStart, base::Unretained(this)));
     resource_scheduler_request_handle_->WillStartRequest(&defer);
   }
-
   if (defer)
     url_request_->LogBlockedBy("ResourceScheduler");
   else
     url_request_->Start();
-}
-
-void URLLoader::PrepareDataPipe(
-    URLLoader::PrepareDataPipeSuccessCallback success_cb,
-    base::OnceClosure error_cb) {
-  MojoCreateDataPipeOptions options;
-  options.struct_size = sizeof(MojoCreateDataPipeOptions);
-  options.flags = MOJO_CREATE_DATA_PIPE_FLAG_NONE;
-  options.element_num_bytes = 1;
-  options.capacity_num_bytes = GetDataPipeDefaultAllocationSize(
-      DataPipeAllocationSize::kLargerSizeIfPossible);
-
-  mojo::ScopedDataPipeProducerHandle producer_handle;
-  mojo::ScopedDataPipeConsumerHandle consumer_handle;
-  MojoResult result =
-      mojo::CreateDataPipe(&options, producer_handle, consumer_handle);
-  if (result != MOJO_RESULT_OK) {
-    std::move(error_cb).Run();
-    return;
-  }
-
-  std::move(success_cb)
-      .Run(std::move(producer_handle), std::move(consumer_handle));
-}
-
-void URLLoader::OnPrepareDataPipeSuccess(
-    mojo::ScopedDataPipeProducerHandle producer_handle,
-    mojo::ScopedDataPipeConsumerHandle consumer_handle) {
-  if (was_continue_and_response_started_called_ || !create_data_pipe_async_) {
-    // `ContinueOnResponseStarted` was already called, or the pipe creation is
-    // synchronous and we're currently being called by
-    // `ContinueOnResponseStarted` so finish setting up the pipe and invoke
-    // `ContinueOnResponseStartedImmediately` right away.
-    SetupPipeHandlesAndWatchers(std::move(producer_handle),
-                                std::move(consumer_handle));
-    CHECK(response_body_stream_.is_valid());
-    CHECK(consumer_handle_.is_valid());
-    ContinueOnResponseStartedImmediately();
-  } else {
-    // Nothing is waiting on the pipe, but a lot of this code's preconditions
-    // encode the fact that the handles aren't setup until
-    // `ContinueOnResponseStarted` is called. Instead of setting up the pipe
-    // handles right away, store them as "pending" and let
-    // `ContinueOnResponseStarted` call setup.
-    pending_pipe_handles_ = std::make_pair<mojo::ScopedDataPipeProducerHandle,
-                                           mojo::ScopedDataPipeConsumerHandle>(
-        std::move(producer_handle), std::move(consumer_handle));
-  }
-}
-
-void URLLoader::OnPrepareDataPipeError() {
-  NotifyCompleted(net::ERR_INSUFFICIENT_RESOURCES);
-  // Don't do any more work here because `NotifyCompleted` deletes this
-  // URLLoader.
-}
-
-void URLLoader::SetupPipeHandlesAndWatchers(
-    mojo::ScopedDataPipeProducerHandle producer_handle,
-    mojo::ScopedDataPipeConsumerHandle consumer_handle) {
-  response_body_stream_ = std::move(producer_handle);
-  consumer_handle_ = std::move(consumer_handle);
-
-  CHECK(response_body_stream_.is_valid());
-  CHECK(consumer_handle_.is_valid());
-
-  peer_closed_handle_watcher_.Watch(
-      response_body_stream_.get(), MOJO_HANDLE_SIGNAL_PEER_CLOSED,
-      base::BindRepeating(&URLLoader::OnResponseBodyStreamConsumerClosed,
-                          base::Unretained(this)));
-  peer_closed_handle_watcher_.ArmOrNotify();
-
-  writable_handle_watcher_.Watch(
-      response_body_stream_.get(), MOJO_HANDLE_SIGNAL_WRITABLE,
-      base::BindRepeating(&URLLoader::OnResponseBodyStreamReady,
-                          base::Unretained(this)));
 }
 
 URLLoader::~URLLoader() {
@@ -1263,46 +1164,33 @@ void URLLoader::ContinueOnResponseStarted() {
     upload_progress_tracker_ = nullptr;
   }
 
-  if (options_ & mojom::kURLLoadOptionReadAndDiscardBody) {
-    // If the body is to be discarded, the pipe won't be used and it's correct
-    // to keep going without waiting for it.
-    ContinueOnResponseStartedImmediately();
-    return;
-  }
-
-  if (create_data_pipe_async_) {
-    // If the body isn't discarded, the mojo pipe is required before continuing.
-    if (pending_pipe_handles_) {
-      // The pipe is already in a usable state, set up the pipe handles so it's
-      // safe to continue the work
-      SetupPipeHandlesAndWatchers(std::move(pending_pipe_handles_->first),
-                                  std::move(pending_pipe_handles_->second));
-      pending_pipe_handles_ = std::nullopt;
-      CHECK(response_body_stream_.is_valid());
-      CHECK(consumer_handle_.is_valid());
-      ContinueOnResponseStartedImmediately();
-    } else {
-      // The pipe isn't ready.
-      // Its creation was started from the constructor and
-      // OnPrepareDataPipeSuccess will
-      was_continue_and_response_started_called_ = true;
+  if (!(options_ & mojom::kURLLoadOptionReadAndDiscardBody)) {
+    MojoCreateDataPipeOptions options;
+    options.struct_size = sizeof(MojoCreateDataPipeOptions);
+    options.flags = MOJO_CREATE_DATA_PIPE_FLAG_NONE;
+    options.element_num_bytes = 1;
+    options.capacity_num_bytes = GetDataPipeDefaultAllocationSize(
+        DataPipeAllocationSize::kLargerSizeIfPossible);
+    MojoResult result =
+        mojo::CreateDataPipe(&options, response_body_stream_, consumer_handle_);
+    if (result != MOJO_RESULT_OK) {
+      NotifyCompleted(net::ERR_INSUFFICIENT_RESOURCES);
+      return;
     }
-  } else {
-    // If the data pipe is to be created synchronously, invoke `PrepareDataPipe`
-    // directly on this sequence. Either of `OnPrepareDataPipeSuccess` or
-    // `OnPrepareDataPipeError` will be invoked synchronously and
-    // URLLoader::OnPrepareDataPipeSuccess will set the pipe handles before
-    // calling `ContinueOnResponseStartedImmediately`
-    PrepareDataPipe(base::BindOnce(&URLLoader::OnPrepareDataPipeSuccess,
-                                   base::Unretained(this)),
-                    base::BindOnce(&URLLoader::OnPrepareDataPipeError,
-                                   base::Unretained(this)));
-    // If PrepareDataPipe fails, `this` is deleted by `OnPrepareDataPipeError`
-    // and is invalid here.
-  }
-}
+    CHECK(response_body_stream_.is_valid());
+    CHECK(consumer_handle_.is_valid());
+    peer_closed_handle_watcher_.Watch(
+        response_body_stream_.get(), MOJO_HANDLE_SIGNAL_PEER_CLOSED,
+        base::BindRepeating(&URLLoader::OnResponseBodyStreamConsumerClosed,
+                            base::Unretained(this)));
+    peer_closed_handle_watcher_.ArmOrNotify();
 
-void URLLoader::ContinueOnResponseStartedImmediately() {
+    writable_handle_watcher_.Watch(
+        response_body_stream_.get(), MOJO_HANDLE_SIGNAL_WRITABLE,
+        base::BindRepeating(&URLLoader::OnResponseBodyStreamReady,
+                            base::Unretained(this)));
+  }
+
   // Enforce the Cross-Origin-Resource-Policy (CORP) header.
   const CrossOriginEmbedderPolicy kEmptyCoep;
   const CrossOriginEmbedderPolicy& cross_origin_embedder_policy =

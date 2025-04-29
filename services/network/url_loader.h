@@ -438,34 +438,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // concluding the request's Trust Tokens, Attribution, and/or Shared Storage
   // operations.
   void ContinueOnResponseStarted();
-  // Invoked either by the pipe creation success callback, or by
-  // `ContinueOnResponseStarted` when no mojo pipe is needed (thus no need to
-  // use to wait on it).
-  void ContinueOnResponseStartedImmediately();
 
   void ScheduleStart();
-
-  using PrepareDataPipeSuccessCallback =
-      base::OnceCallback<void(mojo::ScopedDataPipeProducerHandle,
-                              mojo::ScopedDataPipeConsumerHandle)>;
-  // Prepares the mojo data pipe that will be used to send the body data to the
-  // URLLoaderClient. Can be invoked on any sequence.
-  static void PrepareDataPipe(PrepareDataPipeSuccessCallback success_cb,
-                              base::OnceClosure error_cb);
-  // Invoked by `PrepareDataPipe`. Should run on the sequence where `this`
-  // lives.
-  void OnPrepareDataPipeSuccess(
-      mojo::ScopedDataPipeProducerHandle producer_handle,
-      mojo::ScopedDataPipeConsumerHandle consumer_handle);
-  // Invoked by `PrepareDataPipe`. Should run on the sequence where `this`
-  // lives.
-  void OnPrepareDataPipeError();
-  // Sets up this object's pipe handles. Invoked from `OnPrepareDataPipeSuccess`
-  // or `ContinueOnResponseStarted`, whichever comes last.
-  void SetupPipeHandlesAndWatchers(
-      mojo::ScopedDataPipeProducerHandle producer_handle,
-      mojo::ScopedDataPipeConsumerHandle consumer_handle);
-
   void ReadMore();
   void DidRead(int num_bytes,
                bool completed_synchronously,
@@ -768,23 +742,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
 
   // Keeps the result of IsSharedDictionaryReadAllowed(). Used only for metrics.
   bool shared_dictionary_allowed_check_passed_ = false;
-
-  // True if the async data pipe creation experiment is enabled.
-  bool create_data_pipe_async_ = false;
-
-  // Set to `true` once ContinueAndResponseStarted() is called. If
-  // OnPrepareDataPipeSuccess() finds that
-  // `was_continue_and_response_started_called_` is true it will call
-  // SetupPipeHandleAndWatchers() and ContinueOnResponseStartedImmediately().
-  bool was_continue_and_response_started_called_ = false;
-
-  // Stores the `consumer_handle` and the `produced_handle` if they become
-  // available while `was_continue_and_response_started_called_` is still
-  // false. If ContinueAndResponseStarted() finds that `pending_pipe_handles_`
-  // is set it will call SetupPipeHandlesAndWatches().
-  std::optional<std::pair<mojo::ScopedDataPipeProducerHandle,
-                          mojo::ScopedDataPipeConsumerHandle>>
-      pending_pipe_handles_;
 
   // Permissions policy of the request.
   const std::optional<network::PermissionsPolicy> permissions_policy_;
