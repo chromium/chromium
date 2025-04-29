@@ -52,7 +52,9 @@ Chromium, or at runtime using environment variables.
         of Chrome will not work)
     *   Google Drive API (enable this for Files.app on Chrome OS and
         SyncFileSystem API)
-    *   Safe Browsing API
+    *   Safe Browsing API (Googlers should additionally reach out to the Safe
+        Browsing team to ensure that visibility labels are applied
+        appropriately)
     *   Time Zone API
     *   Optional
         *   Admin SDK
