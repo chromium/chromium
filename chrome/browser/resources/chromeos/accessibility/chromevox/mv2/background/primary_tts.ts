@@ -12,19 +12,29 @@ import {TestImportManager} from '/common/testing/test_import_manager.js';
 import {Msgs} from '../common/msgs.js';
 import {PanelCommand, PanelCommandType} from '../common/panel_command.js';
 import {SettingsManager} from '../common/settings_manager.js';
-import * as ttsTypes from '../common/tts_types.js';
+import {CharacterDictionary, Personality, PunctuationEcho, PunctuationEchoes, QueueMode, TtsAudioProperty, TtsSettings, TtsSpeechProperties} from '../common/tts_types.js';
 
 import {AbstractTts} from './abstract_tts.js';
 import {ChromeVox} from './chromevox.js';
 import {PhoneticData} from './phonetic_data.js';
 import {TtsCapturingEventListener, TtsInterface} from './tts_interface.js';
 
-const Utterance = class {
+type TtsVoice = chrome.tts.TtsVoice;
+
+class Utterance {
+  static nextUtteranceId_ = 1;
+  textString: string;
+  properties: TtsSpeechProperties;
+  queueMode: QueueMode;
+  id: number;
+
   /**
-   * @param {string} textString The string of text to be spoken.
-   * @param {Object} properties Speech properties to use for this utterance.
+   * @param textString The string of text to be spoken.
+   * @param properties Speech properties to use for this utterance.
    */
-  constructor(textString, properties, queueMode) {
+  constructor(
+      textString: string, properties: TtsSpeechProperties,
+      queueMode: QueueMode) {
     this.textString = textString;
     this.properties = properties;
     this.queueMode = queueMode;
@@ -33,71 +43,59 @@ const Utterance = class {
 };
 
 /**
- * The next utterance id to use.
- * @type {number}
- * @private
- */
-Utterance.nextUtteranceId_ = 1;
-
-/**
  * This class is the default implementation for TTS in the background context.
  */
 export class PrimaryTts extends AbstractTts {
+  // The amount of time, in milliseconds, to wait before speaking a hint.
+  static hint_delay_ms_ = 1000;
+  /**
+   * The list of properties allowed to be passed to the chrome.tts.speak API.
+   * Anything outside this list will be stripped.
+   */
+  private static ALLOWED_PROPERTIES_ = [
+    'desiredEventTypes',
+    'enqueue',
+    'extensionId',
+    'gender',
+    'lang',
+    'onEvent',
+    'pitch',
+    'rate',
+    'requiredEventTypes',
+    'voiceName',
+    'volume',
+  ];
+  private static SKIP_WHITESPACE_ = /^[\s\u00a0]*$/;
+
+  // The current voice name.
+  currentVoice: string|undefined;
+  lastEventType = chrome.tts.EventType.END;
+
+  private currentPunctuationEcho_: number;
+  /**
+   * A list of punctuation characters that should always be spliced into
+   * output even with literal word substitutions. This is important for tts
+   * prosity.
+   */
+  private retainPunctuation_ = [';', '?', '!', '\''];
+  // The id of a callback returned by setTimeout.
+  private timeoutId_: number|undefined;
+  // Capturing tts event listeners.
+  private capturingTtsEventListeners_: TtsCapturingEventListener[] = [];
+  // The current utterance.
+  private currentUtterance_: Utterance|null = null;
+  // The utterance queue.
+  private utteranceQueue_: Utterance[] = [];
+  // Queue of utterances interrupted by interjected utterances.
+  private utteranceQueueInterruptedByInterjection_: Utterance[] = [];
+
+
   constructor() {
     super();
 
-    this.lastEventType = 'end';
-
-    /** @private {number} */
     this.currentPunctuationEcho_ =
-        SettingsManager.getNumber(ttsTypes.TtsSettings.PUNCTUATION_ECHO);
+        SettingsManager.getNumber(TtsSettings.PUNCTUATION_ECHO);
 
-    /**
-     * A list of punctuation characters that should always be spliced into
-     * output even with literal word substitutions. This is important for tts
-     * prosity.
-     * @type {!Array<string>}
-     * @private
-     */
-    this.retainPunctuation_ = [';', '?', '!', '\''];
-
-    /**
-     * The id of a callback returned by setTimeout.
-     * @type {number|undefined}
-     */
-    this.timeoutId_;
-
-    /**
-     * Capturing tts event listeners.
-     * @type {Array<TtsCapturingEventListener>}
-     * @private
-     */
-    this.capturingTtsEventListeners_ = [];
-
-    /**
-     * The current utterance.
-     * @type {Utterance}
-     * @private
-     */
-    this.currentUtterance_ = null;
-
-    /**
-     * The utterance queue.
-     * @private {!Array<Utterance>}
-     */
-    this.utteranceQueue_ = [];
-
-    /**
-     * Queue of utterances interrupted by interjected utterances.
-     * @private {!Array<Utterance>}
-     */
-    this.utteranceQueueInterruptedByInterjection_ = [];
-
-    /**
-     * The current voice name.
-     * @type {string}
-     */
-    this.currentVoice;
 
     if (window.speechSynthesis) {
       window.speechSynthesis.onvoiceschanged = () =>
@@ -139,26 +137,27 @@ export class PrimaryTts extends AbstractTts {
   }
 
   /**
-   * @param {string} textString The string of text to be spoken.
-   * @param {ttsTypes.QueueMode} queueMode The queue mode to use for speaking.
-   * @param {ttsTypes.TtsSpeechProperties=} properties Speech properties to use
+   * @param textString The string of text to be spoken.
+   * @param queueMode The queue mode to use for speaking.
+   * @param properties Speech properties to use
    *     for this utterance.
-   * @return {TtsInterface} A tts object useful for chaining speak calls.
-   * @override
+   * @return A tts object useful for chaining speak calls.
    */
-  speak(textString, queueMode, properties) {
+  override speak(
+      textString: string, queueMode: QueueMode,
+      properties?: TtsSpeechProperties): TtsInterface {
     super.speak(textString, queueMode, properties);
 
     // |textString| gets manipulated throughout this function. Save the
     // original value for functions that may need it.
     const originalTextString = textString;
 
-    if (this.ttsProperties[ttsTypes.TtsSettings.VOLUME] === 0) {
+    if (this.ttsProperties[TtsSettings.VOLUME] === 0) {
       return this;
     }
 
     if (!properties) {
-      properties = new ttsTypes.TtsSpeechProperties();
+      properties = new TtsSpeechProperties();
     }
 
     if (textString.length > constants.OBJECT_MAX_CHARCOUNT) {
@@ -192,7 +191,7 @@ export class PrimaryTts extends AbstractTts {
         } catch (e) {
         }
       }
-      if (queueMode === ttsTypes.QueueMode.FLUSH) {
+      if (queueMode === QueueMode.FLUSH) {
         this.stop();
       }
       return this;
@@ -212,36 +211,32 @@ export class PrimaryTts extends AbstractTts {
     return this;
   }
 
-  /** @return {!Array<Utterance>} */
-  getUtteranceQueueForTest() {
+  getUtteranceQueueForTest(): Utterance[] {
     return this.utteranceQueue_;
   }
 
   /**
    * Split the given textString into smaller chunks and call this.speak() for
    * each chunks.
-   * @param {string} textString The string of text to be spoken.
-   * @param {ttsTypes.QueueMode} queueMode The queue mode to use for speaking.
-   * @param {ttsTypes.TtsSpeechProperties=} properties Speech properties to use
-   *     for this utterance.
-   * @private
+   * @param textString The string of text to be spoken.
+   * @param queueMode The queue mode to use for speaking.
+   * @param properties Speech properties to use for this utterance.
    */
-  speakSplittingText_(textString, queueMode, properties) {
+  private speakSplittingText_(
+      textString: string, queueMode: QueueMode,
+      properties?: TtsSpeechProperties): void {
     const chunks = PrimaryTts.splitUntilSmall(textString, '\n\r ');
     for (const chunk of chunks) {
       this.speak(chunk, queueMode, properties);
-      queueMode = ttsTypes.QueueMode.QUEUE;
+      queueMode = QueueMode.QUEUE;
     }
   }
 
   /**
    * Splits |text| until each substring's length is smaller than or equal to
    * constants.OBJECT_MAX_CHARCOUNT.
-   * @param {string} text
-   * @param {string} delimiters
-   * @return {!Array<string>}
    */
-  static splitUntilSmall(text, delimiters) {
+  static splitUntilSmall(text: string, delimiters: string): string[] {
     if (text.length === 0) {
       return [];
     }
@@ -275,18 +270,17 @@ export class PrimaryTts extends AbstractTts {
 
   /**
    * Use the speech queue to handle the given speech request.
-   * @param {Utterance} utterance The utterance to speak.
-   * @private
+   * @param utterance The utterance to speak.
    */
-  speakUsingQueue_(utterance) {
+  private speakUsingQueue_(utterance: Utterance): void {
     const queueMode = utterance.queueMode;
 
     // First, take care of removing the current utterance and flushing
     // anything from the queue we need to. If we remove the current utterance,
     // make a note that we're going to stop speech.
-    if (queueMode === ttsTypes.QueueMode.FLUSH ||
-        queueMode === ttsTypes.QueueMode.CATEGORY_FLUSH ||
-        queueMode === ttsTypes.QueueMode.INTERJECT) {
+    if (queueMode === QueueMode.FLUSH ||
+        queueMode === QueueMode.CATEGORY_FLUSH ||
+        queueMode === QueueMode.INTERJECT) {
       (new PanelCommand(PanelCommandType.CLEAR_SPEECH)).send();
 
       if (this.shouldCancel_(this.currentUtterance_, utterance)) {
@@ -307,7 +301,7 @@ export class PrimaryTts extends AbstractTts {
     }
 
     // Now, some special handling for interjections.
-    if (queueMode === ttsTypes.QueueMode.INTERJECT) {
+    if (queueMode === QueueMode.INTERJECT) {
       // Move all utterances to a secondary queue to be restored later.
       this.utteranceQueueInterruptedByInterjection_ = this.utteranceQueue_;
 
@@ -327,7 +321,7 @@ export class PrimaryTts extends AbstractTts {
       setTimeout(() => {
         // Utterances on the current queue are now also interjections.
         for (let i = 0; i < this.utteranceQueue_.length; i++) {
-          this.utteranceQueue_[i].queueMode = ttsTypes.QueueMode.INTERJECT;
+          this.utteranceQueue_[i].queueMode = QueueMode.INTERJECT;
         }
         this.utteranceQueue_ = this.utteranceQueue_.concat(
             this.utteranceQueueInterruptedByInterjection_);
@@ -345,9 +339,8 @@ export class PrimaryTts extends AbstractTts {
    * If nothing is speaking, pop the first item off the speech queue and
    * start speaking it. This is called when a speech request is made and
    * when the current utterance finishes speaking.
-   * @private
    */
-  startSpeakingNextItemInQueue_() {
+  private startSpeakingNextItemInQueue_(): void {
     if (this.currentUtterance_) {
       return;
     }
@@ -377,7 +370,7 @@ export class PrimaryTts extends AbstractTts {
       return;
     }
 
-    this.currentUtterance_ = this.utteranceQueue_.shift();
+    this.currentUtterance_ = this.utteranceQueue_.shift()!;
     const utterance = this.currentUtterance_;
     const utteranceId = utterance.id;
 
@@ -385,17 +378,17 @@ export class PrimaryTts extends AbstractTts {
       this.onTtsEvent_(event, utteranceId);
     };
 
-    const validatedProperties = /** @type {!chrome.tts.TtsOptions} */ ({});
+    const validatedProperties: chrome.tts.TtsOptions = {};
     for (let i = 0; i < PrimaryTts.ALLOWED_PROPERTIES_.length; i++) {
       const p = PrimaryTts.ALLOWED_PROPERTIES_[i];
       if (utterance.properties[p]) {
-        validatedProperties[p] = utterance.properties[p];
+        (validatedProperties as any)[p] = utterance.properties[p];
       }
     }
 
     // Update the caption panel.
     if (utterance.properties && utterance.properties['pitch'] &&
-        utterance.properties['pitch'] < this.ttsProperties['pitch']) {
+        utterance.properties['pitch'] < this.ttsProperties['pitch']!) {
       (new PanelCommand(
            PanelCommandType.ADD_ANNOTATION_SPEECH, utterance.textString))
           .send();
@@ -413,11 +406,10 @@ export class PrimaryTts extends AbstractTts {
    * that doesn't pertain to the current utterance, but when speech starts
    * or ends we optionally call callback functions, and start speaking the
    * next utterance if there's another one enqueued.
-   * @param {Object} event The TTS event from chrome.
-   * @param {number} utteranceId The id of the associated utterance.
-   * @private
+   * @param event The TTS event from chrome.
+   * @param utteranceId The id of the associated utterance.
    */
-  onTtsEvent_(event, utteranceId) {
+  private onTtsEvent_(event: chrome.tts.TtsEvent, utteranceId: number): void {
     this.lastEventType = event['type'];
 
     // Ignore events sent on utterances other than the current one.
@@ -427,8 +419,8 @@ export class PrimaryTts extends AbstractTts {
 
     const utterance = this.currentUtterance_;
 
-    switch (event.type) {
-      case 'start':
+    switch (event['type']) {
+      case chrome.tts.EventType.START:
         this.capturingTtsEventListeners_.forEach(
             listener => listener.onTtsStart());
         if (utterance.properties['startCallback']) {
@@ -438,7 +430,7 @@ export class PrimaryTts extends AbstractTts {
           }
         }
         break;
-      case 'end':
+      case chrome.tts.EventType.END:
         // End callbacks could cause additional speech to queue up.
         this.currentUtterance_ = null;
         this.capturingTtsEventListeners_.forEach(
@@ -451,7 +443,7 @@ export class PrimaryTts extends AbstractTts {
         }
         this.startSpeakingNextItemInQueue_();
         break;
-      case 'interrupted':
+      case chrome.tts.EventType.INTERRUPTED:
         this.cancelUtterance_(utterance);
         this.currentUtterance_ = null;
         for (let i = 0; i < this.utteranceQueue_.length; i++) {
@@ -461,7 +453,7 @@ export class PrimaryTts extends AbstractTts {
         this.capturingTtsEventListeners_.forEach(
             listener => listener.onTtsInterrupted());
         break;
-      case 'error':
+      case chrome.tts.EventType.ERROR:
         this.onError_(event['errorMessage']);
         this.currentUtterance_ = null;
         this.startSpeakingNextItemInQueue_();
@@ -476,12 +468,12 @@ export class PrimaryTts extends AbstractTts {
    * QUEUE or FLUSH, the logic is straightforward. If the queue mode is
    * CATEGORY_FLUSH, we only flush utterances with the same category.
    *
-   * @param {Utterance} utteranceToCancel The utterance in question.
-   * @param {Utterance} newUtterance The new utterance we're enqueueing.
-   * @return {boolean} True if this utterance should be canceled.
-   * @private
+   * @param utteranceToCancel The utterance in question.
+   * @param newUtterance The new utterance we're enqueueing.
+   * @return True if this utterance should be canceled.
    */
-  shouldCancel_(utteranceToCancel, newUtterance) {
+  private shouldCancel_(
+      utteranceToCancel: Utterance|null, newUtterance: Utterance): boolean {
     if (!utteranceToCancel) {
       return false;
     }
@@ -489,27 +481,25 @@ export class PrimaryTts extends AbstractTts {
       return false;
     }
     switch (newUtterance.queueMode) {
-      case ttsTypes.QueueMode.QUEUE:
+      case QueueMode.QUEUE:
         return false;
-      case ttsTypes.QueueMode.INTERJECT:
-        return utteranceToCancel.queueMode === ttsTypes.QueueMode.INTERJECT;
-      case ttsTypes.QueueMode.FLUSH:
+      case QueueMode.INTERJECT:
+        return utteranceToCancel.queueMode === QueueMode.INTERJECT;
+      case QueueMode.FLUSH:
         return true;
-      case ttsTypes.QueueMode.CATEGORY_FLUSH:
+      case QueueMode.CATEGORY_FLUSH:
         return (
             utteranceToCancel.properties['category'] ===
             newUtterance.properties['category']);
     }
-    return false;
   }
 
   /**
    * Do any cleanup necessary to cancel an utterance, like callings its
    * callback function if any.
-   * @param {Utterance} utterance The utterance to cancel.
-   * @private
+   * @param utterance The utterance to cancel.
    */
-  cancelUtterance_(utterance) {
+  private cancelUtterance_(utterance: Utterance|null): void {
     if (utterance && utterance.properties['endCallback']) {
       try {
         utterance.properties['endCallback'](true);
@@ -518,25 +508,24 @@ export class PrimaryTts extends AbstractTts {
     }
   }
 
-  /** @override */
-  increaseOrDecreaseProperty(propertyName, increase) {
+  override increaseOrDecreaseProperty(
+      propertyName: TtsAudioProperty, increase: boolean): void {
     super.increaseOrDecreaseProperty(propertyName, increase);
-    const value = this.ttsProperties[propertyName];
+    const value = this.ttsProperties[propertyName]!;
     this.setProperty(propertyName, value);
   }
 
-  /** @override */
-  setProperty(propertyName, value) {
+  override setProperty(propertyName: TtsAudioProperty, value: number): void {
     super.setProperty(propertyName, value);
-    let pref;
+    let pref: string;
     switch (propertyName) {
-      case ttsTypes.TtsSettings.RATE:
+      case TtsAudioProperty.RATE:
         pref = 'settings.tts.speech_rate';
         break;
-      case ttsTypes.TtsSettings.PITCH:
+      case TtsAudioProperty.PITCH:
         pref = 'settings.tts.speech_pitch';
         break;
-      case ttsTypes.TtsSettings.VOLUME:
+      case TtsAudioProperty.VOLUME:
         pref = 'settings.tts.speech_volume';
         break;
       default:
@@ -545,14 +534,12 @@ export class PrimaryTts extends AbstractTts {
     chrome.settingsPrivate.setPref(pref, this.ttsProperties[propertyName]);
   }
 
-  /** @override */
-  isSpeaking() {
+  override isSpeaking(): boolean {
     super.isSpeaking();
     return Boolean(this.currentUtterance_);
   }
 
-  /** @override */
-  stop() {
+  override stop(): void {
     super.stop();
 
     this.cancelUtterance_(this.currentUtterance_);
@@ -577,13 +564,13 @@ export class PrimaryTts extends AbstractTts {
         listener => listener.onTtsInterrupted());
   }
 
-  /** @override */
-  addCapturingEventListener(listener) {
+  override addCapturingEventListener(listener: TtsCapturingEventListener):
+      void {
     this.capturingTtsEventListeners_.push(listener);
   }
 
-  /** @override */
-  removeCapturingEventListener(listener) {
+  override removeCapturingEventListener(listener: TtsCapturingEventListener):
+      void {
     this.capturingTtsEventListeners_ =
         this.capturingTtsEventListeners_.filter(item => {
           return item !== listener;
@@ -592,35 +579,28 @@ export class PrimaryTts extends AbstractTts {
 
   /**
    * An error handler passed as a callback to chrome.tts.speak.
-   * @param {string} errorMessage Describes the error (set by onEvent).
-   * @private
+   * @param errorMessage Describes the error (set by onEvent).
    */
-  onError_(errorMessage) {
+  private onError_(_errorMessage: string|undefined): void {
     this.updateVoice(this.currentVoice);
   }
 
-  /**
-   * @param {string} text
-   * @param {Object=} properties
-   * @override
-   */
-  preprocess(text, properties) {
-    properties = properties ? properties : {};
-
+  override preprocess(
+      text: string,
+      properties: TtsSpeechProperties = new TtsSpeechProperties()): string {
     // Perform generic processing.
     text = super.preprocess(text, properties);
 
     // Perform any remaining processing such as punctuation expansion.
-    let punctEcho = null;
-    if (properties[ttsTypes.TtsSettings.PUNCTUATION_ECHO]) {
-      for (let i = 0; punctEcho = ttsTypes.PunctuationEchoes[i]; i++) {
-        if (properties[ttsTypes.TtsSettings.PUNCTUATION_ECHO] ===
-            punctEcho.name) {
+    let punctEcho: PunctuationEcho;
+    if (properties[TtsSettings.PUNCTUATION_ECHO]) {
+      for (let i = 0; punctEcho = PunctuationEchoes[i]; i++) {
+        if (properties[TtsSettings.PUNCTUATION_ECHO] === punctEcho.name) {
           break;
         }
       }
     } else {
-      punctEcho = ttsTypes.PunctuationEchoes[this.currentPunctuationEcho_];
+      punctEcho = PunctuationEchoes[this.currentPunctuationEcho_];
     }
     text = text.replace(
         punctEcho.regexp, this.createPunctuationReplace_(punctEcho.clear));
@@ -638,20 +618,19 @@ export class PrimaryTts extends AbstractTts {
     // it comes after a number.
     text = text.replace(
         /(\d)(\s*)([b-z])\b/g,
-        (unused, num, whitespace, letter) =>
+        (_unused, num, whitespace, letter) =>
             num + whitespace + letter.toUpperCase());
 
     return text;
   }
 
-  /** @override */
-  toggleSpeechOnOrOff() {
-    const previousValue = this.ttsProperties[ttsTypes.TtsSettings.VOLUME];
+  override toggleSpeechOnOrOff(): boolean {
+    const previousValue = this.ttsProperties[TtsSettings.VOLUME];
     const toggle = () => {
       if (previousValue === 0) {
-        this.ttsProperties[ttsTypes.TtsSettings.VOLUME] = 1;
+        this.ttsProperties[TtsSettings.VOLUME] = 1;
       } else {
-        this.ttsProperties[ttsTypes.TtsSettings.VOLUME] = 0;
+        this.ttsProperties[TtsSettings.VOLUME] = 0;
         this.stop();
       }
     };
@@ -670,22 +649,22 @@ export class PrimaryTts extends AbstractTts {
   /**
    * Method that updates the punctuation echo level, and also persists setting
    * to settings prefs.
-   * @param {number} punctuationEcho The index of the desired punctuation echo
-   * level in ttsTypes.PunctuationEchoes.
+   * @param punctuationEcho The index of the desired punctuation echo
+   * level in PunctuationEchoes.
    */
-  updatePunctuationEcho(punctuationEcho) {
+  updatePunctuationEcho(punctuationEcho: number): void {
     this.currentPunctuationEcho_ = punctuationEcho;
-    SettingsManager.set(ttsTypes.TtsSettings.PUNCTUATION_ECHO, punctuationEcho);
+    SettingsManager.set(TtsSettings.PUNCTUATION_ECHO, punctuationEcho);
   }
 
   /**
    * Method that cycles among the available punctuation echo levels.
-   * @return {string} The resulting punctuation level message id.
+   * @return The resulting punctuation level message id.
    */
-  cyclePunctuationEcho() {
+  cyclePunctuationEcho(): string {
     this.updatePunctuationEcho(
-        (this.currentPunctuationEcho_ + 1) % ttsTypes.PunctuationEchoes.length);
-    return ttsTypes.PunctuationEchoes[this.currentPunctuationEcho_].msg;
+        (this.currentPunctuationEcho_ + 1) % PunctuationEchoes.length);
+    return PunctuationEchoes[this.currentPunctuationEcho_].msg;
   }
 
   /**
@@ -693,11 +672,11 @@ export class PrimaryTts extends AbstractTts {
    * For numbers containing 4 or fewer digits, we return the original number.
    * This ensures that numbers like 123,456 or 2011 are not "digitized" while
    * 123456 is.
-   * @param {string} text The text to process.
-   * @return {string} A string with all numbers converted.
+   * @param text The text to process.
+   * @return A string with all numbers converted.
    * @private
    */
-  getNumberAsDigits_(text) {
+  getNumberAsDigits_(text: string): string {
     return text.replace(/[0-9０-９]+/g, function(num) {
       return num.split('').join(' ');
     });
@@ -706,30 +685,28 @@ export class PrimaryTts extends AbstractTts {
   /**
    * Constructs a function for string.replace that handles description of a
    *  punctuation character.
-   * @param {boolean} clear Whether we want to use whitespace in place of
+   * @param clear Whether we want to use whitespace in place of
    *     match.
-   * @return {function(string): string} The replacement function.
-   * @private
+   * @return The replacement function.
    */
-  createPunctuationReplace_(clear) {
+  private createPunctuationReplace_(clear: boolean): (match: string) => string {
     return match => {
       const retain =
           this.retainPunctuation_.indexOf(match) !== -1 ? match : ' ';
-      return clear ?
-          retain :
-          ' ' + Msgs.getMsgWithCount(ttsTypes.CharacterDictionary[match], 1) +
+      return clear ? retain :
+                     ' ' + Msgs.getMsgWithCount(CharacterDictionary[match], 1) +
               retain + ' ';
     };
   }
 
   /**
    * Queues phonetic disambiguation for characters if disambiguation is found.
-   * @param {string} text The text for which we want to get phonetic data.
-   * @param {!ttsTypes.TtsSpeechProperties} properties Speech properties to use
-   *     for this utterance.
+   * @param text The text for which we want to get phonetic data.
+   * @param properties Speech properties to use for this utterance.
    * @private
    */
-  pronouncePhonetically_(text, properties) {
+  private pronouncePhonetically_(text: string, properties: TtsSpeechProperties):
+      void {
     // Math should never be pronounced phonetically.
     if (properties.math) {
       return;
@@ -750,19 +727,18 @@ export class PrimaryTts extends AbstractTts {
     }
 
     const phoneticText = text.length === 1 ?
-        PhoneticData.forCharacter(text, properties.lang) :
-        PhoneticData.forText(text, properties.lang);
+        PhoneticData.forCharacter(text, properties.lang!) :
+        PhoneticData.forText(text, properties.lang!);
     if (phoneticText) {
       properties.delay = true;
-      this.speak(phoneticText, ttsTypes.QueueMode.QUEUE, properties);
+      this.speak(phoneticText, QueueMode.QUEUE, properties);
     }
   }
 
   /**
    * Clears the last timeout set via setTimeout.
-   * @private
    */
-  clearTimeout_() {
+  private clearTimeout_(): void {
     if (this.timeoutId_ !== undefined) {
       clearTimeout(this.timeoutId_);
       this.timeoutId_ = undefined;
@@ -773,12 +749,13 @@ export class PrimaryTts extends AbstractTts {
    * Update the current voice used to speak based upon values in storage. If
    * that does not succeed, fallback to use system locale when picking a
    * voice.
-   * @param {string} voiceName Voice name to set.
-   * @param {function(string) : void=} opt_callback Called when the voice is
-   * determined.
+   * @param voiceName Voice name to set.
+   * @param opt_callback Called when the voice is determined.
    */
-  updateVoice(voiceName, opt_callback) {
-    chrome.tts.getVoices(voices => {
+  updateVoice(
+      voiceName: string|undefined,
+      opt_callback?: (voices: string) => void): void {
+    chrome.tts.getVoices((voices: TtsVoice[]) => {
       const systemVoice = {voiceName: constants.SYSTEM_VOICE};
       voices.unshift(systemVoice);
       const newVoice = voices.find(v => {
@@ -790,32 +767,28 @@ export class PrimaryTts extends AbstractTts {
         this.startSpeakingNextItemInQueue_();
       }
       if (opt_callback) {
-        opt_callback(this.currentVoice);
+        opt_callback(this.currentVoice!);
       }
     });
   }
 
-  /**
-   * @param {boolean} announce
-   * @param {Array<chrome.settingsPrivate.PrefObject>} prefs
-   * @private
-   */
-  updateFromPrefs_(announce, prefs) {
+  private updateFromPrefs_(
+      announce: boolean, prefs: chrome.settingsPrivate.PrefObject[]): void {
     prefs.forEach(pref => {
-      let msg;
-      let propertyName;
+      let msg: string;
+      let propertyName: TtsAudioProperty;
       switch (pref.key) {
         case 'settings.tts.speech_rate':
-          propertyName = ttsTypes.TtsSettings.RATE;
+          propertyName = TtsAudioProperty.RATE;
           msg = 'announce_rate';
           this.setHintDelayMS(/** @type {number} */ (pref.value));
           break;
         case 'settings.tts.speech_pitch':
-          propertyName = ttsTypes.TtsSettings.PITCH;
+          propertyName = TtsAudioProperty.PITCH;
           msg = 'announce_pitch';
           break;
         case 'settings.tts.speech_volume':
-          propertyName = ttsTypes.TtsSettings.VOLUME;
+          propertyName = TtsAudioProperty.VOLUME;
           msg = 'announce_volume';
           break;
         default:
@@ -829,11 +802,10 @@ export class PrimaryTts extends AbstractTts {
       }
 
       const valueAsPercent =
-          Math.round(this.propertyToPercentage(propertyName) * 100);
-      const announcement = Msgs.getMsg(msg, [valueAsPercent]);
+          Math.round((this.propertyToPercentage(propertyName) || 0) * 100);
+      const announcement = Msgs.getMsg(msg, [valueAsPercent.toString()]);
       ChromeVox.tts.speak(
-          announcement, ttsTypes.QueueMode.FLUSH,
-          ttsTypes.Personality.ANNOTATION);
+          announcement, QueueMode.FLUSH, Personality.ANNOTATION);
     });
   }
 
@@ -842,43 +814,10 @@ export class PrimaryTts extends AbstractTts {
    * We want an inverse relationship between the speech rate and the hint
    * delay; the faster the speech rate, the shorter the delay should be.
    * Default speech rate (value of 1) should map to a delay of 1000 MS.
-   * @param {number} rate
    */
-  setHintDelayMS(rate) {
+  setHintDelayMS(rate: number): void {
     PrimaryTts.hint_delay_ms_ = 1000 / rate;
   }
 }
-
-
-/**
- * The amount of time, in milliseconds, to wait before speaking a hint.
- * @type {number}
- * @private
- */
-PrimaryTts.hint_delay_ms_ = 1000;
-
-/**
- * The list of properties allowed to be passed to the chrome.tts.speak API.
- * Anything outside this list will be stripped.
- * @type {Array<string>}
- * @private
- * @const
- */
-PrimaryTts.ALLOWED_PROPERTIES_ = [
-  'desiredEventTypes',
-  'enqueue',
-  'extensionId',
-  'gender',
-  'lang',
-  'onEvent',
-  'pitch',
-  'rate',
-  'requiredEventTypes',
-  'voiceName',
-  'volume',
-];
-
-/** @private {RegExp} */
-PrimaryTts.SKIP_WHITESPACE_ = /^[\s\u00a0]*$/;
 
 TestImportManager.exportForTesting(PrimaryTts);

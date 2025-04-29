@@ -44,8 +44,20 @@ export enum QueueMode {
   QUEUE,
 }
 
+/**
+ * Numeric properties of TtsSpeechProperties that will be set.
+ */
+export enum TtsAudioProperty {
+  PITCH = 'pitch',
+  RATE = 'rate',
+  VOLUME = 'volume',
+}
+
 /** Structure to store properties around TTS speech production. */
 export class TtsSpeechProperties {
+  [TtsAudioProperty.PITCH]?: number;
+  [TtsAudioProperty.RATE]?: number;
+  [TtsAudioProperty.VOLUME]?: number;
   category?: TtsCategory;
   color?: string;
   delay?: boolean;
@@ -58,16 +70,16 @@ export class TtsSpeechProperties {
   punctuationEcho?: string;
   token?: boolean;
   voiceName?: string;
-  pitch?: number;
   relativePitch?: number;
-  rate?: number;
   relativeRate?: number;
-  volume?: number;
   relativeVolume?: number;
 
   startCallback?: VoidFunction;
   endCallback?: (val?: boolean) => void;
-  onEvent?: (event: Object) => void;
+  onEvent?: (event: chrome.tts.TtsEvent) => void;
+
+  // Allows for string indexing in AbstractTts and PrimaryTts helper functions.
+  [key: string]: any;
 
   constructor(initialValues?: Object) {
     this.init_(initialValues);
@@ -176,7 +188,7 @@ export enum TtsSettings {
   VOLUME = 'volume',
 }
 
-interface PunctuationEcho {
+export interface PunctuationEcho {
   name: string;
   msg: string;
   regexp: RegExp;

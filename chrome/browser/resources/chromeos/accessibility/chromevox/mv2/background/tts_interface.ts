@@ -8,7 +8,7 @@
  */
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 
-import type {QueueMode, TtsSpeechProperties} from '../common/tts_types.js';
+import type {QueueMode, TtsAudioProperty, TtsSpeechProperties} from '../common/tts_types.js';
 
 /**
  * An interface for clients who want to get notified when an utterance
@@ -58,8 +58,8 @@ export abstract class TtsInterface {
    * @param increase If true, increases the property value by one
    *     step size, otherwise decreases.
    */
-  abstract increaseOrDecreaseProperty(propertyName: string, increase: boolean):
-      void;
+  abstract increaseOrDecreaseProperty(
+      propertyName: TtsAudioProperty, increase: boolean): void;
 
   /**
    * Sets the property to a particular value. Callers should prefer this
@@ -67,14 +67,14 @@ export abstract class TtsInterface {
    * @param propertyName The name of the property to change.
    * @param value The value to change it to.
    */
-  abstract setProperty(propertyName: string, value: number): void;
+  abstract setProperty(propertyName: TtsAudioProperty, value: number): void;
 
   /**
    * Converts an engine property value to a percentage from 0.00 to 1.00.
    * @param property The property to convert.
    * @return The percentage of the property.
    */
-  abstract propertyToPercentage(property: string): number|null;
+  abstract propertyToPercentage(property: TtsAudioProperty): number|null;
 
   /**
    * Returns the default properties of the first tts that has default
