@@ -27,19 +27,8 @@ class GlicWindowAnimator : public gfx::AnimationDelegate {
   GlicWindowAnimator& operator=(const GlicWindowAnimator&) = delete;
   ~GlicWindowAnimator() override;
 
-  // Runs the attached open widget animation for the Glic widget.
-  void RunOpenAttachedAnimation(GlicButton* glic_button,
-                                const gfx::Size& target_size,
-                                base::OnceClosure callback);
-
   // Runs the attached close animation for the Glic widget.
   void RunCloseAnimation(GlicButton* glic_button, base::OnceClosure callback);
-
-  // Fades in the GlicView's web view layer.
-  void FadeInWebView();
-
-  // Sets the background color and corner radius of the Glic widget.
-  void SetRoundedRectBackground();
 
   // Animate the window size, maintaining the position of the top right corner.
   // If there is already a running bounds change animation, update that
@@ -61,14 +50,6 @@ class GlicWindowAnimator : public gfx::AnimationDelegate {
   // Called when the programmatic resize has finished. Public for use by
   // GlicWindowResizeAnimation.
   void ResizeFinished();
-
-  // Called when the widget's opacity fading animation has finished. Public for
-  // use by GlicWindowOpacityAnimation.
-  void OnWindowOpacityAnimationEnded();
-
-  // Called when the view's opacity fading animation has finished. Public for
-  // use by GlicViewOpacityAnimation.
-  void OnViewOpacityAnimationEnded();
 
   // Gets the bounds for the widget's resize animation. If there is an animation
   // already ongoing, use the target bounds for that animation. Otherwise, use
@@ -106,13 +87,6 @@ class GlicWindowAnimator : public gfx::AnimationDelegate {
   const raw_ptr<GlicWindowController> window_controller_;
   std::unique_ptr<GlicWindowResizeAnimation> window_resize_animation_;
 
-  class GlicWindowOpacityAnimation;
-  std::unique_ptr<GlicWindowOpacityAnimation> glic_window_opacity_animation_;
-
-  class GlicViewOpacityAnimation;
-  std::unique_ptr<GlicViewOpacityAnimation> glic_view_opacity_animation_;
-
- private:
   // Last requested target size. Will be (0, 0) if there hasn't been a resize
   // request or glic has already been resized to the target size.
   gfx::Size last_target_size_;

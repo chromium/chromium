@@ -253,7 +253,6 @@ class GlicWindowController : public views::WidgetObserver,
   //   * ClosingToReopenDetached
   enum class State {
     kClosed,
-    kOpenAnimation,
     kWaitingForGlicToLoad,
     kOpen,
     kDetaching,
@@ -323,19 +322,15 @@ class GlicWindowController : public views::WidgetObserver,
 
   void SetupGlicWidget(Browser* browser);
   void SetupGlicWidgetAccessibilityText();
-  void StartAttachedAnimation(GlicButton* glic_button);
 
   // Host::Observer implementation.
   void WebClientInitializeFailed() override;
   void LoginPageCommitted() override;
   void ClientReadyToShow(const mojom::OpenPanelInfo& open_info) override;
 
-  // Called when the open animation is finished.
-  void OpenAnimationFinished();
-
   // Called once glic is completely loaded and any animations have finished.
   // This is the end of the opening process and |state_| will be set to kOpen.
-  void GlicLoadedAndAnimationDone();
+  void GlicLoadedAndReadyToDisplay();
 
   void SetDraggingAreasAndWatchForMouseEvents();
 

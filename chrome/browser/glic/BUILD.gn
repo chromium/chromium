@@ -376,7 +376,6 @@ source_set("interactive_ui_tests") {
     "host/glic_api_uitest.cc",
     "host/glic_permission_enforcement_interactive_uitest.cc",
     "host/glic_ui_interactive_uitest.cc",
-    "widget/glic_window_animator_interactive_uitest.cc",
     "widget/glic_window_controller_interactive_uitest.cc",
     "widget/glic_window_resize_animation_interactive_uitest.cc",
   ]

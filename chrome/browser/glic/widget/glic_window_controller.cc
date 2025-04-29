@@ -307,8 +307,7 @@ GlicWindowController::GlicWindowController(
 GlicWindowController::~GlicWindowController() = default;
 
 void GlicWindowController::WebClientInitializeFailed() {
-  if (state_ == State::kOpenAnimation ||
-      state_ == State::kWaitingForGlicToLoad) {
+  if (state_ == State::kWaitingForGlicToLoad) {
     // TODO(crbug.com/388328847): The web client failed to initialize. Decide
     // what the fallback behavior is. Additionally, we probably need some kind
     // of timeout and/or loading indicator if loading takes too much time. For
@@ -316,19 +315,17 @@ void GlicWindowController::WebClientInitializeFailed() {
     LOG(ERROR)
         << "Glic web client failed to initialize, it won't work properly.";
     glic_service_->metrics()->set_show_start_time(base::TimeTicks());
-    GlicLoadedAndAnimationDone();
+    GlicLoadedAndReadyToDisplay();
   }
 }
 
 void GlicWindowController::LoginPageCommitted() {
   login_page_committed_ = true;
-  if ((state_ == State::kOpenAnimation ||
-       state_ == State::kWaitingForGlicToLoad) &&
-      !host().IsReady()) {
+  if (state_ == State::kWaitingForGlicToLoad && !host().IsReady()) {
     // TODO(crbug.com/388328847): Temporarily allow showing the UI when a login
     // page is reached.
     glic_service_->metrics()->set_show_start_time(base::TimeTicks());
-    GlicLoadedAndAnimationDone();
+    GlicLoadedAndReadyToDisplay();
   }
 }
 
@@ -609,7 +606,9 @@ void GlicWindowController::Show(Browser* browser,
     return;
   }
 
-  SetWindowState(State::kOpenAnimation);
+  glic_window_animator_ = std::make_unique<GlicWindowAnimator>(this);
+  SetWindowState(State::kWaitingForGlicToLoad);
+
   glic_service_->metrics()->OnGlicWindowOpen(/*attached=*/browser, source);
   glic_service_->GetAuthController().OnGlicWindowOpened();
 
@@ -619,14 +618,6 @@ void GlicWindowController::Show(Browser* browser,
   host().NotifyWindowIntentToShow();
 
   SetupGlicWidget(browser);
-
-  glic_window_animator_ = std::make_unique<GlicWindowAnimator>(this);
-  if (browser && !AlwaysDetached()) {
-    StartAttachedAnimation(GetGlicButton(*browser));
-  } else {
-    // There is no detached animation so move to waiting for glic.
-    SetWindowState(State::kWaitingForGlicToLoad);
-  }
 
   // Notify the web client that the panel will open, and wait for the response
   // to actually show the window. Note that we have to call
@@ -638,7 +629,7 @@ void GlicWindowController::Show(Browser* browser,
   if (login_page_committed_) {
     // This indicates that we've warmed the web client and it has hit a login
     // page. See LoginPageCommitted.
-    GlicLoadedAndAnimationDone();
+    GlicLoadedAndReadyToDisplay();
   } else {
     // This adds dragging functionality to special case panels (e.g. error,
     // offline, loading).
@@ -797,20 +788,6 @@ GlicWindowController::GetInitialDetachedBoundsFromBrowser(
                                          : std::nullopt;
 }
 
-void GlicWindowController::StartAttachedAnimation(GlicButton* glic_button) {
-  // Make the web view invisible for now, then fade it in after the open
-  // animation finishes.
-  glic_window_animator_->SetGlicWebViewVisibility(false);
-
-  // Set target size for animation and run the open attached animation.
-  gfx::Size widget_size = GetLastRequestedSizeClamped();
-
-  glic_window_animator_->RunOpenAttachedAnimation(
-      glic_button, widget_size,
-      base::BindOnce(&GlicWindowController::OpenAnimationFinished,
-                     GetWeakPtr()));
-}
-
 void GlicWindowController::ClientReadyToShow(
     const mojom::OpenPanelInfo& open_info) {
   DVLOG(1) << "Glic client ready to show " << open_info.web_client_mode;
@@ -821,25 +798,11 @@ void GlicWindowController::ClientReadyToShow(
   EnableDragResize(open_info.can_user_resize);
 
   if (state_ == State::kWaitingForGlicToLoad) {
-    GlicLoadedAndAnimationDone();
+    GlicLoadedAndReadyToDisplay();
   }
 }
 
-void GlicWindowController::OpenAnimationFinished() {
-  if (state_ == State::kOpenAnimation) {
-    SetWindowState(State::kWaitingForGlicToLoad);
-
-    // Note: this logic may never be called if state_ != kOpenAnimation when the
-    // open animation is finished (or cancelled).
-    glic_window_animator_->FadeInWebView();
-
-    if (host().IsPrimaryClientOpen()) {
-      GlicLoadedAndAnimationDone();
-    }
-  }
-}
-
-void GlicWindowController::GlicLoadedAndAnimationDone() {
+void GlicWindowController::GlicLoadedAndReadyToDisplay() {
   login_page_committed_ = false;
   if (state_ == State::kClosed || state_ == State::kOpen) {
     return;
@@ -984,7 +947,7 @@ void GlicWindowController::Resize(const gfx::Size& size,
   // animation and resize to the final size. Investigate a smoother way to
   // animate this transition.
   if (state_ == State::kOpen || state_ == State::kWaitingForGlicToLoad ||
-      state_ == State::kOpenAnimation || state_ == State::kDetaching) {
+      state_ == State::kDetaching) {
     glic_window_animator_->AnimateSize(GetLastRequestedSizeClamped(), duration,
                                        std::move(callback));
   } else {
@@ -1454,7 +1417,7 @@ gfx::Size GlicWindowController::GetLastRequestedSizeClamped() const {
 
 void GlicWindowController::MaybeAdjustSizeForDisplay(bool animate) {
   if (state_ == State::kOpen || state_ == State::kWaitingForGlicToLoad ||
-      state_ == State::kOpenAnimation || state_ == State::kDetaching) {
+      state_ == State::kDetaching) {
     const auto target_size = GetLastRequestedSizeClamped();
     if (target_size != glic_window_animator_->GetCurrentTargetBounds().size()) {
       glic_window_animator_->AnimateSize(
