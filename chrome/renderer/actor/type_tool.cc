@@ -165,8 +165,9 @@ std::optional<TypeTool::KeyParams> TypeTool::GetKeyParamsForChar(char c) {
   return params;
 }
 
-bool TypeTool::CreateAndDispatchKeyEvent(blink::WebInputEvent::Type type,
-                                         KeyParams key_params) {
+blink::WebInputEventResult TypeTool::CreateAndDispatchKeyEvent(
+    blink::WebInputEvent::Type type,
+    KeyParams key_params) {
   blink::WebKeyboardEvent key_event(type, key_params.modifiers,
                                     ui::EventTimeForNow());
   key_event.windows_key_code = key_params.windows_key_code;
@@ -182,25 +183,41 @@ bool TypeTool::CreateAndDispatchKeyEvent(blink::WebInputEvent::Type type,
       frame_->GetWebFrame()->FrameWidget()->HandleInputEvent(
           blink::WebCoalescedInputEvent(key_event, ui::LatencyInfo()));
 
-  if (result == blink::WebInputEventResult::kHandledSuppressed) {
-    ACTOR_LOG() << "Keyboard event (" << type << ") for key "
-                << key_event.dom_key << " suppressed.";
-    return false;
-  }
-  return true;
+  return result;
 }
 
 bool TypeTool::SimulateKeyPress(TypeTool::KeyParams params) {
   // TODO(crbug.com/402082693): Maybe add slight delay between events?
-  bool overall_success = CreateAndDispatchKeyEvent(
+  blink::WebInputEventResult down_result = CreateAndDispatchKeyEvent(
       blink::WebInputEvent::Type::kRawKeyDown, params);
 
-  overall_success &=
-      CreateAndDispatchKeyEvent(blink::WebInputEvent::Type::kChar, params);
+  // Only the KeyDown event will check for and report failure. The reason the
+  // other events don't is that if the KeyDown event was dispatched to the page,
+  // the key input was observable to the page and it may mutate itself in a way
+  // that subsequent Char and KeyUp events are suppressed (e.g. mutating the DOM
+  // tree, removing frames, etc). These "failure" cases can be considered
+  // successful in terms that the tool has acted on the page. In particular, a
+  // preventDefault()'ed KeyDown event will force suppressing the following Char
+  // event but this is expected and common.
+  if (down_result == blink::WebInputEventResult::kHandledSuppressed) {
+    ACTOR_LOG() << "KeyDown event for key " << params.dom_key << " suppressed.";
+    return false;
+  }
 
-  overall_success &=
+  blink::WebInputEventResult char_result =
+      CreateAndDispatchKeyEvent(blink::WebInputEvent::Type::kChar, params);
+  if (char_result == blink::WebInputEventResult::kHandledSuppressed) {
+    ACTOR_LOG() << "Warning: Char event for key " << params.dom_key
+                << " suppressed.";
+  }
+
+  blink::WebInputEventResult up_result =
       CreateAndDispatchKeyEvent(blink::WebInputEvent::Type::kKeyUp, params);
-  return overall_success;
+  if (up_result == blink::WebInputEventResult::kHandledSuppressed) {
+    ACTOR_LOG() << "Warning: KeyUp event for key " << params.dom_key
+                << " suppressed.";
+  }
+  return true;
 }
 
 bool TypeTool::PrepareTargetForMode(const blink::WebNode& node,

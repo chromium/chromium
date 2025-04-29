@@ -414,6 +414,25 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool_FollowByEnter) {
       EvalJs(web_contents(), "input_event_log.join(',')"));
 }
 
+// Ensure the type tool doesn't fail if the keydown event is handled (page
+// called preventDefault).
+IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool_PageHandlesKeyEvents) {
+  const GURL url = embedded_test_server()->GetURL("/actor/input.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  std::optional<int> input_id =
+      FindContentNodeId(*main_frame(), "#keyHandlingInput");
+  ASSERT_TRUE(input_id);
+
+  std::string typed_string = "abc";
+  BrowserAction action =
+      MakeType(input_id.value(), typed_string, /*follow_by_enter=*/true);
+
+  TestFuture<bool> result;
+  actor_coordinator().Act(action, result.GetCallback());
+  EXPECT_TRUE(result.Get());
+}
+
 // ===============================================
 // Mouse Move Tool
 // ===============================================

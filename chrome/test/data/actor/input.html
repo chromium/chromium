@@ -3,6 +3,11 @@
   <head>
     <meta name="viewport" content="width=device-width, minimum-scale=1.0">
     <title>Page with text input</title>
+    <style>
+      div {
+        margin-top: 8px;
+      }
+    </style>
   </head>
   <body>
     <!-- method=dialog prevents the form from navigating the page -->
@@ -20,5 +25,21 @@
       document.getElementById('input').addEventListener('keyup', log_handler);
       document.getElementById('submit').addEventListener('click', log_handler);
     </script>
+
+    <div>
+      This input calls preventDefault on all key events.
+      <input type="text" id="keyHandlingInput">
+      <script>
+        document.getElementById('keyHandlingInput')
+            .addEventListener('keydown', e => {
+          e.target.value += e.key;
+          e.preventDefault();
+        });
+        document.getElementById('keyHandlingInput')
+            .addEventListener('keypress', e => e.preventDefault());
+        document.getElementById('keyHandlingInput')
+            .addEventListener('keyup', e => e.preventDefault());
+      </script>
+    </div>
   </body>
 </html>
