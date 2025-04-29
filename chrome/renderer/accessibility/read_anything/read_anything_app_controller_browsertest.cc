@@ -26,6 +26,7 @@
 #include "chrome/renderer/accessibility/read_anything/read_anything_test_utils.h"
 #include "chrome/test/base/chrome_render_view_test.h"
 #include "content/public/renderer/render_frame.h"
+#include "read_aloud_traversal_utils.h"
 #include "read_anything_test_utils.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/strings/grit/services_strings.h"
@@ -3081,6 +3082,7 @@ TEST_F(ReadAnythingAppControllerTest,
 
   static constexpr ui::AXNodeID kSuperscriptId = 13;
   ui::AXNodeData superscript = test::GenericContainerNode(kSuperscriptId);
+  superscript.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag, "<p>");
   superscript.child_ids = {kId2, kId3, kId4};
 
   ui::AXNodeData root;
@@ -3115,17 +3117,17 @@ TEST_F(ReadAnythingAppControllerTest,
   EXPECT_EQ(next_node_ids[0], kId2);
   EXPECT_EQ(controller().GetCurrentTextStartIndex(next_node_ids[0]), 0);
   EXPECT_EQ(controller().GetCurrentTextEndIndex(next_node_ids[0]),
-            (int)sentence2.length());
+            (int)(sentence2.length()));
 
   EXPECT_EQ(next_node_ids[1], kId3);
   EXPECT_EQ(controller().GetCurrentTextStartIndex(next_node_ids[1]), 0);
   EXPECT_EQ(controller().GetCurrentTextEndIndex(next_node_ids[1]),
-            (int)sentence3.length());
+            (int)(sentence3.length()));
 
   EXPECT_EQ(next_node_ids[2], kId4);
   EXPECT_EQ(controller().GetCurrentTextStartIndex(next_node_ids[2]), 0);
   EXPECT_EQ(controller().GetCurrentTextEndIndex(next_node_ids[2]),
-            (int)sentence4.length());
+            (int)(sentence4.length()));
 
   // Nodes are empty at the end of the new tree.
   next_node_ids = MoveToNextGranularityAndGetText();
@@ -3218,6 +3220,7 @@ TEST_F(ReadAnythingAppControllerTest,
   static constexpr ui::AXNodeID kSuperscriptId = 13;
   superscript.id = kSuperscriptId;
   superscript.role = ax::mojom::Role::kSuperscript;
+  superscript.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag, "<p>");
   superscript.child_ids = {kId2, kId3, kId4};
 
   ui::AXNodeData root;
@@ -3289,6 +3292,7 @@ TEST_F(ReadAnythingAppControllerTest,
   static constexpr ui::AXNodeID kSuperscriptId = 13;
   superscript.id = kSuperscriptId;
   superscript.role = ax::mojom::Role::kSuperscript;
+  superscript.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag, "<p>");
   superscript.child_ids = {kId2, kId3, kId4};
 
   static constexpr ui::AXNodeID kId5 = 100;
@@ -3464,6 +3468,8 @@ TEST_F(ReadAnythingAppControllerTest,
   static constexpr ui::AXNodeID kParagraphId1 = 6;
   paragraph_node1.id = kParagraphId1;
   paragraph_node1.role = ax::mojom::Role::kParagraph;
+  paragraph_node1.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag,
+                                     "<p>");
   paragraph_node1.AddBoolAttribute(
       ax::mojom::BoolAttribute::kIsLineBreakingObject, true);
   paragraph_node1.child_ids = {kId2};
@@ -3472,6 +3478,8 @@ TEST_F(ReadAnythingAppControllerTest,
   static constexpr ui::AXNodeID kParagraphId2 = 7;
   paragraph_node2.id = kParagraphId2;
   paragraph_node2.role = ax::mojom::Role::kParagraph;
+  paragraph_node2.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag,
+                                     "<p>");
   paragraph_node2.AddBoolAttribute(
       ax::mojom::BoolAttribute::kIsLineBreakingObject, true);
   paragraph_node2.child_ids = {kId3};
@@ -4066,6 +4074,7 @@ TEST_F(ReadAnythingAppControllerTest, GetNextValidPosition_SkipsNonTextNode) {
   ui::AXNodeData static_text2 = test::TextNode(kId2, sentence2);
 
   ui::AXNodeData empty_node;
+  empty_node.role = ax::mojom::Role::kNone;
   empty_node.id = 3;
 
   InitializeWithAndProcessNodes({std::move(static_text1), std::move(empty_node),
@@ -4127,19 +4136,25 @@ TEST_F(ReadAnythingAppControllerTest,
   std::u16string sentence1 = u"This is a sentence.";
   ui::AXNodeData static_text = test::TextNode(/* id= */ 2, sentence1);
   ui::AXNodeData empty_node1;
+  empty_node1.role = ax::mojom::Role::kNone;
   empty_node1.id = 3;
   ui::AXNodeData empty_node2;
+  empty_node2.role = ax::mojom::Role::kNone;
   empty_node2.id = 4;
   InitializeWithAndProcessNodes(
       {std::move(static_text), std::move(empty_node1), std::move(empty_node2)});
 
-  ui::AXNodePosition::AXPositionInstance new_position = GetNextNodePosition();
+  a11y::ReadAloudCurrentGranularity current_granularity =
+      a11y::ReadAloudCurrentGranularity();
+  current_granularity.AddText(static_text.id, 0, sentence1.length(), sentence1);
+
+  ui::AXNodePosition::AXPositionInstance new_position =
+      GetNextNodePosition(current_granularity);
   EXPECT_TRUE(new_position->IsNullPosition());
 }
 
-TEST_F(
-    ReadAnythingAppControllerTest,
-    GetNextValidPosition_AfterGetNextNodesButBeforeGetCurrentText_UsesCurrentGranularity) {
+TEST_F(ReadAnythingAppControllerTest,
+       GetNextValidPosition_UsesCurrentGranularity) {
   std::u16string sentence1 = u"But from up here. The ";
   std::u16string sentence2 = u"world ";
   std::u16string sentence3 =
@@ -4167,20 +4182,18 @@ TEST_F(
   EXPECT_EQ(controller().GetCurrentTextStartIndex(kId1), -1);
   EXPECT_EQ(controller().GetCurrentTextEndIndex(kId1), -1);
 
-  // Get the next position without using the current granularity. This
-  // simulates getting the next node position from within GetNextNode if
-  // the current granularity hasn't yet been added to the list processed
-  // granularities. This should return the ID for static_text1, even though
-  // it's already been used because the current granularity isn't being used.
   ui::AXNodePosition::AXPositionInstance new_position = GetNextNodePosition();
-  EXPECT_EQ(new_position->anchor_id(), kId1);
+  EXPECT_EQ(new_position->anchor_id(), kId2);
+
+  // Simulate adding to the current granularity.
+  current_granularity.AddText(kId2, 0, sentence2.length(), sentence2);
 
   // Now get the next position using the correct current granularity. This
   // simulates calling GetNextNodePosition from within GetNextNodes before
   // the nodes have been added to the list of processed granularities. This
   // should correctly return the next node in the tree.
   new_position = GetNextNodePosition(current_granularity);
-  EXPECT_EQ(new_position->anchor_id(), kId2);
+  EXPECT_EQ(new_position->anchor_id(), kId3);
 }
 
 TEST_F(ReadAnythingAppControllerTest,

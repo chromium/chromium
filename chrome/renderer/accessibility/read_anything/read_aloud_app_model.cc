@@ -41,10 +41,7 @@ std::vector<size_t> GetDependencyHeads(base::span<const std::string> input) {
 
 }  // namespace
 
-ReadAloudAppModel::ReadAloudAppModel()
-    : sentence_movement_options_(ui::AXMovementOptions(
-          ui::AXBoundaryBehavior::kCrossBoundary,
-          ui::AXBoundaryDetection::kDontCheckInitialPosition)) {
+ReadAloudAppModel::ReadAloudAppModel() {
   for (const auto& [metric, count] : metric_to_count_map_) {
     metric_to_single_sample_[metric] =
         base::SingleSampleMetricsFactory::Get()->CreateCustomCountsMetric(
@@ -564,89 +561,31 @@ ReadAloudAppModel::GetNextValidPositionFromCurrentPosition(
   ui::AXNodePosition::AXPositionInstance new_position =
       ui::AXNodePosition::CreateNullPosition();
 
-  new_position = GetNextSentencePosition();
+  // Traverse the available nodes in the tree using depth-first search.
+  // TODO(crbug.com/411198154): If it's determined that reading mode and read
+  // aloud should both be using AXPosition, revisit using sentence start
+  // positions. If reading mode is populating the panel with nodes and read
+  // aloud is populating via text-based positions from AXPosition, there can
+  // be inconsistencies between the two.
+  new_position = ax_position_->CreateNextAnchorPosition();
 
   if (new_position->IsNullPosition() || new_position->AtEndOfAXTree() ||
       !new_position->GetAnchor()) {
     return new_position;
   }
 
+  // Ensure the current position is valid. If it's not, move to the next
+  // position.
   while (!IsValidAXPosition(new_position, current_granularity, is_pdf, is_docs,
                             current_nodes)) {
-    ui::AXNodePosition::AXPositionInstance possible_new_position =
-        new_position->CreateNextSentenceStartPosition(
-            sentence_movement_options_);
-
-    // If the new position and the previous position are the same, try different
-    // granularities for the next position instead. Otherwise, we can get stuck
-    // in an infinite loop of calling CreateNextSentenceStartPosition, as it
-    // will always return the same position.
-    if (ArePositionsEqual(possible_new_position, new_position)) {
-      possible_new_position =
-          new_position->CreateNextWordStartPosition(sentence_movement_options_);
-    }
-
-    if (ArePositionsEqual(possible_new_position, new_position)) {
-      possible_new_position =
-          new_position->CreateNextCharacterPosition(sentence_movement_options_);
-    }
-    // If the new position and the previous position are still the same, try
-    // moving to the next line position instead. This seems to happen on pdfs
-    // sometimes where next sentence returns the same position and next
-    // paragraph skips some text.
-    // TODO(crbug.com/40927698): Investigate whether this is helpful beyond pdfs
-    if (is_pdf && ArePositionsEqual(possible_new_position, new_position)) {
-      possible_new_position =
-          new_position->CreateNextLineStartPosition(sentence_movement_options_);
-    }
-
-    if (possible_new_position->IsNullPosition() ||
-        ArePositionsEqual(possible_new_position, new_position)) {
-      possible_new_position = new_position->CreateNextParagraphStartPosition(
-          sentence_movement_options_);
-
-      // If after switching to use the paragraph position, the position is
-      // in a null position, go ahead and return the null position so
-      // speech can terminate properly. Otherwise, speech may get caught
-      // in an infinite loop of searching for another item to speak when
-      // there's no text left. This happens when the final node to be spoken
-      // in the content is followed by an invalid character that causes
-      // CreatenextSentenceStartPosition to repeatedly return the same thing.
-      if (possible_new_position->IsNullPosition()) {
-        return ui::AXNodePosition::AXPosition::CreateNullPosition();
-      }
-    }
-
-    // If the new position is still the same as the old position after trying
-    // multiple different ways of getting a new position, go ahead and return
-    // a null position instead, as ending speech early is preferable to getting
-    // stuck in an infinite loop.
-    if (ArePositionsEqual(possible_new_position, new_position)) {
-      return ui::AXNodePosition::AXPosition::CreateNullPosition();
-    }
-
-    if (!possible_new_position->GetAnchor()) {
-      if (NodeBeenOrWillBeSpoken(current_granularity,
-                                 new_position->GetAnchor()->id())) {
-        // If the previous position we were looking at was previously spoken,
-        // go ahead and return the null position to avoid duplicate nodes
-        // being added.
-        return possible_new_position;
-      }
+    new_position = new_position->CreateNextAnchorPosition();
+    if (new_position->IsNullPosition() || new_position->AtEndOfAXTree() ||
+        !new_position->GetAnchor()) {
       return new_position;
     }
-
-    new_position = std::move(possible_new_position);
   }
 
   return new_position;
-}
-
-ui::AXNodePosition::AXPositionInstance
-ReadAloudAppModel::GetNextSentencePosition() const {
-  return ax_position_->CreatePositionAtTextBoundary(
-      ax::mojom::TextBoundary::kSentenceStart,
-      ax::mojom::MoveDirection::kForward, sentence_movement_options_);
 }
 
 int ReadAloudAppModel::GetCurrentTextStartIndex(const ui::AXNodeID& node_id) {
