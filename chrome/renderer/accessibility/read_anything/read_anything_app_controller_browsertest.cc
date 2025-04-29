@@ -353,6 +353,11 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
     EXPECT_EQ(controller().GetCurrentTextEndIndex(id), (int)text.length());
   }
 
+  void MoveToNextAndAssertEmpty() {
+    std::vector<ui::AXNodeID> next_node_ids = MoveToNextGranularityAndGetText();
+    EXPECT_EQ(next_node_ids.size(), 0u);
+  }
+
   ui::AXTreeID tree_id_;
   raw_ptr<MockAXTreeDistiller, DanglingUntriaged> distiller_ = nullptr;
   testing::StrictMock<MockReadAnythingUntrustedPageHandler> page_handler_;
@@ -2526,8 +2531,7 @@ TEST_F(ReadAnythingAppControllerTest, GetCurrentText_ReturnsExpectedNodes) {
   EXPECT_EQ(next_node_ids.size(), 1u);
 
   // Attempt to move to another node.
-  next_node_ids = MoveToNextGranularityAndGetText();
-  EXPECT_EQ(next_node_ids.size(), 0u);
+  MoveToNextAndAssertEmpty();
 }
 
 TEST_F(ReadAnythingAppControllerTest,
@@ -2570,8 +2574,7 @@ TEST_F(ReadAnythingAppControllerTest,
   ExpectNodeMapsToEntireText(next_node_ids[0], kId3, sentence3);
 
   // Attempt to move to another node.
-  next_node_ids = MoveToNextGranularityAndGetText();
-  EXPECT_EQ(next_node_ids.size(), 0u);
+  MoveToNextAndAssertEmpty();
 }
 
 TEST_F(ReadAnythingAppControllerTest,
@@ -2645,8 +2648,7 @@ TEST_F(ReadAnythingAppControllerTest,
   ExpectNodeMapsToEntireText(next_node_ids[0], kId3, sentence3);
 
   // Attempt to move to another node.
-  next_node_ids = MoveToNextGranularityAndGetText();
-  EXPECT_EQ(next_node_ids.size(), 0u);
+  MoveToNextAndAssertEmpty();
 }
 
 TEST_F(ReadAnythingAppControllerTest,
@@ -2792,8 +2794,7 @@ TEST_F(ReadAnythingAppControllerTest, GetCurrentText_AfterAXTreeRefresh) {
   ExpectNodeMapsToEntireText(next_node_ids[0], kNewId3, new_sentence_3);
 
   // Nodes are empty at the end of the new tree.
-  next_node_ids = MoveToNextGranularityAndGetText();
-  EXPECT_EQ(next_node_ids.size(), 0u);
+  MoveToNextAndAssertEmpty();
 }
 
 TEST_F(ReadAnythingAppControllerTest, GetCurrentText_WithMultipleTrees) {
@@ -2864,8 +2865,7 @@ TEST_F(ReadAnythingAppControllerTest, GetCurrentText_WithMultipleTrees) {
   ExpectNodeMapsToEntireText(next_node_ids[0], kId3, sentence3);
 
   // Nodes are empty at the end of the new tree.
-  next_node_ids = MoveToNextGranularityAndGetText();
-  EXPECT_EQ(next_node_ids.size(), 0u);
+  MoveToNextAndAssertEmpty();
 }
 
 TEST_F(ReadAnythingAppControllerTest,
@@ -2896,8 +2896,7 @@ TEST_F(ReadAnythingAppControllerTest,
   ExpectNodeMapsToEntireText(next_node_ids[2], kId3, sentence3);
 
   // Nodes are empty at the end of the new tree.
-  next_node_ids = MoveToNextGranularityAndGetText();
-  EXPECT_EQ(next_node_ids.size(), 0u);
+  MoveToNextAndAssertEmpty();
 }
 
 TEST_F(ReadAnythingAppControllerTest,
@@ -2930,8 +2929,7 @@ TEST_F(ReadAnythingAppControllerTest,
   ExpectNodeMapsToEntireText(next_node_ids[0], kId3, sentence3);
 
   // Nodes are empty at the end of the tree.
-  next_node_ids = MoveToNextGranularityAndGetText();
-  EXPECT_EQ(next_node_ids.size(), 0u);
+  MoveToNextAndAssertEmpty();
 }
 
 TEST_F(ReadAnythingAppControllerTest,
@@ -2957,8 +2955,7 @@ TEST_F(ReadAnythingAppControllerTest,
   ExpectNodeMapsToEntireText(next_node_ids[0], kId2, sentence2);
 
   // Nodes are empty at the end of the new tree.
-  next_node_ids = MoveToNextGranularityAndGetText();
-  EXPECT_EQ(next_node_ids.size(), 0u);
+  MoveToNextAndAssertEmpty();
 }
 
 TEST_F(ReadAnythingAppControllerTest,
@@ -3017,8 +3014,7 @@ TEST_F(ReadAnythingAppControllerTest,
   ExpectNodeMapsToEntireText(next_node_ids[2], kId4, sentence4);
 
   // Nodes are empty at the end of the new tree.
-  next_node_ids = MoveToNextGranularityAndGetText();
-  EXPECT_EQ(next_node_ids.size(), 0u);
+  MoveToNextAndAssertEmpty();
 }
 
 TEST_F(ReadAnythingAppControllerTest,
@@ -3042,8 +3038,7 @@ TEST_F(ReadAnythingAppControllerTest,
   ExpectNodeMapsToEntireText(next_node_ids[1], kId2, sentence2);
 
   // Nodes are empty at the end of the new tree.
-  next_node_ids = MoveToNextGranularityAndGetText();
-  EXPECT_EQ(next_node_ids.size(), 0u);
+  MoveToNextAndAssertEmpty();
 }
 
 TEST_F(ReadAnythingAppControllerTest,
@@ -3067,8 +3062,7 @@ TEST_F(ReadAnythingAppControllerTest,
   ExpectNodeMapsToEntireText(next_node_ids[1], kId2, sentence2);
 
   // Nodes are empty at the end of the new tree.
-  next_node_ids = MoveToNextGranularityAndGetText();
-  EXPECT_EQ(next_node_ids.size(), 0u);
+  MoveToNextAndAssertEmpty();
 }
 
 TEST_F(ReadAnythingAppControllerTest,
@@ -3123,8 +3117,7 @@ TEST_F(ReadAnythingAppControllerTest,
   ExpectNodeMapsToEntireText(next_node_ids[3], kId4, sentence4);
 
   // Nodes are empty at the end of the new tree.
-  next_node_ids = MoveToNextGranularityAndGetText();
-  EXPECT_EQ(next_node_ids.size(), 0u);
+  MoveToNextAndAssertEmpty();
 }
 
 TEST_F(ReadAnythingAppControllerTest,
@@ -3189,8 +3182,7 @@ TEST_F(ReadAnythingAppControllerTest,
   ExpectNodeMapsToEntireText(next_node_ids[0], kId5, sentence5);
 
   // Nodes are empty at the end of the new tree.
-  next_node_ids = MoveToNextGranularityAndGetText();
-  EXPECT_EQ(next_node_ids.size(), 0u);
+  MoveToNextAndAssertEmpty();
 }
 
 TEST_F(ReadAnythingAppControllerTest, GetCurrentText_IncludesListMarkers) {
@@ -3265,8 +3257,7 @@ TEST_F(ReadAnythingAppControllerTest, GetCurrentText_IncludesListMarkers) {
   ExpectNodeMapsToEntireText(next_node_ids[0], kId2, sentence2);
 
   // Nodes are empty at the end of the new tree.
-  next_node_ids = MoveToNextGranularityAndGetText();
-  EXPECT_EQ(next_node_ids.size(), 0u);
+  MoveToNextAndAssertEmpty();
 }
 
 TEST_F(ReadAnythingAppControllerTest,
@@ -3345,8 +3336,7 @@ TEST_F(ReadAnythingAppControllerTest,
   ExpectNodeMapsToEntireText(next_node_ids[0], kId3, paragraph_text2);
 
   // Nodes are empty at the end of the new tree.
-  next_node_ids = MoveToNextGranularityAndGetText();
-  EXPECT_EQ(next_node_ids.size(), 0u);
+  MoveToNextAndAssertEmpty();
 }
 
 TEST_F(ReadAnythingAppControllerTest,
@@ -3383,8 +3373,7 @@ TEST_F(ReadAnythingAppControllerTest,
   ExpectNodeMapsToEntireText(next_node_ids[0], kParagraphId2, paragraph_text2);
 
   // Nodes are empty at the end of the new tree.
-  next_node_ids = MoveToNextGranularityAndGetText();
-  EXPECT_EQ(next_node_ids.size(), 0u);
+  MoveToNextAndAssertEmpty();
 }
 
 TEST_F(ReadAnythingAppControllerTest,
@@ -3472,8 +3461,7 @@ TEST_F(ReadAnythingAppControllerTest,
             (int)sentence3.length());
 
   // Nodes are empty at the end of the new tree.
-  next_node_ids = MoveToNextGranularityAndGetText();
-  EXPECT_EQ(next_node_ids.size(), 0u);
+  MoveToNextAndAssertEmpty();
 }
 
 TEST_F(ReadAnythingAppControllerTest, GetCurrentText_EmptyTree) {
@@ -3567,8 +3555,7 @@ TEST_F(ReadAnythingAppControllerTest, GetPreviousText_AfterAXTreeRefresh) {
   ExpectNodeMapsToEntireText(next_node_ids[0], kNewId3, new_sentence3);
 
   // Attempt to move to another node.
-  next_node_ids = MoveToNextGranularityAndGetText();
-  EXPECT_EQ(next_node_ids.size(), 0u);
+  MoveToNextAndAssertEmpty();
 }
 
 TEST_F(ReadAnythingAppControllerTest, GetPreviousText_ReturnsExpectedNodes) {
@@ -3618,8 +3605,7 @@ TEST_F(ReadAnythingAppControllerTest, GetPreviousText_ReturnsExpectedNodes) {
   ExpectNodeMapsToEntireText(next_node_ids[0], kId3, sentence3);
 
   // Attempt to move to another node.
-  next_node_ids = MoveToNextGranularityAndGetText();
-  EXPECT_EQ(next_node_ids.size(), 0u);
+  MoveToNextAndAssertEmpty();
 }
 
 TEST_F(ReadAnythingAppControllerTest, GetPreviousText_EmptyTree) {
@@ -3715,8 +3701,7 @@ TEST_F(ReadAnythingAppControllerTest,
   ExpectNodeMapsToEntireText(previous_node_ids[2], kId3, sentence3);
 
   // Nodes are empty at the end of the new tree.
-  std::vector<ui::AXNodeID> next_node_ids = MoveToNextGranularityAndGetText();
-  EXPECT_EQ(next_node_ids.size(), 0u);
+  MoveToNextAndAssertEmpty();
 }
 
 TEST_F(ReadAnythingAppControllerTest,
@@ -3754,8 +3739,7 @@ TEST_F(ReadAnythingAppControllerTest,
   ExpectNodeMapsToEntireText(next_node_ids[0], kId3, sentence3);
 
   // Nodes are empty at the end of the new tree.
-  next_node_ids = MoveToNextGranularityAndGetText();
-  EXPECT_EQ(next_node_ids.size(), 0u);
+  MoveToNextAndAssertEmpty();
 }
 
 TEST_F(ReadAnythingAppControllerTest,
