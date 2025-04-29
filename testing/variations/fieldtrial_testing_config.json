@@ -8506,6 +8506,29 @@
             ]
         }
     ],
+    "EnableHangWatcher": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "io_thread_log_level": "2",
+                        "ui_thread_log_level": "2",
+                        "utility_process_main_thread_log_level": "2"
+                    },
+                    "enable_features": [
+                        "EnableHangWatcher"
+                    ]
+                }
+            ]
+        }
+    ],
     "EnableImprovedManagementDisclosure": [
         {
             "platforms": [
