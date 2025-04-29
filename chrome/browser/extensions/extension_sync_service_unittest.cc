@@ -803,8 +803,8 @@ TEST_F(ExtensionSyncServiceTest, GetSyncExtensionDataUserSettings) {
     EXPECT_FALSE(data->incognito_enabled());
   }
 
-  service()->DisableExtension(kGoodCrx,
-                              extensions::disable_reason::DISABLE_USER_ACTION);
+  registrar()->DisableExtension(
+      kGoodCrx, {extensions::disable_reason::DISABLE_USER_ACTION});
   {
     syncer::SyncDataList list =
         extension_sync_service()->GetAllSyncDataForTesting(syncer::EXTENSIONS);
