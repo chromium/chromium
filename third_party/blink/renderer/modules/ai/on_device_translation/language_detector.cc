@@ -302,7 +302,7 @@ ScriptPromise<LanguageDetector> LanguageDetector::create(
       resolver->Reject(MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kNotAllowedError,
           kExceptionMessageCrossOriginAccess));
-      return EmptyPromise();
+      return resolver->Promise();
     }
   }
 

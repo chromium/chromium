@@ -129,7 +129,7 @@ ScriptPromise<Translator> Translator::create(ScriptState* script_state,
       resolver->Reject(MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kNotAllowedError,
           kExceptionMessageCrossOriginAccess));
-      return EmptyPromise();
+      return resolver->Promise();
     }
   }
 
