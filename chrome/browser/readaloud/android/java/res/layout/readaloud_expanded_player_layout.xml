@@ -251,6 +251,31 @@ found in the LICENSE file.
                             android:src="@drawable/baseline_more_horiz_24"
                             android:layout_gravity="center_vertical"
                             android:contentDescription="@string/readaloud_options_menu_button"/>
+                        <ImageView
+                            android:id="@+id/readaloud_thumb_up_button"
+                            android:layout_width="@dimen/readaloud_playback_thumb_up_down_dimen"
+                            android:layout_height="@dimen/readaloud_playback_thumb_up_down_dimen"
+                            android:src="@drawable/feedback_thumb_up_selector"
+                            android:padding="12dp"
+                            android:background="?attr/selectableItemBackgroundBorderless"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:layout_gravity="center_vertical"
+                            android:layout_marginStart="8dp"
+                            android:contentDescription="@string/readaloud_feedback_thumb_up"
+                            android:visibility="gone" />
+                        <ImageView
+                            android:id="@+id/readaloud_thumb_down_button"
+                            android:layout_width="@dimen/readaloud_playback_thumb_up_down_dimen"
+                            android:layout_height="@dimen/readaloud_playback_thumb_up_down_dimen"
+                            android:src="@drawable/feedback_thumb_down_selector"
+                            android:padding="12dp"
+                            android:background="?attr/selectableItemBackgroundBorderless"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:layout_gravity="center_vertical"
+                            android:contentDescription="@string/readaloud_feedback_thumb_down"
+                            android:visibility="gone" />
                     </LinearLayout>
                 </RelativeLayout>
             </LinearLayout>

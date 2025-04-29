@@ -19,7 +19,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 /** Base class for menu bottom sheets. */
 abstract class MenuSheetContent implements BottomSheetContent {
     private static final String TAG = "ReadAloudMenu";
-    private final BottomSheetController mBottomSheetController;
+    protected final BottomSheetController mBottomSheetController;
     protected final BottomSheetContent mParent;
     private boolean mOpeningSubmenu;
 

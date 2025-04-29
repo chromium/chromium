@@ -53,6 +53,7 @@ found in the LICENSE file.
     <dimen name="readaloud_controls_portrait_padding">60dp</dimen>
     <dimen name="readaloud_controls_landscape_padding">0dp</dimen>
     <dimen name="readaloud_playback_mode_selector_diameter">48dp</dimen>
+    <dimen name="readaloud_playback_thumb_up_down_dimen">48dp</dimen>
 
     <!-- Menu buttons -->
     <dimen name="readaloud_menu_buttons_width">28dp</dimen>

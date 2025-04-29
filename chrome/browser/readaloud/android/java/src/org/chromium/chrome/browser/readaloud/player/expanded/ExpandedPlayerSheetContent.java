@@ -55,6 +55,7 @@ public class ExpandedPlayerSheetContent implements BottomSheetContent {
     private View mContentView;
     // Effectively final and non null, can be null only in tests
     private OptionsMenuSheetContent mOptionsMenu;
+    private NegativeFeedbackMenuSheetContent mNegativeFeedbackMenu;
     private SpeedMenuSheetContent mSpeedMenu;
     private TextView mSpeedButton;
 
@@ -63,6 +64,10 @@ public class ExpandedPlayerSheetContent implements BottomSheetContent {
     private final ImageView mPlayPauseButton;
     private final ImageView mRewindButton;
     private final ImageView mForwardButton;
+
+    private final ImageView mMoreOptionsButton;
+    private final ImageView mThumbUpButton;
+    private final ImageView mThumbDownButton;
 
     private final LinearLayout mNormalLayout;
     private final LinearLayout mErrorLayout;
@@ -100,6 +105,9 @@ public class ExpandedPlayerSheetContent implements BottomSheetContent {
         mOptionsMenu =
                 new OptionsMenuSheetContent(
                         mContext, /* parent= */ this, mBottomSheetController, mModel);
+        mNegativeFeedbackMenu =
+                new NegativeFeedbackMenuSheetContent(
+                        mContext, /* parent= */ this, mBottomSheetController);
         mSpeedMenu =
                 new SpeedMenuSheetContent(
                         mContext, /* parent= */ this, mBottomSheetController, mModel);
@@ -116,6 +124,10 @@ public class ExpandedPlayerSheetContent implements BottomSheetContent {
         mPlayPauseButton = mContentView.findViewById(R.id.readaloud_play_pause_button);
         mRewindButton = mContentView.findViewById(R.id.readaloud_seek_back_button);
         mForwardButton = mContentView.findViewById(R.id.readaloud_seek_forward_button);
+
+        mThumbUpButton = mContentView.findViewById(R.id.readaloud_thumb_up_button);
+        mThumbDownButton = mContentView.findViewById(R.id.readaloud_thumb_down_button);
+        mMoreOptionsButton = mContentView.findViewById(R.id.readaloud_more_button);
 
         View publisherButton = mContentView.findViewById(R.id.readaloud_player_publisher_button);
         publisherButton.addOnLayoutChangeListener(
@@ -231,11 +243,18 @@ public class ExpandedPlayerSheetContent implements BottomSheetContent {
       if (playbackMode == PlaybackMode.OVERVIEW) {
             mIsModeActive = true;
             mModeSelectorButton.setSelected(true);
-            chromeNowPlaying.setText(mContext.getString(R.string.readaloud_chrome_now_playing_audio_overview));
+            chromeNowPlaying.setText(
+                    mContext.getString(R.string.readaloud_chrome_now_playing_audio_overview));
+            mThumbUpButton.setVisibility(View.VISIBLE);
+            mThumbDownButton.setVisibility(View.VISIBLE);
+            mMoreOptionsButton.setVisibility(View.GONE);
         } else {
             mIsModeActive = false;
             mModeSelectorButton.setSelected(false);
             chromeNowPlaying.setText(mContext.getString(R.string.readaloud_chrome_now_playing));
+            mThumbUpButton.setVisibility(View.GONE);
+            mThumbDownButton.setVisibility(View.GONE);
+            mMoreOptionsButton.setVisibility(View.VISIBLE);
         }
     }
 
@@ -283,6 +302,7 @@ public class ExpandedPlayerSheetContent implements BottomSheetContent {
         setOnClickListener(R.id.readaloud_playback_speed, this::showSpeedMenu);
         setOnClickListener(R.id.readaloud_more_button, this::showOptionsMenu);
         setOnClickListener(R.id.readaloud_mode_selector, () -> onPlaybackModeChangeClick(handler));
+        setOnClickListener(R.id.readaloud_thumb_down_button, () -> showNegativeFeedbackMenu());
 
         SeekBar seekBar =
                 (SeekBar) mContentView.findViewById(R.id.readaloud_expanded_player_seek_bar);
@@ -350,6 +370,12 @@ public class ExpandedPlayerSheetContent implements BottomSheetContent {
         mBottomSheetController.requestShowContent(mOptionsMenu, /* animate= */ false);
     }
 
+    public void showNegativeFeedbackMenu() {
+        mModel.set(PlayerProperties.SHOW_MINI_PLAYER_ON_DISMISS, false);
+        mBottomSheetController.hideContent(this, /* animate= */ false);
+        mBottomSheetController.requestShowContent(mNegativeFeedbackMenu, /* animate= */ false);
+    }
+
     @Nullable
     VoiceMenu getVoiceMenu() {
         if (mOptionsMenu == null) {
@@ -361,6 +387,7 @@ public class ExpandedPlayerSheetContent implements BottomSheetContent {
     public void notifySheetClosed(BottomSheetContent contentClosed) {
         mOptionsMenu.notifySheetClosed(contentClosed);
         mSpeedMenu.notifySheetClosed(contentClosed);
+        mNegativeFeedbackMenu.notifySheetClosed(contentClosed);
     }
 
     public void showSpeedMenu() {
@@ -481,6 +508,9 @@ public class ExpandedPlayerSheetContent implements BottomSheetContent {
     public void onOrientationChange(int orientation) {
         if (mOptionsMenu != null) {
             mOptionsMenu.onOrientationChange(orientation);
+        }
+        if (mNegativeFeedbackMenu != null) {
+            mNegativeFeedbackMenu.onOrientationChange(orientation);
         }
         if (mSpeedMenu != null) {
             mSpeedMenu.onOrientationChange(orientation);

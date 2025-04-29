@@ -192,6 +192,39 @@
       <message name="IDS_READALOUD_CHROME_NOW_PLAYING_AUDIO_OVERVIEW" desc="Text in the expanded player appearing before the title, when in Audio Overviews mode.">
         AI audio playback
       </message>
+      <message name="IDS_READALOUD_FEEDBACK_THUMB_UP" desc="Accessibility string for thumb up button (for audio overview mode only).">
+        Thumb up
+      </message>
+      <message name="IDS_READALOUD_FEEDBACK_THUMB_DOWN" desc="Accessibility string for thumb down button (for audio overview mode only).">
+        Thumb down
+      </message>
+      <message name="IDS_READALOUD_NEGATIVE_FEEDBACK_MENU_TITLE" desc="Menu title for negative feedback.">
+        What went wrong?
+      </message>
+      <message name="IDS_READALOUD_NEGATIVE_FEEDBACK_MENU_DESCRIPTION" desc="Menu content description for negative feedback.">
+        Negative feedback options menu
+      </message>
+
+      <!-- Negative feedback reasons. -->
+      <message name="IDS_READALOUD_NEGATIVE_FEEDBACK_NOT_FACTUALLY_CORRECT" desc="Menu item for not-factually-correct feedback.">
+        Not factually correct
+      </message>
+      <message name="IDS_READALOUD_NEGATIVE_FEEDBACK_DIDNT_LIKE_THE_VOICE" desc="Menu item for bad voice feedback.">
+        Didn't like the voice
+      </message>
+      <message name="IDS_READALOUD_NEGATIVE_FEEDBACK_NOT_ENGAGING_ENOUGH" desc="Menu item for not engaging enough feedback.">
+        Not engaging enough
+      </message>
+      <message name="IDS_READALOUD_NEGATIVE_FEEDBACK_OFFENSIVE_CONTENT" desc="Menu item for offensive content feedback.">
+        Offensive content
+      </message>
+      <message name="IDS_READALOUD_NEGATIVE_FEEDBACK_TECHNICAL_ISSUE" desc="Menu item for technical issue feedback.">
+        Technical issue
+      </message>
+      <message name="IDS_READALOUD_NEGATIVE_FEEDBACK_OTHER" desc="Menu item for other feedback.">
+        Other
+      </message>
+
       <message name="IDS_READALOUD_REPLAY" desc="Accessibility string for the button that rewinds 'Listen to this page' playback by the specified number of seconds.">
         Go back <ph name="NUMBER_OF_SECONDS">%1$s<ex>10</ex></ph> seconds
       </message>
