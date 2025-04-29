@@ -17,19 +17,33 @@ namespace page_actions {
 
 // A metrics reporter implementation that does nothing.
 class NoopPageActionMetricsRecorder
-    : public PageActionMetricsRecorderInterface {
+    : public PageActionPerActionMetricsRecorderInterface,
+      public PageActionPageMetricsRecorderInterface {
  public:
   NoopPageActionMetricsRecorder() = default;
   ~NoopPageActionMetricsRecorder() override = default;
+
+  // PageActionPerActionMetricsRecorderInterface:
+  void RecordClick(PageActionTrigger trigger_source) final;
+
+  // PageActionPageMetricsRecorderInterface:
+  void Observe(PageActionModelInterface& model) final;
 };
 
 class NoopPageActionMetricsRecorderFactory
     : public PageActionMetricsRecorderFactory {
  public:
-  std::unique_ptr<PageActionMetricsRecorderInterface> Create(
+  std::unique_ptr<PageActionPerActionMetricsRecorderInterface>
+  CreatePerActionMetricsRecorder(
       tabs::TabInterface& tab_interface,
       const PageActionProperties& properties,
       PageActionModelInterface& model,
+      VisibleEphemeralPageActionsCountCallback
+          visible_ephemeral_page_actions_count_callback) override;
+
+  std::unique_ptr<PageActionPageMetricsRecorderInterface>
+  CreatePageMetricRecorder(
+      tabs::TabInterface& tab_interface,
       VisibleEphemeralPageActionsCountCallback
           visible_ephemeral_page_actions_count_callback) override;
 };

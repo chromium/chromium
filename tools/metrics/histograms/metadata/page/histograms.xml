@@ -325,6 +325,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PageActionController.NumberActionsShown3" units="actions"
+    expires_after="2025-10-12">
+  <owner>koretadaniel@chromium.org</owner>
+  <owner>alsan@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    The number of ephemeral Page Actions currently shown. Measured each time a
+    new page is loaded, and then again when each new page action appears on the
+    same page. This recorded only for the new page action framework.
+  </summary>
+</histogram>
+
 <histogram name="PageActionController.PagesWithActionsShown2"
     enum="PageActionPageEvent" expires_after="2025-10-12">
   <owner>emshack@chromium.org</owner>
@@ -341,6 +353,26 @@ chromium-metrics-reviews@google.com.
     is displayed on a given page, and &quot;Multiple Actions Shown&quot; is
     logged the first time a page action appears on a given page alongside a
     second page action.
+  </summary>
+</histogram>
+
+<histogram name="PageActionController.PagesWithActionsShown3"
+    enum="PageActionPageEvent" expires_after="2025-10-12">
+  <owner>koretadaniel@chromium.org</owner>
+  <owner>alsan@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    Records events related to percentage of pages with actions calculation.
+
+    The percentage of pages with at least one ephemeral action shown can be
+    calculated by computing &quot;Action Shown&quot; / &quot;Page Shown&quot;.
+    The percentage of pages with multiple ephemeral actions shown can be
+    calculated by computing &quot;Multiple Actions Shown&quot; / &quot;Page
+    Shown&quot;. &quot;Page Shown&quot; is logged once when a given page is
+    first loaded, &quot;Action Shown&quot; is logged when the first page action
+    is displayed on a given page, and &quot;Multiple Actions Shown&quot; is
+    logged the first time a page action appears on a given page alongside a
+    second page action. This recorded only for the new page action framework.
   </summary>
 </histogram>
 

@@ -12,6 +12,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
+#include "chrome/browser/ui/views/page_action/page_action_metrics_recorder_interface.h"
 #include "chrome/browser/ui/views/page_action/page_action_model_observer.h"
 #include "chrome/browser/ui/views/page_action/page_action_triggers.h"
 #include "url/gurl.h"
@@ -24,56 +25,28 @@ namespace page_actions {
 
 struct PageActionProperties;
 
-// Metrics may need to know the number of visible ephemeral page actions.
-// This information is not available to the local instance of the metrics
-// recorder, as it does not have visibility into the page action state. However,
-// the `PageActionController`, which owns the metrics recorder instance, can
-// determine that count. Therefore, a callback is used to retrieve the count
-// from the `PageActionController`.
-using VisibleEphemeralPageActionsCountCallback = base::RepeatingCallback<int()>;
-
-// Interface for PageActionMetricsRecorder, used for concrete implementation or
-// a mock for testing.
-class PageActionMetricsRecorderInterface {
- public:
-  PageActionMetricsRecorderInterface() = default;
-  virtual ~PageActionMetricsRecorderInterface() = default;
-
-  // Records a click event for the page action.
-  virtual void RecordClick(PageActionTrigger trigger_source) {}
-};
-
-class PageActionMetricsRecorderFactory {
- public:
-  virtual ~PageActionMetricsRecorderFactory() = default;
-  virtual std::unique_ptr<PageActionMetricsRecorderInterface> Create(
-      tabs::TabInterface& tab_interface,
-      const PageActionProperties& properties,
-      PageActionModelInterface& model,
-      VisibleEphemeralPageActionsCountCallback
-          visible_ephemeral_page_actions_count_callback) = 0;
-};
-
 // Records visibility metrics for a specific page action, scoped to a single
 // ActionId. This class does not handle all page action metrics, only for the
 // one it is instantiated for.
-class PageActionMetricsRecorder : public PageActionMetricsRecorderInterface,
-                                  public PageActionModelObserver {
+class PageActionPerActionMetricsRecorder
+    : public PageActionPerActionMetricsRecorderInterface,
+      public PageActionModelObserver {
  public:
-  explicit PageActionMetricsRecorder(
+  explicit PageActionPerActionMetricsRecorder(
       tabs::TabInterface& tab_interface,
       const PageActionProperties& properties,
       PageActionModelInterface& model,
       VisibleEphemeralPageActionsCountCallback
           visible_ephemeral_page_actions_count_callback);
 
-  PageActionMetricsRecorder(const PageActionMetricsRecorder&) = delete;
-  PageActionMetricsRecorder operator=(const PageActionMetricsRecorder&) =
-      delete;
+  PageActionPerActionMetricsRecorder(
+      const PageActionPerActionMetricsRecorder&) = delete;
+  PageActionPerActionMetricsRecorder operator=(
+      const PageActionPerActionMetricsRecorder&) = delete;
 
-  ~PageActionMetricsRecorder() override;
+  ~PageActionPerActionMetricsRecorder() override;
 
-  // PageActionMetricsRecorderInterface:
+  // PageActionPerActionMetricsRecorderInterface:
   void RecordClick(PageActionTrigger trigger_source) override;
 
   // PageActionModelObserver
@@ -99,6 +72,9 @@ class PageActionMetricsRecorder : public PageActionMetricsRecorderInterface,
 
   // The TabInterface is guaranteed valid for this object’s lifetime.
   const raw_ref<tabs::TabInterface> tab_interface_;
+
+  // Tracks per-navigation state used for metric recording.
+  GURL last_committed_url_;
 
   base::ScopedObservation<PageActionModelInterface, PageActionModelObserver>
       scoped_observation_{this};

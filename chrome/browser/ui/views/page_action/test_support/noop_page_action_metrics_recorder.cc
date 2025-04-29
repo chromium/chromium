@@ -6,11 +6,24 @@
 
 namespace page_actions {
 
-std::unique_ptr<PageActionMetricsRecorderInterface>
-NoopPageActionMetricsRecorderFactory::Create(
+void NoopPageActionMetricsRecorder::RecordClick(
+    PageActionTrigger trigger_source) {}
+
+void NoopPageActionMetricsRecorder::Observe(PageActionModelInterface& model) {}
+
+std::unique_ptr<PageActionPerActionMetricsRecorderInterface>
+NoopPageActionMetricsRecorderFactory::CreatePerActionMetricsRecorder(
     tabs::TabInterface& tab_interface,
     const PageActionProperties& properties,
     PageActionModelInterface& model,
+    VisibleEphemeralPageActionsCountCallback
+        visible_ephemeral_page_actions_count_callback) {
+  return std::make_unique<NoopPageActionMetricsRecorder>();
+}
+
+std::unique_ptr<PageActionPageMetricsRecorderInterface>
+NoopPageActionMetricsRecorderFactory::CreatePageMetricRecorder(
+    tabs::TabInterface& tab_interface,
     VisibleEphemeralPageActionsCountCallback
         visible_ephemeral_page_actions_count_callback) {
   return std::make_unique<NoopPageActionMetricsRecorder>();

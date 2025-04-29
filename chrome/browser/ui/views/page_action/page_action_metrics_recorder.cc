@@ -15,7 +15,7 @@
 
 namespace page_actions {
 
-PageActionMetricsRecorder::PageActionMetricsRecorder(
+PageActionPerActionMetricsRecorder::PageActionPerActionMetricsRecorder(
     tabs::TabInterface& tab_interface,
     const PageActionProperties& properties,
     PageActionModelInterface& model,
@@ -29,26 +29,34 @@ PageActionMetricsRecorder::PageActionMetricsRecorder(
   scoped_observation_.Observe(&model);
 }
 
-PageActionMetricsRecorder::~PageActionMetricsRecorder() = default;
+PageActionPerActionMetricsRecorder::~PageActionPerActionMetricsRecorder() =
+    default;
 
-void PageActionMetricsRecorder::OnPageActionModelChanged(
+void PageActionPerActionMetricsRecorder::OnPageActionModelChanged(
     const PageActionModelInterface& model) {
-  // Page action can be permanent or ephemeral. For the
-  // "PageActionController.ActionTypeShown2" metric, it should be recorded only
-  // for when the page action is ephemeral.
   if (!model.GetVisible() || !model.IsEphemeral()) {
     return;
+  }
+
+  content::WebContents* contents = tab_interface_->GetContents();
+  CHECK(contents);
+
+  // Detect main-frame navigation by URL change.
+  const GURL current_url = contents->GetURL();
+  if (current_url != last_committed_url_) {
+    last_committed_url_ = current_url;
+    page_action_recorded_urls_.clear();
   }
 
   OnPageActionVisible();
 }
 
-void PageActionMetricsRecorder::OnPageActionModelWillBeDeleted(
+void PageActionPerActionMetricsRecorder::OnPageActionModelWillBeDeleted(
     const PageActionModelInterface& model) {
   scoped_observation_.Reset();
 }
 
-void PageActionMetricsRecorder::OnPageActionVisible() {
+void PageActionPerActionMetricsRecorder::OnPageActionVisible() {
   CHECK(tab_interface_->GetContents());
 
   // Only record the "Shown" metric the first time the icon appears on a "page".
@@ -71,7 +79,7 @@ void PageActionMetricsRecorder::OnPageActionVisible() {
                                 page_action_type_);
 }
 
-void PageActionMetricsRecorder::RecordClick(
+void PageActionPerActionMetricsRecorder::RecordClick(
     PageActionTrigger /*trigger_source*/) {
   base::UmaHistogramEnumeration("PageActionController.Icon.CTR2",
                                 PageActionCTREvent::kClicked);

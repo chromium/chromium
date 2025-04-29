@@ -15,6 +15,15 @@ enum class PageActionCTREvent {
   kMaxValue = kClicked,
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class PageActionPageEvent {
+  kPageShown = 0,
+  kActionShown,
+  kMultipleActionsShown,
+  kMaxValue = kMultipleActionsShown,
+};
+
 }  // namespace page_actions
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PAGE_ACTION_PAGE_ACTION_ENUMS_H_

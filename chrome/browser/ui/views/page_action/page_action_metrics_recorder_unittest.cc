@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/views/page_action/page_action_metrics_recorder.h"
+
 #include <memory>
 
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ui/views/page_action/page_action_enums.h"
-#include "chrome/browser/ui/views/page_action/page_action_metrics_recorder.h"
 #include "chrome/browser/ui/views/page_action/page_action_model.h"
 #include "chrome/browser/ui/views/page_action/page_action_model_observer.h"
 #include "chrome/browser/ui/views/page_action/page_action_properties_provider.h"
@@ -45,7 +46,7 @@ class PageActionMetricsRecorderTest : public testing::Test {
   void CreateRecorder() {
     properties_.type = PageActionIconType::kLensOverlay;
     properties_.histogram_name = "LensOverlay";
-    recorder_ = std::make_unique<PageActionMetricsRecorder>(
+    recorder_ = std::make_unique<PageActionPerActionMetricsRecorder>(
         tab_, properties_, mock_model_,
         base::BindRepeating(&PageActionMetricsRecorderTest::GetVisibleCount,
                             base::Unretained(this)));
@@ -65,7 +66,7 @@ class PageActionMetricsRecorderTest : public testing::Test {
   MockPageActionModel mock_model_;
   FakeTabInterface tab_;
   PageActionProperties properties_;
-  std::unique_ptr<PageActionMetricsRecorder> recorder_;
+  std::unique_ptr<PageActionPerActionMetricsRecorder> recorder_;
 
   int visible_count_ = 1;
 };

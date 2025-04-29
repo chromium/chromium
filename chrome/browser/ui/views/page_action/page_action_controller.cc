@@ -6,7 +6,9 @@
 
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/views/page_action/page_action_metrics_recorder.h"
+#include "chrome/browser/ui/views/page_action/page_action_metrics_recorder_interface.h"
 #include "chrome/browser/ui/views/page_action/page_action_model.h"
+#include "chrome/browser/ui/views/page_action/page_action_page_metrics_recorder.h"
 #include "chrome/browser/ui/views/page_action/page_action_properties_provider.h"
 #include "chrome/browser/ui/views/page_action/page_action_view.h"
 #include "components/tabs/public/tab_interface.h"
@@ -41,6 +43,13 @@ void PageActionController::Initialize(
   tab_deactivated_callback_subscription_ =
       tab_interface.RegisterWillDeactivate(base::BindRepeating(
           &PageActionController::OnTabWillDeactivate, base::Unretained(this)));
+
+  page_metrics_recorder_ = CreatePageMetricsRecorder(
+      tab_interface,
+      base::BindRepeating(
+          &PageActionController::GetVisibleEphemeralPageActionsCount,
+          base::Unretained(this)));
+
   for (actions::ActionId id : action_ids) {
     const PageActionProperties& properties =
         properties_provider.GetProperties(id);
@@ -48,13 +57,17 @@ void PageActionController::Initialize(
 
     // It's safe to use base::Unretained here since the recorded is owned by
     // this object.
-    std::unique_ptr<PageActionMetricsRecorderInterface> metrics_recorder =
-        CreateMetricsRecorder(
+    std::unique_ptr<PageActionPerActionMetricsRecorderInterface>
+        metrics_recorder = CreatePerActionMetricsRecorder(
             tab_interface, properties, FindPageActionModel(id),
             base::BindRepeating(
                 &PageActionController::GetVisibleEphemeralPageActionsCount,
                 base::Unretained(this)));
     metrics_recorders_.emplace(id, std::move(metrics_recorder));
+
+    // `page_metrics_recorder_` will observe all the page action models to have
+    // a global state.
+    page_metrics_recorder_->Observe(FindPageActionModel(id));
   }
   if (pinned_actions_observation_.GetSource()) {
     PinnedActionsModelChanged();
@@ -214,20 +227,37 @@ std::unique_ptr<PageActionModelInterface> PageActionController::CreateModel(
   }
 }
 
-std::unique_ptr<PageActionMetricsRecorderInterface>
-PageActionController::CreateMetricsRecorder(
+std::unique_ptr<PageActionPerActionMetricsRecorderInterface>
+PageActionController::CreatePerActionMetricsRecorder(
     tabs::TabInterface& tab_interface,
     const PageActionProperties& properties,
     PageActionModelInterface& model,
     VisibleEphemeralPageActionsCountCallback
         visible_ephemeral_page_actions_count_callback) {
   if (page_action_metrics_recorder_factory_ != nullptr) {
-    return page_action_metrics_recorder_factory_->Create(
+    return page_action_metrics_recorder_factory_
+        ->CreatePerActionMetricsRecorder(
+            tab_interface, properties, model,
+            std::move(visible_ephemeral_page_actions_count_callback));
+  } else {
+    return std::make_unique<PageActionPerActionMetricsRecorder>(
         tab_interface, properties, model,
         std::move(visible_ephemeral_page_actions_count_callback));
+  }
+}
+
+std::unique_ptr<PageActionPageMetricsRecorderInterface>
+PageActionController::CreatePageMetricsRecorder(
+    tabs::TabInterface& tab_interface,
+    VisibleEphemeralPageActionsCountCallback
+        visible_ephemeral_page_actions_count_callback) {
+  if (page_action_metrics_recorder_factory_ != nullptr) {
+    return page_action_metrics_recorder_factory_->CreatePageMetricRecorder(
+        tab_interface,
+        std::move(visible_ephemeral_page_actions_count_callback));
   } else {
-    return std::make_unique<PageActionMetricsRecorder>(
-        tab_interface, properties, model,
+    return std::make_unique<PageActionPageMetricsRecorder>(
+        tab_interface,
         std::move(visible_ephemeral_page_actions_count_callback));
   }
 }

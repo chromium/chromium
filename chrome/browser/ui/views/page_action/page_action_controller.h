@@ -15,7 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
-#include "chrome/browser/ui/views/page_action/page_action_metrics_recorder.h"
+#include "chrome/browser/ui/views/page_action/page_action_metrics_recorder_interface.h"
 #include "chrome/browser/ui/views/page_action/page_action_properties_provider.h"
 #include "chrome/browser/ui/views/page_action/page_action_triggers.h"
 #include "components/tabs/public/tab_interface.h"
@@ -151,7 +151,7 @@ class PageActionController : public PinnedToolbarActionsModel::Observer {
       std::map<actions::ActionId, std::unique_ptr<PageActionModelInterface>>;
   using PageActionMetricsRecordersMap =
       std::map<actions::ActionId,
-               std::unique_ptr<PageActionMetricsRecorderInterface>>;
+               std::unique_ptr<PageActionPerActionMetricsRecorderInterface>>;
 
   // Creates a page action model for the given id, and initializes it's values.
   void Register(actions::ActionId action_id,
@@ -171,12 +171,21 @@ class PageActionController : public PinnedToolbarActionsModel::Observer {
   std::unique_ptr<PageActionModelInterface> CreateModel(
       actions::ActionId action_id,
       bool is_ephemeral);
-  std::unique_ptr<PageActionMetricsRecorderInterface> CreateMetricsRecorder(
+
+  // Helper used to create per-action metric recorder.
+  std::unique_ptr<PageActionPerActionMetricsRecorderInterface>
+  CreatePerActionMetricsRecorder(
       tabs::TabInterface& tab_interface,
       const PageActionProperties& properties,
       PageActionModelInterface& model,
       VisibleEphemeralPageActionsCountCallback
           visible_ephemeral_page_actions_count_callback);
+
+  // Helper used to create a page-level metric recorder.
+  std::unique_ptr<PageActionPageMetricsRecorderInterface>
+  CreatePageMetricsRecorder(tabs::TabInterface& tab_interface,
+                            VisibleEphemeralPageActionsCountCallback
+                                visible_ephemeral_page_actions_count_callback);
 
   // Issues internally a metric recording for the provided `action_id`.
   void RecordClickMetric(actions::ActionId action_id,
@@ -195,6 +204,11 @@ class PageActionController : public PinnedToolbarActionsModel::Observer {
   // Metrics recorders associated with ephemeral page actions.
   // Each recorder handles logging UMA metrics for one specific action id.
   PageActionMetricsRecordersMap metrics_recorders_;
+
+  // Page-level metric recorder. It's will recorder global metrics that is not
+  // scoped to a single page action.
+  std::unique_ptr<PageActionPageMetricsRecorderInterface>
+      page_metrics_recorder_;
 
   base::ScopedObservation<PinnedToolbarActionsModel,
                           PinnedToolbarActionsModel::Observer>

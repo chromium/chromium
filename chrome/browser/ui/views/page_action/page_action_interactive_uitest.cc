@@ -480,10 +480,11 @@ IN_PROC_BROWSER_TEST_F(PageActionInteractiveUiTest,
 
   ShowPageAction(kActionShowTranslate);
 
-  // Histogram should remain at 2 total samples; no new logging.
-  histogram_tester.ExpectTotalCount("PageActionController.ActionTypeShown2", 2);
+  // Histogram should increase at 3 total samples; since the url have changed in
+  // the same page.
+  histogram_tester.ExpectTotalCount("PageActionController.ActionTypeShown2", 3);
   histogram_tester.ExpectBucketCount("PageActionController.ActionTypeShown2",
-                                     PageActionIconType::kTranslate, 2);
+                                     PageActionIconType::kTranslate, 3);
 }
 
 IN_PROC_BROWSER_TEST_F(PageActionInteractiveUiTest,
@@ -685,6 +686,52 @@ IN_PROC_BROWSER_TEST_F(PageActionMetricsInteractiveUiTest, ClickHistogramLogs) {
                 specific_histogram, PageActionCTREvent::kClicked);
           },
           testing::Eq(2)));
+}
+
+// Verifies that the "NumberActionsShown3" exact-linear histogram records
+// the correct bucket for one vs. two simultaneously visible ephemeral actions.
+IN_PROC_BROWSER_TEST_F(PageActionMetricsInteractiveUiTest,
+                       NumberActionsShown3HistogramLogged) {
+  base::HistogramTester histogram_tester;
+
+  // 1) Show the Translate suggestion chip (1 visible ephemeral action).
+  ShowPageAction(kActionShowTranslate);
+
+  // 2) Show the Memory Saver suggestion chip (now 2 visible ephemeral actions).
+  ShowPageAction(kActionShowMemorySaverChip);
+
+  // Expect exactly one sample in bucket “1” and one in bucket “2”.
+  histogram_tester.ExpectBucketCount("PageActionController.NumberActionsShown3",
+                                     1, 1);
+  histogram_tester.ExpectBucketCount("PageActionController.NumberActionsShown3",
+                                     2, 1);
+}
+
+// Verifies that the "PagesWithActionsShown3" enumeration histogram records
+// a kPageShown on navigation, a kActionShown on the first ephemeral action,
+// and a kMultipleActionsShown once two appear.
+IN_PROC_BROWSER_TEST_F(PageActionMetricsInteractiveUiTest,
+                       PagesWithActionsShown3EventsLogged) {
+  base::HistogramTester histogram_tester;
+
+  // Navigate to a fresh URL to trigger a kPageShown event.
+  GURL test_url("chrome://version");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
+
+  // Show two ephemeral suggestion chips in sequence.
+  ShowPageAction(kActionShowTranslate);        // logs kActionShown
+  ShowPageAction(kActionShowMemorySaverChip);  // logs kMultipleActionsShown
+
+  // Verify each enumeration event was recorded exactly once.
+  histogram_tester.ExpectBucketCount(
+      "PageActionController.PagesWithActionsShown3",
+      PageActionPageEvent::kPageShown, 1);
+  histogram_tester.ExpectBucketCount(
+      "PageActionController.PagesWithActionsShown3",
+      PageActionPageEvent::kActionShown, 1);
+  histogram_tester.ExpectBucketCount(
+      "PageActionController.PagesWithActionsShown3",
+      PageActionPageEvent::kMultipleActionsShown, 1);
 }
 
 // TODO(crbug.com/411078148): Re-enable on Mac.
