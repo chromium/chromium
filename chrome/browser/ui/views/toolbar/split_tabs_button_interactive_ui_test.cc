@@ -32,7 +32,6 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/interactive_test.h"
-#include "ui/base/interaction/state_observer.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/test/ui_controls.h"
 #include "ui/base/ui_base_types.h"
@@ -234,29 +233,6 @@ IN_PROC_BROWSER_TEST_F(SplitTabButtonInteractiveTest,
                                   IDS_SPLIT_TAB_REVERSE_VIEWS),
                   CheckMenuIcon(SplitTabMenuModel::kSwapPositionMenuItem,
                                 kSplitSceneLeftIcon));
-}
-
-IN_PROC_BROWSER_TEST_F(SplitTabButtonInteractiveTest, LayoutMenuItemUpdates) {
-  const GURL url1 = embedded_test_server()->GetURL("/title1.html");
-  RunTestSequence(
-      AddInstrumentedTab(kWebContents2Id, url1),
-      SelectTab(kTabStripElementId, 0), EnterSplitView(0, 1),
-      WaitForShow(kToolbarSplitTabsToolbarButtonElementId),
-      PressButton(kToolbarSplitTabsToolbarButtonElementId),
-      WaitForShow(SplitTabsToolbarButton::kSplitTabButtonMenu),
-      CheckMenuString(SplitTabMenuModel::kSwapLayoutMenuItem,
-                      IDS_SPLIT_TAB_HORIZONTAL_LAYOUT),
-      CheckMenuIcon(SplitTabMenuModel::kSwapLayoutMenuItem, kSplitSceneUpIcon),
-      ClickActiveTabInSplit(),
-      WaitForHide(SplitTabsToolbarButton::kSplitTabButtonMenu),
-      // Change the focus and reopen the menu
-      FocusInactiveTabInSplit(),
-      PressButton(kToolbarSplitTabsToolbarButtonElementId),
-      WaitForShow(SplitTabsToolbarButton::kSplitTabButtonMenu),
-      CheckMenuString(SplitTabMenuModel::kSwapLayoutMenuItem,
-                      IDS_SPLIT_TAB_HORIZONTAL_LAYOUT),
-      CheckMenuIcon(SplitTabMenuModel::kSwapLayoutMenuItem,
-                    kSplitSceneDownIcon));
 }
 
 IN_PROC_BROWSER_TEST_F(SplitTabButtonInteractiveTest, SwapSplitTabPosition) {

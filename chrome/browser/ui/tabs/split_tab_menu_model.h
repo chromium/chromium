@@ -26,14 +26,13 @@ class SplitTabMenuModel : public ui::SimpleMenuModel,
                           public ui::SimpleMenuModel::Delegate {
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kSwapPositionMenuItem);
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kSwapLayoutMenuItem);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kCloseMenuItem);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kExitSplitMenuItem);
 
   explicit SplitTabMenuModel(TabStripModel* tab_strip_model);
   ~SplitTabMenuModel() override;
 
-  enum class CommandId { kSwapPosition, kSwapLayout, kClose, kExitSplit };
+  enum class CommandId { kSwapPosition, kClose, kExitSplit };
 
   // ui::SimpleMenuModel::Delegate override
   bool IsItemForCommandIdDynamic(int command_id) const override;
@@ -44,9 +43,6 @@ class SplitTabMenuModel : public ui::SimpleMenuModel,
  private:
   const gfx::VectorIcon& GetSwapPositionIcon(
       split_tabs::SplitTabActiveLocation active_split_tab_location) const;
-  const gfx::VectorIcon& GetSwapLayoutIcon(
-      split_tabs::SplitTabActiveLocation active_split_tab_location) const;
-  std::u16string GetSwapLayoutString() const;
 
   raw_ptr<TabStripModel> tab_strip_model_ = nullptr;
 };
