@@ -11,6 +11,7 @@ source_set("model") {
   ]
   deps = [
     "//base",
+    "//components/application_locale_storage",
     "//components/breadcrumbs/core",
     "//components/breadcrumbs/core:status",
     "//components/component_updater",

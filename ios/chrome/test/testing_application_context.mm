@@ -10,6 +10,7 @@
 #import "base/notreached.h"
 #import "base/time/default_clock.h"
 #import "base/time/default_tick_clock.h"
+#import "components/application_locale_storage/application_locale_storage.h"
 #import "components/network_time/network_time_tracker.h"
 #import "components/os_crypt/async/browser/test_utils.h"
 #import "components/variations/service/variations_service.h"
@@ -29,7 +30,6 @@
 #import "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #import "services/network/test/test_network_connection_tracker.h"
 #import "services/network/test/test_url_loader_factory.h"
-
 TestingApplicationContext::TestingApplicationContext()
     : application_locale_("en-US"),
       application_country_("us"),
@@ -40,9 +40,12 @@ TestingApplicationContext::TestingApplicationContext()
           std::make_unique<network::TestURLLoaderFactory>()),
       test_network_connection_tracker_(
           network::TestNetworkConnectionTracker::CreateInstance()),
-      variations_service_(nullptr) {
+      variations_service_(nullptr),
+      application_locale_storage_(
+          std::make_unique<ApplicationLocaleStorage>()) {
   DCHECK(!GetApplicationContext());
   SetApplicationContext(this);
+  application_locale_storage_->Set("en-US");
 }
 
 TestingApplicationContext::~TestingApplicationContext() {
@@ -157,6 +160,13 @@ const std::string& TestingApplicationContext::GetApplicationLocale() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!application_locale_.empty());
   return application_locale_;
+}
+
+ApplicationLocaleStorage*
+TestingApplicationContext::GetApplicationLocaleStorage() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(application_locale_storage_);
+  return application_locale_storage_.get();
 }
 
 const std::string& TestingApplicationContext::GetApplicationCountry() {

@@ -63,6 +63,7 @@ source_set("test_support") {
   deps = [
     "//base",
     "//base/test:test_support",
+    "//components/application_locale_storage",
     "//components/content_settings/core/browser",
     "//components/content_settings/core/common",
     "//components/metrics",

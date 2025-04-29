@@ -76,6 +76,7 @@ class TestingApplicationContext : public ApplicationContext {
       override;
   network::mojom::NetworkContext* GetSystemNetworkContext() override;
   const std::string& GetApplicationLocale() override;
+  ApplicationLocaleStorage* GetApplicationLocaleStorage() override;
   const std::string& GetApplicationCountry() override;
   ProfileManagerIOS* GetProfileManager() override;
   metrics_services_manager::MetricsServicesManager* GetMetricsServicesManager()
@@ -140,6 +141,7 @@ class TestingApplicationContext : public ApplicationContext {
   std::unique_ptr<AdditionalFeaturesController> additional_features_controller_;
   raw_ptr<IOSChromeIOThread> ios_chrome_io_thread_;
   std::unique_ptr<auto_deletion::AutoDeletionService> auto_deletion_service_;
+  std::unique_ptr<ApplicationLocaleStorage> application_locale_storage_;
 };
 
 #endif  // IOS_CHROME_TEST_TESTING_APPLICATION_CONTEXT_H_
