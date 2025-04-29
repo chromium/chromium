@@ -91,6 +91,10 @@ BASE_FEATURE(kLensOverlayRecontextualizeOnQuery,
              "LensOverlayRecontextualizeOnQuery",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kLensOverlayCornerSliders,
+             "LensOverlayCornerSliders",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 const base::FeatureParam<int> kLensOverlayMinRamMb{&kLensOverlay, "min_ram_mb",
                                                    /*default=value=*/-1};
 const base::FeatureParam<std::string> kActivityUrl{
@@ -481,6 +485,9 @@ constexpr base::FeatureParam<bool> kLensOverlayUploadChunkingUseDebugOptions{
 
 constexpr base::FeatureParam<int> kLensOverlayUploadChunkRequestTimeoutMs{
     &kLensOverlayUploadChunking, "upload-chunk-request-timeout-ms", 60000};
+
+constexpr base::FeatureParam<int> kLensOverlaySliderChangedTimeout{
+    &kLensOverlayCornerSliders, "slider-changed-timeout", 1000};
 
 std::string GetHomepageURLForLens() {
   return kHomepageURLForLens.Get();
@@ -1028,6 +1035,14 @@ bool IsLensSearchSidePanelNewFeedbackEnabled() {
 
 bool ShouldLensOverlayRecontextualizeOnQuery() {
   return base::FeatureList::IsEnabled(kLensOverlayRecontextualizeOnQuery);
+}
+
+bool AreLensOverlayCornerSlidersEnabled() {
+  return base::FeatureList::IsEnabled(kLensOverlayCornerSliders);
+}
+
+int GetLensOverlaySliderChangedTimeout() {
+  return kLensOverlaySliderChangedTimeout.Get();
 }
 
 }  // namespace lens::features

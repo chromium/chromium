@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert, assertNotReached} from '//resources/js/assert.js';
+import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
+import {assert, assertInstanceof, assertNotReached} from '//resources/js/assert.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
+import {loadTimeData} from '//resources/js/load_time_data.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserProxyImpl} from './browser_proxy.js';
@@ -70,12 +72,15 @@ interface CornerDimensions {
   cutoutRadius: number;
 }
 
+const PostSelectionRendererElementBase = I18nMixin(PolymerElement);
+
 /*
  * Renders the users visual selection after one is made. This element is also
  * responsible for allowing the user to adjust their region to issue a new
  * Lens request.
  */
-export class PostSelectionRendererElement extends PolymerElement {
+export class PostSelectionRendererElement extends
+    PostSelectionRendererElementBase {
   static get is() {
     return 'post-selection-renderer';
   }
@@ -120,6 +125,11 @@ export class PostSelectionRendererElement extends PolymerElement {
         reflectToAttribute: true,
         value: false,
       },
+      cornerSlidersEnabled: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('cornerSlidersEnabled'),
+        reflectToAttribute: true,
+      },
     };
   }
 
@@ -144,7 +154,7 @@ export class PostSelectionRendererElement extends PolymerElement {
   private context: CanvasRenderingContext2D;
   // Listener IDs for events tracked from the browser.
   private listenerIds: number[];
-  // The original bounds from the start of a drag.
+  // The original bounds from the start of a drag or slider change.
   private originalBounds:
       PostSelectionBoundingBox = {left: 0, top: 0, width: 0, height: 0};
   private browserProxy: BrowserProxy = BrowserProxyImpl.getInstance();
@@ -155,6 +165,13 @@ export class PostSelectionRendererElement extends PolymerElement {
   private animateOnResize = false;
   // Whether to darken the post selection scrim.
   declare private shouldDarkenScrim;
+  // Whether to enable corner sliders for keyboard control.
+  declare private cornerSlidersEnabled: boolean;
+  // Timeout for calling handleGestureEnd() after a slider change.
+  private sliderChangedTimeout: number =
+      loadTimeData.getValue('sliderChangedTimeout');
+  // -1 if no timeout is currently running.
+  private sliderChangedTimeoutID: number = -1;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -303,10 +320,9 @@ export class PostSelectionRendererElement extends PolymerElement {
     });
 
     // Set the new dimensions.
-    this.left = clampedBounds.left;
-    this.top = clampedBounds.top;
-    this.width = clampedBounds.width;
-    this.height = clampedBounds.height;
+    this.setDimensions(
+        clampedBounds.top, clampedBounds.left, clampedBounds.height,
+        clampedBounds.width);
 
     this.rerender();
   }
@@ -353,14 +369,148 @@ export class PostSelectionRendererElement extends PolymerElement {
     }
   }
 
+  // Handle changes in the slider inputs used by keyboard users.
+  handleSliderChange(event: Event) {
+    if (this.sliderChangedTimeoutID <= 0) {
+      // Initiating a slider change.
+      this.originalBounds = {
+        left: this.left,
+        top: this.top,
+        width: this.width,
+        height: this.height,
+      };
+      this.shouldDarkenScrim = false;
+    }
+
+    const imageBounds = this.selectionOverlayRect;
+    const normalizedMinBoxWidth = MIN_BOX_SIZE_PX / imageBounds.width;
+    const normalizedMinBoxHeight = MIN_BOX_SIZE_PX / imageBounds.height;
+
+    const currentLeft = this.left;
+    const currentTop = this.top;
+    const currentRight = this.left + this.width;
+    const currentBottom = this.top + this.height;
+    let newLeft = currentLeft;
+    let newTop = currentTop;
+    let newRight = currentRight;
+    let newBottom = currentBottom;
+
+    const slider = event.currentTarget;
+    assertInstanceof(slider, HTMLInputElement);
+    const value = Number(slider.value);
+    switch (slider.dataset['cornerId']) {
+      // The top left and bottom right corners' sliders control the x position
+      // of their corners. Set the x position to the slider value, as long as it
+      // is not below 0, above 1, or beyond the x position of the opposite side.
+      case 'topLeft':
+        newLeft = Math.max(
+            0, Math.min(value / 100, currentRight - normalizedMinBoxWidth));
+        break;
+      case 'bottomRight':
+        newRight = Math.min(
+            1, Math.max(value / 100, currentLeft + normalizedMinBoxWidth));
+        break;
+      // The top right and bottom left corners' sliders control the y position
+      // of their corners. Move the y position by the negative of the change in
+      // the slider value, so that increasing the slider moves the cursor up
+      // (i.e. in the -y direction), as long as it is not below 0, above 1, or
+      // beyond the y position of the opposite side.
+      case 'topRight':
+        newTop = Math.max(
+            0,
+            Math.min(
+                2 * currentTop - value / 100,
+                currentBottom - normalizedMinBoxHeight));
+        break;
+      case 'bottomLeft':
+        newBottom = Math.min(
+            1,
+            Math.max(
+                2 * currentBottom - value / 100,
+                currentTop + normalizedMinBoxHeight));
+        break;
+      default:
+        assertNotReached();
+    }
+    // Ensure the new region is within the image bounds.
+    const clampedBounds = this.getClampedBounds({
+      left: newLeft,
+      top: newTop,
+      width: newRight - newLeft,
+      height: newBottom - newTop,
+    });
+
+    // Set the new dimensions.
+    this.setDimensions(
+        clampedBounds.top, clampedBounds.left, clampedBounds.height,
+        clampedBounds.width);
+
+    this.rerender();
+
+    // Timeout to wait for further slider changes before calling
+    // handleGestureEnd().
+    if (this.sliderChangedTimeoutID > 0) {
+      clearTimeout(this.sliderChangedTimeoutID);
+    }
+    this.sliderChangedTimeoutID = setTimeout(() => {
+      this.sliderChangedTimeoutID = -1;
+      this.handleGestureEnd();
+    }, this.sliderChangedTimeout);
+  }
+
+  private setDimensions(
+      top: number, left: number, height: number, width: number) {
+    this.top = top;
+    this.left = left;
+    this.height = height;
+    this.width = width;
+    this.updateSliderValues();
+  }
+
+  // Update the attributes of the sliders to reflect the current dimensions.
+  private updateSliderValues() {
+    const sliders =
+        this.shadowRoot!.querySelectorAll<HTMLInputElement>('input');
+    for (const slider of sliders) {
+      switch (slider.dataset['cornerId']) {
+        case 'topLeft':
+          slider.value = (this.left * 100).toString();
+          slider.ariaLabel = this.i18n(
+              'topLeftSliderAriaLabel', Math.round(this.left * 100),
+              Math.round(this.top * 100));
+          break;
+        case 'topRight':
+          slider.value = (this.top * 100).toString();
+          slider.ariaLabel = this.i18n(
+              'topRightSliderAriaLabel',
+              Math.round((this.left + this.width) * 100),
+              Math.round(this.top * 100));
+          break;
+        case 'bottomRight':
+          slider.value = ((this.left + this.width) * 100).toString();
+          slider.ariaLabel = this.i18n(
+              'bottomRightSliderAriaLabel',
+              Math.round((this.left + this.width) * 100),
+              Math.round((this.top + this.height) * 100));
+          break;
+        case 'bottomLeft':
+          slider.value = ((this.top + this.height) * 100).toString();
+          slider.ariaLabel = this.i18n(
+              'bottomLeftSliderAriaLabel', Math.round(this.left * 100),
+              Math.round((this.top + this.height) * 100));
+          break;
+        default:
+          assertNotReached();
+      }
+    }
+  }
+
   private setSelection(region: CenterRotatedBox) {
     const normalizedTop = region.box.y - (region.box.height / 2);
     const normalizedLeft = region.box.x - (region.box.width / 2);
 
-    this.top = normalizedTop;
-    this.left = normalizedLeft;
-    this.height = region.box.height;
-    this.width = region.box.width;
+    this.setDimensions(
+        normalizedTop, normalizedLeft, region.box.height, region.box.width);
     this.originalBounds = {left: 0, top: 0, width: 0, height: 0};
 
     this.rerender();
@@ -368,11 +518,8 @@ export class PostSelectionRendererElement extends PolymerElement {
   }
 
   private onRenderPostSelection(e: CustomEvent<PostSelectionBoundingBox>) {
-    this.top = e.detail.top;
-    this.left = e.detail.left;
-    this.height = e.detail.height;
-    this.width = e.detail.width;
-
+    this.setDimensions(
+        e.detail.top, e.detail.left, e.detail.height, e.detail.width);
     this.rerender();
     this.triggerNewBoxAnimation();
   }

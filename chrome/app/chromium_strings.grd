@@ -1868,6 +1868,26 @@ Chromium is unable to recover your settings.
           desc="Accessibility label for the button that opens a searchbox on the language picker so the user can search through the defined languages to find one that matches the text they enter into the searchbox.">
           Search language list
         </message>
+        <message name="IDS_LENS_OVERLAY_TOP_LEFT_CORNER_SLIDER_ACCESSIBILITY_LABEL"
+          is_accessibility_with_no_ui="true"
+          desc="Accessibility label for the slider controlling the top left corner of the search area. Includes the coordinates of the left and top edges of the search area expressed as percentages of the image area.">
+          top left corner of search area: left <ph name="LEFT"><ex>15</ex>$1</ph>%, top <ph name="TOP"><ex>65</ex>$2</ph>%
+        </message>
+        <message name="IDS_LENS_OVERLAY_TOP_RIGHT_CORNER_SLIDER_ACCESSIBILITY_LABEL"
+          is_accessibility_with_no_ui="true"
+          desc="Accessibility label for the slider controlling the top right corner of the search area. Includes the coordinates of the right and top edges of the search area expressed as percentages of the image area.">
+          top right corner of search area: right <ph name="RIGHT"><ex>15</ex>$1</ph>%, top <ph name="TOP"><ex>65</ex>$2</ph>%
+        </message>
+        <message name="IDS_LENS_OVERLAY_BOTTOM_RIGHT_CORNER_SLIDER_ACCESSIBILITY_LABEL"
+          is_accessibility_with_no_ui="true"
+          desc="Accessibility label for the slider controlling the bottom right corner of the search area. Includes the coordinates of the right and bottom edges of the search area expressed as percentages of the image area.">
+          bottom right corner of search area: right <ph name="RIGHT"><ex>15</ex>$1</ph>%, bottom <ph name="BOTTOM"><ex>65</ex>$2</ph>%
+        </message>
+        <message name="IDS_LENS_OVERLAY_BOTTOM_LEFT_CORNER_SLIDER_ACCESSIBILITY_LABEL"
+          is_accessibility_with_no_ui="true"
+          desc="Accessibility label for the slider controlling the bottom left corner of the search area. Includes the coordinates of the left and bottom edges of the search area expressed as percentages of the image area.">
+          bottom left corner of search area: left <ph name="LEFT"><ex>15</ex>$1</ph>%, bottom <ph name="BOTTOM"><ex>65</ex>$2</ph>%
+        </message>
 
         <!-- IPH Strings -->
         <message name="IDS_LENS_OVERLAY_TRANSLATE_BUTTON_IPH"

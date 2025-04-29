@@ -130,6 +130,18 @@ LensOverlayUntrustedUI::LensOverlayUntrustedUI(content::WebUI* web_ui)
       IDS_GOOGLE_SEARCH_BOX_CONTEXTUAL_NO_SUGGEST_TEXT);
   html_source->AddLocalizedString(
       "searchButton", IDS_LENS_OVERLAY_SEARCH_LANGUAGE_PICKER_LABEL);
+  html_source->AddLocalizedString(
+      "topLeftSliderAriaLabel",
+      IDS_LENS_OVERLAY_TOP_LEFT_CORNER_SLIDER_ACCESSIBILITY_LABEL);
+  html_source->AddLocalizedString(
+      "topRightSliderAriaLabel",
+      IDS_LENS_OVERLAY_TOP_RIGHT_CORNER_SLIDER_ACCESSIBILITY_LABEL);
+  html_source->AddLocalizedString(
+      "bottomRightSliderAriaLabel",
+      IDS_LENS_OVERLAY_BOTTOM_RIGHT_CORNER_SLIDER_ACCESSIBILITY_LABEL);
+  html_source->AddLocalizedString(
+      "bottomLeftSliderAriaLabel",
+      IDS_LENS_OVERLAY_BOTTOM_LEFT_CORNER_SLIDER_ACCESSIBILITY_LABEL);
 
   // Add default theme colors.
   const auto& palette = lens::kPaletteColors.at(lens::PaletteId::kFallback);
@@ -233,6 +245,10 @@ LensOverlayUntrustedUI::LensOverlayUntrustedUI(content::WebUI* web_ui)
                           lens::features::IsSimplifiedSelectionEnabled());
   html_source->AddBoolean("autoFocusSearchbox",
                           lens::features::ShouldAutoFocusSearchbox());
+  html_source->AddBoolean("cornerSlidersEnabled",
+                          lens::features::AreLensOverlayCornerSlidersEnabled());
+  html_source->AddInteger("sliderChangedTimeout",
+                          lens::features::GetLensOverlaySliderChangedTimeout());
 
   LensOverlayController& controller = GetLensOverlayController();
   html_source->AddDouble("invocationTime",
