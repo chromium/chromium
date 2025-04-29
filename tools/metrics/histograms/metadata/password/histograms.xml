@@ -4720,16 +4720,6 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
-<histogram name="PasswordManager.WeakCheck.SingleCheckTime" units="ms"
-    expires_after="2025-06-08">
-  <owner>jkeitel@google.com</owner>
-  <owner>vasilii@chromium.org</owner>
-  <summary>
-    The time taken to perform a weakness check for a single password. Recorded
-    whenever a password weakness score is computed.
-  </summary>
-</histogram>
-
 <histogram name="PasswordManager.WeakCheck.Time" units="ms"
     expires_after="2025-08-24">
   <owner>kazinova@google.com</owner>

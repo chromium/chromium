@@ -37,8 +37,6 @@ TEST(WeakCheckUtilityTest, IsWeakRecordsMetrics) {
   EXPECT_TRUE(IsWeak(kWeakLongPassword));
   EXPECT_FALSE(IsWeak(kStrongShortPassword));
 
-  histogram_tester.ExpectTotalCount("PasswordManager.WeakCheck.SingleCheckTime",
-                                    2u);
   EXPECT_THAT(
       histogram_tester.GetAllSamples("PasswordManager.WeakCheck.PasswordScore"),
       base::BucketsAre(base::Bucket(0, 1), base::Bucket(4, 1)));
