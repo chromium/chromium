@@ -68,7 +68,7 @@ enum class CollaborationServiceShareOrManageEvent {
   kCanceledNotSignedIn = 3,
   kShareDialogShown = 4,
   kManageDialogShown = 5,
-  kTabGroupShared = 6,
+  kCollaborationGroupCreated = 6,
   kUrlReadyToShare = 7,
   kFlowRequirementsMet = 8,
   kSigninVerificationFailed = 9,
@@ -90,7 +90,8 @@ enum class CollaborationServiceShareOrManageEvent {
   kAccountInfoNotReadyOnSignin = 25,
   kCollaborationIdEmptyGroupToken = 26,
   kCollaborationIdShareCanceled = 27,
-  kMaxValue = kCollaborationIdShareCanceled,
+  kTabGroupShared = 28,
+  kMaxValue = kTabGroupShared,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/collaboration_service/enums.xml:CollaborationServiceShareOrManageEvent)
 

@@ -104,8 +104,8 @@ std::string_view CollaborationServiceShareOrManageEventToString(
       return "ShareDialogShown";
     case CollaborationServiceShareOrManageEvent::kManageDialogShown:
       return "ManageDialogShown";
-    case CollaborationServiceShareOrManageEvent::kTabGroupShared:
-      return "TabGroupShared";
+    case CollaborationServiceShareOrManageEvent::kCollaborationGroupCreated:
+      return "CollaborationGroupCreated";
     case CollaborationServiceShareOrManageEvent::kUrlReadyToShare:
       return "UrlReadyToShare";
     case CollaborationServiceShareOrManageEvent::kFlowRequirementsMet:
@@ -151,6 +151,8 @@ std::string_view CollaborationServiceShareOrManageEventToString(
       return "CollarborationIdEmptyGroupToken";
     case CollaborationServiceShareOrManageEvent::kCollaborationIdShareCanceled:
       return "CollaborationIdShareCanceled";
+    case CollaborationServiceShareOrManageEvent::kTabGroupShared:
+      return "TabGroupShared";
   }
 }
 

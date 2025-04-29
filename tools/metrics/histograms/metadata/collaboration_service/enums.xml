@@ -127,7 +127,7 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Not signed in on share or manage attempt"/>
   <int value="4" label="Share dialog shown"/>
   <int value="5" label="Manage dialog shown"/>
-  <int value="6" label="Tab group shared"/>
+  <int value="6" label="Collaboration group created"/>
   <int value="7" label="Urls ready to share"/>
   <int value="8" label="Signin and sync requirements met"/>
   <int value="9" label="Signin verified when finished"/>
@@ -149,6 +149,7 @@ chromium-metrics-reviews@google.com.
   <int value="25" label="Account info is not ready upon signin"/>
   <int value="26" label="Failed - Created group ID empty"/>
   <int value="27" label="Canceled - Share dialog canceled"/>
+  <int value="28" label="Tab group shared"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/collaboration/internal/metrics.h:CollaborationServiceShareOrManageEvent) -->

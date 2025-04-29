@@ -935,6 +935,9 @@ class ShowingShareScreen : public ControllerState {
     }
 
     controller->flow().set_share_token(group_token.value());
+    RecordShareOrManageEvent(
+        GetLogger(),
+        CollaborationServiceShareOrManageEvent::kCollaborationGroupCreated);
     ProcessOutcome(outcome);
   }
 
@@ -967,9 +970,6 @@ class MakingTabGroupShared : public ControllerState {
     const data_sharing::GroupToken& group_token =
         controller->flow().share_token();
 
-    RecordShareOrManageEvent(
-        GetLogger(), CollaborationServiceShareOrManageEvent::kTabGroupShared);
-
     controller->tab_group_sync_service()->MakeTabGroupShared(
         local_group_id.value(), group_token.group_id.value(),
         base::BindOnce(&MakingTabGroupShared::ProcessTabGroupSharingResult,
@@ -982,6 +982,8 @@ class MakingTabGroupShared : public ControllerState {
   }
 
   void OnProcessingFinishedWithSuccess() override {
+    RecordShareOrManageEvent(
+        GetLogger(), CollaborationServiceShareOrManageEvent::kTabGroupShared);
     controller->TransitionTo(StateId::kSharingTabGroupUrl);
   }
 
