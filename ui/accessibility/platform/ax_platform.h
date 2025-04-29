@@ -42,11 +42,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatform {
     virtual ~Delegate() = default;
 
     // Returns the effective process-wide accessibility mode.
-    virtual AXMode GetProcessMode() = 0;
-
-    // Sets the effective process-wide accessibility mode and notifies observers
-    // if `new_mode` contains additions to the mode flags.
-    virtual void SetProcessMode(AXMode new_mode) = 0;
+    virtual AXMode GetAccessibilityMode() = 0;
 
     // The global accessibility mode is automatically enabled based on
     // usage of accessibility APIs. When we detect a significant amount
@@ -70,6 +66,14 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatform {
     // to a detected assistive technology that may cause issues with the
     // provider, such as JAWS.
     virtual void OnUiaProviderDisabled() {}
+#endif
+
+#if BUILDFLAG(IS_LINUX)
+    // Enables AXMode::kExtendedProperties, for advanced ATs such as Orca.
+    // TODO(accessibility): Consider unifying with
+    // WinAccessibilityAPIUsageObserver into a single system for turning on
+    // useful AXModes.
+    virtual void OnExtendedPropertiesUsed() {}
 #endif
 
    protected:
@@ -155,14 +159,16 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatform {
   void OnUiaProviderRequested(bool uia_provider_enabled);
 #endif
 
+#if BUILDFLAG(IS_LINUX)
+  // Enables AXMode::kExtendedProperties, for advanced ATs such as Orca.
+  void OnExtendedPropertiesUsed();
+#endif
+
   void DetachFromThreadForTesting();
 
  private:
   friend class ::ui::AXPlatformNode;
   FRIEND_TEST_ALL_PREFIXES(AXPlatformTest, Observer);
-
-  // Sets the process-wide accessibility mode.
-  void SetMode(AXMode new_mode);
 
 #if BUILDFLAG(IS_WIN)
   // Retrieves the product name, version, and toolkit version from the delegate

@@ -371,12 +371,15 @@ class COMPONENT_EXPORT(AX_PLATFORM) WinAccessibilityAPIUsageObserver {
   WinAccessibilityAPIUsageObserver();
   virtual ~WinAccessibilityAPIUsageObserver();
   virtual void OnMSAAUsed() = 0;
-  virtual void OnBasicIAccessible2Used() = 0;
-  virtual void OnAdvancedIAccessible2Used() = 0;
+  virtual void OnIAccessible2UsedInBrowserUI() = 0;
+  virtual void OnIAccessible2UsedInWebContent() = 0;
   virtual void OnScreenReaderHoneyPotQueried() = 0;
   virtual void OnAccNameCalled() = 0;
-  virtual void OnBasicUIAutomationUsed() = 0;
-  virtual void OnAdvancedUIAutomationUsed() = 0;
+  virtual void OnInlineTextBoxesUsed() = 0;
+  virtual void OnExtendedPropertiesUsed() = 0;
+  virtual void OnHTMLAttributesUsed() = 0;
+  virtual void OnUIAutomationUsedInWebContent() = 0;
+  virtual void OnUIAutomationUsedInBrowserUI() = 0;
   virtual void OnProbableUIAutomationScreenReaderDetected() = 0;
   virtual void OnTextPatternRequested() = 0;
   virtual void StartFiringUIAEvents() = 0;
@@ -1296,6 +1299,13 @@ class COMPONENT_EXPORT(AX_PLATFORM)
   // It's okay for input to be the same as output.
   static void SanitizeStringAttributeForIA2(const std::string& input,
                                             std::string* output);
+
+  // Turn on AXMode::kExtendedProperties if in web content.
+  void OnExtendedPropertiesUsed() const;
+
+  // Turn on AXMode::kInlineTextBoxes if in web content.
+  void OnInlineTextBoxesUsed() const;
+
   FRIEND_TEST_ALL_PREFIXES(AXPlatformNodeWinTest,
                            SanitizeStringAttributeForIA2);
 
@@ -1564,7 +1574,6 @@ class COMPONENT_EXPORT(AX_PLATFORM)
   // only use MSAA/IAccessible have a way to turn on accessibility.
   void NotifyObserverForMSAAUsage() const;
 
-  void NotifyAddAXModeFlagsForIA2(const uint32_t ax_modes) const;
   void NotifyAPIObserverForPatternRequest(PATTERNID pattern_id) const;
   void NotifyAPIObserverForPropertyRequest(PROPERTYID property_id) const;
 

@@ -60,20 +60,6 @@ class CONTENT_EXPORT BrowserAccessibilityState {
   CreateScopedModeForWebContents(WebContents* web_contents,
                                  ui::AXMode mode) = 0;
 
-  // Note: Prefer the three methods above to add/remove mode flags, as they
-  // allow callers to do so without interfering with other controllers of
-  // accessibility. The methods below effectively modify a single
-  // `ScopedAccessibilityMode` instance targeting the whole process, and put
-  // callers at risk of stepping on one another.
-
-  // DEPRECATED. Adds the given accessibility mode flags to the process,
-  // impacting all WebContents.
-  virtual void AddAccessibilityModeFlags(ui::AXMode mode) = 0;
-
-  // DEPRECATED. Remove the given accessibility mode flags from the current
-  // accessibility mode bitmap.
-  virtual void RemoveAccessibilityModeFlags(ui::AXMode mode) = 0;
-
   // Some platforms have a strong signal indicating the presence of a
   // screen reader and can call in to let us know when one has
   // been enabled/disabled. This should be called for screen readers only.

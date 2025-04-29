@@ -63,9 +63,6 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
   ui::AXMode GetAccessibilityMode() override;
   ui::AXMode GetAccessibilityModeForBrowserContext(
       BrowserContext* browser_context) override;
-  // TODO(aleventhal): Rename this to Add/RemoveProcessAccessibilityFlags()
-  void AddAccessibilityModeFlags(ui::AXMode mode) override;
-  void RemoveAccessibilityModeFlags(ui::AXMode mode) override;
   // Some platforms have a strong signal indicating the presence of a
   // screen reader and can call in to let us know when one has
   // been enabled/disabled.
@@ -95,8 +92,6 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
   void NotifyWebContentsPreferencesChanged() const override;
 
   // ui::AXPlatform::Delegate:
-  ui::AXMode GetProcessMode() override;
-  void SetProcessMode(ui::AXMode new_mode) override;
   void OnAccessibilityApiUsage() override;
 
   // content::RenderWidgetHost::InputEventObserver:
@@ -129,11 +124,6 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
   void OnAssistiveTechFound(ui::AssistiveTech assistive_tech);
 
  private:
-  // Called by `OnScreenReaderStopped` as a delayed task. If accessibility
-  // support has not been re-enabled by the time the delay has expired, we clear
-  // `process_accessibility_mode_` so that all WebContentses are updated.
-  void MaybeResetAccessibilityMode();
-
   void UpdateAccessibilityActivityTask();
 
   // ScopedModeCollection::Delegate:
@@ -226,11 +216,10 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
   ScopedModeCollection scoped_modes_for_process_{*this};
 
   // A ScopedAccessibilityMode that holds the process-wide mode flags modified
-  // via ui::AXPlatformNode::NotifyAddAXModeFlags(),
-  // AddAccessibilityModeFlags(), RemoveAccessibilityModeFlags(), and
-  // ResetAccessibilityMode(); and applies them to all WebContentses in the
-  // process. Guaranteed to hold at least an instance with no mode flags set.
-  std::unique_ptr<ScopedAccessibilityMode> process_accessibility_mode_;
+  // via --force-renderer-accessibility on the command line.
+  std::unique_ptr<ScopedAccessibilityMode> forced_accessibility_mode_;
+
+  friend class ui::AXPlatform;
 };
 
 }  // namespace content

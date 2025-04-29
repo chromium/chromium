@@ -2196,7 +2196,7 @@ AtkRelationSet* AtkRefRelationSet(AtkObject* atk_object) {
   // Enables AX mode. Most AT does not call AtkRefRelationSet, but Orca does,
   // which is why it's a good signal to enable accessibility for Orca users
   // without too many false positives.
-  AXPlatformNodeAuraLinux::EnableAXMode();
+  AXPlatform::GetInstance().OnExtendedPropertiesUsed();
   return RefRelationSet(atk_object);
 }
 
@@ -2216,7 +2216,7 @@ AtkAttributeSet* AtkGetAttributes(AtkObject* atk_object) {
   // Enables AX mode. Most AT does not call AtkGetAttributes, but Orca does,
   // which is why it's a good signal to enable accessibility for Orca users
   // without too many false positives.
-  AXPlatformNodeAuraLinux::EnableAXMode();
+  AXPlatform::GetInstance().OnExtendedPropertiesUsed();
   return GetAttributes(atk_object);
 }
 
@@ -2611,11 +2611,6 @@ AXPlatformNode* AXPlatformNodeAuraLinux::application() {
 // static
 void AXPlatformNodeAuraLinux::StaticInitialize() {
   AtkUtilAuraLinux::GetInstance()->InitializeAsync();
-}
-
-// static
-void AXPlatformNodeAuraLinux::EnableAXMode() {
-  AXPlatformNode::NotifyAddAXModeFlags(kAXModeComplete);
 }
 
 AtkRole AXPlatformNodeAuraLinux::GetAtkRole() const {

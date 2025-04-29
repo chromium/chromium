@@ -341,7 +341,7 @@ gfx::NativeViewAccessible AXFragmentRootWin::GetNativeViewAccessible() {
   // Automation. Signal observers when we're asked for a platform object on it.
   for (WinAccessibilityAPIUsageObserver& observer :
        GetWinAccessibilityAPIUsageObserverList()) {
-    observer.OnBasicUIAutomationUsed();
+    observer.OnUIAutomationUsedInBrowserUI();
   }
   return static_cast<AXFragmentRootPlatformNodeWin*>(platform_node_.get());
 }

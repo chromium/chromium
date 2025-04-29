@@ -26,8 +26,7 @@ class AXPlatformForTest : public AXPlatform::Delegate {
   void DetachFromThread();
 
   // AXPlatform::Delegate:
-  AXMode GetProcessMode() override;
-  void SetProcessMode(AXMode new_mode) override;
+  AXMode GetAccessibilityMode() override;
   void OnAccessibilityApiUsage() override;
 #if BUILDFLAG(IS_WIN)
   AXPlatform::ProductStrings GetProductStrings() override;

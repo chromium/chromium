@@ -15,6 +15,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/task/thread_pool.h"
 #include "content/browser/accessibility/browser_accessibility_state_impl.h"
+#include "content/public/browser/scoped_accessibility_mode.h"
 #include "third_party/re2/src/re2/re2.h"
 
 namespace content {
@@ -88,8 +89,9 @@ class BrowserAccessibilityStateImplAuralinux
  public:
   BrowserAccessibilityStateImplAuralinux() = default;
 
- protected:
+  // BrowserAccessibilityStateImpl:
   void RefreshAssistiveTech() override;
+  void OnExtendedPropertiesUsed() override;
 
  private:
   void OnDiscoveredOrca(bool is_orca_active);
@@ -97,6 +99,8 @@ class BrowserAccessibilityStateImplAuralinux
   // The presence of an AssistiveTech is currently being recomputed.
   // Will be updated via DiscoverOrca().
   bool awaiting_known_assistive_tech_computation_ = false;
+
+  std::unique_ptr<ScopedAccessibilityMode> complete_ax_mode_;
 };
 
 void BrowserAccessibilityStateImplAuralinux::RefreshAssistiveTech() {
@@ -113,9 +117,22 @@ void BrowserAccessibilityStateImplAuralinux::RefreshAssistiveTech() {
   }
 }
 
+void BrowserAccessibilityStateImplAuralinux::OnExtendedPropertiesUsed() {
+  if (!complete_ax_mode_) {
+    complete_ax_mode_ = CreateScopedModeForProcess(ui::kAXModeComplete |
+                                                   ui::AXMode::kFromPlatform);
+  }
+}
+
 void BrowserAccessibilityStateImplAuralinux::OnDiscoveredOrca(
     bool is_orca_active) {
   awaiting_known_assistive_tech_computation_ = false;
+
+  if (ActiveAssistiveTech() == ui::AssistiveTech::kGenericScreenReader) {
+    // A test has overridden the screen reader state manually.
+    // In such cases, we don't want to alter it.
+    return;
+  }
 
   UMA_HISTOGRAM_BOOLEAN("Accessibility.Linux.Orca", is_orca_active);
   static auto* ax_orca_crash_key = base::debug::AllocateCrashKeyString(

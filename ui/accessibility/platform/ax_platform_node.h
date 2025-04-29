@@ -67,10 +67,6 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNode {
   static void SetAXModeChangeAllowed(bool allow);
   static bool IsAXModeChangeAllowed();
 
-  // Helper static function to notify all global observers about
-  // the addition of an AXMode flag.
-  static void NotifyAddAXModeFlags(AXMode mode_flags);
-
   // Return the focused object in any UI popup overlaying content, or null.
   static gfx::NativeViewAccessible GetPopupFocusOverride();
 

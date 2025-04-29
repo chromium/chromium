@@ -240,7 +240,7 @@ BrowserAccessibilityStateImpl::BrowserAccessibilityStateImpl() {
   // are enabled or not. Always creating a ScopedAccessibilityMode
   // (even if it holds a mode with all flags off) allows us to avoid null
   // checks elsewhere, thereby simplifying other logic.
-  process_accessibility_mode_ = CreateScopedModeForProcess(initial_mode);
+  forced_accessibility_mode_ = CreateScopedModeForProcess(initial_mode);
 
   UMA_HISTOGRAM_BOOLEAN("Accessibility.ManuallyEnabled",
                         !initial_mode.is_mode_off());
@@ -382,8 +382,9 @@ void BrowserAccessibilityStateImpl::OnUserInputEvent() {
                                   now - accessibility_enabled_time_);
 
       accessibility_disabled_time_ = now;
-      // TODO(aleventhal): prefer making a11y dormant for new page loads.
-      SetProcessMode(ui::AXMode());
+
+      // TODO(accessibility) Reimplement by making a11y dormant as opposed to
+      // turning off flags, which leads to thrashing.
     }
   }
 }
@@ -417,62 +418,10 @@ void BrowserAccessibilityStateImpl::NotifyWebContentsPreferencesChanged()
   }
 }
 
-void BrowserAccessibilityStateImpl::AddAccessibilityModeFlags(ui::AXMode mode) {
-  // Update process_accessibility_mode_ via SetProcessMode so that the remainder
-  // of processing is identical to when AXPlatformNode::NotifyAddAXModeFlags()
-  // is called -- it will defer to AXPlatform::SetMode() to update the global
-  // set of flags. AXPlatform, itself, defers to its Delegate, which is this
-  // instance. This ensures that calls to AddAccessibilityModeFlags() and direct
-  // calls to AXPlatformNode::NotifyAddAXModeFlags() down in //ui each follow
-  // the same codepath to set the global mode flags, notify observers, dispatch
-  // to WebContents, and record metrics.
-  SetProcessMode(process_accessibility_mode_->mode() | mode);
-}
-
-void BrowserAccessibilityStateImpl::RemoveAccessibilityModeFlags(
-    ui::AXMode mode) {
-  SetProcessMode(process_accessibility_mode_->mode() & ~mode);
-}
-
 base::CallbackListSubscription
 BrowserAccessibilityStateImpl::RegisterFocusChangedCallback(
     FocusChangedCallback callback) {
   return focus_changed_callbacks_.Add(std::move(callback));
-}
-
-// Returns the effective mode for the process, taking all process-wide scopers
-// into account.
-ui::AXMode BrowserAccessibilityStateImpl::GetProcessMode() {
-  return GetAccessibilityMode();
-}
-
-// Replaces the scoper that backs the legacy process-wide mode with one applying
-// `new_mode`.
-void BrowserAccessibilityStateImpl::SetProcessMode(ui::AXMode new_mode) {
-  if (!allow_ax_mode_changes_) {
-    return;
-  }
-
-  if (!new_mode.is_mode_off()) {
-    // Unless the mode is being turned off, setting accessibility flags is
-    // generally caused by accessibility API call, so we should also reset the
-    // auto-disable accessibility code.
-    OnAccessibilityApiUsage();
-  }
-
-  const ui::AXMode previous_mode = GetAccessibilityMode();
-  if (new_mode == previous_mode) {
-    return;
-  }
-
-  process_accessibility_mode_ =
-      CreateScopedModeForProcess(new_mode | ui::AXMode::kFromPlatform);
-
-  // If the AXMode changes, there's a good chance an assistive technology was
-  // activated. Allow platforms that must perform special detection to update
-  // their notion of which tech is running. The platform-specific implementation
-  // is responsible for calling `OnAssistiveTechFound()` in response.
-  RefreshAssistiveTech();
 }
 
 void BrowserAccessibilityStateImpl::OnAccessibilityApiUsage() {
@@ -520,6 +469,19 @@ BrowserAccessibilityStateImpl::CreateScopedModeForProcess(ui::AXMode mode) {
 // scopers targeting the process changes.
 void BrowserAccessibilityStateImpl::OnModeChanged(ui::AXMode old_mode,
                                                   ui::AXMode new_mode) {
+  // If the AXMode changes, there's a good chance an assistive technology was
+  // activated. Allow platforms that must perform special detection to update
+  // their notion of which tech is running. The platform-specific implementation
+  // is responsible for calling `OnAssistiveTechFound()` in response.
+  RefreshAssistiveTech();
+
+  if (!new_mode.is_mode_off()) {
+    // Unless the mode is being turned off, setting accessibility flags is
+    // generally caused by accessibility API call, so we should also reset the
+    // auto-disable accessibility code.
+    OnAccessibilityApiUsage();
+  }
+
   ui::RecordAccessibilityModeHistograms(ui::AXHistogramPrefix::kNone, new_mode,
                                         old_mode);
 

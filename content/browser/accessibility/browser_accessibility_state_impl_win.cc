@@ -25,6 +25,7 @@
 #include "base/win/registry.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/scoped_accessibility_mode.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/platform/ax_platform.h"
 #include "ui/accessibility/platform/ax_platform_node_win.h"
@@ -299,27 +300,36 @@ class WindowsAccessibilityEnabler
   WindowsAccessibilityEnabler() {}
 
  private:
+  void EnableAXMode(ui::AXMode modes_to_add) {
+    modes_to_add |= ui::AXMode::kFromPlatform;
+    ui::AXMode old_mode = scoped_windows_ax_mode_
+                              ? scoped_windows_ax_mode_->mode()
+                              : ui::AXMode();
+    ui::AXMode new_mode = old_mode | modes_to_add;
+    if (old_mode != new_mode) {
+      scoped_windows_ax_mode_ = BrowserAccessibilityStateImpl::GetInstance()
+                                    ->CreateScopedModeForProcess(new_mode);
+    }
+  }
+
   // WinAccessibilityAPIUsageObserver
   void OnMSAAUsed() override {
     // When only basic MSAA functionality is used, just enable kNativeAPIs.
     // Enabling kNativeAPIs gives little perf impact, but allows these APIs to
     // interact with the BrowserAccessibilityManager allowing ATs to be able at
     // least find the document without using any advanced APIs.
-    BrowserAccessibilityStateImpl::GetInstance()->AddAccessibilityModeFlags(
-        ui::AXMode::kNativeAPIs);
+    EnableAXMode(ui::AXMode::kNativeAPIs);
   }
 
-  void OnBasicIAccessible2Used() override {
-    BrowserAccessibilityStateImpl::GetInstance()->AddAccessibilityModeFlags(
-        ui::AXMode::kNativeAPIs);
+  void OnIAccessible2UsedInBrowserUI() override {
+    EnableAXMode(ui::AXMode::kNativeAPIs);
   }
 
-  void OnAdvancedIAccessible2Used() override {
-    // When IAccessible2 APIs have been used elsewhere in the codebase,
-    // enable basic web accessibility support. (Full screen reader support is
-    // detected later when specific more advanced APIs are accessed.)
-    BrowserAccessibilityStateImpl::GetInstance()->AddAccessibilityModeFlags(
-        ui::kAXModeBasic);
+  void OnIAccessible2UsedInWebContent() override {
+    // When IAccessible2 APIs have been used in content, enable basic web
+    // accessibility support. Full screen reader support is detected later when
+    // specific more advanced APIs are accessed.
+    EnableAXMode(ui::kAXModeBasic);
   }
 
   void OnScreenReaderHoneyPotQueried() override {
@@ -331,8 +341,7 @@ class WindowsAccessibilityEnabler
     }
     screen_reader_honeypot_queried_ = true;
     if (acc_name_called_) {
-      BrowserAccessibilityStateImpl::GetInstance()->AddAccessibilityModeFlags(
-          ui::kAXModeBasic);
+      EnableAXMode(ui::kAXModeBasic);
     }
   }
 
@@ -343,30 +352,25 @@ class WindowsAccessibilityEnabler
     }
     acc_name_called_ = true;
     if (screen_reader_honeypot_queried_) {
-      BrowserAccessibilityStateImpl::GetInstance()->AddAccessibilityModeFlags(
-          ui::kAXModeBasic);
+      EnableAXMode(ui::kAXModeBasic);
     }
   }
 
-  void OnBasicUIAutomationUsed() override {
-    AddAXModeForUIA(ui::AXMode::kNativeAPIs);
+  void OnInlineTextBoxesUsed() override {
+    EnableAXMode(ui::kAXModeBasic | ui::AXMode::kExtendedProperties |
+                 ui::AXMode::kInlineTextBoxes);
   }
 
-  void OnAdvancedUIAutomationUsed() override {
-    AddAXModeForUIA(ui::AXMode::kWebContents);
+  void OnExtendedPropertiesUsed() override {
+    EnableAXMode(ui::kAXModeBasic | ui::AXMode::kExtendedProperties);
   }
 
-  void OnProbableUIAutomationScreenReaderDetected() override {
-    // Same as kAXModeComplete but without kHTML as it is not needed for UIA.
-    AddAXModeForUIA(ui::AXMode::kNativeAPIs | ui::AXMode::kWebContents |
-                    ui::AXMode::kExtendedProperties);
+  void OnHTMLAttributesUsed() override {
+    EnableAXMode(ui::kAXModeBasic | ui::AXMode::kExtendedProperties |
+                 ui::AXMode::kHTML);
   }
 
-  void OnTextPatternRequested() override {
-    AddAXModeForUIA(ui::AXMode::kInlineTextBoxes);
-  }
-
-  void AddAXModeForUIA(ui::AXMode mode) {
+  void OnUIAutomationUsedInWebContent() override {
     DCHECK(::ui::AXPlatform::GetInstance().IsUiaProviderEnabled());
 
     // Firing a UIA event can cause UIA to call back into our APIs, don't
@@ -375,8 +379,43 @@ class WindowsAccessibilityEnabler
       return;
     }
 
-    BrowserAccessibilityStateImpl::GetInstance()->AddAccessibilityModeFlags(
-        mode);
+    EnableAXMode(ui::kAXModeBasic);
+  }
+
+  void OnUIAutomationUsedInBrowserUI() override {
+    DCHECK(::ui::AXPlatform::GetInstance().IsUiaProviderEnabled());
+
+    // Firing a UIA event can cause UIA to call back into our APIs, don't
+    // consider this to be usage.
+    if (firing_uia_events_) {
+      return;
+    }
+
+    EnableAXMode(ui::AXMode::kNativeAPIs);
+  }
+
+  void OnProbableUIAutomationScreenReaderDetected() override {
+    DCHECK(::ui::AXPlatform::GetInstance().IsUiaProviderEnabled());
+
+    // Firing a UIA event can cause UIA to call back into our APIs, don't
+    // consider this to be usage.
+    if (firing_uia_events_) {
+      return;
+    }
+
+    OnExtendedPropertiesUsed();
+  }
+
+  void OnTextPatternRequested() override {
+    DCHECK(::ui::AXPlatform::GetInstance().IsUiaProviderEnabled());
+
+    // Firing a UIA event can cause UIA to call back into our APIs, don't
+    // consider this to be usage.
+    if (firing_uia_events_) {
+      return;
+    }
+
+    OnInlineTextBoxesUsed();
   }
 
   void StartFiringUIAEvents() override { firing_uia_events_ = true; }
@@ -389,6 +428,8 @@ class WindowsAccessibilityEnabler
   bool firing_uia_events_ = false;
   bool screen_reader_honeypot_queried_ = false;
   bool acc_name_called_ = false;
+
+  std::unique_ptr<ScopedAccessibilityMode> scoped_windows_ax_mode_;
 };
 
 void OnWndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) {
@@ -450,6 +491,12 @@ void BrowserAccessibilityStateImplWin::RefreshAssistiveTech() {
 void BrowserAccessibilityStateImplWin::OnDiscoveredAssistiveTech(
     const std::vector<AssistiveTechInfo>& at_infos) {
   awaiting_known_assistive_tech_computation_ = false;
+
+  if (ActiveAssistiveTech() == ui::AssistiveTech::kGenericScreenReader) {
+    // A test has overridden the screen reader state manually.
+    // In such cases, we don't want to alter it.
+    return;
+  }
 
   // Older versions of JAWS are known to not work well with text fields when we
   // expose the native UIA provider. Disable it when we detect an older version

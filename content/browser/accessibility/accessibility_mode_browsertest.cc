@@ -89,23 +89,6 @@ IN_PROC_BROWSER_TEST_F(AccessibilityModeTest, AccessibilityModeComplete) {
   EXPECT_NE(nullptr, GetManager());
 }
 
-// Tests that adding kAXModeComplete via ui::AXPlatformNode gives the flags
-// to an active WebContents.
-IN_PROC_BROWSER_TEST_F(AccessibilityModeTest,
-                       AccessibilityModeCompleteViaNode) {
-  EXPECT_TRUE(NavigateToURL(shell(), GURL(kMinimalPageDataURL)));
-  ASSERT_TRUE(web_contents()->GetAccessibilityMode().is_mode_off());
-
-  AccessibilityNotificationWaiter waiter(shell()->web_contents());
-  // Activation via AXPlatformNode is considered platform activation.
-  BrowserAccessibilityState::GetInstance()->SetActivationFromPlatformEnabled(
-      true);
-  ui::AXPlatformNode::NotifyAddAXModeFlags(ui::kAXModeComplete);
-  ASSERT_TRUE(waiter.WaitForNotification());
-  EXPECT_EQ(web_contents()->GetAccessibilityMode(), ui::kAXModeComplete);
-  EXPECT_NE(nullptr, GetManager());
-}
-
 // Tests that adding kAXModeComplete via BrowserAccessibilityState gives the
 // flags to an active WebContents.
 IN_PROC_BROWSER_TEST_F(AccessibilityModeTest,

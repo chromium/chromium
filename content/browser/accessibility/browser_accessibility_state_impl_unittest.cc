@@ -68,7 +68,7 @@ TEST_F(BrowserAccessibilityStateImplTest,
   state_->OnUserInputEvent();
   state_->OnUserInputEvent();
   task_environment_.FastForwardBy(base::Seconds(31));
-  state_->AddAccessibilityModeFlags(ui::kAXModeComplete);
+  ScopedAccessibilityModeOverride scoped_mode_2(ui::kAXModeComplete);
   state_->OnUserInputEvent();
 
   // Accessibility should still be enabled.

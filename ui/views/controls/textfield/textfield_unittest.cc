@@ -555,7 +555,7 @@ ui::MenuModel* TextfieldTest::GetContextMenuModel() {
 }
 
 void TextfieldTest::MockAXModeAdded() {
-  ui::AXMode mode = ui::AXPlatformForTest::GetInstance().GetProcessMode();
+  ui::AXMode mode = ui::AXPlatformForTest::GetInstance().GetAccessibilityMode();
   widget_->OnAXModeAdded(mode);
 }
 

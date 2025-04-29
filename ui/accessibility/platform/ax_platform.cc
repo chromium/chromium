@@ -42,7 +42,7 @@ AXPlatform::~AXPlatform() {
 
 AXMode AXPlatform::GetMode() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  return delegate_->GetProcessMode();
+  return delegate_->GetAccessibilityMode();
 }
 
 void AXPlatform::AddModeObserver(AXModeObserver* observer) {
@@ -147,13 +147,15 @@ void AXPlatform::OnUiaProviderRequested(bool uia_provider_enabled) {
 }
 #endif  // BUILDFLAG(IS_WIN)
 
+#if BUILDFLAG(IS_LINUX)
+void AXPlatform::OnExtendedPropertiesUsed() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  delegate_->OnExtendedPropertiesUsed();
+}
+#endif  // BUILDFLAG(IS_LINUX)
+
 void AXPlatform::DetachFromThreadForTesting() {
   DETACH_FROM_THREAD(thread_checker_);
-}
-
-void AXPlatform::SetMode(AXMode new_mode) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  delegate_->SetProcessMode(new_mode);
 }
 
 #if BUILDFLAG(IS_WIN)
