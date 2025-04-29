@@ -465,6 +465,8 @@ IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest,
                             perform_ocr_future.GetCallback());
           }));
 
+  ASSERT_TRUE(perform_ocr_future.Wait());
+
 #if BUILDFLAG(USE_FAKE_SCREEN_AI)
   EXPECT_THAT(perform_ocr_future.Get()->lines, IsEmpty());
 #else
