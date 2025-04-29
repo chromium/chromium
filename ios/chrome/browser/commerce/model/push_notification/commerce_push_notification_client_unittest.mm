@@ -233,8 +233,7 @@ class CommercePushNotificationClientTest : public PlatformTest {
   }
 
   Browser* GetSceneLevelForegroundActiveBrowser() {
-    return commerce_push_notification_client_
-        .GetSceneLevelForegroundActiveBrowser();
+    return commerce_push_notification_client_.GetActiveForegroundBrowser();
   }
 
  protected:

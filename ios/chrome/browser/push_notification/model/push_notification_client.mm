@@ -109,7 +109,56 @@ void AddProfileNameToNotificationContent(UNMutableNotificationContent* content,
   content.userInfo = mutable_user_info;
 }
 
+// Searches for a browser associated with the provided `profile`. Returns the
+// first matching browser with `SceneActivationLevelForegroundActive`, or
+// `nullptr` if none exists for this `profile`.
+Browser* GetSceneLevelForegroundActiveBrowserForProfile(ProfileIOS* profile) {
+  if (!profile) {
+    return nullptr;
+  }
+
+  BrowserList* browser_list = BrowserListFactory::GetForProfile(profile);
+
+  if (!browser_list) {
+    return nullptr;
+  }
+
+  std::set<Browser*> browsers =
+      browser_list->BrowsersOfType(BrowserList::BrowserType::kRegular);
+
+  for (Browser* browser : browsers) {
+    if (!browser) {
+      continue;
+    }
+
+    if (browser->GetSceneState().activationLevel ==
+        SceneActivationLevelForegroundActive) {
+      return browser;
+    }
+  }
+
+  return nullptr;
+}
+
 }  // namespace
+
+PushNotificationClient::PushNotificationClient(
+    PushNotificationClientId client_id,
+    ProfileIOS* profile)
+    : client_id_(client_id),
+      client_scope_(PushNotificationClientScope::kPerProfile),
+      profile_(profile->AsWeakPtr()) {
+  CHECK(IsIOSMultiProfilePushNotificationHandlingEnabled());
+  CHECK(profile_.get()) << "Profile must be provided for kPerProfile client "
+                           "when kIOSPushNotificationMultiProfile is enabled";
+  // Ensure this Profile is not an off-the-record Profile.
+  // Off-the-record (incognito) Profiles have an empty Profile name.
+  CHECK(!profile->GetProfileName().empty())
+      << "Expected a regular Profile, but GetProfileName() is empty, "
+      << "indicating an off-the-record Profile.";
+  CHECK(!profile->IsOffTheRecord()) << "Notifications are not supported for "
+                                       "off-the-record (incognito) Profiles.";
+}
 
 PushNotificationClient::PushNotificationClient(
     PushNotificationClientId client_id,
@@ -134,7 +183,7 @@ void PushNotificationClient::OnSceneActiveForegroundBrowserReady() {
   // TODO(crbug.com/41497027): The notifications should probbaly be linked
   // to a specific profile, and thus this should check that the code here
   // use the correct profile.
-  Browser* browser = GetSceneLevelForegroundActiveBrowser();
+  Browser* browser = GetActiveForegroundBrowser();
   CHECK(browser);
 
   if (feedback_presentation_delayed_) {
@@ -169,36 +218,27 @@ void PushNotificationClient::OnSceneActiveForegroundBrowserReady() {
   }
 }
 
-Browser* PushNotificationClient::GetSceneLevelForegroundActiveBrowser() {
-  for (ProfileIOS* profile :
-       GetApplicationContext()->GetProfileManager()->GetLoadedProfiles()) {
-    if (Browser* browser =
-            GetSceneLevelForegroundActiveBrowserForProfile(profile)) {
-      return browser;
+Browser* PushNotificationClient::GetActiveForegroundBrowser() {
+  if (!IsIOSMultiProfilePushNotificationHandlingEnabled() ||
+      client_scope_ != PushNotificationClientScope::kPerProfile) {
+    for (ProfileIOS* profile :
+         GetApplicationContext()->GetProfileManager()->GetLoadedProfiles()) {
+      if (Browser* browser =
+              GetSceneLevelForegroundActiveBrowserForProfile(profile)) {
+        return browser;
+      }
     }
-  }
 
-  return nullptr;
-}
-
-Browser* PushNotificationClient::GetSceneLevelForegroundActiveBrowserForProfile(
-    ProfileIOS* profile) {
-  if (!profile) {
     return nullptr;
   }
 
-  std::set<Browser*> browsers =
-      BrowserListFactory::GetForProfile(profile)->BrowsersOfType(
-          BrowserList::BrowserType::kRegular);
+  return GetSceneLevelForegroundActiveBrowserForProfile(profile_.get());
+}
 
-  for (Browser* browser : browsers) {
-    if (browser->GetSceneState().activationLevel ==
-        SceneActivationLevelForegroundActive) {
-      return browser;
-    }
-  }
+ProfileIOS* PushNotificationClient::GetProfile() {
+  CHECK_EQ(client_scope_, PushNotificationClientScope::kPerProfile);
 
-  return nullptr;
+  return profile_.get();
 }
 
 void PushNotificationClient::LoadUrlInNewTab(const GURL& url) {
@@ -208,7 +248,7 @@ void PushNotificationClient::LoadUrlInNewTab(const GURL& url) {
 void PushNotificationClient::LoadUrlInNewTab(
     const GURL& url,
     base::OnceCallback<void(Browser*)> callback) {
-  Browser* browser = GetSceneLevelForegroundActiveBrowser();
+  Browser* browser = GetActiveForegroundBrowser();
   if (!browser) {
     urls_delayed_for_loading_.emplace_back(url, std::move(callback));
     return;
@@ -230,7 +270,7 @@ void PushNotificationClient::LoadUrlInNewTab(
 void PushNotificationClient::LoadFeedbackWithPayloadAndClientId(
     NSDictionary<NSString*, NSString*>* data,
     PushNotificationClientId client) {
-  Browser* browser = GetSceneLevelForegroundActiveBrowser();
+  Browser* browser = GetActiveForegroundBrowser();
   if (!browser && data) {
     feedback_presentation_delayed_client_ = client;
     feedback_presentation_delayed_ = true;

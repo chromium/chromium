@@ -39,7 +39,7 @@ bool ContentNotificationClient::HandleNotificationInteraction(
   // If the app is not foreground active, store this interaction and process it
   // later. This uses an arbitrary Browser and thus is unsafe in multi-profile.
   // TODO(crbug.com/41497027): This API should be redesigned.
-  Browser* browser = GetSceneLevelForegroundActiveBrowser();
+  Browser* browser = GetActiveForegroundBrowser();
   if (!browser) {
     stored_interaction_ = response;
     return true;
