@@ -66,9 +66,9 @@ UIFont* GetNavigationBarTitleFont() {
 // Activity indicator on top of `self.primaryButton`.
 @property(nonatomic, strong) UIActivityIndicatorView* activityIndicatorView;
 // Label text, or nil if there's supposed to be none.
-@property(nonatomic, assign, readwrite) NSString* labelText;
+@property(nonatomic, copy, readwrite) NSString* labelText;
 // Text in the button that aborts the flow. Must be set before displaying.
-@property(nonatomic, assign, readwrite) NSString* skipButtonText;
+@property(nonatomic, copy, readwrite) NSString* skipButtonText;
 
 @end
 
