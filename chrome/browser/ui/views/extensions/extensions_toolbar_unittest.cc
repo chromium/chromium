@@ -11,7 +11,6 @@
 #include "base/run_loop.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/permissions/scripting_permissions_modifier.h"
 #include "chrome/browser/extensions/permissions/site_permissions_helper.h"
@@ -19,6 +18,7 @@
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
 #include "components/crx_file/id_util.h"
 #include "content/public/test/test_utils.h"
+#include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
@@ -56,9 +56,6 @@ void ExtensionsToolbarUnitTest::SetUp() {
           extensions::ExtensionSystem::Get(profile()));
   extension_system->CreateExtensionService(
       base::CommandLine::ForCurrentProcess(), base::FilePath(), false);
-
-  extension_service_ =
-      extensions::ExtensionSystem::Get(profile())->extension_service();
 
   permissions_manager_ = PermissionsManager::Get(profile());
   permissions_helper_ = std::make_unique<SitePermissionsHelper>(profile());
@@ -146,13 +143,13 @@ void ExtensionsToolbarUnitTest::UninstallExtension(
 
 void ExtensionsToolbarUnitTest::EnableExtension(
     const extensions::ExtensionId& extension_id) {
-  extension_service()->EnableExtension(extension_id);
+  extension_registrar()->EnableExtension(extension_id);
 }
 
 void ExtensionsToolbarUnitTest::DisableExtension(
     const extensions::ExtensionId& extension_id) {
-  extension_service()->DisableExtension(
-      extension_id, extensions::disable_reason::DISABLE_USER_ACTION);
+  extension_registrar()->DisableExtension(
+      extension_id, {extensions::disable_reason::DISABLE_USER_ACTION});
 }
 
 void ExtensionsToolbarUnitTest::WithholdHostPermissions(

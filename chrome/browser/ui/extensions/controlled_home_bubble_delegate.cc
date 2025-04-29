@@ -10,7 +10,6 @@
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/settings_api_helpers.h"
 #include "chrome/browser/profiles/profile.h"
@@ -21,7 +20,9 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/common/referrer.h"
+#include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/browser/extension_system.h"
@@ -236,10 +237,8 @@ void ControlledHomeBubbleDelegate::OnBubbleClosed(CloseAction action) {
   switch (action) {
     case CLOSE_EXECUTE:
       // User clicked to disable the extension.
-      extensions::ExtensionSystem::Get(profile_)
-          ->extension_service()
-          ->DisableExtension(extension_->id(),
-                             extensions::disable_reason::DISABLE_USER_ACTION);
+      extensions::ExtensionRegistrar::Get(profile_)->DisableExtension(
+          extension_->id(), {extensions::disable_reason::DISABLE_USER_ACTION});
       break;
     case CLOSE_LEARN_MORE: {
       AcknowledgeExtension(*profile_, extension_->id());

@@ -4,13 +4,13 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/extensions/extensions_dialogs.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "content/public/test/browser_test.h"
+#include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/extension.h"
@@ -43,18 +43,13 @@ class Mv2DeprecationKeepDialogInteractiveTest : public InteractiveBrowserTest {
   }
 
   void DisableMV2Extension(const extensions::ExtensionId& extension_id) {
-    extension_service()->DisableExtension(
+    extension_registrar()->DisableExtension(
         extension_id,
-        extensions::disable_reason::DISABLE_UNSUPPORTED_MANIFEST_VERSION);
+        {extensions::disable_reason::DISABLE_UNSUPPORTED_MANIFEST_VERSION});
   }
 
   extensions::ExtensionRegistrar* extension_registrar() {
     return extensions::ExtensionRegistrar::Get(browser()->profile());
-  }
-
-  extensions::ExtensionService* extension_service() {
-    return extensions::ExtensionSystem::Get(browser()->profile())
-        ->extension_service();
   }
 
  private:

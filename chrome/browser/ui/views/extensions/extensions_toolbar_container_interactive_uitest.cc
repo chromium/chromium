@@ -140,14 +140,12 @@ class ExtensionsToolbarContainerUITest : public ExtensionsToolbarUITest {
         extensions::ExtensionRegistrar::Get(browser()->profile());
     switch (method) {
       case ExtensionRemovalMethod::kDisable:
-        extension_service->DisableExtension(
-            extension_id, extensions::disable_reason::DISABLE_USER_ACTION);
+        registrar->DisableExtension(
+            extension_id, {extensions::disable_reason::DISABLE_USER_ACTION});
         break;
       case ExtensionRemovalMethod::kUninstall:
-        extensions::ExtensionRegistrar::Get(browser()->profile())
-            ->UninstallExtension(extension_id,
-                                 extensions::UNINSTALL_REASON_FOR_TESTING,
-                                 nullptr);
+        registrar->UninstallExtension(
+            extension_id, extensions::UNINSTALL_REASON_FOR_TESTING, nullptr);
         break;
       case ExtensionRemovalMethod::kBlocklist:
         extension_service->BlocklistExtensionForTest(extension_id);
@@ -465,10 +463,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarContainerUITest,
   ASSERT_TRUE(extension);
 
   // Disable the extension. Disabled extensions don't display in the toolbar.
-  extensions::ExtensionService* const extension_service =
-      extensions::ExtensionSystem::Get(profile())->extension_service();
-  extension_service->DisableExtension(
-      extension->id(), extensions::disable_reason::DISABLE_USER_ACTION);
+  extensions::ExtensionRegistrar::Get(profile())->DisableExtension(
+      extension->id(), {extensions::disable_reason::DISABLE_USER_ACTION});
 
   ExtensionsToolbarContainer* const container = GetExtensionsToolbarContainer();
   EXPECT_FALSE(container->GetActionForId(extension->id()));

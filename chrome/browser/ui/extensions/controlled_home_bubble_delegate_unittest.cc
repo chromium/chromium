@@ -93,10 +93,6 @@ class ControlledHomeBubbleDelegateTest : public BrowserWithTestWindowTest {
         base::Value(true));
   }
 
-  extensions::ExtensionService* extension_service() {
-    return extension_service_.get();
-  }
-
   extensions::ExtensionRegistrar* extension_registrar() {
     return extension_registrar_.get();
   }
@@ -118,9 +114,7 @@ class ControlledHomeBubbleDelegateTest : public BrowserWithTestWindowTest {
                                  base::FilePath(), false);
 
     // Set up the rest of the necessary systems.
-    extension_service_ =
-        extensions::ExtensionSystem::Get(profile())->extension_service();
-    extension_service_->Init();
+    extensions::ExtensionSystem::Get(profile())->extension_service()->Init();
 
     extensions::ExtensionWebUIOverrideRegistrar::GetFactoryInstance()
         ->SetTestingFactory(profile(),
@@ -134,7 +128,6 @@ class ControlledHomeBubbleDelegateTest : public BrowserWithTestWindowTest {
   }
 
   void TearDown() override {
-    extension_service_ = nullptr;
     extension_prefs_ = nullptr;
     extension_registrar_ = nullptr;
     extension_registry_ = nullptr;
@@ -157,7 +150,6 @@ class ControlledHomeBubbleDelegateTest : public BrowserWithTestWindowTest {
 
   base::AutoReset<bool> ignore_learn_more_{
       ControlledHomeBubbleDelegate::IgnoreLearnMoreForTesting()};
-  raw_ptr<extensions::ExtensionService> extension_service_;
   raw_ptr<extensions::ExtensionPrefs> extension_prefs_;
   raw_ptr<extensions::ExtensionRegistrar> extension_registrar_;
   raw_ptr<extensions::ExtensionRegistry> extension_registry_;
@@ -306,8 +298,8 @@ TEST_F(ControlledHomeBubbleDelegateTest, DisablingTheExtensionClosesTheBubble) {
   bubble_delegate->PendingShow();
   bubble_delegate->OnBubbleShown(std::move(close_callback));
 
-  extension_service()->DisableExtension(
-      extension->id(), extensions::disable_reason::DISABLE_USER_ACTION);
+  extension_registrar()->DisableExtension(
+      extension->id(), {extensions::disable_reason::DISABLE_USER_ACTION});
 
   // The bubble should close as part of the extension being unloaded.
   EXPECT_TRUE(did_close_programmatically);
@@ -440,8 +432,8 @@ TEST_F(ControlledHomeBubbleDelegateTest,
   }
 
   // Disable the extension that was acknowledged.
-  extension_service()->DisableExtension(
-      extension2->id(), extensions::disable_reason::DISABLE_USER_ACTION);
+  extension_registrar()->DisableExtension(
+      extension2->id(), {extensions::disable_reason::DISABLE_USER_ACTION});
 
   {
     auto bubble_delegate =

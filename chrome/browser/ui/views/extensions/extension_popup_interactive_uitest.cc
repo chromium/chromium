@@ -4,7 +4,6 @@
 
 #include "base/strings/strcat.h"
 #include "chrome/browser/extensions/extension_apitest.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_view_host.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/extensions/extension_action_test_helper.h"
@@ -25,6 +24,7 @@
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_host_test_helper.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/common/mojom/view_type.mojom.h"
 #include "extensions/test/test_extension_dir.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
@@ -161,8 +161,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionPopupInteractiveUiTest,
     extensions::ExtensionHostTestHelper popup_waiter(profile(),
                                                      extension->id());
     popup_waiter.RestrictToType(extensions::mojom::ViewType::kExtensionPopup);
-    extension_service()->DisableExtension(
-        extension->id(), extensions::disable_reason::DISABLE_USER_ACTION);
+    extension_registrar()->DisableExtension(
+        extension->id(), {extensions::disable_reason::DISABLE_USER_ACTION});
     popup_waiter.WaitForHostDestroyed();
   }
 }
