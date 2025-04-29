@@ -310,9 +310,10 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
   virtual void BeginDrawingFrame() = 0;
   virtual void FinishDrawingFrame() = 0;
   // If a pass contains a single tile draw quad and can be drawn without
-  // a render pass (e.g. applying a filter directly to the tile quad)
-  // return that quad, otherwise return null.
-  virtual const DrawQuad* CanPassBeDrawnDirectly(
+  // a render pass (e.g. applying a filter directly to the tile quad) return
+  // that quad. If the render pass itself is empty, but may have backdrop
+  // filters, return nullptr. Otherwise, return nullopt.
+  virtual std::optional<const DrawQuad*> CanPassBeDrawnDirectly(
       const AggregatedRenderPass* pass,
       const RenderPassRequirements& requirements);
   virtual void EnsureScissorTestDisabled() = 0;

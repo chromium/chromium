@@ -2000,29 +2000,34 @@ void SkiaRenderer::DrawQuadParams::ApplyScissor(
   scissor_rect.reset();
 }
 
-const DrawQuad* SkiaRenderer::CanPassBeDrawnDirectly(
+std::optional<const DrawQuad*> SkiaRenderer::CanPassBeDrawnDirectly(
     const AggregatedRenderPass* pass,
     const RenderPassRequirements& requirements) {
   // If render pass bypassing is disabled for testing
   if (settings_->disable_render_pass_bypassing)
-    return nullptr;
+    return std::nullopt;
+
+  // A pass that is functionally empty is bypass-able with a transparent quad.
+  if (pass->quad_list.empty() || pass->output_rect.IsEmpty()) {
+    return std::optional(nullptr);
+  }
 
   // Only supports bypassing render passes with a single child quad and simple
   // content.
   if (pass->quad_list.size() != 1) {
-    return nullptr;
+    return std::nullopt;
   }
 
   // If it there are supposed to be mipmaps, the renderpass must exist
   if (pass->generate_mipmap)
-    return nullptr;
+    return std::nullopt;
 
     // Force passes whose backings can be directly scanned out from being a
     // bypass quad. This logic should mirror
     // |GetRenderPassBackingForDirectScanout|.
 #if BUILDFLAG(IS_WIN)
   if (requirements.is_scanout) {
-    return nullptr;
+    return std::nullopt;
   }
 #else
   // This platform doesn't support direct scanout, so we don't expect any
@@ -2036,18 +2041,18 @@ const DrawQuad* SkiaRenderer::CanPassBeDrawnDirectly(
   // DrawRPDQParams.
   if (quad->material == DrawQuad::Material::kDebugBorder ||
       quad->material == DrawQuad::Material::kPictureContent)
-    return nullptr;
+    return std::nullopt;
 
   // TODO(penghuang): support composite TileDrawQuad in a sub render pass for
   // raw draw directly.
   if (is_using_raw_draw_ && quad->material == DrawQuad::Material::kTiledContent)
-    return nullptr;
+    return std::nullopt;
 
   // If the quad specifies nearest-neighbor scaling then there could be two
   // scaling operations at different quality levels. This requires drawing to an
   // intermediate render pass. See https://crbug.com/1155338.
   if (UseNearestNeighborSampling(quad))
-    return nullptr;
+    return std::nullopt;
 
   // In order to concatenate the bypass'ed quads transform with RP itself, it
   // needs to be invertible.
@@ -2058,7 +2063,7 @@ const DrawQuad* SkiaRenderer::CanPassBeDrawnDirectly(
   SkMatrix flattened = gfx::TransformToFlattenedSkMatrix(
       quad->shared_quad_state->quad_to_target_transform);
   if (!flattened.invert(nullptr))
-    return nullptr;
+    return std::nullopt;
 
   // A renderpass normally draws its content into a transparent destination,
   // using the quad's blend mode, then that result is later drawn into the
@@ -2066,7 +2071,7 @@ const DrawQuad* SkiaRenderer::CanPassBeDrawnDirectly(
   // correctly, CalculateBypassParams must be able to reason about the quad's
   // blend mode.
   if (!IsPorterDuffBlendMode(quad->shared_quad_state->blend_mode))
-    return nullptr;
+    return std::nullopt;
   // All Porter-Duff blending with transparent black should fall into one of
   // these two categories:
   DCHECK(RenderPassPreservesContent(quad->shared_quad_state->blend_mode) ||
@@ -2079,15 +2084,15 @@ const DrawQuad* SkiaRenderer::CanPassBeDrawnDirectly(
   // bypass rrect separately and update PrepareCanvasForRDQP to apply the
   // additional clip.
   if (ShouldApplyRoundedCorner(quad))
-    return nullptr;
+    return std::nullopt;
 
   if (ShouldApplyGradientMask(quad))
-    return nullptr;
+    return std::nullopt;
 
   if (const auto* render_pass_quad =
           quad->DynamicCast<AggregatedRenderPassDrawQuad>()) {
     if (render_pass_quad->mask_resource_id()) {
-      return nullptr;
+      return std::nullopt;
     }
 
     // Only allow merging render passes containing RenderPassDrawQuads if they
@@ -2095,7 +2100,7 @@ const DrawQuad* SkiaRenderer::CanPassBeDrawnDirectly(
     // a single intermediate coordinate space.
     if (!Is2dScaleTranslateTransform(
             render_pass_quad->shared_quad_state->quad_to_target_transform)) {
-      return nullptr;
+      return std::nullopt;
     }
 
     const auto nested_render_pass_id = render_pass_quad->render_pass_id;
@@ -2110,7 +2115,7 @@ const DrawQuad* SkiaRenderer::CanPassBeDrawnDirectly(
     const auto& nested_render_pass = *it;
     if (!nested_render_pass->filters.IsEmpty() ||
         !nested_render_pass->backdrop_filters.IsEmpty()) {
-      return nullptr;
+      return std::nullopt;
     }
   }
 
@@ -2123,6 +2128,13 @@ SkiaRenderer::BypassMode SkiaRenderer::CalculateBypassParams(
     const DrawQuad* bypass_quad,
     DrawRPDQParams* rpdq_params,
     DrawQuadParams* params) const {
+  // `bypass_quad` is nullptr if the render pass being bypassed is functionally
+  // empty. We want to draw a transparent quad in this case to support backdrop
+  // filters that can expand the bounding box.
+  if (!bypass_quad) {
+    return BypassMode::kDrawTransparentQuad;
+  }
+
   // Depending on bypass_quad's blend mode, its content may be irrelevant
   if (RenderPassRemainsTransparent(
           bypass_quad->shared_quad_state->blend_mode)) {

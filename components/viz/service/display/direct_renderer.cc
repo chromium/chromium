@@ -124,10 +124,10 @@ gfx::Rect DirectRenderer::MoveFromDrawToWindowSpace(
   return window_rect;
 }
 
-const DrawQuad* DirectRenderer::CanPassBeDrawnDirectly(
+std::optional<const DrawQuad*> DirectRenderer::CanPassBeDrawnDirectly(
     const AggregatedRenderPass* pass,
     const RenderPassRequirements& requirements) {
-  return nullptr;
+  return std::nullopt;
 }
 
 void DirectRenderer::SetOutputSurfaceClipRect(const gfx::Rect& clip_rect) {
@@ -189,11 +189,11 @@ void DirectRenderer::DecideRenderPassAllocationsForFrame(
     // If there's a copy request, we need an explicit renderpass backing so
     // only try to draw directly if there are no copy requests.
     if (!is_root && pass->copy_requests.empty()) {
-      if (const DrawQuad* quad =
+      if (std::optional<const DrawQuad*> quad =
               CanPassBeDrawnDirectly(pass.get(), requirements)) {
         // If the render pass is drawn directly, it will not be drawn from as
         // a render pass so it's not added to the map.
-        render_pass_bypass_quads_[pass->id] = quad;
+        render_pass_bypass_quads_[pass->id] = quad.value();
         continue;
       }
     }
