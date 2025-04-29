@@ -280,16 +280,13 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                             findPreference(PREF_IDENTITY_ERROR_CARD_PREFERENCE);
             identityErrorCardPreference.initialize(profile, this);
 
-            if (ChromeFeatureList.isEnabled(ChromeFeatureList.ENABLE_BATCH_UPLOAD_FROM_SETTINGS)) {
-                mBatchUploadCardPreference =
-                        (BatchUploadCardPreference)
-                                findPreference(PREF_BATCH_UPLOAD_CARD_PREFERENCE);
-                mBatchUploadCardPreference.initialize(
-                        getActivity(),
-                        profile,
-                        ((ModalDialogManagerHolder) getActivity()).getModalDialogManager());
-                mBatchUploadCardPreference.setSnackbarManagerSupplier(mSnackbarManagerSupplier);
-            }
+            mBatchUploadCardPreference =
+                    (BatchUploadCardPreference) findPreference(PREF_BATCH_UPLOAD_CARD_PREFERENCE);
+            mBatchUploadCardPreference.initialize(
+                    getActivity(),
+                    profile,
+                    ((ModalDialogManagerHolder) getActivity()).getModalDialogManager());
+            mBatchUploadCardPreference.setSnackbarManagerSupplier(mSnackbarManagerSupplier);
 
             if (mSyncService.isSyncDisabledByEnterprisePolicy()) {
                 ChromeBasePreference settingsSyncDisabledByAdministrator =
@@ -572,9 +569,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
         super.onResume();
         // This is necessary to refresh the batch upload card if the user leaves Chrome open on the
         // settings screen, changes their screen lock settings, and then returns to Chrome.
-        if (mShouldReplaceSyncSettingsWithAccountSettings
-                && ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.ENABLE_BATCH_UPLOAD_FROM_SETTINGS)) {
+        if (mShouldReplaceSyncSettingsWithAccountSettings) {
             mBatchUploadCardPreference.hideBatchUploadCardAndUpdate();
         }
         updateSyncPreferences();

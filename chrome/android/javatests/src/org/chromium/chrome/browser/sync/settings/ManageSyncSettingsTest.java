@@ -669,7 +669,6 @@ public class ManageSyncSettingsTest {
 
     @Test
     @LargeTest
-    @EnableFeatures({ChromeFeatureList.ENABLE_BATCH_UPLOAD_FROM_SETTINGS})
     public void testSigninSettingsBatchUploadCardVisibilityWhenSyncIsConfiguring()
             throws Exception {
         setupMockSyncService(BiometricStatus.ONLY_LSKF_AVAILABLE, TransportState.CONFIGURING);
@@ -817,7 +816,6 @@ public class ManageSyncSettingsTest {
     @Test
     @LargeTest
     @Feature({"Sync", "RenderTest"})
-    @EnableFeatures({ChromeFeatureList.ENABLE_BATCH_UPLOAD_FROM_SETTINGS})
     public void testSigninSettingsBatchUploadEntryDescriptionPassword() throws Exception {
         setupMockSyncService();
         doAnswer(
@@ -856,7 +854,6 @@ public class ManageSyncSettingsTest {
     @Test
     @LargeTest
     @Feature({"Sync", "RenderTest"})
-    @EnableFeatures({ChromeFeatureList.ENABLE_BATCH_UPLOAD_FROM_SETTINGS})
     public void testSigninSettingsBatchUploadEntryDescriptionOther() throws Exception {
         setupMockSyncService();
         doAnswer(
@@ -895,7 +892,6 @@ public class ManageSyncSettingsTest {
     @Test
     @LargeTest
     @Feature({"Sync", "RenderTest"})
-    @EnableFeatures({ChromeFeatureList.ENABLE_BATCH_UPLOAD_FROM_SETTINGS})
     public void testSigninSettingsBatchUploadEntryDescriptionPasswordAndOther() throws Exception {
         setupMockSyncService();
         doAnswer(
@@ -934,7 +930,6 @@ public class ManageSyncSettingsTest {
     @Test
     @LargeTest
     @Feature({"Sync", "RenderTest"})
-    @EnableFeatures({ChromeFeatureList.ENABLE_BATCH_UPLOAD_FROM_SETTINGS})
     public void testSigninSettingsBatchUploadDialogShouldShowPasswordsToggle() throws Exception {
         setupMockSyncService();
         doAnswer(
@@ -982,7 +977,6 @@ public class ManageSyncSettingsTest {
     @Test
     @LargeTest
     @Feature({"Sync", "RenderTest"})
-    @EnableFeatures({ChromeFeatureList.ENABLE_BATCH_UPLOAD_FROM_SETTINGS})
     public void testSigninSettingsBatchUploadDialogShouldShowBookmarksAndReadingListToggles()
             throws Exception {
         setupMockSyncService();
@@ -1031,7 +1025,6 @@ public class ManageSyncSettingsTest {
     @Test
     @LargeTest
     @Feature({"Sync", "RenderTest"})
-    @EnableFeatures({ChromeFeatureList.ENABLE_BATCH_UPLOAD_FROM_SETTINGS})
     public void testSigninSettingsBatchUploadDialogShouldShowAllToggles() throws Exception {
         setupMockSyncService();
         doAnswer(
@@ -1079,7 +1072,6 @@ public class ManageSyncSettingsTest {
     @Test
     @LargeTest
     @Feature({"Sync"})
-    @EnableFeatures({ChromeFeatureList.ENABLE_BATCH_UPLOAD_FROM_SETTINGS})
     public void
             testSigninSettingsBatchUploadEntryDescriptionForPasswordsNotRequestedWhenAuthUnavailable()
                     throws Exception {

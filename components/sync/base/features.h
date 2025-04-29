@@ -28,10 +28,6 @@ BASE_DECLARE_FEATURE(kSyncAutofillLoyaltyCard);
 BASE_DECLARE_FEATURE(kSyncSharedTabGroupAccountData);
 
 #if BUILDFLAG(IS_ANDROID)
-// Controls whether to show a batch upload card in Android unified settings
-// panel.
-BASE_DECLARE_FEATURE(kEnableBatchUploadFromSettings);
-
 // Flag that controls Uno fast-follow features which are:
 // - Batch upload of left-behind bookmarks from the bookmark manager
 // - Turn on bookmarks and reading list when signing in from bookmark manager

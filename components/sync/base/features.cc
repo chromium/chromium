@@ -21,10 +21,6 @@ BASE_FEATURE(kSyncSharedTabGroupAccountData,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(kEnableBatchUploadFromSettings,
-             "EnableBatchUploadFromSettings",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kUnoPhase2FollowUp,
              "UnoPhase2FollowUp",
              base::FEATURE_DISABLED_BY_DEFAULT);

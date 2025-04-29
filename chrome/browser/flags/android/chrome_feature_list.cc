@@ -427,7 +427,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &switches::kForceStartupSigninPromo,
     &switches::kForceDisableExtendedSyncPromos,
     &sync_sessions::kOptimizeAssociateWindowsAndroid,
-    &syncer::kEnableBatchUploadFromSettings,
     &syncer::kWebApkBackupAndRestoreBackend,
     &syncer::kUnoPhase2FollowUp,
     &syncer::kSyncEnablePasswordsSyncErrorMessageAlternative,
