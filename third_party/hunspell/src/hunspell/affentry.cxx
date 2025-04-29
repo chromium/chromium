@@ -224,7 +224,7 @@ struct hentry* PfxEntry::checkword(const char* word,
     // back any characters that would have been stripped
 
     std::string tmpword(strip);
-    tmpword.append(word + appnd.size());
+    tmpword.append(word + appnd.size(), tmpl);
 
     // now make sure all of the conditions on characters
     // are met.  Please see the appendix at the end of

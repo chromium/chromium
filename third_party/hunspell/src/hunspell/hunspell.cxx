@@ -816,7 +816,6 @@ bool HunspellImpl::spell_internal(const std::string& word, int* info, std::strin
 }
 
 struct hentry* HunspellImpl::checkword(const std::string& w, int* info, std::string* root) {
-  bool usebuffer = false;
   std::string w2;
   const char* word;
   int len;
@@ -826,7 +825,6 @@ struct hentry* HunspellImpl::checkword(const std::string& w, int* info, std::str
 
   word = w2.c_str();
   len = w2.size();
-  usebuffer = true;
 
   if (!len)
     return NULL;
@@ -840,19 +838,13 @@ struct hentry* HunspellImpl::checkword(const std::string& w, int* info, std::str
 
   // word reversing wrapper for complex prefixes
   if (complexprefixes) {
-    if (!usebuffer) {
-      w2.assign(word);
-      usebuffer = true;
-    }
     if (utf8)
       reverseword_utf(w2);
     else
       reverseword(w2);
   }
 
-  if (usebuffer) {
-    word = w2.c_str();
-  }
+  word = w2.c_str();
 
   // look word in hash table
   struct hentry* he = NULL;
@@ -2038,6 +2030,7 @@ int HunspellImpl::stem(char*** slst, const char* word) {
 
 int HunspellImpl::stem(char*** slst, char** desc, int n) {
   std::vector<std::string> morph;
+  morph.reserve(n);
   for (int i = 0; i < n; ++i)
     morph.push_back(desc[i]);
 
@@ -2052,6 +2045,7 @@ int HunspellImpl::generate(char*** slst, const char* word, const char* pattern) 
 
 int HunspellImpl::generate(char*** slst, const char* word, char** pl, int pln) {
   std::vector<std::string> morph;
+  morph.reserve(pln);
   for (int i = 0; i < pln; ++i)
     morph.push_back(pl[i]);
 
