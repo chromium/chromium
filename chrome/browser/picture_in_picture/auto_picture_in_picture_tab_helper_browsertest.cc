@@ -2660,10 +2660,10 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
     log_watcher.FlushAndStopWatching();
     ASSERT_FALSE(log_watcher.last_auto_picture_in_picture_event_info().empty());
     const std::string expected_auto_pip_info =
-        "{\"auto_picture_in_picture_info\":{\"Reason\":\"MediaPlayback\","
-        "\"blocked_due_to_content_setting\":false,\"has_audio_focus\":true,"
-        "\"has_safe_url\":true,\"is_playing\":true,\"meets_media_engagement_"
-        "conditions\":true,\"was_recently_audible\":true},\"event\":"
+        "{\"auto_picture_in_picture_info\":{\"blocked_due_to_content_setting\":"
+        "false,\"has_audio_focus\":true,\"has_safe_url\":true,\"is_playing\":"
+        "true,\"meets_media_engagement_conditions\":true,\"reason\":"
+        "\"MediaPlayback\",\"was_recently_audible\":true},\"event\":"
         "\"kAutoPictureInPictureInfoChanged\"}";
     EXPECT_EQ(expected_auto_pip_info,
               log_watcher.last_auto_picture_in_picture_event_info());
