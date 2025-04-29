@@ -54,10 +54,10 @@ class Browser;
 @property(nonatomic, weak) id<SignoutActionSheetCoordinatorDelegate> delegate;
 
 // The title displayed for the sign-out alert.
-@property(nonatomic, strong, readonly) NSString* title;
+@property(nonatomic, copy, readonly) NSString* title;
 
 // The message displayed for the sign-out alert.
-@property(nonatomic, strong, readonly) NSString* message;
+@property(nonatomic, copy, readonly) NSString* message;
 
 // Whether to warns feature won’t be available anymore when user is not
 // synced.

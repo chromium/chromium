@@ -49,10 +49,10 @@
 + (instancetype)testAccountInfoWithUserEmail:(NSString*)userEmail
                                       gaiaID:(NSString*)gaiaID;
 
-@property(strong, nonatomic, strong, readonly) NSString* gaiaID;
-@property(strong, nonatomic, strong, readonly) NSString* userEmail;
-@property(strong, nonatomic, strong, readonly) NSString* userFullName;
-@property(strong, nonatomic, strong, readonly) NSString* userGivenName;
+@property(copy, nonatomic, readonly) NSString* gaiaID;
+@property(copy, nonatomic, readonly) NSString* userEmail;
+@property(copy, nonatomic, readonly) NSString* userFullName;
+@property(copy, nonatomic, readonly) NSString* userGivenName;
 // List capabilities related to `AccountCapabilities`.
 // @YES: the capability is true.
 // @NO: the capability is false.
