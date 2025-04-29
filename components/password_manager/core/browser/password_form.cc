@@ -232,6 +232,35 @@ void PasswordFormToJSON(const PasswordForm& form, base::Value::Dict& target) {
              form.sharing_notification_displayed);
 }
 
+// Returns the value of the note with a specified |unique_display_name|.
+// returns an empty string if none exists.
+std::u16string GetNote(const std::vector<PasswordNote>& notes,
+                       const std::u16string& unique_display_name) {
+  auto note_itr = std::ranges::find(notes, unique_display_name,
+                                    &PasswordNote::unique_display_name);
+  return note_itr != notes.end() ? note_itr->value : std::u16string();
+}
+
+// Updates the note with a specified `unique_display_name`.
+void SetNote(std::vector<PasswordNote>& notes,
+             const std::u16string& unique_display_name,
+             const std::u16string& new_note_value) {
+  auto note_itr = std::ranges::find(notes, unique_display_name,
+                                    &PasswordNote::unique_display_name);
+  // if the old note doesn't exist, the note is just created.
+  if (note_itr == notes.end()) {
+    notes.emplace_back(new_note_value, base::Time::Now());
+    return;
+  }
+  // Note existed, but it was empty.
+  if (note_itr->value.empty()) {
+    note_itr->value = new_note_value;
+    note_itr->date_created = base::Time::Now();
+    return;
+  }
+  note_itr->value = new_note_value;
+}
+
 }  // namespace
 
 AlternativeElement::AlternativeElement(
@@ -387,27 +416,20 @@ bool PasswordForm::HasNonEmptyPasswordValue() const {
 }
 
 std::u16string PasswordForm::GetNoteWithEmptyUniqueDisplayName() const {
-  const auto& note_itr = std::ranges::find_if(
-      notes, &std::u16string::empty, &PasswordNote::unique_display_name);
-  return note_itr != notes.end() ? note_itr->value : std::u16string();
+  return GetNote(notes, std::u16string());
 }
 
 void PasswordForm::SetNoteWithEmptyUniqueDisplayName(
     const std::u16string& new_note_value) {
-  const auto& note_itr = std::ranges::find_if(
-      notes, &std::u16string::empty, &PasswordNote::unique_display_name);
-  // if the old note doesn't exist, the note is just created.
-  if (note_itr == notes.end()) {
-    notes.emplace_back(new_note_value, base::Time::Now());
-    return;
-  }
-  // Note existed, but it was empty.
-  if (note_itr->value.empty()) {
-    note_itr->value = new_note_value;
-    note_itr->date_created = base::Time::Now();
-    return;
-  }
-  note_itr->value = new_note_value;
+  SetNote(notes, std::u16string(), new_note_value);
+}
+
+std::u16string PasswordForm::GetPasswordBackupNote() const {
+  return GetNote(notes, PasswordNote::kPasswordChangeBackupNoteName);
+}
+
+void PasswordForm::SetPasswordBackupNote(const std::u16string& new_note_value) {
+  SetNote(notes, PasswordNote::kPasswordChangeBackupNoteName, new_note_value);
 }
 
 bool ArePasswordFormUniqueKeysEqual(const PasswordForm& left,
