@@ -330,6 +330,9 @@ NSString* const kCustomMinimizedDetentIdentifier = @"customMinimizedDetent";
 
 - (UIView*)configureSharedTextView {
   UILabel* sharedTextLabel = [[UILabel alloc] init];
+  sharedTextLabel.font =
+      [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline];
+  sharedTextLabel.adjustsFontForContentSizeCategory = YES;
   sharedTextLabel.numberOfLines = 0;
   if (!self.displayMaxLimit) {
     sharedTextLabel.text = self.sharedText;
