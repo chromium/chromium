@@ -15,6 +15,7 @@ import sys
 if __name__ == '__main__':
   sys.path.append(os.path.join(os.path.dirname(__file__), '../..'))
 
+from grit import constants
 from grit import util
 from grit.node import include
 from grit.node import message
@@ -75,8 +76,10 @@ class DataPackContents:
     self.sizes = sizes
 
 
-def Format(root, lang='en', output_dir='.'):
+def Format(root, lang='en', gender=constants.DEFAULT_GENDER, output_dir='.'):
   """Writes out the data pack file format (platform agnostic resource file)."""
+  assert gender is not None
+
   id_map = root.GetIdMap()
   data = {}
   root.info = []

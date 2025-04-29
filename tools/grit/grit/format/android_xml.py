@@ -110,7 +110,9 @@ _PLURALS_QUANTITY_MAP = {
 }
 
 
-def Format(root, lang='en', output_dir='.'):
+def Format(root, lang='en', gender=constants.DEFAULT_GENDER, output_dir='.'):
+  assert gender is not None
+
   yield ('<?xml version="1.0" encoding="utf-8"?>\n'
           '<resources '
           'xmlns:android="http://schemas.android.com/apk/res/android">\n')
@@ -129,7 +131,7 @@ def Format(root, lang='en', output_dir='.'):
   for item in root.ActiveDescendants():
     with item:
       if ShouldOutputNode(item, tagged_only):
-        yield _FormatMessage(item, lang)
+        yield _FormatMessage(item, lang, gender)
 
   yield '</resources>\n'
 
@@ -196,7 +198,7 @@ def _FormatPluralMessage(message):
   return ''.join(lines)
 
 
-def _FormatMessage(item, lang):
+def _FormatMessage(item, lang, gender):
   """Writes out a single string as a <resource/> element."""
 
   mangled_name = item.GetTextualIds()[0]
@@ -205,8 +207,7 @@ def _FormatMessage(item, lang):
     raise Exception('Unexpected resource name: %s' % mangled_name)
   name = match.group('name').lower()
 
-  value = item.ws_at_start + item.Translate(
-      lang, constants.DEFAULT_GENDER) + item.ws_at_end
+  value = item.ws_at_start + item.Translate(lang, gender) + item.ws_at_end
   # Replace < > & with &lt; &gt; &amp; to ensure we generate valid XML and
   # replace ' " with \' \" to conform to Android's string formatting rules.
   value = xml.sax.saxutils.escape(value, {"'": "\\'", '"': '\\"'})

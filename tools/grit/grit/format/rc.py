@@ -14,7 +14,10 @@ from grit import util
 from grit.node import misc
 
 
-def Format(root, lang='en', output_dir='.'):
+def Format(root, lang='en', gender=None, output_dir='.'):
+  assert gender is None, "rc doesn't support gender translations, yet " \
+      f"Format() was called with gender {gender}"
+
   from grit.node import empty, include, message, structure
 
   yield _FormatHeader(root, lang, output_dir)

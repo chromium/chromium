@@ -57,7 +57,7 @@ class StructureUnittest(unittest.TestCase):
         </structures>''', base_dir=util.PathFromRoot('grit/testdata'))
     grd.SetOutputLanguage('fr')
     grd.RunGatherers()
-    transl = ''.join(rc.Format(grd, 'fr', '.'))
+    transl = ''.join(rc.Format(grd, 'fr', None, '.'))
     self.assertTrue(transl.count('040704') and transl.count('110978'))
     self.assertTrue(transl.count('2005",IDC_STATIC'))
 

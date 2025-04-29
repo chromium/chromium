@@ -15,6 +15,7 @@ if __name__ == '__main__':
 
 from io import StringIO
 
+from grit import constants
 from grit import util
 from grit.format import android_xml
 from grit.node import message
@@ -62,7 +63,8 @@ a sledge hammer.
         """)
 
     buf = StringIO()
-    build.RcBuilder.ProcessNode(root, DummyOutput('android', 'en'), buf)
+    build.RcBuilder.ProcessNode(
+        root, DummyOutput('android', 'en', constants.DEFAULT_GENDER), buf)
     output = buf.getvalue()
     expected = r"""
 <?xml version="1.0" encoding="utf-8"?>
@@ -105,7 +107,8 @@ a sledge hammer."</string>
         """)
 
     buf = StringIO()
-    build.RcBuilder.ProcessNode(root, DummyOutput('android', 'en'), buf)
+    build.RcBuilder.ProcessNode(
+        root, DummyOutput('android', 'en', constants.DEFAULT_GENDER), buf)
     output = buf.getvalue()
     expected = r"""
 <?xml version="1.0" encoding="utf-8"?>
@@ -140,9 +143,10 @@ a sledge hammer."</string>
 
 class DummyOutput:
 
-  def __init__(self, type, language):
+  def __init__(self, type, language, gender):
     self.type = type
     self.language = language
+    self.gender = gender
 
   def GetType(self):
     return self.type
@@ -152,6 +156,9 @@ class DummyOutput:
 
   def GetOutputFilename(self):
     return 'hello.gif'
+
+  def GetGender(self):
+    return self.gender
 
 if __name__ == '__main__':
   unittest.main()

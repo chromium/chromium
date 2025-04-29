@@ -74,5 +74,8 @@ class DummyOutput:
   def GetOutputFilename(self):
     return 'hello.gif'
 
+  def GetGender(self):
+    return None
+
 if __name__ == '__main__':
   unittest.main()

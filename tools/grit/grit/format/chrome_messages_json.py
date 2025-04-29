@@ -11,8 +11,13 @@ from json import JSONEncoder
 from grit import constants
 from grit.node import message
 
-def Format(root, lang='en', output_dir='.'):
+
+def Format(root, lang='en', gender=None, output_dir='.'):
   """Format the messages as JSON."""
+
+  assert gender is None, "chrome_message_json doesn't support gender " \
+      f"translations, yet Format() was called with gender {gender}"
+
   yield '{'
 
   encoder = JSONEncoder(ensure_ascii=False)

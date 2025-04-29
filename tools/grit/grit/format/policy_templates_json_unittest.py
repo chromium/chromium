@@ -206,3 +206,6 @@ class DummyOutput:
 
   def GetOutputFilename(self):
     return 'hello.gif'
+
+  def GetGender(self):
+    return None

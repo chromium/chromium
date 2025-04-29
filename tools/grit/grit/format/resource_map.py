@@ -45,9 +45,12 @@ def GetMapName(root):
   return 'k' + filename
 
 
-def _FormatHeader(get_key, root, lang='en', output_dir='.'):
+def _FormatHeader(get_key, root, lang='en', gender=None, output_dir='.'):
   '''Create the header file for the resource mapping.  This file just declares
   an array of name/value pairs.'''
+  assert gender is None, "resource_map doesn't support gender translations, " \
+      f"yet Format() was called with gender {gender}"
+
   unique_resource_count = sum(
       1 for item in _UniqueResourcesGenerator(get_key, root))
   return '''\
@@ -139,7 +142,10 @@ const size_t %(map_name)sSize = std::size(%(map_name)s);
 ADD_FILEPATH_TO_RESOURCE_MAP_VAR = 'add_filepath_to_resource_map'
 
 
-def _FormatSource(get_key, root, lang, output_dir):
+def _FormatSource(get_key, root, lang, gender, output_dir):
+  assert gender is None, "chrome_message_json doesn't support gender " \
+      f"translations, yet Format() was called with gender {gender}"
+
   yield _FormatSourceHeader(get_key, root, output_dir)
   for (key, tid, filepath) in _UniqueResourcesGenerator(get_key, root):
     if os.environ.get(ADD_FILEPATH_TO_RESOURCE_MAP_VAR, 'false') == 'true':

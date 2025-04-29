@@ -31,8 +31,11 @@ def _FormatHeader(root, output_dir):
 # end _FormatHeader() function
 
 
-def Format(root, lang='en', output_dir='.'):
+def Format(root, lang='en', gender=None, output_dir='.'):
   """Outputs a C switch statement representing the string table."""
+  assert gender is None, "c_format doesn't support gender translations, yet " \
+      f"Format() was called with gender {gender}"
+
   from grit.node import message
   assert isinstance(lang, str)
 

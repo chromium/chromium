@@ -156,6 +156,7 @@ class IncludeNodeUnittest(unittest.TestCase):
         'resource_file_map_source')
     formatted = formatter(root,
                           lang='en',
+                          gender=None,
                           output_dir=util.PathFromRoot('grit/testdata'))
     found = False
     for segment in formatted:

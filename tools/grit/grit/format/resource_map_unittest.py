@@ -49,7 +49,7 @@ class FormatResourceMapUnittest(unittest.TestCase):
          </includes>
        </release>''', run_gatherers=True)
     output = util.StripBlankLinesAndComments(''.join(
-        resource_map.GetFormatter('resource_map_header')(grd, 'en', '.')))
+        resource_map.GetFormatter('resource_map_header')(grd, 'en', None, '.')))
     self.assertEqual(
         '''\
 #include <stddef.h>
@@ -57,7 +57,7 @@ class FormatResourceMapUnittest(unittest.TestCase):
 extern const webui::ResourcePath kTheRcHeader[5];
 extern const size_t kTheRcHeaderSize;''', output)
     output = util.StripBlankLinesAndComments(''.join(
-        resource_map.GetFormatter('resource_map_source')(grd, 'en', '.')))
+        resource_map.GetFormatter('resource_map_source')(grd, 'en', None, '.')))
     self.assertEqual(
         '''\
 #include "the_resource_map_header.h"
@@ -73,7 +73,8 @@ const webui::ResourcePath kTheRcHeader[5] = {
 };
 const size_t kTheRcHeaderSize = std::size(kTheRcHeader);''', output)
     output = util.StripBlankLinesAndComments(''.join(
-        resource_map.GetFormatter('resource_file_map_source')(grd, 'en', '.')))
+        resource_map.GetFormatter('resource_file_map_source')(grd, 'en', None,
+                                                              '.')))
     self.assertEqual(
         '''\
 #include "the_resource_map_header.h"
@@ -110,7 +111,7 @@ const size_t kTheRcHeaderSize = std::size(kTheRcHeader);''', output)
 
     with self.assertRaises(AssertionError) as assertion_error:
       formatter = resource_map.GetFormatter('resource_file_map_source')
-      util.StripBlankLinesAndComments(''.join(formatter(grd, 'en', '.')))
+      util.StripBlankLinesAndComments(''.join(formatter(grd, 'en', None, '.')))
     self.assertTrue(str(assertion_error.exception). \
         startswith('resource_path attribute missing for IDR_FOO_BAR_BAZ_JS'))
 
@@ -140,7 +141,8 @@ const size_t kTheRcHeaderSize = std::size(kTheRcHeader);''', output)
 
     os.environ["add_filepath_to_resource_map"] = "true"
     output = util.StripBlankLinesAndComments(''.join(
-        resource_map.GetFormatter('resource_file_map_source')(grd, 'en', '.')))
+        resource_map.GetFormatter('resource_file_map_source')(grd, 'en', None,
+                                                              '.')))
     self.assertMultiLineEqual(
         output, '''#include "resource_map_header.h"
 #include <stddef.h>
@@ -154,7 +156,8 @@ const size_t kTheRcHeaderSize = std::size(kTheRcHeader);''')
 
     os.environ["add_filepath_to_resource_map"] = "false"
     output = util.StripBlankLinesAndComments(''.join(
-        resource_map.GetFormatter('resource_file_map_source')(grd, 'en', '.')))
+        resource_map.GetFormatter('resource_file_map_source')(grd, 'en', None,
+                                                              '.')))
     self.assertMultiLineEqual(
         output, '''#include "resource_map_header.h"
 #include <stddef.h>
@@ -208,7 +211,7 @@ const size_t kTheRcHeaderSize = std::size(kTheRcHeader);''')
          </structures>
         </release>''', run_gatherers=True)
     output = util.StripBlankLinesAndComments(''.join(
-        resource_map.GetFormatter('resource_map_header')(grd, 'en', '.')))
+        resource_map.GetFormatter('resource_map_header')(grd, 'en', None, '.')))
     self.assertEqual(
         '''\
 #include <stddef.h>
@@ -216,7 +219,7 @@ const size_t kTheRcHeaderSize = std::size(kTheRcHeader);''')
 extern const webui::ResourcePath kTheRcHeader[4];
 extern const size_t kTheRcHeaderSize;''', output)
     output = util.StripBlankLinesAndComments(''.join(
-        resource_map.GetFormatter('resource_map_source')(grd, 'en', '.')))
+        resource_map.GetFormatter('resource_map_source')(grd, 'en', None, '.')))
     self.assertEqual(
         '''\
 #include "the_resource_map_header.h"
@@ -231,7 +234,7 @@ const webui::ResourcePath kTheRcHeader[4] = {
 };
 const size_t kTheRcHeaderSize = std::size(kTheRcHeader);''', output)
     output = util.StripBlankLinesAndComments(''.join(
-        resource_map.GetFormatter('resource_map_source')(grd, 'en', '.')))
+        resource_map.GetFormatter('resource_map_source')(grd, 'en', None, '.')))
     self.assertEqual(
         '''\
 #include "the_resource_map_header.h"
@@ -284,7 +287,7 @@ const size_t kTheRcHeaderSize = std::size(kTheRcHeader);''', output)
          </includes>
         </release>''', run_gatherers=True)
     output = util.StripBlankLinesAndComments(''.join(
-        resource_map.GetFormatter('resource_map_header')(grd, 'en', '.')))
+        resource_map.GetFormatter('resource_map_header')(grd, 'en', None, '.')))
     self.assertEqual(
         '''\
 #include <stddef.h>
@@ -292,7 +295,7 @@ const size_t kTheRcHeaderSize = std::size(kTheRcHeader);''', output)
 extern const webui::ResourcePath kTheRcHeader[6];
 extern const size_t kTheRcHeaderSize;''', output)
     output = util.StripBlankLinesAndComments(''.join(
-        resource_map.GetFormatter('resource_map_source')(grd, 'en', '.')))
+        resource_map.GetFormatter('resource_map_source')(grd, 'en', None, '.')))
     self.assertEqual(
         '''\
 #include "the_resource_map_header.h"
@@ -309,7 +312,8 @@ const webui::ResourcePath kTheRcHeader[6] = {
 };
 const size_t kTheRcHeaderSize = std::size(kTheRcHeader);''', output)
     output = util.StripBlankLinesAndComments(''.join(
-        resource_map.GetFormatter('resource_file_map_source')(grd, 'en', '.')))
+        resource_map.GetFormatter('resource_file_map_source')(grd, 'en', None,
+                                                              '.')))
     self.assertEqual(
         '''\
 #include "the_resource_map_header.h"
@@ -354,7 +358,7 @@ const size_t kTheRcHeaderSize = std::size(kTheRcHeader);''', output)
         </release>''', run_gatherers=True)
     grd.InitializeIds()
     output = util.StripBlankLinesAndComments(''.join(
-        resource_map.GetFormatter('resource_map_header')(grd, 'en', '.')))
+        resource_map.GetFormatter('resource_map_header')(grd, 'en', None, '.')))
     self.assertEqual(
         '''\
 #include <stddef.h>
@@ -362,7 +366,7 @@ const size_t kTheRcHeaderSize = std::size(kTheRcHeader);''', output)
 extern const webui::ResourcePath kTheRcHeader[2];
 extern const size_t kTheRcHeaderSize;''', output)
     output = util.StripBlankLinesAndComments(''.join(
-        resource_map.GetFormatter('resource_map_source')(grd, 'en', '.')))
+        resource_map.GetFormatter('resource_map_source')(grd, 'en', None, '.')))
     self.assertEqual(
         '''\
 #include "the_rc_map_header.h"
