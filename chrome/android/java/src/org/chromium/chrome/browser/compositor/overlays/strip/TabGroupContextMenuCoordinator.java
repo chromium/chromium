@@ -350,14 +350,14 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
                     BrowserUiListMenuUtils.buildMenuListItem(
                             R.string.tab_grid_dialog_toolbar_manage_sharing,
                             R.id.manage_sharing,
-                            R.drawable.ic_group_24dp,
+                            /* startIconId= */ 0,
                             /* enabled= */ true));
             itemList.add(
                     insertionIndex++,
                     BrowserUiListMenuUtils.buildMenuListItem(
                             R.string.tab_grid_dialog_toolbar_recent_activity,
                             R.id.recent_activity,
-                            R.drawable.ic_update_24dp,
+                            /* startIconId= */ 0,
                             /* enabled= */ true));
         }
 
@@ -367,7 +367,7 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
                     BrowserUiListMenuUtils.buildMenuListItem(
                             R.string.tab_grid_dialog_toolbar_delete_group,
                             R.id.delete_shared_group,
-                            R.drawable.material_ic_delete_24dp,
+                            /* startIconId= */ 0,
                             /* enabled= */ true));
         } else if (memberRole == MemberRole.MEMBER) {
             itemList.add(getDivider());
@@ -375,7 +375,7 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
                     BrowserUiListMenuUtils.buildMenuListItem(
                             R.string.tab_grid_dialog_toolbar_leave_group,
                             R.id.leave_group,
-                            R.drawable.material_ic_delete_24dp,
+                            /* startIconId= */ 0,
                             /* enabled= */ true));
         }
         resizeMenu();
