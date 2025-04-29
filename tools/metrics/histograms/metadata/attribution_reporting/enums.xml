@@ -315,16 +315,6 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//content/browser/attribution_reporting/attribution_manager_impl.cc:ConversionReportSendRetryCount) -->
 
-<!-- LINT.IfChange(ConversionReportStatus) -->
-
-<enum name="ConversionReportStatus">
-  <int value="0" label="OK"/>
-  <int value="1" label="Internal network error"/>
-  <int value="2" label="External non-200 HTTP error"/>
-</enum>
-
-<!-- LINT.ThenChange(//content/browser/attribution_reporting/attribution_report_network_sender.cc:Status) -->
-
 <!-- LINT.IfChange(ConversionRequestSupportHeader) -->
 
 <enum name="ConversionRequestSupportHeader">

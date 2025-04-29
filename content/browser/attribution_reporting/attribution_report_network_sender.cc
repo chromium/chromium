@@ -45,19 +45,13 @@ namespace content {
 
 namespace {
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-//
-// LINT.IfChange(Status)
 enum class Status {
   kOk = 0,
   // Corresponds to a non-zero NET_ERROR.
   kInternalError = 1,
   // Corresponds to a non-200 HTTP response code from the reporting endpoint.
   kExternalError = 2,
-  kMaxValue = kExternalError
 };
-// LINT.ThenChange(//tools/metrics/histograms/metadata/attribution_reporting/enums.xml:ConversionReportStatus)
 
 template <typename T>
 void NetworkHistogram(std::string_view suffix,
@@ -303,9 +297,6 @@ void AttributionReportNetworkSender::OnReportSent(
   std::visit(
       base::Overloaded{
           [&](const AttributionReport::EventLevelData&) {
-            NetworkHistogram("ReportStatusEventLevel",
-                             &base::UmaHistogramEnumeration, is_debug_report,
-                             has_trigger_context_id, status);
             NetworkHistogram("HttpResponseOrNetErrorCodeEventLevel",
                              &base::UmaHistogramSparse, is_debug_report,
                              has_trigger_context_id, response_or_net_error);
@@ -320,9 +311,6 @@ void AttributionReportNetworkSender::OnReportSent(
                                          .trigger_context_id()
                                          .has_value();
 
-            NetworkHistogram("ReportStatusAggregatable2",
-                             &base::UmaHistogramEnumeration, is_debug_report,
-                             has_trigger_context_id, status);
             NetworkHistogram("HttpResponseOrNetErrorCodeAggregatable2",
                              &base::UmaHistogramSparse, is_debug_report,
                              has_trigger_context_id, response_or_net_error);
