@@ -876,7 +876,14 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
     /** Copy the image, that triggered the current context menu, to system clipboard. */
     private void copyImageToClipboard() {
         mNativeDelegate.retrieveImageForShare(
-                ContextMenuImageFormat.ORIGINAL, mItemDelegate::onSaveImageToClipboard);
+                ContextMenuImageFormat.ORIGINAL,
+                (Uri uri) ->
+                        DataProtectionBridge.verifyCopyImageIsAllowedByPolicy(
+                                uri.getPath(),
+                                mItemDelegate.getWebContents().getMainFrame(),
+                                (isAllowed) -> {
+                                    if (isAllowed) mItemDelegate.onSaveImageToClipboard(uri);
+                                }));
     }
 
     /**

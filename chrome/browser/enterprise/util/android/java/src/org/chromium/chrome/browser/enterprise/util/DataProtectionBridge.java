@@ -58,6 +58,26 @@ public class DataProtectionBridge {
                 .verifyCopyUrlIsAllowedByPolicy(url, renderFrameHost, callback);
     }
 
+    /**
+     * Runs the provided callback after verifying that copying the specified image is allowed by the
+     * current data protection policies. The callback boolean input will be true if the copy action
+     * is allowed, or false if the copy action has been blocked or cancelled.
+     *
+     * @param imageUri The uri for the image being copied.
+     * @param renderFrameHost The RenderFrameHost providing the context in which a copy occurred.
+     * @param callback The callback to run after verifying the policy. The boolean input will be
+     *     true if the copy action was allowed, false if the action was blocked or cancelled.
+     */
+    public static void verifyCopyImageIsAllowedByPolicy(
+            String imageUri, RenderFrameHost renderFrameHost, Callback<Boolean> callback) {
+        if (!ChromeFeatureList.isEnabled(ENABLE_CLIPBOARD_DATA_CONTROLS_ANDROID)) {
+            callback.onResult(true);
+            return;
+        }
+        DataProtectionBridgeJni.get()
+                .verifyCopyImageIsAllowedByPolicy(imageUri, renderFrameHost, callback);
+    }
+
     @NativeMethods
     @VisibleForTesting
     public interface Natives {

@@ -10,6 +10,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -927,6 +928,10 @@ public class ContextMenuTest {
     @SmallTest
     @Feature({"Browser", "ContextMenu"})
     public void testCopyImage() throws Throwable {
+        doAnswer(sCopyIsAllowedByPolicy)
+                .when(mDataProtectionBridgeMock)
+                .verifyCopyImageIsAllowedByPolicy(anyString(), any(), any());
+
         // Clear the clipboard.
         Clipboard.getInstance().setText("");
 
@@ -963,6 +968,38 @@ public class ContextMenuTest {
 
         // Clean up the clipboard.
         Clipboard.getInstance().setText("");
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Browser", "ContextMenu"})
+    @EnableFeatures(ChromeFeatureList.ENABLE_CLIPBOARD_DATA_CONTROLS_ANDROID)
+    public void testCopyImage_notAllowedByPolicy() throws Throwable {
+        doAnswer(sCopyIsNotAllowedByPolicy)
+                .when(mDataProtectionBridgeMock)
+                .verifyCopyImageIsAllowedByPolicy(anyString(), any(), any());
+
+        // Clear the clipboard.
+        Clipboard.getInstance().setText("");
+
+        hardcodeTestImageForSharing(TEST_GIF_IMAGE_FILE_EXTENSION);
+        Tab tab = sDownloadTestRule.getActivity().getActivityTab();
+        // Allow all thread policies temporarily in main thread to avoid
+        // DiskWrite and UnBufferedIo violations during copying under
+        // emulator environment.
+        try (CloseableOnMainThread ignored =
+                CloseableOnMainThread.StrictMode.allowAllThreadPolicies()) {
+            ContextMenuUtils.selectContextMenuItem(
+                    InstrumentationRegistry.getInstrumentation(),
+                    sDownloadTestRule.getActivity(),
+                    tab,
+                    "dataUrlIcon",
+                    R.id.contextmenu_copy_image);
+        }
+
+        verify(mDataProtectionBridgeMock, times(1))
+                .verifyCopyImageIsAllowedByPolicy(anyString(), any(), any());
+        Assert.assertNull(Clipboard.getInstance().getImageUri());
     }
 
     @Test
