@@ -1358,7 +1358,7 @@ TEST_F(StartupAppLauncherTest,
   // initially, so the test can verify the app gets enabled regardless of the
   // initial state.
   PreinstallApp(*SecondaryAppBuilder(kSecondaryAppId).Build());
-  // Disable the secodnary app for a reason different than user action - that
+  // Disable the secondary app for a reason different than user action - that
   // disable reason should not be overriden during the kiosk launch.
   registrar()->DisableExtension(
       kSecondaryAppId, {extensions::disable_reason::DISABLE_USER_ACTION,
