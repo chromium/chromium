@@ -605,7 +605,7 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, IsProviderAllowed) {
   }
 
   {
-    // The provider is only run if Google is the default search provider.
+    // The provider is run regardless of default search engine.
     TemplateURLService* turl_service = client_->GetTemplateURLService();
     TemplateURLData data;
     data.SetShortName(u"test");
@@ -614,7 +614,7 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, IsProviderAllowed) {
     TemplateURL* new_default_provider =
         turl_service->Add(std::make_unique<TemplateURL>(data));
     turl_service->SetUserSelectedDefaultSearchProvider(new_default_provider);
-    EXPECT_FALSE(provider_->IsProviderAllowed(input));
+    EXPECT_TRUE(provider_->IsProviderAllowed(input));
     TemplateURL* current_template_url =
         const_cast<TemplateURL*>((provider_->template_url_).get());
     turl_service->SetUserSelectedDefaultSearchProvider(current_template_url);

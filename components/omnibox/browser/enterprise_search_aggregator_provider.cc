@@ -512,12 +512,6 @@ bool EnterpriseSearchAggregatorProvider::IsProviderAllowed(
     return false;
   }
 
-  // Google must be set as default search provider.
-  if (!search::DefaultSearchProviderIsGoogle(
-          client_->GetTemplateURLService())) {
-    return false;
-  }
-
   // Don't run provider in non-keyword mode if query length is less than
   // the minimum length.
   if (!input.InKeywordMode() &&
