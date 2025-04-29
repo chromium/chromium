@@ -577,7 +577,6 @@ class CookieSettingsBase {
       const std::string& scheme) const = 0;
 
   static bool storage_access_api_grants_unpartitioned_storage_;
-  const bool is_storage_partitioned_;
 };
 
 }  // namespace content_settings

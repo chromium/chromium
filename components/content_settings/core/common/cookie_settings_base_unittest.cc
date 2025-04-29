@@ -332,29 +332,16 @@ TEST_F(CookieSettingsBaseTest, IsValidLegacyAccessSetting) {
 // services/network/cookie_settings_unittest.cc
 
 class CookieSettingsBaseStorageAccessAPITest
-    : public testing::TestWithParam<std::tuple<bool, bool>> {
+    : public testing::TestWithParam<bool> {
  public:
   CookieSettingsBaseStorageAccessAPITest() {
     CookieSettingsBase::SetStorageAccessAPIGrantsUnpartitionedStorageForTesting(
         PermissionGrantsUnpartitionedStorage());
-
-    std::vector<base::test::FeatureRefAndParams> enabled;
-    std::vector<base::test::FeatureRef> disabled;
-    if (IsStoragePartitioned()) {
-      enabled.push_back({net::features::kThirdPartyStoragePartitioning, {}});
-    } else {
-      disabled.push_back(net::features::kThirdPartyStoragePartitioning);
-    }
-    features_.InitWithFeaturesAndParameters(enabled, disabled);
   }
 
-  bool PermissionGrantsUnpartitionedStorage() const {
-    return std::get<0>(GetParam());
-  }
-  bool IsStoragePartitioned() const { return std::get<1>(GetParam()); }
+  bool PermissionGrantsUnpartitionedStorage() const { return GetParam(); }
 
  private:
-  base::test::ScopedFeatureList features_;
 };
 
 TEST_P(CookieSettingsBaseStorageAccessAPITest,
@@ -365,17 +352,15 @@ TEST_P(CookieSettingsBaseStorageAccessAPITest,
 
   EXPECT_EQ(
       overrides.Has(net::CookieSettingOverride::kStorageAccessGrantEligible),
-      PermissionGrantsUnpartitionedStorage() || IsStoragePartitioned());
-  EXPECT_EQ(
-      overrides.Has(
-          net::CookieSettingOverride::kTopLevelStorageAccessGrantEligible),
-      IsStoragePartitioned());
+      PermissionGrantsUnpartitionedStorage());
+  EXPECT_FALSE(overrides.Has(
+      net::CookieSettingOverride::kTopLevelStorageAccessGrantEligible));
 }
 
 INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,
     CookieSettingsBaseStorageAccessAPITest,
-    testing::Combine(testing::Bool(), testing::Bool()));
+    testing::Bool());
 
 }  // namespace
 }  // namespace content_settings
