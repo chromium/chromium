@@ -307,7 +307,7 @@ export function createTranslationMap(): TranslationMap {
           loadTimeData.getStringF('manageGroupTitle', getTabGroupName()),
       [DynamicMessageKey.GET_CLOSE_FLOW_DESCRIPTION_FIRST_PARAGRAPH]:
           (params: DynamicMessageParams) => {
-            if (params.displayedUser!.name! === getGroupOwnerName(params)) {
+            if (params.loggedInUser.role === DataSharingMemberRoleEnum.OWNER) {
               return loadTimeData.getStringF('ownerDeleteLastTimeBody');
             } else {
               return loadTimeData.getStringF('memberDeleteLastTimeBody');
@@ -315,7 +315,7 @@ export function createTranslationMap(): TranslationMap {
           },
       [DynamicMessageKey.GET_CLOSE_FLOW_DESCRIPTION_SECOND_PARAGRAPH]:
           (params: DynamicMessageParams) => {
-            if (params.displayedUser!.name! === getGroupOwnerName(params)) {
+            if (params.loggedInUser.role === DataSharingMemberRoleEnum.OWNER) {
               return loadTimeData.getStringF(
                   'ownerDeleteLastTimeBody2', getTabGroupName());
             } else {
