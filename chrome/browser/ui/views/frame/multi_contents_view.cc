@@ -161,10 +161,13 @@ void MultiContentsView::OnResize(int resize_amount, bool done_resizing) {
   }
 
   double total_width = contents_container_views_[0]->size().width() +
-                       contents_container_views_[1]->size().width();
-  double start_ratio =
-      (initial_start_width_on_resize_.value() + resize_amount) / total_width;
-
+                       contents_container_views_[0]->GetInsets().width() +
+                       contents_container_views_[1]->size().width() +
+                       contents_container_views_[1]->GetInsets().width();
+  double start_ratio = (initial_start_width_on_resize_.value() +
+                        contents_container_views_[0]->GetInsets().width() +
+                        static_cast<double>(resize_amount)) /
+                       total_width;
   contents_resize_callback_.Run(start_ratio);
 
   if (done_resizing) {
