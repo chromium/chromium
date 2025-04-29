@@ -20,6 +20,7 @@ from chrome.test.variations.test_utils import SRC_DIR
 from selenium import webdriver
 from selenium.common.exceptions import WebDriverException
 
+
 # The module chromite is under third_party and imported relative to its root.
 sys.path.append(os.path.join(SRC_DIR, 'third_party'))
 # The module catapult/telemetry is under third_party and imported relative to
@@ -34,9 +35,9 @@ from telemetry.internal.platform import cros_device
 from telemetry.internal.platform.cros_platform_backend import CrosPlatformBackend
 from telemetry.internal.backends.chrome import cros_browser_finder
 
-
 CACHE_DIR = os.path.join(SRC_DIR, "build", "cros_cache")
-VNC_SERVER_ADDRESS = 'localhost:5900'
+INITIAL_WAIT_TIME_SECONDS = 10
+
 
 class _PossibleCrOSBrowser(cros_browser_finder.PossibleCrOSBrowser):
   """The CrOS browser wrapper to filter out start-up args."""
@@ -178,26 +179,6 @@ class CrOSDriverFactory(DriverFactory):
     finally:
       tunnel.terminate()
 
-  @contextmanager
-  def window_context(self):
-    # We want to start local VNC receiver so the Selenium driver will detect
-    # Chromium window as present.
-    vnc_process = subprocess.Popen(
-      ['vncviewer', VNC_SERVER_ADDRESS],
-      stdout = subprocess.PIPE,
-      stderr = subprocess.PIPE,
-    )
-    # Check if the process is running.
-    if vnc_process.poll() is not None:
-      raise WebDriverException(
-        'Unable to start vncviewer session, process exit code:' +
-        f'{vnc_process.returcode}'
-      )
-    try:
-      yield
-    finally:
-      vnc_process.kill()
-
   #override
   @contextmanager
   def create_driver(
@@ -228,8 +209,11 @@ class CrOSDriverFactory(DriverFactory):
     options.debugger_address=f'localhost:{debugging_port}'
 
 
-    with self.tunnel_context(debugging_port, self.server_port), \
-      self.window_context():
+    with self.tunnel_context(debugging_port, self.server_port):
+      # We want to make sure that the browser window has fully started
+      # on the VM. On LUCI workers it takes more time than in the local
+      # environment, which can cause tests flakiness.
+      time.sleep(INITIAL_WAIT_TIME_SECONDS)
       driver = webdriver.Chrome(service=self.get_driver_service(),
                                 options=options)
       # VM may not be fully ready before it returns, wait for window handle
