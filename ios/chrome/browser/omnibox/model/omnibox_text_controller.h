@@ -140,6 +140,10 @@ class OmniboxViewIOS;
     startAutocomplete:(BOOL)startAutocomplete
     notifyTextChanged:(BOOL)notifyTextChanged;
 
+- (void)updateAutocompleteIfTextChanged:(const std::u16string&)userText
+                         autocompletion:
+                             (const std::u16string&)inlineAutocomplete;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_OMNIBOX_MODEL_OMNIBOX_TEXT_CONTROLLER_H_

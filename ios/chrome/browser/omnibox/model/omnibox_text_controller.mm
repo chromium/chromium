@@ -518,6 +518,20 @@
   [self setCaretPos:caretPos];
 }
 
+/// Updates inline autocomplete if the full text is different.
+- (void)updateAutocompleteIfTextChanged:(const std::u16string&)userText
+                         autocompletion:
+                             (const std::u16string&)inlineAutocomplete {
+  std::u16string displayedText = userText + inlineAutocomplete;
+  if (displayedText == self.textField.displayedText.cr_UTF16String) {
+    return;
+  }
+
+  NSAttributedString* as = [[NSMutableAttributedString alloc]
+      initWithString:[NSString cr_fromString16:displayedText]];
+  [self.textField setText:as userTextLength:userText.size()];
+}
+
 /// Returns the omnibox client.
 - (OmniboxClient*)client {
   return _omniboxController ? _omniboxController->client() : nullptr;

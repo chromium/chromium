@@ -109,14 +109,9 @@ void OmniboxViewIOS::OnTemporaryTextMaybeChanged(
 void OmniboxViewIOS::OnInlineAutocompleteTextMaybeChanged(
     const std::u16string& user_text,
     const std::u16string& inline_autocompletion) {
-  std::u16string display_text = user_text + inline_autocompletion;
-  if (display_text == GetText()) {
-    return;
-  }
-
-  NSAttributedString* as = [[NSMutableAttributedString alloc]
-      initWithString:base::SysUTF16ToNSString(display_text)];
-  [field_ setText:as userTextLength:user_text.size()];
+  [omnibox_text_controller_
+      updateAutocompleteIfTextChanged:user_text
+                       autocompletion:inline_autocompletion];
 }
 
 void OmniboxViewIOS::SetAdditionalText(const std::u16string& text) {
