@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] fetchpriority attribute on SVG <script> elements should reflect valid IDL values
+  assert_equals: high fetchPriority is a valid IDL value on the script element expected (string) "high" but got (undefined) undefined
+[FAIL] default fetchpriority attribute on SVG <script> elements should be 'auto'
+  assert_equals: expected (string) "auto" but got (undefined) undefined
+Harness: the test ran to completion.
+
