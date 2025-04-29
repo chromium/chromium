@@ -26,6 +26,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"
 #include "media/base/color_plane_layout.h"
 #include "media/base/format_utils.h"
@@ -386,21 +387,24 @@ gfx::GpuMemoryBufferId GetNextGpuMemoryBufferId() {
   return gfx::GpuMemoryBufferId(next_gpu_memory_buffer_id++);
 }
 
-scoped_refptr<VideoFrame> CreateGpuMemoryBufferVideoFrame(
+scoped_refptr<VideoFrame> CreateGmbOrMappableSIVideoFrame(
     VideoPixelFormat pixel_format,
     const gfx::Size& coded_size,
     const gfx::Rect& visible_rect,
     const gfx::Size& natural_size,
     base::TimeDelta timestamp,
-    gfx::BufferUsage buffer_usage) {
+    gfx::BufferUsage buffer_usage,
+    gpu::SharedImageInterface* sii) {
+  CHECK(sii);
   auto gmb_handle =
       AllocateGpuMemoryBufferHandle(pixel_format, coded_size, buffer_usage);
-  if (gmb_handle.is_null() || gmb_handle.type != gfx::NATIVE_PIXMAP)
+  if (gmb_handle.is_null() || gmb_handle.type != gfx::NATIVE_PIXMAP) {
     return nullptr;
+  }
 
   return CreateVideoFrameFromGpuMemoryBufferHandle(
       std::move(gmb_handle), pixel_format, coded_size, visible_rect,
-      natural_size, timestamp, buffer_usage);
+      natural_size, timestamp, buffer_usage, sii);
 }
 
 scoped_refptr<VideoFrame> CreateVideoFrameFromGpuMemoryBufferHandle(
@@ -410,33 +414,53 @@ scoped_refptr<VideoFrame> CreateVideoFrameFromGpuMemoryBufferHandle(
     const gfx::Rect& visible_rect,
     const gfx::Size& natural_size,
     base::TimeDelta timestamp,
-    gfx::BufferUsage buffer_usage) {
+    gfx::BufferUsage buffer_usage,
+    gpu::SharedImageInterface* sii) {
   const bool supports_zero_copy_webgpu_import =
       gmb_handle.native_pixmap_handle().supports_zero_copy_webgpu_import;
 
   auto buffer_format = VideoPixelFormatToGfxBufferFormat(pixel_format);
   DCHECK(buffer_format);
-  gpu::GpuMemoryBufferSupport support;
-  std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer =
-      support.CreateGpuMemoryBufferImplFromHandle(
-          std::move(gmb_handle), coded_size, *buffer_format, buffer_usage,
-          base::NullCallback());
-  if (!gpu_memory_buffer)
-    return nullptr;
 
-  // It is not necessary to pass a SharedImage because this VideoFrame is not
-  // rendered.
-  scoped_refptr<VideoFrame> frame = VideoFrame::WrapExternalGpuMemoryBuffer(
-      visible_rect, natural_size, std::move(gpu_memory_buffer), timestamp);
-  if (!frame)
+  scoped_refptr<VideoFrame> video_frame;
+  if (sii) {
+    const auto si_usage = gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY |
+                          gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
+    auto shared_image = sii->CreateSharedImage(
+        {viz::GetSharedImageFormat(*buffer_format), coded_size,
+         gfx::ColorSpace(), gpu::SharedImageUsageSet(si_usage),
+         "PlatformVideoFrameUtils"},
+        gpu::kNullSurfaceHandle, buffer_usage, std::move(gmb_handle));
+
+    video_frame = media::VideoFrame::WrapMappableSharedImage(
+        std::move(shared_image), sii->GenVerifiedSyncToken(),
+        base::NullCallback(), visible_rect, natural_size, timestamp);
+  } else {
+    gpu::GpuMemoryBufferSupport support;
+    std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer =
+        support.CreateGpuMemoryBufferImplFromHandle(
+            std::move(gmb_handle), coded_size, *buffer_format, buffer_usage,
+            base::NullCallback());
+    if (!gpu_memory_buffer) {
+      return nullptr;
+    }
+
+    // It is not necessary to pass a SharedImage because this VideoFrame is not
+    // rendered.
+    video_frame = VideoFrame::WrapExternalGpuMemoryBuffer(
+        visible_rect, natural_size, std::move(gpu_memory_buffer), timestamp);
+  }
+  if (!video_frame) {
     return nullptr;
+  }
 
   // We only support importing non-DISJOINT multi-planar GbmBuffer right now.
   // TODO(crbug.com/40201271): Add DISJOINT support.
-  frame->metadata().is_webgpu_compatible = supports_zero_copy_webgpu_import;
-  frame->metadata().tracking_token = base::UnguessableToken::Create();
+  video_frame->metadata().is_webgpu_compatible =
+      supports_zero_copy_webgpu_import;
+  video_frame->metadata().tracking_token = base::UnguessableToken::Create();
 
-  return frame;
+  return video_frame;
 }
 
 // TODO(crbug.com/381896729): Mark CreatePlatformVideoFrame as test only.

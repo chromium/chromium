@@ -195,6 +195,7 @@ source_set("video_frame_utils") {
   deps = [
     "//base",
     "//build/config/linux/libdrm",
+    "//components/viz/common:shared_image_format",
     "//gpu/ipc/common:common",
     "//media",
     "//media/gpu:buffer_validation",

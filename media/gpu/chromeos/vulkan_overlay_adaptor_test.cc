@@ -702,7 +702,7 @@ scoped_refptr<VideoFrame> VulkanOverlayAdaptorTest::CreateVideoFrame(
                           kMM21TileHeight) *
           bpp_numerator / bpp_denom);
 
-  scoped_refptr<VideoFrame> frame = CreateGpuMemoryBufferVideoFrame(
+  scoped_refptr<VideoFrame> frame = CreateGmbOrMappableSIVideoFrame(
       VideoPixelFormat::PIXEL_FORMAT_NV12, alloc_size, visible_rect, alloc_size,
       kNullTimestamp, gfx::BufferUsage::SCANOUT_CPU_READ_WRITE);
 
@@ -742,7 +742,7 @@ scoped_refptr<VideoFrame> VulkanOverlayAdaptorTest::CreateFramebuffer(
     bool is_10bit) {
   constexpr base::TimeDelta kNullTimestamp;
 
-  scoped_refptr<VideoFrame> frame = CreateGpuMemoryBufferVideoFrame(
+  scoped_refptr<VideoFrame> frame = CreateGmbOrMappableSIVideoFrame(
       is_10bit ? VideoPixelFormat::PIXEL_FORMAT_XR30
                : VideoPixelFormat::PIXEL_FORMAT_ARGB,
       coded_size, gfx::Rect(coded_size), coded_size, kNullTimestamp,

@@ -555,7 +555,7 @@ bool V4L2VideoEncodeAccelerator::AllocateImageProcessorOutputBuffers(
   for (size_t i = 0; i < count; i++) {
     switch (output_config.storage_type) {
       case VideoFrame::STORAGE_GPU_MEMORY_BUFFER:
-        image_processor_output_buffers_[i] = CreateGpuMemoryBufferVideoFrame(
+        image_processor_output_buffers_[i] = CreateGmbOrMappableSIVideoFrame(
             output_config.fourcc.ToVideoPixelFormat(), output_config.size,
             output_config.visible_rect, output_config.visible_rect.size(),
             base::TimeDelta(),

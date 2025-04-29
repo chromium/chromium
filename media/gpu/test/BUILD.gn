@@ -195,7 +195,9 @@ static_library("video_player") {
   ]
   deps = [
     ":test_helpers",
+    "//gpu:test_support",
     "//media/gpu",
+    "//testing/gmock",
     "//testing/gtest:gtest",
   ]
 

@@ -15,6 +15,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/config/gpu_preferences.h"
 #include "media/base/media_log.h"
 #include "media/base/video_frame.h"
@@ -55,7 +56,8 @@ TestVDAVideoDecoder::TestVDAVideoDecoder(
 #if BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
       linear_output_(linear_output),
 #endif  // BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
-      decode_start_timestamps_(kTimestampCacheSize) {
+      decode_start_timestamps_(kTimestampCacheSize),
+      test_sii_(base::MakeRefCounted<gpu::TestSharedImageInterface>()) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(vda_wrapper_sequence_checker_);
 
   vda_wrapper_task_runner_ = base::SingleThreadTaskRunner::GetCurrentDefault();
@@ -209,11 +211,12 @@ void TestVDAVideoDecoder::ProvidePictureBuffersWithVisibleRect(
   // Create a video frame for each of the picture buffers and provide memory
   // handles to the video frame's data to the decoder.
   for (const PictureBuffer& picture_buffer : picture_buffers) {
-    scoped_refptr<VideoFrame> video_frame = CreateGpuMemoryBufferVideoFrame(
+    scoped_refptr<VideoFrame> video_frame = CreateGmbOrMappableSIVideoFrame(
         format, dimensions, visible_rect, visible_rect.size(),
         base::TimeDelta(),
         linear_output_ ? gfx::BufferUsage::SCANOUT_CPU_READ_WRITE
-                       : gfx::BufferUsage::SCANOUT_VDA_WRITE);
+                       : gfx::BufferUsage::SCANOUT_VDA_WRITE,
+        test_sii_.get());
 
     ASSERT_TRUE(video_frame) << "Failed to create video frame";
     video_frames_.emplace(picture_buffer.id(), video_frame);
