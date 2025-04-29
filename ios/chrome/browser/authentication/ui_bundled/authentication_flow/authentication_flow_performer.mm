@@ -124,6 +124,14 @@ void HandleSignoutForSnackbar(
       .Run(browser);
 }
 
+// Returns a reference to the global used by tests to force the next policy
+// fetch to terminate with this policy value if set.
+std::optional<policy::ProfileSeparationDataMigrationSettings>&
+ForcedPolicyResponseForNextFetchRequestForTesting() {
+  static std::optional<policy::ProfileSeparationDataMigrationSettings> instance;
+  return instance;
+}
+
 }  // namespace
 
 @interface AuthenticationFlowPerformer () <
@@ -236,7 +244,6 @@ void HandleSignoutForSnackbar(
           GetApplicationContext()->GetBrowserPolicyConnector(),
           GetApplicationContext()->GetSharedURLLoaderFactory());
 
-  auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
   __weak __typeof(self) weakSelf = self;
   base::OnceCallback<void(const policy::ProfileSeparationPolicies&)> callback =
       base::BindOnce(
@@ -245,6 +252,22 @@ void HandleSignoutForSnackbar(
             [strongSelf didFetchProfileSeparationPolicies:policies];
           },
           weakSelf);
+
+  std::optional<policy::ProfileSeparationDataMigrationSettings>& testPolicy =
+      ForcedPolicyResponseForNextFetchRequestForTesting();
+  if (testPolicy.has_value()) {
+    // Note: The ProfileSeparationSettings value doesn't matter here (only the
+    // ProfileSeparationDataMigrationSettings value does).
+    policy::ProfileSeparationPolicies policies(
+        policy::ProfileSeparationSettings::SUGGESTED, testPolicy.value());
+    testPolicy = std::nullopt;
+
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), policies));
+    return;
+  }
+
+  auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
   _accountLevelSigninRestrictionPolicyFetcher
       ->GetManagedAccountsSigninRestriction(
           identity_manager,
@@ -813,6 +836,19 @@ void HandleSignoutForSnackbar(
 
   [browser->GetSceneState().controller showSignin:command
                                baseViewController:viewController];
+}
+
+@end
+
+@implementation AuthenticationFlowPerformer (ForTesting)
+
++ (void)forcePolicyResponseForNextRequestForTesting:
+    (policy::ProfileSeparationDataMigrationSettings)
+        profileSeparationDataMigrationSettings {
+  auto& optionalForcedPolicy =
+      ForcedPolicyResponseForNextFetchRequestForTesting();
+  CHECK(!optionalForcedPolicy.has_value());
+  optionalForcedPolicy = profileSeparationDataMigrationSettings;
 }
 
 @end

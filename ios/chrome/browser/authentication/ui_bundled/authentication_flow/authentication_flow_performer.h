@@ -154,4 +154,15 @@ using OnProfileSwitchCompletion =
 
 @end
 
+@interface AuthenticationFlowPerformer (ForTesting)
+
+// Forces the ProfileSeparationDataMigrationSettings value for the next request
+// made to fetch ProfileSeparationPolicies. This function is only for testing
+// purposes.
++ (void)forcePolicyResponseForNextRequestForTesting:
+    (policy::ProfileSeparationDataMigrationSettings)
+        profileSeparationDataMigrationSettings;
+
+@end
+
 #endif  // IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_AUTHENTICATION_FLOW_AUTHENTICATION_FLOW_PERFORMER_H_

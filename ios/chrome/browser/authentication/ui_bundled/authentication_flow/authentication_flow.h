@@ -66,13 +66,6 @@ class Browser;
 // Does noting if the sign-in flow is already done
 - (void)interrupt;
 
-// Forces the ProfileSeparationDataMigrationSettings value for the next request
-// made to fetch ProfileSeparationPolicies. This function is only for testing
-// purposes.
-+ (void)forcePolicyResponseForNextRequestForTesting:
-    (policy::ProfileSeparationDataMigrationSettings)
-        profileSeparationDataMigrationSettings;
-
 // Identity to sign-in.
 @property(nonatomic, strong, readonly) id<SystemIdentity> identity;
 

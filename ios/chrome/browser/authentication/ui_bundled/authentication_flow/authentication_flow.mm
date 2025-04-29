@@ -61,14 +61,6 @@ using signin_ui::SigninCompletionCallback;
 
 namespace {
 
-// Returns a reference to the global used by tests to force the
-// next policy fetch to terminate with this policy value if set.
-std::optional<policy::ProfileSeparationDataMigrationSettings>&
-GetForcedPolicyResponseForNextFetchRequestForTesting() {
-  static std::optional<policy::ProfileSeparationDataMigrationSettings> instance;
-  return instance;
-}
-
 // The states of the sign-in flow state machine.
 enum class AuthenticationState {
   kBegin,
@@ -594,20 +586,6 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
     return;
   }
 
-  auto& optionalForcedPolicy =
-      GetForcedPolicyResponseForNextFetchRequestForTesting();
-  if (optionalForcedPolicy.has_value()) {
-    auto policy = optionalForcedPolicy.value();
-    optionalForcedPolicy = std::nullopt;
-
-    __weak __typeof(self) weakSelf = self;
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(^{
-          [weakSelf didFetchProfileSeparationPolicies:policy];
-        }));
-    return;
-  }
-
   ProfileIOS* profile = [self originalProfile];
   [_performer fetchProfileSeparationPolicies:profile
                                  forIdentity:_identityToSignIn];
@@ -960,15 +938,6 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
 
 - (PrefService*)prefs {
   return [self originalProfile]->GetPrefs();
-}
-
-+ (void)forcePolicyResponseForNextRequestForTesting:
-    (policy::ProfileSeparationDataMigrationSettings)
-        profileSeparationDataMigrationSettings {
-  auto& optionalForcedPolicy =
-      GetForcedPolicyResponseForNextFetchRequestForTesting();
-  CHECK(!optionalForcedPolicy.has_value());
-  optionalForcedPolicy = profileSeparationDataMigrationSettings;
 }
 
 @end
