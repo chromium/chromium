@@ -59,9 +59,9 @@ enum class PushNotificationClientManagerFailurePoint {
   // Failed to get Profile-based `PushNotificationClientManager` when the app
   // entered foreground (in `-appDidEnterForeground:`).
   kAppDidEnterForeground = 2,
-  // Failed to get Profile-based `PushNotificationClientManager` when handling a
-  // user interaction response (in `-handleNotificationResponse:`).
-  kHandleNotificationResponse = 3,
+  // DEPRECATED: This failure point is no longer used as the code path
+  // that logged it has been removed.
+  // kHandleNotificationResponse = 3,
   // Failed to get Profile-based `PushNotificationClientManager` when processing
   // an incoming remote notification in the background (in
   // `-applicationWillProcessIncomingRemoteNotification:`).

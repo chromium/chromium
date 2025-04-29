@@ -193,7 +193,7 @@ constexpr base::TimeDelta kMainIntentCheckDelay = base::Seconds(1);
               (void (^)(UIBackgroundFetchResult result))completionHandler {
   // This method is invoked by iOS to process an incoming remote push
   // notification for the application and fetch any additional data.
-
+  //
   // According to the documentation, iOS invokes this function whether the
   // application is in the foreground or background. In addition, iOS will
   // launch the application and place it in background mode to invoke this
@@ -201,15 +201,9 @@ constexpr base::TimeDelta kMainIntentCheckDelay = base::Seconds(1);
   // application. In that case, the user must relaunch the application or must
   // restart the device before the system will launch the application and invoke
   // this function.
-  //
-  // TODO(crbug.com/412624110): Retrieve Profile-specific
-  // `UIBackgroundFetchResult` from
-  // `-applicationWillProcessIncomingRemoteNotification:`.
-  UIBackgroundFetchResult result = [self.pushNotificationDelegate
-      applicationWillProcessIncomingRemoteNotification:userInfo];
-  if (completionHandler) {
-    completionHandler(result);
-  }
+  [self.pushNotificationDelegate
+      applicationWillProcessIncomingRemoteNotification:userInfo
+                                fetchCompletionHandler:completionHandler];
 }
 
 - (void)application:(UIApplication*)application

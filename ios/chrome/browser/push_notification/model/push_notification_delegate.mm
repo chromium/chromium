@@ -319,14 +319,34 @@ void OnProfileLoadedForClientManager(ClientManagerCallback original_callback,
   std::move(original_callback).Run(manager);
 }
 
-// Asynchronously gets the Profile-specific `PushNotificationClientManager`
-// using `user_info` containing the Profile name. Invokes `callback` with the
-// manager once the Profile is loaded and the manager is retrieved, or with
-// `nullptr` if any step fails (e.g., Profile name invalid, Profile not found,
-// Profile load fails, manager cannot be retrieved).
+// Gets the appropriate `PushNotificationClientManager` based on `user_info`.
+// Checks for Profile-identifying keys (`kOriginatingProfileNameKey`,
+// `kOriginatingGaiaIDKey`). If neither key is present, it synchronously returns
+// the app-wide manager via the `callback`. If keys are present, it attempts to
+// retrieve the Profile-specific manager, potentially loading the Profile
+// asynchronously. The callback receives the retrieved manager or `nullptr` if
+// the Profile-specific lookup or load fails.
 void GetClientManagerForUserInfo(NSDictionary* user_info,
                                  ClientManagerCallback callback) {
   CHECK(IsIOSMultiProfilePushNotificationHandlingEnabled());
+
+  BOOL hasProfileKey = (user_info[kOriginatingProfileNameKey] != nil);
+  BOOL hasGaiaKey = (user_info[kOriginatingGaiaIDKey] != nil);
+
+  // If the notification payload contains neither the originating Profile name
+  // key (`kOriginatingProfileNameKey`) nor the originating Gaia ID key
+  // (`kOriginatingGaiaIDKey`), assume it's intended only for the app-wide
+  // client manager.
+  if (!hasProfileKey && !hasGaiaKey) {
+    PushNotificationClientManager* app_wide_manager =
+        GetApplicationContext()
+            ->GetPushNotificationService()
+            ->GetPushNotificationClientManager();
+
+    std::move(callback).Run(app_wide_manager);
+
+    return;
+  }
 
   std::string profile_name = GetProfileNameFromUserInfo(user_info);
 
@@ -412,6 +432,67 @@ ChangeProfileContinuation CreateNotificationInteractionContinuation(
                         response);
 }
 
+// Handles notification reception using the app-wide client manager and calls
+// the final completion block.
+void HandleNotificationReceptionWithAppWideManager(
+    NSDictionary* user_info,
+    void (^completion_block)(UIBackgroundFetchResult /* result */)) {
+  PushNotificationClientManager* app_wide_manager =
+      GetApplicationContext()
+          ->GetPushNotificationService()
+          ->GetPushNotificationClientManager();
+  CHECK(app_wide_manager);
+
+  UIBackgroundFetchResult result =
+      app_wide_manager->HandleNotificationReception(user_info);
+
+  if (completion_block) {
+    completion_block(result);
+  }
+}
+
+// Callback invoked after asynchronously attempting to retrieve the
+// Profile-specific `PushNotificationClientManager`. Falls back to app-wide
+// manager, if necessary.
+void OnClientManagerReadyForReception(
+    NSDictionary* user_info,
+    PushNotificationClientManagerFailurePoint failure_point,
+    void (^completion_block)(UIBackgroundFetchResult result),
+    PushNotificationClientManager* client_manager) {
+  if (!client_manager) {
+    RecordClientManagerAccessFailure(failure_point);
+
+    if (completion_block) {
+      completion_block(UIBackgroundFetchResultNoData);
+    }
+
+    return;
+  }
+
+  UIBackgroundFetchResult result =
+      client_manager->HandleNotificationReception(user_info);
+
+  if (completion_block) {
+    completion_block(result);
+  }
+}
+
+// Processes an incoming notification by attempting to use a Profile-specific
+// client manager, falling back to the app-wide manager, if necessary.
+void ProcessIncomingNotification(
+    NSDictionary* user_info,
+    PushNotificationClientManagerFailurePoint failure_point,
+    void (^completion_block)(UIBackgroundFetchResult result)) {
+  CHECK(IsIOSMultiProfilePushNotificationHandlingEnabled());
+
+  ClientManagerCallback manager_ready_callback =
+      base::BindOnce(&OnClientManagerReadyForReception, user_info,
+                     failure_point, completion_block);
+
+  // Start the async process to get the Profile-specific manager
+  GetClientManagerForUserInfo(user_info, std::move(manager_ready_callback));
+}
+
 }  // anonymous namespace
 
 @interface PushNotificationDelegate () <AppStateObserver,
@@ -470,45 +551,25 @@ ChangeProfileContinuation CreateNotificationInteractionContinuation(
   [self recordLifeCycleEvent:PushNotificationLifecycleEvent::
                                  kNotificationForegroundPresentation];
 
+  NSDictionary* userInfo = notification.request.content.userInfo;
+
+  __weak __typeof(self) weakSelf = self;
+
+  void (^presentationCompletionBlock)(UIBackgroundFetchResult result) =
+      ^(UIBackgroundFetchResult /* result */) {
+        [weakSelf handlePresentationCompletionWithUserInfo:userInfo
+                                         completionHandler:completionHandler];
+      };
+
   if (IsIOSMultiProfilePushNotificationHandlingEnabled()) {
-    [self
-        getClientManagerAndHandleReceptionForUserInfo:notification.request
-                                                          .content.userInfo
-                                     withFailurePoint:
-                                         PushNotificationClientManagerFailurePoint::
-                                             kWillPresentNotification];
+    ProcessIncomingNotification(
+        userInfo,
+        PushNotificationClientManagerFailurePoint::kWillPresentNotification,
+        presentationCompletionBlock);
+  } else {
+    HandleNotificationReceptionWithAppWideManager(userInfo,
+                                                  presentationCompletionBlock);
   }
-
-  // This method is invoked by iOS to process a notification that arrived
-  // while the app was running in the foreground.
-  auto* appWideClientManager = GetApplicationContext()
-                                   ->GetPushNotificationService()
-                                   ->GetPushNotificationClientManager();
-  DCHECK(appWideClientManager);
-  appWideClientManager->HandleNotificationReception(
-      notification.request.content.userInfo);
-
-  // Per Apple's guidance for delegate methods handling notifications: "You
-  // must execute [completionHandler] at some point…to let the system know that
-  // you are done." Therefore, `completionHandler` is always invoked below, even
-  // if a `PushNotificationClientManager` could not be found for the `Profile`,
-  // to avoid leaving the system in an indeterminate state.
-  if (completionHandler) {
-    // If the app is foregrounded, Send Tab push notifications should not be
-    // displayed.
-    if ([notification.request.content.userInfo[kPushNotificationClientIdKey]
-            intValue] == static_cast<int>(PushNotificationClientId::kSendTab) &&
-        self.foregroundActiveScene) {
-      completionHandler(UNNotificationPresentationOptionNone);
-    } else {
-      // TODO(crbug.com/408085973): Add PushNotificationDelegate unittest suite.
-      // Cover critical paths and error cases.
-      completionHandler(UNNotificationPresentationOptionBanner);
-    }
-  }
-
-  base::UmaHistogramEnumeration(kAppLaunchSource,
-                                AppLaunchSource::NOTIFICATION);
 }
 
 - (void)userNotificationCenter:(UNUserNotificationCenter*)center
@@ -521,42 +582,41 @@ ChangeProfileContinuation CreateNotificationInteractionContinuation(
 
 #pragma mark - PushNotificationDelegate
 
-- (UIBackgroundFetchResult)applicationWillProcessIncomingRemoteNotification:
-    (NSDictionary*)userInfo {
+- (void)applicationWillProcessIncomingRemoteNotification:(NSDictionary*)userInfo
+                                  fetchCompletionHandler:
+                                      (void (^)(UIBackgroundFetchResult result))
+                                          completionHandler {
   [self recordLifeCycleEvent:PushNotificationLifecycleEvent::
                                  kNotificationReception];
 
   double incomingNotificationTime =
       base::Time::Now().InSecondsFSinceUnixEpoch();
 
+  auto recordMetricsAndComplete = ^(UIBackgroundFetchResult result) {
+    double processingTime =
+        base::Time::Now().InSecondsFSinceUnixEpoch() - incomingNotificationTime;
+
+    UmaHistogramCustomTimes(
+        "IOS.PushNotification.IncomingNotificationProcessingTime",
+        base::Milliseconds(processingTime),
+        kTimeRangeIncomingNotificationHistogramMin,
+        kTimeRangeIncomingNotificationHistogramMax,
+        kTimeRangeHistogramBucketCount);
+
+    if (completionHandler) {
+      completionHandler(result);
+    }
+  };
+
   if (IsIOSMultiProfilePushNotificationHandlingEnabled()) {
-    [self
-        getClientManagerAndHandleReceptionForUserInfo:userInfo
-                                     withFailurePoint:
-                                         PushNotificationClientManagerFailurePoint::
-                                             kWillProcessIncomingRemoteNotification];
+    ProcessIncomingNotification(userInfo,
+                                PushNotificationClientManagerFailurePoint::
+                                    kWillProcessIncomingRemoteNotification,
+                                recordMetricsAndComplete);
+  } else {
+    HandleNotificationReceptionWithAppWideManager(userInfo,
+                                                  recordMetricsAndComplete);
   }
-
-  // Always notify the app-wide client manager.
-  PushNotificationClientManager* appWideClientManager =
-      GetApplicationContext()
-          ->GetPushNotificationService()
-          ->GetPushNotificationClientManager();
-  DCHECK(appWideClientManager);
-  UIBackgroundFetchResult result =
-      appWideClientManager->HandleNotificationReception(userInfo);
-
-  double processingTime =
-      base::Time::Now().InSecondsFSinceUnixEpoch() - incomingNotificationTime;
-
-  UmaHistogramCustomTimes(
-      "IOS.PushNotification.IncomingNotificationProcessingTime",
-      base::Milliseconds(processingTime),
-      kTimeRangeIncomingNotificationHistogramMin,
-      kTimeRangeIncomingNotificationHistogramMax,
-      kTimeRangeHistogramBucketCount);
-
-  return result;
 }
 
 - (void)applicationDidRegisterWithAPNS:(NSData*)deviceToken
@@ -717,51 +777,29 @@ ChangeProfileContinuation CreateNotificationInteractionContinuation(
 
 #pragma mark - Private
 
-// Helper method to asynchronously get the client manager and handle reception.
-- (void)
-    getClientManagerAndHandleReceptionForUserInfo:(NSDictionary*)userInfo
-                                 withFailurePoint:
-                                     (PushNotificationClientManagerFailurePoint)
-                                         failurePoint {
-  CHECK(IsIOSMultiProfilePushNotificationHandlingEnabled());
+// Determines how a notification should be presented when received while the app
+// is in the foreground and invokes the system completion handler with the
+// appropriate options. It also logs a histogram for the notification event.
+- (void)handlePresentationCompletionWithUserInfo:(NSDictionary*)userInfo
+                               completionHandler:
+                                   (void (^)(UNNotificationPresentationOptions
+                                                 options))completionHandler {
+  if (completionHandler) {
+    BOOL isSendTab = ([userInfo[kPushNotificationClientIdKey] intValue] ==
+                      static_cast<int>(PushNotificationClientId::kSendTab));
+    BOOL isForeground = (self.foregroundActiveScene != nil);
 
-  // Copy the userInfo dictionary to ensure its lifetime during the async
-  // operation.
-  NSDictionary* userInfoCopy = [userInfo copy];
-  __weak __typeof(self) weakSelf = self;
+    UNNotificationPresentationOptions presentationOptions =
+        (isSendTab && isForeground) ? UNNotificationPresentationOptionNone
+                                    : UNNotificationPresentationOptionBanner;
 
-  // Create the callback that will be executed once the Profile is loaded
-  // and the client manager is retrieved (or fails).
-  ClientManagerCallback managerReadyCallback = base::BindOnce(
-      [](__typeof(self) strongSelf, NSDictionary* capturedUserInfo,
-         PushNotificationClientManagerFailurePoint capturedFailurePoint,
-         PushNotificationClientManager* manager) {
-        [strongSelf onClientManagerReadyForReception:manager
-                                         forUserInfo:capturedUserInfo
-                                    fromFailurePoint:capturedFailurePoint];
-      },
-      weakSelf, userInfoCopy, failurePoint);
-
-  GetClientManagerForUserInfo(userInfoCopy, std::move(managerReadyCallback));
-}
-
-// Callback invoked after asynchronously attempting to retrieve the
-// `PushNotificationClientManager` associated with a notification's `userInfo`.
-// If a `manager` is successfully retrieved, it's used to handle the
-// notification reception. If retrieval fails (`manager` is nil), the failure is
-// recorded using the provided `failurePoint`.
-- (void)onClientManagerReadyForReception:(PushNotificationClientManager*)manager
-                             forUserInfo:(NSDictionary*)userInfo
-                        fromFailurePoint:
-                            (PushNotificationClientManagerFailurePoint)
-                                failurePoint {
-  if (!manager) {
-    RecordClientManagerAccessFailure(failurePoint);
-
-    return;
+    // TODO(crbug.com/408085973): Add PushNotificationDelegate unittest suite.
+    // Cover critical paths and error cases.
+    completionHandler(presentationOptions);
   }
 
-  manager->HandleNotificationReception(userInfo);
+  base::UmaHistogramEnumeration(kAppLaunchSource,
+                                AppLaunchSource::NOTIFICATION);
 }
 
 // Executes blocks queued in _runAfterForeground. If multi-profile handling is

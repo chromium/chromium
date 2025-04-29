@@ -1440,7 +1440,10 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Will Present Notification"/>
   <int value="1" label="Did Register With APNS"/>
   <int value="2" label="App Did Enter Foreground"/>
-  <int value="3" label="Handle Notification Response"/>
+<!-- DEPRECATED: This failure point is no longer used as the code path
+  that logged it has been removed. -->
+
+  <int value="3" label="Handle Notification Response (Deprecated)"/>
   <int value="4" label="Will Process Incoming Remote Notification"/>
   <int value="5" label="GetClientManager: Null Profile Input"/>
   <int value="6" label="GetClientManager: Missing Profile Service"/>
