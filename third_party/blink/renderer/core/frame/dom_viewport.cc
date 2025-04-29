@@ -33,12 +33,6 @@ std::optional<HeapVector<Member<DOMRect>>> DOMViewport::segments() const {
   std::vector<gfx::Rect> web_segments =
       frame->GetWidgetForLocalRoot()->ViewportSegments();
 
-  // If there is a single segment, return null as authors should use other
-  // properties on VisualViewport to determine the size.
-  if (web_segments.size() <= 1) {
-    return std::nullopt;
-  }
-
   // The rect passed to us from content is in DIP, relative to the main
   // frame/widget. This doesn't take the page's zoom factor into account so we
   // must scale by the inverse of the page zoom in order to get correct client

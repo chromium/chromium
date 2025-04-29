@@ -5285,9 +5285,14 @@ class ChromeDriverSecureContextTest(ChromeDriverBaseTestWithWebServer):
     self.assertTrue(
         self.WaitForCondition(lambda: self._driver.ExecuteScript(
             'return changeEventReceived == true')))
-    self.assertTrue(self.WaitForCondition(lambda: self._driver.ExecuteScript(
-              'return window.viewport.segments === arguments[0]',
-              original_segments)))
+    script = """
+      return (window.viewport.segments[0].width === arguments[0][0].width
+        && window.viewport.segments[0].height === arguments[0][0].height)
+    """
+    self.assertTrue(
+      self.WaitForCondition(lambda: self._driver.ExecuteScript(
+          script,
+          original_segments)))
 
   def testCreateVirtualPressureSourceNotConnected(self):
     script = """
