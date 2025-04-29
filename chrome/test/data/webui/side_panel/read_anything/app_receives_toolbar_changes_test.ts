@@ -6,7 +6,7 @@ import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js'
 
 import {BrowserProxy} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {SpeechBrowserProxyImpl, ToolbarEvent, VoiceClientSideStatusCode, WordBoundaryMode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {SpeechBrowserProxyImpl, ToolbarEvent, VoiceClientSideStatusCode, WordBoundaries} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertArrayEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {hasStyle, microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
@@ -407,7 +407,7 @@ suite('AppReceivesToolbarChanges', () => {
       app.highlightCurrentSentence = () => highlightedSentence = true;
       app.highlightCurrentWord = () => highlightedWord = true;
       app.highlightCurrentPhrase = () => highlightedPhrase = true;
-      app.wordBoundaryState.mode = WordBoundaryMode.BOUNDARY_DETECTED;
+      WordBoundaries.getInstance().updateBoundary(7);
       app.updateContent();
     });
 

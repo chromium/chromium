@@ -4,14 +4,17 @@
 
 import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import type {AppElement, ReadAnythingToolbarElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {WordBoundaries} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
 import {createApp, mockMetrics, stubAnimationFrame} from './common.js';
 import type {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
+
 suite('PhraseHighlighting', () => {
   let app: AppElement;
   let metrics: TestMetricsBrowserProxy;
+  let wordBoundaries: WordBoundaries;
 
   // root htmlTag='#document' id=1
   // ++link htmlTag='a' url='http://www.google.com' id=2
@@ -64,6 +67,7 @@ suite('PhraseHighlighting', () => {
 
     metrics = mockMetrics();
     app = await createApp();
+    wordBoundaries = WordBoundaries.getInstance();
 
     // Use a tree with just one sentence. For the actual implementation of
     // phrase segmentation, a more realistic example would be to use
@@ -103,7 +107,7 @@ suite('PhraseHighlighting', () => {
           chrome.readingMode.highlightGranularity,
           chrome.readingMode.wordHighlighting);
 
-      app.updateBoundary(0);
+      wordBoundaries.updateBoundary(0);
       app.playSpeech();
       const currentHighlight =
           app.$.container.querySelector('.current-read-highlight');
@@ -122,7 +126,7 @@ suite('PhraseHighlighting', () => {
           chrome.readingMode.highlightGranularity,
           chrome.readingMode.phraseHighlighting);
 
-      app.updateBoundary(0);
+      wordBoundaries.updateBoundary(0);
       app.playSpeech();
       const currentHighlight =
           app.$.container.querySelector('.current-read-highlight');
@@ -139,7 +143,7 @@ suite('PhraseHighlighting', () => {
           chrome.readingMode.highlightGranularity,
           chrome.readingMode.sentenceHighlighting);
 
-      app.updateBoundary(0);
+      wordBoundaries.updateBoundary(0);
       app.playSpeech();
       const currentHighlight =
           app.$.container.querySelector('.current-read-highlight');
@@ -156,7 +160,7 @@ suite('PhraseHighlighting', () => {
           chrome.readingMode.highlightGranularity,
           chrome.readingMode.noHighlighting);
 
-      app.updateBoundary(0);
+      wordBoundaries.updateBoundary(0);
       app.playSpeech();
       const currentHighlight =
           app.$.container.querySelector('.current-read-highlight');
@@ -169,7 +173,7 @@ suite('PhraseHighlighting', () => {
 
   suite('after a word boundary', () => {
     setup(() => {
-      app.updateBoundary(0);
+      wordBoundaries.updateBoundary(0);
     });
 
     test('initially, phrase is highlighted', () => {
@@ -185,7 +189,7 @@ suite('PhraseHighlighting', () => {
     test('phrase highlight same after second word boundary', () => {
       chrome.readingMode.onHighlightGranularityChanged(
           chrome.readingMode.phraseHighlighting);
-      app.updateBoundary(5);
+      wordBoundaries.updateBoundary(5);
       app.playSpeech();
       const currentHighlight =
           app.$.container.querySelector('.current-read-highlight');
@@ -196,7 +200,7 @@ suite('PhraseHighlighting', () => {
     test('phrase highlighting highlights second phrase', () => {
       chrome.readingMode.onHighlightGranularityChanged(
           chrome.readingMode.phraseHighlighting);
-      app.updateBoundary(10);
+      wordBoundaries.updateBoundary(10);
       app.playSpeech();
       const currentHighlight =
           app.$.container.querySelector('.current-read-highlight');

@@ -3,205 +3,80 @@
 // found in the LICENSE file.
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import type {AppElement, WordBoundaryState} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {PauseActionSource, SpeechBrowserProxyImpl, ToolbarEvent, WordBoundaryMode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {assertEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {BrowserProxy, WordBoundaries} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import type {WordBoundaryState} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
-import {createApp, createSpeechSynthesisVoice, emitEvent, setupBasicSpeech} from './common.js';
-import {TestSpeechBrowserProxy} from './test_speech_browser_proxy.js';
+import {FakeReadingMode} from './fake_reading_mode.js';
+import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
 
-suite('WordBoundariesUsedForSpeech', () => {
-  let app: AppElement;
+suite('WordBoundaries', () => {
+  let wordBoundaries: WordBoundaries;
 
-  // root htmlTag='#document' id=1
-  // ++link htmlTag='a' url='http://www.google.com' id=2
-  // ++++staticText name='This is a link.' id=3
-  // ++link htmlTag='a' url='http://www.youtube.com' id=4
-  // ++++staticText name='This is another link.' id=5
-  const axTree = {
-    rootId: 1,
-    nodes: [
-      {
-        id: 1,
-        role: 'rootWebArea',
-        htmlTag: '#document',
-        childIds: [2, 4],
-      },
-      {
-        id: 2,
-        role: 'link',
-        htmlTag: 'a',
-        url: 'http://www.google.com',
-        childIds: [3],
-      },
-      {
-        id: 3,
-        role: 'staticText',
-        name: 'This is a link.',
-      },
-      {
-        id: 4,
-        role: 'link',
-        htmlTag: 'a',
-        url: 'http://www.youtube.com',
-        childIds: [5],
-      },
-      {
-        id: 5,
-        role: 'staticText',
-        name: 'This is another link.',
-      },
-    ],
-  };
-
-  setup(async () => {
+  setup(() => {
     // Clearing the DOM should always be done first.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    // Do not call the real `onConnected()`. As defined in
-    // ReadAnythingAppController, onConnected creates mojo pipes to connect to
-    // the rest of the Read Anything feature, which we are not testing here.
-    chrome.readingMode.onConnected = () => {};
-    const speech = new TestSpeechBrowserProxy();
-    SpeechBrowserProxyImpl.setInstance(speech);
+    BrowserProxy.setInstance(new TestColorUpdaterBrowserProxy());
+    const readingMode = new FakeReadingMode();
+    chrome.readingMode = readingMode as unknown as typeof chrome.readingMode;
 
-    app = await createApp();
-    setupBasicSpeech(app, speech);
-    chrome.readingMode.setContentForTesting(axTree, [2, 4]);
+    wordBoundaries = new WordBoundaries();
   });
 
-  test('by default wordBoundaryState in default state', () => {
-    const state: WordBoundaryState = app.wordBoundaryState;
-    assertEquals(WordBoundaryMode.BOUNDARIES_NOT_SUPPORTED, state.mode);
+  test('default state', () => {
+    const state: WordBoundaryState = wordBoundaries.state;
     assertEquals(0, state.previouslySpokenIndex);
     assertEquals(0, state.speechUtteranceStartIndex);
     assertEquals(0, state.speechUtteranceLength);
+    assertTrue(wordBoundaries.notSupported());
+    assertFalse(wordBoundaries.hasBoundaries());
   });
 
-  test(
-      'during speech with no boundaries wordBoundaryState in default state',
-      () => {
-        app.playSpeech();
-        const state: WordBoundaryState = app.wordBoundaryState;
-        assertEquals(WordBoundaryMode.BOUNDARIES_NOT_SUPPORTED, state.mode);
-        assertEquals(0, state.previouslySpokenIndex);
-        assertEquals(0, state.speechUtteranceStartIndex);
-        assertEquals(0, state.speechUtteranceLength);
-      });
+  test('has boundaries after update boundary', () => {
+    wordBoundaries.updateBoundary(15);
 
-  suite('during speech with one initial word boundary ', () => {
-    setup(() => {
-      app.playSpeech();
-      app.updateBoundary(10, 5);
-    });
-
-    test('wordBoundaryState uses most recent boundary', () => {
-      const state: WordBoundaryState = app.wordBoundaryState;
-      assertEquals(WordBoundaryMode.BOUNDARY_DETECTED, state.mode);
-      assertEquals(10, state.previouslySpokenIndex);
-      assertEquals(0, state.speechUtteranceStartIndex);
-      assertEquals(5, state.speechUtteranceLength);
-    });
-
-    test('pause / play toggle maintains word boundary state', () => {
-      app.stopSpeech(PauseActionSource.BUTTON_CLICK);
-      app.playSpeech();
-
-      const state: WordBoundaryState = app.wordBoundaryState;
-      assertEquals(WordBoundaryMode.BOUNDARY_DETECTED, state.mode);
-      assertTrue(!!app.getSpeechSynthesisVoice());
-      assertEquals(10, state.speechUtteranceStartIndex);
-      assertEquals(0, state.previouslySpokenIndex);
-      assertEquals(5, state.speechUtteranceLength);
-    });
-
-    test('word boundaries update after pause / play toggle', () => {
-      app.stopSpeech(PauseActionSource.BUTTON_CLICK);
-      app.playSpeech();
-      app.updateBoundary(3, 9);
-
-      const state: WordBoundaryState = app.wordBoundaryState;
-      assertEquals(WordBoundaryMode.BOUNDARY_DETECTED, state.mode);
-      assertEquals(3, state.previouslySpokenIndex);
-      assertEquals(10, state.speechUtteranceStartIndex);
-      assertEquals(9, state.speechUtteranceLength);
-    });
-
-    test('word boundaries correct after multiple pause / play toggles', () => {
-      app.stopSpeech(PauseActionSource.BUTTON_CLICK);
-      app.playSpeech();
-      app.updateBoundary(3, 9);
-      app.stopSpeech(PauseActionSource.BUTTON_CLICK);
-      app.playSpeech();
-      app.updateBoundary(7);
-      app.stopSpeech(PauseActionSource.BUTTON_CLICK);
-      app.playSpeech();
-      app.updateBoundary(1, 15);
-
-      const state: WordBoundaryState = app.wordBoundaryState;
-      assertEquals(WordBoundaryMode.BOUNDARY_DETECTED, state.mode);
-      assertEquals(1, state.previouslySpokenIndex);
-      assertEquals(20, state.speechUtteranceStartIndex);
-      assertEquals(15, state.speechUtteranceLength);
-    });
+    assertEquals(15, wordBoundaries.state.previouslySpokenIndex);
+    assertEquals(0, wordBoundaries.state.speechUtteranceLength);
+    assertTrue(wordBoundaries.hasBoundaries());
+    assertFalse(wordBoundaries.notSupported());
   });
 
-  test(
-      'with multiple word boundaries wordBoundaryState in default state during speech',
-      () => {
-        app.playSpeech();
-        app.updateBoundary(10);
-        app.updateBoundary(15, 5);
-        app.updateBoundary(25, 10);
-        app.updateBoundary(40);
+  test('updates charLength', () => {
+    const charLength = 6;
+    const charIndex = 12;
 
-        const state: WordBoundaryState = app.wordBoundaryState;
-        assertEquals(WordBoundaryMode.BOUNDARY_DETECTED, state.mode);
-        assertEquals(40, state.previouslySpokenIndex);
-        assertEquals(0, state.speechUtteranceLength);
-        assertEquals(0, state.speechUtteranceStartIndex);
-      });
+    wordBoundaries.updateBoundary(charIndex, charLength);
 
-  test('after voice change resets to unsupported boundary mode', () => {
-    app.playSpeech();
-    app.updateBoundary(10);
-    assertEquals(
-        WordBoundaryMode.BOUNDARY_DETECTED, app.wordBoundaryState.mode);
+    assertEquals(charIndex, wordBoundaries.state.previouslySpokenIndex);
+    assertEquals(charLength, wordBoundaries.state.speechUtteranceLength);
+    assertTrue(wordBoundaries.hasBoundaries());
+    assertFalse(wordBoundaries.notSupported());
+  });
 
-    const selectedVoice =
-        createSpeechSynthesisVoice({lang: 'es', name: 'Lauren'});
-    emitEvent(app, ToolbarEvent.VOICE, {detail: {selectedVoice}});
+  test('reset to default state after update boundary', () => {
+    wordBoundaries.updateBoundary(15, 10);
 
-    // After a voice change, the word boundary state has been reset.
-    const state: WordBoundaryState = app.wordBoundaryState;
-    assertEquals(WordBoundaryMode.BOUNDARIES_NOT_SUPPORTED, state.mode);
+    wordBoundaries.resetToDefaultState();
+
+    const state: WordBoundaryState = wordBoundaries.state;
     assertEquals(0, state.previouslySpokenIndex);
-    assertEquals(0, state.speechUtteranceLength);
     assertEquals(0, state.speechUtteranceStartIndex);
-
-    // After another boundary event, the boundary mode is set to
-    // BOUNDARY_DETECTED again.
-    app.updateBoundary(15);
-    assertEquals(
-        WordBoundaryMode.BOUNDARY_DETECTED, app.wordBoundaryState.mode);
+    assertEquals(0, state.speechUtteranceLength);
+    assertFalse(wordBoundaries.notSupported());
+    assertFalse(wordBoundaries.hasBoundaries());
   });
 
-  test(
-      'after voice change to same language does not reset word boundary mode',
-      () => {
-        app.playSpeech();
-        app.updateBoundary(10);
-        assertEquals(
-            WordBoundaryMode.BOUNDARY_DETECTED, app.wordBoundaryState.mode);
+  test('getResumeBoundary', () => {
+    wordBoundaries.updateBoundary(5);
+    assertEquals(5, wordBoundaries.getResumeBoundary());
 
-        const selectedVoice =
-            createSpeechSynthesisVoice({lang: 'en', name: 'Lauren'});
-        emitEvent(app, ToolbarEvent.VOICE, {detail: {selectedVoice}});
+    wordBoundaries.updateBoundary(5);
+    wordBoundaries.updateBoundary(13);
+    assertEquals(18, wordBoundaries.getResumeBoundary());
 
-        // After a voice change to the same language, the word boundary state
-        // has stayed the same.
-        const state: WordBoundaryState = app.wordBoundaryState;
-        assertEquals(WordBoundaryMode.BOUNDARY_DETECTED, state.mode);
-        assertEquals(0, state.previouslySpokenIndex);
-        assertEquals(10, state.speechUtteranceStartIndex);
-      });
+    wordBoundaries.updateBoundary(5);
+    wordBoundaries.updateBoundary(13);
+    wordBoundaries.updateBoundary(2);
+    assertEquals(20, wordBoundaries.getResumeBoundary());
+  });
 });

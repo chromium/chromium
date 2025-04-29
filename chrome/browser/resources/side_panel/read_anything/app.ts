@@ -22,6 +22,8 @@ import {AppStyleUpdater} from './app_style_updater.js';
 import type {SettingsPrefs} from './common.js';
 import {getCurrentSpeechRate, isHtmlElementVisible, minOverflowLengthToScroll, playFromSelectionTimeout} from './common.js';
 import type {LanguageToastElement} from './language_toast.js';
+import {WordBoundaries} from './read_aloud/word_boundaries.js';
+import type {WordBoundaryState} from './read_aloud/word_boundaries.js';
 import {ReadAnythingLogger, TimeFrom} from './read_anything_logger.js';
 import type {ReadAnythingToolbarElement} from './read_anything_toolbar.js';
 import type {SpeechBrowserProxy} from './speech_browser_proxy.js';
@@ -92,14 +94,6 @@ export enum PauseActionSource {
   ENGINE_INTERRUPT,
 }
 
-export enum WordBoundaryMode {
-  // Used if word boundaries are not supported (i.e. we haven't received enough
-  // information to determine if word boundaries are supported.)
-  BOUNDARIES_NOT_SUPPORTED,
-  NO_BOUNDARIES,
-  BOUNDARY_DETECTED,
-}
-
 export interface SpeechPlayingState {
   // If the speech tree for the current page has been initialized. This happens
   // in updateContent before speech has been initiated by users but it can
@@ -126,24 +120,6 @@ export interface SpeechPlayingState {
   // this.speech_.cancel() that shouldn't update the UI for the speech playing
   // state.
   isSpeechBeingRepositioned: boolean;
-}
-
-export interface WordBoundaryState {
-  mode: WordBoundaryMode;
-  // The charIndex of the last word boundary index retrieved by the "Boundary"
-  // event. Default is 0.
-  previouslySpokenIndex: number;
-  // Is only non-zero if the current state has already resumed speech on a
-  // word boundary. e.g. If we interrupted speech for the segment
-  // "This is a sentence" at "is," so the next segment spoken is "is a
-  // sentence," if we attempt to interrupt speech again at "a." This helps us
-  // keep track of the correct index in the overall granularity string- not
-  // just the correct index within the current string.
-  // Default is 0.
-  speechUtteranceStartIndex: number;
-  // The length of the current word if it was provided by the speech engine. If
-  // not, this is 0.
-  speechUtteranceLength: number;
 }
 
 export interface AppElement {
@@ -309,6 +285,7 @@ export class AppElement extends AppElementBase {
   private logger_: ReadAnythingLogger = ReadAnythingLogger.getInstance();
   private styleUpdater_: AppStyleUpdater;
   private speech_: SpeechBrowserProxy;
+  private wordBoundaries_: WordBoundaries;
   protected accessor settingsPrefs_: SettingsPrefs = {
     letterSpacing: 0,
     lineSpacing: 0,
@@ -331,13 +308,6 @@ export class AppElement extends AppElementBase {
   };
 
   private accessor imagesEnabled: boolean = false;
-
-  wordBoundaryState: WordBoundaryState = {
-    mode: WordBoundaryMode.BOUNDARIES_NOT_SUPPORTED,
-    speechUtteranceStartIndex: 0,
-    previouslySpokenIndex: 0,
-    speechUtteranceLength: 0,
-  };
 
   // If the node id of the first text node that should be used by Read Aloud
   // has been set. This is null if the id has not been set.
@@ -370,6 +340,7 @@ export class AppElement extends AppElementBase {
     this.styleUpdater_ = new AppStyleUpdater(this);
     this.notificationManager_ = VoiceNotificationManager.getInstance();
     this.speech_ = SpeechBrowserProxyImpl.getInstance();
+    this.wordBoundaries_ = WordBoundaries.getInstance();
     ColorChangeUpdater.forDocument().start();
   }
 
@@ -748,7 +719,7 @@ export class AppElement extends AppElementBase {
           chrome.readingMode.unexpectedUpdateContentStopSource);
     }
     const previousSpeechPlayingState = {...this.speechPlayingState};
-    const previousWordBoundaryState = {...this.wordBoundaryState};
+    const previousWordBoundaryState = {...this.wordBoundaries_.state};
 
     this.speech_.cancel();
     this.clearReadAloudState();
@@ -822,7 +793,7 @@ export class AppElement extends AppElementBase {
     if (this.domNodeToAxNodeIdMap_.keyFrom(this.lastReadingId_)) {
       this.movePlaybackToNode_(this.lastReadingId_, this.lastReadingOffset_);
       this.speechPlayingState = {...previousSpeechPlayingState};
-      this.wordBoundaryState = {...previousWordBoundaryState};
+      this.wordBoundaries_.state = {...previousWordBoundaryState};
       // Since we're setting the reading position after a content update when
       // we're paused, redraw the highlight after moving the traversal state to
       // the right spot above.
@@ -1526,7 +1497,7 @@ export class AppElement extends AppElementBase {
     this.speech_.cancel();
     this.resetPreviousHighlight_();
     // Reset the word boundary index whenever we move the granularity position.
-    this.resetToDefaultWordBoundaryState();
+    this.wordBoundaries_.resetToDefaultState();
     chrome.readingMode.movePositionToNextGranularity();
 
     if (!this.highlightAndPlayMessage()) {
@@ -1545,7 +1516,7 @@ export class AppElement extends AppElementBase {
     // determine what's currently being highlighted.
     this.resetPreviousHighlightAndRemoveCurrentHighlight();
     // Reset the word boundary index whenever we move the granularity position.
-    this.resetToDefaultWordBoundaryState();
+    this.wordBoundaries_.resetToDefaultState();
     chrome.readingMode.movePositionToPreviousGranularity();
 
     if (!this.highlightAndPlayMessage(/*isInterrupted=*/ false,
@@ -1568,14 +1539,12 @@ export class AppElement extends AppElementBase {
       let playedFromSelection = false;
       if (hasSelection) {
         this.speech_.cancel();
-        this.resetToDefaultWordBoundaryState();
+        this.wordBoundaries_.resetToDefaultState();
         playedFromSelection = this.playFromSelection();
       }
 
       if (!playedFromSelection) {
-        if (pausedFromButton &&
-            this.wordBoundaryState.mode !==
-                WordBoundaryMode.BOUNDARY_DETECTED) {
+        if (pausedFromButton && !this.wordBoundaries_.hasBoundaries()) {
           // If word boundaries aren't supported for the given voice, we should
           // still continue to use synth.resume, as this is preferable to
           // restarting the current message.
@@ -1819,19 +1788,14 @@ export class AppElement extends AppElementBase {
     // If we're resuming a previously interrupted message, use word
     // boundaries (if available) to resume at the beginning of the current
     // word.
-    if (isInterrupted &&
-        this.wordBoundaryState.mode === WordBoundaryMode.BOUNDARY_DETECTED) {
-      const substringIndex = this.wordBoundaryState.previouslySpokenIndex +
-          this.wordBoundaryState.speechUtteranceStartIndex;
-      this.wordBoundaryState.previouslySpokenIndex = 0;
-      this.wordBoundaryState.speechUtteranceStartIndex = substringIndex;
+    if (isInterrupted && this.wordBoundaries_.hasBoundaries()) {
       const utteranceTextForWordBoundary =
-          utteranceText.substring(substringIndex);
+          utteranceText.substring(this.wordBoundaries_.getResumeBoundary());
       // If we paused right at the end of the sentence, no need to speak the
       // ending punctuation.
       if (isInvalidHighlightForWordHighlighting(
               utteranceTextForWordBoundary.trim())) {
-        this.resetToDefaultWordBoundaryState();
+        this.wordBoundaries_.resetToDefaultState();
         return this.skipCurrentPosition_(isInterrupted, isMovingBackward);
       } else {
         this.playText(utteranceTextForWordBoundary);
@@ -1948,7 +1912,7 @@ export class AppElement extends AppElementBase {
       // the sentence granularity level, so we'll retrieve these boundaries in
       // message.onEnd instead.
       if (event.name === 'word') {
-        this.updateBoundary(event.charIndex, event.charLength);
+        this.wordBoundaries_.updateBoundary(event.charIndex, event.charLength);
 
         // No need to update the highlight on word boundary events if
         // highlighting is off or if sentence highlighting is used.
@@ -1995,7 +1959,7 @@ export class AppElement extends AppElementBase {
       // Now that we've finiished reading this utterance, update the
       // Granularity state to point to the next one Reset the word boundary
       // index whenever we move the granularity position.
-      this.resetToDefaultWordBoundaryState();
+      this.wordBoundaries_.resetToDefaultState();
       chrome.readingMode.movePositionToNextGranularity();
       // Continue speaking with the next block of text.
       if (!this.highlightAndPlayMessage()) {
@@ -2115,35 +2079,6 @@ export class AppElement extends AppElementBase {
     this.stopSpeech(PauseActionSource.DEFAULT);
   }
 
-  updateBoundary(charIndex: number, charLength: number = 0) {
-    this.wordBoundaryState.previouslySpokenIndex = charIndex;
-    this.wordBoundaryState.mode = WordBoundaryMode.BOUNDARY_DETECTED;
-    this.wordBoundaryState.speechUtteranceLength = charLength;
-  }
-
-  resetToDefaultWordBoundaryState(
-      possibleWordBoundarySupportChange: boolean = false) {
-    this.wordBoundaryState = {
-      previouslySpokenIndex: 0,
-      // If a boundary has been detected, the mode should be reset to
-      // NO_BOUNDARIES instead of BOUNDARIES_NOT_SUPPORTED because we know
-      // word boundaries are supported- we just need to clear the current
-      // boundary state. This allows us to highlight the next word at the
-      // start of a sentence when playback state changes. However, if there's
-      // been a change that potentially impacts if word boundaries are
-      // supported (such as changing the voice), we should reset to
-      // BOUNDARIES_NOT_SUPPORTED because we don't know yet if word boundaries
-      // are supported for this voice.
-      mode: ((this.wordBoundaryState.mode ===
-              WordBoundaryMode.BOUNDARY_DETECTED) &&
-             !possibleWordBoundarySupportChange) ?
-          WordBoundaryMode.NO_BOUNDARIES :
-          WordBoundaryMode.BOUNDARIES_NOT_SUPPORTED,
-      speechUtteranceStartIndex: 0,
-      speechUtteranceLength: 0,
-    };
-  }
-
   private extractTextOf(axNodeIds: number[]): string {
     let utteranceText: string = '';
     for (const nodeId of axNodeIds) {
@@ -2171,16 +2106,16 @@ export class AppElement extends AppElementBase {
     this.highlightCurrentWordOrPhrase_(true);
   }
 
-  // TODO: crbug.com/301131238 - Verify all edge cases.
   private highlightCurrentWordOrPhrase_(highlightPhrases: boolean) {
     // Word highlights can be called quite frequently which can create some
     // misordering, so just make sure we've cleared the prior current word
     // highlight before showing the next one.
     this.resetCurrentHighlight();
     this.resetPreviousHighlight_();
-    const index = this.wordBoundaryState.speechUtteranceStartIndex +
-        this.wordBoundaryState.previouslySpokenIndex;
-    const length = this.wordBoundaryState.speechUtteranceLength;
+    const wordBoundaryState = this.wordBoundaries_.state;
+    const index = wordBoundaryState.speechUtteranceStartIndex +
+        wordBoundaryState.previouslySpokenIndex;
+    const length = wordBoundaryState.speechUtteranceLength;
 
     const highlightNodes =
         chrome.readingMode.getHighlightForCurrentSegmentIndex(
@@ -2374,7 +2309,7 @@ export class AppElement extends AppElementBase {
     };
 
     this.clearHighlightFormatting_();
-    this.resetToDefaultWordBoundaryState();
+    this.wordBoundaries_.resetToDefaultState();
   }
 
   private getEffectiveHighlightingGranularity_(): number {
@@ -2387,9 +2322,7 @@ export class AppElement extends AppElementBase {
       return highlight;
     }
 
-    if (this.wordBoundaryState.mode ===
-            WordBoundaryMode.BOUNDARIES_NOT_SUPPORTED ||
-        isEspeak(this.selectedVoice_)) {
+    if (this.wordBoundaries_.notSupported() || isEspeak(this.selectedVoice_)) {
       // Fall back where word highlighting is not possible. Since espeak
       // boundaries are different than Google TTS word boundaries, fall back
       // to sentence boundaries in that case too.
@@ -2445,7 +2378,7 @@ export class AppElement extends AppElementBase {
     // voice pack and use the same TTS engine, therefore, we don't need
     // to reset the word boundary state.
     if (!localesAreIdentical) {
-      this.resetToDefaultWordBoundaryState(
+      this.wordBoundaries_.resetToDefaultState(
           /*possibleWordBoundarySupportChange=*/ true);
     }
 
