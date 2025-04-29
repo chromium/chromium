@@ -7168,8 +7168,16 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
 // declarativeNetRequest API, and that if they try to redirect requests, the
 // request is blocked by the Protected Audience logic, which doesn't allow
 // redirects, instead of being redirected.
+// Flaky on Mac and Win bots, see also crbug.com/414462480
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#define MAYBE_ProtectedAudienceNetworkRequestsBlockRequests \
+  DISABLED_ProtectedAudienceNetworkRequestsBlockRequests
+#else
+#define MAYBE_ProtectedAudienceNetworkRequestsBlockRequests \
+  ProtectedAudienceNetworkRequestsBlockRequests
+#endif
 IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
-                       ProtectedAudienceNetworkRequestsBlockRequests) {
+                       MAYBE_ProtectedAudienceNetworkRequestsBlockRequests) {
   privacy_sandbox::ScopedPrivacySandboxAttestations scoped_attestations(
       privacy_sandbox::PrivacySandboxAttestations::CreateForTesting());
   // Mark all Privacy Sandbox APIs as attested since the test case is testing
