@@ -1092,6 +1092,7 @@ public final class ProductionSupportedFlagList {
                 BlinkFeatures.RENDER_BLOCKING_FULL_FRAME_RATE,
                 "Enable the <link blocking=\"full-frame-rate\"/> API to lower the frame rate during"
                         + " loading"),
+        Flag.baseFeature("ProgressiveAccessibility"),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
