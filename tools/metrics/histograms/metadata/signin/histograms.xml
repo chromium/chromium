@@ -1798,6 +1798,17 @@ prefs when the profile is loaded.  -->
   </summary>
 </histogram>
 
+<histogram name="Signin.IOSChangeProfileReason" enum="IOSChangeProfileReason"
+    expires_after="2025-11-25">
+  <owner>jlebel@chromium.org</owner>
+  <owner>treib@chromium.org</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
+  <summary>
+    Records the reason for switching profiles on iOS, whenever a profile switch
+    is kicked off.
+  </summary>
+</histogram>
+
 <histogram name="Signin.IOSDeviceRestoreIdentityCountAfter" units="identities"
     expires_after="2026-04-01">
   <owner>jlebel@chromium.org</owner>

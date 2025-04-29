@@ -25,6 +25,7 @@
 #import "components/sync/test/test_sync_service.h"
 #import "components/sync_preferences/pref_service_mock_factory.h"
 #import "components/sync_preferences/pref_service_syncable.h"
+#import "ios/chrome/app/change_profile_commands.h"
 #import "ios/chrome/app/change_profile_continuation.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_in_profile.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_performer.h"
@@ -346,6 +347,8 @@ class AuthenticationFlowTest : public PlatformTest,
             [performer_mock_
                 switchToProfileWithIdentity:identity
                                  sceneState:personal_browser_->GetSceneState()
+                                     reason:ChangeProfileReason::
+                                                kManagedAccountSignIn
                               requestHelper:requestHelperChecker])
             .andDo(switchToProfileWithIdentityCallback);
       }

@@ -995,6 +995,7 @@ ChangeProfileContinuation CreateNotificationInteractionContinuation(
 
   [handler changeProfile:profileName
                 forScene:targetSceneState
+                  reason:ChangeProfileReason::kHandlePushNotification
             continuation:CreateNotificationInteractionContinuation(response)];
 }
 

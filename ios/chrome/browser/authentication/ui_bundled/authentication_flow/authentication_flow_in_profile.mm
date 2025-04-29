@@ -406,6 +406,7 @@ enum class AuthenticationFlowInProfileState {
   SceneState* sceneState = _browser->GetSceneState();
   [_performer switchToProfileWithName:personalProfileName
                            sceneState:sceneState
+                               reason:ChangeProfileReason::kAuthenticationError
             changeProfileContinuation:DoNothingContinuation()];
 }
 

@@ -286,6 +286,7 @@ ForcedPolicyResponseForNextFetchRequestForTesting() {
 
 - (void)switchToProfileWithIdentity:(id<SystemIdentity>)identity
                          sceneState:(SceneState*)sceneState
+                             reason:(ChangeProfileReason)reason
                       requestHelper:
                           (id<AuthenticationFlowRequestHelper>)requestHelper {
   CHECK(AreSeparateProfilesForManagedAccountsEnabled());
@@ -310,11 +311,13 @@ ForcedPolicyResponseForNextFetchRequestForTesting() {
 
   [self switchToProfileWithName:*profileName
                      sceneState:sceneState
+                         reason:reason
       changeProfileContinuation:std::move(continuation)];
 }
 
 - (void)switchToProfileWithName:(const std::string&)profileName
                      sceneState:(SceneState*)sceneState
+                         reason:(ChangeProfileReason)reason
       changeProfileContinuation:(ChangeProfileContinuation)continuation {
   CHECK(AreSeparateProfilesForManagedAccountsEnabled());
 
@@ -324,6 +327,7 @@ ForcedPolicyResponseForNextFetchRequestForTesting() {
       std::move(authenticationFlowContinuation), std::move(continuation));
   [_changeProfileHandler changeProfile:profileName
                               forScene:sceneState
+                                reason:reason
                           continuation:std::move(fullContinuation)];
 }
 

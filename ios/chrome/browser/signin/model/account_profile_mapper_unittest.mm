@@ -66,6 +66,7 @@ using testing::UnorderedElementsAre;
 
 - (void)changeProfile:(std::string_view)profileName
              forScene:(SceneState*)sceneState
+               reason:(ChangeProfileReason)reason
          continuation:(ChangeProfileContinuation)continuation {
   NOTREACHED();
 }

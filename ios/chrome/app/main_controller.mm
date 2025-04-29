@@ -1672,12 +1672,15 @@ std::string GetProfileNameForChoice(ProfileChoice choice,
 
 - (void)changeProfile:(std::string_view)profileName
              forScene:(SceneState*)sceneState
+               reason:(ChangeProfileReason)reason
          continuation:(ChangeProfileContinuation)continuation {
   CHECK(AreSeparateProfilesForManagedAccountsEnabled());
   CHECK_EQ(self.appState.initStage, AppInitStage::kFinal);
 
   CHECK(sceneState);
   CHECK([self.appState.connectedScenes containsObject:sceneState]);
+
+  base::UmaHistogramEnumeration("Signin.IOSChangeProfileReason", reason);
 
   ProfileManagerIOS* manager = GetApplicationContext()->GetProfileManager();
   CHECK(manager->HasProfileWithName(profileName));
@@ -1777,6 +1780,7 @@ std::string GetProfileNameForChoice(ProfileChoice choice,
   for (SceneState* scene in scenes) {
     [self changeProfile:personalProfile
                forScene:scene
+                 reason:ChangeProfileReason::kProfileDeleted
            continuation:continuation];
   }
 }

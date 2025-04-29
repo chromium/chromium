@@ -16,6 +16,7 @@
 
 @protocol AuthenticationFlowRequestHelper;
 class Browser;
+enum class ChangeProfileReason;
 @protocol ChangeProfileCommands;
 class ProfileIOS;
 @class SceneState;
@@ -94,12 +95,14 @@ using OnProfileSwitchCompletion =
 // argument instead.
 - (void)switchToProfileWithIdentity:(id<SystemIdentity>)identity
                          sceneState:(SceneState*)sceneState
+                             reason:(ChangeProfileReason)reason
                       requestHelper:
                           (id<AuthenticationFlowRequestHelper>)requestHelper;
 
 // Switches to the profile with `profileName`, for `sceneIdentifier`.
 - (void)switchToProfileWithName:(const std::string&)profileName
                      sceneState:(SceneState*)sceneState
+                         reason:(ChangeProfileReason)reason
       changeProfileContinuation:(ChangeProfileContinuation)continuation;
 
 // Converts the personal profile to a managed one and attaches `identity` to it.

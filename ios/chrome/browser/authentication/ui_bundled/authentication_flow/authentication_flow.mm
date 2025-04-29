@@ -17,6 +17,7 @@
 #import "components/prefs/pref_service.h"
 #import "components/reading_list/features/reading_list_switches.h"
 #import "components/signin/core/browser/active_primary_accounts_metrics_recorder.h"
+#import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/base/signin_pref_names.h"
 #import "components/signin/public/identity_manager/tribool.h"
 #import "components/sync/base/account_pref_utils.h"
@@ -692,8 +693,21 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
       UnsyncedDataTypeHistogram::kUnsyncedDataOnProfileSwitching,
       _unsyncedDataTypes.value());
   SceneState* sceneState = _browser->GetSceneState();
+  // Determine the reason for the profile switch. In general, AuthenticationFlow
+  // handles cases where the user has chosen a new account to use. This can be
+  // either a signin or a change-account:
+  // * If the *current* profile (pre-switch) has a primary account, then the
+  //   profile switch must be due to an account change.
+  // * Otherwise, it must be due to a signin with a managed account (because a
+  //   signin with a non-managed account wouldn't cause a profile switch - that
+  //   case is handled in the `isValidIdentityInProfile` check above).
+  ChangeProfileReason reason =
+      identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin)
+          ? ChangeProfileReason::kSwitchAccounts
+          : ChangeProfileReason::kManagedAccountSignIn;
   [_performer switchToProfileWithIdentity:_identityToSignIn
                                sceneState:sceneState
+                                   reason:reason
                             requestHelper:[self takeRequestHelper]];
 }
 

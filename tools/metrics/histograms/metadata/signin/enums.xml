@@ -467,6 +467,33 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow.mm:IOSAccountSwitchType) -->
 
+<!-- LINT.IfChange(IOSChangeProfileReason) -->
+
+<enum name="IOSChangeProfileReason">
+  <int value="0"
+      label="User switched accounts (i.e. both old and new profile are signed
+             in, though the new one may only be newly signed in via this
+             action)"/>
+  <int value="1"
+      label="Managed account sign-in (i.e. signing in to a managed account
+             while being signed-out in the personal profile)"/>
+  <int value="2"
+      label="Managed account sign-out (i.e. signing out from a managed
+             account, which switches to the personal profile and signs out
+             there if necessary)"/>
+  <int value="3"
+      label="Authentication error while signing in or switching, and
+             therefore switching back"/>
+  <int value="4"
+      label="Profile deleted (usually because the associated managed account
+             was removed, either from another Google app or remotely)"/>
+  <int value="5"
+      label="User tapped a push notification that's associated with a
+             different profile"/>
+</enum>
+
+<!-- LINT.ThenChange(//ios/chrome/app/change_profile_commands.h:IOSChangeProfileReason) -->
+
 <enum name="IOSDeviceRestoreSignedinState">
   <int value="0" label="User not signed in before iOS device restore"/>
   <int value="1"
