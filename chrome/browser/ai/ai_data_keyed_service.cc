@@ -793,7 +793,9 @@ bool AiDataKeyedService::IsExtensionAllowlistedForData(
                                        // https://issues.chromium.org/393435942
                                        "fjhpgileahdpnmfmaggobehbipojhlce",
                                        // https://issues.chromium.org/403366603
-                                       "abdciamfdmknaeggbnmafmbdfdmhfgfa"});
+                                       "abdciamfdmknaeggbnmafmbdfdmhfgfa",
+                                       // https://issues.chromium.org/414437025
+                                       "fiamdfnbelfkjlacoaeiclobkdmckaoa"});
   if (base::Contains(*kHardcodedAllowlistedExtensions, extension_id)) {
     return true;
   }

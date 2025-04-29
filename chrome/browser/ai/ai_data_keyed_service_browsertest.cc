@@ -143,7 +143,7 @@ IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTest,
   std::vector<std::string> expected_allowlisted_extensions = {
       "hpkopmikdojpadgmioifjjodbmnjjjca", "bgbpcgpcobgjpnpiginpidndjpggappi",
       "eefninhhiifgcimjkmkongegpoaikmhm", "fjhpgileahdpnmfmaggobehbipojhlce",
-      "abdciamfdmknaeggbnmafmbdfdmhfgfa"};
+      "abdciamfdmknaeggbnmafmbdfdmhfgfa", "fiamdfnbelfkjlacoaeiclobkdmckaoa"};
 
   for (const auto& extension_id : expected_allowlisted_extensions) {
     EXPECT_TRUE(
@@ -163,7 +163,7 @@ IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTest,
   std::vector<std::string> expected_not_allowlisted_extensions = {
       "hpkopmikdojpadgmioifjjodbmnjjjca", "bgbpcgpcobgjpnpiginpidndjpggappi",
       "eefninhhiifgcimjkmkongegpoaikmhm", "fjhpgileahdpnmfmaggobehbipojhlce",
-      "abdciamfdmknaeggbnmafmbdfdmhfgfa"};
+      "abdciamfdmknaeggbnmafmbdfdmhfgfa", "fiamdfnbelfkjlacoaeiclobkdmckaoa"};
   for (const auto& extension_id : expected_not_allowlisted_extensions) {
     EXPECT_FALSE(
         AiDataKeyedService::IsExtensionAllowlistedForActions(extension_id));
@@ -444,7 +444,8 @@ IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTestWithBlocklistedExtensions,
                        BlockedExtensionList) {
   std::vector<std::string> expected_allowlisted_extensions = {
       "bgbpcgpcobgjpnpiginpidndjpggappi", "eefninhhiifgcimjkmkongegpoaikmhm",
-      "fjhpgileahdpnmfmaggobehbipojhlce", "abdciamfdmknaeggbnmafmbdfdmhfgfa"};
+      "fjhpgileahdpnmfmaggobehbipojhlce", "abdciamfdmknaeggbnmafmbdfdmhfgfa",
+      "fiamdfnbelfkjlacoaeiclobkdmckaoa"};
 
   EXPECT_FALSE(AiDataKeyedService::IsExtensionAllowlistedForData(
       "hpkopmikdojpadgmioifjjodbmnjjjca"));
@@ -477,7 +478,8 @@ IN_PROC_BROWSER_TEST_F(
       "bgbpcgpcobgjpnpiginpidndjpggappi",
       "eefninhhiifgcimjkmkongegpoaikmhm",
       "fjhpgileahdpnmfmaggobehbipojhlce",
-      "abdciamfdmknaeggbnmafmbdfdmhfgfa"};
+      "abdciamfdmknaeggbnmafmbdfdmhfgfa",
+      "fiamdfnbelfkjlacoaeiclobkdmckaoa"};
 
   for (const auto& extension : expected_allowlisted_extensions) {
     EXPECT_TRUE(AiDataKeyedService::IsExtensionAllowlistedForData(extension));
