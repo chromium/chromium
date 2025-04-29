@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/no_destructor.h"
@@ -14,6 +15,7 @@
 #include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "base/version_info/channel.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
@@ -31,6 +33,7 @@
 #include "chrome/browser/ui/webui/ntp/cookie_controls_handler.h"
 #include "chrome/browser/ui/webui/webui_util_desktop.h"
 #include "chrome/common/buildflags.h"
+#include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
@@ -289,22 +292,33 @@ void NTPResourceCache::CreateNewTabIncognitoHTML(
       l10n_util::GetStringUTF8(IDS_NEW_TAB_OTR_NOT_SAVED);
   replacements["learnMore"] =
       l10n_util::GetStringUTF8(IDS_NEW_TAB_OTR_LEARN_MORE_LINK);
-  replacements["cookieControlsTitle"] =
-      l10n_util::GetStringUTF8(IDS_NEW_TAB_OTR_THIRD_PARTY_COOKIE);
 
   replacements["learnMoreLink"] = kLearnMoreIncognitoUrl;
   replacements["learnMoreA11yLabel"] = l10n_util::GetStringUTF8(
       IDS_INCOGNITO_TAB_LEARN_MORE_ACCESSIBILITY_LABEL);
   replacements["title"] = l10n_util::GetStringUTF8(IDS_NEW_INCOGNITO_TAB_TITLE);
-  replacements["cookieControlsHeader"] = "cookie-controls-title";
 
-  if (base::FeatureList::IsEnabled(
-          privacy_sandbox::kAlwaysBlock3pcsIncognito)) {
-    replacements["hideBlockCookiesToggle"] = "hidden";
-    replacements["hideTooltipIcon"] = "hidden";
+  replacements["cookieControlsHeader"] = "cookie-controls-header";
+  replacements["hideBlockCookiesToggle"] = "hidden";
+  replacements["hideTooltipIcon"] = "hidden";
+  replacements["hideUserBypassIcon"] = "hidden";
+
+  if ((base::FeatureList::IsEnabled(
+           privacy_sandbox::kFingerprintingProtectionUx) ||
+       base::FeatureList::IsEnabled(privacy_sandbox::kIpProtectionUx)) &&
+      chrome::GetChannel() == version_info::Channel::CANARY) {
+    replacements["cookieControlsTitle"] = l10n_util::GetStringUTF8(
+        IDS_INCOGNITO_NTP_INCOGNITO_TRACKING_PROTECTIONS_HEADER);
+    localized_strings.Set(
+        "cookieControlsDescription",
+        l10n_util::GetStringFUTF16(
+            IDS_INCOGNITO_NTP_INCOGNITO_TRACKING_PROTECTIONS_DESCRIPTION_DESKTOP,
+            u"chrome://settings/incognito",
+            l10n_util::GetStringUTF16(
+                IDS_INCOGNITO_NTP_INCOGNITO_TRACKING_PROTECTIONS_LINK_A11Y_LABEL)));
+  } else if (base::FeatureList::IsEnabled(
+                 privacy_sandbox::kAlwaysBlock3pcsIncognito)) {
     replacements["hideUserBypassIcon"] = "";
-    replacements["cookieControlsHeader"] = "cookie-controls-header";
-
     replacements["cookieControlsTitle"] = l10n_util::GetStringUTF8(
         IDS_INCOGNITO_NTP_BLOCK_THIRD_PARTY_COOKIES_HEADER);
     localized_strings.Set(
@@ -315,11 +329,7 @@ void NTPResourceCache::CreateNewTabIncognitoHTML(
             l10n_util::GetStringUTF16(
                 IDS_NEW_TAB_OPENS_HC_ARTICLE_IN_NEW_TAB)));
   } else if (is_tracking_protection_3pcd_enabled) {
-    replacements["hideBlockCookiesToggle"] = "hidden";
-    replacements["hideTooltipIcon"] = "hidden";
-    replacements["hideUserBypassIcon"] = "hidden";
-
-    // Overwrite the cookies control title and description if 3pcd enabled.
+    replacements["cookieControlsHeader"] = "cookie-controls-title";
     replacements["cookieControlsTitle"] =
         l10n_util::GetStringUTF8(IDS_NEW_TAB_OTR_THIRD_PARTY_BLOCKED_COOKIE);
     localized_strings.Set(
@@ -330,12 +340,14 @@ void NTPResourceCache::CreateNewTabIncognitoHTML(
             l10n_util::GetStringUTF16(
                 IDS_NEW_TAB_OPENS_HC_ARTICLE_IN_NEW_TAB)));
   } else {
+    replacements["cookieControlsTitle"] =
+        l10n_util::GetStringUTF8(IDS_NEW_TAB_OTR_THIRD_PARTY_COOKIE);
+    replacements["cookieControlsHeader"] = "cookie-controls-title";
     replacements["hideBlockCookiesToggle"] = "";
     replacements["hideTooltipIcon"] =
         cookie_controls_service->ShouldEnforceCookieControls() ? "" : "hidden";
     replacements["cookieControlsDescription"] =
         l10n_util::GetStringUTF8(IDS_NEW_TAB_OTR_THIRD_PARTY_COOKIE_SUBLABEL);
-    replacements["hideUserBypassIcon"] = "hidden";
   }
 
   replacements["cookieControlsToggleChecked"] =

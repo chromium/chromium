@@ -1046,6 +1046,13 @@
       <message name="IDS_INCOGNITO_NTP_INCOGNITO_TRACKING_PROTECTIONS_DESCRIPTION_ANDROID" desc="" formatter_data="android_java" translateable="false" >
         Third-party cookies are blocked. Incognito also provides features that can limit the information available to companies whose content is embedded on a site you visit. You can manage Incognito tracking protections in <ph name="BEGIN_LINK">&lt;link&gt;</ph>Settings<ph name="END_LINK">&lt;/link&gt;</ph>.
       </message>
+      <message name="IDS_INCOGNITO_NTP_INCOGNITO_TRACKING_PROTECTIONS_DESCRIPTION_DESKTOP" desc="" translateable="false">
+        Third-party cookies are blocked. Incognito also provides features that can limit the information available to companies whose content is embedded on a site you visit. You can manage Incognito tracking protections in <ph name="START_LINK">&lt;a href="$1" aria-description="$2"&gt;</ph>Settings<ph name="END_LINK">&lt;/a&gt;</ph>.
+      </message>
+      <!-- TODO(crbug.com/408036586): Update a11y label when finalized -->
+      <message name="IDS_INCOGNITO_NTP_INCOGNITO_TRACKING_PROTECTIONS_LINK_A11Y_LABEL" desc="" translateable="false">
+        Opens the Incognito tracking protections page in a new tab
+      </message>
     </messages>
   </release>
 </grit>
