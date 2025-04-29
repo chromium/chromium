@@ -2093,7 +2093,7 @@ int LegacyFontSizeFromCSSValue(Document* document,
                                LegacyFontSizeMode mode) {
   if (const auto* primitive_value = DynamicTo<CSSPrimitiveValue>(value)) {
     if (primitive_value->IsLength()) {
-      // TODO(crbug.com/979895): This doesn't seem to be handle math functions
+      // TODO(crbug.com/40634280): This doesn't seem to be handle math functions
       // correctly. This is the result of a refactoring, and may have revealed
       // an existing bug. Fix it if necessary.
       CSSPrimitiveValue::UnitType length_unit =
@@ -2101,11 +2101,14 @@ int LegacyFontSizeFromCSSValue(Document* document,
               ? To<CSSNumericLiteralValue>(primitive_value)->GetType()
               : CSSPrimitiveValue::UnitType::kPixels;
       if (!CSSPrimitiveValue::IsRelativeUnit(length_unit)) {
+        std::optional<double> number = primitive_value->GetValueIfKnown();
+        if (!number.has_value()) {
+          return 0;
+        }
         double conversion =
             CSSPrimitiveValue::ConversionToCanonicalUnitsScaleFactor(
                 length_unit);
-        int pixel_font_size =
-            ClampTo<int>(primitive_value->GetDoubleValue() * conversion);
+        int pixel_font_size = ClampTo<int>(number.value() * conversion);
         int legacy_font_size = FontSizeFunctions::LegacyFontSize(
             document, pixel_font_size, is_monospace_font);
         // Use legacy font size only if pixel value matches exactly to that of
