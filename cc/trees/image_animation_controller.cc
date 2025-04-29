@@ -9,7 +9,6 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
@@ -439,30 +438,6 @@ ImageAnimationController::AnimationState::AdvanceAnimationState(
   // We should have advanced a single frame, anything more than that are frames
   // skipped trying to catch up.
   DCHECK_GT(animation_advancement_state.num_of_frames_advanced, 0u);
-  size_t frames_skipped =
-      animation_advancement_state.num_of_frames_advanced - 1u;
-  switch (animation_advancement_state.repetitions_completed) {
-    case 0:
-      UMA_HISTOGRAM_COUNTS_100000(
-          "AnimatedImage.NumOfFramesSkipped.FirstAnimationLoop",
-          frames_skipped);
-      break;
-    case 1:
-      UMA_HISTOGRAM_COUNTS_100000(
-          "AnimatedImage.NumOfFramesSkipped.SecondAnimationLoop",
-          frames_skipped);
-      break;
-    case 2:
-    case 3:
-    case 4:
-      UMA_HISTOGRAM_COUNTS_100000(
-          "AnimatedImage.NumOfFramesSkipped.ThirdToFifthAnimationLoop",
-          frames_skipped);
-      break;
-  }
-  UMA_HISTOGRAM_COUNTS_100000("AnimatedImage.NumOfFramesSkipped.Compositor",
-                              frames_skipped);
-
   return animation_advancement_state;
 }
 

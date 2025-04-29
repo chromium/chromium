@@ -143,17 +143,6 @@ chromium-metrics-reviews@google.com.
       name="PageLoad.Clients.Ads.Visible.Bytes.FullPage.Total2"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="AnimationLoop" separator=".">
-  <suffix name="FirstAnimationLoop"
-      label="Measurement taken on the first animation loop."/>
-  <suffix name="SecondAnimationLoop"
-      label="Measurement taken on the second animation loop."/>
-  <suffix name="ThirdToFifthAnimationLoop"
-      label="Measurements taken on the third, fourth, and fifth animation
-             loop."/>
-  <affected-histogram name="AnimatedImage.NumOfFramesSkipped"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="AutofillAddressFormType" separator=".">
   <suffix name="AddressOnly" label="Form has address and maybe name fields"/>
   <suffix name="AddressPlusContact"

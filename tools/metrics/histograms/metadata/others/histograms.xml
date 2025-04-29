@@ -2652,33 +2652,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="AnimatedImage.NumOfFramesSkipped{RendererThreadType}"
-    units="count" expires_after="2023-04-24">
-  <owner>khushalsagar@chromium.org</owner>
-  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
-  <summary>
-    If the frame rate for the image animation can not be reached, frames in the
-    animation are skipped to catch up to the desired frame. This metric tracks
-    the number of frames skipped during catch up, and can be used to assess the
-    smoothness of these animations. It records the number of frames skipped each
-    time the animation is ticked forward to draw the next frame. In the ideal
-    case, where the animation can be drawn at the desired rate, 0 frames should
-    be skipped. Note that skipping of frames can also be triggered if the
-    animation was intentionally paused (on becoming off-screen, or the tab being
-    hidden).
-
-    Warning: this histogram was expired from 2020-04-24 to 2022-04-29; data may
-    be missing. {RendererThreadType}
-  </summary>
-  <token key="RendererThreadType">
-    <variant name=""/>
-    <variant name=".Compositor"
-        summary="Measurement taken on the compositor thread."/>
-    <variant name=".Main"
-        summary="Measurement taken on the main/render thread."/>
-  </token>
-</histogram>
-
 <histogram
     name="Animation.AnimationWorklet.Dispatcher.AsynchronousMutateDuration"
     units="microseconds" expires_after="2021-01-01">
