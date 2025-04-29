@@ -859,7 +859,11 @@ class DeviceStatusCollectorTest : public testing::Test {
             DeviceLocalAccount::EphemeralMode::kUnset,
             fake_web_kiosk_app_basic_info_,
             kWebKioskAccountId),
-        fake_iwa_kiosk_basic_info_(kIwaKioskWebBundleId, kIwaKioskUpdateUrl),
+        fake_iwa_kiosk_basic_info_(kIwaKioskWebBundleId,
+                                   kIwaKioskUpdateUrl,
+                                   /*update_channel=*/std::string(),
+                                   /*pinned_version=*/std::string(),
+                                   /*allow_downgrades=*/false),
         fake_iwa_kiosk_device_local_account_(
             DeviceLocalAccount::EphemeralMode::kUnset,
             fake_iwa_kiosk_basic_info_,

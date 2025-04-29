@@ -737,6 +737,21 @@ base::Value::Dict DecodeDeviceLocalAccountInfoProto(
       entry_dict.Set(ash::kAccountsPrefDeviceLocalAccountsKeyIwaKioskUpdateUrl,
                      entry.isolated_kiosk_app().update_manifest_url());
     }
+    if (entry.isolated_kiosk_app().has_update_channel()) {
+      entry_dict.Set(
+          ash::kAccountsPrefDeviceLocalAccountsKeyIwaKioskUpdateChannel,
+          entry.isolated_kiosk_app().update_channel());
+    }
+    if (entry.isolated_kiosk_app().has_pinned_version()) {
+      entry_dict.Set(
+          ash::kAccountsPrefDeviceLocalAccountsKeyIwaKioskPinnedVersion,
+          entry.isolated_kiosk_app().pinned_version());
+    }
+    if (entry.isolated_kiosk_app().has_allow_downgrades()) {
+      entry_dict.Set(
+          ash::kAccountsPrefDeviceLocalAccountsKeyIwaKioskAllowDowngrades,
+          entry.isolated_kiosk_app().allow_downgrades());
+    }
   }
   if (policy::features::IsHeliumArcvmKioskEnabled()) {
     if (entry.arcvm_kiosk_app().has_package_name()) {

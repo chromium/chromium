@@ -37,9 +37,14 @@ struct WebKioskAppBasicInfo {
 struct IsolatedWebAppKioskBasicInfo {
  public:
   IsolatedWebAppKioskBasicInfo(std::string web_bundle_id,
-                               std::string update_manifest_url);
-  IsolatedWebAppKioskBasicInfo() = default;
-  ~IsolatedWebAppKioskBasicInfo() = default;
+                               std::string update_manifest_url,
+                               std::string update_channel,
+                               std::string pinned_version,
+                               bool allow_downgrades);
+  IsolatedWebAppKioskBasicInfo();
+  ~IsolatedWebAppKioskBasicInfo();
+  IsolatedWebAppKioskBasicInfo(const IsolatedWebAppKioskBasicInfo& other);
+  IsolatedWebAppKioskBasicInfo& operator=(const IsolatedWebAppKioskBasicInfo&);
 
   [[nodiscard]] const std::string& web_bundle_id() const {
     return web_bundle_id_;
@@ -49,9 +54,22 @@ struct IsolatedWebAppKioskBasicInfo {
     return update_manifest_url_;
   }
 
+  [[nodiscard]] const std::string& update_channel() const {
+    return update_channel_;
+  }
+
+  [[nodiscard]] const std::string& pinned_version() const {
+    return pinned_version_;
+  }
+
+  [[nodiscard]] bool allow_downgrades() const { return allow_downgrades_; }
+
  private:
   std::string web_bundle_id_;
   std::string update_manifest_url_;
+  std::string update_channel_;
+  std::string pinned_version_;
+  bool allow_downgrades_ = false;
 };
 
 struct ArcvmKioskAppBasicInfo {

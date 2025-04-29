@@ -64,9 +64,25 @@ WebKioskAppBasicInfo::~WebKioskAppBasicInfo() = default;
 
 IsolatedWebAppKioskBasicInfo::IsolatedWebAppKioskBasicInfo(
     std::string web_bundle_id,
-    std::string update_manifest_url)
+    std::string update_manifest_url,
+    std::string update_channel,
+    std::string pinned_version,
+    bool allow_downgrades)
     : web_bundle_id_(std::move(web_bundle_id)),
-      update_manifest_url_(std::move(update_manifest_url)) {}
+      update_manifest_url_(std::move(update_manifest_url)),
+      update_channel_(std::move(update_channel)),
+      pinned_version_(std::move(pinned_version)),
+      allow_downgrades_(allow_downgrades) {}
+
+IsolatedWebAppKioskBasicInfo::IsolatedWebAppKioskBasicInfo() = default;
+
+IsolatedWebAppKioskBasicInfo::~IsolatedWebAppKioskBasicInfo() = default;
+
+IsolatedWebAppKioskBasicInfo::IsolatedWebAppKioskBasicInfo(
+    const IsolatedWebAppKioskBasicInfo& other) = default;
+
+IsolatedWebAppKioskBasicInfo& IsolatedWebAppKioskBasicInfo::operator=(
+    const IsolatedWebAppKioskBasicInfo&) = default;
 
 ArcvmKioskAppBasicInfo::ArcvmKioskAppBasicInfo(const std::string& package_name,
                                                const std::string& class_name,
@@ -270,9 +286,28 @@ std::vector<DeviceLocalAccount> GetDeviceLocalAccounts(
           continue;
         }
 
+        std::string update_channel;
+        GetString(entry_dict,
+                  ash::kAccountsPrefDeviceLocalAccountsKeyIwaKioskUpdateChannel,
+                  &update_channel);
+
+        std::string pinned_version;
+        GetString(entry_dict,
+                  ash::kAccountsPrefDeviceLocalAccountsKeyIwaKioskPinnedVersion,
+                  &pinned_version);
+
+        bool allow_downgrades =
+            entry_dict
+                .FindBool(
+                    ash::
+                        kAccountsPrefDeviceLocalAccountsKeyIwaKioskAllowDowngrades)
+                .value_or(false);
+
         accounts.emplace_back(
             ephemeral_mode_value,
-            IsolatedWebAppKioskBasicInfo(web_bundle_id, update_manifest_url),
+            IsolatedWebAppKioskBasicInfo(web_bundle_id, update_manifest_url,
+                                         update_channel, pinned_version,
+                                         allow_downgrades),
             account_id);
         break;
       }
@@ -355,6 +390,13 @@ void SetDeviceLocalAccountsForTesting(
                   account.kiosk_iwa_info.web_bundle_id());
         entry.Set(ash::kAccountsPrefDeviceLocalAccountsKeyIwaKioskUpdateUrl,
                   account.kiosk_iwa_info.update_manifest_url());
+        entry.Set(ash::kAccountsPrefDeviceLocalAccountsKeyIwaKioskUpdateChannel,
+                  account.kiosk_iwa_info.update_channel());
+        entry.Set(ash::kAccountsPrefDeviceLocalAccountsKeyIwaKioskPinnedVersion,
+                  account.kiosk_iwa_info.pinned_version());
+        entry.Set(
+            ash::kAccountsPrefDeviceLocalAccountsKeyIwaKioskAllowDowngrades,
+            account.kiosk_iwa_info.allow_downgrades());
         break;
       case DeviceLocalAccountType::kArcvmKioskApp:
         entry.Set(ash::kAccountsPrefDeviceLocalAccountsKeyArcvmKioskPackage,

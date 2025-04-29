@@ -482,6 +482,21 @@ void DecodeLoginPolicies(const em::ChromeDeviceSettingsProto& policy,
           entry_dict.Set(kAccountsPrefDeviceLocalAccountsKeyIwaKioskUpdateUrl,
                          entry.isolated_kiosk_app().update_manifest_url());
         }
+        if (entry.isolated_kiosk_app().has_update_channel()) {
+          entry_dict.Set(
+              kAccountsPrefDeviceLocalAccountsKeyIwaKioskUpdateChannel,
+              entry.isolated_kiosk_app().update_channel());
+        }
+        if (entry.isolated_kiosk_app().has_pinned_version()) {
+          entry_dict.Set(
+              kAccountsPrefDeviceLocalAccountsKeyIwaKioskPinnedVersion,
+              entry.isolated_kiosk_app().pinned_version());
+        }
+        if (entry.isolated_kiosk_app().has_allow_downgrades()) {
+          entry_dict.Set(
+              kAccountsPrefDeviceLocalAccountsKeyIwaKioskAllowDowngrades,
+              entry.isolated_kiosk_app().allow_downgrades());
+        }
       }
     } else if (entry.has_deprecated_public_session_id()) {
       // Deprecated public session specification.
