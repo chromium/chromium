@@ -241,6 +241,24 @@ TEST_F(AmountExtractionManagerTest, ShouldNotTriggerIfUrlNotEligible) {
       /*has_suggestions=*/true, /*field_type=*/FieldType::CREDIT_CARD_NUMBER));
 }
 
+TEST_F(AmountExtractionManagerTest, ShouldNotTriggerInIncognitoMode) {
+  SuggestionsContext context;
+  context.is_autofill_available = true;
+  context.filling_product = FillingProduct::kCreditCard;
+  std::vector<FieldType> field_types = {FieldType::CREDIT_CARD_NUMBER,
+                                        FieldType::CREDIT_CARD_NAME_FULL,
+                                        FieldType::CREDIT_CARD_EXP_MONTH};
+  autofill_client_->set_is_off_the_record(/*is_off_the_record=*/true);
+
+  for (FieldType field_type : field_types) {
+    EXPECT_FALSE(amount_extraction_manager_->ShouldTriggerAmountExtraction(
+        context,
+        /*should_suppress_suggestions=*/false,
+        /*has_suggestions=*/true,
+        /*field_type=*/field_type));
+  }
+}
+
 TEST_F(AmountExtractionManagerTest, ShouldTriggerWhenLoggingFeatureIsEnabled) {
   scoped_feature_list_.Reset();
   scoped_feature_list_.InitWithFeatures(

@@ -100,6 +100,14 @@ bool AmountExtractionManager::ShouldTriggerAmountExtraction(
   if (context.filling_product != FillingProduct::kCreditCard) {
     return false;
   }
+
+  // None of the projects that use amount extraction are intended to be enabled
+  // in off-the-record mode, so do not run amount extraction in off-the-record
+  // mode.
+  if (autofill_manager_->client().IsOffTheRecord()) {
+    return false;
+  }
+
   if constexpr (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
                 BUILDFLAG(IS_CHROMEOS)) {
     if (base::FeatureList::IsEnabled(
