@@ -58,14 +58,14 @@ namespace blink {
 
 namespace {
 
-void InvalidateShadowIncludingAncestorForms(ContainerNode& insertion_point) {
+void InvalidateAncestorFormsForAutofill(ContainerNode& insertion_point) {
   // Let any forms in the shadow including ancestors know that this
   // ListedElement has changed.
   ContainerNode* starting_node = &insertion_point;
   for (ContainerNode* parent = starting_node; parent;
        parent = parent->ParentOrShadowHostNode()) {
     if (HTMLFormElement* form = DynamicTo<HTMLFormElement>(parent)) {
-      form->InvalidateListedElementsIncludingShadowTrees();
+      form->InvalidateListedElementsForAutofill();
     }
   }
 }
@@ -150,7 +150,7 @@ void ListedElement::InsertedInto(ContainerNode& insertion_point) {
         &element, WebFormRelatedChangeType::kAdd);
   }
 
-  InvalidateShadowIncludingAncestorForms(insertion_point);
+  InvalidateAncestorFormsForAutofill(insertion_point);
 }
 
 void ListedElement::RemovedFrom(ContainerNode& insertion_point) {
@@ -203,7 +203,7 @@ void ListedElement::RemovedFrom(ContainerNode& insertion_point) {
         .InvalidateStatefulFormControlList();
   }
 
-  InvalidateShadowIncludingAncestorForms(insertion_point);
+  InvalidateAncestorFormsForAutofill(insertion_point);
 
   if (insertion_point.isConnected()) {
     // We don't insist on form_ being non-null as the form does not take care of
