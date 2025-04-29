@@ -4183,12 +4183,6 @@ const FeatureEntry::FeatureVariation kTranslationAPIVariations[] = {
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_ANDROID)
-const FeatureEntry::FeatureParam kClayBlockingWithFakeBackend[] = {
-    {"use_fake_backend", "true"}};
-const FeatureEntry::FeatureVariation kClayBlockingVariations[] = {
-    {"(with fake backend)", kClayBlockingWithFakeBackend,
-     std::size(kClayBlockingWithFakeBackend), nullptr}};
-
 const FeatureEntry::FeatureParam kSensitiveContentUsePwmHeuristics[] = {
     {"sensitive_content_use_pwm_heuristics", "true"}};
 
@@ -5654,9 +5648,7 @@ const FeatureEntry kFeatureEntries[] = {
 #if BUILDFLAG(IS_ANDROID)
     {"clay-blocking-dialog", flag_descriptions::kClayBlockingDialogName,
      flag_descriptions::kClayBlockingDialogDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(switches::kClayBlocking,
-                                    kClayBlockingVariations,
-                                    "ClayBlocking")},
+     FEATURE_VALUE_TYPE(switches::kClayBlocking)},
 
     {"force-off-text-autosizing",
      flag_descriptions::kForceOffTextAutosizingName,
