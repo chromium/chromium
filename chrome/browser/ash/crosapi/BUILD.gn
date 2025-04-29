@@ -63,8 +63,6 @@ static_library("crosapi") {
     "multi_capture_service_ash.h",
     "networking_attributes_ash.cc",
     "networking_attributes_ash.h",
-    "networking_private_ash.cc",
-    "networking_private_ash.h",
     "parent_access_ash.cc",
     "parent_access_ash.h",
     "payment_app_instance_ash.cc",

@@ -32,7 +32,6 @@
 #include "chrome/browser/ash/crosapi/media_ui_ash.h"
 #include "chrome/browser/ash/crosapi/multi_capture_service_ash.h"
 #include "chrome/browser/ash/crosapi/networking_attributes_ash.h"
-#include "chrome/browser/ash/crosapi/networking_private_ash.h"
 #include "chrome/browser/ash/crosapi/parent_access_ash.h"
 #include "chrome/browser/ash/crosapi/payment_app_instance_ash.h"
 #include "chrome/browser/ash/crosapi/remoting_ash.h"
@@ -126,7 +125,6 @@ CrosapiAsh::CrosapiAsh()
       media_ui_ash_(std::make_unique<MediaUIAsh>()),
       multi_capture_service_ash_(std::make_unique<MultiCaptureServiceAsh>()),
       networking_attributes_ash_(std::make_unique<NetworkingAttributesAsh>()),
-      networking_private_ash_(std::make_unique<NetworkingPrivateAsh>()),
       parent_access_ash_(std::make_unique<ParentAccessAsh>()),
       payment_app_instance_ash_(std::make_unique<PaymentAppInstanceAsh>()),
       telemetry_diagnostic_routine_service_ash_(
@@ -329,11 +327,6 @@ void CrosapiAsh::BindNetworkChange(
 void CrosapiAsh::BindNetworkingAttributes(
     mojo::PendingReceiver<mojom::NetworkingAttributes> receiver) {
   networking_attributes_ash_->BindReceiver(std::move(receiver));
-}
-
-void CrosapiAsh::BindNetworkingPrivate(
-    mojo::PendingReceiver<mojom::NetworkingPrivate> receiver) {
-  networking_private_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindParentAccess(

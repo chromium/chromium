@@ -61,7 +61,6 @@ class LoginStateAsh;
 class MediaUIAsh;
 class MultiCaptureServiceAsh;
 class NetworkingAttributesAsh;
-class NetworkingPrivateAsh;
 class ParentAccessAsh;
 class PaymentAppInstanceAsh;
 class RemotingAsh;
@@ -149,8 +148,6 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<mojom::NetworkChange> receiver) override;
   void BindNetworkingAttributes(
       mojo::PendingReceiver<mojom::NetworkingAttributes> receiver) override;
-  void BindNetworkingPrivate(
-      mojo::PendingReceiver<mojom::NetworkingPrivate> receiver) override;
   void BindParentAccess(
       mojo::PendingReceiver<mojom::ParentAccess> receiver) override;
   void BindPaymentAppInstance(
@@ -237,10 +234,6 @@ class CrosapiAsh : public mojom::Crosapi {
     return networking_attributes_ash_.get();
   }
 
-  NetworkingPrivateAsh* networking_private_ash() {
-    return networking_private_ash_.get();
-  }
-
   ParentAccessAsh* parent_access_ash() { return parent_access_ash_.get(); }
 
   PaymentAppInstanceAsh* payment_app_instance_ash() {
@@ -289,7 +282,6 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<MediaUIAsh> media_ui_ash_;
   std::unique_ptr<MultiCaptureServiceAsh> multi_capture_service_ash_;
   std::unique_ptr<NetworkingAttributesAsh> networking_attributes_ash_;
-  std::unique_ptr<NetworkingPrivateAsh> networking_private_ash_;
   std::unique_ptr<ParentAccessAsh> parent_access_ash_;
   std::unique_ptr<PaymentAppInstanceAsh> payment_app_instance_ash_;
   std::unique_ptr<ash::TelemetryDiagnosticsRoutineServiceAsh>

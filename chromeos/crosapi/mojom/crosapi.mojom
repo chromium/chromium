@@ -162,12 +162,7 @@ interface Crosapi {
   // BindEmojiPicker@89 was removed.
   // BindExtensionInfoPrivate@75 was removed.
   // REMOVED_105@105 was removed.
-
-  // NetworkingPrivate is a service that allows users to modify
-  // network settings in Lacros. Implemented in Ash.
-  [MinVersion=80] BindNetworkingPrivate@83(
-      pending_receiver<NetworkingPrivate> receiver);
-
+  // BindNetworkingPrivate@83 was removed.
   // BindExtensionPublisher@73 was removed.
 
   // Binds the bridge implemented in Ash which is connected to the
