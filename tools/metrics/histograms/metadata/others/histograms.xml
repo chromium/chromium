@@ -7713,7 +7713,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PointingStick.Acceleration{PreferenceChangeType}"
-    enum="BooleanEnabled" expires_after="2025-06-11">
+    enum="BooleanEnabled" expires_after="2026-06-11">
   <owner>dpad@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -7727,7 +7727,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PointingStick.PointerSensitivity{PreferenceChangeType}"
-    enum="PointerSensitivity" expires_after="2025-06-11">
+    enum="PointerSensitivity" expires_after="2026-06-11">
   <owner>dpad@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -7740,7 +7740,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PointingStick.PrimaryButtonRight{PreferenceChangeType}"
-    enum="PointerPrimaryButton" expires_after="2025-06-11">
+    enum="PointerPrimaryButton" expires_after="2026-06-11">
   <owner>dpad@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
