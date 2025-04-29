@@ -404,10 +404,10 @@ export declare interface GlicBrowserHost {
 
   /**
    * Opens the OS permission settings page for the given permission type.
-   * Supports `media` for microphone and `geolocation` for location. This
-   * function is available when running on Mac.
+   * Supports `media` for microphone and `geolocation` for location.
+   * @throws {Error} if the permission type is not supported.
    */
-  openOsPermissionSettingsMenu?(permission: string): void;
+  openOsPermissionSettingsMenu?(permission: OsPermissionType): void;
 
   /**
    * Get the status of the OS Microphone permission currently granted to Chrome.
@@ -431,6 +431,8 @@ export declare interface GlicBrowserHost {
   getZeroStateSuggestionsForFocusedTab?
       (is_first_run?: boolean): Promise<ZeroStateSuggestions>;
 }
+/** Fields of interest from the system settings page. */
+export type OsPermissionType = 'media'|'geolocation';
 
 /** Fields of interest from the Glic settings page. */
 export enum SettingsPageField {
@@ -1178,6 +1180,7 @@ export interface BackwardsCompatibleTypes {
   webClient: GlicWebClient;
   webPageData: WebPageData;
   openSettingsOptions: OpenSettingsOptions;
+  osPermissionType: OsPermissionType;
   zeroStateSuggestions: ZeroStateSuggestions;
 }
 
