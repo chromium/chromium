@@ -8,12 +8,12 @@
 
 #include "base/bits.h"
 #include "base/check_op.h"
-#include "base/debug/alias.h"
 #include "base/logging.h"
 #include "base/memory/page_size.h"
 #include "base/memory/shared_memory_tracker.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/posix/eintr_wrapper.h"
+#include "base/types/expected.h"
 #include "third_party/ashmem/ashmem.h"
 
 namespace base {
@@ -39,11 +39,11 @@ int GetAshmemRegionProtectionMask(int fd) {
 }  // namespace
 
 // static
-PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Take(
-    ScopedFD fd,
-    Mode mode,
-    size_t size,
-    const UnguessableToken& guid) {
+expected<PlatformSharedMemoryRegion, PlatformSharedMemoryRegion::TakeError>
+PlatformSharedMemoryRegion::TakeOrFail(ScopedFD fd,
+                                       Mode mode,
+                                       size_t size,
+                                       const UnguessableToken& guid) {
   if (!fd.is_valid()) {
     return {};
   }
@@ -56,12 +56,10 @@ PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Take(
     return {};
   }
 
-  PermissionModeCheckResult result =
-      CheckPlatformHandlePermissionsCorrespondToMode(fd.get(), mode, size);
-  base::debug::Alias(&result);
-  CHECK_EQ(PermissionModeCheckResult::kOk, result);
-
-  return PlatformSharedMemoryRegion(std::move(fd), mode, size, guid);
+  return CheckPlatformHandlePermissionsCorrespondToMode(fd.get(), mode, size)
+      .transform([&] {
+        return PlatformSharedMemoryRegion(std::move(fd), mode, size, guid);
+      });
 }
 
 int PlatformSharedMemoryRegion::GetPlatformHandle() const {
@@ -165,26 +163,25 @@ PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Create(Mode mode,
   return PlatformSharedMemoryRegion(std::move(scoped_fd), mode, size, guid);
 }
 
-PlatformSharedMemoryRegion::PermissionModeCheckResult
+expected<void, PlatformSharedMemoryRegion::TakeError>
 PlatformSharedMemoryRegion::CheckPlatformHandlePermissionsCorrespondToMode(
     PlatformSharedMemoryHandle handle,
     Mode mode,
     size_t size) {
   int prot = GetAshmemRegionProtectionMask(handle);
   if (prot < 0) {
-    return PermissionModeCheckResult::kFailedToGetAshmemRegionProtectionMask;
+    return unexpected(TakeError::kFailedToGetAshmemRegionProtectionMask);
   }
 
   bool is_read_only = (prot & PROT_WRITE) == 0;
   bool expected_read_only = mode == Mode::kReadOnly;
 
   if (is_read_only != expected_read_only) {
-    return expected_read_only
-               ? PermissionModeCheckResult::kExpectedReadOnlyButNot
-               : PermissionModeCheckResult::kExpectedWritableButNot;
+    return unexpected(expected_read_only ? TakeError::kExpectedReadOnlyButNot
+                                         : TakeError::kExpectedWritableButNot);
   }
 
-  return PermissionModeCheckResult::kOk;
+  return ok();
 }
 
 PlatformSharedMemoryRegion::PlatformSharedMemoryRegion(

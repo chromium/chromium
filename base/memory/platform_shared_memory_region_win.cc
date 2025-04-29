@@ -11,12 +11,12 @@
 #include "base/bits.h"
 #include "base/check.h"
 #include "base/check_op.h"
-#include "base/debug/alias.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/process/process_handle.h"
 #include "base/strings/string_util.h"
+#include "base/types/expected.h"
 #include "partition_alloc/page_allocator.h"
 
 namespace base::subtle {
@@ -98,11 +98,11 @@ HANDLE CreateFileMappingWithReducedPermissions(SECURITY_ATTRIBUTES* sa,
 }  // namespace
 
 // static
-PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Take(
-    win::ScopedHandle handle,
-    Mode mode,
-    size_t size,
-    const UnguessableToken& guid) {
+expected<PlatformSharedMemoryRegion, PlatformSharedMemoryRegion::TakeError>
+PlatformSharedMemoryRegion::TakeOrFail(win::ScopedHandle handle,
+                                       Mode mode,
+                                       size_t size,
+                                       const UnguessableToken& guid) {
   if (!handle.is_valid()) {
     return {};
   }
@@ -119,12 +119,11 @@ PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Take(
     return {};
   }
 
-  PermissionModeCheckResult result =
-      CheckPlatformHandlePermissionsCorrespondToMode(handle.get(), mode, size);
-  base::debug::Alias(&result);
-  CHECK_EQ(PermissionModeCheckResult::kOk, result);
-
-  return PlatformSharedMemoryRegion(std::move(handle), mode, size, guid);
+  return CheckPlatformHandlePermissionsCorrespondToMode(handle.get(), mode,
+                                                        size)
+      .transform([&] {
+        return PlatformSharedMemoryRegion(std::move(handle), mode, size, guid);
+      });
 }
 
 HANDLE PlatformSharedMemoryRegion::GetPlatformHandle() const {
@@ -247,7 +246,7 @@ PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Create(Mode mode,
 }
 
 // static
-PlatformSharedMemoryRegion::PermissionModeCheckResult
+expected<void, PlatformSharedMemoryRegion::TakeError>
 PlatformSharedMemoryRegion::CheckPlatformHandlePermissionsCorrespondToMode(
     PlatformSharedMemoryHandle handle,
     Mode mode,
@@ -267,12 +266,11 @@ PlatformSharedMemoryRegion::CheckPlatformHandlePermissionsCorrespondToMode(
   bool expected_read_only = mode == Mode::kReadOnly;
 
   if (is_read_only != expected_read_only) {
-    return expected_read_only
-               ? PermissionModeCheckResult::kExpectedReadOnlyButNot
-               : PermissionModeCheckResult::kExpectedWritableButNot;
+    return unexpected(expected_read_only ? TakeError::kExpectedReadOnlyButNot
+                                         : TakeError::kExpectedWritableButNot);
   }
 
-  return PermissionModeCheckResult::kOk;
+  return ok();
 }
 
 PlatformSharedMemoryRegion::PlatformSharedMemoryRegion(

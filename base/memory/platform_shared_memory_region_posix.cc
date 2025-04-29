@@ -10,12 +10,12 @@
 #include <optional>
 
 #include "base/check_op.h"
-#include "base/debug/alias.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/types/expected.h"
 #include "build/build_config.h"
 
 namespace base::subtle {
@@ -74,11 +74,11 @@ ScopedFD PlatformSharedMemoryRegion::ExecutableRegion::CreateFD(size_t size) {
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 // static
-PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Take(
-    ScopedFDPair handle,
-    Mode mode,
-    size_t size,
-    const UnguessableToken& guid) {
+expected<PlatformSharedMemoryRegion, PlatformSharedMemoryRegion::TakeError>
+PlatformSharedMemoryRegion::TakeOrFail(ScopedFDPair handle,
+                                       Mode mode,
+                                       size_t size,
+                                       const UnguessableToken& guid) {
   if (!handle.fd.is_valid()) {
     return {};
   }
@@ -91,14 +91,16 @@ PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Take(
     return {};
   }
 
-  PermissionModeCheckResult result =
+  expected<void, TakeError> result =
       CheckPlatformHandlePermissionsCorrespondToMode(handle.get(), mode, size);
-  base::debug::Alias(&result);
-  CHECK_EQ(PermissionModeCheckResult::kOk, result);
+  if (!result.has_value()) {
+    return unexpected(result.error());
+  }
 
   switch (mode) {
     case Mode::kReadOnly:
     case Mode::kUnsafe:
+      // TODO(dcheng): This may not be reachable given the above.
       if (handle.readonly_fd.is_valid()) {
         handle.readonly_fd.reset();
         DLOG(WARNING) << "Readonly handle shouldn't be valid for a "
@@ -106,6 +108,7 @@ PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Take(
       }
       break;
     case Mode::kWritable:
+      // TODO(dcheng): This may not be reachable given the above.
       if (!handle.readonly_fd.is_valid()) {
         DLOG(ERROR)
             << "Readonly handle must be valid for writable memory region";
@@ -283,7 +286,7 @@ PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Create(Mode mode,
 #endif  // !BUILDFLAG(IS_NACL)
 }
 
-PlatformSharedMemoryRegion::PermissionModeCheckResult
+expected<void, PlatformSharedMemoryRegion::TakeError>
 PlatformSharedMemoryRegion::CheckPlatformHandlePermissionsCorrespondToMode(
     PlatformSharedMemoryHandle handle,
     Mode mode,
@@ -294,11 +297,11 @@ PlatformSharedMemoryRegion::CheckPlatformHandlePermissionsCorrespondToMode(
       result.has_value()) {
     switch (*result) {
       case FDAccessModeError::kFcntlFailed:
-        return PermissionModeCheckResult::kFcntlFailed;
+        return unexpected(TakeError::kFcntlFailed);
       case FDAccessModeError::kMismatch:
-        return mode == Mode::kReadOnly
-                   ? PermissionModeCheckResult::kExpectedReadOnlyButNot
-                   : PermissionModeCheckResult::kExpectedWritableButNot;
+        return unexpected(mode == Mode::kReadOnly
+                              ? TakeError::kExpectedReadOnlyButNot
+                              : TakeError::kExpectedWritableButNot);
     }
   }
 
@@ -307,25 +310,25 @@ PlatformSharedMemoryRegion::CheckPlatformHandlePermissionsCorrespondToMode(
         result.has_value()) {
       switch (*result) {
         case FDAccessModeError::kFcntlFailed:
-          return PermissionModeCheckResult::kFcntlFailed;
+          return unexpected(TakeError::kFcntlFailed);
         case FDAccessModeError::kMismatch:
-          return PermissionModeCheckResult::kReadOnlyFdNotReadOnly;
+          return unexpected(TakeError::kReadOnlyFdNotReadOnly);
       }
     }
-    return PermissionModeCheckResult::kOk;
+    return ok();
   }
 
   // The second descriptor must be invalid in kReadOnly and kUnsafe modes.
   if (handle.readonly_fd != -1) {
-    return PermissionModeCheckResult::kUnexpectedReadOnlyFd;
+    return unexpected(TakeError::kUnexpectedReadOnlyFd);
   }
 
-  return PermissionModeCheckResult::kOk;
+  return ok();
 #else
   // fcntl(_, F_GETFL) is not implemented on NaCl.
   // We also cannot try to mmap() a region as writable and look at the return
   // status because the plugin process crashes if system mmap() fails.
-  return PermissionModeCheckResult::kOk;
+  return ok();
 #endif  // !BUILDFLAG(IS_NACL)
 }
 

@@ -9,16 +9,16 @@
 #include "base/apple/mach_logging.h"
 #include "base/apple/scoped_mach_vm.h"
 #include "base/check_op.h"
-#include "base/debug/alias.h"
+#include "base/types/expected.h"
 
 namespace base::subtle {
 
 // static
-PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Take(
-    apple::ScopedMachSendRight handle,
-    Mode mode,
-    size_t size,
-    const UnguessableToken& guid) {
+expected<PlatformSharedMemoryRegion, PlatformSharedMemoryRegion::TakeError>
+PlatformSharedMemoryRegion::TakeOrFail(apple::ScopedMachSendRight handle,
+                                       Mode mode,
+                                       size_t size,
+                                       const UnguessableToken& guid) {
   if (!handle.is_valid()) {
     return {};
   }
@@ -31,12 +31,11 @@ PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Take(
     return {};
   }
 
-  PermissionModeCheckResult result =
-      CheckPlatformHandlePermissionsCorrespondToMode(handle.get(), mode, size);
-  base::debug::Alias(&result);
-  CHECK_EQ(PermissionModeCheckResult::kOk, result);
-
-  return PlatformSharedMemoryRegion(std::move(handle), mode, size, guid);
+  return CheckPlatformHandlePermissionsCorrespondToMode(handle.get(), mode,
+                                                        size)
+      .transform([&] {
+        return PlatformSharedMemoryRegion(std::move(handle), mode, size, guid);
+      });
 }
 
 mach_port_t PlatformSharedMemoryRegion::GetPlatformHandle() const {
@@ -159,7 +158,7 @@ PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Create(Mode mode,
 }
 
 // static
-PlatformSharedMemoryRegion::PermissionModeCheckResult
+expected<void, PlatformSharedMemoryRegion::TakeError>
 PlatformSharedMemoryRegion::CheckPlatformHandlePermissionsCorrespondToMode(
     PlatformSharedMemoryHandle handle,
     Mode mode,
@@ -177,19 +176,18 @@ PlatformSharedMemoryRegion::CheckPlatformHandlePermissionsCorrespondToMode(
         << "vm_deallocate";
   } else if (kr != KERN_INVALID_RIGHT) {
     MACH_LOG(ERROR, kr) << "vm_map";
-    return PermissionModeCheckResult::kVmMapFailed;
+    return unexpected(TakeError::kVmMapFailed);
   }
 
   bool is_read_only = kr == KERN_INVALID_RIGHT;
   bool expected_read_only = mode == Mode::kReadOnly;
 
   if (is_read_only != expected_read_only) {
-    return expected_read_only
-               ? PermissionModeCheckResult::kExpectedReadOnlyButNot
-               : PermissionModeCheckResult::kExpectedWritableButNot;
+    return unexpected(expected_read_only ? TakeError::kExpectedReadOnlyButNot
+                                         : TakeError::kExpectedWritableButNot);
   }
 
-  return PermissionModeCheckResult::kOk;
+  return ok();
 }
 
 PlatformSharedMemoryRegion::PlatformSharedMemoryRegion(
