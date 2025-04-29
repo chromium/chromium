@@ -265,7 +265,7 @@ public class AuxiliarySearchBackgroundTask extends NativeBackgroundTask {
 
     private void destroy() {
         if (mAuxiliarySearchController != null) {
-            mAuxiliarySearchController.destroy();
+            mAuxiliarySearchController.destroy(/* lifecycleDispatcher= */ null);
             mAuxiliarySearchController = null;
         }
         if (mFaviconHelper != null) {

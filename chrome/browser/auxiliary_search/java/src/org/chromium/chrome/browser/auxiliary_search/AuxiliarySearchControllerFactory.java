@@ -25,10 +25,14 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 public class AuxiliarySearchControllerFactory {
     private final @Nullable AuxiliarySearchHooks mHooks;
 
+    private boolean mSupportMultiDataSource;
+
     private @Nullable AuxiliarySearchHooks mHooksForTesting;
 
     /** It tracks whether the current device is a tablet. */
     private @Nullable Boolean mIsTablet;
+
+    private @Nullable AuxiliarySearchController mAuxiliarySearchMultiDataController;
 
     /** Static class that implements the initialization-on-demand holder idiom. */
     private static class LazyHolder {
@@ -42,6 +46,7 @@ public class AuxiliarySearchControllerFactory {
 
     private AuxiliarySearchControllerFactory() {
         mHooks = ServiceLoaderUtil.maybeCreate(AuxiliarySearchHooks.class);
+        mSupportMultiDataSource = isMultiDataTypeEnabledOnDevice();
     }
 
     /** Returns whether the hook is enabled on device. */
@@ -97,6 +102,15 @@ public class AuxiliarySearchControllerFactory {
         }
 
         assert ChromeFeatureList.sAndroidAppIntegrationV2.isEnabled();
+        if (mSupportMultiDataSource && hostType == AuxiliarySearchHostType.CTA) {
+            if (mAuxiliarySearchMultiDataController == null) {
+                mAuxiliarySearchMultiDataController =
+                        new AuxiliarySearchMultiDataControllerImpl(
+                                context, profile, AuxiliarySearchHostType.CTA);
+            }
+            return mAuxiliarySearchMultiDataController;
+        }
+
         return new AuxiliarySearchControllerImpl(context, profile, tabModelSelector, hostType);
     }
 
@@ -141,6 +155,12 @@ public class AuxiliarySearchControllerFactory {
     public void setHooksForTesting(AuxiliarySearchHooks instanceForTesting) {
         mHooksForTesting = instanceForTesting;
         ResettersForTesting.register(() -> mHooksForTesting = null);
+    }
+
+    public void setSupportMultiDataSourceForTesting(boolean supportMultiDataSource) {
+        boolean oldValue = mSupportMultiDataSource;
+        mSupportMultiDataSource = supportMultiDataSource;
+        ResettersForTesting.register(() -> mSupportMultiDataSource = oldValue);
     }
 
     public void resetIsTabletForTesting() {

@@ -97,6 +97,13 @@ public class AuxiliarySearchControllerFactoryUnitTest {
                 mFactory.createAuxiliarySearchController(
                         mContext, mProfile, mTabModelSelector, AuxiliarySearchHostType.CTA);
         assertTrue(controller instanceof AuxiliarySearchControllerImpl);
+
+        // Enables donating multiple data sources.
+        mFactory.setSupportMultiDataSourceForTesting(true);
+        controller =
+                mFactory.createAuxiliarySearchController(
+                        mContext, mProfile, mTabModelSelector, AuxiliarySearchHostType.CTA);
+        assertTrue(controller instanceof AuxiliarySearchMultiDataControllerImpl);
     }
 
     @Test
