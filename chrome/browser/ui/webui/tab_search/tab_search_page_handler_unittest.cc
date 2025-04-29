@@ -34,6 +34,7 @@
 #include "chrome/browser/ui/webui/metrics_reporter/mock_metrics_reporter.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search.mojom-forward.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search_ui.h"
+#include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -177,6 +178,7 @@ class TabSearchPageHandlerTest : public BrowserWithTestWindowTest {
     web_contents_ = content::WebContents::Create(
         content::WebContents::CreateParams(profile()));
     web_ui_.set_web_contents(web_contents_.get());
+    webui::SetBrowserWindowInterface(web_contents_.get(), browser());
     profile2_ = profile_manager()->CreateTestingProfile(
         "testing_profile2", nullptr, std::u16string(), 0,
         GetTestingFactories());
@@ -186,7 +188,7 @@ class TabSearchPageHandlerTest : public BrowserWithTestWindowTest {
         false);
     browser4_ = CreateTestBrowser(profile2(), false);
     browser5_ = CreateTestBrowser(profile1(), true);
-    BrowserList::SetLastActive(browser1());
+    browser1()->DidBecomeActive();
     webui_controller_ = std::make_unique<TabSearchUI>(web_ui());
     handler_ = std::make_unique<TestTabSearchPageHandler>(
         page_.BindAndGetRemote(), web_ui(), webui_controller_.get());
@@ -264,7 +266,6 @@ class TabSearchPageHandlerTest : public BrowserWithTestWindowTest {
 
     std::unique_ptr<Browser> browser =
         CreateBrowser(profile, type, false, window.get());
-    BrowserList::SetLastActive(browser.get());
     // Self deleting.
     new TestBrowserWindowOwner(std::move(window));
     return browser;

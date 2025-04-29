@@ -1304,6 +1304,10 @@ Browser* Browser::GetBrowserForMigrationOnly() {
   return this;
 }
 
+void Browser::ActivateWindow() {
+  window_->Activate();
+}
+
 bool Browser::IsTabModalPopup() const {
   return is_tab_modal_popup_;
 }

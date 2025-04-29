@@ -79,6 +79,7 @@ class MockBrowserWindowInterface : public BrowserWindowInterface {
               (),
               (override));
   MOCK_METHOD(Browser*, GetBrowserForMigrationOnly, (), (override));
+  MOCK_METHOD(void, ActivateWindow, (), (override));
   MOCK_METHOD(void,
               SetWebContentsBlocked,
               (content::WebContents*, bool),
