@@ -4735,61 +4735,6 @@ deps = {
       'condition': 'checkout_android and checkout_src_internal',
   },
 
-  'src/third_party/libassistant/x64': {
-    'packages': [
-        {
-            'package': 'chromeos_internal/assistant/libassistant/libassistant_cros_device/x86_64/internal',
-            'version': 'CmuG4T_84hgqYyVPLppHO_cYpXPoYIFpJNT5wC5iGZgC',
-        },
-    ],
-    'condition': 'checkout_src_internal and checkout_chromeos',
-    'dep_type': 'cipd',
-  },
-
- 'src/third_party/libassistant/arm64': {
-    'packages': [
-        {
-            'package': 'chromeos_internal/assistant/libassistant/libassistant_cros_device/arm64/internal',
-            'version': '0gwaQvw-4Jne1dvCdVsGRVHcADdvSLBy172ar-FFyIoC',
-        },
-    ],
-    'condition': 'checkout_src_internal and checkout_chromeos',
-    'dep_type': 'cipd',
-  },
-
- 'src/third_party/libassistant/arm': {
-    'packages': [
-        {
-            'package': 'chromeos_internal/assistant/libassistant/libassistant_cros_device/arm/internal',
-            'version': 'bLW45XE7O8kCndjxEYtqdupr0tV4mgB7xKkcETBOsskC',
-        },
-    ],
-    'condition': 'checkout_src_internal and checkout_chromeos',
-    'dep_type': 'cipd',
-  },
-
- 'src/third_party/libassistant/glinux': {
-    'packages': [
-        {
-            'package': 'chromeos_internal/assistant/libassistant/libassistant_cros_glinux/x64/internal',
-            'version': '3Opw5sw239P8B6hdZCofFV_16gGsW5nJbuoA93doiAkC',
-        },
-    ],
-    'condition': 'checkout_src_internal and checkout_chromeos',
-    'dep_type': 'cipd',
-  },
-
- 'src/third_party/libassistant/fake_s3_server': {
-    'packages': [
-        {
-            'package': 'chromeos_internal/assistant/libassistant/fake_s3_server_cros_glinux/x64/internal',
-            'version': '7BVkGvAvW0XDvbHj3P4-e6TAxssx6_PC2L0eQBLWyP8C',
-        },
-    ],
-    'condition': 'checkout_src_internal and checkout_chromeos',
-    'dep_type': 'cipd',
-  },
-
   'src/third_party/screen-ai/linux': {
       'packages': [
           {
