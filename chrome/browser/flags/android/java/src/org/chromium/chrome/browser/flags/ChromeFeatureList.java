@@ -1457,6 +1457,10 @@ public abstract class ChromeFeatureList {
             sAndroidNativePagesInNewTabDownloadsEnabled =
             sAndroidNativePagesInNewTab.newBooleanParam(
                     "android_native_pages_in_new_tab_downloads_enabled", true);
+    public static final MutableBooleanParamWithSafeDefault
+            sAndroidNativePagesInNewTabHistoryEnabled =
+            sAndroidNativePagesInNewTab.newBooleanParam(
+                    "android_native_pages_in_new_tab_history_enabled", true);
     public static final MutableBooleanParamWithSafeDefault sAndroidTabDeclutterArchiveEnabled =
             sAndroidTabDeclutter.newBooleanParam("android_tab_declutter_archive_enabled", true);
     public static final MutableIntParamWithSafeDefault sAndroidTabDeclutterArchiveTimeDeltaHours =
