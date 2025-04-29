@@ -253,6 +253,13 @@ public class TabGroupSyncServiceImpl implements TabGroupSyncService {
                 .updateArchivalStatus(mNativePtr, this, syncTabGroupId, archivalStatus);
     }
 
+    @Override
+    public void setCollaborationAvailableInFinderForTesting(String collaborationId) {
+        if (mNativePtr == 0) return;
+        TabGroupSyncServiceImplJni.get()
+                .setCollaborationAvailableInFinderForTesting(mNativePtr, this, collaborationId);
+    }
+
     @CalledByNative
     private void clearNativePtr() {
         mNativePtr = 0;
@@ -442,5 +449,10 @@ public class TabGroupSyncServiceImpl implements TabGroupSyncService {
                 TabGroupSyncServiceImpl caller,
                 String syncTabGroupId,
                 boolean archivalStatus);
+
+        void setCollaborationAvailableInFinderForTesting(
+                long nativeTabGroupSyncServiceAndroid,
+                TabGroupSyncServiceImpl caller,
+                String collaborationId);
     }
 }
