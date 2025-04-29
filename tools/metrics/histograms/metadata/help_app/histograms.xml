@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="Discover.Overall.AppLaunched" enum="LaunchSource"
-    expires_after="2025-08-24">
+    expires_after="2025-10-26">
   <owner>callistus@google.com</owner>
   <owner>showoff-eng@google.com</owner>
   <summary>

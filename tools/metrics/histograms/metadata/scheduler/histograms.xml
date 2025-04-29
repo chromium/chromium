@@ -45,7 +45,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Scheduling.DBusSchedQoS.PidReusedOnSetProcessState"
-    enum="PidReuseResult" expires_after="2025-08-24">
+    enum="PidReuseResult" expires_after="2025-10-26">
   <owner>kawasin@google.com</owner>
   <owner>joelaf@google.com</owner>
   <summary>
@@ -59,7 +59,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Scheduling.DBusSchedQoS.PidReusedOnSetThreadState"
-    enum="PidReuseResult" expires_after="2025-08-24">
+    enum="PidReuseResult" expires_after="2025-10-26">
   <owner>kawasin@google.com</owner>
   <owner>joelaf@google.com</owner>
   <summary>
@@ -85,7 +85,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Scheduling.DBusSchedQoS.SetProcessStateLatency"
-    units="microseconds" expires_after="2025-08-24">
+    units="microseconds" expires_after="2025-10-26">
   <owner>kawasin@google.com</owner>
   <owner>joelaf@google.com</owner>
   <summary>
@@ -96,7 +96,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Scheduling.DBusSchedQoS.SetThreadStateLatency"
-    units="microseconds" expires_after="2025-08-24">
+    units="microseconds" expires_after="2025-10-26">
   <owner>kawasin@google.com</owner>
   <owner>joelaf@google.com</owner>
   <summary>
