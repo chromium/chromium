@@ -181,6 +181,9 @@ class DualLayerUserPrefStoreTestBase : public testing::Test {
       local_store_->NotifyInitializationCompleted();
       account_store_->NotifyInitializationCompleted();
     }
+    // Set preferences user selected type by default.
+    dual_layer_store_->SetUserSelectedTypesForTest(
+        {syncer::UserSelectableType::kPreferences});
   }
 
   TestingPrefStore* local_store() { return local_store_.get(); }
