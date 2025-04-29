@@ -49,4 +49,13 @@ int SysInfo::NumberOfEfficientProcessorsImpl() {
   return num_of_efficient_processors;
 }
 
+// static
+uint64_t SysInfo::AmountOfPhysicalMemoryImpl() {
+  uint64_t physical_memory;
+  size_t size = sizeof(physical_memory);
+  int rv = sysctlbyname("hw.memsize", &physical_memory, &size, nullptr, 0);
+  PCHECK(rv == 0) << "sysctlbyname(\"hw.memsize\")";
+  return physical_memory;
+}
+
 }  // namespace base
