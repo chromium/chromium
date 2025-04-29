@@ -237,14 +237,30 @@ IOSurfaceBackingEGLState::IOSurfaceBackingEGLState(
       context_(gl_context),
       surface_(gl_surface),
       gl_target_(gl_target),
-      gl_textures_(std::move(gl_textures)) {
+      gl_textures_(std::move(gl_textures)),
+      created_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {
   client_->IOSurfaceBackingEGLStateBeingCreated(this);
 }
 
 IOSurfaceBackingEGLState::~IOSurfaceBackingEGLState() {
+  // To use ui::ScopedMakeCurrent, this funciton must be called on the same
+  // thread where it got its current context context during creation.
   ui::ScopedMakeCurrent smc(context_.get(), surface_.get());
-  client_->IOSurfaceBackingEGLStateBeingDestroyed(this, !context_lost_);
-  DCHECK(gl_textures_.empty());
+  if (client_) {
+    // IOSurfaceBackingEGLState is destroyed directly from the same thread.
+    client_->IOSurfaceBackingEGLStateBeingDestroyed(this, !context_lost_);
+    DCHECK(gl_textures_.empty());
+  } else {
+    // ~IOSurfaceBackingEGLState is posted from the other thread when the
+    // client_ (IOSurfaceImageBacking) was destroyed.
+    if (context_lost_) {
+      for (const auto& texture : gl_textures_) {
+        texture->MarkContextLost();
+      }
+    }
+    gl_textures_.clear();
+    egl_surfaces_.clear();
+  }
 }
 
 GLuint IOSurfaceBackingEGLState::GetGLServiceId(int plane_index) const {
@@ -263,7 +279,16 @@ void IOSurfaceBackingEGLState::EndAccess(bool readonly) {
 }
 
 void IOSurfaceBackingEGLState::WillRelease(bool have_context) {
-  context_lost_ |= !have_context;
+  if (!have_context) {
+    context_lost_ = true;
+  }
+}
+
+void IOSurfaceBackingEGLState::RemoveClient() {
+  client_ = nullptr;
+}
+bool IOSurfaceBackingEGLState::BelongsToCurrentThread() const {
+  return created_task_runner_->BelongsToCurrentThread();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1061,7 +1086,24 @@ IOSurfaceImageBacking::~IOSurfaceImageBacking() {
   AutoLock auto_lock(this);
   if (egl_state_for_skia_gl_context_) {
     egl_state_for_skia_gl_context_->WillRelease(have_context());
-    egl_state_for_skia_gl_context_ = nullptr;
+
+    if (egl_state_for_skia_gl_context_->BelongsToCurrentThread()) {
+      egl_state_for_skia_gl_context_ = nullptr;
+    } else {
+      // Remove `egl_state` from `egl_state_map_`.
+      IOSurfaceBackingEGLState* egl_state =
+          egl_state_for_skia_gl_context_.get();
+      auto found = egl_state_map_.find(egl_state->egl_display_);
+      CHECK(found != egl_state_map_.end());
+      CHECK(found->second == egl_state);
+      egl_state_map_.erase(found);
+
+      egl_state_for_skia_gl_context_->RemoveClient();
+      base::SingleThreadTaskRunner* task_runner =
+          egl_state_for_skia_gl_context_->created_task_runner_.get();
+      task_runner->PostTask(FROM_HERE, base::DoNothingWithBoundArgs(std::move(
+                                           egl_state_for_skia_gl_context_)));
+    }
   }
   DCHECK(egl_state_map_.empty());
 }
@@ -1777,7 +1819,7 @@ bool IOSurfaceImageBacking::IOSurfaceBackingEGLStateBeginAccess(
 
     // Bind the IOSurface to the GL texture.
     if (!egl_state->egl_surfaces_[plane_index]->BindTexImage()) {
-      LOG(ERROR) << "Failed to bind ScopedEGLSurfaceIOSurface to target";
+      LOG(ERROR) << "Failed to bind ScopedEGLSurfaceIOSurface to target.";
       EndAccess(readonly);
       return false;
     }

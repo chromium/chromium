@@ -68,6 +68,8 @@ struct IOSurfaceBackingEGLState : base::RefCounted<IOSurfaceBackingEGLState> {
   bool is_bind_pending() const { return is_bind_pending_; }
   void set_bind_pending() { is_bind_pending_ = true; }
   void clear_bind_pending() { is_bind_pending_ = false; }
+  void RemoveClient();
+  bool BelongsToCurrentThread() const;
 
  private:
   friend class base::RefCounted<IOSurfaceBackingEGLState>;
@@ -77,7 +79,7 @@ struct IOSurfaceBackingEGLState : base::RefCounted<IOSurfaceBackingEGLState> {
   friend class IOSurfaceImageBacking;
 
   // The interface through which to call into IOSurfaceImageBacking.
-  const raw_ptr<Client> client_;
+  raw_ptr<Client> client_;
 
   // The display for this GL representation.
   const EGLDisplay egl_display_;
@@ -98,6 +100,8 @@ struct IOSurfaceBackingEGLState : base::RefCounted<IOSurfaceBackingEGLState> {
   bool is_bind_pending_ = false;
 
   int num_ongoing_accesses_ = 0;
+
+  scoped_refptr<base::SingleThreadTaskRunner> created_task_runner_;
 
   ~IOSurfaceBackingEGLState();
 };
