@@ -42,8 +42,7 @@ MessagingBackendServiceFactory* MessagingBackendServiceFactory::GetInstance() {
 }
 
 MessagingBackendServiceFactory::MessagingBackendServiceFactory()
-    : ProfileKeyedServiceFactoryIOS("MessagingBackendService",
-                                    ProfileSelection::kNoInstanceInIncognito) {
+    : ProfileKeyedServiceFactoryIOS("MessagingBackendService") {
   DependsOn(tab_groups::TabGroupSyncServiceFactory::GetInstance());
   DependsOn(data_sharing::DataSharingServiceFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());

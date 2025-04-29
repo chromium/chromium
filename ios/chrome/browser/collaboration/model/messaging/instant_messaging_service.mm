@@ -29,14 +29,14 @@ void InstantMessagingService::DisplayInstantaneousMessage(
     case InstantNotificationLevel::SYSTEM:
       break;
     case InstantNotificationLevel::BROWSER:
-      message_displayed = ShowCollaboraitonGroupInfobar(instant_message);
+      message_displayed = ShowCollaborationGroupInfobar(instant_message);
       break;
   }
 
   std::move(success_callback).Run(message_displayed);
 }
 
-bool InstantMessagingService::ShowCollaboraitonGroupInfobar(
+bool InstantMessagingService::ShowCollaborationGroupInfobar(
     collaboration::messaging::InstantMessage instant_message) {
   bool infobar_displayed =
       CollaborationGroupInfoBarDelegate::Create(profile_, instant_message);

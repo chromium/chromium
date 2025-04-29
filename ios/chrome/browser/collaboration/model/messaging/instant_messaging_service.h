@@ -35,7 +35,7 @@ class InstantMessagingService
  private:
   // Shows a collaboration group infobar for the given `instant_message`.
   // Returns `true` if the infobar has been displayed.
-  bool ShowCollaboraitonGroupInfobar(
+  bool ShowCollaborationGroupInfobar(
       collaboration::messaging::InstantMessage instant_message);
 
   raw_ptr<ProfileIOS> profile_ = nullptr;

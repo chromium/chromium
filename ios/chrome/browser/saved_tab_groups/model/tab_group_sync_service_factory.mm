@@ -48,8 +48,9 @@ std::unique_ptr<KeyedService> BuildService(
 
   // Give the opportunity for the test hook to override the factory from
   // the provider (allowing EG tests to use a fake TabGroupSyncService).
-  if (auto sync_service = tests_hook::CreateTabGroupSyncService(profile)) {
-    return sync_service;
+  if (auto tab_group_sync_service =
+          tests_hook::CreateTabGroupSyncService(profile)) {
+    return tab_group_sync_service;
   }
 
   syncer::DeviceInfoTracker* device_info_tracker =
@@ -63,23 +64,25 @@ std::unique_ptr<KeyedService> BuildService(
       std::make_unique<collaboration::CollaborationFinderImpl>(
           data_sharing_service);
 
-  std::unique_ptr<TabGroupSyncService> sync_service = CreateTabGroupSyncService(
-      ::GetChannel(), DataTypeStoreServiceFactory::GetForProfile(profile),
-      profile->GetPrefs(), device_info_tracker, opt_guide, identity_manager,
-      std::move(collaboration_finder), synthetic_field_trial_helper,
-      data_sharing_service->GetLogger());
+  std::unique_ptr<TabGroupSyncService> tab_group_sync_service =
+      CreateTabGroupSyncService(
+          ::GetChannel(), DataTypeStoreServiceFactory::GetForProfile(profile),
+          profile->GetPrefs(), device_info_tracker, opt_guide, identity_manager,
+          std::move(collaboration_finder), synthetic_field_trial_helper,
+          data_sharing_service->GetLogger());
 
   BrowserList* browser_list = BrowserListFactory::GetForProfile(profile);
   std::unique_ptr<TabGroupLocalUpdateObserver> local_update_observer =
-      std::make_unique<TabGroupLocalUpdateObserver>(browser_list,
-                                                    sync_service.get());
+      std::make_unique<TabGroupLocalUpdateObserver>(
+          browser_list, tab_group_sync_service.get());
 
   std::unique_ptr<IOSTabGroupSyncDelegate> delegate =
       std::make_unique<IOSTabGroupSyncDelegate>(
-          browser_list, sync_service.get(), std::move(local_update_observer));
+          browser_list, tab_group_sync_service.get(),
+          std::move(local_update_observer));
 
-  sync_service->SetTabGroupSyncDelegate(std::move(delegate));
-  return sync_service;
+  tab_group_sync_service->SetTabGroupSyncDelegate(std::move(delegate));
+  return tab_group_sync_service;
 }
 }  // namespace
 

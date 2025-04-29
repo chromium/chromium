@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/share_kit/model/share_kit_service_factory.h"
 
+#import "base/check.h"
 #import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/collaboration/model/collaboration_service_factory.h"
 #import "ios/chrome/browser/collaboration/model/features.h"
@@ -32,7 +33,6 @@ ShareKitServiceFactory* ShareKitServiceFactory::GetInstance() {
 
 ShareKitServiceFactory::ShareKitServiceFactory()
     : ProfileKeyedServiceFactoryIOS("ShareKitService",
-                                    ProfileSelection::kNoInstanceInIncognito,
                                     ServiceCreation::kCreateWithProfile) {
   DependsOn(AuthenticationServiceFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
@@ -47,6 +47,7 @@ ShareKitServiceFactory::~ShareKitServiceFactory() = default;
 std::unique_ptr<KeyedService> ShareKitServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
   ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
+  CHECK(!profile->IsOffTheRecord());
 
   collaboration::CollaborationService* collaboration_service =
       collaboration::CollaborationServiceFactory::GetForProfile(profile);

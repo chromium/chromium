@@ -6,6 +6,7 @@
 
 #import <memory>
 
+#import "base/check.h"
 #import "components/collaboration/public/features.h"
 #import "ios/chrome/browser/collaboration/model/collaboration_service_factory.h"
 #import "ios/chrome/browser/collaboration/model/features.h"
@@ -28,8 +29,7 @@ InstantMessagingServiceFactory* InstantMessagingServiceFactory::GetInstance() {
 }
 
 InstantMessagingServiceFactory::InstantMessagingServiceFactory()
-    : ProfileKeyedServiceFactoryIOS("InstantMessagingService",
-                                    ProfileSelection::kNoInstanceInIncognito) {
+    : ProfileKeyedServiceFactoryIOS("InstantMessagingService") {
   DependsOn(collaboration::CollaborationServiceFactory::GetInstance());
 }
 
