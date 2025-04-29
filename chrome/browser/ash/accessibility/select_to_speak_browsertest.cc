@@ -42,6 +42,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/browsertest_util.h"
 #include "extensions/browser/extension_host_test_helper.h"
+#include "extensions/browser/extension_registry_test_helper.h"
 #include "extensions/browser/process_manager.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/accessibility_features.h"
@@ -682,6 +683,8 @@ IN_PROC_BROWSER_TEST_F(SelectToSpeakTest,
   // Wait for Fullscreen magnifier to initialize.
   extensions::ExtensionHostTestHelper host_helper(
       profile, extension_misc::kAccessibilityCommonExtensionId);
+  extensions::ExtensionRegistryTestHelper observer(
+      extension_misc::kAccessibilityCommonExtensionId, profile);
   profile->GetPrefs()->SetBoolean(prefs::kAccessibilityScreenMagnifierEnabled,
                                   true);
 
@@ -690,7 +693,11 @@ IN_PROC_BROWSER_TEST_F(SelectToSpeakTest,
   MagnifierAnimationWaiter waiter(fullscreen_magnifier_controller);
   waiter.Wait();
 
-  host_helper.WaitForHostCompletedFirstLoad();
+  if (observer.WaitForManifestVersion() == 3) {
+    observer.WaitForServiceWorkerStart();
+  } else {
+    host_helper.WaitForHostCompletedFirstLoad();
+  }
   FullscreenMagnifierTestHelper::WaitForMagnifierJSReady(profile);
 
   gfx::Rect initial_viewport =

@@ -20,6 +20,7 @@
 #include "components/prefs/pref_service.h"
 #include "extensions/browser/browsertest_util.h"
 #include "extensions/browser/extension_host_test_helper.h"
+#include "extensions/browser/extension_registry_test_helper.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/display/screen.h"
 #include "ui/display/test/display_manager_test_api.h"
@@ -296,8 +297,16 @@ void FaceGazeTestUtils::EnableFaceGaze(const Config& config) {
   extensions::ExtensionHostTestHelper host_helper(
       AccessibilityManager::Get()->profile(),
       extension_misc::kAccessibilityCommonExtensionId);
+  // Watch events from an MV3 extension which runs in a service worker.
+  extensions::ExtensionRegistryTestHelper observer(
+      extension_misc::kAccessibilityCommonExtensionId,
+      AccessibilityManager::Get()->profile());
   AccessibilityManager::Get()->EnableFaceGaze(true);
-  host_helper.WaitForHostCompletedFirstLoad();
+  if (observer.WaitForManifestVersion() == 3) {
+    observer.WaitForServiceWorkerStart();
+  } else {
+    host_helper.WaitForHostCompletedFirstLoad();
+  }
 
   WaitForJSReady();
   SetUpJSTestSupport(v3_manifest ? kTestSupportMV3Path : kTestSupportMV2Path);

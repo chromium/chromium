@@ -27,6 +27,7 @@
 #include "content/public/test/fake_speech_recognition_manager.h"
 #include "extensions/browser/browsertest_util.h"
 #include "extensions/browser/extension_host_test_helper.h"
+#include "extensions/browser/extension_registry_test_helper.h"
 #include "media/mojo/mojom/speech_recognition_service.mojom.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/base/clipboard/clipboard_monitor.h"
@@ -167,8 +168,15 @@ void DictationTestUtils::EnableDictation(
     // extension loads.
     extensions::ExtensionHostTestHelper host_helper(
         profile_, extension_misc::kAccessibilityCommonExtensionId);
+    // Watch events from an MV3 extension which runs in a service worker.
+    extensions::ExtensionRegistryTestHelper observer(
+        extension_misc::kAccessibilityCommonExtensionId, profile);
     AccessibilityManager::Get()->SetDictationEnabled(true);
-    host_helper.WaitForHostCompletedFirstLoad();
+    if (observer.WaitForManifestVersion() == 3) {
+      observer.WaitForServiceWorkerStart();
+    } else {
+      host_helper.WaitForHostCompletedFirstLoad();
+    }
   } else {
     // In some cases (e.g. DictationWithAutoclickTest) the accessibility
     // common extension is already setup and loaded. For these cases, simply
