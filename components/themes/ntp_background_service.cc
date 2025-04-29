@@ -56,9 +56,6 @@ constexpr char kNextCollectionImagePath[] =
 // TODO(crbug.com/41408116): Set options based on display resolution capability.
 constexpr char kImageOptions[] = "=w3840-h2160-p-k-no-nd-mv";
 
-// Label added to request to filter out unwanted collections.
-constexpr char kFilteringLabel[] = "chrome_desktop_ntp";
-
 // Returns the configured collections base URL with |path| appended.
 GURL GetUrl(std::string_view path) {
   return GURL(base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -143,18 +140,18 @@ void NtpBackgroundService::FetchCollectionInfo() {
   ntp::background::GetCollectionsRequest request;
   // The language field may include the country code (e.g. "en-US").
   request.set_language(application_locale_storage_->Get());
-  request.add_filtering_label(kFilteringLabel);
+  request.add_filtering_label(GetFilteringLabel());
   // Add some extra filtering information in case we need to target a specific
   // milestone post release.
   request.add_filtering_label(base::StrCat(
-      {kFilteringLabel, ".M", version_info::GetMajorVersionNumber()}));
+      {GetFilteringLabel(), ".M", version_info::GetMajorVersionNumber()}));
   // Add filtering for Panorama feature.
-  request.add_filtering_label(base::StrCat({kFilteringLabel, ".panorama"}));
-  request.add_filtering_label(base::StrCat({kFilteringLabel, ".gm3"}));
+  request.add_filtering_label(base::StrCat({GetFilteringLabel(), ".panorama"}));
+  request.add_filtering_label(base::StrCat({GetFilteringLabel(), ".gm3"}));
   if (base::FeatureList::IsEnabled(
           ntp_features::kNtpBackgroundImageErrorDetection)) {
     request.add_filtering_label(
-        base::StrCat({kFilteringLabel, ".error_detection"}));
+        base::StrCat({GetFilteringLabel(), ".error_detection"}));
   }
 
   std::string serialized_proto;

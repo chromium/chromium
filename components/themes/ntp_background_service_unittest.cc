@@ -123,12 +123,14 @@ TEST_F(NtpBackgroundServiceTest, CollectionRequest) {
   EXPECT_TRUE(collection_request.ParseFromString(request_body));
   EXPECT_EQ("foo", collection_request.language());
   EXPECT_EQ(4, collection_request.filtering_label_size());
-  EXPECT_EQ("chrome_desktop_ntp", collection_request.filtering_label(0));
-  EXPECT_EQ("chrome_desktop_ntp.M" + version_info::GetMajorVersionNumber(),
+  EXPECT_EQ(GetFilteringLabel(), collection_request.filtering_label(0));
+  EXPECT_EQ(base::StrCat({GetFilteringLabel(), ".M"}) +
+                version_info::GetMajorVersionNumber(),
             collection_request.filtering_label(1));
-  EXPECT_EQ("chrome_desktop_ntp.panorama",
+  EXPECT_EQ(base::StrCat({GetFilteringLabel(), ".panorama"}),
             collection_request.filtering_label(2));
-  EXPECT_EQ("chrome_desktop_ntp.gm3", collection_request.filtering_label(3));
+  EXPECT_EQ(base::StrCat({GetFilteringLabel(), ".gm3"}),
+            collection_request.filtering_label(3));
 }
 
 TEST_F(NtpBackgroundServiceTest,
@@ -154,13 +156,15 @@ TEST_F(NtpBackgroundServiceTest,
   EXPECT_TRUE(collection_request.ParseFromString(request_body));
   EXPECT_EQ("foo", collection_request.language());
   EXPECT_EQ(5, collection_request.filtering_label_size());
-  EXPECT_EQ("chrome_desktop_ntp.error_detection",
+  EXPECT_EQ(base::StrCat({GetFilteringLabel(), ".error_detection"}),
             collection_request.filtering_label(4));
-  EXPECT_EQ("chrome_desktop_ntp.M" + version_info::GetMajorVersionNumber(),
+  EXPECT_EQ(base::StrCat({GetFilteringLabel(), ".M"}) +
+                version_info::GetMajorVersionNumber(),
             collection_request.filtering_label(1));
-  EXPECT_EQ("chrome_desktop_ntp.panorama",
+  EXPECT_EQ(base::StrCat({GetFilteringLabel(), ".panorama"}),
             collection_request.filtering_label(2));
-  EXPECT_EQ("chrome_desktop_ntp.gm3", collection_request.filtering_label(3));
+  EXPECT_EQ(base::StrCat({GetFilteringLabel(), ".gm3"}),
+            collection_request.filtering_label(3));
 }
 
 TEST_F(NtpBackgroundServiceTest, CollectionInfoNetworkError) {

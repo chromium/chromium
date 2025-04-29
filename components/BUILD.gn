@@ -356,6 +356,7 @@ test("components_unittests") {
     "//components/system_media_controls:unit_tests",
     "//components/tabs:unit_tests",
     "//components/test:run_all_unittests",
+    "//components/themes:unit_tests",
     "//components/tpcd/metadata/browser:unit_tests",
     "//components/tpcd/metadata/common:unit_tests",
     "//components/translate/core/browser:unit_tests",
@@ -607,7 +608,6 @@ test("components_unittests") {
       "//components/site_isolation:unit_tests",
       "//components/spellcheck/browser:unit_tests",
       "//components/spellcheck/renderer:unit_tests",
-      "//components/themes:unit_tests",
     ]
 
     if (!is_win) {  #!iOS and!Windows

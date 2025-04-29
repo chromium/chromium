@@ -4,15 +4,30 @@
 
 #include "components/themes/ntp_background_data.h"
 
+#include "build/build_config.h"
+
 namespace {
 // The options to be added to a thumbnail image URL, specifying resolution,
 // cropping, etc. Options appear on an image URL after the '=' character. This
 // resolution matches the height an width of bg-sel-tile.
 constexpr char kThumbnailImageOptions[] = "=w156-h117-p-k-no-nd-mv";
+
+#if BUILDFLAG(IS_IOS)
+// iOS label added to request to filter out unwanted collections.
+constexpr char kFilteringLabel[] = "chrome_ios_ntp";
+#else
+// Desktop label added to request to filter out unwanted collections.
+constexpr char kFilteringLabel[] = "chrome_desktop_ntp";
+#endif
+
 }  // namespace
 
 std::string GetThumbnailImageOptions() {
   return kThumbnailImageOptions;
+}
+
+std::string GetFilteringLabel() {
+  return kFilteringLabel;
 }
 
 GURL AddOptionsToImageURL(const std::string& image_url,

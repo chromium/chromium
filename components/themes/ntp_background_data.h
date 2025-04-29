@@ -25,6 +25,10 @@ enum class ErrorType {
 };
 
 std::string GetThumbnailImageOptions();
+
+// Label added to request to filter out unwanted collections.
+std::string GetFilteringLabel();
+
 // Adds options for resizing an image to its url.
 // Without options added to the image, it is 512x512.
 // TODO(crbug.com/41408116): Request resolution from service, instead of
