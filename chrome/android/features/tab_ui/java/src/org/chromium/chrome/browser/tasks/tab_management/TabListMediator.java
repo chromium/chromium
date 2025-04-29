@@ -97,6 +97,8 @@ import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.collaboration.CollaborationServiceShareOrManageEntryPoint;
 import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.embedder_support.util.UrlUtilities;
+import org.chromium.components.tab_group_sync.EitherId.EitherGroupId;
+import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.content_public.browser.NavigationHandle;
@@ -2861,23 +2863,32 @@ class TabListMediator implements TabListNotificationHandler {
             return;
         }
 
+        updateTabGroupColorViewProvider(
+                model, EitherGroupId.createLocalId(new LocalTabGroupId(tabGroupId)), colorId);
+    }
+
+    private void updateTabGroupColorViewProvider(
+            PropertyModel model, @NonNull EitherGroupId groupId, @TabGroupColorId int colorId) {
         assert colorId != TabGroupColorUtils.INVALID_COLOR_ID
                 : "Tab in tab group should always have valid colors.";
         assert mMode != TabListMode.STRIP : "Tab group colors are not applicable to strip mode.";
 
+        @Nullable TabGroupColorViewProvider provider = model.get(TAB_GROUP_COLOR_VIEW_PROVIDER);
         if (provider == null) {
+            boolean isIncognitoBranded =
+                    mCurrentTabGroupModelFilterSupplier.get().getTabModel().isIncognitoBranded();
             provider =
                     new TabGroupColorViewProvider(
                             mActivity,
-                            tabGroupId,
-                            tab.isIncognitoBranded(),
+                            groupId,
+                            isIncognitoBranded,
                             colorId,
                             mTabGroupSyncService,
                             mDataSharingService,
                             mCollaborationService);
             model.set(TAB_GROUP_COLOR_VIEW_PROVIDER, provider);
         } else {
-            provider.setTabGroupId(tabGroupId);
+            provider.setTabGroupId(groupId);
             provider.setTabGroupColorId(colorId);
         }
     }

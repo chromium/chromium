@@ -17,7 +17,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 
 import org.chromium.base.Callback;
-import org.chromium.base.Token;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesConfig;
@@ -25,6 +24,7 @@ import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImag
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.data_sharing.GroupMember;
+import org.chromium.components.tab_group_sync.EitherId.EitherGroupId;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.components.tab_groups.TabGroupColorPickerUtils;
@@ -46,7 +46,7 @@ public class TabGroupColorViewProvider implements Destroyable {
     private final @NonNull CollaborationService mCollaborationService;
     private final @Nullable TransitiveSharedGroupObserver mTransitiveSharedGroupObserver;
 
-    private @NonNull Token mTabGroupId;
+    private @NonNull EitherGroupId mGroupId;
     private @TabGroupColorId int mColorId;
     private @Nullable FrameLayout mFrameLayout;
     private @Nullable SharedImageTilesCoordinator mSharedImageTilesCoordinator;
@@ -54,7 +54,7 @@ public class TabGroupColorViewProvider implements Destroyable {
 
     /**
      * @param context The context to use to use for creating the view.
-     * @param tabGroupId The tab group id for the group.
+     * @param groupId The tab group id or sync id for the group stored as {@link EitherGroupId}.
      * @param isIncognito Whether the tab group is incognito.
      * @param colorId The {@link TabGroupColorId} to show for the main color.
      * @param tabGroupSyncService Used to fetch the current collaboration id of the group.
@@ -63,26 +63,28 @@ public class TabGroupColorViewProvider implements Destroyable {
      */
     public TabGroupColorViewProvider(
             @NonNull Context context,
-            @NonNull Token tabGroupId,
+            @NonNull EitherGroupId groupId,
             boolean isIncognito,
             @TabGroupColorId int colorId,
             @Nullable TabGroupSyncService tabGroupSyncService,
             @Nullable DataSharingService dataSharingService,
             @Nullable CollaborationService collaborationService) {
-        assert tabGroupId != null : "Tab group id cannot be null.";
+        assert groupId != null : "Tab group id cannot be null.";
         mContext = context;
-        mTabGroupId = tabGroupId;
+        mGroupId = groupId;
         mIsIncognito = isIncognito;
         mColorId = colorId;
         mCollaborationService = collaborationService;
 
         boolean servicesExist = tabGroupSyncService != null && dataSharingService != null;
-        if (servicesExist && mCollaborationService.getServiceStatus().isAllowedToJoin()) {
+        if (servicesExist
+                && mCollaborationService.getServiceStatus().isAllowedToJoin()
+                && groupId.isLocalId()) {
             mDataSharingService = dataSharingService;
             mTransitiveSharedGroupObserver =
                     new TransitiveSharedGroupObserver(
                             tabGroupSyncService, dataSharingService, mCollaborationService);
-            mTransitiveSharedGroupObserver.setTabGroupId(tabGroupId);
+            mTransitiveSharedGroupObserver.setTabGroupId(groupId.getLocalId().tabGroupId);
             mTransitiveSharedGroupObserver
                     .getGroupMembersSupplier()
                     .addObserver(mOnGroupMembersChanged);
@@ -118,16 +120,15 @@ public class TabGroupColorViewProvider implements Destroyable {
     }
 
     /**
-     * Sets the tab group id to observer. This cannot be null
+     * Sets the group id to observer. This {@link EitherGroupId} cannot be null.
      *
-     * @param tabGroupId The tab group id to use.
+     * @param groupId The group id to use.
      */
-    public void setTabGroupId(@NonNull Token tabGroupId) {
-        assert tabGroupId != null;
-        mTabGroupId = tabGroupId;
+    public void setTabGroupId(@NonNull EitherGroupId groupId) {
+        mGroupId = groupId;
 
-        if (mTransitiveSharedGroupObserver != null) {
-            mTransitiveSharedGroupObserver.setTabGroupId(tabGroupId);
+        if (mTransitiveSharedGroupObserver != null && groupId.isLocalId()) {
+            mTransitiveSharedGroupObserver.setTabGroupId(groupId.getLocalId().tabGroupId);
         }
     }
 
@@ -294,7 +295,7 @@ public class TabGroupColorViewProvider implements Destroyable {
     }
 
     @NonNull
-    Token getTabGroupIdForTesting() {
-        return mTabGroupId;
+    EitherGroupId getTabGroupIdForTesting() {
+        return mGroupId;
     }
 }

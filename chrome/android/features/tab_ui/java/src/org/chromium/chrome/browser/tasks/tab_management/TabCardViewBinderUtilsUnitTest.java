@@ -29,6 +29,8 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.collaboration.ServiceStatus;
 import org.chromium.components.data_sharing.DataSharingService;
+import org.chromium.components.tab_group_sync.EitherId.EitherGroupId;
+import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.ui.base.TestActivity;
@@ -65,7 +67,7 @@ public class TabCardViewBinderUtilsUnitTest {
         mTabGroupColorViewProvider =
                 new TabGroupColorViewProvider(
                         activity,
-                        new Token(2L, 1L),
+                        EitherGroupId.createLocalId(new LocalTabGroupId(new Token(2L, 1L))),
                         /* isIncognito= */ false,
                         TabGroupColorId.RED,
                         mTabGroupSyncService,

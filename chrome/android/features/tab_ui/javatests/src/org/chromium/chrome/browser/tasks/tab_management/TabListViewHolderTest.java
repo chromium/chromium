@@ -100,6 +100,8 @@ import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.embedder_support.util.UrlUtilitiesJni;
 import org.chromium.components.payments.ui.CurrencyFormatter;
 import org.chromium.components.payments.ui.CurrencyFormatterJni;
+import org.chromium.components.tab_group_sync.EitherId.EitherGroupId;
+import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -1069,7 +1071,7 @@ public class TabListViewHolderTest {
         TabGroupColorViewProvider provider =
                 new TabGroupColorViewProvider(
                         sActivity,
-                        new Token(1L, 2L),
+                        EitherGroupId.createLocalId(new LocalTabGroupId(new Token(1L, 2L))),
                         /* isIncognito= */ false,
                         TabGroupColorId.BLUE,
                         /* tabGroupSyncService= */ null,
@@ -1110,7 +1112,7 @@ public class TabListViewHolderTest {
         TabGroupColorViewProvider provider =
                 new TabGroupColorViewProvider(
                         sActivity,
-                        new Token(1L, 2L),
+                        EitherGroupId.createLocalId(new LocalTabGroupId(new Token(1L, 2L))),
                         /* isIncognito= */ false,
                         TabGroupColorId.BLUE,
                         /* tabGroupSyncService= */ null,
