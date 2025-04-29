@@ -11,7 +11,6 @@
 #include <cstdlib>
 #include <map>
 #include <optional>
-#include <string_view>
 #include <vector>
 
 #include "base/base_paths.h"
@@ -22,6 +21,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
+#include "base/strings/cstring_view.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -52,24 +52,24 @@ class MockEnvironment : public base::Environment {
   MockEnvironment(const MockEnvironment&) = delete;
   MockEnvironment& operator=(const MockEnvironment&) = delete;
 
-  void Set(std::string_view name, const std::string& value) {
+  void Set(base::cstring_view name, const std::string& value) {
     variables_[std::string(name)] = value;
   }
 
-  std::optional<std::string> GetVar(std::string_view variable_name) override {
+  std::optional<std::string> GetVar(base::cstring_view variable_name) override {
     if (!base::Contains(variables_, std::string(variable_name))) {
       return std::nullopt;
     }
     return variables_[std::string(variable_name)];
   }
 
-  bool SetVar(std::string_view variable_name,
+  bool SetVar(base::cstring_view variable_name,
               const std::string& new_value) override {
     ADD_FAILURE();
     return false;
   }
 
-  bool UnSetVar(std::string_view variable_name) override {
+  bool UnSetVar(base::cstring_view variable_name) override {
     ADD_FAILURE();
     return false;
   }

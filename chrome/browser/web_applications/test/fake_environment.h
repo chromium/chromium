@@ -7,9 +7,9 @@
 
 #include <map>
 #include <string>
-#include <string_view>
 
 #include "base/environment.h"
+#include "base/strings/cstring_view.h"
 
 namespace web_app {
 
@@ -21,13 +21,13 @@ class FakeEnvironment : public base::Environment {
   FakeEnvironment& operator=(const FakeEnvironment&) = delete;
   ~FakeEnvironment() override;
 
-  void Set(std::string_view name, const std::string& value);
+  void Set(base::cstring_view name, const std::string& value);
 
   // base::Environment:
-  std::optional<std::string> GetVar(std::string_view variable_name) override;
-  bool SetVar(std::string_view variable_name,
+  std::optional<std::string> GetVar(base::cstring_view variable_name) override;
+  bool SetVar(base::cstring_view variable_name,
               const std::string& new_value) override;
-  bool UnSetVar(std::string_view variable_name) override;
+  bool UnSetVar(base::cstring_view variable_name) override;
 
  private:
   std::map<std::string, std::string> variables_;

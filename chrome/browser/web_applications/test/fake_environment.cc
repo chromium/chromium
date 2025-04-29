@@ -12,13 +12,13 @@ namespace web_app {
 FakeEnvironment::FakeEnvironment() = default;
 FakeEnvironment::~FakeEnvironment() = default;
 
-void FakeEnvironment::Set(std::string_view name, const std::string& value) {
+void FakeEnvironment::Set(base::cstring_view name, const std::string& value) {
   const std::string key(name);
   variables_[key] = value;
 }
 
 std::optional<std::string> FakeEnvironment::GetVar(
-    std::string_view variable_name) {
+    base::cstring_view variable_name) {
   const std::string key(variable_name);
   if (!base::Contains(variables_, key)) {
     return std::nullopt;
@@ -26,13 +26,13 @@ std::optional<std::string> FakeEnvironment::GetVar(
   return variables_[key];
 }
 
-bool FakeEnvironment::SetVar(std::string_view variable_name,
+bool FakeEnvironment::SetVar(base::cstring_view variable_name,
                              const std::string& new_value) {
   ADD_FAILURE();
   return false;
 }
 
-bool FakeEnvironment::UnSetVar(std::string_view variable_name) {
+bool FakeEnvironment::UnSetVar(base::cstring_view variable_name) {
   ADD_FAILURE();
   return false;
 }
