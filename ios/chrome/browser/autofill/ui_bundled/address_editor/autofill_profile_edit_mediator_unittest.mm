@@ -44,7 +44,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 // autofill::AutofillProfile::RecordType::kAccount.
 @property(nonatomic, assign) BOOL accountProfile;
 
-@property(nonatomic, assign) NSString* countrySelected;
+@property(nonatomic, copy) NSString* countrySelected;
 @end
 
 @implementation FakeAutofillProfileEditConsumer
