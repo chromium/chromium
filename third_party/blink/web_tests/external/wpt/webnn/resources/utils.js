@@ -10,7 +10,7 @@ const operatorToleranceDict = {
   leakyRelu: {float32: 1, float16: 2},
   linear: {float32: 2, float16: 2},
   prelu: {float32: 1, float16: 1},
-  relu: {float32: 0, float16: 0},
+  relu: {float32: 0, float16: 0, int8: 0, int32: 0},
   reshape: {float32: 0, float16: 0},
   sigmoid: {float32: 34, float16: 10},
   softplus: {float32: 18, float16: 18},
