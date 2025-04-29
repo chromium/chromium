@@ -91,7 +91,9 @@
   },
   "ios": {
     "exclusions": [
-      "ios/build/bots/.*"
+      "ios/build/bots/.*",
+      "tools/clang/dsymutil/bin/dsymutil.arm64.sha1",
+      "tools/clang/dsymutil/bin/dsymutil.x64.sha1"
     ]
   },
   "linux": {
@@ -99,6 +101,12 @@
       "build/linux/sysroot_ld_path.sh",
       "build/linux/sysroot_scripts/sysroots.json",
       "testing/xvfb.py"
+    ]
+  },
+  "mac": {
+    "exclusions": [
+      "tools/clang/dsymutil/bin/dsymutil.arm64.sha1",
+      "tools/clang/dsymutil/bin/dsymutil.x64.sha1"
     ]
   },
   "win": {
