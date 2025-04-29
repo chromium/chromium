@@ -72,6 +72,7 @@ bool IsDumpObsolete(const DumpInfo& dump) {
 
 MinidumpUploader::MinidumpUploader(CastSysInfo* sys_info,
                                    const std::string& server_url,
+                                   const std::string& crash_report_product_name,
                                    CastCrashdumpUploader* const uploader,
                                    PrefServiceGeneratorCallback callback)
     : release_channel_(sys_info->GetSystemReleaseChannel()),
@@ -83,15 +84,20 @@ MinidumpUploader::MinidumpUploader(CastSysInfo* sys_info,
       system_version_(sys_info->GetSystemBuildNumber()),
       upload_location_(!server_url.empty() ? server_url
                                            : kCrashServerProduction),
+      crash_report_product_name_(!crash_report_product_name.empty()
+                                     ? crash_report_product_name
+                                     : kProductName),
       reboot_scheduled_(false),
       filestate_initialized_(false),
       uploader_(uploader),
       pref_service_generator_(std::move(callback)) {}
 
 MinidumpUploader::MinidumpUploader(CastSysInfo* sys_info,
-                                   const std::string& server_url)
+                                   const std::string& server_url,
+                                   const std::string& crash_report_product_name)
     : MinidumpUploader(sys_info,
                        server_url,
+                       crash_report_product_name,
                        nullptr,
                        base::BindRepeating(&CreatePrefService)) {}
 
@@ -215,7 +221,7 @@ bool MinidumpUploader::DoWork() {
     // attempt to upload
     LOG(INFO) << "Uploading crash to " << upload_location_;
     CastCrashdumpData crashdump_data;
-    crashdump_data.product = kProductName;
+    crashdump_data.product = crash_report_product_name_;
     crashdump_data.version = GetVersionString(
         dump.params().cast_release_version, dump.params().cast_build_number);
     crashdump_data.guid = client_id;

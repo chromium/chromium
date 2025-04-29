@@ -5,6 +5,7 @@
 #include <sys/resource.h>
 
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/at_exit.h"
@@ -60,7 +61,11 @@ int main(int argc, char** argv) {
       chromecast::GetSwitchValueBoolean(switches::kCrashUploaderDaemon, false);
   LOG_IF(INFO, daemon) << "Running crash uploader in daemon-mode";
 
-  chromecast::MinidumpUploader uploader(sys_info.get(), server_url);
+  std::string crash_report_product_name(
+      command_line->GetSwitchValueASCII(switches::kCrashReportProductName));
+
+  chromecast::MinidumpUploader uploader(sys_info.get(), server_url,
+                                        crash_report_product_name);
   do {
     if (!uploader.UploadAllMinidumps())
       LOG(ERROR) << "Failed to process minidumps";
