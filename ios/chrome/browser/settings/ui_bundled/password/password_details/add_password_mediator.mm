@@ -81,7 +81,7 @@ bool CheckForDuplicates(
 // Stores the url entered in the website field.
 @property(nonatomic, assign) GURL URL;
 
-@property(nonatomic, assign) NSString* suggestedPassword;
+@property(nonatomic, copy) NSString* suggestedPassword;
 
 @end
 
