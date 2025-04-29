@@ -1,0 +1,21 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("model") {
+  sources = [
+    "image_fetcher_service_factory.h",
+    "image_fetcher_service_factory.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/image_fetcher/core",
+    "//components/image_fetcher/core/cache",
+    "//components/image_fetcher/ios",
+    "//components/prefs",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
+    "//services/network/public/cpp",
+    "//third_party/leveldatabase",
+  ]
+}
