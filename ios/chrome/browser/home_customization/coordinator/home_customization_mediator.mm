@@ -19,7 +19,6 @@
 #import "ios/chrome/browser/home_customization/utils/home_customization_constants.h"
 #import "ios/chrome/browser/home_customization/utils/home_customization_helper.h"
 #import "ios/chrome/browser/home_customization/utils/home_customization_metrics_recorder.h"
-#import "ios/chrome/browser/ntp/shared/metrics/feed_metrics_utils.h"
 #import "ios/chrome/browser/parcel_tracking/features.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -41,20 +40,14 @@
 #pragma mark - Public
 
 - (void)configureMainPageData {
-  std::map<CustomizationToggleType, BOOL> toggleMap = {};
-  if (!ShouldPutMostVisitedSitesInMagicStack(
-          FeedActivityBucketForPrefs(_prefService))) {
-    toggleMap.insert(
-        {CustomizationToggleType::kMostVisited,
-         [self isModuleEnabledForType:CustomizationToggleType::kMostVisited]});
-  }
-  toggleMap.insert(
+  std::map<CustomizationToggleType, BOOL> toggleMap = {
+      {CustomizationToggleType::kMostVisited,
+       [self isModuleEnabledForType:CustomizationToggleType::kMostVisited]},
       {CustomizationToggleType::kMagicStack,
-       [self isModuleEnabledForType:CustomizationToggleType::kMagicStack]});
-  toggleMap.insert(
+       [self isModuleEnabledForType:CustomizationToggleType::kMagicStack]},
       {CustomizationToggleType::kDiscover,
-       [self isModuleEnabledForType:CustomizationToggleType::kDiscover]});
-
+       [self isModuleEnabledForType:CustomizationToggleType::kDiscover]},
+  };
   [self.mainPageConsumer populateToggles:toggleMap];
 
   if (IsNTPBackgroundCustomizationEnabled()) {
@@ -82,16 +75,17 @@
 }
 
 - (void)configureMagicStackPageData {
-  std::map<CustomizationToggleType, BOOL> toggleMap = {};
-  toggleMap.insert({CustomizationToggleType::kSetUpList,
-                    [self isMagicStackCardEnabledForType:
-                              CustomizationToggleType::kSetUpList]});
-  toggleMap.insert({CustomizationToggleType::kSafetyCheck,
-                    [self isMagicStackCardEnabledForType:
-                              CustomizationToggleType::kSafetyCheck]});
-  toggleMap.insert({CustomizationToggleType::kTapResumption,
-                    [self isMagicStackCardEnabledForType:
-                              CustomizationToggleType::kTapResumption]});
+  std::map<CustomizationToggleType, BOOL> toggleMap = {
+      {CustomizationToggleType::kSetUpList,
+       [self
+           isMagicStackCardEnabledForType:CustomizationToggleType::kSetUpList]},
+      {CustomizationToggleType::kSafetyCheck,
+       [self isMagicStackCardEnabledForType:CustomizationToggleType::
+                                                kSafetyCheck]},
+      {CustomizationToggleType::kTapResumption,
+       [self isMagicStackCardEnabledForType:CustomizationToggleType::
+                                                kTapResumption]},
+  };
   if (IsIOSParcelTrackingEnabled()) {
     toggleMap.insert({CustomizationToggleType::kParcelTracking,
                       [self isMagicStackCardEnabledForType:
@@ -101,12 +95,6 @@
     toggleMap.insert(
         {CustomizationToggleType::kTips,
          [self isMagicStackCardEnabledForType:CustomizationToggleType::kTips]});
-  }
-  if (ShouldPutMostVisitedSitesInMagicStack(
-          FeedActivityBucketForPrefs(_prefService))) {
-    toggleMap.insert({CustomizationToggleType::kMostVisited,
-                      [self isMagicStackCardEnabledForType:
-                                CustomizationToggleType::kMostVisited]});
   }
   if (commerce::kShopCardVariation.Get() == commerce::kShopCardArm1 ||
       commerce::kShopCardVariation.Get() == commerce::kShopCardArm2) {
@@ -123,8 +111,6 @@
 - (BOOL)isModuleEnabledForType:(CustomizationToggleType)type {
   switch (type) {
     case CustomizationToggleType::kMostVisited:
-      CHECK(!ShouldPutMostVisitedSitesInMagicStack(
-          FeedActivityBucketForPrefs(_prefService)));
       return _prefService->GetBoolean(
           prefs::kHomeCustomizationMostVisitedEnabled);
     case CustomizationToggleType::kMagicStack:
@@ -158,11 +144,6 @@
       return _prefService->GetBoolean(
           prefs::kHomeCustomizationMagicStackTipsEnabled);
     }
-    case CustomizationToggleType::kMostVisited:
-      CHECK(ShouldPutMostVisitedSitesInMagicStack(
-          FeedActivityBucketForPrefs(_prefService)));
-      return _prefService->GetBoolean(
-          prefs::kHomeCustomizationMostVisitedEnabled);
     case CustomizationToggleType::kShopCard:
       if (commerce::kShopCardVariation.Get() == commerce::kShopCardArm1) {
         return _prefService->GetBoolean(

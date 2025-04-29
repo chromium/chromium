@@ -725,22 +725,6 @@ bool IsTabResumptionImagesThumbnailsEnabled();
 // X-Devices tabs only.
 const base::TimeDelta TabResumptionForXDevicesTimeThreshold();
 
-// Whether the Most Visited Sites should be put into the Magic Stack based on
-// `feed_activity_bucket`.
-bool ShouldPutMostVisitedSitesInMagicStack(
-    FeedActivityBucket feed_activity_bucket);
-
-// How much the NTP top margin should be reduced by for the Magic Stack design.
-double ReducedNTPTopMarginSpaceForMagicStack();
-
-// Whether modules should not be added to the Magic Stack if their content is
-// irrelevant.
-bool ShouldHideIrrelevantModules();
-
-// How many days before showing the Compacted Set Up List module configuration
-// in the Magic Stack.
-int TimeUntilShowingCompactedSetUpList();
-
 // Kill switch for disabling the navigations when the application is in
 // foreground inactive state after opening an external app.
 BASE_DECLARE_FEATURE(kInactiveNavigationAfterAppLaunchKillSwitch);

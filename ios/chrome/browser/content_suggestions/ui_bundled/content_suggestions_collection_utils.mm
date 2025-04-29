@@ -39,7 +39,7 @@ const CGFloat kTopSpacingMaterial = 24;
 
 // Top margin for the doodle.
 const CGFloat kDoodleTopMarginRegularXRegular = 162;
-const CGFloat kDoodleTopMarginOther = 65;
+const CGFloat kDoodleTopMarginOther = 45;
 // Size of the doodle top margin which is multiplied by the scaled font factor,
 // and added to `kDoodleTopMarginOther` on non Regular x Regular form factors.
 const CGFloat kDoodleScaledTopMarginOther = 10;
@@ -178,8 +178,6 @@ CGFloat DoodleTopMargin(BOOL logo_is_showing,
       top_inset +
       AlignValueToPixel(kDoodleScaledTopMarginOther *
                         ui_util::SystemSuggestedFontSizeMultiplier());
-  // If Magic Stack is not enabled, this value is zero (e.g. no-op).
-  top_margin -= ReducedNTPTopMarginSpaceForMagicStack();
   top_margin += kDoodleTopMarginOther;
   top_margin += GetDeprecateFeedHeaderParameterValueAsDouble(
       kDeprecateFeedHeaderParameterTopPadding, /*default_value=*/0);

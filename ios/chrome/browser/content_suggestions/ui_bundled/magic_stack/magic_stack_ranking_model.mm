@@ -848,11 +848,6 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
         if (![self shouldShowTabResumption]) {
           break;
         }
-        // If ShouldHideIrrelevantModules() is enabled and it is not ranked as
-        // the first two modules, do not add it to the Magic Stack.
-        if (ShouldHideIrrelevantModules() && [magicStackOrder count] > 1) {
-          break;
-        }
         if (PromoteTabResumptionShopCardToFrontOfStack()) {
           [magicStackOrder insertObject:_tabResumptionMediator.itemConfig
                                 atIndex:0];
@@ -893,11 +888,7 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
           break;
         }
 
-        // If ShouldHideIrrelevantModules() is enabled and it is not the first
-        // ranked module, do not add it to the Magic Stack.
-        if (!ShouldHideIrrelevantModules() || [magicStackOrder count] == 0) {
-          [magicStackOrder addObject:_safetyCheckMediator.safetyCheckState];
-        }
+        [magicStackOrder addObject:_safetyCheckMediator.safetyCheckState];
 
         break;
       }

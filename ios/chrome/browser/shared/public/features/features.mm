@@ -850,23 +850,6 @@ bool IsTabResumptionImagesThumbnailsEnabled() {
   return image_type == kTabResumptionImagesTypesThumbnails || image_type == "";
 }
 
-bool ShouldPutMostVisitedSitesInMagicStack(
-    FeedActivityBucket feed_activity_bucket) {
-  return false;
-}
-
-double ReducedNTPTopMarginSpaceForMagicStack() {
-  return 20;
-}
-
-bool ShouldHideIrrelevantModules() {
-  return NO;
-}
-
-int TimeUntilShowingCompactedSetUpList() {
-  return 0;
-}
-
 BASE_FEATURE(kInactiveNavigationAfterAppLaunchKillSwitch,
              "kInactiveNavigationAfterAppLaunchKillSwitch",
              base::FEATURE_DISABLED_BY_DEFAULT);

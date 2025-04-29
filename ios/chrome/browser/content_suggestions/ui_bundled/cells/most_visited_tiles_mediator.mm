@@ -34,7 +34,6 @@
 #import "ios/chrome/browser/favicon/ui_bundled/favicon_attributes_provider.h"
 #import "ios/chrome/browser/menu/ui_bundled/browser_action_factory.h"
 #import "ios/chrome/browser/net/model/crurl.h"
-#import "ios/chrome/browser/ntp/shared/metrics/feed_metrics_utils.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_actions_delegate.h"
 #import "ios/chrome/browser/ntp_tiles/model/most_visited_sites_observer_bridge.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
@@ -106,8 +105,7 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
     _URLLoadingBrowserAgent = URLLoadingBrowserAgent;
     _accountManagerService = accountManagerService;
     _incognitoAvailable = !IsIncognitoModeDisabled(prefService);
-    _inMagicStack = ShouldPutMostVisitedSitesInMagicStack(
-        FeedActivityBucketForPrefs(prefService));
+    _inMagicStack = NO;
     _mostVisitedAttributesProvider = [[FaviconAttributesProvider alloc]
         initWithFaviconSize:kMagicStackFaviconWidth
              minFaviconSize:kMagicStackMostVisitedFaviconMinimalSize
