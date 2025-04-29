@@ -11,8 +11,20 @@
 
 namespace ui_controls {
 namespace {
-UIControlsAura* instance_ = NULL;
+UIControlsAura* g_instance = nullptr;
 bool g_ui_controls_enabled = false;
+
+void CheckUIControlsEnabled() {
+  CHECK(g_ui_controls_enabled)
+      << "In order to use ui_controls methods, you must be in a test "
+         "executable that enables UI Controls. Currently, this is "
+         "interactive_ui_tests and some fuzzing tests.\n"
+         "This limitation prevents attempting to send input that might require "
+         "the test process to be active and focused in an environment where "
+         "the process is not guaranteed to be running exclusively, which can "
+         "lead to flaky tests.";
+}
+
 }  // namespace
 
 #if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_WIN)
@@ -32,8 +44,8 @@ bool SendKeyPress(gfx::NativeWindow window,
                   bool shift,
                   bool alt,
                   bool command) {
-  CHECK(g_ui_controls_enabled);
-  return instance_->SendKeyEvents(
+  CheckUIControlsEnabled();
+  return g_instance->SendKeyEvents(
       window, key, kKeyPress | kKeyRelease,
       GenerateAcceleratorState(control, shift, alt, command));
 }
@@ -47,10 +59,10 @@ bool SendKeyPressNotifyWhenDone(gfx::NativeWindow window,
                                 bool command,
                                 base::OnceClosure task,
                                 KeyEventType wait_for) {
-  CHECK(g_ui_controls_enabled);
+  CheckUIControlsEnabled();
   CHECK(wait_for == ui_controls::KeyEventType::kKeyPress ||
         wait_for == ui_controls::KeyEventType::kKeyRelease);
-  return instance_->SendKeyEventsNotifyWhenDone(
+  return g_instance->SendKeyEventsNotifyWhenDone(
       window, key, kKeyPress | kKeyRelease, std::move(task),
       GenerateAcceleratorState(control, shift, alt, command), wait_for);
 }
@@ -60,7 +72,7 @@ bool SendKeyEvents(gfx::NativeWindow window,
                    ui::KeyboardCode key,
                    int key_event_types,
                    int accelerator_state) {
-  CHECK(g_ui_controls_enabled);
+  CheckUIControlsEnabled();
 
   // Make sure `key_event_types` abd `accelerator_state` is valid.
   // `key_event_types` must include at least one key event type.
@@ -68,8 +80,8 @@ bool SendKeyEvents(gfx::NativeWindow window,
   DCHECK(accelerator_state >= 0 &&
          accelerator_state <= (kShift | kControl | kAlt | kCommand));
 
-  return instance_->SendKeyEvents(window, key, key_event_types,
-                                  accelerator_state);
+  return g_instance->SendKeyEvents(window, key, key_event_types,
+                                   accelerator_state);
 }
 
 // static
@@ -78,7 +90,7 @@ bool SendKeyEventsNotifyWhenDone(gfx::NativeWindow window,
                                  int key_event_types,
                                  base::OnceClosure task,
                                  int accelerator_state) {
-  CHECK(g_ui_controls_enabled);
+  CheckUIControlsEnabled();
 
   // Make sure `key_event_types` abd `accelerator_state` is valid.
   // `key_event_types` must include at least one key event type.
@@ -86,7 +98,7 @@ bool SendKeyEventsNotifyWhenDone(gfx::NativeWindow window,
   DCHECK(accelerator_state >= 0 &&
          accelerator_state <= (kShift | kControl | kAlt | kCommand));
 
-  return instance_->SendKeyEventsNotifyWhenDone(
+  return g_instance->SendKeyEventsNotifyWhenDone(
       window, key, key_event_types, std::move(task), accelerator_state,
       KeyEventType::kKeyPress);
 }
@@ -94,8 +106,8 @@ bool SendKeyEventsNotifyWhenDone(gfx::NativeWindow window,
 // static
 bool SendMouseMove(int x, int y, gfx::NativeWindow) {
   // TODO(crbug.com/40249511): Maybe use the window hint on other platforms.
-  CHECK(g_ui_controls_enabled);
-  return instance_->SendMouseMove(x, y);
+  CheckUIControlsEnabled();
+  return g_instance->SendMouseMove(x, y);
 }
 
 // static
@@ -104,8 +116,8 @@ bool SendMouseMoveNotifyWhenDone(int x,
                                  base::OnceClosure task,
                                  gfx::NativeWindow) {
   // TODO(crbug.com/40249511): Maybe use the window hint on other platforms.
-  CHECK(g_ui_controls_enabled);
-  return instance_->SendMouseMoveNotifyWhenDone(x, y, std::move(task));
+  CheckUIControlsEnabled();
+  return g_instance->SendMouseMoveNotifyWhenDone(x, y, std::move(task));
 }
 
 // static
@@ -114,8 +126,8 @@ bool SendMouseEvents(MouseButton type,
                      int accelerator_state,
                      gfx::NativeWindow) {
   // TODO(crbug.com/40249511): Maybe use the window hint on other platforms.
-  CHECK(g_ui_controls_enabled);
-  return instance_->SendMouseEvents(type, button_state, accelerator_state);
+  CheckUIControlsEnabled();
+  return g_instance->SendMouseEvents(type, button_state, accelerator_state);
 }
 
 // static
@@ -125,29 +137,29 @@ bool SendMouseEventsNotifyWhenDone(MouseButton type,
                                    int accelerator_state,
                                    gfx::NativeWindow) {
   // TODO(crbug.com/40249511): Maybe use the window hint on other platforms.
-  CHECK(g_ui_controls_enabled);
-  return instance_->SendMouseEventsNotifyWhenDone(
+  CheckUIControlsEnabled();
+  return g_instance->SendMouseEventsNotifyWhenDone(
       type, button_state, std::move(task), accelerator_state);
 }
 
 // static
 bool SendMouseClick(MouseButton type, gfx::NativeWindow) {
   // TODO(crbug.com/40249511): Do any Aura platforms need to use the hint?
-  CHECK(g_ui_controls_enabled);
-  return instance_->SendMouseClick(type);
+  CheckUIControlsEnabled();
+  return g_instance->SendMouseClick(type);
 }
 
 #if BUILDFLAG(IS_WIN)
 // static
 bool SendTouchEvents(int action, int num, int x, int y) {
-  CHECK(g_ui_controls_enabled);
-  return instance_->SendTouchEvents(action, num, x, y);
+  CheckUIControlsEnabled();
+  return g_instance->SendTouchEvents(action, num, x, y);
 }
 #elif BUILDFLAG(IS_CHROMEOS)
 // static
 bool SendTouchEvents(int action, int id, int x, int y) {
-  CHECK(g_ui_controls_enabled);
-  return instance_->SendTouchEvents(action, id, x, y);
+  CheckUIControlsEnabled();
+  return g_instance->SendTouchEvents(action, id, x, y);
 }
 
 // static
@@ -156,9 +168,9 @@ bool SendTouchEventsNotifyWhenDone(int action,
                                    int x,
                                    int y,
                                    base::OnceClosure task) {
-  CHECK(g_ui_controls_enabled);
-  return instance_->SendTouchEventsNotifyWhenDone(action, id, x, y,
-                                                  std::move(task));
+  CheckUIControlsEnabled();
+  return g_instance->SendTouchEventsNotifyWhenDone(action, id, x, y,
+                                                   std::move(task));
 }
 #endif
 
@@ -172,8 +184,8 @@ UIControlsAura::~UIControlsAura() {
 // static. declared in ui_controls.h
 void InstallUIControlsAura(UIControlsAura* instance) {
   g_ui_controls_enabled = true;
-  delete instance_;
-  instance_ = instance;
+  delete g_instance;
+  g_instance = instance;
 }
 #endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
 

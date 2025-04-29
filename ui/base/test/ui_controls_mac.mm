@@ -73,6 +73,17 @@ bool g_mouse_button_down[3] = {false, false, false};
 
 bool g_ui_controls_enabled = false;
 
+void CheckUIControlsEnabled() {
+  CHECK(g_ui_controls_enabled)
+      << "In order to use ui_controls methods, you must be in a test "
+         "executable that enables UI Controls. Currently, this is "
+         "interactive_ui_tests and some fuzzing tests.\n"
+         "This limitation prevents attempting to send input that might require "
+         "the test process to be active and focused in an environment where "
+         "the process is not guaranteed to be running exclusively, which can "
+         "lead to flaky tests.";
+}
+
 // Creates the proper sequence of autoreleased key events for a key down + up.
 void SynthesizeKeyEventsSequence(NSWindow* window,
                                  ui::KeyboardCode keycode,
@@ -299,7 +310,7 @@ bool SendKeyPress(gfx::NativeWindow window,
                   bool shift,
                   bool alt,
                   bool command) {
-  CHECK(g_ui_controls_enabled);
+  CheckUIControlsEnabled();
   return SendKeyPressNotifyWhenDone(window, key, control, shift, alt, command,
                                     base::OnceClosure());
 }
@@ -317,7 +328,7 @@ bool SendKeyPressNotifyWhenDone(gfx::NativeWindow window,
   // This doesn't time out if `window` is deleted before the key release events
   // are dispatched, so it's fine to ignore `wait_for` and always wait for key
   // release events.
-  CHECK(g_ui_controls_enabled);
+  CheckUIControlsEnabled();
   return SendKeyEventsNotifyWhenDone(
       window, key, kKeyPress | kKeyRelease, std::move(task),
       GenerateAcceleratorState(control, shift, alt, command));
@@ -327,7 +338,7 @@ bool SendKeyEvents(gfx::NativeWindow window,
                    ui::KeyboardCode key,
                    int key_event_types,
                    int accelerator_state) {
-  CHECK(g_ui_controls_enabled);
+  CheckUIControlsEnabled();
   return SendKeyEventsNotifyWhenDone(window, key, key_event_types,
                                      base::OnceClosure(), accelerator_state);
 }
@@ -337,7 +348,7 @@ bool SendKeyEventsNotifyWhenDone(gfx::NativeWindow window,
                                  int key_event_types,
                                  base::OnceClosure task,
                                  int accelerator_state) {
-  CHECK(g_ui_controls_enabled);
+  CheckUIControlsEnabled();
   DCHECK(base::CurrentUIThread::IsSet());
 
   std::vector<NSEvent*> events;
@@ -362,7 +373,7 @@ bool SendKeyEventsNotifyWhenDone(gfx::NativeWindow window,
 }
 
 bool SendMouseMove(int x, int y, gfx::NativeWindow window_hint) {
-  CHECK(g_ui_controls_enabled);
+  CheckUIControlsEnabled();
   return SendMouseMoveNotifyWhenDone(x, y, base::OnceClosure(), window_hint);
 }
 
@@ -374,7 +385,7 @@ bool SendMouseMoveNotifyWhenDone(int x,
                                  int y,
                                  base::OnceClosure task,
                                  gfx::NativeWindow window_hint) {
-  CHECK(g_ui_controls_enabled);
+  CheckUIControlsEnabled();
 
   g_mouse_location = gfx::ScreenPointToNSPoint(gfx::Point(x, y));  // flip!
   NSWindow* window = window_hint ? window_hint.GetNativeNSWindow()
@@ -427,7 +438,7 @@ bool SendMouseEvents(MouseButton type,
                      int button_state,
                      int accelerator_state,
                      gfx::NativeWindow window_hint) {
-  CHECK(g_ui_controls_enabled);
+  CheckUIControlsEnabled();
   return SendMouseEventsNotifyWhenDone(type, button_state, base::OnceClosure(),
                                        accelerator_state, window_hint);
 }
@@ -437,7 +448,7 @@ bool SendMouseEventsNotifyWhenDone(MouseButton type,
                                    base::OnceClosure task,
                                    int accelerator_state,
                                    gfx::NativeWindow window_hint) {
-  CHECK(g_ui_controls_enabled);
+  CheckUIControlsEnabled();
   // Handle the special case of mouse clicking (UP | DOWN) case.
   if (button_state == (UP | DOWN)) {
     return (SendMouseEventsNotifyWhenDone(type, DOWN, base::OnceClosure(),
@@ -508,7 +519,7 @@ bool SendMouseEventsNotifyWhenDone(MouseButton type,
 }
 
 bool SendMouseClick(MouseButton type, gfx::NativeWindow window_hint) {
-  CHECK(g_ui_controls_enabled);
+  CheckUIControlsEnabled();
   return SendMouseEventsNotifyWhenDone(type, UP | DOWN, base::OnceClosure(),
                                        kNoAccelerator, window_hint);
 }
