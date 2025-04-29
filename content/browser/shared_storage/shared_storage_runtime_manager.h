@@ -16,6 +16,7 @@
 #include "content/browser/shared_storage/shared_storage_lock_manager.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/frame_tree_node_id.h"
+#include "content/public/browser/global_routing_id.h"
 #include "third_party/blink/public/common/shared_storage/shared_storage_utils.h"
 #include "third_party/blink/public/mojom/origin_trials/origin_trial_feature.mojom-shared.h"
 #include "third_party/blink/public/mojom/shared_storage/shared_storage.mojom.h"
@@ -63,7 +64,7 @@ class CONTENT_EXPORT SharedStorageRuntimeManager {
         base::Time access_time,
         AccessScope scope,
         AccessMethod method,
-        FrameTreeNodeId main_frame_id,
+        GlobalRenderFrameHostId main_frame_id,
         const std::string& owner_origin,
         const SharedStorageEventParams& params) = 0;
 
@@ -78,7 +79,7 @@ class CONTENT_EXPORT SharedStorageRuntimeManager {
         AccessMethod method,
         int operation_id,
         int worklet_id,
-        std::optional<FrameTreeNodeId> main_frame_id,
+        GlobalRenderFrameHostId main_frame_id,
         const std::string& owner_origin) = 0;
   };
 
@@ -111,7 +112,7 @@ class CONTENT_EXPORT SharedStorageRuntimeManager {
   void NotifySharedStorageAccessed(
       AccessScope scope,
       SharedStorageObserverInterface::AccessMethod method,
-      FrameTreeNodeId main_frame_id,
+      GlobalRenderFrameHostId main_frame_id,
       const std::string& owner_origin,
       const SharedStorageEventParams& params);
 
@@ -120,7 +121,7 @@ class CONTENT_EXPORT SharedStorageRuntimeManager {
       SharedStorageObserverInterface::AccessMethod method,
       int operation_id,
       int worklet_id,
-      std::optional<FrameTreeNodeId> main_frame_id,
+      GlobalRenderFrameHostId main_frame_id,
       const std::string& owner_origin);
 
   std::map<SharedStorageDocumentServiceImpl*, WorkletHosts>&

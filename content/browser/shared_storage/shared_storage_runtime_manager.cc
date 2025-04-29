@@ -114,7 +114,7 @@ void SharedStorageRuntimeManager::RemoveSharedStorageObserver(
 void SharedStorageRuntimeManager::NotifySharedStorageAccessed(
     AccessScope scope,
     SharedStorageObserverInterface::AccessMethod method,
-    FrameTreeNodeId main_frame_id,
+    GlobalRenderFrameHostId main_frame_id,
     const std::string& owner_origin,
     const SharedStorageEventParams& params) {
   // Don't bother getting the time if there are no observers.
@@ -133,7 +133,7 @@ void SharedStorageRuntimeManager::NotifyWorkletOperationExecutionFinished(
     SharedStorageObserverInterface::AccessMethod method,
     int operation_id,
     int worklet_id,
-    std::optional<FrameTreeNodeId> main_frame_id,
+    GlobalRenderFrameHostId main_frame_id,
     const std::string& owner_origin) {
   // Don't bother getting the time if there are no observers.
   if (observers_.empty()) {

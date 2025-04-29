@@ -21,6 +21,7 @@
 #include "content/browser/interest_group/interest_group_manager_impl.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/shared_storage/shared_storage_runtime_manager.h"
+#include "content/public/browser/global_routing_id.h"
 #include "storage/browser/quota/quota_manager.h"
 #include "third_party/blink/public/common/shared_storage/shared_storage_utils.h"
 
@@ -221,7 +222,7 @@ class StorageHandler
       blink::SharedStorageAccessScope scope,
       SharedStorageRuntimeManager::SharedStorageObserverInterface::AccessMethod
           method,
-      FrameTreeNodeId main_frame_id,
+      GlobalRenderFrameHostId main_frame_id,
       const std::string& owner_origin,
       const SharedStorageEventParams& params);
   void NotifySharedStorageWorkletOperationExecutionFinished(
@@ -231,7 +232,7 @@ class StorageHandler
           method,
       int operation_id,
       int worklet_id,
-      std::optional<FrameTreeNodeId> main_frame_id,
+      GlobalRenderFrameHostId main_frame_id,
       const std::string& owner_origin);
 
   void NotifyCacheStorageListChanged(

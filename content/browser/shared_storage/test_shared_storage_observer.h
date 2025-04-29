@@ -14,7 +14,7 @@
 #include "base/time/time.h"
 #include "content/browser/shared_storage/shared_storage_event_params.h"
 #include "content/browser/shared_storage/shared_storage_runtime_manager.h"
-#include "content/public/browser/frame_tree_node_id.h"
+#include "content/public/browser/global_routing_id.h"
 #include "third_party/blink/public/common/shared_storage/shared_storage_utils.h"
 #include "url/gurl.h"
 
@@ -28,7 +28,7 @@ class TestSharedStorageObserver
   struct Access {
     AccessScope scope;
     AccessMethod method;
-    FrameTreeNodeId main_frame_id;
+    GlobalRenderFrameHostId main_frame_id;
     std::string owner_origin;
     SharedStorageEventParams params;
     friend bool operator==(const Access& lhs, const Access& rhs);
@@ -39,7 +39,7 @@ class TestSharedStorageObserver
     AccessMethod method;
     int operation_id;
     int worklet_id;
-    std::optional<FrameTreeNodeId> main_frame_id;
+    GlobalRenderFrameHostId main_frame_id;
     std::string owner_origin;
   };
 
@@ -49,7 +49,7 @@ class TestSharedStorageObserver
   void OnSharedStorageAccessed(base::Time access_time,
                                AccessScope scope,
                                AccessMethod method,
-                               FrameTreeNodeId main_frame_id,
+                               GlobalRenderFrameHostId main_frame_id,
                                const std::string& owner_origin,
                                const SharedStorageEventParams& params) override;
 
@@ -64,7 +64,7 @@ class TestSharedStorageObserver
       AccessMethod method,
       int operation_id,
       int worklet_id,
-      std::optional<FrameTreeNodeId> main_frame_id,
+      GlobalRenderFrameHostId main_frame_id,
       const std::string& owner_origin) override;
 
   void ExpectAccessObserved(const std::vector<Access>& expected_accesses);

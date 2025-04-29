@@ -64,7 +64,7 @@ void SharedStorageLockManager::SharedStorageUpdate(
         method_with_options,
     const url::Origin& shared_storage_origin,
     AccessScope scope,
-    FrameTreeNodeId main_frame_id,
+    GlobalRenderFrameHostId main_frame_id,
     std::optional<int> worklet_id,
     SharedStorageUpdateCallback callback) {
   base::UmaHistogramBoolean("Storage.SharedStorage.UpdateMethod.HasLockOption",
@@ -82,7 +82,7 @@ void SharedStorageLockManager::SharedStorageBatchUpdate(
     const std::optional<std::string>& with_lock,
     const url::Origin& shared_storage_origin,
     AccessScope scope,
-    FrameTreeNodeId main_frame_id,
+    GlobalRenderFrameHostId main_frame_id,
     std::optional<int> worklet_id,
     SharedStorageUpdateCallback callback) {
   base::UmaHistogramBoolean(
@@ -161,7 +161,7 @@ void SharedStorageLockManager::SharedStorageUpdateHelper(
         method_with_options,
     const url::Origin& shared_storage_origin,
     AccessScope scope,
-    FrameTreeNodeId main_frame_id,
+    GlobalRenderFrameHostId main_frame_id,
     std::optional<int> worklet_id,
     SharedStorageUpdateCallback callback,
     std::optional<int> legacy_batch_update_id) {
@@ -189,7 +189,7 @@ void SharedStorageLockManager::OnReadyToHandleUpdate(
     network::mojom::SharedStorageModifierMethodPtr method,
     url::Origin shared_storage_origin,
     AccessScope scope,
-    FrameTreeNodeId main_frame_id,
+    GlobalRenderFrameHostId main_frame_id,
     std::optional<int> worklet_id,
     SharedStorageUpdateCallback callback,
     std::optional<std::string> with_lock,
@@ -322,7 +322,7 @@ void SharedStorageLockManager::OnReadyToHandleBatchUpdate(
         methods_with_options,
     url::Origin shared_storage_origin,
     AccessScope scope,
-    FrameTreeNodeId main_frame_id,
+    GlobalRenderFrameHostId main_frame_id,
     std::optional<int> worklet_id,
     SharedStorageUpdateCallback callback,
     std::optional<std::string> with_lock,
@@ -469,7 +469,7 @@ void SharedStorageLockManager::NotifySharedStorageAccessed(
     const network::mojom::SharedStorageModifierMethodPtr& method,
     const url::Origin& shared_storage_origin,
     AccessScope scope,
-    FrameTreeNodeId main_frame_id,
+    GlobalRenderFrameHostId main_frame_id,
     std::optional<int> worklet_id,
     std::optional<std::string> with_lock,
     std::optional<int> batch_update_id) {

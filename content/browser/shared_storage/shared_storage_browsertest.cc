@@ -1464,7 +1464,8 @@ IN_PROC_BROWSER_TEST_P(
 
   ExpectOperationFinishedInfosObserved(
       {{base::TimeDelta(), AccessMethod::kRun, /*operation_id=*/0,
-        /*worklet_id=*/0, /*main_frame_id=*/std::nullopt, origin_str}});
+        /*worklet_id=*/0, /*main_frame_id=*/GlobalRenderFrameHostId(),
+        origin_str}});
 }
 
 IN_PROC_BROWSER_TEST_P(
@@ -1605,7 +1606,8 @@ IN_PROC_BROWSER_TEST_P(
 
   ExpectOperationFinishedInfosObserved(
       {{base::TimeDelta(), AccessMethod::kSelectURL, /*operation_id=*/0,
-        /*worklet_id=*/0, /*main_frame_id=*/std::nullopt, origin_str}});
+        /*worklet_id=*/0, /*main_frame_id=*/GlobalRenderFrameHostId(),
+        origin_str}});
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, KeepAlive_SubframeWorklet) {
@@ -3910,6 +3912,10 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
   GURL url = https_server()->GetURL("a.test", kSimplePagePath);
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
+  // Cache the main frame ID for comparison below, since it will change with
+  // navigation.
+  GlobalRenderFrameHostId cached_main_frame_id = MainFrameId();
+
   EXPECT_TRUE(ExecJs(shell(), R"(
       sharedStorage.set('key0', 'value0');
     )"));
@@ -3933,7 +3939,8 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
 
   std::string origin_str = url::Origin::Create(url).Serialize();
   ExpectAccessObserved(
-      {{AccessScope::kWindow, AccessMethod::kSet, MainFrameId(), origin_str,
+      {{AccessScope::kWindow, AccessMethod::kSet, cached_main_frame_id,
+        origin_str,
         SharedStorageEventParams::CreateForSet("key0", "value0", false)},
        {AccessScope::kWindow, AccessMethod::kAddModule, MainFrameId(),
         origin_str,
@@ -3953,6 +3960,10 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
                        AccessStorageInDifferentOriginDocument) {
   GURL url1 = https_server()->GetURL("a.test", kSimplePagePath);
   EXPECT_TRUE(NavigateToURL(shell(), url1));
+
+  // Cache the main frame ID for comparison below, since it will change with
+  // navigation.
+  GlobalRenderFrameHostId cached_main_frame_id = MainFrameId();
 
   EXPECT_TRUE(ExecJs(shell(), R"(
       sharedStorage.set('key0', 'value0');
@@ -3977,7 +3988,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
 
   std::string origin2_str = url::Origin::Create(url2).Serialize();
   ExpectAccessObserved(
-      {{AccessScope::kWindow, AccessMethod::kSet, MainFrameId(),
+      {{AccessScope::kWindow, AccessMethod::kSet, cached_main_frame_id,
         url::Origin::Create(url1).Serialize(),
         SharedStorageEventParams::CreateForSet("key0", "value0", false)},
        {AccessScope::kWindow, AccessMethod::kAddModule, MainFrameId(),

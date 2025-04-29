@@ -1026,9 +1026,9 @@ void SharedStorageWorkletHost::SharedStorageUpdate(
     return;
   }
 
-  FrameTreeNodeId main_frame_id = document_service_
-                                      ? document_service_->main_frame_id()
-                                      : FrameTreeNodeId();
+  GlobalRenderFrameHostId main_frame_id =
+      document_service_ ? document_service_->main_frame_id()
+                        : GlobalRenderFrameHostId();
 
   shared_storage_runtime_manager_->lock_manager().SharedStorageUpdate(
       std::move(method_with_options), shared_storage_origin_,
@@ -1048,9 +1048,9 @@ void SharedStorageWorkletHost::SharedStorageBatchUpdate(
     return;
   }
 
-  FrameTreeNodeId main_frame_id = document_service_
-                                      ? document_service_->main_frame_id()
-                                      : FrameTreeNodeId();
+  GlobalRenderFrameHostId main_frame_id =
+      document_service_ ? document_service_->main_frame_id()
+                        : GlobalRenderFrameHostId();
 
   shared_storage_runtime_manager_->lock_manager().SharedStorageBatchUpdate(
       std::move(methods_with_options), with_lock, shared_storage_origin_,
@@ -1418,7 +1418,7 @@ void SharedStorageWorkletHost::OnRunOperationOnWorkletFinished(
         blink::SharedStorageWorkletErrorType::kSuccess);
   }
 
-  std::optional<FrameTreeNodeId> maybe_main_frame_id;
+  GlobalRenderFrameHostId maybe_main_frame_id;
   if (document_service_) {
     DCHECK(!IsInKeepAlivePhase());
     maybe_main_frame_id = document_service_->main_frame_id();
@@ -1491,7 +1491,7 @@ void SharedStorageWorkletHost::OnRunURLSelectionOperationOnWorkletFinished(
       urls_with_metadata = std::move(it->second);
   unresolved_urns_.erase(it);
 
-  std::optional<FrameTreeNodeId> maybe_main_frame_id;
+  GlobalRenderFrameHostId maybe_main_frame_id;
 
   if (page_) {
     blink::SharedStorageSelectUrlBudgetStatus budget_status =

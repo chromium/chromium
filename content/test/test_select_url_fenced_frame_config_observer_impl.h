@@ -23,7 +23,7 @@ class TestSelectURLFencedFrameConfigObserverImpl
   void OnSharedStorageAccessed(base::Time access_time,
                                AccessScope scope,
                                AccessMethod method,
-                               FrameTreeNodeId main_frame_id,
+                               GlobalRenderFrameHostId main_frame_id,
                                const std::string& owner_origin,
                                const SharedStorageEventParams& params) override;
   void OnUrnUuidGenerated(const GURL& urn_uuid) override;
@@ -36,7 +36,7 @@ class TestSelectURLFencedFrameConfigObserverImpl
       AccessMethod method,
       int operation_id,
       int worklet_id,
-      std::optional<FrameTreeNodeId> main_frame_id,
+      GlobalRenderFrameHostId main_frame_id,
       const std::string& owner_origin) override;
 
   const std::optional<GURL>& GetUrnUuid() const;

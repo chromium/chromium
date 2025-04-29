@@ -172,8 +172,8 @@ FrameTreeNode* SharedStorageBrowserTestBase::PrimaryFrameTreeNodeRoot() {
       .root();
 }
 
-FrameTreeNodeId SharedStorageBrowserTestBase::MainFrameId() {
-  return PrimaryFrameTreeNodeRoot()->frame_tree_node_id();
+GlobalRenderFrameHostId SharedStorageBrowserTestBase::MainFrameId() {
+  return PrimaryFrameTreeNodeRoot()->current_frame_host()->GetGlobalId();
 }
 
 SharedStorageBudgetMetadata*

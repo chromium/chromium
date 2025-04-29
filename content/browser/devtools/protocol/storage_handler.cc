@@ -61,6 +61,7 @@
 #include "content/browser/devtools/protocol/network_handler.h"
 #include "content/browser/devtools/protocol/storage.h"
 #include "content/browser/interest_group/interest_group_manager_impl.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -377,7 +378,7 @@ class StorageHandler::SharedStorageObserver
       base::Time access_time,
       blink::SharedStorageAccessScope scope,
       AccessMethod method,
-      FrameTreeNodeId main_frame_id,
+      GlobalRenderFrameHostId main_frame_id,
       const std::string& owner_origin,
       const SharedStorageEventParams& params) override {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -396,7 +397,7 @@ class StorageHandler::SharedStorageObserver
       AccessMethod method,
       int operation_id,
       int worklet_id,
-      std::optional<FrameTreeNodeId> main_frame_id,
+      GlobalRenderFrameHostId main_frame_id,
       const std::string& owner_origin) override {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     owner_->NotifySharedStorageWorkletOperationExecutionFinished(
@@ -1514,15 +1515,10 @@ void StorageHandler::ResetSharedStorageBudget(
 
 namespace {
 
-std::string GetFrameTokenFromFrameTreeNodeId(FrameTreeNodeId frame_id) {
-  if (frame_id.is_null()) {
-    return std::string();
-  }
-  auto* frame_tree_node = FrameTreeNode::GloballyFindByID(frame_id);
-  return frame_tree_node ? frame_tree_node->current_frame_host()
-                               ->devtools_frame_token()
-                               .ToString()
-                         : std::string();
+std::string GetFrameTokenFromGlobalRenderFrameHostId(
+    GlobalRenderFrameHostId frame_id) {
+  auto* rfh = frame_id ? RenderFrameHostImpl::FromID(frame_id) : nullptr;
+  return rfh ? rfh->devtools_frame_token().ToString() : std::string();
 }
 
 }  // namespace
@@ -1532,7 +1528,7 @@ void StorageHandler::NotifySharedStorageAccessed(
     blink::SharedStorageAccessScope scope,
     SharedStorageRuntimeManager::SharedStorageObserverInterface::AccessMethod
         method,
-    FrameTreeNodeId main_frame_id,
+    GlobalRenderFrameHostId main_frame_id,
     const std::string& owner_origin,
     const SharedStorageEventParams& params) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -1705,7 +1701,7 @@ void StorageHandler::NotifySharedStorageAccessed(
 
   frontend_->SharedStorageAccessed(
       access_time.InSecondsFSinceUnixEpoch(), scope_enum, method_enum,
-      GetFrameTokenFromFrameTreeNodeId(main_frame_id), owner_origin,
+      GetFrameTokenFromGlobalRenderFrameHostId(main_frame_id), owner_origin,
       net::SchemefulSite(GURL(owner_origin)).Serialize(),
       std::move(protocol_params));
 }
@@ -1717,7 +1713,7 @@ void StorageHandler::NotifySharedStorageWorkletOperationExecutionFinished(
         method,
     int operation_id,
     int worklet_id,
-    std::optional<FrameTreeNodeId> main_frame_id,
+    GlobalRenderFrameHostId main_frame_id,
     const std::string& owner_origin) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 

@@ -20,7 +20,7 @@ void TestSelectURLFencedFrameConfigObserverImpl::OnSharedStorageAccessed(
     base::Time access_time,
     AccessScope scope,
     AccessMethod method,
-    FrameTreeNodeId main_frame_id,
+    GlobalRenderFrameHostId main_frame_id,
     const std::string& owner_origin,
     const SharedStorageEventParams& params) {}
 
@@ -48,14 +48,13 @@ void TestSelectURLFencedFrameConfigObserverImpl::OnConfigPopulated(
 }
 
 void TestSelectURLFencedFrameConfigObserverImpl::
-    OnWorkletOperationExecutionFinished(
-        base::Time finished_time,
-        base::TimeDelta execution_time,
-        AccessMethod method,
-        int operation_id,
-        int worklet_id,
-        std::optional<FrameTreeNodeId> main_frame_id,
-        const std::string& owner_origin) {}
+    OnWorkletOperationExecutionFinished(base::Time finished_time,
+                                        base::TimeDelta execution_time,
+                                        AccessMethod method,
+                                        int operation_id,
+                                        int worklet_id,
+                                        GlobalRenderFrameHostId main_frame_id,
+                                        const std::string& owner_origin) {}
 
 const std::optional<GURL>&
 TestSelectURLFencedFrameConfigObserverImpl::GetUrnUuid() const {

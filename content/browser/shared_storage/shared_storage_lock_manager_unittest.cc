@@ -176,7 +176,7 @@ TEST_F(SharedStorageLockManagerTest,
   test_lock_manager_->SharedStorageUpdate(
       std::move(method_with_options), origin,
       AccessScope::kSharedStorageWorklet,
-      /*main_frame_id=*/FrameTreeNodeId(), /*worklet_id=*/0,
+      /*main_frame_id=*/GlobalRenderFrameHostId(), /*worklet_id=*/0,
       error_message_future.GetCallback());
   task_environment()->RunUntilIdle();
 
@@ -203,7 +203,7 @@ TEST_F(SharedStorageLockManagerTest,
   test_lock_manager_->SharedStorageUpdate(
       std::move(method_with_options), origin,
       AccessScope::kSharedStorageWorklet,
-      /*main_frame_id=*/FrameTreeNodeId(), /*worklet_id=*/0,
+      /*main_frame_id=*/GlobalRenderFrameHostId(), /*worklet_id=*/0,
       error_message_future.GetCallback());
   task_environment()->RunUntilIdle();
 
@@ -240,7 +240,7 @@ TEST_F(SharedStorageLockManagerTest,
   test_lock_manager_->SharedStorageUpdate(
       std::move(method_with_options), origin,
       AccessScope::kSharedStorageWorklet,
-      /*main_frame_id=*/FrameTreeNodeId(), /*worklet_id=*/0,
+      /*main_frame_id=*/GlobalRenderFrameHostId(), /*worklet_id=*/0,
       error_message_future.GetCallback());
   task_environment()->RunUntilIdle();
 
@@ -266,7 +266,7 @@ TEST_F(SharedStorageLockManagerTest,
   test_lock_manager_->SharedStorageUpdate(
       std::move(method_with_options), origin,
       AccessScope::kSharedStorageWorklet,
-      /*main_frame_id=*/FrameTreeNodeId(), /*worklet_id=*/0,
+      /*main_frame_id=*/GlobalRenderFrameHostId(), /*worklet_id=*/0,
       error_message_future.GetCallback());
 
   EXPECT_FALSE(error_message_future.IsReady());
@@ -301,7 +301,7 @@ TEST_F(SharedStorageLockManagerTest, BatchUpdateWithLock_ImmediatelyHandled) {
   test_lock_manager_->SharedStorageBatchUpdate(
       std::move(methods_with_options),
       /*with_lock=*/"lock1", origin, AccessScope::kWindow,
-      /*main_frame_id=*/FrameTreeNodeId(), /*worklet_id=*/std::nullopt,
+      /*main_frame_id=*/GlobalRenderFrameHostId(), /*worklet_id=*/std::nullopt,
       error_message_future.GetCallback());
   task_environment()->RunUntilIdle();
 
@@ -332,7 +332,7 @@ TEST_F(SharedStorageLockManagerTest, BatchUpdateWithLock_WaitForGranted) {
   test_lock_manager_->SharedStorageBatchUpdate(
       std::move(methods_with_options),
       /*with_lock=*/"lock1", origin, AccessScope::kWindow,
-      /*main_frame_id=*/FrameTreeNodeId(), /*worklet_id=*/std::nullopt,
+      /*main_frame_id=*/GlobalRenderFrameHostId(), /*worklet_id=*/std::nullopt,
       error_message_future.GetCallback());
   task_environment()->RunUntilIdle();
 
@@ -387,7 +387,7 @@ TEST_F(SharedStorageLockManagerTransactionalBatchUpdateDisabledTest,
   test_lock_manager_->SharedStorageBatchUpdate(
       std::move(methods_with_options),
       /*with_lock=*/std::nullopt, origin, AccessScope::kWindow,
-      /*main_frame_id=*/FrameTreeNodeId(), /*worklet_id=*/std::nullopt,
+      /*main_frame_id=*/GlobalRenderFrameHostId(), /*worklet_id=*/std::nullopt,
       error_message_future.GetCallback());
   task_environment()->RunUntilIdle();
 
@@ -438,7 +438,7 @@ TEST_F(SharedStorageLockManagerTransactionalBatchUpdateDisabledTest,
   test_lock_manager_->SharedStorageBatchUpdate(
       std::move(methods_with_options),
       /*with_lock=*/std::nullopt, origin, AccessScope::kWindow,
-      /*main_frame_id=*/FrameTreeNodeId(), /*worklet_id=*/std::nullopt,
+      /*main_frame_id=*/GlobalRenderFrameHostId(), /*worklet_id=*/std::nullopt,
       error_message_future.GetCallback());
   task_environment()->RunUntilIdle();
 
@@ -485,7 +485,7 @@ TEST_F(SharedStorageLockManagerTransactionalBatchUpdateDisabledTest,
   test_lock_manager_->SharedStorageBatchUpdate(
       std::move(methods_with_options),
       /*with_lock=*/"lock1", origin, AccessScope::kWindow,
-      /*main_frame_id=*/FrameTreeNodeId(), /*worklet_id=*/std::nullopt,
+      /*main_frame_id=*/GlobalRenderFrameHostId(), /*worklet_id=*/std::nullopt,
       error_message_future.GetCallback());
   task_environment()->RunUntilIdle();
 
@@ -514,7 +514,7 @@ TEST_F(SharedStorageLockManagerTransactionalBatchUpdateDisabledTest,
   test_lock_manager_->SharedStorageBatchUpdate(
       std::move(methods_with_options),
       /*with_lock=*/std::nullopt, origin, AccessScope::kWindow,
-      /*main_frame_id=*/FrameTreeNodeId(), /*worklet_id=*/std::nullopt,
+      /*main_frame_id=*/GlobalRenderFrameHostId(), /*worklet_id=*/std::nullopt,
       error_message_future.GetCallback());
   task_environment()->RunUntilIdle();
 

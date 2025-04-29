@@ -7,16 +7,15 @@
 #include <cstddef>
 #include <optional>
 #include <ostream>
+#include <sstream>
 #include <string>
 #include <vector>
 
 #include "base/logging.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/strings/to_string.h"
 #include "base/time/time.h"
 #include "content/browser/shared_storage/shared_storage_event_params.h"
 #include "content/browser/shared_storage/shared_storage_runtime_manager.h"
-#include "content/public/browser/frame_tree_node_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -77,14 +76,6 @@ std::string SerializeMethod(AccessMethod method) {
   NOTREACHED();
 }
 
-std::string SerializeOptionalMainFrameId(
-    std::optional<FrameTreeNodeId> maybe_main_frame_id) {
-  if (!maybe_main_frame_id) {
-    return "std::nullopt";
-  }
-  return base::NumberToString(maybe_main_frame_id->GetUnsafeValue());
-}
-
 template <typename T>
 void ExpectObservations(const std::string& observation_name,
                         const std::vector<T>& expected_observations,
@@ -107,7 +98,7 @@ void TestSharedStorageObserver::OnSharedStorageAccessed(
     base::Time access_time,
     AccessScope scope,
     AccessMethod method,
-    FrameTreeNodeId main_frame_id,
+    GlobalRenderFrameHostId main_frame_id,
     const std::string& owner_origin,
     const SharedStorageEventParams& params) {
   accesses_.emplace_back(scope, method, main_frame_id, owner_origin, params);
@@ -126,7 +117,7 @@ void TestSharedStorageObserver::OnWorkletOperationExecutionFinished(
     AccessMethod method,
     int operation_id,
     int worklet_id,
-    std::optional<FrameTreeNodeId> main_frame_id,
+    GlobalRenderFrameHostId main_frame_id,
     const std::string& owner_origin) {
   operation_finished_infos_.emplace_back(execution_time, method, operation_id,
                                          worklet_id, main_frame_id,
@@ -151,7 +142,7 @@ std::ostream& operator<<(std::ostream& os,
                          const TestSharedStorageObserver::Access& access) {
   os << "{ Access Scope: " << SerializeScope(access.scope)
      << "; Access Method: " << SerializeMethod(access.method)
-     << "; Main Frame ID: " << access.main_frame_id.GetUnsafeValue()
+     << "; Main Frame ID: " << access.main_frame_id
      << "; Owner Origin: " << access.owner_origin
      << "; Params: " << access.params << " }";
   return os;
@@ -173,7 +164,7 @@ std::ostream& operator<<(
      << "; Access Method: " << SerializeMethod(info.method)
      << "; Operation ID: " << info.operation_id
      << "; Worklet ID: " << info.worklet_id
-     << "; Main Frame ID: " << SerializeOptionalMainFrameId(info.main_frame_id)
+     << "; Main Frame ID: " << info.main_frame_id
      << "; Owner Origin: " << info.owner_origin << " }";
   return os;
 }
