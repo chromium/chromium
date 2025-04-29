@@ -135,7 +135,7 @@ if (current_cpu == "arm" || v8_current_cpu == "arm") {
       # target_cpu == "arm64" filters out some cases (e.g. the ChromeOS x64
       # MSAN build) where the target platform is x64, but V8 is configured to
       # use the arm64 simulator.
-      arm_control_flow_integrity = "bti+pac"
+      arm_control_flow_integrity = "standard"
     }
 
     if (host_os == "mac" && host_cpu == "arm64") {
@@ -145,17 +145,8 @@ if (current_cpu == "arm" || v8_current_cpu == "arm") {
       arm_control_flow_integrity = "none"
     }
   }
-
-  # Warn that using "standard" control flow integrity
-  # will also enable guarded control stack.
-  if (arm_control_flow_integrity == "standard") {
-    print(
-        "warning: arm_control_flow_integrity=standard will now enable bti+pac+gcs. You should use bti+pac instead.")
-  }
-
   assert(arm_control_flow_integrity == "none" ||
              arm_control_flow_integrity == "standard" ||
-             arm_control_flow_integrity == "bti+pac" ||
              arm_control_flow_integrity == "pac",
          "Invalid branch protection option")
 }
