@@ -189,7 +189,7 @@ NSString* GetContextMenuHideDescriptionForType(
 @property(nonatomic, assign) ContentSuggestionsModuleType type;
 
 // Configuration for the Magic Stack Module.
-@property(nonatomic, assign) MagicStackModule* config;
+@property(nonatomic, strong) MagicStackModule* config;
 
 /// Whether the magic stack module should be hidden when the context menu
 /// finishes presentation.
