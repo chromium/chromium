@@ -55,6 +55,7 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   ~AXNodeObject() override;
 
   static std::optional<String> GetCSSAltText(const Element*);
+  static std::optional<String> GetCSSContentText(const Element*);
 
   void Trace(Visitor*) const override;
 
