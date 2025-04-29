@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/boca/invalidations/invalidation_service_impl.h"
 
 #include "base/time/time.h"
+#include "chromeos/ash/components/boca/boca_metrics_util.h"
 #include "chromeos/ash/components/boca/boca_session_manager.h"
 #include "chromeos/ash/components/boca/session_api/session_client_impl.h"
 #include "chromeos/ash/components/boca/session_api/upload_token_request.h"
@@ -87,7 +88,7 @@ void InvalidationServiceImpl::UploadToken() {
 void InvalidationServiceImpl::OnTokenUploaded(
     base::expected<bool, google_apis::ApiErrorCode> result) {
   if (!result.has_value()) {
-    // TODO(b/366316261):Add metrics for token failure.
+    boca::RecordUploadTokenErrorCode(result.error());
     LOG(WARNING) << "[Boca]Failed to upload token, retrying";
     upload_retry_backoff_.InformOfRequest(/*succeeded=*/false);
     base::TimeDelta backoff_delay = upload_retry_backoff_.GetTimeUntilRelease();

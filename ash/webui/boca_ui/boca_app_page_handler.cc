@@ -30,6 +30,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/boca/boca_app_client.h"
+#include "chromeos/ash/components/boca/boca_metrics_util.h"
 #include "chromeos/ash/components/boca/boca_role_util.h"
 #include "chromeos/ash/components/boca/boca_session_manager.h"
 #include "chromeos/ash/components/boca/boca_session_util.h"
@@ -549,6 +550,7 @@ void BocaAppHandler::ViewStudentScreen(const std::string& id,
           [](ViewStudentScreenCallback callback,
              base::expected<bool, google_apis::ApiErrorCode> result) {
             if (!result.has_value()) {
+              boca::RecordViewStudentScreenErrorCode(result.error());
               LOG(WARNING) << "[Boca] Error requesting to view student screen: "
                            << result.error();
               std::move(callback).Run(
@@ -572,6 +574,7 @@ void BocaAppHandler::EndViewScreenSession(
           [](EndViewScreenSessionCallback cb,
              base::expected<bool, google_apis::ApiErrorCode> result) {
             if (!result.has_value()) {
+              boca::RecordEndViewStudentScreenErrorCode(result.error());
               LOG(WARNING)
                   << "[Boca] Error setting view screen state to inactive: "
                   << result.error();
@@ -594,6 +597,7 @@ void BocaAppHandler::SetViewScreenSessionActive(
           [](SetViewScreenSessionActiveCallback cb,
              base::expected<bool, google_apis::ApiErrorCode> result) {
             if (!result.has_value()) {
+              boca::RecordSetViewScreenSessionActiveErrorCode(result.error());
               LOG(WARNING)
                   << "[Boca] Error setting view screen state to active: "
                   << result.error();
@@ -811,6 +815,7 @@ void BocaAppHandler::OnGetSession(
     base::expected<std::unique_ptr<::boca::Session>, google_apis::ApiErrorCode>
         result) {
   if (!result.has_value()) {
+    boca::RecordGetSessionErrorCode(result.error());
     std::move(callback).Run(
         mojom::SessionResult::NewError(mojom::GetSessionError::kHTTPError));
     return;
@@ -847,6 +852,7 @@ void BocaAppHandler::OnUpdatedSession(
         result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!result.has_value()) {
+    boca::RecordUpdateSessionErrorCode(result.error());
     std::move(callback).Run(mojom::UpdateSessionError::kHTTPError);
   } else {
     std::move(callback).Run(std::nullopt);
@@ -866,9 +872,11 @@ void BocaAppHandler::OnUpdatedCaptionConfig(
     base::expected<std::unique_ptr<::boca::Session>, google_apis::ApiErrorCode>
         result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  VLOG_IF(1, !result.has_value())
-      << "[Boca] captions update session request failed with code "
-      << result.error();
+  if (!result.has_value()) {
+    boca::RecordUpdateCaptionErrorCode(result.error());
+    VLOG(1) << "[Boca] captions update session request failed with code "
+            << result.error();
+  }
   // We should not block producer from stopping sending session captions even
   // if the update fails. So handle failure only if the producer was trying to
   // enable captions and ignore it otherwise.
@@ -904,6 +912,7 @@ void BocaAppHandler::OnStudentRemoved(
     std::string id,
     base::expected<bool, google_apis::ApiErrorCode> result) {
   if (!result.has_value()) {
+    boca::RecordRemoveStudentErrorCode(result.error());
     std::move(callback).Run(mojom::RemoveStudentError::kHTTPError);
     return;
   }
@@ -926,6 +935,7 @@ void BocaAppHandler::OnStudentsAdded(
     ::boca::Session* current_session,
     base::expected<bool, google_apis::ApiErrorCode> result) {
   if (!result.has_value()) {
+    boca::RecordAddStudentsErrorCode(result.error());
     std::move(callback).Run(mojom::AddStudentsError::kHTTPError);
     return;
   }
@@ -940,6 +950,7 @@ void BocaAppHandler::OnAccessCodeSubmitted(
     base::expected<std::unique_ptr<::boca::Session>, google_apis::ApiErrorCode>
         result) {
   if (!result.has_value()) {
+    boca::RecordJoinSessionViaAccessCodeErrorCode(result.error());
     std::move(callback).Run(mojom::SubmitAccessCodeError::kInvalid);
     return;
   } else {
@@ -955,6 +966,7 @@ void BocaAppHandler::OnCreateSessionResponse(
     base::expected<std::unique_ptr<::boca::Session>, google_apis::ApiErrorCode>
         result) {
   if (!result.has_value()) {
+    boca::RecordCreateSessionErrorCode(result.error());
     std::move(callback).Run(mojom::CreateSessionError::kHTTPError);
     return;
   }
@@ -969,6 +981,7 @@ void BocaAppHandler::OnEndSessionResponse(
     base::expected<std::unique_ptr<::boca::Session>, google_apis::ApiErrorCode>
         result) {
   if (!result.has_value()) {
+    boca::RecordEndSessionErrorCode(result.error());
     std::move(callback).Run(mojom::UpdateSessionError::kHTTPError);
     return;
   }

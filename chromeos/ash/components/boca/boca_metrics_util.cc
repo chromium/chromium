@@ -100,6 +100,22 @@ void RecordOnRegisterScreenRequestSentErrorCode(
                                     error_code);
 }
 
+void RecordViewStudentScreenErrorCode(google_apis::ApiErrorCode error_code) {
+  RecordSpotlightGoogleApiErrorCode(kBocaSpotlightViewStudentScreen,
+                                    error_code);
+}
+
+void RecordEndViewStudentScreenErrorCode(google_apis::ApiErrorCode error_code) {
+  RecordSpotlightGoogleApiErrorCode(kBocaSpotlightEndViewStudentScreen,
+                                    error_code);
+}
+
+void RecordSetViewScreenSessionActiveErrorCode(
+    google_apis::ApiErrorCode error_code) {
+  RecordSpotlightGoogleApiErrorCode(kBocaSpotlightSetViewScreenSessionActive,
+                                    error_code);
+}
+
 void RecordSpotlightGoogleApiErrorCode(const std::string& name,
                                        google_apis::ApiErrorCode error_code) {
   base::UmaHistogramSparse(
@@ -109,6 +125,39 @@ void RecordSpotlightGoogleApiErrorCode(const std::string& name,
       error_code);
 }
 
+void RecordGetSessionErrorCode(google_apis::ApiErrorCode error_code) {
+  RecordGoogleApiErrorCode(kBocaGetSession, error_code);
+}
+
+void RecordCreateSessionErrorCode(google_apis::ApiErrorCode error_code) {
+  RecordGoogleApiErrorCode(kBocaCreateSession, error_code);
+}
+
+void RecordEndSessionErrorCode(google_apis::ApiErrorCode error_code) {
+  RecordGoogleApiErrorCode(kBocaEndSession, error_code);
+}
+
+void RecordUpdateSessionErrorCode(google_apis::ApiErrorCode error_code) {
+  RecordGoogleApiErrorCode(kBocaUpdateSession, error_code);
+}
+
+void RecordJoinSessionViaAccessCodeErrorCode(
+    google_apis::ApiErrorCode error_code) {
+  RecordGoogleApiErrorCode(kBocaJoinSessionViaAccessCode, error_code);
+}
+
+void RecordUpdateCaptionErrorCode(google_apis::ApiErrorCode error_code) {
+  RecordGoogleApiErrorCode(kBocaUpdateCaption, error_code);
+}
+
+void RecordAddStudentsErrorCode(google_apis::ApiErrorCode error_code) {
+  RecordGoogleApiErrorCode(kBocaAddStudents, error_code);
+}
+
+void RecordRemoveStudentErrorCode(google_apis::ApiErrorCode error_code) {
+  RecordGoogleApiErrorCode(kBocaRemoveStudent, error_code);
+}
+
 void RecordUpdateStudentActivitiesErrorCode(
     google_apis::ApiErrorCode error_code) {
   RecordGoogleApiErrorCode(kBocaUpdateStudentActivities, error_code);
@@ -116,6 +165,10 @@ void RecordUpdateStudentActivitiesErrorCode(
 
 void RecordStudentHeartBeatErrorCode(google_apis::ApiErrorCode error_code) {
   RecordGoogleApiErrorCode(kBocaStudentHeartbeat, error_code);
+}
+
+void RecordUploadTokenErrorCode(google_apis::ApiErrorCode error_code) {
+  RecordGoogleApiErrorCode(kBocaUploadToken, error_code);
 }
 
 void RecordGoogleApiErrorCode(const std::string& name,

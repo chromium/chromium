@@ -1352,7 +1352,10 @@ chromium-metrics-reviews@google.com.
     for view screen in a Class Tools session.
   </summary>
   <token key="Request">
+    <variant name="EndViewStudentScreen"/>
     <variant name="RegisterScreen"/>
+    <variant name="SetViewScreenSessionActive"/>
+    <variant name="ViewStudentScreen"/>
   </token>
 </histogram>
 
@@ -1365,8 +1368,17 @@ chromium-metrics-reviews@google.com.
     captions in a Class Tools.
   </summary>
   <token key="Request">
+    <variant name="AddStudents"/>
+    <variant name="CreateSession"/>
+    <variant name="EndSession"/>
+    <variant name="GetSession"/>
+    <variant name="JoinSessionViaAccessCode"/>
+    <variant name="RemoveStudent"/>
     <variant name="StudentHeartbeat"/>
+    <variant name="UpdateCaption"/>
+    <variant name="UpdateSession"/>
     <variant name="UpdateStudentActivities"/>
+    <variant name="UploadToken"/>
   </token>
 </histogram>
 
