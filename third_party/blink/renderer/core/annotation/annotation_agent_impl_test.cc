@@ -1644,6 +1644,139 @@ TEST_F(AnnotationAgentImplTest, GlicShouldNotAnimateLongScroll) {
   EXPECT_TRUE(ExpectInViewport(*element_foo));
 }
 
+// Tests that the device scale factor is taken into account when deciding
+// whether to smooth scroll. A device with a higher DSF will have a higher
+// threshold for smooth scrolling.
+TEST_F(AnnotationAgentImplTest, GlicScrollConsidersDeviceScaleFactor) {
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style>
+      p {
+        font: 10px/1 Ahem;
+      }
+      #foo {
+        position: absolute;
+        top: 5000px;
+      }
+      body {
+        height: 10000px;
+        margin: 0;
+      }
+    </style>
+    <p id='foo'>FOO<p>
+  )HTML");
+  WebView().MainFrameViewWidget()->SetDeviceScaleFactorForTesting(2.0);
+
+  LoadAhem();
+  Compositor().BeginFrame();
+
+  Element* element_foo = GetDocument().getElementById(AtomicString("foo"));
+  RangeInFlatTree* range_foo =
+      CreateRangeToExpectedText(element_foo->firstChild(), 0, 3, "FOO");
+  auto* agent_foo =
+      CreateAgentForRange(range_foo, mojom::blink::AnnotationType::kGlic);
+  ASSERT_TRUE(agent_foo);
+
+  ASSERT_TRUE(ExpectNotInViewport(*element_foo));
+  ASSERT_EQ(GetDocument().View()->GetRootFrameViewport()->GetScrollOffset(),
+            ScrollOffset());
+
+  MockAnnotationAgentHost host_foo;
+  host_foo.BindToAgent(*agent_foo);
+  Compositor().BeginFrame();
+  ASSERT_TRUE(agent_foo->IsAttached());
+  host_foo.FlushForTesting();
+
+  // Attachment must not cause any scrolling.
+  ASSERT_TRUE(ExpectNotInViewport(*element_foo));
+  ASSERT_EQ(GetDocument().View()->GetRootFrameViewport()->GetScrollOffset(),
+            ScrollOffset());
+
+  // Invoking ScrollIntoView on the agent will trigger a scroll, but the scroll
+  // will be animated (and so will not be in the viewport immediately).
+  //
+  // The scroll distance will be ~10,000 physical pixels (due to the device
+  // scale factor), which would be above the threshold for a smooth scroll. But
+  // if we normalize the distance using the device scale factor (which we
+  // should), the scroll distance will be within the threshold.
+  host_foo.agent_->ScrollIntoView(/*applies_focus=*/false);
+  host_foo.FlushForTesting();
+  Compositor().BeginFrame();
+  EXPECT_TRUE(ExpectNotInViewport(*element_foo));
+
+  // Start and complete the animation (which should happen within 700 ms based
+  // on kDeltaBasedMaxDuration in scroll_offset_animation_curve.cc).
+  task_environment().FastForwardBy(base::Milliseconds(16));
+  Compositor().BeginFrame();
+  task_environment().FastForwardBy(base::Milliseconds(700));
+  Compositor().BeginFrame(/*time_delta_in_seconds*/ 0.7);
+
+  // The text should now be in the viewport.
+  EXPECT_TRUE(ExpectInViewport(*element_foo));
+}
+
+// Tests that browser zoom doesn't affect the computation of scroll behaviour
+// for mojom::blink::AnnotationType::kGlic.
+TEST_F(AnnotationAgentImplTest, GlicScrollIgnoresBrowserZoom) {
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style>
+      p {
+        font: 10px/1 Ahem;
+      }
+      #foo {
+        position: absolute;
+        top: 5000px;
+      }
+      body {
+        height: 10000px;
+        margin: 0;
+      }
+    </style>
+    <p id='foo'>FOO<p>
+  )HTML");
+  // Sets the zoom factor to (1.2 ^ 4)x (i.e. ~2x).
+  WebView().MainFrameViewWidget()->SetZoomLevelForTesting(4.0);
+
+  LoadAhem();
+  Compositor().BeginFrame();
+
+  Element* element_foo = GetDocument().getElementById(AtomicString("foo"));
+  RangeInFlatTree* range_foo =
+      CreateRangeToExpectedText(element_foo->firstChild(), 0, 3, "FOO");
+  auto* agent_foo =
+      CreateAgentForRange(range_foo, mojom::blink::AnnotationType::kGlic);
+  ASSERT_TRUE(agent_foo);
+
+  ASSERT_TRUE(ExpectNotInViewport(*element_foo));
+  ASSERT_EQ(GetDocument().View()->GetRootFrameViewport()->GetScrollOffset(),
+            ScrollOffset());
+
+  MockAnnotationAgentHost host_foo;
+  host_foo.BindToAgent(*agent_foo);
+  Compositor().BeginFrame();
+  ASSERT_TRUE(agent_foo->IsAttached());
+  host_foo.FlushForTesting();
+
+  // Attachment must not cause any scrolling.
+  ASSERT_TRUE(ExpectNotInViewport(*element_foo));
+  ASSERT_EQ(GetDocument().View()->GetRootFrameViewport()->GetScrollOffset(),
+            ScrollOffset());
+
+  // Invoking ScrollIntoView on the agent will trigger an instant scroll
+  // (without any animation), as the distance exceeds the threshold for a
+  // smooth scroll. The scroll distance will be >10,000 physical pixels (due to
+  // browser zoom), which is above the threshold.
+  host_foo.agent_->ScrollIntoView(/*applies_focus=*/false);
+  host_foo.FlushForTesting();
+  Compositor().BeginFrame();
+  EXPECT_TRUE(ExpectInViewport(*element_foo));
+}
+
 // Ensure that a range that's valid in a flat-tree ordering but invalid in
 // regular DOM order doesn't cause a crash. https://crbug.com/410033683.
 TEST_F(AnnotationAgentImplTest, ValidFlatTreeRangeIsInvalidDOMRange) {
