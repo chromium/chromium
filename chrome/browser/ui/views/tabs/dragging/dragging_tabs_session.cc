@@ -308,7 +308,7 @@ DraggingTabsSession::CalculateGroupForDraggedTabs(int to_index) {
   const auto tab_bounds_in_drag_context_coords = [this](int model_index) {
     const Tab* const tab = attached_context_->GetTabAt(model_index);
     return ToEnclosingRect(views::View::ConvertRectToTarget(
-        tab, attached_context_, gfx::RectF(tab->GetLocalBounds())));
+        tab->parent(), attached_context_, gfx::RectF(tab->bounds())));
   };
 
   // Use the left edge for a reliable fallback, e.g. if this is the leftmost
@@ -331,7 +331,7 @@ DraggingTabsSession::CalculateGroupForDraggedTabs(int to_index) {
     left_edge -= buffer;
   }
 
-  int left_most_selected_x_position =
+  const int left_most_selected_x_position =
       left_most_selected_tab->x() + tab_left_inset;
 
   if (left_group.has_value() &&
