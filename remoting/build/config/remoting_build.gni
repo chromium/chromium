@@ -40,7 +40,4 @@ declare_args() {
   if (is_linux) {
     enable_chromoting_crashpad = true
   }
-
-  # Enable this to build the CLI client for testing.
-  enable_remoting_cli_client = false
 }
