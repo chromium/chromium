@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket Connection Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+            margin: 0;
+        }
+        #status {
+            font-size: 24px;
+            margin-top: 20px;
+        }
+    </style>
+    <script type="text/javascript">
+        document.addEventListener('DOMContentLoaded', function() {
+            const statusElement = document.createElement('div');
+            statusElement.id = 'status';
+            document.body.appendChild(statusElement);
+
+            const url = getWebSocketUrl();
+
+            if (!url) {
+                displayStatus("Invalid URL. Please provide a valid WebSocket URL in the query string.");
+                return;
+            }
+
+            const ws = new WebSocket(url);
+
+            ws.onopen = function() {
+                document.title = 'PASS';
+                displayStatus("WebSocket connection established successfully.");
+            };
+
+            ws.onclose = function() {
+                document.title = 'FAIL';
+                displayStatus("WebSocket connection closed.");
+            };
+
+            ws.onmessage = function(evt) {
+                domAutomationController.send(evt.data);
+            };
+
+            ws.onerror = function(evt) {
+                document.title = 'FAIL';
+                console.error(`WebSocket error: '${JSON.stringify(evt, ["message", "arguments", "type", "name"])}'`);
+                displayStatus("WebSocket error occurred. Check the console for details.");
+            };
+
+            function getWebSocketUrl() {
+                const href = window.location.href;
+                const queryBegin = href.indexOf('?url=');
+                if (queryBegin === -1) {
+                    console.log("Failed to find ?url= in URL");
+                    return null;
+                }
+                return href.slice(queryBegin + 5);
+            }
+
+            function displayStatus(message) {
+                statusElement.textContent = message;
+            }
+        });
+    </script>
+</head>
+<body>
+    <h1>WebSocket Connection Test</h1>
+    <p>Please check the status below:</p>
+</body>
+</html>
