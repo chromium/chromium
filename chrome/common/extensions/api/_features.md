@@ -46,9 +46,10 @@ with properties for each feature.
 
 ### Simple and Complex Features
 
-Most features are known as "simple" features. These are features whose
-definition is a single object that contains the properties describing the
-criteria for availability. A simple feature might look like this:
+Most features are classified as "simple" features. These have a single feature
+definition, represented as an object that specifies a set of attributes and
+constraints defining the feature's criteria for availability and inheritance
+behavior. A simple feature might look like this:
 ```
 "feature1": {
   "dependencies": ["permission:feature1"],
@@ -59,8 +60,9 @@ criteria for availability. A simple feature might look like this:
 permission must be present and it must be executed from a privileged context.
 (These concepts are covered more later in this document.)
 
-Features can also be "complex". A complex feature has a list of objects to
-specify multiple groups of possible properties. A complex feature could look
+Features can also be categorized as "complex." A complex feature consists of
+multiple feature definitions, each of which specifies a distinct group of
+potential attributes or constraints. For example, a complex feature might look
 like this:
 ```
 "feature1": [{
@@ -72,7 +74,7 @@ like this:
 }]
 ```
 
-With complex features, if either of the definitions are matched, the feature
+With complex features, if any of the definitions are matched, the feature
 is available (in other words, the feature definitions are logically OR'd
 together). Complex features should frequently be avoided, as it makes the
 logic more involved and slower.
@@ -85,8 +87,8 @@ child's name. That is, `feature1.child` is the child of `feature1`. Inheritance
 can carry for multiple levels (e.g. `feature1.child.child`), but this is rarely
 (if ever) useful.
 
-A child feature inherits all the properties of its parent, but can choose to
-override them or add additional properties. Take the example:
+A child feature inherits all the properties of its parent feature definition,
+but can choose to override them or add additional properties. Take the example:
 ```
 "feature1": {
   "dependencies": ["permission:feature1"],
@@ -113,7 +115,8 @@ prefixed API name that isn't dependent on the prefix, such as app.window
 If the parent of a feature is a complex feature, the feature system needs to
 know which parent to inherit from. To do this, add the property
 `"default_parent": true` to one of the feature definitions in the parent
-feature.
+feature. All child feature definitions will inherit from this default parent
+definition.
 
 ## Properties
 
