@@ -345,6 +345,14 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
         {});
   }
 
+  void ExpectNodeMapsToEntireText(ui::AXNodeID id,
+                                  ui::AXNodeID expectedId,
+                                  std::u16string text) {
+    EXPECT_EQ(id, expectedId);
+    EXPECT_EQ(controller().GetCurrentTextStartIndex(id), 0);
+    EXPECT_EQ(controller().GetCurrentTextEndIndex(id), (int)text.length());
+  }
+
   ui::AXTreeID tree_id_;
   raw_ptr<MockAXTreeDistiller, DanglingUntriaged> distiller_ = nullptr;
   testing::StrictMock<MockReadAnythingUntrustedPageHandler> page_handler_;
@@ -2505,29 +2513,17 @@ TEST_F(ReadAnythingAppControllerTest, GetCurrentText_ReturnsExpectedNodes) {
 
   std::vector<ui::AXNodeID> next_node_ids = controller().GetCurrentText();
   EXPECT_EQ(next_node_ids.size(), 1u);
-  // The returned id should be the next node id, 2
-  EXPECT_EQ(next_node_ids[0], kId1);
-  // The returned int should be the beginning of the node's text.
-  EXPECT_EQ(controller().GetCurrentTextStartIndex(next_node_ids[0]), 0);
-  // The returned int should be equivalent to the text in the node.
-  EXPECT_EQ(controller().GetCurrentTextEndIndex(next_node_ids[0]),
-            (int)sentence1.length());
+  ExpectNodeMapsToEntireText(next_node_ids[0], kId1, sentence1);
 
   // Move to the next node
   next_node_ids = MoveToNextGranularityAndGetText();
   EXPECT_EQ(next_node_ids.size(), 1u);
-  EXPECT_EQ(next_node_ids[0], kId2);
-  EXPECT_EQ(controller().GetCurrentTextStartIndex(next_node_ids[0]), 0);
-  EXPECT_EQ(controller().GetCurrentTextEndIndex(next_node_ids[0]),
-            (int)sentence2.length());
+  ExpectNodeMapsToEntireText(next_node_ids[0], kId2, sentence2);
 
   // Move to the last node
   next_node_ids = MoveToNextGranularityAndGetText();
+  ExpectNodeMapsToEntireText(next_node_ids[0], kId3, sentence3);
   EXPECT_EQ(next_node_ids.size(), 1u);
-  EXPECT_EQ(next_node_ids[0], kId3);
-  EXPECT_EQ(controller().GetCurrentTextStartIndex(next_node_ids[0]), 0);
-  EXPECT_EQ(controller().GetCurrentTextEndIndex(next_node_ids[0]),
-            (int)sentence3.length());
 
   // Attempt to move to another node.
   next_node_ids = MoveToNextGranularityAndGetText();
@@ -2551,45 +2547,27 @@ TEST_F(ReadAnythingAppControllerTest,
 
   std::vector<ui::AXNodeID> next_node_ids = controller().GetCurrentText();
   EXPECT_EQ(next_node_ids.size(), 1u);
-  // The returned id should be the next node id, 2
-  EXPECT_EQ(next_node_ids[0], kId1);
-  // The returned int should be the beginning of the node's text.
-  EXPECT_EQ(controller().GetCurrentTextStartIndex(next_node_ids[0]), 0);
-  // The returned int should be equivalent to the text in the node.
-  EXPECT_EQ(controller().GetCurrentTextEndIndex(next_node_ids[0]),
-            (int)sentence1.length());
+  ExpectNodeMapsToEntireText(next_node_ids[0], kId1, sentence1);
 
   // Move to the next node
   next_node_ids = MoveToNextGranularityAndGetText();
   EXPECT_EQ(next_node_ids.size(), 1u);
-  EXPECT_EQ(next_node_ids[0], kId2);
-  EXPECT_EQ(controller().GetCurrentTextStartIndex(next_node_ids[0]), 0);
-  EXPECT_EQ(controller().GetCurrentTextEndIndex(next_node_ids[0]),
-            (int)sentence2.length());
+  ExpectNodeMapsToEntireText(next_node_ids[0], kId2, sentence2);
 
   // Move to the last node
   next_node_ids = MoveToNextGranularityAndGetText();
   EXPECT_EQ(next_node_ids.size(), 1u);
-  EXPECT_EQ(next_node_ids[0], kId3);
-  EXPECT_EQ(controller().GetCurrentTextStartIndex(next_node_ids[0]), 0);
-  EXPECT_EQ(controller().GetCurrentTextEndIndex(next_node_ids[0]),
-            (int)sentence3.length());
+  ExpectNodeMapsToEntireText(next_node_ids[0], kId3, sentence3);
 
   // Move backwards
   next_node_ids = MoveToPreviousGranularityAndGetText();
   EXPECT_EQ(next_node_ids.size(), 1u);
-  EXPECT_EQ(next_node_ids[0], kId2);
-  EXPECT_EQ(controller().GetCurrentTextStartIndex(next_node_ids[0]), 0);
-  EXPECT_EQ(controller().GetCurrentTextEndIndex(next_node_ids[0]),
-            (int)sentence2.length());
+  ExpectNodeMapsToEntireText(next_node_ids[0], kId2, sentence2);
 
   // Move to the last node again.
   next_node_ids = MoveToNextGranularityAndGetText();
   EXPECT_EQ(next_node_ids.size(), 1u);
-  EXPECT_EQ(next_node_ids[0], kId3);
-  EXPECT_EQ(controller().GetCurrentTextStartIndex(next_node_ids[0]), 0);
-  EXPECT_EQ(controller().GetCurrentTextEndIndex(next_node_ids[0]),
-            (int)sentence3.length());
+  ExpectNodeMapsToEntireText(next_node_ids[0], kId3, sentence3);
 
   // Attempt to move to another node.
   next_node_ids = MoveToNextGranularityAndGetText();
@@ -2617,13 +2595,7 @@ TEST_F(ReadAnythingAppControllerTest,
 
   std::vector<ui::AXNodeID> next_node_ids = controller().GetCurrentText();
   EXPECT_EQ(next_node_ids.size(), 1u);
-  // The returned id should be the next node id, 2
-  EXPECT_EQ(next_node_ids[0], kId1);
-  // The returned int should be the beginning of the node's text.
-  EXPECT_EQ(controller().GetCurrentTextStartIndex(next_node_ids[0]), 0);
-  // The returned int should be equivalent to the text in the node.
-  EXPECT_EQ(controller().GetCurrentTextEndIndex(next_node_ids[0]),
-            (int)sentence1.length());
+  ExpectNodeMapsToEntireText(next_node_ids[0], kId1, sentence1);
 
   // Preprocess is called again.
   controller().PreprocessTextForSpeech();
@@ -2632,29 +2604,17 @@ TEST_F(ReadAnythingAppControllerTest,
   // But nothing changes with what's returned by GetCurrentText
   next_node_ids = controller().GetCurrentText();
   EXPECT_EQ(next_node_ids.size(), 1u);
-  // The returned id should be the next node id, 2
-  EXPECT_EQ(next_node_ids[0], kId1);
-  // The returned int should be the beginning of the node's text.
-  EXPECT_EQ(controller().GetCurrentTextStartIndex(next_node_ids[0]), 0);
-  // The returned int should be equivalent to the text in the node.
-  EXPECT_EQ(controller().GetCurrentTextEndIndex(next_node_ids[0]),
-            (int)sentence1.length());
+  ExpectNodeMapsToEntireText(next_node_ids[0], kId1, sentence1);
 
   // Move to the next node
   next_node_ids = MoveToNextGranularityAndGetText();
   EXPECT_EQ(next_node_ids.size(), 1u);
-  EXPECT_EQ(next_node_ids[0], kId2);
-  EXPECT_EQ(controller().GetCurrentTextStartIndex(next_node_ids[0]), 0);
-  EXPECT_EQ(controller().GetCurrentTextEndIndex(next_node_ids[0]),
-            (int)sentence2.length());
+  ExpectNodeMapsToEntireText(next_node_ids[0], kId2, sentence2);
 
   // Move to the last node
   next_node_ids = MoveToNextGranularityAndGetText();
   EXPECT_EQ(next_node_ids.size(), 1u);
-  EXPECT_EQ(next_node_ids[0], kId3);
-  EXPECT_EQ(controller().GetCurrentTextStartIndex(next_node_ids[0]), 0);
-  EXPECT_EQ(controller().GetCurrentTextEndIndex(next_node_ids[0]),
-            (int)sentence3.length());
+  ExpectNodeMapsToEntireText(next_node_ids[0], kId3, sentence3);
 
   // Preprocess is called again.
   controller().PreprocessTextForSpeech();
@@ -2663,18 +2623,12 @@ TEST_F(ReadAnythingAppControllerTest,
   // And nothing has changed with the current text.
   next_node_ids = controller().GetCurrentText();
   EXPECT_EQ(next_node_ids.size(), 1u);
-  EXPECT_EQ(next_node_ids[0], kId3);
-  EXPECT_EQ(controller().GetCurrentTextStartIndex(next_node_ids[0]), 0);
-  EXPECT_EQ(controller().GetCurrentTextEndIndex(next_node_ids[0]),
-            (int)sentence3.length());
+  ExpectNodeMapsToEntireText(next_node_ids[0], kId3, sentence3);
 
   // Move backwards
   next_node_ids = MoveToPreviousGranularityAndGetText();
   EXPECT_EQ(next_node_ids.size(), 1u);
-  EXPECT_EQ(next_node_ids[0], kId2);
-  EXPECT_EQ(controller().GetCurrentTextStartIndex(next_node_ids[0]), 0);
-  EXPECT_EQ(controller().GetCurrentTextEndIndex(next_node_ids[0]),
-            (int)sentence2.length());
+  ExpectNodeMapsToEntireText(next_node_ids[0], kId2, sentence2);
 
   // Preprocess is called again.
   controller().PreprocessTextForSpeech();
@@ -2683,18 +2637,12 @@ TEST_F(ReadAnythingAppControllerTest,
   // And nothing has changed with the current text.
   next_node_ids = controller().GetCurrentText();
   EXPECT_EQ(next_node_ids.size(), 1u);
-  EXPECT_EQ(next_node_ids[0], kId2);
-  EXPECT_EQ(controller().GetCurrentTextStartIndex(next_node_ids[0]), 0);
-  EXPECT_EQ(controller().GetCurrentTextEndIndex(next_node_ids[0]),
-            (int)sentence2.length());
+  ExpectNodeMapsToEntireText(next_node_ids[0], kId2, sentence2);
 
   // Move to the last node again.
   next_node_ids = MoveToNextGranularityAndGetText();
   EXPECT_EQ(next_node_ids.size(), 1u);
-  EXPECT_EQ(next_node_ids[0], kId3);
-  EXPECT_EQ(controller().GetCurrentTextStartIndex(next_node_ids[0]), 0);
-  EXPECT_EQ(controller().GetCurrentTextEndIndex(next_node_ids[0]),
-            (int)sentence3.length());
+  ExpectNodeMapsToEntireText(next_node_ids[0], kId3, sentence3);
 
   // Attempt to move to another node.
   next_node_ids = MoveToNextGranularityAndGetText();
@@ -2797,10 +2745,7 @@ TEST_F(ReadAnythingAppControllerTest, GetCurrentText_AfterAXTreeRefresh) {
 
   std::vector<ui::AXNodeID> next_node_ids = controller().GetCurrentText();
   EXPECT_EQ(next_node_ids.size(), 1u);
-  EXPECT_EQ(next_node_ids[0], kId1);
-  EXPECT_EQ(controller().GetCurrentTextStartIndex(next_node_ids[0]), 0);
-  EXPECT_EQ(controller().GetCurrentTextEndIndex(next_node_ids[0]),
-            (int)sentence1.length());
+  ExpectNodeMapsToEntireText(next_node_ids[0], kId1, sentence1);
 
   // Simulate updating the page text.
   std::u16string new_sentence_1 =
@@ -2836,24 +2781,15 @@ TEST_F(ReadAnythingAppControllerTest, GetCurrentText_AfterAXTreeRefresh) {
   // The nodes from the new tree are used.
   next_node_ids = controller().GetCurrentText();
   EXPECT_EQ(next_node_ids.size(), 1u);
-  EXPECT_EQ(next_node_ids[0], kNewId1);
-  EXPECT_EQ(controller().GetCurrentTextStartIndex(next_node_ids[0]), 0);
-  EXPECT_EQ(controller().GetCurrentTextEndIndex(next_node_ids[0]),
-            (int)new_sentence_1.length());
+  ExpectNodeMapsToEntireText(next_node_ids[0], kNewId1, new_sentence_1);
 
   next_node_ids = MoveToNextGranularityAndGetText();
   EXPECT_EQ(next_node_ids.size(), 1u);
-  EXPECT_EQ(next_node_ids[0], kNewId2);
-  EXPECT_EQ(controller().GetCurrentTextStartIndex(next_node_ids[0]), 0);
-  EXPECT_EQ(controller().GetCurrentTextEndIndex(next_node_ids[0]),
-            (int)new_sentence_2.length());
+  ExpectNodeMapsToEntireText(next_node_ids[0], kNewId2, new_sentence_2);
 
   next_node_ids = MoveToNextGranularityAndGetText();
   EXPECT_EQ(next_node_ids.size(), 1u);
-  EXPECT_EQ(next_node_ids[0], kNewId3);
-  EXPECT_EQ(controller().GetCurrentTextStartIndex(next_node_ids[0]), 0);
-  EXPECT_EQ(controller().GetCurrentTextEndIndex(next_node_ids[0]),
-            (int)new_sentence_3.length());
+  ExpectNodeMapsToEntireText(next_node_ids[0], kNewId3, new_sentence_3);
 
   // Nodes are empty at the end of the new tree.
   next_node_ids = MoveToNextGranularityAndGetText();
@@ -2914,27 +2850,18 @@ TEST_F(ReadAnythingAppControllerTest, GetCurrentText_WithMultipleTrees) {
 
   std::vector<ui::AXNodeID> next_node_ids = controller().GetCurrentText();
   EXPECT_EQ(next_node_ids.size(), 1u);
-  EXPECT_EQ(next_node_ids[0], kId1);
-  EXPECT_EQ(controller().GetCurrentTextStartIndex(next_node_ids[0]), 0);
-  EXPECT_EQ(controller().GetCurrentTextEndIndex(next_node_ids[0]),
-            (int)sentence1.length());
+  ExpectNodeMapsToEntireText(next_node_ids[0], kId1, sentence1);
 
   // Move to the 2nd sentence
   next_node_ids = MoveToNextGranularityAndGetText();
   EXPECT_EQ(next_node_ids.size(), 1u);
-  EXPECT_EQ(next_node_ids[0], kId2);
-  EXPECT_EQ(controller().GetCurrentTextStartIndex(next_node_ids[0]), 0);
-  EXPECT_EQ(controller().GetCurrentTextEndIndex(next_node_ids[0]),
-            (int)sentence2.length());
+  ExpectNodeMapsToEntireText(next_node_ids[0], kId2, sentence2);
 
   // Move to the third sentence- the content on a different tree should be
   // skipped.
   next_node_ids = MoveToNextGranularityAndGetText();
   EXPECT_EQ(next_node_ids.size(), 1u);
-  EXPECT_EQ(next_node_ids[0], kId3);
-  EXPECT_EQ(controller().GetCurrentTextStartIndex(next_node_ids[0]), 0);
-  EXPECT_EQ(controller().GetCurrentTextEndIndex(next_node_ids[0]),
-            (int)sentence3.length());
+  ExpectNodeMapsToEntireText(next_node_ids[0], kId3, sentence3);
 
   // Nodes are empty at the end of the new tree.
   next_node_ids = MoveToNextGranularityAndGetText();
@@ -2960,22 +2887,13 @@ TEST_F(ReadAnythingAppControllerTest,
   std::vector<ui::AXNodeID> next_node_ids = controller().GetCurrentText();
 
   // The first segment was returned correctly.
-  EXPECT_EQ(next_node_ids[0], kId1);
-  EXPECT_EQ(controller().GetCurrentTextStartIndex(next_node_ids[0]), 0);
-  EXPECT_EQ(controller().GetCurrentTextEndIndex(next_node_ids[0]),
-            (int)sentence1.length());
+  ExpectNodeMapsToEntireText(next_node_ids[0], kId1, sentence1);
 
   // The second segment was returned correctly.
-  EXPECT_EQ(next_node_ids[1], kId2);
-  EXPECT_EQ(controller().GetCurrentTextStartIndex(next_node_ids[1]), 0);
-  EXPECT_EQ(controller().GetCurrentTextEndIndex(next_node_ids[1]),
-            (int)sentence2.length());
+  ExpectNodeMapsToEntireText(next_node_ids[1], kId2, sentence2);
 
   // The third segment was returned correctly.
-  EXPECT_EQ(next_node_ids[2], kId3);
-  EXPECT_EQ(controller().GetCurrentTextStartIndex(next_node_ids[2]), 0);
-  EXPECT_EQ(controller().GetCurrentTextEndIndex(next_node_ids[2]),
-            (int)sentence3.length());
+  ExpectNodeMapsToEntireText(next_node_ids[2], kId3, sentence3);
 
   // Nodes are empty at the end of the new tree.
   next_node_ids = MoveToNextGranularityAndGetText();
@@ -3002,24 +2920,14 @@ TEST_F(ReadAnythingAppControllerTest,
   EXPECT_EQ(next_node_ids.size(), 2u);
 
   // The first segment was returned correctly.
-  EXPECT_EQ(next_node_ids[0], kId1);
-  EXPECT_EQ(controller().GetCurrentTextStartIndex(next_node_ids[0]), 0);
-  EXPECT_EQ(controller().GetCurrentTextEndIndex(next_node_ids[0]),
-            (int)sentence1.length());
+  ExpectNodeMapsToEntireText(next_node_ids[0], kId1, sentence1);
 
   // The second segment was returned correctly.
-  EXPECT_EQ(next_node_ids[1], kId2);
-  EXPECT_EQ(controller().GetCurrentTextStartIndex(next_node_ids[1]), 0);
-  EXPECT_EQ(controller().GetCurrentTextEndIndex(next_node_ids[1]),
-            (int)sentence2.length());
+  ExpectNodeMapsToEntireText(next_node_ids[1], kId2, sentence2);
 
   // The third segment was returned correctly after getting the next text.
   next_node_ids = MoveToNextGranularityAndGetText();
-  EXPECT_EQ(next_node_ids.size(), 1u);
-  EXPECT_EQ(next_node_ids[0], kId3);
-  EXPECT_EQ(controller().GetCurrentTextStartIndex(next_node_ids[0]), 0);
-  EXPECT_EQ(controller().GetCurrentTextEndIndex(next_node_ids[0]),
-            (int)sentence3.length());
+  ExpectNodeMapsToEntireText(next_node_ids[0], kId3, sentence3);
 
   // Nodes are empty at the end of the tree.
   next_node_ids = MoveToNextGranularityAndGetText();
@@ -3041,19 +2949,12 @@ TEST_F(ReadAnythingAppControllerTest,
   EXPECT_EQ(next_node_ids.size(), 1u);
 
   // The first segment was returned correctly.
-  EXPECT_EQ(next_node_ids[0], kId1);
-  EXPECT_EQ(controller().GetCurrentTextStartIndex(next_node_ids[0]), 0);
-  EXPECT_EQ(controller().GetCurrentTextEndIndex(next_node_ids[0]),
-            (int)sentence1.length());
+  ExpectNodeMapsToEntireText(next_node_ids[0], kId1, sentence1);
 
   // The parenthetical expression is returned as a single separate segment.
   next_node_ids = MoveToNextGranularityAndGetText();
   EXPECT_EQ(next_node_ids.size(), 1u);
-
-  EXPECT_EQ(next_node_ids[0], kId2);
-  EXPECT_EQ(controller().GetCurrentTextStartIndex(next_node_ids[0]), 0);
-  EXPECT_EQ(controller().GetCurrentTextEndIndex(next_node_ids[0]),
-            (int)sentence2.length());
+  ExpectNodeMapsToEntireText(next_node_ids[0], kId2, sentence2);
 
   // Nodes are empty at the end of the new tree.
   next_node_ids = MoveToNextGranularityAndGetText();
@@ -3104,30 +3005,16 @@ TEST_F(ReadAnythingAppControllerTest,
   EXPECT_EQ(next_node_ids.size(), 1u);
 
   // The first segment was returned correctly.
-  EXPECT_EQ(next_node_ids[0], kId1);
-  EXPECT_EQ(controller().GetCurrentTextStartIndex(next_node_ids[0]), 0);
-  EXPECT_EQ(controller().GetCurrentTextEndIndex(next_node_ids[0]),
-            (int)sentence1.length());
+  ExpectNodeMapsToEntireText(next_node_ids[0], kId1, sentence1);
 
   // The next segment contains the entire bracketed statement '[2]' with both
   // opening and closing brackets so neither bracket is read out-of-context.
   next_node_ids = MoveToNextGranularityAndGetText();
   EXPECT_EQ(next_node_ids.size(), 3u);
 
-  EXPECT_EQ(next_node_ids[0], kId2);
-  EXPECT_EQ(controller().GetCurrentTextStartIndex(next_node_ids[0]), 0);
-  EXPECT_EQ(controller().GetCurrentTextEndIndex(next_node_ids[0]),
-            (int)(sentence2.length()));
-
-  EXPECT_EQ(next_node_ids[1], kId3);
-  EXPECT_EQ(controller().GetCurrentTextStartIndex(next_node_ids[1]), 0);
-  EXPECT_EQ(controller().GetCurrentTextEndIndex(next_node_ids[1]),
-            (int)(sentence3.length()));
-
-  EXPECT_EQ(next_node_ids[2], kId4);
-  EXPECT_EQ(controller().GetCurrentTextStartIndex(next_node_ids[2]), 0);
-  EXPECT_EQ(controller().GetCurrentTextEndIndex(next_node_ids[2]),
-            (int)(sentence4.length()));
+  ExpectNodeMapsToEntireText(next_node_ids[0], kId2, sentence2);
+  ExpectNodeMapsToEntireText(next_node_ids[1], kId3, sentence3);
+  ExpectNodeMapsToEntireText(next_node_ids[2], kId4, sentence4);
 
   // Nodes are empty at the end of the new tree.
   next_node_ids = MoveToNextGranularityAndGetText();
@@ -3149,16 +3036,10 @@ TEST_F(ReadAnythingAppControllerTest,
   EXPECT_EQ(next_node_ids.size(), 2u);
 
   // The first segment was returned correctly.
-  EXPECT_EQ(next_node_ids[0], kId1);
-  EXPECT_EQ(controller().GetCurrentTextStartIndex(next_node_ids[0]), 0);
-  EXPECT_EQ(controller().GetCurrentTextEndIndex(next_node_ids[0]),
-            (int)sentence1.length());
+  ExpectNodeMapsToEntireText(next_node_ids[0], kId1, sentence1);
 
   // The superscript is attached to the first sentence.
-  EXPECT_EQ(next_node_ids[1], kId2);
-  EXPECT_EQ(controller().GetCurrentTextStartIndex(next_node_ids[1]), 0);
-  EXPECT_EQ(controller().GetCurrentTextEndIndex(next_node_ids[1]),
-            (int)sentence2.length());
+  ExpectNodeMapsToEntireText(next_node_ids[1], kId2, sentence2);
 
   // Nodes are empty at the end of the new tree.
   next_node_ids = MoveToNextGranularityAndGetText();
@@ -3180,16 +3061,10 @@ TEST_F(ReadAnythingAppControllerTest,
   EXPECT_EQ(next_node_ids.size(), 2u);
 
   // The first segment was returned correctly.
-  EXPECT_EQ(next_node_ids[0], kId1);
-  EXPECT_EQ(controller().GetCurrentTextStartIndex(next_node_ids[0]), 0);
-  EXPECT_EQ(controller().GetCurrentTextEndIndex(next_node_ids[0]),
-            (int)sentence1.length());
+  ExpectNodeMapsToEntireText(next_node_ids[0], kId1, sentence1);
 
   // The superscript is attached to the first sentence.
-  EXPECT_EQ(next_node_ids[1], kId2);
-  EXPECT_EQ(controller().GetCurrentTextStartIndex(next_node_ids[1]), 0);
-  EXPECT_EQ(controller().GetCurrentTextEndIndex(next_node_ids[1]),
-            (int)sentence2.length());
+  ExpectNodeMapsToEntireText(next_node_ids[1], kId2, sentence2);
 
   // Nodes are empty at the end of the new tree.
   next_node_ids = MoveToNextGranularityAndGetText();
@@ -3242,25 +3117,10 @@ TEST_F(ReadAnythingAppControllerTest,
   EXPECT_EQ(next_node_ids.size(), 4u);
 
   // The first sentence and its superscript are returned as one segment.
-  EXPECT_EQ(next_node_ids[0], kId1);
-  EXPECT_EQ(controller().GetCurrentTextStartIndex(next_node_ids[0]), 0);
-  EXPECT_EQ(controller().GetCurrentTextEndIndex(next_node_ids[0]),
-            (int)sentence1.length());
-
-  EXPECT_EQ(next_node_ids[1], kId2);
-  EXPECT_EQ(controller().GetCurrentTextStartIndex(next_node_ids[1]), 0);
-  EXPECT_EQ(controller().GetCurrentTextEndIndex(next_node_ids[1]),
-            (int)sentence2.length());
-
-  EXPECT_EQ(next_node_ids[2], kId3);
-  EXPECT_EQ(controller().GetCurrentTextStartIndex(next_node_ids[2]), 0);
-  EXPECT_EQ(controller().GetCurrentTextEndIndex(next_node_ids[2]),
-            (int)sentence3.length());
-
-  EXPECT_EQ(next_node_ids[3], kId4);
-  EXPECT_EQ(controller().GetCurrentTextStartIndex(next_node_ids[3]), 0);
-  EXPECT_EQ(controller().GetCurrentTextEndIndex(next_node_ids[3]),
-            (int)sentence4.length());
+  ExpectNodeMapsToEntireText(next_node_ids[0], kId1, sentence1);
+  ExpectNodeMapsToEntireText(next_node_ids[1], kId2, sentence2);
+  ExpectNodeMapsToEntireText(next_node_ids[2], kId3, sentence3);
+  ExpectNodeMapsToEntireText(next_node_ids[3], kId4, sentence4);
 
   // Nodes are empty at the end of the new tree.
   next_node_ids = MoveToNextGranularityAndGetText();
@@ -3318,32 +3178,15 @@ TEST_F(ReadAnythingAppControllerTest,
   EXPECT_EQ(next_node_ids.size(), 4u);
 
   // The first segment was returned correctly.
-  EXPECT_EQ(next_node_ids[0], kId1);
-  EXPECT_EQ(controller().GetCurrentTextStartIndex(next_node_ids[0]), 0);
-  EXPECT_EQ(controller().GetCurrentTextEndIndex(next_node_ids[0]),
-            (int)sentence1.length());
+  ExpectNodeMapsToEntireText(next_node_ids[0], kId1, sentence1);
 
   // The superscript is returned as a segment.
-  EXPECT_EQ(next_node_ids[1], kId2);
-  EXPECT_EQ(controller().GetCurrentTextStartIndex(next_node_ids[1]), 0);
-  EXPECT_EQ(controller().GetCurrentTextEndIndex(next_node_ids[1]),
-            (int)sentence2.length());
-
-  EXPECT_EQ(next_node_ids[2], kId3);
-  EXPECT_EQ(controller().GetCurrentTextStartIndex(next_node_ids[2]), 0);
-  EXPECT_EQ(controller().GetCurrentTextEndIndex(next_node_ids[2]),
-            (int)sentence3.length());
-
-  EXPECT_EQ(next_node_ids[3], kId4);
-  EXPECT_EQ(controller().GetCurrentTextStartIndex(next_node_ids[3]), 0);
-  EXPECT_EQ(controller().GetCurrentTextEndIndex(next_node_ids[3]),
-            (int)sentence4.length());
+  ExpectNodeMapsToEntireText(next_node_ids[1], kId2, sentence2);
+  ExpectNodeMapsToEntireText(next_node_ids[2], kId3, sentence3);
+  ExpectNodeMapsToEntireText(next_node_ids[3], kId4, sentence4);
 
   next_node_ids = MoveToNextGranularityAndGetText();
-  EXPECT_EQ(next_node_ids[0], kId5);
-  EXPECT_EQ(controller().GetCurrentTextStartIndex(next_node_ids[0]), 0);
-  EXPECT_EQ(controller().GetCurrentTextEndIndex(next_node_ids[0]),
-            (int)sentence5.length());
+  ExpectNodeMapsToEntireText(next_node_ids[0], kId5, sentence5);
 
   // Nodes are empty at the end of the new tree.
   next_node_ids = MoveToNextGranularityAndGetText();
@@ -3404,37 +3247,22 @@ TEST_F(ReadAnythingAppControllerTest, GetCurrentText_IncludesListMarkers) {
   EXPECT_EQ(next_node_ids.size(), 1u);
 
   // The first segment was returned correctly.
-  EXPECT_EQ(next_node_ids[0], kListMarkerId1);
-  EXPECT_EQ(controller().GetCurrentTextStartIndex(next_node_ids[0]), 0);
-  EXPECT_EQ(controller().GetCurrentTextEndIndex(next_node_ids[0]),
-            (int)bullet1.length());
+  ExpectNodeMapsToEntireText(next_node_ids[0], kListMarkerId1, bullet1);
 
   // Move to the next segment.
   next_node_ids = MoveToNextGranularityAndGetText();
   EXPECT_EQ(next_node_ids.size(), 1u);
-
-  EXPECT_EQ(next_node_ids[0], kId1);
-  EXPECT_EQ(controller().GetCurrentTextStartIndex(next_node_ids[0]), 0);
-  EXPECT_EQ(controller().GetCurrentTextEndIndex(next_node_ids[0]),
-            (int)sentence1.length());
+  ExpectNodeMapsToEntireText(next_node_ids[0], kId1, sentence1);
 
   // Move to the next segment.
   next_node_ids = MoveToNextGranularityAndGetText();
   EXPECT_EQ(next_node_ids.size(), 1u);
-
-  EXPECT_EQ(next_node_ids[0], kListMarkerId2);
-  EXPECT_EQ(controller().GetCurrentTextStartIndex(next_node_ids[0]), 0);
-  EXPECT_EQ(controller().GetCurrentTextEndIndex(next_node_ids[0]),
-            (int)bullet2.length());
+  ExpectNodeMapsToEntireText(next_node_ids[0], kListMarkerId2, bullet2);
 
   // Move to the next segment.
   next_node_ids = MoveToNextGranularityAndGetText();
   EXPECT_EQ(next_node_ids.size(), 1u);
-
-  EXPECT_EQ(next_node_ids[0], kId2);
-  EXPECT_EQ(controller().GetCurrentTextStartIndex(next_node_ids[0]), 0);
-  EXPECT_EQ(controller().GetCurrentTextEndIndex(next_node_ids[0]),
-            (int)sentence2.length());
+  ExpectNodeMapsToEntireText(next_node_ids[0], kId2, sentence2);
 
   // Nodes are empty at the end of the new tree.
   next_node_ids = MoveToNextGranularityAndGetText();
@@ -3504,26 +3332,17 @@ TEST_F(ReadAnythingAppControllerTest,
   // The header is returned alone.
   std::vector<ui::AXNodeID> next_node_ids = controller().GetCurrentText();
   EXPECT_EQ(next_node_ids.size(), 1u);
-  EXPECT_EQ(next_node_ids[0], kId1);
-  EXPECT_EQ(controller().GetCurrentTextStartIndex(next_node_ids[0]), 0);
-  EXPECT_EQ(controller().GetCurrentTextEndIndex(next_node_ids[0]),
-            (int)header_text.length());
+  ExpectNodeMapsToEntireText(next_node_ids[0], kId1, header_text);
 
   // Paragraph 1 is returned alone.
   next_node_ids = MoveToNextGranularityAndGetText();
   EXPECT_EQ(next_node_ids.size(), 1u);
-  EXPECT_EQ(next_node_ids[0], kId2);
-  EXPECT_EQ(controller().GetCurrentTextStartIndex(next_node_ids[0]), 0);
-  EXPECT_EQ(controller().GetCurrentTextEndIndex(next_node_ids[0]),
-            (int)paragraph_text1.length());
+  ExpectNodeMapsToEntireText(next_node_ids[0], kId2, paragraph_text1);
 
   // Paragraph 2 is returned alone.
   next_node_ids = MoveToNextGranularityAndGetText();
   EXPECT_EQ(next_node_ids.size(), 1u);
-  EXPECT_EQ(next_node_ids[0], kId3);
-  EXPECT_EQ(controller().GetCurrentTextStartIndex(next_node_ids[0]), 0);
-  EXPECT_EQ(controller().GetCurrentTextEndIndex(next_node_ids[0]),
-            (int)paragraph_text2.length());
+  ExpectNodeMapsToEntireText(next_node_ids[0], kId3, paragraph_text2);
 
   // Nodes are empty at the end of the new tree.
   next_node_ids = MoveToNextGranularityAndGetText();
@@ -3551,26 +3370,17 @@ TEST_F(ReadAnythingAppControllerTest,
   // The header is returned alone.
   std::vector<ui::AXNodeID> next_node_ids = controller().GetCurrentText();
   EXPECT_EQ(next_node_ids.size(), 1u);
-  EXPECT_EQ(next_node_ids[0], kHeaderId);
-  EXPECT_EQ(controller().GetCurrentTextStartIndex(next_node_ids[0]), 0);
-  EXPECT_EQ(controller().GetCurrentTextEndIndex(next_node_ids[0]),
-            (int)header_text.length());
+  ExpectNodeMapsToEntireText(next_node_ids[0], kHeaderId, header_text);
 
   // Paragraph 1 is returned alone.
   next_node_ids = MoveToNextGranularityAndGetText();
   EXPECT_EQ(next_node_ids.size(), 1u);
-  EXPECT_EQ(next_node_ids[0], kParagraphId1);
-  EXPECT_EQ(controller().GetCurrentTextStartIndex(next_node_ids[0]), 0);
-  EXPECT_EQ(controller().GetCurrentTextEndIndex(next_node_ids[0]),
-            (int)paragraph_text1.length());
+  ExpectNodeMapsToEntireText(next_node_ids[0], kParagraphId1, paragraph_text1);
 
   // Paragraph 2 is returned alone.
   next_node_ids = MoveToNextGranularityAndGetText();
   EXPECT_EQ(next_node_ids.size(), 1u);
-  EXPECT_EQ(next_node_ids[0], kParagraphId2);
-  EXPECT_EQ(controller().GetCurrentTextStartIndex(next_node_ids[0]), 0);
-  EXPECT_EQ(controller().GetCurrentTextEndIndex(next_node_ids[0]),
-            (int)paragraph_text2.length());
+  ExpectNodeMapsToEntireText(next_node_ids[0], kParagraphId2, paragraph_text2);
 
   // Nodes are empty at the end of the new tree.
   next_node_ids = MoveToNextGranularityAndGetText();
@@ -3614,10 +3424,7 @@ TEST_F(ReadAnythingAppControllerTest,
   EXPECT_EQ(controller().GetCurrentTextEndIndex(next_node_ids[0]),
             (int)sentence1.length());
 
-  EXPECT_EQ(next_node_ids[1], kId2);
-  EXPECT_EQ(controller().GetCurrentTextStartIndex(next_node_ids[1]), 0);
-  EXPECT_EQ(controller().GetCurrentTextEndIndex(next_node_ids[1]),
-            (int)sentence2.length());
+  ExpectNodeMapsToEntireText(next_node_ids[1], kId2, sentence2);
 
   EXPECT_EQ(next_node_ids[2], kId3);
   EXPECT_EQ(controller().GetCurrentTextStartIndex(next_node_ids[2]), 0);
@@ -3697,10 +3504,7 @@ TEST_F(ReadAnythingAppControllerTest, GetPreviousText_AfterAXTreeRefresh) {
 
   std::vector<ui::AXNodeID> next_node_ids = controller().GetCurrentText();
   EXPECT_EQ(next_node_ids.size(), 1u);
-  EXPECT_EQ(next_node_ids[0], kId1);
-  EXPECT_EQ(controller().GetCurrentTextStartIndex(next_node_ids[0]), 0);
-  EXPECT_EQ(controller().GetCurrentTextEndIndex(next_node_ids[0]),
-            (int)sentence1.length());
+  ExpectNodeMapsToEntireText(next_node_ids[0], kId1, sentence1);
 
   // Simulate updating the page text.
   std::u16string new_sentence1 = u"Welcome to the show to the histo-remix. ";
@@ -3740,42 +3544,27 @@ TEST_F(ReadAnythingAppControllerTest, GetPreviousText_AfterAXTreeRefresh) {
   std::vector<ui::AXNodeID> previous_node_ids =
       MoveToPreviousGranularityAndGetText();
   EXPECT_EQ(previous_node_ids.size(), 1u);
-  EXPECT_EQ(previous_node_ids[0], kNewId2);
-  EXPECT_EQ(controller().GetCurrentTextStartIndex(previous_node_ids[0]), 0);
-  EXPECT_EQ(controller().GetCurrentTextEndIndex(previous_node_ids[0]),
-            (int)new_sentence2.length());
+  ExpectNodeMapsToEntireText(previous_node_ids[0], kNewId2, new_sentence2);
 
   previous_node_ids = MoveToPreviousGranularityAndGetText();
   EXPECT_EQ(previous_node_ids.size(), 1u);
-  EXPECT_EQ(previous_node_ids[0], kNewId1);
-  EXPECT_EQ(controller().GetCurrentTextStartIndex(previous_node_ids[0]), 0);
-  EXPECT_EQ(controller().GetCurrentTextEndIndex(previous_node_ids[0]),
-            (int)new_sentence1.length());
+  ExpectNodeMapsToEntireText(previous_node_ids[0], kNewId1, new_sentence1);
 
   // We're at the beginning of the content again, so the first sentence
   // should be retrieved next.
   previous_node_ids = MoveToPreviousGranularityAndGetText();
   EXPECT_EQ(previous_node_ids.size(), 1u);
-  EXPECT_EQ(previous_node_ids[0], kNewId1);
-  EXPECT_EQ(controller().GetCurrentTextStartIndex(previous_node_ids[0]), 0);
-  EXPECT_EQ(controller().GetCurrentTextEndIndex(previous_node_ids[0]),
-            (int)new_sentence1.length());
+  ExpectNodeMapsToEntireText(previous_node_ids[0], kNewId1, new_sentence1);
 
   // After navigating previous text, navigating forwards should continue
   // to work as expected.
   next_node_ids = MoveToNextGranularityAndGetText();
   EXPECT_EQ(next_node_ids.size(), 1u);
-  EXPECT_EQ(next_node_ids[0], kNewId2);
-  EXPECT_EQ(controller().GetCurrentTextStartIndex(next_node_ids[0]), 0);
-  EXPECT_EQ(controller().GetCurrentTextEndIndex(next_node_ids[0]),
-            (int)new_sentence2.length());
+  ExpectNodeMapsToEntireText(next_node_ids[0], kNewId2, new_sentence2);
 
   next_node_ids = MoveToNextGranularityAndGetText();
   EXPECT_EQ(next_node_ids.size(), 1u);
-  EXPECT_EQ(next_node_ids[0], kNewId3);
-  EXPECT_EQ(controller().GetCurrentTextStartIndex(next_node_ids[0]), 0);
-  EXPECT_EQ(controller().GetCurrentTextEndIndex(next_node_ids[0]),
-            (int)new_sentence3.length());
+  ExpectNodeMapsToEntireText(next_node_ids[0], kNewId3, new_sentence3);
 
   // Attempt to move to another node.
   next_node_ids = MoveToNextGranularityAndGetText();
@@ -3806,42 +3595,27 @@ TEST_F(ReadAnythingAppControllerTest, GetPreviousText_ReturnsExpectedNodes) {
   std::vector<ui::AXNodeID> previous_node_ids =
       MoveToPreviousGranularityAndGetText();
   EXPECT_EQ(previous_node_ids.size(), 1u);
-  EXPECT_EQ(previous_node_ids[0], kId2);
-  EXPECT_EQ(controller().GetCurrentTextStartIndex(previous_node_ids[0]), 0);
-  EXPECT_EQ(controller().GetCurrentTextEndIndex(previous_node_ids[0]),
-            (int)sentence2.length());
+  ExpectNodeMapsToEntireText(previous_node_ids[0], kId2, sentence2);
 
   previous_node_ids = MoveToPreviousGranularityAndGetText();
   EXPECT_EQ(previous_node_ids.size(), 1u);
-  EXPECT_EQ(previous_node_ids[0], kId1);
-  EXPECT_EQ(controller().GetCurrentTextStartIndex(previous_node_ids[0]), 0);
-  EXPECT_EQ(controller().GetCurrentTextEndIndex(previous_node_ids[0]),
-            (int)sentence1.length());
+  ExpectNodeMapsToEntireText(previous_node_ids[0], kId1, sentence1);
 
   // We're at the beginning of the content again, so the first sentence
   // should be retrieved next.
   previous_node_ids = MoveToPreviousGranularityAndGetText();
   EXPECT_EQ(previous_node_ids.size(), 1u);
-  EXPECT_EQ(previous_node_ids[0], kId1);
-  EXPECT_EQ(controller().GetCurrentTextStartIndex(previous_node_ids[0]), 0);
-  EXPECT_EQ(controller().GetCurrentTextEndIndex(previous_node_ids[0]),
-            (int)sentence1.length());
+  ExpectNodeMapsToEntireText(previous_node_ids[0], kId1, sentence1);
 
   // After navigating previous text, navigating forwards should continue
   // to work as expected.
   next_node_ids = MoveToNextGranularityAndGetText();
   EXPECT_EQ(next_node_ids.size(), 1u);
-  EXPECT_EQ(next_node_ids[0], kId2);
-  EXPECT_EQ(controller().GetCurrentTextStartIndex(next_node_ids[0]), 0);
-  EXPECT_EQ(controller().GetCurrentTextEndIndex(next_node_ids[0]),
-            (int)sentence2.length());
+  ExpectNodeMapsToEntireText(next_node_ids[0], kId2, sentence2);
 
   next_node_ids = MoveToNextGranularityAndGetText();
   EXPECT_EQ(next_node_ids.size(), 1u);
-  EXPECT_EQ(next_node_ids[0], kId3);
-  EXPECT_EQ(controller().GetCurrentTextStartIndex(next_node_ids[0]), 0);
-  EXPECT_EQ(controller().GetCurrentTextEndIndex(next_node_ids[0]),
-            (int)sentence3.length());
+  ExpectNodeMapsToEntireText(next_node_ids[0], kId3, sentence3);
 
   // Attempt to move to another node.
   next_node_ids = MoveToNextGranularityAndGetText();
@@ -3879,10 +3653,7 @@ TEST_F(
   std::vector<ui::AXNodeID> previous_node_ids =
       MoveToPreviousGranularityAndGetText();
   EXPECT_EQ(previous_node_ids.size(), 1u);
-  EXPECT_EQ(previous_node_ids[0], kId1);
-  EXPECT_EQ(controller().GetCurrentTextStartIndex(previous_node_ids[0]), 0);
-  EXPECT_EQ(controller().GetCurrentTextEndIndex(previous_node_ids[0]),
-            (int)sentence1.length());
+  ExpectNodeMapsToEntireText(previous_node_ids[0], kId1, sentence1);
 }
 
 TEST_F(ReadAnythingAppControllerTest,
@@ -3935,22 +3706,13 @@ TEST_F(ReadAnythingAppControllerTest,
       MoveToPreviousGranularityAndGetText();
 
   // The first segment was returned correctly.
-  EXPECT_EQ(previous_node_ids[0], kId1);
-  EXPECT_EQ(controller().GetCurrentTextStartIndex(previous_node_ids[0]), 0);
-  EXPECT_EQ(controller().GetCurrentTextEndIndex(previous_node_ids[0]),
-            (int)sentence1.length());
+  ExpectNodeMapsToEntireText(previous_node_ids[0], kId1, sentence1);
 
   // The second segment was returned correctly.
-  EXPECT_EQ(previous_node_ids[1], kId2);
-  EXPECT_EQ(controller().GetCurrentTextStartIndex(previous_node_ids[1]), 0);
-  EXPECT_EQ(controller().GetCurrentTextEndIndex(previous_node_ids[1]),
-            (int)sentence2.length());
+  ExpectNodeMapsToEntireText(previous_node_ids[1], kId2, sentence2);
 
   // The third segment was returned correctly.
-  EXPECT_EQ(previous_node_ids[2], kId3);
-  EXPECT_EQ(controller().GetCurrentTextStartIndex(previous_node_ids[2]), 0);
-  EXPECT_EQ(controller().GetCurrentTextEndIndex(previous_node_ids[2]),
-            (int)sentence3.length());
+  ExpectNodeMapsToEntireText(previous_node_ids[2], kId3, sentence3);
 
   // Nodes are empty at the end of the new tree.
   std::vector<ui::AXNodeID> next_node_ids = MoveToNextGranularityAndGetText();
@@ -3980,25 +3742,16 @@ TEST_F(ReadAnythingAppControllerTest,
   EXPECT_EQ(previous_node_ids.size(), 2u);
 
   // Returns the 2nd segment correctly.
-  EXPECT_EQ(previous_node_ids[1], kId2);
-  EXPECT_EQ(controller().GetCurrentTextStartIndex(previous_node_ids[1]), 0);
-  EXPECT_EQ(controller().GetCurrentTextEndIndex(previous_node_ids[1]),
-            (int)sentence2.length());
+  ExpectNodeMapsToEntireText(previous_node_ids[1], kId2, sentence2);
 
   // Returns the 1st segment correctly.
-  EXPECT_EQ(previous_node_ids[0], kId1);
-  EXPECT_EQ(controller().GetCurrentTextStartIndex(previous_node_ids[0]), 0);
-  EXPECT_EQ(controller().GetCurrentTextEndIndex(previous_node_ids[0]),
-            (int)sentence1.length());
+  ExpectNodeMapsToEntireText(previous_node_ids[0], kId1, sentence1);
 
   // After moving forward again, the third segment was returned correctly.
   // The third segment was returned correctly after getting the next text.
   std::vector<ui::AXNodeID> next_node_ids = MoveToNextGranularityAndGetText();
   EXPECT_EQ(next_node_ids.size(), 1u);
-  EXPECT_EQ(next_node_ids[0], kId3);
-  EXPECT_EQ(controller().GetCurrentTextStartIndex(next_node_ids[0]), 0);
-  EXPECT_EQ(controller().GetCurrentTextEndIndex(next_node_ids[0]),
-            (int)sentence3.length());
+  ExpectNodeMapsToEntireText(next_node_ids[0], kId3, sentence3);
 
   // Nodes are empty at the end of the new tree.
   next_node_ids = MoveToNextGranularityAndGetText();
