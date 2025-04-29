@@ -8,6 +8,8 @@
 #include <map>
 #include <memory>
 
+#include "base/callback_list.h"
+#include "base/containers/id_map.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/notifications/notification_handler.h"
 #include "chrome/common/buildflags.h"
@@ -60,7 +62,7 @@ class PersistentNotificationHandler : public NotificationHandler {
 
  private:
   void OnCloseCompleted(Profile* profile,
-                        base::OnceClosure completed_closure,
+                        uint64_t close_completed_callback_id,
                         content::PersistentNotificationStatus status);
   void OnClickCompleted(Profile* profile,
                         const std::string& notification_id,
@@ -71,6 +73,7 @@ class PersistentNotificationHandler : public NotificationHandler {
                      Profile* profile,
                      bool did_show_warning,
                      bool did_user_unsubscribe);
+  void OnAppTerminating();
 
 #if BUILDFLAG(ENABLE_BACKGROUND_MODE)
   class NotificationKeepAliveState {
@@ -82,6 +85,8 @@ class PersistentNotificationHandler : public NotificationHandler {
 
     void AddKeepAlive(Profile* profile);
     void RemoveKeepAlive(Profile* profile);
+
+    void RemoveAllKeepAlives();
 
    private:
     const KeepAliveOrigin keep_alive_origin_;
@@ -115,6 +120,17 @@ class PersistentNotificationHandler : public NotificationHandler {
       KeepAliveOrigin::PENDING_NOTIFICATION_CLOSE_EVENT,
       ProfileKeepAliveOrigin::kPendingNotificationCloseEvent};
 #endif
+
+  // App termination must release all `PENDING_NOTIFICATION_CLOSE_EVENT` keep
+  // alives to avoid delaying shutdown.  After app termination begins, a new
+  // browser launch cannot create a new window until shutdown completes.
+  base::CallbackListSubscription on_app_terminating_subscription_;
+
+  // Store pending 'notificationclose' event callbacks.  App termination may
+  // run these callbacks before the 'notificationclose' event completes.
+  using CloseCompletedCallbackMap =
+      base::IDMap<std::unique_ptr<base::OnceClosure>>;
+  CloseCompletedCallbackMap close_completed_callbacks_;
 
   base::WeakPtrFactory<PersistentNotificationHandler> weak_ptr_factory_{this};
 };

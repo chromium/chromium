@@ -7,9 +7,13 @@
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/lifetime/browser_shutdown.h"
+#include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/browser/notifications/metrics/notification_metrics_logger.h"
 #include "chrome/browser/notifications/metrics/notification_metrics_logger_factory.h"
 #include "chrome/browser/notifications/notification_common.h"
@@ -50,8 +54,26 @@
 
 using content::BrowserThread;
 
-PersistentNotificationHandler::PersistentNotificationHandler() = default;
-PersistentNotificationHandler::~PersistentNotificationHandler() = default;
+namespace {
+
+void RecordCloseResult(content::PersistentNotificationStatus status) {
+  base::UmaHistogramEnumeration(
+      "Notifications.PersistentWebNotificationCloseResult", status);
+}
+
+}  // namespace
+
+PersistentNotificationHandler::PersistentNotificationHandler() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  on_app_terminating_subscription_ =
+      browser_shutdown::AddAppTerminatingCallback(
+          base::BindOnce(&PersistentNotificationHandler::OnAppTerminating,
+                         weak_ptr_factory_.GetWeakPtr()));
+}
+
+PersistentNotificationHandler::~PersistentNotificationHandler() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+}
 
 void PersistentNotificationHandler::OnClose(
     Profile* profile,
@@ -61,6 +83,15 @@ void PersistentNotificationHandler::OnClose(
     base::OnceClosure completed_closure) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(origin.is_valid());
+
+  if (browser_shutdown::HasShutdownStarted() ||
+      g_browser_process->IsShuttingDown()) {
+    // Do not prolong shutdown by running the 'notificationclose' event.
+    RecordCloseResult(
+        content::PersistentNotificationStatus::kCanceledByAppTerminating);
+    std::move(completed_closure).Run();
+    return;
+  }
 
   // TODO(peter): Should we do permission checks prior to forwarding to the
   // NotificationEventDispatcher?
@@ -90,20 +121,33 @@ void PersistentNotificationHandler::OnClose(
   else
     metrics_logger->LogPersistentNotificationClosedProgrammatically();
 
+  int32_t callback_id = close_completed_callbacks_.Add(
+      std::make_unique<base::OnceClosure>(std::move(completed_closure)));
+
   content::NotificationEventDispatcher::GetInstance()
       ->DispatchNotificationCloseEvent(
           profile, notification_id, origin, by_user,
           base::BindOnce(&PersistentNotificationHandler::OnCloseCompleted,
-                         weak_ptr_factory_.GetWeakPtr(), profile,
-                         std::move(completed_closure)));
+                         weak_ptr_factory_.GetWeakPtr(), profile, callback_id));
 }
 
 void PersistentNotificationHandler::OnCloseCompleted(
     Profile* profile,
-    base::OnceClosure completed_closure,
+    uint64_t close_completed_callback_id,
     content::PersistentNotificationStatus status) {
-  UMA_HISTOGRAM_ENUMERATION(
-      "Notifications.PersistentWebNotificationCloseResult", status);
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  base::OnceClosure* completed_closure_pointer =
+      close_completed_callbacks_.Lookup(close_completed_callback_id);
+  if (!completed_closure_pointer) {
+    // `OnAppTerminating()` already ran the callback.
+    return;
+  }
+
+  base::OnceClosure completed_closure = std::move(*completed_closure_pointer);
+  close_completed_callbacks_.Remove(close_completed_callback_id);
+
+  RecordCloseResult(status);
 
 #if BUILDFLAG(ENABLE_BACKGROUND_MODE)
   close_event_keep_alive_state_.RemoveKeepAlive(profile);
@@ -180,6 +224,8 @@ void PersistentNotificationHandler::OnClickCompleted(
     const std::string& notification_id,
     base::OnceClosure completed_closure,
     content::PersistentNotificationStatus status) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
   UMA_HISTOGRAM_ENUMERATION(
       "Notifications.PersistentWebNotificationClickResult", status);
 
@@ -198,6 +244,10 @@ void PersistentNotificationHandler::OnClickCompleted(
       PlatformNotificationServiceFactory::GetForProfile(profile)
           ->ClosePersistentNotification(notification_id);
       break;
+
+    case content::PersistentNotificationStatus::kCanceledByAppTerminating:
+      // App termination must not cancel the click event.
+      NOTREACHED();
   }
 
 #if BUILDFLAG(ENABLE_BACKGROUND_MODE)
@@ -207,8 +257,30 @@ void PersistentNotificationHandler::OnClickCompleted(
   std::move(completed_closure).Run();
 }
 
+void PersistentNotificationHandler::OnAppTerminating() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  // Release all keep alives for currently running 'notificationclose' events.
+  // This will allow browser shutdown to begin without waiting for the
+  // 'notificationclose' events to complete.
+#if BUILDFLAG(ENABLE_BACKGROUND_MODE)
+  close_event_keep_alive_state_.RemoveAllKeepAlives();
+#endif
+
+  // Like `OnCloseCompleted()` above, run the 'notificationclose' completed
+  // callbacks after removing the keep alives.
+  for (CloseCompletedCallbackMap::iterator it(&close_completed_callbacks_);
+       !it.IsAtEnd(); it.Advance()) {
+    RecordCloseResult(
+        content::PersistentNotificationStatus::kCanceledByAppTerminating);
+    std::move(*it.GetCurrentValue()).Run();
+  }
+  close_completed_callbacks_.Clear();
+}
+
 void PersistentNotificationHandler::DisableNotifications(Profile* profile,
                                                          const GURL& origin) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   permissions::PermissionUmaUtil::ScopedRevocationReporter
       scoped_revocation_reporter(
           profile, origin, origin, ContentSettingsType::NOTIFICATIONS,
@@ -236,6 +308,7 @@ void PersistentNotificationHandler::DisableNotifications(Profile* profile,
 
 void PersistentNotificationHandler::OpenSettings(Profile* profile,
                                                  const GURL& origin) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   NotificationCommon::OpenNotificationSettings(profile, origin);
 }
 
@@ -342,12 +415,21 @@ void PersistentNotificationHandler::NotificationKeepAliveState::RemoveKeepAlive(
   // Reset the keep alive if all in-flight events have been processed.
   if (--pending_dispatch_events_ == 0)
     event_dispatch_keep_alive_.reset();
+
   // TODO(crbug.com/40159237): Remove IsOffTheRecord() when Incognito profiles
   // support refcounting.
   if (!profile->IsOffTheRecord() &&
       --profile_pending_dispatch_events_[profile] == 0) {
     event_dispatch_profile_keep_alives_[profile].reset();
   }
+}
+
+void PersistentNotificationHandler::NotificationKeepAliveState::
+    RemoveAllKeepAlives() {
+  event_dispatch_keep_alive_.reset();
+  event_dispatch_profile_keep_alives_.clear();
+  pending_dispatch_events_ = 0;
+  profile_pending_dispatch_events_.clear();
 }
 
 #endif  // BUILDFLAG(ENABLE_BACKGROUND_MODE)

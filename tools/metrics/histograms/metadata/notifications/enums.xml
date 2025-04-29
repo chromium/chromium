@@ -219,6 +219,7 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="event.waitUntil promise rejected"/>
   <int value="4" label="Database error"/>
   <int value="5" label="No permission granted"/>
+  <int value="6" label="Canceled by app terminating"/>
 </enum>
 
 <enum name="UNNotificationPermissionRequestResult">
