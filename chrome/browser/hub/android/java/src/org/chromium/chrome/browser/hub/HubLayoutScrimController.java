@@ -13,7 +13,7 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.components.browser_ui.styles.ChromeColors;
+import org.chromium.chrome.browser.theme.SurfaceColorUpdateUtils;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -90,7 +90,7 @@ public class HubLayoutScrimController implements ScrimController {
     private @ColorInt int calculateScrimColor() {
         View anchorView = mAnchorViewSupplier.get();
         assert anchorView != null;
-        return ChromeColors.getPrimaryBackgroundColor(
+        return SurfaceColorUpdateUtils.getGridTabSwitcherBackgroundColor(
                 anchorView.getContext(), mIsIncognitoSupplier.get());
     }
 }
