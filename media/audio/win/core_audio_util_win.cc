@@ -1068,6 +1068,12 @@ HRESULT CoreAudioUtil::GetPreferredAudioParameters(const std::string& device_id,
                   params->sample_rate(), params->frames_per_buffer());
   }
 
+  // The EnforceSystemEchoCancellation flag must be set to support audio
+  // effects.
+  if (!media::IsSystemEchoCancellationEnforced()) {
+    return hr;
+  }
+
   // Modify the effect mask if the device supports the echo canceller audio
   // effect. The mask can contain any combination of ECHO_CANCELLER and
   // NOISE_SUPPRESSION or AUTOMATIC_GAIN_CONTROL. Note that some devices
@@ -1368,14 +1374,6 @@ bool CoreAudioUtil::EnableCommunicationsAudioCategoryForClient(
 // category set to AudioCategory_Communications.
 std::pair<int, bool> CoreAudioUtil::GetVoiceProcessingEffectsAndCheckForAEC(
     IAudioClient* client) {
-  // The EnforceSystemEchoCancellation flag must be set to support audio
-  // effects.
-  if (!media::IsSystemEchoCancellationEnforced()) {
-    // Don't log any UMA here since it will cause a large amount of NO_EFFECTS
-    // records caused by this flag not being set instead of a proper check of
-    // what effects that are actually supported.
-    return {{}, false};
-  }
   TRACE_EVENT("audio",
               "CoreAudioUtil::GetVoiceProcessingEffectsAndCheckForAEC");
 
