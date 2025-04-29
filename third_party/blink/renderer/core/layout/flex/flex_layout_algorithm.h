@@ -31,10 +31,6 @@ class CORE_EXPORT FlexLayoutAlgorithm
   MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&);
   const LayoutResult* Layout();
 
-  const GapGeometry* GetGapGeometryForTest() {
-    return container_builder_.GetGapGeometryForTest();
-  }
-
  private:
   const LayoutResult* LayoutInternal();
 

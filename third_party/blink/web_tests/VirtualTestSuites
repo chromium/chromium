@@ -3043,11 +3043,10 @@
     "exclusive_tests": ["external/wpt/css/css-gaps"],
     "platforms": ["Linux"],
     "bases": [
-      "external/wpt/css/css-multicol/animation",
-      "external/wpt/css/css-multicol/parsing",
+      "external/wpt/css/css-multicol",
       "external/wpt/web-animations/animation-model/animation-types",
       "animations/interpolation/webkit-column-rule-color-interpolation.html",
-      "fast/multicol/change-column-rule.html",
+      "fast/multicol",
       "external/wpt/web-animations/responsive/to-color-change.html",
       "external/wpt/css/css-typed-om/the-stylepropertymap/properties/column-rule-color.html",
       "external/wpt/css/css-animations/responsive/column-rule-color-001.html",

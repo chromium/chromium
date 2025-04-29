@@ -1414,6 +1414,11 @@ void BoxFragmentPainter::PaintGaps(GridTrackSizingDirection track_direction,
                   ? gap_geometry.GetGapIntersections(kForRows)
                   : gap_geometry.GetGapIntersections(kForColumns);
 
+          // The following logic is only valid for grid containers.
+          if (gap_geometry.GetContainerType() !=
+              GapGeometry::ContainerType::kGrid) {
+            return false;
+          }
           // Get the matching intersection in the cross direction by
           // swapping the indices. This transpose allows us determine if the
           // intersection is flanked by spanning items on opposing sides.
@@ -1479,6 +1484,7 @@ void BoxFragmentPainter::PaintGaps(GridTrackSizingDirection track_direction,
 
     wtf_size_t start = 0;
     const auto gap = gaps[gap_index];
+    CHECK(!gap.empty());
     const auto num_intersections = gap.size();
 
     // Gap decorations are painted relative to (start, end) pairs of gap

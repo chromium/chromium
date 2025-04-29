@@ -6251,8 +6251,16 @@ crbug.com/357648037 virtual/css-gap-decorations/external/wpt/css/css-multicol/pa
 crbug.com/357648037 virtual/css-gap-decorations/external/wpt/web-animations/animation-model/animation-types/accumulation-per-property-001.html [ Crash Failure Timeout ]
 crbug.com/357648037 virtual/css-gap-decorations/external/wpt/web-animations/animation-model/animation-types/addition-per-property-001.html [ Crash Failure Timeout ]
 crbug.com/357648037 virtual/css-gap-decorations/external/wpt/web-animations/animation-model/animation-types/interpolation-per-property-001.html [ Crash Failure Timeout ]
-# These tests are failing due to some Paint issue on overflow cases:
+# These tests are failing due to wrong expectations file, must update the expectations file:
+crbug.com/357648037 virtual/css-gap-decorations/external/wpt/css/css-multicol/column-height-009.html [ Failure ]
+# These tests are failing due to not handling OOF in multicol, will be addressed in follow up CL.
+crbug.com/357648037 virtual/css-gap-decorations/external/wpt/css/css-multicol/multicol-nested-column-rule-002.html [ Failure ]
+# These tests are failing due to a known paint issue on overflow cases:
+crbug.com/357648037 virtual/css-gap-decorations/fast/multicol/many-lines-overflow-in-single-row-inner.html [ Failure ]
+crbug.com/357648037 virtual/css-gap-decorations/external/wpt/css/css-gaps/tentative/multicol/multicol-gap-decorations-013.html [ Failure ]
 crbug.com/357648037 virtual/css-gap-decorations/external/wpt/css/css-gaps/flex/flex-gap-decorations-008.html [ Failure ]
+# This test is failing due to known issue with the scrollability of when we paint the gaps:
+crbug.com/357648037 virtual/css-gap-decorations/external/wpt/css/css-multicol/column-rule-001.html [ Failure ]
 ### End of tests failing with CSSGapDecorations Enabled
 
 # I think these are just test issues, but at least the scrollbars are related:

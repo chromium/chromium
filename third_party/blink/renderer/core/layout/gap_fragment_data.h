@@ -63,6 +63,7 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
   enum ContainerType {
     kGrid,
     kFlex,
+    kMultiColumn,
   };
 
   explicit GapGeometry(ContainerType container_type)

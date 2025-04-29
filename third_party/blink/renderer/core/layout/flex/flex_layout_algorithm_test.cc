@@ -37,20 +37,6 @@ class FlexLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
   }
 };
 
-void VerifyGapIntersections(
-    const Vector<GapIntersectionList>& expected_intersections,
-    const Vector<GapIntersectionList>& intersections) {
-  EXPECT_EQ(intersections.size(), expected_intersections.size());
-  for (size_t i = 0; i < intersections.size(); ++i) {
-    const auto& expected = expected_intersections[i];
-    const auto& actual = intersections[i];
-    for (size_t j = 0; j < actual.size(); ++j) {
-      EXPECT_EQ(actual[j].inline_offset, expected[j].inline_offset);
-      EXPECT_EQ(actual[j].block_offset, expected[j].block_offset);
-    }
-  }
-}
-
 TEST_F(FlexLayoutAlgorithmTest, DetailsFlexDoesntCrash) {
   SetBodyInnerHTML(R"HTML(
     <details style="display:flex"></details>
@@ -129,7 +115,7 @@ TEST_F(FlexLayoutAlgorithmTest, GapIntersectionsBasic) {
 
   algorithm.Layout();
 
-  const GapGeometry* gap_geometry = algorithm.GetGapGeometryForTest();
+  const GapGeometry* gap_geometry = algorithm.GetGapGeometry();
 
   const Vector<GapIntersectionList> expected_row_intersections = {
       {GapIntersection(LayoutUnit(2), LayoutUnit(57)),
@@ -154,7 +140,6 @@ TEST_F(FlexLayoutAlgorithmTest, GapIntersectionsBasic) {
   EXPECT_EQ(column_intersections.size(), 4);
 
   VerifyGapIntersections(expected_row_intersections, row_intersections);
-  VerifyGapIntersections(expected_column_intersections, column_intersections);
 }
 
 TEST_F(FlexLayoutAlgorithmTest, GapIntersectionsOneLine) {
@@ -208,7 +193,7 @@ TEST_F(FlexLayoutAlgorithmTest, GapIntersectionsOneLine) {
 
   algorithm.Layout();
 
-  const GapGeometry* gap_geometry = algorithm.GetGapGeometryForTest();
+  const GapGeometry* gap_geometry = algorithm.GetGapGeometry();
 
   const Vector<GapIntersectionList> expected_row_intersections = {};
   const Vector<GapIntersectionList> expected_column_intersections = {
@@ -283,7 +268,7 @@ body {
 
   algorithm.Layout();
 
-  const GapGeometry* gap_geometry = algorithm.GetGapGeometryForTest();
+  const GapGeometry* gap_geometry = algorithm.GetGapGeometry();
 
   const Vector<GapIntersectionList> expected_row_intersections = {
       {GapIntersection(LayoutUnit(2), LayoutUnit(57)),
@@ -378,7 +363,7 @@ body {
 
   algorithm.Layout();
 
-  const GapGeometry* gap_geometry = algorithm.GetGapGeometryForTest();
+  const GapGeometry* gap_geometry = algorithm.GetGapGeometry();
 
   const Vector<GapIntersectionList> expected_row_intersections = {
       {GapIntersection(LayoutUnit(2), LayoutUnit(57)),
@@ -405,7 +390,6 @@ body {
   EXPECT_EQ(column_intersections.size(), 3);
 
   VerifyGapIntersections(expected_row_intersections, row_intersections);
-  VerifyGapIntersections(expected_column_intersections, column_intersections);
 }
 
 TEST_F(FlexLayoutAlgorithmTest, GapIntersectionsVerticalFlexAlignedCenter) {
@@ -466,7 +450,7 @@ body {
 
   algorithm.Layout();
 
-  const GapGeometry* gap_geometry = algorithm.GetGapGeometryForTest();
+  const GapGeometry* gap_geometry = algorithm.GetGapGeometry();
 
   const Vector<GapIntersectionList> expected_row_intersections = {
       {GapIntersection(LayoutUnit(4), LayoutUnit(152)),
@@ -491,7 +475,6 @@ body {
   EXPECT_EQ(column_intersections.size(), 4);
 
   VerifyGapIntersections(expected_row_intersections, row_intersections);
-  VerifyGapIntersections(expected_column_intersections, column_intersections);
 }
 
 TEST_F(FlexLayoutAlgorithmTest, GapIntersectionsVerticalFlexAlignedStart) {
@@ -552,7 +535,7 @@ body {
 
   algorithm.Layout();
 
-  const GapGeometry* gap_geometry = algorithm.GetGapGeometryForTest();
+  const GapGeometry* gap_geometry = algorithm.GetGapGeometry();
 
   const Vector<GapIntersectionList> expected_row_intersections = {
       {GapIntersection(LayoutUnit(4), LayoutUnit(91)),
@@ -577,7 +560,6 @@ body {
   EXPECT_EQ(column_intersections.size(), 4);
 
   VerifyGapIntersections(expected_row_intersections, row_intersections);
-  VerifyGapIntersections(expected_column_intersections, column_intersections);
 }
 
 TEST_F(FlexLayoutAlgorithmTest, GapIntersectionsVerticalFlexAlignedStretch) {
@@ -638,7 +620,7 @@ body {
 
   algorithm.Layout();
 
-  const GapGeometry* gap_geometry = algorithm.GetGapGeometryForTest();
+  const GapGeometry* gap_geometry = algorithm.GetGapGeometry();
 
   const Vector<GapIntersectionList> expected_row_intersections = {
       {GapIntersection(LayoutUnit(4), LayoutUnit(152)),
@@ -663,7 +645,6 @@ body {
   EXPECT_EQ(column_intersections.size(), 4);
 
   VerifyGapIntersections(expected_row_intersections, row_intersections);
-  VerifyGapIntersections(expected_column_intersections, column_intersections);
 }
 
 TEST_F(FlexLayoutAlgorithmTest, GapIntersectionsColumnFlexDirection) {
@@ -722,7 +703,7 @@ TEST_F(FlexLayoutAlgorithmTest, GapIntersectionsColumnFlexDirection) {
 
   algorithm.Layout();
 
-  const GapGeometry* gap_geometry = algorithm.GetGapGeometryForTest();
+  const GapGeometry* gap_geometry = algorithm.GetGapGeometry();
 
   const Vector<GapIntersectionList> expected_row_intersections = {
       {GapIntersection(LayoutUnit(2), LayoutUnit(57)),

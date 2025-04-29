@@ -49,10 +49,6 @@ class CORE_EXPORT GridLayoutAlgorithm
       wtf_size_t range_starting_set_index,
       wtf_size_t range_set_count);
 
-  const GapGeometry* GetGapGeometryForTest() {
-    return container_builder_.GetGapGeometryForTest();
-  }
-
  private:
   friend class GridLayoutAlgorithmTest;
 

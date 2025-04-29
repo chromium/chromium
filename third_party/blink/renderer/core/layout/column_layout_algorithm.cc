@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/layout/column_spanner_path.h"
 #include "third_party/blink/renderer/core/layout/constraint_space_builder.h"
 #include "third_party/blink/renderer/core/layout/fragmentation_utils.h"
+#include "third_party/blink/renderer/core/layout/gap_fragment_data.h"
 #include "third_party/blink/renderer/core/layout/geometry/fragment_geometry.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_size.h"
 #include "third_party/blink/renderer/core/layout/geometry/margin_strut.h"
@@ -220,6 +221,53 @@ BlockNode GetSpannerFromPath(const ColumnSpannerPath* path) {
   return path->GetBlockNode();
 }
 
+// Returns true if the last intersection in the list is marked as blocked after,
+// meaning that there is a spanner blocking it.
+bool IsLastIntersectionBeforeSpanner(const GapIntersectionList& intersections) {
+  return !intersections.empty() && intersections.back().is_blocked_after;
+}
+
+void MaybeAddLastBlockEdgeGapIntersection(
+    Vector<GapIntersectionList>& column_gaps,
+    LayoutUnit container_edge_block_offset,
+    bool need_to_add_final_intersections_to_column_gaps) {
+  // There are two possible cases here:
+  // 1. The last row of columns is filled out.
+  // 2. The number of columns in the last row of columns is less than the
+  // number of columns in the previous row.
+  //
+  // In the first case, we need to modify the last intersection in the list to
+  // be at the end of the container, so that the intersection is not at the
+  // content end offset but rather at the end of the container offset. In the
+  // second case, we need to add an intersection at the end of the container.
+  for (auto& gap : column_gaps) {
+    CHECK(!gap.empty());
+    // If the last intersection is already blocked after (by a spanner for
+    // instance), we don't add an intersection at the end of the container, so
+    // that we don't paint the decoration through the spanner.
+    if (gap.back().is_blocked_after) {
+      continue;
+    }
+    // There are cases during fragmentation where we shouldn't account for
+    // borders or padding from the block size, since it could be that the split
+    // happens where there is no border or padding. Since `block_offset`
+    // accounts for these, we take the max of that and the intersection block
+    // offset.
+    //
+    // See `multicol-gap-decorations-007.html` for an example.
+    LayoutUnit final_block_offset =
+        std::max(container_edge_block_offset, gap.back().block_offset);
+    if (need_to_add_final_intersections_to_column_gaps) {
+      gap.emplace_back(
+          GapIntersection(gap.back().inline_offset, final_block_offset));
+      gap.back().is_at_edge_of_container = true;
+    } else {
+      gap.back().block_offset = final_block_offset;
+      gap.back().is_at_edge_of_container = true;
+    }
+  }
+}
+
 }  // namespace
 
 ColumnLayoutAlgorithm::ColumnLayoutAlgorithm(
@@ -242,11 +290,13 @@ ColumnLayoutAlgorithm::ColumnLayoutAlgorithm(
 const LayoutResult* ColumnLayoutAlgorithm::Layout() {
   const LogicalSize border_box_size = container_builder_.InitialBorderBoxSize();
   DCHECK_GE(ChildAvailableSize().inline_size, LayoutUnit());
+  column_gap_size_ =
+      ResolveColumnGapForMulticol(Style(), ChildAvailableSize().inline_size);
+  row_gap_size_ =
+      ResolveRowGapForMulticol(Style(), ChildAvailableSize().block_size);
   column_inline_size_ =
       ResolveUsedColumnInlineSize(Style(), ChildAvailableSize().inline_size);
-  column_inline_progression_ =
-      column_inline_size_ +
-      ResolveColumnGapForMulticol(Style(), ChildAvailableSize().inline_size);
+  column_inline_progression_ = column_inline_size_ + column_gap_size_;
   used_column_count_ =
       ResolveUsedColumnCount(Style(), ChildAvailableSize().inline_size);
 
@@ -356,6 +406,26 @@ const LayoutResult* ColumnLayoutAlgorithm::Layout() {
   }
 
   container_builder_.HandleOofsAndSpecialDescendants();
+
+  if (RuntimeEnabledFeatures::CSSGapDecorationEnabled() &&
+      Style().HasGapRule()) {
+    // After we are done, we can modify the last column intersections to move
+    // them to be at the edge of the container.
+    MaybeAddLastBlockEdgeGapIntersection(
+        column_gaps_,
+        container_builder_.FragmentBlockSize() -
+            BorderScrollbarPadding().block_end,
+        need_to_add_final_intersections_to_column_gaps_);
+
+    GapGeometry* gap_geometry =
+        MakeGarbageCollected<GapGeometry>(GapGeometry::kMultiColumn);
+
+    gap_geometry->SetGapIntersections(kForColumns, std::move(column_gaps_));
+    gap_geometry->SetBlockGapSize(row_gap_size_);
+    gap_geometry->SetInlineGapSize(column_gap_size_);
+    gap_geometry->SetGapIntersections(kForRows, std::move(row_gaps_));
+    container_builder_.SetGapGeometry(gap_geometry);
+  }
 
   return container_builder_.ToBoxFragment();
 }
@@ -607,8 +677,9 @@ const LayoutResult* ColumnLayoutAlgorithm::LayoutFragmentationContext(
     const BlockBreakToken* next_column_token,
     MarginStrut* margin_strut) {
   const LayoutUnit minimum_column_block_size;
-  std::optional<LayoutUnit> row_gap;
   const LayoutResult* result = nullptr;
+  wtf_size_t num_columns_in_prev_row = 0;
+  bool is_first_row = true;
   do {
     // Calculate the block-offset by including any trailing margin from a
     // previous adjacent column spanner. We will not reset the margin strut just
@@ -617,11 +688,15 @@ const LayoutResult* ColumnLayoutAlgorithm::LayoutFragmentationContext(
     // through the row (and as far as the spec is concerned, the row won't even
     // exist then). If this row follows after a wrapped row, also include
     // row-gap.
-    LayoutUnit row_offset = intrinsic_block_size_ + margin_strut->Sum() +
-                            row_gap.value_or(LayoutUnit());
+    LayoutUnit row_offset = intrinsic_block_size_ + margin_strut->Sum();
 
-    const LayoutResult* new_result = LayoutRow(
-        next_column_token, row_offset, minimum_column_block_size, margin_strut);
+    if (!is_first_row) {
+      row_offset += row_gap_size_;
+      num_columns_in_prev_row = num_columns_in_last_processed_row_;
+    }
+    const LayoutResult* new_result =
+        LayoutRow(next_column_token, row_offset, minimum_column_block_size,
+                  !is_first_row, margin_strut);
 
     if (!new_result) {
       // An outer fragmentainer break was inserted before this row.
@@ -633,15 +708,120 @@ const LayoutResult* ColumnLayoutAlgorithm::LayoutFragmentationContext(
     next_column_token =
         To<BlockBreakToken>(result->GetPhysicalFragment().GetBreakToken());
 
-    if (!row_gap) {
-      // Add row-gap before any next row(s).
-      row_gap =
-          ResolveRowGapForMulticol(Style(), ChildAvailableSize().block_size);
+    if (RuntimeEnabledFeatures::CSSGapDecorationEnabled() &&
+        Style().HasGapRule()) {
+      // If we end up having a row of columns that has less columns than the row
+      // before, we will have to add an extra intersection to each
+      // column gap at the last edge of the container. See
+      // `MaybeAddLastBlockEdgeGapIntersection()`.
+      if (!is_first_row &&
+          num_columns_in_prev_row != num_columns_in_last_processed_row_) {
+        need_to_add_final_intersections_to_column_gaps_ = true;
+      }
     }
+    is_first_row = false;
   } while (next_column_token && ShouldWrapColumns() &&
            !result->GetColumnSpannerPath());
 
   return result;
+}
+
+void ColumnLayoutAlgorithm::BuildGapIntersectionsForColumn(
+    wtf_size_t column_gap_index,
+    const LogicalRect& column_logical_rect,
+    bool has_wrapped,
+    bool row_precedes_spanner) {
+  LayoutUnit intersection_block_offset = column_logical_rect.BlockStartOffset();
+  LayoutUnit intersection_inline_offset =
+      column_logical_rect.InlineStartOffset() - (column_gap_size_ / 2);
+
+  // We might be in a situation where the current row has more columns than the
+  // previous row. In this case, we need to add a new column gap to the list of
+  // column gaps.
+  if (column_gap_index >= column_gaps_.size()) {
+    column_gaps_.emplace_back(GapIntersectionList());
+  }
+
+  GapIntersectionList& column_gap = column_gaps_[column_gap_index];
+
+  bool is_last_intersection_before_spanner =
+      IsLastIntersectionBeforeSpanner(column_gap);
+
+  // If we have a row gap, we will already have added this particular
+  // intersection to the column gap intersections with
+  // `AdjustEveryColumnLastGapIntersectionsWithRowGap()`
+  if (is_last_intersection_before_spanner || !has_wrapped) {
+    column_gap.emplace_back(intersection_inline_offset,
+                            intersection_block_offset);
+
+    if (is_last_intersection_before_spanner) {
+      // If the last intersection in the list is marked as blocked after,
+      // it means that there is a spanner. Therefore we must add an
+      // intersection after the spanner and mark it as blocked before.
+      column_gap.back().is_blocked_before = true;
+
+      // TODO(javiercon): We need a way to indicate that the intersection is
+      // with a spanner, since we don't want the rule-breaks and
+      // rule-outset/inset to behave as it if were an intersection with another
+      // gap. For now, we set it as being at the edge of the container, but we
+      // might want to change the name so its clear multicol uses it for this
+      // purpose.
+      column_gap.back().is_at_edge_of_container = true;
+    }
+  }
+
+  if (column_gap.size() == 1) {
+    // If the intersection we just added is the first one in the column gap,
+    // it should be marked as `is_at_edge_of_container`.
+    column_gap.back().is_at_edge_of_container = true;
+  }
+
+  // By default, the next intersection will be at the end of the column, however
+  // this intersection will be modified later on if we end up having a row gap,
+  // spanner, or if it is at the edge of the container.
+  column_gap.emplace_back(intersection_inline_offset,
+                          column_logical_rect.BlockEndOffset());
+
+  if (row_precedes_spanner) {
+    column_gap.back().is_blocked_after = true;
+    // TODO(javiercon): We need a way to indicate that the intersection is with
+    // a spanner, since we don't want the rule-breaks and rule-outset/inset to
+    // behave as it if were an intersection with another gap. For now, we set it
+    // as being at the edge of the container, but we might want to change the
+    // name so its clear multicol uses it for this purpose.
+    column_gap.back().is_at_edge_of_container = true;
+  }
+}
+
+void ColumnLayoutAlgorithm::AdjustEveryColumnLastGapIntersectionsWithRowGap(
+    LayoutUnit row_offset) {
+  // We adjust the last intersection of each column gap to be at the
+  // middle of the row gap, rather than at the end of the column.
+  LayoutUnit intersection_block_offset = row_offset - (row_gap_size_ / 2);
+
+  for (GapIntersectionList& column_gap : column_gaps_) {
+    CHECK(!column_gap.empty());
+    column_gap.back().block_offset = intersection_block_offset;
+  }
+}
+
+void ColumnLayoutAlgorithm::BuildRowGapIntersections(
+    const LogicalRect& column_logical_rect,
+    GapIntersectionList& row_gap_intersections) {
+  // First we add the first inline edge intersections for the row gap.
+  CHECK(row_gap_intersections.empty());
+  LayoutUnit row_gap_block_offset =
+      column_logical_rect.BlockStartOffset() - (row_gap_size_ / 2);
+  row_gap_intersections.emplace_back(column_logical_rect.InlineStartOffset(),
+                                     row_gap_block_offset);
+  row_gap_intersections.back().is_at_edge_of_container = true;
+
+  // Now we need to add the row gap intersections for each column gap.
+  for (const GapIntersectionList& column_gap : column_gaps_) {
+    LayoutUnit intersection_inline_offset = column_gap.back().inline_offset;
+    row_gap_intersections.emplace_back(intersection_inline_offset,
+                                       row_gap_block_offset);
+  }
 }
 
 struct ResultWithOffset {
@@ -665,9 +845,9 @@ const LayoutResult* ColumnLayoutAlgorithm::LayoutRow(
     const BlockBreakToken* next_column_token,
     LayoutUnit row_offset,
     LayoutUnit minimum_column_block_size,
+    bool has_wrapped,
     MarginStrut* margin_strut) {
   LogicalSize column_size(column_inline_size_, remaining_content_block_size_);
-
   if (!Style().HasAutoColumnHeight()) {
     // Use specified `column-height`. May be clamped by outer fragmentainer
     // space further down.
@@ -918,7 +1098,8 @@ const LayoutResult* ColumnLayoutAlgorithm::LayoutRow(
             // TODO(mstensho): Consider refactoring this, rather than calling
             // ourselves recursively.
             return LayoutRow(next_column_token, row_offset,
-                             minimum_column_block_size, margin_strut);
+                             minimum_column_block_size, has_wrapped,
+                             margin_strut);
           }
         }
       }
@@ -1113,6 +1294,25 @@ const LayoutResult* ColumnLayoutAlgorithm::LayoutRow(
   if (IsBreakInside(next_column_token)) {
     num_columns = next_column_token->SequenceNumber() + 1;
   }
+
+  GapIntersectionList row_gap_intersections;
+  if (RuntimeEnabledFeatures::CSSGapDecorationEnabled() &&
+      Style().HasGapRule()) {
+    // TODO(crbug.com/357648037): This might not cover all the cases, need to
+    // revisit this. For instance in the case that there's less columns in the
+    // previous row.
+    if (column_gaps_.empty()) {
+      // The number of column gaps is one less than the number of columns.
+      column_gaps_.resize(new_columns.size() - 1);
+    }
+    if (has_wrapped) {
+      row_gap_intersections.ReserveInitialCapacity(new_columns.size() + 1);
+    }
+
+    num_columns_in_last_processed_row_ = new_columns.size();
+  }
+
+  wtf_size_t column_index_in_row = 0;
   // Commit all column fragments to the fragment builder.
   for (auto result_with_offset : new_columns) {
     const PhysicalBoxFragment& column = result_with_offset.Fragment();
@@ -1135,6 +1335,47 @@ const LayoutResult* ColumnLayoutAlgorithm::LayoutRow(
             cc::ScrollSnapAlign()) {
       container_builder_.AddSnapAreaForColumn(column_pseudo);
     }
+
+    if (RuntimeEnabledFeatures::CSSGapDecorationEnabled() &&
+        Style().HasGapRule()) {
+      // If we have a row gap, it means that the block offset of the last
+      // intersections added to each column gap is wrong, since it should be in
+      // the middle of the row gap. Thus, we go back and modify them first.
+      if (has_wrapped && column_index_in_row == 0) {
+        AdjustEveryColumnLastGapIntersectionsWithRowGap(row_offset);
+        // We need to build the intersections of the row gap with each column
+        // gap separately. We need to do this once per row of columns, since it
+        // could be the case that the last row of columns has fewer columns than
+        // the row before it.
+        BuildRowGapIntersections(column_logical_rect, row_gap_intersections);
+      }
+
+      // The first column in a row has no associated column intersections.
+      if (column_index_in_row > 0) {
+        BuildGapIntersectionsForColumn(column_index_in_row - 1,
+                                       column_logical_rect, has_wrapped,
+                                       result->GetColumnSpannerPath());
+      }
+
+      // If this is the last column, we need to add the last intersection for
+      // the row gap with the edge of the container.
+      if (column_index_in_row == new_columns.size() - 1 && has_wrapped) {
+        LayoutUnit border_scrollbar_padding =
+            BorderScrollbarPadding().inline_end;
+        LayoutUnit edge_inline_offset =
+            container_builder_.InlineSize() - border_scrollbar_padding;
+        row_gap_intersections.emplace_back(
+            edge_inline_offset,
+            column_logical_rect.BlockStartOffset() - (row_gap_size_ / 2));
+        row_gap_intersections.back().is_at_edge_of_container = true;
+      }
+    }
+
+    column_index_in_row++;
+  }
+
+  if (!row_gap_intersections.empty()) {
+    row_gaps_.push_back(std::move(row_gap_intersections));
   }
 
   // If there were superfluous ::column pseudo-elements from the previous pass,

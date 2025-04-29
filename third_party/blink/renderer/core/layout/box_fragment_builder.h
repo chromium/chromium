@@ -645,7 +645,7 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
     gap_geometry_ = gap_geometry;
   }
 
-  const GapGeometry* GetGapGeometryForTest() { return gap_geometry_; }
+  const GapGeometry* GetGapGeometry() const { return gap_geometry_; }
 
   void SetTableGridRect(const LogicalRect& table_grid_rect) {
     table_grid_rect_ = table_grid_rect;

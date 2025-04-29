@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/layout/block_layout_algorithm.h"
 #include "third_party/blink/renderer/core/layout/length_utils.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 namespace {
@@ -6470,6 +6471,436 @@ TEST_F(ColumnLayoutAlgorithmTest, TallReplacedContent) {
         offset:0,0 size:44x150
 )DUMP";
   EXPECT_EQ(expectation, dump);
+}
+
+TEST_F(ColumnLayoutAlgorithmTest, GapDecorationIntersectionsBasic) {
+  ScopedCSSGapDecorationForTest scoped_gap_decoration(true);
+  SetBodyInnerHTML(R"HTML(
+    <style>
+ body {
+  margin: 0px;
+ }
+
+ #container {
+  border: 2px solid rgb(96 139 168);
+  width: 200px;
+  column-count: 3;
+  column-width: 60px;
+  column-gap: 10px;
+  column-rule-width: 10px;
+  column-rule-style: solid;
+  column-rule-color: purple;
+ }
+
+ p {
+    background: rgb(96 139 168 / 0.2);
+    height: 200px;
+    margin: 0px;
+ }
+
+</style>
+
+  <body>
+  <div id="container">
+    <p>One</p>
+    <p>Two</p>
+    <p>Three</p>
+  </div>
+</body>
+  )HTML");
+
+  BlockNode container(GetLayoutBoxByElementId("container"));
+  ConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
+      {WritingMode::kHorizontalTb, TextDirection::kLtr},
+      LogicalSize(LayoutUnit(1000), kIndefiniteSize), true, true);
+  FragmentGeometry fragment_geometry = CalculateInitialFragmentGeometry(
+      space, container, /* break_token */ nullptr);
+  ColumnLayoutAlgorithm algorithm({container, fragment_geometry, space});
+
+  algorithm.Layout();
+
+  const GapGeometry* gap_geometry = algorithm.GetGapGeometry();
+
+  ASSERT_TRUE(gap_geometry);
+
+  const Vector<GapIntersectionList> expected_row_intersections = {};
+  const Vector<GapIntersectionList> expected_column_intersections = {
+      {GapIntersection(LayoutUnit(67), LayoutUnit(2)),
+       GapIntersection(LayoutUnit(67), LayoutUnit(202))},
+      {GapIntersection(LayoutUnit(137), LayoutUnit(2)),
+       GapIntersection(LayoutUnit(137), LayoutUnit(202))},
+  };
+
+  const Vector<GapIntersectionList> row_intersections =
+      gap_geometry->GetGapIntersections(kForRows);
+  const Vector<GapIntersectionList> column_intersections =
+      gap_geometry->GetGapIntersections(kForColumns);
+  EXPECT_EQ(row_intersections.size(), 0);
+  EXPECT_EQ(column_intersections.size(), 2);
+
+  VerifyGapIntersections(expected_row_intersections, row_intersections);
+  VerifyGapIntersections(expected_column_intersections, column_intersections);
+
+  // Check that the edge gap intersections are marked as being on the edge of
+  // the container.
+  for (const auto& column_intersection : column_intersections) {
+    EXPECT_TRUE(column_intersection.front().is_at_edge_of_container);
+    EXPECT_TRUE(column_intersection.back().is_at_edge_of_container);
+  }
+}
+
+TEST_F(ColumnLayoutAlgorithmTest, GapDecorationIntersectionsColumnWrapBasic) {
+  ScopedMulticolColumnWrappingForTest multicol_column_wrapping(true);
+  ScopedCSSGapDecorationForTest scoped_gap_decoration(true);
+  SetBodyInnerHTML(R"HTML(
+    <style>
+  body {
+    margin: 0px;
+  }
+
+  #container {
+    border: 2px solid rgb(96 139 168);
+    width: 200px;
+    height: 130px;
+    column-count: 3;
+    column-width: 60px;
+    column-height: 60px;
+    column-gap: 10px;
+    row-gap: 10px;
+    column-rule-width: 10px;
+    column-rule-style: solid;
+    column-rule-color: yellow;
+    row-rule-width: 10px;
+    row-rule-style: solid;
+    row-rule-color: blue;
+    column-wrap: wrap;
+    column-fill: auto;
+  }
+
+  p {
+    background: rgb(96 139 168 / 0.2);
+    height: 60px;
+    margin: 0px;
+  }
+</style>
+
+<body>
+  <div id="container">
+    <p>One</p>
+    <p>Two</p>
+    <p>Three</p>
+    <p>Four</p>
+    <p>Five</p>
+    <p>Six</p>
+  </div>
+</body>
+  )HTML");
+
+  BlockNode container(GetLayoutBoxByElementId("container"));
+  ConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
+      {WritingMode::kHorizontalTb, TextDirection::kLtr},
+      LogicalSize(LayoutUnit(1000), kIndefiniteSize), true, true);
+  FragmentGeometry fragment_geometry = CalculateInitialFragmentGeometry(
+      space, container, /* break_token */ nullptr);
+  ColumnLayoutAlgorithm algorithm({container, fragment_geometry, space});
+
+  algorithm.Layout();
+
+  const GapGeometry* gap_geometry = algorithm.GetGapGeometry();
+
+  ASSERT_TRUE(gap_geometry);
+
+  const Vector<GapIntersectionList> expected_row_intersections = {
+      {GapIntersection(LayoutUnit(2), LayoutUnit(67)),
+       GapIntersection(LayoutUnit(67), LayoutUnit(67)),
+       GapIntersection(LayoutUnit(137), LayoutUnit(67)),
+       GapIntersection(LayoutUnit(202), LayoutUnit(67))},
+  };
+  const Vector<GapIntersectionList> expected_column_intersections = {
+      {GapIntersection(LayoutUnit(67), LayoutUnit(2)),
+       GapIntersection(LayoutUnit(67), LayoutUnit(67)),
+       GapIntersection(LayoutUnit(67), LayoutUnit(132))},
+      {GapIntersection(LayoutUnit(137), LayoutUnit(2)),
+       GapIntersection(LayoutUnit(137), LayoutUnit(67)),
+       GapIntersection(LayoutUnit(137), LayoutUnit(132))},
+  };
+
+  const Vector<GapIntersectionList> row_intersections =
+      gap_geometry->GetGapIntersections(kForRows);
+  const Vector<GapIntersectionList> column_intersections =
+      gap_geometry->GetGapIntersections(kForColumns);
+  EXPECT_EQ(row_intersections.size(), 1);
+  EXPECT_EQ(column_intersections.size(), 2);
+
+  VerifyGapIntersections(expected_row_intersections, row_intersections);
+  VerifyGapIntersections(expected_column_intersections, column_intersections);
+
+  // Check that the edge gap intersections are marked as being on the edge of
+  // the container.
+  for (const auto& row_intersection_list : row_intersections) {
+    EXPECT_TRUE(row_intersection_list.front().is_at_edge_of_container);
+    EXPECT_TRUE(row_intersection_list.back().is_at_edge_of_container);
+    // Now we check that all the other intersections are not on the edge of the
+    // container.
+    for (size_t i = 1; i < row_intersection_list.size() - 1; ++i) {
+      EXPECT_FALSE(row_intersection_list[i].is_at_edge_of_container);
+    }
+  }
+  for (const auto& column_intersection : column_intersections) {
+    EXPECT_TRUE(column_intersection.front().is_at_edge_of_container);
+    EXPECT_TRUE(column_intersection.back().is_at_edge_of_container);
+    // Now we check that all the other intersections are not on the edge of the
+    // container.
+    for (size_t i = 1; i < column_intersection.size() - 1; ++i) {
+      EXPECT_FALSE(column_intersection[i].is_at_edge_of_container);
+    }
+  }
+}
+
+TEST_F(ColumnLayoutAlgorithmTest,
+       GapDecorationIntersectionsColumnWrapAndSpanner) {
+  ScopedMulticolColumnWrappingForTest multicol_column_wrapping(true);
+  ScopedCSSGapDecorationForTest scoped_gap_decoration(true);
+  SetBodyInnerHTML(R"HTML(
+      <style>
+  body {
+    margin: 0px;
+  }
+
+  #container {
+    border: 2px solid rgb(96 139 168);
+    width: 200px;
+    height: 200px;
+    column-height: 60px;
+    column-gap: 10px;
+    row-gap: 10px;
+    column-rule-width: 10px;
+    column-rule-style: solid;
+    column-rule-color: blue;
+    row-rule-width: 10px;
+    row-rule-style: solid;
+    row-rule-color: gold;
+    column-wrap: wrap;
+    column-width: 60px;
+    column-count: 3;
+    column-fill: auto;
+  }
+
+  p {
+    background: rgb(96 139 168 / 0.2);
+    height: 60px;
+    margin: 0px;
+  }
+
+  h2 {
+    column-span: all;
+    background-color: #4d4e53;
+    color: #fff;
+    margin: 0px;
+    opacity: 0.5;
+  }
+</style>
+
+<body>
+  <div id="container">
+    <p>One</p>
+    <p>Two</p>
+    <h2>Spanner</h2>
+
+    <p>Three</p>
+    <p>Four</p>
+    <p>Five</p>
+    <p>Six</p>
+    <p>Seven</p>
+    <p>Eight</p>
+  </div>
+</body>
+
+  )HTML");
+
+  BlockNode container(GetLayoutBoxByElementId("container"));
+  ConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
+      {WritingMode::kHorizontalTb, TextDirection::kLtr},
+      LogicalSize(LayoutUnit(1000), kIndefiniteSize), true, true);
+  FragmentGeometry fragment_geometry = CalculateInitialFragmentGeometry(
+      space, container, /* break_token */ nullptr);
+  ColumnLayoutAlgorithm algorithm({container, fragment_geometry, space});
+
+  algorithm.Layout();
+
+  const GapGeometry* gap_geometry = algorithm.GetGapGeometry();
+
+  ASSERT_TRUE(gap_geometry);
+
+  const Vector<GapIntersectionList> expected_row_intersections = {
+      {GapIntersection(LayoutUnit(2), LayoutUnit(108)),
+       GapIntersection(LayoutUnit(67), LayoutUnit(108)),
+       GapIntersection(LayoutUnit(137), LayoutUnit(108)),
+       GapIntersection(LayoutUnit(202), LayoutUnit(108))}};
+  const Vector<GapIntersectionList> expected_column_intersections = {
+      {GapIntersection(LayoutUnit(67), LayoutUnit(2)),
+       GapIntersection(LayoutUnit(67), LayoutUnit(42)),
+       GapIntersection(LayoutUnit(67), LayoutUnit(43)),
+       GapIntersection(LayoutUnit(67), LayoutUnit(108)),
+       GapIntersection(LayoutUnit(67), LayoutUnit(202))},
+      {GapIntersection(LayoutUnit(137), LayoutUnit(2)),
+       GapIntersection(LayoutUnit(137), LayoutUnit(42)),
+       GapIntersection(LayoutUnit(137), LayoutUnit(43)),
+       GapIntersection(LayoutUnit(137), LayoutUnit(108)),
+       GapIntersection(LayoutUnit(137), LayoutUnit(202))},
+  };
+
+  const Vector<GapIntersectionList> row_intersections =
+      gap_geometry->GetGapIntersections(kForRows);
+  const Vector<GapIntersectionList> column_intersections =
+      gap_geometry->GetGapIntersections(kForColumns);
+  EXPECT_EQ(row_intersections.size(), 1);
+  EXPECT_EQ(column_intersections.size(), 2);
+
+  VerifyGapIntersections(expected_row_intersections, row_intersections);
+  VerifyGapIntersections(expected_column_intersections, column_intersections);
+
+  // Check that the edge gap intersections are marked as being on the edge of
+  // the container.
+  for (const auto& row_intersection_list : row_intersections) {
+    EXPECT_TRUE(row_intersection_list.front().is_at_edge_of_container);
+    EXPECT_TRUE(row_intersection_list.back().is_at_edge_of_container);
+    // Now we check that all the other intersections are not on the edge of the
+    // container.
+    for (size_t i = 1; i < row_intersection_list.size() - 1; ++i) {
+      EXPECT_FALSE(row_intersection_list[i].is_at_edge_of_container);
+    }
+  }
+  for (const auto& column_intersection : column_intersections) {
+    EXPECT_TRUE(column_intersection.front().is_at_edge_of_container);
+    EXPECT_TRUE(column_intersection.back().is_at_edge_of_container);
+    // The intersections before and after the spanner should also be marked as
+    // at the end of container:
+    EXPECT_TRUE(column_intersection[1].is_at_edge_of_container);
+    EXPECT_TRUE(column_intersection[2].is_at_edge_of_container);
+    // Now we check that all the other intersections are not on the edge of the
+    // container.
+    for (size_t i = 1; i < column_intersection.size() - 1; ++i) {
+      // This is needed because for now we mark the intersections adjacent to
+      // spanners as `is_at_edge_of_container`.
+      if (i == 1 || i == 2) {
+        continue;
+      }
+      EXPECT_FALSE(column_intersection[i].is_at_edge_of_container);
+    }
+  }
+
+  // Check that the column intersections before/after the spanner are marked
+  // accordingly.
+  EXPECT_TRUE(column_intersections[0][1].is_blocked_after);
+  EXPECT_TRUE(column_intersections[0][2].is_blocked_before);
+  EXPECT_TRUE(column_intersections[1][1].is_blocked_after);
+  EXPECT_TRUE(column_intersections[1][2].is_blocked_before);
+}
+
+TEST_F(ColumnLayoutAlgorithmTest,
+       GapDecorationIntersectionsColumnWrapLastRowNotFilled) {
+  ScopedMulticolColumnWrappingForTest multicol_column_wrapping(true);
+  ScopedCSSGapDecorationForTest scoped_gap_decoration(true);
+  SetBodyInnerHTML(R"HTML(
+ <style>
+  #container {
+    columns: 4;
+    gap: 20px;
+    column-fill: auto;
+    column-rule: solid;
+    row-rule-style: solid;
+    width: 460px;
+    column-height: 100px;
+    column-wrap: wrap;
+  }
+</style>
+
+<div id="container" style="">
+  <div style="height:1300px; background:cyan;"></div>
+</div>
+
+)HTML");
+
+  BlockNode container(GetLayoutBoxByElementId("container"));
+  ConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
+      {WritingMode::kHorizontalTb, TextDirection::kLtr},
+      LogicalSize(LayoutUnit(1000), kIndefiniteSize), true, true);
+  FragmentGeometry fragment_geometry = CalculateInitialFragmentGeometry(
+      space, container, /* break_token */ nullptr);
+  ColumnLayoutAlgorithm algorithm({container, fragment_geometry, space});
+
+  algorithm.Layout();
+
+  const GapGeometry* gap_geometry = algorithm.GetGapGeometry();
+
+  ASSERT_TRUE(gap_geometry);
+
+  const Vector<GapIntersectionList> expected_row_intersections = {
+      {GapIntersection(LayoutUnit(0), LayoutUnit(110)),
+       GapIntersection(LayoutUnit(110), LayoutUnit(110)),
+       GapIntersection(LayoutUnit(230), LayoutUnit(110)),
+       GapIntersection(LayoutUnit(350), LayoutUnit(110)),
+       GapIntersection(LayoutUnit(460), LayoutUnit(110))},
+      {GapIntersection(LayoutUnit(0), LayoutUnit(230)),
+       GapIntersection(LayoutUnit(110), LayoutUnit(230)),
+       GapIntersection(LayoutUnit(230), LayoutUnit(230)),
+       GapIntersection(LayoutUnit(350), LayoutUnit(230)),
+       GapIntersection(LayoutUnit(460), LayoutUnit(230))},
+      {GapIntersection(LayoutUnit(0), LayoutUnit(350)),
+       GapIntersection(LayoutUnit(110), LayoutUnit(350)),
+       GapIntersection(LayoutUnit(230), LayoutUnit(350)),
+       GapIntersection(LayoutUnit(350), LayoutUnit(350)),
+       GapIntersection(LayoutUnit(460), LayoutUnit(350))},
+  };
+  const Vector<GapIntersectionList> expected_column_intersections = {
+      {GapIntersection(LayoutUnit(110), LayoutUnit(0)),
+       GapIntersection(LayoutUnit(110), LayoutUnit(110)),
+       GapIntersection(LayoutUnit(110), LayoutUnit(230)),
+       GapIntersection(LayoutUnit(110), LayoutUnit(350)),
+       GapIntersection(LayoutUnit(110), LayoutUnit(460))},
+      {GapIntersection(LayoutUnit(230), LayoutUnit(0)),
+       GapIntersection(LayoutUnit(230), LayoutUnit(110)),
+       GapIntersection(LayoutUnit(230), LayoutUnit(230)),
+       GapIntersection(LayoutUnit(230), LayoutUnit(350)),
+       GapIntersection(LayoutUnit(230), LayoutUnit(460))},
+      {GapIntersection(LayoutUnit(350), LayoutUnit(0)),
+       GapIntersection(LayoutUnit(350), LayoutUnit(110)),
+       GapIntersection(LayoutUnit(350), LayoutUnit(230)),
+       GapIntersection(LayoutUnit(350), LayoutUnit(350)),
+       GapIntersection(LayoutUnit(350), LayoutUnit(460))},
+  };
+
+  const Vector<GapIntersectionList> row_intersections =
+      gap_geometry->GetGapIntersections(kForRows);
+  const Vector<GapIntersectionList> column_intersections =
+      gap_geometry->GetGapIntersections(kForColumns);
+  EXPECT_EQ(row_intersections.size(), 3);
+  EXPECT_EQ(column_intersections.size(), 3);
+
+  VerifyGapIntersections(expected_row_intersections, row_intersections);
+  VerifyGapIntersections(expected_column_intersections, column_intersections);
+
+  // Check that the edge gap intersections are marked as being on the edge of
+  // the container.
+  for (const auto& row_intersection_list : row_intersections) {
+    EXPECT_TRUE(row_intersection_list.front().is_at_edge_of_container);
+    EXPECT_TRUE(row_intersection_list.back().is_at_edge_of_container);
+    // Now we check that all the other intersections are not on the edge of the
+    // container.
+    for (size_t i = 1; i < row_intersection_list.size() - 1; ++i) {
+      EXPECT_FALSE(row_intersection_list[i].is_at_edge_of_container);
+    }
+  }
+  for (const auto& column_intersection : column_intersections) {
+    EXPECT_TRUE(column_intersection.front().is_at_edge_of_container);
+    EXPECT_TRUE(column_intersection.back().is_at_edge_of_container);
+    // Now we check that all the other intersections are not on the edge of the
+    // container.
+    for (size_t i = 1; i < column_intersection.size() - 1; ++i) {
+      EXPECT_FALSE(column_intersection[i].is_at_edge_of_container);
+    }
+  }
 }
 
 }  // anonymous namespace
