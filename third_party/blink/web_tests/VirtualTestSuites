@@ -1640,14 +1640,6 @@
     "args": ["--enable-features=ThreadedPreloadScanner,PrecompileInlineScripts"],
     "expires": "Dec 5, 2025"
   },
-  {
-    "prefix": "coop-restrict-properties",
-    "owners": ["clamy@chromium.org", "arichiv@chromium.org"],
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": [ "external/wpt/html/cross-origin-opener-policy/tentative/restrict-properties" ],
-    "args": ["--enable-features=CoopRestrictProperties"],
-    "expires": "Jul 1, 2025"
-  },
   "These tests require the experimental speculative prefetch feature, and",
   "requires extra switches to enable content implementation of speculation",
   "rules prefetch.",
