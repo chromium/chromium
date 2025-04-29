@@ -650,14 +650,6 @@ void NewTabPageHandler::SetNoBackgroundImage() {
   LogEvent(NTP_BACKGROUND_IMAGE_RESET);
 }
 
-void NewTabPageHandler::RevertBackgroundChanges() {
-  ntp_custom_background_service_->RevertBackgroundChanges();
-}
-
-void NewTabPageHandler::ConfirmBackgroundChanges() {
-  ntp_custom_background_service_->ConfirmBackgroundChanges();
-}
-
 void NewTabPageHandler::GetBackgroundCollections(
     GetBackgroundCollectionsCallback callback) {
   if (!ntp_background_service_ || background_collections_callback_) {
