@@ -8444,6 +8444,23 @@
             ]
         }
     ],
+    "EnableEwalletPayFlow": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillSyncEwalletAccounts",
+                        "EwalletPayments",
+                        "PaymentLinkDetection"
+                    ]
+                }
+            ]
+        }
+    ],
     "EnableExtensibleEnterpriseSSO": [
         {
             "platforms": [
