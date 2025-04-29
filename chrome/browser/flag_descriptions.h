@@ -2141,6 +2141,9 @@ extern const char kFeedbackIncludeVariationsName[];
 extern const char kFeedbackIncludeVariationsDescription[];
 #endif
 
+extern const char kSideBySideName[];
+extern const char kSideBySideDescription[];
+
 extern const char kSidePanelResizingFlagId[];
 extern const char kSidePanelResizingName[];
 extern const char kSidePanelResizingDescription[];

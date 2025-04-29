@@ -3742,6 +3742,11 @@ const char kFeedbackIncludeVariationsDescription[] =
     "In Chrome feedback report, include commandline variations.";
 #endif
 
+const char kSideBySideName[] = "Split View";
+const char kSideBySideDescription[] =
+    "Allows users to view two tabs "
+    "simultaneously in a split view.";
+
 const char kSidePanelResizingFlagId[] = "side-panel-resizing";
 const char kSidePanelResizingName[] = "Side Panel Resizing";
 const char kSidePanelResizingDescription[] =
