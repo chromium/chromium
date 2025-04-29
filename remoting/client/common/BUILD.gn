@@ -10,6 +10,8 @@ if (is_linux) {
       "logging.h",
       "remoting_client.cc",
       "remoting_client.h",
+      "software_video_renderer.cc",
+      "software_video_renderer.h",
     ]
 
     deps = [
@@ -21,6 +23,7 @@ if (is_linux) {
       "//remoting/protocol",
       "//remoting/signaling",
       "//third_party/protobuf:protobuf_lite",
+      "//third_party/webrtc_overrides:webrtc_component",
     ]
   }
 }

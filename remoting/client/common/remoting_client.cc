@@ -20,15 +20,14 @@
 #include "remoting/base/oauth_token_info.h"
 #include "remoting/base/passthrough_oauth_token_getter.h"
 #include "remoting/client/common/logging.h"
+#include "remoting/client/common/software_video_renderer.h"
 #include "remoting/proto/remoting/v1/host_info.pb.h"
 #include "remoting/proto/remoting/v1/remote_support_host_messages.pb.h"
-#include "remoting/proto/video.pb.h"
 #include "remoting/protocol/chromium_port_allocator_factory.h"
 #include "remoting/protocol/chromium_socket_factory.h"
 #include "remoting/protocol/client_authentication_config.h"
 #include "remoting/protocol/connection_to_host.h"
 #include "remoting/protocol/errors.h"
-#include "remoting/protocol/fake_video_renderer.h"
 #include "remoting/protocol/ice_config_fetcher_default.h"
 #include "remoting/protocol/ice_connection_to_host.h"
 #include "remoting/protocol/jingle_session.h"
@@ -45,56 +44,6 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace remoting {
-
-class ClientContext;
-
-namespace {
-
-class LoggingVideoStub : public protocol::VideoStub {
- public:
-  LoggingVideoStub() = default;
-  ~LoggingVideoStub() override = default;
-
-  void ProcessVideoPacket(std::unique_ptr<VideoPacket> packet,
-                          base::OnceClosure done) override {
-    if (!packet) {
-      LOG(ERROR) << "Received null packet";
-    } else if (!packet->has_data() || packet->data().size() == 0) {
-      CLIENT_LOG << "Received empty video packet";
-    } else {
-      auto& format = packet->format();
-      CLIENT_LOG << "Received video packet: " << format.screen_width() << "x"
-                 << format.screen_height() << "@" << format.x_dpi() << " for "
-                 << "encoder: " << format.encoding()
-                 << " frame_id: " << packet->frame_id()
-                 << " with dirty rect count: " << packet->dirty_rects_size();
-    }
-    std::move(done).Run();
-  }
-};
-
-// TODO: joedow - Delete this stub and replace with a working VideoRenderer.
-class StubVideoRenderer : public protocol::VideoRenderer {
- public:
-  StubVideoRenderer() = default;
-  ~StubVideoRenderer() override = default;
-
-  // VideoRenderer interface.
-  bool Initialize(const ClientContext& client_context,
-                  protocol::FrameStatsConsumer* stats_consumer) override {
-    return false;
-  }
-  void OnSessionConfig(const protocol::SessionConfig& config) override {}
-  protocol::VideoStub* GetVideoStub() override { return &video_stub_; }
-  protocol::FrameConsumer* GetFrameConsumer() override { return nullptr; }
-  protocol::FrameStatsConsumer* GetFrameStatsConsumer() override {
-    return nullptr;
-  }
-
- private:
-  LoggingVideoStub video_stub_;
-};
-}  // namespace
 
 RemotingClient::RemotingClient(
     base::OnceClosure quit_closure,
@@ -209,8 +158,8 @@ void RemotingClient::StartConnection() {
           std::move(client_auth_config)));
 
   CLIENT_LOG << "Creating video renderer...";
-  // TODO: joedow - Replace with a real video renderer and a FrameConsumer.
-  video_renderer_ = std::make_unique<StubVideoRenderer>();
+  // TODO: joedow - Provide a real FrameConsumer instance.
+  video_renderer_ = std::make_unique<SoftwareVideoRenderer>(nullptr);
 
   CLIENT_LOG << "Establishing connection to host...";
   connection_ = std::make_unique<protocol::IceConnectionToHost>();
