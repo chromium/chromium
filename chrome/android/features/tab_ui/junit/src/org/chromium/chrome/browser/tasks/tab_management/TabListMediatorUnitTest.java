@@ -54,6 +54,7 @@ import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.util.Pair;
+import android.util.Size;
 import android.view.View;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.view.accessibility.AccessibilityNodeInfo.AccessibilityAction;
@@ -241,6 +242,8 @@ public class TabListMediatorUnitTest {
     private static final String COLLABORATION_ID1 = "A";
     private static final String GROUP_TITLE = "My Group";
     private static final Token TAB_GROUP_ID = new Token(829L, 283L);
+    private static final String SYNC_GROUP_ID1 = "sync_group_id1";
+    private static final @TabGroupColorId int SYNC_GROUP_COLOR1 = TabGroupColorId.BLUE;
 
     public static final PropertyKey[] TAB_GRID_SELECTABLE_KEYS =
             new PropertyKey[] {
@@ -373,6 +376,7 @@ public class TabListMediatorUnitTest {
     private GURL mFaviconUrl;
     private Resources mResources;
     private Context mContext;
+    private SavedTabGroup mSavedTabGroup1;
 
     @Before
     public void setUp() {
@@ -411,6 +415,7 @@ public class TabListMediatorUnitTest {
         mFakeViewHolder2 = prepareFakeViewHolder(mItemView2, POSITION2);
         List<Tab> tabs1 = new ArrayList<>(Arrays.asList(mTab1));
         List<Tab> tabs2 = new ArrayList<>(Arrays.asList(mTab2));
+        mSavedTabGroup1 = prepareSavedTabGroup(SYNC_GROUP_ID1, GROUP_TITLE, SYNC_GROUP_COLOR1);
 
         doNothing().when(mTabContentManager).getTabThumbnailWithCallback(anyInt(), any(), any());
         // Mock that tab restoring stage is over.
@@ -483,6 +488,7 @@ public class TabListMediatorUnitTest {
                 .getDomainAndRegistry(eq(TAB3_URL.getSpec()), anyBoolean());
         doNothing().when(mTemplateUrlService).addObserver(mTemplateUrlServiceObserver.capture());
         doReturn(true).when(mTabListFaviconProvider).isInitialized();
+        doReturn(mSavedTabGroup1).when(mTabGroupSyncService).getGroup(SYNC_GROUP_ID1);
 
         mModelList = new TabListModel();
         TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
@@ -4699,8 +4705,7 @@ public class TabListMediatorUnitTest {
     public void testMoveNonExistantTab() {
         setUpTabListMediator(TabListMediatorType.TAB_SWITCHER, TabListMode.GRID);
 
-        // Assume added a new tab to tab model after tab1
-        // and move it to the end(index is 2).
+        // Assume added a new tab to tab model after tab1 and move it to the end(index is 2).
         Tab newTab = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
         doReturn(mTab1).when(mTabGroupModelFilter).getRepresentativeTabAt(0);
         doReturn(mTab2).when(mTabGroupModelFilter).getRepresentativeTabAt(1);
@@ -4718,8 +4723,8 @@ public class TabListMediatorUnitTest {
         assertThat(mModelList.get(1).model.get(TabProperties.TAB_ID), equalTo(TAB2_ID));
         assertThat(mModelList.get(1).model.get(TabProperties.TITLE), equalTo(TAB2_TITLE));
 
-        // Call didMoveTabGroup with the new tab. It should not crash and the tab list
-        // should not be updated.
+        // Call didMoveTabGroup with the new tab. It should not crash and the tab list should not be
+        // updated.
         mTabGroupModelFilterObserverCaptor.getValue().didMoveTabGroup(newTab, 2, 1);
 
         assertThat(mModelList.size(), equalTo(2));
@@ -4756,6 +4761,24 @@ public class TabListMediatorUnitTest {
 
         assertTrue(mModelList.size() > 0);
         assertEquals(TabProperties.UiType.TAB_GROUP, mModelList.get(0).type);
+    }
+
+    @Test
+    public void testResetWithListOfTabs_withTabGroupType() {
+        Tab newTab = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
+        List<Tab> tabs = new ArrayList<>(Arrays.asList(mTab1, newTab));
+        List<String> syncIds = new ArrayList<>(Arrays.asList(SYNC_GROUP_ID1));
+        mMediator.setDefaultGridCardSize(new Size(100, 200));
+
+        mMediator.resetWithListOfTabs(tabs, syncIds, false);
+
+        // Assert that group types come before tabs and all properties are correct.
+        assertEquals(TAB_GROUP, mModelList.get(0).model.get(CARD_TYPE));
+        assertEquals(SYNC_GROUP_ID1, mModelList.get(0).model.get(TabProperties.TAB_GROUP_SYNC_ID));
+        assertEquals(GROUP_TITLE, mModelList.get(0).model.get(TabProperties.TITLE));
+        var provider = mModelList.get(0).model.get(TabProperties.TAB_GROUP_COLOR_VIEW_PROVIDER);
+        assertNotNull(provider);
+        assertEquals(TabGroupColorId.BLUE, provider.getTabGroupColorIdForTesting());
     }
 
     private void setUpTabGroupCardDescriptionString() {
@@ -4876,6 +4899,15 @@ public class TabListMediatorUnitTest {
         when(mIncognitoTabModel.getTabById(id)).thenReturn(tab);
         doReturn(mProfile).when(tab).getProfile();
         return tab;
+    }
+
+    private SavedTabGroup prepareSavedTabGroup(
+            String syncId, String title, @TabGroupColorId int colorId) {
+        SavedTabGroup savedTabGroup = new SavedTabGroup();
+        savedTabGroup.syncId = syncId;
+        savedTabGroup.title = title;
+        savedTabGroup.color = colorId;
+        return savedTabGroup;
     }
 
     private SimpleRecyclerViewAdapter.ViewHolder prepareViewHolder(int id, int position) {

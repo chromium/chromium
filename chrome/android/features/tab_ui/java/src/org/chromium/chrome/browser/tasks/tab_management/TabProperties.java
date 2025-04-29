@@ -150,6 +150,8 @@ public class TabProperties {
 
     private static final PropertyKey[] COMMON_KEYS_TAB_AND_GROUP_GRID =
             new PropertyKey[] {
+                IS_INCOGNITO,
+                IS_SELECTED,
                 TAB_CLICK_LISTENER,
                 TAB_ACTION_BUTTON_DATA,
                 FAVICON_FETCHED,
@@ -178,9 +180,7 @@ public class TabProperties {
                     new PropertyKey[] {
                         TAB_ACTION_STATE,
                         TAB_ID,
-                        IS_INCOGNITO,
                         TAB_LONG_CLICK_LISTENER,
-                        IS_SELECTED,
                         SHOPPING_PERSISTED_TAB_DATA_FETCHER,
                         SHOULD_SHOW_PRICE_DROP_TOOLTIP,
                         HAS_NOTIFICATION_BUBBLE,
