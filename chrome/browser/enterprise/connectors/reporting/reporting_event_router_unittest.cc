@@ -396,4 +396,32 @@ TEST_F(ReportingEventRouterTest,
       GURL("https://filteredurl.com"), "", response, referrer_chain);
 }
 
+TEST_F(ReportingEventRouterTest, TestInterstitialShownWarned) {
+  test::SetOnSecurityEventReporting(
+      profile_->GetPrefs(), /*enabled=*/true,
+      /*enabled_event_names=*/{kKeyInterstitialEvent},
+      /*enabled_opt_in_events=*/{});
+
+  test::EventReportValidatorBase validator(client_.get());
+  validator.ExpectSecurityInterstitialShown(
+      "https://phishing.com/", "PHISHING", profile_->GetProfileUserName(),
+      GetProfileIdentifier(), "EVENT_RESULT_WARNED", 0);
+  reporting_event_router_->OnSecurityInterstitialShown(
+      GURL("https://phishing.com/"), "PHISHING", 0, false);
+}
+
+TEST_F(ReportingEventRouterTest, TestInterstitialShownBlocked) {
+  test::SetOnSecurityEventReporting(
+      profile_->GetPrefs(), /*enabled=*/true,
+      /*enabled_event_names=*/{kKeyInterstitialEvent},
+      /*enabled_opt_in_events=*/{});
+
+  test::EventReportValidatorBase validator(client_.get());
+  validator.ExpectSecurityInterstitialShown(
+      "https://phishing.com/", "PHISHING", profile_->GetProfileUserName(),
+      GetProfileIdentifier(), "EVENT_RESULT_BLOCKED", 0);
+  reporting_event_router_->OnSecurityInterstitialShown(
+      GURL("https://phishing.com/"), "PHISHING", 0, true);
+}
+
 }  // namespace enterprise_connectors

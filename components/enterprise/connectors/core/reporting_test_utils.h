@@ -58,6 +58,16 @@ class EventReportValidatorBase {
       const std::string& expected_profile_username,
       const std::string& expected_profile_identifier);
 
+  // TODO(crbug.com/396436374): Use secutiry interstital event proto instead of
+  // raw json string for validation.
+  void ExpectSecurityInterstitialShown(
+      const std::string& expected_url,
+      const std::string& expected_reason,
+      const std::string& expected_profile_username,
+      const std::string& expected_profile_identifier,
+      const std::string& result,
+      int expected_net_error_code);
+
  protected:
   void ValidateField(const base::Value::Dict* value,
                      const std::string& field_key,
@@ -68,6 +78,9 @@ class EventReportValidatorBase {
   void ValidateField(const base::Value::Dict* value,
                      const std::string& field_key,
                      const std::optional<int>& expected_value);
+  void ValidateField(const base::Value::Dict* value,
+                     const std::string& field_key,
+                     int expected_value);
   void ValidateField(const base::Value::Dict* value,
                      const std::string& field_key,
                      bool expected_value);
