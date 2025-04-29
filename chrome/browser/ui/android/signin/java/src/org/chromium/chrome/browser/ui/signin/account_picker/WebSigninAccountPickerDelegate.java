@@ -4,10 +4,12 @@
 
 package org.chromium.chrome.browser.ui.signin.account_picker;
 
-import androidx.annotation.Nullable;
+import static org.chromium.build.NullUtil.assumeNonNull;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
@@ -26,6 +28,7 @@ import org.chromium.components.signin.metrics.SignoutReason;
 import org.chromium.content_public.browser.LoadUrlParams;
 
 /** Implementation of {@link AccountPickerDelegate} for the web-signin flow. */
+@NullMarked
 public class WebSigninAccountPickerDelegate implements AccountPickerDelegate {
     private final Tab mCurrentTab;
     private final Profile mProfile;
@@ -47,8 +50,9 @@ public class WebSigninAccountPickerDelegate implements AccountPickerDelegate {
         mProfile = currentTab.getProfile();
         mWebSigninBridgeFactory = webSigninBridgeFactory;
         mContinueUrl = continueUrl;
-        mSigninManager = IdentityServicesProvider.get().getSigninManager(mProfile);
-        mIdentityManager = IdentityServicesProvider.get().getIdentityManager(mProfile);
+        mSigninManager = assumeNonNull(IdentityServicesProvider.get().getSigninManager(mProfile));
+        mIdentityManager =
+                assumeNonNull(IdentityServicesProvider.get().getIdentityManager(mProfile));
     }
 
     /** Implements {@link AccountPickerDelegate}. */

@@ -4,17 +4,18 @@
 
 package org.chromium.chrome.browser.ui.signin.account_picker;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.accounts.AccountManager;
 import android.app.Activity;
 import android.content.Intent;
 import android.text.TextUtils;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
@@ -37,6 +38,7 @@ import org.chromium.ui.modelutil.PropertyObservable.PropertyObserver;
 import java.util.List;
 
 /** Mediator of the account picker bottom sheet in web sign-in flow. */
+@NullMarked
 public class AccountPickerBottomSheetMediator
         implements AccountPickerCoordinator.Listener,
                 AccountPickerBottomSheetView.BackPressListener,
@@ -79,7 +81,7 @@ public class AccountPickerBottomSheetMediator
             @SigninAccessPoint int signinAccessPoint,
             @Nullable CoreAccountId accountId) {
         mWindowAndroid = windowAndroid;
-        mActivity = windowAndroid.getActivity().get();
+        mActivity = assumeNonNull(windowAndroid.getActivity().get());
         mAccountPickerDelegate = accountPickerDelegate;
         mProfileDataCache = ProfileDataCache.createWithDefaultImageSizeAndNoBadge(mActivity);
         mDeviceLockActivityLauncher = deviceLockActivityLauncher;
@@ -165,6 +167,7 @@ public class AccountPickerBottomSheetMediator
                             AccountConsistencyPromoAction.ADD_ACCOUNT_COMPLETED,
                             mSigninAccessPoint);
                     mAddedAccountEmail = data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
+                    assert mAddedAccountEmail != null;
                     onAccountSelected(mAddedAccountEmail);
                 };
         mAccountManagerFacade.createAddAccountIntent(
@@ -184,7 +187,7 @@ public class AccountPickerBottomSheetMediator
      * Called by the embedder when an account is added through the latter. Sign-in the just added
      * user.
      */
-    public void onAccountAdded(@NonNull String accountEmail) {
+    public void onAccountAdded(String accountEmail) {
         SigninMetricsUtils.logAccountConsistencyPromoAction(
                 AccountConsistencyPromoAction.ADD_ACCOUNT_COMPLETED, mSigninAccessPoint);
 
@@ -281,7 +284,9 @@ public class AccountPickerBottomSheetMediator
 
         if (accountId != null) {
             mDefaultAccountEmail =
-                    AccountUtils.findCoreAccountInfoByGaiaId(coreAccountInfos, accountId.getId())
+                    assumeNonNull(
+                                    AccountUtils.findCoreAccountInfoByGaiaId(
+                                            coreAccountInfos, accountId.getId()))
                             .getEmail();
             setSelectedAccountName(mDefaultAccountEmail);
             mModel.set(AccountPickerBottomSheetProperties.VIEW_STATE, mInitialViewState);
@@ -319,7 +324,8 @@ public class AccountPickerBottomSheetMediator
                     AccountPickerBottomSheetProperties.VIEW_STATE,
                     ViewState.COLLAPSED_ACCOUNT_LIST);
         } else if (viewState == ViewState.COLLAPSED_ACCOUNT_LIST
-                && AccountUtils.findCoreAccountInfoByEmail(coreAccountInfos, mSelectedAccountEmail)
+                && AccountUtils.findCoreAccountInfoByEmail(
+                                coreAccountInfos, assumeNonNull(mSelectedAccountEmail))
                         == null) {
             // When it is already collapsed account list, we update the selected account only
             // when the current selected account name is no longer in the new account list
@@ -408,6 +414,7 @@ public class AccountPickerBottomSheetMediator
 
     private void signIn() {
         mModel.set(AccountPickerBottomSheetProperties.VIEW_STATE, ViewState.SIGNIN_IN_PROGRESS);
+        assumeNonNull(mSelectedAccountEmail);
         CoreAccountInfo accountInfo =
                 AccountUtils.findCoreAccountInfoByEmail(
                         mAccountManagerFacade.getCoreAccountInfos().getResult(),
@@ -459,6 +466,7 @@ public class AccountPickerBottomSheetMediator
                     .clearWebSigninAccountPickerActiveDismissalCount();
         }
 
+        assumeNonNull(mSelectedAccountEmail);
         CoreAccountInfo accountInfo =
                 AccountUtils.findCoreAccountInfoByEmail(
                         mAccountManagerFacade.getCoreAccountInfos().getResult(),
@@ -482,6 +490,7 @@ public class AccountPickerBottomSheetMediator
                                 ViewState.COLLAPSED_ACCOUNT_LIST);
                     }
                 };
+        assumeNonNull(mSelectedAccountEmail);
         mAccountManagerFacade.updateCredentials(
                 AccountUtils.createAccountFromName(mSelectedAccountEmail),
                 mActivity,

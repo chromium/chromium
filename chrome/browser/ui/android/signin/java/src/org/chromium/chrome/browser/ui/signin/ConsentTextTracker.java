@@ -9,9 +9,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.consent_auditor.ConsentAuditorBridge;
 import org.chromium.chrome.browser.consent_auditor.ConsentAuditorFeature;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -23,10 +24,11 @@ import java.util.Map;
 
 /**
  * Tracks resource IDs for consent texts within TextViews inside the consent screen. The consent
- * screen is an arbitrary set of view hierarchies that are passed to {#link recordConsent()}.
- * Note that all TextView instances within these hierarchies MUST have their text assigned using
- * {@link #setText} and {@link #setTextNonRecordable}. This is verified in {#link recordConsent()}.
+ * screen is an arbitrary set of view hierarchies that are passed to {#link recordConsent()}. Note
+ * that all TextView instances within these hierarchies MUST have their text assigned using {@link
+ * #setText} and {@link #setTextNonRecordable}. This is verified in {#link recordConsent()}.
  */
+@NullMarked
 public class ConsentTextTracker {
     /**
      * Stores metadata about the text associated with a given TextView in order to extract and

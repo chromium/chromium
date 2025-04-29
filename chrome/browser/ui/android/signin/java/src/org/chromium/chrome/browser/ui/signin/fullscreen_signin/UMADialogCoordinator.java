@@ -10,6 +10,7 @@ import android.view.View;
 
 import androidx.annotation.MainThread;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ui.signin.R;
 import org.chromium.components.browser_ui.widget.MaterialSwitchWithText;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -23,6 +24,7 @@ import org.chromium.ui.modelutil.PropertyModel;
  * Creates a dialog that lets users choose whether or not they want to send diagnostic data to
  * Google in the First Run Experience signin screen.
  */
+@NullMarked
 public class UMADialogCoordinator {
     /** Callback for the switch in the dialog. */
     public interface Listener {

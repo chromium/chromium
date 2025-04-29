@@ -5,9 +5,10 @@
 package org.chromium.chrome.browser.ui.signin.history_sync;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ui.signin.R;
 
 import java.lang.annotation.Retention;
@@ -15,6 +16,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.Objects;
 
 /* Class containing IDs of resources for the history sync opt-in view. */
+@NullMarked
 public final class HistorySyncConfig {
 
     /** The visibility rule to apply to the history opt-in step in the sign-in flow. */

@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.ui.signin;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.os.SystemClock;
 
 import androidx.annotation.IntDef;
@@ -11,6 +13,8 @@ import androidx.annotation.IntDef;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.components.signin.Tribool;
 import org.chromium.components.signin.base.AccountCapabilities;
@@ -40,6 +44,7 @@ import java.lang.annotation.RetentionPolicy;
  *
  * <p>Use {@link resolveMinorMode} as an entry point.
  */
+@NullMarked
 public class MinorModeHelper implements IdentityManager.Observer {
 
     /** Screen modes indicated by capability. */
@@ -85,7 +90,7 @@ public class MinorModeHelper implements IdentityManager.Observer {
     private final CoreAccountInfo mPrimaryAccount;
 
     // Disposable updater which is executed only once.
-    private UiUpdater mUiUpdater;
+    private @Nullable UiUpdater mUiUpdater;
 
     /**
      * Waits for the capability to be loaded. When this happens, the ui is updated in minor-mode
@@ -107,6 +112,7 @@ public class MinorModeHelper implements IdentityManager.Observer {
         }
         AccountInfo accountInfo =
                 identityManager.findExtendedAccountInfoByEmailAddress(primaryAccount.getEmail());
+        assumeNonNull(accountInfo);
 
         if (hasCapabilities(accountInfo)) {
             uiUpdater.onScreenModeReady(

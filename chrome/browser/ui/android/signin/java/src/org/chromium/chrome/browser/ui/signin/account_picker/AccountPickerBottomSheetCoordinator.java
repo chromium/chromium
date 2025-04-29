@@ -4,12 +4,14 @@
 
 package org.chromium.chrome.browser.ui.signin.account_picker;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.view.View;
 
 import androidx.annotation.MainThread;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.chrome.browser.ui.signin.R;
@@ -26,6 +28,7 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /** Coordinator of the account picker bottom sheet. */
+@NullMarked
 public class AccountPickerBottomSheetCoordinator {
     private final AccountPickerBottomSheetView mView;
     private final AccountPickerBottomSheetMediator mAccountPickerBottomSheetMediator;
@@ -92,7 +95,8 @@ public class AccountPickerBottomSheetCoordinator {
                         selectedAccountId);
         mView =
                 new AccountPickerBottomSheetView(
-                        windowAndroid.getActivity().get(), mAccountPickerBottomSheetMediator);
+                        assumeNonNull(windowAndroid.getActivity().get()),
+                        mAccountPickerBottomSheetMediator);
 
         mAccountPickerCoordinator =
                 new AccountPickerCoordinator(
@@ -141,7 +145,7 @@ public class AccountPickerBottomSheetCoordinator {
      * bottom sheet and the flow dismissal in this case. Should be called only by the new sign-in
      * flow.
      */
-    public void onAccountAdded(@NonNull String accountEmail) {
+    public void onAccountAdded(String accountEmail) {
         mAccountPickerBottomSheetMediator.onAccountAdded(accountEmail);
     }
 

@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.ui.signin;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.accounts.Account;
 import android.app.Activity;
 import android.os.SystemClock;
@@ -17,6 +19,9 @@ import androidx.annotation.IntDef;
 import org.chromium.base.Promise;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.build.annotations.EnsuresNonNull;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -47,6 +52,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** Parent coordinator for the re-FRE promo */
+@NullMarked
 public final class FullscreenSigninAndHistorySyncCoordinator
         implements SigninAndHistorySyncCoordinator,
                 HistorySyncCoordinator.HistorySyncDelegate,
@@ -102,12 +108,12 @@ public final class FullscreenSigninAndHistorySyncCoordinator
     private final boolean mDidShowSignin;
     private final long mActivityStartTime;
     private final DeviceLockActivityLauncher mDeviceLockActivityLauncher;
+    private final FrameLayout mViewHolder;
     private @ChildView int mCurrentView;
     private FullscreenSigninView mFullscreenSigninView;
     private View mHistorySyncView;
-    private FrameLayout mViewHolder;
-    private FullscreenSigninCoordinator mSigninCoordinator;
-    private HistorySyncCoordinator mHistorySyncCoordinator;
+    private @Nullable FullscreenSigninCoordinator mSigninCoordinator;
+    private @Nullable HistorySyncCoordinator mHistorySyncCoordinator;
 
     public FullscreenSigninAndHistorySyncCoordinator(
             WindowAndroid windowAndroid,
@@ -177,6 +183,7 @@ public final class FullscreenSigninAndHistorySyncCoordinator
     /** Implements {@link SigninAndHistorySyncCoordinator}. */
     @Override
     public void onAccountAdded(String accountName) {
+        assumeNonNull(mSigninCoordinator);
         mSigninCoordinator.onAccountAdded(accountName);
     }
 
@@ -206,6 +213,7 @@ public final class FullscreenSigninAndHistorySyncCoordinator
                     SigninManager signinManager =
                             IdentityServicesProvider.get()
                                     .getSigninManager(mProfileSupplier.get().getOriginalProfile());
+                    assumeNonNull(signinManager);
                     signinManager.signOut(SignoutReason.ABORT_SIGNIN);
                 }
                 mDelegate.onFlowComplete(SigninAndHistorySyncCoordinator.Result.INTERRUPTED);
@@ -216,6 +224,7 @@ public final class FullscreenSigninAndHistorySyncCoordinator
                     return BackPressResult.SUCCESS;
                 }
                 showChildView(ChildView.SIGNIN);
+                assumeNonNull(mSigninCoordinator);
                 mSigninCoordinator.reset();
         }
         return BackPressResult.SUCCESS;
@@ -363,6 +372,7 @@ public final class FullscreenSigninAndHistorySyncCoordinator
         }
     }
 
+    @EnsuresNonNull({"mFullscreenSigninView", "mHistorySyncView"})
     private void inflateViewBundle() {
         boolean useLandscapeLayout = SigninUtils.shouldShowDualPanesHorizontalLayout(mActivity);
         ViewGroup viewBundle =
@@ -386,6 +396,7 @@ public final class FullscreenSigninAndHistorySyncCoordinator
         IdentityManager identityManager =
                 IdentityServicesProvider.get()
                         .getIdentityManager(mProfileSupplier.get().getOriginalProfile());
+        assumeNonNull(identityManager);
         return identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN);
     }
 
@@ -411,6 +422,7 @@ public final class FullscreenSigninAndHistorySyncCoordinator
                 break;
             case ChildView.HISTORY_SYNC:
                 maybeCreateHistorySyncCoordinator();
+                assumeNonNull(mHistorySyncCoordinator);
                 mHistorySyncCoordinator.setView(
                         (HistorySyncView) mHistorySyncView,
                         SigninUtils.shouldShowDualPanesHorizontalLayout(mActivity));

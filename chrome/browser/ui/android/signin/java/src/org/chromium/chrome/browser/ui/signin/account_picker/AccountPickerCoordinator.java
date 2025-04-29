@@ -8,6 +8,7 @@ import androidx.annotation.LayoutRes;
 import androidx.annotation.MainThread;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerProperties.AddAccountRowProperties;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerProperties.ItemType;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
@@ -18,6 +19,7 @@ import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
  * This class is responsible for setting up the account list's view and model and it serves as an
  * access point for users of the account picker MVC.
  */
+@NullMarked
 @MainThread
 public class AccountPickerCoordinator {
     /** Listener for account picker. */

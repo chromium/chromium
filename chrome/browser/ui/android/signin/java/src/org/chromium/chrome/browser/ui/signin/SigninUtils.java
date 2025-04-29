@@ -14,10 +14,12 @@ import android.text.TextUtils;
 import android.view.View;
 
 import org.chromium.base.IntentUtils;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.components.signin.AccountUtils;
 
 /** Helper functions for sign-in and accounts. */
+@NullMarked
 public final class SigninUtils {
     private static final String ACCOUNT_SETTINGS_ACTION = "android.settings.ACCOUNT_SYNC_SETTINGS";
     private static final String ACCOUNT_SETTINGS_ACCOUNT_KEY = "account";
@@ -106,15 +108,16 @@ public final class SigninUtils {
 
     private static String getAccountLabelForNonSelectedAccount(
             DisplayableProfileData profileData, Context context) {
+        String fullName = profileData.getFullName();
         if (!profileData.hasDisplayableEmailAddress()) {
-            return profileData.getFullName();
+            return TextUtils.isEmpty(fullName) ? "" : fullName;
         }
-        if (TextUtils.isEmpty(profileData.getFullName())) {
+        if (TextUtils.isEmpty(fullName)) {
             return profileData.getAccountEmail();
         }
         return context.getString(
                 R.string.signin_account_label_for_non_selected_account,
-                profileData.getFullName(),
+                fullName,
                 profileData.getAccountEmail());
     }
 

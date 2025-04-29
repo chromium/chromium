@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.ui.signin.R;
 import org.chromium.chrome.browser.ui.signin.SigninUtils;
@@ -17,10 +18,8 @@ import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor.ViewBinder;
 
-/**
- * This class regroups the buildView and bindView util methods of the
- * existing account row.
- */
+/** This class regroups the buildView and bindView util methods of the existing account row. */
+@NullMarked
 public class ExistingAccountRowViewBinder implements ViewBinder<PropertyModel, View, PropertyKey> {
     /**
      * View binder that associates an existing account view with the model of

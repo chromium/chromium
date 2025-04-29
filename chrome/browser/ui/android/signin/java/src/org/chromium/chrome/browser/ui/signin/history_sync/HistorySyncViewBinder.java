@@ -6,12 +6,14 @@ package org.chromium.chrome.browser.ui.signin.history_sync;
 
 import androidx.annotation.StringRes;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ui.signin.MinorModeHelper;
 import org.chromium.chrome.browser.ui.signin.MinorModeHelper.ScreenMode;
 import org.chromium.components.signin.metrics.SyncButtonsType;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
+@NullMarked
 class HistorySyncViewBinder {
 
     private static boolean sMinorModeButtonShownMetricRecorded;

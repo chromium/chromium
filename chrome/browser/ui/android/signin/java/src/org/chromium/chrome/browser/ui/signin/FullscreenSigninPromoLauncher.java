@@ -8,9 +8,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.text.TextUtils;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.BuildInfo;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Set;
 
 /** Helper class responsible of launching the re-FRE with {@link SigninAndHistorySyncActivity}. */
+@NullMarked
 public final class FullscreenSigninPromoLauncher {
     /**
      * Launches the {@link SigninAndHistoryOptInActivity} if it needs to be displayed.

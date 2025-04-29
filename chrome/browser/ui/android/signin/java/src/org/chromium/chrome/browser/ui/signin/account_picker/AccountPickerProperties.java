@@ -9,6 +9,7 @@ import android.view.View.OnClickListener;
 import androidx.annotation.IntDef;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -17,6 +18,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** Properties for account picker. */
+@NullMarked
 class AccountPickerProperties {
     private AccountPickerProperties() {}
 

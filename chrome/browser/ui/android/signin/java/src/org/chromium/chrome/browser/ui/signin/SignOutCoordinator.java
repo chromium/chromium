@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.ui.signin;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 
 import androidx.annotation.IntDef;
@@ -13,6 +15,7 @@ import androidx.fragment.app.FragmentManager;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
@@ -34,6 +37,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.stream.IntStream;
 
 /** A coordinator to handle sign-out. */
+@NullMarked
 public class SignOutCoordinator {
     /**
      * Starts the sign-out flow. The caller must verify existence of a signed-in account and whether
@@ -119,11 +123,14 @@ public class SignOutCoordinator {
 
         IdentityManager identityManager =
                 IdentityServicesProvider.get().getIdentityManager(profile);
+        assumeNonNull(identityManager);
         if (!identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)) {
             throw new IllegalStateException("There is no signed-in account");
         }
         SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(profile);
+        assumeNonNull(signinManager);
         SyncService syncService = SyncServiceFactory.getForProfile(profile);
+        assumeNonNull(syncService);
         syncService.getTypesWithUnsyncedData(
                 unsyncedTypes -> {
                     switch (getUiState(

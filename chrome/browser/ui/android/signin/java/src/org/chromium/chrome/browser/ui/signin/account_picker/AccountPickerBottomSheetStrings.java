@@ -3,12 +3,15 @@
 // found in the LICENSE file.
 package org.chromium.chrome.browser.ui.signin.account_picker;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
+
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.Objects;
 
 /* Class containing string resource ids for the sign-in account picker bottom sheet. */
+@NullMarked
 public final class AccountPickerBottomSheetStrings {
     public final @StringRes int titleStringId;
     public final @StringRes int subtitleStringId;

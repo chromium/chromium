@@ -4,12 +4,15 @@
 
 package org.chromium.chrome.browser.ui.signin.signin_promo;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -32,6 +35,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.Set;
 
 /** {@link SigninPromoDelegate} for bookmark signin promo. */
+@NullMarked
 public class BookmarkSigninPromoDelegate extends SigninPromoDelegate {
 
     /** Indicates the type of content the should be shown in the visible promo. */
@@ -191,11 +195,13 @@ public class BookmarkSigninPromoDelegate extends SigninPromoDelegate {
 
         IdentityManager identityManager =
                 IdentityServicesProvider.get().getIdentityManager(mProfile);
+        assumeNonNull(identityManager);
         if (identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)) {
             return PromoState.ACCOUNT_SETTINGS;
         }
 
         SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(mProfile);
+        assumeNonNull(signinManager);
         return signinManager.isSigninAllowed() ? PromoState.SIGNIN : PromoState.NONE;
     }
 
@@ -206,6 +212,7 @@ public class BookmarkSigninPromoDelegate extends SigninPromoDelegate {
 
     private boolean canManuallyEnableSyncTypes() {
         SyncService syncService = SyncServiceFactory.getForProfile(mProfile);
+        assumeNonNull(syncService);
         boolean areTypesAlreadyEnabled =
                 syncService
                         .getSelectedTypes()

@@ -4,17 +4,20 @@
 
 package org.chromium.chrome.browser.ui.signin.fullscreen_signin;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.accounts.Account;
 import android.content.Context;
 import android.text.SpannableString;
 import android.text.TextUtils;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.BuildInfo;
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -53,8 +56,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.IntStream;
 
+@NullMarked
 @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
 public class FullscreenSigninMediator
         implements AccountsChangeObserver,
@@ -98,7 +101,7 @@ public class FullscreenSigninMediator
     /** Whether the initial load phase has been completed. See {@link #onInitialLoadCompleted}. */
     private boolean mInitialLoadCompleted;
 
-    private AccountPickerDialogCoordinator mDialogCoordinator;
+    private @Nullable AccountPickerDialogCoordinator mDialogCoordinator;
     // TODO(crbug.com/40921927): Replace with CoreAccountInfo.
     private @Nullable String mAddedAccountEmail;
     // TODO(crbug.com/40921927): Replace with CoreAccountInfo.
@@ -171,7 +174,7 @@ public class FullscreenSigninMediator
     }
 
     private Account getSelectedAccount() {
-        return AccountUtils.createAccountFromName(mSelectedAccountEmail);
+        return AccountUtils.createAccountFromName(assumeNonNull(mSelectedAccountEmail));
     }
 
     private void onNativeLoaded() {
@@ -250,9 +253,16 @@ public class FullscreenSigninMediator
         if (isSigninSupported) {
             mModel.set(FullscreenSigninProperties.TITLE_STRING_ID, mConfig.titleId);
             SyncService syncService = SyncServiceFactory.getForProfile(profile);
-            boolean isSyncDataManaged =
-                    IntStream.range(UserSelectableType.FIRST_TYPE, UserSelectableType.LAST_TYPE + 1)
-                            .anyMatch(syncService::isTypeManagedByPolicy);
+            assumeNonNull(syncService);
+            boolean isSyncDataManaged = false;
+            for (int typeId = UserSelectableType.FIRST_TYPE;
+                    typeId <= UserSelectableType.LAST_TYPE;
+                    typeId++) {
+                if (syncService.isTypeManagedByPolicy(typeId)) {
+                    isSyncDataManaged = true;
+                    break;
+                }
+            }
             mModel.set(
                     FullscreenSigninProperties.SUBTITLE_STRING_ID,
                     isSyncDataManaged
@@ -350,11 +360,14 @@ public class FullscreenSigninMediator
         mDelegate.recordUserSignInHistograms(getSigninPromoAction());
         // If the user signs into an account on the FRE, goes to the next page and presses
         // back to come back to the welcome screen, then there will already be an account signed in.
-        @Nullable
-        CoreAccountInfo signedInAccount =
-                IdentityServicesProvider.get()
-                        .getIdentityManager(
-                                mDelegate.getProfileSupplier().get().getOriginalProfile())
+        @Nullable CoreAccountInfo signedInAccount =
+                assumeNonNull(
+                                IdentityServicesProvider.get()
+                                        .getIdentityManager(
+                                                mDelegate
+                                                        .getProfileSupplier()
+                                                        .get()
+                                                        .getOriginalProfile()))
                         .getPrimaryAccountInfo(ConsentLevel.SIGNIN);
         if (signedInAccount != null && signedInAccount.getEmail().equals(mSelectedAccountEmail)) {
             mDelegate.advanceToNextPage();
@@ -364,6 +377,7 @@ public class FullscreenSigninMediator
                 IdentityServicesProvider.get()
                         .getSigninManager(
                                 mDelegate.getProfileSupplier().get().getOriginalProfile());
+        assumeNonNull(signinManager);
         final SignInCallback signInCallback =
                 new SignInCallback() {
                     @Override
@@ -390,7 +404,7 @@ public class FullscreenSigninMediator
         CoreAccountInfo selectedAccount =
                 AccountUtils.findCoreAccountInfoByEmail(
                         mAccountManagerFacade.getCoreAccountInfos().getResult(),
-                        mSelectedAccountEmail);
+                        assumeNonNull(mSelectedAccountEmail));
         if (selectedAccount != null) {
             mModel.set(FullscreenSigninProperties.SHOW_SIGNIN_PROGRESS_SPINNER_WITH_TEXT, true);
             final @SigninAccessPoint int accessPoint =
@@ -459,8 +473,8 @@ public class FullscreenSigninMediator
         mDelegate.recordSigninDismissedHistograms();
         mDelegate.acceptTermsOfService(mAllowMetricsAndCrashUploading);
         SigninPreferencesManager.getInstance().temporarilySuppressNewTabPagePromos();
-        if (IdentityServicesProvider.get()
-                .getIdentityManager(mDelegate.getProfileSupplier().get().getOriginalProfile())
+        Profile profile = mDelegate.getProfileSupplier().get().getOriginalProfile();
+        if (assumeNonNull(IdentityServicesProvider.get().getIdentityManager(profile))
                 .hasPrimaryAccount(ConsentLevel.SIGNIN)) {
             mModel.set(FullscreenSigninProperties.SHOW_SIGNIN_PROGRESS_SPINNER, true);
             SignOutCallback signOutCallback =
@@ -473,8 +487,7 @@ public class FullscreenSigninMediator
 
                         mDelegate.advanceToNextPage();
                     };
-            IdentityServicesProvider.get()
-                    .getSigninManager(mDelegate.getProfileSupplier().get().getOriginalProfile())
+            assumeNonNull(IdentityServicesProvider.get().getSigninManager(profile))
                     .signOut(
                             SignoutReason.ABORT_SIGNIN,
                             signOutCallback,

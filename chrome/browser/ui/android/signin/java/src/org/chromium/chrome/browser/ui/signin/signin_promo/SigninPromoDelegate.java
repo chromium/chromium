@@ -7,8 +7,8 @@ package org.chromium.chrome.browser.ui.signin.signin_promo;
 import android.content.Context;
 import android.content.Intent;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.components.signin.base.CoreAccountInfo;
 
 /** A delegate object that provides necessary information to customize sign-in promo. */
+@NullMarked
 public abstract class SigninPromoDelegate {
     protected final Context mContext;
     protected final Profile mProfile;

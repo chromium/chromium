@@ -19,6 +19,7 @@ import androidx.annotation.ColorInt;
 
 import org.chromium.base.BuildInfo;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.util.ColorUtils;
 
@@ -27,6 +28,7 @@ import org.chromium.ui.util.ColorUtils;
  * automotive, the view is shown in a dialog-like style and takes a fixed percentage of the screen,
  * given by the constants below.
  */
+@NullMarked
 public class DialogWhenLargeContentLayout extends FrameLayout {
     private TypedValue mFixedWidthMajor = new TypedValue();
     private TypedValue mFixedWidthMinor = new TypedValue();

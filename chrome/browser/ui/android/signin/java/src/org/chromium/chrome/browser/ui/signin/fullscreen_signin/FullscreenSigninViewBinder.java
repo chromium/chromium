@@ -11,9 +11,10 @@ import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.ProgressBar;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.ui.signin.R;
 import org.chromium.chrome.browser.ui.signin.SigninUtils;
@@ -22,6 +23,7 @@ import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Stateless FullscreenSignin view binder. */
+@NullMarked
 class FullscreenSigninViewBinder {
     static void bind(PropertyModel model, FullscreenSigninView view, PropertyKey propertyKey) {
         if (propertyKey == FullscreenSigninProperties.ON_CONTINUE_AS_CLICKED) {

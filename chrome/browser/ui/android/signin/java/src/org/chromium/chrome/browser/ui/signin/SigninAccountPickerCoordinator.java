@@ -4,18 +4,21 @@
 
 package org.chromium.chrome.browser.ui.signin;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
+import android.app.Activity;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.FrameLayout;
 
 import androidx.activity.ComponentActivity;
 import androidx.annotation.ColorInt;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.back_press.BackPressHelper;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetCoordinator;
@@ -23,6 +26,7 @@ import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomS
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerDelegate;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerLaunchMode;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerFactory;
@@ -38,7 +42,10 @@ import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.widget.Toast;
 
+import java.lang.ref.WeakReference;
+
 /** Responsible of showing the sign-in bottom sheet. */
+@NullMarked
 public class SigninAccountPickerCoordinator implements AccountPickerDelegate {
     private static final int HISTORY_SYNC_ENTER_ANIMATION_DELAY_MS = 100;
 
@@ -55,7 +62,7 @@ public class SigninAccountPickerCoordinator implements AccountPickerDelegate {
     private ScrimManager mScrimManager;
     private BottomSheetObserver mBottomSheetObserver;
     private BottomSheetController mBottomSheetController;
-    private AccountPickerBottomSheetCoordinator mAccountPickerBottomSheetCoordinator;
+    private @Nullable AccountPickerBottomSheetCoordinator mAccountPickerBottomSheetCoordinator;
 
     /** This is a delegate that the embedder needs to implement. */
     public interface Delegate {
@@ -94,13 +101,13 @@ public class SigninAccountPickerCoordinator implements AccountPickerDelegate {
      * @param selectedAccountId the account id to use as default, if present.
      */
     public SigninAccountPickerCoordinator(
-            @NonNull WindowAndroid windowAndroid,
-            @NonNull ComponentActivity activity,
-            @NonNull ViewGroup containerView,
-            @NonNull Delegate delegate,
-            @NonNull DeviceLockActivityLauncher deviceLockActivityLauncher,
-            @NonNull SigninManager signinManager,
-            @NonNull AccountPickerBottomSheetStrings bottomSheetStrings,
+            WindowAndroid windowAndroid,
+            ComponentActivity activity,
+            ViewGroup containerView,
+            Delegate delegate,
+            DeviceLockActivityLauncher deviceLockActivityLauncher,
+            SigninManager signinManager,
+            AccountPickerBottomSheetStrings bottomSheetStrings,
             @AccountPickerLaunchMode int accountPickerLaunchMode,
             @SigninAccessPoint int signinAccessPoint,
             @Nullable CoreAccountId selectedAccountId) {
@@ -117,7 +124,7 @@ public class SigninAccountPickerCoordinator implements AccountPickerDelegate {
     }
 
     private void initAndShowBottomSheet(
-            @NonNull AccountPickerBottomSheetStrings bottomSheetStrings,
+            AccountPickerBottomSheetStrings bottomSheetStrings,
             @AccountPickerLaunchMode int accountPickerLaunchMode) {
         ViewGroup sheetContainer = new FrameLayout(mActivity);
         sheetContainer.setLayoutParams(
@@ -165,7 +172,8 @@ public class SigninAccountPickerCoordinator implements AccountPickerDelegate {
     }
 
     /** Called when an account is added on the device. */
-    public void onAccountAdded(@NonNull String accountEmail) {
+    public void onAccountAdded(String accountEmail) {
+        assumeNonNull(mAccountPickerBottomSheetCoordinator);
         mAccountPickerBottomSheetCoordinator.onAccountAdded(accountEmail);
     }
 
@@ -196,10 +204,12 @@ public class SigninAccountPickerCoordinator implements AccountPickerDelegate {
                 new SigninManager.SignInCallback() {
                     @Override
                     public void onSignInComplete() {
-                        mBottomSheetController.hideContent(
-                                mBottomSheetController.getCurrentSheetContent(),
-                                true,
-                                StateChangeReason.INTERACTION_COMPLETE);
+                        BottomSheetContent content =
+                                mBottomSheetController.getCurrentSheetContent();
+                        if (content != null) {
+                            mBottomSheetController.hideContent(
+                                    content, true, StateChangeReason.INTERACTION_COMPLETE);
+                        }
                         PostTask.postDelayedTask(
                                 TaskTraits.UI_DEFAULT,
                                 () -> mDelegate.onSignInComplete(),
@@ -253,8 +263,14 @@ public class SigninAccountPickerCoordinator implements AccountPickerDelegate {
 
     private void makeSigninNotAllowedToast() {
         // TODO(crbug.com/41493758): Update the string & UI.
+        WeakReference<Activity> activityReference = mWindowAndroid.getActivity();
+        if (activityReference == null) return;
+
+        Activity activity = activityReference.get();
+        if (activity == null) return;
+
         Toast.makeText(
-                        mWindowAndroid.getActivity().get(),
+                        activity,
                         R.string.sign_in_to_chrome_disabled_by_user_summary,
                         Toast.LENGTH_SHORT)
                 .show();

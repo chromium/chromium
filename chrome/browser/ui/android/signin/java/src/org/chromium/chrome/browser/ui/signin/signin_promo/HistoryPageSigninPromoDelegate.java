@@ -4,12 +4,15 @@
 
 package org.chromium.chrome.browser.ui.signin.signin_promo;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -33,6 +36,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.concurrent.TimeUnit;
 
 /** {@link SigninPromoDelegate} for the History page sign-in promo. */
+@NullMarked
 public class HistoryPageSigninPromoDelegate extends SigninPromoDelegate {
 
     /** Indicates the type of content the should be shown in the visible promo. */
@@ -196,6 +200,7 @@ public class HistoryPageSigninPromoDelegate extends SigninPromoDelegate {
 
         IdentityManager identityManager =
                 IdentityServicesProvider.get().getIdentityManager(mProfile);
+        assumeNonNull(identityManager);
         if (!identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)) {
             // Hide promo for signed-out users.
             return PromoState.NONE;

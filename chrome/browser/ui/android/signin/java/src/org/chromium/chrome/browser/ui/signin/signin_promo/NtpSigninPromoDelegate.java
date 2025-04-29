@@ -4,13 +4,16 @@
 
 package org.chromium.chrome.browser.ui.signin.signin_promo;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.text.format.DateUtils;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -29,6 +32,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** {@link SigninPromoDelegate} for ntp signin promo. */
+@NullMarked
 public class NtpSigninPromoDelegate extends SigninPromoDelegate {
 
     /** Indicates the type of content the should be shown in the visible promo. */
@@ -170,7 +174,9 @@ public class NtpSigninPromoDelegate extends SigninPromoDelegate {
     private @PromoState int computePromoState(@Nullable CoreAccountInfo visibleAccount) {
         IdentityManager identityManager =
                 IdentityServicesProvider.get().getIdentityManager(mProfile);
+        assumeNonNull(identityManager);
         SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(mProfile);
+        assumeNonNull(signinManager);
         if (identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)
                 || !signinManager.isSigninAllowed()) {
             return PromoState.NONE;

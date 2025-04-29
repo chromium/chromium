@@ -13,13 +13,14 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ui.signin.R;
 import org.chromium.ui.widget.ButtonCompat;
 import org.chromium.ui.widget.TextViewWithClickableSpans;
 
 /** View that wraps the fullscreen signin promo and caches references to UI elements. */
+@NullMarked
 public class FullscreenSigninView extends RelativeLayout {
     private ImageView mLogo;
     private TextView mTitle;
