@@ -53,6 +53,7 @@ source_set("browser_tests") {
     "//base/test:test_support",
     "//chrome/browser:browser_process",
     "//chrome/browser/privacy_sandbox:headers",
+    "//chrome/browser/privacy_sandbox:test_support",
     "//chrome/browser/search_engine_choice",
     "//chrome/browser/sync",
     "//chrome/browser/sync:factories",

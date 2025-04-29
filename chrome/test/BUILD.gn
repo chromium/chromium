@@ -4897,6 +4897,7 @@ if (!is_android) {
         ":test_support_ui",
         "//chrome/browser/commerce",
         "//chrome/browser/lens/core/mojom:mojo_bindings",
+        "//chrome/browser/privacy_sandbox:test_support",
         "//chrome/browser/ui/actions:actions",
         "//chrome/browser/ui/actions:actions_headers",
         "//chrome/browser/ui/autofill:test_support",
@@ -6633,6 +6634,10 @@ test("unit_tests") {
     # TODO(413315837): Remove this dep when privacy_sandbox_service_impl_unittest.cc
     # gets build off of c/b/privacy_sandbox/BUILD.gn.
     "//chrome/browser/privacy_sandbox:headers",
+
+    # TODO(413315837): Remove this dependency when privacy_sandbox_service_impl_unittest.cc
+    # gets modularized.
+    "//chrome/browser/privacy_sandbox:test_support",
     "//chrome/browser/profile_resetter:profile_reset_report_proto",
     "//chrome/browser/profiles:profile_util",
     "//chrome/browser/profiles:profiles_extra_parts",
@@ -11005,6 +11010,7 @@ if (!is_android && !is_chromeos_device) {
       # TODO(413315837): Remove this dependency when
       # c/b/ui/views/privacy_sandbox/privacy_sandbox_dialog_view_interactive_ui_test.cc
       # gets modularized.
+      "//chrome/browser/privacy_sandbox:test_support",
       "//chrome/browser/ui/privacy_sandbox",
 
       # TODO(413315837): Remove this dep when browsing_topics_settings_interactive_uitest.cc

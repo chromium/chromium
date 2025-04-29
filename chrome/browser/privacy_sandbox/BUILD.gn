@@ -80,5 +80,30 @@ group("browser_tests") {
     "notice:browser_tests",
   ]
 }
+
 # TODO(crbug.com/408801109) move other privacy_sandbox sources
 # from chrome/test/BUILD.gn here.
+
+source_set("test_support") {
+  testonly = true
+
+  if (!is_android) {
+    sources = [
+      "mock_privacy_sandbox_service.cc",
+      "mock_privacy_sandbox_service.h",
+      "mock_queue_manager.cc",
+      "mock_queue_manager.h",
+    ]
+
+    public_deps = [
+      ":headers",
+      "//chrome/test:test_support",
+      "//testing/gmock",
+    ]
+
+    deps = [
+      "//components/keyed_service/core",
+      "//content/public/browser",
+    ]
+  }
+}

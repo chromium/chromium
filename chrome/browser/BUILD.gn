@@ -9081,12 +9081,6 @@ static_library("test_support") {
       "hid/mock_hid_device_observer.h",
       "notifications/notification_test_util.cc",
       "notifications/notification_test_util.h",
-
-      # TODO(413315837): move the declarations below to c/b/privacy_sandbox/BUILD.gn.
-      "privacy_sandbox/mock_privacy_sandbox_service.cc",
-      "privacy_sandbox/mock_privacy_sandbox_service.h",
-      "privacy_sandbox/mock_queue_manager.cc",
-      "privacy_sandbox/mock_queue_manager.h",
       "privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations_mixin.cc",
       "privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations_mixin.h",
       "profile_resetter/profile_resetter_test_base.cc",
