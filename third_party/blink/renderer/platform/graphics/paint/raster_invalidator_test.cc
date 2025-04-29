@@ -5,12 +5,14 @@
 #include "third_party/blink/renderer/platform/graphics/paint/raster_invalidator.h"
 
 #include <utility>
+
 #include "base/functional/function_ref.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/graphics/paint/geometry_mapper.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_artifact.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/testing/paint_property_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/paint_test_configurations.h"
 #include "third_party/blink/renderer/platform/testing/test_paint_artifact.h"
@@ -1086,6 +1088,81 @@ TEST_P(RasterInvalidatorTest, EffectChangeOnCachedSubsequence) {
   EXPECT_THAT(TrackedRasterInvalidations(),
               ElementsAre(ChunkInvalidation(
                   chunks, 0, PaintInvalidationReason::kPaintProperty)));
+  FinishCycle(chunks);
+}
+
+static CompositorFilterOperations CreateReferenceFilterOperations(
+    const gfx::Rect& filter_bounds,
+    SkColor4f color) {
+  PaintFilter::CropRect paint_filter_rect(gfx::RectToSkRect(filter_bounds));
+  CompositorFilterOperations filter;
+  filter.AppendReferenceFilter(sk_make_sp<ColorFilterPaintFilter>(
+      cc::ColorFilter::MakeBlend(color, SkBlendMode::kSrc), nullptr,
+      &paint_filter_rect));
+  filter.SetReferenceBox(gfx::RectF(0, 0, 50, 50));
+  return filter;
+}
+
+TEST_P(RasterInvalidatorTest, EffectReferenceFilterChangeOnEmptyChunk) {
+  gfx::Rect filter_bounds(0, 0, 100, 100);
+  auto* e1 = CreateFilterEffect(
+      e0(), t0(), &c0(),
+      CreateReferenceFilterOperations(filter_bounds, SkColors::kBlue));
+  auto* clip_expander = CreatePixelMovingFilterClipExpander(c0(), *e1);
+
+  auto* e2 = CreateOpacityEffect(*e1, t0(), clip_expander, 0.5);
+
+  PropertyTreeState layer_state = DefaultPropertyTreeState();
+
+  // Note that this test intentionally creates a chunk where the effect node
+  // chain is opacity -> reference filter -> root where opacity and the
+  // reference filter effects both apply to the chunk. This is not a valid chain
+  // per the effect node hierarchy defined in object_paint_properties.h but
+  // helps future-proof the invalidation code against changes in the hierarchy.
+  PropertyTreeState chunk_state(t0(), *clip_expander, *e2);
+
+  auto& artifact = TestPaintArtifact()
+                       .Chunk(0)
+                       .Properties(chunk_state)
+                       .DrawableBounds(gfx::Rect(0, 0, 0, 0))
+                       .Build();
+  PaintChunkSubset chunks(artifact);
+
+  invalidator_->Generate(chunks, kDefaultLayerOffset, kDefaultLayerBounds,
+                         layer_state);
+  FinishCycle(chunks);
+
+  invalidator_->SetTracksRasterInvalidations(true);
+  // Modify the reference filter operations to use a different color. This
+  // should trigger a PaintPropertyChangeType::kChangedOnlyValues which should
+  // be treated as a raster invalidation even with an empty drawable bounds.
+  EffectPaintPropertyNode::State state{&t0(), &c0()};
+  CompositorFilterOperations filter =
+      CreateReferenceFilterOperations(filter_bounds, SkColors::kRed);
+  state.filter_info = std::make_unique<EffectPaintPropertyNode::FilterInfo>(
+      filter, filter.MapRect(gfx::ToEnclosingRect(filter.ReferenceBox())));
+  PaintPropertyChangeType change = e1->Update(*e1->Parent(), std::move(state));
+  ASSERT_TRUE(change == PaintPropertyChangeType::kChangedOnlyValues);
+
+  invalidator_->Generate(chunks, kDefaultLayerOffset, kDefaultLayerBounds,
+                         layer_state);
+  DisplayItemClientId client_id = chunks.begin()->id.client_id;
+  if (RuntimeEnabledFeatures::EmptyReferenceFilterInvalidationEnabled()) {
+    // The invalidation rect should have the size of the filter bounds and not
+    // the drawable bounds due to the filter's potential to be decomposed.
+    EXPECT_THAT(
+        TrackedRasterInvalidations(),
+        ElementsAre(RasterInvalidationInfo{
+            client_id, artifact.ClientDebugName(client_id),
+            gfx::Rect(-kDefaultLayerOffset.x(), -kDefaultLayerOffset.y(),
+                      filter_bounds.width(), filter_bounds.height()),
+            PaintInvalidationReason::kPaintProperty}));
+  } else {
+    // Should be no invalidations if the fix is disabled (previous buggy
+    // behavior).
+    EXPECT_TRUE(TrackedRasterInvalidations().empty());
+  }
+
   FinishCycle(chunks);
 }
 

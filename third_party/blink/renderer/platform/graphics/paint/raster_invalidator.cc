@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/display_item_raster_invalidator.h"
 #include "third_party/blink/renderer/platform/graphics/paint/geometry_mapper.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_artifact.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 
 namespace blink {
@@ -143,9 +144,31 @@ PaintInvalidationReason RasterInvalidator::ChunkPropertiesChanged(
 }
 
 static bool ShouldSkipForRasterInvalidation(
-    const PaintChunkIterator& chunk_it) {
-  if (!chunk_it->DrawsContent())
-    return true;
+    const PaintChunkIterator& chunk_it,
+    const EffectPaintPropertyNode* parent_effect) {
+  if (!chunk_it->DrawsContent()) {
+    if (RuntimeEnabledFeatures::EmptyReferenceFilterInvalidationEnabled()) {
+      // Skipping an empty chunk with a reference filter can lead to under
+      // invalidation when the effect is decomposed. To avoid that, we override
+      // the result of DrawsContent() in that scenario. Note that this isn't
+      // always optimal as a chunk that is effectively_invisible (near-zero
+      // opacity) will return false for DrawsContent() and this check will
+      // override it.
+      bool has_reference_filter = false;
+      for (const auto* node = &chunk_it->properties.Effect().Unalias();
+           node != parent_effect; node = node->UnaliasedParent()) {
+        if (node->HasReferenceFilter()) {
+          has_reference_filter = true;
+          break;
+        }
+      }
+      if (!has_reference_filter) {
+        return true;
+      }
+    } else {
+      return true;
+    }
+  }
 
   // Foreign layers take care of raster invalidation by themselves.
   if (DisplayItem::IsForeignLayerType(chunk_it->id.type))
@@ -189,8 +212,9 @@ void RasterInvalidator::GenerateRasterInvalidations(
   const float other_transform_tolerance = 1e-4f;
 
   for (auto it = new_chunks.begin(); it != new_chunks.end(); ++it) {
-    if (ShouldSkipForRasterInvalidation(it))
+    if (ShouldSkipForRasterInvalidation(it, &layer_state_.Effect())) {
       continue;
+    }
 
     const auto& new_chunk = *it;
     auto matched_old_index = MatchNewChunkToOldChunk(new_chunk, old_index);
@@ -390,7 +414,7 @@ void RasterInvalidator::PopulatePaintChunksInfo(
   DCHECK(chunks_info.empty());
   ChunkToLayerMapper mapper(layer_state, layer_offset);
   for (auto it = chunks.begin(); it != chunks.end(); ++it) {
-    if (ShouldSkipForRasterInvalidation(it)) {
+    if (ShouldSkipForRasterInvalidation(it, &layer_state.Effect())) {
       continue;
     }
     mapper.SwitchToChunk(*it);
