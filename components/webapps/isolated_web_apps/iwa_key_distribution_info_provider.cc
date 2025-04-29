@@ -14,6 +14,7 @@
 #include "base/no_destructor.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "components/webapps/isolated_web_apps/iwa_key_distribution_histograms.h"
@@ -22,6 +23,11 @@
 namespace web_app {
 
 namespace {
+
+// The maximum time to wait for downloaded component data after preloaded data
+// has loaded. After this duration, readiness is signaled via
+// OnMaybeDownloadedComponentDataReady().
+constexpr base::TimeDelta kDownloadedComponentDataWaitTime = base::Seconds(15);
 
 IwaKeyDistributionInfoProvider::KeyRotations& GetDevModeKeyRotationData() {
   static base::NoDestructor<IwaKeyDistributionInfoProvider::KeyRotations>
@@ -317,7 +323,7 @@ void IwaKeyDistributionInfoProvider::MaybeQueueComponentUpdate() {
         base::BindOnce(&IwaKeyDistributionInfoProvider::SignalOnDataReady,
                        base::Unretained(this),
                        /*is_preloaded=*/false),
-        base::Seconds(15));
+        kDownloadedComponentDataWaitTime);
   }
 }
 
