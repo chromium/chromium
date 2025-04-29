@@ -38,6 +38,12 @@ NSString* const kGuidKey = @"SendTabGuid";
 
 }  // namespace
 
+SendTabPushNotificationClient::SendTabPushNotificationClient(
+    ProfileIOS* profile)
+    : PushNotificationClient(PushNotificationClientId::kSendTab, profile) {
+  CHECK(IsIOSMultiProfilePushNotificationHandlingEnabled());
+}
+
 SendTabPushNotificationClient::SendTabPushNotificationClient()
     : PushNotificationClient(PushNotificationClientId::kSendTab,
                              PushNotificationClientScope::kPerProfile) {}
@@ -54,7 +60,7 @@ bool SendTabPushNotificationClient::CanHandleNotification(
 bool SendTabPushNotificationClient::HandleNotificationInteraction(
     UNNotificationResponse* response) {
   NSDictionary* user_info = response.notification.request.content.userInfo;
-  DCHECK(user_info);
+  CHECK(user_info);
 
   if (!CanHandleNotification(response.notification)) {
     return false;

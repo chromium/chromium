@@ -203,9 +203,19 @@ void PushNotificationClientManager::AddPerProfilePushNotificationClients() {
   // Add Send Tab To Self client if its push notifications are enabled.
   if (base::FeatureList::IsEnabled(
           send_tab_to_self::kSendTabToSelfIOSPushNotifications)) {
-    auto client = std::make_unique<SendTabPushNotificationClient>();
+    std::unique_ptr<SendTabPushNotificationClient> client;
+
+    if (IsIOSMultiProfilePushNotificationHandlingEnabled()) {
+      CHECK(profile_);
+
+      client = std::make_unique<SendTabPushNotificationClient>(profile_);
+    } else {
+      client = std::make_unique<SendTabPushNotificationClient>();
+    }
+
     CHECK_EQ(client->GetClientScope(),
              PushNotificationClientScope::kPerProfile);
+
     AddPushNotificationClient(std::move(client));
 
     // Additionally, add Reminder client if STTS reminders are also enabled.
