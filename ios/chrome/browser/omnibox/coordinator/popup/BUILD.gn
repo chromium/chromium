@@ -32,6 +32,7 @@ source_set("popup") {
     "//ios/chrome/browser/menu/ui_bundled",
     "//ios/chrome/browser/net/model:crurl",
     "//ios/chrome/browser/ntp/model:util",
+    "//ios/chrome/browser/omnibox/model",
     "//ios/chrome/browser/omnibox/model:omnibox_pedal_swift",
     "//ios/chrome/browser/omnibox/model:ui_bundled_interface",
     "//ios/chrome/browser/omnibox/public:features",

@@ -25,6 +25,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/location_bar/ui_bundled:constants",
     "//ios/chrome/browser/net/model:crurl",
     "//ios/chrome/browser/omnibox/coordinator/popup",
+    "//ios/chrome/browser/omnibox/model",
     "//ios/chrome/browser/omnibox/model:ui_bundled_interface",
     "//ios/chrome/browser/omnibox/public",
     "//ios/chrome/browser/omnibox/public:features",

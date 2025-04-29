@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_OMNIBOX_UI_BUNDLED_OMNIBOX_VIEW_IOS_H_
-#define IOS_CHROME_BROWSER_OMNIBOX_UI_BUNDLED_OMNIBOX_VIEW_IOS_H_
+#ifndef IOS_CHROME_BROWSER_OMNIBOX_MODEL_OMNIBOX_VIEW_IOS_H_
+#define IOS_CHROME_BROWSER_OMNIBOX_MODEL_OMNIBOX_VIEW_IOS_H_
 
 #import <UIKit/UIKit.h>
 
@@ -15,7 +15,6 @@
 #import "components/omnibox/browser/omnibox_view.h"
 
 struct AutocompleteMatch;
-class GURL;
 class OmniboxClient;
 @protocol OmniboxCommands;
 @protocol OmniboxFocusDelegate;
@@ -125,4 +124,4 @@ class OmniboxViewIOS : public OmniboxView {
   base::WeakPtrFactory<OmniboxViewIOS> weak_ptr_factory_{this};
 };
 
-#endif  // IOS_CHROME_BROWSER_OMNIBOX_UI_BUNDLED_OMNIBOX_VIEW_IOS_H_
+#endif  // IOS_CHROME_BROWSER_OMNIBOX_MODEL_OMNIBOX_VIEW_IOS_H_

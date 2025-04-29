@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_OMNIBOX_UI_BUNDLED_POPUP_OMNIBOX_POPUP_VIEW_IOS_H_
-#define IOS_CHROME_BROWSER_OMNIBOX_UI_BUNDLED_POPUP_OMNIBOX_POPUP_VIEW_IOS_H_
+#ifndef IOS_CHROME_BROWSER_OMNIBOX_MODEL_OMNIBOX_POPUP_VIEW_IOS_H_
+#define IOS_CHROME_BROWSER_OMNIBOX_MODEL_OMNIBOX_POPUP_VIEW_IOS_H_
 
 #import <UIKit/UIKit.h>
 
@@ -11,9 +11,7 @@
 #import "components/omnibox/browser/omnibox_popup_view.h"
 
 @class OmniboxAutocompleteController;
-@class OmniboxPopupMediator;
 class OmniboxController;
-struct AutocompleteMatch;
 
 // iOS implementation of OmniboxPopupView.
 class OmniboxPopupViewIOS : public OmniboxPopupView {
@@ -36,4 +34,4 @@ class OmniboxPopupViewIOS : public OmniboxPopupView {
   __weak OmniboxAutocompleteController* omnibox_autocomplete_controller_;
 };
 
-#endif  // IOS_CHROME_BROWSER_OMNIBOX_UI_BUNDLED_POPUP_OMNIBOX_POPUP_VIEW_IOS_H_
+#endif  // IOS_CHROME_BROWSER_OMNIBOX_MODEL_OMNIBOX_POPUP_VIEW_IOS_H_
