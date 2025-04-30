@@ -219,13 +219,16 @@ void PushNotificationClientManager::AddPerProfilePushNotificationClients() {
     AddPushNotificationClient(std::move(client));
 
     // Additionally, add Reminder client if STTS reminders are also enabled.
-    if (IsSendTabIOSPushNotificationsEnabledWithTabReminders()) {
-      ProfileManagerIOS* profile_manager =
-          GetApplicationContext()->GetProfileManager();
-      auto reminder_client =
-          std::make_unique<ReminderNotificationClient>(profile_manager);
+    if (IsSendTabIOSPushNotificationsEnabledWithTabReminders() &&
+        IsIOSMultiProfilePushNotificationHandlingEnabled()) {
+      CHECK(profile_);
+
+      std::unique_ptr<ReminderNotificationClient> reminder_client =
+          std::make_unique<ReminderNotificationClient>(profile_);
+
       CHECK_EQ(reminder_client->GetClientScope(),
                PushNotificationClientScope::kPerProfile);
+
       AddPushNotificationClient(std::move(reminder_client));
     }
   }
