@@ -4133,11 +4133,12 @@ TEST_F(
   EXPECT_EQ(node_ids.size(), 1u);
 
   // Storing as a separate variable so we don't need to cast every time.
-  int segment1_length = (int)segment1.length();
-  int segment2_length = (int)segment2.length();
-  int segment3_length = (int)segment3.length();
-  int segment4_partial_length = (int)segment4.length();
-  int segment4_full_length = (int)segment4.length() + (int)node2_text.length();
+  int segment1_length = static_cast<int>(segment1.length());
+  int segment2_length = static_cast<int>(segment2.length());
+  int segment3_length = static_cast<int>(segment3.length());
+  int segment4_partial_length = static_cast<int>(segment4.length());
+  int segment4_full_length =
+      static_cast<int>(segment4.length() + node2_text.length());
 
   // For the first node in the first segment, the returned index should equal
   // the passed parameter.
