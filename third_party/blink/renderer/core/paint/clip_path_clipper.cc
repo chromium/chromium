@@ -32,7 +32,9 @@
 #include "third_party/blink/renderer/platform/graphics/paint/paint_controller.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record_builder.h"
 #include "third_party/blink/renderer/platform/graphics/paint/scoped_paint_chunk_properties.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
+#include "third_party/skia/include/pathops/SkPathOps.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
@@ -580,10 +582,11 @@ std::optional<Path> ClipPathClipper::PathBasedClipInternal(
   if (!resource_clipper) {
     return std::nullopt;
   }
-  // If the current clip-path gets clipped itself, we have to fallback to
-  // masking.
-  if (resource_clipper->StyleRef().HasClipPath()) {
-    return std::nullopt;
+  if (!RuntimeEnabledFeatures::ClipPathNestedRasterOptimizationEnabled()) {
+    // If the current clip-path gets clipped itself, we fallback to masking.
+    if (resource_clipper->StyleRef().HasClipPath()) {
+      return std::nullopt;
+    }
   }
   std::optional<Path> path = resource_clipper->AsPath();
   if (!path) {
@@ -595,6 +598,30 @@ std::optional<Path> ClipPathClipper::PathBasedClipInternal(
                              reference_box_object);
   if (!clip_transform.IsIdentity()) {
     path = PathBuilder(*path).Transform(clip_transform).Finalize();
+  }
+  if (RuntimeEnabledFeatures::ClipPathNestedRasterOptimizationEnabled()) {
+    if (resource_clipper->StyleRef().HasClipPath()) {
+      std::optional<Path> nested_clip = PathBasedClipInternal(
+          *resource_clipper, reference_box, reference_box_object, clip_offset);
+      if (!nested_clip) {
+        return std::nullopt;
+      }
+      // Avoid high-complexities since Skia Path ops can have O(N^2) behavior
+      // (skbug.com/350478860).
+      // TODO: Consider a different approach to avoid combining paths.
+      constexpr int kMaxVerbs = 500;
+      if (path->GetSkPath().countVerbs() +
+              nested_clip->GetSkPath().countVerbs() >
+          kMaxVerbs) {
+        return std::nullopt;
+      }
+      SkPath clipped_path;
+      if (!Op(path->GetSkPath(), nested_clip->GetSkPath(), kIntersect_SkPathOp,
+              &clipped_path)) {
+        return std::nullopt;
+      }
+      path = Path(clipped_path);
+    }
   }
   return path;
 }
