@@ -17,6 +17,24 @@
 #import "net/base/apple/url_conversions.h"
 #import "url/gurl.h"
 
+namespace {
+
+// Return whether the navigation should be handled if it is a share URL.
+bool ShouldHandleShareURLNavigation(
+    web::WebStatePolicyDecider::RequestInfo request_info) {
+  if (!request_info.target_frame_is_main) {
+    return false;
+  }
+
+  if (request_info.is_user_initiated && !request_info.user_tapped_recently) {
+    return false;
+  }
+
+  return true;
+}
+
+}  // namespace
+
 DataSharingTabHelper::DataSharingTabHelper(web::WebState* web_state)
     : web::WebStatePolicyDecider(web_state) {}
 
@@ -54,15 +72,15 @@ void DataSharingTabHelper::ShouldAllowRequest(
 
     CHECK(current_browser, base::NotFatalUntil::M138);
 
-    // TODO(crbug.com/409825122): Avoid calling
-    // HandleShareURLNavigationIntercepted for some navigation cases.
-    auto context =
-        std::make_unique<data_sharing::IOSShareURLInterceptionContext>(
-            current_browser);
-    collaboration_service->HandleShareURLNavigationIntercepted(
-        url, std::move(context),
-        collaboration::GetEntryPointFromPageTransition(
-            request_info.transition_type));
+    if (ShouldHandleShareURLNavigation(request_info)) {
+      auto context =
+          std::make_unique<data_sharing::IOSShareURLInterceptionContext>(
+              current_browser);
+      collaboration_service->HandleShareURLNavigationIntercepted(
+          url, std::move(context),
+          collaboration::GetEntryPointFromPageTransition(
+              request_info.transition_type));
+    }
     std::move(callback).Run(PolicyDecision::Cancel());
 
     // Close the tab if the url interception ends with an empty page.
