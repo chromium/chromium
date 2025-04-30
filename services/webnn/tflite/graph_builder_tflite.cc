@@ -1460,6 +1460,73 @@ GraphBuilderTflite::CanFuseQuantizeAndGetOutput(const mojom::Conv2d& conv2d) {
 }
 
 std::optional<GraphBuilderTflite::TensorInfo>
+GraphBuilderTflite::CanFuseQuantizeAndGetOutput(const mojom::Concat& concat) {
+  std::optional<OperandDataType> first_input_quantized_type;
+  if (!std::ranges::all_of(
+          concat.input_operand_ids, [&](uint64_t input_operand_id) {
+            if (!IsDequantizeOutput(input_operand_id)) {
+              return false;
+            }
+            const mojom::DequantizeLinear& input_dequantize =
+                GetDequantizeOp(input_operand_id);
+            if (!IsInts8AndScalarScale(input_dequantize)) {
+              return false;
+            }
+            const OperandDataType quantized_type =
+                GetOperand(input_dequantize.input_operand_id)
+                    .descriptor.data_type();
+            if (!first_input_quantized_type) {
+              first_input_quantized_type = quantized_type;
+            } else {
+              return *first_input_quantized_type == quantized_type;
+            }
+            return true;
+          })) {
+    return std::nullopt;
+  }
+  CHECK(first_input_quantized_type.has_value());
+
+  std::optional<size_t> next_op =
+      IsNextOpQuantize(concat.output_operand_id, {*first_input_quantized_type});
+  if (!next_op) {
+    return std::nullopt;
+  }
+  const mojom::QuantizeLinear& output_quantize = GetQuantizeOp(*next_op);
+
+  // TODO(crbug.com/413083273): Consider the restriction in GPU delegate.
+  // For XNNPack delegate and the kernel of concatenation, the scale and zero
+  // point of output tensor must be the same as inputs.
+  // https://source.chromium.org/chromium/chromium/src/+/main:third_party/tflite/src/tensorflow/lite/delegates/xnnpack/xnnpack_delegate.cc;l=3443;drc=b6620a02fa498df5297e53241b54a31f488ca440
+  // https://source.chromium.org/chromium/chromium/src/+/main:third_party/tflite/src/tensorflow/lite/kernels/concatenation.cc;l=217;drc=87b24bc831966733aa45ad8d1a3ea00d3950b245
+  base::span<const float> output_scale_values =
+      GetConstantValue<float>(output_quantize.scale_operand_id);
+  base::FixedArray<int64_t> output_zero_point_values =
+      GetConstantInt64Value(output_quantize.zero_point_operand_id);
+  if (output_scale_values.size() != 1 || output_zero_point_values.size() != 1) {
+    return std::nullopt;
+  }
+  for (auto input_operand_id : concat.input_operand_ids) {
+    const mojom::DequantizeLinear& input_dequantize =
+        GetDequantizeOp(input_operand_id);
+    base::span<const float> input_scale_values =
+        GetConstantValue<float>(input_dequantize.scale_operand_id);
+    CHECK_EQ(input_scale_values.size(), 1u);
+    if (input_scale_values[0] != output_scale_values[0]) {
+      return std::nullopt;
+    }
+
+    base::FixedArray<int64_t> input_zero_point_values =
+        GetConstantInt64Value(input_dequantize.zero_point_operand_id);
+    CHECK_EQ(input_zero_point_values.size(), 1u);
+    if (output_zero_point_values[0] != input_zero_point_values[0]) {
+      return std::nullopt;
+    }
+  }
+
+  return TrySerializeQuantizedOutput(*next_op);
+}
+
+std::optional<GraphBuilderTflite::TensorInfo>
 GraphBuilderTflite::CanFuseQuantizeAndGetOutput(
     const mojom::ElementWiseBinary& binary) {
   if (!IsDequantizeOutput(binary.lhs_operand_id) ||
@@ -2768,19 +2835,32 @@ auto GraphBuilderTflite::SerializeConcat(const mojom::Concat& concat)
             GetOperand(input_operand_id).descriptor);
       }));
 
+  std::optional<TensorInfo> quantized_output =
+      CanFuseQuantizeAndGetOutput(concat);
   // TODO(crbug.com/369649350): Support float16 without dequantize operator.
   base::FixedArray<int32_t> operator_inputs_index(
       concat.input_operand_ids.size());
   for (size_t i = 0; i < concat.input_operand_ids.size(); ++i) {
-    ASSIGN_OR_RETURN(const TensorInfo& input_tensor_info,
-                     SerializeInputTensorInfo(concat.input_operand_ids[i]));
+    ASSIGN_OR_RETURN(
+        const TensorInfo& input_tensor_info,
+        SerializeInputTensorInfo(
+            concat.input_operand_ids[i],
+            /*quantize_params=*/0,
+            /*operation_supports_float16=*/false,
+            /*fuse_dequantize_quantize=*/quantized_output.has_value()));
     operator_inputs_index[i] = input_tensor_info.index;
   }
-  ASSIGN_OR_RETURN(const TensorInfo& output_tensor_info,
-                   SerializeOutputTensorInfo(concat.output_operand_id));
+  int32_t output_tensor_index;
+  if (quantized_output) {
+    output_tensor_index = quantized_output->index;
+  } else {
+    ASSIGN_OR_RETURN(const TensorInfo& output_tensor_info,
+                     SerializeOutputTensorInfo(concat.output_operand_id));
+    output_tensor_index = output_tensor_info.index;
+  }
 
-  return SerializeConcatOperation(operator_inputs_index,
-                                  output_tensor_info.index, concat.axis);
+  return SerializeConcatOperation(operator_inputs_index, output_tensor_index,
+                                  concat.axis);
 }
 
 auto GraphBuilderTflite::SerializeCumulativeSum(

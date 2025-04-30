@@ -703,6 +703,10 @@ function validateContextSupportsGraph(context, graph) {
             assert(
                 typeof inputName === 'string',
                 `the inputs' item of ${operatorName} should be a string.`);
+            if (!graph.inputs[inputName]) {
+              // intermediate input
+              continue;
+            }
             validateInputOrConstantDataType(
                 inputName, operatorSupportLimits, 'inputs');
           }
@@ -788,7 +792,21 @@ const buildAndExecuteGraph = async (context, builder, graphResources) => {
     for (const argument of operator.arguments) {
       for (const argumentName in argument) {
         if (argumentName !== 'options') {
-          if (graphInputs.hasOwnProperty(argument[argumentName])) {
+          if (operator.name === 'concat' && argumentName === 'inputs') {
+            const concatInputs = [];
+            for (const inputName of argument[argumentName]) {
+              if (graphInputs.hasOwnProperty(inputName)) {
+                const operandName = inputName;
+                const operand = createOperand(
+                    context, builder, operandName, graphInputs[operandName]);
+                concatInputs.push(operand);
+              } else if (intermediateOperands.hasOwnProperty(inputName)) {
+                concatInputs.push(intermediateOperands[inputName]);
+              }
+              // concatInputs.push(intermediateOperands[inputName]);
+            }
+            argumentArray.push(concatInputs);
+          } else if (graphInputs.hasOwnProperty(argument[argumentName])) {
             const operandName = argument[argumentName];
             const operand = createOperand(
                 context, builder, operandName, graphInputs[operandName]);

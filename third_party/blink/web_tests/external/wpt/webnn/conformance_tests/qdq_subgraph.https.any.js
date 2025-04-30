@@ -810,6 +810,120 @@ const subgraphTests = [
       }
     }
   },
+  {
+    'name': 'quantized concat',
+    'graph': {
+      'inputs': {
+        'inputA': {
+          'data': [
+            -0.990639865398407, -0.576785683631897, -0.32276400923728943,
+            -0.44735023379325867, -0.11028251051902771, -0.5945112705230713,
+          ],
+          'descriptor': {shape: [3, 2], dataType: 'float32'},
+          'constant': false
+        },
+        'inputAScale': {
+          'data': [0.003921568859368563],
+          'descriptor': {shape: [1], dataType: 'float32'},
+          'constant': true
+        },
+        'inputAZeroPoint': {
+          'data': [127],
+          'descriptor': {shape: [1], dataType: 'int8'},
+          'constant': true
+        },
+        'inputB': {
+          'data': [
+            2, 27, 38,
+          ],
+          'descriptor': {shape: [3, 1], dataType: 'int8'},
+          'constant': true
+        },
+        'inputBScale': {
+          'data': [0.003921568859368563],
+          'descriptor': {shape: [1], dataType: 'float32'},
+          'constant': true
+        },
+        'inputBZeroPoint': {
+          'data': [127],
+          'descriptor': {shape: [1], dataType: 'int8'},
+          'constant': true
+        },
+        'outputScale': {
+          'data': [0.003921568859368563],
+          'descriptor': {shape: [1], dataType: 'float32'},
+          'constant': true
+        },
+        'outputZeroPoint': {
+          'data': [127],
+          'descriptor': {shape: [1], dataType: 'int8'},
+          'constant': true
+        },
+      },
+      'operators': [
+        {
+          'name': 'quantizeLinear',
+          'arguments': [
+            {'input': 'inputA'},
+            {'scale': 'inputAScale', 'zeroPoint': 'inputAZeroPoint'}
+          ],
+          'outputs': 'quantizedInputA'
+        },
+        {
+          'name': 'dequantizeLinear',
+          'arguments': [
+            {'input': 'quantizedInputA'},
+            {'scale': 'inputAScale', 'zeroPoint': 'inputAZeroPoint'}
+          ],
+          'outputs': 'dequantizedInputA'
+        },
+        {
+          'name': 'dequantizeLinear',
+          'arguments': [
+            {'input': 'inputB'},
+            {'scale': 'inputBScale', 'zeroPoint': 'inputBZeroPoint'}
+          ],
+          'outputs': 'dequantizedInputB'
+        },
+        {
+          'name': 'concat',
+          'arguments': [
+            {
+              'inputs': ['dequantizedInputA', 'dequantizedInputB']
+            },
+            {'axis': 1}
+          ],
+          'outputs': 'concatOutput'
+        },
+        {
+          'name': 'quantizeLinear',
+          'arguments': [
+            {'input': 'concatOutput'},
+            {'scale': 'outputScale', 'zeroPoint': 'outputZeroPoint'}
+          ],
+          'outputs': 'quantizedConcatOutput'
+        },
+        {
+          'name': 'dequantizeLinear',
+          'arguments': [
+            {'input': 'quantizedConcatOutput'},
+            {'scale': 'outputScale', 'zeroPoint': 'outputZeroPoint'}
+          ],
+          'outputs': 'output'
+        }
+      ],
+      'expectedOutputs': {
+        'output': {
+          'data': [
+            -0.9921569228172302, -0.5764706134796143, -0.4901961088180542,
+            -0.32156863808631897, -0.44705885648727417, -0.3921568989753723,
+            -0.1098039299249649, -0.5960784554481506, -0.3490196168422699,
+          ],
+          'descriptor': {shape: [3, 3], dataType: 'float32'}
+        }
+      }
+    }
+  },
 ];
 
 if (navigator.ml) {
