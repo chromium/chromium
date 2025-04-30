@@ -126,8 +126,7 @@ TEST_F(TabCollectionIteratorTest, IteratorWithMixedTabsAndCollections) {
   std::unique_ptr<tabs::SplitTabCollection> split_collection =
       std::make_unique<tabs::SplitTabCollection>(
           split_tabs::SplitTabId::GenerateNew(),
-          split_tabs::SplitTabVisualData(
-              split_tabs::SplitTabLayout::kHorizontal, 0.5));
+          split_tabs::SplitTabVisualData());
   split_collection->AddTab(
       std::make_unique<tabs::TabModel>(MakeWebContents(), GetTabStripModel()),
       0);
