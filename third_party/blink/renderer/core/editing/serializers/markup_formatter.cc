@@ -172,9 +172,17 @@ void MarkupFormatter::AppendStartMarkup(StringBuilder& result,
       break;
     case Node::kElementNode:
       NOTREACHED();
-    case Node::kCdataSectionNode:
-      AppendCDATASection(result, To<CDATASection>(node).data());
+    case Node::kCdataSectionNode: {
+      auto& cdata = To<CDATASection>(node);
+      if (RuntimeEnabledFeatures::
+              SerializeCdataAsTextInHTMLDocumentsEnabled() &&
+          SerializeAsHTML()) {
+        AppendText(result, cdata);
+      } else {
+        AppendCDATASection(result, cdata.data());
+      }
       break;
+    }
     case Node::kAttributeNode:
       NOTREACHED();
   }

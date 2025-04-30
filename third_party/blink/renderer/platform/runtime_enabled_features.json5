@@ -4240,6 +4240,12 @@
       base_feature: "WebSerialAPI",
     },
     {
+      // Kill-switch for crbug.com/40791925.
+      // Added in M138, and it can be removed in M140.
+      name: "SerializeCdataAsTextInHTMLDocuments",
+      status: "stable",
+    },
+    {
       name: "SerializeViewTransitionStateInSPA",
     },
     {
