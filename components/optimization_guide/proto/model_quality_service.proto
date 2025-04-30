@@ -20,6 +20,7 @@ import "components/optimization_guide/proto/features/model_prototyping.proto";
 import "components/optimization_guide/proto/features/notification_content_detection.proto";
 import "components/optimization_guide/proto/features/password_change_submission.proto";
 import "components/optimization_guide/proto/features/permissions_ai.proto";
+import "components/optimization_guide/proto/features/preferences_generation.proto";
 import "components/optimization_guide/proto/features/product_specifications.proto";
 import "components/optimization_guide/proto/features/scam_detection.proto";
 import "components/optimization_guide/proto/features/tab_organization.proto";
@@ -80,6 +81,8 @@ message LogAiDataRequest {
     ZeroStateSuggestionsLoggingData zero_state_suggestions = 22;
 
     WritingAssistanceApiLoggingData writing_assistance_api = 23;
+
+    PreferencesGenerationLoggingData preferences_generation = 24;
 
     DefaultLoggingData default = 1000;
   }
