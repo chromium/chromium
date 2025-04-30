@@ -166,6 +166,8 @@ class ApiTests extends ApiTestFixtureBase {
     await this.advanceToNextStep(allNames);
   }
 
+  async testRequestHeader() {}
+
   async testCreateTab() {
     assertTrue(!!this.host.createTab);
     // Open a tab pointing to test.html.

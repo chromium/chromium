@@ -10,9 +10,12 @@
 
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/containers/to_vector.h"
+#include "base/functional/bind.h"
 #include "base/json/json_writer.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/test/bind.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -139,6 +142,9 @@ class GlicApiTest : public test::InteractiveGlicTest {
     embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
         &GlicApiTest::SorryPageRequestHandler, base::Unretained(this)));
 
+    embedded_test_server()->RegisterRequestMonitor(base::BindRepeating(
+        &GlicApiTest::OnEmbeddedTestServerHttpRequest, base::Unretained(this)));
+
     add_mock_glic_query_param(
         "test",
         ::testing::UnitTest::GetInstance()->current_test_info()->name());
@@ -235,7 +241,7 @@ class GlicApiTest : public test::InteractiveGlicTest {
 
   const std::optional<base::Value>& step_data() const { return step_data_; }
 
- private:
+ protected:
   // Just an error page at a specific /sorry/... URL.
   std::unique_ptr<net::test_server::HttpResponse> SorryPageRequestHandler(
       const net::test_server::HttpRequest& request) {
@@ -269,6 +275,13 @@ class GlicApiTest : public test::InteractiveGlicTest {
     ASSERT_THAT(result.ExtractString(), testing::Eq("pass"));
   }
 
+  // Records all requests to the embedded test server.
+  void OnEmbeddedTestServerHttpRequest(
+      const net::test_server::HttpRequest& request) {
+    embedded_test_server_requests_.push_back(request);
+  }
+
+  std::vector<net::test_server::HttpRequest> embedded_test_server_requests_;
   bool next_step_required_ = false;
   std::optional<base::Value> step_data_;
   base::test::ScopedFeatureList features_;
@@ -546,6 +559,21 @@ IN_PROC_BROWSER_TEST_F(GlicApiTestWithFastTimeout, testInitializeTimesOut) {
   });
   listener.WaitForWebUiState(mojom::WebUiState::kError);
 #endif
+}
+
+// Connect the client, and check that the special request header is sent.
+IN_PROC_BROWSER_TEST_F(GlicApiTest, testRequestHeader) {
+  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
+                                 GlicInstrumentMode::kHostAndContents));
+  ExecuteJsTest();
+
+  ASSERT_THAT(base::ToVector(embedded_test_server_requests_,
+                             [](const auto& request) {
+                               return std::make_pair(
+                                   request.GetURL().path(),
+                                   request.headers.contains("X-Glic"));
+                             }),
+              testing::Contains(testing::Pair(GetGuestURL().path(), true)));
 }
 
 IN_PROC_BROWSER_TEST_F(GlicApiTest, testCreateTab) {

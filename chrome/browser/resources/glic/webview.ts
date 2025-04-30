@@ -4,6 +4,7 @@
 
 import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
+import type {ChromeEvent} from '/tools/typescript/definitions/chrome_event.js';
 
 import type {BrowserProxyImpl} from './browser_proxy.js';
 import type {Subscriber} from './glic_api/glic_api.js';
@@ -68,6 +69,9 @@ export class WebviewPersistentState {
   }
 }
 
+type ChromeEventFunctionType<T> =
+    T extends ChromeEvent<infer ListenerType>? ListenerType : never;
+
 // Creates and manages the <webview> element, and the GlicApiHost which
 // communicates with it.
 export class WebviewController {
@@ -100,6 +104,17 @@ export class WebviewController {
         ['blocking']);
     this.onDestroy.push(() => {
       this.webview.request.onBeforeRequest.removeListener(onBeforeRequest);
+    });
+    const onBeforeSendHeaders = this.onBeforeSendHeaders.bind(this);
+    this.webview.request.onBeforeSendHeaders.addListener(
+        onBeforeSendHeaders, {
+          types: [ResourceType.MAIN_FRAME],
+          urls: ['<all_urls>'],
+        },
+        ['blocking', 'requestHeaders']);
+    this.onDestroy.push(() => {
+      this.webview.request.onBeforeSendHeaders.removeListener(
+          onBeforeSendHeaders);
     });
 
     this.webview.id = 'guestFrame';
@@ -257,13 +272,31 @@ export class WebviewController {
     event.stopPropagation();
   }
 
-  private onBeforeRequest(details: any) {
-    // Allow subframe requests.
-    if (details.frameId !== 0) {
-      return {};
-    }
-    return {cancel: !urlMatchesAllowedOrigin(details.url)};
-  }
+  private onBeforeRequest:
+      ChromeEventFunctionType<typeof chrome.webRequest.onBeforeRequest> =
+          (details) => {
+            // Allow subframe requests.
+            if (details.frameId !== 0) {
+              return {};
+            }
+            return {cancel: !urlMatchesAllowedOrigin(details.url)};
+          };
+
+  // Attaches the X-Glic header to all main-frame requests.
+  private onBeforeSendHeaders:
+      ChromeEventFunctionType<typeof chrome.webRequest.onBeforeSendHeaders> =
+          (details) => {
+            // Ignore subframe requests.
+            if (details.frameId !== 0) {
+              return {};
+            }
+            const requestHeaders = details.requestHeaders || [];
+            requestHeaders.push({
+              name: 'X-Glic',
+              value: '1',
+            });
+            return {requestHeaders};
+          };
 }
 
 /**
