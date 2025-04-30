@@ -22654,23 +22654,6 @@
             ]
         }
     ],
-    "SyncEnableBookmarksInTransportMode": [
-        {
-            "platforms": [
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SyncEnableBookmarksInTransportMode"
-                    ]
-                }
-            ]
-        }
-    ],
     "SyncIncreaseNudgeDelayForSingleClient": [
         {
             "platforms": [
@@ -23618,6 +23601,23 @@
                     "name": "Enabled",
                     "enable_features": [
                         "UnlockDatabaseOnClose"
+                    ]
+                }
+            ]
+        }
+    ],
+    "UnoDesktopBookmarks": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SyncEnableBookmarksInTransportMode"
                     ]
                 }
             ]
