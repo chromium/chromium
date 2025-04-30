@@ -21,6 +21,7 @@ source_set("common") {
     "//remoting/base:authorization",
     "//remoting/codec:decoder",
     "//remoting/proto",
+    "//remoting/proto/remoting/v1:host_info_proto",
     "//remoting/proto/remoting/v1:remote_support_host_messages",
     "//remoting/protocol",
     "//remoting/signaling",
