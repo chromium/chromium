@@ -437,13 +437,18 @@ android_library("cronet_impl_common_java") {
     _generated_impl_version_java,
   ]
 
+  # Note: This target should not depend on //base:base_java as base
+  # is only bundled within the native_impl jar. Which means that
+  # if this target depends on base then we'll have to export the
+  # native_impl jar to all users of the fallback impl too.
+  assert_no_deps = [ "//base:base_java" ]
+
   # Adding deps here won't include those deps in the cronet_impl_common_java.jar.
   # Please add to cronet_impl_common_java_deps_to_package instead.
   deps = [
     ":cronet_api_java",
     ":cronet_shared_java",
     ":impl_version",
-    "//base:base_java",
     "//third_party/androidx:androidx_annotation_annotation_experimental_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
