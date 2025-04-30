@@ -694,20 +694,21 @@ void VideoCaptureImpl::SuspendCapture(bool suspend) {
 void VideoCaptureImpl::StartCapture(
     int client_id,
     const media::VideoCaptureParams& params,
-    const VideoCaptureStateUpdateCB& state_update_cb,
-    const VideoCaptureDeliverFrameCB& deliver_frame_cb,
-    const VideoCaptureSubCaptureTargetVersionCB& sub_capture_target_version_cb,
-    const VideoCaptureNotifyFrameDroppedCB& frame_dropped_cb) {
+    VideoCaptureCallbacks video_capture_callbacks) {
   DVLOG(1) << __func__ << " |device_id_| = " << device_id_;
   DCHECK_CALLED_ON_VALID_THREAD(io_thread_checker_);
   OnLog("VideoCaptureImpl got request to start capture.");
 
   ClientInfo client_info;
   client_info.params = params;
-  client_info.state_update_cb = state_update_cb;
-  client_info.deliver_frame_cb = deliver_frame_cb;
-  client_info.sub_capture_target_version_cb = sub_capture_target_version_cb;
-  client_info.frame_dropped_cb = frame_dropped_cb;
+  client_info.state_update_cb =
+      std::move(video_capture_callbacks.state_update_cb);
+  client_info.deliver_frame_cb =
+      std::move(video_capture_callbacks.deliver_frame_cb);
+  client_info.sub_capture_target_version_cb =
+      std::move(video_capture_callbacks.sub_capture_target_version_cb);
+  client_info.frame_dropped_cb =
+      std::move(video_capture_callbacks.frame_dropped_cb);
 
   switch (state_) {
     case VIDEO_CAPTURE_STATE_STARTING:
@@ -739,20 +740,22 @@ void VideoCaptureImpl::StartCapture(
       return;
     case VIDEO_CAPTURE_STATE_ERROR:
       OnLog("VideoCaptureImpl is in error state.");
-      state_update_cb.Run(blink::VIDEO_CAPTURE_STATE_ERROR);
+      client_info.state_update_cb.Run(blink::VIDEO_CAPTURE_STATE_ERROR);
       return;
     case VIDEO_CAPTURE_STATE_ERROR_SYSTEM_PERMISSIONS_DENIED:
       OnLog("VideoCaptureImpl is in system permissions error state.");
-      state_update_cb.Run(
+      client_info.state_update_cb.Run(
           blink::VIDEO_CAPTURE_STATE_ERROR_SYSTEM_PERMISSIONS_DENIED);
       return;
     case VIDEO_CAPTURE_STATE_ERROR_CAMERA_BUSY:
       OnLog("VideoCaptureImpl is in camera busy error state.");
-      state_update_cb.Run(blink::VIDEO_CAPTURE_STATE_ERROR_CAMERA_BUSY);
+      client_info.state_update_cb.Run(
+          blink::VIDEO_CAPTURE_STATE_ERROR_CAMERA_BUSY);
       return;
     case VIDEO_CAPTURE_STATE_ERROR_START_TIMEOUT:
       OnLog("VideoCaptureImpl is in timeout error state.");
-      state_update_cb.Run(blink::VIDEO_CAPTURE_STATE_ERROR_START_TIMEOUT);
+      client_info.state_update_cb.Run(
+          blink::VIDEO_CAPTURE_STATE_ERROR_START_TIMEOUT);
       return;
     case VIDEO_CAPTURE_STATE_PAUSED:
     case VIDEO_CAPTURE_STATE_RESUMED:

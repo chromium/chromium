@@ -15,6 +15,7 @@
 #include "third_party/blink/public/platform/modules/video_capture/web_video_capture_impl_manager.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_string.h"
+#include "third_party/blink/public/web/modules/mediastream/media_stream_video_source.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
@@ -44,23 +45,26 @@ media::VideoCaptureFormats LocalVideoCapturerSource::GetPreferredFormats() {
 
 void LocalVideoCapturerSource::StartCapture(
     const media::VideoCaptureParams& params,
-    const VideoCaptureDeliverFrameCB& new_frame_callback,
-    const VideoCaptureSubCaptureTargetVersionCB&
-        sub_capture_target_version_callback,
-    const VideoCaptureNotifyFrameDroppedCB& frame_dropped_callback,
-    const RunningCallback& running_callback) {
+    VideoCaptureCallbacks video_capture_callbacks,
+    VideoCaptureRunningCallbackCB running_callback) {
   DCHECK(params.requested_format.IsValid());
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  running_callback_ = running_callback;
+  running_callback_ = std::move(running_callback);
 
+  // Combine all callbacks into MediaStreamVideoSourceCallbacks structure
+  VideoCaptureCallbacks new_video_capture_callbacks;
+  new_video_capture_callbacks.state_update_cb = base::BindPostTask(
+      task_runner_, ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
+                        &LocalVideoCapturerSource::OnStateUpdate,
+                        weak_factory_.GetWeakPtr())));
+  new_video_capture_callbacks.deliver_frame_cb =
+      std::move(video_capture_callbacks.deliver_frame_cb);
+  new_video_capture_callbacks.sub_capture_target_version_cb =
+      std::move(video_capture_callbacks.sub_capture_target_version_cb);
+  new_video_capture_callbacks.frame_dropped_cb =
+      std::move(video_capture_callbacks.frame_dropped_cb);
   stop_capture_cb_ = manager_->StartCapture(
-      session_id_, params,
-      base::BindPostTask(
-          task_runner_, ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
-                            &LocalVideoCapturerSource::OnStateUpdate,
-                            weak_factory_.GetWeakPtr()))),
-      new_frame_callback, sub_capture_target_version_callback,
-      frame_dropped_callback);
+      session_id_, params, std::move(new_video_capture_callbacks));
 }
 
 media::VideoCaptureFeedbackCB LocalVideoCapturerSource::GetFeedbackCallback()
@@ -103,19 +107,19 @@ void LocalVideoCapturerSource::OnStateUpdate(blink::VideoCaptureState state) {
     OnLog("LocalVideoCapturerSource::OnStateUpdate discarding state update.");
     return;
   }
-  RunState run_state;
+  VideoCaptureRunState run_state;
   switch (state) {
     case VIDEO_CAPTURE_STATE_ERROR_SYSTEM_PERMISSIONS_DENIED:
-      run_state = RunState::kSystemPermissionsError;
+      run_state = VideoCaptureRunState::kSystemPermissionsError;
       break;
     case VIDEO_CAPTURE_STATE_ERROR_CAMERA_BUSY:
-      run_state = RunState::kCameraBusyError;
+      run_state = VideoCaptureRunState::kCameraBusyError;
       break;
     case VIDEO_CAPTURE_STATE_ERROR_START_TIMEOUT:
-      run_state = RunState::kStartTimeoutError;
+      run_state = VideoCaptureRunState::kStartTimeoutError;
       break;
     default:
-      run_state = RunState::kStopped;
+      run_state = VideoCaptureRunState::kStopped;
   }
 
   auto* frame = LocalFrame::FromFrameToken(frame_token_);
@@ -124,7 +128,7 @@ void LocalVideoCapturerSource::OnStateUpdate(blink::VideoCaptureState state) {
       OnLog(
           "LocalVideoCapturerSource::OnStateUpdate signaling to "
           "consumer that source is now running.");
-      running_callback_.Run(RunState::kRunning);
+      running_callback_.Run(VideoCaptureRunState::kRunning);
       break;
 
     case VIDEO_CAPTURE_STATE_STOPPING:

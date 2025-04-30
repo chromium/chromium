@@ -82,31 +82,28 @@ HtmlVideoElementCapturerSource::GetPreferredFormats() {
 
 void HtmlVideoElementCapturerSource::StartCapture(
     const media::VideoCaptureParams& params,
-    const VideoCaptureDeliverFrameCB& new_frame_callback,
-    const VideoCaptureSubCaptureTargetVersionCB&
-        sub_capture_target_version_callback,
-    // The HTML element does not report frame drops.
-    const VideoCaptureNotifyFrameDroppedCB&,
-    const RunningCallback& running_callback) {
+    VideoCaptureCallbacks video_capture_callbacks,
+    VideoCaptureRunningCallbackCB running_callback) {
   DVLOG(2) << __func__ << " requested "
            << media::VideoCaptureFormat::ToString(params.requested_format);
   DCHECK(params.requested_format.IsValid());
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  running_callback_ = running_callback;
+  running_callback_ = std::move(running_callback);
   if (!web_media_player_ || !web_media_player_->HasVideo()) {
-    running_callback_.Run(RunState::kStopped);
+    running_callback_.Run(VideoCaptureRunState::kStopped);
     return;
   }
 
-  new_frame_callback_ = new_frame_callback;
+  new_frame_callback_ = std::move(video_capture_callbacks.deliver_frame_cb);
+
   // Force |capture_frame_rate_| to be in between k{Min,Max}FramesPerSecond.
   capture_frame_rate_ =
       std::max(kMinFramesPerSecond,
                std::min(static_cast<float>(media::limits::kMaxFramesPerSecond),
                         params.requested_format.frame_rate));
 
-  running_callback_.Run(RunState::kRunning);
+  running_callback_.Run(VideoCaptureRunState::kRunning);
   task_runner_->PostTask(
       FROM_HERE, WTF::BindOnce(&HtmlVideoElementCapturerSource::sendNewFrame,
                                weak_factory_.GetWeakPtr()));

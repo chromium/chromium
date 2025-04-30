@@ -151,7 +151,7 @@ class MODULES_EXPORT VideoTrackAdapter
       VideoCaptureSubCaptureTargetVersionInternalCallback
           sub_capture_target_version_callback,
       VideoTrackSettingsInternalCallback settings_callback,
-      VideoTrackFormatInternalCallback track_callback,
+      VideoTrackFormatInternalCallback format_callback,
       const VideoTrackAdapterSettings& settings);
 
   void RemoveTrackOnVideoTaskRunner(const MediaStreamVideoTrack* track);

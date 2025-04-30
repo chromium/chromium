@@ -15,6 +15,7 @@
 #include "content/renderer/render_thread_impl.h"
 #include "media/base/video_frame.h"
 #include "third_party/blink/public/platform/modules/video_capture/web_video_capture_impl_manager.h"
+#include "third_party/blink/public/web/modules/mediastream/media_stream_video_source.h"
 
 namespace content {
 
@@ -46,16 +47,20 @@ void PepperPlatformVideoCapture::StartCapture(
     return;
   blink::WebVideoCaptureImplManager* manager =
       RenderThreadImpl::current()->video_capture_impl_manager();
-  stop_capture_cb_ = manager->StartCapture(
-      session_id_, params,
-      base::BindPostTaskToCurrentDefault(
-          base::BindRepeating(&PepperPlatformVideoCapture::OnStateUpdate,
-                              weak_factory_.GetWeakPtr())),
-      base::BindPostTaskToCurrentDefault(
-          base::BindRepeating(&PepperPlatformVideoCapture::OnFrameReady,
-                              weak_factory_.GetWeakPtr())),
-      /*sub_capture_target_version_cb=*/base::DoNothing(),
-      /*frame_dropped_cb=*/base::DoNothing());
+
+  blink::VideoCaptureCallbacks video_capture_callbacks;
+  video_capture_callbacks.state_update_cb = base::BindPostTaskToCurrentDefault(
+      base::BindRepeating(&PepperPlatformVideoCapture::OnStateUpdate,
+                          weak_factory_.GetWeakPtr()));
+  video_capture_callbacks.deliver_frame_cb = base::BindPostTaskToCurrentDefault(
+      base::BindRepeating(&PepperPlatformVideoCapture::OnFrameReady,
+                          weak_factory_.GetWeakPtr()));
+  // TODO(crbug.com/409110236): Ensures what's is the expected callback
+  // functions from WebVideoCaptureImplManager::StartCapture().
+  video_capture_callbacks.frame_dropped_cb = base::DoNothing();
+  video_capture_callbacks.sub_capture_target_version_cb = base::DoNothing();
+  stop_capture_cb_ = manager->StartCapture(session_id_, params,
+                                           std::move(video_capture_callbacks));
 }
 
 void PepperPlatformVideoCapture::StopCapture() {

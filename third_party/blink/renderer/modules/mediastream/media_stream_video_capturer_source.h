@@ -101,9 +101,10 @@ class MODULES_EXPORT MediaStreamVideoCapturerSource
   uint32_t GetSubCaptureTargetVersion() const override;
   base::WeakPtr<MediaStreamVideoSource> GetWeakPtr() override;
 
-  // Method to bind as RunningCallback in VideoCapturerSource::StartCapture().
+  // Method to bind as VideoCaptureRunningCallbackCB in
+  // VideoCapturerSource::StartCapture().
   void OnRunStateChanged(const media::VideoCaptureParams& new_capture_params,
-                         RunState run_state);
+                         VideoCaptureRunState run_state);
 
   mojom::blink::MediaStreamDispatcherHost* GetMediaStreamDispatcherHost();
 

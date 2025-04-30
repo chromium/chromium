@@ -58,37 +58,35 @@ class BLINK_PLATFORM_EXPORT WebVideoCaptureImplManager {
 
   // Start receiving video frames for the given session ID.
   //
-  // |state_update_cb| will be called on the IO thread when capturing
-  // state changes.
+  // |video_capture_callbacks.state_update_cb| will be called on the main thread
+  // when capturing state changes although the caller is on IO thread.
   // States will be one of the following four:
   // * VIDEO_CAPTURE_STATE_STARTED
   // * VIDEO_CAPTURE_STATE_STOPPED
   // * VIDEO_CAPTURE_STATE_PAUSED
   // * VIDEO_CAPTURE_STATE_ERROR
   //
-  // |deliver_frame_cb| will be called on the IO thread when a video
-  // frame is ready.
+  // |video_capture_callbacks.deliver_frame_cb| will be called on the IO thread
+  // when a video frame is ready.
   //
-  // |sub_capture_target_version_cb| will be called on the IO thread when a new
-  // crop version is successfully applied, and it is guaranteed that all
-  // subsequent frames delivered to |deliver_frame_cb|, will have this
+  // |video_capture_callbacks.sub_capture_target_version_cb| will be called on
+  // the IO thread when a new crop version is successfully applied, and it is
+  // guaranteed that all subsequent frames delivered to
+  // |video_capture_callbacks.deliver_frame_cb|, will have this
   // sub-capture-target version or later.
   //
-  // |frame_dropped_cb| will be called when a frame was dropped prior to
-  // delivery (i.e. |deliver_frame_cb| was not called for this frame).
-  //
+  // |video_capture_callbacks.frame_dropped_cb| will be called on the IO thread
+  // when a frame was dropped prior to delivery
+  // (i.e. |video_capture_callbacks,deliver_frame_cb| was not called for this
+  // frame).
+
   // Returns a callback that is used to stop capturing. Note that stopping
   // video capture is not synchronous. Client should handle the case where
   // callbacks are called after capturing is instructed to stop, typically
   // by binding the passed callbacks on a WeakPtr.
-  base::OnceClosure StartCapture(
-      const media::VideoCaptureSessionId& id,
-      const media::VideoCaptureParams& params,
-      const VideoCaptureStateUpdateCB& state_update_cb,
-      const VideoCaptureDeliverFrameCB& deliver_frame_cb,
-      const VideoCaptureSubCaptureTargetVersionCB&
-          sub_capture_target_version_cb,
-      const VideoCaptureNotifyFrameDroppedCB& frame_dropped_cb);
+  base::OnceClosure StartCapture(const media::VideoCaptureSessionId& id,
+                                 const media::VideoCaptureParams& params,
+                                 VideoCaptureCallbacks video_capture_callbacks);
 
   // Requests that the video capturer send a frame "soon" (e.g., to resolve
   // picture loss or quality issues).
