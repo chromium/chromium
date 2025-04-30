@@ -6,6 +6,7 @@
 '''Unit tests for grit.format.data_pack'''
 
 
+import io
 import os
 import sys
 if __name__ == '__main__':
@@ -13,6 +14,9 @@ if __name__ == '__main__':
 
 import unittest
 
+from grit import constants
+from grit import grd_reader
+from grit import util
 from grit.format import data_pack
 
 
@@ -110,6 +114,85 @@ class FormatDataPackUnittest(unittest.TestCase):
         inputs, None, suppress_removed_key_output=True)
     self.assertDictEqual(expected_without_allowlist, output,
                          'Incorrect resource output')
+
+  def testFormatInternal(self):
+    xml = '''<?xml version="1.0" encoding="UTF-8"?>
+      <grit latest_public_release="2" source_lang_id="en-US" current_release="3" base_dir=".">
+        <translations>
+          <file path="generated_resources_fr.xtb" lang="fr" />
+        </translations>
+        <outputs>
+          <output filename="contents.pak" type="data_pack" />
+        </outputs>
+        <release seq="3">
+          <messages>
+            <message name="ID_HELLO">Hello!</message>
+            <message name="ID_HELLO_USER">Hello <ph name="USERNAME">%s<ex>Joi</ex></ph></message>
+            <message name="ID_PLUGIN_NOT_AUTHORIZED">Plugin <ph name="PLUGIN_NAME">%s<ex>Pluggy McPluginface</ex></ph> is not authorized.</message>
+          </messages>
+        </release>
+      </grit>'''
+    grd = grd_reader.Parse(io.StringIO(xml),
+                           util.PathFromRoot('grit/testdata'),
+                           translate_genders=True)
+    grd.SetOutputLanguage('en')
+    grd.RunGatherers()
+    grd.InitializeIds()
+
+    expected_en_other = {
+        511: 'Hello!',
+        512: 'Hello %s',
+        513: 'Plugin %s is not authorized.',
+    }
+
+    # en has no gender translations, so the non-default-gendered PAK data is
+    # empty.
+    expected_en_neuter = {}
+    expected_en_feminine = {}
+    expected_en_masculine = {}
+
+    expected_fr_other = {
+        511: 'Salut!',
+        512: 'Salut %s',
+        513: "Le plug-in %s n'est pas autorisé. (OTHER)",
+    }
+
+    # The only gendered translation in the xtb file for fr is included in the
+    # PAK data, but the genderless translations are deduped.
+    expected_fr_neuter = {
+        513: "Le plug-in %s n'est pas autorisé. (NEUTER)",
+    }
+    expected_fr_feminine = {
+        513: "Le plug-in %s n'est pas autorisé. (FEMININE)",
+    }
+    expected_fr_masculine = {
+        513: "Le plug-in %s n'est pas autorisé. (MASCULINE)",
+    }
+
+    self.assertEqual(
+        data_pack._FormatInternal(grd, 'en', constants.GENDER_OTHER),
+        expected_en_other)
+    self.assertEqual(
+        data_pack._FormatInternal(grd, 'en', constants.GENDER_NEUTER),
+        expected_en_neuter)
+    self.assertEqual(
+        data_pack._FormatInternal(grd, 'en', constants.GENDER_FEMININE),
+        expected_en_feminine)
+    self.assertEqual(
+        data_pack._FormatInternal(grd, 'en', constants.GENDER_MASCULINE),
+        expected_en_masculine)
+    self.assertEqual(
+        data_pack._FormatInternal(grd, 'fr', constants.GENDER_OTHER),
+        expected_fr_other)
+    self.assertEqual(
+        data_pack._FormatInternal(grd, 'fr', constants.GENDER_NEUTER),
+        expected_fr_neuter)
+    self.assertEqual(
+        data_pack._FormatInternal(grd, 'fr', constants.GENDER_FEMININE),
+        expected_fr_feminine)
+    self.assertEqual(
+        data_pack._FormatInternal(grd, 'fr', constants.GENDER_MASCULINE),
+        expected_fr_masculine)
 
 
 if __name__ == '__main__':

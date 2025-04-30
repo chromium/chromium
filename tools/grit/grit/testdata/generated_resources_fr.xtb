@@ -53,7 +53,7 @@
 <translation id="6156863943908443225">Cache des scripts</translation>
 <translation id="4610656722473172270">Barre d'outils Google</translation>
 <translation id="151501797353681931">Importés depuis Safari</translation>
-<translation id="6706684875496318067">Le plug-in <ph name="PLUGIN_NAME"/> n'est pas autorisé.</translation>
+<translation id="4456805950026190411"><branch variants="variants { grammatical_gender_variant { grammatical_gender_case: OTHER } }">Le plug-in <ph name="PLUGIN_NAME"/> n'est pas autorisé. (OTHER)</branch><branch variants="variants { grammatical_gender_variant { grammatical_gender_case: FEMININE } }">Le plug-in <ph name="PLUGIN_NAME"/> n'est pas autorisé. (FEMININE)</branch><branch variants="variants { grammatical_gender_variant { grammatical_gender_case: MASCULINE } }">Le plug-in <ph name="PLUGIN_NAME"/> n'est pas autorisé. (MASCULINE)</branch><branch variants="variants { grammatical_gender_variant { grammatical_gender_case: NEUTER } }">Le plug-in <ph name="PLUGIN_NAME"/> n'est pas autorisé. (NEUTER)</branch></translation>
 <translation id="586567932979200359">Vous exécutez <ph name="PRODUCT_NAME"/> à partir de son image disque. Si vous l'installez sur votre ordinateur, vous pourrez l'utiliser sans image disque et bénéficierez de mises à jour automatiques.</translation>
 <translation id="3775432569830822555">Certificat du serveur SSL</translation>
 <translation id="1829192082282182671">Z&amp;oom arrière</translation>
