@@ -111,10 +111,11 @@ bool ImageFrameGenerator::DecodeAndScale(
     wtf_size_t index,
     const SkPixmap& pixmap,
     cc::PaintImage::GeneratorClientId client_id) {
+  if (decode_failed_.load()) {
+    return false;
+  }
   {
     base::AutoLock lock(generator_lock_);
-    if (decode_failed_)
-      return false;
     RecordWhetherMultiDecoded(client_id);
   }
 
@@ -146,8 +147,8 @@ bool ImageFrameGenerator::DecodeAndScale(
   }
 
   base::AutoLock lock(generator_lock_);
-  decode_failed_ = decode_failed;
-  if (decode_failed_) {
+  decode_failed_.store(decode_failed);
+  if (decode_failed) {
     DCHECK(!current_decode_succeeded);
     return false;
   }
@@ -175,8 +176,9 @@ bool ImageFrameGenerator::DecodeToYUV(
   // TODO (scroggo): The only interesting thing this uses from the
   // ImageFrameGenerator is |decode_failed_|. Move this into
   // DecodingImageGenerator, which is the only class that calls it.
-  if (decode_failed_ || yuv_decoding_failed_)
+  if (decode_failed_.load() || yuv_decoding_failed_.load()) {
     return false;
+  }
 
   if (!planes.data() || !planes[0] || !planes[1] || !planes[2] ||
       !row_bytes.data() || !row_bytes[0] || !row_bytes[1] || !row_bytes[2]) {
@@ -216,15 +218,14 @@ bool ImageFrameGenerator::DecodeToYUV(
   // This may not be the case once YUV supports incremental decoding
   // (crbug.com/943519).
   if (decoder->Failed()) {
-    yuv_decoding_failed_ = true;
+    yuv_decoding_failed_.store(true);
   }
 
   return false;
 }
 
 void ImageFrameGenerator::SetHasAlpha(wtf_size_t index, bool has_alpha) {
-  generator_lock_.AssertAcquired();
-
+  base::AutoLock lock(has_alpha_lock_);
   if (index >= has_alpha_.size()) {
     const wtf_size_t old_size = has_alpha_.size();
     has_alpha_.resize(index + 1);
@@ -255,9 +256,8 @@ void ImageFrameGenerator::RecordWhetherMultiDecoded(
   }
 }
 
-bool ImageFrameGenerator::HasAlpha(wtf_size_t index) {
-  base::AutoLock lock(generator_lock_);
-
+bool ImageFrameGenerator::HasAlpha(wtf_size_t index) const {
+  base::AutoLock lock(has_alpha_lock_);
   if (index < has_alpha_.size())
     return has_alpha_[index];
   return true;
@@ -272,8 +272,9 @@ bool ImageFrameGenerator::GetYUVAInfo(
 
   base::AutoLock lock(generator_lock_);
 
-  if (yuv_decoding_failed_)
+  if (yuv_decoding_failed_.load()) {
     return false;
+  }
   std::unique_ptr<ImageDecoder> decoder = ImageDecoder::Create(
       data, /*data_complete=*/true, ImageDecoder::kAlphaPremultiplied,
       ImageDecoder::kDefaultBitDepth, decoder_color_behavior_, aux_image_,
