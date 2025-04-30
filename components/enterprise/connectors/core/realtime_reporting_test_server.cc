@@ -9,6 +9,8 @@
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/values.h"
+#include "components/enterprise/common/proto/synced/browser_events.pb.h"
+#include "components/enterprise/common/proto/synced_from_google3/chrome_reporting_entity.pb.h"
 #include "net/http/http_status_code.h"
 
 namespace enterprise_connectors::test {
@@ -16,10 +18,48 @@ namespace enterprise_connectors::test {
 namespace {
 
 using ::chrome::cros::reporting::proto::Event;
+using ::chrome::cros::reporting::proto::EventResult;
+using ::chrome::cros::reporting::proto::EventResult_Parse;
 using ::chrome::cros::reporting::proto::LoginEvent;
+using ::chrome::cros::reporting::proto::SafeBrowsingInterstitialEvent;
 using ::chrome::cros::reporting::proto::UploadEventsRequest;
 
 constexpr char kRealtimeReportingUrl[] = "/v1/events";
+
+void ParseLoginEvent(const base::Value::Dict* event_details_json,
+                     LoginEvent* event) {
+  if (const std::string* url = event_details_json->FindString("url")) {
+    event->set_url(*url);
+  }
+  if (const std::string* login_user_name =
+          event_details_json->FindString("loginUserName")) {
+    event->set_login_user_name(*login_user_name);
+  }
+}
+
+void ParseInterstitialEvent(const base::Value::Dict* event_details_json,
+                            SafeBrowsingInterstitialEvent* event) {
+  if (const std::string* url = event_details_json->FindString("url")) {
+    event->set_url(*url);
+  }
+  event->set_clicked_through(
+      event_details_json->FindBool("clickedThrough").value_or(false));
+  if (const std::string* event_result_name =
+          event_details_json->FindString("eventResult")) {
+    EventResult event_result;
+    if (EventResult_Parse(*event_result_name, &event_result)) {
+      event->set_event_result(std::move(event_result));
+    }
+  }
+  if (const std::string* reason_name =
+          event_details_json->FindString("reason")) {
+    SafeBrowsingInterstitialEvent::InterstitialReason reason;
+    if (SafeBrowsingInterstitialEvent::InterstitialReason_Parse(*reason_name,
+                                                                &reason)) {
+      event->set_reason(std::move(reason));
+    }
+  }
+}
 
 std::optional<Event> ParseEvent(const base::Value::Dict* event_json) {
   if (!event_json) {
@@ -29,16 +69,10 @@ std::optional<Event> ParseEvent(const base::Value::Dict* event_json) {
   const base::Value::Dict* event_details_json;
   // TODO(crbug.com/412683254): Add branches for other event types.
   if ((event_details_json = event_json->FindDict("loginEvent"))) {
-    LoginEvent* login_event = event.mutable_login_event();
-    const std::string* url = event_details_json->FindString("url");
-    if (url) {
-      login_event->set_url(*url);
-    }
-    const std::string* login_user_name =
-        event_details_json->FindString("loginUserName");
-    if (login_user_name) {
-      login_event->set_login_user_name(*login_user_name);
-    }
+    ParseLoginEvent(event_details_json, event.mutable_login_event());
+  } else if ((event_details_json = event_json->FindDict("interstitialEvent"))) {
+    ParseInterstitialEvent(event_details_json,
+                           event.mutable_interstitial_event());
   } else {
     return std::nullopt;
   }

@@ -2,11 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import <memory>
 #import <string>
+#import <vector>
 
+#import "base/check.h"
+#import "base/strings/strcat.h"
 #import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "base/time/time.h"
+#import "components/enterprise/common/proto/synced/browser_events.pb.h"
+#import "components/enterprise/common/proto/synced_from_google3/chrome_reporting_entity.pb.h"
+#import "components/enterprise/common/proto/upload_request_response.pb.h"
+#import "components/enterprise/connectors/core/realtime_reporting_test_environment.h"
+#import "components/policy/core/common/policy_loader_ios_constants.h"
 #import "components/safe_browsing/core/common/features.h"
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #import "components/strings/grit/components_strings.h"
@@ -14,6 +24,7 @@
 #import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_earl_grey.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_earl_grey_ui.h"
 #import "ios/chrome/browser/infobars/ui_bundled/banners/infobar_banner_constants.h"
+#import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/settings/ui_bundled/privacy/privacy_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -28,10 +39,18 @@
 #import "net/test/embedded_test_server/http_response.h"
 #import "ui/base/l10n/l10n_util.h"
 
+using ::chrome::cros::reporting::proto::Event;
+using ::chrome::cros::reporting::proto::EventResult;
+using ::chrome::cros::reporting::proto::SafeBrowsingInterstitialEvent;
+using InterstitialReason = ::chrome::cros::reporting::proto::
+    SafeBrowsingInterstitialEvent::InterstitialReason;
+using ::chrome::cros::reporting::proto::UploadEventsRequest;
 using chrome_test_util::BackButton;
 using chrome_test_util::ForwardButton;
+using chrome_test_util::GREYAssertErrorNil;
 using chrome_test_util::SettingsDoneButton;
 using chrome_test_util::TappableBookmarkNodeWithLabel;
+using enterprise_connectors::test::RealtimeReportingTestEnvironment;
 
 namespace {
 
@@ -42,6 +61,13 @@ const char kPhishingWarningDetails[] =
 // Text that is found when expanding details on the malware warning page.
 const char kMalwareWarningDetails[] =
     "Google Safe Browsing, which recently found malware";
+
+// Policy name and value for setting a fake enterprise enrollment token.
+constexpr char kEnrollmentTokenPolicyName[] = "CloudManagementEnrollmentToken";
+constexpr char kEnrollmentToken[] = "fake-enrollment-token";
+
+// Duration to wait for an enterprise security event report.
+constexpr base::TimeDelta kReportUploadTimeout = base::Seconds(15);
 
 // Request handler for net::EmbeddedTestServer that returns the request URL's
 // path as the body of the response if the request URL's path starts with
@@ -101,6 +127,8 @@ id<GREYMatcher> EnhancedSafeBrowsingInfobarButtonMatcher() {
   BOOL _safeBrowsingEnhancedPrefDefault;
   // The default value for SafeBrowsingProceedAnywayDisabled pref.
   BOOL _proceedAnywayDisabledPrefDefault;
+  // Fake servers for testing enterprise security event reporting.
+  std::unique_ptr<RealtimeReportingTestEnvironment> _reportingEnvironment;
 }
 @end
 
@@ -131,6 +159,19 @@ id<GREYMatcher> EnhancedSafeBrowsingInfobarButtonMatcher() {
   } else {
     config.additional_args.push_back(
         std::string("--enable-features=SafeBrowsingHashPrefixRealTimeLookups"));
+  }
+
+  if ([self isRunningEnterpriseReportingTest]) {
+    CHECK(_reportingEnvironment);
+    std::vector<std::string> reporting_args =
+        _reportingEnvironment->GetArguments();
+    config.additional_args.insert(config.additional_args.end(),
+                                  reporting_args.begin(), reporting_args.end());
+    config.additional_args.push_back(base::StrCat(
+        {"-", base::SysNSStringToUTF8(kPolicyLoaderIOSConfigurationKey)}));
+    config.additional_args.push_back(
+        base::StrCat({"<dict><key>", kEnrollmentTokenPolicyName,
+                      "</key><string>", kEnrollmentToken, "</string></dict>"}));
   }
 
   config.additional_args.push_back(
@@ -174,6 +215,15 @@ id<GREYMatcher> EnhancedSafeBrowsingInfobarButtonMatcher() {
   _iframeWithPhishingURL =
       _iframeWithPhishingURL.ReplaceComponents(replacements);
 
+  if ([self isRunningEnterpriseReportingTest]) {
+    // `GREYAssertTrue` can't be used before the superclass's `-setUp` call is
+    // complete, so fall back to `CHECK()`.
+    _reportingEnvironment = RealtimeReportingTestEnvironment::Create(
+        {"interstitialEvent"}, {{"interstitialEvent", {"*"}}});
+    CHECK(_reportingEnvironment);
+    CHECK(_reportingEnvironment->Start());
+  }
+
   // `appConfigurationForTestCase` is called during [super setUp], and
   // depends on the URLs initialized above.
   [super setUp];
@@ -204,9 +254,14 @@ id<GREYMatcher> EnhancedSafeBrowsingInfobarButtonMatcher() {
   // Ensure that the real-time Safe Browsing opt-in starts in the default
   // (opted-out) state.
   [ChromeEarlGrey setURLKeyedAnonymizedDataCollectionEnabled:NO];
+
+  // Set up histograms for testing enterprise reporting.
+  GREYAssertErrorNil([MetricsAppInterface setupHistogramTester]);
 }
 
 - (void)tearDownHelper {
+  GREYAssertErrorNil([MetricsAppInterface releaseHistogramTester]);
+
   // Ensure that Safe Browsing is reset to its original value.
   [ChromeEarlGrey setBoolValue:_safeBrowsingEnabledPrefDefault
                    forUserPref:prefs::kSafeBrowsingEnabled];
@@ -241,6 +296,60 @@ id<GREYMatcher> EnhancedSafeBrowsingInfobarButtonMatcher() {
   NSString* description = @"Enhanced Safe Browsing message.";
   return [ElementSelector selectorWithScript:selector
                          selectorDescription:description];
+}
+
+- (BOOL)isRunningEnterpriseReportingTest {
+  return
+      [self
+          isRunningTest:@selector(testProceedingPastPhishingWarningReported)] ||
+      [self isRunningTest:@selector(testProceedingPastMalwareWarningReported)];
+}
+
+- (void)waitForEnterpriseReports:(int)count {
+  // Use metrics to detect that the report upload completed. This is the best
+  // known way to wait because a task environment isn't available here for the
+  // server's request handler to post to.
+  GREYAssertTrue(
+      base::test::ios::WaitUntilConditionOrTimeout(
+          kReportUploadTimeout,
+          ^{
+            NSError* error = [MetricsAppInterface
+                expectTotalCount:count
+                    forHistogram:@"Enterprise.ReportingEventUploadSuccess"];
+            return error == nil;
+          }),
+      @"Timed out uploading security event.");
+  GREYAssertErrorNil([MetricsAppInterface
+      expectTotalCount:0
+          forHistogram:@"Enterprise.ReportingEventUploadFailure"]);
+}
+
+- (void)assertInterstitialEvent:(const UploadEventsRequest&)request
+                            url:(const GURL&)url
+                 clickedThrough:(BOOL)clickedThrough
+                    eventResult:(EventResult)eventResult
+                         reason:(InterstitialReason)reason {
+  GREYAssertEqual(std::string("iOS"), request.device().os_platform(),
+                  @"Wrong OS platform in report.");
+  GREYAssertEqual(1, request.events_size(), @"Wrong number of events.");
+
+  GREYAssertTrue(request.events(0).has_interstitial_event(),
+                 @"Wrong event type.");
+  const SafeBrowsingInterstitialEvent& event =
+      request.events(0).interstitial_event();
+  GREYAssertEqual(url, GURL(event.url()), @"Wrong interstitial event URL.");
+  if (clickedThrough) {
+    GREYAssertTrue(
+        event.clicked_through(),
+        @"Interstitial event unexpectedly not marked as clicked through.");
+  } else {
+    GREYAssertFalse(
+        event.clicked_through(),
+        @"Interstitial event unexpectedly marked as clicked through.");
+  }
+  GREYAssertEqual(eventResult, event.event_result(),
+                  @"Wrong interstitial event result.");
+  GREYAssertEqual(reason, event.reason(), @"Wrong interstitial event reason.");
 }
 
 #pragma mark - Tests
@@ -324,6 +433,50 @@ id<GREYMatcher> EnhancedSafeBrowsingInfobarButtonMatcher() {
   [ChromeEarlGrey loadURL:_phishingURL];
   [ChromeEarlGrey waitForWebStateContainingText:l10n_util::GetStringUTF8(
                                                     IDS_SAFEBROWSING_HEADING)];
+}
+
+// Tests expanding the details on a phishing warning, and proceeding past the
+// warning is reported to an enterprise connector.
+- (void)testProceedingPastPhishingWarningReported {
+  [ChromeEarlGrey loadURL:_safeURL1];
+  [ChromeEarlGrey waitForWebStateContainingText:_safeContent1];
+
+  // Load the phishing page and verify a warning is shown.
+  [ChromeEarlGrey loadURL:_phishingURL];
+  [ChromeEarlGrey waitForWebStateContainingText:l10n_util::GetStringUTF8(
+                                                    IDS_SAFEBROWSING_HEADING)];
+
+  // Tap on the Details button and verify that warning details are shown.
+  [ChromeEarlGrey tapWebStateElementWithID:@"details-button"];
+  [ChromeEarlGrey waitForWebStateContainingText:kPhishingWarningDetails];
+
+  // Verify the server is notified the browser showed a warning.
+  [self waitForEnterpriseReports:1];
+  std::vector<UploadEventsRequest> requests =
+      _reportingEnvironment->reporting_server()->GetUploadedReports();
+  GREYAssertEqual(1U, requests.size(), @"Wrong number of reports.");
+  [self assertInterstitialEvent:requests[0]
+                            url:_phishingURL
+                 clickedThrough:NO
+                    eventResult:EventResult::EVENT_RESULT_WARNED
+                         reason:SafeBrowsingInterstitialEvent::
+                                    SOCIAL_ENGINEERING];
+
+  // Tap on the link to proceed to the unsafe page, and verify that this page is
+  // loaded.
+  [ChromeEarlGrey tapWebStateElementWithID:@"proceed-link"];
+  [ChromeEarlGrey waitForWebStateContainingText:_phishingContent];
+
+  // Verify the server is notified the end user bypassed the warning.
+  [self waitForEnterpriseReports:2];
+  requests = _reportingEnvironment->reporting_server()->GetUploadedReports();
+  GREYAssertEqual(2U, requests.size(), @"Wrong number of reports.");
+  [self assertInterstitialEvent:requests[1]
+                            url:_phishingURL
+                 clickedThrough:YES
+                    eventResult:EventResult::EVENT_RESULT_BYPASSED
+                         reason:SafeBrowsingInterstitialEvent::
+                                    SOCIAL_ENGINEERING];
 }
 
 // Tests that a malware page is blocked, and the "Back to safety" button on the
@@ -427,6 +580,55 @@ id<GREYMatcher> EnhancedSafeBrowsingInfobarButtonMatcher() {
   [ChromeEarlGrey waitForWebStateContainingText:_safeContent2];
   [[EarlGrey selectElementWithMatcher:BackButton()] performAction:grey_tap()];
   [ChromeEarlGrey waitForWebStateContainingText:_malwareContent];
+}
+
+// Tests expanding the details on a malware warning, and proceeding past the
+// warning is reported to an enterprise connector.
+- (void)testProceedingPastMalwareWarningReported {
+  [ChromeEarlGrey loadURL:_safeURL1];
+  [ChromeEarlGrey waitForWebStateContainingText:_safeContent1];
+
+  // Load the malware page and verify a warning is shown.
+  [ChromeEarlGrey loadURL:_malwareURL];
+  [ChromeEarlGrey waitForWebStateContainingText:l10n_util::GetStringUTF8(
+                                                    IDS_SAFEBROWSING_HEADING)];
+
+  // Tap on the Details button and verify that warning details are shown.
+  [ChromeEarlGrey tapWebStateElementWithID:@"details-button"];
+  [ChromeEarlGrey waitForWebStateContainingText:kMalwareWarningDetails];
+
+  // Verify the server is notified the browser showed a warning.
+  [self waitForEnterpriseReports:1];
+  std::vector<UploadEventsRequest> requests =
+      _reportingEnvironment->reporting_server()->GetUploadedReports();
+  GREYAssertEqual(1U, requests.size(), @"Wrong number of reports.");
+  [self assertInterstitialEvent:requests[0]
+                            url:_malwareURL
+                 clickedThrough:NO
+                    eventResult:EventResult::EVENT_RESULT_WARNED
+                         reason:SafeBrowsingInterstitialEvent::MALWARE];
+
+  if (@available(iOS 15.1, *)) {
+  } else {
+    // Workaround https://bugs.webkit.org/show_bug.cgi?id=226323, which can
+    // break loading the unsafe page below.
+    return;
+  }
+
+  // Tap on the link to proceed to the unsafe page, and verify that this page is
+  // loaded.
+  [ChromeEarlGrey tapWebStateElementWithID:@"proceed-link"];
+  [ChromeEarlGrey waitForWebStateFrameContainingText:_malwareContent];
+
+  // Verify the server is notified the end user bypassed the warning.
+  [self waitForEnterpriseReports:2];
+  requests = _reportingEnvironment->reporting_server()->GetUploadedReports();
+  GREYAssertEqual(2U, requests.size(), @"Wrong number of reports.");
+  [self assertInterstitialEvent:requests[1]
+                            url:_malwareURL
+                 clickedThrough:YES
+                    eventResult:EventResult::EVENT_RESULT_BYPASSED
+                         reason:SafeBrowsingInterstitialEvent::MALWARE];
 }
 
 // Tests that disabling and re-enabling Safe Browsing works as expected.

@@ -104,6 +104,7 @@ source_set("test_support") {
     "//base/test:test_support",
     "//components/enterprise",
     "//components/enterprise/common/proto:browser_events_proto",
+    "//components/enterprise/common/proto:chrome_reporting_entity",
     "//components/enterprise/common/proto:upload_request_response",
     "//components/policy/core/common:common_constants",
     "//components/policy/core/common:test_support",
