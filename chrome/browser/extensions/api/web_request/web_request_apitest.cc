@@ -6432,6 +6432,185 @@ IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest, WebRequestBlocking) {
     EXPECT_EQ(net::ERR_BLOCKED_BY_CLIENT, nav_observer.last_net_error_code());
   }
 }
+
+// Tests an extension returning a promise from a webRequest blocking handler to
+// deliver an async response. This is only available to policy-installed
+// extensions.
+IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest,
+                       WebRequestBlockingWithPromises_PromiseResolves) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  static constexpr char kManifest[] =
+      R"({
+           "name": "MV3 WebRequest",
+           "version": "0.1",
+           "manifest_version": 3,
+           "permissions": ["webRequest", "webRequestBlocking"],
+           "host_permissions": [
+             "http://block.example/*",
+             "http://allow.example/*"
+           ],
+           "background": {"service_worker": "background.js"}
+         })";
+  // An extension with a listener that cancels any requests that include
+  // block.example.
+  static constexpr char kBackgroundJs[] =
+      R"(chrome.webRequest.onBeforeRequest.addListener(
+             (details) => {
+               let result = {};
+               if (details.url.includes('block.example')) {
+                 result.cancel = true;
+               }
+               return Promise.resolve(result);
+             },
+             {urls: ['<all_urls>'], types: ['main_frame']},
+             ['blocking']);
+         chrome.test.sendMessage('ready');)";
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackgroundJs);
+  const Extension* extension = LoadPolicyExtension(test_dir);
+  ASSERT_TRUE(extension);
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // Navigate to allow.example. This should succeed.
+  {
+    content::TestNavigationObserver nav_observer(web_contents);
+    EXPECT_TRUE(ui_test_utils::NavigateToURL(
+        browser(),
+        embedded_test_server()->GetURL("allow.example", "/simple.html")));
+    EXPECT_EQ(net::OK, nav_observer.last_net_error_code());
+  }
+
+  // Now, navigate to block.example. This navigation should be blocked.
+  {
+    content::TestNavigationObserver nav_observer(web_contents);
+    EXPECT_TRUE(ui_test_utils::NavigateToURL(
+        browser(),
+        embedded_test_server()->GetURL("block.example", "/simple.html")));
+    EXPECT_EQ(net::ERR_BLOCKED_BY_CLIENT, nav_observer.last_net_error_code());
+  }
+}
+
+// Tests an extension returning a promise that rejects from a webRequest
+// blocking handler. The request should proceed.
+IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest,
+                       WebRequestBlockingWithPromises_PromiseRejects) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  static constexpr char kManifest[] =
+      R"({
+           "name": "MV3 WebRequest",
+           "version": "0.1",
+           "manifest_version": 3,
+           "permissions": ["webRequest", "webRequestBlocking"],
+           "host_permissions": [
+             "http://test.example/*"
+           ],
+           "background": {"service_worker": "background.js"}
+         })";
+  // An extension with a listener that cancels any requests that include
+  // block.example.
+  static constexpr char kBackgroundJs[] =
+      R"(chrome.webRequest.onBeforeRequest.addListener(
+             (details) => {
+               return Promise.reject(new Error('Some Error'));
+             },
+             {urls: ['<all_urls>'], types: ['main_frame']},
+             ['blocking']);
+         chrome.test.sendMessage('ready');)";
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackgroundJs);
+  const Extension* extension = LoadPolicyExtension(test_dir);
+  ASSERT_TRUE(extension);
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  ErrorConsoleTestObserver error_observer(1u, profile());
+  error_observer.EnableErrorCollection();
+  ErrorConsole::Get(profile())->SetReportingAllForExtension(extension->id(),
+                                                            true);
+
+  // Navigate to test.example. The extension intercepts the request and returns
+  // a promise that rejects.
+  // This results in:
+  // - An error being logged in the extension context, and
+  // - The request proceeding.
+  content::TestNavigationObserver nav_observer(web_contents);
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_test_server()->GetURL("test.example", "/simple.html")));
+  EXPECT_EQ(net::OK, nav_observer.last_net_error_code());
+
+  error_observer.WaitForErrors();
+
+  const ErrorList& errors =
+      ErrorConsole::Get(profile())->GetErrorsForExtension(extension->id());
+  ASSERT_EQ(1u, errors.size());
+  EXPECT_TRUE(base::StartsWith(errors[0]->message(),
+                               u"Uncaught (in promise) Error: Some Error"))
+      << errors[0]->message();
+}
+
+// Tests an extension returning a promise that never resolves from a webRequest
+// blocking handler. The request should hang forever.
+IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest,
+                       WebRequestBlockingWithPromises_PromiseHangs) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  static constexpr char kManifest[] =
+      R"({
+           "name": "MV3 WebRequest",
+           "version": "0.1",
+           "manifest_version": 3,
+           "permissions": ["webRequest", "webRequestBlocking"],
+           "host_permissions": [
+             "http://test.example/*"
+           ],
+           "background": {"service_worker": "background.js"}
+         })";
+  // An extension with a listener that cancels any requests that include
+  // block.example.
+  static constexpr char kBackgroundJs[] =
+      R"(chrome.webRequest.onBeforeRequest.addListener(
+             (details) => {
+               setTimeout(() => {
+                 chrome.test.sendMessage('received event');
+               }, 500);
+               return new Promise(() => { });
+             },
+             {urls: ['<all_urls>'], types: ['main_frame']},
+             ['blocking']);
+         chrome.test.sendMessage('ready');)";
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackgroundJs);
+  const Extension* extension = LoadPolicyExtension(test_dir);
+  ASSERT_TRUE(extension);
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // Navigate to test.example. The extension intercepts this request, and then
+  // returns a promise that never resolves. This will result in the request
+  // hanging forever and ever, with no way for the user to do anything about
+  // it, possibly bricking the entire browser. (This is desired functionality
+  // for enterprise-installed extensions.)
+  // There's no good way to validate "will never resolve", but we do our best
+  // by waiting for an async message from the extension and validating the
+  // request is still in-flight.
+  ExtensionTestMessageListener listener("received event");
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), embedded_test_server()->GetURL("test.example", "/simple.html"),
+      WindowOpenDisposition::CURRENT_TAB, ui_test_utils::BROWSER_TEST_NO_WAIT);
+  EXPECT_TRUE(listener.WaitUntilSatisfied());
+
+  EXPECT_TRUE(web_contents->IsLoading());
+}
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 // Tests a service worker-based extension registering multiple webRequest events
