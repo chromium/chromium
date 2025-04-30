@@ -16,7 +16,7 @@ import com.google.android.material.color.MaterialColors;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.CreationMode;
-import org.chromium.components.browser_ui.styles.ChromeColors;
+import org.chromium.chrome.browser.theme.SurfaceColorUpdateUtils;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 
 /** Utility class that provides theme related attributes for Tab UI. */
@@ -202,7 +202,7 @@ public class TabUiThemeProvider {
         if (creationMode == CreationMode.DIALOG) {
             return getTabGridDialogBackgroundColor(context, isIncognito);
         } else {
-            return ChromeColors.getPrimaryBackgroundColor(context, isIncognito);
+            return SurfaceColorUpdateUtils.getGridTabSwitcherBackgroundColor(context, isIncognito);
         }
     }
 
@@ -356,15 +356,10 @@ public class TabUiThemeProvider {
      */
     public static @ColorInt int getTabSelectionToolbarBackground(
             Context context, boolean isIncognito, @CreationMode int creationMode) {
-        if (isIncognito) {
-            return context.getColor(R.color.incognito_tab_list_editor_toolbar_bg_color);
-        } else {
-            if (creationMode == CreationMode.DIALOG) {
-                return ContextCompat.getColor(context, R.color.tab_grid_dialog_bg_color);
-            }
-
-            return MaterialColors.getColor(context, R.attr.colorSurface, TAG);
+        if (creationMode == CreationMode.DIALOG) {
+            return ContextCompat.getColor(context, R.color.tab_grid_dialog_bg_color);
         }
+        return SurfaceColorUpdateUtils.getGridTabSwitcherBackgroundColor(context, isIncognito);
     }
 
     /**
