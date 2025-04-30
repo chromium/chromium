@@ -34,7 +34,7 @@ BookmarkModelMetricsServiceFactory::~BookmarkModelMetricsServiceFactory() {}
 std::unique_ptr<KeyedService>
 BookmarkModelMetricsServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  ProfileIOS* profile = static_cast<ProfileIOS*>(context);
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
   return std::make_unique<BookmarkModelMetricsService>(
       ios::BookmarkModelFactory::GetForProfile(profile), profile);
 }

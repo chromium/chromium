@@ -58,7 +58,7 @@ std::unique_ptr<KeyedService> CreateFakeTabGroupSyncService(
 // Creates a test ShareKitService.
 std::unique_ptr<KeyedService> BuildTestShareKitService(
     web::BrowserState* context) {
-  ProfileIOS* profile = static_cast<ProfileIOS*>(context);
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
   data_sharing::DataSharingService* data_sharing_service =
       data_sharing::DataSharingServiceFactory::GetForProfile(profile);
   TabGroupService* tab_group_service =
