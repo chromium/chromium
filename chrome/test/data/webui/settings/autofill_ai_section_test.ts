@@ -7,9 +7,10 @@ import 'chrome://settings/settings.js';
 
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertGE, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import type {SettingsToggleButtonElement} from 'chrome://settings/settings.js';
+import {CrSettingsPrefs, loadTimeData, ModelExecutionEnterprisePolicyValue} from 'chrome://settings/settings.js';
+import type {SettingsAiLoggingInfoBullet, SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
 import type {CrButtonElement, SettingsAutofillAiAddOrEditDialogElement, SettingsSimpleConfirmationDialogElement, SettingsAutofillAiSectionElement} from 'chrome://settings/lazy_load.js';
-import {EntityDataManagerProxyImpl} from 'chrome://settings/lazy_load.js';
+import {AiEnterpriseFeaturePrefName, EntityDataManagerProxyImpl} from 'chrome://settings/lazy_load.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestEntityDataManagerProxy} from './test_entity_data_manager_proxy.js';
@@ -20,6 +21,12 @@ const AttributeTypeDataType = chrome.autofillPrivate.AttributeTypeDataType;
 suite('AutofillAiSectionUiReflectsEligibilityStatus', function() {
   let section: SettingsAutofillAiSectionElement;
   let entityDataManager: TestEntityDataManagerProxy;
+  let settingsPrefs: SettingsPrefsElement;
+
+  suiteSetup(function() {
+    settingsPrefs = document.createElement('settings-prefs');
+    return CrSettingsPrefs.initialized;
+  });
 
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -49,6 +56,7 @@ suite('AutofillAiSectionUiReflectsEligibilityStatus', function() {
     entityDataManager.setGetOptInStatusResponse(false);
 
     section = document.createElement('settings-autofill-ai-section');
+    section.prefs = settingsPrefs.prefs;
   });
 
   interface EligibilityParamsInterface {
@@ -120,8 +128,14 @@ suite('AutofillAiSectionUiTest', function() {
   let entityDataManager: TestEntityDataManagerProxy;
   let testEntityInstance: chrome.autofillPrivate.EntityInstance;
   let testEntityTypes: chrome.autofillPrivate.EntityType[];
+  let settingsPrefs: SettingsPrefsElement;
 
-  setup(async function() {
+  suiteSetup(function() {
+    settingsPrefs = document.createElement('settings-prefs');
+    return CrSettingsPrefs.initialized;
+  });
+
+  setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     entityDataManager = new TestEntityDataManagerProxy();
@@ -204,8 +218,11 @@ suite('AutofillAiSectionUiTest', function() {
     // alphabetically.
     testEntityTypes.sort(
         (a, b) => a.typeNameAsString.localeCompare(b.typeNameAsString));
+  });
 
+  async function createPage() {
     section = document.createElement('settings-autofill-ai-section');
+    section.prefs = settingsPrefs.prefs;
     document.body.appendChild(section);
     await flushTasks();
 
@@ -215,9 +232,62 @@ suite('AutofillAiSectionUiTest', function() {
     entityInstancesListElement = entityInstancesQueried;
 
     assertTrue(!!section.shadowRoot!.querySelector('#entriesHeader'));
-  });
+  }
+
+  test(
+      'testAutofillAiEnterpriseUserLoggingAllowedAndNonEnterpriseUserHaveNoLoggingInfoBullet',
+      async function() {
+        // Both enterprise and non enterprise users have the pref set to 0
+        // (allow).
+        settingsPrefs.set(
+            `prefs.${AiEnterpriseFeaturePrefName.AUTOFILL_AI}.value`,
+            ModelExecutionEnterprisePolicyValue.ALLOW);
+        await createPage();
+
+        const enterpriseLogginInfoBullet =
+            section.shadowRoot!.querySelector<SettingsAiLoggingInfoBullet>(
+                '#enterpriseInfoBullet');
+        assertFalse(!!enterpriseLogginInfoBullet);
+      });
+
+  test(
+      'testAutofillAiEnterpriseUserLoggingNotAllowedHaveLoggingInfoBullet',
+      async function() {
+        settingsPrefs.set(
+            `prefs.${AiEnterpriseFeaturePrefName.AUTOFILL_AI}.value`,
+            ModelExecutionEnterprisePolicyValue.ALLOW_WITHOUT_LOGGING);
+        await createPage();
+
+        const enterpriseLogginInfoBullet =
+            section.shadowRoot!.querySelector<SettingsAiLoggingInfoBullet>(
+                '#enterpriseInfoBullet');
+        assertTrue(!!enterpriseLogginInfoBullet);
+        assertEquals(
+            loadTimeData.getString(
+                'autofillAiSubpageSublabelLoggingManagedDisabled'),
+            enterpriseLogginInfoBullet.loggingManagedDisabledCustomLabel);
+      });
+
+  test(
+      'testAutofillAiEnterpriseUserDisabledHasLoggingInfoBullet',
+      async function() {
+        settingsPrefs.set(
+            `prefs.${AiEnterpriseFeaturePrefName.AUTOFILL_AI}.value`,
+            ModelExecutionEnterprisePolicyValue.DISABLE);
+        await createPage();
+
+        const enterpriseLogginInfoBullet =
+            section.shadowRoot!.querySelector<SettingsAiLoggingInfoBullet>(
+                '#enterpriseInfoBullet');
+        assertTrue(!!enterpriseLogginInfoBullet);
+        assertEquals(
+            loadTimeData.getString(
+                'autofillAiSubpageSublabelLoggingManagedDisabled'),
+            enterpriseLogginInfoBullet.loggingManagedDisabledCustomLabel);
+      });
 
   test('testEntityInstancesLoadedAndSortedAlphabetically', async function() {
+    await createPage();
     await entityDataManager.whenCalled('loadEntityInstances');
     const listItems =
         entityInstancesListElement.querySelectorAll<HTMLElement>('.list-item');
@@ -249,6 +319,7 @@ suite('AutofillAiSectionUiTest', function() {
 
   removeEntityInstanceParams.forEach(
       (params) => test(params.title, async function() {
+        await createPage();
         entityDataManager.setGetEntityInstanceByGuidResponse(
             testEntityInstance);
 
@@ -308,6 +379,7 @@ suite('AutofillAiSectionUiTest', function() {
 
   addOrEditEntityInstanceDialogParams.forEach(
       (params) => test(params.title, async function() {
+        await createPage();
         if (params.add) {
           // Open the add entity instance dialog.
           const addButton = section.shadowRoot!.querySelector<HTMLElement>(
@@ -377,6 +449,7 @@ suite('AutofillAiSectionUiTest', function() {
       }));
 
   test('testAddButtonShowsEntityInstancesList', async function() {
+    await createPage();
     const addButton =
         section.shadowRoot!.querySelector<HTMLElement>('#addEntityInstance');
     assertTrue(!!addButton);
@@ -397,6 +470,7 @@ suite('AutofillAiSectionUiTest', function() {
   test(
       'testEntityInstancesChangedListenerUpdatesAndAlphabeticallySortsEntries',
       async function() {
+        await createPage();
         const newTestEntityInstancesWithLabels:
             chrome.autofillPrivate.EntityInstanceWithLabels[] = [
           {
@@ -437,6 +511,7 @@ suite('AutofillAiSectionUiTest', function() {
       });
 
   test('testEntriesDoNotDisappearAfterToggleDisabling', async function() {
+    await createPage();
     // The toggle is initially enabled (see the setup() method). Clicking it
     // sets the opt-in status to false.
     const toggle =
@@ -455,6 +530,7 @@ suite('AutofillAiSectionUiTest', function() {
   });
 
   test('testToggleIsDisabledWhenUserIsNotEligible', async function() {
+    await createPage();
     // The toggle is initially enabled (see the setup() method). Clicking it
     // sets the opt-in status to false.
     const toggle =
@@ -479,6 +555,12 @@ suite('AutofillAiSectionUiTest', function() {
 
 suite('AutofillAiSectionLongLabelsUiTest', function() {
   let section: SettingsAutofillAiSectionElement;
+  let settingsPrefs: SettingsPrefsElement;
+
+  suiteSetup(function() {
+    settingsPrefs = document.createElement('settings-prefs');
+    return CrSettingsPrefs.initialized;
+  });
 
   setup(async function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -507,6 +589,7 @@ suite('AutofillAiSectionLongLabelsUiTest', function() {
         testEntityInstancesWithLabels);
 
     section = document.createElement('settings-autofill-ai-section');
+    section.prefs = settingsPrefs.prefs;
     document.body.appendChild(section);
     await flushTasks();
   });
