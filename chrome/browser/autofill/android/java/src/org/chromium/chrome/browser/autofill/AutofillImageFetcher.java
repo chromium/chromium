@@ -223,7 +223,7 @@ public class AutofillImageFetcher {
 
         ImageFetcher.Params params =
                 ImageFetcher.Params.create(
-                        resolvedUrl, ImageFetcher.AUTOFILL_CARD_ART_UMA_CLIENT_NAME);
+                        resolvedUrl, ImageFetcher.AUTOFILL_IMAGE_FETCHER_UMA_CLIENT_NAME);
         mImageFetcher.fetchImage(params, onImageFetched);
     }
 

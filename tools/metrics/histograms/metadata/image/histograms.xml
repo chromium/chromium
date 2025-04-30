@@ -53,9 +53,10 @@ chromium-metrics-reviews@google.com.
       summary="Showing cache patterns only for AssistantDetails."/>
   <variant name=".AutofillCardArt"
       summary="Show customized card-art image for credit card suggestions on
-               Android."/>
+               Android (Used up to M137, will log as 'AutofillImageFetcher'
+               from M138)."/>
   <variant name=".AutofillImageFetcher"
-      summary="Show customized card art image for credit card."/>
+      summary="Downloads various Autofill related images."/>
   <variant name=".AutofillPasswordFavicon"
       summary="Requesting favicons associated with credentials directly from
                websites."/>
