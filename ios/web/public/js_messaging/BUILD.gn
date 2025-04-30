@@ -76,6 +76,7 @@ source_set("unittests") {
   testonly = true
 
   deps = [
+    ":gcrweb_test_api",
     ":util_test_api",
     "//base",
     "//base/test:test_support",
@@ -85,7 +86,10 @@ source_set("unittests") {
     "//url",
   ]
 
-  sources = [ "utils_javascript_test.mm" ]
+  sources = [
+    "gcrweb_javascript_test.mm",
+    "utils_javascript_test.mm",
+  ]
 }
 
 optimize_ts("util_test_api") {
@@ -97,4 +101,12 @@ optimize_ts("util_test_api") {
     ":gcrweb",
     ":util_scripts",
   ]
+}
+
+optimize_ts("gcrweb_test_api") {
+  testonly = true
+
+  sources = [ "resources/gcrweb_test_api.ts" ]
+
+  deps = [ ":gcrweb" ]
 }
