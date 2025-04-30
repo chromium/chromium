@@ -1258,6 +1258,35 @@ public class ManageSyncSettingsTest {
         onView(withId(R.id.signin_settings_card_button)).check(matches(hasFocus()));
     }
 
+    @Test
+    @SmallTest
+    public void testFirstTextViewInPassphraseDialogNotReceivingFocus() {
+        mSyncTestRule.getFakeServerHelper().setCustomPassphraseNigori("passphrase");
+
+        mSyncTestRule.setUpAccountAndSignInForTesting();
+        SyncTestUtil.waitForSyncTransportActive();
+
+        CriteriaHelper.pollUiThread(
+                () -> mSyncTestRule.getSyncService().isPassphraseRequiredForPreferredDataTypes());
+
+        startManageSyncPreferences();
+        ViewUtils.waitForVisibleView(withId(R.id.signin_settings_card));
+
+        // Mimic the user tapping on the error card's button.
+        onView(withId(R.id.signin_settings_card_button)).perform(click());
+
+        // Passphrase dialog should open.
+        final PassphraseDialogFragment passphraseFragment =
+                ActivityTestUtils.waitForFragment(
+                        mSettingsActivity, ManageSyncSettings.FRAGMENT_ENTER_PASSPHRASE);
+        Assert.assertTrue(passphraseFragment.isAdded());
+
+        // Focus on the first element that can receive focus in the passphrase dialog.
+        onView(withText(R.string.sync_enter_passphrase_title))
+                .perform(pressKey(KeyEvent.KEYCODE_DPAD_LEFT));
+        onView(withId(R.id.passphrase)).check(matches(hasFocus()));
+    }
+
     // TODO(crbug.com/330438265): Extend this test for the identity error card.
     @Test
     @SmallTest
