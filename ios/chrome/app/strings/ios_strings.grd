@@ -4814,6 +4814,12 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_PRIVACY_SAFE_BROWSING_TITLE" desc="Title for Privacy Safe Browsing table view.">
         Safe Browsing
       </message>
+      <message name="IDS_IOS_PROFILE_RECORD_TYPE_HOME" desc="Title for a profile with a Home record type.">
+        Home
+      </message>
+      <message name="IDS_IOS_PROFILE_RECORD_TYPE_WORK" desc="Title for a profile with a Work record type.">
+        Work
+      </message>
       <message name="IDS_IOS_PROGRESS_BAR_ACCESSIBILITY" desc="Text read by voice over to inform the user about the progress of the page load. [Read by Text To Speech].">
         Page load progress bar, <ph name="EMAIL">$1<ex>20%</ex></ph> loaded.
       </message>

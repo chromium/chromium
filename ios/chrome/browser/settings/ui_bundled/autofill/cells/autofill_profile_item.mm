@@ -40,12 +40,16 @@
 
   cell.textLabel.text = self.title;
   cell.detailTextLabel.text = self.detailText;
+  [cell setTrailingDetailText:_trailingDetailText];
   cell.localProfileIconShown = self.localProfileIconShown;
 }
 
 @end
 
-@implementation AutofillProfileCell
+@implementation AutofillProfileCell {
+  // The cell trailing detail text
+  UILabel* _trailingDetailTextLabel;
+}
 
 // These properties overrides the ones from UITableViewCell, so this @synthesize
 // cannot be removed.
@@ -80,6 +84,13 @@
     _detailTextLabel.adjustsFontForContentSizeCategory = YES;
     _detailTextLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
 
+    _trailingDetailTextLabel = [[UILabel alloc] init];
+    _trailingDetailTextLabel.font =
+        [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
+    _trailingDetailTextLabel.textColor =
+        [UIColor colorNamed:kTextSecondaryColor];
+    _trailingDetailTextLabel.hidden = YES;
+
     UIStackView* verticalStack = [[UIStackView alloc]
         initWithArrangedSubviews:@[ _textLabel, _detailTextLabel ]];
     verticalStack.translatesAutoresizingMaskIntoConstraints = NO;
@@ -89,8 +100,10 @@
     verticalStack.alignment = UIStackViewAlignmentLeading;
     [self.contentView addSubview:verticalStack];
 
-    UIStackView* horizontalStack = [[UIStackView alloc]
-        initWithArrangedSubviews:@[ verticalStack, _imageView ]];
+    UIStackView* horizontalStack =
+        [[UIStackView alloc] initWithArrangedSubviews:@[
+          verticalStack, _trailingDetailTextLabel, _imageView
+        ]];
     horizontalStack.translatesAutoresizingMaskIntoConstraints = NO;
     horizontalStack.axis = UILayoutConstraintAxisHorizontal;
     horizontalStack.spacing = kTableViewSubViewHorizontalSpacing;
@@ -125,12 +138,18 @@
   return self;
 }
 
+- (void)setTrailingDetailText:(NSString*)trailingText {
+  _trailingDetailTextLabel.text = trailingText;
+  _trailingDetailTextLabel.hidden = (trailingText.length == 0);
+}
+
 #pragma mark - UITableViewCell
 
 - (void)prepareForReuse {
   [super prepareForReuse];
   self.textLabel.text = nil;
   self.detailTextLabel.text = nil;
+  [self setTrailingDetailText:nil];
   self.localProfileIconShown = NO;
 }
 
@@ -141,6 +160,11 @@
   if (self.detailTextLabel.text) {
     label =
         [NSString stringWithFormat:@"%@, %@", label, self.detailTextLabel.text];
+  }
+
+  if (_trailingDetailTextLabel.text.length > 0) {
+    label = [NSString
+        stringWithFormat:@"%@, %@", label, _trailingDetailTextLabel.text];
   }
   if (self.localProfileIconShown) {
     label = [NSString

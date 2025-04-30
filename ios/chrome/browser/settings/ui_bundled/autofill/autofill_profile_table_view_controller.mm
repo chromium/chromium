@@ -296,6 +296,21 @@ typedef NS_ENUM(NSInteger, ItemType) {
       [[AutofillProfileItem alloc] initWithType:ItemTypeAddress];
   item.title = title;
   item.detailText = subTitle;
+
+  if (base::FeatureList::IsEnabled(
+          autofill::features::kAutofillEnableSupportForHomeAndWork)) {
+    autofill::AutofillProfile::RecordType recordType =
+        autofillProfile.record_type();
+    if (recordType == autofill::AutofillProfile::RecordType::kAccountHome) {
+      item.trailingDetailText =
+          l10n_util::GetNSString(IDS_IOS_PROFILE_RECORD_TYPE_HOME);
+    } else if (recordType ==
+               autofill::AutofillProfile::RecordType::kAccountWork) {
+      item.trailingDetailText =
+          l10n_util::GetNSString(IDS_IOS_PROFILE_RECORD_TYPE_WORK);
+    }
+  }
+
   item.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
   item.accessibilityIdentifier = title;
   item.GUID = guid;

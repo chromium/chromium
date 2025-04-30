@@ -23,6 +23,9 @@
 // multiline (no limit).
 @property(nonatomic, copy) NSString* detailText;
 
+// Trailing detail text to be displayed.
+@property(nonatomic, copy) NSString* trailingDetailText;
+
 // The GUID used by the PersonalDataManager to identify profiles.
 @property(nonatomic, assign) std::string GUID;
 
@@ -47,8 +50,12 @@
 @property(nonatomic, readonly, strong) UILabel* textLabel;
 // The cell detail text.
 @property(nonatomic, readonly, strong) UILabel* detailTextLabel;
+
 // YES, if the cloud off icon representing local profile is shown.
 @property(nonatomic, assign) BOOL localProfileIconShown;
+
+// Sets the visibility of trailingDetailTextLabel.
+- (void)setTrailingDetailText:(NSString*)trailingText;
 
 @end
 
