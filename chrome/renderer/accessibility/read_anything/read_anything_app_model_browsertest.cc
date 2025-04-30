@@ -1899,3 +1899,49 @@ TEST_F(ReadAnythingAppModelTest,
   model().AccessibilityEventReceived(tree_id_, updates, events, false);
   ASSERT_FALSE(model().reset_draw_timer());
 }
+
+TEST_F(ReadAnythingAppModelTest, SetUkmSourceId_TreeExists) {
+  ui::AXTreeID tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  ui::AXTreeUpdate update;
+  test::SetUpdateTreeID(&update, tree_id);
+  ui::AXNodeData node1;
+  static constexpr int kId = 1;
+  node1.id = kId;
+  update.root_id = node1.id;
+  update.nodes = {std::move(node1)};
+
+  ukm::SourceId source_id = ukm::AssignNewSourceId();
+
+  // The UKM source should be invalid before the tree is made active.
+  AccessibilityEventReceived({std::move(update)});
+  EXPECT_EQ(model().GetUkmSourceId(), ukm::kInvalidSourceId);
+
+  // After the tree is made active, the UKM source should be valid.
+  model().SetActiveTreeId(tree_id);
+  model().SetUkmSourceIdForTree(tree_id, source_id);
+  EXPECT_EQ(model().GetUkmSourceId(), source_id);
+}
+
+TEST_F(ReadAnythingAppModelTest, SetUkmSourceId_TreeDoesNotExistInitially) {
+  ui::AXTreeID tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  ui::AXTreeUpdate update;
+  test::SetUpdateTreeID(&update, tree_id);
+  ui::AXNodeData node1;
+  static constexpr int kId = 1;
+  node1.id = kId;
+  update.root_id = node1.id;
+  update.nodes = {std::move(node1)};
+
+  ukm::SourceId source_id = ukm::AssignNewSourceId();
+
+  // The UKM source should be invalid when the tree is made active but before
+  // a representation of it is actually stored.
+  model().SetActiveTreeId(tree_id);
+  model().SetUkmSourceIdForTree(tree_id, source_id);
+  EXPECT_EQ(model().GetUkmSourceId(), ukm::kInvalidSourceId);
+
+  // The UKM source should be valid once an accessibility event is received for
+  // the active tree.
+  AccessibilityEventReceived({std::move(update)});
+  EXPECT_EQ(model().GetUkmSourceId(), source_id);
+}

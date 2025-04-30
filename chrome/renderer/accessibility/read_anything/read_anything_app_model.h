@@ -234,7 +234,8 @@ class ReadAnythingAppModel {
   void SetActiveTreeId(ui::AXTreeID active_tree_id);
 
   ukm::SourceId GetUkmSourceId() const;
-  void SetUkmSourceId(ukm::SourceId ukm_source_id);
+  void SetUkmSourceIdForTree(const ui::AXTreeID& tree,
+                             ukm::SourceId ukm_source_id);
 
   int GetNumSelections() const;
   void SetNumSelections(int num_selections);
@@ -362,6 +363,7 @@ class ReadAnythingAppModel {
   void OnTreeChangeTimerTriggered();
 
   void SetFontSize(double font_size, int increment = 0);
+  void SetUkmSourceId(ukm::SourceId ukm_source_id);
 
   // State.
   std::map<ui::AXTreeID, std::unique_ptr<AXTreeInfo>> tree_infos_;
@@ -465,6 +467,8 @@ class ReadAnythingAppModel {
   bool requires_tree_lang_ = false;
 
   bool will_hide_ = false;
+
+  std::map<ui::AXTreeID, ukm::SourceId> pending_ukm_sources_;
 
   // List of observers of model state changes.
   base::ObserverList<ModelObserver, /*check_empty=*/true> observers_;

@@ -616,7 +616,7 @@ void ReadAnythingAppController::OnActiveAXTreeIDChanged(
   post_user_entry_draw_timer_->Stop();
 
   model_.SetActiveTreeId(tree_id);
-  model_.SetUkmSourceId(ukm_source_id);
+  model_.SetUkmSourceIdForTree(tree_id, ukm_source_id);
   model_.set_is_pdf(is_pdf);
 
   if (IsReadAloudEnabled() && read_aloud_model_.speech_playing()) {

@@ -531,6 +531,13 @@ void ReadAnythingAppModel::AccessibilityEventReceived(
     tree_infos_.emplace(
         tree_id, std::make_unique<AXTreeInfo>(
                      std::make_unique<ui::AXTreeManager>(std::move(new_tree))));
+    // If we previously received UKM source info for this tree_id, set the
+    // UKM source now that the tree information has been added to tree_infos_.
+    if (tree_id == active_tree_id_ && pending_ukm_sources_.count(tree_id) > 0) {
+      ukm::SourceId ukm_source_id = pending_ukm_sources_[tree_id];
+      pending_ukm_sources_.erase(tree_id);
+      SetUkmSourceId(ukm_source_id);
+    }
   }
 
   // If a tree update on the active tree is received while distillation is in
@@ -603,6 +610,21 @@ ukm::SourceId ReadAnythingAppModel::GetUkmSourceId() const {
     }
   }
   return ukm::kInvalidSourceId;
+}
+
+void ReadAnythingAppModel::SetUkmSourceIdForTree(const ui::AXTreeID& tree,
+                                                 ukm::SourceId ukm_source_id) {
+  // We may receive an OnActiveAXTreeIDChanged event on a tree before we've
+  // received an AccessibilityEventReceived event adding the tree to
+  // tree_infos_. When this happens, we should keep track of the ukm_source_id,
+  // and later, if the tree is added to tree_infos_ while it's still active,
+  // we can try again to set the ukm source.
+  if (!base::Contains(tree_infos_, active_tree_id_)) {
+    pending_ukm_sources_[tree] = ukm_source_id;
+    return;
+  }
+
+  SetUkmSourceId(ukm_source_id);
 }
 
 void ReadAnythingAppModel::SetUkmSourceId(ukm::SourceId ukm_source_id) {
