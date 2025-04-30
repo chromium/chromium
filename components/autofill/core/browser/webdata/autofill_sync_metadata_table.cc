@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/webdata/autofill_sync_metadata_table.h"
 
+#include "base/logging.h"
 #include "components/autofill/core/browser/webdata/autofill_table_utils.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/model/metadata_batch.h"

@@ -10,6 +10,7 @@
 #include "base/base64.h"
 #include "base/base64url.h"
 #include "base/files/file_util.h"
+#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/byte_conversions.h"
 #include "components/ip_protection/common/ip_protection_probabilistic_reveal_token_fetcher.h"
