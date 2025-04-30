@@ -24,6 +24,8 @@ class BluetoothRemoteGattDescriptor;
 
 namespace bluetooth {
 
+class FakeRemoteGattService;
+
 // Implements device::BluetoothRemoteGattCharacteristics. Meant to be used
 // by FakeRemoteGattService to keep track of the characteristic's state and
 // attributes.
@@ -37,7 +39,7 @@ class FakeRemoteGattCharacteristic
   FakeRemoteGattCharacteristic(const std::string& characteristic_id,
                                const device::BluetoothUUID& characteristic_uuid,
                                mojom::CharacteristicPropertiesPtr properties,
-                               device::BluetoothRemoteGattService* service);
+                               FakeRemoteGattService* service);
   ~FakeRemoteGattCharacteristic() override;
 
   // Adds a fake descriptor with |descriptor_uuid| to this characteristic.
@@ -89,6 +91,8 @@ class FakeRemoteGattCharacteristic
   // Returns the write type of the last successfully written value to the
   // characteristic. Returns kNone if no value has been written yet.
   mojom::WriteType last_write_type() { return last_write_type_; }
+
+  FakeRemoteGattService& fake_service() const { return fake_service_.get(); }
 
   // device::BluetoothGattCharacteristic overrides:
   std::string GetIdentifier() const override;
@@ -153,7 +157,7 @@ class FakeRemoteGattCharacteristic
   const std::string characteristic_id_;
   const device::BluetoothUUID characteristic_uuid_;
   Properties properties_;
-  raw_ptr<device::BluetoothRemoteGattService> service_;
+  const raw_ref<FakeRemoteGattService> fake_service_;
 
   // Last successfully written value to the characteristic.
   std::optional<std::vector<uint8_t>> last_written_value_;

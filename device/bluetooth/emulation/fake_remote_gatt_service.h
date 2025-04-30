@@ -22,6 +22,8 @@ class BluetoothRemoteGattService;
 
 namespace bluetooth {
 
+class FakePeripheral;
+
 // Implements device::BluetoothRemoteGattService. Meant to be used by
 // FakePeripheral to keep track of the service's state and attributes.
 //
@@ -31,7 +33,7 @@ class FakeRemoteGattService : public device::BluetoothRemoteGattService {
   FakeRemoteGattService(const std::string& service_id,
                         const device::BluetoothUUID& service_uuid,
                         bool is_primary,
-                        device::BluetoothDevice* device);
+                        FakePeripheral* device);
   ~FakeRemoteGattService() override;
 
   // Returns true if there are no pending responses for any characterstics.
@@ -45,6 +47,8 @@ class FakeRemoteGattService : public device::BluetoothRemoteGattService {
 
   // Removes a fake characteristic with |identifier| from this service.
   bool RemoveFakeCharacteristic(const std::string& identifier);
+
+  FakePeripheral& fake_peripheral() const { return fake_peripheral_.get(); }
 
   // device::BluetoothGattService overrides:
   std::string GetIdentifier() const override;
@@ -60,7 +64,7 @@ class FakeRemoteGattService : public device::BluetoothRemoteGattService {
   const std::string service_id_;
   const device::BluetoothUUID service_uuid_;
   const bool is_primary_;
-  raw_ptr<device::BluetoothDevice> device_;
+  const raw_ref<FakePeripheral> fake_peripheral_;
 
   size_t last_characteristic_id_ = 0;
 };

@@ -186,6 +186,7 @@
                     "simulateAdvertisement",
                     "simulateGATTOperationResponse",
                     "simulateCharacteristicOperationResponse",
+                    "simulateDescriptorOperationResponse",
                     "addService",
                     "removeService",
                     "addCharacteristic",

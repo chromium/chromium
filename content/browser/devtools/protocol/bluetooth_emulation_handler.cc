@@ -178,6 +178,27 @@ constexpr std::string_view ToCharacteristicWriteType(
   }
 }
 
+constexpr std::string_view ToDescriptorOperation(
+    bluetooth::mojom::DescriptorOperationType type) {
+  switch (type) {
+    case bluetooth::mojom::DescriptorOperationType::kRead:
+      return BluetoothEmulation::CharacteristicOperationTypeEnum::Read;
+    case bluetooth::mojom::DescriptorOperationType::kWrite:
+      return BluetoothEmulation::DescriptorOperationTypeEnum::Write;
+  }
+}
+
+std::optional<bluetooth::mojom::DescriptorOperationType> ToDescriptorOperation(
+    std::string_view type) {
+  if (type == BluetoothEmulation::DescriptorOperationTypeEnum::Read) {
+    return bluetooth::mojom::DescriptorOperationType::kRead;
+  } else if (type == BluetoothEmulation::DescriptorOperationTypeEnum::Write) {
+    return bluetooth::mojom::DescriptorOperationType::kWrite;
+  } else {
+    return std::nullopt;
+  }
+}
+
 std::string getParentId(const std::string& id) {
   // This decoding mechanism aligns with the identifier formatting mechanism in
   // FakePeripheral::AddFakeService,
@@ -396,10 +417,10 @@ void BluetoothEmulationHandler::SimulateCharacteristicOperationResponse(
     return;
   }
 
-  std::string serviceId = getParentId(in_characteristicId);
-  std::string address = getParentId(serviceId);
+  std::string service_id = getParentId(in_characteristicId);
+  std::string address = getParentId(service_id);
   fake_central_->SimulateCharacteristicOperationResponse(
-      *operation_type, in_characteristicId, serviceId, address, in_code,
+      *operation_type, in_characteristicId, service_id, address, in_code,
       in_data ? std::optional(base::ToVector(*in_data)) : std::nullopt,
       base::BindOnce(
           [](std::unique_ptr<SimulateCharacteristicOperationResponseCallback>
@@ -415,6 +436,55 @@ void BluetoothEmulationHandler::SimulateCharacteristicOperationResponse(
           std::move(callback),
           base::StrCat(
               {"Failed to simulate characteristic response for operation type ",
+               in_type})));
+}
+
+void BluetoothEmulationHandler::SimulateDescriptorOperationResponse(
+    const std::string& descriptor_id,
+    const std::string& in_type,
+    int in_code,
+    std::optional<Binary> in_data,
+    std::unique_ptr<SimulateDescriptorOperationResponseCallback> callback) {
+  if (!is_enabled()) {
+    std::move(callback)->sendFailure(
+        Response::ServerError("BluetoothEmulation not enabled"));
+    return;
+  }
+  auto operation_type = ToDescriptorOperation(in_type);
+  if (!operation_type) {
+    std::move(callback)->sendFailure(Response::InvalidParams(
+        base::StrCat({"Unknown descriptor operation type ", in_type})));
+    return;
+  }
+  if (operation_type == bluetooth::mojom::DescriptorOperationType::kRead &&
+      ((in_code == bluetooth::mojom::kGATTSuccess) != in_data.has_value())) {
+    std::move(callback)->sendFailure(Response::InvalidParams(
+        base::StrCat({"Descriptor operation type ", in_type, " with code ",
+                      base::NumberToString(in_code),
+                      in_data ? " does not expect" : " expects", " data"})));
+    return;
+  }
+
+  std::string characteristic_id = getParentId(descriptor_id);
+  std::string service_id = getParentId(characteristic_id);
+  std::string address = getParentId(service_id);
+  fake_central_->SimulateDescriptorOperationResponse(
+      *operation_type, descriptor_id, characteristic_id, service_id, address,
+      in_code, in_data ? std::optional(base::ToVector(*in_data)) : std::nullopt,
+      base::BindOnce(
+          [](std::unique_ptr<SimulateDescriptorOperationResponseCallback>
+                 callback,
+             const std::string& error_message, bool success) {
+            if (!success) {
+              std::move(callback)->sendFailure(
+                  Response::ServerError(error_message));
+              return;
+            }
+            std::move(callback)->sendSuccess();
+          },
+          std::move(callback),
+          base::StrCat(
+              {"Failed to simulate descriptor response for operation type ",
                in_type})));
 }
 
@@ -530,10 +600,10 @@ void BluetoothEmulationHandler::RemoveCharacteristic(
     return;
   }
 
-  std::string serviceId = getParentId(in_characteristicId);
-  std::string address = getParentId(serviceId);
+  std::string service_id = getParentId(in_characteristicId);
+  std::string address = getParentId(service_id);
   fake_central_->RemoveFakeCharacteristic(
-      in_characteristicId, serviceId, address,
+      in_characteristicId, service_id, address,
       base::BindOnce(
           [](std::unique_ptr<RemoveCharacteristicCallback> callback,
              const std::string& error_message, bool success) {
@@ -566,10 +636,10 @@ void BluetoothEmulationHandler::AddDescriptor(
     return;
   }
 
-  std::string serviceId = getParentId(in_characteristicId);
-  std::string address = getParentId(serviceId);
+  std::string service_id = getParentId(in_characteristicId);
+  std::string address = getParentId(service_id);
   fake_central_->AddFakeDescriptor(
-      uuid, in_characteristicId, serviceId, address,
+      uuid, in_characteristicId, service_id, address,
       base::BindOnce(
           [](std::unique_ptr<AddDescriptorCallback> callback,
              const std::string& error_message,
@@ -596,11 +666,11 @@ void BluetoothEmulationHandler::RemoveDescriptor(
     return;
   }
 
-  std::string characteristicId = getParentId(in_descriptorId);
-  std::string serviceId = getParentId(characteristicId);
-  std::string address = getParentId(serviceId);
+  std::string characteristic_id = getParentId(in_descriptorId);
+  std::string service_id = getParentId(characteristic_id);
+  std::string address = getParentId(service_id);
   fake_central_->RemoveFakeDescriptor(
-      in_descriptorId, characteristicId, serviceId, address,
+      in_descriptorId, characteristic_id, service_id, address,
       base::BindOnce(
           [](std::unique_ptr<RemoveDescriptorCallback> callback,
              const std::string& error_message, bool success) {
@@ -634,6 +704,15 @@ void BluetoothEmulationHandler::DispatchCharacteristicOperationEvent(
       write_type
           ? std::optional(std::string(ToCharacteristicWriteType(*write_type)))
           : std::nullopt);
+}
+
+void BluetoothEmulationHandler::DispatchDescriptorOperationEvent(
+    bluetooth::mojom::DescriptorOperationType type,
+    const std::optional<std::vector<uint8_t>>& data,
+    const std::string& descriptor_id) {
+  frontend_->DescriptorOperationReceived(
+      descriptor_id, std::string(ToDescriptorOperation(type)),
+      data ? std::optional(Binary::fromVector(*data)) : std::nullopt);
 }
 
 }  // namespace content::protocol

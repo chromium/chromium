@@ -262,6 +262,35 @@ void FakeCentral::SimulateCharacteristicOperationResponse(
   }
 }
 
+void FakeCentral::SimulateDescriptorOperationResponse(
+    mojom::DescriptorOperationType type,
+    const std::string& descriptor_id,
+    const std::string& characteristic_id,
+    const std::string& service_id,
+    const std::string& peripheral_address,
+    uint16_t code,
+    const std::optional<std::vector<uint8_t>>& data,
+    SimulateCharacteristicOperationResponseCallback callback) {
+  FakeRemoteGattDescriptor* fake_remote_gatt_descriptor =
+      GetFakeRemoteGattDescriptor(peripheral_address, service_id,
+                                  characteristic_id, descriptor_id);
+  if (fake_remote_gatt_descriptor == nullptr) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  switch (type) {
+    case mojom::DescriptorOperationType::kRead:
+      fake_remote_gatt_descriptor->SimulateReadResponse(code, data);
+      std::move(callback).Run(true);
+      break;
+    case mojom::DescriptorOperationType::kWrite:
+      fake_remote_gatt_descriptor->SimulateWriteResponse(code);
+      std::move(callback).Run(true);
+      break;
+  }
+}
+
 bool FakeCentral::AllResponsesConsumed() {
   return std::ranges::all_of(devices_, [](const auto& e) {
     // static_cast is safe because the parent class's devices_ is only
@@ -849,6 +878,15 @@ void FakeCentral::DispatchCharacteristicOperationEvent(
   if (client_.is_bound()) {
     client_->DispatchCharacteristicOperationEvent(type, data, write_type,
                                                   characteristic_id);
+  }
+}
+
+void FakeCentral::DispatchDescriptorOperationEvent(
+    mojom::DescriptorOperationType type,
+    const std::optional<std::vector<uint8_t>>& data,
+    const std::string& descriptor_id) {
+  if (client_.is_bound()) {
+    client_->DispatchDescriptorOperationEvent(type, data, descriptor_id);
   }
 }
 

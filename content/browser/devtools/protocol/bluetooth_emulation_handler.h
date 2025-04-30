@@ -69,6 +69,14 @@ class CONTENT_EXPORT BluetoothEmulationHandler
       std::unique_ptr<SimulateCharacteristicOperationResponseCallback> callback)
       override;
 
+  void SimulateDescriptorOperationResponse(
+      const std::string& descriptor_id,
+      const std::string& in_type,
+      int in_code,
+      std::optional<Binary> in_data,
+      std::unique_ptr<SimulateDescriptorOperationResponseCallback> callback)
+      override;
+
   void AddService(const std::string& in_address,
                   const std::string& in_serviceUuid,
                   std::unique_ptr<AddServiceCallback> callback) override;
@@ -100,6 +108,10 @@ class CONTENT_EXPORT BluetoothEmulationHandler
       const std::optional<std::vector<uint8_t>>& data,
       const std::optional<bluetooth::mojom::WriteType> write_type,
       const std::string& characteristic_id) override;
+  void DispatchDescriptorOperationEvent(
+      bluetooth::mojom::DescriptorOperationType type,
+      const std::optional<std::vector<uint8_t>>& data,
+      const std::string& descriptor_id) override;
 
   bool is_enabled() { return fake_central_.is_bound(); }
 

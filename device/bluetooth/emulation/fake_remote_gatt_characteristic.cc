@@ -33,12 +33,9 @@ FakeRemoteGattCharacteristic::ResponseCallback CreateResponseCallback(
           case mojom::kGATTSuccess:
             std::move(callback).Run();
             break;
-          case mojom::kGATTInvalidHandle:
+          default:
             std::move(error_callback)
                 .Run(device::BluetoothGattService::GattErrorCode::kFailed);
-            break;
-          default:
-            NOTREACHED();
         }
       },
       std::move(callback), std::move(error_callback));
@@ -58,10 +55,10 @@ FakeRemoteGattCharacteristic::FakeRemoteGattCharacteristic(
     const std::string& characteristic_id,
     const device::BluetoothUUID& characteristic_uuid,
     mojom::CharacteristicPropertiesPtr properties,
-    device::BluetoothRemoteGattService* service)
+    FakeRemoteGattService* service)
     : characteristic_id_(characteristic_id),
       characteristic_uuid_(characteristic_uuid),
-      service_(service) {
+      fake_service_(*service) {
   properties_ = PROPERTY_NONE;
   if (properties->broadcast) {
     properties_ |= PROPERTY_BROADCAST;
@@ -140,15 +137,12 @@ void FakeRemoteGattCharacteristic::SimulateReadResponse(
   std::vector<uint8_t> response_value;
   switch (gatt_code) {
     case mojom::kGATTSuccess:
-      CHECK(value);
-      response_value = std::move(value.value());
-      break;
-    case mojom::kGATTInvalidHandle:
-      CHECK(!value);
-      response_code = device::BluetoothGattService::GattErrorCode::kFailed;
+      if (value) {
+        response_value = std::move(value.value());
+      }
       break;
     default:
-      NOTREACHED();
+      response_code = device::BluetoothGattService::GattErrorCode::kFailed;
   }
 
   auto callbacks = std::move(read_callbacks_);
@@ -208,7 +202,7 @@ const std::vector<uint8_t>& FakeRemoteGattCharacteristic::GetValue() const {
 
 device::BluetoothRemoteGattService* FakeRemoteGattCharacteristic::GetService()
     const {
-  return service_;
+  return &fake_service_.get();
 }
 
 void FakeRemoteGattCharacteristic::ReadRemoteCharacteristic(
@@ -397,13 +391,10 @@ void FakeRemoteGattCharacteristic::DispatchCharacteristicOperationEvent(
     mojom::CharacteristicOperationType type,
     const std::optional<std::vector<uint8_t>>& data,
     const std::optional<mojom::WriteType> write_type) {
-  FakeRemoteGattService* fake_service =
-      static_cast<FakeRemoteGattService*>(service_);
-  FakePeripheral* fake_peripheral =
-      static_cast<FakePeripheral*>(fake_service->GetDevice());
-  auto* fake_central = static_cast<FakeCentral*>(fake_peripheral->GetAdapter());
-  fake_central->DispatchCharacteristicOperationEvent(type, data, write_type,
-                                                     characteristic_id_);
+  fake_service_->fake_peripheral()
+      .fake_central()
+      .DispatchCharacteristicOperationEvent(type, data, write_type,
+                                            characteristic_id_);
 }
 
 }  // namespace bluetooth

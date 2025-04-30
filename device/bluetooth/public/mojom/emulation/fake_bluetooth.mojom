@@ -60,6 +60,12 @@ enum CharacteristicOperationType {
   kUnsubscribeFromNotifications,
 };
 
+// Descriptor operation type
+enum DescriptorOperationType {
+  kRead,
+  kWrite,
+};
+
 // Stores the external appearance description of the device.
 struct Appearance {
   bool has_value;
@@ -237,6 +243,19 @@ interface FakeCentral {
   // |peripheral_address| peripheral for a characteristic operation of |type|.
   SimulateCharacteristicOperationResponse(
     CharacteristicOperationType type,
+    string characteristic_id,
+    string service_id,
+    string peripheral_address,
+    uint16 code,
+    array<uint8>? data) => (bool success);
+
+  // Simulates the response |code| and |data| from the fake GATT Descriptor
+  // with |descriptor_id| in the fake characteristic with |characteristic_id| in
+  // the fake service with |service_id| in |peripheral_address| peripheral for a
+  // descriptor operation of |type|.
+  SimulateDescriptorOperationResponse(
+    DescriptorOperationType type,
+    string descriptor_id,
     string characteristic_id,
     string service_id,
     string peripheral_address,
@@ -431,4 +450,10 @@ interface FakeCentralClient {
       array<uint8>? data,
       WriteType? write_type,
       string characteristic_id);
+  // Called when the descriptor with |descriptor_id| receives a request
+  // of descriptor operation |type| along with |data|.
+  DispatchDescriptorOperationEvent(
+    DescriptorOperationType type,
+    array<uint8>? data,
+    string descriptor_id);
 };

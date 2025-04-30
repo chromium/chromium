@@ -81,6 +81,8 @@ class FakePeripheral : public device::BluetoothDevice {
   // Remove a fake service with |identifier| from this peripheral.
   bool RemoveFakeService(const std::string& identifier);
 
+  FakeCentral& fake_central() const { return fake_central_.get(); }
+
   // BluetoothDevice overrides:
   uint32_t GetBluetoothClass() const override;
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID)
@@ -178,6 +180,8 @@ class FakePeripheral : public device::BluetoothDevice {
 
   // Used to decide if the GattServicesDiscovered method is called.
   std::optional<uint16_t> next_discovery_response_;
+
+  const raw_ref<FakeCentral> fake_central_;
 
   // Mutable because IsGattServicesDiscoveryComplete needs to post a task but
   // is const.

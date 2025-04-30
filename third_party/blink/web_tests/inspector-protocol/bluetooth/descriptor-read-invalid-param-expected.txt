@@ -1,0 +1,16 @@
+Tests Bluetooth descriptor read response simulation invalid paramter
+{
+    error : {
+        code : -32602
+        message : Descriptor operation type read with code 0 expects data
+    }
+    id : <number>
+}
+{
+    error : {
+        code : -32602
+        message : Descriptor operation type read with code 8 does not expect data
+    }
+    id : <number>
+}
+

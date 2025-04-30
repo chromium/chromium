@@ -79,6 +79,15 @@ class FakeCentral final : public mojom::FakeCentral,
       uint16_t code,
       const std::optional<std::vector<uint8_t>>& data,
       SimulateCharacteristicOperationResponseCallback callback) override;
+  void SimulateDescriptorOperationResponse(
+      mojom::DescriptorOperationType type,
+      const std::string& descriptor_id,
+      const std::string& characteristic_id,
+      const std::string& service_id,
+      const std::string& peripheral_address,
+      uint16_t code,
+      const std::optional<std::vector<uint8_t>>& data,
+      SimulateDescriptorOperationResponseCallback callback) override;
   void AddFakeService(const std::string& peripheral_address,
                       const device::BluetoothUUID& service_uuid,
                       AddFakeServiceCallback callback) override;
@@ -246,6 +255,10 @@ class FakeCentral final : public mojom::FakeCentral,
       const std::optional<std::vector<uint8_t>>& data,
       const std::optional<mojom::WriteType> write_type,
       const std::string& characteristic_id);
+  void DispatchDescriptorOperationEvent(
+      mojom::DescriptorOperationType type,
+      const std::optional<std::vector<uint8_t>>& data,
+      const std::string& descriptor_id);
 
  private:
   ~FakeCentral() override;
