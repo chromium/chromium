@@ -22,6 +22,8 @@ import android.window.OnBackInvokedDispatcher;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
+import androidx.annotation.VisibleForTesting;
 import androidx.core.app.ActivityOptionsCompat;
 
 import org.chromium.base.ContextUtils;
@@ -171,12 +173,7 @@ public class CustomTabActivityNavigationController
 
         if (ChromeFeatureList.sCctPredictiveBackGesture.isEnabled()
                 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.BAKLAVA) {
-            mOnSystemBackInvokedCallback = () -> handleNavigateOnBackByOS();
-            mActivity
-                    .getOnBackInvokedDispatcher()
-                    .registerOnBackInvokedCallback(
-                            OnBackInvokedDispatcher.PRIORITY_SYSTEM_NAVIGATION_OBSERVER,
-                            mOnSystemBackInvokedCallback);
+            registerPredictiveBackCallback();
         }
 
         lifecycleDispatcher.register(this);
@@ -255,7 +252,6 @@ public class CustomTabActivityNavigationController
                                         | Intent.FLAG_ACTIVITY_NEW_DOCUMENT))
                         != 0;
 
-        // TODO(crbug.com/40285983): Add a metric for events handled by the OS and record it.
         RecordUserAction.record("CustomTabs.SystemBack");
         if (mTabProvider.getTab() == null) return false;
 
@@ -443,15 +439,48 @@ public class CustomTabActivityNavigationController
             if (ChromeFeatureList.sCctPredictiveBackGesture.isEnabled()
                     && Build.VERSION.SDK_INT >= Build.VERSION_CODES.BAKLAVA
                     && mOnSystemBackInvokedCallback != null) {
-                mActivity
-                        .getOnBackInvokedDispatcher()
-                        .unregisterOnBackInvokedCallback(mOnSystemBackInvokedCallback);
-                mOnSystemBackInvokedCallback = null;
+                unregisterPredictiveBackCallback();
             }
             mTabController.closeAndForgetTab();
         } else {
             mTabController.saveState();
         }
+    }
+
+    /**
+     * Registers a callback with the system's {@link OnBackInvokedDispatcher} to handle predictive
+     * back navigation events.
+     *
+     * <p>This method initializes an {@link android.window.OnBackInvokedCallback} that, when
+     * invoked, will call the {@code handleNavigateOnBackByOS()} method. The callback is registered
+     * with the priority {@link OnBackInvokedDispatcher#PRIORITY_SYSTEM_NAVIGATION_OBSERVER}.
+     */
+    @VisibleForTesting
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    void registerPredictiveBackCallback() {
+        mOnSystemBackInvokedCallback = () -> handleNavigateOnBackByOS();
+        mActivity
+                .getOnBackInvokedDispatcher()
+                .registerOnBackInvokedCallback(
+                        OnBackInvokedDispatcher.PRIORITY_SYSTEM_NAVIGATION_OBSERVER,
+                        mOnSystemBackInvokedCallback);
+    }
+
+    /**
+     * Unregisters the predictive back callback previously registered with the system's {@link
+     * OnBackInvokedDispatcher}.
+     *
+     * <p>This method uses the callback instance stored in {@code mOnSystemBackInvokedCallback} to
+     * unregister it from the dispatcher. After unregistration, {@code mOnSystemBackInvokedCallback}
+     * is set to {@code null}.
+     */
+    @VisibleForTesting
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    void unregisterPredictiveBackCallback() {
+        mActivity
+                .getOnBackInvokedDispatcher()
+                .unregisterOnBackInvokedCallback(mOnSystemBackInvokedCallback);
+        mOnSystemBackInvokedCallback = null;
     }
 
     // Debug log dump for https://crbug.com/374871254.

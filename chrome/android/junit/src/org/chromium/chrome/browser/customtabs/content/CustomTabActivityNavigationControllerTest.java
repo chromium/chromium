@@ -7,10 +7,12 @@ package org.chromium.chrome.browser.customtabs.content;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -19,6 +21,7 @@ import android.content.ContextWrapper;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.os.Build;
+import android.window.OnBackInvokedCallback;
 import android.window.OnBackInvokedDispatcher;
 
 import com.google.common.collect.ImmutableList;
@@ -282,5 +285,48 @@ public class CustomTabActivityNavigationControllerTest {
                 .getTabObserverForTesting()
                 .onInitialTabCreated(env.prepareTab(), TabCreationMode.DEFAULT);
         Assert.assertTrue(mNavigationController.getHandleBackPressChangedSupplier().get());
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.TIRAMISU)
+    public void registersPredictiveBackCallback_WhenEnabledForPredictiveBack() {
+        mNavigationController.registerPredictiveBackCallback();
+
+        ArgumentCaptor<OnBackInvokedCallback> captor =
+                ArgumentCaptor.forClass(OnBackInvokedCallback.class);
+
+        verify(env.activity, times(1)).getOnBackInvokedDispatcher();
+
+        // TODO(crbug.com/40285983): Update the verify function to use the actual enum value instead
+        // of (-2) once Roboelectric starts supporting Android Baklava.
+
+        // The "-2" value comes from OnBackInvokedDispatcher#PRIORITY_SYSTEM_NAVIGATION_OBSERVER.
+        // However, since Roboelectric is not enabled for API level 36 yet, the actual value of the
+        // flag is used. For reference:
+        // https://developer.android.com/reference/android/window/OnBackInvokedDispatcher#PRIORITY_SYSTEM_NAVIGATION_OBSERVER
+        verify(env.activity.getOnBackInvokedDispatcher(), times(1))
+                .registerOnBackInvokedCallback(eq(-2), captor.capture());
+
+        OnBackInvokedCallback capturedCallback = captor.getValue();
+
+        Assert.assertNotNull(capturedCallback);
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.TIRAMISU)
+    public void unregistersPredictiveBackCallback_WhenEnabledForPredictiveBack() {
+        mNavigationController.unregisterPredictiveBackCallback();
+
+        ArgumentCaptor<OnBackInvokedCallback> captor =
+                ArgumentCaptor.forClass(OnBackInvokedCallback.class);
+
+        verify(env.activity, times(1)).getOnBackInvokedDispatcher();
+
+        verify(env.activity.getOnBackInvokedDispatcher(), times(1))
+                .unregisterOnBackInvokedCallback(captor.capture());
+
+        OnBackInvokedCallback capturedCallback = captor.getValue();
+
+        Assert.assertNull(capturedCallback);
     }
 }
