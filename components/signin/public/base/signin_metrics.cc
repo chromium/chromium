@@ -591,6 +591,10 @@ void RecordSigninUserActionForAccessPoint(AccessPoint access_point) {
       base::RecordAction(base::UserMetricsAction(
           "Signin_Signin_FromHistorySyncOptinExpansionPillOnInactivity"));
       break;
+    case AccessPoint::kManagedProfileAutoSigninIos:
+      base::RecordAction(base::UserMetricsAction(
+          "Signin_Signin_FromManagedProfileAutoSigninIos"));
+      break;
   }
 }
 
@@ -764,6 +768,7 @@ void RecordSigninImpressionUserActionForAccessPoint(AccessPoint access_point) {
     case AccessPoint::kCollaborationLeaveOrDeleteTabGroup:
     case AccessPoint::kHistorySyncOptinExpansionPillOnInactivity:
     case AccessPoint::kHistorySyncEducationalTip:
+    case AccessPoint::kManagedProfileAutoSigninIos:
       NOTREACHED() << "Signin_Impression_From* user actions are not recorded "
                       "for access point "
                    << static_cast<int>(access_point);

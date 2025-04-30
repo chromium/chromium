@@ -232,6 +232,8 @@ class SigninMetricsTest : public ::testing::Test {
         return "HistorySyncOptinExpansionPillOnInactivity";
       case AccessPoint::kHistorySyncEducationalTip:
         return "HistorySyncEducationalTip";
+      case AccessPoint::kManagedProfileAutoSigninIos:
+        return "ManagedProfileAutoSigninIos";
     }
   }
 };
