@@ -27295,17 +27295,23 @@ should be able to be added at any place in this file.
 
 <action name="MobileToolbarBackInNewBackgroundTab">
   <owner>jhimawan@google.com</owner>
-  <description>TBD(jhimawan)</description>
+  <description>
+    The user navigated back, opening the page in a background tab.
+  </description>
 </action>
 
 <action name="MobileToolbarBackInNewForegroundTab">
   <owner>jhimawan@google.com</owner>
-  <description>TBD(jhimawan)</description>
+  <description>
+    The user navigated back, opening the page in a foreground tab.
+  </description>
 </action>
 
 <action name="MobileToolbarBackInNewForegroundWindow">
   <owner>jhimawan@google.com</owner>
-  <description>TBD(jhimawan)</description>
+  <description>
+    The user navigated back, opening the page in a foreground window.
+  </description>
 </action>
 
 <action name="MobileToolbarCloseAllIncognitoTabsButtonTap">
@@ -27353,6 +27359,27 @@ should be able to be added at any place in this file.
 <action name="MobileToolbarForward">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
+</action>
+
+<action name="MobileToolbarForwardInNewBackgroundTab">
+  <owner>jhimawan@google.com</owner>
+  <description>
+    The user navigated forward, opening the page in a background tab.
+  </description>
+</action>
+
+<action name="MobileToolbarForwardInNewForegroundTab">
+  <owner>jhimawan@google.com</owner>
+  <description>
+    The user navigated forward, opening the page in a foreground tab.
+  </description>
+</action>
+
+<action name="MobileToolbarForwardInNewWindow">
+  <owner>jhimawan@google.com</owner>
+  <description>
+    The user navigated forward, opening the page in a foreground window.
+  </description>
 </action>
 
 <action name="MobileToolbarIdentityDiscTap">
