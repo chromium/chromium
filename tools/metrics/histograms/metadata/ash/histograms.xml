@@ -1359,6 +1359,15 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Ash.Boca.TokenRetrievalIsValidation" enum="Boolean"
+    expires_after="2025-10-28">
+  <owner>zifanzhang@google.com</owner>
+  <owner>cros-edu-eng@google.com</owner>
+  <summary>
+    Records the number of validation and non-validation token Retrievals.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Boca.{Request}.ErrorCode" enum="ApiErrorCode"
     expires_after="2025-10-23">
   <owner>zifanzhang@google.com</owner>

@@ -9,6 +9,7 @@
 #include "base/metrics/metrics_hashes.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/string_util.h"
+#include "chromeos/ash/components/boca/boca_session_manager.h"
 #include "google_apis/common/api_error_codes.h"
 
 namespace ash::boca {
@@ -177,6 +178,28 @@ void RecordGoogleApiErrorCode(const std::string& name,
                                kBocaGoogleApiCallErrorCodeTemplate, {name},
                                /*=offsets*/ nullptr),
                            error_code);
+}
+
+void RecordPollingResult(const ::boca::Session* previous_session,
+                         const ::boca::Session* current_session) {
+  BocaSessionManager::BocaPollingResult polling_result;
+  if (!previous_session && !current_session) {
+    polling_result = BocaSessionManager::BocaPollingResult::kNoUpdate;
+  } else if (!previous_session) {
+    polling_result = BocaSessionManager::BocaPollingResult::kSessionStart;
+  } else if (!current_session) {
+    polling_result = BocaSessionManager::BocaPollingResult::kSessionEnd;
+  } else if (previous_session->SerializeAsString() !=
+             current_session->SerializeAsString()) {
+    polling_result = BocaSessionManager::BocaPollingResult::kInSessionUpdate;
+  } else {
+    polling_result = BocaSessionManager::BocaPollingResult::kNoUpdate;
+  }
+  base::UmaHistogramEnumeration(kPollingResult, polling_result);
+}
+
+void RecordTokenRetrievalIsValidation(const bool is_validation) {
+  base::UmaHistogramBoolean(kBocaTokenRetrievalIsValidation, is_validation);
 }
 
 }  // namespace ash::boca

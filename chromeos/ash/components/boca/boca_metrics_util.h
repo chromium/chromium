@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_BOCA_BOCA_METRICS_UTIL_H_
 
 #include "base/time/time.h"
+#include "chromeos/ash/components/boca/session_api/session_client_impl.h"
 #include "google_apis/common/api_error_codes.h"
 
 namespace ash::boca {
@@ -62,6 +63,9 @@ inline constexpr char kBocaRemoveStudent[] = "RemoveStudent";
 inline constexpr char kBocaUpdateStudentActivities[] =
     "UpdateStudentActivities";
 inline constexpr char kBocaStudentHeartbeat[] = "StudentHeartbeat";
+inline static constexpr char kPollingResult[] = "Ash.Boca.PollingResult";
+inline static constexpr char kBocaTokenRetrievalIsValidation[] =
+    "Ash.Boca.TokenRetrievalIsValidation";
 inline constexpr char kBocaUploadToken[] = "UploadToken";
 
 // Records the percentage of the duration that a session was in a particular
@@ -166,6 +170,13 @@ void RecordUploadTokenErrorCode(google_apis::ApiErrorCode error_code);
 // Records the error code of the Google Api calls.
 void RecordGoogleApiErrorCode(const std::string& name,
                               google_apis::ApiErrorCode error_code);
+
+// Records the session polling result.
+void RecordPollingResult(const ::boca::Session* previous_session,
+                         const ::boca::Session* current_session);
+
+// Records the token retrieval is validation status.
+void RecordTokenRetrievalIsValidation(const bool is_validation);
 
 }  // namespace ash::boca
 

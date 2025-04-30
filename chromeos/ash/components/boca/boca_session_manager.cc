@@ -243,7 +243,7 @@ void BocaSessionManager::ParseSessionResponse(
   }
 
   if (from_polling) {
-    RecordPollingResult(current_session_.get(), result.value().get());
+    boca::RecordPollingResult(current_session_.get(), result.value().get());
   }
 
   UpdateCurrentSession(std::move(result.value()), true);
@@ -452,25 +452,6 @@ bool BocaSessionManager::IsSessionTakeOver(
     return false;
   }
   return previous_session->session_id() != current_session->session_id();
-}
-
-void BocaSessionManager::RecordPollingResult(
-    const ::boca::Session* previous_session,
-    const ::boca::Session* current_session) {
-  BocaPollingResult polling_result;
-  if (!previous_session && !current_session) {
-    polling_result = BocaPollingResult::kNoUpdate;
-  } else if (!previous_session) {
-    polling_result = BocaPollingResult::kSessionStart;
-  } else if (!current_session) {
-    polling_result = BocaPollingResult::kSessionEnd;
-  } else if (previous_session->SerializeAsString() !=
-             current_session->SerializeAsString()) {
-    polling_result = BocaPollingResult::kInSessionUpdate;
-  } else {
-    polling_result = BocaPollingResult::kNoUpdate;
-  }
-  base::UmaHistogramEnumeration(kPollingResultHistName, polling_result);
 }
 
 void BocaSessionManager::HandleTakeOver(

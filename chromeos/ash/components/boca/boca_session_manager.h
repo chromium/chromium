@@ -62,8 +62,6 @@ class BocaSessionManager
   inline static constexpr int kLocalSessionTrackerBufferInSeconds = 60;
   inline static constexpr int kDefaultStudentHeartbeatIntervalInSeconds = 30;
   inline static constexpr int kSkipPollingBufferInSeconds = 2;
-  inline static constexpr char kPollingResultHistName[] =
-      "Ash.Boca.PollingResult";
 
   enum class BocaAction {
     kDefault = 0,
@@ -243,8 +241,6 @@ class BocaSessionManager
   bool IsSessionActive(const ::boca::Session* session);
   bool IsSessionTakeOver(const ::boca::Session* previous_session,
                          const ::boca::Session* current_session);
-  void RecordPollingResult(const ::boca::Session* previous_session,
-                           const ::boca::Session* current_session);
   void HandleTakeOver(bool dispatch_event,
                       std::unique_ptr<::boca::Session> session);
   void DispatchEvent();
