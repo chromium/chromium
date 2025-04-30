@@ -457,7 +457,6 @@ public class ManageSyncSettingsTest {
 
         mSyncTestRule.setUpAccountAndSignInForTesting();
         SyncTestUtil.waitForSyncTransportActive();
-        mSyncTestRule.getSyncService();
 
         ManageSyncSettings fragment = startManageSyncPreferences();
 
