@@ -741,6 +741,7 @@ class CrossbenchTest(object):
     self.options = options
     self.isolated_out_dir = isolated_out_dir
     self.network = self._get_network_arg(options.passthrough_args)
+    self.probe = self._get_probe_arg(options.passthrough_args)
     if self.options.luci_chromium:
       # In luci.chromium the Chrome and driver are in the user path.
       self.browser = '--browser=%s' % get_abs_user_path('chrome')
@@ -770,6 +771,14 @@ class CrossbenchTest(object):
       arg = '--fileserver'
       args.append(arg)
       return self._create_fileserver_network(arg)
+    return []
+
+  def _get_probe_arg(self, args):
+    if _arg := _get_arg(args, '--probe='):
+      return [_arg]
+    if self.options.benchmarks.startswith('motionmark'):
+      # Take a screenshot because of crbug.com/414806161.
+      return ['--probe=screenshot']
     return []
 
   def _create_fileserver_network(self, arg):
@@ -861,7 +870,7 @@ class CrossbenchTest(object):
     return (['vpython3', '-Xutf8'] + [self.options.executable] + [benchmark] +
             ['--env-validation=throw'] + [self.OUTDIR % working_dir] +
             [self.browser] + benchmark_args + self.driver_path_arg +
-            self.network + self._get_default_args())
+            self.network + self.probe + self._get_default_args())
 
   def execute_benchmark(self,
                         benchmark,
