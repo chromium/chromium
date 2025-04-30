@@ -3667,6 +3667,12 @@ const char kSecurePaymentConfirmationDebugDescription[] =
     "secure payment confirmation in PaymentRequest API must use user verifying "
     "platform authenticators.";
 
+const char kSecurePaymentConfirmationFallbackName[] =
+    "Secure Payment Confirmation Fallback UX";
+const char kSecurePaymentConfirmationFallbackDescription[] =
+    "Enable the fallback experience in Secure Payment Confirmation, where a "
+    "transaction dialog-like UX is shown even if no credentials match.";
+
 const char kSecurePaymentConfirmationNetworkAndIssuerIconsName[] =
     "Secure Payment Confirmation Network and Issuer Icons";
 const char kSecurePaymentConfirmationNetworkAndIssuerIconsDescription[] =

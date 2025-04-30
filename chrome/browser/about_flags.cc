@@ -12322,6 +12322,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSideBySideDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kSideBySide)},
 
+    {"enable-secure-payment-confirmation-fallback-ux",
+     flag_descriptions::kSecurePaymentConfirmationFallbackName,
+     flag_descriptions::kSecurePaymentConfirmationFallbackDescription, kOsAll,
+     FEATURE_VALUE_TYPE(
+         payments::features::kSecurePaymentConfirmationFallback)},
+
     // Add new entries above this line.
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum

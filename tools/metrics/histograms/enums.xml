@@ -12336,6 +12336,7 @@ from previous Chrome versions.
   <int value="-772679248" label="MojoVideoEncodeAccelerator:enabled"/>
   <int value="-772608284" label="MyFilesVolume:enabled"/>
   <int value="-772040705" label="ChromeWhatsNewInMainMenuNewBadge:disabled"/>
+  <int value="-771643789" label="SecurePaymentConfirmationFallback:enabled"/>
   <int value="-771080109" label="GrantNotificationsToDSE:disabled"/>
   <int value="-770319039" label="enable-touch-editing"/>
   <int value="-770144964"
@@ -16854,6 +16855,7 @@ from previous Chrome versions.
       label="HappinessTrackingSurveysForDesktopSettingsPrivacy:disabled"/>
   <int value="965218542" label="ReadAnythingWithScreen2x:disabled"/>
   <int value="965533018" label="MlUrlScoreCaching:disabled"/>
+  <int value="966103686" label="SecurePaymentConfirmationFallback:disabled"/>
   <int value="966134219" label="CrostiniEnableDlc:disabled"/>
   <int value="966352185" label="PrivacyAdvisor:disabled"/>
   <int value="966415988" label="SyncPseudoUSSPasswords:enabled"/>
