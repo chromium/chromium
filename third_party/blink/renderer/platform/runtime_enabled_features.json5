@@ -4948,7 +4948,10 @@
     },
     {
       name: "VideoFrameMetadataBackgroundBlur",
-      public: true,
+      status: "experimental",
+    },
+    {
+      name: "VideoFrameMetadataRtpTimestamp",
       status: "experimental",
     },
     {
