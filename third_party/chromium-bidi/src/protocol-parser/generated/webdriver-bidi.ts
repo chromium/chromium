@@ -1176,14 +1176,27 @@ export namespace Emulation {
 }
 export namespace Emulation {
   export const SetGeolocationOverrideParametersSchema = z.lazy(() =>
-    z.object({
-      coordinates: z.union([Emulation.GeolocationCoordinatesSchema, z.null()]),
-      contexts: z
-        .array(BrowsingContext.BrowsingContextSchema)
-        .min(1)
-        .optional(),
-      userContexts: z.array(Browser.UserContextSchema).min(1).optional(),
-    }),
+    z
+      .union([
+        z.object({
+          coordinates: z.union([
+            Emulation.GeolocationCoordinatesSchema,
+            z.null(),
+          ]),
+        }),
+        z.object({
+          error: Emulation.GeolocationPositionErrorSchema,
+        }),
+      ])
+      .and(
+        z.object({
+          contexts: z
+            .array(BrowsingContext.BrowsingContextSchema)
+            .min(1)
+            .optional(),
+          userContexts: z.array(Browser.UserContextSchema).min(1).optional(),
+        }),
+      ),
   );
 }
 export namespace Emulation {
@@ -1200,6 +1213,13 @@ export namespace Emulation {
         .union([z.number().gt(0).lt(360), z.null().default(null)])
         .optional(),
       speed: z.union([z.number().gte(0), z.null().default(null)]).optional(),
+    }),
+  );
+}
+export namespace Emulation {
+  export const GeolocationPositionErrorSchema = z.lazy(() =>
+    z.object({
+      type: z.literal('positionUnavailable'),
     }),
   );
 }

@@ -39,13 +39,40 @@ export class EmulationProcessor {
   async setGeolocationOverride(
     params: Emulation.SetGeolocationOverrideParameters,
   ): Promise<EmptyResult> {
-    if (
-      (params.coordinates?.altitude ?? null) === null &&
-      (params.coordinates?.altitudeAccuracy ?? null) !== null
-    ) {
+    if ('coordinates' in params && 'error' in params) {
+      // Unreachable. Handled by params parser.
       throw new InvalidArgumentException(
-        'Geolocation altitudeAccuracy can be set only with altitude',
+        'Coordinates and error cannot be set at the same time',
       );
+    }
+
+    let geolocation:
+      | Emulation.GeolocationCoordinates
+      | Emulation.GeolocationPositionError
+      | null = null;
+
+    if ('coordinates' in params) {
+      if (
+        (params.coordinates?.altitude ?? null) === null &&
+        (params.coordinates?.altitudeAccuracy ?? null) !== null
+      ) {
+        throw new InvalidArgumentException(
+          'Geolocation altitudeAccuracy can be set only with altitude',
+        );
+      }
+
+      geolocation = params.coordinates;
+    } else if ('error' in params) {
+      if (params.error.type !== 'positionUnavailable') {
+        // Unreachable. Handled by params parser.
+        throw new InvalidArgumentException(
+          `Unknown geolocation error ${params.error.type}`,
+        );
+      }
+      geolocation = params.error;
+    } else {
+      // Unreachable. Handled by params parser.
+      throw new InvalidArgumentException(`Coordinates or error should be set`);
     }
 
     const browsingContexts = await this.#getRelatedTopLevelBrowsingContexts(
@@ -56,13 +83,13 @@ export class EmulationProcessor {
     for (const userContextId of params.userContexts ?? []) {
       const userContextConfig =
         this.#userContextStorage.getConfig(userContextId);
-      userContextConfig.emulatedGeolocation = params.coordinates;
+      userContextConfig.geolocation = geolocation;
     }
 
     await Promise.all(
       browsingContexts.map(
         async (context) =>
-          await context.cdpTarget.setGeolocationOverride(params.coordinates),
+          await context.cdpTarget.setGeolocationOverride(geolocation),
       ),
     );
     return {};

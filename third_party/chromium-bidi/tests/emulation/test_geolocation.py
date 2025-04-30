@@ -58,7 +58,7 @@ async def get_geolocation(websocket, context_id):
                         new Promise(
                             resolve => window.navigator.geolocation.getCurrentPosition(
                                 position => resolve(position.coords.toJSON()),
-                                error => resolve({code: error.code, message: error.message}),
+                                error => resolve({code: error.code}),
                                 {timeout: 200}
                         ))
                     """,
@@ -106,6 +106,47 @@ async def test_geolocation_set_and_clear(websocket, context_id, url_example,
             }
         })
     emulated_geolocation = await get_geolocation(websocket, context_id)
+    assert emulated_geolocation == snapshot(
+    ), "New geolocation should match snapshot"
+
+    # Clear geolocation override.
+    await execute_command(
+        websocket, {
+            'method': 'emulation.setGeolocationOverride',
+            'params': {
+                'contexts': [context_id],
+                'coordinates': None
+            }
+        })
+
+    # Assert the geolocation has returned to the original state.
+    assert initial_geolocation == await get_geolocation(websocket, context_id)
+
+
+@pytest.mark.asyncio
+async def test_geolocation_emulate_unavailable(websocket, context_id,
+                                               url_example, snapshot):
+    await goto_url(websocket, context_id, url_example)
+
+    await set_permission(websocket, get_origin(url_example),
+                         {'name': 'geolocation'}, 'granted')
+
+    initial_geolocation = await get_geolocation(websocket, context_id)
+
+    await execute_command(
+        websocket, {
+            'method': 'emulation.setGeolocationOverride',
+            'params': {
+                'contexts': [context_id],
+                'error': {
+                    'type': 'positionUnavailable'
+                }
+            }
+        })
+
+    emulated_geolocation = await get_geolocation(websocket, context_id)
+
+    assert initial_geolocation != emulated_geolocation, "Geolocation should have changed"
     assert emulated_geolocation == snapshot(
     ), "New geolocation should match snapshot"
 

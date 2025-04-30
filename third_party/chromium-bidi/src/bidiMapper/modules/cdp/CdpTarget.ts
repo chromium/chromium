@@ -24,6 +24,7 @@ import {
   type ChromiumBidi,
   type Emulation,
   Session,
+  UnknownErrorException,
   UnsupportedOperationException,
 } from '../../../protocol/protocol.js';
 import {Deferred} from '../../../utils/Deferred.js';
@@ -636,13 +637,11 @@ export class CdpTarget {
     }
 
     if (
-      this.#userContextConfig.emulatedGeolocation !== undefined &&
-      this.#userContextConfig.emulatedGeolocation !== null
+      this.#userContextConfig.geolocation !== undefined &&
+      this.#userContextConfig.geolocation !== null
     ) {
       promises.push(
-        this.setGeolocationOverride(
-          this.#userContextConfig.emulatedGeolocation,
-        ),
+        this.setGeolocationOverride(this.#userContextConfig.geolocation),
       );
     }
 
@@ -672,21 +671,38 @@ export class CdpTarget {
   }
 
   async setGeolocationOverride(
-    coordinates: Emulation.GeolocationCoordinates | null,
+    geolocation:
+      | Emulation.GeolocationCoordinates
+      | Emulation.GeolocationPositionError
+      | null,
   ): Promise<void> {
-    if (coordinates === null) {
+    if (geolocation === null) {
       await this.cdpClient.sendCommand('Emulation.clearGeolocationOverride');
-    } else {
+    } else if ('type' in geolocation) {
+      if (geolocation.type !== 'positionUnavailable') {
+        // Unreachable. Handled by params parser.
+        throw new UnknownErrorException(
+          `Unknown geolocation error ${geolocation.type}`,
+        );
+      }
+      // Omitting latitude, longitude or accuracy emulates position unavailable.
+      await this.cdpClient.sendCommand('Emulation.setGeolocationOverride', {});
+    } else if ('latitude' in geolocation) {
       await this.cdpClient.sendCommand('Emulation.setGeolocationOverride', {
-        latitude: coordinates.latitude,
-        longitude: coordinates.longitude,
-        accuracy: coordinates.accuracy ?? 1,
+        latitude: geolocation.latitude,
+        longitude: geolocation.longitude,
+        accuracy: geolocation.accuracy ?? 1,
         // `null` value is treated as "missing".
-        altitude: coordinates.altitude ?? undefined,
-        altitudeAccuracy: coordinates.altitudeAccuracy ?? undefined,
-        heading: coordinates.heading ?? undefined,
-        speed: coordinates.speed ?? undefined,
+        altitude: geolocation.altitude ?? undefined,
+        altitudeAccuracy: geolocation.altitudeAccuracy ?? undefined,
+        heading: geolocation.heading ?? undefined,
+        speed: geolocation.speed ?? undefined,
       });
+    } else {
+      // Unreachable. Handled by params parser.
+      throw new UnknownErrorException(
+        'Unexpected geolocation coordinates value',
+      );
     }
   }
 }

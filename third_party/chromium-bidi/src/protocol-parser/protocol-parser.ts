@@ -297,6 +297,14 @@ export namespace Session {
 
 export namespace Emulation {
   export function parseSetGeolocationOverrideParams(params: unknown) {
+    if ('coordinates' in (params as object) && 'error' in (params as object)) {
+      // Zod picks the first matching parameter omitting the other. In this case, the
+      // `parseObject` will remove `error` from the params. However, specification
+      // requires to throw an exception.
+      throw new InvalidArgumentException(
+        'Coordinates and error cannot be set at the same time',
+      );
+    }
     return parseObject(
       params,
       WebDriverBidi.Emulation.SetGeolocationOverrideParametersSchema,

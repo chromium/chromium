@@ -1,4 +1,18 @@
 # serializer version: 1
+# name: test_geolocation_emulate_unavailable
+  dict({
+    'type': 'object',
+    'value': list([
+      list([
+        'code',
+        dict({
+          'type': 'number',
+          'value': 2,
+        }),
+      ]),
+    ]),
+  })
+# ---
 # name: test_geolocation_per_user_context
   dict({
     'type': 'object',

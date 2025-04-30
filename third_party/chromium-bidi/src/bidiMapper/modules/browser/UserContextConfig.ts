@@ -28,7 +28,10 @@ export class UserContextConfig {
   readonly userContextId: string;
   viewport?: BrowsingContext.Viewport | null;
   devicePixelRatio?: number | null;
-  emulatedGeolocation?: Emulation.GeolocationCoordinates | null;
+  geolocation?:
+    | Emulation.GeolocationCoordinates
+    | Emulation.GeolocationPositionError
+    | null;
 
   constructor(userContextId: string) {
     this.userContextId = userContextId;
