@@ -34,10 +34,12 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.hub.PaneManager;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
@@ -58,6 +60,7 @@ import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
@@ -95,6 +98,8 @@ public class TabSwitcherMessageManagerUnitTest {
     @Mock private OnTabSelectingListener mOnTabSelectingListener;
     @Mock private EdgeToEdgeController mEdgeToEdgeController;
     @Mock private TabGroupSyncService mTabGroupSyncService;
+    @Mock private Supplier<PaneManager> mPaneManagerSupplier;
+    @Mock private Supplier<TabGroupUiActionHandler> mTabGroupUiActionHandlerSupplier;
     @Captor private ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
 
     @Captor
@@ -154,7 +159,9 @@ public class TabSwitcherMessageManagerUnitTest {
                         mRegularTabCreator,
                         mBackPressManager,
                         /* desktopWindowStateManager= */ null,
-                        mEdgeToEdgeSupplier);
+                        mEdgeToEdgeSupplier,
+                        mPaneManagerSupplier,
+                        mTabGroupUiActionHandlerSupplier);
         mMessageManager.registerMessages(mTabListCoordinator);
         mMessageManager.bind(
                 mTabListCoordinator,

@@ -21,6 +21,7 @@ import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.hub.PaneManager;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthManager;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
@@ -48,6 +49,7 @@ import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
+import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -149,6 +151,8 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
     private final @NonNull BackPressManager mBackPressManager;
     private final @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
     private final @NonNull ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeSupplier;
+    private final @NonNull Supplier<PaneManager> mPaneManagerSupplier;
+    private final @NonNull Supplier<TabGroupUiActionHandler> mTabGroupUiActionHandlerSupplier;
 
     private @Nullable Profile mProfile;
     private @Nullable PriceMessageService mPriceMessageService;
@@ -172,6 +176,8 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
      * @param backPressManager Manages the different back press handlers in the app.
      * @param desktopWindowStateManager Manager to get desktop window and app header state.
      * @param edgeToEdgeSupplier Supplier to the {@link EdgeToEdgeController} instance.
+     * @param paneManagerSupplier Used to switch and communicate with other panes.
+     * @param tabGroupUiActionHandlerSupplier Used to open hidden tab groups.
      */
     public TabSwitcherMessageManager(
             @NonNull Activity activity,
@@ -187,7 +193,9 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
             @NonNull TabCreator regularTabCreator,
             @NonNull BackPressManager backPressManager,
             @Nullable DesktopWindowStateManager desktopWindowStateManager,
-            @NonNull ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier) {
+            @NonNull ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier,
+            @NonNull Supplier<PaneManager> paneManagerSupplier,
+            @NonNull Supplier<TabGroupUiActionHandler> tabGroupUiActionHandlerSupplier) {
         mActivity = activity;
         mLifecylceDispatcher = lifecycleDispatcher;
         mCurrentTabGroupModelFilterSupplier = currentTabGroupModelFilterSupplier;
@@ -215,6 +223,8 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
         mOnTabGroupModelFilterChanged.onResult(
                 currentTabGroupModelFilterSupplier.addObserver(mOnTabGroupModelFilterChanged));
         mEdgeToEdgeSupplier = edgeToEdgeSupplier;
+        mPaneManagerSupplier = paneManagerSupplier;
+        mTabGroupUiActionHandlerSupplier = tabGroupUiActionHandlerSupplier;
     }
 
     /**
@@ -313,7 +323,10 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
                             mTabListCoordinatorSupplier,
                             mDesktopWindowStateManager,
                             mEdgeToEdgeSupplier,
-                            TabGroupSyncServiceFactory.getForProfile(mProfile));
+                            TabGroupSyncServiceFactory.getForProfile(mProfile),
+                            mPaneManagerSupplier,
+                            mTabGroupUiActionHandlerSupplier,
+                            mCurrentTabGroupModelFilterSupplier);
             addObserver(mArchivedTabsMessageService);
             mMessageCardProviderCoordinator.subscribeMessageService(mArchivedTabsMessageService);
         }

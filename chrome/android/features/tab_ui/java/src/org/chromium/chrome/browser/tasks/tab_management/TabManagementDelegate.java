@@ -125,6 +125,9 @@ public interface TabManagementDelegate {
      * @param tabBookmarkerSupplier Supplier of {@link TabBookmarker} for bookmarking a given tab.
      * @param tabGroupCreationUiDelegate Orchestrates the tab group creation UI flow.
      * @param undoBarThrottle The controller to throttle the undo bar.
+     * @param hubManagerSupplier Supplier ultimately used to get the pane manager to switch panes.
+     * @param tabGroupUiActionHandlerSupplier Supplier for the controller used to open hidden
+     *     groups.
      */
     Pair<TabSwitcher, Pane> createTabSwitcherPane(
             @NonNull Activity activity,
@@ -152,7 +155,9 @@ public interface TabManagementDelegate {
             @NonNull ObservableSupplier<ShareDelegate> shareDelegateSupplier,
             @NonNull ObservableSupplier<TabBookmarker> tabBookmarkerSupplier,
             @NonNull TabGroupCreationUiDelegate tabGroupCreationUiDelegate,
-            UndoBarThrottle undoBarThrottle);
+            UndoBarThrottle undoBarThrottle,
+            @NonNull LazyOneshotSupplier<HubManager> hubManagerSupplier,
+            @NonNull Supplier<TabGroupUiActionHandler> tabGroupUiActionHandlerSupplier);
 
     /**
      * Create a {@link TabGroupsPane} for the Hub.

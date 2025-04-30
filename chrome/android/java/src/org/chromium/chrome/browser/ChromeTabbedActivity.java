@@ -1033,7 +1033,11 @@ public class ChromeTabbedActivity extends ChromeActivity {
                         getShareDelegateSupplier(),
                         mTabBookmarkerSupplier,
                         tabGroupCreationUiDelegate,
-                        mUndoBarPopupController);
+                        mUndoBarPopupController,
+                        mHubProvider.getHubManagerSupplier(),
+                        () ->
+                                ((TabbedRootUiCoordinator) mRootUiCoordinator)
+                                        .getTabGroupSyncController());
         if (didFinishNativeInitialization()) {
             result.first.initWithNative();
         }

@@ -121,7 +121,9 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
             @NonNull ObservableSupplier<ShareDelegate> shareDelegateSupplier,
             @NonNull ObservableSupplier<TabBookmarker> tabBookmarkerSupplier,
             @NonNull TabGroupCreationUiDelegate tabGroupCreationUiDelegate,
-            UndoBarThrottle undoBarThrottle) {
+            UndoBarThrottle undoBarThrottle,
+            @NonNull LazyOneshotSupplier<HubManager> hubManagerSupplier,
+            @NonNull Supplier<TabGroupUiActionHandler> tabGroupUiActionHandlerSupplier) {
         // TODO(crbug.com/40946413): Consider making this an activity scoped singleton and possibly
         // hosting it in CTA/HubProvider.
         TabSwitcherPaneCoordinatorFactory factory =
@@ -144,7 +146,9 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
                         edgeToEdgeSupplier,
                         shareDelegateSupplier,
                         tabBookmarkerSupplier,
-                        undoBarThrottle);
+                        undoBarThrottle,
+                        () -> hubManagerSupplier.get().getPaneManager(),
+                        tabGroupUiActionHandlerSupplier);
         OneshotSupplierImpl<Profile> profileSupplier = new OneshotSupplierImpl<>();
         Handler handler = new Handler();
         profileProviderSupplier.onAvailable(

@@ -41,7 +41,9 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Token;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.task.test.ShadowPostTask;
 import org.chromium.base.task.test.ShadowPostTask.TestImpl;
@@ -53,10 +55,12 @@ import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.hub.PaneManager;
 import org.chromium.chrome.browser.tab.TabArchiveSettings;
 import org.chromium.chrome.browser.tab_ui.OnTabSelectingListener;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorBase;
@@ -69,6 +73,7 @@ import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
@@ -109,6 +114,9 @@ public class ArchivedTabsDialogCoordinatorUnitTest {
     @Mock private RecyclerView mRecyclerView;
     @Mock private EdgeToEdgeController mEdgeToEdgeController;
     @Mock private TabGroupSyncService mTabGroupSyncService;
+    @Mock private Supplier<PaneManager> mPaneManagerSupplier;
+    @Mock private Supplier<TabGroupUiActionHandler> mTabGroupUiActionHandlerSupplier;
+    @Mock private ObservableSupplier<TabGroupModelFilter> mCurrentTabGroupModelFilterSupplier;
 
     private Activity mActivity;
     private ArchivedTabsDialogCoordinator mCoordinator;
@@ -154,7 +162,10 @@ public class ArchivedTabsDialogCoordinatorUnitTest {
                         mModalDialogManager,
                         /* desktopWindowStateManager= */ null,
                         mEdgeToEdgeSupplier,
-                        mTabGroupSyncService);
+                        mTabGroupSyncService,
+                        mPaneManagerSupplier,
+                        mTabGroupUiActionHandlerSupplier,
+                        mCurrentTabGroupModelFilterSupplier);
         mCoordinator.setTabListEditorCoordinatorForTesting(mTabListEditorCoordinator);
         recyclerView = new TabListRecyclerView(mActivity, null);
         recyclerView.setId(R.id.tab_list_recycler_view);
