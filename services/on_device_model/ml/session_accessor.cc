@@ -94,6 +94,7 @@ SessionAccessor::Ptr SessionAccessor::Clone() {
 ChromeMLCancelFn SessionAccessor::Append(
     on_device_model::mojom::AppendOptionsPtr options,
     ChromeMLContextSavedFn context_saved_fn) {
+  DCHECK(context_saved_fn);
   auto canceler = base::MakeRefCounted<Canceler>(chrome_ml_.get());
   task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&SessionAccessor::AppendInternal,
@@ -106,6 +107,7 @@ ChromeMLCancelFn SessionAccessor::Generate(
     on_device_model::mojom::GenerateOptionsPtr options,
     ChromeMLConstraint constraint,
     ChromeMLExecutionOutputFn output_fn) {
+  DCHECK(output_fn);
   auto canceler = base::MakeRefCounted<Canceler>(chrome_ml_.get());
   task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&SessionAccessor::GenerateInternal,
@@ -206,17 +208,14 @@ void SessionAccessor::AppendInternal(
     ChromeMLContextSavedFn context_saved_fn,
     scoped_refptr<Canceler> canceler) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  ChromeMLExecuteOptions options{
-      .max_tokens = append_options->max_tokens,
+  ChromeMLAppendOptions options{
+      .input = append_options->input->pieces.data(),
+      .input_size = append_options->input->pieces.size(),
       .token_offset = append_options->token_offset,
+      .max_tokens = append_options->max_tokens,
+      .context_saved_fn = &context_saved_fn,
   };
-  options.input = append_options->input->pieces.data();
-  options.input_size = append_options->input->pieces.size();
-  if (context_saved_fn) {
-    options.context_saved_fn = &context_saved_fn;
-  }
-  chrome_ml_->api().SessionExecuteModel(session_, model_, &options,
-                                        canceler->get());
+  chrome_ml_->api().SessionAppend(session_, &options, canceler->get());
 }
 
 DISABLE_CFI_DLSYM
@@ -226,15 +225,12 @@ void SessionAccessor::GenerateInternal(
     ChromeMLExecutionOutputFn output_fn,
     scoped_refptr<Canceler> canceler) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  ChromeMLExecuteOptions options{
+  ChromeMLGenerateOptions options{
       .max_output_tokens = generate_options->max_output_tokens,
       .constraint = constraint,
+      .output_fn = &output_fn,
   };
-  if (output_fn) {
-    options.execution_output_fn = &output_fn;
-  }
-  chrome_ml_->api().SessionExecuteModel(session_, model_, &options,
-                                        canceler->get());
+  chrome_ml_->api().SessionGenerate(session_, &options, canceler->get());
 }
 
 DISABLE_CFI_DLSYM

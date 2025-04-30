@@ -147,6 +147,7 @@ struct FakeModelInstance {
 };
 
 struct FakeSessionInstance {
+  raw_ptr<FakeModelInstance> model_instance;
   std::string adaptation_data;
   std::optional<uint32_t> adaptation_file_id;
   std::vector<std::string> context;
@@ -190,6 +191,7 @@ ChromeMLSession CreateSession(ChromeMLModel model,
                               const ChromeMLAdaptationDescriptor* descriptor) {
   auto* model_instance = reinterpret_cast<FakeModelInstance*>(model);
   auto* instance = new FakeSessionInstance{};
+  instance->model_instance = model_instance;
   if (descriptor) {
     instance->enable_image_input = descriptor->enable_image_input;
     instance->enable_audio_input = descriptor->enable_audio_input;
@@ -214,6 +216,7 @@ ChromeMLSession CreateSession(ChromeMLModel model,
 ChromeMLSession CloneSession(ChromeMLSession session) {
   auto* instance = reinterpret_cast<FakeSessionInstance*>(session);
   return reinterpret_cast<ChromeMLSession>(new FakeSessionInstance{
+      .model_instance = instance->model_instance,
       .adaptation_data = instance->adaptation_data,
       .adaptation_file_id = instance->adaptation_file_id,
       .context = instance->context,
@@ -230,10 +233,9 @@ void DestroySession(ChromeMLSession session) {
   delete instance;
 }
 
-bool SessionExecuteModel(ChromeMLSession session,
-                         ChromeMLModel model,
-                         const ChromeMLExecuteOptions* options,
-                         ChromeMLCancel cancel) {
+bool SessionAppend(ChromeMLSession session,
+                   const ChromeMLAppendOptions* options,
+                   ChromeMLCancel cancel) {
   auto* instance = reinterpret_cast<FakeSessionInstance*>(session);
   std::string text;
   for (size_t i = 0; i < options->input_size; i++) {
@@ -266,25 +268,27 @@ bool SessionExecuteModel(ChromeMLSession session,
   if (options->context_saved_fn) {
     (*options->context_saved_fn)(static_cast<int>(text.size()));
   }
+  return true;
+}
 
-  if (!options->execution_output_fn) {
-    return true;
-  }
+bool SessionGenerate(ChromeMLSession session,
+                     const ChromeMLGenerateOptions* options,
+                     ChromeMLCancel cancel) {
+  auto* instance = reinterpret_cast<FakeSessionInstance*>(session);
+  auto OutputChunk = [output_fn =
+                          *options->output_fn](const std::string& chunk) {
+    ChromeMLExecutionOutput output = {};
+    if (chunk.empty()) {
+      output.status = ChromeMLExecutionStatus::kComplete;
+      output_fn(&output);
+      return;
+    }
+    output.status = ChromeMLExecutionStatus::kInProgress;
+    output.text = chunk.c_str();
+    output_fn(&output);
+  };
 
-  auto OutputChunk =
-      [output_fn = *options->execution_output_fn](const std::string& chunk) {
-        ChromeMLExecutionOutput output = {};
-        if (chunk.empty()) {
-          output.status = ChromeMLExecutionStatus::kComplete;
-          output_fn(&output);
-          return;
-        }
-        output.status = ChromeMLExecutionStatus::kInProgress;
-        output.text = chunk.c_str();
-        output_fn(&output);
-      };
-
-  if (reinterpret_cast<FakeModelInstance*>(model)->performance_hint ==
+  if (instance->model_instance->performance_hint ==
       ml::ModelPerformanceHint::kFastestInference) {
     OutputChunk("Fastest inference\n");
   }
@@ -315,6 +319,31 @@ bool SessionExecuteModel(ChromeMLSession session,
   }
   OutputChunk("");
   return true;
+}
+
+bool SessionExecuteModel(ChromeMLSession session,
+                         ChromeMLModel model,
+                         const ChromeMLExecuteOptions* options,
+                         ChromeMLCancel cancel) {
+  ChromeMLAppendOptions append_opts{
+      .input = options->input,
+      .input_size = options->input_size,
+      .token_offset = options->token_offset,
+      .max_tokens = options->max_tokens,
+      .context_saved_fn = options->context_saved_fn,
+  };
+  if (!SessionAppend(session, &append_opts, cancel)) {
+    return false;
+  }
+  if (!options->execution_output_fn) {
+    return true;
+  }
+  ChromeMLGenerateOptions gen_opts{
+      .max_output_tokens = options->max_output_tokens,
+      .constraint = options->constraint,
+      .output_fn = options->execution_output_fn,
+  };
+  return SessionGenerate(session, &gen_opts, cancel);
 }
 
 void SessionSizeInTokensInputPiece(ChromeMLSession session,
@@ -421,6 +450,8 @@ const ChromeMLAPI g_api = {
     .SetFatalErrorNonGpuFn = &SetFatalErrorNonGpuFn,
 
     .SessionCreateModel = &SessionCreateModel,
+    .SessionAppend = &SessionAppend,
+    .SessionGenerate = &SessionGenerate,
     .SessionExecuteModel = &SessionExecuteModel,
     .SessionSizeInTokensInputPiece = &SessionSizeInTokensInputPiece,
     .SessionScore = &SessionScore,
