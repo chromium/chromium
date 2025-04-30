@@ -106,6 +106,10 @@ void OwnerPendingSettingController::OnSignedPolicyStored(bool success) {
   }
 }
 
+void OwnerPendingSettingController::OnServiceShutdown() {
+  owner_settings_service_observation_.Reset();
+}
+
 void OwnerPendingSettingController::SetOnDeviceSettingsStoredCallBack(
     base::OnceClosure callback) {
   CHECK(!on_device_settings_stored_callback_);

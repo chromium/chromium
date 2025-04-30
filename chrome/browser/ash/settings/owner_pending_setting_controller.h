@@ -77,6 +77,7 @@ class OwnerPendingSettingController
 
   // ownership::OwnerSettingsService::Observer implementation:
   void OnSignedPolicyStored(bool success) override;
+  void OnServiceShutdown() override;
 
   // Clears any value waiting to be written (from storage in local state).
   void ClearPendingValue();
