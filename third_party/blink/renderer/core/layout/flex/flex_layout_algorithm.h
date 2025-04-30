@@ -55,7 +55,7 @@ class CORE_EXPORT FlexLayoutAlgorithm
       const BlockNode& flex_item,
       ItemPosition alignment) const;
   ConstraintSpace BuildSpaceForFlexBasis(const BlockNode& flex_item) const;
-  ConstraintSpace BuildSpaceForIntrinsicBlockSize(
+  ConstraintSpace BuildSpaceForIntrinsicBlockSizeDeprecated(
       const BlockNode& flex_item,
       ItemPosition alignment,
       std::optional<LayoutUnit> override_inline_size) const;
@@ -63,13 +63,23 @@ class CORE_EXPORT FlexLayoutAlgorithm
   // layout pass for stretch, when the line cross size is definite.
   // |block_offset_for_fragmentation| should only be set when running the final
   // layout pass for fragmentation. Both may be set at the same time.
-  ConstraintSpace BuildSpaceForLayout(
+  ConstraintSpace BuildSpaceForLayoutDeprecated(
       const BlockNode& flex_item_node,
       ItemPosition alignment,
       LayoutUnit item_main_axis_final_size,
       bool is_initial_block_size_indefinite,
       std::optional<LayoutUnit> override_inline_size = std::nullopt,
       std::optional<LayoutUnit> line_cross_size_for_stretch = std::nullopt,
+      std::optional<LayoutUnit> block_offset_for_fragmentation = std::nullopt,
+      bool min_block_size_should_encompass_intrinsic_size = false) const;
+
+  const ConstraintSpace BuildSpaceForLayout(
+      const BlockNode& node,
+      ItemPosition alignment,
+      bool is_initial_block_size_indefinite,
+      std::optional<LayoutUnit> override_inline_size = std::nullopt,
+      std::optional<LayoutUnit> main_axis_final_size = std::nullopt,
+      std::optional<LayoutUnit> line_cross_size = std::nullopt,
       std::optional<LayoutUnit> block_offset_for_fragmentation = std::nullopt,
       bool min_block_size_should_encompass_intrinsic_size = false) const;
 
@@ -103,6 +113,7 @@ class CORE_EXPORT FlexLayoutAlgorithm
 
   // Returns the position of the baseline, given a physical fragment.
   LayoutUnit BaselineAscent(const FlexItem&, const PhysicalBoxFragment&) const;
+  LayoutUnit SynthesizedBaselineAscent(const FlexItem&, const LayoutUnit) const;
 
   // If we should apply the automatic minimum size, see:
   // See: https://drafts.csswg.org/css-flexbox/#min-size-auto
