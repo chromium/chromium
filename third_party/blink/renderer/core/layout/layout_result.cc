@@ -405,6 +405,7 @@ void LayoutResult::RareData::Trace(Visitor* visitor) const {
   visitor->Trace(early_break);
   visitor->Trace(non_overflowing_scroll_ranges);
   visitor->Trace(column_spanner_path);
+  visitor->Trace(exclusion_space);
   visitor->Trace(accessibility_anchor);
   visitor->Trace(display_locks_affected_by_anchors);
 }

@@ -19,6 +19,9 @@ using ::testing::ElementsAre;
   EXPECT_EQ(expected_end_offset, opp.rect.end_offset)
 
 struct ExclusionSpaceForTesting {
+  STACK_ALLOCATED();
+
+ public:
   explicit ExclusionSpaceForTesting(float available_inline_size)
       : available_inline_size(available_inline_size) {}
 

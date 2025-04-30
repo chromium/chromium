@@ -216,7 +216,7 @@ void ExclusionSpace::CopyFrom(const ExclusionSpace& other) {
     exclusion_space_ = nullptr;
     return;
   }
-  exclusion_space_ = std::make_unique<ExclusionSpaceInternal>();
+  exclusion_space_ = MakeGarbageCollected<ExclusionSpaceInternal>();
   exclusion_space_->CopyFrom(*other.exclusion_space_);
 }
 
