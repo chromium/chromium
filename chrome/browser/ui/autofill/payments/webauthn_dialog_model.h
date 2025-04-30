@@ -35,8 +35,7 @@ class WebauthnDialogModel : public AuthenticatorRequestSheetModel {
   bool IsActivityIndicatorVisible() const override;
   bool IsCancelButtonVisible() const override;
   std::u16string GetCancelButtonLabel() const override;
-  bool IsAcceptButtonVisible() const override;
-  bool IsAcceptButtonEnabled() const override;
+  AcceptButtonState GetAcceptButtonState() const override;
   std::u16string GetAcceptButtonLabel() const override;
   std::u16string GetStepTitle() const override;
   std::u16string GetStepDescription() const override;
