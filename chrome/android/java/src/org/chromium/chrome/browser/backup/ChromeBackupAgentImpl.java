@@ -124,8 +124,7 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
         // record a more specific result.
         int RESTORE_STARTED_NOT_FINISHED = 8;
 
-        // No record found in the backup for the previous signed-in account (signed in only or
-        // syncing)
+        // No record found in the backup for the previous signed-in account.
         int NO_SIGNED_IN_ACCOUNT_IN_BACKUP = 9;
 
         int NUM_ENTRIES = NO_SIGNED_IN_ACCOUNT_IN_BACKUP;
@@ -157,6 +156,7 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
                     new DictPrefBackupSerializer(),
                     new IntPrefBackupSerializer());
 
+    // TODO(crbug.com/40066949): Remove key once all sync users are migrated to signed-in users.
     // Key used to store the email of the syncing account. This email is obtained from
     // IdentityManager during the backup.
     static final String SYNCING_ACCOUNT_KEY = "google.services.username";
@@ -245,9 +245,6 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
         final ArrayList<String> backupNames = new ArrayList<>();
         final ArrayList<byte[]> backupValues = new ArrayList<>();
 
-        // TODO(crbug.com/40066949): Remove syncAccount once UNO is launched, given the sync feature
-        // and consent will disappear.
-        final AtomicReference<CoreAccountInfo> syncAccount = new AtomicReference<>();
         final AtomicReference<CoreAccountInfo> signedInAccount = new AtomicReference<>();
 
         // The native preferences can only be read on the UI thread.
@@ -263,16 +260,8 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
                             Profile profile = ProfileManager.getLastUsedRegularProfile();
                             IdentityManager identityManager =
                                     IdentityServicesProvider.get().getIdentityManager(profile);
-                            syncAccount.set(
-                                    identityManager.getPrimaryAccountInfo(ConsentLevel.SYNC));
                             signedInAccount.set(
                                     identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN));
-
-                            if (syncAccount.get() != null
-                                    && !syncAccount.get().equals(signedInAccount.get())) {
-                                throw new IllegalStateException(
-                                        "Recorded signed in account differs from syncing account");
-                            }
 
                             PrefService prefService = UserPrefs.get(profile);
                             for (PrefBackupSerializer serializer : NATIVE_PREFS_SERIALIZERS) {
@@ -324,11 +313,6 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
             }
         }
 
-        // Finally add the signed-in/syncing user ids.
-        backupNames.add(ANDROID_DEFAULT_PREFIX + SYNCING_ACCOUNT_KEY);
-        backupValues.add(
-                ApiCompatibilityUtils.getBytesUtf8(
-                        syncAccount.get() == null ? "" : syncAccount.get().getEmail()));
         backupNames.add(ANDROID_DEFAULT_PREFIX + SIGNED_IN_ACCOUNT_ID_KEY);
         backupValues.add(
                 ApiCompatibilityUtils.getBytesUtf8(
@@ -535,12 +519,9 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
                     final boolean shouldRestoreSelectedTypesAsAccountSettings =
                             syncAccountInfo != null;
                     if (shouldRestoreSelectedTypesAsAccountSettings) {
-                        final GaiaId gaiaID =
-                                syncAccountInfo != null
-                                        ? syncAccountInfo.getGaiaId()
-                                        : signedInAccountInfo.getGaiaId();
                         ChromeBackupAgentImplJni.get()
-                                .migrateGlobalDataTypePrefsToAccount(prefService, gaiaID);
+                                .migrateGlobalDataTypePrefsToAccount(
+                                        prefService, syncAccountInfo.getGaiaId());
                     }
 
                     // TODO(crbug.com/332710541): Another commit is done for signed-in users in
@@ -563,27 +544,13 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
             }
         }
 
-        if (syncAccountInfo != null) {
-            // Both accounts are recorded at the same time. Since only one account is in signed-in
-            // state at a given time, they should be identical if both are valid.
-            if (signedInAccountInfo != null && !signedInAccountInfo.equals(syncAccountInfo)) {
-                throw new IllegalStateException(
-                        "Recorded signed in account differs from syncing account");
-            }
-
+        if (signedInAccountInfo != null) {
+            editor.apply();
+            signInAndWaitForResult(signedInAccountInfo);
+        } else {
+            // syncAccountInfo must be non-null at this point.
             editor.apply();
             signInAndWaitForResult(syncAccountInfo);
-        } else {
-            editor.apply();
-
-            // signedInAccountInfo and syncAccountInfo should not be null at the same at this point.
-            // Otherwise the restore should already be stopped and the restore state set to
-            // `ACCOUNT_NOT_FOUND`.
-            if (signedInAccountInfo == null) {
-                throw new IllegalStateException("No valid account can be signed-in");
-            }
-
-            signInAndWaitForResult(signedInAccountInfo);
         }
         Log.i(TAG, "Restore complete");
     }
