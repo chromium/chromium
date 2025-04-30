@@ -3048,7 +3048,6 @@ crbug.com/379008013 [ Win11 ] external/wpt/signed-exchange/reporting/sxg-reporti
 crbug.com/379008013 [ Mac15-arm64 ] external/wpt/webrtc-extensions/RTCRtpCorruptionDetection-headerExtensionControl.html [ Timeout ]
 crbug.com/379008013 [ Mac15 ] external/wpt/webrtc-extensions/RTCRtpCorruptionDetection-headerExtensionControl.html [ Timeout ]
 crbug.com/378634716 [ Win10.20h2 ] external/wpt/html/webappapis/system-state-and-capabilities/the-navigator-object/navigatorcookies-cookieenabled-true.html [ Crash Timeout ]
-crbug.com/378891977 [ Win10.20h2 ] external/wpt/nav-tracking-mitigations/stateful-client-bounce.sub.https.html [ Timeout ]
 crbug.com/377942353 [ Win10.20h2 ] external/wpt/secure-payment-confirmation/authentication-cross-origin.sub.https.html [ Crash Timeout ]
 crbug.com/377942353 [ Win10.20h2 ] external/wpt/signed-exchange/reporting/sxg-reporting-navigation-failed-zero-success-fraction.tentative.html [ Crash Failure Timeout ]
 crbug.com/377942353 [ Mac15 ] external/wpt/webrtc-encoded-transform/tentative/RTCPeerConnection-insertable-streams-video-frames.https.html [ Timeout ]
@@ -3062,7 +3061,7 @@ crbug.com/378891970 [ Win10.20h2 ] external/wpt/secure-payment-confirmation/auth
 crbug.com/378891970 [ Win10.20h2 ] external/wpt/signed-exchange/reporting/sxg-reporting-navigation-cert_parse_error.tentative.html [ Crash Timeout ]
 crbug.com/378891970 [ Win10.20h2 ] virtual/split-http-cache/external/wpt/signed-exchange/reporting/sxg-reporting-navigation-ok-origin-referrer.tentative.html [ Crash ]
 crbug.com/378891966 external/wpt/html/semantics/embedded-content/the-iframe-element/iframe_sandbox_iframe_pdf_viewer.html [ Failure ]
-crbug.com/378014598 [ Win11 ] external/wpt/nav-tracking-mitigations/stateful-client-bounce.sub.https.html [ Crash Timeout ]
+crbug.com/378014598 [ Win11 ] external/wpt/nav-tracking-mitigations/stateful-client-bounce.sub.https.html [ Crash ]
 crbug.com/378014599 [ Win11 ] external/wpt/signed-exchange/reporting/sxg-reporting-navigation-cert_parse_error-downgraded.tentative.html [ Crash Timeout ]
 crbug.com/378014599 [ Win10.20h2 ] external/wpt/signed-exchange/reporting/sxg-reporting-navigation-cert_verification_error-downgraded.tentative.html [ Crash Timeout ]
 crbug.com/378014599 [ Win11 ] external/wpt/signed-exchange/reporting/sxg-reporting-navigation-cert_verification_error-downgraded.tentative.html [ Crash Timeout ]
@@ -9151,8 +9150,8 @@ crbug.com/407865639 external/wpt/css/css-grid/grid-extrinsically-sized-mutations
 crbug.com/409149439 [ Win11-arm64 ] external/wpt/partitioned-popins/partitioned-popins.partitions.tentative.https.window.html?include=variant-5-test [ Failure Pass ]
 crbug.com/409032332 http/tests/inspector-protocol/no-crash-with-stack-id-and-stale-while-revalidate.js [ Crash Pass Timeout ]
 
-crbug.com/411529366 [ Mac ] external/wpt/nav-tracking-mitigations/stateful-client-bounce.sub.https.html [ Crash Failure Pass Timeout ]
-crbug.com/411529366 [ Mac ] external/wpt/nav-tracking-mitigations/stateless-client-bounce.sub.https.html [ Crash Failure Pass Timeout ]
+crbug.com/411529366 [ Mac ] external/wpt/nav-tracking-mitigations/stateful-client-bounce.sub.https.html [ Crash Failure Pass ]
+crbug.com/411529366 [ Mac ] external/wpt/nav-tracking-mitigations/stateless-client-bounce.sub.https.html [ Crash Failure Pass ]
 
 # Gardener 2025-04-21
 crbug.com/412321937 [ Mac ] media/controls/closed-captions-switch-track.html [ Crash Failure Pass Timeout ]

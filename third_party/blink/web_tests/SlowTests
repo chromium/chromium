@@ -1457,3 +1457,5 @@ crbug.com/332938942 [ Mac ] editing/selection/mouse/mouse-selection-vertical-rl.
 crbug.com/407795725 http/tests/inspector-protocol/tracing/frame-postmessage.js [ Slow ]
 
 crbug.com/413283544 [ Linux ] external/wpt/css/selectors/focus-visible-003.html [ Slow ]
+
+crbug.com/378014598 external/wpt/nav-tracking-mitigations/* [ Slow ]
