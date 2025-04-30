@@ -54,6 +54,11 @@ public class NativePageBitmapCapturer implements UnownedUserData {
             return false;
         }
 
+        if (!enableAsyncNativePageScreenshot()) {
+            PostTask.postTask(TaskTraits.UI_USER_VISIBLE, () -> callback.onResult(null));
+            return true;
+        }
+
         int result = shouldUseFallbackUx(tab);
         BackPressMetrics.recordCaptureNativeViewResult(result);
         if (result != CaptureNativeViewResult.CAPTURE_SCREENSHOT) {
@@ -105,7 +110,7 @@ public class NativePageBitmapCapturer implements UnownedUserData {
      * @return Null if fails; otherwise, a Bitmap object.
      */
     public static @Nullable Bitmap maybeCaptureNativeViewSync(Tab tab, int topControlsHeight) {
-        if (!isCapturable(tab)) {
+        if (!isCapturable(tab) || !enableSyncNativePageScreenshot()) {
             return null;
         }
 
@@ -205,5 +210,15 @@ public class NativePageBitmapCapturer implements UnownedUserData {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
                 && ChromeFeatureList.isEnabled(
                         ChromeFeatureList.NATIVE_PAGE_TRANSITION_HARDWARE_CAPTURE);
+    }
+
+    private static boolean enableAsyncNativePageScreenshot() {
+        return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                ChromeFeatureList.BACK_FORWARD_TRANSITIONS, "native-page-screenshot-async", true);
+    }
+
+    private static boolean enableSyncNativePageScreenshot() {
+        return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                ChromeFeatureList.BACK_FORWARD_TRANSITIONS, "native-page-screenshot-sync", true);
     }
 }
