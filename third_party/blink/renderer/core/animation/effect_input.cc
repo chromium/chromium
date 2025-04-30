@@ -51,7 +51,6 @@
 #include "third_party/blink/renderer/core/css/css_identifier_value_mappings.h"
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
 #include "third_party/blink/renderer/core/css/css_value_id_mappings_generated.h"
-#include "third_party/blink/renderer/core/css/media_values.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
 #include "third_party/blink/renderer/core/css/properties/computed_style_utils.h"
 #include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
@@ -119,15 +118,20 @@ std::optional<ParsedOffset> ParseOffsetFromTimelineRangeOffset(
                      : TimelineOffset::NamedRange::kNone;
   if (timeline_range_offset->hasOffset()) {
     CSSNumericValue* numeric_value = timeline_range_offset->offset();
-    const CSSPrimitiveValue* css_value =
+    const auto* css_value =
         DynamicTo<CSSPrimitiveValue>(numeric_value->ToCSSValue());
 
-    if (!css_value || !css_value->IsPercentage()) {
+    std::optional<double> percentage;
+    if (css_value && css_value->IsPercentage()) {
+      percentage = css_value->GetValueIfKnown();
+    }
+    if (!percentage.has_value()) {
       exception_state.ThrowTypeError(
-          "CSSNumericValue must be a percentage for a keyframe offset");
+          "CSSNumericValue must be a percentage, resolvable at parse time, for "
+          "a keyframe offset");
       return std::nullopt;
     }
-    result.relative_offset = css_value->GetDoubleValue() / 100;
+    result.relative_offset = percentage.value() / 100;
   } else {
     exception_state.ThrowTypeError(
         "timeline offset must be a range offset pair.  Missing the offset.");
@@ -142,19 +146,22 @@ std::optional<ParsedOffset> ParseOffsetFromCssText(
     ExceptionState& exception_state) {
   const CSSParserContext* context =
       document.ElementSheet().Contents()->ParserContext();
-  MediaValues* media_values =
-      MediaValues::CreateDynamicIfFrameExists(document.GetFrame());
   CSSParserTokenStream stream(css_text);
   stream.ConsumeWhitespace();
 
   // <number>
   {
     CSSParserTokenStream::State savepoint = stream.Save();
-    const CSSPrimitiveValue* primitive = css_parsing_utils::ConsumeNumber(
-        stream, *context, CSSPrimitiveValue::ValueRange::kAll);
-    if (primitive && stream.AtEnd()) {
-      return ParsedOffset({TimelineOffset::NamedRange::kNone,
-                           primitive->ComputeNumber(*media_values)});
+    const auto* number =
+        DynamicTo<CSSPrimitiveValue>(css_parsing_utils::ConsumeNumber(
+            stream, *context, CSSPrimitiveValue::ValueRange::kAll));
+
+    if (number && stream.AtEnd()) {
+      std::optional<double> offset = number->GetValueIfKnown();
+      if (!offset.has_value()) {
+        return std::nullopt;
+      }
+      return ParsedOffset({TimelineOffset::NamedRange::kNone, offset.value()});
     }
     stream.Restore(savepoint);
   }
@@ -162,11 +169,16 @@ std::optional<ParsedOffset> ParseOffsetFromCssText(
   // <percent>
   {
     CSSParserTokenStream::State savepoint = stream.Save();
-    const CSSPrimitiveValue* primitive = css_parsing_utils::ConsumePercent(
-        stream, *context, CSSPrimitiveValue::ValueRange::kAll);
-    if (primitive && stream.AtEnd()) {
-      return ParsedOffset({TimelineOffset::NamedRange::kNone,
-                           primitive->ComputeNumber(*media_values)});
+    const CSSPrimitiveValue* percent =
+        DynamicTo<CSSPrimitiveValue>(css_parsing_utils::ConsumePercent(
+            stream, *context, CSSPrimitiveValue::ValueRange::kAll));
+    if (percent && stream.AtEnd()) {
+      std::optional<double> percentage = percent->GetValueIfKnown();
+      if (!percentage.has_value()) {
+        return std::nullopt;
+      }
+      return ParsedOffset(
+          {TimelineOffset::NamedRange::kNone, percentage.value() / 100});
     }
     stream.Restore(savepoint);
   }
@@ -174,19 +186,21 @@ std::optional<ParsedOffset> ParseOffsetFromCssText(
   // <range-name> <percent>
   auto* range_name_percent = To<CSSValueList>(
       css_parsing_utils::ConsumeTimelineRangeNameAndPercent(stream, *context));
-  if (!range_name_percent || !stream.AtEnd()) {
-    exception_state.ThrowTypeError(
-        "timeline offset must be of the form [timeline-range-name] "
-        "<percentage>");
-    return std::nullopt;
+  if (range_name_percent && stream.AtEnd()) {
+    TimelineOffset::NamedRange range =
+        To<CSSIdentifierValue>(range_name_percent->Item(0))
+            .ConvertTo<TimelineOffset::NamedRange>();
+    std::optional<double> relative_offset =
+        To<CSSPrimitiveValue>(range_name_percent->Item(1)).GetValueIfKnown();
+    if (relative_offset.has_value()) {
+      return ParsedOffset({range, relative_offset.value() / 100});
+    }
   }
-  TimelineOffset::NamedRange range =
-      To<CSSIdentifierValue>(range_name_percent->Item(0))
-          .ConvertTo<TimelineOffset::NamedRange>();
-  double relative_offset = To<CSSPrimitiveValue>(range_name_percent->Item(1))
-                               .ComputeNumber(*media_values);
 
-  return ParsedOffset({range, relative_offset});
+  exception_state.ThrowTypeError(
+      "timeline offset must be of the form [timeline-range-name] "
+      "<percentage>");
+  return std::nullopt;
 }
 
 template <typename T>
