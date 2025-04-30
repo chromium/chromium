@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/ai/summarizer.h"
 
+#include "base/metrics/metrics_hashes.h"
 #include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom-blink.h"
 #include "third_party/blink/renderer/modules/ai/ai_metrics.h"
 #include "third_party/blink/renderer/modules/ai/ai_writing_assistance_create_client.h"
@@ -108,6 +109,31 @@ void SummarizerBase::RecordCreateOptionMetrics(
   base::UmaHistogramEnumeration(
       base::StrCat({metric_name, ".", function_name, ".CoreOptionLength"}),
       length_metric);
+
+  // expectedContextLanguages and expectedInputLanguages and outputLanguage
+  // should be canonicalized. See ValidateAndCanonicalizeBCP47Language.
+  if (options.hasExpectedContextLanguages()) {
+    for (const auto& lang : options.expectedContextLanguages()) {
+      base::UmaHistogramSparse(base::StrCat({metric_name, ".", function_name,
+                                             ".ExpectedContextLanguage"}),
+                               static_cast<base::HistogramBase::Sample32>(
+                                   base::HashMetricName(lang.Ascii())));
+    }
+  }
+  if (options.hasExpectedInputLanguages()) {
+    for (const auto& lang : options.expectedInputLanguages()) {
+      base::UmaHistogramSparse(base::StrCat({metric_name, ".", function_name,
+                                             ".ExpectedInputLanguage"}),
+                               static_cast<base::HistogramBase::Sample32>(
+                                   base::HashMetricName(lang.Ascii())));
+    }
+  }
+  if (options.hasOutputLanguage()) {
+    base::UmaHistogramSparse(
+        base::StrCat({metric_name, ".", function_name, ".OutputLanguage"}),
+        static_cast<base::HistogramBase::Sample32>(
+            base::HashMetricName(options.outputLanguage().Ascii())));
+  }
 }
 
 Summarizer::Summarizer(

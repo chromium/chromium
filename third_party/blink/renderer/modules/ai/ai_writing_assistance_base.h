@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/modules/ai/ai_interface_proxy.h"
 #include "third_party/blink/renderer/modules/ai/ai_metrics.h"
+#include "third_party/blink/renderer/modules/ai/ai_utils.h"
 #include "third_party/blink/renderer/modules/ai/ai_writing_assistance_create_client.h"
 #include "third_party/blink/renderer/modules/ai/availability.h"
 #include "third_party/blink/renderer/modules/ai/exception_helpers.h"
@@ -122,6 +123,11 @@ class AIWritingAssistanceBase : public ExecutionContextClient {
       ThrowInvalidContextException(exception_state);
       return ScriptPromise<V8Availability>();
     }
+    CHECK(options);
+    if (!ValidateAndCanonicalizeOptionLanguages(script_state->GetIsolate(),
+                                                options)) {
+      return ScriptPromise<V8Availability>();
+    }
 
     auto* resolver =
         MakeGarbageCollected<ScriptPromiseResolver<V8Availability>>(
@@ -170,6 +176,11 @@ class AIWritingAssistanceBase : public ExecutionContextClient {
       return ScriptPromise<V8SessionObjectType>();
     }
     CHECK(options);
+    if (!ValidateAndCanonicalizeOptionLanguages(script_state->GetIsolate(),
+                                                options)) {
+      return ScriptPromise<V8SessionObjectType>();
+    }
+
     auto* resolver =
         MakeGarbageCollected<ScriptPromiseResolver<V8SessionObjectType>>(
             script_state);
@@ -424,6 +435,39 @@ class AIWritingAssistanceBase : public ExecutionContextClient {
   Member<CreateOptions> options_;
 
  private:
+  static bool ValidateAndCanonicalizeOptionLanguages(
+      v8::Isolate* isolate,
+      CreateCoreOptions* options) {
+    using LanguageList = std::optional<Vector<String>>;
+    if (options->hasExpectedContextLanguages()) {
+      LanguageList result = ValidateAndCanonicalizeBCP47Languages(
+          isolate, options->expectedContextLanguages());
+      if (!result) {
+        return false;
+      }
+      options->setExpectedContextLanguages(*result);
+    }
+
+    if (options->hasExpectedInputLanguages()) {
+      LanguageList result = ValidateAndCanonicalizeBCP47Languages(
+          isolate, options->expectedInputLanguages());
+      if (!result) {
+        return false;
+      }
+      options->setExpectedInputLanguages(*result);
+    }
+
+    if (options->hasOutputLanguage()) {
+      LanguageList result = ValidateAndCanonicalizeBCP47Languages(
+          isolate, {options->outputLanguage()});
+      if (!result) {
+        return false;
+      }
+      options->setOutputLanguage((*result)[0]);
+    }
+    return true;
+  }
+
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   AIMetrics::AISessionType metric_session_type_;
   // Whether to echo back the original input if it only contains whitespace.

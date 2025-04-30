@@ -204,6 +204,28 @@ chromium-metrics-reviews@google.com.
       variants="WritingAssistanceFunctionName"/>
 </histogram>
 
+<histogram
+    name="AI.{WritingAssistanceType}.APIUsage.{WritingAssistanceFunctionName}.{LanguageMetric}"
+    enum="LocaleCodeISO639" expires_after="2025-10-27">
+  <owner>btriebw@chromium.org</owner>
+  <owner>ayui@chromium.org</owner>
+  <owner>src/chrome/browser/ai/OWNERS</owner>
+  <summary>
+    This is recorded each time when the WritingAssistance function is invoked.
+    It can be used to measure the usage of the language options.
+  </summary>
+  <token key="WritingAssistanceType" variants="WritingAssistanceType"/>
+  <token key="WritingAssistanceFunctionName"
+      variants="WritingAssistanceFunctionName"/>
+  <token key="LanguageMetric">
+    <variant name="ExpectedContextLanguage"
+        summary="Expected context language specified."/>
+    <variant name="ExpectedInputLanguage"
+        summary="Expected input language specified."/>
+    <variant name="OutputLanguage" summary="Output language specified."/>
+  </token>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>

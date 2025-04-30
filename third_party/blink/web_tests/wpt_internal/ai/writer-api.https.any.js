@@ -72,6 +72,14 @@ promise_test(async () => {
   assert_array_equals(writer.expectedInputLanguages, ['en']);
 }, 'Creating a Writer with expectedInputLanguages');
 
+
+promise_test(async (t) => {
+  promise_rejects_js(
+      t, RangeError,
+      Writer.create({expectedInputLanguages: ['en-abc-invalid']}));
+}, 'Creating a Writer with malformed language string');
+
+
 promise_test(async () => {
   const writer = await Writer.create({
     expectedContextLanguages: ['en']
