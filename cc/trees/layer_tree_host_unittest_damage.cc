@@ -278,7 +278,7 @@ class LayerTreeHostDamageTestForcedFullDamage : public LayerTreeHostDamageTest {
         EXPECT_TRUE(frame_data->has_no_damage);
 
         // Then we set full damage for the next frame.
-        host_impl->SetFullViewportDamage();
+        full_viewport_damage_ = true;
         break;
       case 2:
         // The whole frame should be damaged as requested.
@@ -297,7 +297,7 @@ class LayerTreeHostDamageTestForcedFullDamage : public LayerTreeHostDamageTest {
         // If we damage part of the frame, but also damage the full
         // frame, then the whole frame should be damaged.
         child_damage_rect_ = gfx::Rect(10, 11, 12, 13);
-        host_impl->SetFullViewportDamage();
+        full_viewport_damage_ = true;
         break;
       case 4:
         // The whole frame is damaged.
@@ -308,6 +308,13 @@ class LayerTreeHostDamageTestForcedFullDamage : public LayerTreeHostDamageTest {
         break;
     }
     return draw_result;
+  }
+
+  void CommitCompleteOnThread(LayerTreeHostImpl* host_impl) override {
+    if (full_viewport_damage_) {
+      host_impl->SetFullViewportDamage();
+      full_viewport_damage_ = false;
+    }
   }
 
   void DidCommitAndDrawFrame() override {
@@ -324,6 +331,7 @@ class LayerTreeHostDamageTestForcedFullDamage : public LayerTreeHostDamageTest {
   scoped_refptr<FakePictureLayer> root_;
   scoped_refptr<FakePictureLayer> child_;
   gfx::Rect child_damage_rect_;
+  bool full_viewport_damage_ = false;
 };
 
 SINGLE_AND_MULTI_THREAD_TEST_F(LayerTreeHostDamageTestForcedFullDamage);

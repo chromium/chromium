@@ -1423,8 +1423,9 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame) {
   CHECK(!frame->checkerboarded_needs_raster);
   CHECK(!frame->checkerboarded_needs_record);
 
-  bool have_copy_request =
+  frame->has_copy_requests =
       active_tree()->property_trees()->effect_tree().HasCopyRequests();
+
   bool have_missing_animated_tiles = false;
   int num_of_layers_with_videos = 0;
 
@@ -1465,7 +1466,7 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame) {
 
     if (it.state() == EffectTreeLayerListIterator::State::kTargetSurface) {
       // TODO(zmo): Make sure EffectTree's copy requests are sent to viz.
-      if (target_render_surface->HasCopyRequest()) {
+      if (output_frame_data && target_render_surface->HasCopyRequest()) {
         active_tree()
             ->property_trees()
             ->effect_tree_mutable()
@@ -1640,15 +1641,6 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame) {
   // If we're making a frame to draw, it better have at least one render pass.
   DCHECK(!frame->render_passes.empty());
 
-  if (have_copy_request) {
-    // Any copy requests left in the tree are not going to get serviced, and
-    // should be aborted.
-    active_tree()->property_trees()->effect_tree_mutable().ClearCopyRequests();
-
-    // Draw properties depend on copy requests.
-    active_tree()->set_needs_update_draw_properties();
-  }
-
   TRACE_EVENT_END2("cc,benchmark", "LayerTreeHostImpl::CalculateRenderPasses",
                    "draw_result", draw_result, "missing tiles",
                    num_missing_tiles);
@@ -1660,15 +1652,7 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame) {
   // destroyed.
   // TODO(weiliangc): Test copy request w/ LayerTreeFrameSink recreation. Would
   // trigger this DCHECK.
-  DCHECK(!have_copy_request || draw_result == DrawResult::kSuccess);
-
-  // TODO(crbug.com/40447355): This workaround to prevent creating unnecessarily
-  // persistent render passes. When a copy request is made, it may force a
-  // separate render pass for the layer, which will persist until a new commit
-  // removes it. Force a commit after copy requests, to remove extra render
-  // passes.
-  if (have_copy_request)
-    client_->SetNeedsCommitOnImplThread();
+  DCHECK(!frame->has_copy_requests || draw_result == DrawResult::kSuccess);
 
   return draw_result;
 }
@@ -1746,10 +1730,6 @@ DrawResult LayerTreeHostImpl::PrepareToDraw(FrameData* frame) {
     tile_manager_.PrepareToDraw();
   }
 
-  if (use_layer_context_for_display_) {
-    UpdateDisplayTree(*frame);
-  }
-
   frame->render_surface_list = &active_tree_->GetRenderSurfaceList();
   frame->render_passes.clear();
   frame->will_draw_layers.clear();
@@ -1759,7 +1739,6 @@ DrawResult LayerTreeHostImpl::PrepareToDraw(FrameData* frame) {
   if (active_tree_->RootRenderSurface()) {
     active_tree_->RootRenderSurface()->damage_tracker()->AddDamageNextUpdate(
         viewport_damage_rect_);
-    viewport_damage_rect_ = gfx::Rect();
   }
 
   DrawResult draw_result = CalculateRenderPasses(frame);
@@ -2922,6 +2901,8 @@ std::optional<SubmitInfo> LayerTreeHostImpl::DrawLayers(FrameData* frame) {
   base::TimeTicks submit_time = base::TimeTicks::Now();
 
   if (use_layer_context_for_display_) {
+    UpdateDisplayTree(*frame);
+
     // For the display compositor we should have already submitted at display
     // Immediately queue a DidReceiveCompositorFrameAck.
     GetTaskRunner()->PostTask(
@@ -2990,6 +2971,22 @@ std::optional<SubmitInfo> LayerTreeHostImpl::DrawLayers(FrameData* frame) {
   // signal that the swap is over.
   active_tree()->ClearSwapPromises();
 
+  if (frame->has_copy_requests) {
+    // Any copy requests left in the tree are not going to get serviced, and
+    // should be aborted.
+    active_tree()->property_trees()->effect_tree_mutable().ClearCopyRequests();
+
+    // Draw properties depend on copy requests.
+    active_tree()->set_needs_update_draw_properties();
+
+    // TODO(crbug.com/40447355): This workaround to prevent creating
+    // unnecessarily persistent render passes. When a copy request is made, it
+    // may force a separate render pass for the layer, which will persist until
+    // a new commit removes it. Force a commit after copy requests, to remove
+    // extra render passes.
+    client_->SetNeedsCommitOnImplThread();
+  }
+
   // The next frame should start by assuming nothing has changed, and changes
   // are noted as they occur.
   // TODO(boliu): If we did a temporary software renderer frame, propagate the
@@ -2997,6 +2994,9 @@ std::optional<SubmitInfo> LayerTreeHostImpl::DrawLayers(FrameData* frame) {
   for (size_t i = 0; i < frame->render_surface_list->size(); i++) {
     auto* surface = (*frame->render_surface_list)[i];
     surface->damage_tracker()->DidDrawDamagedArea();
+  }
+  if (active_tree_->RootRenderSurface()) {
+    viewport_damage_rect_ = gfx::Rect();
   }
   active_tree_->ResetAllChangeTracking();
 

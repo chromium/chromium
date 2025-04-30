@@ -177,6 +177,10 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
     // Indicates if this frame has a save directive which will add copy requests
     // for render passes in the Viz process.
     bool has_view_transition_save_directive = false;
+    // Indicates if this frame had any copy requests, and is used to ensure
+    // that we clear pending copy requests after drawing a frame and request
+    // a new tree commit.
+    bool has_copy_requests = false;
   };
 
   // A struct of data for a single UIResource, including the backing
