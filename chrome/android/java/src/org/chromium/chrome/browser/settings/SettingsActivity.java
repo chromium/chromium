@@ -87,6 +87,8 @@ import java.util.Locale;
  */
 public class SettingsActivity extends ChromeBaseAppCompatActivity
         implements PreferenceFragmentCompat.OnPreferenceStartFragmentCallback, SnackbarManageable {
+    private static final String TAG = "SettingsActivity";
+
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public static final String EXTRA_SHOW_FRAGMENT = "show_fragment";
 
@@ -320,9 +322,7 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
         }
 
         // The fragment is not yet migrated with auditing. Fallback to the legacy animation type.
-        Log.w(
-                "SettingsActivity",
-                "Non-migrated Settings fragment is found: " + fragment.getClass().getName());
+        Log.w(TAG, "Non-migrated Settings fragment is found: " + fragment.getClass().getName());
         return SettingsFragment.AnimationType.TWEEN;
     }
 
@@ -642,12 +642,25 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
                     "Settings.FragmentAttached", className.hashCode());
             // Log hashCode to easily add new class names to enums.xml.
             Log.d(
-                    "SettingsActivity",
+                    TAG,
                     String.format(
                             Locale.ENGLISH,
                             "Settings.FragmentAttached: <int value=\"%d\" label=\"%s\"/>",
                             className.hashCode(),
                             className));
+
+            if (!(fragment instanceof SettingsFragment)) {
+                RecordHistogram.recordSparseHistogram(
+                        "Settings.NonSettingsFragmentAttached", className.hashCode());
+                Log.e(
+                        TAG,
+                        String.format(
+                                Locale.ENGLISH,
+                                "%s does not implement SettingsFragment",
+                                className));
+            }
+            assert fragment instanceof SettingsFragment
+                    : className + "does not implement SettingsFragment";
         }
     }
 }

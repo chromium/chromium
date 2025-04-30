@@ -32,6 +32,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ProfileDependentSetting;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.settings.SettingsFragment;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.ui.widget.ButtonCompat;
 
@@ -46,7 +47,7 @@ import java.util.List;
  */
 @NullMarked
 public class PrivacyGuideFragment extends Fragment
-        implements BackPressHandler, ProfileDependentSetting {
+        implements BackPressHandler, ProfileDependentSetting, SettingsFragment {
     /**
      * The types of fragments supported. Each fragment corresponds to a step in the privacy guide.
      */

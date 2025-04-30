@@ -368,6 +368,18 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
   </summary>
 </histogram>
 
+<histogram name="Settings.NonSettingsFragmentAttached"
+    enum="AndroidSettingsFragmentHashes" expires_after="2026-04-25">
+  <owner>hidehiko@chromium.org</owner>
+  <owner>nya@chromium.org</owner>
+  <summary>
+    Records the classname of a Fragment when it is attached to a
+    SettingsActivity but not implements SettingsFragment interface. The name is
+    hashed using String.hashCode. All fragment attached to SettingsActivity
+    should implement SettingsFragment and this helps to identify missing ones.
+  </summary>
+</histogram>
+
 <histogram name="Settings.OpenSettingsFromMenu.PerProfileType"
     enum="BrowserProfileType" expires_after="2024-04-28">
   <owner>roagarwal@chromium.org</owner>

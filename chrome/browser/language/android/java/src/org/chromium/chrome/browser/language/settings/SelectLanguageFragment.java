@@ -32,6 +32,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.language.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ProfileDependentSetting;
+import org.chromium.components.browser_ui.settings.SettingsFragment;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 
 import java.util.ArrayList;
@@ -43,7 +44,8 @@ import java.util.Locale;
  * accept languages. There is a {@link SearchView} on its Actionbar to make a quick lookup.
  */
 @NullMarked
-public class SelectLanguageFragment extends Fragment implements ProfileDependentSetting {
+public class SelectLanguageFragment extends Fragment
+        implements ProfileDependentSetting, SettingsFragment {
     // Intent key to pass selected language code from SelectLanguageFragment.
     static final String INTENT_SELECTED_LANGUAGE = "SelectLanguageFragment.SelectedLanguage";
     // Intent key to receive type of languages to populate fragment with.
