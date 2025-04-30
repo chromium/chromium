@@ -25,6 +25,7 @@ import androidx.annotation.IntDef;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.widget.ImageViewCompat;
 
+import org.chromium.base.MathUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
@@ -41,6 +42,7 @@ import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.NavigationEntry;
 import org.chromium.content_public.browser.NavigationHistory;
+import org.chromium.ui.UiUtils;
 import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
@@ -155,9 +157,6 @@ public class NavigationPopup implements AdapterView.OnItemClickListener {
         mPopup.setHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
         mPopup.setOnItemClickListener(this);
         mPopup.setAdapter(mAdapter);
-        mPopup.setWidth(
-                resources.getDimensionPixelSize(
-                        anchorToBottom ? R.dimen.navigation_popup_width : R.dimen.menu_width));
 
         if (anchorToBottom) {
             // By default ListPopupWindow uses the top & bottom padding of the background to
@@ -204,7 +203,24 @@ public class NavigationPopup implements AdapterView.OnItemClickListener {
             mPopup.getAnchorView().removeOnLayoutChangeListener(mAnchorViewLayoutChangeListener);
         }
         mPopup.setAnchorView(anchorView);
-        if (mType == Type.ANDROID_SYSTEM_BACK) {
+        Resources resources = mContext.getResources();
+        boolean isAndroidSystemBack = mType == Type.ANDROID_SYSTEM_BACK;
+        int contentWidth = UiUtils.computeListAdapterContentDimensions(mAdapter, null)[0];
+        int minWidth = resources.getDimensionPixelSize(R.dimen.navigation_popup_tablet_min_width);
+        int maxWidth =
+                // Take the smaller of...
+                Math.min(
+                        // ... a fixed upper bound, and...
+                        resources.getDimensionPixelSize(R.dimen.navigation_popup_tablet_max_width),
+                        // ... the width of the screen minus a margin.
+                        resources.getDisplayMetrics().widthPixels
+                                - resources.getDimensionPixelSize(
+                                        R.dimen.navigation_popup_tablet_width_margin));
+        mPopup.setWidth(
+                isAndroidSystemBack
+                        ? resources.getDimensionPixelSize(R.dimen.navigation_popup_width)
+                        : MathUtils.clamp(contentWidth, minWidth, maxWidth));
+        if (isAndroidSystemBack) {
             anchorView.addOnLayoutChangeListener(mAnchorViewLayoutChangeListener);
             centerPopupOverAnchorViewAndShow();
         } else {
@@ -326,7 +342,7 @@ public class NavigationPopup implements AdapterView.OnItemClickListener {
         public View getView(int position, View convertView, ViewGroup parent) {
             EntryViewHolder viewHolder;
             if (convertView == null) {
-                LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+                LayoutInflater inflater = LayoutInflater.from(mContext);
                 convertView = inflater.inflate(R.layout.navigation_popup_item, parent, false);
                 viewHolder =
                         new EntryViewHolder(
