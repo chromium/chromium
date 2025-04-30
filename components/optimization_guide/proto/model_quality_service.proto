@@ -4,14 +4,9 @@
 
 syntax = "proto3";
 
-option optimize_for = LITE_RUNTIME;
-option java_package = "org.chromium.components.optimization_guide.proto";
-
-option java_outer_classname = "ModelQualityServiceProto";
-
 package optimization_guide.proto;
 
-import "components/optimization_guide/proto/model_quality_metadata.proto";
+import "components/optimization_guide/proto/features/bling_prototyping.proto";
 import "components/optimization_guide/proto/features/compose.proto";
 import "components/optimization_guide/proto/features/default.proto";
 import "components/optimization_guide/proto/features/enhanced_calendar.proto";
@@ -29,9 +24,13 @@ import "components/optimization_guide/proto/features/product_specifications.prot
 import "components/optimization_guide/proto/features/scam_detection.proto";
 import "components/optimization_guide/proto/features/tab_organization.proto";
 import "components/optimization_guide/proto/features/wallpaper_search.proto";
-import "components/optimization_guide/proto/features/bling_prototyping.proto";
 import "components/optimization_guide/proto/features/writing_assistance_api.proto";
 import "components/optimization_guide/proto/features/zero_state_suggestions.proto";
+import "components/optimization_guide/proto/model_quality_metadata.proto";
+
+option optimize_for = LITE_RUNTIME;
+option java_package = "org.chromium.components.optimization_guide.proto";
+option java_outer_classname = "ModelQualityServiceProto";
 
 // A request to send AI data logs to the model quality server. Data logging for
 // an AI feature with metadata specific to the logging.
