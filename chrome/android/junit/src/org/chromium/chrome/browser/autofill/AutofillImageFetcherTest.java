@@ -563,25 +563,40 @@ public class AutofillImageFetcherTest {
     @Test
     @SmallTest
     public void testPrefetchValuableImages_successfulImageFetch() {
+        // Image fetcher has a predefined number of image sizes to fetch.
+        final int imageNumber = AutofillImageFetcher.VALUABLE_IMAGE_SIZES.length;
+
         HistogramWatcher expectedHistogram =
                 HistogramWatcher.newBuilder()
                         .expectBooleanRecordTimes(
-                                "Autofill.ImageFetcher.Result", /* value= */ true, /* times= */ 1)
+                                "Autofill.ImageFetcher.Result",
+                                /* value= */ true,
+                                /* times= */ imageNumber)
                         .expectBooleanRecordTimes(
                                 "Autofill.ImageFetcher.ValuableImage.OverallResultOnBrowserStart",
                                 /* value= */ true,
-                                /* times= */ 1)
+                                /* times= */ imageNumber)
                         .build();
 
         mAutofillImageFetcher.prefetchValuableImages(new GURL[] {TEST_IMAGE_URL});
         Map<String, Bitmap> cachedImages = mAutofillImageFetcher.getCachedImagesForTesting();
 
-        // Verify that fetchImage was called once.
-        verify(mMockImageFetcher).fetchImage(any(Params.class), any(Callback.class));
+        // Verify that fetchImage was called once per each image size.
+        verify(mMockImageFetcher, times(imageNumber))
+                .fetchImage(any(Params.class), any(Callback.class));
 
         // Verify that the images are successfully fetched and cached.
-        assertEquals(1, cachedImages.size());
-        assertTrue(TEST_IMAGE.sameAs(cachedImages.get(TEST_IMAGE_URL.getSpec())));
+        assertEquals(imageNumber, cachedImages.size());
+        for (@ImageSize int imageSize : AutofillImageFetcher.VALUABLE_IMAGE_SIZES) {
+            IconSpecs specs =
+                    IconSpecs.create(
+                            ContextUtils.getApplicationContext(),
+                            ImageType.VALUABLE_IMAGE,
+                            imageSize);
+            assertTrue(
+                    TEST_IMAGE.sameAs(
+                            cachedImages.get(specs.getResolvedIconUrl(TEST_IMAGE_URL).getSpec())));
+        }
 
         expectedHistogram.assertExpected();
     }
@@ -589,6 +604,9 @@ public class AutofillImageFetcherTest {
     @Test
     @SmallTest
     public void testPrefetchValuableImages_unsuccessfulImageFetch() {
+        // Image fetcher has a predefined number of image sizes to fetch.
+        final int imageNumber = AutofillImageFetcher.VALUABLE_IMAGE_SIZES.length;
+
         doAnswer(
                         invocation -> {
                             Callback callback = invocation.getArgument(1);
@@ -600,11 +618,13 @@ public class AutofillImageFetcherTest {
         HistogramWatcher expectedHistogram =
                 HistogramWatcher.newBuilder()
                         .expectBooleanRecordTimes(
-                                "Autofill.ImageFetcher.Result", /* value= */ false, /* times= */ 2)
+                                "Autofill.ImageFetcher.Result",
+                                /* value= */ false,
+                                /* times= */ 2 * imageNumber)
                         .expectBooleanRecordTimes(
                                 "Autofill.ImageFetcher.ValuableImage.OverallResultOnBrowserStart",
                                 /* value= */ false,
-                                /* times= */ 1)
+                                /* times= */ imageNumber)
                         .build();
         mAutofillImageFetcher.prefetchValuableImages(new GURL[] {TEST_IMAGE_URL});
 
@@ -614,7 +634,8 @@ public class AutofillImageFetcherTest {
         mShadowLooper.runOneTask();
 
         // Verify that fetchImage was called twice.
-        verify(mMockImageFetcher, times(2)).fetchImage(any(Params.class), any(Callback.class));
+        verify(mMockImageFetcher, times(2 * imageNumber))
+                .fetchImage(any(Params.class), any(Callback.class));
 
         // Verify that the cache is empty since image fetching failed.
         assertTrue(mAutofillImageFetcher.getCachedImagesForTesting().isEmpty());

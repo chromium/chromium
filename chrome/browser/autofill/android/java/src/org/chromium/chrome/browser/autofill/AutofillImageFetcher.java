@@ -56,6 +56,8 @@ public class AutofillImageFetcher {
     // #MAX_FETCH_ATTEMPTS} attempts.
     private static final String VALUABLE_IMAGE_OVERALL_SUCCESS_HISTOGRAM =
             "Autofill.ImageFetcher.ValuableImage.OverallResultOnBrowserStart";
+    // Valuable images should be cached in small and large size on Android.
+    public static final int[] VALUABLE_IMAGE_SIZES = new int[] {ImageSize.SMALL, ImageSize.LARGE};
 
     private final Map<String, Integer> mFetchAttemptCounter = new HashMap<>();
     private final Map<String, Bitmap> mImagesCache = new HashMap<>();
@@ -146,20 +148,26 @@ public class AutofillImageFetcher {
      */
     @CalledByNative
     void prefetchValuableImages(@JniType("base::span<const GURL>") GURL[] urls) {
-        for (GURL url : urls) {
-            if (url == null || !url.isValid()) {
-                continue;
-            }
+        Context context = ContextUtils.getApplicationContext();
 
-            Function<Bitmap, Bitmap> treatImageFunction = bitmap -> bitmap;
-            Callback<@Nullable Bitmap> onImageFetched =
-                    bitmap ->
-                            treatAndCacheImage(
-                                    bitmap,
-                                    url.getSpec(),
-                                    treatImageFunction,
-                                    VALUABLE_IMAGE_OVERALL_SUCCESS_HISTOGRAM);
-            fetchImage(url.getSpec(), onImageFetched);
+        for (@ImageSize int size : VALUABLE_IMAGE_SIZES) {
+            IconSpecs iconSpecs = IconSpecs.create(context, ImageType.VALUABLE_IMAGE, size);
+            for (GURL url : urls) {
+                if (url == null || !url.isValid()) {
+                    continue;
+                }
+                String resolvedUrl = iconSpecs.getResolvedIconUrl(url).getSpec();
+                // TODO: crbug.com/404437211 - Make sure the valuable images are post-processed
+                // properly.
+                Callback<@Nullable Bitmap> onImageFetched =
+                        bitmap ->
+                                treatAndCacheImage(
+                                        bitmap,
+                                        resolvedUrl,
+                                        imageBitmap -> imageBitmap,
+                                        VALUABLE_IMAGE_OVERALL_SUCCESS_HISTOGRAM);
+                fetchImage(resolvedUrl, onImageFetched);
+            }
         }
     }
 
