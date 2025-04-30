@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_side_panel_coordinator.h"
+#include "chrome/browser/ui/lens/lens_search_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
@@ -319,8 +320,14 @@ IN_PROC_BROWSER_TEST_F(LensOverlayLiveTest, ClickText_SignedInAndSynced) {
                          ->lens_overlay_controller();
   ASSERT_EQ(controller->state(), State::kOff);
 
+  auto* search_controller = browser()
+                                ->tab_strip_model()
+                                ->GetActiveTab()
+                                ->GetTabFeatures()
+                                ->lens_search_controller();
+
   // Showing UI should change the state to screenshot and eventually to overlay.
-  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
+  search_controller->OpenLensOverlay(LensOverlayInvocationSource::kAppMenu);
   ASSERT_EQ(controller->state(), State::kScreenshot);
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOverlay; }));
@@ -363,8 +370,14 @@ IN_PROC_BROWSER_TEST_F(LensOverlayLiveTest, ClickText_SignedInNotSynced) {
                          ->lens_overlay_controller();
   ASSERT_EQ(controller->state(), State::kOff);
 
+  auto* search_controller = browser()
+                                ->tab_strip_model()
+                                ->GetActiveTab()
+                                ->GetTabFeatures()
+                                ->lens_search_controller();
+
   // Showing UI should change the state to screenshot and eventually to overlay.
-  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
+  search_controller->OpenLensOverlay(LensOverlayInvocationSource::kAppMenu);
   ASSERT_EQ(controller->state(), State::kScreenshot);
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOverlay; }));
@@ -400,8 +413,14 @@ IN_PROC_BROWSER_TEST_F(LensOverlayLiveTest, ClickText_SignedOut) {
                          ->lens_overlay_controller();
   ASSERT_EQ(controller->state(), State::kOff);
 
+  auto* search_controller = browser()
+                                ->tab_strip_model()
+                                ->GetActiveTab()
+                                ->GetTabFeatures()
+                                ->lens_search_controller();
+
   // Showing UI should change the state to screenshot and eventually to overlay.
-  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
+  search_controller->OpenLensOverlay(LensOverlayInvocationSource::kAppMenu);
   ASSERT_EQ(controller->state(), State::kScreenshot);
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOverlay; }));
@@ -444,8 +463,14 @@ IN_PROC_BROWSER_TEST_F(LensOverlayLiveTest, ClickObject_SignedInAndSynced) {
                          ->lens_overlay_controller();
   ASSERT_EQ(controller->state(), State::kOff);
 
+  auto* search_controller = browser()
+                                ->tab_strip_model()
+                                ->GetActiveTab()
+                                ->GetTabFeatures()
+                                ->lens_search_controller();
+
   // Showing UI should change the state to screenshot and eventually to overlay.
-  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
+  search_controller->OpenLensOverlay(LensOverlayInvocationSource::kAppMenu);
   ASSERT_EQ(controller->state(), State::kScreenshot);
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOverlay; }));
@@ -488,8 +513,14 @@ IN_PROC_BROWSER_TEST_F(LensOverlayLiveTest, ClickObject_SignedInNotSynced) {
                          ->lens_overlay_controller();
   ASSERT_EQ(controller->state(), State::kOff);
 
+  auto* search_controller = browser()
+                                ->tab_strip_model()
+                                ->GetActiveTab()
+                                ->GetTabFeatures()
+                                ->lens_search_controller();
+
   // Showing UI should change the state to screenshot and eventually to overlay.
-  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
+  search_controller->OpenLensOverlay(LensOverlayInvocationSource::kAppMenu);
   ASSERT_EQ(controller->state(), State::kScreenshot);
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOverlay; }));
@@ -525,8 +556,14 @@ IN_PROC_BROWSER_TEST_F(LensOverlayLiveTest, ClickObject_SignedOut) {
                          ->lens_overlay_controller();
   ASSERT_EQ(controller->state(), State::kOff);
 
+  auto* search_controller = browser()
+                                ->tab_strip_model()
+                                ->GetActiveTab()
+                                ->GetTabFeatures()
+                                ->lens_search_controller();
+
   // Showing UI should change the state to screenshot and eventually to overlay.
-  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
+  search_controller->OpenLensOverlay(LensOverlayInvocationSource::kAppMenu);
   ASSERT_EQ(controller->state(), State::kScreenshot);
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOverlay; }));
@@ -607,8 +644,14 @@ IN_PROC_BROWSER_TEST_F(LensOverlayTranslateLiveTest,
                          ->lens_overlay_controller();
   ASSERT_EQ(controller->state(), State::kOff);
 
+  auto* search_controller = browser()
+                                ->tab_strip_model()
+                                ->GetActiveTab()
+                                ->GetTabFeatures()
+                                ->lens_search_controller();
+
   // Showing UI should change the state to screenshot and eventually to overlay.
-  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
+  search_controller->OpenLensOverlay(LensOverlayInvocationSource::kAppMenu);
   ASSERT_EQ(controller->state(), State::kScreenshot);
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOverlay; }));
@@ -648,8 +691,14 @@ IN_PROC_BROWSER_TEST_F(LensOverlayTranslateLiveTest,
                          ->lens_overlay_controller();
   ASSERT_EQ(controller->state(), State::kOff);
 
+  auto* search_controller = browser()
+                                ->tab_strip_model()
+                                ->GetActiveTab()
+                                ->GetTabFeatures()
+                                ->lens_search_controller();
+
   // Showing UI should change the state to screenshot and eventually to overlay.
-  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
+  search_controller->OpenLensOverlay(LensOverlayInvocationSource::kAppMenu);
   ASSERT_EQ(controller->state(), State::kScreenshot);
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOverlay; }));
@@ -682,8 +731,14 @@ IN_PROC_BROWSER_TEST_F(LensOverlayTranslateLiveTest,
                          ->lens_overlay_controller();
   ASSERT_EQ(controller->state(), State::kOff);
 
+  auto* search_controller = browser()
+                                ->tab_strip_model()
+                                ->GetActiveTab()
+                                ->GetTabFeatures()
+                                ->lens_search_controller();
+
   // Showing UI should change the state to screenshot and eventually to overlay.
-  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
+  search_controller->OpenLensOverlay(LensOverlayInvocationSource::kAppMenu);
   ASSERT_EQ(controller->state(), State::kScreenshot);
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOverlay; }));

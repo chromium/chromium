@@ -430,153 +430,6 @@ void LensOverlayController::ShowUIWithPendingRegion(
   search_performed_in_session_ = true;
 }
 
-void LensOverlayController::ShowUI(
-    lens::LensOverlayInvocationSource invocation_source) {
-  // If UI is already showing or in the process of showing, do nothing.
-  if (state_ != State::kOff) {
-    return;
-  }
-
-  // The UI should only show if the tab is in the foreground or if the tab web
-  // contents is not in a crash state.
-  if (!tab_->IsActivated() || tab_->GetContents()->IsCrashed()) {
-    return;
-  }
-
-  // If a different tab-modal is showing, do nothing.
-  if (!tab_->CanShowModalUI()) {
-    return;
-  }
-
-  invocation_source_ = invocation_source;
-
-  // Request user permission before grabbing a screenshot.
-  CHECK(pref_service_);
-  // If contextual serachbox is enabled, show permission bubble again informing
-  // users of other information that will be shared. The contextual searchbox
-  // pref is a different pref.
-  if (!lens::CanSharePageScreenshotWithLensOverlay(pref_service_) ||
-      (lens::features::IsLensOverlayContextualSearchboxEnabled() &&
-       !lens::CanSharePageContentWithLensOverlay(pref_service_))) {
-    if (!permission_bubble_controller_) {
-      permission_bubble_controller_ =
-          std::make_unique<lens::LensPermissionBubbleController>(
-              *tab_, pref_service_, invocation_source);
-    }
-    permission_bubble_controller_->RequestPermission(
-        tab_->GetContents(),
-        base::BindRepeating(&LensOverlayController::ShowUI,
-                            weak_factory_.GetWeakPtr(), invocation_source));
-    return;
-  }
-
-  // Increment the counter for the number of times the Lens Overlay has been
-  // started.
-  int lens_overlay_start_count =
-      pref_service_->GetInteger(prefs::kLensOverlayStartCount);
-  pref_service_->SetInteger(prefs::kLensOverlayStartCount,
-                            lens_overlay_start_count + 1);
-
-  // Grab reference to the side panel coordinator it not already done so.
-  if (!results_side_panel_coordinator_) {
-    results_side_panel_coordinator_ =
-        lens_search_controller_->lens_overlay_side_panel_coordinator();
-  }
-
-  Profile* profile =
-      Profile::FromBrowserContext(tab_->GetContents()->GetBrowserContext());
-  // Create the query controller.
-  lens_overlay_query_controller_ = CreateLensQueryController(
-      base::BindRepeating(&LensOverlayController::HandleStartQueryResponse,
-                          weak_factory_.GetWeakPtr()),
-      base::BindRepeating(&LensOverlayController::HandleInteractionURLResponse,
-                          weak_factory_.GetWeakPtr()),
-      base::BindRepeating(&LensOverlayController::HandleInteractionResponse,
-                          weak_factory_.GetWeakPtr()),
-      base::BindRepeating(&LensOverlayController::HandleSuggestInputsResponse,
-                          weak_factory_.GetWeakPtr()),
-      base::BindRepeating(&LensOverlayController::HandleThumbnailCreated,
-                          weak_factory_.GetWeakPtr()),
-      base::BindRepeating(
-          &LensOverlayController::HandlePageContentUploadProgress,
-          weak_factory_.GetWeakPtr()),
-      variations_client_, identity_manager_, profile, invocation_source,
-      lens::LensOverlayShouldUseDarkMode(theme_service_),
-      gen204_controller_.get());
-  side_panel_coordinator_ =
-      tab_->GetBrowserWindowInterface()->GetFeatures().side_panel_coordinator();
-  CHECK(side_panel_coordinator_);
-
-  // Create the languages controller.
-  languages_controller_ =
-      std::make_unique<lens::LensOverlayLanguagesController>(profile);
-
-  // Setup observer to be notified of side panel opens and closes.
-  side_panel_shown_subscription_ =
-      side_panel_coordinator_->RegisterSidePanelShown(
-          base::BindRepeating(&LensOverlayController::OnSidePanelDidOpen,
-                              weak_factory_.GetWeakPtr()));
-
-  if (find_in_page::FindTabHelper* const find_tab_helper =
-          find_in_page::FindTabHelper::FromWebContents(tab_->GetContents())) {
-    find_tab_observer_.Observe(find_tab_helper);
-  }
-
-  if (!omnibox_tab_helper_observer_.IsObserving()) {
-    if (auto* helper = OmniboxTabHelper::FromWebContents(tab_->GetContents())) {
-      omnibox_tab_helper_observer_.Observe(helper);
-    }
-  }
-
-  // This is safe because we checked if another modal was showing above.
-  scoped_tab_modal_ui_ = tab_->ShowModalUI();
-  fullscreen_observation_.Observe(tab_->GetBrowserWindowInterface()
-                                      ->GetExclusiveAccessManager()
-                                      ->fullscreen_controller());
-
-  // The preselection widget can cover top Chrome in immersive fullscreen.
-  // Observer the reveal state to hide the widget when top Chrome is shown.
-  immersive_mode_observer_.Observe(
-      tab_->GetBrowserWindowInterface()->GetImmersiveModeController());
-
-#if BUILDFLAG(IS_MAC)
-  // Add observer to listen for changes in the always show toolbar state,
-  // since that requires the preselection bubble to rerender to show properly.
-  pref_change_registrar_.Init(pref_service_);
-  pref_change_registrar_.Add(
-      prefs::kShowFullscreenToolbar,
-      base::BindRepeating(
-          &LensOverlayController::CloseAndReshowPreselectionBubble,
-          base::Unretained(this)));
-#endif  // BUILDFLAG(IS_MAC)
-
-  NotifyUserEducationAboutOverlayUsed();
-
-  // Establish data required for session metrics.
-  search_performed_in_session_ = false;
-  invocation_time_ = base::TimeTicks::Now();
-  invocation_time_since_epoch_ = base::Time::Now();
-  hats_triggered_in_session_ = false;
-  ocr_dom_similarity_recorded_in_session_ = false;
-
-  // This should be the last thing called in ShowUI, so if something goes wrong
-  // in capturing the screenshot, the state gets cleaned up correctly.
-  if (side_panel_coordinator_->IsSidePanelShowing()) {
-    // Close the currently opened side panel synchronously. Postpone the
-    // screenshot for a fixed time to allow reflow.
-    state_ = State::kClosingOpenedSidePanel;
-    side_panel_coordinator_->Close(/*suppress_animations=*/true);
-    base::SingleThreadTaskRunner::GetCurrentDefault()
-        ->PostNonNestableDelayedTask(
-            FROM_HERE,
-            base::BindOnce(&LensOverlayController::FinishedWaitingForReflow,
-                           weak_factory_.GetWeakPtr()),
-            kReflowWaitTimeout);
-  } else {
-    CaptureScreenshot();
-  }
-}
-
 void LensOverlayController::CloseUIAsync(
     lens::LensOverlayDismissalSource dismissal_source) {
   if (state_ == State::kOff || IsOverlayClosing()) {
@@ -1127,6 +980,153 @@ LensOverlayController::CreateLensQueryController(
       std::move(thumbnail_created_callback),
       std::move(upload_progress_callback), variations_client, identity_manager,
       profile, invocation_source, use_dark_mode, gen204_controller);
+}
+
+void LensOverlayController::ShowUI(
+    lens::LensOverlayInvocationSource invocation_source) {
+  // If UI is already showing or in the process of showing, do nothing.
+  if (state_ != State::kOff) {
+    return;
+  }
+
+  // The UI should only show if the tab is in the foreground or if the tab web
+  // contents is not in a crash state.
+  if (!tab_->IsActivated() || tab_->GetContents()->IsCrashed()) {
+    return;
+  }
+
+  // If a different tab-modal is showing, do nothing.
+  if (!tab_->CanShowModalUI()) {
+    return;
+  }
+
+  invocation_source_ = invocation_source;
+
+  // Request user permission before grabbing a screenshot.
+  CHECK(pref_service_);
+  // If contextual serachbox is enabled, show permission bubble again informing
+  // users of other information that will be shared. The contextual searchbox
+  // pref is a different pref.
+  if (!lens::CanSharePageScreenshotWithLensOverlay(pref_service_) ||
+      (lens::features::IsLensOverlayContextualSearchboxEnabled() &&
+       !lens::CanSharePageContentWithLensOverlay(pref_service_))) {
+    if (!permission_bubble_controller_) {
+      permission_bubble_controller_ =
+          std::make_unique<lens::LensPermissionBubbleController>(
+              *tab_, pref_service_, invocation_source);
+    }
+    permission_bubble_controller_->RequestPermission(
+        tab_->GetContents(),
+        base::BindRepeating(&LensOverlayController::ShowUI,
+                            weak_factory_.GetWeakPtr(), invocation_source));
+    return;
+  }
+
+  // Increment the counter for the number of times the Lens Overlay has been
+  // started.
+  int lens_overlay_start_count =
+      pref_service_->GetInteger(prefs::kLensOverlayStartCount);
+  pref_service_->SetInteger(prefs::kLensOverlayStartCount,
+                            lens_overlay_start_count + 1);
+
+  // Grab reference to the side panel coordinator it not already done so.
+  if (!results_side_panel_coordinator_) {
+    results_side_panel_coordinator_ =
+        lens_search_controller_->lens_overlay_side_panel_coordinator();
+  }
+
+  Profile* profile =
+      Profile::FromBrowserContext(tab_->GetContents()->GetBrowserContext());
+  // Create the query controller.
+  lens_overlay_query_controller_ = CreateLensQueryController(
+      base::BindRepeating(&LensOverlayController::HandleStartQueryResponse,
+                          weak_factory_.GetWeakPtr()),
+      base::BindRepeating(&LensOverlayController::HandleInteractionURLResponse,
+                          weak_factory_.GetWeakPtr()),
+      base::BindRepeating(&LensOverlayController::HandleInteractionResponse,
+                          weak_factory_.GetWeakPtr()),
+      base::BindRepeating(&LensOverlayController::HandleSuggestInputsResponse,
+                          weak_factory_.GetWeakPtr()),
+      base::BindRepeating(&LensOverlayController::HandleThumbnailCreated,
+                          weak_factory_.GetWeakPtr()),
+      base::BindRepeating(
+          &LensOverlayController::HandlePageContentUploadProgress,
+          weak_factory_.GetWeakPtr()),
+      variations_client_, identity_manager_, profile, invocation_source,
+      lens::LensOverlayShouldUseDarkMode(theme_service_),
+      gen204_controller_.get());
+  side_panel_coordinator_ =
+      tab_->GetBrowserWindowInterface()->GetFeatures().side_panel_coordinator();
+  CHECK(side_panel_coordinator_);
+
+  // Create the languages controller.
+  languages_controller_ =
+      std::make_unique<lens::LensOverlayLanguagesController>(profile);
+
+  // Setup observer to be notified of side panel opens and closes.
+  side_panel_shown_subscription_ =
+      side_panel_coordinator_->RegisterSidePanelShown(
+          base::BindRepeating(&LensOverlayController::OnSidePanelDidOpen,
+                              weak_factory_.GetWeakPtr()));
+
+  if (find_in_page::FindTabHelper* const find_tab_helper =
+          find_in_page::FindTabHelper::FromWebContents(tab_->GetContents())) {
+    find_tab_observer_.Observe(find_tab_helper);
+  }
+
+  if (!omnibox_tab_helper_observer_.IsObserving()) {
+    if (auto* helper = OmniboxTabHelper::FromWebContents(tab_->GetContents())) {
+      omnibox_tab_helper_observer_.Observe(helper);
+    }
+  }
+
+  // This is safe because we checked if another modal was showing above.
+  scoped_tab_modal_ui_ = tab_->ShowModalUI();
+  fullscreen_observation_.Observe(tab_->GetBrowserWindowInterface()
+                                      ->GetExclusiveAccessManager()
+                                      ->fullscreen_controller());
+
+  // The preselection widget can cover top Chrome in immersive fullscreen.
+  // Observer the reveal state to hide the widget when top Chrome is shown.
+  immersive_mode_observer_.Observe(
+      tab_->GetBrowserWindowInterface()->GetImmersiveModeController());
+
+#if BUILDFLAG(IS_MAC)
+  // Add observer to listen for changes in the always show toolbar state,
+  // since that requires the preselection bubble to rerender to show properly.
+  pref_change_registrar_.Init(pref_service_);
+  pref_change_registrar_.Add(
+      prefs::kShowFullscreenToolbar,
+      base::BindRepeating(
+          &LensOverlayController::CloseAndReshowPreselectionBubble,
+          base::Unretained(this)));
+#endif  // BUILDFLAG(IS_MAC)
+
+  NotifyUserEducationAboutOverlayUsed();
+
+  // Establish data required for session metrics.
+  search_performed_in_session_ = false;
+  invocation_time_ = base::TimeTicks::Now();
+  invocation_time_since_epoch_ = base::Time::Now();
+  hats_triggered_in_session_ = false;
+  ocr_dom_similarity_recorded_in_session_ = false;
+
+  // This should be the last thing called in ShowUI, so if something goes wrong
+  // in capturing the screenshot, the state gets cleaned up correctly.
+  if (side_panel_coordinator_->IsSidePanelShowing()) {
+    // Close the currently opened side panel synchronously. Postpone the
+    // screenshot for a fixed time to allow reflow.
+    state_ = State::kClosingOpenedSidePanel;
+    side_panel_coordinator_->Close(/*suppress_animations=*/true);
+    base::SingleThreadTaskRunner::GetCurrentDefault()
+        ->PostNonNestableDelayedTask(
+            FROM_HERE,
+            base::BindOnce(&LensOverlayController::FinishedWaitingForReflow,
+                           weak_factory_.GetWeakPtr()),
+            kReflowWaitTimeout);
+  } else {
+    CaptureScreenshot();
+  }
 }
 
 std::string LensOverlayController::GetVsridForNewTab() {

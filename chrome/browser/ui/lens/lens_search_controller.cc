@@ -58,6 +58,19 @@ LensSearchController* LensSearchController::FromTabWebContents(
       tabs::TabInterface::GetFromContents(tab_web_contents));
 }
 
+void LensSearchController::OpenLensOverlay(
+    lens::LensOverlayInvocationSource invocation_source) {
+  // The UI should only show if the tab is in the foreground or if the tab web
+  // contents is not in a crash state.
+  if (!tab_->IsActivated() || tab_->GetContents()->IsCrashed()) {
+    return;
+  }
+
+  // TODO(crbug.com/404941800): Add logic based on this classes state once the
+  // state machine is available.
+  lens_overlay_controller_->ShowUI(invocation_source);
+}
+
 tabs::TabInterface* LensSearchController::GetTabInterface() {
   return tab_;
 }

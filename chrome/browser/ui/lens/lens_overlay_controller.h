@@ -214,13 +214,6 @@ class LensOverlayController : public LensSearchboxClient,
       lens::mojom::CenterRotatedBoxPtr region,
       const SkBitmap& region_bitmap);
 
-  // This is entry point for showing the overlay UI. This has no effect if state
-  // is not kOff. This has no effect if the tab is not in the foreground. If the
-  // overlay is successfully invoked, then the value of `invocation_source` will
-  // be recorded in the relevant metrics.
-  // Virtual for testing.
-  virtual void ShowUI(lens::LensOverlayInvocationSource invocation_source);
-
   // Starts the closing process of the overlay. This is an asynchronous process
   // with the following sequence:
   //   (1) Close the side panel
@@ -572,6 +565,7 @@ class LensOverlayController : public LensSearchboxClient,
   }
 
  protected:
+  friend class LensSearchController;
   friend class lens::LensOverlaySidePanelCoordinator;
 
   // Override these methods to stub out network requests for testing.
@@ -589,6 +583,12 @@ class LensOverlayController : public LensSearchboxClient,
       lens::LensOverlayInvocationSource invocation_source,
       bool use_dark_mode,
       lens::LensOverlayGen204Controller* gen204_controller);
+
+  // This is entry point for showing the overlay UI. This has no effect if state
+  // is not kOff. This has no effect if the tab is not in the foreground. If the
+  // overlay is successfully invoked, then the value of `invocation_source` will
+  // be recorded in the relevant metrics.
+  void ShowUI(lens::LensOverlayInvocationSource invocation_source);
 
   // Returns the vsrid to use for the new tab URL.
   std::string GetVsridForNewTab();

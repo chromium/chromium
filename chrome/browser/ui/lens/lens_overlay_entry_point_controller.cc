@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
+#include "chrome/browser/ui/lens/lens_search_controller.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -182,7 +183,9 @@ void LensOverlayEntryPointController::UpdateEntryPointsState(
 void LensOverlayEntryPointController::InvokeAction(
     tabs::TabInterface* active_tab,
     const actions::ActionInvocationContext& context) {
-  LensOverlayController* controller =
+  LensSearchController* search_controller =
+      active_tab->GetTabFeatures()->lens_search_controller();
+  LensOverlayController* overlay_controller =
       active_tab->GetTabFeatures()->lens_overlay_controller();
 
   std::underlying_type_t<page_actions::PageActionTrigger> page_action_trigger =
@@ -205,7 +208,8 @@ void LensOverlayEntryPointController::InvokeAction(
       default:
         lens::RecordAmbientSearchQuery(
             lens::AmbientSearchEntryPoint::LENS_OVERLAY_LOCATION_BAR);
-        controller->ShowUI(lens::LensOverlayInvocationSource::kOmnibox);
+        search_controller->OpenLensOverlay(
+            lens::LensOverlayInvocationSource::kOmnibox);
         active_tab->GetBrowserWindowInterface()
             ->GetUserEducationInterface()
             ->NotifyNewBadgeFeatureUsed(lens::features::kLensOverlay);
@@ -215,10 +219,12 @@ void LensOverlayEntryPointController::InvokeAction(
 
   // Toggle the Lens overlay. There's no need to show or hide the side
   // panel as the overlay controller will handle that.
-  if (controller->IsOverlayActive()) {
-    controller->CloseUIAsync(lens::LensOverlayDismissalSource::kToolbar);
+  if (overlay_controller->IsOverlayActive()) {
+    overlay_controller->CloseUIAsync(
+        lens::LensOverlayDismissalSource::kToolbar);
   } else {
-    controller->ShowUI(lens::LensOverlayInvocationSource::kToolbar);
+    search_controller->OpenLensOverlay(
+        lens::LensOverlayInvocationSource::kToolbar);
   }
 }
 

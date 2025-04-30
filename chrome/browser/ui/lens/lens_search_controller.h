@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_LENS_LENS_SEARCH_CONTROLLER_H_
 
 #include "base/memory/raw_ptr.h"
+#include "components/lens/lens_overlay_invocation_source.h"
 #include "components/tabs/public/tab_interface.h"
 
 class LensOverlayController;
@@ -58,6 +59,14 @@ class LensSearchController {
   // with `tab_web_contents`.
   static LensSearchController* FromTabWebContents(
       content::WebContents* tab_web_contents);
+
+  // This is an entry point for showing the overlay UI. This has no effect if
+  // the overlay is not currently `kOff`.  This has no effect if the tab is not
+  // in the foreground. If the overlay is successfully invoked, then the value
+  // of `invocation_source` will be recorded in the relevant metrics. Virtual
+  // for testing.
+  virtual void OpenLensOverlay(
+      lens::LensOverlayInvocationSource invocation_source);
 
   // Returns the tab interface that owns this controller.
   tabs::TabInterface* GetTabInterface();
