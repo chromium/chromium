@@ -132,10 +132,11 @@ class NativePixmapFrameResource : public FrameResource {
   // type STORAGE_DMABUFS is created.
   scoped_refptr<VideoFrame> CreateDmabufVideoFrame() const;
 
-  // CreateGmbVideoFrame() is used to create a VideoFrame from the underlying
-  // NativePixmap. The DMABuf FDs are duplicated and a VideoFrame with storage
-  // type STORAGE_GPU_MEMORY_BUFFER is created.
-  scoped_refptr<VideoFrame> CreateGmbVideoFrame() const;
+  // CreateMappableVideoFrame() is used to create a VideoFrame from the
+  // underlying NativePixmap. The DMABuf FDs are duplicated and a VideoFrame
+  // with storage type STORAGE_GPU_MEMORY_BUFFER is created.
+  scoped_refptr<VideoFrame> CreateMappableVideoFrame(
+      gpu::SharedImageInterface* sii) const;
 
  private:
   ~NativePixmapFrameResource() override;

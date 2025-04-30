@@ -505,15 +505,15 @@ scoped_refptr<VideoFrame> NativePixmapFrameResource::CreateDmabufVideoFrame()
   return video_frame;
 }
 
-scoped_refptr<VideoFrame> NativePixmapFrameResource::CreateGmbVideoFrame()
-    const {
+scoped_refptr<VideoFrame> NativePixmapFrameResource::CreateMappableVideoFrame(
+    gpu::SharedImageInterface* sii) const {
   LOG_ASSERT(buffer_usage_.has_value())
       << "Unsupported conversion from wrapped DMA buffers to GpuMemoryBuffer "
          "VideoFrame.";
   // Creates a GMB-backed frame with using duplicated file descriptors.
   auto video_frame = CreateVideoFrameFromGpuMemoryBufferHandle(
       CreateGpuMemoryBufferHandle(), format(), coded_size(), visible_rect(),
-      natural_size(), timestamp(), *buffer_usage_);
+      natural_size(), timestamp(), *buffer_usage_, sii);
   if (!video_frame) {
     DLOGF(ERROR) << "Unable to create a VideoFrame";
     return nullptr;

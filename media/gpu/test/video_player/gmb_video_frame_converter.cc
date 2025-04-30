@@ -19,7 +19,10 @@ GmbVideoFrameConverter::CreateForTesting() {
   return base::WrapUnique<FrameResourceConverter>(new GmbVideoFrameConverter());
 }
 
-GmbVideoFrameConverter::GmbVideoFrameConverter() = default;
+GmbVideoFrameConverter::GmbVideoFrameConverter()
+    : test_sii_(base::MakeRefCounted<gpu::TestSharedImageInterface>()) {}
+
+GmbVideoFrameConverter::~GmbVideoFrameConverter() = default;
 
 void GmbVideoFrameConverter::ConvertFrameImpl(
     scoped_refptr<FrameResource> frame) {
@@ -31,7 +34,8 @@ void GmbVideoFrameConverter::ConvertFrameImpl(
   LOG_ASSERT(frame->AsNativePixmapFrameResource())
       << "|frame| is expected to be a NativePixmapFrameResource";
   scoped_refptr<VideoFrame> video_frame =
-      frame->AsNativePixmapFrameResource()->CreateGmbVideoFrame();
+      frame->AsNativePixmapFrameResource()->CreateMappableVideoFrame(
+          test_sii_.get());
   if (!video_frame) {
     return OnError(FROM_HERE, "Failed to convert FrameResource to VideoFrame.");
   }
