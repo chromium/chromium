@@ -18,7 +18,9 @@ import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.ui.R;
+import org.chromium.ui.util.StyleUtils.FontLoadingOutcome;
 
 /** Tests for {@link StyleUtils} class. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -33,6 +35,9 @@ public class StyleUtilsTest {
 
     @Test
     public void applyTextAppearanceToTextPaint_StringFontFamily() {
+        var watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.StyleUtils.FontLoadingOutcome", FontLoadingOutcome.FONT_FAMILY);
         TextPaint textPaint = new TextPaint();
         // Should not crash if font-family resource is not found, string font family will be
         // constructed instead.
@@ -44,10 +49,14 @@ public class StyleUtilsTest {
                 /* applyFontFamily= */ true,
                 /* applyTextSize= */ false,
                 /* applyTextColor= */ false);
+        watcher.assertExpected();
     }
 
     @Test
     public void applyTextAppearanceToTextPaint_CustomFontSizeText() {
+        var watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.StyleUtils.FontLoadingOutcome", FontLoadingOutcome.FONT_RES);
         TextPaint textPaint = new TextPaint();
         StyleUtils.applyTextAppearanceToTextPaint(
                 mContext,
@@ -56,6 +65,7 @@ public class StyleUtilsTest {
                 /* applyFontFamily= */ true,
                 /* applyTextSize= */ true,
                 /* applyTextColor= */ true);
+        watcher.assertExpected();
         // Verify test values defined in resources.
         assertEquals(
                 "Applied font is incorrect.",

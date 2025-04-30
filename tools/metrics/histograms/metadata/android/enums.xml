@@ -993,6 +993,12 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="Undefined"/>
 </enum>
 
+<enum name="FontLoadingOutcome">
+  <int value="0" label="Fallback Font Family"/>
+  <int value="1" label="Font resource"/>
+  <int value="2" label="Font family"/>
+</enum>
+
 <enum name="FrameJankStatus">
   <int value="0" label="Janky"/>
   <int value="1" label="NonJanky"/>
