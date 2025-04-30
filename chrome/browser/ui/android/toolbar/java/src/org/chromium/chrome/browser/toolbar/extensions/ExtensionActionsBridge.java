@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.toolbar.extensions;
 
+import android.graphics.Bitmap;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -66,6 +68,17 @@ public class ExtensionActionsBridge {
                 .getAction(mNativeExtensionActionsBridge, actionId, tabId);
     }
 
+    /**
+     * Returns the icon for the action in the specified tab.
+     *
+     * <p>While loading the icon, this method returns a transparent icon.
+     */
+    @Nullable
+    public Bitmap getActionIcon(@NonNull String actionId, int tabId) {
+        return ExtensionActionsBridgeJni.get()
+                .getActionIcon(mNativeExtensionActionsBridge, actionId, tabId);
+    }
+
     @CalledByNative
     private void onActionAdded(@JniType("std::string") String actionId) {
         for (Observer observer : mObservers) {
@@ -101,6 +114,13 @@ public class ExtensionActionsBridge {
         }
     }
 
+    @CalledByNative
+    private void onActionIconUpdated(@JniType("std::string") String actionId) {
+        for (Observer observer : mObservers) {
+            observer.onActionIconUpdated(actionId);
+        }
+    }
+
     /** The interface for observing action events. */
     public interface Observer {
         /**
@@ -114,7 +134,8 @@ public class ExtensionActionsBridge {
 
         /**
          * Signals that the browser action with actionId has been updated. This method covers lots
-         * of different extension updates.
+         * of different extension updates, except for icons which should be covered by {@link
+         * #onActionIconUpdated()}.
          */
         void onActionUpdated(@NonNull String actionId);
 
@@ -126,6 +147,9 @@ public class ExtensionActionsBridge {
 
         /** Called whenever the pinned actions change. */
         void onPinnedActionsChanged();
+
+        /** Called when the icon for an action was updated. */
+        void onActionIconUpdated(@NonNull String actionId);
     }
 
     @NativeMethods
@@ -138,6 +162,11 @@ public class ExtensionActionsBridge {
         String[] getActionIds(long nativeExtensionActionsBridge);
 
         ExtensionAction getAction(
+                long nativeExtensionActionsBridge,
+                @JniType("std::string") String actionId,
+                int tabId);
+
+        Bitmap getActionIcon(
                 long nativeExtensionActionsBridge,
                 @JniType("std::string") String actionId,
                 int tabId);

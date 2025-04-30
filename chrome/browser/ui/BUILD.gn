@@ -994,8 +994,6 @@ static_library("ui") {
 
     if (enable_extensions_core) {
       sources += [
-        "android/toolbar/extension_action_icon_bridge.cc",
-        "android/toolbar/extension_action_icon_bridge.h",
         "android/toolbar/extension_actions_bridge.cc",
         "android/toolbar/extension_actions_bridge.h",
         "android/toolbar/extension_actions_bridge_factory.cc",
