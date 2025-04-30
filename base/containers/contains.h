@@ -14,8 +14,6 @@
 #include <ranges>
 #include <type_traits>
 #include <utility>
-// TODO(dcheng): Remove this after fixing any IWYU errors.
-#include <ranges>
 
 namespace base {
 
