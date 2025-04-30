@@ -79,14 +79,27 @@ TabSizer::TabSizer(LayoutDomain domain, float space_fraction_available)
 
 int TabSizer::CalculateTabWidth(const TabWidthConstraints& tab) const {
   switch (domain_) {
-    case LayoutDomain::kInactiveWidthBelowActiveWidth:
-      return std::floor(gfx::Tween::FloatValueBetween(
+    case LayoutDomain::kInactiveWidthBelowActiveWidth: {
+      // First calculate the scaled width without including split minimums which
+      // will ensure two split tabs are the width of one regular tab.
+      const float scaled_width = std::floor(gfx::Tween::FloatValueBetween(
           space_fraction_available_, tab.GetMinimumWidth(),
-          tab.GetLayoutCrossoverWidth()));
-    case LayoutDomain::kInactiveWidthEqualsActiveWidth:
-      return std::floor(gfx::Tween::FloatValueBetween(
+          tab.GetLayoutCrossoverWidth(/*compensate_for_splits=*/true)));
+      // Ensure tabs are at least their min width when accounting for splits.
+      return std::max(scaled_width,
+                      tab.GetMinimumWidth(/*compensate_for_splits=*/true));
+    }
+    case LayoutDomain::kInactiveWidthEqualsActiveWidth: {
+      // First calculate the scaled width without including split crossover
+      // widths which will ensure two split tabs are the width of one regular
+      // tab.
+      const float scaled_width = std::floor(gfx::Tween::FloatValueBetween(
           space_fraction_available_, tab.GetLayoutCrossoverWidth(),
           tab.GetPreferredWidth()));
+      // Ensure tabs are at least their min width when accounting for splits.
+      return std::max(scaled_width, tab.GetLayoutCrossoverWidth(
+                                        /*compensate_for_splits=*/true));
+    }
   }
 }
 
