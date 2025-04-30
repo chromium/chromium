@@ -528,6 +528,9 @@ if (is_clang_or_gcc) {
     } else if (current_cpu == "riscv64") {
       assert(stack_scan_supported)
       sources += [ "stack/asm/riscv64/push_registers_asm.cc" ]
+    } else if (current_cpu == "loong64") {
+      assert(stack_scan_supported)
+      sources += [ "stack/asm/loong64/push_registers_asm.cc" ]
     } else {
       # To support a trampoline for another arch, please refer to v8/src/heap/base.
       assert(!stack_scan_supported)
