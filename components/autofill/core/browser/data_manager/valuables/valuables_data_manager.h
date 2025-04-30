@@ -20,6 +20,8 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/sync/base/data_type.h"
 #include "components/webdata/common/web_data_service_base.h"
+#include "ui/gfx/image/image.h"
+#include "url/gurl.h"
 
 namespace autofill {
 
@@ -81,6 +83,9 @@ class ValuablesDataManager : public KeyedService,
 
   // Handler method called with newly received loyalty cards.
   void OnLoyaltyCardsLoaded(const std::vector<LoyaltyCard>& loyalty_cards);
+
+  // Fetches missing loyalty card icons.
+  void ProcessLoyaltyCardIconUrlChanges();
 
   // Notify all observers that a change has occurred.
   void NotifyObservers();
