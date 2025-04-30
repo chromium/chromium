@@ -640,6 +640,7 @@ bool LensOverlayController::IsScreenshotPossible(
   return view && view->IsSurfaceAvailableForCopy();
 }
 
+// TOOD(crbug.com/404941800): Move this method to the search controller.
 void LensOverlayController::OnSidePanelWillHide(
     SidePanelEntryHideReason reason) {
   // If the tab is not in the foreground, this is not relevant.
@@ -658,11 +659,13 @@ void LensOverlayController::OnSidePanelWillHide(
     } else {
       // Trigger the close animation and notify the overlay that the side
       // panel is closing so that it can fade out the UI.
-      CloseUIAsync(lens::LensOverlayDismissalSource::kSidePanelCloseButton);
+      lens_search_controller_->CloseLensAsync(
+          lens::LensOverlayDismissalSource::kSidePanelCloseButton);
     }
   }
 }
 
+// TOOD(crbug.com/404941800): Move this method to the search controller.
 void LensOverlayController::OnSidePanelHidden() {
   if (state_ != State::kClosingSidePanel) {
     return;
@@ -1367,7 +1370,7 @@ class LensOverlayController::UnderlyingWebContentsObserver
       lens_overlay_controller_->NotifyPageContentUpdated();
       return;
     }
-    lens_overlay_controller_->CloseUISync(
+    lens_overlay_controller_->lens_search_controller_->CloseLensSync(
         lens::LensOverlayDismissalSource::kPageChanged);
   }
 
@@ -1379,7 +1382,7 @@ class LensOverlayController::UnderlyingWebContentsObserver
       return;
     }
 
-    lens_overlay_controller_->CloseUISync(
+    lens_overlay_controller_->lens_search_controller_->CloseLensSync(
         status == base::TERMINATION_STATUS_NORMAL_TERMINATION
             ? lens::LensOverlayDismissalSource::kPageRendererClosedNormally
             : lens::LensOverlayDismissalSource::
@@ -1402,7 +1405,7 @@ void LensOverlayController::CaptureScreenshot() {
 
   // During initialization and shutdown a capture may not be possible.
   if (!IsScreenshotPossible(view)) {
-    CloseUISync(
+    lens_search_controller_->CloseLensSync(
         lens::LensOverlayDismissalSource::kErrorScreenshotCreationFailed);
     return;
   }
@@ -1480,7 +1483,7 @@ void LensOverlayController::DidCaptureScreenshot(
   // this is a multi-process, multi-threaded environment so there may be a
   // TOCTTOU race condition.
   if (bitmap.drawsNothing()) {
-    CloseUISync(
+    lens_search_controller_->CloseLensSync(
         lens::LensOverlayDismissalSource::kErrorScreenshotCreationFailed);
     return;
   }
@@ -1538,7 +1541,7 @@ void LensOverlayController::ContinueCreateInitializationData(
     SkBitmap rgb_screenshot) {
   if (state_ != State::kStartingWebUI || rgb_screenshot.drawsNothing()) {
     // TODO(b/334185985): Handle case when screenshot RGB encoding fails.
-    CloseUISync(
+    lens_search_controller_->CloseLensSync(
         lens::LensOverlayDismissalSource::kErrorScreenshotEncodingFailed);
     return;
   }
@@ -2548,7 +2551,8 @@ void LensOverlayController::OnFullscreenStateChanged() {
   if (tab_->GetBrowserWindowInterface()->IsTabStripVisible()) {
     return;
   }
-  CloseUISync(lens::LensOverlayDismissalSource::kFullscreened);
+  lens_search_controller_->CloseLensSync(
+      lens::LensOverlayDismissalSource::kFullscreened);
 }
 
 void LensOverlayController::OnViewBoundsChanged(views::View* observed_view) {
@@ -2611,7 +2615,8 @@ void LensOverlayController::OnFindEmptyText(
   if (state_ == State::kLivePageAndResults) {
     return;
   }
-  CloseUIAsync(lens::LensOverlayDismissalSource::kFindInPageInvoked);
+  lens_search_controller_->CloseLensAsync(
+      lens::LensOverlayDismissalSource::kFindInPageInvoked);
 }
 
 void LensOverlayController::OnFindResultAvailable(
@@ -2619,7 +2624,8 @@ void LensOverlayController::OnFindResultAvailable(
   if (state_ == State::kLivePageAndResults) {
     return;
   }
-  CloseUIAsync(lens::LensOverlayDismissalSource::kFindInPageInvoked);
+  lens_search_controller_->CloseLensAsync(
+      lens::LensOverlayDismissalSource::kFindInPageInvoked);
 }
 
 void LensOverlayController::OnImmersiveRevealStarted() {
@@ -2862,7 +2868,8 @@ void LensOverlayController::OnSidePanelDidOpen() {
   // If a side panel opens that is not ours, we must close the overlay.
   if (side_panel_coordinator_->GetCurrentEntryId() !=
       SidePanelEntry::Id::kLensOverlayResults) {
-    CloseUISync(lens::LensOverlayDismissalSource::kUnexpectedSidePanelOpen);
+    lens_search_controller_->CloseLensSync(
+        lens::LensOverlayDismissalSource::kUnexpectedSidePanelOpen);
   }
 }
 
@@ -2892,7 +2899,8 @@ void LensOverlayController::RenderProcessExited(
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(
-          &LensOverlayController::CloseUISync, weak_factory_.GetWeakPtr(),
+          &LensSearchController::CloseLensSync,
+          lens_search_controller_->GetWeakPtr(),
           info.status == base::TERMINATION_STATUS_NORMAL_TERMINATION
               ? lens::LensOverlayDismissalSource::kOverlayRendererClosedNormally
               : lens::LensOverlayDismissalSource::
@@ -2945,7 +2953,7 @@ void LensOverlayController::TabWillEnterBackground(tabs::TabInterface* tab) {
   // This is still possible when the controller is in state kScreenshot and the
   // tab was backgrounded. We should close the UI as the overlay has not been
   // created yet.
-  CloseUISync(
+  lens_search_controller_->CloseLensSync(
       lens::LensOverlayDismissalSource::kTabBackgroundedWhileScreenshotting);
 }
 
@@ -2954,7 +2962,8 @@ void LensOverlayController::WillDiscardContents(
     content::WebContents* old_contents,
     content::WebContents* new_contents) {
   // Background tab contents discarded.
-  CloseUISync(lens::LensOverlayDismissalSource::kTabContentsDiscarded);
+  lens_search_controller_->CloseLensSync(
+      lens::LensOverlayDismissalSource::kTabContentsDiscarded);
 }
 
 void LensOverlayController::WillDetach(
@@ -2965,10 +2974,12 @@ void LensOverlayController::WillDetach(
   // of `reason`. https://crbug.com/342921671.
   switch (reason) {
     case tabs::TabInterface::DetachReason::kDelete:
-      CloseUISync(lens::LensOverlayDismissalSource::kTabClosed);
+      lens_search_controller_->CloseLensSync(
+          lens::LensOverlayDismissalSource::kTabClosed);
       return;
     case tabs::TabInterface::DetachReason::kInsertIntoOtherWindow:
-      CloseUISync(lens::LensOverlayDismissalSource::kTabDragNewWindow);
+      lens_search_controller_->CloseLensSync(
+          lens::LensOverlayDismissalSource::kTabDragNewWindow);
       return;
   }
 }
@@ -3017,11 +3028,13 @@ void LensOverlayController::AddBackgroundBlur() {
 }
 
 void LensOverlayController::CloseRequestedByOverlayCloseButton() {
-  CloseUIAsync(lens::LensOverlayDismissalSource::kOverlayCloseButton);
+  lens_search_controller_->CloseLensAsync(
+      lens::LensOverlayDismissalSource::kOverlayCloseButton);
 }
 
 void LensOverlayController::CloseRequestedByOverlayBackgroundClick() {
-  CloseUIAsync(lens::LensOverlayDismissalSource::kOverlayBackgroundClick);
+  lens_search_controller_->CloseLensAsync(
+      lens::LensOverlayDismissalSource::kOverlayBackgroundClick);
 }
 
 void LensOverlayController::FeedbackRequestedByOverlay() {
@@ -3194,12 +3207,12 @@ void LensOverlayController::ShowPreselectionBubble() {
             net::NetworkChangeNotifier::IsOffline(),
             /*exit_clicked_callback=*/
             base::BindRepeating(
-                &LensOverlayController::CloseUIAsync,
-                weak_factory_.GetWeakPtr(),
+                &LensSearchController::CloseLensSync,
+                lens_search_controller_->GetWeakPtr(),
                 lens::LensOverlayDismissalSource::kPreselectionToastExitButton),
             /*on_cancel_callback=*/
-            base::BindOnce(&LensOverlayController::CloseUIAsync,
-                           weak_factory_.GetWeakPtr(),
+            base::BindOnce(&LensSearchController::CloseLensSync,
+                           lens_search_controller_->GetWeakPtr(),
                            lens::LensOverlayDismissalSource::
                                kPreselectionToastEscapeKeyPress)));
     preselection_widget_->SetNativeWindowProperty(

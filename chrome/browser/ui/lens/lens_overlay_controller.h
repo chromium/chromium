@@ -214,17 +214,6 @@ class LensOverlayController : public LensSearchboxClient,
       lens::mojom::CenterRotatedBoxPtr region,
       const SkBitmap& region_bitmap);
 
-  // Starts the closing process of the overlay. This is an asynchronous process
-  // with the following sequence:
-  //   (1) Close the side panel
-  //   (2) Close the overlay.
-  // Step (1) is asynchronous.
-  void CloseUIAsync(lens::LensOverlayDismissalSource dismissal_source);
-
-  // Instantly closes the overlay. This may not look nice if the overlay is
-  // visible when this is called.
-  void CloseUISync(lens::LensOverlayDismissalSource dismissal_source);
-
   // This method is used to set up communication between this instance and the
   // overlay WebUI. This is called by the WebUIController when the WebUI is
   // executing javascript and ready to bind.
@@ -589,6 +578,17 @@ class LensOverlayController : public LensSearchboxClient,
   // overlay is successfully invoked, then the value of `invocation_source` will
   // be recorded in the relevant metrics.
   void ShowUI(lens::LensOverlayInvocationSource invocation_source);
+
+  // Starts the closing process of the overlay. This is an asynchronous process
+  // with the following sequence:
+  //   (1) Close the side panel
+  //   (2) Close the overlay.
+  // Step (1) is asynchronous.
+  void CloseUIAsync(lens::LensOverlayDismissalSource dismissal_source);
+
+  // Instantly closes the overlay. This may not look nice if the overlay is
+  // visible when this is called.
+  void CloseUISync(lens::LensOverlayDismissalSource dismissal_source);
 
   // Returns the vsrid to use for the new tab URL.
   std::string GetVsridForNewTab();

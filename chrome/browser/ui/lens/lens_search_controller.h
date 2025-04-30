@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "components/lens/lens_overlay_dismissal_source.h"
 #include "components/lens/lens_overlay_invocation_source.h"
 #include "components/optimization_guide/content/browser/page_context_eligibility.h"
 #include "components/tabs/public/tab_interface.h"
@@ -72,8 +73,23 @@ class LensSearchController {
   virtual void OpenLensOverlay(
       lens::LensOverlayInvocationSource invocation_source);
 
+  // Starts the closing process of the overlay. This is an asynchronous process
+  // with the following sequence:
+  //   (1) Close the side panel
+  //   (2) Close the overlay.
+  // Step (1) is asynchronous.
+  virtual void CloseLensAsync(
+      lens::LensOverlayDismissalSource dismissal_source);
+
+  // Instantly closes all Lens components currently opened.This may not look
+  // nice if the overlay is visible when this is called.
+  virtual void CloseLensSync(lens::LensOverlayDismissalSource dismissal_source);
+
   // Returns the tab interface that owns this controller.
   tabs::TabInterface* GetTabInterface();
+
+  // Returns the weak pointer to this class.
+  base::WeakPtr<LensSearchController> GetWeakPtr();
 
   // Returns the LensOverlayController.
   LensOverlayController* lens_overlay_controller();
@@ -116,12 +132,30 @@ class LensSearchController {
   // eligibility API.
   virtual void CreatePageContextEligibilityAPI();
 
+  // Internal state machine. States are mutually exclusive. Exposed for testing.
+  enum class State {
+    // This is the default state. No feature is currently active or soon to be
+    // active.
+    kOff,
+
+    // One or more Lens features are active on this tab.
+    kActive,
+
+    // TODO(crbug.com/335516480): Implement suspended state.
+    kSuspended,
+  };
+  State state() { return state_; }
+
  private:
   void OnPageContextEligibilityAPILoaded(
       optimization_guide::PageContextEligibility* page_context_eligibility);
 
-  // Whether the LensSearchController has been initialized.
+  // Whether the LensSearchController has been initialized. Meaning, all the
+  // dependencies have been initialized and the controller is ready to use.
   bool initialized_ = false;
+
+  // Tracks the internal state machine.
+  State state_ = State::kOff;
 
   // The overlay controller for the Lens Search feature on this tab.
   std::unique_ptr<LensOverlayController> lens_overlay_controller_;
@@ -141,6 +175,7 @@ class LensSearchController {
   // Owns this class.
   raw_ptr<tabs::TabInterface> tab_;
 
+  // Must be the last member.
   base::WeakPtrFactory<LensSearchController> weak_ptr_factory_{this};
 };
 

@@ -220,7 +220,7 @@ void LensOverlayEntryPointController::InvokeAction(
   // Toggle the Lens overlay. There's no need to show or hide the side
   // panel as the overlay controller will handle that.
   if (overlay_controller->IsOverlayActive()) {
-    overlay_controller->CloseUIAsync(
+    search_controller->CloseLensAsync(
         lens::LensOverlayDismissalSource::kToolbar);
   } else {
     search_controller->OpenLensOverlay(

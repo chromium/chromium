@@ -922,7 +922,14 @@ class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
 
   void CloseOverlayAndWaitForOff(LensOverlayController* controller,
                                  LensOverlayDismissalSource dismissal_source) {
-    controller->CloseUIAsync(dismissal_source);
+    // TODO(crbug.com/404941800): This uses a roundabout way to close the UI.
+    // It has to go through the LensOverlayController because the search
+    // controller doesn't have proper state management. Use search controller
+    // directly once it has its own state for properly determining kOff.
+    controller->GetTabInterface()
+        ->GetTabFeatures()
+        ->lens_search_controller()
+        ->CloseLensAsync(dismissal_source);
     ASSERT_TRUE(base::test::RunUntil(
         [&]() { return controller->state() == State::kOff; }));
   }
@@ -1316,11 +1323,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, SidePanelModalDialog) {
   views::test::WidgetDestroyedWaiter modal_widget_destroy_waiter(modal_widget);
 
   // Close the lens overlay.
-  controller->CloseUISync(lens::LensOverlayDismissalSource::kPageChanged);
-
-  // Overlay should eventually close.
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return controller->state() == State::kOff; }));
+  CloseOverlayAndWaitForOff(controller,
+                            LensOverlayDismissalSource::kPageChanged);
 
   // Modal dialog should close without crashing.
   modal_widget_destroy_waiter.Wait();
@@ -5322,7 +5326,14 @@ class LensOverlayControllerBrowserPDFTest
 
   void CloseOverlayAndWaitForOff(LensOverlayController* controller,
                                  LensOverlayDismissalSource dismissal_source) {
-    controller->CloseUIAsync(dismissal_source);
+    // TODO(crbug.com/404941800): This uses a roundabout way to close the UI.
+    // It has to go through the LensOverlayController because the search
+    // controller doesn't have proper state management. Use search controller
+    // directly once it has its own state for properly determining kOff.
+    controller->GetTabInterface()
+        ->GetTabFeatures()
+        ->lens_search_controller()
+        ->CloseLensAsync(dismissal_source);
     ASSERT_TRUE(base::test::RunUntil(
         [&]() { return controller->state() == State::kOff; }));
   }

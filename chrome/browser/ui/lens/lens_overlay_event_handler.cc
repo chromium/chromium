@@ -5,6 +5,8 @@
 #include "chrome/browser/ui/lens/lens_overlay_event_handler.h"
 
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
+#include "chrome/browser/ui/lens/lens_search_controller.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "components/lens/lens_overlay_dismissal_source.h"
 
 namespace lens {
@@ -37,8 +39,14 @@ bool LensOverlayEventHandler::HandleKeyboardEvent(
   }
 
   if (IsEscapeEvent(event)) {
-    lens_overlay_controller_->CloseUIAsync(
-        lens::LensOverlayDismissalSource::kEscapeKeyPress);
+    // TODO(crbug.com/404941800): This is a roundabout way to close the overlay,
+    // but this class isn't yet owned by the search controller, so it can't
+    // directly call it. This should be cleaned up once this class is owned by
+    // the search controller.
+    lens_overlay_controller_->GetTabInterface()
+        ->GetTabFeatures()
+        ->lens_search_controller()
+        ->CloseLensAsync(lens::LensOverlayDismissalSource::kEscapeKeyPress);
     return true;
   }
   // We only want to copy if the user is not currently making a native text

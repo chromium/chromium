@@ -60,6 +60,7 @@
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
+#include "chrome/browser/ui/lens/lens_search_controller.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/omnibox/chrome_omnibox_navigation_observer.h"
 #include "chrome/browser/ui/omnibox/omnibox_tab_helper.h"
@@ -119,6 +120,12 @@ using predictors::AutocompleteActionPredictor;
 LensOverlayController* GetLensOverlayController(
     content::WebContents* web_contents) {
   return web_contents ? LensOverlayController::FromTabWebContents(web_contents)
+                      : nullptr;
+}
+
+LensSearchController* GetLensSearchController(
+    content::WebContents* web_contents) {
+  return web_contents ? LensSearchController::FromTabWebContents(web_contents)
                       : nullptr;
 }
 
@@ -381,10 +388,10 @@ void ChromeOmniboxClient::OnKeywordModeChanged(bool entered,
     return;
   }
 
-  if (LensOverlayController* lens_overlay_controller =
-          GetLensOverlayController(location_bar_->GetWebContents())) {
+  if (LensSearchController* lens_search_controller =
+          GetLensSearchController(location_bar_->GetWebContents())) {
     // TODO(crbug.com/408073216): Create and use new dismissal source.
-    lens_overlay_controller->CloseUIAsync(
+    lens_search_controller->CloseLensAsync(
         lens::LensOverlayDismissalSource::kEscapeKeyPress);
   }
 }

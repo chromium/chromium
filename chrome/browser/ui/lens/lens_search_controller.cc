@@ -74,10 +74,34 @@ void LensSearchController::OpenLensOverlay(
   // TODO(crbug.com/404941800): Add logic based on this classes state once the
   // state machine is available.
   lens_overlay_controller_->ShowUI(invocation_source);
+
+  // TODO(crbug.com/404941800): This state should start with kInitializing and
+  // then move to kActive once the overlay is fully initialized. Setting
+  // straight to kActive for now to unblock development.
+  state_ = State::kActive;
+}
+
+void LensSearchController::CloseLensAsync(
+    lens::LensOverlayDismissalSource dismissal_source) {
+  lens_overlay_controller_->CloseUIAsync(dismissal_source);
+  // TODO(crbug.com/404941800): This state should start with kClosing and
+  // then move to kOff once all Lens feature have finished closing. Setting
+  // straight to kOff for now to unblock development.
+  state_ = State::kOff;
+}
+
+void LensSearchController::CloseLensSync(
+    lens::LensOverlayDismissalSource dismissal_source) {
+  lens_overlay_controller_->CloseUISync(dismissal_source);
+  state_ = State::kOff;
 }
 
 tabs::TabInterface* LensSearchController::GetTabInterface() {
   return tab_;
+}
+
+base::WeakPtr<LensSearchController> LensSearchController::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 LensOverlayController* LensSearchController::lens_overlay_controller() {
