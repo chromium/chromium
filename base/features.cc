@@ -50,19 +50,6 @@ BASE_FEATURE(kFastFilePathIsParent,
              "FastFilePathIsParent",
              FEATURE_ENABLED_BY_DEFAULT);
 
-// Use the Rust JSON parser. Enabled everywhere.
-BASE_FEATURE(kUseRustJsonParser,
-             "UseRustJsonParser",
-             FEATURE_ENABLED_BY_DEFAULT);
-
-// If true, use the Rust JSON parser in-thread; otherwise, it runs in a thread
-// pool.
-BASE_FEATURE_PARAM(bool,
-                   kUseRustJsonParserInCurrentSequence,
-                   &kUseRustJsonParser,
-                   "UseRustJsonParserInCurrentSequence",
-                   true);
-
 // Use non default low memory device threshold.
 // Value should be given via |LowMemoryDeviceThresholdMB|.
 #if BUILDFLAG(IS_ANDROID)

@@ -442,16 +442,10 @@ TEST_F(FileUtilTest, LoadExtensionGivesHelpfullErrorOnBadManifest) {
       install_dir, ManifestLocation::kUnpacked, Extension::NO_FLAGS, &error));
   ASSERT_TRUE(extension.get() == nullptr);
   ASSERT_FALSE(error.empty());
-  if (base::JSONReader::UsingRust()) {
-    ASSERT_NE(
-        std::string::npos,
-        error.find(manifest_errors::kManifestParseError +
-                   std::string("  expected `,` or `}` at line 2 column 16")));
-  } else {
-    ASSERT_NE(std::string::npos,
-              error.find(manifest_errors::kManifestParseError +
-                         std::string("  Line: 2, column: 16,")));
-  }
+  ASSERT_NE(
+      std::string::npos,
+      error.find(manifest_errors::kManifestParseError +
+                 std::string("  expected `,` or `}` at line 2 column 16")));
 }
 
 TEST_F(FileUtilTest, ValidateThemeUTF8) {
