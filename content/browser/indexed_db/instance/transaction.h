@@ -45,7 +45,6 @@ class Database;
 class CONTENT_EXPORT Transaction : public blink::mojom::IDBTransaction {
  public:
   using Operation = base::OnceCallback<Status(Transaction*)>;
-  using AbortOperation = base::OnceClosure;
 
   enum State {
     CREATED,     // Created, but not yet started by coordinator.
@@ -124,7 +123,6 @@ class CONTENT_EXPORT Transaction : public blink::mojom::IDBTransaction {
     ScheduleTask(blink::mojom::IDBTaskType::Normal, std::move(task));
   }
   void ScheduleTask(blink::mojom::IDBTaskType, Operation task);
-  void ScheduleAbortTask(AbortOperation abort_task);
   void RegisterOpenCursor(Cursor* cursor);
   void UnregisterOpenCursor(Cursor* cursor);
   void AddPreemptiveEvent() { pending_preemptive_events_++; }
@@ -272,26 +270,8 @@ class CONTENT_EXPORT Transaction : public blink::mojom::IDBTransaction {
     base::queue<Operation> queue_;
   };
 
-  class TaskStack {
-   public:
-    TaskStack();
-
-    TaskStack(const TaskStack&) = delete;
-    TaskStack& operator=(const TaskStack&) = delete;
-
-    ~TaskStack();
-    bool empty() const { return stack_.empty(); }
-    void push(AbortOperation task) { stack_.push(std::move(task)); }
-    AbortOperation pop();
-    void clear();
-
-   private:
-    base::stack<AbortOperation> stack_;
-  };
-
   TaskQueue task_queue_;
   TaskQueue preemptive_task_queue_;
-  TaskStack abort_task_stack_;
 
   std::unique_ptr<BackingStore::Transaction> backing_store_transaction_;
   bool backing_store_transaction_begun_ = false;

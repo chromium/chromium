@@ -317,10 +317,25 @@ class BackingStoreTest : public testing::Test {
                              blink::mojom::IDBTransactionMode::VersionChange);
     transaction->Begin(CreateDummyLock());
     EXPECT_TRUE(transaction->SetDatabaseVersion(version).ok());
-    bool success = false;
-    transaction->CommitPhaseOne(CreateBlobWriteCallback(&success));
-    EXPECT_TRUE(success);
-    transaction->CommitPhaseTwo();
+    CommitTransaction(*transaction);
+  }
+
+  std::unique_ptr<indexed_db::BackingStore::Transaction>
+  CreateAndBeginTransaction(indexed_db::BackingStore::Database& db,
+                            blink::mojom::IDBTransactionMode mode) {
+    std::unique_ptr<indexed_db::BackingStore::Transaction> transaction =
+        db.CreateTransaction(blink::mojom::IDBTransactionDurability::Relaxed,
+                             mode);
+    transaction->Begin(CreateDummyLock());
+    return transaction;
+  }
+
+  void CommitTransaction(indexed_db::BackingStore::Transaction& transaction) {
+    bool succeeded = false;
+    EXPECT_TRUE(
+        transaction.CommitPhaseOne(CreateBlobWriteCallback(&succeeded)).ok());
+    EXPECT_TRUE(succeeded);
+    EXPECT_TRUE(transaction.CommitPhaseTwo().ok());
   }
 
   std::vector<PartitionedLock> CreateDummyLock() {
@@ -1159,6 +1174,75 @@ TEST_P(BackingStoreTestWithExternalObjects, ActiveBlobJournal) {
   EXPECT_FALSE(backing_store()->IsBlobCleanupPending());
 }
 
+// Deleting an index should delete the index metadata and the index data.
+TEST_F(BackingStoreTest, CreateAndDeleteIndex) {
+  const int64_t object_store_id = 99;
+  const IndexedDBKeyPath object_store_key_path(u"object_store_key");
+
+  const int64_t index_id = 999;
+  const IndexedDBKeyPath index_key_path(u"index_key");
+
+  auto db = backing_store()->CreateOrOpenDatabase(u"database_name");
+  ASSERT_TRUE(db.has_value());
+
+  {
+    auto transaction = CreateAndBeginTransaction(
+        **db, blink::mojom::IDBTransactionMode::VersionChange);
+
+    EXPECT_TRUE(transaction
+                    ->CreateObjectStore(object_store_id, u"object_store_name",
+                                        object_store_key_path,
+                                        /*auto_increment=*/true)
+                    .ok());
+
+    EXPECT_TRUE(transaction
+                    ->CreateIndex(object_store_id, index_id, u"index_name",
+                                  index_key_path, /*unique=*/true,
+                                  /*multi_entry=*/true)
+                    .ok());
+
+    CommitTransaction(*transaction);
+  }
+
+  EXPECT_EQ((*db)->GetMetadata().object_stores.size(), 1U);
+  auto object_store_it =
+      (*db)->GetMetadata().object_stores.find(object_store_id);
+  ASSERT_NE(object_store_it, (*db)->GetMetadata().object_stores.end());
+  const IndexedDBObjectStoreMetadata& object_store = object_store_it->second;
+  EXPECT_NE(object_store.indexes.end(), object_store.indexes.find(index_id));
+
+  {
+    auto transaction = CreateAndBeginTransaction(
+        **db, blink::mojom::IDBTransactionMode::VersionChange);
+
+    BackingStore::RecordIdentifier record;
+    EXPECT_TRUE(
+        transaction->PutRecord(object_store_id, key1_, &value1_, &record).ok());
+    EXPECT_TRUE(
+        transaction
+            ->PutIndexDataForRecord(object_store_id, index_id, key2_, record)
+            .ok());
+    std::unique_ptr<IndexedDBKey> pk;
+    EXPECT_TRUE(
+        transaction
+            ->GetPrimaryKeyViaIndex(object_store_id, index_id, key2_, &pk)
+            .ok());
+    EXPECT_TRUE(pk.get());
+
+    EXPECT_TRUE(transaction->DeleteIndex(object_store_id, index_id).ok());
+    pk.reset();
+    EXPECT_TRUE(
+        transaction
+            ->GetPrimaryKeyViaIndex(object_store_id, index_id, key2_, &pk)
+            .ok());
+    EXPECT_FALSE(pk.get());
+
+    CommitTransaction(*transaction);
+  }
+
+  EXPECT_EQ(object_store.indexes.end(), object_store.indexes.find(index_id));
+}
+
 // Make sure that using very high ( more than 32 bit ) values for
 // database_id and object_store_id still work.
 TEST_F(BackingStoreTest, HighIds) {
@@ -1340,16 +1424,21 @@ TEST_F(BackingStoreTest, CreateDatabase) {
             blink::mojom::IDBTransactionMode::VersionChange);
     transaction->Begin(CreateDummyLock());
 
-    IndexedDBObjectStoreMetadata object_store;
-    Status s = transaction->CreateObjectStore(
-        object_store_id, object_store_name, object_store_key_path,
-        auto_increment, &object_store);
+    Status s =
+        transaction->CreateObjectStore(object_store_id, object_store_name,
+                                       object_store_key_path, auto_increment);
     EXPECT_TRUE(s.ok());
 
-    IndexedDBIndexMetadata index;
+    IndexedDBObjectStoreMetadata& object_store =
+        (*db1)->GetMetadata().object_stores[object_store_id];
+    EXPECT_EQ(object_store.id, object_store_id);
+
     s = transaction->CreateIndex(object_store.id, index_id, index_name,
-                                 index_key_path, unique, multi_entry, &index);
+                                 index_key_path, unique, multi_entry);
     EXPECT_TRUE(s.ok());
+
+    IndexedDBIndexMetadata& index = object_store.indexes[index_id];
+    EXPECT_EQ(index.id, index_id);
 
     bool succeeded = false;
     EXPECT_TRUE(
@@ -1756,11 +1845,14 @@ TEST_F(BackingStoreTestWithBlobs, SchemaUpgradeV3ToV4) {
     auto& transaction = *txn;
     transaction.Begin(CreateDummyLock());
 
-    IndexedDBObjectStoreMetadata object_store;
-    Status s = transaction.CreateObjectStore(object_store_id, object_store_name,
-                                             object_store_key_path,
-                                             auto_increment, &object_store);
+    Status s =
+        transaction.CreateObjectStore(object_store_id, object_store_name,
+                                      object_store_key_path, auto_increment);
     EXPECT_TRUE(s.ok());
+
+    IndexedDBObjectStoreMetadata& object_store =
+        (*db)->GetMetadata().object_stores[object_store_id];
+    EXPECT_EQ(object_store.id, object_store_id);
 
     bool succeeded = false;
     EXPECT_TRUE(
@@ -1904,11 +1996,14 @@ TEST_F(BackingStoreTestWithBlobs, SchemaUpgradeV4ToV5) {
     auto& transaction = *txn;
     transaction.Begin(CreateDummyLock());
 
-    IndexedDBObjectStoreMetadata object_store;
-    Status s = transaction.CreateObjectStore(object_store_id, object_store_name,
-                                             object_store_key_path,
-                                             auto_increment, &object_store);
+    Status s =
+        transaction.CreateObjectStore(object_store_id, object_store_name,
+                                      object_store_key_path, auto_increment);
     EXPECT_TRUE(s.ok());
+
+    IndexedDBObjectStoreMetadata& object_store =
+        (*db)->GetMetadata().object_stores[object_store_id];
+    EXPECT_EQ(object_store.id, object_store_id);
 
     bool succeeded = false;
     EXPECT_TRUE(

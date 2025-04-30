@@ -35,11 +35,8 @@
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-forward.h"
 
 namespace blink {
-class IndexedDBKeyPath;
 class IndexedDBKeyRange;
 struct IndexedDBDatabaseMetadata;
-struct IndexedDBIndexMetadata;
-struct IndexedDBObjectStoreMetadata;
 }  // namespace blink
 
 namespace content::indexed_db {
@@ -100,19 +97,6 @@ class CONTENT_EXPORT Database {
   void ScheduleDeleteDatabase(std::unique_ptr<FactoryClient> factory_client,
                               base::OnceClosure on_deletion_complete);
 
-  void AddObjectStoreToMetadata(blink::IndexedDBObjectStoreMetadata metadata,
-                                int64_t new_max_object_store_id);
-  blink::IndexedDBObjectStoreMetadata RemoveObjectStoreFromMetadata(
-      int64_t object_store_id);
-  void AddIndexToMetadata(int64_t object_store_id,
-                          blink::IndexedDBIndexMetadata metadata,
-                          int64_t new_max_index_id);
-  blink::IndexedDBIndexMetadata RemoveIndexFromMetadata(int64_t object_store_id,
-                                                        int64_t index_id);
-
-  // The following methods all schedule a task on the transaction & modify the
-  // database:
-
   // Number of connections that have progressed passed initial open call.
   size_t ConnectionCount() const { return connections_.size(); }
 
@@ -127,52 +111,7 @@ class CONTENT_EXPORT Database {
     return connection_coordinator_.PendingOpenDeleteCount();
   }
 
-  // The following methods are all of the ones actually scheduled asynchronously
-  // within transctions:
-  Status CreateObjectStoreOperation(int64_t object_store_id,
-                                    const std::u16string& name,
-                                    const blink::IndexedDBKeyPath& key_path,
-                                    bool auto_increment,
-                                    Transaction* transaction);
-
-  void CreateObjectStoreAbortOperation(int64_t object_store_id);
-
-  Status DeleteObjectStoreOperation(int64_t object_store_id,
-                                    Transaction* transaction);
-  void DeleteObjectStoreAbortOperation(
-      blink::IndexedDBObjectStoreMetadata object_store_metadata);
-
-  Status RenameObjectStoreOperation(int64_t object_store_id,
-                                    const std::u16string& new_name,
-                                    Transaction* transaction);
-  void RenameObjectStoreAbortOperation(int64_t object_store_id,
-                                       std::u16string old_name);
-
   Status VersionChangeOperation(int64_t version, Transaction* transaction);
-  void VersionChangeAbortOperation(int64_t previous_version);
-
-  Status CreateIndexOperation(int64_t object_store_id,
-                              int64_t index_id,
-                              const std::u16string& name,
-                              const blink::IndexedDBKeyPath& key_path,
-                              bool unique,
-                              bool multi_entry,
-                              Transaction* transaction);
-  void CreateIndexAbortOperation(int64_t object_store_id, int64_t index_id);
-
-  Status DeleteIndexOperation(int64_t object_store_id,
-                              int64_t index_id,
-                              Transaction* transaction);
-  void DeleteIndexAbortOperation(int64_t object_store_id,
-                                 blink::IndexedDBIndexMetadata index_metadata);
-
-  Status RenameIndexOperation(int64_t object_store_id,
-                              int64_t index_id,
-                              const std::u16string& new_name,
-                              Transaction* transaction);
-  void RenameIndexAbortOperation(int64_t object_store_id,
-                                 int64_t index_id,
-                                 std::u16string old_name);
 
   Status GetOperation(int64_t object_store_id,
                       int64_t index_id,
@@ -260,12 +199,8 @@ class CONTENT_EXPORT Database {
       Transaction* transaction);
 
   bool IsObjectStoreIdInMetadata(int64_t object_store_id) const;
-  bool IsObjectStoreIdAndIndexIdInMetadata(int64_t object_store_id,
-                                           int64_t index_id) const;
   bool IsObjectStoreIdAndMaybeIndexIdInMetadata(int64_t object_store_id,
                                                 int64_t index_id) const;
-  bool IsObjectStoreIdInMetadataAndIndexNotInMetadata(int64_t object_store_id,
-                                                      int64_t index_id) const;
 
   // Returns metadata relevant to idb-internals.
   storage::mojom::IdbDatabaseMetadataPtr GetIdbInternalsMetadata() const;

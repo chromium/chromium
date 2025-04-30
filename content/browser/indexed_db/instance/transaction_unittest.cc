@@ -109,11 +109,6 @@ class TransactionTest : public testing::Test {
   Status DummyOperation(Status result, Transaction* transaction) {
     return result;
   }
-  Status AbortableOperation(AbortObserver* observer, Transaction* transaction) {
-    transaction->ScheduleAbortTask(
-        base::BindOnce(&AbortObserver::AbortTask, base::Unretained(observer)));
-    return Status::OK();
-  }
 
   std::unique_ptr<Connection> CreateConnection(int priority = 0) {
     mojo::Remote<storage::mojom::IndexedDBClientStateChecker> remote;
@@ -583,31 +578,6 @@ TEST_F(TransactionTest, SchedulePreemptiveTask) {
   RunPostedTasks();
   // The bucket context should have been destroyed via
   // `OnDbReadyForDestruction`.
-  EXPECT_FALSE(bucket_context_);
-}
-
-TEST_P(TransactionTestMode, AbortTasks) {
-  std::unique_ptr<Connection> connection = CreateConnection();
-  Transaction* transaction = CreateFakeTransactionWithCommitPhaseTwoError(
-      connection.get(), /*id=*/0, /*object_store_ids=*/{},
-      /*mode=*/GetParam(), Status::Corruption("Ouch."));
-  db_ = nullptr;
-
-  AbortObserver observer;
-  transaction->ScheduleTask(base::BindOnce(&TransactionTest::AbortableOperation,
-                                           base::Unretained(this),
-                                           base::Unretained(&observer)));
-
-  // Pump the message loop so that the transaction completes all pending tasks,
-  // otherwise it will defer the commit.
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_FALSE(observer.abort_task_called());
-  transaction->SetCommitFlag();
-  RunPostedTasks();
-  EXPECT_TRUE(observer.abort_task_called());
-  // An error was reported which deletes the backing store, as well as the
-  // bucket context by way of `OnDbReadyForDestruction`.
   EXPECT_FALSE(bucket_context_);
 }
 

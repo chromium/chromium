@@ -236,8 +236,13 @@ void Connection::RenameObjectStore(int64_t transaction_id,
 
   transaction->ScheduleTask(
       blink::mojom::IDBTaskType::Preemptive,
-      BindWeakOperation(&Database::RenameObjectStoreOperation, database_,
-                        object_store_id, new_name));
+      base::BindOnce(
+          [](int64_t object_store_id, const std::u16string& new_name,
+             Transaction* transaction) {
+            return transaction->BackingStoreTransaction()->RenameObjectStore(
+                object_store_id, new_name);
+          },
+          object_store_id, new_name));
 }
 
 void Connection::CreateTransaction(
@@ -688,9 +693,14 @@ void Connection::CreateIndex(int64_t transaction_id,
 
   transaction->ScheduleTask(
       blink::mojom::IDBTaskType::Preemptive,
-      BindWeakOperation(&Database::CreateIndexOperation, database_,
-                        object_store_id, index_id, name, key_path, unique,
-                        multi_entry));
+      base::BindOnce(
+          [](int64_t object_store_id, int64_t index_id,
+             const std::u16string& name, const IndexedDBKeyPath& key_path,
+             bool unique, bool multi_entry, Transaction* transaction) {
+            return transaction->BackingStoreTransaction()->CreateIndex(
+                object_store_id, index_id, name, key_path, unique, multi_entry);
+          },
+          object_store_id, index_id, name, key_path, unique, multi_entry));
 }
 
 void Connection::DeleteIndex(int64_t transaction_id,
@@ -720,9 +730,12 @@ void Connection::DeleteIndex(int64_t transaction_id,
     // transaction having been committed. So for now simply ignore the request.
     return;
   }
-
-  transaction->ScheduleTask(BindWeakOperation(
-      &Database::DeleteIndexOperation, database_, object_store_id, index_id));
+  transaction->ScheduleTask(base::BindOnce(
+      [](int64_t object_store_id, int64_t index_id, Transaction* transaction) {
+        return transaction->BackingStoreTransaction()->DeleteIndex(
+            object_store_id, index_id);
+      },
+      object_store_id, index_id));
 }
 
 void Connection::RenameIndex(int64_t transaction_id,
@@ -754,9 +767,13 @@ void Connection::RenameIndex(int64_t transaction_id,
     return;
   }
 
-  transaction->ScheduleTask(BindWeakOperation(&Database::RenameIndexOperation,
-                                              database_, object_store_id,
-                                              index_id, new_name));
+  transaction->ScheduleTask(base::BindOnce(
+      [](int64_t object_store_id, int64_t index_id, std::u16string new_name,
+         Transaction* transaction) {
+        return transaction->BackingStoreTransaction()->RenameIndex(
+            object_store_id, index_id, new_name);
+      },
+      object_store_id, index_id, new_name));
 }
 
 void Connection::Abort(int64_t transaction_id) {

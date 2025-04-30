@@ -129,22 +129,6 @@ Transaction::Operation Transaction::TaskQueue::pop() {
   return task;
 }
 
-Transaction::TaskStack::TaskStack() = default;
-Transaction::TaskStack::~TaskStack() = default;
-
-void Transaction::TaskStack::clear() {
-  while (!stack_.empty()) {
-    stack_.pop();
-  }
-}
-
-Transaction::AbortOperation Transaction::TaskStack::pop() {
-  DCHECK(!stack_.empty());
-  AbortOperation task = std::move(stack_.top());
-  stack_.pop();
-  return task;
-}
-
 Transaction::Transaction(
     int64_t id,
     Connection* connection,
@@ -194,7 +178,6 @@ Transaction::~Transaction() {
   DCHECK(preemptive_task_queue_.empty());
   DCHECK_EQ(pending_preemptive_events_, 0);
   DCHECK(task_queue_.empty());
-  DCHECK(abort_task_stack_.empty());
   DCHECK(!processing_event_queue_);
 }
 
@@ -234,12 +217,6 @@ void Transaction::ScheduleTask(blink::mojom::IDBTaskType type, Operation task) {
   }
 }
 
-void Transaction::ScheduleAbortTask(AbortOperation abort_task) {
-  DCHECK_NE(FINISHED, state_);
-  DCHECK(used_);
-  abort_task_stack_.push(std::move(abort_task));
-}
-
 Status Transaction::Abort(const DatabaseError& error) {
   if (state_ == FINISHED) {
     return Status::OK();
@@ -256,11 +233,6 @@ Status Transaction::Abort(const DatabaseError& error) {
 
   if (backing_store_transaction_begun_) {
     backing_store_transaction_->Rollback();
-  }
-
-  // Run the abort tasks, if any.
-  while (!abort_task_stack_.empty()) {
-    abort_task_stack_.pop().Run();
   }
 
   preemptive_task_queue_.clear();
@@ -444,9 +416,14 @@ void Transaction::CreateObjectStore(int64_t object_store_id,
 
   ScheduleTask(
       blink::mojom::IDBTaskType::Preemptive,
-      BindWeakOperation(&Database::CreateObjectStoreOperation,
-                        connection()->database()->AsWeakPtr(), object_store_id,
-                        name, key_path, auto_increment));
+      base::BindOnce(
+          [](int64_t object_store_id, const std::u16string& name,
+             const blink::IndexedDBKeyPath& key_path, bool auto_increment,
+             Transaction* transaction) {
+            return transaction->BackingStoreTransaction()->CreateObjectStore(
+                object_store_id, name, key_path, auto_increment);
+          },
+          object_store_id, name, key_path, auto_increment));
 }
 
 void Transaction::DeleteObjectStore(int64_t object_store_id) {
@@ -460,9 +437,12 @@ void Transaction::DeleteObjectStore(int64_t object_store_id) {
     return;
   }
 
-  ScheduleTask(BindWeakOperation(&Database::DeleteObjectStoreOperation,
-                                 connection()->database()->AsWeakPtr(),
-                                 object_store_id));
+  ScheduleTask(base::BindOnce(
+      [](int64_t object_store_id, Transaction* transaction) {
+        return transaction->BackingStoreTransaction()->DeleteObjectStore(
+            object_store_id);
+      },
+      object_store_id));
 }
 
 void Transaction::Put(int64_t object_store_id,
@@ -755,8 +735,6 @@ Status Transaction::CommitPhaseTwo() {
   locks_receiver_.locks.clear();
 
   if (committed) {
-    abort_task_stack_.clear();
-
     {
       TRACE_EVENT1("IndexedDB",
                    "Transaction::CommitPhaseTwo.TransactionCompleteCallbacks",
@@ -771,10 +749,6 @@ Status Transaction::CommitPhaseTwo() {
       bucket_context_->delegate().on_files_written.Run(did_sync);
     }
     return s;
-  }
-
-  while (!abort_task_stack_.empty()) {
-    abort_task_stack_.pop().Run();
   }
 
   DatabaseError error;

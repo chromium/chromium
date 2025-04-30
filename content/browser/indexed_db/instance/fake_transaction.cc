@@ -1,27 +1,25 @@
-// Copyright 2013 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "content/browser/indexed_db/instance/fake_transaction.h"
 
-#include <cstdint>
-#include <memory>
 #include <utility>
-#include <vector>
 
-#include "components/services/storage/indexed_db/locks/partitioned_lock.h"
-#include "components/services/storage/public/mojom/blob_storage_context.mojom-shared.h"
-#include "content/browser/indexed_db/indexed_db_external_object_storage.h"
-#include "content/browser/indexed_db/instance/backing_store.h"
-#include "content/browser/indexed_db/status.h"
-#include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "base/check.h"
+#include "base/notreached.h"
+#include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"
+#include "third_party/blink/public/common/indexeddb/indexeddb_key.h"
+#include "third_party/blink/public/common/indexeddb/indexeddb_key_path.h"
+#include "third_party/blink/public/common/indexeddb/indexeddb_key_range.h"
+#include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-forward.h"
 
 namespace content::indexed_db {
 
 FakeTransaction::FakeTransaction(
-    Status result,
+    Status phase_two_result,
     std::unique_ptr<BackingStore::Transaction> wrapped)
-    : result_(result), wrapped_transaction_(std::move(wrapped)) {}
+    : result_(phase_two_result), wrapped_transaction_(std::move(wrapped)) {}
 
 FakeTransaction::~FakeTransaction() = default;
 
@@ -49,54 +47,46 @@ Status FakeTransaction::SetDatabaseVersion(int64_t version) {
   return wrapped_transaction_->SetDatabaseVersion(version);
 }
 
-Status FakeTransaction::CreateObjectStore(
-    int64_t object_store_id,
-    std::u16string name,
-    blink::IndexedDBKeyPath key_path,
-    bool auto_increment,
-    blink::IndexedDBObjectStoreMetadata* metadata) {
+Status FakeTransaction::CreateObjectStore(int64_t object_store_id,
+                                          const std::u16string& name,
+                                          blink::IndexedDBKeyPath key_path,
+                                          bool auto_increment) {
   return wrapped_transaction_->CreateObjectStore(
-      object_store_id, std::move(name), std::move(key_path), auto_increment,
-      metadata);
+      object_store_id, name, std::move(key_path), auto_increment);
 }
 
-Status FakeTransaction::DeleteObjectStore(
-    const blink::IndexedDBObjectStoreMetadata& object_store) {
-  return wrapped_transaction_->DeleteObjectStore(object_store);
+Status FakeTransaction::DeleteObjectStore(int64_t object_store_id) {
+  return wrapped_transaction_->DeleteObjectStore(object_store_id);
 }
 
-Status FakeTransaction::RenameObjectStore(
-    std::u16string new_name,
-    std::u16string* old_name,
-    blink::IndexedDBObjectStoreMetadata* metadata) {
-  return wrapped_transaction_->RenameObjectStore(std::move(new_name), old_name,
-                                                 metadata);
+Status FakeTransaction::RenameObjectStore(int64_t object_store_id,
+                                          const std::u16string& new_name) {
+  return wrapped_transaction_->RenameObjectStore(object_store_id, new_name);
+}
+
+Status FakeTransaction::ClearObjectStore(int64_t object_store_id) {
+  return wrapped_transaction_->ClearObjectStore(object_store_id);
 }
 
 Status FakeTransaction::CreateIndex(int64_t object_store_id,
                                     int64_t index_id,
-                                    std::u16string name,
+                                    const std::u16string& name,
                                     blink::IndexedDBKeyPath key_path,
                                     bool is_unique,
-                                    bool is_multi_entry,
-                                    blink::IndexedDBIndexMetadata* metadata) {
-  return wrapped_transaction_->CreateIndex(object_store_id, index_id,
-                                           std::move(name), std::move(key_path),
-                                           is_unique, is_multi_entry, metadata);
+                                    bool is_multi_entry) {
+  return wrapped_transaction_->CreateIndex(object_store_id, index_id, name,
+                                           std::move(key_path), is_unique,
+                                           is_multi_entry);
 }
 
-Status FakeTransaction::DeleteIndex(
-    int64_t object_store_id,
-    const blink::IndexedDBIndexMetadata& metadata) {
-  return wrapped_transaction_->DeleteIndex(object_store_id, metadata);
+Status FakeTransaction::DeleteIndex(int64_t object_store_id, int64_t index_id) {
+  return wrapped_transaction_->DeleteIndex(object_store_id, index_id);
 }
 
 Status FakeTransaction::RenameIndex(int64_t object_store_id,
-                                    std::u16string new_name,
-                                    std::u16string* old_name,
-                                    blink::IndexedDBIndexMetadata* metadata) {
-  return wrapped_transaction_->RenameIndex(object_store_id, std::move(new_name),
-                                           old_name, metadata);
+                                    int64_t index_id,
+                                    const std::u16string& new_name) {
+  return wrapped_transaction_->RenameIndex(object_store_id, index_id, new_name);
 }
 
 Status FakeTransaction::GetRecord(int64_t object_store_id,
@@ -110,10 +100,6 @@ Status FakeTransaction::PutRecord(int64_t object_store_id,
                                   IndexedDBValue* value,
                                   BackingStore::RecordIdentifier* record) {
   return wrapped_transaction_->PutRecord(object_store_id, key, value, record);
-}
-
-Status FakeTransaction::ClearObjectStore(int64_t object_store_id) {
-  return wrapped_transaction_->ClearObjectStore(object_store_id);
 }
 
 Status FakeTransaction::DeleteRecord(
@@ -148,10 +134,6 @@ Status FakeTransaction::KeyExistsInObjectStore(
     bool* found) {
   return wrapped_transaction_->KeyExistsInObjectStore(
       object_store_id, key, found_record_identifier, found);
-}
-
-Status FakeTransaction::ClearIndex(int64_t object_store_id, int64_t index_id) {
-  return wrapped_transaction_->ClearIndex(object_store_id, index_id);
 }
 
 Status FakeTransaction::PutIndexDataForRecord(

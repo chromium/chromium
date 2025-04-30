@@ -118,37 +118,33 @@ class BackingStore {
     [[nodiscard]] virtual Status SetDatabaseVersion(int64_t version) = 0;
     [[nodiscard]] virtual Status CreateObjectStore(
         int64_t object_store_id,
-        std::u16string name,
+        const std::u16string& name,
         blink::IndexedDBKeyPath key_path,
-        bool auto_increment,
-        blink::IndexedDBObjectStoreMetadata* metadata) = 0;
-    [[nodiscard]] virtual Status DeleteObjectStore(
-        const blink::IndexedDBObjectStoreMetadata& object_store) = 0;
+        bool auto_increment) = 0;
+    [[nodiscard]] virtual Status DeleteObjectStore(int64_t object_store_id) = 0;
     [[nodiscard]] virtual Status RenameObjectStore(
-        std::u16string new_name,
-        std::u16string* old_name,
-        blink::IndexedDBObjectStoreMetadata* metadata) = 0;
+        int64_t object_store_id,
+        const std::u16string& new_name) = 0;
+    // Removes all data contained in the given object store but keeps the object
+    // store.
+    [[nodiscard]] virtual Status ClearObjectStore(int64_t object_store_id) = 0;
 
     // Creates a new index metadata and writes it to the transaction.
-    [[nodiscard]] virtual Status CreateIndex(
-        int64_t object_store_id,
-        int64_t index_id,
-        std::u16string name,
-        blink::IndexedDBKeyPath key_path,
-        bool is_unique,
-        bool is_multi_entry,
-        blink::IndexedDBIndexMetadata* metadata) = 0;
+    [[nodiscard]] virtual Status CreateIndex(int64_t object_store_id,
+                                             int64_t index_id,
+                                             const std::u16string& name,
+                                             blink::IndexedDBKeyPath key_path,
+                                             bool is_unique,
+                                             bool is_multi_entry) = 0;
     // Deletes the index metadata on the transaction (but not any index
     // entries).
-    [[nodiscard]] virtual Status DeleteIndex(
-        int64_t object_store_id,
-        const blink::IndexedDBIndexMetadata& metadata) = 0;
+    [[nodiscard]] virtual Status DeleteIndex(int64_t object_store_id,
+                                             int64_t index_id) = 0;
     // Renames the given index and writes it to the transaction.
     [[nodiscard]] virtual Status RenameIndex(
         int64_t object_store_id,
-        std::u16string new_name,
-        std::u16string* old_name,
-        blink::IndexedDBIndexMetadata* metadata) = 0;
+        int64_t index_id,
+        const std::u16string& new_name) = 0;
     [[nodiscard]] virtual Status GetRecord(int64_t object_store_id,
                                            const blink::IndexedDBKey& key,
                                            IndexedDBValue* record) = 0;
@@ -156,7 +152,6 @@ class BackingStore {
                                            const blink::IndexedDBKey& key,
                                            IndexedDBValue* value,
                                            RecordIdentifier* record) = 0;
-    [[nodiscard]] virtual Status ClearObjectStore(int64_t object_store_id) = 0;
     [[nodiscard]] virtual Status DeleteRecord(
         int64_t object_store_id,
         const RecordIdentifier& record) = 0;
@@ -175,8 +170,6 @@ class BackingStore {
         const blink::IndexedDBKey& key,
         RecordIdentifier* found_record_identifier,
         bool* found) = 0;
-    [[nodiscard]] virtual Status ClearIndex(int64_t object_store_id,
-                                            int64_t index_id) = 0;
     [[nodiscard]] virtual Status PutIndexDataForRecord(
         int64_t object_store_id,
         int64_t index_id,

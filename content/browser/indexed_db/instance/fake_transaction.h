@@ -28,31 +28,24 @@ class FakeTransaction : public BackingStore::Transaction {
   void Begin(std::vector<PartitionedLock> locks) override;
   void Reset() override;
   Status SetDatabaseVersion(int64_t version) override;
-  Status CreateObjectStore(
-      int64_t object_store_id,
-      std::u16string name,
-      blink::IndexedDBKeyPath key_path,
-      bool auto_increment,
-      blink::IndexedDBObjectStoreMetadata* metadata) override;
-  Status DeleteObjectStore(
-      const blink::IndexedDBObjectStoreMetadata& object_store) override;
-  Status RenameObjectStore(
-      std::u16string new_name,
-      std::u16string* old_name,
-      blink::IndexedDBObjectStoreMetadata* metadata) override;
+  Status CreateObjectStore(int64_t object_store_id,
+                           const std::u16string& name,
+                           blink::IndexedDBKeyPath key_path,
+                           bool auto_increment) override;
+  Status DeleteObjectStore(int64_t object_store_id) override;
+  Status RenameObjectStore(int64_t object_store_id,
+                           const std::u16string& new_name) override;
+  Status ClearObjectStore(int64_t object_store_id) override;
   Status CreateIndex(int64_t object_store_id,
                      int64_t index_id,
-                     std::u16string name,
+                     const std::u16string& name,
                      blink::IndexedDBKeyPath key_path,
                      bool is_unique,
-                     bool is_multi_entry,
-                     blink::IndexedDBIndexMetadata* metadata) override;
-  Status DeleteIndex(int64_t object_store_id,
-                     const blink::IndexedDBIndexMetadata& metadata) override;
+                     bool is_multi_entry) override;
+  Status DeleteIndex(int64_t object_store_id, int64_t index_id) override;
   Status RenameIndex(int64_t object_store_id,
-                     std::u16string new_name,
-                     std::u16string* old_name,
-                     blink::IndexedDBIndexMetadata* metadata) override;
+                     int64_t index_id,
+                     const std::u16string& new_name) override;
   Status GetRecord(int64_t object_store_id,
                    const blink::IndexedDBKey& key,
                    IndexedDBValue* record) override;
@@ -60,7 +53,6 @@ class FakeTransaction : public BackingStore::Transaction {
                    const blink::IndexedDBKey& key,
                    IndexedDBValue* value,
                    BackingStore::RecordIdentifier* record) override;
-  Status ClearObjectStore(int64_t object_store_id) override;
   Status DeleteRecord(int64_t object_store_id,
                       const BackingStore::RecordIdentifier& record) override;
   Status DeleteRange(int64_t object_store_id,
@@ -75,7 +67,6 @@ class FakeTransaction : public BackingStore::Transaction {
       const blink::IndexedDBKey& key,
       BackingStore::RecordIdentifier* found_record_identifier,
       bool* found) override;
-  Status ClearIndex(int64_t object_store_id, int64_t index_id) override;
   Status PutIndexDataForRecord(
       int64_t object_store_id,
       int64_t index_id,

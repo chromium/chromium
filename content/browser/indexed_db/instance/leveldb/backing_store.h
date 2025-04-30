@@ -77,6 +77,8 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
    public:
     explicit DatabaseMetadata(const std::u16string& name);
     DatabaseMetadata(DatabaseMetadata&& metadata);
+    DatabaseMetadata(const DatabaseMetadata& metadata);
+    DatabaseMetadata& operator=(const DatabaseMetadata& metadata);
     DatabaseMetadata();
     ~DatabaseMetadata() override;
 
@@ -148,36 +150,28 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
     void Rollback() override;
     void Reset() override;
     Status SetDatabaseVersion(int64_t version) override;
-    Status CreateObjectStore(
-        int64_t object_store_id,
-        std::u16string name,
-        blink::IndexedDBKeyPath key_path,
-        bool auto_increment,
-        blink::IndexedDBObjectStoreMetadata* metadata) override;
-    Status DeleteObjectStore(
-        const blink::IndexedDBObjectStoreMetadata& object_store) override;
-    Status RenameObjectStore(
-        std::u16string new_name,
-        std::u16string* old_name,
-        blink::IndexedDBObjectStoreMetadata* metadata) override;
+    Status CreateObjectStore(int64_t object_store_id,
+                             const std::u16string& name,
+                             blink::IndexedDBKeyPath key_path,
+                             bool auto_increment) override;
+    Status DeleteObjectStore(int64_t object_store_id) override;
+    Status RenameObjectStore(int64_t object_store_id,
+                             const std::u16string& new_name) override;
 
     // Creates a new index metadata and writes it to the transaction.
     Status CreateIndex(int64_t object_store_id,
                        int64_t index_id,
-                       std::u16string name,
+                       const std::u16string& name,
                        blink::IndexedDBKeyPath key_path,
                        bool is_unique,
-                       bool is_multi_entry,
-                       blink::IndexedDBIndexMetadata* metadata) override;
+                       bool is_multi_entry) override;
     // Deletes the index metadata on the transaction (but not any index
     // entries).
-    Status DeleteIndex(int64_t object_store_id,
-                       const blink::IndexedDBIndexMetadata& metadata) override;
+    Status DeleteIndex(int64_t object_store_id, int64_t index_id) override;
     // Renames the given index and writes it to the transaction.
     Status RenameIndex(int64_t object_store_id,
-                       std::u16string new_name,
-                       std::u16string* old_name,
-                       blink::IndexedDBIndexMetadata* metadata) override;
+                       int64_t index_id,
+                       const std::u16string& new_name) override;
     Status GetRecord(int64_t object_store_id,
                      const blink::IndexedDBKey& key,
                      IndexedDBValue* record) override;
@@ -199,7 +193,6 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
                                   const blink::IndexedDBKey& key,
                                   RecordIdentifier* found_record_identifier,
                                   bool* found) override;
-    Status ClearIndex(int64_t object_store_id, int64_t index_id) override;
     Status PutIndexDataForRecord(int64_t object_store_id,
                                  int64_t index_id,
                                  const blink::IndexedDBKey& key,
@@ -334,6 +327,8 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
     // This flag is set when tombstones encountered during a read-only
     // cursor operation exceed `kCursorTombstoneThreshold`.
     bool tombstone_threshold_exceeded_ = false;
+
+    std::optional<DatabaseMetadata> metadata_before_transaction_;
 
     base::WeakPtrFactory<Transaction> weak_ptr_factory_{this};
   };
