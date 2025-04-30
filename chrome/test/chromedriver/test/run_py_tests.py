@@ -9458,9 +9458,11 @@ class ProtectedAudienceSpecificTest(ChromeDriverBaseTestWithWebServer):
 
     port = self._https_server._server.server_port
 
+    self._received_report = threading.Event()
     self._kanon_status = None
     def handleReport(request):
       self._kanon_status = request.GetPath().split('/')[-1]
+      self._received_report.set()
       return {}, bytes()
 
     self._https_server.SetCallbackForPath('/reportWin/passedNotEnforced',
@@ -9573,8 +9575,9 @@ class ProtectedAudienceSpecificTest(ChromeDriverBaseTestWithWebServer):
     self._driver.Load('https://owner.test/auction.html')
     self._driver.ExecuteScript('runAuction()')
 
-    time.sleep(0.5)
+    self._received_report.wait(10)
     self.assertEqual(self._kanon_status, 'belowThreshold')
+    self._received_report.clear()
 
     self._driver.SetProtectedAudienceKAnonymity(
       'https://owner.test/', 'testing', [base64.b64encode(bid_hash).decode()])
@@ -9582,7 +9585,7 @@ class ProtectedAudienceSpecificTest(ChromeDriverBaseTestWithWebServer):
     self._kanon_status = None
     self._driver.ExecuteScript('runAuction()')
 
-    time.sleep(0.5)
+    self._received_report.wait(10)
     self.assertEqual(self._kanon_status, 'passedNotEnforced')
 
 # 'Z' in the beginning is to make test executed in the end of suite.
