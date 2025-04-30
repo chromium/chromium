@@ -54,8 +54,6 @@
 #include "services/webnn/webnn_constant_operand.h"
 #include "services/webnn/webnn_context_impl.h"
 #include "services/webnn/webnn_utils.h"
-#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
-#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/fp16/src/include/fp16.h"
 
 namespace webnn::dml {
@@ -78,7 +76,7 @@ using mojom::Operation;
 using IdToOperandMap = base::flat_map<uint64_t, OperandPtr>;
 // A map of all node outputs in `dml::GraphBuilderDml` using the mojom operand
 // id as key.
-using IdToNodeOutputMap = absl::flat_hash_map<uint64_t, const NodeOutput*>;
+using IdToNodeOutputMap = std::map<uint64_t, const NodeOutput*>;
 
 static constexpr auto kDmlFloatDataTypes =
     base::MakeFixedFlatSet<DML_TENSOR_DATA_TYPE>(
@@ -255,7 +253,7 @@ std::optional<AlignedByteLength<uint64_t>> CalculateAlignedByteLength(
     const base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>&
         constant_operands) {
   base::CheckedNumeric<size_t> total_byte_length(0);
-  absl::flat_hash_map<uint64_t, D3D12_RANGE> key_to_d3d12_range_map;
+  std::map<uint64_t, D3D12_RANGE> key_to_d3d12_range_map;
 
   for (const auto& [operand_id, constant_operand] : constant_operands) {
     auto& d3d12_range = key_to_d3d12_range_map[operand_id];
@@ -288,7 +286,7 @@ CalculateAlignedByteLengthFromDescriptors(
     const base::flat_map<std::string, OperandDescriptor>&
         names_to_descriptors) {
   base::CheckedNumeric<size_t> total_byte_length(0);
-  absl::flat_hash_map<std::string, D3D12_RANGE> key_to_d3d12_range_map;
+  std::map<std::string, D3D12_RANGE> key_to_d3d12_range_map;
 
   for (auto& [name, descriptor] : names_to_descriptors) {
     auto& d3d12_range = key_to_d3d12_range_map[name];
@@ -325,7 +323,7 @@ struct UploadAndDefaultBuffers {
 // `buffer_variant` for both constants uploading and binding. For GPU doesn't
 // support UMA, pass a upload buffer and a default buffer via `buffer_variant`
 // for uploading and binding separately.
-base::expected<absl::flat_hash_map<uint64_t, DML_BUFFER_BINDING>, HRESULT>
+base::expected<std::map<uint64_t, DML_BUFFER_BINDING>, HRESULT>
 UploadAndCreateConstantBufferBinding(
     CommandRecorder* command_recorder,
     const base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>&
@@ -358,7 +356,7 @@ UploadAndCreateConstantBufferBinding(
 
   RETURN_UNEXPECTED_IF_FAILED(buffer_to_map->Map(0, nullptr, &mapped_buffer));
 
-  absl::flat_hash_map<uint64_t, DML_BUFFER_BINDING> key_to_buffer_binding_map;
+  std::map<uint64_t, DML_BUFFER_BINDING> key_to_buffer_binding_map;
   for (auto& [operand_id, constant_operand] : constant_operands) {
     // Copy the input data to the upload heap with byte offset
     const auto& d3d12_range =
@@ -393,8 +391,7 @@ UploadAndCreateConstantBufferBinding(
 
 HRESULT MapAndCopyInputDataToBuffer(
     const base::flat_map<std::string, mojo_base::BigBuffer>& named_inputs,
-    const absl::flat_hash_map<std::string, D3D12_RANGE>&
-        input_name_to_d3d12_range_map,
+    const std::map<std::string, D3D12_RANGE>& input_name_to_d3d12_range_map,
     ID3D12Resource* buffer) {
   // Map entire resource to copy the array buffer of input one by one
   // with byte offset.
@@ -453,7 +450,7 @@ void CreateConstantNode(
         constant_operands,
     GraphBuilderDml& graph_builder,
     IdToNodeOutputMap& id_to_node_output_map,
-    absl::flat_hash_map<uint64_t, uint32_t>& constant_id_to_input_index_map) {
+    std::unordered_map<uint64_t, uint32_t>& constant_id_to_input_index_map) {
   const OperandDescriptor operand_descriptor =
       constant_operands.at(operand_id)->descriptor();
 
@@ -694,8 +691,7 @@ ActivationOperatorDesc CreateOperatorDescForActivation(
 }
 
 std::optional<const Operation*> GetFusibleActivationFromOperation(
-    const absl::flat_hash_map<const Operation*,
-                              raw_ptr<const Operation, CtnExperimental>>&
+    const std::map<const Operation*, raw_ptr<const Operation, CtnExperimental>>&
         operation_to_fusible_standalone_activation_map,
     const Operation* operation) {
   const auto activation_iterator =
@@ -708,8 +704,7 @@ std::optional<const Operation*> GetFusibleActivationFromOperation(
 }
 
 std::optional<uint64_t> GetFusibleTransposeInputId(
-    const absl::flat_hash_map<uint64_t,
-                              raw_ptr<const Operation, CtnExperimental>>&
+    const std::map<uint64_t, raw_ptr<const Operation, CtnExperimental>>&
         output_id_to_fusible_transpose_map,
     uint64_t input_id) {
   const auto transpose_iterator =
@@ -1307,19 +1302,18 @@ struct GraphFusionInfo {
   // fused into preceding operations.
   // The key is the preceding operation which can support fusion. The value is
   // the standalone activation which can be fused into the preceding operation.
-  absl::flat_hash_map<const Operation*,
-                      raw_ptr<const Operation, CtnExperimental>>
+  std::map<const Operation*, raw_ptr<const Operation, CtnExperimental>>
       operation_to_fusible_standalone_activation_map;
 
   // A map of all transposes that can be fused into the following matmul using
   // transpose's output operand id as the key.
-  absl::flat_hash_map<uint64_t, raw_ptr<const Operation, CtnExperimental>>
+  std::map<uint64_t, raw_ptr<const Operation, CtnExperimental>>
       output_id_to_fusible_transpose_map;
 
   // A set of all operations in `mojom::GraphInfo` which can be fused into
   // another operation. No DirectML operator node will be created for operations
   // in this set.
-  absl::flat_hash_set<const Operation*> fusible_operations_set;
+  std::unordered_set<const Operation*> fusible_operations_set;
 };
 
 // The method gets the graph fusion information from `mojom::GraphInfo`, based
@@ -1337,7 +1331,7 @@ GraphFusionInfo GetGraphFusionInfo(const mojom::GraphInfoPtr& graph_info) {
 
   // A map of all fusible activations in `mojom::GraphInfo` using activation's
   // input operand id as the key.
-  absl::flat_hash_map<uint64_t, raw_ptr<const Operation, CtnExperimental>>
+  std::map<uint64_t, raw_ptr<const Operation, CtnExperimental>>
       input_id_to_activation_map;
 
   // The case we're interested in includes a fusible base operation with exactly
@@ -1386,7 +1380,7 @@ GraphFusionInfo GetGraphFusionInfo(const mojom::GraphInfoPtr& graph_info) {
 
   // A map of all matmul operations in `mojom::GraphInfo` using matmul's input
   // operand id as the key.
-  absl::flat_hash_map<uint64_t, const Operation*> input_id_to_matmul_map;
+  std::map<uint64_t, const Operation*> input_id_to_matmul_map;
 
   // This is a scenario where transpose can be fused into the following matmul.
   // The transpose output solely feeds matmul. The transposed input can be
@@ -1413,7 +1407,7 @@ GraphFusionInfo GetGraphFusionInfo(const mojom::GraphInfoPtr& graph_info) {
   GraphFusionInfo graph_fusion_info;
   // A map to record how many times each operand id is used as one
   // operation's input edge or the graph's output edge.
-  absl::flat_hash_map<uint64_t, uint32_t> operand_id_to_use_count_map;
+  std::map<uint64_t, uint32_t> operand_id_to_use_count_map;
   for (const auto& pair : graph_info->id_to_operand_map) {
     operand_id_to_use_count_map[pair.first] = 0;
   }
@@ -1531,15 +1525,14 @@ void CreateOperatorNodeForBatchNormalization(
     Adapter* adapter,
     const ContextProperties& context_properties,
     const Operation* operation,
-    const absl::flat_hash_map<const Operation*,
-                              raw_ptr<const Operation, CtnExperimental>>&
+    const std::map<const Operation*, raw_ptr<const Operation, CtnExperimental>>&
         operation_to_fusible_standalone_activation_map,
     mojom::GraphInfoPtr& graph_info,
     base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>&
         constant_operands,
     GraphBuilderDml& graph_builder,
     IdToNodeOutputMap& id_to_node_output_map,
-    absl::flat_hash_map<uint64_t, uint32_t>& constant_id_to_input_index_map,
+    std::unordered_map<uint64_t, uint32_t>& constant_id_to_input_index_map,
     uint64_t& next_operand_id) {
   const auto& batch_normalization = operation->get_batch_normalization();
   auto& id_to_operand_map = graph_info->id_to_operand_map;
@@ -1786,8 +1779,7 @@ void CreateOperatorNodeForConv2d(
     const ContextProperties& context_properties,
     const IdToOperandMap& id_to_operand_map,
     const Operation* operation,
-    const absl::flat_hash_map<const Operation*,
-                              raw_ptr<const Operation, CtnExperimental>>&
+    const std::map<const Operation*, raw_ptr<const Operation, CtnExperimental>>&
         operation_to_fusible_standalone_activation_map,
     GraphBuilderDml& graph_builder,
     IdToNodeOutputMap& id_to_node_output_map) {
@@ -2306,8 +2298,7 @@ void CreateOperatorNodeForBinary(
     const ContextProperties& context_properties,
     const IdToOperandMap& id_to_operand_map,
     const Operation* operation,
-    const absl::flat_hash_map<const Operation*,
-                              raw_ptr<const Operation, CtnExperimental>>&
+    const std::map<const Operation*, raw_ptr<const Operation, CtnExperimental>>&
         operation_to_fusible_standalone_activation_map,
     GraphBuilderDml& graph_builder,
     IdToNodeOutputMap& id_to_node_output_map) {
@@ -3574,7 +3565,7 @@ void CreateOperatorNodeForGelu(
         constant_operands,
     GraphBuilderDml& graph_builder,
     IdToNodeOutputMap& id_to_node_output_map,
-    absl::flat_hash_map<uint64_t, uint32_t>& constant_id_to_input_index_map,
+    std::unordered_map<uint64_t, uint32_t>& constant_id_to_input_index_map,
     uint64_t& next_operand_id) {
   // Check feature level by referring to MSDN doc:
   // https://learn.microsoft.com/en-us/windows/ai/directml/api/ns-directml-dml_activation_gelu_operator_desc
@@ -3727,8 +3718,7 @@ void CreateOperatorNodeForGemm(
     const ContextProperties& context_properties,
     const IdToOperandMap& id_to_operand_map,
     const Operation* operation,
-    const absl::flat_hash_map<const Operation*,
-                              raw_ptr<const Operation, CtnExperimental>>&
+    const std::map<const Operation*, raw_ptr<const Operation, CtnExperimental>>&
         operation_to_fusible_standalone_activation_map,
     GraphBuilderDml& graph_builder,
     IdToNodeOutputMap& id_to_node_output_map) {
@@ -3861,7 +3851,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForGru(
         constant_operands,
     GraphBuilderDml& graph_builder,
     IdToNodeOutputMap& id_to_node_output_map,
-    absl::flat_hash_map<uint64_t, uint32_t>& constant_id_to_input_index_map,
+    std::unordered_map<uint64_t, uint32_t>& constant_id_to_input_index_map,
     uint64_t& next_operand_id) {
   mojom::Operation::Tag op_tag;
   std::optional<uint64_t> initial_hidden_state_operand_id;
@@ -4256,15 +4246,14 @@ CreateOperatorNodeForMeanVarianceNormalization(
     const ContextProperties& context_properties,
     const NormalizationPtr& normalization,
     const Operation* operation,
-    const absl::flat_hash_map<const Operation*,
-                              raw_ptr<const Operation, CtnExperimental>>&
+    const std::map<const Operation*, raw_ptr<const Operation, CtnExperimental>>&
         operation_to_fusible_standalone_activation_map,
     mojom::GraphInfoPtr& graph_info,
     base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>&
         constant_operands,
     GraphBuilderDml& graph_builder,
     IdToNodeOutputMap& id_to_node_output_map,
-    absl::flat_hash_map<uint64_t, uint32_t>& constant_id_to_input_index_map,
+    std::unordered_map<uint64_t, uint32_t>& constant_id_to_input_index_map,
     uint64_t& next_operand_id,
     base::span<const uint32_t> mean_variance_axes,
     base::span<const uint32_t> scale_bias_broadcast_axes,
@@ -4490,7 +4479,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForLstm(
         constant_operands,
     GraphBuilderDml& graph_builder,
     IdToNodeOutputMap& id_to_node_output_map,
-    absl::flat_hash_map<uint64_t, uint32_t>& constant_id_to_input_index_map,
+    std::unordered_map<uint64_t, uint32_t>& constant_id_to_input_index_map,
     uint64_t& next_operand_id) {
   const std::string& label = lstm.label;
   IdToOperandMap& id_to_operand_map = graph_info->id_to_operand_map;
@@ -5024,11 +5013,9 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForMatmul(
     const ContextProperties& context_properties,
     const IdToOperandMap& id_to_operand_map,
     const Operation* operation,
-    const absl::flat_hash_map<const Operation*,
-                              raw_ptr<const Operation, CtnExperimental>>&
+    const std::map<const Operation*, raw_ptr<const Operation, CtnExperimental>>&
         operation_to_fusible_standalone_activation_map,
-    const absl::flat_hash_map<uint64_t,
-                              raw_ptr<const Operation, CtnExperimental>>&
+    const std::map<uint64_t, raw_ptr<const Operation, CtnExperimental>>&
         output_id_to_fusible_transpose_map,
     GraphBuilderDml& graph_builder,
     IdToNodeOutputMap& id_to_node_output_map) {
@@ -5469,7 +5456,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForTriangular(
         constant_operands,
     GraphBuilderDml& graph_builder,
     IdToNodeOutputMap& id_to_node_output_map,
-    absl::flat_hash_map<uint64_t, uint32_t>& constant_id_to_input_index_map,
+    std::unordered_map<uint64_t, uint32_t>& constant_id_to_input_index_map,
     uint64_t& next_operand_id) {
   const NodeOutput* input = GetNodeOutputForOperand(
       id_to_node_output_map, triangular->input_operand_id);
@@ -6027,7 +6014,7 @@ void GraphImplDml::OnCompilationComplete(
     scoped_refptr<Adapter> adapter,
     base::WeakPtr<ContextImplDml> context,
     WebNNContextImpl::CreateGraphImplCallback callback,
-    absl::flat_hash_map<uint64_t, uint32_t> constant_id_to_input_index_map,
+    std::unordered_map<uint64_t, uint32_t> constant_id_to_input_index_map,
     GraphBufferBindingInfo graph_buffer_binding_info,
     ComputeResourceInfo compute_resource_info,
     base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>
@@ -6155,8 +6142,7 @@ void GraphImplDml::OnCompilationComplete(
     }
 
     ASSIGN_OR_RETURN(
-        (absl::flat_hash_map<uint64_t, DML_BUFFER_BINDING>
-             constant_buffer_binding),
+        (std::map<uint64_t, DML_BUFFER_BINDING> constant_buffer_binding),
         UploadAndCreateConstantBufferBinding(
             initialization_command_recorder.get(), constant_operands,
             aligned_byte_length_of_constants.value(),
@@ -6375,7 +6361,7 @@ base::expected<void, mojom::ErrorPtr> GraphImplDml::CreateAndBuildInternal(
     base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>&
         constant_operands,
     GraphBuilderDml& graph_builder,
-    absl::flat_hash_map<uint64_t, uint32_t>& constant_id_to_input_index_map,
+    std::unordered_map<uint64_t, uint32_t>& constant_id_to_input_index_map,
     GraphBufferBindingInfo& graph_buffer_binding_info) {
   IdToNodeOutputMap id_to_node_output_map;
   const IdToOperandMap& id_to_operand_map = graph_info->id_to_operand_map;
@@ -6858,7 +6844,7 @@ void GraphImplDml::CreateAndBuild(
   TRACE_EVENT0("gpu", "dml::GraphImplDml::CreateAndBuild");
 
   GraphBuilderDml graph_builder(adapter->dml_device());
-  absl::flat_hash_map<uint64_t, uint32_t> constant_id_to_input_index_map;
+  std::unordered_map<uint64_t, uint32_t> constant_id_to_input_index_map;
   GraphBufferBindingInfo graph_buffer_binding_info;
   base::expected<void, mojom::ErrorPtr> create_operator_result =
       GraphImplDml::CreateAndBuildInternal(
