@@ -92,10 +92,6 @@ std::string StripFirstGenericPrefix(const std::string& host) {
   return host;
 }
 
-bool ShouldShowPopularSites() {
-  return base::FeatureList::IsEnabled(kUsePopularSitesSuggestions);
-}
-
 // Generate a short title for Most Visited items before they're converted to
 // custom links.
 std::u16string GenerateShortTitle(const std::u16string& title) {
@@ -259,10 +255,7 @@ void MostVisitedSites::AddMostVisitedURLsObserver(Observer* observer,
   // Starts observing the following sources when the first observer is added.
   if (!is_observing_) {
     is_observing_ = true;
-    // The order for this condition is important, ShouldShowPopularSites()
-    // should always be called last to keep metrics as relevant as possible.
-    if (popular_sites_ && NeedPopularSites(prefs_, GetMaxNumSites()) &&
-        ShouldShowPopularSites()) {
+    if (popular_sites_ && NeedPopularSites(prefs_, GetMaxNumSites())) {
       popular_sites_->MaybeStartFetch(
           false, base::BindOnce(&MostVisitedSites::OnPopularSitesDownloaded,
                                 base::Unretained(this)));
@@ -541,7 +534,7 @@ MostVisitedSites::CreatePopularSitesSections(
   }
 #endif
 
-  if (!popular_sites_ || !ShouldShowPopularSites()) {
+  if (!popular_sites_) {
     return sections;
   }
 
