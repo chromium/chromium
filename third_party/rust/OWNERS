@@ -17,10 +17,7 @@ chrome-third-party-rust-reviews@google.com
 #
 # Please keep this list alphabetized and in sync with the gwsq config (see
 # `chromium_gwsq/third-party-rust/config.gwsq`).
-collinbaker@chromium.org     #{LAST_RESORT_SUGGESTION}
 dcheng@chromium.org          #{LAST_RESORT_SUGGESTION}
-djmitche@chromium.org        #{LAST_RESORT_SUGGESTION}
 liza@chromium.org            #{LAST_RESORT_SUGGESTION}
 lukasza@chromium.org         #{LAST_RESORT_SUGGESTION}
 palmer@chromium.org          #{LAST_RESORT_SUGGESTION}
-phao@chromium.org            #{LAST_RESORT_SUGGESTION}
