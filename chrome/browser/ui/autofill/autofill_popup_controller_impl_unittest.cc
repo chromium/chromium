@@ -496,48 +496,6 @@ TEST_F(AutofillPopupControllerImplTest,
   Mock::VerifyAndClearExpectations(client().popup_view());
 }
 
-TEST_F(AutofillPopupControllerImplTest, EmitsVisibleDurationMetricsOnHide) {
-  base::HistogramTester histogram_tester;
-  base::TimeDelta hide_delay = base::Milliseconds(500);
-
-  ShowSuggestions(manager(), {SuggestionType::kPasswordEntry});
-  task_environment()->FastForwardBy(hide_delay);
-  client().popup_controller(manager()).Hide(
-      SuggestionHidingReason::kEndEditing);
-
-  histogram_tester.ExpectTimeBucketCount("Autofill.Popup.VisibleDuration",
-                                         hide_delay, 1);
-  histogram_tester.ExpectTimeBucketCount(
-      "Autofill.Popup.VisibleDuration.Password", hide_delay, 1);
-}
-
-TEST_F(AutofillPopupControllerImplTest,
-       DoesntEmitsVisibleDurationMetricsOnHideForSubPopups) {
-  base::HistogramTester histogram_tester;
-  base::TimeDelta hide_delay = base::Milliseconds(500);
-
-  base::WeakPtr<AutofillSuggestionController> sub_controller =
-      client().popup_controller(manager()).OpenSubPopup(
-          {0, 0, 10, 10}, {}, AutoselectFirstSuggestion(false));
-
-  // Setting a view makes the subsequent `Show()` call successful and stores
-  // the visible duration metric start time.
-  test_api(static_cast<AutofillPopupControllerImpl&>(*sub_controller))
-      .SetView(client().sub_popup_view()->GetWeakPtr());
-  sub_controller->Show(AutofillClient::SuggestionUiSessionId(),
-                       {Suggestion(SuggestionType::kPasswordEntry)},
-                       AutofillSuggestionTriggerSource::kPasswordManager,
-                       AutoselectFirstSuggestion(false));
-
-  task_environment()->FastForwardBy(hide_delay);
-  sub_controller->Hide(SuggestionHidingReason::kEndEditing);
-
-  histogram_tester.ExpectTimeBucketCount("Autofill.Popup.VisibleDuration",
-                                         hide_delay, 0);
-  histogram_tester.ExpectTimeBucketCount(
-      "Autofill.Popup.VisibleDuration.Password", hide_delay, 0);
-}
-
 TEST_F(AutofillPopupControllerImplTest,
        RemoveAutocompleteSuggestion_IgnoresClickOutsideCheck) {
   ShowSuggestions(manager(), {SuggestionType::kAutocompleteEntry,

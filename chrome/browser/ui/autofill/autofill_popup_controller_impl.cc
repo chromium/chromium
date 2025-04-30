@@ -255,8 +255,6 @@ void AutofillPopupControllerImpl::Show(
   }
 
   if (IsRootPopup()) {
-    shown_time_ = base::TimeTicks::Now();
-
     // We may already be observing from a previous `Show` call.
     // TODO(crbug.com/41486228): Consider not to recycle views or controllers
     // and only permit a single call to `Show`.
@@ -338,12 +336,6 @@ void AutofillPopupControllerImpl::Hide(SuggestionHidingReason reason) {
   // properly opening the popup.
   AutofillMetrics::LogAutofillSuggestionHidingReason(
       suggestions_filling_product_, reason);
-
-  if (IsRootPopup() && shown_time_) {
-    AutofillMetrics::LogAutofillPopupVisibleDuration(
-        suggestions_filling_product_, base::TimeTicks::Now() - *shown_time_);
-    shown_time_.reset();
-  }
 
   HideViewAndDie();
 }
