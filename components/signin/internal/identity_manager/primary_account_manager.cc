@@ -363,21 +363,6 @@ void PrimaryAccountManager::PrepareToLoadPrefs() {
 
   PrefService* prefs = client_->GetPrefs();
 
-  // kGoogleServicesLastSignedInUsername was introduced much later than its
-  // "Syncing" counterpart, so backfill. Note that having different values for
-  // the 2 prefs is possible (user enabled sync, disabled, then signed-in with
-  // a different account) and we should not overwrite the "SignedIn" pref in
-  // that case.
-  // TODO(crbug.com/337112658): Remove migration after 04/25.
-  std::string last_syncing_username =
-      prefs->GetString(prefs::kGoogleServicesLastSyncingUsername);
-  std::string last_signed_in_username =
-      prefs->GetString(prefs::kGoogleServicesLastSignedInUsername);
-  if (!last_syncing_username.empty() && last_signed_in_username.empty()) {
-    prefs->SetString(prefs::kGoogleServicesLastSignedInUsername,
-                     last_syncing_username);
-  }
-
   // If the user is clearing the token service from the command line, then
   // clear their login info also (not valid to be logged in without any
   // tokens).
