@@ -12,6 +12,13 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static org.hamcrest.Matchers.allOf;
+
+import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.addBlankTabs;
+import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.clickFirstCardFromTabSwitcher;
+import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.enterTabSwitcher;
+import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.mergeAllNormalTabsToAGroup;
+import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.verifyTabSwitcherCardCount;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import androidx.test.filters.MediumTest;
@@ -28,6 +35,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
+import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingUiDelegateAndroid;
 import org.chromium.chrome.browser.data_sharing.FakeDataSharingUIDelegateImpl;
@@ -197,5 +205,61 @@ public class CollaborationIntegrationTest {
                 },
                 WAIT_TIMEOUT_MS,
                 CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+    }
+
+    @Test
+    @MediumTest
+    public void testCollaborationCreateFlow() {
+        final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        final AtomicBoolean createCalled = new AtomicBoolean();
+        mDataSharingUIDelegate.setShowCreateFlowRunnable(() -> createCalled.set(true));
+
+        // Create a tab group and enter TabGridDialog.
+        addBlankTabs(cta, false, 3);
+        enterTabSwitcher(cta);
+        mergeAllNormalTabsToAGroup(cta);
+        verifyTabSwitcherCardCount(cta, 1);
+        clickFirstCardFromTabSwitcher(cta);
+        onViewWaiting(withId(R.id.share_button)).check(matches(isDisplayed())).perform(click());
+
+        // Verify that bottom sheet sign-in is shown and accept.
+        onViewWaiting(
+                allOf(
+                        withText(R.string.collaboration_signin_bottom_sheet_description),
+                        isDisplayed()));
+        final String continueAsText =
+                mActivityTestRule
+                        .getActivity()
+                        .getString(
+                                R.string.sync_promo_continue_as,
+                                TestAccounts.ACCOUNT1.getGivenName());
+        onView(withText(continueAsText)).perform(click());
+
+        // Verify that the history opt-in dialog is shown and accept.
+        onViewWaiting(
+                        withText(R.string.collaboration_sync_description),
+                        // checkRootDialog=true ensures dialog is in focus, avoid flakiness.
+                        true)
+                .check(matches(isDisplayed()));
+        onViewWaiting(withId(R.id.button_primary)).perform(click());
+
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    return createCalled.get();
+                },
+                WAIT_TIMEOUT_MS,
+                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+    }
+
+    @Test
+    @MediumTest
+    public void testHistoryAndSyncDisabled() {
+        mActivityTestRule.getSigninTestRule().addAccountThenSignin(TestAccounts.ACCOUNT1);
+
+        mActivityTestRule.loadUrlInNewTab(
+                mUrl, /* incognito= */ false, TabLaunchType.FROM_EXTERNAL_APP);
+        // Verify that the history opt-in dialog is shown and refuse.
+        onViewWaiting(withText(R.string.collaboration_sync_description))
+                .check(matches(isDisplayed()));
     }
 }

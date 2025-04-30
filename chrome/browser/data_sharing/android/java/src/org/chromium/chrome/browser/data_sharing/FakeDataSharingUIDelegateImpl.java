@@ -20,6 +20,8 @@ import org.chromium.url.GURL;
 public class FakeDataSharingUIDelegateImpl implements DataSharingUIDelegate {
 
     private @Nullable Runnable mShowJoinFlowRunnable;
+    private @Nullable Runnable mShowCreateFlowRunnable;
+    private @Nullable Runnable mShowManageFlowRunnable;
 
     public FakeDataSharingUIDelegateImpl() {}
 
@@ -31,6 +33,7 @@ public class FakeDataSharingUIDelegateImpl implements DataSharingUIDelegate {
 
     @Override
     public String showCreateFlow(DataSharingCreateUiConfig createUiConfig) {
+        if (mShowCreateFlowRunnable != null) mShowCreateFlowRunnable.run();
         return "";
     }
 
@@ -42,6 +45,7 @@ public class FakeDataSharingUIDelegateImpl implements DataSharingUIDelegate {
 
     @Override
     public String showManageFlow(DataSharingManageUiConfig manageUiConfig) {
+        if (mShowManageFlowRunnable != null) mShowManageFlowRunnable.run();
         return "";
     }
 
@@ -55,5 +59,15 @@ public class FakeDataSharingUIDelegateImpl implements DataSharingUIDelegate {
     /* Set a runnable to be called when showJoinFlow() is called. */
     public void setShowJoinFlowRunnable(Runnable runnable) {
         mShowJoinFlowRunnable = runnable;
+    }
+
+    /* Set a runnable to be called when showCreateFlow() is called. */
+    public void setShowCreateFlowRunnable(Runnable runnable) {
+        mShowCreateFlowRunnable = runnable;
+    }
+
+    /* Set a runnable to be called when showManageFlow() is called. */
+    public void setShowManageFlowRunnable(Runnable runnable) {
+        mShowManageFlowRunnable = runnable;
     }
 }
