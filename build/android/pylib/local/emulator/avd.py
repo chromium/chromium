@@ -482,7 +482,8 @@ class AvdConfig:
 
   def HasSnapshot(self, snapshot_name):
     """Check if a given snapshot exists or not."""
-    snapshot_path = os.path.join(self._avd_dir, 'snapshots', snapshot_name)
+    snapshot_path = os.path.join(self._avd_dir, 'snapshots', snapshot_name,
+                                 'ram.bin')
     return os.path.exists(snapshot_path)
 
   def Create(self,
