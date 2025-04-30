@@ -11200,21 +11200,6 @@
             ]
         }
     ],
-    "IOSChromnientDenseText": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "LensVsintParamEnabled"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSChromnientEscapeHatch": [
         {
             "platforms": [
