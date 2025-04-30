@@ -194,7 +194,7 @@ def ProcessNodeDescription(node: IDLNode) -> DescriptionData:
   Parameter descriptions are returned as a dictionary, with the parameter names
   as keys pointing to the formatted description strings as values.
 
-  TODO(crbug.com/340297705): Call this for events and properties.
+  TODO(crbug.com/340297705): Call this for properties.
 
   Args:
     node: The IDL node to look for a descriptive comment above.
@@ -520,7 +520,6 @@ class Event:
   Given an IDLNode of class Attribute for an event, extracts out the details of
   the associated event callback and converts it to a Python dictionary
   representing it.
-  TODO(crbug.com/340297705): Add in processing for event descriptions.
 
   Attributes:
     node: The IDLNode for the Attribute definition for this event.
@@ -558,11 +557,25 @@ class Event:
     callback_name = GetTypeName(
         add_listener_operation.GetOneOf('Arguments').GetOneOf('Argument'))
     callback_node = GetChildWithName(parent, callback_name)
+    parameter_descriptions = ProcessNodeDescription(
+        callback_node).parameter_descriptions
+
+    # The WebIDL Parser incorrectly reports the line number for Attributes we
+    # use to define events as 0, so we need to use the Typeref node on the
+    # Attribute instead to get the correct line number to extract the
+    # description comment.
+    # TODO(crbug.com/396176041): Clean this up once the line number issue is
+    # resolved in the Parser.
+    description = ProcessNodeDescription(
+        self.node.GetOneOf('Type').GetOneOf('Typeref')).description
+    if (description):
+      properties['description'] = description
 
     parameters = []
     arguments_node = callback_node.GetOneOf('Arguments')
     for argument in arguments_node.GetListOf('Argument'):
-      parameters.append(FunctionArgument(argument, None).Process())
+      parameters.append(
+          FunctionArgument(argument, parameter_descriptions).Process())
     properties['parameters'] = parameters
 
     return properties

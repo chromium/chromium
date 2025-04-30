@@ -286,8 +286,6 @@ class WebIdlSchemaTest(unittest.TestCase):
         }, function_parameters[1])
 
   # Tests that API events are processed as expected.
-  # TODO(crbug.com/379052294): Add description testing when it is added to the
-  # processor.
   def testEvents(self):
     schema = self.idl_basics
 
@@ -296,22 +294,32 @@ class WebIdlSchemaTest(unittest.TestCase):
     # the object and raises a KeyError if it is not found.
     self.assertEqual('onTestOne', event_one.get('name'))
     self.assertEqual('function', event_one.get('type'))
-    self.assertEqual([{
-        'name': 'argument1',
-        'type': 'string'
-    }, {
-        'name': 'argument2',
-        'optional': True,
-        'type': 'number'
-    }], event_one['parameters'])
+    self.assertEqual(
+        'Comment that acts as a description for onTestOne. Parameter specific'
+        ' comments are down below before the associated callback definition.',
+        event_one.get('description'))
+    self.assertEqual(
+        [{
+            'name': 'argument1',
+            'type': 'string',
+            'description': 'Parameter description for argument1.'
+        }, {
+            'name': 'argument2',
+            'optional': True,
+            'type': 'number',
+            'description': 'Another description, this time for argment2.'
+        }], event_one['parameters'])
 
     event_two = getEvent(schema, 'onTestTwo')
     self.assertEqual('onTestTwo', event_two.get('name'))
     self.assertEqual('function', event_two.get('type'))
-    self.assertEqual([{
-        'name': 'customType',
-        '$ref': 'ExampleType'
-    }], event_two['parameters'])
+    self.assertEqual('Comment for onTestTwo.', event_two.get('description'))
+    self.assertEqual(
+        [{
+            'name': 'customType',
+            '$ref': 'ExampleType',
+            'description': 'An ExampleType passed to the event listener.'
+        }], event_two['parameters'])
 
   # Tests that Dictionaries defined on the top level of the IDL file are
   # processed into types on the resulting namespace.
