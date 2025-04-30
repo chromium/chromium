@@ -69,6 +69,24 @@ class DisruptiveNotificationPermissionsManager
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/settings/enums.xml:DisruptiveNotificationRevocationResult)
 
+  // TODO(crbug.com/406472515): Reevaluate if we should continue reporting false
+  // positives for non persistent notification clicks. Non persistent
+  // notifications are only shown when the site is visited so the site must be
+  // visited first.
+  //
+  // The reason why a disruptive notification revocation was considered a false
+  // positive. If the user interacts with a site after revocation, the
+  // revocation was a false positive.
+  //
+  // LINT.IfChange(FalsePositiveReason)
+  enum class FalsePositiveReason {
+    kPageVisit = 0,
+    kPersistentNotificationClick = 1,
+    kNonPersistentNotificationClick = 2,
+    kMaxValue = kNonPersistentNotificationClick,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/enums.xml:DisruptiveNotificationFalsePositiveReason)
+
   class SafetyHubNotificationWrapper {
    public:
     virtual ~SafetyHubNotificationWrapper();
@@ -121,6 +139,13 @@ class DisruptiveNotificationPermissionsManager
   void DeleteRevokedPermissionContentSetting(
       const ContentSettingsPattern& primary_pattern,
       const ContentSettingsPattern& secondary_pattern);
+
+  // If the URL is in the revoke or proposed revoke list, report a false
+  // positive and record metrics.
+  static void CheckForFalsePositive(Profile* profile,
+                                    const GURL& origin,
+                                    FalsePositiveReason reason,
+                                    ukm::SourceId source_id);
 
   // Logs metrics for proposed disruptive notification revocation, to be called
   // when displaying a persistent notification.

@@ -4000,6 +4000,22 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
   <int value="1" label="Mixed mirror mode"/>
 </enum>
 
+<!-- LINT.IfChange(DisruptiveNotificationFalsePositiveReason) -->
+
+<enum name="DisruptiveNotificationFalsePositiveReason">
+  <summary>
+    The reason why a disruptive notification revocation was considered a false
+    positive. Disruptive notifications are those with high notification volume
+    and low site engagement. Therefore if the user interacts with a site after
+    revocation, the revocation was a false positive.
+  </summary>
+  <int value="0" label="Page visit"/>
+  <int value="1" label="Persistent notification click"/>
+  <int value="2" label="Non persistent notification click"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/safety_hub/disruptive_notification_permissions_manager.h:FalsePositiveReason) -->
+
 <enum name="DlcInstallResult">
   <int value="0" label="Success"/>
   <int value="1" label="Internal error"/>

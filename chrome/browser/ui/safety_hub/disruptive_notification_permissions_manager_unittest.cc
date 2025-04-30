@@ -37,9 +37,6 @@ constexpr char kNotificationCountHistogram[] =
     "NotificationCount";
 constexpr char kRevokedWebsitesCountHistogram[] =
     "Settings.SafetyHub.DisruptiveNotificationRevocations.RevokedWebsitesCount";
-constexpr char kFalsePositiveSiteEngagementHistogram[] =
-    "Settings.SafetyHub.DisruptiveNotificationRevocations.FalsePositive."
-    "SiteEngagement";
 
 class SafetyHubNotificationWrapperForTesting
     : public DisruptiveNotificationPermissionsManager::
@@ -420,103 +417,6 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
 }
 
 TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
-       FalsePositiveMetrics) {
-  ukm::TestAutoSetUkmRecorder ukm_recorder;
-
-  GURL url("https://chrome.test/");
-  const int kDailyNotificationCount = 4;
-
-  base::Value::Dict dict;
-  dict.Set(safety_hub::kRevokedStatusDictKeyStr, safety_hub::kFalsePositiveStr);
-  dict.Set(safety_hub::kSiteEngagementStr, 1.0);
-  dict.Set(safety_hub::kDailyNotificationCountStr, kDailyNotificationCount);
-  dict.Set(safety_hub::kHasReportedMetricsStr, true);
-  dict.Set(safety_hub::kTimestampStr,
-           base::TimeToValue(base::Time::Now() - base::Days(3)));
-  hcsm()->SetWebsiteSettingCustomScope(
-      ContentSettingsPattern::FromURLNoWildcard(url),
-      ContentSettingsPattern::Wildcard(),
-      ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS,
-      base::Value(std::move(dict)));
-
-  site_engagement_service()->ResetBaseScoreForURL(url, 5.0);
-
-  ukm::SourceId source_id = ukm::UkmRecorder::GetNewSourceID();
-  ukm_recorder.UpdateSourceURL(source_id, GURL(url));
-
-  DisruptiveNotificationPermissionsManager::LogMetrics(profile(), url,
-                                                       source_id);
-
-  // False positive entry was removed.
-  base::Value stored_value = hcsm()->GetWebsiteSetting(
-      url, url,
-      ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS);
-  EXPECT_TRUE(stored_value.is_none());
-
-  // Check that the correct metric is reported.
-  auto entries = ukm_recorder.GetEntriesByName(
-      "SafetyHub.DisruptiveNotificationRevocations.FalsePositive");
-  EXPECT_EQ(1u, entries.size());
-  ukm_recorder.ExpectEntrySourceHasUrl(entries[0], url);
-  ukm_recorder.ExpectEntryMetric(entries[0], "DaysSinceRevocation", 3);
-  ukm_recorder.ExpectEntryMetric(entries[0], "NewSiteEngagement", 5.0);
-  ukm_recorder.ExpectEntryMetric(entries[0], "OldSiteEngagement", 1.0);
-}
-
-TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
-       ProposedFalsePositiveMetrics) {
-  ukm::TestAutoSetUkmRecorder ukm_recorder;
-  GURL url("https://chrome.test/");
-  const int kDailyNotificationCount = 4;
-
-  base::Value::Dict dict;
-  dict.Set(safety_hub::kRevokedStatusDictKeyStr, safety_hub::kFalsePositiveStr);
-  dict.Set(safety_hub::kSiteEngagementStr, 0.0);
-  dict.Set(safety_hub::kDailyNotificationCountStr, kDailyNotificationCount);
-  dict.Set(safety_hub::kTimestampStr,
-           base::TimeToValue(base::Time::Now() - base::Days(3)));
-  hcsm()->SetWebsiteSettingCustomScope(
-      ContentSettingsPattern::FromURLNoWildcard(url),
-      ContentSettingsPattern::Wildcard(),
-      ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS,
-      base::Value(std::move(dict)));
-
-  site_engagement_service()->ResetBaseScoreForURL(url, 5.0);
-
-  ukm::SourceId source_id = ukm::UkmRecorder::GetNewSourceID();
-  ukm_recorder.UpdateSourceURL(source_id, GURL(url));
-
-  DisruptiveNotificationPermissionsManager::LogMetrics(profile(), url,
-                                                       source_id);
-
-  // False positive entry was removed.
-  base::Value stored_value = hcsm()->GetWebsiteSetting(
-      url, url,
-      ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS);
-  EXPECT_TRUE(stored_value.is_none());
-
-  // Check that the correct metrics are reported.
-  auto proposed_entries = ukm_recorder.GetEntriesByName(
-      "SafetyHub.DisruptiveNotificationRevocations.Proposed");
-  EXPECT_EQ(1u, proposed_entries.size());
-  ukm_recorder.ExpectEntrySourceHasUrl(proposed_entries[0], url);
-  ukm_recorder.ExpectEntryMetric(proposed_entries[0], "DailyAverageVolume",
-                                 kDailyNotificationCount);
-  ukm_recorder.ExpectEntryMetric(proposed_entries[0], "SiteEngagement", 0.0);
-
-  auto false_positive_entries = ukm_recorder.GetEntriesByName(
-      "SafetyHub.DisruptiveNotificationRevocations.FalsePositive");
-  EXPECT_EQ(1u, false_positive_entries.size());
-  ukm_recorder.ExpectEntrySourceHasUrl(false_positive_entries[0], url);
-  ukm_recorder.ExpectEntryMetric(false_positive_entries[0],
-                                 "DaysSinceRevocation", 3);
-  ukm_recorder.ExpectEntryMetric(false_positive_entries[0], "NewSiteEngagement",
-                                 5.0);
-  ukm_recorder.ExpectEntryMetric(false_positive_entries[0], "OldSiteEngagement",
-                                 0.0);
-}
-
-TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
        RegrantPermission) {
   base::HistogramTester t;
   GURL url("https://www.example.com");
@@ -847,72 +747,6 @@ TEST_F(DisruptiveNotificationPermissionsManagerShadowRunTest,
                       RevocationResult::kProposedRevoke, 1);
   t.ExpectBucketCount(kRevocationResultHistogram,
                       RevocationResult::kAlreadyInProposedRevokeList, 1);
-
-  // The shadow run should never display notifications.
-  EXPECT_THAT(GetDisplayNotificationFunctionCalledWith(), IsEmpty());
-}
-
-TEST_F(DisruptiveNotificationPermissionsManagerShadowRunTest,
-       FalsePositivePermission) {
-  base::HistogramTester t;
-  GURL url("https://www.example.com");
-  SetNotificationPermission(url, CONTENT_SETTING_ALLOW);
-  SetDailyAverageNotificationCount(url, 3);
-  site_engagement_service()->ResetBaseScoreForURL(url, 0);
-
-  manager()->RevokeDisruptiveNotifications();
-  // Permission was proposed for revocation.
-  content_settings::SettingInfo proposed_info;
-  base::Value stored_value = hcsm()->GetWebsiteSetting(
-      url, url,
-      ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS,
-      &proposed_info);
-  EXPECT_FALSE(stored_value.is_none());
-  ASSERT_TRUE(stored_value.is_dict());
-  base::Value::Dict dict = std::move(stored_value).TakeDict();
-  EXPECT_EQ(safety_hub::kProposedStr,
-            dict.Find(safety_hub::kRevokedStatusDictKeyStr)->GetString());
-  EXPECT_FALSE(
-      dict.FindBool(safety_hub::kHasReportedMetricsStr).value_or(false));
-  EXPECT_EQ(0.0, dict.FindDouble(safety_hub::kSiteEngagementStr).value_or(0));
-  EXPECT_EQ(3,
-            dict.FindInt(safety_hub::kDailyNotificationCountStr).value_or(0));
-  t.ExpectBucketCount(kRevocationResultHistogram,
-                      RevocationResult::kProposedRevoke, 1);
-
-  // After that the site engagement score has increased.
-  site_engagement_service()->ResetBaseScoreForURL(url, 5.0);
-  manager()->RevokeDisruptiveNotifications();
-  // Verify that the permission was marked as a false positive.
-  content_settings::SettingInfo false_positive_info;
-  stored_value = hcsm()->GetWebsiteSetting(
-      url, url,
-      ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS,
-      &false_positive_info);
-  EXPECT_FALSE(stored_value.is_none());
-  ASSERT_TRUE(stored_value.is_dict());
-  dict = std::move(stored_value).TakeDict();
-  EXPECT_EQ(safety_hub::kFalsePositiveStr,
-            dict.Find(safety_hub::kRevokedStatusDictKeyStr)->GetString());
-  EXPECT_FALSE(
-      dict.FindBool(safety_hub::kHasReportedMetricsStr).value_or(false));
-  EXPECT_EQ(0.0, dict.FindDouble(safety_hub::kSiteEngagementStr).value_or(0));
-  EXPECT_EQ(3,
-            dict.FindInt(safety_hub::kDailyNotificationCountStr).value_or(0));
-  // Verify that after updating the content setting value expiration didn't
-  // change.
-  EXPECT_EQ(false_positive_info.metadata.expiration(),
-            proposed_info.metadata.expiration());
-
-  t.ExpectBucketCount(kRevocationResultHistogram,
-                      RevocationResult::kFalsePositive, 1);
-  t.ExpectBucketCount(kFalsePositiveSiteEngagementHistogram, 5, 1);
-
-  // Verify that future calls will report `kAlreadyFalsePositive` instead of
-  // `kFalsePositive`.
-  manager()->RevokeDisruptiveNotifications();
-  t.ExpectBucketCount(kRevocationResultHistogram,
-                      RevocationResult::kAlreadyFalsePositive, 1);
 
   // The shadow run should never display notifications.
   EXPECT_THAT(GetDisplayNotificationFunctionCalledWith(), IsEmpty());

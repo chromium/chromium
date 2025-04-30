@@ -105,16 +105,32 @@ ukm::SourceId UkmRecorder::GetSourceIdForExtensionUrl(
 // static
 ukm::SourceId UkmRecorder::GetSourceIdForNotificationPermission(
     base::PassKey<ChromePermissionsClient>,
-    const GURL& origin) {
-  return UkmRecorder::GetSourceIdFromScopeImpl(origin,
+    const GURL& url) {
+  return UkmRecorder::GetSourceIdFromScopeImpl(url,
                                                SourceIdType::NOTIFICATION_ID);
 }
 
 // static
 ukm::SourceId UkmRecorder::GetSourceIdForNotificationEvent(
     base::PassKey<PlatformNotificationServiceImpl>,
-    const GURL& origin) {
-  return UkmRecorder::GetSourceIdFromScopeImpl(origin,
+    const GURL& url) {
+  return UkmRecorder::GetSourceIdFromScopeImpl(url,
+                                               SourceIdType::NOTIFICATION_ID);
+}
+
+// static
+ukm::SourceId UkmRecorder::GetSourceIdForNotificationEvent(
+    base::PassKey<PersistentNotificationHandler>,
+    const GURL& url) {
+  return UkmRecorder::GetSourceIdFromScopeImpl(url,
+                                               SourceIdType::NOTIFICATION_ID);
+}
+
+// static
+ukm::SourceId UkmRecorder::GetSourceIdForNotificationEvent(
+    base::PassKey<NonPersistentNotificationHandler>,
+    const GURL& url) {
+  return UkmRecorder::GetSourceIdFromScopeImpl(url,
                                                SourceIdType::NOTIFICATION_ID);
 }
 

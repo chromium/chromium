@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/safety_hub/revoked_permissions_service.h"
 
+#include "base/json/values_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
@@ -12,6 +13,9 @@
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/engagement/site_engagement_service_factory.h"
+#include "chrome/browser/notifications/notification_display_service_tester.h"
+#include "chrome/browser/notifications/platform_notification_service_factory.h"
+#include "chrome/browser/notifications/platform_notification_service_impl.h"
 #include "chrome/browser/permissions/notifications_engagement_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
@@ -34,7 +38,9 @@
 #include "components/permissions/features.h"
 #include "components/permissions/notifications_engagement_service.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_test.h"
+#include "third_party/blink/public/common/notifications/platform_notification_data.h"
 
 namespace {
 
@@ -624,10 +630,17 @@ class DisruptiveNotificationPermissionsRevocationBrowserTest
         });
   }
 
+  void SetUpOnMainThread() override {
+    RevokedPermissionsServiceBrowserTest::SetUpOnMainThread();
+    recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
+  }
+
   site_engagement::SiteEngagementService* site_engagement_service() {
     return site_engagement::SiteEngagementServiceFactory::GetForProfile(
         browser()->profile());
   }
+
+  std::unique_ptr<ukm::TestAutoSetUkmRecorder> recorder_;
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -778,4 +791,146 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(
       CONTENT_SETTING_ASK,
       hcsm->GetContentSetting(url, url, ContentSettingsType::GEOLOCATION));
+}
+
+IN_PROC_BROWSER_TEST_F(DisruptiveNotificationPermissionsRevocationBrowserTest,
+                       TestProposedFalsePositiveOnPageVisit) {
+  auto* hcsm =
+      HostContentSettingsMapFactory::GetForProfile(browser()->profile());
+  GURL url = embedded_test_server()->GetURL("/title1.html");
+
+  // Set up a proposed revoked notification.
+  base::Value::Dict dict;
+  dict.Set(safety_hub::kRevokedStatusDictKeyStr, safety_hub::kProposedStr);
+  dict.Set(safety_hub::kSiteEngagementStr, 0.0);
+  dict.Set(safety_hub::kDailyNotificationCountStr, 5);
+  dict.Set(safety_hub::kTimestampStr,
+           base::TimeToValue(base::Time::Now() - base::Days(3)));
+  hcsm->SetWebsiteSettingCustomScope(
+      ContentSettingsPattern::FromURLNoWildcard(url),
+      ContentSettingsPattern::Wildcard(),
+      ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS,
+      base::Value(std::move(dict)));
+
+  // Visit the site.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  auto entries = recorder_->GetEntriesByName(
+      "SafetyHub.DisruptiveNotificationRevocations.FalsePositive");
+  ASSERT_EQ(1u, entries.size());
+  auto* entry = entries[0].get();
+  recorder_->ExpectEntryMetric(entry, "DaysSinceRevocation", 3);
+  recorder_->ExpectEntryMetric(
+      entry, "Reason",
+      static_cast<int>(DisruptiveNotificationPermissionsManager::
+                           FalsePositiveReason::kPageVisit));
+  // Site engagement hasn't been updated yet.
+  recorder_->ExpectEntryMetric(entry, "NewSiteEngagement", 0.0);
+  recorder_->ExpectEntryMetric(entry, "OldSiteEngagement", 0.0);
+  recorder_->ExpectEntryMetric(entry, "DailyAverageVolume", 5);
+}
+
+IN_PROC_BROWSER_TEST_F(DisruptiveNotificationPermissionsRevocationBrowserTest,
+                       TestRevokedFalsePositiveOnPageVisit) {
+  auto* hcsm =
+      HostContentSettingsMapFactory::GetForProfile(browser()->profile());
+  GURL url = embedded_test_server()->GetURL("/title1.html");
+
+  // Set up a proposed revoked notification.
+  base::Value::Dict dict;
+  dict.Set(safety_hub::kRevokedStatusDictKeyStr, safety_hub::kRevokeStr);
+  dict.Set(safety_hub::kSiteEngagementStr, 0.0);
+  dict.Set(safety_hub::kDailyNotificationCountStr, 5);
+  dict.Set(safety_hub::kTimestampStr,
+           base::TimeToValue(base::Time::Now() - base::Days(3)));
+  hcsm->SetWebsiteSettingCustomScope(
+      ContentSettingsPattern::FromURLNoWildcard(url),
+      ContentSettingsPattern::Wildcard(),
+      ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS,
+      base::Value(std::move(dict)));
+
+  // Visit the page.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  auto entries = recorder_->GetEntriesByName(
+      "SafetyHub.DisruptiveNotificationRevocations.FalsePositive");
+  ASSERT_EQ(1u, entries.size());
+  auto* entry = entries[0].get();
+  recorder_->ExpectEntryMetric(entry, "DaysSinceRevocation", 3);
+  recorder_->ExpectEntryMetric(
+      entry, "Reason",
+      static_cast<int>(DisruptiveNotificationPermissionsManager::
+                           FalsePositiveReason::kPageVisit));
+  // Site engagement hasn't been updated yet.
+  recorder_->ExpectEntryMetric(entry, "NewSiteEngagement", 0.0);
+  recorder_->ExpectEntryMetric(entry, "OldSiteEngagement", 0.0);
+  recorder_->ExpectEntryMetric(entry, "DailyAverageVolume", 5);
+
+  // Switch to a different site.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL("https://www.another.site")));
+
+  // Visit the page again.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  EXPECT_EQ(1u,
+            recorder_
+                ->GetEntriesByName(
+                    "SafetyHub.DisruptiveNotificationRevocations.FalsePositive")
+                .size());
+}
+
+// TODO(crbug.com/406472515): Add a test for non persistent notification click.
+IN_PROC_BROWSER_TEST_F(DisruptiveNotificationPermissionsRevocationBrowserTest,
+                       TestProposedFalsePositiveOnPersistentNotificationClick) {
+  auto* hcsm =
+      HostContentSettingsMapFactory::GetForProfile(browser()->profile());
+  auto display_service_tester =
+      std::make_unique<NotificationDisplayServiceTester>(browser()->profile());
+  auto* notifications_service =
+      PlatformNotificationServiceFactory::GetForProfile(browser()->profile());
+
+  GURL url = embedded_test_server()->GetURL("/title1.html");
+  const char kNotificationId[] = "my-notification-id";
+
+  // Set up a proposed revoked disruptive notification. The notification are not
+  // yet revoked.
+  hcsm->SetContentSettingDefaultScope(
+      url, GURL(), ContentSettingsType::NOTIFICATIONS, CONTENT_SETTING_ALLOW);
+
+  base::Value::Dict dict;
+  dict.Set(safety_hub::kRevokedStatusDictKeyStr, safety_hub::kProposedStr);
+  dict.Set(safety_hub::kSiteEngagementStr, 0.0);
+  dict.Set(safety_hub::kDailyNotificationCountStr, 5);
+  dict.Set(safety_hub::kTimestampStr,
+           base::TimeToValue(base::Time::Now() - base::Days(3)));
+  hcsm->SetWebsiteSettingCustomScope(
+      ContentSettingsPattern::FromURLNoWildcard(url),
+      ContentSettingsPattern::Wildcard(),
+      ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS,
+      base::Value(std::move(dict)));
+
+  // Show a notification.
+  blink::PlatformNotificationData data;
+  data.title = u"My notification's title";
+  data.body = u"Hello, world!";
+  notifications_service->DisplayPersistentNotification(
+      kNotificationId, url, url, data, blink::NotificationResources());
+
+  // Click on the notification.
+  display_service_tester->SimulateClick(
+      NotificationHandler::Type::WEB_PERSISTENT, kNotificationId,
+      0 /*action_index*/, std::nullopt);
+
+  auto entries = recorder_->GetEntriesByName(
+      "SafetyHub.DisruptiveNotificationRevocations.FalsePositive");
+  ASSERT_EQ(1u, entries.size());
+  auto* entry = entries[0].get();
+  recorder_->ExpectEntryMetric(entry, "DaysSinceRevocation", 3);
+  recorder_->ExpectEntryMetric(
+      entry, "Reason",
+      static_cast<int>(DisruptiveNotificationPermissionsManager::
+                           FalsePositiveReason::kPersistentNotificationClick));
+  recorder_->ExpectEntryMetric(entry, "NewSiteEngagement", 2.0);
+  recorder_->ExpectEntryMetric(entry, "OldSiteEngagement", 0.0);
+  recorder_->ExpectEntryMetric(entry, "DailyAverageVolume", 5);
 }

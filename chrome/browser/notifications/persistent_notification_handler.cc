@@ -25,6 +25,7 @@
 #include "chrome/browser/permissions/notifications_engagement_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/notification_content_detection/notification_content_detection_util.h"
+#include "chrome/browser/ui/safety_hub/disruptive_notification_permissions_manager.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
@@ -43,6 +44,7 @@
 #include "content/public/browser/platform_notification_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/persistent_notification_status.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -217,6 +219,17 @@ void PersistentNotificationHandler::OnClick(
           base::BindOnce(&PersistentNotificationHandler::OnClickCompleted,
                          weak_ptr_factory_.GetWeakPtr(), profile,
                          notification_id, std::move(completed_closure)));
+
+  // If there is a proposed disruptive notification revocation, report a false
+  // positive due to user interacting with a notification. Disruptive are
+  // notifications with high notification volume and low site engagement score.
+  ukm::SourceId source_id = ukm::UkmRecorder::GetSourceIdForNotificationEvent(
+      base::PassKey<PersistentNotificationHandler>(), origin);
+  DisruptiveNotificationPermissionsManager::CheckForFalsePositive(
+      profile, origin,
+      DisruptiveNotificationPermissionsManager::FalsePositiveReason::
+          kPersistentNotificationClick,
+      source_id);
 }
 
 void PersistentNotificationHandler::OnClickCompleted(
