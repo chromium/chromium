@@ -7,9 +7,9 @@
       {
         "args": [
           "--platform",
-          "iPhone X",
+          "iPhone 14",
           "--version",
-          "16.4",
+          "17.5",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -19,7 +19,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "base_unittests iPhone X 16.4",
+        "name": "base_unittests iPhone 14 17.5",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -38,8 +38,8 @@
           },
           "named_caches": [
             {
-              "name": "runtime_ios_16_4",
-              "path": "Runtime-ios-16.4"
+              "name": "runtime_ios_17_5",
+              "path": "Runtime-ios-17.5"
             },
             {
               "name": "xcode_ios_16c5032a",
@@ -50,14 +50,14 @@
         },
         "test": "base_unittests",
         "test_id_prefix": "ninja://base:base_unittests/",
-        "variant_id": "iPhone X 16.4"
+        "variant_id": "iPhone 14 17.5"
       },
       {
         "args": [
           "--platform",
-          "iPhone X",
+          "iPhone 14",
           "--version",
-          "16.4",
+          "17.5",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -67,7 +67,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "highway_tests iPhone X 16.4",
+        "name": "highway_tests iPhone 14 17.5",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -86,8 +86,8 @@
           },
           "named_caches": [
             {
-              "name": "runtime_ios_16_4",
-              "path": "Runtime-ios-16.4"
+              "name": "runtime_ios_17_5",
+              "path": "Runtime-ios-17.5"
             },
             {
               "name": "xcode_ios_16c5032a",
@@ -98,7 +98,7 @@
         },
         "test": "highway_tests",
         "test_id_prefix": "ninja://third_party/highway:highway_tests/",
-        "variant_id": "iPhone X 16.4"
+        "variant_id": "iPhone 14 17.5"
       }
     ]
   }
