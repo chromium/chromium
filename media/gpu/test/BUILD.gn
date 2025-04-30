@@ -203,8 +203,8 @@ static_library("video_player") {
 
   if (use_vaapi || use_v4l2_codec) {
     sources += [
-      "video_player/gmb_video_frame_converter.cc",
-      "video_player/gmb_video_frame_converter.h",
+      "video_player/mappable_video_frame_converter.cc",
+      "video_player/mappable_video_frame_converter.h",
     ]
     deps += [ "//media/gpu/chromeos:common" ]
   }
