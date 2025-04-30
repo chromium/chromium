@@ -77,7 +77,8 @@ IOSSharingServiceFactory* IOSSharingServiceFactory::GetInstance() {
 
 IOSSharingServiceFactory::IOSSharingServiceFactory()
     : ProfileKeyedServiceFactoryIOS("SharingService",
-                                    ServiceCreation::kCreateWithProfile) {
+                                    ServiceCreation::kCreateWithProfile,
+                                    TestingCreation::kNoServiceForTests) {
   DependsOn(IOSChromeInstanceIDProfileServiceFactory::GetInstance());
   DependsOn(DeviceInfoSyncServiceFactory::GetInstance());
   DependsOn(SyncServiceFactory::GetInstance());

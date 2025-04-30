@@ -34,10 +34,10 @@ class IOSSharingServiceFactoryTest : public PlatformTest {
   std::unique_ptr<TestProfileIOS> profile_;
 };
 
-// Tests that IOSSharingServiceFactory creates
-// SharingService.
-TEST_F(IOSSharingServiceFactoryTest, CreateService) {
+// Tests that IOSSharingServiceFactory does not create SharingService
+// for TestProfileIOS.
+TEST_F(IOSSharingServiceFactoryTest, NoServiceForTests) {
   SharingService* service =
       IOSSharingServiceFactory::GetForProfile(profile_.get());
-  ASSERT_TRUE(service);
+  EXPECT_FALSE(service);
 }
