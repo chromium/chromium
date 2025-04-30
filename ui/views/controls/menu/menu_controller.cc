@@ -946,11 +946,10 @@ void MenuController::OnMouseReleased(SubmenuView* source,
     return;
   }
 
-  // Mouse releases during DnD are handled differently by platforms. Most will
-  // consume the mouse release to end the DnD, which would subsequently trigger
-  // OnDragComplete. However, Wayland will send a spurious mouse release event
-  // before ending the DnD, which should be ignored by this menu.
-  if (drag_in_progress_) {
+  // The menu should ignore mouse release events and refrain from closing if a
+  // drag operation is in progress or has been recently canceled without
+  // immediate notification.
+  if (drag_in_progress_ || for_drop_) {
     return;
   }
 

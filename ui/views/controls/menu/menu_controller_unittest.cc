@@ -1823,6 +1823,23 @@ TEST_F(MenuControllerForDropTest, AsyncDropCallback) {
   EXPECT_TRUE(menu_delegate->is_drop_performed());
 }
 
+TEST_F(MenuControllerForDropTest, OnMouseReleasedIgnored) {
+  ShowSubmenu();
+  SubmenuView* const submenu = menu_item()->GetSubmenu();
+  MenuItemView* const target = submenu->GetMenuItemAt(0);
+  const gfx::Point press_location = target->bounds().CenterPoint();
+  ProcessMouseReleased(
+      submenu, ui::MouseEvent(ui::EventType::kMouseReleased, press_location,
+                              press_location, ui::EventTimeForNow(),
+                              ui::EF_LEFT_MOUSE_BUTTON, 0));
+
+  // The command shouldn't be executed if this menu is open for a drop.
+  EXPECT_EQ(menu_delegate()->execute_command_id(),
+            test::TestMenuDelegate::kInvalidExecuteCommandId);
+  EXPECT_EQ(menu_controller_delegate()->on_menu_closed_called(), 0);
+  EXPECT_TRUE(showing());
+}
+
 // Widget destruction and cleanup occurs on the MessageLoop after the
 // MenuController has been destroyed. A MenuHostRootView should not attempt to
 // access a destroyed MenuController. This test should not cause a crash.
