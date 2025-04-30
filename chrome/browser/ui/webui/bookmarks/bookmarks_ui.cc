@@ -105,6 +105,7 @@ content::WebUIDataSource* CreateAndAddBookmarksUIHTMLSource(Profile* profile) {
       {"menuRename", IDS_BOOKMARK_MANAGER_MENU_RENAME},
       {"menuShowInFolder", IDS_BOOKMARK_MANAGER_MENU_SHOW_IN_FOLDER},
       {"menuSort", IDS_BOOKMARK_MANAGER_MENU_SORT},
+      {"uploadBookmarkButtonTitle", IDS_BOOKMARK_MOVE_TO_ACCOUNT_ICON_TOOLTIP},
       {"moreActionsButtonTitle", IDS_BOOKMARK_MANAGER_MORE_ACTIONS},
       {"moreActionsButtonAxLabel", IDS_BOOKMARK_MANAGER_MORE_ACTIONS_AX_LABEL},
       {"moreActionsMultiButtonAxLabel",
