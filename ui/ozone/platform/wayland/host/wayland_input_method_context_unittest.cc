@@ -30,6 +30,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_event_source.h"
 #include "ui/ozone/platform/wayland/host/wayland_seat.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
+#include "ui/ozone/platform/wayland/host/zwp_text_input_v1.h"
 #include "ui/ozone/platform/wayland/test/mock_surface.h"
 #include "ui/ozone/platform/wayland/test/mock_zwp_text_input.h"
 #include "ui/ozone/platform/wayland/test/test_wayland_server_thread.h"
@@ -151,20 +152,20 @@ class MockTextInputClient : public TextInputClient {
   base::WeakPtrFactory<MockTextInputClient> weak_ptr_factory_{this};
 };
 
-class MockZWPTextInputWrapper : public ZWPTextInputWrapper {
+class MockZwpTextInputV3 : public ZwpTextInputV3 {
  public:
-  ~MockZWPTextInputWrapper() override = default;
+  ~MockZwpTextInputV3() override = default;
 
-  MOCK_METHOD(void, Reset, (), (override));
+  MOCK_METHOD(void, SetClient, (ZwpTextInputV3Client * context), (override));
 
   MOCK_METHOD(void,
-              Activate,
-              (WaylandWindow * window, ui::TextInputClient::FocusReason reason),
+              OnClientDestroyed,
+              (ZwpTextInputV3Client * context),
               (override));
-  MOCK_METHOD(void, Deactivate, (), (override));
 
-  MOCK_METHOD(void, ShowInputPanel, (), (override));
-  MOCK_METHOD(void, HideInputPanel, (), (override));
+  MOCK_METHOD(void, Enable, (), (override));
+  MOCK_METHOD(void, Disable, (), (override));
+  MOCK_METHOD(void, Reset, (), (override));
 
   MOCK_METHOD(void, SetCursorRect, (const gfx::Rect& rect), (override));
   MOCK_METHOD(void,
@@ -327,8 +328,11 @@ class WaylandInputMethodContextTest : public WaylandTest {
     input_method_context_ = std::make_unique<WaylandInputMethodContext>(
         connection_.get(), keyboard_delegate_.get(),
         input_method_context_delegate_.get());
-    input_method_context_->Init(
-        true, nullptr,
+    auto text_input_v1 = std::make_unique<ZwpTextInputV1Impl>(
+        connection_.get(), connection_->text_input_manager_v1());
+    text_input_v1_ = text_input_v1.get();
+    input_method_context_->SetTextInputV1ForTesting(std::move(text_input_v1));
+    input_method_context_->SetDesktopEnvironmentForTesting(
         // Ensure by default it doesn't pick the current desktop from the system
         // the tests are running on.
         base::nix::DesktopEnvironment::DESKTOP_ENVIRONMENT_OTHER);
@@ -350,11 +354,12 @@ class WaylandInputMethodContextTest : public WaylandTest {
       input_method_context_delegate_;
   std::unique_ptr<TestKeyboardDelegate> keyboard_delegate_;
   std::unique_ptr<WaylandInputMethodContext> input_method_context_;
+  raw_ptr<ZwpTextInputV1> text_input_v1_;
 
   uint32_t surface_id_ = 0u;
 };
 
-INSTANTIATE_TEST_SUITE_P(TextInput,
+INSTANTIATE_TEST_SUITE_P(TextInputV1,
                          WaylandInputMethodContextTest,
                          ::testing::Values(wl::ServerConfig{}));
 
@@ -1167,7 +1172,7 @@ class WaylandInputMethodContextNoKeyboardTest
   }
 };
 
-INSTANTIATE_TEST_SUITE_P(TextInput,
+INSTANTIATE_TEST_SUITE_P(TextInputV1,
                          WaylandInputMethodContextNoKeyboardTest,
                          ::testing::Values(wl::ServerConfig{}));
 
@@ -1254,9 +1259,9 @@ TEST_P(WaylandInputMethodContextNoKeyboardTest, UpdateFocusBetweenTextFields) {
   });
 }
 
-// For use in tests that simply test the WaylandInputMethodContext in isolation
-// without using a real v1/v3 wrapper.
-class WaylandInputMethodContextWithMockWrapperTest : public WaylandTestSimple {
+// For use in tests that test the WaylandInputMethodContext in isolation with a
+// mock V3 client.
+class WaylandInputMethodContextWithMockV3Test : public WaylandTestSimple {
  public:
   void SetUp() override {
     WaylandTestSimple::SetUp();
@@ -1266,10 +1271,10 @@ class WaylandInputMethodContextWithMockWrapperTest : public WaylandTestSimple {
     input_method_context_ = std::make_unique<WaylandInputMethodContext>(
         connection_.get(), keyboard_delegate_.get(),
         input_method_context_delegate_.get());
-    auto mock_wrapper = std::make_unique<MockZWPTextInputWrapper>();
+    auto mock_wrapper = std::make_unique<MockZwpTextInputV3>();
     mock_wrapper_ = mock_wrapper.get();
-    input_method_context_->Init(
-        true, std::move(mock_wrapper),
+    input_method_context_->SetTextInputV3ForTesting(std::move(mock_wrapper));
+    input_method_context_->SetDesktopEnvironmentForTesting(
         // Ensure by default it doesn't pick the current desktop from the system
         // the tests are running on.
         base::nix::DesktopEnvironment::DESKTOP_ENVIRONMENT_OTHER);
@@ -1280,10 +1285,10 @@ class WaylandInputMethodContextWithMockWrapperTest : public WaylandTestSimple {
       input_method_context_delegate_;
   std::unique_ptr<TestKeyboardDelegate> keyboard_delegate_;
   std::unique_ptr<WaylandInputMethodContext> input_method_context_;
-  raw_ptr<MockZWPTextInputWrapper> mock_wrapper_;
+  raw_ptr<MockZwpTextInputV3> mock_wrapper_;
 };
 
-TEST_F(WaylandInputMethodContextWithMockWrapperTest,
+TEST_F(WaylandInputMethodContextWithMockV3Test,
        SetSurroundingShortTextWithCompositionRange) {
   const std::u16string text(50, u'あ');
   constexpr gfx::Range range(20, 30);
@@ -1304,7 +1309,7 @@ TEST_F(WaylandInputMethodContextWithMockWrapperTest,
   connection_->Flush();
 }
 
-TEST_F(WaylandInputMethodContextWithMockWrapperTest,
+TEST_F(WaylandInputMethodContextWithMockV3Test,
        SetSurroundingLongTextWithCompositionRange) {
   const std::u16string text(5000, u'あ');
   constexpr gfx::Range kRange(2800, 3200);
@@ -1325,7 +1330,7 @@ TEST_F(WaylandInputMethodContextWithMockWrapperTest,
             kRange);
 }
 
-TEST_F(WaylandInputMethodContextWithMockWrapperTest,
+TEST_F(WaylandInputMethodContextWithMockV3Test,
        SetSurroundingLongTextWithCompositionRangeOutsideSurroundingTextRange) {
   const std::u16string text(5000, u'あ');
   constexpr gfx::Range kSelectionRange(2800, 3200);
@@ -1362,7 +1367,7 @@ TEST_F(WaylandInputMethodContextWithMockWrapperTest,
             kSelectionRange);
 }
 
-TEST_F(WaylandInputMethodContextWithMockWrapperTest,
+TEST_F(WaylandInputMethodContextWithMockV3Test,
        SetSurroundingWithCompositionRangeOutideText) {
   const std::u16string text(5000, u'あ');
   constexpr gfx::Range kSelectionRange(2800, 3200);
@@ -1377,7 +1382,7 @@ TEST_F(WaylandInputMethodContextWithMockWrapperTest,
             kSelectionRange);
 }
 
-TEST_F(WaylandInputMethodContextWithMockWrapperTest,
+TEST_F(WaylandInputMethodContextWithMockV3Test,
        SetSurroundingWithCompositionRangeInvalid) {
   const std::u16string text(5000, u'あ');
   constexpr gfx::Range kSelectionRange(2800, 3200);
@@ -1399,7 +1404,7 @@ TEST_F(WaylandInputMethodContextWithMockWrapperTest,
             kSelectionRange);
 }
 
-TEST_F(WaylandInputMethodContextWithMockWrapperTest, OnPreeditChanged) {
+TEST_F(WaylandInputMethodContextWithMockV3Test, OnPreeditChanged) {
   const std::u16string text(50, u'あ');
   const std::string text_utf8 = base::UTF16ToUTF8(text);
 
@@ -1419,7 +1424,7 @@ TEST_F(WaylandInputMethodContextWithMockWrapperTest, OnPreeditChanged) {
             gfx::Range(20, 10));
 }
 
-TEST_F(WaylandInputMethodContextWithMockWrapperTest,
+TEST_F(WaylandInputMethodContextWithMockV3Test,
        OnPreeditChangedInvalidCursorEnd) {
   const std::u16string text(50, u'あ');
   const std::string text_utf8 = base::UTF16ToUTF8(text);
@@ -1443,7 +1448,7 @@ TEST_F(WaylandInputMethodContextWithMockWrapperTest,
             gfx::Range(0, 0));
 }
 
-TEST_F(WaylandInputMethodContextWithMockWrapperTest,
+TEST_F(WaylandInputMethodContextWithMockV3Test,
        OnPreeditChangedGnomeWorkaround) {
   const std::u16string text(50, u'あ');
   const std::string text_utf8 = base::UTF16ToUTF8(text);
@@ -1453,9 +1458,8 @@ TEST_F(WaylandInputMethodContextWithMockWrapperTest,
   input_method_context = std::make_unique<WaylandInputMethodContext>(
       connection_.get(), keyboard_delegate_.get(),
       input_method_context_delegate_.get());
-  auto mock_wrapper = std::make_unique<MockZWPTextInputWrapper>();
-  input_method_context->Init(true, std::move(mock_wrapper),
-                             base::nix::DESKTOP_ENVIRONMENT_KDE3);
+  input_method_context->SetDesktopEnvironmentForTesting(
+      base::nix::DESKTOP_ENVIRONMENT_KDE3);
 
   input_method_context->OnPreeditString(text_utf8, {}, {60, 30});
   EXPECT_EQ(
@@ -1468,9 +1472,8 @@ TEST_F(WaylandInputMethodContextWithMockWrapperTest,
   input_method_context = std::make_unique<WaylandInputMethodContext>(
       connection_.get(), keyboard_delegate_.get(),
       input_method_context_delegate_.get());
-  mock_wrapper = std::make_unique<MockZWPTextInputWrapper>();
-  input_method_context->Init(true, std::move(mock_wrapper),
-                             base::nix::DESKTOP_ENVIRONMENT_GNOME);
+  input_method_context->SetDesktopEnvironmentForTesting(
+      base::nix::DESKTOP_ENVIRONMENT_GNOME);
   input_method_context->OnPreeditString(text_utf8, {}, {60, 30});
   EXPECT_EQ(
       input_method_context->predicted_state_for_testing().surrounding_text,

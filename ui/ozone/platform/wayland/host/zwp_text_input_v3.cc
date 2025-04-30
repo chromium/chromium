@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/ozone/platform/wayland/host/zwp_text_input_wrapper_v3.h"
+#include "ui/ozone/platform/wayland/host/zwp_text_input_v3.h"
 
 #include <string>
 #include <utility>
@@ -13,6 +13,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "ui/base/wayland/wayland_client_input_types.h"
 #include "ui/gfx/range/range.h"
+#include "ui/ozone/platform/wayland/host/span_style.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_seat.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
@@ -96,11 +97,10 @@ uint32_t InputFlagsToContentHint(int input_flags) {
 
 }  // namespace
 
-ZWPTextInputWrapperV3::ZWPTextInputWrapperV3(
+ZwpTextInputV3Impl::ZwpTextInputV3Impl(
     WaylandConnection* connection,
-    ZWPTextInputWrapperClient* client,
     zwp_text_input_manager_v3* text_input_manager)
-    : connection_(connection), client_(client) {
+    : connection_(connection) {
   static constexpr zwp_text_input_v3_listener kTextInputListener = {
       &OnEnter,
       &OnLeave,
@@ -118,9 +118,9 @@ ZWPTextInputWrapperV3::ZWPTextInputWrapperV3(
   zwp_text_input_v3_add_listener(text_input, &kTextInputListener, this);
 }
 
-ZWPTextInputWrapperV3::~ZWPTextInputWrapperV3() = default;
+ZwpTextInputV3Impl::~ZwpTextInputV3Impl() = default;
 
-void ZWPTextInputWrapperV3::Reset() {
+void ZwpTextInputV3Impl::Reset() {
   // Clear last sent values.
   ResetLastSentValues();
   // There is no explicit reset API in v3. See [1].
@@ -151,8 +151,18 @@ void ZWPTextInputWrapperV3::Reset() {
   Commit();
 }
 
-void ZWPTextInputWrapperV3::Activate(WaylandWindow* window,
-                                     TextInputClient::FocusReason reason) {
+void ZwpTextInputV3Impl::SetClient(ZwpTextInputV3Client* context) {
+  client_ = context;
+}
+
+void ZwpTextInputV3Impl::OnClientDestroyed(ZwpTextInputV3Client* context) {
+  if (client_ == context) {
+    client_ = nullptr;
+    Disable();
+  }
+}
+
+void ZwpTextInputV3Impl::Enable() {
   // Pending state is reset on enable.
   ResetPendingSetRequests();
   ResetPendingInputEvents();
@@ -160,7 +170,7 @@ void ZWPTextInputWrapperV3::Activate(WaylandWindow* window,
   Commit();
 }
 
-void ZWPTextInputWrapperV3::Deactivate() {
+void ZwpTextInputV3Impl::Disable() {
   // Avoid sending pending requests if done is received after disabling.
   ResetPendingSetRequests();
   // Do not process pending input events after deactivating.
@@ -169,33 +179,7 @@ void ZWPTextInputWrapperV3::Deactivate() {
   Commit();
 }
 
-void ZWPTextInputWrapperV3::ShowInputPanel() {
-  VLOG(1) << __func__;
-  // Unsupported in zwp_text_input_v3 yet. To be supported soon as per wayland
-  // governance meeting on 2024-07-02:
-  // https://gitlab.freedesktop.org/wayland/wayland-protocols/-/wikis/meetings
-  //
-  // Some earlier notes in
-  // https://lists.freedesktop.org/archives/wayland-devel/2018-March/037341.html
-  //
-  // Calling enable here could be problematic, as enable clears state, so for
-  // instance cursor position sent previously will be reset and the input method
-  // popup will not appear next to the cursor after this.
-  NOTIMPLEMENTED_LOG_ONCE();
-}
-
-void ZWPTextInputWrapperV3::HideInputPanel() {
-  VLOG(1) << __func__;
-  // Unsupported in zwp_text_input_v3 yet. To be supported soon as per wayland
-  // governance meeting on 2024-07-02:
-  // https://gitlab.freedesktop.org/wayland/wayland-protocols/-/wikis/meetings
-  //
-  // Some earlier notes in
-  // https://lists.freedesktop.org/archives/wayland-devel/2018-March/037341.html
-  NOTIMPLEMENTED_LOG_ONCE();
-}
-
-void ZWPTextInputWrapperV3::SetCursorRect(const gfx::Rect& rect) {
+void ZwpTextInputV3Impl::SetCursorRect(const gfx::Rect& rect) {
   if (last_sent_cursor_rect_ == rect) {
     // This is to avoid a loop in sending cursor rect and receiving pre-edit
     // string.
@@ -209,14 +193,14 @@ void ZWPTextInputWrapperV3::SetCursorRect(const gfx::Rect& rect) {
   Commit();
 }
 
-void ZWPTextInputWrapperV3::SendCursorRect(const gfx::Rect& rect) {
+void ZwpTextInputV3Impl::SendCursorRect(const gfx::Rect& rect) {
   CHECK_EQ(commit_count_, last_done_serial_);
   zwp_text_input_v3_set_cursor_rectangle(obj_.get(), rect.x(), rect.y(),
                                          rect.width(), rect.height());
   last_sent_cursor_rect_ = rect;
 }
 
-void ZWPTextInputWrapperV3::SetSurroundingText(
+void ZwpTextInputV3Impl::SetSurroundingText(
     const std::string& text_with_preedit,
     const gfx::Range& preedit_range,
     const gfx::Range& selection_range) {
@@ -264,7 +248,7 @@ void ZWPTextInputWrapperV3::SetSurroundingText(
   Commit();
 }
 
-void ZWPTextInputWrapperV3::SendSurroundingText(
+void ZwpTextInputV3Impl::SendSurroundingText(
     const SetSurroundingTextData& data) {
   CHECK_EQ(commit_count_, last_done_serial_);
   zwp_text_input_v3_set_surrounding_text(obj_.get(), data.text.c_str(),
@@ -272,14 +256,17 @@ void ZWPTextInputWrapperV3::SendSurroundingText(
   last_sent_surrounding_text_data_ = data;
 }
 
-void ZWPTextInputWrapperV3::SetContentType(ui::TextInputType type,
-                                           uint32_t flags,
-                                           bool should_do_learning) {
+void ZwpTextInputV3Impl::SetContentType(ui::TextInputType type,
+                                        uint32_t flags,
+                                        bool should_do_learning) {
   uint32_t content_hint = InputFlagsToContentHint(flags);
   if (!should_do_learning) {
     content_hint |= ZWP_TEXT_INPUT_V3_CONTENT_HINT_SENSITIVE_DATA;
   }
   uint32_t content_purpose = InputTypeToContentPurpose(type);
+  if (!should_do_learning) {
+    content_hint |= ZWP_TEXT_INPUT_V3_CONTENT_HINT_SENSITIVE_DATA;
+  }
   ContentType content_type{content_hint, content_purpose};
   if (last_sent_content_type_ == content_type) {
     return;
@@ -292,14 +279,14 @@ void ZWPTextInputWrapperV3::SetContentType(ui::TextInputType type,
   Commit();
 }
 
-void ZWPTextInputWrapperV3::SendContentType(const ContentType& content_type) {
+void ZwpTextInputV3Impl::SendContentType(const ContentType& content_type) {
   CHECK_EQ(commit_count_, last_done_serial_);
   zwp_text_input_v3_set_content_type(obj_.get(), content_type.content_hint,
                                      content_type.content_purpose);
   last_sent_content_type_ = content_type;
 }
 
-void ZWPTextInputWrapperV3::ApplyPendingSetRequests() {
+void ZwpTextInputV3Impl::ApplyPendingSetRequests() {
   bool commit = false;
   if (auto content_type = pending_set_content_type_) {
     SendContentType(*content_type);
@@ -319,67 +306,66 @@ void ZWPTextInputWrapperV3::ApplyPendingSetRequests() {
   }
 }
 
-void ZWPTextInputWrapperV3::ResetPendingSetRequests() {
+void ZwpTextInputV3Impl::ResetPendingSetRequests() {
   pending_set_cursor_rect_.reset();
   pending_set_content_type_.reset();
   pending_set_surrounding_text_.reset();
 }
 
-void ZWPTextInputWrapperV3::ResetLastSentValues() {
+void ZwpTextInputV3Impl::ResetLastSentValues() {
   last_sent_cursor_rect_.reset();
   last_sent_content_type_.reset();
   last_sent_surrounding_text_data_.reset();
 }
 
-void ZWPTextInputWrapperV3::ResetPendingInputEvents() {
+void ZwpTextInputV3Impl::ResetPendingInputEvents() {
   pending_preedit_.reset();
   pending_commit_.reset();
 }
 
-void ZWPTextInputWrapperV3::Commit() {
+void ZwpTextInputV3Impl::Commit() {
   zwp_text_input_v3_commit(obj_.get());
   // It will wrap around to 0 once it reaches uint32_t max value. It is
   // expected that this will occur on the compositor side as well.
   ++commit_count_;
 }
 
-void ZWPTextInputWrapperV3::OnEnter(void* data,
-                                    struct zwp_text_input_v3* text_input,
-                                    struct wl_surface* surface) {
+void ZwpTextInputV3Impl::OnEnter(void* data,
+                                 struct zwp_text_input_v3* text_input,
+                                 struct wl_surface* surface) {
   // Same as text-input-v1, we don't use this for text-input focus changes and
   // instead use wayland keyboard enter/leave events to activate or deactivate
   // text-input.
   NOTIMPLEMENTED_LOG_ONCE();
 }
 
-void ZWPTextInputWrapperV3::OnLeave(void* data,
-                                    struct zwp_text_input_v3* text_input,
-                                    struct wl_surface* surface) {
+void ZwpTextInputV3Impl::OnLeave(void* data,
+                                 struct zwp_text_input_v3* text_input,
+                                 struct wl_surface* surface) {
   // Same as text-input-v1, we don't use this for text-input focus changes and
   // instead use wayland keyboard enter/leave events to activate or deactivate
   // text-input.
   NOTIMPLEMENTED_LOG_ONCE();
 }
 
-void ZWPTextInputWrapperV3::OnPreeditString(
-    void* data,
-    struct zwp_text_input_v3* text_input,
-    const char* text,
-    int32_t cursor_begin,
-    int32_t cursor_end) {
-  auto* self = static_cast<ZWPTextInputWrapperV3*>(data);
+void ZwpTextInputV3Impl::OnPreeditString(void* data,
+                                         struct zwp_text_input_v3* text_input,
+                                         const char* text,
+                                         int32_t cursor_begin,
+                                         int32_t cursor_end) {
+  auto* self = static_cast<ZwpTextInputV3Impl*>(data);
   self->pending_preedit_ = {text ? text : std::string(), cursor_begin,
                             cursor_end};
 }
 
-void ZWPTextInputWrapperV3::OnCommitString(void* data,
-                                           struct zwp_text_input_v3* text_input,
-                                           const char* text) {
-  auto* self = static_cast<ZWPTextInputWrapperV3*>(data);
+void ZwpTextInputV3Impl::OnCommitString(void* data,
+                                        struct zwp_text_input_v3* text_input,
+                                        const char* text) {
+  auto* self = static_cast<ZwpTextInputV3Impl*>(data);
   self->pending_commit_ = text ? text : std::string();
 }
 
-void ZWPTextInputWrapperV3::OnDeleteSurroundingText(
+void ZwpTextInputV3Impl::OnDeleteSurroundingText(
     void* data,
     struct zwp_text_input_v3* text_input,
     uint32_t before_length,
@@ -387,11 +373,16 @@ void ZWPTextInputWrapperV3::OnDeleteSurroundingText(
   NOTIMPLEMENTED_LOG_ONCE();
 }
 
-void ZWPTextInputWrapperV3::OnDone(void* data,
-                                   struct zwp_text_input_v3* text_input,
-                                   uint32_t serial) {
+void ZwpTextInputV3Impl::OnDone(void* data,
+                                struct zwp_text_input_v3* text_input,
+                                uint32_t serial) {
   // TODO(crbug.com/40113488) apply delete surrounding
-  auto* self = static_cast<ZWPTextInputWrapperV3*>(data);
+  auto* self = static_cast<ZwpTextInputV3Impl*>(data);
+
+  if (!self->client_) {
+    self->last_done_serial_ = serial;
+    return;
+  }
 
   if (const auto& commit_string = self->pending_commit_) {
     // Replace the existing preedit with the commit string.

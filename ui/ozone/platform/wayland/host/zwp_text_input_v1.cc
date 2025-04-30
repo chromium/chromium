@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/ozone/platform/wayland/host/zwp_text_input_wrapper_v1.h"
+#include "ui/ozone/platform/wayland/host/zwp_text_input_v1.h"
 
 #include <sys/mman.h>
 
@@ -74,21 +74,28 @@ uint32_t InputTypeToContentPurpose(TextInputType input_type) {
 // Converts Chrome's TextInputType into wayland's content_hint.
 uint32_t InputFlagsToContentHint(int input_flags) {
   uint32_t hint = 0;
-  if (input_flags & TEXT_INPUT_FLAG_AUTOCOMPLETE_ON)
+  if (input_flags & TEXT_INPUT_FLAG_AUTOCOMPLETE_ON) {
     hint |= ZWP_TEXT_INPUT_V1_CONTENT_HINT_AUTO_COMPLETION;
-  if (input_flags & TEXT_INPUT_FLAG_AUTOCORRECT_ON)
+  }
+  if (input_flags & TEXT_INPUT_FLAG_AUTOCORRECT_ON) {
     hint |= ZWP_TEXT_INPUT_V1_CONTENT_HINT_AUTO_CORRECTION;
+  }
   // No good match. Fallback to AUTO_CORRECTION.
-  if (input_flags & TEXT_INPUT_FLAG_SPELLCHECK_ON)
+  if (input_flags & TEXT_INPUT_FLAG_SPELLCHECK_ON) {
     hint |= ZWP_TEXT_INPUT_V1_CONTENT_HINT_AUTO_CORRECTION;
-  if (input_flags & TEXT_INPUT_FLAG_AUTOCAPITALIZE_CHARACTERS)
+  }
+  if (input_flags & TEXT_INPUT_FLAG_AUTOCAPITALIZE_CHARACTERS) {
     hint |= ZWP_TEXT_INPUT_V1_CONTENT_HINT_UPPERCASE;
-  if (input_flags & TEXT_INPUT_FLAG_AUTOCAPITALIZE_WORDS)
+  }
+  if (input_flags & TEXT_INPUT_FLAG_AUTOCAPITALIZE_WORDS) {
     hint |= ZWP_TEXT_INPUT_V1_CONTENT_HINT_TITLECASE;
-  if (input_flags & TEXT_INPUT_FLAG_AUTOCAPITALIZE_SENTENCES)
+  }
+  if (input_flags & TEXT_INPUT_FLAG_AUTOCAPITALIZE_SENTENCES) {
     hint |= ZWP_TEXT_INPUT_V1_CONTENT_HINT_AUTO_CAPITALIZATION;
-  if (input_flags & TEXT_INPUT_FLAG_HAS_BEEN_PASSWORD)
+  }
+  if (input_flags & TEXT_INPUT_FLAG_HAS_BEEN_PASSWORD) {
     hint |= ZWP_TEXT_INPUT_V1_CONTENT_HINT_PASSWORD;
+  }
   return hint;
 }
 
@@ -106,8 +113,7 @@ std::vector<std::string> ParseModifiersMap(wl_array* array) {
 
 // Returns ImeTextSpan style to be assigned. Maybe nullopt if it is not
 // supported.
-std::optional<ZWPTextInputWrapperClient::SpanStyle::Style> ConvertStyle(
-    uint32_t style) {
+std::optional<SpanStyle::Style> ConvertStyle(uint32_t style) {
   switch (style) {
     case ZWP_TEXT_INPUT_V1_PREEDIT_STYLE_DEFAULT:
       return {{ImeTextSpan::Type::kComposition, ImeTextSpan::Thickness::kNone}};
@@ -132,11 +138,10 @@ std::optional<ZWPTextInputWrapperClient::SpanStyle::Style> ConvertStyle(
 
 }  // namespace
 
-ZWPTextInputWrapperV1::ZWPTextInputWrapperV1(
+ZwpTextInputV1Impl::ZwpTextInputV1Impl(
     WaylandConnection* connection,
-    ZWPTextInputWrapperClient* client,
     zwp_text_input_manager_v1* text_input_manager)
-    : connection_(connection), client_(client) {
+    : connection_(connection) {
   static constexpr zwp_text_input_v1_listener kTextInputListener = {
       .enter = &OnEnter,
       .leave = &OnLeave,
@@ -159,103 +164,108 @@ ZWPTextInputWrapperV1::ZWPTextInputWrapperV1(
   zwp_text_input_v1_add_listener(obj_.get(), &kTextInputListener, this);
 }
 
-ZWPTextInputWrapperV1::~ZWPTextInputWrapperV1() = default;
+ZwpTextInputV1Impl::~ZwpTextInputV1Impl() = default;
 
-void ZWPTextInputWrapperV1::Reset() {
+void ZwpTextInputV1Impl::Reset() {
   ResetInputEventState();
   zwp_text_input_v1_reset(obj_.get());
 }
 
-void ZWPTextInputWrapperV1::Activate(WaylandWindow* window,
-                                     TextInputClient::FocusReason reason) {
+void ZwpTextInputV1Impl::Activate(WaylandWindow* window) {
   DCHECK(connection_->seat());
   zwp_text_input_v1_activate(obj_.get(), connection_->seat()->wl_object(),
                              window->root_surface()->surface());
 }
 
-void ZWPTextInputWrapperV1::Deactivate() {
+void ZwpTextInputV1Impl::SetClient(ZwpTextInputV1Client* context) {
+  client_ = context;
+}
+
+void ZwpTextInputV1Impl::OnClientDestroyed(ZwpTextInputV1Client* context) {
+  if (client_ == context) {
+    client_ = nullptr;
+    Deactivate();
+  }
+}
+
+void ZwpTextInputV1Impl::Deactivate() {
   DCHECK(connection_->seat());
 
   zwp_text_input_v1_deactivate(obj_.get(), connection_->seat()->wl_object());
 }
 
-void ZWPTextInputWrapperV1::ShowInputPanel() {
+void ZwpTextInputV1Impl::ShowInputPanel() {
   zwp_text_input_v1_show_input_panel(obj_.get());
 }
 
-void ZWPTextInputWrapperV1::HideInputPanel() {
+void ZwpTextInputV1Impl::HideInputPanel() {
   zwp_text_input_v1_hide_input_panel(obj_.get());
 }
 
-void ZWPTextInputWrapperV1::SetCursorRect(const gfx::Rect& rect) {
+void ZwpTextInputV1Impl::SetCursorRect(const gfx::Rect& rect) {
   zwp_text_input_v1_set_cursor_rectangle(obj_.get(), rect.x(), rect.y(),
                                          rect.width(), rect.height());
 }
 
-void ZWPTextInputWrapperV1::SetSurroundingText(
-    const std::string& text,
-    const gfx::Range& preedit_range,
-    const gfx::Range& selection_range) {
+void ZwpTextInputV1Impl::SetSurroundingText(const std::string& text,
+                                            const gfx::Range& preedit_range,
+                                            const gfx::Range& selection_range) {
   zwp_text_input_v1_set_surrounding_text(
       obj_.get(), text.c_str(), selection_range.start(), selection_range.end());
 }
 
-void ZWPTextInputWrapperV1::SetContentType(ui::TextInputType type,
-                                           uint32_t flags,
-                                           bool should_do_learning) {
-  // If wayland compositor supports the extended version of set input type,
-  // use it to avoid losing the info.
-  // Otherwise, fallback to the standard set_content_type.
+void ZwpTextInputV1Impl::SetContentType(ui::TextInputType type,
+                                        uint32_t flags,
+                                        bool should_do_learning) {
   uint32_t content_purpose = InputTypeToContentPurpose(type);
   uint32_t content_hint = InputFlagsToContentHint(flags);
-  if (!should_do_learning)
+  if (!should_do_learning) {
     content_hint |= ZWP_TEXT_INPUT_V1_CONTENT_HINT_SENSITIVE_DATA;
+  }
   zwp_text_input_v1_set_content_type(obj_.get(), content_hint, content_purpose);
 }
 
-void ZWPTextInputWrapperV1::ResetInputEventState() {
+void ZwpTextInputV1Impl::ResetInputEventState() {
   spans_.clear();
   preedit_cursor_ = -1;
 }
 
 // static
-void ZWPTextInputWrapperV1::OnEnter(void* data,
-                                    struct zwp_text_input_v1* text_input,
-                                    struct wl_surface* surface) {
+void ZwpTextInputV1Impl::OnEnter(void* data,
+                                 struct zwp_text_input_v1* text_input,
+                                 struct wl_surface* surface) {
   NOTIMPLEMENTED_LOG_ONCE();
 }
 
 // static
-void ZWPTextInputWrapperV1::OnLeave(void* data,
-                                    struct zwp_text_input_v1* text_input) {
+void ZwpTextInputV1Impl::OnLeave(void* data,
+                                 struct zwp_text_input_v1* text_input) {
   NOTIMPLEMENTED_LOG_ONCE();
 }
 
 // static
-void ZWPTextInputWrapperV1::OnModifiersMap(void* data,
-                                           struct zwp_text_input_v1* text_input,
-                                           struct wl_array* map) {
-  auto* self = static_cast<ZWPTextInputWrapperV1*>(data);
+void ZwpTextInputV1Impl::OnModifiersMap(void* data,
+                                        struct zwp_text_input_v1* text_input,
+                                        struct wl_array* map) {
+  auto* self = static_cast<ZwpTextInputV1Impl*>(data);
   self->client_->OnModifiersMap(ParseModifiersMap(map));
 }
 
 // static
-void ZWPTextInputWrapperV1::OnInputPanelState(
-    void* data,
-    struct zwp_text_input_v1* text_input,
-    uint32_t state) {
-  auto* self = static_cast<ZWPTextInputWrapperV1*>(data);
+void ZwpTextInputV1Impl::OnInputPanelState(void* data,
+                                           struct zwp_text_input_v1* text_input,
+                                           uint32_t state) {
+  auto* self = static_cast<ZwpTextInputV1Impl*>(data);
   self->client_->OnInputPanelState(state);
 }
 
 // static
-void ZWPTextInputWrapperV1::OnPreeditString(
-    void* data,
-    struct zwp_text_input_v1* text_input,
-    uint32_t serial,
-    const char* text,
-    const char* commit) {
-  auto* self = static_cast<ZWPTextInputWrapperV1*>(data);
+void ZwpTextInputV1Impl::OnPreeditString(void* data,
+                                         struct zwp_text_input_v1* text_input,
+                                         uint32_t serial,
+                                         const char* text,
+                                         const char* commit) {
+  auto* self = static_cast<ZwpTextInputV1Impl*>(data);
   auto spans = std::move(self->spans_);
   int32_t preedit_cursor = self->preedit_cursor_;
   self->ResetInputEventState();
@@ -266,82 +276,77 @@ void ZWPTextInputWrapperV1::OnPreeditString(
 }
 
 // static
-void ZWPTextInputWrapperV1::OnPreeditStyling(
-    void* data,
-    struct zwp_text_input_v1* text_input,
-    uint32_t index,
-    uint32_t length,
-    uint32_t style) {
-  auto* self = static_cast<ZWPTextInputWrapperV1*>(data);
-  self->spans_.push_back(
-      ZWPTextInputWrapperClient::SpanStyle{index, length, ConvertStyle(style)});
+void ZwpTextInputV1Impl::OnPreeditStyling(void* data,
+                                          struct zwp_text_input_v1* text_input,
+                                          uint32_t index,
+                                          uint32_t length,
+                                          uint32_t style) {
+  auto* self = static_cast<ZwpTextInputV1Impl*>(data);
+  self->spans_.push_back(SpanStyle{index, length, ConvertStyle(style)});
 }
 
 // static
-void ZWPTextInputWrapperV1::OnPreeditCursor(
-    void* data,
-    struct zwp_text_input_v1* text_input,
-    int32_t index) {
-  auto* self = static_cast<ZWPTextInputWrapperV1*>(data);
+void ZwpTextInputV1Impl::OnPreeditCursor(void* data,
+                                         struct zwp_text_input_v1* text_input,
+                                         int32_t index) {
+  auto* self = static_cast<ZwpTextInputV1Impl*>(data);
   self->preedit_cursor_ = index;
 }
 
 // static
-void ZWPTextInputWrapperV1::OnCommitString(void* data,
-                                           struct zwp_text_input_v1* text_input,
-                                           uint32_t serial,
-                                           const char* text) {
-  auto* self = static_cast<ZWPTextInputWrapperV1*>(data);
+void ZwpTextInputV1Impl::OnCommitString(void* data,
+                                        struct zwp_text_input_v1* text_input,
+                                        uint32_t serial,
+                                        const char* text) {
+  auto* self = static_cast<ZwpTextInputV1Impl*>(data);
   self->ResetInputEventState();
   self->client_->OnCommitString(text);
 }
 
 // static
-void ZWPTextInputWrapperV1::OnCursorPosition(
-    void* data,
-    struct zwp_text_input_v1* text_input,
-    int32_t index,
-    int32_t anchor) {
-  auto* self = static_cast<ZWPTextInputWrapperV1*>(data);
+void ZwpTextInputV1Impl::OnCursorPosition(void* data,
+                                          struct zwp_text_input_v1* text_input,
+                                          int32_t index,
+                                          int32_t anchor) {
+  auto* self = static_cast<ZwpTextInputV1Impl*>(data);
   self->client_->OnCursorPosition(index, anchor);
 }
 
 // static
-void ZWPTextInputWrapperV1::OnDeleteSurroundingText(
+void ZwpTextInputV1Impl::OnDeleteSurroundingText(
     void* data,
     struct zwp_text_input_v1* text_input,
     int32_t index,
     uint32_t length) {
-  auto* self = static_cast<ZWPTextInputWrapperV1*>(data);
+  auto* self = static_cast<ZwpTextInputV1Impl*>(data);
   self->client_->OnDeleteSurroundingText(index, length);
 }
 
 // static
-void ZWPTextInputWrapperV1::OnKeysym(void* data,
-                                     struct zwp_text_input_v1* text_input,
-                                     uint32_t serial,
-                                     uint32_t time,
-                                     uint32_t key,
-                                     uint32_t state,
-                                     uint32_t modifiers) {
-  auto* self = static_cast<ZWPTextInputWrapperV1*>(data);
+void ZwpTextInputV1Impl::OnKeysym(void* data,
+                                  struct zwp_text_input_v1* text_input,
+                                  uint32_t serial,
+                                  uint32_t time,
+                                  uint32_t key,
+                                  uint32_t state,
+                                  uint32_t modifiers) {
+  auto* self = static_cast<ZwpTextInputV1Impl*>(data);
   self->client_->OnKeysym(key, state, modifiers, time);
 }
 
 // static
-void ZWPTextInputWrapperV1::OnLanguage(void* data,
-                                       struct zwp_text_input_v1* text_input,
-                                       uint32_t serial,
-                                       const char* language) {
+void ZwpTextInputV1Impl::OnLanguage(void* data,
+                                    struct zwp_text_input_v1* text_input,
+                                    uint32_t serial,
+                                    const char* language) {
   NOTIMPLEMENTED_LOG_ONCE();
 }
 
 // static
-void ZWPTextInputWrapperV1::OnTextDirection(
-    void* data,
-    struct zwp_text_input_v1* text_input,
-    uint32_t serial,
-    uint32_t direction) {
+void ZwpTextInputV1Impl::OnTextDirection(void* data,
+                                         struct zwp_text_input_v1* text_input,
+                                         uint32_t serial,
+                                         uint32_t direction) {
   NOTIMPLEMENTED_LOG_ONCE();
 }
 

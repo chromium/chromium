@@ -36,11 +36,10 @@
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/range/range.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
+#include "ui/ozone/platform/wayland/host/span_style.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_seat.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
-#include "ui/ozone/platform/wayland/host/zwp_text_input_wrapper_v1.h"
-#include "ui/ozone/platform/wayland/host/zwp_text_input_wrapper_v3.h"
 #include "ui/ozone/public/ozone_switches.h"
 
 #if BUILDFLAG(USE_XKBCOMMON)
@@ -177,6 +176,67 @@ std::optional<OffsetText> TrimSurroundingTextForStandard(
                     truncated_range.start()};
 }
 
+class WaylandInputMethodContextV1Client : public ZwpTextInputV1Client {
+ public:
+  explicit WaylandInputMethodContextV1Client(WaylandInputMethodContext* context)
+      : context_(context) {}
+
+  void OnPreeditString(std::string_view text,
+                       const std::vector<SpanStyle>& spans,
+                       const gfx::Range& preedit_cursor) override {
+    context_->OnPreeditString(text, spans, preedit_cursor);
+  }
+
+  void OnCommitString(std::string_view text) override {
+    context_->OnCommitString(text);
+  }
+
+  void OnCursorPosition(int32_t index, int32_t anchor) override {
+    context_->OnCursorPosition(index, anchor);
+  }
+
+  void OnDeleteSurroundingText(int32_t index, uint32_t length) override {
+    context_->OnDeleteSurroundingText(index, length);
+  }
+
+  void OnKeysym(uint32_t key,
+                uint32_t state,
+                uint32_t modifiers,
+                uint32_t time) override {
+    context_->OnKeysym(key, state, modifiers, time);
+  }
+
+  void OnInputPanelState(uint32_t state) override {
+    context_->OnInputPanelState(state);
+  }
+
+  void OnModifiersMap(std::vector<std::string> map) override {
+    context_->OnModifiersMap(std::move(map));
+  }
+
+ private:
+  raw_ptr<WaylandInputMethodContext> context_;
+};
+
+class WaylandInputmethodContextV3Client : public ZwpTextInputV3Client {
+ public:
+  explicit WaylandInputmethodContextV3Client(WaylandInputMethodContext* context)
+      : context_(context) {}
+
+  void OnPreeditString(std::string_view text,
+                       const std::vector<SpanStyle>& spans,
+                       const gfx::Range& preedit_cursor) override {
+    context_->OnPreeditString(text, spans, preedit_cursor);
+  }
+
+  void OnCommitString(std::string_view text) override {
+    context_->OnCommitString(text);
+  }
+
+ private:
+  raw_ptr<WaylandInputMethodContext> context_;
+};
+
 }  // namespace
 
 WaylandInputMethodContext::WaylandInputMethodContext(
@@ -186,21 +246,23 @@ WaylandInputMethodContext::WaylandInputMethodContext(
     : connection_(connection),
       key_delegate_(key_delegate),
       ime_delegate_(ime_delegate),
-      text_input_(nullptr),
+      text_input_v1_(nullptr),
       character_composer_(kPreeditStringMode) {
   connection_->window_manager()->AddObserver(this);
   Init();
 }
 
 WaylandInputMethodContext::~WaylandInputMethodContext() {
-  if (text_input_) {
+  if (text_input_v3_) {
+    text_input_v3_->OnClientDestroyed(text_input_v3_client_.get());
+  } else if (text_input_v1_) {
     DismissVirtualKeyboard();
-    text_input_->Deactivate();
+    text_input_v1_->OnClientDestroyed(text_input_v1_client_.get());
   }
   connection_->window_manager()->RemoveObserver(this);
 }
 
-void WaylandInputMethodContext::CreateTextInputWrapper() {
+void WaylandInputMethodContext::CreateTextInput() {
   // Can be specified as value for --wayland-ime-version to use text-input-v1 or
   // text-input-v3.
   constexpr char kWaylandTextInputVersion1[] = "1";
@@ -213,49 +275,70 @@ void WaylandInputMethodContext::CreateTextInputWrapper() {
       cmd_line->HasSwitch(switches::kEnableWaylandIme) &&
       !version_from_cmd_line.empty();
 
-  if (base::FeatureList::IsEnabled(features::kWaylandTextInputV3) ||
-      (enable_using_cmd_line_version &&
-       version_from_cmd_line == kWaylandTextInputVersion3)) {
-    if (connection_->text_input_manager_v3()) {
-      text_input_ = std::make_unique<ZWPTextInputWrapperV3>(
-          connection_, this, connection_->text_input_manager_v3());
-    } else {
-      LOG(WARNING) << "text-input-v3 not available.";
+  if (enable_using_cmd_line_version &&
+      version_from_cmd_line == kWaylandTextInputVersion1) {
+    if (!connection_->text_input_manager_v1()) {
+      LOG(WARNING) << "text-input-v1 is not supported by the compositor.";
+      return;
     }
-    return;
-  } else if (enable_using_cmd_line_version &&
-             version_from_cmd_line != kWaylandTextInputVersion1) {
-    LOG(WARNING) << "text input version should be either 1 or 3. Defaulting to "
-                    "text-input-v1.";
-  }
-  if (connection_->text_input_manager_v1()) {
-    text_input_ = std::make_unique<ZWPTextInputWrapperV1>(
-        connection_, this, connection_->text_input_manager_v1());
-  } else {
-    LOG(WARNING) << "text-input-v1 not available.";
+    text_input_v1_ = std::make_unique<ZwpTextInputV1Impl>(
+        connection_, connection_->text_input_manager_v1());
+    text_input_v1_client_ =
+        std::make_unique<WaylandInputMethodContextV1Client>(this);
+  } else if (base::FeatureList::IsEnabled(features::kWaylandTextInputV3) ||
+             enable_using_cmd_line_version) {
+    if (!version_from_cmd_line.empty() &&
+        version_from_cmd_line != kWaylandTextInputVersion3) {
+      LOG(WARNING) << "--wayland-text-input-version should have a value of "
+                      "either 1 or 3 and "
+                      "--enable-wayland-ime should be present. Defaulting to "
+                      "text-input-v3.";
+    }
+    if (!connection_->text_input_manager_v3()) {
+      LOG(WARNING) << "text-input-v3 is not supported by the compositor.";
+      return;
+    }
+    text_input_v3_ = std::make_unique<ZwpTextInputV3Impl>(
+        connection_, connection_->text_input_manager_v3());
+    text_input_v3_client_ =
+        std::make_unique<WaylandInputmethodContextV3Client>(this);
   }
 }
 
-void WaylandInputMethodContext::Init(
-    bool initialize_for_testing,
-    std::unique_ptr<ZWPTextInputWrapper> wrapper_for_testing,
-    std::optional<base::nix::DesktopEnvironment> desktop_for_testing) {
-  desktop_environment_ = desktop_for_testing.value_or(
-      base::nix::GetDesktopEnvironment(base::Environment::Create().get()));
-  if (wrapper_for_testing) {
-    text_input_ = std::move(wrapper_for_testing);
-    return;
-  }
-
-  bool use_ozone_wayland_vkb = initialize_for_testing || IsImeEnabled();
+void WaylandInputMethodContext::Init() {
+  bool use_ozone_wayland_ime = IsImeEnabled();
   // If text input instance is not created then all ime context operations
   // are noop. This option is because in some environments someone might not
   // want to enable ime/virtual keyboard even if it's available.
-  if (!use_ozone_wayland_vkb || text_input_) {
+  if (!use_ozone_wayland_ime || text_input_v3_ || text_input_v1_) {
     return;
   }
 
-  CreateTextInputWrapper();
+  CreateTextInput();
+  CHECK(!(text_input_v3_ && text_input_v1_))
+      << "Both text-input-v1 and text-input-v3 used at the same time.";
+}
+
+void WaylandInputMethodContext::SetTextInputV1ForTesting(
+    std::unique_ptr<ZwpTextInputV1> text_input_v1) {
+  text_input_v1_ = std::move(text_input_v1);
+  if (!text_input_v1_client_) {
+    text_input_v1_client_ =
+        std::make_unique<WaylandInputMethodContextV1Client>(this);
+  }
+  text_input_v1_->SetClient(text_input_v1_client_.get());
+  text_input_v3_ = nullptr;
+}
+
+void WaylandInputMethodContext::SetTextInputV3ForTesting(
+    std::unique_ptr<ZwpTextInputV3> text_input_v3) {
+  text_input_v3_ = std::move(text_input_v3);
+  if (!text_input_v3_client_) {
+    text_input_v3_client_ =
+        std::make_unique<WaylandInputmethodContextV3Client>(this);
+  }
+  text_input_v3_->SetClient(text_input_v3_client_.get());
+  text_input_v1_ = nullptr;
 }
 
 bool WaylandInputMethodContext::DispatchKeyEvent(const KeyEvent& key_event) {
@@ -308,8 +391,11 @@ void WaylandInputMethodContext::Reset() {
   // intentions. Introduce a dedicated extended Wayland API for resetting only
   // the composition.
   surrounding_text_tracker_.CancelComposition();
-  if (text_input_)
-    text_input_->Reset();
+  if (text_input_v3_) {
+    text_input_v3_->Reset();
+  } else if (text_input_v1_) {
+    text_input_v1_->Reset();
+  }
 }
 
 void WaylandInputMethodContext::WillUpdateFocus(TextInputClient* old_client,
@@ -334,23 +420,21 @@ void WaylandInputMethodContext::UpdateFocus(
   if (old_type != TEXT_INPUT_TYPE_NONE)
     Blur(skip_vk_update);
   if (new_type != TEXT_INPUT_TYPE_NONE)
-    Focus(skip_vk_update, reason);
+    Focus(skip_vk_update);
 }
 
-void WaylandInputMethodContext::Focus(bool skip_virtual_keyboard_update,
-                                      TextInputClient::FocusReason reason) {
+void WaylandInputMethodContext::Focus(bool skip_virtual_keyboard_update) {
   focused_ = true;
-  MaybeUpdateActivated(skip_virtual_keyboard_update, reason);
+  MaybeUpdateActivated(skip_virtual_keyboard_update);
 }
 
 void WaylandInputMethodContext::Blur(bool skip_virtual_keyboard_update) {
   focused_ = false;
-  MaybeUpdateActivated(skip_virtual_keyboard_update,
-                       TextInputClient::FOCUS_REASON_NONE);
+  MaybeUpdateActivated(skip_virtual_keyboard_update);
 }
 
 void WaylandInputMethodContext::SetCursorLocation(const gfx::Rect& rect) {
-  if (!text_input_) {
+  if (!text_input_v3_ && !text_input_v1_) {
     return;
   }
   WaylandWindow* focused_window =
@@ -358,8 +442,13 @@ void WaylandInputMethodContext::SetCursorLocation(const gfx::Rect& rect) {
   if (!focused_window) {
     return;
   }
-  text_input_->SetCursorRect(
-      rect - focused_window->GetBoundsInDIP().OffsetFromOrigin());
+  if (text_input_v3_) {
+    text_input_v3_->SetCursorRect(
+        rect - focused_window->GetBoundsInDIP().OffsetFromOrigin());
+  } else {
+    text_input_v1_->SetCursorRect(
+        rect - focused_window->GetBoundsInDIP().OffsetFromOrigin());
+  }
 }
 
 void WaylandInputMethodContext::SetSurroundingText(
@@ -387,8 +476,9 @@ void WaylandInputMethodContext::SetSurroundingText(
   size_t utf16_offset = text_range.GetMin();
   surrounding_text_tracker_.Update(text, utf16_offset, selection_range);
 
-  if (!text_input_)
+  if (!text_input_v3_ && !text_input_v1_) {
     return;
+  }
 
   // Convert into UTF8 unit.
   std::vector<size_t> offsets_for_adjustment = {
@@ -451,30 +541,44 @@ void WaylandInputMethodContext::SetSurroundingText(
   gfx::Range relocated_selection_range(
       selection_range_utf8.start() - surrounding_text_offset_,
       selection_range_utf8.end() - surrounding_text_offset_);
-  text_input_->SetSurroundingText(text_utf8, relocated_preedit_range,
-                                  relocated_selection_range);
+  if (text_input_v3_) {
+    text_input_v3_->SetSurroundingText(text_utf8, relocated_preedit_range,
+                                       relocated_selection_range);
+  } else {
+    text_input_v1_->SetSurroundingText(text_utf8, relocated_preedit_range,
+                                       relocated_selection_range);
+  }
 }
 
 VirtualKeyboardController*
 WaylandInputMethodContext::GetVirtualKeyboardController() {
-  if (!text_input_)
+  if (!text_input_v3_ && !text_input_v1_) {
     return nullptr;
+  }
   return this;
 }
 
 bool WaylandInputMethodContext::DisplayVirtualKeyboard() {
-  if (!text_input_)
+  if (!text_input_v3_ && !text_input_v1_) {
     return false;
+  }
 
-  text_input_->ShowInputPanel();
+  // Text-input-v3 does not support input panel show/hide yet.
+  if (text_input_v1_) {
+    text_input_v1_->ShowInputPanel();
+  }
   return true;
 }
 
 void WaylandInputMethodContext::DismissVirtualKeyboard() {
-  if (!text_input_)
+  if (!text_input_v3_ && !text_input_v1_) {
     return;
+  }
 
-  text_input_->HideInputPanel();
+  // Text-input-v3 does not support input panel show/hide yet.
+  if (text_input_v1_) {
+    text_input_v1_->HideInputPanel();
+  }
 }
 
 void WaylandInputMethodContext::AddObserver(
@@ -715,39 +819,57 @@ void WaylandInputMethodContext::OnModifiersMap(
 }
 
 void WaylandInputMethodContext::OnKeyboardFocusedWindowChanged() {
-  MaybeUpdateActivated(false, TextInputClient::FOCUS_REASON_OTHER);
+  if (text_input_v3_) {
+    // For text-input-v3, zwp_text_input_l3::{enter,leave} is used instead.
+    return;
+  }
+  MaybeUpdateActivated(false);
 }
 
 void WaylandInputMethodContext::MaybeUpdateActivated(
-    bool skip_virtual_keyboard_update,
-    TextInputClient::FocusReason reason) {
-  if (!text_input_)
+    bool skip_virtual_keyboard_update) {
+  if (!text_input_v3_ && !text_input_v1_) {
     return;
+  }
 
-  WaylandWindow* window =
+  WaylandWindow* focused_window =
       connection_->window_manager()->GetCurrentKeyboardFocusedWindow();
-  if (!window && !connection_->seat()->keyboard())
-    window = connection_->window_manager()->GetCurrentActiveWindow();
-  // Activate Wayland IME only if 1) InputMethod in Chrome has some
-  // TextInputClient connected, and 2) the actual keyboard focus of Wayland
-  // is given to Chrome, which is notified via wl_keyboard::enter.
-  // If no keyboard is connected, the current active window is used for 2)
-  // instead (https://crbug.com/1168411).
-  bool activated = focused_ && window;
+  if (!focused_window && !connection_->seat()->keyboard()) {
+    // If no keyboard is connected, the current active window is used.
+    focused_window = connection_->window_manager()->GetCurrentActiveWindow();
+  }
+  // Activate Wayland IME only if the following conditions are met:
+  // 1) InputMethod has some TextInputClient connected.
+  // 2) There is a focused Chromium window.
+  // 3) The focused window matches the window containing this
+  // WaylandInputMethodContext.
+  bool activated = focused_ && focused_window;
   if (activated_ == activated)
     return;
 
   activated_ = activated;
   if (activated) {
-    text_input_->Activate(window, reason);
-    text_input_->SetContentType(attributes_.input_type, attributes_.flags,
-                                attributes_.should_do_learning);
+    if (text_input_v3_) {
+      text_input_v3_->SetClient(text_input_v3_client_.get());
+      text_input_v3_->Enable();
+      text_input_v3_->SetContentType(attributes_.input_type, attributes_.flags,
+                                     attributes_.should_do_learning);
+    } else {
+      text_input_v1_->SetClient(text_input_v1_client_.get());
+      text_input_v1_->Activate(focused_window);
+      text_input_v1_->SetContentType(attributes_.input_type, attributes_.flags,
+                                     attributes_.should_do_learning);
+    }
     if (!skip_virtual_keyboard_update)
       DisplayVirtualKeyboard();
   } else {
     if (!skip_virtual_keyboard_update)
       DismissVirtualKeyboard();
-    text_input_->Deactivate();
+    if (text_input_v3_) {
+      text_input_v3_->Disable();
+    } else {
+      text_input_v1_->Deactivate();
+    }
   }
 }
 

@@ -17,7 +17,6 @@
 #include "base/threading/thread.h"
 #include "base/threading/thread_checker.h"
 #include "ui/display/types/display_constants.h"
-#include "ui/ozone/platform/wayland/host/zwp_text_input_wrapper.h"
 #include "ui/ozone/platform/wayland/test/global_object.h"
 #include "ui/ozone/platform/wayland/test/mock_wayland_zcr_color_manager.h"
 #include "ui/ozone/platform/wayland/test/mock_wp_presentation.h"
@@ -56,11 +55,10 @@ enum class PrimarySelectionProtocol { kNone, kGtk, kZwp };
 enum class ShouldUseExplicitSynchronizationProtocol { kNone, kUse };
 enum class ShouldUseLinuxDrmSyncobjProtocol { kNone, kUse };
 // Text input protocol type.
-enum class ZWPTextInputWrapperType { kV1, kV3 };
+enum class ZwpTextInputType { kV1, kV3 };
 
 struct ServerConfig {
-  ZWPTextInputWrapperType text_input_wrapper_type =
-      ZWPTextInputWrapperType::kV1;
+  ZwpTextInputType text_input_type = ZwpTextInputType::kV1;
   TestCompositor::Version compositor_version = TestCompositor::Version::kV4;
   PrimarySelectionProtocol primary_selection_protocol =
       PrimarySelectionProtocol::kNone;

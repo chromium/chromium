@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/ozone/platform/wayland/host/zwp_text_input_wrapper_v3.h"
+#include "ui/ozone/platform/wayland/host/zwp_text_input_v3.h"
 
 #include <text-input-unstable-v3-client-protocol.h>
 #include <text-input-unstable-v3-server-protocol.h>
@@ -14,9 +14,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ime/text_input_flags.h"
 #include "ui/gfx/range/range.h"
+#include "ui/ozone/platform/wayland/host/span_style.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/test/mock_zwp_text_input.h"
-#include "ui/ozone/platform/wayland/test/mock_zwp_text_input_wrapper_client.h"
+#include "ui/ozone/platform/wayland/test/mock_zwp_text_input_v3_client.h"
 #include "ui/ozone/platform/wayland/test/test_wayland_server_thread.h"
 #include "ui/ozone/platform/wayland/test/wayland_test.h"
 
@@ -26,17 +27,17 @@ using ::testing::Mock;
 
 namespace ui {
 
-class ZWPTextInputWrapperV3Test : public WaylandTestSimple {
+class ZwpTextInputV3Test : public WaylandTestSimple {
  public:
-  ZWPTextInputWrapperV3Test()
-      : WaylandTestSimple(
-            {.text_input_wrapper_type = wl::ZWPTextInputWrapperType::kV3}) {}
+  ZwpTextInputV3Test()
+      : WaylandTestSimple({.text_input_type = wl::ZwpTextInputType::kV3}) {}
 
   void SetUp() override {
     WaylandTestSimple::SetUp();
 
-    wrapper_ = std::make_unique<ZWPTextInputWrapperV3>(
-        connection_.get(), &test_client_, connection_->text_input_manager_v3());
+    text_input_v3_ = std::make_unique<ZwpTextInputV3Impl>(
+        connection_.get(), connection_->text_input_manager_v3());
+    text_input_v3_->SetClient(&test_client_);
   }
 
  protected:
@@ -44,11 +45,11 @@ class ZWPTextInputWrapperV3Test : public WaylandTestSimple {
     Mock::VerifyAndClearExpectations(&test_client_);
   }
 
-  MockZWPTextInputWrapperClient test_client_;
-  std::unique_ptr<ZWPTextInputWrapperV3> wrapper_;
+  MockZwpTextInputV3Client test_client_;
+  std::unique_ptr<ZwpTextInputV3> text_input_v3_;
 };
 
-TEST_F(ZWPTextInputWrapperV3Test, Activate) {
+TEST_F(ZwpTextInputV3Test, Enable) {
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
     InSequence s;
     EXPECT_CALL(*server->text_input_manager_v3()->text_input(), Enable())
@@ -56,10 +57,10 @@ TEST_F(ZWPTextInputWrapperV3Test, Activate) {
     EXPECT_CALL(*server->text_input_manager_v3()->text_input(), Commit())
         .Times(1);
   });
-  wrapper_->Activate(window_.get(), ui::TextInputClient::FOCUS_REASON_NONE);
+  text_input_v3_->Enable();
 }
 
-TEST_F(ZWPTextInputWrapperV3Test, Deactivate) {
+TEST_F(ZwpTextInputV3Test, Disable) {
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
     InSequence s;
     EXPECT_CALL(*server->text_input_manager_v3()->text_input(), Disable())
@@ -67,10 +68,10 @@ TEST_F(ZWPTextInputWrapperV3Test, Deactivate) {
     EXPECT_CALL(*server->text_input_manager_v3()->text_input(), Commit())
         .Times(1);
   });
-  wrapper_->Deactivate();
+  text_input_v3_->Disable();
 }
 
-TEST_F(ZWPTextInputWrapperV3Test, Reset) {
+TEST_F(ZwpTextInputV3Test, Reset) {
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
     InSequence s;
     EXPECT_CALL(*server->text_input_manager_v3()->text_input(), Disable())
@@ -82,34 +83,10 @@ TEST_F(ZWPTextInputWrapperV3Test, Reset) {
     EXPECT_CALL(*server->text_input_manager_v3()->text_input(), Commit())
         .Times(1);
   });
-  wrapper_->Reset();
+  text_input_v3_->Reset();
 }
 
-TEST_F(ZWPTextInputWrapperV3Test, ShowInputPanel) {
-  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
-    EXPECT_CALL(*server->text_input_manager_v3()->text_input(), Enable())
-        .Times(0);
-    EXPECT_CALL(*server->text_input_manager_v3()->text_input(), Disable())
-        .Times(0);
-    EXPECT_CALL(*server->text_input_manager_v3()->text_input(), Commit())
-        .Times(0);
-  });
-  wrapper_->ShowInputPanel();
-}
-
-TEST_F(ZWPTextInputWrapperV3Test, HideInputPanel) {
-  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
-    EXPECT_CALL(*server->text_input_manager_v3()->text_input(), Enable())
-        .Times(0);
-    EXPECT_CALL(*server->text_input_manager_v3()->text_input(), Disable())
-        .Times(0);
-    EXPECT_CALL(*server->text_input_manager_v3()->text_input(), Commit())
-        .Times(0);
-  });
-  wrapper_->HideInputPanel();
-}
-
-TEST_F(ZWPTextInputWrapperV3Test, SetContentType) {
+TEST_F(ZwpTextInputV3Test, SetContentType) {
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
     InSequence s;
     auto* zwp_text_input = server->text_input_manager_v3()->text_input();
@@ -121,8 +98,8 @@ TEST_F(ZWPTextInputWrapperV3Test, SetContentType) {
         .Times(1);
     EXPECT_CALL(*zwp_text_input, Commit()).Times(1);
   });
-  wrapper_->SetContentType(TEXT_INPUT_TYPE_EMAIL,
-                           TEXT_INPUT_FLAG_AUTOCORRECT_ON, false);
+  text_input_v3_->SetContentType(TEXT_INPUT_TYPE_EMAIL,
+                                 TEXT_INPUT_FLAG_AUTOCORRECT_ON, false);
   VerifyAndClearExpectations();
 
   // Calling again with the same values should be a no-op.
@@ -133,8 +110,8 @@ TEST_F(ZWPTextInputWrapperV3Test, SetContentType) {
     // Commit has been called once. So send done serial matching commit.
     zwp_text_input_v3_send_done(zwp_text_input->resource(), 1);
   });
-  wrapper_->SetContentType(TEXT_INPUT_TYPE_EMAIL,
-                           TEXT_INPUT_FLAG_AUTOCORRECT_ON, false);
+  text_input_v3_->SetContentType(TEXT_INPUT_TYPE_EMAIL,
+                                 TEXT_INPUT_FLAG_AUTOCORRECT_ON, false);
   VerifyAndClearExpectations();
 
   // Calling with different values should work.
@@ -148,11 +125,11 @@ TEST_F(ZWPTextInputWrapperV3Test, SetContentType) {
         .Times(1);
     EXPECT_CALL(*zwp_text_input, Commit()).Times(1);
   });
-  wrapper_->SetContentType(TEXT_INPUT_TYPE_NUMBER,
-                           TEXT_INPUT_FLAG_AUTOCAPITALIZE_WORDS, false);
+  text_input_v3_->SetContentType(TEXT_INPUT_TYPE_NUMBER,
+                                 TEXT_INPUT_FLAG_AUTOCAPITALIZE_WORDS, false);
 }
 
-TEST_F(ZWPTextInputWrapperV3Test, SetCursorRect) {
+TEST_F(ZwpTextInputV3Test, SetCursorRect) {
   constexpr gfx::Rect kRect(50, 20, 1, 1);
   PostToServerAndWait([kRect](wl::TestWaylandServerThread* server) {
     InSequence s;
@@ -161,7 +138,7 @@ TEST_F(ZWPTextInputWrapperV3Test, SetCursorRect) {
                                                kRect.width(), kRect.height()));
     EXPECT_CALL(*zwp_text_input, Commit()).Times(1);
   });
-  wrapper_->SetCursorRect(kRect);
+  text_input_v3_->SetCursorRect(kRect);
   VerifyAndClearExpectations();
 
   // Calling again with the same values should be a no-op.
@@ -172,7 +149,7 @@ TEST_F(ZWPTextInputWrapperV3Test, SetCursorRect) {
     // Commit has been called once. So send done serial matching commit.
     zwp_text_input_v3_send_done(zwp_text_input->resource(), 1);
   });
-  wrapper_->SetCursorRect(kRect);
+  text_input_v3_->SetCursorRect(kRect);
   VerifyAndClearExpectations();
 
   // Calling again with different values should work.
@@ -185,11 +162,11 @@ TEST_F(ZWPTextInputWrapperV3Test, SetCursorRect) {
         SetCursorRect(kRect2.x(), kRect2.y(), kRect2.width(), kRect2.height()));
     EXPECT_CALL(*zwp_text_input, Commit()).Times(1);
   });
-  wrapper_->SetCursorRect(kRect2);
+  text_input_v3_->SetCursorRect(kRect2);
   VerifyAndClearExpectations();
 }
 
-TEST_F(ZWPTextInputWrapperV3Test, SetSurroundingText) {
+TEST_F(ZwpTextInputV3Test, SetSurroundingText) {
   const std::string text("surroundingすしはおいしいですtext");
   constexpr std::string kSurroundingText("surroundingtext");
   constexpr gfx::Range kPreeditRange(11, 38);
@@ -204,7 +181,7 @@ TEST_F(ZWPTextInputWrapperV3Test, SetSurroundingText) {
     EXPECT_CALL(*server->text_input_manager_v3()->text_input(), Commit())
         .Times(1);
   });
-  wrapper_->SetSurroundingText(text, kPreeditRange, selection_range);
+  text_input_v3_->SetSurroundingText(text, kPreeditRange, selection_range);
   VerifyAndClearExpectations();
 
   // values unchanged
@@ -218,7 +195,7 @@ TEST_F(ZWPTextInputWrapperV3Test, SetSurroundingText) {
     // Ensure done serial matches commit count.
     zwp_text_input_v3_send_done(zwp_text_input->resource(), 1);
   });
-  wrapper_->SetSurroundingText(text2, preedit_range2, selection_range);
+  text_input_v3_->SetSurroundingText(text2, preedit_range2, selection_range);
   VerifyAndClearExpectations();
 
   // selection before preedit
@@ -230,7 +207,7 @@ TEST_F(ZWPTextInputWrapperV3Test, SetSurroundingText) {
         .Times(1);
     EXPECT_CALL(*zwp_text_input, Commit()).Times(1);
   });
-  wrapper_->SetSurroundingText(text, kPreeditRange, selection_range);
+  text_input_v3_->SetSurroundingText(text, kPreeditRange, selection_range);
   VerifyAndClearExpectations();
 
   // selection bounded by preedit
@@ -243,7 +220,7 @@ TEST_F(ZWPTextInputWrapperV3Test, SetSurroundingText) {
     EXPECT_CALL(*zwp_text_input, Commit()).Times(1);
     zwp_text_input_v3_send_done(zwp_text_input->resource(), 2);
   });
-  wrapper_->SetSurroundingText(text, kPreeditRange, selection_range);
+  text_input_v3_->SetSurroundingText(text, kPreeditRange, selection_range);
   VerifyAndClearExpectations();
 
   // selection starts inside preedit and ends after preedit
@@ -256,7 +233,7 @@ TEST_F(ZWPTextInputWrapperV3Test, SetSurroundingText) {
     EXPECT_CALL(*zwp_text_input, Commit()).Times(1);
     zwp_text_input_v3_send_done(zwp_text_input->resource(), 3);
   });
-  wrapper_->SetSurroundingText(text, kPreeditRange, selection_range);
+  text_input_v3_->SetSurroundingText(text, kPreeditRange, selection_range);
   VerifyAndClearExpectations();
 
   // selection starts inside preedit and ends after preedit (inverted selection)
@@ -269,7 +246,7 @@ TEST_F(ZWPTextInputWrapperV3Test, SetSurroundingText) {
     EXPECT_CALL(*zwp_text_input, Commit()).Times(1);
     zwp_text_input_v3_send_done(zwp_text_input->resource(), 4);
   });
-  wrapper_->SetSurroundingText(text, kPreeditRange, selection_range);
+  text_input_v3_->SetSurroundingText(text, kPreeditRange, selection_range);
   VerifyAndClearExpectations();
 
   // selection starts before preedit and ends inside preedit
@@ -282,7 +259,7 @@ TEST_F(ZWPTextInputWrapperV3Test, SetSurroundingText) {
     EXPECT_CALL(*zwp_text_input, Commit()).Times(1);
     zwp_text_input_v3_send_done(zwp_text_input->resource(), 5);
   });
-  wrapper_->SetSurroundingText(text, kPreeditRange, selection_range);
+  text_input_v3_->SetSurroundingText(text, kPreeditRange, selection_range);
   VerifyAndClearExpectations();
 
   // selection starts before preedit and ends inside preedit (inverted
@@ -296,7 +273,7 @@ TEST_F(ZWPTextInputWrapperV3Test, SetSurroundingText) {
     EXPECT_CALL(*zwp_text_input, Commit()).Times(1);
     zwp_text_input_v3_send_done(zwp_text_input->resource(), 6);
   });
-  wrapper_->SetSurroundingText(text, kPreeditRange, selection_range);
+  text_input_v3_->SetSurroundingText(text, kPreeditRange, selection_range);
   VerifyAndClearExpectations();
 
   // selection starts before preedit and ends after preedit
@@ -309,7 +286,7 @@ TEST_F(ZWPTextInputWrapperV3Test, SetSurroundingText) {
     EXPECT_CALL(*zwp_text_input, Commit()).Times(1);
     zwp_text_input_v3_send_done(zwp_text_input->resource(), 7);
   });
-  wrapper_->SetSurroundingText(text, kPreeditRange, selection_range);
+  text_input_v3_->SetSurroundingText(text, kPreeditRange, selection_range);
   VerifyAndClearExpectations();
 
   // selection after preedit
@@ -322,7 +299,7 @@ TEST_F(ZWPTextInputWrapperV3Test, SetSurroundingText) {
     EXPECT_CALL(*zwp_text_input, Commit()).Times(1);
     zwp_text_input_v3_send_done(zwp_text_input->resource(), 8);
   });
-  wrapper_->SetSurroundingText(text, kPreeditRange, selection_range);
+  text_input_v3_->SetSurroundingText(text, kPreeditRange, selection_range);
   VerifyAndClearExpectations();
 
   // invalid preedit
@@ -335,8 +312,8 @@ TEST_F(ZWPTextInputWrapperV3Test, SetSurroundingText) {
     EXPECT_CALL(*zwp_text_input, Commit()).Times(1);
     zwp_text_input_v3_send_done(zwp_text_input->resource(), 9);
   });
-  wrapper_->SetSurroundingText(kSurroundingText, gfx::Range::InvalidRange(),
-                               selection_range);
+  text_input_v3_->SetSurroundingText(
+      kSurroundingText, gfx::Range::InvalidRange(), selection_range);
   VerifyAndClearExpectations();
 
   // invalid selection
@@ -348,7 +325,8 @@ TEST_F(ZWPTextInputWrapperV3Test, SetSurroundingText) {
     EXPECT_CALL(*zwp_text_input, Commit()).Times(1);
     zwp_text_input_v3_send_done(zwp_text_input->resource(), 10);
   });
-  wrapper_->SetSurroundingText(text, kPreeditRange, gfx::Range::InvalidRange());
+  text_input_v3_->SetSurroundingText(text, kPreeditRange,
+                                     gfx::Range::InvalidRange());
   VerifyAndClearExpectations();
 
   // invalid preedit and selection
@@ -359,12 +337,12 @@ TEST_F(ZWPTextInputWrapperV3Test, SetSurroundingText) {
     EXPECT_CALL(*zwp_text_input, Commit()).Times(1);
     zwp_text_input_v3_send_done(zwp_text_input->resource(), 11);
   });
-  wrapper_->SetSurroundingText(text, gfx::Range::InvalidRange(),
-                               gfx::Range::InvalidRange());
+  text_input_v3_->SetSurroundingText(text, gfx::Range::InvalidRange(),
+                                     gfx::Range::InvalidRange());
   VerifyAndClearExpectations();
 }
 
-TEST_F(ZWPTextInputWrapperV3Test, PendingRequestsSentOnDone) {
+TEST_F(ZwpTextInputV3Test, PendingRequestsSentOnDone) {
   constexpr gfx::Rect kRect(50, 20, 1, 1);
   const std::string text("surroundingすしはおいしいですtext");
   constexpr std::string kSurroundingText("surroundingtext");
@@ -375,18 +353,18 @@ TEST_F(ZWPTextInputWrapperV3Test, PendingRequestsSentOnDone) {
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
     auto* zwp_text_input = server->text_input_manager_v3()->text_input();
     InSequence s;
-    EXPECT_CALL(*zwp_text_input, Enable()).Times(1);
+    EXPECT_CALL(*zwp_text_input, Enable());
     EXPECT_CALL(*zwp_text_input, Commit()).Times(1);
   });
-  wrapper_->Activate(window_.get(), ui::TextInputClient::FOCUS_REASON_NONE);
+  text_input_v3_->Enable();
   VerifyAndClearExpectations();
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
     auto* zwp_text_input = server->text_input_manager_v3()->text_input();
     InSequence s;
-    EXPECT_CALL(*zwp_text_input, Enable()).Times(1);
+    EXPECT_CALL(*zwp_text_input, Enable());
     EXPECT_CALL(*zwp_text_input, Commit()).Times(1);
   });
-  wrapper_->Activate(window_.get(), ui::TextInputClient::FOCUS_REASON_NONE);
+  text_input_v3_->Enable();
   VerifyAndClearExpectations();
 
   // Now if commit number doesn't match done serial it shouldn't send a request.
@@ -399,36 +377,36 @@ TEST_F(ZWPTextInputWrapperV3Test, PendingRequestsSentOnDone) {
     // Commit has been called twice. So done serial 1 should not match.
     zwp_text_input_v3_send_done(zwp_text_input->resource(), 1);
   });
-  wrapper_->SetSurroundingText(text, kPreeditRange, kSelectionRange);
-  wrapper_->SetCursorRect(kRect);
-  wrapper_->SetContentType(TEXT_INPUT_TYPE_EMAIL,
-                           TEXT_INPUT_FLAG_AUTOCORRECT_ON, true);
+  text_input_v3_->SetSurroundingText(text, kPreeditRange, kSelectionRange);
+  text_input_v3_->SetCursorRect(kRect);
+  text_input_v3_->SetContentType(TEXT_INPUT_TYPE_EMAIL,
+                                 TEXT_INPUT_FLAG_AUTOCORRECT_ON, true);
   VerifyAndClearExpectations();
 
   // Multiple pending requests should be sent when commit number finally
   // matches.
-  PostToServerAndWait([kRect,
-                       kSurroundingText](wl::TestWaylandServerThread* server) {
-    auto* zwp_text_input = server->text_input_manager_v3()->text_input();
-    InSequence s;
-    EXPECT_CALL(*zwp_text_input,
-                SetContentType(ZWP_TEXT_INPUT_V3_CONTENT_HINT_SPELLCHECK,
-                               ZWP_TEXT_INPUT_V3_CONTENT_PURPOSE_EMAIL))
-        .Times(1);
-    EXPECT_CALL(
-        *server->text_input_manager_v3()->text_input(),
-        SetCursorRect(kRect.x(), kRect.y(), kRect.width(), kRect.height()));
-    EXPECT_CALL(*zwp_text_input,
-                SetSurroundingText(kSurroundingText, gfx::Range{11, 11}))
-        .Times(1);
-    EXPECT_CALL(*zwp_text_input, Commit()).Times(1);
-    // Commit has been called twice. So done serial 2 should match.
-    zwp_text_input_v3_send_done(zwp_text_input->resource(), 2);
-  });
+  PostToServerAndWait(
+      [kRect, kSurroundingText](wl::TestWaylandServerThread* server) {
+        auto* zwp_text_input = server->text_input_manager_v3()->text_input();
+        InSequence s;
+        EXPECT_CALL(*zwp_text_input,
+                    SetContentType(ZWP_TEXT_INPUT_V3_CONTENT_HINT_SPELLCHECK,
+                                   ZWP_TEXT_INPUT_V3_CONTENT_PURPOSE_EMAIL))
+            .Times(1);
+        EXPECT_CALL(
+            *server->text_input_manager_v3()->text_input(),
+            SetCursorRect(kRect.x(), kRect.y(), kRect.width(), kRect.height()));
+        EXPECT_CALL(*zwp_text_input,
+                    SetSurroundingText(kSurroundingText, gfx::Range{11, 11}))
+            .Times(1);
+        EXPECT_CALL(*zwp_text_input, Commit()).Times(1);
+        // Commit has been called twice. So done serial 2 should match.
+        zwp_text_input_v3_send_done(zwp_text_input->resource(), 2);
+      });
   VerifyAndClearExpectations();
 }
 
-TEST_F(ZWPTextInputWrapperV3Test, PendingRequestsClearedOnEnable) {
+TEST_F(ZwpTextInputV3Test, PendingRequestsClearedOnEnable) {
   constexpr gfx::Rect kRect(50, 20, 1, 1);
   const std::string text("surroundingすしはおいしいですtext");
   constexpr gfx::Range kPreeditRange(11, 38);
@@ -438,10 +416,10 @@ TEST_F(ZWPTextInputWrapperV3Test, PendingRequestsClearedOnEnable) {
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
     auto* zwp_text_input = server->text_input_manager_v3()->text_input();
     InSequence s;
-    EXPECT_CALL(*zwp_text_input, Enable()).Times(1);
+    EXPECT_CALL(*zwp_text_input, Enable());
     EXPECT_CALL(*zwp_text_input, Commit()).Times(1);
   });
-  wrapper_->Activate(window_.get(), ui::TextInputClient::FOCUS_REASON_NONE);
+  text_input_v3_->Enable();
   VerifyAndClearExpectations();
 
   // Pending set requests should not be sent without matching done event.
@@ -452,20 +430,20 @@ TEST_F(ZWPTextInputWrapperV3Test, PendingRequestsClearedOnEnable) {
     EXPECT_CALL(*zwp_text_input, SetSurroundingText(_, _)).Times(0);
     EXPECT_CALL(*zwp_text_input, Commit()).Times(0);
   });
-  wrapper_->SetSurroundingText(text, kPreeditRange, kSelectionRange);
-  wrapper_->SetCursorRect(kRect);
-  wrapper_->SetContentType(TEXT_INPUT_TYPE_EMAIL,
-                           TEXT_INPUT_FLAG_AUTOCORRECT_ON, true);
+  text_input_v3_->SetSurroundingText(text, kPreeditRange, kSelectionRange);
+  text_input_v3_->SetCursorRect(kRect);
+  text_input_v3_->SetContentType(TEXT_INPUT_TYPE_EMAIL,
+                                 TEXT_INPUT_FLAG_AUTOCORRECT_ON, true);
   VerifyAndClearExpectations();
 
   // Enable should clear pending requests.
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
     auto* zwp_text_input = server->text_input_manager_v3()->text_input();
     InSequence s;
-    EXPECT_CALL(*zwp_text_input, Enable()).Times(1);
+    EXPECT_CALL(*zwp_text_input, Enable());
     EXPECT_CALL(*zwp_text_input, Commit()).Times(1);
   });
-  wrapper_->Activate(window_.get(), ui::TextInputClient::FOCUS_REASON_NONE);
+  text_input_v3_->Enable();
   VerifyAndClearExpectations();
 
   // Since there are no more pending requests nothing should be sent even if
@@ -482,7 +460,7 @@ TEST_F(ZWPTextInputWrapperV3Test, PendingRequestsClearedOnEnable) {
   VerifyAndClearExpectations();
 }
 
-TEST_F(ZWPTextInputWrapperV3Test, PendingRequestsClearedOnDisable) {
+TEST_F(ZwpTextInputV3Test, PendingRequestsClearedOnDisable) {
   constexpr gfx::Rect kRect(50, 20, 1, 1);
   const std::string text("surroundingすしはおいしいですtext");
   constexpr gfx::Range kPreeditRange(11, 38);
@@ -492,10 +470,10 @@ TEST_F(ZWPTextInputWrapperV3Test, PendingRequestsClearedOnDisable) {
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
     auto* zwp_text_input = server->text_input_manager_v3()->text_input();
     InSequence s;
-    EXPECT_CALL(*zwp_text_input, Enable()).Times(1);
+    EXPECT_CALL(*zwp_text_input, Enable());
     EXPECT_CALL(*zwp_text_input, Commit()).Times(1);
   });
-  wrapper_->Activate(window_.get(), ui::TextInputClient::FOCUS_REASON_NONE);
+  text_input_v3_->Enable();
   VerifyAndClearExpectations();
 
   // Pending set requests should not be sent without matching done event.
@@ -506,10 +484,10 @@ TEST_F(ZWPTextInputWrapperV3Test, PendingRequestsClearedOnDisable) {
     EXPECT_CALL(*zwp_text_input, SetSurroundingText(_, _)).Times(0);
     EXPECT_CALL(*zwp_text_input, Commit()).Times(0);
   });
-  wrapper_->SetSurroundingText(text, kPreeditRange, kSelectionRange);
-  wrapper_->SetCursorRect(kRect);
-  wrapper_->SetContentType(TEXT_INPUT_TYPE_EMAIL,
-                           TEXT_INPUT_FLAG_AUTOCORRECT_ON, true);
+  text_input_v3_->SetSurroundingText(text, kPreeditRange, kSelectionRange);
+  text_input_v3_->SetCursorRect(kRect);
+  text_input_v3_->SetContentType(TEXT_INPUT_TYPE_EMAIL,
+                                 TEXT_INPUT_FLAG_AUTOCORRECT_ON, true);
   VerifyAndClearExpectations();
 
   // Disable should clear pending requests.
@@ -519,7 +497,7 @@ TEST_F(ZWPTextInputWrapperV3Test, PendingRequestsClearedOnDisable) {
     EXPECT_CALL(*zwp_text_input, Disable()).Times(1);
     EXPECT_CALL(*zwp_text_input, Commit()).Times(1);
   });
-  wrapper_->Deactivate();
+  text_input_v3_->Disable();
   VerifyAndClearExpectations();
 
   // Since there are no more pending requests nothing should be sent even if
@@ -536,7 +514,7 @@ TEST_F(ZWPTextInputWrapperV3Test, PendingRequestsClearedOnDisable) {
   VerifyAndClearExpectations();
 }
 
-TEST_F(ZWPTextInputWrapperV3Test, PendingRequestsClearedOnReset) {
+TEST_F(ZwpTextInputV3Test, PendingRequestsClearedOnReset) {
   constexpr gfx::Rect kRect(50, 20, 1, 1);
   const std::string text("surroundingすしはおいしいですtext");
   constexpr gfx::Range kPreeditRange(11, 38);
@@ -546,10 +524,10 @@ TEST_F(ZWPTextInputWrapperV3Test, PendingRequestsClearedOnReset) {
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
     auto* zwp_text_input = server->text_input_manager_v3()->text_input();
     InSequence s;
-    EXPECT_CALL(*zwp_text_input, Enable()).Times(1);
+    EXPECT_CALL(*zwp_text_input, Enable());
     EXPECT_CALL(*zwp_text_input, Commit()).Times(1);
   });
-  wrapper_->Activate(window_.get(), ui::TextInputClient::FOCUS_REASON_NONE);
+  text_input_v3_->Enable();
 
   // Pending set requests should not be sent without matching done event.
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
@@ -559,10 +537,10 @@ TEST_F(ZWPTextInputWrapperV3Test, PendingRequestsClearedOnReset) {
     EXPECT_CALL(*zwp_text_input, SetSurroundingText(_, _)).Times(0);
     EXPECT_CALL(*zwp_text_input, Commit()).Times(0);
   });
-  wrapper_->SetSurroundingText(text, kPreeditRange, kSelectionRange);
-  wrapper_->SetCursorRect(kRect);
-  wrapper_->SetContentType(TEXT_INPUT_TYPE_EMAIL,
-                           TEXT_INPUT_FLAG_AUTOCORRECT_ON, true);
+  text_input_v3_->SetSurroundingText(text, kPreeditRange, kSelectionRange);
+  text_input_v3_->SetCursorRect(kRect);
+  text_input_v3_->SetContentType(TEXT_INPUT_TYPE_EMAIL,
+                                 TEXT_INPUT_FLAG_AUTOCORRECT_ON, true);
   VerifyAndClearExpectations();
 
   // Reset should clear pending requests.
@@ -571,10 +549,10 @@ TEST_F(ZWPTextInputWrapperV3Test, PendingRequestsClearedOnReset) {
     InSequence s;
     EXPECT_CALL(*zwp_text_input, Disable()).Times(1);
     EXPECT_CALL(*zwp_text_input, Commit()).Times(1);
-    EXPECT_CALL(*zwp_text_input, Enable()).Times(1);
+    EXPECT_CALL(*zwp_text_input, Enable());
     EXPECT_CALL(*zwp_text_input, Commit()).Times(1);
   });
-  wrapper_->Reset();
+  text_input_v3_->Reset();
   VerifyAndClearExpectations();
 
   // Since there are no more pending requests nothing should be sent even if
@@ -592,14 +570,12 @@ TEST_F(ZWPTextInputWrapperV3Test, PendingRequestsClearedOnReset) {
   VerifyAndClearExpectations();
 }
 
-TEST_F(ZWPTextInputWrapperV3Test, OnPreeditString) {
+TEST_F(ZwpTextInputV3Test, OnPreeditString) {
   constexpr std::string_view kPreeditString("PreeditString");
   constexpr gfx::Range kPreeditCursor{0, 13};
-  EXPECT_CALL(
-      test_client_,
-      OnPreeditString(kPreeditString,
-                      std::vector<ZWPTextInputWrapperClient::SpanStyle>{},
-                      kPreeditCursor));
+  EXPECT_CALL(test_client_,
+              OnPreeditString(kPreeditString, std::vector<SpanStyle>{},
+                              kPreeditCursor));
   PostToServerAndWait(
       [kPreeditString, kPreeditCursor](wl::TestWaylandServerThread* server) {
         auto* text_input = server->text_input_manager_v3()->text_input();
@@ -611,11 +587,9 @@ TEST_F(ZWPTextInputWrapperV3Test, OnPreeditString) {
   VerifyAndClearExpectations();
 
   // Invalid range if negative cursor begin
-  EXPECT_CALL(
-      test_client_,
-      OnPreeditString(kPreeditString,
-                      std::vector<ZWPTextInputWrapperClient::SpanStyle>{},
-                      gfx::Range::InvalidRange()));
+  EXPECT_CALL(test_client_,
+              OnPreeditString(kPreeditString, std::vector<SpanStyle>{},
+                              gfx::Range::InvalidRange()));
   PostToServerAndWait(
       [kPreeditString, kPreeditCursor](wl::TestWaylandServerThread* server) {
         auto* text_input = server->text_input_manager_v3()->text_input();
@@ -627,11 +601,9 @@ TEST_F(ZWPTextInputWrapperV3Test, OnPreeditString) {
   VerifyAndClearExpectations();
 
   // Invalid range if negative cursor end
-  EXPECT_CALL(
-      test_client_,
-      OnPreeditString(kPreeditString,
-                      std::vector<ZWPTextInputWrapperClient::SpanStyle>{},
-                      gfx::Range::InvalidRange()));
+  EXPECT_CALL(test_client_,
+              OnPreeditString(kPreeditString, std::vector<SpanStyle>{},
+                              gfx::Range::InvalidRange()));
   PostToServerAndWait(
       [kPreeditString, kPreeditCursor](wl::TestWaylandServerThread* server) {
         auto* text_input = server->text_input_manager_v3()->text_input();
@@ -643,7 +615,7 @@ TEST_F(ZWPTextInputWrapperV3Test, OnPreeditString) {
   VerifyAndClearExpectations();
 }
 
-TEST_F(ZWPTextInputWrapperV3Test, OnCommitString) {
+TEST_F(ZwpTextInputV3Test, OnCommitString) {
   constexpr std::string kCommitString("CommitString");
   EXPECT_CALL(test_client_, OnCommitString(kCommitString));
   PostToServerAndWait([kCommitString](wl::TestWaylandServerThread* server) {
@@ -655,17 +627,15 @@ TEST_F(ZWPTextInputWrapperV3Test, OnCommitString) {
   VerifyAndClearExpectations();
 }
 
-TEST_F(ZWPTextInputWrapperV3Test, OnDoneWithCommitAndPreedit) {
+TEST_F(ZwpTextInputV3Test, OnDoneWithCommitAndPreedit) {
   constexpr std::string kPreeditString("PreeditString");
   constexpr gfx::Range kPreeditCursor{0, 13};
   constexpr std::string kCommitString("CommitString");
   InSequence s;
   EXPECT_CALL(test_client_, OnCommitString(kCommitString));
-  EXPECT_CALL(
-      test_client_,
-      OnPreeditString(kPreeditString,
-                      std::vector<ZWPTextInputWrapperClient::SpanStyle>{},
-                      kPreeditCursor));
+  EXPECT_CALL(test_client_,
+              OnPreeditString(kPreeditString, std::vector<SpanStyle>{},
+                              kPreeditCursor));
   PostToServerAndWait([kPreeditString, kPreeditCursor,
                        kCommitString](wl::TestWaylandServerThread* server) {
     auto* text_input = server->text_input_manager_v3()->text_input();
@@ -679,7 +649,7 @@ TEST_F(ZWPTextInputWrapperV3Test, OnDoneWithCommitAndPreedit) {
   VerifyAndClearExpectations();
 }
 
-TEST_F(ZWPTextInputWrapperV3Test, PendingInputEventsClearedOnEnable) {
+TEST_F(ZwpTextInputV3Test, PendingInputEventsClearedOnEnable) {
   constexpr std::string kCommitString("CommitString");
   constexpr std::string_view kPreeditString("PreeditString");
   constexpr gfx::Range kPreeditCursor{0, 13};
@@ -697,10 +667,10 @@ TEST_F(ZWPTextInputWrapperV3Test, PendingInputEventsClearedOnEnable) {
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
     auto* zwp_text_input = server->text_input_manager_v3()->text_input();
     InSequence s;
-    EXPECT_CALL(*zwp_text_input, Enable()).Times(1);
+    EXPECT_CALL(*zwp_text_input, Enable());
     EXPECT_CALL(*zwp_text_input, Commit()).Times(1);
   });
-  wrapper_->Activate(window_.get(), ui::TextInputClient::FOCUS_REASON_NONE);
+  text_input_v3_->Enable();
   VerifyAndClearExpectations();
 
   // Sending done should have no effect.
@@ -713,7 +683,7 @@ TEST_F(ZWPTextInputWrapperV3Test, PendingInputEventsClearedOnEnable) {
   VerifyAndClearExpectations();
 }
 
-TEST_F(ZWPTextInputWrapperV3Test, PendingInputEventsClearedOnDisable) {
+TEST_F(ZwpTextInputV3Test, PendingInputEventsClearedOnDisable) {
   constexpr std::string_view kPreeditString("PreeditString");
   constexpr gfx::Range kPreeditCursor{0, 13};
   PostToServerAndWait(
@@ -731,7 +701,7 @@ TEST_F(ZWPTextInputWrapperV3Test, PendingInputEventsClearedOnDisable) {
     EXPECT_CALL(*zwp_text_input, Disable()).Times(1);
     EXPECT_CALL(*zwp_text_input, Commit()).Times(1);
   });
-  wrapper_->Deactivate();
+  text_input_v3_->Disable();
   VerifyAndClearExpectations();
 
   // Sending done should have no effect.
@@ -743,7 +713,7 @@ TEST_F(ZWPTextInputWrapperV3Test, PendingInputEventsClearedOnDisable) {
   VerifyAndClearExpectations();
 }
 
-TEST_F(ZWPTextInputWrapperV3Test, PendingInputEventsClearedOnReset) {
+TEST_F(ZwpTextInputV3Test, PendingInputEventsClearedOnReset) {
   constexpr std::string kCommitString("CommitString");
   constexpr std::string_view kPreeditString("PreeditString");
   constexpr gfx::Range kPreeditCursor{0, 13};
@@ -763,10 +733,10 @@ TEST_F(ZWPTextInputWrapperV3Test, PendingInputEventsClearedOnReset) {
     InSequence s;
     EXPECT_CALL(*zwp_text_input, Disable()).Times(1);
     EXPECT_CALL(*zwp_text_input, Commit()).Times(1);
-    EXPECT_CALL(*zwp_text_input, Enable()).Times(1);
+    EXPECT_CALL(*zwp_text_input, Enable());
     EXPECT_CALL(*zwp_text_input, Commit()).Times(1);
   });
-  wrapper_->Reset();
+  text_input_v3_->Reset();
   VerifyAndClearExpectations();
 
   // Sending done should have no effect.

@@ -1,22 +1,21 @@
-// Copyright 2024 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_OZONE_PLATFORM_WAYLAND_TEST_MOCK_ZWP_TEXT_INPUT_WRAPPER_CLIENT_H_
-#define UI_OZONE_PLATFORM_WAYLAND_TEST_MOCK_ZWP_TEXT_INPUT_WRAPPER_CLIENT_H_
+#ifndef UI_OZONE_PLATFORM_WAYLAND_TEST_MOCK_ZWP_TEXT_INPUT_V1_CLIENT_H_
+#define UI_OZONE_PLATFORM_WAYLAND_TEST_MOCK_ZWP_TEXT_INPUT_V1_CLIENT_H_
 
 #include "testing/gmock/include/gmock/gmock.h"
-#include "ui/ozone/platform/wayland/host/zwp_text_input_wrapper.h"
+#include "ui/ozone/platform/wayland/host/zwp_text_input_v1.h"
 
 namespace ui {
 
-class MockZWPTextInputWrapperClient : public ZWPTextInputWrapperClient {
+class MockZwpTextInputV1Client : public ZwpTextInputV1Client {
  public:
-  MockZWPTextInputWrapperClient();
-  MockZWPTextInputWrapperClient(const MockZWPTextInputWrapperClient&) = delete;
-  MockZWPTextInputWrapperClient& operator=(
-      const MockZWPTextInputWrapperClient&) = delete;
-  ~MockZWPTextInputWrapperClient() override;
+  MockZwpTextInputV1Client();
+  MockZwpTextInputV1Client(const MockZwpTextInputV1Client&) = delete;
+  MockZwpTextInputV1Client& operator=(const MockZwpTextInputV1Client&) = delete;
+  ~MockZwpTextInputV1Client() override;
 
   MOCK_METHOD(void,
               OnPreeditString,
@@ -46,4 +45,4 @@ class MockZWPTextInputWrapperClient : public ZWPTextInputWrapperClient {
 
 }  // namespace ui
 
-#endif  // UI_OZONE_PLATFORM_WAYLAND_TEST_MOCK_ZWP_TEXT_INPUT_WRAPPER_CLIENT_H_
+#endif  // UI_OZONE_PLATFORM_WAYLAND_TEST_MOCK_ZWP_TEXT_INPUT_V1_CLIENT_H_
