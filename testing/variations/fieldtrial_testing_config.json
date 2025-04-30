@@ -22852,10 +22852,13 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20250423",
+                    "name": "Enabled_20250430",
                     "params": {
-                        "consecutive_computation_delay_sec": "5",
-                        "create_suggestions_promotion_ui": "false"
+                        "consecutive_computation_delay_sec": "0",
+                        "create_suggestions_promotion_ui": "false",
+                        "group_suggestion_enable_similar_source": "true",
+                        "group_suggestion_enable_switch_between": "true",
+                        "group_suggestion_trigger_calculation_on_page_load": "false"
                     },
                     "enable_features": [
                         "GroupSuggestionService"
