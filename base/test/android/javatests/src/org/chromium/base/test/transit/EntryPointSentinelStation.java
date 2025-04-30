@@ -21,10 +21,6 @@ public class EntryPointSentinelStation extends Station<Activity> {
         super(null);
     }
 
-    @Override
-    @SuppressWarnings("MissingSuperCall")
-    public void declareElements(Elements.Builder elements) {}
-
     /**
      * Set this station as the entry point for Public Transit tests. Only EntryPoints should call
      * this. Will assert if called twice.

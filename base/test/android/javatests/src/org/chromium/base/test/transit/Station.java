@@ -6,7 +6,6 @@ package org.chromium.base.test.transit;
 
 import android.app.Activity;
 
-import androidx.annotation.CallSuper;
 import androidx.test.espresso.Espresso;
 
 import org.chromium.base.test.transit.Transition.TransitionOptions;
@@ -42,7 +41,7 @@ public abstract class Station<HostActivity extends Activity> extends Conditional
     private final String mName;
     private final @Nullable Class<HostActivity> mActivityClass;
 
-    protected @Nullable ActivityElement<HostActivity> mActivityElement;
+    protected final @Nullable ActivityElement<HostActivity> mActivityElement;
 
     /**
      * Create a base station.
@@ -55,6 +54,12 @@ public abstract class Station<HostActivity extends Activity> extends Conditional
         mId = sLastStationId++;
         mName = String.format("<S%d: %s>", mId, getClass().getSimpleName());
         TrafficControl.notifyCreatedStation(this);
+
+        if (mActivityClass != null) {
+            mActivityElement = mElements.declareActivity(mActivityClass);
+        } else {
+            mActivityElement = null;
+        }
     }
 
     protected List<Facility<?>> getFacilitiesWithPhase(@Phase int phase) {
@@ -86,14 +91,6 @@ public abstract class Station<HostActivity extends Activity> extends Conditional
     @Override
     public String toString() {
         return mName;
-    }
-
-    @CallSuper
-    @Override
-    public void declareElements(Elements.Builder elements) {
-        if (mActivityClass != null) {
-            mActivityElement = elements.declareActivity(mActivityClass);
-        }
     }
 
     /**

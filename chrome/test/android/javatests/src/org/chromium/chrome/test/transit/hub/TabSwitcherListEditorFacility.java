@@ -16,7 +16,6 @@ import android.view.View;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.espresso.Espresso;
 
-import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.Facility;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.base.test.transit.ViewSpec;
@@ -32,25 +31,22 @@ import java.util.List;
 public class TabSwitcherListEditorFacility extends Facility<TabSwitcherStation> {
     private final List<Integer> mTabIdsSelected;
     private final List<List<Integer>> mTabGroupsSelected;
-    public ViewElement<RecyclerView> tabListRecyclerViewElement;
-    public ViewElement<View> selectionTitleElement;
+    public final ViewElement<RecyclerView> tabListRecyclerViewElement;
+    public final ViewElement<View> selectionTitleElement;
 
     public TabSwitcherListEditorFacility(
             List<Integer> tabIdsSelected, List<List<Integer>> tabGroupsSelected) {
         mTabIdsSelected = tabIdsSelected;
         mTabGroupsSelected = tabGroupsSelected;
-    }
 
-    @Override
-    public void declareElements(Elements.Builder elements) {
         ViewSpec<View> tabListEditorLayout = viewSpec(withId(R.id.selectable_list));
-        elements.declareView(tabListEditorLayout);
+        declareView(tabListEditorLayout);
         tabListRecyclerViewElement =
-                elements.declareView(
+                declareView(
                         tabListEditorLayout.descendant(
                                 RecyclerView.class, withId(R.id.tab_list_recycler_view)));
         selectionTitleElement =
-                elements.declareView(
+                declareView(
                         viewSpec(
                                 withText(getSelectionModeNumberText()),
                                 withId(R.id.down),

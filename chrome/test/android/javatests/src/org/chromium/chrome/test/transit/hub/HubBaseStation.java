@@ -26,7 +26,6 @@ import androidx.test.espresso.NoMatchingViewException;
 import com.google.android.material.tabs.TabLayout;
 
 import org.chromium.base.test.transit.Element;
-import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.Station;
 import org.chromium.base.test.transit.Transition;
 import org.chromium.base.test.transit.TravelException;
@@ -43,67 +42,59 @@ import org.chromium.chrome.test.transit.tabmodel.TabModelSelectorCondition;
 
 /** The base station for Hub, with several panes and a toolbar. */
 public abstract class HubBaseStation extends Station<ChromeTabbedActivity> {
-    public static final ViewSpec HUB_TOOLBAR = viewSpec(withId(R.id.hub_toolbar));
-    public static final ViewSpec HUB_PANE_HOST = viewSpec(withId(R.id.hub_pane_host));
-    public static final ViewSpec HUB_MENU_BUTTON =
+    public static final ViewSpec<View> HUB_TOOLBAR = viewSpec(withId(R.id.hub_toolbar));
+    public static final ViewSpec<View> HUB_PANE_HOST = viewSpec(withId(R.id.hub_pane_host));
+    public static final ViewSpec<View> HUB_MENU_BUTTON =
             HUB_TOOLBAR.descendant(withId(org.chromium.chrome.R.id.menu_button));
     public static final ViewSpec<TabLayout> HUB_PANE_SWITCHER =
             HUB_TOOLBAR.descendant(TabLayout.class, withId(R.id.pane_switcher));
 
-    public Element<TabModelSelector> tabModelSelectorElement;
-    public ViewElement<View> toolbarElement;
-    public ViewElement<View> paneHostElement;
-    public ViewElement<View> menuButtonElement;
-    public ViewElement<TabLayout> paneSwitcherElement;
-    public @Nullable ViewElement<View> regularTabsButtonElement;
-    public @Nullable ViewElement<View> incognitoTabsButtonElement;
+    public final Element<TabModelSelector> tabModelSelectorElement;
+    public final ViewElement<View> toolbarElement;
+    public final ViewElement<View> paneHostElement;
+    public final ViewElement<View> menuButtonElement;
+    public final ViewElement<TabLayout> paneSwitcherElement;
+    public final @Nullable ViewElement<View> regularTabsButtonElement;
+    public final @Nullable ViewElement<View> incognitoTabsButtonElement;
     protected final boolean mIncognitoTabsExist;
     protected final boolean mRegularTabsExist;
-    private final boolean mHasMenuButton;
 
     public HubBaseStation(
             boolean regularTabsExist, boolean incognitoTabsExist, boolean hasMenuButton) {
         super(ChromeTabbedActivity.class);
         mRegularTabsExist = regularTabsExist;
         mIncognitoTabsExist = incognitoTabsExist;
-        mHasMenuButton = hasMenuButton;
-    }
 
-    /** Returns the station's {@link PaneId}. */
-    public abstract @PaneId int getPaneId();
-
-    @Override
-    public void declareElements(Elements.Builder elements) {
-        super.declareElements(elements);
         tabModelSelectorElement =
-                elements.declareEnterConditionAsElement(
-                        new TabModelSelectorCondition(mActivityElement));
+                declareEnterConditionAsElement(new TabModelSelectorCondition(mActivityElement));
 
-        toolbarElement = elements.declareView(HUB_TOOLBAR);
-        paneHostElement = elements.declareView(HUB_PANE_HOST);
-        if (mHasMenuButton) {
-            menuButtonElement = elements.declareView(HUB_MENU_BUTTON);
-        }
+        toolbarElement = declareView(HUB_TOOLBAR);
+        paneHostElement = declareView(HUB_PANE_HOST);
+        menuButtonElement = hasMenuButton ? declareView(HUB_MENU_BUTTON) : null;
 
-        paneSwitcherElement = elements.declareView(HUB_PANE_SWITCHER);
+        paneSwitcherElement = declareView(HUB_PANE_SWITCHER);
 
         // TODO(crbug.com/386819654): Add a member of type ViewElement representing tab group pane
         // The non-regular toggle tab button contentDescription is a substring found in the string:
         // R.string.accessibility_tab_switcher_standard_stack.
         regularTabsButtonElement =
-                elements.declareView(
-                        viewSpec(withContentDescription(containsString("standard tab"))));
+                declareView(viewSpec(withContentDescription(containsString("standard tab"))));
         if (mIncognitoTabsExist) {
             incognitoTabsButtonElement =
-                    elements.declareView(
+                    declareView(
                             viewSpec(
                                     withContentDescription(
                                             R.string.accessibility_tab_switcher_incognito_stack)));
+        } else {
+            incognitoTabsButtonElement = null;
         }
 
-        elements.declareEnterCondition(
+        declareEnterCondition(
                 new LayoutTypeVisibleCondition(mActivityElement, LayoutType.TAB_SWITCHER));
     }
+
+    /** Returns the station's {@link PaneId}. */
+    public abstract @PaneId int getPaneId();
 
     /**
      * Returns to the previous tab via the back button.

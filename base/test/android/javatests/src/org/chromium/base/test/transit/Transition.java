@@ -68,7 +68,7 @@ public abstract class Transition {
         // At least one Condition should be not fulfilled, or this is likely an incorrectly
         // designed Transition. Exceptions to this rule:
         //     1. null Trigger, for example when focusing on secondary elements of a screen that
-        //        aren't declared in Station#declareElements().
+        //        aren't declared in the Station's constructor or in its declareElements().
         //     2. A explicit exception is made with TransitionOptions.mPossiblyAlreadyFulfilled.
         //        E.g. when not possible to determine whether the trigger needs to be run.
         return !mOptions.mPossiblyAlreadyFulfilled && mTrigger != null;
