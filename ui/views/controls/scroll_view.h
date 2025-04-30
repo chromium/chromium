@@ -242,6 +242,15 @@ class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
                          bool is_positive) override;
   void OnScrollEnded() override;
 
+  // Registers a callback to be called after the layout is complete. This
+  // callback can be used e.g. to scroll the view to the appropriate position
+  // in the contents by explicitly calling `ScrollToOffset` or `ScrollByOffset`
+  // and to update the scrollbars to reflect the new position.
+  // The callback should not trigger any new layouts on the scroll view,
+  // otherwise it will lead to a CHECK failure.
+  void RegisterPostLayoutCallback(
+      base::RepeatingCallback<void(ScrollView*)> post_layout_callback);
+
   bool is_scrolling() const {
     return horiz_sb_->is_scrolling() || vert_sb_->is_scrolling();
   }
@@ -399,6 +408,9 @@ class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
   // Scrolling callbacks.
   ScrollViewCallbackList on_contents_scrolled_;
   ScrollViewCallbackList on_contents_scroll_ended_;
+
+  // Post-layout callback.
+  base::RepeatingCallback<void(ScrollView*)> post_layout_callback_;
 };
 
 // When building with GCC this ensures that an instantiation of the
