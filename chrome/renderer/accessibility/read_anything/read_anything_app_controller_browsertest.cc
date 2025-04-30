@@ -358,6 +358,54 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
     EXPECT_EQ(next_node_ids.size(), 0u);
   }
 
+  std::vector<ReadAloudTextSegment> GetHighlightsAtIndex(
+      int index,
+      bool is_phrase_highlight = false) {
+    return read_aloud_model().GetHighlightForCurrentSegmentIndex(
+        index, is_phrase_highlight);
+  }
+
+  struct TextRange {
+    ui::AXNodeID id;
+    int start;
+    int end;
+  };
+
+  void ExpectHighlightAtIndexEmpty(int index,
+                                   bool is_phrase_highlight = false) {
+    EXPECT_THAT(GetHighlightsAtIndex(index, is_phrase_highlight), IsEmpty());
+  }
+
+  void ExpectPhraseHighlightAtIndexEmpty(int index) {
+    ExpectHighlightAtIndexEmpty(index, true);
+  }
+
+  void ExpectHighlightAtIndexMatches(int highlight_index,
+                                     std::vector<TextRange> text_ranges,
+                                     bool is_phrase_highlight = false) {
+    std::vector<testing::Matcher<ReadAloudTextSegment>> matchers;
+    for (const auto& range : text_ranges) {
+      matchers.push_back(TextSegmentMatcher(range));
+    }
+
+    EXPECT_THAT(GetHighlightsAtIndex(highlight_index, is_phrase_highlight),
+                ElementsAreArray(matchers));
+  }
+
+  void ExpectPhraseHighlightAtIndexMatches(int highlight_index,
+                                           std::vector<TextRange> text_ranges) {
+    ExpectHighlightAtIndexMatches(highlight_index, text_ranges, true);
+  }
+
+  testing::Matcher<ReadAloudTextSegment> TextSegmentMatcher(TextRange range) {
+    return testing::AllOf(
+        ::testing::Field(&ReadAloudTextSegment::id, ::testing::Eq(range.id)),
+        ::testing::Field(&ReadAloudTextSegment::text_start,
+                         ::testing::Eq(range.start)),
+        ::testing::Field(&ReadAloudTextSegment::text_end,
+                         ::testing::Eq(range.end)));
+  }
+
   ui::AXTreeID tree_id_;
   raw_ptr<MockAXTreeDistiller, DanglingUntriaged> distiller_ = nullptr;
   testing::StrictMock<MockReadAnythingUntrustedPageHandler> page_handler_;
@@ -3976,17 +4024,6 @@ TEST_F(ReadAnythingAppControllerTest,
   EXPECT_EQ(first_granularity.text, sentence1);
 }
 
-testing::Matcher<ReadAloudTextSegment> TextSegmentMatcher(ui::AXNodeID id,
-                                                          int text_start,
-                                                          int text_end) {
-  return testing::AllOf(
-      ::testing::Field(&ReadAloudTextSegment::id, ::testing::Eq(id)),
-      ::testing::Field(&ReadAloudTextSegment::text_start,
-                       ::testing::Eq(text_start)),
-      ::testing::Field(&ReadAloudTextSegment::text_end,
-                       ::testing::Eq(text_end)));
-}
-
 TEST_F(ReadAnythingAppControllerTest,
        GetHighlightForCurrentSegmentIndex_ReturnsCorrectNodes) {
   // Text indices             0 123456789012345678901
@@ -3998,26 +4035,18 @@ TEST_F(ReadAnythingAppControllerTest,
 
   // Before there are any processed granularities, GetHighlightStartIndex
   // should return an invalid id.
-  EXPECT_THAT(read_aloud_model().GetHighlightForCurrentSegmentIndex(1, false),
-              IsEmpty());
+  ExpectHighlightAtIndexEmpty(1);
 
   std::vector<ui::AXNodeID> node_ids = controller().GetCurrentText();
   EXPECT_EQ(node_ids.size(), 1u);
 
   // Since we just have one node with one text segment, the returned index
   // should equal the passed parameter.
-  EXPECT_THAT(read_aloud_model().GetHighlightForCurrentSegmentIndex(0, false),
-              ElementsAre(TextSegmentMatcher(kId, 0, 4)));
-  EXPECT_THAT(read_aloud_model().GetHighlightForCurrentSegmentIndex(3, false),
-              ElementsAre(TextSegmentMatcher(kId, 3, 4)));
-  EXPECT_THAT(read_aloud_model().GetHighlightForCurrentSegmentIndex(7, false),
-              ElementsAre(TextSegmentMatcher(kId, 7, 13)));
-  EXPECT_THAT(read_aloud_model().GetHighlightForCurrentSegmentIndex(
-                  static_cast<int>(sentence.length()) - 1, false),
-              ElementsAre(TextSegmentMatcher(kId, 21, 22)));
-  EXPECT_THAT(read_aloud_model().GetHighlightForCurrentSegmentIndex(
-                  static_cast<int>(sentence.length()), false),
-              IsEmpty());
+  ExpectHighlightAtIndexMatches(0, {{kId, 0, 4}});
+  ExpectHighlightAtIndexMatches(3, {{kId, 3, 4}});
+  ExpectHighlightAtIndexMatches(7, {{kId, 7, 13}});
+  ExpectHighlightAtIndexMatches(sentence.length() - 1, {{kId, 21, 22}});
+  ExpectHighlightAtIndexEmpty(static_cast<int>(sentence.length()));
 }
 
 TEST_F(
@@ -4041,63 +4070,37 @@ TEST_F(
 
   // Before there are any processed granularities,
   // GetHighlightForCurrentSegmentIndex should return an empty array.
-  EXPECT_THAT(read_aloud_model().GetHighlightForCurrentSegmentIndex(1, false),
-              IsEmpty());
+  ExpectHighlightAtIndexEmpty(1);
 
   std::vector<ui::AXNodeID> node_ids = controller().GetCurrentText();
   EXPECT_EQ(node_ids.size(), 3u);
 
   // Spot check that indices 0->sentence1.length() map to the first node id.
-  EXPECT_THAT(read_aloud_model().GetHighlightForCurrentSegmentIndex(0, false),
-              ElementsAre(TextSegmentMatcher(kId1, 0, 6)));
-  EXPECT_THAT(read_aloud_model().GetHighlightForCurrentSegmentIndex(7, false),
-              ElementsAre(TextSegmentMatcher(kId1, 7, 11)));
-  EXPECT_THAT(read_aloud_model().GetHighlightForCurrentSegmentIndex(
-                  sentence1.length() - 1, false),
-              ElementsAre(TextSegmentMatcher(kId1, 16, 17)));
-  EXPECT_THAT(read_aloud_model().GetHighlightForCurrentSegmentIndex(
-                  sentence1.length(), false),
-              ElementsAre(TextSegmentMatcher(kId2, 0, 3)));
+  int base_length = sentence1.length();
+  ExpectHighlightAtIndexMatches(0, {{kId1, 0, 6}});
+  ExpectHighlightAtIndexMatches(7, {{kId1, 7, 11}});
+  ExpectHighlightAtIndexMatches(base_length - 1, {{kId1, 16, 17}});
+  ExpectHighlightAtIndexMatches(base_length, {{kId2, 0, 3}});
 
   // Spot check that indices in sentence 2 map to the second node id.
-  EXPECT_THAT(read_aloud_model().GetHighlightForCurrentSegmentIndex(
-                  sentence1.length() + 1, false),
-              ElementsAre(TextSegmentMatcher(kId2, 1, 3)));
-  EXPECT_THAT(read_aloud_model().GetHighlightForCurrentSegmentIndex(26, false),
-              ElementsAre(TextSegmentMatcher(kId2, 9, 15)));
-  EXPECT_THAT(read_aloud_model().GetHighlightForCurrentSegmentIndex(
-                  sentence1.length() + sentence2.length() - 1, false),
-              ElementsAre(TextSegmentMatcher(kId2, 14, 15)));
-  EXPECT_THAT(read_aloud_model().GetHighlightForCurrentSegmentIndex(
-                  sentence1.length() + sentence2.length(), false),
-              ElementsAre(TextSegmentMatcher(kId3, 0, 3)));
+  base_length += sentence2.length();
+  ExpectHighlightAtIndexMatches(sentence1.length() + 1, {{kId2, 1, 3}});
+  ExpectHighlightAtIndexMatches(26, {{kId2, 9, 15}});
+  ExpectHighlightAtIndexMatches(base_length - 1, {{kId2, 14, 15}});
+  ExpectHighlightAtIndexMatches(base_length, {{kId3, 0, 3}});
 
   // Spot check that indices in sentence 3 map to the third node id.
-  EXPECT_THAT(read_aloud_model().GetHighlightForCurrentSegmentIndex(
-                  sentence1.length() + sentence2.length() + 1, false),
-              ElementsAre(TextSegmentMatcher(kId3, 1, 3)));
-  EXPECT_THAT(read_aloud_model().GetHighlightForCurrentSegmentIndex(40, false),
-              ElementsAre(TextSegmentMatcher(kId3, 8, 11)));
-  EXPECT_THAT(
-      read_aloud_model().GetHighlightForCurrentSegmentIndex(
-          sentence1.length() + sentence2.length() + sentence3.length() - 1,
-          false),
-      ElementsAre(TextSegmentMatcher(kId3, 30, 31)));
-  EXPECT_THAT(
-      read_aloud_model().GetHighlightForCurrentSegmentIndex(
-          sentence1.length() + sentence2.length() + sentence3.length(), false),
-      IsEmpty());
+  base_length += sentence3.length();
+  ExpectHighlightAtIndexMatches(sentence1.length() + sentence2.length() + 1,
+                                {{kId3, 1, 3}});
+  ExpectHighlightAtIndexMatches(40, {{kId3, 8, 11}});
+  ExpectHighlightAtIndexMatches(base_length - 1, {{kId3, 30, 31}});
+  ExpectHighlightAtIndexEmpty(base_length);
 
   // Out-of-bounds nodes return an empty array.
-  EXPECT_THAT(
-      read_aloud_model().GetHighlightForCurrentSegmentIndex(
-          sentence1.length() + sentence2.length() + sentence3.length() + 1,
-          false),
-      IsEmpty());
-  EXPECT_THAT(read_aloud_model().GetHighlightForCurrentSegmentIndex(535, false),
-              IsEmpty());
-  EXPECT_THAT(read_aloud_model().GetHighlightForCurrentSegmentIndex(-10, false),
-              IsEmpty());
+  ExpectHighlightAtIndexEmpty(base_length);
+  ExpectHighlightAtIndexEmpty(535);
+  ExpectHighlightAtIndexEmpty(-10);
 }
 
 TEST_F(
@@ -4124,10 +4127,7 @@ TEST_F(
       {std::move(static_text1), std::move(static_text2)});
   // Before there are any processed granularities, GetHighlightStartIndex
   // should return an invalid id.
-  EXPECT_THAT(read_aloud_model().GetHighlightForCurrentSegmentIndex(1, false),
-              IsEmpty());
-  EXPECT_THAT(read_aloud_model().GetHighlightForCurrentSegmentIndex(1, false),
-              IsEmpty());
+  ExpectHighlightAtIndexEmpty(1);
 
   std::vector<ui::AXNodeID> node_ids = controller().GetCurrentText();
   EXPECT_EQ(node_ids.size(), 1u);
@@ -4141,19 +4141,12 @@ TEST_F(
 
   // For the first node in the first segment, the returned index should equal
   // the passed parameter.
-  EXPECT_THAT(read_aloud_model().GetHighlightForCurrentSegmentIndex(0, false),
-              ElementsAre(TextSegmentMatcher(kId1, 0, 4)));
-  EXPECT_THAT(read_aloud_model().GetHighlightForCurrentSegmentIndex(6, false),
-              ElementsAre(TextSegmentMatcher(kId1, 6, 11)));
-  EXPECT_THAT(read_aloud_model().GetHighlightForCurrentSegmentIndex(15, false),
-              ElementsAre(TextSegmentMatcher(kId1, 15, 16)));
-  EXPECT_THAT(read_aloud_model().GetHighlightForCurrentSegmentIndex(
-                  static_cast<int>(segment1.length() - 1), false),
-              ElementsAre(TextSegmentMatcher(kId1, segment1_length - 1,
-                                             segment1_length)));
-  EXPECT_THAT(read_aloud_model().GetHighlightForCurrentSegmentIndex(
-                  static_cast<int>(segment1.length()), false),
-              IsEmpty());
+  ExpectHighlightAtIndexMatches(0, {{kId1, 0, 4}});
+  ExpectHighlightAtIndexMatches(6, {{kId1, 6, 11}});
+  ExpectHighlightAtIndexMatches(15, {{kId1, 15, 16}});
+  ExpectHighlightAtIndexMatches(segment1.length() - 1,
+                                {{kId1, segment1_length - 1, segment1_length}});
+  ExpectHighlightAtIndexEmpty(segment1.length());
 
   // Move to segment 2.
   node_ids = MoveToNextGranularityAndGetText();
@@ -4162,24 +4155,17 @@ TEST_F(
   // For the second segment, the boundary index will have reset for the new
   // speech segment. The correct highlight start index is the index that the
   // boundary index within the segment corresponds to within the node.
-  EXPECT_THAT(read_aloud_model().GetHighlightForCurrentSegmentIndex(0, false),
-              ElementsAre(TextSegmentMatcher(kId1, segment1_length,
-                                             segment1_length + 6)));
-  EXPECT_THAT(read_aloud_model().GetHighlightForCurrentSegmentIndex(10, false),
-              ElementsAre(TextSegmentMatcher(kId1, segment1_length + 10,
-                                             segment1_length + 12)));
-  EXPECT_THAT(read_aloud_model().GetHighlightForCurrentSegmentIndex(13, false),
-              ElementsAre(TextSegmentMatcher(kId1, segment1_length + 13,
-                                             segment1_length + 18)));
-  EXPECT_THAT(read_aloud_model().GetHighlightForCurrentSegmentIndex(
-                  static_cast<int>(segment2.length() - 1), false),
-              ElementsAre(TextSegmentMatcher(
-                  kId1, segment1_length + segment2_length - 1,
-                  segment1_length + segment2_length)));
-  EXPECT_THAT(
-      read_aloud_model().GetHighlightForCurrentSegmentIndex(
-          static_cast<int>(segment1.length() + segment2.length()), false),
-      IsEmpty());
+  int base_length = segment1_length;
+  ExpectHighlightAtIndexMatches(0, {{kId1, base_length, base_length + 6}});
+  ExpectHighlightAtIndexMatches(10,
+                                {{kId1, base_length + 10, base_length + 12}});
+  ExpectHighlightAtIndexMatches(13,
+                                {{kId1, base_length + 13, base_length + 18}});
+
+  base_length += segment2_length;
+  ExpectHighlightAtIndexMatches(segment2_length - 1,
+                                {{kId1, base_length - 1, base_length}});
+  ExpectHighlightAtIndexEmpty(segment1_length + segment2_length);
 
   // Move to segment 3.
   node_ids = MoveToNextGranularityAndGetText();
@@ -4188,32 +4174,15 @@ TEST_F(
   // For the third segment, the boundary index will have reset for the new
   // speech segment. The correct highlight start index is the index that the
   // boundary index within the segment corresponds to within the node.
-  EXPECT_THAT(
-      read_aloud_model().GetHighlightForCurrentSegmentIndex(0, false),
-      ElementsAre(TextSegmentMatcher(kId1, segment1_length + segment2_length,
-                                     segment1_length + segment2_length + 3)));
+  ExpectHighlightAtIndexMatches(0, {{kId1, base_length, base_length + 3}});
+  ExpectHighlightAtIndexMatches(9, {{kId1, base_length + 9, base_length + 15}});
+  ExpectHighlightAtIndexMatches(13,
+                                {{kId1, base_length + 13, base_length + 15}});
+  ExpectHighlightAtIndexMatches(segment3_length - 1,
+                                {{kId1, base_length + segment3_length - 1,
+                                  base_length + segment3_length}});
 
-  EXPECT_THAT(read_aloud_model().GetHighlightForCurrentSegmentIndex(9, false),
-              ElementsAre(TextSegmentMatcher(
-                  kId1, segment1_length + segment2_length + 9,
-                  segment1_length + segment2_length + 15)));
-
-  EXPECT_THAT(read_aloud_model().GetHighlightForCurrentSegmentIndex(13, false),
-              ElementsAre(TextSegmentMatcher(
-                  kId1, segment1_length + segment2_length + 13,
-                  segment1_length + segment2_length + 15)));
-
-  EXPECT_THAT(read_aloud_model().GetHighlightForCurrentSegmentIndex(
-                  segment3_length - 1, false),
-              ElementsAre(TextSegmentMatcher(
-                  kId1, segment1_length + segment2_length + segment3_length - 1,
-                  segment1_length + segment2_length + segment3_length)));
-
-  EXPECT_THAT(read_aloud_model().GetHighlightForCurrentSegmentIndex(
-                  static_cast<int>(segment1.length() + segment2.length() +
-                                   segment3.length()),
-                  false),
-              IsEmpty());
+  ExpectHighlightAtIndexEmpty(base_length + segment3.length());
 
   // Move to segment 4.
   node_ids = MoveToNextGranularityAndGetText();
@@ -4224,54 +4193,29 @@ TEST_F(
   // For the fourth segment, there are two nodes. For the first node,
   // the correct highlight start corresponds to the index within the first
   // node.
-  EXPECT_THAT(read_aloud_model().GetHighlightForCurrentSegmentIndex(0, false),
-              ElementsAre(TextSegmentMatcher(
-                  kId1, segment1_length + segment2_length + segment3_length,
-                  segment1_length + segment2_length + segment3_length + 4)));
+  base_length += segment3_length;
+  ExpectHighlightAtIndexMatches(0, {{kId1, base_length, base_length + 4}});
+  ExpectHighlightAtIndexMatches(2, {{kId1, base_length + 2, base_length + 4}});
+  ExpectHighlightAtIndexMatches(8, {{kId1, base_length + 8, base_length + 17}});
+  ExpectHighlightAtIndexMatches(
+      segment4_partial_length - 1,
+      {{kId1, base_length + segment4_partial_length - 1,
+        base_length + segment4_partial_length}});
 
-  EXPECT_THAT(read_aloud_model().GetHighlightForCurrentSegmentIndex(2, false),
-              ElementsAre(TextSegmentMatcher(
-                  kId1, segment1_length + segment2_length + segment3_length + 2,
-                  segment1_length + segment2_length + segment3_length + 4)));
+  ExpectHighlightAtIndexEmpty(
+      static_cast<int>(base_length + segment4.length()));
 
-  EXPECT_THAT(read_aloud_model().GetHighlightForCurrentSegmentIndex(8, false),
-              ElementsAre(TextSegmentMatcher(
-                  kId1, segment1_length + segment2_length + segment3_length + 8,
-                  segment1_length + segment2_length + segment3_length + 17)));
+  // For the second node, the highlight index corresponds to the position
+  // within the second node.
+  ExpectHighlightAtIndexMatches(segment4_partial_length, {{kId2, 0, 5}});
+  ExpectHighlightAtIndexMatches(segment4_partial_length + 2, {{kId2, 2, 5}});
+  ExpectHighlightAtIndexMatches(
+      segment4_full_length - 1,
+      {{kId2, static_cast<int>(node2_text.length() - 1),
+        static_cast<int>(node2_text.length())}});
 
-  EXPECT_THAT(read_aloud_model().GetHighlightForCurrentSegmentIndex(
-                  segment4_partial_length - 1, false),
-              ElementsAre(TextSegmentMatcher(
-                  kId1,
-                  segment1_length + segment2_length + segment3_length +
-                      segment4_partial_length - 1,
-                  segment1_length + segment2_length + segment3_length +
-                      segment4_partial_length)));
-
-  EXPECT_THAT(read_aloud_model().GetHighlightForCurrentSegmentIndex(
-                  static_cast<int>(segment1.length() + segment2.length() +
-                                   segment3.length() + segment4.length()),
-                  false),
-              IsEmpty());
-
-  // For the second node, the highlight index corresponds to the position within
-  // the second node.
-  EXPECT_THAT(read_aloud_model().GetHighlightForCurrentSegmentIndex(
-                  segment4_partial_length, false),
-              ElementsAre(TextSegmentMatcher(kId2, 0, 5)));
-  EXPECT_THAT(read_aloud_model().GetHighlightForCurrentSegmentIndex(
-                  segment4_partial_length + 2, false),
-              ElementsAre(TextSegmentMatcher(kId2, 2, 5)));
-
-  EXPECT_THAT(read_aloud_model().GetHighlightForCurrentSegmentIndex(
-                  segment4_full_length - 1, false),
-              ElementsAre(TextSegmentMatcher(kId2, (int)node2_text.length() - 1,
-                                             (int)node2_text.length())));
-
-  EXPECT_THAT(
-      read_aloud_model().GetHighlightForCurrentSegmentIndex(
-          static_cast<int>(segment4.length() + node2_text.length()), false),
-      IsEmpty());
+  ExpectHighlightAtIndexEmpty(
+      static_cast<int>(segment4.length() + node2_text.length()));
 }
 
 TEST_F(ReadAnythingAppControllerTest,
@@ -4294,51 +4238,34 @@ TEST_F(ReadAnythingAppControllerTest,
 
   // Before there are any processed granularities,
   // GetNodeIdForCurrentSegmentIndex should return an invalid id.
-  EXPECT_THAT(read_aloud_model().GetHighlightForCurrentSegmentIndex(1, false),
-              IsEmpty());
+  ExpectHighlightAtIndexEmpty(1);
 
   std::vector<ui::AXNodeID> node_ids = controller().GetCurrentText();
   EXPECT_EQ(node_ids.size(), 1u);
 
   // Spot check that indices 0->sentence1.length() map to the first node id.
-  EXPECT_THAT(read_aloud_model().GetHighlightForCurrentSegmentIndex(0, false),
-              ElementsAre(TextSegmentMatcher(kId1, 0, 6)));
-  EXPECT_THAT(read_aloud_model().GetHighlightForCurrentSegmentIndex(7, false),
-              ElementsAre(TextSegmentMatcher(kId1, 7, 11)));
-  EXPECT_THAT(read_aloud_model().GetHighlightForCurrentSegmentIndex(
-                  sentence1.length() - 1, false),
-              ElementsAre(TextSegmentMatcher(kId1, 31, 32)));
-  EXPECT_THAT(read_aloud_model().GetHighlightForCurrentSegmentIndex(
-                  sentence1.length(), false),
-              IsEmpty());
+  ExpectHighlightAtIndexMatches(0, {{kId1, 0, 6}});
+  ExpectHighlightAtIndexMatches(7, {{kId1, 7, 11}});
+  ExpectHighlightAtIndexMatches(sentence1.length() - 1, {{kId1, 31, 32}});
+  ExpectHighlightAtIndexEmpty(sentence1.length());
 
   // Move to the next granularity.
   node_ids = MoveToNextGranularityAndGetText();
   EXPECT_EQ(node_ids.size(), 2u);
 
   // Spot check that indices in sentence 2 map to the second node id.
-  EXPECT_THAT(read_aloud_model().GetHighlightForCurrentSegmentIndex(0, false),
-              ElementsAre(TextSegmentMatcher(kId2, 0, 3)));
-  EXPECT_THAT(read_aloud_model().GetHighlightForCurrentSegmentIndex(7, false),
-              ElementsAre(TextSegmentMatcher(kId2, 7, 11)));
-  EXPECT_THAT(read_aloud_model().GetHighlightForCurrentSegmentIndex(
-                  sentence2.length() - 1, false),
-              ElementsAre(TextSegmentMatcher(kId2, 20, 21)));
+  ExpectHighlightAtIndexMatches(0, {{kId2, 0, 3}});
+  ExpectHighlightAtIndexMatches(7, {{kId2, 7, 11}});
+  ExpectHighlightAtIndexMatches(sentence2.length() - 1, {{kId2, 20, 21}});
 
   // Spot check that indices in sentence 3 map to the third node id.
-  EXPECT_THAT(read_aloud_model().GetHighlightForCurrentSegmentIndex(
-                  sentence2.length() + 1, false),
-              ElementsAre(TextSegmentMatcher(kId3, 1, 10)));
-  EXPECT_THAT(read_aloud_model().GetHighlightForCurrentSegmentIndex(27, false),
-              ElementsAre(TextSegmentMatcher(kId3, 6, 10)));
-  EXPECT_THAT(read_aloud_model().GetHighlightForCurrentSegmentIndex(
-                  sentence2.length() + sentence3.length() - 1, false),
-              ElementsAre(TextSegmentMatcher(kId3, 9, 10)));
+  ExpectHighlightAtIndexMatches(sentence2.length() + 1, {{kId3, 1, 10}});
+  ExpectHighlightAtIndexMatches(27, {{kId3, 6, 10}});
+  ExpectHighlightAtIndexMatches(sentence2.length() + sentence3.length() - 1,
+                                {{kId3, 9, 10}});
 
   // Out-of-bounds nodes return invalid.
-  EXPECT_THAT(read_aloud_model().GetHighlightForCurrentSegmentIndex(
-                  sentence2.length() + sentence3.length() + 1, false),
-              IsEmpty());
+  ExpectHighlightAtIndexEmpty(sentence2.length() + sentence3.length() + 1);
 }
 
 TEST_F(ReadAnythingAppControllerTest,
@@ -4361,8 +4288,7 @@ TEST_F(ReadAnythingAppControllerTest,
 
   // Before there are any processed granularities,
   // GetNodeIdForCurrentSegmentIndex should return an invalid id.
-  EXPECT_THAT(read_aloud_model().GetHighlightForCurrentSegmentIndex(1, false),
-              IsEmpty());
+  ExpectHighlightAtIndexEmpty(1);
 
   std::vector<ui::AXNodeID> node_ids = controller().GetCurrentText();
   EXPECT_EQ(node_ids.size(), 2u);
@@ -4372,41 +4298,27 @@ TEST_F(ReadAnythingAppControllerTest,
   EXPECT_EQ(node_ids.size(), 1u);
 
   // Spot check that indices 0->sentence3.length() map to the third node id.
-  EXPECT_THAT(read_aloud_model().GetHighlightForCurrentSegmentIndex(0, false),
-              ElementsAre(TextSegmentMatcher(kId3, 0, 8)));
-  EXPECT_THAT(read_aloud_model().GetHighlightForCurrentSegmentIndex(7, false),
-              ElementsAre(TextSegmentMatcher(kId3, 7, 8)));
-  EXPECT_THAT(read_aloud_model().GetHighlightForCurrentSegmentIndex(
-                  sentence3.length() - 1, false),
-              ElementsAre(TextSegmentMatcher(kId3, 36, 37)));
+  ExpectHighlightAtIndexMatches(0, {{kId3, 0, 8}});
+  ExpectHighlightAtIndexMatches(7, {{kId3, 7, 8}});
+  ExpectHighlightAtIndexMatches(sentence3.length() - 1, {{kId3, 36, 37}});
 
   // Move backwards.
   node_ids = MoveToPreviousGranularityAndGetText();
   EXPECT_EQ(node_ids.size(), 2u);
 
   // Spot check that indices in sentence 1 map to the first node id.
-  EXPECT_THAT(read_aloud_model().GetHighlightForCurrentSegmentIndex(0, false),
-              ElementsAre(TextSegmentMatcher(kId1, 0, 8)));
-  EXPECT_THAT(read_aloud_model().GetHighlightForCurrentSegmentIndex(6, false),
-              ElementsAre(TextSegmentMatcher(kId1, 6, 8)));
-  EXPECT_THAT(read_aloud_model().GetHighlightForCurrentSegmentIndex(
-                  sentence1.length() - 1, false),
-              ElementsAre(TextSegmentMatcher(kId1, 23, 24)));
+  ExpectHighlightAtIndexMatches(0, {{kId1, 0, 8}});
+  ExpectHighlightAtIndexMatches(6, {{kId1, 6, 8}});
+  ExpectHighlightAtIndexMatches(sentence1.length() - 1, {{kId1, 23, 24}});
 
   // Spot check that indices in sentence 2 map to the second node id.
-  EXPECT_THAT(read_aloud_model().GetHighlightForCurrentSegmentIndex(
-                  sentence1.length() + 1, false),
-              ElementsAre(TextSegmentMatcher(kId2, 1, 8)));
-  EXPECT_THAT(read_aloud_model().GetHighlightForCurrentSegmentIndex(27, false),
-              ElementsAre(TextSegmentMatcher(kId2, 3, 8)));
-  EXPECT_THAT(read_aloud_model().GetHighlightForCurrentSegmentIndex(
-                  sentence1.length() + sentence2.length() - 1, false),
-              ElementsAre(TextSegmentMatcher(kId2, 38, 39)));
+  ExpectHighlightAtIndexMatches(sentence1.length() + 1, {{kId2, 1, 8}});
+  ExpectHighlightAtIndexMatches(27, {{kId2, 3, 8}});
+  ExpectHighlightAtIndexMatches(sentence1.length() + sentence2.length() - 1,
+                                {{kId2, 38, 39}});
 
   // Out-of-bounds nodes return invalid.
-  EXPECT_THAT(read_aloud_model().GetHighlightForCurrentSegmentIndex(
-                  sentence1.length() + sentence2.length() + 1, false),
-              IsEmpty());
+  ExpectHighlightAtIndexEmpty(sentence1.length() + sentence2.length() + 1);
 }
 
 TEST_F(ReadAnythingAppControllerTest,
@@ -4432,66 +4344,40 @@ TEST_F(ReadAnythingAppControllerTest,
 
   // Before there are any processed granularities,
   // GetNodeIdForCurrentSegmentIndex should return an invalid id.
-  EXPECT_THAT(read_aloud_model().GetHighlightForCurrentSegmentIndex(1, false),
-              IsEmpty());
+  ExpectHighlightAtIndexEmpty(1);
 
   std::vector<ui::AXNodeID> node_ids = controller().GetCurrentText();
   EXPECT_EQ(node_ids.size(), 2u);
 
   // Throughout first word.
-  EXPECT_THAT(read_aloud_model().GetHighlightForCurrentSegmentIndex(0, false),
-              ElementsAre(TextSegmentMatcher(kId1, 0, 8)));
-  EXPECT_THAT(read_aloud_model().GetHighlightForCurrentSegmentIndex(2, false),
-              ElementsAre(TextSegmentMatcher(kId1, 2, 8)));
-  EXPECT_THAT(read_aloud_model().GetHighlightForCurrentSegmentIndex(
-                  static_cast<int>(word1.length() - 2), false),
-              ElementsAre(TextSegmentMatcher(kId1, 6, 8)));
+  ExpectHighlightAtIndexMatches(0, {{kId1, 0, 8}});
+  ExpectHighlightAtIndexMatches(2, {{kId1, 2, 8}});
+  ExpectHighlightAtIndexMatches(word1.length() - 2, {{kId1, 6, 8}});
 
   // Throughout third word.
   int third_word_index = sentence1.find(word3);
-  EXPECT_THAT(read_aloud_model().GetHighlightForCurrentSegmentIndex(
-                  third_word_index, false),
-              ElementsAre(TextSegmentMatcher(kId1, 12, 17)));
-  EXPECT_THAT(read_aloud_model().GetHighlightForCurrentSegmentIndex(
-                  third_word_index + 2, false),
-              ElementsAre(TextSegmentMatcher(kId1, 14, 17)));
+  ExpectHighlightAtIndexMatches(third_word_index, {{kId1, 12, 17}});
+  ExpectHighlightAtIndexMatches(third_word_index + 2, {{kId1, 14, 17}});
 
   // Words split across node boundaries
   int sixth_word_index = sentence1.find(word6);
-  EXPECT_THAT(read_aloud_model().GetHighlightForCurrentSegmentIndex(
-                  sixth_word_index, false),
-              ElementsAre(TextSegmentMatcher(kId1, 26, 29),
-                          TextSegmentMatcher(kId2, 0, 4)));
-  EXPECT_THAT(read_aloud_model().GetHighlightForCurrentSegmentIndex(
-                  sixth_word_index + 2, false),
-              ElementsAre(TextSegmentMatcher(kId1, 28, 29),
-                          TextSegmentMatcher(kId2, 0, 4)));
+  ExpectHighlightAtIndexMatches(sixth_word_index,
+                                {{kId1, 26, 29}, {kId2, 0, 4}});
+  ExpectHighlightAtIndexMatches(sixth_word_index + 2,
+                                {{kId1, 28, 29}, {kId2, 0, 4}});
 
   int seventh_word_index = sentence1.length();
-  EXPECT_THAT(read_aloud_model().GetHighlightForCurrentSegmentIndex(
-                  seventh_word_index, false),
-              ElementsAre(TextSegmentMatcher(kId2, 0, 4)));
-  EXPECT_THAT(read_aloud_model().GetHighlightForCurrentSegmentIndex(
-                  seventh_word_index + 2, false),
-              ElementsAre(TextSegmentMatcher(kId2, 2, 4)));
+  ExpectHighlightAtIndexMatches(seventh_word_index, {{kId2, 0, 4}});
+  ExpectHighlightAtIndexMatches(seventh_word_index + 2, {{kId2, 2, 4}});
 
   int last_word_index = sentence1.length() + sentence2.find(word8);
-  EXPECT_THAT(read_aloud_model().GetHighlightForCurrentSegmentIndex(
-                  last_word_index, false),
-              ElementsAre(TextSegmentMatcher(kId2, 4, 8)));
-  EXPECT_THAT(read_aloud_model().GetHighlightForCurrentSegmentIndex(
-                  last_word_index + 2, false),
-              ElementsAre(TextSegmentMatcher(kId2, 6, 8)));
+  ExpectHighlightAtIndexMatches(last_word_index, {{kId2, 4, 8}});
+  ExpectHighlightAtIndexMatches(last_word_index + 2, {{kId2, 6, 8}});
 
   // Boundary testing.
-  EXPECT_THAT(read_aloud_model().GetHighlightForCurrentSegmentIndex(-5, false),
-              IsEmpty());
-  EXPECT_THAT(read_aloud_model().GetHighlightForCurrentSegmentIndex(
-                  sentence1.length() + sentence2.length(), false),
-              IsEmpty());
-  EXPECT_THAT(read_aloud_model().GetHighlightForCurrentSegmentIndex(
-                  sentence1.length() + sentence2.length() + 1, false),
-              IsEmpty());
+  ExpectHighlightAtIndexEmpty(-5);
+  ExpectHighlightAtIndexEmpty(sentence1.length() + sentence2.length());
+  ExpectHighlightAtIndexEmpty(sentence1.length() + sentence2.length() + 1);
 }
 
 TEST_F(
@@ -4521,62 +4407,38 @@ TEST_F(
   EXPECT_EQ(node_ids.size(), 3u);
 
   // Spot check that indices 0->sentence1.length() map to the first node id.
-  EXPECT_THAT(read_aloud_model().GetHighlightForCurrentSegmentIndex(0, true),
-              ElementsAre(TextSegmentMatcher(kId1, 0, 17)));
-  EXPECT_THAT(read_aloud_model().GetHighlightForCurrentSegmentIndex(7, true),
-              ElementsAre(TextSegmentMatcher(kId1, 0, 17)));
-  EXPECT_THAT(read_aloud_model().GetHighlightForCurrentSegmentIndex(
-                  sentence1.length() - 1, true),
-              ElementsAre(TextSegmentMatcher(kId1, 0, 17)));
-  EXPECT_THAT(read_aloud_model().GetHighlightForCurrentSegmentIndex(
-                  sentence1.length(), true),
-              ElementsAre(TextSegmentMatcher(kId2, 0, 15),
-                          TextSegmentMatcher(kId3, 0, 3)));
+  ExpectPhraseHighlightAtIndexMatches(0, {{kId1, 0, 17}});
+  ExpectPhraseHighlightAtIndexMatches(7, {{kId1, 0, 17}});
+  ExpectPhraseHighlightAtIndexMatches(sentence1.length() - 1, {{kId1, 0, 17}});
+
+  int base_length = sentence1.length();
+  ExpectPhraseHighlightAtIndexMatches(base_length,
+                                      {{kId2, 0, 15}, {kId3, 0, 3}});
 
   // Spot check that indices in sentence 2 map to the second node id.
-  EXPECT_THAT(read_aloud_model().GetHighlightForCurrentSegmentIndex(
-                  sentence1.length() + 1, true),
-              ElementsAre(TextSegmentMatcher(kId2, 0, 15),
-                          TextSegmentMatcher(kId3, 0, 3)));
-  EXPECT_THAT(read_aloud_model().GetHighlightForCurrentSegmentIndex(26, true),
-              ElementsAre(TextSegmentMatcher(kId2, 0, 15),
-                          TextSegmentMatcher(kId3, 0, 3)));
-  EXPECT_THAT(read_aloud_model().GetHighlightForCurrentSegmentIndex(
-                  sentence1.length() + sentence2.length() - 1, true),
-              ElementsAre(TextSegmentMatcher(kId2, 0, 15),
-                          TextSegmentMatcher(kId3, 0, 3)));
-  EXPECT_THAT(read_aloud_model().GetHighlightForCurrentSegmentIndex(
-                  sentence1.length() + sentence2.length(), true),
-              ElementsAre(TextSegmentMatcher(kId2, 0, 15),
-                          TextSegmentMatcher(kId3, 0, 3)));
+  ExpectPhraseHighlightAtIndexMatches(base_length + 1,
+                                      {{kId2, 0, 15}, {kId3, 0, 3}});
+  ExpectPhraseHighlightAtIndexMatches(26, {{kId2, 0, 15}, {kId3, 0, 3}});
+
+  base_length += sentence2.length();
+  ExpectPhraseHighlightAtIndexMatches(base_length - 1,
+                                      {{kId2, 0, 15}, {kId3, 0, 3}});
+  ExpectPhraseHighlightAtIndexMatches(base_length,
+                                      {{kId2, 0, 15}, {kId3, 0, 3}});
 
   // Spot check that indices in sentence 3 map to the third node id.
-  EXPECT_THAT(read_aloud_model().GetHighlightForCurrentSegmentIndex(
-                  sentence1.length() + sentence2.length() + 1, true),
-              ElementsAre(TextSegmentMatcher(kId2, 0, 15),
-                          TextSegmentMatcher(kId3, 0, 3)));
-  EXPECT_THAT(read_aloud_model().GetHighlightForCurrentSegmentIndex(40, true),
-              ElementsAre(TextSegmentMatcher(kId3, 3, 21)));
-  EXPECT_THAT(
-      read_aloud_model().GetHighlightForCurrentSegmentIndex(
-          sentence1.length() + sentence2.length() + sentence3.length() - 1,
-          true),
-      ElementsAre(TextSegmentMatcher(kId3, 21, 31)));
-  EXPECT_THAT(
-      read_aloud_model().GetHighlightForCurrentSegmentIndex(
-          sentence1.length() + sentence2.length() + sentence3.length(), true),
-      IsEmpty());
+  ExpectPhraseHighlightAtIndexMatches(base_length + 1,
+                                      {{kId2, 0, 15}, {kId3, 0, 3}});
+  ExpectPhraseHighlightAtIndexMatches(40, {{kId3, 3, 21}});
+
+  ExpectPhraseHighlightAtIndexMatches(base_length + sentence3.length() - 1,
+                                      {{kId3, 21, 31}});
+  ExpectPhraseHighlightAtIndexEmpty(base_length + sentence3.length());
 
   // Out-of-bounds nodes return an empty array.
-  EXPECT_THAT(
-      read_aloud_model().GetHighlightForCurrentSegmentIndex(
-          sentence1.length() + sentence2.length() + sentence3.length() + 1,
-          true),
-      IsEmpty());
-  EXPECT_THAT(read_aloud_model().GetHighlightForCurrentSegmentIndex(535, true),
-              IsEmpty());
-  EXPECT_THAT(read_aloud_model().GetHighlightForCurrentSegmentIndex(-10, true),
-              IsEmpty());
+  ExpectPhraseHighlightAtIndexEmpty(base_length + sentence3.length() + 1);
+  ExpectPhraseHighlightAtIndexEmpty(535);
+  ExpectPhraseHighlightAtIndexEmpty(-10);
 }
 
 TEST_F(
@@ -4620,44 +4482,29 @@ TEST_F(
   EXPECT_EQ(node_ids.size(), 3u);
 
   // First character (N) => first phrase
-  EXPECT_THAT(read_aloud_model().GetHighlightForCurrentSegmentIndex(0, true),
-              ElementsAre(TextSegmentMatcher(kId1, 0, 20),
-                          TextSegmentMatcher(kId2, 0, 12)));
+  ExpectPhraseHighlightAtIndexMatches(0, {{kId1, 0, 20}, {kId2, 0, 12}});
 
   // 20th character (e of earthbound) => first phrase
-  EXPECT_THAT(read_aloud_model().GetHighlightForCurrentSegmentIndex(20, true),
-              ElementsAre(TextSegmentMatcher(kId1, 0, 20),
-                          TextSegmentMatcher(kId2, 0, 12)));
+  ExpectPhraseHighlightAtIndexMatches(20, {{kId1, 0, 20}, {kId2, 0, 12}});
 
   // 31st character (space before "no") => first phrase
-  EXPECT_THAT(read_aloud_model().GetHighlightForCurrentSegmentIndex(31, true),
-              ElementsAre(TextSegmentMatcher(kId1, 0, 20),
-                          TextSegmentMatcher(kId2, 0, 12)));
+  ExpectPhraseHighlightAtIndexMatches(31, {{kId1, 0, 20}, {kId2, 0, 12}});
 
   // 32nd character (n of no) => second phrase
-  EXPECT_THAT(read_aloud_model().GetHighlightForCurrentSegmentIndex(32, true),
-              ElementsAre(TextSegmentMatcher(kId2, 12, 15),
-                          TextSegmentMatcher(kId3, 0, 28)));
+  ExpectPhraseHighlightAtIndexMatches(32, {{kId2, 12, 15}, {kId3, 0, 28}});
 
   // 35th character (w of worries) => second phrase
-  EXPECT_THAT(read_aloud_model().GetHighlightForCurrentSegmentIndex(35, true),
-              ElementsAre(TextSegmentMatcher(kId2, 12, 15),
-                          TextSegmentMatcher(kId3, 0, 28)));
+  ExpectPhraseHighlightAtIndexMatches(35, {{kId2, 12, 15}, {kId3, 0, 28}});
 
   // 62nd character (final .) => second phrase
-  EXPECT_THAT(read_aloud_model().GetHighlightForCurrentSegmentIndex(62, true),
-              ElementsAre(TextSegmentMatcher(kId2, 12, 15),
-                          TextSegmentMatcher(kId3, 0, 28)));
+  ExpectPhraseHighlightAtIndexMatches(62, {{kId2, 12, 15}, {kId3, 0, 28}});
 
   // 63rd character (past the end of the sentence) => empty
-  EXPECT_THAT(read_aloud_model().GetHighlightForCurrentSegmentIndex(63, true),
-              IsEmpty());
+  ExpectPhraseHighlightAtIndexEmpty(63);
 
   // Invalid indices.
-  EXPECT_THAT(read_aloud_model().GetHighlightForCurrentSegmentIndex(535, true),
-              IsEmpty());
-  EXPECT_THAT(read_aloud_model().GetHighlightForCurrentSegmentIndex(-10, true),
-              IsEmpty());
+  ExpectPhraseHighlightAtIndexEmpty(535);
+  ExpectPhraseHighlightAtIndexEmpty(-10);
 }
 
 TEST_F(ReadAnythingAppControllerTest,
