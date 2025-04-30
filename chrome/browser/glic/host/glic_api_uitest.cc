@@ -16,6 +16,7 @@
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -433,6 +434,7 @@ IN_PROC_BROWSER_TEST_F(GlicApiTest, testLoadWhileWindowClosed) {
 }
 
 IN_PROC_BROWSER_TEST_F(GlicApiTest, testInitializeFailsWindowClosed) {
+  base::HistogramTester histogram_tester;
   // Immediately close the window to check behavior while window is closed.
   // Fail client initialization, should see error page.
   RunTestSequence(
@@ -440,6 +442,8 @@ IN_PROC_BROWSER_TEST_F(GlicApiTest, testInitializeFailsWindowClosed) {
   window_controller().Close();
   ExecuteJsTest();
   WaitForWebUiState(mojom::WebUiState::kError);
+  histogram_tester.ExpectUniqueSample("Glic.Host.WebClientState.OnDestroy",
+                                      /*WEB_CLIENT_INITIALIZE_FAILED=*/2, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(GlicApiTest, testInitializeFailsWindowOpen) {
@@ -547,10 +551,45 @@ IN_PROC_BROWSER_TEST_F(GlicApiTest, testInitializeFailsAfterReload) {
   listener.WaitForWebUiState(mojom::WebUiState::kError);
 }
 
+IN_PROC_BROWSER_TEST_F(GlicApiTestWithFastTimeout, testNoClientCreated) {
+#if defined(SLOW_BINARY)
+  GTEST_SKIP() << "skip timeout test for slow binary";
+#else
+  base::HistogramTester histogram_tester;
+  RunTestSequence(
+      OpenGlicWindow(GlicWindowMode::kDetached, GlicInstrumentMode::kNone));
+  WebUIStateListener listener(&window_controller());
+  ExecuteJsTest();
+  listener.WaitForWebUiState(mojom::WebUiState::kError);
+  // Note that the client does receive the bootstrap message, but never calls
+  // back, so from the host's perspective bootstrapping is still pending.
+  histogram_tester.ExpectUniqueSample("Glic.Host.WebClientState.OnDestroy",
+                                      0 /*BOOTSTRAP_PENDING*/, 1);
+#endif
+}
+
+// In this test, the client page does not initiate the bootstrap process, so no
+// client connects.
+IN_PROC_BROWSER_TEST_F(GlicApiTestWithFastTimeout, testNoBootstrap) {
+#if defined(SLOW_BINARY)
+  GTEST_SKIP() << "skip timeout test for slow binary";
+#else
+  base::HistogramTester histogram_tester;
+  RunTestSequence(
+      OpenGlicWindow(GlicWindowMode::kDetached, GlicInstrumentMode::kNone));
+  WebUIStateListener listener(&window_controller());
+  ExecuteJsTest();
+  listener.WaitForWebUiState(mojom::WebUiState::kError);
+  histogram_tester.ExpectUniqueSample("Glic.Host.WebClientState.OnDestroy",
+                                      0 /*BOOTSTRAP_PENDING*/, 1);
+#endif
+}
+
 IN_PROC_BROWSER_TEST_F(GlicApiTestWithFastTimeout, testInitializeTimesOut) {
 #if defined(SLOW_BINARY)
   GTEST_SKIP() << "skip timeout test for slow binary";
 #else
+  base::HistogramTester histogram_tester;
   RunTestSequence(
       OpenGlicWindow(GlicWindowMode::kDetached, GlicInstrumentMode::kNone));
   WebUIStateListener listener(&window_controller());
@@ -558,6 +597,8 @@ IN_PROC_BROWSER_TEST_F(GlicApiTestWithFastTimeout, testInitializeTimesOut) {
       .params = base::Value(base::Value::Dict().Set("failWith", "timeout")),
   });
   listener.WaitForWebUiState(mojom::WebUiState::kError);
+  histogram_tester.ExpectUniqueSample("Glic.Host.WebClientState.OnDestroy",
+                                      3 /*WEB_CLIENT_NOT_INITIALIZED*/, 1);
 #endif
 }
 
@@ -907,6 +948,16 @@ IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab,
   }));
 }
 
+// TODO(harringtond): This is flaky.
+IN_PROC_BROWSER_TEST_F(GlicApiTest, DISABLED_testCloseAndOpenWhileOpening) {
+  RunTestSequence(
+      OpenGlicWindow(GlicWindowMode::kDetached, GlicInstrumentMode::kNone));
+  ExecuteJsTest();
+  RunTestSequence(
+      OpenGlicWindow(GlicWindowMode::kDetached, GlicInstrumentMode::kNone));
+  ContinueJsTest();
+}
+
 IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab,
                        testNotifyPanelWillOpenIsCalledOnce) {
   ExecuteJsTest();
@@ -1107,6 +1158,8 @@ IN_PROC_BROWSER_TEST_F(GlicApiTestSystemSettingsTest,
 }
 
 IN_PROC_BROWSER_TEST_F(GlicApiTest, testNavigateToDifferentClientPage) {
+  base::HistogramTester histogram_tester;
+
   WebUIStateListener listener(&window_controller());
   RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
                                  GlicInstrumentMode::kHostAndContents));
@@ -1115,6 +1168,10 @@ IN_PROC_BROWSER_TEST_F(GlicApiTest, testNavigateToDifferentClientPage) {
   listener.WaitForWebUiState(mojom::WebUiState::kBeginLoad);
   listener.WaitForWebUiState(mojom::WebUiState::kReady);
   ExecuteJsTest({.params = base::Value(1)});  // test run count: 1.
+  histogram_tester.ExpectUniqueSample("Glic.Host.WebClientState.OnCommit",
+                                      6 /*RESPONSIVE*/, 1);
+  histogram_tester.ExpectUniqueSample("Glic.Host.WebClientState.OnDestroy",
+                                      0 /*BOOTSTRAP_PENDING*/, 1);
 }
 
 // TODO(crbug.com/410881522): Re-enable this test

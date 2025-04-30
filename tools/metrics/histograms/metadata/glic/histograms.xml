@@ -160,6 +160,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Glic.Host.WebClientState.{Event}"
+    enum="GlicDetailedWebClientState" expires_after="2026-01-15">
+  <owner>harringtond@chromium.org</owner>
+  <owner>carlosk@chromium.org</owner>
+  <summary>Records the web client state according to the host. {Event}</summary>
+  <token key="Event">
+    <variant name="AtOneMinute"
+        summary="Recorded one minute after loading the webview."/>
+    <variant name="OnCommit" summary="Recorded before commit on the webview."/>
+    <variant name="OnDestroy"
+        summary="Recorded before the webview is destroyed."/>
+  </token>
+</histogram>
+
 <histogram name="Glic.Metrics.Error" enum="GlicMetricsError"
     expires_after="2026-01-15">
   <owner>dewittj@google.com</owner>

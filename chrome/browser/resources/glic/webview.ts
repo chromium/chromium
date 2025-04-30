@@ -8,10 +8,11 @@ import type {ChromeEvent} from '/tools/typescript/definitions/chrome_event.js';
 
 import type {BrowserProxyImpl} from './browser_proxy.js';
 import type {Subscriber} from './glic_api/glic_api.js';
-import {GlicApiHost, WebClientState} from './glic_api_impl/glic_api_host.js';
+import {DetailedWebClientState, GlicApiHost, WebClientState} from './glic_api_impl/glic_api_host.js';
 import type {ApiHostEmbedder} from './glic_api_impl/glic_api_host.js';
 import {ObservableValue} from './observable.js';
 import type {ObservableValueReadOnly} from './observable.js';
+import {OneShotTimer} from './timer.js';
 
 export type PageType =
     // A login page.
@@ -82,6 +83,7 @@ export class WebviewController {
   private eventTracker = new EventTracker();
   private webClientState =
       ObservableValue.withValue(WebClientState.UNINITIALIZED);
+  private oneMinuteTimer = new OneShotTimer(1000 * 60);
 
   constructor(
       private readonly container: HTMLElement,
@@ -135,6 +137,15 @@ export class WebviewController {
     this.eventTracker.add(this.webview, 'exit', this.onExit.bind(this));
 
     this.webview.src = this.persistentState.useLoadUrl();
+
+    this.oneMinuteTimer.start(() => {
+      if (this.host) {
+        chrome.metricsPrivate.recordEnumerationValue(
+            'Glic.Host.WebClientState.AtOneMinute',
+            this.host.getDetailedWebClientState(),
+            DetailedWebClientState.MAX_VALUE + 1);
+      }
+    });
   }
 
   getWebClientState(): ObservableValueReadOnly<WebClientState> {
@@ -142,6 +153,13 @@ export class WebviewController {
   }
 
   destroy() {
+    this.oneMinuteTimer.reset();
+    if (this.host) {
+      chrome.metricsPrivate.recordEnumerationValue(
+          'Glic.Host.WebClientState.OnDestroy',
+          this.host.getDetailedWebClientState(),
+          DetailedWebClientState.MAX_VALUE + 1);
+    }
     this.destroyHost(
         this.webClientState.getCurrentValue() === WebClientState.ERROR ?
             WebClientState.ERROR :
@@ -222,6 +240,12 @@ export class WebviewController {
   private loadCommit(url: string, isTopLevel: boolean) {
     if (!isTopLevel) {
       return;
+    }
+    if (this.host) {
+      chrome.metricsPrivate.recordEnumerationValue(
+          'Glic.Host.WebClientState.OnCommit',
+          this.host.getDetailedWebClientState(),
+          DetailedWebClientState.MAX_VALUE + 1);
     }
     const wasResponsive = this.getWebClientState().getCurrentValue() ===
         WebClientState.RESPONSIVE;
