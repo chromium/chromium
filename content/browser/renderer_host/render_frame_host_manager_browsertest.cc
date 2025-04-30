@@ -5997,7 +5997,7 @@ class AssertForegroundHelper {
   AssertForegroundHelper(const AssertForegroundHelper&) = delete;
   AssertForegroundHelper& operator=(const AssertForegroundHelper&) = delete;
 
-#if BUILDFLAG(IS_APPLE)
+#if BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_IOS_TVOS)
   // Asserts that |renderer_process| isn't backgrounded and reposts self to
   // check again shortly. |renderer_process| must outlive this
   // AssertForegroundHelper instance.
@@ -6012,7 +6012,7 @@ class AssertForegroundHelper {
                        std::cref(renderer_process)),
         base::Milliseconds(1));
   }
-#else   // BUILDFLAG(IS_APPLE)
+#else   // BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_IOS_TVOS)
   // Same as above without the Mac specific base::PortProvider.
   void AssertForegroundAndRepost(const base::Process& renderer_process) {
     ASSERT_NE(renderer_process.GetPriority(),
@@ -6024,7 +6024,7 @@ class AssertForegroundHelper {
                        std::cref(renderer_process)),
         base::Milliseconds(1));
   }
-#endif  // BUILDFLAG(IS_APPLE)
+#endif  // BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_IOS_TVOS)
 
  private:
   base::WeakPtrFactory<AssertForegroundHelper> weak_ptr_factory_{this};
