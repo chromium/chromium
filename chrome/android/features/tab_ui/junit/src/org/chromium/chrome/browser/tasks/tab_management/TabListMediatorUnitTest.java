@@ -4781,6 +4781,32 @@ public class TabListMediatorUnitTest {
         assertEquals(TabGroupColorId.BLUE, provider.getTabGroupColorIdForTesting());
     }
 
+    @Test
+    public void testBindTabGroupActionButtonData_withTabGroupType() {
+        Tab newTab = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
+        List<Tab> tabs = new ArrayList<>(Arrays.asList(mTab1, newTab));
+        List<String> syncIds = new ArrayList<>(Arrays.asList(SYNC_GROUP_ID1));
+        mMediator.setDefaultGridCardSize(new Size(100, 200));
+
+        // Ensure the group is archived.
+        mSavedTabGroup1.archivalTimeMs = System.currentTimeMillis();
+
+        mMediator.resetWithListOfTabs(tabs, syncIds, false);
+
+        assertEquals(TAB_GROUP, mModelList.get(0).model.get(CARD_TYPE));
+        assertNotNull(mModelList.get(0).model.get(TabProperties.TAB_ACTION_BUTTON_DATA));
+        mModelList
+                .get(0)
+                .model
+                .get(TabProperties.TAB_ACTION_BUTTON_DATA)
+                .tabActionListener
+                .run(mItemView1, mModelList.get(0).model.get(TabProperties.TAB_GROUP_SYNC_ID));
+
+        // Assert that the tab group has been removed from the model list and archive status reset.
+        assertEquals(TAB, mModelList.get(0).model.get(CARD_TYPE));
+        verify(mTabGroupSyncService).updateArchivalStatus(eq(SYNC_GROUP_ID1), eq(false));
+    }
+
     private void setUpTabGroupCardDescriptionString() {
         doAnswer(
                         invocation -> {

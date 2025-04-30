@@ -189,6 +189,9 @@ class TabListMediator implements TabListNotificationHandler {
     public interface TabActionListener {
         /** Run the action for the given view and tabId. */
         void run(View view, int tabId);
+
+        /** Run the action for the given view and tab group sync id. */
+        void run(View view, String syncId);
     }
 
     /**
@@ -418,6 +421,11 @@ class TabListMediator implements TabListNotificationHandler {
                     }
                 }
 
+                @Override
+                public void run(View view, String syncId) {
+                    // Intentional no-op.
+                }
+
                 /**
                  * Records MobileTabSwitched for the component. Also, records Tabs.TabOffsetOfSwitch
                  * but only when fromTab and toTab are within the same group. This method only
@@ -470,6 +478,11 @@ class TabListMediator implements TabListNotificationHandler {
                     if (tab != null && filter.isTabInTabGroup(tab)) {
                         updateThumbnailFetcher(model, tabId);
                     }
+                }
+
+                @Override
+                public void run(View view, String syncId) {
+                    // Intentional no-op.
                 }
             };
 
@@ -1159,6 +1172,26 @@ class TabListMediator implements TabListNotificationHandler {
                                 .closeTabs(closureParams, /* allowDialog= */ true, listener);
                     }
 
+                    @Override
+                    public void run(View view, String syncId) {
+                        int index = mModelList.indexFromSyncId(syncId);
+                        if (index == TabModel.INVALID_TAB_INDEX) return;
+
+                        @Nullable PropertyModel model = mModelList.getModelFromSyncId(syncId);
+                        if (model != null) {
+                            Long archivalTimeMs =
+                                    mTabGroupSyncService.getGroup(syncId).archivalTimeMs;
+
+                            // If the tab group is archived, run archival reset logic and remove the
+                            // tab group from the model list.
+                            if (archivalTimeMs != null) {
+                                model.set(TabProperties.USE_SHRINK_CLOSE_ANIMATION, true);
+                                mModelList.removeAt(index);
+                                mTabGroupSyncService.updateArchivalStatus(syncId, false);
+                            }
+                        }
+                    }
+
                     private Tab getNextTab(int closingTabId) {
                         int closingTabIndex = mModelList.indexFromTabId(closingTabId);
 
@@ -1190,35 +1223,43 @@ class TabListMediator implements TabListNotificationHandler {
                 };
 
         TabActionListener swipeSafeTabActionListener =
-                (view, tabId) -> {
-                    // The DefaultItemAnimator is prone to crashing in combination with the swipe
-                    // animation when closing the last tab.
-                    // Avoid this issue by disabling the default item animation for the duration of
-                    // the removal of the last tab. This is a framework issue. For more details see
-                    // crbug/1319859.
-                    boolean shouldDisableItemAnimations =
-                            mCurrentTabGroupModelFilterSupplier.hasValue()
-                                    && mCurrentTabGroupModelFilterSupplier
-                                                    .get()
-                                                    .getTabModel()
-                                                    .getCount()
-                                            <= 1;
-                    if (shouldDisableItemAnimations) {
-                        mRecyclerViewItemAnimationToggle.setDisableItemAnimations(true);
+                new TabActionListener() {
+                    @Override
+                    public void run(View view, int tabId) {
+                        // The DefaultItemAnimator is prone to crashing in combination with the
+                        // swipe animation when closing the last tab. Avoid this issue by disabling
+                        // the default item animation for the duration of the removal of the last
+                        // tab. This is a framework issue. For more details see crbug.com/1319859.
+                        boolean shouldDisableItemAnimations =
+                                mCurrentTabGroupModelFilterSupplier.hasValue()
+                                        && mCurrentTabGroupModelFilterSupplier
+                                                        .get()
+                                                        .getTabModel()
+                                                        .getCount()
+                                                <= 1;
+                        if (shouldDisableItemAnimations) {
+                            mRecyclerViewItemAnimationToggle.setDisableItemAnimations(true);
+                        }
+
+                        mTabClosedListener.run(view, tabId);
+
+                        // It is necessary to post the restoration as otherwise any animation
+                        // triggered by removing the tab will still use the animator as they are
+                        // also posted to the UI thread.
+                        if (shouldDisableItemAnimations) {
+                            new Handler()
+                                    .post(
+                                            () -> {
+                                                mRecyclerViewItemAnimationToggle
+                                                        .setDisableItemAnimations(false);
+                                            });
+                        }
                     }
 
-                    mTabClosedListener.run(view, tabId);
-
-                    // It is necessary to post the restoration as otherwise any animation triggered
-                    // by removing the tab will still use the animator as they are also posted to
-                    // the UI thread.
-                    if (shouldDisableItemAnimations) {
-                        new Handler()
-                                .post(
-                                        () -> {
-                                            mRecyclerViewItemAnimationToggle
-                                                    .setDisableItemAnimations(false);
-                                        });
+                    @Override
+                    public void run(View view, String syncId) {
+                        // Swipe is disabled in the {@link ArchivedTabsDialogCoordinator}
+                        // implementation of the TabListMediator. Intentional no-op.
                     }
                 };
 
@@ -1855,6 +1896,13 @@ class TabListMediator implements TabListNotificationHandler {
         }
     }
 
+    private void bindTabGroupActionStateProperties(PropertyModel model) {
+        TabActionButtonData tabActionButtonData =
+                new TabActionButtonData(
+                        TabActionButtonData.TabActionButtonType.CLOSE, mTabClosedListener);
+        model.set(TabProperties.TAB_ACTION_BUTTON_DATA, tabActionButtonData);
+    }
+
     private TabActionListener getTabActionListener(Tab tab, boolean isInTabGroup) {
         TabActionListener tabSelectedListener;
         if (mGridCardOnClickListenerProvider == null
@@ -1994,6 +2042,8 @@ class TabListMediator implements TabListNotificationHandler {
                         .with(TabProperties.VISIBILITY, View.VISIBLE)
                         .with(TabProperties.USE_SHRINK_CLOSE_ANIMATION, false)
                         .build();
+
+        bindTabGroupActionStateProperties(tabGroupInfo);
 
         mModelList.add(
                 index,

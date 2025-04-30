@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
+import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -63,23 +64,31 @@ public class TabListGroupMenuCoordinator extends TabGroupOverflowMenuCoordinator
      * clicked.
      */
     TabListMediator.TabActionListener getTabActionListener() {
-        return (view, tabId) -> {
-            @Nullable TabModel tabModel = getTabModel();
-            if (tabModel == null) return;
+        return new TabListMediator.TabActionListener() {
+            @Override
+            public void run(View view, int tabId) {
+                @Nullable TabModel tabModel = getTabModel();
+                if (tabModel == null) return;
 
-            @Nullable Tab tab = tabModel.getTabById(tabId);
-            if (tab == null) return;
+                @Nullable Tab tab = tabModel.getTabById(tabId);
+                if (tab == null) return;
 
-            @Nullable Token tabGroupId = tab.getTabGroupId();
-            if (tabGroupId == null) return;
+                @Nullable Token tabGroupId = tab.getTabGroupId();
+                if (tabGroupId == null) return;
 
-            mShouldShowIcons = false;
-            createAndShowMenu(
-                    new ViewRectProvider(view),
-                    tabGroupId,
-                    /* animStyle= */ R.style.EndIconMenuAnim,
-                    /* verticalOverlapAnchor= */ true,
-                    (Activity) view.getContext());
+                mShouldShowIcons = false;
+                createAndShowMenu(
+                        new ViewRectProvider(view),
+                        tabGroupId,
+                        /* animStyle= */ R.style.EndIconMenuAnim,
+                        /* verticalOverlapAnchor= */ true,
+                        (Activity) view.getContext());
+            }
+
+            @Override
+            public void run(View view, String syncId) {
+                // Intentional no-op.
+            }
         };
     }
 

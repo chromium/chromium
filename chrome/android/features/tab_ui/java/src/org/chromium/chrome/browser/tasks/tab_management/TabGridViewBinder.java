@@ -282,7 +282,11 @@ class TabGridViewBinder {
         } else {
             view.setOnClickListener(
                     v -> {
-                        listener.run(v, propertyModel.get(TabProperties.TAB_ID));
+                        if (propertyModel.containsKey(TabProperties.TAB_GROUP_SYNC_ID)) {
+                            listener.run(v, propertyModel.get(TabProperties.TAB_GROUP_SYNC_ID));
+                        } else {
+                            listener.run(v, propertyModel.get(TabProperties.TAB_ID));
+                        }
                     });
         }
     }

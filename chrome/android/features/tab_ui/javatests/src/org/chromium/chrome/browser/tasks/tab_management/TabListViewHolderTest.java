@@ -214,6 +214,9 @@ public class TabListViewHolderTest {
                     mCloseClicked.set(true);
                     mCloseTabId.set(tabId);
                 }
+
+                @Override
+                public void run(View view, String syncId) {}
             };
     private AtomicBoolean mCloseClicked = new AtomicBoolean();
     private AtomicInteger mCloseTabId = new AtomicInteger();
@@ -225,6 +228,9 @@ public class TabListViewHolderTest {
                     mSelectClicked.set(true);
                     mSelectTabId.set(tabId);
                 }
+
+                @Override
+                public void run(View view, String syncId) {}
             };
     private AtomicBoolean mSelectClicked = new AtomicBoolean();
     private AtomicInteger mSelectTabId = new AtomicInteger();
@@ -236,6 +242,9 @@ public class TabListViewHolderTest {
                     mCreateGroupButtonClicked.set(true);
                     mCreateGroupTabId.set(tabId);
                 }
+
+                @Override
+                public void run(View view, String syncId) {}
             };
     private AtomicBoolean mCreateGroupButtonClicked = new AtomicBoolean();
     private AtomicInteger mCreateGroupTabId = new AtomicInteger();
