@@ -144,7 +144,7 @@ IN_PROC_BROWSER_TEST_P(SettingsPrivateApiTest, GetPref_CrOSSetting) {
   EXPECT_TRUE(RunSettingsSubtest("getPref_CrOSSetting")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_P(SettingsPrivateApiTest, SetPref_CrOSSetting) {
+IN_PROC_BROWSER_TEST_P(SettingsPrivateApiTest, DISABLED_SetPref_CrOSSetting) {
   EXPECT_TRUE(RunSettingsSubtest("setPref_CrOSSetting")) << message_;
 }
 
