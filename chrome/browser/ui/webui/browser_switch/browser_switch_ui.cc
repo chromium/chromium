@@ -544,6 +544,11 @@ void BrowserSwitchHandler::HandleIsBrowserSwitchEnabled(
   ResolveJavascriptCallback(args[0], base::Value(service->prefs().IsEnabled()));
 }
 
+bool BrowserSwitchUIConfig::IsWebUIEnabled(
+    content::BrowserContext* browser_context) {
+  return browser_context && !browser_context->IsOffTheRecord();
+}
+
 BrowserSwitchUI::BrowserSwitchUI(content::WebUI* web_ui)
     : WebUIController(web_ui) {
   web_ui->AddMessageHandler(std::make_unique<BrowserSwitchHandler>());

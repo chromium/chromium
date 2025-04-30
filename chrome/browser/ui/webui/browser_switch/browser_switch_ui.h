@@ -19,6 +19,9 @@ class BrowserSwitchUIConfig
   BrowserSwitchUIConfig()
       : DefaultWebUIConfig(content::kChromeUIScheme,
                            chrome::kChromeUIBrowserSwitchHost) {}
+
+  // WebUIConfig:
+  bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
 };
 
 class BrowserSwitchUI : public content::WebUIController {
