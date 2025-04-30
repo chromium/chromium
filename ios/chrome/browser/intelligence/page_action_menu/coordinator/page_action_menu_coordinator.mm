@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/intelligence/page_action_menu/coordinator/page_action_menu_coordinator.h"
 
 #import "base/functional/callback_helpers.h"
+#import "ios/chrome/browser/intelligence/glic/coordinator/glic_consent_coordinator.h"
 #import "ios/chrome/browser/intelligence/glic/model/glic_service.h"
 #import "ios/chrome/browser/intelligence/glic/model/glic_service_factory.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
@@ -15,6 +16,7 @@
 @implementation PageActionMenuCoordinator {
   // The PageContext wrapper used to provide context about a page.
   PageContextWrapper* _pageContextWrapper;
+  GlicConsentCoordinator* _glicConsentCoordinator;
 }
 
 #pragma mark - ChromeCoordinator
@@ -23,7 +25,6 @@
   // TODO(crbug.com/408006823): Have the view controller call this when its
   // button is pressed.
   [self handleEntryPointPressed];
-
   [super start];
 }
 
@@ -35,6 +36,29 @@
 
 // TODO(crbug.com/408006823): Rename this function.
 - (void)handleEntryPointPressed {
+  if ([self shouldShowGlicConsent]) {
+    [self showGlicConsent];
+    return;
+  }
+  [self prepareGlicOverlay];
+}
+
+// TODO(crbug.com/414419915): Present Consent UI when Glic is used for the first
+// time or the user declined it.
+- (BOOL)shouldShowGlicConsent {
+  return NO;
+}
+
+- (void)showGlicConsent {
+  _glicConsentCoordinator = [[GlicConsentCoordinator alloc]
+      initWithBaseViewController:self.baseViewController
+                         browser:self.browser];
+
+  [_glicConsentCoordinator start];
+}
+
+// Prepare Glic overlay.
+- (void)prepareGlicOverlay {
   // Cancel any ongoing page context operation.
   if (_pageContextWrapper) {
     _pageContextWrapper = nil;

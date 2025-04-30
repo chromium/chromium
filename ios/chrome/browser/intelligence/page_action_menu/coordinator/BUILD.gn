@@ -8,6 +8,7 @@ source_set("coordinator") {
     "page_action_menu_coordinator.mm",
   ]
   deps = [
+    "//ios/chrome/browser/intelligence/glic/coordinator",
     "//ios/chrome/browser/intelligence/glic/model",
     "//ios/chrome/browser/intelligence/glic/model:glic_service_factory",
     "//ios/chrome/browser/intelligence/proto_wrappers",
