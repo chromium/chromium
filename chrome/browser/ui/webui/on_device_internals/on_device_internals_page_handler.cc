@@ -49,13 +49,6 @@ on_device_model::ModelAssets LoadModelAssets(const base::FilePath& model_path) {
     model_paths.weights = model_path;
   }
 
-  if (optimization_guide::features::ForceCpuBackendForOnDeviceModel()) {
-    // TODO(crbug.com/401011041): Pass the model via a file descriptor.
-    on_device_model::ModelAssets assets;
-    assets.weights_path = model_paths.weights;
-    return assets;
-  }
-
   return on_device_model::LoadModelAssets(model_paths);
 }
 #endif

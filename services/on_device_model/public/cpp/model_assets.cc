@@ -7,6 +7,7 @@
 #include <cstdint>
 #include <string_view>
 
+#include "base/feature_list.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/task/thread_pool.h"
@@ -14,6 +15,19 @@
 
 namespace on_device_model {
 namespace {
+
+// Whether the on-device model should be loaded from a file path rather than a
+// file descriptor. This may require disabling this service's sandbox.
+//
+// This flag is only for testing purposes and should NOT be enabled by default.
+//
+// Ideally this would be a FeatureParam of
+// `optimization_guide::features::kOptimizationGuideOnDeviceModel` but including
+// that header here results in a circular dependency which isn't worth
+// unraveling for a flag which will never be used outside of local testing.
+BASE_FEATURE(kForceLoadOnDeviceModelFromFilePathForTesting,
+             "ForceLoadOnDeviceModelFromFilePathForTesting",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // NOTE: Weights ultimately need to be mapped copy-on-write, but Fuchsia
 // (due to an apparent bug?) doesn't seem to support copy-on-write mapping of
@@ -78,7 +92,12 @@ ModelAssets LoadModelAssets(const ModelAssetPaths& paths) {
 
   ModelAssets assets;
   if (!paths.weights.empty()) {
-    assets.weights = base::File(paths.weights, kWeightsFlags);
+    if (base::FeatureList::IsEnabled(
+            kForceLoadOnDeviceModelFromFilePathForTesting)) {
+      assets.weights_path = paths.weights;
+    } else {
+      assets.weights = base::File(paths.weights, kWeightsFlags);
+    }
   }
   return assets;
 }
