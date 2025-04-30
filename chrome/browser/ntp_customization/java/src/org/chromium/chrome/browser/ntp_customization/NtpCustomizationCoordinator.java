@@ -74,6 +74,10 @@ public class NtpCustomizationCoordinator {
         mViewFlipperView = contentView.findViewById(R.id.ntp_customization_view_flipper);
         contentView.setAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_ASSERTIVE);
 
+        // This empty OnClickListener is added to the ViewFlipper to prevent TalkBack from
+        // unexpectedly triggering the click listeners of its child list items.
+        mViewFlipperView.setOnClickListener(v -> {});
+
         NtpCustomizationBottomSheetContent bottomSheetContent =
                 new NtpCustomizationBottomSheetContent(
                         contentView,
