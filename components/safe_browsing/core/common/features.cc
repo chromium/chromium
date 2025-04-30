@@ -353,6 +353,30 @@ constexpr base::FeatureParam<int>
         /*name=*/"notification_timeout_seconds",
         /*default_value=*/7 * 24 * 3600};
 
+constexpr base::FeatureParam<int>
+    kSafetyHubDisruptiveNotificationRevocationMinFalsePositiveCooldown{
+        &kSafetyHubDisruptiveNotificationRevocation,
+        /*name=*/"min_false_positive_cooldown", /*default_value=*/0};
+
+constexpr base::FeatureParam<int>
+    kSafetyHubDisruptiveNotificationRevocationMaxFalsePositivePeriod{
+        &kSafetyHubDisruptiveNotificationRevocation,
+        /*name=*/"max_false_positive_period", /*default_value=*/14};
+
+// TODO(crbug.com/406472515): Site engagement score increase on navigation
+// happens at the same time as us detecting the navigation. If the score delta
+// is 0, the initial navigation won't trigger marking the site as false
+// positive.
+constexpr base::FeatureParam<double>
+    kSafetyHubDisruptiveNotificationRevocationMinSiteEngagementScoreDelta{
+        &kSafetyHubDisruptiveNotificationRevocation,
+        /*name=*/"min_engagement_score_delta", /*default_value=*/0.0};
+
+constexpr base::FeatureParam<int>
+    kSafetyHubDisruptiveNotificationRevocationUserRegrantWaitingPeriod{
+        &kSafetyHubDisruptiveNotificationRevocation,
+        /*name=*/"user_regrant_waiting_period", /*default_value=*/7};
+
 BASE_FEATURE(kSavePasswordHashFromProfilePicker,
              "SavePasswordHashFromProfilePicker",
              base::FEATURE_ENABLED_BY_DEFAULT);

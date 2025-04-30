@@ -342,6 +342,31 @@ extern const base::FeatureParam<double>
 extern const base::FeatureParam<int>
     kSafetyHubDisruptiveNotificationRevocationNotificationTimeoutSeconds;
 
+// The minimum number of days since the revocation until a site can be
+// considered a false positive disruptive notification revocation. The cooldown
+// period allows to gather interactions for a period of time to understand how
+// much users have interacted with a site and whether it might have been a flake
+// (ex. accidental click on a notification).
+extern const base::FeatureParam<int>
+    kSafetyHubDisruptiveNotificationRevocationMinFalsePositiveCooldown;
+
+// The maximum number of days since the revocation when a site can be considered
+// a false positive disruptive notification revocation. After it runs out, the
+// revocation won't be reported as a false positive.
+extern const base::FeatureParam<int>
+    kSafetyHubDisruptiveNotificationRevocationMaxFalsePositivePeriod;
+
+// The minimum site engagement score delta for a website to be considered a
+// false positive disruptive notification revocation.
+extern const base::FeatureParam<double>
+    kSafetyHubDisruptiveNotificationRevocationMinSiteEngagementScoreDelta;
+
+// The maximum number of days to observe the revoked site for user regranting
+// the permission while visiting the site. The period is a number of days since
+// a false positive was detected (a page visit or a notification click).
+extern const base::FeatureParam<int>
+    kSafetyHubDisruptiveNotificationRevocationUserRegrantWaitingPeriod;
+
 // Enables saving gaia password hash from the Profile Picker sign-in flow.
 BASE_DECLARE_FEATURE(kSavePasswordHashFromProfilePicker);
 
