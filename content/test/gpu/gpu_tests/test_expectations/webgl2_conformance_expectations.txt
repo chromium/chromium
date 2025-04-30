@@ -523,7 +523,7 @@ crbug.com/angleproject/6358 [ no-passthrough ] conformance/programs/program-test
 
 # Persistent flaking on Windows and Mac/M1
 crbug.com/365680830 [ amd64 angle-d3d11 graphite-enabled win ] deqp/functional/gles3/occlusionquery_strict.html [ Failure ]
-crbug.com/365680830 [ mac angle-metal apple ] deqp/functional/gles3/occlusionquery_strict.html [ RetryOnFailure ]
+crbug.com/365680830 [ angle-metal apple sonoma ] deqp/functional/gles3/occlusionquery_strict.html [ RetryOnFailure ]
 
 
 ####################
@@ -532,7 +532,6 @@ crbug.com/365680830 [ mac angle-metal apple ] deqp/functional/gles3/occlusionque
 
 crbug.com/angleproject/4417 [ win angle-d3d11 ] conformance2/rendering/framebuffer-render-to-layer-angle-issue.html [ Failure ]
 crbug.com/angleproject/1465 [ win angle-d3d11 ] conformance2/glsl3/tricky-loop-conditions.html [ Failure ]
-crbug.com/angleproject/389733590 [ angle-d3d11 nvidia-0x2184 nvidia_lt_535.183.01 win10 ] conformance/extensions/khr-parallel-shader-compile.html [ RetryOnFailure ]
 
 ## Win / NVIDIA ##
 
@@ -583,7 +582,6 @@ crbug.com/1523401 [ win11 qualcomm-0x41333430 angle-d3d11 ] deqp/functional/gles
 crbug.com/41496352 [ win11 qualcomm-0x41333430 angle-d3d11 ] deqp/functional/gles3/shaderprecision_float.html [ Failure ]
 crbug.com/329211596 [ win11 qualcomm-0x41333430 angle-d3d11 ] deqp/functional/gles3/shaderprecision_int.html [ Failure ]
 crbug.com/329211596 [ win11 qualcomm-0x41333430 angle-d3d11 ] deqp/functional/gles3/shaderprecision_uint.html [ Failure ]
-crbug.com/373852610 [ win11 qualcomm-0x41333430 angle-d3d11 ] conformance/rendering/rendering-stencil-large-viewport.html [ Failure ]
 crbug.com/407945675 [ win11 qualcomm-0x41333430 angle-d3d11 ] conformance2/wasm/texsubimage2d-16gb-wasm-memory.html [ Failure ]
 crbug.com/408364836 [ win11 qualcomm-0x41333430 angle-d3d11 ] deqp/data/gles3/shaders/linkage.html [ RetryOnFailure ]
 crbug.com/373852610 [ win11 qualcomm-0x41333430 angle-d3d11 ] conformance2/wasm/getbuffersubdata-16gb-wasm-memory.html [ RetryOnFailure ]
@@ -925,8 +923,6 @@ crbug.com/326755442 [ chromeos intel mesa_ge_21.0 passthrough ] conformance2/ext
 ## Volteer ##
 crbug.com/332743717 [ chromeos cros-chrome chromeos-board-volteer ] conformance2/canvas/drawingbuffer-storage-test.html [ Failure ]
 crbug.com/40947854 [ chromeos cros-chrome chromeos-board-volteer ] conformance2/rendering/blitframebuffer-filter-outofbounds.html [ Failure ]
-crbug.com/40947856 [ chromeos cros-chrome chromeos-board-volteer ] conformance2/textures/canvas_sub_rectangle/tex-2d-r8ui-red_integer-unsigned_byte.html [ Failure ]
-crbug.com/40947856 [ chromeos cros-chrome chromeos-board-volteer ] conformance2/textures/webgl_canvas/tex-2d-r8ui-red_integer-unsigned_byte.html [ Failure ]
 # Fragment position generation rounds incorrectly on intel line primitives.
 crbug.com/40947858 [ chromeos intel passthrough ] deqp/functional/gles3/clipping.html [ Failure ]
 
