@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <optional>
+#include <unordered_map>
 
 #include "chrome/browser/ui/tabs/split_tab_data.h"
 #include "chrome/browser/ui/tabs/tab_collection.h"
