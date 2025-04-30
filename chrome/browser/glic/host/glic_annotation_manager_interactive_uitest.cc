@@ -10,7 +10,6 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
-#include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/glic/host/context/glic_page_context_fetcher.h"
 #include "chrome/browser/glic/host/glic.mojom-shared.h"
 #include "chrome/browser/glic/test_support/interactive_glic_test.h"
@@ -742,11 +741,11 @@ IN_PROC_BROWSER_TEST_F(GlicAnnotationManagerUiTest,
 
 IN_PROC_BROWSER_TEST_F(GlicAnnotationManagerUiTest, NodeIdSelector) {
   NodeIdCallback text_node = base::BindLambdaForTesting([&]() {
-    return actor::FindContentNodeId(*browser()
-                                         ->tab_strip_model()
-                                         ->GetActiveWebContents()
-                                         ->GetPrimaryMainFrame(),
-                                    "p#text")
+    return content::GetDOMNodeId(*browser()
+                                      ->tab_strip_model()
+                                      ->GetActiveWebContents()
+                                      ->GetPrimaryMainFrame(),
+                                 "p#text")
         .value();
   });
   RunTestSequence(InstrumentTab(kActiveTabId),

@@ -41,6 +41,7 @@ using base::test::TestFuture;
 using content::ChildFrameAt;
 using content::EvalJs;
 using content::ExecJs;
+using content::GetDOMNodeId;
 using content::JsReplace;
 using content::RenderFrameHost;
 using content::TestNavigationManager;
@@ -182,7 +183,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, ClickTool_SentToElement) {
 
   // Send a click to the document body.
   {
-    std::optional<int> body_id = FindContentNodeId(*main_frame(), "body");
+    std::optional<int> body_id = GetDOMNodeId(*main_frame(), "body");
     ASSERT_TRUE(body_id);
 
     BrowserAction action = MakeClick(body_id.value());
@@ -198,7 +199,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, ClickTool_SentToElement) {
   // Send a second click to the button.
   {
     std::optional<int> button_id =
-        FindContentNodeId(*main_frame(), "button#clickable");
+        GetDOMNodeId(*main_frame(), "button#clickable");
     ASSERT_TRUE(button_id);
 
     BrowserAction action = MakeClick(button_id.value());
@@ -238,8 +239,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, ClickTool_DisabledElement) {
       embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
-  std::optional<int> button_id =
-      FindContentNodeId(*main_frame(), "button#disabled");
+  std::optional<int> button_id = GetDOMNodeId(*main_frame(), "button#disabled");
   ASSERT_TRUE(button_id);
 
   BrowserAction action = MakeClick(button_id.value());
@@ -259,7 +259,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, ClickTool_OffscreenElement) {
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   std::optional<int> button_id =
-      FindContentNodeId(*main_frame(), "button#offscreen");
+      GetDOMNodeId(*main_frame(), "button#offscreen");
   ASSERT_TRUE(button_id);
 
   BrowserAction action = MakeClick(button_id.value());
@@ -282,7 +282,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool_TextInput) {
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   std::string typed_string = "test";
-  std::optional<int> input_id = FindContentNodeId(*main_frame(), "#input");
+  std::optional<int> input_id = GetDOMNodeId(*main_frame(), "#input");
   ASSERT_TRUE(input_id);
   BrowserAction action =
       MakeType(input_id.value(), typed_string, /*follow_by_enter=*/true);
@@ -321,7 +321,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool_Events) {
 
   std::string typed_string = "ab";
 
-  std::optional<int> input_id = FindContentNodeId(*main_frame(), "#input");
+  std::optional<int> input_id = GetDOMNodeId(*main_frame(), "#input");
   ASSERT_TRUE(input_id);
   BrowserAction action =
       MakeType(input_id.value(), typed_string, /*follow_by_enter=*/true);
@@ -351,7 +351,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool_EmptyText) {
 
   std::string typed_string = "";
 
-  std::optional<int> input_id = FindContentNodeId(*main_frame(), "#input");
+  std::optional<int> input_id = GetDOMNodeId(*main_frame(), "#input");
   ASSERT_TRUE(input_id);
   BrowserAction action =
       MakeType(input_id.value(), typed_string, /*follow_by_enter=*/true);
@@ -374,7 +374,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool_FollowByEnter) {
   // The log starts empty.
   ASSERT_EQ("", EvalJs(web_contents(), "input_event_log.join(',')"));
 
-  std::optional<int> input_id = FindContentNodeId(*main_frame(), "#input");
+  std::optional<int> input_id = GetDOMNodeId(*main_frame(), "#input");
   ASSERT_TRUE(input_id);
 
   // Send 'a' followed by enter. Ensure the click event is seen.
@@ -421,7 +421,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool_PageHandlesKeyEvents) {
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   std::optional<int> input_id =
-      FindContentNodeId(*main_frame(), "#keyHandlingInput");
+      GetDOMNodeId(*main_frame(), "#keyHandlingInput");
   ASSERT_TRUE(input_id);
 
   std::string typed_string = "abc";
@@ -463,7 +463,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, MouseMoveTool_Events) {
 
   // Move mouse over #first DIV
   {
-    std::optional<int> first_id = FindContentNodeId(*main_frame(), "#first");
+    std::optional<int> first_id = GetDOMNodeId(*main_frame(), "#first");
     BrowserAction action = MakeMouseMove(first_id.value());
 
     TestFuture<bool> result;
@@ -477,7 +477,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, MouseMoveTool_Events) {
 
   // Move mouse over #second DIV
   {
-    std::optional<int> second_id = FindContentNodeId(*main_frame(), "#second");
+    std::optional<int> second_id = GetDOMNodeId(*main_frame(), "#second");
     BrowserAction action = MakeMouseMove(second_id.value());
 
     TestFuture<bool> result;
@@ -501,8 +501,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, MouseMoveTool_TargetOutsideViewport) {
   // Move mouse over #offscreen DIV. This should fail since #offscreen is
   // outside the viewport.
   {
-    std::optional<int> offscreen_id =
-        FindContentNodeId(*main_frame(), "#offscreen");
+    std::optional<int> offscreen_id = GetDOMNodeId(*main_frame(), "#offscreen");
     BrowserAction action = MakeMouseMove(offscreen_id.value());
 
     TestFuture<bool> result;
@@ -520,8 +519,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, MouseMoveTool_TargetOutsideViewport) {
   // Try moving the mouse over #offscreen again. This time it should succeed
   // since it was scrolled into the viewport.
   {
-    std::optional<int> offscreen_id =
-        FindContentNodeId(*main_frame(), "#offscreen");
+    std::optional<int> offscreen_id = GetDOMNodeId(*main_frame(), "#offscreen");
     BrowserAction action = MakeMouseMove(offscreen_id.value());
 
     TestFuture<bool> result;
@@ -621,7 +619,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, ScrollTool_ScrollElement) {
   int scroll_offset_x = 50;
   int scroll_offset_y = 80;
 
-  int scroller = FindContentNodeId(*main_frame(), "#scroller").value();
+  int scroller = GetDOMNodeId(*main_frame(), "#scroller").value();
 
   {
     BrowserAction action = MakeScroll(scroller, scroll_offset_x,
@@ -654,7 +652,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, ScrollTool_NonScrollable) {
 
   int scroll_offset_y = 80;
 
-  int scroller = FindContentNodeId(*main_frame(), "#nonscroll").value();
+  int scroller = GetDOMNodeId(*main_frame(), "#nonscroll").value();
 
   {
     BrowserAction action = MakeScroll(scroller,
@@ -677,8 +675,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, ScrollTool_OneAxisScroller) {
 
   int scroll_offset = 80;
 
-  int scroller =
-      FindContentNodeId(*main_frame(), "#horizontalscroller").value();
+  int scroller = GetDOMNodeId(*main_frame(), "#horizontalscroller").value();
 
   // Try a vertical scroll - it should fail since the scroller has only
   // horizontal overflow.
@@ -722,7 +719,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, ScrollTool_BrowserZoom) {
   // (3 physical pixels : 2 CSS Pixels)
   int scroll_offset_physical = 60;
   int expected_offset_css = 40;
-  int scroller = FindContentNodeId(*main_frame(), "#scroller").value();
+  int scroller = GetDOMNodeId(*main_frame(), "#scroller").value();
 
   {
     BrowserAction action =
@@ -748,7 +745,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, ScrollTool_CSSZoom) {
   // inside a `zoom:0.5` subtree (1 physical pixels : 2 CSS Pixels)
   int scroll_offset_physical = 60;
   int expected_offset_css = 120;
-  int scroller = FindContentNodeId(*main_frame(), "#zoomedscroller").value();
+  int scroller = GetDOMNodeId(*main_frame(), "#zoomedscroller").value();
 
   {
     BrowserAction action =
@@ -788,7 +785,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestDSF2, ScrollTool_ScrollDSF) {
   // = 2 (2 physical pixels : 1 CSS pixel);
   int scroll_offset_physical = 80;
   int expected_offset_css = 40;
-  int scroller = FindContentNodeId(*main_frame(), "#scroller").value();
+  int scroller = GetDOMNodeId(*main_frame(), "#scroller").value();
 
   {
     BrowserAction action =
@@ -1206,7 +1203,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, SelectTool_OptionSelected) {
 
   const std::string plain_select_id = "#plainSelect";
   const int32_t plain_select_dom_node_id =
-      FindContentNodeId(*main_frame(), plain_select_id).value();
+      GetDOMNodeId(*main_frame(), plain_select_id).value();
 
   ASSERT_EQ(GetSelectElementCurrentValue(plain_select_id), "alpha");
 
@@ -1249,7 +1246,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, SelectTool_Events) {
 
   const std::string plain_select_id = "#plainSelect";
   const int32_t plain_select_dom_node_id =
-      FindContentNodeId(*main_frame(), plain_select_id).value();
+      GetDOMNodeId(*main_frame(), plain_select_id).value();
 
   ASSERT_EQ(GetSelectElementCurrentValue(plain_select_id), "alpha");
   ASSERT_EQ("", EvalJs(web_contents(), "select_event_log.join(',')"));
@@ -1272,7 +1269,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, SelectTool_NonExistentValueFails) {
 
   const std::string plain_select_id = "#plainSelect";
   int32_t plain_select_dom_node_id =
-      FindContentNodeId(*main_frame(), plain_select_id).value();
+      GetDOMNodeId(*main_frame(), plain_select_id).value();
 
   const std::string initial_value =
       GetSelectElementCurrentValue(plain_select_id);
@@ -1295,7 +1292,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, SelectTool_NonOptionNodeValueFails) {
 
   const std::string non_options_select_id = "#nonOptionsSelect";
   int32_t non_options_select_dom_node_id =
-      FindContentNodeId(*main_frame(), non_options_select_id).value();
+      GetDOMNodeId(*main_frame(), non_options_select_id).value();
 
   const std::string initial_value =
       GetSelectElementCurrentValue(non_options_select_id);
@@ -1345,7 +1342,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, SelectTool_ValueIsCaseSensitive) {
 
   const std::string plain_select_id = "#plainSelect";
   int32_t plain_select_dom_node_id =
-      FindContentNodeId(*main_frame(), plain_select_id).value();
+      GetDOMNodeId(*main_frame(), plain_select_id).value();
   const std::string initial_value =
       GetSelectElementCurrentValue(plain_select_id);
 
@@ -1369,7 +1366,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, SelectTool_DisabledOptionFails) {
 
   const std::string plain_select_id = "#plainSelect";
   int32_t plain_select_dom_node_id =
-      FindContentNodeId(*main_frame(), plain_select_id).value();
+      GetDOMNodeId(*main_frame(), plain_select_id).value();
   const std::string initial_value =
       GetSelectElementCurrentValue(plain_select_id);
 
@@ -1391,7 +1388,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, SelectTool_DisabledOptGroupFails) {
 
   const std::string group_select_id = "#groupedSelect";
   int32_t plain_select_dom_node_id =
-      FindContentNodeId(*main_frame(), group_select_id).value();
+      GetDOMNodeId(*main_frame(), group_select_id).value();
   const std::string initial_value =
       GetSelectElementCurrentValue(group_select_id);
 
@@ -1415,7 +1412,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, SelectTool_DisabledSelectFails) {
 
   const std::string disabled_select_id = "#disabledSelect";
   int32_t disabled_select_dom_node_id =
-      FindContentNodeId(*main_frame(), disabled_select_id).value();
+      GetDOMNodeId(*main_frame(), disabled_select_id).value();
   const std::string initial_value =
       GetSelectElementCurrentValue(disabled_select_id);
 
@@ -1437,7 +1434,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, SelectTool_GroupedOptionSelected) {
 
   const std::string grouped_select_id = "#groupedSelect";
   int32_t grouped_select_dom_node_id =
-      FindContentNodeId(*main_frame(), grouped_select_id).value();
+      GetDOMNodeId(*main_frame(), grouped_select_id).value();
 
   ASSERT_EQ(GetSelectElementCurrentValue(grouped_select_id), "alpha");
 
@@ -1470,7 +1467,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, SelectTool_ListboxOptionSelected) {
 
   const std::string listbox_select_id = "#listboxSelect";
   int32_t listbox_select_dom_node_id =
-      FindContentNodeId(*main_frame(), listbox_select_id).value();
+      GetDOMNodeId(*main_frame(), listbox_select_id).value();
 
   // List box starts with no element selected.
   ASSERT_EQ(GetSelectElementCurrentValue(listbox_select_id), "");
