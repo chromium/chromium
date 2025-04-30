@@ -287,9 +287,6 @@ void IOSurfaceBackingEGLState::WillRelease(bool have_context) {
 void IOSurfaceBackingEGLState::RemoveClient() {
   client_ = nullptr;
 }
-bool IOSurfaceBackingEGLState::BelongsToCurrentThread() const {
-  return created_task_runner_->BelongsToCurrentThread();
-}
 
 ///////////////////////////////////////////////////////////////////////////////
 // GLTextureIRepresentation
@@ -1087,17 +1084,22 @@ IOSurfaceImageBacking::~IOSurfaceImageBacking() {
   if (egl_state_for_skia_gl_context_) {
     egl_state_for_skia_gl_context_->WillRelease(have_context());
 
-    if (egl_state_for_skia_gl_context_->BelongsToCurrentThread()) {
+    if (egl_state_for_skia_gl_context_->created_task_runner()
+            ->BelongsToCurrentThread()) {
       egl_state_for_skia_gl_context_ = nullptr;
     } else {
       // Remove `egl_state` from `egl_state_map_`.
       IOSurfaceBackingEGLState* egl_state =
           egl_state_for_skia_gl_context_.get();
-      auto found = egl_state_map_.find(egl_state->egl_display_);
+      auto key = std::make_pair(egl_state->egl_display_,
+                                egl_state->created_task_runner());
+      auto found = egl_state_map_.find(key);
       CHECK(found != egl_state_map_.end());
       CHECK(found->second == egl_state);
       egl_state_map_.erase(found);
 
+      // Send egl_state to the original thread for delete. Making
+      // the original context current can only be done on the same thread.
       egl_state_for_skia_gl_context_->RemoveClient();
       base::SingleThreadTaskRunner* task_runner =
           egl_state_for_skia_gl_context_->created_task_runner_.get();
@@ -1224,7 +1226,9 @@ IOSurfaceImageBacking::RetainGLTexture() {
   }
   const EGLDisplay egl_display = display->GetDisplay();
 
-  auto found = egl_state_map_.find(egl_display);
+  auto key = std::make_pair(egl_display,
+                            base::SingleThreadTaskRunner::GetCurrentDefault());
+  auto found = egl_state_map_.find(key);
   if (found != egl_state_map_.end())
     return found->second;
 
@@ -1904,8 +1908,9 @@ void IOSurfaceImageBacking::IOSurfaceBackingEGLStateBeingCreated(
     IOSurfaceBackingEGLState* egl_state) {
   AssertLockAcquired();
 
-  auto insert_result =
-      egl_state_map_.insert(std::make_pair(egl_state->egl_display_, egl_state));
+  auto key =
+      std::make_pair(egl_state->egl_display_, egl_state->created_task_runner());
+  auto insert_result = egl_state_map_.insert(std::make_pair(key, egl_state));
   CHECK(insert_result.second);
 }
 
@@ -1918,7 +1923,9 @@ void IOSurfaceImageBacking::IOSurfaceBackingEGLStateBeingDestroyed(
   egl_state->egl_surfaces_.clear();
 
   // Remove `egl_state` from `egl_state_map_`.
-  auto found = egl_state_map_.find(egl_state->egl_display_);
+  auto key =
+      std::make_pair(egl_state->egl_display_, egl_state->created_task_runner());
+  auto found = egl_state_map_.find(key);
   CHECK(found != egl_state_map_.end());
   CHECK(found->second == egl_state);
   egl_state_map_.erase(found);

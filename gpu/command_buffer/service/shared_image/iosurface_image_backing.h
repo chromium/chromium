@@ -70,6 +70,9 @@ struct IOSurfaceBackingEGLState : base::RefCounted<IOSurfaceBackingEGLState> {
   void clear_bind_pending() { is_bind_pending_ = false; }
   void RemoveClient();
   bool BelongsToCurrentThread() const;
+  base::SingleThreadTaskRunner* created_task_runner() {
+    return created_task_runner_.get();
+  }
 
  private:
   friend class base::RefCounted<IOSurfaceBackingEGLState>;
@@ -275,8 +278,9 @@ class GPU_GLES2_EXPORT IOSurfaceImageBacking
   bool purgeable_ GUARDED_BY(lock_) = false;
 
   // This map tracks all IOSurfaceBackingEGLState instances that exist.
-  base::flat_map<EGLDisplay, IOSurfaceBackingEGLState*> egl_state_map_
-      GUARDED_BY(lock_);
+  base::flat_map<std::pair<EGLDisplay, base::SingleThreadTaskRunner*>,
+                 IOSurfaceBackingEGLState*>
+      egl_state_map_ GUARDED_BY(lock_);
 
   // If Skia is using GL, this object creates a GL texture at construction time
   // for the Skia GL context and reuses it (for that context) for its lifetime.
