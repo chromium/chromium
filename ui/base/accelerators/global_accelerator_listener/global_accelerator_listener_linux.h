@@ -5,12 +5,11 @@
 #ifndef UI_BASE_ACCELERATORS_GLOBAL_ACCELERATOR_LISTENER_GLOBAL_ACCELERATOR_LISTENER_LINUX_H_
 #define UI_BASE_ACCELERATORS_GLOBAL_ACCELERATOR_LISTENER_GLOBAL_ACCELERATOR_LISTENER_LINUX_H_
 
+#include <map>
 #include <memory>
 #include <optional>
 #include <string>
-#include <tuple>
 
-#include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/dbus/xdg/request.h"
@@ -31,7 +30,8 @@ namespace ui {
 // interface.
 class GlobalAcceleratorListenerLinux : public GlobalAcceleratorListener {
  public:
-  explicit GlobalAcceleratorListenerLinux(scoped_refptr<dbus::Bus> bus);
+  GlobalAcceleratorListenerLinux(scoped_refptr<dbus::Bus> bus,
+                                 const std::string& session_token);
 
   GlobalAcceleratorListenerLinux(const GlobalAcceleratorListenerLinux&) =
       delete;
@@ -43,6 +43,9 @@ class GlobalAcceleratorListenerLinux : public GlobalAcceleratorListener {
  private:
   FRIEND_TEST_ALL_PREFIXES(GlobalAcceleratorListenerLinuxTest,
                            OnCommandsChanged);
+
+  using DbusShortcut = DbusStruct<DbusString, DbusDictionary>;
+  using DbusShortcuts = DbusArray<DbusShortcut>;
 
   // These are exposed in the header for testing.
   static constexpr char kPortalServiceName[] = "org.freedesktop.portal.Desktop";
@@ -57,35 +60,18 @@ class GlobalAcceleratorListenerLinux : public GlobalAcceleratorListener {
   static constexpr char kMethodCloseSession[] = "Close";
   static constexpr char kSignalActivated[] = "Activated";
 
-  static constexpr char kSessionTokenPrefix[] = "chromium_";
+  enum class BindState {
+    kNotBound,
+    kBindCalled,
+    kNeedsRebind,
+    kBound,
+  };
 
-  struct SessionKey {
+  struct BoundCommand {
+    ui::Command command;
     std::string accelerator_group_id;
-    std::string profile_id;
-
-    std::string GetTokenKey() const;
-
-    bool operator<(const SessionKey& other) const {
-      return std::tie(accelerator_group_id, profile_id) <
-             std::tie(other.accelerator_group_id, other.profile_id);
-    }
+    raw_ptr<Observer> observer = nullptr;
   };
-
-  struct SessionContext {
-    SessionContext(Observer* observer, const ui::CommandMap& commands);
-    ~SessionContext();
-
-    scoped_refptr<dbus::Bus> bus;
-    raw_ptr<dbus::ObjectProxy> session_proxy;
-    const raw_ptr<Observer> observer;
-    ui::CommandMap commands;
-    bool bind_shortcuts_called = false;
-    std::unique_ptr<dbus_xdg::Request> request;
-  };
-
-  using SessionMap =
-      base::flat_map<SessionKey, std::unique_ptr<SessionContext>>;
-  using SessionMapPair = std::pair<SessionKey, std::unique_ptr<SessionContext>>;
 
   // GlobalAcceleratorListener:
   void StartListening() override;
@@ -93,7 +79,6 @@ class GlobalAcceleratorListenerLinux : public GlobalAcceleratorListener {
   bool StartListeningForAccelerator(
       const ui::Accelerator& accelerator) override;
   void StopListeningForAccelerator(const ui::Accelerator& accelerator) override;
-  void UnregisterAccelerators(Observer* observer);
   bool IsRegistrationHandledExternally() const override;
   void OnCommandsChanged(const std::string& accelerator_group_id,
                          const std::string& profile_id,
@@ -101,16 +86,11 @@ class GlobalAcceleratorListenerLinux : public GlobalAcceleratorListener {
                          Observer* observer) override;
 
   void OnCreateSession(
-      const SessionKey& session_key,
       base::expected<DbusDictionary, dbus_xdg::ResponseError> results);
   void OnListShortcuts(
-      const SessionKey& session_key,
       base::expected<DbusDictionary, dbus_xdg::ResponseError> results);
   void OnBindShortcuts(
       base::expected<DbusDictionary, dbus_xdg::ResponseError> results);
-
-  void RecreateSessionOnClosed(const SessionKey& session_key,
-                               dbus::Response* response);
 
   // Callbacks for DBus signals.
   void OnActivatedSignal(dbus::Signal* signal);
@@ -123,20 +103,22 @@ class GlobalAcceleratorListenerLinux : public GlobalAcceleratorListener {
 
   void OnServiceStarted(std::optional<bool> service_started);
 
-  void CreateSession(SessionMapPair& pair);
+  void CreateSession();
 
-  void BindShortcuts(SessionContext& session_context);
+  void BindShortcuts(const DbusShortcuts& old_shortcuts);
+
+  void CloseSession();
 
   // DBus components.
   scoped_refptr<dbus::Bus> bus_;
   raw_ptr<dbus::ObjectProxy> global_shortcuts_proxy_ = nullptr;
-
-  // Whether the GlobalShortcuts service is available, or nullopt if the status
-  // is not yet known.
+  raw_ptr<dbus::ObjectProxy> session_proxy_ = nullptr;
   std::optional<bool> service_started_;
+  std::unique_ptr<dbus_xdg::Request> request_;
+  BindState bind_state_ = BindState::kNotBound;
+  const std::string session_token_;
 
-  // One session per extension.
-  base::flat_map<SessionKey, std::unique_ptr<SessionContext>> session_map_;
+  std::map<std::string, BoundCommand> bound_commands_;
 
   base::WeakPtrFactory<GlobalAcceleratorListenerLinux> weak_ptr_factory_{this};
 };
