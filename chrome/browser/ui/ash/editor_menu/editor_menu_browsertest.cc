@@ -136,45 +136,6 @@ class EditorMenuBrowserFeatureEnabledWithoutMagicBoostRevampTest
 #endif  // BUILDFLAG(IS_CHROMEOS)
 };
 
-class EditorMenuBrowserI18nEnabledTest : public EditorMenuBrowserTest {
- public:
-  EditorMenuBrowserI18nEnabledTest() {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{chromeos::features::kOrca,
-                              chromeos::features::kFeatureManagementOrca,
-                              chromeos::features::kOrcaUseL10nStrings},
-        /*disabled_features=*/{ash::features::kLobsterDogfood,
-                               chromeos::features::kMagicBoostRevamp});
-  }
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitchASCII(switches::kLang, "fr");
-  }
-
-  ~EditorMenuBrowserI18nEnabledTest() override = default;
-};
-
-class EditorMenuBrowserI18nDisabledTest : public EditorMenuBrowserTest {
- public:
-  EditorMenuBrowserI18nDisabledTest() {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/
-        {
-            chromeos::features::kOrca,
-            chromeos::features::kFeatureManagementOrca,
-        },
-        /*disabled_features=*/{ash::features::kLobsterDogfood,
-                               chromeos::features::kOrcaUseL10nStrings,
-                               chromeos::features::kMagicBoostRevamp});
-  }
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitchASCII(switches::kLang, "fr");
-  }
-
-  ~EditorMenuBrowserI18nDisabledTest() override = default;
-};
-
 IN_PROC_BROWSER_TEST_F(EditorMenuBrowserFeatureDisabledTest,
                        ShouldNotCreateWhenFeatureNotEnabled) {
   EXPECT_FALSE(chromeos::features::IsOrcaEnabled());
@@ -428,9 +389,24 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(GetEditorMenuView()->GetWidget()->IsClosed());
 }
 
-IN_PROC_BROWSER_TEST_F(
-    EditorMenuBrowserI18nEnabledTest,
-    ShowWriteCardTitleInFrenchWhenOrcaUseL10nStringsIsEnabled) {
+class EditorMenuBrowserI18nTest : public EditorMenuBrowserTest {
+ public:
+  EditorMenuBrowserI18nTest() {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{chromeos::features::kOrca,
+                              chromeos::features::kFeatureManagementOrca},
+        /*disabled_features=*/{ash::features::kLobsterDogfood,
+                               chromeos::features::kMagicBoostRevamp});
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitchASCII(switches::kLang, "fr");
+  }
+
+  ~EditorMenuBrowserI18nTest() override = default;
+};
+
+IN_PROC_BROWSER_TEST_F(EditorMenuBrowserI18nTest, ShowWriteCardTitleInFrench) {
   ASSERT_THAT(GetControllerImpl(), Not(IsNull()));
 
   GetControllerImpl()->OnGetAnchorBoundsAndEditorContextForTesting(
@@ -449,9 +425,7 @@ IN_PROC_BROWSER_TEST_F(
                 IDS_EDITOR_MENU_FREEFORM_PROMPT_INPUT_FIELD_PLACEHOLDER));
 }
 
-IN_PROC_BROWSER_TEST_F(
-    EditorMenuBrowserI18nEnabledTest,
-    ShowPromoCardTitleInFrenchWhenOrcaUseL10nStringsFlagIsEnabled) {
+IN_PROC_BROWSER_TEST_F(EditorMenuBrowserI18nTest, ShowPromoCardTitleInFrench) {
   ASSERT_THAT(GetControllerImpl(), Not(IsNull()));
 
   GetControllerImpl()->OnGetAnchorBoundsAndEditorContextForTesting(
@@ -468,66 +442,7 @@ IN_PROC_BROWSER_TEST_F(
             l10n_util::GetStringUTF16(IDS_EDITOR_MENU_PROMO_CARD_TITLE));
 }
 
-IN_PROC_BROWSER_TEST_F(
-    EditorMenuBrowserI18nDisabledTest,
-    ShowWriteCardPlaceholderTextInEnUsWhenOrcaUseL10nStringsFlagIsDisabled) {
-  ASSERT_THAT(GetControllerImpl(), Not(IsNull()));
-
-  GetControllerImpl()->OnGetAnchorBoundsAndEditorContextForTesting(
-      kAnchorBounds,
-      CreateTestEditorPanelContext(EditorMode::kWrite,
-                                   EditorTextSelectionMode::kNoSelection,
-                                   /*consent_status_settled=*/true));
-
-  ASSERT_TRUE(views::IsViewClass<EditorMenuView>(GetEditorMenuView()));
-
-  EXPECT_EQ(views::AsViewClass<EditorMenuView>(GetEditorMenuView())
-                ->textfield_for_testing()
-                ->textfield()
-                ->GetPlaceholderText(),
-            u"Enter a prompt");
-}
-
-IN_PROC_BROWSER_TEST_F(
-    EditorMenuBrowserI18nDisabledTest,
-    ShowPromoCardTitleInEnUsWhenOrcaUseL10nStringsFlagIsDisabled) {
-  ASSERT_THAT(GetControllerImpl(), Not(IsNull()));
-
-  GetControllerImpl()->OnGetAnchorBoundsAndEditorContextForTesting(
-      kAnchorBounds,
-      CreateTestEditorPanelContext(EditorMode::kConsentNeeded,
-                                   EditorTextSelectionMode::kNoSelection,
-                                   /*consent_status_settled=*/false));
-
-  ASSERT_TRUE(views::IsViewClass<EditorMenuPromoCardView>(GetEditorMenuView()));
-
-  EXPECT_EQ(views::AsViewClass<EditorMenuPromoCardView>(GetEditorMenuView())
-                ->title_for_testing()
-                ->GetDisplayTextForTesting(),
-            u"Write faster and with more confidence");
-}
-
-IN_PROC_BROWSER_TEST_F(EditorMenuBrowserI18nDisabledTest,
-                       EditorMenuPromoCardViewAccessibleProperties) {
-  ASSERT_THAT(GetControllerImpl(), Not(IsNull()));
-
-  GetControllerImpl()->OnGetAnchorBoundsAndEditorContextForTesting(
-      kAnchorBounds,
-      CreateTestEditorPanelContext(EditorMode::kConsentNeeded,
-                                   EditorTextSelectionMode::kNoSelection,
-                                   /*consent_status_settled=*/false));
-  auto* promo_card =
-      views::AsViewClass<EditorMenuPromoCardView>(GetEditorMenuView());
-  ui::AXNodeData data;
-
-  ASSERT_TRUE(promo_card);
-  promo_card->GetViewAccessibility().GetAccessibleNodeData(&data);
-  EXPECT_EQ(ax::mojom::Role::kDialog, data.role);
-  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
-            u"Write faster and with more confidence");
-}
-
-IN_PROC_BROWSER_TEST_F(EditorMenuBrowserI18nEnabledTest,
+IN_PROC_BROWSER_TEST_F(EditorMenuBrowserI18nTest,
                        EditorMenuPromoCardViewAccessibleProperties) {
   ASSERT_THAT(GetControllerImpl(), Not(IsNull()));
 
@@ -557,8 +472,7 @@ class EditorMenuBrowserWithMagicBoostRevampTest : public EditorMenuBrowserTest {
             chromeos::features::kFeatureManagementOrca,
             chromeos::features::kMagicBoostRevamp,
         },
-        /*disabled_features=*/{ash::features::kLobsterDogfood,
-                               chromeos::features::kOrcaUseL10nStrings});
+        /*disabled_features=*/{ash::features::kLobsterDogfood});
   }
 
   ~EditorMenuBrowserWithMagicBoostRevampTest() override = default;
