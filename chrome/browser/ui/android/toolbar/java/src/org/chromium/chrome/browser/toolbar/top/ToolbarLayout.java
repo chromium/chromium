@@ -742,7 +742,7 @@ public abstract class ToolbarLayout extends FrameLayout
                 RecordUserAction.record(reportingTagPrefix + "InNewBackgroundTab");
                 return mToolbarTabController.forwardInNewTab(/* foregroundNewTab= */ false);
             } else if (hasShift) {
-                RecordUserAction.record(reportingTagPrefix + "InNewWindow");
+                RecordUserAction.record(reportingTagPrefix + "InNewForegroundWindow");
                 return mToolbarTabController.forwardInNewWindow();
             } else {
                 RecordUserAction.record(reportingTagPrefix);

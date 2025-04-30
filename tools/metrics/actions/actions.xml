@@ -27375,7 +27375,7 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
-<action name="MobileToolbarForwardInNewWindow">
+<action name="MobileToolbarForwardInNewForegroundWindow">
   <owner>jhimawan@google.com</owner>
   <description>
     The user navigated forward, opening the page in a foreground window.
