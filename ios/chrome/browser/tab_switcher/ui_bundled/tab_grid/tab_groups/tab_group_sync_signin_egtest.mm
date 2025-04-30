@@ -236,7 +236,7 @@ void WaitForEntitiesOnFakeServer(int entity_count) {
 
   // Switch over to the third panel of the Tab Grid.
   [ChromeEarlGreyUI openTabGrid];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGroupBackButton()]
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::CloseTabGroupButton()]
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:TabGridTabGroupsPanelButton()]
       performAction:grey_tap()];
@@ -300,7 +300,7 @@ void WaitForEntitiesOnFakeServer(int entity_count) {
 
   // Switch over to the third panel of the Tab Grid.
   [ChromeEarlGreyUI openTabGrid];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGroupBackButton()]
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::CloseTabGroupButton()]
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:TabGridTabGroupsPanelButton()]
       performAction:grey_tap()];
