@@ -23,9 +23,7 @@ class Zipper {
   constexpr explicit Zipper(Ranges&... ranges LIFETIME_BOUND) noexcept
       : ranges_(ranges...) {}
 
-  // A sentinel used by the iterator to constrain the comparison to make sure it
-  // has the proper end of each range.
-  struct ZipEnd {};
+  struct ZipEnd;
 
   class iterator {
    public:
@@ -44,6 +42,12 @@ class Zipper {
     constexpr iterator& operator++() noexcept LIFETIME_BOUND {
       advance(std::index_sequence_for<Ranges...>{});
       return *this;
+    }
+
+    constexpr iterator operator++(int) noexcept LIFETIME_BOUND {
+      auto it = *this;
+      advance(std::index_sequence_for<Ranges...>{});
+      return it;
     }
 
     constexpr auto operator*() const noexcept LIFETIME_BOUND {
@@ -88,6 +92,12 @@ class Zipper {
 
     std::tuple<decltype(std::begin(std::declval<Ranges&>()))...> begin_;
     std::tuple<decltype(std::end(std::declval<Ranges&>()))...> end_;
+  };
+
+  // A sentinel used by the iterator to constrain the comparison to make sure it
+  // has the proper end of each range.
+  struct ZipEnd {
+    constexpr bool operator==(iterator it) const { return it == *this; }
   };
 
   constexpr iterator begin() noexcept LIFETIME_BOUND {

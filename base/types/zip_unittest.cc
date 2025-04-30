@@ -7,6 +7,7 @@
 #include <array>
 #include <iostream>
 #include <iterator>
+#include <ranges>
 #include <vector>
 
 #include "base/test/gtest_util.h"
@@ -216,6 +217,21 @@ TEST(ZipTest, CheckForIterationPastTheEnd) {
   auto it = ranges.begin();
   std::advance(it, 2);
   EXPECT_CHECK_DEATH(std::advance(it, 1));
+}
+
+// Tests that std::ranges algorithms can be used with zip.
+TEST(ZipTest, ZipAsRange) {
+  std::vector<int> a = {2, 5, 6};
+  auto b = std::array{3, 5};
+  static_assert(std::ranges::range<decltype(zip(a, b))>);
+
+  auto elements_are_equal = [](auto p) {
+    auto [x, y] = p;
+    return x == y;
+  };
+
+  EXPECT_TRUE(std::ranges::any_of(zip(a, b), elements_are_equal));
+  EXPECT_FALSE(std::ranges::all_of(zip(a, b), elements_are_equal));
 }
 
 }  // namespace base
