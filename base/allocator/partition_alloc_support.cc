@@ -851,6 +851,7 @@ bool PartitionAllocSupport::ShouldEnableMemoryTaggingInRendererProcess() {
 // static
 ::partition_alloc::internal::SchedulerLoopQuarantineConfig
 PartitionAllocSupport::GetSchedulerLoopQuarantineConfiguration(
+    const std::string& process_type,
     features::internal::SchedulerLoopQuarantineBranchType branch_type) {
   ::partition_alloc::internal::SchedulerLoopQuarantineConfig config;
 
@@ -877,6 +878,11 @@ PartitionAllocSupport::GetSchedulerLoopQuarantineConfiguration(
     case features::internal::SchedulerLoopQuarantineBranchType::kMain:
       config.quarantine_config.leak_on_destruction = false;
       config.quarantine_config.lock_required = false;
+      if (process_type == "") {
+        config.quarantine_config.branch_capacity_in_bytes = static_cast<size_t>(
+            base::features::
+                kPartitionAllocSchedulerLoopQuarantineBrowserUICapacity.Get());
+      }
       break;
   }
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
@@ -1069,11 +1075,12 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
 
   const auto scheduler_loop_quarantine_global_config =
       GetSchedulerLoopQuarantineConfiguration(
+          process_type,
           features::internal::SchedulerLoopQuarantineBranchType::kGlobal);
   const auto scheduler_loop_quarantine_thread_local_config =
       GetSchedulerLoopQuarantineConfiguration(
-          features::internal::SchedulerLoopQuarantineBranchType::
-              kThreadLocalDefault);
+          process_type, features::internal::SchedulerLoopQuarantineBranchType::
+                            kThreadLocalDefault);
 
   const bool eventually_zero_freed_memory = base::FeatureList::IsEnabled(
       base::features::kPartitionAllocEventuallyZeroFreedMemory);
@@ -1213,14 +1220,11 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
   if (process_type == "" &&
       base::FeatureList::IsEnabled(
           base::features::kPartitionAllocSchedulerLoopQuarantine)) {
-    // `ReconfigureAfterTaskRunnerInit()` is called on the UI thread.
-    const size_t capacity_in_bytes = static_cast<size_t>(
-        base::features::kPartitionAllocSchedulerLoopQuarantineBrowserUICapacity
-            .Get());
+    // `ReconfigureAfterTaskRunnerInit()` is called on the Main thread.
     partition_alloc::internal::SchedulerLoopQuarantineConfig quarantine_config =
-        {.quarantine_config = {
-             .branch_capacity_in_bytes = capacity_in_bytes,
-         }};
+        GetSchedulerLoopQuarantineConfiguration(
+            process_type,
+            features::internal::SchedulerLoopQuarantineBranchType::kMain);
     allocator_shim::internal::PartitionAllocMalloc::Allocator()
         ->ReconfigureSchedulerLoopQuarantineForCurrentThread(quarantine_config);
   }

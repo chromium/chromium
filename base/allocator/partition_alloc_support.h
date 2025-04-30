@@ -117,6 +117,7 @@ class BASE_EXPORT PartitionAllocSupport {
   // Returns quarantine configuration for `process_name` and `branch_type`.
   static ::partition_alloc::internal::SchedulerLoopQuarantineConfig
   GetSchedulerLoopQuarantineConfiguration(
+      const std::string& process_type,
       features::internal::SchedulerLoopQuarantineBranchType branch_type);
 
  private:
