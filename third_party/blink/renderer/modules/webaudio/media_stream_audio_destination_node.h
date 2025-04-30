@@ -42,7 +42,9 @@ class MediaStreamAudioDestinationHandler;
 // MediaStreamAudioDestinationNode is an AudioNode that represents an endpoint
 // in the Web Audio graph and also functions as an audio stream source for
 // MediaStream ecosystem. (e.g., WebRTC, MediaRecorder)
-class MODULES_EXPORT MediaStreamAudioDestinationNode final : public AudioNode {
+class MODULES_EXPORT MediaStreamAudioDestinationNode final
+    : public AudioNode,
+      public ActiveScriptWrappable<MediaStreamAudioDestinationNode> {
   DEFINE_WRAPPERTYPEINFO();
   USING_PRE_FINALIZER(MediaStreamAudioDestinationNode, Dispose);
 
@@ -59,6 +61,7 @@ class MODULES_EXPORT MediaStreamAudioDestinationNode final : public AudioNode {
   MediaStream* stream() const { return stream_.Get(); }
   MediaStreamSource* source() const { return source_.Get(); }
 
+  bool HasPendingActivity() const final;
   void Trace(Visitor*) const final;
   void Dispose();
 

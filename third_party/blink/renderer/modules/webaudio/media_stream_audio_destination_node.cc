@@ -48,7 +48,8 @@ constexpr uint32_t kDefaultNumberOfChannels = 2;
 MediaStreamAudioDestinationNode::MediaStreamAudioDestinationNode(
     AudioContext& context,
     uint32_t number_of_channels)
-    : AudioNode(context) {
+    : AudioNode(context),
+      ActiveScriptWrappable<MediaStreamAudioDestinationNode>({}) {
   DVLOG(1) << "Creating WebAudio media stream source.";
   auto audio_source = std::make_unique<WebAudioMediaStreamSource>(
     context.GetExecutionContext()->GetTaskRunner(TaskType::kInternalMedia));
@@ -131,6 +132,10 @@ MediaStreamAudioDestinationNode* MediaStreamAudioDestinationNode::Create(
   node->HandleChannelOptions(options, exception_state);
 
   return node;
+}
+
+bool MediaStreamAudioDestinationNode::HasPendingActivity() const {
+  return context()->ContextState() == V8AudioContextState::Enum::kRunning;
 }
 
 void MediaStreamAudioDestinationNode::Trace(Visitor* visitor) const {
