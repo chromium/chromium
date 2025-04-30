@@ -176,9 +176,19 @@ void PushNotificationClientManager::AddPerProfilePushNotificationClients() {
   }
 
   if (IsContentNotificationExperimentEnabled()) {
-    auto client = std::make_unique<ContentNotificationClient>();
+    std::unique_ptr<ContentNotificationClient> client;
+
+    if (IsIOSMultiProfilePushNotificationHandlingEnabled()) {
+      CHECK(profile_);
+
+      client = std::make_unique<ContentNotificationClient>(profile_);
+    } else {
+      client = std::make_unique<ContentNotificationClient>();
+    }
+
     CHECK_EQ(client->GetClientScope(),
              PushNotificationClientScope::kPerProfile);
+
     AddPushNotificationClient(std::move(client));
   }
 
