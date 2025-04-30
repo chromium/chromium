@@ -214,18 +214,6 @@ class PrefRegistrySyncable;
                                          (const ChangeProfileContinuationProvider&)
                                              continuationProvider;
 
-// Returns a coordinator to switch account.
-+ (SigninCoordinator*)
-    accountMenuCoordinatorWithBaseViewController:
-        (UIViewController*)viewController
-                                         browser:(Browser*)browser
-                                    contextStyle:
-                                        (SigninContextStyle)contextStyle
-                                      anchorView:(UIView*)anchorView
-                                     accessPoint:
-                                         (AccountMenuAccessPoint)accessPoint
-                                             URL:(const GURL&)url;
-
 // Returns a coordinator to show the history sync.
 + (SigninCoordinator*)
     historySyncCoordinatorWithBaseViewController:

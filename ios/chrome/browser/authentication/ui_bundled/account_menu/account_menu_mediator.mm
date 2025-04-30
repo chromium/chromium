@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/authentication/ui_bundled/signin/account_menu/account_menu_mediator.h"
+#import "ios/chrome/browser/authentication/ui_bundled/account_menu/account_menu_mediator.h"
 
 #import <optional>
 #import <string>
@@ -14,6 +14,11 @@
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
+#import "ios/chrome/browser/authentication/ui_bundled/account_menu/account_menu_constants.h"
+#import "ios/chrome/browser/authentication/ui_bundled/account_menu/account_menu_consumer.h"
+#import "ios/chrome/browser/authentication/ui_bundled/account_menu/account_menu_data_source.h"
+#import "ios/chrome/browser/authentication/ui_bundled/account_menu/account_menu_mediator_delegate.h"
+#import "ios/chrome/browser/authentication/ui_bundled/account_menu/account_menu_view_controller.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_request_helper.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/table_view_account_item.h"
@@ -22,16 +27,12 @@
 #import "ios/chrome/browser/authentication/ui_bundled/change_profile/change_profile_settings_continuation.h"
 #import "ios/chrome/browser/authentication/ui_bundled/continuation.h"
 #import "ios/chrome/browser/authentication/ui_bundled/enterprise/enterprise_utils.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin/account_menu/account_menu_constants.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin/account_menu/account_menu_consumer.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin/account_menu/account_menu_data_source.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin/account_menu/account_menu_mediator_delegate.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin/account_menu/account_menu_view_controller.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/policy/ui_bundled/management_util.h"
 #import "ios/chrome/browser/settings/model/sync/utils/account_error_ui_info.h"
 #import "ios/chrome/browser/settings/model/sync/utils/identity_error_util.h"
+#import "ios/chrome/browser/settings/ui_bundled/google_services/sync_error_settings_command_handler.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_table_view_controller_constants.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -305,43 +306,46 @@
               _primaryIdentityBeforeSignin)) {
         base::RecordAction(
             base::UserMetricsAction("Signin_AccountMenu_ErrorButton_MDM"));
-        [self.delegate
+        [self.syncErrorSettingsCommandHandler
             openMDMErrodDialogWithSystemIdentity:_primaryIdentityBeforeSignin];
       } else {
         base::RecordAction(
             base::UserMetricsAction("Signin_AccountMenu_ErrorButton_Reauth"));
-        [self.delegate openPrimaryAccountReauthDialog];
+        [self.syncErrorSettingsCommandHandler openPrimaryAccountReauthDialog];
       }
       break;
     }
     case syncer::SyncService::UserActionableError::kNeedsPassphrase:
       base::RecordAction(
           base::UserMetricsAction("Signin_AccountMenu_ErrorButton_Passphrase"));
-      [self.delegate openPassphraseDialogWithModalPresentation:YES];
+      [self.syncErrorSettingsCommandHandler
+          openPassphraseDialogWithModalPresentation:YES];
       break;
     case syncer::SyncService::UserActionableError::
         kNeedsTrustedVaultKeyForPasswords:
       base::RecordAction(base::UserMetricsAction(
           "Signin_AccountMenu_ErrorButton_TrustedVaultForPasswords"));
-      [self.delegate openTrustedVaultReauthForFetchKeys];
+      [self.syncErrorSettingsCommandHandler openTrustedVaultReauthForFetchKeys];
       break;
     case syncer::SyncService::UserActionableError::
         kNeedsTrustedVaultKeyForEverything:
       base::RecordAction(base::UserMetricsAction(
           "Signin_AccountMenu_ErrorButton_TrustedVaultForEverything"));
-      [self.delegate openTrustedVaultReauthForFetchKeys];
+      [self.syncErrorSettingsCommandHandler openTrustedVaultReauthForFetchKeys];
       break;
     case syncer::SyncService::UserActionableError::
         kTrustedVaultRecoverabilityDegradedForPasswords:
       base::RecordAction(base::UserMetricsAction(
           "Signin_AccountMenu_ErrorButton_TrustedVaultDegradedForPasswords"));
-      [self.delegate openTrustedVaultReauthForDegradedRecoverability];
+      [self.syncErrorSettingsCommandHandler
+              openTrustedVaultReauthForDegradedRecoverability];
       break;
     case syncer::SyncService::UserActionableError::
         kTrustedVaultRecoverabilityDegradedForEverything:
       base::RecordAction(base::UserMetricsAction(
           "Signin_AccountMenu_ErrorButton_TrustedVaultDegradedForEverything"));
-      [self.delegate openTrustedVaultReauthForDegradedRecoverability];
+      [self.syncErrorSettingsCommandHandler
+              openTrustedVaultReauthForDegradedRecoverability];
       break;
     case syncer::SyncService::UserActionableError::kNone:
       NOTREACHED();

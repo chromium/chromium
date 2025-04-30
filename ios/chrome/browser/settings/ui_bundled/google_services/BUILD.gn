@@ -24,12 +24,12 @@ source_set("google_services") {
     "manage_sync_settings_table_view_controller.h",
     "manage_sync_settings_table_view_controller.mm",
     "manage_sync_settings_table_view_controller_model_delegate.h",
-    "sync_error_settings_command_handler.h",
   ]
   deps = [
     ":constants",
     ":features",
     ":personalize_google_services",
+    ":sync_error_settings_command_handler",
     "//base",
     "//components/browser_sync",
     "//components/google/core/common",
@@ -52,12 +52,13 @@ source_set("google_services") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/authentication/ui_bundled",
     "//ios/chrome/browser/authentication/ui_bundled:authentication_constants",
+    "//ios/chrome/browser/authentication/ui_bundled/account_menu",
+    "//ios/chrome/browser/authentication/ui_bundled/account_menu:constants",
     "//ios/chrome/browser/authentication/ui_bundled/authentication_flow",
     "//ios/chrome/browser/authentication/ui_bundled/cells",
     "//ios/chrome/browser/authentication/ui_bundled/enterprise:enterprise_utils",
     "//ios/chrome/browser/authentication/ui_bundled/history_sync",
     "//ios/chrome/browser/authentication/ui_bundled/signin:signin_headers",
-    "//ios/chrome/browser/authentication/ui_bundled/signin/account_menu:constants",
     "//ios/chrome/browser/authentication/ui_bundled/signout_action_sheet",
     "//ios/chrome/browser/authentication/ui_bundled/trusted_vault_reauthentication",
     "//ios/chrome/browser/commerce/model:model",
@@ -114,6 +115,12 @@ source_set("google_services") {
     "//ios/public/provider/chrome/browser/signin:signin_resources_api",
     "//ui/base",
   ]
+}
+
+source_set("sync_error_settings_command_handler") {
+  sources = [ "sync_error_settings_command_handler.h" ]
+  deps = []
+  frameworks = [ "UIKit.framework" ]
 }
 
 source_set("personalize_google_services") {
@@ -210,7 +217,7 @@ source_set("eg2_tests") {
     "//components/variations",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/authentication/ui_bundled:eg_test_support+eg2",
-    "//ios/chrome/browser/authentication/ui_bundled/signin/account_menu:constants",
+    "//ios/chrome/browser/authentication/ui_bundled/account_menu:constants",
     "//ios/chrome/browser/authentication/ui_bundled/views:views_constants",
     "//ios/chrome/browser/bookmarks/model:bookmark_storage_type",
     "//ios/chrome/browser/bookmarks/ui_bundled:eg_test_support+eg2",

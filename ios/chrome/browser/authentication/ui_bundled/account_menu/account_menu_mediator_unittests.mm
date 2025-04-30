@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/authentication/ui_bundled/signin/account_menu/account_menu_mediator.h"
+#import "ios/chrome/browser/authentication/ui_bundled/account_menu/account_menu_mediator.h"
 
 #import "base/containers/flat_map.h"
 #import "base/memory/raw_ptr.h"
@@ -10,15 +10,16 @@
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "components/sync/test/test_sync_service.h"
+#import "ios/chrome/browser/authentication/ui_bundled/account_menu/account_menu_constants.h"
+#import "ios/chrome/browser/authentication/ui_bundled/account_menu/account_menu_consumer.h"
+#import "ios/chrome/browser/authentication/ui_bundled/account_menu/account_menu_mediator_delegate.h"
+#import "ios/chrome/browser/authentication/ui_bundled/account_menu/account_menu_view_controller.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/table_view_account_item.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin/account_menu/account_menu_constants.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin/account_menu/account_menu_consumer.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin/account_menu/account_menu_mediator_delegate.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin/account_menu/account_menu_view_controller.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/settings/model/sync/utils/account_error_ui_info.h"
 #import "ios/chrome/browser/settings/model/sync/utils/identity_error_util.h"
+#import "ios/chrome/browser/settings/ui_bundled/google_services/sync_error_settings_command_handler.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
@@ -115,6 +116,8 @@ class AccountMenuMediatorTest
     // Set the mediator and its mocks delegate.
     delegate_mock_ =
         OCMStrictProtocolMock(@protocol(AccountMenuMediatorDelegate));
+    sync_error_settings_mock_ =
+        OCMStrictProtocolMock(@protocol(SyncErrorSettingsCommandHandler));
     consumer_mock_ = OCMStrictProtocolMock(@protocol(AccountMenuConsumer));
     mediator_ = [[AccountMenuMediator alloc]
           initWithSyncService:test_sync_service_
@@ -125,6 +128,7 @@ class AccountMenuMediatorTest
                   accessPoint:AccountMenuAccessPoint::kNewTabPage
                           URL:GURL()];
     mediator_.delegate = delegate_mock_;
+    mediator_.syncErrorSettingsCommandHandler = sync_error_settings_mock_;
     mediator_.consumer = consumer_mock_;
     authentication_flow_mock_ = OCMStrictClassMock([AuthenticationFlow class]);
   }
@@ -155,6 +159,7 @@ class AccountMenuMediatorTest
   // Verify that all mocks expectation are fulfilled.
   void VerifyMock() {
     EXPECT_OCMOCK_VERIFY(delegate_mock_);
+    EXPECT_OCMOCK_VERIFY(sync_error_settings_mock_);
     EXPECT_OCMOCK_VERIFY(consumer_mock_);
     EXPECT_OCMOCK_VERIFY((id)authentication_flow_mock_);
   }
@@ -193,6 +198,7 @@ class AccountMenuMediatorTest
   base::test::ScopedFeatureList feature_list_;
 
   id<AccountMenuMediatorDelegate> delegate_mock_;
+  id<SyncErrorSettingsCommandHandler> sync_error_settings_mock_;
   id<AccountMenuConsumer> consumer_mock_;
   AuthenticationFlow* authentication_flow_mock_;
   AccountMenuMediator* mediator_;
@@ -592,7 +598,8 @@ TEST_P(AccountMenuMediatorTest, TestTapErrorButtonPassphrase) {
   // `kSignInNeedsUpdate` is not an error displayed to the user (technically,
   // `GetAccountErrorUIInfo` returns `nil` on `kSignInNeedsUpdate`.)
   SignInAndSetPassphraseRequired();
-  OCMExpect([delegate_mock_ openPassphraseDialogWithModalPresentation:YES]);
+  OCMExpect([sync_error_settings_mock_
+      openPassphraseDialogWithModalPresentation:YES]);
   [mediator_ didTapErrorButton];
   EXPECT_EQ(1, user_actions_.GetActionCount(
                    "Signin_AccountMenu_ErrorButton_Passphrase"));

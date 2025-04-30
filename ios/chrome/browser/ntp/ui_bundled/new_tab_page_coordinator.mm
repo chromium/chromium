@@ -29,9 +29,11 @@
 #import "ios/chrome/app/profile/profile_init_stage.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/app/profile/profile_state_observer.h"
+#import "ios/chrome/browser/authentication/ui_bundled/account_menu/account_menu_constants.h"
+#import "ios/chrome/browser/authentication/ui_bundled/account_menu/account_menu_coordinator.h"
+#import "ios/chrome/browser/authentication/ui_bundled/account_menu/account_menu_coordinator_delegate.h"
 #import "ios/chrome/browser/authentication/ui_bundled/continuation.h"
 #import "ios/chrome/browser/authentication/ui_bundled/enterprise/enterprise_utils.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin/account_menu/account_menu_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_history_sync/signin_and_history_sync_coordinator.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_view_controller_presenter.h"
@@ -131,7 +133,8 @@
 #import "ios/web/public/web_state_observer_bridge.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
-@interface NewTabPageCoordinator () <AuthenticationServiceObserving,
+@interface NewTabPageCoordinator () <AccountMenuCoordinatorDelegate,
+                                     AuthenticationServiceObserving,
                                      ContentSuggestionsDelegate,
                                      DiscoverFeedObserverBridgeDelegate,
                                      DiscoverFeedPreviewDelegate,
@@ -267,7 +270,7 @@
   // Indicates whether the fakebox was tapped as part of an omnibox focus event.
   BOOL _fakeboxTapped;
   // The account menu coordinator.
-  SigninCoordinator* _accountMenuCoordinator;
+  AccountMenuCoordinator* _accountMenuCoordinator;
   // The sign in and history sync coordinator displayed on top of the NTP.
   SigninCoordinator* _signinCoordinator;
 }
@@ -1524,10 +1527,21 @@
   }
 }
 
+#pragma mark - AccountMenuCoordinatorDelegate
+
+// Update the state, to take into account that the account menu coordinator is
+// stopped.
+- (void)accountMenuCoordinatorWantsToBeStopped:
+    (AccountMenuCoordinator*)coordinator {
+  CHECK_EQ(_accountMenuCoordinator, coordinator, base::NotFatalUntil::M140);
+  [self stopAccountMenuCoordinator];
+}
+
 #pragma mark - Private
 
 - (void)stopAccountMenuCoordinator {
   [_accountMenuCoordinator stop];
+  _accountMenuCoordinator.delegate = nil;
   _accountMenuCoordinator = nil;
 }
 
@@ -1537,19 +1551,13 @@
 }
 
 - (void)showAccountMenu:(UIView*)identityDisc {
-  _accountMenuCoordinator = [SigninCoordinator
-      accountMenuCoordinatorWithBaseViewController:self.NTPViewController
-                                           browser:self.browser
-                                      contextStyle:SigninContextStyle::kDefault
-                                        anchorView:identityDisc
-                                       accessPoint:AccountMenuAccessPoint::
-                                                       kNewTabPage
-                                               URL:GURL()];
-  __typeof(self) weakSelf = self;
-  _accountMenuCoordinator.signinCompletion =
-      ^(SigninCoordinatorResult, id<SystemIdentity>) {
-        [weakSelf showAccountMenuDidFinish];
-      };
+  _accountMenuCoordinator = [[AccountMenuCoordinator alloc]
+      initWithBaseViewController:self.NTPViewController
+                         browser:self.browser
+                      anchorView:identityDisc
+                     accessPoint:AccountMenuAccessPoint::kNewTabPage
+                             URL:GURL()];
+  _accountMenuCoordinator.delegate = self;
   [_accountMenuCoordinator start];
 }
 
@@ -1568,7 +1576,7 @@
 // Update the state, to take into account that the signin coordinator
 // coordinator is stopped.
 - (void)showSigninCommandDidFinish {
-  CHECK(_signinCoordinator, base::NotFatalUntil::M135);
+  CHECK(_signinCoordinator, base::NotFatalUntil::M140);
   [self stopSigninCoordinator];
 }
 
@@ -1744,7 +1752,8 @@
     }
     // Check if feed is visible before reporting NTP visibility as the feed
     // needs to be visible in order to use for metrics.
-    // TODO(crbug.com/40871863) Move isFeedVisible check to the metrics recorder
+    // TODO(crbug.com/40871863) Move isFeedVisible check to the metrics
+    // recorder
     if ([self isFeedVisible]) {
       [self.feedMetricsRecorder recordNTPDidChangeVisibility:visible];
     }
