@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_SAFETY_HUB_DISRUPTIVE_NOTIFICATION_PERMISSIONS_MANAGER_H_
 
 #include <memory>
+#include <set>
 
 #include "base/scoped_observation.h"
 #include "base/time/clock.h"
