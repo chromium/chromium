@@ -294,6 +294,10 @@ class CONTENT_EXPORT ChildProcessLauncher {
   // this method to work.
   static bool TerminateProcess(const base::Process& process, int exit_code);
 
+  // Replaces the ChildProcessLauncher::Client for testing purposes. Returns the
+  // previous client.
+  Client* ReplaceClientForTest(Client* client);
+
 #if BUILDFLAG(IS_ANDROID)
   // Returns the highest binding state for the ChildProcessConnection.
   base::android::ChildBindingState GetEffectiveChildBindingState();
@@ -332,15 +336,6 @@ class CONTENT_EXPORT ChildProcessLauncher {
   scoped_refptr<internal::ChildProcessLauncherHelper> helper_;
 
   base::WeakPtrFactory<ChildProcessLauncher> weak_factory_{this};
-};
-
-// Allows simulating launch failures. Once instantiated,
-// `Client::OnProcessLaunchFailed()` will always be called, regardless of the
-// actual result of the process launch..
-class CONTENT_EXPORT ScopedSimulateProcessLaunchFailureForTesting {
- public:
-  ScopedSimulateProcessLaunchFailureForTesting();
-  ~ScopedSimulateProcessLaunchFailureForTesting();
 };
 
 }  // namespace content

@@ -41,10 +41,6 @@ namespace content {
 
 namespace {
 
-// If set to true, `Client::OnProcessLaunchFailed()` will always be called,
-// regardless of the actual result of the process launch..
-bool g_simulate_launch_failure_for_testing = false;
-
 #if !BUILDFLAG(IS_ANDROID)
 // Returns the cumulative CPU usage for the specified process.
 std::optional<base::TimeDelta> GetCPUUsage(base::ProcessHandle process_handle) {
@@ -188,12 +184,6 @@ void ChildProcessLauncher::Notify(ChildProcessLauncherHelper::Process process,
   starting_ = false;
   process_ = std::move(process);
 
-  if (g_simulate_launch_failure_for_testing) {
-    // NOTE: May delete |this|.
-    client_->OnProcessLaunchFailed(content::LAUNCH_RESULT_FAILURE);
-    return;
-  }
-
   if (process_.process.IsValid()) {
     process_start_time_ = base::TimeTicks::Now();
     client_->OnProcessLaunched();
@@ -289,18 +279,11 @@ void ChildProcessLauncher::DumpProcessStack() {
 }
 #endif
 
-ScopedSimulateProcessLaunchFailureForTesting::
-    ScopedSimulateProcessLaunchFailureForTesting() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  CHECK(!g_simulate_launch_failure_for_testing);
-  g_simulate_launch_failure_for_testing = true;
-}
-
-ScopedSimulateProcessLaunchFailureForTesting::
-    ~ScopedSimulateProcessLaunchFailureForTesting() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  CHECK(g_simulate_launch_failure_for_testing);
-  g_simulate_launch_failure_for_testing = false;
+ChildProcessLauncher::Client* ChildProcessLauncher::ReplaceClientForTest(
+    Client* client) {
+  Client* ret = client_;
+  client_ = client;
+  return ret;
 }
 
 RenderProcessPriority::RenderProcessPriority(
