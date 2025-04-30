@@ -181,9 +181,7 @@ TEST_F(GeneratedPasswordLeakDetectionPrefTest, UpdatePreference) {
             extensions::settings_private::SetPrefResult::PREF_TYPE_MISMATCH);
 }
 
-TEST_F(GeneratedPasswordLeakDetectionPrefTest,
-       ProfileStateAfterPasswordLeakToggleMove) {
-  feature_list.InitAndEnableFeature(safe_browsing::kPasswordLeakToggleMove);
+TEST_F(GeneratedPasswordLeakDetectionPrefTest, ProfileState) {
   GeneratedPasswordLeakDetectionPref pref(profile());
   prefs()->SetUserPref(password_manager::prefs::kPasswordLeakDetectionEnabled,
                        std::make_unique<base::Value>(true));
@@ -240,35 +238,7 @@ TEST_F(GeneratedPasswordLeakDetectionPrefTest, ManagementState) {
             settings_private::SetPrefResult::PREF_NOT_MODIFIABLE);
 }
 
-TEST_F(GeneratedPasswordLeakDetectionPrefTest,
-       PasswordLeakDetectionWithNoSafeBrowsing) {
-  feature_list.InitAndEnableFeature(safe_browsing::kPasswordLeakToggleMove);
-  GeneratedPasswordLeakDetectionPref pref(profile());
-  prefs()->SetUserPref(password_manager::prefs::kPasswordLeakDetectionEnabled,
-                       std::make_unique<base::Value>(true));
-
-  // Check that when Safe Browsing is set to standard, both user control and the
-  // pref are enabled.
-  prefs()->SetUserPref(prefs::kSafeBrowsingEnabled,
-                       std::make_unique<base::Value>(true));
-  prefs()->SetUserPref(prefs::kSafeBrowsingEnhanced,
-                       std::make_unique<base::Value>(false));
-  EXPECT_TRUE(pref.GetPrefObject().value->GetBool());
-  EXPECT_FALSE(*pref.GetPrefObject().user_control_disabled);
-
-  // Set Safe Browsing to disabled, check that user control is enabled and pref
-  // can be modified and that the user can have leak protection while in no safe
-  // browsing
-  prefs()->SetUserPref(prefs::kSafeBrowsingEnabled,
-                       std::make_unique<base::Value>(false));
-  EXPECT_TRUE(pref.GetPrefObject().value->GetBool());
-  EXPECT_FALSE(*pref.GetPrefObject().user_control_disabled);
-  EXPECT_EQ(pref.SetPref(std::make_unique<base::Value>(true).get()),
-            settings_private::SetPrefResult::SUCCESS);
-}
-
 TEST_F(GeneratedPasswordLeakDetectionPrefTest, NoPasswordLeakDetectionWithESB) {
-  feature_list.InitAndEnableFeature(safe_browsing::kPasswordLeakToggleMove);
   GeneratedPasswordLeakDetectionPref pref(profile());
   prefs()->SetUserPref(password_manager::prefs::kPasswordLeakDetectionEnabled,
                        std::make_unique<base::Value>(true));

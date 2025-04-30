@@ -358,7 +358,6 @@ TEST_F(LeakDetectionDelegateTest, DoNotStartLeakCheckIfLeakCheckIsOff) {
 
 TEST_F(LeakDetectionDelegateTest,
        StartCheckWithNoSafeBrowsingWhileLeakDetectionOn) {
-  feature_list.InitAndEnableFeature(safe_browsing::kPasswordLeakToggleMove);
   SetSBState(safe_browsing::SafeBrowsingState::NO_SAFE_BROWSING);
   SetLeakDetectionEnabled(true);
   const PasswordForm form = CreateTestForm();
@@ -379,7 +378,6 @@ TEST_F(LeakDetectionDelegateTest,
 
 TEST_F(LeakDetectionDelegateTest,
        DoNotStartCheckWithEnhancedProtectionWhileLeakProtectionIsOff) {
-  feature_list.InitAndEnableFeature(safe_browsing::kPasswordLeakToggleMove);
   SetSBState(safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION);
   SetLeakDetectionEnabled(false);
   const PasswordForm form = CreateTestForm();
