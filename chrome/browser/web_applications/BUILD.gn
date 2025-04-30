@@ -47,6 +47,8 @@ source_set("web_applications") {
     "commands/launch_web_app_command.h",
     "commands/manifest_update_check_command.cc",
     "commands/manifest_update_check_command.h",
+    "commands/manifest_update_check_command_v2.cc",
+    "commands/manifest_update_check_command_v2.h",
     "commands/manifest_update_finalize_command.cc",
     "commands/manifest_update_finalize_command.h",
     "commands/navigate_and_trigger_install_dialog_command.cc",
