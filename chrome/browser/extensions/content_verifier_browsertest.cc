@@ -1177,16 +1177,8 @@ IN_PROC_BROWSER_TEST_F(ContentVerifierTest,
 // disable the extension, both in case-sensitive and case-insensitive systems.
 //
 // Regression test for https://crbug.com/1033294.
-// Consistently fails on Mac11, Mac12, and Mac13 bots (crbug.com/414579613).
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_RemainsEnabledOnNavigateToPathWithIncorrectCase \
-  DISABLED_RemainsEnabledOnNavigateToPathWithIncorrectCase
-#else
-#define MAYBE_RemainsEnabledOnNavigateToPathWithIncorrectCase \
-  RemainsEnabledOnNavigateToPathWithIncorrectCase
-#endif
 IN_PROC_BROWSER_TEST_F(ContentVerifierTest,
-                       MAYBE_RemainsEnabledOnNavigateToPathWithIncorrectCase) {
+                       RemainsEnabledOnNavigateToPathWithIncorrectCase) {
   const Extension* extension = InstallExtensionFromWebstore(
       test_data_dir_.AppendASCII("content_verifier/content_script.crx"), 1);
   ASSERT_TRUE(extension);
@@ -1199,8 +1191,8 @@ IN_PROC_BROWSER_TEST_F(ContentVerifierTest,
       extension_id, base::FilePath().AppendASCII(kIncorrectCasePath));
 
   GURL page_url = extension->GetResourceURL(kIncorrectCasePath);
-#if BUILDFLAG(IS_WIN)
-  // Windows is case insensitive, load should succeed.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  // Some platforms are case insensitive, load should succeed.
   ASSERT_TRUE(NavigateToURL(page_url));
   ASSERT_TRUE(content::WaitForLoadStop(GetActiveWebContents()));
 #else
