@@ -142,8 +142,9 @@ AwComponentUpdaterConfigurator::GetCrxDownloaderFactory() {
 scoped_refptr<update_client::UnzipperFactory>
 AwComponentUpdaterConfigurator::GetUnzipperFactory() {
   if (!unzip_factory_) {
-    unzip_factory_ =
-        base::MakeRefCounted<update_client::InProcessUnzipperFactory>();
+    unzip_factory_ = base::MakeRefCounted<
+        update_client::InProcessUnzipperFactory>(
+        update_client::InProcessUnzipperFactory::SymlinkOption::DONT_PRESERVE);
   }
   return unzip_factory_;
 }

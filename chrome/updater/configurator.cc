@@ -49,6 +49,19 @@
 
 namespace updater {
 
+namespace {
+
+// Allow internal symbolic links in zip files on macOS.
+#if BUILDFLAG(IS_POSIX)
+update_client::InProcessUnzipperFactory::SymlinkOption unzipper_symlink_option =
+    update_client::InProcessUnzipperFactory::SymlinkOption::PRESERVE;
+#else
+update_client::InProcessUnzipperFactory::SymlinkOption unzipper_symlink_option =
+    update_client::InProcessUnzipperFactory::SymlinkOption::DONT_PRESERVE;
+#endif
+
+}  // namespace
+
 Configurator::Configurator(scoped_refptr<UpdaterPrefs> prefs,
                            scoped_refptr<ExternalConstants> external_constants,
                            bool is_ceca_experiment_enabled)
@@ -63,7 +76,8 @@ Configurator::Configurator(scoped_refptr<UpdaterPrefs> prefs,
                                               persisted_data_,
                                               is_ceca_experiment_enabled)),
       unzip_factory_(
-          base::MakeRefCounted<update_client::InProcessUnzipperFactory>()),
+          base::MakeRefCounted<update_client::InProcessUnzipperFactory>(
+              unzipper_symlink_option)),
       patch_factory_(
           base::MakeRefCounted<update_client::InProcessPatcherFactory>()),
       is_managed_device_([] {

@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "components/update_client/unzipper.h"
+#include "third_party/zlib/google/zip.h"
 
 namespace update_client {
 
@@ -17,7 +18,9 @@ namespace update_client {
 // Android WebView or Content dependencies are not allowed.
 class InProcessUnzipperFactory : public UnzipperFactory {
  public:
-  InProcessUnzipperFactory();
+  using SymlinkOption = zip::UnzipSymlinkOption;
+
+  explicit InProcessUnzipperFactory(SymlinkOption symlink_option);
   InProcessUnzipperFactory(const InProcessUnzipperFactory&) = delete;
   InProcessUnzipperFactory& operator=(const InProcessUnzipperFactory&) = delete;
 
@@ -25,6 +28,9 @@ class InProcessUnzipperFactory : public UnzipperFactory {
 
  protected:
   ~InProcessUnzipperFactory() override;
+
+ private:
+  const SymlinkOption symlink_option_;
 };
 
 }  // namespace update_client
