@@ -37,6 +37,7 @@ class NotificationTelemetryServiceFactory : public ProfileKeyedServiceFactory {
   ~NotificationTelemetryServiceFactory() override = default;
 
   // BrowserContextKeyedServiceFactory:
+  bool ServiceIsCreatedWithBrowserContext() const override;
   std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
 };
