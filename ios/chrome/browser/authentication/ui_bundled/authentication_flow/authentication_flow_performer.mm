@@ -124,12 +124,43 @@ void HandleSignoutForSnackbar(
       .Run(browser);
 }
 
+// Returns a reference to the global bool used by tests to immediately return a
+// fake policy response.
+bool& FakePolicyResponsesForTesting() {
+  static bool instance = false;
+  return instance;
+}
+
 // Returns a reference to the global used by tests to force the next policy
 // fetch to terminate with this policy value if set.
 std::optional<policy::ProfileSeparationDataMigrationSettings>&
 ForcedPolicyResponseForNextFetchRequestForTesting() {
   static std::optional<policy::ProfileSeparationDataMigrationSettings> instance;
   return instance;
+}
+
+bool ShouldUseFakePolicyResponseForTesting() {
+  return FakePolicyResponsesForTesting() ||
+         ForcedPolicyResponseForNextFetchRequestForTesting().has_value();
+}
+
+policy::ProfileSeparationPolicies GetFakePolicyResponseForTesting() {
+  CHECK(ShouldUseFakePolicyResponseForTesting());
+
+  policy::ProfileSeparationPolicies response;
+
+  // If a forced response is set for the next request, use (and reset) that.
+  std::optional<policy::ProfileSeparationDataMigrationSettings>&
+      forced_response = ForcedPolicyResponseForNextFetchRequestForTesting();
+  if (forced_response.has_value()) {
+    // Note: The ProfileSeparationSettings value doesn't matter here (only the
+    // ProfileSeparationDataMigrationSettings value does).
+    response = policy::ProfileSeparationPolicies(
+        policy::ProfileSeparationSettings::SUGGESTED, forced_response.value());
+    forced_response = std::nullopt;
+  }
+  // Otherwise: Just return the empty default value.
+  return response;
 }
 
 }  // namespace
@@ -253,17 +284,10 @@ ForcedPolicyResponseForNextFetchRequestForTesting() {
           },
           weakSelf);
 
-  std::optional<policy::ProfileSeparationDataMigrationSettings>& testPolicy =
-      ForcedPolicyResponseForNextFetchRequestForTesting();
-  if (testPolicy.has_value()) {
-    // Note: The ProfileSeparationSettings value doesn't matter here (only the
-    // ProfileSeparationDataMigrationSettings value does).
-    policy::ProfileSeparationPolicies policies(
-        policy::ProfileSeparationSettings::SUGGESTED, testPolicy.value());
-    testPolicy = std::nullopt;
-
+  if (ShouldUseFakePolicyResponseForTesting()) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), policies));
+        FROM_HERE,
+        base::BindOnce(std::move(callback), GetFakePolicyResponseForTesting()));
     return;
   }
 
@@ -845,6 +869,10 @@ ForcedPolicyResponseForNextFetchRequestForTesting() {
 @end
 
 @implementation AuthenticationFlowPerformer (ForTesting)
+
++ (void)setUseFakePolicyResponsesForTesting:(BOOL)useFakeResponses {
+  FakePolicyResponsesForTesting() = useFakeResponses;
+}
 
 + (void)forcePolicyResponseForNextRequestForTesting:
     (policy::ProfileSeparationDataMigrationSettings)

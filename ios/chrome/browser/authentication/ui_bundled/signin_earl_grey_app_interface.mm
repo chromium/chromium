@@ -209,6 +209,14 @@
   return settings->GetSelectedTypes().Has(type) ? YES : NO;
 }
 
++ (void)setUseFakeResponsesForProfileSeparationPolicyRequests {
+  chrome_test_util::SetUseFakeResponsesForProfileSeparationPolicyRequests();
+}
+
++ (void)clearUseFakeResponsesForProfileSeparationPolicyRequests {
+  chrome_test_util::ClearUseFakeResponsesForProfileSeparationPolicyRequests();
+}
+
 + (void)setPolicyResponseForNextProfileSeparationPolicyRequest:
     (policy::ProfileSeparationDataMigrationSettings)
         profileSeparationDataMigrationSettings {

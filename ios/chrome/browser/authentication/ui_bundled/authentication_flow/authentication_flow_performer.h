@@ -159,9 +159,15 @@ using OnProfileSwitchCompletion =
 
 @interface AuthenticationFlowPerformer (ForTesting)
 
+// If `useFakeResponses` is true, policy requests will be immediately answered,
+// with a default "no policy" response, instead of via a network request to the
+// policy server. If a non-default response is required, use
+// `forcePolicyResponseForNextRequestForTesting` instead.
+// Any test that uses this should reset it to `false` at the end of the test.
++ (void)setUseFakePolicyResponsesForTesting:(BOOL)useFakeResponses;
+
 // Forces the ProfileSeparationDataMigrationSettings value for the next request
-// made to fetch ProfileSeparationPolicies. This function is only for testing
-// purposes.
+// made to fetch ProfileSeparationPolicies.
 + (void)forcePolicyResponseForNextRequestForTesting:
     (policy::ProfileSeparationDataMigrationSettings)
         profileSeparationDataMigrationSettings;

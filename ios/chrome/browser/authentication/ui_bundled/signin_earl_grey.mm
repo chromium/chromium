@@ -246,6 +246,16 @@ using base::test::ios::WaitUntilConditionOrTimeout;
   }
 }
 
+- (void)setUseFakeResponsesForProfileSeparationPolicyRequests {
+  [SigninEarlGreyAppInterface
+      setUseFakeResponsesForProfileSeparationPolicyRequests];
+}
+
+- (void)clearUseFakeResponsesForProfileSeparationPolicyRequests {
+  [SigninEarlGreyAppInterface
+      clearUseFakeResponsesForProfileSeparationPolicyRequests];
+}
+
 - (void)setPolicyResponseForNextProfileSeparationPolicyRequest:
     (policy::ProfileSeparationDataMigrationSettings)
         profileSeparationDataMigrationSettings {

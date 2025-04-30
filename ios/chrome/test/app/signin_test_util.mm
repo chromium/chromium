@@ -215,6 +215,14 @@ void ResetSyncAccountSettingsPrefs() {
       ->KeepAccountSettingsPrefsOnlyForUsers({});
 }
 
+void SetUseFakeResponsesForProfileSeparationPolicyRequests() {
+  [AuthenticationFlowPerformer setUseFakePolicyResponsesForTesting:YES];
+}
+
+void ClearUseFakeResponsesForProfileSeparationPolicyRequests() {
+  [AuthenticationFlowPerformer setUseFakePolicyResponsesForTesting:NO];
+}
+
 void SetPolicyResponseForNextProfileSeparationPolicyRequest(
     policy::ProfileSeparationDataMigrationSettings
         profileSeparationDataMigrationSettings) {
