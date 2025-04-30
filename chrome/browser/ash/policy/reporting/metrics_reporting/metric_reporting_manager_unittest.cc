@@ -788,7 +788,6 @@ TEST_F(MetricReportingManagerTelemetryTest, OneShotCollectorBootPerformance) {
                                  _, ::ash::kReportDeviceBootMode, true,
                                  metrics::kInitialCollectionDelay))
       .WillByDefault([&]() {
-        LOG(ERROR) << " lbaraz: CALLED ";
         return std::make_unique<FakeCollector>(&collector_count);
       });
 
