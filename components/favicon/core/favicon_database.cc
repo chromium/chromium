@@ -239,8 +239,7 @@ bool FaviconDatabase::IconMappingEnumerator::GetNextIconMapping(
 
 FaviconDatabase::FaviconDatabase()
     : db_(sql::DatabaseOptions()
-              .set_preload(base::FeatureList::IsEnabled(
-                  sql::features::kPreOpenPreloadDatabase))
+              .set_preload(true)
               // Favicons db only stores favicons, so we don't need that big a
               // page size or cache.
               .set_page_size(2048)
@@ -1039,13 +1038,7 @@ sql::InitStatus FaviconDatabase::OpenDatabase(sql::Database* db,
   if (!db_.has_error_callback()) {
     db->set_error_callback(base::BindRepeating(&DatabaseErrorCallback, db));
   }
-  if (!db->Open(db_name))
-    return sql::INIT_FAILURE;
-  if (!base::FeatureList::IsEnabled(sql::features::kPreOpenPreloadDatabase)) {
-    db->Preload();
-  }
-
-  return sql::INIT_OK;
+  return db->Open(db_name) ? sql::INIT_OK : sql::INIT_FAILURE;
 }
 
 sql::InitStatus FaviconDatabase::InitImpl(const base::FilePath& db_name) {

@@ -751,7 +751,7 @@ bool FirstPartySetsDatabase::LazyInit() {
   CHECK_EQ(db_.get(), nullptr);
   db_ = std::make_unique<sql::Database>(
       sql::DatabaseOptions().set_page_size(4096).set_cache_size(32).set_preload(
-          base::FeatureList::IsEnabled(sql::features::kPreOpenPreloadDatabase)),
+          true),
       sql::Database::Tag("FirstPartySets"));
   // base::Unretained is safe here because this FirstPartySetsDatabase owns
   // the sql::Database instance that stores and uses the callback. So,
@@ -773,13 +773,7 @@ bool FirstPartySetsDatabase::LazyInit() {
 
 bool FirstPartySetsDatabase::OpenDatabase() {
   CHECK(db_);
-  if (db_->is_open() || db_->Open(db_path_)) {
-    if (!base::FeatureList::IsEnabled(sql::features::kPreOpenPreloadDatabase)) {
-      db_->Preload();
-    }
-    return true;
-  }
-  return false;
+  return db_->is_open() || db_->Open(db_path_);
 }
 
 void FirstPartySetsDatabase::DatabaseErrorCallback(int extended_error,

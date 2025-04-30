@@ -13,11 +13,6 @@ BASE_FEATURE(kEnableWALModeByDefault,
              "EnableWALModeByDefault",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Preload database before opening the file.
-BASE_FEATURE(kPreOpenPreloadDatabase,
-             "PreOpenPreloadDatabase",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Use a fixed memory-map size instead of using the heuristic.
 BASE_FEATURE(kSqlFixedMmapSize,
              "SqlFixedMmapSize",

@@ -1337,12 +1337,6 @@ TEST_P(SQLDatabaseTest, RazeAndPoison_OpenTransaction) {
       << "RazeAndPoison() did not produce a healthy empty database";
 }
 
-TEST_P(SQLDatabaseTest, RazeAndPoison_Preload_NoCrash) {
-  db_->Preload();
-  db_->RazeAndPoison();
-  db_->Preload();
-}
-
 TEST_P(SQLDatabaseTest, RazeAndPoison_DoesTableExist) {
   ASSERT_TRUE(
       db_->Execute("CREATE TABLE rows(id INTEGER PRIMARY KEY NOT NULL)"));
@@ -1592,12 +1586,6 @@ TEST_P(SQLDatabaseTest, Poison_Close_Reopen_NoChanges) {
   EXPECT_TRUE(
       db_->Execute("CREATE TABLE rows(id INTEGER PRIMARY KEY NOT NULL)"))
       << "Execute() returned false but went through after Poison()";
-}
-
-TEST_P(SQLDatabaseTest, Poison_Preload_NoCrash) {
-  db_->Preload();
-  db_->Poison();
-  db_->Preload();
 }
 
 TEST_P(SQLDatabaseTest, Poison_DoesTableExist) {

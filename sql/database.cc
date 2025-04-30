@@ -515,24 +515,6 @@ void Database::Close() {
   CloseInternal(false);
 }
 
-void Database::Preload() {
-  TRACE_EVENT0("sql", "Database::Preload");
-
-  // The database should not have been preloaded.
-  CHECK(!options_.preload_);
-
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!db_) {
-    DCHECK(poisoned_) << "Cannot preload null db";
-    return;
-  }
-
-  CHECK(!options_.exclusive_database_file_lock_)
-      << "Cannot preload an exclusively locked database.";
-
-  PreloadInternal(DbPath());
-}
-
 // SQLite keeps unused pages associated with a database in a cache.  It asks
 // the cache for pages by an id, and if the page is present and the database is
 // unchanged, it considers the content of the page valid and doesn't read it

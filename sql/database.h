@@ -118,10 +118,6 @@ struct COMPONENT_EXPORT(SQL) DatabaseOptions {
   // to prevent the database files from being opened from any process including
   // being opened a second time by the hosting process.
   //
-  // A side effect of setting this flag is that the database cannot be
-  // preloaded. If you would like to set this flag on a preloaded database,
-  // please reach out to a //sql owner.
-  //
   // This option is experimental and will be merged into the `exclusive_locking`
   // option above if proven to cause no OS compatibility issues.
   // TODO(crbug.com/40262539): Merge into above option, if possible.
@@ -507,19 +503,6 @@ class COMPONENT_EXPORT(SQL) Database {
   // any other functions after closing it. It is permissable to call Close on
   // an uninitialized or already-closed database.
   void Close();
-
-  // Hints the file system that the database will be accessed soon.
-  //
-  // This method should be called on databases that are on the critical path to
-  // Chrome startup. Informing the filesystem about our expected access pattern
-  // early on reduces the likelihood that we'll be blocked on disk I/O. This has
-  // a high impact on startup time.
-  //
-  // This method should not be used for non-critical databases. While using it
-  // will likely improve micro-benchmarks involving one specific database,
-  // overuse risks randomizing the disk I/O scheduler, slowing down Chrome
-  // startup.
-  void Preload();
 
   // Release all non-essential memory associated with this database connection.
   void TrimMemory();
