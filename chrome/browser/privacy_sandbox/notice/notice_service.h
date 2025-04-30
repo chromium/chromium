@@ -16,7 +16,6 @@
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 class Profile;
-class PrefService;
 
 namespace privacy_sandbox {
 
@@ -44,11 +43,6 @@ class PrivacySandboxNoticeService
   void EventOccurred(NoticeId notice_id,
                      notice::mojom::PrivacySandboxNoticeEvent event) override;
 
-  // Service Accessors.
-  NoticeStorage* GetNoticeStorage();
-  PrefService* GetPrefService();
-  NoticeCatalog* GetCatalog();
-
 #if !BUILDFLAG(IS_ANDROID)
   DesktopViewManagerInterface* GetDesktopViewManager() override;
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -58,10 +52,14 @@ class PrivacySandboxNoticeService
 
  private:
   void EmitStartupHistograms();
+
+  NoticeStorage* notice_storage() { return notice_storage_.get(); }
+
   // TODO(crbug.com/392612108): Create eligibility and notice result callbacks.
   raw_ptr<Profile> profile_;
   std::unique_ptr<NoticeCatalog> catalog_;
   std::unique_ptr<NoticeStorage> notice_storage_;
+
 #if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<DesktopViewManagerInterface> desktop_view_manager_;
 #endif  // !BUILDFLAG(IS_ANDROID)

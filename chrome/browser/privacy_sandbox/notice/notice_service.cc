@@ -44,7 +44,7 @@ void PrivacySandboxNoticeService::Shutdown() {
 void PrivacySandboxNoticeService::EventOccurred(
     NoticeId notice_id,
     PrivacySandboxNoticeEvent event) {
-  GetNoticeStorage()->RecordEvent(notice_id, event);
+  notice_storage()->RecordEvent(notice_id, event);
 
   auto notice_ptr = catalog_->GetNoticeMap().find(notice_id);
   CHECK(notice_ptr != catalog_->GetNoticeMap().end());
@@ -60,20 +60,8 @@ PrivacySandboxNoticeService::GetRequiredNotices(SurfaceType surface) {
   return required_notices;
 }
 
-NoticeStorage* PrivacySandboxNoticeService::GetNoticeStorage() {
-  return notice_storage_.get();
-}
-
-PrefService* PrivacySandboxNoticeService::GetPrefService() {
-  return profile_->GetPrefs();
-}
-
-NoticeCatalog* PrivacySandboxNoticeService::GetCatalog() {
-  return catalog_.get();
-}
-
 void PrivacySandboxNoticeService::EmitStartupHistograms() {
-  GetNoticeStorage()->RecordStartupHistograms();
+  notice_storage()->RecordStartupHistograms();
 }
 
 #if !BUILDFLAG(IS_ANDROID)
