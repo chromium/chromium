@@ -505,7 +505,7 @@ crbug.com/1523062 [ win11 qualcomm-0x41333430 angle-d3d11 ] conformance/textures
 
 
 ## Win / Intel / D3D9
-crbug.com/395934162 [ win intel angle-d3d9 passthrough ] conformance/uniforms/out-of-bounds-uniform-array-access.html [ RetryOnFailure ]
+crbug.com/395934162 [ angle-d3d9 intel-0x4680 passthrough win ] conformance/uniforms/out-of-bounds-uniform-array-access.html [ RetryOnFailure ]
 
 ####################
 # Mac failures     #
@@ -634,9 +634,7 @@ crbug.com/396176034 [ android android-sm-a137f ] conformance/offscreencanvas/con
 
 crbug.com/1372149 [ android android-sm-a236b no-passthrough ] conformance/rendering/blending.html [ Failure ]
 crbug.com/40241618 [ android android-sm-s911u1 no-passthrough ] conformance/rendering/blending.html [ Failure ]
-crbug.com/1499000 [ android android-sm-a236b no-passthrough renderer-skia-vulkan ] conformance/extensions/ext-color-buffer-half-float.html [ Failure ]
 crbug.com/1499000 [ android android-sm-a236b no-passthrough ] conformance/extensions/oes-texture-float-with-video.html [ Failure ]
-crbug.com/1499000 [ android android-sm-a236b no-passthrough renderer-skia-vulkan ] conformance/extensions/oes-texture-float.html [ Failure ]
 crbug.com/1499000 [ android android-sm-a236b no-passthrough ] conformance/extensions/oes-texture-half-float-with-video.html [ Failure ]
 crbug.com/1499000 [ android android-sm-a236b no-passthrough ] conformance/textures/image_bitmap_from_video/tex-2d-luminance-luminance-unsigned_byte.html [ Failure ]
 crbug.com/1499000 [ android android-sm-a236b no-passthrough ] conformance/textures/image_bitmap_from_video/tex-2d-luminance_alpha-luminance_alpha-unsigned_byte.html [ Failure ]
