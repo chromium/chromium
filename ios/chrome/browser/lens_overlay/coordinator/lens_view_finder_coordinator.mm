@@ -104,6 +104,10 @@ LensViewFinderTransition TransitionFromPresentationStyle(
 
   _lensViewController =
       ios::provider::NewChromeLensViewFinderController(configuration);
+  if (!_lensViewController) {
+    return;
+  }
+
   [_lensViewController setLensViewFinderDelegate:self];
 
   _lensViewController.transitioningDelegate = _transitionManager;
