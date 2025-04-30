@@ -65,7 +65,7 @@ class ExtensionSystem : public KeyedService {
   // Initializes extensions machinery.
   // Component extensions are always enabled, external and user extensions are
   // controlled (for both incognito and non-incognito profiles) by the
-  // |extensions_enabled| flag passed to non-incognito initialization.
+  // `extensions_enabled` flag passed to non-incognito initialization.
   // These calls should occur after the profile IO data is initialized,
   // as extensions initialization depends on that.
   virtual void InitForRegularProfile(bool extensions_enabled) = 0;
@@ -94,7 +94,7 @@ class ExtensionSystem : public KeyedService {
   // The dynamic user scripts store is created at startup.
   virtual StateStore* dynamic_user_scripts_store() = 0;
 
-  // Returns the |ValueStore| factory created at startup.
+  // Returns the `ValueStore` factory created at startup.
   virtual scoped_refptr<value_store::ValueStoreFactory> store_factory() = 0;
 
   // Returns the QuotaService that limits calls to certain extension functions.
@@ -119,10 +119,10 @@ class ExtensionSystem : public KeyedService {
   virtual std::unique_ptr<ExtensionSet> GetDependentExtensions(
       const Extension* extension) = 0;
 
-  // Install an updated version of |extension_id| with the version given in
-  // |unpacked_dir|. If |install_immediately| is true, the system will install
+  // Install an updated version of `extension_id` with the version given in
+  // `unpacked_dir`. If `install_immediately` is true, the system will install
   // the given extension immediately instead of waiting until idle. Ownership
-  // of |unpacked_dir| in the filesystem is transferred and implementors of
+  // of `unpacked_dir` in the filesystem is transferred and implementors of
   // this function are responsible for cleaning it up on errors, etc.
   virtual void InstallUpdate(const ExtensionId& extension_id,
                              const std::string& public_key,

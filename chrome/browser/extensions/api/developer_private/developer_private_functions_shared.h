@@ -79,11 +79,11 @@ class DeveloperPrivateAPIFunction : public ExtensionFunction {
 
   ~DeveloperPrivateAPIFunction() override;
 
-  // Returns the extension with the given |id| from the registry, including
+  // Returns the extension with the given `id` from the registry, including
   // all possible extensions (enabled, disabled, terminated, etc).
   const Extension* GetExtensionById(const ExtensionId& id);
 
-  // Returns the extension with the given |id| from the registry, only checking
+  // Returns the extension with the given `id` from the registry, only checking
   // enabled extensions.
   const Extension* GetEnabledExtensionById(const ExtensionId& id);
 };

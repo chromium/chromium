@@ -26,7 +26,7 @@ using SequenceBoundSettingsChangedCallback =
     base::StrongAlias<class SequenceBoundSettingsChangedCallbackTag,
                       SettingsChangedCallback>;
 
-// Returns a callback that is guaranteed to run on |task_runner|. This should be
+// Returns a callback that is guaranteed to run on `task_runner`. This should be
 // used when the callback is invoked from other sequences.
 inline SequenceBoundSettingsChangedCallback
 GetSequenceBoundSettingsChangedCallback(

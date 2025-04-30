@@ -60,8 +60,8 @@ class AppRuntimeEventRouter {
   //   }
   // }
 
-  // The FileEntries are created from |file_system_id| and |base_name|.
-  // |handler_id| corresponds to the id of the file_handlers item in the
+  // The FileEntries are created from `file_system_id` and `base_name`.
+  // `handler_id` corresponds to the id of the file_handlers item in the
   // manifest that resulted in a match which triggered this launch.
   static void DispatchOnLaunchedEventWithFileEntries(
       content::BrowserContext* context,
@@ -71,7 +71,7 @@ class AppRuntimeEventRouter {
       const std::vector<EntryInfo>& entries,
       const std::vector<GrantedFileEntry>& file_entries);
 
-  // |handler_id| corresponds to the id of the url_handlers item
+  // `handler_id` corresponds to the id of the url_handlers item
   // in the manifest that resulted in a match which triggered this launch.
   static void DispatchOnLaunchedEventWithUrl(content::BrowserContext* context,
                                              const Extension* extension,

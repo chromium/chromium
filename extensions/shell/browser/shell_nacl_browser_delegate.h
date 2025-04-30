@@ -20,7 +20,7 @@ class InfoMap;
 // BrowserContext.
 class ShellNaClBrowserDelegate : public NaClBrowserDelegate {
  public:
-  // Uses |context| to look up extensions via InfoMap on the IO thread.
+  // Uses `context` to look up extensions via InfoMap on the IO thread.
   explicit ShellNaClBrowserDelegate(content::BrowserContext* context);
 
   ShellNaClBrowserDelegate(const ShellNaClBrowserDelegate&) = delete;

@@ -68,8 +68,8 @@ class HidDeviceManager : public BrowserContextKeyedAPI,
 
   void Connect(const std::string& device_guid, ConnectCallback callback);
 
-  // Checks if |extension| has permission to open |device_info|. Set
-  // |update_last_used| to update the timestamp in the DevicePermissionsManager.
+  // Checks if `extension` has permission to open `device_info`. Set
+  // `update_last_used` to update the timestamp in the DevicePermissionsManager.
   bool HasPermission(const Extension* extension,
                      const device::mojom::HidDeviceInfo& device_info,
                      bool update_last_used);

@@ -68,7 +68,7 @@ class ExtensionApiTest : public ExtensionBrowserTest {
   void SetUpOnMainThread() override;
   void TearDownOnMainThread() override;
 
-  // Loads the extension with |extension_name| and default RunOptions and
+  // Loads the extension with `extension_name` and default RunOptions and
   // LoadOptions.
   [[nodiscard]] bool RunExtensionTest(const char* extension_name);
 
@@ -83,8 +83,8 @@ class ExtensionApiTest : public ExtensionBrowserTest {
                                       const RunOptions& run_options,
                                       const LoadOptions& load_options);
 
-  // Opens the given |url| and waits for the next result from the
-  // chrome.test API. If |open_in_incognito| is true, the URL is opened
+  // Opens the given `url` and waits for the next result from the
+  // chrome.test API. If `open_in_incognito` is true, the URL is opened
   // in an off-the-record browser profile. This API is different from
   // RunExtensionTest as it doesn't load an extension.
   [[nodiscard]] bool OpenTestURL(const GURL& url,
@@ -120,7 +120,7 @@ class ExtensionApiTest : public ExtensionBrowserTest {
   bool StartWebSocketServer(const base::FilePath& root_directory,
                             bool enable_basic_auth = false);
 
-  // Sets the additional string argument |customArg| to the test config object,
+  // Sets the additional string argument `customArg` to the test config object,
   // which is available to javascript tests using chrome.test.getConfig().
   void SetCustomArg(std::string_view custom_arg);
 

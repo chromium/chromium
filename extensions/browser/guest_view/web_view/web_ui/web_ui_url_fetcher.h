@@ -18,7 +18,7 @@ class SimpleURLLoader;
 
 namespace extensions {
 
-// WebUIURLFetcher downloads the content of a file by giving its |url| on WebUI.
+// WebUIURLFetcher downloads the content of a file by giving its `url` on WebUI.
 // Each WebUIURLFetcher is associated with a given |render_process_id,
 // render_view_id| pair.
 class WebUIURLFetcher : public URLFetcher {

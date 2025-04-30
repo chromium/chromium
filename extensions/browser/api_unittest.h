@@ -27,10 +27,10 @@ class ExtensionFunction;
 namespace extensions {
 
 // Use this class to enable calling API functions in a unittest.
-// By default, this class will create and load an empty unpacked |extension_|,
+// By default, this class will create and load an empty unpacked `extension_`,
 // which will be used in all API function calls. This extension can be
 // overridden using set_extension().
-// When calling RunFunction[AndReturn*], |args| should be in JSON format,
+// When calling RunFunction[AndReturn*], `args` should be in JSON format,
 // wrapped in a list. See also RunFunction* in api_test_utils.h.
 class ApiUnitTest : public ExtensionsTest {
  public:
@@ -49,12 +49,12 @@ class ApiUnitTest : public ExtensionsTest {
   void SetUp() override;
   void TearDown() override;
 
-  // Creates a page for |extension_|, and sets it for the WebContents to be used
-  // in API calls. If |contents_| is already set, this does nothing.
+  // Creates a page for `extension_`, and sets it for the WebContents to be used
+  // in API calls. If `contents_` is already set, this does nothing.
   void CreateExtensionPage();
 
   // Various ways of running an API function. These methods take ownership of
-  // |function|. |args| should be in JSON format, wrapped in a list.
+  // `function`. `args` should be in JSON format, wrapped in a list.
 
   // Return the function result as a base::Value.
   std::optional<base::Value> RunFunctionAndReturnValue(

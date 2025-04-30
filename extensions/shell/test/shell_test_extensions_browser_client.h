@@ -12,7 +12,7 @@ namespace extensions {
 // A TestExtensionsBrowserClient for AppShell tests.
 class ShellTestExtensionsBrowserClient : public TestExtensionsBrowserClient {
  public:
-  // If provided, |main_context| must not be an incognito context.
+  // If provided, `main_context` must not be an incognito context.
   explicit ShellTestExtensionsBrowserClient(
       content::BrowserContext* main_context);
   ShellTestExtensionsBrowserClient();

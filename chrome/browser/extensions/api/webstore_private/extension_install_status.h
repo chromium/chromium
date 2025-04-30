@@ -48,7 +48,7 @@ enum ExtensionInstallStatus {
 };
 
 // Returns the Extension install status for a Chrome web store extension with
-// |extension_id| in |profile|. Note that this function won't check whether the
+// `extension_id` in `profile`. Note that this function won't check whether the
 // extension's manifest type, required permissions are blocked by enterprise
 // policy. type blocking or permission blocking or manifest version. Please use
 // this function only if manifest file is not available.

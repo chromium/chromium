@@ -81,7 +81,7 @@ class WorkerThreadDispatcher :
       std::unique_ptr<NativeExtensionBindingsSystem> bindings_system);
   void RemoveWorkerData(int64_t service_worker_version_id);
 
-  // Updates bindings of all Service Workers for |extension_id|, after extension
+  // Updates bindings of all Service Workers for `extension_id`, after extension
   // permission update.
   // Returns whether or not the update request was successfully issued to
   // each Service Workers.

@@ -58,7 +58,7 @@ class IdentityAPI : public BrowserContextKeyedAPI,
   // GAIA id cache.
   void SetGaiaIdForExtension(const std::string& extension_id,
                              const GaiaId& gaia_id);
-  // Returns |std::nullopt| if no GAIA id is saved for |extension_id|.
+  // Returns |std::nullopt| if no GAIA id is saved for `extension_id`.
   // Otherwise, returns GAIA id previously saved via SetGaiaIdForExtension().
   std::optional<GaiaId> GetGaiaIdForExtension(const std::string& extension_id);
   void EraseGaiaIdForExtension(const std::string& extension_id);

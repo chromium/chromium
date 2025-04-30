@@ -66,7 +66,7 @@ using WebRequestRule = DeclarativeRule<WebRequestCondition, WebRequestAction>;
 // example 'scheme': 'http') are fulfilled.
 class WebRequestRulesRegistry : public RulesRegistry {
  public:
-  // |cache_delegate| can be NULL. In that case it constructs the registry with
+  // `cache_delegate` can be NULL. In that case it constructs the registry with
   // storage functionality suspended.
   WebRequestRulesRegistry(content::BrowserContext* browser_context,
                           RulesCacheDelegate* cache_delegate,
@@ -125,13 +125,13 @@ class WebRequestRulesRegistry : public RulesRegistry {
   using RuleSet = std::set<const WebRequestRule*>;
 
   // This bundles all consistency checkers. Returns true in case of consistency
-  // and MUST set |error| otherwise.
+  // and MUST set `error` otherwise.
   static bool Checker(const Extension* extension,
                       const WebRequestConditionSet* conditions,
                       const WebRequestActionSet* actions,
                       std::string* error);
 
-  // Check that the |extension| has host permissions for all URLs if actions
+  // Check that the `extension` has host permissions for all URLs if actions
   // requiring them are present.
   static bool HostPermissionsChecker(const Extension* extension,
                                      const WebRequestActionSet* actions,
@@ -144,24 +144,24 @@ class WebRequestRulesRegistry : public RulesRegistry {
                            std::string* error);
 
   // Helper for RemoveRulesImpl and RemoveAllRulesImpl. Call this before
-  // deleting |rule| from one of the maps in |webrequest_rules_|. It will erase
-  // the rule from |rule_triggers_| and |rules_with_untriggered_conditions_|,
+  // deleting `rule` from one of the maps in `webrequest_rules_`. It will erase
+  // the rule from `rule_triggers_` and `rules_with_untriggered_conditions_`,
   // and add every of the rule's URLMatcherConditionSet to
-  // |remove_from_url_matcher|, so that the caller can remove them from the
+  // `remove_from_url_matcher`, so that the caller can remove them from the
   // matcher later.
   void CleanUpAfterRule(
       const WebRequestRule* rule,
       std::vector<base::MatcherStringPattern::ID>* remove_from_url_matcher);
 
-  // This is a helper function to GetMatches. Rules triggered by |url_matches|
-  // get added to |result| if one of their conditions is fulfilled.
-  // |request_data| gets passed to IsFulfilled of the rules' condition sets.
+  // This is a helper function to GetMatches. Rules triggered by `url_matches`
+  // get added to `result` if one of their conditions is fulfilled.
+  // `request_data` gets passed to IsFulfilled of the rules' condition sets.
   void AddTriggeredRules(const URLMatches& url_matches,
                          const WebRequestCondition::MatchData& request_data,
                          RuleSet* result) const;
 
   // Map that tells us which WebRequestRule may match under the condition that
-  // the base::MatcherStringPattern::ID was returned by the |url_matcher_|.
+  // the base::MatcherStringPattern::ID was returned by the `url_matcher_`.
   RuleTriggers rule_triggers_;
 
   // These rules contain condition sets with conditions without URL attributes.

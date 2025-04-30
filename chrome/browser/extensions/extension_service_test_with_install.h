@@ -93,16 +93,16 @@ class ExtensionServiceTestWithInstall : public ExtensionServiceUserTestBase,
                                           InstallState install_state);
 
   // Verifies the result of a CRX installation. Used by InstallCRX. Set the
-  // |install_state| to INSTALL_FAILED if the installation is expected to fail.
+  // `install_state` to INSTALL_FAILED if the installation is expected to fail.
   // Returns an Extension pointer if the install succeeded, null otherwise.
   const Extension* VerifyCrxInstall(const base::FilePath& path,
                                     InstallState install_state);
 
   // Verifies the result of a CRX installation. Used by InstallCRX. Set the
-  // |install_state| to INSTALL_FAILED if the installation is expected to fail.
-  // If |install_state| is INSTALL_UPDATED, and |expected_old_name| is
+  // `install_state` to INSTALL_FAILED if the installation is expected to fail.
+  // If `install_state` is INSTALL_UPDATED, and `expected_old_name` is
   // non-empty, expects that the existing extension's title was
-  // |expected_old_name|.
+  // `expected_old_name`.
   // Returns an Extension pointer if the install succeeded, null otherwise.
   const Extension* VerifyCrxInstall(const base::FilePath& path,
                                     InstallState install_state,

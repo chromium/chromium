@@ -72,7 +72,7 @@ class ExtensionsRendererClient {
   void OnExtensionUnloaded(const ExtensionId& extension);
 
   // Adds an API provider that can extend the behavior of extension's renderer
-  // side. API providers need to be added before |Dispatcher| is created.
+  // side. API providers need to be added before `Dispatcher` is created.
   void AddAPIProvider(
       std::unique_ptr<ExtensionsRendererAPIProvider> api_provider);
 
@@ -103,7 +103,7 @@ class ExtensionsRendererClient {
                        const url::Origin* initiator_origin,
                        GURL* new_url);
 
-  // Returns the single instance of |this|.
+  // Returns the single instance of `this`.
   static ExtensionsRendererClient* Get();
 
   // Initialize the single instance.

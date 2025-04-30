@@ -90,7 +90,7 @@ class TCPServerSocketEventDispatcher : public BrowserContextKeyedAPI {
       mojo::ScopedDataPipeConsumerHandle receive_pipe_handle,
       mojo::ScopedDataPipeProducerHandle send_pipe_handle);
 
-  // Post an extension event from |thread_id| to UI thread
+  // Post an extension event from `thread_id` to UI thread
   static void PostEvent(const AcceptParams& params,
                         std::unique_ptr<Event> event);
 

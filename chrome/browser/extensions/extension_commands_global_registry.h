@@ -59,7 +59,7 @@ class ExtensionCommandsGlobalRegistry
     registry_for_active_window_ = registry;
   }
 
-  // Returns whether |accelerator| is registered on the registry for the active
+  // Returns whether `accelerator` is registered on the registry for the active
   // window or on the global registry.
   bool IsRegistered(const ui::Accelerator& accelerator);
 

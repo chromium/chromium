@@ -91,7 +91,7 @@ class PowerAPI : public BrowserContextKeyedAPI,
     return extension_levels_;
   }
 
-  // Adds an extension lock at |level| for |extension_id|, replacing the
+  // Adds an extension lock at `level` for `extension_id`, replacing the
   // extension's existing lock, if any.
   void AddRequest(const ExtensionId& extension_id, api::power::Level level);
 
@@ -113,8 +113,8 @@ class PowerAPI : public BrowserContextKeyedAPI,
  private:
   friend class BrowserContextKeyedAPIFactory<PowerAPI>;
 
-  // Updates wake lock status and |current_level_| after iterating
-  // over |extension_levels_|.
+  // Updates wake lock status and `current_level_` after iterating
+  // over `extension_levels_`.
   void UpdateWakeLock();
 
   // BrowserContextKeyedAPI implementation.
@@ -123,16 +123,16 @@ class PowerAPI : public BrowserContextKeyedAPI,
   static const bool kServiceIsCreatedWithBrowserContext = false;
   void Shutdown() override;
 
-  // Activates the wake lock with the type. |is_wake_lock_active_| is set true.
+  // Activates the wake lock with the type. `is_wake_lock_active_` is set true.
   void ActivateWakeLock(device::mojom::WakeLockType type);
 
   // Cancels the current wake lock if it is in active state.
-  // |is_wake_lock_active_| is set false.
+  // `is_wake_lock_active_` is set false.
   void CancelWakeLock();
 
-  // Returns the raw pointer of the bound |wake_lock_|. This function is used
+  // Returns the raw pointer of the bound `wake_lock_`. This function is used
   // only inside ActivateWakeLock() and CancelWakeLock() to perform the wake
-  // lock mojo calls. The |wake_lock_| is bound and the wake lock mojo pipe is
+  // lock mojo calls. The `wake_lock_` is bound and the wake lock mojo pipe is
   // created only once at the first time the GetWakeLock() is called.
   device::mojom::WakeLock* GetWakeLock();
 

@@ -220,7 +220,7 @@ class PermissionsManager : public KeyedService {
 
   // Returns true if the extension has been explicitly granted permission to run
   // on the origin of `url`. This will return true if any permission includes
-  // access to the origin of |url|, even if the permission includes others
+  // access to the origin of `url`, even if the permission includes others
   // (such as *://*.com/*) or is restricted to a path (that is, an extension
   // with permission for https://google.com/maps will return true for
   // https://google.com). Note: This checks any runtime-granted permissions,

@@ -59,11 +59,11 @@ class IncognitoConnectability : public BrowserContextKeyedAPI {
 
   explicit IncognitoConnectability(content::BrowserContext* context);
   ~IncognitoConnectability() override;
-  // Returns the IncognitoConnectability object for |context|. |context| must
+  // Returns the IncognitoConnectability object for `context`. `context` must
   // be off-the-record.
   static IncognitoConnectability* Get(content::BrowserContext* context);
 
-  // Passes true to the provided callback if |url| is allowed to connect from
+  // Passes true to the provided callback if `url` is allowed to connect from
   // this profile, false otherwise. If unknown, the user will be prompted before
   // an answer is returned.
   void Query(const Extension* extension,
@@ -106,7 +106,7 @@ class IncognitoConnectability : public BrowserContextKeyedAPI {
                              infobars::ContentInfoBarManager* infobar_manager,
                              ScopedAlertTracker::Mode response);
 
-  // Returns true if the (|extension|, |origin|) pair appears in the map.
+  // Returns true if the (`extension`, `origin`) pair appears in the map.
   bool IsInMap(const Extension* extension,
                const GURL& origin,
                const ExtensionToOriginsMap& map);

@@ -26,12 +26,12 @@ class DeclarativeManifestData : public Extension::ManifestData {
 
   ~DeclarativeManifestData() override;
 
-  // Gets the DeclarativeManifestData for |extension|, or NULL if none was
+  // Gets the DeclarativeManifestData for `extension`, or NULL if none was
   // specified.
   static DeclarativeManifestData* Get(const Extension* extension);
 
-  // Tries to construct the info based on |value|, as it would have appeared in
-  // the manifest. Sets |error| and returns an empty scoped_ptr on failure.
+  // Tries to construct the info based on `value`, as it would have appeared in
+  // the manifest. Sets `error` and returns an empty scoped_ptr on failure.
   static std::unique_ptr<DeclarativeManifestData> FromValue(
       const base::Value& value,
       std::u16string* error);

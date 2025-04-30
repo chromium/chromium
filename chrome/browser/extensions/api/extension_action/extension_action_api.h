@@ -51,7 +51,7 @@ class ExtensionActionFunction : public ExtensionFunction {
   // kDefaultTabId if none was specified.
   int tab_id_;
 
-  // WebContents for |tab_id_| if one exists.
+  // WebContents for `tab_id_` if one exists.
   raw_ptr<content::WebContents> contents_;
 
   // The extension action for the current extension.

@@ -28,7 +28,7 @@ namespace policy_test_utils {
 void SetUpEmbeddedTestServer(
     net::test_server::EmbeddedTestServer* embedded_test_server);
 
-// Assigns an |extension_id| and its |update_manifest_url| to the
+// Assigns an `extension_id` and its `update_manifest_url` to the
 // "ExtensionInstallForcelist" user policy.
 // This will cause the extension to get force-installed.
 void SetExtensionInstallForcelistPolicy(

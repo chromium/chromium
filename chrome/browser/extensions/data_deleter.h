@@ -25,7 +25,7 @@ class DataDeleter {
   // called. Cookies are deleted on the current thread, local storage and
   // databases/settings are deleted asynchronously on the webkit and file
   // threads, respectively. This function must be called from the UI thread.
-  // This method starts the deletion process and triggers |done_callback| when
+  // This method starts the deletion process and triggers `done_callback` when
   // the process has finished.
   static void StartDeleting(Profile* profile,
                             const Extension* extension,

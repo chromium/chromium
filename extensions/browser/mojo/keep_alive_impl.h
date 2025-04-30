@@ -34,8 +34,8 @@ class KeepAliveImpl : public KeepAlive,
   KeepAliveImpl(const KeepAliveImpl&) = delete;
   KeepAliveImpl& operator=(const KeepAliveImpl&) = delete;
 
-  // Create a keep alive for |extension| running in |context| and connect it to
-  // |receiver|. When the receiver closes its pipe, the keep alive ends.
+  // Create a keep alive for `extension` running in `context` and connect it to
+  // `receiver`. When the receiver closes its pipe, the keep alive ends.
   static void Create(content::BrowserContext* browser_context,
                      const Extension* extension,
                      content::RenderFrameHost* render_frame_host,

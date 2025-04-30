@@ -38,8 +38,8 @@ bool CanDisplayInAppLauncher(const Extension* extension,
 bool ShouldDisplayInNewTabPage(const Extension* extension,
                                content::BrowserContext* context);
 
-// If |url| is an extension URL, returns the name of the associated extension,
-// with whitespace collapsed. Otherwise, returns empty string. |context| is used
+// If `url` is an extension URL, returns the name of the associated extension,
+// with whitespace collapsed. Otherwise, returns empty string. `context` is used
 // to get at the extension registry.
 std::u16string GetEnabledExtensionNameForUrl(const GURL& url,
                                              content::BrowserContext* context);

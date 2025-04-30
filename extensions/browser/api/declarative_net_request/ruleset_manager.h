@@ -63,19 +63,19 @@ class RulesetManager {
     virtual ~TestObserver() {}
   };
 
-  // Adds the ruleset for the given |extension_id|. Should not be called twice
+  // Adds the ruleset for the given `extension_id`. Should not be called twice
   // in succession for an extension.
   void AddRuleset(const ExtensionId& extension_id,
                   std::unique_ptr<CompositeMatcher> matcher);
 
-  // Removes the ruleset for |extension_id|. Should be called only after a
+  // Removes the ruleset for `extension_id`. Should be called only after a
   // corresponding AddRuleset.
   void RemoveRuleset(const ExtensionId& extension_id);
 
   // Returns the set of extensions which have active rulesets.
   std::set<ExtensionId> GetExtensionsWithRulesets() const;
 
-  // Returns the CompositeMatcher corresponding to the |extension_id| or null
+  // Returns the CompositeMatcher corresponding to the `extension_id` or null
   // if no matcher is present for the extension.
   CompositeMatcher* GetMatcherForExtension(const ExtensionId& extension_id);
   const CompositeMatcher* GetMatcherForExtension(
@@ -103,7 +103,7 @@ class RulesetManager {
   bool HasAnyExtraHeadersMatcher() const;
 
   // Returns true if there is a matcher which modifies "extraHeaders" for the
-  // given |request|.
+  // given `request`.
   bool HasExtraHeadersMatcherForRequest(const WebRequestInfo& request,
                                         bool is_incognito_context) const;
 
@@ -124,7 +124,7 @@ class RulesetManager {
   // Returns the number of CompositeMatchers currently being managed.
   size_t GetMatcherCountForTest() const { return rulesets_.size(); }
 
-  // Sets the TestObserver. Client maintains ownership of |observer|.
+  // Sets the TestObserver. Client maintains ownership of `observer`.
   void SetObserverForTest(TestObserver* observer);
 
  private:
@@ -157,7 +157,7 @@ class RulesetManager {
       RulesetMatchingStage stage) const;
 
   // Returns the list of matching modifyHeaders actions sorted in descending
-  // order of priority (|rulesets| is sorted in descending order of extension
+  // order of priority (`rulesets` is sorted in descending order of extension
   // priority.)
   std::vector<RequestAction> GetModifyHeadersActions(
       const std::vector<RulesetAndPageAccess>& rulesets,
@@ -171,7 +171,7 @@ class RulesetManager {
       const net::HttpResponseHeaders* response_headers,
       bool is_incognito_context) const;
 
-  // Returns true if the given |request| should be evaluated for
+  // Returns true if the given `request` should be evaluated for
   // blocking/redirection.
   bool ShouldEvaluateRequest(const WebRequestInfo& request) const;
 
@@ -183,7 +183,7 @@ class RulesetManager {
       bool is_incognito_context,
       PermissionsData::PageAccess& host_permission_access) const;
 
-  // Sorted in decreasing order of |extension_install_time|.
+  // Sorted in decreasing order of `extension_install_time`.
   // Use a flat_set instead of std::set/map. This makes [Add/Remove]Ruleset
   // O(n), but it's fine since the no. of rulesets are expected to be quite
   // small.

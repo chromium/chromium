@@ -82,7 +82,7 @@ class ExtensionAction {
     SetValue(&title_, tab_id, title);
   }
 
-  // If tab |tab_id| has a set title, return it.  Otherwise, return
+  // If tab `tab_id` has a set title, return it.  Otherwise, return
   // the default title.
   std::string GetTitle(int tab_id) const { return GetValue(title_, tab_id); }
 
@@ -95,7 +95,7 @@ class ExtensionAction {
   // Set this action's icon bitmap on a specific tab.
   void SetIcon(int tab_id, const gfx::Image& image);
 
-  // Gets the icon that has been set using |SetIcon| for the tab.
+  // Gets the icon that has been set using `SetIcon` for the tab.
   gfx::Image GetExplicitlySetIcon(int tab_id) const;
 
   // Sets the icon for a tab, in a way that can't be read by the extension's
@@ -153,8 +153,8 @@ class ExtensionAction {
   void ClearDNRActionCountForAllTabs() { dnr_action_count_.clear(); }
 
   // Get the badge text displayed for a tab, calculated based on both
-  // |badge_text_| and |dnr_action_count_|. Returns in order of priority:
-  // - GetExplicitlySetBadgeText(tab_id) if it exists for the |tab_id|
+  // `badge_text_` and `dnr_action_count_`. Returns in order of priority:
+  // - GetExplicitlySetBadgeText(tab_id) if it exists for the `tab_id`
   // - GetDNRActionCount(tab_id) if there is at least one action for this tab
   // - The default badge text, if set, otherwise: an empty string.
   std::string GetDisplayBadgeText(int tab_id) const;
@@ -170,9 +170,9 @@ class ExtensionAction {
 
   // Get the badge visibility for a tab, or the default badge visibility
   // if none was set.
-  // Gets the visibility of |tab_id|.  Returns the first of: a specific
+  // Gets the visibility of `tab_id`.  Returns the first of: a specific
   // visibility set on the tab; a declarative visibility set on the tab; the
-  // default visibility set for all tabs; or |false|.  Don't return this
+  // default visibility set for all tabs; or `false`.  Don't return this
   // result to an extension's background page because the declarative state can
   // leak information about hosts the extension doesn't have permission to
   // access.
@@ -198,7 +198,7 @@ class ExtensionAction {
   gfx::Image GetPlaceholderIconImage() const;
 
   // Determine whether or not the ExtensionAction has a value set for the given
-  // |tab_id| for each property.
+  // `tab_id` for each property.
   bool HasPopupUrl(int tab_id) const;
   bool HasTitle(int tab_id) const;
   bool HasBadgeText(int tab_id) const;
@@ -213,7 +213,7 @@ class ExtensionAction {
   void SetDefaultIconForTest(std::unique_ptr<ExtensionIconSet> default_icon);
 
  private:
-  // Populates the action from the |extension| and |manifest_data|, filling in
+  // Populates the action from the `extension` and `manifest_data`, filling in
   // any missing values (like title or icons) as possible.
   void Populate(const Extension& extension, const ActionInfo& manifest_data);
 
@@ -287,7 +287,7 @@ class ExtensionAction {
   std::map<int, std::map<int, std::vector<gfx::Image>>> declarative_icon_;
 
   // Maps tab_id to the number of actions taken based on declarative net request
-  // rule matches on incoming requests. Overrides the default |badge_text_| for
+  // rule matches on incoming requests. Overrides the default `badge_text_` for
   // this extension if it has opted into setting the action count as badge text.
   std::map<int, int> dnr_action_count_;
 
@@ -295,7 +295,7 @@ class ExtensionAction {
   // image representations will be selected.
   std::unique_ptr<ExtensionIconSet> default_icon_;
 
-  // The default icon image, if |default_icon_| exists. Set via
+  // The default icon image, if `default_icon_` exists. Set via
   // SetDefaultIconImage(). Since IconImages depend upon BrowserContexts, we
   // don't have the ExtensionAction load it directly to keep this class's
   // knowledge limited.

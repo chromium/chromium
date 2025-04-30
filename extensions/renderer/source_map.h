@@ -20,7 +20,7 @@ class SourceMap {
   virtual v8::Local<v8::String> GetSource(v8::Isolate* isolate,
                                           const std::string& name) const = 0;
 
-  // Returns true if the map contains an entry for the given |name|.
+  // Returns true if the map contains an entry for the given `name`.
   virtual bool Contains(const std::string& name) const = 0;
 };
 

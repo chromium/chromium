@@ -74,7 +74,7 @@ class ContentVerifyJob : public base::RefCountedThreadSafe<ContentVerifyJob> {
 
   // This begins the process of getting expected hashes, so it should be called
   // as early as possible.
-  // The |failure_callback| will be called at most once if there was a failure.
+  // The `failure_callback` will be called at most once if there was a failure.
   void Start(ContentVerifier* verifier,
              const base::Version& extension_version,
              int manifest_version,
@@ -168,13 +168,13 @@ class ContentVerifyJob : public base::RefCountedThreadSafe<ContentVerifyJob> {
   // The index of the block we're currently on.
   int current_block_ = 0;
 
-  // The hash we're building up for the bytes of |current_block_|.
+  // The hash we're building up for the bytes of `current_block_`.
   std::unique_ptr<crypto::SecureHash> current_hash_;
 
-  // The number of bytes we've already input into |current_hash_|.
+  // The number of bytes we've already input into `current_hash_`.
   int current_hash_byte_count_ = 0;
 
-  // Valid and set after |hashes_ready_| is set to true.
+  // Valid and set after `hashes_ready_` is set to true.
   std::unique_ptr<const ContentHashReader> hash_reader_;
 
   // Resource info for this verify job.

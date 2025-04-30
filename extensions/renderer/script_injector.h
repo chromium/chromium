@@ -73,31 +73,31 @@ class ScriptInjector {
   virtual blink::mojom::PromiseResultOption ShouldWaitForPromise() const = 0;
 
   // Returns true if the script should inject JS source at the given
-  // |run_location|.
+  // `run_location`.
   virtual bool ShouldInjectJs(
       mojom::RunLocation run_location,
       const std::set<std::string>& executing_scripts) const = 0;
 
   // Returns true if the script should inject or remove CSS at the given
-  // |run_location|.
+  // `run_location`.
   virtual bool ShouldInjectOrRemoveCss(
       mojom::RunLocation run_location,
       const std::set<std::string>& injected_stylesheets) const = 0;
 
-  // Returns true if the script should execute on the given |frame|.
+  // Returns true if the script should execute on the given `frame`.
   virtual PermissionsData::PageAccess CanExecuteOnFrame(
       const InjectionHost* injection_host,
       blink::WebLocalFrame* web_frame,
       int tab_id) = 0;
 
-  // Returns the javascript sources to inject at the given |run_location|.
+  // Returns the javascript sources to inject at the given `run_location`.
   // Only called if ShouldInjectJs() is true.
   virtual std::vector<blink::WebScriptSource> GetJsSources(
       mojom::RunLocation run_location,
       std::set<std::string>* executing_scripts,
       size_t* num_injected_js_scripts) const = 0;
 
-  // Returns the css to inject at the given |run_location|.
+  // Returns the css to inject at the given `run_location`.
   // Only called if ShouldInjectOrRemoveCss() is true.
   virtual std::vector<CSSSource> GetCssSources(
       mojom::RunLocation run_location,

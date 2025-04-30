@@ -33,14 +33,14 @@ class ExtensionHostDelegate {
  public:
   virtual ~ExtensionHostDelegate() {}
 
-  // Called after the hosting |web_contents| for an extension is created. The
-  // implementation may wish to add preference observers to |web_contents|.
+  // Called after the hosting `web_contents` for an extension is created. The
+  // implementation may wish to add preference observers to `web_contents`.
   virtual void OnExtensionHostCreated(content::WebContents* web_contents) = 0;
 
-  // Called after |host| creates the renderer main frame for an extension.
+  // Called after `host` creates the renderer main frame for an extension.
   virtual void OnMainFrameCreatedForBackgroundPage(ExtensionHost* host) = 0;
 
-  // Creates a new tab or popup window with |web_contents|. The embedder may
+  // Creates a new tab or popup window with `web_contents`. The embedder may
   // choose to do nothing if tabs and popups are not supported.
   virtual void CreateTab(std::unique_ptr<content::WebContents> web_contents,
                          const ExtensionId& extension_id,
@@ -48,7 +48,7 @@ class ExtensionHostDelegate {
                          const blink::mojom::WindowFeatures& window_features,
                          bool user_gesture) = 0;
 
-  // Requests access to an audio or video media stream. Invokes |callback|
+  // Requests access to an audio or video media stream. Invokes `callback`
   // with the response.
   virtual void ProcessMediaAccessRequest(
       content::WebContents* web_contents,
@@ -57,7 +57,7 @@ class ExtensionHostDelegate {
       const Extension* extension) = 0;
 
   // Checks if we have permission to access the microphone or camera. Note that
-  // this does not query the user. |type| must be MEDIA_DEVICE_AUDIO_CAPTURE
+  // this does not query the user. `type` must be MEDIA_DEVICE_AUDIO_CAPTURE
   // or MEDIA_DEVICE_VIDEO_CAPTURE.
   virtual bool CheckMediaAccessPermission(
       content::RenderFrameHost* render_frame_host,

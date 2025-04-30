@@ -22,7 +22,7 @@ namespace extensions {
 
 // An abstract base class for permissions that are represented by the
 // disjunction of a set of conditions.  Each condition is represented by a
-// |PermissionDataType| (e.g. SocketPermissionData).  If an
+// `PermissionDataType` (e.g. SocketPermissionData).  If an
 // APIPermission::CheckParam matches any of the conditions in the set, the
 // permission is granted.
 //

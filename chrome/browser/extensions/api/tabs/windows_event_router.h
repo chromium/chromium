@@ -52,7 +52,7 @@ class WindowsEventRouter : public AppWindowRegistry::Observer,
 
   ~WindowsEventRouter() override;
 
-  // |window_controller| is NULL to indicate a focused window has lost focus.
+  // `window_controller` is NULL to indicate a focused window has lost focus.
   void OnActiveWindowChanged(WindowController* window_controller);
 
  private:

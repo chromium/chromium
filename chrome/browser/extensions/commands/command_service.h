@@ -108,11 +108,11 @@ class CommandService : public BrowserContextKeyedAPI,
   // Convenience method to get the CommandService for a profile.
   static CommandService* Get(content::BrowserContext* context);
 
-  // Gets the command (if any) for the specified |action_type| of an extension
-  // given its |extension_id|. The function consults the master list to see if
+  // Gets the command (if any) for the specified `action_type` of an extension
+  // given its `extension_id`. The function consults the master list to see if
   // the command is active. Returns false if the command is not active and
-  // |type| requested is ACTIVE. |command| contains the command found and
-  // |active| (if not null) contains whether |command| is active.
+  // `type` requested is ACTIVE. `command` contains the command found and
+  // `active` (if not null) contains whether `command` is active.
   bool GetExtensionActionCommand(const ExtensionId& extension_id,
                                  ActionInfo::Type action_type,
                                  QueryType type,
@@ -120,21 +120,21 @@ class CommandService : public BrowserContextKeyedAPI,
                                  bool* active) const;
 
   // Gets the active named commands (if any) for the extension with
-  // |extension_id|. The function consults the master list to see if the
+  // `extension_id`. The function consults the master list to see if the
   // commands are active. Returns an empty map if the extension has no named
-  // commands of the right |scope| or no such active named commands when |type|
+  // commands of the right `scope` or no such active named commands when `type`
   // requested is ACTIVE.
   bool GetNamedCommands(const ExtensionId& extension_id,
                         QueryType type,
                         CommandScope scope,
                         ui::CommandMap* command_map) const;
 
-  // Records a keybinding |accelerator| as active for an extension with id
-  // |extension_id| and command with the name |command_name|. If
-  // |allow_overrides| is false, the keybinding must be free for the change to
-  // be recorded (as determined by the master list in |user_prefs|). If
-  // |allow_overwrites| is true, any previously recorded keybinding for this
-  // |accelerator| will be overwritten. If |global| is true, the command will
+  // Records a keybinding `accelerator` as active for an extension with id
+  // `extension_id` and command with the name `command_name`. If
+  // `allow_overrides` is false, the keybinding must be free for the change to
+  // be recorded (as determined by the master list in `user_prefs`). If
+  // `allow_overwrites` is true, any previously recorded keybinding for this
+  // `accelerator` will be overwritten. If `global` is true, the command will
   // be registered as a global command (be active even when Chrome does not have
   // focus. Returns true if the change was successfully recorded.
   bool AddKeybindingPref(const ui::Accelerator& accelerator,
@@ -143,28 +143,28 @@ class CommandService : public BrowserContextKeyedAPI,
                          bool allow_overrides,
                          bool global);
 
-  // Removes all keybindings for a given extension by its |extension_id|.
-  // |command_name| is optional and if specified, causes only the command with
-  // the name |command_name| to be removed.
+  // Removes all keybindings for a given extension by its `extension_id`.
+  // `command_name` is optional and if specified, causes only the command with
+  // the name `command_name` to be removed.
   void RemoveKeybindingPrefs(const ExtensionId& extension_id,
                              const std::string& command_name);
 
-  // Update the keybinding prefs (for a command with a matching |extension_id|
-  // and |command_name|) to |keystroke|. If the command had another key assigned
+  // Update the keybinding prefs (for a command with a matching `extension_id`
+  // and `command_name`) to `keystroke`. If the command had another key assigned
   // that key assignment will be removed.
   void UpdateKeybindingPrefs(const ExtensionId& extension_id,
                              const std::string& command_name,
                              const std::string& keystroke);
 
-  // Set the scope of the keybinding. If |global| is true, the keybinding works
+  // Set the scope of the keybinding. If `global` is true, the keybinding works
   // even when Chrome does not have focus. If the scope requested is already
   // set, the function returns false, otherwise true.
   bool SetScope(const ExtensionId& extension_id,
                 const std::string& command_name,
                 bool global);
 
-  // Finds the command with the name |command_name| within an extension with id
-  // |extension_id| . Returns an empty Command object (with keycode
+  // Finds the command with the name `command_name` within an extension with id
+  // `extension_id` . Returns an empty Command object (with keycode
   // VKEY_UNKNOWN) if the command is not found.
   Command FindCommandByName(const ExtensionId& extension_id,
                             const std::string& command) const;
@@ -202,7 +202,7 @@ class CommandService : public BrowserContextKeyedAPI,
                               const Extension* extension,
                               extensions::UninstallReason reason) override;
 
-  // Updates keybindings for a given |extension|'s page action, browser action
+  // Updates keybindings for a given `extension`'s page action, browser action
   // and named commands. Assigns new keybindings and removes relinquished
   // keybindings if not changed by the user. In the case of adding keybindings,
   // if the suggested keybinding is free, it will be taken by this extension. If
@@ -219,11 +219,11 @@ class CommandService : public BrowserContextKeyedAPI,
   // already assigned.
   void AssignKeybindings(const Extension* extension);
 
-  // Checks if |extension| is permitted to automatically assign the
-  // |accelerator| key.
+  // Checks if `extension` is permitted to automatically assign the
+  // `accelerator` key.
   bool CanAutoAssign(const ui::Command& command, const Extension* extension);
 
-  // Updates the record of |extension|'s most recent suggested command shortcut
+  // Updates the record of `extension`'s most recent suggested command shortcut
   // keys in the preferences.
   void UpdateExtensionSuggestedCommandPrefs(const Extension* extension);
 
@@ -232,7 +232,7 @@ class CommandService : public BrowserContextKeyedAPI,
   void RemoveDefunctExtensionSuggestedCommandPrefs(const Extension* extension);
 
   // Returns true if the user modified a command's shortcut key from the
-  // |extension|-suggested value.
+  // `extension`-suggested value.
   bool IsCommandShortcutUserModified(const Extension* extension,
                                      const std::string& command_name);
 

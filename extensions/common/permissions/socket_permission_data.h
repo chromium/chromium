@@ -54,14 +54,14 @@ class SocketPermissionData {
     return a.entry_ == b.entry_;
   }
 
-  // Check if |param| (which must be a SocketPermissionData::CheckParam)
-  // matches the spec of |this|.
+  // Check if `param` (which must be a SocketPermissionData::CheckParam)
+  // matches the spec of `this`.
   bool Check(const APIPermission::CheckParam* param) const;
 
-  // Convert |this| into a base::Value.
+  // Convert `this` into a base::Value.
   std::unique_ptr<base::Value> ToValue() const;
 
-  // Populate |this| from a base::Value.
+  // Populate `this` from a base::Value.
   bool FromValue(const base::Value* value);
 
   // TODO(bryeung): SocketPermissionData should be encoded as a base::Value

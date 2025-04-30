@@ -68,7 +68,7 @@ class URLPatternSet {
   };
 
   // Returns the intersection of |set1| and |set2| according to
-  // |intersection_behavior|.
+  // `intersection_behavior`.
   static URLPatternSet CreateIntersection(
       const URLPatternSet& set1,
       const URLPatternSet& set2,
@@ -105,20 +105,20 @@ class URLPatternSet {
   // false if the pattern was already in the set.
   bool AddPattern(const URLPattern& pattern);
 
-  // Adds all patterns from |set| into this.
+  // Adds all patterns from `set` into this.
   void AddPatterns(const URLPatternSet& set);
 
   void ClearPatterns();
 
-  // Adds a pattern based on |origin| to the set.
+  // Adds a pattern based on `origin` to the set.
   bool AddOrigin(int valid_schemes, const GURL& origin);
   bool AddOrigin(int valid_schemes, const url::Origin& origin);
 
-  // Returns true if every URL that matches |set| is matched by this. In other
-  // words, if every pattern in |set| is encompassed by a pattern in this.
+  // Returns true if every URL that matches `set` is matched by this. In other
+  // words, if every pattern in `set` is encompassed by a pattern in this.
   bool Contains(const URLPatternSet& set) const;
 
-  // Returns true if any pattern in this set encompasses |pattern|.
+  // Returns true if any pattern in this set encompasses `pattern`.
   bool ContainsPattern(const URLPattern& pattern) const;
 
   // Test if the extent contains a URL.
@@ -127,8 +127,8 @@ class URLPatternSet {
   // Test if the extent matches all URLs (for example, <all_urls>).
   bool MatchesAllURLs() const;
 
-  // Returns true if any pattern in this set matches the host in |test|, plus
-  // all subdomains of |test| if |require_match_subdomains| is true,
+  // Returns true if any pattern in this set matches the host in `test`, plus
+  // all subdomains of `test` if `require_match_subdomains` is true,
   bool MatchesHost(const GURL& test, bool require_match_subdomains) const;
 
   bool MatchesSecurityOrigin(const GURL& origin) const;

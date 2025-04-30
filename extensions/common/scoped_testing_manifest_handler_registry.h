@@ -16,7 +16,7 @@ class ScopedTestingManifestHandlerRegistry {
   ScopedTestingManifestHandlerRegistry();
   ~ScopedTestingManifestHandlerRegistry();
 
-  // TODO(devlin): Provide an accessor for |registry_|.
+  // TODO(devlin): Provide an accessor for `registry_`.
 
  private:
   ManifestHandlerRegistry registry_;

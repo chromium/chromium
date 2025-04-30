@@ -40,14 +40,14 @@ class EventFilter {
   // Retrieve the EventMatcher with the given id.
   EventMatcher* GetEventMatcher(MatcherID id);
 
-  // Retrieve the name of the event that the EventMatcher specified by |id| is
+  // Retrieve the name of the event that the EventMatcher specified by `id` is
   // referring to.
   const std::string& GetEventName(MatcherID id) const;
 
   // Removes an event matcher, returning the name of the event that it was for.
   std::string RemoveEventMatcher(MatcherID id);
 
-  // Match an event named |event_name| with filtering info |event_info| against
+  // Match an event named `event_name` with filtering info `event_info` against
   // our set of event matchers. Returns a set of ids that correspond to the
   // event matchers that matched the event.
   // TODO(koz): Add a std::string* parameter for retrieving error messages.
@@ -62,10 +62,10 @@ class EventFilter {
  private:
   class EventMatcherEntry {
    public:
-    // Adds |condition_sets| to |url_matcher| on construction and removes them
-    // again on destruction. |condition_sets| should be the
+    // Adds `condition_sets` to `url_matcher` on construction and removes them
+    // again on destruction. `condition_sets` should be the
     // URLMatcherConditionSets that match the URL constraints specified by
-    // |event_matcher|.
+    // `event_matcher`.
     EventMatcherEntry(
         std::unique_ptr<EventMatcher> event_matcher,
         url_matcher::URLMatcher* url_matcher,
@@ -88,7 +88,7 @@ class EventFilter {
 
    private:
     std::unique_ptr<EventMatcher> event_matcher_;
-    // The id sets in |url_matcher_| that this EventMatcher owns.
+    // The id sets in `url_matcher_` that this EventMatcher owns.
     std::vector<base::MatcherStringPattern::ID> condition_set_ids_;
     raw_ptr<url_matcher::URLMatcher> url_matcher_;
   };
@@ -100,7 +100,7 @@ class EventFilter {
   // Maps from event name to the map of matchers that are registered for it.
   using EventMatcherMultiMap = std::map<std::string, EventMatcherMap>;
 
-  // Adds the list of URL filters in |matcher| to the URL matcher.
+  // Adds the list of URL filters in `matcher` to the URL matcher.
   bool CreateConditionSets(
       EventMatcher* matcher,
       url_matcher::URLMatcherConditionSet::Vector* condition_sets);

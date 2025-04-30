@@ -45,7 +45,7 @@ class APIBindingHooksTestDelegate : public APIBindingHooksDelegate {
       base::RepeatingCallback<void(v8::Local<v8::Context>,
                                    v8::Local<v8::Object>)>;
 
-  // Adds a custom |handler| for the method with the given |name|.
+  // Adds a custom `handler` for the method with the given `name`.
   void AddHandler(std::string_view name, RequestHandler handler);
 
   // Creates events with the given factory.

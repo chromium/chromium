@@ -75,20 +75,20 @@ class UnpackedInstaller : public base::RefCountedThreadSafe<UnpackedInstaller>,
   static scoped_refptr<UnpackedInstaller> Create(
       content::BrowserContext* context);
 
-  // Loads the extension from the directory |extension_path|, which is
+  // Loads the extension from the directory `extension_path`, which is
   // the top directory of a specific extension where its manifest file lives.
   // Errors are reported through LoadErrorReporter. On success,
   // ExtensionService::AddExtension() is called.
   void Load(const base::FilePath& extension_path);
 
-  // Loads the extension from the directory |extension_path|;
+  // Loads the extension from the directory `extension_path`;
   // for use with command line switch --load-extension=path or
   // --load-and-launch-app=path.
   // This is equivalent to Load, except that it reads the extension from
-  // |extension_path| synchronously.
+  // `extension_path` synchronously.
   // The return value indicates whether the installation has begun successfully.
-  // The id of the extension being loaded is returned in |extension_id|.
-  // |only_allow_apps| is used to avoid side-loading of non-app extensions.
+  // The id of the extension being loaded is returned in `extension_id`.
+  // `only_allow_apps` is used to avoid side-loading of non-app extensions.
   bool LoadFromCommandLine(const base::FilePath& extension_path,
                            std::string* extension_id,
                            bool only_allow_apps);
@@ -160,14 +160,14 @@ class UnpackedInstaller : public base::RefCountedThreadSafe<UnpackedInstaller>,
   // Helper to load an extension. Should be called on a sequence where file IO
   // is allowed. Loads the extension, validates extension locales and persists
   // the ruleset for the Declarative Net Request API, if needed. In case of an
-  // error, returns false and populates |error|.
+  // error, returns false and populates `error`.
   bool LoadExtension(mojom::ManifestLocation location,
                      int flags,
                      std::string* error);
 
   // Reads the Declarative Net Request JSON rulesets for the extension, if it
   // provided any, and persists the indexed rulesets. Returns false and
-  // populates |error| in case of an error. Should be called on a sequence where
+  // populates `error` in case of an error. Should be called on a sequence where
   // file IO is allowed.
   bool IndexAndPersistRulesIfNeeded(std::string* error);
 

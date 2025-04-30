@@ -41,7 +41,7 @@ class TestExtensionSystem;
 // extensions and tabs for extension-related unittests.
 class TestExtensionEnvironment {
  public:
-  // Fetches the TestExtensionSystem in |profile| and creates a default
+  // Fetches the TestExtensionSystem in `profile` and creates a default
   // ExtensionService there,
   static ExtensionService* CreateExtensionServiceForProfile(
       TestingProfile* profile);
@@ -107,8 +107,8 @@ class TestExtensionEnvironment {
   const Extension* MakeExtension(const base::Value::Dict& manifest_extra,
                                  const std::string& id);
 
-  // Generates a valid packaged app manifest with the given ID. If |install|
-  // it gets added to the ExtensionService in |profile|.
+  // Generates a valid packaged app manifest with the given ID. If `install`
+  // it gets added to the ExtensionService in `profile`.
   scoped_refptr<const Extension> MakePackagedApp(const std::string& id,
                                                  bool install);
 
@@ -129,8 +129,8 @@ class TestExtensionEnvironment {
   // TestExtensionSystem created by the TestingProfile.
   ExtensionService* GetExtensionService();
 
-  // If |task_environment_| is needed, then it needs to constructed before
-  // |profile_| and destroyed after |profile_|.
+  // If `task_environment_` is needed, then it needs to constructed before
+  // `profile_` and destroyed after `profile_`.
   const std::unique_ptr<content::BrowserTaskEnvironment> task_environment_;
 
 #if BUILDFLAG(IS_CHROMEOS)

@@ -56,8 +56,8 @@ class SandboxedUnpackerClient
   // the constructor call must also happen on the UI thread.
   SandboxedUnpackerClient();
 
-  // Determines whether |extension| requires computing and storing
-  // computed_hashes.json and returns the result through |callback|.
+  // Determines whether `extension` requires computing and storing
+  // computed_hashes.json and returns the result through `callback`.
   // Currently we do this only for force-installed extensions outside of Chrome
   // Web Store, and that is reflected in method's name.
   virtual void ShouldComputeHashesForOffWebstoreExtension(
@@ -131,8 +131,8 @@ class SandboxedUnpacker : public ImageSanitizer::Client {
   };
 
   // Creates a SandboxedUnpacker that will do work to unpack an extension,
-  // passing the |location| and |creation_flags| to Extension::Create. The
-  // |extensions_dir| parameter should specify the directory under which we'll
+  // passing the `location` and `creation_flags` to Extension::Create. The
+  // `extensions_dir` parameter should specify the directory under which we'll
   // create a subdirectory to write the unpacked extension contents.
   // Note: Because this requires disk I/O, the task runner passed should use
   // TaskShutdownBehavior::SKIP_ON_SHUTDOWN to ensure that either the task is
@@ -165,7 +165,7 @@ class SandboxedUnpacker : public ImageSanitizer::Client {
 
   ~SandboxedUnpacker() override;
 
-  // Create |temp_dir_| used to unzip or unpack the extension in.
+  // Create `temp_dir_` used to unzip or unpack the extension in.
   bool CreateTempDirectory();
 
   // Helper functions to simplify calling ReportFailure.
@@ -174,7 +174,7 @@ class SandboxedUnpacker : public ImageSanitizer::Client {
   void FailWithPackageError(const SandboxedUnpackerFailureReason reason);
 
   // Validates the signature of the extension and extract the key to
-  // |public_key_|. True if the signature validates, false otherwise.
+  // `public_key_`. True if the signature validates, false otherwise.
   bool ValidateSignature(const base::FilePath& crx_path,
                          const std::string& expected_hash,
                          const crx_file::VerifierFormat required_format);
@@ -252,12 +252,12 @@ class SandboxedUnpacker : public ImageSanitizer::Client {
 
   void MaybeComputeHashes(bool should_compute_hashes);
 
-  // Returns a JsonParser that can be used on the |unpacker_io_task_runner|.
+  // Returns a JsonParser that can be used on the `unpacker_io_task_runner`.
   data_decoder::mojom::JsonParser* GetJsonParserPtr();
 
-  // Parses the JSON file at |path| and invokes |callback| when done. |callback|
+  // Parses the JSON file at `path` and invokes `callback` when done. `callback`
   // is called with a null parameter if parsing failed.
-  // This must be called from the |unpacker_io_task_runner_|.
+  // This must be called from the `unpacker_io_task_runner_`.
   void ParseJsonFile(const base::FilePath& path,
                      data_decoder::mojom::JsonParser::ParseCallback callback);
 

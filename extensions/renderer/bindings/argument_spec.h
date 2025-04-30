@@ -38,7 +38,7 @@ class ArgumentSpec {
  public:
   using PropertiesMap = std::map<std::string, std::unique_ptr<ArgumentSpec>>;
 
-  // Reads the description from |dict| and sets associated fields.
+  // Reads the description from `dict` and sets associated fields.
   // TODO(devlin): We should strongly think about generating these instead of
   // populating them at runtime.
   explicit ArgumentSpec(const base::Value::Dict& dict);
@@ -49,22 +49,22 @@ class ArgumentSpec {
 
   ~ArgumentSpec();
 
-  // Returns true if the given |value| is of the correct type to match this
-  // spec. If it is not, populates |error|.
+  // Returns true if the given `value` is of the correct type to match this
+  // spec. If it is not, populates `error`.
   bool IsCorrectType(v8::Local<v8::Value> value,
                      const APITypeReferenceMap& refs,
                      std::string* error) const;
 
-  // Returns true if the passed |value| matches this specification. If
-  // |out_value| is non-null, converts the value to a base::Value and populates
-  // |out_value|. Similarly, if |v8_out_value| is non-null, this will populate
+  // Returns true if the passed `value` matches this specification. If
+  // `out_value` is non-null, converts the value to a base::Value and populates
+  // `out_value`. Similarly, if |v8_out_value| is non-null, this will populate
   // |v8_out_value| with the parsed value. The advantage to duplicating the
   // parsed value into |v8_out_value| is that for defined objects, the result
   // will be a data object with no getters/setters, so clients don't need to
   // worry about re-checking the arguments. Note that this will *not* apply in
   // the case of ArgumentType::ANY, ArgumentType::BINARY, or
   // ArgumentType::FUNCTION, where we do not copy the (arbitrary) contents.
-  // If both |out_value| and |v8_out_value| are null, no conversion is
+  // If both `out_value` and |v8_out_value| are null, no conversion is
   // performed.
   bool ParseArgument(v8::Local<v8::Context> context,
                      v8::Local<v8::Value> value,
@@ -111,7 +111,7 @@ class ArgumentSpec {
   }
 
  private:
-  // Initializes this object according to |type_string| and |dict|.
+  // Initializes this object according to `type_string` and `dict`.
   void InitializeType(const base::Value::Dict& dict);
 
   // Conversion functions. These should only be used if the spec is of the given
@@ -144,7 +144,7 @@ class ArgumentSpec {
                                v8::Local<v8::Value>* v8_out_value,
                                std::string* error) const;
 
-  // Returns an error message indicating the type of |value| does not match the
+  // Returns an error message indicating the type of `value` does not match the
   // expected type.
   std::string GetInvalidTypeError(v8::Local<v8::Value> value) const;
 

@@ -14,7 +14,7 @@ enum class VerifierFormat;
 namespace extensions {
 
 // Returns the default format requirement for installing an extension that
-// originates or updates from the Webstore. |test_publisher_enabled| indicates
+// originates or updates from the Webstore. `test_publisher_enabled` indicates
 // whether items from a test instance of Webstore are permitted.
 crx_file::VerifierFormat GetWebstoreVerifierFormat(bool test_publisher_enabled);
 

@@ -35,7 +35,7 @@ class DnsResolveFunction : public ExtensionFunction,
                   const std::optional<net::HostResolverEndpointResults>&
                       endpoint_results_with_metadata) override;
 
-  // A reference to |this| must be taken while the request is being made on this
+  // A reference to `this` must be taken while the request is being made on this
   // receiver so the object is alive when the request completes.
   mojo::Receiver<network::mojom::ResolveHostClient> receiver_{this};
 };

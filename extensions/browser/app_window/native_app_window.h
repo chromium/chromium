@@ -33,7 +33,7 @@ class NativeAppWindow : public ui::BaseWindow,
   using ShapeRects = std::vector<gfx::Rect>;
 
   // Sets whether the window is fullscreen and the type of fullscreen.
-  // |fullscreen_types| is a bit field of AppWindow::FullscreenType.
+  // `fullscreen_types` is a bit field of AppWindow::FullscreenType.
   virtual void SetFullscreen(int fullscreen_types) = 0;
 
   // Returns whether the window is fullscreen or about to enter fullscreen.
@@ -53,7 +53,7 @@ class NativeAppWindow : public ui::BaseWindow,
   // nullptr.
   virtual SkRegion* GetDraggableRegion() = 0;
 
-  // Called when the window shape is changed. If |region| is nullptr then the
+  // Called when the window shape is changed. If `region` is nullptr then the
   // window is restored to the default shape.
   virtual void UpdateShape(std::unique_ptr<ShapeRects> rects) = 0;
 

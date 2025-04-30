@@ -29,12 +29,12 @@ struct PrefMappingEntry {
   const char* browser_pref;
 
   // Permission required to read and observe this preference.
-  // Use APIPermissionID::kInvalid for |read_permission| to express that
+  // Use APIPermissionID::kInvalid for `read_permission` to express that
   // the read permission should not be granted.
   extensions::mojom::APIPermissionID read_permission;
 
   // Permission required to write this preference.
-  // Use APIPermissionID::kInvalid for |write_permission| to express that
+  // Use APIPermissionID::kInvalid for `write_permission` to express that
   // the write permission should not be granted.
   extensions::mojom::APIPermissionID write_permission;
 };

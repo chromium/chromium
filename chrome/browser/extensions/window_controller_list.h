@@ -49,7 +49,7 @@ class WindowControllerList {
   WindowController* get(size_t index) const { return windows_[index]; }
 
   // Returns a window matching the context the function was invoked in
-  // using |filter|.
+  // using `filter`.
   WindowController* FindWindowForFunctionByIdWithFilter(
       const ExtensionFunction* function,
       int id,
@@ -61,7 +61,7 @@ class WindowControllerList {
   WindowController* CurrentWindowForFunction(ExtensionFunction* function) const;
 
   // Returns the focused or last added window matching the context the function
-  // was invoked in using |filter|.
+  // was invoked in using `filter`.
   WindowController* CurrentWindowForFunctionWithFilter(
       ExtensionFunction* function,
       WindowController::TypeFilter filter) const;

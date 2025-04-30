@@ -133,14 +133,14 @@ class ExtensionServiceTestBase : public testing::Test {
   // Nulls out pointers to avoid dangling. May be called multiple times.
   void Shutdown();
 
-  // Initialize an ExtensionService according to the given |params|.
+  // Initialize an ExtensionService according to the given `params`.
   virtual void InitializeExtensionService(ExtensionServiceInitParams params);
 
   // Whether MV2 extensions should be allowed. Defaults to true.
   virtual bool ShouldAllowMV2Extensions();
 
   // Initialize an empty ExtensionService using a production, on-disk pref file.
-  // See documentation for |prefs_content|.
+  // See documentation for `prefs_content`.
   void InitializeEmptyExtensionService();
 
   // Initialize an ExtensionService with a few already-installed extensions.
@@ -203,10 +203,10 @@ class ExtensionServiceTestBase : public testing::Test {
 
  private:
   // If a test uses a feature list, it should be destroyed after
-  // |task_environment_|, to avoid tsan data races between the ScopedFeatureList
+  // `task_environment_`, to avoid tsan data races between the ScopedFeatureList
   // destructor, and any tasks running on different threads that check if a
   // feature is enabled. ~BrowserTaskEnvironment will make sure those tasks
-  // finish before |feature_list_| is destroyed.
+  // finish before `feature_list_` is destroyed.
   base::test::ScopedFeatureList feature_list_;
 
   // Must be declared before anything that may make use of the
@@ -236,7 +236,7 @@ class ExtensionServiceTestBase : public testing::Test {
   // The associated testing profile.
   std::unique_ptr<TestingProfile> profile_;
 
-  // The ExtensionService, whose lifetime is managed by |profile|'s
+  // The ExtensionService, whose lifetime is managed by `profile`'s
   // ExtensionSystem.
   raw_ptr<ExtensionService, DanglingUntriaged> service_;
   ScopedTestingLocalState testing_local_state_;

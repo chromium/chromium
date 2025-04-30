@@ -24,7 +24,7 @@ namespace extensions::l10n_file_util {
 
 // Loads the extension message bundle substitution map. Contains at least
 // the extension_id item. Does not supported compressed locale files. Passes
-// |gzip_permission| to extension_l10n_util::LoadMessageCatalogs (see
+// `gzip_permission` to extension_l10n_util::LoadMessageCatalogs (see
 // extension_l10n_util.h).
 std::unique_ptr<MessageBundle::SubstitutionMap>
 LoadMessageBundleSubstitutionMap(
@@ -40,7 +40,7 @@ std::unique_ptr<MessageBundle::SubstitutionMap>
 LoadNonLocalizedMessageBundleSubstitutionMap(const ExtensionId& extension_id);
 
 // Loads the extension message bundle substitution map from the specified paths.
-// Contains at least the extension_id item. Passes |gzip_permission| to
+// Contains at least the extension_id item. Passes `gzip_permission` to
 // extension_l10n_util::LoadMessageCatalogs (see extension_l10n_util.h).
 std::unique_ptr<MessageBundle::SubstitutionMap>
 LoadMessageBundleSubstitutionMapFromPaths(

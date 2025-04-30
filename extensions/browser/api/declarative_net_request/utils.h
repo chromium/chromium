@@ -45,16 +45,16 @@ int GetIndexedRulesetFormatVersionForTesting();
 using ScopedIncrementRulesetVersion = base::AutoReset<int>;
 ScopedIncrementRulesetVersion CreateScopedIncrementRulesetVersionForTesting();
 
-// Strips the version header from |ruleset_data|. Returns false on version
+// Strips the version header from `ruleset_data`. Returns false on version
 // mismatch.
 bool StripVersionHeaderAndParseVersion(std::string* ruleset_data);
 
-// Returns the checksum of the given serialized |data|. |data| must not include
+// Returns the checksum of the given serialized `data`. `data` must not include
 // the version header.
 int GetChecksum(base::span<const uint8_t> data);
 
 // Override the result of any calls to GetChecksum() above, so that it returns
-// |checksum|. Note: If |checksum| is -1, no such override is performed.
+// `checksum`. Note: If `checksum` is -1, no such override is performed.
 void OverrideGetChecksumForTest(int checksum);
 
 // Returns the indexed ruleset data to be persisted to disk. The ruleset is
@@ -62,7 +62,7 @@ void OverrideGetChecksumForTest(int checksum);
 // version, followed by the actual ruleset data.
 std::string GetIndexedRulesetData(base::span<const uint8_t> data);
 
-// Helper function to persist the indexed ruleset |data| at the given |path|.
+// Helper function to persist the indexed ruleset `data` at the given `path`.
 // The ruleset is composed of a version header corresponding to the current
 // ruleset format version, followed by the actual ruleset data.
 bool PersistIndexedRuleset(const base::FilePath& path,
@@ -72,7 +72,7 @@ bool PersistIndexedRuleset(const base::FilePath& path,
 // the next time it navigates.
 void ClearRendererCacheOnNavigation();
 
-// Helper to log the |kReadDynamicRulesJSONStatusHistogram| histogram.
+// Helper to log the `kReadDynamicRulesJSONStatusHistogram` histogram.
 void LogReadDynamicRulesStatus(ReadJSONRulesResult::Status status);
 
 // Maps dnr_api::ResourceType to WebRequestResourceType.
@@ -92,15 +92,15 @@ re2::RE2::Options CreateRE2Options(bool is_case_sensitive,
 flat::ActionType ConvertToFlatActionType(
     api::declarative_net_request::RuleActionType action_type);
 
-// Returns the extension-specified ID for the given |ruleset_id| if it
+// Returns the extension-specified ID for the given `ruleset_id` if it
 // corresponds to a static ruleset ID. For the dynamic or session-scoped ruleset
-// ID, it returns the |DYNAMIC_RULESET_ID| and |SESSION_RULESET_ID| API
+// ID, it returns the `DYNAMIC_RULESET_ID` and `SESSION_RULESET_ID` API
 // constants respectively.
 std::string GetPublicRulesetID(const Extension& extension,
                                RulesetID ruleset_id);
 
-// Returns the public ruleset IDs corresponding to the given |extension| and
-// |matcher|.
+// Returns the public ruleset IDs corresponding to the given `extension` and
+// `matcher`.
 std::vector<std::string> GetPublicRulesetIDs(const Extension& extension,
                                              const CompositeMatcher& matcher);
 
@@ -167,15 +167,15 @@ T CreateString(const flatbuffers::String& str) {
 }
 
 // Returns the number of static rules enabled for the specified
-// |composite_matcher|.
+// `composite_matcher`.
 size_t GetEnabledStaticRuleCount(const CompositeMatcher* composite_matcher);
 
 // Whether the `extension` has the permission to use the declarativeNetRequest
 // API.
 bool HasAnyDNRPermission(const Extension& extension);
 
-// Returns true if |extension| has the declarativeNetRequestFeedback permission
-// for the specified |tab_id|. If |tab_is| is omitted, then non-tab specific
+// Returns true if `extension` has the declarativeNetRequestFeedback permission
+// for the specified `tab_id`. If `tab_is` is omitted, then non-tab specific
 // permissions are checked.
 bool HasDNRFeedbackPermission(const Extension* extension,
                               const std::optional<int>& tab_id);

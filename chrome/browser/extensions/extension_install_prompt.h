@@ -254,14 +254,14 @@ class ExtensionInstallPrompt {
   // The implementations of this function are platform-specific.
   static ShowDialogCallback GetDefaultShowDialogCallback();
 
-  // Returns the appropriate prompt type for the given |extension|.
+  // Returns the appropriate prompt type for the given `extension`.
   // TODO(devlin): This method is yucky - callers probably only care about one
   // prompt type. We just need to comb through and figure out what it is.
   static PromptType GetReEnablePromptTypeForExtension(
       content::BrowserContext* context,
       const extensions::Extension* extension);
 
-  // Creates a dummy extension from the |manifest|, replacing the name and
+  // Creates a dummy extension from the `manifest`, replacing the name and
   // description with the localizations if provided.
   static scoped_refptr<extensions::Extension> GetLocalizedExtensionForDisplay(
       const base::Value::Dict& manifest,
@@ -286,18 +286,18 @@ class ExtensionInstallPrompt {
 
   ExtensionInstallUI* install_ui() const { return install_ui_.get(); }
 
-  // Starts the process to show the install dialog. Loads the icon (if |icon| is
-  // null), sets up the Prompt, and calls |show_dialog_callback| when ready to
+  // Starts the process to show the install dialog. Loads the icon (if `icon` is
+  // null), sets up the Prompt, and calls `show_dialog_callback` when ready to
   // show.
-  // |extension| can be null in the case of a bndle install.
-  // If |icon| is null, this will attempt to load the extension's icon.
-  // |prompt| is used to pass in a prompt with additional data (like retained
-  // device permissions) or a different type. If not provided, |prompt| will
+  // `extension` can be null in the case of a bndle install.
+  // If `icon` is null, this will attempt to load the extension's icon.
+  // `prompt` is used to pass in a prompt with additional data (like retained
+  // device permissions) or a different type. If not provided, `prompt` will
   // be created as an INSTALL_PROMPT.
-  // |custom_permissions| will be used if provided; otherwise, the extensions
+  // `custom_permissions` will be used if provided; otherwise, the extensions
   // current permissions are used.
   //
-  // The |install_callback| *MUST* eventually be called.
+  // The `install_callback` *MUST* eventually be called.
   void ShowDialog(DoneCallback install_callback,
                   const extensions::Extension* extension,
                   const SkBitmap* icon,
@@ -331,7 +331,7 @@ class ExtensionInstallPrompt {
   std::unique_ptr<Prompt> GetPromptForTesting();
 
  private:
-  // Sets the icon that will be used in any UI. If |icon| is NULL, or contains
+  // Sets the icon that will be used in any UI. If `icon` is NULL, or contains
   // an empty bitmap, then a default icon will be used instead.
   void SetIcon(const SkBitmap* icon);
 
@@ -379,7 +379,7 @@ class ExtensionInstallPrompt {
   // Used to show the confirm dialog.
   ShowDialogCallback show_dialog_callback_;
 
-  // Whether or not the |show_dialog_callback_| was called.
+  // Whether or not the `show_dialog_callback_` was called.
   bool did_call_show_dialog_;
 
   base::WeakPtrFactory<ExtensionInstallPrompt> weak_factory_{this};

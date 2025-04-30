@@ -175,7 +175,7 @@ struct WebRequestInfo {
   // Indicates whether this request was initiated by a <webview> instance.
   const bool is_web_view;
 
-  // If |is_web_view| is true, the instance ID, rules registry ID, and embedder
+  // If `is_web_view` is true, the instance ID, rules registry ID, and embedder
   // process ID pertain to the webview instance.
   const int web_view_instance_id;
   const int web_view_rules_registry_id;

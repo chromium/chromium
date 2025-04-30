@@ -52,7 +52,7 @@ class Manifest final {
       mojom::ManifestLocation loc1,
       mojom::ManifestLocation loc2);
 
-  // Whether the |location| is external or not.
+  // Whether the `location` is external or not.
   static inline bool IsExternalLocation(mojom::ManifestLocation location) {
     return location == mojom::ManifestLocation::kExternalPref ||
            location == mojom::ManifestLocation::kExternalRegistry ||
@@ -62,13 +62,13 @@ class Manifest final {
            location == mojom::ManifestLocation::kExternalComponent;
   }
 
-  // Whether the |location| is unpacked (no CRX) or not.
+  // Whether the `location` is unpacked (no CRX) or not.
   static inline bool IsUnpackedLocation(mojom::ManifestLocation location) {
     return location == mojom::ManifestLocation::kUnpacked ||
            location == mojom::ManifestLocation::kCommandLine;
   }
 
-  // Whether extensions with |location| are auto-updatable or not.
+  // Whether extensions with `location` are auto-updatable or not.
   static inline bool IsAutoUpdateableLocation(
       mojom::ManifestLocation location) {
     // Only internal and external extensions can be autoupdated.
@@ -76,14 +76,14 @@ class Manifest final {
            IsExternalLocation(location);
   }
 
-  // Whether the |location| is a source of extensions force-installed through
+  // Whether the `location` is a source of extensions force-installed through
   // policy.
   static inline bool IsPolicyLocation(mojom::ManifestLocation location) {
     return location == mojom::ManifestLocation::kExternalPolicy ||
            location == mojom::ManifestLocation::kExternalPolicyDownload;
   }
 
-  // Whether the |location| is an extension intended to be an internal part of
+  // Whether the `location` is an extension intended to be an internal part of
   // Chrome.
   static inline bool IsComponentLocation(mojom::ManifestLocation location) {
     return location == mojom::ManifestLocation::kComponent ||
@@ -102,11 +102,11 @@ class Manifest final {
     return IsUnpackedLocation(location);
   }
 
-  // Returns the Manifest::Type for the given |value|.
+  // Returns the Manifest::Type for the given `value`.
   static Type GetTypeFromManifestValue(const base::Value::Dict& value,
                                        bool for_login_screen = false);
 
-  // Returns true if an item with the given |location| should always be loaded,
+  // Returns true if an item with the given `location` should always be loaded,
   // even if extensions are otherwise disabled.
   static bool ShouldAlwaysLoadExtension(mojom::ManifestLocation location,
                                         bool is_theme);
@@ -133,7 +133,7 @@ class Manifest final {
 
   mojom::ManifestLocation location() const { return location_; }
 
-  // Populates |warnings| if manifest contains keys not permitted for the
+  // Populates `warnings` if manifest contains keys not permitted for the
   // chosen extension type.
   void ValidateManifest(std::vector<InstallWarning>* warnings) const;
 
@@ -177,7 +177,7 @@ class Manifest final {
   // Deprecated: Use the FindDictPath(asValue) functions instead.
   bool GetList(const std::string& path, const base::Value** out_value) const;
 
-  // Returns true if this equals the |other| manifest.
+  // Returns true if this equals the `other` manifest.
   bool EqualsForTesting(const Manifest& other) const;
 
   // Gets the underlying base::Value::Dict representing the manifest.
@@ -212,7 +212,7 @@ class Manifest final {
   // The underlying dictionary representation of the manifest.
   const base::Value::Dict value_;
 
-  // Same as |value_| but comprises only of keys available to this manifest.
+  // Same as `value_` but comprises only of keys available to this manifest.
   base::Value::Dict available_values_;
 
   const Type type_;

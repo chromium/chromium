@@ -212,7 +212,7 @@ class ServiceWorkerTaskQueue
   };
 
   // Convenience method to return the ServiceWorkerTaskQueue for a given
-  // |context|.
+  // `context`.
   static ServiceWorkerTaskQueue* Get(content::BrowserContext* context);
 
   class RegistrationObserver : public base::CheckedObserver {
@@ -246,11 +246,11 @@ class ServiceWorkerTaskQueue
   void AddPendingTask(const LazyContextId& context_id,
                       PendingTask task) override;
 
-  // Performs Service Worker related tasks upon |extension| activation,
-  // e.g. registering |extension|'s worker, executing any pending tasks.
+  // Performs Service Worker related tasks upon `extension` activation,
+  // e.g. registering `extension`'s worker, executing any pending tasks.
   void ActivateExtension(const Extension* extension);
-  // Performs Service Worker related tasks upon |extension| deactivation,
-  // e.g. unregistering |extension|'s worker.
+  // Performs Service Worker related tasks upon `extension` deactivation,
+  // e.g. unregistering `extension`'s worker.
   void DeactivateExtension(const Extension* extension);
 
   // Called once an extension Service Worker context was initialized but not
@@ -286,7 +286,7 @@ class ServiceWorkerTaskQueue
   std::optional<base::UnguessableToken> GetCurrentActivationToken(
       const ExtensionId& extension_id) const;
 
-  // Activates incognito split mode extensions that are activated in |other|
+  // Activates incognito split mode extensions that are activated in `other`
   // task queue.
   void ActivateIncognitoSplitModeExtensions(ServiceWorkerTaskQueue* other);
 
@@ -340,8 +340,8 @@ class ServiceWorkerTaskQueue
 
     virtual ~TestObserver();
 
-    // Called when an extension with id |extension_id| is going to be activated.
-    // |will_register_service_worker| is true if a Service Worker will be
+    // Called when an extension with id `extension_id` is going to be activated.
+    // `will_register_service_worker` is true if a Service Worker will be
     // registered.
     virtual void OnActivateExtension(const ExtensionId& extension_id,
                                      bool will_register_service_worker) {}
@@ -461,22 +461,22 @@ class ServiceWorkerTaskQueue
   bool IsStartWorkerFailureUnexpected(
       blink::ServiceWorkerStatusCode status_code);
 
-  // Records that the extension with |extension_id| and |version| successfully
+  // Records that the extension with `extension_id` and `version` successfully
   // registered a Service Worker.
   void SetRegisteredServiceWorkerInfo(const ExtensionId& extension_id,
                                       const base::Version& version);
 
   // Clears any record of registered Service Worker for the given extension with
-  // |extension_id|.
+  // `extension_id`.
   void RemoveRegisteredServiceWorkerInfo(const ExtensionId& extension_id);
 
-  // If the worker with |context_id| has seen worker start
+  // If the worker with `context_id` has seen worker start
   // (DidStartWorkerForScope) and load (DidStartServiceWorkerContext) then runs
   // all pending tasks for that worker.
   void RunPendingTasksIfWorkerReady(const SequencedContextId& context_id);
 
-  // Returns true if |activation_token| is the current activation for
-  // |extension_id|.
+  // Returns true if `activation_token` is the current activation for
+  // `extension_id`.
   bool IsCurrentActivation(
       const ExtensionId& extension_id,
       const base::UnguessableToken& activation_token) const;
@@ -487,7 +487,7 @@ class ServiceWorkerTaskQueue
   content::ServiceWorkerContext* GetServiceWorkerContext(
       const ExtensionId& extension_id);
 
-  // Starts and stops observing |service_worker_context|.
+  // Starts and stops observing `service_worker_context`.
   //
   // The methods ensure that many:1 relationship of SWContext:SWContextObserver
   // is preserved correctly.
@@ -495,7 +495,7 @@ class ServiceWorkerTaskQueue
   void StopObserving(content::ServiceWorkerContext* service_worker_context);
 
   // Asynchronously verifies whether an expected SW registration (denoted by
-  // |scope|) is there.
+  // `scope`) is there.
   void VerifyRegistration(content::ServiceWorkerContext* service_worker_context,
                           const SequencedContextId& context_id,
                           const GURL& scope);

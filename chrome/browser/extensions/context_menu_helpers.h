@@ -68,7 +68,7 @@ MenuItem::ContextList GetContexts(const std::vector<
 MenuItem::Type GetType(extensions::api::context_menus::ItemType type,
                        MenuItem::Type default_type);
 
-// Creates and adds a menu item from |create_properties|.
+// Creates and adds a menu item from `create_properties`.
 template <typename PropertyWithEnumT>
 bool CreateMenuItem(const PropertyWithEnumT& create_properties,
                     content::BrowserContext* browser_context,
@@ -174,7 +174,7 @@ bool CreateMenuItem(const PropertyWithEnumT& create_properties,
   return true;
 }
 
-// Updates a menu item from |update_properties|.
+// Updates a menu item from `update_properties`.
 template <typename PropertyWithEnumT>
 bool UpdateMenuItem(const PropertyWithEnumT& update_properties,
                     content::BrowserContext* browser_context,

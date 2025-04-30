@@ -94,10 +94,10 @@ class APIRequestHandler {
       v8::Local<v8::Function> callback,
       binding::ResultModifierFunction result_modifier);
 
-  // Responds to the request with the given |request_id|, calling the callback
-  // with the given |response| arguments.
+  // Responds to the request with the given `request_id`, calling the callback
+  // with the given `response` arguments.
   // Invalid ids are ignored.
-  // Warning: This can run arbitrary JS code, so the |context| may be
+  // Warning: This can run arbitrary JS code, so the `context` may be
   // invalidated after this!
   void CompleteRequest(int request_id,
                        const base::Value::List& response_list,
@@ -107,7 +107,7 @@ class APIRequestHandler {
                        const v8::LocalVector<v8::Value>& response,
                        const std::string& error);
 
-  // Invalidates any requests that are associated with |context|.
+  // Invalidates any requests that are associated with `context`.
   void InvalidateContext(v8::Local<v8::Context> context);
 
   void SetResponseValidator(std::unique_ptr<APIResponseValidator> validator);
@@ -151,7 +151,7 @@ class APIRequestHandler {
 
   // Creates and returns an AsyncResultHandler for a request if the request
   // requires an asynchronous response, otherwise returns null. Also populates
-  // |promise_out| with the associated promise if this is a promise based
+  // `promise_out` with the associated promise if this is a promise based
   // request.
   std::unique_ptr<AsyncResultHandler> GetAsyncResultHandler(
       v8::Local<v8::Context> context,
@@ -189,7 +189,7 @@ class APIRequestHandler {
   // Null if response validation is disabled.
   std::unique_ptr<APIResponseValidator> response_validator_;
 
-  // Outlives |this|.
+  // Outlives `this`.
   const raw_ptr<const InteractionProvider, DanglingUntriaged>
       interaction_provider_;
 };

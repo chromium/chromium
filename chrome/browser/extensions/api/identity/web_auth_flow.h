@@ -29,7 +29,7 @@ class WebAuthFlowInfoBarDelegate;
 
 // Controller class for web based auth flows. The WebAuthFlow creates
 // a browser popup window (or a new tab based on the feature setting)
-// with a webview that will navigate to the |provider_url| passed to the
+// with a webview that will navigate to the `provider_url` passed to the
 // WebAuthFlow constructor.
 //
 // The WebAuthFlow monitors the WebContents of the webview, and

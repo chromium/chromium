@@ -113,7 +113,7 @@ class ShellDesktopControllerAura
   // Returns all root windows managed by RootWindowControllers.
   aura::Window::Windows GetAllRootWindows();
 
-  // Updates the bounds of |app_window|. This may involve reparenting the window
+  // Updates the bounds of `app_window`. This may involve reparenting the window
   // to a different root window if the new bounds are in a different display.
   void SetWindowBoundsInScreen(AppWindow* app_window, const gfx::Rect& bounds);
 

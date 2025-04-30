@@ -47,7 +47,7 @@ class SerialConnection : public ApiResource,
                               std::unique_ptr<api::serial::ConnectionInfo>)>;
 
   // This is the callback type expected by Receive. Note that an error result
-  // does not necessarily imply an empty |data| string, since a receive may
+  // does not necessarily imply an empty `data` string, since a receive may
   // complete partially before being interrupted by an error condition.
   using ReceiveEventCallback =
       base::RepeatingCallback<void(std::vector<uint8_t> data,
@@ -98,7 +98,7 @@ class SerialConnection : public ApiResource,
 
   // Initiates an asynchronous Open of the device. It is the caller's
   // responsibility to ensure that this SerialConnection stays alive
-  // until |callback| is run.
+  // until `callback` is run.
   virtual void Open(api::SerialPortManager* port_manager,
                     const std::string& path,
                     const api::serial::ConnectionOptions& options,
@@ -109,7 +109,7 @@ class SerialConnection : public ApiResource,
   virtual void Send(const std::vector<uint8_t>& data,
                     SendCompleteCallback callback);
 
-  // Start to the polling process from |receive_pipe_|.
+  // Start to the polling process from `receive_pipe_`.
   virtual void StartPolling(const ReceiveEventCallback& callback);
 
   // Flushes input and output buffers.
@@ -122,17 +122,17 @@ class SerialConnection : public ApiResource,
                  ConfigureCompleteCallback callback);
 
   // Connection configuration query. Returns retrieved ConnectionInfo value via
-  // |callback|, and indicates whether it's complete info. Some ConnectionInfo
-  // fields are filled with local info from |this|, while some other fields must
+  // `callback`, and indicates whether it's complete info. Some ConnectionInfo
+  // fields are filled with local info from `this`, while some other fields must
   // be retrieved from remote SerialPort interface, which may fail.
   void GetInfo(GetInfoCompleteCallback callback) const;
 
-  // Reads current control signals (DCD, CTS, etc.) and returns via |callback|.
+  // Reads current control signals (DCD, CTS, etc.) and returns via `callback`.
   // Returns nullptr if we failed in getting values.
   void GetControlSignals(GetControlSignalsCompleteCallback callback) const;
 
   // Sets one or more control signals (DTR, RTS, Break). Returns result success
-  // or not via |callback|.
+  // or not via `callback`.
   void SetControlSignals(device::mojom::SerialHostControlSignalsPtr signals,
                          SetControlSignalsCompleteCallback callback);
 
@@ -142,7 +142,7 @@ class SerialConnection : public ApiResource,
   static const BrowserThread::ID kThreadId = BrowserThread::UI;
 
  protected:
-  // Initializes |serial_port_| with a disconnected Mojo pipe for testing
+  // Initializes `serial_port_` with a disconnected Mojo pipe for testing
   // purposes.
   void InitSerialPortForTesting();
 
@@ -159,7 +159,7 @@ class SerialConnection : public ApiResource,
       OpenCompleteCallback callback,
       mojo::PendingRemote<device::mojom::SerialPort> serial_port);
 
-  // Read data from |receive_pipe_| when the data is ready or dispatch error
+  // Read data from `receive_pipe_` when the data is ready or dispatch error
   // events in error cases.
   void OnReadPipeReadableOrClosed(MojoResult result,
                                   const mojo::HandleSignalsState& state);
@@ -182,10 +182,10 @@ class SerialConnection : public ApiResource,
                                   const mojo::HandleSignalsState& state);
   void OnSendPipeClosed();
 
-  // Handles |serial_port_| connection error.
+  // Handles `serial_port_` connection error.
   void OnConnectionError();
 
-  // Handles |client_receiver_| connection error.
+  // Handles `client_receiver_` connection error.
   void OnClientReceiverClosed();
 
   // Flag indicating whether or not the connection should persist when
@@ -242,7 +242,7 @@ class SerialConnection : public ApiResource,
 
   mojo::Receiver<device::mojom::SerialPortClient> client_receiver_{this};
 
-  // Closure which is set by client and will be called when |serial_port_|
+  // Closure which is set by client and will be called when `serial_port_`
   // connection encountered an error.
   base::OnceClosure connection_error_handler_;
 

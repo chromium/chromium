@@ -55,9 +55,9 @@ class UserScriptSetManager {
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
-  // Looks up the script injection associated with |script_id| and
-  // |extension_id| in the context of the given |web_frame|, |tab_id|,
-  // and |url|.
+  // Looks up the script injection associated with `script_id` and
+  // `extension_id` in the context of the given `web_frame`, `tab_id`,
+  // and `url`.
   std::unique_ptr<ScriptInjection> GetInjectionForDeclarativeScript(
       const std::string& script_id,
       content::RenderFrame* render_frame,
@@ -65,8 +65,8 @@ class UserScriptSetManager {
       const GURL& url,
       const ExtensionId& extension_id);
 
-  // Append all injections from |static_scripts| and each of
-  // |programmatic_scripts_| to |injections|.
+  // Append all injections from `static_scripts` and each of
+  // `programmatic_scripts_` to `injections`.
   void GetAllInjections(
       std::vector<std::unique_ptr<ScriptInjection>>* injections,
       content::RenderFrame* render_frame,

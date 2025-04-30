@@ -47,18 +47,18 @@ class ObjectBackedNativeHandler : public NativeHandler {
 
   virtual void AddRoutes() = 0;
 
-  // Installs a new 'route' from |name| to |handler_function|. This means that
+  // Installs a new 'route' from `name` to `handler_function`. This means that
   // NewInstance()s of this ObjectBackedNativeHandler will have a property
-  // |name| which will be handled by |handler_function|.
+  // `name` which will be handled by `handler_function`.
   //
   // Routed functions are destroyed along with the destruction of this class,
-  // and are never called back into, therefore it's safe for |handler_function|
+  // and are never called back into, therefore it's safe for `handler_function`
   // to bind to base::Unretained.
   //
-  // |feature_name| corresponds to the api feature the native handler is used
+  // `feature_name` corresponds to the api feature the native handler is used
   // for. If the associated ScriptContext does not have access to that feature,
-  // the |handler_function| is not invoked.
-  // TODO(devlin): Deprecate the version that doesn't take a |feature_name|.
+  // the `handler_function` is not invoked.
+  // TODO(devlin): Deprecate the version that doesn't take a `feature_name`.
   void RouteHandlerFunction(const std::string& name,
                             HandlerFunction handler_function);
   void RouteHandlerFunction(const std::string& name,
@@ -69,13 +69,13 @@ class ObjectBackedNativeHandler : public NativeHandler {
 
   void Invalidate() override;
 
-  // Returns true if the given |context| is allowed to access the given
-  // |object|. This should be checked before returning any objects from another
+  // Returns true if the given `context` is allowed to access the given
+  // `object`. This should be checked before returning any objects from another
   // context.
-  // |allow_null_context| indicates that if there is no ScriptContext associated
-  // with the |object|, it should be allowed.
+  // `allow_null_context` indicates that if there is no ScriptContext associated
+  // with the `object`, it should be allowed.
   // TODO(devlin): It'd be nice to track down when when there's no ScriptContext
-  // and remove |allow_null_context|.
+  // and remove `allow_null_context`.
   static bool ContextCanAccessObject(v8::Isolate* isolate,
                                      const v8::Local<v8::Context>& context,
                                      const v8::Local<v8::Object>& object,

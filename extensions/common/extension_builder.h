@@ -61,7 +61,7 @@ class ExtensionBuilder {
   ExtensionBuilder();
 
   // Initializes an ExtensionBuilder that can be used with various utility
-  // methods to automatically construct a manifest. |name| will be the name of
+  // methods to automatically construct a manifest. `name` will be the name of
   // the extension and used to generate a stable ID.
   explicit ExtensionBuilder(const std::string& name,
                             Type type = Type::EXTENSION);
@@ -115,7 +115,7 @@ class ExtensionBuilder {
   ExtensionBuilder& SetBackgroundContext(BackgroundContext background_context);
 
   // Adds a content script to the extension, with a script with the specified
-  // |script_name| that matches the given |match_patterns|.
+  // `script_name` that matches the given `match_patterns`.
   ExtensionBuilder& AddContentScript(
       const std::string& script_name,
       const std::vector<std::string>& match_patterns);
@@ -154,7 +154,7 @@ class ExtensionBuilder {
   //////////////////////////////////////////////////////////////////////////////
   // Utility methods for use with custom manifest construction.
 
-  // Assigns the extension's manifest to |manifest|.
+  // Assigns the extension's manifest to `manifest`.
   ExtensionBuilder& SetManifest(base::Value::Dict manifest);
 
   //////////////////////////////////////////////////////////////////////////////

@@ -16,7 +16,7 @@ class ScriptContext;
 // Utility for logging console messages.
 namespace console {
 
-// Adds |message| to the console of of the |script_context|. If |script_context|
+// Adds `message` to the console of of the `script_context`. If `script_context`
 // is null, LOG()s the message instead.
 void AddMessage(ScriptContext* script_context,
                 blink::mojom::ConsoleMessageLevel level,

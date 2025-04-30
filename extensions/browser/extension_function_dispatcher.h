@@ -75,7 +75,7 @@ class ExtensionFunctionDispatcher {
       content::BrowserContext* browser_context);
   ~ExtensionFunctionDispatcher();
 
-  // Dispatches a request and the response is sent in |callback| that is a reply
+  // Dispatches a request and the response is sent in `callback` that is a reply
   // of mojom::LocalFrameHost::Request.
   void Dispatch(mojom::RequestParamsPtr params,
                 content::RenderFrameHost& frame,
@@ -118,7 +118,7 @@ class ExtensionFunctionDispatcher {
 
  private:
   // Helper to create an ExtensionFunction to handle the function given by
-  // |params|.
+  // `params`.
   // Does not set subclass properties, or include_incognito.
   scoped_refptr<ExtensionFunction> CreateExtensionFunction(
       const mojom::RequestParams& params,

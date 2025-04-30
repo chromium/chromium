@@ -177,12 +177,12 @@ class Dispatcher : public content::RenderThreadObserver,
   void DidCreateDocumentElement(blink::WebLocalFrame* frame);
 
   // These methods may run (untrusted) JavaScript code in the frame, and
-  // cause |render_frame| to become invalid.
+  // cause `render_frame` to become invalid.
   void RunScriptsAtDocumentStart(content::RenderFrame* render_frame);
   void RunScriptsAtDocumentEnd(content::RenderFrame* render_frame);
   void RunScriptsAtDocumentIdle(content::RenderFrame* render_frame);
 
-  // Dispatches the event named |event_name| to all render views.
+  // Dispatches the event named `event_name` to all render views.
   void DispatchEventHelper(const mojom::HostID& extension_id,
                            const std::string& event_name,
                            const base::Value::List& event_args,
@@ -201,7 +201,7 @@ class Dispatcher : public content::RenderThreadObserver,
                                 const std::string& script_id,
                                 const GURL& url);
 
-  // Executes the code described in |param| and calls |callback| if it's done.
+  // Executes the code described in `param` and calls `callback` if it's done.
   void ExecuteCode(mojom::ExecuteCodeParamsPtr param,
                    mojom::LocalFrame::ExecuteCodeCallback callback,
                    content::RenderFrame* render_frame);
@@ -291,7 +291,7 @@ class Dispatcher : public content::RenderThreadObserver,
 
   void UpdateActiveExtensions();
 
-  // Sets up the host permissions for |extension|.
+  // Sets up the host permissions for `extension`.
   void InitOriginPermissions(const Extension* extension);
 
   // Updates the host permissions for the extension url to include only those
@@ -306,7 +306,7 @@ class Dispatcher : public content::RenderThreadObserver,
   // changed and cached features should be re-calculated.
   void UpdateAllBindings(bool api_permissions_changed);
 
-  // Adds or removes bindings for every context belonging to |extension|, due to
+  // Adds or removes bindings for every context belonging to `extension`, due to
   // permissions change in the extension.
   void UpdateBindingsForExtension(const Extension& extension);
 
@@ -315,14 +315,14 @@ class Dispatcher : public content::RenderThreadObserver,
                               NativeExtensionBindingsSystem* bindings_system,
                               V8SchemaRegistry* v8_schema_registry);
 
-  // Inserts static source code into |source_map_|.
+  // Inserts static source code into `source_map_`.
   void PopulateSourceMap();
 
   // Returns whether the current renderer hosts a platform app.
   bool IsWithinPlatformApp();
 
   // Requires the GuestView modules in the module system of the ScriptContext
-  // |context|.
+  // `context`.
   void RequireGuestViewModules(ScriptContext* context);
 
   // Creates the NativeExtensionBindingsSystem. Note: this may be called on any

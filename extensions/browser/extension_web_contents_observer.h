@@ -64,7 +64,7 @@ class ExtensionWebContentsObserver
   ExtensionWebContentsObserver& operator=(const ExtensionWebContentsObserver&) =
       delete;
 
-  // Returns the ExtensionWebContentsObserver for the given |web_contents|.
+  // Returns the ExtensionWebContentsObserver for the given `web_contents`.
   static ExtensionWebContentsObserver* GetForWebContents(
       content::WebContents* web_contents);
 
@@ -79,17 +79,17 @@ class ExtensionWebContentsObserver
 
   ExtensionFunctionDispatcher* dispatcher() { return &dispatcher_; }
 
-  // Returns the extension associated with the given |render_frame_host|, or
+  // Returns the extension associated with the given `render_frame_host`, or
   // null if there is none.
-  // If |verify_url| is false, only the SiteInstance is taken into account.
-  // If |verify_url| is true, the frame's last committed URL is also used to
+  // If `verify_url` is false, only the SiteInstance is taken into account.
+  // If `verify_url` is true, the frame's last committed URL is also used to
   // improve the classification of the frame.
   const Extension* GetExtensionFromFrame(
       content::RenderFrameHost* render_frame_host,
       bool verify_url) const;
 
   // Returns mojom::LocalFrame* corresponding `render_frame_host`. It emplaces
-  // AssociatedRemote<mojom::LocalFrame> to |local_frame_map_| if the map
+  // AssociatedRemote<mojom::LocalFrame> to `local_frame_map_` if the map
   // doesn't have it. Note that it could return nullptr if `render_frame_host`
   // is not live or `render_frame_host` does not immediately belong to the
   // associated `WebContents`.

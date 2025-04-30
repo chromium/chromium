@@ -16,9 +16,9 @@ namespace extensions {
 
 class Extension;
 
-// Checks that |extension| is not NULL and that it has |permission|. If
-// |extension| is NULL, just returns false. If an extension without |permission|
-// returns false and suggests |permision| in the developer tools console.
+// Checks that `extension` is not NULL and that it has `permission`. If
+// `extension` is NULL, just returns false. If an extension without `permission`
+// returns false and suggests `permission` in the developer tools console.
 bool IsExtensionWithPermissionOrSuggestInConsole(
     mojom::APIPermissionID permission,
     const Extension* extension,

@@ -54,8 +54,8 @@ class SharedModuleService : public KeyedService,
   void Shutdown() override;
 
   // Checks an extension's imports. Imports that are not installed are stored
-  // in |missing_modules|, and imports that are out of date are stored in
-  // |outdated_modules|.
+  // in `missing_modules`, and imports that are out of date are stored in
+  // `outdated_modules`.
   ImportStatus CheckImports(
       const Extension* extension,
       std::list<SharedModuleInfo::ImportInfo>* missing_modules,
@@ -63,7 +63,7 @@ class SharedModuleService : public KeyedService,
 
   // Checks an extension's shared module imports to see if they are satisfied.
   // If they are not, this function adds the dependencies to the pending install
-  // list if |extension| came from the webstore.
+  // list if `extension` came from the webstore.
   ImportStatus SatisfyImports(const Extension* extension);
 
   // Returns a set of extensions that import a given extension.

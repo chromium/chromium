@@ -37,7 +37,7 @@ class PolicyValueStore : public value_store::ValueStore {
 
   ~PolicyValueStore() override;
 
-  // Stores |policy| in the persistent database represented by the |delegate_|
+  // Stores `policy` in the persistent database represented by the `delegate_`
   // and notifies observers with the changes from the previous policy.
   void SetCurrentPolicy(const policy::PolicyMap& policy);
 

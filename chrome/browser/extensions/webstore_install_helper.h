@@ -47,7 +47,7 @@ class WebstoreInstallHelper : public base::RefCounted<WebstoreInstallHelper>,
                                         const SkBitmap& icon,
                                         base::Value::Dict parsed_manifest) = 0;
 
-    // Called to indicate a parse failure. The |result_code| parameter should
+    // Called to indicate a parse failure. The `result_code` parameter should
     // indicate whether the problem was with the manifest or icon.
     virtual void OnWebstoreParseFailure(
         const std::string& id,
@@ -58,7 +58,7 @@ class WebstoreInstallHelper : public base::RefCounted<WebstoreInstallHelper>,
     virtual ~Delegate() = default;
   };
 
-  // It is legal for |icon_url| to be empty.
+  // It is legal for `icon_url` to be empty.
   WebstoreInstallHelper(Delegate* delegate,
                         const std::string& id,
                         const std::string& manifest,
@@ -87,7 +87,7 @@ class WebstoreInstallHelper : public base::RefCounted<WebstoreInstallHelper>,
   // The manifest to parse.
   std::string manifest_;
 
-  // If |icon_url_| is non-empty, it needs to be fetched and decoded into an
+  // If `icon_url_` is non-empty, it needs to be fetched and decoded into an
   // SkBitmap.
   GURL icon_url_;
   std::unique_ptr<BitmapFetcher> icon_fetcher_;

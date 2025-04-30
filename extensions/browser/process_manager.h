@@ -151,7 +151,7 @@ class ProcessManager : public KeyedService,
   ExtensionHost* GetBackgroundHostForExtension(const ExtensionId& extension_id);
 
   // Returns the background page ExtensionHost for the given
-  // |render_frame_host|, if |render_frame_host| is in primary main frame and
+  // `render_frame_host`, if `render_frame_host` is in primary main frame and
   // within the extension's background.
   ExtensionHost* GetBackgroundHostForRenderFrameHost(
       content::RenderFrameHost* render_frame_host);
@@ -166,7 +166,7 @@ class ProcessManager : public KeyedService,
       content::RenderFrameHost* render_frame_host);
 
   // Returns the extension associated with the main frame of the given
-  // |web_contents|, or null if there isn't one.
+  // `web_contents`, or null if there isn't one.
   const Extension* GetExtensionForWebContents(
       content::WebContents* web_contents);
 
@@ -174,7 +174,7 @@ class ProcessManager : public KeyedService,
   // the count of how many outstanding "things" are keeping the page alive.
   // When this reaches 0, we will begin the process of shutting down the page.
   // "Things" include pending events, resource loads, and API calls.
-  // Returns -1 if |extension| does not have a lazy background page.
+  // Returns -1 if `extension` does not have a lazy background page.
   // The calls to increment and decrement the count also accept a category
   // of activity and an extra string of data. These are kept so there is
   // more information for the counts. See the Activity struct definition
@@ -191,17 +191,17 @@ class ProcessManager : public KeyedService,
   void NotifyExtensionProcessTerminated(const Extension* extension);
 
   // Methods to increment or decrement the ref-count of a specified service
-  // worker with id |worker_id|.
+  // worker with id `worker_id`.
   // The increment method returns the guid that needs to be passed to the
   // decrement method.
-  // |timeout_type| is the SW's timeout behavior.
+  // `timeout_type` is the SW's timeout behavior.
   base::Uuid IncrementServiceWorkerKeepaliveCount(
       const WorkerId& worker_id,
       content::ServiceWorkerExternalRequestTimeoutType timeout_type,
       Activity::Type activity_type,
       const std::string& extra_data);
-  // Decrements the ref-count of the specified worker with |worker_id| that
-  // had its ref-count incremented with |request_uuid|.
+  // Decrements the ref-count of the specified worker with `worker_id` that
+  // had its ref-count incremented with `request_uuid`.
   void DecrementServiceWorkerKeepaliveCount(const WorkerId& worker_id,
                                             const base::Uuid& request_uuid,
                                             Activity::Type activity_type,
@@ -225,7 +225,7 @@ class ProcessManager : public KeyedService,
   void NetworkRequestDone(content::RenderFrameHost* render_frame_host,
                           uint64_t request_id);
 
-  // Prevents |extension|'s background page from being closed and sends the
+  // Prevents `extension`'s background page from being closed and sends the
   // onSuspendCanceled() event to it.
   void CancelSuspend(const Extension* extension);
 
@@ -261,11 +261,11 @@ class ProcessManager : public KeyedService,
   }
 
   // Returns true if this ProcessManager has registered any worker with id
-  // |worker_id|.
+  // `worker_id`.
   bool HasServiceWorker(const WorkerId& worker_id) const;
 
   // Returns all the Service Worker infos that is active for the extension with
-  // |extension_id|.
+  // `extension_id`.
   std::vector<WorkerId> GetServiceWorkersForExtension(
       const ExtensionId& extension_id) const;
 
@@ -318,14 +318,14 @@ class ProcessManager : public KeyedService,
   // should be loaded.
   void CreateStartupBackgroundHosts();
 
-  // Called just after |host| is created so it can be registered in our lists.
+  // Called just after `host` is created so it can be registered in our lists.
   void OnBackgroundHostCreated(ExtensionHost* host);
 
   // Handles a request from a created extension host to close the contents.
   // This happens in cases such as the contents calling `window.close()`.
   void HandleCloseExtensionHost(ExtensionHost* host);
 
-  // Close the given |host| iff it's a background page.
+  // Close the given `host` iff it's a background page.
   void CloseBackgroundHost(ExtensionHost* host);
 
   // If the frame isn't keeping the lazy background page alive, increments the
@@ -339,7 +339,7 @@ class ProcessManager : public KeyedService,
       content::RenderFrameHost* render_frame_host);
 
   // Internal implementation of DecrementLazyKeepaliveCount with an
-  // |extension_id| known to have a lazy background page.
+  // `extension_id` known to have a lazy background page.
   void DecrementLazyKeepaliveCount(const ExtensionId& extension_id);
   void DecrementLazyKeepaliveCount(const ExtensionId& extension_id,
                                    Activity::Type activity_type,

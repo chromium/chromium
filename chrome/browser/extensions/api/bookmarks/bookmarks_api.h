@@ -238,7 +238,7 @@ class BookmarksCreateFunction : public BookmarksFunction {
 
  private:
   // Helper to create a bookmark node from a CreateDetails object. If a node
-  // can't be created based on the given details, sets |error| and returns
+  // can't be created based on the given details, sets `error` and returns
   // nullptr.
   const bookmarks::BookmarkNode* CreateBookmarkNode(
       bookmarks::BookmarkModel* model,

@@ -15,7 +15,7 @@ namespace extensions {
 // A helper class to handle access-checking API features.
 class BindingAccessChecker {
  public:
-  // The callback for determining if a given API feature (specified by |name|)
+  // The callback for determining if a given API feature (specified by `name`)
   // is available in the given context.
   using APIAvailabilityCallback =
       base::RepeatingCallback<bool(v8::Local<v8::Context>,
@@ -34,17 +34,17 @@ class BindingAccessChecker {
 
   ~BindingAccessChecker();
 
-  // Returns true if the feature specified by |full_name| is available to the
-  // given |context|.
+  // Returns true if the feature specified by `full_name` is available to the
+  // given `context`.
   bool HasAccess(v8::Local<v8::Context> context,
                  const std::string& full_name) const;
 
-  // Same as HasAccess(), but throws an exception in the |context| if it doesn't
+  // Same as HasAccess(), but throws an exception in the `context` if it doesn't
   // have access.
   bool HasAccessOrThrowError(v8::Local<v8::Context> context,
                              const std::string& full_name) const;
 
-  // Returns true if the given |context| is allowed to use promise-based APIs.
+  // Returns true if the given `context` is allowed to use promise-based APIs.
   bool HasPromiseAccess(v8::Local<v8::Context> context) const;
 
  private:

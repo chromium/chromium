@@ -45,9 +45,9 @@ class WebRequestConditionAttribute
       delete;
 
   // Factory method that creates a WebRequestConditionAttribute for the JSON
-  // dictionary {|name|: |value|} passed by the extension API. Sets |error| and
+  // dictionary {`name`: `value`} passed by the extension API. Sets `error` and
   // returns NULL if something fails.
-  // The ownership of |value| remains at the caller.
+  // The ownership of `value` remains at the caller.
   static scoped_refptr<const WebRequestConditionAttribute> Create(
       const std::string& name,
       const base::Value* value,
@@ -150,8 +150,8 @@ class WebRequestConditionAttributeContentType
 // Condition attribute for matching against request headers. Uses HeaderMatcher
 // to handle the actual tests, in connection with a boolean positiveness
 // flag. If that flag is set to true, then IsFulfilled() returns true iff
-// |header_matcher_| matches at least one header. Otherwise IsFulfilled()
-// returns true iff the |header_matcher_| matches no header.
+// `header_matcher_` matches at least one header. Otherwise IsFulfilled()
+// returns true iff the `header_matcher_` matches no header.
 class WebRequestConditionAttributeRequestHeaders
     : public WebRequestConditionAttribute {
  public:
@@ -187,8 +187,8 @@ class WebRequestConditionAttributeRequestHeaders
 // Condition attribute for matching against response headers. Uses HeaderMatcher
 // to handle the actual tests, in connection with a boolean positiveness
 // flag. If that flag is set to true, then IsFulfilled() returns true iff
-// |header_matcher_| matches at least one header. Otherwise IsFulfilled()
-// returns true iff the |header_matcher_| matches no header.
+// `header_matcher_` matches at least one header. Otherwise IsFulfilled()
+// returns true iff the `header_matcher_` matches no header.
 class WebRequestConditionAttributeResponseHeaders
     : public WebRequestConditionAttribute {
  public:

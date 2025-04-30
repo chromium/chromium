@@ -65,8 +65,8 @@ struct IndexedRule {
   std::vector<std::string> request_domains;
   std::vector<std::string> excluded_request_domains;
 
-  // Note: For redirect rules, exactly one of |redirect_url|,
-  // |regex_substitution| or |url_transform| will be set.
+  // Note: For redirect rules, exactly one of `redirect_url`,
+  // `regex_substitution` or `url_transform` will be set.
   // The redirect url for the rule.
   std::optional<std::string> redirect_url;
   // The regex substitution for this rule.

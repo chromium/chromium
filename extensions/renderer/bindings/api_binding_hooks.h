@@ -38,7 +38,7 @@ class APIBindingHooks {
       THROWN,               // An exception was thrown during parsing or
                             // handling.
       INVALID_INVOCATION,   // The request was called with invalid arguments.
-                            // |error| will contain the invocation error.
+                            // `error` will contain the invocation error.
       CONTEXT_INVALIDATED,  // The context was invalidated during the handling
                             // of the API. Ideally, this wouldn't happen, but
                             // could in certain circumstances.
@@ -86,7 +86,7 @@ class APIBindingHooks {
   // Returns a JS interface that can be used to register hooks.
   v8::Local<v8::Object> GetJSHookInterface(v8::Local<v8::Context> context);
 
-  // Creates a new JS event for the given |event_name|, if a custom event is
+  // Creates a new JS event for the given `event_name`, if a custom event is
   // provided. Returns true if an event was created.
   bool CreateCustomEvent(v8::Local<v8::Context> context,
                          const std::string& event_name,
@@ -104,7 +104,7 @@ class APIBindingHooks {
   void SetDelegate(std::unique_ptr<APIBindingHooksDelegate> delegate);
 
  private:
-  // Updates the |arguments| by running |function| and settings arguments to the
+  // Updates the `arguments` by running `function` and settings arguments to the
   // returned result.
   bool UpdateArguments(v8::Local<v8::Function> function,
                        v8::Local<v8::Context> context,

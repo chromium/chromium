@@ -33,7 +33,7 @@ namespace subtle {
 
 // Helpers shared with unit-tests.
 
-// Appends a dictionary {'key': 'value'} to |list|.
+// Appends a dictionary {'key': 'value'} to `list`.
 void AppendKeyValuePair(const char* key,
                         base::Value value,
                         base::Value::List& list);

@@ -65,7 +65,7 @@ class LoggingTimer {
 
   ~LoggingTimer();
 
-  // Returns the tracked time for the given |key|.
+  // Returns the tracked time for the given `key`.
   static base::TimeDelta GetTrackedTime(const char* key);
 
   // Prints the result for all LoggingTimers.

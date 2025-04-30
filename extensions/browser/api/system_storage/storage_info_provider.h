@@ -40,15 +40,15 @@ class StorageInfoProvider : public SystemInfoProvider {
 
   ~StorageInfoProvider() override;
 
-  // Put all available storages' information into |info_|.
+  // Put all available storages' information into `info_`.
   void GetAllStoragesIntoInfoList();
 
   // The last information filled up by QueryInfo and is accessed on multiple
   // threads, but the whole class is being guarded by SystemInfoProvider base
   // class.
   //
-  // |info_| is accessed on the UI thread while |is_waiting_for_completion_| is
-  // false and on the sequenced worker pool while |is_waiting_for_completion_|
+  // `info_` is accessed on the UI thread while `is_waiting_for_completion_` is
+  // false and on the sequenced worker pool while `is_waiting_for_completion_`
   // is true.
   StorageUnitInfoList info_;
 

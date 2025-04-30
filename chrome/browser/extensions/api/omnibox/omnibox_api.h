@@ -213,7 +213,7 @@ class OmniboxSetDefaultSuggestionFunction : public ExtensionFunction {
 };
 
 // If the extension has set a custom default suggestion via
-// omnibox.setDefaultSuggestion, apply that to |match|. Otherwise, do nothing.
+// omnibox.setDefaultSuggestion, apply that to `match`. Otherwise, do nothing.
 void ApplyDefaultSuggestionForExtensionKeyword(
     Profile* profile,
     const TemplateURL* keyword,

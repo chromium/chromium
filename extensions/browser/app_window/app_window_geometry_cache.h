@@ -75,16 +75,16 @@ class AppWindowGeometryCache : public KeyedService,
   // Returns the instance for the given browsing context.
   static AppWindowGeometryCache* Get(content::BrowserContext* context);
 
-  // Save the geometry and state associated with |extension_id| and |window_id|.
+  // Save the geometry and state associated with `extension_id` and `window_id`.
   void SaveGeometry(const ExtensionId& extension_id,
                     const std::string& window_id,
                     const gfx::Rect& bounds,
                     const gfx::Rect& screen_bounds,
                     ui::mojom::WindowShowState state);
 
-  // Get any saved geometry and state associated with |extension_id| and
-  // |window_id|. If saved data exists, sets |bounds|, |screen_bounds| and
-  // |state| if not NULL and returns true.
+  // Get any saved geometry and state associated with `extension_id` and
+  // `window_id`. If saved data exists, sets `bounds`, `screen_bounds` and
+  // `state` if not NULL and returns true.
   bool GetGeometry(const ExtensionId& extension_id,
                    const std::string& window_id,
                    gfx::Rect* bounds,
@@ -144,7 +144,7 @@ class AppWindowGeometryCache : public KeyedService,
   // The timer used to save the data.
   base::OneShotTimer sync_timer_;
 
-  // The timeout value we'll use for |sync_timer_|.
+  // The timeout value we'll use for `sync_timer_`.
   base::TimeDelta sync_delay_;
 
   // Listen to extension load, unloaded notifications.

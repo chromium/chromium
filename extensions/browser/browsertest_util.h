@@ -26,11 +26,11 @@ enum class ScriptUserActivation {
   kDontActivate,
 };
 
-// Waits until |script| calls "chrome.test.sendScriptResult(result)",
-// where |result| is a serializable value, and returns |result|. Fails
-// the test and returns an empty base::Value if |extension_id| isn't
-// installed in |context| or doesn't have a background page, or if
-// executing the script fails. The argument |script_user_activation|
+// Waits until `script` calls "chrome.test.sendScriptResult(result)",
+// where `result` is a serializable value, and returns `result`. Fails
+// the test and returns an empty base::Value if `extension_id` isn't
+// installed in `context` or doesn't have a background page, or if
+// executing the script fails. The argument `script_user_activation`
 // determines if the script should be executed after a user activation.
 base::Value ExecuteScriptInBackgroundPage(
     content::BrowserContext* context,
@@ -40,9 +40,9 @@ base::Value ExecuteScriptInBackgroundPage(
         ScriptUserActivation::kDontActivate);
 
 // Same as ExecuteScriptInBackgroundPage, but doesn't wait for the script
-// to return a result. Fails the test and returns false if |extension_id|
-// isn't installed in |context| or doesn't have a background page, or if
-// executing the script fails. The argument |script_user_activation|
+// to return a result. Fails the test and returns false if `extension_id`
+// isn't installed in `context` or doesn't have a background page, or if
+// executing the script fails. The argument `script_user_activation`
 // determines if the script should be executed after a user activation.
 bool ExecuteScriptInBackgroundPageNoWait(
     content::BrowserContext* context,
@@ -51,11 +51,11 @@ bool ExecuteScriptInBackgroundPageNoWait(
     ScriptUserActivation script_user_activation =
         ScriptUserActivation::kDontActivate);
 
-// Waits until |script| calls "window.domAutomationController.send(result)",
-// where |result| is a string, and returns |result|. Fails the test and returns
-// an empty string if |extension_id| isn't installed in |context| or doesn't
+// Waits until `script` calls "window.domAutomationController.send(result)",
+// where `result` is a string, and returns `result`. Fails the test and returns
+// an empty string if `extension_id` isn't installed in `context` or doesn't
 // have a background page, or if executing the script fails. The argument
-// |script_user_activation| determines if the script should be executed after a
+// `script_user_activation` determines if the script should be executed after a
 // user activation.
 std::string ExecuteScriptInBackgroundPageDeprecated(
     content::BrowserContext* context,

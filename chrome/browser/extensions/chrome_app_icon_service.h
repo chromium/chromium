@@ -62,9 +62,9 @@ class ChromeAppIconService : public KeyedService,
   static ChromeAppIconService* Get(content::BrowserContext* context);
 
   // Creates extension app icon for requested app and size. Icon updates are
-  // dispatched via |delegate|.
-  // |resize_function| overrides icon resizing behavior if non-null. Otherwise
-  // IconLoader with perform the resizing. In both cases |resource_size_in_dip|
+  // dispatched via `delegate`.
+  // `resize_function` overrides icon resizing behavior if non-null. Otherwise
+  // IconLoader with perform the resizing. In both cases `resource_size_in_dip`
   // is used to pick the correct icon representation from resources.
   std::unique_ptr<ChromeAppIcon> CreateIcon(
       ChromeAppIconDelegate* delegate,
@@ -116,7 +116,7 @@ class ChromeAppIconService : public KeyedService,
   std::unique_ptr<ShelfExtensionAppUpdater> app_updater_;
 #endif
 
-  // Deletes the icon set for |app_id| from the map if it is empty.
+  // Deletes the icon set for `app_id` from the map if it is empty.
   void MaybeCleanupIconSet(const std::string& app_id);
 
   IconMap icon_map_;

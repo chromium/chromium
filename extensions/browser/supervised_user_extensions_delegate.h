@@ -71,7 +71,7 @@ class SupervisedUserExtensionsDelegate {
   // the parent has enabled the "Permissions for sites, apps and extensions"
   // toggle, then display the Parent Permission Dialog. If the setting is
   // disabled, the extension install blocked dialog is shown. When the flow is
-  // complete call |extension_approval_callback|.
+  // complete call `extension_approval_callback`.
   // The icon must be supplied for installing new extensions because they are
   // fetched via a network request.
   // The extension approval dialog entry point indicates who invokes this method

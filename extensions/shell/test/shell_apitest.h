@@ -28,17 +28,17 @@ class ShellApiTest : public AppShellTest {
 
   // Loads an unpacked extension. Returns an instance of the extension that was
   // just loaded.
-  // |extension_dir| should be a subpath under extensions/test/data.
+  // `extension_dir` should be a subpath under extensions/test/data.
   const Extension* LoadExtension(const std::string& extension_dir);
 
   // Loads an unpacked extension. Returns an instance of the extension that was
   // just loaded.
-  // |extension_path| should be an absolute path to the extension.
+  // `extension_path` should be an absolute path to the extension.
   const Extension* LoadExtension(const base::FilePath& extension_path);
 
   // Loads and launches an unpacked platform app. Returns an instance of the
   // extension that was just loaded.
-  // |app_dir| should be a subpath under extensions/test/data.
+  // `app_dir` should be a subpath under extensions/test/data.
   const Extension* LoadApp(const std::string& app_dir);
 
   // Loads an unpacked extension and waits for a chrome.test success
@@ -49,7 +49,7 @@ class ShellApiTest : public AppShellTest {
   // success notification. Returns true if the test succeeds.
   bool RunAppTest(const std::string& app_dir);
 
-  // Removes the |app| from the ExtensionRegistry and dispatches
+  // Removes the `app` from the ExtensionRegistry and dispatches
   // notifications of the removal stating reason as REASON_DISABLE.
   void UnloadApp(const Extension* app);
 

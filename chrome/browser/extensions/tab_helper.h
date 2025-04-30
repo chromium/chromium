@@ -49,7 +49,7 @@ class TabHelper : public content::WebContentsObserver,
 
   ~TabHelper() override;
 
-  // Sets the extension denoting this as an app. If |extension| is non-null this
+  // Sets the extension denoting this as an app. If `extension` is non-null this
   // tab becomes an app-tab. WebContents does not listen for unload events for
   // the extension. It's up to consumers of WebContents to do that.
   //
@@ -59,7 +59,7 @@ class TabHelper : public content::WebContentsObserver,
   void SetExtensionApp(const Extension* extension);
 
   // Convenience for setting the app extension by id. This does nothing if
-  // |extension_app_id| is empty, or an extension can't be found given the
+  // `extension_app_id` is empty, or an extension can't be found given the
   // specified id.
   void SetExtensionAppById(const ExtensionId& extension_app_id);
 
@@ -131,7 +131,7 @@ class TabHelper : public content::WebContentsObserver,
 
   // App extensions related methods:
 
-  // Resets app_icon_ and if |extension| is non-null uses ImageLoader to load
+  // Resets app_icon_ and if `extension` is non-null uses ImageLoader to load
   // the extension's image asynchronously.
   void UpdateExtensionAppIcon(const Extension* extension);
 
@@ -139,7 +139,7 @@ class TabHelper : public content::WebContentsObserver,
 
   void OnImageLoaded(const gfx::Image& image);
 
-  // Sends our tab ID to |render_frame_host|.
+  // Sends our tab ID to `render_frame_host`.
   void SetTabId(content::RenderFrameHost* render_frame_host);
 
   raw_ptr<Profile> profile_;

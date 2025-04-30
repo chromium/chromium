@@ -98,8 +98,8 @@ class WebstoreInstaller : public ExtensionRegistryObserver,
                             const Extension* extension,
                             bool is_update) override;
 
-  // Instead of using the default download directory, use |directory| instead.
-  // This does *not* transfer ownership of |directory|.
+  // Instead of using the default download directory, use `directory` instead.
+  // This does *not* transfer ownership of `directory`.
   static void SetDownloadDirectoryForTests(base::FilePath* directory);
 
  protected:
@@ -125,14 +125,14 @@ class WebstoreInstaller : public ExtensionRegistryObserver,
   void OnDownloadUpdated(download::DownloadItem* download) override;
   void OnDownloadDestroyed(download::DownloadItem* download) override;
 
-  // Downloads next pending module in |pending_modules_|.
+  // Downloads next pending module in `pending_modules_`.
   void DownloadNextPendingModule();
 
-  // Downloads and installs a single Crx with the given |extension_id|.
+  // Downloads and installs a single Crx with the given `extension_id`.
   // This function is used for both the extension Crx and dependences.
   void DownloadCrx(const std::string& extension_id, InstallSource source);
 
-  // Starts downloading the extension with ID |extension_id| to |file_path|.
+  // Starts downloading the extension with ID `extension_id` to `file_path`.
   void StartDownload(const std::string& extension_id,
                      const base::FilePath& file_path);
 
@@ -142,7 +142,7 @@ class WebstoreInstaller : public ExtensionRegistryObserver,
   // Creates and starts CrxInstaller for the downloaded extension package.
   void StartCrxInstaller(const download::DownloadItem& item);
 
-  // Reports an install |error| to the delegate for the given extension if this
+  // Reports an install `error` to the delegate for the given extension if this
   // managed its installation. This also removes the associated PendingInstall.
   void ReportFailure(const std::string& error, FailureReason reason);
 

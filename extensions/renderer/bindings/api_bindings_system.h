@@ -59,14 +59,14 @@ class APIBindingsSystem {
 
   ~APIBindingsSystem();
 
-  // Returns a new v8::Object representing the api specified by |api_name|.
+  // Returns a new v8::Object representing the api specified by `api_name`.
   v8::Local<v8::Object> CreateAPIInstance(
       const std::string& api_name,
       v8::Local<v8::Context> context,
       APIBindingHooks** hooks_out);
 
-  // Responds to the request with the given |request_id|, calling the callback
-  // with |response|. If |error| is non-empty, sets the last error.
+  // Responds to the request with the given `request_id`, calling the callback
+  // with `response`. If `error` is non-empty, sets the last error.
   void CompleteRequest(int request_id,
                        const base::Value::List& response,
                        const std::string& error,
@@ -85,12 +85,12 @@ class APIBindingsSystem {
                              std::unique_ptr<APIBindingHooksDelegate> delegate);
 
   // Registers the handler for creating a custom type with the given
-  // |type_name|, where |type_name| is the fully-qualified type (e.g.
+  // `type_name`, where `type_name` is the fully-qualified type (e.g.
   // storage.StorageArea).
   void RegisterCustomType(const std::string& type_name,
                           CustomTypeHandler function);
 
-  // Handles any cleanup necessary before releasing the given |context|.
+  // Handles any cleanup necessary before releasing the given `context`.
   void WillReleaseContext(v8::Local<v8::Context> context);
 
   InteractionProvider* interaction_provider() {
@@ -102,7 +102,7 @@ class APIBindingsSystem {
   ExceptionHandler* exception_handler() { return &exception_handler_; }
 
  private:
-  // Creates a new APIBinding for the given |api_name|.
+  // Creates a new APIBinding for the given `api_name`.
   std::unique_ptr<APIBinding> CreateNewAPIBinding(const std::string& api_name);
 
   // Callback for the APITypeReferenceMap in order to initialize an unknown

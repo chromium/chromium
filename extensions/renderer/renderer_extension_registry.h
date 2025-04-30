@@ -58,11 +58,11 @@ class RendererExtensionRegistry {
 
   // Activation token-related methods.
   //
-  // Sets the activation token for a Service Worker based |extension|.
+  // Sets the activation token for a Service Worker based `extension`.
   void SetWorkerActivationToken(const scoped_refptr<const Extension>& extension,
                                 base::UnguessableToken worker_activation_token);
   // Returns the current activation token for worker based extension with
-  // |extension_id|. Returns std::nullopt otherwise.
+  // `extension_id`. Returns std::nullopt otherwise.
   std::optional<base::UnguessableToken> GetWorkerActivationToken(
       const ExtensionId& extension_id) const;
 

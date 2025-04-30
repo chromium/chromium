@@ -39,8 +39,8 @@ class ManagementPolicy {
   // of providers is short-circuited as soon as a decision is possible), so
   // implementations of these methods must have no side effects.
   //
-  // For all of the Provider methods below, if |error| is not NULL and the
-  // method imposes a restriction on the desired action, |error| may be set
+  // For all of the Provider methods below, if `error` is not NULL and the
+  // method imposes a restriction on the desired action, `error` may be set
   // to an applicable error message, but this is not required.
   class Provider {
    public:
@@ -57,7 +57,7 @@ class ManagementPolicy {
     // enabled.
     virtual std::string GetDebugPolicyProviderName() const = 0;
 
-    // Providers should return false if a user may not install the |extension|,
+    // Providers should return false if a user may not install the `extension`,
     // or load or run it if it has already been installed.
     // TODO(crbug.com/41159442): The method name is misleading, since this
     // applies to all extension installations, not just user-initiated ones. Fix
@@ -66,13 +66,13 @@ class ManagementPolicy {
                              std::u16string* error) const;
 
     // Returns false if the user should not be allowed to install the given
-    // |extension|. By default, this forwards to UserMayLoad() (since a user
+    // `extension`. By default, this forwards to UserMayLoad() (since a user
     // should not be able to install an extension they cannot load).
     virtual bool UserMayInstall(const Extension* extension,
                                 std::u16string* error) const;
 
     // Providers should return false if a user may not enable, disable, or
-    // uninstall the |extension|, or change its usage options (incognito
+    // uninstall the `extension`, or change its usage options (incognito
     // permission, file access, etc.).
     // TODO(crbug.com/41159442): The method name is misleading, since this
     // applies to all setting modifications, not just user-initiated ones. Fix
@@ -81,12 +81,12 @@ class ManagementPolicy {
                                        std::u16string* error) const;
 
     // Providers should return false if the originating extension
-    // |source_extension| cannot disable the |extension|.
+    // `source_extension` cannot disable the `extension`.
     virtual bool ExtensionMayModifySettings(const Extension* source_extension,
                                             const Extension* extension,
                                             std::u16string* error) const;
 
-    // Providers should return true if the |extension| must always remain
+    // Providers should return true if the `extension` must always remain
     // enabled. This is distinct from UserMayModifySettings() in that the latter
     // also prohibits enabling the extension if it is currently disabled.
     // Providers implementing this method should also implement the others
@@ -136,25 +136,25 @@ class ManagementPolicy {
   bool UserMayLoad(const Extension* extension) const;
 
   // Returns false if the user should not be allowed to install the given
-  // |extension|. By default, this forwards to UserMayLoad() (since a user
+  // `extension`. By default, this forwards to UserMayLoad() (since a user
   // should not be able to install an extension they cannot load).
   bool UserMayInstall(const Extension* extension, std::u16string* error) const;
 
   // Returns true if the user is permitted to enable, disable, or uninstall the
   // given extension, or change the extension's usage options (incognito mode,
-  // file access, etc.). If not, |error| may be set to an appropriate message.
+  // file access, etc.). If not, `error` may be set to an appropriate message.
   // TODO(crbug.com/41159442): Misleading name; see comment in Provider.
   bool UserMayModifySettings(const Extension* extension,
                              std::u16string* error) const;
 
   // Returns true if the originating extension is permitted to disable the
-  // given extension. If not, |error| may be set to an appropriate message.
+  // given extension. If not, `error` may be set to an appropriate message.
   bool ExtensionMayModifySettings(const Extension* source_extension,
                                   const Extension* extension,
                                   std::u16string* error) const;
 
   // Returns true if the extension must remain enabled at all times (e.g. a
-  // component extension). In that case, |error| may be set to an appropriate
+  // component extension). In that case, `error` may be set to an appropriate
   // message.
   bool MustRemainEnabled(const Extension* extension,
                          std::u16string* error) const;
@@ -173,7 +173,7 @@ class ManagementPolicy {
   bool ShouldForceUninstall(const Extension* extension,
                             std::u16string* error) const;
 
-  // Returns true if the |extension| should be repaired upon corruption.
+  // Returns true if the `extension` should be repaired upon corruption.
   // Note that this method doesn't check whether extension is corrupted or not
   // (it's job of ContentVerifier).
   bool ShouldRepairIfCorrupted(const Extension* extension);
@@ -191,8 +191,8 @@ class ManagementPolicy {
   typedef std::set<raw_ptr<Provider, SetExperimental>> ProviderList;
 
   // This is a helper to apply a method in the Provider interface to each of
-  // the Provider objects in |providers_|. The return value of this function
-  // will be |normal_result|, unless any of the Provider calls to |function|
+  // the Provider objects in `providers_`. The return value of this function
+  // will be `normal_result`, unless any of the Provider calls to `function`
   // return !normal_result, in which case this function will then early-return
   // !normal_result.
   bool ApplyToProviderList(ProviderFunction function,

@@ -55,7 +55,7 @@ class ExtensionRegistry : public KeyedService {
 
   ~ExtensionRegistry() override;
 
-  // Returns the instance for the given |browser_context|.
+  // Returns the instance for the given `browser_context`.
   static ExtensionRegistry* Get(content::BrowserContext* browser_context);
 
   base::WeakPtr<ExtensionRegistry> GetWeakPtr();
@@ -83,7 +83,7 @@ class ExtensionRegistry : public KeyedService {
   // disabled, etc). Equivalent to GenerateInstalledExtensionSet(EVERYTHING).
   ExtensionSet GenerateInstalledExtensionsSet() const;
 
-  // Returns a set of all extensions in the subsets specified by |include_mask|.
+  // Returns a set of all extensions in the subsets specified by `include_mask`.
   //  * enabled_extensions()     --> ExtensionRegistry::ENABLED
   //  * disabled_extensions()    --> ExtensionRegistry::DISABLED
   //  * terminated_extensions()  --> ExtensionRegistry::TERMINATED
@@ -91,7 +91,7 @@ class ExtensionRegistry : public KeyedService {
   //  * blocked_extensions()     --> ExtensionRegistry::BLOCKED
   ExtensionSet GenerateInstalledExtensionsSet(int include_mask) const;
 
-  // Returns the current version of the extension with the given |id|, if
+  // Returns the current version of the extension with the given `id`, if
   // one exists.
   // Note: If we are currently updating the extension, this returns the
   // version stored currently, rather than the in-progress update.
@@ -119,10 +119,10 @@ class ExtensionRegistry : public KeyedService {
   void TriggerOnUnloaded(const Extension* extension,
                          UnloadedExtensionReason reason);
 
-  // If this is a fresh install then |is_update| is false and there must not be
-  // any installed extension with |extension|'s ID. If this is an update then
-  // |is_update| is true and must be an installed extension with |extension|'s
-  // ID, and |old_name| must be non-empty.
+  // If this is a fresh install then `is_update` is false and there must not be
+  // any installed extension with `extension`'s ID. If this is an update then
+  // `is_update` is true and must be an installed extension with `extension`'s
+  // ID, and `old_name` must be non-empty.
   void TriggerOnWillBeInstalled(const Extension* extension,
                                 bool is_update,
                                 const std::string& old_name);
@@ -133,13 +133,13 @@ class ExtensionRegistry : public KeyedService {
                           bool is_update);
 
   // Invokes the observer method OnExtensionUninstalled(). The extension must
-  // not be any installed extension with |extension|'s ID.
+  // not be any installed extension with `extension`'s ID.
   void TriggerOnUninstalled(const Extension* extension, UninstallReason reason);
 
   // Invokes the observer method OnExtensionUninstallationDenied().
   void TriggerOnUninstallationDenied(const Extension* extension);
 
-  // Find an extension by ID using |include_mask| to pick the sets to search:
+  // Find an extension by ID using `include_mask` to pick the sets to search:
   //  * enabled_extensions()     --> ExtensionRegistry::ENABLED
   //  * disabled_extensions()    --> ExtensionRegistry::DISABLED
   //  * terminated_extensions()  --> ExtensionRegistry::TERMINATED
@@ -212,7 +212,7 @@ class ExtensionRegistry : public KeyedService {
   ExtensionSet blocked_extensions_;
 
   // Extensions that are ready for execution. This set is a non-exclusive
-  // subset of |enabled_extensions_|.
+  // subset of `enabled_extensions_`.
   ExtensionSet ready_extensions_;
 
   base::ObserverList<ExtensionRegistryObserver>::UncheckedAndDanglingUntriaged

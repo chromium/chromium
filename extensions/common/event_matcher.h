@@ -26,7 +26,7 @@ class EventMatcher {
 
   ~EventMatcher();
 
-  // Returns true if |event_info| satisfies this matcher's criteria, not taking
+  // Returns true if `event_info` satisfies this matcher's criteria, not taking
   // into consideration any URL criteria.
   bool MatchNonURLCriteria(const mojom::EventFilteringInfo& event_info) const;
 

@@ -46,7 +46,7 @@ class RendererStartupHelper : public KeyedService,
                               public content::RenderProcessHostObserver,
                               public mojom::RendererHost {
  public:
-  // This class sends messages to all renderers started for |browser_context|.
+  // This class sends messages to all renderers started for `browser_context`.
   explicit RendererStartupHelper(content::BrowserContext* browser_context);
 
   RendererStartupHelper(const RendererStartupHelper&) = delete;
@@ -82,7 +82,7 @@ class RendererStartupHelper : public KeyedService,
   void GetMessageBundle(const ExtensionId& extension_id,
                         GetMessageBundleCallback callback) override;
 
-  // Sends a message to the specified |process| activating the given extension
+  // Sends a message to the specified `process` activating the given extension
   // once the process is initialized. OnExtensionLoaded should have already been
   // called for the extension.
   void ActivateExtensionInProcess(const Extension& extension,
@@ -114,9 +114,9 @@ class RendererStartupHelper : public KeyedService,
       const Extension& extension,
       const std::optional<std::string>& world_id);
 
-  // Returns mojom::Renderer* corresponding to |process|. This would return
-  // nullptr when it's called before |process| is inserted to
-  // |process_mojo_map_| or after it's deleted. Note that the callers should
+  // Returns mojom::Renderer* corresponding to `process`. This would return
+  // nullptr when it's called before `process` is inserted to
+  // `process_mojo_map_` or after it's deleted. Note that the callers should
   // pass a valid content::RenderProcessHost*.
   mojom::Renderer* GetRenderer(content::RenderProcessHost* process);
 

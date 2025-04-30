@@ -76,21 +76,21 @@ class PendingExtensionManager : public KeyedService {
 
   ~PendingExtensionManager() override;
 
-  // Returns the instance for the given |browser_context|.
+  // Returns the instance for the given `browser_context`.
   static PendingExtensionManager* Get(content::BrowserContext* browser_context);
 
   // TODO(skerner): Many of these methods can be private once code in
   // ExtensionService is moved into methods of this class.
 
-  // Remove extension with id |id| from the set of pending extensions. Returns
+  // Remove extension with id `id` from the set of pending extensions. Returns
   // true if such an extension was found and removed, false otherwise.
   bool Remove(const std::string& id);
 
   // Get the  information for a pending extension.  Returns a pointer to the
-  // pending extension with id |id|, or NULL if there is no such extension.
+  // pending extension with id `id`, or NULL if there is no such extension.
   const PendingExtensionInfo* GetById(const std::string& id) const;
 
-  // Is |id| in the set of pending extensions?
+  // Is `id` in the set of pending extensions?
   bool IsIdPending(const std::string& id) const;
 
   // Returns true if there are any extensions pending.
@@ -110,7 +110,7 @@ class PendingExtensionManager : public KeyedService {
   // sync installs (such as a policy extension) or if the extension
   // is already installed.
   // After installation, the extension will be granted permissions iff
-  // |version| is valid and matches the actual installed version.
+  // `version` is valid and matches the actual installed version.
   bool AddFromSync(
       const std::string& id,
       const GURL& update_url,
@@ -154,7 +154,7 @@ class PendingExtensionManager : public KeyedService {
   void RemoveObserver(Observer* observer);
 
  private:
-  // Assumes an extension with id |id| is not already installed.
+  // Assumes an extension with id `id` is not already installed.
   // Return true if the extension was added.
   bool AddExtensionImpl(
       const std::string& id,

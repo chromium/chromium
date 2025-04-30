@@ -120,8 +120,8 @@ class TestExtensionPrefs {
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
  private:
-  // |clock_| is injected to an ExtensionPrefs that associated to |profile_|.
-  // Put |clock_| above |profile_| to outlive it.
+  // `clock_` is injected to an ExtensionPrefs that associated to `profile_`.
+  // Put `clock_` above `profile_` to outlive it.
   std::unique_ptr<IncrementalClock> clock_;
   TestingProfile profile_;
   bool extensions_disabled_;

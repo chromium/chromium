@@ -113,20 +113,20 @@ class WebRequestAction : public base::RefCounted<WebRequestAction> {
   }
 
   // Returns whether the specified extension has permission to execute this
-  // action on |request|. Checks the host permission if the host permissions
+  // action on `request`. Checks the host permission if the host permissions
   // strategy is STRATEGY_DEFAULT.
   // |apply_info->permission_helper| may only be nullptr for during testing, in
-  // which case host permissions are ignored. |crosses_incognito| specifies
-  // whether the request comes from a different profile than |extension_id|
+  // which case host permissions are ignored. `crosses_incognito` specifies
+  // whether the request comes from a different profile than `extension_id`
   // but was processed because the extension is in spanning mode.
   bool HasPermission(ApplyInfo* apply_info,
                      const ExtensionId& extension_id) const;
 
   // Factory method that instantiates a concrete WebRequestAction
-  // implementation according to |json_action|, the representation of the
+  // implementation according to `json_action`, the representation of the
   // WebRequestAction as received from the extension API.
-  // Sets |error| and returns NULL in case of a semantic error that cannot
-  // be caught by schema validation. Sets |bad_message| and returns NULL
+  // Sets `error` and returns NULL in case of a semantic error that cannot
+  // be caught by schema validation. Sets `bad_message` and returns NULL
   // in case the input is syntactically unexpected.
   static scoped_refptr<const WebRequestAction> Create(
       content::BrowserContext* browser_context,
@@ -264,7 +264,7 @@ class WebRequestRedirectToEmptyDocumentAction : public WebRequestAction {
 // Action that instructs to redirect a network request.
 class WebRequestRedirectByRegExAction : public WebRequestAction {
  public:
-  // The |to_pattern| has to be passed in RE2 syntax with the exception that
+  // The `to_pattern` has to be passed in RE2 syntax with the exception that
   // capture groups are referenced in Perl style ($1, $2, ...).
   explicit WebRequestRedirectByRegExAction(
       std::unique_ptr<re2::RE2> from_pattern,
@@ -420,8 +420,8 @@ class WebRequestIgnoreRulesAction : public WebRequestAction {
  private:
   ~WebRequestIgnoreRulesAction() override;
 
-  // Rules are ignored if they have a tag matching |ignore_tag_| and
-  // |ignore_tag_| is non-empty.
+  // Rules are ignored if they have a tag matching `ignore_tag_` and
+  // `ignore_tag_` is non-empty.
   std::string ignore_tag_;
 };
 

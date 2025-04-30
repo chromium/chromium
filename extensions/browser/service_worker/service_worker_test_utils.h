@@ -80,7 +80,7 @@ class TestServiceWorkerContextObserver
   // can be instantiated after the extension has already started.
   void SetRunningId(int64_t version_id) { running_version_id_ = version_id; }
 
-  // Returns the number of completed registrations for |scope|.
+  // Returns the number of completed registrations for `scope`.
   int GetCompletedCount(const GURL& scope) const;
 
  private:
@@ -145,7 +145,7 @@ class UnregisterWorkerObserver : public ProcessManagerObserver {
   void OnStoppedTrackingServiceWorkerInstance(
       const WorkerId& worker_id) override;
 
-  // Waits for ProcessManager::UnregisterServiceWorker for |extension_id_|.
+  // Waits for ProcessManager::UnregisterServiceWorker for `extension_id_`.
   void WaitForUnregister();
 
  private:

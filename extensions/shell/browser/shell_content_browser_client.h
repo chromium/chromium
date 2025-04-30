@@ -159,7 +159,7 @@ class ShellContentBrowserClient : public content::ContentBrowserClient {
   // Appends command line switches for a renderer process.
   void AppendRendererSwitches(base::CommandLine* command_line);
 
-  // Returns the extension or app associated with |site_instance| or NULL.
+  // Returns the extension or app associated with `site_instance` or NULL.
   const Extension* GetExtension(content::SiteInstance* site_instance);
 
   // Owned by content::BrowserMainLoop.

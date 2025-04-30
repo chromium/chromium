@@ -101,7 +101,7 @@ class ExtensionSyncService : public syncer::SyncableService,
   void OnExtensionPrefsWillBeDestroyed(
       extensions::ExtensionPrefs* prefs) override;
 
-  // Gets the SyncBundle for the given |type|.
+  // Gets the SyncBundle for the given `type`.
   extensions::SyncBundle* GetSyncBundle(syncer::DataType type);
   const extensions::SyncBundle* GetSyncBundle(syncer::DataType type) const;
 

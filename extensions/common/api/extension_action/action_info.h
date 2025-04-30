@@ -52,7 +52,7 @@ struct ActionInfo {
   // under the "page_action", "browser_action", or "action" key.
   static const ActionInfo* GetExtensionActionInfo(const Extension* extension);
 
-  // Retrieves the manifest key for the given action |type|.
+  // Retrieves the manifest key for the given action `type`.
   static const char* GetManifestKeyForActionType(ActionInfo::Type type);
 
   // Sets the extension's action.
@@ -61,7 +61,7 @@ struct ActionInfo {
 
   // The key this action corresponds to. NOTE: You should only use this if you
   // care about the actual manifest key. Use the other members (like
-  // |default_state| for querying general info.
+  // `default_state` for querying general info.
   const Type type;
 
   // Empty implies the key wasn't present.

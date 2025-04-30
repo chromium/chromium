@@ -23,7 +23,7 @@ class IncognitoConnectabilityInfoBarDelegate : public ConfirmInfoBarDelegate {
       IncognitoConnectability::ScopedAlertTracker::Mode)>;
 
   // Creates a confirmation infobar and delegate and adds the infobar to
-  // |infobar_manager|.
+  // `infobar_manager`.
   static infobars::InfoBar* Create(
       infobars::ContentInfoBarManager* infobar_manager,
       const std::u16string& message,

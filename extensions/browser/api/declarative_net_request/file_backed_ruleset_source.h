@@ -74,25 +74,25 @@ struct IndexAndPersistJSONRulesetResult {
   // The result of IndexAndPersistRules.
   Status status = Status::kError;
 
-  // Checksum of the persisted indexed ruleset file. Valid if |status| if
+  // Checksum of the persisted indexed ruleset file. Valid if `status` if
   // kSuccess. Note: there's no sane default value for this, any integer value
   // is a valid checksum value.
   int ruleset_checksum = 0;
 
-  // Valid if |status| is kSuccess or kIgnore.
+  // Valid if `status` is kSuccess or kIgnore.
   std::vector<InstallWarning> warnings;
 
-  // The number of indexed rules. Valid if |status| is kSuccess.
+  // The number of indexed rules. Valid if `status` is kSuccess.
   size_t rules_count = 0;
 
-  // The number of indexed regex rules. Valid if |status| is kSuccess.
+  // The number of indexed regex rules. Valid if `status` is kSuccess.
   size_t regex_rules_count = 0;
 
   // Time taken to deserialize the JSON rules and persist them in flatbuffer
   // format. Valid if status is kSuccess.
   base::TimeDelta index_and_persist_time;
 
-  // Valid if |status| is kError.
+  // Valid if `status` is kError.
   std::string error;
 
  private:
@@ -161,8 +161,8 @@ class FileBackedRulesetSource : public RulesetSource {
       const Extension& extension,
       RulesetFilter ruleset_filter);
 
-  // Creates a static FileBackedRulesetSource corresponding to |info| for the
-  // given |extension|.
+  // Creates a static FileBackedRulesetSource corresponding to `info` for the
+  // given `extension`.
   static FileBackedRulesetSource CreateStatic(
       const Extension& extension,
       const DNRManifestData::RulesetInfo& info);
@@ -203,7 +203,7 @@ class FileBackedRulesetSource : public RulesetSource {
   using IndexAndPersistJSONRulesetCallback =
       base::OnceCallback<void(IndexAndPersistJSONRulesetResult)>;
   // Same as IndexAndPersistJSONRulesetUnsafe but parses the JSON rules file
-  // out-of-process. |decoder| corresponds to a Data Decoder service instance
+  // out-of-process. `decoder` corresponds to a Data Decoder service instance
   // to use for decode operations related to this call.
   //
   // NOTE: This must be called on a sequence where file IO is allowed.
@@ -216,13 +216,13 @@ class FileBackedRulesetSource : public RulesetSource {
   // trusted. Must be called on a sequence which supports file IO.
   ReadJSONRulesResult ReadJSONRulesUnsafe() const;
 
-  // Serializes |rules| into the `json` string. Returns false on failure.
+  // Serializes `rules` into the `json` string. Returns false on failure.
   bool SerializeRulesToJSON(
       const std::vector<api::declarative_net_request::Rule>& rules,
       std::string* json) const;
 
   // Creates a verified RulesetMatcher corresponding to indexed ruleset on disk.
-  // Returns kSuccess on success along with the ruleset |matcher|. Must be
+  // Returns kSuccess on success along with the ruleset `matcher`. Must be
   // called on a sequence which supports file IO.
   LoadRulesetResult CreateVerifiedMatcher(
       int expected_ruleset_checksum,

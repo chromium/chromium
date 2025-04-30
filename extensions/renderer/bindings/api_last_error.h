@@ -19,11 +19,11 @@ namespace extensions {
 class APILastError {
  public:
   // Returns the object the 'lastError' property should be exposed on for the
-  // given context. Also allows for the population of a |secondary_parent|; if
+  // given context. Also allows for the population of a `secondary_parent`; if
   // populated, this object will also have a lastError property, but it will be
   // a simple object without getters/setters. This is to accommodate the
   // legacy chrome.extension.lastError property.
-  // Note: |secondary_parent| may be null.
+  // Note: `secondary_parent` may be null.
   using GetParent = base::RepeatingCallback<v8::Local<v8::Object>(
       v8::Local<v8::Context>,
       v8::Local<v8::Object>* secondary_parent)>;
@@ -37,17 +37,17 @@ class APILastError {
 
   ~APILastError();
 
-  // Sets the last error for the given |context| to |error|.
+  // Sets the last error for the given `context` to `error`.
   void SetError(v8::Local<v8::Context> context, const std::string& error);
 
-  // Clears the last error in the given |context|. If |report_if_unchecked| is
+  // Clears the last error in the given `context`. If `report_if_unchecked` is
   // true and the developer didn't check the error, this throws an exception.
   void ClearError(v8::Local<v8::Context> context, bool report_if_unchecked);
 
   // Returns true if the given context has an active error.
   bool HasError(v8::Local<v8::Context> context);
 
-  // Returns the message from the last error for the given |context| without
+  // Returns the message from the last error for the given `context` without
   // marking it as accessed. If the given context doesn't have an active error
   // returns std::nullopt.
   std::optional<std::string> GetErrorMessage(v8::Local<v8::Context> context);

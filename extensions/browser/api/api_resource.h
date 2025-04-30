@@ -22,7 +22,7 @@ class ApiResource {
 
   const ExtensionId& owner_extension_id() const { return owner_extension_id_; }
 
-  // If this method returns |true|, the resource remains open when the
+  // If this method returns `true`, the resource remains open when the
   // owning extension is suspended due to inactivity.
   virtual bool IsPersistent() const;
 

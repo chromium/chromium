@@ -83,7 +83,7 @@ enum BadMessageReason {
 
 // Called when the browser receives a bad IPC message from a normal or an
 // extension renderer. Logs the event, records a histogram metric for the
-// |reason|, and terminates the process for |host|/|render_process_id|.
+// `reason`, and terminates the process for `host`/`render_process_id`.
 void ReceivedBadMessage(content::RenderProcessHost* host,
                         BadMessageReason reason);
 

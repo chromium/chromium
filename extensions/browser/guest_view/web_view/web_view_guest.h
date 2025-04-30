@@ -60,7 +60,7 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
   static const guest_view::GuestViewHistogramValue HistogramValue;
 
   // Returns the WebView partition ID associated with the render process
-  // represented by |render_process_host|, if any. Otherwise, an empty string is
+  // represented by `render_process_host`, if any. Otherwise, an empty string is
   // returned.
   static std::string GetPartitionID(
       content::RenderProcessHost* render_process_host);
@@ -81,7 +81,7 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
   // Get the current zoom mode.
   zoom::ZoomController::ZoomMode GetZoomMode();
 
-  // Request navigating the guest to the provided |src| URL.
+  // Request navigating the guest to the provided `src` URL.
   void NavigateGuest(const std::string& src,
                      base::OnceCallback<void(content::NavigationHandle&)>
                          navigation_handle_callback,
@@ -121,7 +121,7 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
   // Conclude a find request to clear highlighting.
   void StopFinding(content::StopFindAction);
 
-  // If possible, navigate the guest to |relative_index| entries away from the
+  // If possible, navigate the guest to `relative_index` entries away from the
   // current navigation entry. Returns true on success.
   bool Go(int relative_index);
 
@@ -147,8 +147,8 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
 
   // Clears data in the storage partition of this guest.
   //
-  // Partition data that are newer than |removal_since| will be removed.
-  // |removal_mask| corresponds to bitmask in StoragePartition::RemoveDataMask.
+  // Partition data that are newer than `removal_since` will be removed.
+  // `removal_mask` corresponds to bitmask in StoragePartition::RemoveDataMask.
   bool ClearData(const base::Time remove_since,
                  uint32_t removal_mask,
                  base::OnceClosure callback);
@@ -359,7 +359,7 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
   // Requests resolution of a potentially relative URL.
   GURL ResolveURL(const std::string& src);
 
-  // Notification that a load in the guest resulted in abort. Note that |url|
+  // Notification that a load in the guest resulted in abort. Note that `url`
   // may be invalid.
   void LoadAbort(bool is_top_level, const GURL& url, int error_code);
 
@@ -423,7 +423,7 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
     GURL url;
 
     // Whether OpenURL navigation from the newly created GuestView has changed
-    // |url|. The pending OpenURL navigation needs to be applied after attaching
+    // `url`. The pending OpenURL navigation needs to be applied after attaching
     // the GuestView.
     bool url_changed_via_open_url = false;
 

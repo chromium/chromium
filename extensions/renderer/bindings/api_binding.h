@@ -59,7 +59,7 @@ class APIBinding {
   using HandlerCallback = base::RepeatingCallback<void(gin::Arguments*)>;
 
   // The APITypeReferenceMap is required to outlive this object.
-  // |function_definitions|, |type_definitions| and |event_definitions|
+  // `function_definitions`, `type_definitions` and `event_definitions`
   // may be null if the API does not specify any of that category.
   APIBinding(const std::string& name,
              const base::Value::List* function_definitions,
@@ -89,9 +89,9 @@ class APIBinding {
   // first instance is created.
   void InitializeTemplate(v8::Isolate* isolate);
 
-  // Decorates |object_template| with the properties specified by |properties|.
-  // |is_root| is used to determine whether to add the properties to
-  // |root_properties_|.
+  // Decorates `object_template` with the properties specified by `properties`.
+  // `is_root` is used to determine whether to add the properties to
+  // `root_properties_`.
   void DecorateTemplateWithProperties(
       v8::Isolate* isolate,
       v8::Local<v8::ObjectTemplate> object_template,
@@ -108,8 +108,8 @@ class APIBinding {
       v8::Local<v8::Name> property,
       const v8::PropertyCallbackInfo<v8::Value>& info);
 
-  // Handles calling of an API method with the given |name| on the given
-  // |thread| and matches the arguments against |signature|.
+  // Handles calling of an API method with the given `name` on the given
+  // `thread` and matches the arguments against `signature`.
   void HandleCall(const std::string& name,
                   const APISignature* signature,
                   gin::Arguments* args);

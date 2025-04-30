@@ -58,7 +58,7 @@ class ShellNetworkController : public ash::NetworkStateHandlerObserver {
 
   // If not currently connected or connecting, chooses a wireless network and
   // asks the connection manager to connect to it. Also switches to
-  // |preferred_network_name_| if possible.
+  // `preferred_network_name_` if possible.
   void ConnectIfUnconnected();
 
   // Handles a successful or failed connection attempt.

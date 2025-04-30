@@ -30,8 +30,8 @@ api::bookmarks::BookmarkTreeNode GetBookmarkTreeNode(
     bool only_folders,
     std::optional<size_t> visible_index = std::nullopt);
 
-// Populates |out_bookmark_tree_node| with given |node|.
-// |visible_index| is the index position of this node among only the visible
+// Populates `out_bookmark_tree_node` with given `node`.
+// `visible_index` is the index position of this node among only the visible
 // siblings in its parent folder, if not provided, will use GetAPIIndexOf() to
 // calculate the index.
 void PopulateBookmarkTreeNode(
@@ -43,32 +43,32 @@ void PopulateBookmarkTreeNode(
     std::optional<size_t> visible_index,
     api::bookmarks::BookmarkTreeNode* out_bookmark_tree_node);
 
-// Adds a JSON representation of |node| to the JSON |nodes|.
+// Adds a JSON representation of `node` to the JSON `nodes`.
 void AddNode(bookmarks::BookmarkModel* model,
              bookmarks::ManagedBookmarkService* managed,
              const bookmarks::BookmarkNode* node,
              std::vector<api::bookmarks::BookmarkTreeNode>* nodes,
              bool recurse);
 
-// Adds a JSON representation of |node| of folder type to the JSON |nodes|.
+// Adds a JSON representation of `node` of folder type to the JSON `nodes`.
 void AddNodeFoldersOnly(bookmarks::BookmarkModel* model,
                         bookmarks::ManagedBookmarkService* managed,
                         const bookmarks::BookmarkNode* node,
                         std::vector<api::bookmarks::BookmarkTreeNode>* nodes,
                         bool recurse);
 
-// Remove node of |id|.
+// Remove node of `id`.
 bool RemoveNode(bookmarks::BookmarkModel* model,
                 bookmarks::ManagedBookmarkService* managed,
                 int64_t id,
                 bool recursive,
                 std::string* error);
 
-// Get meta info from |node| and all it's children recursively.
+// Get meta info from `node` and all it's children recursively.
 void GetMetaInfo(const bookmarks::BookmarkNode& node,
                  base::Value::Dict& id_to_meta_info_map);
 
-// Return the API index of |node| among its siblings on the extensions API.
+// Return the API index of `node` among its siblings on the extensions API.
 //
 // Nodes which are not visible (see `BookmarkModel::IsNodeVisible()`) are not
 // exposed on the extensions API. This means that the child indices of nodes as

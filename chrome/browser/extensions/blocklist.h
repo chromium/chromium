@@ -41,7 +41,7 @@ class Blocklist : public KeyedService {
  public:
   class Observer {
    public:
-    // Observes |blocklist| on construction and unobserves on destruction.
+    // Observes `blocklist` on construction and unobserves on destruction.
     explicit Observer(Blocklist* blocklist);
 
     virtual void OnBlocklistUpdated() = 0;
@@ -74,9 +74,9 @@ class Blocklist : public KeyedService {
 
   static Blocklist* Get(content::BrowserContext* context);
 
-  // From the set of extension IDs passed in via |ids|, asynchronously checks
+  // From the set of extension IDs passed in via `ids`, asynchronously checks
   // which are blocklisted and includes them in the resulting map passed
-  // via |callback|, which will be sent on the caller's message loop. The values
+  // via `callback`, which will be sent on the caller's message loop. The values
   // of the map are the blocklist state for each extension. Extensions with
   // a BlocklistState of NOT_BLOCKLISTED are not included in the result.
   //
@@ -85,9 +85,9 @@ class Blocklist : public KeyedService {
   void GetBlocklistedIDs(const std::set<ExtensionId>& ids,
                          GetBlocklistedIDsCallback callback);
 
-  // From the subset of extension IDs passed in via |ids|, select the ones
+  // From the subset of extension IDs passed in via `ids`, select the ones
   // marked in the blocklist as BLOCKLISTED_MALWARE and asynchronously pass
-  // to |callback|. Basically, will call GetBlocklistedIDs and filter its
+  // to `callback`. Basically, will call GetBlocklistedIDs and filter its
   // results.
   void GetMalwareIDs(const std::set<ExtensionId>& ids,
                      GetMalwareIDsCallback callback);
@@ -97,7 +97,7 @@ class Blocklist : public KeyedService {
                      IsBlocklistedCallback callback);
 
   // Used to mock BlocklistStateFetcher in unit tests. Blocklist owns the
-  // |fetcher|.
+  // `fetcher`.
   void SetBlocklistStateFetcherForTest(BlocklistStateFetcher* fetcher);
 
   // Reset the owned BlocklistStateFetcher to null and return the current

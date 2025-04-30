@@ -62,7 +62,7 @@ class ExtensionPrefsHelper : public KeyedService {
 
   // Returns true if extension `extension_id` currently controls the
   // preference. If `from_incognito` is not a nullptr value, looks at incognito
-  // preferences first, and |from_incognito| is set to true if the effective
+  // preferences first, and `from_incognito` is set to true if the effective
   // pref value is coming from the incognito preferences, false if it is coming
   // from the normal ones.
   bool DoesExtensionControlPref(const ExtensionId& extension_id,

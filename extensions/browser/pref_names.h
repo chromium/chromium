@@ -16,9 +16,9 @@
 namespace extensions {
 namespace pref_names {
 
-// If the given |scope| is persisted, return true and populate |result| with the
+// If the given `scope` is persisted, return true and populate `result` with the
 // appropriate property (i.e. one of kPref*) within a kExtensions dictionary. If
-// |scope| is not persisted, return false, and leave |result| unchanged.
+// `scope` is not persisted, return false, and leave `result` unchanged.
 bool ScopeToPrefName(extensions::api::types::ChromeSettingScope scope,
                      std::string* result);
 

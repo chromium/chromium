@@ -124,7 +124,7 @@ class WebrtcAudioPrivateGetAssociatedSinkFunction
   ResponseAction Run() override;
 
   // Receives the input device descriptions, looks up the raw source device ID
-  // basing on |params|, and requests the associated raw sink ID for it.
+  // basing on `params`, and requests the associated raw sink ID for it.
   void ReceiveInputDeviceDescriptions(
       const url::Origin& origin,
       const std::string& salt,

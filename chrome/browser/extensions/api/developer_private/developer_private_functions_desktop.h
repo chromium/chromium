@@ -231,7 +231,7 @@ class DeveloperPrivateLoadDirectoryFunction : public ExtensionFunction {
   // call of the API. It is returned as a response of the API call.
   bool success_;
 
-  // Error string if |success_| is false.
+  // Error string if `success_` is false.
   std::string error_;
 };
 

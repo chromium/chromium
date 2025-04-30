@@ -48,7 +48,7 @@ class ShellMainDelegate : public content::ContentMainDelegate {
 #endif
 
  private:
-  // |process_type| is zygote, renderer, utility, etc. Returns true if the
+  // `process_type` is zygote, renderer, utility, etc. Returns true if the
   // process needs data from resources.pak.
   static bool ProcessNeedsResourceBundle(const std::string& process_type);
 

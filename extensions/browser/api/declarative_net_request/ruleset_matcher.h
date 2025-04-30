@@ -55,7 +55,7 @@ class RulesetMatcher {
                                          RulesetMatchingStage stage) const;
 
   // Returns a list of actions corresponding to all matched
-  // modifyHeaders rules with priority greater than |min_priority| if specified.
+  // modifyHeaders rules with priority greater than `min_priority` if specified.
   std::vector<RequestAction> GetModifyHeadersActions(
       const RequestParams& params,
       RulesetMatchingStage stage,
@@ -85,7 +85,7 @@ class RulesetMatcher {
   RulesetID id() const { return id_; }
 
   // Returns the tracked highest priority matching allowsAllRequests action, if
-  // any, for |host|.
+  // any, for `host`.
   std::optional<RequestAction> GetAllowlistedFrameActionForTesting(
       content::RenderFrameHost* host) const;
 
@@ -116,7 +116,7 @@ class RulesetMatcher {
   std::optional<size_t> unsafe_rule_count_ = std::nullopt;
 
   // Underlying matcher for filter-list style rules supported using the
-  // |url_pattern_index| component.
+  // `url_pattern_index` component.
   ExtensionUrlPatternIndexMatcher url_matcher_;
 
   // Underlying matcher for regex rules.

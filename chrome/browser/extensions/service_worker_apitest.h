@@ -38,21 +38,21 @@ class ServiceWorkerTest : public ExtensionApiTest {
 
   // Starts running a test from the background page test extension.
   //
-  // This registers a service worker with |script_name|, and fetches the
+  // This registers a service worker with `script_name`, and fetches the
   // registration result.
   const Extension* StartTestFromBackgroundPage(const char* script_name);
 
-  // Navigates the browser to a new tab at |url|, waits for it to load, then
+  // Navigates the browser to a new tab at `url`, waits for it to load, then
   // returns it.
   content::WebContents* Navigate(const GURL& url);
 
-  // Navigates the browser to |url| and returns the new tab's page type.
+  // Navigates the browser to `url` and returns the new tab's page type.
   content::PageType NavigateAndGetPageType(const GURL& url);
 
-  // Extracts the innerText from |contents|.
+  // Extracts the innerText from `contents`.
   std::string ExtractInnerText(content::WebContents* contents);
 
-  // Navigates the browser to |url|, then returns the innerText of the new
+  // Navigates the browser to `url`, then returns the innerText of the new
   // tab's WebContents' main frame.
   std::string NavigateAndExtractInnerText(const GURL& url);
 
@@ -72,9 +72,9 @@ class ServiceWorkerBasedBackgroundTest : public ServiceWorkerTest {
 
   void SetUpOnMainThread() override;
 
-  // Returns the only running worker id for |extension_id|.
+  // Returns the only running worker id for `extension_id`.
   // Returns std::nullopt if there isn't any worker running or more than one
-  // worker is running for |extension_id|.
+  // worker is running for `extension_id`.
   std::optional<WorkerId> GetUniqueRunningWorkerId(
       const ExtensionId& extension_id);
 

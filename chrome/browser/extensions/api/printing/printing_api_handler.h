@@ -96,7 +96,7 @@ class PrintingAPIHandler : public BrowserContextKeyedAPI,
   static BrowserContextKeyedAPIFactory<PrintingAPIHandler>*
   GetFactoryInstance();
 
-  // Returns the current instance for |browser_context|.
+  // Returns the current instance for `browser_context`.
   static PrintingAPIHandler* Get(content::BrowserContext* browser_context);
 
   // crosapi::mojom::PrintJobObserver:
@@ -108,14 +108,14 @@ class PrintingAPIHandler : public BrowserContextKeyedAPI,
                         unsigned int job_id,
                         crosapi::mojom::PrintJobUpdatePtr update) override;
 
-  // Register the printing API preference with the |registry|.
+  // Register the printing API preference with the `registry`.
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   // Submits the job to printing pipeline.
-  // If |extension| is not present among PrintingAPIExtensionsAllowlist
+  // If `extension` is not present among PrintingAPIExtensionsAllowlist
   // extensions, special print job request dialog is shown to the user to ask
   // for their confirmation.
-  // |native_window| is needed to show this dialog.
+  // `native_window` is needed to show this dialog.
   void SubmitJob(gfx::NativeWindow native_window,
                  scoped_refptr<const extensions::Extension> extension,
                  std::optional<api::printing::SubmitJob::Params> params,

@@ -38,7 +38,7 @@ class ExtensionErrorController : public KeyedService,
 
   void ShowErrorIfNeeded();
 
-  // Returns the instance for the given |browser_context|.
+  // Returns the instance for the given `browser_context`.
   static ExtensionErrorController* Get(
       content::BrowserContext* browser_context);
 

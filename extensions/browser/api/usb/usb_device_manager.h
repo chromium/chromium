@@ -59,7 +59,7 @@ class UsbDeviceManager : public BrowserContextKeyedAPI,
 
   // Looks up a device GUID for a given extensions USB device ID. If the ID is
   // unknown (e.g., the corresponding device was unplugged), this returns
-  // |false|; otherwise it returns |true|.
+  // `false`; otherwise it returns `true`.
   bool GetGuidFromId(int id, std::string* guid);
 
   // Populates an instance of the chrome.usb.Device object from the given
@@ -125,7 +125,7 @@ class UsbDeviceManager : public BrowserContextKeyedAPI,
       pending_get_devices_requests_;
   std::map<std::string, device::mojom::UsbDeviceInfoPtr> devices_;
 
-  // Connection to |device_manager_instance_|.
+  // Connection to `device_manager_instance_`.
   mojo::Remote<device::mojom::UsbDeviceManager> device_manager_;
   mojo::AssociatedReceiver<device::mojom::UsbDeviceManagerClient>
       client_receiver_{this};

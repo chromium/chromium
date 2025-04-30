@@ -29,7 +29,7 @@ struct ContentScriptsInfo : public Extension::ManifestData {
   // Returns the list of hosts that this extension can run content scripts on.
   static URLPatternSet GetScriptableHosts(const Extension* extension);
 
-  // Returns true if the extension has a content script declared at |url|.
+  // Returns true if the extension has a content script declared at `url`.
   static bool ExtensionHasScriptAtURL(const Extension* extension,
                                       const GURL& url);
 };

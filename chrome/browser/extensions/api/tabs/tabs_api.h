@@ -211,7 +211,7 @@ class TabsDetectLanguageFunction
   void OnLanguageDetermined(
       const translate::LanguageDetectionDetails& details) override;
 
-  // Resolves the API call with the detected |language|.
+  // Resolves the API call with the detected `language`.
   void RespondWithLanguage(const std::string& language);
 
   // Indicates if this instance is observing the tabs' WebContents and the
@@ -279,7 +279,7 @@ class ExecuteCodeInTabFunction : public ExecuteCodeFunction {
  protected:
   ~ExecuteCodeInTabFunction() override;
 
-  // Initializes |execute_tab_id_| and |details_|.
+  // Initializes `execute_tab_id_` and `details_`.
   InitResult Init() override;
   bool ShouldInsertCSS() const override;
   bool ShouldRemoveCSS() const override;

@@ -26,12 +26,12 @@ class AppWindowClient {
  public:
   virtual ~AppWindowClient() {}
 
-  // Creates a new AppWindow for the app in |extension| for |context|.
+  // Creates a new AppWindow for the app in `extension` for `context`.
   // Caller takes ownership.
   virtual AppWindow* CreateAppWindow(content::BrowserContext* context,
                                      const Extension* extension) = 0;
 
-  // Creates a new extensions::NativeAppWindow for |window|.
+  // Creates a new extensions::NativeAppWindow for `window`.
   virtual std::unique_ptr<NativeAppWindow> CreateNativeAppWindow(
       AppWindow* window,
       AppWindow::CreateParams* params) = 0;

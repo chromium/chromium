@@ -43,9 +43,9 @@ class EventAckData {
                               EventDispatchSource dispatch_source,
                               bool lazy_background_active_on_dispatch,
                               events::HistogramValue histogram_value);
-  // Clears the record of our knowledge of an in-flight event with |event_id|.
+  // Clears the record of our knowledge of an in-flight event with `event_id`.
   //
-  // On failure, |failure_callback| is called synchronously.
+  // On failure, `failure_callback` is called synchronously.
   void DecrementInflightEvent(content::ServiceWorkerContext* context,
                               int render_process_id,
                               int64_t version_id,

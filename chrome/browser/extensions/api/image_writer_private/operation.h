@@ -89,7 +89,7 @@ class Operation : public base::RefCountedThreadSafe<Operation> {
   int GetProgress();
   image_writer_api::Stage GetStage();
 
-  // Posts |task| to Operation's |task_runner_|.
+  // Posts `task` to Operation's `task_runner_`.
   void PostTask(base::OnceClosure task);
 
  protected:
@@ -117,14 +117,14 @@ class Operation : public base::RefCountedThreadSafe<Operation> {
   void Finish();
 
   // Generates an error.
-  // |error_message| is used to create an OnWriteError event which is
+  // `error_message` is used to create an OnWriteError event which is
   // sent to the extension
   void Error(const std::string& error_message);
 
-  // Set |progress_| and send an event.  Progress should be in the interval
+  // Set `progress_` and send an event.  Progress should be in the interval
   // [0,100]
   void SetProgress(int progress);
-  // Change to a new |stage_| and set |progress_| to zero.  Triggers a progress
+  // Change to a new `stage_` and set `progress_` to zero.  Triggers a progress
   // event.
   void SetStage(image_writer_api::Stage stage);
 
@@ -133,19 +133,19 @@ class Operation : public base::RefCountedThreadSafe<Operation> {
 
   // Adds a callback that will be called during clean-up, whether the operation
   // is aborted, encounters and error, or finishes successfully.  These
-  // functions will be run on |task_runner_|.
+  // functions will be run on `task_runner_`.
   void AddCleanUpFunction(base::OnceClosure callback);
 
   // Completes the current operation (progress set to 100) and runs the
   // continuation.
   void CompleteAndContinue(base::OnceClosure continuation);
 
-  // If |file_size| is non-zero, only |file_size| bytes will be read from file,
+  // If `file_size` is non-zero, only `file_size` bytes will be read from file,
   // otherwise the entire file will be read.
-  // |progress_scale| is a percentage to which the progress will be scale, e.g.
+  // `progress_scale` is a percentage to which the progress will be scale, e.g.
   // a scale of 50 means it will increment from 0 to 50 over the course of the
-  // sum.  |progress_offset| is an percentage that will be added to the progress
-  // of the MD5 sum before updating |progress_| but after scaling.
+  // sum.  `progress_offset` is an percentage that will be added to the progress
+  // of the MD5 sum before updating `progress_` but after scaling.
   void GetMD5SumOfFile(const base::FilePath& file,
                        int64_t file_size,
                        int progress_offset,
@@ -186,7 +186,7 @@ class Operation : public base::RefCountedThreadSafe<Operation> {
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
-  // Unmounts all volumes on |device_path_|.
+  // Unmounts all volumes on `device_path_`.
   void UnmountVolumes(base::OnceClosure continuation);
   // Starts the write after unmounting.
   void UnmountVolumesCallback(base::OnceClosure continuation,
@@ -221,8 +221,8 @@ class Operation : public base::RefCountedThreadSafe<Operation> {
   // Runs all cleanup functions.
   void CleanUp();
 
-  // |stage_| and |progress_| are owned by the FILE thread, use |SetStage| and
-  // |SetProgress| to update.  Progress should be in the interval [0,100]
+  // `stage_` and `progress_` are owned by the FILE thread, use `SetStage` and
+  // `SetProgress` to update.  Progress should be in the interval [0,100]
   image_writer_api::Stage stage_;
   int progress_;
 
@@ -231,7 +231,7 @@ class Operation : public base::RefCountedThreadSafe<Operation> {
   base::MD5Context md5_context_;
 
   // Cleanup operations that must be run.  All these functions are run on
-  // |task_runner_|.
+  // `task_runner_`.
   std::vector<base::OnceClosure> cleanup_functions_;
 
   static constexpr base::TaskTraits blocking_task_traits() {

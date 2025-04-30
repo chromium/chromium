@@ -42,19 +42,19 @@ class JsonFileSanitizer {
   };
 
   // Callback invoked when the JSON sanitization is is done. If status is an
-  // error, |error_msg| contains the error message.
+  // error, `error_msg` contains the error message.
   using Callback =
       base::OnceCallback<void(Status status, const std::string& error_msg)>;
 
   // Creates a JsonFileSanitizer and starts the sanitization of the JSON files
-  // in |file_paths|.
-  // |decoder| should be a DataDecoder which can be used to talk to a Data
+  // in `file_paths`.
+  // `decoder` should be a DataDecoder which can be used to talk to a Data
   // Decoder service instance. It must be live on the calling sequence and
   // it is not retained beyond the extent of this call.
-  // |callback| is invoked asynchronously when all JSON files have been
+  // `callback` is invoked asynchronously when all JSON files have been
   // sanitized or if an error occurred.
-  // If the returned JsonFileSanitizer instance is deleted before |callback| was
-  // invoked, then |callback| is never invoked and the sanitization stops
+  // If the returned JsonFileSanitizer instance is deleted before `callback` was
+  // invoked, then `callback` is never invoked and the sanitization stops
   // promptly (some background tasks may still run).
   static std::unique_ptr<JsonFileSanitizer> CreateAndStart(
       data_decoder::DataDecoder* decoder,

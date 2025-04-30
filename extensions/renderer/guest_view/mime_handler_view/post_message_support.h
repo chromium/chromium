@@ -30,7 +30,7 @@ class PostMessageSupport {
   // expected to be alive for the lifetime of PostMessageSupport.
   class Delegate {
    public:
-    // Returns the Delegate with source frame |web_local_frame| which will be
+    // Returns the Delegate with source frame `web_local_frame` which will be
     // used for internal uses of postMessage.
     static Delegate* FromWebLocalFrame(blink::WebLocalFrame* web_local_frame);
 
@@ -59,12 +59,12 @@ class PostMessageSupport {
     std::unique_ptr<PostMessageSupport> post_message_support_;
   };
 
-  // Returns the first postMessage support found on |web_local_frame|. This is
+  // Returns the first postMessage support found on `web_local_frame`. This is
   // the instance which corresponds to a full page MimeHandlerView.
   static PostMessageSupport* FromWebLocalFrame(
       blink::WebLocalFrame* web_local_frame);
 
-  // |delegate| will take ownership of this class.
+  // `delegate` will take ownership of this class.
   explicit PostMessageSupport(Delegate* delegate);
   ~PostMessageSupport();
 
@@ -72,15 +72,15 @@ class PostMessageSupport {
   // This is used as the PluginWrapper() for HTMLPlugInElement.
   v8::Local<v8::Object> GetScriptableObject(v8::Isolate* isolate);
 
-  // If |is_active_| the message is sent from source frame to the target frame
-  // (provided by |delegate_|). If |!is_active_| the messages are queued to be
+  // If `is_active_` the message is sent from source frame to the target frame
+  // (provided by `delegate_`). If |!is_active_| the messages are queued to be
   // sent as soon as the PostMessageSupport becomes active.
   void PostJavaScriptMessage(v8::Isolate* isolate,
                              v8::Local<v8::Value> message);
   void PostMessageFromValue(const base::Value& message);
 
   // Activates the PostMessageSupport. After calling this method all the
-  // messages in |message_queue_| are forwarded to the target frame.
+  // messages in `message_queue_` are forwarded to the target frame.
   void SetActive();
   bool is_active() const { return is_active_; }
 
@@ -96,7 +96,7 @@ class PostMessageSupport {
   // delivered so that messages aren't lost.
   std::vector<v8::Global<v8::Value>> pending_messages_;
 
-  // When false, all sent messages are queued up in |message_queue_|. When true,
+  // When false, all sent messages are queued up in `message_queue_`. When true,
   // the messages are forwarded to the target frame.
   bool is_active_ = false;
 

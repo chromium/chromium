@@ -89,7 +89,7 @@ class ExtensionSet {
   // Returns true if there is no previous extension.
   bool Insert(const scoped_refptr<const Extension>& extension);
 
-  // Copies different items from |extensions| to the current set and returns
+  // Copies different items from `extensions` to the current set and returns
   // whether anything changed.
   bool InsertAll(const ExtensionSet& extensions);
 
@@ -112,9 +112,9 @@ class ExtensionSet {
   const Extension* GetExtensionOrAppByURL(const GURL& url,
                                           bool include_guid = false) const;
 
-  // Returns the app specified by the given |url|, if one exists. This will
-  // return NULL if there is no entry with |url|, or if the extension with
-  // |url| is not an app.
+  // Returns the app specified by the given `url`, if one exists. This will
+  // return NULL if there is no entry with `url`, or if the extension with
+  // `url` is not an app.
   const Extension* GetAppByURL(const GURL& url) const;
 
   // Returns the hosted app whose web extent contains the URL.
@@ -125,8 +125,8 @@ class ExtensionSet {
   const Extension* GetHostedAppByOverlappingWebExtent(
       const URLPatternSet& extent) const;
 
-  // Returns true if |new_url| is in the extent of the same extension as
-  // |old_url|.  Also returns true if neither URL is in an app.
+  // Returns true if `new_url` is in the extent of the same extension as
+  // `old_url`.  Also returns true if neither URL is in an app.
   bool InSameExtent(const GURL& old_url, const GURL& new_url) const;
 
   // Look up an Extension object by id or guid.
@@ -137,7 +137,7 @@ class ExtensionSet {
   // Gets the IDs of all extensions in the set.
   ExtensionIdSet GetIDs() const;
 
-  // Returns true if |info| should get extension api bindings and be permitted
+  // Returns true if `info` should get extension api bindings and be permitted
   // to make api calls. Note that this is independent of what extension
   // permissions the given extension has been granted.
   bool ExtensionBindingsAllowed(const GURL& url) const;

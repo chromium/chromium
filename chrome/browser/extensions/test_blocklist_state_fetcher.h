@@ -27,7 +27,7 @@ class TestBlocklistStateFetcher {
   void SetBlocklistVerdict(const std::string& id,
                            ClientCRXListInfoResponse_Verdict state);
 
-  // Send the appropriate response for the request for extension with id |id|.
+  // Send the appropriate response for the request for extension with id `id`.
   // Return false, if fetcher with fiven id doesn't exist or in case of
   // incorrect request. Otherwise return true.
   bool HandleFetcher(const std::string& id);

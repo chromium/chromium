@@ -45,7 +45,7 @@ class ExternalProviderManager
   // KeyedService:
   void Shutdown() override;
 
-  // Returns the instance for the given |browser_context|.
+  // Returns the instance for the given `browser_context`.
   static ExternalProviderManager* Get(content::BrowserContext* browser_context);
 
   // ExternalProviderInterface::VisitorInterface:
@@ -99,7 +99,7 @@ class ExternalProviderManager
   // external extensions.
   void OnAllExternalProvidersReady();
 
-  // For the extension in |version_path| with |id|, check to see if it's an
+  // For the extension in `version_path` with `id`, check to see if it's an
   // externally managed extension.  If so, uninstall it.
   void CheckExternalUninstall(const std::string& id);
 

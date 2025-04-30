@@ -38,7 +38,7 @@ class ManifestPermission {
   // for the app.
   virtual PermissionIDSet GetPermissions() const = 0;
 
-  // Parses the ManifestPermission from |value|. Returns false if error happens.
+  // Parses the ManifestPermission from `value`. Returns false if error happens.
   virtual bool FromValue(const base::Value* value) = 0;
 
   // Stores this into a new created Value.
@@ -47,16 +47,16 @@ class ManifestPermission {
   // Clones this.
   std::unique_ptr<ManifestPermission> Clone() const;
 
-  // Returns a new manifest permission which equals this - |rhs|.
+  // Returns a new manifest permission which equals this - `rhs`.
   virtual std::unique_ptr<ManifestPermission> Diff(
       const ManifestPermission* rhs) const = 0;
 
-  // Returns a new manifest permission which equals the union of this and |rhs|.
+  // Returns a new manifest permission which equals the union of this and `rhs`.
   virtual std::unique_ptr<ManifestPermission> Union(
       const ManifestPermission* rhs) const = 0;
 
   // Returns a new manifest permission which equals the intersect of this and
-  // |rhs|.
+  // `rhs`.
   virtual std::unique_ptr<ManifestPermission> Intersect(
       const ManifestPermission* rhs) const = 0;
 
@@ -70,10 +70,10 @@ class ManifestPermission {
   // privacy team before setting this function to return false.
   virtual bool RequiresManagedSessionFullLoginWarning() const;
 
-  // Returns true if |rhs| is a subset of this.
+  // Returns true if `rhs` is a subset of this.
   bool Contains(const ManifestPermission* rhs) const;
 
-  // Returns true if |rhs| is equal to this.
+  // Returns true if `rhs` is equal to this.
   bool Equal(const ManifestPermission* rhs) const;
 };
 

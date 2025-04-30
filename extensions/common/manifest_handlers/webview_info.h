@@ -22,13 +22,13 @@ class PartitionItem;
 // "webview" key.
 class WebviewInfo : public Extension::ManifestData {
  public:
-  // Returns true if |extension|'s resource at |relative_path| is accessible
-  // from the WebView partition with ID |partition_id|.
+  // Returns true if `extension`'s resource at `relative_path` is accessible
+  // from the WebView partition with ID `partition_id`.
   static bool IsResourceWebviewAccessible(const Extension* extension,
                                           const std::string& partition_id,
                                           const std::string& relative_path);
-  // Returns true if the given |extension| has any webview accessible
-  // resources in the given |partition_id|.
+  // Returns true if the given `extension` has any webview accessible
+  // resources in the given `partition_id`.
   static bool HasWebviewAccessibleResources(const Extension& extension,
                                             const std::string& partition_id);
 

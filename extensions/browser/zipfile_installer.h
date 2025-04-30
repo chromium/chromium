@@ -29,8 +29,8 @@ using ZipResultVariant = std::variant<base::FilePath, std::string>;
 class ZipFileInstaller : public base::RefCountedThreadSafe<ZipFileInstaller> {
  public:
   // The callback invoked when the ZIP file installation is finished.
-  // On success, |unzip_dir| points to the directory the ZIP file was installed
-  // and |error| is empty. On failure, |unzip_dir| is empty and |error| contains
+  // On success, `unzip_dir` points to the directory the ZIP file was installed
+  // and `error` is empty. On failure, `unzip_dir` is empty and `error` contains
   // an error message describing the failure.
   using DoneCallback = base::OnceCallback<void(const base::FilePath& zip_file,
                                                const base::FilePath& unzip_dir,
@@ -39,7 +39,7 @@ class ZipFileInstaller : public base::RefCountedThreadSafe<ZipFileInstaller> {
   ZipFileInstaller(const ZipFileInstaller&) = delete;
   ZipFileInstaller& operator=(const ZipFileInstaller&) = delete;
 
-  // Creates a ZipFileInstaller that invokes |done_callback| when done.
+  // Creates a ZipFileInstaller that invokes `done_callback` when done.
   static scoped_refptr<ZipFileInstaller> Create(
       const scoped_refptr<base::SequencedTaskRunner>& io_task_runner,
       DoneCallback done_callback);
@@ -94,7 +94,7 @@ class ZipFileInstaller : public base::RefCountedThreadSafe<ZipFileInstaller> {
                       const std::optional<std::string>& error);
   void UnzipDone(const base::FilePath& unzip_dir, bool success);
 
-  // On failure, report the |error| reason.
+  // On failure, report the `error` reason.
   void ReportFailure(const std::string& error);
 
   // Callback invoked when unzipping has finished.
@@ -104,7 +104,7 @@ class ZipFileInstaller : public base::RefCountedThreadSafe<ZipFileInstaller> {
   // extension/theme. Protects against unused or potentially hamrful files.
   static bool ShouldExtractFile(bool is_theme, const base::FilePath& file_path);
 
-  // Returns true if |file_path| points to an extension manifest.
+  // Returns true if `file_path` points to an extension manifest.
   static bool IsManifestFile(const base::FilePath& file_path);
 
   // File containing the extension to unzip.

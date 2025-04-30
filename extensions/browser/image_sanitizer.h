@@ -50,7 +50,7 @@ class ImageSanitizer {
     virtual data_decoder::DataDecoder* GetDataDecoder() = 0;
 
     // Callback invoked exactly once - when the image sanitization is done. If
-    // status is an error, |path| points to the file that caused the error.
+    // status is an error, `path` points to the file that caused the error.
     virtual void OnImageSanitizationDone(Status status,
                                          const base::FilePath& path) = 0;
 
@@ -64,11 +64,11 @@ class ImageSanitizer {
   };
 
   // Creates an ImageSanitizer and starts the sanitization of the images in
-  // |image_relative_paths|. These paths should be relative and not reference
-  // their parent dir or an kImagePathError will be reported to |done_callback|.
-  // These relative paths are resolved against |image_dir|.
+  // `image_relative_paths`. These paths should be relative and not reference
+  // their parent dir or an kImagePathError will be reported to `done_callback`.
+  // These relative paths are resolved against `image_dir`.
   //
-  // |client| provides the DataDecoder to use for image decoding.  |client|'s
+  // `client` provides the DataDecoder to use for image decoding.  `client`'s
   // OnImageDecoded and OnImageSanitizationDone methods will be called with
   // sanitization results (if the returned ImageSanitizer instance is deleted
   // then these callback methods are not called and the sanitization stops

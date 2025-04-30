@@ -112,8 +112,8 @@ class FakeImageWriterClient : public ImageWriterUtilityClient {
 
   void Shutdown() override;
 
-  // Issues Operation::Progress() calls with items in |progress_list| on
-  // Operation Write(). Sends Operation::Success() iff |will_succeed| is true,
+  // Issues Operation::Progress() calls with items in `progress_list` on
+  // Operation Write(). Sends Operation::Success() iff `will_succeed` is true,
   // otherwise issues an error.
   void SimulateProgressOnWrite(const std::vector<int>& progress_list,
                                bool will_succeed);
@@ -164,7 +164,7 @@ class ImageWriterTestUtils {
   // may be larger than the image.
   bool ImageWrittenToDevice();
 
-  // Fills |file| with |length| bytes of |pattern|, overwriting any existing
+  // Fills `file` with `length` bytes of `pattern`, overwriting any existing
   // data.
   bool FillFile(const base::FilePath& file, uint8_t pattern, size_t length);
 

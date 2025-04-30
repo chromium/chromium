@@ -93,13 +93,13 @@ class ExtensionsAPIClient {
   // Destruction clears the single instance.
   virtual ~ExtensionsAPIClient();
 
-  // Returns the single instance of |this|.
+  // Returns the single instance of `this`.
   static ExtensionsAPIClient* Get();
 
   // Storage API support.
 
   // Add any additional value store caches (e.g. for chrome.storage.managed)
-  // to |caches|. By default adds nothing.
+  // to `caches`. By default adds nothing.
   virtual void AddAdditionalValueStoreCaches(
       content::BrowserContext* context,
       const scoped_refptr<value_store::ValueStoreFactory>& factory,
@@ -108,7 +108,7 @@ class ExtensionsAPIClient {
                raw_ptr<ValueStoreCache, CtnExperimental>>* caches);
 
   // Attaches any extra web contents helpers (like ExtensionWebContentsObserver)
-  // to |web_contents|.
+  // to `web_contents`.
   virtual void AttachWebContentsHelpers(content::WebContents* web_contents)
       const;
 
@@ -116,7 +116,7 @@ class ExtensionsAPIClient {
   virtual bool ShouldHideResponseHeader(const GURL& url,
                                         const std::string& header_name) const;
 
-  // Returns true if the given |request| should be hidden from extensions. This
+  // Returns true if the given `request` should be hidden from extensions. This
   // should be invoked on the UI thread.
   virtual bool ShouldHideBrowserNetworkRequest(
       content::BrowserContext* context,
@@ -130,7 +130,7 @@ class ExtensionsAPIClient {
 
   // Updates an extension's matched action count stored in an ExtensionAction
   // and optionally clears the extension's explicitly set badge text for the
-  // tab specified by |tab_id|.
+  // tab specified by `tab_id`.
   virtual void UpdateActionCount(content::BrowserContext* context,
                                  const ExtensionId& extension_id,
                                  int tab_id,

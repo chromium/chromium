@@ -35,10 +35,10 @@ namespace browsertest_util {
 void CreateAndInitializeLocalCache();
 #endif
 
-// Launches a new app window for |app| in |profile|.
+// Launches a new app window for `app` in `profile`.
 Browser* LaunchAppBrowser(Profile* profile, const Extension* app);
 
-// Adds a tab to |browser| and returns the newly added WebContents.
+// Adds a tab to `browser` and returns the newly added WebContents.
 content::WebContents* AddTab(Browser* browser, const GURL& url);
 
 // Returns the number of WindowControllers with the Profile `profile`.

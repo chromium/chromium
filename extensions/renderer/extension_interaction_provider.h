@@ -47,7 +47,7 @@ class ExtensionInteractionProvider : public InteractionProvider {
     // Creates a Scope for a Service Worker context, without token.
     static std::unique_ptr<Scope> ForWorker(v8::Local<v8::Context> v8_context);
 
-    // Creates a scope from a |token|.
+    // Creates a scope from a `token`.
     static std::unique_ptr<Scope> ForToken(
         v8::Local<v8::Context> v8_context,
         std::unique_ptr<InteractionProvider::Token> token);

@@ -51,12 +51,12 @@ class ModuleSystemTestEnvironment {
   // name.
   void OverrideNativeHandler(const std::string& name, const std::string& code);
 
-  // Registers |file_name| from chrome/test/data/extensions as a module name
-  // |module_name|.
+  // Registers `file_name` from chrome/test/data/extensions as a module name
+  // `module_name`.
   void RegisterTestFile(const std::string& module_name,
                         const std::string& file_name);
 
-  // Create an empty object in the global scope with name |name|.
+  // Create an empty object in the global scope with name `name`.
   v8::Local<v8::Object> CreateGlobal(const std::string& name);
 
   // Registers a native field in the ModuleSystem.

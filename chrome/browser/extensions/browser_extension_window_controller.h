@@ -25,7 +25,7 @@ class BrowserExtensionWindowController : public WindowController {
 
   ~BrowserExtensionWindowController() override;
 
-  // Sets the window's fullscreen state. |extension_url| provides the url
+  // Sets the window's fullscreen state. `extension_url` provides the url
   // associated with the extension (used by FullscreenController).
 
   // WindowController implementation.

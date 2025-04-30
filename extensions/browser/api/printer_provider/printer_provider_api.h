@@ -57,13 +57,13 @@ class PrinterProviderAPI : public KeyedService {
   virtual void DispatchGetPrintersRequested(
       const GetPrintersCallback& callback) = 0;
 
-  // Requests printer capability for a printer with id |printer_id|.
-  // |printer_id| should be one of the printer ids reported by |GetPrinters|
+  // Requests printer capability for a printer with id `printer_id`.
+  // `printer_id` should be one of the printer ids reported by `GetPrinters`
   // callback.
   // It dispatches chrome.printerProvider.onGetCapabilityRequested event
   // to the extension that manages the printer (which can be determined from
-  // |printer_id| value).
-  // |callback| is passed a dictionary value containing printer capabilities as
+  // `printer_id` value).
+  // `callback` is passed a dictionary value containing printer capabilities as
   // reported by the extension.
   virtual void DispatchGetCapabilityRequested(
       const std::string& printer_id,
@@ -72,20 +72,20 @@ class PrinterProviderAPI : public KeyedService {
   // It dispatches chrome.printerProvider.onPrintRequested event with the
   // provided print job. The event is dispatched only to the extension that
   // manages printer with id |job.printer_id|.
-  // |callback| is passed the print status returned by the extension, and it
+  // `callback` is passed the print status returned by the extension, and it
   // must not be null.
   virtual void DispatchPrintRequested(PrinterProviderPrintJob job,
                                       PrintCallback callback) = 0;
 
-  // Returns print job associated with the print request with id |request_id|
-  // for extension |extension|.
+  // Returns print job associated with the print request with id `request_id`
+  // for extension `extension`.
   // It should return NULL if the job for the request does not exist.
   virtual const PrinterProviderPrintJob* GetPrintJob(const Extension* extension,
                                                      int request_id) const = 0;
 
   // Dispatches a chrome.printerProvider.getUsbPrinterInfo event requesting
-  // information about |device_id|. The event is only dispatched to the
-  // extension identified by |extension_id|.
+  // information about `device_id`. The event is only dispatched to the
+  // extension identified by `extension_id`.
   virtual void DispatchGetUsbPrinterInfoRequested(
       const ExtensionId& extension_id,
       const device::mojom::UsbDeviceInfo& device,

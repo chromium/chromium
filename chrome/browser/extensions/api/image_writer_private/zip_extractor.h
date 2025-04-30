@@ -22,8 +22,8 @@ class ZipExtractor {
  public:
   static bool IsZipFile(const base::FilePath& image_path);
 
-  // Start extracting the archive at |image_path| to |temp_dir_path| in
-  // |properties|.
+  // Start extracting the archive at `image_path` to `temp_dir_path` in
+  // `properties`.
   static void Extract(ExtractionProperties properties);
 
   ZipExtractor(const ZipExtractor&) = delete;

@@ -40,15 +40,15 @@ class APIPermissionSet : public BaseSetOperators<APIPermissionSet> {
 
   void insert(mojom::APIPermissionID id);
 
-  // Inserts |permission| into the APIPermissionSet.
+  // Inserts `permission` into the APIPermissionSet.
   void insert(std::unique_ptr<APIPermission> permission);
 
-  // Parses permissions from |permissions| and adds the parsed permissions to
-  // |api_permissions|. If |source| is kDisallowInternalPermissions, treat
-  // permissions with kFlagInternal as errors. If |unhandled_permissions| is
+  // Parses permissions from `permissions` and adds the parsed permissions to
+  // `api_permissions`. If `source` is kDisallowInternalPermissions, treat
+  // permissions with kFlagInternal as errors. If `unhandled_permissions` is
   // not NULL, the names of all permissions that couldn't be parsed will be
-  // added to this vector. If |error| is NULL, parsing will continue with the
-  // next permission if invalid data is detected. If |error| is not NULL, it
+  // added to this vector. If `error` is NULL, parsing will continue with the
+  // next permission if invalid data is detected. If `error` is not NULL, it
   // will be set to an error message and false is returned when an invalid
   // permission is found.
   static bool ParseFromJSON(const base::Value::List& permissions,

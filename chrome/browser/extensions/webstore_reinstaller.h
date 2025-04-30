@@ -24,7 +24,7 @@ class WebstoreReinstaller : public WebstoreStandaloneInstaller,
                       const std::string& extension_id,
                       WebstoreStandaloneInstaller::Callback callback);
 
-  // Begin the reinstall process. |callback| (from the constructor) will be
+  // Begin the reinstall process. `callback` (from the constructor) will be
   // called upon completion.
   void BeginReinstall();
 

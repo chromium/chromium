@@ -248,9 +248,9 @@ struct TestRulesetInfo {
 };
 
 // Helper to build an extension manifest which uses the
-// kDeclarativeNetRequestKey manifest key. |hosts| specifies the host
-// permissions to grant. |flags| is a bitmask of ConfigFlag to configure the
-// extension. |ruleset_info| specifies the static rulesets for the extension.
+// kDeclarativeNetRequestKey manifest key. `hosts` specifies the host
+// permissions to grant. `flags` is a bitmask of ConfigFlag to configure the
+// extension. `ruleset_info` specifies the static rulesets for the extension.
 base::Value::Dict CreateManifest(
     const std::vector<TestRulesetInfo>& ruleset_info,
     const std::vector<std::string>& hosts = {},
@@ -263,9 +263,9 @@ base::Value::List ToListValue(const std::vector<std::string>& vec);
 // Returns a base::Value::List corresponding to a vector of TestRules.
 base::Value::List ToListValue(const std::vector<TestRule>& rules);
 
-// Writes the rulesets specified in |ruleset_info| in the given |extension_dir|
-// together with the manifest file. |hosts| specifies the host permissions, the
-// extensions should have. |flags| is a bitmask of ConfigFlag to configure the
+// Writes the rulesets specified in `ruleset_info` in the given `extension_dir`
+// together with the manifest file. `hosts` specifies the host permissions, the
+// extensions should have. `flags` is a bitmask of ConfigFlag to configure the
 // extension.
 void WriteManifestAndRulesets(
     const base::FilePath& extension_dir,

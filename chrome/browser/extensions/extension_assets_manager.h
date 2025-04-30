@@ -27,14 +27,14 @@ class Extension;
 class ExtensionAssetsManager {
  public:
   // Callback that is invoked when the extension assets are installed.
-  // |file_path| is destination directory on success or empty in case of error.
+  // `file_path` is destination directory on success or empty in case of error.
   typedef base::OnceCallback<void(const base::FilePath& file_path)>
       InstallExtensionCallback;
 
   static ExtensionAssetsManager* GetInstance();
 
   // Copy extension assets to final location. This location could be under
-  // |local_install_dir| or some common location shared for multiple users.
+  // `local_install_dir` or some common location shared for multiple users.
   virtual void InstallExtension(
       const Extension* extension,
       const base::FilePath& unpacked_extension_root,

@@ -79,8 +79,8 @@ class DelayedInstallManager : public KeyedService {
   // or if we should delay the install until further notice, or if the install
   // should be aborted. A pending install is delayed or aborted when any of the
   // delayers say so and only proceeds when all delayers return INSTALL.
-  // |extension| is the extension to be installed. |install_immediately| is the
-  // install flag set with the install. |reason| is the reason associated with
+  // `extension` is the extension to be installed. `install_immediately` is the
+  // install flag set with the install. `reason` is the reason associated with
   // the install delayer that wants to defer or abort the install.
   InstallGate::Action ShouldDelayExtensionInstall(
       const Extension* extension,

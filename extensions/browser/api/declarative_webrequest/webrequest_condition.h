@@ -75,7 +75,7 @@ class WebRequestCondition {
   ~WebRequestCondition();
 
   // Factory method that instantiates a WebRequestCondition according to
-  // the description |condition| passed by the extension API.
+  // the description `condition` passed by the extension API.
   static std::unique_ptr<WebRequestCondition> Create(
       const Extension* extension,
       url_matcher::URLMatcherConditionFactory* url_matcher_condition_factory,
@@ -85,7 +85,7 @@ class WebRequestCondition {
   // Returns whether the request matches this condition.
   bool IsFulfilled(const MatchData& request_data) const;
 
-  // If this condition has url attributes, appends them to |condition_sets|.
+  // If this condition has url attributes, appends them to `condition_sets`.
   void GetURLMatcherConditionSets(
       url_matcher::URLMatcherConditionSet::Vector* condition_sets) const;
 
@@ -102,7 +102,7 @@ class WebRequestCondition {
   WebRequestConditionAttributes condition_attributes_;
 
   // Bit vector indicating all RequestStage during which all
-  // |condition_attributes_| can be evaluated.
+  // `condition_attributes_` can be evaluated.
   int applicable_request_stages_;
 };
 

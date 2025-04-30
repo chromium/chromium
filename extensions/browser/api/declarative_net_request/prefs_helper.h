@@ -73,7 +73,7 @@ class PrefsHelper {
   base::flat_set<int> GetDisabledStaticRuleIds(const ExtensionId& extension_id,
                                                RulesetID ruleset_id) const;
 
-  // Returns the disabled static rule count for the given |extension_id|.
+  // Returns the disabled static rule count for the given `extension_id`.
   size_t GetDisabledStaticRuleCount(const ExtensionId& extension_id) const;
 
   // Updates the set of disabled rule ids of a static ruleset.
@@ -83,7 +83,7 @@ class PrefsHelper {
       const RuleIdsToUpdate& rule_ids_to_update);
 
   // Returns false if there is no ruleset checksum corresponding to the given
-  // |extension_id| and |ruleset_id|. On success, returns true and populates the
+  // `extension_id` and `ruleset_id`. On success, returns true and populates the
   // checksum.
   bool GetStaticRulesetChecksum(const ExtensionId& extension_id,
                                 RulesetID ruleset_id,

@@ -41,7 +41,7 @@ struct KioskModeInfo : public Extension::ManifestData {
                 bool always_update);
   ~KioskModeInfo() override;
 
-  // Gets the KioskModeInfo for |extension|, or NULL if none was
+  // Gets the KioskModeInfo for `extension`, or NULL if none was
   // specified.
   static KioskModeInfo* Get(const Extension* extension);
 
@@ -51,10 +51,10 @@ struct KioskModeInfo : public Extension::ManifestData {
   // Whether the extension or app should only be available in kiosk mode.
   static bool IsKioskOnly(const Extension* extension);
 
-  // Returns true if |extension| declares kiosk secondary apps.
+  // Returns true if `extension` declares kiosk secondary apps.
   static bool HasSecondaryApps(const Extension* extension);
 
-  // Whether the given |version_string| is a valid ChromeOS platform version.
+  // Whether the given `version_string` is a valid ChromeOS platform version.
   // The acceptable format is major[.minor[.micro]].
   static bool IsValidPlatformVersion(const std::string& version_string);
 

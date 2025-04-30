@@ -34,7 +34,7 @@ class ExtensionError {
 
   virtual std::string GetDebugString() const;
 
-  // Return true if this error and |rhs| are considered equal, and should be
+  // Return true if this error and `rhs` are considered equal, and should be
   // grouped together.
   bool IsEqual(const ExtensionError* rhs) const;
 

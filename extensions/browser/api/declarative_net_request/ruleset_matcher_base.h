@@ -76,7 +76,7 @@ class RulesetMatcherBase {
   void OnDidFinishNavigation(content::NavigationHandle* navigation_handle);
 
   // Returns the tracked highest priority matching allowsAllRequests action, if
-  // any, for |host|.
+  // any, for `host`.
   std::optional<RequestAction> GetAllowlistedFrameActionForTesting(
       content::RenderFrameHost* host) const;
 
@@ -84,28 +84,28 @@ class RulesetMatcherBase {
   using ExtensionMetadataList =
       ::flatbuffers::Vector<flatbuffers::Offset<flat::UrlRuleMetadata>>;
 
-  // Helper to create a RequestAction of type |BLOCK| or |COLLAPSE|.
+  // Helper to create a RequestAction of type `BLOCK` or `COLLAPSE`.
   RequestAction CreateBlockOrCollapseRequestAction(
       const RequestParams& params,
       const url_pattern_index::flat::UrlRule& rule) const;
 
-  // Helper to create a RequestAction of type |ALLOW|.
+  // Helper to create a RequestAction of type `ALLOW`.
   RequestAction CreateAllowAction(
       const RequestParams& params,
       const url_pattern_index::flat::UrlRule& rule) const;
 
-  // Helper to create a RequestAction of type |ALLOW_ALL_REQUESTS|.
+  // Helper to create a RequestAction of type `ALLOW_ALL_REQUESTS`.
   RequestAction CreateAllowAllRequestsAction(
       const RequestParams& params,
       const url_pattern_index::flat::UrlRule& rule) const;
 
-  // Helper to create a RequestAction of type |REDIRECT| with the request
+  // Helper to create a RequestAction of type `REDIRECT` with the request
   // upgraded. Returns std::nullopt if the request is not upgradeable.
   std::optional<RequestAction> CreateUpgradeAction(
       const RequestParams& params,
       const url_pattern_index::flat::UrlRule& rule) const;
 
-  // Helpers to create a RequestAction of type |REDIRECT| with the appropriate
+  // Helpers to create a RequestAction of type `REDIRECT` with the appropriate
   // redirect url. Can return std::nullopt if the redirect url is ill-formed or
   // same as the current request url.
   std::optional<RequestAction> CreateRedirectActionFromMetadata(
@@ -117,7 +117,7 @@ class RulesetMatcherBase {
       const url_pattern_index::flat::UrlRule& rule,
       GURL redirect_url) const;
 
-  // Helper to create a list of RequestActions of type |MODIFY_HEADERS| with the
+  // Helper to create a list of RequestActions of type `MODIFY_HEADERS` with the
   // appropriate list of headers for each action.
   std::vector<RequestAction> GetModifyHeadersActionsFromMetadata(
       const RequestParams& params,
@@ -127,7 +127,7 @@ class RulesetMatcherBase {
  private:
   // Returns the ruleset's highest priority matching allowAllRequests action or
   // std::nullopt if there is no corresponding matching rule. Only takes into
-  // account the request |params| passed in. This doesn't take any account any
+  // account the request `params` passed in. This doesn't take any account any
   // matching allowAllRequests rules for ancestor frames.
   virtual std::optional<RequestAction> GetAllowAllRequestsAction(
       const RequestParams& params,
@@ -145,7 +145,7 @@ class RulesetMatcherBase {
       RequestAction::Type type,
       const url_pattern_index::flat::UrlRule& rule) const;
 
-  // Returns the matching RequestAction from |allowlisted_frames_| or
+  // Returns the matching RequestAction from `allowlisted_frames_` or
   // std::nullopt if none is found.
   std::optional<RequestAction> GetAllowlistedFrameAction(
       content::GlobalRenderFrameHostId frame_id) const;

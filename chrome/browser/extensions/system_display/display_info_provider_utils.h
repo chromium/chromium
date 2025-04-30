@@ -13,8 +13,8 @@
 namespace extensions {
 
 // Callback function for CrosDisplayConfigController crosapi interface.
-// Converts input display layout |info| from crosapi to extension api type.
-// Passes converted array into a |callback|.
+// Converts input display layout `info` from crosapi to extension api type.
+// Passes converted array into a `callback`.
 void OnGetDisplayLayoutResult(
     base::OnceCallback<void(DisplayInfoProvider::DisplayLayoutList)> callback,
     crosapi::mojom::DisplayLayoutInfoPtr info);
@@ -27,18 +27,18 @@ int64_t GetDisplayId(const std::string& display_id_str);
 // Return empty display object otherwise.
 display::Display GetDisplayForId(const std::string& display_id_str);
 
-// Converts display layout |position| from extension api to crosapi type.
+// Converts display layout `position` from extension api to crosapi type.
 crosapi::mojom::DisplayLayoutPosition GetDisplayLayoutPosition(
     api::system_display::LayoutPosition position);
 
-// Converts system display |insets| to gfx type.
+// Converts system display `insets` to gfx type.
 gfx::Insets GetInsets(const api::system_display::Insets& insets);
 
-// Converts int |rotation_value| to crosapi type.
+// Converts int `rotation_value` to crosapi type.
 crosapi::mojom::DisplayRotationOptions GetMojomDisplayRotationOptions(
     int rotation_value);
 
-// Converts crosapi |rotation_options| to int.
+// Converts crosapi `rotation_options` to int.
 int GetRotationFromMojomDisplayRotationInfo(
     crosapi::mojom::DisplayRotationOptions rotation_options);
 
@@ -49,11 +49,11 @@ std::optional<std::string> ValidateDisplayPropertiesInput(
     const std::string& display_id_str,
     const api::system_display::DisplayProperties& info);
 
-// Converts display unit crosapi |mojo_info| to system display type.
+// Converts display unit crosapi `mojo_info` to system display type.
 api::system_display::DisplayUnitInfo GetDisplayUnitInfoFromMojo(
     const crosapi::mojom::DisplayUnitInfo& mojo_info);
 
-// Converts system display calibration |pair| to crosapi type.
+// Converts system display calibration `pair` to crosapi type.
 crosapi::mojom::TouchCalibrationPairPtr GetTouchCalibrationPair(
     const api::system_display::TouchCalibrationPair& pair);
 

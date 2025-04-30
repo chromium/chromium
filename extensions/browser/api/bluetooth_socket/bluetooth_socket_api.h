@@ -214,7 +214,7 @@ class BluetoothSocketAbstractConnectFunction :
   ResponseAction Run() override;
 
   // Subclasses should implement this method to connect to the service
-  // registered with |uuid| on the |device|.
+  // registered with `uuid` on the `device`.
   virtual void ConnectToService(device::BluetoothDevice* device,
                                 const device::BluetoothUUID& uuid) = 0;
 
