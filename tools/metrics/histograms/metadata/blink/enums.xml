@@ -8189,6 +8189,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="328" label="IntlDisplayNames"/>
   <int value="329" label="State"/>
   <int value="330" label="PrintColorAdjust"/>
+  <int value="331" label="TextUnderlineOffset"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom:WebDXFeature) -->

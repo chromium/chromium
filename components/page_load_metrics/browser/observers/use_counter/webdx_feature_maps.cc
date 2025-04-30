@@ -441,6 +441,8 @@ UseCounterMetricsRecorder::GetCSSProperties2WebDXFeatureMap() {
           {CSSSampleId::kTextBoxTrim, WebDXFeature::kTextBox},
           {CSSSampleId::kTextIndent, WebDXFeature::kTextIndent},
           {CSSSampleId::kTextSpacingTrim, WebDXFeature::kTextSpacingTrim},
+          {CSSSampleId::kTextUnderlineOffset,
+           WebDXFeature::kTextUnderlineOffset},
           {CSSSampleId::kTransitionBehavior, WebDXFeature::kTransitionBehavior},
           {CSSSampleId::kTranslate, WebDXFeature::kIndividualTransforms},
           {CSSSampleId::kRotate, WebDXFeature::kIndividualTransforms},

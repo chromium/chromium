@@ -386,6 +386,7 @@ enum WebDXFeature {
   kIntlDisplayNames = 328,
   kState = 329,
   kPrintColorAdjust = 330,
+  kTextUnderlineOffset = 331,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
