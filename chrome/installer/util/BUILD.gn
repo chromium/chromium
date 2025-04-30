@@ -306,6 +306,7 @@ if (is_win) {
     sources = [
       "additional_parameters_unittest.cc",
       "advanced_firewall_manager_win_unittest.cc",
+      "auto_launch_util_unittest.cc",
       "beacons_unittest.cc",
       "callback_work_item_unittest.cc",
       "conditional_work_item_list_unittest.cc",

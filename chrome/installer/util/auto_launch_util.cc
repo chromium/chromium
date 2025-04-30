@@ -22,7 +22,7 @@
 #include "components/app_launch_prefetch/app_launch_prefetch.h"
 #include "crypto/hash.h"
 
-namespace {
+namespace auto_launch_util {
 
 // The prefix of the Chrome Auto-launch key under the Run key.
 constexpr wchar_t kAutolaunchKeyValue[] = L"GoogleChromeAutoLaunch";
@@ -45,15 +45,11 @@ std::wstring GetAutoLaunchKeyName() {
 
   // This code has historically used the first 16 bytes of the SHA-256 of the
   // path, primarily to keep the registry key name shorter since we do not need
-  // cryptogrpahic collision resistance.
+  // cryptographic collision resistance.
   const auto truncated_hash = base::span<const uint8_t>(hash).first<16>();
   return base::StrCat({kAutolaunchKeyValue, L"_",
                        base::ASCIIToWide(base::HexEncode(truncated_hash))});
 }
-
-}  // namespace
-
-namespace auto_launch_util {
 
 void EnableBackgroundStartAtLogin() {
   base::FilePath application_dir;
