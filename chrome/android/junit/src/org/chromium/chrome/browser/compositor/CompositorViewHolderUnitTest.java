@@ -981,6 +981,12 @@ public class CompositorViewHolderUnitTest {
         verifyBackgroundRemoved();
     }
 
+    @Test
+    public void testFocusOnWebContent_resetsKeyboardFocus() {
+        mCompositorViewHolder.setFocusOnFirstContentViewItem();
+        verify(mCompositorViewHolder).resetKeyboardFocus();
+    }
+
     private static void runCurrentTasks() {
         ShadowLooper.runUiThreadTasks();
     }

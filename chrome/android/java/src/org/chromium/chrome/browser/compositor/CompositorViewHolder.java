@@ -1773,7 +1773,7 @@ public class CompositorViewHolder extends FrameLayout
     /** Sets keyboard focus on the first content view item. */
     public void setFocusOnFirstContentViewItem() {
         // We are no longer focusing on a scene overlay b/c we are focus on main content
-        mSceneOverlay = null;
+        resetKeyboardFocus();
         View view = getCurrentTab().getView();
         if (view instanceof ViewGroup viewGroup) {
             setFocusOnFirstFocusableDescendant(viewGroup);
