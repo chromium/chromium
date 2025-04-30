@@ -21,14 +21,12 @@ void ContentDrawQuadBase::SetNew(const SharedQuadState* shared_quad_state,
                                  bool needs_blending,
                                  const gfx::RectF& coord_rect,
                                  const gfx::Size& size,
-                                 bool premultiplied,
                                  bool nearest,
                                  bool anti_aliasing_off) {
   DrawQuad::SetAll(shared_quad_state, material, rect, visible_rect,
                    needs_blending);
   tex_coord_rect = coord_rect;
   texture_size = size;
-  is_premultiplied = premultiplied;
   nearest_neighbor = nearest;
   force_anti_aliasing_off = anti_aliasing_off;
 }
@@ -40,14 +38,12 @@ void ContentDrawQuadBase::SetAll(const SharedQuadState* shared_quad_state,
                                  bool needs_blending,
                                  const gfx::RectF& coord_rect,
                                  const gfx::Size& size,
-                                 bool premultiplied,
                                  bool nearest,
                                  bool anti_aliasing_off) {
   DrawQuad::SetAll(shared_quad_state, material, rect, visible_rect,
                    needs_blending);
   tex_coord_rect = coord_rect;
   texture_size = size;
-  is_premultiplied = premultiplied;
   nearest_neighbor = nearest;
   force_anti_aliasing_off = anti_aliasing_off;
 }

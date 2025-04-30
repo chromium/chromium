@@ -35,7 +35,7 @@ void PictureDrawQuad::SetNew(
   ContentDrawQuadBase::SetNew(shared_quad_state,
                               DrawQuad::Material::kPictureContent, rect,
                               visible_rect, needs_blending, tex_coord_rect,
-                              texture_size, false, nearest_neighbor, false);
+                              texture_size, nearest_neighbor, false);
   content_rect = content;
   contents_scale = scale;
   image_animation_map = std::move(animation_map);
