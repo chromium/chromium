@@ -534,8 +534,7 @@ GetContentDispositionPDFResponse(const net::test_server::HttpRequest& request) {
 
 // Tests that a pdf that is displayed in the web view can be downloaded.
 // Only valid with "Save to drive" enabled.
-// TDOO(crbug.com/343971371): Enable after fixing flakiness.
-- (void)FLAKY_testDownloadDisplayedPDF {
+- (void)testDownloadDisplayedPDF {
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/two_pages.pdf")];
   [ChromeEarlGrey waitForPageToFinishLoading];
   GREYAssert(WaitForDownloadButton(), @"Download button did not show up");
