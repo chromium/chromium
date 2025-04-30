@@ -13,7 +13,6 @@
 #include "third_party/skia/include/core/SkPaint.h"
 #include "third_party/skia/include/effects/SkColorMatrix.h"
 #include "third_party/skia/include/effects/SkRuntimeEffect.h"
-#include "ui/gfx/color_conversion_sk_filter_cache.h"
 
 namespace cc {
 

@@ -453,8 +453,6 @@ component("gfx") {
 
 component("color_space") {
   sources = [
-    "color_conversion_sk_filter_cache.cc",
-    "color_conversion_sk_filter_cache.h",
     "color_space.cc",
     "color_space.h",
     "color_space_export.h",
