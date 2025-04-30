@@ -202,6 +202,11 @@ public class SemanticColorUtils {
         return resolve(R.attr.colorSurface, context);
     }
 
+    /** Returns the semantic color values that correspond to colorSurfaceBright. */
+    public static @ColorInt int getColorSurfaceBright(Context context) {
+        return resolve(R.attr.colorSurfaceBright, context);
+    }
+
     /** Returns the semantic color values that correspond to colorPrimary. */
     public static @ColorInt int getColorPrimary(Context context) {
         return resolve(R.attr.colorPrimary, context);

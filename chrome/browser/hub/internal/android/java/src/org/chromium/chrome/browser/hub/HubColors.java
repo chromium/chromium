@@ -115,7 +115,7 @@ public final class HubColors {
             Context context, @HubColorScheme int colorScheme) {
         switch (colorScheme) {
             case HubColorScheme.DEFAULT:
-                return SemanticColorUtils.getColorSurface(context);
+                return SemanticColorUtils.getColorSurfaceBright(context);
             case HubColorScheme.INCOGNITO:
                 return ContextCompat.getColor(
                         context, R.color.pane_switcher_selected_tab_incognito);
