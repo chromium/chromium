@@ -29,7 +29,10 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/search/ntp_user_data_types.h"
 #include "chrome/browser/ui/views/side_panel/customize_chrome/customize_chrome_utils.h"
+#include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
 #include "chrome/browser/ui/webui/new_tab_page/ntp_pref_names.h"
+#include "chrome/browser/ui/webui/new_tab_page_third_party/new_tab_page_third_party_ui.h"
+#include "chrome/browser/ui/webui/ntp/new_tab_ui.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_section.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
@@ -183,10 +186,9 @@ void CustomizeChromePageHandler::ScrollToSection(
   page_->ScrollToSection(mojo_section);
 }
 
-void CustomizeChromePageHandler::AttachedTabStateUpdated(
-    bool is_source_tab_first_party_ntp) {
-  last_is_source_tab_first_party_ntp_ = is_source_tab_first_party_ntp;
-  page_->AttachedTabStateUpdated(is_source_tab_first_party_ntp);
+void CustomizeChromePageHandler::AttachedTabStateUpdated(const GURL& url) {
+  last_source_url_ = url;
+  page_->AttachedTabStateUpdated(GetNewTabPageType(url));
 }
 
 bool CustomizeChromePageHandler::IsNtpManagedByThirdPartySearchEngine() const {
@@ -539,7 +541,7 @@ void CustomizeChromePageHandler::UpdateScrollToSection() {
 }
 
 void CustomizeChromePageHandler::UpdateAttachedTabState() {
-  AttachedTabStateUpdated(last_is_source_tab_first_party_ntp_);
+  AttachedTabStateUpdated(last_source_url_);
 }
 
 void CustomizeChromePageHandler::UpdateNtpManagedByName() {
@@ -725,4 +727,23 @@ void CustomizeChromePageHandler::FileSelectionCanceled() {
   select_file_dialog_ = nullptr;
   LogEvent(NTP_BACKGROUND_UPLOAD_CANCEL);
   std::move(choose_local_custom_background_callback_).Run(false);
+}
+
+side_panel::mojom::NewTabPageType CustomizeChromePageHandler::GetNewTabPageType(
+    const GURL& url) {
+  if (NewTabPageUI::IsNewTabPageOrigin(url)) {
+    return side_panel::mojom::NewTabPageType::kFirstPartyWebUI;
+  } else if (customize_chrome::IsExtensionNtp(url, profile_)) {
+    return side_panel::mojom::NewTabPageType::kExtension;
+  } else if (NewTabPageThirdPartyUI::IsNewTabPageOrigin(url)) {
+    return side_panel::mojom::NewTabPageType::kThirdPartyWebUI;
+  } else if (IsNtpManagedByThirdPartySearchEngine()) {
+    return side_panel::mojom::NewTabPageType::kThirdPartyRemote;
+  } else if (NewTabUI::IsNewTab(url)) {
+    return profile_->IsGuestSession()
+               ? side_panel::mojom::NewTabPageType::kGuestMode
+               : side_panel::mojom::NewTabPageType::kIncognito;
+  }
+
+  return side_panel::mojom::NewTabPageType::kNone;
 }

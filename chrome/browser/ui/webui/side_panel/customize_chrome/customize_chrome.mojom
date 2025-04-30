@@ -111,6 +111,17 @@ enum ChromeWebStoreCategory {
   kShopping,
 };
 
+// Types of New Tabs that CustomizeChromePage can attach to.
+enum NewTabPageType {
+  kFirstPartyWebUI,
+  kThirdPartyWebUI,
+  kThirdPartyRemote,
+  kExtension,
+  kIncognito,
+  kGuestMode,
+  kNone,
+};
+
 // Used by the WebUI page to bootstrap bidirectional communication.
 interface CustomizeChromePageHandlerFactory {
   // The WebUI calls this method when the page is first initialized.
@@ -226,7 +237,7 @@ interface CustomizeChromePage {
   // |CustomizeChromePageHandler.UpdateScrollToSection()|.
   ScrollToSection(CustomizeChromeSection section);
   // Sets Information about the tab that is attached to the CustomizeChromePage.
-  AttachedTabStateUpdated(bool is_source_tab_first_party_ntp);
+  AttachedTabStateUpdated(NewTabPageType ntp_type);
   // Sets the name of the system that manages the new tab page if there is one.
   // If not, empty string should be provided.
   NtpManagedByNameUpdated(string ntp_managed_by_name);
