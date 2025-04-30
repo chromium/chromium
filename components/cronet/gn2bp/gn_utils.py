@@ -15,29 +15,6 @@ import shlex
 
 LINKER_UNIT_TYPES = ('executable', 'shared_library', 'static_library',
                      'source_set')
-# This is a list of java files that should not be collected
-# as they don't exist right now downstream (eg: apihelpers, cronetEngineBuilderTest).
-# This is temporary solution until they are up-streamed.
-JAVA_FILES_TO_IGNORE = (
-    "//components/cronet/android/api/src/org/chromium/net/apihelpers/ByteArrayCronetCallback.java",
-    "//components/cronet/android/api/src/org/chromium/net/apihelpers/ContentTypeParametersParser.java",
-    "//components/cronet/android/api/src/org/chromium/net/apihelpers/CronetRequestCompletionListener.java",
-    "//components/cronet/android/api/src/org/chromium/net/apihelpers/CronetResponse.java",
-    "//components/cronet/android/api/src/org/chromium/net/apihelpers/ImplicitFlowControlCallback.java",
-    "//components/cronet/android/api/src/org/chromium/net/apihelpers/InMemoryTransformCronetCallback.java",
-    "//components/cronet/android/api/src/org/chromium/net/apihelpers/JsonCronetCallback.java",
-    "//components/cronet/android/api/src/org/chromium/net/apihelpers/RedirectHandler.java",
-    "//components/cronet/android/api/src/org/chromium/net/apihelpers/RedirectHandlers.java",
-    "//components/cronet/android/api/src/org/chromium/net/apihelpers/StringCronetCallback.java",
-    "//components/cronet/android/api/src/org/chromium/net/apihelpers/UrlRequestCallbacks.java",
-    "//components/cronet/android/test/javatests/src/org/chromium/net/CronetEngineBuilderTest.java",
-    # Api helpers does not exist downstream, hence the tests shouldn't be collected.
-    "//components/cronet/android/test/javatests/src/org/chromium/net/apihelpers/ContentTypeParametersParserTest.java",
-    # androidx-multidex is disabled on unbundled branches.
-    "//base/test/android/java/src/org/chromium/base/multidex/ChromiumMultiDexInstaller.java",
-    # This file is not used in aosp and depends on newer accessibility_test_framework.
-    "//base/test/android/javatests/src/org/chromium/base/test/BaseActivityTestRule.java",
-)
 RESPONSE_FILE = '{{response_file_name}}'
 TESTING_SUFFIX = "__testing"
 AIDL_INCLUDE_DIRS_REGEX = r'--includes=\[(.*)\]'
@@ -629,8 +606,7 @@ class GnParser:
             # various (sub)targets.
             compile_java_target.sources.update(
                 java_source for java_source in metadata.get("source_files", [])
-                if not java_source.startswith("//out")
-                and java_source not in JAVA_FILES_TO_IGNORE)
+                if not java_source.startswith("//out"))
             # Make sure we surface the input list - downstream logic needs it to
             # make some decisions, e.g. deciding which jni_zero generated
             # srcjars to depend on.

@@ -5410,9 +5410,7 @@ if (is_android) {
     ]
 
     sources = [
-      "test/android/java/src/org/chromium/base/multidex/ChromiumMultiDexInstaller.java",
       "test/android/javatests/src/org/chromium/base/test/ActivityFinisher.java",
-      "test/android/javatests/src/org/chromium/base/test/BaseActivityTestRule.java",
       "test/android/javatests/src/org/chromium/base/test/BaseChromiumAndroidJUnitRunner.java",
       "test/android/javatests/src/org/chromium/base/test/BaseJUnit4ClassRunner.java",
       "test/android/javatests/src/org/chromium/base/test/LoadNative.java",
@@ -5485,6 +5483,12 @@ if (is_android) {
       "test/android/javatests/src/org/chromium/base/test/util/ViewActionOnDescendant.java",
       "test/android/javatests/src/org/chromium/base/test/util/ViewPrinter.java",
     ]
+    if (!is_cronet_for_aosp_build) {
+      sources += [
+        "test/android/java/src/org/chromium/base/multidex/ChromiumMultiDexInstaller.java",
+        "test/android/javatests/src/org/chromium/base/test/BaseActivityTestRule.java",
+      ]
+    }
     if (use_clang_coverage) {
       mergeable_android_manifests = [
         "test/android/javatests/AndroidManifest_NativeCoverageListener.xml",
