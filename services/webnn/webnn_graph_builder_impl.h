@@ -19,6 +19,7 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/webnn/public/cpp/context_properties.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
+#include "services/webnn/public/cpp/webnn_types.h"
 #include "services/webnn/public/mojom/webnn_error.mojom-forward.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"
 #include "services/webnn/public/mojom/webnn_graph_builder.mojom.h"
@@ -64,7 +65,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNGraphBuilderImpl
   struct ValidateGraphSuccessResult {
     ValidateGraphSuccessResult(
         WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
-        base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>
+        base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
             constant_operands);
     ~ValidateGraphSuccessResult();
 
@@ -80,7 +81,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNGraphBuilderImpl
     // Constant operands associated with this graph, which will be used during
     // graph construction. This member is only non-empty when
     // `keep_builder_resources_for_testing` is false.
-    base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>
+    base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
         constant_operands;
   };
 

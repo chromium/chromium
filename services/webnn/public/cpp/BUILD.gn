@@ -20,6 +20,7 @@ component("cpp") {
     "webnn_errors.h",
     "webnn_trace.cc",
     "webnn_trace.h",
+    "webnn_types.h",
   ]
 
   if (is_mac) {
