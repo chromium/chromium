@@ -81,10 +81,18 @@ message TrustAnchor {
   // TrustAnchor using the constraints expressed in the corresponding
   // certificate.
   optional bool enforce_anchor_constraints = 9;
+
+  // If true, indicates that this certificate is a trust anchor for TLS
+  // connections.
+  optional bool tls_trust_anchor = 10;
 }
 
 // Message storing a complete Chrome Root Store.
 message RootStore {
+  // Certificates in this list are expected to have |tls_trust_anchor| unset,
+  // because all |trust_anchors| are TLS trust anchors. This field exists as a
+  // separate, TLS-trust-anchor-only list from |additional_certs| just for
+  // historical reasons.
   repeated TrustAnchor trust_anchors = 1;
 
   // Major version # of the Chrome Root Store. It is assumed that if
