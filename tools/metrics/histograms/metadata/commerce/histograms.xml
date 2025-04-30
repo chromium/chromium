@@ -866,7 +866,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.ShoppingService.ProductInfo.FallbackDataUsed"
-    enum="Boolean" expires_after="2025-06-08">
+    enum="Boolean" expires_after="2025-12-08">
   <owner>ayman@chromium.org</owner>
   <owner>mdjones@chromium.org</owner>
   <summary>
