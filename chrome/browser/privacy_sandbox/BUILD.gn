@@ -155,12 +155,6 @@ if (!is_android) {
   }
 }
 
-group("unit_tests") {
-  testonly = true
-  deps = [ "notice:unit_tests" ]
-  public_deps = [ "notice:test_support" ]
-}
-
 group("browser_tests") {
   testonly = true
   deps = [
@@ -176,6 +170,137 @@ group("browser_tests") {
       ":survey_desktop_controller_browser_test",
     ]
   }
+}
+
+source_set("policy_handler_unittest") {
+  testonly = true
+  sources = [ "privacy_sandbox_policy_handler_unittest.cc" ]
+  deps = [
+    "//base",
+    "//chrome/test:test_support",
+    "//components/policy:generated",
+    "//components/policy:policy_code_generate",
+    "//components/policy/core/browser",
+    "//components/policy/core/common",
+    "//components/policy/core/common:common_constants",
+    "//components/prefs",
+    "//components/privacy_sandbox:privacy_sandbox_prefs",
+    "//components/strings:components_strings",
+    "//ui/base",
+  ]
+}
+
+source_set("service_impl_unittest") {
+  testonly = true
+  sources = [ "privacy_sandbox_service_impl_unittest.cc" ]
+  deps = [
+    ":countries",
+    ":headers",
+    ":test_support",
+    "//base/test:test_support",
+    "//build:branding_buildflags",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/browser/first_party_sets",
+    "//chrome/browser/policy:test_support",
+    "//chrome/browser/privacy_sandbox/notice:core",
+    "//chrome/browser/privacy_sandbox/notice:notice_mojom",
+    "//chrome/browser/privacy_sandbox/notice:test_support",
+    "//chrome/common:chrome_features",
+    "//chrome/test:test_support",
+    "//components/browsing_topics:test_support",
+    "//components/content_settings/core/browser",
+    "//components/content_settings/core/browser:cookie_settings",
+    "//components/content_settings/core/common",
+    "//components/content_settings/core/test:test_support",
+    "//components/metrics:metrics_pref_names",
+    "//components/policy:generated",
+    "//components/policy:policy_code_generate",
+    "//components/policy/core/common:test_support",
+    "//components/privacy_sandbox:features",
+    "//components/privacy_sandbox:privacy_sandbox_prefs",
+    "//components/privacy_sandbox:privacy_sandbox_settings_headers",
+    "//components/privacy_sandbox:test_support",
+    "//components/privacy_sandbox:tracking_protection_settings",
+    "//components/privacy_sandbox/privacy_sandbox_attestations",
+    "//components/privacy_sandbox/privacy_sandbox_attestations:test_support",
+    "//components/profile_metrics",
+    "//components/signin/public/identity_manager",
+    "//components/signin/public/identity_manager:test_support",
+    "//components/strings:components_strings",
+    "//components/sync:test_support",
+    "//components/sync/base",
+    "//components/sync_preferences:test_support",
+    "//content/public/browser",
+    "//content/public/common",
+    "//content/test:test_support",
+    "//net",
+    "//third_party/blink/public/common:headers",
+    "//url",
+  ]
+  if (!is_android) {
+    deps += [ "//chrome/browser/ui/hats:test_support" ]
+  }
+  if (is_chromeos) {
+    deps += [
+      "//chromeos/ash/components/login/login_state:test_support",
+      "//chromeos/components/kiosk:test_support",
+    ]
+  }
+}
+
+source_set("settings_delegate_unittest") {
+  testonly = true
+  sources = [ "privacy_sandbox_settings_delegate_unittest.cc" ]
+  deps = [
+    "//base/test:test_support",
+    "//build:buildflag_header_h",
+    "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/supervised_user:test_support",
+    "//chrome/test:test_support",
+    "//components/content_settings/core/browser:cookie_settings",
+    "//components/content_settings/core/common",
+    "//components/metrics:metrics_pref_names",
+    "//components/privacy_sandbox:features",
+    "//components/privacy_sandbox:privacy_sandbox_prefs",
+    "//components/privacy_sandbox:privacy_sandbox_settings_headers",
+    "//components/privacy_sandbox:tracking_protection_onboarding",
+    "//components/privacy_sandbox:tracking_protection_prefs",
+    "//components/signin/public/identity_manager:test_support",
+    "//content/public/common",
+    "//content/test:test_support",
+  ]
+}
+
+source_set("utils_unittest") {
+  testonly = true
+  sources = [ "privacy_sandbox_utils_unittest.cc" ]
+  deps = [ "//chrome/test:test_support" ]
+}
+
+source_set("profile_bucket_metrics_unittest") {
+  testonly = true
+  sources = [ "profile_bucket_metrics_unittest.cc" ]
+  deps = [
+    "//base/test:test_support",
+    "//chrome/test:test_support",
+    "//components/profile_metrics",
+    "//content/test:test_support",
+  ]
+}
+
+group("unit_tests") {
+  testonly = true
+  deps = [
+    ":policy_handler_unittest",
+    ":profile_bucket_metrics_unittest",
+    ":service_impl_unittest",
+    ":settings_delegate_unittest",
+    ":utils_unittest",
+    "notice:unit_tests",
+  ]
+  public_deps = [ "notice:test_support" ]
 }
 
 # TODO(crbug.com/408801109) move other privacy_sandbox sources
