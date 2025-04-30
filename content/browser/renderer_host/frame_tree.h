@@ -663,9 +663,6 @@ class CONTENT_EXPORT FrameTree {
 
   FrameTreeNodeId focused_frame_tree_node_id_;
 
-  // Overall load progress.
-  double load_progress_;
-
   // Whether the initial empty page has been accessed by another page, making it
   // unsafe to show the pending URL. Usually false unless another window tries
   // to modify the blank page.  Always false after the first commit.
