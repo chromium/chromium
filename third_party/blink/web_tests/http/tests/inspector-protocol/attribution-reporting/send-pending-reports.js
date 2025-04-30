@@ -40,7 +40,11 @@
     return;
   }
 
+  const report = dp.Storage.onceAttributionReportingReportSent();
+
   const {result} = await dp.Storage.sendPendingAttributionReports();
   testRunner.log(result);
+
+  testRunner.log((await report).params, '', ['report_id', 'scheduled_report_time']);
   testRunner.completeTest();
 })

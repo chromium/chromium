@@ -16,6 +16,7 @@
 
 #include "base/barrier_closure.h"
 #include "base/functional/bind.h"
+#include "base/functional/overloaded.h"
 #include "base/notreached.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string_number_conversions.h"
@@ -53,6 +54,7 @@
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/browser/attribution_reporting/create_report_result.h"
 #include "content/browser/attribution_reporting/event_level_result.mojom.h"
+#include "content/browser/attribution_reporting/send_result.h"
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "content/browser/attribution_reporting/store_source_result.mojom.h"
 #include "content/browser/devtools/protocol/browser_handler.h"
@@ -67,6 +69,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/storage_partition.h"
+#include "net/base/net_errors.h"
 #include "net/base/schemeful_site.h"
 #include "services/network/public/mojom/trust_tokens.mojom.h"
 #include "storage/browser/quota/quota_manager.h"
@@ -2437,6 +2440,44 @@ void StorageHandler::OnTriggerHandled(std::optional<uint64_t> cleared_debug_key,
   frontend_->AttributionReportingTriggerRegistered(
       std::move(out_trigger), ToEventLevelResult(result.event_level_status()),
       ToAggregatableResult(result.aggregatable_status()));
+}
+
+void StorageHandler::OnReportSent(const AttributionReport& report,
+                                  bool is_debug_report,
+                                  const SendResult& result) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  std::optional<int> net_error;
+  std::optional<String> net_error_name;
+  std::optional<int> http_status_code;
+  Storage::AttributionReportingReportResult out_result = std::visit(
+      base::Overloaded{
+          [&](SendResult::Sent result) {
+            if (result.status >= 0) {
+              http_status_code = result.status;
+            } else {
+              net_error = result.status;
+              net_error_name = String(net::ErrorToShortString(result.status));
+            }
+            return Storage::AttributionReportingReportResultEnum::Sent;
+          },
+          [](SendResult::Dropped) {
+            return Storage::AttributionReportingReportResultEnum::Prohibited;
+          },
+          [](SendResult::Expired) {
+            return Storage::AttributionReportingReportResultEnum::Expired;
+          },
+          [](SendResult::AssemblyFailure) {
+            return Storage::AttributionReportingReportResultEnum::
+                FailedToAssemble;
+          },
+      },
+      result.result);
+
+  frontend_->AttributionReportingReportSent(
+      report.ReportURL(is_debug_report).spec(),
+      std::make_unique<base::Value::Dict>(report.ReportBody()), out_result,
+      net_error, std::move(net_error_name), http_status_code);
 }
 
 Response StorageHandler::SetAttributionReportingTracking(bool enable) {

@@ -11380,6 +11380,28 @@ experimental domain Storage
       AttributionReportingEventLevelResult eventLevel
       AttributionReportingAggregatableResult aggregatable
 
+  experimental type AttributionReportingReportResult extends string
+    enum
+      # A network request was attempted for the report.
+      sent
+      # No request was attempted because of browser policy.
+      prohibited
+      # No request was attempted because of an error in report assembly,
+      # e.g. the aggregation service was unavailable.
+      failedToAssemble
+      # No request was attempted because the report's expiry passed.
+      expired
+
+  experimental event attributionReportingReportSent
+    parameters
+      string url
+      object body
+      AttributionReportingReportResult result
+      # If result is `sent`, populated with net/HTTP status.
+      optional integer netError
+      optional string netErrorName
+      optional integer httpStatusCode
+
   # A single Related Website Set object.
   experimental type RelatedWebsiteSet extends object
     properties
