@@ -475,14 +475,15 @@ void HttpStreamPool::AttemptManager::ProcessPendingJob() {
   }
 
   // Try to assign an idle stream to a job.
-  if (jobs_.size() > 0 && group_->IdleStreamSocketCount() > 0) {
+  if (jobs_.size() > 0) {
     std::unique_ptr<StreamSocket> stream_socket = group_->GetIdleStreamSocket();
-    CHECK(stream_socket);
-    const StreamSocketHandle::SocketReuseType reuse_type =
-        GetReuseTypeFromIdleStreamSocket(*stream_socket);
-    CreateTextBasedStreamAndNotify(std::move(stream_socket), reuse_type,
-                                   LoadTimingInfo::ConnectTiming());
-    return;
+    if (stream_socket) {
+      const StreamSocketHandle::SocketReuseType reuse_type =
+          GetReuseTypeFromIdleStreamSocket(*stream_socket);
+      CreateTextBasedStreamAndNotify(std::move(stream_socket), reuse_type,
+                                     LoadTimingInfo::ConnectTiming());
+      return;
+    }
   }
 
   const size_t pending_job_count = PendingJobCount();
