@@ -90,12 +90,16 @@ bool Accelerator::IsMediaKey() const {
 std::vector<std::u16string> Accelerator::GetShortcutVectorRepresentation()
     const {
   std::vector<std::u16string> shortcut_vector;
+  if (IsEmpty()) {
+    return shortcut_vector;
+  }
+
+  std::u16string key_code = GetKeyCodeStringForShortcut();
 
 #if BUILDFLAG(IS_MAC)
   shortcut_vector = GetShortFormModifiers();
-  shortcut_vector.push_back(GetKeyCodeStringForShortcut());
+  shortcut_vector.push_back(key_code);
 #else
-  std::u16string key_code = GetKeyCodeStringForShortcut();
   std::vector<std::u16string> modifiers = GetLongFormModifiers();
   // For some reason, menus in Windows ignore standard Unicode directionality
   // marks (such as LRE, PDF, etc.). On RTL locales, we use RTL menus and

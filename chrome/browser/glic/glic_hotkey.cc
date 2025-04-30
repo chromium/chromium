@@ -12,10 +12,10 @@
 
 namespace glic {
 std::string GetHotkeyString() {
-  // If the hotkey is unset, return an empty string as its representation.
   std::vector<std::u16string> hotkey_tokens =
       glic::GlicLauncherConfiguration::GetGlobalHotkey()
           .GetShortcutVectorRepresentation();
+  // If the hotkey is unset, return an empty string as its representation.
   if (hotkey_tokens.empty()) {
     return "";
   }
