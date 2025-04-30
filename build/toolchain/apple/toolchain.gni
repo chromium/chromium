@@ -781,7 +781,8 @@ template("single_apple_toolchain") {
         }
 
         command = "$_env_vars $python_path $_tool " +
-                  "-p '${toolchain_args.current_os}' " +
+                  "-O '${toolchain_args.current_os}' " +
+                  "-p '${invoker.target_platform}' " +
                   "-e '${invoker.target_environment}' " +
                   "-t '${invoker.deployment_target}' " +
                   "-T '{{bundle_product_type}}' " +
