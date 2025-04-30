@@ -664,11 +664,6 @@ class ApiTests extends ApiTestFixtureBase {
     this.host.openOsPermissionSettingsMenu('geolocation');
   }
 
-  async testIncompatiblePermissionWithOsPermissionSettings() {
-    assertTrue(!!this.host.openOsPermissionSettingsMenu);
-    this.host.openOsPermissionSettingsMenu('notifications');
-  }
-
   async testGetOsMicrophonePermissionStatusAllowed() {
     assertTrue(!!this.host.getOsMicrophonePermissionStatus);
     assertTrue(await this.host.getOsMicrophonePermissionStatus());

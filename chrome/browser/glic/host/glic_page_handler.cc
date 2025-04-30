@@ -325,12 +325,6 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
 
     state->browser_is_open = browser_is_open_calculator_.IsOpen();
 
-#if BUILDFLAG(IS_MAC)
-    state->open_os_settings_api_is_allowed = true;
-#else
-    state->open_os_settings_api_is_allowed = false;
-#endif
-
     state->always_detached_mode = GlicWindowController::AlwaysDetached();
 
     state->enable_act_in_focused_tab =
@@ -596,7 +590,6 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   }
 
   void OpenOsPermissionSettingsMenu(ContentSettingsType type) override {
-#if BUILDFLAG(IS_MAC)
     if (type != ContentSettingsType::MEDIASTREAM_MIC &&
         type != ContentSettingsType::GEOLOCATION) {
       // This will terminate the render process.
@@ -607,10 +600,6 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     }
     system_permission_settings::OpenSystemSettings(
         page_handler_->webui_contents(), type);
-#else
-    mojo::ReportBadMessage(
-        "OpenOsPermissionSettingsMenu not supported on this platform.");
-#endif
   }
 
   void GetOsMicrophonePermissionStatus(

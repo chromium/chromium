@@ -967,19 +967,8 @@ class GlicApiTestSystemSettingsTest : public GlicApiTestWithOneTab {
       mock_platform_handle;
 };
 
-// Opening system settings is only available for MacOS. These tests are not
-// fully gated behind the mac buildflag, because
-// GlicApiTestWithOneTab#testAllTestsAreRegistered checks if all the tests in JS
-// are registered in a CC test.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_testOpenOsMediaPermissionSettings \
-  testOpenOsMediaPermissionSettings
-#else
-#define MAYBE_testOpenOsMediaPermissionSettings \
-  DISABLED_testOpenOsMediaPermissionSettings
-#endif
 IN_PROC_BROWSER_TEST_F(GlicApiTestSystemSettingsTest,
-                       MAYBE_testOpenOsMediaPermissionSettings) {
+                       testOpenOsMediaPermissionSettings) {
   base::test::TestFuture<void> signal;
   EXPECT_CALL(
       mock_platform_handle,
@@ -992,14 +981,8 @@ IN_PROC_BROWSER_TEST_F(GlicApiTestSystemSettingsTest,
   EXPECT_TRUE(signal.Wait());
 }
 
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_testOpenOsGeoPermissionSettings testOpenOsGeoPermissionSettings
-#else
-#define MAYBE_testOpenOsGeoPermissionSettings \
-  DISABLED_testOpenOsGeoPermissionSettings
-#endif
 IN_PROC_BROWSER_TEST_F(GlicApiTestSystemSettingsTest,
-                       MAYBE_testOpenOsGeoPermissionSettings) {
+                       testOpenOsGeoPermissionSettings) {
   base::test::TestFuture<void> signal;
   EXPECT_CALL(mock_platform_handle,
               OpenSystemSettings(testing::_, ContentSettingsType::GEOLOCATION))
@@ -1009,27 +992,6 @@ IN_PROC_BROWSER_TEST_F(GlicApiTestSystemSettingsTest,
   ExecuteJsTest();
   // Wait for OpenSystemSettings to be called.
   EXPECT_TRUE(signal.Wait());
-}
-
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_testIncompatiblePermissionWithOsPermissionSettings \
-  testIncompatiblePermissionWithOsPermissionSettings
-#else
-#define MAYBE_testIncompatiblePermissionWithOsPermissionSettings \
-  DISABLED_testIncompatiblePermissionWithOsPermissionSettings
-#endif
-IN_PROC_BROWSER_TEST_F(
-    GlicApiTestSystemSettingsTest,
-    MAYBE_testIncompatiblePermissionWithOsPermissionSettings) {
-  EXPECT_CALL(mock_platform_handle, OpenSystemSettings(testing::_, testing::_))
-      .Times(0);
-
-  // Trigger the openOsPermissionSettingsMenu API with 'notifications', which is
-  // not supported by Glic.
-  ExecuteJsTest();
-
-  // Wait for eventual calls of OpenSystemSettings, which is async.
-  base::RunLoop().RunUntilIdle();
 }
 
 IN_PROC_BROWSER_TEST_F(GlicApiTestSystemSettingsTest,

@@ -236,10 +236,6 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
       this.enableDragResize = undefined;
     }
 
-    if (!state.openOsSettingsApiIsAllowed) {
-      this.openOsPermissionSettingsMenu = undefined;
-    }
-
     if (state.alwaysDetachedMode) {
       this.attachPanel = undefined;
       this.detachPanel = undefined;
