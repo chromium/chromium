@@ -3703,10 +3703,9 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram name="Autofill.iOS.TriggeredFormExtractionFromDriver.{Range}"
-    units="count" expires_after="2025-06-11">
+    units="count" expires_after="2025-10-12">
   <owner>vincb@google.com</owner>
   <owner>tmartino@chromium.org</owner>
-  <owner>eic@google.com</owner>
   <owner>bling-transactions@google.com</owner>
   <summary>
     Records the number of form extractions that were triggered on a frame during
@@ -4075,7 +4074,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram name="Autofill.NumberOfFramesPerFormForest" units="count"
-    expires_after="2025-06-08">
+    expires_after="2025-10-12">
   <owner>schwering@google.com</owner>
   <owner>vincb@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
