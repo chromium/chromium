@@ -398,7 +398,7 @@ LRESULT LegacyRenderWidgetHostHWND::OnMouseLeave(UINT message,
     return 0;
   }
 
-  if (!capture_window || window_from_point == hwnd()) {
+  if (!capture_window && window_from_point == hwnd()) {
     return 0;
   }
 
