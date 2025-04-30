@@ -37,6 +37,7 @@ import static org.mockito.Mockito.when;
 import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties.DESCRIPTION_TEXT;
 import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties.MESSAGE_SERVICE_ACTION_PROVIDER;
 import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties.MESSAGE_SERVICE_DISMISS_ACTION_PROVIDER;
+import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.SUPPRESS_ACCESSIBILITY;
 import static org.chromium.components.data_sharing.SharedGroupTestHelper.COLLABORATION_ID1;
 import static org.chromium.components.data_sharing.SharedGroupTestHelper.EMAIL1;
 import static org.chromium.components.data_sharing.SharedGroupTestHelper.EMAIL2;
@@ -110,6 +111,8 @@ import org.chromium.chrome.browser.tasks.tab_management.TabGridItemLongPressOrch
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.collaboration.CollaborationService;
@@ -219,6 +222,8 @@ public class TabGridDialogMediatorUnitTest {
     @Captor
     private ArgumentCaptor<MessagingBackendService.PersistentMessageObserver>
             mPersistentMessageObserverCaptor;
+
+    @Captor private ArgumentCaptor<BottomSheetObserver> mBottomSheetObserverCaptor;
 
     private final ObservableSupplierImpl<TabGroupModelFilter> mCurrentTabGroupModelFilterSupplier =
             new ObservableSupplierImpl<>();
@@ -1985,6 +1990,18 @@ public class TabGridDialogMediatorUnitTest {
                 mMediator.onLongPressEvent(TAB1_ID, mCardView);
         verify(mTabGridContextMenuCoordinator, never()).showMenu(any(), eq(TAB1_ID));
         assertNull(cancelLongPress);
+    }
+
+    @Test
+    public void testSuppressAccessibility() {
+        assertFalse(mModel.get(SUPPRESS_ACCESSIBILITY));
+
+        verify(mBottomSheetController).addObserver(mBottomSheetObserverCaptor.capture());
+        mBottomSheetObserverCaptor.getValue().onSheetOpened(StateChangeReason.NONE);
+        assertTrue(mModel.get(SUPPRESS_ACCESSIBILITY));
+
+        mBottomSheetObserverCaptor.getValue().onSheetClosed(StateChangeReason.NONE);
+        assertFalse(mModel.get(SUPPRESS_ACCESSIBILITY));
     }
 
     private void resetForDataSharing(boolean isShared, GroupMember... members) {

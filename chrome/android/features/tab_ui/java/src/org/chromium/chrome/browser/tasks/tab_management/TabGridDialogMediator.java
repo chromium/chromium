@@ -72,7 +72,9 @@ import org.chromium.chrome.browser.tinker_tank.TinkerTankDelegate;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager.AppHeaderObserver;
@@ -238,6 +240,7 @@ public class TabGridDialogMediator
     private final TabGroupModelFilterObserver mTabGroupModelFilterObserver;
     private final Runnable mScrimClickRunnable;
     private final @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
+    private final BottomSheetObserver mBottomSheetObserver;
 
     private @Nullable TabGroupListBottomSheetCoordinator mTabGroupListBottomSheetCoordinator;
     private int mCurrentTabId = Tab.INVALID_TAB_ID;
@@ -602,6 +605,29 @@ public class TabGridDialogMediator
                                 showTabListEditor);
             }
         }
+
+        mBottomSheetObserver =
+                new BottomSheetObserver() {
+                    @Override
+                    public void onSheetOpened(int reason) {
+                        mModel.set(TabGridDialogProperties.SUPPRESS_ACCESSIBILITY, true);
+                    }
+
+                    @Override
+                    public void onSheetClosed(int reason) {
+                        mModel.set(TabGridDialogProperties.SUPPRESS_ACCESSIBILITY, false);
+                    }
+
+                    @Override
+                    public void onSheetOffsetChanged(float heightFraction, float offsetPx) {}
+
+                    @Override
+                    public void onSheetStateChanged(int newState, int reason) {}
+
+                    @Override
+                    public void onSheetContentChanged(@Nullable BottomSheetContent newContent) {}
+                };
+        mBottomSheetController.addObserver(mBottomSheetObserver);
     }
 
     public void initWithNative(
@@ -745,6 +771,7 @@ public class TabGridDialogMediator
         if (mMessagingBackendService != null && mPersistentMessageObserver != null) {
             mMessagingBackendService.removePersistentMessageObserver(mPersistentMessageObserver);
         }
+        mBottomSheetController.removeObserver(mBottomSheetObserver);
     }
 
     boolean isVisible() {

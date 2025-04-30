@@ -111,6 +111,8 @@ class TabGridDialogProperties {
             new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<Callback<TabKeyEventData>> PAGE_KEY_LISTENER =
             new WritableObjectPropertyKey<>();
+    public static final WritableBooleanPropertyKey SUPPRESS_ACCESSIBILITY =
+            new WritableBooleanPropertyKey();
 
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
@@ -159,5 +161,6 @@ class TabGridDialogProperties {
                 SHOW_SEND_FEEDBACK,
                 SEND_FEEDBACK_RUNNABLE,
                 PAGE_KEY_LISTENER,
+                SUPPRESS_ACCESSIBILITY,
             };
 }
