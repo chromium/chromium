@@ -2731,9 +2731,6 @@
       name: "LayoutIgnoreMarginsForSticky",
     },
     {
-      name: "LayoutImageRevalidationCheckForSvgImages",
-    },
-    {
       name: "LayoutJustifySelfForBlocks",
       status: "stable",
     },

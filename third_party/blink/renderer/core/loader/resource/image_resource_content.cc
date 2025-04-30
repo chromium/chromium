@@ -728,10 +728,6 @@ std::optional<ResourceError> ImageResourceContent::GetResourceError() const {
   return info_->GetResourceError();
 }
 
-bool ImageResourceContent::IsCacheValidator() const {
-  return info_->IsCacheValidator();
-}
-
 void ImageResourceContent::LoadDeferredImage(ResourceFetcher* fetcher) {
   info_->LoadDeferredImage(fetcher);
 }

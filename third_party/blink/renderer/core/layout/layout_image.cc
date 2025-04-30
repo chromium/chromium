@@ -45,7 +45,6 @@
 #include "third_party/blink/renderer/core/paint/image_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/timing/image_element_timing.h"
-#include "third_party/blink/renderer/core/svg/graphics/svg_image.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "ui/gfx/geometry/size_conversions.h"
 
@@ -345,30 +344,7 @@ bool LayoutImage::NodeAtPoint(HitTestResult& result,
 
 PhysicalNaturalSizingInfo LayoutImage::GetNaturalDimensions() const {
   NOT_DESTROYED();
-  PhysicalNaturalSizingInfo natural_dimensions = natural_dimensions_;
-  if (RuntimeEnabledFeatures::
-          LayoutImageRevalidationCheckForSvgImagesEnabled() &&
-      EmbeddedSVGImage()) {
-    // The value returned by LayoutImageResource will be in zoomed CSS
-    // pixels, but for the 'scale-down' object-fit value we want "zoomed
-    // device pixels", so undo the DPR part here.
-    if (StyleRef().GetObjectFit() == EObjectFit::kScaleDown) {
-      natural_dimensions.size.Scale(1 / ImageDevicePixelRatio());
-    }
-  }
-  return natural_dimensions;
-}
-
-SVGImage* LayoutImage::EmbeddedSVGImage() const {
-  NOT_DESTROYED();
-  if (!image_resource_)
-    return nullptr;
-  ImageResourceContent* cached_image = image_resource_->CachedImage();
-  // TODO(japhet): This shouldn't need to worry about cache validation.
-  // https://crbug.com/761026
-  if (!cached_image || cached_image->IsCacheValidator())
-    return nullptr;
-  return DynamicTo<SVGImage>(cached_image->GetImage());
+  return natural_dimensions_;
 }
 
 bool LayoutImage::IsUnsizedImage() const {
