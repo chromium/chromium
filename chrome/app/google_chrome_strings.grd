@@ -981,6 +981,17 @@ Google Chrome is unable to recover your settings.
         </message>
       </if>
 
+      <!-- Installer Downloader infobar -->
+      <message name="IDS_INSTALLER_DOWNLOADER_DISCLAIMER" desc="Installer downloader infobar message prompting users upgrading to Windows 11 to download the Chrome installer to OneDrive.">
+        Upgrading to Windows 11 soon? Download the Chrome Installer to One Drive so you’re ready from day one.
+      </message>
+      <message name="IDS_INSTALLER_DOWNLOADER_LINK_TEXT" desc="Link text for the installer downloader infobar, 'Learn More'.">
+        Learn More
+      </message>
+      <message name="IDS_INSTALLER_DOWNLOADER_BUTTON_LABEL" desc="Button label for the installer downloader infobar to download the Chrome installer.">
+        Download Chrome Installer
+      </message>
+
       <!-- Enterprise sign-in dialog -->
       <message name="IDS_ENTERPRISE_VALUE_PROPOSITION_PROFILE_REQUIRED_BY_ORG_TITLE" desc="Title of the screen in the profile creation flow where the user is asked whether they want to confirm signing in to Chrome with their enterprise account when it is mandatory to sign in to Chrome with the enterprise account.">
         Your organization requires you to sign into Chrome
