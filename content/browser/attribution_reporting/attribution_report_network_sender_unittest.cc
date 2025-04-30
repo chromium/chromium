@@ -311,7 +311,8 @@ TEST_F(AttributionReportNetworkSenderTest,
        ReportRequestFailsWithTargetedError_ShouldRetrySet) {
   struct {
     int net_error;
-    SentResult expected_status;
+    SentResult expected_send_result;
+    std::optional<int> expected_status;
   } kTestCases[] = {
       {net::ERR_INTERNET_DISCONNECTED, SentResult::kTransientFailure},
       {net::ERR_TIMED_OUT, SentResult::kTransientFailure},
@@ -319,15 +320,17 @@ TEST_F(AttributionReportNetworkSenderTest,
       {net::ERR_CONNECTION_TIMED_OUT, SentResult::kTransientFailure},
       {net::ERR_CONNECTION_REFUSED, SentResult::kFailure},
       {net::ERR_CERT_DATE_INVALID, SentResult::kFailure},
-      {net::OK, SentResult::kFailure},
+      // Simulate missing headers.
+      {net::OK, SentResult::kFailure, net::ERR_INVALID_HTTP_RESPONSE},
   };
 
   for (const auto& test_case : kTestCases) {
     auto report = DefaultEventLevelReport();
 
     EXPECT_CALL(callback_,
-                Run(report, SendResult::Sent(test_case.expected_status,
-                                             test_case.net_error)));
+                Run(report, SendResult::Sent(test_case.expected_send_result,
+                                             test_case.expected_status.value_or(
+                                                 test_case.net_error))));
 
     network_sender_->SendReport(report, /*is_debug_report=*/false,
                                 callback_.Get());
@@ -371,9 +374,10 @@ TEST_F(AttributionReportNetworkSenderTest,
 TEST_F(AttributionReportNetworkSenderTest,
        ReportRequestFailsWithHttpError_ShouldRetryNotSet) {
   auto report = DefaultEventLevelReport();
-  EXPECT_CALL(callback_, Run(report, SendResult::Sent(
-                                         SentResult::kFailure,
-                                         net::ERR_HTTP_RESPONSE_CODE_FAILURE)));
+  EXPECT_CALL(
+      callback_,
+      Run(report, SendResult::Sent(SentResult::kFailure,
+                                   net::HttpStatusCode::HTTP_BAD_REQUEST)));
 
   network_sender_->SendReport(report, /*is_debug_report=*/false,
                               callback_.Get());
@@ -460,7 +464,7 @@ TEST_F(AttributionReportNetworkSenderTest,
     EXPECT_CALL(
         callback_,
         Run(report, SendResult::Sent(SentResult::kFailure,
-                                     net::ERR_HTTP_RESPONSE_CODE_FAILURE)));
+                                     net::HttpStatusCode::HTTP_BAD_REQUEST)));
   }
 
   network_sender_->SendReport(report, /*is_debug_report=*/false,

@@ -384,6 +384,8 @@ std::ostream& operator<<(std::ostream& out, SendResult::Status status);
 
 std::ostream& operator<<(std::ostream& out, const SendResult& info);
 
+std::ostream& operator<<(std::ostream& out, SendResult::Sent);
+
 std::ostream& operator<<(std::ostream& out,
                          StoredSource::AttributionLogic attribution_logic);
 

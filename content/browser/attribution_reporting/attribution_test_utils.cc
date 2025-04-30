@@ -47,6 +47,7 @@
 #include "content/browser/attribution_reporting/attribution_utils.h"
 #include "content/browser/attribution_reporting/os_registration.h"
 #include "content/browser/attribution_reporting/rate_limit_result.h"
+#include "content/browser/attribution_reporting/send_result.h"
 #include "content/browser/attribution_reporting/stored_source.h"
 #include "content/public/browser/attribution_data_model.h"
 #include "net/base/net_errors.h"
@@ -868,21 +869,7 @@ std::ostream& operator<<(std::ostream& out, SendResult::Status status) {
 
 std::ostream& operator<<(std::ostream& out, const SendResult& info) {
   std::visit(base::Overloaded{
-                 [&](SendResult::Sent sent) {
-                   out << "{Sent={result=";
-                   switch (sent.result) {
-                     case SendResult::Sent::Result::kSent:
-                       out << "kSent";
-                       break;
-                     case SendResult::Sent::Result::kTransientFailure:
-                       out << "kTransientFailure";
-                       break;
-                     case SendResult::Sent::Result::kFailure:
-                       out << "kFailure";
-                       break;
-                   }
-                   out << ",status=" << sent.status << "}}";
-                 },
+                 [&](SendResult::Sent sent) { out << sent; },
                  [&](SendResult::Dropped) { out << "{Dropped={}}"; },
                  [&](SendResult::Expired) { out << "{Expired={}}"; },
                  [&](SendResult::AssemblyFailure failure) {
@@ -892,6 +879,28 @@ std::ostream& operator<<(std::ostream& out, const SendResult& info) {
              },
              info.result);
   return out;
+}
+
+std::ostream& operator<<(std::ostream& out, SendResult::Sent sent) {
+  out << "{Sent={result=";
+  switch (sent.result) {
+    case SendResult::Sent::Result::kSent:
+      out << "kSent";
+      break;
+    case SendResult::Sent::Result::kTransientFailure:
+      out << "kTransientFailure";
+      break;
+    case SendResult::Sent::Result::kFailure:
+      out << "kFailure";
+      break;
+  }
+  out << ",status=";
+  if (sent.status < 0) {
+    out << net::ErrorToShortString(sent.status);
+  } else {
+    out << sent.status;
+  }
+  return out << "}}";
 }
 
 std::ostream& operator<<(std::ostream& out,
