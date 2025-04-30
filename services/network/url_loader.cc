@@ -760,11 +760,11 @@ void URLLoader::FollowRedirect(
 
   // We may need to clear out old Sec- prefixed request headers. We'll attempt
   // to do this before we re-add any.
-  MaybeRemoveSecHeaders(url_request_.get(), *deferred_redirect_url_);
-  SetFetchMetadataHeaders(url_request_.get(), request_mode_,
-                          has_user_activation_, request_destination_,
-                          deferred_redirect_url_.get(), *factory_params_,
-                          *origin_access_list_, request_credentials_mode_);
+  MaybeRemoveSecHeaders(*url_request_, *deferred_redirect_url_);
+  SetFetchMetadataHeaders(*url_request_, request_mode_, has_user_activation_,
+                          request_destination_, *deferred_redirect_url_,
+                          *factory_params_, *origin_access_list_,
+                          request_credentials_mode_);
 
   // Set seen_raw_request_headers_ to false in order to make sure this redirect
   // also calls the devtools observer.

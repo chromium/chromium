@@ -10,6 +10,7 @@
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/types/optional_ref.h"
 #include "net/base/isolation_info.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/cookies/cookie_util.h"
@@ -79,27 +80,27 @@ OriginRelationHeaderValue GetRelationOfURLToOrigin(
 }
 
 OriginRelationHeaderValue GetHeaderValueForRequest(
-    net::URLRequest* request,
-    const GURL* pending_redirect_url,
+    const net::URLRequest& request,
+    base::optional_ref<const GURL> pending_redirect_url,
     const mojom::URLLoaderFactoryParams& factory_params,
     const cors::OriginAccessList& origin_access_list) {
   // Browser-initiated requests with no initiator origin will send
   // `Sec-Fetch-Site: None`.
-  if (!request->initiator().has_value()) {
+  if (!request.initiator().has_value()) {
     // CorsURLLoaderFactory::IsValidRequest verifies that only the browser
     // process may initiate requests with no request initiator.
     DCHECK_EQ(factory_params.process_id, mojom::kBrowserProcessId);
 
     return OriginRelationHeaderValue::kNoOrigin;
   }
-  const url::Origin& initiator = request->initiator().value();
+  const url::Origin& initiator = request.initiator().value();
 
   // Privileged requests initiated from a "non-webby" context will send
   // `Sec-Fetch-Site: None` while unprivileged ones will send
   // `Sec-Fetch-Site: cross-site`.
   if (factory_params.unsafe_non_webby_initiator) {
     cors::OriginAccessList::AccessState access_state =
-        origin_access_list.CheckAccessState(initiator, request->url());
+        origin_access_list.CheckAccessState(initiator, request.url());
     bool is_privileged =
         (access_state == cors::OriginAccessList::AccessState::kAllowed);
     return is_privileged ? OriginRelationHeaderValue::kNoOrigin
@@ -109,7 +110,7 @@ OriginRelationHeaderValue GetHeaderValueForRequest(
   // Other requests default to `kSameOrigin`, and walk through the request's URL
   // chain to calculate the correct value.
   auto header_value = OriginRelationHeaderValue::kSameOrigin;
-  for (const GURL& target_url : request->url_chain()) {
+  for (const GURL& target_url : request.url_chain()) {
     header_value =
         std::max(header_value, GetRelationOfURLToOrigin(target_url, initiator));
   }
@@ -160,43 +161,43 @@ ComputeSecFetchStorageAccessOutcome(const net::URLRequest& request,
 }
 
 // Sec-Fetch-Site
-void SetSecFetchSiteHeader(net::URLRequest* request,
-                           const GURL* pending_redirect_url,
+void SetSecFetchSiteHeader(net::URLRequest& request,
+                           base::optional_ref<const GURL> pending_redirect_url,
                            const mojom::URLLoaderFactoryParams& factory_params,
                            const cors::OriginAccessList& origin_access_list) {
   OriginRelationHeaderValue header_value = GetHeaderValueForRequest(
       request, pending_redirect_url, factory_params, origin_access_list);
 
-  request->SetExtraRequestHeaderByName(kSecFetchSite,
-                                       GetOriginRelationString(header_value),
-                                       /* overwrite = */ true);
+  request.SetExtraRequestHeaderByName(kSecFetchSite,
+                                      GetOriginRelationString(header_value),
+                                      /* overwrite = */ true);
 }
 
 // Sec-Fetch-Mode
-void SetSecFetchModeHeader(net::URLRequest* request,
+void SetSecFetchModeHeader(net::URLRequest& request,
                            network::mojom::RequestMode mode) {
   std::string header_value = RequestModeToString(mode);
 
-  request->SetExtraRequestHeaderByName(kSecFetchMode, header_value, false);
+  request.SetExtraRequestHeaderByName(kSecFetchMode, header_value, false);
 }
 
 // Sec-Fetch-User
-void SetSecFetchUserHeader(net::URLRequest* request, bool has_user_activation) {
+void SetSecFetchUserHeader(net::URLRequest& request, bool has_user_activation) {
   if (has_user_activation)
-    request->SetExtraRequestHeaderByName(kSecFetchUser, "?1", true);
+    request.SetExtraRequestHeaderByName(kSecFetchUser, "?1", true);
   else
-    request->RemoveRequestHeaderByName(kSecFetchUser);
+    request.RemoveRequestHeaderByName(kSecFetchUser);
 }
 
 // Sec-Fetch-Dest
-void SetSecFetchDestHeader(net::URLRequest* request,
+void SetSecFetchDestHeader(net::URLRequest& request,
                            network::mojom::RequestDestination dest) {
   // https://w3c.github.io/webappsec-fetch-metadata/#abstract-opdef-set-dest
   // If r's destination is the empty string, set header's value to the string
   // "empty". Otherwise, set header's value to r's destination.
   std::string header_value = RequestDestinationToString(
       dest, EmptyRequestDestinationOption::kUseFiveCharEmptyString);
-  request->SetExtraRequestHeaderByName(kSecFetchDest, header_value, true);
+  request.SetExtraRequestHeaderByName(kSecFetchDest, header_value, true);
 }
 
 // Sec-Fetch-Storage-Access
@@ -229,57 +230,57 @@ void SetSecFetchStorageAccessHeader(net::URLRequest& request,
 }
 
 // Sec-Fetch-Frame-Top
-void SetSecFetchFrameTop(net::URLRequest* request,
-                         const GURL* pending_redirect_url) {
+void SetSecFetchFrameTop(net::URLRequest& request,
+                         base::optional_ref<const GURL> pending_redirect_url) {
   if (!base::FeatureList::IsEnabled(features::kFrameAncestorHeaders)) {
     return;
   }
 
-  if (request->isolation_info().IsEmpty() ||
-      request->isolation_info().request_type() ==
+  if (request.isolation_info().IsEmpty() ||
+      request.isolation_info().request_type() ==
           net::IsolationInfo::RequestType::kMainFrame) {
     return;
   }
 
-  url::Origin target_origin = url::Origin::Create(request->url());
+  url::Origin target_origin = url::Origin::Create(request.url());
   url::Origin top_frame_origin =
-      request->isolation_info().top_frame_origin().value();
+      request.isolation_info().top_frame_origin().value();
 
   auto header_value = OriginRelationHeaderValue::kSameOrigin;
   // Walk through the request's URL chain to calculate its relationship to the
   // top frame.
-  for (const GURL& target_url : request->url_chain()) {
+  for (const GURL& target_url : request.url_chain()) {
     header_value = std::max(
         header_value, GetRelationOfURLToOrigin(target_url, top_frame_origin));
   }
-  if (pending_redirect_url) {
+  if (pending_redirect_url.has_value()) {
     header_value = std::max(
-        header_value,
-        GetRelationOfURLToOrigin(*pending_redirect_url, top_frame_origin));
+        header_value, GetRelationOfURLToOrigin(pending_redirect_url.value(),
+                                               top_frame_origin));
   }
 
-  request->SetExtraRequestHeaderByName(kSecFetchFrameTop,
-                                       GetOriginRelationString(header_value),
-                                       /*overwrite=*/true);
+  request.SetExtraRequestHeaderByName(kSecFetchFrameTop,
+                                      GetOriginRelationString(header_value),
+                                      /*overwrite=*/true);
 }
 
 }  // namespace
 
 void SetFetchMetadataHeaders(
-    net::URLRequest* request,
+    net::URLRequest& request,
     network::mojom::RequestMode mode,
     bool has_user_activation,
     network::mojom::RequestDestination dest,
-    const GURL* pending_redirect_url,
+    base::optional_ref<const GURL> pending_redirect_url,
     const mojom::URLLoaderFactoryParams& factory_params,
     const cors::OriginAccessList& origin_access_list,
-    const mojom::CredentialsMode credentials_mode) {
-  DCHECK(request);
-  DCHECK_NE(0u, request->url_chain().size());
+    mojom::CredentialsMode credentials_mode) {
+  DCHECK_NE(0u, request.url_chain().size());
 
   // Only append the header to potentially trustworthy URLs.
-  const GURL& target_url =
-      pending_redirect_url ? *pending_redirect_url : request->url();
+  const GURL& target_url = pending_redirect_url.has_value()
+                               ? pending_redirect_url.value()
+                               : request.url();
   if (!IsUrlPotentiallyTrustworthy(target_url))
     return;
 
@@ -288,30 +289,28 @@ void SetFetchMetadataHeaders(
   SetSecFetchModeHeader(request, mode);
   SetSecFetchUserHeader(request, has_user_activation);
   SetSecFetchDestHeader(request, dest);
-  SetSecFetchStorageAccessHeader(*request, credentials_mode);
+  SetSecFetchStorageAccessHeader(request, credentials_mode);
   SetSecFetchFrameTop(request, pending_redirect_url);
 }
 
-void MaybeRemoveSecHeaders(net::URLRequest* request,
+void MaybeRemoveSecHeaders(net::URLRequest& request,
                            const GURL& pending_redirect_url) {
-  DCHECK(request);
-
   // If our redirect destination is not trusted it would not have had sec-ch-
   // or sec-fetch- prefixed headers added to it. Our previous hops may have
   // added these headers if the current url is trustworthy though so we should
   // try to remove these now.
-  if (IsUrlPotentiallyTrustworthy(request->url()) &&
+  if (IsUrlPotentiallyTrustworthy(request.url()) &&
       !IsUrlPotentiallyTrustworthy(pending_redirect_url)) {
     // Check each of our request headers and if it is a "sec-ch-" or
     // "sec-fetch-" prefixed header we'll remove it.
     const net::HttpRequestHeaders::HeaderVector request_headers =
-        request->extra_request_headers().GetHeaderVector();
+        request.extra_request_headers().GetHeaderVector();
     for (const auto& header : request_headers) {
       if (StartsWith(header.key, "sec-ch-",
                      base::CompareCase::INSENSITIVE_ASCII) ||
           StartsWith(header.key, "sec-fetch-",
                      base::CompareCase::INSENSITIVE_ASCII)) {
-        request->RemoveRequestHeaderByName(header.key);
+        request.RemoveRequestHeaderByName(header.key);
       }
     }
   }

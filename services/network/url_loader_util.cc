@@ -5,6 +5,7 @@
 #include "services/network/url_loader_util.h"
 
 #include <algorithm>
+#include <optional>
 
 #include "base/containers/enum_set.h"
 #include "base/containers/to_vector.h"
@@ -626,10 +627,10 @@ void ConfigureUrlRequest(const ResourceRequest& request,
   }
 
   SetFetchMetadataHeaders(
-      &url_request, request.mode,
+      url_request, request.mode,
       request.trusted_params && request.trusted_params->has_user_activation,
-      request.destination, nullptr, factory_params, origin_access_list,
-      request.credentials_mode);
+      request.destination, /*pending_redirect_url=*/std::nullopt,
+      factory_params, origin_access_list, request.credentials_mode);
 
   MaybeSetAcceptSignatureHeader(&url_request, request.expected_public_keys);
 
