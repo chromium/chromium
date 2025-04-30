@@ -6,6 +6,7 @@
 
 #include <array>
 #include <map>
+#include <utility>
 
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/screen_util.h"
@@ -1406,12 +1407,9 @@ TEST_F(WorkspaceControllerTest, WindowEdgeHitTest) {
   // slightly outside the edges of the |second| window should still be targeted
   // to |second| to allow resizing the windows easily.
 
-  struct TestData {
-    const char* direction;
-    gfx::Point location;
-  };
+  using TestPoint = std::pair<const char*, gfx::Point>;
 
-  constexpr auto test_points = std::to_array<TestData>({
+  constexpr auto test_points = std::to_array<TestPoint>({
       {"left", {28, 45}},    // outside the left edge.
       {"top", {50, 38}},     // outside the top edge.
       {"right", {72, 45}},   // outside the right edge.
