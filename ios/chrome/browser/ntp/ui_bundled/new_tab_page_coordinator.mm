@@ -29,9 +29,11 @@
 #import "ios/chrome/app/profile/profile_init_stage.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/app/profile/profile_state_observer.h"
+#import "ios/chrome/browser/authentication/ui_bundled/continuation.h"
 #import "ios/chrome/browser/authentication/ui_bundled/enterprise/enterprise_utils.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/account_menu/account_menu_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_history_sync/signin_and_history_sync_coordinator.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_view_controller_presenter.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_coordinator.h"
@@ -266,8 +268,8 @@
   BOOL _fakeboxTapped;
   // The account menu coordinator.
   SigninCoordinator* _accountMenuCoordinator;
-  // Whether the signin menu is displayed on top of this NTP.
-  BOOL _showSigninCommandInProgress;
+  // The sign in and history sync coordinator displayed on top of the NTP.
+  SigninCoordinator* _signinCoordinator;
 }
 
 // Synthesize NewTabPageConfiguring properties.
@@ -400,8 +402,8 @@
   self.feedHeaderViewController = nil;
   [self.feedTopSectionCoordinator stop];
   self.feedTopSectionCoordinator = nil;
-  [_accountMenuCoordinator stop];
-  _accountMenuCoordinator = nil;
+  [self stopAccountMenuCoordinator];
+  [self stopSigninCoordinator];
 
   self.NTPMetricsRecorder = nil;
 
@@ -856,7 +858,7 @@
 }
 
 - (void)identityDiscWasTapped:(UIView*)identityDisc {
-  if (_accountMenuCoordinator || _showSigninCommandInProgress) {
+  if (_accountMenuCoordinator || _signinCoordinator) {
     // Double tap, or tap before dismissing of the previous one is complete.
     return;
   }
@@ -877,19 +879,22 @@
     }
   } else {
     __weak __typeof(self) weakSelf = self;
-    _showSigninCommandInProgress = YES;
-    ShowSigninCommand* const showSigninCommand = [[ShowSigninCommand alloc]
-        initWithOperation:AuthenticationOperation::kSheetSigninAndHistorySync
-                 identity:nil
-              accessPoint:signin_metrics::AccessPoint::kNtpSignedOutIcon
-              promoAction:signin_metrics::PromoAction::
-                              PROMO_ACTION_NO_SIGNIN_PROMO
-               completion:^(SigninCoordinatorResult result,
-                            id<SystemIdentity> completionIdentity) {
-                 [weakSelf showSigninCommandDidFinish];
-               }];
-    [handler showSignin:showSigninCommand
-        baseViewController:self.baseViewController];
+    _signinCoordinator = [[SignInAndHistorySyncCoordinator alloc]
+        initWithBaseViewController:self.baseViewController
+                           browser:self.browser
+                      contextStyle:SigninContextStyle::kDefault
+                       accessPoint:signin_metrics::AccessPoint::
+                                       kNtpSignedOutIcon
+                       promoAction:signin_metrics::PromoAction::
+                                       PROMO_ACTION_NO_SIGNIN_PROMO
+               optionalHistorySync:YES
+                   fullscreenPromo:NO
+              continuationProvider:DoNothingContinuationProvider()];
+    _signinCoordinator.signinCompletion = ^(
+        SigninCoordinatorResult result, id<SystemIdentity> completionIdentity) {
+      [weakSelf showSigninCommandDidFinish];
+    };
+    [_signinCoordinator start];
   }
 }
 
@@ -1079,19 +1084,13 @@
                                   feed::FeedSyncPromo::kShowDisableToast];
     return;
   }
-  if (_accountMenuCoordinator || _showSigninCommandInProgress) {
+  if (_accountMenuCoordinator || _signinCoordinator) {
     return;
   }
   BOOL hasUserIdentities = [self hasIdentitiesOnDevice];
 
   signin_metrics::AccessPoint accessPoint =
       signin_metrics::AccessPoint::kNtpFeedCardMenuPromo;
-  id<ApplicationCommands> handler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), ApplicationCommands);
-  // If there are 0 identities, kInstantSignin requires less taps.
-  AuthenticationOperation operation =
-      (hasUserIdentities) ? AuthenticationOperation::kSigninOnly
-                          : AuthenticationOperation::kInstantSignin;
   switch (source) {
     case FeedSignInCommandSourceBottom:
       // TODO(crbug.com/40066051): Strictly speaking this should record a bucket
@@ -1109,18 +1108,38 @@
       break;
   }
   __weak __typeof(self) weakSelf = self;
-  _showSigninCommandInProgress = YES;
-  ShowSigninCommand* command = [[ShowSigninCommand alloc]
-      initWithOperation:operation
-               identity:nil
-            accessPoint:accessPoint
-            promoAction:signin_metrics::PromoAction::
-                            PROMO_ACTION_NO_SIGNIN_PROMO
-             completion:^(SigninCoordinatorResult result,
-                          id<SystemIdentity> completionIdentity) {
-               [weakSelf showSigninCommandDidFinish];
-             }];
-  [handler showSignin:command baseViewController:self.NTPViewController];
+  // If there are 0 identities, kInstantSignin requires less taps.
+  if (hasUserIdentities) {
+    _signinCoordinator = [SigninCoordinator
+        consistencyPromoSigninCoordinatorWithBaseViewController:
+            self.NTPViewController
+                                                        browser:self.browser
+                                                   contextStyle:
+                                                       SigninContextStyle::
+                                                           kDefault
+                                                    accessPoint:accessPoint
+                                           prepareChangeProfile:nil
+                                           continuationProvider:
+                                               DoNothingContinuationProvider()];
+  } else {
+    _signinCoordinator = [SigninCoordinator
+        instantSigninCoordinatorWithBaseViewController:self.NTPViewController
+                                               browser:self.browser
+                                              identity:nil
+                                          contextStyle:SigninContextStyle::
+                                                           kDefault
+                                           accessPoint:accessPoint
+                                           promoAction:
+                                               signin_metrics::PromoAction::
+                                                   PROMO_ACTION_NO_SIGNIN_PROMO
+                                  continuationProvider:
+                                      DoNothingContinuationProvider()];
+  }
+  _signinCoordinator.signinCompletion =
+      ^(SigninCoordinatorResult result, id<SystemIdentity> completionIdentity) {
+        [weakSelf showSigninCommandDidFinish];
+      };
+  [_signinCoordinator start];
   signin_metrics::RecordSigninUserActionForAccessPoint(accessPoint);
 }
 
@@ -1507,6 +1526,16 @@
 
 #pragma mark - Private
 
+- (void)stopAccountMenuCoordinator {
+  [_accountMenuCoordinator stop];
+  _accountMenuCoordinator = nil;
+}
+
+- (void)stopSigninCoordinator {
+  [_signinCoordinator stop];
+  _signinCoordinator = nil;
+}
+
 - (void)showAccountMenu:(UIView*)identityDisc {
   _accountMenuCoordinator = [SigninCoordinator
       accountMenuCoordinatorWithBaseViewController:self.NTPViewController
@@ -1533,15 +1562,14 @@
 // Update the state, to take into account that the account menu coordinator is
 // stopped.
 - (void)showAccountMenuDidFinish {
-  [_accountMenuCoordinator stop];
-  _accountMenuCoordinator = nil;
+  [self stopAccountMenuCoordinator];
 }
 
 // Update the state, to take into account that the signin coordinator
 // coordinator is stopped.
 - (void)showSigninCommandDidFinish {
-  CHECK(_showSigninCommandInProgress, base::NotFatalUntil::M135);
-  _showSigninCommandInProgress = NO;
+  CHECK(_signinCoordinator, base::NotFatalUntil::M135);
+  [self stopSigninCoordinator];
 }
 
 // Updates the feed visibility or content based on the supervision state
