@@ -12,7 +12,7 @@ BASE_FEATURE(kIOSEnablePasscodeSettings,
 
 BASE_FEATURE(kIOSEnableDeleteAllSavedCredentials,
              "IOSEnableDeleteAllSavedCredentials",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSuggestStrongPasswordInAddPassword,
              "SuggestStrongPasswordInAddPassword",
