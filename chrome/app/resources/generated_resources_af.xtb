@@ -2573,7 +2573,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="274318651891194348">Soek tans vir sleutelbord</translation>
 <translation id="2743301740238894839">Begin</translation>
 <translation id="2743387203779672305">Kopieer na knipbord</translation>
-<translation id="274362947316498129">’n Program probeer om toegang tot <ph name="DEVICE_NAME" /> kry. Skakel <ph name="DEVICE_NAME" /> se privaatheidskakelaar af om toegang te gee.</translation>
+<translation id="274362947316498129">’n App probeer om toegang tot <ph name="DEVICE_NAME" /> kry. Skakel <ph name="DEVICE_NAME" /> se privaatheidskakelaar af om toegang te gee.</translation>
 <translation id="2745080116229976798">Microsoft se gekwalifiseerde ondergeskiktheid</translation>
 <translation id="2749756011735116528">Meld by <ph name="PRODUCT_NAME" /> aan</translation>
 <translation id="2749836841884031656">SIM</translation>
@@ -4239,7 +4239,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="3917644013202553949">Daar is nie genoeg bergingspasie om jou lêers te sinkroniseer nie. Probeer spasie beskikbaar maak.</translation>
 <translation id="3919145445993746351">Skakel sinkronisering aan om jou uitbreidings op al jou rekenaars te kry</translation>
 <translation id="3919229493046408863">Skakel kennisgewing af wanneer toestelle in die omtrek is</translation>
-<translation id="3919262972282962508">Ouer weergawes van Chrome-programme sal nie ná Desember 2022 op Mac-toestelle oopmaak nie. Kontak jou admin om na ’n nuwe weergawe toe op te dateer of hierdie program te verwyder.</translation>
+<translation id="3919262972282962508">Ouer weergawes van Chrome-apps sal nie ná Desember 2022 op Mac-toestelle oopmaak nie. Kontak jou admin om na ’n nuwe weergawe toe op te dateer of hierdie app te verwyder.</translation>
 <translation id="3919376399641777316">Gebruik Google Drive-berging</translation>
 <translation id="3919798653937160644">Bladsye wat jy in hierdie venster bekyk, sal nie in die blaaiergeskiedenis verskyn nie en sal nie ander spore, soos webkoekies, op die rekenaar agterlaat nadat jy alle oop gasvensters toegemaak het nie. Enige lêers wat jy aflaai, sal egter bewaar word.</translation>
 <translation id="3920504717067627103">Sertifikaatbeleide</translation>
@@ -7626,7 +7626,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="637135143619858508">Los</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">Probeer weer</translation>
-<translation id="637642201764944055">Ouer weergawes van Chrome-programme sal nie ná Desember 2022 op Linux-toestelle oopmaak nie. Kontak jou admin om na ’n nuwe weergawe toe op te dateer of hierdie program te verwyder.</translation>
+<translation id="637642201764944055">Ouer weergawes van Chrome-apps sal nie ná Desember 2022 op Linux-toestelle oopmaak nie. Kontak jou admin om na ’n nuwe weergawe toe op te dateer of hierdie app te verwyder.</translation>
 <translation id="6377268785556383139">1 resultaat vir "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="6378392501584240055">Maak in wi-fi-netwerk oop</translation>
 <translation id="6379228010899751161">Verifieer dat dit jy is om seker te maak dat jy altyd die wagwoorde in jou rekening, <ph name="ACCOUNT_EMAIL" />, kan gebruik</translation>
@@ -8264,7 +8264,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="6827121912381363404">Laat alle uitbreidings toe om <ph name="PERMITTED_SITE" /> te lees en te verander</translation>
 <translation id="6827422464708099620">Kies om meer opsies te sien</translation>
 <translation id="6827517233063803343">Jou programme en instellings sal gesinkroniseer word op alle Chrome-bedryfstelseltoestelle waarop jy met jou Google-rekening aangemeld is. Gaan na <ph name="LINK_BEGIN" />Chrome-instellings<ph name="LINK_END" /> toe vir blaaiersinkroniseringopsies.</translation>
-<translation id="6827767090350758381">Ouer weergawes van Chrome-programme sal nie ná Desember 2022 op Windows-toestelle oopmaak nie. Kontak jou admin om na ’n nuwe weergawe toe op te dateer of hierdie program te verwyder.</translation>
+<translation id="6827767090350758381">Ouer weergawes van Chrome-apps sal nie ná Desember 2022 op Windows-toestelle oopmaak nie. Kontak jou admin om na ’n nuwe weergawe toe op te dateer of hierdie app te verwyder.</translation>
 <translation id="6828182567531805778">Voer jou wagfrase in om jou data te sinkroniseer</translation>
 <translation id="682871081149631693">QuickFix</translation>
 <translation id="6828860976882136098">Kon nie outomatiese opdaterings vir alle gebruikers opstel nie (kontroleringuitvoeringfout: <ph name="ERROR_NUMBER" />)</translation>

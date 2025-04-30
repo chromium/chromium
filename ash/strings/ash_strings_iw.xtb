@@ -663,7 +663,7 @@
 <translation id="3208321278970793882">אפליקציה</translation>
 <translation id="3212221635583599601">כדי לראות עוד, צריך להתחבר לאינטרנט</translation>
 <translation id="3213571860604332401">שמירת הקישור כסימנייה</translation>
-<translation id="3217205077783620295">לחצן עוצמת הקול מופעל. אם המצב יוחלף, האודיו יושתק.</translation>
+<translation id="3217205077783620295">כפתור עוצמת הקול מופעל. אם המצב יוחלף, האודיו יושתק.</translation>
 <translation id="3226991577105957773">+<ph name="COUNT" /> נוספות</translation>
 <translation id="3227137524299004712">מיקרופון</translation>
 <translation id="3233611303007751344">התכונה 'חיסכון בסוללה' הושבתה</translation>
@@ -832,7 +832,7 @@
 <translation id="3727231512028252576">לא ניתן לטעון את הפריטים. אפשר לנסות שוב כשיהיה חיבור לאינטרנט.</translation>
 <translation id="3735740477244556633">מיון לפי</translation>
 <translation id="3738664582935948253">עכשיו אפשר להציג את הקליקים ומקשי הקיצור בהקלטות המסך</translation>
-<translation id="3741482431277446954">לחצן עכבר ימני</translation>
+<translation id="3741482431277446954">כפתור עכבר ימני</translation>
 <translation id="3742055079367172538">צילום המסך בוצע</translation>
 <translation id="3743775386021959186">מצב הריכוז מופעל. הזמן שנותר: <ph name="REMAINING_TIME" /></translation>
 <translation id="3750403286520637847">הסתרת ההצעה לתחזית מזג האוויר</translation>
@@ -2225,7 +2225,7 @@
 <translation id="8203224998425013577">‏הצגה של סמלי אמוג'י וקובצי GIF נוספים</translation>
 <translation id="8203795194971602413">לחיצה ימנית</translation>
 <translation id="8205469348819768313">‏רוצה להשתמש במקש Page Down? שימוש במקש</translation>
-<translation id="8213376797713070611">לחצן עכבר שמאלי</translation>
+<translation id="8213376797713070611">כפתור עכבר שמאלי</translation>
 <translation id="8214996719228530800">‏ערוץ Canary</translation>
 <translation id="8219451629189078428">‏בפרק הזמן הזה, יש להקפיד להשאיר את ה-Chromebook פועל ומחובר לחשמל. יש לוודא שהכבלים של המטען או של המתאם מחוברים כראוי אל ה-Chromebook ואל שקע החשמל. אין לכבות את ה-Chromebook.</translation>
 <translation id="8220076512072059941">הוספה של <ph name="FOCUS_DURATION_DELTA" /></translation>
