@@ -4,19 +4,20 @@
 
 package org.chromium.chrome.browser.toolbar.extensions;
 
-import androidx.annotation.NonNull;
-
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
+
+import org.chromium.build.annotations.NullMarked;
 
 /**
  * Represents the state of an extension action for a particular tab.
  *
  * <p>This object is returned by {@link ExtensionActionBridge}.
  */
+@NullMarked
 public class ExtensionAction {
-    @NonNull private final String mId;
-    @NonNull private final String mTitle;
+    private final String mId;
+    private final String mTitle;
 
     @CalledByNative
     private ExtensionAction(
@@ -25,12 +26,10 @@ public class ExtensionAction {
         mTitle = title;
     }
 
-    @NonNull
     public String getId() {
         return mId;
     }
 
-    @NonNull
     public String getTitle() {
         return mTitle;
     }
