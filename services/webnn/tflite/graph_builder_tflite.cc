@@ -18,6 +18,7 @@
 #include "base/command_line.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/containers/span.h"
+#include "base/feature_list.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -41,6 +42,12 @@
 namespace webnn::tflite {
 
 namespace {
+
+// This feature flag allows us to compare performance between fused vs unfused
+// quantized graphs.
+BASE_FEATURE(kApplyQDQFusion,
+             "ApplyQDQFusion",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // The version number of the Schema. Ideally all changes will be backward
 // compatible. If that ever changes, we must ensure that version is the first
@@ -998,7 +1005,8 @@ base::expected<void, std::string> GraphBuilderTflite::SerializeOperation(
       // is needed for a subsequent operation. During `SerializeInputTensorInfo`
       // for subsequent operations, it will check whether it needs to inject
       // a dequantize operation.
-      if (TrySerializeQuantizedInput(operation, operation_index)) {
+      if (base::FeatureList::IsEnabled(kApplyQDQFusion) &&
+          TrySerializeQuantizedInput(operation, operation_index)) {
         return base::ok();
       }
       ASSIGN_OR_RETURN(operator_offset, SerializeDequantizeLinear(operation));
