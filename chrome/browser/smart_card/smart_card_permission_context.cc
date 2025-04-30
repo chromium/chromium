@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/check_op.h"
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
@@ -23,6 +24,7 @@
 #include "chrome/browser/permissions/one_time_permissions_tracker.h"
 #include "chrome/browser/permissions/one_time_permissions_tracker_factory.h"
 #include "chrome/browser/permissions/one_time_permissions_tracker_observer.h"
+#include "chrome/browser/permissions/permission_decision_auto_blocker_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/smart_card/smart_card_reader_tracker.h"
 #include "chrome/browser/smart_card/smart_card_reader_tracker_factory.h"
@@ -31,6 +33,7 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/permissions/permission_context_base.h"
+#include "components/permissions/permission_decision_auto_blocker.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/render_frame_host.h"
@@ -189,6 +192,33 @@ bool SmartCardPermissionContext::HasReaderPermission(
 
   return ephemeral_grants_with_expiry_[origin].contains(reader_name) ||
          HasPersistentReaderPermission(origin, reader_name);
+}
+
+bool SmartCardPermissionContext::IsAllowlistedByPolicy(
+    const url::Origin& origin) const {
+  if (!guard_content_settings_type_) {
+    return false;
+  }
+
+  content_settings::SettingInfo setting_info;
+  auto content_setting =
+      HostContentSettingsMapFactory::GetForProfile(&profile_.get())
+          ->GetContentSetting(origin.GetURL(), GURL(),
+                              ContentSettingsType::SMART_CARD_GUARD,
+                              &setting_info);
+  return setting_info.source == content_settings::SettingSource::kPolicy &&
+         content_setting == CONTENT_SETTING_ALLOW;
+}
+
+bool SmartCardPermissionContext::CanRequestObjectPermission(
+    const url::Origin& origin) const {
+  CHECK(guard_content_settings_type_);
+  if (CHECK_DEREF(
+          PermissionDecisionAutoBlockerFactory::GetForProfile(&profile_.get()))
+          .IsEmbargoed(origin.GetURL(), *guard_content_settings_type_)) {
+    return false;
+  }
+  return ObjectPermissionContextBase::CanRequestObjectPermission(origin);
 }
 
 void SmartCardPermissionContext::RequestReaderPermisssion(
@@ -381,48 +411,16 @@ void SmartCardPermissionContext::OnPermissionRequestDecided(
   switch (result) {
     case SmartCardPermissionRequest::Result::kAllowOnce:
       GrantEphemeralReaderPermission(origin, reader_name);
-      consecutive_denials_.erase(origin);
       std::move(callback).Run(true);
       break;
     case SmartCardPermissionRequest::Result::kAllowAlways:
       GrantPersistentReaderPermission(origin, reader_name);
-      consecutive_denials_.erase(origin);
       std::move(callback).Run(true);
       break;
     case SmartCardPermissionRequest::Result::kDontAllow:
       std::move(callback).Run(false);
-      OnPermissionDenied(origin);
       break;
   }
-}
-
-void SmartCardPermissionContext::OnPermissionDenied(const url::Origin& origin) {
-  auto consecutive_denials = ++consecutive_denials_[origin];
-
-  DCHECK(consecutive_denials <= 3);
-  if (consecutive_denials >= 3) {
-    HostContentSettingsMapFactory::GetForProfile(&profile_.get())
-        ->SetContentSettingDefaultScope(origin.GetURL(), GURL(),
-                                        ContentSettingsType::SMART_CARD_GUARD,
-                                        ContentSetting::CONTENT_SETTING_BLOCK);
-    consecutive_denials_.erase(origin);
-  }
-}
-
-bool SmartCardPermissionContext::IsAllowlistedByPolicy(
-    const url::Origin& origin) {
-  if (!guard_content_settings_type_) {
-    return false;
-  }
-
-  content_settings::SettingInfo setting_info;
-  auto content_setting =
-      HostContentSettingsMapFactory::GetForProfile(&profile_.get())
-          ->GetContentSetting(origin.GetURL(), GURL(),
-                              ContentSettingsType::SMART_CARD_GUARD,
-                              &setting_info);
-  return setting_info.source == content_settings::SettingSource::kPolicy &&
-         content_setting == CONTENT_SETTING_ALLOW;
 }
 
 std::vector<std::unique_ptr<SmartCardPermissionContext::Object>>

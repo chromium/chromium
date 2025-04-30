@@ -70,7 +70,9 @@ class SmartCardPermissionContext
   // Checks whether |origin|'s value of |guard_content_settings_type_| is both:
   // - set to "allow"
   // - set by policy
-  bool IsAllowlistedByPolicy(const url::Origin& origin);
+  bool IsAllowlistedByPolicy(const url::Origin& origin) const;
+
+  bool CanRequestObjectPermission(const url::Origin& origin) const override;
 
   // The two methods below are overridden to expose a symbolic "All readers"
   // device in case of allowlisting via policy.
@@ -115,8 +117,6 @@ class SmartCardPermissionContext
                                   RequestReaderPermissionCallback callback,
                                   SmartCardPermissionRequest::Result result);
 
-  void OnPermissionDenied(const url::Origin& origin);
-
   SmartCardReaderTracker& GetReaderTracker() const;
 
   void RevokeEphemeralPermissionIfLongTimeoutOccured(
@@ -127,10 +127,6 @@ class SmartCardPermissionContext
   // ephemeral permissions should expire.
   base::flat_map<url::Origin, base::flat_map<std::string, base::Time>>
       ephemeral_grants_with_expiry_;
-
-  // this is for tracking consecutive denials (after 3, guard setting is to be
-  // set to blocked)
-  std::map<url::Origin, uint8_t> consecutive_denials_;
 
   std::unique_ptr<OneTimeObserver> one_time_observer_;
   std::unique_ptr<PowerSuspendObserver> power_suspend_observer_;
