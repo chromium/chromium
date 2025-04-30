@@ -72,6 +72,9 @@ void Host::PanelWillOpen(mojom::InvocationSource invocation_source) {
 void Host::PanelWasClosed() {
   invocation_source_ = std::nullopt;
   for (auto& entry : page_handlers_) {
+    if (entry.web_client) {
+      entry.web_client->PanelWasClosed(base::DoNothing());
+    }
     entry.open_complete = false;
   }
 }
