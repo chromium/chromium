@@ -286,9 +286,9 @@ constexpr char kCustomPreflightHeader[] = "x-testheader";
 
 // Performs an XHR in the given |frame|, replying when complete.
 void PerformXhrInFrame(content::RenderFrameHost* frame,
-                      const std::string& host,
-                      int port,
-                      const std::string& page) {
+                       const std::string& host,
+                       int port,
+                       const std::string& page) {
   EXPECT_EQ(true, EvalJs(frame, base::StringPrintf(kPerformXhrJs, host.c_str(),
                                                    port, page.c_str())));
 }
@@ -308,8 +308,9 @@ std::optional<bool> ExecuteScriptAndReturnBool(const ExtensionId& extension_id,
   std::optional<bool> result;
   base::Value script_result =
       ExecuteScriptAndReturnValue(extension_id, context, script);
-  if (script_result.is_bool())
+  if (script_result.is_bool()) {
     result = script_result.GetBool();
+  }
   return result;
 }
 
@@ -320,8 +321,9 @@ std::optional<std::string> ExecuteScriptAndReturnString(
   std::optional<std::string> result;
   base::Value script_result =
       ExecuteScriptAndReturnValue(extension_id, context, script);
-  if (script_result.is_string())
+  if (script_result.is_string()) {
     result = script_result.GetString();
+  }
   return result;
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -336,8 +338,9 @@ int GetCountFromBackgroundScript(const Extension* extension,
       "chrome.test.sendScriptResult(%s)", variable_name.c_str());
   base::Value value =
       ExecuteScriptAndReturnValue(extension->id(), context, script);
-  if (!value.is_int())
+  if (!value.is_int()) {
     return -1;
+  }
   return value.GetInt();
 }
 
@@ -583,8 +586,15 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
 }
 
 // Regression test for https://crbug.com/395985663.
+// TODO(crbug.com/399261153): Flaky on Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_ExtensionRequestRedirectToServer \
+  DISABLED_ExtensionRequestRedirectToServer
+#else
+#define MAYBE_ExtensionRequestRedirectToServer ExtensionRequestRedirectToServer
+#endif
 IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
-                       ExtensionRequestRedirectToServer) {
+                       MAYBE_ExtensionRequestRedirectToServer) {
   ASSERT_TRUE(StartEmbeddedTestServer());
 
   TestExtensionDir test_dir;
@@ -855,8 +865,9 @@ class DevToolsFrontendInWebRequestApiTest : public ExtensionApiTest {
     // We treat any URL request not targeting the test server as targeting the
     // remote frontend, and we intercept them to fulfill from test data rather
     // than hitting the network.
-    if (params->url_request.url.EffectiveIntPort() == test_server_port)
+    if (params->url_request.url.EffectiveIntPort() == test_server_port) {
       return false;
+    }
 
     std::string status_line;
     std::string contents;
@@ -878,10 +889,11 @@ class DevToolsFrontendInWebRequestApiTest : public ExtensionApiTest {
     }
 
     std::string content_type;
-    if (path.Extension() == FILE_PATH_LITERAL(".html"))
+    if (path.Extension() == FILE_PATH_LITERAL(".html")) {
       content_type = "Content-type: text/html\n";
-    else if (path.Extension() == FILE_PATH_LITERAL(".js"))
+    } else if (path.Extension() == FILE_PATH_LITERAL(".js")) {
       content_type = "Content-type: application/javascript\n";
+    }
 
     *status_line =
         base::StringPrintf("HTTP/1.0 200 OK\n%s\n", content_type.c_str());
@@ -1224,8 +1236,9 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiAuthRequiredTest,
   // If running in incognito, create an incognito browser so the test
   // framework can create an incognito window.
   const bool incognito = GetEnableIncognito();
-  if (incognito)
+  if (incognito) {
     CreateIncognitoBrowser(profile());
+  }
 
   ASSERT_TRUE(RunExtensionTest(
       "webrequest/test_auth_required",
@@ -1256,8 +1269,9 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiAuthRequiredTest,
   // If running in incognito, create an incognito browser so the tests
   // run in an incognito window.
   const bool incognito = GetEnableIncognito();
-  if (incognito)
+  if (incognito) {
     CreateIncognitoBrowser(profile());
+  }
 
   ASSERT_TRUE(RunExtensionTest(
       "webrequest/test_auth_required_async",
@@ -1281,8 +1295,9 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiAuthRequiredTest,
 IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiAuthRequiredTest,
                        DISABLED_WebRequestAuthRequiredParallel) {
   const bool incognito = GetEnableIncognito();
-  if (incognito)
+  if (incognito) {
     CreateIncognitoBrowser(profile());
+  }
 
   const char* const custom_arg = incognito ? R"({"runInIncognito": true})"
                                            : R"({"runInIncognito": false})";
@@ -1610,8 +1625,9 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
 }
 
 // TODO(crbug.com/40916455): test is flaky on multiple platforms.
-IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
-                       DISABLED_WebRequestSubresourceRedirectsWithExtraHeaders) {
+IN_PROC_BROWSER_TEST_P(
+    ExtensionWebRequestApiTestWithContextType,
+    DISABLED_WebRequestSubresourceRedirectsWithExtraHeaders) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(RunExtensionTest("webrequest/test_subresource_redirects",
                                {.custom_arg = R"({"useExtraHeaders": true})"}))
@@ -1723,8 +1739,9 @@ void ExtensionWebRequestApiTest::RunPermissionTest(
   Browser* otr_browser =
       OpenURLOffTheRecord(browser()->profile(), GURL("about:blank"));
 
-  if (wait_for_extension_loaded_in_incognito)
+  if (wait_for_extension_loaded_in_incognito) {
     EXPECT_TRUE(listener_incognito.WaitUntilSatisfied());
+  }
 
   // This navigation should be redirected if
   // load_extension_with_incognito_permission is true.
@@ -1841,8 +1858,8 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
   ExtensionTestMessageListener listener_extension("extension_done");
 
   // Set up webRequest listener
-  ASSERT_TRUE(LoadExtension(
-          test_data_dir_.AppendASCII("webrequest_extensions/main")));
+  ASSERT_TRUE(
+      LoadExtension(test_data_dir_.AppendASCII("webrequest_extensions/main")));
   EXPECT_TRUE(listener_main1.WaitUntilSatisfied());
   EXPECT_TRUE(listener_main2.WaitUntilSatisfied());
 
@@ -1904,9 +1921,8 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
 
 IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, HostedAppRequest) {
   ASSERT_TRUE(StartEmbeddedTestServer());
-  GURL hosted_app_url(
-      embedded_test_server()->GetURL(
-          "/extensions/api_test/webrequest_hosted_app/index.html"));
+  GURL hosted_app_url(embedded_test_server()->GetURL(
+      "/extensions/api_test/webrequest_hosted_app/index.html"));
   scoped_refptr<const Extension> hosted_app =
       ExtensionBuilder()
           .SetManifest(
@@ -1924,8 +1940,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, HostedAppRequest) {
   ExtensionTestMessageListener listener1("main_frame");
   ExtensionTestMessageListener listener2("xmlhttprequest");
 
-  ASSERT_TRUE(LoadExtension(
-          test_data_dir_.AppendASCII("webrequest_hosted_app")));
+  ASSERT_TRUE(
+      LoadExtension(test_data_dir_.AppendASCII("webrequest_hosted_app")));
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), hosted_app_url));
 
@@ -2727,8 +2743,9 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextTypeMV3,
 
     // Ensure that the extension wasn't able to intercept the request if it
     // didn't have permission to the initiator or the request url.
-    if (!testcase.expected_initiator.empty())
+    if (!testcase.expected_initiator.empty()) {
       ++expected_requests_intercepted_count;
+    }
 
     // Run a script in the extensions background page to ensure that we have
     // received the initiator message from the extension.
@@ -3664,8 +3681,9 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
   embedded_test_server()->RegisterRequestHandler(base::BindLambdaForTesting(
       [&](const net::test_server::HttpRequest& request)
           -> std::unique_ptr<net::test_server::HttpResponse> {
-        if (request.relative_url != "/redirect-and-wait")
+        if (request.relative_url != "/redirect-and-wait") {
           return nullptr;
+        }
 
         // Wait for the listener to be installed before proceeding.
         base::WaitableEvent unblock(
@@ -3944,8 +3962,9 @@ class ServiceWorkerWebRequestApiTest
         chrome.test.sendMessage('ready');
       )";
     std::string opt_extra_info_spec = "'blocking', 'requestHeaders'";
-    if (GetExtraInfoSpec() == ExtraInfoSpec::kExtraHeaders)
+    if (GetExtraInfoSpec() == ExtraInfoSpec::kExtraHeaders) {
       opt_extra_info_spec += ", 'extraHeaders'";
+    }
     test_dir.WriteFile(
         FILE_PATH_LITERAL("background.js"),
         base::StringPrintf(kBackgroundScript, opt_extra_info_spec.c_str()));
@@ -4070,14 +4089,16 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerWebRequestApiTest, ServiceWorkerScript) {
   embedded_test_server()->RegisterRequestHandler(base::BindLambdaForTesting(
       [&](const net::test_server::HttpRequest& request)
           -> std::unique_ptr<net::test_server::HttpResponse> {
-        if (request.relative_url != kScriptPath)
+        if (request.relative_url != kScriptPath) {
           return nullptr;
+        }
 
         base::AutoLock auto_lock(lock);
         ++served_service_worker_count;
         foo_header_value.clear();
-        if (request.headers.find("foo") != request.headers.end())
+        if (request.headers.find("foo") != request.headers.end()) {
           foo_header_value = request.headers.at("foo");
+        }
 
         auto response = std::make_unique<net::test_server::BasicHttpResponse>();
         response->set_code(net::HTTP_OK);
@@ -4136,14 +4157,16 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerWebRequestApiTest,
   embedded_test_server()->RegisterRequestHandler(base::BindLambdaForTesting(
       [&](const net::test_server::HttpRequest& request)
           -> std::unique_ptr<net::test_server::HttpResponse> {
-        if (request.relative_url != kScriptPath)
+        if (request.relative_url != kScriptPath) {
           return nullptr;
+        }
 
         base::AutoLock auto_lock(lock);
         ++served_service_worker_count;
         foo_header_value.clear();
-        if (base::Contains(request.headers, "foo"))
+        if (base::Contains(request.headers, "foo")) {
           foo_header_value = request.headers.at("foo");
+        }
 
         auto response = std::make_unique<net::test_server::BasicHttpResponse>();
         response->set_code(net::HTTP_OK);
@@ -4222,8 +4245,9 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerWebRequestApiTest,
           base::AutoLock auto_lock(lock);
           ++served_service_worker_count;
           foo_header_value.clear();
-          if (base::Contains(request.headers, "foo"))
+          if (base::Contains(request.headers, "foo")) {
             foo_header_value = request.headers.at("foo");
+          }
           auto response =
               std::make_unique<net::test_server::BasicHttpResponse>();
           response->set_code(net::HTTP_OK);
@@ -4830,8 +4854,9 @@ IN_PROC_BROWSER_TEST_P(SubresourceWebBundlesWebRequestApiTest,
       })");
 
   std::string opt_extra_info_spec = "";
-  if (GetExtraInfoSpec() == ExtraInfoSpec::kExtraHeaders)
+  if (GetExtraInfoSpec() == ExtraInfoSpec::kExtraHeaders) {
     opt_extra_info_spec += "'extraHeaders'";
+  }
   test_dir.WriteFile(FILE_PATH_LITERAL("background.js"),
                      base::StringPrintf(R"(
         self.numMainResourceRequests = 0;
@@ -4951,8 +4976,9 @@ IN_PROC_BROWSER_TEST_P(SubresourceWebBundlesWebRequestApiTest,
   std::string cancel_uuid_in_package_js_url =
       "uuid-in-package:9cc02e52-05b6-466a-8c0e-f22ee86825a8";
   std::string opt_extra_info_spec = "'blocking'";
-  if (GetExtraInfoSpec() == ExtraInfoSpec::kExtraHeaders)
+  if (GetExtraInfoSpec() == ExtraInfoSpec::kExtraHeaders) {
     opt_extra_info_spec += ", 'extraHeaders'";
+  }
   test_dir.WriteFile(FILE_PATH_LITERAL("background.js"),
                      base::StringPrintf(R"(
         self.numPassScriptRequests = 0;
@@ -5091,8 +5117,9 @@ IN_PROC_BROWSER_TEST_P(SubresourceWebBundlesWebRequestApiTest, ChangeHeader) {
         "permissions": ["<all_urls>", "webRequest", "webRequestBlocking"]
       })");
   std::string opt_extra_info_spec = "'blocking', 'responseHeaders'";
-  if (GetExtraInfoSpec() == ExtraInfoSpec::kExtraHeaders)
+  if (GetExtraInfoSpec() == ExtraInfoSpec::kExtraHeaders) {
     opt_extra_info_spec += ", 'extraHeaders'";
+  }
   test_dir.WriteFile(FILE_PATH_LITERAL("background.js"),
                      base::StringPrintf(R"(
         chrome.webRequest.onHeadersReceived.addListener(function(details) {
@@ -5192,8 +5219,9 @@ IN_PROC_BROWSER_TEST_P(SubresourceWebBundlesWebRequestApiTest,
         "permissions": ["<all_urls>", "webRequest", "webRequestBlocking"]
       })");
   std::string opt_extra_info_spec = "'blocking', 'responseHeaders'";
-  if (GetExtraInfoSpec() == ExtraInfoSpec::kExtraHeaders)
+  if (GetExtraInfoSpec() == ExtraInfoSpec::kExtraHeaders) {
     opt_extra_info_spec += ", 'extraHeaders'";
+  }
   static constexpr char kJsTemplate[] = R"(
         chrome.webRequest.onHeadersReceived.addListener(function(details) {
           if (details.url != '%s') {
@@ -5287,8 +5315,9 @@ IN_PROC_BROWSER_TEST_P(SubresourceWebBundlesWebRequestApiTest,
         "permissions": ["<all_urls>", "webRequest", "webRequestBlocking"]
       })");
   std::string opt_extra_info_spec = "'blocking'";
-  if (GetExtraInfoSpec() == ExtraInfoSpec::kExtraHeaders)
+  if (GetExtraInfoSpec() == ExtraInfoSpec::kExtraHeaders) {
     opt_extra_info_spec += ", 'extraHeaders'";
+  }
   test_dir.WriteFile(FILE_PATH_LITERAL("background.js"),
                      base::StringPrintf(R"(
         chrome.webRequest.onBeforeRequest.addListener(function(details) {
@@ -5426,8 +5455,9 @@ IN_PROC_BROWSER_TEST_P(SubresourceWebBundlesWebRequestApiTest,
         "permissions": ["<all_urls>", "webRequest", "webRequestBlocking"]
       })");
   std::string opt_extra_info_spec = "'blocking'";
-  if (GetExtraInfoSpec() == ExtraInfoSpec::kExtraHeaders)
+  if (GetExtraInfoSpec() == ExtraInfoSpec::kExtraHeaders) {
     opt_extra_info_spec += ", 'extraHeaders'";
+  }
   test_dir.WriteFile(FILE_PATH_LITERAL("background.js"),
                      base::StringPrintf(R"(
         chrome.webRequest.onBeforeRequest.addListener(function(details) {
