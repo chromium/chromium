@@ -42,6 +42,13 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="'Show other passwords' link"/>
   <int value="8" label="Show Passkeys again"/>
   <int value="9" label="'Use passkey on a different device' link"/>
+  <int value="10" label="'Create plus address' link in the address sheet"/>
+  <int value="11" label="'Select plus address' link in the address sheet"/>
+  <int value="12" label="'Manage plus addresses' link in the address sheet"/>
+  <int value="13" label="'Create plus address' link in the password sheet"/>
+  <int value="14" label="'Select plus address' link in the password sheet"/>
+  <int value="15" label="'Manage plus addresses' link in the password sheet"/>
+  <int value="16" label="'Manage loyalty cards' link"/>
 </enum>
 
 <enum name="AccessorySheetTrigger">

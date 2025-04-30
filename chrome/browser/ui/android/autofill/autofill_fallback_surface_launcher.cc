@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/android/plus_addresses/plus_addresses_helper.h"
+#include "chrome/browser/ui/android/autofill/autofill_fallback_surface_launcher.h"
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
@@ -13,14 +13,14 @@
 #include "ui/android/window_android.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
-#include "chrome/android/chrome_jni_headers/PlusAddressesHelper_jni.h"
+#include "chrome/android/chrome_jni_headers/AutofillFallbackSurfaceLauncher_jni.h"
 
-namespace plus_addresses {
+namespace autofill {
 
 void ShowManagePlusAddressesPage(content::WebContents& web_contents) {
-  if (web_contents.GetNativeView() != nullptr &&
-      web_contents.GetNativeView()->GetWindowAndroid() != nullptr) {
-    Java_PlusAddressesHelper_openManagePlusAddresses(
+  if (web_contents.GetNativeView() &&
+      web_contents.GetNativeView()->GetWindowAndroid()) {
+    Java_AutofillFallbackSurfaceLauncher_openManagePlusAddresses(
         base::android::AttachCurrentThread(),
         web_contents.GetNativeView()->GetWindowAndroid()->GetJavaObject(),
         Profile::FromBrowserContext(web_contents.GetBrowserContext())
@@ -28,9 +28,18 @@ void ShowManagePlusAddressesPage(content::WebContents& web_contents) {
   }
 }
 
-static std::string JNI_PlusAddressesHelper_GetPlusAddressManagementUrl(
-    JNIEnv* env) {
+void ShowGoogleWalletLoyaltyCardsPage(content::WebContents& web_contents) {
+  if (web_contents.GetNativeView() &&
+      web_contents.GetNativeView()->GetWindowAndroid()) {
+    Java_AutofillFallbackSurfaceLauncher_openGoogleWalletLoyaltyCardsPage(
+        base::android::AttachCurrentThread(),
+        web_contents.GetNativeView()->GetWindowAndroid()->GetJavaObject());
+  }
+}
+
+static std::string
+JNI_AutofillFallbackSurfaceLauncher_GetPlusAddressManagementUrl(JNIEnv* env) {
   return plus_addresses::features::kPlusAddressManagementUrl.Get();
 }
 
-}  // namespace plus_addresses
+}  // namespace autofill

@@ -442,10 +442,10 @@ if (is_android) {
     resources_package = "org.chromium.chrome.browser.autofill"
 
     sources = [
+      "src/org/chromium/chrome/browser/autofill/AutofillFallbackSurfaceLauncherTest.java",
       "src/org/chromium/chrome/browser/autofill/AutofillImageFetcherTest.java",
       "src/org/chromium/chrome/browser/autofill/AutofillImageFetcherUtilsTest.java",
       "src/org/chromium/chrome/browser/autofill/AutofillUiUtilsTest.java",
-      "src/org/chromium/chrome/browser/autofill/PlusAddressesHelperTest.java",
       "src/org/chromium/chrome/browser/autofill/SaveUpdateAddressProfilePromptTest.java",
       "src/org/chromium/chrome/browser/autofill/iban/AutofillSaveIbanBottomSheetBridgeTest.java",
       "src/org/chromium/chrome/browser/autofill/iban/AutofillSaveIbanBottomSheetContentTest.java",

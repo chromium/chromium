@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.Intent;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
@@ -26,11 +27,15 @@ import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.ui.base.WindowAndroid;
 
-/** A helper class to open plus address management UI. */
-@JNINamespace("plus_addresses")
-public class PlusAddressesHelper {
+/** A helper class to open web pages from the keyboard accessory manual filling UI. */
+@JNINamespace("autofill")
+public class AutofillFallbackSurfaceLauncher {
     // GMS Core accountsettings screen that comes from the resource_id.proto.
     private static final int PLUS_ADDRESS_EMAIL_SCREEN = 10764;
+
+    // Google Wallet URL for managing loyalty cards.
+    @VisibleForTesting
+    static final String GOOGLE_WALLET_LOYALTY_CARD_URL = "https://wallet.google.com/wallet/passes";
 
     @CalledByNative
     public static void openManagePlusAddresses(WindowAndroid window, Profile profile) {
@@ -77,6 +82,17 @@ public class PlusAddressesHelper {
         }
     }
 
+    @CalledByNative
+    public static void openGoogleWalletLoyaltyCardsPage(WindowAndroid window) {
+        Context context = window.getActivity().get();
+
+        if (context == null) {
+            return;
+        }
+
+        CustomTabActivity.showInfoPage(context, GOOGLE_WALLET_LOYALTY_CARD_URL);
+    }
+
     private static Intent createAccountSettingsIntent(String primaryEmail) {
         return new Intent("com.google.android.gms.accountsettings.action.VIEW_SETTINGS")
                 .setPackage("com.google.android.gms")
@@ -91,10 +107,10 @@ public class PlusAddressesHelper {
     }
 
     private static String getPlusAddressManagementUrl() {
-        return PlusAddressesHelperJni.get().getPlusAddressManagementUrl();
+        return AutofillFallbackSurfaceLauncherJni.get().getPlusAddressManagementUrl();
     }
 
-    private PlusAddressesHelper() {}
+    private AutofillFallbackSurfaceLauncher() {}
 
     @NativeMethods
     interface Natives {
