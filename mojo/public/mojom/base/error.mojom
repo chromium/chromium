@@ -1,0 +1,56 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module mojo_base.mojom;
+
+// A copy of absl's Status Code. It is copied here to prevent infecting
+// users with absl where Errors are used. kOk is intentionally omitted,
+// because it should never be used.
+// For additional clarity around how each code should be used, please
+// refer to: https://abseil.io/docs/cpp/guides/status-codes
+enum Code {
+  // The request was cancelled, typically by the caller.
+  kCancelled = 1,
+  // There is no way to determine a more specific error code.
+  kUnknown = 2,
+  // The request parameters would never work.
+  kInvalidArgument = 3,
+  // The operation did not complete within the specified deadline.
+  kDeadlineExceeded = 4,
+  // The requested entity does not exist.
+  kNotFound = 5,
+  // The entity being created already exists.
+  kAlreadyExists = 6,
+  // The caller does not have permission to execute the operation.
+  kPermissionDenied = 7,
+  // Some infrastructure resource is exhausted (quota, server capacity, etc).
+  kResourceExhausted = 8,
+  // The system is not in the required state for the operation.
+  kFailedPrecondition = 9,
+  // The operation was aborted, typically due to a concurrency issue like
+  // sequencer check failures, transaction aborts, etc.
+  kAborted = 10,
+  // The client has iterated too far, and should stop.
+  kOutOfRange = 11,
+  // There is no implementation for the requested operation.
+  kUnimplemented = 12,
+  // A serious internal invariant is broken (i.e. worthy of a bug or
+  // outage report).
+  kInternal = 13,
+  // There was a transient error.
+  kUnavailable = 14,
+  // Unrecoverable data loss or corruption.
+  kDataLoss = 15,
+  // The caller’s identity cannot be verified.
+  kUnauthenticated = 16,
+};
+
+// Represents an API error.
+struct Error {
+  // The error code. This can be used to determine whether this is a
+  // client or service error.
+  Code code;
+  // A human readable error string intended for developers.
+  string message;
+};
