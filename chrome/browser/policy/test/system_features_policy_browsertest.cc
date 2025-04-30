@@ -23,6 +23,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/core/common/system_features_disable_list_constants.h"
 #include "components/policy/policy_constants.h"
@@ -51,11 +52,15 @@ struct VisibilityFlags {
 
 }  // namespace
 
+// TODO(413350575): Add/update tests cases to use MGS and not just regular user
+// sessions.
 class SystemFeaturesPolicyTest : public PolicyTest {
  public:
   SystemFeaturesPolicyTest() {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{ash::features::kEcheSWA, ash::features::kConch},
+        /*enabled_features=*/{ash::features::kEcheSWA, ash::features::kConch,
+                              chromeos::features::
+                                  kSystemFeaturesDisableListHidden},
         /*disabled_features=*/{});
     fake_crostini_features_.set_is_allowed_now(true);
   }
@@ -181,15 +186,9 @@ class SystemFeaturesPolicyTest : public PolicyTest {
     base::Value::List system_features;
     system_features.Append(feature);
     VisibilityFlags expected_visibility =
-        GetVisibilityFlags(false /* is_hidden */);
-    // Disable app with default mode (blocked).
+        GetVisibilityFlags(true /* is_hidden */);
+    // Disable app with default mode (hidden).
     UpdateSystemFeaturesDisableList(system_features.Clone(), nullptr);
-    VerifyAppState(app_id, apps::Readiness::kDisabledByPolicy, true,
-                   expected_visibility);
-    // Disable and hide app.
-    expected_visibility = GetVisibilityFlags(true /* is_hidden */);
-    UpdateSystemFeaturesDisableList(system_features.Clone(),
-                                    kSystemFeaturesDisableModeHidden);
     VerifyAppState(app_id, apps::Readiness::kDisabledByPolicy, true,
                    expected_visibility);
     // Disable and block app.
@@ -198,8 +197,15 @@ class SystemFeaturesPolicyTest : public PolicyTest {
                                     kSystemFeaturesDisableModeBlocked);
     VerifyAppState(app_id, apps::Readiness::kDisabledByPolicy, true,
                    expected_visibility);
+    // Disable and hide app.
+    expected_visibility = GetVisibilityFlags(true /* is_hidden */);
+    UpdateSystemFeaturesDisableList(system_features.Clone(),
+                                    kSystemFeaturesDisableModeHidden);
+    VerifyAppState(app_id, apps::Readiness::kDisabledByPolicy, true,
+                   expected_visibility);
     // Enable app.
     UpdateSystemFeaturesDisableList(base::Value(), nullptr);
+    expected_visibility = GetVisibilityFlags(false /* is_hidden */);
     VerifyAppState(app_id, apps::Readiness::kReady, false, expected_visibility);
   }
 
@@ -244,7 +250,7 @@ IN_PROC_BROWSER_TEST_F(SystemFeaturesPolicyTest, DisableWebStoreBeforeInstall) {
   base::Value::List system_features;
   system_features.Append(kWebStoreFeature);
   VisibilityFlags expected_visibility =
-      GetVisibilityFlags(false /* is_hidden */);
+      GetVisibilityFlags(true /* is_hidden */);
   UpdateSystemFeaturesDisableList(std::move(system_features), nullptr);
   EnableExtensions(true);
   VerifyExtensionAppState(extensions::kWebStoreAppId,
@@ -256,6 +262,7 @@ IN_PROC_BROWSER_TEST_F(SystemFeaturesPolicyTest, DisableWebStoreBeforeInstall) {
                                     kWebStoreExtensionTitle);
 
   UpdateSystemFeaturesDisableList(base::Value(), nullptr);
+  expected_visibility = GetVisibilityFlags(false /* is_hidden */);
   VerifyExtensionAppState(extensions::kWebStoreAppId, apps::Readiness::kReady,
                           false, expected_visibility);
   VerifyIsExtensionAppURLAccessible(kWebStoreExtensionURL,
@@ -267,7 +274,7 @@ IN_PROC_BROWSER_TEST_F(SystemFeaturesPolicyTest, DisableWebStoreAfterInstall) {
   base::Value::List system_features;
   system_features.Append(kWebStoreFeature);
   VisibilityFlags expected_visibility =
-      GetVisibilityFlags(false /* is_hidden */);
+      GetVisibilityFlags(true /* is_hidden */);
   UpdateSystemFeaturesDisableList(std::move(system_features), nullptr);
 
   VerifyExtensionAppState(extensions::kWebStoreAppId,
@@ -279,6 +286,7 @@ IN_PROC_BROWSER_TEST_F(SystemFeaturesPolicyTest, DisableWebStoreAfterInstall) {
                                     kWebStoreExtensionTitle);
 
   UpdateSystemFeaturesDisableList(base::Value(), nullptr);
+  expected_visibility = GetVisibilityFlags(false /* is_hidden */);
   VerifyExtensionAppState(extensions::kWebStoreAppId, apps::Readiness::kReady,
                           false, expected_visibility);
   VerifyIsExtensionAppURLAccessible(kWebStoreExtensionURL,
@@ -291,20 +299,11 @@ IN_PROC_BROWSER_TEST_F(SystemFeaturesPolicyTest,
   base::Value::List system_features;
   system_features.Append(kWebStoreFeature);
   VisibilityFlags expected_visibility =
-      GetVisibilityFlags(false /* is_hidden */);
-  // Disable app with default mode (blocked).
+      GetVisibilityFlags(true /* is_hidden */);
+  // Disable app with default mode (hidden).
   // The URL navigation should still be possible
   // even if the app is disabled by policy.
   UpdateSystemFeaturesDisableList(system_features.Clone(), nullptr);
-  VerifyExtensionAppState(extensions::kWebStoreAppId,
-                          apps::Readiness::kDisabledByPolicy, true,
-                          expected_visibility);
-  VerifyIsExtensionAppURLAccessible(kWebStoreExtensionURL,
-                                    kWebStoreExtensionTitle);
-  // Disable and hide app.
-  expected_visibility = GetVisibilityFlags(true /* is_hidden */);
-  UpdateSystemFeaturesDisableList(system_features.Clone(),
-                                  kSystemFeaturesDisableModeHidden);
   VerifyExtensionAppState(extensions::kWebStoreAppId,
                           apps::Readiness::kDisabledByPolicy, true,
                           expected_visibility);
@@ -319,7 +318,18 @@ IN_PROC_BROWSER_TEST_F(SystemFeaturesPolicyTest,
                           expected_visibility);
   VerifyIsExtensionAppURLAccessible(kWebStoreExtensionURL,
                                     kWebStoreExtensionTitle);
+
+  // Disable and hide app.
+  expected_visibility = GetVisibilityFlags(true /* is_hidden */);
+  UpdateSystemFeaturesDisableList(system_features.Clone(),
+                                  kSystemFeaturesDisableModeHidden);
+  VerifyExtensionAppState(extensions::kWebStoreAppId,
+                          apps::Readiness::kDisabledByPolicy, true,
+                          expected_visibility);
+  VerifyIsExtensionAppURLAccessible(kWebStoreExtensionURL,
+                                    kWebStoreExtensionTitle);
   // Enable app
+  expected_visibility = GetVisibilityFlags(false /* is_hidden */);
   UpdateSystemFeaturesDisableList(base::Value(), nullptr);
   VerifyExtensionAppState(extensions::kWebStoreAppId, apps::Readiness::kReady,
                           false, expected_visibility);

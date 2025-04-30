@@ -52,6 +52,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "url/url_constants.h"
 
@@ -66,6 +67,7 @@
 #include "chrome/browser/policy/system_features_disable_list_policy_handler.h"
 #include "chrome/browser/web_applications/web_app_system_web_app_delegate_map_utils.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
+#include "chromeos/ash/components/policy/system_features_disable_list/system_features_disable_list_policy_utils.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/core/common/system_features_disable_list_constants.h"
 #include "components/user_manager/user_manager.h"
@@ -249,35 +251,29 @@ void WebAppPolicyManager::OnSyncPolicySettingsCommandsComplete() {
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
-const std::set<ash::SystemWebAppType>&
+const absl::flat_hash_set<ash::SystemWebAppType>&
 WebAppPolicyManager::GetDisabledSystemWebApps() const {
   return disabled_system_apps_;
 }
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
-const std::set<webapps::AppId>& WebAppPolicyManager::GetDisabledWebAppsIds()
-    const {
-  return disabled_web_apps_;
+bool WebAppPolicyManager::IsDisabledAppsModeHidden(
+    std::optional<ash::SystemWebAppType> system_app_type) const {
+  if (system_app_type.has_value() &&
+      base::Contains(disabled_system_apps_not_hidden_,
+                     system_app_type.value())) {
+    return false;
+  }
+  PrefService* const local_state = g_browser_process->local_state();
+  if (!local_state) {  // Sometimes it's not available in tests.
+    return false;
+  }
+  return policy::IsDisabledAppsModeHidden(*local_state);
 }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 bool WebAppPolicyManager::IsWebAppInDisabledList(
     const webapps::AppId& app_id) const {
-  return base::Contains(GetDisabledWebAppsIds(), app_id);
-}
-
-bool WebAppPolicyManager::IsDisabledAppsModeHidden() const {
-#if BUILDFLAG(IS_CHROMEOS)
-  PrefService* const local_state = g_browser_process->local_state();
-  if (!local_state)  // Sometimes it's not available in tests.
-    return false;
-
-  std::string disabled_mode =
-      local_state->GetString(policy::policy_prefs::kSystemFeaturesDisableMode);
-  if (disabled_mode == policy::kSystemFeaturesDisableModeHidden) {
-    return true;
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS)
-  return false;
+  return base::Contains(disabled_web_apps_, app_id);
 }
 
 void WebAppPolicyManager::RefreshPolicyInstalledApps(
@@ -363,7 +359,6 @@ void WebAppPolicyManager::RefreshPolicyInstalledApps(
       base::BindOnce(&WebAppPolicyManager::OnAppsSynchronized,
                      weak_ptr_factory_.GetWeakPtr()));
 }
-
 
 void WebAppPolicyManager::ParsePolicySettings() {
   // No need to validate the types or values of the policy members because we
@@ -805,16 +800,19 @@ void WebAppPolicyManager::PopulateDisabledWebAppsIdsLists() {
 
 #if BUILDFLAG(IS_CHROMEOS)
   disabled_system_apps_.clear();
+  disabled_system_apps_not_hidden_.clear();
 
   if (ash::features::IsGraduationEnabled() &&
       !ash::graduation::IsEligibleForGraduation(pref_service_)) {
     disabled_system_apps_.insert(ash::SystemWebAppType::GRADUATION);
+    disabled_system_apps_not_hidden_.insert(ash::SystemWebAppType::GRADUATION);
   }
 
   if (!ash::features::IsBocaEnabled() &&
       pref_service_->GetString(
           ash::prefs::kClassManagementToolsAvailabilitySetting) == kDisabled) {
     disabled_system_apps_.insert(ash::SystemWebAppType::BOCA);
+    disabled_system_apps_not_hidden_.insert(ash::SystemWebAppType::BOCA);
   }
 
   PrefService* const local_state = g_browser_process->local_state();
@@ -903,6 +901,8 @@ void WebAppPolicyManager::PopulateDisabledWebAppsIdsLists() {
   }
 
   DCHECK(system_web_apps_delegate_map_);
+  // TODO(413343732): Remove/fix - IDs are not (always) resolved when this
+  // function runs.
   for (const ash::SystemWebAppType& app_type : disabled_system_apps_) {
     std::optional<webapps::AppId> app_id =
         GetAppIdForSystemApp(provider_->registrar_unsafe(),

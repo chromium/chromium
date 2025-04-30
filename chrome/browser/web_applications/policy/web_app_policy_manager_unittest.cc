@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/web_app_id_constants.h"
 #include "base/containers/extend.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
@@ -72,6 +73,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/system_web_apps/test_support/test_system_web_app_manager.h"
 #include "chrome/browser/policy/system_features_disable_list_policy_handler.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/core/common/system_features_disable_list_constants.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -905,55 +907,6 @@ TEST_F(WebAppPolicyManagerTest, InvalidUrlParsingSkipped) {
   ASSERT_TRUE(app_registrar().is_empty());
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
-TEST_F(WebAppPolicyManagerTest, DisableSystemWebApps) {
-  auto disabled_apps = policy_manager().GetDisabledSystemWebApps();
-  EXPECT_TRUE(disabled_apps.empty());
-
-  // Add supported system web apps to system features disable list policy.
-  testing_local_state_.Get()->SetUserPref(
-      policy::policy_prefs::kSystemFeaturesDisableList,
-      base::Value::List()
-          .Append(static_cast<int>(policy::SystemFeature::kCamera))
-          .Append(static_cast<int>(policy::SystemFeature::kOsSettings))
-          .Append(static_cast<int>(policy::SystemFeature::kScanning))
-          .Append(static_cast<int>(policy::SystemFeature::kExplore))
-          .Append(static_cast<int>(policy::SystemFeature::kCrosh))
-          .Append(static_cast<int>(policy::SystemFeature::kTerminal))
-          .Append(static_cast<int>(policy::SystemFeature::kGallery))
-          .Append(static_cast<int>(policy::SystemFeature::kPrintJobs))
-          .Append(static_cast<int>(policy::SystemFeature::kKeyShortcuts))
-          .Append(static_cast<int>(policy::SystemFeature::kRecorder)));
-  base::RunLoop().RunUntilIdle();
-
-  const std::set<ash::SystemWebAppType> expected_disabled_apps{
-      ash::SystemWebAppType::CAMERA,
-      ash::SystemWebAppType::SETTINGS,
-      ash::SystemWebAppType::SCANNING,
-      ash::SystemWebAppType::HELP,
-      ash::SystemWebAppType::CROSH,
-      ash::SystemWebAppType::TERMINAL,
-      ash::SystemWebAppType::MEDIA,
-      ash::SystemWebAppType::PRINT_MANAGEMENT,
-      ash::SystemWebAppType::SHORTCUT_CUSTOMIZATION,
-      ash::SystemWebAppType::RECORDER,
-      ash::SystemWebAppType::GRADUATION,
-      ash::SystemWebAppType::BOCA};
-
-  disabled_apps = policy_manager().GetDisabledSystemWebApps();
-  EXPECT_EQ(disabled_apps, expected_disabled_apps);
-
-  // Default disable mode is blocked.
-  EXPECT_FALSE(policy_manager().IsDisabledAppsModeHidden());
-  // Set disable mode to hidden.
-  testing_local_state_.Get()->SetUserPref(
-      policy::policy_prefs::kSystemFeaturesDisableMode,
-      base::Value(policy::kSystemFeaturesDisableModeHidden));
-  base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(policy_manager().IsDisabledAppsModeHidden());
-}
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 TEST_F(WebAppPolicyManagerTest, WebAppSettingsDynamicRefresh) {
   const char kWebAppSettingInitialConfiguration[] = R"([
     {
@@ -1074,6 +1027,88 @@ TEST_F(WebAppPolicyManagerTest, WebAppSettingsForceInstallNewApps) {
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
+
+class WebAppPolicyManagerDisableListTest : public WebAppPolicyManagerTestBase {
+ public:
+  WebAppPolicyManagerDisableListTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        chromeos::features::kSystemFeaturesDisableListHidden);
+  }
+
+  WebAppPolicyManagerDisableListTest(
+      const WebAppPolicyManagerDisableListTest&) = delete;
+  WebAppPolicyManagerDisableListTest& operator=(
+      const WebAppPolicyManagerDisableListTest&) = delete;
+
+  ~WebAppPolicyManagerDisableListTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(WebAppPolicyManagerDisableListTest, DisableSystemWebApps) {
+  auto disabled_apps = policy_manager().GetDisabledSystemWebApps();
+  EXPECT_TRUE(disabled_apps.empty());
+
+  // Add supported system web apps to system features disable list policy.
+  testing_local_state_.Get()->SetUserPref(
+      policy::policy_prefs::kSystemFeaturesDisableList,
+      base::Value::List()
+          .Append(static_cast<int>(policy::SystemFeature::kCamera))
+          .Append(static_cast<int>(policy::SystemFeature::kOsSettings))
+          .Append(static_cast<int>(policy::SystemFeature::kScanning))
+          .Append(static_cast<int>(policy::SystemFeature::kExplore))
+          .Append(static_cast<int>(policy::SystemFeature::kCrosh))
+          .Append(static_cast<int>(policy::SystemFeature::kTerminal))
+          .Append(static_cast<int>(policy::SystemFeature::kGallery))
+          .Append(static_cast<int>(policy::SystemFeature::kPrintJobs))
+          .Append(static_cast<int>(policy::SystemFeature::kKeyShortcuts))
+          .Append(static_cast<int>(policy::SystemFeature::kRecorder)));
+  base::RunLoop().RunUntilIdle();
+
+  disabled_apps = policy_manager().GetDisabledSystemWebApps();
+  EXPECT_THAT(
+      disabled_apps,
+      testing::UnorderedElementsAre(
+          ash::SystemWebAppType::CAMERA, ash::SystemWebAppType::SETTINGS,
+          ash::SystemWebAppType::SCANNING, ash::SystemWebAppType::HELP,
+          ash::SystemWebAppType::CROSH, ash::SystemWebAppType::TERMINAL,
+          ash::SystemWebAppType::MEDIA, ash::SystemWebAppType::PRINT_MANAGEMENT,
+          ash::SystemWebAppType::SHORTCUT_CUSTOMIZATION,
+          ash::SystemWebAppType::RECORDER, ash::SystemWebAppType::GRADUATION,
+          ash::SystemWebAppType::BOCA));
+
+  // If the app is disabled by the SystemFeaturesDisableList policy, default
+  // disable mode for user sessions is hidden.
+  EXPECT_TRUE(
+      policy_manager().IsDisabledAppsModeHidden(ash::SystemWebAppType::CAMERA));
+  EXPECT_TRUE(policy_manager().IsDisabledAppsModeHidden(
+      ash::SystemWebAppType::SETTINGS));
+  EXPECT_TRUE(policy_manager().IsDisabledAppsModeHidden(
+      ash::SystemWebAppType::SCANNING));
+  EXPECT_TRUE(
+      policy_manager().IsDisabledAppsModeHidden(ash::SystemWebAppType::HELP));
+  EXPECT_TRUE(
+      policy_manager().IsDisabledAppsModeHidden(ash::SystemWebAppType::CROSH));
+  EXPECT_TRUE(policy_manager().IsDisabledAppsModeHidden(
+      ash::SystemWebAppType::TERMINAL));
+  EXPECT_TRUE(
+      policy_manager().IsDisabledAppsModeHidden(ash::SystemWebAppType::MEDIA));
+  EXPECT_TRUE(policy_manager().IsDisabledAppsModeHidden(
+      ash::SystemWebAppType::PRINT_MANAGEMENT));
+  EXPECT_TRUE(policy_manager().IsDisabledAppsModeHidden(
+      ash::SystemWebAppType::SHORTCUT_CUSTOMIZATION));
+  EXPECT_TRUE(policy_manager().IsDisabledAppsModeHidden(
+      ash::SystemWebAppType::RECORDER));
+
+  // For apps not hidden by the SystemFeaturesDisableList policy, default
+  // disable mode for user sessions is blocked.
+  EXPECT_FALSE(policy_manager().IsDisabledAppsModeHidden(
+      ash::SystemWebAppType::GRADUATION));
+  EXPECT_FALSE(
+      policy_manager().IsDisabledAppsModeHidden(ash::SystemWebAppType::BOCA));
+}
+
 class WebAppPolicyManagerWithGraduationTest
     : public WebAppPolicyManagerTestBase {
  public:

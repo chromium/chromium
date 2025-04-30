@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <iterator>
 #include <memory>
+#include <optional>
 #include <ostream>
 #include <set>
 #include <string_view>
@@ -1442,7 +1443,13 @@ void WebAppPublisherHelper::OnWebAppDisabledStateChanged(
 
   // If the disable mode is hidden, update the visibility of the new disabled
   // app.
-  if (is_disabled && provider_->policy_manager().IsDisabledAppsModeHidden()) {
+  std::optional<ash::SystemWebAppType> system_app_type = std::nullopt;
+  auto* swa_manager = ash::SystemWebAppManager::Get(profile());
+  if (swa_manager) {
+    system_app_type = swa_manager->GetSystemAppTypeForAppId(app->app_id);
+  }
+  if (is_disabled &&
+      provider_->policy_manager().IsDisabledAppsModeHidden(system_app_type)) {
     UpdateAppDisabledMode(*app);
   }
 
@@ -1755,7 +1762,13 @@ apps::PackageId WebAppPublisherHelper::GetPackageId(
 
 #if BUILDFLAG(IS_CHROMEOS)
 void WebAppPublisherHelper::UpdateAppDisabledMode(apps::App& app) {
-  if (provider_->policy_manager().IsDisabledAppsModeHidden()) {
+  std::optional<ash::SystemWebAppType> system_app_type = std::nullopt;
+  auto* swa_manager = ash::SystemWebAppManager::Get(profile());
+  if (swa_manager) {
+    system_app_type = swa_manager->GetSystemAppTypeForAppId(app.app_id);
+  }
+
+  if (provider_->policy_manager().IsDisabledAppsModeHidden(system_app_type)) {
     app.show_in_launcher = false;
     app.show_in_search = false;
     app.show_in_shelf = false;
@@ -1765,11 +1778,6 @@ void WebAppPublisherHelper::UpdateAppDisabledMode(apps::App& app) {
   app.show_in_search = true;
   app.show_in_shelf = true;
 
-  auto* swa_manager = ash::SystemWebAppManager::Get(profile());
-  if (!swa_manager) {
-    return;
-  }
-  auto system_app_type = swa_manager->GetSystemAppTypeForAppId(app.app_id);
   if (system_app_type.has_value()) {
     auto* system_app = swa_manager->GetSystemApp(*system_app_type);
     DCHECK(system_app);
