@@ -152,6 +152,11 @@ void EnterpriseSearchAggregatorSuggestionsService::
       signin::ConsentLevel::kSignin);
 }
 
+void EnterpriseSearchAggregatorSuggestionsService::
+    StopCreatingEnterpriseSearchAggregatorSuggestionsRequest() {
+  token_fetcher_.reset();
+}
+
 void EnterpriseSearchAggregatorSuggestionsService::AccessTokenAvailable(
     std::unique_ptr<network::ResourceRequest> request,
     std::string request_body,

@@ -487,6 +487,13 @@ void EnterpriseSearchAggregatorProvider::Stop(bool clear_cached_results,
   if (!due_to_user_inactivity) {
     AutocompleteProvider::Stop(clear_cached_results, due_to_user_inactivity);
     debouncer_->CancelRequest();
+
+    if (auto* remote_suggestions_service = client_->GetRemoteSuggestionsService(
+            /*create_if_necessary=*/false)) {
+      remote_suggestions_service
+          ->StopCreatingEnterpriseSearchAggregatorSuggestionsRequest();
+    }
+
     if (loader_) {
       LogResponseTime(true);
       loader_.reset();

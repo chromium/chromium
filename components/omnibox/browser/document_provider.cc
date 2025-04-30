@@ -524,6 +524,11 @@ void DocumentProvider::Stop(bool clear_cached_results,
 
   debouncer_->CancelRequest();
 
+  if (auto* remote_suggestions_service =
+          client_->GetRemoteSuggestionsService(/*create_if_necessary=*/false)) {
+    remote_suggestions_service->StopCreatingDocumentSuggestionsRequest();
+  }
+
   // If the request was sent, then log its duration and that it was invalidated.
   if (loader_) {
     DCHECK(!time_run_invoked_.is_null());
@@ -541,11 +546,6 @@ void DocumentProvider::Stop(bool clear_cached_results,
   if (!time_run_invoked_.is_null()) {
     LogTotalTime(time_run_invoked_, true);
     time_run_invoked_ = base::TimeTicks();
-  }
-
-  if (auto* remote_suggestions_service =
-          client_->GetRemoteSuggestionsService(/*create_if_necessary=*/false)) {
-    remote_suggestions_service->StopCreatingDocumentSuggestionsRequest();
   }
 }
 

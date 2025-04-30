@@ -517,6 +517,14 @@ void RemoteSuggestionsService::
           in_keyword_mode);
 }
 
+void RemoteSuggestionsService::
+    StopCreatingEnterpriseSearchAggregatorSuggestionsRequest() {
+  if (enterprise_search_aggregator_suggestions_service_) {
+    enterprise_search_aggregator_suggestions_service_
+        ->StopCreatingEnterpriseSearchAggregatorSuggestionsRequest();
+  }
+}
+
 std::unique_ptr<network::SimpleURLLoader>
 RemoteSuggestionsService::StartDeletionRequest(
     const std::string& deletion_url,

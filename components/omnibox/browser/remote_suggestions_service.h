@@ -211,8 +211,7 @@ class RemoteSuggestionsService : public KeyedService {
                                         StartCallback start_callback,
                                         CompletionCallback completion_callback);
 
-  // Advises the service to stop any process that creates a document suggestion
-  // request.
+  // Stops creating the request. Already created requests aren't affected.
   void StopCreatingDocumentSuggestionsRequest();
 
   // Creates and starts an enterprise search aggregator suggestion request using
@@ -224,6 +223,9 @@ class RemoteSuggestionsService : public KeyedService {
       StartCallback start_callback,
       CompletionCallback completion_callback,
       bool in_keyword_mode);
+
+  // Stops creating the request. Already created requests aren't affected.
+  void StopCreatingEnterpriseSearchAggregatorSuggestionsRequest();
 
   // Creates and returns a loader to delete personalized suggestions.
   //
