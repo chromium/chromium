@@ -330,6 +330,7 @@ class AuthenticatingState : public ControllerState,
       : ControllerState(id, controller) {}
 
   void OnEnter(const ErrorInfo& error) override {
+    start_time_ = base::Time::Now();
     FlowType flow_type = controller->flow().type;
     switch (flow_type) {
       case FlowType::kJoin:
@@ -401,8 +402,7 @@ class AuthenticatingState : public ControllerState,
           GetLogger(), CollaborationServiceShareOrManageEvent::kSigninVerified);
     }
     // TODO(crbug.com/380957996): Handle signin/sync changes during a flow.
-    controller->delegate()->NotifySignInAndSyncStatusChange();
-    controller->TransitionTo(StateId::kWaitingForServicesToInitialize);
+    FinishAndTransition();
   }
 
   // CollaborationService::Observer implementation.
@@ -423,12 +423,20 @@ class AuthenticatingState : public ControllerState,
             GetLogger(),
             CollaborationServiceShareOrManageEvent::kSigninVerifiedInObserver);
       }
-      controller->delegate()->NotifySignInAndSyncStatusChange();
-      controller->TransitionTo(StateId::kWaitingForServicesToInitialize);
+      FinishAndTransition();
     }
   }
 
  private:
+  void FinishAndTransition() {
+    RecordLatency(GetLogger(),
+                  metrics::CollaborationServiceStep::kAuthenticationSuccess,
+                  base::Time::Now() - start_time_);
+    controller->delegate()->NotifySignInAndSyncStatusChange();
+    controller->TransitionTo(StateId::kWaitingForServicesToInitialize);
+  }
+
+  base::Time start_time_;
   base::ScopedObservation<CollaborationService, CollaborationService::Observer>
       collaboration_service_observer_{this};
 
@@ -446,6 +454,7 @@ class WaitingForServicesToInitialize
 
   // ControllerState implementation.
   void OnEnter(const ErrorInfo& error) override {
+    start_time_ = base::Time::Now();
     // Timeout waiting.
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
@@ -474,6 +483,9 @@ class WaitingForServicesToInitialize
   }
 
   void OnProcessingFinishedWithSuccess() override {
+    RecordLatency(GetLogger(),
+                  metrics::CollaborationServiceStep::kServicesInitialized,
+                  base::Time::Now() - start_time_);
     controller->TransitionTo(StateId::kCheckingFlowRequirements);
   }
 
@@ -523,6 +535,7 @@ class WaitingForServicesToInitialize
     }
   }
 
+  base::Time start_time_;
   bool is_tab_group_sync_ready_{false};
   bool is_data_sharing_ready_{false};
   base::ScopedObservation<tab_groups::TabGroupSyncService,
@@ -775,6 +788,7 @@ class WaitingForSyncAndDataSharingGroup
   WaitingForSyncAndDataSharingGroup(StateId id,
                                     CollaborationController* controller)
       : ControllerState(id, controller) {
+    start_time_ = base::Time::Now();
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(
@@ -802,6 +816,10 @@ class WaitingForSyncAndDataSharingGroup
 
   // ControllerState implementation.
   void OnProcessingFinishedWithSuccess() override {
+    RecordLatency(GetLogger(),
+                  metrics::CollaborationServiceStep::
+                      kTabGroupFetchedAfterPeopleGroupJoined,
+                  base::Time::Now() - start_time_);
     controller->TransitionTo(StateId::kOpeningLocalTabGroup);
   }
 
@@ -847,6 +865,7 @@ class WaitingForSyncAndDataSharingGroup
   }
 
  private:
+  base::Time start_time_;
   base::ScopedObservation<tab_groups::TabGroupSyncService,
                           tab_groups::TabGroupSyncService::Observer>
       tab_group_sync_observer_{this};
@@ -947,6 +966,7 @@ class MakingTabGroupShared : public ControllerState {
       : ControllerState(id, controller) {}
 
   void OnEnter(const ErrorInfo& error) override {
+    start_time_ = base::Time::Now();
     CHECK_EQ(controller->flow().type, FlowType::kShareOrManage);
 
     std::optional<tab_groups::SavedTabGroup> group =
@@ -1017,10 +1037,15 @@ class MakingTabGroupShared : public ControllerState {
 
   void MaybeProceedFlow() {
     if (is_make_group_shared_complete_ && is_read_group_complete_) {
+      RecordLatency(
+          GetLogger(),
+          metrics::CollaborationServiceStep::kLinkReadyAfterGroupCreation,
+          base::Time::Now() - start_time_);
       OnProcessingFinishedWithSuccess();
     }
   }
 
+  base::Time start_time_;
   bool is_make_group_shared_complete_{false};
   bool is_read_group_complete_{false};
   base::WeakPtrFactory<MakingTabGroupShared> local_weak_ptr_factory_{this};

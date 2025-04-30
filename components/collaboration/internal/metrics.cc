@@ -229,6 +229,22 @@ std::string_view CollaborationServiceShareOrManageEntryPointToString(
   }
 }
 
+std::string_view CollaborationServiceStepToString(
+    CollaborationServiceStep step) {
+  switch (step) {
+    case CollaborationServiceStep::kUnknown:
+      return "Unknown";
+    case CollaborationServiceStep::kAuthenticationSuccess:
+      return "AuthenticationSuccess";
+    case CollaborationServiceStep::kServicesInitialized:
+      return "ServicesInitialized";
+    case CollaborationServiceStep::kLinkReadyAfterGroupCreation:
+      return "LinkReadyAfterGroupCreation";
+    case CollaborationServiceStep::kTabGroupFetchedAfterPeopleGroupJoined:
+      return "TabGroupFetchedAfterPeopleGroupJoined";
+  }
+}
+
 std::string CreateJoinEventLogString(CollaborationServiceJoinEvent event) {
   return base::StringPrintf("Join Flow Event: %s",
                             CollaborationServiceJoinEventToString(event));
@@ -252,6 +268,13 @@ std::string CreateShareOrManageEntryLogToString(
   return base::StringPrintf(
       "Share or Manage Flow Started\n  From: %s\n",
       CollaborationServiceShareOrManageEntryPointToString(entry));
+}
+
+std::string CreateLatencyLogToString(CollaborationServiceStep step,
+                                     base::TimeDelta duration) {
+  return base::StringPrintf("Step %s took %dms to complete.",
+                            CollaborationServiceStepToString(step),
+                            duration.InMillisecondsRoundedUp());
 }
 
 }  // namespace
@@ -298,6 +321,14 @@ void RecordShareOrManageEntryPoint(
       "CollaborationService.ShareOrManageFlow.EntryPoint", entry);
   DATA_SHARING_LOG(logger_common::mojom::LogSource::CollaborationService,
                    logger, CreateShareOrManageEntryLogToString(entry));
+}
+
+void RecordLatency(data_sharing::Logger* logger,
+                   CollaborationServiceStep step,
+                   base::TimeDelta duration) {
+  base::UmaHistogramMediumTimes("CollaborationService.Latency", duration);
+  DATA_SHARING_LOG(logger_common::mojom::LogSource::CollaborationService,
+                   logger, CreateLatencyLogToString(step, duration));
 }
 
 }  // namespace collaboration::metrics
