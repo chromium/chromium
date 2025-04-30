@@ -101,7 +101,9 @@ class AnimationEffectStackTest : public PageTestBase {
     EXPECT_TRUE(typed_value->GetInterpolableValue().IsLength());
     const InterpolableLength& length =
         To<InterpolableLength>(typed_value->GetInterpolableValue());
-    return length.CreateCSSValue(Length::ValueRange::kAll)->GetDoubleValue();
+    return To<CSSNumericLiteralValue>(
+               length.CreateCSSValue(Length::ValueRange::kAll))
+        ->GetDoubleValue();
   }
 
   double GetZIndexValue(const ActiveInterpolationsMap& active_interpolations) {
