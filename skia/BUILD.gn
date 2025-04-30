@@ -67,7 +67,6 @@ config("skia_config") {
     "SK_USER_CONFIG_HEADER=\"../../skia/config/SkUserConfig.h\"",
     "SK_WIN_FONTMGR_NO_SIMULATIONS",
     "SK_DISABLE_LEGACY_INIT_DECODERS",
-    "SK_CODEC_ENCODES_PNG_WITH_CONVERT_PIXELS",
   ]
 
   include_dirs = [
