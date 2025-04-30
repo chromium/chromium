@@ -12,46 +12,54 @@
 import sys
 import os
 
-INCLUDE_ARRAY = '#include <array>'
-INCLUDE_SPAN = '#include "base/containers/span.h"'
-INCLUDE_RAW_SPAN = '#include "base/memory/raw_span.h"'
-
 
 class ReorderTarget:
 
     def __find_line_numbers(self):
-        # Do we have any `#include`s above `#pragma allow_unsafe_buffers`?
+        # Do we have any `#include`s above
+        # * `#pragma allow_unsafe_buffers` or
+        # * the header guard (if in a header file)?
         in_opt_out = False
+        guard_line = None
+        pragma_end = None
         for i, unstripped_line in enumerate(self.lines):
             line = unstripped_line.strip()
-            if line == INCLUDE_ARRAY:
-                self.array_include_line = i
-            elif line == INCLUDE_SPAN:
-                self.span_include_line = i
-            elif line == INCLUDE_RAW_SPAN:
-                self.raw_span_include_line = i
-            if '#ifdef UNSAFE_BUFFERS_BUILD' in line:
+            if line in self.lines_to_reorder:
+                # If we come across a duplicate `#include`, it's
+                # probably an existing one, and we should leave it alone.
+                # The `#include`s that spanify emits should be the
+                # highest-up.
+                if self.lines_to_reorder[line] is not None:
+                    continue
+                self.lines_to_reorder[line] = i
+            elif '#ifdef UNSAFE_BUFFERS_BUILD' in line:
                 in_opt_out = True
             elif in_opt_out and '#endif' in line:
-                self.pragma_end = i
+                pragma_end = i
                 in_opt_out = False
             elif line == self.guard_format:
-                self.guard_line = i
+                guard_line = i
+
         # If we have both a pragma and a guard, we want to insert _after_ both.
         # However if we only have either pragma or guard we insert after
         # whichever is present.
         try:
-            self.insertion_point = max(self.pragma_end, self.guard_line)
+            self.insertion_point = max(pragma_end, guard_line)
         except TypeError:
-            self.insertion_point = self.pragma_end or self.guard_line
+            self.insertion_point = pragma_end or guard_line
+        self.lines_to_reorder = {
+            k: v
+            for (k, v) in self.lines_to_reorder.items()
+            if v is not None and v < self.insertion_point
+        }
 
     def __init__(self, path):
         self.lines = None
-        self.array_include_line = None
-        self.span_include_line = None
-        self.raw_span_include_line = None
-        self.pragma_end = None
-        self.guard_line = None
+        self.lines_to_reorder = {
+            '#include <array>': None,
+            '#include "base/containers/span.h"': None,
+            '#include "base/memory/raw_span.h"': None,
+        }
         self.insertion_point = None
         self.guard_format = self._compute_guard_format(path)
 
@@ -68,33 +76,15 @@ class ReorderTarget:
         guard_format = path.upper().replace('/', '_').replace('.', '_') + '_'
         return f'#define {guard_format}'
 
-    def _should_reorder_impl(self, member):
-        try:
-            return member < self.insertion_point
-        except TypeError:
-            # One or both are `None`.
-            return False
-
-    def should_reorder_array_include(self):
-        return self._should_reorder_impl(self.array_include_line)
-
-    def should_reorder_span_include(self):
-        return self._should_reorder_impl(self.span_include_line)
-
-    def should_reorder_raw_span_include(self):
-        return self._should_reorder_impl(self.raw_span_include_line)
-
     def should_reorder(self):
         # Deleted file.
         if self.lines is None:
             return False
-        # No pragma? Then `git cl format` shouldn't be confused (apply_edits.py,
-        # knows how to handle header guards without pragmas).
-        if self.pragma_end is None:
+        # If there were no pragmas or header guards, then
+        # `git cl format` should not be confused.
+        if self.insertion_point is None:
             return False
-        return (self.should_reorder_array_include()
-                or self.should_reorder_span_include()
-                or self.should_reorder_raw_span_include())
+        return bool(self.lines_to_reorder)
 
 
 def reorder_pragma_and_includes(path):
@@ -105,26 +95,23 @@ def reorder_pragma_and_includes(path):
     # Entering this block means there _is_ something to reorder.
     # 1.  The `#pragma` line exists. We _will_ pass through it as
     #     we traverse the file.
-    # 2.  Either `span.h` or `<array>` is included - possibly both.
+    # 2.  `target.lines_to_reorder` is a nonempty dict.
     with open(path, 'w') as f:
         for (line_number, line) in enumerate(target.lines):
             # Write out all lines except for the overly-high-up `#include`s
             # until we pass the the `UNSAFE_BUFFERS_BUILD` macro and the HEADER
             # guards (if present).
             if line_number < target.insertion_point:
-                if line.strip() not in (INCLUDE_ARRAY, INCLUDE_SPAN,
-                                        INCLUDE_RAW_SPAN):
+                if line.strip() not in target.lines_to_reorder:
                     f.write(line)
                 continue
 
             if line_number == target.insertion_point:
                 f.write(line)
-                if target.should_reorder_array_include():
-                    f.write(f"\n{INCLUDE_ARRAY}\n")
-                if target.should_reorder_span_include():
-                    f.write(f"\n{INCLUDE_SPAN}\n")
-                if target.should_reorder_raw_span_include():
-                    f.write(f"\n{INCLUDE_RAW_SPAN}\n")
+                for to_reorder in target.lines_to_reorder:
+                    f.write("\n")
+                    f.write(to_reorder)
+                    f.write("\n")
                 continue
 
             # We have passed the `#pragma` and any header guards (if present)
