@@ -434,6 +434,7 @@ base::expected<void, std::string> UpdateLayer(const mojom::Layer& wire,
   layer.UnionUpdateRect(wire.update_rect);
   layer.SetOffsetToTransformParent(wire.offset_to_transform_parent);
   layer.SetShouldCheckBackfaceVisibility(wire.should_check_backface_visibility);
+  layer.SetFilterQuality(wire.filter_quality);
 
   if (layer.GetLayerType() == cc::mojom::LayerType::kTileDisplay) {
     auto& tile_display_layer = static_cast<cc::TileDisplayLayerImpl&>(layer);
