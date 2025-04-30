@@ -995,7 +995,7 @@ public class KeyboardShortcuts {
                         currentTabModel
                                 .getTabRemover()
                                 .closeTabs(
-                                        TabClosureParams.closeTab(tab).allowUndo(true).build(),
+                                        TabClosureParams.closeTab(tab).allowUndo(false).build(),
                                         /* allowDialog= */ true);
                     }
                     return true;
