@@ -278,16 +278,20 @@ chromium-metrics-reviews@google.com.
   <owner>amelies@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
-    Records metrics about the dialog which asks the user whether they want to
-    move a bookmark from account to local storage. {Action} records whether the
-    dialog was shown, and whether it was subsequently accepted, declined, or
-    explicitly closed (e.g. by using the Escape key).
+    Records that the user {Action} the dialog which asks them to confirm whether
+    they want to move a bookmark from account to local storage.
+
+    This histogram is usually recorded twice per dialog, once for `Shown` and
+    once for the following user action (accepted, declined, or explicitly
+    closed). It is only recorded once with `Shown` if the browser is closed
+    while the dialog is opened.
   </summary>
   <token key="Action">
-    <variant name="Accepted"/>
-    <variant name="Declined"/>
-    <variant name="ExplicitlyClosed"/>
-    <variant name="Shown"/>
+    <variant name="Accepted" summary="accepted"/>
+    <variant name="Declined" summary="declined"/>
+    <variant name="ExplicitlyClosed"
+        summary="explicitly closed (e.g. by using the Escape key)"/>
+    <variant name="Shown" summary="was shown"/>
   </token>
 </histogram>
 
@@ -296,26 +300,33 @@ chromium-metrics-reviews@google.com.
   <owner>amelies@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
-    Records metrics about the dialog which asks the user whether they want to
-    move a bookmark from local to account storage. {Action} records whether the
-    dialog was shown, and whether it was subsequently accepted, declined, or
-    explicitly closed (e.g. by using the Escape key).
+    Records that the user {Action} the dialog which asks them to confirm whether
+    they want to move a bookmark from local to account storage.
 
-    BookmarkAccountStorageMoveDialogType refers to the type of dialog.
+    This histogram is usually recorded twice per dialog, once for `Shown` and
+    once for the following user action (accepted, declined, or explicitly
+    closed). It is only recorded once with `Shown` if the browser is closed
+    while the dialog is opened.
 
-    DownloadOrUpload is the version of the dialog which can be used for either
-    uploading or downloading a bookmark, usually triggered through a drag and
-    drop by the user in a folder of a different storage (account vs. local).
+    `BookmarkAccountStorageMoveDialogType` refers to the type of dialog:
 
-    Upload is the version of the dialog which can only be used for uploading a
-    bookmark without specifying the location, triggered by clicking on a
-    bookmark's cloud upload icon in the bookmark manager.
+    * `Download or upload version` is the version of the dialog which can be
+    used for either uploading or downloading a bookmark, usually triggered
+    through a drag and drop by the user in a folder of a different storage
+    (account vs. local). This dialog is triggered for merged surfaces such as
+    the bookmarks bar or the side panel, not unmerged surfaces such as the
+    bookmark manager.
+
+    * `Upload only version` is the version of the dialog which can only be used
+    for uploading a bookmark without specifying the location, triggered by
+    clicking on a local bookmark's cloud upload icon in the bookmark manager.
   </summary>
   <token key="Action">
-    <variant name="Accepted"/>
-    <variant name="Declined"/>
-    <variant name="ExplicitlyClosed"/>
-    <variant name="Shown"/>
+    <variant name="Accepted" summary="accepted"/>
+    <variant name="Declined" summary="declined"/>
+    <variant name="ExplicitlyClosed"
+        summary="explicitly closed (e.g. by using the Escape key)"/>
+    <variant name="Shown" summary="was shown"/>
   </token>
 </histogram>
 
