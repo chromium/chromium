@@ -2,17 +2,17 @@
     {
         "name": "activity",
         "group": "androidx.activity",
-        "version": "1.11.0-SNAPSHOT"
+        "version": "1.12.0-SNAPSHOT"
     },
     {
         "name": "activity-compose",
         "group": "androidx.activity",
-        "version": "1.11.0-SNAPSHOT"
+        "version": "1.12.0-SNAPSHOT"
     },
     {
         "name": "activity-ktx",
         "group": "androidx.activity",
-        "version": "1.11.0-SNAPSHOT"
+        "version": "1.12.0-SNAPSHOT"
     },
     {
         "name": "annotation",

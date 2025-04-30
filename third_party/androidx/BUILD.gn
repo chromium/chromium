@@ -12,7 +12,7 @@ define_override_androidx_targets("unused") {
 if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_activity_activity_java") {
-    aar_path = "../androidx/cipd/libs/androidx_activity_activity/activity-1.11.0-SNAPSHOT.aar"
+    aar_path = "../androidx/cipd/libs/androidx_activity_activity/activity-1.12.0-SNAPSHOT.aar"
     info_path = "../androidx/committed/libs/androidx_activity_activity/androidx_activity_activity.info"
     enable_bytecode_checks = false
     deps = [
@@ -32,7 +32,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_activity_activity_compose_java") {
-    aar_path = "../androidx/cipd/libs/androidx_activity_activity_compose/activity-compose-1.11.0-SNAPSHOT.aar"
+    aar_path = "../androidx/cipd/libs/androidx_activity_activity_compose/activity-compose-1.12.0-SNAPSHOT.aar"
     info_path = "../androidx/committed/libs/androidx_activity_activity_compose/androidx_activity_activity_compose.info"
     enable_bytecode_checks = false
     deps = [
@@ -1619,7 +1619,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_activity_activity_ktx_java") {
-    aar_path = "../androidx/cipd/libs/androidx_activity_activity_ktx/activity-ktx-1.11.0-SNAPSHOT.aar"
+    aar_path = "../androidx/cipd/libs/androidx_activity_activity_ktx/activity-ktx-1.12.0-SNAPSHOT.aar"
     info_path = "../androidx/committed/libs/androidx_activity_activity_ktx/androidx_activity_activity_ktx.info"
     enable_bytecode_checks = false
 
