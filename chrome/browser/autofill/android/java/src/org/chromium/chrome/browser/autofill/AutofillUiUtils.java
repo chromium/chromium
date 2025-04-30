@@ -716,6 +716,31 @@ public class AutofillUiUtils {
     }
 
     /**
+     * If {@code imageUrl} is valid, it fetches the bitmap of the required size from {@link
+     * AutofillImageFetcher}. Otherwise @{code null} drawable is returned.
+     *
+     * @param context Context required to get resources.
+     * @param imageFetcher The {@link AutofillImageFetcher} associated with the profile.
+     * @param imageUrl The URL to fetch the icon.
+     * @param imageSize Enum that specifies the icon's size (small or large).
+     * @return {@link Drawable} that can be set as the card icon.
+     */
+    public static @Nullable Drawable getValuableIcon(
+            Context context,
+            AutofillImageFetcher imageFetcher,
+            GURL imageUrl,
+            @ImageSize int imageSize) {
+        Optional<Bitmap> customIconBitmap =
+                imageFetcher.getImageIfAvailable(
+                        imageUrl, IconSpecs.create(context, ImageType.VALUABLE_IMAGE, imageSize));
+
+        if (!customIconBitmap.isPresent()) {
+            return null;
+        }
+        return new BitmapDrawable(context.getResources(), customIconBitmap.get());
+    }
+
+    /**
      * Resize the bitmap to the required specs, round corners, and add grey border.
      *
      * @param bitmap to be updated.

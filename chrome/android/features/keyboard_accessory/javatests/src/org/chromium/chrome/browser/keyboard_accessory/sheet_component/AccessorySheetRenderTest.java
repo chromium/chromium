@@ -73,6 +73,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.NightModeTestUtils;
 import org.chromium.ui.test.util.ViewUtils;
+import org.chromium.url.GURL;
 
 import java.util.Arrays;
 import java.util.List;
@@ -396,6 +397,7 @@ public class AccessorySheetRenderTest {
                 .add(
                         new KeyboardAccessoryData.LoyaltyCardInfo(
                                 "CVS Pharmacy",
+                                new GURL("https:://image.server.com/image.png"),
                                 new UserInfoField.Builder()
                                         .setSuggestionType(AccessorySuggestionType.LOYALTY_CARD)
                                         .setDisplayText("987654321")

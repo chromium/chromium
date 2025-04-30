@@ -342,6 +342,7 @@ class ManualFillingComponentBridge {
             @AccessoryTabType int sheetType,
             @AccessorySuggestionType int suggestionType,
             @JniType("std::string") String merchantName,
+            GURL programLogoUrl,
             @JniType("std::u16string") String loyaltyCardNumber) {
         Callback<UserInfoField> callback =
                 (field) -> {
@@ -356,6 +357,7 @@ class ManualFillingComponentBridge {
                 .add(
                         new LoyaltyCardInfo(
                                 merchantName,
+                                programLogoUrl,
                                 new UserInfoField.Builder()
                                         .setSuggestionType(suggestionType)
                                         .setDisplayText(loyaltyCardNumber)

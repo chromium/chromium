@@ -705,7 +705,7 @@ TEST_F(PaymentMethodAccessoryControllerTest,
               IDS_MANUAL_FILLING_CREDIT_CARD_SHEET_EMPTY_MESSAGE),
           /*plus_address_title=*/std::u16string())
           .AddLoyaltyCardInfo(
-              loyalty_card.merchant_name(),
+              loyalty_card.merchant_name(), loyalty_card.program_logo(),
               base::UTF8ToUTF16(loyalty_card.loyalty_card_number()))
           .AppendFooterCommand(
               l10n_util::GetStringUTF16(
@@ -754,7 +754,7 @@ TEST_F(PaymentMethodAccessoryControllerTest, LoyaltyCardDataIsChangedBySync) {
               IDS_MANUAL_FILLING_CREDIT_CARD_SHEET_EMPTY_MESSAGE),
           /*plus_address_title=*/std::u16string())
           .AddLoyaltyCardInfo(
-              loyalty_card.merchant_name(),
+              loyalty_card.merchant_name(), loyalty_card.program_logo(),
               base::UTF8ToUTF16(loyalty_card.loyalty_card_number()))
           .AppendFooterCommand(
               l10n_util::GetStringUTF16(
@@ -771,7 +771,7 @@ TEST_F(PaymentMethodAccessoryControllerTest, FillLoyaltyCardNumber) {
 
   LoyaltyCard loyalty_card = test::CreateLoyaltyCard();
   LoyaltyCardInfo loyalty_card_info(
-      loyalty_card.merchant_name(),
+      loyalty_card.merchant_name(), loyalty_card.program_logo(),
       base::UTF8ToUTF16(loyalty_card.loyalty_card_number()));
   EXPECT_CALL(autofill_driver(),
               ApplyFieldAction(mojom::FieldActionType::kReplaceAll,

@@ -168,6 +168,8 @@ ScopedJavaGlobalRef<jobject> ConvertAccessorySheetDataToJavaObject(
         static_cast<int>(tab_data.get_sheet_type()),
         static_cast<int>(loyalty_card_info.value().suggestion_type()),
         loyalty_card_info.merchant_name(),
+        url::GURLAndroid::FromNativeGURL(env,
+                                         loyalty_card_info.program_logo_url()),
         loyalty_card_info.value().display_text());
   }
 

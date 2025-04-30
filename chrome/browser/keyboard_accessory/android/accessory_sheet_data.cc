@@ -296,8 +296,10 @@ std::ostream& operator<<(std::ostream& os, const IbanInfo& iban_info) {
 }
 
 LoyaltyCardInfo::LoyaltyCardInfo(std::string merchant_name,
+                                 GURL program_logo_url,
                                  std::u16string loyalty_card_number)
     : merchant_name_(std::move(merchant_name)),
+      program_logo_url_(std::move(program_logo_url)),
       value_(AccessorySheetField::Builder()
                  .SetSuggestionType(AccessorySuggestionType::kLoyaltyCard)
                  .SetDisplayText(loyalty_card_number)
@@ -676,17 +678,21 @@ AccessorySheetData::Builder& AccessorySheetData::Builder::AddIbanInfo(
 
 AccessorySheetData::Builder&& AccessorySheetData::Builder::AddLoyaltyCardInfo(
     std::string merchant_name,
+    GURL program_logo_url,
     std::u16string loyalty_card_number) && {
   // Calls AddLoyaltyCardInfo(...)& since `this` is an lvalue.
   return std::move(AddLoyaltyCardInfo(std::move(merchant_name),
+                                      std::move(program_logo_url),
                                       std::move(loyalty_card_number)));
 }
 
 AccessorySheetData::Builder& AccessorySheetData::Builder::AddLoyaltyCardInfo(
     std::string merchant_name,
+    GURL program_logo_url,
     std::u16string loyalty_card_number) & {
-  accessory_sheet_data_.add_loyalty_card_info((LoyaltyCardInfo(
-      std::move(merchant_name), std::move(loyalty_card_number))));
+  accessory_sheet_data_.add_loyalty_card_info(
+      (LoyaltyCardInfo(std::move(merchant_name), std::move(program_logo_url),
+                       std::move(loyalty_card_number))));
   return *this;
 }
 

@@ -247,9 +247,9 @@ PaymentMethodAccessoryControllerImpl::GetSheetData() const {
   }
 
   for (const LoyaltyCard& loyalty_card : GetLoyaltyCards()) {
-    data.add_loyalty_card_info(
-        LoyaltyCardInfo(loyalty_card.merchant_name(),
-                        base::UTF8ToUTF16(loyalty_card.loyalty_card_number())));
+    data.add_loyalty_card_info(LoyaltyCardInfo(
+        loyalty_card.merchant_name(), loyalty_card.program_logo(),
+        base::UTF8ToUTF16(loyalty_card.loyalty_card_number())));
   }
 
   if (has_suggestions && !allow_filling && autofill_manager) {

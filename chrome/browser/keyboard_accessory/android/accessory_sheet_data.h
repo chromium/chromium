@@ -335,6 +335,7 @@ std::ostream& operator<<(std::ostream& out, const IbanInfo& iban);
 class LoyaltyCardInfo final {
  public:
   LoyaltyCardInfo(std::string merchant_name,
+                  GURL program_logo_url,
                   std::u16string loyalty_card_number);
 
   LoyaltyCardInfo(const LoyaltyCardInfo&);
@@ -346,12 +347,15 @@ class LoyaltyCardInfo final {
 
   const std::string& merchant_name() const { return merchant_name_; }
 
+  const GURL& program_logo_url() const { return program_logo_url_; }
+
   const AccessorySheetField& value() const { return value_; }
 
   bool operator==(const LoyaltyCardInfo&) const = default;
 
  private:
   std::string merchant_name_;
+  GURL program_logo_url_;
   AccessorySheetField value_;
 };
 
@@ -650,8 +654,10 @@ class AccessorySheetData::Builder final {
                        std::string id) &;
 
   Builder&& AddLoyaltyCardInfo(std::string merchant_name,
+                               GURL program_logo_url,
                                std::u16string loyalty_card_number) &&;
   Builder& AddLoyaltyCardInfo(std::string merchant_name,
+                              GURL program_logo_url,
                               std::u16string loyalty_card_number) &;
 
   // Appends a new footer command to |accessory_sheet_data_|.

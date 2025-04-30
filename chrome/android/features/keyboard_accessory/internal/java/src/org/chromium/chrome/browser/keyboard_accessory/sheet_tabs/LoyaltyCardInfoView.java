@@ -5,9 +5,14 @@
 package org.chromium.chrome.browser.keyboard_accessory.sheet_tabs;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
@@ -18,6 +23,7 @@ import org.chromium.components.browser_ui.widget.chips.ChipView;
  */
 class LoyaltyCardInfoView extends LinearLayout {
     private TextView mMerchantName;
+    private ImageView mIcon;
     private ChipView mLoyaltyCardNumber;
 
     /** Constructor for inflating from XML. */
@@ -30,6 +36,7 @@ class LoyaltyCardInfoView extends LinearLayout {
         super.onFinishInflate();
 
         mMerchantName = findViewById(R.id.merchant_name);
+        mIcon = findViewById(R.id.loyalty_card_icon);
         mLoyaltyCardNumber = findViewById(R.id.loyalty_card_number);
     }
 
@@ -39,5 +46,14 @@ class LoyaltyCardInfoView extends LinearLayout {
 
     ChipView getLoyaltyCardNumber() {
         return mLoyaltyCardNumber;
+    }
+
+    public void setIcon(@Nullable Drawable drawable) {
+        if (drawable == null) {
+            mIcon.setVisibility(View.GONE);
+            return;
+        }
+        mIcon.setVisibility(View.VISIBLE);
+        mIcon.setImageDrawable(drawable);
     }
 }

@@ -13,6 +13,7 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -479,18 +480,24 @@ public class CreditCardAccessorySheetViewTest {
 
     @Test
     @MediumTest
-    public void testAddingLoyaltyCardInfoToTheModelRendersClickableActions()
-            throws ExecutionException {
+    public void testAddingLoyaltyCardInfo_ProgramLogoIsCached() throws ExecutionException {
         final String kMerchantName = "CVS Pharmacy";
         final String kLoyaltyCardNumber = "987654321";
+        final GURL kProgramLogo = new GURL("https:://image.server.com/image.png");
         final AtomicBoolean clicked = new AtomicBoolean();
         assertThat(mView.get().getChildCount(), is(0));
+
+        // Return the cached image when AutofillImageFetcher.getImageIfAvailable is called for the
+        // above url.
+        when(mMockImageFetcher.getImageIfAvailable(eq(kProgramLogo), any()))
+                .thenReturn(Optional.of(TEST_CARD_ART_IMAGE));
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     LoyaltyCardInfo info =
                             new LoyaltyCardInfo(
                                     kMerchantName,
+                                    kProgramLogo,
                                     new UserInfoField.Builder()
                                             .setSuggestionType(AccessorySuggestionType.LOYALTY_CARD)
                                             .setDisplayText(kLoyaltyCardNumber)
@@ -519,6 +526,57 @@ public class CreditCardAccessorySheetViewTest {
         LoyaltyCardInfoView loyaltyCardView = (LoyaltyCardInfoView) mView.get().getChildAt(1);
         assertThat(loyaltyCardView.getMerchantName().isShown(), is(true));
         assertThat(loyaltyCardView.getMerchantName().getText(), is(kMerchantName));
+        // The icon must be visible since the image is cached.
+        assertThat(loyaltyCardView.findViewById(R.id.loyalty_card_icon).isShown(), is(true));
+        assertThat(
+                loyaltyCardView.getLoyaltyCardNumber().getPrimaryTextView().getText(),
+                is(kLoyaltyCardNumber));
+
+        // Chips are clickable:
+        ThreadUtils.runOnUiThreadBlocking(loyaltyCardView.getLoyaltyCardNumber()::performClick);
+        assertThat(clicked.get(), is(true));
+    }
+
+    @Test
+    @MediumTest
+    public void testAddingLoyaltyCardInfo_ProgramLogoIsNotCached() throws ExecutionException {
+        final String kMerchantName = "CVS Pharmacy";
+        final String kLoyaltyCardNumber = "987654321";
+        final AtomicBoolean clicked = new AtomicBoolean();
+        assertThat(mView.get().getChildCount(), is(0));
+
+        // Return the cached image when AutofillImageFetcher.getImageIfAvailable is called for the
+        // above url.
+        when(mMockImageFetcher.getImageIfAvailable(any(), any())).thenReturn(Optional.empty());
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    LoyaltyCardInfo info =
+                            new LoyaltyCardInfo(
+                                    kMerchantName,
+                                    new GURL("https:://image.server.com/image.png"),
+                                    new UserInfoField.Builder()
+                                            .setSuggestionType(AccessorySuggestionType.LOYALTY_CARD)
+                                            .setDisplayText(kLoyaltyCardNumber)
+                                            .setA11yDescription(kLoyaltyCardNumber)
+                                            .setCallback(item -> clicked.set(true))
+                                            .build());
+
+                    mModel.add(
+                            new AccessorySheetDataPiece(
+                                    info, AccessorySheetDataPiece.Type.LOYALTY_CARD_INFO));
+                });
+
+        // mView's child count should be 3: no payment methods message, loyalty card field, and
+        // footer command.
+        CriteriaHelper.pollUiThread(() -> Criteria.checkThat(mView.get().getChildCount(), is(1)));
+
+        // Check that the titles are correct:
+        LoyaltyCardInfoView loyaltyCardView = (LoyaltyCardInfoView) mView.get().getChildAt(0);
+        assertThat(loyaltyCardView.getMerchantName().isShown(), is(true));
+        assertThat(loyaltyCardView.getMerchantName().getText(), is(kMerchantName));
+        // The icon should be hidden since the image is not cached.
+        assertThat(loyaltyCardView.findViewById(R.id.loyalty_card_icon).isShown(), is(false));
         assertThat(
                 loyaltyCardView.getLoyaltyCardNumber().getPrimaryTextView().getText(),
                 is(kLoyaltyCardNumber));

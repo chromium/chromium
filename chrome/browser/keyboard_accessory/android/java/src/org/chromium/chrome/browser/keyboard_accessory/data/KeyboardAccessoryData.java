@@ -416,15 +416,22 @@ public class KeyboardAccessoryData {
     /** Represents a Google Wallet loyalty card to be shown on the manual fallback UI. */
     public static final class LoyaltyCardInfo {
         private String mMerchantName;
+        private GURL mProgramLogoUrl;
         private UserInfoField mLoyaltyCardNumber;
 
-        public LoyaltyCardInfo(String merchantName, UserInfoField loyaltyCardNumber) {
+        public LoyaltyCardInfo(
+                String merchantName, GURL programLogoUrl, UserInfoField loyaltyCardNumber) {
             mMerchantName = merchantName;
+            mProgramLogoUrl = programLogoUrl;
             mLoyaltyCardNumber = loyaltyCardNumber;
         }
 
         public String getMerchantName() {
             return mMerchantName;
+        }
+
+        public GURL getProgramLogoUrl() {
+            return mProgramLogoUrl;
         }
 
         public UserInfoField getLoyaltyCardNumber() {
