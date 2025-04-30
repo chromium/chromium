@@ -9,6 +9,7 @@
 #include "components/enterprise/browser/reporting/common_pref_names.h"
 #include "components/enterprise/browser/reporting/report_scheduler.h"
 #include "components/enterprise/browser/reporting/report_util.h"
+#include "components/policy/core/common/policy_logger.h"
 #include "components/prefs/pref_service.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/gaia_urls.h"
@@ -132,6 +133,9 @@ void UserSecuritySignalsService::OnCookiePolicyValueChanged() {
 }
 
 void UserSecuritySignalsService::TriggerReport(SecurityReportTrigger trigger) {
+  VLOG_POLICY(1, REPORTING) << "Security signals report is triggered by "
+                            << static_cast<int>(trigger);
+
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&Delegate::OnReportEventTriggered,
                                 base::Unretained(delegate_), trigger));

@@ -16,6 +16,7 @@
 #include "components/enterprise/browser/reporting/report_type.h"
 #include "components/enterprise/browser/reporting/report_util.h"
 #include "components/enterprise/browser/reporting/reporting_delegate_factory.h"
+#include "components/policy/core/common/policy_logger.h"
 
 namespace enterprise_reporting {
 
@@ -271,7 +272,9 @@ void ChromeProfileRequestGenerator::OnAggregatedSignalsReceived(
 
   request->GetChromeProfileReportRequest().set_allocated_browser_report(
       browser_report.release());
-
+  VLOG_POLICY(1, REPORTING)
+      << "Signals report request generated: "
+      << request->GetChromeProfileReportRequest().SerializeAsString();
   OnRequestReady(std::move(request), std::move(callback));
 }
 

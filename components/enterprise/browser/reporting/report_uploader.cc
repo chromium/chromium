@@ -10,6 +10,7 @@
 #include "base/time/time.h"
 #include "components/enterprise/browser/reporting/report_type.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
+#include "components/policy/core/common/policy_logger.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 
 namespace em = enterprise_management;
@@ -77,6 +78,13 @@ void ReportUploader::Upload() {
       auto request = std::make_unique<em::ChromeProfileReportRequest>(
           requests_.front()->GetChromeProfileReportRequest());
       VLOG(2) << "Uploading report: " << request->SerializeAsString();
+
+      if (config_.security_signals_mode != SecuritySignalsMode::kNoSignals) {
+        VLOG_POLICY(1, REPORTING)
+            << "Uploading profile report with signals mode "
+            << static_cast<int>(config_.security_signals_mode);
+      }
+
       client_->UploadChromeProfileReport(
           config_.use_cookies, std::move(request), std::move(callback));
       break;

@@ -5,6 +5,36 @@
 #include "components/enterprise/browser/reporting/report_generation_config.h"
 
 #include "base/check_op.h"
+#include "base/strings/stringprintf.h"
+
+namespace {
+constexpr char kReportGenerationConfigTemplate[] =
+    R"(Report Type: %s, Security Signals Mode: %s, Using Cookies: %s)";
+
+std::string TranslateReportType(enterprise_reporting::ReportType report_type) {
+  switch (report_type) {
+    case enterprise_reporting::ReportType::kFull:
+      return "Full/Browser Report";
+    case enterprise_reporting::ReportType::kBrowserVersion:
+      return "Browser Version Report";
+    case enterprise_reporting::ReportType::kProfileReport:
+      return "Profile Report";
+  }
+}
+
+std::string TranslateSecuritySignalsMode(
+    SecuritySignalsMode security_signals_mode) {
+  switch (security_signals_mode) {
+    case SecuritySignalsMode::kNoSignals:
+      return "No security signals reported";
+    case SecuritySignalsMode::kSignalsAttached:
+      return "Security signals reported alongside status report";
+    case SecuritySignalsMode::kSignalsOnly:
+      return "Security signals are reported exclusively";
+  }
+}
+
+}  // namespace
 
 namespace enterprise_reporting {
 
@@ -31,5 +61,12 @@ ReportGenerationConfig::~ReportGenerationConfig() = default;
 
 bool ReportGenerationConfig::operator==(const ReportGenerationConfig&) const =
     default;
+
+std::string ReportGenerationConfig::ToString() const {
+  return base::StringPrintf(kReportGenerationConfigTemplate,
+                            TranslateReportType(report_type),
+                            TranslateSecuritySignalsMode(security_signals_mode),
+                            use_cookies ? "Yes" : "No");
+}
 
 }  // namespace enterprise_reporting
