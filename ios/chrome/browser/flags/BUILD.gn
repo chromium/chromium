@@ -45,6 +45,7 @@ source_set("flags") {
     "//components/policy/core/common:common_constants",
     "//components/safe_browsing/core/common",
     "//components/safe_browsing/ios/browser/web_ui:features",
+    "//components/search",
     "//components/search_engines:search_engines_switches",
     "//components/search_provider_logos",
     "//components/security_state/core",
