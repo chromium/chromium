@@ -140693,6 +140693,32 @@
         {}
        ]
       ],
+      "replaced-element-016.tentative.html": [
+       "2d5b401b8d20ac682675b3eeb23f264239b83d49",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square-only.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "replaced-element-017.tentative.html": [
+       "575fa8c78179d3741948e0d987fc446534bb6a86",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square-only.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "table-with-infinite-max-intrinsic-width.html": [
        "877e982cd4c5987f131587da33a23f3b7a49d538",
        [
@@ -197596,6 +197622,32 @@
        [
         [
          "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "intrinsic-percent-replaced-029.tentative.html": [
+      "feff03bbe2e1a1e18a22429a58a9d20cc0f9987b",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "intrinsic-percent-replaced-030.tentative.html": [
+      "5a6b103c22e20d23aa842e72ac6ffe6c9948156f",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
          "=="
         ]
        ],
@@ -271661,6 +271713,19 @@
        [
         [
          "/css/css-writing-modes/reference/table-cell-align-005-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "table-cell-align-006.html": [
+      "a8d33f281fda76603ea312601933fdf170ddf64b",
+      [
+       null,
+       [
+        [
+         "/css/css-writing-modes/reference/table-cell-align-006-ref.html",
          "=="
         ]
        ],
@@ -374720,6 +374785,10 @@
        "c5cd6fe28a97343b94989193c4583ddd2393538a",
        []
       ],
+      "table-cell-align-006-ref.html": [
+       "c5b52346fc0ad931aedb40339150146e067bc268",
+       []
+      ],
       "table-cell-valign-001-ref.html": [
        "03cb9ec9e4c6b1d7b6e0973b57f3c93ce293b1e4",
        []
@@ -433764,7 +433833,7 @@
     },
     "resources": {
      "utils.js": [
-      "04e7e7528a7d18afcc49578c2010a81ab098a1b2",
+      "50d7911a9181a5139d9e16f7c866112dc54d6d01",
       []
      ],
      "utils_validation.js": [
@@ -466900,7 +466969,7 @@
      ]
     ],
     "setSinkId.https.html": [
-     "be65f0ac81bc41a89e5085a43124f7ee991fea7b",
+     "662596910ee9adf94f83d536fe9c67a49db67f4b",
      [
       null,
       {
@@ -656559,6 +656628,13 @@
         {}
        ]
       ],
+      "serializing-cdata-in-html-document.html": [
+       "b2366285a41d946324981e771bfbfe2b157606f5",
+       [
+        null,
+        {}
+       ]
+      ],
       "serializing-lt-gt.tentative.html": [
        "6c74b443a838267be7f0d2ad8a8a80964c57209f",
        [
@@ -670580,7 +670656,7 @@
      ]
     ],
     "MediaDevices-enumerateDevices-per-origin-ids.sub.https.html": [
-     "714355f5c1c0b2fe37cff162c7be6240540cc0e2",
+     "467cf5d50c71c28675e87445ec311df53815a100",
      [
       null,
       {
@@ -763850,7 +763926,7 @@
    "webnn": {
     "conformance_tests": {
      "abs.https.any.js": [
-      "fcf144200f665b7f9370c2c3f0867f6cfc80a059",
+      "de6a5761df443ab6977ee3a61afc764eedd31c2c",
       [
        "webnn/conformance_tests/abs.https.any.html?cpu",
        {
@@ -765110,7 +765186,7 @@
       ]
      ],
      "concat.https.any.js": [
-      "0208e2ec605387a8d4dac040b64a1465b61d6848",
+      "d41921720463d388eeb0e152b30e04d8246b40b0",
       [
        "webnn/conformance_tests/concat.https.any.html?cpu",
        {
@@ -771854,7 +771930,7 @@
       ]
      ],
      "qdq_subgraph.https.any.js": [
-      "d8c9a591aed81182c8748775ff794d37a972031f",
+      "3b59c3bb49d6441a77e83309f48a97dd982aea74",
       [
        "webnn/conformance_tests/qdq_subgraph.https.any.html?cpu",
        {
@@ -776084,7 +776160,7 @@
       ]
      ],
      "sub.https.any.js": [
-      "2f2fadf7282185eb92cbd7961ab3f1e9d35fd5a3",
+      "85b15f5a00051c0ece94f6202150c0b93b23260f",
       [
        "webnn/conformance_tests/sub.https.any.html?cpu",
        {
