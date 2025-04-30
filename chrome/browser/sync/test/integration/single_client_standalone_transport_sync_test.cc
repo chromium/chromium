@@ -72,7 +72,7 @@ class SingleClientStandaloneTransportSyncTest : public SyncTest {
 #if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(SingleClientStandaloneTransportSyncTest,
                        StartsSyncTransportOnSignin) {
-  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  ASSERT_TRUE(SetupClients());
 
   // Signing in (without explicitly setting up Sync) should trigger starting the
   // Sync machinery in standalone transport mode.
@@ -108,7 +108,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientStandaloneTransportSyncTest,
 #if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(SingleClientStandaloneTransportSyncTest,
                        SwitchesBetweenTransportAndFeature) {
-  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  ASSERT_TRUE(SetupClients());
 
   // Setup a primary account, but don't actually enable Sync-the-feature (so
   // that Sync will start in transport mode).
@@ -146,7 +146,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientStandaloneTransportSyncTest,
 // Sync-the-transport will start.
 IN_PROC_BROWSER_TEST_F(SingleClientStandaloneTransportSyncTest,
                        HandlesResetFromDashboardWhenSyncActive) {
-  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  ASSERT_TRUE(SetupClients());
 
   // Set up Sync-the-feature.
   ASSERT_TRUE(GetClient(0)->SetupSync());
@@ -192,7 +192,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientStandaloneTransportSyncTest,
 // reset upon restart of the browser, in standalone transport mode.
 IN_PROC_BROWSER_TEST_F(SingleClientStandaloneTransportSyncTest,
                        PRE_ReusesSameCacheGuid) {
-  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  ASSERT_TRUE(SetupClients());
   ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
   ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
 
@@ -223,7 +223,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientStandaloneTransportSyncTest,
 
 IN_PROC_BROWSER_TEST_F(SingleClientStandaloneTransportSyncTest,
                        ReusesSameCacheGuid) {
-  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  ASSERT_TRUE(SetupClients());
   ASSERT_FALSE(GetSyncService(0)->HasDisableReason(
       syncer::SyncService::DISABLE_REASON_NOT_SIGNED_IN));
   ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
@@ -290,7 +290,7 @@ class SingleClientStandaloneTransportWithReplaceSyncWithSigninSyncTest
 IN_PROC_BROWSER_TEST_F(
     SingleClientStandaloneTransportWithReplaceSyncWithSigninSyncTest,
     DataTypesEnabledInTransportMode) {
-  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  ASSERT_TRUE(SetupClients());
   // Sign in, without turning on Sync-the-feature.
   ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
   ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
@@ -342,7 +342,7 @@ IN_PROC_BROWSER_TEST_F(
   SetNigoriInFakeServer(BuildCustomPassphraseNigoriSpecifics(kKeyParams),
                         GetFakeServer());
 
-  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  ASSERT_TRUE(SetupClients());
   // Sign in, without turning on Sync-the-feature.
   ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
   ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
@@ -419,9 +419,23 @@ class SingleClientStandaloneTransportWithoutReplaceSyncWithSigninSyncTest
     : public SingleClientStandaloneTransportSyncTest {
  public:
   SingleClientStandaloneTransportWithoutReplaceSyncWithSigninSyncTest() {
+#if BUILDFLAG(IS_ANDROID)
+    // On Android, PREFERENCES is active in transport mode only with
+    // `kReplaceSyncPromosWithSignInPromos` enabled.
     override_features_.InitWithFeatures(
         /*enabled_features=*/{switches::kEnablePreferencesAccountStorage},
         /*disabled_features=*/{syncer::kReplaceSyncPromosWithSignInPromos});
+#else
+    // On Desktop, PREFERENCES, SEARCH_ENGINES and THEMES are active in
+    // transport mode irrespective of `kReplaceSyncPromosWithSignInPromos`.
+    // TODO(crbug.com/330677712): Merge this with the Android branch once
+    // `kReplaceSyncPromosWithSignInPromos` is removed.
+    override_features_.InitWithFeatures(
+        /*enabled_features=*/{switches::kEnablePreferencesAccountStorage,
+                              syncer::kSeparateLocalAndAccountSearchEngines,
+                              syncer::kSeparateLocalAndAccountThemes},
+        /*disabled_features=*/{syncer::kReplaceSyncPromosWithSignInPromos});
+#endif  // BUILDFLAG(IS_ANDROID)
   }
   ~SingleClientStandaloneTransportWithoutReplaceSyncWithSigninSyncTest()
       override = default;
@@ -430,10 +444,12 @@ class SingleClientStandaloneTransportWithoutReplaceSyncWithSigninSyncTest
   base::test::ScopedFeatureList override_features_;
 };
 
+#if BUILDFLAG(IS_ANDROID)
+
 IN_PROC_BROWSER_TEST_F(
     SingleClientStandaloneTransportWithoutReplaceSyncWithSigninSyncTest,
     DataTypesNotEnabledInTransportMode) {
-  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  ASSERT_TRUE(SetupClients());
   // Sign in, without turning on Sync-the-feature.
   ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
   ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
@@ -477,6 +493,66 @@ IN_PROC_BROWSER_TEST_F(
   // PRIORITY_PREFERENCES are active in transport mode and decoupled from user
   // toggle. Update or add new test to cover PRIORITY_PREFERENCES.
 }
+
+#else
+
+IN_PROC_BROWSER_TEST_F(
+    SingleClientStandaloneTransportWithoutReplaceSyncWithSigninSyncTest,
+    DataTypesNotEnabledInTransportMode) {
+  ASSERT_TRUE(SetupClients());
+  // Sign in, without turning on Sync-the-feature.
+  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
+  ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
+
+  // Without `kReplaceSyncPromosWithSignInPromos`, History/Tabs are not are
+  // supported in transport mode, so they're reported as not selected even if
+  // the user explicitly tries to turn them on.
+  syncer::UserSelectableTypeSet types =
+      GetSyncService(0)->GetUserSettings()->GetRegisteredSelectableTypes();
+  ASSERT_TRUE(types.HasAll({syncer::UserSelectableType::kHistory,
+                            syncer::UserSelectableType::kTabs,
+                            syncer::UserSelectableType::kPreferences}));
+  GetSyncService(0)->GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/true, types);
+  ASSERT_FALSE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
+      syncer::UserSelectableType::kHistory));
+  ASSERT_FALSE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
+      syncer::UserSelectableType::kTabs));
+  // Preferences, Themes and Search Engines are supported in transport mode,
+  // provided the enabled feature flags, irrespective of
+  // `kReplaceSyncPromosWithSignInPromos`. So they're reported as selected even
+  // when the user explicitly turns them on.
+  ASSERT_TRUE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().HasAll(
+      {syncer::UserSelectableType::kPreferences,
+       syncer::UserSelectableType::kThemes}));
+
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+  ASSERT_EQ(syncer::SyncService::TransportState::ACTIVE,
+            GetSyncService(0)->GetTransportState());
+
+  // Without `kReplaceSyncPromosWithSignInPromos`, none of the history-related
+  // types should be active in transport mode (even if the user has opted in).
+  EXPECT_FALSE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::HISTORY));
+  EXPECT_FALSE(GetSyncService(0)->GetActiveDataTypes().Has(
+      syncer::HISTORY_DELETE_DIRECTIVES));
+  EXPECT_FALSE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::SESSIONS));
+  EXPECT_FALSE(
+      GetSyncService(0)->GetActiveDataTypes().Has(syncer::USER_EVENTS));
+
+  // PREFERENCES, SEARCH_ENGINES and THEMES are active in transport mode
+  // irrespective of `kReplaceSyncPromosWithSignInPromos`, provided the
+  // enabled feature flags.
+  EXPECT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::THEMES));
+  EXPECT_TRUE(
+      GetSyncService(0)->GetActiveDataTypes().Has(syncer::SEARCH_ENGINES));
+  EXPECT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::PREFERENCES));
+  // TODO(crbug.com/412602018): With
+  // `kSyncSupportAlwaysSyncingPriorityPreferences` enabled,
+  // PRIORITY_PREFERENCES are active in transport mode and decoupled from user
+  // toggle. Update or add new test to cover PRIORITY_PREFERENCES.
+}
+
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // SingleClientStandaloneTransportReplaceSyncWithSigninMigrationSyncTest is
 // disabled on CrOS as the signed in, non-syncing state does not exist.
