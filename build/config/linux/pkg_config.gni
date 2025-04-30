@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/compute_inputs_for_analyze.gni")
 import("//build/config/sysroot.gni")
 import("//build/toolchain/rbe.gni")
 
@@ -57,14 +56,10 @@ pkg_config_args = []
 
 common_pkg_config_args = []
 if (sysroot != "") {
-  _rebased_sysroot = rebase_path(sysroot, root_build_dir)
-  _cached_results = read_file("cached_results.scope", "scope")
-  _cached_results = _cached_results.data
-
   # Pass the sysroot if we're using one (it requires the CPU arch also).
   common_pkg_config_args += [
     "-s",
-    _rebased_sysroot,
+    rebase_path(sysroot),
     "-a",
     current_cpu,
   ]
@@ -99,69 +94,29 @@ template("pkg_config") {
          "Variable |packages| must be defined to be a list in pkg_config.")
   config(target_name) {
     if (host_toolchain == current_toolchain) {
-      _cache_args = host_pkg_config_args + invoker.packages
+      args = common_pkg_config_args + host_pkg_config_args + invoker.packages
     } else {
-      _cache_args = pkg_config_args + invoker.packages
+      args = common_pkg_config_args + pkg_config_args + invoker.packages
     }
     if (defined(invoker.extra_args)) {
-      _cache_args += invoker.extra_args
+      args += invoker.extra_args
     }
 
-    # exec_script() is slow, so cache results.
-    if (sysroot != "") {
-      foreach(_entry, _cached_results) {
-        if (_rebased_sysroot == _entry.sysroot) {
-          foreach(_subentry, _entry.entries) {
-            if (_subentry.args == _cache_args) {
-              pkgresult = _subentry.pkgresult
-            }
-          }
-
-          # Do not expect cache hits when:
-          #  * No entries exist for the sysroot.
-          #  * It's a package outside of the core ones in //build/config/linux
-          _expected_cache_hit =
-              filter_include([ get_path_info(".", "abspath") ],
-                             [ "//build/config/linux/*" ]) != []
-          not_needed([ "_expected_cache_hit" ])
-        }
-      }
-    }
-
-    if (!defined(pkgresult)) {
-      _script_args = common_pkg_config_args + _cache_args
-      pkgresult = exec_script(pkg_config_script, _script_args, "json")
-      if (defined(_expected_cache_hit)) {
-        print("sysroot=$_rebased_sysroot")
-        print("      {")
-        print("        args = $_cache_args")
-        print("        pkgresult = $pkgresult")
-        print("      },")
-        assert(
-            false,
-            "Non-cached pkg_config query. Please update //build/config/linux/cached_results.scope with the above.")
-      }
-    } else if (compute_inputs_for_analyze) {
-      # Generally, only bots add this arg. Use it to ensure cache is not stale.
-      _script_args = common_pkg_config_args + _cache_args
-      _expected_pkgresult = exec_script(pkg_config_script, _script_args, "json")
-      if (pkgresult != _expected_pkgresult) {
-        print("sysroot=$_rebased_sysroot")
-        print("      {")
-        print("        args = $_cache_args")
-        print("        pkgresult = $_expected_pkgresult")
-        print("      },")
-        assert(
-            false,
-            "Outdated pkg_config query result detected. Please update //build/config/linux/cached_results.scope with the above.")
-      }
-    }
+    pkgresult = exec_script(pkg_config_script, args, "json")
     cflags = pkgresult[1]
 
     foreach(include, pkgresult[0]) {
       # We want the system include paths to use -isystem instead of -I to
       # suppress warnings in those headers.
-      cflags += [ "-isystem$include" ]
+      # When building remotely, we make the path relative just as for use_sysroot.
+      # This ensures we are using the header files that match the platform we are
+      # building for.
+      if (use_sysroot || use_remoteexec) {
+        include_relativized = rebase_path(include, root_build_dir)
+        cflags += [ "-isystem$include_relativized" ]
+      } else {
+        cflags += [ "-isystem$include" ]
+      }
     }
 
     if (!defined(invoker.ignore_libs) || !invoker.ignore_libs) {
