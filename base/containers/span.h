@@ -14,7 +14,6 @@
 #include <stdint.h>
 
 #include <algorithm>
-#include <array>
 #include <concepts>
 #include <functional>
 #include <initializer_list>
