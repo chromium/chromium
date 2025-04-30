@@ -286,10 +286,12 @@ def _ParseBenchmarks(shard_map_path):
   for shard, benchmarks_in_shard in shard_map.items():
     if "extra_infos" in shard:
       continue
-    if benchmarks_in_shard.get('benchmarks'):
-      all_benchmarks |= set(benchmarks_in_shard['benchmarks'].keys())
-    if benchmarks_in_shard.get('executables'):
-      all_benchmarks |= set(benchmarks_in_shard['executables'].keys())
+    if benchmarks := benchmarks_in_shard.get('benchmarks'):
+      all_benchmarks |= set(benchmarks.keys())
+    if executables := benchmarks_in_shard.get('executables'):
+      all_benchmarks |= set(executables.keys())
+    if crossbench := benchmarks_in_shard.get('crossbench'):
+      all_benchmarks |= {b['display_name'] for b in crossbench.values()}
   return frozenset(all_benchmarks)
 
 
@@ -317,9 +319,11 @@ def _ValidateShardMaps(args):
   for platform in bot_platforms.ALL_PLATFORMS:
     if platform.pinpoint_only:
       continue
-    platform_benchmark_names = set(
-        b.name for b in platform.benchmark_configs) | set(
-            e.name for e in platform.executables)
+    platform_benchmark_names = {
+        b.name
+        for b in (platform.benchmark_configs | platform.executables
+                  | platform.crossbench)
+    }
     shard_map_benchmark_names = _ParseBenchmarks(platform.shards_map_file_path)
     for benchmark in platform_benchmark_names - shard_map_benchmark_names:
       errors.append(
