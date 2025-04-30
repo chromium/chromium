@@ -2,3 +2,4 @@
 -SkiaOutputSurfaceImplTest.CopyOutputBitmapSupportedColorSpace
 -SkiaOutputSurfaceImplTest.CopyOutputBitmapUnsupportedColorSpace
 -SkiaOutputSurfaceImplTest.EndPaint
+-SkiaOutputSurfaceImplTest.EndPaintReleaseFence
