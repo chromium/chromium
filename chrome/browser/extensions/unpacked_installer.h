@@ -39,7 +39,7 @@ class ExtensionService;
 class PreloadCheckGroup;
 
 // Installs and loads an unpacked extension. Because internal state needs to be
-// held about the instalation process, only one call to Load*() should be made
+// held about the installation process, only one call to Load*() should be made
 // per UnpackedInstaller.
 // TODO(erikkay): It might be useful to be able to load a packed extension
 // (presumably into memory) without installing it.

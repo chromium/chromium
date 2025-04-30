@@ -304,7 +304,7 @@ TEST_F(ExtensionUtilWithSigninProfileUnittest,
   extension_registry->AddTerminated(policy_extension);
   EXPECT_TRUE(util::HasIsolatedStorage(policy_extension_id, signin_profile_));
 
-  // Extension blockedlisted.
+  // Extension blocklisted.
   extension_registry->RemoveTerminated(policy_extension_id);
   extension_registry->AddBlocklisted(policy_extension);
   EXPECT_TRUE(util::HasIsolatedStorage(policy_extension_id, signin_profile_));

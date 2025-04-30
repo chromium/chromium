@@ -239,7 +239,7 @@ TEST_F(ExtensionErrorControllerUnitTest,
   EXPECT_FALSE(g_error_ui);
 }
 
-// Test error ui is presented and acknowledged whe an extension is blocked by
+// Test error ui is presented and acknowledged when an extension is blocked by
 // policy.
 TEST_F(ExtensionErrorControllerUnitTest, ExtensionIsBlockedByEnterprisePolicy) {
   scoped_refptr<const Extension> extension = BuildExtension();

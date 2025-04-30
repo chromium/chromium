@@ -289,7 +289,7 @@ class ExtensionInstallPrompt {
   // Starts the process to show the install dialog. Loads the icon (if `icon` is
   // null), sets up the Prompt, and calls `show_dialog_callback` when ready to
   // show.
-  // `extension` can be null in the case of a bndle install.
+  // `extension` can be null in the case of a bundle install.
   // If `icon` is null, this will attempt to load the extension's icon.
   // `prompt` is used to pass in a prompt with additional data (like retained
   // device permissions) or a different type. If not provided, `prompt` will

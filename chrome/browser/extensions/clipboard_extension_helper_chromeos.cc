@@ -98,7 +98,7 @@ void ClipboardExtensionHelper::DecodeAndSaveImageData(
   if (clipboard_image_data_decoder_->has_request_pending())
     clipboard_image_data_decoder_->Cancel();
 
-  // Cache additonal items.
+  // Cache additional items.
   additonal_items_ = std::move(additional_items);
 
   image_save_success_callback_ = std::move(success_callback);

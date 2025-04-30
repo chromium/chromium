@@ -287,7 +287,7 @@ IN_PROC_BROWSER_TEST_F(ScriptExecutorBrowserTest, PromisesResolve) {
   {
     // Inject two pieces of code. They each evaluate to a promise. The second,
     // `kCode2`, evaluates to a promise that resolves immediately, and then
-    // asynchronously resovles the promise from the first, `kCode1`, which
+    // asynchronously resolves the promise from the first, `kCode1`, which
     // changes the title of the page.
     // This guarantees that the renderer code properly waits for *all* results
     // to resolve, and not simply the last one.

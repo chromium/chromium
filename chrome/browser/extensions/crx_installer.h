@@ -539,7 +539,7 @@ class CrxInstaller : public SandboxedUnpackerClient, public ProfileObserver {
 
   // Whether we should produce an error if the manifest declares requirements
   // that are not met. If false and there is an unmet requirement, the install
-  // will continue but the extension will be distabled.
+  // will continue but the extension will be disabled.
   bool error_on_unsupported_requirements_;
 
   // Sequenced task runner where most file I/O operations will be performed.

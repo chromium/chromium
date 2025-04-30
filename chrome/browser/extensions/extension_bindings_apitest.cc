@@ -538,7 +538,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(event_router->ExtensionHasEventListener(extension->id(),
                                                        "tabs.onCreated"));
 
-  // Register both lsiteners, and verify they were added.
+  // Register both listeners, and verify they were added.
   ASSERT_TRUE(content::ExecJs(first_tab, "registerListener()"));
   ASSERT_TRUE(content::ExecJs(second_tab, "registerListener()"));
   EXPECT_TRUE(event_router->ExtensionHasEventListener(extension->id(),

@@ -504,7 +504,7 @@ void WebstoreInstaller::DownloadCrx(const extensions::ExtensionId& extension_id,
 // http://crbug.com/165634
 // http://crbug.com/126013
 // The current working theory is that one of the many pointers dereferenced in
-// here is occasionally deleted before all of its referers are nullified,
+// here is occasionally deleted before all of its referrers are nullified,
 // probably in a callback race. After this comment is released, the crash
 // reports should narrow down exactly which pointer it is.  Collapsing all the
 // early-returns into a single branch makes it hard to see exactly which pointer

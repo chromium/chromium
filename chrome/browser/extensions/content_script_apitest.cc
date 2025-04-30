@@ -794,7 +794,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTestWithManagementPolicy,
     ExtensionManagementPolicyUpdater pref(&policy_provider_);
     pref.AddPolicyBlockedHost(extension_id, "*://example.com");
   }
-  // Some policy updating operations are performed asynchronuosly. Wait for them
+  // Some policy updating operations are performed asynchronously. Wait for them
   // to complete before installing extension.
   base::RunLoop().RunUntilIdle();
 
@@ -1462,8 +1462,8 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest, MhtmlIframe) {
   // Verify that the content scripts have been injected.  Content script
   // injection is important even in somewhat exotic scenarios such as here
   // (MHTML frames normally don't execute any scripts), because it is important
-  // that some extensions (such as accessbility aids) are able to inject content
-  // scripts into all frames.
+  // that some extensions (such as accessibility aids) are able to inject
+  // content scripts into all frames.
   //
   // Note that `<all_urls>` doesn't cover `cid:` subframes, so we don't wait for
   // `listener2`.

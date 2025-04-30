@@ -550,7 +550,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxFocusInteractiveFencedFrameTest,
   EXPECT_TRUE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_TAB_CONTAINER));
 
   // FencedFrameTestHelper uses eval() function that is blocked by the
-  // document's CSP on this page. So need to maually create a fenced frame for
+  // document's CSP on this page. So need to manually create a fenced frame for
   // avoiding the CSP policy.
   constexpr char kAddFencedFrameScript[] = R"({
       const fenced_frame = document.createElement('fencedframe');

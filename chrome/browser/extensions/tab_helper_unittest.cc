@@ -67,7 +67,7 @@ class TabHelperUnitTest : public ExtensionServiceTestWithInstall {
   PermissionsManager* permissions_manager() { return permissions_manager_; }
 
  private:
-  // The browser and accompaying window.
+  // The browser and accompanying window.
   std::unique_ptr<Browser> browser_;
   std::unique_ptr<TestBrowserWindow> browser_window_;
 

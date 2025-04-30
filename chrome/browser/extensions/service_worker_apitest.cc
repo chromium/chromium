@@ -1123,7 +1123,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerTest, UpdateToMV3RefreshesServiceWorker) {
 IN_PROC_BROWSER_TEST_F(ServiceWorkerTest, FetchArbitraryPaths) {
   const Extension* extension = StartTestFromBackgroundPage("fetch.js");
 
-  // Open some arbirary paths. Their contents should be what the service worker
+  // Open some arbitrary paths. Their contents should be what the service worker
   // responds with, which in this case is the path of the fetch.
   EXPECT_EQ(
       "Caught a fetch for /index.html",

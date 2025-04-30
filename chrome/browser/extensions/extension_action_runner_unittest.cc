@@ -255,7 +255,7 @@ TEST_F(ExtensionActionRunnerUnitTest, RequestPermissionAndExecute) {
   EXPECT_FALSE(RequiresUserConsent(extension));
 
   // Reloading and same-origin navigations shouldn't clear those permissions,
-  // and we shouldn't require user constent again.
+  // and we shouldn't require user consent again.
   content::NavigationSimulator::Reload(web_contents());
   EXPECT_FALSE(RequiresUserConsent(extension));
   NavigateAndCommit(GURL("https://www.google.com/foo"));
@@ -362,7 +362,7 @@ TEST_F(ExtensionActionRunnerUnitTest, ActiveScriptsUseActiveTabPermissions) {
   NavigateAndCommit(GURL("https://yahoo.com"));
   EXPECT_TRUE(RequiresUserConsent(extension));
 
-  // Back to the original origin should also re-require constent.
+  // Back to the original origin should also re-require consent.
   NavigateAndCommit(GURL("https://www.google.com"));
   EXPECT_TRUE(RequiresUserConsent(extension));
 

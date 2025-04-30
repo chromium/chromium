@@ -517,7 +517,7 @@ bool CWSInfoService::MaybeSaveResponseToPrefs(
     }
   }
 
-  // Process any resquested ids missing from the response. These ids represent
+  // Process any requested ids missing from the response. These ids represent
   // extensions that are no longer available from the store.
   for (const auto& id : active_fetch_->requests.front().ids) {
     if (extension_prefs_->HasPrefForExtension(id) == false) {

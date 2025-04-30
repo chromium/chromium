@@ -50,7 +50,7 @@ class WindowController {
     REASON_NOT_EDITABLE,
   };
 
-  // A bitmaks used as filter on window types.
+  // A bitmask used as filter on window types.
   using TypeFilter = uint32_t;
 
   // Represents the lack of any window filter, implying

@@ -1030,7 +1030,7 @@ bool ExtensionTabUtil::IsWebContentsInContext(
   if (web_contents_browser_context == browser_context)
     return true;
 
-  // If not it might be to include the incongito mode, so we if the profiles
+  // If not it might be to include the incognito mode, so we if the profiles
   // are the same or the parent.
   return include_incognito && Profile::FromBrowserContext(browser_context)
                                   ->IsSameOrParent(Profile::FromBrowserContext(

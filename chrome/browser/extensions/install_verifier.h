@@ -86,7 +86,7 @@ class InstallVerifier : public KeyedService,
   void VerifyAllExtensions();
 
   // Call this to add a set of ids that will immediately be considered allowed,
-  // and kick off an aysnchronous request to Add.
+  // and kick off an asynchronous request to Add.
   void AddProvisional(const ExtensionIdSet& ids);
 
   // Removes an id or set of ids from the verified list.

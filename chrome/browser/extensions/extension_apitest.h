@@ -99,7 +99,7 @@ class ExtensionApiTest : public ExtensionBrowserTest {
   //
   // Starting the test server is done in two steps; first the server socket is
   // created and starts listening, followed by the start of an IO thread on
-  // which the test server will accept connectons.
+  // which the test server will accept connections.
   //
   // In general you can start the test server using StartEmbeddedTestServer()
   // which handles both steps. When you need to register request handlers that

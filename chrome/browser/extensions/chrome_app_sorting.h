@@ -198,7 +198,7 @@ class ChromeAppSorting : public AppSorting,
   // app launch ordinals that exist on that page. This is used for mapping
   // StringOrdinals to their Integer equivalent as well as quick lookup of the
   // any collision of on the NTP (icons with the same page and same app launch
-  // ordinals). The possiblity of collisions means that a multimap must be used
+  // ordinals). The possibility of collisions means that a multimap must be used
   // (although the collisions must all be resolved once all the syncing is
   // done).
   PageOrdinalMap ntp_ordinal_map_;

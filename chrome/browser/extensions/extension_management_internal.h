@@ -41,7 +41,7 @@ namespace internal {
 // Since update URL is not directly associated to extension ID, per-extension
 // and per-update-url settings might be enforced at the same time, see per-field
 // comments below for details.
-// Some features do not support per-update-url setttings.
+// Some features do not support per-update-url settings.
 struct IndividualSettings {
   enum ParsingScope {
     // Parses the default settings.

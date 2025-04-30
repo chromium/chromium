@@ -127,7 +127,7 @@ bool ExtensionApiTest::RunExtensionTest(const base::FilePath& extension_path,
       << "'extension_url' and 'page_url' are mutually exclusive.";
   CHECK(!run_options.open_in_incognito || run_options.page_url ||
         run_options.extension_url)
-      << "'open_in_incognito' is only allowed if specifiying 'page_url'";
+      << "'open_in_incognito' is only allowed if specifying 'page_url'";
   CHECK(!(run_options.launch_as_platform_app && run_options.page_url))
       << "'launch_as_platform_app' and 'page_url' are mutually exclusive.";
 

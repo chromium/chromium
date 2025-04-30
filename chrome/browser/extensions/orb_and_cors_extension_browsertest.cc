@@ -418,7 +418,7 @@ class OrbAndCorsExtensionBrowserTest : public OrbAndCorsExtensionTestBase {
   // |url|. Returns the body of the response.
   //
   // The method below uses "programmatic" (rather than "declarative") way to
-  // inject a content script, but the behavior and permissions of the conecnt
+  // inject a content script, but the behavior and permissions of the content
   // script should be the same in both cases.  See also
   // https://developer.chrome.com/extensions/content_scripts#programmatic.
   std::string FetchViaContentScript(const GURL& url,
@@ -486,7 +486,7 @@ class OrbAndCorsExtensionBrowserTest : public OrbAndCorsExtensionTestBase {
   // Asks the test |extension_| to inject |content_script| into |web_contents|.
   //
   // This is an implementation of FetchCallback.
-  // Returns true if the content script execution started succeessfully.
+  // Returns true if the content script execution started successfully.
   bool ExecuteContentScript(content::WebContents* web_contents,
                             const std::string& content_script) {
     int tab_id = ExtensionTabUtil::GetTabId(web_contents);
@@ -503,7 +503,7 @@ class OrbAndCorsExtensionBrowserTest : public OrbAndCorsExtensionTestBase {
   // Executes |regular_script| in |web_contents|.
   //
   // This is an implementation of FetchCallback.
-  // Returns true if the script execution started succeessfully.
+  // Returns true if the script execution started successfully.
   bool ExecuteRegularScript(content::RenderFrameHost* frame,
                             const std::string& regular_script) {
     content::ExecuteScriptAsync(frame, regular_script);
@@ -520,7 +520,7 @@ class OrbAndCorsExtensionBrowserTest : public OrbAndCorsExtensionTestBase {
   // commit is happening.
   //
   // This is an implementation of FetchCallback.
-  // Returns true if the script execution started succeessfully.
+  // Returns true if the script execution started successfully.
   bool ExecuteInSrcDocFrame(content::RenderFrameHost* parent_frame,
                             const std::string& script_to_run_in_subframe) {
     static int sequence_id = 0;
@@ -1942,7 +1942,7 @@ IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
           // Note that these requests will use the URLLoaderFactory owned by
           // ServiceWorkerSubresourceLoader which can be different to the
           // network loader factory owned by the ServiceWorker thread (which is
-          // used for fetch intiated by the service worker above).
+          // used for fetch initiated by the service worker above).
       }); )";
   ASSERT_TRUE(RegisterServiceWorkerForExtension(kServiceWorkerScript));
 
@@ -2194,7 +2194,7 @@ IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
   EXPECT_EQ(false, content::EvalJs(active_web_contents(),
                                    kInjectionVerificationScript));
 
-  // Try to fetch a WebUI resource (i.e. verify that the unsucessful content
+  // Try to fetch a WebUI resource (i.e. verify that the unsuccessful content
   // script injection above didn't clobber the WebUI-specific URLLoaderFactory).
   const char kScript[] = R"(
       var img = document.createElement('img');
@@ -2709,7 +2709,7 @@ IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
   }
 }
 
-// Similar to FromBackgroundPage_ActiveTabPermission, but focues on interaction
+// Similar to FromBackgroundPage_ActiveTabPermission, but focuses on interaction
 // between the regular background page and the separate incognito background
 // page in "split" mode.
 IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
@@ -2944,7 +2944,7 @@ IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
   }
 }
 
-// Similar to FromBackgroundPage_ActiveTabPermission, but focues on behavior
+// Similar to FromBackgroundPage_ActiveTabPermission, but focuses on behavior
 // of the background page when it is shared between the regular and the
 // incognito profiles in "spanning" mode.
 IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
