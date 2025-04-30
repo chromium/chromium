@@ -874,6 +874,12 @@ void ManagePasswordsUIController::NeverSavePassword() {
   UpdateBubbleAndIconVisibility();
 }
 
+void ManagePasswordsUIController::OnNotNowClicked() {
+  DCHECK_EQ(password_manager::ui::PENDING_PASSWORD_STATE, GetState());
+  // TODO(crbug.com/414573697): Log appropriate metrics.
+  UpdateBubbleAndIconVisibility();
+}
+
 void ManagePasswordsUIController::OnPasswordsRevealed() {
   DCHECK(passwords_data_.form_manager());
   passwords_data_.form_manager()->OnPasswordsRevealed();

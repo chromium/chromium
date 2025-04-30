@@ -246,6 +246,12 @@ BASE_FEATURE(kTearOffWebAppTabOpensWebAppWindow,
              "TearOffWebAppTabOpensWebAppWindow",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+#if !BUILDFLAG(IS_ANDROID)
+BASE_FEATURE(kThreeButtonPasswordSaveDialog,
+             "ThreeButtonPasswordSaveDialog",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 #if !defined(ANDROID)
 BASE_FEATURE(kPinnedCastButton,
              "PinnedCastButton",

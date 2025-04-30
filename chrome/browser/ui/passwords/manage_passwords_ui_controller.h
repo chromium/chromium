@@ -183,6 +183,7 @@ class ManagePasswordsUIController
   void OnNoInteraction() override;
   void OnNopeUpdateClicked() override;
   void NeverSavePassword() override;
+  void OnNotNowClicked() override;
   void OnPasswordsRevealed() override;
   void SavePassword(const std::u16string& username,
                     const std::u16string& password) override;

@@ -185,6 +185,12 @@ extern const base::FeatureParam<bool> KTabOrganizationTriggerDemoMode;
 
 BASE_DECLARE_FEATURE(kTearOffWebAppTabOpensWebAppWindow);
 
+#if !BUILDFLAG(IS_ANDROID)
+// Enables a three-button password save dialog variant (essentially adding a
+// "not now" button alongside "never").
+BASE_DECLARE_FEATURE(kThreeButtonPasswordSaveDialog);
+#endif
+
 bool IsToolbarPinningEnabled();
 
 BASE_DECLARE_FEATURE(kPinnedCastButton);

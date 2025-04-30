@@ -152,6 +152,14 @@ void SaveUpdateBubbleController::OnNeverForThisSiteClicked() {
   }
 }
 
+void SaveUpdateBubbleController::OnNotNowClicked() {
+  CHECK_EQ(password_manager::ui::PENDING_PASSWORD_STATE, GetState());
+  // TODO(crbug.com/414573697): Log appropriate metrics.
+  if (delegate_) {
+    delegate_->OnNotNowClicked();
+  }
+}
+
 bool SaveUpdateBubbleController::IsCurrentStateUpdate() const {
   CHECK(GetState() == password_manager::ui::PENDING_PASSWORD_UPDATE_STATE ||
         GetState() == password_manager::ui::PENDING_PASSWORD_STATE);

@@ -116,6 +116,10 @@ class PasswordsModelDelegate {
   // Called from the model when the user chooses to never save passwords.
   virtual void NeverSavePassword() = 0;
 
+  // Called from the model when the user chooses "not now" in response to the
+  // password-save prompt.
+  virtual void OnNotNowClicked() = 0;
+
   // Called when the passwords are revealed to the user without obfuscation.
   virtual void OnPasswordsRevealed() = 0;
 

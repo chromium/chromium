@@ -10,9 +10,11 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/password_manager/profile_password_store_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/passwords/password_bubble_view_test_base.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/password_manager/core/browser/mock_password_feature_manager.h"
@@ -21,12 +23,12 @@
 #include "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
 #include "components/sync/test/test_sync_service.h"
 #include "content/public/test/navigation_simulator.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/views/controls/combobox/combobox.h"
 #include "ui/views/controls/editable_combobox/editable_password_combobox.h"
+#include "ui/views/interaction/interaction_test_util_views.h"
 
 using ::testing::Return;
 using ::testing::ReturnRef;
@@ -59,6 +61,17 @@ class PasswordSaveUpdateViewTest : public PasswordBubbleViewTestBase {
   PasswordSaveUpdateView* view() { return view_; }
 
  protected:
+  static std::u16string SaveButtonCaption() {
+    return l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_SAVE_BUTTON);
+  }
+  static std::u16string NeverButtonCaption() {
+    return l10n_util::GetStringUTF16(
+        IDS_PASSWORD_MANAGER_BUBBLE_BLOCKLIST_BUTTON);
+  }
+  static std::u16string NotNowButtonCaption() {
+    return l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_CANCEL_BUTTON);
+  }
+
   password_manager::PasswordForm pending_password_;
 
  private:
@@ -106,8 +119,18 @@ void PasswordSaveUpdateViewTest::SimulateSignIn() {
 TEST_F(PasswordSaveUpdateViewTest, HasTitleAndTwoButtons) {
   CreateViewAndShow();
   EXPECT_TRUE(view()->ShouldShowWindowTitle());
-  EXPECT_TRUE(view()->GetOkButton());
-  EXPECT_TRUE(view()->GetCancelButton());
+  ASSERT_TRUE(view()->GetOkButton());
+  EXPECT_EQ(view()->GetOkButton()->GetText(), SaveButtonCaption());
+  ASSERT_TRUE(view()->GetCancelButton());
+  EXPECT_EQ(view()->GetCancelButton()->GetText(), NeverButtonCaption());
+  EXPECT_FALSE(view()->extra_view_for_testing());
+}
+
+TEST_F(PasswordSaveUpdateViewTest, NeverButtonClicked) {
+  CreateViewAndShow();
+  EXPECT_CALL(*model_delegate_mock(), NeverSavePassword);
+  views::test::InteractionTestUtilSimulatorViews::PressButton(
+      view()->GetCancelButton());
 }
 
 TEST_F(PasswordSaveUpdateViewTest, ShouldSelectAccountStoreByDefault) {
@@ -160,4 +183,45 @@ TEST_F(PasswordSaveUpdateViewTest, SaveButtonIsDisabledWhenPasswordIsEmpty) {
   save_bubble->password_dropdown_for_testing()->SetText(u"pass");
   EXPECT_TRUE(
       dialog_delegate->IsDialogButtonEnabled(ui::mojom::DialogButton::kOk));
+}
+
+class PasswordSaveThreeButtonDialogViewTest
+    : public PasswordSaveUpdateViewTest {
+ public:
+  PasswordSaveThreeButtonDialogViewTest();
+  ~PasswordSaveThreeButtonDialogViewTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+PasswordSaveThreeButtonDialogViewTest::PasswordSaveThreeButtonDialogViewTest() {
+  // Enable an experiment to have the Cancel button simply dismiss the dialog,
+  // and have a third button to explicitly never save the password.
+  scoped_feature_list_.InitWithFeatureState(
+      features::kThreeButtonPasswordSaveDialog, true);
+}
+
+TEST_F(PasswordSaveThreeButtonDialogViewTest, ThreeButtonLayout) {
+  CreateViewAndShow();
+  ASSERT_TRUE(view()->GetOkButton());
+  EXPECT_EQ(view()->GetOkButton()->GetText(), SaveButtonCaption());
+  ASSERT_TRUE(view()->GetCancelButton());
+  EXPECT_EQ(view()->GetCancelButton()->GetText(), NotNowButtonCaption());
+  ASSERT_TRUE(view()->extra_view_for_testing());
+  EXPECT_EQ(view()->extra_view_for_testing()->GetText(), NeverButtonCaption());
+}
+
+TEST_F(PasswordSaveThreeButtonDialogViewTest, ThreeButtonLayoutNotNowClicked) {
+  CreateViewAndShow();
+  EXPECT_CALL(*model_delegate_mock(), OnNotNowClicked);
+  views::test::InteractionTestUtilSimulatorViews::PressButton(
+      view()->GetCancelButton());
+}
+
+TEST_F(PasswordSaveThreeButtonDialogViewTest, ThreeButtonLayoutNeverClicked) {
+  CreateViewAndShow();
+  EXPECT_CALL(*model_delegate_mock(), NeverSavePassword);
+  views::test::InteractionTestUtilSimulatorViews::PressButton(
+      view()->extra_view_for_testing());
 }
