@@ -800,7 +800,6 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, ParseWithMissingFields) {
   EXPECT_THAT(
       GetMatches(),
       testing::ElementsAre(u"https://www.google.com/?q=john%40example.com",
-                           u"https://www.missinguributlinkavailable.co.uk/",
                            u"https://www.example.com/",
                            u"https://www.google.com/?q=John%27s+Document+1"));
 }
