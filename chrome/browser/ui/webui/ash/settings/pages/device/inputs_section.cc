@@ -473,6 +473,8 @@ void InputsSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"editDictionaryLabel", IDS_OS_SETTINGS_LANGUAGES_EDIT_DICTIONARY_LABEL},
       {"japaneseManageUserDictionaryLabel",
        IDS_OS_SETTINGS_LANGUAGES_JAPANESE_MANAGE_USER_DICTIONARY_LABEL},
+      {"japaneseDictionary",
+       IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_DICTIONARY},
       {"japaneseDictionaryAddDictionary",
        IDS_OS_SETTINGS_LANGUAGES_JAPANESE_DICTIONARY_ADD_DICTIONARY},
       {"japaneseDictionaryCategory",
