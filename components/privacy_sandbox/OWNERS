@@ -1,6 +1,3 @@
-# Android UI
-andzaytsev@google.com
-
 # PAT settings
 # Notice and consent framework
 # UXR and HaTS frameworks
@@ -15,6 +12,3 @@ fmacintosh@google.com
 
 # Backup for emergency approvals
 kmg@google.com
-
-# Owners for the PrivacySandboxSurveyService files
-per-file privacy_sandbox_survey_service*=kjarosz@google.com,dembski@google.com
