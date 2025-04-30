@@ -64,7 +64,7 @@
     margin: 0;
   }
 
-  #infoContainer > h2 {
+  #infoContainer > h1 {
     color: var(--cros-text-color-primary);
     font: var(--cros-display-6_regular-font);
     line-height: 24px;
@@ -205,7 +205,7 @@
   </div>
   <div id="infoContainer">
     <template is="dom-if" if="[[info_]]">
-      <h2 id="name">[[info_.name]]</h2>
+      <h1 id="name">[[info_.name]]</h1>
       <template is="dom-if" if="[[info_.email]]">
         <a id="emailContainer"
             class="avatar-link"
