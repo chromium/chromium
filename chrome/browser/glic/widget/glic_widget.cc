@@ -208,6 +208,7 @@ ui::ColorProviderKey GlicWidget::GetColorProviderKey() const {
 
 void GlicWidget::OnThemeChanged() {
   NotifyColorProviderChanged();
+  ThemeChanged();
 }
 
 }  // namespace glic
