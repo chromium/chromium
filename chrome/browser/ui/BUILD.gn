@@ -3845,6 +3845,8 @@ static_library("ui") {
       "views/autofill/update_address_profile_view.h",
       "views/bookmarks/bookmark_account_storage_move_dialog.cc",
       "views/bookmarks/bookmark_account_storage_move_dialog.h",
+      "views/bookmarks/bookmark_account_storage_move_dialog_delegate.cc",
+      "views/bookmarks/bookmark_account_storage_move_dialog_delegate.h",
       "views/bookmarks/bookmark_bar_view.cc",
       "views/bookmarks/bookmark_bar_view.h",
       "views/bookmarks/bookmark_bar_view_observer.h",

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/functional/callback_helpers.h"
+#include "base/location.h"
 #include "base/notreached.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -16,6 +17,7 @@
 #include "chrome/browser/ui/views/bookmarks/bookmark_account_storage_move_dialog.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/bookmarks/browser/bookmark_model.h"
+#include "components/bookmarks/browser/bookmark_node.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
@@ -469,6 +471,157 @@ IN_PROC_BROWSER_TEST_F(BookmarkAccountStorageMoveDialogInteractiveTest,
       "BookmarkAccountStorageMoveDialog.Download.Declined", 0);
   histogram_tester.ExpectTotalCount(
       "BookmarkAccountStorageMoveDialog.Download.ExplicitlyClosed", 1);
+}
+
+// Tests that removing the source node or destination folder (e.g., in another
+// window) closes the upload dialog.
+IN_PROC_BROWSER_TEST_F(BookmarkAccountStorageMoveDialogInteractiveTest,
+                       UploadDialogClosesWhenSourceOrDestinationRemoved) {
+  base::HistogramTester histogram_tester;
+
+  bookmarks::BookmarkModel* bookmark_model = service()->bookmark_model();
+  const bookmarks::BookmarkNode* local_folder = bookmark_model->AddFolder(
+      bookmark_model->bookmark_bar_node(), 0, u"Local folder");
+  const bookmarks::BookmarkNode* local_folder_bookmark =
+      bookmark_model->AddURL(local_folder, 0, u"Local folder bookmark",
+                             GURL("http://local-folder-bookmark/"));
+  const bookmarks::BookmarkNode* local_bookmark =
+      bookmark_model->AddURL(bookmark_model->bookmark_bar_node(), 1,
+                             u"Local bookmark", GURL("http://local-bookmark/"));
+  const bookmarks::BookmarkNode* account_folder = bookmark_model->AddFolder(
+      bookmark_model->account_bookmark_bar_node(), 0, u"Account folder");
+
+  BookmarkParentFolder destination =
+      BookmarkParentFolder::FromFolderNode(account_folder);
+
+  service()->Move(local_folder_bookmark, destination, 1, browser());
+  RunTestSequence(WaitForShow(kBookmarkAccountStorageMoveDialogCancelButton),
+                  Do([bookmark_model, local_folder] {
+                    // Remove the folder that contains the bookmark being moved.
+                    bookmark_model->Remove(
+                        local_folder,
+                        bookmarks::metrics::BookmarkEditSource::kOther,
+                        FROM_HERE);
+                  }),
+                  WaitForHide(kBookmarkAccountStorageMoveDialogCancelButton));
+
+  service()->Move(local_bookmark, destination, 1, browser());
+  RunTestSequence(WaitForShow(kBookmarkAccountStorageMoveDialogCancelButton),
+                  Do([bookmark_model, account_folder] {
+                    // Remove the destination folder.
+                    bookmark_model->Remove(
+                        account_folder,
+                        bookmarks::metrics::BookmarkEditSource::kOther,
+                        FROM_HERE);
+                  }),
+                  WaitForHide(kBookmarkAccountStorageMoveDialogCancelButton));
+
+  histogram_tester.ExpectTotalCount(
+      "BookmarkAccountStorageMoveDialog.Upload.Shown", 2);
+  histogram_tester.ExpectTotalCount(
+      "BookmarkAccountStorageMoveDialog.Upload.Accepted", 0);
+  histogram_tester.ExpectTotalCount(
+      "BookmarkAccountStorageMoveDialog.Upload.Declined", 0);
+  histogram_tester.ExpectTotalCount(
+      "BookmarkAccountStorageMoveDialog.Upload.ExplicitlyClosed", 2);
+}
+
+// Tests that removing the source node or destination folder (e.g., in another
+// window) closes the download dialog.
+IN_PROC_BROWSER_TEST_F(BookmarkAccountStorageMoveDialogInteractiveTest,
+                       DownloadDialogClosesWhenSourceOrDestinationRemoved) {
+  base::HistogramTester histogram_tester;
+
+  bookmarks::BookmarkModel* bookmark_model = service()->bookmark_model();
+  const bookmarks::BookmarkNode* local_folder = bookmark_model->AddFolder(
+      bookmark_model->bookmark_bar_node(), 0, u"Local folder");
+  const bookmarks::BookmarkNode* account_bookmark = bookmark_model->AddURL(
+      bookmark_model->account_bookmark_bar_node(), 0, u"Account bookmark",
+      GURL("http://account-bookmark/"));
+  const bookmarks::BookmarkNode* account_folder = bookmark_model->AddFolder(
+      bookmark_model->account_bookmark_bar_node(), 1, u"Account folder");
+  const bookmarks::BookmarkNode* account_folder_bookmark =
+      bookmark_model->AddURL(account_folder, 0, u"Account folder bookmark",
+                             GURL("http://account-folder-bookmark/"));
+
+  BookmarkParentFolder destination =
+      BookmarkParentFolder::FromFolderNode(local_folder);
+
+  service()->Move(account_folder_bookmark, destination, 1, browser());
+  RunTestSequence(WaitForShow(kBookmarkAccountStorageMoveDialogCancelButton),
+                  Do([bookmark_model, account_folder] {
+                    // Remove the folder that contains the bookmark being moved.
+                    bookmark_model->Remove(
+                        account_folder,
+                        bookmarks::metrics::BookmarkEditSource::kOther,
+                        FROM_HERE);
+                  }),
+                  WaitForHide(kBookmarkAccountStorageMoveDialogCancelButton));
+
+  service()->Move(account_bookmark, destination, 1, browser());
+  RunTestSequence(WaitForShow(kBookmarkAccountStorageMoveDialogCancelButton),
+                  Do([bookmark_model, local_folder] {
+                    // Remove the destination folder.
+                    bookmark_model->Remove(
+                        local_folder,
+                        bookmarks::metrics::BookmarkEditSource::kOther,
+                        FROM_HERE);
+                  }),
+                  WaitForHide(kBookmarkAccountStorageMoveDialogCancelButton));
+
+  histogram_tester.ExpectTotalCount(
+      "BookmarkAccountStorageMoveDialog.Download.Shown", 2);
+  histogram_tester.ExpectTotalCount(
+      "BookmarkAccountStorageMoveDialog.Download.Accepted", 0);
+  histogram_tester.ExpectTotalCount(
+      "BookmarkAccountStorageMoveDialog.Download.Declined", 0);
+  histogram_tester.ExpectTotalCount(
+      "BookmarkAccountStorageMoveDialog.Download.ExplicitlyClosed", 2);
+}
+
+// Tests that removing an unrelated bookmark does not close the upload dialog.
+IN_PROC_BROWSER_TEST_F(BookmarkAccountStorageMoveDialogInteractiveTest,
+                       UploadDialogStaysOpenWhenUnrelatedBookmarkRemoved) {
+  base::HistogramTester histogram_tester;
+
+  bookmarks::BookmarkModel* bookmark_model = service()->bookmark_model();
+  const bookmarks::BookmarkNode* local_bookmark =
+      bookmark_model->AddURL(bookmark_model->bookmark_bar_node(), 0,
+                             u"Local bookmark", GURL("http://local-bookmark/"));
+  const bookmarks::BookmarkNode* second_local_bookmark = bookmark_model->AddURL(
+      bookmark_model->bookmark_bar_node(), 1, u"Local bookmark 2",
+      GURL("http://local-bookmark-2/"));
+  const bookmarks::BookmarkNode* account_folder = bookmark_model->AddFolder(
+      bookmark_model->account_bookmark_bar_node(), 0, u"Account folder");
+
+  base::test::TestFuture<void> closed_waiter;
+  ShowBookmarkAccountStorageMoveDialog(
+      browser(), local_bookmark, account_folder,
+      /*index=*/0, BookmarkAccountStorageMoveDialogType::kUpload,
+      closed_waiter.GetCallback());
+
+  RunTestSequence(PressButton(kBookmarkAccountStorageMoveDialogOkButton),
+                  Do([bookmark_model, second_local_bookmark] {
+                    // Remove the bookmark that is not being moved.
+                    bookmark_model->Remove(
+                        second_local_bookmark,
+                        bookmarks::metrics::BookmarkEditSource::kOther,
+                        FROM_HERE);
+                  }));
+
+  ASSERT_TRUE(closed_waiter.Wait());
+  ASSERT_EQ(bookmark_model->bookmark_bar_node()->children().size(), 0u);
+  ASSERT_EQ(account_folder->children().size(), 1u);
+  EXPECT_EQ(account_folder->children()[0].get(), local_bookmark);
+
+  histogram_tester.ExpectTotalCount(
+      "BookmarkAccountStorageMoveDialog.Upload.Shown", 1);
+  histogram_tester.ExpectTotalCount(
+      "BookmarkAccountStorageMoveDialog.Upload.Accepted", 1);
+  histogram_tester.ExpectTotalCount(
+      "BookmarkAccountStorageMoveDialog.Upload.Declined", 0);
+  histogram_tester.ExpectTotalCount(
+      "BookmarkAccountStorageMoveDialog.Upload.ExplicitlyClosed", 0);
 }
 
 }  // namespace

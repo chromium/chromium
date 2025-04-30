@@ -17,6 +17,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_dialogs.h"
+#include "chrome/browser/ui/views/bookmarks/bookmark_account_storage_move_dialog_delegate.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/bookmarks/browser/bookmark_model.h"
@@ -128,7 +129,9 @@ void ShowBookmarkAccountStorageMoveDialog(
   auto [ok_callback, cancel_callback] =
       base::SplitOnceCallback(std::move(closed_callback));
 
-  ui::DialogModel::Builder builder;
+  auto delegate = std::make_unique<BookmarkAccountStorageMoveDialogDelegate>(
+      browser, node, target_folder);
+  ui::DialogModel::Builder builder(std::move(delegate));
   builder.SetInternalName("BookmarkAccountStorageMoveDialog")
       .SetTitle(l10n_util::GetStringUTF16(title_id))
       .AddParagraph(ui::DialogModelLabel(body_text))
