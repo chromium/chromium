@@ -166,12 +166,6 @@ public class CustomTabsConnection {
     private static final String ON_RESIZED_CALLBACK = "onResized";
     private static final String ON_RESIZED_SIZE_EXTRA = "size";
 
-    @VisibleForTesting
-    static final String IS_EPHEMERAL_BROWSING_SUPPORTED = "isEphemeralBrowsingSupported";
-
-    @VisibleForTesting
-    static final String EPHEMERAL_BROWSING_SUPPORTED_KEY = "ephemeralBrowsingSupported";
-
     static final String IS_AUTH_TAB_SUPPORTED = "isAuthTabSupported";
     static final String AUTH_TAB_SUPPORTED_KEY = "authTabSupported";
 
@@ -821,13 +815,7 @@ public class CustomTabsConnection {
      * @return The result {@link Bundle}, or null.
      */
     public @Nullable Bundle extraCommand(String commandName, Bundle args) {
-        if (commandName.equals(IS_EPHEMERAL_BROWSING_SUPPORTED)) {
-            var bundle = new Bundle();
-            bundle.putBoolean(
-                    EPHEMERAL_BROWSING_SUPPORTED_KEY,
-                    ChromeFeatureList.isEnabled(ChromeFeatureList.CCT_EPHEMERAL_MODE));
-            return bundle;
-        } else if (commandName.equals(IS_AUTH_TAB_SUPPORTED)) {
+        if (commandName.equals(IS_AUTH_TAB_SUPPORTED)) {
             var bundle = new Bundle();
             boolean supported = ChromeFeatureList.sCctAuthTab.isEnabled();
             bundle.putBoolean(AUTH_TAB_SUPPORTED_KEY, supported);
@@ -2178,11 +2166,6 @@ public class CustomTabsConnection {
 
     public boolean hasEngagementSignalsCallback(SessionHolder<?> session) {
         return mClientManager.getEngagementSignalsCallbackForSession(session) != null;
-    }
-
-    /** Whether Ephemeral Browsing is supported. */
-    public boolean isEphemeralBrowsingSupported(Bundle extras) {
-        return ChromeFeatureList.sCctEphemeralMode.isEnabled();
     }
 
     /** Whether a CustomTabs instance should include interactive Omnibox. */

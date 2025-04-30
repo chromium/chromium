@@ -143,11 +143,6 @@ public class CustomTabsConnectionServiceImpl extends CustomTabsConnectionService
     }
 
     @Override
-    protected boolean isEphemeralBrowsingSupported(Bundle extras) {
-        return mConnection.isEphemeralBrowsingSupported(extras);
-    }
-
-    @Override
     protected void cleanUpSession(@NonNull AuthTabSessionToken sessionToken) {
         mConnection.cleanUpSession(sessionToken);
     }
