@@ -169,9 +169,19 @@ void PushNotificationClientManager::OnSceneActiveForegroundBrowserReady() {
 // Adds clients that operate on a per-Profile basis.
 void PushNotificationClientManager::AddPerProfilePushNotificationClients() {
   if (optimization_guide::features::IsPushNotificationsEnabled()) {
-    auto client = std::make_unique<CommercePushNotificationClient>();
+    std::unique_ptr<CommercePushNotificationClient> client;
+
+    if (IsIOSMultiProfilePushNotificationHandlingEnabled()) {
+      CHECK(profile_);
+
+      client = std::make_unique<CommercePushNotificationClient>(profile_);
+    } else {
+      client = std::make_unique<CommercePushNotificationClient>();
+    }
+
     CHECK_EQ(client->GetClientScope(),
              PushNotificationClientScope::kPerProfile);
+
     AddPushNotificationClient(std::move(client));
   }
 
