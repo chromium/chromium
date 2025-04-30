@@ -15897,10 +15897,12 @@
                 {
                     "name": "Enabled",
                     "params": {
-                        "PartitionAllocSchedulerLoopQuarantineBranchCapacity": "262144"
+                        "PartitionAllocSchedulerLoopQuarantineBrowserUICapacity": "1048576",
+                        "enabled-processes": "browser-only"
                     },
                     "enable_features": [
                         "PartitionAllocSchedulerLoopQuarantine",
+                        "PartitionAllocWithAdvancedChecks",
                         "PartitionAllocZappingByFreeFlags"
                     ]
                 }
