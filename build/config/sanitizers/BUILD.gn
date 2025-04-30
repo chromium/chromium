@@ -267,11 +267,13 @@ config("default_sanitizer_ldflags") {
       if (is_component_build) {
         ldflags +=
             [ "-wholearchive:clang_rt.asan_dynamic_runtime_thunk-x86_64.lib" ]
-        libs += [ "$_clang_lib_dir/clang_rt.asan_dynamic_runtime_thunk-x86_64.lib" ]
+        libs +=
+            [ "$_clang_lib_dir/clang_rt.asan_dynamic_runtime_thunk-x86_64.lib" ]
       } else {
         ldflags +=
             [ "-wholearchive:clang_rt.asan_static_runtime_thunk-x86_64.lib" ]
-        libs += [ "$_clang_lib_dir/clang_rt.asan_static_runtime_thunk-x86_64.lib" ]
+        libs +=
+            [ "$_clang_lib_dir/clang_rt.asan_static_runtime_thunk-x86_64.lib" ]
       }
     }
     if (use_libfuzzer) {
@@ -660,6 +662,13 @@ config("not_fuzzed") {
     # though this sounds fragile, it isn't a big deal if it breaks, since proto
     # fuzzers will still work, they will just be slightly slower.
     cflags = [ "-O2" ]
+
+    # Adding -O2 alone is not enough, we also need to make sure that
+    # the sanitizer coverage flags that are included by `default_sanitizer_flags`
+    # are disabled. Unfortunately, this can't be done using
+    # not_fuzzed_remove_nonasan_configs since it can't selectively remove the
+    # sanitizer coverage flags from `default_sanitizer_flags`.
+    cflags += [ "-fsanitize-coverage=0" ]
 
     # We need to include this config when we remove default_sanitizer_flags or
     # else there will be linking errors. We would remove default_sanitizer_flags
