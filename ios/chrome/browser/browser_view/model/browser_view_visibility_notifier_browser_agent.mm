@@ -8,8 +8,6 @@
 #import "ios/chrome/browser/browser_view/model/browser_view_visibility_handler.h"
 #import "ios/chrome/browser/browser_view/model/browser_view_visibility_observer.h"
 
-BROWSER_USER_DATA_KEY_IMPL(BrowserViewVisibilityNotifierBrowserAgent)
-
 BrowserViewVisibilityNotifierBrowserAgent::
     BrowserViewVisibilityNotifierBrowserAgent(Browser* browser) {
   BrowserViewVisibilityStateChangeCallback callback =
