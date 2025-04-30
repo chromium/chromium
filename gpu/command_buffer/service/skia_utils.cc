@@ -176,9 +176,9 @@ void DumpBackgroundGraphiteMemoryStatistics(
   using base::trace_event::MemoryAllocatorDump;
   static constexpr char kNamePurgeableSize[] = "purgeable_size";
 
-  std::string context_dump_name =
-      base::StringPrintf("skia/gpu_resources/graphite_context_0x%" PRIXPTR,
-                         reinterpret_cast<uintptr_t>(graphite_shared_context));
+  std::string context_dump_name = base::StringPrintf(
+      "skia/gpu_resources/graphite_shared_context_0x%" PRIXPTR,
+      reinterpret_cast<uintptr_t>(graphite_shared_context));
 
   // Skip the second graphite context memory dump if both
   // SharedContextStates share the same GraphiteSharedContext when DrDC is
