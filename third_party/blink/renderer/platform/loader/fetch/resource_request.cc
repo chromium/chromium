@@ -41,6 +41,7 @@
 #include "third_party/blink/renderer/platform/network/http_names.h"
 #include "third_party/blink/renderer/platform/network/network_utils.h"
 #include "third_party/blink/renderer/platform/weborigin/referrer.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
 
@@ -405,8 +406,10 @@ void ResourceRequestHead::SetPriorityIncremental(bool priority_incremental) {
 void ResourceRequestHead::AddHttpHeaderField(const AtomicString& name,
                                              const AtomicString& value) {
   HTTPHeaderMap::AddResult result = http_header_fields_.Add(name, value);
-  if (!result.is_new_entry)
-    result.stored_value->value = result.stored_value->value + ", " + value;
+  if (!result.is_new_entry) {
+    String new_value = WTF::StrCat({result.stored_value->value, ", ", value});
+    result.stored_value->value = AtomicString(new_value);
+  }
 }
 
 void ResourceRequestHead::AddHTTPHeaderFields(

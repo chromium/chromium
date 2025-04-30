@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/platform/json/json_values.h"
 #include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_to_number.h"
 
@@ -47,8 +48,8 @@ String FormatErrorMessage(Error error, int line, int column) {
           "valid Unicode characters.";
       break;
   }
-  return "Line: " + String::Number(line) +
-         ", column: " + String::Number(column) + ", " + text;
+  return WTF::StrCat({"Line: ", String::Number(line),
+                      ", column: ", String::Number(column), ", ", text});
 }
 
 // Note: all parsing functions take a |cursor| parameter which is

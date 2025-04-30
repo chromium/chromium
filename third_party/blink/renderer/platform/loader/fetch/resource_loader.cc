@@ -102,7 +102,7 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
-#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "url/url_constants.h"
 
 namespace blink {
@@ -1510,11 +1510,11 @@ ResourceLoader::CheckResponseNosniff(
     fetcher_->GetConsoleLogger().AddConsoleMessage(
         mojom::ConsoleMessageSource::kSecurity,
         mojom::ConsoleMessageLevel::kError,
-        "Refused to apply style from '" +
-            response.CurrentRequestUrl().ElidedString() +
-            "' because its MIME type ('" + mime_type + "') " +
-            "is not a supported stylesheet MIME type, and strict MIME checking "
-            "is enabled.");
+        WTF::StrCat({"Refused to apply style from '",
+                     response.CurrentRequestUrl().ElidedString(),
+                     "' because its MIME type ('", mime_type,
+                     "') is not a supported stylesheet MIME type, and strict "
+                     "MIME checking is enabled."}));
     return ResourceRequestBlockedReason::kContentType;
   }
   // TODO(mkwst): Move the 'nosniff' bit of 'AllowedByNosniff::MimeTypeAsScript'

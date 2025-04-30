@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/platform/bindings/callback_function_base.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
 
@@ -54,7 +55,8 @@ v8::Local<v8::Value> CallbackMethodRetriever::GetFunctionOrUndefined(
     return v8::Local<v8::Function>();
   }
   if (!value->IsUndefined() && !value->IsFunction()) {
-    exception_state.ThrowTypeError("\"" + property + "\" is not a function");
+    exception_state.ThrowTypeError(
+        WTF::StrCat({"\"", property, "\" is not a function"}));
     return v8::Local<v8::Function>();
   }
   return value;
@@ -69,8 +71,8 @@ v8::Local<v8::Function> CallbackMethodRetriever::GetFunctionOrThrow(
   if (exception_state.HadException())
     return v8::Local<v8::Function>();
   if (value->IsUndefined()) {
-    exception_state.ThrowTypeError("Property \"" + property +
-                                   "\" doesn't exist");
+    exception_state.ThrowTypeError(
+        WTF::StrCat({"Property \"", property, "\" doesn't exist"}));
     return v8::Local<v8::Function>();
   }
   return value.As<v8::Function>();

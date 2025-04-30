@@ -6,6 +6,7 @@
 
 #include <ostream>
 
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -25,16 +26,16 @@ String FromLayoutUnit(FixedPoint<fractional_bits, Storage> value) {
 template <unsigned fractional_bits, typename Storage>
 String FixedPoint<fractional_bits, Storage>::ToString() const {
   if (value_ == Max().RawValue()) {
-    return "Max(" + FromLayoutUnit(*this) + ")";
+    return WTF::StrCat({"Max(", FromLayoutUnit(*this), ")"});
   }
   if (value_ == Min().RawValue()) {
-    return "Min(" + FromLayoutUnit(*this) + ")";
+    return WTF::StrCat({"Min(", FromLayoutUnit(*this), ")"});
   }
   if (value_ == NearlyMax().RawValue()) {
-    return "NearlyMax(" + FromLayoutUnit(*this) + ")";
+    return WTF::StrCat({"NearlyMax(", FromLayoutUnit(*this), ")"});
   }
   if (value_ == NearlyMin().RawValue()) {
-    return "NearlyMin(" + FromLayoutUnit(*this) + ")";
+    return WTF::StrCat({"NearlyMin(", FromLayoutUnit(*this), ")"});
   }
   return FromLayoutUnit(*this);
 }

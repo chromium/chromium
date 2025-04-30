@@ -104,6 +104,7 @@
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
@@ -2398,11 +2399,11 @@ void ResourceFetcher::WarnUnusedPreloads(
     ++unused_resource_count;
     unused_preloads.push_back(resource->Url());
     if (resource->IsLinkPreload()) {
-      String message =
-          "The resource " + resource->Url().GetString() + " was preloaded " +
-          "using link preload but not used within a few seconds from the " +
-          "window's load event. Please make sure it has an appropriate `as` " +
-          "value and it is preloaded intentionally.";
+      String message = WTF::StrCat(
+          {"The resource ", resource->Url().GetString(),
+           " was preloaded using link preload but not used within a few "
+           "seconds from the window's load event. Please make sure it has an "
+           "appropriate `as` value and it is preloaded intentionally."});
       console_logger_->AddConsoleMessage(
           mojom::blink::ConsoleMessageSource::kJavaScript,
           mojom::blink::ConsoleMessageLevel::kWarning, message);
@@ -2442,9 +2443,10 @@ void ResourceFetcher::WarnUnusedPreloads(
     // resource wouldn't be harmful. We need to plumb information from the
     // browser process to check whether the resource was already in the HTTP
     // cache.
-    String message = "The resource " + pair.key.GetString() +
-                     " was preloaded using link preload in Early Hints but not "
-                     "used within a few seconds from the window's load event.";
+    String message = WTF::StrCat(
+        {"The resource ", pair.key.GetString(),
+         " was preloaded using link preload in Early Hints but not "
+         "used within a few seconds from the window's load event."});
     console_logger_->AddConsoleMessage(
         mojom::blink::ConsoleMessageSource::kJavaScript,
         mojom::blink::ConsoleMessageLevel::kWarning, message);

@@ -28,6 +28,7 @@
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/skia/include/core/SkM44.h"
 #include "third_party/skia/include/core/SkMatrix.h"
@@ -291,7 +292,7 @@ String AffineTransform::ToString(bool as_matrix) const {
 
   std::optional<gfx::DecomposedTransform> decomp = ToTransform().Decompose();
   if (!decomp)
-    return ToString(true) + " (degenerate)";
+    return WTF::StrCat({ToString(true), " (degenerate)"});
 
   if (IsIdentityOrTranslation()) {
     return String::Format("translation(%lg,%lg)", decomp->translate[0],
