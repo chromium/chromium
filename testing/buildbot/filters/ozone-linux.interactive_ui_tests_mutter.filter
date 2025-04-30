@@ -1,7 +1,3 @@
-############################################################
-# Tests that were failing on weston and still fail on mutter
-############################################################
-
 # TODO(crbug.com/40759171): implement the feature for Wayland.
 -GlobalCommandsApiTest.GlobalCommand
 
@@ -50,3 +46,6 @@
 
 # TODO(crbug.com/40800718): Enable once the xdg desktop portal backed implementation is in place.
 -EyeDropperViewAuraInteractiveTest.*
+
+# TODO(crbug.com/414635394): Re-enable once right click for bookmark empty submenu works.
+-BookmarkBarViewTest21.ContextMenusForEmptyFolder
