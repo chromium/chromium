@@ -4,6 +4,8 @@
 
 #include "components/autofill/core/browser/ui/autofill_image_fetcher.h"
 
+#include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
@@ -59,7 +61,7 @@ constexpr net::NetworkTrafficAnnotationTag kCardArtImageTrafficAnnotation =
       })");
 
 // Time between fetch attempts.
-static constexpr base::TimeDelta kRefetchDelay = base::Seconds(5);
+static constexpr base::TimeDelta kRefetchDelay = base::Minutes(2);
 
 // Maximum number of times to attempt fetching an image.
 static constexpr int kMaxFetchAttempts = 2;

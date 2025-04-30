@@ -39,7 +39,7 @@ import java.util.function.Function;
 /** Fetches, and caches credit card art images. */
 @NullMarked
 public class AutofillImageFetcher {
-    private static final long REFETCH_DELAY_MS = 5000;
+    private static final long REFETCH_DELAY_MS = 120000; // 2 mins.
     private static final int MAX_FETCH_ATTEMPTS = 2;
     // Logs the overall success rate of fetching credit card art images. For a given credit card art
     // URL, logs "true" if image was fetched, "false" if the image was not fetched after {@link

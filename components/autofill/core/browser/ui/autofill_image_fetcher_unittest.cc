@@ -11,6 +11,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/browser/ui/autofill_image_fetcher_base.h"
@@ -209,7 +210,7 @@ TEST_F(AutofillImageFetcherTest, FetchImage_Failure_RetryFailure) {
   EXPECT_CALL(*mock_image_fetcher(), FetchImageAndData_);
 
   // Fast forward time to trigger the retry.
-  task_environment().FastForwardBy(base::Seconds(5));
+  task_environment().FastForwardBy(base::Minutes(2));
   // Simulate image fetch failure again.
   autofill_image_fetcher()->SimulateOnCardArtImageFetched(fake_url,
                                                           gfx::Image());
@@ -229,7 +230,7 @@ TEST_F(AutofillImageFetcherTest, FetchImage_Failure_RetryFailure) {
   // Verify a maximum of 2 attempts are made. Fast-forward time to verify this.
   EXPECT_CALL(*mock_image_fetcher(), FetchImageAndData_).Times(0);
 
-  task_environment().FastForwardBy(base::Seconds(5));
+  task_environment().FastForwardBy(base::Minutes(2));
 }
 
 TEST_F(AutofillImageFetcherTest, FetchImage_Failure_RetrySuccess) {
@@ -263,7 +264,7 @@ TEST_F(AutofillImageFetcherTest, FetchImage_Failure_RetrySuccess) {
   EXPECT_CALL(*mock_image_fetcher(), FetchImageAndData_);
 
   // Fast forward time to trigger the retry.
-  task_environment().FastForwardBy(base::Seconds(5));
+  task_environment().FastForwardBy(base::Minutes(2));
   // Simulate image fetch success.
   autofill_image_fetcher()->SimulateOnCardArtImageFetched(fake_url, fake_image);
 
@@ -317,7 +318,7 @@ TEST_F(AutofillImageFetcherTest, FetchImage_Failure_RetryDisabled) {
   EXPECT_CALL(*mock_image_fetcher(), FetchImageAndData_).Times(0);
 
   // Fast forward time to trigger the retry.
-  task_environment().FastForwardBy(base::Seconds(5));
+  task_environment().FastForwardBy(base::Minutes(2));
 }
 
 TEST_F(AutofillImageFetcherTest, FetchValuableImage_Success) {
