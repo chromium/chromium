@@ -1317,7 +1317,7 @@
     {
         "name": "kotlin-stdlib-jdk7",
         "group": "org.jetbrains.kotlin",
-        "version": "1.8.20"
+        "version": "1.9.0"
     },
     {
         "name": "kotlin-stdlib-jdk8",
@@ -1327,7 +1327,7 @@
     {
         "name": "kotlinx-coroutines-android",
         "group": "org.jetbrains.kotlinx",
-        "version": "1.7.3"
+        "version": "1.8.1"
     },
     {
         "name": "kotlinx-coroutines-bom",
@@ -1337,7 +1337,7 @@
     {
         "name": "kotlinx-coroutines-core",
         "group": "org.jetbrains.kotlinx",
-        "version": "1.7.3"
+        "version": "1.8.1"
     },
     {
         "name": "kotlinx-coroutines-core-jvm",
@@ -1362,12 +1362,12 @@
     {
         "name": "kotlinx-coroutines-test",
         "group": "org.jetbrains.kotlinx",
-        "version": "1.7.3"
+        "version": "1.8.1"
     },
     {
         "name": "kotlinx-coroutines-test-jvm",
         "group": "org.jetbrains.kotlinx",
-        "version": "1.7.3"
+        "version": "1.8.1"
     },
     {
         "name": "kotlinx-serialization-bom",
