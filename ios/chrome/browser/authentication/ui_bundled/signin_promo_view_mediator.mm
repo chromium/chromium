@@ -137,7 +137,6 @@ bool IsSupportedAccessPoint(signin_metrics::AccessPoint access_point) {
     case signin_metrics::AccessPoint::
         kHistorySyncOptinExpansionPillOnInactivity:
     case signin_metrics::AccessPoint::kHistorySyncEducationalTip:
-    case signin_metrics::AccessPoint::kManagedProfileAutoSigninIos:
       return false;
   }
 }
@@ -235,7 +234,6 @@ void RecordImpressionsTilSigninButtonsHistogramForAccessPoint(
     case signin_metrics::AccessPoint::
         kHistorySyncOptinExpansionPillOnInactivity:
     case signin_metrics::AccessPoint::kHistorySyncEducationalTip:
-    case signin_metrics::AccessPoint::kManagedProfileAutoSigninIos:
       NOTREACHED() << "Unexpected value for access point "
                    << static_cast<int>(access_point);
   }
@@ -334,7 +332,6 @@ void RecordImpressionsTilXButtonHistogramForAccessPoint(
     case signin_metrics::AccessPoint::
         kHistorySyncOptinExpansionPillOnInactivity:
     case signin_metrics::AccessPoint::kHistorySyncEducationalTip:
-    case signin_metrics::AccessPoint::kManagedProfileAutoSigninIos:
       NOTREACHED() << "Unexpected value for access point "
                    << static_cast<int>(access_point);
   }
@@ -422,7 +419,6 @@ const char* DisplayedCountPreferenceKey(
     case signin_metrics::AccessPoint::
         kHistorySyncOptinExpansionPillOnInactivity:
     case signin_metrics::AccessPoint::kHistorySyncEducationalTip:
-    case signin_metrics::AccessPoint::kManagedProfileAutoSigninIos:
       return nullptr;
   }
 }
@@ -509,7 +505,6 @@ const char* AlreadySeenSigninViewPreferenceKey(
     case signin_metrics::AccessPoint::
         kHistorySyncOptinExpansionPillOnInactivity:
     case signin_metrics::AccessPoint::kHistorySyncEducationalTip:
-    case signin_metrics::AccessPoint::kManagedProfileAutoSigninIos:
       return nullptr;
   }
 }
