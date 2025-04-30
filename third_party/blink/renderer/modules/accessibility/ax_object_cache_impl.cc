@@ -5858,7 +5858,9 @@ void AXObjectCacheImpl::GetUpdatesAndEventsForSerialization(
       continue;
 
     if (GetAXMode().HasFilterFlags(ui::AXMode::kOnScreenOnly)) {
-      if (!obj->WasEverOnScreen() &&
+      DUMP_WILL_BE_CHECK(obj->IsRoot() || obj->ParentObjectIncludedInTree())
+          << "Non-root object has no parent: " << obj->ToString();
+      if (!obj->IsRoot() && !obj->WasEverOnScreen() &&
           !obj->ParentObjectIncludedInTree()->WasEverOnScreen()) {
         // Off-screen children with off-screen parents are not serialized.
         continue;
