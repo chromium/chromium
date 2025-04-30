@@ -8,6 +8,7 @@
 
 ### Android
 
+ * [android-byra-perf](https://ci.chromium.org/p/chrome/builders/ci/android-byra-perf): AL Byra.
  * [android-go-wembley-perf](https://ci.chromium.org/p/chrome/builders/ci/android-go-wembley-perf): Android U.
  * [android-go-wembley_webview-perf](https://ci.chromium.org/p/chrome/builders/ci/android-go-wembley_webview-perf): Android U.
  * [android-pixel-fold-perf](https://ci.chromium.org/p/chrome/builders/ci/android-pixel-fold-perf): Android U.

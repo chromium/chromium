@@ -540,6 +540,10 @@ _CROSSBENCH_PIXEL9 = frozenset([
     ]),
 ])
 
+_CROSSBENCH_ANDROID_BYRA = frozenset([
+    _crossbench_speedometer3_1(arguments=['--fileserver', '--debug']),
+])
+
 _CROSSBENCH_TANGOR = frozenset([
     _crossbench_loadline_tablet(arguments=[
         '--cool-down-threshold=moderate',
@@ -768,6 +772,15 @@ _ANDROID_PIXEL_TANGOR_BENCHMARK_CONFIGS = PerfSuite(
         _GetBenchmarkConfig('speedometer2-minorms'),
         _GetBenchmarkConfig('speedometer3-minorms')
     ])
+# Android Desktop (AL)
+_ANDROID_BYRA_BENCHMARK_CONFIGS = PerfSuite([
+    # Byra will also run the crossbench variant to ensure that both legacy and
+    # crossbench work.
+    _GetBenchmarkConfig('speedometer3'),
+    _GetBenchmarkConfig('rendering.mobile'),
+    _GetBenchmarkConfig('rendering.desktop'),
+])
+
 _CHROMEOS_KEVIN_FYI_BENCHMARK_CONFIGS = PerfSuite(
     [_GetBenchmarkConfig('rendering.desktop')])
 _FUCHSIA_PERF_SMARTDISPLAY_BENCHMARK_CONFIGS = PerfSuite([
@@ -941,6 +954,14 @@ WIN_ARM64_SNAPDRAGON_ELITE = PerfPlatform(
     is_fyi=True)
 
 # Android
+ANDROID_BYRA = PerfPlatform(name='android-byra-perf',
+                            description='AL Byra',
+                            num_shards=7,
+                            benchmark_configs=_ANDROID_BYRA_BENCHMARK_CONFIGS,
+                            platform_os='android',
+                            executables=None,
+                            crossbench=_CROSSBENCH_ANDROID_BYRA)
+
 ANDROID_PIXEL4 = PerfPlatform('android-pixel4-perf',
                               'Android R',
                               _ANDROID_PIXEL4_BENCHMARK_CONFIGS,
