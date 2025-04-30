@@ -712,8 +712,20 @@ class GraphBuilderTflite final {
       const mojom::ElementWiseBinary& binary);
   std::optional<TensorInfo> CanFuseQuantizeAndGetOutput(
       const mojom::Transpose& transpose);
+  std::optional<TensorInfo> CanFuseQuantizeAndGetOutput(
+      const mojom::Tanh& tanh);
+  std::optional<TensorInfo> CanFuseQuantizeAndGetOutput(
+      const mojom::Sigmoid& sigmoid);
+  std::optional<TensorInfo> CanFuseQuantizeAndGetOutput(
+      const mojom::LeakyRelu& leaky_relu);
+  // Helper for activation operations to check if specific fusion criteria
+  // required by TFLite are met and return next quantizeLinear operation id
+  // if so.
+  // This is shared by `tanh`, `sigmoid` and `leakyRelu`.
+  template <typename OpType>
+  std::optional<size_t> CanFuseQuantizeForActivationOperation(const OpType& op);
   bool IsDequantizeOutput(uint64_t operand_id);
-  //   Get the dequantize op by its output operand id.
+  // Get the dequantize op by its output operand id.
   const mojom::DequantizeLinear& GetDequantizeOp(uint64_t operand_id);
   const mojom::QuantizeLinear& GetQuantizeOp(size_t operation_index);
   // Try to serialize `dequantize_linear`'s input with quantization params and

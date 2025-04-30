@@ -1570,6 +1570,120 @@ GraphBuilderTflite::CanFuseQuantizeAndGetOutput(
   return next_op ? TrySerializeQuantizedOutput(*next_op) : std::nullopt;
 }
 
+std::optional<GraphBuilderTflite::TensorInfo>
+GraphBuilderTflite::CanFuseQuantizeAndGetOutput(const mojom::Tanh& tanh) {
+  std::optional<size_t> next_op = CanFuseQuantizeForActivationOperation(tanh);
+  return next_op ? TrySerializeQuantizedOutput(*next_op) : std::nullopt;
+}
+
+std::optional<GraphBuilderTflite::TensorInfo>
+GraphBuilderTflite::CanFuseQuantizeAndGetOutput(const mojom::Sigmoid& sigmoid) {
+  std::optional<size_t> next_op =
+      CanFuseQuantizeForActivationOperation(sigmoid);
+  if (!next_op) {
+    return std::nullopt;
+  }
+
+  const mojom::QuantizeLinear& output_quantize = GetQuantizeOp(*next_op);
+  base::span<const float> output_scale_values =
+      GetConstantValue<float>(output_quantize.scale_operand_id);
+  // The output scale value must be 1.0f / 256.0f.
+  // https://source.chromium.org/chromium/chromium/src/+/main:third_party/tflite/src/tensorflow/lite/kernels/activations.cc;l=463;drc=f667feb8a5c6f227b49328ce78a062acc4f81187
+  if (output_scale_values[0] != 1.0f / 256.0f) {
+    return std::nullopt;
+  }
+
+  return TrySerializeQuantizedOutput(*next_op);
+}
+
+std::optional<GraphBuilderTflite::TensorInfo>
+GraphBuilderTflite::CanFuseQuantizeAndGetOutput(
+    const mojom::LeakyRelu& leaky_relu) {
+  std::optional<size_t> next_op =
+      CanFuseQuantizeForActivationOperation(leaky_relu);
+  if (!next_op) {
+    return std::nullopt;
+  }
+
+  // The alpha value can't be 0.0f.
+  // https://source.chromium.org/chromium/chromium/src/+/main:third_party/tflite/src/tensorflow/lite/delegates/xnnpack/xnnpack_delegate.cc;l=4151;drc=f667feb8a5c6f227b49328ce78a062acc4f81187
+  if (leaky_relu.alpha == 0.0f) {
+    return std::nullopt;
+  }
+
+  const mojom::DequantizeLinear& input_dequantize =
+      GetDequantizeOp(leaky_relu.input_operand_id);
+  const mojom::QuantizeLinear& output_quantize = GetQuantizeOp(*next_op);
+  base::span<const float> input_scale_values =
+      GetConstantValue<float>(input_dequantize.scale_operand_id);
+  base::span<const float> output_scale_values =
+      GetConstantValue<float>(output_quantize.scale_operand_id);
+  const float scale_positive_min = 1.0f / 256.0f;
+  const float scale_positive_max = 128.0f;
+  const float scale_negative_min = -127.99609375f;
+  // The `input scale / output scale` must be in the range.
+  // https://source.chromium.org/chromium/chromium/src/+/main:third_party/tflite/src/tensorflow/lite/delegates/xnnpack/xnnpack_delegate.cc;l=4162;drc=f667feb8a5c6f227b49328ce78a062acc4f81187
+  base::CheckedNumeric<float> checked_positive_scale =
+      base::MakeCheckedNum<float>(input_scale_values[0]) /
+      output_scale_values[0];
+  if (!checked_positive_scale.IsValid() ||
+      checked_positive_scale.ValueOrDie() < scale_positive_min ||
+      checked_positive_scale.ValueOrDie() > scale_positive_max) {
+    return std::nullopt;
+  }
+
+  // The `input scale * alpha / output scale` must be in the range.
+  // https://source.chromium.org/chromium/chromium/src/+/main:third_party/tflite/src/tensorflow/lite/delegates/xnnpack/xnnpack_delegate.cc;l=4171;drc=f667feb8a5c6f227b49328ce78a062acc4f81187
+  base::CheckedNumeric<float> checked_negative_scale =
+      checked_positive_scale * leaky_relu.alpha;
+  if (!checked_negative_scale.IsValid() ||
+      checked_negative_scale.ValueOrDie() < scale_negative_min ||
+      checked_negative_scale.ValueOrDie() > scale_positive_max ||
+      checked_negative_scale.Abs().ValueOrDie() < scale_positive_min) {
+    return std::nullopt;
+  }
+
+  return TrySerializeQuantizedOutput(*next_op);
+}
+
+template <typename OpType>
+std::optional<size_t> GraphBuilderTflite::CanFuseQuantizeForActivationOperation(
+    const OpType& op) {
+  if constexpr (!std::is_same_v<OpType, mojom::Tanh> &&
+                !std::is_same_v<OpType, mojom::Sigmoid> &&
+                !std::is_same_v<OpType, mojom::LeakyRelu>) {
+    NOTREACHED() << "Unsupported quantize operators";
+  }
+
+  if (!IsDequantizeOutput(op.input_operand_id)) {
+    return std::nullopt;
+  }
+
+  const mojom::DequantizeLinear& input_dequantize =
+      GetDequantizeOp(op.input_operand_id);
+  if (!IsInts8AndScalarScale(input_dequantize)) {
+    return std::nullopt;
+  }
+
+  std::optional<size_t> next_op = IsNextOpQuantize(
+      op.output_operand_id,
+      {GetOperand(input_dequantize.input_operand_id).descriptor.data_type()});
+  if (!next_op) {
+    return std::nullopt;
+  }
+
+  const mojom::QuantizeLinear& output_quantize = GetQuantizeOp(*next_op);
+  if (GetOperand(output_quantize.scale_operand_id)
+          .descriptor.NumberOfElements() != 1) {
+    return std::nullopt;
+  }
+  CHECK_EQ(GetOperand(output_quantize.zero_point_operand_id)
+               .descriptor.NumberOfElements(),
+           1u);
+
+  return next_op;
+}
+
 bool GraphBuilderTflite::IsDequantizeOutput(uint64_t operand_id) {
   return lazy_serialized_dequantize_operations_.contains(operand_id);
 }
@@ -4844,18 +4958,31 @@ auto GraphBuilderTflite::SerializeLeakyRelu(const mojom::LeakyRelu& leaky_relu)
     -> base::expected<OperatorOffset, std::string> {
   CHECK(context_properties_.data_type_limits.leaky_relu_input.Supports(
       GetOperand(leaky_relu.input_operand_id).descriptor));
+
+  std::optional<TensorInfo> quantized_output =
+      CanFuseQuantizeAndGetOutput(leaky_relu);
+  const bool fuse_dequantize = quantized_output.has_value();
   ASSIGN_OR_RETURN(const TensorInfo& input_tensor_info,
-                   SerializeInputTensorInfo(leaky_relu.input_operand_id));
-  ASSIGN_OR_RETURN(const TensorInfo& output_tensor_info,
-                   SerializeOutputTensorInfo(leaky_relu.output_operand_id));
+                   SerializeInputTensorInfo(
+                       leaky_relu.input_operand_id, /*quantize_params=*/0,
+                       /*operation_supports_float16=*/false, fuse_dequantize));
+
+  int32_t output_tensor_index;
+  if (fuse_dequantize) {
+    output_tensor_index = quantized_output->index;
+  } else {
+    ASSIGN_OR_RETURN(const TensorInfo& output_tensor_info,
+                     SerializeOutputTensorInfo(leaky_relu.output_operand_id));
+    output_tensor_index = output_tensor_info.index;
+  }
 
   const auto leaky_rely_options =
       ::tflite::CreateLeakyReluOptions(builder_, leaky_relu.alpha);
 
-  return SerializeUnaryOperation(
-      ::tflite::BuiltinOperator_LEAKY_RELU, input_tensor_info.index,
-      output_tensor_info.index, ::tflite::BuiltinOptions_LeakyReluOptions,
-      leaky_rely_options.Union());
+  return SerializeUnaryOperation(::tflite::BuiltinOperator_LEAKY_RELU,
+                                 input_tensor_info.index, output_tensor_index,
+                                 ::tflite::BuiltinOptions_LeakyReluOptions,
+                                 leaky_rely_options.Union());
 }
 
 auto GraphBuilderTflite::SerializeLinear(const mojom::Linear& linear)
@@ -5853,14 +5980,26 @@ auto GraphBuilderTflite::SerializeSigmoid(const mojom::Sigmoid& sigmoid)
     -> base::expected<OperatorOffset, std::string> {
   CHECK(context_properties_.data_type_limits.sigmoid_input.Supports(
       GetOperand(sigmoid.input_operand_id).descriptor));
+
+  std::optional<TensorInfo> quantized_output =
+      CanFuseQuantizeAndGetOutput(sigmoid);
+  const bool fuse_dequantize = quantized_output.has_value();
   ASSIGN_OR_RETURN(const TensorInfo& input_tensor_info,
-                   SerializeInputTensorInfo(sigmoid.input_operand_id));
-  ASSIGN_OR_RETURN(const TensorInfo& output_tensor_info,
-                   SerializeOutputTensorInfo(sigmoid.output_operand_id));
+                   SerializeInputTensorInfo(
+                       sigmoid.input_operand_id, /*quantize_params=*/0,
+                       /*operation_supports_float16=*/false, fuse_dequantize));
+
+  int32_t output_tensor_index;
+  if (fuse_dequantize) {
+    output_tensor_index = quantized_output->index;
+  } else {
+    ASSIGN_OR_RETURN(const TensorInfo& output_tensor_info,
+                     SerializeOutputTensorInfo(sigmoid.output_operand_id));
+    output_tensor_index = output_tensor_info.index;
+  }
 
   return SerializeUnaryOperation(::tflite::BuiltinOperator_LOGISTIC,
-                                 input_tensor_info.index,
-                                 output_tensor_info.index);
+                                 input_tensor_info.index, output_tensor_index);
 }
 
 auto GraphBuilderTflite::SerializeWebNNScatterND(
@@ -6229,14 +6368,26 @@ auto GraphBuilderTflite::SerializeTanh(const mojom::Tanh& tanh)
     -> base::expected<OperatorOffset, std::string> {
   CHECK(context_properties_.data_type_limits.tanh_input.Supports(
       GetOperand(tanh.input_operand_id).descriptor));
+
+  std::optional<TensorInfo> quantized_output =
+      CanFuseQuantizeAndGetOutput(tanh);
+  const bool fuse_dequantize = quantized_output.has_value();
   ASSIGN_OR_RETURN(const TensorInfo& input_tensor_info,
-                   SerializeInputTensorInfo(tanh.input_operand_id));
-  ASSIGN_OR_RETURN(const TensorInfo& output_tensor_info,
-                   SerializeOutputTensorInfo(tanh.output_operand_id));
+                   SerializeInputTensorInfo(
+                       tanh.input_operand_id, /*quantize_params=*/0,
+                       /*operation_supports_float16=*/false, fuse_dequantize));
+
+  int32_t output_tensor_index;
+  if (fuse_dequantize) {
+    output_tensor_index = quantized_output->index;
+  } else {
+    ASSIGN_OR_RETURN(const TensorInfo& output_tensor_info,
+                     SerializeOutputTensorInfo(tanh.output_operand_id));
+    output_tensor_index = output_tensor_info.index;
+  }
 
   return SerializeUnaryOperation(::tflite::BuiltinOperator_TANH,
-                                 input_tensor_info.index,
-                                 output_tensor_info.index);
+                                 input_tensor_info.index, output_tensor_index);
 }
 
 auto GraphBuilderTflite::SerializeTile(const mojom::Tile& tile)
