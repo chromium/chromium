@@ -159,7 +159,7 @@ void AccountConsistencyBrowserAgent::ShowAccountMenu(const GURL& url) {
   CHECK(AreSeparateProfilesForManagedAccountsEnabled());
   // TODO(crbug.com/411614444): Open the account menu here instead of going
   // through the handler.
-  // TODO(crbug.com/375605412): Pass the URL to the account menu.
   [application_handler_
-      showAccountMenuFromAccessPoint:AccountMenuAccessPoint::kWeb];
+      showAccountMenuFromAccessPoint:AccountMenuAccessPoint::kWeb
+                                 URL:url];
 }

@@ -252,7 +252,8 @@ class PrefRegistrySyncable;
                                         (SigninContextStyle)contextStyle
                                       anchorView:(UIView*)anchorView
                                      accessPoint:
-                                         (AccountMenuAccessPoint)accessPoint;
+                                         (AccountMenuAccessPoint)accessPoint
+                                             URL:(const GURL&)url;
 
 // Returns a coordinator to show the history sync.
 + (SigninCoordinator*)

@@ -2221,7 +2221,8 @@ using UserFeedbackDataCallback =
   [self startSigninCoordinatorWithCompletion:command.completion];
 }
 
-- (void)showAccountMenuFromAccessPoint:(AccountMenuAccessPoint)accessPoint {
+- (void)showAccountMenuFromAccessPoint:(AccountMenuAccessPoint)accessPoint
+                                   URL:(const GURL&)url {
   if (![self isTabAvailableToPresentViewController]) {
     return;
   }
@@ -2235,7 +2236,8 @@ using UserFeedbackDataCallback =
                                            browser:browser
                                       contextStyle:SigninContextStyle::kDefault
                                         anchorView:nil
-                                       accessPoint:accessPoint];
+                                       accessPoint:accessPoint
+                                               URL:url];
   self.signinCoordinator = accountMenuCoordinator;
   // TODO(crbug.com/336719423): Record signin metrics based on the
   // selected action from the account switcher.

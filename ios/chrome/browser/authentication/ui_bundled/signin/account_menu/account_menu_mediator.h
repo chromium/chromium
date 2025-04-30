@@ -15,6 +15,7 @@ enum class AccountMenuAccessPoint;
 @protocol AccountMenuMediatorDelegate;
 class AuthenticationService;
 class ChromeAccountManagerService;
+class GURL;
 class PrefService;
 typedef NS_ENUM(NSUInteger, SigninCoordinatorResult);
 namespace signin {
@@ -41,7 +42,7 @@ class SyncService;
                     identityManager:(signin::IdentityManager*)identityManager
                               prefs:(PrefService*)prefs
                         accessPoint:(AccountMenuAccessPoint)accessPoint
-    NS_DESIGNATED_INITIALIZER;
+                                URL:(const GURL&)url NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
 // Disconnects the mediator.

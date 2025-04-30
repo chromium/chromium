@@ -134,7 +134,8 @@ class AccountMenuCoordinatorTest : public PlatformTest {
                            browser:browser_.get()
                       contextStyle:SigninContextStyle::kDefault
                         anchorView:nil
-                       accessPoint:AccountMenuAccessPoint::kNewTabPage];
+                       accessPoint:AccountMenuAccessPoint::kNewTabPage
+                               URL:GURL()];
     coordinator_.signinCompletion =
         ^(SigninCoordinatorResult, id<SystemIdentity>) {
           Stop();

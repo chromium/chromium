@@ -22,6 +22,7 @@ enum class AccountMenuAccessPoint;
                               contextStyle:(SigninContextStyle)contextStyle
                                 anchorView:(UIView*)anchorView
                                accessPoint:(AccountMenuAccessPoint)accessPoint
+                                       URL:(const GURL&)url
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController

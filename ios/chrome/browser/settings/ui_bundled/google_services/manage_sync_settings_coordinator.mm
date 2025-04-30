@@ -492,7 +492,8 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
                                       contextStyle:SigninContextStyle::kDefault
                                         anchorView:nil
                                        accessPoint:AccountMenuAccessPoint::
-                                                       kSettings];
+                                                       kSettings
+                                               URL:GURL()];
 
   __weak __typeof(self) weakself = self;
   _accountMenuCoordinator.signinCompletion =

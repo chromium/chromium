@@ -102,13 +102,17 @@
   UIView* _anchorView;
   // The access point from which this account menu was triggered.
   AccountMenuAccessPoint _accessPoint;
+  // The URL which the the account menu was viewed from when
+  // AccountMenuAccessPoint::kWeb.
+  GURL _url;
 }
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
                               contextStyle:(SigninContextStyle)contextStyle
                                 anchorView:(UIView*)anchorView
-                               accessPoint:(AccountMenuAccessPoint)accessPoint {
+                               accessPoint:(AccountMenuAccessPoint)accessPoint
+                                       URL:(const GURL&)url {
   self = [super
       initWithBaseViewController:viewController
                          browser:browser
@@ -117,6 +121,7 @@
   if (self) {
     _anchorView = anchorView;
     _accessPoint = accessPoint;
+    _url = url;
   }
   return self;
 }
@@ -164,7 +169,8 @@
                                            authService:_authenticationService
                                        identityManager:_identityManager
                                                  prefs:prefs
-                                           accessPoint:_accessPoint];
+                                           accessPoint:_accessPoint
+                                                   URL:_url];
   _mediator.delegate = self;
   _mediator.consumer = _viewController;
   _viewController.mutator = _mediator;

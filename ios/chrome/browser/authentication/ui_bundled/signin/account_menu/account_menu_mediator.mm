@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_request_helper.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/table_view_account_item.h"
+#import "ios/chrome/browser/authentication/ui_bundled/change_profile/change_profile_load_url.h"
 #import "ios/chrome/browser/authentication/ui_bundled/change_profile/change_profile_open_ntp.h"
 #import "ios/chrome/browser/authentication/ui_bundled/change_profile/change_profile_settings_continuation.h"
 #import "ios/chrome/browser/authentication/ui_bundled/continuation.h"
@@ -81,6 +82,9 @@
   // If the authentication flow started, the identity is switching to this
   // profile.
   id<SystemIdentity> _identityToSignin;
+  // The URL which the the account menu was viewed from when
+  // AccountMenuAccessPoint::kWeb.
+  GURL _url;
 }
 
 - (instancetype)initWithSyncService:(syncer::SyncService*)syncService
@@ -89,7 +93,8 @@
                         authService:(AuthenticationService*)authService
                     identityManager:(signin::IdentityManager*)identityManager
                               prefs:(PrefService*)prefs
-                        accessPoint:(AccountMenuAccessPoint)accessPoint {
+                        accessPoint:(AccountMenuAccessPoint)accessPoint
+                                URL:(const GURL&)url {
   self = [super init];
   if (self) {
     CHECK(syncService);
@@ -107,6 +112,7 @@
             _identityManager, self);
     _prefs = prefs;
     _accessPoint = accessPoint;
+    _url = url;
     _primaryIdentityBeforeSignin = _authenticationService->GetPrimaryIdentity(
         signin::ConsentLevel::kSignin);
     _syncService = syncService;
@@ -449,8 +455,7 @@
     case AccountMenuAccessPoint::kSettings:
       return CreateChangeProfileSettingsContinuation();
     case AccountMenuAccessPoint::kWeb:
-      // TODO(crbug.com/375605412): Move the current tab into the new profile.
-      return DoNothingContinuation();
+      return CreateChangeProfileOpensURLContinuation(_url);
   }
 }
 

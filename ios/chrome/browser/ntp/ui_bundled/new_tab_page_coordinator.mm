@@ -1514,7 +1514,8 @@
                                       contextStyle:SigninContextStyle::kDefault
                                         anchorView:identityDisc
                                        accessPoint:AccountMenuAccessPoint::
-                                                       kNewTabPage];
+                                                       kNewTabPage
+                                               URL:GURL()];
   __typeof(self) weakSelf = self;
   _accountMenuCoordinator.signinCompletion =
       ^(SigninCoordinatorResult, id<SystemIdentity>) {
