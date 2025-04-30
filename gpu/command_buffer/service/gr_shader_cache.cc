@@ -29,6 +29,12 @@ namespace gpu {
 namespace raster {
 namespace {
 
+// TODO(b/375264422): Temporary to debug potential shader cache entries
+// mismatch.
+BASE_FEATURE(kGrShaderCacheLoad,
+             "GrShaderCacheLoad",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 std::string MakeString(const SkData* data) {
   return std::string(static_cast<const char*>(data->data()), data->size());
 }
@@ -59,6 +65,13 @@ GrShaderCache::~GrShaderCache() {
 
 sk_sp<SkData> GrShaderCache::load(const SkData& key) {
   TRACE_EVENT0("gpu", "GrShaderCache::load");
+
+  // TODO(b/375264422): Temporary to debug potential shader cache entries
+  // mismatch.
+  if (!base::FeatureList::IsEnabled(kGrShaderCacheLoad)) {
+    return nullptr;
+  }
+
   base::AutoLock auto_lock(lock_);
   DCHECK_NE(current_client_id(), kInvalidClientId);
 
