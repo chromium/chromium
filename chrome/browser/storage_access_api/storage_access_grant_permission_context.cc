@@ -30,6 +30,8 @@
 #include "components/content_settings/core/common/content_settings_constraints.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
+#include "components/metrics/dwa/dwa_builders.h"
+#include "components/metrics/dwa/dwa_recorder.h"
 #include "components/permissions/constants.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_request_id.h"
@@ -132,8 +134,14 @@ RequestOutcome RequestOutcomeFromPrompt(ContentSetting content_setting,
   }
 }
 
-void RecordOutcomeSample(RequestOutcome outcome) {
+void RecordOutcomeSample(RequestOutcome outcome,
+                         const net::SchemefulSite& requesting_site) {
   base::UmaHistogramEnumeration("API.StorageAccess.RequestOutcome", outcome);
+
+  dwa::builders::StorageAccess_RequestOutcome()
+      .SetOutcome(static_cast<int>(outcome))
+      .SetContent(requesting_site.GetURL().spec())
+      .Record(metrics::dwa::DwaRecorder::Get());
 }
 
 content_settings::ContentSettingConstraints ComputeConstraints(
@@ -263,7 +271,7 @@ FederatedIdentityPermissionContext* IsAutograntViaFedCmAllowed(
   }
 
   RecordAutograntViaFedCmOutcomeSample(AutograntViaFedCmOutcome::kAllowed);
-  RecordOutcomeSample(RequestOutcome::kAllowedByFedCM);
+  RecordOutcomeSample(RequestOutcome::kAllowedByFedCM, requesting_site);
   return fedcm_context;
 }
 
@@ -307,6 +315,8 @@ void StorageAccessGrantPermissionContext::DecidePermission(
       request_data.id.global_render_frame_host_id());
   CHECK(rfh);
 
+  const net::SchemefulSite requesting_site(request_data.requesting_origin);
+
   if (rfh->GetLastCommittedOrigin().opaque() || rfh->IsCredentialless() ||
       rfh->IsNestedWithinFencedFrame() ||
       rfh->IsSandboxed(
@@ -315,7 +325,8 @@ void StorageAccessGrantPermissionContext::DecidePermission(
     // No need to log anything here, since well-behaved renderers have already
     // done these checks and have logged to the console. This block is to handle
     // compromised renderers.
-    RecordOutcomeSample(RequestOutcome::kDeniedByPrerequisites);
+    RecordOutcomeSample(RequestOutcome::kDeniedByPrerequisites,
+                        requesting_site);
     mojo::ReportBadMessage(
         "requestStorageAccess: Must not be called by a fenced frame, iframe "
         "with an opaque origin, credentialless iframe, or sandboxed iframe");
@@ -331,8 +342,10 @@ void StorageAccessGrantPermissionContext::DecidePermission(
   ContentSetting setting = settings_map->GetContentSetting(
       request_data.requesting_origin, request_data.embedding_origin,
       ContentSettingsType::COOKIES);
+
   if (setting == CONTENT_SETTING_BLOCK) {
-    RecordOutcomeSample(RequestOutcome::kDeniedByCookieSettings);
+    RecordOutcomeSample(RequestOutcome::kDeniedByCookieSettings,
+                        requesting_site);
     std::move(callback).Run(CONTENT_SETTING_BLOCK);
     return;
   }
@@ -349,7 +362,7 @@ void StorageAccessGrantPermissionContext::DecidePermission(
   if (overrides.Has(net::CookieSettingOverride::kStorageAccessGrantEligible) ||
       overrides.Has(
           net::CookieSettingOverride::kStorageAccessGrantEligibleViaHeader)) {
-    RecordOutcomeSample(RequestOutcome::kDeniedAborted);
+    RecordOutcomeSample(RequestOutcome::kDeniedAborted, requesting_site);
     // The caller already has the `kStorageAccessGrantEligible` or
     // `kStorageAccessGrantEligibleViaHeader` override, which is impossible
     // since those overrides should be used solely by the network service. This
@@ -363,18 +376,18 @@ void StorageAccessGrantPermissionContext::DecidePermission(
   if (cookie_settings->IsFullCookieAccessAllowed(request_data.requesting_origin,
                                                  net::SiteForCookies(),
                                                  embedding_origin, overrides)) {
-    RecordOutcomeSample(RequestOutcome::kAllowedByCookieSettings);
+    RecordOutcomeSample(RequestOutcome::kAllowedByCookieSettings,
+                        requesting_site);
     std::move(callback).Run(CONTENT_SETTING_ALLOW);
     return;
   }
 
-  const net::SchemefulSite requesting_site(request_data.requesting_origin);
   const net::SchemefulSite embedding_site(embedding_origin);
 
   // Return early without prompting users if the requesting frame is same-site
   // with the top-level frame.
   if (requesting_site == embedding_site) {
-    RecordOutcomeSample(RequestOutcome::kAllowedBySameSite);
+    RecordOutcomeSample(RequestOutcome::kAllowedBySameSite, requesting_site);
     std::move(callback).Run(CONTENT_SETTING_ALLOW);
     return;
   }
@@ -422,7 +435,8 @@ void StorageAccessGrantPermissionContext::DecidePermission(
     rfh->AddMessageToConsole(
         blink::mojom::ConsoleMessageLevel::kError,
         "requestStorageAccess: Must be handling a user gesture to use.");
-    RecordOutcomeSample(RequestOutcome::kDeniedByPrerequisites);
+    RecordOutcomeSample(RequestOutcome::kDeniedByPrerequisites,
+                        requesting_site);
     std::move(callback).Run(CONTENT_SETTING_BLOCK);
     return;
   }
@@ -519,7 +533,8 @@ void StorageAccessGrantPermissionContext::OnCheckedUserInteractionHeuristic(
   if (!rfh) {
     // After async steps, the RenderFrameHost is not guaranteed to still be
     // alive.
-    RecordOutcomeSample(RequestOutcome::kDeniedAborted);
+    RecordOutcomeSample(RequestOutcome::kDeniedAborted,
+                        net::SchemefulSite(request_data.requesting_origin));
     std::move(callback).Run(CONTENT_SETTING_BLOCK);
     return;
   }
@@ -620,7 +635,7 @@ void StorageAccessGrantPermissionContext::NotifyPermissionSetInternal(
     RequestOutcome outcome) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  RecordOutcomeSample(outcome);
+  RecordOutcomeSample(outcome, net::SchemefulSite(requesting_origin));
 
   const bool permission_allowed = (content_setting == CONTENT_SETTING_ALLOW);
   UpdateTabContext(id, requesting_origin, permission_allowed);

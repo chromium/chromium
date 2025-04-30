@@ -210,4 +210,17 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="StorageAccess.RequestOutcome">
+  <owner>selya@google.com</owner>
+  <owner>cfredric@chromium.org</owner>
+  <metric name="Outcome" enum="StorageAccessAPIRequestOutcome">
+    <summary>
+      Records the outcome of a particular Storage Access API permission request
+      and the site that requested it.
+
+      Recorded at the time of the request, for every request.
+    </summary>
+  </metric>
+</event>
+
 </dwa-configuration>
