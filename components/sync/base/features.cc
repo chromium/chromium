@@ -34,16 +34,6 @@ BASE_FEATURE(kSyncAutofillWalletCredentialData,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS)
-BASE_FEATURE(kSyncChromeOSAppsToggleSharing,
-             "SyncChromeOSAppsToggleSharing",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
-BASE_FEATURE(kSkipInvalidationOptimizationsWhenDeviceInfoUpdated,
-             "SkipInvalidationOptimizationsWhenDeviceInfoUpdated",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kSyncEnableContactInfoDataTypeForCustomPassphraseUsers,
              "SyncEnableContactInfoDataTypeForCustomPassphraseUsers",
 #if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
