@@ -30,6 +30,17 @@ void GlicController::Close() {
   glic_keyed_service->CloseUI();
 }
 
+void GlicController::CloseForProfile(Profile* profile) {
+  GlicKeyedService* glic_keyed_service =
+      glic::GlicProfileManager::GetInstance()->GetLastActiveGlic();
+  if (!glic_keyed_service) {
+    return;
+  }
+  if (glic_keyed_service->profile() == profile) {
+    glic_keyed_service->CloseUI();
+  }
+}
+
 bool GlicController::IsShowing() const {
   GlicKeyedService* glic_keyed_service =
       glic::GlicProfileManager::GetInstance()->GetLastActiveGlic();

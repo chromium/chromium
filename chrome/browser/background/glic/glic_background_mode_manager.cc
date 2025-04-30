@@ -119,6 +119,11 @@ void GlicBackgroundModeManager::OnProfileAdded(Profile* profile) {
   }
 }
 
+void GlicBackgroundModeManager::OnProfileMarkedForPermanentDeletion(
+    Profile* profile) {
+  controller_->CloseForProfile(profile);
+}
+
 void GlicBackgroundModeManager::OnProfileWillBeDestroyed(Profile* profile) {
   profile_observers_.erase(profile);
   profile_enabled_subscriptions_.erase(profile);

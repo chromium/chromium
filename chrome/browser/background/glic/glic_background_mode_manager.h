@@ -66,6 +66,8 @@ class GlicBackgroundModeManager
   // ProfileManagerObserver:
   void OnProfileAdded(Profile* profile) override;
 
+  void OnProfileMarkedForPermanentDeletion(Profile* profile) override;
+
   // ProfileObserver:
   void OnProfileWillBeDestroyed(Profile* profile) override;
 
