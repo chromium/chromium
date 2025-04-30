@@ -281,6 +281,11 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, HighlightToggle) {
                    "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, Highlighter) {
+  RunSidePanelTest("side_panel/read_anything/highlighter_test.js",
+                   "mocha.run()");
+}
+
 class ReadAnythingReadAloudPhraseHighlightingMochaTest
     : public ReadAnythingMochaBrowserTest {
  protected:

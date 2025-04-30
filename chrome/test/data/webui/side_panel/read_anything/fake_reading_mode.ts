@@ -187,7 +187,7 @@ export class FakeReadingMode {
 
   // Called when a user toggles a switch in the language menu
   onLanguagePrefChange(lang: string, enabled: boolean) {
-    if(enabled) {
+    if (enabled) {
       this.savedLanguagePref.add(lang);
     } else {
       this.savedLanguagePref.delete(lang);
@@ -416,4 +416,21 @@ export class FakeReadingMode {
   // Begins processing the speech segments on the current page to be used by
   // Read Aloud.
   preprocessTextForSpeech() {}
+
+  // Returns a list of node ids and ranges (start and length) associated with
+  // the index within the given text segment. The intended use is for
+  // highlighting the ranges. Note that a highlight can span over multiple
+  // nodes in certain cases. If the `phrases` argument is `true`, the text
+  // ranges for the containing phrase are returned, otherwise the text ranges
+  // for the word are returned.
+  //
+  // For example, for a segment of text composed of two nodes:
+  // Node 1: "Hello, this is a "
+  // Node 2: "segment of text."
+  // An index of "20" will return the node id associated with node 2, a start
+  // index of 0, and a length of 8 (covering the word "segment ").
+  getHighlightForCurrentSegmentIndex(_index: number, _phrases: boolean):
+      Array<{nodeId: number, start: number, length: number}> {
+    return [];
+  }
 }

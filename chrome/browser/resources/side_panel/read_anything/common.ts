@@ -97,9 +97,14 @@ export function isWhitespace(s: string): boolean {
   return /\s+/g.test(s);
 }
 
-export function isHtmlElementVisible(element: HTMLElement): boolean {
-  const boundingRect = element.getBoundingClientRect();
-  return (boundingRect.bottom <= window.innerHeight ||
-          boundingRect.bottom <= document.documentElement.clientHeight) &&
-      boundingRect.top >= 0;
+export function isRectVisible(rect: DOMRect): boolean {
+  return (rect.top <= 0 && rect.bottom >= window.innerHeight) ||
+      isPointVisible(rect.top) || isPointVisible(rect.bottom);
+}
+
+function isPointVisible(point: number) {
+  return (
+      (point >= 0) &&
+      ((point <= window.innerHeight) ||
+       (point <= document.documentElement.clientHeight)));
 }
