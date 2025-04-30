@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "base/containers/adapters.h"
 #include "base/feature_list.h"
 #include "base/json/values_util.h"
 #include "base/metrics/histogram_functions.h"
@@ -119,7 +118,8 @@ NoticeActionTaken NoticeEventToNoticeAction(Event action) {
   }
 }
 
-base::DictValue BuildDictEntryEvent(Event event, base::Time event_time) {
+base::DictValue BuildDictEntryEvent(Event event,
+                                    base::Time event_time = base::Time::Now()) {
   return base::DictValue()
       .Set(kEventKey, static_cast<int>(event))
       .Set(kTimestampKey, base::TimeToValue(event_time));
@@ -205,21 +205,73 @@ NoticeStartupState GetNoticeStartupStateFromEvent(Event event) {
   }
 }
 
+// Emits histograms for new events, comparing against existing notice_data for
+// certain histograms.
+void EmitNewEventHistograms(
+    std::optional<NoticeStorageData> existing_notice_data,
+    std::string_view notice,
+    Event new_event) {
+  // Emit NoticeEvent for all Events.
+  RecordEnum("NoticeEvent", notice, new_event);
+  // Deprecated histograms.
+  new_event == kShown ? RecordBool("NoticeShown", notice, true)
+                      : RecordEnum("NoticeAction", notice,
+                                   NoticeEventToNoticeAction(new_event));
+
+  if (!existing_notice_data) {
+    existing_notice_data.emplace();
+  }
+  std::optional<base::Time> first_shown, last_shown;
+  bool action_taken_found = false;
+  for (const auto& event_ptr : existing_notice_data->notice_events) {
+    if (event_ptr->event != kShown) {
+      action_taken_found = true;
+      continue;
+    }
+    if (!first_shown || *first_shown >= event_ptr->timestamp) {
+      first_shown = event_ptr->timestamp;
+    }
+    if (!last_shown || *last_shown <= event_ptr->timestamp) {
+      last_shown = event_ptr->timestamp;
+    }
+  }
+
+  if (new_event == kShown) {
+    RecordBool("NoticeShownForFirstTime", notice, !first_shown.has_value());
+    return;
+  }
+
+  // At this point new_event is guaranteed to be an action.
+  if (!first_shown) {
+    RecordEnum("NoticeActionTakenBehavior", notice,
+               NoticeActionBehavior::kActionBeforeShown);
+  }
+  if (action_taken_found) {
+    RecordEnum("NoticeActionTakenBehavior", notice,
+               NoticeActionBehavior::kDuplicateActionTaken);
+  }
+  if (!action_taken_found && first_shown) {
+    RecordEnum("NoticeActionTakenBehavior", notice,
+               NoticeActionBehavior::kSuccess);
+  }
+  base::Time event_time = base::Time::Now();
+  if (first_shown) {
+    RecordTimingWithAction("FirstShownToInteractedDuration", notice,
+                           GetNoticeActionStringFromEvent(new_event),
+                           event_time - *first_shown);
+  }
+  if (last_shown) {
+    RecordTimingWithAction("LastShownToInteractedDuration", notice,
+                           GetNoticeActionStringFromEvent(new_event),
+                           event_time - *last_shown);
+  }
+}
+
 }  // namespace
 
 std::optional<base::Time> GetNoticeFirstShownFromEvents(
     const NoticeStorageData& notice_data) {
   for (const auto& notice_event : notice_data.notice_events) {
-    if (notice_event->event == kShown) {
-      return notice_event->timestamp;
-    }
-  }
-  return std::nullopt;
-}
-
-std::optional<base::Time> GetNoticeLastShownFromEvents(
-    const NoticeStorageData& notice_data) {
-  for (const auto& notice_event : base::Reversed(notice_data.notice_events)) {
     if (notice_event->event == kShown) {
       return notice_event->timestamp;
     }
@@ -451,82 +503,14 @@ std::optional<NoticeStorageData> PrivacySandboxNoticeStorage::ReadNoticeData(
 void PrivacySandboxNoticeStorage::RecordEvent(NoticeId notice_id, Event event) {
   const Notice& notice = FindNotice(notice_id, catalog_);
 
-  if (event == kShown) {
-    SetNoticeShown(notice.GetStorageName(), base::Time::Now());
-    return;
-  }
-  SetNoticeActionTaken(notice.GetStorageName(), event, base::Time::Now());
-}
-
-void PrivacySandboxNoticeStorage::SetNoticeActionTaken(std::string_view notice,
-                                                       Event event,
-                                                       base::Time event_time) {
-  CHECK(event != kShown);
-  auto notice_data = ReadNoticeData(notice);
-
-  // The notice should be shown first before action can be taken on it.
-  if (!notice_data.has_value() ||
-      GetNoticeLastShownFromEvents(*notice_data) == std::nullopt) {
-    RecordEnum("NoticeActionTakenBehavior", notice,
-               NoticeActionBehavior::kActionBeforeShown);
-    return;
-  }
-
-  // Performing multiple actions on an existing notice is unexpected.
-  if (notice_data->notice_events.back().get()->event != kShown) {
-    RecordEnum("NoticeActionTakenBehavior", notice,
-               NoticeActionBehavior::kDuplicateActionTaken);
-    return;
-  }
+  EmitNewEventHistograms(ReadNoticeData(notice.GetStorageName()),
+                         notice.GetStorageName(), event);
 
   ScopedDictPrefUpdate update(pref_service_, kNoticeDataPath);
-  update->EnsureDict(notice)
-      ->EnsureList(kEventsKey)
-      ->Append(BuildDictEntryEvent(event, event_time));
-
-  // Emitting histograms.
-  // TODO(chrstne): Deprecate NoticeAction histogram once it is no longer used
-  // in other codepaths.
-  RecordEnum("NoticeAction", notice, NoticeEventToNoticeAction(event));
-  RecordEnum("NoticeEvent", notice, event);
-  RecordEnum("NoticeActionTakenBehavior", notice,
-             NoticeActionBehavior::kSuccess);
-
-  std::string action_str = GetNoticeActionStringFromEvent(event);
-  // First shown to interacted duration.
-  if (auto first_shown = GetNoticeFirstShownFromEvents(*notice_data)) {
-    RecordTimingWithAction("FirstShownToInteractedDuration", notice, action_str,
-                           event_time - *first_shown);
-  }
-
-  // Set last shown to interacted.
-  if (auto last_shown = GetNoticeLastShownFromEvents(*notice_data)) {
-    RecordTimingWithAction("LastShownToInteractedDuration", notice, action_str,
-                           event_time - *last_shown);
-  }
-}
-
-void PrivacySandboxNoticeStorage::SetNoticeShown(std::string_view notice,
-                                                 base::Time notice_shown_time) {
-  ScopedDictPrefUpdate update(pref_service_, kNoticeDataPath);
-  base::DictValue* dict = update->EnsureDict(notice);
+  base::DictValue* dict = update->EnsureDict(notice.GetStorageName());
   dict->Set(kSchemaVersionKey, kCurrentSchemaVersion);
   dict->Set(kChromeVersionKey, version_info::GetVersionNumber());
-  dict->EnsureList(kEventsKey)
-      ->Append(BuildDictEntryEvent(kShown, notice_shown_time));
-
-  // TODO(chrstne): Deprecate NoticeShown histogram once it is
-  // no longer used in other codepaths.
-  RecordBool("NoticeShown", notice, true);
-  RecordEnum("NoticeEvent", notice, kShown);
-
-  auto notice_data = ReadNoticeData(notice);
-  CHECK(notice_data.has_value());
-  if (GetNoticeFirstShownFromEvents(*notice_data) == notice_shown_time) {
-    RecordBool("NoticeShownForFirstTime", notice, true);
-  } else {
-    RecordBool("NoticeShownForFirstTime", notice, false);
-  }
+  dict->EnsureList(kEventsKey)->Append(BuildDictEntryEvent(event));
 }
 
 }  // namespace privacy_sandbox

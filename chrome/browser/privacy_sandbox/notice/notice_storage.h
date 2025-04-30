@@ -131,9 +131,6 @@ struct V1MigrationData {
 std::optional<base::Time> GetNoticeFirstShownFromEvents(
     const NoticeStorageData& notice_data);
 
-std::optional<base::Time> GetNoticeLastShownFromEvents(
-    const NoticeStorageData& notice_data);
-
 std::optional<NoticeEventTimestampPair>
 GetNoticeActionTakenForFirstShownFromEvents(
     const NoticeStorageData& notice_data);
@@ -169,6 +166,9 @@ class PrivacySandboxNoticeStorage : public NoticeStorage {
   PrivacySandboxNoticeStorage(PrefService* pref_service,
                               NoticeCatalog* catalog);
   ~PrivacySandboxNoticeStorage() override;
+  PrivacySandboxNoticeStorage(const PrivacySandboxNoticeStorage&) = delete;
+  PrivacySandboxNoticeStorage& operator=(const PrivacySandboxNoticeStorage&) =
+      delete;
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
@@ -191,21 +191,7 @@ class PrivacySandboxNoticeStorage : public NoticeStorage {
   // Migrates fields in the notice data v1 schema to the notice data v2 schema.
   static NoticeStorageData ToV2Schema(const V1MigrationData& data_v1);
 
-  PrivacySandboxNoticeStorage(const PrivacySandboxNoticeStorage&) = delete;
-  PrivacySandboxNoticeStorage& operator=(const PrivacySandboxNoticeStorage&) =
-      delete;
-
  private:
-  // Sets the pref and histogram controlling the action taken on the notice.
-  void SetNoticeActionTaken(
-      std::string_view notice,
-      notice::mojom::PrivacySandboxNoticeEvent notice_action_taken,
-      base::Time notice_action_taken_time);
-
-  // Updates the pref and histogram controlling whether the notice has been
-  // shown.
-  void SetNoticeShown(std::string_view notice, base::Time notice_shown_time);
-
   raw_ptr<PrefService> pref_service_;
   raw_ptr<NoticeCatalog> catalog_;
 };
