@@ -46,6 +46,8 @@ constexpr wchar_t kTest3InheritedDacl[] = L"D:(A;ID;FR;;;AU)(A;ID;FA;;;WD)";
 
 constexpr wchar_t kNoWriteDacDacl[] = L"D:(D;;WD;;;OW)(A;;FRSD;;;WD)";
 
+constexpr wchar_t kNullDacl[] = L"D:NO_ACCESS_CONTROL";
+
 constexpr wchar_t kAuthenticatedUsersSid[] = L"AU";
 constexpr wchar_t kLocalGuestSid[] = L"LG";
 
@@ -216,6 +218,18 @@ TEST(SecurityUtilTest, HasAccessToPathFile) {
   EXPECT_TRUE(HasAccessToPath(path, *sids, FILE_GENERIC_READ, NO_INHERITANCE));
   EXPECT_FALSE(
       HasAccessToPath(path, *sids, FILE_GENERIC_WRITE, NO_INHERITANCE));
+}
+
+TEST(SecurityUtilTest, HasAccessToPathFileNullDacl) {
+  ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  FilePath path = temp_dir.GetPath().Append(L"test");
+  ASSERT_TRUE(CreateWithDacl(path, kNullDacl, false));
+  EXPECT_EQ(kNullDacl, GetFileDacl(path));
+  auto sids = Sid::FromSddlStringVector({kAuthenticatedUsersSid});
+  ASSERT_TRUE(sids);
+  EXPECT_TRUE(HasAccessToPath(path, *sids, FILE_GENERIC_READ, NO_INHERITANCE));
+  EXPECT_TRUE(HasAccessToPath(path, *sids, FILE_GENERIC_WRITE, NO_INHERITANCE));
 }
 
 TEST(SecurityUtilTest, DenyHasAccessToPathFile) {
