@@ -10,6 +10,8 @@
 #import "ios/chrome/browser/alert_view/ui_bundled/alert_action.h"
 #import "ios/chrome/browser/alert_view/ui_bundled/alert_consumer.h"
 #import "ios/chrome/browser/autofill/ui_bundled/progress_dialog/autofill_progress_dialog_mediator_delegate.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
@@ -56,4 +58,19 @@ TEST_F(AutofillProgressDialogMediatorTest, DismissDialog) {
                      /*is_canceled_by_user=*/true);
 
   EXPECT_OCMOCK_VERIFY(delegate_);
+}
+
+// Tests that when showing confirmation, the consumer is updated correctly.
+TEST_F(AutofillProgressDialogMediatorTest,
+       DismissDialog_ShowConfirmation_UpdatesConsumer) {
+  mediator_->SetConsumer(consumer_);
+
+  // Expectations for the consumer when showing confirmation.
+  OCMExpect([consumer_ setProgressState:ProgressIndicatorStateSuccess]);
+  OCMExpect([consumer_ setActions:@[]]);
+
+  mediator_->Dismiss(/*show_confirmation_before_closing=*/true,
+                     /*is_canceled_by_user=*/false);
+
+  EXPECT_OCMOCK_VERIFY(consumer_);
 }

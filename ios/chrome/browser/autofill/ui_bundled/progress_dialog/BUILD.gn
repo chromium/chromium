@@ -20,6 +20,7 @@ source_set("progress_dialog") {
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/ui/symbols",
   ]
   frameworks = [ "UIKit.framework" ]
 }
@@ -29,8 +30,11 @@ source_set("unit_tests") {
   sources = [ "autofill_progress_dialog_mediator_unittest.mm" ]
   deps = [
     ":progress_dialog",
+    "//base/test:test_support",
     "//components/autofill/core/browser",
+    "//components/autofill/ios/browser:test_support",
     "//ios/chrome/browser/alert_view/ui_bundled",
+    "//ios/chrome/browser/shared/ui/symbols:symbols",
     "//testing/gtest",
     "//third_party/ocmock",
   ]

@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/alert_view/ui_bundled/alert_action.h"
 #import "ios/chrome/browser/alert_view/ui_bundled/alert_consumer.h"
 #import "ios/chrome/browser/autofill/ui_bundled/progress_dialog/autofill_progress_dialog_mediator_delegate.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 
 AutofillProgressDialogMediator::AutofillProgressDialogMediator(
     base::WeakPtr<autofill::AutofillProgressDialogControllerImpl>
@@ -31,9 +32,17 @@ AutofillProgressDialogMediator::~AutofillProgressDialogMediator() {
 void AutofillProgressDialogMediator::Dismiss(
     bool show_confirmation_before_closing,
     bool is_canceled_by_user) {
-  // TODO(crbug.com/324603292): Check whether we need the confirmation on iOS.
   is_canceled_by_user_ = is_canceled_by_user;
-  [delegate_ dismissDialog];
+  if (show_confirmation_before_closing) {
+    [consumer_ setProgressState:ProgressIndicatorStateSuccess];
+    [consumer_ setActions:@[]];
+
+    // TODO(crbug.com/413453967): Add dismiss delay logic to IOS autofill
+    // progress dialog
+    [delegate_ dismissDialog];
+  } else {
+    [delegate_ dismissDialog];
+  }
 }
 
 void AutofillProgressDialogMediator::InvalidateControllerForCallbacks() {

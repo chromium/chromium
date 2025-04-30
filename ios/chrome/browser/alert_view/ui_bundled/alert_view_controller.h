@@ -19,6 +19,10 @@
 // The text in the text fields after presentation.
 @property(nonatomic, readonly) NSArray<NSString*>* textFieldResults;
 
+// Represents the current state of the progress indicator area.
+// Set this property to change between spinner, checkmark, or none.
+@property(nonatomic, assign) ProgressIndicatorState progressState;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_ALERT_VIEW_UI_BUNDLED_ALERT_VIEW_CONTROLLER_H_

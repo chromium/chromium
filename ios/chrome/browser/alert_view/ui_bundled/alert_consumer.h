@@ -43,6 +43,17 @@
 // Sets whether the action buttons should initially be disabled.
 - (void)setActionButtonsAreInitiallyDisabled:
     (BOOL)actionButtonsAreInitiallyDisabled;
+
+// Define the possible states for the progress indicator.
+typedef NS_ENUM(NSInteger, ProgressIndicatorState) {
+  ProgressIndicatorStateNone =
+      0,  // Nothing is shown (or the space is collapsed)
+  ProgressIndicatorStateActivity,  // The spinner is shown
+  ProgressIndicatorStateSuccess,   // The checkmark is shown
+};
+
+// Sets the states for the progress indicator.
+- (void)setProgressState:(ProgressIndicatorState)progressState;
 @end
 
 #endif  // IOS_CHROME_BROWSER_ALERT_VIEW_UI_BUNDLED_ALERT_CONSUMER_H_
