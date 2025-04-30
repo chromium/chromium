@@ -238,17 +238,24 @@ void MailboxVideoFrameConverter::WrapSharedImageAndVideoFrameAndOutput(
   CHECK(buffer_format);
 
   VideoFrame::ReleaseMailboxCB release_mailbox_cb = base::BindOnce(
-      [](base::WeakPtr<MailboxVideoFrameConverter> weak_ptr,
+      [](scoped_refptr<base::SequencedTaskRunner> parent_task_runner,
+         base::WeakPtr<MailboxVideoFrameConverter> parent_weak_ptr,
          scoped_refptr<FrameResource> frame, const gpu::SyncToken& sync_token) {
         if (!sync_token.HasData()) {
           return;
         }
-
-        if (weak_ptr) {
-          weak_ptr->ReleaseFrame(std::move(frame), sync_token);
+        if (parent_task_runner->RunsTasksInCurrentSequence()) {
+          if (parent_weak_ptr) {
+            parent_weak_ptr->ReleaseFrame(std::move(frame), sync_token);
+            return;
+          }
         }
+        parent_task_runner->PostTask(
+            FROM_HERE,
+            base::BindOnce(&MailboxVideoFrameConverter::ReleaseFrame,
+                           parent_weak_ptr, std::move(frame), sync_token));
       },
-      weak_this_, frame);
+      parent_task_runner(), weak_this_, frame);
 
   // Note the use of GetRectSizeFromOrigin() as the coded size. The reason is
   // that the coded_size() of the outgoing FrameResource tells the client what
