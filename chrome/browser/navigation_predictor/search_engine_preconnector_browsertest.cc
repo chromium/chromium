@@ -360,8 +360,10 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 // Test that search engine preconnects are done only if the browser app is
 // likely in foreground.
+//
+// TODO(crbug.com/413293448): Disabled the test for flakiness due to test setup.
 IN_PROC_BROWSER_TEST_P(SearchEnginePreconnectorForegroundBrowserTest,
-                       PreconnectOnlyInForeground) {
+                       DISABLED_PreconnectOnlyInForeground) {
   static const char16_t kShortName[] = u"test";
   static const char kSearchURL[] =
       "/anchors_different_area.html?q={searchTerms}";
