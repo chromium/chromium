@@ -490,6 +490,7 @@ TEST_F(FocusControllerTest, FullCarouselFocusOrder) {
                                     before_scroller,
                                     before_first_child,
                                     before_second_child,
+                                    after_first_scroll_marker,
                                     after_block_start_button,
                                     after_inline_start_button,
                                     after_inline_end_button,
@@ -497,7 +498,6 @@ TEST_F(FocusControllerTest, FullCarouselFocusOrder) {
                                     after_scroller,
                                     after_first_child,
                                     after_last_child,
-                                    after_first_scroll_marker,
                                     post_input};
 
   for (std::size_t i = 0u; i < order.size() - 1; ++i) {
@@ -686,8 +686,8 @@ TEST_F(FocusControllerTest, CarouselWithOnlyScrollMarkersFocusOrder) {
 
   std::array<Element*, 10> order = {
       pre_input,          before_first_scroll_marker, before_scroller,
-      before_first_child, before_second_child,        after_scroller,
-      after_first_child,  after_last_child,           after_first_scroll_marker,
+      before_first_child, before_second_child,        after_first_scroll_marker,
+      after_scroller,     after_first_child,          after_last_child,
       post_input};
 
   for (std::size_t i = 0u; i < order.size() - 1; ++i) {
@@ -871,6 +871,7 @@ TEST_F(FocusControllerTest, FullCarouselWithExtraPseudoElementsFocusOrder) {
                                     before_scroller,
                                     before_first_child,
                                     before_second_child,
+                                    after_first_scroll_marker,
                                     after_block_start_button,
                                     after_inline_start_button,
                                     after_inline_end_button,
@@ -878,7 +879,6 @@ TEST_F(FocusControllerTest, FullCarouselWithExtraPseudoElementsFocusOrder) {
                                     after_scroller,
                                     after_first_child,
                                     after_last_child,
-                                    after_first_scroll_marker,
                                     post_input};
 
   for (std::size_t i = 0u; i < order.size() - 1; ++i) {
