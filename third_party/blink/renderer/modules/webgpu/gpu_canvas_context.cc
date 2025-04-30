@@ -240,10 +240,6 @@ bool GPUCanvasContext::PaintRenderingResultsToCanvas(
     texture = texture_->GetHandle();
   }
 
-  if (!texture) {
-    return false;
-  }
-
   return CopyTextureToResourceProvider(texture, resource_provider);
 }
 
