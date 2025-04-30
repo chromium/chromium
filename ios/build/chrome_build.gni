@@ -26,8 +26,8 @@ declare_args() {
   # Enable share extension.
   ios_enable_share_extension = true
 
-  # Disable the new share extension UI and entry points.
-  ios_enable_extended_share_extension = false
+  # Enable the new share extension UI and entry points.
+  ios_enable_extended_share_extension = true
 
   # Enable open in extension.
   ios_enable_open_extension = true
