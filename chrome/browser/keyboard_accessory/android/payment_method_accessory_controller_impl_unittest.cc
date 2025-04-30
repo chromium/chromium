@@ -711,6 +711,10 @@ TEST_F(PaymentMethodAccessoryControllerTest,
               l10n_util::GetStringUTF16(
                   IDS_MANUAL_FILLING_CREDIT_CARD_SHEET_ALL_ADDRESSES_LINK),
               AccessoryAction::MANAGE_CREDIT_CARDS)
+          .AppendFooterCommand(
+              l10n_util::GetStringUTF16(
+                  IDS_MANUAL_FILLING_CREDIT_CARD_SHEET_ALL_LOYALTY_CARDS_LINK),
+              AccessoryAction::MANAGE_LOYALTY_CARDS)
           .Build());
 }
 
@@ -760,6 +764,10 @@ TEST_F(PaymentMethodAccessoryControllerTest, LoyaltyCardDataIsChangedBySync) {
               l10n_util::GetStringUTF16(
                   IDS_MANUAL_FILLING_CREDIT_CARD_SHEET_ALL_ADDRESSES_LINK),
               AccessoryAction::MANAGE_CREDIT_CARDS)
+          .AppendFooterCommand(
+              l10n_util::GetStringUTF16(
+                  IDS_MANUAL_FILLING_CREDIT_CARD_SHEET_ALL_LOYALTY_CARDS_LINK),
+              AccessoryAction::MANAGE_LOYALTY_CARDS)
           .Build());
 }
 
