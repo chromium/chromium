@@ -934,3 +934,39 @@ IN_PROC_BROWSER_TEST_F(DisruptiveNotificationPermissionsRevocationBrowserTest,
   recorder_->ExpectEntryMetric(entry, "OldSiteEngagement", 0.0);
   recorder_->ExpectEntryMetric(entry, "DailyAverageVolume", 5);
 }
+
+IN_PROC_BROWSER_TEST_F(DisruptiveNotificationPermissionsRevocationBrowserTest,
+                       TestReportUserRegrant) {
+  auto* hcsm =
+      HostContentSettingsMapFactory::GetForProfile(browser()->profile());
+  GURL url = embedded_test_server()->GetURL("/title1.html");
+
+  // Set up a proposed revoked notification.
+  base::Value::Dict dict;
+  dict.Set(safety_hub::kRevokedStatusDictKeyStr, safety_hub::kRevokeStr);
+  dict.Set(safety_hub::kSiteEngagementStr, 0.0);
+  dict.Set(safety_hub::kDailyNotificationCountStr, 5);
+  dict.Set(safety_hub::kTimestampStr,
+           base::TimeToValue(base::Time::Now() - base::Days(3)));
+  hcsm->SetWebsiteSettingCustomScope(
+      ContentSettingsPattern::FromURLNoWildcard(url),
+      ContentSettingsPattern::Wildcard(),
+      ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS,
+      base::Value(std::move(dict)));
+
+  // Visit the page.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  // Allow notifications.
+  hcsm->SetContentSettingDefaultScope(
+      url, url, ContentSettingsType::NOTIFICATIONS, CONTENT_SETTING_ALLOW);
+
+  auto entries = recorder_->GetEntriesByName(
+      "SafetyHub.DisruptiveNotificationRevocations.UserRegrant");
+  ASSERT_EQ(1u, entries.size());
+  auto* entry = entries[0].get();
+  recorder_->ExpectEntryMetric(entry, "DaysSinceRevocation", 3);
+  recorder_->ExpectEntryMetric(entry, "NewSiteEngagement", 3.0);
+  recorder_->ExpectEntryMetric(entry, "OldSiteEngagement", 0.0);
+  recorder_->ExpectEntryMetric(entry, "DailyAverageVolume", 5);
+}

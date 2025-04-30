@@ -135,7 +135,8 @@ class RevokedPermissionsService final : public SafetyHubService,
   };
 
   class TabHelper : public content::WebContentsObserver,
-                    public content::WebContentsUserData<TabHelper> {
+                    public content::WebContentsUserData<TabHelper>,
+                    public content_settings::Observer {
    public:
     TabHelper(const TabHelper&) = delete;
     TabHelper& operator=(const TabHelper&) = delete;
@@ -144,12 +145,21 @@ class RevokedPermissionsService final : public SafetyHubService,
     // WebContentsObserver:
     void PrimaryPageChanged(content::Page& page) override;
 
+    // content_settings::Observer:
+    void OnContentSettingChanged(
+        const ContentSettingsPattern& primary_pattern,
+        const ContentSettingsPattern& secondary_pattern,
+        ContentSettingsTypeSet content_type_set) override;
+
    private:
     explicit TabHelper(
         content::WebContents* web_contents,
         RevokedPermissionsService* unused_site_permission_service);
 
     base::WeakPtr<RevokedPermissionsService> unused_site_permission_service_;
+
+    base::ScopedObservation<HostContentSettingsMap, content_settings::Observer>
+        observation_{this};
 
     friend class content::WebContentsUserData<TabHelper>;
     WEB_CONTENTS_USER_DATA_KEY_DECL();

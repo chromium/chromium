@@ -220,7 +220,13 @@ RevokedPermissionsService::TabHelper::TabHelper(
     : content::WebContentsObserver(web_contents),
       content::WebContentsUserData<TabHelper>(*web_contents),
       unused_site_permission_service_(
-          unused_site_permission_service->AsWeakPtr()) {}
+          unused_site_permission_service->AsWeakPtr()) {
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  auto* host_content_settings_map_ =
+      HostContentSettingsMapFactory::GetForProfile(profile);
+  observation_.Observe(host_content_settings_map_);
+}
 
 RevokedPermissionsService::TabHelper::~TabHelper() = default;
 
@@ -353,6 +359,43 @@ void RevokedPermissionsService::TabHelper::PrimaryPageChanged(
     unused_site_permission_service_->OnPageVisited(
         page.GetMainDocument().GetLastCommittedOrigin());
   }
+}
+
+void RevokedPermissionsService::TabHelper::OnContentSettingChanged(
+    const ContentSettingsPattern& primary_pattern,
+    const ContentSettingsPattern& secondary_pattern,
+    ContentSettingsTypeSet content_type_set) {
+  if (content_type_set.ContainsAllTypes() ||
+      content_type_set.GetType() != ContentSettingsType::NOTIFICATIONS) {
+    return;
+  }
+
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+  auto* hcsm = HostContentSettingsMapFactory::GetForProfile(profile);
+  if (!content_settings::PatternAppliesToSingleOrigin(primary_pattern,
+                                                      secondary_pattern)) {
+    return;
+  }
+
+  const GURL last_visited_url =
+      web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL();
+
+  // Only trigger if the user is currently visiting the URL.
+  if (!primary_pattern.Matches(last_visited_url)) {
+    return;
+  }
+
+  // Only when the notification is allowed.
+  if (hcsm->GetContentSetting(last_visited_url, last_visited_url,
+                              ContentSettingsType::NOTIFICATIONS) !=
+      CONTENT_SETTING_ALLOW) {
+    return;
+  }
+
+  DisruptiveNotificationPermissionsManager::MaybeReportUserRegrant(
+      profile, last_visited_url,
+      web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId());
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(RevokedPermissionsService::TabHelper);

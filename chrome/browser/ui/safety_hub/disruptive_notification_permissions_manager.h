@@ -148,6 +148,13 @@ class DisruptiveNotificationPermissionsManager
                                     FalsePositiveReason reason,
                                     ukm::SourceId source_id);
 
+  // If the URL is in the false positive list, report user regrant after a
+  // revocation. Since the user regrant only happens on a page visit, the site
+  // will be in false positive list, not in the revoked list.
+  static void MaybeReportUserRegrant(Profile* profile,
+                                     const GURL& url,
+                                     ukm::SourceId source_id);
+
   // Logs metrics for proposed disruptive notification revocation, to be called
   // when displaying a persistent notification.
   static void LogMetrics(Profile* profile,

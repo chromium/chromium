@@ -21272,6 +21272,39 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="SafetyHub.DisruptiveNotificationRevocations.UserRegrant">
+  <owner>olesiamarukhnno@google.com</owner>
+  <owner>antoniosartori@chromium.org</owner>
+  <summary>
+    Recorded when a user has granted a notification permission for a site where
+    notifications where revoked due to disruptive notifications. Recorded when
+    user is visiting a site and has allowed notification permission for a site
+    in the revoke list.
+  </summary>
+  <metric name="DailyAverageVolume">
+    <summary>
+      Average daily volume of notifications sent by the site, measured over the
+      last 7 days.
+    </summary>
+  </metric>
+  <metric name="DaysSinceRevocation">
+    <summary>
+      The number of days between the website was put in the potential revocation
+      list and the detected increase in site engagement.
+    </summary>
+  </metric>
+  <metric name="NewSiteEngagement">
+    <summary>
+      New site engagement after user interaction with the site.
+    </summary>
+  </metric>
+  <metric name="OldSiteEngagement">
+    <summary>
+      Site engagement score when the site marked for revocation.
+    </summary>
+  </metric>
+</event>
+
 <event name="SalientImageAvailability" singular="True">
   <owner>chrome-intelligence-core@google.com</owner>
   <owner>tbansal@chromium.org</owner>

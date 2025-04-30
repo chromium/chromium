@@ -545,6 +545,55 @@ void DisruptiveNotificationPermissionsManager::CheckForFalsePositive(
 }
 
 // static
+void DisruptiveNotificationPermissionsManager::MaybeReportUserRegrant(
+    Profile* profile,
+    const GURL& url,
+    ukm::SourceId source_id) {
+  if (!profile) {
+    return;
+  }
+  auto* hcsm = HostContentSettingsMapFactory::GetForProfile(profile);
+  if (!hcsm || !url.is_valid()) {
+    return;
+  }
+  content_settings::SettingInfo info;
+  base::Value stored_value = hcsm->GetWebsiteSetting(
+      url, url,
+      ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS, &info);
+  if (stored_value.is_none()) {
+    return;
+  }
+  CHECK(stored_value.is_dict());
+  base::Value::Dict dict = std::move(stored_value).TakeDict();
+
+  const std::string* revoked_status =
+      dict.FindString(safety_hub::kRevokedStatusDictKeyStr);
+  if (!revoked_status) {
+    return;
+  }
+
+  // It should be already false positive since the website is being visited.
+  if (*revoked_status != safety_hub::kFalsePositiveStr) {
+    return;
+  }
+
+  const base::Value* stored_timestamp = dict.Find(safety_hub::kTimestampStr);
+  base::TimeDelta delta_since_revocation =
+      base::Time::Now() -
+      base::ValueToTime(stored_timestamp).value_or(base::Time::Now());
+  ukm::builders::SafetyHub_DisruptiveNotificationRevocations_UserRegrant(
+      source_id)
+      .SetDaysSinceRevocation(delta_since_revocation.InDays())
+      .SetNewSiteEngagement(
+          site_engagement::SiteEngagementService::Get(profile)->GetScore(url))
+      .SetOldSiteEngagement(
+          dict.FindDouble(safety_hub::kSiteEngagementStr).value_or(0))
+      .SetDailyAverageVolume(
+          dict.FindInt(safety_hub::kDailyNotificationCountStr).value_or(0))
+      .Record(ukm::UkmRecorder::Get());
+}
+
+// static
 void DisruptiveNotificationPermissionsManager::LogMetrics(
     Profile* profile,
     const GURL& url,
