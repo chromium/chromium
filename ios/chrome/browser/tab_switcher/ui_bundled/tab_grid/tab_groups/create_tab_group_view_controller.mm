@@ -11,6 +11,7 @@
 #import "components/strings/grit/components_strings.h"
 #import "components/tab_groups/tab_group_color.h"
 #import "ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h"
+#import "ios/chrome/browser/saved_tab_groups/ui/tab_group_utils.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/elements/top_aligned_image_view.h"
@@ -312,7 +313,7 @@ const CGFloat kClearButtonWidthAndHeight = 40;
   tab_groups::TabGroupColorId colorID =
       static_cast<tab_groups::TabGroupColorId>(_selectedButton.tag);
 
-  UIColor* defaultColor = TabGroup::ColorForTabGroupColorId(colorID);
+  UIColor* defaultColor = tab_groups::ColorForTabGroupColorId(colorID);
   _dotView = [self groupDotViewWithColor:defaultColor];
   _tabGroupTextField = [self configuredTabGroupNameTextFieldInput];
 
@@ -487,7 +488,7 @@ const CGFloat kClearButtonWidthAndHeight = 40;
   [_selectedButton setSelected:YES];
   tab_groups::TabGroupColorId colorID =
       static_cast<tab_groups::TabGroupColorId>(_selectedButton.tag);
-  [_dotView setBackgroundColor:TabGroup::ColorForTabGroupColorId(colorID)];
+  [_dotView setBackgroundColor:tab_groups::ColorForTabGroupColorId(colorID)];
 }
 
 // Creates all the available color buttons.
@@ -497,7 +498,7 @@ const CGFloat kClearButtonWidthAndHeight = 40;
       tab_groups::GetTabGroupColorLabelMap();
 
   for (tab_groups::TabGroupColorId colorID :
-       TabGroup::AllPossibleTabGroupColors()) {
+       tab_groups::AllPossibleTabGroupColors()) {
     UIButton* colorButton = [[UIButton alloc] init];
     colorButton.translatesAutoresizingMaskIntoConstraints = NO;
     [colorButton setTag:static_cast<NSInteger>(colorID)];
@@ -521,13 +522,13 @@ const CGFloat kClearButtonWidthAndHeight = 40;
     UIImage* normalSymbolImage =
         DefaultSymbolWithConfiguration(kCircleFillSymbol, configuration);
     normalSymbolImage = [normalSymbolImage
-        imageWithTintColor:TabGroup::ColorForTabGroupColorId(colorID)
+        imageWithTintColor:tab_groups::ColorForTabGroupColorId(colorID)
              renderingMode:UIImageRenderingModeAlwaysOriginal];
 
     UIImage* selectedSymbolImage =
         DefaultSymbolWithConfiguration(kCircleCircleFillSymbol, configuration);
     selectedSymbolImage = [selectedSymbolImage
-        imageWithTintColor:TabGroup::ColorForTabGroupColorId(colorID)
+        imageWithTintColor:tab_groups::ColorForTabGroupColorId(colorID)
              renderingMode:UIImageRenderingModeAlwaysOriginal];
 
     [colorButton setImage:normalSymbolImage forState:UIControlStateNormal];

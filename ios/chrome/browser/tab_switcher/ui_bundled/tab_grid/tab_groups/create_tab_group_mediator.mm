@@ -13,6 +13,7 @@
 #import "base/scoped_multi_source_observation.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/tab_groups/tab_group_color.h"
+#import "ios/chrome/browser/saved_tab_groups/ui/tab_group_utils.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -189,7 +190,7 @@
           base::UserMetricsAction("MobileTabGroupUserUpdatedGroupName"));
     }
     if (![_tabGroup->GetColor()
-            isEqual:TabGroup::ColorForTabGroupColorId(colorID)]) {
+            isEqual:tab_groups::ColorForTabGroupColorId(colorID)]) {
       base::RecordAction(
           base::UserMetricsAction("MobileTabGroupUserUpdatedGroupColor"));
     }

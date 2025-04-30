@@ -25,6 +25,7 @@
 #import "ios/chrome/browser/data_sharing/model/data_sharing_service_observer_bridge.h"
 #import "ios/chrome/browser/saved_tab_groups/favicon/coordinator/tab_group_favicons_grid_configurator.h"
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_util.h"
+#import "ios/chrome/browser/saved_tab_groups/ui/tab_group_utils.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_face_pile_configuration.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_service.h"
 #import "ios/chrome/browser/share_kit/model/sharing_state.h"
@@ -367,7 +368,7 @@ NSString* CreationText(base::Time creation_date) {
     itemData.title = l10n_util::GetPluralNSStringF(
         IDS_IOS_TAB_GROUP_TABS_NUMBER, numberOfTabs);
   }
-  itemData.color = TabGroup::ColorForTabGroupColorId(group->color());
+  itemData.color = tab_groups::ColorForTabGroupColorId(group->color());
   itemData.creationText =
       CreationText(group->creation_time_windows_epoch_micros());
   itemData.numberOfTabs = static_cast<NSUInteger>(numberOfTabs);

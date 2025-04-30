@@ -23,6 +23,7 @@
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_util.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_local_update_observer.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
+#import "ios/chrome/browser/saved_tab_groups/ui/tab_group_utils.h"
 #import "ios/chrome/browser/sessions/model/session_restoration_service_factory.h"
 #import "ios/chrome/browser/sessions/model/test_session_restoration_service.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
@@ -429,7 +430,7 @@ TEST_F(IOSTabGroupSyncDelegateTest, UpdateLocalTabGroup) {
   EXPECT_EQ(1, tab_group->range().count());
   EXPECT_NSEQ(tab_group->GetTitle(), @"my group");
   EXPECT_TRUE([tab_group->GetColor()
-      isEqual:TabGroup::ColorForTabGroupColorId(TabGroupColorId::kPink)]);
+      isEqual:tab_groups::ColorForTabGroupColorId(TabGroupColorId::kPink)]);
 
   // Update the local group by adding 2 new tabs.
   saved_group.AddTabFromSync(second_tab);
@@ -526,7 +527,7 @@ TEST_F(IOSTabGroupSyncDelegateTest, UpdateLocalTabGroupOneTab) {
   EXPECT_EQ(1, tab_group->range().count());
   EXPECT_NSEQ(tab_group->GetTitle(), @"my group");
   EXPECT_TRUE([tab_group->GetColor()
-      isEqual:TabGroup::ColorForTabGroupColorId(TabGroupColorId::kPink)]);
+      isEqual:tab_groups::ColorForTabGroupColorId(TabGroupColorId::kPink)]);
 }
 
 // Tests that the service correctly returns local ids.

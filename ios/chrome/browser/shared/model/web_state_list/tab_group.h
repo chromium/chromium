@@ -86,18 +86,6 @@ class TabGroup {
     return tab_group_id_;
   }
 
-  // Returns all the colors a TabGroup can have.
-  static std::vector<tab_groups::TabGroupColorId> AllPossibleTabGroupColors();
-
-  // Returns a UIColor based on a `tab_group_color_id`.
-  static UIColor* ColorForTabGroupColorId(
-      tab_groups::TabGroupColorId tab_group_color_id);
-
-  // Returns a UIColor for the text to be displayed on top a
-  // `tab_group_color_id` color.
-  static UIColor* ForegroundColorForTabGroupColorId(
-      tab_groups::TabGroupColorId tab_group_color_id);
-
   // Returns the default color for a new TabGroup in `web_state_list`. This is
   // based on the colors currently used by this web state list (for this
   // window).
