@@ -129,6 +129,10 @@ ScriptPromise<ReadableStreamReadResult> ReadableStreamBYOBReader::read(
       MakeGarbageCollected<ScriptPromiseResolver<ReadableStreamReadResult>>(
           script_state, exception_state.GetContext());
 
+  // resolver may be GC'ed before underlying read completes if reader and stream
+  // are released.
+  resolver->SuppressDetachCheck();
+
   // 6. Let readIntoRequest be a new read-into request with the following items:
   //    chunk steps, given chunk
   //      1. Resolve promise with «[ "value" → chunk, "done" → false ]».

@@ -66,6 +66,8 @@ WritableStreamDefaultWriter::WritableStreamDefaultWriter(
   //  4. Set stream.[[writer]] to this.
   stream->SetWriter(this);
 
+  closed_resolver_->SuppressDetachCheck();
+
   //  5. Let state be stream.[[state]].
   const auto state = stream->GetState();
   auto* isolate = script_state->GetIsolate();
@@ -83,6 +85,8 @@ WritableStreamDefaultWriter::WritableStreamDefaultWriter(
         //      b. Otherwise, set this.[[readyPromise]] to a promise resolved
         //         with undefined.
         ready_resolver_->Resolve();
+      } else {
+        ready_resolver_->SuppressDetachCheck();
       }
       //      c. Set this.[[closedPromise]] to a new promise.
       break;
@@ -431,6 +435,10 @@ ScriptPromise<IDLUndefined> WritableStreamDefaultWriter::Write(
     resolver->Reject(stream->GetStoredError(isolate));
     return resolver->Promise();
   }
+
+  // A writer may be discarded before the write completes, so suppress the
+  // detach check.
+  resolver->SuppressDetachCheck();
 
   // 10. Assert: state is "writable".
   DCHECK_EQ(state, WritableStream::kWritable);
