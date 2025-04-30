@@ -7,6 +7,6 @@ found in the LICENSE file.
 
 <ImageButton
     xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/custom_tabs_sidepanel_maximize"
     style="@style/ToolbarButton"
-    android:scaleType="center"
-    android:contentDescription="@string/close_tab" />
+    android:contentDescription="@string/custom_tab_side_sheet_maximize" />

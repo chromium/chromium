@@ -78,6 +78,7 @@ import org.chromium.chrome.browser.customtabs.features.branding.ToolbarBrandingO
 import org.chromium.chrome.browser.customtabs.features.branding.ToolbarBrandingOverlayProperties;
 import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.CustomTabMinimizeDelegate;
 import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.MinimizedFeatureUtils;
+import org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabSideSheetStrategy.MaximizeButtonCallback;
 import org.chromium.chrome.browser.ephemeraltab.EphemeralTabCoordinator;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -266,14 +267,6 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     private HandleStrategy mHandleStrategy;
     private @CloseButtonPosition int mCloseButtonPosition;
 
-    /** Callback used to notify the maximize button on side sheet PCCT click event. */
-    public interface MaximizeButtonCallback {
-        /**
-         * @return {@code true} if the PCCT gets maximized. {@code false} if restored.
-         */
-        boolean onClick();
-    }
-
     /** Constructor for getting this class inflated from an xml layout file. */
     public CustomTabToolbar(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -408,13 +401,21 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         }
 
         // Check if we have space for the minimize button.
-        if (posParams.availableWidth > mDefaultButtonWidth) {
+        if (posParams.availableWidth >= mDefaultButtonWidth) {
             prepareMinimizeButton();
 
             if (mMinimizeButton != null && mMinimizeButton.getVisibility() == VISIBLE) {
                 boolean isEndPosition = mCloseButtonPosition == CLOSE_BUTTON_POSITION_END;
                 positionButton(mMinimizeButton, posParams, mDefaultIconWidth, isEndPosition);
             }
+        }
+
+        View sideSheetMaximizeButton = findViewById(R.id.custom_tabs_sidepanel_maximize);
+        // Check if we have space for the side-sheet maximize button.
+        if (sideSheetMaximizeButton != null
+                && sideSheetMaximizeButton.getVisibility() == VISIBLE
+                && posParams.availableWidth >= mDefaultButtonWidth) {
+            positionButton(sideSheetMaximizeButton, posParams, mDefaultIconWidth, true);
         }
 
         // TODO(crbug.com/402213312): We need to think about how this should work with MTB.
@@ -671,6 +672,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
      */
     public void initSideSheetMaximizeButton(
             boolean maximizedOnInit, MaximizeButtonCallback callback) {
+        assert !ChromeFeatureList.sCctToolbarRefactor.isEnabled();
         ImageButton maximizeButton = findViewById(R.id.custom_tabs_sidepanel_maximize);
         if (maximizeButton == null) {
             ViewStub maximizeButtonStub = findViewById(R.id.maximize_button_stub);
@@ -719,6 +721,8 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     }
 
     private void setMaximizeButtonVisibility() {
+        if (ChromeFeatureList.sCctToolbarRefactor.isEnabled()) return;
+
         ImageButton maximizeButton = findViewById(R.id.custom_tabs_sidepanel_maximize);
         if (!mMaximizeButtonEnabled || maximizeButton == null) {
             if (maximizeButton != null) maximizeButton.setVisibility(View.GONE);
@@ -775,6 +779,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
 
     /** Remove maximize button from side sheet CCT toolbar. */
     public void removeSideSheetMaximizeButton() {
+        assert !ChromeFeatureList.sCctToolbarRefactor.isEnabled();
         ImageButton maximizeButton = findViewById(R.id.custom_tabs_sidepanel_maximize);
         mMaximizeButtonEnabled = false;
         if (maximizeButton == null) return; // Toolbar could be already destroyed.

@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.customtabs.features.toolbar;
 import android.graphics.drawable.Drawable;
 import android.view.View.OnClickListener;
 
+import org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabSideSheetStrategy.MaximizeButtonCallback;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyListModel;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -37,10 +38,38 @@ public class CustomTabToolbarButtonsProperties {
     public static final ReadableObjectPropertyKey<PropertyListModel<PropertyModel, PropertyKey>>
             CUSTOM_ACTION_BUTTONS = new ReadableObjectPropertyKey<>();
 
+    public static class SideSheetMaximizeButtonData {
+        /** Whether the side-sheet maximize button is visible. */
+        public final boolean visible;
+
+        /** Whether the side-sheet is maximized. */
+        public final boolean maximized;
+
+        /** The {@link MaximizeButtonCallback} to notify of the click events. */
+        public final MaximizeButtonCallback callback;
+
+        SideSheetMaximizeButtonData(
+                boolean visible, boolean maximized, MaximizeButtonCallback callback) {
+            this.visible = visible;
+            this.maximized = maximized;
+            this.callback = callback;
+        }
+
+        /** Default constructor to hide the button. */
+        public SideSheetMaximizeButtonData() {
+            this(false, false, () -> false);
+        }
+    }
+
+    /** Property key for the side sheet maximize button. */
+    public static final WritableObjectPropertyKey<SideSheetMaximizeButtonData>
+            SIDE_SHEET_MAXIMIZE_BUTTON = new WritableObjectPropertyKey<>();
+
     public static PropertyModel create(
             PropertyListModel<PropertyModel, PropertyKey> customActionButtons) {
-        return new PropertyModel.Builder(CUSTOM_ACTION_BUTTONS)
+        return new PropertyModel.Builder(CUSTOM_ACTION_BUTTONS, SIDE_SHEET_MAXIMIZE_BUTTON)
                 .with(CUSTOM_ACTION_BUTTONS, customActionButtons)
+                .with(SIDE_SHEET_MAXIMIZE_BUTTON, new SideSheetMaximizeButtonData())
                 .build();
     }
 }

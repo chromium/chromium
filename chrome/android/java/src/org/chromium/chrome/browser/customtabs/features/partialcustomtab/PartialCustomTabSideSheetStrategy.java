@@ -41,6 +41,7 @@ import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntent
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsCoordinator;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.base.LocalizationUtils;
@@ -64,6 +65,15 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
     private int mDecorationType;
     private boolean mSlideDownAnimation; // Slide down to bottom when closing the sheet.
     private boolean mSheetOnRight;
+    private CustomTabToolbarButtonsCoordinator mToolbarButtonsCoordinator;
+
+    /** Callback used to notify the maximize button on side sheet PCCT click event. */
+    public interface MaximizeButtonCallback {
+        /**
+         * @return {@code true} if the PCCT gets maximized. {@code false} if restored.
+         */
+        boolean onClick();
+    }
 
     public PartialCustomTabSideSheetStrategy(
             Activity activity,
@@ -154,8 +164,14 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
         super.onToolbarInitialized(
                 coordinatorView, toolbar, toolbarCornerRadius, toolbarButtonsCoordinator);
 
+        mToolbarButtonsCoordinator = toolbarButtonsCoordinator;
         if (mShowMaximizeButton) {
-            toolbar.initSideSheetMaximizeButton(mIsMaximized, () -> toggleMaximize(true));
+            if (ChromeFeatureList.sCctToolbarRefactor.isEnabled()) {
+                mToolbarButtonsCoordinator.showSideSheetMaximizeButton(
+                        mIsMaximized, () -> toggleMaximize(true));
+            } else {
+                toolbar.initSideSheetMaximizeButton(mIsMaximized, () -> toggleMaximize(true));
+            }
         }
         toolbar.setMinimizeButtonEnabled(false);
         updateDragBarVisibility(/* dragHandlebarVisibility= */ View.GONE);
@@ -487,7 +503,13 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
     @Override
     public void destroy() {
         super.destroy();
-        if (mShowMaximizeButton) ((CustomTabToolbar) mToolbarView).removeSideSheetMaximizeButton();
+        if (mShowMaximizeButton) {
+            if (ChromeFeatureList.sCctToolbarRefactor.isEnabled()) {
+                mToolbarButtonsCoordinator.removeSideSheetMaximizeButton();
+            } else {
+                mToolbarView.removeSideSheetMaximizeButton();
+            }
+        }
     }
 
     void setSlideDownAnimationForTesting(boolean slideDown) {

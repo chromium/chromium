@@ -8,6 +8,7 @@ import static org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabT
 import static org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsProperties.DESCRIPTION;
 import static org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsProperties.ICON;
 import static org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsProperties.INDIVIDUAL_BUTTON_KEYS;
+import static org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsProperties.SIDE_SHEET_MAXIMIZE_BUTTON;
 import static org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsProperties.VISIBLE;
 
 import android.content.Context;
@@ -15,6 +16,9 @@ import android.content.Context;
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams;
+import org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabSideSheetStrategy.MaximizeButtonCallback;
+import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsProperties.SideSheetMaximizeButtonData;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.modelutil.ListModelChangeProcessor;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyListModel;
@@ -46,6 +50,26 @@ public class CustomTabToolbarButtonsCoordinator {
                         viewBinder);
         mModel.get(CustomTabToolbarButtonsProperties.CUSTOM_ACTION_BUTTONS)
                 .addObserver(mCustomActionButtonsMcp);
+    }
+
+    /**
+     * Shows the maximize button on the side sheet.
+     *
+     * @param isMaximized Whether the side sheet is starting as maximized.
+     * @param toggleMaximize The callback to toggle the maximize state.
+     */
+    public void showSideSheetMaximizeButton(
+            boolean isMaximized, MaximizeButtonCallback toggleMaximize) {
+        assert ChromeFeatureList.sCctToolbarRefactor.isEnabled();
+        var buttonData =
+                new SideSheetMaximizeButtonData(/* visible= */ true, isMaximized, toggleMaximize);
+        mModel.set(SIDE_SHEET_MAXIMIZE_BUTTON, buttonData);
+    }
+
+    public void removeSideSheetMaximizeButton() {
+        assert ChromeFeatureList.sCctToolbarRefactor.isEnabled();
+        var buttonData = new SideSheetMaximizeButtonData();
+        mModel.set(SIDE_SHEET_MAXIMIZE_BUTTON, buttonData);
     }
 
     static PropertyListModel<PropertyModel, PropertyKey> getCustomActionButtonsModel(
