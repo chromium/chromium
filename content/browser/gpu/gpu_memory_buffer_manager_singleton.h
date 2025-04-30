@@ -11,18 +11,11 @@
 
 namespace content {
 
-class GpuDataManagerImpl;
-
 // This class ensures that there is at most one instance of
 // |viz::HostGpuMemoryBufferManager| in content at any given time. Code in
 // content must use this class to access the instance.
-//
-// With non-Ozone/X11 and Ozone/X11, the supported buffer configurations can
-// only be determined at runtime, with help from the GPU process.
-// GpuDataManagerObserver adds functionality for updating the supported
-// configuration list when new GPUInfo is received.
-class GpuMemoryBufferManagerSingleton : public viz::HostGpuMemoryBufferManager,
-                                        public GpuDataManagerObserver {
+
+class GpuMemoryBufferManagerSingleton : public viz::HostGpuMemoryBufferManager {
  public:
   explicit GpuMemoryBufferManagerSingleton(int client_id);
   GpuMemoryBufferManagerSingleton(const GpuMemoryBufferManagerSingleton&) =
@@ -35,12 +28,6 @@ class GpuMemoryBufferManagerSingleton : public viz::HostGpuMemoryBufferManager,
 
   void AddObserver(gpu::GpuMemoryBufferManagerObserver* observer) final;
   void RemoveObserver(gpu::GpuMemoryBufferManagerObserver* observer) final;
-
- private:
-  // GpuDataManagerObserver:
-  void OnGpuExtraInfoUpdate() override;
-
-  raw_ptr<GpuDataManagerImpl> gpu_data_manager_impl_ = nullptr;
 };
 
 }  // namespace content

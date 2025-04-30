@@ -417,10 +417,6 @@ bool GpuDataManagerImpl::IsGpuMemoryBufferNV12Supported() {
   base::AutoLock auto_lock(lock_);
   return private_->IsGpuMemoryBufferNV12Supported();
 }
-void GpuDataManagerImpl::SetGpuMemoryBufferNV12Supported(bool supported) {
-  base::AutoLock auto_lock(lock_);
-  private_->SetGpuMemoryBufferNV12Supported(supported);
-}
 #endif  // BUILDFLAG(IS_LINUX)
 
 // static

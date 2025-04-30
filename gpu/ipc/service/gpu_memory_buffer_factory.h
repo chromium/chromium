@@ -27,6 +27,7 @@ namespace gpu {
 enum class MappableSIClientGmbId : int {
   kGpuChannel = 1,
   kGmbVideoFramePoolContext = 2,
+  kGpuServiceImpl = 3,
   kLast = 2
 };
 

@@ -647,6 +647,11 @@ void GpuServiceImpl::InitializeWithHostInternal(
   shutdown_event_ = shutdown_event;
 
   mojo::Remote<mojom::GpuHost> gpu_host(std::move(pending_gpu_host));
+
+#if BUILDFLAG(IS_LINUX)
+  gpu_extra_info_.is_gmb_nv12_supported = IsGMBNV12Supported();
+#endif
+
   gpu_host->DidInitialize(gpu_info_, gpu_feature_info_,
                           gpu_info_for_hardware_gpu_,
                           gpu_feature_info_for_hardware_gpu_, gpu_extra_info_);
@@ -1543,6 +1548,31 @@ bool GpuServiceImpl::OnBeginFrameDerivedImpl(const BeginFrameArgs& args) {
                                       base::Unretained(this), args));
   return true;
 }
+
+#if BUILDFLAG(IS_LINUX)
+bool GpuServiceImpl::IsGMBNV12Supported() {
+  auto buffer_format = gfx::BufferFormat::YUV_420_BIPLANAR;
+  auto buffer_usage = gfx::BufferUsage::GPU_READ_CPU_READ_WRITE;
+
+  if (!IsNativeBufferSupported(buffer_format, buffer_usage)) {
+    return false;
+  }
+  auto size = gfx::Size(2, 2);
+
+  // Note that |gmb_id| and |client_id| does not matter here as this is the
+  // first GMB which will created and immediately destroyed.
+  auto gmb_id = gfx::GpuMemoryBufferId(
+      static_cast<int>(gpu::MappableSIClientGmbId::kGpuServiceImpl));
+  auto client_id = gpu::kMappableSIClientId;
+  auto gmb_handle = gpu_memory_buffer_factory_->CreateGpuMemoryBuffer(
+      gmb_id, size, /*framebuffer_size=*/size, buffer_format, buffer_usage,
+      client_id, gpu::kNullSurfaceHandle);
+
+  // Destroy the gmb_handle since it will be no longer needed.
+  DestroyGpuMemoryBuffer(gmb_id, client_id);
+  return !gmb_handle.is_null();
+}
+#endif
 
 void GpuServiceImpl::OnBeginFrameSourcePausedChanged(bool paused) {}
 

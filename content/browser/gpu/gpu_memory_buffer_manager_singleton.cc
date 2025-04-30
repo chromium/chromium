@@ -9,7 +9,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "components/viz/host/gpu_host_impl.h"
-#include "content/browser/gpu/gpu_data_manager_impl.h"
 #include "content/browser/gpu/gpu_process_host.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -46,31 +45,6 @@ scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner() {
 #endif
 }
 
-#if BUILDFLAG(IS_LINUX)
-bool IsGpuMemoryBufferNV12Supported() {
-  static bool is_computed = false;
-  static bool supported = false;
-  if (is_computed) {
-    return supported;
-  }
-
-  auto* gmb_mgr = GpuMemoryBufferManagerSingleton::GetInstance();
-  if (gmb_mgr) {
-    auto gmb = gmb_mgr->CreateGpuMemoryBuffer(
-        gfx::Size(2, 2), gfx::BufferFormat::YUV_420_BIPLANAR,
-        gfx::BufferUsage::GPU_READ_CPU_READ_WRITE, gpu::kNullSurfaceHandle,
-        nullptr);
-    if (gmb && gmb->GetType() == gfx::GpuMemoryBufferType::NATIVE_PIXMAP) {
-      supported = true;
-    }
-  }
-
-  is_computed = true;
-
-  return supported;
-}
-#endif  // BUILDFLAG(IS_LINUX)
-
 }  // namespace
 
 GpuMemoryBufferManagerSingleton::GpuMemoryBufferManagerSingleton(int client_id)
@@ -78,18 +52,15 @@ GpuMemoryBufferManagerSingleton::GpuMemoryBufferManagerSingleton(int client_id)
           base::BindRepeating(&content::GetGpuService),
           client_id,
           std::make_unique<gpu::GpuMemoryBufferSupport>(),
-          GetTaskRunner()),
-      gpu_data_manager_impl_(GpuDataManagerImpl::GetInstance()) {
+          GetTaskRunner()) {
   DCHECK(!g_gpu_memory_buffer_manager);
   g_gpu_memory_buffer_manager = this;
-  gpu_data_manager_impl_->AddObserver(this);
 }
 
 GpuMemoryBufferManagerSingleton::~GpuMemoryBufferManagerSingleton() {
   DCHECK_EQ(this, g_gpu_memory_buffer_manager);
   NotifyObservers();
   g_gpu_memory_buffer_manager = nullptr;
-  gpu_data_manager_impl_->RemoveObserver(this);
 }
 
 // static
@@ -108,16 +79,6 @@ void GpuMemoryBufferManagerSingleton::AddObserver(
 void GpuMemoryBufferManagerSingleton::RemoveObserver(
     gpu::GpuMemoryBufferManagerObserver* observer) {
   observers_.RemoveObserver(observer);
-}
-
-void GpuMemoryBufferManagerSingleton::OnGpuExtraInfoUpdate() {
-#if BUILDFLAG(IS_LINUX)
-  // Dynamic check whether the NV12 format is supported as it may be
-  // inconsistent between the system GBM (Generic Buffer Management) and
-  // chromium miniGBM.
-  gpu_data_manager_impl_->SetGpuMemoryBufferNV12Supported(
-      IsGpuMemoryBufferNV12Supported());
-#endif  // BUILDFLAG(IS_LINUX)
 }
 
 }  // namespace content
