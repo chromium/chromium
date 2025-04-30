@@ -15,7 +15,7 @@ bool IsKioskSession() {
 
 bool IsWebKioskSession() {
   return user_manager::UserManager::IsInitialized() &&
-         user_manager::UserManager::Get()->IsLoggedInAsWebKioskApp();
+         user_manager::UserManager::Get()->IsLoggedInAsKioskWebApp();
 }
 
 }  // namespace chromeos

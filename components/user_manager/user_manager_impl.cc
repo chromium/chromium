@@ -995,8 +995,9 @@ bool UserManagerImpl::IsLoggedInAsKioskChromeApp() const {
   return IsUserLoggedIn() && active_user_->GetType() == UserType::kKioskApp;
 }
 
-bool UserManagerImpl::IsLoggedInAsWebKioskApp() const {
+bool UserManagerImpl::IsLoggedInAsKioskWebApp() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // TODO(crbug.com/414755777): Rename to kKioskWebApp for naming consistency.
   return IsUserLoggedIn() && active_user_->GetType() == UserType::kWebKioskApp;
 }
 

@@ -42,7 +42,7 @@ const ash::KioskAppManagerBase* GetKioskAppManager(
   if (user_manager.IsLoggedInAsKioskChromeApp()) {
     return ash::KioskChromeAppManager::Get();
   }
-  if (user_manager.IsLoggedInAsWebKioskApp()) {
+  if (user_manager.IsLoggedInAsKioskWebApp()) {
     return ash::WebKioskAppManager::Get();
   }
   if (user_manager.IsLoggedInAsKioskIWA()) {
