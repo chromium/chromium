@@ -1396,6 +1396,10 @@
       status: "stable",
     },
     {
+      name: "CSSScrollDirectionContainerQueries",
+      status: "test",
+    },
+    {
       // https://drafts.csswg.org/css-scroll-snap-2#scroll-initial-target
       name: "CSSScrollInitialTarget",
       status: "stable",
@@ -1431,7 +1435,8 @@
       // Flag for supporting scroll-state() and container-type: scroll-state
       // Implied by supporting at least one of the scroll-state query features.
       name: "CSSScrollStateContainerQueries",
-      implied_by: ["CSSStickyContainerQueries", "CSSSnapContainerQueries", "CSSScrollableContainerQueries"],
+      implied_by: ["CSSStickyContainerQueries", "CSSSnapContainerQueries",
+                   "CSSScrollableContainerQueries", "CSSScrollDirectionContainerQueries"],
     },
     {
       name: "CSSSelectorFragmentAnchor",

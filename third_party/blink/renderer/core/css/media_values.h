@@ -164,6 +164,29 @@ class CORE_EXPORT MediaValues : public GarbageCollected<MediaValues>,
            ScrollableVertical() != static_cast<ContainerScrollableFlags>(
                                        ContainerScrollable::kNone);
   }
+  // For evaluating scroll-state(scroll-direction: left/right)
+  virtual ContainerScrollDirection ScrollDirectionHorizontal() const {
+    return ContainerScrollDirection::kNone;
+  }
+  // For evaluating scroll-state(scroll-direction: up/down)
+  virtual ContainerScrollDirection ScrollDirectionVertical() const {
+    return ContainerScrollDirection::kNone;
+  }
+  // For evaluating scroll-state(scroll-direction: inline-start/inline-end)
+  virtual ContainerScrollDirection ScrollDirectionInline() const {
+    return ContainerScrollDirection::kNone;
+  }
+  // For evaluating scroll-state(scroll-direction: block-start/block-end)
+  virtual ContainerScrollDirection ScrollDirectionBlock() const {
+    return ContainerScrollDirection::kNone;
+  }
+  // For boolean context evaluation
+  bool ScrollDirection() const {
+    return ScrollDirectionHorizontal() != static_cast<ContainerScrollDirection>(
+                                              ContainerScrollable::kNone) ||
+           ScrollDirectionVertical() != static_cast<ContainerScrollDirection>(
+                                            ContainerScrollable::kNone);
+  }
   // Returns the container element used to retrieve base style and parent style
   // when computing the computed value of a style() container query.
   virtual Element* ContainerElement() const { return nullptr; }

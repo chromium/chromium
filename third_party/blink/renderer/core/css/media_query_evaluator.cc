@@ -1558,6 +1558,59 @@ static bool ScrollableMediaFeatureEval(const MediaQueryExpValue& value,
   }
 }
 
+static bool ScrollDirectionMediaFeatureEval(const MediaQueryExpValue& value,
+                                            MediaQueryOperator op,
+                                            const MediaValues& media_values) {
+  if (!value.IsValid()) {
+    return media_values.ScrollDirection();
+  }
+
+  switch (value.Id()) {
+    case CSSValueID::kNone:
+      return !media_values.ScrollDirection();
+    case CSSValueID::kAny:
+      return media_values.ScrollDirection();
+    case CSSValueID::kTop:
+      return media_values.ScrollDirectionVertical() ==
+             ContainerScrollDirection::kStart;
+    case CSSValueID::kLeft:
+      return media_values.ScrollDirectionHorizontal() ==
+             ContainerScrollDirection::kStart;
+    case CSSValueID::kBottom:
+      return media_values.ScrollDirectionVertical() ==
+             ContainerScrollDirection::kEnd;
+    case CSSValueID::kRight:
+      return media_values.ScrollDirectionHorizontal() ==
+             ContainerScrollDirection::kEnd;
+    case CSSValueID::kBlockStart:
+      return media_values.ScrollDirectionBlock() ==
+             ContainerScrollDirection::kStart;
+    case CSSValueID::kBlockEnd:
+      return media_values.ScrollDirectionBlock() ==
+             ContainerScrollDirection::kEnd;
+    case CSSValueID::kInlineStart:
+      return media_values.ScrollDirectionInline() !=
+             ContainerScrollDirection::kStart;
+    case CSSValueID::kInlineEnd:
+      return media_values.ScrollDirectionInline() !=
+             ContainerScrollDirection::kEnd;
+    case CSSValueID::kX:
+      return media_values.ScrollDirectionHorizontal() !=
+             ContainerScrollDirection::kNone;
+    case CSSValueID::kY:
+      return media_values.ScrollDirectionVertical() !=
+             ContainerScrollDirection::kNone;
+    case CSSValueID::kBlock:
+      return media_values.ScrollDirectionBlock() !=
+             ContainerScrollDirection::kNone;
+    case CSSValueID::kInline:
+      return media_values.ScrollDirectionInline() !=
+             ContainerScrollDirection::kNone;
+    default:
+      NOTREACHED();
+  }
+}
+
 static bool InvertedColorsMediaFeatureEval(const MediaQueryExpValue& value,
                                            MediaQueryOperator,
                                            const MediaValues& media_values) {
