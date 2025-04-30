@@ -75,7 +75,10 @@ public class AutofillManagerWrapper {
         updateLogStat();
         if (isLoggable()) log("constructor");
         AutofillManager autofillManager = context.getSystemService(AutofillManager.class);
-        if (autofillManager != null && !autofillManager.isEnabled()) {
+        if (!AndroidAutofillFeatures.ANDROID_AUTOFILL_VIRTUAL_VIEW_STRUCTURE_ANDROID_IN_CCT
+                        .isEnabled()
+                && autofillManager != null
+                && !autofillManager.isEnabled()) {
             autofillManager = null;
         }
         mAutofillManager = autofillManager;
@@ -215,9 +218,14 @@ public class AutofillManagerWrapper {
         }
     }
 
-    @EnsuresNonNullIf(value="mAutofillManager", result=false)
+    @EnsuresNonNullIf(value = "mAutofillManager", result = false)
     public boolean isDisabled() {
-        return mAutofillManager == null || mDestroyed;
+        if (mAutofillManager == null || mDestroyed) {
+            return true;
+        }
+        return AndroidAutofillFeatures.ANDROID_AUTOFILL_VIRTUAL_VIEW_STRUCTURE_ANDROID_IN_CCT
+                        .isEnabled()
+                && !mAutofillManager.isEnabled();
     }
 
     /**

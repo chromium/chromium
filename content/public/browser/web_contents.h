@@ -207,6 +207,10 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
     // True if the contents should be initially hidden.
     bool initially_hidden = false;
 
+    // True if newly created WebContents should defer all autofill to the
+    // platform.
+    bool initially_use_platform_autofill = false;
+
     // If non-null then this WebContents will be hosted by a BrowserPlugin.
     raw_ptr<BrowserPluginGuestDelegate> guest_delegate = nullptr;
 

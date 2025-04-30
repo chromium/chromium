@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.customtabs.content;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.clearInvocations;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -33,11 +34,16 @@ import org.robolectric.annotation.Implements;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
+import org.chromium.chrome.browser.autofill.AndroidAutofillAvailabilityStatus;
+import org.chromium.chrome.browser.autofill.AutofillClientProviderUtils;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.components.autofill.AndroidAutofillFeatures;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.embedder_support.util.UrlUtilitiesJni;
+import org.chromium.components.prefs.PrefService;
+import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.url.GURL;
 import org.chromium.url.Origin;
@@ -53,7 +59,8 @@ import org.chromium.url.Origin;
 @Features.EnableFeatures({
     ChromeFeatureList.CCT_EARLY_NAV,
     ChromeFeatureList.CCT_PREWARM_TAB,
-    ChromeFeatureList.ANDROID_WEB_APP_LAUNCH_HANDLER
+    ChromeFeatureList.ANDROID_WEB_APP_LAUNCH_HANDLER,
+    AndroidAutofillFeatures.ANDROID_AUTOFILL_VIRTUAL_VIEW_STRUCTURE_ANDROID_IN_CCT_NAME
 })
 public class CustomTabActivityUrlLoadingTest {
     @Implements(Origin.class)
@@ -75,10 +82,17 @@ public class CustomTabActivityUrlLoadingTest {
     private CustomTabIntentHandler mIntentHandler;
 
     @Mock UrlUtilities.Natives mUrlUtilitiesJniMock;
+    @Mock private UserPrefsJni mMockUserPrefsJni;
 
     @Before
     public void setUp() {
         UrlUtilitiesJni.setInstanceForTesting(mUrlUtilitiesJniMock);
+        UserPrefsJni.setInstanceForTesting(mMockUserPrefsJni);
+        doReturn(mock(PrefService.class)).when(mMockUserPrefsJni).get(any());
+
+        // Ensure the test can read the Autofill pref. Assume it's turned off by default.
+        AutofillClientProviderUtils.setAutofillAvailabilityToUseForTesting(
+                AndroidAutofillAvailabilityStatus.SETTING_TURNED_OFF);
 
         mTabController = env.createTabController();
         mNavigationController = env.createNavigationController(mTabController);

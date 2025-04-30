@@ -3894,6 +3894,11 @@ void WebContentsImpl::Init(const WebContents::CreateParams& params,
                            blink::FramePolicy primary_main_frame_policy) {
   TRACE_EVENT0("content", "WebContentsImpl::Init");
 
+  // Set initial autofill mode. Prefs may update this value later but for
+  // pre-warmed WebContents that update happens too late.
+  renderer_preferences_.uses_platform_autofill =
+      params.initially_use_platform_autofill;
+
   is_in_preview_mode_ = params.preview_mode;
   creator_location_ = params.creator_location;
 #if BUILDFLAG(IS_ANDROID)

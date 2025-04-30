@@ -21,7 +21,8 @@ namespace autofill::features {
 namespace {
 
 const base::Feature* const kFeaturesExposedToJava[] = {
-    &kAndroidAutofillDeprecateAccessibilityApi};
+    &kAndroidAutofillDeprecateAccessibilityApi,
+    &kAutofillVirtualViewStructureAndroidInCct};
 
 }  // namespace
 
@@ -31,6 +32,13 @@ const base::Feature* const kFeaturesExposedToJava[] = {
 BASE_FEATURE(kAndroidAutofillDeprecateAccessibilityApi,
              "AndroidAutofillDeprecateAccessibilityApi",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Safe-guard for a crucial fix that prevented consistent use of 3P in CCTs.
+// It's ineffective when AutofillVirtualViewStructureAndroid is disabled.
+// TODO: crbug.com/409579377 - Delete after M140.
+BASE_FEATURE(kAutofillVirtualViewStructureAndroidInCct,
+             "AutofillVirtualViewStructureAndroidInCct",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 static jlong JNI_AndroidAutofillFeatures_GetFeature(JNIEnv* env, jint ordinal) {
   return reinterpret_cast<jlong>(kFeaturesExposedToJava[ordinal]);

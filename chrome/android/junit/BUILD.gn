@@ -221,6 +221,7 @@ if (is_android) {
       "//chrome/browser/xsurface:java",
       "//chrome/test:sync_integration_test_support_java",
       "//chrome/test/android:chrome_java_unit_test_support",
+      "//components/android_autofill/browser:features_java",
       "//components/android_autofill/browser:java",
       "//components/autofill/android:autofill_features_java",
       "//components/autofill/android:autofill_java_resources",

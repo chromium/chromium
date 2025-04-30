@@ -49,21 +49,23 @@ public class WebContentsFactory {
      * @param profile The profile with which the {@link WebContents} should be built.
      * @param initiallyHidden Whether or not the {@link WebContents} should be initially hidden.
      * @param initializeRenderer Whether or not the {@link WebContents} should initialize renderer.
-     * @param targetNetwork target bound network, also refer to the documentation of
-     *                      {@link ChromeContentBrowserClient::MaybeProxyNetworkBoundRequest}
-     *                      on how to use targetNetwork at the native layer.
+     * @param targetNetwork target bound network, also refer to the documentation of {@link
+     *     ChromeContentBrowserClient::MaybeProxyNetworkBoundRequest} on how to use targetNetwork at
+     *     the native layer.
      * @return A newly created {@link WebContents} object.
      */
     public static WebContents createWebContents(
             Profile profile,
             boolean initiallyHidden,
             boolean initializeRenderer,
+            boolean usesPlatformAutofill,
             long targetNetwork) {
         return WebContentsFactoryJni.get()
                 .createWebContents(
                         profile,
                         initiallyHidden,
                         initializeRenderer,
+                        usesPlatformAutofill,
                         targetNetwork,
                         new WebContentsCreationException());
     }
@@ -79,7 +81,11 @@ public class WebContentsFactory {
     public static WebContents createWebContents(
             Profile profile, boolean initiallyHidden, boolean initializeRenderer) {
         return createWebContents(
-                profile, initiallyHidden, initializeRenderer, /* targetNetwork= */ NetId.INVALID);
+                profile,
+                initiallyHidden,
+                initializeRenderer,
+                /* usesPlatformAutofill= */ false,
+                /* targetNetwork= */ NetId.INVALID);
     }
 
     /**
@@ -93,8 +99,12 @@ public class WebContentsFactory {
      * @return A newly created {@link WebContents} object.
      */
     public static WebContents createWebContentsWithWarmRenderer(
-            Profile profile, boolean initiallyHidden, long targetNetwork) {
-        return createWebContents(profile, initiallyHidden, true, targetNetwork);
+            Profile profile,
+            boolean initiallyHidden,
+            boolean usesPlatformAutofill,
+            long targetNetwork) {
+        return createWebContents(
+                profile, initiallyHidden, true, usesPlatformAutofill, targetNetwork);
     }
 
     @NativeMethods
@@ -103,6 +113,7 @@ public class WebContentsFactory {
                 @JniType("Profile*") Profile profile,
                 boolean initiallyHidden,
                 boolean initializeRenderer,
+                boolean usesPlatformAutofill,
                 long targetNetwork,
                 Throwable javaCreator);
 

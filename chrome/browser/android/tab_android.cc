@@ -28,6 +28,7 @@
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/notifications/notification_permission_context.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/renderer_preferences_util.h"
 #include "chrome/browser/resource_coordinator/tab_helper.h"
 #include "chrome/browser/resource_coordinator/tab_load_tracker.h"
 #include "chrome/browser/sync/glue/synced_tab_delegate_android.h"
@@ -58,6 +59,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "ui/android/view_android.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
@@ -358,6 +360,9 @@ void TabAndroid::InitWebContents(
   web_contents_.reset(content::WebContents::FromJavaWebContents(jweb_contents));
   DCHECK(web_contents_.get());
 
+  renderer_preferences_util::UpdateFromSystemSettings(
+      web_contents_->GetMutableRendererPrefs(),
+      Profile::FromBrowserContext(web_contents_->GetBrowserContext()));
   web_contents_->SetOwnerLocationForDebug(FROM_HERE);
 
   TabAndroidHelper::SetTabForWebContents(web_contents(), this);
