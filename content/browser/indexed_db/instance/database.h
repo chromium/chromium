@@ -73,10 +73,6 @@ class CONTENT_EXPORT Database {
   const blink::IndexedDBDatabaseMetadata& metadata() const {
     return backing_store_db_->GetMetadata();
   }
-  // This mutable copy is a bit of a hack. Probably better if it weren't here.
-  blink::IndexedDBDatabaseMetadata& metadata() {
-    return backing_store_db_->GetMetadata();
-  }
   const std::u16string& name() const { return name_; }
   int64_t version() const;
   bool IsInitialized() const;
@@ -322,6 +318,11 @@ class CONTENT_EXPORT Database {
       Transaction* current_transaction,
       std::vector<PartitionedLockManager::PartitionedLockRequest>&
           lock_requests);
+
+  // Gets metadata for the given object store ID, asserting that the object
+  // store exists.
+  const blink::IndexedDBObjectStoreMetadata& GetObjectStoreMetadata(
+      int64_t object_store_id) const;
 
   std::u16string name_;
 

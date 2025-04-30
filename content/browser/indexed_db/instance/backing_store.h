@@ -82,8 +82,8 @@ class BackingStore {
    public:
     virtual ~Database() = default;
 
-    // Returns mutable reference to metadata for this database.
-    virtual blink::IndexedDBDatabaseMetadata& GetMetadata() = 0;
+    // Memory-cached metadata for this database.
+    virtual const blink::IndexedDBDatabaseMetadata& GetMetadata() = 0;
 
     // Generates a lock ID for the given object store.
     virtual PartitionedLockId GetLockId(int64_t object_store_id) const = 0;
@@ -92,6 +92,12 @@ class BackingStore {
     virtual std::unique_ptr<Transaction> CreateTransaction(
         blink::mojom::IDBTransactionDurability durability,
         blink::mojom::IDBTransactionMode mode) = 0;
+
+    // Deletes the database from the backing store and resets metadata to a
+    // mostly uninitialized state.
+    [[nodiscard]] virtual Status DeleteDatabase(
+        std::vector<PartitionedLock> locks,
+        base::OnceClosure on_complete) = 0;
   };
 
   // This interface wraps state and actions executed on the backing store by the
@@ -254,10 +260,6 @@ class BackingStore {
   [[nodiscard]] virtual base::expected<std::unique_ptr<BackingStore::Database>,
                                        Status>
   CreateOrOpenDatabase(const std::u16string& name) = 0;
-  [[nodiscard]] virtual Status DeleteDatabase(
-      const std::u16string& name,
-      std::vector<PartitionedLock> locks,
-      base::OnceClosure on_complete) = 0;
 
   virtual uintptr_t GetIdentifierForMemoryDump() = 0;
 

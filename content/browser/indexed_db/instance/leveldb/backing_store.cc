@@ -1084,21 +1084,6 @@ Status ReadObjectStores(
   return s;
 }
 
-Status FindDatabaseId(TransactionalLevelDBDatabase* db,
-                      const std::string& origin_identifier,
-                      const std::u16string& name,
-                      int64_t* id,
-                      bool* found) {
-  const std::string key = DatabaseNameKey::Encode(origin_identifier, name);
-
-  Status s = GetInt(db, key, id, found);
-  if (!s.ok()) {
-    INTERNAL_READ_ERROR(GET_IDBDATABASE_METADATA);
-  }
-
-  return s;
-}
-
 }  // namespace
 
 BackingStore::BackingStore(
@@ -1759,26 +1744,18 @@ BackingStore::CreateOrOpenDatabase(const std::u16string& name) {
   return std::make_unique<Database>(*this, std::move(metadata));
 }
 
-Status BackingStore::DeleteDatabase(const std::u16string& name,
-                                    std::vector<PartitionedLock> locks,
-                                    base::OnceClosure on_complete) {
+Status BackingStore::Database::DeleteDatabase(
+    std::vector<PartitionedLock> locks,
+    base::OnceClosure on_complete) {
   TRACE_EVENT0("IndexedDB", "BackingStore::DeleteDatabase");
 
   scoped_refptr<TransactionalLevelDBTransaction> transaction =
       GetTransactionalLevelDBFactory()->CreateLevelDBTransaction(
-          db(), db()->scopes()->CreateScope(std::move(locks)));
+          backing_store_->db(),
+          backing_store_->db()->scopes()->CreateScope(std::move(locks)));
   transaction->set_commit_cleanup_complete_callback(std::move(on_complete));
 
-  Status s;
-  bool success = false;
-  int64_t id = 0;
-  s = FindDatabaseId(db_.get(), origin_identifier_, name, &id, &success);
-  if (!s.ok()) {
-    return s;
-  }
-  if (!success) {
-    return Status::OK();
-  }
+  const int64_t id = metadata().id.value();
 
   // `ORIGIN_NAME` is the first key (0) in the database prefix, so this
   // deletes the whole database.
@@ -1786,6 +1763,7 @@ Status BackingStore::DeleteDatabase(const std::u16string& name,
       DatabaseMetaDataKey::Encode(id, DatabaseMetaDataKey::ORIGIN_NAME);
   const std::string stop_key =
       DatabaseMetaDataKey::Encode(id + 1, DatabaseMetaDataKey::ORIGIN_NAME);
+  Status s;
   {
     TRACE_EVENT0("IndexedDB", "BackingStore::DeleteDatabase.DeleteEntries");
     // It is safe to do deferred deletion here because database ids are never
@@ -1798,7 +1776,8 @@ Status BackingStore::DeleteDatabase(const std::u16string& name,
     return s;
   }
 
-  const std::string key = DatabaseNameKey::Encode(origin_identifier_, name);
+  const std::string key = DatabaseNameKey::Encode(
+      backing_store_->origin_identifier(), metadata().name);
   s = transaction->Remove(key);
   if (!s.ok()) {
     return s;
@@ -1806,7 +1785,8 @@ Status BackingStore::DeleteDatabase(const std::u16string& name,
 
   bool need_cleanup = false;
   bool database_has_blob_references =
-      active_blob_registry()->MarkDatabaseDeletedAndCheckIfReferenced(id);
+      backing_store_->active_blob_registry()
+          ->MarkDatabaseDeletedAndCheckIfReferenced(id);
   if (database_has_blob_references) {
     s = MergeDatabaseIntoActiveBlobJournal(transaction.get(), id);
     if (!s.ok()) {
@@ -1830,10 +1810,14 @@ Status BackingStore::DeleteDatabase(const std::u16string& name,
   // If another transaction is running, this will defer processing
   // the journal until completion.
   if (need_cleanup) {
-    CleanRecoveryJournalIgnoreReturn();
+    backing_store_->CleanRecoveryJournalIgnoreReturn();
   }
 
-  return s;
+  metadata().version = IndexedDBDatabaseMetadata::NO_VERSION;
+  metadata().max_object_store_id = 0;
+  metadata().object_stores.clear();
+
+  return Status::OK();
 }
 
 Status BackingStore::Transaction::SetDatabaseVersion(int64_t version) {
@@ -1842,7 +1826,7 @@ Status BackingStore::Transaction::SetDatabaseVersion(int64_t version) {
     version = IndexedDBDatabaseMetadata::DEFAULT_VERSION;
   }
   DCHECK_GE(version, 0) << "version was " << version;
-  database_->GetMetadata().version = version;
+  database_->metadata().version = version;
   return PutVarInt(transaction(),
                    DatabaseMetaDataKey::Encode(
                        database_id(), DatabaseMetaDataKey::USER_VERSION),
@@ -1855,7 +1839,7 @@ Status BackingStore::Transaction::CreateObjectStore(
     blink::IndexedDBKeyPath key_path,
     bool auto_increment) {
   CHECK_EQ(mode(), blink::mojom::IDBTransactionMode::VersionChange);
-  if (base::Contains(database_->GetMetadata().object_stores, object_store_id)) {
+  if (base::Contains(database_->metadata().object_stores, object_store_id)) {
     return Status::InvalidArgument("Invalid object_store_id");
   }
 
@@ -4098,7 +4082,7 @@ PartitionedLockId BackingStore::Database::GetLockId(
   return GetObjectStoreLockId(*metadata_.id, object_store_id);
 }
 
-blink::IndexedDBDatabaseMetadata& BackingStore::Database::GetMetadata() {
+const blink::IndexedDBDatabaseMetadata& BackingStore::Database::GetMetadata() {
   return metadata_;
 }
 

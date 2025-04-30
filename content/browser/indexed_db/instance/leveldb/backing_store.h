@@ -95,11 +95,13 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
     ~Database() override;
 
     // indexed_db::BackingStore::Database:
-    blink::IndexedDBDatabaseMetadata& GetMetadata() override;
+    const blink::IndexedDBDatabaseMetadata& GetMetadata() override;
     PartitionedLockId GetLockId(int64_t object_store_id) const override;
     std::unique_ptr<Transaction> CreateTransaction(
         blink::mojom::IDBTransactionDurability durability,
         blink::mojom::IDBTransactionMode mode) override;
+    Status DeleteDatabase(std::vector<PartitionedLock> locks,
+                          base::OnceClosure on_complete) override;
 
     DatabaseMetadata& metadata() { return metadata_; }
     base::WeakPtr<BackingStore> backing_store() { return backing_store_; }
@@ -481,9 +483,6 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
   void StopPreCloseTasks() override;
   base::expected<std::unique_ptr<indexed_db::BackingStore::Database>, Status>
   CreateOrOpenDatabase(const std::u16string& name) override;
-  Status DeleteDatabase(const std::u16string& name,
-                        std::vector<PartitionedLock> locks,
-                        base::OnceClosure on_complete) override;
 
   uintptr_t GetIdentifierForMemoryDump() override;
   void FlushForTesting() override;

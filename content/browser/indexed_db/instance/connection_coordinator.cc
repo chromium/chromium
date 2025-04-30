@@ -528,11 +528,11 @@ class ConnectionCoordinator::DeleteRequest
     // This is used to check if this class is still alive after the destruction
     // of the backing store, which can synchronously cause the system to be shut
     // down if the disk is really bad.
+    const int64_t old_version = db_->version();
     base::WeakPtr<DeleteRequest> weak_ptr = weak_factory_.GetWeakPtr();
-    if (db_->backing_store()) {
-      saved_status_ = db_->backing_store()->DeleteDatabase(
-          db_->name(), std::move(lock_receiver_.locks),
-          std::move(on_database_deleted_));
+    if (db_->backing_store_db()) {
+      saved_status_ = db_->backing_store_db()->DeleteDatabase(
+          std::move(lock_receiver_.locks), std::move(on_database_deleted_));
       base::UmaHistogramEnumeration(
           "WebCore.IndexedDB.BackingStore.DeleteDatabaseStatus",
           leveldb_env::GetLevelDBStatusUMAValue(saved_status_.leveldb_status()),
@@ -553,10 +553,6 @@ class ConnectionCoordinator::DeleteRequest
       return;
     }
 
-    int64_t old_version = db_->version();
-    db_->metadata().version = IndexedDBDatabaseMetadata::NO_VERSION;
-    db_->metadata().max_object_store_id = 0;
-    db_->metadata().object_stores.clear();
     // Unittests (specifically the Database unittests) can have the
     // backing store be a nullptr, so report deleted here.
     if (on_database_deleted_) {

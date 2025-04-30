@@ -396,10 +396,8 @@ Status Database::GetOperation(int64_t object_store_id,
     return Status::InvalidArgument("Invalid object_store_id and/or index_id.");
   }
 
-  DCHECK(metadata().object_stores.find(object_store_id) !=
-         metadata().object_stores.end());
   const IndexedDBObjectStoreMetadata& object_store_metadata =
-      metadata().object_stores[object_store_id];
+      GetObjectStoreMetadata(object_store_id);
 
   const IndexedDBKey* key;
 
@@ -632,10 +630,8 @@ Status Database::GetAllOperation(
 
   DCHECK_GT(max_count, 0);
 
-  DCHECK(metadata().object_stores.find(object_store_id) !=
-         metadata().object_stores.end());
   const IndexedDBObjectStoreMetadata& object_store_metadata =
-      metadata().object_stores[object_store_id];
+      GetObjectStoreMetadata(object_store_id);
 
   Status s = Status::OK();
   std::unique_ptr<BackingStore::Cursor> cursor;
@@ -779,10 +775,8 @@ Status Database::PutOperation(std::unique_ptr<PutOperationParams> params,
     return Status::InvalidArgument("Invalid object_store_id.");
   }
 
-  DCHECK(metadata().object_stores.find(params->object_store_id) !=
-         metadata().object_stores.end());
   const IndexedDBObjectStoreMetadata& object_store =
-      metadata().object_stores[params->object_store_id];
+      GetObjectStoreMetadata(params->object_store_id);
   DCHECK(object_store.auto_increment || params->key->IsValid());
 
   std::unique_ptr<IndexedDBKey> key;
@@ -885,8 +879,8 @@ Status Database::PutOperation(std::unique_ptr<PutOperationParams> params,
     std::move(params->callback)
         .Run(blink::mojom::IDBTransactionPutResult::NewKey(*key));
   }
-  bucket_context_->delegate().on_content_changed.Run(
-      name_, metadata().object_stores[params->object_store_id].name);
+
+  bucket_context_->delegate().on_content_changed.Run(name_, object_store.name);
   return s;
 }
 
@@ -917,10 +911,9 @@ Status Database::SetIndexKeysOperation(
   std::vector<std::unique_ptr<IndexWriter>> index_writers;
   std::string error_message;
   bool obeys_constraints = false;
-  DCHECK(metadata().object_stores.find(object_store_id) !=
-         metadata().object_stores.end());
+
   const IndexedDBObjectStoreMetadata& object_store_metadata =
-      metadata().object_stores[object_store_id];
+      GetObjectStoreMetadata(object_store_id);
   bool backing_store_success = MakeIndexWriters(
       transaction, object_store_metadata, *primary_key, false, index_keys,
       &index_writers, &error_message, &obeys_constraints);
@@ -1104,8 +1097,10 @@ Status Database::DeleteRangeOperation(
     s = Status::InvalidArgument("Invalid object_store_id.");
   }
   if (s.ok()) {
+    const IndexedDBObjectStoreMetadata& object_store_metadata =
+        GetObjectStoreMetadata(object_store_id);
     bucket_context_->delegate().on_content_changed.Run(
-        metadata().name, metadata().object_stores[object_store_id].name);
+        metadata().name, object_store_metadata.name);
   }
   std::move(success_callback).Run(s.ok());
   return s;
@@ -1150,8 +1145,10 @@ Status Database::ClearOperation(
         object_store_id);
   }
   if (s.ok()) {
+    const IndexedDBObjectStoreMetadata& object_store_metadata =
+        GetObjectStoreMetadata(object_store_id);
     bucket_context_->delegate().on_content_changed.Run(
-        name_, metadata().object_stores[object_store_id].name);
+        name_, object_store_metadata.name);
   }
   std::move(success_callback).Run(s.ok());
   return s;
@@ -1172,7 +1169,7 @@ bool Database::IsObjectStoreIdAndMaybeIndexIdInMetadata(
     return false;
   }
   const IndexedDBObjectStoreMetadata& object_store_metadata =
-      metadata().object_stores.find(object_store_id)->second;
+      GetObjectStoreMetadata(object_store_id);
   if (index_id != IndexedDBIndexMetadata::kInvalidId &&
       !base::Contains(object_store_metadata.indexes, index_id)) {
     DLOG(ERROR) << "Invalid index_id";
@@ -1311,6 +1308,13 @@ void Database::ConnectionClosed(Connection* connection) {
 
 bool Database::CanBeDestroyed() {
   return !connection_coordinator_.HasTasks() && connections_.empty();
+}
+
+const IndexedDBObjectStoreMetadata& Database::GetObjectStoreMetadata(
+    int64_t object_store_id) const {
+  auto object_store_it = metadata().object_stores.find(object_store_id);
+  DCHECK(object_store_it != metadata().object_stores.end());
+  return object_store_it->second;
 }
 
 }  // namespace content::indexed_db

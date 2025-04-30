@@ -306,8 +306,8 @@ class BackingStoreTest : public testing::Test {
         reinterpret_cast<BackingStore*>(bucket_context_->backing_store());
   }
 
-  int64_t GetId(indexed_db::BackingStore::Database& db) {
-    return *reinterpret_cast<DatabaseMetadata&>(db.GetMetadata()).id;
+  int64_t GetId(indexed_db::BackingStore::Database& db) const {
+    return *reinterpret_cast<const DatabaseMetadata&>(db.GetMetadata()).id;
   }
 
   void UpdateDatabaseVersion(indexed_db::BackingStore::Database& db,
@@ -1429,15 +1429,16 @@ TEST_F(BackingStoreTest, CreateDatabase) {
                                        object_store_key_path, auto_increment);
     EXPECT_TRUE(s.ok());
 
-    IndexedDBObjectStoreMetadata& object_store =
-        (*db1)->GetMetadata().object_stores[object_store_id];
+    const IndexedDBObjectStoreMetadata& object_store =
+        (*db1)->GetMetadata().object_stores.find(object_store_id)->second;
     EXPECT_EQ(object_store.id, object_store_id);
 
     s = transaction->CreateIndex(object_store.id, index_id, index_name,
                                  index_key_path, unique, multi_entry);
     EXPECT_TRUE(s.ok());
 
-    IndexedDBIndexMetadata& index = object_store.indexes[index_id];
+    const IndexedDBIndexMetadata& index =
+        object_store.indexes.find(index_id)->second;
     EXPECT_EQ(index.id, index_id);
 
     bool succeeded = false;
@@ -1451,20 +1452,21 @@ TEST_F(BackingStoreTest, CreateDatabase) {
     auto db1 = backing_store()->CreateOrOpenDatabase(database_name);
     EXPECT_TRUE(db1.has_value());
 
-    blink::IndexedDBDatabaseMetadata& database = (*db1)->GetMetadata();
+    const blink::IndexedDBDatabaseMetadata& database = (*db1)->GetMetadata();
     // database.name is not filled in by the implementation.
     EXPECT_EQ(version, database.version);
     EXPECT_EQ(database_id, GetId(**db1));
 
     EXPECT_EQ(1UL, database.object_stores.size());
-    IndexedDBObjectStoreMetadata object_store =
-        database.object_stores[object_store_id];
+    const IndexedDBObjectStoreMetadata& object_store =
+        database.object_stores.find(object_store_id)->second;
     EXPECT_EQ(object_store_name, object_store.name);
     EXPECT_EQ(object_store_key_path, object_store.key_path);
     EXPECT_EQ(auto_increment, object_store.auto_increment);
 
     EXPECT_EQ(1UL, object_store.indexes.size());
-    IndexedDBIndexMetadata index = object_store.indexes[index_id];
+    const IndexedDBIndexMetadata& index =
+        object_store.indexes.find(index_id)->second;
     EXPECT_EQ(index_name, index.name);
     EXPECT_EQ(index_key_path, index.key_path);
     EXPECT_EQ(unique, index.unique);
@@ -1850,8 +1852,8 @@ TEST_F(BackingStoreTestWithBlobs, SchemaUpgradeV3ToV4) {
                                       object_store_key_path, auto_increment);
     EXPECT_TRUE(s.ok());
 
-    IndexedDBObjectStoreMetadata& object_store =
-        (*db)->GetMetadata().object_stores[object_store_id];
+    const IndexedDBObjectStoreMetadata& object_store =
+        (*db)->GetMetadata().object_stores.find(object_store_id)->second;
     EXPECT_EQ(object_store.id, object_store_id);
 
     bool succeeded = false;
@@ -2001,8 +2003,8 @@ TEST_F(BackingStoreTestWithBlobs, SchemaUpgradeV4ToV5) {
                                       object_store_key_path, auto_increment);
     EXPECT_TRUE(s.ok());
 
-    IndexedDBObjectStoreMetadata& object_store =
-        (*db)->GetMetadata().object_stores[object_store_id];
+    const IndexedDBObjectStoreMetadata& object_store =
+        (*db)->GetMetadata().object_stores.find(object_store_id)->second;
     EXPECT_EQ(object_store.id, object_store_id);
 
     bool succeeded = false;
