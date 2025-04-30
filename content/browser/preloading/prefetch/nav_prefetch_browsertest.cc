@@ -48,6 +48,14 @@ class NavPrefetchBrowserTest : public ContentBrowserTest,
     attempt_ukm_entry_builder_ =
         std::make_unique<test::PreloadingAttemptUkmEntryBuilder>(
             content_preloading_predictor::kSpeculationRules);
+
+    ssl_server_.RegisterRequestMonitor(
+        base::BindRepeating(&NavPrefetchBrowserTest::MonitorResourceRequest,
+                            base::Unretained(this)));
+    ssl_server_.AddDefaultHandlers(GetTestDataFilePath());
+    ssl_server_.SetSSLConfig(
+        net::test_server::EmbeddedTestServer::CERT_TEST_NAMES);
+    ASSERT_TRUE(ssl_server_.Start());
   }
 
   void StartPrefetch(const GURL& url) {
@@ -100,8 +108,17 @@ class NavPrefetchBrowserTest : public ContentBrowserTest,
     return *attempt_ukm_entry_builder_;
   }
 
+ protected:
+  GURL GetUrl(const std::string& host, const std::string& path) const {
+    return ssl_server_.GetURL(host, path);
+  }
+
  private:
   base::ScopedMockElapsedTimersForTest test_timer_;
+
+  net::test_server::EmbeddedTestServer ssl_server_{
+      net::test_server::EmbeddedTestServer::TYPE_HTTPS};
+
   std::map<std::string, int> request_count_by_path_ GUARDED_BY(lock_);
   base::HistogramTester histogram_tester_;
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> ukm_recorder_;
@@ -154,19 +171,9 @@ IN_PROC_BROWSER_TEST_F(NavPrefetchBrowserTest,
 
 // TODO(crbug.com/345352974): Make it a web platform test instead.
 IN_PROC_BROWSER_TEST_F(NavPrefetchBrowserTest, ServedToRedirectionChain) {
-  net::test_server::EmbeddedTestServer ssl_server{
-      net::test_server::EmbeddedTestServer::TYPE_HTTPS};
-  ssl_server.RegisterRequestMonitor(base::BindRepeating(
-      &NavPrefetchBrowserTest::MonitorResourceRequest, base::Unretained(this)));
-  ssl_server.AddDefaultHandlers(GetTestDataFilePath());
-  ssl_server.SetSSLConfig(
-      net::test_server::EmbeddedTestServer::CERT_TEST_NAMES);
-  ASSERT_TRUE(ssl_server.Start());
-
-  GURL initiator_url = ssl_server.GetURL("a.test", "/empty.html");
-  GURL des_url = ssl_server.GetURL("a.test", "/title2.html");
-  GURL next_nav_url =
-      ssl_server.GetURL("b.test", "/server-redirect?" + des_url.spec());
+  GURL initiator_url = GetUrl("a.test", "/empty.html");
+  GURL des_url = GetUrl("a.test", "/title2.html");
+  GURL next_nav_url = GetUrl("b.test", "/server-redirect?" + des_url.spec());
   ASSERT_TRUE(NavigateToURL(shell(), initiator_url));
 
   test::TestPrefetchWatcher test_prefetch_watcher;
@@ -203,18 +210,9 @@ IN_PROC_BROWSER_TEST_F(NavPrefetchBrowserTest, ServedToRedirectionChain) {
 
 // TODO(crbug.com/345352974): Make it a web platform test instead.
 IN_PROC_BROWSER_TEST_F(NavPrefetchBrowserTest, SetCookieViaHTTPResponse) {
-  net::test_server::EmbeddedTestServer ssl_server{
-      net::test_server::EmbeddedTestServer::TYPE_HTTPS};
-  ssl_server.RegisterRequestMonitor(base::BindRepeating(
-      &NavPrefetchBrowserTest::MonitorResourceRequest, base::Unretained(this)));
-  ssl_server.AddDefaultHandlers(GetTestDataFilePath());
-  ssl_server.SetSSLConfig(
-      net::test_server::EmbeddedTestServer::CERT_TEST_NAMES);
-  ASSERT_TRUE(ssl_server.Start());
-
-  GURL initiator_url = ssl_server.GetURL("a.test", "/empty.html");
+  GURL initiator_url = GetUrl("a.test", "/empty.html");
   const std::string server_cookie = "host_cookie=1";
-  GURL des_url = ssl_server.GetURL("b.test", "/set-cookie?" + server_cookie);
+  GURL des_url = GetUrl("b.test", "/set-cookie?" + server_cookie);
   ASSERT_TRUE(NavigateToURL(shell(), initiator_url));
 
   // 1. Prefetch a resource which sets cookie.
@@ -238,7 +236,7 @@ IN_PROC_BROWSER_TEST_F(NavPrefetchBrowserTest, SetCookieViaHTTPResponse) {
                    "document.cookie"), server_cookie);
 
   // 4. Navigate to another same-site page to confirm the cookie is persistent.
-  GURL after_prefetch_url = ssl_server.GetURL("b.test", "/title2.html");
+  GURL after_prefetch_url = GetUrl("b.test", "/title2.html");
   std::ignore = ExecJs(shell()->web_contents()->GetPrimaryMainFrame(),
                        JsReplace("location = $1", after_prefetch_url));
   EXPECT_EQ(EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
@@ -248,18 +246,9 @@ IN_PROC_BROWSER_TEST_F(NavPrefetchBrowserTest, SetCookieViaHTTPResponse) {
 // TODO(crbug.com/345352974): Make it a web platform test instead.
 IN_PROC_BROWSER_TEST_F(NavPrefetchBrowserTest,
                        NeverSetCookieForDiscardedPrefetch) {
-  net::test_server::EmbeddedTestServer ssl_server{
-      net::test_server::EmbeddedTestServer::TYPE_HTTPS};
-  ssl_server.RegisterRequestMonitor(base::BindRepeating(
-      &NavPrefetchBrowserTest::MonitorResourceRequest, base::Unretained(this)));
-  ssl_server.AddDefaultHandlers(GetTestDataFilePath());
-  ssl_server.SetSSLConfig(
-      net::test_server::EmbeddedTestServer::CERT_TEST_NAMES);
-  ASSERT_TRUE(ssl_server.Start());
-
-  GURL initiator_url = ssl_server.GetURL("a.test", "/empty.html");
+  GURL initiator_url = GetUrl("a.test", "/empty.html");
   const std::string server_cookie = "host_cookie=1";
-  GURL des_url = ssl_server.GetURL("b.test", "/set-cookie?" + server_cookie);
+  GURL des_url = GetUrl("b.test", "/set-cookie?" + server_cookie);
   ASSERT_TRUE(NavigateToURL(shell(), initiator_url));
 
   // 1. Prefetch a resource which sets cookie.
@@ -272,7 +261,7 @@ IN_PROC_BROWSER_TEST_F(NavPrefetchBrowserTest,
   // 2. Navigate to another URL to invalidate the prefetch result.
   TestNavigationObserver nav_observer(shell()->web_contents());
   nav_observer.set_wait_event(TestNavigationObserver::WaitEvent::kLoadStopped);
-  GURL after_prefetch_url = ssl_server.GetURL("b.test", "/title2.html");
+  GURL after_prefetch_url = GetUrl("b.test", "/title2.html");
 
   std::ignore = ExecJs(shell()->web_contents()->GetPrimaryMainFrame(),
                        JsReplace("location = $1", after_prefetch_url));
@@ -287,19 +276,10 @@ IN_PROC_BROWSER_TEST_F(NavPrefetchBrowserTest,
 IN_PROC_BROWSER_TEST_F(
     NavPrefetchBrowserTest,
     CrossSitePrefetchNotServedWhenCookieChange_BeforeFirstServe) {
-  net::test_server::EmbeddedTestServer ssl_server{
-      net::test_server::EmbeddedTestServer::TYPE_HTTPS};
-  ssl_server.RegisterRequestMonitor(base::BindRepeating(
-      &NavPrefetchBrowserTest::MonitorResourceRequest, base::Unretained(this)));
-  ssl_server.AddDefaultHandlers(GetTestDataFilePath());
-  ssl_server.SetSSLConfig(
-      net::test_server::EmbeddedTestServer::CERT_TEST_NAMES);
-  ASSERT_TRUE(ssl_server.Start());
-
   // Perform a cross-site prefetch which sets cookie.
   const std::string server_cookie = "server_cookie=1";
-  GURL initiator_url = ssl_server.GetURL("a.test", "/empty.html");
-  GURL des_url = ssl_server.GetURL("b.test", "/set-cookie?" + server_cookie);
+  GURL initiator_url = GetUrl("a.test", "/empty.html");
+  GURL des_url = GetUrl("b.test", "/set-cookie?" + server_cookie);
   ASSERT_TRUE(NavigateToURL(shell(), initiator_url));
   test::TestPrefetchWatcher test_prefetch_watcher;
   StartPrefetch(des_url);
@@ -336,19 +316,10 @@ IN_PROC_BROWSER_TEST_F(
         << "This test assumes that BFCache is used when back navigation";
   }
 
-  net::test_server::EmbeddedTestServer ssl_server{
-      net::test_server::EmbeddedTestServer::TYPE_HTTPS};
-  ssl_server.RegisterRequestMonitor(base::BindRepeating(
-      &NavPrefetchBrowserTest::MonitorResourceRequest, base::Unretained(this)));
-  ssl_server.AddDefaultHandlers(GetTestDataFilePath());
-  ssl_server.SetSSLConfig(
-      net::test_server::EmbeddedTestServer::CERT_TEST_NAMES);
-  ASSERT_TRUE(ssl_server.Start());
-
   // Perform a cross-site prefetch which sets cookie.
   const std::string server_cookie = "server_cookie=1";
-  GURL initiator_url = ssl_server.GetURL("a.test", "/empty.html");
-  GURL des_url = ssl_server.GetURL("b.test", "/set-cookie?" + server_cookie);
+  GURL initiator_url = GetUrl("a.test", "/empty.html");
+  GURL des_url = GetUrl("b.test", "/set-cookie?" + server_cookie);
   ASSERT_TRUE(NavigateToURL(shell(), initiator_url));
   test::TestPrefetchWatcher test_prefetch_watcher;
   StartPrefetch(des_url);
