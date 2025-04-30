@@ -15,6 +15,8 @@ std::string NetworkIsolationPartitionToDebugString(
       return "general partition";
     case NetworkIsolationPartition::kProtectedAudienceSellerWorklet:
       return "protected audience seller worklet partition";
+    case NetworkIsolationPartition::kFedCmUncredentialedRequests:
+      return "fedcm uncredentialed requests";
   }
 }
 

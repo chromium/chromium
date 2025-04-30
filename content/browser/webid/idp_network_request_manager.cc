@@ -24,6 +24,7 @@
 #include "content/public/common/color_parser.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/isolation_info.h"
+#include "net/base/network_isolation_partition.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/schemeful_site.h"
 #include "net/base/url_util.h"
@@ -1429,17 +1430,7 @@ IdpNetworkRequestManager::CreateUncredentialedResourceRequest(
     const GURL& target_url,
     bool send_origin,
     bool follow_redirects) const {
-  // We want this to be unique, so we append a random string.
-  static constexpr char kFedCmSchemeForIsolationKey[] = "fedcm-9c0367b4";
-
   auto resource_request = std::make_unique<network::ResourceRequest>();
-
-  GURL::Replacements replacements;
-  replacements.SetSchemeStr(kFedCmSchemeForIsolationKey);
-  GURL target_url_for_isolation_info =
-      target_url.ReplaceComponents(replacements);
-  url::Origin target_origin_for_isolation_info =
-      url::Origin::Create(target_url_for_isolation_info);
 
   resource_request->url = target_url;
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
@@ -1462,8 +1453,11 @@ IdpNetworkRequestManager::CreateUncredentialedResourceRequest(
   resource_request->request_initiator = url::Origin();
   resource_request->trusted_params = network::ResourceRequest::TrustedParams();
   resource_request->trusted_params->isolation_info = net::IsolationInfo::Create(
-      net::IsolationInfo::RequestType::kOther, relying_party_origin_,
-      target_origin_for_isolation_info, net::SiteForCookies());
+      net::IsolationInfo::RequestType::kOther,
+      /*top_frame_origin=*/relying_party_origin_,
+      /*frame_origin=*/url::Origin::Create(target_url), net::SiteForCookies(),
+      /*nonce=*/std::nullopt,
+      net::NetworkIsolationPartition::kFedCmUncredentialedRequests);
   DCHECK(client_security_state_);
   resource_request->trusted_params->client_security_state =
       client_security_state_.Clone();
@@ -1510,7 +1504,8 @@ IdpNetworkRequestManager::CreateCredentialedResourceRequest(
     request_type = net::IsolationInfo::RequestType::kMainFrame;
   }
   resource_request->trusted_params->isolation_info = net::IsolationInfo::Create(
-      request_type, target_origin, target_origin, site_for_cookies);
+      request_type, /*top_frame_origin=*/target_origin,
+      /*frame_origin=*/target_origin, site_for_cookies);
   DCHECK(client_security_state_);
   resource_request->trusted_params->client_security_state =
       client_security_state_.Clone();
