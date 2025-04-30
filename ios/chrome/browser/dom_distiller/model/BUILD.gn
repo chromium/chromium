@@ -25,7 +25,10 @@ source_set("model") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "distiller_service_factory_unittest.mm" ]
+  sources = [
+    "distiller_service_factory_unittest.mm",
+    "distiller_service_unittest.mm",
+  ]
   deps = [
     ":model",
     "//base/test:test_support",
