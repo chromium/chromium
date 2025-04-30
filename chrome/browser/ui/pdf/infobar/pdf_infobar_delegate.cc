@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/metrics/histogram_functions.h"
 #include "base/path_service.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/infobars/confirm_infobar_creator.h"
@@ -27,12 +28,28 @@
 #include "ui/views/win/hwnd_util.h"
 #endif  // BUILDFLAG(IS_WIN)
 
+namespace {
+
+void RecordUserInteractionHistogram(PdfInfoBarUserInteraction interaction) {
+  base::UmaHistogramEnumeration("PDF.InfoBar.UserInteraction", interaction);
+}
+
+}  // namespace
+
 // static
 infobars::InfoBar* PdfInfoBarDelegate::Create(
     infobars::ContentInfoBarManager* infobar_manager) {
+  base::UmaHistogramBoolean("PDF.InfoBar.Shown", true);
+
   CHECK(infobar_manager);
   return infobar_manager->AddInfoBar(
       CreateConfirmInfoBar(std::make_unique<PdfInfoBarDelegate>()));
+}
+
+PdfInfoBarDelegate::~PdfInfoBarDelegate() {
+  if (!action_taken_) {
+    RecordUserInteractionHistogram(PdfInfoBarUserInteraction::kIgnored);
+  }
 }
 
 infobars::InfoBarDelegate::InfoBarIdentifier PdfInfoBarDelegate::GetIdentifier()
@@ -58,6 +75,9 @@ std::u16string PdfInfoBarDelegate::GetButtonLabel(InfoBarButton button) const {
 }
 
 bool PdfInfoBarDelegate::Accept() {
+  action_taken_ = true;
+  RecordUserInteractionHistogram(PdfInfoBarUserInteraction::kAccepted);
+
 #if BUILDFLAG(IS_MAC)
   shell_integration::SetAsDefaultHandlerForUTType("com.adobe.pdf");
 #elif BUILDFLAG(IS_WIN)
@@ -77,4 +97,10 @@ bool PdfInfoBarDelegate::Accept() {
   // TODO(crbug.com/396202897): record metrics when the user accepts, dismisses,
   // or ignores the infobar, and whether opening the system UI succeeds.
   return ConfirmInfoBarDelegate::Accept();
+}
+
+void PdfInfoBarDelegate::InfoBarDismissed() {
+  action_taken_ = true;
+  RecordUserInteractionHistogram(PdfInfoBarUserInteraction::kDismissed);
+  ConfirmInfoBarDelegate::InfoBarDismissed();
 }

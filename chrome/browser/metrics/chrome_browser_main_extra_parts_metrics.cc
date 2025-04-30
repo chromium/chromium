@@ -817,6 +817,31 @@ void RecordDisplayHDRStatus(const display::Display& display) {
                             display.GetColorSpaces().SupportsHDR());
 }
 
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+// Records whether Chrome is the default PDF viewer.
+void RecordDefaultPdfViewerState() {
+#if BUILDFLAG(IS_MAC)
+  auto is_default_callback = base::BindOnce(
+      &shell_integration::IsDefaultHandlerForUTType, "com.adobe.pdf");
+#elif BUILDFLAG(IS_WIN)
+  auto is_default_callback = base::BindOnce(
+      &shell_integration::IsDefaultHandlerForFileExtension, ".pdf");
+#else
+#error Unsupported platform
+#endif
+  auto record_default_state_callback =
+      std::move(is_default_callback)
+          .Then(base::BindOnce(
+              [](shell_integration::DefaultWebClientState default_state) {
+                base::UmaHistogramEnumeration(
+                    "PDF.DefaultState", default_state,
+                    shell_integration::NUM_DEFAULT_STATES);
+              }));
+  base::ThreadPool::PostTask(FROM_HERE, {base::MayBlock()},
+                             std::move(record_default_state_callback));
+}
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+
 // Called on a background thread, with low priority to avoid slowing down
 // startup with metrics that aren't trivial to compute.
 void RecordStartupMetrics() {
@@ -879,6 +904,11 @@ void RecordStartupMetrics() {
   base::UmaHistogramEnumeration("DefaultBrowser.State", default_state,
                                 shell_integration::NUM_DEFAULT_STATES);
 #endif  // !BUILDFLAG(IS_LINUX)
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  // Record whether Chrome is the default PDF viewer.
+  RecordDefaultPdfViewerState();
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_MAC)
   base::mac::ProcessRequirement::MaybeGatherMetrics();
