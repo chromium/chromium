@@ -52,7 +52,7 @@ void SessionStorageNamespaceImpl::ClearChildNamespacesWaitingForClone() {
   child_namespaces_waiting_for_clone_call_.clear();
 }
 
-bool SessionStorageNamespaceImpl::HasAreaForStorageKey(
+bool SessionStorageNamespaceImpl::HasAreaForStorageKeyForTesting(
     const blink::StorageKey& storage_key) const {
   return storage_key_areas_.find(storage_key) != storage_key_areas_.end();
 }
