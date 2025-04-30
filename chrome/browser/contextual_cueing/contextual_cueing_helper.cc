@@ -184,6 +184,34 @@ void ContextualCueingHelper::PrimaryMainDocumentElementAvailable() {
                      weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now()));
 }
 
+void ContextualCueingHelper::OnFirstContentfulPaintInPrimaryMainFrame() {
+  if (!base::FeatureList::IsEnabled(kGlicZeroStateSuggestions)) {
+    return;
+  }
+
+  ZeroStateSuggestionsPageData* page_data =
+      ZeroStateSuggestionsPageData::GetForPage(
+          web_contents()->GetPrimaryPage());
+  if (page_data) {
+    page_data->InitiatePageContentExtraction(
+        /*has_first_contentful_paint=*/true);
+  }
+}
+
+void ContextualCueingHelper::DocumentOnLoadCompletedInPrimaryMainFrame() {
+  if (!base::FeatureList::IsEnabled(kGlicZeroStateSuggestions)) {
+    return;
+  }
+
+  ZeroStateSuggestionsPageData* page_data =
+      ZeroStateSuggestionsPageData::GetForPage(
+          web_contents()->GetPrimaryPage());
+  if (page_data) {
+    page_data->InitiatePageContentExtraction(
+        /*has_first_contentful_paint=*/true);
+  }
+}
+
 void ContextualCueingHelper::OnOptimizationGuideCueingMetadata(
     base::TimeTicks document_available_time,
     optimization_guide::OptimizationGuideDecision decision,

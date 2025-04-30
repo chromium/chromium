@@ -46,6 +46,9 @@ class ZeroStateSuggestionsPageData
       delete;
   ~ZeroStateSuggestionsPageData() override;
 
+  // Initiates page content extraction.
+  void InitiatePageContentExtraction(bool has_first_contentful_paint);
+
   // Explicitly fetch suggestions for this page.
   void FetchSuggestions(bool is_fre, GlicSuggestionsCallback callback);
 
@@ -55,6 +58,9 @@ class ZeroStateSuggestionsPageData
 
   // Note that this constructor initiates extracting page content.
   explicit ZeroStateSuggestionsPageData(content::Page& page);
+
+  // Returns the URL of the primary main frame associated with this page.
+  const GURL GetUrl();
 
   // Called when inner text is extracted.
   void OnReceivedInnerText(
@@ -97,6 +103,7 @@ class ZeroStateSuggestionsPageData
 
   // Tracks the status of inner text and annotated page content fetches, which
   // are needed in `RequestSuggestionsIfComplete()`.
+  bool content_extraction_initiated_ = false;
   bool inner_text_done_ = false;
   std::unique_ptr<content_extraction::InnerTextResult> inner_text_result_;
   bool annotated_page_content_done_ = false;
