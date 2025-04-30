@@ -8,7 +8,7 @@
 #include "base/check.h"
 #include "base/memory/ptr_util.h"
 #include "base/supports_user_data.h"
-#import "ios/chrome/browser/shared/model/browser/browser.h"
+#include "ios/chrome/browser/shared/model/browser/browser.h"
 
 // A base class for classes attached to, and scoped to, the lifetime of a
 // Browser. For example:
@@ -32,9 +32,8 @@ class BrowserUserData : public base::SupportsUserData::Data {
   static void CreateForBrowser(Browser* browser, Args&&... args) {
     DCHECK(browser);
     if (!FromBrowser(browser)) {
-      browser->SetUserData(
-          UserDataKey(),
-          base::WrapUnique(new T(browser, std::forward<Args>(args)...)));
+      browser->SetUserData(UserDataKey(),
+                           T::Create(browser, std::forward<Args>(args)...));
     }
   }
 
@@ -57,6 +56,14 @@ class BrowserUserData : public base::SupportsUserData::Data {
   static inline const void* UserDataKey() {
     static const int kId = 0;
     return &kId;
+  }
+
+ private:
+  // Default factory for T that invoke T's constructor. Can be overloaded
+  // by sub-class if they want to create a sub-class of T instead.
+  template <typename... Args>
+  static std::unique_ptr<T> Create(Browser* browser, Args&&... args) {
+    return base::WrapUnique(new T(browser, std::forward<Args>(args)...));
   }
 };
 
