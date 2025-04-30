@@ -41,6 +41,20 @@ static constexpr auto kSupportedLanguages =
         "zh-Latn", "zu",
     });
 
+bool RequiresUserActivation(
+    language_detection::mojom::blink::LanguageDetectionModelStatus result) {
+  switch (result) {
+    case language_detection::mojom::blink::LanguageDetectionModelStatus::
+        kAfterDownload:
+      return true;
+    case language_detection::mojom::blink::LanguageDetectionModelStatus::
+        kReadily:
+    case language_detection::mojom::blink::LanguageDetectionModelStatus::
+        kNotAvailable:
+      return false;
+  }
+}
+
 // Runs `callback` on destruction unless `Reset` is called.
 class RunOnDestruction {
  public:
@@ -104,9 +118,9 @@ class LanguageDetectorCreateTask
       }
     }
 
-    AIInterfaceProxy::GetLanguageDetectionModel(
+    AIInterfaceProxy::GetLanguageDetectionModelStatus(
         GetExecutionContext(),
-        WTF::BindOnce(&LanguageDetectorCreateTask::OnModelLoaded,
+        WTF::BindOnce(&LanguageDetectorCreateTask::OnGotAvailability,
                       WrapPersistent(this))
             .Then(RejectOnDestruction(resolver)));
   }
@@ -116,6 +130,31 @@ class LanguageDetectorCreateTask
     AIContextObserver::Trace(visitor);
     visitor->Trace(monitor_);
     visitor->Trace(options_);
+  }
+
+  void OnGotAvailability(
+      language_detection::mojom::blink::LanguageDetectionModelStatus result) {
+    if (!GetResolver()) {
+      return;
+    }
+
+    LocalDOMWindow* const window = LocalDOMWindow::From(GetScriptState());
+
+    if (RequiresUserActivation(result) &&
+        !LocalFrame::ConsumeTransientUserActivation(window->GetFrame())) {
+      GetResolver()->RejectWithDOMException(
+          DOMExceptionCode::kNotAllowedError,
+          "Requires handling a user gesture when availability is "
+          "\"downloadable\".");
+      Cleanup();
+      return;
+    }
+
+    AIInterfaceProxy::GetLanguageDetectionModel(
+        GetExecutionContext(),
+        WTF::BindOnce(&LanguageDetectorCreateTask::OnModelLoaded,
+                      WrapPersistent(this))
+            .Then(RejectOnDestruction(GetResolver())));
   }
 
   void OnModelLoaded(base::expected<LanguageDetectionModel*,
