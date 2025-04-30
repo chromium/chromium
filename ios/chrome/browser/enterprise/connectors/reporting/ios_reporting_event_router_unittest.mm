@@ -437,9 +437,9 @@ TEST_F(IOSReportingEventRouterTest, TestInterstitialShownWarned) {
       /*enabled_opt_in_events=*/{});
 
   test::EventReportValidatorBase validator(client_.get());
-  validator.ExpectSecurityInterstitialShown(
+  validator.ExpectSecurityInterstitialEvent(
       "https://phishing.com/", "PHISHING", profile_->GetProfileName(),
-      GetProfileIdentifier(), "EVENT_RESULT_WARNED", 0);
+      GetProfileIdentifier(), "EVENT_RESULT_WARNED", false, 0);
   reporting_event_router_->OnSecurityInterstitialShown(
       GURL("https://phishing.com/"), "PHISHING", 0, false);
 }
@@ -452,11 +452,26 @@ TEST_F(IOSReportingEventRouterTest, TestInterstitialShownBlocked) {
       /*enabled_opt_in_events=*/{});
 
   test::EventReportValidatorBase validator(client_.get());
-  validator.ExpectSecurityInterstitialShown(
+  validator.ExpectSecurityInterstitialEvent(
       "https://phishing.com/", "PHISHING", profile_->GetProfileName(),
-      GetProfileIdentifier(), "EVENT_RESULT_BLOCKED", 0);
+      GetProfileIdentifier(), "EVENT_RESULT_BLOCKED", false, 0);
   reporting_event_router_->OnSecurityInterstitialShown(
       GURL("https://phishing.com/"), "PHISHING", 0, true);
+}
+
+// Tests that interstitial reporting events bypassed as expected.
+TEST_F(IOSReportingEventRouterTest, TestInterstitialProceeded) {
+  test::SetOnSecurityEventReporting(
+      profile_->GetTestingPrefService(), /*enabled=*/true,
+      /*enabled_event_names=*/{kKeyInterstitialEvent},
+      /*enabled_opt_in_events=*/{});
+
+  test::EventReportValidatorBase validator(client_.get());
+  validator.ExpectSecurityInterstitialEvent(
+      "https://phishing.com/", "PHISHING", profile_->GetProfileName(),
+      GetProfileIdentifier(), "EVENT_RESULT_BYPASSED", true, 0);
+  reporting_event_router_->OnSecurityInterstitialProceeded(
+      GURL("https://phishing.com/"), "PHISHING", 0);
 }
 
 }  // namespace enterprise_connectors

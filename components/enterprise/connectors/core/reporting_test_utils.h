@@ -60,12 +60,13 @@ class EventReportValidatorBase {
 
   // TODO(crbug.com/396436374): Use secutiry interstital event proto instead of
   // raw json string for validation.
-  void ExpectSecurityInterstitialShown(
+  void ExpectSecurityInterstitialEvent(
       const std::string& expected_url,
       const std::string& expected_reason,
       const std::string& expected_profile_username,
       const std::string& expected_profile_identifier,
       const std::string& result,
+      const bool expected_click_through,
       int expected_net_error_code);
 
  protected:

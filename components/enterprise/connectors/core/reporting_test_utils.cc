@@ -356,16 +356,18 @@ void EventReportValidatorBase::ExpectPasswordBreachEvent(
       });
 }
 
-void EventReportValidatorBase::ExpectSecurityInterstitialShown(
+void EventReportValidatorBase::ExpectSecurityInterstitialEvent(
     const std::string& expected_url,
     const std::string& expected_reason,
     const std::string& expected_profile_username,
     const std::string& expected_profile_identifier,
     const std::string& result,
+    const bool expected_click_through,
     int expected_net_error_code) {
   EXPECT_CALL(*client_, UploadSecurityEventReport)
       .WillOnce([this, expected_url, expected_reason, expected_profile_username,
-                 expected_profile_identifier, result, expected_net_error_code](
+                 expected_profile_identifier, result, expected_click_through,
+                 expected_net_error_code](
                     bool include_device_info, base::Value::Dict report,
                     base::OnceCallback<void(policy::CloudPolicyClient::Result)>
                         callback) {
@@ -384,7 +386,7 @@ void EventReportValidatorBase::ExpectSecurityInterstitialShown(
         ValidateField(event, kKeyURL, expected_url);
         ValidateField(event, kKeyReason, expected_reason);
         ValidateField(event, kKeyNetErrorCode, expected_net_error_code);
-        ValidateField(event, kKeyClickedThrough, false);
+        ValidateField(event, kKeyClickedThrough, expected_click_through);
         ValidateField(event, kKeyProfileUserName, expected_profile_username);
         ValidateField(event, kKeyProfileIdentifier,
                       expected_profile_identifier);
