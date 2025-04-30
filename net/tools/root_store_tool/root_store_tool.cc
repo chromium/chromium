@@ -250,11 +250,6 @@ void WriteTrustAnchors(
           constraint_params.push_back("{}");
         }
 
-        constraint_params.push_back(
-            constraint.enforce_anchor_expiry() ? "true" : "false");
-        constraint_params.push_back(
-            constraint.enforce_anchor_constraints() ? "true" : "false");
-
         constraint_strings.push_back(
             base::StrCat({"{", base::JoinString(constraint_params, ","), "}"}));
 
@@ -290,7 +285,11 @@ bool WriteRootCppFile(const RootStore& root_store,
     } else {
       string_to_write += "{}";
     }
-    string_to_write += "},\n";
+    base::StringAppendF(
+        &string_to_write,
+        ", /*enforce_anchor_expiry=*/%s, /*enforce_anchor_constraints=*/%s},\n",
+        anchor.enforce_anchor_expiry() ? "true" : "false",
+        anchor.enforce_anchor_constraints() ? "true" : "false");
   }
   string_to_write += "};\n\n";
 

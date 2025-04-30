@@ -709,10 +709,6 @@ class PathBuilderDelegateImpl : public bssl::SimplePathBuilderDelegate {
       return false;
     }
 
-    // |enforce_anchor_expiry| and |enforce_anchor_constraints| are enforced
-    // internally in BoringSSL's certificate verifier when configured at the
-    // time of adding the trust anchor, so there is no need to check them here.
-
     return true;
   }
 

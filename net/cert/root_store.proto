@@ -38,15 +38,9 @@ message ConstraintSet {
   // as described in RFC 5280 section 4.2.1.10.
   repeated string permitted_dns_names = 5;
 
-  // When set to true, Chrome will enforce certificate expiry for this
-  // TrustAnchor using the notBefore and notAfter from the corresponding
-  // certificate.
-  optional bool enforce_anchor_expiry = 6;
-
-  // When set to true, Chrome will enforce X.509 constraints for this
-  // TrustAnchor using the constraints expressed in the corresponding
-  // certificate.
-  optional bool enforce_anchor_constraints = 7;
+  // `enforce_anchor_expiry` and `enforce_anchor_constraints` were briefly
+  // represented in this message, but moved to TrustAnchor.
+  reserved 6, 7;
 }
 
 message TrustAnchor {
@@ -77,6 +71,16 @@ message TrustAnchor {
   // Trust Anchor IDs are represented as relative OID suffixes of the Private
   // Enterprise Number (PEN) OID prefix of "1.3.6.1.4.1.".
   optional string trust_anchor_id = 7;
+
+  // When set to true, Chrome will enforce certificate expiry for this
+  // TrustAnchor using the notBefore and notAfter from the corresponding
+  // certificate.
+  optional bool enforce_anchor_expiry = 8;
+
+  // When set to true, Chrome will enforce X.509 constraints for this
+  // TrustAnchor using the constraints expressed in the corresponding
+  // certificate.
+  optional bool enforce_anchor_constraints = 9;
 }
 
 // Message storing a complete Chrome Root Store.

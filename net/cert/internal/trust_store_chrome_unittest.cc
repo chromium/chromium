@@ -239,6 +239,8 @@ TEST(TrustStoreChromeTestNoFixture, EnforceAnchorExpiryAndConstraints) {
   std::map<std::string /* SHA-256 hash of certificate */,
            bssl::CertificateTrust>
       tests = {
+          {"568d6905a2c88708a4b3025190edcfedb1974a606a13c6e5290fcb2ae63edab5",
+           bssl::CertificateTrust::ForTrustAnchor()},
           {"d92e93252eabca950870b94331990963a2dd5db96d833c82b08e41afd1719178",
            bssl::CertificateTrust::ForTrustAnchor().WithEnforceAnchorExpiry()},
           {"68b9c761219a5b1f0131784474665db61bbdb109e00f05ca9f74244ee5f5f52b",
@@ -267,26 +269,29 @@ TEST(TrustStoreChromeTestNoFixture, EnforceAnchorExpiryAndConstraints) {
 
 TEST(TrustStoreChromeTestNoFixture,
      EnforceAnchorExpiryAndConstraintsFromProto) {
-  scoped_refptr<X509Certificate> root = MakeTestRoot();
-  chrome_root_store::RootStore root_store;
-  chrome_root_store::TrustAnchor* anchor = root_store.add_trust_anchors();
-  anchor->set_der(
-      net::x509_util::CryptoBufferAsStringPiece(root->cert_buffer()));
-  chrome_root_store::ConstraintSet* constraint = anchor->add_constraints();
-  constraint->set_enforce_anchor_expiry(true);
-  constraint->set_enforce_anchor_constraints(true);
+  for (bool enforce_anchor_expiry : {false, true}) {
+    for (bool enforce_anchor_constraints : {false, true}) {
+      scoped_refptr<X509Certificate> root = MakeTestRoot();
+      chrome_root_store::RootStore root_store;
+      chrome_root_store::TrustAnchor* anchor = root_store.add_trust_anchors();
+      anchor->set_der(
+          net::x509_util::CryptoBufferAsStringPiece(root->cert_buffer()));
+      anchor->set_enforce_anchor_expiry(enforce_anchor_expiry);
+      anchor->set_enforce_anchor_constraints(enforce_anchor_constraints);
 
-  std::optional<ChromeRootStoreData> root_store_data =
-      ChromeRootStoreData::CreateFromRootStoreProto(root_store);
-  ASSERT_TRUE(root_store_data);
-  TrustStoreChrome trust_store_chrome(root_store_data.value());
+      std::optional<ChromeRootStoreData> root_store_data =
+          ChromeRootStoreData::CreateFromRootStoreProto(root_store);
+      ASSERT_TRUE(root_store_data);
+      TrustStoreChrome trust_store_chrome(root_store_data.value());
 
-  std::shared_ptr<const bssl::ParsedCertificate> parsed =
-      ToParsedCertificate(*root);
-  bssl::CertificateTrust trust = trust_store_chrome.GetTrust(parsed.get());
-  EXPECT_TRUE(trust.IsTrustAnchor());
-  EXPECT_TRUE(trust.enforce_anchor_expiry);
-  EXPECT_TRUE(trust.enforce_anchor_constraints);
+      std::shared_ptr<const bssl::ParsedCertificate> parsed =
+          ToParsedCertificate(*root);
+      bssl::CertificateTrust trust = trust_store_chrome.GetTrust(parsed.get());
+      EXPECT_TRUE(trust.IsTrustAnchor());
+      EXPECT_EQ(trust.enforce_anchor_expiry, enforce_anchor_expiry);
+      EXPECT_EQ(trust.enforce_anchor_constraints, enforce_anchor_constraints);
+    }
+  }
 }
 
 TEST(TrustStoreChromeTestNoFixture, OverrideConstraints) {
@@ -321,27 +326,21 @@ TEST(TrustStoreChromeTestNoFixture, OverrideConstraints) {
        std::nullopt,
        std::nullopt,
        /*max_version_exclusive=*/std::make_optional(base::Version("31")),
-       {},
-       /*enforce_anchor_expiry=*/false,
-       /*enforce_anchor_constraints=*/false}};
+       {}}};
 
   override_constraints[crypto::SHA256Hash(root4->cert_span())] = {
       {std::nullopt,
        std::nullopt,
        std::nullopt,
        /*max_version_exclusive=*/std::make_optional(base::Version("41")),
-       {},
-       /*enforce_anchor_expiry=*/false,
-       /*enforce_anchor_constraints=*/false}};
+       {}}};
 
   override_constraints[crypto::SHA256Hash(root6->cert_span())] = {
       {std::nullopt,
        std::nullopt,
        std::nullopt,
        /*max_version_exclusive=*/std::make_optional(base::Version("61")),
-       {},
-       /*enforce_anchor_expiry=*/false,
-       /*enforce_anchor_constraints=*/false}};
+       {}}};
 
   std::unique_ptr<TrustStoreChrome> trust_store_chrome =
       TrustStoreChrome::CreateTrustStoreForTesting(
