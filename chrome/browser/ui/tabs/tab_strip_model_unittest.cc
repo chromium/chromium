@@ -1742,6 +1742,72 @@ TEST_F(TabStripModelTest, CommandTogglePinned) {
   EXPECT_TRUE(tabstrip()->empty());
 }
 
+TEST_F(TabStripModelTest, SplitTabPinning) {
+  for (bool split_is_selected : {true, false}) {
+    for (bool use_left_tab : {true, false}) {
+      ASSERT_NO_FATAL_FAILURE(
+          PrepareTabstripForSelectionTest(tabstrip(), 5, 1, {2}));
+      tabstrip()->AddToNewSplit({3}, split_tabs::SplitTabLayout::kHorizontal);
+      ASSERT_EQ("0p 1 2s 3s 4", GetTabStripStateString(tabstrip()));
+      if (!split_is_selected) {
+        tabstrip()->ActivateTabAt(1);
+      }
+
+      tabstrip()->ExecuteContextMenuCommand(2 + !use_left_tab,
+                                            TabStripModel::CommandTogglePinned);
+      EXPECT_EQ("0p 2ps 3ps 1 4", GetTabStripStateString(tabstrip()));
+
+      tabstrip()->ExecuteContextMenuCommand(1 + !use_left_tab,
+                                            TabStripModel::CommandTogglePinned);
+      EXPECT_EQ("0p 2s 3s 1 4", GetTabStripStateString(tabstrip()));
+
+      tabstrip()->CloseAllTabs();
+      EXPECT_TRUE(tabstrip()->empty());
+    }
+  }
+}
+
+TEST_F(TabStripModelTest, SplitTabPinningBulk) {
+  ASSERT_NO_FATAL_FAILURE(
+      PrepareTabstripForSelectionTest(tabstrip(), 12, 2, {4}));
+  tabstrip()->AddToNewSplit({5}, split_tabs::SplitTabLayout::kHorizontal);
+  ASSERT_EQ("0p 1p 2 3 4s 5s 6 7 8 9 10 11",
+            GetTabStripStateString(tabstrip()));
+  tabstrip()->ActivateTabAt(8);
+  tabstrip()->AddToNewSplit({9}, split_tabs::SplitTabLayout::kHorizontal);
+  ASSERT_EQ("0p 1p 2 3 4s 5s 6 7 8s 9s 10 11",
+            GetTabStripStateString(tabstrip()));
+  tabstrip()->SelectTabAt(0);
+  tabstrip()->SelectTabAt(2);
+  tabstrip()->SelectTabAt(4);
+  tabstrip()->SelectTabAt(5);
+  tabstrip()->SelectTabAt(7);
+  tabstrip()->SelectTabAt(10);
+  // tabs 0 2 4 5 7 8 9 10 should be selected
+  ASSERT_EQ(base::MakeFlatSet<size_t>(std::vector{0, 2, 4, 5, 7, 8, 9, 10}),
+            tabstrip()->selection_model().selected_indices());
+
+  // pin multiple selected tabs and splits
+  tabstrip()->ExecuteContextMenuCommand(
+      5, TabStripModel::CommandTogglePinned);  // tab 5
+  EXPECT_EQ("0p 1p 2p 4ps 5ps 7p 8ps 9ps 10p 3 6 11",
+            GetTabStripStateString(tabstrip()));
+
+  // unpin multiple selected tabs and splits
+  tabstrip()->DeselectTabAt(2);  // tab 2
+  tabstrip()->DeselectTabAt(8);  // tab 10
+  // tabs 0 4 5 7 8 9 should be selected
+  ASSERT_EQ(base::MakeFlatSet<size_t>(std::vector{0, 3, 4, 5, 6, 7}),
+            tabstrip()->selection_model().selected_indices());
+  tabstrip()->ExecuteContextMenuCommand(
+      0, TabStripModel::CommandTogglePinned);  // tab 0
+  EXPECT_EQ("1p 2p 10p 0 4s 5s 7 8s 9s 3 6 11",
+            GetTabStripStateString(tabstrip()));
+
+  tabstrip()->CloseAllTabs();
+  EXPECT_TRUE(tabstrip()->empty());
+}
+
 TEST_F(TabStripModelTest, AddToSplitInGroup) {
   // Create five tabs with two pinned.
   ASSERT_NO_FATAL_FAILURE(

@@ -58,6 +58,7 @@ enum class SplitTabLayout;
 }
 
 namespace tabs {
+class SplitTabCollection;
 class TabStripCollection;
 class TabGroupTabCollection;
 }
@@ -789,6 +790,7 @@ class TabStripModel : public TabGroupController {
   struct MoveNotification {
     int initial_index;
     std::optional<tab_groups::TabGroupId> intial_group;
+    bool initial_pinned;
     raw_ptr<const tabs::TabInterface> tab;
     TabStripSelectionChange selection_change;
   };
@@ -1083,8 +1085,23 @@ class TabStripModel : public TabGroupController {
       int destination_index) const;
 
   // Changes the pinned state of all tabs at `indices`, moving them in the
-  // process if necessary.
+  // process if necessary. If indices contains all tabs in a split, the whole
+  // split is pinned/unpinned. Otherwise, the tabs will be individually
+  // processed, resulting in the split being unsplit.
   void SetTabsPinned(const std::vector<int> indices, bool pinned);
+
+  // Implementation for setting the pinned state of the tab at `index`.
+  int SetTabPinnedImpl(int indices, bool pinned);
+
+  // Changes the pinned state of a split collection, moving it in the process if
+  // necessary.
+  void SetSplitPinnedImpl(tabs::SplitTabCollection* split, bool pinned);
+
+  // Wrapper for bulk move operations to make them send out the appropriate
+  // change notifications.
+  void MoveTabsWithNotifications(std::vector<int> tab_indices,
+                                 int destination_index,
+                                 base::OnceClosure execute_tabs_move_operation);
 
   // Sets the sound content setting for each site at the |indices|.
   void SetSitesMuted(const std::vector<int>& indices, bool mute) const;
@@ -1127,7 +1144,7 @@ class TabStripModel : public TabGroupController {
 
   // Returns [start, end) where the leftmost tab in the split has index start
   // and the rightmost tab in the split has index end - 1.
-  gfx::Range GetIndexRangeOfSplit(split_tabs::SplitTabId split_id);
+  gfx::Range GetIndexRangeOfSplit(split_tabs::SplitTabId split_id) const;
 
   // If inserting at `index` breaks a split, returns its id, otherwise nullopt.
   std::optional<split_tabs::SplitTabId> InsertionBreaksSplitContiguity(
