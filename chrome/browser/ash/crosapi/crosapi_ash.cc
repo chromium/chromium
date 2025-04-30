@@ -32,7 +32,6 @@
 #include "chrome/browser/ash/crosapi/multi_capture_service_ash.h"
 #include "chrome/browser/ash/crosapi/networking_attributes_ash.h"
 #include "chrome/browser/ash/crosapi/parent_access_ash.h"
-#include "chrome/browser/ash/crosapi/payment_app_instance_ash.h"
 #include "chrome/browser/ash/crosapi/remoting_ash.h"
 #include "chrome/browser/ash/crosapi/structured_metrics_service_ash.h"
 #include "chrome/browser/ash/crosapi/vpn_service_ash.h"
@@ -124,7 +123,6 @@ CrosapiAsh::CrosapiAsh()
       multi_capture_service_ash_(std::make_unique<MultiCaptureServiceAsh>()),
       networking_attributes_ash_(std::make_unique<NetworkingAttributesAsh>()),
       parent_access_ash_(std::make_unique<ParentAccessAsh>()),
-      payment_app_instance_ash_(std::make_unique<PaymentAppInstanceAsh>()),
       telemetry_diagnostic_routine_service_ash_(
           std::make_unique<ash::TelemetryDiagnosticsRoutineServiceAsh>()),
       telemetry_event_service_ash_(
@@ -325,14 +323,6 @@ void CrosapiAsh::BindNetworkingAttributes(
 void CrosapiAsh::BindParentAccess(
     mojo::PendingReceiver<mojom::ParentAccess> receiver) {
   parent_access_ash_->BindReceiver(std::move(receiver));
-}
-
-void CrosapiAsh::BindPaymentAppInstance(
-    mojo::PendingReceiver<chromeos::payments::mojom::PaymentAppInstance>
-        receiver) {
-  Profile* profile = ProfileManager::GetPrimaryUserProfile();
-  payment_app_instance_ash_->Initialize(profile);
-  payment_app_instance_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindPrintPreviewCrosDelegate(

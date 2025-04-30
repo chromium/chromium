@@ -63,8 +63,6 @@ static_library("crosapi") {
     "networking_attributes_ash.h",
     "parent_access_ash.cc",
     "parent_access_ash.h",
-    "payment_app_instance_ash.cc",
-    "payment_app_instance_ash.h",
     "primary_profile_creation_waiter.cc",
     "primary_profile_creation_waiter.h",
     "remoting_ash.cc",
@@ -382,7 +380,6 @@ source_set("unit_tests") {
     "login_state_ash_unittest.cc",
     "networking_attributes_ash_unittest.cc",
     "parent_access_ash_unittest.cc",
-    "payment_app_instance_ash_unittest.cc",
     "primary_profile_creation_waiter_unittest.cc",
   ]
 

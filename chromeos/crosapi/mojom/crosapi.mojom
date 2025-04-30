@@ -269,11 +269,7 @@ interface Crosapi {
   BindParentAccess@101(pending_receiver<ParentAccess> receiver);
 
   // BindPasskeyAuthenticatorDeprecated@126 was removed.
-
-  // Binds the PaymentAppInstance to allow Playstore payment to be made for
-  // web apps listing in Playstore.
-  [MinVersion=113] BindPaymentAppInstance@116(
-    pending_receiver<chromeos.payments.mojom.PaymentAppInstance> receiver);
+  // BindPaymentAppInstance@116 was removed.
 
   // BindPolicyService@60 was removed.
   // BindPrefs@16 was removed.
