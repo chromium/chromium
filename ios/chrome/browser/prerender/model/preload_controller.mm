@@ -166,8 +166,12 @@ class PreloadManageAccountsDelegate : public ManageAccountsDelegate {
   ~PreloadManageAccountsDelegate() override {}
 
   void OnRestoreGaiaCookies() override { [canceler_ schedulePrerenderCancel]; }
-  void OnManageAccounts() override { [canceler_ schedulePrerenderCancel]; }
-  void OnAddAccount() override { [canceler_ schedulePrerenderCancel]; }
+  void OnManageAccounts(const GURL& url) override {
+    [canceler_ schedulePrerenderCancel];
+  }
+  void OnAddAccount(const GURL& url) override {
+    [canceler_ schedulePrerenderCancel];
+  }
   void OnShowConsistencyPromo(const GURL& url,
                               web::WebState* webState) override {
     [canceler_ schedulePrerenderCancel];

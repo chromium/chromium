@@ -65,13 +65,13 @@ void AccountConsistencyBrowserAgent::OnRestoreGaiaCookies() {
       showSigninAccountNotificationFromViewController:base_view_controller_];
 }
 
-void AccountConsistencyBrowserAgent::OnManageAccounts() {
+void AccountConsistencyBrowserAgent::OnManageAccounts(const GURL& url) {
   signin_metrics::LogAccountReconcilorStateOnGaiaResponse(
       ios::AccountReconcilorFactory::GetForProfile(browser_->GetProfile())
           ->GetState());
 
   if (ShouldShowAccountMenu()) {
-    ShowAccountMenu();
+    ShowAccountMenu(url);
   } else {
     [settings_handler_
         showAccountsSettingsFromViewController:base_view_controller_
@@ -94,7 +94,7 @@ void AccountConsistencyBrowserAgent::OnShowConsistencyPromo(
   }
 }
 
-void AccountConsistencyBrowserAgent::OnAddAccount() {
+void AccountConsistencyBrowserAgent::OnAddAccount(const GURL& url) {
   if ([base_view_controller_ presentedViewController]) {
     // If the base view controller is already presenting a view, the sign-in
     // should not appear on top of it.
@@ -103,7 +103,7 @@ void AccountConsistencyBrowserAgent::OnAddAccount() {
   }
 
   if (ShouldShowAccountMenu()) {
-    ShowAccountMenu();
+    ShowAccountMenu(url);
   } else {
     ShowSigninCommand* command = [[ShowSigninCommand alloc]
         initWithOperation:AuthenticationOperation::kAddAccount
@@ -155,10 +155,11 @@ bool AccountConsistencyBrowserAgent::ShouldShowAccountMenu() const {
   return num_profiles > 1;
 }
 
-void AccountConsistencyBrowserAgent::ShowAccountMenu() {
+void AccountConsistencyBrowserAgent::ShowAccountMenu(const GURL& url) {
   CHECK(AreSeparateProfilesForManagedAccountsEnabled());
   // TODO(crbug.com/411614444): Open the account menu here instead of going
   // through the handler.
+  // TODO(crbug.com/375605412): Pass the URL to the account menu.
   [application_handler_
       showAccountMenuFromAccessPoint:AccountMenuAccessPoint::kWeb];
 }

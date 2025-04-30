@@ -100,8 +100,10 @@ class FakeManageAccountsDelegate : public ManageAccountsDelegate {
   ~FakeManageAccountsDelegate() override = default;
 
   void OnRestoreGaiaCookies() override { restore_cookies_call_count_++; }
-  void OnManageAccounts() override { manage_accounts_call_count_++; }
-  void OnAddAccount() override { add_account_call_count_++; }
+  void OnManageAccounts(const GURL& url) override {
+    manage_accounts_call_count_++;
+  }
+  void OnAddAccount(const GURL& url) override { add_account_call_count_++; }
   void OnShowConsistencyPromo(const GURL& url,
                               web::WebState* webState) override {
     show_promo_call_count_++;

@@ -40,8 +40,8 @@ class AccountConsistencyBrowserAgent
 
   // ManageAccountsDelegate
   void OnRestoreGaiaCookies() override;
-  void OnManageAccounts() override;
-  void OnAddAccount() override;
+  void OnManageAccounts(const GURL& url) override;
+  void OnAddAccount(const GURL& url) override;
   void OnShowConsistencyPromo(const GURL& url,
                               web::WebState* webState) override;
   void OnGoIncognito(const GURL& url) override;
@@ -63,7 +63,7 @@ class AccountConsistencyBrowserAgent
 
   // Opens the account menu, offering to switch to a different account (even one
   // that's in a different profile).
-  void ShowAccountMenu();
+  void ShowAccountMenu(const GURL& url);
 
   UIViewController* base_view_controller_;
   id<ApplicationCommands> application_handler_;

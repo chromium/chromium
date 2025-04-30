@@ -140,7 +140,7 @@ TEST_P(AccountConsistencyBrowserAgentTest, OnGoIncognitoWithURL) {
 TEST_P(AccountConsistencyBrowserAgentTest, OnAddAccountWithPresentedView) {
   OCMStub([base_view_controller_mock_ presentedViewController])
       .andReturn([[UIViewController alloc] init]);
-  agent_->OnAddAccount();
+  agent_->OnAddAccount(GURL());
   // Expect [application_commands_mock_ showSignin:baseViewController:] to not
   // be called. This is ensured by TearDown because application_commands_mock_
   // is a strict mock.
@@ -160,7 +160,7 @@ TEST_P(AccountConsistencyBrowserAgentTest, OnAddAccountWithoutPresentedView) {
                                return YES;
                              }]
       baseViewController:base_view_controller_mock_]);
-  agent_->OnAddAccount();
+  agent_->OnAddAccount(GURL());
   EXPECT_NE(received_command, nil);
   EXPECT_EQ(received_command.operation, AuthenticationOperation::kAddAccount);
   EXPECT_EQ(received_command.identity, nil);
@@ -188,7 +188,7 @@ TEST_F(AccountConsistencyBrowserAgentWithSeparateProfilesTest,
   // instead of the add-account flow.
   OCMExpect([application_commands_mock_
       showAccountMenuFromAccessPoint:AccountMenuAccessPoint::kWeb]);
-  agent_->OnAddAccount();
+  agent_->OnAddAccount(GURL());
   // Expect [application_commands_mock_ showSignin:baseViewController:] to not
   // be called. This is ensured by TearDown because application_commands_mock_
   // is a strict mock.
@@ -212,7 +212,7 @@ TEST_P(AccountConsistencyBrowserAgentTest, OnManageAccountsCallsCommand) {
   OCMExpect([settings_commands_mock_
       showAccountsSettingsFromViewController:base_view_controller_mock_
                         skipIfUINotAvailable:YES]);
-  agent_->OnManageAccounts();
+  agent_->OnManageAccounts(GURL());
   // Expect -showAccountsSettingsFromViewController:skipIfUINotAvailable: to
   // have been called. This is ensured by TearDown because
   // settings_commands_mock_ is a strict mock.
@@ -233,7 +233,7 @@ TEST_F(AccountConsistencyBrowserAgentWithSeparateProfilesTest,
   // instead of the manage accounts screen.
   OCMExpect([application_commands_mock_
       showAccountMenuFromAccessPoint:AccountMenuAccessPoint::kWeb]);
-  agent_->OnManageAccounts();
+  agent_->OnManageAccounts(GURL());
   // Expect showAccountsSettingsFromViewController:skipIfUINotAvailable: to not
   // be called. This is ensured by TearDown because application_commands_mock_
   // is a strict mock.

@@ -23,11 +23,15 @@ class ManageAccountsDelegate {
 
   // Called when the user taps on a manage accounts button in a Google web
   // property.
-  virtual void OnManageAccounts() = 0;
+  // |url| is the continuation URL received from the server. If it is valid,
+  // then this delegate should navigate to |url|.
+  virtual void OnManageAccounts(const GURL& url) = 0;
 
   // Called when the user taps on an add account button in a Google web
   // property.
-  virtual void OnAddAccount() = 0;
+  // |url| is the continuation URL received from the server. If it is valid,
+  // then this delegate should navigate to |url|.
+  virtual void OnAddAccount(const GURL& url) = 0;
 
   // Called when the user taps a sign-in or add account button in a Google web
   // property.
