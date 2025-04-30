@@ -21,11 +21,16 @@ namespace {
 
 // The HLG OOTF filter applies reference HLG opto-optical transfer function as
 // described in Table 5 of ITU-R BT.2100-3, using the value of gamma=1.2.
+// The working space of this shader has premultiplied alpha, and so the
+// computed value of Y must be un-multiplied.
 static constexpr char kHlgOotfSKSL[] =
     "half4 main(half4 color) {\n"
     "  half3 L = half3(0.2627, 0.6780, 0.0593);\n"
     "  half Y = dot(L, color.rgb);\n"
     "  if (Y > 0.0) {\n"
+    "    if (color.a > 0.0) {\n"
+    "      Y /= color.a;\n"
+    "    }\n"
     "    color.rgb *= pow(Y, 0.2);\n"
     "  }\n"
     "  return color;\n"
@@ -59,25 +64,25 @@ sk_sp<SkColorFilter> GetLinearScaleFilter(float s) {
       SkNamedTransferFn::kLinear, SkNamedGamut::kRec2020));
 }
 
-// The Reinhard tone mapping function performs the tone mapping described in
+// The Reinhard tone mapping function performs the tone mapping described in:
 // https://docs.google.com/document/d/17T2ek1i2R7tXdfHCnM-i5n6__RoYe0JyMfKmTEjoGR8/edit?usp=sharing
+// And further detailed in:
+// https://colab.research.google.com/drive/1hI10nq6L6ru_UFvz7-f7xQaQp0qarz_K
+// The working space of this shader is premultiplied, and so the computed value
+// of M (maxRGB) must be un-multiplied.
 static constexpr char kReinhardToneMapSKSL[] =
-    "uniform half Lc;\n"
-    "uniform half Ld;\n"
+    "uniform half a;\n"
+    "uniform half b;\n"
     "half4 main(half4 color) {\n"
-    "  if (Lc > Ld) {\n"
-    "    half L = max(max(color.r, color.g), color.b);\n"
-    "    half gain_num = (1 + L * Ld / (Lc * Lc));\n"
-    "    half gain_den = (1 + L / Ld);\n"
-    "    color.rgb *= gain_num / gain_den;\n"
+    "  half M = max(max(color.r, color.g), color.b);\n"
+    "  if (M > 0.0) {\n"
+    "    if (color.a > 0.0) {\n"
+    "      M /= color.a;\n"
+    "    }\n"
+    "    color.rgb *= (1.0 + a * M) / (1.0 + b * M);\n"
     "  }\n"
     "  return color;\n"
     "}\n";
-
-struct ReinhardToneMapUniforms {
-  float Lc = 1000.f / 203.f;
-  float Ld = 1.f;
-};
 
 sk_sp<SkColorFilter> GetReinhardToneMapFilter(
     float content_max_component_value,
@@ -89,10 +94,15 @@ sk_sp<SkColorFilter> GetReinhardToneMapFilter(
           .effect.release();
   CHECK(effect);
 
-  ReinhardToneMapUniforms uniforms;
-  uniforms.Lc = content_max_component_value;
-  uniforms.Ld = target_max_component_value;
-  auto uniforms_data = SkData::MakeWithCopy(&uniforms, sizeof(uniforms));
+  // Computation of the uniforms a and b is derived in
+  // https://colab.research.google.com/drive/1hI10nq6L6ru_UFvz7-f7xQaQp0qarz_K
+  float uniforms[2] = {0.f, 0.f};
+  if (content_max_component_value > target_max_component_value) {
+    uniforms[0] = target_max_component_value /
+                  (content_max_component_value * content_max_component_value);
+    uniforms[1] = 1.f / target_max_component_value;
+  }
+  auto uniforms_data = SkData::MakeWithCopy(uniforms, sizeof(uniforms));
 
   sk_sp<SkColorFilter> filter = effect->makeColorFilter(uniforms_data);
   CHECK(filter);

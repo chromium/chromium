@@ -6484,27 +6484,18 @@ TEST_P(ColorTransformPixelTest, MAYBE_Basic) {
 }
 
 gfx::ColorSpace src_color_spaces[] = {
-    // This will be replaced by an ICC-based space (which can't be initialized
-    // here).
-    gfx::ColorSpace(),
     gfx::ColorSpace(PrimaryID::BT709, TransferID::BT709),
-    gfx::ColorSpace(PrimaryID::BT709, TransferID::GAMMA28),
-    gfx::ColorSpace(PrimaryID::BT709, TransferID::SMPTE240M),
+    gfx::ColorSpace(PrimaryID::WIDE_GAMUT_COLOR_SPIN, TransferID::GAMMA28),
     gfx::ColorSpace(PrimaryID::BT709, TransferID::LINEAR),
     gfx::ColorSpace(PrimaryID::BT709, TransferID::SRGB),
-    gfx::ColorSpace(PrimaryID::BT709, TransferID::SMPTEST428_1),
     gfx::ColorSpace(PrimaryID::BT709, TransferID::SRGB_HDR),
     gfx::ColorSpace(PrimaryID::BT709, TransferID::LINEAR_HDR),
     gfx::ColorSpace::CreateHDR10(),
 };
 
 gfx::ColorSpace dst_color_spaces[] = {
-    // This will be replaced by an ICC-based space (which can't be initialized
-    // here).
-    gfx::ColorSpace(),
     gfx::ColorSpace(PrimaryID::BT709, TransferID::BT709),
-    gfx::ColorSpace(PrimaryID::BT709, TransferID::GAMMA28),
-    gfx::ColorSpace(PrimaryID::BT709, TransferID::SMPTE240M),
+    gfx::ColorSpace(PrimaryID::WIDE_GAMUT_COLOR_SPIN, TransferID::GAMMA28),
     gfx::ColorSpace(PrimaryID::BT709, TransferID::LINEAR),
     gfx::ColorSpace(PrimaryID::BT709, TransferID::SRGB),
     gfx::ColorSpace(PrimaryID::BT709, TransferID::SRGB_HDR),

@@ -32,6 +32,7 @@
 #include "cc/base/math_util.h"
 #include "cc/debug/debug_colors.h"
 #include "cc/paint/render_surface_filters.h"
+#include "cc/paint/tone_map_util.h"
 #include "components/viz/common/display/renderer_settings.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
@@ -2709,18 +2710,15 @@ void SkiaRenderer::DrawTextureQuad(const TextureDrawQuad* quad,
   const gfx::HDRMetadata& src_hdr_metadata =
       resource_provider()->GetHDRMetadata(quad->resource_id);
 
-  const bool needs_color_conversion_filter =
+  const bool needs_tone_map =
       ((quad->is_video_frame && src_color_space.IsHDR()) ||
        src_color_space.IsToneMappedByDefault()) &&
-      // Don't do color conversions for stream video unless
+      // Don't do tone mapping for stream video unless
       // FixAndroidToneMapping is enabled.
       (!quad->is_stream_video ||
        base::FeatureList::IsEnabled(kFixAndroidToneMapping));
 
   sk_sp<SkColorSpace> override_color_space;
-  if (needs_color_conversion_filter) {
-    override_color_space = CurrentDrawLayerColorSpace().ToSkColorSpace();
-  }
   if (overlay_color_space) {
     override_color_space = overlay_color_space->ToSkColorSpace();
   }
@@ -2751,7 +2749,7 @@ void SkiaRenderer::DrawTextureQuad(const TextureDrawQuad* quad,
   const bool blend_background =
       quad->background_color != SkColors::kTransparent && !image->isOpaque();
 
-  if (!blend_background && !needs_color_conversion_filter && !rpdq_params) {
+  if (!blend_background && !needs_tone_map && !rpdq_params) {
     // This is a simple texture draw and can go into the batching system
     DCHECK(!MustFlushBatchedQuads(quad, rpdq_params, *params));
     AddQuadToBatch(image, valid_texel_bounds, params);
@@ -2779,15 +2777,26 @@ void SkiaRenderer::DrawTextureQuad(const TextureDrawQuad* quad,
   // Auto-restore canvas state after applying clipShader and draw.
   SkAutoCanvasRestore acr(current_canvas_, /*do_save=*/true);
 
-  if (needs_color_conversion_filter) {
-    // Skia won't perform color conversion.
-    const gfx::ColorSpace dst_color_space = CurrentDrawLayerColorSpace();
-    DCHECK(SkColorSpace::Equals(image->colorSpace(),
-                                dst_color_space.ToSkColorSpace().get()));
-    sk_sp<SkColorFilter> color_filter = GetColorSpaceConversionFilter(
-        src_color_space, std::nullopt, src_hdr_metadata,
-        quad->dynamic_range_limit, dst_color_space, quad->is_video_frame);
-    paint.setColorFilter(color_filter->makeComposed(paint.refColorFilter()));
+  if (needs_tone_map) {
+    // Use the current SDR slider white level for PQ HDR videos on
+    // Windows, so that they look similar when rendered by the
+    // compositor and when rendered as an overlay (HDR10 MPO).
+    // https://crbug.com/1492817
+    auto hdr_metadata = src_hdr_metadata;
+    if (quad->is_video_frame &&
+        src_color_space.GetTransferID() == gfx::ColorSpace::TransferID::PQ &&
+        base::FeatureList::IsEnabled(
+            features::kUseDisplaySDRMaxLuminanceNits)) {
+      hdr_metadata =
+          gfx::HDRMetadata::PopulateUnspecifiedWithDefaults(src_hdr_metadata);
+      hdr_metadata.ndwl = gfx::HdrMetadataNdwl(
+          current_frame()->display_color_spaces.GetSDRMaxLuminanceNits());
+    }
+    cc::ToneMapUtil::AddGlobalToneMapFilterToPaint(
+        paint, image, hdr_metadata,
+        quad->dynamic_range_limit.ComputeHdrHeadroom(
+            current_frame()
+                ->display_color_spaces.GetHDRMaxLuminanceRelative()));
   }
 
   // From gl_renderer, the final src color will be
@@ -3022,34 +3031,6 @@ void SkiaRenderer::ScheduleOverlays() {
 
   skia_output_surface_->ScheduleOverlays(
       std::move(current_frame()->overlay_list), std::move(sync_tokens));
-}
-
-sk_sp<SkColorFilter> SkiaRenderer::GetColorSpaceConversionFilter(
-    const gfx::ColorSpace& src,
-    std::optional<uint32_t> src_bit_depth,
-    std::optional<gfx::HDRMetadata> src_hdr_metadata,
-    const cc::PaintFlags::DynamicRangeLimitMixture& src_dynamic_range_limit,
-    const gfx::ColorSpace& dst,
-    bool is_video_frame) {
-  // Use the current SDR slider white level for PQ HDR videos on
-  // Windows, so that they look similar when rendered by the
-  // compositor and when rendered as an overlay (HDR10 MPO).
-  // https://crbug.com/1492817
-  auto hdr_metadata = src_hdr_metadata;
-  if (is_video_frame &&
-      src.GetTransferID() == gfx::ColorSpace::TransferID::PQ &&
-      base::FeatureList::IsEnabled(features::kUseDisplaySDRMaxLuminanceNits)) {
-    hdr_metadata =
-        gfx::HDRMetadata::PopulateUnspecifiedWithDefaults(src_hdr_metadata);
-    hdr_metadata->ndwl = gfx::HdrMetadataNdwl(
-        current_frame()->display_color_spaces.GetSDRMaxLuminanceNits());
-  }
-
-  return color_filter_cache_.Get(
-      src, dst, src_bit_depth, hdr_metadata,
-      current_frame()->display_color_spaces.GetSDRMaxLuminanceNits(),
-      src_dynamic_range_limit.ComputeHdrHeadroom(
-          current_frame()->display_color_spaces.GetHDRMaxLuminanceRelative()));
 }
 
 namespace {
