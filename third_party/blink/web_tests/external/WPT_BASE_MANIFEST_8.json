@@ -7448,6 +7448,15 @@
      }
     }
    },
+   "focus": {
+    "focus-element-crash.html": [
+     "27df1c0b13081827685fa96e0cba2f7b9b03c89a",
+     [
+      null,
+      {}
+     ]
+    ]
+   },
    "fullscreen": {
     "crashtests": {
      "backdrop-list-item.html": [
@@ -73659,6 +73668,32 @@
     },
     "css-align": {
      "abspos": {
+      "align-items-static-position-001.tentative.html": [
+       "06c11e6cdb61a519fdbc77d377fb0ace0e92f6b1",
+       [
+        null,
+        [
+         [
+          "/css/css-align/abspos/align-items-static-position-001-ref.tentative.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "align-items-static-position-002.tentative.html": [
+       "f90004b5672a1fef9f42cf32ae13b06fc085e0ec",
+       [
+        null,
+        [
+         [
+          "/css/css-align/abspos/align-items-static-position-002-ref.tentative.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "align-items-static-position.html": [
        "0b653ca5d6c2bbaf29b3834aec7d806169c8de55",
        [
@@ -73698,6 +73733,110 @@
         {}
        ]
       ],
+      "align-self-static-position-003.html": [
+       "39f871f4c2b837dc67b30d615e9c8ad0e4392d24",
+       [
+        null,
+        [
+         [
+          "/css/css-align/abspos/align-self-static-position-003-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "align-self-static-position-004.html": [
+       "afba7215b116506138434da5fa3c13ec832fb393",
+       [
+        null,
+        [
+         [
+          "/css/css-align/abspos/align-self-static-position-004-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "align-self-static-position-005.html": [
+       "e148f0ebda37797d5573f4c3a2d4b7c52e5a2f2e",
+       [
+        null,
+        [
+         [
+          "/css/css-align/abspos/align-self-static-position-005-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "align-self-static-position-006.html": [
+       "253b2a52f618a82fcf13b82bd61075bc2dcee8be",
+       [
+        null,
+        [
+         [
+          "/css/css-align/abspos/align-self-static-position-006-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "align-self-static-position-007.html": [
+       "ebe872aaab909e29abf3eed33840a577a616b34b",
+       [
+        null,
+        [
+         [
+          "/css/css-align/abspos/align-self-static-position-007-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "align-self-static-position-008.html": [
+       "187974884b4aded9a031c0c2fdc9d2caafd9ef5b",
+       [
+        null,
+        [
+         [
+          "/css/css-align/abspos/align-self-static-position-008-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "align-self-stretch-auto-margins-aspect-ratio.html": [
+       "4eaa9d2f3a6dbab63d3d931d4c58a427bc11976f",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "align-self-stretch-auto-margins.html": [
+       "9d1b6454c848c02b7fef360fb447d4d6b46ee8c0",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "align-self-stretch-auto-size.tentative.html": [
        "74091feacfe63813aa4a6bbc3ef1b4d3e4e8a59c",
        [
@@ -73718,6 +73857,32 @@
         [
          [
           "/css/css-align/abspos/align-self-with-flex-grid-parent-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "justify-self-stretch-auto-margins-aspect-ratio.html": [
+       "c50b32f089b1b0043ac5d9dbd0f79906d82827f3",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "justify-self-stretch-auto-margins.html": [
+       "7d7b4bfc8570d3dde59fc903de7cb173b0b5baf8",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
           "=="
          ]
         ],
@@ -331301,6 +331466,14 @@
       []
      ],
      "abspos": {
+      "align-items-static-position-001-ref.tentative.html": [
+       "22c1fd03e38792a3d697659c1e087178c453f1ed",
+       []
+      ],
+      "align-items-static-position-002-ref.tentative.html": [
+       "6f53b04178707a83eb2822e5807cf42d3c547ca6",
+       []
+      ],
       "align-items-static-position-ref.html": [
        "fd7093f98748709d0f6d03c9dc9993a7a1447446",
        []
@@ -331311,6 +331484,30 @@
       ],
       "align-self-static-position-002-ref.html": [
        "d8bef63aa292aecd1ce6628e27abbc2c196f8a29",
+       []
+      ],
+      "align-self-static-position-003-ref.html": [
+       "132bbb7360fb5a40130e0a7af9ffb3a9d2baf753",
+       []
+      ],
+      "align-self-static-position-004-ref.html": [
+       "68130ee1d7e723a6b5c4c8a7e3b78d7bdb2f35da",
+       []
+      ],
+      "align-self-static-position-005-ref.html": [
+       "947bd2704481f757f3d1f4bf51105483978cc7ff",
+       []
+      ],
+      "align-self-static-position-006-ref.html": [
+       "5bbafc6484585ad25223cf1b5825214e90705836",
+       []
+      ],
+      "align-self-static-position-007-ref.html": [
+       "bc9b5f4f6502f647e97332401308a87a64c339f0",
+       []
+      ],
+      "align-self-static-position-008-ref.html": [
+       "79cf612b8f846920af1d2d7b188376693c789b3f",
        []
       ],
       "align-self-with-flex-grid-parent-ref.html": [
@@ -424279,7 +424476,7 @@
       []
      ],
      "soft-navigation-helper.js": [
-      "d405adb4e7eb7690fe73f31db523d357a38734ee",
+      "a29978c8760495ffccbd6fc56d62f4625d89334d",
       []
      ]
     }
@@ -710263,7 +710460,7 @@
      ]
     ],
     "interaction-with-paint-before-back.tentative.html": [
-     "b587411991383e47381e14fc6e00c0bcfc2dc447",
+     "7b884f2bdb38945a346c3b5a8b178c04e88989ad",
      [
       null,
       {
@@ -771657,7 +771854,7 @@
       ]
      ],
      "qdq_subgraph.https.any.js": [
-      "8f6f2246b04f8a6fc9570eced30b31b841da5a06",
+      "d8c9a591aed81182c8748775ff794d37a972031f",
       [
        "webnn/conformance_tests/qdq_subgraph.https.any.html?cpu",
        {
