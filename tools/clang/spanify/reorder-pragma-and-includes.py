@@ -57,8 +57,11 @@ class ReorderTarget:
         self.lines = None
         self.lines_to_reorder = {
             '#include <array>': None,
+            '#include <cstdint>': None,
+            '#include "base/containers/auto_spanification_helper.h"': None,
             '#include "base/containers/span.h"': None,
             '#include "base/memory/raw_span.h"': None,
+            '#include "base/numerics/safe_conversions.h"': None,
         }
         self.insertion_point = None
         self.guard_format = self._compute_guard_format(path)
