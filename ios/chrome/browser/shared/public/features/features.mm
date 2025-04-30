@@ -1077,7 +1077,7 @@ const std::string_view kFRESignInSecondaryActionLabelUpdateParamStaySignedOut =
 
 BASE_FEATURE(kFRESignInSecondaryActionLabelUpdate,
              "FRESignInSecondaryActionLabelUpdate",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool FRESignInSecondaryActionLabelUpdate() {
   return base::FeatureList::IsEnabled(kFRESignInSecondaryActionLabelUpdate);
