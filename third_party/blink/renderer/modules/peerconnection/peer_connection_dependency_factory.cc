@@ -89,8 +89,8 @@
 #include "third_party/webrtc/modules/video_coding/codecs/h264/include/h264.h"
 #include "third_party/webrtc/rtc_base/ref_counted_object.h"
 #include "third_party/webrtc/rtc_base/ssl_adapter.h"
+#include "third_party/webrtc_overrides/environment.h"
 #include "third_party/webrtc_overrides/metronome_source.h"
-#include "third_party/webrtc_overrides/task_queue_factory.h"
 #include "third_party/webrtc_overrides/timer_based_tick_provider.h"
 
 namespace WTF {
@@ -801,7 +801,7 @@ void PeerConnectionDependencyFactory::InitializeSignalingThread(
   if (pcf_deps.worker_thread == pcf_deps.network_thread) {
     LOG(INFO) << "Running WebRTC with a combined Network and Worker thread.";
   }
-  pcf_deps.task_queue_factory = CreateWebRtcTaskQueueFactory();
+  pcf_deps.env = WebRtcEnvironment();
   pcf_deps.decode_metronome = StaticDeps().CreateDecodeMetronome();
   pcf_deps.encode_metronome = StaticDeps().MaybeCreateEncodeMetronome();
   pcf_deps.event_log_factory = std::make_unique<webrtc::RtcEventLogFactory>();
