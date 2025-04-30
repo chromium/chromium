@@ -17,6 +17,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "third_party/leveldatabase/env_chromium.h"
 #include "third_party/leveldatabase/src/include/leveldb/db.h"
@@ -80,8 +81,31 @@ void AsyncDomStorageDatabase::RunBatchDatabaseTasks(
                       [](std::vector<BatchDatabaseTask> tasks,
                          const DomStorageDatabase& db) {
                         leveldb::WriteBatch batch;
-                        for (auto& task : tasks)
+                        size_t iteration_count = 0;
+                        for (auto& task : tasks) {
+                          iteration_count++;
+                          size_t current_batch_size = batch.ApproximateSize();
                           std::move(task).Run(&batch, db);
+                          size_t new_batch_size = batch.ApproximateSize();
+                          size_t growth = new_batch_size - current_batch_size;
+                          base::UmaHistogramCustomCounts(
+                              "Storage.DomStorage."
+                              "BatchTaskGrowthSizeBytes",
+                              growth, 1, 100 * 1024 * 1024, 50);
+                          const size_t kTargetBatchSizesMB[] = {20, 100, 500};
+                          for (size_t batch_size_mb : kTargetBatchSizesMB) {
+                            size_t target_batch_size =
+                                batch_size_mb * 1024 * 1024;
+                            if (current_batch_size < target_batch_size &&
+                                new_batch_size >= target_batch_size) {
+                              base::UmaHistogramCounts10000(
+                                  base::StringPrintf("Storage.DomStorage."
+                                                     "IterationsToReach%zuMB",
+                                                     batch_size_mb),
+                                  iteration_count);
+                            }
+                          }
+                        }
                         return db.Commit(&batch);
                       },
                       std::move(tasks)),
