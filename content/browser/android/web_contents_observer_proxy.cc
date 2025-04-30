@@ -11,6 +11,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/trace_event/named_trigger.h"
 #include "base/trace_event/trace_event.h"
 #include "content/browser/android/navigation_handle_proxy.h"
 #include "content/browser/media/session/media_session_android.h"
@@ -173,6 +174,7 @@ void WebContentsObserverProxy::DidFinishNavigation(
   TRACE_EVENT0("browser", "Java_WebContentsObserverProxy_didFinishNavigation");
 
   if (navigation_handle->IsInPrimaryMainFrame()) {
+    base::trace_event::EmitNamedTrigger("did-finish-navigation-in-pmf");
     Java_WebContentsObserverProxy_didFinishNavigationInPrimaryMainFrame(
         AttachCurrentThread(), java_observer_,
         navigation_handle->GetJavaNavigationHandle());
