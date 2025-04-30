@@ -1052,13 +1052,12 @@ bool AddressComponent::IsMergeableWithComponent(
     if (subcomponents_.size() != newer_component.subcomponents_.size()) {
       return false;
     }
-    for (auto [subcomponent, newer_subcomponent] :
-         base::zip(subcomponents_, newer_component.subcomponents_)) {
-      if (!subcomponent->IsMergeableWithComponent(*newer_subcomponent)) {
-        return false;
-      }
-    }
-    return true;
+    return std::ranges::all_of(
+        base::zip(subcomponents_, newer_component.subcomponents_),
+        [](const auto& p) {
+          auto [subcomponent, newer_subcomponent] = p;
+          return subcomponent->IsMergeableWithComponent(*newer_subcomponent);
+        });
   }
   return false;
 }
@@ -1251,13 +1250,14 @@ bool AddressComponent::MergeWithComponent(
   // If the corresponding mode is active, ignore this mode and pair-wise merge
   // the child tokens. Reformat this nodes from its children after the merge.
   if (merge_mode_ & kMergeChildrenAndReformatIfNeeded) {
-    CHECK_EQ(newer_component.subcomponents_.size(), subcomponents_.size());
-    for (auto [subcomponent, newer_subcomponent] :
-         base::zip(subcomponents_, newer_component.subcomponents_)) {
-      if (!subcomponent->MergeWithComponent(*newer_subcomponent,
-                                            newer_was_more_recently_used)) {
-        return false;
-      }
+    if (std::ranges::any_of(
+            base::zip(subcomponents_, newer_component.subcomponents_),
+            [&](const auto& p) {
+              auto [subcomponent, newer_subcomponent] = p;
+              return !subcomponent->MergeWithComponent(
+                  *newer_subcomponent, newer_was_more_recently_used);
+            })) {
+      return false;
     }
 
     // If the two values are already token equivalent, use the value of the
