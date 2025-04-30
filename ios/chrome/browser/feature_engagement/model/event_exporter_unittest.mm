@@ -10,6 +10,7 @@
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/feature_engagement/test/test_tracker.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/features.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/default_browser/model/default_browser_interest_signals.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
@@ -468,6 +469,9 @@ TEST_F(EventExporterTest, TestNonModalMigrationInteractionConditionNotMet) {
 }
 
 TEST_F(EventExporterTest, TestSigninFullscreenPromoImpressionsMigration) {
+  if (!IsFullscreenSigninPromoManagerMigrationEnabled()) {
+    return;
+  }
   // No events to export.
   RequestExportEventsAndVerifyCallback();
   EXPECT_EQ(GetExportEventsCount(), 0);
