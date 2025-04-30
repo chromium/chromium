@@ -5,6 +5,8 @@
 #ifndef BASE_TRACING_PERFETTO_TASK_RUNNER_H_
 #define BASE_TRACING_PERFETTO_TASK_RUNNER_H_
 
+#include <vector>
+
 #include "base/base_export.h"
 #include "base/cancelable_callback.h"
 #include "base/memory/weak_ptr.h"
@@ -29,7 +31,8 @@ namespace tracing {
 // to provide it to Perfetto.
 class BASE_EXPORT PerfettoTaskRunner : public perfetto::base::TaskRunner {
  public:
-  explicit PerfettoTaskRunner(scoped_refptr<base::SequencedTaskRunner>);
+  explicit PerfettoTaskRunner(scoped_refptr<base::SequencedTaskRunner>,
+                              bool defer_delayed_tasks = false);
   ~PerfettoTaskRunner() override;
   PerfettoTaskRunner(const PerfettoTaskRunner&) = delete;
   void operator=(const PerfettoTaskRunner&) = delete;
@@ -57,6 +60,21 @@ class BASE_EXPORT PerfettoTaskRunner : public perfetto::base::TaskRunner {
 
  private:
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
+
+  struct DeferredTask {
+    DeferredTask(std::function<void()> task, uint32_t delay);
+    DeferredTask(const DeferredTask&) = delete;
+    DeferredTask& operator=(const DeferredTask&) = delete;
+    DeferredTask(DeferredTask&& task);
+    ~DeferredTask();
+
+    std::function<void()> task;
+    uint32_t delay;
+  };
+
+  // Delayed tasks will be posted when `task_runner_` resets.
+  std::vector<DeferredTask> deferred_delayed_tasks_;
+  bool defer_delayed_tasks_;
 
 #if (BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)) || BUILDFLAG(IS_FUCHSIA)
   // FDControllerAndCallback keeps track of the state of FD watching:

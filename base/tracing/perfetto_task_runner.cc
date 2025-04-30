@@ -22,8 +22,10 @@
 namespace base::tracing {
 
 PerfettoTaskRunner::PerfettoTaskRunner(
-    scoped_refptr<base::SequencedTaskRunner> task_runner)
-    : task_runner_(std::move(task_runner)) {
+    scoped_refptr<base::SequencedTaskRunner> task_runner,
+    bool defer_delayed_tasks)
+    : task_runner_(std::move(task_runner)),
+      defer_delayed_tasks_(defer_delayed_tasks) {
   CHECK(task_runner_);
 }
 
@@ -40,6 +42,10 @@ void PerfettoTaskRunner::PostTask(std::function<void()> task) {
 
 void PerfettoTaskRunner::PostDelayedTask(std::function<void()> task,
                                          uint32_t delay_ms) {
+  if (defer_delayed_tasks_ && delay_ms) {
+    deferred_delayed_tasks_.emplace_back(task, delay_ms);
+    return;
+  }
   base::ScopedDeferTaskPosting::PostOrDefer(
       task_runner_, FROM_HERE,
       base::BindOnce(
@@ -117,6 +123,11 @@ void PerfettoTaskRunner::RemoveFileDescriptorWatch(
 void PerfettoTaskRunner::ResetTaskRunner(
     scoped_refptr<base::SequencedTaskRunner> task_runner) {
   task_runner_ = std::move(task_runner);
+  defer_delayed_tasks_ = false;
+  for (auto& task : deferred_delayed_tasks_) {
+    PostDelayedTask(task.task, task.delay);
+  }
+  deferred_delayed_tasks_.clear();
 }
 
 #if (BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)) || BUILDFLAG(IS_FUCHSIA)
@@ -126,5 +137,13 @@ PerfettoTaskRunner::FDControllerAndCallback::FDControllerAndCallback() =
 PerfettoTaskRunner::FDControllerAndCallback::~FDControllerAndCallback() =
     default;
 #endif  // (BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)) || BUILDFLAG(IS_FUCHSIA)
+
+PerfettoTaskRunner::DeferredTask::DeferredTask(std::function<void()> task,
+                                               uint32_t delay)
+    : task(std::move(task)), delay(delay) {}
+
+PerfettoTaskRunner::DeferredTask::DeferredTask(DeferredTask&& task) = default;
+
+PerfettoTaskRunner::DeferredTask::~DeferredTask() = default;
 
 }  // namespace base::tracing
