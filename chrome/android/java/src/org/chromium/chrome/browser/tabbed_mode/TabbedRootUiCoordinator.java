@@ -11,10 +11,13 @@ import static org.chromium.chrome.browser.tab.Tab.INVALID_TAB_ID;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
@@ -28,6 +31,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
 import org.chromium.base.CommandLine;
+import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.Token;
 import org.chromium.base.TraceEvent;
@@ -216,6 +220,8 @@ import java.util.function.Function;
 
 /** A {@link RootUiCoordinator} variant that controls tabbed-mode specific UI. */
 public class TabbedRootUiCoordinator extends RootUiCoordinator {
+    // The tag length is restricted to be at most 20 characters.
+    private static final String TAG = "TabbedRootUiCoord";
     private static boolean sDisableTopControlsAnimationForTesting;
     private final RootUiTabObserver mRootUiTabObserver;
     private TabbedSystemUiCoordinator mSystemUiCoordinator;
@@ -267,6 +273,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private @NonNull ObservableSupplier<BookmarkManagerOpener> mBookmarkManagerOpenerSupplier;
     private @NonNull AdvancedProtectionCoordinator mAdvancedProtectionCoordinator;
     private final @NonNull KeyboardFocusRowManager mKeyboardFocusRowManager;
+    private CharSequence mApplicationLabel;
 
     // Activity tab observer that updates the current tab used by various UI components.
     private class RootUiTabObserver extends ActivityTabTabObserver {
@@ -277,8 +284,13 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         }
 
         @Override
-        public void onObservingDifferentTab(Tab tab, boolean hint) {
+        public void onObservingDifferentTab(Tab tab) {
             swapToTab(tab);
+        }
+
+        @Override
+        public void onTitleUpdated(Tab tab) {
+            setActivityTitle(tab);
         }
 
         private void swapToTab(Tab tab) {
@@ -294,6 +306,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 swipeHandler.setNavigationCoordinator(mHistoryNavigationCoordinator);
                 swipeHandler.setBrowserControls(mBrowserControlsManager);
             }
+            setActivityTitle(tab);
         }
 
         @Override
@@ -535,6 +548,16 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         getTabObscuringHandler(),
                         () -> mToolbarManager // Gets current value of mToolbarManager
                         );
+
+        try {
+            PackageManager packageManager = mActivity.getPackageManager();
+            ApplicationInfo applicationInfo =
+                    packageManager.getApplicationInfo(mActivity.getPackageName(), 0);
+            mApplicationLabel = packageManager.getApplicationLabel(applicationInfo);
+        } catch (PackageManager.NameNotFoundException e) {
+            Log.w(TAG, "Error getting application info", e);
+            mApplicationLabel = "";
+        }
     }
 
     @Override
@@ -1780,5 +1803,28 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
     /* package */ KeyboardFocusRowManager getKeyboardFocusRowManagerForTesting() {
         return mKeyboardFocusRowManager;
+    }
+
+    private void setActivityTitle(Tab tab) {
+        // Do not update title after Activity destruction.
+        if (mActivity == null) {
+            return;
+        }
+
+        String tabTitle = tab == null ? "" : tab.getTitle();
+        if (TextUtils.isEmpty(mApplicationLabel)) {
+            if (TextUtils.isEmpty(tabTitle)) {
+                mActivity.setTitle("Application");
+                Log.w(TAG, "Both application label and tab title are missing.");
+            } else {
+                mActivity.setTitle(tabTitle);
+            }
+        } else {
+            if (TextUtils.isEmpty(tabTitle)) {
+                mActivity.setTitle(mApplicationLabel);
+            } else {
+                mActivity.setTitle(mApplicationLabel + ": " + tabTitle);
+            }
+        }
     }
 }
