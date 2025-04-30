@@ -20,8 +20,7 @@ found in the LICENSE file.
     android:orientation="horizontal"
     android:gravity="center_vertical"
     android:layout_marginTop="@dimen/recent_activity_title_top_margin"
-    android:paddingStart="@dimen/list_item_default_margin"
-    android:paddingEnd="@dimen/list_item_default_margin">
+    android:paddingStart="@dimen/list_item_default_margin">
 
         <TextView
             android:id="@+id/title"
@@ -35,6 +34,7 @@ found in the LICENSE file.
             android:id="@+id/recent_activity_menu_button"
             android:layout_width="@dimen/min_touch_target_size"
             android:layout_height="@dimen/min_touch_target_size"
+            android:paddingEnd="@dimen/list_item_default_margin"
             android:background="@null"
             android:src="@drawable/ic_more_vert_24dp"
             android:contentDescription="@string/collaboration_recent_activity_menu_option"
