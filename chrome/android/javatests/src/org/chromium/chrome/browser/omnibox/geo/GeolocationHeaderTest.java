@@ -160,6 +160,7 @@ public class GeolocationHeaderTest {
     @Test
     @SmallTest
     @Feature({"Location"})
+    @DisabledTest(message = "https://crbug.com/414769376")
     public void testGpsFallbackYounger() {
         setPermission(ContentSettingValues.ALLOW);
         long now = System.currentTimeMillis();
