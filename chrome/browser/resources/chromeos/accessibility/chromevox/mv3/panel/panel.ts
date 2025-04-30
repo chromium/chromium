@@ -13,7 +13,6 @@ import {LocalStorage} from '/common/local_storage.js';
 import {BackgroundBridge} from '../common/background_bridge.js';
 import {BridgeConstants} from '../common/bridge_constants.js';
 import {Command} from '../common/command.js';
-import {LocaleOutputHelper} from '../common/locale_output_helper.js';
 import {Msgs} from '../common/msgs.js';
 import type {PanelCommand} from '../common/panel_command.js';
 import {PanelCommandType} from '../common/panel_command.js';
@@ -108,7 +107,6 @@ export class Panel implements PanelInterface {
     await LocalStorage.init();
     await SettingsManager.init();
 
-    LocaleOutputHelper.init();
     PanelCaptions.init();
 
     Panel.instance = new Panel();
