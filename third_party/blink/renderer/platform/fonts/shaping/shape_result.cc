@@ -72,7 +72,7 @@ struct SameSizeAsRunInfo {
     Vector<int> offsets;
   } glyph_data;
   Member<void*> pointer2[2];
-  int integers[5];
+  int integers[6];
 };
 
 ASSERT_SIZE(ShapeResultRun, SameSizeAsRunInfo);
@@ -749,7 +749,7 @@ float ShapeResult::ForEachGlyphImpl(float initial_advance,
                                     const ShapeResultRun& run) const {
   auto glyph_offsets = run.glyph_data_.GetOffsets<has_non_zero_glyph_offsets>();
   auto total_advance = InlineLayoutUnit::FromFloatRound(initial_advance);
-  bool is_horizontal = run.IsHorizontal();
+  bool is_horizontal = HB_DIRECTION_IS_HORIZONTAL(run.direction_);
   for (const auto& glyph_data : run.glyph_data_) {
     glyph_callback(context, run.start_index_ + glyph_data.character_index,
                    glyph_data.glyph, *glyph_offsets, total_advance,
@@ -787,7 +787,7 @@ float ShapeResult::ForEachGlyphImpl(float initial_advance,
   auto glyph_offsets = run.glyph_data_.GetOffsets<has_non_zero_glyph_offsets>();
   auto total_advance = InlineLayoutUnit::FromFloatRound(initial_advance);
   unsigned run_start = run.start_index_ + index_offset;
-  bool is_horizontal = run.IsLtr();
+  bool is_horizontal = HB_DIRECTION_IS_HORIZONTAL(run.direction_);
   const SimpleFontData* font_data = run.font_data_.Get();
 
   if (run.IsLtr()) {  // Left-to-right
@@ -1587,8 +1587,9 @@ void ShapeResult::InsertRun(ShapeResultRun* run) {
     return run->start_index_ > start_index;
   };
 
-  auto it = std::lower_bound(runs_.begin(), runs_.end(), run->start_index_,
-                             run->IsLtr() ? ltr_comparer : rtl_comparer);
+  auto it = std::lower_bound(
+      runs_.begin(), runs_.end(), run->start_index_,
+      HB_DIRECTION_IS_FORWARD(run->direction_) ? ltr_comparer : rtl_comparer);
   if (it != runs_.end()) {
     runs_.insert(static_cast<wtf_size_t>(it - runs_.begin()), run);
   } else {
@@ -2028,7 +2029,7 @@ void ShapeResult::ToString(StringBuilder* output) const {
     output->Append(", #chars=");
     output->AppendNumber(run.num_characters_);
     output->Append(", dir=");
-    output->AppendNumber(run.hb_direction_);
+    output->AppendNumber(static_cast<uint32_t>(run.direction_));
     output->Append(", glyphs[");
     output->AppendNumber(run.glyph_data_.size());
     output->Append("]{");
