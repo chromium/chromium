@@ -9321,6 +9321,48 @@
             ]
         }
     ],
+    "FeedPerformanceStudyV3": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "rs4_rr05_al1",
+                    "params": {
+                        "asyncLayout": "true",
+                        "rangeRatio": "0.5",
+                        "rangeSize": "4"
+                    },
+                    "enable_features": [
+                        "FeedPerformanceStudy"
+                    ]
+                },
+                {
+                    "name": "rs4_rr10_al1",
+                    "params": {
+                        "asyncLayout": "true",
+                        "rangeRatio": "1",
+                        "rangeSize": "4"
+                    },
+                    "enable_features": [
+                        "FeedPerformanceStudy"
+                    ]
+                },
+                {
+                    "name": "rs4_rr05_al0",
+                    "params": {
+                        "asyncLayout": "false",
+                        "rangeRatio": "0.5",
+                        "rangeSize": "4"
+                    },
+                    "enable_features": [
+                        "FeedPerformanceStudy"
+                    ]
+                }
+            ]
+        }
+    ],
     "FeedSignedOutViewDemotion": [
         {
             "platforms": [
