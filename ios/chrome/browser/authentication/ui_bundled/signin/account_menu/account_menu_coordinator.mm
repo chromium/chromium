@@ -32,6 +32,8 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator+protected.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signout_action_sheet/signout_action_sheet_coordinator.h"
+#import "ios/chrome/browser/authentication/ui_bundled/trusted_vault_reauthentication/trusted_vault_reauthentication_coordinator.h"
+#import "ios/chrome/browser/authentication/ui_bundled/trusted_vault_reauthentication/trusted_vault_reauthentication_coordinator_delegate.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_service.h"
 #import "ios/chrome/browser/settings/ui_bundled/google_services/manage_accounts/manage_accounts_coordinator.h"
@@ -65,9 +67,11 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
-@interface AccountMenuCoordinator () <AccountMenuMediatorDelegate,
-                                      ManageAccountsCoordinatorDelegate,
-                                      UIAdaptivePresentationControllerDelegate>
+@interface AccountMenuCoordinator () <
+    AccountMenuMediatorDelegate,
+    ManageAccountsCoordinatorDelegate,
+    TrustedVaultReauthenticationCoordinatorDelegate,
+    UIAdaptivePresentationControllerDelegate>
 
 // The view controller.
 @property(nonatomic, strong) AccountMenuViewController* viewController;
@@ -105,6 +109,8 @@
   // The URL which the the account menu was viewed from when
   // AccountMenuAccessPoint::kWeb.
   GURL _url;
+  TrustedVaultReauthenticationCoordinator*
+      _trustedVaultReauthenticationCoordinator;
 }
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
@@ -190,6 +196,7 @@
   if (!_mediator) {
     return;
   }
+  [self stopTrustedVaultReauthenticationCoordinator];
   [self stopChildrenAndViewControllerAnimated:animated];
   [_syncEncryptionPassphraseTableViewController settingsWillBeDismissed];
   _syncEncryptionPassphraseTableViewController = nil;
@@ -352,21 +359,18 @@
       trusted_vault::SecurityDomainId::kChromeSync;
   syncer::TrustedVaultUserActionTriggerForUMA trigger =
       syncer::TrustedVaultUserActionTriggerForUMA::kAccountMenu;
-  signin_metrics::AccessPoint accessPoint =
-      signin_metrics::AccessPoint::kAccountMenu;
   SigninTrustedVaultDialogIntent intent =
       SigninTrustedVaultDialogIntentFetchKeys;
-  _signinCoordinator = [SigninCoordinator
-      trustedVaultReAuthenticationCoordinatorWithBaseViewController:
-          _navigationController
-                                                            browser:self.browser
-                                                             intent:intent
-                                                   securityDomainID:
-                                                       securityDomainID
-                                                            trigger:trigger
-                                                        accessPoint:
-                                                            accessPoint];
-  [self startSigninCoordinatorWithCompletion:nil];
+  CHECK(!_trustedVaultReauthenticationCoordinator, base::NotFatalUntil::M145);
+  _trustedVaultReauthenticationCoordinator =
+      [[TrustedVaultReauthenticationCoordinator alloc]
+          initWithBaseViewController:_navigationController
+                             browser:self.browser
+                              intent:intent
+                    securityDomainID:securityDomainID
+                             trigger:trigger];
+  _trustedVaultReauthenticationCoordinator.delegate = self;
+  [_trustedVaultReauthenticationCoordinator start];
 }
 
 - (void)openTrustedVaultReauthForDegradedRecoverability {
@@ -374,21 +378,18 @@
       trusted_vault::SecurityDomainId::kChromeSync;
   syncer::TrustedVaultUserActionTriggerForUMA trigger =
       syncer::TrustedVaultUserActionTriggerForUMA::kAccountMenu;
-  signin_metrics::AccessPoint accessPoint =
-      signin_metrics::AccessPoint::kAccountMenu;
   SigninTrustedVaultDialogIntent intent =
       SigninTrustedVaultDialogIntentDegradedRecoverability;
-  _signinCoordinator = [SigninCoordinator
-      trustedVaultReAuthenticationCoordinatorWithBaseViewController:
-          _navigationController
-                                                            browser:self.browser
-                                                             intent:intent
-                                                   securityDomainID:
-                                                       securityDomainID
-                                                            trigger:trigger
-                                                        accessPoint:
-                                                            accessPoint];
-  [self startSigninCoordinatorWithCompletion:nil];
+  CHECK(!_trustedVaultReauthenticationCoordinator, base::NotFatalUntil::M145);
+  _trustedVaultReauthenticationCoordinator =
+      [[TrustedVaultReauthenticationCoordinator alloc]
+          initWithBaseViewController:_navigationController
+                             browser:self.browser
+                              intent:intent
+                    securityDomainID:securityDomainID
+                             trigger:trigger];
+  _trustedVaultReauthenticationCoordinator.delegate = self;
+  [_trustedVaultReauthenticationCoordinator start];
 }
 
 - (void)openMDMErrodDialogWithSystemIdentity:(id<SystemIdentity>)identity {
@@ -409,7 +410,8 @@
                                                 promoAction:promoAction
                                        continuationProvider:
                                            DoNothingContinuationProvider()];
-  [self startSigninCoordinatorWithCompletion:nil];
+  _trustedVaultReauthenticationCoordinator.delegate = self;
+  [_trustedVaultReauthenticationCoordinator start];
 }
 
 #pragma mark - ManageAccountsCoordinatorDelegate
@@ -432,6 +434,12 @@
 }
 
 #pragma mark - Private
+
+- (void)stopTrustedVaultReauthenticationCoordinator {
+  [_trustedVaultReauthenticationCoordinator stop];
+  _trustedVaultReauthenticationCoordinator.delegate = nil;
+  _trustedVaultReauthenticationCoordinator = nil;
+}
 
 - (void)stopSigninCoordinatorAnimated:(BOOL)animated {
   [_signinCoordinator stopAnimated:animated];
@@ -551,6 +559,15 @@
       HandlerForProtocol(dispatcher, HelpCommands);
   [helpCommandsHandler
       presentInProductHelpWithType:InProductHelpType::kSettingsInOverflowMenu];
+}
+
+#pragma mark - TrustedVaultReauthenticationCoordinatorDelegate
+
+- (void)trustedVaultReauthenticationCoordinatorWantsToBeStopped:
+    (TrustedVaultReauthenticationCoordinator*)coordinator {
+  CHECK_EQ(coordinator, _trustedVaultReauthenticationCoordinator,
+           base::NotFatalUntil::M145);
+  [self stopTrustedVaultReauthenticationCoordinator];
 }
 
 @end

@@ -20,8 +20,9 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_history_sync/signin_and_history_sync_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_screen_provider.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin/trusted_vault_reauthentication/trusted_vault_reauthentication_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/two_screens_signin/two_screens_signin_coordinator.h"
+#import "ios/chrome/browser/authentication/ui_bundled/trusted_vault_reauthentication/trusted_vault_reauthentication_coordinator.h"
+#import "ios/chrome/browser/authentication/ui_bundled/trusted_vault_reauthentication/trusted_vault_reauthentication_coordinator_delegate.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/animated_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -188,36 +189,6 @@ using signin_metrics::PromoAction;
                      promoAction:promoAction
                     signinIntent:AddAccountSigninIntent::kResignin
             continuationProvider:continuationProvider];
-}
-
-+ (SigninCoordinator*)
-    trustedVaultReAuthenticationCoordinatorWithBaseViewController:
-        (UIViewController*)viewController
-                                                          browser:
-                                                              (Browser*)browser
-                                                           intent:
-                                                               (SigninTrustedVaultDialogIntent)
-                                                                   intent
-                                                 securityDomainID:
-                                                     (trusted_vault::
-                                                          SecurityDomainId)
-                                                         securityDomainID
-                                                          trigger:
-                                                              (syncer::
-                                                                   TrustedVaultUserActionTriggerForUMA)
-                                                                  trigger
-                                                      accessPoint:
-                                                          (signin_metrics::
-                                                               AccessPoint)
-                                                              accessPoint {
-  DCHECK(!browser->GetProfile()->IsOffTheRecord());
-  return [[TrustedVaultReauthenticationCoordinator alloc]
-      initWithBaseViewController:viewController
-                         browser:browser
-                          intent:intent
-                securityDomainID:securityDomainID
-                         trigger:trigger
-                     accessPoint:accessPoint];
 }
 
 + (SigninCoordinator*)

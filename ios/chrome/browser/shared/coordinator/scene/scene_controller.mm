@@ -2244,52 +2244,6 @@ using UserFeedbackDataCallback =
   [self startSigninCoordinatorWithCompletion:nil];
 }
 
-- (void)
-    showTrustedVaultReauthForFetchKeysFromViewController:
-        (UIViewController*)viewController
-                                        securityDomainID:
-                                            (trusted_vault::SecurityDomainId)
-                                                securityDomainID
-                                                 trigger:
-                                                     (syncer::
-                                                          TrustedVaultUserActionTriggerForUMA)
-                                                         trigger
-                                             accessPoint:
-                                                 (signin_metrics::AccessPoint)
-                                                     accessPoint {
-  [self
-      showTrustedVaultDialogFromViewController:viewController
-                                        intent:
-                                            SigninTrustedVaultDialogIntentFetchKeys
-                              securityDomainID:securityDomainID
-                                       trigger:trigger
-                                   accessPoint:accessPoint];
-}
-
-- (void)
-    showTrustedVaultReauthForDegradedRecoverabilityFromViewController:
-        (UIViewController*)viewController
-                                                     securityDomainID:
-                                                         (trusted_vault::
-                                                              SecurityDomainId)
-                                                             securityDomainID
-                                                              trigger:
-                                                                  (syncer::
-                                                                       TrustedVaultUserActionTriggerForUMA)
-                                                                      trigger
-                                                          accessPoint:
-                                                              (signin_metrics::
-                                                                   AccessPoint)
-                                                                  accessPoint {
-  [self
-      showTrustedVaultDialogFromViewController:viewController
-                                        intent:
-                                            SigninTrustedVaultDialogIntentDegradedRecoverability
-                              securityDomainID:securityDomainID
-                                       trigger:trigger
-                                   accessPoint:accessPoint];
-}
-
 - (void)showWebSigninPromoFromViewController:
             (UIViewController*)baseViewController
                                          URL:(const GURL&)url {
@@ -3926,38 +3880,6 @@ using UserFeedbackDataCallback =
 }
 
 #pragma mark - Sign In UI presentation
-
-// Show trusted vault dialog.
-// `intent` Dialog to present.
-// `trigger` UI elements where the trusted vault reauth has been triggered.
-- (void)
-    showTrustedVaultDialogFromViewController:(UIViewController*)viewController
-                                      intent:
-                                          (SigninTrustedVaultDialogIntent)intent
-                            securityDomainID:(trusted_vault::SecurityDomainId)
-                                                 securityDomainID
-                                     trigger:
-                                         (syncer::
-                                              TrustedVaultUserActionTriggerForUMA)
-                                             trigger
-                                 accessPoint:
-                                     (signin_metrics::AccessPoint)accessPoint {
-  DCHECK(!self.signinCoordinator)
-      << "self.signinCoordinator: "
-      << base::SysNSStringToUTF8([self.signinCoordinator description]);
-  Browser* mainBrowser = self.mainInterface.browser;
-  self.signinCoordinator = [SigninCoordinator
-      trustedVaultReAuthenticationCoordinatorWithBaseViewController:
-          viewController
-                                                            browser:mainBrowser
-                                                             intent:intent
-                                                   securityDomainID:
-                                                       securityDomainID
-                                                            trigger:trigger
-                                                        accessPoint:
-                                                            accessPoint];
-  [self startSigninCoordinatorWithCompletion:nil];
-}
 
 // Close Settings, or Signin or the 3rd-party intents Incognito interstitial.
 - (void)closePresentedViews:(BOOL)animated

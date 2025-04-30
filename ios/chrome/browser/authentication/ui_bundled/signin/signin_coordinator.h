@@ -168,35 +168,6 @@ class PrefRegistrySyncable;
                                         (const ChangeProfileContinuationProvider&)
                                             continuationProvider;
 
-// Returns a coordinator for re-authentication workflow for Trusted
-// Vault for the primary identity. This is done with TrustedVaultService.
-// Related to IOSTrustedVaultClient.
-// `viewController` presents the sign-in.
-// `intent` Dialog to present.
-// `securityDomainID` Identifies a particular security domain.
-// `trigger` UI elements where the trusted vault reauth has been triggered.
-// `accessPoint` Identifies where the dialog is initiated from.
-+ (SigninCoordinator*)
-    trustedVaultReAuthenticationCoordinatorWithBaseViewController:
-        (UIViewController*)viewController
-                                                          browser:
-                                                              (Browser*)browser
-                                                           intent:
-                                                               (SigninTrustedVaultDialogIntent)
-                                                                   intent
-                                                 securityDomainID:
-                                                     (trusted_vault::
-                                                          SecurityDomainId)
-                                                         securityDomainID
-                                                          trigger:
-                                                              (syncer::
-                                                                   TrustedVaultUserActionTriggerForUMA)
-                                                                  trigger
-                                                      accessPoint:
-                                                          (signin_metrics::
-                                                               AccessPoint)
-                                                              accessPoint;
-
 // Returns a coordinator to display the account consistency promo with a list
 // of accounts available on the device for sign-in.
 // `viewController` presents the promo.

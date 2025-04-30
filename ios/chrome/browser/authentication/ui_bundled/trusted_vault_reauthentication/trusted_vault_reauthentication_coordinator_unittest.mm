@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "ios/chrome/browser/authentication/ui_bundled/trusted_vault_reauthentication/trusted_vault_reauthentication_coordinator.h"
+
 #import "base/test/ios/wait_util.h"
 #import "components/sync/service/sync_service_utils.h"
 #import "components/trusted_vault/trusted_vault_server_constants.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h"
+#import "ios/chrome/browser/authentication/ui_bundled/trusted_vault_reauthentication/trusted_vault_reauthentication_coordinator_delegate.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -77,28 +78,26 @@ TEST_F(TrustedVaultReauthenticationCoordinatorTest, TestCancel) {
       trusted_vault::SecurityDomainId::kChromeSync;
   syncer::TrustedVaultUserActionTriggerForUMA trigger =
       syncer::TrustedVaultUserActionTriggerForUMA::kSettings;
-  signin_metrics::AccessPoint accessPoint =
-      signin_metrics::AccessPoint::kStartPage;
-  SigninCoordinator* signinCoordinator = [SigninCoordinator
-      trustedVaultReAuthenticationCoordinatorWithBaseViewController:
-          base_view_controller_
-                                                            browser:browser()
-                                                             intent:
-                                                                 SigninTrustedVaultDialogIntentFetchKeys
-                                                   securityDomainID:
-                                                       securityDomainID
-                                                            trigger:trigger
-                                                        accessPoint:
-                                                            accessPoint];
+  TrustedVaultReauthenticationCoordinator*
+      trustedVaultReauthenticationCoordinator =
+          [[TrustedVaultReauthenticationCoordinator alloc]
+              initWithBaseViewController:base_view_controller_
+                                 browser:browser()
+                                  intent:SigninTrustedVaultDialogIntentFetchKeys
+                        securityDomainID:securityDomainID
+                                 trigger:trigger];
+  id<TrustedVaultReauthenticationCoordinatorDelegate> delegate =
+      OCMStrictProtocolMock(
+          @protocol(TrustedVaultReauthenticationCoordinatorDelegate));
+  trustedVaultReauthenticationCoordinator.delegate = delegate;
   // Open and cancel the web sign-in dialog.
-  __block bool signin_completion_called = false;
-  signinCoordinator.signinCompletion =
-      ^(SigninCoordinatorResult result, id<SystemIdentity> resultInfo) {
-        signin_completion_called = true;
-        EXPECT_EQ(SigninCoordinatorResultCanceledByUser, result);
-        EXPECT_EQ(nil, resultInfo);
-      };
-  [signinCoordinator start];
+  OCMExpect([delegate trustedVaultReauthenticationCoordinatorWantsToBeStopped:
+                          trustedVaultReauthenticationCoordinator])
+      .andDo(^(NSInvocation*) {
+        [trustedVaultReauthenticationCoordinator stop];
+      });
+
+  [trustedVaultReauthenticationCoordinator start];
   // Wait until the view controllre is presented.
   EXPECT_NE(nil, base_view_controller_.presentedViewController);
   EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
@@ -123,13 +122,6 @@ TEST_F(TrustedVaultReauthenticationCoordinatorTest, TestCancel) {
   static_cast<FakeTrustedVaultClientBackend*>(
       TrustedVaultClientBackendFactory::GetForProfile(profile_.get()))
       ->SimulateUserCancel();
-
-  // Test the completion block.
-  EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
-      base::test::ios::kWaitForUIElementTimeout, ^bool() {
-        return signin_completion_called;
-      }));
-  [signinCoordinator stop];
 }
 
 // Opens the trusted vault reauth dialog, and simulate a user cancel.
@@ -139,36 +131,26 @@ TEST_F(TrustedVaultReauthenticationCoordinatorTest, TestInterruptWithDismiss) {
       trusted_vault::SecurityDomainId::kChromeSync;
   syncer::TrustedVaultUserActionTriggerForUMA trigger =
       syncer::TrustedVaultUserActionTriggerForUMA::kSettings;
-  signin_metrics::AccessPoint accessPoint =
-      signin_metrics::AccessPoint::kStartPage;
-  SigninCoordinator* signinCoordinator = [SigninCoordinator
-      trustedVaultReAuthenticationCoordinatorWithBaseViewController:
-          base_view_controller_
-                                                            browser:browser()
-                                                             intent:
-                                                                 SigninTrustedVaultDialogIntentFetchKeys
-                                                   securityDomainID:
-                                                       securityDomainID
-                                                            trigger:trigger
-                                                        accessPoint:
-                                                            accessPoint];
+  TrustedVaultReauthenticationCoordinator*
+      trustedVaultReauthenticationCoordinator =
+          [[TrustedVaultReauthenticationCoordinator alloc]
+              initWithBaseViewController:base_view_controller_
+                                 browser:browser()
+                                  intent:SigninTrustedVaultDialogIntentFetchKeys
+                        securityDomainID:securityDomainID
+                                 trigger:trigger];
+  id<TrustedVaultReauthenticationCoordinatorDelegate> delegate =
+      OCMStrictProtocolMock(
+          @protocol(TrustedVaultReauthenticationCoordinatorDelegate));
+  trustedVaultReauthenticationCoordinator.delegate = delegate;
   // Open and cancel the web sign-in dialog.
-  __block bool signin_completion_called = false;
-  signinCoordinator.signinCompletion =
-      ^(SigninCoordinatorResult result, id<SystemIdentity> resultInfo) {
-        signin_completion_called = true;
-        EXPECT_EQ(SigninCoordinatorResultInterrupted, result);
-        EXPECT_EQ(nil, resultInfo);
-      };
-  [signinCoordinator start];
-  // Wait until the view controllre is presented.
+  [trustedVaultReauthenticationCoordinator start];
+  // Wait until the view controller is presented.
   EXPECT_NE(nil, base_view_controller_.presentedViewController);
   EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
       base::test::ios::kWaitForUIElementTimeout, ^bool() {
         return !base_view_controller_.presentedViewController.beingPresented;
       }));
   // Stop the coordinator while being opened.
-  [signinCoordinator stop];
-  // Sign-in and interrupt completion blocks should be called synchronously.
-  EXPECT_FALSE(signin_completion_called);
+  [trustedVaultReauthenticationCoordinator stop];
 }

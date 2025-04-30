@@ -2,15 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/authentication/ui_bundled/signin/trusted_vault_reauthentication/trusted_vault_reauthentication_coordinator.h"
+#import "ios/chrome/browser/authentication/ui_bundled/trusted_vault_reauthentication/trusted_vault_reauthentication_coordinator.h"
 
 #import "base/strings/sys_string_conversions.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/service/sync_service_utils.h"
 #import "components/trusted_vault/trusted_vault_server_constants.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator+protected.h"
+#import "ios/chrome/browser/authentication/ui_bundled/trusted_vault_reauthentication/trusted_vault_reauthentication_coordinator_delegate.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
-#import "ios/chrome/browser/shared/coordinator/chrome_coordinator/animated_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
@@ -43,14 +42,10 @@ using l10n_util::GetNSStringF;
                        browser:(Browser*)browser
                         intent:(SigninTrustedVaultDialogIntent)intent
               securityDomainID:(trusted_vault::SecurityDomainId)securityDomainID
-                       trigger:
-                           (syncer::TrustedVaultUserActionTriggerForUMA)trigger
-                   accessPoint:(signin_metrics::AccessPoint)accessPoint {
+                       trigger:(syncer::TrustedVaultUserActionTriggerForUMA)
+                                   trigger {
   DCHECK(!browser->GetProfile()->IsOffTheRecord());
-  self = [super initWithBaseViewController:viewController
-                                   browser:browser
-                              contextStyle:SigninContextStyle::kDefault
-                               accessPoint:accessPoint];
+  self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
     _intent = intent;
     _securityDomainID = securityDomainID;
@@ -65,20 +60,6 @@ using l10n_util::GetNSStringF;
   }
   return self;
 }
-
-#pragma mark - AnimatedCoordinator
-
-- (void)stopAnimated:(BOOL)animated {
-  // This coordinator should be either showing an error dialog or the trusted
-  // vault dialog.
-  [self stopErrorAlertCoordinator];
-  if (_dialogCancelCallback) {
-    std::move(_dialogCancelCallback).Run(animated, nil);
-  }
-  [super stopAnimated:animated];
-}
-
-#pragma mark - ChromeCoordinator
 
 - (void)start {
   [super start];
@@ -112,6 +93,17 @@ using l10n_util::GetNSStringF;
                                           self.baseViewController, callback);
       break;
   }
+}
+
+- (void)stop {
+  // This coordinator should be either showing an error dialog or the trusted
+  // vault dialog.
+  [self stopErrorAlertCoordinator];
+  if (_dialogCancelCallback) {
+    std::move(_dialogCancelCallback).Run(NO, nil);
+  }
+  [super stop];
+  self.delegate = nil;
 }
 
 #pragma mark - Private
@@ -154,11 +146,7 @@ using l10n_util::GetNSStringF;
 
 - (void)reauthentificationCompletedWithSuccess:(BOOL)success {
   DCHECK(self.identity);
-  SigninCoordinatorResult result = success
-                                       ? SigninCoordinatorResultSuccess
-                                       : SigninCoordinatorResultCanceledByUser;
-  [self runCompletionWithSigninResult:result
-                   completionIdentity:success ? self.identity : nil];
+  [self.delegate trustedVaultReauthenticationCoordinatorWantsToBeStopped:self];
 }
 
 #pragma mark - NSObject

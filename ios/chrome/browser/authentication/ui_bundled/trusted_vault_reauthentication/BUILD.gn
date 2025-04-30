@@ -8,23 +8,23 @@ source_set("trusted_vault_reauthentication") {
   sources = [
     "trusted_vault_reauthentication_coordinator.h",
     "trusted_vault_reauthentication_coordinator.mm",
+    "trusted_vault_reauthentication_coordinator_delegate.h",
   ]
   deps = [
     "//components/strings",
     "//components/sync",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/authentication/ui_bundled/signin:signin_protected",
+    "//ios/chrome/browser/authentication/ui_bundled/signin:constants",
     "//ios/chrome/browser/shared/coordinator/alert",
-    "//ios/chrome/browser/shared/coordinator/chrome_coordinator:animated_coordinator",
     "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/signin/model:authentication_service",
     "//ios/chrome/browser/signin/model:authentication_service_factory",
     "//ios/chrome/browser/signin/model:trusted_vault",
     "//ios/chrome/browser/signin/model:trusted_vault_factory",
     "//ui/base",
   ]
-  public_deps =
-      [ "//ios/chrome/browser/authentication/ui_bundled/signin:signin_headers" ]
+  public_deps = [ "//ios/chrome/browser/shared/coordinator/chrome_coordinator:chrome_coordinator" ]
 }
 
 source_set("unit_tests") {
