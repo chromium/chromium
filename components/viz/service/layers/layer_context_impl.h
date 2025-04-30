@@ -41,7 +41,8 @@ class LayerContextImpl : public cc::LayerTreeHostImplClient,
   // Constructs a new LayerContextImpl which submits frames to the local
   // `compositor_sink` with client connection details given by `context`.
   LayerContextImpl(CompositorFrameSinkSupport* compositor_sink,
-                   mojom::PendingLayerContext& context);
+                   mojom::PendingLayerContext& context,
+                   bool draw_mode_is_gpu);
   ~LayerContextImpl() override;
 
   void BeginFrame(const BeginFrameArgs& args);

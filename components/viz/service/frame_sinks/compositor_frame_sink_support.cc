@@ -605,8 +605,10 @@ void CompositorFrameSinkSupport::InitializeCompositorFrameSinkType(
 }
 
 void CompositorFrameSinkSupport::BindLayerContext(
-    mojom::PendingLayerContext& context) {
-  layer_context_ = std::make_unique<LayerContextImpl>(this, context);
+    mojom::PendingLayerContext& context,
+    bool draw_mode_is_gpu) {
+  layer_context_ =
+      std::make_unique<LayerContextImpl>(this, context, draw_mode_is_gpu);
 }
 
 void CompositorFrameSinkSupport::SetThreads(

@@ -48,10 +48,11 @@ int GenerateNextDisplayTreeId() {
   return next_id++;
 }
 
-cc::LayerTreeSettings GetDisplayTreeSettings() {
+cc::LayerTreeSettings GetDisplayTreeSettings(bool draw_mode_is_gpu) {
   cc::LayerTreeSettings settings;
   settings.use_layer_lists = true;
   settings.is_display_tree = true;
+  settings.display_tree_draw_mode_is_gpu = draw_mode_is_gpu;
   return settings;
 }
 
@@ -952,24 +953,25 @@ base::expected<void, std::string> DeserializeAnimationUpdates(
 }  // namespace
 
 LayerContextImpl::LayerContextImpl(CompositorFrameSinkSupport* compositor_sink,
-                                   mojom::PendingLayerContext& context)
+                                   mojom::PendingLayerContext& context,
+                                   bool draw_mode_is_gpu)
     : compositor_sink_(compositor_sink),
       receiver_(this, std::move(context.receiver)),
       client_(std::move(context.client)),
       task_runner_provider_(cc::TaskRunnerProvider::CreateForDisplayTree(
           base::SingleThreadTaskRunner::GetCurrentDefault())),
       rendering_stats_(cc::RenderingStatsInstrumentation::Create()),
-      host_impl_(
-          cc::LayerTreeHostImpl::Create(GetDisplayTreeSettings(),
-                                        this,
-                                        task_runner_provider_.get(),
-                                        rendering_stats_.get(),
-                                        /*task_graph_runner=*/nullptr,
-                                        animation_host_->CreateImplInstance(),
-                                        /*dark_mode_filter=*/nullptr,
-                                        GenerateNextDisplayTreeId(),
-                                        /*image_worker_task_runner=*/nullptr,
-                                        /*scheduling_client=*/nullptr)) {
+      host_impl_(cc::LayerTreeHostImpl::Create(
+          GetDisplayTreeSettings(draw_mode_is_gpu),
+          this,
+          task_runner_provider_.get(),
+          rendering_stats_.get(),
+          /*task_graph_runner=*/nullptr,
+          animation_host_->CreateImplInstance(),
+          /*dark_mode_filter=*/nullptr,
+          GenerateNextDisplayTreeId(),
+          /*image_worker_task_runner=*/nullptr,
+          /*scheduling_client=*/nullptr)) {
   CHECK(host_impl_->InitializeFrameSink(this));
 }
 

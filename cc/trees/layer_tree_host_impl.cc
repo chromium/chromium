@@ -1220,7 +1220,9 @@ std::string LayerTreeHostImpl::FrameData::ToString() const {
 DrawMode LayerTreeHostImpl::GetDrawMode() const {
   if (resourceless_software_draw_) {
     return DRAW_MODE_RESOURCELESS_SOFTWARE;
-  } else if (layer_tree_frame_sink_->context_provider()) {
+  } else if (layer_tree_frame_sink_->context_provider() ||
+             (settings_.is_display_tree &&
+              settings_.display_tree_draw_mode_is_gpu)) {
     return DRAW_MODE_HARDWARE;
   } else {
     return DRAW_MODE_SOFTWARE;

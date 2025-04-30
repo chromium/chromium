@@ -866,7 +866,8 @@ VizLayerContext::VizLayerContext(viz::mojom::CompositorFrameSink& frame_sink,
   auto context = viz::mojom::PendingLayerContext::New();
   context->receiver = service_.BindNewEndpointAndPassReceiver();
   context->client = client_receiver_.BindNewEndpointAndPassRemote();
-  frame_sink.BindLayerContext(std::move(context));
+  bool draw_mode_is_gpu = host_impl.GetDrawMode() == DRAW_MODE_HARDWARE;
+  frame_sink.BindLayerContext(std::move(context), draw_mode_is_gpu);
 }
 
 VizLayerContext::~VizLayerContext() = default;

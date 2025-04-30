@@ -45,6 +45,9 @@ class CC_EXPORT LayerTreeSettings {
   // the remote client.
   bool is_display_tree = false;
 
+  // If true, the client requested display tree draw mode to be GPU.
+  bool display_tree_draw_mode_is_gpu = false;
+
   bool single_thread_proxy_scheduler = true;
   bool main_frame_before_activation_enabled = false;
   bool using_synchronous_renderer_compositor = false;

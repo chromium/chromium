@@ -132,7 +132,8 @@ class VIZ_SERVICE_EXPORT RootCompositorFrameSinkImpl
       SubmitCompositorFrameSyncCallback callback) override;
   void InitializeCompositorFrameSinkType(
       mojom::CompositorFrameSinkType type) override;
-  void BindLayerContext(mojom::PendingLayerContextPtr context) override;
+  void BindLayerContext(mojom::PendingLayerContextPtr context,
+                        bool draw_mode_is_gpu) override;
 #if BUILDFLAG(IS_ANDROID)
   void SetThreads(const std::vector<Thread>& threads) override;
 #endif
