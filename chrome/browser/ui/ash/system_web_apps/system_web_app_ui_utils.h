@@ -96,10 +96,10 @@ void LaunchSystemWebAppAsync(
 //
 // This method returns `nullptr` if the app aborts the launch (e.g. delaying the
 // launch after some async operation).
-Browser* LaunchSystemWebAppImpl(Profile* profile,
-                                SystemWebAppType type,
-                                const GURL& url,
-                                const apps::AppLaunchParams& params);
+BrowserDelegate* LaunchSystemWebAppImpl(Profile* profile,
+                                        SystemWebAppType type,
+                                        const GURL& url,
+                                        const apps::AppLaunchParams& params);
 
 // Returns a browser that is dedicated (i.e. has a standalone shelf icon) to
 // hosting the given system |app_type| that matches |browser_type| and

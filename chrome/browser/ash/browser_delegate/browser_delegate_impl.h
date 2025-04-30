@@ -30,6 +30,9 @@ class BrowserDelegateImpl : public BrowserDelegate {
   void Show() override;
   void Minimize() override;
   void Close() override;
+  void AddTab(const GURL& url,
+              std::optional<size_t> index,
+              TabDisposition disposition) override;
   content::WebContents* NavigateWebApp(const GURL& url,
                                        TabPinning pin_tab) override;
 

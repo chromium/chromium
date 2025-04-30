@@ -8,6 +8,7 @@
 #include "chrome/browser/ash/browser_delegate/browser_type_conversion.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
@@ -66,6 +67,13 @@ void BrowserDelegateImpl::Minimize() {
 
 void BrowserDelegateImpl::Close() {
   browser_->window()->Close();
+}
+
+void BrowserDelegateImpl::AddTab(const GURL& url,
+                                 std::optional<size_t> index,
+                                 TabDisposition disposition) {
+  chrome::AddTabAt(&browser_.get(), url, index.has_value() ? *index : -1,
+                   disposition == TabDisposition::kForeground);
 }
 
 content::WebContents* BrowserDelegateImpl::NavigateWebApp(const GURL& url,

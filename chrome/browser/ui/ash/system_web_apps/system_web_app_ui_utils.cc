@@ -227,10 +227,10 @@ void LaunchSystemWebAppAsync(Profile* profile,
                                           : base::DoNothing()));
 }
 
-Browser* LaunchSystemWebAppImpl(Profile* profile,
-                                SystemWebAppType app_type,
-                                const GURL& url,
-                                const apps::AppLaunchParams& params) {
+BrowserDelegate* LaunchSystemWebAppImpl(Profile* profile,
+                                        SystemWebAppType app_type,
+                                        const GURL& url,
+                                        const apps::AppLaunchParams& params) {
   // Exit early if we can't create browser windows (e.g. when browser is
   // shutting down, or a wrong profile is given).
   if (Browser::GetCreationStatusForProfile(profile) !=
@@ -292,7 +292,7 @@ Browser* LaunchSystemWebAppImpl(Profile* profile,
   multi_user_util::MoveWindowToCurrentDesktop(browser->GetNativeWindow());
 
   browser->Show();
-  return &browser->GetBrowser();
+  return browser;
 }
 
 Browser* FindSystemWebAppBrowser(Profile* profile,

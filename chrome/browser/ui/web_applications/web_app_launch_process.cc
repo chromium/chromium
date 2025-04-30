@@ -35,6 +35,7 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #endif
@@ -154,11 +155,9 @@ content::WebContents* WebAppLaunchProcess::Run() {
   std::optional<ash::SystemWebAppType> system_app_type =
       ash::GetSystemWebAppTypeForAppId(&profile_.get(), params_->app_id);
   if (system_app_type) {
-    Browser* browser = LaunchSystemWebAppImpl(&profile_.get(), *system_app_type,
-                                              launch_url, *params_);
-
-    return browser ? browser->tab_strip_model()->GetActiveWebContents()
-                   : nullptr;
+    ash::BrowserDelegate* browser = LaunchSystemWebAppImpl(
+        &profile_.get(), *system_app_type, launch_url, *params_);
+    return browser ? browser->GetActiveWebContents() : nullptr;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
