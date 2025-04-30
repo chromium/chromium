@@ -293,7 +293,11 @@ class GraphBuilderOrt {
       const mojom::Linear& linear);
   void AddLogicalNotOperation(const mojom::ElementWiseUnary& logical_not);
   void AddLeakyReluOperation(const mojom::LeakyRelu& leaky_relu);
-  void AddMatMulOperation(const mojom::Matmul& matmul);
+  [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddMatMulOperation(
+      const mojom::Matmul& matmul,
+      const std::map<uint64_t,
+                     raw_ptr<const mojom::Operation, CtnExperimental>>&
+          output_id_to_fusible_matmulnbits_map);
   template <typename LstmType>
     requires(std::is_same_v<LstmType, mojom::Lstm> ||
              std::is_same_v<LstmType, mojom::LstmCell>)

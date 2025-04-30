@@ -28,6 +28,12 @@ namespace webnn::ort {
 
 namespace {
 
+// The feature flag allows us to disable the graph fusion if it causes
+// something wrong.
+BASE_FEATURE(kApplyOrtGraphFusion,
+             "ApplyOrtGraphFusion",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 constexpr char kOpTypeArgMax[] = "ArgMax";
 constexpr char kOpTypeArgMin[] = "ArgMin";
 constexpr char kOpTypeBatchNormalization[] = "BatchNormalization";
@@ -88,6 +94,7 @@ constexpr char kOpTypeLayerNormalization[] = "LayerNormalization";
 constexpr char kOpTypeLeakyRelu[] = "LeakyRelu";
 constexpr char kOpTypeLstm[] = "LSTM";
 constexpr char kOpTypeMatMul[] = "MatMul";
+constexpr char kOpTypeMatMulNBits[] = "MatMulNBits";
 constexpr char kOpTypePad[] = "Pad";
 
 // Pooling operations
@@ -222,6 +229,657 @@ struct TensorTypeMap<uint8_t> {
   static constexpr ONNXTensorElementDataType value =
       ONNX_TENSOR_ELEMENT_DATA_TYPE_UINT8;
 };
+
+// The struct contains the connectivity information of an operation in
+// `mojom::GraphInfo::operations`. It helps to generate and represent the
+// topological information about how all operations are connected.
+struct OperationConnectivity {
+  // The operation's input ids which are used to identity the input operands in
+  // `mojom::GraphInfo::id_to_operand_map`.
+  std::vector<uint64_t> input_ids;
+  // The operation's output ids which are used to identity the output operands
+  // in `mojom::GraphInfo::id_to_operand_map`.
+  std::vector<uint64_t> output_ids;
+};
+
+void RetrieveOperationConnectivity(
+    const mojom::Operation* operation,
+    OperationConnectivity& out_operation_connectivity) {
+  std::vector<uint64_t>& input_ids = out_operation_connectivity.input_ids;
+  std::vector<uint64_t>& output_ids = out_operation_connectivity.output_ids;
+  input_ids.clear();
+  output_ids.clear();
+  switch (operation->which()) {
+    case mojom::Operation::Tag::kArgMinMax: {
+      const auto& arg_min_max = operation->get_arg_min_max();
+      input_ids = {arg_min_max->input_operand_id};
+      output_ids = {arg_min_max->output_operand_id};
+      break;
+    }
+    case mojom::Operation::Tag::kBatchNormalization: {
+      const auto& batch_norm = operation->get_batch_normalization();
+      input_ids = {batch_norm->input_operand_id, batch_norm->mean_operand_id,
+                   batch_norm->variance_operand_id};
+      auto& scale_operand_id = batch_norm->scale_operand_id;
+      if (scale_operand_id) {
+        input_ids.push_back(scale_operand_id.value());
+      }
+      auto& bias_operand_id = batch_norm->bias_operand_id;
+      if (bias_operand_id) {
+        input_ids.push_back(bias_operand_id.value());
+      }
+      output_ids = {batch_norm->output_operand_id};
+      break;
+    }
+    case mojom::Operation::Tag::kClamp: {
+      const auto& clamp = operation->get_clamp();
+      input_ids = {clamp->input_operand_id};
+      output_ids = {clamp->output_operand_id};
+      break;
+    }
+    case mojom::Operation::Tag::kConcat: {
+      const auto& concat = operation->get_concat();
+      input_ids = {concat->input_operand_ids};
+      output_ids = {concat->output_operand_id};
+      break;
+    }
+    case mojom::Operation::Tag::kConv2d: {
+      const auto& conv2d = operation->get_conv2d();
+      input_ids = {conv2d->input_operand_id, conv2d->filter_operand_id};
+      auto& bias_operand_id = conv2d->bias_operand_id;
+      if (bias_operand_id) {
+        input_ids.push_back(bias_operand_id.value());
+      }
+      output_ids = {conv2d->output_operand_id};
+      break;
+    }
+    case mojom::Operation::Tag::kCumulativeSum: {
+      const auto& cumulative_sum = operation->get_cumulative_sum();
+      input_ids = {cumulative_sum->input_operand_id};
+      output_ids = {cumulative_sum->output_operand_id};
+      break;
+    }
+    case mojom::Operation::Tag::kDequantizeLinear: {
+      const auto& dequantize_linear = operation->get_dequantize_linear();
+      input_ids = {dequantize_linear->input_operand_id,
+                   dequantize_linear->scale_operand_id,
+                   dequantize_linear->zero_point_operand_id};
+      output_ids = {dequantize_linear->output_operand_id};
+      break;
+    }
+    case mojom::Operation::Tag::kElementWiseBinary: {
+      const auto& binary = operation->get_element_wise_binary();
+      input_ids = {binary->lhs_operand_id, binary->rhs_operand_id};
+      output_ids = {binary->output_operand_id};
+      break;
+    }
+    case mojom::Operation::Tag::kElu: {
+      const auto& elu = operation->get_elu();
+      input_ids = {elu->input_operand_id};
+      output_ids = {elu->output_operand_id};
+      break;
+    }
+    case mojom::Operation::Tag::kElementWiseUnary: {
+      const auto& unary = operation->get_element_wise_unary();
+      input_ids = {unary->input_operand_id};
+      output_ids = {unary->output_operand_id};
+      break;
+    }
+    case mojom::Operation::Tag::kExpand: {
+      const auto& expand = operation->get_expand();
+      input_ids = {expand->input_operand_id};
+      output_ids = {expand->output_operand_id};
+      break;
+    }
+    case mojom::Operation::Tag::kGather: {
+      const auto& gather = operation->get_gather();
+      input_ids = {gather->input_operand_id, gather->indices_operand_id};
+      output_ids = {gather->output_operand_id};
+      break;
+    }
+    case mojom::Operation::Tag::kGatherElements: {
+      const auto& gather_elements = operation->get_gather_elements();
+      input_ids = {gather_elements->input_operand_id,
+                   gather_elements->indices_operand_id};
+      output_ids = {gather_elements->output_operand_id};
+      break;
+    }
+    case mojom::Operation::Tag::kGatherNd: {
+      const auto& gather_nd = operation->get_gather_nd();
+      input_ids = {gather_nd->input_operand_id, gather_nd->indices_operand_id};
+      output_ids = {gather_nd->output_operand_id};
+      break;
+    }
+    case mojom::Operation::Tag::kGelu: {
+      const auto& gelu = operation->get_gelu();
+      input_ids = {gelu->input_operand_id};
+      output_ids = {gelu->output_operand_id};
+      break;
+    }
+    case mojom::Operation::Tag::kGemm: {
+      const auto& gemm = operation->get_gemm();
+      input_ids = {gemm->a_operand_id, gemm->b_operand_id};
+      auto& c_operand_id = gemm->c_operand_id;
+      if (c_operand_id) {
+        input_ids.push_back(c_operand_id.value());
+      }
+      output_ids = {gemm->output_operand_id};
+      break;
+    }
+    case mojom::Operation::Tag::kGru: {
+      const auto& gru = operation->get_gru();
+      input_ids = {gru->input_operand_id, gru->weight_operand_id,
+                   gru->recurrent_weight_operand_id};
+      auto& bias_operand_id = gru->bias_operand_id;
+      if (bias_operand_id) {
+        input_ids.push_back(bias_operand_id.value());
+      }
+      auto& recurrent_bias_operand_id = gru->recurrent_bias_operand_id;
+      if (recurrent_bias_operand_id) {
+        input_ids.push_back(recurrent_bias_operand_id.value());
+      }
+      auto& initial_hidden_state_operand_id =
+          gru->initial_hidden_state_operand_id;
+      if (initial_hidden_state_operand_id) {
+        input_ids.push_back(initial_hidden_state_operand_id.value());
+      }
+      output_ids = {gru->output_operand_ids};
+      break;
+    }
+    case mojom::Operation::Tag::kGruCell: {
+      const auto& gru_cell = operation->get_gru_cell();
+      input_ids = {gru_cell->input_operand_id, gru_cell->weight_operand_id,
+                   gru_cell->recurrent_weight_operand_id,
+                   gru_cell->hidden_state_operand_id};
+      auto& bias_operand_id = gru_cell->bias_operand_id;
+      if (bias_operand_id) {
+        input_ids.push_back(bias_operand_id.value());
+      }
+      auto& recurrent_bias_operand_id = gru_cell->recurrent_bias_operand_id;
+      if (recurrent_bias_operand_id) {
+        input_ids.push_back(recurrent_bias_operand_id.value());
+      }
+      output_ids = {gru_cell->output_operand_id};
+      break;
+    }
+    case mojom::Operation::Tag::kHardSigmoid: {
+      const auto& hard_sgmoid = operation->get_hard_sigmoid();
+      input_ids = {hard_sgmoid->input_operand_id};
+      output_ids = {hard_sgmoid->output_operand_id};
+      break;
+    }
+    case mojom::Operation::Tag::kHardSwish: {
+      const auto& hard_swish = operation->get_hard_swish();
+      input_ids = {hard_swish->input_operand_id};
+      output_ids = {hard_swish->output_operand_id};
+      break;
+    }
+    case mojom::Operation::Tag::kInstanceNormalization: {
+      const auto& instance_norm = operation->get_instance_normalization();
+      input_ids = {instance_norm->input_operand_id};
+      auto& scale_operand_id = instance_norm->scale_operand_id;
+      if (scale_operand_id) {
+        input_ids.push_back(scale_operand_id.value());
+      }
+      auto& bias_operand_id = instance_norm->bias_operand_id;
+      if (bias_operand_id) {
+        input_ids.push_back(bias_operand_id.value());
+      }
+      output_ids = {instance_norm->output_operand_id};
+      break;
+    }
+    case mojom::Operation::Tag::kLayerNormalization: {
+      const auto& layer_norm = operation->get_layer_normalization();
+      input_ids = {layer_norm->input_operand_id};
+      auto& scale_operand_id = layer_norm->scale_operand_id;
+      if (scale_operand_id) {
+        input_ids.push_back(scale_operand_id.value());
+      }
+      auto& bias_operand_id = layer_norm->bias_operand_id;
+      if (bias_operand_id) {
+        input_ids.push_back(bias_operand_id.value());
+      }
+      output_ids = {layer_norm->output_operand_id};
+      break;
+    }
+    case mojom::Operation::Tag::kLeakyRelu: {
+      const auto& leaky_relu = operation->get_leaky_relu();
+      input_ids = {leaky_relu->input_operand_id};
+      output_ids = {leaky_relu->output_operand_id};
+      break;
+    }
+    case mojom::Operation::Tag::kLinear: {
+      const auto& linear = operation->get_linear();
+      input_ids = {linear->input_operand_id};
+      output_ids = {linear->output_operand_id};
+      break;
+    }
+    case mojom::Operation::Tag::kLstm: {
+      const auto& lstm = operation->get_lstm();
+      input_ids = {lstm->input_operand_id, lstm->weight_operand_id,
+                   lstm->recurrent_weight_operand_id};
+      auto& bias_operand_id = lstm->bias_operand_id;
+      if (bias_operand_id) {
+        input_ids.push_back(bias_operand_id.value());
+      }
+      auto& recurrent_bias_operand_id = lstm->recurrent_bias_operand_id;
+      if (recurrent_bias_operand_id) {
+        input_ids.push_back(recurrent_bias_operand_id.value());
+      }
+      auto& peephole_weight_operand_id = lstm->peephole_weight_operand_id;
+      if (peephole_weight_operand_id) {
+        input_ids.push_back(peephole_weight_operand_id.value());
+      }
+      auto& initial_hidden_state_operand_id =
+          lstm->initial_hidden_state_operand_id;
+      if (initial_hidden_state_operand_id) {
+        input_ids.push_back(initial_hidden_state_operand_id.value());
+      }
+      auto& initial_cell_state_operand_id = lstm->initial_cell_state_operand_id;
+      if (initial_cell_state_operand_id) {
+        input_ids.push_back(initial_cell_state_operand_id.value());
+      }
+      output_ids = {lstm->output_operand_ids};
+      break;
+    }
+    case mojom::Operation::Tag::kLstmCell: {
+      const auto& lstm_cell = operation->get_lstm_cell();
+      input_ids = {lstm_cell->input_operand_id, lstm_cell->weight_operand_id,
+                   lstm_cell->recurrent_weight_operand_id,
+                   lstm_cell->hidden_state_operand_id,
+                   lstm_cell->cell_state_operand_id};
+      auto& bias_operand_id = lstm_cell->bias_operand_id;
+      if (bias_operand_id) {
+        input_ids.push_back(bias_operand_id.value());
+      }
+      auto& recurrent_bias_operand_id = lstm_cell->recurrent_bias_operand_id;
+      if (recurrent_bias_operand_id) {
+        input_ids.push_back(recurrent_bias_operand_id.value());
+      }
+      auto& peephole_weight_operand_id = lstm_cell->peephole_weight_operand_id;
+      if (peephole_weight_operand_id) {
+        input_ids.push_back(peephole_weight_operand_id.value());
+      }
+      output_ids = {lstm_cell->output_operand_ids};
+      break;
+    }
+    case mojom::Operation::Tag::kMatmul: {
+      const auto& matmul = operation->get_matmul();
+      input_ids = {matmul->a_operand_id, matmul->b_operand_id};
+      output_ids = {matmul->output_operand_id};
+      break;
+    }
+    case mojom::Operation::Tag::kPad: {
+      const auto& pad = operation->get_pad();
+      input_ids = {pad->input_operand_id};
+      output_ids = {pad->output_operand_id};
+      break;
+    }
+    case mojom::Operation::Tag::kPool2d: {
+      const auto& pool2d = operation->get_pool2d();
+      input_ids = {pool2d->input_operand_id};
+      output_ids = {pool2d->output_operand_id};
+      break;
+    }
+    case mojom::Operation::Tag::kPrelu: {
+      const auto& prelu = operation->get_prelu();
+      input_ids = {prelu->input_operand_id, prelu->slope_operand_id};
+      output_ids = {prelu->output_operand_id};
+      break;
+    }
+    case mojom::Operation::Tag::kQuantizeLinear: {
+      const auto& quantize_linear = operation->get_quantize_linear();
+      input_ids = {quantize_linear->input_operand_id,
+                   quantize_linear->scale_operand_id,
+                   quantize_linear->zero_point_operand_id};
+      output_ids = {quantize_linear->output_operand_id};
+      break;
+    }
+    case mojom::Operation::Tag::kReduce: {
+      const auto& reduce = operation->get_reduce();
+      input_ids = {reduce->input_operand_id};
+      output_ids = {reduce->output_operand_id};
+      break;
+    }
+    case mojom::Operation::Tag::kRelu: {
+      const auto& relu = operation->get_relu();
+      input_ids = {relu->input_operand_id};
+      output_ids = {relu->output_operand_id};
+      break;
+    }
+    case mojom::Operation::Tag::kResample2d: {
+      const auto& resample2d = operation->get_resample2d();
+      input_ids = {resample2d->input_operand_id};
+      output_ids = {resample2d->output_operand_id};
+      break;
+    }
+    case mojom::Operation::Tag::kReshape: {
+      const auto& reshape = operation->get_reshape();
+      input_ids = {reshape->input_operand_id};
+      output_ids = {reshape->output_operand_id};
+      break;
+    }
+    case mojom::Operation::Tag::kReverse: {
+      const auto& reverse = operation->get_reverse();
+      input_ids = {reverse->input_operand_id};
+      output_ids = {reverse->output_operand_id};
+      break;
+    }
+    case mojom::Operation::Tag::kScatterElements: {
+      const auto& scatter_elements = operation->get_scatter_elements();
+      input_ids = {scatter_elements->input_operand_id,
+                   scatter_elements->indices_operand_id,
+                   scatter_elements->updates_operand_id};
+      output_ids = {scatter_elements->output_operand_id};
+      break;
+    }
+    case mojom::Operation::Tag::kScatterNd: {
+      const auto& scatter_nd = operation->get_scatter_nd();
+      input_ids = {scatter_nd->input_operand_id, scatter_nd->indices_operand_id,
+                   scatter_nd->updates_operand_id};
+      output_ids = {scatter_nd->output_operand_id};
+      break;
+    }
+    case mojom::Operation::Tag::kSigmoid: {
+      const auto& sigmoid = operation->get_sigmoid();
+      input_ids = {sigmoid->input_operand_id};
+      output_ids = {sigmoid->output_operand_id};
+      break;
+    }
+    case mojom::Operation::Tag::kSlice: {
+      const auto& slice = operation->get_slice();
+      input_ids = {slice->input_operand_id};
+      output_ids = {slice->output_operand_id};
+      break;
+    }
+    case mojom::Operation::Tag::kSoftmax: {
+      const auto& softmax = operation->get_softmax();
+      input_ids = {softmax->input_operand_id};
+      output_ids = {softmax->output_operand_id};
+      break;
+    }
+    case mojom::Operation::Tag::kSoftplus: {
+      const auto& softplus = operation->get_softplus();
+      input_ids = {softplus->input_operand_id};
+      output_ids = {softplus->output_operand_id};
+      break;
+    }
+    case mojom::Operation::Tag::kSoftsign: {
+      const auto& softsign = operation->get_softsign();
+      input_ids = {softsign->input_operand_id};
+      output_ids = {softsign->output_operand_id};
+      break;
+    }
+    case mojom::Operation::Tag::kSplit: {
+      const auto& split = operation->get_split();
+      input_ids = {split->input_operand_id};
+      output_ids = {split->output_operand_ids};
+      break;
+    }
+    case mojom::Operation::Tag::kTanh: {
+      const auto& tanh = operation->get_tanh();
+      input_ids = {tanh->input_operand_id};
+      output_ids = {tanh->output_operand_id};
+      break;
+    }
+    case mojom::Operation::Tag::kTile: {
+      const auto& tile = operation->get_tile();
+      input_ids = {tile->input_operand_id};
+      output_ids = {tile->output_operand_id};
+      break;
+    }
+    case mojom::Operation::Tag::kTranspose: {
+      const auto& transpose = operation->get_transpose();
+      input_ids = {transpose->input_operand_id};
+      output_ids = {transpose->output_operand_id};
+      break;
+    }
+    case mojom::Operation::Tag::kTriangular: {
+      const auto& triangular = operation->get_triangular();
+      input_ids = {triangular->input_operand_id};
+      output_ids = {triangular->output_operand_id};
+      break;
+    }
+    case mojom::Operation::Tag::kWhere: {
+      const auto& where = operation->get_where();
+      input_ids = {where->condition_operand_id, where->true_value_operand_id,
+                   where->false_value_operand_id};
+      output_ids = {where->output_operand_id};
+      break;
+    }
+  }
+}
+
+// The struct contains the information of graph fusion. In `CreateAndBuild`
+// method, when going through all operations to add each operation into the
+// final graph, this struct will be used for graph fusion.
+struct GraphFusionInfo {
+  // A map of all dequantizeLinear operations that can be fused into the
+  // following matmul using matmul's input_b id as the key.
+  std::map<uint64_t, raw_ptr<const mojom::Operation, CtnExperimental>>
+      matmul_input_b_to_fusible_dequantize_map;
+
+  // A set of all operations in `mojom::GraphInfo` which can be fused into
+  // another operation. No ORT operator node will be created for operations
+  // in this set.
+  std::unordered_set<const mojom::Operation*> fusible_operations_set;
+};
+
+// The method gets the graph fusion information from `mojom::GraphInfo`, based
+// on that the `operations` in `mojom::GraphInfo` have been in topological
+// order which means if operation 'j' depends on 'i', 'i' must appear before
+// 'j'.
+GraphFusionInfo GetGraphFusionInfo(const mojom::GraphInfo& graph_info) {
+  // If it's disabled, just return empty 'GraphFusionInfo' object which means no
+  // graph fusion will be applied since currently we only enable matmulnbits
+  // fusion.
+  if (!base::FeatureList::IsEnabled(kApplyOrtGraphFusion)) {
+    return GraphFusionInfo();
+  }
+
+  GraphFusionInfo graph_fusion_info;
+
+  // A map of all matmul operations in `mojom::GraphInfo` using matmul's 2nd
+  // input operand id as the key.
+  std::map<uint64_t, const mojom::Operation*> input_b_id_to_matmul_map;
+
+  // A map of all transpose operations in `mojom::GraphInfo` whose output is
+  // consumed by a matmul operation, using the input operand id of the transpose
+  // operation as the key.
+  std::map<uint64_t, const mojom::Operation*> input_id_to_transpose_matmul_map;
+
+  // A map of all reshape operations in `mojom::GraphInfo` whose output is
+  // consumed by a transpose operation and this transpose must be contained in
+  // `input_id_to_transpose_matmul_map`. Using the input operand id of the
+  // reshape as the key.
+  std::map<uint64_t, const mojom::Operation*>
+      input_id_to_reshape_transpose_matmul_map;
+
+  // A map to record how many times each operand id is used as one
+  // operation's input edge or the graph's output edge.
+  std::map<uint64_t, uint32_t> operand_id_to_use_count_map;
+  for (const auto& pair : graph_info.id_to_operand_map) {
+    operand_id_to_use_count_map[pair.first] = 0;
+  }
+
+  for (uint64_t graph_output_id : graph_info.output_operands) {
+    ++operand_id_to_use_count_map[graph_output_id];
+  }
+
+  // Iterate from the end of operations instead from the beginning, so we
+  // can easily get the total use count of a fusible operation's output
+  // edge before visiting it.
+  OperationConnectivity operation_connectivity;
+  for (size_t operation_index = graph_info.operations.size();
+       operation_index-- > 0;) {
+    const auto& operation = graph_info.operations[operation_index];
+    RetrieveOperationConnectivity(
+        operation.get(),
+        /*out_operation_connectivity*/ operation_connectivity);
+
+    for (uint64_t input_id : operation_connectivity.input_ids) {
+      ++operand_id_to_use_count_map[input_id];
+    }
+
+    // Try to find the operations that can be fused into a MatMulNBits
+    // operation following the decomposed pattern used by ONNX Runtime WebNN
+    // EP-https://github.com/microsoft/onnxruntime/blob/main/onnxruntime/core/providers/webnn/builders/impl/matMulNBits_op_builder.cc#L59.
+    // MatMulNBits fusion pattern:
+    //            scale
+    //              |
+    //     input reshape_2  zeroPoint
+    //        \     |      /
+    //         dequantizeLinear
+    //              |
+    //           reshape_1
+    //              |
+    //  input_a    transpose
+    //     \       /
+    //        matmul
+    // If scale is a constant, the reshape_2 will be folded into scale by
+    // constant_folding in WebNN blink side. The fusion pattern will looks
+    // like this:
+    //     input   scale   zeroPoint
+    //         \     |      /
+    //         dequantizeLinear
+    //              |
+    //           reshape
+    //              |
+    //  inputa    transpose
+    //     \       /
+    //        matmul
+    switch (operation->which()) {
+      case mojom::Operation::Tag::kMatmul: {
+        // Map matmul's 2nd inputs to operation, so the following algorithm can
+        // find a dequantizeLinear whose output is consumed by a matmul.
+        CHECK_EQ(operation_connectivity.input_ids.size(), 2U);
+        const mojom::OperandPtr& input_b = graph_info.id_to_operand_map.at(
+            operation_connectivity.input_ids[1]);
+        if (input_b->descriptor.shape().size() != 2) {
+          break;
+        }
+        // We needn't check the result of `try_emplace` here, because if the key
+        // `input_id` is already in container, there must be more than 1 output
+        // edges from a predecessor in which case the dequantizeLinear fusion
+        // won't happen.
+        input_b_id_to_matmul_map.try_emplace(
+            operation_connectivity.input_ids[1], operation.get());
+        break;
+      }
+      case mojom::Operation::Tag::kTranspose: {
+        // If a transpose's output is solely used by a matmul and
+        // transpose's output must be the 2nd input of a matmul.
+        CHECK_EQ(operation_connectivity.output_ids.size(), 1U);
+        uint64_t output_id = operation_connectivity.output_ids[0];
+        // The matmul has only 1 transpose input and the tranpose must have 1
+        // output edge and not be a graph output
+        if (!input_b_id_to_matmul_map.contains(output_id) ||
+            operand_id_to_use_count_map[output_id] != 1) {
+          break;
+        }
+        // Transpose's permuation must be {1, 0}.
+        const mojom::TransposePtr& transpose = operation->get_transpose();
+        if (transpose->permutation != std::vector<uint32_t>{1, 0}) {
+          break;
+        }
+        input_id_to_transpose_matmul_map.try_emplace(
+            operation_connectivity.input_ids[0], operation.get());
+        break;
+      }
+      case mojom::Operation::Tag::kReshape: {
+        CHECK_EQ(operation_connectivity.output_ids.size(), 1U);
+        uint64_t output_id = operation_connectivity.output_ids[0];
+        if (!input_id_to_transpose_matmul_map.contains(output_id) ||
+            operand_id_to_use_count_map[output_id] != 1) {
+          break;
+        }
+        const mojom::OperandPtr& input_operand =
+            graph_info.id_to_operand_map.at(
+                operation_connectivity.input_ids[0]);
+        const mojom::OperandPtr& output_operand =
+            graph_info.id_to_operand_map.at(
+                operation_connectivity.output_ids[0]);
+        if (input_operand->descriptor.shape().size() != 3 ||
+            output_operand->descriptor.shape().size() != 2) {
+          break;
+        }
+        input_id_to_reshape_transpose_matmul_map.try_emplace(
+            operation_connectivity.input_ids[0], operation.get());
+        break;
+      }
+      case mojom::Operation::Tag::kDequantizeLinear: {
+        CHECK_EQ(operation_connectivity.output_ids.size(), 1U);
+        uint64_t output_id = operation_connectivity.output_ids[0];
+        if (!input_id_to_reshape_transpose_matmul_map.contains(output_id) ||
+            operand_id_to_use_count_map[output_id] != 1) {
+          break;
+        }
+        const mojom::DequantizeLinearPtr& dequantize_linear =
+            operation->get_dequantize_linear();
+        // Input, scale and zeroPoint must be constants.
+        if (!graph_info.constant_operand_ids_to_handles.contains(
+                dequantize_linear->input_operand_id) ||
+            !graph_info.constant_operand_ids_to_handles.contains(
+                dequantize_linear->scale_operand_id) ||
+            !graph_info.constant_operand_ids_to_handles.contains(
+                dequantize_linear->zero_point_operand_id)) {
+          break;
+        }
+        const mojom::OperandPtr& input_operand =
+            graph_info.id_to_operand_map.at(
+                dequantize_linear->input_operand_id);
+        const mojom::OperandPtr& scale_operand =
+            graph_info.id_to_operand_map.at(
+                dequantize_linear->scale_operand_id);
+
+        // Scale/output types must be float or float16.
+        auto scale_data_type = scale_operand->descriptor.data_type();
+        if (scale_data_type != OperandDataType::kFloat32 &&
+            scale_data_type != OperandDataType::kFloat16) {
+          break;
+        }
+
+        // Input/zeroPoint types must be uint4.
+        auto input_data_type = input_operand->descriptor.data_type();
+        if (input_data_type != OperandDataType::kUint4) {
+          break;
+        }
+
+        uint32_t input_rank = input_operand->descriptor.shape().size();
+        uint32_t scale_rank = input_operand->descriptor.shape().size();
+        // The shape rank of input, scale and zeroPoint must be 3.
+        if (input_rank != 3 || scale_rank != 3) {
+          break;
+        }
+
+        // Block_size must be 2's power and >= 16.
+        uint32_t block_size = input_operand->descriptor.shape()[2];
+        if (block_size < 16 || ((block_size - 1) & block_size)) {
+          break;
+        }
+
+        const mojom::Operation* reshape =
+            input_id_to_reshape_transpose_matmul_map[output_id];
+        const mojom::Operation* transpose =
+            input_id_to_transpose_matmul_map[reshape->get_reshape()
+                                                 ->output_operand_id];
+        graph_fusion_info.fusible_operations_set.insert(reshape);
+        graph_fusion_info.fusible_operations_set.insert(transpose);
+        graph_fusion_info.fusible_operations_set.insert(operation.get());
+        graph_fusion_info.matmul_input_b_to_fusible_dequantize_map
+            [transpose->get_transpose()->output_operand_id] = operation.get();
+
+        break;
+      }
+      default: {
+        // Skip other operations.
+        break;
+      }
+    }
+  }
+
+  return graph_fusion_info;
+}
 
 }  // namespace
 
@@ -2760,16 +3418,80 @@ GraphBuilderOrt::AddLstmOperation(const LstmType& lstm) {
   return base::ok();
 }
 
-void GraphBuilderOrt::AddMatMulOperation(const mojom::Matmul& matmul) {
+[[nodiscard]] base::expected<void, mojom::ErrorPtr>
+GraphBuilderOrt::AddMatMulOperation(
+    const mojom::Matmul& matmul,
+    const std::map<uint64_t, raw_ptr<const mojom::Operation, CtnExperimental>>&
+        matmul_input_b_to_fusible_dequantize_map) {
   const std::string node = GenerateNextOperationName(matmul.label);
   const std::string input_a = GetOperandNameById(matmul.a_operand_id);
-  const std::string input_b = GetOperandNameById(matmul.b_operand_id);
+  std::string input_b = GetOperandNameById(matmul.b_operand_id);
   const std::string output = GetOperandNameById(matmul.output_operand_id);
 
-  std::array<const char*, 2> inputs = {input_a.c_str(), input_b.c_str()};
-  std::array<const char*, 1> outputs = {output.c_str()};
+  if (matmul_input_b_to_fusible_dequantize_map.contains(matmul.b_operand_id)) {
+    const mojom::DequantizeLinearPtr& dequantize_linear =
+        matmul_input_b_to_fusible_dequantize_map.at(matmul.b_operand_id)
+            ->get_dequantize_linear();
+    const mojom::OperandPtr& input_b_operand =
+        graph_info_->id_to_operand_map.at(dequantize_linear->input_operand_id);
+    const std::vector<uint32_t>& input_b_shape =
+        input_b_operand->descriptor.shape();
 
-  model_editor_.AddNode(kOpTypeMatMul, node, inputs, outputs);
+    uint32_t input_feature_size = input_b_shape[0];
+    uint32_t quant_num = input_b_shape[1];
+    uint32_t blob_bytes = input_b_shape[2] / 2;
+    uint32_t block_size = input_b_shape[2];
+    uint32_t output_feature_size = quant_num * block_size;
+
+    const WebNNConstantOperand& input_constant =
+        *constant_operands_.at(dequantize_linear->input_operand_id);
+    std::vector<uint32_t> new_input_buffer_shape = {input_feature_size,
+                                                    quant_num, blob_bytes};
+
+    ASSIGN_OR_RETURN(input_b,
+                     CreateInitializer<uint8_t>(new_input_buffer_shape,
+                                                input_constant.ByteSpan()));
+
+    const WebNNConstantOperand& zero_point_constant =
+        *constant_operands_.at(dequantize_linear->zero_point_operand_id);
+    std::vector<uint32_t> new_zero_point_buffer_shape = {input_feature_size *
+                                                         ((quant_num + 1) / 2)};
+    ASSIGN_OR_RETURN(
+        std::string zero_point,
+        CreateInitializer<uint8_t>(new_zero_point_buffer_shape,
+                                   zero_point_constant.ByteSpan()));
+
+    std::string scale = GetOperandNameById(dequantize_linear->scale_operand_id);
+    // Here we insert a reshape since the original reshape has been folded into
+    // scale due to constant folding.
+    ASSIGN_OR_RETURN(scale,
+                     PrependReshape(scale, {input_feature_size * quant_num}));
+
+    std::array<const char*, 4> inputs = {input_a.c_str(), input_b.c_str(),
+                                         scale.c_str(), zero_point.c_str()};
+    std::array<const char*, 1> outputs = {output.c_str()};
+
+    std::vector<ScopedOrtOpAttr> attributes;
+    attributes.reserve(4);
+    attributes.push_back(model_editor_.CreateAttribute(
+        /*name=*/"K", base::checked_cast<int64_t>(output_feature_size)));
+    attributes.push_back(model_editor_.CreateAttribute(
+        /*name=*/"N", base::checked_cast<int64_t>(input_feature_size)));
+    attributes.push_back(model_editor_.CreateAttribute(
+        /*name=*/"bits", base::checked_cast<int64_t>(4)));
+    attributes.push_back(model_editor_.CreateAttribute(
+        /*name=*/"block_size", base::checked_cast<int64_t>(block_size)));
+    model_editor_.AddNode(kOpTypeMatMulNBits, node, inputs, outputs,
+                          std::move(attributes), kMSDomainName);
+
+  } else {
+    std::array<const char*, 2> inputs = {input_a.c_str(), input_b.c_str()};
+    std::array<const char*, 1> outputs = {output.c_str()};
+
+    model_editor_.AddNode(kOpTypeMatMul, node, inputs, outputs);
+  }
+
+  return base::ok();
 }
 
 [[nodiscard]] base::expected<void, mojom::ErrorPtr>
@@ -3409,8 +4131,15 @@ GraphBuilderOrt::BuildModel() {
   // Find all the bool operands.
   FindBoolOperands();
 
+  GraphFusionInfo graph_fusion_info = GetGraphFusionInfo(*graph_info_);
+
   // Add operations.
   for (const mojom::OperationPtr& operation : graph_info_->operations) {
+    // Skip the operations which are fused into another operation.
+    if (graph_fusion_info.fusible_operations_set.contains(operation.get())) {
+      continue;
+    }
+
     switch (operation->which()) {
       case mojom::Operation::Tag::kArgMinMax: {
         AddArgMinMaxOperation(*operation->get_arg_min_max());
@@ -3520,7 +4249,9 @@ GraphBuilderOrt::BuildModel() {
         break;
       }
       case mojom::Operation::Tag::kMatmul: {
-        AddMatMulOperation(*operation->get_matmul());
+        RETURN_IF_ERROR(AddMatMulOperation(
+            *operation->get_matmul(),
+            graph_fusion_info.matmul_input_b_to_fusible_dequantize_map));
         break;
       }
       case mojom::Operation::Tag::kLeakyRelu: {

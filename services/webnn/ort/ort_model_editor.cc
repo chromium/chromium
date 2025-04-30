@@ -13,26 +13,6 @@
 
 namespace webnn {
 
-namespace {
-
-// Domains
-constexpr char kOrtDomainName[] = "";
-constexpr char kMSDomainName[] = "com.microsoft";
-// DML fused operators.
-constexpr char kMSDmlDomainName[] = "com.microsoft.dml";
-
-// Opsets
-constexpr int32_t kOrtOpsetVersion = 21;
-// EPContext op is used for exporting the EP context cache model.
-// https://onnxruntime.ai/docs/execution-providers/EP-Context-Design.html#onnxruntime-ep-context-cache-feature-design
-constexpr int32_t kEPContextOpsetVersion = 1;
-constexpr int32_t kMSDmlDomainOpsetVersion = 1;
-
-// Define the minimum size(in bytes) to use external data.
-constexpr size_t kMinExternalDataSize = 128;
-
-}  // namespace
-
 namespace ort {
 
 OrtModelEditor::ModelInfo::ModelInfo() = default;
@@ -204,7 +184,8 @@ void OrtModelEditor::AddNode(std::string_view op_type,
                              std::string_view node_name,
                              base::span<const char*> inputs,
                              base::span<const char*> outputs,
-                             std::vector<ScopedOrtOpAttr> attributes) {
+                             std::vector<ScopedOrtOpAttr> attributes,
+                             std::string_view domain_name) {
   std::vector<OrtOpAttr*> attr_ptrs;
   attr_ptrs.reserve(attributes.size());
   std::ranges::transform(attributes, std::back_inserter(attr_ptrs),
@@ -213,7 +194,7 @@ void OrtModelEditor::AddNode(std::string_view op_type,
   // Node will own the attributes.
   ScopedOrtNode node;
   CHECK(IsSuccess(GetOrtModelEditorApi()->CreateNode(
-      op_type.data(), kOrtDomainName, node_name.data(), inputs.data(),
+      op_type.data(), domain_name.data(), node_name.data(), inputs.data(),
       inputs.size(), outputs.data(), outputs.size(), attr_ptrs.data(),
       attr_ptrs.size(), ScopedOrtNode::Receiver(node).get())));
   // Graph will own the node.
