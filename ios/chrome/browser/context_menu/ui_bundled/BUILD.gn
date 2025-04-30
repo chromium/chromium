@@ -108,6 +108,7 @@ source_set("unit_tests") {
     "//components/url_formatter",
     "//ios/chrome/browser/menu/ui_bundled",
     "//ios/chrome/browser/optimization_guide/model",
+    "//ios/chrome/browser/photos/model:photos_service_factory",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/model/web_state_list",

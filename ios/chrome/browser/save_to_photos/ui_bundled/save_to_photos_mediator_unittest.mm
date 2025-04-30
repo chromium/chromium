@@ -125,6 +125,8 @@ class SaveToPhotosMediatorTest : public PlatformTest {
         IdentityManagerFactory::GetInstance(),
         base::BindRepeating(IdentityTestEnvironmentBrowserStateAdaptor::
                                 BuildIdentityManagerForTests));
+    builder.AddTestingFactory(PhotosServiceFactory::GetInstance(),
+                              PhotosServiceFactory::GetDefaultFactory());
     profile_ = std::move(builder).Build();
     browser_ = std::make_unique<TestBrowser>(profile_.get());
     web_state_ = std::make_unique<web::FakeWebState>();

@@ -16,13 +16,9 @@ class PhotosServiceFactoryTest : public PlatformTest {
   std::unique_ptr<TestProfileIOS> profile_;
 };
 
-// Checks that the same instance is returned for on-the-record and
-// off-the-record profile.
-TEST_F(PhotosServiceFactoryTest, ProfileRedirectedInIncognito) {
-  PhotosService* on_the_record_service =
-      PhotosServiceFactory::GetForProfile(profile_.get());
-  PhotosService* off_the_record_service =
-      PhotosServiceFactory::GetForProfile(profile_->GetOffTheRecordProfile());
-  EXPECT_TRUE(on_the_record_service != nullptr);
-  EXPECT_EQ(on_the_record_service, off_the_record_service);
+// Tests that PhotosServiceFactory does not create PhotosService
+// for TestProfileIOS.
+TEST_F(PhotosServiceFactoryTest, NoServiceForTests) {
+  PhotosService* service = PhotosServiceFactory::GetForProfile(profile_.get());
+  EXPECT_FALSE(service);
 }
