@@ -71,7 +71,6 @@
 #include "ui/gfx/geometry/mask_filter_info.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/geometry/transform_util.h"
-#include "ui/gfx/test/icc_profiles.h"
 #include "ui/gfx/video_types.h"
 #include "ui/gl/gl_implementation.h"
 
@@ -6217,29 +6216,103 @@ INSTANTIATE_TEST_SUITE_P(
 using PrimaryID = gfx::ColorSpace::PrimaryID;
 using TransferID = gfx::ColorSpace::TransferID;
 
+enum class NamedColorSpace {
+  kBt709Bt709,
+  kWideGamutColorSpinGamma28,
+  kBt709LinearHdr,
+  kBt709Linear,
+  kBt709SrgbHdr,
+  kBt709Srgb,
+  kXyzD50Linear,
+  kXyzD50SrgbHdr,
+  kHdr10,
+  kHlg,
+  kScrgbLinear80Nits,
+};
+
+const char* ToString(NamedColorSpace named_color_space) {
+  // Note that these names are used in the test parametrization stringification
+  // and thus used in test filter files.
+  switch (named_color_space) {
+    case NamedColorSpace::kBt709Bt709:
+      return "Bt709Bt709";
+    case NamedColorSpace::kWideGamutColorSpinGamma28:
+      return "WideGamutColorSpinGamma28";
+    case NamedColorSpace::kBt709LinearHdr:
+      return "Bt709LinearHdr";
+    case NamedColorSpace::kBt709Linear:
+      return "Bt709Linear";
+    case NamedColorSpace::kBt709SrgbHdr:
+      return "Bt709SrgbHdr";
+    case NamedColorSpace::kBt709Srgb:
+      return "Bt709Srgb";
+    case NamedColorSpace::kXyzD50Linear:
+      return "XyzD50Linear";
+    case NamedColorSpace::kXyzD50SrgbHdr:
+      return "XyzD50SrgbHdr";
+    case NamedColorSpace::kHdr10:
+      return "Hdr10";
+    case NamedColorSpace::kHlg:
+      return "Hlg";
+    case NamedColorSpace::kScrgbLinear80Nits:
+      return "ScrgbLinear80Nits";
+  }
+  NOTREACHED();
+}
+
+gfx::ColorSpace GetColorSpace(NamedColorSpace named_color_space) {
+  switch (named_color_space) {
+    case NamedColorSpace::kBt709Bt709:
+      return gfx::ColorSpace(PrimaryID::BT709, TransferID::BT709);
+    case NamedColorSpace::kWideGamutColorSpinGamma28:
+      return gfx::ColorSpace(PrimaryID::WIDE_GAMUT_COLOR_SPIN,
+                             TransferID::GAMMA28);
+    case NamedColorSpace::kBt709LinearHdr:
+      return gfx::ColorSpace(PrimaryID::BT709, TransferID::LINEAR_HDR);
+    case NamedColorSpace::kBt709Linear:
+      return gfx::ColorSpace(PrimaryID::BT709, TransferID::LINEAR);
+    case NamedColorSpace::kBt709SrgbHdr:
+      return gfx::ColorSpace(PrimaryID::BT709, TransferID::SRGB_HDR);
+    case NamedColorSpace::kBt709Srgb:
+      return gfx::ColorSpace(PrimaryID::BT709, TransferID::SRGB);
+    case NamedColorSpace::kXyzD50Linear:
+      return gfx::ColorSpace(PrimaryID::XYZ_D50, TransferID::LINEAR);
+    case NamedColorSpace::kXyzD50SrgbHdr:
+      return gfx::ColorSpace(PrimaryID::XYZ_D50, TransferID::SRGB_HDR);
+    case NamedColorSpace::kHdr10:
+      return gfx::ColorSpace::CreateHDR10();
+    case NamedColorSpace::kHlg:
+      return gfx::ColorSpace::CreateHLG();
+    case NamedColorSpace::kScrgbLinear80Nits:
+      return gfx::ColorSpace::CreateSCRGBLinear80Nits();
+  }
+  NOTREACHED();
+}
+
 class ColorTransformPixelTest
     : public VizPixelTest,
       public testing::WithParamInterface<std::tuple<RendererType,
-                                                    gfx::ColorSpace,
-                                                    gfx::ColorSpace,
+                                                    NamedColorSpace,
+                                                    NamedColorSpace,
                                                     bool,
                                                     bool>> {
  public:
+  static std::string GetParamName(
+      const testing::TestParamInfo<ParamType>& info) {
+    return base::StringPrintf(
+        "%s_%s_%s_%s%s", testing::PrintToString(std::get<0>(info.param)),
+        ToString(std::get<1>(info.param)), ToString(std::get<2>(info.param)),
+        std::get<3>(info.param) ? "premul" : "unpremul",
+        std::get<4>(info.param) ? "_ColorConversionInRenderer" : "");
+  }
+
   ColorTransformPixelTest() : VizPixelTest(std::get<0>(GetParam())) {
     // Note that this size of 17 is not random -- it is chosen to match the
     // size of LUTs that are created. If we did not match the LUT size exactly,
     // then the error for LUT based transforms is much larger.
     this->device_viewport_size_ = gfx::Size(17, 5);
-    this->src_color_space_ = std::get<1>(GetParam());
-    this->dst_color_space_ = std::get<2>(GetParam());
-    if (!this->src_color_space_.IsValid()) {
-      this->src_color_space_ =
-          gfx::ICCProfileForTestingNoAnalyticTrFn().GetColorSpace();
-    }
-    if (!this->dst_color_space_.IsValid()) {
-      this->dst_color_space_ =
-          gfx::ICCProfileForTestingNoAnalyticTrFn().GetColorSpace();
-    }
+    this->src_color_space_ = GetColorSpace(std::get<1>(GetParam()));
+    this->dst_color_space_ = GetColorSpace(std::get<2>(GetParam()));
     this->display_color_spaces_ =
         gfx::DisplayColorSpaces(this->dst_color_space_);
     if (this->dst_color_space_.IsWide()) {
@@ -6313,13 +6386,6 @@ class ColorTransformPixelTest
   }
 
   void Basic() {
-#if BUILDFLAG(IS_IOS)
-    if (this->src_color_space_.IsToneMappedByDefault() &&
-        !this->dst_color_space_.IsHDR()) {
-      GTEST_SKIP() << "Skipping tonemapped src for non-hdr dst";
-    }
-#endif
-
     gfx::Rect rect(this->device_viewport_size_);
     std::vector<uint8_t> input_colors(4 * rect.width() * rect.height(), 0);
     std::vector<SkColor> expected_output_colors(rect.width() * rect.height());
@@ -6455,8 +6521,7 @@ class ColorTransformPixelTest
                           .SetAvgAbsErrorLimit(avg_abs_error_limit)
                           .SetAbsErrorLimit(max_abs_error_limit);
     EXPECT_TRUE(
-        this->RunPixelTest(&pass_list, &expected_output_colors, comparator))
-        << " src:" << src_color_space_ << ", dst:" << dst_color_space_;
+        this->RunPixelTest(&pass_list, &expected_output_colors, comparator));
   }
 
   base::test::ScopedFeatureList features_;
@@ -6483,28 +6548,22 @@ TEST_P(ColorTransformPixelTest, MAYBE_Basic) {
   Basic();
 }
 
-gfx::ColorSpace src_color_spaces[] = {
-    gfx::ColorSpace(PrimaryID::BT709, TransferID::BT709),
-    gfx::ColorSpace(PrimaryID::WIDE_GAMUT_COLOR_SPIN, TransferID::GAMMA28),
-    gfx::ColorSpace(PrimaryID::BT709, TransferID::LINEAR),
-    gfx::ColorSpace(PrimaryID::BT709, TransferID::SRGB),
-    gfx::ColorSpace(PrimaryID::BT709, TransferID::SRGB_HDR),
-    gfx::ColorSpace(PrimaryID::BT709, TransferID::LINEAR_HDR),
-    gfx::ColorSpace::CreateHDR10(),
+NamedColorSpace src_color_spaces[] = {
+    NamedColorSpace::kBt709Bt709,   NamedColorSpace::kWideGamutColorSpinGamma28,
+    NamedColorSpace::kBt709Linear,  NamedColorSpace::kBt709Srgb,
+    NamedColorSpace::kBt709SrgbHdr, NamedColorSpace::kBt709LinearHdr,
+    NamedColorSpace::kHdr10,
 };
 
-gfx::ColorSpace dst_color_spaces[] = {
-    gfx::ColorSpace(PrimaryID::BT709, TransferID::BT709),
-    gfx::ColorSpace(PrimaryID::WIDE_GAMUT_COLOR_SPIN, TransferID::GAMMA28),
-    gfx::ColorSpace(PrimaryID::BT709, TransferID::LINEAR),
-    gfx::ColorSpace(PrimaryID::BT709, TransferID::SRGB),
-    gfx::ColorSpace(PrimaryID::BT709, TransferID::SRGB_HDR),
-    gfx::ColorSpace(PrimaryID::BT709, TransferID::LINEAR_HDR),
+NamedColorSpace dst_color_spaces[] = {
+    NamedColorSpace::kBt709Bt709,   NamedColorSpace::kWideGamutColorSpinGamma28,
+    NamedColorSpace::kBt709Linear,  NamedColorSpace::kBt709Srgb,
+    NamedColorSpace::kBt709SrgbHdr, NamedColorSpace::kBt709LinearHdr,
 };
 
-gfx::ColorSpace intermediate_color_spaces[] = {
-    gfx::ColorSpace(PrimaryID::XYZ_D50, TransferID::LINEAR),
-    gfx::ColorSpace(PrimaryID::XYZ_D50, TransferID::SRGB_HDR),
+NamedColorSpace intermediate_color_spaces[] = {
+    NamedColorSpace::kXyzD50Linear,
+    NamedColorSpace::kXyzD50SrgbHdr,
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -6514,7 +6573,8 @@ INSTANTIATE_TEST_SUITE_P(
                      testing::ValuesIn(src_color_spaces),
                      testing::ValuesIn(intermediate_color_spaces),
                      testing::Bool(),
-                     testing::Values(false)));
+                     testing::Values(false)),
+    &ColorTransformPixelTest::GetParamName);
 
 INSTANTIATE_TEST_SUITE_P(
     ToColorSpace,
@@ -6523,7 +6583,8 @@ INSTANTIATE_TEST_SUITE_P(
                      testing::ValuesIn(intermediate_color_spaces),
                      testing::ValuesIn(dst_color_spaces),
                      testing::Bool(),
-                     testing::Values(false)));
+                     testing::Values(false)),
+    &ColorTransformPixelTest::GetParamName);
 
 // Test cases that simulate HDR content with tone mapping, which may require
 // color conversion when the destination color space is not suitable for
@@ -6533,16 +6594,17 @@ INSTANTIATE_TEST_SUITE_P(
     ColorTransformPixelTest,
     testing::Combine(testing::ValuesIn(GetGpuRendererTypes()),
                      testing::ValuesIn({
-                         gfx::ColorSpace::CreateExtendedSRGB(),
-                         gfx::ColorSpace::CreateHDR10(),
-                         gfx::ColorSpace::CreateHLG(),
+                         NamedColorSpace::kBt709SrgbHdr,
+                         NamedColorSpace::kHdr10,
+                         NamedColorSpace::kHlg,
                      }),
                      testing::ValuesIn({
-                         gfx::ColorSpace::CreateExtendedSRGB(),
-                         gfx::ColorSpace::CreateSCRGBLinear80Nits(),
+                         NamedColorSpace::kBt709SrgbHdr,
+                         NamedColorSpace::kScrgbLinear80Nits,
                      }),
                      testing::Bool(),
-                     testing::Bool()));
+                     testing::Bool()),
+    &ColorTransformPixelTest::GetParamName);
 
 // GetGpuRendererTypes() can return an empty list, e.g. on Fuchsia ARM64.
 GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(ColorTransformPixelTest);

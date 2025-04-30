@@ -31,8 +31,10 @@
 -VideoRendererPixelHiLoTest.SimpleYUVRect/1
 
 # These tests fail with perceptible pixel differences
--FromColorSpace/ColorTransformPixelTest.Basic/118
--FromColorSpace/ColorTransformPixelTest.Basic/119
+-FromColorSpace/ColorTransformPixelTest.Basic/SkiaGraphiteMetal_Hdr10_XyzD50Linear_premul
+-FromColorSpace/ColorTransformPixelTest.Basic/SkiaGraphiteMetal_Hdr10_XyzD50Linear_unpremul
+-FromColorSpace/ColorTransformPixelTest.Basic/SkiaGraphiteMetal_Hdr10_XyzD50SrgbHdr_premul
+-FromColorSpace/ColorTransformPixelTest.Basic/SkiaGraphiteMetal_Hdr10_XyzD50SrgbHdr_unpremul
 
 # Spot checking seems to show that the following fail with errors similar to:
 # dawn_context_provider.cc(448) First instance (1) must be zero.
@@ -77,26 +79,15 @@
 -IntersectingMultiplanarVideoQuadPixelTest.YUVVideoQuads/SkiaGL
 
 # TODO(crbug.com/337673256): These tests has been failing with happening in a
-# "suitable for blending" color space since https://crrev.com/c/5494389.
--ToColorSpace/ColorTransformPixelTest.Basic/78
--ToColorSpace/ColorTransformPixelTest.Basic/79
--ToColorSpace/ColorTransformPixelTest.Basic/94
--ToColorSpace/ColorTransformPixelTest.Basic/95
-
-# TODO(crbug.com/337673256): These tests has been failing with happening in a
 # "suitable for blending" color space since https://crrev.com/c/5478271.
--HdrVideoCases/ColorTransformPixelTest.Basic/52
--HdrVideoCases/ColorTransformPixelTest.Basic/54
--HdrVideoCases/ColorTransformPixelTest.Basic/56
--HdrVideoCases/ColorTransformPixelTest.Basic/57
--HdrVideoCases/ColorTransformPixelTest.Basic/58
--HdrVideoCases/ColorTransformPixelTest.Basic/59
--HdrVideoCases/ColorTransformPixelTest.Basic/60
--HdrVideoCases/ColorTransformPixelTest.Basic/61
--HdrVideoCases/ColorTransformPixelTest.Basic/62
--HdrVideoCases/ColorTransformPixelTest.Basic/63
--HdrVideoCases/ColorTransformPixelTest.Basic/68
--HdrVideoCases/ColorTransformPixelTest.Basic/70
+-HdrVideoCases/ColorTransformPixelTest.Basic/SkiaGraphiteMetal_Hdr10_ScrgbLinear80Nits_premul
+-HdrVideoCases/ColorTransformPixelTest.Basic/SkiaGraphiteMetal_Hdr10_ScrgbLinear80Nits_premul_ColorConversionInRenderer
+-HdrVideoCases/ColorTransformPixelTest.Basic/SkiaGraphiteMetal_Hdr10_ScrgbLinear80Nits_unpremul
+-HdrVideoCases/ColorTransformPixelTest.Basic/SkiaGraphiteMetal_Hdr10_ScrgbLinear80Nits_unpremul_ColorConversionInRenderer
+-HdrVideoCases/ColorTransformPixelTest.Basic/SkiaGraphiteMetal_Hdr10_Bt709SrgbHdr_premul
+-HdrVideoCases/ColorTransformPixelTest.Basic/SkiaGraphiteMetal_Hdr10_Bt709SrgbHdr_premul_ColorConversionInRenderer
+-HdrVideoCases/ColorTransformPixelTest.Basic/SkiaGraphiteMetal_Hdr10_Bt709SrgbHdr_unpremul
+-HdrVideoCases/ColorTransformPixelTest.Basic/SkiaGraphiteMetal_Hdr10_Bt709SrgbHdr_unpremul_ColorConversionInRenderer
 
 # TODO(crbug.com/358957649): These tests have been failing since
 # https://crrev.com/c/5683265.
