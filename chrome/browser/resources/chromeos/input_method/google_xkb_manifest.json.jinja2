@@ -5,6 +5,8 @@
   "default_locale": "en",
   "incognito": "split",
   "key": "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC7C0oB6YTnf69uhWnVTZl5TB/psHrJXgIPLYchFb0whlVCG8fqMo9lW/oxBmZXZ3N8T7zZrdYI/SUjoc9I5R/dMVVD2q4iKox+x7xlTbqSdVeOb6b9ZVJ24pLbO1L7feSNSBgR0t61jrC2eY/gf78h7w58UEQBPFT2mUxhhwodyQIDAQAB",
+
+
   "permissions": [
     "accessibilityFeatures.read",
     "app.window.alpha",
@@ -12,11 +14,6 @@
     "app.window.ime",
     "audioCapture",
     "crashReportPrivate",
-    "https://clients4.google.com/",
-    "https://dl.google.com/",
-    "https://edgedl.me.gvt1.com/",
-    "https://handwriting.googleapis.com/",
-    "https://www.googleapis.com/",
     "input",
     "inputMethodPrivate",
     "metricsPrivate",
@@ -26,11 +23,24 @@
     "tts",
     "unlimitedStorage",
     "virtualKeyboardPrivate"
+{% if is_manifest_v3 == '1' %}
   ],
+  "host_permissions": [
+{% else %}
+      ,
+{% endif %} 
+    "https://clients4.google.com/",
+    "https://dl.google.com/",
+    "https://edgedl.me.gvt1.com/",
+    "https://handwriting.googleapis.com/",
+    "https://www.googleapis.com/"
+  ],
+{% if is_manifest_v3 != '1' %}
   "background": {
     "page": "background.html",
     "persistent": false
   },
+{% endif %}
   "content_scripts": [
   ],
   "ime_path": "/usr/share/chromeos-assets/input_methods/input_tools",
@@ -1579,8 +1589,9 @@
   ],
 {% if is_manifest_v3 == '1' %}
   "manifest_version": 3,
+  "content_security_policy": {"extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self'; style-src 'unsafe-inline' chrome://theme"}
 {% else %}
   "manifest_version": 2,
-{% endif %}
   "content_security_policy": "script-src 'self' 'wasm-eval'; object-src 'self'; style-src 'unsafe-inline' chrome://theme"
+{% endif %}
 }
