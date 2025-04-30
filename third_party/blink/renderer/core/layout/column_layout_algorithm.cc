@@ -417,14 +417,24 @@ const LayoutResult* ColumnLayoutAlgorithm::Layout() {
             BorderScrollbarPadding().block_end,
         need_to_add_final_intersections_to_column_gaps_);
 
-    GapGeometry* gap_geometry =
-        MakeGarbageCollected<GapGeometry>(GapGeometry::kMultiColumn);
+    // Make sure we don't create a gap geometry without having any gap
+    // intersections.
+    bool has_column_gap_intersections = !column_gaps_.empty();
+    bool has_row_gap_intersections = !row_gaps_.empty();
+    if (has_column_gap_intersections || has_row_gap_intersections) {
+      GapGeometry* gap_geometry =
+          MakeGarbageCollected<GapGeometry>(GapGeometry::kMultiColumn);
 
-    gap_geometry->SetGapIntersections(kForColumns, std::move(column_gaps_));
-    gap_geometry->SetBlockGapSize(row_gap_size_);
-    gap_geometry->SetInlineGapSize(column_gap_size_);
-    gap_geometry->SetGapIntersections(kForRows, std::move(row_gaps_));
-    container_builder_.SetGapGeometry(gap_geometry);
+      if (has_column_gap_intersections) {
+        gap_geometry->SetGapIntersections(kForColumns, std::move(column_gaps_));
+        gap_geometry->SetInlineGapSize(column_gap_size_);
+      }
+      if (has_row_gap_intersections) {
+        gap_geometry->SetGapIntersections(kForRows, std::move(row_gaps_));
+        gap_geometry->SetBlockGapSize(row_gap_size_);
+      }
+      container_builder_.SetGapGeometry(gap_geometry);
+    }
   }
 
   return container_builder_.ToBoxFragment();
