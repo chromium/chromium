@@ -988,6 +988,22 @@ void EmitContainerPointerRewrites(const MatchFinder::MatchResult& result,
     if (const auto* container_subscript =
             result.Nodes.getNodeAs<clang::CXXOperatorCallExpr>(
                 "container_subscript")) {
+      // 1. implicit `this` arg and
+      // 2. the subscript expression.
+      if (container_subscript->getNumArgs() != 2u) {
+        llvm::errs() << "\nError: matched `operator[]`, expected exactly two "
+                        "args, but got "
+                     << container_subscript->getNumArgs() << "!\n";
+        DumpMatchResult(result);
+        assert(false && "apparently bogus `operator[]`");
+      }
+
+      // Call `IgnoreImpCasts()` to see past the implicit promotion to
+      // `...::size_type` and look at the "original" type of the
+      // expression.
+      RewriteExprForSubspan(container_subscript->getArg(1u)->IgnoreImpCasts(),
+                            result, key);
+
       replacement_range = {
           container_subscript->getRParenLoc(),
           container_subscript->getRParenLoc().getLocWithOffset(1)};

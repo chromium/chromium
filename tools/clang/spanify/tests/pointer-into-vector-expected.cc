@@ -3,10 +3,12 @@
 // found in the LICENSE file.
 
 #include <array>
+#include <cstdint>
 #include <string>
 #include <vector>
 
 #include "base/containers/span.h"
+#include "base/numerics/safe_conversions.h"
 
 int UnsafeIndex();
 
@@ -32,17 +34,21 @@ int main() {
   TakePointerIntoContainer(vector);
 
   // Expected rewrite:
-  // TakePointerIntoContainer(base::span<int>(vector).subspan(2));
-  TakePointerIntoContainer(base::span<int>(vector).subspan(2));
+  // TakePointerIntoContainer(base::span<int>(vector).subspan(2u));
+  TakePointerIntoContainer(base::span<int>(vector).subspan(2u));
 
   int cached_index = UnsafeIndex();
   // Expected rewrite:
-  // TakePointerIntoContainer(base::span<int>(vector).subspan(cached_index));
-  TakePointerIntoContainer(base::span<int>(vector).subspan(cached_index));
+  // TakePointerIntoContainer(base::span<int>(vector).subspan(
+  //     base::checked_cast<size_t>(cached_index)));
+  TakePointerIntoContainer(base::span<int>(vector).subspan(
+      base::checked_cast<size_t>(cached_index)));
 
   // Expected rewrite:
-  // TakePointerIntoContainer(base::span<int>(vector).subspan(UnsafeIndex()));
-  TakePointerIntoContainer(base::span<int>(vector).subspan(UnsafeIndex()));
+  // TakePointerIntoContainer(base::span<int>(vector).subspan(
+  //     base::checked_cast<size_t>(UnsafeIndex())));
+  TakePointerIntoContainer(base::span<int>(vector).subspan(
+      base::checked_cast<size_t>(UnsafeIndex())));
 
   // Also test basic rewrite functionality on `std::array`.
   auto array = std::to_array<int>({13, 26, 39, 52});
@@ -52,8 +58,8 @@ int main() {
   TakePointerIntoContainer(array);
 
   // Expected rewrite:
-  // TakePointerIntoContainer(base::span<int>(array).subspan(2));
-  TakePointerIntoContainer(base::span<int>(array).subspan(2));
+  // TakePointerIntoContainer(base::span<int>(array).subspan(2u));
+  TakePointerIntoContainer(base::span<int>(array).subspan(2u));
 
   // TODO: no rewriting is done here. Investigate.
   // Test basic rewrite functionality on `std::string`.
