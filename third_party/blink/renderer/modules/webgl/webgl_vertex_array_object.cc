@@ -4,11 +4,9 @@
 
 #include "third_party/blink/renderer/modules/webgl/webgl_vertex_array_object.h"
 
-#include "third_party/blink/renderer/modules/webgl/webgl_rendering_context_base.h"
-
 namespace blink {
 
-WebGLVertexArrayObject::WebGLVertexArrayObject(WebGLRenderingContextBase* ctx,
+WebGLVertexArrayObject::WebGLVertexArrayObject(WebGLContextObjectSupport* ctx,
                                                VaoType type,
                                                GLint max_vertex_attribs)
     : WebGLVertexArrayObjectBase(ctx, type, max_vertex_attribs) {}

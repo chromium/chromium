@@ -4,12 +4,9 @@
 
 #include "third_party/blink/renderer/modules/webgl/webgl_unowned_texture.h"
 
-#include "gpu/command_buffer/client/gles2_interface.h"
-#include "third_party/blink/renderer/modules/webgl/webgl_rendering_context_base.h"
-
 namespace blink {
 
-WebGLUnownedTexture::WebGLUnownedTexture(WebGLRenderingContextBase* ctx,
+WebGLUnownedTexture::WebGLUnownedTexture(WebGLContextObjectSupport* ctx,
                                          GLuint texture,
                                          GLenum target)
     : WebGLTexture(ctx, texture, target) {}

@@ -27,11 +27,11 @@
 
 #include <limits>
 
-#include "third_party/blink/renderer/modules/webgl/webgl_rendering_context_base.h"
+#include "third_party/blink/renderer/modules/webgl/webgl_context_object_support.h"
 
 namespace blink {
 
-WebGLObject::WebGLObject(WebGLRenderingContextBase* context)
+WebGLObject::WebGLObject(WebGLContextObjectSupport* context)
     : context_(context),
       cached_number_of_context_losses_(std::numeric_limits<uint32_t>::max()) {
   if (context_) {
@@ -41,7 +41,7 @@ WebGLObject::WebGLObject(WebGLRenderingContextBase* context)
 
 WebGLObject::~WebGLObject() = default;
 
-bool WebGLObject::Validate(const WebGLRenderingContextBase* context) const {
+bool WebGLObject::Validate(const WebGLContextObjectSupport* context) const {
   // The contexts and context groups no longer maintain references to all
   // the objects they ever created, so there's no way to invalidate them
   // eagerly during context loss. The invalidation is discovered lazily.

@@ -5,19 +5,19 @@
 #include "third_party/blink/renderer/modules/webgl/webgl_vertex_array_object_base.h"
 
 #include "gpu/command_buffer/client/gles2_interface.h"
-#include "third_party/blink/renderer/modules/webgl/webgl_rendering_context_base.h"
+#include "third_party/blink/renderer/modules/webgl/webgl_context_object_support.h"
 
 namespace blink {
 
 WebGLVertexArrayObjectBase::WebGLVertexArrayObjectBase(
-    WebGLRenderingContextBase* ctx,
+    WebGLContextObjectSupport* ctx,
     VaoType type,
     GLint max_vertex_attribs)
     : WebGLObject(ctx),
       type_(type),
       has_ever_been_bound_(false),
       is_all_enabled_attrib_buffer_bound_(true) {
-  if (!ctx || ctx->isContextLost()) {
+  if (!ctx || ctx->IsLost()) {
     return;
   }
 

@@ -34,7 +34,7 @@ class WebGLRenderbuffer final : public WebGLObject {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  explicit WebGLRenderbuffer(WebGLRenderingContextBase*);
+  explicit WebGLRenderbuffer(WebGLContextObjectSupport*);
   ~WebGLRenderbuffer() override;
 
   void SetInternalFormat(GLenum internalformat) {

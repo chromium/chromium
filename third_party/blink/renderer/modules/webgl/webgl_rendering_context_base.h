@@ -33,7 +33,6 @@
 #include "base/check_op.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/numerics/checked_math.h"
-#include "base/task/single_thread_task_runner.h"
 #include "device/vr/public/mojom/vr_service.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_graphics_context_3d_provider.h"
@@ -46,12 +45,11 @@
 #include "third_party/blink/renderer/core/layout/content_change_type.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
-#include "third_party/blink/renderer/modules/webgl/webgl_extension_name.h"
+#include "third_party/blink/renderer/modules/webgl/webgl_context_object_support.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_texture.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_uniform_location.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_vertex_array_object_base.h"
 #include "third_party/blink/renderer/platform/bindings/name_client.h"
-#include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/drawing_buffer.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/extensions_3d_util.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgl_image_conversion.h"
@@ -60,19 +58,11 @@
 #include "third_party/blink/renderer/platform/scheduler/public/frame_or_worker_scheduler.h"
 #include "third_party/blink/renderer/platform/timer.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
-#include "third_party/khronos/GLES2/gl2.h"
-#include "third_party/khronos/GLES3/gl31.h"
 #include "third_party/skia/include/core/SkData.h"
 
 namespace cc {
 class Layer;
 }
-
-namespace gpu {
-namespace gles2 {
-class GLES2Interface;
-}
-}  // namespace gpu
 
 namespace media {
 class PaintCanvasVideoRenderer;
@@ -103,7 +93,6 @@ class WebGLCompressedTextureETC1;
 class WebGLCompressedTexturePVRTC;
 class WebGLCompressedTextureS3TC;
 class WebGLCompressedTextureS3TCsRGB;
-class WebGLContextObject;
 class WebGLDebugShaders;
 class WebGLDrawBuffers;
 class WebGLExtension;
@@ -111,6 +100,7 @@ class WebGLFramebuffer;
 class WebGLObject;
 class WebGLProgram;
 class WebGLRenderbuffer;
+class WebGLRenderingContextBase;
 class WebGLShader;
 class WebGLShaderPrecisionFormat;
 class WebGLVertexArrayObjectBase;
@@ -135,9 +125,10 @@ class ScopedRGBEmulationColorMask {
   const bool requires_emulation_;
 };
 
-class MODULES_EXPORT WebGLRenderingContextBase : public ScriptWrappable,
-                                                 public CanvasRenderingContext,
-                                                 public DrawingBuffer::Client {
+class MODULES_EXPORT WebGLRenderingContextBase
+    : public WebGLContextObjectSupport,
+      public CanvasRenderingContext,
+      public DrawingBuffer::Client {
  public:
   WebGLRenderingContextBase(const WebGLRenderingContextBase&) = delete;
   WebGLRenderingContextBase& operator=(const WebGLRenderingContextBase&) =
@@ -561,8 +552,6 @@ class MODULES_EXPORT WebGLRenderingContextBase : public ScriptWrappable,
   void LoseContext(LostContextMode) override;
   void ForceLostContext(LostContextMode, AutoRecoveryMethod);
   void ForceRestoreContext();
-  void LoseContextImpl(LostContextMode, AutoRecoveryMethod);
-  uint32_t NumberOfContextLosses() const;
 
   // Utilities to restore GL state to match the rendering context's
   // saved state. Use these after contextGL()-based state changes that
@@ -575,12 +564,6 @@ class MODULES_EXPORT WebGLRenderingContextBase : public ScriptWrappable,
   void RestoreProgram();
   void RestoreActiveTexture();
 
-  gpu::gles2::GLES2Interface* ContextGL() const {
-    DrawingBuffer* d = GetDrawingBuffer();
-    if (!d)
-      return nullptr;
-    return d->ContextGL();
-  }
   const gpu::Capabilities& ContextGLCapabilities() const {
     // This should only be called in contexts where ContextGL() is guaranteed
     // to exist.
@@ -664,13 +647,6 @@ class MODULES_EXPORT WebGLRenderingContextBase : public ScriptWrappable,
       ::partition_alloc::internal::MaxDirectMapped();
 
  protected:
-  // WebGL object types.
-  friend class WebGLContextObject;
-  friend class WebGLObject;
-  friend class WebGLQuery;
-  friend class WebGLTimerQueryEXT;
-  friend class WebGLVertexArrayObjectBase;
-
   // Implementation helpers.
   friend class ScopedPixelLocalStorageInterrupt;
   friend class ScopedDrawingBufferBinder;
@@ -786,8 +762,6 @@ class MODULES_EXPORT WebGLRenderingContextBase : public ScriptWrappable,
 
   void OnErrorMessage(const char*, int32_t id);
 
-  scoped_refptr<base::SingleThreadTaskRunner> GetContextTaskRunner();
-
   // Query if depth_stencil buffer is supported.
   bool IsDepthStencilSupported() { return is_depth_stencil_supported_; }
 
@@ -844,7 +818,6 @@ class MODULES_EXPORT WebGLRenderingContextBase : public ScriptWrappable,
       dispatch_context_lost_event_timer_;
   bool restore_allowed_ = false;
   HeapTaskRunnerTimer<WebGLRenderingContextBase> restore_timer_;
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
   bool destruction_in_progress_ = false;
   bool marked_canvas_dirty_;
@@ -1073,10 +1046,6 @@ class MODULES_EXPORT WebGLRenderingContextBase : public ScriptWrappable,
 
   bool ExtensionSupportedAndAllowed(const ExtensionTracker*);
   WebGLExtension* EnableExtensionIfSupported(const String& name);
-
-  inline bool ExtensionEnabled(WebGLExtensionName name) {
-    return extension_enabled_[name];
-  }
 
   bool TimerQueryExtensionsEnabled();
 

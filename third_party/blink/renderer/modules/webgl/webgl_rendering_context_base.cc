@@ -1258,7 +1258,10 @@ WebGLRenderingContextBase::WebGLRenderingContextBase(
     const Platform::GraphicsInfo& graphics_info,
     const CanvasContextCreationAttributesCore& requested_attributes,
     Platform::ContextType context_type)
-    : CanvasRenderingContext(host,
+    : WebGLContextObjectSupport(
+          task_runner,
+          /* is_webgl2 */ context_type == Platform::kWebGL2ContextType),
+      CanvasRenderingContext(host,
                              requested_attributes,
                              context_type == Platform::kWebGL2ContextType
                                  ? CanvasRenderingAPI::kWebgl2
@@ -1270,7 +1273,6 @@ WebGLRenderingContextBase::WebGLRenderingContextBase(
       restore_timer_(task_runner,
                      this,
                      &WebGLRenderingContextBase::MaybeRestoreContext),
-      task_runner_(task_runner),
       num_gl_errors_to_console_allowed_(kMaxGLErrorsAllowedToConsole),
       context_type_(context_type),
       number_of_user_allocated_multisampled_renderbuffers_(0) {
@@ -1292,6 +1294,7 @@ WebGLRenderingContextBase::WebGLRenderingContextBase(
 
   drawing_buffer_ = std::move(buffer);
   GetDrawingBuffer()->Bind(GL_FRAMEBUFFER);
+  WebGLContextObjectSupport::OnContextRestored(drawing_buffer_->ContextGL());
   SetupFlags();
 
   String disabled_webgl_extensions(GetDrawingBuffer()
@@ -1471,9 +1474,6 @@ void WebGLRenderingContextBase::InitializeNewContext() {
   // mistakenly identified as the "least recently used" context.
   ContextGL()->Flush();
 
-  for (int i = 0; i < kWebGLExtensionNameCount; ++i)
-    extension_enabled_[i] = false;
-
   // This limits the count of threads if the extension is yet to be requested.
   if (String(ContextGL()->GetString(GL_EXTENSIONS))
           .Contains("GL_KHR_parallel_shader_compile")) {
@@ -1593,6 +1593,10 @@ void WebGLRenderingContextBase::DestroyContext() {
 
   extensions_util_.reset();
 
+  // Invalidate all objects associated with this version of the context (new
+  // objects can be created after context restoration).
+  WebGLContextObjectSupport::OnContextLost();
+
   base::RepeatingClosure null_closure;
   base::RepeatingCallback<void(const char*, int32_t)> null_function;
   GetDrawingBuffer()->ContextProvider()->SetLostContextCallback(
@@ -1640,11 +1644,6 @@ void WebGLRenderingContextBase::MarkContextChanged(
       cc_layer->SetNeedsDisplay();
     DidDraw(draw_type);
   }
-}
-
-scoped_refptr<base::SingleThreadTaskRunner>
-WebGLRenderingContextBase::GetContextTaskRunner() {
-  return task_runner_;
 }
 
 bool WebGLRenderingContextBase::PushFrame() {
@@ -3434,25 +3433,25 @@ bool WebGLRenderingContextBase::ExtensionSupportedAndAllowed(
 
 WebGLExtension* WebGLRenderingContextBase::EnableExtensionIfSupported(
     const String& name) {
-  WebGLExtension* extension = nullptr;
-
-  if (!isContextLost()) {
-    for (ExtensionTracker* tracker : extensions_) {
-      if (tracker->MatchesName(name)) {
-        if (ExtensionSupportedAndAllowed(tracker)) {
-          extension = tracker->GetExtension(this);
-          if (extension) {
-            if (!extension_enabled_[extension->GetName()]) {
-              extension_enabled_[extension->GetName()] = true;
-            }
-          }
-        }
-        break;
-      }
-    }
+  if (isContextLost()) {
+    return nullptr;
   }
 
-  return extension;
+  for (ExtensionTracker* tracker : extensions_) {
+    if (!tracker->MatchesName(name) || !ExtensionSupportedAndAllowed(tracker)) {
+      continue;
+    }
+
+    WebGLExtension* extension = tracker->GetExtension(this);
+    if (!extension) {
+      continue;
+    }
+
+    MarkExtensionEnabled(extension->GetName());
+    return extension;
+  }
+
+  return nullptr;
 }
 
 bool WebGLRenderingContextBase::TimerQueryExtensionsEnabled() {
@@ -7118,17 +7117,6 @@ void WebGLRenderingContextBase::ForceLostContext(
     return;
   }
 
-  LoseContextImpl(mode, auto_recovery_method);
-}
-
-void WebGLRenderingContextBase::LoseContextImpl(
-    WebGLRenderingContextBase::LostContextMode mode,
-    AutoRecoveryMethod auto_recovery_method) {
-  number_of_context_losses_++;
-
-  if (isContextLost())
-    return;
-
   context_lost_mode_ = mode;
   DCHECK_NE(context_lost_mode_, kNotLostContext);
   auto_recovery_method_ = auto_recovery_method;
@@ -7137,9 +7125,6 @@ void WebGLRenderingContextBase::LoseContextImpl(
   for (ExtensionTracker* tracker : extensions_) {
     tracker->LoseExtension(false);
   }
-
-  for (wtf_size_t i = 0; i < kWebGLExtensionNameCount; ++i)
-    extension_enabled_[i] = false;
 
   // This resolver is non-null during a makeXRCompatible call, while waiting
   // for a response from the browser and XR process. If the WebGL context is
@@ -7163,7 +7148,7 @@ void WebGLRenderingContextBase::LoseContextImpl(
     // the event is done being handled. This causes a crash when an outstanding
     // AutoLock goes out of scope. To avoid this, we create a no-op task to hold
     // a reference to the DrawingBuffer until this function is done executing.
-    task_runner_->PostTask(
+    GetContextTaskRunner()->PostTask(
         FROM_HERE,
         WTF::BindOnce(&WebGLRenderingContextBase::HoldReferenceToDrawingBuffer,
                       WrapWeakPersistent(this),
@@ -7214,10 +7199,6 @@ void WebGLRenderingContextBase::ForceRestoreContext() {
 
   if (!restore_timer_.IsActive())
     restore_timer_.StartOneShot(base::TimeDelta(), FROM_HERE);
-}
-
-uint32_t WebGLRenderingContextBase::NumberOfContextLosses() const {
-  return number_of_context_losses_;
 }
 
 cc::Layer* WebGLRenderingContextBase::CcLayer() const {
@@ -8590,6 +8571,7 @@ void WebGLRenderingContextBase::MaybeRestoreContext(TimerBase*) {
 
   drawing_buffer_ = std::move(buffer);
   GetDrawingBuffer()->Bind(GL_FRAMEBUFFER);
+  WebGLContextObjectSupport::OnContextRestored(drawing_buffer_->ContextGL());
   lost_context_errors_.clear();
   context_lost_mode_ = kNotLostContext;
   auto_recovery_method_ = kManual;
@@ -8888,7 +8870,7 @@ void WebGLRenderingContextBase::Trace(Visitor* visitor) const {
   visitor->Trace(make_xr_compatible_resolver_);
   visitor->Trace(program_completion_query_list_);
   visitor->Trace(program_completion_query_map_);
-  ScriptWrappable::Trace(visitor);
+  WebGLContextObjectSupport::Trace(visitor);
   CanvasRenderingContext::Trace(visitor);
 }
 

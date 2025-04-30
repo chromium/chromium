@@ -9,13 +9,11 @@
 
 namespace blink {
 
-class WebGL2RenderingContextBase;
-
 class WebGLSampler : public WebGLObject {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  explicit WebGLSampler(WebGL2RenderingContextBase*);
+  explicit WebGLSampler(WebGLContextObjectSupport*);
   ~WebGLSampler() override;
 
  protected:

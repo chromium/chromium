@@ -45,7 +45,7 @@ class WebGLVertexArrayObjectBase : public WebGLObject {
   void Trace(Visitor*) const override;
 
  protected:
-  WebGLVertexArrayObjectBase(WebGLRenderingContextBase*,
+  WebGLVertexArrayObjectBase(WebGLContextObjectSupport*,
                              VaoType,
                              GLint max_vertex_attribs);
 

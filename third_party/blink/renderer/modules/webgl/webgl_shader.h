@@ -37,7 +37,7 @@ class WebGLShader final : public WebGLObject {
  public:
   ~WebGLShader() override;
 
-  WebGLShader(WebGLRenderingContextBase*, GLenum);
+  WebGLShader(WebGLContextObjectSupport*, GLenum);
 
   GLenum GetType() const { return type_; }
   const String& Source() const { return source_; }

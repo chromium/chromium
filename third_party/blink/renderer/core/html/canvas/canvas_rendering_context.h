@@ -137,9 +137,6 @@ class CORE_EXPORT CanvasRenderingContext
     return canvas_rendering_type_ == CanvasRenderingAPI::kWebgl ||
            canvas_rendering_type_ == CanvasRenderingAPI::kWebgl2;
   }
-  bool IsWebGL2() const {
-    return canvas_rendering_type_ == CanvasRenderingAPI::kWebgl2;
-  }
   bool IsWebGPU() const {
     return canvas_rendering_type_ == CanvasRenderingAPI::kWebgpu;
   }

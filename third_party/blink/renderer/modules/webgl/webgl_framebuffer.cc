@@ -26,8 +26,8 @@
 #include "third_party/blink/renderer/modules/webgl/webgl_framebuffer.h"
 
 #include "gpu/command_buffer/client/gles2_interface.h"
+#include "third_party/blink/renderer/modules/webgl/webgl_context_object_support.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_renderbuffer.h"
-#include "third_party/blink/renderer/modules/webgl/webgl_rendering_context_base.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_texture.h"
 
 namespace blink {
@@ -196,7 +196,7 @@ void WebGLTextureAttachment::Unattach(gpu::gles2::GLES2Interface* gl,
 
 WebGLFramebuffer::WebGLAttachment::WebGLAttachment() = default;
 
-WebGLFramebuffer* WebGLFramebuffer::CreateOpaque(WebGLRenderingContextBase* ctx,
+WebGLFramebuffer* WebGLFramebuffer::CreateOpaque(WebGLContextObjectSupport* ctx,
                                                  bool has_depth,
                                                  bool has_stencil) {
   WebGLFramebuffer* const fb =
@@ -206,13 +206,13 @@ WebGLFramebuffer* WebGLFramebuffer::CreateOpaque(WebGLRenderingContextBase* ctx,
   return fb;
 }
 
-WebGLFramebuffer::WebGLFramebuffer(WebGLRenderingContextBase* ctx, bool opaque)
+WebGLFramebuffer::WebGLFramebuffer(WebGLContextObjectSupport* ctx, bool opaque)
     : WebGLObject(ctx),
       has_ever_been_bound_(false),
       web_gl1_depth_stencil_consistent_(true),
       opaque_(opaque),
       read_buffer_(GL_COLOR_ATTACHMENT0) {
-  if (!ctx->isContextLost()) {
+  if (!ctx->IsLost()) {
     GLuint fbo;
     ctx->ContextGL()->GenFramebuffers(1, &fbo);
     SetObject(fbo);
@@ -231,7 +231,7 @@ void WebGLFramebuffer::SetAttachmentForBoundFramebuffer(GLenum target,
   DCHECK(HasObject());
   DCHECK(IsBound(target));
 
-  if (Context()->isContextLost()) {
+  if (Context()->IsLost()) {
     return;
   }
 
@@ -294,7 +294,7 @@ void WebGLFramebuffer::SetAttachmentForBoundFramebuffer(
   DCHECK(HasObject());
   DCHECK(IsBound(target));
 
-  if (Context()->isContextLost()) {
+  if (Context()->IsLost()) {
     return;
   }
 
@@ -466,7 +466,7 @@ void WebGLFramebuffer::DrawBuffers(const Vector<GLenum>& bufs) {
 void WebGLFramebuffer::DrawBuffersIfNecessary(bool force) {
   if (Context()->IsWebGL2() ||
       Context()->ExtensionEnabled(kWebGLDrawBuffersName)) {
-    if (Context()->isContextLost()) {
+    if (Context()->IsLost()) {
       return;
     }
 
@@ -541,7 +541,7 @@ void WebGLFramebuffer::RemoveAttachmentInternal(GLenum target,
 void WebGLFramebuffer::CommitWebGL1DepthStencilIfConsistent(GLenum target) {
   DCHECK(!Context()->IsWebGL2());
 
-  if (Context()->isContextLost()) {
+  if (Context()->IsLost()) {
     return;
   }
 

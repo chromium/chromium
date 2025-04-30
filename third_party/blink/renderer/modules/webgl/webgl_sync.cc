@@ -7,11 +7,12 @@
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
-#include "third_party/blink/renderer/modules/webgl/webgl2_rendering_context_base.h"
+#include "third_party/blink/renderer/modules/webgl/webgl_context_object_support.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 
-WebGLSync::WebGLSync(WebGL2RenderingContextBase* ctx,
+WebGLSync::WebGLSync(WebGLContextObjectSupport* ctx,
                      GLuint object,
                      GLenum object_type)
     : WebGLObject(ctx),

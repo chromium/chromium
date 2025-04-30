@@ -9,15 +9,7 @@
 #include "third_party/blink/renderer/modules/webgl/webgl_object.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cancellable_task.h"
 
-namespace gpu {
-namespace gles2 {
-class GLES2Interface;
-}
-}  // namespace gpu
-
 namespace blink {
-
-class WebGL2RenderingContextBase;
 
 class WebGLSync : public WebGLObject {
   DEFINE_WRAPPERTYPEINFO();
@@ -30,7 +22,7 @@ class WebGLSync : public WebGLObject {
   bool IsSignaled() const;
 
  protected:
-  WebGLSync(WebGL2RenderingContextBase*, GLuint, GLenum object_type);
+  WebGLSync(WebGLContextObjectSupport*, GLuint, GLenum object_type);
 
   void DeleteObjectImpl(gpu::gles2::GLES2Interface*) override;
 

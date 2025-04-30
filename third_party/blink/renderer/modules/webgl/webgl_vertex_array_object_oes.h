@@ -34,7 +34,7 @@ class WebGLVertexArrayObjectOES final : public WebGLVertexArrayObjectBase {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  explicit WebGLVertexArrayObjectOES(WebGLRenderingContextBase*,
+  explicit WebGLVertexArrayObjectOES(WebGLContextObjectSupport*,
                                      VaoType,
                                      GLint max_vertex_attribs);
 };

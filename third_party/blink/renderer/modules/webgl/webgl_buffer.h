@@ -34,7 +34,7 @@ class WebGLBuffer final : public WebGLObject {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  explicit WebGLBuffer(WebGLRenderingContextBase*);
+  explicit WebGLBuffer(WebGLContextObjectSupport*);
   ~WebGLBuffer() override;
 
   GLenum GetInitialTarget() const { return initial_target_; }

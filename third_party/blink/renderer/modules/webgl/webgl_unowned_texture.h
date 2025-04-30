@@ -19,9 +19,9 @@ namespace blink {
 class WebGLUnownedTexture final : public WebGLTexture {
  public:
   // The provided GLuint must have been created in the same
-  // WebGLRenderingContextBase that is provided. Garbage collection of
+  // WebGLContextObjectSupport that is provided. Garbage collection of
   // this texture will not result in any GL calls being issued.
-  explicit WebGLUnownedTexture(WebGLRenderingContextBase* ctx,
+  explicit WebGLUnownedTexture(WebGLContextObjectSupport* ctx,
                                GLuint texture,
                                GLenum target);
   ~WebGLUnownedTexture() override;

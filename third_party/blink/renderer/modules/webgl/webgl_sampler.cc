@@ -5,13 +5,13 @@
 #include "third_party/blink/renderer/modules/webgl/webgl_sampler.h"
 
 #include "gpu/command_buffer/client/gles2_interface.h"
-#include "third_party/blink/renderer/modules/webgl/webgl2_rendering_context_base.h"
+#include "third_party/blink/renderer/modules/webgl/webgl_context_object_support.h"
 
 namespace blink {
 
-WebGLSampler::WebGLSampler(WebGL2RenderingContextBase* ctx) : WebGLObject(ctx) {
-  GLuint sampler;
-  if (!ctx->isContextLost()) {
+WebGLSampler::WebGLSampler(WebGLContextObjectSupport* ctx) : WebGLObject(ctx) {
+  if (!ctx->IsLost()) {
+    GLuint sampler;
     ctx->ContextGL()->GenSamplers(1, &sampler);
     SetObject(sampler);
   }

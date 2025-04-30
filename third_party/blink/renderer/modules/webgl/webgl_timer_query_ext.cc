@@ -7,18 +7,19 @@
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
-#include "third_party/blink/renderer/modules/webgl/webgl_rendering_context_base.h"
+#include "third_party/blink/renderer/modules/webgl/webgl_context_object_support.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 
-WebGLTimerQueryEXT::WebGLTimerQueryEXT(WebGLRenderingContextBase* ctx)
+WebGLTimerQueryEXT::WebGLTimerQueryEXT(WebGLContextObjectSupport* ctx)
     : WebGLObject(ctx),
       target_(0),
       can_update_availability_(false),
       query_result_available_(false),
       query_result_(0),
       task_runner_(ctx->GetContextTaskRunner()) {
-  if (!ctx || ctx->isContextLost()) {
+  if (!ctx || ctx->IsLost()) {
     return;
   }
 

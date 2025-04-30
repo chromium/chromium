@@ -26,11 +26,12 @@
 #include "third_party/blink/renderer/modules/webgl/webgl_program.h"
 
 #include "gpu/command_buffer/client/gles2_interface.h"
-#include "third_party/blink/renderer/modules/webgl/webgl_rendering_context_base.h"
+#include "third_party/blink/renderer/modules/webgl/webgl_context_object_support.h"
+#include "third_party/blink/renderer/modules/webgl/webgl_shader.h"
 
 namespace blink {
 
-WebGLProgram::WebGLProgram(WebGLRenderingContextBase* ctx)
+WebGLProgram::WebGLProgram(WebGLContextObjectSupport* ctx)
     : WebGLObject(ctx),
       link_status_(false),
       link_count_(0),
@@ -38,7 +39,7 @@ WebGLProgram::WebGLProgram(WebGLRenderingContextBase* ctx)
       info_valid_(true),
       required_transform_feedback_buffer_count_(0),
       required_transform_feedback_buffer_count_after_next_link_(0) {
-  if (!ctx->isContextLost()) {
+  if (!ctx->IsLost()) {
     SetObject(ctx->ContextGL()->CreateProgram());
   }
 }
@@ -59,12 +60,12 @@ void WebGLProgram::DeleteObjectImpl(gpu::gles2::GLES2Interface* gl) {
   }
 }
 
-bool WebGLProgram::LinkStatus(WebGLRenderingContextBase* context) {
+bool WebGLProgram::LinkStatus(WebGLContextObjectSupport* context) {
   CacheInfoIfNeeded(context);
   return link_status_;
 }
 
-bool WebGLProgram::CompletionStatus(WebGLRenderingContextBase* context) {
+bool WebGLProgram::CompletionStatus(WebGLContextObjectSupport* context) {
   GLint completed = 0;
   gpu::gles2::GLES2Interface* gl = context->ContextGL();
   // If gl is nullptr, context has been lost.
@@ -137,7 +138,7 @@ bool WebGLProgram::DetachShader(WebGLShader* shader) {
   }
 }
 
-void WebGLProgram::CacheInfoIfNeeded(WebGLRenderingContextBase* context) {
+void WebGLProgram::CacheInfoIfNeeded(WebGLContextObjectSupport* context) {
   if (info_valid_)
     return;
   if (!HasObject()) {

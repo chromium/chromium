@@ -31,15 +31,13 @@
 #include "third_party/blink/renderer/platform/heap/prefinalizer.h"
 #include "third_party/khronos/GLES2/gl2.h"
 
-namespace gpu {
-namespace gles2 {
+namespace gpu::gles2 {
 class GLES2Interface;
-}
 }
 
 namespace blink {
 
-class WebGLRenderingContextBase;
+class WebGLContextObjectSupport;
 
 template <typename T>
 GLuint ObjectOrZero(const T* object) {
@@ -74,7 +72,7 @@ class WebGLObject : public ScriptWrappable {
   // subclasses via Dispose().
   ~WebGLObject() override;
 
-  WebGLRenderingContextBase* Context() const { return context_.Get(); }
+  WebGLContextObjectSupport* Context() const { return context_.Get(); }
 
   // deleteObject may not always delete the OpenGL resource.  For programs and
   // shaders, deletion is delayed until they are no longer attached.
@@ -89,7 +87,7 @@ class WebGLObject : public ScriptWrappable {
   bool MarkedForDeletion() { return marked_for_deletion_; }
 
   // True if this object belongs to the group or context.
-  bool Validate(const WebGLRenderingContextBase*) const;
+  bool Validate(const WebGLContextObjectSupport*) const;
 
   // A reference is returned so it can be made a pointer for glDelete* calls
   const GLuint& Object() const { return object_; }
@@ -101,7 +99,7 @@ class WebGLObject : public ScriptWrappable {
   void Trace(Visitor*) const override;
 
  protected:
-  explicit WebGLObject(WebGLRenderingContextBase*);
+  explicit WebGLObject(WebGLContextObjectSupport*);
 
   // Must be called only once to set the GL object this JS wrapper wraps.
   void SetObject(GLuint object);
@@ -121,7 +119,7 @@ class WebGLObject : public ScriptWrappable {
   bool DestructionInProgress() const;
 
  private:
-  Member<WebGLRenderingContextBase> context_;
+  Member<WebGLContextObjectSupport> context_;
 
   GLuint object_ = 0;
 

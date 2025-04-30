@@ -26,11 +26,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGL_WEBGL_TEXTURE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGL_WEBGL_TEXTURE_H_
 
-#include "base/time/time.h"
-#include "media/base/video_frame.h"
-#include "third_party/blink/public/platform/web_media_player.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_object.h"
-#include "ui/gfx/geometry/rect.h"
 
 namespace blink {
 
@@ -38,7 +34,7 @@ class WebGLTexture : public WebGLObject {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  explicit WebGLTexture(WebGLRenderingContextBase*);
+  explicit WebGLTexture(WebGLContextObjectSupport*);
 
   ~WebGLTexture() override;
 
@@ -55,7 +51,7 @@ class WebGLTexture : public WebGLObject {
 
  protected:
   // Constructor for WebGLUnownedTexture.
-  explicit WebGLTexture(WebGLRenderingContextBase* ctx,
+  explicit WebGLTexture(WebGLContextObjectSupport* ctx,
                         GLuint texture,
                         GLenum target);
 

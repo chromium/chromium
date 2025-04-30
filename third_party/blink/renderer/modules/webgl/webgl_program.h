@@ -27,21 +27,22 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGL_WEBGL_PROGRAM_H_
 
 #include "third_party/blink/renderer/modules/webgl/webgl_object.h"
-#include "third_party/blink/renderer/modules/webgl/webgl_shader.h"
 
 namespace blink {
+
+class WebGLShader;
 
 class WebGLProgram final : public WebGLObject {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  explicit WebGLProgram(WebGLRenderingContextBase*);
+  explicit WebGLProgram(WebGLContextObjectSupport*);
   ~WebGLProgram() override;
 
-  bool LinkStatus(WebGLRenderingContextBase*);
+  bool LinkStatus(WebGLContextObjectSupport*);
   void setLinkStatus(bool link_status);
 
-  bool CompletionStatus(WebGLRenderingContextBase*);
+  bool CompletionStatus(WebGLContextObjectSupport*);
 
   unsigned LinkCount() const { return link_count_; }
 
@@ -61,7 +62,7 @@ class WebGLProgram final : public WebGLObject {
     required_transform_feedback_buffer_count_after_next_link_ = count;
   }
   int GetRequiredTransformFeedbackBufferCount(
-      WebGLRenderingContextBase* context) {
+      WebGLContextObjectSupport* context) {
     CacheInfoIfNeeded(context);
     return required_transform_feedback_buffer_count_;
   }
@@ -76,7 +77,7 @@ class WebGLProgram final : public WebGLObject {
   void DeleteObjectImpl(gpu::gles2::GLES2Interface*) override;
 
  private:
-  void CacheInfoIfNeeded(WebGLRenderingContextBase*);
+  void CacheInfoIfNeeded(WebGLContextObjectSupport*);
 
   GLint link_status_;
 

@@ -9,21 +9,13 @@
 #include "third_party/blink/renderer/modules/webgl/webgl_object.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cancellable_task.h"
 
-namespace gpu {
-namespace gles2 {
-class GLES2Interface;
-}
-}
-
 namespace blink {
-
-class WebGL2RenderingContextBase;
 
 class WebGLQuery : public WebGLObject {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  explicit WebGLQuery(WebGL2RenderingContextBase*);
+  explicit WebGLQuery(WebGLContextObjectSupport*);
   ~WebGLQuery() override;
 
   void SetTarget(GLenum);

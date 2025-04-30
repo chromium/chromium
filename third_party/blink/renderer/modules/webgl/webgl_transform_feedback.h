@@ -6,13 +6,12 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGL_WEBGL_TRANSFORM_FEEDBACK_H_
 
 #include "third_party/blink/renderer/modules/webgl/webgl_object.h"
-#include "third_party/blink/renderer/modules/webgl/webgl_program.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 
 namespace blink {
 
-class WebGL2RenderingContextBase;
 class WebGLBuffer;
+class WebGLProgram;
 
 class WebGLTransformFeedback : public WebGLObject {
   DEFINE_WRAPPERTYPEINFO();
@@ -24,7 +23,7 @@ class WebGLTransformFeedback : public WebGLObject {
   };
 
   explicit WebGLTransformFeedback(
-      WebGL2RenderingContextBase*,
+      WebGLContextObjectSupport*,
       TFType,
       GLint max_transform_feedback_separate_attribs);
   ~WebGLTransformFeedback() override;

@@ -5,12 +5,14 @@
 #include "third_party/blink/renderer/modules/webgl/webgl_transform_feedback.h"
 
 #include "gpu/command_buffer/client/gles2_interface.h"
-#include "third_party/blink/renderer/modules/webgl/webgl2_rendering_context_base.h"
+#include "third_party/blink/renderer/modules/webgl/webgl_buffer.h"
+#include "third_party/blink/renderer/modules/webgl/webgl_context_object_support.h"
+#include "third_party/blink/renderer/modules/webgl/webgl_program.h"
 
 namespace blink {
 
 WebGLTransformFeedback::WebGLTransformFeedback(
-    WebGL2RenderingContextBase* ctx,
+    WebGLContextObjectSupport* ctx,
     TFType type,
     GLint max_transform_feedback_separate_attribs)
     : WebGLObject(ctx),
@@ -19,7 +21,7 @@ WebGLTransformFeedback::WebGLTransformFeedback(
       program_(nullptr),
       active_(false),
       paused_(false) {
-  if (ctx->isContextLost()) {
+  if (ctx->IsLost()) {
     return;
   }
 

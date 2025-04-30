@@ -31,12 +31,6 @@
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
-namespace gpu {
-namespace gles2 {
-class GLES2Interface;
-}
-}
-
 namespace blink {
 
 class WebGLRenderbuffer;
@@ -68,13 +62,13 @@ class WebGLFramebuffer final : public WebGLObject {
     WebGLAttachment();
   };
 
-  explicit WebGLFramebuffer(WebGLRenderingContextBase*, bool opaque = false);
+  explicit WebGLFramebuffer(WebGLContextObjectSupport*, bool opaque = false);
   ~WebGLFramebuffer() override;
 
   // An opaque framebuffer is one whose attachments are created and managed by
   // the browser and not inspectable or alterable via Javascript. This is
   // primarily used by the VRWebGLLayer interface.
-  static WebGLFramebuffer* CreateOpaque(WebGLRenderingContextBase*,
+  static WebGLFramebuffer* CreateOpaque(WebGLContextObjectSupport*,
                                         bool has_depth,
                                         bool has_stencil);
 
