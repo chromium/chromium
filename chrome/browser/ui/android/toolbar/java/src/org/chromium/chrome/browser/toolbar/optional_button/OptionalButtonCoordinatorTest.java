@@ -483,7 +483,7 @@ public class OptionalButtonCoordinatorTest {
         mOptionalButtonCoordinator.updateButton(buttonData, /* isIncognito= */ false);
 
         // Button should be disabled.
-        verify(mockButtonView).setEnabled(false);
+        verify(mMockOptionalButtonView).setEnabled(false);
         verify(mMockOptionalButtonView, times(2)).updateButtonWithAnimation(buttonData);
     }
 

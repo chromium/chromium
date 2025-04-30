@@ -14,9 +14,7 @@ class OptionalButtonViewBinder {
         if (OptionalButtonProperties.BUTTON_DATA.equals(propertyKey)) {
             view.updateButtonWithAnimation(model.get(OptionalButtonProperties.BUTTON_DATA));
         } else if (OptionalButtonProperties.IS_ENABLED.equals(propertyKey)) {
-            if (view.getButtonView() != null) {
-                view.getButtonView().setEnabled(model.get(OptionalButtonProperties.IS_ENABLED));
-            }
+            view.setEnabled(model.get(OptionalButtonProperties.IS_ENABLED));
         } else if (OptionalButtonProperties.TRANSITION_STARTED_CALLBACK.equals(propertyKey)) {
             view.setTransitionStartedCallback(
                     model.get(OptionalButtonProperties.TRANSITION_STARTED_CALLBACK));

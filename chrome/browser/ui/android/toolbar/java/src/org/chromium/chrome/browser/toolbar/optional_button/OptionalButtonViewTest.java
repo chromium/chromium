@@ -320,6 +320,20 @@ public class OptionalButtonViewTest {
 
         // The enabled property should be reflected immediately.
         assertFalse(mOptionalButtonView.getButtonView().isEnabled());
+        assertFalse(mActionChipLabel.isEnabled());
+    }
+
+    @Test
+    public void testSetEnabledMethod() {
+        ButtonDataImpl buttonData = getDataForReaderModeActionChip();
+
+        mOptionalButtonView.updateButtonWithAnimation(buttonData);
+
+        // setEnabled updates the button's enabled status without requiring a new ButtonData.
+        mOptionalButtonView.setEnabled(false);
+
+        assertFalse(mOptionalButtonView.getButtonView().isEnabled());
+        assertFalse(mActionChipLabel.isEnabled());
     }
 
     @Test

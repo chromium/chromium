@@ -251,6 +251,7 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
         mClickListener = buttonSpec.getOnClickListener();
         mLongClickListener = buttonSpec.getOnLongClickListener();
         mButton.setEnabled(buttonData.isEnabled());
+        mActionChipLabel.setEnabled(buttonData.isEnabled());
 
         // Set circular highlight for optional button when button variant is profile, share, voice
         // search and new tab. Set box highlight for the rest of button variants.
@@ -367,6 +368,14 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
         mExpandedStatePaddingPx =
                 getDimensionPixelSize(
                         R.dimen.toolbar_phone_optional_button_expanded_state_extra_width);
+    }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        super.setEnabled(enabled);
+
+        mButton.setEnabled(enabled);
+        mActionChipLabel.setEnabled(enabled);
     }
 
     /**
