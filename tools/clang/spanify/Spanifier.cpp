@@ -422,7 +422,7 @@ std::string GetTypeAsString(const clang::QualType& qual_type,
   printing_policy.SuppressElaboration = 0;
   printing_policy.SuppressInlineNamespace = 1;
   printing_policy.SuppressDefaultTemplateArgs = 1;
-  printing_policy.PrintCanonicalTypes = 0;
+  printing_policy.PrintAsCanonical = 0;
   return qual_type.getAsString(printing_policy);
 }
 
