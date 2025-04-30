@@ -198,24 +198,6 @@ OptimizationGuideKeyedService::MaybeCreatePushNotificationManager(
 }
 
 // static
-void OptimizationGuideKeyedService::DeterminePerformanceClass(
-    base::WeakPtr<OnDeviceModelComponentStateManager>
-        on_device_component_state_manager) {
-  OnDeviceModelServiceController::GetEstimatedPerformanceClass(
-      GetOnDeviceModelServiceController(on_device_component_state_manager),
-      base::BindOnce([](OnDeviceModelPerformanceClass perf_class) {
-        base::UmaHistogramEnumeration(
-            "OptimizationGuide.ModelExecution.OnDeviceModelPerformanceClass",
-            perf_class);
-        RegisterPerformanceClassSyntheticTrial(perf_class);
-        return perf_class;
-      })
-          .Then(base::BindOnce(&OnDeviceModelComponentStateManager::
-                                   DevicePerformanceClassChanged,
-                               on_device_component_state_manager)));
-}
-
-// static
 void OptimizationGuideKeyedService::RegisterPerformanceClassSyntheticTrial(
     OnDeviceModelPerformanceClass perf_class) {
   if (perf_class != OnDeviceModelPerformanceClass::kUnknown) {
@@ -412,8 +394,8 @@ void OptimizationGuideKeyedService::InitializeModelExecution(Profile* profile) {
       base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
           FROM_HERE,
           base::BindOnce(
-              &OptimizationGuideKeyedService::DeterminePerformanceClass,
-              on_device_component_manager_->GetWeakPtr()),
+              &OptimizationGuideKeyedService::EnsurePerformanceClassAvailable,
+              weak_factory_.GetWeakPtr(), base::DoNothing()),
           optimization_guide::features::GetOnDeviceStartupMetricDelay());
     }
     // If the perf class was previously determined, register that.
@@ -827,6 +809,15 @@ OptimizationGuideKeyedService::GetOnDeviceModelEligibility(
   return model_execution_manager_->GetOnDeviceModelEligibility(feature);
 }
 
+void OptimizationGuideKeyedService::GetOnDeviceModelEligibilityAsync(
+    optimization_guide::ModelBasedCapabilityKey feature,
+    base::OnceCallback<void(optimization_guide::OnDeviceModelEligibilityReason)>
+        callback) {
+  EnsurePerformanceClassAvailable(base::BindOnce(
+      &OptimizationGuideKeyedService::FinishGetOnDeviceModelEligibility,
+      weak_factory_.GetWeakPtr(), feature, std::move(callback)));
+}
+
 std::optional<optimization_guide::SamplingParamsConfig>
 OptimizationGuideKeyedService::GetSamplingParamsConfig(
     optimization_guide::ModelBasedCapabilityKey feature) {
@@ -845,4 +836,56 @@ OptimizationGuideKeyedService::GetFeatureMetadata(
   }
 
   return model_execution_manager_->GetFeatureMetadata(feature);
+}
+
+void OptimizationGuideKeyedService::EnsurePerformanceClassAvailable(
+    base::OnceClosure complete) {
+  if (!on_device_component_manager_ ||
+      !on_device_component_manager_->NeedsPerformanceClassUpdate()) {
+    std::move(complete).Run();
+    return;
+  }
+
+  if (performance_class_state_ == PerformanceClassState::kComplete) {
+    std::move(complete).Run();
+    return;
+  }
+
+  // Use unsafe because cancellation isn't needed.
+  performance_class_callbacks_.AddUnsafe(std::move(complete));
+
+  if (performance_class_state_ == PerformanceClassState::kComputing) {
+    return;
+  }
+
+  performance_class_state_ = PerformanceClassState::kComputing;
+  OnDeviceModelServiceController::GetEstimatedPerformanceClass(
+      GetOnDeviceModelServiceController(
+          on_device_component_manager_->GetWeakPtr()),
+      base::BindOnce([](OnDeviceModelPerformanceClass perf_class) {
+        base::UmaHistogramEnumeration(
+            "OptimizationGuide.ModelExecution.OnDeviceModelPerformanceClass",
+            perf_class);
+        RegisterPerformanceClassSyntheticTrial(perf_class);
+        return perf_class;
+      })
+          .Then(base::BindOnce(
+              &OnDeviceModelComponentStateManager::
+                  DevicePerformanceClassChanged,
+              on_device_component_manager_->GetWeakPtr(),
+              base::BindOnce(
+                  &OptimizationGuideKeyedService::PerformanceClassUpdated,
+                  weak_factory_.GetWeakPtr()))));
+}
+
+void OptimizationGuideKeyedService::PerformanceClassUpdated() {
+  performance_class_state_ = PerformanceClassState::kComplete;
+  performance_class_callbacks_.Notify();
+}
+
+void OptimizationGuideKeyedService::FinishGetOnDeviceModelEligibility(
+    optimization_guide::ModelBasedCapabilityKey feature,
+    base::OnceCallback<void(optimization_guide::OnDeviceModelEligibilityReason)>
+        callback) {
+  std::move(callback).Run(GetOnDeviceModelEligibility(feature));
 }

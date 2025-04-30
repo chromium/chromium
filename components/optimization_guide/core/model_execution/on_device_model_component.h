@@ -200,6 +200,7 @@ class OnDeviceModelComponentStateManager
 
   // Should be called whenever the device performance class changes.
   void DevicePerformanceClassChanged(
+      base::OnceClosure complete,
       OnDeviceModelPerformanceClass performance_class);
 
   // Whether the performance class needs to be fetched.
@@ -283,7 +284,7 @@ class OnDeviceModelComponentStateManager
   DebugState GetDebugState();
 
   // Installs the component installer if it needs installed.
-  void BeginUpdateRegistration();
+  void BeginUpdateRegistration(base::OnceClosure complete);
   // Continuation of `UpdateRegistration()` after async work.
   void CompleteUpdateRegistration(int64_t disk_space_free_bytes);
 

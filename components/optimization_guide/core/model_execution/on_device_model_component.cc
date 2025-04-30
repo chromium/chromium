@@ -198,17 +198,18 @@ void OnDeviceModelComponentStateManager::OnDeviceEligibleFeatureUsed(
     LogInstallCriteria(*registration_criteria_, "AtAttemptedUse");
   }
 
-  BeginUpdateRegistration();
+  BeginUpdateRegistration(base::DoNothing());
 }
 
 void OnDeviceModelComponentStateManager::DevicePerformanceClassChanged(
+    base::OnceClosure complete,
     OnDeviceModelPerformanceClass performance_class) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   UpdatePerformanceClassPref(local_state_, performance_class);
   local_state_->SetString(
       model_execution::prefs::localstate::kOnDevicePerformanceClassVersion,
       version_info::GetVersionNumber());
-  BeginUpdateRegistration();
+  BeginUpdateRegistration(std::move(complete));
 }
 
 bool OnDeviceModelComponentStateManager::NeedsPerformanceClassUpdate() {
@@ -234,7 +235,7 @@ void OnDeviceModelComponentStateManager::OnStartup() {
                                                      .Set("name", "override")));
     return;
   }
-  BeginUpdateRegistration();
+  BeginUpdateRegistration(base::DoNothing());
 }
 
 void OnDeviceModelComponentStateManager::InstallerRegistered() {
@@ -250,16 +251,19 @@ bool OnDeviceModelComponentStateManager::IsInstallerRegistered() {
   return state_ != nullptr;
 }
 
-void OnDeviceModelComponentStateManager::BeginUpdateRegistration() {
+void OnDeviceModelComponentStateManager::BeginUpdateRegistration(
+    base::OnceClosure complete) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (switches::GetOnDeviceModelExecutionOverride()) {
+    std::move(complete).Run();
     return;
   }
   delegate_->GetFreeDiskSpace(
       delegate_->GetInstallDirectory(),
       base::BindOnce(
           &OnDeviceModelComponentStateManager::CompleteUpdateRegistration,
-          GetWeakPtr()));
+          GetWeakPtr())
+          .Then(std::move(complete)));
 }
 
 void OnDeviceModelComponentStateManager::CompleteUpdateRegistration(

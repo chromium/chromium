@@ -20,6 +20,11 @@ class OptimizationGuideOnDeviceCapabilityProvider {
   // provide the factory of `OptimizationGuideModelExecutor`.
   virtual OnDeviceModelEligibilityReason GetOnDeviceModelEligibility(
       ModelBasedCapabilityKey feature) = 0;
+  // Similar to above, but bumps the priority of related tasks such as computing
+  // the performance class before returning the eligibility.
+  virtual void GetOnDeviceModelEligibilityAsync(
+      ModelBasedCapabilityKey feature,
+      base::OnceCallback<void(OnDeviceModelEligibilityReason)> callback) = 0;
   virtual std::optional<SamplingParamsConfig> GetSamplingParamsConfig(
       ModelBasedCapabilityKey feature) = 0;
   virtual std::optional<const optimization_guide::proto::Any>

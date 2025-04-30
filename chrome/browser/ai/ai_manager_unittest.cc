@@ -170,11 +170,13 @@ TEST_F(AIManagerTest, CanCreate) {
 TEST_F(AIManagerTest, CanCreateNotEnabled) {
   SetupMockOptimizationGuideKeyedService();
   EXPECT_CALL(*mock_optimization_guide_keyed_service_,
-              GetOnDeviceModelEligibility(_))
+              GetOnDeviceModelEligibilityAsync(_, _))
       .Times(4)
-      .WillRepeatedly(
-          testing::Return(optimization_guide::OnDeviceModelEligibilityReason::
-                              kFeatureNotEnabled));
+      .WillRepeatedly([](auto feature, auto callback) {
+        std::move(callback).Run(
+            optimization_guide::OnDeviceModelEligibilityReason::
+                kFeatureNotEnabled);
+      });
   base::MockCallback<
       base::OnceCallback<void(blink::mojom::ModelAvailabilityCheckResult)>>
       callback;

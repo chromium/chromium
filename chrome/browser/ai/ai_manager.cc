@@ -771,9 +771,23 @@ void AIManager::CanCreateSession(
     return;
   }
 
+  service->GetOnDeviceModelEligibilityAsync(
+      capability, base::BindOnce(&AIManager::FinishCanCreateSession,
+                                 weak_factory_.GetWeakPtr(), capability,
+                                 capabilities, std::move(callback)));
+}
+
+void AIManager::FinishCanCreateSession(
+    optimization_guide::ModelBasedCapabilityKey capability,
+    on_device_model::Capabilities capabilities,
+    CanCreateLanguageModelCallback callback,
+    optimization_guide::OnDeviceModelEligibilityReason eligibility) {
+  OptimizationGuideKeyedService* service =
+      OptimizationGuideKeyedServiceFactory::GetForProfile(
+          Profile::FromBrowserContext(browser_context_));
+
   // If the `OptimizationGuideKeyedService` cannot create new session, return
   // the reason.
-  auto eligibility = service->GetOnDeviceModelEligibility(capability);
   if (eligibility !=
       optimization_guide::OnDeviceModelEligibilityReason::kSuccess) {
     std::move(callback).Run(

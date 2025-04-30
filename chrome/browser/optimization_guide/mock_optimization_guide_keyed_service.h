@@ -130,6 +130,13 @@ class MockOptimizationGuideKeyedService : public OptimizationGuideKeyedService {
               (optimization_guide::ModelBasedCapabilityKey),
               (override));
 
+  MOCK_METHOD(void,
+              GetOnDeviceModelEligibilityAsync,
+              (optimization_guide::ModelBasedCapabilityKey,
+               base::OnceCallback<
+                   void(optimization_guide::OnDeviceModelEligibilityReason)>),
+              (override));
+
   MOCK_METHOD(std::optional<optimization_guide::SamplingParamsConfig>,
               GetSamplingParamsConfig,
               (optimization_guide::ModelBasedCapabilityKey),

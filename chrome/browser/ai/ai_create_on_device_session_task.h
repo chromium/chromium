@@ -81,6 +81,9 @@ class CreateOnDeviceSessionTask
       optimization_guide::ModelBasedCapabilityKey feature,
       optimization_guide::OnDeviceModelEligibilityReason reason) override;
 
+  void OnGetEligibility(
+      optimization_guide::OnDeviceModelEligibilityReason eligibility);
+
   std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
   StartSession();
 
@@ -93,6 +96,7 @@ class CreateOnDeviceSessionTask
   const raw_ptr<content::BrowserContext> browser_context_;
   const optimization_guide::ModelBasedCapabilityKey feature_;
   State state_ = CreateOnDeviceSessionTask::State::kNotStarted;
+  base::WeakPtrFactory<CreateOnDeviceSessionTask> weak_factory_{this};
 };
 
 // Implementation of the `CreateOnDeviceSessionTask` base class for

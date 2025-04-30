@@ -907,6 +907,91 @@ TEST_F(AILanguageModelTest, PromptWithHistoryWithQuotaOverflow) {
   TestSessionAddContext(/*should_overflow_context=*/true);
 }
 
+// TODO(crbug.com/414632884): This test is flaky on Linux TSAN.
+#if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
+#define MAYBE_CreateLanguageModel_WaitsForEligibility \
+  DISABLED_CreateLanguageModel_WaitsForEligibility
+#else
+#define MAYBE_CreateLanguageModel_WaitsForEligibility \
+  CreateLanguageModel_WaitsForEligibility
+#endif
+TEST_F(AILanguageModelTest, MAYBE_CreateLanguageModel_WaitsForEligibility) {
+  SetupMockOptimizationGuideKeyedService();
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _))
+      .WillOnce(
+          [&](optimization_guide::ModelBasedCapabilityKey feature,
+              const std::optional<optimization_guide::SessionConfigParams>&
+                  config_params) {
+            auto session = std::make_unique<
+                testing::NiceMock<optimization_guide::MockSession>>();
+            SetUpMockSession(*session);
+            return session;
+          });
+
+  base::test::TestFuture<base::OnceCallback<void(
+      optimization_guide::OnDeviceModelEligibilityReason)>>
+      eligibility_future;
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_,
+              GetOnDeviceModelEligibilityAsync(_, _))
+      .WillOnce(testing::Invoke([&](auto feature, auto callback) {
+        eligibility_future.SetValue(std::move(callback));
+      }));
+
+  AITestUtils::MockCreateLanguageModelClient create_language_model_client;
+  base::test::TestFuture<mojo::PendingRemote<blink::mojom::AILanguageModel>>
+      session_future;
+  EXPECT_CALL(create_language_model_client, OnResult(_, _))
+      .WillOnce(
+          [&](mojo::PendingRemote<blink::mojom::AILanguageModel> language_model,
+              blink::mojom::AILanguageModelInstanceInfoPtr info) {
+            session_future.SetValue(std::move(language_model));
+          });
+
+  GetAIManagerRemote()->CreateLanguageModel(
+      create_language_model_client.BindNewPipeAndPassRemote(),
+      blink::mojom::AILanguageModelCreateOptions::New());
+
+  // Session should not be ready until eligibility callback has run.
+  EXPECT_FALSE(session_future.IsReady());
+  eligibility_future.Take().Run(
+      optimization_guide::OnDeviceModelEligibilityReason::kSuccess);
+  EXPECT_TRUE(session_future.Get());
+}
+
+// TODO(crbug.com/414632884): This test is flaky on Linux TSAN.
+#if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
+#define MAYBE_CanCreate_WaitsForEligibility \
+  DISABLED_CanCreate_WaitsForEligibility
+#else
+#define MAYBE_CanCreate_WaitsForEligibility CanCreate_WaitsForEligibility
+#endif
+TEST_F(AILanguageModelTest, MAYBE_CanCreate_WaitsForEligibility) {
+  SetupMockOptimizationGuideKeyedService();
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_,
+              GetOnDeviceModelEligibility(_))
+      .WillRepeatedly(testing::Return(
+          optimization_guide::OnDeviceModelEligibilityReason::kSuccess));
+  base::test::TestFuture<base::OnceCallback<void(
+      optimization_guide::OnDeviceModelEligibilityReason)>>
+      eligibility_future;
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_,
+              GetOnDeviceModelEligibilityAsync(_, _))
+      .WillOnce(testing::Invoke([&](auto feature, auto callback) {
+        eligibility_future.SetValue(std::move(callback));
+      }));
+
+  base::test::TestFuture<blink::mojom::ModelAvailabilityCheckResult>
+      result_future;
+  GetAIManagerInterface()->CanCreateLanguageModel({},
+                                                  result_future.GetCallback());
+  // Session should not be ready until eligibility callback has run.
+  EXPECT_FALSE(result_future.IsReady());
+  eligibility_future.Take().Run(
+      optimization_guide::OnDeviceModelEligibilityReason::kSuccess);
+  EXPECT_EQ(result_future.Get(),
+            blink::mojom::ModelAvailabilityCheckResult::kAvailable);
+}
+
 TEST_F(AILanguageModelTest, CanCreate_IsLanguagesSupported) {
   SetupMockOptimizationGuideKeyedService();
   EXPECT_CALL(*mock_optimization_guide_keyed_service_,

@@ -164,6 +164,12 @@ class AIManager : public base::SupportsUserData::Data,
   void RenderWidgetHostDestroyed(
       content::RenderWidgetHost* widget_host) override;
 
+  void FinishCanCreateSession(
+      optimization_guide::ModelBasedCapabilityKey capability,
+      on_device_model::Capabilities capabilities,
+      CanCreateLanguageModelCallback callback,
+      optimization_guide::OnDeviceModelEligibilityReason eligibility);
+
   mojo::ReceiverSet<blink::mojom::AIManager> receivers_;
   mojo::RemoteSet<blink::mojom::ModelDownloadProgressObserver>
       download_progress_observers_;

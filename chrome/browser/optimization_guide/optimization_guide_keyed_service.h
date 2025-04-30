@@ -9,6 +9,8 @@
 #include <optional>
 #include <vector>
 
+#include "base/callback_list.h"
+#include "base/cancelable_callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/scoped_observation.h"
@@ -165,6 +167,11 @@ class OptimizationGuideKeyedService
   optimization_guide::OnDeviceModelEligibilityReason
   GetOnDeviceModelEligibility(
       optimization_guide::ModelBasedCapabilityKey feature) override;
+  void GetOnDeviceModelEligibilityAsync(
+      optimization_guide::ModelBasedCapabilityKey feature,
+      base::OnceCallback<
+          void(optimization_guide::OnDeviceModelEligibilityReason)> callback)
+      override;
   std::optional<optimization_guide::SamplingParamsConfig>
   GetSamplingParamsConfig(
       optimization_guide::ModelBasedCapabilityKey feature) override;
@@ -270,10 +277,6 @@ class OptimizationGuideKeyedService
   friend class optimization_guide::android::OptimizationGuideBridge;
 #endif  // BUILDFLAG(IS_ANDROID)
 
-  // Evaluates and records the device performance class to local state prefs.
-  static void DeterminePerformanceClass(
-      base::WeakPtr<optimization_guide::OnDeviceModelComponentStateManager>
-          on_device_component_state_manager);
   static void RegisterPerformanceClassSyntheticTrial(
       optimization_guide::OnDeviceModelPerformanceClass perf_class);
 
@@ -346,6 +349,18 @@ class OptimizationGuideKeyedService
       optimization_guide::UserVisibleFeatureKey feature,
       std::string_view feature_name);
 
+  // Ensures the performance class will be up to date and available when
+  // `complete` runs.
+  void EnsurePerformanceClassAvailable(base::OnceClosure complete);
+
+  // Called when performance class has finished updating.
+  void PerformanceClassUpdated();
+
+  void FinishGetOnDeviceModelEligibility(
+      optimization_guide::ModelBasedCapabilityKey feature,
+      base::OnceCallback<
+          void(optimization_guide::OnDeviceModelEligibilityReason)> callback);
+
   raw_ptr<content::BrowserContext> browser_context_;
 
   // The store of hints.
@@ -399,6 +414,19 @@ class OptimizationGuideKeyedService
 
   // Used to observe profile initialization event.
   base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
+
+  enum class PerformanceClassState {
+    kNotSet,
+    kComputing,
+    kComplete,
+  };
+  PerformanceClassState performance_class_state_ =
+      PerformanceClassState::kNotSet;
+
+  // Callbacks waiting for performance class to finish computing.
+  base::OnceClosureList performance_class_callbacks_;
+
+  base::WeakPtrFactory<OptimizationGuideKeyedService> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_OPTIMIZATION_GUIDE_OPTIMIZATION_GUIDE_KEYED_SERVICE_H_

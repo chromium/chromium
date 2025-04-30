@@ -32,6 +32,12 @@ class MockOptimizationGuideOnDeviceCapabilityProvider
               (ModelBasedCapabilityKey),
               (override));
 
+  MOCK_METHOD(void,
+              GetOnDeviceModelEligibilityAsync,
+              (ModelBasedCapabilityKey,
+               base::OnceCallback<void(OnDeviceModelEligibilityReason)>),
+              (override));
+
   MOCK_METHOD(std::optional<SamplingParamsConfig>,
               GetSamplingParamsConfig,
               (ModelBasedCapabilityKey),
