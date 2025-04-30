@@ -178,8 +178,8 @@ public class OptionalButtonCoordinator {
         if (buttonData != null) {
             buttonData.setBackgroundResource(
                     isIncognito
-                            ? R.drawable.default_icon_background_baseline
-                            : R.drawable.default_icon_background);
+                            ? R.drawable.optional_button_background_baseline
+                            : R.drawable.optional_button_background);
         }
         mMediator.updateButton(buttonData);
     }

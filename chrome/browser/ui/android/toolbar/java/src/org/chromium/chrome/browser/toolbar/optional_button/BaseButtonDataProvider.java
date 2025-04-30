@@ -45,11 +45,16 @@ public abstract class BaseButtonDataProvider implements ButtonDataProvider, OnCl
      *     visible. Can be null to disable this behavior.
      * @param buttonDrawable Drawable for the button icon.
      * @param contentDescription String for the button's content description.
+     * @param actionChipLabelResId String for the button's action chip label, can be
+     *     Resources.ID_NULL is the button doesn't support action chip.
      * @param supportsTinting Whether the button's icon should be tinted.
      * @param iphCommandBuilder An IPH command builder instance to show when the button is
      *     displayed, can be null.
      * @param adaptiveButtonVariant Enum value of {@link AdaptiveToolbarButtonVariant}, used for
      *     metrics.
+     * @param tooltipTextResId String to show as a tooltip when the button is hovered over.
+     * @param showBackgroundHighlight Whether to use a custom background drawable to handle
+     *     highlight and focus UI states.
      */
     public BaseButtonDataProvider(
             Supplier<Tab> activeTabSupplier,

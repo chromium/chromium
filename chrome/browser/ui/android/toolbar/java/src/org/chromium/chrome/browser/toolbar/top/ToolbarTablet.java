@@ -485,7 +485,7 @@ public class ToolbarTablet extends ToolbarLayout {
 
         ButtonSpec buttonSpec = buttonData.getButtonSpec();
 
-        // Set hover highlight for profile, voice search, share and new tab button on tablets. Set
+        // Set hover highlight for buttons requesting a custom highlight. Set
         // box hover highlight for the rest of button variants.
         if (buttonData.getButtonSpec().shouldShowBackgroundHighlight()) {
             mOptionalButton.setBackgroundResource(

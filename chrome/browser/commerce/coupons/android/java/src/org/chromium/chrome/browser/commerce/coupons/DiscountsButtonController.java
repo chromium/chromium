@@ -40,13 +40,13 @@ public class DiscountsButtonController extends BaseButtonDataProvider {
                 activeTabSupplier,
                 modalDialogManager,
                 AppCompatResources.getDrawable(context, R.drawable.ic_shoppingmode_24dp),
-                context.getString(R.string.discount_container_title),
-                R.string.discount_container_title,
-                true,
-                null,
+                /* contentDescription= */ context.getString(R.string.discount_container_title),
+                /* actionChipLabelResId= */ R.string.discount_container_title,
+                /* supportsTinting= */ true,
+                /* iphCommandBuilder= */ null,
                 AdaptiveToolbarButtonVariant.DISCOUNTS,
-                Resources.ID_NULL,
-                false);
+                /* tooltipTextResId= */ Resources.ID_NULL,
+                /* showBackgroundHighlight= */ true);
 
         mBottomSheetController = bottomSheetController;
         mBottomSheetObserver =
