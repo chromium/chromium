@@ -14,15 +14,18 @@
 #include "base/notimplemented.h"
 #include "base/strings/string_split.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "chrome/browser/actor/actor_features.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/actor/actor_logging.h"
 #include "components/optimization_guide/core/optimization_guide_decision.h"
+#include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/tabs/public/tab_interface.h"
+#include "components/variations/service/variations_service.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/url_util.h"
 #include "url/gurl.h"
@@ -39,8 +42,8 @@ namespace {
 void ResolveDecision(DecisionCallback callback, bool decision) {
   // Some decisions are made asynchronously, so always invoke the callback
   // asynchronously for consistency.
-  VLOG(1) << __func__ << ": Decided to " << (decision ? "allow" : "block")
-          << " for actions";
+  ACTOR_LOG() << __func__ << ": Decided to " << (decision ? "allow" : "block")
+              << " for actions";
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), decision));
 }
@@ -68,23 +71,24 @@ void OnOptimizationGuideDecision(
     DecisionCallback callback,
     optimization_guide::OptimizationGuideDecision decision,
     const optimization_guide::OptimizationMetadata& metadata) {
-  VLOG(1) << __func__ << ": OptimizationGuideDecision is "
-          << base::to_underlying(decision);
+  ACTOR_LOG() << __func__ << ": OptimizationGuideDecision is "
+              << optimization_guide::GetStringForOptimizationGuideDecision(
+                     decision);
   ResolveDecision(
       std::move(callback),
       decision == optimization_guide::OptimizationGuideDecision::kTrue);
 }
 
 void MayActOnUrl(const GURL& url, Profile* profile, DecisionCallback callback) {
-  VLOG(1) << __func__ << ": Considering for eligibility \"" << url.spec()
-          << "\"";
+  ACTOR_LOG() << __func__ << ": Considering for eligibility \"" << url.spec()
+              << "\"";
   if (net::IsLocalhost(url) || url.IsAboutBlank()) {
     ResolveDecision(std::move(callback), true);
     return;
   }
 
   if (!url.SchemeIs(url::kHttpsScheme) || url.HostIsIPAddress()) {
-    VLOG(1) << __func__ << ": Wrong scheme";
+    ACTOR_LOG() << __func__ << ": Wrong scheme";
     ResolveDecision(std::move(callback), false);
     return;
   }
@@ -110,7 +114,22 @@ void MayActOnUrl(const GURL& url, Profile* profile, DecisionCallback callback) {
     }
 
     if (kAllowlistOnly.Get()) {
-      VLOG(1) << __func__ << ": URL not in allowlist";
+      if (allowlist.empty() && allowlist_exact.empty()) {
+        ACTOR_LOG() << __func__ << ": Allowlist is empty";
+        if (variations::VariationsService* variations_service =
+                g_browser_process->variations_service()) {
+          if (!variations_service->IsLikelyDogfoodClient()) {
+            ACTOR_LOG() << __func__ << ": Non-dogfood client";
+          }
+          if (variations_service->GetClientFilterableStateForVersion()
+                  ->GoogleGroups()
+                  .empty()) {
+            ACTOR_LOG() << __func__ << ": No Google groups";
+          }
+        }
+      } else {
+        ACTOR_LOG() << __func__ << ": URL not in allowlist";
+      }
       ResolveDecision(std::move(callback), false);
       return;
     }
@@ -147,7 +166,7 @@ void MayActOnTab(const tabs::TabInterface& tab, DecisionCallback callback) {
   content::WebContents& web_contents = *tab.GetContents();
 
   if (web_contents.GetPrimaryMainFrame()->IsErrorDocument()) {
-    VLOG(1) << __func__ << ": Tab is an error document";
+    ACTOR_LOG() << __func__ << ": Tab is an error document";
     ResolveDecision(std::move(callback), false);
     return;
   }
@@ -159,7 +178,7 @@ void MayActOnTab(const tabs::TabInterface& tab, DecisionCallback callback) {
   // Do not act on such a page.
   if (safe_browsing::SafeBrowsingUserInteractionObserver::FromWebContents(
           &web_contents)) {
-    VLOG(1) << __func__ << ": Blocked by safebrowsing";
+    ACTOR_LOG() << __func__ << ": Blocked by safebrowsing";
     ResolveDecision(std::move(callback), false);
     return;
   }
