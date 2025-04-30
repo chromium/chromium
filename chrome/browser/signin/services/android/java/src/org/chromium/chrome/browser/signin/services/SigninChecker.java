@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.signin.services;
 
 import org.chromium.base.Log;
-import org.chromium.base.Promise;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -15,6 +14,7 @@ import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.AccountsChangeObserver;
+import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
@@ -52,13 +52,12 @@ public class SigninChecker implements AccountsChangeObserver, Destroyable {
 
     @Override
     public void onCoreAccountInfosChanged() {
-        Promise<List<CoreAccountInfo>> coreAccountInfosPromise =
-                mAccountManagerFacade.getCoreAccountInfos();
-        assert coreAccountInfosPromise.isFulfilled();
-        List<CoreAccountInfo> coreAccountInfos = coreAccountInfosPromise.getResult();
+        var accountsPromise = mAccountManagerFacade.getAccounts();
+        assert accountsPromise.isFulfilled();
+        var accounts = accountsPromise.getResult();
         // In the FRE, supervised accounts are signed in by the SigninManager
         if (!FirstRunStatus.isFirstRunTriggered()) {
-            checkChildAccount(coreAccountInfos);
+            checkChildAccount(accounts);
         }
     }
 
@@ -66,9 +65,9 @@ public class SigninChecker implements AccountsChangeObserver, Destroyable {
         return mNumOfChildAccountChecksDone;
     }
 
-    private void checkChildAccount(List<CoreAccountInfo> coreAccountInfos) {
+    private void checkChildAccount(List<AccountInfo> accounts) {
         AccountUtils.checkIsSubjectToParentalControls(
-                mAccountManagerFacade, coreAccountInfos, this::onChildAccountStatusReady);
+                mAccountManagerFacade, accounts, this::onChildAccountStatusReady);
     }
 
     private void onChildAccountStatusReady(boolean isChild, @Nullable CoreAccountInfo childInfo) {

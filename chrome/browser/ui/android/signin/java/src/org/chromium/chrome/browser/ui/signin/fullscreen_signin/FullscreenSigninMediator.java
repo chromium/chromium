@@ -38,6 +38,7 @@ import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.AccountsChangeObserver;
+import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
@@ -152,8 +153,7 @@ public class FullscreenSigninMediator
 
         mAccountManagerFacade.addObserver(this);
         updateAccounts(
-                AccountUtils.getCoreAccountInfosIfFulfilledOrEmpty(
-                        mAccountManagerFacade.getCoreAccountInfos()));
+                AccountUtils.getAccountsIfFulfilledOrEmpty(mAccountManagerFacade.getAccounts()));
         SigninMetricsUtils.logSigninStarted(accessPoint);
     }
 
@@ -293,8 +293,7 @@ public class FullscreenSigninMediator
     /** Implements {@link AccountsChangeObserver}. */
     @Override
     public void onCoreAccountInfosChanged() {
-        // TODO(crbug.com/40065164): Replace onAccountsChanged() with this method.
-        mAccountManagerFacade.getCoreAccountInfos().then(this::updateAccounts);
+        mAccountManagerFacade.getAccounts().then(this::updateAccounts);
         checkWhetherInitialLoadCompleted(LoadPoint.ACCOUNT_FETCHING);
     }
 
@@ -521,8 +520,8 @@ public class FullscreenSigninMediator
         }
     }
 
-    private void updateAccounts(List<CoreAccountInfo> coreAccountInfos) {
-        if (coreAccountInfos.isEmpty()) {
+    private void updateAccounts(List<AccountInfo> accounts) {
+        if (accounts.isEmpty()) {
             mDefaultAccountEmail = null;
             mSelectedAccountEmail = null;
             mModel.set(FullscreenSigninProperties.SELECTED_ACCOUNT_DATA, null);
@@ -530,17 +529,15 @@ public class FullscreenSigninMediator
                 mDialogCoordinator.dismissDialog();
             }
         } else {
-            mDefaultAccountEmail = coreAccountInfos.get(0).getEmail();
+            mDefaultAccountEmail = accounts.get(0).getEmail();
             if (mSelectedAccountEmail == null
-                    || AccountUtils.findCoreAccountInfoByEmail(
-                                    coreAccountInfos, mSelectedAccountEmail)
-                            == null) {
+                    || AccountUtils.findAccountByEmail(accounts, mSelectedAccountEmail) == null) {
                 setSelectedAccountEmail(mDefaultAccountEmail);
             }
         }
 
         AccountUtils.checkChildAccountStatus(
-                mAccountManagerFacade, coreAccountInfos, this::onChildAccountStatusReady);
+                mAccountManagerFacade, accounts, this::onChildAccountStatusReady);
     }
 
     private void onChildAccountStatusReady(boolean isChild, @Nullable CoreAccountInfo childInfo) {

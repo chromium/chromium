@@ -40,6 +40,7 @@ import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
+import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.base.GaiaId;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
@@ -642,7 +643,7 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
         return PostTask.runSynchronously(
                 TaskTraits.UI_DEFAULT,
                 () -> {
-                    return AccountUtils.findCoreAccountInfoByEmail(getAccountInfos(), accountEmail);
+                    return AccountUtils.findAccountByEmail(getAccountInfos(), accountEmail);
                 });
     }
 
@@ -654,13 +655,12 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
         return PostTask.runSynchronously(
                 TaskTraits.UI_DEFAULT,
                 () -> {
-                    return AccountUtils.findCoreAccountInfoByGaiaId(
-                            getAccountInfos(), accountGaiaId);
+                    return AccountUtils.findAccountByGaiaId(getAccountInfos(), accountGaiaId);
                 });
     }
 
-    private static List<CoreAccountInfo> getAccountInfos() {
-        return AccountManagerFacadeProvider.getInstance().getCoreAccountInfos().getResult();
+    private static List<AccountInfo> getAccountInfos() {
+        return AccountManagerFacadeProvider.getInstance().getAccounts().getResult();
     }
 
     private static void signInAndWaitForResult(CoreAccountInfo accountInfo) {

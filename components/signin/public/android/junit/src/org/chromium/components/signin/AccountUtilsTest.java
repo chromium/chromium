@@ -15,8 +15,6 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.signin.AccountManagerFacade.ChildAccountStatusListener;
-import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.signin.base.GaiaId;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.components.signin.test.util.TestAccounts;
 
@@ -26,20 +24,6 @@ import java.util.List;
 /** Unit tests for {@link AccountUtils} */
 @RunWith(BaseRobolectricTestRunner.class)
 public class AccountUtilsTest {
-    private static final CoreAccountInfo CHILD =
-            CoreAccountInfo.createFromEmailAndGaiaId(
-                    FakeAccountManagerFacade.generateChildEmail("account@gmail.com"),
-                    new GaiaId("notUsedGaiaId"));
-    private static final CoreAccountInfo ADULT_1 =
-            CoreAccountInfo.createFromEmailAndGaiaId(
-                    "adult.account1@gmail.com", new GaiaId("notUsedGaiaId"));
-    private static final CoreAccountInfo ADULT_2 =
-            CoreAccountInfo.createFromEmailAndGaiaId(
-                    "adult.account2@gmail.com", new GaiaId("notUsedGaiaId"));
-    private static final CoreAccountInfo EDU =
-            CoreAccountInfo.createFromEmailAndGaiaId(
-                    "edu.account@gmail.com", new GaiaId("notUsedGaiaId"));
-
     private final FakeAccountManagerFacade mFakeFacade = new FakeAccountManagerFacade();
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
