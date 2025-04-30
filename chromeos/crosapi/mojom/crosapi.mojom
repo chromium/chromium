@@ -164,15 +164,7 @@ interface Crosapi {
   // REMOVED_105@105 was removed.
   // BindNetworkingPrivate@83 was removed.
   // BindExtensionPublisher@73 was removed.
-
-  // Binds the bridge implemented in Ash which is connected to the
-  // `FileChangeServiceBridge` in Lacros via crosapi. This bridge enables file
-  // change events originating from Lacros to be propagated to the
-  // `FileChangeService`, and its observers, in Ash.
-  // Added in M122.
-  [MinVersion=128]
-  BindFileChangeServiceBridge@130(
-      pending_receiver<FileChangeServiceBridge> receiver);
+  // BindFileChangeServiceBridge@130 was removed.
 
   // Binds the provider for cloud identifiers for files and folders used through
   // the file system access web API.

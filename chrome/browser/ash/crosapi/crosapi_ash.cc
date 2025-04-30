@@ -19,7 +19,6 @@
 #include "chrome/browser/ash/crosapi/device_attributes_ash.h"
 #include "chrome/browser/ash/crosapi/device_oauth2_token_service_ash.h"
 #include "chrome/browser/ash/crosapi/document_scan_ash.h"
-#include "chrome/browser/ash/crosapi/file_change_service_bridge_ash.h"
 #include "chrome/browser/ash/crosapi/file_system_access_cloud_identifier_provider_ash.h"
 #include "chrome/browser/ash/crosapi/file_system_provider_service_ash.h"
 #include "chrome/browser/ash/crosapi/fullscreen_controller_ash.h"
@@ -208,19 +207,6 @@ void CrosapiAsh::BindDiagnosticsService(
 void CrosapiAsh::BindDocumentScan(
     mojo::PendingReceiver<mojom::DocumentScan> receiver) {
   document_scan_ash_->BindReceiver(std::move(receiver));
-}
-
-void CrosapiAsh::BindFileChangeServiceBridge(
-    mojo::PendingReceiver<crosapi::mojom::FileChangeServiceBridge> receiver) {
-  // NOTE: The `FileChangeServiceBridgeAsh` is created lazily as the Ash profile
-  // is not yet ready on `CrosapiAsh` construction.
-  if (!file_change_service_bridge_ash_) {
-    Profile* const profile = GetAshProfile();
-    CHECK(profile);
-    file_change_service_bridge_ash_ =
-        std::make_unique<FileChangeServiceBridgeAsh>(profile);
-  }
-  file_change_service_bridge_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindFileSystemAccessCloudIdentifierProvider(

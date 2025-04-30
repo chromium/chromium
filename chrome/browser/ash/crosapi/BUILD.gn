@@ -33,8 +33,6 @@ static_library("crosapi") {
     "document_scan_ash.h",
     "document_scan_ash_type_converters.cc",
     "document_scan_ash_type_converters.h",
-    "file_change_service_bridge_ash.cc",
-    "file_change_service_bridge_ash.h",
     "file_system_access_cloud_identifier_provider_ash.cc",
     "file_system_access_cloud_identifier_provider_ash.h",
     "file_system_provider_service_ash.cc",
@@ -444,7 +442,6 @@ source_set("browser_tests") {
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
   sources = [
-    "file_change_service_bridge_ash_browsertest.cc",
     "magic_boost_ash_browsertest.cc",
     "media_ui_ash_browsertest.cc",
     "power_ash_apitest.cc",
