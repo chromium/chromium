@@ -408,7 +408,7 @@ BASE_FEATURE(kGlicLearnMoreURLConfig,
              "GlicLearnMoreURLConfig",
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE_PARAM(std::string,
-                   kGlicLearnMoreURL,
+                   kGlicShortcutsLearnMoreURL,
                    &kGlicLearnMoreURLConfig,
                    "glic-shortcuts-learn-more-url",
                    "");
@@ -426,6 +426,11 @@ BASE_FEATURE_PARAM(std::string,
                    kGlicTabAccessToggleLearnMoreURL,
                    &kGlicLearnMoreURLConfig,
                    "glic-shortcuts-tab-access-toggle-learn-more-url",
+                   "");
+BASE_FEATURE_PARAM(std::string,
+                   kGlicSettingsPageLearnMoreURL,
+                   &kGlicLearnMoreURLConfig,
+                   "glic-settings-page-learn-more-url",
                    "");
 
 BASE_FEATURE(kGlicCSPConfig,

@@ -371,7 +371,7 @@ void BrowserCommandHandler::OpenGlicSettings() {
     const std::string url = has_url
                                 ? command_line->GetSwitchValueASCII(
                                       ::switches::kGlicShortcutsLearnMoreURL)
-                                : features::kGlicLearnMoreURL.Get();
+                                : features::kGlicShortcutsLearnMoreURL.Get();
     if (url.empty()) {
       return;
     }
