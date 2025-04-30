@@ -156,7 +156,9 @@ namespace autofillPrivate {
     LOCAL_OR_SYNCABLE,
     // The address is stored in a third party service that is tied
     // to user's account.
-    ACCOUNT
+    ACCOUNT,
+    ACCOUNT_HOME,
+    ACCOUNT_WORK
   };
 
   // The type of data that can be stored for an attribute type.

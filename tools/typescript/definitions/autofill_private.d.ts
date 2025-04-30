@@ -127,6 +127,8 @@ declare global {
       export enum AddressRecordType {
         LOCAL_OR_SYNCABLE = 'LOCAL_OR_SYNCABLE',
         ACCOUNT = 'ACCOUNT',
+        ACCOUNT_HOME = 'ACCOUNT_HOME',
+        ACCOUNT_WORK = 'ACCOUNT_WORK'
       }
 
       export enum AttributeTypeDataType {

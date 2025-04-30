@@ -255,7 +255,11 @@ export class SettingsAutofillSectionElement extends
       address: chrome.autofillPrivate.AddressEntry,
       accountInfo: chrome.autofillPrivate.AccountInfo|null): boolean {
     if (address.metadata?.recordType ===
-        chrome.autofillPrivate.AddressRecordType.ACCOUNT) {
+            chrome.autofillPrivate.AddressRecordType.ACCOUNT ||
+        address.metadata?.recordType ===
+            chrome.autofillPrivate.AddressRecordType.ACCOUNT_HOME ||
+        address.metadata?.recordType ===
+            chrome.autofillPrivate.AddressRecordType.ACCOUNT_WORK) {
       return false;
     }
 

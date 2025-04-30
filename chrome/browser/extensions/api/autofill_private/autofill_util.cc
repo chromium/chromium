@@ -80,9 +80,11 @@ autofill_private::AddressRecordType ConvertProfileRecordType(
     case autofill::AutofillProfile::RecordType::kLocalOrSyncable:
       return autofill_private::AddressRecordType::kLocalOrSyncable;
     case autofill::AutofillProfile::RecordType::kAccount:
-    case autofill::AutofillProfile::RecordType::kAccountHome:
-    case autofill::AutofillProfile::RecordType::kAccountWork:
       return autofill_private::AddressRecordType::kAccount;
+    case autofill::AutofillProfile::RecordType::kAccountHome:
+      return autofill_private::AddressRecordType::kAccountHome;
+    case autofill::AutofillProfile::RecordType::kAccountWork:
+      return autofill_private::AddressRecordType::kAccountWork;
   }
   NOTREACHED();
 }
