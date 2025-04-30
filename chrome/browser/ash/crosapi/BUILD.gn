@@ -63,8 +63,6 @@ static_library("crosapi") {
     "parent_access_ash.h",
     "primary_profile_creation_waiter.cc",
     "primary_profile_creation_waiter.h",
-    "remoting_ash.cc",
-    "remoting_ash.h",
     "structured_metrics_service_ash.cc",
     "structured_metrics_service_ash.h",
     "vpn_service_ash.cc",

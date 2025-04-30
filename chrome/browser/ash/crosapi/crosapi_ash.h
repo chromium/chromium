@@ -60,7 +60,6 @@ class MediaUIAsh;
 class MultiCaptureServiceAsh;
 class NetworkingAttributesAsh;
 class ParentAccessAsh;
-class RemotingAsh;
 class StructuredMetricsServiceAsh;
 class VpnServiceAsh;
 
@@ -149,7 +148,6 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<
           chromeos::remote_apps::mojom::RemoteAppsLacrosBridge> receiver)
       override;
-  void BindRemoting(mojo::PendingReceiver<mojom::Remoting> receiver) override;
   void BindSensorHalClient(
       mojo::PendingRemote<chromeos::sensors::mojom::SensorHalClient> remote)
       override;
@@ -273,7 +271,6 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<ash::TelemetryManagementServiceAsh>
       telemetry_management_service_ash_;
   std::unique_ptr<ash::ProbeServiceAsh> probe_service_ash_;
-  std::unique_ptr<RemotingAsh> remoting_ash_;
   std::unique_ptr<ash::printing::PrintPreviewWebcontentsAdapterAsh>
       print_preview_webcontents_adapter_ash_;
   std::unique_ptr<StructuredMetricsServiceAsh> structured_metrics_service_ash_;

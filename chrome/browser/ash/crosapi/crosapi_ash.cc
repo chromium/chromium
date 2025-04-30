@@ -31,7 +31,6 @@
 #include "chrome/browser/ash/crosapi/multi_capture_service_ash.h"
 #include "chrome/browser/ash/crosapi/networking_attributes_ash.h"
 #include "chrome/browser/ash/crosapi/parent_access_ash.h"
-#include "chrome/browser/ash/crosapi/remoting_ash.h"
 #include "chrome/browser/ash/crosapi/structured_metrics_service_ash.h"
 #include "chrome/browser/ash/crosapi/vpn_service_ash.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_factory.h"
@@ -129,7 +128,6 @@ CrosapiAsh::CrosapiAsh()
       telemetry_management_service_ash_(
           std::make_unique<ash::TelemetryManagementServiceAsh>()),
       probe_service_ash_(std::make_unique<ash::ProbeServiceAsh>()),
-      remoting_ash_(std::make_unique<RemotingAsh>()),
       print_preview_webcontents_adapter_ash_(
           std::make_unique<ash::printing::PrintPreviewWebcontentsAdapterAsh>()),
       structured_metrics_service_ash_(
@@ -338,10 +336,6 @@ void CrosapiAsh::BindRemoteAppsLacrosBridge(
     return;
   }
   remote_apps_manager->BindLacrosBridgeInterface(std::move(receiver));
-}
-
-void CrosapiAsh::BindRemoting(mojo::PendingReceiver<mojom::Remoting> receiver) {
-  remoting_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindSensorHalClient(

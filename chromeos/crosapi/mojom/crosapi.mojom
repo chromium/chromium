@@ -273,11 +273,7 @@ interface Crosapi {
       pending_receiver<chromeos.remote_apps.mojom.RemoteAppsLacrosBridge>
           receiver);
 
-  // Binds the Remoting service to allow websites running in Lacros to interact
-  // with Chrome Remote Desktop functionality available in ash-chrome.
-  // Added in M93.
-  [MinVersion=32] BindRemoting@37(pending_receiver<Remoting> receiver);
-
+  // BindRemoting@37 was removed.
   // BindScreenAIDownloader@113 was removed.
   // BindScreenManager@1 was removed.
 
