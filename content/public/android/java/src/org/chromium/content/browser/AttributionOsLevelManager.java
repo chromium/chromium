@@ -295,7 +295,7 @@ public class AttributionOsLevelManager {
                         onRegistrationCompleted(requestId, type, convertToOperationResult(thrown));
                     }
                 },
-                ContextUtils.getApplicationContext().getMainExecutor());
+                PostTask.createTaskRunner(TaskTraits.UI_BEST_EFFORT));
     }
 
     @CalledByNative
@@ -570,7 +570,7 @@ public class AttributionOsLevelManager {
                                     originUris));
 
             Futures.addCallback(
-                    future, callback, ContextUtils.getApplicationContext().getMainExecutor());
+                    future, callback, PostTask.createTaskRunner(TaskTraits.UI_USER_VISIBLE));
         }
     }
 
@@ -648,7 +648,7 @@ public class AttributionOsLevelManager {
                                 /* status= */ 0, convertToOperationResult(thrown));
                     }
                 },
-                ContextUtils.getApplicationContext().getMainExecutor());
+                PostTask.createTaskRunner(TaskTraits.UI_USER_BLOCKING));
     }
 
     @CalledByNative
