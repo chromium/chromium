@@ -5255,8 +5255,8 @@ TEST_F(SellerWorkletTest, DeleteBeforeReportResultCallback) {
 
 TEST_F(SellerWorkletTest, PauseOnStart) {
   // If pause isn't working, this will be used and not the right script.
-  url_loader_factory_.AddResponse(decision_logic_url_.spec(), "",
-                                  net::HTTP_NOT_FOUND);
+  AddJavascriptResponse(&url_loader_factory_, decision_logic_url_,
+                        CreateScoreAdScript("10"));
 
   SellerWorklet* worklet_impl = nullptr;
   auto worklet =
@@ -5282,13 +5282,7 @@ TEST_F(SellerWorkletTest, PauseOnStart) {
       /*expected_signals_fetch_latency=*/std::nullopt,
       /*expected_code_ready_latency=*/std::nullopt, run_loop.QuitClosure());
 
-  // Give it a chance to fetch.
-  task_environment_.RunUntilIdle();
-  EXPECT_FALSE(run_loop.AnyQuitCalled());
-
-  AddJavascriptResponse(&url_loader_factory_, decision_logic_url_,
-                        CreateScoreAdScript("10"));
-
+  // Give it a chance to run. It should not callback since it's paused.
   task_environment_.RunUntilIdle();
   EXPECT_FALSE(run_loop.AnyQuitCalled());
 

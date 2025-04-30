@@ -9076,9 +9076,6 @@ TEST_F(BidderWorkletTwoThreadsTest, PauseOnStart) {
   // bids.
   ASSERT_EQ(0u, bids_.size());
 
-  AddJavascriptResponse(&url_loader_factory_, interest_group_bidding_url_,
-                        CreateBasicGenerateBidScript());
-
   // Set up the event loop for the standard callback.
   generate_bid_run_loop_ = std::make_unique<base::RunLoop>();
 
