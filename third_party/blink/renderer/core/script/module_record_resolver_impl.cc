@@ -14,19 +14,19 @@ namespace blink {
 void ModuleRecordResolverImpl::RegisterModuleScript(
     const ModuleScript* module_script) {
   DCHECK(module_script);
-  v8::Local<v8::Module> module = module_script->V8Module();
-  if (module.IsEmpty())
+  if (module_script->HasEmptyRecord()) {
     return;
+  }
 
-  v8::Isolate* isolate = modulator_->GetScriptState()->GetIsolate();
-  BoxedV8Module* record = MakeGarbageCollected<BoxedV8Module>(isolate, module);
+  BoxedV8Module* record = module_script->BoxModuleRecord();
+
   DVLOG(1) << "ModuleRecordResolverImpl::RegisterModuleScript(url="
            << module_script->BaseUrl().GetString()
            << ", hash=" << WTF::GetHash(record) << ")";
 
   auto result = record_to_module_script_map_.Set(record, module_script);
 
-  DCHECK(result.is_new_entry);
+  CHECK(result.is_new_entry);
 }
 
 void ModuleRecordResolverImpl::UnregisterModuleScript(

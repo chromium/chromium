@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/loader/modulescript/module_script_loader.h"
 
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -131,7 +132,11 @@ class ModuleScriptLoaderTest : public PageTestBase {
                             TestModuleScriptLoaderClient*);
   void TestFetchInvalidURL(ModuleScriptCustomFetchType,
                            TestModuleScriptLoaderClient*);
-  void TestFetchURL(ModuleScriptCustomFetchType, TestModuleScriptLoaderClient*);
+  void TestFetchURL(ModuleScriptCustomFetchType,
+                    TestModuleScriptLoaderClient*,
+                    const char*,
+                    const char*,
+                    const char*);
   void TestFetchDataURLJSONModule(ModuleScriptCustomFetchType custom_fetch_type,
                                   TestModuleScriptLoaderClient* client);
   void TestFetchDataURLInvalidJSONModule(
@@ -499,10 +504,13 @@ TEST_F(ModuleScriptLoaderTest, FetchInvalidURL_OnWorklet) {
 
 void ModuleScriptLoaderTest::TestFetchURL(
     ModuleScriptCustomFetchType custom_fetch_type,
-    TestModuleScriptLoaderClient* client) {
-  KURL url("https://example.test/module.js");
+    TestModuleScriptLoaderClient* client,
+    const char* url_string,
+    const char* module_name,
+    const char* mime_type) {
+  KURL url(url_string);
   url_test_helpers::RegisterMockedURLLoad(
-      url, test::CoreTestDataPath("module.js"), "text/javascript",
+      url, test::CoreTestDataPath(module_name), WebString(mime_type),
       platform_->GetURLLoaderMockFactory());
 
   auto* registry = MakeGarbageCollected<ModuleScriptLoaderRegistry>();
@@ -517,7 +525,9 @@ TEST_F(ModuleScriptLoaderTest, FetchURL) {
   InitializeForDocument();
   TestModuleScriptLoaderClient* client =
       MakeGarbageCollected<TestModuleScriptLoaderClient>();
-  TestFetchURL(ModuleScriptCustomFetchType::kNone, client);
+  TestFetchURL(ModuleScriptCustomFetchType::kNone, client,
+               "https://example.test/module.js", "module.js",
+               "text/javascript");
 
   EXPECT_FALSE(client->WasNotifyFinished())
       << "ModuleScriptLoader unexpectedly finished synchronously.";
@@ -534,7 +544,9 @@ TEST_F(ModuleScriptLoaderTest, FetchURL_OnWorklet) {
   InitializeForWorklet();
   TestModuleScriptLoaderClient* client =
       MakeGarbageCollected<TestModuleScriptLoaderClient>();
-  TestFetchURL(ModuleScriptCustomFetchType::kWorkletAddModule, client);
+  TestFetchURL(ModuleScriptCustomFetchType::kWorkletAddModule, client,
+               "https://example.test/module.js", "module.js",
+               "text/javascript");
 
   EXPECT_FALSE(client->WasNotifyFinished())
       << "ModuleScriptLoader unexpectedly finished synchronously.";
@@ -543,6 +555,75 @@ TEST_F(ModuleScriptLoaderTest, FetchURL_OnWorklet) {
 
   EXPECT_TRUE(client->WasNotifyFinished());
   EXPECT_TRUE(client->GetModuleScript());
+}
+
+TEST_F(ModuleScriptLoaderTest, FetchWasmURL) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {blink::features::kJavaScriptSourcePhaseImports},
+      /*disabled_features =*/{});
+  InitializeForDocument();
+  TestModuleScriptLoaderClient* client =
+      MakeGarbageCollected<TestModuleScriptLoaderClient>();
+  TestFetchURL(ModuleScriptCustomFetchType::kNone, client,
+               "https://example.test/exported-names.wasm",
+               "exported-names.wasm", "application/wasm");
+
+  EXPECT_FALSE(client->WasNotifyFinished())
+      << "ModuleScriptLoader unexpectedly finished synchronously.";
+  platform_->GetURLLoaderMockFactory()->ServeAsynchronousRequests();
+
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return client->WasNotifyFinished(); }));
+  ModuleScript* module_script = client->GetModuleScript();
+  EXPECT_TRUE(module_script);
+  EXPECT_TRUE(module_script->IsWasmModuleRecord());
+}
+
+TEST_F(ModuleScriptLoaderTest, FetchWasmURLWrongMimeType) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {blink::features::kJavaScriptSourcePhaseImports},
+      /*disabled_features =*/{});
+  InitializeForDocument();
+  TestModuleScriptLoaderClient* client =
+      MakeGarbageCollected<TestModuleScriptLoaderClient>();
+  TestFetchURL(ModuleScriptCustomFetchType::kNone, client,
+               "https://example.test/exported-names.wasm",
+               "exported-names.wasm", "text/javascript");
+
+  EXPECT_FALSE(client->WasNotifyFinished())
+      << "ModuleScriptLoader unexpectedly finished synchronously.";
+  platform_->GetURLLoaderMockFactory()->ServeAsynchronousRequests();
+
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return client->WasNotifyFinished(); }));
+  ModuleScript* module_script = client->GetModuleScript();
+  EXPECT_TRUE(module_script);
+  EXPECT_TRUE(module_script->HasParseError());
+}
+
+TEST_F(ModuleScriptLoaderTest, FetchWasmURLInvalidModule) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {blink::features::kJavaScriptSourcePhaseImports},
+      /*disabled_features =*/{});
+  InitializeForDocument();
+  TestModuleScriptLoaderClient* client =
+      MakeGarbageCollected<TestModuleScriptLoaderClient>();
+  TestFetchURL(ModuleScriptCustomFetchType::kNone, client,
+               "https://example.test/invalid-module.wasm",
+               "invalid-module.wasm", "application/wasm");
+
+  EXPECT_FALSE(client->WasNotifyFinished())
+      << "ModuleScriptLoader unexpectedly finished synchronously.";
+  platform_->GetURLLoaderMockFactory()->ServeAsynchronousRequests();
+
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return client->WasNotifyFinished(); }));
+  ModuleScript* module_script = client->GetModuleScript();
+  EXPECT_TRUE(module_script);
+  EXPECT_TRUE(module_script->HasParseError());
 }
 
 }  // namespace blink

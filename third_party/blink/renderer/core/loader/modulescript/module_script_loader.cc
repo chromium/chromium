@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/script/js_module_script.h"
 #include "third_party/blink/renderer/core/script/modulator.h"
 #include "third_party/blink/renderer/core/script/value_wrapper_synthetic_module_script.h"
+#include "third_party/blink/renderer/core/script/wasm_module_script.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_client_settings_object_snapshot.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_type_names.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource.h"
@@ -320,8 +321,7 @@ void ModuleScriptLoader::NotifyFetchFinishedSuccess(
 
   switch (params.GetModuleType()) {
     // The MIME type verification happens at
-    // ModuleScriptFetcher::WasModuleLoadSuccessful, where the module type is
-    // also updated from kJavaScriptOrWasm to kJavaScript or kWasm.
+    // ModuleScriptFetcher::WasModuleLoadSuccessful.
     case ResolvedModuleType::kJSON:
       // <spec step="13.7.4"> If mimeType is a JSON MIME type and moduleType is
       // "json", then set moduleScript to the result of creating a JSON module
@@ -349,8 +349,7 @@ void ModuleScriptLoader::NotifyFetchFinishedSuccess(
       // moduleType is "javascript-or-wasm", then set moduleScript to the result
       // of creating a WebAssembly module script given bodyBytes,
       // settingsObject, response's URL, and options/</spec>
-      // TODO(https://crbug.com/42204365).
-      NOTIMPLEMENTED();
+      module_script_ = WasmModuleScript::Create(params, modulator_, options_);
       break;
   }
 

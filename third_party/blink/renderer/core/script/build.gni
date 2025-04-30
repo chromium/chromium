@@ -59,6 +59,8 @@ blink_core_sources_script = [
   "script_scheduling_type.h",
   "value_wrapper_synthetic_module_script.cc",
   "value_wrapper_synthetic_module_script.h",
+  "wasm_module_script.cc",
+  "wasm_module_script.h",
   "worker_modulator_impl.cc",
   "worker_modulator_impl.h",
   "worklet_modulator_impl.cc",

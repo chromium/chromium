@@ -46,20 +46,20 @@ std::optional<ResolvedModuleType> ModuleScriptFetcher::WasModuleLoadSuccessful(
     }
   }
 
-  // <spec step="9">... response's type is "error" ...</spec>
+  // <spec step="13.1">... bodyBytes is null or failure ...</spec>
   if (!resource || resource->ErrorOccurred() ||
       !resource->PassedIntegrityChecks()) {
     return std::nullopt;
   }
 
   const auto& response = resource->GetResponse();
-  // <spec step="9">... response's status is not an ok status</spec>
+  // <spec step="13.1">... response's status is not an ok status</spec>
   if (response.IsHTTP() &&
       !network::IsSuccessfulStatus(response.HttpStatusCode())) {
     return std::nullopt;
   }
 
-  // <spec step="10">Let type be the result of extracting a MIME type from
+  // <spec step="13.2">Let mimeType be the result of extracting a MIME type from
   // response's header list.</spec>
   //
   // Note: For historical reasons, fetching a classic script does not include
@@ -67,14 +67,20 @@ std::optional<ResolvedModuleType> ModuleScriptFetcher::WasModuleLoadSuccessful(
   // are not of a correct MIME type.
   // We use ResourceResponse::HttpContentType() instead of MimeType(), as
   // MimeType() may be rewritten by mime sniffer.
-  //
-  // <spec step="12">If type is a JavaScript MIME type, then:</spec>
+
+  if (base::FeatureList::IsEnabled(
+          blink::features::kJavaScriptSourcePhaseImports) &&
+      expected_module_type == ModuleType::kJavaScriptOrWasm &&
+      MIMETypeRegistry::IsWasmMIMEType(response.HttpContentType())) {
+    return ResolvedModuleType::kWasm;
+  }
+
   if (expected_module_type == ModuleType::kJavaScriptOrWasm &&
       MIMETypeRegistry::IsSupportedJavaScriptMIMEType(
           response.HttpContentType())) {
     return ResolvedModuleType::kJavaScript;
   }
-  // <spec step="13">If type is a JSON MIME type, then:</spec>
+
   if (expected_module_type == ModuleType::kJSON &&
       MIMETypeRegistry::IsJSONMimeType(response.HttpContentType())) {
     return ResolvedModuleType::kJSON;

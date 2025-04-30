@@ -98,6 +98,7 @@ testing/data/enter_key_hint_search.html
 testing/data/enter_key_hint_send.html
 testing/data/exif-orientation-1-ul.jpg
 testing/data/exif-orientation-5-lu.jpg
+testing/data/exported-names.wasm
 testing/data/fallback.html
 testing/data/find.html
 testing/data/find_in_generated_frame.html
@@ -269,6 +270,7 @@ testing/data/input_mode_type_tel.html
 testing/data/input_mode_type_text.html
 testing/data/input_mode_type_url.html
 testing/data/input_placeholder.html
+testing/data/invalid-module.wasm
 testing/data/invisible_iframe.html
 testing/data/large-div.html
 testing/data/link-manifest-change.html

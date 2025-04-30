@@ -2687,6 +2687,9 @@
       origin_trial_feature_name: "JavaScriptCompileHintsPerFunctionMagic",
     },
     {
+      name: "JavaScriptSourcePhaseImports",
+    },
+    {
       name: "KeyboardAccessibleTooltip",
       status: "experimental",
       base_feature: "none",

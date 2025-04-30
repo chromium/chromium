@@ -292,13 +292,11 @@ void ModulatorImplBase::ProduceCacheModuleTree(
 
   discovered_set->insert(module_script);
 
-  v8::Local<v8::Module> record = module_script->V8Module();
-  DCHECK(!record.IsEmpty());
+  DCHECK(!module_script->HasEmptyRecord());
 
   module_script->ProduceCache();
-
   Vector<ModuleRequest> child_specifiers =
-      ModuleRecord::ModuleRequests(GetScriptState(), record);
+      module_script->GetModuleRecordRequests();
 
   for (const auto& module_request : child_specifiers) {
     KURL child_url =
