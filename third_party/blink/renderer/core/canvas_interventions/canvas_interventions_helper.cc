@@ -128,7 +128,7 @@ bool CanvasInterventionsHelper::MaybeNoiseSnapshot(
   auto info = SkImageInfo::Make(
       snapshot->GetSize().width(), snapshot->GetSize().height(),
       viz::ToClosestSkColorType(snapshot->GetSharedImageFormat()),
-      kUnpremul_SkAlphaType, snapshot->GetSkColorSpace());
+      kUnpremul_SkAlphaType, snapshot->GetColorSpace().ToSkColorSpace());
   SkBitmap bm;
   if (!bm.tryAllocPixels(info)) {
     return false;
