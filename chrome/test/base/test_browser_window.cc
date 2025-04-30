@@ -458,12 +458,13 @@ user_education::DisplayNewBadge TestBrowserWindow::MaybeShowNewBadgeFor(
 void TestBrowserWindow::NotifyNewBadgeFeatureUsed(
     const base::Feature& feature) {}
 
-bool TestBrowserWindow::IsTabModalPopup() const {
-  return is_tab_modal_popup_;
+bool TestBrowserWindow::IsTabModalPopupDeprecated() const {
+  return is_tab_modal_popup_deprecated_;
 }
 
-void TestBrowserWindow::SetIsTabModalPopup(bool is_tab_modal_popup) {
-  is_tab_modal_popup_ = is_tab_modal_popup;
+void TestBrowserWindow::SetIsTabModalPopupDeprecated(
+    bool is_tab_modal_popup_deprecated) {
+  is_tab_modal_popup_deprecated_ = is_tab_modal_popup_deprecated;
 }
 
 user_education::FeaturePromoController*

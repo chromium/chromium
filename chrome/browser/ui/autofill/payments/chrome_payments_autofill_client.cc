@@ -974,12 +974,12 @@ void ChromePaymentsAutofillClient::DismissSelectBnplIssuerDialog() {
   }
 }
 
-bool ChromePaymentsAutofillClient::IsTabModalPopup() const {
+bool ChromePaymentsAutofillClient::IsTabModalPopupDeprecated() const {
 #if !BUILDFLAG(IS_ANDROID)
   tabs::TabInterface* const tab_interface =
       tabs::TabInterface::MaybeGetFromContents(web_contents());
-  return tab_interface &&
-         tab_interface->GetBrowserWindowInterface()->IsTabModalPopup();
+  return tab_interface && tab_interface->GetBrowserWindowInterface()
+                              ->IsTabModalPopupDeprecated();
 #else
   return false;
 #endif  // !BUILDFLAG(IS_ANDROID)

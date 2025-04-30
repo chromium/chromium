@@ -273,8 +273,9 @@ class TestBrowserWindow : public BrowserWindow {
   user_education::DisplayNewBadge MaybeShowNewBadgeFor(
       const base::Feature& new_badge_feature) override;
   void NotifyNewBadgeFeatureUsed(const base::Feature& feature) override;
-  bool IsTabModalPopup() const override;
-  void SetIsTabModalPopup(bool is_tab_modal_popup) override;
+  bool IsTabModalPopupDeprecated() const override;
+  void SetIsTabModalPopupDeprecated(
+      bool is_tab_modal_popup_deprecated) override;
 
   // Sets the controller returned by GetFeaturePromoController().
   // Deletes the existing one, if any.
@@ -335,7 +336,7 @@ class TestBrowserWindow : public BrowserWindow {
   bool is_active_ = false;
   bool is_closed_ = false;
   bool is_tab_strip_editable_ = true;
-  bool is_tab_modal_popup_ = false;
+  bool is_tab_modal_popup_deprecated_ = false;
 
   std::unique_ptr<user_education::FeaturePromoController>
       feature_promo_controller_;

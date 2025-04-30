@@ -711,12 +711,12 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
 #endif
 
 // This test verifies that navigating with WindowOpenDisposition = NEW_POPUP
-// and is_tab_modal_popup = true results in a new WebContents that is a popup
-// and behaves like a tab modal.
+// and is_tab_modal_popup_deprecated = true results in a new WebContents that is
+// a popup and behaves like a tab modal.
 IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, Disposition_NewPopupTabModal) {
   NavigateParams params(MakeNavigateParams());
   params.disposition = WindowOpenDisposition::NEW_POPUP;
-  params.is_tab_modal_popup = true;
+  params.is_tab_modal_popup_deprecated = true;
   params.window_features.bounds = gfx::Rect(0, 0, 200, 200);
   // Wait for new popup to load and gain focus.
   ui_test_utils::NavigateToURL(&params);
@@ -737,7 +737,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, Disposition_NewPopupTabModal) {
   EXPECT_TRUE(params.browser->window()->IsVisible());
 
   // Verify the popup window is set as tab model popup.
-  EXPECT_TRUE(params.browser->window()->IsTabModalPopup());
+  EXPECT_TRUE(params.browser->window()->IsTabModalPopupDeprecated());
 }
 
 // This test verifies that navigating with WindowOpenDisposition = NEW_WINDOW

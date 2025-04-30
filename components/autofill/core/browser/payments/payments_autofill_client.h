@@ -578,7 +578,7 @@ class PaymentsAutofillClient : public RiskDataLoader {
   virtual void DismissSelectBnplIssuerDialog();
 
   // Checks if the browser popup is a tab modal popup.
-  virtual bool IsTabModalPopup() const;
+  virtual bool IsTabModalPopupDeprecated() const;
 };
 
 }  // namespace payments

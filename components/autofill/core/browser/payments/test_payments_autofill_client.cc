@@ -210,7 +210,7 @@ bool TestPaymentsAutofillClient::ShowTouchToFillCreditCard(
   return false;
 }
 
-bool TestPaymentsAutofillClient::IsTabModalPopup() const {
+bool TestPaymentsAutofillClient::IsTabModalPopupDeprecated() const {
   return is_tab_model_popup_;
 }
 

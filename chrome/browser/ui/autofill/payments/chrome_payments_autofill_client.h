@@ -212,7 +212,7 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
       base::OnceCallback<void(BnplIssuer)> selected_issuer_callback,
       base::OnceClosure cancel_callback) override;
   void DismissSelectBnplIssuerDialog() override;
-  bool IsTabModalPopup() const override;
+  bool IsTabModalPopupDeprecated() const override;
 
 #if BUILDFLAG(IS_ANDROID)
   // The AutofillMessageController is used to show a message notification

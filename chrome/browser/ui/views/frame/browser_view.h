@@ -709,8 +709,9 @@ class BrowserView : public BrowserWindow,
   void ShowIncognitoClearBrowsingDataDialog() override;
 
   void ShowIncognitoHistoryDisclaimerDialog() override;
-  bool IsTabModalPopup() const override;
-  void SetIsTabModalPopup(bool is_tab_modal_popup) override;
+  bool IsTabModalPopupDeprecated() const override;
+  void SetIsTabModalPopupDeprecated(
+      bool is_tab_modal_popup_deprecated) override;
 
   // TabStripModelObserver:
   void OnTabStripModelChanged(

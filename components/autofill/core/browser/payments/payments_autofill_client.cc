@@ -254,7 +254,7 @@ void PaymentsAutofillClient::ShowSelectBnplIssuerDialog(
 
 void PaymentsAutofillClient::DismissSelectBnplIssuerDialog() {}
 
-bool PaymentsAutofillClient::IsTabModalPopup() const {
+bool PaymentsAutofillClient::IsTabModalPopupDeprecated() const {
   return false;
 }
 

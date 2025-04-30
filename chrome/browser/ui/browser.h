@@ -896,13 +896,13 @@ class Browser : public TabStripModelObserver,
   std::vector<tabs::TabInterface*> GetAllTabInterfaces() override;
   Browser* GetBrowserForMigrationOnly() override;
   void ActivateWindow() override;
-  bool IsTabModalPopup() const override;
+  bool IsTabModalPopupDeprecated() const override;
   bool CanShowCallToAction() const override;
   std::unique_ptr<ScopedWindowCallToAction> ShowCallToAction() override;
 
   // Called by BrowserView.
-  void set_is_tab_modal_popup(bool is_tab_modal_popup) {
-    is_tab_modal_popup_ = is_tab_modal_popup;
+  void set_is_tab_modal_popup_deprecated(bool is_tab_modal_popup_deprecated) {
+    is_tab_modal_popup_deprecated_ = is_tab_modal_popup_deprecated;
   }
 
   // Called by BrowserView on active change for the browser.
@@ -1527,9 +1527,11 @@ class Browser : public TabStripModelObserver,
   // shortly (after a PostTask).
   bool is_delete_scheduled_ = false;
 
+  // Do not use this. Instead, create a views::Widget and use helpers like
+  // TabDialogManager.
   // If true, the browser window was created as a tab modal pop-up. This is
-  // determined by the NavigateParams::is_tab_modal_popup.
-  bool is_tab_modal_popup_ = false;
+  // determined by the NavigateParams::is_tab_modal_popup_deprecated.
+  bool is_tab_modal_popup_deprecated_ = false;
 
 #if defined(USE_AURA)
   std::unique_ptr<OverscrollPrefManager> overscroll_pref_manager_;

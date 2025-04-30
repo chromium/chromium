@@ -174,7 +174,7 @@ void DesktopPaymentsWindowManager::CreatePopup(const GURL& url,
   params.disposition = WindowOpenDisposition::NEW_POPUP;
   params.window_action = NavigateParams::SHOW_WINDOW;
   params.source_contents = &source_contents;
-  params.is_tab_modal_popup = true;
+  params.is_tab_modal_popup_deprecated = true;
   params.window_features.bounds = std::move(popup_size);
 
   if (base::WeakPtr<content::NavigationHandle> navigation_handle =

@@ -108,7 +108,7 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
       base::WeakPtr<TouchToFillDelegate> delegate,
       base::span<const CreditCard> cards_to_suggest,
       base::span<const Suggestion> suggestions) override;
-  bool IsTabModalPopup() const override;
+  bool IsTabModalPopupDeprecated() const override;
 #if !BUILDFLAG(IS_IOS)
   std::unique_ptr<webauthn::InternalAuthenticator>
   CreateCreditCardInternalAuthenticator(AutofillDriver* driver) override;

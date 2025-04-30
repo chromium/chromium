@@ -5985,12 +5985,13 @@ void BrowserView::ShowIncognitoHistoryDisclaimerDialog() {
                  kHistoryDisclaimerBubble);
 }
 
-bool BrowserView::IsTabModalPopup() const {
-  return browser_->IsTabModalPopup();
+bool BrowserView::IsTabModalPopupDeprecated() const {
+  return browser_->IsTabModalPopupDeprecated();
 }
 
-void BrowserView::SetIsTabModalPopup(bool is_tab_modal_popup) {
-  browser_->set_is_tab_modal_popup(is_tab_modal_popup);
+void BrowserView::SetIsTabModalPopupDeprecated(
+    bool is_tab_modal_popup_deprecated) {
+  browser_->set_is_tab_modal_popup_deprecated(is_tab_modal_popup_deprecated);
 }
 
 void BrowserView::UpdateWebAppStatusIconsVisiblity() {

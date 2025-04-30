@@ -1308,8 +1308,8 @@ void Browser::ActivateWindow() {
   window_->Activate();
 }
 
-bool Browser::IsTabModalPopup() const {
-  return is_tab_modal_popup_;
+bool Browser::IsTabModalPopupDeprecated() const {
+  return is_tab_modal_popup_deprecated_;
 }
 
 bool Browser::CanShowCallToAction() const {

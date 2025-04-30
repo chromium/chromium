@@ -243,7 +243,7 @@ class BrowserWindowInterface : public content::PageNavigator {
                                      bool blocked) = 0;
 
   // Checks if the browser popup is tab modal dialog.
-  virtual bool IsTabModalPopup() const = 0;
+  virtual bool IsTabModalPopupDeprecated() const = 0;
 
   // Features that want to show a window level call to action UI can be mutually
   // exclusive. Before gating on call to action UI first check
