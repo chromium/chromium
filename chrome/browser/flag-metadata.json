@@ -5188,7 +5188,7 @@
       "birnie@google.com",
       "//chrome/browser/glic/OWNERS"
     ],
-    "expiry_milestone": 137
+    "expiry_milestone": 140
   },
   {
     "name": "glic-user-resize",
@@ -5196,7 +5196,7 @@
       "iwells@chromium.org",
       "//chrome/browser/glic/OWNERS"
     ],
-    "expiry_milestone": 137
+    "expiry_milestone": 139
   },
   {
     "name": "glic-z-order-changes",
@@ -5204,7 +5204,7 @@
       "andreaxg@google.com",
       "//chrome/browser/glic/OWNERS"
     ],
-    "expiry_milestone": 137
+    "expiry_milestone": 139
   },
   {
     "name": "glic-zero-state-suggestions",
