@@ -198,6 +198,8 @@ TEST_F(ControlledFramePermissionsTest, Verify) {
       case ContentSettingsType::CONTROLLED_FRAME:
       case ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS:
       case ContentSettingsType::LOCAL_NETWORK_ACCESS:
+      case ContentSettingsType::
+          ON_DEVICE_SPEECH_RECOGNITION_LANGUAGES_DOWNLOADED:
         break;
 
       default:

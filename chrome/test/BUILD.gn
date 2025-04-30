@@ -4503,6 +4503,7 @@ if (!is_android) {
         sources += [
           "../browser/extensions/api/experimental_actor/experimental_actor_apitest.cc",
           "../browser/extensions/api/web_authentication_proxy/web_authentication_proxy_apitest.cc",
+          "../browser/speech/on_device_speech_recognition_impl_browsertest.cc",
           "../browser/supervised_user/supervised_user_pending_state_navigation_browsertest.cc",
           "../browser/ui/views/web_apps/file_handler_launch_dialog_browsertest.cc",
           "../browser/ui/webui/app_home/app_home_page_handler_browsertest.cc",
