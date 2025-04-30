@@ -47,7 +47,6 @@ class Gpu : public gpu::GpuChannelEstablishFactory {
   void EstablishGpuChannel(
       gpu::GpuChannelEstablishedCallback callback) override;
   scoped_refptr<gpu::GpuChannelHost> EstablishGpuChannelSync() override;
-  gpu::GpuMemoryBufferManager* GetGpuMemoryBufferManager() override;
 
   bool gpu_remote_disconnected() { return gpu_remote_disconnected_; }
 

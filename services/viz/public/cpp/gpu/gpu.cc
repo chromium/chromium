@@ -353,10 +353,6 @@ scoped_refptr<gpu::GpuChannelHost> Gpu::EstablishGpuChannelSync() {
   return gpu_channel_;
 }
 
-gpu::GpuMemoryBufferManager* Gpu::GetGpuMemoryBufferManager() {
-  NOTREACHED();
-}
-
 void Gpu::LoseChannel() {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
   if (gpu_channel_) {
