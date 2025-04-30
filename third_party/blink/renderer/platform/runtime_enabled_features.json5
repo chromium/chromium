@@ -2753,6 +2753,9 @@
       base_feature: "LayoutNGShapeCache",
     },
     {
+      name: "LayoutReplacedReturnExplicitDefaultNaturalSize",
+    },
+    {
       name: "LayoutStretch",
       status: "experimental",
     },
