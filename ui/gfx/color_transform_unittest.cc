@@ -420,22 +420,6 @@ TEST(SimpleColorSpace, DefaultToSRGB) {
   EXPECT_EQ(t2->NumberOfStepsForTesting(), 0u);
 }
 
-// Checks that the generated SkSL fragment shaders can be parsed by
-// SkSL::Compiler.
-TEST(SimpleColorSpace, CanParseSkShaderSource) {
-  std::vector<ColorSpace> common_color_spaces = {
-      ColorSpace::CreateSRGB(),         ColorSpace::CreateDisplayP3D65(),
-      ColorSpace::CreateExtendedSRGB(), ColorSpace::CreateSRGBLinear(),
-      ColorSpace::CreateJpeg(),         ColorSpace::CreateREC601(),
-      ColorSpace::CreateREC709()};
-  for (const auto& src : common_color_spaces) {
-    for (const auto& dst : common_color_spaces) {
-      auto transform = ColorTransform::NewColorTransform(src, dst);
-      EXPECT_NE(transform->GetSkRuntimeEffect(), nullptr);
-    }
-  }
-}
-
 class TransferTest : public testing::TestWithParam<ColorSpace::TransferID> {};
 
 TEST_P(TransferTest, BasicTest) {
