@@ -4373,6 +4373,7 @@ static_library("browser") {
       "//chrome/browser/ui/webui/cr_components/theme_color_picker",
       "//chrome/browser/ui/webui/new_tab_footer",
       "//chrome/browser/ui/webui/new_tab_footer:impl",
+      "//chrome/browser/ui/webui/privacy_sandbox",
       "//chrome/browser/ui/webui/privacy_sandbox/related_website_sets:mojo_bindings",
       "//chrome/browser/ui/webui/searchbox",
       "//chrome/browser/ui/webui/settings",

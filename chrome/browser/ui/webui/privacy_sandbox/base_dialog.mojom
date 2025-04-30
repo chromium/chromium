@@ -1,0 +1,18 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module privacy_sandbox.dialog.mojom;
+
+import "mojo/public/mojom/base/values.mojom";
+
+// Renderer -> Browser
+interface BaseDialogPageHandler {
+  // Resizes the native view dialog based on the height of the document.
+  // This can only be called once.
+  ResizeDialog(uint32 height);
+  // Shows the Native View dialog.
+  ShowDialog();
+  // Closes the Native View dialog.
+  CloseDialog();
+};

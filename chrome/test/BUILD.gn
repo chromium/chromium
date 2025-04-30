@@ -8066,6 +8066,7 @@ test("unit_tests") {
       "//chrome/browser/ui/views/webid:test_support",
       "//chrome/browser/ui/webui:webui_util",
       "//chrome/browser/ui/webui/new_tab_footer:unit_tests",
+      "//chrome/browser/ui/webui/privacy_sandbox:unit_tests",
       "//chrome/browser/ui/webui/settings",
       "//chrome/browser/ui/webui/signin:unit_tests",
       "//components/autofill_ai/core/browser:browser",

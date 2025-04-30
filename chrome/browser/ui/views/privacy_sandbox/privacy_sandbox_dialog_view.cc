@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/privacy_sandbox/dialog_origin_marker.h"
+#include "chrome/browser/ui/webui/privacy_sandbox/base_dialog_ui.h"
 #include "chrome/browser/ui/webui/privacy_sandbox/privacy_sandbox_dialog_ui.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/constrained_window/constrained_window_views.h"
@@ -127,7 +128,7 @@ PrivacySandboxDialogView::PrivacySandboxDialogView(
   // Attach the marker to identify that this WebContents instance originates
   // from the dialog view, allowing WebUI controllers to tailor behavior.
   privacy_sandbox::DialogOriginMarker::CreateForWebContents(
-      web_view_->GetWebContents());
+      web_view_->GetWebContents(), *this);
   // Override the default zoom level for the Privacy Sandbox dialog. Its size
   // should align with native UI elements, rather than web content.
   auto* web_contents = web_view_->GetWebContents();
@@ -187,7 +188,7 @@ void PrivacySandboxDialogView::AdsDialogNoArgsCallback(
       ShowNativeView();
       break;
     case kCloseDialog:
-      Close();
+      CloseNativeView();
       break;
     case kOpenAdsPrivacySettings:
       OpenPrivacySandboxSettings();
@@ -198,7 +199,7 @@ void PrivacySandboxDialogView::AdsDialogNoArgsCallback(
   }
 }
 
-void PrivacySandboxDialogView::Close() {
+void PrivacySandboxDialogView::CloseNativeView() {
   GetWidget()->Close();
 }
 

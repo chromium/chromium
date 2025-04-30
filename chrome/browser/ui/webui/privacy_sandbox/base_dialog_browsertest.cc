@@ -13,9 +13,11 @@
 #include "content/public/test/browser_test.h"
 #include "ui/base/l10n/l10n_util.h"
 
-class BaseDialogTest : public InProcessBrowserTest {};
+namespace {
 
-IN_PROC_BROWSER_TEST_F(BaseDialogTest, PageLoads) {
+using PrivacySandboxBaseDialogTest = InProcessBrowserTest;
+
+IN_PROC_BROWSER_TEST_F(PrivacySandboxBaseDialogTest, PageLoads) {
   GURL kUrl(chrome::kChromeUIPrivacySandboxBaseDialogURL);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kUrl));
   content::WebContents* web_contents =
@@ -30,3 +32,5 @@ IN_PROC_BROWSER_TEST_F(BaseDialogTest, PageLoads) {
   EXPECT_EQ(web_contents->GetTitle(),
             l10n_util::GetStringUTF16(IDS_SETTINGS_AD_PRIVACY_PAGE_TITLE));
 }
+
+}  // namespace

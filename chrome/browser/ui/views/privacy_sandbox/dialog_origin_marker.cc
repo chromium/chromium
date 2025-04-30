@@ -8,10 +8,16 @@
 
 namespace privacy_sandbox {
 
-DialogOriginMarker::DialogOriginMarker(content::WebContents* contents)
-    : content::WebContentsUserData<DialogOriginMarker>(*contents) {}
+DialogOriginMarker::DialogOriginMarker(content::WebContents* contents,
+                                       BaseDialogUIDelegate& delegate)
+    : content::WebContentsUserData<DialogOriginMarker>(*contents),
+      delegate_(delegate) {}
 
 DialogOriginMarker::~DialogOriginMarker() = default;
+
+BaseDialogUIDelegate& DialogOriginMarker::GetDelegate() {
+  return *delegate_;
+}
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(DialogOriginMarker);
 

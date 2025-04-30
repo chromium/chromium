@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/webui/media/media_engagement_ui.h"
 #include "chrome/browser/ui/webui/omnibox/omnibox_internals.mojom.h"
 #include "chrome/browser/ui/webui/omnibox/omnibox_ui.h"
+#include "chrome/browser/ui/webui/privacy_sandbox/base_dialog_ui.h"
 #include "chrome/browser/ui/webui/privacy_sandbox/privacy_sandbox_internals_ui.h"
 #include "chrome/browser/ui/webui/segmentation_internals/segmentation_internals_ui.h"
 #include "chrome/browser/ui/webui/suggest_internals/suggest_internals.mojom.h"
@@ -1216,6 +1217,10 @@ void PopulateChromeWebUIFrameBinders(
         private_state_tokens::mojom::PrivateStateTokensPageHandler,
         privacy_sandbox_internals::PrivacySandboxInternalsUI>(map);
   }
+
+  RegisterWebUIControllerInterfaceBinder<
+      privacy_sandbox::dialog::mojom::BaseDialogPageHandler,
+      privacy_sandbox::BaseDialogUI>(map);
 #endif
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
