@@ -385,6 +385,7 @@ enum WebDXFeature {
   kWebauthnPublicKeyEasy = 327,
   kIntlDisplayNames = 328,
   kState = 329,
+  kPrintColorAdjust = 330,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

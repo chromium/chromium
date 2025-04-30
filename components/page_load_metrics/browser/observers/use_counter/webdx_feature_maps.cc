@@ -532,6 +532,7 @@ UseCounterMetricsRecorder::GetCSSProperties2WebDXFeatureMap() {
           {CSSSampleId::kScrollMarkerGroup, WebDXFeature::kScrollMarkers},
           {CSSSampleId::kInteractivity, WebDXFeature::kInteractivity},
           {CSSSampleId::kReadingFlow, WebDXFeature::kReadingFlow},
+          {CSSSampleId::kPrintColorAdjust, WebDXFeature::kPrintColorAdjust},
           // Add new features above this line.
       }};
 
