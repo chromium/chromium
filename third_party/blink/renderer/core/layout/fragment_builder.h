@@ -235,6 +235,7 @@ class CORE_EXPORT FragmentBuilder {
       BlockNode,
       const LogicalOffset& child_offset,
       WritingDirectionMode inline_container_writing_direction,
+      LayoutUnit line_box_block_size,
       bool is_hidden_for_paint = false);
 
   void AddOutOfFlowFragmentainerDescendant(

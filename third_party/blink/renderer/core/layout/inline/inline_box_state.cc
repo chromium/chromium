@@ -543,7 +543,10 @@ void InlineLayoutStateStack::AddBoxData(const ConstraintSpace& space,
                        box_data.margin_border_padding_line_right;
   box_data.rect.size.inline_size =
       advance - box_data.margin_line_left - box_data.margin_line_right;
-  placeholder.layout_result = box_data.CreateBoxFragment(space, line_box);
+  // Since this is a placeholder, treat the `line_box_line_height` used for OOF
+  // static position calculation as 0.
+  placeholder.layout_result = box_data.CreateBoxFragment(
+      space, line_box, /*line_box_line_height=*/LayoutUnit());
   placeholder.inline_size = advance;
   DCHECK(!placeholder.children_count);
   box_data_list_.pop_back();
@@ -908,10 +911,12 @@ void InlineLayoutStateStack::ApplyRelativePositioning(
 
 void InlineLayoutStateStack::CreateBoxFragments(const ConstraintSpace& space,
                                                 LogicalLineItems* line_box,
+                                                LayoutUnit line_box_line_height,
                                                 bool is_opaque) {
   for (auto& logical_column : ruby_column_list_) {
     logical_column->state_stack.CreateBoxFragments(
-        space, logical_column->annotation_items, /* is_opaque */ false);
+        space, logical_column->annotation_items, line_box_line_height,
+        /* is_opaque */ false);
   }
 
   if (!HasBoxFragments()) {
@@ -924,8 +929,8 @@ void InlineLayoutStateStack::CreateBoxFragments(const ConstraintSpace& space,
     DCHECK_GT(end, start);
     LogicalLineItem* child = &(*line_box)[start];
     DCHECK(box_data.item->ShouldCreateBoxFragment());
-    const LayoutResult* box_fragment =
-        box_data.CreateBoxFragment(space, line_box, is_opaque);
+    const LayoutResult* box_fragment = box_data.CreateBoxFragment(
+        space, line_box, line_box_line_height, is_opaque);
     if (child->IsPlaceholder()) {
       child->layout_result = std::move(box_fragment);
       child->rect = box_data.rect;
@@ -946,6 +951,7 @@ void InlineLayoutStateStack::CreateBoxFragments(const ConstraintSpace& space,
 const LayoutResult* InlineLayoutStateStack::BoxData::CreateBoxFragment(
     const ConstraintSpace& space,
     LogicalLineItems* line_box,
+    LayoutUnit line_box_line_height,
     bool is_opaque) {
   DCHECK(item);
   DCHECK(item->Style());
@@ -988,9 +994,9 @@ const LayoutResult* InlineLayoutStateStack::BoxData::CreateBoxFragment(
       // position to be relative to this fragment.
       LogicalOffset static_offset = child.rect.offset - rect.offset;
 
-      box.AddOutOfFlowInlineChildCandidate(oof_box, static_offset,
-                                           child.container_writing_direction,
-                                           child.is_hidden_for_paint);
+      box.AddOutOfFlowInlineChildCandidate(
+          oof_box, static_offset, child.container_writing_direction,
+          line_box_line_height, child.is_hidden_for_paint);
       child.out_of_flow_positioned_box = nullptr;
       return;
     }

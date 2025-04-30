@@ -293,57 +293,6 @@ LayoutUnit WebkitTextAlignAndJustifySelfOffset(
   }
 }
 
-LogicalStaticPosition::InlineEdge InlineAxisEdge(
-    const BlockNode& child,
-    const ComputedStyle* parent_style) {
-  StyleSelfAlignmentData normal_value_behavior = {ItemPosition::kStart,
-                                                  OverflowAlignment::kDefault};
-  const ItemPosition align_self =
-      child.Style()
-          .ResolvedJustifySelf(normal_value_behavior, parent_style)
-          .GetPosition();
-
-  DCHECK_NE(align_self, ItemPosition::kAuto);
-  DCHECK_NE(align_self, ItemPosition::kNormal);
-
-  if (align_self == ItemPosition::kEnd ||
-      align_self == ItemPosition::kLastBaseline ||
-      align_self == ItemPosition::kRight) {
-    return LogicalStaticPosition::kInlineEnd;
-  } else if (align_self == ItemPosition::kCenter) {
-    return LogicalStaticPosition::kInlineCenter;
-  } else {
-    return LogicalStaticPosition::kInlineStart;
-  }
-}
-
-LogicalStaticPosition::BlockEdge BlockAxisEdge(
-    const BlockNode& child,
-    const ComputedStyle* parent_style) {
-  StyleSelfAlignmentData normal_value_behavior = {ItemPosition::kStart,
-                                                  OverflowAlignment::kDefault};
-  const ItemPosition align_self =
-      child.Style()
-          .ResolvedAlignSelf(normal_value_behavior, parent_style)
-          .GetPosition();
-
-  DCHECK_NE(align_self, ItemPosition::kAuto);
-  DCHECK_NE(align_self, ItemPosition::kNormal);
-  DCHECK_NE(align_self, ItemPosition::kLeft)
-      << "left, right are only for justify";
-  DCHECK_NE(align_self, ItemPosition::kRight)
-      << "left, right are only for justify";
-
-  if (align_self == ItemPosition::kEnd ||
-      align_self == ItemPosition::kLastBaseline) {
-    return LogicalStaticPosition::kBlockEnd;
-  } else if (align_self == ItemPosition::kCenter) {
-    return LogicalStaticPosition::kBlockCenter;
-  } else {
-    return LogicalStaticPosition::kBlockStart;
-  }
-}
-
 }  // namespace
 
 BlockLayoutAlgorithm::BlockLayoutAlgorithm(const LayoutAlgorithmParams& params)
@@ -1562,8 +1511,14 @@ void BlockLayoutAlgorithm::HandleOutOfFlowPositioned(
         LogicalStaticPosition::kBlockStart, LogicalStaticPosition::kBlock,
         line_clamp_data_.ShouldHideForPaint());
   } else {
-    auto inline_axis_edge = InlineAxisEdge(child, &Style());
-    auto block_axis_edge = BlockAxisEdge(child, &Style());
+    WritingDirectionMode parent_writing_direction =
+        GetConstraintSpace().GetWritingDirection();
+    auto inline_axis_edge = InlineStaticPositionEdge(
+        child, /*justify_items_style=*/&Style(), parent_writing_direction);
+    // 'align-items' doesn't apply in block layout, so don't apply it to OOF
+    // items.
+    auto block_axis_edge = BlockStaticPositionEdge(
+        child, /*align_items_style=*/nullptr, parent_writing_direction);
 
     // The alignment container for block OOF elements is a zero-thickness line
     // in the inline direction. As such, we need to adjust the inline static

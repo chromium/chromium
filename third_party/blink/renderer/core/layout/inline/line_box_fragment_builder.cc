@@ -87,7 +87,7 @@ void LineBoxFragmentBuilder::PropagateChildrenDataFromLineItems(
     if (child.out_of_flow_positioned_box) {
       AddOutOfFlowInlineChildCandidate(
           BlockNode(To<LayoutBox>(child.out_of_flow_positioned_box.Get())),
-          child.Offset(), child.container_writing_direction,
+          child.Offset(), child.container_writing_direction, LineHeight(),
           child.is_hidden_for_paint);
       child.out_of_flow_positioned_box = nullptr;
     }

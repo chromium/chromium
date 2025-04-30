@@ -8,6 +8,7 @@
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/dom/column_pseudo_element.h"
+#include "third_party/blink/renderer/core/layout/block_layout_algorithm_utils.h"
 #include "third_party/blink/renderer/core/layout/fragmentation_utils.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/physical_fragment.h"
@@ -471,19 +472,46 @@ void FragmentBuilder::AddOutOfFlowInlineChildCandidate(
     BlockNode child,
     const LogicalOffset& child_offset,
     WritingDirectionMode inline_container_writing_direction,
+    LayoutUnit line_box_block_size,
     bool is_hidden_for_paint) {
   DCHECK(node_.IsInline() || layout_object_->IsLayoutInline());
+
+  LogicalOffset static_offset = child_offset;
+
+  // 'align-items' and 'justify-items' don't apply in inline layout, so don't
+  // apply them to OOF items.
+  auto inline_axis_edge = InlineStaticPositionEdge(
+      child, /*justify_items_style=*/nullptr,
+      inline_container_writing_direction,
+      /*should_swap_inline_axis=*/
+      !IsLtr(inline_container_writing_direction.Direction()));
+  auto block_axis_edge = BlockStaticPositionEdge(
+      child, /*align_items_style=*/nullptr, inline_container_writing_direction);
+
+  // The alignment container for inline OOF elements is a zero-thickness line in
+  // the block direction. As such, we need to adjust the block static position
+  // offset for end/center alignment to ensure the OOF ends up aligned correctly
+  // within its alignment container. The inline offset will not change.
+  //
+  // https://drafts.csswg.org/css-position-3/#staticpos-rect
+  switch (block_axis_edge) {
+    case LogicalStaticPosition::BlockEdge::kBlockCenter:
+      static_offset.block_offset += line_box_block_size / 2;
+      break;
+    case LogicalStaticPosition::BlockEdge::kBlockEnd:
+      static_offset.block_offset += line_box_block_size;
+      break;
+    case LogicalStaticPosition::BlockEdge::kBlockStart:
+      // The static position is already correct in this case.
+      break;
+  }
 
   // As all inline-level fragments are built in the line-logical coordinate
   // system (Direction() is kLtr), we need to know the direction of the
   // parent element to correctly determine an OOF childs static position.
-  AddOutOfFlowChildCandidate(
-      child, child_offset,
-      IsLtr(inline_container_writing_direction.Direction())
-          ? LogicalStaticPosition::kInlineStart
-          : LogicalStaticPosition::kInlineEnd,
-      LogicalStaticPosition::kBlockStart, LogicalStaticPosition::kBlock,
-      is_hidden_for_paint);
+  AddOutOfFlowChildCandidate(child, static_offset, inline_axis_edge,
+                             block_axis_edge, LogicalStaticPosition::kBlock,
+                             is_hidden_for_paint);
 }
 
 void FragmentBuilder::AddOutOfFlowFragmentainerDescendant(
