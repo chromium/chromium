@@ -112,28 +112,28 @@ class DefaultBrowserPromptManagerTest : public BrowserWithTestWindowTest {
 
 TEST_F(DefaultBrowserPromptManagerTest, ShowsAppMenuItem) {
   auto* manager = DefaultBrowserPromptManager::GetInstance();
-  ASSERT_FALSE(manager->get_show_app_menu_item());
+  ASSERT_FALSE(manager->show_app_menu_item());
 
   manager->MaybeShowPrompt();
-  ASSERT_TRUE(manager->get_show_app_menu_item());
+  ASSERT_TRUE(manager->show_app_menu_item());
 }
 
 TEST_F(DefaultBrowserPromptManagerTest, AppMenuItemHiddenOnPromptAccept) {
   auto* manager = DefaultBrowserPromptManager::GetInstance();
   manager->MaybeShowPrompt();
-  ASSERT_TRUE(manager->get_show_app_menu_item());
+  ASSERT_TRUE(manager->show_app_menu_item());
 
   manager->CloseAllPrompts(DefaultBrowserPromptManager::CloseReason::kAccept);
-  ASSERT_FALSE(manager->get_show_app_menu_item());
+  ASSERT_FALSE(manager->show_app_menu_item());
 }
 
 TEST_F(DefaultBrowserPromptManagerTest, AppMenuItemPersistsOnPromptDismissed) {
   auto* manager = DefaultBrowserPromptManager::GetInstance();
   manager->MaybeShowPrompt();
-  ASSERT_TRUE(manager->get_show_app_menu_item());
+  ASSERT_TRUE(manager->show_app_menu_item());
 
   manager->CloseAllPrompts(DefaultBrowserPromptManager::CloseReason::kDismiss);
-  ASSERT_TRUE(manager->get_show_app_menu_item());
+  ASSERT_TRUE(manager->show_app_menu_item());
 }
 
 constexpr int kMaxPromptCount = 5;
