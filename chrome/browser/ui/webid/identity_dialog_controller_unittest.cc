@@ -210,25 +210,33 @@ class IdentityDialogControllerTest : public ChromeRenderViewHostTestHarness {
               result.request_id = segmentation_platform::TrainingRequestId(1);
               result.ordered_labels = {result_label};
               if (this->optimization_guide_decider_) {
-                ASSERT_EQ(
-                    segmentation_platform::processing::ProcessedValue(
-                        kPerPageLoadClickthroughRate),
-                    input_context->GetMetadataArgument(
-                        segmentation_platform::kPerPageLoadClickthroughRate));
-                ASSERT_EQ(
-                    segmentation_platform::processing::ProcessedValue(
-                        kPerClientClickthroughRate),
-                    input_context->GetMetadataArgument(
-                        segmentation_platform::kPerClientClickthroughRate));
-                ASSERT_EQ(
-                    segmentation_platform::processing::ProcessedValue(
-                        kPerImpressionClickthroughRate),
-                    input_context->GetMetadataArgument(
-                        segmentation_platform::kPerImpressionClickthroughRate));
+                ASSERT_EQ(segmentation_platform::processing::ProcessedValue(
+                              web_contents()->GetLastCommittedURL().host()),
+                          input_context->GetMetadataArgument(
+                              segmentation_platform::kFedCmHost));
+                ASSERT_EQ(segmentation_platform::processing::ProcessedValue(
+                              web_contents()->GetLastCommittedURL()),
+                          input_context->GetMetadataArgument(
+                              segmentation_platform::kFedCmUrl));
+                ASSERT_EQ(segmentation_platform::processing::ProcessedValue(
+                              kPerPageLoadClickthroughRate),
+                          input_context->GetMetadataArgument(
+                              segmentation_platform::
+                                  kFedCmPerPageLoadClickthroughRate));
+                ASSERT_EQ(segmentation_platform::processing::ProcessedValue(
+                              kPerClientClickthroughRate),
+                          input_context->GetMetadataArgument(
+                              segmentation_platform::
+                                  kFedCmPerClientClickthroughRate));
+                ASSERT_EQ(segmentation_platform::processing::ProcessedValue(
+                              kPerImpressionClickthroughRate),
+                          input_context->GetMetadataArgument(
+                              segmentation_platform::
+                                  kFedCmPerImpressionClickthroughRate));
                 ASSERT_EQ(segmentation_platform::processing::ProcessedValue(
                               kLikelyToSignin),
                           input_context->GetMetadataArgument(
-                              segmentation_platform::kLikelyToSignin));
+                              segmentation_platform::kFedCmLikelyToSignin));
               }
               base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
                   FROM_HERE, base::BindOnce(std::move(callback), result)
