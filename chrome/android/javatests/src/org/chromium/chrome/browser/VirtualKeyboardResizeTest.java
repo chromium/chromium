@@ -560,6 +560,7 @@ public class VirtualKeyboardResizeTest {
     @Test
     @MediumTest
     @DisableFeatures(ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN)
+    @DisabledTest(message = "crbug.com/414804967")
     public void testNoSpuriousResizeEventOverlaysContent() throws Throwable {
         startMainActivityWithURL(
                 "/chrome/test/data/android/page_with_editable.html?overlays-content");
@@ -592,6 +593,7 @@ public class VirtualKeyboardResizeTest {
     @Test
     @MediumTest
     @DisableFeatures(ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN)
+    @DisabledTest(message = "crbug.com/414804967")
     public void testNoSpuriousResizeEventResizesVisual() throws Throwable {
         startMainActivityWithURL(
                 "/chrome/test/data/android/page_with_editable.html?resizes-visual");
