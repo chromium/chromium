@@ -538,6 +538,10 @@ class CORE_EXPORT CSSSelector {
   bool IsOrContainsHostPseudoClass() const;
   bool IsUserActionPseudoClass() const;
   bool IsIdClassOrAttributeSelector() const;
+  // Support :is(:host) and :is(#foo:host) but not :is(:host, #foo);
+  // see SelectorChecker::MatchForRelation() for explanation about
+  // this limitation.
+  bool IsDeeplyHostPseudoClass() const;
 
   RelationType Relation() const {
     return static_cast<RelationType>(bits_.get<RelationField>());

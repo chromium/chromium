@@ -741,8 +741,15 @@ SelectorChecker::MatchStatus SelectorChecker::MatchForRelation(
         // Generally a ::part() rule needs to be in the host’s tree scope, but
         // if (and only if) we are preceded by :host or :host(), then the rule
         // could also be in the same scope as the subject.
+        //
+        // We recognize :is(:host) and :where(:host) because the former could
+        // arise from nesting, but we don't understand the more complex cases
+        // :is(:host, #foo)::part(x), as we'd need to go down the :is() twice;
+        // once in the tree scope of the rule itself, and once more in the
+        // parent scope of the rule but somehow ignoring everything that isn't
+        // :host.
         const TreeScope& host_tree_scope =
-            next_context.selector->IsHostPseudoClass()
+            next_context.selector->IsDeeplyHostPseudoClass()
                 ? *context.tree_scope->ParentTreeScope()
                 : *context.tree_scope;
 
