@@ -132,9 +132,6 @@ extern const base::FeatureParam<std::string>
 // policy is no longer supported.
 BASE_DECLARE_FEATURE(kAllowLegacyMV2Extensions);
 
-// IsValidSourceUrl enforcement for ExtensionHostMsg_OpenChannelToExtension IPC.
-BASE_DECLARE_FEATURE(kExtensionSourceUrlEnforcement);
-
 // Controls whether server-side redirects are subject to extensions' web
 // accessible resource restrictions.
 BASE_DECLARE_FEATURE(kExtensionWARForRedirect);
