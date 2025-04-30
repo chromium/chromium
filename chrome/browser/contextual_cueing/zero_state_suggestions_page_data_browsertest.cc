@@ -175,44 +175,59 @@ class ZeroStateSuggestionsPageDataBrowserTest
 
   void SetUpHints(bool allow_contextual,
                   const std::vector<std::string>& suggestions) {
-    EXPECT_CALL(mock_optimization_guide_keyed_service(),
-                CanApplyOptimization(
-                    _, _, An<optimization_guide::OptimizationMetadata*>()))
-        .WillRepeatedly(
-            Return(optimization_guide::OptimizationGuideDecision::kFalse));
-    EXPECT_CALL(mock_optimization_guide_keyed_service(),
-                CanApplyOptimization(
-                    _, optimization_guide::proto::GLIC_ZERO_STATE_SUGGESTIONS,
-                    An<optimization_guide::OptimizationMetadata*>()))
+    EXPECT_CALL(
+        mock_optimization_guide_keyed_service(),
+        CanApplyOptimization(
+            _, _, An<optimization_guide::OptimizationGuideDecisionCallback>()))
+        .WillRepeatedly(WithArgs<2>(
+            [=](optimization_guide::OptimizationGuideDecisionCallback
+                    callback) {
+              std::move(callback).Run(
+                  optimization_guide::OptimizationGuideDecision::kFalse, {});
+            }));
+    EXPECT_CALL(
+        mock_optimization_guide_keyed_service(),
+        CanApplyOptimization(
+            _, optimization_guide::proto::GLIC_ZERO_STATE_SUGGESTIONS,
+            An<optimization_guide::OptimizationGuideDecisionCallback>()))
         .WillOnce(WithArgs<2>(
-            [=](optimization_guide::OptimizationMetadata* og_metadata)
-                -> optimization_guide::OptimizationGuideDecision {
+            [=](optimization_guide::OptimizationGuideDecisionCallback
+                    callback) {
               optimization_guide::proto::GlicZeroStateSuggestionsMetadata
                   metadata;
               metadata.set_contextual_suggestions_eligible(allow_contextual);
               *metadata.mutable_contextual_suggestions() = {suggestions.begin(),
                                                             suggestions.end()};
 
-              og_metadata->SetAnyMetadataForTesting(metadata);
-              return optimization_guide::OptimizationGuideDecision::kTrue;
+              optimization_guide::OptimizationMetadata og_metadata;
+              og_metadata.SetAnyMetadataForTesting(metadata);
+              std::move(callback).Run(
+                  optimization_guide::OptimizationGuideDecision::kTrue,
+                  og_metadata);
             }));
   }
 
   void SetUpHintsNoResult() {
-    EXPECT_CALL(mock_optimization_guide_keyed_service(),
-                CanApplyOptimization(
-                    _, _, An<optimization_guide::OptimizationMetadata*>()))
-        .WillRepeatedly(
-            Return(optimization_guide::OptimizationGuideDecision::kFalse));
-    EXPECT_CALL(mock_optimization_guide_keyed_service(),
-                CanApplyOptimization(
-                    _, optimization_guide::proto::GLIC_ZERO_STATE_SUGGESTIONS,
-                    An<optimization_guide::OptimizationMetadata*>()))
+    EXPECT_CALL(
+        mock_optimization_guide_keyed_service(),
+        CanApplyOptimization(
+            _, _, An<optimization_guide::OptimizationGuideDecisionCallback>()))
+        .WillRepeatedly(WithArgs<2>(
+            [=](optimization_guide::OptimizationGuideDecisionCallback
+                    callback) {
+              std::move(callback).Run(
+                  optimization_guide::OptimizationGuideDecision::kFalse, {});
+            }));
+    EXPECT_CALL(
+        mock_optimization_guide_keyed_service(),
+        CanApplyOptimization(
+            _, optimization_guide::proto::GLIC_ZERO_STATE_SUGGESTIONS,
+            An<optimization_guide::OptimizationGuideDecisionCallback>()))
         .WillOnce(WithArgs<2>(
-            [](optimization_guide::OptimizationMetadata* og_metadata)
-                -> optimization_guide::OptimizationGuideDecision {
-              EXPECT_NE(nullptr, og_metadata);
-              return optimization_guide::OptimizationGuideDecision::kFalse;
+            [=](optimization_guide::OptimizationGuideDecisionCallback
+                    callback) {
+              std::move(callback).Run(
+                  optimization_guide::OptimizationGuideDecision::kFalse, {});
             }));
   }
 
@@ -323,6 +338,7 @@ IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsPageDataBrowserTest,
   base::HistogramTester histogram_tester;
 
   DisableOptimizationPermissionCheck();
+  SetUpHints(/*allow_contextual=*/true, /*suggestions=*/{});
   EXPECT_CALL(mock_optimization_guide_keyed_service(), ExecuteModel(_, _, _, _))
       .WillOnce(Invoke(&mock_optimization_guide_keyed_service(),
                        &MockOGKS::CaptureExecutionCallback));
@@ -404,8 +420,6 @@ IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsPageDataBrowserTest,
   EXPECT_CALL(mock_optimization_guide_keyed_service(),
               CanApplyOptimizationOnDemand)
       .Times(0);
-  // MES not to be called if hints has the suggestions.
-  EXPECT_CALL(mock_optimization_guide_keyed_service(), ExecuteModel).Times(0);
 
   ASSERT_TRUE(embedded_test_server()->Start());
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
@@ -432,8 +446,6 @@ IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsPageDataBrowserTest,
   EXPECT_CALL(mock_optimization_guide_keyed_service(),
               CanApplyOptimizationOnDemand)
       .Times(0);
-  // MES not to be called if not eligible for contextual suggestions.
-  EXPECT_CALL(mock_optimization_guide_keyed_service(), ExecuteModel).Times(0);
 
   ASSERT_TRUE(embedded_test_server()->Start());
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
@@ -489,6 +501,7 @@ IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsPageDataBrowserTest, CacheBehavior) {
   {
     base::test::TestFuture<std::optional<std::vector<std::string>>> future;
 
+    SetUpHints(/*allow_contextual=*/true, /*suggestions=*/{});
     SetUpSuccessfulModelExecution();
 
     auto* page_data = ZeroStateSuggestionsPageData::GetOrCreateForPage(
@@ -589,6 +602,7 @@ IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsPageDataBrowserTest,
   {
     base::test::TestFuture<std::optional<std::vector<std::string>>> future;
 
+    SetUpHints(/*allow_contextual=*/true, /*suggestions=*/{});
     EXPECT_CALL(mock_optimization_guide_keyed_service(),
                 ExecuteModel(_, _, _, _))
         .WillOnce(WithArgs<1, 3>(
