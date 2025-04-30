@@ -977,7 +977,7 @@ Transaction::BuildLockRequests() const {
           : PartitionedLockManager::LockType::kExclusive;
   for (int64_t object_store : scope()) {
     lock_requests.emplace_back(
-        GetObjectStoreLockId(database_->id(), object_store),
+        database_->backing_store_db()->GetLockId(object_store),
         object_store_lock_type);
   }
   return lock_requests;

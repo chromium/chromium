@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/types/expected.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock.h"
 #include "content/browser/indexed_db/indexed_db_external_object_storage.h"
 #include "content/browser/indexed_db/status.h"
@@ -73,10 +74,30 @@ class BackingStore {
   };
 
   class Cursor;
+  class Transaction;
+
+  // Represents a database in the backing store. A single Database may be
+  // associated with many connections and transactions.
+  class Database {
+   public:
+    virtual ~Database() = default;
+
+    // Returns mutable reference to metadata for this database.
+    virtual blink::IndexedDBDatabaseMetadata& GetMetadata() = 0;
+
+    // Generates a lock ID for the given object store.
+    virtual PartitionedLockId GetLockId(int64_t object_store_id) const = 0;
+
+    // Creates a transaction on this database.
+    virtual std::unique_ptr<Transaction> CreateTransaction(
+        blink::mojom::IDBTransactionDurability durability,
+        blink::mojom::IDBTransactionMode mode) = 0;
+  };
 
   // This interface wraps state and actions executed on the backing store by the
   // store-agnostic `Transaction`, and is to be implemented by backends such as
   // LevelDB or SQLite.
+  // Each transaction is associated with a single `Database`.
   class Transaction {
    public:
     virtual ~Transaction() = default;
@@ -94,29 +115,22 @@ class BackingStore {
     virtual void Reset() = 0;
 
     // Changes the database version to |version|.
-    [[nodiscard]] virtual Status SetDatabaseVersion(
-        int64_t row_id,
-        int64_t version,
-        blink::IndexedDBDatabaseMetadata* metadata) = 0;
+    [[nodiscard]] virtual Status SetDatabaseVersion(int64_t version) = 0;
     [[nodiscard]] virtual Status CreateObjectStore(
-        int64_t database_id,
         int64_t object_store_id,
         std::u16string name,
         blink::IndexedDBKeyPath key_path,
         bool auto_increment,
         blink::IndexedDBObjectStoreMetadata* metadata) = 0;
     [[nodiscard]] virtual Status DeleteObjectStore(
-        int64_t database_id,
         const blink::IndexedDBObjectStoreMetadata& object_store) = 0;
     [[nodiscard]] virtual Status RenameObjectStore(
-        int64_t database_id,
         std::u16string new_name,
         std::u16string* old_name,
         blink::IndexedDBObjectStoreMetadata* metadata) = 0;
 
     // Creates a new index metadata and writes it to the transaction.
     [[nodiscard]] virtual Status CreateIndex(
-        int64_t database_id,
         int64_t object_store_id,
         int64_t index_id,
         std::u16string name,
@@ -127,93 +141,75 @@ class BackingStore {
     // Deletes the index metadata on the transaction (but not any index
     // entries).
     [[nodiscard]] virtual Status DeleteIndex(
-        int64_t database_id,
         int64_t object_store_id,
         const blink::IndexedDBIndexMetadata& metadata) = 0;
     // Renames the given index and writes it to the transaction.
     [[nodiscard]] virtual Status RenameIndex(
-        int64_t database_id,
         int64_t object_store_id,
         std::u16string new_name,
         std::u16string* old_name,
         blink::IndexedDBIndexMetadata* metadata) = 0;
-    [[nodiscard]] virtual Status GetRecord(int64_t database_id,
-                                           int64_t object_store_id,
+    [[nodiscard]] virtual Status GetRecord(int64_t object_store_id,
                                            const blink::IndexedDBKey& key,
                                            IndexedDBValue* record) = 0;
-    [[nodiscard]] virtual Status PutRecord(int64_t database_id,
-                                           int64_t object_store_id,
+    [[nodiscard]] virtual Status PutRecord(int64_t object_store_id,
                                            const blink::IndexedDBKey& key,
                                            IndexedDBValue* value,
                                            RecordIdentifier* record) = 0;
-    [[nodiscard]] virtual Status ClearObjectStore(int64_t database_id,
-                                                  int64_t object_store_id) = 0;
+    [[nodiscard]] virtual Status ClearObjectStore(int64_t object_store_id) = 0;
     [[nodiscard]] virtual Status DeleteRecord(
-        int64_t database_id,
         int64_t object_store_id,
         const RecordIdentifier& record) = 0;
     [[nodiscard]] virtual Status DeleteRange(
-        int64_t database_id,
         int64_t object_store_id,
         const blink::IndexedDBKeyRange&) = 0;
     [[nodiscard]] virtual Status GetKeyGeneratorCurrentNumber(
-        int64_t database_id,
         int64_t object_store_id,
         int64_t* current_number) = 0;
     [[nodiscard]] virtual Status MaybeUpdateKeyGeneratorCurrentNumber(
-        int64_t database_id,
         int64_t object_store_id,
         int64_t new_state,
         bool check_current) = 0;
     [[nodiscard]] virtual Status KeyExistsInObjectStore(
-        int64_t database_id,
         int64_t object_store_id,
         const blink::IndexedDBKey& key,
         RecordIdentifier* found_record_identifier,
         bool* found) = 0;
-    [[nodiscard]] virtual Status ClearIndex(int64_t database_id,
-                                            int64_t object_store_id,
+    [[nodiscard]] virtual Status ClearIndex(int64_t object_store_id,
                                             int64_t index_id) = 0;
     [[nodiscard]] virtual Status PutIndexDataForRecord(
-        int64_t database_id,
         int64_t object_store_id,
         int64_t index_id,
         const blink::IndexedDBKey& key,
         const RecordIdentifier& record) = 0;
     [[nodiscard]] virtual Status GetPrimaryKeyViaIndex(
-        int64_t database_id,
         int64_t object_store_id,
         int64_t index_id,
         const blink::IndexedDBKey& key,
         std::unique_ptr<blink::IndexedDBKey>* primary_key) = 0;
     [[nodiscard]] virtual Status KeyExistsInIndex(
-        int64_t database_id,
         int64_t object_store_id,
         int64_t index_id,
         const blink::IndexedDBKey& key,
         std::unique_ptr<blink::IndexedDBKey>* found_primary_key,
         bool* exists) = 0;
     virtual std::unique_ptr<Cursor> OpenObjectStoreKeyCursor(
-        int64_t database_id,
         int64_t object_store_id,
         const blink::IndexedDBKeyRange& key_range,
         blink::mojom::IDBCursorDirection,
         Status*) = 0;
     virtual std::unique_ptr<Cursor> OpenObjectStoreCursor(
-        int64_t database_id,
         int64_t object_store_id,
         const blink::IndexedDBKeyRange& key_range,
         blink::mojom::IDBCursorDirection,
         Status*) = 0;
     virtual std::unique_ptr<Cursor> OpenIndexKeyCursor(
-        int64_t database_id,
         int64_t object_store_id,
         int64_t index_id,
         const blink::IndexedDBKeyRange& key_range,
         blink::mojom::IDBCursorDirection,
         Status*) = 0;
     virtual std::unique_ptr<Cursor> OpenIndexCursor(
-        int64_t database_id,
         int64_t object_store_id,
         int64_t index_id,
         const blink::IndexedDBKeyRange& key_range,
@@ -259,25 +255,16 @@ class BackingStore {
   // Fill in the provided list with existing database names and versions.
   [[nodiscard]] virtual Status GetDatabaseNamesAndVersions(
       std::vector<blink::mojom::IDBNameAndVersionPtr>* names_and_versions) = 0;
-  // Creates a new database in the backing store. `metadata` is an in-out param.
-  // The `name` and `version` fields are inputs, while the `id` and
-  // `max_object_store_id` fields are outputs.
-  [[nodiscard]] virtual Status CreateDatabase(
-      blink::IndexedDBDatabaseMetadata& metadata) = 0;
+  // Creates a new database in the backing store, or opens an existing one. If
+  // pre-existing, the database's metadata will be populated from disk.
+  // Otherwise the version will be set to DEFAULT_VERSION.
+  [[nodiscard]] virtual base::expected<std::unique_ptr<BackingStore::Database>,
+                                       Status>
+  CreateOrOpenDatabase(const std::u16string& name) = 0;
   [[nodiscard]] virtual Status DeleteDatabase(
       const std::u16string& name,
       std::vector<PartitionedLock> locks,
       base::OnceClosure on_complete) = 0;
-  // Reads in metadata for the database and all object stores & indices.
-  // Note: the database name is not populated in |metadata|. Virtual for
-  // testing.
-  [[nodiscard]] virtual Status ReadMetadataForDatabaseName(
-      const std::u16string& name,
-      blink::IndexedDBDatabaseMetadata* metadata,
-      bool* found) = 0;
-  virtual std::unique_ptr<Transaction> CreateTransaction(
-      blink::mojom::IDBTransactionDurability durability,
-      blink::mojom::IDBTransactionMode mode) = 0;
 
   virtual uintptr_t GetIdentifierForMemoryDump() = 0;
 

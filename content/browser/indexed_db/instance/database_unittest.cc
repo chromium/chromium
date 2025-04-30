@@ -293,8 +293,7 @@ class DatabaseTest : public ::testing::Test {
 
     bucket_context_->InitBackingStoreIfNeeded(true);
     db_ = bucket_context_->AddDatabase(
-        u"db", std::make_unique<Database>(u"db", *bucket_context_,
-                                          Database::Identifier()));
+        u"db", std::make_unique<Database>(u"db", *bucket_context_));
   }
 
   void TearDown() override { db_ = nullptr; }
@@ -669,8 +668,10 @@ class DatabaseOperationTest : public DatabaseTest {
     transaction_ = request_.connection()->CreateVersionChangeTransaction(
         transaction_id, /*scope=*/std::set<int64_t>(),
         std::make_unique<FakeTransaction>(
-            commit_success_, blink::mojom::IDBTransactionMode::VersionChange,
-            *bucket_context_->backing_store()));
+            commit_success_,
+            db_->backing_store_db()->CreateTransaction(
+                blink::mojom::IDBTransactionDurability::Relaxed,
+                blink::mojom::IDBTransactionMode::VersionChange)));
 
     std::vector<PartitionedLockManager::PartitionedLockRequest> lock_requests =
         {{GetDatabaseLockId(db_->metadata().name),

@@ -56,34 +56,33 @@ enum class CursorType;
 // It is created and operated on a bucket thread.
 class CONTENT_EXPORT Database {
  public:
-  // Identifier is pair of (bucket_locator, database name).
-  using Identifier = std::pair<storage::BucketLocator, std::u16string>;
   // Used to report irrecoverable backend errors. The second argument can be
   // null.
   using ErrorCallback = base::RepeatingCallback<void(Status, const char*)>;
 
-  static const int64_t kInvalidId = 0;
   static const int64_t kMinimumIndexId = 30;
 
-  Database(const std::u16string& name,
-           BucketContext& bucket_context,
-           const Identifier& unique_identifier);
+  Database(const std::u16string& name, BucketContext& bucket_context);
 
   Database(const Database&) = delete;
   Database& operator=(const Database&) = delete;
 
   virtual ~Database();
 
-  const Identifier& identifier() const { return identifier_; }
   BackingStore* backing_store();
+  BackingStore::Database* backing_store_db() { return backing_store_db_.get(); }
   PartitionedLockManager& lock_manager();
 
-  int64_t id() const { return metadata_.id; }
-  const std::u16string& name() const { return metadata_.name; }
-  const storage::BucketLocator& bucket_locator() const {
-    return identifier_.first;
+  const blink::IndexedDBDatabaseMetadata& metadata() const {
+    return backing_store_db_->GetMetadata();
   }
-  const blink::IndexedDBDatabaseMetadata& metadata() const { return metadata_; }
+  // This mutable copy is a bit of a hack. Probably better if it weren't here.
+  blink::IndexedDBDatabaseMetadata& metadata() {
+    return backing_store_db_->GetMetadata();
+  }
+  const std::u16string& name() const { return name_; }
+  int64_t version() const;
+  bool IsInitialized() const;
 
   const list_set<Connection*>& connections() const { return connections_; }
 
@@ -277,12 +276,14 @@ class CONTENT_EXPORT Database {
   base::WeakPtr<Database> AsWeakPtr() { return weak_factory_.GetWeakPtr(); }
 
   void AddConnectionForTesting(Connection* connection) {
+    if (connections_.empty()) {
+      OpenInternal();
+    }
     connections_.insert(connection);
   }
 
  protected:
   friend class Transaction;
-  friend class ConnectionCoordinator;
   friend class ConnectionCoordinator::ConnectionRequest;
   friend class ConnectionCoordinator::OpenRequest;
   friend class ConnectionCoordinator::DeleteRequest;
@@ -387,11 +388,7 @@ class CONTENT_EXPORT Database {
       std::vector<PartitionedLockManager::PartitionedLockRequest>&
           lock_requests);
 
-  // `metadata_` may not be fully initialized, but its `name` will always be
-  // valid.
-  blink::IndexedDBDatabaseMetadata metadata_;
-
-  const Identifier identifier_;
+  std::u16string name_;
 
   // The object that owns `this`.
   raw_ref<BucketContext> bucket_context_;
@@ -401,6 +398,9 @@ class CONTENT_EXPORT Database {
   bool force_closing_ = false;
 
   ConnectionCoordinator connection_coordinator_;
+
+  // Null until `OpenInternal()` is called successfully.
+  std::unique_ptr<BackingStore::Database> backing_store_db_;
 
   // `weak_factory_` is used for all callback uses.
   base::WeakPtrFactory<Database> weak_factory_{this};

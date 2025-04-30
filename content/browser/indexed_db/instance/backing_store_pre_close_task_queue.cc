@@ -33,7 +33,8 @@ bool BackingStorePreCloseTaskQueue::PreCloseTask::RequiresMetadata() const {
 }
 
 void BackingStorePreCloseTaskQueue::PreCloseTask::SetMetadata(
-    const std::vector<blink::IndexedDBDatabaseMetadata>* metadata) {}
+    const std::vector<std::unique_ptr<blink::IndexedDBDatabaseMetadata>>*
+        metadata) {}
 
 BackingStorePreCloseTaskQueue::BackingStorePreCloseTaskQueue(
     std::list<std::unique_ptr<BackingStorePreCloseTaskQueue::PreCloseTask>>

@@ -35,7 +35,6 @@ IndexWriter::IndexWriter(const IndexedDBIndexMetadata& index_metadata,
 IndexWriter::~IndexWriter() {}
 
 bool IndexWriter::VerifyIndexKeys(BackingStore::Transaction* transaction,
-                                  int64_t database_id,
                                   int64_t object_store_id,
                                   int64_t index_id,
                                   bool* can_add_keys,
@@ -43,8 +42,8 @@ bool IndexWriter::VerifyIndexKeys(BackingStore::Transaction* transaction,
                                   std::string* error_message) const {
   *can_add_keys = false;
   for (const auto& key : keys_) {
-    bool ok = AddingKeyAllowed(transaction, database_id, object_store_id,
-                               index_id, key, primary_key, can_add_keys);
+    bool ok = AddingKeyAllowed(transaction, object_store_id, index_id, key,
+                               primary_key, can_add_keys);
     if (!ok) {
       return false;
     }
@@ -65,12 +64,11 @@ bool IndexWriter::VerifyIndexKeys(BackingStore::Transaction* transaction,
 Status IndexWriter::WriteIndexKeys(
     const BackingStore::RecordIdentifier& record_identifier,
     BackingStore::Transaction* transaction,
-    int64_t database_id,
     int64_t object_store_id) const {
   int64_t index_id = index_metadata_.id;
   for (const auto& key : keys_) {
-    Status s = transaction->PutIndexDataForRecord(
-        database_id, object_store_id, index_id, key, record_identifier);
+    Status s = transaction->PutIndexDataForRecord(object_store_id, index_id,
+                                                  key, record_identifier);
     if (!s.ok()) {
       return s;
     }
@@ -79,7 +77,6 @@ Status IndexWriter::WriteIndexKeys(
 }
 
 bool IndexWriter::AddingKeyAllowed(BackingStore::Transaction* transaction,
-                                   int64_t database_id,
                                    int64_t object_store_id,
                                    int64_t index_id,
                                    const IndexedDBKey& index_key,
@@ -93,9 +90,8 @@ bool IndexWriter::AddingKeyAllowed(BackingStore::Transaction* transaction,
 
   std::unique_ptr<IndexedDBKey> found_primary_key;
   bool found = false;
-  Status s =
-      transaction->KeyExistsInIndex(database_id, object_store_id, index_id,
-                                    index_key, &found_primary_key, &found);
+  Status s = transaction->KeyExistsInIndex(object_store_id, index_id, index_key,
+                                           &found_primary_key, &found);
   if (!s.ok()) {
     return false;
   }
@@ -107,7 +103,6 @@ bool IndexWriter::AddingKeyAllowed(BackingStore::Transaction* transaction,
 }
 
 bool MakeIndexWriters(Transaction* transaction,
-                      int64_t database_id,
                       const IndexedDBObjectStoreMetadata& object_store,
                       const IndexedDBKey& primary_key,  // makes a copy
                       bool key_was_generated,
@@ -150,8 +145,8 @@ bool MakeIndexWriters(Transaction* transaction,
         std::make_unique<IndexWriter>(index, std::move(keys)));
     bool can_add_keys = false;
     bool backing_store_success = index_writer->VerifyIndexKeys(
-        transaction->BackingStoreTransaction(), database_id, object_store.id,
-        index.id, &can_add_keys, primary_key, error_message);
+        transaction->BackingStoreTransaction(), object_store.id, index.id,
+        &can_add_keys, primary_key, error_message);
     if (!backing_store_success) {
       return false;
     }

@@ -21,7 +21,6 @@ bool StructTraits<blink::mojom::IDBDatabaseMetadataDataView,
                   blink::IndexedDBDatabaseMetadata>::
     Read(blink::mojom::IDBDatabaseMetadataDataView data,
          blink::IndexedDBDatabaseMetadata* out) {
-  out->id = data.id();
   if (!data.ReadName(&out->name))
     return false;
   out->version = data.version();

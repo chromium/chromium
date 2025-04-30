@@ -129,7 +129,7 @@ class ConnectionCoordinator::ConnectionRequest {
     }
 
     std::vector<PartitionedLockManager::PartitionedLockRequest> lock_requests =
-        {{GetDatabaseLockId(db_->metadata().name),
+        {{GetDatabaseLockId(db_->name()),
           PartitionedLockManager::LockType::kExclusive}};
     state_ = RequestState::kPendingLocks;
 
@@ -163,9 +163,8 @@ class ConnectionCoordinator::OpenRequest
               std::unique_ptr<PendingConnection> pending_connection,
               ConnectionCoordinator* connection_coordinator)
       : ConnectionRequest(bucket_context, db, connection_coordinator),
-        pending_(std::move(pending_connection)) {
-    db_->metadata_.was_cold_open = pending_->was_cold_open;
-
+        pending_(std::move(pending_connection)),
+        was_cold_open_(pending_->was_cold_open) {
     // Note that the `scheduling_priority` on this lock receiver isn't very
     // important because locks are only acquired when upgrading the version, and
     // that requires that all other connections be closed. So there shouldn't be
@@ -198,7 +197,7 @@ class ConnectionCoordinator::OpenRequest
     // Initialization of the metadata occurs here because it requires a lock. If
     // metadata is read from the database without a lock, then we may get a
     // stale version. See crbug.com/1472028
-    if (db_->metadata().id == kInvalidDatabaseId) {
+    if (!db_->IsInitialized()) {
       ContinueAfterAcquiringLocks(
           base::BindOnce(&ConnectionCoordinator::OpenRequest::InitDatabase,
                          weak_factory_.GetWeakPtr(), has_connections));
@@ -231,7 +230,7 @@ class ConnectionCoordinator::OpenRequest
 
   void ContinueOpening(bool has_connections) {
     base::ScopedClosureRunner scoped_tasks_available(tasks_available_callback_);
-    const int64_t old_version = db_->metadata().version;
+    const int64_t old_version = db_->version();
     int64_t& new_version = pending_->version;
 
     bool is_new_database = old_version == IndexedDBDatabaseMetadata::NO_VERSION;
@@ -245,7 +244,7 @@ class ConnectionCoordinator::OpenRequest
                                 std::move(pending_->client_state_checker),
                                 pending_->client_token,
                                 pending_->scheduling_priority),
-          db_->metadata_);
+          GenerateDbMetadata());
       bucket_context_handle_.Release();
       state_ = RequestState::kDone;
       return;
@@ -259,7 +258,7 @@ class ConnectionCoordinator::OpenRequest
                                 std::move(pending_->client_state_checker),
                                 pending_->client_token,
                                 pending_->scheduling_priority),
-          db_->metadata_);
+          GenerateDbMetadata());
       state_ = RequestState::kDone;
       bucket_context_handle_.Release();
       return;
@@ -277,7 +276,7 @@ class ConnectionCoordinator::OpenRequest
           blink::mojom::IDBException::kVersionError,
           u"The requested version (" + NumberToString16(pending_->version) +
               u") is less than the existing version (" +
-              NumberToString16(db_->metadata_.version) + u")."));
+              NumberToString16(db_->version()) + u")."));
       state_ = RequestState::kDone;
       return;
     }
@@ -305,7 +304,7 @@ class ConnectionCoordinator::OpenRequest
 
   void OnVersionChangeIgnored() const override {
     DCHECK(state_ == RequestState::kPendingNoConnections);
-    pending_->factory_client->OnBlocked(db_->metadata_.version);
+    pending_->factory_client->OnBlocked(db_->version());
   }
 
   void OnConnectionClosed(Connection* connection) override {
@@ -351,7 +350,7 @@ class ConnectionCoordinator::OpenRequest
     Transaction* transaction = connection_->CreateVersionChangeTransaction(
         pending_->transaction_id,
         std::set<int64_t>(object_store_ids.begin(), object_store_ids.end()),
-        db_->backing_store()->CreateTransaction(
+        db_->backing_store_db()->CreateTransaction(
             blink::mojom::IDBTransactionDurability::Strict,
             blink::mojom::IDBTransactionMode::VersionChange));
 
@@ -379,7 +378,7 @@ class ConnectionCoordinator::OpenRequest
     DCHECK(state_ == RequestState::kPendingTransactionComplete);
     DCHECK(connection_);
     pending_->factory_client->OnUpgradeNeeded(
-        old_version, std::move(connection_), db_->metadata_,
+        old_version, std::move(connection_), GenerateDbMetadata(),
         pending_->data_loss_info);
   }
 
@@ -387,10 +386,10 @@ class ConnectionCoordinator::OpenRequest
     DCHECK(state_ == RequestState::kPendingTransactionComplete);
     // Ownership of connection was already passed along in OnUpgradeNeeded.
     if (committed) {
-      DCHECK_EQ(pending_->version, db_->metadata_.version);
-      pending_->factory_client->OnOpenSuccess(nullptr, db_->metadata());
+      DCHECK_EQ(pending_->version, db_->version());
+      pending_->factory_client->OnOpenSuccess(nullptr, GenerateDbMetadata());
     } else {
-      DCHECK_NE(pending_->version, db_->metadata_.version);
+      DCHECK_NE(pending_->version, db_->version());
       pending_->factory_client->OnError(
           DatabaseError(blink::mojom::IDBException::kAbortError,
                         "Version change transaction was aborted in "
@@ -429,7 +428,14 @@ class ConnectionCoordinator::OpenRequest
   }
 
  private:
+  blink::IndexedDBDatabaseMetadata GenerateDbMetadata() {
+    blink::IndexedDBDatabaseMetadata metadata = db_->metadata();
+    metadata.was_cold_open = was_cold_open_;
+    return metadata;
+  }
+
   std::unique_ptr<PendingConnection> pending_;
+  bool was_cold_open_;
 
   // If an upgrade is needed, holds the pending connection until ownership is
   // transferred to the IndexedDBDispatcherHost via OnUpgradeNeeded.
@@ -463,7 +469,7 @@ class ConnectionCoordinator::DeleteRequest
     base::AutoReset suspend_callback(&tasks_available_callback_,
                                      base::DoNothing());
 
-    if (db_->metadata().id == kInvalidDatabaseId) {
+    if (!db_->IsInitialized()) {
       ContinueAfterAcquiringLocks(
           base::BindOnce(&ConnectionCoordinator::DeleteRequest::InitDatabase,
                          weak_factory_.GetWeakPtr(), has_connections));
@@ -495,7 +501,7 @@ class ConnectionCoordinator::DeleteRequest
 
     // Front end ensures the event is not fired at connections that have
     // close_pending set.
-    const int64_t old_version = db_->metadata().version;
+    const int64_t old_version = db_->version();
     const int64_t new_version = IndexedDBDatabaseMetadata::NO_VERSION;
     state_ = RequestState::kPendingNoConnections;
     db_->SendVersionChangeToAllConnections(old_version, new_version);
@@ -503,7 +509,7 @@ class ConnectionCoordinator::DeleteRequest
 
   void OnVersionChangeIgnored() const override {
     DCHECK(state_ == RequestState::kPendingNoConnections);
-    factory_client_->OnBlocked(db_->metadata_.version);
+    factory_client_->OnBlocked(db_->version());
   }
 
   void OnConnectionClosed(Connection* connection) override {}
@@ -525,7 +531,7 @@ class ConnectionCoordinator::DeleteRequest
     base::WeakPtr<DeleteRequest> weak_ptr = weak_factory_.GetWeakPtr();
     if (db_->backing_store()) {
       saved_status_ = db_->backing_store()->DeleteDatabase(
-          db_->metadata_.name, std::move(lock_receiver_.locks),
+          db_->name(), std::move(lock_receiver_.locks),
           std::move(on_database_deleted_));
       base::UmaHistogramEnumeration(
           "WebCore.IndexedDB.BackingStore.DeleteDatabaseStatus",
@@ -547,11 +553,10 @@ class ConnectionCoordinator::DeleteRequest
       return;
     }
 
-    int64_t old_version = db_->metadata_.version;
-    db_->metadata_.id = kInvalidDatabaseId;
-    db_->metadata_.version = IndexedDBDatabaseMetadata::NO_VERSION;
-    db_->metadata_.max_object_store_id = 0;
-    db_->metadata_.object_stores.clear();
+    int64_t old_version = db_->version();
+    db_->metadata().version = IndexedDBDatabaseMetadata::NO_VERSION;
+    db_->metadata().max_object_store_id = 0;
+    db_->metadata().object_stores.clear();
     // Unittests (specifically the Database unittests) can have the
     // backing store be a nullptr, so report deleted here.
     if (on_database_deleted_) {

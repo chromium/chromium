@@ -88,8 +88,7 @@ class TransactionTest : public testing::Test {
 
     bucket_context_->InitBackingStoreIfNeeded(true);
     db_ = bucket_context_->AddDatabase(
-        u"db", std::make_unique<Database>(u"db", *bucket_context_,
-                                          Database::Identifier()));
+        u"db", std::make_unique<Database>(u"db", *bucket_context_));
   }
 
   void TearDown() override { db_ = nullptr; }
@@ -160,8 +159,10 @@ class TransactionTest : public testing::Test {
         id, connection, object_store_ids, mode,
         blink::mojom::IDBTransactionDurability::Relaxed,
         BucketContextHandle(*bucket_context_),
-        std::make_unique<FakeTransaction>(commit_phase_two_error_status, mode,
-                                          *bucket_context_->backing_store()));
+        std::make_unique<FakeTransaction>(
+            commit_phase_two_error_status,
+            db_->backing_store_db()->CreateTransaction(
+                blink::mojom::IDBTransactionDurability::Relaxed, mode)));
 
     Transaction* transaction_reference = transaction.get();
     connection->transactions_[id] = std::move(transaction);
@@ -663,15 +664,17 @@ INSTANTIATE_TEST_SUITE_P(Transactions,
                          ::testing::ValuesIn(kTestModes));
 
 TEST_F(TransactionTest, AbortCancelsLockRequest) {
-  const int64_t id = 0;
+  std::unique_ptr<Connection> connection = CreateConnection();
+
   const int64_t object_store_id = 1ll;
 
   // Acquire a lock to block the transaction's lock acquisition.
   std::vector<PartitionedLockManager::PartitionedLockRequest> lock_requests;
   lock_requests.emplace_back(GetDatabaseLockId(u"name"),
                              PartitionedLockManager::LockType::kShared);
-  lock_requests.emplace_back(GetObjectStoreLockId(id, object_store_id),
-                             PartitionedLockManager::LockType::kExclusive);
+  lock_requests.emplace_back(
+      db_->backing_store_db()->GetLockId(object_store_id),
+      PartitionedLockManager::LockType::kExclusive);
   bool locks_received = false;
   PartitionedLockHolder temp_lock_receiver;
   lock_manager().AcquireLocks(lock_requests, temp_lock_receiver,
@@ -680,10 +683,9 @@ TEST_F(TransactionTest, AbortCancelsLockRequest) {
 
   // Create and register the transaction, which should request locks and wait
   // for `temp_lock_receiver` to release the locks.
-  std::unique_ptr<Connection> connection = CreateConnection();
-  Transaction* transaction =
-      CreateTransaction(connection.get(), id, {object_store_id},
-                        blink::mojom::IDBTransactionMode::ReadWrite);
+  Transaction* transaction = CreateTransaction(
+      connection.get(), /*transaction_id=*/0, {object_store_id},
+      blink::mojom::IDBTransactionMode::ReadWrite);
   EXPECT_EQ(transaction->state(), Transaction::CREATED);
 
   // Abort the transaction, which should cancel the

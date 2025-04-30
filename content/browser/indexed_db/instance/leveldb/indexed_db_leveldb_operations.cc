@@ -414,16 +414,8 @@ Status VersionExists(TransactionalLevelDBTransaction* transaction,
   return s;
 }
 
-template Status GetNewDatabaseId<LevelDBDirectTransaction>(
-    LevelDBDirectTransaction* transaction,
-    int64_t* new_id);
-
-template Status GetNewDatabaseId<TransactionalLevelDBTransaction>(
-    TransactionalLevelDBTransaction* transaction,
-    int64_t* new_id);
-
-template <typename Transaction>
-Status GetNewDatabaseId(Transaction* transaction, int64_t* new_id) {
+Status GetNewDatabaseId(LevelDBDirectTransaction* transaction,
+                        int64_t* new_id) {
   *new_id = -1;
   int64_t max_database_id = -1;
   bool found = false;

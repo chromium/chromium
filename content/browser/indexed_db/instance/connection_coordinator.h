@@ -25,7 +25,6 @@ struct PendingConnection;
 
 class CONTENT_EXPORT ConnectionCoordinator {
  public:
-  static const int64_t kInvalidDatabaseId = 0;
   static const int64_t kMinimumIndexId = 30;
 
   ConnectionCoordinator(Database* db, BucketContext& bucket_context);

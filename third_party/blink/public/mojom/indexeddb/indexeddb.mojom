@@ -185,7 +185,6 @@ struct IDBObjectStoreMetadata {
 };
 
 struct IDBDatabaseMetadata {
-  int64 id;
   mojo_base.mojom.String16 name;
   int64 version;
   int64 max_object_store_id;

@@ -77,7 +77,6 @@
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
 
-using blink::IndexedDBDatabaseMetadata;
 using blink::IndexedDBIndexMetadata;
 using blink::IndexedDBKey;
 using blink::IndexedDBKeyPath;
@@ -87,6 +86,10 @@ using blink::StorageKey;
 using url::Origin;
 
 namespace content::indexed_db::level_db {
+
+namespace {
+
+using DatabaseMetadata = BackingStore::DatabaseMetadata;
 
 struct BlobWrite {
   BlobWrite() = default;
@@ -107,6 +110,28 @@ struct BlobWrite {
   mojo::Remote<::blink::mojom::Blob> blob;
   base::FilePath path;
 };
+
+BlobWriteCallback CreateBlobWriteCallback(
+    bool* succeeded,
+    base::OnceClosure on_done = base::DoNothing()) {
+  *succeeded = false;
+  return base::BindOnce(
+      [](bool* succeeded, base::OnceClosure on_done, BlobWriteResult result,
+         storage::mojom::WriteBlobToFileResult error) {
+        switch (result) {
+          case BlobWriteResult::kFailure:
+            NOTREACHED();
+          case BlobWriteResult::kRunPhaseTwoAsync:
+          case BlobWriteResult::kRunPhaseTwoAndReturnResult:
+            DCHECK_EQ(error, storage::mojom::WriteBlobToFileResult::kSuccess);
+            *succeeded = true;
+            break;
+        }
+        std::move(on_done).Run();
+        return Status::OK();
+      },
+      succeeded, std::move(on_done));
+}
 
 class MockBlobStorageContext : public ::storage::mojom::BlobStorageContext {
  public:
@@ -220,6 +245,8 @@ class MockFileSystemAccessContext
   mojo::ReceiverSet<::storage::mojom::FileSystemAccessContext> receivers_;
 };
 
+}  // namespace
+
 class BackingStoreTest : public testing::Test {
  public:
   BackingStoreTest() = default;
@@ -277,6 +304,23 @@ class BackingStoreTest : public testing::Test {
 
     backing_store_ =
         reinterpret_cast<BackingStore*>(bucket_context_->backing_store());
+  }
+
+  int64_t GetId(indexed_db::BackingStore::Database& db) {
+    return *reinterpret_cast<DatabaseMetadata&>(db.GetMetadata()).id;
+  }
+
+  void UpdateDatabaseVersion(indexed_db::BackingStore::Database& db,
+                             int64_t version) {
+    auto transaction =
+        db.CreateTransaction(blink::mojom::IDBTransactionDurability::Relaxed,
+                             blink::mojom::IDBTransactionMode::VersionChange);
+    transaction->Begin(CreateDummyLock());
+    EXPECT_TRUE(transaction->SetDatabaseVersion(version).ok());
+    bool success = false;
+    transaction->CommitPhaseOne(CreateBlobWriteCallback(&success));
+    EXPECT_TRUE(success);
+    transaction->CommitPhaseTwo();
   }
 
   std::vector<PartitionedLock> CreateDummyLock() {
@@ -651,42 +695,23 @@ class BackingStoreTestWithBlobs : public BackingStoreTestWithExternalObjects {
   }
 };
 
-BlobWriteCallback CreateBlobWriteCallback(
-    bool* succeeded,
-    base::OnceClosure on_done = base::OnceClosure()) {
-  *succeeded = false;
-  return base::BindOnce(
-      [](bool* succeeded, base::OnceClosure on_done, BlobWriteResult result,
-         storage::mojom::WriteBlobToFileResult error) {
-        switch (result) {
-          case BlobWriteResult::kFailure:
-            NOTREACHED();
-          case BlobWriteResult::kRunPhaseTwoAsync:
-          case BlobWriteResult::kRunPhaseTwoAndReturnResult:
-            DCHECK_EQ(error, storage::mojom::WriteBlobToFileResult::kSuccess);
-            *succeeded = true;
-            break;
-        }
-        if (!on_done.is_null()) {
-          std::move(on_done).Run();
-        }
-        return Status::OK();
-      },
-      succeeded, std::move(on_done));
-}
-
 TEST_F(BackingStoreTest, PutGetConsistency) {
   base::RunLoop loop;
   const IndexedDBKey key = key1_;
   IndexedDBValue value = value1_;
+  BackingStore::Database db(*backing_store(),
+                            BackingStore::DatabaseMetadata{u"name"});
+  db.metadata().id = 1;
   {
-    BackingStore::Transaction transaction1(
-        backing_store()->AsWeakPtr(),
-        blink::mojom::IDBTransactionDurability::Relaxed,
-        blink::mojom::IDBTransactionMode::ReadWrite);
+    auto txn =
+        db.CreateTransaction(blink::mojom::IDBTransactionDurability::Relaxed,
+                             blink::mojom::IDBTransactionMode::ReadWrite);
+
+    BackingStore::Transaction& transaction1 =
+        *reinterpret_cast<BackingStore::Transaction*>(txn.get());
     transaction1.Begin(CreateDummyLock());
     BackingStore::RecordIdentifier record;
-    Status s = transaction1.PutRecord(1, 1, key, &value, &record);
+    Status s = transaction1.PutRecord(1, key, &value, &record);
     EXPECT_TRUE(s.ok());
     bool succeeded = false;
     EXPECT_TRUE(
@@ -696,13 +721,16 @@ TEST_F(BackingStoreTest, PutGetConsistency) {
   }
 
   {
-    BackingStore::Transaction transaction2(
-        backing_store()->AsWeakPtr(),
-        blink::mojom::IDBTransactionDurability::Relaxed,
-        blink::mojom::IDBTransactionMode::ReadWrite);
+    auto txn =
+        db.CreateTransaction(blink::mojom::IDBTransactionDurability::Relaxed,
+                             blink::mojom::IDBTransactionMode::ReadWrite);
+
+    BackingStore::Transaction& transaction2 =
+        *reinterpret_cast<BackingStore::Transaction*>(txn.get());
+
     transaction2.Begin(CreateDummyLock());
     IndexedDBValue result_value;
-    EXPECT_TRUE(transaction2.GetRecord(1, 1, key, &result_value).ok());
+    EXPECT_TRUE(transaction2.GetRecord(1, key, &result_value).ok());
     bool succeeded = false;
     EXPECT_TRUE(
         transaction2.CommitPhaseOne(CreateBlobWriteCallback(&succeeded)).ok());
@@ -713,15 +741,18 @@ TEST_F(BackingStoreTest, PutGetConsistency) {
 }
 
 TEST_P(BackingStoreTestWithExternalObjects, PutGetConsistency) {
+  BackingStore::Database db(*backing_store(),
+                            BackingStore::DatabaseMetadata{u"name"});
+  db.metadata().id = 1;
+
   // Initiate transaction1 - writing blobs.
-  std::unique_ptr<BackingStore::Transaction> transaction1 =
-      std::make_unique<BackingStore::Transaction>(
-          backing_store()->AsWeakPtr(),
-          blink::mojom::IDBTransactionDurability::Relaxed,
-          blink::mojom::IDBTransactionMode::ReadWrite);
+  auto transaction1 =
+      db.CreateTransaction(blink::mojom::IDBTransactionDurability::Relaxed,
+                           blink::mojom::IDBTransactionMode::ReadWrite);
+
   transaction1->Begin(CreateDummyLock());
   BackingStore::RecordIdentifier record;
-  EXPECT_TRUE(transaction1->PutRecord(1, 1, key3_, &value3_, &record).ok());
+  EXPECT_TRUE(transaction1->PutRecord(1, key3_, &value3_, &record).ok());
   bool succeeded = false;
   base::RunLoop phase_one_wait;
   EXPECT_TRUE(transaction1
@@ -729,7 +760,6 @@ TEST_P(BackingStoreTestWithExternalObjects, PutGetConsistency) {
                       &succeeded, phase_one_wait.QuitClosure()))
                   .ok());
   EXPECT_FALSE(succeeded);
-  task_environment_.RunUntilIdle();
   phase_one_wait.Run();
 
   // Finish up transaction1, verifying blob writes.
@@ -739,13 +769,13 @@ TEST_P(BackingStoreTestWithExternalObjects, PutGetConsistency) {
   EXPECT_TRUE(transaction1->CommitPhaseTwo().ok());
 
   // Initiate transaction2, reading blobs.
-  BackingStore::Transaction transaction2(
-      backing_store()->AsWeakPtr(),
-      blink::mojom::IDBTransactionDurability::Relaxed,
-      blink::mojom::IDBTransactionMode::ReadWrite);
+  auto txn2 =
+      db.CreateTransaction(blink::mojom::IDBTransactionDurability::Relaxed,
+                           blink::mojom::IDBTransactionMode::ReadWrite);
+  auto& transaction2 = *txn2;
   transaction2.Begin(CreateDummyLock());
   IndexedDBValue result_value;
-  EXPECT_TRUE(transaction2.GetRecord(1, 1, key3_, &result_value).ok());
+  EXPECT_TRUE(transaction2.GetRecord(1, key3_, &result_value).ok());
 
   // Finish up transaction2, verifying blob reads.
   succeeded = false;
@@ -760,13 +790,12 @@ TEST_P(BackingStoreTestWithExternalObjects, PutGetConsistency) {
   EXPECT_TRUE(CheckBlobReadsMatchWrites(result_value.external_objects));
 
   // Initiate transaction3, deleting blobs.
-  std::unique_ptr<BackingStore::Transaction> transaction3 =
-      std::make_unique<BackingStore::Transaction>(
-          backing_store()->AsWeakPtr(),
-          blink::mojom::IDBTransactionDurability::Relaxed,
-          blink::mojom::IDBTransactionMode::ReadWrite);
+  auto transaction3 =
+      db.CreateTransaction(blink::mojom::IDBTransactionDurability::Relaxed,
+                           blink::mojom::IDBTransactionMode::ReadWrite);
+
   transaction3->Begin(CreateDummyLock());
-  EXPECT_TRUE(transaction3->DeleteRange(1, 1, IndexedDBKeyRange(key3_)).ok());
+  EXPECT_TRUE(transaction3->DeleteRange(1, IndexedDBKeyRange(key3_)).ok());
   succeeded = false;
   EXPECT_TRUE(
       transaction3->CommitPhaseOne(CreateBlobWriteCallback(&succeeded)).ok());
@@ -778,22 +807,19 @@ TEST_P(BackingStoreTestWithExternalObjects, PutGetConsistency) {
   // Finish up transaction 3, verifying blob deletes.
   EXPECT_TRUE(transaction3->CommitPhaseTwo().ok());
   CheckFirstNBlobsRemoved(blob_context_->writes().size());
-
-  // Clean up on the IDB sequence.
-  transaction1.reset();
-  transaction3.reset();
-  task_environment_.RunUntilIdle();
 }
 
 // http://crbug.com/1131151
 // Validate that recovery journal cleanup during a transaction does
 // not delete blobs that were just written.
 TEST_P(BackingStoreTestWithExternalObjects, BlobWriteCleanup) {
+  BackingStore::Database db(*backing_store(),
+                            BackingStore::DatabaseMetadata{u"name"});
+  db.metadata().id = 1;
   const std::vector<IndexedDBKey> keys = {
       IndexedDBKey(u"key0"), IndexedDBKey(u"key1"), IndexedDBKey(u"key2"),
       IndexedDBKey(u"key3")};
 
-  const int64_t database_id = 1;
   const int64_t object_store_id = 1;
 
   external_objects().clear();
@@ -814,18 +840,15 @@ TEST_P(BackingStoreTestWithExternalObjects, BlobWriteCleanup) {
   // blobs.
   backing_store()->SetExecuteJournalCleaningOnNoTransactionsForTesting();
 
-  std::unique_ptr<BackingStore::Transaction> transaction1 =
-      std::make_unique<BackingStore::Transaction>(
-          backing_store()->AsWeakPtr(),
-          blink::mojom::IDBTransactionDurability::Relaxed,
-          blink::mojom::IDBTransactionMode::ReadWrite);
+  auto transaction1 =
+      db.CreateTransaction(blink::mojom::IDBTransactionDurability::Relaxed,
+                           blink::mojom::IDBTransactionMode::ReadWrite);
   transaction1->Begin(CreateDummyLock());
   BackingStore::RecordIdentifier record;
   for (size_t i = 0; i < values.size(); ++i) {
-    EXPECT_TRUE(transaction1
-                    ->PutRecord(database_id, object_store_id, keys[i],
-                                &values[i], &record)
-                    .ok());
+    EXPECT_TRUE(
+        transaction1->PutRecord(object_store_id, keys[i], &values[i], &record)
+            .ok());
   }
 
   // Start committing transaction1.
@@ -841,13 +864,12 @@ TEST_P(BackingStoreTestWithExternalObjects, BlobWriteCleanup) {
 
   // Verify lack of blob removals.
   VerifyNumBlobsRemoved(0);
-
-  // Clean up on the IDB sequence.
-  transaction1.reset();
-  task_environment_.RunUntilIdle();
 }
 
 TEST_P(BackingStoreTestWithExternalObjects, DeleteRange) {
+  BackingStore::Database db(*backing_store(),
+                            BackingStore::DatabaseMetadata{u"name"});
+  db.metadata().id = 1;
   const std::vector<IndexedDBKey> keys = {
       IndexedDBKey(u"key0"), IndexedDBKey(u"key1"), IndexedDBKey(u"key2"),
       IndexedDBKey(u"key3")};
@@ -860,7 +882,6 @@ TEST_P(BackingStoreTestWithExternalObjects, DeleteRange) {
   });
 
   for (size_t i = 0; i < std::size(ranges); ++i) {
-    const int64_t database_id = 1;
     const int64_t object_store_id = i + 1;
     const IndexedDBKeyRange& range = ranges[i];
 
@@ -883,18 +904,15 @@ TEST_P(BackingStoreTestWithExternalObjects, DeleteRange) {
     ASSERT_GE(keys.size(), values.size());
 
     // Initiate transaction1 - write records.
-    std::unique_ptr<BackingStore::Transaction> transaction1 =
-        std::make_unique<BackingStore::Transaction>(
-            backing_store()->AsWeakPtr(),
-            blink::mojom::IDBTransactionDurability::Relaxed,
-            blink::mojom::IDBTransactionMode::ReadWrite);
+    auto transaction1 =
+        db.CreateTransaction(blink::mojom::IDBTransactionDurability::Relaxed,
+                             blink::mojom::IDBTransactionMode::ReadWrite);
     transaction1->Begin(CreateDummyLock());
     BackingStore::RecordIdentifier record;
     for (size_t j = 0; j < values.size(); ++j) {
-      EXPECT_TRUE(transaction1
-                      ->PutRecord(database_id, object_store_id, keys[j],
-                                  &values[j], &record)
-                      .ok());
+      EXPECT_TRUE(
+          transaction1->PutRecord(object_store_id, keys[j], &values[j], &record)
+              .ok());
     }
 
     // Start committing transaction1.
@@ -909,15 +927,12 @@ TEST_P(BackingStoreTestWithExternalObjects, DeleteRange) {
     EXPECT_TRUE(transaction1->CommitPhaseTwo().ok());
 
     // Initiate transaction 2 - delete range.
-    std::unique_ptr<BackingStore::Transaction> transaction2 =
-        std::make_unique<BackingStore::Transaction>(
-            backing_store()->AsWeakPtr(),
-            blink::mojom::IDBTransactionDurability::Relaxed,
-            blink::mojom::IDBTransactionMode::ReadWrite);
+    auto transaction2 =
+        db.CreateTransaction(blink::mojom::IDBTransactionDurability::Relaxed,
+                             blink::mojom::IDBTransactionMode::ReadWrite);
     transaction2->Begin(CreateDummyLock());
     IndexedDBValue result_value;
-    EXPECT_TRUE(
-        transaction2->DeleteRange(database_id, object_store_id, range).ok());
+    EXPECT_TRUE(transaction2->DeleteRange(object_store_id, range).ok());
 
     // Start committing transaction2.
     succeeded = false;
@@ -932,15 +947,13 @@ TEST_P(BackingStoreTestWithExternalObjects, DeleteRange) {
 
     // Verify blob removals.
     CheckFirstNBlobsRemoved(2U);
-
-    // Clean up on the IDB sequence.
-    transaction1.reset();
-    transaction2.reset();
-    task_environment_.RunUntilIdle();
   }
 }
 
 TEST_P(BackingStoreTestWithExternalObjects, DeleteRangeEmptyRange) {
+  BackingStore::Database db(*backing_store(),
+                            BackingStore::DatabaseMetadata{u"name"});
+  db.metadata().id = 1;
   const std::vector<IndexedDBKey> keys = {
       IndexedDBKey(u"key0"), IndexedDBKey(u"key1"), IndexedDBKey(u"key2"),
       IndexedDBKey(u"key3"), IndexedDBKey(u"key4"),
@@ -952,7 +965,6 @@ TEST_P(BackingStoreTestWithExternalObjects, DeleteRangeEmptyRange) {
   };
 
   for (size_t i = 0; i < std::size(ranges); ++i) {
-    const int64_t database_id = 1;
     const int64_t object_store_id = i + 1;
     const IndexedDBKeyRange& range = ranges[i];
 
@@ -975,19 +987,16 @@ TEST_P(BackingStoreTestWithExternalObjects, DeleteRangeEmptyRange) {
     ASSERT_GE(keys.size(), values.size());
 
     // Initiate transaction1 - write records.
-    std::unique_ptr<BackingStore::Transaction> transaction1 =
-        std::make_unique<BackingStore::Transaction>(
-            backing_store()->AsWeakPtr(),
-            blink::mojom::IDBTransactionDurability::Relaxed,
-            blink::mojom::IDBTransactionMode::ReadWrite);
+    auto transaction1 =
+        db.CreateTransaction(blink::mojom::IDBTransactionDurability::Relaxed,
+                             blink::mojom::IDBTransactionMode::ReadWrite);
     transaction1->Begin(CreateDummyLock());
 
     BackingStore::RecordIdentifier record;
     for (size_t j = 0; j < values.size(); ++j) {
-      EXPECT_TRUE(transaction1
-                      ->PutRecord(database_id, object_store_id, keys[j],
-                                  &values[j], &record)
-                      .ok());
+      EXPECT_TRUE(
+          transaction1->PutRecord(object_store_id, keys[j], &values[j], &record)
+              .ok());
     }
     // Start committing transaction1.
     bool succeeded = false;
@@ -1000,15 +1009,12 @@ TEST_P(BackingStoreTestWithExternalObjects, DeleteRangeEmptyRange) {
     EXPECT_TRUE(transaction1->CommitPhaseTwo().ok());
 
     // Initiate transaction 2 - delete range.
-    std::unique_ptr<BackingStore::Transaction> transaction2 =
-        std::make_unique<BackingStore::Transaction>(
-            backing_store()->AsWeakPtr(),
-            blink::mojom::IDBTransactionDurability::Relaxed,
-            blink::mojom::IDBTransactionMode::ReadWrite);
+    auto transaction2 =
+        db.CreateTransaction(blink::mojom::IDBTransactionDurability::Relaxed,
+                             blink::mojom::IDBTransactionMode::ReadWrite);
     transaction2->Begin(CreateDummyLock());
     IndexedDBValue result_value;
-    EXPECT_TRUE(
-        transaction2->DeleteRange(database_id, object_store_id, range).ok());
+    EXPECT_TRUE(transaction2->DeleteRange(object_store_id, range).ok());
 
     // Start committing transaction2.
     succeeded = false;
@@ -1022,25 +1028,21 @@ TEST_P(BackingStoreTestWithExternalObjects, DeleteRangeEmptyRange) {
 
     // Verify blob removals.
     VerifyNumBlobsRemoved(0U);
-
-    // Clean on the IDB sequence.
-    transaction1.reset();
-    transaction2.reset();
-    task_environment_.RunUntilIdle();
   }
 }
 
 TEST_P(BackingStoreTestWithExternalObjects,
        BlobJournalInterleavedTransactions) {
+  BackingStore::Database db(*backing_store(),
+                            BackingStore::DatabaseMetadata{u"name"});
+  db.metadata().id = 1;
   // Initiate transaction1.
-  std::unique_ptr<BackingStore::Transaction> transaction1 =
-      std::make_unique<BackingStore::Transaction>(
-          backing_store()->AsWeakPtr(),
-          blink::mojom::IDBTransactionDurability::Relaxed,
-          blink::mojom::IDBTransactionMode::ReadWrite);
+  auto transaction1 =
+      db.CreateTransaction(blink::mojom::IDBTransactionDurability::Relaxed,
+                           blink::mojom::IDBTransactionMode::ReadWrite);
   transaction1->Begin(CreateDummyLock());
   BackingStore::RecordIdentifier record1;
-  EXPECT_TRUE(transaction1->PutRecord(1, 1, key3_, &value3_, &record1).ok());
+  EXPECT_TRUE(transaction1->PutRecord(1, key3_, &value3_, &record1).ok());
   bool succeeded = false;
   EXPECT_TRUE(
       transaction1->CommitPhaseOne(CreateBlobWriteCallback(&succeeded)).ok());
@@ -1053,14 +1055,12 @@ TEST_P(BackingStoreTestWithExternalObjects,
   VerifyNumBlobsRemoved(0);
 
   // Initiate transaction2.
-  std::unique_ptr<BackingStore::Transaction> transaction2 =
-      std::make_unique<BackingStore::Transaction>(
-          backing_store()->AsWeakPtr(),
-          blink::mojom::IDBTransactionDurability::Relaxed,
-          blink::mojom::IDBTransactionMode::ReadWrite);
+  auto transaction2 =
+      db.CreateTransaction(blink::mojom::IDBTransactionDurability::Relaxed,
+                           blink::mojom::IDBTransactionMode::ReadWrite);
   transaction2->Begin(CreateDummyLock());
   BackingStore::RecordIdentifier record2;
-  EXPECT_TRUE(transaction2->PutRecord(1, 1, key1_, &value1_, &record2).ok());
+  EXPECT_TRUE(transaction2->PutRecord(1, key1_, &value1_, &record2).ok());
   succeeded = false;
   EXPECT_TRUE(
       transaction2->CommitPhaseOne(CreateBlobWriteCallback(&succeeded)).ok());
@@ -1077,22 +1077,18 @@ TEST_P(BackingStoreTestWithExternalObjects,
 
   EXPECT_TRUE(transaction2->CommitPhaseTwo().ok());
   VerifyNumBlobsRemoved(0);
-
-  // Clean up on the IDB sequence.
-  transaction1.reset();
-  transaction2.reset();
-  task_environment_.RunUntilIdle();
 }
 
 TEST_P(BackingStoreTestWithExternalObjects, ActiveBlobJournal) {
-  std::unique_ptr<BackingStore::Transaction> transaction1 =
-      std::make_unique<BackingStore::Transaction>(
-          backing_store()->AsWeakPtr(),
-          blink::mojom::IDBTransactionDurability::Relaxed,
-          blink::mojom::IDBTransactionMode::ReadWrite);
+  BackingStore::Database db(*backing_store(),
+                            BackingStore::DatabaseMetadata{u"name"});
+  db.metadata().id = 1;
+  auto transaction1 =
+      db.CreateTransaction(blink::mojom::IDBTransactionDurability::Relaxed,
+                           blink::mojom::IDBTransactionMode::ReadWrite);
   transaction1->Begin(CreateDummyLock());
   BackingStore::RecordIdentifier record;
-  EXPECT_TRUE(transaction1->PutRecord(1, 1, key3_, &value3_, &record).ok());
+  EXPECT_TRUE(transaction1->PutRecord(1, key3_, &value3_, &record).ok());
   bool succeeded = false;
   EXPECT_TRUE(
       transaction1->CommitPhaseOne(CreateBlobWriteCallback(&succeeded)).ok());
@@ -1103,20 +1099,19 @@ TEST_P(BackingStoreTestWithExternalObjects, ActiveBlobJournal) {
   EXPECT_TRUE(CheckBlobWrites());
   EXPECT_TRUE(transaction1->CommitPhaseTwo().ok());
 
-  BackingStore::Transaction transaction2(
-      backing_store()->AsWeakPtr(),
-      blink::mojom::IDBTransactionDurability::Relaxed,
-      blink::mojom::IDBTransactionMode::ReadWrite);
-  transaction2.Begin(CreateDummyLock());
+  auto transaction2 =
+      db.CreateTransaction(blink::mojom::IDBTransactionDurability::Relaxed,
+                           blink::mojom::IDBTransactionMode::ReadWrite);
+  transaction2->Begin(CreateDummyLock());
   IndexedDBValue read_result_value;
-  EXPECT_TRUE(transaction2.GetRecord(1, 1, key3_, &read_result_value).ok());
+  EXPECT_TRUE(transaction2->GetRecord(1, key3_, &read_result_value).ok());
   succeeded = false;
 
   EXPECT_TRUE(
-      transaction2.CommitPhaseOne(CreateBlobWriteCallback(&succeeded)).ok());
+      transaction2->CommitPhaseOne(CreateBlobWriteCallback(&succeeded)).ok());
 
   EXPECT_TRUE(succeeded);
-  EXPECT_TRUE(transaction2.CommitPhaseTwo().ok());
+  EXPECT_TRUE(transaction2->CommitPhaseTwo().ok());
   EXPECT_EQ(value3_.bits, read_result_value.bits);
   EXPECT_TRUE(CheckBlobInfoMatches(read_result_value.external_objects));
   EXPECT_TRUE(CheckBlobReadsMatchWrites(read_result_value.external_objects));
@@ -1127,13 +1122,11 @@ TEST_P(BackingStoreTestWithExternalObjects, ActiveBlobJournal) {
     }
   }
 
-  std::unique_ptr<BackingStore::Transaction> transaction3 =
-      std::make_unique<BackingStore::Transaction>(
-          backing_store()->AsWeakPtr(),
-          blink::mojom::IDBTransactionDurability::Relaxed,
-          blink::mojom::IDBTransactionMode::ReadWrite);
+  auto transaction3 =
+      db.CreateTransaction(blink::mojom::IDBTransactionDurability::Relaxed,
+                           blink::mojom::IDBTransactionMode::ReadWrite);
   transaction3->Begin(CreateDummyLock());
-  EXPECT_TRUE(transaction3->DeleteRange(1, 1, IndexedDBKeyRange(key3_)).ok());
+  EXPECT_TRUE(transaction3->DeleteRange(1, IndexedDBKeyRange(key3_)).ok());
   succeeded = false;
   EXPECT_TRUE(
       transaction3->CommitPhaseOne(CreateBlobWriteCallback(&succeeded)).ok());
@@ -1164,11 +1157,6 @@ TEST_P(BackingStoreTestWithExternalObjects, ActiveBlobJournal) {
   }
 
   EXPECT_FALSE(backing_store()->IsBlobCleanupPending());
-
-  // Clean on the IDB sequence.
-  transaction1.reset();
-  transaction3.reset();
-  task_environment_.RunUntilIdle();
 }
 
 // Make sure that using very high ( more than 32 bit ) values for
@@ -1185,27 +1173,29 @@ TEST_F(BackingStoreTest, HighIds) {
 
   const int64_t invalid_high_index_id = 1ULL << 37;
 
+  BackingStore::Database db(*backing_store(),
+                            BackingStore::DatabaseMetadata{u"name"});
+  db.metadata().id = high_database_id;
+
   const IndexedDBKey& index_key = key2;
   std::string index_key_raw;
   EncodeIDBKey(index_key, &index_key_raw);
   {
-    BackingStore::Transaction transaction1(
-        backing_store()->AsWeakPtr(),
-        blink::mojom::IDBTransactionDurability::Relaxed,
-        blink::mojom::IDBTransactionMode::ReadWrite);
+    auto txn1 =
+        db.CreateTransaction(blink::mojom::IDBTransactionDurability::Relaxed,
+                             blink::mojom::IDBTransactionMode::ReadWrite);
+    auto& transaction1 = *txn1;
     transaction1.Begin(CreateDummyLock());
     BackingStore::RecordIdentifier record;
-    Status s = transaction1.PutRecord(high_database_id, high_object_store_id,
-                                      key1, &value1, &record);
+    Status s =
+        transaction1.PutRecord(high_object_store_id, key1, &value1, &record);
     EXPECT_TRUE(s.ok());
 
     s = transaction1.PutIndexDataForRecord(
-        high_database_id, high_object_store_id, invalid_high_index_id,
-        index_key, record);
+        high_object_store_id, invalid_high_index_id, index_key, record);
     EXPECT_FALSE(s.ok());
 
-    s = transaction1.PutIndexDataForRecord(high_database_id,
-                                           high_object_store_id, high_index_id,
+    s = transaction1.PutIndexDataForRecord(high_object_store_id, high_index_id,
                                            index_key, record);
     EXPECT_TRUE(s.ok());
 
@@ -1217,25 +1207,24 @@ TEST_F(BackingStoreTest, HighIds) {
   }
 
   {
-    BackingStore::Transaction transaction2(
-        backing_store()->AsWeakPtr(),
-        blink::mojom::IDBTransactionDurability::Relaxed,
-        blink::mojom::IDBTransactionMode::ReadWrite);
+    auto txn2 =
+        db.CreateTransaction(blink::mojom::IDBTransactionDurability::Relaxed,
+                             blink::mojom::IDBTransactionMode::ReadWrite);
+    auto& transaction2 = *txn2;
     transaction2.Begin(CreateDummyLock());
     IndexedDBValue result_value;
-    Status s = transaction2.GetRecord(high_database_id, high_object_store_id,
-                                      key1, &result_value);
+    Status s =
+        transaction2.GetRecord(high_object_store_id, key1, &result_value);
     EXPECT_TRUE(s.ok());
     EXPECT_EQ(value1.bits, result_value.bits);
 
     std::unique_ptr<IndexedDBKey> new_primary_key;
-    s = transaction2.GetPrimaryKeyViaIndex(
-        high_database_id, high_object_store_id, invalid_high_index_id,
-        index_key, &new_primary_key);
+    s = transaction2.GetPrimaryKeyViaIndex(high_object_store_id,
+                                           invalid_high_index_id, index_key,
+                                           &new_primary_key);
     EXPECT_FALSE(s.ok());
 
-    s = transaction2.GetPrimaryKeyViaIndex(high_database_id,
-                                           high_object_store_id, high_index_id,
+    s = transaction2.GetPrimaryKeyViaIndex(high_object_store_id, high_index_id,
                                            index_key, &new_primary_key);
     EXPECT_TRUE(s.ok());
     EXPECT_TRUE(new_primary_key->Equals(key1));
@@ -1261,53 +1250,64 @@ TEST_F(BackingStoreTest, InvalidIds) {
   const int64_t invalid_low_index_id = 19;
   IndexedDBValue result_value;
 
-  BackingStore::Transaction transaction1(
-      backing_store()->AsWeakPtr(),
-      blink::mojom::IDBTransactionDurability::Relaxed,
-      blink::mojom::IDBTransactionMode::ReadWrite);
+  BackingStore::Database db(*backing_store(),
+                            BackingStore::DatabaseMetadata{u"name"});
+  db.metadata().id = database_id;
+  auto txn =
+      db.CreateTransaction(blink::mojom::IDBTransactionDurability::Relaxed,
+                           blink::mojom::IDBTransactionMode::ReadWrite);
+
+  BackingStore::Transaction& transaction1 =
+      *reinterpret_cast<BackingStore::Transaction*>(txn.get());
   transaction1.Begin(CreateDummyLock());
 
   BackingStore::RecordIdentifier record;
-  Status s = transaction1.PutRecord(database_id, KeyPrefix::kInvalidId, key,
-                                    &value, &record);
+  db.metadata().id = database_id;
+  Status s =
+      transaction1.PutRecord(KeyPrefix::kInvalidId, key, &value, &record);
   EXPECT_FALSE(s.ok());
-  s = transaction1.PutRecord(database_id, 0, key, &value, &record);
+  db.metadata().id = database_id;
+  s = transaction1.PutRecord(0, key, &value, &record);
   EXPECT_FALSE(s.ok());
-  s = transaction1.PutRecord(KeyPrefix::kInvalidId, object_store_id, key,
-                             &value, &record);
+  db.metadata().id = KeyPrefix::kInvalidId;
+  s = transaction1.PutRecord(object_store_id, key, &value, &record);
   EXPECT_FALSE(s.ok());
-  s = transaction1.PutRecord(0, object_store_id, key, &value, &record);
+  db.metadata().id = 0;
+  s = transaction1.PutRecord(object_store_id, key, &value, &record);
   EXPECT_FALSE(s.ok());
 
-  s = transaction1.GetRecord(database_id, KeyPrefix::kInvalidId, key,
-                             &result_value);
+  db.metadata().id = database_id;
+  s = transaction1.GetRecord(KeyPrefix::kInvalidId, key, &result_value);
   EXPECT_FALSE(s.ok());
-  s = transaction1.GetRecord(database_id, 0, key, &result_value);
+  db.metadata().id = database_id;
+  s = transaction1.GetRecord(0, key, &result_value);
   EXPECT_FALSE(s.ok());
-  s = transaction1.GetRecord(KeyPrefix::kInvalidId, object_store_id, key,
-                             &result_value);
+  db.metadata().id = KeyPrefix::kInvalidId;
+  s = transaction1.GetRecord(object_store_id, key, &result_value);
   EXPECT_FALSE(s.ok());
-  s = transaction1.GetRecord(0, object_store_id, key, &result_value);
+  db.metadata().id = 0;
+  s = transaction1.GetRecord(object_store_id, key, &result_value);
   EXPECT_FALSE(s.ok());
 
   std::unique_ptr<IndexedDBKey> new_primary_key;
-  s = transaction1.GetPrimaryKeyViaIndex(database_id, object_store_id,
-                                         KeyPrefix::kInvalidId, key,
-                                         &new_primary_key);
+  db.metadata().id = database_id;
+  s = transaction1.GetPrimaryKeyViaIndex(object_store_id, KeyPrefix::kInvalidId,
+                                         key, &new_primary_key);
   EXPECT_FALSE(s.ok());
-  s = transaction1.GetPrimaryKeyViaIndex(database_id, object_store_id,
-                                         invalid_low_index_id, key,
-                                         &new_primary_key);
+  s = transaction1.GetPrimaryKeyViaIndex(object_store_id, invalid_low_index_id,
+                                         key, &new_primary_key);
   EXPECT_FALSE(s.ok());
-  s = transaction1.GetPrimaryKeyViaIndex(database_id, object_store_id, 0, key,
+  s = transaction1.GetPrimaryKeyViaIndex(object_store_id, 0, key,
                                          &new_primary_key);
   EXPECT_FALSE(s.ok());
 
-  s = transaction1.GetPrimaryKeyViaIndex(KeyPrefix::kInvalidId, object_store_id,
-                                         index_id, key, &new_primary_key);
+  db.metadata().id = KeyPrefix::kInvalidId;
+  s = transaction1.GetPrimaryKeyViaIndex(object_store_id, index_id, key,
+                                         &new_primary_key);
   EXPECT_FALSE(s.ok());
-  s = transaction1.GetPrimaryKeyViaIndex(database_id, KeyPrefix::kInvalidId,
-                                         index_id, key, &new_primary_key);
+  db.metadata().id = database_id;
+  s = transaction1.GetPrimaryKeyViaIndex(KeyPrefix::kInvalidId, index_id, key,
+                                         &new_primary_key);
   EXPECT_FALSE(s.ok());
 }
 
@@ -1328,50 +1328,44 @@ TEST_F(BackingStoreTest, CreateDatabase) {
   const IndexedDBKeyPath index_key_path(u"index_key");
 
   {
-    IndexedDBDatabaseMetadata database;
-    database.name = database_name;
-    database.version = version;
-    Status s = backing_store()->CreateDatabase(database);
-    EXPECT_TRUE(s.ok());
-    EXPECT_GT(database.id, 0);
-    database_id = database.id;
+    auto db1 = backing_store()->CreateOrOpenDatabase(database_name);
+    ASSERT_TRUE(db1.has_value());
+    UpdateDatabaseVersion(**db1, version);
+    database_id = GetId(**db1);
+    EXPECT_GT(database_id, 0);
 
-    BackingStore::Transaction transaction(
-        backing_store()->AsWeakPtr(),
-        blink::mojom::IDBTransactionDurability::Relaxed,
-        blink::mojom::IDBTransactionMode::VersionChange);
-    transaction.Begin(CreateDummyLock());
+    std::unique_ptr<indexed_db::BackingStore::Transaction> transaction =
+        (*db1)->CreateTransaction(
+            blink::mojom::IDBTransactionDurability::Relaxed,
+            blink::mojom::IDBTransactionMode::VersionChange);
+    transaction->Begin(CreateDummyLock());
 
     IndexedDBObjectStoreMetadata object_store;
-    s = transaction.CreateObjectStore(database.id, object_store_id,
-                                      object_store_name, object_store_key_path,
-                                      auto_increment, &object_store);
+    Status s = transaction->CreateObjectStore(
+        object_store_id, object_store_name, object_store_key_path,
+        auto_increment, &object_store);
     EXPECT_TRUE(s.ok());
 
     IndexedDBIndexMetadata index;
-    s = transaction.CreateIndex(database.id, object_store.id, index_id,
-                                index_name, index_key_path, unique, multi_entry,
-                                &index);
+    s = transaction->CreateIndex(object_store.id, index_id, index_name,
+                                 index_key_path, unique, multi_entry, &index);
     EXPECT_TRUE(s.ok());
 
     bool succeeded = false;
     EXPECT_TRUE(
-        transaction.CommitPhaseOne(CreateBlobWriteCallback(&succeeded)).ok());
+        transaction->CommitPhaseOne(CreateBlobWriteCallback(&succeeded)).ok());
     EXPECT_TRUE(succeeded);
-    EXPECT_TRUE(transaction.CommitPhaseTwo().ok());
+    EXPECT_TRUE(transaction->CommitPhaseTwo().ok());
   }
 
   {
-    IndexedDBDatabaseMetadata database;
-    bool found;
-    Status s = backing_store()->ReadMetadataForDatabaseName(database_name,
-                                                            &database, &found);
-    EXPECT_TRUE(s.ok());
-    EXPECT_TRUE(found);
+    auto db1 = backing_store()->CreateOrOpenDatabase(database_name);
+    EXPECT_TRUE(db1.has_value());
 
+    blink::IndexedDBDatabaseMetadata& database = (*db1)->GetMetadata();
     // database.name is not filled in by the implementation.
     EXPECT_EQ(version, database.version);
-    EXPECT_EQ(database_id, database.id);
+    EXPECT_EQ(database_id, GetId(**db1));
 
     EXPECT_EQ(1UL, database.object_stores.size());
     IndexedDBObjectStoreMetadata object_store =
@@ -1390,35 +1384,25 @@ TEST_F(BackingStoreTest, CreateDatabase) {
 }
 
 TEST_F(BackingStoreTest, GetDatabaseNames) {
-  const std::u16string db1_name(u"db1");
-  const int64_t db1_version = 1LL;
+  auto db1 = backing_store()->CreateOrOpenDatabase(u"db1");
 
-  // Database records with DEFAULT_VERSION represent
-  // stale data, and should not be enumerated.
-  const std::u16string db2_name(u"db2");
-  const int64_t db2_version = IndexedDBDatabaseMetadata::DEFAULT_VERSION;
+  ASSERT_TRUE(db1.has_value());
+  EXPECT_GT(GetId(**db1), 0);
 
-  IndexedDBDatabaseMetadata db1;
-  db1.name = db1_name;
-  db1.version = db1_version;
-  Status s = backing_store()->CreateDatabase(db1);
+  auto db2 = backing_store()->CreateOrOpenDatabase(u"db2");
 
-  EXPECT_TRUE(s.ok());
-  EXPECT_GT(db1.id, 0LL);
+  ASSERT_TRUE(db2.has_value());
+  EXPECT_GT(GetId(**db2), GetId(**db1));
 
-  IndexedDBDatabaseMetadata db2;
-  db2.name = db2_name;
-  db2.version = db2_version;
-  s = backing_store()->CreateDatabase(db2);
-
-  EXPECT_TRUE(s.ok());
-  EXPECT_GT(db2.id, db1.id);
+  // Only databases with non-default versions should be enumerated by
+  // `GetDatabaseNames()`.
+  UpdateDatabaseVersion(*db1.value(), 2);
 
   std::vector<std::u16string> names;
-  s = backing_store()->GetDatabaseNames(&names);
+  Status s = backing_store()->GetDatabaseNames(&names);
   EXPECT_TRUE(s.ok());
   ASSERT_EQ(1U, names.size());
-  EXPECT_EQ(db1_name, names[0]);
+  EXPECT_EQ(u"db1", names[0]);
 }
 
 TEST_P(BackingStoreTestForThirdPartyStoragePartitioning,
@@ -1640,10 +1624,13 @@ TEST_P(BackingStoreTestWithExternalObjects, RollbackClearsDiskSpace) {
   // This ensures that the rollback process only affects the blobs inserted in
   // the second transaction, allowing us to verify that the rollback correctly
   // handles blob cleanup without impacting pre-existing blobs.
-  BackingStore::Transaction initial_transaction(
-      BackingStore::Transaction(backing_store()->AsWeakPtr(),
-                                blink::mojom::IDBTransactionDurability::Relaxed,
-                                blink::mojom::IDBTransactionMode::ReadWrite));
+  BackingStore::Database db(*backing_store(),
+                            BackingStore::DatabaseMetadata{u"name"});
+  db.metadata().id = 1;
+  auto it =
+      db.CreateTransaction(blink::mojom::IDBTransactionDurability::Relaxed,
+                           blink::mojom::IDBTransactionMode::ReadWrite);
+  auto& initial_transaction = *it;
   initial_transaction.Begin(CreateDummyLock());
 
   // Insert an initial blob.
@@ -1654,8 +1641,7 @@ TEST_P(BackingStoreTestWithExternalObjects, RollbackClearsDiskSpace) {
   IndexedDBKey initial_key(u"initial_key");
   BackingStore::RecordIdentifier initial_record;
   EXPECT_TRUE(initial_transaction
-                  .PutRecord(/*database_id=*/1,
-                             /*object_store_id=*/1, initial_key, &initial_value,
+                  .PutRecord(/*object_store_id=*/1, initial_key, &initial_value,
                              &initial_record)
                   .ok());
 
@@ -1681,10 +1667,10 @@ TEST_P(BackingStoreTestWithExternalObjects, RollbackClearsDiskSpace) {
   ASSERT_GT(disk_space_after_committed_transaction, 0);
 
   // Start a new transaction for the test scenario (rollback).
-  BackingStore::Transaction transaction(
-      BackingStore::Transaction(backing_store()->AsWeakPtr(),
-                                blink::mojom::IDBTransactionDurability::Relaxed,
-                                blink::mojom::IDBTransactionMode::ReadWrite));
+  auto txn =
+      db.CreateTransaction(blink::mojom::IDBTransactionDurability::Relaxed,
+                           blink::mojom::IDBTransactionMode::ReadWrite);
+  auto& transaction = *txn;
   transaction.Begin(CreateDummyLock());
 
   // Prepare test data for second transaction.
@@ -1696,10 +1682,8 @@ TEST_P(BackingStoreTestWithExternalObjects, RollbackClearsDiskSpace) {
 
   // Insert additional blob that will be rolled back.
   BackingStore::RecordIdentifier record;
-  EXPECT_TRUE(transaction
-                  .PutRecord(/*database_id=*/1,
-                             /*object_store_id=*/1, key, &value, &record)
-                  .ok());
+  EXPECT_TRUE(
+      transaction.PutRecord(/*object_store_id=*/1, key, &value, &record).ok());
 
   // Simulate commit phase 1 to ensure that the blob is written to disk.
   bool succeeded = false;
@@ -1751,7 +1735,6 @@ TEST_P(BackingStoreTestWithExternalObjects, RollbackClearsDiskSpace) {
 }
 
 TEST_F(BackingStoreTestWithBlobs, SchemaUpgradeV3ToV4) {
-  int64_t database_id;
   const int64_t object_store_id = 99;
 
   const std::u16string database_name(u"db1");
@@ -1761,25 +1744,22 @@ TEST_F(BackingStoreTestWithBlobs, SchemaUpgradeV3ToV4) {
   const bool auto_increment = true;
   const IndexedDBKeyPath object_store_key_path(u"object_store_key");
 
+  auto db = backing_store()->CreateOrOpenDatabase(database_name);
+  ASSERT_TRUE(db.has_value());
+  const int64_t database_id = GetId(**db);
+  EXPECT_GT(database_id, 0);
+  UpdateDatabaseVersion(**db, version);
   {
-    IndexedDBDatabaseMetadata database;
-    database.name = database_name;
-    database.version = version;
-    Status s = backing_store()->CreateDatabase(database);
-    EXPECT_TRUE(s.ok());
-    EXPECT_GT(database.id, 0);
-    database_id = database.id;
-
-    BackingStore::Transaction transaction(
-        backing_store()->AsWeakPtr(),
+    auto txn = (*db)->CreateTransaction(
         blink::mojom::IDBTransactionDurability::Relaxed,
         blink::mojom::IDBTransactionMode::VersionChange);
+    auto& transaction = *txn;
     transaction.Begin(CreateDummyLock());
 
     IndexedDBObjectStoreMetadata object_store;
-    s = transaction.CreateObjectStore(database.id, object_store_id,
-                                      object_store_name, object_store_key_path,
-                                      auto_increment, &object_store);
+    Status s = transaction.CreateObjectStore(object_store_id, object_store_name,
+                                             object_store_key_path,
+                                             auto_increment, &object_store);
     EXPECT_TRUE(s.ok());
 
     bool succeeded = false;
@@ -1791,17 +1771,13 @@ TEST_F(BackingStoreTestWithBlobs, SchemaUpgradeV3ToV4) {
   task_environment_.RunUntilIdle();
 
   // Initiate transaction1 - writing blobs.
-  std::unique_ptr<BackingStore::Transaction> transaction1 =
-      std::make_unique<BackingStore::Transaction>(
-          backing_store()->AsWeakPtr(),
-          blink::mojom::IDBTransactionDurability::Relaxed,
-          blink::mojom::IDBTransactionMode::ReadWrite);
+  auto transaction1 =
+      (*db)->CreateTransaction(blink::mojom::IDBTransactionDurability::Relaxed,
+                               blink::mojom::IDBTransactionMode::ReadWrite);
   transaction1->Begin(CreateDummyLock());
   BackingStore::RecordIdentifier record;
   EXPECT_TRUE(
-      transaction1
-          ->PutRecord(database_id, object_store_id, key3_, &value3_, &record)
-          .ok());
+      transaction1->PutRecord(object_store_id, key3_, &value3_, &record).ok());
   bool succeeded = false;
   base::RunLoop write_blobs_loop;
   EXPECT_TRUE(transaction1
@@ -1864,22 +1840,28 @@ TEST_F(BackingStoreTestWithBlobs, SchemaUpgradeV3ToV4) {
                              external_objects()[2].last_modified()));
   file2.Close();
 
+  db->reset();
   DestroyFactoryAndBackingStore();
   CreateFactoryAndBackingStore();
 
   // There should be no corruption.
   ASSERT_TRUE(data_loss_info_.status == blink::mojom::IDBDataLoss::None);
 
+  // Re-open the database.
+  db = backing_store()->CreateOrOpenDatabase(database_name);
+  ASSERT_TRUE(db.has_value());
+  EXPECT_EQ(GetId(**db), database_id);
+  EXPECT_EQ((*db)->GetMetadata().version, version);
+
   // Initiate transaction2, reading blobs.
-  BackingStore::Transaction transaction2(
-      backing_store()->AsWeakPtr(),
-      blink::mojom::IDBTransactionDurability::Relaxed,
-      blink::mojom::IDBTransactionMode::ReadWrite);
+  auto txn2 =
+      (*db)->CreateTransaction(blink::mojom::IDBTransactionDurability::Relaxed,
+                               blink::mojom::IDBTransactionMode::ReadWrite);
+  auto& transaction2 = *txn2;
   transaction2.Begin(CreateDummyLock());
   IndexedDBValue result_value;
   EXPECT_TRUE(
-      transaction2.GetRecord(database_id, object_store_id, key3_, &result_value)
-          .ok());
+      transaction2.GetRecord(object_store_id, key3_, &result_value).ok());
 
   // Finish up transaction2, verifying blob reads.
   succeeded = false;
@@ -1892,7 +1874,6 @@ TEST_F(BackingStoreTestWithBlobs, SchemaUpgradeV3ToV4) {
 }
 
 TEST_F(BackingStoreTestWithBlobs, SchemaUpgradeV4ToV5) {
-  int64_t database_id;
   const int64_t object_store_id = 99;
 
   const std::u16string database_name(u"db1");
@@ -1911,25 +1892,22 @@ TEST_F(BackingStoreTestWithBlobs, SchemaUpgradeV4ToV5) {
   // context writes something there to check.
   blob_context_->SetWriteFilesToDisk(true);
 
+  auto db = backing_store()->CreateOrOpenDatabase(database_name);
+  EXPECT_TRUE(db.has_value());
+  const int64_t database_id = GetId(**db);
+  EXPECT_GT(database_id, 0);
+  UpdateDatabaseVersion(**db, version);
   {
-    IndexedDBDatabaseMetadata database;
-    database.name = database_name;
-    database.version = version;
-    Status s = backing_store()->CreateDatabase(database);
-    EXPECT_TRUE(s.ok());
-    EXPECT_GT(database.id, 0);
-    database_id = database.id;
-
-    BackingStore::Transaction transaction(
-        backing_store()->AsWeakPtr(),
+    auto txn = (*db)->CreateTransaction(
         blink::mojom::IDBTransactionDurability::Relaxed,
         blink::mojom::IDBTransactionMode::VersionChange);
+    auto& transaction = *txn;
     transaction.Begin(CreateDummyLock());
 
     IndexedDBObjectStoreMetadata object_store;
-    s = transaction.CreateObjectStore(database.id, object_store_id,
-                                      object_store_name, object_store_key_path,
-                                      auto_increment, &object_store);
+    Status s = transaction.CreateObjectStore(object_store_id, object_store_name,
+                                             object_store_key_path,
+                                             auto_increment, &object_store);
     EXPECT_TRUE(s.ok());
 
     bool succeeded = false;
@@ -1941,11 +1919,9 @@ TEST_F(BackingStoreTestWithBlobs, SchemaUpgradeV4ToV5) {
   task_environment_.RunUntilIdle();
 
   // Initiate transaction - writing blobs.
-  std::unique_ptr<BackingStore::Transaction> transaction =
-      std::make_unique<BackingStore::Transaction>(
-          backing_store()->AsWeakPtr(),
-          blink::mojom::IDBTransactionDurability::Relaxed,
-          blink::mojom::IDBTransactionMode::ReadWrite);
+  auto transaction =
+      (*db)->CreateTransaction(blink::mojom::IDBTransactionDurability::Relaxed,
+                               blink::mojom::IDBTransactionMode::ReadWrite);
   transaction->Begin(CreateDummyLock());
   BackingStore::RecordIdentifier record;
 
@@ -1953,8 +1929,7 @@ TEST_F(BackingStoreTestWithBlobs, SchemaUpgradeV4ToV5) {
   IndexedDBValue value = IndexedDBValue("value3", external_objects());
 
   EXPECT_TRUE(
-      transaction->PutRecord(database_id, object_store_id, key, &value, &record)
-          .ok());
+      transaction->PutRecord(object_store_id, key, &value, &record).ok());
   bool succeeded = false;
   base::RunLoop write_blobs_loop;
   EXPECT_TRUE(transaction
@@ -2025,8 +2000,11 @@ TEST_P(BackingStoreTestWithExternalObjects, ClearObjectStoreObjects) {
       IndexedDBKey(u"key0"), IndexedDBKey(u"key1"), IndexedDBKey(u"key2"),
       IndexedDBKey(u"key3")};
 
-  const int64_t database_id = 777;
   const int64_t object_store_id = 999;
+
+  BackingStore::Database db(*backing_store(),
+                            BackingStore::DatabaseMetadata{u"name"});
+  db.metadata().id = 777;
 
   // Create two object stores, to verify that only one gets deleted.
   for (size_t i = 0; i < 2; ++i) {
@@ -2047,18 +2025,16 @@ TEST_P(BackingStoreTestWithExternalObjects, ClearObjectStoreObjects) {
     ASSERT_GE(keys.size(), values.size());
 
     // Initiate transaction1 - write records.
-    std::unique_ptr<BackingStore::Transaction> transaction1 =
-        std::make_unique<BackingStore::Transaction>(
-            backing_store()->AsWeakPtr(),
-            blink::mojom::IDBTransactionDurability::Relaxed,
-            blink::mojom::IDBTransactionMode::ReadWrite);
+    auto transaction1 =
+        db.CreateTransaction(blink::mojom::IDBTransactionDurability::Relaxed,
+                             blink::mojom::IDBTransactionMode::ReadWrite);
     transaction1->Begin(CreateDummyLock());
     BackingStore::RecordIdentifier record;
     for (size_t j = 0; j < values.size(); ++j) {
-      EXPECT_TRUE(transaction1
-                      ->PutRecord(database_id, write_object_store_id, keys[j],
-                                  &values[j], &record)
-                      .ok());
+      EXPECT_TRUE(
+          transaction1
+              ->PutRecord(write_object_store_id, keys[j], &values[j], &record)
+              .ok());
     }
 
     // Start committing transaction1.
@@ -2074,15 +2050,12 @@ TEST_P(BackingStoreTestWithExternalObjects, ClearObjectStoreObjects) {
   }
 
   // Initiate transaction 2 - delete object store
-  std::unique_ptr<BackingStore::Transaction> transaction2 =
-      std::make_unique<BackingStore::Transaction>(
-          backing_store()->AsWeakPtr(),
-          blink::mojom::IDBTransactionDurability::Relaxed,
-          blink::mojom::IDBTransactionMode::ReadWrite);
+  auto transaction2 =
+      db.CreateTransaction(blink::mojom::IDBTransactionDurability::Relaxed,
+                           blink::mojom::IDBTransactionMode::ReadWrite);
   transaction2->Begin(CreateDummyLock());
   IndexedDBValue result_value;
-  EXPECT_TRUE(
-      transaction2->ClearObjectStore(database_id, object_store_id).ok());
+  EXPECT_TRUE(transaction2->ClearObjectStore(object_store_id).ok());
 
   // Start committing transaction2.
   bool succeeded = false;
@@ -2097,10 +2070,6 @@ TEST_P(BackingStoreTestWithExternalObjects, ClearObjectStoreObjects) {
 
   // Verify blob removals.
   CheckFirstNBlobsRemoved(4);
-
-  // Clean up on the IDB sequence.
-  transaction2.reset();
-  task_environment_.RunUntilIdle();
 }
 
 class BackingStoreTestForCleanupScheduler : public BackingStoreTest {

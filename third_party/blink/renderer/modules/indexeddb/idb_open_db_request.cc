@@ -130,9 +130,9 @@ void IDBOpenDBRequest::OnUpgradeNeeded(
     // This database hasn't had a version before.
     old_version = IDBDatabaseMetadata::kDefaultVersion;
   }
-  IDBDatabaseMetadata old_database_metadata(
-      metadata.name, metadata.id, old_version, metadata.max_object_store_id,
-      metadata.was_cold_open);
+  IDBDatabaseMetadata old_database_metadata(metadata.name, old_version,
+                                            metadata.max_object_store_id,
+                                            metadata.was_cold_open);
 
   transaction_ = IDBTransaction::CreateVersionChange(
       GetExecutionContext(), std::move(transaction_remote_), transaction_id_,

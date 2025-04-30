@@ -40,7 +40,7 @@ class CONTENT_EXPORT BackingStorePreCloseTaskQueue {
   // This function should fetch all database metadata for the origin. The
   // returned status signifies if the metadata was read successfully.
   using MetadataFetcher = base::OnceCallback<Status(
-      std::vector<blink::IndexedDBDatabaseMetadata>*)>;
+      std::vector<std::unique_ptr<blink::IndexedDBDatabaseMetadata>>*)>;
 
   // Defines a task that will be run after closing an IndexedDB backing store
   // instance. Instances of this class are sequence-hostile. Each instance must
@@ -59,7 +59,8 @@ class CONTENT_EXPORT BackingStorePreCloseTaskQueue {
 
     // Called before RunRound. |metadata| is guaranteed to outlive this task.
     virtual void SetMetadata(
-        const std::vector<blink::IndexedDBDatabaseMetadata>* metadata);
+        const std::vector<std::unique_ptr<blink::IndexedDBDatabaseMetadata>>*
+            metadata);
 
     // Runs a round of work. Tasks are expected to keep round execution time
     // small. Returns if the task is complete and can be destroyed.
@@ -113,7 +114,7 @@ class CONTENT_EXPORT BackingStorePreCloseTaskQueue {
   // pre-close task requires metadata (see RequiresMetadata). This happens
   // before that task is run.
   MetadataFetcher metadata_fetcher_;
-  std::vector<blink::IndexedDBDatabaseMetadata> metadata_;
+  std::vector<std::unique_ptr<blink::IndexedDBDatabaseMetadata>> metadata_;
 
   bool started_ = false;
   bool done_ = false;

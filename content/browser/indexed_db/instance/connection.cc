@@ -279,7 +279,7 @@ void Connection::CreateTransaction(
       (transactions_[transaction_id] = std::make_unique<Transaction>(
            transaction_id, this, std::move(scope), mode, durability,
            bucket_context_handle_,
-           database_->backing_store()->CreateTransaction(durability, mode)))
+           database_->backing_store_db()->CreateTransaction(durability, mode)))
           .get();
 
   transaction->BindReceiver(std::move(transaction_receiver));

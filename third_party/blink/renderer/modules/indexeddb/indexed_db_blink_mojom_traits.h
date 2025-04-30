@@ -23,9 +23,6 @@ namespace mojo {
 template <>
 struct MODULES_EXPORT StructTraits<blink::mojom::IDBDatabaseMetadataDataView,
                                    blink::IDBDatabaseMetadata> {
-  static int64_t id(const blink::IDBDatabaseMetadata& metadata) {
-    return metadata.id;
-  }
   static WTF::String name(const blink::IDBDatabaseMetadata& metadata) {
     if (metadata.name.IsNull())
       return g_empty_string;

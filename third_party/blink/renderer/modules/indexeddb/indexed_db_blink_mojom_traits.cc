@@ -28,7 +28,6 @@ bool StructTraits<blink::mojom::IDBDatabaseMetadataDataView,
                   blink::IDBDatabaseMetadata>::
     Read(blink::mojom::IDBDatabaseMetadataDataView data,
          blink::IDBDatabaseMetadata* out) {
-  out->id = data.id();
   String name;
   if (!data.ReadName(&name))
     return false;

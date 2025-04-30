@@ -11,6 +11,7 @@
 #include "components/services/storage/indexed_db/scopes/varint_coding.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_database.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_factory.h"
+#include "content/browser/indexed_db/instance/leveldb/backing_store.h"
 #include "content/browser/indexed_db/instance/leveldb/indexed_db_leveldb_operations.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_key.h"
@@ -47,12 +48,16 @@ class LevelDBCleanupSchedulerTest : public testing::Test,
   bool UpdateEarliestCompactionTime() override { return true; }
 
   Status GetCompleteMetadata(
-      std::vector<blink::IndexedDBDatabaseMetadata>* metadata_) override {
+      std::vector<std::unique_ptr<blink::IndexedDBDatabaseMetadata>>* out)
+      override {
     // db1
     //   os1
     //     index1
-    metadata_->emplace_back(u"db1", kDb1, 1, 29);
-    auto& db1 = metadata_->back();
+    auto db = std::make_unique<BackingStore::DatabaseMetadata>(u"db1");
+    auto& db1 = *db;
+    db1.id = kDb1;
+    db1.version = 1;
+    db1.max_object_store_id = 29;
     db1.object_stores[kOs1] = blink::IndexedDBObjectStoreMetadata(
         u"os1", kOs1, blink::IndexedDBKeyPath(), false, 1000);
     auto& os2 = db1.object_stores[kOs1];
@@ -79,9 +84,9 @@ class LevelDBCleanupSchedulerTest : public testing::Test,
           ExistsEntryKey::Encode(kDb1, kOs1, encoded_primary_key),
           &exists_value);
     }
+    out->push_back(std::move(db));
 
-    Status s;
-    return s;
+    return Status::OK();
   }
 
  protected:
