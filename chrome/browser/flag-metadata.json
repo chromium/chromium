@@ -4230,11 +4230,6 @@
     "expiry_milestone": 160
   },
   {
-    "name": "enable-tls13-kyber",
-    "owners": [ "agl@chromium.org", "davidben@chromium.org" ],
-    "expiry_milestone": 150
-  },
-  {
     "name": "enable-toggle-camera-shortcut",
     "owners": [
       "cambickel@google.com",
@@ -9491,11 +9486,6 @@
     "owners": [ "khorimoto@chromium.org", "jonmann@chromium.org" ],
     // This flag is required for QA and dogfood testing.
     "expiry_milestone": -1
-  },
-  {
-    "name": "use-ml-kem",
-    "owners": [ "agl@chromium.org", "davidben@chromium.org" ],
-    "expiry_milestone": 150
   },
   {
     "name": "use-ml-service-for-non-longform-handwriting-on-all-boards",

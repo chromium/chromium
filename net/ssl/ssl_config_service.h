@@ -25,9 +25,6 @@ struct NET_EXPORT SSLContextConfig {
 
   bool operator==(const SSLContextConfig&) const;
 
-  // Returns whether post-quantum key agreement is enabled in TLS handshakes.
-  bool PostQuantumKeyAgreementEnabled() const;
-
   // The minimum and maximum protocol versions that are enabled.
   // (Use the SSL_PROTOCOL_VERSION_xxx enumerators defined in ssl_config.h.)
   // SSL 2.0/3.0 and TLS 1.0/1.1 are not supported. If version_max <
@@ -45,10 +42,8 @@ struct NET_EXPORT SSLContextConfig {
   // disable TLS_ECDH_ECDSA_WITH_RC4_128_SHA, specify 0xC002.
   std::vector<uint16_t> disabled_cipher_suites;
 
-  // If specified, controls whether post-quantum key agreement in TLS
-  // connections is allowed. If `std::nullopt`, this is determined by feature
-  // flags.
-  std::optional<bool> post_quantum_override;
+  // Controls whether post-quantum key agreement in TLS connections is allowed.
+  bool post_quantum_key_agreement_enabled = true;
 
   // Controls whether ECH is enabled.
   bool ech_enabled = true;

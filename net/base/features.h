@@ -174,19 +174,6 @@ NET_EXPORT BASE_DECLARE_FEATURE(kSplitCodeCacheByNetworkIsolationKey);
 // See https://github.com/MattMenke2/Explainer---Partition-Network-State.
 NET_EXPORT BASE_DECLARE_FEATURE(kPartitionConnectionsByNetworkIsolationKey);
 
-// Enables post-quantum key-agreements in TLS 1.3 connections. kUseMLKEM
-// controls whether ML-KEM or Kyber (its predecessor) is used. The flag is named
-// after Kyber because it was originally introduced for Kyber.
-NET_EXPORT BASE_DECLARE_FEATURE(kPostQuantumKyber);
-
-// Causes TLS 1.3 connections to use the ML-KEM standard instead of the Kyber
-// draft standard for post-quantum key-agreement. Post-quantum key-agreement
-// must be enabled (e.g. via kPostQuantumKyber) for this to have an effect.
-//
-// TODO(crbug.com/40910498): Remove this flag sometime after M131 has reached
-// stable without issues.
-NET_EXPORT BASE_DECLARE_FEATURE(kUseMLKEM);
-
 // Changes the interval between two search engine preconnect attempts.
 NET_EXPORT BASE_DECLARE_FEATURE(kSearchEnginePreconnectInterval);
 

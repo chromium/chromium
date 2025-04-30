@@ -22,11 +22,6 @@ SSLContextConfig& SSLContextConfig::operator=(const SSLContextConfig&) =
 SSLContextConfig& SSLContextConfig::operator=(SSLContextConfig&&) = default;
 bool SSLContextConfig::operator==(const SSLContextConfig&) const = default;
 
-bool SSLContextConfig::PostQuantumKeyAgreementEnabled() const {
-  return post_quantum_override.value_or(
-      base::FeatureList::IsEnabled(features::kPostQuantumKyber));
-}
-
 SSLConfigService::SSLConfigService()
     : observer_list_(base::ObserverListPolicy::EXISTING_ONLY) {}
 

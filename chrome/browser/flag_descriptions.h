@@ -825,12 +825,6 @@ extern const char kAudioDuckingDescription[];
 extern const char kEnableTLS13EarlyDataName[];
 extern const char kEnableTLS13EarlyDataDescription[];
 
-extern const char kEnableTLS13KyberName[];
-extern const char kEnableTLS13KyberDescription[];
-
-extern const char kUseMLKEMName[];
-extern const char kUseMLKEMDescription[];
-
 extern const char kAccessibilityAcceleratorName[];
 extern const char kAccessibilityAcceleratorDescription[];
 

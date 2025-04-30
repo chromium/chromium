@@ -140,12 +140,6 @@ BASE_FEATURE(kPartitionConnectionsByNetworkIsolationKey,
              "PartitionConnectionsByNetworkIsolationKey",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kPostQuantumKyber,
-             "PostQuantumKyber",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kUseMLKEM, "UseMLKEM", base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kSearchEnginePreconnectInterval,
              "SearchEnginePreconnectInterval",
              base::FEATURE_DISABLED_BY_DEFAULT);
