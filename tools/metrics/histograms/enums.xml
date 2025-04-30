@@ -2068,7 +2068,8 @@ In case of new special images, values 3 to 9 can be used. -->
   <int value="15" label="YouTube"/>
   <int value="16" label="Camera"/>
   <int value="17" label="Pixel Launcher"/>
-  <int value="18" label="Third-party Launcher"/>
+  <int value="18" label="Third-party Launcher (Deprecated)"/>
+  <int value="19" label="Samsung Launcher"/>
 </enum>
 
 <!-- LINT.IfChange(ClientSummarizedResultType) -->

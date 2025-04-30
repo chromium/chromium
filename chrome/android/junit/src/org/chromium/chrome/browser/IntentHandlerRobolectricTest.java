@@ -735,9 +735,11 @@ public class IntentHandlerRobolectricTest {
                 ExternalAppId.PIXEL_LAUNCHER,
                 IntentHandler.determineExternalIntentSource(intent, activity));
 
-        intent.putExtra(IntentHandler.EXTRA_ACTIVITY_REFERRER, "android.app.launcher");
+        intent.putExtra(
+                IntentHandler.EXTRA_ACTIVITY_REFERRER,
+                "android-app://com.sec.android.app.launcher");
         assertEquals(
-                ExternalAppId.THIRD_PARTY_LAUNCHER,
+                ExternalAppId.SAMSUNG_LAUNCHER,
                 IntentHandler.determineExternalIntentSource(intent, activity));
     }
 }
