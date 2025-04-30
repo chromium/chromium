@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.autofill;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.annotation.SuppressLint;
 import android.content.ComponentCallbacks;
 import android.content.Context;
@@ -40,7 +42,6 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
@@ -51,6 +52,8 @@ import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.components.autofill.FieldType;
@@ -68,6 +71,7 @@ import java.util.List;
 import java.util.Optional;
 
 /** Helper methods that can be used across multiple Autofill UIs. */
+@NullMarked
 public class AutofillUiUtils {
     // URL for the "Payment methods" page on the Google Wallet website. To manage a specific FOP,
     // append its instrument id as a query parameter using '&id='.
@@ -167,7 +171,7 @@ public class AutofillUiUtils {
                     return createForValuableIcon(context, imageSize);
             }
             assert false : "Image type not handled: " + imageType;
-            return null;
+            return assumeNonNull(null);
         }
 
         private static IconSpecs createForCreditCardIcon(
@@ -196,7 +200,7 @@ public class AutofillUiUtils {
                             R.dimen.card_icon_border_width);
             }
             assert false : "Image size not handled: " + imageSize;
-            return null;
+            return assumeNonNull(null);
         }
 
         private static IconSpecs createForValuableIcon(Context context, @ImageSize int imageSize) {
@@ -213,7 +217,7 @@ public class AutofillUiUtils {
                             R.dimen.small_valuable_icon_size);
             }
             assert false : "Image size not handled: " + imageSize;
-            return null;
+            return assumeNonNull(null);
         }
 
         public GURL getResolvedIconUrl(GURL iconUrl) {
@@ -520,10 +524,11 @@ public class AutofillUiUtils {
 
     /**
      * Sets the stroke color for the given input.
+     *
      * @param input The input to modify.
      * @param filter The color filter to apply to the background.
      */
-    public static void updateColorForInput(EditText input, ColorFilter filter) {
+    public static void updateColorForInput(EditText input, @Nullable ColorFilter filter) {
         input.getBackground().mutate().setColorFilter(filter);
     }
 
@@ -541,6 +546,7 @@ public class AutofillUiUtils {
         Drawable mInlineTitleIcon =
                 ResourcesCompat.getDrawable(
                         context.getResources(), logoResourceId, context.getTheme());
+        assumeNonNull(mInlineTitleIcon);
         // The first character will be replaced by the logo, and the consecutive spaces after
         // are used as padding.
         SpannableString titleWithLogo = new SpannableString("   " + title);

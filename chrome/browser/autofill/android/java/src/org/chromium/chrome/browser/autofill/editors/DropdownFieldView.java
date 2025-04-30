@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.autofill.editors;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.ERROR_MESSAGE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.FOCUSED;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.IS_REQUIRED;
@@ -27,9 +28,9 @@ import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.ResettersForTesting;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.autofill.R;
 import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
 import org.chromium.ui.KeyboardVisibilityDelegate;
@@ -38,8 +39,9 @@ import org.chromium.ui.modelutil.PropertyModel;
 import java.util.List;
 
 /** Helper class for creating a dropdown view with a label. */
+@NullMarked
 class DropdownFieldView implements FieldView {
-    @Nullable private static EditorObserverForTest sObserverForTest;
+    private @Nullable static EditorObserverForTest sObserverForTest;
 
     private final Context mContext;
     private final PropertyModel mFieldModel;
@@ -49,9 +51,9 @@ class DropdownFieldView implements FieldView {
     private final View mUnderline;
     private final TextView mErrorLabel;
     private int mSelectedIndex;
-    private ArrayAdapter<String> mAdapter;
-    @Nullable private String mHint;
-    @Nullable private EditorFieldValidator mValidator;
+    private @Nullable ArrayAdapter<String> mAdapter;
+    private @Nullable String mHint;
+    private @Nullable EditorFieldValidator mValidator;
     private boolean mShowRequiredIndicator;
 
     /**
@@ -84,8 +86,10 @@ class DropdownFieldView implements FieldView {
                     public void onItemSelected(
                             AdapterView<?> parent, View view, int position, long id) {
                         if (mSelectedIndex != position) {
+                            assumeNonNull(mAdapter);
                             String key =
-                                    getDropdownKeyByValue(mFieldModel, mAdapter.getItem(position));
+                                    getDropdownKeyByValue(
+                                            mFieldModel, assumeNonNull(mAdapter.getItem(position)));
                             // If the hint is selected, it means that no value is entered by the
                             // user.
                             if (mHint != null && position == 0) {
@@ -174,7 +178,9 @@ class DropdownFieldView implements FieldView {
 
         // Set up accessibility content description dynamically.
         mDropdown.setContentDescription(
-                mLabel.getText() + "/" + mAdapter.getItem(mSelectedIndex).toString());
+                mLabel.getText()
+                        + "/"
+                        + assumeNonNull(mAdapter.getItem(mSelectedIndex)).toString());
     }
 
     void setErrorMessage(@Nullable String errorMessage) {
@@ -193,6 +199,7 @@ class DropdownFieldView implements FieldView {
         Drawable drawable =
                 TraceEventVectorDrawableCompat.create(
                         mContext.getResources(), R.drawable.ic_error, mContext.getTheme());
+        assumeNonNull(drawable);
         drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
         if (view != null && view instanceof TextView) {
             ((TextView) view).setError(errorMessage, drawable);

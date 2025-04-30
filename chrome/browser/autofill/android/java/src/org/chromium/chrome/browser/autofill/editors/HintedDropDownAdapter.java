@@ -11,6 +11,8 @@ import android.widget.TextView;
 
 import androidx.core.view.ViewCompat;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.autofill.R;
 
 import java.util.List;
@@ -32,9 +34,10 @@ import java.util.List;
  * (with selected item) | option X |                       .    ...     .
  *                       ----------                        .------------.
  */
+@NullMarked
 class HintedDropDownAdapter<T> extends DropdownFieldAdapter<T> {
     protected final int mTextViewResourceId;
-    protected TextView mTextView;
+    protected @Nullable TextView mTextView;
 
     /**
      * Creates an array adapter for which the first element is a hint.

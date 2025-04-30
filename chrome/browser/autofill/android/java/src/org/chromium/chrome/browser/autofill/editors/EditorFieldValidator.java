@@ -10,24 +10,23 @@ import static org.chromium.chrome.browser.autofill.editors.EditorProperties.Fiel
 
 import android.text.TextUtils;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.function.Predicate;
 
 /**
- * Class used for editor field validation. It supports following types of
- * error messages:
- * 1. Message to show before used has started to edit the field.
- * 2. Message to show when required field is left empty.
- * 3. Message to show when field contains invalid input.
+ * Class used for editor field validation. It supports following types of error messages: 1. Message
+ * to show before used has started to edit the field. 2. Message to show when required field is left
+ * empty. 3. Message to show when field contains invalid input.
  */
+@NullMarked
 public class EditorFieldValidator {
-    @Nullable private String mInitialErrorMessage;
-    @Nullable private String mRequiredErrorMessage;
-    @Nullable private String mInvalidErrorMessage;
-    @Nullable private Predicate<String> mValidationPredicate;
+    private @Nullable String mInitialErrorMessage;
+    private @Nullable String mRequiredErrorMessage;
+    private @Nullable String mInvalidErrorMessage;
+    private @Nullable Predicate<String> mValidationPredicate;
 
     public EditorFieldValidator() {}
 

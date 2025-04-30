@@ -25,12 +25,13 @@ import android.widget.AutoCompleteTextView;
 import android.widget.FrameLayout;
 import android.widget.TextView.OnEditorActionListener;
 
-import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
 
 import com.google.android.material.textfield.TextInputLayout;
 
 import org.chromium.base.ResettersForTesting;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.autofill.R;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.text.EmptyTextWatcher;
@@ -40,14 +41,15 @@ import java.util.List;
 /** Handles validation and display of one field from the {@link EditorProperties.ItemType}. */
 // TODO(b/173103628): Re-enable this
 // @VisibleForTesting
+@NullMarked
 class TextFieldView extends FrameLayout implements FieldView {
     // TODO(crbug.com/40824084): Replace with EditorDialog field once migrated.
     /** The indicator for input fields that are required. */
     public static final String REQUIRED_FIELD_INDICATOR = "*";
 
-    @Nullable private static EditorObserverForTest sObserverForTest;
+    private @Nullable static EditorObserverForTest sObserverForTest;
 
-    @Nullable private Runnable mDoneRunnable;
+    private @Nullable Runnable mDoneRunnable;
 
     @SuppressWarnings("WrongConstant") // https://crbug.com/1038784
     private final OnEditorActionListener mEditorActionListener =
@@ -71,8 +73,8 @@ class TextFieldView extends FrameLayout implements FieldView {
     private AutoCompleteTextView mInput;
     private View mIconsLayer;
     private boolean mShowRequiredIndicator;
-    @Nullable private EditorFieldValidator mValidator;
-    @Nullable private TextWatcher mTextFormatter;
+    private @Nullable EditorFieldValidator mValidator;
+    private @Nullable TextWatcher mTextFormatter;
     private boolean mInFocusChange;
     private boolean mInValueChange;
 

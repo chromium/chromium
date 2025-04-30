@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.autofill;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -18,9 +20,11 @@ import androidx.annotation.VisibleForTesting;
 import androidx.core.content.ContextCompat;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.url.GURL;
 
 /** Helper methods to treat Autofill images. */
+@NullMarked
 public final class AutofillImageFetcherUtils {
     private AutofillImageFetcherUtils() {}
 
@@ -99,7 +103,7 @@ public final class AutofillImageFetcherUtils {
      */
     static Bitmap addBorder(
             Bitmap bitmap, @Px int cornerRadius, @Px int borderThickness, int borderColor) {
-        Bitmap outputBitmap = bitmap.copy(bitmap.getConfig(), /* isMutable= */ true);
+        Bitmap outputBitmap = bitmap.copy(assumeNonNull(bitmap.getConfig()), /* isMutable= */ true);
         Canvas canvas = new Canvas(outputBitmap);
         Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
         paint.setColor(borderColor);

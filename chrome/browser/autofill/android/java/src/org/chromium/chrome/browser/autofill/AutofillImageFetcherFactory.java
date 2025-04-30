@@ -4,20 +4,21 @@
 
 package org.chromium.chrome.browser.autofill;
 
-import androidx.annotation.Nullable;
-
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 
 /** Provides access to {@link AutofillImageFetcher} singleton associated with a {@link Profile}. */
+@NullMarked
 @JNINamespace("autofill")
 public class AutofillImageFetcherFactory {
-    @Nullable private static AutofillImageFetcher sAutofillImageFetcherForTesting;
+    private @Nullable static AutofillImageFetcher sAutofillImageFetcherForTesting;
 
     private AutofillImageFetcherFactory() {}
 

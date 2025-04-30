@@ -4,10 +4,11 @@
 
 package org.chromium.chrome.browser.autofill;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.text.TextUtils;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
@@ -17,6 +18,8 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.lifetime.Destroyable;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.autofill.AutofillProfile;
@@ -41,6 +44,7 @@ import java.util.Objects;
  *
  * <p>See chrome/browser/autofill/personal_data_manager.h for more details.
  */
+@NullMarked
 @JNINamespace("autofill")
 public class PersonalDataManager implements Destroyable {
     private static final String TAG = "PersonalDataManager";
@@ -74,10 +78,10 @@ public class PersonalDataManager implements Destroyable {
         // the card in PaymentMethods in Settings.
         private String mCardLabel;
         private String mNickname;
-        private GURL mCardArtUrl;
+        private @Nullable GURL mCardArtUrl;
         private String mCvc;
         private String mIssuerId;
-        private GURL mProductTermsUrl;
+        private @Nullable GURL mProductTermsUrl;
         private final @VirtualCardEnrollmentState int mVirtualCardEnrollmentState;
         private final String mProductDescription;
         private final String mCardNameForAutofillDisplay;
@@ -193,14 +197,14 @@ public class PersonalDataManager implements Destroyable {
                 long instrumentId,
                 String cardLabel,
                 String nickname,
-                GURL cardArtUrl,
+                @Nullable GURL cardArtUrl,
                 @VirtualCardEnrollmentState int virtualCardEnrollmentState,
                 String productDescription,
                 String cardNameForAutofillDisplay,
                 String obfuscatedLastFourDigits,
                 String cvc,
                 String issuerId,
-                GURL productTermsUrl) {
+                @Nullable GURL productTermsUrl) {
             mGUID = guid;
             mOrigin = origin;
             mIsLocal = isLocal;
@@ -335,7 +339,7 @@ public class PersonalDataManager implements Destroyable {
         }
 
         @CalledByNative("CreditCard")
-        public GURL getCardArtUrl() {
+        public @Nullable GURL getCardArtUrl() {
             return mCardArtUrl;
         }
 
@@ -360,7 +364,7 @@ public class PersonalDataManager implements Destroyable {
         }
 
         @CalledByNative("CreditCard")
-        public GURL getProductTermsUrl() {
+        public @Nullable GURL getProductTermsUrl() {
             return mProductTermsUrl;
         }
 
@@ -444,8 +448,8 @@ public class PersonalDataManager implements Destroyable {
 
     /** Autofill IBAN information. */
     public static class Iban {
-        @Nullable private String mGuid;
-        @Nullable private Long mInstrumentId;
+        private @Nullable String mGuid;
+        private @Nullable Long mInstrumentId;
 
         // Obfuscated IBAN value. This is used for displaying the IBAN in the Payment methods page.
         private String mLabel;
@@ -453,7 +457,7 @@ public class PersonalDataManager implements Destroyable {
         private String mNickname;
         private @IbanRecordType int mRecordType;
         // Value is empty for server IBAN.
-        @Nullable private String mValue;
+        private @Nullable String mValue;
 
         private Iban(
                 String guid,
@@ -517,7 +521,7 @@ public class PersonalDataManager implements Destroyable {
         }
 
         @CalledByNative("Iban")
-        public @JniType("std::string") String getGuid() {
+        public @Nullable @JniType("std::string") String getGuid() {
             assert mRecordType != IbanRecordType.SERVER_IBAN;
             return mGuid;
         }
@@ -544,7 +548,7 @@ public class PersonalDataManager implements Destroyable {
         }
 
         @CalledByNative("Iban")
-        public @JniType("std::u16string") String getValue() {
+        public @Nullable @JniType("std::u16string") String getValue() {
             return mValue;
         }
 
@@ -581,12 +585,12 @@ public class PersonalDataManager implements Destroyable {
 
         /** Builder for {@link Iban}. */
         public static final class Builder {
-            private String mGuid;
-            private Long mInstrumentId;
-            private String mLabel;
-            private String mNickname;
+            private @Nullable String mGuid;
+            private @Nullable Long mInstrumentId;
+            private @Nullable String mLabel;
+            private @Nullable String mNickname;
             private @IbanRecordType int mRecordType;
-            private String mValue;
+            private @Nullable String mValue;
 
             public Builder setGuid(String guid) {
                 mGuid = guid;
@@ -638,7 +642,15 @@ public class PersonalDataManager implements Destroyable {
                                         + " empty value.";
                         break;
                 }
-                return new Iban(mGuid, mInstrumentId, mLabel, mNickname, mRecordType, mValue);
+                // Non-null enforcement happens inside the constructor if applicable, assume
+                // non-null for all fields.
+                return new Iban(
+                        assumeNonNull(mGuid),
+                        assumeNonNull(mInstrumentId),
+                        assumeNonNull(mLabel),
+                        assumeNonNull(mNickname),
+                        mRecordType,
+                        assumeNonNull(mValue));
             }
         }
     }

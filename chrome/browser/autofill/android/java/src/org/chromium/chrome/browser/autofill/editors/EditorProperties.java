@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.autofill.editors;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.DropdownFieldProperties.DROPDOWN_HINT;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.DropdownFieldProperties.DROPDOWN_KEY_VALUE_LIST;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.IS_REQUIRED;
@@ -14,11 +15,12 @@ import static org.chromium.chrome.browser.autofill.editors.EditorProperties.Fiel
 import android.text.TextWatcher;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 
 import com.google.common.collect.ObjectArrays;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.autofill.DropdownKeyValue;
 import org.chromium.ui.modelutil.ListModel;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
@@ -35,6 +37,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 
 /** Properties defined here reflect the visible state of the {@link EditorDialog}. */
+@NullMarked
 public class EditorProperties {
     /** Contains information needed by {@link EditorDialogView} to display fields. */
     public static class FieldItem extends ListItem {
@@ -175,7 +178,7 @@ public class EditorProperties {
     }
 
     public static @Nullable String getDropdownKeyByValue(
-            PropertyModel dropdownField, String value) {
+            PropertyModel dropdownField, @Nullable String value) {
         for (DropdownKeyValue keyValue :
                 dropdownField.get(DropdownFieldProperties.DROPDOWN_KEY_VALUE_LIST)) {
             if (keyValue.getValue().equals(value)) {
@@ -185,7 +188,8 @@ public class EditorProperties {
         return null;
     }
 
-    public static @Nullable String getDropdownValueByKey(PropertyModel dropdownField, String key) {
+    public static @Nullable String getDropdownValueByKey(
+            PropertyModel dropdownField, @Nullable String key) {
         for (DropdownKeyValue keyValue :
                 dropdownField.get(DropdownFieldProperties.DROPDOWN_KEY_VALUE_LIST)) {
             if (keyValue.getKey().equals(key)) {
@@ -204,7 +208,7 @@ public class EditorProperties {
         Callback<String> fieldCallback =
                 dropdownField.get(DropdownFieldProperties.DROPDOWN_CALLBACK);
         if (fieldCallback != null) {
-            fieldCallback.onResult(key);
+            fieldCallback.onResult(assumeNonNull(key));
         }
     }
 
