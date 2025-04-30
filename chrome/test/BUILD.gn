@@ -3158,7 +3158,6 @@ if (!is_android) {
       "../browser/net/private_network_access_browsertest.cc",
       "../browser/net/profile_network_context_service_browsertest.cc",
       "../browser/net/proxy_browsertest.cc",
-      "../browser/net/samesite_cookies_policy_browsertest.cc",
       "../browser/net/storage_test_utils.cc",
       "../browser/net/storage_test_utils.h",
       "../browser/net/stub_resolver_config_reader_browsertest.cc",

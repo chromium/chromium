@@ -185,10 +185,6 @@ BASE_FEATURE(kSameSiteDefaultChecksMethodRigorously,
              "SameSiteDefaultChecksMethodRigorously",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSchemefulSameSite,
-             "SchemefulSameSite",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kLimitOpenUDPSockets,
              "LimitOpenUDPSockets",
              base::FEATURE_ENABLED_BY_DEFAULT);

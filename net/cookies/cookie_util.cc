@@ -1037,10 +1037,6 @@ bool IsTimeLimitedInsecureCookiesEnabled() {
          base::FeatureList::IsEnabled(features::kTimeLimitedInsecureCookies);
 }
 
-bool IsSchemefulSameSiteEnabled() {
-  return base::FeatureList::IsEnabled(features::kSchemefulSameSite);
-}
-
 std::optional<
     std::pair<FirstPartySetMetadata, FirstPartySetsCacheFilter::MatchInfo>>
 ComputeFirstPartySetMetadataMaybeAsync(

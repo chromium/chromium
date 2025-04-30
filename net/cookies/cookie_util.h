@@ -411,9 +411,6 @@ NET_EXPORT bool IsOriginBoundCookiesPartiallyEnabled();
 
 NET_EXPORT bool IsTimeLimitedInsecureCookiesEnabled();
 
-// Returns whether the respective feature is enabled.
-NET_EXPORT bool IsSchemefulSameSiteEnabled();
-
 // Computes the First-Party Sets metadata and cache match information.
 // `isolation_info` must be fully populated.
 //

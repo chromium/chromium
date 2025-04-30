@@ -223,10 +223,6 @@ NET_EXPORT BASE_DECLARE_FEATURE(kShortLaxAllowUnsafeThreshold);
 // This only has an effect if the cookie defaults to SameSite=Lax.
 NET_EXPORT BASE_DECLARE_FEATURE(kSameSiteDefaultChecksMethodRigorously);
 
-// When enabled this feature will cause same-site calculations to take into
-// account the scheme of the site-for-cookies and the request/response url.
-NET_EXPORT BASE_DECLARE_FEATURE(kSchemefulSameSite);
-
 // Enables a process-wide limit on "open" UDP sockets. See
 // udp_socket_global_limits.h for details on what constitutes an "open" socket.
 NET_EXPORT BASE_DECLARE_FEATURE(kLimitOpenUDPSockets);

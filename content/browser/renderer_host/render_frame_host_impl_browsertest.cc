@@ -4347,17 +4347,6 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
       CreateBlockingDetails({}));
 }
 
-class RenderFrameHostImplSchemefulEnabledBrowserTest
-    : public RenderFrameHostImplBrowserTest {
- public:
-  RenderFrameHostImplSchemefulEnabledBrowserTest() {
-    scope_feature_list_.InitAndEnableFeature(net::features::kSchemefulSameSite);
-  }
-
- protected:
-  base::test::ScopedFeatureList scope_feature_list_;
-};
-
 class RenderFrameHostImplNoStrictSiteIsolationOnAndroidBrowserTest
     : public RenderFrameHostImplBrowserTest {
  public:
