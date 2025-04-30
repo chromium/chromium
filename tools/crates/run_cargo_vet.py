@@ -63,7 +63,7 @@ def main():
         '--cargo-arg=-Zbindeps',
         '--no-registry-suggestions'
     ]
-    success = RunCargo(
+    retcode = RunCargo(
         args.rust_sysroot, None,
         _CARGO_ARGS + ['vet'] + unrecognized_args + _EXTRA_VET_ARGS)
 
@@ -86,7 +86,7 @@ def main():
                        '--frozen' in unrecognized_args
         assert not is_presubmit
 
-    return 0 if success else 1
+    return retcode
 
 
 if __name__ == '__main__':
