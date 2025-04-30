@@ -61,6 +61,11 @@ chromium-metrics-reviews@google.com.
   <variant name="UtilityProcess"/>
 </variants>
 
+<variants name="ThreadSetType">
+  <variant name="Any" summary="any"/>
+  <variant name="AnyCritical" summary="any non ThreadPool"/>
+</variants>
+
 <histogram name="HangWatcher.IsThreadHung.{BrowserProcessAndThreadType}"
     enum="BooleanHung" expires_after="M127">
   <owner>olivierli@chromium.org</owner>
@@ -126,6 +131,23 @@ chromium-metrics-reviews@google.com.
   <token key="NonBrowserProcessAndThreadType"
       variants="NonBrowserProcessAndThreadType"/>
   <token key="MaybeBestEffort" variants="MaybeBestEffort"/>
+</histogram>
+
+<histogram name="HangWatcher.IsThreadHung.{ThreadSetType}" enum="BooleanHung"
+    expires_after="never">
+<!-- expires-never: Staple top-level metric for chrome-catan@. -->
+
+  <owner>olivierli@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Every 10 seconds, a boolean is recorded to this histogram to indicate
+    whether {ThreadSetType} thread was hung. A thread is hung if the current
+    work unit started running more than 10 seconds ago and this was not labeled
+    as &quot;working as intended&quot; by InvalidateActiveExpectations().
+    Recording is skipped if the hang watcher detects an irregular heartbeat
+    (e.g. when the machine sleeps).
+  </summary>
+  <token key="ThreadSetType" variants="ThreadSetType"/>
 </histogram>
 
 <histogram name="HangWatcher.{ProcessType}.UncoveredStartupTime" units="ms"

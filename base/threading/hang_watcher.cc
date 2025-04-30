@@ -822,18 +822,34 @@ void HangWatcher::WatchStateSnapShot::Init(
     }
   }
 
+  bool any_critical_thread_hung = false;
+  bool any_thread_hung = false;
   // Log the hung thread counts to histograms for each thread type if any thread
   // of the type were found.
   for (size_t i = 0; i < kHangCountArraySize; ++i) {
     const int hang_count = hung_counts_per_thread_type[i];
     const HangWatcher::ThreadType thread_type =
         static_cast<HangWatcher::ThreadType>(i);
-    if (hang_count != kInvalidHangCount &&
-        ThreadTypeLoggingLevelGreaterOrEqual(thread_type,
-                                             LoggingLevel::kUmaOnly)) {
-      LogStatusHistogram(thread_type, hang_count, now, monitoring_period);
+    if (hang_count != kInvalidHangCount) {
+      if (hang_count > 0) {
+        any_thread_hung = true;
+      }
+
+      if (ThreadTypeLoggingLevelGreaterOrEqual(thread_type,
+                                               LoggingLevel::kUmaOnly)) {
+        LogStatusHistogram(thread_type, hang_count, now, monitoring_period);
+
+        if (hang_count > 0 && thread_type != ThreadType::kThreadPoolThread) {
+          any_critical_thread_hung = true;
+        }
+      }
     }
   }
+
+  UMA_HISTOGRAM_BOOLEAN("HangWatcher.IsThreadHung.Any", any_thread_hung);
+
+  UMA_HISTOGRAM_BOOLEAN("HangWatcher.IsThreadHung.AnyCritical",
+                        any_critical_thread_hung);
 
   // Three cases can invalidate this snapshot and prevent the capture of the
   // hang.
