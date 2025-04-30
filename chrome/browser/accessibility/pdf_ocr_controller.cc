@@ -138,8 +138,8 @@ void RecordAcceptLanguages(const std::string& accept_languages) {
        base::SplitString(accept_languages, ",", base::TRIM_WHITESPACE,
                          base::SPLIT_WANT_NONEMPTY)) {
     // Convert to a Chrome language code synonym. This language synonym is then
-    // converted into a `LocaleCodeISO639` enum value for a UMA histogram. See
-    // tools/metrics/histograms/enums.xml enum LocaleCodeISO639. The enum there
+    // converted into a `LocaleCodeBCP47` enum value for a UMA histogram. See
+    // tools/metrics/histograms/enums.xml enum LocaleCodeBCP47. The enum there
     // doesn't always have locales where the base lang and the locale are the
     // same (e.g. they don't have id-id, but do have id). So if the base lang
     // and the locale are the same, just use the base lang.

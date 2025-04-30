@@ -7425,7 +7425,7 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
 
 <enum name="LanguageName">
   <summary>
-    Deprecated: Instead use LocaleCodeISO639 since it supports script tags and
+    Deprecated: Instead use LocaleCodeBCP47 since it supports script tags and
     three letter language codes unlike LanguageName.
 
     Hash values for the first two letters of a locale code. This is mapped to
@@ -8403,11 +8403,12 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
   <int value="11" label="Invalid base model version"/>
 </enum>
 
-<enum name="LocaleCodeISO639">
+<enum name="LocaleCodeBCP47">
   <summary>
-    Hash values for ISO 639 locale codes (including country and script tags e.g
-    &quot;en-US&quot;). Each of these values is computed by casting the output
-    of base::HashMetricName(locale_string_id) to base::HistogramBase::Sample. JS
+    Hash values for BCP47 locale codes (including country and script tags e.g
+    &quot;en-US&quot; (i.e. ISO639) or extended BCP47 tags &quot;zh-Hant&quot;).
+    Each of these values is computed by casting the output of
+    base::HashMetricName(locale_string_id) to base::HistogramBase::Sample. JS
     users should use metricsPrivate.recordSparseValueWithHashMetricName().
   </summary>
   <int value="-2132740958" label="gl"/>
@@ -8524,6 +8525,7 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
   <int value="-644560085" label="su"/>
   <int value="-598481752" label="et"/>
   <int value="-548175087" label="tt"/>
+  <int value="-545951624" label="ar-Latn"/>
   <int value="-450972170" label="oc"/>
   <int value="-442590807" label="sd"/>
   <int value="-441493751" label="el-Latn"/>
@@ -8569,6 +8571,7 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
   <int value="264824286" label="ksh"/>
   <int value="350748440" label="und"/>
   <int value="357286655" label="af"/>
+  <int value="389407533" label="zh-Hant"/>
   <int value="443574411" label="dz"/>
   <int value="461111861" label="mt"/>
   <int value="462869158" label="hy"/>

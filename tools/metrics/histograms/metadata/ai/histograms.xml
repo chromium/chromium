@@ -206,7 +206,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="AI.{WritingAssistanceType}.APIUsage.{WritingAssistanceFunctionName}.{LanguageMetric}"
-    enum="LocaleCodeISO639" expires_after="2025-10-27">
+    enum="LocaleCodeBCP47" expires_after="2025-10-27">
   <owner>btriebw@chromium.org</owner>
   <owner>ayui@chromium.org</owner>
   <owner>src/chrome/browser/ai/OWNERS</owner>

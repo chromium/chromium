@@ -81,7 +81,7 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.ThenChange(//chrome/browser/on_device_translation/language_pack_util.h:SupportedLanguage) -->
 
 <histogram name="Translate.ApplicationStart.AlwaysTranslateLanguage"
-    enum="LocaleCodeISO639" expires_after="2025-08-24">
+    enum="LocaleCodeBCP47" expires_after="2025-08-24">
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -107,7 +107,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Translate.ApplicationStart.NeverTranslateLanguage"
-    enum="LocaleCodeISO639" expires_after="2025-08-10">
+    enum="LocaleCodeBCP47" expires_after="2025-08-10">
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -144,7 +144,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Translate.CLD3.LanguageDetected" enum="LocaleCodeISO639"
+<histogram name="Translate.CLD3.LanguageDetected" enum="LocaleCodeBCP47"
     expires_after="2025-09-28">
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
@@ -356,8 +356,8 @@ chromium-metrics-reviews@google.com.
   <token key="LanguageRole" variants="LanguageRole"/>
 </histogram>
 
-<histogram name="Translate.PageLoad.FinalSourceLanguage"
-    enum="LocaleCodeISO639" expires_after="2025-08-24">
+<histogram name="Translate.PageLoad.FinalSourceLanguage" enum="LocaleCodeBCP47"
+    expires_after="2025-08-24">
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -382,8 +382,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Translate.PageLoad.FinalTargetLanguage"
-    enum="LocaleCodeISO639" expires_after="2025-12-10">
+<histogram name="Translate.PageLoad.FinalTargetLanguage" enum="LocaleCodeBCP47"
+    expires_after="2025-12-10">
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -408,7 +408,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Translate.PageLoad.InitialSourceLanguage"
-    enum="LocaleCodeISO639" expires_after="2025-12-10">
+    enum="LocaleCodeBCP47" expires_after="2025-12-10">
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -434,7 +434,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Translate.PageLoad.InitialTargetLanguage"
-    enum="LocaleCodeISO639" expires_after="2025-10-19">
+    enum="LocaleCodeBCP47" expires_after="2025-10-19">
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -598,7 +598,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Translate.PartialTranslation.SourceLanguage"
-    enum="LocaleCodeISO639" expires_after="2025-12-10">
+    enum="LocaleCodeBCP47" expires_after="2025-12-10">
   <owner>cuianthony@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -608,7 +608,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Translate.PartialTranslation.TargetLanguage"
-    enum="LocaleCodeISO639" expires_after="2025-12-10">
+    enum="LocaleCodeBCP47" expires_after="2025-12-10">
   <owner>cuianthony@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -674,7 +674,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Translate.Translation.SourceLanguage" enum="LocaleCodeISO639"
+<histogram name="Translate.Translation.SourceLanguage" enum="LocaleCodeBCP47"
     expires_after="2025-10-19">
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
@@ -705,7 +705,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Translate.Translation.TargetLanguage" enum="LocaleCodeISO639"
+<histogram name="Translate.Translation.TargetLanguage" enum="LocaleCodeBCP47"
     expires_after="2025-10-19">
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>

@@ -47,9 +47,9 @@ std::optional<uint64_t> GetMostDetectedLanguageInOcrData(
   }
 
   // Convert to a Chrome language code synonym. Then pass it to
-  // `base::HashMetricName()` that maps this code to a `LocaleCodeISO639` enum
+  // `base::HashMetricName()` that maps this code to a `LocaleCodeBCP47` enum
   // value expected by this histogram. See tools/metrics/histograms/enums.xml
-  // enum LocaleCodeISO639. The enum there doesn't always have locales where
+  // enum LocaleCodeBCP47. The enum there doesn't always have locales where
   // the base lang and the locale are the same (e.g. they don't have id-id, but
   // do have id). So if the base lang and the locale are the same, just use the
   // base lang.

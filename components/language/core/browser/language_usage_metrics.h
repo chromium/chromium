@@ -35,7 +35,7 @@ class LanguageUsageMetrics {
       const language::UrlLanguageHistogram& language_counts);
 
   // Maps |locale| to a hash value in the "LanguageName" enum.
-  // Deprecated - please use the enum "LocaleCodeISO639" which maps the full
+  // Deprecated - please use the enum "LocaleCodeBCP47" which maps the full
   // locale including country variant to a base::HashMetricName value.
   //
   // The language hash is calculated by splitting the locale on "-" and bit

@@ -931,7 +931,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Accessibility.CrosDictation.Language" enum="LocaleCodeISO639"
+<histogram name="Accessibility.CrosDictation.Language" enum="LocaleCodeBCP47"
     expires_after="2026-03-30">
   <owner>katie@chromium.org</owner>
   <owner>dtseng@chromium.org</owner>
@@ -2093,7 +2093,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.LiveTranslate.Ash.Boca.Babelorca.TargetLanguage"
-    enum="LocaleCodeISO639" expires_after="2025-10-12">
+    enum="LocaleCodeBCP47" expires_after="2025-10-12">
   <owner>caott@google.com</owner>
   <owner>cros-edu-eng@google.com</owner>
   <summary>
@@ -2130,7 +2130,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.LiveTranslate.SourceLanguage"
-    enum="LocaleCodeISO639" expires_after="2025-10-19">
+    enum="LocaleCodeBCP47" expires_after="2025-10-19">
   <owner>evliu@google.com</owner>
   <owner>chrome-media-ux@google.com</owner>
   <summary>
@@ -2140,7 +2140,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.LiveTranslate.TargetLanguage"
-    enum="LocaleCodeISO639" expires_after="2025-10-19">
+    enum="LocaleCodeBCP47" expires_after="2025-10-19">
   <owner>evliu@google.com</owner>
   <owner>chrome-media-ux@google.com</owner>
   <summary>
@@ -2329,7 +2329,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.PdfOcr.UserAcceptLanguage"
-    enum="LocaleCodeISO639" expires_after="2025-10-26">
+    enum="LocaleCodeBCP47" expires_after="2025-10-26">
   <owner>kyungjunlee@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -2899,7 +2899,7 @@ even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
-<histogram name="Accessibility.ReadAnything.Language" enum="LocaleCodeISO639"
+<histogram name="Accessibility.ReadAnything.Language" enum="LocaleCodeBCP47"
     expires_after="2026-01-30">
   <owner>abigailbklein@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -2981,7 +2981,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.ReadAnything.ReadAloud.Language"
-    enum="LocaleCodeISO639" expires_after="2025-09-07">
+    enum="LocaleCodeBCP47" expires_after="2025-09-07">
   <owner>kristislee@google.com</owner>
   <owner>komo-eng@google.com</owner>
   <summary>
@@ -3312,7 +3312,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.ScreenAI.OCR.MostDetectedLanguage.PDF"
-    enum="LocaleCodeISO639" expires_after="2025-12-01">
+    enum="LocaleCodeBCP47" expires_after="2025-12-01">
   <owner>rhalavati@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
