@@ -342,7 +342,7 @@ public class SafetyHubLocalPasswordsModuleMediatorTest {
         String expectedTitle =
                 mActivity.getString(R.string.safety_hub_no_compromised_local_passwords_title);
         String expectedSummary =
-                mActivity.getString(R.string.safety_hub_no_compromised_local_passwords_summary);
+                mActivity.getString(R.string.safety_hub_no_compromised_passwords_summary);
         String expectedSecondaryButtonText =
                 mActivity.getString(R.string.safety_hub_passwords_navigation_button);
 

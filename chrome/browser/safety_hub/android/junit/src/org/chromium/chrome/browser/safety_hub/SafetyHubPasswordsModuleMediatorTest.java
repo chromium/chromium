@@ -41,6 +41,7 @@ import org.chromium.ui.base.TestActivity;
     ChromeFeatureList.SAFETY_HUB_UNIFIED_PASSWORDS_MODULE
 })
 public class SafetyHubPasswordsModuleMediatorTest {
+    private static final @DrawableRes int SAFE_ICON = R.drawable.material_ic_check_24dp;
     private static final @DrawableRes int WARNING_ICON = R.drawable.ic_error;
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -219,6 +220,36 @@ public class SafetyHubPasswordsModuleMediatorTest {
         assertEquals(expectedSummary, mPreference.getSummary().toString());
         assertEquals(WARNING_ICON, shadowOf(mPreference.getIcon()).getCreatedFromResId());
         assertEquals(expectedPrimaryButtonText, mPreference.getPrimaryButtonText());
+        assertEquals(expectedSecondaryButtonText, mPreference.getSecondaryButtonText());
+    }
+
+    @Test
+    public void noCompromisedPasswordsExist() {
+        mockAccountPasswordCounts(0);
+        mockLocalPasswordCounts(0);
+
+        mockAccountPasswordState(
+                SafetyHubAccountPasswordsDataSource.ModuleType.NO_COMPROMISED_PASSWORDS);
+        mModuleMediator.accountPasswordsStateChanged(
+                SafetyHubAccountPasswordsDataSource.ModuleType.NO_COMPROMISED_PASSWORDS);
+        mockLocalPasswordState(
+                SafetyHubLocalPasswordsDataSource.ModuleType.NO_COMPROMISED_PASSWORDS);
+        mModuleMediator.localPasswordsStateChanged(
+                SafetyHubLocalPasswordsDataSource.ModuleType.NO_COMPROMISED_PASSWORDS);
+
+        verify(mMediatorDelegateMock, times(1)).onUpdateNeeded();
+
+        String expectedTitle =
+                mActivity.getString(R.string.safety_hub_no_compromised_passwords_title);
+        String expectedSummary =
+                mActivity.getString(R.string.safety_hub_no_compromised_passwords_summary);
+        String expectedSecondaryButtonText =
+                mActivity.getString(R.string.safety_hub_password_subpage_navigation_button);
+
+        assertEquals(expectedTitle, mPreference.getTitle().toString());
+        assertEquals(expectedSummary, mPreference.getSummary().toString());
+        assertEquals(SAFE_ICON, shadowOf(mPreference.getIcon()).getCreatedFromResId());
+        assertNull(mPreference.getPrimaryButtonText());
         assertEquals(expectedSecondaryButtonText, mPreference.getSecondaryButtonText());
     }
 }

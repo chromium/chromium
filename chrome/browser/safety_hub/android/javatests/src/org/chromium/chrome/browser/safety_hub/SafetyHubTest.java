@@ -50,7 +50,6 @@ import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
-import org.chromium.base.test.util.DisabledTest;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
@@ -69,6 +68,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -1325,6 +1325,42 @@ public final class SafetyHubTest {
                 safetyHubFragment.getString(R.string.prefs_safe_browsing_no_protection_summary);
         scrollToPreference(withText(safeBrowsingTitle));
         verifyButtonsNextToTextVisibility(safeBrowsingTitle, false);
+
+        clearLocalCompromisedPasswordsCount();
+        setLocalPasswordCheckTimestamp(0);
+    }
+
+    @Test
+    @MediumTest
+    @Policies.Add({@Policies.Item(key = "SafeBrowsingEnabled", string = "false")})
+    @Restriction(GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_24W15)
+    @Features.EnableFeatures({
+        ChromeFeatureList.SAFETY_HUB_WEAK_AND_REUSED_PASSWORDS,
+        ChromeFeatureList.SAFETY_HUB_LOCAL_PASSWORDS_MODULE,
+        ChromeFeatureList.SAFETY_HUB_UNIFIED_PASSWORDS_MODULE
+    })
+    public void testUnifiedPasswordsModule_NoCompromisedPasswords() {
+        setAccountCompromisedPasswordsCount(0);
+        setLocalCompromisedPasswordsCount(0);
+        setLocalPasswordCheckTimestamp(TimeUtils.currentTimeMillis());
+        addCredentialToAccountStore();
+        addCredentialToProfileStore();
+
+        mSafetyHubFragmentTestRule.startSettingsActivity();
+        SafetyHubFragment safetyHubFragment = mSafetyHubFragmentTestRule.getFragment();
+
+        // Verify that unified passwords module which is in the safe state is collapsed by
+        // default.
+        String noCompromisedPasswordsTitle =
+                safetyHubFragment.getString(R.string.safety_hub_no_compromised_passwords_title);
+        scrollToExpandedPreference(noCompromisedPasswordsTitle);
+        verifyButtonsNextToTextVisibility(noCompromisedPasswordsTitle, false);
+
+        // Verify the information module is expanded.
+        String safeBrowsingTitle =
+                safetyHubFragment.getString(R.string.prefs_safe_browsing_no_protection_summary);
+        scrollToPreference(withText(safeBrowsingTitle));
+        verifyButtonsNextToTextVisibility(safeBrowsingTitle, true);
 
         clearLocalCompromisedPasswordsCount();
         setLocalPasswordCheckTimestamp(0);

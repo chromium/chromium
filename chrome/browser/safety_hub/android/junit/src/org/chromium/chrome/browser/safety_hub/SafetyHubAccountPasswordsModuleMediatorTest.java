@@ -95,8 +95,9 @@ public class SafetyHubAccountPasswordsModuleMediatorTest {
         String expectedTitle =
                 mActivity.getString(R.string.safety_hub_no_compromised_account_passwords_title);
         String expectedSummary =
-                mActivity.getString(
-                        R.string.safety_hub_password_check_time_recently, TEST_EMAIL_ADDRESS);
+                TEST_EMAIL_ADDRESS
+                        + "\n"
+                        + mActivity.getString(R.string.safety_hub_no_compromised_passwords_summary);
         String expectedSecondaryButtonText =
                 mActivity.getString(R.string.safety_hub_passwords_navigation_button);
 
@@ -258,8 +259,9 @@ public class SafetyHubAccountPasswordsModuleMediatorTest {
         String expectedTitle =
                 mActivity.getString(R.string.safety_hub_no_compromised_account_passwords_title);
         String expectedSummary =
-                mActivity.getString(
-                        R.string.safety_hub_password_check_time_recently, TEST_EMAIL_ADDRESS);
+                TEST_EMAIL_ADDRESS
+                        + "\n"
+                        + mActivity.getString(R.string.safety_hub_no_compromised_passwords_summary);
         String expectedSecondaryButtonText =
                 mActivity.getString(R.string.safety_hub_passwords_navigation_button);
 

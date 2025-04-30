@@ -1874,9 +1874,6 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_SAFETY_HUB_NO_COMPROMISED_LOCAL_PASSWORDS_TITLE" desc="Title for the local password check row in the Safety Check page indicating that the checkup did not find any local compromised passwords.">
         No compromised passwords on this device
       </message>
-      <message name="IDS_SAFETY_HUB_NO_COMPROMISED_LOCAL_PASSWORDS_SUMMARY" desc="Summary for the local password check row in the Safety Check page indicating that the checkup didn't find any compromised local passwords">
-        If your passwords are compromised, we’ll let you know
-      </message>
       <message name="IDS_SAFETY_HUB_NO_ACCOUNT_PASSWORDS_TITLE" desc="Title for the account password check row in the Safety Check page indicating that the user does not have any account passwords saved to their Google account.">
         No saved passwords in your Google Account
       </message>
@@ -1930,11 +1927,14 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_SAFETY_HUB_NO_REUSED_WEAK_PASSWORDS_TITLE" desc="Title for the password hub row in the Safety Check page indicating that the checkup didn't found reused or weak passwords.">
         No weak or reused passwords
       </message>
+      <message name="IDS_SAFETY_HUB_NO_COMPROMISED_PASSWORDS_TITLE" desc="Title for the password check row in the Safety Check page indicating that the checkup did not find any account or local compromised passwords.">
+        No compromised passwords
+      </message>
+      <message name="IDS_SAFETY_HUB_NO_COMPROMISED_PASSWORDS_SUMMARY" desc="Summary for the password check row in the Safety Check page indicating that the checkup didn't find any compromised passwords.">
+        If your passwords are compromised, we’ll let you know
+      </message>
       <message name="IDS_SAFETY_HUB_PASSWORD_CHECK_SIGNED_OUT_SUMMARY" desc="Summary for the password check row in the Safety Check page indicating that the user should sign-in so Safety Check can check if they have compromised passwords. This is only shown for signed-out users when the checkup could not be completed.">
         To check for compromised passwords, sign in to your Google Account
-      </message>
-      <message name="IDS_SAFETY_HUB_PASSWORD_CHECK_TIME_RECENTLY" desc="Summary for the password check row in the Safety Check page indicating that the checkup was ran recently for the passwords in the user's Google account.">
-        Recently checked passwords saved to <ph name="USERNAME">%1$s<ex>elisa.becket@gmail.com</ex></ph>
       </message>
       <message name="IDS_SAFETY_HUB_REUSED_WEAK_ACCOUNT_PASSWORDS_TITLE" desc="Title for the account password hub row in the Safety Check page indicating that the checkup found reused or/and weak account passwords.">
         Strengthen your passwords in your Google Account

@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.safety_hub;
 
 import android.content.Context;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.safety_hub.SafetyHubModuleMediator.ModuleOption;
 import org.chromium.chrome.browser.safety_hub.SafetyHubModuleMediator.ModuleState;
@@ -16,6 +18,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
  * Mediator for the Safety Hub passwords module. Populates the {@link SafetyHubExpandablePreference}
  * with the user's local and account passwords state, including compromised, weak and reused.
  */
+@NullMarked
 public class SafetyHubPasswordsModuleMediator
         implements SafetyHubModuleMediator,
                 SafetyHubAccountPasswordsDataSource.Observer,
@@ -23,11 +26,11 @@ public class SafetyHubPasswordsModuleMediator
     private final SafetyHubExpandablePreference mPreference;
     private final SafetyHubModuleMediatorDelegate mMediatorDelegate;
     private final SafetyHubModuleDelegate mModuleDelegate;
+    private final PropertyModel mModel;
 
     private SafetyHubAccountPasswordsDataSource mAccountPasswordsDataSource;
     private SafetyHubLocalPasswordsDataSource mLocalPasswordsDataSource;
-    private SafetyHubModuleHelper mModuleHelper;
-    private PropertyModel mModel;
+    private @Nullable SafetyHubModuleHelper mModuleHelper;
 
     private boolean mAccountPasswordsReturned;
     private boolean mLocalPasswordsReturned;
@@ -43,16 +46,14 @@ public class SafetyHubPasswordsModuleMediator
         mLocalPasswordsDataSource = localPasswordsDataSource;
         mMediatorDelegate = mediatorDelegate;
         mModuleDelegate = moduleDelegate;
+        mModel = new PropertyModel.Builder(SafetyHubModuleProperties.ALL_KEYS).build();
     }
 
     @Override
     public void setUpModule() {
         assert ChromeFeatureList.isEnabled(ChromeFeatureList.SAFETY_HUB_LOCAL_PASSWORDS_MODULE);
-        mModel =
-                new PropertyModel.Builder(SafetyHubModuleProperties.ALL_KEYS)
-                        .with(SafetyHubModuleProperties.IS_VISIBLE, true)
-                        .build();
 
+        mModel.set(SafetyHubModuleProperties.IS_VISIBLE, true);
         PropertyModelChangeProcessor.create(
                 mModel, mPreference, SafetyHubModuleViewBinder::bindProperties);
 
@@ -68,14 +69,8 @@ public class SafetyHubPasswordsModuleMediator
 
     @Override
     public void destroy() {
-        if (mAccountPasswordsDataSource != null) {
-            mAccountPasswordsDataSource.destroy();
-            mAccountPasswordsDataSource = null;
-        }
-        if (mLocalPasswordsDataSource != null) {
-            mLocalPasswordsDataSource.destroy();
-            mLocalPasswordsDataSource = null;
-        }
+        mAccountPasswordsDataSource.destroy();
+        mLocalPasswordsDataSource.destroy();
         mModuleHelper = null;
     }
 
@@ -102,6 +97,17 @@ public class SafetyHubPasswordsModuleMediator
                     mModuleDelegate,
                     mAccountPasswordsDataSource.getCompromisedPasswordCount(),
                     mLocalPasswordsDataSource.getCompromisedPasswordCount(),
+                    /* unifiedModule= */ true);
+        }
+
+        if (accountModuleType
+                        == SafetyHubAccountPasswordsDataSource.ModuleType.NO_COMPROMISED_PASSWORDS
+                && localModuleType
+                        == SafetyHubLocalPasswordsDataSource.ModuleType.NO_COMPROMISED_PASSWORDS) {
+            return new SafetyHubNoCompromisedPasswordsModuleHelper(
+                    context,
+                    mModuleDelegate,
+                    mAccountPasswordsDataSource.getAccountEmail(),
                     /* unifiedModule= */ true);
         }
 
