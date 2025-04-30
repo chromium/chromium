@@ -1786,7 +1786,7 @@ ManifestParser::ParseScopeExtension(const JSONObject* object) {
     const std::optional<String> origin_string =
         ParseString(object, kScopeExtensionsOriginKey, Trim(true));
     if (!origin_string.has_value()) {
-      AddErrorInfo("Scope extension 'value' invalid.");
+      AddErrorInfo("Scope extension 'origin' invalid.");
       return std::nullopt;
     }
     return ParseScopeExtensionOrigin(*origin_string);
