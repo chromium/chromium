@@ -5,10 +5,13 @@
 #include "components/webapps/isolated_web_apps/iwa_key_distribution_info_provider.h"
 
 #include <memory>
+#include <string_view>
 
 #include "base/base64.h"
+#include "base/check_is_test.h"
 #include "base/command_line.h"
 #include "base/containers/map_util.h"
+#include "base/containers/to_value_list.h"
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
@@ -17,6 +20,7 @@
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
+#include "components/webapps/isolated_web_apps/features.h"
 #include "components/webapps/isolated_web_apps/iwa_key_distribution_histograms.h"
 #include "components/webapps/isolated_web_apps/proto/key_distribution.pb.h"
 
@@ -28,6 +32,11 @@ namespace {
 // has loaded. After this duration, readiness is signaled via
 // OnMaybeDownloadedComponentDataReady().
 constexpr base::TimeDelta kDownloadedComponentDataWaitTime = base::Seconds(15);
+
+bool IsIsolatedWebAppManagedAllowlistEnabled() {
+  return base::FeatureList::IsEnabled(
+      features::kIsolatedWebAppManagedAllowlist);
+}
 
 IwaKeyDistributionInfoProvider::KeyRotations& GetDevModeKeyRotationData() {
   static base::NoDestructor<IwaKeyDistributionInfoProvider::KeyRotations>
@@ -97,10 +106,6 @@ base::TaskPriority GetLoadTaskPriority() {
 
 }  // namespace
 
-BASE_FEATURE(kIwaKeyDistributionDevMode,
-             "IwaKeyDistributionDevMode",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 IwaKeyDistributionInfoProvider::KeyRotationInfo::KeyRotationInfo(
     std::optional<PublicKeyData> public_key)
     : public_key(std::move(public_key)) {}
@@ -148,6 +153,13 @@ IwaKeyDistributionInfoProvider::GetKeyRotationInfo(
                                 KeyRotationInfoSource::kNone);
   return nullptr;
 }
+bool IwaKeyDistributionInfoProvider::IsManagedInstallPermitted(
+    std::string_view web_bundle_id) const {
+  if (!IsIsolatedWebAppManagedAllowlistEnabled()) {
+    return true;
+  }
+  return data_ && data_->managed_allowlist.contains(web_bundle_id);
+}
 
 void IwaKeyDistributionInfoProvider::SetUp(
     QueueOnDemandUpdateCallback callback) {
@@ -194,8 +206,9 @@ void IwaKeyDistributionInfoProvider::OnKeyDistributionDataLoaded(
                      DispatchComponentUpdateError(component_version, error);
                    });
 
-  data_ =
-      ComponentData(component_version, std::move(key_rotations), is_preloaded);
+  // TODO(crbug.com/410532804): Add allowlist to the associated proto file.
+  data_ = ComponentData(component_version, std::move(key_rotations),
+                        /*managed_allowlist=*/{}, is_preloaded);
   SignalOnDataReady(is_preloaded);
   DispatchComponentUpdateSuccess(component_version, is_preloaded);
 }
@@ -229,7 +242,14 @@ IwaKeyDistributionInfoProvider::OnMaybeDownloadedComponentDataReady() {
 
 std::optional<bool> IwaKeyDistributionInfoProvider::IsPreloadedForTesting()
     const {
+  CHECK_IS_TEST();
   return data_ ? std::make_optional(data_->is_preloaded) : std::nullopt;
+}
+
+void IwaKeyDistributionInfoProvider::SetComponentDataForTesting(
+    ComponentData component_data) {
+  CHECK_IS_TEST();
+  data_ = std::move(component_data);
 }
 
 base::Value IwaKeyDistributionInfoProvider::AsDebugValue() const {
@@ -244,6 +264,8 @@ base::Value IwaKeyDistributionInfoProvider::AsDebugValue() const {
   }
   if (data_) {
     debug_data.Set("component_version", data_->version.GetString());
+    debug_data.Set("managed_allowlist",
+                   base::ToValueList(data_->managed_allowlist));
     auto* key_rotations = debug_data.EnsureDict("key_rotations");
     for (const auto& [web_bundle_id, kr_info] : data_->key_rotations) {
       key_rotations->Set(web_bundle_id, kr_info.AsDebugValue());
@@ -339,9 +361,11 @@ void IwaKeyDistributionInfoProvider::SignalOnDataReady(bool is_preloaded) {
 IwaKeyDistributionInfoProvider::ComponentData::ComponentData(
     base::Version version,
     KeyRotations key_rotations,
+    ManagedAllowlist managed_allowlist,
     bool is_preloaded)
     : version(std::move(version)),
       key_rotations(std::move(key_rotations)),
+      managed_allowlist(std::move(managed_allowlist)),
       is_preloaded(is_preloaded) {}
 IwaKeyDistributionInfoProvider::ComponentData::~ComponentData() = default;
 IwaKeyDistributionInfoProvider::ComponentData::ComponentData(

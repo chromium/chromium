@@ -899,11 +899,6 @@ BASE_FEATURE(kIncompatibleApplicationsWarning,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-// Prevents the installation of non-allowlisted Isolated Web Apps.
-BASE_FEATURE(kIsolatedWebAppAllowlist,
-             "IsolatedWebAppAllowlist",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables Isolated Web App Developer Mode, which allows developers to
 // install untrusted Isolated Web Apps.
 BASE_FEATURE(kIsolatedWebAppDevMode,

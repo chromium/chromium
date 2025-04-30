@@ -4,6 +4,8 @@
 
 source_set("isolated_web_apps") {
   sources = [
+    "features.cc",
+    "features.h",
     "iwa_key_distribution_histograms.h",
     "iwa_key_distribution_info_provider.cc",
     "iwa_key_distribution_info_provider.h",

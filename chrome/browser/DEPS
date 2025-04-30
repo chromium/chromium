@@ -421,6 +421,7 @@ include_rules = [
   "+components/web_resource",
   "+components/webapps/browser",
   "+components/webapps/common",
+  "+components/webapps/isolated_web_apps",
   "+components/webauthn",
   "+components/webdata/common",
   "+components/webdata_services",

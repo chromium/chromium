@@ -13856,6 +13856,7 @@ from previous Chrome versions.
   <int value="-188439713" label="disable-video-capture-use-gpu-memory-buffer"/>
   <int value="-187536302" label="TabstripComboButton:enabled"/>
   <int value="-187506528" label="(Obsolete) CrOSSuspendToDisk:enabled"/>
+  <int value="-187265576" label="IsolatedWebAppManagedAllowlist:disabled"/>
   <int value="-187125635" label="DisplayEdgeToEdgeFullscreen:enabled"/>
   <int value="-186707397" label="HideArcMediaNotifications:enabled"/>
   <int value="-185849961" label="IOSPromoPasswordBubble:disabled"/>
@@ -14703,6 +14704,7 @@ from previous Chrome versions.
   <int value="129458360" label="LiteVideo:disabled"/>
   <int value="130059719" label="ThreadedPreloadScanner:disabled"/>
   <int value="130939792" label="FilesJsModules:disabled"/>
+  <int value="131042807" label="IsolatedWebAppManagedAllowlist:enabled"/>
   <int value="131881947" label="D3DVsync:enabled"/>
   <int value="132560299"
       label="OmniboxUIExperimentHideSteadyStateUrlScheme:disabled"/>

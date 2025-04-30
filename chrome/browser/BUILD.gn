@@ -2446,6 +2446,7 @@ static_library("browser") {
     "//components/webapps/browser",
     "//components/webapps/common",
     "//components/webapps/common:mojo_bindings",
+    "//components/webapps/isolated_web_apps:isolated_web_apps",
     "//components/webauthn/core/browser:passkey_model",
     "//components/webdata/common",
     "//components/webdata_services",

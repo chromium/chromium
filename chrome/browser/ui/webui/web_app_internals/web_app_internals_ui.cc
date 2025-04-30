@@ -11,7 +11,7 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/web_app_internals_resources.h"
 #include "chrome/grit/web_app_internals_resources_map.h"
-#include "components/webapps/isolated_web_apps/iwa_key_distribution_info_provider.h"
+#include "components/webapps/isolated_web_apps/features.h"
 #include "content/public/browser/isolated_web_apps_policy.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"

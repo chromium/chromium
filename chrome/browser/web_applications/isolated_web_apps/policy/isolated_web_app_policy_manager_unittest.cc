@@ -9,6 +9,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/check_deref.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/files/scoped_temp_dir.h"
@@ -69,6 +70,7 @@
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/web_package/test_support/signed_web_bundles/ed25519_key_pair.h"
 #include "components/webapps/common/web_app_id.h"
+#include "components/webapps/isolated_web_apps/features.h"
 #include "components/webapps/isolated_web_apps/iwa_key_distribution_info_provider.h"
 #include "components/webapps/isolated_web_apps/proto/key_distribution.pb.h"
 #include "content/public/common/content_features.h"
@@ -411,6 +413,99 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Bool());
 
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+class IsolatedWebAppManagedAllowlistTest
+    : public IsolatedWebAppPolicyManagerTestBase {
+ public:
+  IsolatedWebAppManagedAllowlistTest()
+      : IsolatedWebAppPolicyManagerTestBase(
+            /*is_mgs_session_install_enabled=*/false,
+            /*is_user_session=*/true) {}
+
+  // `IsolatedWebAppPolicyManagerTestBase`:
+  void SetCommandScheduler() override {
+    // For these tests we are fine with regular command scheduler.
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kIsolatedWebAppManagedAllowlist};
+};
+
+// TODO(crbug.com/410532804): Flaky on Mac OS, Windows. It will be fixed
+// in the next CL by reading component directly from the proto file.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#define MAYBE_AllowedAppInstalled DISABLED_AllowedAppInstalled
+#else
+#define MAYBE_AllowedAppInstalled AllowedAppInstalled
+#endif
+TEST_F(IsolatedWebAppManagedAllowlistTest, MAYBE_AllowedAppInstalled) {
+  const auto url_info =
+      IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(web_bundle_id_1());
+
+  WebAppTestInstallObserver install_observer(profile());
+  install_observer.BeginListening({url_info.app_id()});
+
+  base::test::TestFuture<web_package::SignedWebBundleId, IwaInstallerResult>
+      future;
+  IsolatedWebAppPolicyManager::SetOnInstallTaskCompletedCallbackForTesting(
+      future.GetRepeatingCallback());
+
+  CHECK_DEREF(IwaKeyDistributionInfoProvider::GetInstance())
+      .SetComponentDataForTesting(IwaKeyDistributionInfoProvider::ComponentData(
+          /*version=*/base::Version("1.0.0"),
+          /*key_rotations=*/{},
+          /*managed_allowlist=*/{web_bundle_id_1().id()},
+          /*is_preloaded=*/false));
+
+  EXPECT_TRUE(
+      IwaKeyDistributionInfoProvider::GetInstance()->IsManagedInstallPermitted(
+          web_bundle_id_1().id()));
+
+  test::AddForceInstalledIwaToPolicy(
+      profile()->GetPrefs(),
+      IwaTestServerConfigurator::CreateForceInstallPolicyEntry(
+          url_info.web_bundle_id()));
+
+  auto [web_bundle_id, result] = future.Take();
+  EXPECT_EQ(web_bundle_id, web_bundle_id_1());
+  EXPECT_EQ(result.type(), IwaInstallerResultType::kSuccess);
+
+  EXPECT_EQ(install_observer.Wait(), url_info.app_id());
+
+  const WebApp* web_app =
+      provider().registrar_unsafe().GetAppById(url_info.app_id());
+  ASSERT_THAT(web_app, NotNull());
+  EXPECT_THAT(web_app->GetSources(),
+              Eq(WebAppManagementTypes({WebAppManagement::Type::kIwaPolicy})));
+}
+
+TEST_F(IsolatedWebAppManagedAllowlistTest, NotAllowedAppInstallationRefused) {
+  auto url_info =
+      IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(web_bundle_id_1());
+
+  base::test::TestFuture<web_package::SignedWebBundleId, IwaInstallerResult>
+      future;
+  IsolatedWebAppPolicyManager::SetOnInstallTaskCompletedCallbackForTesting(
+      future.GetRepeatingCallback());
+
+  EXPECT_FALSE(
+      IwaKeyDistributionInfoProvider::GetInstance()->IsManagedInstallPermitted(
+          web_bundle_id_1().id()));
+
+  test::AddForceInstalledIwaToPolicy(
+      profile()->GetPrefs(),
+      IwaTestServerConfigurator::CreateForceInstallPolicyEntry(
+          url_info.web_bundle_id()));
+
+  auto [web_bundle_id, result] = future.Take();
+  EXPECT_EQ(web_bundle_id, web_bundle_id_1());
+  EXPECT_EQ(result.type(), IwaInstallerResultType::kErrorAppNotInAllowlist);
+
+  const WebApp* web_app =
+      provider().registrar_unsafe().GetAppById(url_info.app_id());
+  EXPECT_THAT(web_app, testing::IsNull());
+}
 
 // This implementation of the command scheduler can't install an IWA. Instead
 // it hangs and waits for the signal to signalize the

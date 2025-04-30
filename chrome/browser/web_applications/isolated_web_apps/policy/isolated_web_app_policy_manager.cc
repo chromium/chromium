@@ -426,6 +426,13 @@ void IsolatedWebAppPolicyManager::DoProcessPolicy(
         break;
 
       case WebAppManagement::kIwaUserInstalled:
+        if (!CHECK_DEREF(IwaKeyDistributionInfoProvider::GetInstance())
+                 .IsManagedInstallPermitted(
+                     install_options.web_bundle_id().id())) {
+          DLOG(WARNING) << "The IWA " << install_options.web_bundle_id()
+                        << " is not in the managed allowlist. ";
+          continue;
+        }
         // Always fully uninstall user installed apps (dev mode and regular)
         // if they're to be replaced by a policy installation.
         app_actions.emplace(
@@ -572,12 +579,15 @@ void IsolatedWebAppPolicyManager::OnAllInstallTasksCompleted(
     return;
   }
 
-  const bool any_task_failed = std::ranges::any_of(
+  const bool any_app_needs_retry = std::ranges::any_of(
       install_results, [](const IwaInstaller::Result& result) {
-        return result.type() != IwaInstallerResultType::kSuccess;
+        // The component update (allowlist change) triggers reprocessing
+        // policy, so do not retry when app rejected because of allowlist.
+        return result.type() != IwaInstallerResultType::kSuccess &&
+               result.type() != IwaInstallerResultType::kErrorAppNotInAllowlist;
       });
 
-  if (any_task_failed) {
+  if (any_app_needs_retry) {
     install_retry_backoff_entry_.InformOfRequest(/*succeeded=*/false);
     CleanupOrphanedBundles(/*finished_closure=*/base::DoNothing());
   } else {

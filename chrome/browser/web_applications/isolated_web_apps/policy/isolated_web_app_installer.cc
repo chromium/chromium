@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/check_deref.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
@@ -20,6 +21,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/update_manifest/update_manifest_fetcher.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_features.h"
+#include "components/webapps/isolated_web_apps/iwa_key_distribution_info_provider.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -157,6 +159,12 @@ IwaInstaller::IwaInstaller(
 IwaInstaller::~IwaInstaller() = default;
 
 void IwaInstaller::Start() {
+  if (!CHECK_DEREF(IwaKeyDistributionInfoProvider::GetInstance())
+           .IsManagedInstallPermitted(install_options_.web_bundle_id().id())) {
+    Finish(Result(Result::Type::kErrorAppNotInAllowlist,
+                  "Not in the managed allowlist."));
+    return;
+  }
 #if BUILDFLAG(IS_CHROMEOS)
   if (chromeos::IsManagedGuestSession() &&
       !base::FeatureList::IsEnabled(
@@ -483,6 +491,8 @@ std::ostream& operator<<(std::ostream& os,
       return os << "kErrorCantInstallFromWebBundle";
     case Type::kErrorManagedGuestSessionInstallDisabled:
       return os << "kErrorManagedGuestSessionInstallDisabled";
+    case Type::kErrorAppNotInAllowlist:
+      return os << "kErrorAppNotInAllowlist";
   }
 }
 
