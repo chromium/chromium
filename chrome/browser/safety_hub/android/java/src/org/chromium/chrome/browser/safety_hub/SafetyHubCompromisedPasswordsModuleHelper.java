@@ -33,7 +33,7 @@ public class SafetyHubCompromisedPasswordsModuleHelper implements SafetyHubModul
         mUnifiedModule = unifiedModule;
         assert mAccountCompromisedPasswordsCount > 0 || mLocalCompromisedPasswordsCount > 0
                 : "Compromised passwords count is not greater than zero in"
-                        + " HasCompromisedPasswordsPreferenceHelper";
+                        + "CompromisedPasswordsModuleHelper";
     }
 
     @Override
@@ -63,13 +63,13 @@ public class SafetyHubCompromisedPasswordsModuleHelper implements SafetyHubModul
 
     @Override
     public String getSummary() {
-        int totalPasswordsCount =
+        int totalCompromisedPasswordsCount =
                 mAccountCompromisedPasswordsCount + mLocalCompromisedPasswordsCount;
         return mContext.getResources()
                 .getQuantityString(
                         R.plurals.safety_hub_compromised_passwords_summary,
-                        totalPasswordsCount,
-                        totalPasswordsCount);
+                        totalCompromisedPasswordsCount,
+                        totalCompromisedPasswordsCount);
     }
 
     @Override
