@@ -194,7 +194,6 @@ crbug.com/329145823 [ win release intel ] GpuCrash_InfoForHardwareGpu [ Failure 
 crbug.com/329145823 [ win release intel ] GpuCrash_SoftwareFallbackDisabled [ Failure ]
 crbug.com/329145823 [ win release nvidia ] GpuCrash_InfoForHardwareGpu [ Failure ]
 crbug.com/329145823 [ win release nvidia ] GpuCrash_SoftwareFallbackDisabled [ Failure ]
-crbug.com/329145823 [ win release qualcomm ] GpuCrash_InfoForHardwareGpu [ Failure ]
 crbug.com/329145823 [ win release qualcomm ] GpuCrash_SoftwareFallbackDisabled [ Failure ]
 crbug.com/329145823 [ angle-metal graphite-enabled mac release ] GpuCrash_InfoForHardwareGpu [ Failure ]
 crbug.com/329145823 [ angle-metal graphite-enabled mac release ] GpuCrash_SoftwareFallbackDisabled [ Failure ]
@@ -228,8 +227,7 @@ crbug.com/384605105 [ win nvidia ] ContextLost_WebGLContextRestoredInHiddenTab [
 
 # Flaky Timed out while waiting 60s for IsJavaScriptExpressionTrue
 crbug.com/365565140 [ amd-0x7340 debug mac-x86_64 no-asan no-clang-coverage sonoma ] ContextLost_WebGPUUnblockedAfterUserInitiatedReload [ Failure ]
-crbug.com/365565140 [ angle-metal asan intel-0x3e9b mac-x86_64 no-clang-coverage release sonoma ] ContextLost_WebGPUUnblockedAfterUserInitiatedReload [ Failure ]
-crbug.com/365565140 [ angle-opengl bigsur graphite-disabled mac-x86_64 no-asan no-clang-coverage nvidia-0xfe9 release ] ContextLost_WebGPUUnblockedAfterUserInitiatedReload [ Failure ]
+crbug.com/365565140 [ angle-metal asan graphite-enabled intel-0x3e9b mac-x86_64 no-clang-coverage release sonoma ] ContextLost_WebGPUUnblockedAfterUserInitiatedReload [ Failure ]
 crbug.com/365565140 [ angle-opengl debug graphite-disabled intel-0x3e9b mac-x86_64 no-asan no-clang-coverage sonoma ] ContextLost_WebGPUUnblockedAfterUserInitiatedReload [ Failure ]
 
 
