@@ -582,6 +582,8 @@ def main():
   apk_under_test_config = None
   if is_apk:
     config['apk_path'] = params['apk_path']
+    if path := params.get('incremental_install_json_path'):
+      config['incremental_install_json_path'] = path
     if path := params.get('apk_under_test_config'):
       apk_under_test_config = GetDepConfig(path)
       config['gradle']['apk_under_test'] = os.path.basename(
