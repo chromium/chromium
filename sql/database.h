@@ -143,6 +143,8 @@ struct COMPONENT_EXPORT(SQL) DatabaseOptions {
   // Note: Changing page size is not supported when in WAL mode. So running
   // 'PRAGMA page_size = <new-size>' will result in no-ops.
   //
+  // Note: This option is not supported in read-only mode.
+  //
   // More details at https://www.sqlite.org/wal.html
   DatabaseOptions& set_wal_mode(bool wal_mode) {
     wal_mode_ = wal_mode;
@@ -180,6 +182,8 @@ struct COMPONENT_EXPORT(SQL) DatabaseOptions {
   // until the data is written to the persistent media. This guarantees
   // durability in the event of power loss, which is needed to guarantee the
   // integrity of non-WAL databases.
+  //
+  // Note: This option is not supported in read-only mode.
   DatabaseOptions& set_flush_to_media(bool flush_to_media) {
     flush_to_media_ = flush_to_media;
     return *this;
@@ -211,6 +215,8 @@ struct COMPONENT_EXPORT(SQL) DatabaseOptions {
   //
   // 0 invokes SQLite's default, which is currently to size up the cache to use
   // exactly 2,048,000 bytes of RAM.
+  //
+  // Note: This option is not supported in read-only mode.
   DatabaseOptions& set_cache_size(int cache_size) {
     cache_size_ = cache_size;
     return *this;
@@ -259,6 +265,16 @@ struct COMPONENT_EXPORT(SQL) DatabaseOptions {
     return *this;
   }
 
+  // If true, the database is opened in read-only mode. All operations requiring
+  // write access will fail, including insert statements and some pragmas.
+  // Queries on the database will fail in the presence of a hot journal since
+  // the database file can't be modified to apply it. This must be used in the
+  // VFS returns read-only file descriptors, but not otherwise.
+  DatabaseOptions& set_read_only(bool read_only) {
+    read_only_ = read_only;
+    return *this;
+  }
+
  private:
   friend class Database;
   FRIEND_TEST_ALL_PREFIXES(DatabaseOptionsTest,
@@ -278,6 +294,7 @@ struct COMPONENT_EXPORT(SQL) DatabaseOptions {
   bool enable_views_discouraged_ = false;
   const char* vfs_name_discouraged_ = nullptr;
   bool mmap_enabled_ = true;
+  bool read_only_ = false;
 };
 
 // Holds database diagnostics in a structured format.

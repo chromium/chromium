@@ -2614,4 +2614,123 @@ INSTANTIATE_TEST_SUITE_P(JournalMode,
                          SQLDatabaseTestExclusiveMode,
                          testing::Values(false));
 #endif
+
+class ReadOnlySQLDatabaseTest
+    : public testing::Test,
+      public testing::WithParamInterface<std::tuple<bool, bool, bool>> {
+ protected:
+  void SetUp() override {
+    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+    const char* db_name = "database_test.db";
+    db_path_ = temp_dir_.GetPath().AppendASCII(db_name);
+
+    std::tie(wal_mode_, exclusive_mode_, readonly_mode_) = GetParam();
+  }
+
+  // Opens a database with options that depend on test params. If
+  // `force_readwrite` is true, the database is opened in read/write mode
+  // irrespective of the "read-only" test param. The database is created
+  // if it doesn't already exist iff it is opened in read/write mode.
+  void OpenDatabase(bool force_read_write) {
+    ASSERT_FALSE(db_path_.empty());
+    db_.reset();
+    db_ = std::make_unique<Database>(GetDBOptions(force_read_write),
+                                     test::kTestTag);
+    ASSERT_TRUE(db_->Open(db_path_));
+  }
+
+  void CreateTable() {
+    ASSERT_TRUE(db_->Execute(
+        "CREATE TABLE IF NOT EXISTS entries(key TEXT PRIMARY KEY UNIQUE NOT "
+        "NULL, content BLOB NOT NULL)"));
+  }
+
+  void Insert() {
+    sql::Statement stm(
+        db_->GetCachedStatement(SQL_FROM_HERE,
+                                "REPLACE INTO entries (key, content "
+                                ") VALUES (?, ?)"));
+    stm.BindString(0, value);
+    stm.BindString(1, base::as_string_view(value));
+    ASSERT_TRUE(stm.is_valid());
+    EXPECT_TRUE(stm.Run());
+  }
+
+  void Select() {
+    sql::Statement stm = sql::Statement(db_->GetCachedStatement(
+        SQL_FROM_HERE, "SELECT content FROM entries WHERE key = ?"));
+    stm.BindString(0, value);
+    ASSERT_TRUE(stm.is_valid());
+    EXPECT_TRUE(stm.Step());
+  }
+
+  DatabaseOptions GetDBOptions(bool force_readwrite_only) {
+    return DatabaseOptions()
+        .set_read_only(force_readwrite_only ? false : readonly_mode_)
+        .set_wal_mode(wal_mode_)
+        .set_exclusive_locking(exclusive_mode_);
+  }
+
+ protected:
+  const std::string value{"VALUE"};
+  base::ScopedTempDir temp_dir_;
+  base::FilePath db_path_;
+  std::unique_ptr<Database> db_;
+
+  bool wal_mode_;
+  bool exclusive_mode_;
+  bool readonly_mode_;
+};
+
+TEST_P(ReadOnlySQLDatabaseTest, MmapSize) {
+  // Ensures the DB exists.
+  ASSERT_NO_FATAL_FAILURE(OpenDatabase(true));
+  // Re-open and test the mmap on the existing DB.
+  ASSERT_NO_FATAL_FAILURE(OpenDatabase(false));
+  sql::Statement pragma_mmap_size(db_->GetUniqueStatement("PRAGMA mmap_size"));
+  pragma_mmap_size.Step();
+  EXPECT_NE(pragma_mmap_size.ColumnInt64(0), 0);
+}
+
+TEST_P(ReadOnlySQLDatabaseTest, Histograms) {
+  base::HistogramTester tester;
+  ASSERT_NO_FATAL_FAILURE(OpenDatabase(true));
+
+  tester.ExpectTotalCount("Sql.Database.Success.OpenInternalTime.Test", 1);
+  tester.ExpectTotalCount("Sql.Database.Success.SqliteOpenTime.Test", 1);
+  tester.ExpectUniqueSample("Sql.Database.Success.SqliteOpenAttempts.Test", 1,
+                            1);
+
+  ASSERT_NO_FATAL_FAILURE(OpenDatabase(false));
+
+  tester.ExpectTotalCount("Sql.Database.Success.OpenInternalTime.Test", 2);
+  tester.ExpectTotalCount("Sql.Database.Success.SqliteOpenTime.Test", 2);
+  EXPECT_THAT(
+      tester.GetAllSamples("Sql.Database.Success.SqliteOpenAttempts.Test"),
+      testing::ElementsAre(base::Bucket(1, 2)));
+}
+
+TEST_P(ReadOnlySQLDatabaseTest, CreateAndSelect) {
+  // Not yet supported by Sqlite. Cannot be tested.
+  // TODO(crbug.com/413595430): Remove this if the combination of flags ever
+  // works.
+  if (wal_mode_ && exclusive_mode_ && readonly_mode_) {
+    return;
+  }
+
+  ASSERT_NO_FATAL_FAILURE(OpenDatabase(true));
+  ASSERT_NO_FATAL_FAILURE(CreateTable());
+  ASSERT_NO_FATAL_FAILURE(Insert());
+  ASSERT_NO_FATAL_FAILURE(Select());
+
+  ASSERT_NO_FATAL_FAILURE(OpenDatabase(false));
+  ASSERT_NO_FATAL_FAILURE(Select());
+}
+
+INSTANTIATE_TEST_SUITE_P(LockingMode,
+                         ReadOnlySQLDatabaseTest,
+                         testing::Combine(testing::Bool(),
+                                          testing::Bool(),
+                                          testing::Bool()));
+
 }  // namespace sql
