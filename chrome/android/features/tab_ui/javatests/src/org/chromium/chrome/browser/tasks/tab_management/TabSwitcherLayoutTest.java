@@ -233,6 +233,7 @@ public class TabSwitcherLayoutTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/413511949")
     public void testThumbnailFetchingResult_jpeg() throws Exception {
         // May be called when setting both grid card size and thumbnail fetcher.
         var histograms =
