@@ -161,6 +161,7 @@ targets.bundle(
     targets = [
         "android_trichrome_smoke_tests",
         "android_smoke_tests",
+        "android_emulator_specific_chrome_public_tests",
     ],
     mixins = [
         "force-main-user",
