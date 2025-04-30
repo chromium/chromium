@@ -166,10 +166,6 @@ class ExtensionService : public ExtensionServiceInterface,
   // KeyedService two-phase shutdown.
   void Shutdown();
 
-  // Enables the extension. If the extension is already enabled, does
-  // nothing.
-  void EnableExtension(const std::string& extension_id);
-
   // Performs action based on Omaha attributes for the extension.
   void PerformActionBasedOnOmahaAttributes(const std::string& extension_id,
                                            const base::Value::Dict& attributes);
@@ -178,14 +174,6 @@ class ExtensionService : public ExtensionServiceInterface,
   // server. Currently, these verdicts are limited to off-store extensions.
   void PerformActionBasedOnExtensionTelemetryServiceVerdicts(
       const Blocklist::BlocklistStateMap& blocklist_state_map);
-
-  // Disables the extension. If the extension is already disabled, just adds
-  // the incoming disable reason(s). If the extension cannot be disabled (due to
-  // policy), does nothing.
-  void DisableExtension(const ExtensionId& extension_id,
-                        disable_reason::DisableReason disable_reason);
-  void DisableExtension(const ExtensionId& extension_id,
-                        const DisableReasonSet& disable_reasons);
 
   // Disable non-default and non-managed extensions with ids not in
   // `except_ids`. Default extensions are those from the Web Store with
