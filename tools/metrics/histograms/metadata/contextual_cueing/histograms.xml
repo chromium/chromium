@@ -32,6 +32,29 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.ThenChange(//chrome/browser/contextual_cueing/contextual_cueing_helper.cc:OptType) -->
 
 <histogram
+    name="ContextualCueing.GlicSuggestions.PageContextFetchlatency.{PageContextType}"
+    units="ms" expires_after="2025-08-30">
+  <owner>zekunjiang@google.com</owner>
+  <owner>rajendrant@google.com</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <summary>
+    Recorded every time a page context extraction is completed. Records the time
+    it takes from the beginning of a context fetch to when the results are
+    received. The results are split by page context types (e.g. InnerText vs.
+    AnnotatedPageContent).
+  </summary>
+  <token key="PageContextType">
+    <variant name="AnnotatedPageContent"
+        summary="Page context in the form of annotated page content"/>
+    <variant name="InnerText"
+        summary="Page context in the form of page inner text."/>
+    <variant name="Total"
+        summary="All page contexts that are related to one zero state
+                 suggestions fetch."/>
+  </token>
+</histogram>
+
+<histogram
     name="ContextualCueing.NudgeDecision.{ContextualCueingOptimizationType}"
     enum="ContextualCueingNudgeDecision" expires_after="2025-08-30">
   <owner>sophiechang@chromium.org</owner>
