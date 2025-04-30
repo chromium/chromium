@@ -22,7 +22,6 @@
 #include "chrome/browser/keyboard_accessory/android/manual_filling_controller.h"
 #include "chrome/browser/keyboard_accessory/android/manual_filling_utils.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/android/autofill/autofill_fallback_surface_launcher.h"
 #include "chrome/browser/vr/vr_tab_helper.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/browser/autofill_browser_util.h"
@@ -227,16 +226,10 @@ PaymentMethodAccessoryControllerImpl::GetSheetData() const {
     }
   }
 
-  std::vector<FooterCommand> footer_commands = {FooterCommand(
+  const std::vector<FooterCommand> footer_commands = {FooterCommand(
       l10n_util::GetStringUTF16(
           IDS_MANUAL_FILLING_CREDIT_CARD_SHEET_ALL_ADDRESSES_LINK),
       AccessoryAction::MANAGE_CREDIT_CARDS)};
-  if (!GetLoyaltyCards().empty()) {
-    footer_commands.emplace_back(
-        l10n_util::GetStringUTF16(
-            IDS_MANUAL_FILLING_CREDIT_CARD_SHEET_ALL_LOYALTY_CARDS_LINK),
-        AccessoryAction::MANAGE_LOYALTY_CARDS);
-  }
 
   bool has_suggestions = !info_to_add.empty();
 
@@ -307,17 +300,12 @@ void PaymentMethodAccessoryControllerImpl::OnPasskeySelected(
 
 void PaymentMethodAccessoryControllerImpl::OnOptionSelected(
     AccessoryAction selected_action) {
-  switch (selected_action) {
-    case AccessoryAction::MANAGE_CREDIT_CARDS:
-      ShowAutofillCreditCardSettings(&GetWebContents());
-      return;
-    case AccessoryAction::MANAGE_LOYALTY_CARDS:
-      autofill::ShowGoogleWalletLoyaltyCardsPage(GetWebContents());
-      return;
-    default:
-      NOTREACHED() << "Unhandled selected action: "
-                   << static_cast<int>(selected_action);
+  if (selected_action == AccessoryAction::MANAGE_CREDIT_CARDS) {
+    ShowAutofillCreditCardSettings(&GetWebContents());
+    return;
   }
+  NOTREACHED() << "Unhandled selected action: "
+               << static_cast<int>(selected_action);
 }
 
 void PaymentMethodAccessoryControllerImpl::OnToggleChanged(

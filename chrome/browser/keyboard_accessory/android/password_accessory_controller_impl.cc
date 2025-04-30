@@ -39,8 +39,8 @@
 #include "chrome/browser/plus_addresses/plus_address_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/chrome_security_state_tab_helper.h"
-#include "chrome/browser/ui/android/autofill/autofill_fallback_surface_launcher.h"
 #include "chrome/browser/ui/android/plus_addresses/all_plus_addresses_bottom_sheet_controller.h"
+#include "chrome/browser/ui/android/plus_addresses/plus_addresses_helper.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/webauthn/android/webauthn_request_delegate_android.h"
 #include "chrome/grit/generated_resources.h"
@@ -478,7 +478,7 @@ void PasswordAccessoryControllerImpl::OnOptionSelected(
       GetManualFillingController()->Hide();
       return;
     case autofill::AccessoryAction::MANAGE_PLUS_ADDRESS_FROM_PASSWORD_SHEET:
-      autofill::ShowManagePlusAddressesPage(GetWebContents());
+      plus_addresses::ShowManagePlusAddressesPage(GetWebContents());
       base::RecordAction(base::UserMetricsAction(
           "PlusAddresses.ManageOptionOnPasswordManualFallbackSelected"));
       return;
