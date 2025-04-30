@@ -22,6 +22,9 @@
 // The icon displayed by this InfobarBanner.
 - (void)setIconImage:(UIImage*)iconImage;
 
+// The custom image view displayed by this InfobarBanner.
+- (void)setCustomView:(UIView*)imageView;
+
 // The tint color of the icon image.
 - (void)setIconImageTintColor:(UIColor*)iconImageTintColor;
 

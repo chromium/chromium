@@ -11,7 +11,7 @@
 #import "ios/chrome/browser/overlays/model/public/default/default_infobar_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/ui_bundled/infobar_banner/infobar_banner_overlay_mediator+consumer_support.h"
 #import "ios/chrome/browser/overlays/ui_bundled/overlay_request_mediator+subclassing.h"
-#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/share_kit/model/share_kit_avatar_primitive.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
 @interface CollaborationGroupInfobarBannerOverlayMediator ()
@@ -69,17 +69,15 @@
   [consumer setButtonText:base::SysUTF16ToNSString(delegate->GetButtonLabel(
                               CollaborationGroupInfoBarDelegate::BUTTON_OK))];
 
-  UIImage* avatarImage = delegate->GetAvatarImage();
-  if (!avatarImage) {
-    // TODO(crbug.com/375595834): Update this once defined in the specs.
-    avatarImage = DefaultSymbolTemplateWithPointSize(kPersonFillSymbol,
-                                                     kInfobarSymbolPointSize);
-    [consumer setUseIconBackgroundTint:YES];
-    [consumer setIconBackgroundColor:[UIColor colorNamed:kBlueColor]];
-    [consumer
-        setIconImageTintColor:[UIColor colorNamed:kPrimaryBackgroundColor]];
+  id<ShareKitAvatarPrimitive> avatarPrimitive = delegate->GetAvatarPrimitive();
+  if (avatarPrimitive) {
+    [avatarPrimitive resolve];
+    [consumer setCustomView:[avatarPrimitive view]];
+    [consumer setUseIconBackgroundTint:NO];
+  } else {
+    UIImage* symbolImage = delegate->GetSymbolImage();
+    [consumer setIconImage:symbolImage];
   }
-  [consumer setIconImage:avatarImage];
 
   [consumer setPresentsModal:NO];
   if (delegate->GetTitleText().empty()) {

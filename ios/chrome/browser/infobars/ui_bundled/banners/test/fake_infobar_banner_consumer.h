@@ -14,6 +14,7 @@
 @property(nonatomic, copy) NSString* buttonText;
 @property(nonatomic, strong) UIImage* faviconImage;
 @property(nonatomic, strong) UIImage* iconImage;
+@property(nonatomic, strong) UIView* customView;
 @property(nonatomic, assign) BOOL presentsModal;
 @property(nonatomic, copy) NSString* titleText;
 @property(nonatomic, copy) NSString* subtitleText;
