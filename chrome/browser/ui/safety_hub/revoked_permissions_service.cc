@@ -491,10 +491,7 @@ void RevokedPermissionsService::OnContentSettingChanged(
           ->DeletePatternFromRevokedAbusiveNotificationList(primary_pattern,
                                                             secondary_pattern);
     }
-    if (disruptive_notification_manager_) {
-      disruptive_notification_manager_->DeleteRevokedPermissionContentSetting(
-          primary_pattern, secondary_pattern);
-    }
+    // TODO(crbug.com/406475122): Clean up the disruptive notification list.
   }
 }
 
