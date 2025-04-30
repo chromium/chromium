@@ -676,31 +676,29 @@ void OnConfigParsed(const GURL& provider,
     idp_metadata.requested_label = *requested_label;
   }
 
-  if (IsFedCmUseOtherAccountEnabled()) {
-    std::optional<bool> supports_add_account;
-    if (IsFedCmUseOtherAccountAndLabelsNewSyntaxEnabled()) {
-      supports_add_account = response.FindBool(kSupportsUseOtherAccountKey);
-    } else {
-      const base::Value::Dict* modes_dict = response.FindDict(kModesKey);
-      const base::Value::Dict* selected_mode_dict = nullptr;
-      if (modes_dict) {
-        switch (rp_mode) {
-          case blink::mojom::RpMode::kPassive:
-            selected_mode_dict = modes_dict->FindDict(kPassiveModeKey);
-            break;
-          case blink::mojom::RpMode::kActive:
-            selected_mode_dict = modes_dict->FindDict(kActiveModeKey);
-            break;
-        };
-      }
-      if (selected_mode_dict) {
-        supports_add_account =
-            selected_mode_dict->FindBool(kSupportsUseOtherAccountKey);
-      }
+  std::optional<bool> supports_add_account;
+  if (IsFedCmUseOtherAccountAndLabelsNewSyntaxEnabled()) {
+    supports_add_account = response.FindBool(kSupportsUseOtherAccountKey);
+  } else {
+    const base::Value::Dict* modes_dict = response.FindDict(kModesKey);
+    const base::Value::Dict* selected_mode_dict = nullptr;
+    if (modes_dict) {
+      switch (rp_mode) {
+        case blink::mojom::RpMode::kPassive:
+          selected_mode_dict = modes_dict->FindDict(kPassiveModeKey);
+          break;
+        case blink::mojom::RpMode::kActive:
+          selected_mode_dict = modes_dict->FindDict(kActiveModeKey);
+          break;
+      };
     }
-    if (supports_add_account) {
-      idp_metadata.supports_add_account = *supports_add_account;
+    if (selected_mode_dict) {
+      supports_add_account =
+          selected_mode_dict->FindBool(kSupportsUseOtherAccountKey);
     }
+  }
+  if (supports_add_account) {
+    idp_metadata.supports_add_account = *supports_add_account;
   }
   std::move(callback).Run({ParseStatus::kSuccess, fetch_status.response_code},
                           endpoints, std::move(idp_metadata));

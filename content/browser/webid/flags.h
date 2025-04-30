@@ -11,13 +11,6 @@
 
 namespace content {
 
-// Whether the authz flags has been overridden. If it has been overridden
-// to false, we should not let it be enabled using an origin trial.
-std::optional<bool> IsFedCmAuthzOverridden();
-
-// Whether the AuthZ flag is enabled or not.
-bool IsFedCmAuthzFlagEnabled();
-
 // Whether multiple identity providers are enabled.
 bool IsFedCmMultipleIdentityProvidersEnabled();
 
@@ -42,17 +35,8 @@ bool IsWebIdentityDigitalCredentialsEnabled();
 // Whether the Web Identity Digital Credentials Creation API is enabled.
 bool IsWebIdentityDigitalCredentialsCreationEnabled();
 
-// Whether "Use Other Account" is enabled.
-bool IsFedCmUseOtherAccountEnabled();
-
-// Whether the ActiveMode feature is enabled.
-bool IsFedCmActiveModeEnabled();
-
 // Whether sending of SameSite=Lax cookies is enabled.
 bool IsFedCmSameSiteLaxEnabled();
-
-// Whether specifying a subset of the default fields is enabled.
-bool IsFedCmFlexibleFieldsEnabled();
 
 // Whether showing filtered accounts is enabled.
 bool IsFedCmShowFilteredAccountsEnabled();

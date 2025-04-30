@@ -14,14 +14,6 @@
 
 namespace content {
 
-std::optional<bool> IsFedCmAuthzOverridden() {
-  return base::FeatureList::GetStateIfOverridden(features::kFedCmAuthz);
-}
-
-bool IsFedCmAuthzFlagEnabled() {
-  return base::FeatureList::IsEnabled(features::kFedCmAuthz);
-}
-
 bool IsFedCmMultipleIdentityProvidersEnabled() {
   return base::FeatureList::IsEnabled(
       features::kFedCmMultipleIdentityProviders);
@@ -57,22 +49,8 @@ bool IsWebIdentityDigitalCredentialsCreationEnabled() {
       features::kWebIdentityDigitalCredentialsCreation);
 }
 
-bool IsFedCmUseOtherAccountEnabled() {
-  // The active mode origin trial can also enable this feature at this moment.
-  return base::FeatureList::IsEnabled(features::kFedCmUseOtherAccount) ||
-         IsFedCmActiveModeEnabled();
-}
-
-bool IsFedCmActiveModeEnabled() {
-  return base::FeatureList::IsEnabled(features::kFedCmButtonMode);
-}
-
 bool IsFedCmSameSiteLaxEnabled() {
   return base::FeatureList::IsEnabled(features::kFedCmSameSiteLax);
-}
-
-bool IsFedCmFlexibleFieldsEnabled() {
-  return base::FeatureList::IsEnabled(features::kFedCmFlexibleFields);
 }
 
 bool IsFedCmShowFilteredAccountsEnabled() {

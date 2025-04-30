@@ -1151,14 +1151,8 @@ extern const char kFractionalScrollOffsetsDescription[];
 extern const char kFedCmAlternativeIdentifiersName[];
 extern const char kFedCmAlternativeIdentifiersDescription[];
 
-extern const char kFedCmAuthzName[];
-extern const char kFedCmAuthzDescription[];
-
 extern const char kFedCmAutofillName[];
 extern const char kFedCmAutofillDescription[];
-
-extern const char kFedCmButtonModeName[];
-extern const char kFedCmButtonModeDescription[];
 
 extern const char kFedCmCooldownOnIgnoreName[];
 extern const char kFedCmCooldownOnIgnoreDescription[];
@@ -1186,9 +1180,6 @@ extern const char kFedCmSelectiveDisclosureDescription[];
 
 extern const char kFedCmShowFilteredAccountsName[];
 extern const char kFedCmShowFilteredAccountsDescription[];
-
-extern const char kFedCmUseOtherAccountName[];
-extern const char kFedCmUseOtherAccountDescription[];
 
 extern const char kFedCmWithoutWellKnownEnforcementName[];
 extern const char kFedCmWithoutWellKnownEnforcementDescription[];

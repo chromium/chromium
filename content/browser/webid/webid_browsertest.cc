@@ -502,9 +502,6 @@ class WebIdIdPRegistryBrowserTest : public WebIdBrowserTest {
 class WebIdAuthzBrowserTest : public WebIdBrowserTest {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kFedCmButtonMode, features::kFedCmAuthz}, {});
-
     command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
   }
 };
@@ -1899,7 +1896,6 @@ IN_PROC_BROWSER_TEST_F(WebIdBrowserTest,
 class WebIdModeBrowserTest : public WebIdBrowserTest {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    scoped_feature_list_.InitAndEnableFeature(features::kFedCmButtonMode);
     command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
   }
 };
@@ -1918,10 +1914,6 @@ class WebIdDelegationBrowserTest : public WebIdBrowserTest {
     std::vector<base::test::FeatureRef> features;
     features.push_back(features::kFedCm);
     features.push_back(features::kFedCmDelegation);
-    // Needs the fields API
-    features.push_back(features::kFedCmAuthz);
-    // Intended to be used in Active mode
-    features.push_back(features::kFedCmButtonMode);
     // Needs to reconcile well with the IdP Registration and Multi-IdP API
     features.push_back(features::kFedCmIdPRegistration);
     features.push_back(features::kFedCmMultipleIdentityProviders);
@@ -2150,10 +2142,7 @@ IN_PROC_BROWSER_TEST_F(WebIdDelegationBrowserTest, ConditionalMediation) {
 class WebIdMetricsBrowserTest : public WebIdBrowserTest {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kFedCmMetricsEndpoint, features::kFedCmButtonMode,
-         features::kFedCmAuthz},
-        {});
+    scoped_feature_list_.InitAndEnableFeature(features::kFedCmMetricsEndpoint);
     command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
   }
 

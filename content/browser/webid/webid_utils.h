@@ -99,8 +99,6 @@ bool HasSharingPermissionOrIdpHasThirdPartyCookiesAccess(
     FederatedIdentityPermissionContextDelegate* sharing_permission_delegate,
     FederatedIdentityApiPermissionContextDelegate* api_permission_delegate);
 
-bool IsFedCmAuthzEnabled();
-
 FederatedAuthRequestPageData* GetPageData(Page& page);
 
 // Returns the frame type of the requester.

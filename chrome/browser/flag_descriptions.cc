@@ -2017,18 +2017,9 @@ const char kFedCmAlternativeIdentifiersName[] = "FedCmAlternativeIdentifiers";
 const char kFedCmAlternativeIdentifiersDescription[] =
     "Supports usernames and phone numbers as account identifiers.";
 
-const char kFedCmAuthzName[] = "FedCmAuthz";
-const char kFedCmAuthzDescription[] =
-    "Enables RPs to request authorization for custom IdP scopes.";
-
 const char kFedCmAutofillName[] = "FedCmAutofill";
 const char kFedCmAutofillDescription[] =
     "Allows RPs to enhance autofill with FedCM.";
-
-const char kFedCmButtonModeName[] = "FedCmButtonMode";
-const char kFedCmButtonModeDescription[] =
-    "Enables RPs specify whether they want to trigger the FedCM widget flow or "
-    "the button flow.";
 
 const char kFedCmCooldownOnIgnoreName[] = "FedCmCooldownOnIgnore";
 const char kFedCmCooldownOnIgnoreDescription[] =
@@ -2071,11 +2062,6 @@ const char kFedCmWithoutWellKnownEnforcementName[] =
     "FedCmWithoutWellKnownEnforcement";
 const char kFedCmWithoutWellKnownEnforcementDescription[] =
     "Supports configURL that's not in the IdP's .well-known file.";
-
-const char kFedCmUseOtherAccountName[] = "FedCmUseOtherAccount";
-const char kFedCmUseOtherAccountDescription[] =
-    "Enables the \"Use a different account\" button on the FedCM account "
-    "chooser to log in to another IdP account, for IdPs who have opted in.";
 
 const char kFedCmSegmentationPlatformName[] = "FedCmSegmentationPlatform";
 const char kFedCmSegmentationPlatformDescription[] =

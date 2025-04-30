@@ -1417,9 +1417,6 @@ TEST_F(IdpNetworkRequestManagerTest, ParseConfigSupportsOtherAccountNewSyntax) {
 
 TEST_F(IdpNetworkRequestManagerTest,
        ParseConfigSupportsOtherAccountDifferentMode) {
-  base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmUseOtherAccount);
-
   const char test_json[] = R"({
   "modes": {
     "active": {
@@ -1440,9 +1437,6 @@ TEST_F(IdpNetworkRequestManagerTest,
 }
 
 TEST_F(IdpNetworkRequestManagerTest, ParseConfigSupportsOtherAccountBothModes) {
-  base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmUseOtherAccount);
-
   const char test_json[] = R"({
   "modes": {
     "active": {
@@ -1459,30 +1453,6 @@ TEST_F(IdpNetworkRequestManagerTest, ParseConfigSupportsOtherAccountBothModes) {
   std::tie(fetch_status, idp_metadata) = SendConfigRequestAndWaitForResponse(
       test_json, net::HTTP_OK, "application/json",
       blink::mojom::RpMode::kActive);
-
-  EXPECT_EQ(ParseStatus::kSuccess, fetch_status.parse_status);
-  EXPECT_EQ(net::HTTP_OK, fetch_status.response_code);
-  EXPECT_EQ(false, idp_metadata.supports_add_account);
-}
-
-TEST_F(IdpNetworkRequestManagerTest, ParseConfigUseOtherAccountDisabled) {
-  base::test::ScopedFeatureList list;
-  // Disables both flags since this feature can be enabled by the other.
-  list.InitWithFeatures(
-      {}, {features::kFedCmUseOtherAccount, features::kFedCmButtonMode});
-
-  const char test_json[] = R"({
-  "modes": {
-    "passive": {
-      "supports_use_other_account": true
-    }
-  }
-  })";
-
-  FetchStatus fetch_status;
-  IdentityProviderMetadata idp_metadata;
-  std::tie(fetch_status, idp_metadata) =
-      SendConfigRequestAndWaitForResponse(test_json);
 
   EXPECT_EQ(ParseStatus::kSuccess, fetch_status.parse_status);
   EXPECT_EQ(net::HTTP_OK, fetch_status.response_code);
@@ -2056,9 +2026,6 @@ TEST_F(IdpNetworkRequestManagerTest, IdAssertionWrongMimeType) {
 }
 
 TEST_F(IdpNetworkRequestManagerTest, FetchingTokenLeadsToAContinuationUrl) {
-  base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmAuthz);
-
   net::HttpStatusCode http_status = net::HTTP_OK;
   const std::string& mime_type = "application/json";
 
@@ -2091,9 +2058,6 @@ TEST_F(IdpNetworkRequestManagerTest, FetchingTokenLeadsToAContinuationUrl) {
 //+    kTokenReceivedAndErrorReceivedAndContinueOnReceived = 5,
 
 TEST_F(IdpNetworkRequestManagerTest, ContinueOnWithToken) {
-  base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmAuthz);
-
   net::HttpStatusCode http_status = net::HTTP_OK;
   const std::string& mime_type = "application/json";
 
@@ -2113,9 +2077,6 @@ TEST_F(IdpNetworkRequestManagerTest, ContinueOnWithToken) {
 }
 
 TEST_F(IdpNetworkRequestManagerTest, ContinueOnWithErrorAndToken) {
-  base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmAuthz);
-
   net::HttpStatusCode http_status = net::HTTP_OK;
   const std::string& mime_type = "application/json";
 
@@ -2136,9 +2097,6 @@ TEST_F(IdpNetworkRequestManagerTest, ContinueOnWithErrorAndToken) {
 }
 
 TEST_F(IdpNetworkRequestManagerTest, ContinueOnWithError) {
-  base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmAuthz);
-
   net::HttpStatusCode http_status = net::HTTP_OK;
   const std::string& mime_type = "application/json";
 
@@ -2158,9 +2116,6 @@ TEST_F(IdpNetworkRequestManagerTest, ContinueOnWithError) {
 }
 
 TEST_F(IdpNetworkRequestManagerTest, ContinueOnCanBeRelativeUrl) {
-  base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmAuthz);
-
   net::HttpStatusCode http_status = net::HTTP_OK;
   const std::string& mime_type = "application/json";
 

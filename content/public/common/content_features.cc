@@ -395,39 +395,17 @@ BASE_FEATURE(kEnsureExistingRendererAlive,
 // We enable it here by default to support use in origin trials.
 BASE_FEATURE(kFedCm, "FedCm", base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables the "Use a different account" button in the FedCM account chooser to
-// log in to another IDP account, if the IDP opts in.
-BASE_FEATURE(kFedCmUseOtherAccount,
-             "FedCmUseOtherAccount",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Support usernames and phone numbers to identify users, instead of
 // (or in addition to) names and emails.
 BASE_FEATURE(kFedCmAlternativeIdentifiers,
              "FedCmAlternativeIdentifiers",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables usage of the FedCM Authz API.
-// Note that actual exposure of the API to web content is controlled by
-// the flag in RuntimeEnabledFeatures on the blink side. See also the use
-// of kSetOnlyIfOverridden in content/child/runtime_features.cc. We enable
-// it here by default to support use in origin trials and web platform tests.
-BASE_FEATURE(kFedCmAuthz, "FedCmAuthz", base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables RPs to enhance autofill with federated accounts fetched by the FedCM
 // API.
 BASE_FEATURE(kFedCmAutofill,
              "FedCmAutofill",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enables usage of the FedCM ButtonMode feature.
-// Note that actual exposure of the API to web content is controlled by
-// the flag in RuntimeEnabledFeatures on the blink side. See also the use
-// of kSetOnlyIfOverridden in content/child/runtime_features.cc. We enable
-// it here by default to support use in origin trials.
-BASE_FEATURE(kFedCmButtonMode,
-             "FedCmButtonMode",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables cooldown on ignore in FedCM API.
 BASE_FEATURE(kFedCmCooldownOnIgnore,

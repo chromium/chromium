@@ -439,16 +439,6 @@ bool HasSharingPermissionOrIdpHasThirdPartyCookiesAccess(
       requester_origin, embedder_origin, url::Origin::Create(provider_url));
 }
 
-bool IsFedCmAuthzEnabled() {
-  // If field trials or an explicit user selection disables authz, we should
-  // respect that.
-  std::optional<bool> is_overridden = IsFedCmAuthzOverridden();
-  if (is_overridden) {
-    return *is_overridden;
-  }
-  return true;
-}
-
 FederatedAuthRequestPageData* GetPageData(Page& page) {
   return FederatedAuthRequestPageData::GetOrCreateForPage(page);
 }

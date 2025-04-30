@@ -286,9 +286,8 @@ void FederatedProviderFetcher::ValidateAndMaybeSetError(FetchResult& result) {
       result.wellknown.accounts.is_valid() ||
       (IsFedCmLightweightModeEnabled() && result.wellknown.accounts.is_empty());
 
-  if (webid::IsFedCmAuthzEnabled() && is_wellknown_accounts_valid &&
-      result.wellknown.login_url.is_valid() && result.metadata &&
-      result.metadata->idp_login_url.is_valid()) {
+  if (is_wellknown_accounts_valid && result.wellknown.login_url.is_valid() &&
+      result.metadata && result.metadata->idp_login_url.is_valid()) {
     // Behind the AuthZ flag, it is valid for IdPs to have valid configURLs
     // by announcing their accounts_endpoint and their login_urls in the
     // .well-known file. When that happens, and both of these urls match the

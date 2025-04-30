@@ -331,11 +331,7 @@ TEST_F(FederatedProviderFetcherTest,
 }
 
 TEST_F(FederatedProviderFetcherTest,
-       ProvidersUrlsIgnoredWhenAuthZIsEnabledAndAccountEndpointsMatch) {
-  // When the AuthZ feature is enabled, the well-known file can have more than
-  // one provider_url.
-  feature_list_.InitAndEnableFeature(features::kFedCmAuthz);
-
+       ProvidersUrlsIgnoredWhenAccountEndpointsMatch) {
   auto network_manager =
       std::make_unique<StrictMock<MockIdpNetworkRequestManager>>();
   FederatedProviderFetcher fetcher(*main_rfh(), network_manager.get());
@@ -387,11 +383,7 @@ TEST_F(FederatedProviderFetcherTest,
 }
 
 TEST_F(FederatedProviderFetcherTest,
-       ProvidersUrlsCanbeEmptyWhenAuthZIsEnabledAndAccountEndpointsMatch) {
-  // When the AuthZ feature is enabled, the well-known file can have empty
-  // provider_urls.
-  feature_list_.InitAndEnableFeature(features::kFedCmAuthz);
-
+       ProvidersUrlsCanbeEmptyWhenAccountEndpointsMatch) {
   auto network_manager =
       std::make_unique<StrictMock<MockIdpNetworkRequestManager>>();
   FederatedProviderFetcher fetcher(*main_rfh(), network_manager.get());
@@ -647,7 +639,6 @@ TEST_F(FederatedProviderFetcherTest, SkippingTheChecksWithTheWellKnownFlag) {
 }
 
 TEST_F(FederatedProviderFetcherTest, InvalidWellKnownWithoutSignInUrl) {
-  feature_list_.InitAndEnableFeature(features::kFedCmAuthz);
   FederatedProviderFetcher::FetchResult result;
   result.endpoints.accounts = GURL("https://idp.example/accounts");
   result.endpoints.token = GURL("https://idp.example/token");
@@ -666,7 +657,6 @@ TEST_F(FederatedProviderFetcherTest, InvalidWellKnownWithoutSignInUrl) {
 }
 
 TEST_F(FederatedProviderFetcherTest, InvalidWellKnownWithoutAccountsEndpoint) {
-  feature_list_.InitAndEnableFeature(features::kFedCmAuthz);
   FederatedProviderFetcher::FetchResult result;
   result.endpoints.accounts = GURL("https://idp.example/accounts");
   result.endpoints.token = GURL("https://idp.example/token");
@@ -686,7 +676,6 @@ TEST_F(FederatedProviderFetcherTest, InvalidWellKnownWithoutAccountsEndpoint) {
 
 TEST_F(FederatedProviderFetcherTest,
        ValidWellKnownWithMatchingAccountsAndSignInUrl) {
-  feature_list_.InitAndEnableFeature(features::kFedCmAuthz);
   FederatedProviderFetcher::FetchResult result;
   IdentityProviderMetadata metadata;
   metadata.idp_login_url = GURL("https://idp.example/sign-in");
@@ -714,7 +703,6 @@ TEST_F(FederatedProviderFetcherTest,
   // not matching the one provided in the configURL, we do to allow falling
   // back to checking based on the fact that the provider_url contains the
   // configURL.
-  feature_list_.InitAndEnableFeature(features::kFedCmAuthz);
   FederatedProviderFetcher::FetchResult result;
   IdentityProviderMetadata metadata;
   metadata.idp_login_url = GURL("https://idp.example/sign-in");
@@ -766,13 +754,12 @@ TEST_F(FederatedProviderFetcherTest,
 }
 
 TEST_F(FederatedProviderFetcherTest,
-       ProvidersUrlsCanbeEmptyWhenAuthZAndLightweightAreEnabled) {
-  // Validate that when LightweightFedCM and FedCmAuthz are enabled,
+       ProvidersUrlsCanbeEmptyWhenLightweightIsEnabled) {
+  // Validate that when LightweightFedCM is enabled,
   // it's permissible to have an empty accounts_endpoint set and
   // no provider_config_urls, so long as the accounts url is empty in both the
   // wellknown and config.
-  feature_list_.InitWithFeatures(
-      {features::kFedCmLightweightMode, features::kFedCmAuthz}, {});
+  feature_list_.InitAndEnableFeature(features::kFedCmLightweightMode);
   FederatedProviderFetcher::FetchResult result;
   IdentityProviderMetadata metadata;
   metadata.idp_login_url = GURL("https://idp.example/sign-in");

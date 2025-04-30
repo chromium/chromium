@@ -4772,19 +4772,9 @@
     "expiry_milestone": 140
   },
   {
-    "name": "fedcm-authz",
-    "owners": [ "goto@chromium.org", "web-identity-eng@google.com"],
-    "expiry_milestone": 137
-  },
-  {
     "name": "fedcm-autofill",
     "owners": [ "yigu@chromium.org", "web-identity-eng@google.com"],
     "expiry_milestone": 140
-  },
-  {
-    "name": "fedcm-button-mode",
-    "owners": [ "yigu@chromium.org", "web-identity-eng@google.com"],
-    "expiry_milestone": 137
   },
   {
     "name": "fedcm-cooldown-on-ignore",
@@ -4829,11 +4819,6 @@
   {
     "name": "fedcm-show-filtered-accounts",
     "owners": ["npm@chromium.org", "web-identity-eng@google.com"],
-    "expiry_milestone": 137
-  },
-  {
-    "name": "fedcm-use-other-account",
-    "owners": [ "cbiesinger@chromium.org", "web-identity-eng@google.com"],
     "expiry_milestone": 137
   },
   {

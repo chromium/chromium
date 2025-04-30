@@ -9071,17 +9071,9 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kFedCmAlternativeIdentifiersDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kFedCmAlternativeIdentifiers)},
 
-    {"fedcm-authz", flag_descriptions::kFedCmAuthzName,
-     flag_descriptions::kFedCmAuthzDescription, kOsAll,
-     FEATURE_VALUE_TYPE(features::kFedCmAuthz)},
-
     {"fedcm-autofill", flag_descriptions::kFedCmAutofillName,
      flag_descriptions::kFedCmAutofillDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kFedCmAutofill)},
-
-    {"fedcm-button-mode", flag_descriptions::kFedCmButtonModeName,
-     flag_descriptions::kFedCmButtonModeDescription, kOsAll,
-     FEATURE_VALUE_TYPE(features::kFedCmButtonMode)},
 
     {"fedcm-cooldown-on-ignore", flag_descriptions::kFedCmCooldownOnIgnoreName,
      flag_descriptions::kFedCmCooldownOnIgnoreDescription, kOsAll,
@@ -9116,10 +9108,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kFedCmShowFilteredAccountsName,
      flag_descriptions::kFedCmShowFilteredAccountsDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kFedCmShowFilteredAccounts)},
-
-    {"fedcm-use-other-account", flag_descriptions::kFedCmUseOtherAccountName,
-     flag_descriptions::kFedCmUseOtherAccountDescription, kOsAll,
-     FEATURE_VALUE_TYPE(features::kFedCmUseOtherAccount)},
 
     {"fedcm-without-well-known-enforcement",
      flag_descriptions::kFedCmWithoutWellKnownEnforcementName,
