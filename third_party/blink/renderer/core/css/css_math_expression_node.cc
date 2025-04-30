@@ -2565,11 +2565,16 @@ bool CSSMathExpressionOperation::AccumulateLengthArray(
       DCHECK_NE((operands_[0]->Category() == kCalcNumber),
                 (operands_[1]->Category() == kCalcNumber));
       if (operands_[0]->Category() == kCalcNumber) {
-        return operands_[1]->AccumulateLengthArray(
-            length_array, multiplier * operands_[0]->DoubleValue());
-      } else {
+        if (IsNumericNodeWithDoubleValue(operands_[0])) {
+          return operands_[1]->AccumulateLengthArray(
+              length_array, multiplier * operands_[0]->DoubleValue());
+        }
+        return false;
+      } else if (IsNumericNodeWithDoubleValue(operands_[1])) {
         return operands_[0]->AccumulateLengthArray(
             length_array, multiplier * operands_[1]->DoubleValue());
+      } else {
+        return false;
       }
     case CSSMathOperator::kInvert:
       // We don't support this yet.
