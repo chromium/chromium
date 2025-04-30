@@ -5,6 +5,7 @@
 #ifndef MOJO_PUBLIC_CPP_BINDINGS_LIB_TEMPLATE_UTIL_H_
 #define MOJO_PUBLIC_CPP_BINDINGS_LIB_TEMPLATE_UTIL_H_
 
+#include <optional>
 #include <type_traits>
 
 #include "mojo/public/cpp/bindings/optional_as_pointer.h"
