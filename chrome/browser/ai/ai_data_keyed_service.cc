@@ -855,8 +855,15 @@ void AiDataKeyedService::StartTask(
     RunLater(base::BindOnce(std::move(callback), std::move(result)));
     return;
   }
-  actor_coordinator_ = std::make_unique<actor::ActorCoordinator>(
-      Profile::FromBrowserContext(browser_context_));
+  Profile* profile = Profile::FromBrowserContext(browser_context_);
+  actor_coordinator_ = std::make_unique<actor::ActorCoordinator>(profile);
+  // The GlicKeyedService is normally what sets up the profile for Glic, but
+  // GlicKeyedService is not compabible with system profiles, so we need to
+  // manually register the profile here to make sure that OptimizationGuide is
+  // properly set up.
+  // Note that this function is idempotent, so it is fine to call it multiple
+  // times.
+  actor::ActorCoordinator::RegisterWithProfile(profile);
   task_needs_navigate_ = true;
   // TODO(https://crbug.com/407860715): Implement a separate host API to start
   // a task, and remove action handling here.
