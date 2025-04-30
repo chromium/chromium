@@ -24,6 +24,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/policy/core/common/policy_pref_names.h"
+#include "components/policy/core/common/system_features_disable_list_constants.h"
 #include "components/policy/policy_constants.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/strings/grit/components_strings.h"
@@ -188,13 +189,13 @@ class SystemFeaturesPolicyTest : public PolicyTest {
     // Disable and hide app.
     expected_visibility = GetVisibilityFlags(true /* is_hidden */);
     UpdateSystemFeaturesDisableList(system_features.Clone(),
-                                    kHiddenDisableMode);
+                                    kSystemFeaturesDisableModeHidden);
     VerifyAppState(app_id, apps::Readiness::kDisabledByPolicy, true,
                    expected_visibility);
     // Disable and block app.
     expected_visibility = GetVisibilityFlags(false /* is_hidden */);
     UpdateSystemFeaturesDisableList(system_features.Clone(),
-                                    kBlockedDisableMode);
+                                    kSystemFeaturesDisableModeBlocked);
     VerifyAppState(app_id, apps::Readiness::kDisabledByPolicy, true,
                    expected_visibility);
     // Enable app.
@@ -302,7 +303,8 @@ IN_PROC_BROWSER_TEST_F(SystemFeaturesPolicyTest,
                                     kWebStoreExtensionTitle);
   // Disable and hide app.
   expected_visibility = GetVisibilityFlags(true /* is_hidden */);
-  UpdateSystemFeaturesDisableList(system_features.Clone(), kHiddenDisableMode);
+  UpdateSystemFeaturesDisableList(system_features.Clone(),
+                                  kSystemFeaturesDisableModeHidden);
   VerifyExtensionAppState(extensions::kWebStoreAppId,
                           apps::Readiness::kDisabledByPolicy, true,
                           expected_visibility);
@@ -310,7 +312,8 @@ IN_PROC_BROWSER_TEST_F(SystemFeaturesPolicyTest,
                                     kWebStoreExtensionTitle);
   // Disable and block app.
   expected_visibility = GetVisibilityFlags(false /* is_hidden */);
-  UpdateSystemFeaturesDisableList(system_features.Clone(), kBlockedDisableMode);
+  UpdateSystemFeaturesDisableList(system_features.Clone(),
+                                  kSystemFeaturesDisableModeBlocked);
   VerifyExtensionAppState(extensions::kWebStoreAppId,
                           apps::Readiness::kDisabledByPolicy, true,
                           expected_visibility);
@@ -366,7 +369,8 @@ IN_PROC_BROWSER_TEST_F(SystemFeaturesPolicyTest,
                                                 .Append(kPrintJobsFeature)
                                                 .Append(kKeyShortcutsFeature)
                                                 .Append(kRecorderFeature);
-  UpdateSystemFeaturesDisableList(system_features.Clone(), kHiddenDisableMode);
+  UpdateSystemFeaturesDisableList(system_features.Clone(),
+                                  kSystemFeaturesDisableModeHidden);
 
   VisibilityFlags expected_visibility =
       GetVisibilityFlags(true /* is_hidden */);
@@ -397,7 +401,8 @@ IN_PROC_BROWSER_TEST_F(SystemFeaturesPolicyTest,
   // Crosh is never shown.
   VisibilityFlags crosh_expected_visibility =
       GetVisibilityFlags(true /* is_hidden */);
-  UpdateSystemFeaturesDisableList(system_features.Clone(), kBlockedDisableMode);
+  UpdateSystemFeaturesDisableList(system_features.Clone(),
+                                  kSystemFeaturesDisableModeBlocked);
 
   VerifyAppState(ash::kCameraAppId, apps::Readiness::kDisabledByPolicy, true,
                  expected_visibility);
@@ -458,7 +463,8 @@ IN_PROC_BROWSER_TEST_F(SystemFeaturesPolicyTest,
                                                 .Append(kPrintJobsFeature)
                                                 .Append(kKeyShortcutsFeature)
                                                 .Append(kRecorderFeature);
-  UpdateSystemFeaturesDisableList(system_features.Clone(), kHiddenDisableMode);
+  UpdateSystemFeaturesDisableList(system_features.Clone(),
+                                  kSystemFeaturesDisableModeHidden);
 
   InstallSWAs();
   InstallPWA(GURL(kCanvasAppURL), ash::kCanvasAppId);

@@ -69,6 +69,7 @@
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/components/policy/system_features_disable_list/system_features_disable_list_policy_utils.h"
 #include "chromeos/ash/experiences/arc/app/arc_app_constants.h"
 #include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
 #include "components/app_constants/constants.h"
@@ -847,9 +848,7 @@ void ExtensionAppsChromeOs::OnSystemFeaturesPrefChanged() {
       local_state->GetList(policy::policy_prefs::kSystemFeaturesDisableList);
 
   const bool is_pref_disabled_mode_hidden =
-      local_state->GetString(
-          policy::policy_prefs::kSystemFeaturesDisableMode) ==
-      policy::kHiddenDisableMode;
+      policy::IsDisabledAppsModeHidden(*local_state);
   const bool is_disabled_mode_changed =
       (is_pref_disabled_mode_hidden != is_disabled_apps_mode_hidden_);
   is_disabled_apps_mode_hidden_ = is_pref_disabled_mode_hidden;

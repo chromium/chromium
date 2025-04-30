@@ -73,6 +73,7 @@
 #include "chrome/browser/ash/system_web_apps/test_support/test_system_web_app_manager.h"
 #include "chrome/browser/policy/system_features_disable_list_policy_handler.h"
 #include "components/policy/core/common/policy_pref_names.h"
+#include "components/policy/core/common/system_features_disable_list_constants.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/test_helper.h"
 #include "components/user_manager/user_names.h"
@@ -947,7 +948,7 @@ TEST_F(WebAppPolicyManagerTest, DisableSystemWebApps) {
   // Set disable mode to hidden.
   testing_local_state_.Get()->SetUserPref(
       policy::policy_prefs::kSystemFeaturesDisableMode,
-      base::Value(policy::kHiddenDisableMode));
+      base::Value(policy::kSystemFeaturesDisableModeHidden));
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(policy_manager().IsDisabledAppsModeHidden());
 }

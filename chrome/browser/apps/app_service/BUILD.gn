@@ -259,6 +259,7 @@ source_set("app_service") {
       "//chromeos/ash/components/demo_mode",
       "//chromeos/ash/components/file_manager:constants",
       "//chromeos/ash/components/login/login_state",
+      "//chromeos/ash/components/policy/system_features_disable_list",
       "//chromeos/ash/experiences/arc",
       "//chromeos/ash/experiences/arc:arc_app_constants",
       "//chromeos/ash/experiences/arc:arc_app_constants",

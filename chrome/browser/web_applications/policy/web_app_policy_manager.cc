@@ -67,6 +67,7 @@
 #include "chrome/browser/web_applications/web_app_system_web_app_delegate_map_utils.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "components/policy/core/common/policy_pref_names.h"
+#include "components/policy/core/common/system_features_disable_list_constants.h"
 #include "components/user_manager/user_manager.h"
 #endif
 
@@ -272,8 +273,9 @@ bool WebAppPolicyManager::IsDisabledAppsModeHidden() const {
 
   std::string disabled_mode =
       local_state->GetString(policy::policy_prefs::kSystemFeaturesDisableMode);
-  if (disabled_mode == policy::kHiddenDisableMode)
+  if (disabled_mode == policy::kSystemFeaturesDisableModeHidden) {
     return true;
+  }
 #endif  // BUILDFLAG(IS_CHROMEOS)
   return false;
 }

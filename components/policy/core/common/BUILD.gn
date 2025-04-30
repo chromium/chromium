@@ -488,6 +488,7 @@ source_set("common_constants") {
     "policy_types.h",
     "proxy_settings_constants.cc",
     "proxy_settings_constants.h",
+    "system_features_disable_list_constants.h",
   ]
 
   if (is_ios) {

@@ -12,6 +12,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/policy/core/common/policy_pref_names.h"
+#include "components/policy/core/common/system_features_disable_list_constants.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_registry_simple.h"
 
@@ -45,9 +46,6 @@ const char kGoogleMapsFeature[] = "google_maps";
 const char kCalculatorFeature[] = "calculator";
 const char kTextEditorFeature[] = "text_editor";
 
-const char kBlockedDisableMode[] = "blocked";
-const char kHiddenDisableMode[] = "hidden";
-
 const char kSystemFeaturesDisableListHistogram[] =
     "Enterprise.SystemFeaturesDisableList";
 
@@ -62,7 +60,7 @@ void SystemFeaturesDisableListPolicyHandler::RegisterPrefs(
     PrefRegistrySimple* registry) {
   registry->RegisterListPref(policy_prefs::kSystemFeaturesDisableList);
   registry->RegisterStringPref(policy_prefs::kSystemFeaturesDisableMode,
-                               kBlockedDisableMode);
+                               kSystemFeaturesDisableModeBlocked);
 }
 
 SystemFeature SystemFeaturesDisableListPolicyHandler::GetSystemFeatureFromAppId(
