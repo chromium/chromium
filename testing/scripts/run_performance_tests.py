@@ -752,7 +752,7 @@ class CrossbenchTest(object):
       browser_arg = _get_browser_arg(options.passthrough_args)
       self.is_android = _is_android(browser_arg)
       self._find_browser(browser_arg)
-      self.driver_path_arg = self._find_chromedriver(browser_arg)
+      self.driver_path_arg = self._find_chromedriver()
 
   def _get_network_arg(self, args):
     if _arg := _get_arg(args, '--network='):
@@ -837,15 +837,8 @@ class CrossbenchTest(object):
       assert hasattr(possible_browser, 'local_executable')
       self.browser = self.CHROME_BROWSER % possible_browser.local_executable
 
-  def _find_chromedriver(self, browser_arg):
-    browser_arg = browser_arg.lower()
-    if browser_arg == 'release_x64':
-      path = '../Release_x64'
-    elif self.is_android:
-      path = 'clang_x64'
-    else:
-      path = '.'
-
+  def _find_chromedriver(self):
+    path = 'clang_x64' if self.is_android else '.'
     abspath = pathlib.Path(path).absolute()
     if ((driver_path := (abspath / 'chromedriver')).exists()
         or (driver_path := (abspath / 'chromedriver.exe')).exists()):
