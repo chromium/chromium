@@ -1666,8 +1666,15 @@ config("clang_revision") {
             string_replace(_clang_version_lines[1], "CLANG_SUB_REVISION = ", "")
         _expected_clang_revision = "$_py_revision-$_py_subrevision"
 
+        # TODO(agrieve): Change filter_include to _clang_revision ==
+        # _expected_clang_revision once angle & webrtc use a GCS DEPS entry
+        # rather than a update.py runhook.
         assert(
-            _clang_revision == _expected_clang_revision,
+            filter_include([ _clang_revision ],
+                           [
+                             _expected_clang_revision,
+                             "$_expected_clang_revision,*",
+                           ]) != [],
             "clang_revision=\"$_clang_revision\" but update.py expected \"$_expected_clang_revision\". Did you forget to gclient sync?")
       }
     }
