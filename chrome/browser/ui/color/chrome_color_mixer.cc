@@ -115,16 +115,8 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorAppMenuHighlightPrimary] = {ui::kColorButtonBackgroundProminent};
   mixer[kColorAppMenuExpandedForegroundPrimary] = {
       ui::kColorButtonForegroundProminent};
-  mixer[kColorAvatarButtonHighlightNormal] =
-      AdjustHighlightColorForContrast(ui::kColorAccent, kColorToolbar);
   mixer[kColorAvatarButtonHighlightSyncError] = AdjustHighlightColorForContrast(
       ui::kColorAlertHighSeverity, kColorToolbar);
-  mixer[kColorAvatarButtonHighlightSyncPaused] = {
-      kColorAvatarButtonHighlightNormal};
-  mixer[kColorAvatarButtonHighlightSigninPaused] = {
-      kColorAvatarButtonHighlightNormal};
-  mixer[kColorAvatarButtonHighlightExplicitText] = {
-      kColorAvatarButtonHighlightNormal};
   mixer[kColorAvatarStroke] = {kColorToolbarButtonIcon};
   mixer[kColorAvatarFillForContrast] = {kColorToolbar};
   mixer[kColorBookmarkBarBackground] = {kColorToolbar};
@@ -754,11 +746,6 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
       ui::SetAlpha(ui::GetColorWithMaxContrast(kColorToolbarButtonText), 0xCC);
   mixer[kColorAvatarButtonHighlightIncognito] = {
       kColorToolbarButtonBackgroundHighlightedDefault};
-  mixer[kColorAvatarButtonHighlightDefault] = {kColorToolbar};
-  mixer[kColorAvatarButtonHighlightNormalForeground] =
-      AdjustHighlightColorForContrast(ui::kColorAccent, kColorToolbar);
-  mixer[kColorAvatarButtonHighlightDefaultForeground] = {
-      kColorToolbarButtonText};
   mixer[kColorAvatarButtonHighlightSyncErrorForeground] =
       AdjustHighlightColorForContrast(ui::kColorAlertMediumSeverityIcon,
                                       kColorToolbar);
