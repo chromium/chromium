@@ -91,6 +91,8 @@ source_set("test_support") {
   testonly = true
 
   sources = [
+    "realtime_reporting_test_environment.cc",
+    "realtime_reporting_test_environment.h",
     "realtime_reporting_test_server.cc",
     "realtime_reporting_test_server.h",
     "reporting_test_utils.cc",
@@ -99,6 +101,8 @@ source_set("test_support") {
 
   deps = [
     ":core",
+    "//base/test:test_support",
+    "//components/enterprise",
     "//components/enterprise/common/proto:browser_events_proto",
     "//components/enterprise/common/proto:upload_request_response",
     "//components/policy/core/common:common_constants",

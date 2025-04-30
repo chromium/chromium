@@ -8,6 +8,7 @@
 #import <memory>
 
 #import "base/check.h"
+#import "base/strings/strcat.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/time/time.h"
@@ -15,16 +16,11 @@
 #import "components/autofill/core/browser/field_types.h"
 #import "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #import "components/autofill/ios/common/features.h"
-#import "components/enterprise/browser/enterprise_switches.h"
-#import "components/enterprise/connectors/core/features.h"
-#import "components/enterprise/connectors/core/realtime_reporting_test_server.h"
-#import "components/enterprise/connectors/core/reporting_test_utils.h"
+#import "components/enterprise/connectors/core/realtime_reporting_test_environment.h"
 #import "components/password_manager/core/browser/features/password_features.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/plus_addresses/features.h"
 #import "components/policy/core/common/policy_loader_ios_constants.h"
-#import "components/policy/core/common/policy_switches.h"
-#import "components/policy/test_support/embedded_policy_test_server.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/base/user_selectable_type.h"
 #import "components/sync/service/sync_prefs.h"
@@ -68,6 +64,7 @@ using chrome_test_util::SettingsAccountButton;
 using chrome_test_util::SettingsDoneButton;
 using chrome_test_util::TapWebElementWithId;
 using chrome_test_util::UseSuggestedPasswordMatcher;
+using enterprise_connectors::test::RealtimeReportingTestEnvironment;
 
 using testing::ElementWithAccessibilityLabelSubstring;
 
@@ -167,9 +164,7 @@ void LoginOnUff() {
 @end
 
 @implementation PasswordControllerEGTest {
-  std::unique_ptr<policy::EmbeddedPolicyTestServer> _policyServer;
-  std::unique_ptr<enterprise_connectors::test::RealtimeReportingTestServer>
-      _reportingServer;
+  std::unique_ptr<RealtimeReportingTestEnvironment> _reportingEnvironment;
 }
 
 - (void)setUp {
@@ -178,14 +173,10 @@ void LoginOnUff() {
     // addresses can be added to the app launch config. `GREYAssertTrue` can
     // only be used after calling the superclass's `-setUp`, so use `CHECK()`
     // instead.
-    _policyServer =
-        enterprise_connectors::test::CreatePolicyTestServerForSecurityEvents(
-            {"loginEvent"}, {{"loginEvent", {"*"}}});
-    CHECK(_policyServer);
-    CHECK(_policyServer->Start());
-    _reportingServer = std::make_unique<
-        enterprise_connectors::test::RealtimeReportingTestServer>();
-    CHECK(_reportingServer->Start());
+    _reportingEnvironment = RealtimeReportingTestEnvironment::Create(
+        {"loginEvent"}, {{"loginEvent", {"*"}}});
+    CHECK(_reportingEnvironment);
+    CHECK(_reportingEnvironment->Start());
   }
 
   // This call launches the application and will wait for the profile to be
@@ -230,23 +221,16 @@ void LoginOnUff() {
   // Set Enterprise features for testing password-related event reporting. The
   // policy and reporting servers must be started by this point.
   if ([self isRunningTest:@selector(testLoginEventReported)]) {
-    CHECK(_policyServer);
-    CHECK(_reportingServer);
-    config.additional_args.push_back(
-        base::StrCat({"--", switches::kEnableChromeBrowserCloudManagement}));
+    CHECK(_reportingEnvironment);
+    std::vector<std::string> reporting_args =
+        _reportingEnvironment->GetArguments();
+    config.additional_args.insert(config.additional_args.end(),
+                                  reporting_args.begin(), reporting_args.end());
     config.additional_args.push_back(base::StrCat(
         {"-", base::SysNSStringToUTF8(kPolicyLoaderIOSConfigurationKey)}));
     config.additional_args.push_back(
         base::StrCat({"<dict><key>", kEnrollmentTokenPolicyName,
                       "</key><string>", kEnrollmentToken, "</string></dict>"}));
-    config.additional_args.push_back(
-        base::StrCat({"--", policy::switches::kDeviceManagementUrl, "=",
-                      _policyServer->GetServiceURL().spec()}));
-    config.additional_args.push_back(
-        base::StrCat({"--", policy::switches::kRealtimeReportingUrl, "=",
-                      _reportingServer->GetServiceURL().spec()}));
-    config.features_enabled.push_back(
-        enterprise_connectors::kEnterpriseRealtimeEventReportingOnIOS);
     config.relaunch_policy = ForceRelaunchByKilling;
   }
 
@@ -768,7 +752,7 @@ void LoginOnUff() {
 
   // Use metrics to detect that the report upload completed. This is the best
   // known way to wait because a task environment isn't available here, so
-  // there's nothing for `_reportingServer` to post to when the request
+  // there's nothing for the reporting server to post to when the request
   // arrives. This also precludes helpers like `base::RunLoop` or
   // `net::test_server::ControllableHttpResponse` that require such an
   // environment.
@@ -787,7 +771,7 @@ void LoginOnUff() {
           forHistogram:@"Enterprise.ReportingEventUploadFailure"]);
 
   std::vector<UploadEventsRequest> requests =
-      _reportingServer->GetUploadedReports();
+      _reportingEnvironment->reporting_server()->GetUploadedReports();
   GREYAssertEqual(1U, requests.size(), @"Wrong number of reports.");
   GREYAssertEqual(std::string("iOS"), requests[0].device().os_platform(),
                   @"Wrong OS platform in report.");
