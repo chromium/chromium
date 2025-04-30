@@ -43,9 +43,34 @@
 
 namespace permissions {
 
-class PredictionServiceBrowserTest : public InProcessBrowserTest {
+namespace {
+constexpr auto kLikelihoodUnspecified =
+    PermissionUmaUtil::PredictionGrantLikelihood::
+        PermissionPrediction_Likelihood_DiscretizedLikelihood_DISCRETIZED_LIKELIHOOD_UNSPECIFIED;
+constexpr auto kLikelihoodVeryUnlikely =
+    PermissionUmaUtil::PredictionGrantLikelihood::
+        PermissionPrediction_Likelihood_DiscretizedLikelihood_VERY_UNLIKELY;
+
+// The model returns a constant value of 0.5; its meaning is defined by the
+// max_likely threshold we use in the signature_model_executor to differentiate
+// between very unlikely and unspecified.
+base::FilePath& ModelFilePath() {
+  static base::NoDestructor<base::FilePath> file_path([]() {
+    base::FilePath source_root_dir;
+    base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &source_root_dir);
+    return source_root_dir.AppendASCII("chrome")
+        .AppendASCII("test")
+        .AppendASCII("data")
+        .AppendASCII("permissions")
+        .AppendASCII("signature_model_ret_0.5.tflite");
+  }());
+  return *file_path;
+}
+}  // namespace
+
+class PredictionServiceBrowserTestBase : public InProcessBrowserTest {
  public:
-  PredictionServiceBrowserTest() {
+  PredictionServiceBrowserTestBase() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{features::kPermissionOnDeviceNotificationPredictions, {}},
          {optimization_guide::features::kOptimizationHints, {}},
@@ -54,7 +79,7 @@ class PredictionServiceBrowserTest : public InProcessBrowserTest {
         {permissions::features::kPermissionsAIv1});
   }
 
-  ~PredictionServiceBrowserTest() override = default;
+  ~PredictionServiceBrowserTestBase() override = default;
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
@@ -122,31 +147,82 @@ class PredictionServiceBrowserTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-base::FilePath& model_file_path() {
-  static base::NoDestructor<base::FilePath> file_path([]() {
-    base::FilePath source_root_dir;
-    base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &source_root_dir);
-    return source_root_dir.AppendASCII("chrome")
-        .AppendASCII("test")
-        .AppendASCII("data")
-        .AppendASCII("permissions")
-        .AppendASCII("signature_model.tflite");
-  }());
-  return *file_path;
-}
+using PredictionServiceBrowserTest = PredictionServiceBrowserTestBase;
 
 IN_PROC_BROWSER_TEST_F(PredictionServiceBrowserTest, PredictionServiceEnabled) {
   EXPECT_TRUE(prediction_model_handler());
 }
 
-IN_PROC_BROWSER_TEST_F(PredictionServiceBrowserTest,
-                       SignatureModelReturnsLikely) {
+struct HoldbackProbabilityTestCase {
+  std::string test_name;
+  float holdback_probability;
+  // At the moment, we define everything that the signature model returns that
+  // is above that threshold as very unlikely, and everything below that will
+  // return unspecified.
+  float max_likely_threshold;
+  bool should_expect_quiet_ui;
+  std::optional<PermissionUmaUtil::PredictionGrantLikelihood>
+      expected_prediction_likelihood;
+};
+
+class ParametrizedPredictionServiceBrowserTest
+    : public PredictionServiceBrowserTestBase,
+      public testing::WithParamInterface<HoldbackProbabilityTestCase> {};
+
+INSTANTIATE_TEST_SUITE_P(
+    HoldbackProbabilityTest,
+    ParametrizedPredictionServiceBrowserTest,
+    testing::ValuesIn<HoldbackProbabilityTestCase>({
+        {
+            /*test_name=*/"TestUnspecifiedLikelihoodAndNoHoldback"
+                          "ReturnsDefaultUI",
+            /*holdback_probability=*/0,
+            /*max_likely_threshold=*/0.5,
+            /*should_expect_quiet_ui=*/false,
+            /*expected_prediction_likelihood=*/kLikelihoodUnspecified,
+        },
+        {
+            /*test_name=*/"TestUnspecifiedLikelihoodAndHoldback"
+                          "ReturnsDefaultUI",
+            /*holdback_probability=*/1,
+            /*max_likely_threshold=*/0.5,
+            /*should_expect_quiet_ui=*/false,
+            /*expected_prediction_likelihood=*/kLikelihoodUnspecified,
+        },
+        {
+            /*test_name=*/"TestVeryLikelyAndNoHoldback"
+                          "ReturnsQuietUI",
+            /*holdback_probability=*/0,
+            /*max_likely_threshold=*/0.49,
+            /*should_expect_quiet_ui=*/true,
+            /*expected_prediction_likelihood=*/kLikelihoodVeryUnlikely,
+        },
+        {
+            /*test_name=*/"TestVeryLikelyAndHoldback"
+                          "ReturnsDefaultUI",
+            /*holdback_probability=*/1,
+            /*max_likely_threshold=*/0.49,
+            /*should_expect_quiet_ui=*/false,
+            /*expected_prediction_likelihood=*/kLikelihoodVeryUnlikely,
+        },
+    }),
+    /*name_generator=*/
+    [](const testing::TestParamInfo<
+        ParametrizedPredictionServiceBrowserTest::ParamType>& info) {
+      return info.param.test_name;
+    });
+
+IN_PROC_BROWSER_TEST_P(ParametrizedPredictionServiceBrowserTest,
+                       CheckHoldbackProbabilitiesForDifferentSignatureModels) {
   ASSERT_TRUE(prediction_model_handler());
 
   WebPermissionPredictionsModelMetadata metadata;
-  metadata.set_holdback_probability(0);
   std::string serialized_metadata;
+  metadata.mutable_not_grant_thresholds()->set_max_likely(
+      GetParam().max_likely_threshold);
+  metadata.set_holdback_probability(GetParam().holdback_probability);
   metadata.SerializeToString(&serialized_metadata);
+
   auto any = std::make_optional<optimization_guide::proto::Any>();
   any->set_value(serialized_metadata);
   any->set_type_url(
@@ -158,7 +234,7 @@ IN_PROC_BROWSER_TEST_F(PredictionServiceBrowserTest,
           optimization_guide::proto::
               OPTIMIZATION_TARGET_NOTIFICATION_PERMISSION_PREDICTIONS,
           optimization_guide::TestModelInfoBuilder()
-              .SetModelFilePath(model_file_path())
+              .SetModelFilePath(ModelFilePath())
               .SetModelMetadata(any)
               .Build());
 
@@ -172,11 +248,9 @@ IN_PROC_BROWSER_TEST_F(PredictionServiceBrowserTest,
     TriggerPromptAndVerifyUI(test_url, PermissionAction::GRANTED,
                              /*should_expect_quiet_ui=*/false, std::nullopt);
   }
-  TriggerPromptAndVerifyUI(
-      "e.test", PermissionAction::DISMISSED,
-      /*should_expect_quiet_ui=*/false,
-      PermissionUmaUtil::PredictionGrantLikelihood::
-          PermissionPrediction_Likelihood_DiscretizedLikelihood_DISCRETIZED_LIKELIHOOD_UNSPECIFIED);
+  TriggerPromptAndVerifyUI("e.test", PermissionAction::DISMISSED,
+                           GetParam().should_expect_quiet_ui,
+                           GetParam().expected_prediction_likelihood);
   EXPECT_EQ(5, bubble_factory()->show_count());
 }
 
