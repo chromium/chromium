@@ -16148,6 +16148,7 @@ from previous Chrome versions.
   <int value="698253616"
       label="ExperimentalAccessibilityChromeVoxOobeDialogImprovements:disabled"/>
   <int value="698273842" label="SyncSendTabToSelf:enabled"/>
+  <int value="698313573" label="InstanceSwitcherV2:enabled"/>
   <int value="698809951" label="WebRtcHWVP8Encoding:enabled"/>
   <int value="698842796"
       label="RevokeNotificationsPermissionIfDisabledOnAppLevel:disabled"/>
@@ -17591,6 +17592,7 @@ from previous Chrome versions.
       label="CCTResizableSideSheetDiscoverFeedSettings:enabled"/>
   <int value="1251663392" label="ArcImageCopyPasteCompat:disabled"/>
   <int value="1253001092" label="FeedShare:enabled"/>
+  <int value="1253304179" label="InstanceSwitcherV2:disabled"/>
   <int value="1253698118" label="ash-disable-stable-overview-order"/>
   <int value="1253720084" label="CrOSEnforceSystemAecAgc:disabled"/>
   <int value="1254018350" label="InsecureDownloadWarnings:enabled"/>

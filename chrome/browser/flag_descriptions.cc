@@ -2428,6 +2428,12 @@ const char kIndexedDBDefaultDurabilityRelaxedDescription[] =
     "IDBTransaction \"readwrite\" transaction durability defaults to relaxed "
     "when not specified";
 
+const char kInstanceSwitcherV2Name[] = "Instance switcher v2";
+const char kInstanceSwitcherV2Description[] =
+    "Enables the updated instance switcher dialog, that uses a new layout and "
+    "displays additional instance information like last access time and "
+    "active/inactive status.";
+
 const char kInProductHelpDemoModeChoiceName[] = "In-Product Help Demo Mode";
 const char kInProductHelpDemoModeChoiceDescription[] =
     "Selects the In-Product Help demo mode.";

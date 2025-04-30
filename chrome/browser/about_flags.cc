@@ -12329,6 +12329,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAndroidAdaptiveFrameRateName,
      flag_descriptions::kAndroidAdaptiveFrameRateDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(features::kUseFrameIntervalDeciderAdaptiveFrameRate)},
+
+    {"instance-switcher-v2", flag_descriptions::kInstanceSwitcherV2Name,
+     flag_descriptions::kInstanceSwitcherV2Description, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kInstanceSwitcherV2)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
     {"side-by-side", flag_descriptions::kSideBySideName,

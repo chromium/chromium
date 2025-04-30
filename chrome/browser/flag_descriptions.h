@@ -1390,6 +1390,9 @@ extern const char
 extern const char kIncognitoScreenshotName[];
 extern const char kIncognitoScreenshotDescription[];
 
+extern const char kInstanceSwitcherV2Name[];
+extern const char kInstanceSwitcherV2Description[];
+
 extern const char kInProductHelpDemoModeChoiceName[];
 extern const char kInProductHelpDemoModeChoiceDescription[];
 
