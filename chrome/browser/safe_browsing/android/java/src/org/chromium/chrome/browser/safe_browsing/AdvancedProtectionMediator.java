@@ -6,10 +6,16 @@ package org.chromium.chrome.browser.safe_browsing;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
+import android.os.Bundle;
+
+import androidx.fragment.app.Fragment;
+
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.privacy.settings.PrivacySettingsNavigation;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageDispatcherProvider;
 import org.chromium.components.permissions.OsAdditionalSecurityPermissionProvider;
@@ -20,10 +26,13 @@ import org.chromium.ui.base.WindowAndroid;
 @NullMarked
 public class AdvancedProtectionMediator implements OsAdditionalSecurityPermissionProvider.Observer {
     private WindowAndroid mWindowAndroid;
+    private Class<? extends Fragment> mPrivacySettingsFragmentClass;
     private boolean mShouldShowMessageOnStartup;
 
-    public AdvancedProtectionMediator(WindowAndroid windowAndroid) {
+    public AdvancedProtectionMediator(
+            WindowAndroid windowAndroid, Class<? extends Fragment> privacySettingsFragmentClass) {
         mWindowAndroid = windowAndroid;
+        mPrivacySettingsFragmentClass = privacySettingsFragmentClass;
 
         var provider = OsAdditionalSecurityPermissionUtil.getProviderInstance();
         if (provider != null) {
@@ -72,9 +81,18 @@ public class AdvancedProtectionMediator implements OsAdditionalSecurityPermissio
 
     private void enqueueMessage(OsAdditionalSecurityPermissionProvider provider) {
         var context = assumeNonNull(mWindowAndroid.getContext().get());
+        Runnable buttonHandler =
+                () -> {
+                    Bundle args = new Bundle();
+                    args.putBoolean(
+                            PrivacySettingsNavigation.EXTRA_FOCUS_ADVANCED_PROTECTION_SECTION,
+                            true);
+                    SettingsNavigationFactory.createSettingsNavigation()
+                            .startSettings(context, mPrivacySettingsFragmentClass, args);
+                };
         var propertyModel =
                 provider.buildAdvancedProtectionMessagePropertyModel(
-                        context, /* primaryButtonAction= */ null);
+                        context, /* primaryButtonAction= */ buttonHandler);
         if (propertyModel == null) {
             return;
         }

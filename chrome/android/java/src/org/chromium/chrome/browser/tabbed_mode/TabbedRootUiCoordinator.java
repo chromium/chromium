@@ -124,6 +124,7 @@ import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
 import org.chromium.chrome.browser.pdf.PdfPageIphController;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.privacy.settings.PrivacySettings;
 import org.chromium.chrome.browser.privacy_sandbox.ActivityTypeMapper;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxBridge;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxDialogController;
@@ -793,7 +794,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         super.onFinishNativeInitialization();
         assert mLayoutManager != null;
 
-        mAdvancedProtectionCoordinator = new AdvancedProtectionCoordinator(mWindowAndroid);
+        mAdvancedProtectionCoordinator =
+                new AdvancedProtectionCoordinator(mWindowAndroid, PrivacySettings.class);
 
         UmaSessionStats.registerSyntheticFieldTrial(
                 "AndroidNavigationMode",
