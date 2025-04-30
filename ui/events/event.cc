@@ -10,7 +10,6 @@
 #include <string>
 #include <utility>
 
-#include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram.h"
@@ -887,18 +886,8 @@ void KeyEvent::InitializeNative() {
 
   // Check if this is a key repeat. This must be called before initial flags
   // processing, e.g: NormalizeFlags(), to avoid issues like crbug.com/1069690.
-  if (synthesize_key_repeat_enabled_ && IsRepeated(GetLastKeyEvent())) {
-    if (!(flags() & EF_IS_REPEAT)) {
-      // If this branch is reached, it means that IsRepeated thinks this should
-      // be a repeat key event, while the native event repeat information was
-      // either incorrect or not preserved. This is unexpected, but execution
-      // is permitted to continue as it is no worse than the old behavior.
-      // TODO(https://crbug.com/411681432) Remove IsRepeated once it is deemed
-      // strictly redundant.
-      base::debug::DumpWithoutCrashing();
-    }
+  if (synthesize_key_repeat_enabled_ && IsRepeated(GetLastKeyEvent()))
     SetFlags(flags() | EF_IS_REPEAT);
-  }
 
 #if BUILDFLAG(IS_LINUX)
   NormalizeFlags();
