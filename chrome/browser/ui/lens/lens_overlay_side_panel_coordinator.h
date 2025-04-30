@@ -12,7 +12,6 @@
 #include "chrome/browser/ui/lens/lens_overlay_translate_options.h"
 #include "chrome/browser/ui/lens/lens_search_controller.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_observer.h"
-#include "components/lens/lens_overlay_side_panel_result.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -169,6 +168,13 @@ class LensOverlaySidePanelCoordinator
   // SimpleMenuModel::Delegate:
   void ExecuteCommand(int command_id, int event_flags) override;
 
+  // Show or hide the protected error page based on the value of
+  // `show_protected_error_page.
+  void SetShowProtectedErrorPage(bool show_protected_error_page);
+
+  // Whether the side panel is currently showing the protected error page.
+  bool IsShowingProtectedErrorPage();
+
   // Internal state machine. States are mutually exclusive. Exposed for testing.
   enum class State {
     // This is the default state. This is the state when the side panel is not
@@ -219,7 +225,7 @@ class LensOverlaySidePanelCoordinator
   // done if the side panel is not already in the state provided by the
   // parameters or on its first load.
   void MaybeSetSidePanelShowErrorPage(bool should_show_error_page,
-                                      lens::SidePanelResultStatus status);
+                                      mojom::SidePanelResultStatus status);
 
   // Set the side panel state as being offline.
   void SetSidePanelIsOffline(bool is_offline);
@@ -367,8 +373,8 @@ class LensOverlaySidePanelCoordinator
 
   // The status of the side panel, or whether it is currently showing an error
   // page.
-  lens::SidePanelResultStatus side_panel_result_status_ =
-      lens::SidePanelResultStatus::kUnknown;
+  mojom::SidePanelResultStatus side_panel_result_status_ =
+      mojom::SidePanelResultStatus::kUnknown;
 
   // General side panel coordinator responsible for all side panel interactions.
   // Separate from this class because this controls interactions to other side

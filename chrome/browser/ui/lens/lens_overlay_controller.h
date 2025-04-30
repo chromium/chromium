@@ -1390,6 +1390,16 @@ class LensOverlayController : public LensSearchboxClient,
   // upload.
   bool is_upload_progress_bar_shown_ = true;
 
+  // Indicates whether the user is currently on a context eligible page.
+  bool is_page_context_eligible_ = true;
+
+  // Indicates whether the screenshot should be sent when updating the page
+  // content when first initializing the overlay. This is only used when the
+  // early start query flow optimization is enabled. Setting this to true does
+  // not guarantee the screenshot is sent on initialization, as that is still
+  // dependent on whether the page is context eligible or not.
+  bool should_send_screenshot_on_init_ = false;
+
   // TODO(384778180): The three `pre_initialization_*` fields below are used to
   // store data that came back before the initialization data was ready. This
   // should be refactored into one struct to make it cleaner.

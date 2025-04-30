@@ -5,8 +5,12 @@
 #ifndef CHROME_BROWSER_UI_LENS_LENS_SEARCH_CONTROLLER_H_
 #define CHROME_BROWSER_UI_LENS_LENS_SEARCH_CONTROLLER_H_
 
+#include <memory>
+
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "components/lens/lens_overlay_invocation_source.h"
+#include "components/optimization_guide/content/browser/page_context_eligibility.h"
 #include "components/tabs/public/tab_interface.h"
 
 class LensOverlayController;
@@ -77,6 +81,15 @@ class LensSearchController {
   // Returns the LensOverlaySidePanelCoordinator.
   lens::LensOverlaySidePanelCoordinator* lens_overlay_side_panel_coordinator();
 
+  optimization_guide::PageContextEligibility* page_context_eligibility();
+
+  // Testing function for setting the page context eligibility API for this
+  // controller.
+  void set_page_context_eligibility_for_testing(
+      optimization_guide::PageContextEligibility* page_context_eligibility) {
+    page_context_eligibility_ = page_context_eligibility;
+  }
+
  protected:
   // Override these methods to stub out individual feature controllers for
   // testing.
@@ -99,7 +112,14 @@ class LensSearchController {
   virtual std::unique_ptr<lens::LensSearchboxController>
   CreateLensSearchboxController();
 
+  // Override these methods to be able to track calls made to the page context
+  // eligibility API.
+  virtual void CreatePageContextEligibilityAPI();
+
  private:
+  void OnPageContextEligibilityAPILoaded(
+      optimization_guide::PageContextEligibility* page_context_eligibility);
+
   // Whether the LensSearchController has been initialized.
   bool initialized_ = false;
 
@@ -115,8 +135,13 @@ class LensSearchController {
   // interactions, without a dependency on the overlay controller.
   std::unique_ptr<lens::LensSearchboxController> lens_searchbox_controller_;
 
+  // The page context eligibility API if it has been fetched. Can be nullptr.
+  raw_ptr<optimization_guide::PageContextEligibility> page_context_eligibility_;
+
   // Owns this class.
   raw_ptr<tabs::TabInterface> tab_;
+
+  base::WeakPtrFactory<LensSearchController> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_LENS_LENS_SEARCH_CONTROLLER_H_

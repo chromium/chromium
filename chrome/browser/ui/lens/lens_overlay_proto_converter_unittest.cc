@@ -12,6 +12,10 @@
 #include "chrome/browser/lens/core/mojom/polygon.mojom.h"
 #include "chrome/browser/lens/core/mojom/text.mojom-forward.h"
 #include "chrome/browser/lens/core/mojom/text.mojom.h"
+#include "components/optimization_guide/content/browser/page_content_proto_provider.h"
+#include "components/optimization_guide/content/browser/page_context_eligibility.h"
+#include "components/optimization_guide/content/mojom/ai_page_content_metadata.mojom-forward.h"
+#include "components/optimization_guide/content/mojom/ai_page_content_metadata.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/lens_server_proto/lens_overlay_deep_gleam_data.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_geometry.pb.h"
@@ -893,6 +897,40 @@ TEST_F(LensOverlayProtoConverterTest, CreateTextMojomFromInteractionResponse) {
             static_cast<int>(kTestText.writing_direction));
   EXPECT_EQ(mojo_word->formula_metadata->latex,
             test_word_struct.formula_metadata_latex);
+}
+
+TEST_F(LensOverlayProtoConverterTest, ConvertFrameMetadataFromProto) {
+  optimization_guide::AIPageContentResult result;
+  optimization_guide::mojom::PageMetadataPtr page_metadata =
+      optimization_guide::mojom::PageMetadata::New();
+  std::vector<optimization_guide::mojom::FrameMetadataPtr> frame_metadata_list;
+  optimization_guide::mojom::FrameMetadataPtr frame_metadata =
+      optimization_guide::mojom::FrameMetadata::New();
+  std::vector<optimization_guide::mojom::MetaTagPtr> meta_tags;
+  optimization_guide::mojom::MetaTagPtr meta_tag =
+      optimization_guide::mojom::MetaTag::New();
+
+  frame_metadata->url = GURL("https://www.google.com/search?q=text#someref");
+  meta_tag->name = "meta-tag-name";
+  meta_tag->content = "meta-tag-content";
+  meta_tags.push_back(std::move(meta_tag));
+  frame_metadata->meta_tags = std::move(meta_tags);
+  frame_metadata_list.push_back(std::move(frame_metadata));
+
+  page_metadata->frame_metadata = std::move(frame_metadata_list);
+  result.metadata = std::move(page_metadata);
+
+  const auto frame_metadata_structs = ConvertFrameMetadataFromProto(result);
+  ASSERT_EQ(1ul, frame_metadata_structs.size());
+
+  const auto frame_metadata_struct = frame_metadata_structs[0];
+  EXPECT_EQ("www.google.com", frame_metadata_struct.host);
+  EXPECT_EQ("/search", frame_metadata_struct.path);
+  ASSERT_EQ(1ul, frame_metadata_struct.meta_tags.size());
+
+  const auto meta_tag_struct = frame_metadata_struct.meta_tags[0];
+  EXPECT_EQ("meta-tag-name", meta_tag_struct.name);
+  EXPECT_EQ("meta-tag-content", meta_tag_struct.content);
 }
 
 }  // namespace lens

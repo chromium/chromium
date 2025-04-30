@@ -684,6 +684,13 @@ if (is_mac && build_with_internal_optimization_guide) {
   }
 }
 
+source_set("optimization_guide_library_holder") {
+  public = [ "optimization_guide_library_holder.h" ]
+  sources = [ "optimization_guide_library_holder.cc" ]
+
+  public_deps = [ "//base" ]
+}
+
 action("on_device_model_execution_proto_generator") {
   script =
       "//components/optimization_guide/tools/gen_on_device_proto_descriptors.py"

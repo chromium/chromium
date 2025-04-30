@@ -8,6 +8,7 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/companion/text_finder/text_finder_manager.h"
 #include "chrome/browser/companion/text_finder/text_highlighter_manager.h"
+#include "chrome/browser/lens/core/mojom/lens_side_panel.mojom.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
@@ -160,8 +161,10 @@ LensOverlaySidePanelCoordinator::RegisterEntryAndShow() {
 
 void LensOverlaySidePanelCoordinator::RecordAndShowSidePanelErrorPage() {
   CHECK(side_panel_page_);
-  side_panel_page_->SetShowErrorPage(side_panel_should_show_error_page_);
-  lens::RecordSidePanelResultStatus(side_panel_result_status_);
+  side_panel_page_->SetShowErrorPage(side_panel_should_show_error_page_,
+                                     side_panel_result_status_);
+  lens::RecordSidePanelResultStatus(
+      static_cast<lens::SidePanelResultStatus>(side_panel_result_status_));
 }
 
 void LensOverlaySidePanelCoordinator::SetSidePanelNewTabUrl(const GURL& url) {
@@ -435,6 +438,29 @@ void LensOverlaySidePanelCoordinator::ExecuteCommand(int command_id,
   }
 }
 
+void LensOverlaySidePanelCoordinator::SetShowProtectedErrorPage(
+    bool show_protected_error_page) {
+  if (show_protected_error_page) {
+    side_panel_should_show_error_page_ = true;
+    side_panel_result_status_ =
+        mojom::SidePanelResultStatus::kErrorPageShownProtected;
+  } else if (side_panel_result_status_ ==
+             mojom::SidePanelResultStatus::kErrorPageShownProtected) {
+    side_panel_should_show_error_page_ = false;
+    side_panel_result_status_ = mojom::SidePanelResultStatus::kResultShown;
+  }
+
+  if (side_panel_page_) {
+    RecordAndShowSidePanelErrorPage();
+  }
+}
+
+bool LensOverlaySidePanelCoordinator::IsShowingProtectedErrorPage() {
+  return side_panel_should_show_error_page_ &&
+         side_panel_result_status_ ==
+             mojom::SidePanelResultStatus::kErrorPageShownProtected;
+}
+
 void LensOverlaySidePanelCoordinator::BindSidePanel(
     mojo::PendingReceiver<lens::mojom::LensSidePanelPageHandler> receiver,
     mojo::PendingRemote<lens::mojom::LensSidePanelPage> page) {
@@ -491,12 +517,12 @@ void LensOverlaySidePanelCoordinator::NotifyPageContentUpdated() {
 
 void LensOverlaySidePanelCoordinator::MaybeSetSidePanelShowErrorPage(
     bool should_show_error_page,
-    lens::SidePanelResultStatus status) {
+    mojom::SidePanelResultStatus status) {
   // Only show / hide the error page if the side panel is not already in that
   // state. Return early if the state should not change unless the initial load
   // has not been logged (`side_panel_result_status_` set to kUnknown).
   if (side_panel_should_show_error_page_ == should_show_error_page &&
-      side_panel_result_status_ != lens::SidePanelResultStatus::kUnknown) {
+      side_panel_result_status_ != mojom::SidePanelResultStatus::kUnknown) {
     return;
   }
 
@@ -508,17 +534,19 @@ void LensOverlaySidePanelCoordinator::MaybeSetSidePanelShowErrorPage(
 }
 
 void LensOverlaySidePanelCoordinator::SetSidePanelIsOffline(bool is_offline) {
-  // If the side panel is already showing an error page due to start query
-  // error, then this should be a no-op.
+  // If the side panel is already showing an error page, then this should be a
+  // no-op.
   if (side_panel_result_status_ ==
-      lens::SidePanelResultStatus::kErrorPageShownStartQueryError) {
+          mojom::SidePanelResultStatus::kErrorPageShownStartQueryError ||
+      side_panel_result_status_ ==
+          mojom::SidePanelResultStatus::kErrorPageShownProtected) {
     return;
   }
 
   MaybeSetSidePanelShowErrorPage(
       is_offline, is_offline
-                      ? lens::SidePanelResultStatus::kErrorPageShownOffline
-                      : lens::SidePanelResultStatus::kResultShown);
+                      ? mojom::SidePanelResultStatus::kErrorPageShownOffline
+                      : mojom::SidePanelResultStatus::kResultShown);
 }
 
 void LensOverlaySidePanelCoordinator::SetSidePanelIsLoadingResults(
@@ -595,7 +623,7 @@ void LensOverlaySidePanelCoordinator::DeregisterEntryAndCleanup() {
   pending_side_panel_url_.reset();
   side_panel_should_show_error_page_ = false;
   side_panel_new_tab_url_ = GURL();
-  side_panel_result_status_ = lens::SidePanelResultStatus::kUnknown;
+  side_panel_result_status_ = mojom::SidePanelResultStatus::kUnknown;
 
   state_ = State::kOff;
 }

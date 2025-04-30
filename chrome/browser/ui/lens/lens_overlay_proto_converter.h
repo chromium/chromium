@@ -7,6 +7,8 @@
 
 #include "chrome/browser/lens/core/mojom/overlay_object.mojom.h"
 #include "chrome/browser/lens/core/mojom/text.mojom.h"
+#include "components/optimization_guide/content/browser/page_content_proto_provider.h"
+#include "components/optimization_guide/content/browser/page_context_eligibility_api.h"
 #include "third_party/lens_server_proto/lens_overlay_geometry.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_server.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_service_deps.pb.h"
@@ -39,6 +41,12 @@ lens::mojom::TextPtr CreateTextMojomFromInteractionResponse(
     const lens::LensOverlayInteractionResponse& response,
     const lens::ZoomedCrop& region_crop_box,
     const gfx::Size& resized_bitmap_size);
+
+// Convert the page metadata from the AIPageContentResult proto to a C struct
+// defined in the optimization_guide component so it can be passed to a shared
+// library.
+std::vector<optimization_guide::FrameMetadata> ConvertFrameMetadataFromProto(
+    const optimization_guide::AIPageContentResult& result);
 }  // namespace lens
 
 #endif  // CHROME_BROWSER_UI_LENS_LENS_OVERLAY_PROTO_CONVERTER_H_
