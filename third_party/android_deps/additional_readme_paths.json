@@ -40,7 +40,6 @@
     "libs/com_google_firebase_firebase_installations_interop",
     "libs/com_google_firebase_firebase_measurement_connector",
     "libs/com_google_firebase_firebase_messaging",
-    "libs/com_google_guava_guava_android",
     "libs/com_googlecode_java_diff_utils_diffutils",
     "libs/com_squareup_javapoet",
     "libs/com_squareup_moshi_moshi_adapters",

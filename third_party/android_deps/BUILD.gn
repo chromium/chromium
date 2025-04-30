@@ -559,43 +559,6 @@ if (!limit_android_deps) {
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  if (!defined(guava_android_target)) {
-    java_prebuilt("com_google_guava_guava_android_java") {
-      jar_path =
-          "cipd/libs/com_google_guava_guava_android/guava-33.3.1-android.jar"
-      output_name = "com_google_guava_guava_android"
-      supports_android = true
-      requires_android = true
-      enable_bytecode_checks = false
-
-      # Target is swapped out when internal code is enabled.
-      # Please depend on //third_party/android_deps:guava_android_java instead.
-      visibility = [ "//third_party/android_deps:*" ]
-      deps = [
-        ":com_google_code_findbugs_jsr305_java",
-        ":com_google_errorprone_error_prone_annotations_java",
-        ":com_google_j2objc_j2objc_annotations_java",
-        ":org_checkerframework_checker_qual_java",
-      ]
-
-      jar_excluded_patterns = []
-      if (!enable_java_asserts) {
-        # Omit the file since we use our own copy.
-        jar_excluded_patterns +=
-            [ "com/google/common/base/Preconditions.class" ]
-        deps += [ "//third_party/android_deps/local_modifications/preconditions:guava_stub_preconditions_java" ]
-      }
-
-      # Dep needed to fix:
-      #   warning: unknown enum constant ReflectionSupport$Level.FULL
-      deps += [ ":com_google_j2objc_j2objc_annotations_java" ]
-
-      # Always bundle this part of guava in with the main target.
-      public_deps = [ ":com_google_guava_failureaccess_java" ]
-    }
-  }
-
-  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("com_googlecode_java_diff_utils_diffutils_java") {
     jar_path =
         "cipd/libs/com_googlecode_java_diff_utils_diffutils/diffutils-1.3.0.jar"
