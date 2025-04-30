@@ -51,7 +51,6 @@
 #import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
 #import "ios/chrome/browser/credential_provider/model/credential_provider_buildflags.h"
-#import "ios/chrome/browser/discover_feed/model/discover_feed_profile_agent.h"
 #import "ios/chrome/browser/enterprise/model/idle/idle_service.h"
 #import "ios/chrome/browser/enterprise/model/idle/idle_service_factory.h"
 #import "ios/chrome/browser/external_files/model/external_file_remover.h"
@@ -627,9 +626,6 @@ void RecordDiscardedSceneConnectedAfterBeingPurged(
 }
 
 - (void)attachProfileAgents {
-  // TODO(crbug.com/355142171): Remove the DiscoverFeedProfileAgent?
-  [_state addAgent:[[DiscoverFeedProfileAgent alloc] init]];
-
   [_state addAgent:[[CertificatePolicyProfileAgent alloc] init]];
   [_state addAgent:[[FirstRunProfileAgent alloc] init]];
   [_state addAgent:[[IdentityConfirmationProfileAgent alloc] init]];

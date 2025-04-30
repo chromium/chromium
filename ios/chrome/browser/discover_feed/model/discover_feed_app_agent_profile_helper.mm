@@ -1,25 +1,23 @@
-// Copyright 2024 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/discover_feed/model/discover_feed_profile_agent.h"
-
-#import <vector>
+#import "ios/chrome/browser/discover_feed/model/discover_feed_app_agent_profile_helper.h"
 
 #import "base/check.h"
-#import "components/push_notification/push_notification_client_id.h"
 #import "components/search_engines/template_url.h"
 #import "components/search_engines/template_url_prepopulate_data.h"
 #import "components/search_engines/template_url_service.h"
 #import "components/signin/public/base/consent_level.h"
+#import "ios/chrome/app/profile/profile_init_stage.h"
 #import "ios/chrome/app/profile/profile_state.h"
+#import "ios/chrome/app/profile/profile_state_observer.h"
 #import "ios/chrome/browser/content_notification/model/content_notification_util.h"
-#import "ios/chrome/browser/discover_feed/model/discover_feed_app_agent.h"
-#import "ios/chrome/browser/discover_feed/model/discover_feed_profile_helper.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_service.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_service_factory.h"
 #import "ios/chrome/browser/ntp/shared/metrics/feed_metrics_constants.h"
 #import "ios/chrome/browser/push_notification/model/provisional_push_notification_util.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -44,24 +42,64 @@ bool IsGoogleDefaultSearchEngine(ProfileIOS* profile) {
 
 }  // namespace
 
-@interface DiscoverFeedProfileAgent () <DiscoverFeedProfileHelper>
+@interface DiscoverFeedAppAgentProfileHelper () <ProfileStateObserver>
+
 @end
 
-@implementation DiscoverFeedProfileAgent
+@implementation DiscoverFeedAppAgentProfileHelper {
+  ProfileState* _profileState;
+}
 
-#pragma mark ProfileStateObserver
+- (instancetype)initWithProfileState:(ProfileState*)profileState {
+  if ((self = [super init])) {
+    CHECK(profileState);
+    _profileState = profileState;
+    [_profileState addObserver:self];
+  }
+  return self;
+}
+
+- (void)refreshFeedInBackground {
+  // The DiscoverFeedAppAgent does not track the ProfileState -initState,
+  // so it may call this method before the profile is fully initialized.
+  // In that case, ignore the call.
+  if (_profileState.initStage < ProfileInitStage::kPrepareUI) {
+    return;
+  }
+
+  // The profile must be loaded (and thus -profile non null) when the
+  // ProfileState has reached ProfileInitStage::kPrepareUI.
+  ProfileIOS* profile = _profileState.profile;
+  CHECK(profile);
+
+  if (DiscoverFeedService* service =
+          DiscoverFeedServiceFactory::GetForProfileIfExists(profile)) {
+    service->RefreshFeed(FeedRefreshTrigger::kForegroundAppClose);
+  }
+}
+
+- (void)shutdown {
+  // Safe to call even if the object no longer observe the ProfileState.
+  [_profileState removeObserver:self];
+  _profileState = nil;
+}
+
+#pragma mark - ProfileStateObserver
 
 - (void)profileState:(ProfileState*)profileState
     didTransitionToInitStage:(ProfileInitStage)nextInitStage
                fromInitStage:(ProfileInitStage)fromInitStage {
-  CHECK_EQ(profileState, self.profileState);
-  if (nextInitStage != ProfileInitStage::kPrepareUI) {
+  CHECK_EQ(profileState, _profileState);
+  if (nextInitStage < ProfileInitStage::kPrepareUI) {
     return;
   }
 
-  // When the ProfileState reaches InitStagePrepareUI, the -profile property
-  // must be set and non-null (i.e. the ProfileIOS must have been loaded).
-  ProfileIOS* profile = self.profileState.profile;
+  // There is no need to observe the ProfileState anymore.
+  [_profileState removeObserver:self];
+
+  // The profile must be loaded (and thus -profile non null) when the
+  // ProfileState has reached ProfileInitStage::kPrepareUI.
+  ProfileIOS* profile = _profileState.profile;
   CHECK(profile);
 
   AuthenticationService* authService =
@@ -98,42 +136,6 @@ bool IsGoogleDefaultSearchEngine(ProfileIOS* profile) {
                                          withAuthService:authService
                                    deviceInfoSyncService:nil];
   }
-
-  // Register self as a profile helper with the DiscoverFeedAddAgent.
-  [[DiscoverFeedAppAgent agentFromApp:self.profileState.appState]
-      addHelper:self];
-}
-
-#pragma mark DiscoverFeedProfileHelper
-
-- (void)refreshFeedInBackground {
-  CHECK(self.profileState.profile);
-  if (DiscoverFeedService* service =
-          DiscoverFeedServiceFactory::GetForProfileIfExists(
-              self.profileState.profile)) {
-    service->RefreshFeed(FeedRefreshTrigger::kForegroundAppClose);
-  }
-}
-
-- (void)performBackgroundRefreshes:(base::OnceCallback<void(bool)>)callback {
-  CHECK(self.profileState.profile);
-  DiscoverFeedServiceFactory::GetForProfile(self.profileState.profile)
-      ->PerformBackgroundRefreshes(base::CallbackToBlock(std::move(callback)));
-}
-
-- (void)handleBackgroundRefreshTaskExpiration {
-  CHECK(self.profileState.profile);
-  DiscoverFeedServiceFactory::GetForProfile(self.profileState.profile)
-      ->HandleBackgroundRefreshTaskExpiration();
-}
-
-- (base::Time)earliestBackgroundRefreshDate {
-  CHECK(self.profileState.profile);
-  NSDate* date =
-      DiscoverFeedServiceFactory::GetForProfile(self.profileState.profile)
-          ->GetEarliestBackgroundRefreshBeginDate();
-
-  return date ? base::Time::FromNSDate(date) : base::Time();
 }
 
 @end
