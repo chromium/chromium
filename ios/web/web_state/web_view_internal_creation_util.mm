@@ -61,12 +61,9 @@ WKWebView* BuildWKWebView(CGRect frame,
   }
 
   if (@available(iOS 16.4, *)) {
-    bool enable_web_inspector =
-        web::GetWebClient()->EnableWebInspector(browser_state);
-    if (enable_web_inspector) {
+    if (web::GetWebClient()->EnableWebInspector(browser_state)) {
       web_view.inspectable = YES;
     }
-    base::UmaHistogramBoolean("IOS.WebInspector.Enabled", enable_web_inspector);
   }
 
   return web_view;

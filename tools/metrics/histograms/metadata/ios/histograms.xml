@@ -2377,7 +2377,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.JavaScript.Permissions.Geolocation.Restricted"
-    enum="GeolocationAPI" expires_after="2025-05-31">
+    enum="GeolocationAPI" expires_after="2025-09-07">
   <owner>michaeldo@google.com</owner>
   <owner>bling-fundamentals@google.com</owner>
   <summary>
@@ -2390,7 +2390,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.JavaScript.Permissions.Media.Denied" enum="MediaAPIParams"
-    expires_after="2025-05-31">
+    expires_after="2025-09-07">
   <owner>michaeldo@google.com</owner>
   <owner>bling-fundamentals@google.com</owner>
   <summary>
@@ -2403,7 +2403,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.JavaScript.Permissions.Media.Granted"
-    enum="MediaAPIParams" expires_after="2025-05-31">
+    enum="MediaAPIParams" expires_after="2025-09-07">
   <owner>michaeldo@google.com</owner>
   <owner>bling-fundamentals@google.com</owner>
   <summary>
@@ -4734,7 +4734,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.SandboxMetrics.TotalOTRSessionSize" units="MB"
-    expires_after="2025-05-01">
+    expires_after="2025-09-14">
   <owner>michaeldo@chromium.org</owner>
   <owner>rohitrao@chromium.org</owner>
   <summary>
@@ -4770,7 +4770,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.SandboxMetrics.WebKitTempSize" units="MB"
-    expires_after="2025-05-01">
+    expires_after="2025-09-14">
   <owner>michaeldo@chromium.org</owner>
   <owner>rohitrao@chromium.org</owner>
   <summary>
@@ -4781,7 +4781,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.SandboxMetrics.WebsiteLocalData" units="MB"
-    expires_after="2025-05-01">
+    expires_after="2025-09-14">
   <owner>michaeldo@chromium.org</owner>
   <owner>rohitrao@chromium.org</owner>
   <summary>
@@ -5878,7 +5878,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.Web.ErrorPagePresentationFailed"
-    enum="IOSErrorPagePresentationFailed" expires_after="2025-06-08">
+    enum="IOSErrorPagePresentationFailed" expires_after="2026-06-08">
   <owner>michaeldo@chromium.org</owner>
   <owner>bling-fundamentals@google.com</owner>
   <summary>
@@ -5940,16 +5940,6 @@ chromium-metrics-reviews@google.com.
     A boolean that is used to indicate that the URL property of the WKWebView
     has changed to a nil or empty URL. Recorded on the KVO of the URL of the
     WKWebView.
-  </summary>
-</histogram>
-
-<histogram name="IOS.WebInspector.Enabled" enum="BooleanEnabled"
-    expires_after="2025-06-08">
-  <owner>michaeldo@chromium.org</owner>
-  <owner>bling-fundamentals@google.com</owner>
-  <summary>
-    Records whether Web Inspector support has been enabled by the user. Logged
-    on iOS 16.4+ only, each time that a WKWebView has been created.
   </summary>
 </histogram>
 
