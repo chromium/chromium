@@ -33,6 +33,7 @@
 #include "net/http/http_stream_pool_job.h"
 #include "net/http/http_stream_request.h"
 #include "net/log/net_log_with_source.h"
+#include "net/quic/quic_session_pool.h"
 #include "net/socket/connection_attempts.h"
 #include "net/socket/next_proto.h"
 #include "net/socket/stream_attempt.h"
@@ -54,16 +55,16 @@ class HttpStreamKey;
 //
 // Maintains multiple in-flight Jobs for a single destination keyed by
 // HttpStreamKey. Peforms DNS resolution and manages connection attempts.
-// Delegates QUIC connection attempts to QuicTask. Upon successful HttpStream
+// Delegates QUIC connection attempts to QuicAttempt. Upon successful HttpStream
 // creations or fatal error occurrence, notify jobs of success or failure.
 //
 // Created by an HttpStreamPool::Group when new connection attempts are needed
-// and destroyed when all jobs, in-flight attempts, and the QuicTask are
+// and destroyed when all jobs, in-flight attempts, and the QuicAttempt are
 // completed.
 class HttpStreamPool::AttemptManager
     : public HostResolver::ServiceEndpointRequest::Delegate {
  public:
-  class NET_EXPORT_PRIVATE QuicTask;
+  class NET_EXPORT_PRIVATE QuicAttempt;
 
   // The state of an IPEndPoint. There is no success state. The absence of a
   // state for an endpoint means that we haven't yet attempted to connect to the
@@ -147,8 +148,8 @@ class HttpStreamPool::AttemptManager
   // Cancels all jobs.
   void CancelJobs(int error);
 
-  // Cancels the QuicTask if it exists.
-  void CancelQuicTask(int error);
+  // Cancels the QuicAttempt if it exists.
+  void CancelQuicAttempt(int error);
 
   // Returns the number of pending jobs/preconnects. The number is
   // calculated by subtracting the number of in-flight attempts (excluding slow
@@ -175,8 +176,8 @@ class HttpStreamPool::AttemptManager
   // still ongoing.
   bool IsSvcbOptional();
 
-  // Called when the QuicTask owned by `this` is completed.
-  void OnQuicTaskComplete(int rv, NetErrorDetails details);
+  // Called when the QuicAttempt owned by `this` is completed.
+  void OnQuicAttemptComplete(int rv, NetErrorDetails details);
 
   // Retrieves information on the current state of `this` as a base::Value.
   base::Value::Dict GetInfoAsValue() const;
@@ -184,11 +185,13 @@ class HttpStreamPool::AttemptManager
   MultiplexedSessionCreationInitiator
   CalculateMultiplexedSessionCreationInitiator();
 
-  std::optional<int> GetQuicTaskResultForTesting() { return quic_task_result_; }
+  std::optional<int> GetQuicAttemptResultForTesting() {
+    return quic_attempt_result_;
+  }
 
   void SetIsFailingForTest(bool is_failing) { is_failing_ = is_failing; }
 
-  QuicTask* quic_task_for_testing() const { return quic_task_.get(); }
+  QuicAttempt* quic_attempt_for_testing() const { return quic_attempt_.get(); }
 
   IPEndPointStateMap& ip_endpoint_states_for_testing() {
     return ip_endpoint_states_;
@@ -386,8 +389,13 @@ class HttpStreamPool::AttemptManager
   bool HasEnoughTcpBasedAttemptsForSlowIPEndPoint(
       const IPEndPoint& ip_endpoint);
 
+  // Returns a QUIC endpoint to make a connection attempt. See the comments in
+  // QuicSessionPool::SelectQuicVersion() for the criteria to select a QUIC
+  // endpoint.
+  std::optional<QuicEndpoint> GetQuicEndpointToAttempt();
+
   // Called when this gets a fatal error. Notifies all jobs of the failure and
-  // cancels in-flight TCP based attempts and QuicTask's, if they exist.
+  // cancels in-flight TCP based attempts and QuicAttempt's, if they exist.
   void HandleFinalError(int error);
 
   // Calculate the failure kind to notify jobs of failure. Used to call one of
@@ -594,10 +602,10 @@ class HttpStreamPool::AttemptManager
   // from Alt-Svc.
   quic::ParsedQuicVersion quic_version_ =
       quic::ParsedQuicVersion::Unsupported();
-  // Created when attempting QUIC sessions.
-  std::unique_ptr<QuicTask> quic_task_;
-  // Set when `quic_task_` is completed.
-  std::optional<int> quic_task_result_;
+  // Created when attempting a QUIC session.
+  std::unique_ptr<QuicAttempt> quic_attempt_;
+  // Set when `quic_attempt_` is completed.
+  std::optional<int> quic_attempt_result_;
 
   // The delay for TCP based stream attempts in favor of QUIC.
   base::TimeDelta tcp_based_attempt_delay_;

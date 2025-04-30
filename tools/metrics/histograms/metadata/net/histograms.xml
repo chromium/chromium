@@ -3100,14 +3100,14 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.HttpStreamPool.QuicTaskTime.{Result}" units="ms"
-    expires_after="2025-10-26">
+<histogram name="Net.HttpStreamPool.QuicAttemptTime.{Result}" units="ms"
+    expires_after="2025-07-13">
   <owner>bashi@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
-    Time from when a HttpStreamPool::QuicTask attempted a QUIC session to when
-    the task is completed. Recorded for each QuicTask if the task actually
-    attempted a session.
+    Time from when a QuicAttempt attempted a QUIC session to when the task is
+    completed. Recorded for each QuicAttempt if the task actually attempted a
+    session.
   </summary>
   <token key="Result">
     <variant name="Failure" summary="Attempt failed"/>

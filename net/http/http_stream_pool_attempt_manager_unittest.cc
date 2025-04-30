@@ -1178,7 +1178,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest, LimitIgnoringRequestCanceled) {
 // This test simulates a situation where:
 // * AttemptManager has jobs (requests) more than the limit.
 // * An attempt fails with a cert error.
-// * QuicTask fails immediately after the attempt failed.
+// * QuicAttempt fails immediately after the attempt failed.
 // Ensures that we don't attempt any further connections.
 TEST_F(HttpStreamPoolAttemptManagerTest, DoNotAttemptWhileFailing) {
   base::test::ScopedFeatureList feature_list;
@@ -4723,7 +4723,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest, QuicOk) {
   EXPECT_THAT(pool()
                   .GetOrCreateGroupForTesting(requester.GetStreamKey())
                   .GetAttemptManagerForTesting()
-                  ->GetQuicTaskResultForTesting(),
+                  ->GetQuicAttemptResultForTesting(),
               Optional(IsOk()));
   EXPECT_TRUE(quic_session_pool()->has_quic_ever_worked_on_current_network());
 
@@ -4793,12 +4793,12 @@ TEST_F(HttpStreamPoolAttemptManagerTest, QuicOkDnsAlpn) {
   EXPECT_THAT(pool()
                   .GetOrCreateGroupForTesting(requester1.GetStreamKey())
                   .GetAttemptManagerForTesting()
-                  ->GetQuicTaskResultForTesting(),
+                  ->GetQuicAttemptResultForTesting(),
               Optional(IsOk()));
 }
 
-// Regression test for crbug.com/403341337. QuicTask should not be started when
-// the corresponding AttemptManager is failing.
+// Regression test for crbug.com/403341337. QuicAttempt should not be started
+// when the corresponding AttemptManager is failing.
 TEST_F(HttpStreamPoolAttemptManagerTest, DontStartQuicAfterFailure) {
   AddQuicData();
 
@@ -4815,7 +4815,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest, DontStartQuicAfterFailure) {
   NetworkChangeNotifier::NotifyObserversOfIPAddressChangeForTests();
   FastForwardUntilNoTasksRemain();
 
-  // Complete the service endpoint resolution. QuicTask should not start.
+  // Complete the service endpoint resolution. QuicAttempt should not start.
   endpoint_request
       ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
       .CallOnServiceEndpointRequestFinished(OK);
@@ -4828,7 +4828,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest, DontStartQuicAfterFailure) {
   ASSERT_FALSE(pool()
                    .GetGroupForTesting(requester.GetStreamKey())
                    ->GetAttemptManagerForTesting()
-                   ->GetQuicTaskResultForTesting());
+                   ->GetQuicAttemptResultForTesting());
 
   // Ensure that the attempt manager completes after the request is destroyed.
   requester.ResetRequest();
@@ -4895,7 +4895,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest, QuicFailBeforeTls) {
   EXPECT_THAT(pool()
                   .GetOrCreateGroupForTesting(requester.GetStreamKey())
                   .GetAttemptManagerForTesting()
-                  ->GetQuicTaskResultForTesting(),
+                  ->GetQuicAttemptResultForTesting(),
               Optional(IsError(ERR_CONNECTION_REFUSED)));
   ASSERT_FALSE(requester.result().has_value());
 
@@ -4949,7 +4949,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest, QuicFailAfterTls) {
   EXPECT_THAT(pool()
                   .GetOrCreateGroupForTesting(requester.GetStreamKey())
                   .GetAttemptManagerForTesting()
-                  ->GetQuicTaskResultForTesting(),
+                  ->GetQuicAttemptResultForTesting(),
               Optional(IsError(ERR_CONNECTION_REFUSED)));
   EXPECT_THAT(requester.result(), Optional(IsError(ERR_CONNECTION_REFUSED)));
 
@@ -5125,7 +5125,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest, QuicCanUseExistingSession) {
   EXPECT_THAT(pool()
                   .GetOrCreateGroupForTesting(requester1.GetStreamKey())
                   .GetAttemptManagerForTesting()
-                  ->GetQuicTaskResultForTesting(),
+                  ->GetQuicAttemptResultForTesting(),
               Optional(IsOk()));
 }
 
@@ -5150,7 +5150,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest, AlternativeSerivcesDisabled) {
   ASSERT_FALSE(pool()
                    .GetOrCreateGroupForTesting(requester.GetStreamKey())
                    .GetAttemptManagerForTesting()
-                   ->GetQuicTaskResultForTesting()
+                   ->GetQuicAttemptResultForTesting()
                    .has_value());
 }
 
@@ -5188,7 +5188,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest,
   EXPECT_THAT(pool()
                   .GetOrCreateGroupForTesting(requester1.GetStreamKey())
                   .GetAttemptManagerForTesting()
-                  ->GetQuicTaskResultForTesting(),
+                  ->GetQuicAttemptResultForTesting(),
               Optional(IsOk()));
 }
 
@@ -5252,7 +5252,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest, QuicEndpointNotFoundNoDnsAlpn) {
   EXPECT_THAT(pool()
                   .GetOrCreateGroupForTesting(requester.GetStreamKey())
                   .GetAttemptManagerForTesting()
-                  ->GetQuicTaskResultForTesting(),
+                  ->GetQuicAttemptResultForTesting(),
               Optional(IsError(ERR_DNS_NO_MATCHING_SUPPORTED_ALPN)));
   // No matching ALPN should not update
   // `is_quic_known_to_work_on_current_network()`.
@@ -5266,7 +5266,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest, QuicEndpointNotFoundNoDnsAlpn) {
       alternative_service, NetworkAnonymizationKey()));
 }
 
-// Tests that a QuicTask completes after finding an IP matching SPDY session.
+// Tests that a QuicAttempt completes after finding an IP matching SPDY session.
 TEST_F(HttpStreamPoolAttemptManagerTest, NoAlpnQuicAfterMatchingSpdySession) {
   const IPEndPoint kCommonEndPoint = MakeIPEndPoint("2001:db8::1", 443);
   const HttpStreamKey alt_stream_key =
@@ -5287,11 +5287,11 @@ TEST_F(HttpStreamPoolAttemptManagerTest, NoAlpnQuicAfterMatchingSpdySession) {
   AttemptManager* manager =
       pool().GetGroupForTesting(stream_key)->GetAttemptManagerForTesting();
 
-  // The second request triggers creating QuicTask in AttemptManager.
+  // The second request should not trigger a QUIC attempt in AttemptManager.
   StreamRequester requester2(stream_key);
   requester2.RequestStream(pool());
   ASSERT_FALSE(requester2.result().has_value());
-  ASSERT_TRUE(manager->quic_task_for_testing());
+  ASSERT_FALSE(manager->quic_attempt_for_testing());
 
   // Complete DNS resolution with an IP address that matches an existing SPDY
   // session.
@@ -5305,11 +5305,10 @@ TEST_F(HttpStreamPoolAttemptManagerTest, NoAlpnQuicAfterMatchingSpdySession) {
   requester2.WaitForResult();
   EXPECT_THAT(requester2.result(), Optional(IsOk()));
 
-  // Ensure that the QuicTask completed.
+  // Ensure that AttemptManager doesn't attempt QUIC.
   FastForwardUntilNoTasksRemain();
-  EXPECT_FALSE(manager->quic_task_for_testing());
-  EXPECT_THAT(manager->GetQuicTaskResultForTesting(),
-              Optional(IsError(ERR_DNS_NO_MATCHING_SUPPORTED_ALPN)));
+  EXPECT_FALSE(manager->quic_attempt_for_testing());
+  EXPECT_FALSE(manager->GetQuicAttemptResultForTesting().has_value());
 }
 
 TEST_F(HttpStreamPoolAttemptManagerTest, QuicPreconnect) {
@@ -5613,7 +5612,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest, QuicMatchingIpSessionDisabled) {
   ASSERT_FALSE(pool()
                    .GetOrCreateGroupForTesting(requester.GetStreamKey())
                    .GetAttemptManagerForTesting()
-                   ->GetQuicTaskResultForTesting()
+                   ->GetQuicAttemptResultForTesting()
                    .has_value());
 }
 
@@ -5719,14 +5718,14 @@ TEST_F(HttpStreamPoolAttemptManagerTest,
       ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
       .CallOnServiceEndpointsUpdated();
   ASSERT_FALSE(requester.result().has_value());
-  ASSERT_FALSE(manager->quic_task_for_testing());
+  ASSERT_FALSE(manager->quic_attempt_for_testing());
 
   // Complete service endpoint resolution with the delay. Trigger both the QUIC
   // task and a TCP-based attempt.
   FastForwardBy(kDelay);
   endpoint_request->CallOnServiceEndpointRequestFinished(OK);
   ASSERT_FALSE(requester.result().has_value());
-  ASSERT_TRUE(manager->quic_task_for_testing());
+  ASSERT_TRUE(manager->quic_attempt_for_testing());
   ASSERT_EQ(manager->TcpBasedAttemptCount(), 1u);
 
   // The request should complete with the TCP-based attempt.
@@ -5781,14 +5780,14 @@ TEST_F(HttpStreamPoolAttemptManagerTest,
       ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
       .CallOnServiceEndpointsUpdated();
   ASSERT_FALSE(requester.result().has_value());
-  ASSERT_FALSE(manager->quic_task_for_testing());
+  ASSERT_FALSE(manager->quic_attempt_for_testing());
 
   // Complete service endpoint resolution with a delay. Trigger a QUIC attempt,
   // but TCP-based attempt should not be triggered yet.
   FastForwardBy(kDnsDelay);
   endpoint_request->CallOnServiceEndpointRequestFinished(OK);
   ASSERT_FALSE(requester.result().has_value());
-  ASSERT_TRUE(manager->quic_task_for_testing());
+  ASSERT_TRUE(manager->quic_attempt_for_testing());
   ASSERT_EQ(manager->TcpBasedAttemptCount(), 0u);
 
   // Fire the stream attempt delay timer. The request should complete.
@@ -5841,9 +5840,9 @@ TEST_F(HttpStreamPoolAttemptManagerTest,
       ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
       .CallOnServiceEndpointsUpdated();
   ASSERT_FALSE(preconnector.result().has_value());
-  ASSERT_FALSE(manager->quic_task_for_testing());
+  ASSERT_FALSE(manager->quic_attempt_for_testing());
 
-  // Complete service endpoint resolution with a delay. The QuicTask should
+  // Complete service endpoint resolution with a delay. The QuicAttempt should
   // complete with an error and a TCP-based attempt should be triggered.
   FastForwardBy(kDelay);
   endpoint_request->CallOnServiceEndpointRequestFinished(OK);
@@ -5853,8 +5852,8 @@ TEST_F(HttpStreamPoolAttemptManagerTest,
   // causes a connection timeout.
   FastForwardBy(base::Milliseconds(1));
   EXPECT_FALSE(preconnector.result().has_value());
-  EXPECT_FALSE(manager->quic_task_for_testing());
-  EXPECT_THAT(manager->GetQuicTaskResultForTesting(),
+  EXPECT_FALSE(manager->quic_attempt_for_testing());
+  EXPECT_THAT(manager->GetQuicAttemptResultForTesting(),
               Optional(IsError(ERR_DNS_NO_MATCHING_SUPPORTED_ALPN)));
   EXPECT_EQ(manager->TcpBasedAttemptCount(), 1u);
 
@@ -7034,7 +7033,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest, JobAllowH2OnlyCancelQuicAttempt) {
   EXPECT_THAT(pool()
                   .GetOrCreateGroupForTesting(stream_key)
                   .GetAttemptManagerForTesting()
-                  ->GetQuicTaskResultForTesting(),
+                  ->GetQuicAttemptResultForTesting(),
               Optional(IsError(ERR_ABORTED)));
 }
 
@@ -7228,7 +7227,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest, NetworkChangeCancelJobs) {
           .GetOrCreateGroupForTesting(requester.GetStreamKey())
           .GetAttemptManagerForTesting();
   EXPECT_THAT(manager->TcpBasedAttemptCount(), 0u);
-  EXPECT_THAT(manager->GetQuicTaskResultForTesting(),
+  EXPECT_THAT(manager->GetQuicAttemptResultForTesting(),
               Optional(IsError(ERR_NETWORK_CHANGED)));
 }
 
@@ -7262,7 +7261,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest,
       .RequestStream(pool());
   ASSERT_FALSE(requester.result().has_value());
 
-  // Notifies partial endpoint results. Triggers QuicTask to start.
+  // Notifies partial endpoint results. Triggers QuicAttempt to start.
   endpoint_request->CallOnServiceEndpointsUpdated();
 
   // Simulates endpoint resolution failure.
@@ -7277,7 +7276,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest,
           .GetOrCreateGroupForTesting(requester.GetStreamKey())
           .GetAttemptManagerForTesting();
   EXPECT_THAT(manager->TcpBasedAttemptCount(), 0u);
-  EXPECT_THAT(manager->GetQuicTaskResultForTesting(),
+  EXPECT_THAT(manager->GetQuicAttemptResultForTesting(),
               Optional(IsError(ERR_NAME_NOT_RESOLVED)));
 }
 
@@ -7321,7 +7320,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest, ClientAuthRequiredCancelQuic) {
           .GetOrCreateGroupForTesting(requester.GetStreamKey())
           .GetAttemptManagerForTesting();
   EXPECT_THAT(manager->TcpBasedAttemptCount(), 0u);
-  EXPECT_THAT(manager->GetQuicTaskResultForTesting(),
+  EXPECT_THAT(manager->GetQuicAttemptResultForTesting(),
               Optional(IsError(ERR_SSL_CLIENT_AUTH_CERT_NEEDED)));
 }
 
@@ -7360,7 +7359,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest, CertificateErrorCancelQuic) {
           .GetOrCreateGroupForTesting(requester.GetStreamKey())
           .GetAttemptManagerForTesting();
   EXPECT_THAT(manager->TcpBasedAttemptCount(), 0u);
-  EXPECT_THAT(manager->GetQuicTaskResultForTesting(),
+  EXPECT_THAT(manager->GetQuicAttemptResultForTesting(),
               Optional(IsError(ERR_CERT_DATE_INVALID)));
 }
 

@@ -32,7 +32,7 @@
 #include "net/http/http_network_session.h"
 #include "net/http/http_server_properties.h"
 #include "net/http/http_stream_key.h"
-#include "net/http/http_stream_pool_attempt_manager_quic_task.h"
+#include "net/http/http_stream_pool_attempt_manager_quic_attempt.h"
 #include "net/http/http_stream_pool_attempt_manager_tcp_based_attempt.h"
 #include "net/http/http_stream_pool_group.h"
 #include "net/http/http_stream_pool_handle.h"
@@ -41,6 +41,7 @@
 #include "net/log/net_log_with_source.h"
 #include "net/quic/quic_http_stream.h"
 #include "net/quic/quic_session_alias_key.h"
+#include "net/quic/quic_session_pool.h"
 #include "net/socket/connection_attempts.h"
 #include "net/socket/next_proto.h"
 #include "net/socket/stream_attempt.h"
@@ -554,10 +555,10 @@ void HttpStreamPool::AttemptManager::CancelJobs(int error) {
   HandleFinalError(error);
 }
 
-void HttpStreamPool::AttemptManager::CancelQuicTask(int error) {
-  if (quic_task_) {
-    quic_task_result_ = error;
-    quic_task_.reset();
+void HttpStreamPool::AttemptManager::CancelQuicAttempt(int error) {
+  if (quic_attempt_) {
+    quic_attempt_result_ = error;
+    quic_attempt_.reset();
   }
 }
 
@@ -704,25 +705,25 @@ bool HttpStreamPool::AttemptManager::IsStalledByPoolLimit() {
   }
 }
 
-void HttpStreamPool::AttemptManager::OnQuicTaskComplete(
+void HttpStreamPool::AttemptManager::OnQuicAttemptComplete(
     int rv,
     NetErrorDetails details) {
-  CHECK(!quic_task_result_.has_value());
-  quic_task_result_ = rv;
+  CHECK(!quic_attempt_result_.has_value());
+  quic_attempt_result_ = rv;
   net_error_details_ = std::move(details);
 
-  // Record completion time only when QuicTask actually attempted QUIC.
+  // Record completion time only when QuicAttempt actually attempted QUIC.
   if (rv != ERR_DNS_NO_MATCHING_SUPPORTED_ALPN) {
     base::UmaHistogramTimes(
-        base::StrCat({"Net.HttpStreamPool.QuicTaskTime.",
+        base::StrCat({"Net.HttpStreamPool.QuicAttemptTime.",
                       rv == OK ? "Success" : "Failure"}),
-        base::TimeTicks::Now() - quic_task_->attempt_start_time());
+        base::TimeTicks::Now() - quic_attempt_->start_time());
   }
 
-  quic_task_.reset();
+  quic_attempt_.reset();
 
   net_log().AddEvent(
-      NetLogEventType::HTTP_STREAM_POOL_ATTEMPT_MANAGER_QUIC_TASK_COMPLETED,
+      NetLogEventType::HTTP_STREAM_POOL_ATTEMPT_MANAGER_QUIC_ATTEMPT_COMPLETED,
       [&] {
         base::Value::Dict dict = GetStatesAsNetLogParams();
         dict.Set("result", ErrorToString(rv));
@@ -827,11 +828,11 @@ base::Value::Dict HttpStreamPool::AttemptManager::GetInfoAsValue() const {
     dict.Set("ip_endpoint_states", std::move(ip_endpoint_states));
   }
 
-  if (quic_task_) {
-    dict.Set("quic_task", quic_task_->GetInfoAsValue());
+  if (quic_attempt_) {
+    dict.Set("quic_attempt", quic_attempt_->GetInfoAsValue());
   }
-  if (quic_task_result_.has_value()) {
-    dict.Set("quic_task_result", ErrorToString(*quic_task_result_));
+  if (quic_attempt_result_.has_value()) {
+    dict.Set("quic_attempt_result", ErrorToString(*quic_attempt_result_));
   }
 
   return dict;
@@ -889,7 +890,7 @@ void HttpStreamPool::AttemptManager::RestrictAllowedProtocols(
 
   if (!CanUseQuic()) {
     // TODO(crbug.com/346835898): Use other error code?
-    CancelQuicTask(ERR_ABORTED);
+    CancelQuicAttempt(ERR_ABORTED);
     UpdateTcpBasedAttemptState();
   }
 }
@@ -919,17 +920,6 @@ void HttpStreamPool::AttemptManager::ProcessServiceEndpointChanges() {
     return;
   }
 
-  // If `this` already created a QuicTask, call `quic_task_->MaybeAttempt()`
-  // before checking existing SPDY session to make sure that the QuicTask makes
-  // progress. Otherwise, the QuicTask would stall until next job/preconnect
-  // comes. Call `quic_task_->MaybeAttempt()` after checking existing SPDY
-  // session to avoid creating QuicTask unnecessary.
-  bool quic_attempted = false;
-  if (quic_task_) {
-    quic_task_->MaybeAttempt();
-    quic_attempted = true;
-  }
-
   if (CanUseExistingSpdySessionAfterEndpointChanges()) {
     CHECK(tcp_based_attempts_.empty());
     return;
@@ -941,9 +931,7 @@ void HttpStreamPool::AttemptManager::ProcessServiceEndpointChanges() {
   }
 
   MaybeNotifySSLConfigReady();
-  if (!quic_attempted) {
-    MaybeAttemptQuic();
-  }
+  MaybeAttemptQuic();
   MaybeAttemptTcpBased();
 }
 
@@ -954,7 +942,7 @@ bool HttpStreamPool::AttemptManager::
   }
 
   if (CanUseExistingQuicSession()) {
-    CancelQuicTask(OK);
+    CancelQuicAttempt(OK);
     return true;
   }
 
@@ -965,7 +953,7 @@ bool HttpStreamPool::AttemptManager::
       continue;
     }
 
-    CancelQuicTask(OK);
+    CancelQuicAttempt(OK);
 
     net_log_.AddEvent(
         NetLogEventType::
@@ -1056,15 +1044,29 @@ void HttpStreamPool::AttemptManager::MaybeNotifySSLConfigReady() {
 
 void HttpStreamPool::AttemptManager::MaybeAttemptQuic() {
   CHECK(service_endpoint_request_);
-  if (is_failing_ || !CanUseQuic() || quic_task_result_.has_value() ||
+  if (is_failing_ || !CanUseQuic() || quic_attempt_result_.has_value() ||
       !service_endpoint_request_->EndpointsCryptoReady()) {
     return;
   }
 
-  if (!quic_task_) {
-    quic_task_ = std::make_unique<QuicTask>(this, quic_version_);
+  if (quic_attempt_) {
+    // TODO(crbug.com/346835898): Support multiple QUIC attempts.
+    return;
   }
-  quic_task_->MaybeAttempt();
+
+  std::optional<QuicEndpoint> quic_endpoint = GetQuicEndpointToAttempt();
+  if (quic_endpoint.has_value()) {
+    quic_attempt_ =
+        std::make_unique<QuicAttempt>(this, std::move(*quic_endpoint));
+    quic_attempt_->Start();
+    return;
+  }
+
+  if (service_endpoint_request_finished_) {
+    // There is no QUIC endpoint to attempt.
+    OnQuicAttemptComplete(ERR_DNS_NO_MATCHING_SUPPORTED_ALPN,
+                          NetErrorDetails());
+  }
 }
 
 void HttpStreamPool::AttemptManager::MaybeAttemptTcpBased(
@@ -1078,8 +1080,8 @@ void HttpStreamPool::AttemptManager::MaybeAttemptTcpBased(
     return;
   }
 
-  if (CanUseQuic() && quic_task_result_.has_value() &&
-      *quic_task_result_ == OK) {
+  if (CanUseQuic() && quic_attempt_result_.has_value() &&
+      *quic_attempt_result_ == OK) {
     return;
   }
 
@@ -1099,7 +1101,7 @@ void HttpStreamPool::AttemptManager::MaybeAttemptTcpBased(
       }
       if (tcp_based_attempt_state_ ==
               TcpBasedAttemptState::kAllEndpointsFailed &&
-          !quic_task_) {
+          !quic_attempt_) {
         // Tried all endpoints.
         CHECK(most_recent_tcp_error_.has_value());
         HandleFinalError(*most_recent_tcp_error_);
@@ -1370,6 +1372,37 @@ bool HttpStreamPool::AttemptManager::HasEnoughTcpBasedAttemptsForSlowIPEndPoint(
   return num_attempts >= std::max(jobs_.size(), CalculateMaxPreconnectCount());
 }
 
+std::optional<QuicEndpoint>
+HttpStreamPool::AttemptManager::GetQuicEndpointToAttempt() {
+  const bool svcb_optional = IsSvcbOptional();
+  for (auto& service_endpoint :
+       service_endpoint_request()->GetEndpointResults()) {
+    quic::ParsedQuicVersion endpoint_quic_version =
+        quic_session_pool()->SelectQuicVersion(
+            quic_version_, service_endpoint.metadata, svcb_optional);
+    if (!endpoint_quic_version.IsKnown()) {
+      continue;
+    }
+
+    // TODO(crbug.com/346835898): Attempt more than one endpoints.
+    std::optional<IPEndPoint> ip_endpoint;
+    if (!service_endpoint.ipv6_endpoints.empty()) {
+      ip_endpoint = service_endpoint.ipv6_endpoints[0];
+    } else if (!service_endpoint.ipv4_endpoints.empty()) {
+      ip_endpoint = service_endpoint.ipv4_endpoints[0];
+    }
+
+    if (!ip_endpoint.has_value()) {
+      continue;
+    }
+
+    return QuicEndpoint(endpoint_quic_version, *ip_endpoint,
+                        service_endpoint.metadata);
+  }
+
+  return std::nullopt;
+}
+
 void HttpStreamPool::AttemptManager::HandleFinalError(int error) {
   // `this` may already be failing, e.g. IP address change happens while failing
   // for a different reason.
@@ -1388,7 +1421,7 @@ void HttpStreamPool::AttemptManager::HandleFinalError(int error) {
       });
 
   CancelTcpBasedAttempts(StreamSocketCloseReason::kAbort);
-  CancelQuicTask(final_error_to_notify_jobs());
+  CancelQuicAttempt(final_error_to_notify_jobs());
   NotifyPreconnectsComplete(final_error_to_notify_jobs());
   NotifyJobOfFailure();
   // `this` may be deleted.
@@ -1633,7 +1666,7 @@ void HttpStreamPool::AttemptManager::HandleSpdySessionReady(
 void HttpStreamPool::AttemptManager::HandleQuicSessionReady(
     StreamSocketCloseReason refresh_group_reason) {
   CHECK(!is_failing_);
-  CHECK(!quic_task_);
+  CHECK(!quic_attempt_);
   DCHECK(CanUseExistingQuicSession());
 
   TRACE_EVENT_INSTANT("net.stream", "AttemptManager::QuicSessionReady", track_);
@@ -1954,15 +1987,15 @@ bool HttpStreamPool::AttemptManager::IsEndpointUsableForTcpBasedAttempt(
 }
 
 void HttpStreamPool::AttemptManager::MaybeMarkQuicBroken() {
-  if (!quic_task_result_.has_value() ||
+  if (!quic_attempt_result_.has_value() ||
       tcp_based_attempt_state_ == TcpBasedAttemptState::kAttempting) {
     return;
   }
 
-  if (*quic_task_result_ == OK ||
-      *quic_task_result_ == ERR_DNS_NO_MATCHING_SUPPORTED_ALPN ||
-      *quic_task_result_ == ERR_NETWORK_CHANGED ||
-      *quic_task_result_ == ERR_INTERNET_DISCONNECTED) {
+  if (*quic_attempt_result_ == OK ||
+      *quic_attempt_result_ == ERR_DNS_NO_MATCHING_SUPPORTED_ALPN ||
+      *quic_attempt_result_ == ERR_NETWORK_CHANGED ||
+      *quic_attempt_result_ == ERR_INTERNET_DISCONNECTED) {
     return;
   }
 
@@ -2004,9 +2037,9 @@ base::Value::Dict HttpStreamPool::AttemptManager::GetStatesAsNetLogParams()
            static_cast<int>(slow_tcp_based_attempt_count_));
   dict.Set("enable_ip_based_pooling", IsIpBasedPoolingEnabled());
   dict.Set("enable_alternative_services", IsAlternativeServiceEnabled());
-  dict.Set("quic_task_alive", !!quic_task_);
-  if (quic_task_result_.has_value()) {
-    dict.Set("quic_task_result", ErrorToString(*quic_task_result_));
+  dict.Set("quic_attempt_alive", !!quic_attempt_);
+  if (quic_attempt_result_.has_value()) {
+    dict.Set("quic_attempt_result", ErrorToString(*quic_attempt_result_));
   }
   return dict;
 }
@@ -2014,7 +2047,7 @@ base::Value::Dict HttpStreamPool::AttemptManager::GetStatesAsNetLogParams()
 bool HttpStreamPool::AttemptManager::CanComplete() const {
   return jobs_.empty() && notified_jobs_.empty() && preconnect_jobs_.empty() &&
          notifying_preconnect_completion_count_ == 0 &&
-         tcp_based_attempts_.empty() && !quic_task_;
+         tcp_based_attempts_.empty() && !quic_attempt_;
 }
 
 void HttpStreamPool::AttemptManager::MaybeComplete() {
