@@ -3829,6 +3829,29 @@
             ]
         }
     ],
+    "CanvasNoise": [
+        {
+            "platforms": [
+                "android_webview",
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "enable_in_regular_mode": "true"
+                    },
+                    "enable_features": [
+                        "CanvasNoise"
+                    ]
+                }
+            ]
+        }
+    ],
     "CanvasTextNg": [
         {
             "platforms": [

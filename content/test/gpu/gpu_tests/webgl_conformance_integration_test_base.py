@@ -426,6 +426,11 @@ class WebGLConformanceIntegrationTestBase(
         # Force-enable SharedArrayBuffer to be able to test its
         # support in WEBGL_multi_draw.
         '--enable-blink-features=SharedArrayBuffer',
+        # Disable the noise interventions. This needs to be disabled because the
+        # tests read out the exact pixels values. By adding noise to these pixel
+        # values, these tests will obviously fail. This is intended behavior for
+        # the feature, so this should remain disabled.
+        '--disable-features=CanvasNoise',
     ])
     # Note that the overriding of the default --js-flags probably
     # won't interact well with RestartBrowserIfNecessaryWithArgs, but
