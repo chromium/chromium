@@ -359,7 +359,7 @@ BASE_FEATURE(kAutofillPaymentsFieldSwapping,
 // will affect many correctness metrics.
 BASE_FEATURE(kAutofillRecordCorrectionOfSelectElements,
              "AutofillRecordCorrectionOfSelectElements",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, chrome will support home and work addresses from account.
 // TODO: crbug.com/397940269 - Clean up when launched.
