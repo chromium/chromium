@@ -246,7 +246,7 @@ pub fn collect_dependencies(
             .to_feature_set(StandardFeatures::Default);
         let no_extra_features = graph.resolve_none().to_feature_set(StandardFeatures::Default);
         let resolver = PackageResolver { extra_config };
-        CargoSet::with_resolver(initials, no_extra_features, resolver, &cargo_options)?
+        CargoSet::with_package_resolver(initials, no_extra_features, resolver, &cargo_options)?
     };
     let cargo_set_links = cargo_set
         .build_dep_links()

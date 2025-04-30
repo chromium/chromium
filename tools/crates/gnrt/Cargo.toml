@@ -15,6 +15,7 @@ path = "main.rs"
 anyhow = "1"
 cargo-platform = "0.1"
 clap = {version = "4", features = ["derive"]}
+guppy = "0.17.18"
 handlebars = "4.3.7"
 itertools = "0.12"
 flate2 = "1"
@@ -25,6 +26,7 @@ semver = "1"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 tar = "0.4"
+target-spec = "3.4.2"
 tempfile = "3"
 toml = "0.8"
 
@@ -32,17 +34,3 @@ toml = "0.8"
 version = "0.10"
 default-features = false
 features = ["color"]
-
-# Patch `guppy` in a way that corresponds to
-# https://github.com/guppy-rs/guppy/pull/453
-# (and an already discussed follow-up, not-yet-raised PR
-# for `host_links` and `target_links` accessors).
-#
-# TODO(https://crbug.com/395924069): Stop patching `guppy` after the upstream
-# discussion of the PR concludes whether to 1) merge it as-is, or 2) tweak it.
-[dependencies.guppy]
-git = 'https://github.com/anforowicz/guppy.git'
-branch = 'cargo-set-more-links-accessors'
-[dependencies.target-spec]
-git = 'https://github.com/anforowicz/guppy.git'
-branch = 'cargo-set-more-links-accessors'
