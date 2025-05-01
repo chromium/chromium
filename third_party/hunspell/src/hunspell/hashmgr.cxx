@@ -109,7 +109,7 @@ HashMgr::HashMgr(const char* tpath, const char* apath, const char* key)
   if (ec) {
     /* error condition - what should we do here */
     HUNSPELL_WARNING(stderr, "Hash Manager Error : %d\n", ec);
-    free(tableptr);
+    free_table();
     //keep tablesize to 1 to fix possible division with zero
     tablesize = 1;
     tableptr = (struct hentry**)calloc(tablesize, sizeof(struct hentry*));
@@ -119,7 +119,12 @@ HashMgr::HashMgr(const char* tpath, const char* apath, const char* key)
   }
 }
 
-HashMgr::~HashMgr() {
+void HashMgr::free_flag(unsigned short* astr, short alen) {
+  if (astr && (aliasf.empty() || TESTAFF(astr, ONLYUPCASEFLAG, alen)))
+    free(astr);
+}
+
+void HashMgr::free_table() {
   if (tableptr) {
     // now pass through hash table freeing up everything
     // go through column by column of the table
@@ -128,9 +133,7 @@ HashMgr::~HashMgr() {
       struct hentry* nt = NULL;
       while (pt) {
         nt = pt->next;
-        if (pt->astr &&
-            (aliasf.empty() || TESTAFF(pt->astr, ONLYUPCASEFLAG, pt->alen)))
-          free(pt->astr);
+        free_flag(pt->astr, pt->alen);
         free(pt);
         pt = nt;
       }
@@ -138,6 +141,10 @@ HashMgr::~HashMgr() {
     free(tableptr);
   }
   tablesize = 0;
+}
+
+HashMgr::~HashMgr() {
+  free_table();
 
   for (size_t j = 0, numaliasf = aliasf.size(); j < numaliasf; ++j)
     free(aliasf[j]);
@@ -267,6 +274,15 @@ int HashMgr::add_word(const std::string& in_word,
     word = word_copy;
   }
 
+  // limit of hp->blen
+  if (word->size() > std::numeric_limits<unsigned char>::max()) {
+    HUNSPELL_WARNING(stderr, "error: word len %ld is over max limit\n", word->size());
+    delete desc_copy;
+    delete word_copy;
+    free_flag(aff, al);
+    return 1;
+  }
+
   bool upcasehomonym = false;
   int descl = desc ? (!aliasm.empty() ? sizeof(char*) : desc->size() + 1) : 0;
   // variable-length hash record with word and optional fields
@@ -275,6 +291,7 @@ int HashMgr::add_word(const std::string& in_word,
   if (!hp) {
     delete desc_copy;
     delete word_copy;
+    free_flag(aff, al);
     return 1;
   }
 
@@ -973,7 +990,7 @@ bool HashMgr::decode_flags(std::vector<unsigned short>& result, const std::strin
   return true;
 }
 
-unsigned short HashMgr::decode_flag(const char* f) const {
+unsigned short HashMgr::decode_flag(const std::string& f) const {
   unsigned short s = 0;
   int i;
   switch (flag_mode) {
@@ -981,7 +998,7 @@ unsigned short HashMgr::decode_flag(const char* f) const {
       s = ((unsigned short)((unsigned char)f[0]) << 8) + (unsigned char)f[1];
       break;
     case FLAG_NUM:
-      i = atoi(f);
+      i = atoi(f.c_str());
       if (i >= DEFAULTFLAGS)
         HUNSPELL_WARNING(stderr, "error: flag id %d is too large (max: %d)\n",
                          i, DEFAULTFLAGS - 1);
@@ -995,7 +1012,7 @@ unsigned short HashMgr::decode_flag(const char* f) const {
       break;
     }
     default:
-      s = *(unsigned char*)f;
+      s = (unsigned char)f[0];
   }
   if (s == 0)
     HUNSPELL_WARNING(stderr, "error: 0 is wrong flag id\n");
@@ -1083,7 +1100,7 @@ int HashMgr::load_config(const char* affpath, const char* key) {
         delete afflst;
         return 1;
       }
-      forbiddenword = decode_flag(st.c_str());
+      forbiddenword = decode_flag(st);
     }
 
     if (line.compare(0, 3, "SET", 3) == 0) {

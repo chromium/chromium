@@ -1969,7 +1969,7 @@ std::vector<std::string> HunspellImpl::suffix_suggest(const std::string& root_wo
     he = m_HMgrs[i]->lookup(word);
   }
   if (he) {
-    slst = pAMgr->get_suffix_words(he->astr, he->alen, root_word.c_str());
+    slst = pAMgr->get_suffix_words(he->astr, he->alen, root_word);
   }
   return slst;
 }

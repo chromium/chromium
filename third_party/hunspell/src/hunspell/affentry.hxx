@@ -99,7 +99,7 @@ class PfxEntry : public AffEntry {
                            char in_compound,
                            const FLAG needflag = FLAG_NULL);
 
-  struct hentry* check_twosfx(const char* word,
+  struct hentry* check_twosfx(const std::string& word,
                               int len,
                               char in_compound,
                               const FLAG needflag = FLAG_NULL);
@@ -136,7 +136,7 @@ class PfxEntry : public AffEntry {
   inline void setFlgNxt(PfxEntry* ptr) { flgnxt = ptr; }
 
   inline char* nextchar(char* p);
-  inline int test_condition(const char* st);
+  inline int test_condition(const std::string& st);
 };
 
 /* A Suffix Entry */
@@ -171,7 +171,7 @@ class SfxEntry : public AffEntry {
                            const FLAG needflag,
                            const FLAG badflag);
 
-  struct hentry* check_twosfx(const char* word,
+  struct hentry* check_twosfx(const std::string& word,
                               int len,
                               int optflags,
                               PfxEntry* ppfx,

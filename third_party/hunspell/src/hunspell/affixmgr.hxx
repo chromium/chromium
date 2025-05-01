@@ -227,7 +227,7 @@ class AffixMgr {
                               char in_compound,
                               const FLAG needflag = FLAG_NULL);
   inline int isSubset(const char* s1, const char* s2);
-  struct hentry* prefix_check_twosfx(const char* word,
+  struct hentry* prefix_check_twosfx(const std::string& word,
                                      int len,
                                      char in_compound,
                                      const FLAG needflag = FLAG_NULL);
@@ -239,7 +239,7 @@ class AffixMgr {
                               const FLAG cclass = FLAG_NULL,
                               const FLAG needflag = FLAG_NULL,
                               char in_compound = IN_CPD_NOT);
-  struct hentry* suffix_check_twosfx(const char* word,
+  struct hentry* suffix_check_twosfx(const std::string& word,
                                      int len,
                                      int sfxopts,
                                      PfxEntry* ppfx,
@@ -303,7 +303,7 @@ class AffixMgr {
                    hentry** rwords,
                    char all);
   int cpdcase_check(const char* word, int len);
-  inline int candidate_check(const char* word, int len);
+  inline int candidate_check(const std::string& word);
   void setcminmax(int* cmin, int* cmax, const char* word, int len);
   struct hentry* compound_check(const std::string& word,
                                 short wordnum,
@@ -316,8 +316,7 @@ class AffixMgr {
                                 char is_sug,
                                 int* info);
 
-  int compound_check_morph(const char* word,
-                           int len,
+  int compound_check_morph(const std::string& word,
                            short wordnum,
                            short numsyllable,
                            short maxwordnum,
@@ -330,7 +329,7 @@ class AffixMgr {
 
   std::vector<std::string> get_suffix_words(short unsigned* suff,
                        int len,
-                       const char* root_word);
+                       const std::string& root_word);
 
   struct hentry* lookup(const char* word);
   const std::vector<replentry>& get_reptable() const;
@@ -397,8 +396,8 @@ class AffixMgr {
 
   void reverse_condition(std::string&);
   std::string& debugflag(std::string& result, unsigned short flag);
-  int condlen(const char*);
-  int encodeit(AffEntry& entry, const char* cs);
+  int condlen(const std::string& s);
+  int encodeit(AffEntry& entry, const std::string& cs);
   int build_pfxtree(PfxEntry* pfxptr);
   int build_sfxtree(SfxEntry* sfxptr);
   int process_pfx_order();
@@ -407,7 +406,7 @@ class AffixMgr {
   SfxEntry* process_sfx_in_order(SfxEntry* ptr, SfxEntry* nptr);
   int process_pfx_tree_to_list();
   int process_sfx_tree_to_list();
-  int redundant_condition(char, const char* strip, int stripl, const char* cond, int);
+  int redundant_condition(char, const std::string& strip, const std::string& cond, int);
   void finishFileMgr(FileMgr* afflst);
 };
 

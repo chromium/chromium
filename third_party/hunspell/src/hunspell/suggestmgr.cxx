@@ -499,18 +499,19 @@ int SuggestMgr::mapchars(std::vector<std::string>& wlst,
   timelimit = clock();
   timer = MINTIMER;
   return map_related(word, candidate, 0, wlst, cpdsuggest,
-                     maptable, &timer, &timelimit);
+                     maptable, &timer, &timelimit, 0);
 }
 
-int SuggestMgr::map_related(const char* word,
+int SuggestMgr::map_related(const std::string& word,
                             std::string& candidate,
-                            int wn,
+                            size_t wn,
                             std::vector<std::string>& wlst,
                             int cpdsuggest,
                             const std::vector<mapentry>& maptable,
                             int* timer,
-                            clock_t* timelimit) {
-  if (*(word + wn) == '\0') {
+                            clock_t* timelimit,
+                            int depth) {
+  if (word.size() == wn) {
     int cwrd = 1;
     for (size_t m = 0; m < wlst.size(); ++m) {
       if (wlst[m] == candidate) {
@@ -525,18 +526,24 @@ int SuggestMgr::map_related(const char* word,
     }
     return wlst.size();
   }
+
+  if (depth > 16384) {
+    *timer = 0;
+    return wlst.size();
+  }
+
   int in_map = 0;
   for (size_t j = 0; j < maptable.size(); ++j) {
     for (size_t k = 0; k < maptable[j].size(); ++k) {
       size_t len = maptable[j][k].size();
-      if (len && strncmp(maptable[j][k].c_str(), word + wn, len) == 0) {
+      if (len && word.compare(wn, len, maptable[j][k]) == 0) {
         in_map = 1;
         size_t cn = candidate.size();
         for (size_t l = 0; l < maptable[j].size(); ++l) {
           candidate.resize(cn);
           candidate.append(maptable[j][l]);
           map_related(word, candidate, wn + len, wlst,
-                           cpdsuggest, maptable, timer, timelimit);
+                           cpdsuggest, maptable, timer, timelimit, depth + 1);
           if (!(*timer))
             return wlst.size();
         }
@@ -544,9 +551,9 @@ int SuggestMgr::map_related(const char* word,
     }
   }
   if (!in_map) {
-    candidate.push_back(*(word + wn));
+    candidate.push_back(word[wn]);
     map_related(word, candidate, wn + 1, wlst, cpdsuggest,
-                maptable, timer, timelimit);
+                maptable, timer, timelimit, depth + 1);
   }
   return wlst.size();
 }
@@ -1813,9 +1820,9 @@ int SuggestMgr::checkword(const std::string& word,
     }
 
     if (!rv && pAMgr->have_contclass()) {
-      rv = pAMgr->suffix_check_twosfx(word.c_str(), word.size(), 0, NULL, FLAG_NULL);
+      rv = pAMgr->suffix_check_twosfx(word, word.size(), 0, NULL, FLAG_NULL);
       if (!rv)
-        rv = pAMgr->prefix_check_twosfx(word.c_str(), word.size(), 0, FLAG_NULL);
+        rv = pAMgr->prefix_check_twosfx(word, word.size(), 0, FLAG_NULL);
     }
 
     // check forbidden words
@@ -1900,8 +1907,7 @@ std::string SuggestMgr::suggest_morph(const std::string& in_w) {
 
   if (pAMgr->get_compound() && result.empty()) {
     struct hentry* rwords[100];  // buffer for COMPOUND pattern checking
-    pAMgr->compound_check_morph(w.c_str(), w.size(), 0, 0, 100, 0, NULL, (hentry**)&rwords, 0, result,
-                                NULL);
+    pAMgr->compound_check_morph(w, 0, 0, 100, 0, NULL, (hentry**)&rwords, 0, result, NULL);
   }
 
   line_uniq(result, MSEP_REC);

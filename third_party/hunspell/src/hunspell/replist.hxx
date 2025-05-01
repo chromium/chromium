@@ -96,7 +96,7 @@ class RepList {
 
   int add(const std::string& pat1, const std::string& pat2);
   int find(const char* word);
-  std::string replace(const char* word, int n, bool atstart);
+  std::string replace(const size_t wordlen, int n, bool atstart);
   bool conv(const std::string& word, std::string& dest);
 };
 #endif

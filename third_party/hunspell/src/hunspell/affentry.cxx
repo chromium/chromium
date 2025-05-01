@@ -122,8 +122,9 @@ inline char* PfxEntry::nextchar(char* p) {
   return NULL;
 }
 
-inline int PfxEntry::test_condition(const char* st) {
-  const char* pos = NULL;  // group with pos input position
+inline int PfxEntry::test_condition(const std::string& s) {
+  size_t st = 0;
+  size_t pos = std::string::npos;  // group with pos input position
   bool neg = false;        // complementer
   bool ingroup = false;    // character in the group
   if (numconds == 0)
@@ -148,53 +149,56 @@ inline int PfxEntry::test_condition(const char* st) {
       case ']': {
         if (bool(neg) == bool(ingroup))
           return 0;
-        pos = NULL;
+        pos = std::string::npos;
         p = nextchar(p);
         // skip the next character
-        if (!ingroup && *st)
-          for (st++; (opts & aeUTF8) && (*st & 0xc0) == 0x80; st++)
-            ;
-        if (*st == '\0' && p)
+        if (!ingroup && st < s.size()) {
+          ++st;
+          while ((opts & aeUTF8) && st < s.size() && (s[st] & 0xc0) == 0x80)
+            ++st;
+        }
+        if (st == s.size() && p)
           return 0;  // word <= condition
         break;
       }
       case '.':
-        if (!pos) {  // dots are not metacharacters in groups: [.]
+        if (pos == std::string::npos) {  // dots are not metacharacters in groups: [.]
           p = nextchar(p);
           // skip the next character
-          for (st++; (opts & aeUTF8) && (*st & 0xc0) == 0x80; st++)
-            ;
-          if (*st == '\0' && p)
+          ++st;
+          while ((opts & aeUTF8) && st < s.size() && (s[st] & 0xc0) == 0x80)
+            ++st;
+          if (st == s.size() && p)
             return 0;  // word <= condition
           break;
         }
       /* FALLTHROUGH */
       default: {
-        if (*st == *p) {
-          st++;
+        if (s[st] == *p) {
+          ++st;
           p = nextchar(p);
-          if ((opts & aeUTF8) && (*(st - 1) & 0x80)) {  // multibyte
+          if ((opts & aeUTF8) && (s[st - 1] & 0x80)) {  // multibyte
             while (p && (*p & 0xc0) == 0x80) {          // character
-              if (*p != *st) {
-                if (!pos)
+              if (*p != s[st]) {
+                if (pos == std::string::npos)
                   return 0;
                 st = pos;
                 break;
               }
               p = nextchar(p);
-              st++;
+              ++st;
             }
-            if (pos && st != pos) {
+            if (pos != std::string::npos && st != pos) {
               ingroup = true;
               while (p && *p != ']' && ((p = nextchar(p)) != NULL)) {
               }
             }
-          } else if (pos) {
+          } else if (pos != std::string::npos) {
             ingroup = true;
             while (p && *p != ']' && ((p = nextchar(p)) != NULL)) {
             }
           }
-        } else if (pos) {  // group
+        } else if (pos != std::string::npos) {  // group
           p = nextchar(p);
         } else
           return 0;
@@ -234,7 +238,7 @@ struct hentry* PfxEntry::checkword(const char* word,
     // if all conditions are met then check if resulting
     // root word in the dictionary
 
-    if (test_condition(tmpword.c_str())) {
+    if (test_condition(tmpword)) {
       tmpl += strip.size();
       if ((he = pmyMgr->lookup(tmpword.c_str())) != NULL) {
         do {
@@ -266,7 +270,7 @@ struct hentry* PfxEntry::checkword(const char* word,
 }
 
 // check if this prefix entry matches
-struct hentry* PfxEntry::check_twosfx(const char* word,
+struct hentry* PfxEntry::check_twosfx(const std::string& word,
                                       int len,
                                       char in_compound,
                                       const FLAG needflag) {
@@ -283,7 +287,7 @@ struct hentry* PfxEntry::check_twosfx(const char* word,
     // back any characters that would have been stripped
 
     std::string tmpword(strip);
-    tmpword.append(word + appnd.size());
+    tmpword.append(word, appnd.size());
 
     // now make sure all of the conditions on characters
     // are met.  Please see the appendix at the end of
@@ -293,7 +297,7 @@ struct hentry* PfxEntry::check_twosfx(const char* word,
     // if all conditions are met then check if resulting
     // root word in the dictionary
 
-    if (test_condition(tmpword.c_str())) {
+    if (test_condition(tmpword)) {
       tmpl += strip.size();
 
       // prefix matched but no root word was found
@@ -302,7 +306,7 @@ struct hentry* PfxEntry::check_twosfx(const char* word,
 
       if ((opts & aeXPRODUCT) && (in_compound != IN_CPD_BEGIN)) {
         // hash entry of root word or NULL
-        struct hentry* he = pmyMgr->suffix_check_twosfx(tmpword.c_str(), tmpl, aeXPRODUCT, this,
+        struct hentry* he = pmyMgr->suffix_check_twosfx(tmpword, tmpl, aeXPRODUCT, this,
                                                         needflag);
         if (he)
           return he;
@@ -340,7 +344,7 @@ std::string PfxEntry::check_twosfx_morph(const char* word,
     // if all conditions are met then check if resulting
     // root word in the dictionary
 
-    if (test_condition(tmpword.c_str())) {
+    if (test_condition(tmpword)) {
       tmpl += strip.size();
 
       // prefix matched but no root word was found
@@ -387,7 +391,7 @@ std::string PfxEntry::check_morph(const char* word,
     // if all conditions are met then check if resulting
     // root word in the dictionary
 
-    if (test_condition(tmpword.c_str())) {
+    if (test_condition(tmpword)) {
       tmpl += strip.size();
       struct hentry* he;  // hash entry of root word or NULL
       if ((he = pmyMgr->lookup(tmpword.c_str())) != NULL) {
@@ -689,7 +693,7 @@ struct hentry* SfxEntry::checkword(const char* word,
 }
 
 // see if two-level suffix is present in the word
-struct hentry* SfxEntry::check_twosfx(const char* word,
+struct hentry* SfxEntry::check_twosfx(const std::string& word,
                                       int len,
                                       int optflags,
                                       PfxEntry* ppfx,

@@ -307,6 +307,18 @@ Linking with Hunspell static library:
     # or better, use pkg-config
     g++ $(pkg-config --cflags --libs hunspell) example.cxx
 
+# Installing Hunspell (vcpkg)
+
+Alternatively, you can build and install hunspell using [vcpkg](https://github.com/Microsoft/vcpkg/) dependency manager:
+
+    git clone https://github.com/Microsoft/vcpkg.git
+    cd vcpkg
+    ./bootstrap-vcpkg.sh
+    ./vcpkg integrate install
+    ./vcpkg install hunspell
+
+The hunspell port in vcpkg is kept up to date by Microsoft team members and community contributors. If the version is out of date, please [create an issue or pull request](https://github.com/Microsoft/vcpkg) on the vcpkg repository.
+
 ## Dictionaries
 
 Hunspell (MySpell) dictionaries:
