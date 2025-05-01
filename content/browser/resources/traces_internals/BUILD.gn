@@ -61,7 +61,7 @@ build_webui("build") {
   ]
   mojo_files = [
     "$root_gen_dir/content/browser/tracing/trace_report/trace_report.mojom-webui.ts",
-    "$root_gen_dir/tsproto/third_party/perfetto/protos/perfetto/config/perfetto_config.ts",
+    "$proto_ts_root/third_party/perfetto/protos/perfetto/config/perfetto_config.ts",
   ]
 
   extra_grdp_deps = [ "//third_party/protobuf:bufbuild_grdp" ]

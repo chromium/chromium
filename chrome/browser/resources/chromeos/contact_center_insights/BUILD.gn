@@ -5,9 +5,9 @@
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/closure_compiler/closure_args.gni")
 import("//third_party/closure_compiler/compile_js.gni")
+import("//third_party/protobuf/proto_library.gni")
 
-reporting_proto_js_dir =
-    "${root_out_dir}/jsproto/components/reporting/proto/synced"
+reporting_proto_js_dir = "$proto_js_root/components/reporting/proto/synced"
 
 # JS library that includes all protos used by the extension for reporting
 # purposes

@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/python.gni")
+import("//third_party/protobuf/proto_library.gni")
 
 # Generate the binary proto form of "ssl_error_assistant" from the ascii proto.
 action("make_ssl_error_assistant_protobuf") {
@@ -14,9 +15,8 @@ action("make_ssl_error_assistant_protobuf") {
   input_filename = "ssl_error_assistant.asciipb"
   output_dir = target_gen_dir
   output_basename = "ssl_error_assistant.pb"
-  python_path_root = "$root_out_dir/pyproto"
   python_path_ssl =
-      "$python_path_root/components/security_interstitials/content/"
+      "$proto_python_root/components/security_interstitials/content/"
 
   inputs = [ input_filename ]
 
@@ -36,7 +36,7 @@ action("make_ssl_error_assistant_protobuf") {
     "-o",
     output_basename,
     "-p",
-    rebase_path(python_path_root, root_build_dir),
+    rebase_path(proto_python_root, root_build_dir),
     "-p",
     rebase_path(python_path_ssl, root_build_dir),
   ]

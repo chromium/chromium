@@ -325,19 +325,18 @@ source_set("utf8_range") {
   deps = [ "${protobuf_abseil_dir}:absl" ]
 }
 
-google_python_dir = "$root_out_dir/pyproto/google"
-
 copy("copy_google_protobuf") {
   # See README.chromium for how this file is generated.
   sources = pyproto_sources + [ "python/google/protobuf/descriptor_pb2.py" ]
-  outputs = [ "$google_python_dir/protobuf/{{source_file_part}}" ]
+  outputs = [ "$proto_python_root/google/protobuf/{{source_file_part}}" ]
 }
 
 copy("copy_google_protobuf_internal") {
   # See README.chromium for how this file is generated.
   sources = pyproto_internal_sources +
             [ "python/google/protobuf/internal/python_edition_defaults.py" ]
-  outputs = [ "$google_python_dir/protobuf/internal/{{source_file_part}}" ]
+  outputs =
+      [ "$proto_python_root/google/protobuf/internal/{{source_file_part}}" ]
 }
 
 # Build time dependency for action rules.
