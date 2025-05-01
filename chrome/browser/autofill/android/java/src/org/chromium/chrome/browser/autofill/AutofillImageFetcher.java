@@ -41,21 +41,6 @@ import java.util.function.Function;
 public class AutofillImageFetcher {
     private static final long REFETCH_DELAY_MS = 120000; // 2 mins.
     private static final int MAX_FETCH_ATTEMPTS = 2;
-    // Logs the overall success rate of fetching credit card art images. For a given credit card art
-    // URL, logs "true" if image was fetched, "false" if the image was not fetched after {@link
-    // #MAX_FETCH_ATTEMPTS} attempts.
-    private static final String CREDIT_CARD_ART_OVERALL_SUCCESS_HISTOGRAM =
-            "Autofill.ImageFetcher.CreditCardArt.OverallResultOnBrowserStart";
-    // Logs the overall success rate of fetching Pix account images. For a given Pix account image
-    // URL, logs "true" if image was fetched, "false" if the image was not fetched after {@link
-    // #MAX_FETCH_ATTEMPTS} attempts.
-    private static final String PIX_ACCOUNT_IMAGE_OVERALL_SUCCESS_HISTOGRAM =
-            "Autofill.ImageFetcher.PixAccountImage.OverallResultOnBrowserStart";
-    // Logs the overall success rate of fetching valuable images. For a given valuable image URL,
-    // logs "true" if image was fetched, "false" if the image was not fetched after {@link
-    // #MAX_FETCH_ATTEMPTS} attempts.
-    private static final String VALUABLE_IMAGE_OVERALL_SUCCESS_HISTOGRAM =
-            "Autofill.ImageFetcher.ValuableImage.OverallResultOnBrowserStart";
     // Valuable images should be cached in small and large size on Android.
     public static final int[] VALUABLE_IMAGE_SIZES = new int[] {ImageSize.SMALL, ImageSize.LARGE};
 
@@ -107,7 +92,7 @@ public class AutofillImageFetcher {
                                         bitmap,
                                         resolvedUrl,
                                         treatImageFunction,
-                                        CREDIT_CARD_ART_OVERALL_SUCCESS_HISTOGRAM);
+                                        /* imageTypeString= */ "CreditCardArt");
                 fetchImage(resolvedUrl, onImageFetched);
             }
         }
@@ -136,7 +121,7 @@ public class AutofillImageFetcher {
                                     bitmap,
                                     resolvedUrl,
                                     treatImageFunction,
-                                    PIX_ACCOUNT_IMAGE_OVERALL_SUCCESS_HISTOGRAM);
+                                    /* imageTypeString= */ "PixAccountImage");
             fetchImage(resolvedUrl, onImageFetched);
         }
     }
@@ -165,7 +150,7 @@ public class AutofillImageFetcher {
                                         bitmap,
                                         resolvedUrl,
                                         imageBitmap -> imageBitmap,
-                                        VALUABLE_IMAGE_OVERALL_SUCCESS_HISTOGRAM);
+                                        /* imageTypeString= */ "ValuableImage");
                 fetchImage(resolvedUrl, onImageFetched);
             }
         }
@@ -235,19 +220,21 @@ public class AutofillImageFetcher {
      * @param bitmap The Bitmap fetched from server.
      * @param resolvedUrl The key against which the treated Bitmap is cached.
      * @param treatImageFunction Imagetreatment function.
-     * @param overallSuccessHistogramName Histogram name to measure the success rate of a specific
-     *     image type. Logs whether or not the image was fetched after a maximum of {@code
-     *     MAX_FETCH_ATTEMPTS} attempts.
+     * @param imageTypeString String representing the type of image, used for logging histograms. It
+     *     corresponds to the "AutofillImage" variant in the histograms.xml file.
      */
     private void treatAndCacheImage(
             @Nullable Bitmap bitmap,
             String resolvedUrl,
             Function<Bitmap, Bitmap> treatImageFunction,
-            String overallSuccessHistogramName) {
+            String imageTypeString) {
+        String overallSuccessHistogram =
+                "Autofill.ImageFetcher." + imageTypeString + ".OverallResultOnBrowserStart";
+
         RecordHistogram.recordBooleanHistogram("Autofill.ImageFetcher.Result", bitmap != null);
 
         if (bitmap != null) {
-            RecordHistogram.recordBooleanHistogram(overallSuccessHistogramName, /* sample= */ true);
+            RecordHistogram.recordBooleanHistogram(overallSuccessHistogram, /* sample= */ true);
 
             mImagesCache.put(resolvedUrl, treatImageFunction.apply(bitmap));
             return;
@@ -255,8 +242,7 @@ public class AutofillImageFetcher {
 
         // Image fetching failed, and max retry attempts reached.
         if (mFetchAttemptCounter.getOrDefault(resolvedUrl, 0) >= MAX_FETCH_ATTEMPTS) {
-            RecordHistogram.recordBooleanHistogram(
-                    overallSuccessHistogramName, /* sample= */ false);
+            RecordHistogram.recordBooleanHistogram(overallSuccessHistogram, /* sample= */ false);
             return;
         }
 
@@ -269,7 +255,7 @@ public class AutofillImageFetcher {
                                     fetchedBitmap,
                                     resolvedUrl,
                                     treatImageFunction,
-                                    overallSuccessHistogramName);
+                                    imageTypeString);
             Handler handler = new Handler();
             handler.postDelayed(() -> fetchImage(resolvedUrl, onImageFetched), REFETCH_DELAY_MS);
         }
