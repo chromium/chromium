@@ -12,6 +12,7 @@ include_rules = [
   "+ios/chrome/browser/authentication/ui_bundled/signin/promo",
   "+ios/chrome/browser/first_run/ui_bundled/welcome_back/ui/welcome_back_display_handler.h",
   "+ios/chrome/browser/first_run/ui_bundled/features.h",
+  "+ios/chrome/browser/authentication/ui_bundled/signin/features.h"
 ]
 
 specific_include_rules = {
