@@ -152,13 +152,14 @@ display::Display ScreenAsh::GetDisplayNearestWindow(
     return GetPrimaryDisplay();
 
   const aura::Window* root_window = window->GetRootWindow();
-  if (!root_window)
+  if (!root_window || root_window->is_destroying()) {
     return GetPrimaryDisplay();
+  }
   const RootWindowSettings* rws = GetRootWindowSettings(root_window);
   CHECK(rws) << "Missing RootWindowSettings : window=" << window->GetName()
              << ", root=" << root_window->GetName();
   int64_t id = rws->display_id;
-  // if id is |kInvaildDisplayID|, it's being deleted.
+  // if id is |kInvalidDisplayId|, it's being deleted.
   if (id == display::kInvalidDisplayId)
     return GetPrimaryDisplay();
 
