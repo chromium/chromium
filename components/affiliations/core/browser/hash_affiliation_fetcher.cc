@@ -8,10 +8,6 @@
 #include <utility>
 
 #include "base/functional/callback_forward.h"
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
