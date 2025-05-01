@@ -1166,9 +1166,14 @@ void SharedContextState::UpdateSkiaOwnedMemorySize() {
     // since with Graphite that's owned by Chrome rather than Skia as in Ganesh.
     const auto* image_provider = static_cast<const gpu::GraphiteImageProvider*>(
         gpu_main_graphite_recorder_->clientImageProvider());
-    new_size = graphite_shared_context()->currentBudgetedBytes() +
-               gpu_main_graphite_recorder_->currentBudgetedBytes() +
+    new_size = gpu_main_graphite_recorder_->currentBudgetedBytes() +
                image_provider->CurrentSizeInBytes();
+    // If there is only one graphite::Context for both GpuMain and
+    // CompositorGpuThread, only track the graphite context memory on GpuMain.
+    if (!features::IsGraphiteContextThreadSafe() ||
+        !created_on_compositor_gpu_thread_) {
+      new_size += graphite_shared_context()->currentBudgetedBytes();
+    }
   }
   // Skia does not have a CommandBufferId. PeakMemoryMonitor currently does not
   // use CommandBufferId to identify source, so use zero here to separate
