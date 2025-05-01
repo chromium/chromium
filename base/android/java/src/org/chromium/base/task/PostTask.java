@@ -89,17 +89,6 @@ public class PostTask {
     }
 
     /**
-     * @param taskTraits The TaskTraits that describe the desired TaskRunner.
-     * @return The TaskRunner for the specified TaskTraits.
-     */
-    public static TaskRunner createTaskRunner(@TaskTraits int taskTraits) {
-        if (isUiTaskTraits(taskTraits)) {
-            return sTraitsToRunnerMap[taskTraits];
-        }
-        return new TaskRunnerImpl(taskTraits);
-    }
-
-    /**
      * Creates and returns a SequencedTaskRunner. SequencedTaskRunners automatically destroy
      * themselves, so the destroy() function is not required to be called.
      *
@@ -355,5 +344,41 @@ public class PostTask {
         for (@TaskTraits int i = TaskTraits.UI_TRAITS_START; i <= TaskTraits.UI_TRAITS_END; i++) {
             sTraitsToRunnerMap[i] = new UiThreadTaskRunnerImpl(i);
         }
+    }
+
+    public static TaskRunner getTaskRunner(@TaskTraits int taskTraits) {
+        return sTraitsToRunnerMap[taskTraits];
+    }
+
+    public static TaskRunner getUiBestEffortExecutor() {
+        return sTraitsToRunnerMap[TaskTraits.UI_BEST_EFFORT];
+    }
+
+    public static TaskRunner getUiUserVisibleExecutor() {
+        return sTraitsToRunnerMap[TaskTraits.UI_USER_VISIBLE];
+    }
+
+    public static TaskRunner getUiUserBlockingExecutor() {
+        return sTraitsToRunnerMap[TaskTraits.UI_USER_BLOCKING];
+    }
+
+    public static TaskRunner getBackgroundBestEffortExecutor() {
+        return sTraitsToRunnerMap[TaskTraits.BEST_EFFORT];
+    }
+
+    public static TaskRunner getBackgroundBestEffortMayBlockExecutor() {
+        return sTraitsToRunnerMap[TaskTraits.BEST_EFFORT_MAY_BLOCK];
+    }
+
+    public static TaskRunner getBackgroundUserVisibleExecutor() {
+        return sTraitsToRunnerMap[TaskTraits.USER_VISIBLE];
+    }
+
+    public static TaskRunner getBackgroundUserBlockingExecutor() {
+        return sTraitsToRunnerMap[TaskTraits.USER_BLOCKING];
+    }
+
+    public static TaskRunner getBackgroundUserBlockingMayBlockExecutor() {
+        return sTraitsToRunnerMap[TaskTraits.USER_BLOCKING_MAY_BLOCK];
     }
 }

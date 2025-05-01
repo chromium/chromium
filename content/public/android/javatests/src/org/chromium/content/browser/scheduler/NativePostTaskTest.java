@@ -155,9 +155,9 @@ public class NativePostTaskTest {
 
     @Test
     @MediumTest
-    public void testCreateTaskRunner() {
+    public void testGetTaskRunner() {
         startNativeScheduler();
-        TaskRunner taskQueue = PostTask.createTaskRunner(TaskTraits.USER_BLOCKING);
+        TaskRunner taskQueue = PostTask.getTaskRunner(TaskTraits.USER_BLOCKING);
         // This should not time out.
         SchedulerTestHelpers.postDelayedTaskAndBlockUntilRun(taskQueue, 1);
     }
@@ -206,10 +206,10 @@ public class NativePostTaskTest {
     @Test
     @MediumTest
     @DisabledTest(message = "https://crbug.com/938316")
-    public void testCreateTaskRunnerMigrationToNative() throws Exception {
+    public void testGetTaskRunnerMigrationToNative() throws Exception {
         final Object lock = new Object();
         final AtomicBoolean taskExecuted = new AtomicBoolean();
-        TaskRunner taskQueue = PostTask.createTaskRunner(TaskTraits.USER_BLOCKING);
+        TaskRunner taskQueue = PostTask.getTaskRunner(TaskTraits.USER_BLOCKING);
 
         postRepeatingTaskAndStartNativeSchedulerThenWaitForTaskToRun(
                 taskQueue,

@@ -58,8 +58,8 @@ public class PostTaskTest {
 
     @Test
     @SmallTest
-    public void testCreateTaskRunner() {
-        TaskRunner taskQueue = PostTask.createTaskRunner(TaskTraits.USER_BLOCKING);
+    public void testGetTaskRunner() {
+        TaskRunner taskQueue = PostTask.getTaskRunner(TaskTraits.USER_BLOCKING);
 
         // This should not timeout.
         SchedulerTestHelpers.postTaskAndBlockUntilRun(taskQueue);

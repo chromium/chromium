@@ -413,7 +413,7 @@ public class TabPersistentStore {
         // TODO(smaier): We likely can move everything onto the SequencedTaskRunner when the
         //  SERIAL_EXECUTOR path is gone. crbug.com/957735
         TaskRunner taskRunner =
-                needsInitialization ? mSequencedTaskRunner : PostTask.createTaskRunner(taskTraits);
+                needsInitialization ? mSequencedTaskRunner : PostTask.getTaskRunner(taskTraits);
 
         mPrefetchTabListTask =
                 startFetchTabListTask(taskRunner, mPersistencePolicy.getMetadataFileName());
