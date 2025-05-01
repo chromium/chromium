@@ -1,5 +1,5 @@
 diff --git a/src/hunspell/affixmgr.cxx b/src/hunspell/affixmgr.cxx
-index 2f38b93..6bdec4e 100644
+index 6371fc9..e42b6f4 100644
 --- a/src/hunspell/affixmgr.cxx
 +++ b/src/hunspell/affixmgr.cxx
 @@ -86,11 +86,19 @@
@@ -161,7 +161,7 @@ index 2f38b93..6bdec4e 100644
  
   return 0;
  }
-@@ -4470,6 +4546,7 @@ bool AffixMgr::parse_affix(const std::string& line,
+@@ -4469,6 +4545,7 @@ bool AffixMgr::parse_affix(const std::string& line,
        case 1: {
          np++;
          aflag = pHMgr->decode_flag(std::string(start_piece, iter).c_str());
@@ -169,7 +169,7 @@ index 2f38b93..6bdec4e 100644
          if (((at == 'S') && (dupflags[aflag] & dupSFX)) ||
              ((at == 'P') && (dupflags[aflag] & dupPFX))) {
            HUNSPELL_WARNING(
-@@ -4478,6 +4555,7 @@ bool AffixMgr::parse_affix(const std::string& line,
+@@ -4477,6 +4554,7 @@ bool AffixMgr::parse_affix(const std::string& line,
                af->getlinenum());
          }
          dupflags[aflag] += (char)((at == 'S') ? dupSFX : dupPFX);
@@ -335,7 +335,7 @@ index 88fe883..6585dc5 100644
  #endif
 +#endif
 diff --git a/src/hunspell/hashmgr.cxx b/src/hunspell/hashmgr.cxx
-index 3ec263d..2e4ed3a 100644
+index ba63347..fd4a99d 100644
 --- a/src/hunspell/hashmgr.cxx
 +++ b/src/hunspell/hashmgr.cxx
 @@ -82,8 +82,14 @@
@@ -354,8 +354,8 @@ index 3ec263d..2e4ed3a 100644
        tableptr(NULL),
        flag_mode(FLAG_CHAR),
        complexprefixes(0),
-@@ -97,8 +103,14 @@ HashMgr::HashMgr(const char* tpath, const char* apath, const char* key)
-       aliasm(NULL) {
+@@ -92,8 +98,14 @@ HashMgr::HashMgr(const char* tpath, const char* apath, const char* key)
+ {
    langnum = 0;
    csconv = 0;
 +#ifdef HUNSPELL_CHROME_CLIENT
@@ -369,7 +369,7 @@ index 3ec263d..2e4ed3a 100644
    if (ec) {
      /* error condition - what should we do here */
      HUNSPELL_WARNING(stderr, "Hash Manager Error : %d\n", ec);
-@@ -156,14 +168,57 @@ HashMgr::~HashMgr() {
+@@ -142,14 +154,57 @@ HashMgr::~HashMgr() {
  #endif
  #endif
  
@@ -427,7 +427,7 @@ index 3ec263d..2e4ed3a 100644
    struct hentry* dp;
    if (tableptr) {
      dp = tableptr[hash(word)];
-@@ -175,6 +230,7 @@ struct hentry* HashMgr::lookup(const char* word) const {
+@@ -161,6 +216,7 @@ struct hentry* HashMgr::lookup(const char* word) const {
      }
    }
    return NULL;
@@ -435,7 +435,7 @@ index 3ec263d..2e4ed3a 100644
  }
  
  // add a word to the hash table (private)
-@@ -185,6 +241,8 @@ int HashMgr::add_word(const std::string& in_word,
+@@ -171,6 +227,8 @@ int HashMgr::add_word(const std::string& in_word,
                        const std::string* in_desc,
                        bool onlyupcase,
                        int captype) {
@@ -444,7 +444,7 @@ index 3ec263d..2e4ed3a 100644
    const std::string* word = &in_word;
    const std::string* desc = in_desc;
  
-@@ -416,6 +474,17 @@ int HashMgr::add_word(const std::string& in_word,
+@@ -402,6 +460,17 @@ int HashMgr::add_word(const std::string& in_word,
  
    delete desc_copy;
    delete word_copy;
@@ -462,7 +462,7 @@ index 3ec263d..2e4ed3a 100644
    return 0;
  }
  
-@@ -480,6 +549,12 @@ int HashMgr::get_clen_and_captype(const std::string& word, int* captype) {
+@@ -466,6 +535,12 @@ int HashMgr::get_clen_and_captype(const std::string& word, int* captype) {
  
  // remove word (personal dictionary function for standalone applications)
  int HashMgr::remove(const std::string& word) {
@@ -475,7 +475,7 @@ index 3ec263d..2e4ed3a 100644
    struct hentry* dp = lookup(word.c_str());
    while (dp) {
      if (dp->alen == 0 || !TESTAFF(dp->astr, forbiddenword, dp->alen)) {
-@@ -497,6 +572,7 @@ int HashMgr::remove(const std::string& word) {
+@@ -483,6 +558,7 @@ int HashMgr::remove(const std::string& word) {
      }
      dp = dp->next_homonym;
    }
@@ -483,7 +483,7 @@ index 3ec263d..2e4ed3a 100644
    return 0;
  }
  
-@@ -555,6 +631,44 @@ int HashMgr::add_with_affix(const std::string& word, const std::string& example)
+@@ -541,6 +617,44 @@ int HashMgr::add_with_affix(const std::string& word, const std::string& example)
  // walk the hash table entry by entry - null at end
  // initialize: col=-1; hp = NULL; hp = walk_hashtable(&col, hp);
  struct hentry* HashMgr::walk_hashtable(int& col, struct hentry* hp) const {
@@ -528,7 +528,7 @@ index 3ec263d..2e4ed3a 100644
    if (hp && hp->next != NULL)
      return hp->next;
    for (col++; col < tablesize; col++) {
-@@ -564,10 +678,12 @@ struct hentry* HashMgr::walk_hashtable(int& col, struct hentry* hp) const {
+@@ -550,10 +664,12 @@ struct hentry* HashMgr::walk_hashtable(int& col, struct hentry* hp) const {
    // null at end and reset to start
    col = -1;
    return NULL;
@@ -541,7 +541,7 @@ index 3ec263d..2e4ed3a 100644
    // open dictionary file
    FileMgr* dict = new FileMgr(tpath, key);
    if (dict == NULL)
-@@ -698,12 +814,16 @@ int HashMgr::load_tables(const char* tpath, const char* key) {
+@@ -684,12 +800,16 @@ int HashMgr::load_tables(const char* tpath, const char* key) {
    }
  
    delete dict;
@@ -558,7 +558,7 @@ index 3ec263d..2e4ed3a 100644
    unsigned long hv = 0;
    for (int i = 0; i < 4 && *word != 0; i++)
      hv = (hv << 8) | (*word++);
-@@ -712,6 +832,7 @@ int HashMgr::hash(const char* word) const {
+@@ -698,6 +818,7 @@ int HashMgr::hash(const char* word) const {
      hv ^= (*word++);
    }
    return (unsigned long)hv % tablesize;
@@ -566,7 +566,7 @@ index 3ec263d..2e4ed3a 100644
  }
  
  int HashMgr::decode_flags(unsigned short** result, const std::string& flags, FileMgr* af) const {
-@@ -921,7 +1042,12 @@ int HashMgr::load_config(const char* affpath, const char* key) {
+@@ -907,7 +1028,12 @@ int HashMgr::load_config(const char* affpath, const char* key) {
    int firstline = 1;
  
    // open the affix file
@@ -579,7 +579,7 @@ index 3ec263d..2e4ed3a 100644
    if (!afflst) {
      HUNSPELL_WARNING(
          stderr, "Error - could not open affix description file %s\n", affpath);
-@@ -1159,6 +1285,132 @@ bool HashMgr::parse_aliasf(const std::string& line, FileMgr* af) {
+@@ -1130,6 +1256,132 @@ bool HashMgr::parse_aliasf(const std::string& line, FileMgr* af) {
    return true;
  }
  
@@ -710,10 +710,10 @@ index 3ec263d..2e4ed3a 100644
 +#endif
 +
  int HashMgr::is_aliasf() const {
-   return (aliasf != NULL);
+   return !aliasf.empty();
  }
 diff --git a/src/hunspell/hashmgr.hxx b/src/hunspell/hashmgr.hxx
-index 98b09e2..6fa2ba7 100644
+index c35d186..8842c97 100644
 --- a/src/hunspell/hashmgr.hxx
 +++ b/src/hunspell/hashmgr.hxx
 @@ -79,6 +79,13 @@
@@ -743,7 +743,7 @@ index 98b09e2..6fa2ba7 100644
    int tablesize;
    struct hentry** tableptr;
    flag flag_mode;
-@@ -111,7 +124,23 @@ class HashMgr {
+@@ -109,7 +122,23 @@ class HashMgr {
    std::vector<replentry> reptable;
  
   public:
@@ -767,7 +767,7 @@ index 98b09e2..6fa2ba7 100644
    ~HashMgr();
  
    struct hentry* lookup(const char*) const;
-@@ -144,6 +173,40 @@ class HashMgr {
+@@ -142,6 +171,40 @@ class HashMgr {
                 int captype);
    int load_config(const char* affpath, const char* key);
    bool parse_aliasf(const std::string& line, FileMgr* af);

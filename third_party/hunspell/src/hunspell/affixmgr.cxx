@@ -1407,7 +1407,7 @@ int AffixMgr::cpdpat_check(const char* word,
          ((checkcpdtable[i].pattern[0] == '0' && r1->blen <= pos &&
            strncmp(word + pos - r1->blen, r1->word, r1->blen) == 0) ||
           (checkcpdtable[i].pattern[0] != '0' &&
-           ((len = checkcpdtable[i].pattern.size()) != 0) &&
+           ((len = checkcpdtable[i].pattern.size()) != 0) && len <= pos &&
            strncmp(word + pos - len, checkcpdtable[i].pattern.c_str(), len) == 0)))) {
       return 1;
     }
@@ -1651,7 +1651,6 @@ struct hentry* AffixMgr::compound_check(const std::string& word,
                                         char hu_mov_rule = 0,
                                         char is_sug = 0,
                                         int* info = NULL) {
-  int i;
   short oldnumsyllable, oldnumsyllable2, oldwordnum, oldwordnum2;
   struct hentry* rv = NULL;
   struct hentry* rv_first;
@@ -1694,7 +1693,7 @@ struct hentry* AffixMgr::compound_check(const std::string& word,
 
   st.assign(word);
 
-  for (i = cmin; i < cmax; i++) {
+  for (int i = cmin; i < cmax; ++i) {
     // go to end of the UTF-8 character
     if (utf8) {
       for (; (st[i] & 0xc0) == 0x80; i++)
@@ -1969,7 +1968,7 @@ struct hentry* AffixMgr::compound_check(const std::string& word,
             }
 
             // check FORCEUCASE
-            if (rv && forceucase && (rv) &&
+            if (rv && forceucase &&
                 (TESTAFF(rv->astr, forceucase, rv->alen)) &&
                 !(info && *info & SPELL_ORIGCAP))
               rv = NULL;
@@ -2038,19 +2037,20 @@ struct hentry* AffixMgr::compound_check(const std::string& word,
             // perhaps second word has prefix or/and suffix
             sfx = NULL;
             sfxflag = FLAG_NULL;
-            rv = (compoundflag && !onlycpdrule)
+            rv = (compoundflag && !onlycpdrule && i < word.size())
                      ? affix_check((word.c_str() + i), strlen(word.c_str() + i), compoundflag,
                                    IN_CPD_END)
                      : NULL;
             if (!rv && compoundend && !onlycpdrule) {
               sfx = NULL;
               pfx = NULL;
-              rv = affix_check((word.c_str() + i), strlen(word.c_str() + i), compoundend,
-                               IN_CPD_END);
+              if (i < word.size())
+                rv = affix_check((word.c_str() + i), strlen(word.c_str() + i), compoundend, IN_CPD_END);
             }
 
             if (!rv && !defcpdtable.empty() && words) {
-              rv = affix_check((word.c_str() + i), strlen(word.c_str() + i), 0, IN_CPD_END);
+              if (i < word.size())
+                rv = affix_check((word.c_str() + i), strlen(word.c_str() + i), 0, IN_CPD_END);
               if (rv && defcpd_check(&words, wnum + 1, rv, NULL, 1))
                 return rv_first;
               rv = NULL;
@@ -2078,7 +2078,7 @@ struct hentry* AffixMgr::compound_check(const std::string& word,
             }
 
             // check FORCEUCASE
-            if (rv && forceucase && (rv) &&
+            if (rv && forceucase &&
                 (TESTAFF(rv->astr, forceucase, rv->alen)) &&
                 !(info && *info & SPELL_ORIGCAP))
               rv = NULL;
@@ -2267,7 +2267,6 @@ int AffixMgr::compound_check_morph(const char* word,
                                    char hu_mov_rule,
                                    std::string& result,
                                    const std::string* partresult) {
-  int i;
   short oldnumsyllable, oldnumsyllable2, oldwordnum, oldwordnum2;
   int ok = 0;
 
@@ -2307,7 +2306,7 @@ int AffixMgr::compound_check_morph(const char* word,
 
   st.assign(word);
 
-  for (i = cmin; i < cmax; i++) {
+  for (int i = cmin; i < cmax; ++i) {
     // go to end of the UTF-8 character
     if (utf8) {
       for (; (st[i] & 0xc0) == 0x80; i++)

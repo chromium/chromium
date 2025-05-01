@@ -134,6 +134,7 @@ void myopen(std::ifstream& stream, const char* path, std::ios_base::openmode mod
 
 std::string& u16_u8(std::string& dest, const std::vector<w_char>& src) {
   dest.clear();
+  dest.reserve(src.size());
   std::vector<w_char>::const_iterator u2 = src.begin();
   std::vector<w_char>::const_iterator u2_max = src.end();
   while (u2 < u2_max) {
@@ -169,8 +170,11 @@ std::string& u16_u8(std::string& dest, const std::vector<w_char>& src) {
   return dest;
 }
 
-int u8_u16(std::vector<w_char>& dest, const std::string& src) {
-  dest.clear();
+int u8_u16(std::vector<w_char>& dest, const std::string& src, bool only_convert_first_letter) {
+  // faster to oversize initially, assign to elements and resize to what's used
+  // than to reserve and push_back
+  dest.resize(only_convert_first_letter ? 1 : src.size());
+  std::vector<w_char>::iterator u16 = dest.begin();
   std::string::const_iterator u8 = src.begin();
   std::string::const_iterator u8_max = src.end();
 
@@ -246,21 +250,27 @@ int u8_u16(std::vector<w_char>& dest, const std::string& src) {
         }
         break;
       }
-      case 0xf0: {  // 4 or more byte UTF-8 codes
+      default: {  // 4 or more byte UTF-8 codes
+        assert(((*u8) & 0xf0) == 0xf0 && "can only be 0xf0");
         HUNSPELL_WARNING(stderr,
                          "This UTF-8 encoding can't convert to UTF-16:\n%s\n",
                          src.c_str());
         u2.h = 0xff;
         u2.l = 0xfd;
-        dest.push_back(u2);
+        *u16++ = u2;
+        dest.resize(u16 - dest.begin());
         return -1;
       }
     }
-    dest.push_back(u2);
+    *u16++ = u2;
+    if (only_convert_first_letter)
+        break;
     ++u8;
   }
 
-  return dest.size();
+  int size = u16 - dest.begin();
+  dest.resize(size);
+  return size;
 }
 
 namespace {

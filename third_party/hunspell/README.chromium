@@ -1,6 +1,6 @@
 Name: hunspell
 URL: http://hunspell.sourceforge.net/
-Version: v1.7.1
+Version: cff7f8a
 CPEPrefix: cpe:/a:hunspell_project:hunspell:1.7.1
 License: MPL-1.1
 License File: COPYING.MPL
@@ -8,7 +8,7 @@ Security Critical: yes
 Shipped: yes
 
 Description:
-This is a partial copy of Hunspell v1.7.1 with the following changes:
+This is a partial copy of Hunspell cff7f8a with the following changes:
 * Move README.md onto the README symlink.
 * Change src/hunspell/filemgr.hxx and src/hunspell/filemgr.cxx to use
   LineIterator.
@@ -34,7 +34,7 @@ steps.
 2) Checkout hunspell:
    $ git clone https://github.com/hunspell/hunspell.git
    $ cd hunspell
-   $ git checkout v1.7.1
+   $ git checkout cff7f8a
 3) Apply Hunspell patches and make a throwaway commit:
    $ patch -p1 --no-backup-if-mismatch -i $CHROMIUM_HUNSPELL/correction-of-a-knowingly-false-condition.patch
    $ patch -p1 --no-backup-if-mismatch -i $CHROMIUM_HUNSPELL/speed-up-hunspell-inner-loop.patch
