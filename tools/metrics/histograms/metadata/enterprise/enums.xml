@@ -2654,6 +2654,21 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="GetUserInfoError"/>
 </enum>
 
+<enum name="SecurityReportTrigger">
+  <int value="0" label="Signals-only report triggered by timer"/>
+  <int value="1" label="Signals-only report triggered by cookie change"/>
+</enum>
+
+<enum name="SecuritySignalsMode">
+  <int value="0"
+      label="No security signals is uploaded, this state is erroneous"/>
+  <int value="1"
+      label="Security signals are uploaded alongside with a status report"/>
+  <int value="2"
+      label="Security signals are uploaded exclusively, in a signals-only
+             report"/>
+</enum>
+
 <enum name="StateDeterminationStatus">
   <int value="0" label="Disabled via never switch"/>
   <int value="1" label="Disabled via kill switch"/>

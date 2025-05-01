@@ -312,7 +312,7 @@ void ReportScheduler::OnReportGenerated(ReportRequestQueue requests) {
     report_uploader_ =
         std::make_unique<ReportUploader>(cloud_policy_client_, kMaximumRetry);
   }
-  RecordUploadTrigger(active_trigger_);
+  RecordUploadTrigger();
 
   report_uploader_->SetRequestAndUpload(
       active_report_generation_config_, std::move(requests),
@@ -419,8 +419,7 @@ void ReportScheduler::RunPendingTriggers() {
   GenerateAndUploadReport(trigger);
 }
 
-// static
-void ReportScheduler::RecordUploadTrigger(ReportTrigger trigger) {
+void ReportScheduler::RecordUploadTrigger() {
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
   enum class Sample {
@@ -434,7 +433,7 @@ void ReportScheduler::RecordUploadTrigger(ReportTrigger trigger) {
     kSecurity = 7,
     kMaxValue = kSecurity
   } sample = Sample::kNone;
-  switch (trigger) {
+  switch (active_trigger_) {
     case kTriggerNone:
       break;
     case kTriggerTimer:
@@ -455,6 +454,13 @@ void ReportScheduler::RecordUploadTrigger(ReportTrigger trigger) {
   }
   base::UmaHistogramEnumeration("Enterprise.CloudReportingUploadTrigger",
                                 sample);
+
+  if (active_report_generation_config_.security_signals_mode !=
+      SecuritySignalsMode::kNoSignals) {
+    base::UmaHistogramEnumeration(
+        "Enterprise.SecurityReport.User.Mode",
+        active_report_generation_config_.security_signals_mode);
+  }
 }
 
 ReportType ReportScheduler::TriggerToReportType(

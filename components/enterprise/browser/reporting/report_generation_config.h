@@ -9,10 +9,18 @@
 
 #include "components/enterprise/browser/reporting/report_type.h"
 
+// Enum represnting how security signals will be included in the current report.
+// This enum should be kept in sync with the `SecuritySignalsMode` enum in
+// tools/metrics/histograms/metadata/enterprise/enums.xml.
 enum class SecuritySignalsMode {
+  // No security signals will be uploaded in the report.
   kNoSignals = 0,
+  // Security signals will be uploaded alongside an existing report format. Only
+  // profile status report is currently supported.
   kSignalsAttached = 1,
+  // Security signals will be uploaded exclusively in its own report.
   kSignalsOnly = 2,
+  kMaxValue = kSignalsOnly
 };
 
 namespace enterprise_reporting {

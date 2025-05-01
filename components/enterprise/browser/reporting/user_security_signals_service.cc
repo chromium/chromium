@@ -5,6 +5,7 @@
 #include "components/enterprise/browser/reporting/user_security_signals_service.h"
 
 #include "base/check.h"
+#include "base/metrics/histogram_functions.h"
 #include "components/device_signals/core/common/signals_features.h"
 #include "components/enterprise/browser/reporting/common_pref_names.h"
 #include "components/enterprise/browser/reporting/report_scheduler.h"
@@ -135,6 +136,8 @@ void UserSecuritySignalsService::OnCookiePolicyValueChanged() {
 void UserSecuritySignalsService::TriggerReport(SecurityReportTrigger trigger) {
   VLOG_POLICY(1, REPORTING) << "Security signals report is triggered by "
                             << static_cast<int>(trigger);
+  base::UmaHistogramEnumeration("Enterprise.SecurityReport.User.Trigger",
+                                trigger);
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&Delegate::OnReportEventTriggered,
