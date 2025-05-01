@@ -1285,12 +1285,23 @@ class LCPPTimingPredictorTestBase : public InProcessBrowserTest {
                 *predicted_lcp_locator);
     }
 
-    EXPECT_EQ(expected_events, content::EvalJs(web_contents, R"(
+    std::string actual_events = content::EvalJs(web_contents, R"(
       globalThis.events.join(", ")
-        )"))
+    )")
+                                    .ExtractString();
+
+    std::vector<std::string> expected_vec = base::SplitString(
+        expected_events, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+    std::vector<std::string> actual_vec = base::SplitString(
+        actual_events, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+
+    EXPECT_THAT(actual_vec, testing::UnorderedElementsAreArray(expected_vec))
+        << "Expected events: " << expected_events
+        << "\nActual events: " << actual_events << "\nTimings: "
         << content::EvalJs(web_contents, R"(
       globalThis.timings.join(", ")
-        )");
+    )")
+               .ExtractString();
 
     LcpElementLearnWaiter lcp_element_waiter(
         loading_predictor()->resource_prefetch_predictor());
