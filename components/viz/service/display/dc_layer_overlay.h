@@ -67,7 +67,7 @@ class VIZ_SERVICE_EXPORT DCLayerOverlayProcessor final
   using RenderPassOverlayDataMap =
       base::flat_map<raw_ptr<AggregatedRenderPass>, RenderPassOverlayData>;
 
-  // Virtual for testing. All render passes that should be considered for
+  // All render passes that should be considered for
   // overlays in this frame should be in |render_pass_overlay_data_map|. After
   // this function executes, |render_pass_overlay_data_map[render_pass]| will
   // contain the all of the overlays promoted for |render_pass|. The z-order
@@ -75,7 +75,7 @@ class VIZ_SERVICE_EXPORT DCLayerOverlayProcessor final
   // pass, with positive z-orders being overlays and negative z-orders being
   // underlays. The caller must aggregate overlays from all render passes into
   // a global overlay list, taking into account the render pass's z-order.
-  virtual void Process(
+  void Process(
       const DisplayResourceProvider* resource_provider,
       const FilterOperationsMap& render_pass_filters,
       const FilterOperationsMap& render_pass_backdrop_filters,

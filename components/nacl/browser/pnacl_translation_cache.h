@@ -41,7 +41,7 @@ class PnaclTranslationCache final {
   PnaclTranslationCache(const PnaclTranslationCache&) = delete;
   PnaclTranslationCache& operator=(const PnaclTranslationCache&) = delete;
 
-  virtual ~PnaclTranslationCache();
+  ~PnaclTranslationCache();
 
   // Initialize the translation cache in |cache_dir|.  If the return value is
   // net::ERR_IO_PENDING, |callback| will be called with a 0 argument on success
