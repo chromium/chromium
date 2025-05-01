@@ -2,18 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/base/network_interfaces_win.h"
 
 #include <algorithm>
 #include <memory>
 #include <string_view>
 
+#include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/lazy_instance.h"
 #include "base/strings/escape.h"
@@ -71,16 +68,19 @@ GetConnectionAttributes() {
 
   // Assume at most one connected wifi interface.
   WLAN_INTERFACE_INFO* info = nullptr;
-  for (unsigned i = 0; i < interface_list->dwNumberOfItems; ++i) {
-    if (interface_list->InterfaceInfo[i].isState ==
-        wlan_interface_state_connected) {
-      info = &interface_list->InterfaceInfo[i];
+
+  base::span<WLAN_INTERFACE_INFO> interfaces =
+      internal::WlanInterfaceInfoListToSpan(interface_list.get());
+  for (auto& interface : interfaces) {
+    if (interface.isState == wlan_interface_state_connected) {
+      info = &interface;
       break;
     }
   }
 
-  if (info == nullptr)
+  if (info == nullptr) {
     return wlan_connection_attributes;
+  }
 
   WLAN_CONNECTION_ATTRIBUTES* conn_info_ptr = nullptr;
   DWORD conn_info_size = 0;
@@ -154,7 +154,8 @@ bool GetNetworkListImpl(NetworkInterfaceList* networks,
     // but don't ignore any GUEST side adapters with a description like:
     // VMware Accelerated AMD PCNet Adapter #2
     if ((policy & EXCLUDE_HOST_SCOPE_VIRTUAL_INTERFACES) &&
-        strstr(adapter->AdapterName, "VMnet") != nullptr) {
+        std::string_view(adapter->AdapterName).find("VMnet") !=
+            std::string_view::npos) {
       continue;
     }
 
@@ -209,6 +210,16 @@ bool GetNetworkListImpl(NetworkInterfaceList* networks,
     }
   }
   return true;
+}
+
+base::span<WLAN_INTERFACE_INFO> WlanInterfaceInfoListToSpan(
+    WLAN_INTERFACE_INFO_LIST* interface_list) {
+  // SAFETY: A Windows API produuces `interface_list` with a count of items
+  // (`dwNumberOfItems`) and an OS-allocated list of that many items
+  // (`InterfaceInfo`), so it should be safe to create a span using that
+  // information.
+  return UNSAFE_BUFFERS(base::span<WLAN_INTERFACE_INFO>(
+      interface_list->InterfaceInfo, interface_list->dwNumberOfItems));
 }
 
 }  // namespace internal
@@ -287,17 +298,18 @@ class WifiOptionSetter : public ScopedWifiOptions {
     std::unique_ptr<WLAN_INTERFACE_INFO_LIST, internal::WlanApiDeleter>
         interface_list(interface_list_ptr);
 
-    for (unsigned i = 0; i < interface_list->dwNumberOfItems; ++i) {
-      WLAN_INTERFACE_INFO* info = &interface_list->InterfaceInfo[i];
+    base::span<WLAN_INTERFACE_INFO> interfaces =
+        internal::WlanInterfaceInfoListToSpan(interface_list.get());
+    for (auto& info : interfaces) {
       if (options & WIFI_OPTIONS_DISABLE_SCAN) {
         BOOL data = false;
-        wlanapi.set_interface_func(client_.Get(), &info->InterfaceGuid,
+        wlanapi.set_interface_func(client_.Get(), &info.InterfaceGuid,
                                    wlan_intf_opcode_background_scan_enabled,
                                    sizeof(data), &data, nullptr);
       }
       if (options & WIFI_OPTIONS_MEDIA_STREAMING_MODE) {
         BOOL data = true;
-        wlanapi.set_interface_func(client_.Get(), &info->InterfaceGuid,
+        wlanapi.set_interface_func(client_.Get(), &info.InterfaceGuid,
                                    wlan_intf_opcode_media_streaming_mode,
                                    sizeof(data), &data, nullptr);
       }
