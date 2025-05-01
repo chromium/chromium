@@ -58,6 +58,10 @@ class Host {
 
   void PanelWasClosed();
 
+  // Must be called before the delegate is destroyed, just before Host's
+  // destructor.
+  void Destroy();
+
   // Delete the owned web contents and prepare for destruction.
   void Shutdown();
 
