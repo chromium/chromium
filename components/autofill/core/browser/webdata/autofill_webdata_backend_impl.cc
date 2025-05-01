@@ -8,8 +8,6 @@
 
 #include "base/check_is_test.h"
 #include "base/check_op.h"
-#include "base/debug/alias.h"
-#include "base/debug/crash_logging.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
@@ -194,14 +192,9 @@ WebDatabase* AutofillWebDataBackendImpl::GetDatabase() {
 }
 
 void AutofillWebDataBackendImpl::CommitChanges() {
-  // TODO(crbug.com/410101523): Investigate the transaction errors. There should
-  // always be a pending sql transaction.
-  sql::Database* sql = web_database_backend_->database()->GetSQLConnection();
-  base::debug::Alias(&sql);
-  SCOPED_CRASH_KEY_BOOL("WebData", "sql_is_open", sql->is_open());
-  SCOPED_CRASH_KEY_BOOL("WebData", "sql_has_active_transaction",
-                        sql->HasActiveTransactions());
-  DCHECK(sql->HasActiveTransactions());
+  DCHECK(web_database_backend_->database()
+             ->GetSQLConnection()
+             ->HasActiveTransactions());
   web_database_backend_->database()->CommitTransaction();
   web_database_backend_->database()->BeginTransaction();
 }
