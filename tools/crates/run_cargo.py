@@ -14,6 +14,7 @@ import os
 import platform
 import subprocess
 import sys
+import pathlib
 
 DEFAULT_SYSROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..',
                                '..', 'third_party', 'rust-toolchain')
@@ -25,12 +26,12 @@ _CARGO_EXE = 'cargo.exe' if 'STARTUPINFO' in subprocess.__all__ else 'cargo'
 
 
 def RunCargo(rust_sysroot, home_dir, cargo_args):
-    if not os.path.exists(rust_sysroot):
+    rust_sysroot = pathlib.Path(rust_sysroot)
+    if not rust_sysroot.exists():
         print(f'WARNING: Rust sysroot missing at "{rust_sysroot}"')
 
-    abs_rust_sysroot = os.path.abspath(rust_sysroot)
-    bin_dir = os.path.join(abs_rust_sysroot, 'bin')
-    cargo_path = os.path.join(bin_dir, _CARGO_EXE)
+    bin_dir = rust_sysroot.absolute().joinpath('bin')
+    cargo_path = bin_dir.joinpath(_CARGO_EXE)
 
     cargo_env = dict(os.environ)
     if home_dir:
