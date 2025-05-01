@@ -2,9 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/settings/device_settings_cache.h"
+#include "chromeos/ash/components/settings/device_settings_cache.h"
 
-#include "chrome/common/pref_names.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/prefs/testing_pref_service.h"
@@ -48,7 +47,8 @@ TEST_F(DeviceSettingsCacheTest, Basic) {
 TEST_F(DeviceSettingsCacheTest, CorruptData) {
   EXPECT_TRUE(device_settings_cache::Store(policy_, &local_state_));
 
-  local_state_.SetString(prefs::kDeviceSettingsCache, "blaaa");
+  local_state_.SetString(device_settings_cache::prefs::kDeviceSettingsCache,
+                         "blaaa");
 
   em::PolicyData policy_out;
   EXPECT_FALSE(device_settings_cache::Retrieve(&policy_out, &local_state_));

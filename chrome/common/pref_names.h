@@ -2936,10 +2936,6 @@ inline constexpr char kSameOriginTabCaptureAllowedByOrigins[] =
     "hardware.same_origin_tab_capture_allowed_by_origins";
 
 #if BUILDFLAG(IS_CHROMEOS)
-// Dictionary for transient storage of settings that should go into device
-// settings storage before owner has been assigned.
-inline constexpr char kDeviceSettingsCache[] = "signed_settings_cache";
-
 // The hardware keyboard layout of the device. This should look like
 // "xkb:us::eng".
 inline constexpr char kHardwareKeyboardLayout[] = "intl.hardware_keyboard";

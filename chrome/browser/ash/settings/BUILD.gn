@@ -12,8 +12,6 @@ static_library("settings") {
     "about_flags.h",
     "cros_settings_holder.cc",
     "cros_settings_holder.h",
-    "device_settings_cache.cc",
-    "device_settings_cache.h",
     "device_settings_provider.cc",
     "device_settings_provider.h",
     "device_settings_service.cc",
@@ -120,7 +118,6 @@ source_set("unit_tests") {
 
   sources = [
     "cros_settings_unittest.cc",
-    "device_settings_cache_unittest.cc",
     "device_settings_provider_unittest.cc",
     "device_settings_service_unittest.cc",
     "session_manager_operation_unittest.cc",

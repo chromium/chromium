@@ -24,12 +24,12 @@
 #include "chrome/browser/ash/policy/core/device_policy_builder.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/lifetime/termination_notification.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
+#include "chromeos/ash/components/settings/device_settings_cache.h"
 #include "components/ownership/mock_owner_key_util.h"
 #include "components/policy/core/common/device_local_account_type.h"
 #include "components/policy/proto/device_management_backend.pb.h"
@@ -127,7 +127,7 @@ class KioskCrashRestoreTest : public MixinBasedInProcessBrowserTest,
     const std::string policy_data_string = policy_data.SerializeAsString();
 
     // Store policy data and existing device local accounts in local state.
-    local_state().SetString(prefs::kDeviceSettingsCache,
+    local_state().SetString(device_settings_cache::prefs::kDeviceSettingsCache,
                             base::Base64Encode(policy_data_string));
 
     base::Value::List accounts;
