@@ -108,6 +108,8 @@ class ReportScheduler {
 
   // Returns true if cloud reporting is enabled.
   bool IsReportingEnabled() const;
+  // Returns true if security signals reporting is enabled.
+  bool AreSecurityReportsEnabled() const;
 
   // Returns true if next report has been scheduled. The report will be
   // scheduled only if the previous report is uploaded successfully and the

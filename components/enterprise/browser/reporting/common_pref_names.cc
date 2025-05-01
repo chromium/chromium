@@ -24,6 +24,18 @@ const char kLastUploadTimestamp[] =
 const char kLastUploadSucceededTimestamp[] =
     "enterprise_reporting.last_upload_succeeded_timestamp";
 
+// The timestamp of when the last security signals upload is attempted.
+const char kLastSignalsUploadAttemptTimestamp[] =
+    "enterprise_reporting.last_signals_upload_attempt_timestamp";
+
+// The timestamp of when the last security signals upload is succeeded.
+const char kLastSignalsUploadSucceededTimestamp[] =
+    "enterprise_reporting.last_signals_upload_succeeded_timestamp";
+
+// The configuration for the latest successful security signals upload.
+const char kLastSignalsUploadSucceededConfig[] =
+    "enterprise_reporting.last_signals_upload_succeeded_config";
+
 // The report frequency
 const char kCloudReportingUploadFrequency[] =
     "enterprise_reporting.upload_frequency";

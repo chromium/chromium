@@ -17,6 +17,12 @@ extern const char kLastUploadTimestamp[];
 
 extern const char kLastUploadSucceededTimestamp[];
 
+extern const char kLastSignalsUploadAttemptTimestamp[];
+
+extern const char kLastSignalsUploadSucceededTimestamp[];
+
+extern const char kLastSignalsUploadSucceededConfig[];
+
 extern const char kCloudReportingUploadFrequency[];
 
 extern const char kUserSecuritySignalsReporting[];

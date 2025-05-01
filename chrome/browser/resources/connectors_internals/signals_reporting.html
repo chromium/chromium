@@ -1,0 +1,47 @@
+<style>
+  .bold {
+    font-weight: bold;
+  }
+
+  .red {
+    color: rgb(162, 56, 32);
+  }
+
+  div ~ div {
+    margin-top: 5px;
+  }
+
+  .hidden {
+    display: none;
+  }
+</style>
+<h2 >User Signals Reporting</h2>
+<div id="error-section">
+  Error Encountered:
+  <span id="error-text" class="bold"></span>
+</div>
+<div>
+  Profile Status Reporting Policy Is Enabled:
+  <span id="status-reporting-enabled" class="bold"></span>
+</div>
+<div>
+  Security Signals Reporting Policy Is Enabled:
+  <span id="signals-reporting-enabled" class="bold"></span>
+</div>
+<div>
+  Last security signals upload attempt timestamp:
+  <span id="last-upload-attempt-timestamp" class="bold"></span>
+</div>
+<div>
+  Last security signals upload success timestamp:
+  <span id="last-upload-success-timestamp" class="bold"></span>
+</div>
+<div>
+  Last security signals report configuration:
+  <span id="last-signals-upload-config" class="bold"></span>
+</div>
+<div>
+  Can all signals be collected:
+  <span id="can-collect-all" class="bold"></span>
+</div>
+

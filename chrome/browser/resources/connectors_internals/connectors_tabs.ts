@@ -9,6 +9,7 @@ import {CustomElement} from 'chrome://resources/js/custom_element.js';
 import {getTemplate} from './connectors_tabs.html.js';
 import {DeviceTrustConnectorElement} from './device_trust_connector.js';
 import {ManagedClientCertificateElement} from './managed_client_certificate.js';
+import {SignalsReportingElement} from './signals_reporting.js';
 
 interface ConnectorTab {
   // Title used as the tab button's text.
@@ -34,6 +35,11 @@ const connectorTabs: ConnectorTab[] = [
   {
     title: 'Managed Client Certificate',
     directive: ManagedClientCertificateElement.is,
+    isEnabled: true,
+  },
+  {
+    title: 'Signals Reporting',
+    directive: SignalsReportingElement.is,
     isEnabled: true,
   },
 ];
