@@ -121,62 +121,56 @@ ChromeRootStoreData& ChromeRootStoreData::operator=(
 
 namespace {
 
-std::optional<std::vector<ChromeRootStoreData::Anchor>> CreateAnchors(
-    const google::protobuf::RepeatedPtrField<chrome_root_store::TrustAnchor>&
-        anchors) {
-  std::vector<ChromeRootStoreData::Anchor> data_anchors;
-  for (auto& anchor : anchors) {
-    if (anchor.der().empty()) {
-      LOG(ERROR) << "Error anchor with empty DER in update";
-      return std::nullopt;
-    }
-
-    auto parsed = bssl::ParsedCertificate::Create(
-        net::x509_util::CreateCryptoBuffer(anchor.der()),
-        net::x509_util::DefaultParseCertificateOptions(), nullptr);
-    if (!parsed) {
-      LOG(ERROR) << "Error parsing cert for update";
-      return std::nullopt;
-    }
-
-    std::vector<ChromeRootCertConstraints> constraints;
-    for (const auto& constraint : anchor.constraints()) {
-      std::optional<base::Version> min_version;
-      if (constraint.has_min_version()) {
-        min_version = base::Version(constraint.min_version());
-        if (!min_version->IsValid()) {
-          LOG(ERROR) << "Error parsing version";
-          return std::nullopt;
-        }
-      }
-
-      std::optional<base::Version> max_version_exclusive;
-      if (constraint.has_max_version_exclusive()) {
-        max_version_exclusive =
-            base::Version(constraint.max_version_exclusive());
-        if (!max_version_exclusive->IsValid()) {
-          LOG(ERROR) << "Error parsing version";
-          return std::nullopt;
-        }
-      }
-
-      constraints.emplace_back(
-          constraint.has_sct_not_after_sec()
-              ? std::optional(base::Time::UnixEpoch() +
-                              base::Seconds(constraint.sct_not_after_sec()))
-              : std::nullopt,
-          constraint.has_sct_all_after_sec()
-              ? std::optional(base::Time::UnixEpoch() +
-                              base::Seconds(constraint.sct_all_after_sec()))
-              : std::nullopt,
-          min_version, max_version_exclusive,
-          base::ToVector(constraint.permitted_dns_names()));
-    }
-    data_anchors.emplace_back(std::move(parsed), std::move(constraints),
-                              anchor.eutl(), anchor.enforce_anchor_expiry(),
-                              anchor.enforce_anchor_constraints());
+std::optional<ChromeRootStoreData::Anchor> CreateChromeRootStoreDataAnchor(
+    const chrome_root_store::TrustAnchor& anchor) {
+  if (anchor.der().empty()) {
+    LOG(ERROR) << "Error anchor with empty DER in update";
+    return std::nullopt;
   }
-  return data_anchors;
+
+  auto parsed = bssl::ParsedCertificate::Create(
+      net::x509_util::CreateCryptoBuffer(anchor.der()),
+      net::x509_util::DefaultParseCertificateOptions(), nullptr);
+  if (!parsed) {
+    LOG(ERROR) << "Error parsing cert for update";
+    return std::nullopt;
+  }
+
+  std::vector<ChromeRootCertConstraints> constraints;
+  for (const auto& constraint : anchor.constraints()) {
+    std::optional<base::Version> min_version;
+    if (constraint.has_min_version()) {
+      min_version = base::Version(constraint.min_version());
+      if (!min_version->IsValid()) {
+        LOG(ERROR) << "Error parsing version";
+        return std::nullopt;
+      }
+    }
+
+    std::optional<base::Version> max_version_exclusive;
+    if (constraint.has_max_version_exclusive()) {
+      max_version_exclusive = base::Version(constraint.max_version_exclusive());
+      if (!max_version_exclusive->IsValid()) {
+        LOG(ERROR) << "Error parsing version";
+        return std::nullopt;
+      }
+    }
+
+    constraints.emplace_back(
+        constraint.has_sct_not_after_sec()
+            ? std::optional(base::Time::UnixEpoch() +
+                            base::Seconds(constraint.sct_not_after_sec()))
+            : std::nullopt,
+        constraint.has_sct_all_after_sec()
+            ? std::optional(base::Time::UnixEpoch() +
+                            base::Seconds(constraint.sct_all_after_sec()))
+            : std::nullopt,
+        min_version, max_version_exclusive,
+        base::ToVector(constraint.permitted_dns_names()));
+  }
+  return ChromeRootStoreData::Anchor(
+      std::move(parsed), std::move(constraints), anchor.eutl(),
+      anchor.enforce_anchor_expiry(), anchor.enforce_anchor_constraints());
 }
 
 }  // namespace
@@ -186,16 +180,34 @@ ChromeRootStoreData::CreateFromRootStoreProto(
     const chrome_root_store::RootStore& proto) {
   ChromeRootStoreData root_store_data;
 
-  auto trust_anchors = CreateAnchors(proto.trust_anchors());
-  if (!trust_anchors) {
-    return std::nullopt;
+  for (const auto& anchor : proto.trust_anchors()) {
+    // |trust_anchors| are not supposed to have the |tls_trust_anchor| field
+    // set, since they are TLS trust anchors definitionally.
+    CHECK(!anchor.has_tls_trust_anchor());
+    std::optional<ChromeRootStoreData::Anchor> chrome_root_store_data_anchor =
+        CreateChromeRootStoreDataAnchor(anchor);
+    if (!chrome_root_store_data_anchor) {
+      return std::nullopt;
+    }
+    root_store_data.trust_anchors_.emplace_back(
+        std::move(chrome_root_store_data_anchor.value()));
   }
-  root_store_data.trust_anchors_ = std::move(*trust_anchors);
-  auto additional_certs = CreateAnchors(proto.additional_certs());
-  if (!additional_certs) {
-    return std::nullopt;
+
+  std::vector<ChromeRootStoreData::Anchor> additional_certs;
+  for (const auto& anchor : proto.additional_certs()) {
+    std::optional<ChromeRootStoreData::Anchor> chrome_root_store_data_anchor =
+        CreateChromeRootStoreDataAnchor(anchor);
+    if (!chrome_root_store_data_anchor) {
+      return std::nullopt;
+    }
+    if (anchor.tls_trust_anchor()) {
+      root_store_data.trust_anchors_.emplace_back(
+          std::move(chrome_root_store_data_anchor.value()));
+    } else {
+      root_store_data.additional_certs_.emplace_back(
+          std::move(chrome_root_store_data_anchor.value()));
+    }
   }
-  root_store_data.additional_certs_ = std::move(*additional_certs);
 
   root_store_data.version_ = proto.version_major();
 
