@@ -9,6 +9,7 @@
     "committed/libs/com_google_android_gms_play_services_identity_credentials",
     "committed/libs/com_google_android_gms_play_services_tasks",
     "committed/libs/com_google_android_libraries_identity_googleid_googleid",
+    "committed/libs/com_google_android_material_material",
     "committed/libs/com_google_auto_service_auto_service_annotations",
     "committed/libs/com_google_auto_value_auto_value_annotations",
     "committed/libs/com_google_code_findbugs_jsr305",

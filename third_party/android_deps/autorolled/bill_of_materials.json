@@ -340,11 +340,6 @@
         "version": "1.2.0-SNAPSHOT"
     },
     {
-        "name": "constraintlayout-solver",
-        "group": "androidx.constraintlayout",
-        "version": "2.0.1"
-    },
-    {
         "name": "coordinatorlayout",
         "group": "androidx.coordinatorlayout",
         "version": "1.3.0"
@@ -807,17 +802,17 @@
     {
         "name": "pdf-document-service",
         "group": "androidx.pdf",
-        "version": "1.0.0-alpha06"
+        "version": "1.0.0-SNAPSHOT"
     },
     {
         "name": "pdf-viewer",
         "group": "androidx.pdf",
-        "version": "1.0.0-alpha06"
+        "version": "1.0.0-SNAPSHOT"
     },
     {
         "name": "pdf-viewer-fragment",
         "group": "androidx.pdf",
-        "version": "1.0.0-alpha06"
+        "version": "1.0.0-SNAPSHOT"
     },
     {
         "name": "preference",

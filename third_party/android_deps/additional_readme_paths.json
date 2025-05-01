@@ -20,7 +20,6 @@
     "libs/com_google_android_gms_play_services_stats",
     "libs/com_google_android_gms_play_services_vision",
     "libs/com_google_android_gms_play_services_vision_common",
-    "libs/com_google_android_material_material",
     "libs/com_google_android_play_core_common",
     "libs/com_google_android_play_feature_delivery",
     "libs/com_google_ar_impress",
