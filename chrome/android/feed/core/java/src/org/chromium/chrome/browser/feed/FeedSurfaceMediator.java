@@ -40,6 +40,7 @@ import org.chromium.chrome.browser.feed.v2.ContentOrder;
 import org.chromium.chrome.browser.feed.v2.FeedUserActionType;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.gesturenav.GestureNavigationUtils;
 import org.chromium.chrome.browser.new_tab_url.DseNewTabUrlManager;
 import org.chromium.chrome.browser.ntp.cards.SignInPromo;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -675,8 +676,7 @@ public class FeedSurfaceMediator
                                         listener.onScrolled(dx, dy);
                                     }
                                     // Null if the stream has not been binded yet.
-                                    if (ChromeFeatureList.isEnabled(
-                                                    ChromeFeatureList.BACK_FORWARD_TRANSITIONS)
+                                    if (GestureNavigationUtils.areBackForwardTransitionsEnabled()
                                             && mCoordinator.getHybridListRenderer() != null
                                             && mCoordinator
                                                             .getHybridListRenderer()

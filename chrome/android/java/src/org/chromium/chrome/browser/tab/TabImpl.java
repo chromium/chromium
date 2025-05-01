@@ -54,6 +54,7 @@ import org.chromium.chrome.browser.content.ContentUtils;
 import org.chromium.chrome.browser.content.WebContentsFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.gesturenav.GestureNavigationUtils;
 import org.chromium.chrome.browser.native_page.NativePageAssassin;
 import org.chromium.chrome.browser.night_mode.NightModeUtils;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
@@ -1984,8 +1985,7 @@ class TabImpl implements Tab {
                                 .addOnAttachStateChangeListener(mAttachStateChangeListener);
                     }
                     if (isDisplayingBackForwardAnimation()) {
-                        assert ChromeFeatureList.isEnabled(
-                                        ChromeFeatureList.BACK_FORWARD_TRANSITIONS)
+                        assert GestureNavigationUtils.areBackForwardTransitionsEnabled()
                                 : "Must not draw bf screenshot if back forward transition is"
                                         + " disabled";
                         mNativePageSmoothTransitionDelegate = mNativePage.enableSmoothTransition();

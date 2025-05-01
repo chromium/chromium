@@ -90,6 +90,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.gesturenav.BackActionDelegate;
+import org.chromium.chrome.browser.gesturenav.GestureNavigationUtils;
 import org.chromium.chrome.browser.gesturenav.HistoryNavigationCoordinator;
 import org.chromium.chrome.browser.gesturenav.NavigationSheet;
 import org.chromium.chrome.browser.gesturenav.RtlGestureNavIphController;
@@ -1172,7 +1173,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         if (!didTriggerPromo
                 && mWindowAndroid.getWindow() != null
                 && LocalizationUtils.isLayoutRtl()
-                && ChromeFeatureList.isEnabled(ChromeFeatureList.BACK_FORWARD_TRANSITIONS)
+                && GestureNavigationUtils.areBackForwardTransitionsEnabled()
                 && ChromeFeatureList.isEnabled(FeatureConstants.IPH_RTL_GESTURE_NAVIGATION)
                 && !UiUtils.isGestureNavigationMode(mWindowAndroid.getWindow())) {
             mRtlGestureNavIphController =

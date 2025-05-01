@@ -122,7 +122,8 @@ void TabFavicon::OnFaviconUpdated(favicon::FaviconDriver* favicon_driver,
     Java_TabFavicon_onFaviconAvailable(
         env, jobj_, gfx::ConvertToJavaBitmap(favicon), j_icon_url);
   }
-  if (base::FeatureList::IsEnabled(blink::features::kBackForwardTransitions)) {
+  if (content::BackForwardTransitionAnimationManager::
+          AreBackForwardTransitionsEnabled()) {
     CHECK(active_web_contents_);
     if (static_cast<bool>(
             Java_TabFavicon_shouldUpdateFaviconForNavigationTransitions(

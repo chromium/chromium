@@ -29,7 +29,6 @@ import org.chromium.base.Log;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.back_press.BackPressMetrics;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.gesturenav.BackActionDelegate.ActionType;
 import org.chromium.chrome.browser.gesturenav.NavigationBubble.CloseTarget;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
@@ -181,7 +180,7 @@ class NavigationHandler implements TouchEventObserver {
 
     void setTab(Tab tab) {
         if (mTab != null) mTab.removeObserver(mTabObserver);
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.BACK_FORWARD_TRANSITIONS)) {
+        if (GestureNavigationUtils.areBackForwardTransitionsEnabled()) {
             onGestureEnd(GestureEndState.RESET);
         } else {
             mBackGestureForTabHistoryInProgress = false;
@@ -405,7 +404,7 @@ class NavigationHandler implements TouchEventObserver {
      * @see {@link HistoryNavigationCoordinator#reset()}
      */
     void reset() {
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.BACK_FORWARD_TRANSITIONS)) {
+        if (GestureNavigationUtils.areBackForwardTransitionsEnabled()) {
             onGestureEnd(GestureEndState.RESET);
         } else {
             if (mState == GestureState.DRAGGED) {

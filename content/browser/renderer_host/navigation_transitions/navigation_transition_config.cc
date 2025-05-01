@@ -18,6 +18,10 @@ const base::FeatureParam<int> kMaxScreenshotCount{
 const base::FeatureParam<int> kMaxCacheSize{
     &blink::features::kBackForwardTransitions, "max-cache-size", -1};
 
+const base::FeatureParam<int> kMinRequiredPhysicalRamMb{
+    &blink::features::kBackForwardTransitions, "min-required-physical-ram-mb",
+    0};
+
 const base::FeatureParam<double> kPercentageOfRamToUse{
     &blink::features::kBackForwardTransitions, "percentage-of-ram-to-use", 2.5};
 
@@ -39,10 +43,18 @@ size_t GetMaxCacheSizeInBytes() {
   return size < 0 ? default_size : static_cast<size_t>(size);
 }
 
+int GetMinRequiredPhysicalRamMb() {
+  return kMinRequiredPhysicalRamMb.Get();
+}
+
 }  // namespace
 
 // static
 bool NavigationTransitionConfig::AreBackForwardTransitionsEnabled() {
+  if (base::SysInfo::AmountOfPhysicalMemoryMB() <
+      GetMinRequiredPhysicalRamMb()) {
+    return false;
+  }
   return base::FeatureList::IsEnabled(blink::features::kBackForwardTransitions);
 }
 

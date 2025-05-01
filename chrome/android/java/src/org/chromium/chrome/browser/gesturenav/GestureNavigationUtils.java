@@ -9,6 +9,7 @@ import android.os.Build.VERSION_CODES;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.base.SysUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
@@ -29,7 +30,7 @@ public class GestureNavigationUtils {
      */
     public static boolean allowTransition(@Nullable Tab tab, boolean forward) {
         if (tab == null) return false;
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.BACK_FORWARD_TRANSITIONS)) return false;
+        if (!areBackForwardTransitionsEnabled()) return false;
         // If in gesture mode, only U and above support transition.
         if (tab.getWindowAndroid().getWindow() == null) return false;
         if (VERSION.SDK_INT < VERSION_CODES.UPSIDE_DOWN_CAKE
@@ -39,6 +40,22 @@ public class GestureNavigationUtils {
         if (!allowTransitionFromNativePages() && tab.isNativePage()) return false;
         if (!allowTransitionToNativePages() && navigateToNativePage(tab, forward)) return false;
         return true;
+    }
+
+    /**
+     * @return Whether the back forward transitions are enabled.
+     */
+    public static boolean areBackForwardTransitionsEnabled() {
+        // Stay in sync with
+        // content::BackForwardTransitionAnimationManager::AreBackForwardTransitionsEnabled().
+        if (SysUtils.amountOfPhysicalMemoryKB() / 1024
+                < ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                        ChromeFeatureList.BACK_FORWARD_TRANSITIONS,
+                        "min-required-physical-ram-mb",
+                        0)) {
+            return false;
+        }
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.BACK_FORWARD_TRANSITIONS);
     }
 
     /**
@@ -66,7 +83,7 @@ public class GestureNavigationUtils {
      * @return True if we should allow default nav transitions when navigating from native pages.
      */
     private static boolean allowTransitionFromNativePages() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.BACK_FORWARD_TRANSITIONS)
+        return GestureNavigationUtils.areBackForwardTransitionsEnabled()
                 && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
                         ChromeFeatureList.BACK_FORWARD_TRANSITIONS,
                         "transition_from_native_pages",
@@ -79,7 +96,7 @@ public class GestureNavigationUtils {
      * @return True if we should allow default nav transitions when navigating to native pages.
      */
     private static boolean allowTransitionToNativePages() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.BACK_FORWARD_TRANSITIONS)
+        return GestureNavigationUtils.areBackForwardTransitionsEnabled()
                 && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
                         ChromeFeatureList.BACK_FORWARD_TRANSITIONS,
                         "transition_to_native_pages",

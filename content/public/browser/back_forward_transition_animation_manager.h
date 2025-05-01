@@ -109,6 +109,9 @@ class CONTENT_EXPORT BackForwardTransitionAnimationManager {
   static bool ShouldAnimateNavigationTransition(
       NavigationDirection navigation_direction,
       ui::BackGestureEventSwipeEdge edge);
+
+  // Returns true if back forward visual transitions are enabled.
+  static bool AreBackForwardTransitionsEnabled();
 };
 
 }  // namespace content
