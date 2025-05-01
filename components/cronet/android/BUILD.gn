@@ -2065,11 +2065,24 @@ script_test("generate_build_script_test") {
 }
 
 action("cronet_gn2bp_aosp_feedback_loop") {
+  # This is only added here to allow GN2BP to depend on
+  # test-only libraries. See below for more information
+  testonly = true
   script = "//components/cronet/gn2bp/run_gn2bp.py"
   sources = GN2BP_SOURCES + LICENSE_SOURCES + [
               "$_gclient_path",
               "//components/cronet/gn2bp/copy.bara.sky",
             ]
+  deps = [
+    # This dependency exists to work around the issue of the gn2bp trybot skipping
+    # CLs that touch Cronet code but not gn2bp itself.
+    # TODO(https://crbug.com/414789446): this is a hack. It forces the
+    # bot to pointlessly build Cronet. Surely there is a cleaner way.
+    # This is still prone to failure if we decide to run GN2BP against
+    # a change that does not affect these particular targets.
+    ":cronet_non_test_package",
+    ":repackage_test_jars",
+  ]
   _stamp_path = "$target_gen_dir/$target_name.stamp"
   args = [
     "--wait-for-presubmit-verified",
