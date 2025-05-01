@@ -9,8 +9,7 @@
 #include "base/check.h"
 #include "base/notreached.h"
 #include "chrome/app/vector_icons/vector_icons.h"
-#include "chrome/browser/ui/tabs/split_tab_data.h"
-#include "chrome/browser/ui/tabs/split_tab_visual_data.h"
+#include "chrome/browser/ui/tabs/split_tab_util.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -71,11 +70,8 @@ std::u16string SplitTabMenuModel::GetLabelForCommandId(int command_id) const {
 }
 
 ui::ImageModel SplitTabMenuModel::GetIconForCommandId(int command_id) const {
-  tabs::TabInterface* const active_tab = tab_strip_model_->GetActiveTab();
-  CHECK(active_tab->IsSplit());
-  split_tabs::SplitTabActiveLocation active_split_tab_location =
-      tab_strip_model_->GetSplitData(active_tab->GetSplit().value())
-          ->GetActiveTabLocation();
+  const split_tabs::SplitTabActiveLocation active_split_tab_location =
+      split_tabs::GetLastActiveTabLocation(tab_strip_model_, GetSplitTabId());
 
   const CommandId id = static_cast<CommandId>(command_id);
   const gfx::VectorIcon* icon = nullptr;
@@ -88,12 +84,10 @@ ui::ImageModel SplitTabMenuModel::GetIconForCommandId(int command_id) const {
 }
 
 void SplitTabMenuModel::ExecuteCommand(int command_id, int event_flags) {
-  std::optional<split_tabs::SplitTabId> split_id =
-      tab_strip_model_->GetActiveTab()->GetSplit();
-  CHECK(split_id.has_value());
+  split_tabs::SplitTabId split_id = GetSplitTabId();
   switch (static_cast<CommandId>(command_id)) {
     case CommandId::kSwapPosition:
-      tab_strip_model_->SwapTabsInSplit(split_id.value());
+      tab_strip_model_->SwapTabsInSplit(split_id);
       break;
     case CommandId::kClose:
       tab_strip_model_->CloseWebContentsAt(
@@ -102,24 +96,27 @@ void SplitTabMenuModel::ExecuteCommand(int command_id, int event_flags) {
               TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB);
       break;
     case CommandId::kExitSplit:
-      tab_strip_model_->RemoveSplit(split_id.value());
+      tab_strip_model_->RemoveSplit(split_id);
       break;
   }
+}
+
+split_tabs::SplitTabId SplitTabMenuModel::GetSplitTabId() const {
+  tabs::TabInterface* const tab = tab_strip_model_->GetActiveTab();
+  CHECK(tab->IsSplit());
+  return tab->GetSplit().value();
 }
 
 const gfx::VectorIcon& SplitTabMenuModel::GetSwapPositionIcon(
     split_tabs::SplitTabActiveLocation active_split_tab_location) const {
   switch (active_split_tab_location) {
-    case split_tabs::SplitTabActiveLocation::kLeft:
+    case split_tabs::SplitTabActiveLocation::kStart:
       return kSplitSceneRightIcon;
-    case split_tabs::SplitTabActiveLocation::kRight:
+    case split_tabs::SplitTabActiveLocation::kEnd:
       return kSplitSceneLeftIcon;
     case split_tabs::SplitTabActiveLocation::kTop:
       return kSplitSceneDownIcon;
     case split_tabs::SplitTabActiveLocation::kBottom:
       return kSplitSceneUpIcon;
-    case split_tabs::SplitTabActiveLocation::kNone:
-      NOTREACHED() << "Split tab menu should not show while the active tab is "
-                      "not in a split";
   }
 }

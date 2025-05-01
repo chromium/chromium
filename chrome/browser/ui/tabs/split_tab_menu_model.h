@@ -8,7 +8,6 @@
 #include <cstddef>
 #include <string>
 
-#include "chrome/browser/ui/tabs/split_tab_data.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/menus/simple_menu_model.h"
 
@@ -21,6 +20,11 @@ class ImageModel;
 namespace gfx {
 struct VectorIcon;
 }
+
+namespace split_tabs {
+class SplitTabId;
+enum class SplitTabActiveLocation;
+}  // namespace split_tabs
 
 class SplitTabMenuModel : public ui::SimpleMenuModel,
                           public ui::SimpleMenuModel::Delegate {
@@ -41,6 +45,8 @@ class SplitTabMenuModel : public ui::SimpleMenuModel,
   void ExecuteCommand(int command_id, int event_flags) override;
 
  private:
+  // Returns the split id for the split tabs that this menu is acting on.
+  split_tabs::SplitTabId GetSplitTabId() const;
   const gfx::VectorIcon& GetSwapPositionIcon(
       split_tabs::SplitTabActiveLocation active_split_tab_location) const;
 

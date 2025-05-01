@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/split_tab_data.h"
 #include "chrome/browser/ui/tabs/split_tab_menu_model.h"
+#include "chrome/browser/ui/tabs/split_tab_util.h"
 #include "chrome/browser/ui/tabs/split_tab_visual_data.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
@@ -117,15 +118,14 @@ void SplitTabsToolbarButton::UpdateButtonIcon() {
   tabs::TabInterface* const active_tab = tab_strip_model->GetActiveTab();
 
   if (active_tab && active_tab->IsSplit()) {
-    split_tabs::SplitTabActiveLocation location =
-        tab_strip_model->GetSplitData(active_tab->GetSplit().value())
-            ->GetActiveTabLocation();
-    CHECK_NE(split_tabs::SplitTabActiveLocation::kNone, location);
+    const split_tabs::SplitTabActiveLocation location =
+        split_tabs::GetLastActiveTabLocation(tab_strip_model,
+                                             active_tab->GetSplit().value());
     constexpr auto icons =
         base::MakeFixedFlatMap<split_tabs::SplitTabActiveLocation,
                                const gfx::VectorIcon*>({
-            {split_tabs::SplitTabActiveLocation::kLeft, &kSplitSceneLeftIcon},
-            {split_tabs::SplitTabActiveLocation::kRight, &kSplitSceneRightIcon},
+            {split_tabs::SplitTabActiveLocation::kStart, &kSplitSceneLeftIcon},
+            {split_tabs::SplitTabActiveLocation::kEnd, &kSplitSceneRightIcon},
             {split_tabs::SplitTabActiveLocation::kTop, &kSplitSceneUpIcon},
             {split_tabs::SplitTabActiveLocation::kBottom, &kSplitSceneDownIcon},
         });

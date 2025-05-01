@@ -23,25 +23,4 @@ SplitTabData::~SplitTabData() = default;
 std::vector<tabs::TabInterface*> SplitTabData::ListTabs() const {
   return controller_->GetTabsRecursive();
 }
-
-SplitTabActiveLocation SplitTabData::GetActiveTabLocation() {
-  std::vector<tabs::TabInterface*> tabs_in_split = ListTabs();
-  CHECK_EQ(tabs_in_split.size(), 2U);
-
-  const bool first_tab_activated = tabs_in_split[0]->IsActivated();
-  const bool second_tab_activated = tabs_in_split[1]->IsActivated();
-
-  if (!first_tab_activated && !second_tab_activated) {
-    return SplitTabActiveLocation::kNone;
-  }
-
-  if (visual_data_.split_layout() == SplitTabLayout::kVertical) {
-    return first_tab_activated ? SplitTabActiveLocation::kLeft
-                               : SplitTabActiveLocation::kRight;
-  } else {
-    return first_tab_activated ? SplitTabActiveLocation::kTop
-                               : SplitTabActiveLocation::kBottom;
-  }
-}
-
 }  // namespace split_tabs

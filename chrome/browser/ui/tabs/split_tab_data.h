@@ -11,15 +11,6 @@
 #include "components/tabs/public/tab_interface.h"
 
 namespace split_tabs {
-
-enum class SplitTabActiveLocation {
-  kLeft,
-  kRight,
-  kTop,
-  kBottom,
-  kNone,
-};
-
 // Contains metadata for a split tab collection such as the id and split layout
 // orientation. Also provides a way to access a the list of tabs in the split.
 class SplitTabData {
@@ -34,8 +25,6 @@ class SplitTabData {
   SplitTabVisualData* visual_data() { return &visual_data_; }
 
   std::vector<tabs::TabInterface*> ListTabs() const;
-
-  SplitTabActiveLocation GetActiveTabLocation();
 
  private:
   raw_ptr<tabs::SplitTabCollection> controller_;
