@@ -155,8 +155,7 @@ public class TopUiThemeColorProvider extends ThemeColorProvider {
      */
     public int getBackgroundColor(Tab tab) {
         // This method makes it easy to mock, test-friendly.
-        return SurfaceColorUpdateUtils.getDefaultThemeColor(
-                tab.getContext(), tab.isIncognitoBranded());
+        return ThemeUtils.getBackgroundColor(tab);
     }
 
     /**
