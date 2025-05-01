@@ -30,6 +30,7 @@
 #include "chrome/test/base/search_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/omnibox/browser/actions/tab_switch_action.h"
+#include "components/omnibox/browser/autocomplete_enums.h"
 #include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/browser/fake_autocomplete_provider.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
@@ -646,7 +647,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest,
       ax::mojom::IntAttribute::kPopupForId));
 
   // Check accessibility of list box while it's closed.
-  controller()->autocomplete_controller()->Stop(true);
+  controller()->autocomplete_controller()->Stop(
+      AutocompleteStopReason::kClobbered);
   popup_view()->UpdatePopupAppearance();
   popup_node_data_while_open = ui::AXNodeData();
   popup_view()->GetViewAccessibility().GetAccessibleNodeData(
@@ -892,7 +894,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest,
 
   // Check accessibility when popup is closed.
   ax_node_data_omnibox = ui::AXNodeData();
-  controller()->autocomplete_controller()->Stop(true);
+  controller()->autocomplete_controller()->Stop(
+      AutocompleteStopReason::kClobbered);
   omnibox_view()->GetViewAccessibility().GetAccessibleNodeData(
       &ax_node_data_omnibox);
   EXPECT_FALSE(popup_view()->IsOpen());
@@ -924,7 +927,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest, AccessibleControlIds) {
 
   // Check accessibility when popup is closed.
   ax_node_data_omnibox = ui::AXNodeData();
-  controller()->autocomplete_controller()->Stop(true);
+  controller()->autocomplete_controller()->Stop(
+      AutocompleteStopReason::kClobbered);
   omnibox_view()->GetViewAccessibility().GetAccessibleNodeData(
       &ax_node_data_omnibox);
   EXPECT_FALSE(popup_view()->IsOpen());

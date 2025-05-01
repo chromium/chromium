@@ -24,6 +24,7 @@
 #include "base/values.h"
 #include "build/blink_buildflags.h"
 #include "build/build_config.h"
+#include "components/omnibox/browser/autocomplete_enums.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
@@ -1042,7 +1043,7 @@ TEST_F(DocumentProviderTest, Logging) {
   {
     SCOPED_TRACE("Case: Stop() before Run().");
     base::HistogramTester histogram_tester;
-    provider_->Stop(false, false);
+    provider_->Stop(AutocompleteStopReason::kClobbered);
     histogram_tester.ExpectTotalCount("Omnibox.DocumentSuggest.Requests", 0);
     histogram_tester.ExpectTotalCount("Omnibox.DocumentSuggest.TotalTime", 0);
     histogram_tester.ExpectTotalCount(
@@ -1060,7 +1061,7 @@ TEST_F(DocumentProviderTest, Logging) {
     SCOPED_TRACE("Case: Stop() before request.");
     base::HistogramTester histogram_tester;
     provider_->time_run_invoked_ = base::TimeTicks::Now();
-    provider_->Stop(false, false);
+    provider_->Stop(AutocompleteStopReason::kClobbered);
     histogram_tester.ExpectTotalCount("Omnibox.DocumentSuggest.Requests", 0);
     histogram_tester.ExpectTotalCount("Omnibox.DocumentSuggest.TotalTime", 1);
     histogram_tester.ExpectTotalCount(
@@ -1082,7 +1083,7 @@ TEST_F(DocumentProviderTest, Logging) {
         network::SimpleURLLoader::Create(
             std::make_unique<network::ResourceRequest>(),
             net::DefineNetworkTrafficAnnotation("test", "test")));
-    provider_->Stop(false, false);
+    provider_->Stop(AutocompleteStopReason::kClobbered);
     histogram_tester.ExpectTotalCount("Omnibox.DocumentSuggest.Requests", 2);
     histogram_tester.ExpectBucketCount("Omnibox.DocumentSuggest.Requests", 1,
                                        1);

@@ -161,6 +161,7 @@ static_library("browser") {
     "autocomplete_controller_emitter.h",
     "autocomplete_controller_metrics.cc",
     "autocomplete_controller_metrics.h",
+    "autocomplete_enums.h",
     "autocomplete_grouper_groups.cc",
     "autocomplete_grouper_groups.h",
     "autocomplete_grouper_sections.cc",

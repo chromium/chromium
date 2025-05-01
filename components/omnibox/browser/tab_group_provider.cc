@@ -16,6 +16,7 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "components/browser_ui/util/android/url_constants.h"
 #endif
+#include "components/omnibox/browser/autocomplete_enums.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_classification.h"
@@ -82,7 +83,7 @@ TabGroupProvider::~TabGroupProvider() = default;
 // TODO(crbug.com/412433887): Make the TabGroupProvider async.
 void TabGroupProvider::Start(const AutocompleteInput& input,
                              bool minimal_changes) {
-  Stop(true, false);
+  Stop(AutocompleteStopReason::kClobbered);
   if (input.current_page_classification() !=
       ::metrics::OmniboxEventProto::ANDROID_HUB) {
     return;

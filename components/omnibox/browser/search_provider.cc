@@ -32,6 +32,7 @@
 #include "components/history/core/browser/keyword_search_term.h"
 #include "components/history/core/browser/keyword_search_term_util.h"
 #include "components/lens/lens_features.h"
+#include "components/omnibox/browser/autocomplete_enums.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
@@ -232,7 +233,7 @@ void SearchProvider::Start(const AutocompleteInput& input,
   if (base::FeatureList::IsEnabled(omnibox::kAblateSearchProviderWarmup) &&
       (input.IsZeroSuggest() ||
        input.type() == metrics::OmniboxInputType::EMPTY)) {
-    Stop(true, false);
+    Stop(AutocompleteStopReason::kClobbered);
     return;
   }
 
@@ -255,7 +256,7 @@ void SearchProvider::Start(const AutocompleteInput& input,
 
   if (!default_provider && !keyword_provider) {
     // No valid providers.
-    Stop(true, false);
+    Stop(AutocompleteStopReason::kClobbered);
     return;
   }
 
@@ -269,7 +270,7 @@ void SearchProvider::Start(const AutocompleteInput& input,
       !providers_.equal(default_provider_keyword, keyword_provider_keyword)) {
     // Cancel any in-flight suggest requests.
     if (!done_)
-      Stop(false, false);
+      Stop(AutocompleteStopReason::kInteraction);
   }
 
   providers_.set(default_provider_keyword, keyword_provider_keyword);
@@ -290,7 +291,7 @@ void SearchProvider::Start(const AutocompleteInput& input,
       match.allowed_to_be_default_match = true;
       matches_.push_back(match);
     }
-    Stop(true, false);
+    Stop(AutocompleteStopReason::kClobbered);
     return;
   }
 
@@ -320,12 +321,10 @@ void SearchProvider::Start(const AutocompleteInput& input,
   UpdateMatches();
 }
 
-void SearchProvider::Stop(bool clear_cached_results,
-                          bool due_to_user_inactivity) {
-  AutocompleteProvider::Stop(clear_cached_results, due_to_user_inactivity);
-
+void SearchProvider::Stop(AutocompleteStopReason stop_reason) {
+  AutocompleteProvider::Stop(stop_reason);
   StopSuggest();
-  if (clear_cached_results)
+  if (stop_reason == AutocompleteStopReason::kClobbered)
     ClearAllResults();
 }
 

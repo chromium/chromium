@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/callback_list.h"
+#include "components/omnibox/browser/autocomplete_enums.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/base_search_provider.h"
 
@@ -34,7 +35,7 @@ class ContextualSearchProvider : public BaseSearchProvider {
 
   // AutocompleteProvider:
   void Start(const AutocompleteInput& input, bool minimal_changes) override;
-  void Stop(bool clear_cached_results, bool due_to_user_inactivity) override;
+  void Stop(AutocompleteStopReason stop_reason) override;
   void AddProviderInfo(ProvidersInfo* provider_info) const override;
 
  protected:

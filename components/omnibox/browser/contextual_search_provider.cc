@@ -23,6 +23,7 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "components/omnibox/browser/actions/contextual_search_action.h"
+#include "components/omnibox/browser/autocomplete_enums.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_classification.h"
@@ -92,7 +93,7 @@ void ContextualSearchProvider::Start(
   TRACE_EVENT0("omnibox", "ContextualSearchProvider::Start");
   // Clear the cached results to remove the page search action matches. Also,
   // matches the behavior of the `ZeroSuggestProvider`.
-  Stop(/*clear_cached_results=*/true, /*due_to_user_inactivity=*/false);
+  Stop(AutocompleteStopReason::kClobbered);
 
   if (client()->IsOffTheRecord()) {
     done_ = true;
@@ -128,17 +129,16 @@ void ContextualSearchProvider::Start(
   StartSuggestRequest(std::move(input));
 }
 
-void ContextualSearchProvider::Stop(bool clear_cached_results,
-                                    bool due_to_user_inactivity) {
-  if (!due_to_user_inactivity) {
-    // Stop the pending request if the sotp is not due to user inactivity. If
-    // it is due to user inactivity, the request will continue so the
-    // suggestions can be shown when they are ready.
-    AutocompleteProvider::Stop(clear_cached_results, due_to_user_inactivity);
-    lens_suggest_inputs_subscription_ = {};
-    loader_.reset();
-    input_keyword_.clear();
+void ContextualSearchProvider::Stop(AutocompleteStopReason stop_reason) {
+  // If the stop is due to user inactivity, the request will continue so the
+  // suggestions can be shown when they are ready.
+  if (stop_reason == AutocompleteStopReason::kInactivity) {
+    return;
   }
+  AutocompleteProvider::Stop(stop_reason);
+  lens_suggest_inputs_subscription_ = {};
+  loader_.reset();
+  input_keyword_.clear();
 }
 
 void ContextualSearchProvider::AddProviderInfo(

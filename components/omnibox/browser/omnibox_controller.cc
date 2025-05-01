@@ -10,6 +10,7 @@
 #include "base/trace_event/trace_event.h"
 #include "components/omnibox/browser/autocomplete_classifier.h"
 #include "components/omnibox/browser/autocomplete_controller_emitter.h"
+#include "components/omnibox/browser/autocomplete_enums.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/omnibox_client.h"
@@ -74,7 +75,9 @@ void OmniboxController::StartAutocomplete(
 
 void OmniboxController::StopAutocomplete(bool clear_result) const {
   TRACE_EVENT0("omnibox", "OmniboxController::StopAutocomplete");
-  autocomplete_controller_->Stop(clear_result);
+  autocomplete_controller_->Stop(clear_result
+                                     ? AutocompleteStopReason::kClobbered
+                                     : AutocompleteStopReason::kInteraction);
 }
 
 void OmniboxController::StartZeroSuggestPrefetch() {

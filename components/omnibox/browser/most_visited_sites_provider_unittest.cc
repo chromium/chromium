@@ -14,6 +14,7 @@
 #include "components/history/core/browser/features.h"
 #include "components/history/core/browser/top_sites.h"
 #include "components/history/core/browser/top_sites_impl.h"
+#include "components/omnibox/browser/autocomplete_enums.h"
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
 #include "components/omnibox/browser/fake_autocomplete_provider_client.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
@@ -351,11 +352,11 @@ TEST_F(MostVisitedSitesProviderTest, TestMostVisitedCallback) {
   EXPECT_TRUE(top_sites_->EmitURLs(test_data));
   CheckMatchesEquivalentTo(test_data, ExpectedUiType::kAggregateMatch);
   EXPECT_EQ(1, provider_update_count_);
-  provider_->Stop(false, false);
+  provider_->Stop(AutocompleteStopReason::kClobbered);
 
   // Observe that subsequent request does not return stale data.
   provider_->Start(input, true);
-  provider_->Stop(false, false);
+  provider_->Stop(AutocompleteStopReason::kClobbered);
   // Since this provider's async logic is still in-flight (`EmitURLs()` has not
   // been called yet), we should not be reporting anything from past runs.
   EXPECT_EQ(0ul, NumMostVisitedMatches());
@@ -372,7 +373,7 @@ TEST_F(MostVisitedSitesProviderTest, TestMostVisitedCallback) {
   EXPECT_EQ(1, provider_update_count_);
 
   provider_->Start(input, true);
-  provider_->Stop(false, false);
+  provider_->Stop(AutocompleteStopReason::kClobbered);
   provider_->Start(input, true);
 
   // Stale results (reported for the first of the two Start() requests) should
@@ -385,7 +386,7 @@ TEST_F(MostVisitedSitesProviderTest, TestMostVisitedCallback) {
   EXPECT_TRUE(top_sites_->EmitURLs(test_data));
   CheckMatchesEquivalentTo(test_data, ExpectedUiType::kAggregateMatch);
   EXPECT_EQ(2, provider_update_count_);
-  provider_->Stop(false, false);
+  provider_->Stop(AutocompleteStopReason::kClobbered);
 }
 
 TEST_F(MostVisitedSitesProviderTest, TestMostVisitedNavigateToSearchPage) {

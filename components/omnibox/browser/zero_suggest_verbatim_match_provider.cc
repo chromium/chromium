@@ -12,6 +12,7 @@
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/url_database.h"
 #include "components/history/core/browser/url_row.h"
+#include "components/omnibox/browser/autocomplete_enums.h"
 #include "components/omnibox/browser/autocomplete_match_classification.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
@@ -54,7 +55,7 @@ ZeroSuggestVerbatimMatchProvider::~ZeroSuggestVerbatimMatchProvider() = default;
 
 void ZeroSuggestVerbatimMatchProvider::Start(const AutocompleteInput& input,
                                              bool minimal_changes) {
-  Stop(true, false);
+  Stop(AutocompleteStopReason::kClobbered);
   if (!IsVerbatimMatchEligible(input.current_page_classification()))
     return;
 
@@ -100,9 +101,9 @@ void ZeroSuggestVerbatimMatchProvider::Start(const AutocompleteInput& input,
       &task_tracker_);
 }
 
-void ZeroSuggestVerbatimMatchProvider::Stop(bool clear_cached_results,
-                                            bool due_to_user_inactivity) {
-  AutocompleteProvider::Stop(clear_cached_results, due_to_user_inactivity);
+void ZeroSuggestVerbatimMatchProvider::Stop(
+    AutocompleteStopReason stop_reason) {
+  AutocompleteProvider::Stop(stop_reason);
   request_weak_ptr_factory_.InvalidateWeakPtrs();
 }
 

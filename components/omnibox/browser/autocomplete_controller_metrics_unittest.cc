@@ -17,6 +17,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
+#include "components/omnibox/browser/autocomplete_enums.h"
 #include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/browser/fake_autocomplete_controller.h"
 #include "components/omnibox/browser/fake_autocomplete_provider.h"
@@ -116,7 +117,7 @@ class AutocompleteControllerMetricsTest : public testing::Test {
   // Simulates `AutocompleteController::Stop()`.
   void SimulateOnStop() {
     task_environment_.FastForwardBy(base::Milliseconds(1));
-    controller_.Stop(false);
+    controller_.Stop(AutocompleteStopReason::kInteraction);
   }
 
   // Convenience function to be called before/after EXPECT'ing histograms to
@@ -132,7 +133,7 @@ class AutocompleteControllerMetricsTest : public testing::Test {
   // when the controller is interrupted in which case metrics are expected to be
   // logged. Does not check provider or cross stability metrics.
   void StopAndExpectNoSuggestionFinalizationMetrics() {
-    controller_.Stop(false, false);
+    controller_.Stop(AutocompleteStopReason::kClobbered);
     ExpectNoSuggestionFinalizationMetrics();
   }
 

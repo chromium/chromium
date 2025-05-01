@@ -64,11 +64,6 @@ void CalculatorProvider::Start(const AutocompleteInput& input,
   }
 }
 
-void CalculatorProvider::Stop(bool clear_cached_results,
-                              bool due_to_user_inactivity) {
-  done_ = true;
-}
-
 void CalculatorProvider::DeleteMatch(const AutocompleteMatch& match) {
   auto it = std::ranges::find_if(Cache(), [&](const auto& cached) {
     return cached.match.destination_url == match.destination_url;

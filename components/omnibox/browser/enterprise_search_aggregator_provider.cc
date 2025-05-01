@@ -28,6 +28,7 @@
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/values.h"
+#include "components/omnibox/browser/autocomplete_enums.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_classification.h"
@@ -437,8 +438,7 @@ void EnterpriseSearchAggregatorProvider::Start(const AutocompleteInput& input,
                                                bool minimal_changes) {
   // Don't clear matches. Keep showing old matches until a new response comes.
   // This avoids flickering.
-  Stop(/*clear_cached_results=*/false,
-       /*due_to_user_inactivity=*/false);
+  Stop(AutocompleteStopReason::kInteraction);
 
   if (!IsProviderAllowed(input)) {
     // Clear old matches if provider is not allowed.
@@ -480,24 +480,25 @@ void EnterpriseSearchAggregatorProvider::Start(const AutocompleteInput& input,
       &EnterpriseSearchAggregatorProvider::Run, base::Unretained(this)));
 }
 
-void EnterpriseSearchAggregatorProvider::Stop(bool clear_cached_results,
-                                              bool due_to_user_inactivity) {
-  // Ignore the stop timer since this provider is expected to take longer than
-  // 1500ms (the stop timer gets triggered due to user inactivity).
-  if (!due_to_user_inactivity) {
-    AutocompleteProvider::Stop(clear_cached_results, due_to_user_inactivity);
-    debouncer_->CancelRequest();
+void EnterpriseSearchAggregatorProvider::Stop(
+    AutocompleteStopReason stop_reason) {
+  // Ignore the stop timer since this provider is expected to sometimes take
+  // longer than 1500ms.
+  if (stop_reason == AutocompleteStopReason::kInactivity) {
+    return;
+  }
+  AutocompleteProvider::Stop(stop_reason);
+  debouncer_->CancelRequest();
 
-    if (auto* remote_suggestions_service = client_->GetRemoteSuggestionsService(
-            /*create_if_necessary=*/false)) {
-      remote_suggestions_service
-          ->StopCreatingEnterpriseSearchAggregatorSuggestionsRequest();
-    }
+  if (auto* remote_suggestions_service = client_->GetRemoteSuggestionsService(
+          /*create_if_necessary=*/false)) {
+    remote_suggestions_service
+        ->StopCreatingEnterpriseSearchAggregatorSuggestionsRequest();
+  }
 
-    if (loader_) {
-      LogResponseTime(true);
-      loader_.reset();
-    }
+  if (loader_) {
+    LogResponseTime(true);
+    loader_.reset();
   }
 }
 

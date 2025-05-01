@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
+#include "components/omnibox/browser/autocomplete_enums.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/on_device_head_model.h"
@@ -38,7 +39,7 @@ class OnDeviceHeadProvider : public AutocompleteProvider {
                                       AutocompleteProviderListener* listener);
 
   void Start(const AutocompleteInput& input, bool minimal_changes) override;
-  void Stop(bool clear_cached_results, bool due_to_user_inactivity) override;
+  void Stop(AutocompleteStopReason stop_reason) override;
   void AddProviderInfo(ProvidersInfo* provider_info) const override;
 
   AutocompleteProviderClient* client() { return client_; }

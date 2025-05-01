@@ -26,6 +26,7 @@
 #include "components/history/core/browser/keyword_search_term.h"
 #include "components/history/core/browser/keyword_search_term_util.h"
 #include "components/history/core/browser/url_database.h"
+#include "components/omnibox/browser/autocomplete_enums.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_classification.h"
@@ -104,8 +105,7 @@ LocalHistoryZeroSuggestProvider* LocalHistoryZeroSuggestProvider::Create(
 void LocalHistoryZeroSuggestProvider::Start(const AutocompleteInput& input,
                                             bool minimal_changes) {
   TRACE_EVENT0("omnibox", "LocalHistoryZeroSuggestProvider::Start");
-  Stop(true, false);
-
+  Stop(AutocompleteStopReason::kClobbered);
   if (!AllowLocalHistoryZeroSuggestSuggestions(client_, input)) {
     return;
   }

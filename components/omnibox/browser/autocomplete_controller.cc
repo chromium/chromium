@@ -45,6 +45,7 @@
 #include "components/omnibox/browser/actions/omnibox_action_in_suggest.h"
 #include "components/omnibox/browser/actions/omnibox_answer_action.h"
 #include "components/omnibox/browser/actions/omnibox_pedal_provider.h"
+#include "components/omnibox/browser/autocomplete_enums.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
@@ -612,15 +613,11 @@ AutocompleteController::AutocompleteController(
 AutocompleteController::~AutocompleteController() {
   base::trace_event::MemoryDumpManager::GetInstance()->UnregisterDumpProvider(
       this);
-
-  // The providers may have tasks outstanding that hold refs to them.  We need
-  // to ensure they won't call us back if they outlive us.  (Practically,
-  // calling Stop() should also cancel those tasks and make it so that we hold
-  // the only refs.)  We also don't want to bother notifying anyone of our
-  // result changes here, because the notification observer is in the midst of
-  // shutdown too, so we don't ask Stop() to clear `internal_result_` (and
-  // notify).
-  Stop(false);
+  // Must stop providers because they may have unowned tasks that continue to
+  // run or hold refs to them; e.g. remote requests or DB reads. Don't bother
+  // notifying observers or using `kClobbered` to clear provider caches and
+  // state, since the observers and providers are being destroyed too.
+  Stop(AutocompleteStopReason::kInteraction);
 }
 
 void AutocompleteController::AddObserver(Observer* observer) {
@@ -785,8 +782,7 @@ void AutocompleteController::StartPrefetch(const AutocompleteInput& input) {
   }
 }
 
-void AutocompleteController::Stop(bool clear_result,
-                                  bool due_to_user_inactivity) {
+void AutocompleteController::Stop(AutocompleteStopReason stop_reason) {
   // Must be called before `expire_timer_.Stop()`, modifying `done_`, or
   // modifying `AutocompleteProvider::done_` below. If the current request has
   // not completed, and therefore has not been logged yet, will log it now.
@@ -797,17 +793,16 @@ void AutocompleteController::Stop(bool clear_result,
   for (const auto& provider : providers_) {
     if (!ShouldRunProvider(provider.get()))
       continue;
-    provider->Stop(clear_result, due_to_user_inactivity);
+    provider->Stop(stop_reason);
   }
-
-  UpdateResult(UpdateType::kStop);
 
   // Cancel any pending requests that may update the results. Otherwise, e.g.,
   // the user's suggestion selection may be reset.
+  UpdateResult(UpdateType::kStop);
   CancelNotifyChangedRequest();
 
   const bool non_empty_result = !internal_result_.empty();
-  if (clear_result) {
+  if (stop_reason == AutocompleteStopReason::kClobbered) {
     internal_result_.Reset();
     if (non_empty_result) {
       // Pass `notify_default_match` as false to clear only the popup and not
@@ -2128,7 +2123,7 @@ void AutocompleteController::StartStopTimer() {
 }
 
 void AutocompleteController::OnStopTimerTriggered() {
-  Stop(false, true);
+  Stop(AutocompleteStopReason::kInactivity);
   for (Observer& obs : observers_) {
     obs.OnAutocompleteStopTimerTriggered(input_);
   }

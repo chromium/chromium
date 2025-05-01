@@ -21,6 +21,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
+#include "components/omnibox/browser/autocomplete_enums.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
@@ -198,10 +199,8 @@ void ClipboardProvider::Start(const AutocompleteInput& input,
   }
 }
 
-void ClipboardProvider::Stop(bool clear_cached_results,
-                             bool due_to_user_inactivity) {
-  AutocompleteProvider::Stop(clear_cached_results, due_to_user_inactivity);
-
+void ClipboardProvider::Stop(AutocompleteStopReason stop_reason) {
+  AutocompleteProvider::Stop(stop_reason);
   callback_weak_ptr_factory_.InvalidateWeakPtrs();
 }
 

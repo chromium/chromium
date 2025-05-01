@@ -17,6 +17,7 @@
 #include "base/trace_event/trace_event.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/top_sites.h"
+#include "components/omnibox/browser/autocomplete_enums.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_classification.h"
@@ -293,8 +294,7 @@ bool BuildTileSuggest(AutocompleteProvider* provider,
 
 void MostVisitedSitesProvider::Start(const AutocompleteInput& input,
                                      bool minimal_changes) {
-  Stop(true, false);
-
+  Stop(AutocompleteStopReason::kClobbered);
   if (!AllowMostVisitedSitesSuggestions(client_, input)) {
     return;
   }
@@ -360,9 +360,8 @@ void MostVisitedSitesProvider::StartPrefetch(const AutocompleteInput& input) {
   }
 }
 
-void MostVisitedSitesProvider::Stop(bool clear_cached_results,
-                                    bool due_to_user_inactivity) {
-  AutocompleteProvider::Stop(clear_cached_results, due_to_user_inactivity);
+void MostVisitedSitesProvider::Stop(AutocompleteStopReason stop_reason) {
+  AutocompleteProvider::Stop(stop_reason);
   request_weak_ptr_factory_.InvalidateWeakPtrs();
   cancelable_task_tracker_.TryCancelAll();
   debouncer_->CancelRequest();

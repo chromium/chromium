@@ -10,6 +10,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "components/history_embeddings/history_embeddings_service.h"
+#include "components/omnibox/browser/autocomplete_enums.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/history_provider.h"
 
@@ -23,7 +24,7 @@ class HistoryEmbeddingsProvider : public HistoryProvider {
 
   // AutocompleteProvider:
   void Start(const AutocompleteInput& input, bool minimal_changes) override;
-  void Stop(bool clear_cached_results, bool due_to_user_inactivity) override;
+  void Stop(AutocompleteStopReason stop_reason) override;
 
  private:
   friend class FakeHistoryEmbeddingsProvider;

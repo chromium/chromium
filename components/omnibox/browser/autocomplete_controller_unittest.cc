@@ -19,6 +19,7 @@
 #include "build/build_config.h"
 #include "components/omnibox/browser/actions/omnibox_answer_action.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
+#include "components/omnibox/browser/autocomplete_enums.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_test_util.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
@@ -740,7 +741,7 @@ TEST_F(AutocompleteControllerTest, UpdateResult_ZPSEnabledAndShownInSession) {
   }
   {
     SCOPED_TRACE("Stop with clear_result=false is called due to user idleness");
-    controller_.Stop(/*clear_result=*/false);
+    controller_.Stop(AutocompleteStopReason::kInteraction);
     // Stop with clear_result=false does not clear the internal result set and
     // does not notify `OnResultChanged()`.
     EXPECT_FALSE(controller_.internal_result_.empty());
@@ -799,7 +800,7 @@ TEST_F(AutocompleteControllerTest, UpdateResult_ZPSEnabledAndShownInSession) {
   }
   {
     SCOPED_TRACE("Stop with clear_result=true is called due to popup closing");
-    controller_.Stop(/*clear_result=*/true);
+    controller_.Stop(AutocompleteStopReason::kClobbered);
     // Stop with clear_result=true clears the internal result set and notifies
     // `OnResultChanged()`.
     EXPECT_TRUE(controller_.internal_result_.empty());
@@ -1875,34 +1876,34 @@ TEST_F(AutocompleteControllerTest, ExplicitStop) {
 
   {
     SCOPED_TRACE(
-        "Stop with clear_result=false and no pending changes should not notify"
+        "Stop with `kInteraction` and no pending changes should not notify "
         "`OnResultChanged()` - there's no change to notify of.");
     controller_.SimulateAutocompletePass(true, false, matches);
-    controller_.Stop(false);
+    controller_.Stop(AutocompleteStopReason::kInteraction);
     controller_.ExpectStopAfter(0, true);
     EXPECT_FALSE(controller_.published_result_.empty());
     controller_.ExpectNoNotificationOrStop();
   }
   {
     SCOPED_TRACE(
-        "Stop with clear_result=false and pending changes should not notify"
-        "`OnResultChanged()` - the last pending change should be abandoned to "
-        "avoid changes as the user's e.g. down arrowing..");
+        "Stop with `kInteraction` and pending changes should not notify "
+        "`OnResultChanged()` - the last pending change should be "
+        "abandoned to avoid changes as the user's e.g. down arrowing.");
     controller_.SimulateAutocompletePass(true, false, matches);
     controller_.SimulateAutocompletePass(false, false, matches);
-    controller_.Stop(false);
+    controller_.Stop(AutocompleteStopReason::kInteraction);
     EXPECT_FALSE(controller_.published_result_.empty());
     controller_.ExpectStopAfter(0, true);
     controller_.ExpectNoNotificationOrStop();
   }
   {
     SCOPED_TRACE(
-        "Stop with clear_result=true and no pending notifications should "
-        "notify `OnResultChanged()` - observers should know the results were "
+        "Stop with `kClobbered` and no pending notifications should notify "
+        "`OnResultChanged()` - observers should know the results were "
         "cleared.");
     controller_.SimulateAutocompletePass(true, false, matches);
     controller_.observer_->last_default_match_changed = true;
-    controller_.Stop(true);
+    controller_.Stop(AutocompleteStopReason::kClobbered);
     EXPECT_TRUE(controller_.published_result_.empty());
     controller_.ExpectOnResultChanged(
         0, AutocompleteController::UpdateType::kStop);
@@ -1911,13 +1912,13 @@ TEST_F(AutocompleteControllerTest, ExplicitStop) {
   }
   {
     SCOPED_TRACE(
-        "Stop with clear_result=true and pending notifications should notify "
-        "`OnResultChanged()` - observers should know the results were "
+        "Stop with `kClobbered` and pending notifications should notify "
+        "`OnResultChanged()` - observers should know the results were cleared."
         "cleared.");
     controller_.SimulateAutocompletePass(true, false, matches);
     controller_.SimulateAutocompletePass(false, false, matches);
     controller_.observer_->last_default_match_changed = true;
-    controller_.Stop(true);
+    controller_.Stop(AutocompleteStopReason::kClobbered);
     EXPECT_TRUE(controller_.published_result_.empty());
     controller_.ExpectOnResultChanged(
         0, AutocompleteController::UpdateType::kStop);
@@ -2445,7 +2446,7 @@ TEST_F(AutocompleteControllerTest, UpdateSearchboxStatsForAnswerAction) {
   AutocompleteMatch match1 = CreateSearchMatch("match1", true, 1300);
   match1.actions.push_back(answer_action);
 
-  controller_.Stop(true);
+  controller_.Stop(AutocompleteStopReason::kClobbered);
   EXPECT_THAT(controller_.SimulateAutocompletePass(
                   /*sync=*/true, /*done=*/true,
                   {match1, CreateSearchMatch("match2", true, 1200),
@@ -2561,11 +2562,11 @@ TEST_F(AutocompleteControllerTest,
   controller_.AttachActions();
 
   // The takeover action should be for the contextual search action, not pedals.
-  EXPECT_TRUE(controller_.internal_result_.match_at(0)->takeover_action);
+  ASSERT_TRUE(controller_.internal_result_.match_at(0)->takeover_action);
   EXPECT_EQ(
       OmniboxActionId::CONTEXTUAL_SEARCH_FULFILLMENT,
       controller_.internal_result_.match_at(0)->takeover_action->ActionId());
-  EXPECT_TRUE(controller_.internal_result_.match_at(1)->takeover_action);
+  ASSERT_TRUE(controller_.internal_result_.match_at(1)->takeover_action);
   EXPECT_EQ(
       OmniboxActionId::CONTEXTUAL_SEARCH_FULFILLMENT,
       controller_.internal_result_.match_at(1)->takeover_action->ActionId());
@@ -2619,11 +2620,11 @@ TEST_F(AutocompleteControllerTest,
   EXPECT_FALSE(controller_.internal_result_.match_at(0)->takeover_action);
   EXPECT_FALSE(controller_.internal_result_.match_at(3)->takeover_action);
 
-  EXPECT_TRUE(controller_.internal_result_.match_at(1)->takeover_action);
+  ASSERT_TRUE(controller_.internal_result_.match_at(1)->takeover_action);
   EXPECT_EQ(
       OmniboxActionId::CONTEXTUAL_SEARCH_FULFILLMENT,
       controller_.internal_result_.match_at(1)->takeover_action->ActionId());
-  EXPECT_TRUE(controller_.internal_result_.match_at(2)->takeover_action);
+  ASSERT_TRUE(controller_.internal_result_.match_at(2)->takeover_action);
   EXPECT_EQ(
       OmniboxActionId::CONTEXTUAL_SEARCH_FULFILLMENT,
       controller_.internal_result_.match_at(2)->takeover_action->ActionId());

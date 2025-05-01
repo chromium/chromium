@@ -8,6 +8,7 @@
 
 #include "base/check_is_test.h"
 #include "base/memory/raw_ptr.h"
+#include "components/omnibox/browser/autocomplete_enums.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
@@ -33,8 +34,8 @@ void UnscopedExtensionProvider::Start(const AutocompleteInput& input,
   // matches and suggestion group information and increment the current request
   // ID to discard any suggestions that may be incoming later with a stale
   // request ID.
-  Stop(/*clear_cached_results=*/!minimal_changes,
-       /*due_to_user_inactivity=*/false);
+  Stop(minimal_changes ? AutocompleteStopReason::kInteraction
+                       : AutocompleteStopReason::kClobbered);
 
   // Unscoped mode input should not be redirected to an extension in incognito.
   if (client_->IsOffTheRecord()) {
@@ -82,14 +83,14 @@ void UnscopedExtensionProvider::Start(const AutocompleteInput& input,
   delegate_->Start(input, minimal_changes, unscoped_extensions);
 }
 
-void UnscopedExtensionProvider::Stop(bool clear_cached_results,
-                                     bool due_to_user_inactivity) {
+void UnscopedExtensionProvider::Stop(AutocompleteStopReason stop_reason) {
   // Ignore the stop timer since extension suggestions might take longer than
   // 1500ms to generate (the stop timer gets triggered due to user inactivity).
-  if (!due_to_user_inactivity) {
-    AutocompleteProvider::Stop(clear_cached_results, due_to_user_inactivity);
-    delegate_->Stop(clear_cached_results);
+  if (stop_reason == AutocompleteStopReason::kInactivity) {
+    return;
   }
+  AutocompleteProvider::Stop(stop_reason);
+  delegate_->Stop(stop_reason == AutocompleteStopReason::kClobbered);
 }
 
 void UnscopedExtensionProvider::DeleteMatch(const AutocompleteMatch& match) {

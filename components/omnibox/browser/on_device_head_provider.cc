@@ -18,6 +18,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
+#include "components/omnibox/browser/autocomplete_enums.h"
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
 #include "components/omnibox/browser/base_search_provider.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
@@ -152,7 +153,8 @@ void OnDeviceHeadProvider::Start(const AutocompleteInput& input,
   TRACE_EVENT0("omnibox", "OnDeviceHeadProvider::Start");
 
   // Cancel any in-progress request.
-  Stop(!minimal_changes, false);
+  Stop(minimal_changes ? AutocompleteStopReason::kInteraction
+                       : AutocompleteStopReason::kClobbered);
 
   if (!IsOnDeviceHeadProviderAllowed(input)) {
     matches_.clear();
@@ -180,10 +182,8 @@ void OnDeviceHeadProvider::Start(const AutocompleteInput& input,
                      weak_ptr_factory_.GetWeakPtr(), std::move(params)));
 }
 
-void OnDeviceHeadProvider::Stop(bool clear_cached_results,
-                                bool due_to_user_inactivity) {
-  AutocompleteProvider::Stop(clear_cached_results, due_to_user_inactivity);
-
+void OnDeviceHeadProvider::Stop(AutocompleteStopReason stop_reason) {
+  AutocompleteProvider::Stop(stop_reason);
   // Increase the request_id so that any in-progress requests will become
   // obsolete.
   on_device_search_request_id_ =

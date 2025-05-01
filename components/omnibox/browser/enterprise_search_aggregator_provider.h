@@ -16,6 +16,7 @@
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/values.h"
+#include "components/omnibox/browser/autocomplete_enums.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
@@ -48,7 +49,7 @@ class EnterpriseSearchAggregatorProvider : public AutocompleteProvider {
 
   // AutocompleteProvider:
   void Start(const AutocompleteInput& input, bool minimal_changes) override;
-  void Stop(bool clear_cached_results, bool due_to_user_inactivity) override;
+  void Stop(AutocompleteStopReason stop_reason) override;
 
  private:
   friend class FakeEnterpriseSearchAggregatorProvider;

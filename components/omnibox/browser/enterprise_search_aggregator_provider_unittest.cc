@@ -20,6 +20,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
+#include "components/omnibox/browser/autocomplete_enums.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
@@ -1669,7 +1670,7 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, Logging) {
   {
     SCOPED_TRACE("Case: Stop() before Run().");
     base::HistogramTester histogram_tester;
-    provider_->Stop(false, false);
+    provider_->Stop(AutocompleteStopReason::kClobbered);
     histogram_tester.ExpectTotalCount(
         "Omnibox.SuggestRequestsSent.ResponseTime2.RequestState."
         "EnterpriseSearchAggregatorSuggest.Interrupted",
@@ -1687,7 +1688,7 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, Logging) {
     provider_->RequestStarted(network::SimpleURLLoader::Create(
         std::make_unique<network::ResourceRequest>(),
         net::DefineNetworkTrafficAnnotation("test", "test")));
-    provider_->Stop(false, false);
+    provider_->Stop(AutocompleteStopReason::kClobbered);
     histogram_tester.ExpectTotalCount(
         "Omnibox.SuggestRequestsSent.ResponseTime2.RequestState."
         "EnterpriseSearchAggregatorSuggest.Interrupted",
