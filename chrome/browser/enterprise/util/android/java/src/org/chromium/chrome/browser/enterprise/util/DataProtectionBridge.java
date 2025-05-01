@@ -23,6 +23,9 @@ public class DataProtectionBridge {
      * current data protection policies. The callback boolean input will be true if the copy action
      * is allowed, or false if the copy action has been blocked or cancelled.
      *
+     * <p>If enterprise policies are not enabled on the device, this check should cause minimal
+     * delays.
+     *
      * @param text The text being copied.
      * @param renderFrameHost The RenderFrameHost providing the context in which a copy occurred.
      * @param callback The callback to run after verifying the policy. The boolean input will be
@@ -36,6 +39,25 @@ public class DataProtectionBridge {
         }
         DataProtectionBridgeJni.get()
                 .verifyCopyTextIsAllowedByPolicy(text, renderFrameHost, callback);
+    }
+
+    /**
+     * Runs the provided callback after verifying that sharing the specified content is allowed by
+     * the current data protection policies. The callback boolean input will be true if the share
+     * action is allowed, or false if the share action has been blocked or cancelled.
+     *
+     * <p>If enterprise policies are not enabled on the device, this check should cause minimal
+     * delays.
+     *
+     * @param text The text being shared.
+     * @param renderFrameHost The RenderFrameHost providing the context in which a share occurred.
+     * @param callback The callback to run after verifying the policy.
+     */
+    public static void verifyShareTextIsAllowedByPolicy(
+            String text, RenderFrameHost renderFrameHost, Callback<Boolean> callback) {
+        // TODO(crbug.com/406591712): Update to use dedicated share flow instead of reusing the
+        //  copy flow.
+        verifyCopyTextIsAllowedByPolicy(text, renderFrameHost, callback);
     }
 
     /**
@@ -59,6 +81,25 @@ public class DataProtectionBridge {
     }
 
     /**
+     * Runs the provided callback after verifying that sharing the specified content is allowed by
+     * the current data protection policies. The callback boolean input will be true if the share
+     * action is allowed, or false if the share action has been blocked or cancelled.
+     *
+     * <p>If enterprise policies are not enabled on the device, this check should cause minimal
+     * delays.
+     *
+     * @param url The url being shared.
+     * @param renderFrameHost The RenderFrameHost providing the context in which a share occurred.
+     * @param callback The callback to run after verifying the policy.
+     */
+    public static void verifyShareUrlIsAllowedByPolicy(
+            String url, RenderFrameHost renderFrameHost, Callback<Boolean> callback) {
+        // TODO(crbug.com/406591712): Update to use dedicated share flow instead of reusing the
+        //  copy flow.
+        verifyCopyUrlIsAllowedByPolicy(url, renderFrameHost, callback);
+    }
+
+    /**
      * Runs the provided callback after verifying that copying the specified image is allowed by the
      * current data protection policies. The callback boolean input will be true if the copy action
      * is allowed, or false if the copy action has been blocked or cancelled.
@@ -76,6 +117,25 @@ public class DataProtectionBridge {
         }
         DataProtectionBridgeJni.get()
                 .verifyCopyImageIsAllowedByPolicy(imageUri, renderFrameHost, callback);
+    }
+
+    /**
+     * Runs the provided callback after verifying that sharing the specified content is allowed by
+     * the current data protection policies. The callback boolean input will be true if the share
+     * action is allowed, or false if the share action has been blocked or cancelled.
+     *
+     * <p>If enterprise policies are not enabled on the device, this check should cause minimal
+     * delays.
+     *
+     * @param imageUri The uri for the image being copied.
+     * @param renderFrameHost The RenderFrameHost providing the context in which a share occurred.
+     * @param callback The callback to run after verifying the policy.
+     */
+    public static void verifyShareImageIsAllowedByPolicy(
+            String imageUri, RenderFrameHost renderFrameHost, Callback<Boolean> callback) {
+        // TODO(crbug.com/406591712): Update to use dedicated share flow instead of reusing the
+        //  copy flow.
+        verifyCopyImageIsAllowedByPolicy(imageUri, renderFrameHost, callback);
     }
 
     @NativeMethods

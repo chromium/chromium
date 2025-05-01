@@ -16,8 +16,10 @@ import org.chromium.base.Callback;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.device_lock.DeviceLockActivityLauncherImpl;
+import org.chromium.chrome.browser.enterprise.util.DataProtectionBridge;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.history_clusters.HistoryClustersTabHelper;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -39,6 +41,7 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.ui_metrics.CanonicalURLResult;
+import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.printing.PrintManagerDelegateImpl;
 import org.chromium.printing.PrintingController;
@@ -106,20 +109,61 @@ public class ShareDelegateImpl implements ShareDelegate {
         if (mShareStartTime == 0L) {
             mShareStartTime = System.currentTimeMillis();
         }
-        mDelegate.share(
+        shareIfAllowedByPolicy(
                 params,
                 chromeShareExtras,
-                mBottomSheetController,
-                mLifecycleDispatcher,
-                mTabProvider,
-                mTabModelSelectorProvider,
-                mProfileSupplier,
-                this::printTab,
-                new TabGroupSharingControllerImpl(mDataSharingTabManager),
-                shareOrigin,
-                mShareStartTime,
-                isSharingHubEnabled());
-        mShareStartTime = 0;
+                (Boolean isAllowed) -> {
+                    if (!isAllowed) return;
+                    mDelegate.share(
+                            params,
+                            chromeShareExtras,
+                            mBottomSheetController,
+                            mLifecycleDispatcher,
+                            mTabProvider,
+                            mTabModelSelectorProvider,
+                            mProfileSupplier,
+                            this::printTab,
+                            new TabGroupSharingControllerImpl(mDataSharingTabManager),
+                            shareOrigin,
+                            mShareStartTime,
+                            isSharingHubEnabled());
+                    mShareStartTime = 0;
+                });
+    }
+
+    private void shareIfAllowedByPolicy(
+            ShareParams params,
+            ChromeShareExtras chromeShareExtras,
+            Callback<Boolean> shareCallback) {
+        @Nullable RenderFrameHost renderFrameHost = chromeShareExtras.getRenderFrameHost();
+        if (renderFrameHost == null) {
+            shareCallback.onResult(true);
+            return;
+        }
+
+        @ShareContentType int type = getShareContentType(params, chromeShareExtras);
+        if ((type == ShareContentType.TEXT || type == ShareContentType.TEXT_WITH_LINK)
+                && !params.getText().isEmpty()) {
+            DataProtectionBridge.verifyShareTextIsAllowedByPolicy(
+                    params.getText(), renderFrameHost, shareCallback);
+            return;
+        }
+        if (type == ShareContentType.LINK && !params.getUrl().isEmpty()) {
+            DataProtectionBridge.verifyShareUrlIsAllowedByPolicy(
+                    params.getUrl(), renderFrameHost, shareCallback);
+            return;
+        }
+        if ((type == ShareContentType.IMAGE || type == ShareContentType.IMAGE_WITH_LINK)
+                && params.getSingleImageUri() != null
+                && params.getSingleImageUri().getPath() != null) {
+            DataProtectionBridge.verifyShareImageIsAllowedByPolicy(
+                    params.getSingleImageUri().getPath(), renderFrameHost, shareCallback);
+            return;
+        }
+
+        // TODO(crbug.com/411706381): Account for web share.
+
+        shareCallback.onResult(true);
     }
 
     // ShareDelegate implementation.
@@ -151,7 +195,11 @@ public class ShareDelegateImpl implements ShareDelegate {
                 (ShareParams p) -> {
                     if (p != null) {
                         var extras =
-                                new ChromeShareExtras.Builder().setIsUrlOfVisiblePage(true).build();
+                                new ChromeShareExtras.Builder()
+                                        .setIsUrlOfVisiblePage(true)
+                                        .setRenderFrameHost(
+                                                currentTab.getWebContents().getMainFrame())
+                                        .build();
                         share(p, extras, shareOrigin);
                         return;
                     }
@@ -229,6 +277,7 @@ public class ShareDelegateImpl implements ShareDelegate {
                         .setSaveLastUsed(!shareDirectly)
                         .setShareDirectly(shareDirectly)
                         .setIsUrlOfVisiblePage(true)
+                        .setRenderFrameHost(webContents.getMainFrame())
                         .build(),
                 shareOrigin);
 
