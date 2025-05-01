@@ -13,6 +13,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
@@ -45,6 +46,7 @@ public class VirtualViewStructureInstrumentationTest {
     @SmallTest
     @MinAndroidSdkLevel(value = 28)
     @EnableFeatures({AutofillFeatures.AUTOFILL_VIRTUAL_VIEW_STRUCTURE_ANDROID})
+    @DisabledTest(message = "https://crbug.com/414988519")
     public void testLogs3PModeDisabledMetrics() {
         WebPageStation page = mActivityTestRule.startOnBlankPage();
 
