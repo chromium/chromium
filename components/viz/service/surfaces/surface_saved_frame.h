@@ -42,16 +42,7 @@ class VIZ_SERVICE_EXPORT SurfaceSavedFrame {
     OutputCopyResult& operator=(OutputCopyResult&& other);
 
     gpu::SyncToken sync_token;
-    gfx::ColorSpace color_space;
-
-    // Texture representation.
-    gpu::Mailbox mailbox;
-
-    // Software image representation.
     scoped_refptr<gpu::ClientSharedImage> shared_image;
-
-    // Is this a software or a GPU copy result?
-    bool is_software = false;
 
     // Release callback used to return a GPU texture.
     ReleaseCallback release_callback;

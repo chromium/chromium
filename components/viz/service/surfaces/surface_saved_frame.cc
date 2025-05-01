@@ -157,7 +157,6 @@ void SurfaceSavedFrame::RequestCopyOfOutput(
     for (auto& [index, shared_image] : blit_shared_images_) {
       OutputCopyResult* slot = &frame_result_->shared_results[index].emplace();
 
-      slot->is_software = is_software;
       slot->sync_token = shared_image->creation_sync_token();
       slot->shared_image = shared_image;
       slot->release_callback = base::BindOnce(
@@ -296,7 +295,6 @@ void SurfaceSavedFrame::CompleteSavedFrameForTesting() {
     result->sync_token = shared_image_interface_->GenVerifiedSyncToken();
     result->release_callback =
         base::DoNothingWithBoundArgs(result->shared_image);
-    result->is_software = true;
   }
 
   copy_request_count_ = 0;
@@ -331,21 +329,12 @@ SurfaceSavedFrame::OutputCopyResult::~OutputCopyResult() {
 
 SurfaceSavedFrame::OutputCopyResult&
 SurfaceSavedFrame::OutputCopyResult::operator=(OutputCopyResult&& other) {
-  mailbox = std::move(other.mailbox);
-  other.mailbox = gpu::Mailbox();
-
   sync_token = std::move(other.sync_token);
   other.sync_token = gpu::SyncToken();
-
-  color_space = std::move(other.color_space);
-  other.color_space = gfx::ColorSpace();
 
   shared_image = std::move(other.shared_image);
 
   release_callback = std::move(other.release_callback);
-
-  is_software = other.is_software;
-  other.is_software = false;
 
   return *this;
 }
