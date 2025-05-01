@@ -5059,12 +5059,16 @@ bool AXObject::ComputeIsHiddenViaStyle(const ComputedStyle* style) {
             style->Visibility() != EVisibility::kVisible);
   }
 
+  // ---- Rules for AXObjectswith no style ------
+
   Node* node = GetNode();
   if (!node)
     return false;
 
-  // content-visibility:hidden or content-visibility: auto.
-  if (DisplayLockUtilities::IsDisplayLockedPreventingPaint(node)) {
+  // For screen readers, check for situations involving content-visibility.
+  // For non-screen readers, display locked content is already pruned.
+  if (AXObjectCache().GetAXMode().has_mode(ui::AXMode::kScreenReader) &&
+      DisplayLockUtilities::IsDisplayLockedPreventingPaint(node)) {
     // Ensure contents of head, style and script are not exposed when
     // display-locked --the only time they are ever exposed is if author
     // explicitly makes them visible.
@@ -5072,12 +5076,6 @@ bool AXObject::ComputeIsHiddenViaStyle(const ComputedStyle* style) {
     DCHECK(!Traversal<HTMLHeadElement>::FirstAncestorOrSelf(*node)) << node;
     DCHECK(!Traversal<HTMLStyleElement>::FirstAncestorOrSelf(*node)) << node;
     DCHECK(!Traversal<HTMLScriptElement>::FirstAncestorOrSelf(*node)) << node;
-
-    // Non-screen readers:
-    // Treat all display locked content as hidden and remove from the tree.
-    if (!AXObjectCache().GetAXMode().has_mode(ui::AXMode::kScreenReader)) {
-      return true;
-    }
 
     // Screen readers:
     // content-visibility: hidden subtrees are always hidden.
