@@ -147,6 +147,9 @@ class CORE_EXPORT TextControlElement : public HTMLFormControlElementWithState {
   virtual void SetInnerEditorValue(const String&);
   String InnerEditorValue() const;
   Node* CreatePlaceholderBreakElement() const;
+  // Returns true if the specified node was created by
+  // CreatePlaceholderBreakElement().
+  static bool IsPlaceholderBreakElement(const Node* node);
 
   String DirectionForFormData() const;
   // https://html.spec.whatwg.org/#auto-directionality-form-associated-elements

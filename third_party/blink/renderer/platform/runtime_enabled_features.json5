@@ -4628,6 +4628,11 @@
       status: "stable",
     },
     {
+      // crbug.com/341564372
+      name: "TextareaLineEndingsAsBr",
+      status: "experimental",
+    },
+    {
       // killswitch for fix in M137
       name: "TextareaStableResizing",
       status: "stable",

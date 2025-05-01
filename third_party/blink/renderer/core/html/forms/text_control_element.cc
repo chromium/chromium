@@ -865,7 +865,21 @@ bool TextControlElement::LastChangeWasUserEdit() const {
 }
 
 Node* TextControlElement::CreatePlaceholderBreakElement() const {
-  return MakeGarbageCollected<HTMLBRElement>(GetDocument());
+  auto* element = MakeGarbageCollected<HTMLBRElement>(GetDocument());
+  if (RuntimeEnabledFeatures::TextareaLineEndingsAsBrEnabled()) {
+    element->setAttribute(html_names::kIdAttr,
+                          shadow_element_names::kIdPlaceholderBreak);
+  }
+  return element;
+}
+
+bool TextControlElement::IsPlaceholderBreakElement(const Node* node) {
+  if (!RuntimeEnabledFeatures::TextareaLineEndingsAsBrEnabled()) {
+    return IsA<HTMLBRElement>(node);
+  }
+  return IsA<HTMLBRElement>(node) &&
+         To<Element>(node)->GetIdAttribute() ==
+             shadow_element_names::kIdPlaceholderBreak;
 }
 
 void TextControlElement::AddPlaceholderBreakElementIfNecessary() {
@@ -874,7 +888,14 @@ void TextControlElement::AddPlaceholderBreakElementIfNecessary() {
       inner_editor->GetLayoutObject()->Style()->ShouldCollapseBreaks()) {
     return;
   }
-  auto* last_child_text_node = DynamicTo<Text>(inner_editor->lastChild());
+  const Node* last_child = inner_editor->lastChild();
+  if (RuntimeEnabledFeatures::TextareaLineEndingsAsBrEnabled() &&
+      IsA<HTMLBRElement>(last_child) &&
+      !IsPlaceholderBreakElement(last_child)) {
+    inner_editor->AppendChild(CreatePlaceholderBreakElement());
+    return;
+  }
+  auto* last_child_text_node = DynamicTo<Text>(last_child);
   if (!last_child_text_node)
     return;
   if (last_child_text_node->data().EndsWith('\n') ||
@@ -894,17 +915,42 @@ void TextControlElement::SetInnerEditorValue(const String& value) {
 
   // If the last child is a trailing <br> that's appended below, remove it
   // first so as to enable setInnerText() fast path of updating a text node.
-  if (IsA<HTMLBRElement>(inner_editor->lastChild()))
+  if (IsPlaceholderBreakElement(inner_editor->lastChild())) {
     inner_editor->RemoveChild(inner_editor->lastChild(), ASSERT_NO_EXCEPTION);
+  }
 
   // We don't use setTextContent.  It triggers unnecessary paint.
-  if (value.empty())
+  if (value.empty()) {
     inner_editor->RemoveChildren();
-  else
+  } else if (!RuntimeEnabledFeatures::TextareaLineEndingsAsBrEnabled() ||
+             IsA<HTMLInputElement>(this)) {
     ReplaceChildrenWithText(inner_editor, value, ASSERT_NO_EXCEPTION);
+  } else {
+    inner_editor->RemoveChildren();
+    // For <textarea>, \n is replaced with <br>.
+    wtf_size_t start = 0;
+    wtf_size_t i = 0;
+    while (start < value.length()) {
+      i = value.find('\n', start);
+      if (i == WTF::kNotFound) {
+        inner_editor->AppendChild(
+            Text::Create(GetDocument(), value.Substring(start)));
+        break;
+      }
+      if (start != i) {
+        // Append [start, i).
+        inner_editor->AppendChild(
+            Text::Create(GetDocument(), value.Substring(start, i - start)));
+      }
+      // Append a BR.
+      inner_editor->AppendChild(
+          MakeGarbageCollected<HTMLBRElement>(GetDocument()));
+      start = i + 1;
+    }
+  }
 
-  // Add <br> so that we can put the caret at the next line of the last
-  // newline.
+  // Add a placeholder <br> so that we can put the caret at the next line of
+  // the last newline.
   AddPlaceholderBreakElementIfNecessary();
 
   if (text_is_changed && GetLayoutObject()) {
@@ -925,19 +971,28 @@ String TextControlElement::InnerEditorValue() const {
   Node& first_child = *inner_editor->firstChild();
   if (auto* first_child_text_node = DynamicTo<Text>(first_child)) {
     Node* second_child = first_child.nextSibling();
-    if (!second_child ||
-        (!second_child->nextSibling() && IsA<HTMLBRElement>(*second_child)))
+    if (!second_child || (!second_child->nextSibling() &&
+                          IsPlaceholderBreakElement(second_child))) {
       return first_child_text_node->data();
-  } else if (!first_child.nextSibling() && IsA<HTMLBRElement>(first_child)) {
+    }
+  } else if (!first_child.nextSibling() &&
+             IsPlaceholderBreakElement(&first_child)) {
     return g_empty_string;
   }
 
   StringBuilder result;
   for (Node& node : NodeTraversal::InclusiveDescendantsOf(*inner_editor)) {
     if (IsA<HTMLBRElement>(node)) {
-      DCHECK_EQ(&node, inner_editor->lastChild());
-      if (&node != inner_editor->lastChild())
-        result.Append(kNewlineCharacter);
+      if (RuntimeEnabledFeatures::TextareaLineEndingsAsBrEnabled()) {
+        if (!IsPlaceholderBreakElement(&node)) {
+          result.Append(kNewlineCharacter);
+        }
+      } else {
+        DCHECK_EQ(&node, inner_editor->lastChild());
+        if (&node != inner_editor->lastChild()) {
+          result.Append(kNewlineCharacter);
+        }
+      }
     } else if (auto* text_node = DynamicTo<Text>(node)) {
       result.Append(text_node->data());
     }
@@ -968,7 +1023,12 @@ String TextControlElement::ValueWithHardLineBreaks() const {
     StringBuilder result;
     for (Node& node : NodeTraversal::DescendantsOf(*inner_text)) {
       if (IsA<HTMLBRElement>(node)) {
-        DCHECK_EQ(&node, inner_text->lastChild());
+        if (RuntimeEnabledFeatures::TextareaLineEndingsAsBrEnabled() &&
+            !IsPlaceholderBreakElement(&node)) {
+          result.Append(kNewlineCharacter);
+        } else {
+          DCHECK_EQ(&node, inner_text->lastChild());
+        }
       } else if (auto* text_node = DynamicTo<Text>(node)) {
         String data = text_node->data();
         unsigned length = data.length();

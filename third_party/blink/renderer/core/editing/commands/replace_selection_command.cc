@@ -1301,6 +1301,10 @@ void ReplaceSelectionCommand::DoApply(EditingState* editing_state) {
   // visible position as [br, 0]).
   auto* end_br = DynamicTo<HTMLBRElement>(
       *MostForwardCaretPosition(insertion_pos).AnchorNode());
+  if (end_br && EnclosingTextControl(end_br) &&
+      !TextControlElement::IsPlaceholderBreakElement(end_br)) {
+    end_br = nullptr;
+  }
   VisiblePosition original_vis_pos_before_end_br;
   if (end_br) {
     original_vis_pos_before_end_br =

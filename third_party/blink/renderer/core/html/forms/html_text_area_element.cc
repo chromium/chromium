@@ -373,7 +373,13 @@ void HTMLTextAreaElement::SubtreeHasChanged() {
     if (node.IsTextNode())
       continue;
     DCHECK(IsA<HTMLBRElement>(node));
-    DCHECK_EQ(&node, inner_editor->lastChild());
+    if (RuntimeEnabledFeatures::TextareaLineEndingsAsBrEnabled()) {
+      if (IsPlaceholderBreakElement(&node)) {
+        DCHECK_EQ(&node, inner_editor->lastChild());
+      }
+    } else {
+      DCHECK_EQ(&node, inner_editor->lastChild());
+    }
   }
 #endif
   AddPlaceholderBreakElementIfNecessary();

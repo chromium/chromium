@@ -1337,9 +1337,14 @@ void DeleteSelectionCommand::DoApply(EditingState* editing_state) {
                         !line_break_at_end_of_selection_to_delete;
   }
 
-  auto* placeholder = need_placeholder_
-                          ? MakeGarbageCollected<HTMLBRElement>(GetDocument())
-                          : nullptr;
+  Node* placeholder = nullptr;
+  if (need_placeholder_) {
+    if (auto* text_control = EnclosingTextControl(ending_position_)) {
+      placeholder = text_control->CreatePlaceholderBreakElement();
+    } else {
+      placeholder = MakeGarbageCollected<HTMLBRElement>(GetDocument());
+    }
+  }
 
   if (placeholder) {
     if (options_.IsSanitizeMarkup()) {

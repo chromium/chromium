@@ -8,6 +8,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/editing/position_with_affinity.h"
 #include "third_party/blink/renderer/core/editing/text_affinity.h"
+#include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/inline/fragment_item.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_node_data.h"
 #include "third_party/blink/renderer/core/layout/layout_image.h"
@@ -434,7 +435,11 @@ TEST_F(InlineCursorTest, MoveToEndOfLineWithNoCharsLtr) {
   EXPECT_EQ(4u, next_line.Current().TextStartOffset());
   const PositionWithAffinity end_position =
       move_to_end_of_line.PositionForEndOfLine();
-  EXPECT_EQ(4, end_position.GetPosition().OffsetInContainerNode());
+  if (RuntimeEnabledFeatures::TextareaLineEndingsAsBrEnabled()) {
+    EXPECT_TRUE(end_position.AnchorNode()->HasTagName(html_names::kBrTag));
+  } else {
+    EXPECT_EQ(4, end_position.GetPosition().OffsetInContainerNode());
+  }
 }
 
 TEST_F(InlineCursorTest, MoveToEndOfLineWithNoCharsRtl) {
@@ -455,7 +460,11 @@ TEST_F(InlineCursorTest, MoveToEndOfLineWithNoCharsRtl) {
   EXPECT_EQ(4u, next_line.Current().TextStartOffset());
   const PositionWithAffinity end_position =
       move_to_end_of_line.PositionForEndOfLine();
-  EXPECT_EQ(4, end_position.GetPosition().OffsetInContainerNode());
+  if (RuntimeEnabledFeatures::TextareaLineEndingsAsBrEnabled()) {
+    EXPECT_TRUE(end_position.AnchorNode()->HasTagName(html_names::kBrTag));
+  } else {
+    EXPECT_EQ(4, end_position.GetPosition().OffsetInContainerNode());
+  }
 }
 
 TEST_F(InlineCursorTest, FirstLastLogicalLeafWithInlineBlock) {
