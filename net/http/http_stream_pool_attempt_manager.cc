@@ -1438,7 +1438,7 @@ HttpStreamPool::AttemptManager::DetermineFailureKind() {
     return FailureKind::kCertifcateError;
   }
 
-  if (final_error_to_notify_jobs_ == ERR_SSL_CLIENT_AUTH_CERT_NEEDED) {
+  if (final_error_to_notify_jobs() == ERR_SSL_CLIENT_AUTH_CERT_NEEDED) {
     return FailureKind::kNeedsClientAuth;
   }
 
@@ -1447,47 +1447,45 @@ HttpStreamPool::AttemptManager::DetermineFailureKind() {
 
 void HttpStreamPool::AttemptManager::NotifyJobOfFailure() {
   CHECK(is_failing_);
-  Job* job = ExtractFirstJobToNotify();
-  if (!job) {
-    // TODO(crbug.com/346835898): Ensure that MaybeComplete() is called
-    // eventually.
-    return;
+
+  const FailureKind kind = DetermineFailureKind();
+  base::WeakPtr<AttemptManager> weak_this = weak_ptr_factory_.GetWeakPtr();
+  while (Job* job = ExtractFirstJobToNotify()) {
+    // Ensure `this` isn't deleted while notifying the failure.
+    // TODO(crbug.com/414173943): Remove this check when we are certain that
+    // `this` won't be deleted.
+    CHECK(weak_this);
+
+    job->AddConnectionAttempts(connection_attempts_);
+
+    switch (kind) {
+      case FailureKind::kStreamFailed: {
+        TRACE_EVENT_INSTANT("net.stream", "AttemptManager::StreamFailed",
+                            track_,
+                            NetLogWithSourceToFlow(job->request_net_log()));
+        job->OnStreamFailed(final_error_to_notify_jobs(), net_error_details_,
+                            resolve_error_info_);
+        break;
+      }
+      case FailureKind::kCertifcateError: {
+        CHECK(cert_error_ssl_info_.has_value());
+        TRACE_EVENT_INSTANT("net.stream", "AttemptManager::CertificateError",
+                            track_,
+                            NetLogWithSourceToFlow(job->request_net_log()));
+        job->OnCertificateError(final_error_to_notify_jobs(),
+                                *cert_error_ssl_info_);
+        break;
+      }
+      case FailureKind::kNeedsClientAuth: {
+        CHECK(client_auth_cert_info_.get());
+        TRACE_EVENT_INSTANT("net.stream", "AttemptManager::NeedsClientAuth",
+                            track_,
+                            NetLogWithSourceToFlow(job->request_net_log()));
+        job->OnNeedsClientAuth(client_auth_cert_info_.get());
+        break;
+      }
+    }
   }
-
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&AttemptManager::NotifyJobOfFailure,
-                                weak_ptr_factory_.GetWeakPtr()));
-
-  job->AddConnectionAttempts(connection_attempts_);
-
-  FailureKind kind = DetermineFailureKind();
-  switch (kind) {
-    case FailureKind::kStreamFailed: {
-      TRACE_EVENT_INSTANT("net.stream", "AttemptManager::StreamFailed", track_,
-                          NetLogWithSourceToFlow(job->request_net_log()));
-      job->OnStreamFailed(final_error_to_notify_jobs(), net_error_details_,
-                          resolve_error_info_);
-      break;
-    }
-    case FailureKind::kCertifcateError: {
-      CHECK(cert_error_ssl_info_.has_value());
-      TRACE_EVENT_INSTANT("net.stream", "AttemptManager::CertificateError",
-                          track_,
-                          NetLogWithSourceToFlow(job->request_net_log()));
-      job->OnCertificateError(final_error_to_notify_jobs(),
-                              *cert_error_ssl_info_);
-      break;
-    }
-    case FailureKind::kNeedsClientAuth: {
-      CHECK(client_auth_cert_info_.get());
-      TRACE_EVENT_INSTANT("net.stream", "AttemptManager::NeedsClientAuth",
-                          track_,
-                          NetLogWithSourceToFlow(job->request_net_log()));
-      job->OnNeedsClientAuth(client_auth_cert_info_.get());
-      break;
-    }
-  }
-  // `this` may be deleted.
 }
 
 void HttpStreamPool::AttemptManager::NotifyPreconnectsComplete(int rv) {
