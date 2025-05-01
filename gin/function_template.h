@@ -175,14 +175,12 @@ struct ArgumentHolder {
 // a default constructor. To create an element of such a type, the isolate
 // has to be provided.
 template <size_t index, typename ArgType>
-struct ArgumentHolder<
-    index,
-    ArgType,
-    std::enable_if_t<!std::is_default_constructible_v<
-                         typename CallbackParamTraits<ArgType>::LocalType> &&
-                     std::is_constructible_v<
-                         typename CallbackParamTraits<ArgType>::LocalType,
-                         v8::Isolate*>>> {
+  requires(
+      !std::is_default_constructible_v<
+          typename CallbackParamTraits<ArgType>::LocalType> &&
+      std::is_constructible_v<typename CallbackParamTraits<ArgType>::LocalType,
+                              v8::Isolate*>)
+struct ArgumentHolder<index, ArgType> {
   using ArgLocalType = typename CallbackParamTraits<ArgType>::LocalType;
 
   ArgLocalType value;
