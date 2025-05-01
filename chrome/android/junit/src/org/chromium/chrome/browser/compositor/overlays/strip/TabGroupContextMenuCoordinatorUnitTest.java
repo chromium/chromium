@@ -416,15 +416,19 @@ public class TabGroupContextMenuCoordinatorUnitTest {
         assertEquals(
                 R.id.open_new_tab_in_group,
                 modelList.get(1).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+        assertEquals(0, modelList.get(1).model.get(ListMenuItemProperties.START_ICON_ID));
         assertEquals(
                 R.id.manage_sharing,
                 modelList.get(2).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+        assertEquals(0, modelList.get(2).model.get(ListMenuItemProperties.START_ICON_ID));
         assertEquals(
                 R.id.recent_activity,
                 modelList.get(3).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+        assertEquals(0, modelList.get(3).model.get(ListMenuItemProperties.START_ICON_ID));
         assertEquals(
                 R.id.close_tab_group,
                 modelList.get(4).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+        assertEquals(0, modelList.get(4).model.get(ListMenuItemProperties.START_ICON_ID));
         assertEquals(ListMenuItemType.DIVIDER, modelList.get(5).type);
 
         // Verify delete group or leave group depending on the member role.
@@ -437,5 +441,6 @@ public class TabGroupContextMenuCoordinatorUnitTest {
                     R.id.leave_group,
                     modelList.get(6).model.get(ListMenuItemProperties.MENU_ITEM_ID));
         }
+        assertEquals(0, modelList.get(6).model.get(ListMenuItemProperties.START_ICON_ID));
     }
 }
