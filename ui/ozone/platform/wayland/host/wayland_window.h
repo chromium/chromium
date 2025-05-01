@@ -487,6 +487,7 @@ class WaylandWindow : public PlatformWindow,
   // wayland server.
   struct PendingConfigureState {
     std::optional<PlatformWindowState> window_state;
+    std::optional<WindowTiledEdges> tiled_edges;
     std::optional<gfx::Rect> bounds_dip;
     std::optional<gfx::Size> size_px;
   };

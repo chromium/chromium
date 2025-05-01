@@ -1268,6 +1268,9 @@ void WaylandWindow::ProcessPendingConfigureState(uint32_t serial) {
   if (pending_configure_state_.size_px.has_value()) {
     state.size_px = pending_configure_state_.size_px.value();
   }
+  if (pending_configure_state_.tiled_edges.has_value()) {
+    state.tiled_edges = pending_configure_state_.tiled_edges.value();
+  }
 
   if (state.bounds_dip.IsEmpty() &&
       GetPlatformWindowState() == PlatformWindowState::kMinimized &&
@@ -1500,9 +1503,11 @@ void WaylandWindow::LatchStateRequest(const StateRequest& req) {
   const bool ack_configure = req.serial != -1;
 
   // Update the geometry if:
-  // - either bounds or insets has changed since the latest latched request; or
+  // - either bounds, tiling or insets has changed since the latest latched
+  //   request; or
   // - acking state corresponding to the very first configure sequence.
   if (req.state.bounds_dip.size() != old_state.bounds_dip.size() ||
+      req.state.tiled_edges != old_state.tiled_edges ||
       delegate()->CalculateInsetsInDIP(req.state.window_state) !=
           delegate()->CalculateInsetsInDIP(old_state.window_state) ||
       (ack_configure &&
