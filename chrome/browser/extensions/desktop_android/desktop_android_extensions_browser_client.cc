@@ -106,7 +106,7 @@ bool DesktopAndroidExtensionsBrowserClient::IsShuttingDown() {
 bool DesktopAndroidExtensionsBrowserClient::AreExtensionsDisabled(
     const base::CommandLine& command_line,
     BrowserContext* context) {
-  return false;
+  return util::AreExtensionsDisabled(command_line, context);
 }
 
 bool DesktopAndroidExtensionsBrowserClient::IsValidContext(void* context) {

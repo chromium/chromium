@@ -44,6 +44,7 @@
 #include "extensions/common/icons/extension_icon_set.h"
 #include "extensions/common/manifest_handlers/incognito_info.h"
 #include "extensions/common/permissions/permissions_data.h"
+#include "extensions/common/switches.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/gfx/text_elider.h"
 #include "url/gurl.h"
@@ -77,6 +78,11 @@ class UpdaterKeepAlive : public ScopedExtensionUpdaterKeepAlive {
  private:
   ScopedProfileKeepAlive profile_keep_alive_;
 };
+
+bool ExtensionsDisabledViaCommandLine(const base::CommandLine& command_line) {
+  return command_line.HasSwitch(switches::kDisableExtensions) ||
+         command_line.HasSwitch(switches::kDisableExtensionsExcept);
+}
 
 // Returns |extension_id|. See note below.
 std::string ReloadExtension(const std::string& extension_id,
@@ -392,6 +398,13 @@ std::unique_ptr<ScopedExtensionUpdaterKeepAlive> CreateUpdaterKeepAlive(
   return std::make_unique<UpdaterKeepAlive>(
       Profile::FromBrowserContext(context),
       ProfileKeepAliveOrigin::kExtensionUpdater);
+}
+
+bool AreExtensionsDisabled(const base::CommandLine& command_line,
+                           content::BrowserContext* context) {
+  Profile* profile = Profile::FromBrowserContext(context);
+  return ExtensionsDisabledViaCommandLine(command_line) ||
+         profile->GetPrefs()->GetBoolean(prefs::kDisableExtensions);
 }
 
 } // namespace extensions::util

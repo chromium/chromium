@@ -367,13 +367,14 @@ void ExtensionServiceTestWithInstall::UninstallExtension(
 
   switch (delete_type) {
     case kDeleteAllVersions:
-      EXPECT_FALSE(base::PathExists(extension_path.DirName()));
+      EXPECT_FALSE(base::PathExists(extension_path.DirName()))
+          << extension_path.value();
       break;
     case kDeletePath:
-      EXPECT_FALSE(base::PathExists(extension_path));
+      EXPECT_FALSE(base::PathExists(extension_path)) << extension_path.value();
       break;
     case kDoNotDelete:
-      EXPECT_TRUE(base::PathExists(extension_path));
+      EXPECT_TRUE(base::PathExists(extension_path)) << extension_path.value();
       break;
   }
 }

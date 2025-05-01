@@ -9211,7 +9211,7 @@ static_library("test_support") {
     ]
   }
 
-  if (safe_browsing_mode == 1) {
+  if (safe_browsing_mode == 1 || safe_browsing_mode == 2) {
     sources += [
       "extensions/fake_safe_browsing_database_manager.cc",
       "extensions/fake_safe_browsing_database_manager.h",

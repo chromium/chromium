@@ -45,11 +45,9 @@
 #include "base/version.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/background/background_contents_service.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/extensions/blocklist.h"
-#include "chrome/browser/extensions/chrome_app_sorting.h"
 #include "chrome/browser/extensions/chrome_extension_cookies.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/chrome_zipfile_installer.h"
@@ -85,12 +83,6 @@
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
-#include "chrome/browser/themes/theme_service.h"
-#include "chrome/browser/ui/global_error/global_error.h"
-#include "chrome/browser/ui/global_error/global_error_service.h"
-#include "chrome/browser/ui/global_error/global_error_service_factory.h"
-#include "chrome/browser/ui/global_error/global_error_waiter.h"
-#include "chrome/browser/web_applications/preinstalled_app_install_features.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
@@ -120,6 +112,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_constants.h"
 #include "content/public/test/browser_task_environment.h"
+#include "extensions/browser/app_sorting.h"
 #include "extensions/browser/blocklist_extension_prefs.h"
 #include "extensions/browser/blocklist_state.h"
 #include "extensions/browser/disable_reason.h"
@@ -184,6 +177,16 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/background/background_contents_service.h"
+#include "chrome/browser/themes/theme_service.h"
+#include "chrome/browser/ui/global_error/global_error.h"
+#include "chrome/browser/ui/global_error/global_error_service.h"
+#include "chrome/browser/ui/global_error/global_error_service_factory.h"
+#include "chrome/browser/ui/global_error/global_error_waiter.h"
+#include "chrome/browser/web_applications/preinstalled_app_install_features.h"
+#endif
+
 #if BUILDFLAG(ENABLE_PLUGINS)
 #include "content/public/browser/plugin_service.h"
 #endif
@@ -213,22 +216,28 @@ const char good2[] = "bjafgdebaacbbbecmhlhpofkepfkgcpa";
 const char all_zero[] = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
 const char good2048[] = "dfhpodpjggiioolfhoimofdbfjibmedp";
 const char good_crx[] = "ldnnhddmnhbkjipkidpdiheffobcpfmf";
-const char minimal_platform_app_crx[] = "jjeoclcdfjddkdjokiejckgcildcflpp";
-const char hosted_app[] = "kbmnembihfiondgfjekmnmcbddelicoi";
 const char page_action[] = "dpfmafkdlbmopmcepgpjkpldjbghdibm";
 const char theme_crx[] = "idlfhncioikpdnlhnmcjogambnefbbfp";
 const char theme2_crx[] = "ibcijncamhmjjdodjamgiipcgnnaeagd";
 const char permissions_crx[] = "eagpmdpfmaekmmcejjbmjoecnejeiiin";
+const char permissions_blocklist[] = "noffkehfcaggllbcojjbopcmlhcnhcdn";
+const char video_player_app[] = "jcgeabjmjgoblfofpppfkcoakmfobdko";
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+const char minimal_platform_app_crx[] = "jjeoclcdfjddkdjokiejckgcildcflpp";
+const char hosted_app[] = "kbmnembihfiondgfjekmnmcbddelicoi";
 const char updates_from_webstore[] = "akjooamlhcgeopfifcmlggaebeocgokj";
 const char updates_from_webstore2[] = "oolblhbomdbcpmafphaodhjfcgbihcdg";
 const char updates_from_webstore3[] = "bmfoocgfinpmkmlbjhcbofejhkhlbchk";
-const char permissions_blocklist[] = "noffkehfcaggllbcojjbopcmlhcnhcdn";
-const char video_player_app[] = "jcgeabjmjgoblfofpppfkcoakmfobdko";
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+#if defined(ENABLE_BLOCKLIST_TESTS)
 const char kPrefBlocklistState[] = "blacklist_state";
 
 // A helper value to cast the malware blocklist state to an integer.
 static constexpr int kBlocklistedMalwareInteger =
     static_cast<int>(BitMapBlocklistState::BLOCKLISTED_MALWARE);
+#endif  // defined(ENABLE_BLOCKLIST_TESTS)
 
 struct BubbleErrorsTestData {
   BubbleErrorsTestData(const std::string& id,
@@ -257,6 +266,9 @@ base::FilePath GetTemporaryFile() {
   return temp_file;
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+// TODO(crbug.com/405391110): Enable when the install error UI exists on desktop
+// Android.
 bool HasExternalInstallErrors(Profile* profile) {
   return !ExternalInstallManager::Get(profile)->GetErrorsForTesting().empty();
 }
@@ -275,6 +287,7 @@ size_t GetExternalInstallBubbleCount(Profile* profile) {
     bubble_count += error->alert_type() == ExternalInstallError::BUBBLE_ALERT;
   return bubble_count;
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 scoped_refptr<const Extension> CreateExtension(const std::string& name,
                                                const base::FilePath& path,
@@ -2524,6 +2537,8 @@ TEST_F(ExtensionServiceTest, MAYBE_InstallTheme) {
   ValidatePrefKeyCount(pref_count);
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+// TODO(crbug.com/408507365): Figure out theme support on Android.
 TEST_F(ExtensionServiceTest, LoadLocalizedTheme) {
   // Load.
   InitializeEmptyExtensionService();
@@ -2544,6 +2559,7 @@ TEST_F(ExtensionServiceTest, LoadLocalizedTheme) {
   EXPECT_EQ("name", theme->name());
   EXPECT_EQ("description", theme->description());
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 #if BUILDFLAG(IS_POSIX)
 TEST_F(ExtensionServiceTest, UnpackedExtensionMayContainSymlinkedFiles) {
@@ -2976,7 +2992,9 @@ TEST_F(ExtensionServiceTest, UpdateApps) {
       registry()->enabled_extensions().GetByID(id)->version().GetString());
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Verifies that the NTP page and launch ordinals are kept when updating apps.
+// Skipped on desktop Android as there's no app sorting.
 TEST_F(ExtensionServiceTest, UpdateAppsRetainOrdinals) {
   InitializeEmptyExtensionService();
   AppSorting* sorting = ExtensionSystem::Get(profile())->app_sorting();
@@ -3010,6 +3028,7 @@ TEST_F(ExtensionServiceTest, UpdateAppsRetainOrdinals) {
 }
 
 // Ensures that the CWS has properly initialized ordinals.
+// Skipped on desktop Android as there's no app sorting.
 TEST_F(ExtensionServiceTest, EnsureCWSOrdinalsInitialized) {
   InitializeEmptyExtensionService();
   ComponentLoader::Get(profile())->Add(
@@ -3020,6 +3039,7 @@ TEST_F(ExtensionServiceTest, EnsureCWSOrdinalsInitialized) {
   EXPECT_TRUE(sorting->GetPageOrdinal(kWebStoreAppId).IsValid());
   EXPECT_TRUE(sorting->GetAppLaunchOrdinal(kWebStoreAppId).IsValid());
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 TEST_F(ExtensionServiceTest, InstallAppsWithUnlimitedStorage) {
   InitializeEmptyExtensionService();
@@ -4876,8 +4896,11 @@ TEST_F(ExtensionServiceTest, ExternalExtensionIsNotDisabledOnUpdate) {
   EXPECT_TRUE(prefs()->GetDisableReasons(good_crx).empty());
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Test that if an external extension warning is ignored three times, the
 // extension no longer prompts
+// TODO(crbug.com/405391110): Enable when the install error UI exists on desktop
+// Android.
 TEST_F(ExtensionServiceTest, ExternalExtensionRemainsDisabledIfIgnored) {
   FeatureSwitch::ScopedOverride prompt_override(
       FeatureSwitch::prompt_for_external_extensions(), true);
@@ -4938,6 +4961,7 @@ TEST_F(ExtensionServiceTest, ExternalExtensionRemainsDisabledIfIgnored) {
     base::RunLoop().RunUntilIdle();
   }
 }
+#endif
 
 // Test that if an external extension becomes force-installed, it's enabled
 // (even if the user hasn't acknowledged the prompt).
@@ -4976,7 +5000,7 @@ TEST_F(ExtensionServiceTest, ExternalExtensionBecomesEnabledIfForceInstalled) {
   EXPECT_TRUE(prefs()->GetDisableReasons(good_crx).empty());
 }
 
-#if !BUILDFLAG(IS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(ENABLE_EXTENSIONS)
 // This tests if pre-installed apps are installed correctly.
 TEST_F(ExtensionServiceTest, PreinstalledAppsInstall) {
   InitializeEmptyExtensionService();
@@ -5415,6 +5439,10 @@ class ExtensionServiceZipUninstallProfileFeatureTest
   base::FilePath expected_extension_install_directory_;
 };
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+// TODO(crbug.com/414911435): Fix this test on desktop Android. During uninstall
+// the unpacked extension directory is not deleted, probably due to path
+// differences on Android. See bug for details.
 TEST_F(ExtensionServiceZipUninstallProfileFeatureTest,
        UninstallExtensionFromZip) {
   MockExtensionRegistryObserver observer;
@@ -5451,6 +5479,7 @@ TEST_F(ExtensionServiceZipUninstallProfileFeatureTest,
   EXPECT_EQ(UnloadedExtensionReason::UNINSTALL, unloaded_reason());
   registry()->RemoveObserver(&observer);
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 TEST_F(ExtensionServiceWithEmptyServiceTest, UninstallTerminatedExtension) {
   InstallCRX(data_dir().AppendASCII("good.crx"), INSTALL_NEW);
@@ -6510,6 +6539,7 @@ TEST_F(ExtensionServiceTest, ExternalPrefProvider) {
     EXPECT_EQ(2, visitor.Visit(json_data));
   }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   // Test web_app_migration_flag.
   {
     json_data = R"(
@@ -6533,6 +6563,7 @@ TEST_F(ExtensionServiceTest, ExternalPrefProvider) {
       visitor.provider()->HasExtension("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
     }
   }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
   // Test keep_if_present.
   json_data =
@@ -7451,8 +7482,11 @@ TEST_F(ExtensionSourcePriorityTest, InstallExternalBlocksSyncRequest) {
   ASSERT_FALSE(AddPendingSyncInstall());
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Test that the blocked pending external extension should be ignored until
 // it's unblocked. (crbug.com/797369)
+// TODO(crbug.com/405391110): Enable when the install error UI exists on desktop
+// Android.
 TEST_F(ExtensionServiceTest, BlockedExternalExtension) {
   FeatureSwitch::ScopedOverride prompt(
       FeatureSwitch::prompt_for_external_extensions(), true);
@@ -7542,6 +7576,7 @@ TEST_F(ExtensionServiceTest, ExternalInstallInitiallyDisabled) {
   EXPECT_FALSE(HasExternalInstallErrors(profile()));
   EXPECT_TRUE(registrar()->IsExtensionEnabled(page_action));
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // As for components, only external component extensions can be disabled.
 TEST_F(ExtensionServiceTest, DisablingComponentExtensions) {
@@ -7573,10 +7608,13 @@ TEST_F(ExtensionServiceTest, DisablingComponentExtensions) {
       registry()->disabled_extensions().Contains(component_extension->id()));
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Test that installing multiple external extensions works.
 // Flaky on windows; http://crbug.com/295757 .
 // Causes race conditions with an in-process utility thread, so disable under
 // TSan: https://crbug.com/518957
+// TODO(crbug.com/405391110): Enable when the install error UI exists on desktop
+// Android.
 #if BUILDFLAG(IS_WIN) || defined(THREAD_SANITIZER)
 #define MAYBE_ExternalInstallMultiple DISABLED_ExternalInstallMultiple
 #else
@@ -7637,6 +7675,8 @@ TEST_F(ExtensionServiceTest, MAYBE_ExternalInstallMultiple) {
   EXPECT_FALSE(HasExternalInstallBubble(profile()));
 }
 
+// TODO(crbug.com/405391110): Enable when the install error UI exists on desktop
+// Android.
 TEST_F(ExtensionServiceTest, MultipleExternalInstallErrors) {
   FeatureSwitch::ScopedOverride prompt(
       FeatureSwitch::prompt_for_external_extensions(), true);
@@ -7729,6 +7769,7 @@ TEST_F(ExtensionServiceTest, InstallPromptAborted) {
   EXPECT_FALSE(HasExternalInstallErrors(profile()));
 }
 
+// GlobalErrorService is only used on Win/Mac/Linux.
 TEST_F(ExtensionServiceTest, MultipleExternalInstallBubbleErrors) {
   FeatureSwitch::ScopedOverride prompt(
       FeatureSwitch::prompt_for_external_extensions(), true);
@@ -7829,6 +7870,8 @@ TEST_F(ExtensionServiceTest, MultipleExternalInstallBubbleErrors) {
 
 // Verifies that an error alert of type BUBBLE_ALERT does not replace an
 // existing visible alert that was previously opened by clicking menu item.
+// TODO(crbug.com/405391110): Enable when the install error UI exists on desktop
+// Android.
 TEST_F(ExtensionServiceTest, BubbleAlertDoesNotHideAnotherAlertFromMenu) {
   FeatureSwitch::ScopedOverride prompt(
       FeatureSwitch::prompt_for_external_extensions(), true);
@@ -7908,6 +7951,8 @@ TEST_F(ExtensionServiceTest, BubbleAlertDoesNotHideAnotherAlertFromMenu) {
 
 // Test that there is a bubble for external extensions that update
 // from the webstore if the profile is not new.
+// TODO(crbug.com/405391110): Enable when the install error UI exists on desktop
+// Android.
 TEST_F(ExtensionServiceTest, ExternalInstallUpdatesFromWebstoreOldProfile) {
   FeatureSwitch::ScopedOverride prompt(
       FeatureSwitch::prompt_for_external_extensions(), true);
@@ -7936,6 +7981,8 @@ TEST_F(ExtensionServiceTest, ExternalInstallUpdatesFromWebstoreOldProfile) {
 }
 
 // Test that there is no bubble for external extensions if the profile is new.
+// TODO(crbug.com/405391110): Enable when the install error UI exists on desktop
+// Android.
 TEST_F(ExtensionServiceTest, ExternalInstallUpdatesFromWebstoreNewProfile) {
   FeatureSwitch::ScopedOverride prompt(
       FeatureSwitch::prompt_for_external_extensions(), true);
@@ -7961,6 +8008,8 @@ TEST_F(ExtensionServiceTest, ExternalInstallUpdatesFromWebstoreNewProfile) {
 
 // Test that clicking to remove the extension on an external install warning
 // uninstalls the extension.
+// TODO(crbug.com/405391110): Enable when the install error UI exists on desktop
+// Android.
 TEST_F(ExtensionServiceTest, ExternalInstallClickToRemove) {
   FeatureSwitch::ScopedOverride prompt(
       FeatureSwitch::prompt_for_external_extensions(), true);
@@ -7999,6 +8048,8 @@ TEST_F(ExtensionServiceTest, ExternalInstallClickToRemove) {
 
 // Test that clicking to keep the extension on an external install warning
 // re-enables the extension.
+// TODO(crbug.com/405391110): Enable when the install error UI exists on desktop
+// Android.
 TEST_F(ExtensionServiceTest, ExternalInstallClickToKeep) {
   FeatureSwitch::ScopedOverride prompt(
       FeatureSwitch::prompt_for_external_extensions(), true);
@@ -8037,6 +8088,7 @@ TEST_F(ExtensionServiceTest, ExternalInstallClickToKeep) {
   // The error should be removed.
   EXPECT_FALSE(HasExternalInstallErrors(profile()));
 }
+#endif  // BUILDFlAG(ENABLE_EXTENSIONS)
 
 // Test that the external install bubble only takes disabled extensions into
 // account - enabled extensions, even those that weren't acknowledged, should
@@ -8495,7 +8547,10 @@ TEST_F(ExtensionServiceTest, InstallingUnacknowledgedExternalExtension) {
   EXPECT_FALSE(prefs()->IsExtensionDisabled(good_crx));
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Regression test for crbug.com/979010.
+// TODO(crbug.com/414879019): Decide if we need BackgroundContentsService on
+// desktop Android.
 TEST_F(ExtensionServiceTest, ReloadingExtensionFromNotification) {
   // Initialize a new extension.
   InitializeEmptyExtensionService();
@@ -8521,6 +8576,7 @@ TEST_F(ExtensionServiceTest, ReloadingExtensionFromNotification) {
                                 notification_id, std::nullopt, std::nullopt);
   ASSERT_TRUE(registry_observer.WaitForExtensionLoaded());
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 #if BUILDFLAG(ENABLE_PLUGINS)
 // Regression test for crbug.com/460699. Ensure PluginManager doesn't crash even

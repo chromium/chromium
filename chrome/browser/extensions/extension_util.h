@@ -15,6 +15,10 @@
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
+namespace base {
+class CommandLine;
+}
+
 namespace content {
 class BrowserContext;
 }
@@ -109,6 +113,11 @@ scoped_refptr<update_client::UpdateClient> CreateUpdateClient(
 // DesktopAndroidExtensionsBrowserClient is deleted.
 std::unique_ptr<ScopedExtensionUpdaterKeepAlive> CreateUpdaterKeepAlive(
     content::BrowserContext* context);
+
+// Returns true if extensions have been disabled (e.g. via a command-line flag
+// or preference).
+bool AreExtensionsDisabled(const base::CommandLine& command_line,
+                           content::BrowserContext* context);
 
 }  // namespace util
 }  // namespace extensions
