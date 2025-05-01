@@ -471,7 +471,6 @@ if (is_android) {
     "//third_party/kotlinc/current/lib/kotlin-scripting-jvm.jar",
     "//third_party/kotlinc/current/lib/kotlin-stdlib.jar",
     "//third_party/kotlinc/current/lib/kotlinx-coroutines-core-jvm.jar",
-    "//third_party/kotlinc/current/lib/trove4j.jar",
   ]
 
   android_logs = [ "android64_ndk_api_level=${android64_ndk_api_level}" ]
