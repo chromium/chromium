@@ -219,7 +219,7 @@ bool IFace_Method_ForwardToCallback::Accept(
           internal::IFace_Method_ResponseParams_Data*>(
               message->mutable_payload());
   
-  
+
   // Validation for IFace.0
   bool success = true;
   std::string p_result{};
@@ -326,7 +326,7 @@ bool IFaceStubDispatch::AcceptWithResponder(
               internal::IFace_Method_Params_Data*>(
                   message->mutable_payload());
       
-      
+
       // Validation for IFace.0
       bool success = true;
       bool p_param{};

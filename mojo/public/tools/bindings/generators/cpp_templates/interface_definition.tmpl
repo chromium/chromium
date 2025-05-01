@@ -8,7 +8,7 @@
 {%- set qualified_class_name = ("::" ~ namespace_as_string_with_variant if namespace_as_string_with_variant) ~ "::" ~ class_name %}
 
 {%- macro alloc_params(struct, params, message, method_number, is_response) %}
-  {# Allow people to search for deserialization error strings #}
+{#   Allow people to search for deserialization error strings #}
   // Validation for {{class_name}}.{{method_number}}
   bool success = true;
 {%-   for param in struct.packed.packed_fields_in_ordinal_order %}
@@ -185,13 +185,18 @@ class {{class_name}}_{{method.name}}_HandleSyncResponse
  public:
   {{class_name}}_{{method.name}}_HandleSyncResponse(
       bool* result
-{%-       for param in method.response_parameters -%}
+{%-       if method.result_response != None %}
+{%-         set param = method.response_parameters[0] %}
+      , {{interface_macros.result_response_to_expected(method.result_response)}}* out_{{param.name}})
+{%-       else %}
+{%-         for param in method.response_parameters -%}
       , {{param.kind|cpp_wrapper_call_type}}* out_{{param.name}}
-{%-       endfor %})
+{%-         endfor %})
+{%-       endif  %}
       : result_(result)
-{%-       for param in method.response_parameters -%}
+{%-     for param in method.response_parameters -%}
         , out_{{param.name}}_(out_{{param.name}})
-{%-       endfor %} {
+{%-     endfor %} {
     DCHECK(!*result_);
   }
 
@@ -201,11 +206,16 @@ class {{class_name}}_{{method.name}}_HandleSyncResponse
   bool Accept(mojo::Message* message) override;
  private:
   bool* result_;
+{%-     if method.result_response != None %}
+{%-       set param = method.response_parameters[0] %}
+  {{interface_macros.result_response_to_expected(method.result_response)}}* out_{{param.name}}_;
+{%-     else -%}
 {%-       for param in method.response_parameters %}
   {{param.kind|cpp_wrapper_call_type}}* out_{{param.name}}_;
 {%-       endfor -%}
+{%-     endif -%}
 };
-{%-     endif %}
+{%-   endif %}
 
 class {{class_name}}_{{method.name}}_ForwardToCallback
     : public mojo::MessageReceiver {
@@ -509,9 +519,18 @@ bool {{class_name}}_{{method.name}}_HandleSyncResponse::Accept(
 {%-       set desc = class_name~"::"~method.name~" response" %}
   {{alloc_params(method.response_param_struct, "params", "message", method.sequential_ordinal, "true")}}
 
-{%-       for param in method.response_parameters %}
+{%-       if method.result_response != None %}
+{%-         set param = method.response_parameters[0] -%}
+    if (p_result->is_success()) {
+      *out_{{param.name}}_ = base::ok(std::move(p_result->get_success()));
+    } else {
+      *out_{{param.name}}_ = base::unexpected(std::move(p_result->get_failure()));
+    }
+{%-       else %}
+{%-         for param in method.response_parameters %}
   *out_{{param.name}}_ = std::move(p_{{param.name}});
-{%-       endfor %}
+{%-         endfor %}
+{%-       endif %}
   *result_ = true;
   return true;
 }

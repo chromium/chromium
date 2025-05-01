@@ -61,6 +61,9 @@ class ResultInterface
   static const char* MessageToMethodName_(mojo::Message& message);
   static constexpr uint32_t Version_ = 0;
   static constexpr bool PassesAssociatedKinds_ = false;
+  static inline constexpr uint32_t kSyncMethodOrdinals[] = {
+    1
+  };
   static constexpr bool HasUninterruptableMethods_ = false;
 
   using Base_ = ResultInterfaceInterfaceBase;
@@ -73,12 +76,16 @@ class ResultInterface
   using ResponseValidator_ = ResultInterfaceResponseValidator;
   enum MethodMinVersions : uint32_t {
     kMethodMinVersion = 0,
+    kSyncMethodMinVersion = 0,
   };
 
 // crbug.com/1340245 - this causes binary size bloat on Fuchsia, and we're OK
 // with not having this data in traces there.
 #if !BUILDFLAG(IS_FUCHSIA)
   struct Method_Sym {
+    NOINLINE static uint32_t IPCStableHash();
+  };
+  struct SyncMethod_Sym {
     NOINLINE static uint32_t IPCStableHash();
   };
 #endif // !BUILDFLAG(IS_FUCHSIA)
@@ -90,6 +97,20 @@ class ResultInterface
   using MethodMojoCallback = base::OnceCallback<void(ResultInterface_Method_ResponseParam_ResultPtr)>;
 
   virtual void Method(bool a, MethodCallback callback) = 0;
+
+  // Sync method. This signature is used by the client side; the service side
+  // should implement the signature with callback below.
+  
+  virtual bool SyncMethod(bool a,
+base::expected<
+  bool,
+  ResultTestErrorPtr>* out_result);
+  using SyncMethodCallback = base::OnceCallback<void(base::expected<
+  bool,
+  ResultTestErrorPtr>)>;
+  using SyncMethodMojoCallback = base::OnceCallback<void(ResultInterface_SyncMethod_ResponseParam_ResultPtr)>;
+
+  virtual void SyncMethod(bool a, SyncMethodCallback callback) = 0;
 };
 
 
@@ -102,6 +123,13 @@ class  ResultInterfaceProxy
   explicit ResultInterfaceProxy(mojo::MessageReceiverWithResponder* receiver);
   
   void Method(bool a, MethodCallback callback) final;
+  
+  bool SyncMethod(bool a,
+base::expected<
+  bool,
+  ResultTestErrorPtr>* out_result) final;
+  
+  void SyncMethod(bool a, SyncMethodCallback callback) final;
 
  private:
   mojo::MessageReceiverWithResponder* receiver_;
@@ -426,6 +454,137 @@ class  ResultInterface_Method_ResponseParam_Result {
 };
 
 
+
+class  ResultInterface_SyncMethod_ResponseParam_Result {
+ public:
+  using DataView = ResultInterface_SyncMethod_ResponseParam_ResultDataView;
+  using Data_ = internal::ResultInterface_SyncMethod_ResponseParam_Result_Data;
+  using Tag = Data_::ResultInterface_SyncMethod_ResponseParam_Result_Tag;
+
+  template <typename... Args>
+  static ResultInterface_SyncMethod_ResponseParam_ResultPtr New(Args&&... args) {
+    static_assert(
+        sizeof...(args) < 0,
+        "Do not use Union::New(); to create a union of a given subtype, use "
+        "New<SubType>(), not New() followed by set_<sub_type>(). To represent "
+        "an empty union, mark the field or parameter as nullable in the mojom "
+        "definition.");
+    return nullptr;
+  }
+  // Construct an instance holding |success|.
+  static ResultInterface_SyncMethod_ResponseParam_ResultPtr
+  NewSuccess(
+      bool value) {
+    auto result = ResultInterface_SyncMethod_ResponseParam_ResultPtr(std::in_place);
+    result->set_success(std::move(value));
+    return result;
+  }
+  // Construct an instance holding |failure|.
+  static ResultInterface_SyncMethod_ResponseParam_ResultPtr
+  NewFailure(
+      ResultTestErrorPtr value) {
+    auto result = ResultInterface_SyncMethod_ResponseParam_ResultPtr(std::in_place);
+    result->set_failure(std::move(value));
+    return result;
+  }
+
+  template <typename U>
+  static ResultInterface_SyncMethod_ResponseParam_ResultPtr From(const U& u) {
+    return mojo::TypeConverter<ResultInterface_SyncMethod_ResponseParam_ResultPtr, U>::Convert(u);
+  }
+
+  template <typename U>
+  U To() const {
+    return mojo::TypeConverter<U, ResultInterface_SyncMethod_ResponseParam_Result>::Convert(*this);
+  }
+
+  ResultInterface_SyncMethod_ResponseParam_Result();
+  ~ResultInterface_SyncMethod_ResponseParam_Result();
+  // Delete the copy constructor and copy assignment operators because `data_`
+  // contains raw pointers that must not be copied.
+  ResultInterface_SyncMethod_ResponseParam_Result(const ResultInterface_SyncMethod_ResponseParam_Result& other) = delete;
+  ResultInterface_SyncMethod_ResponseParam_Result& operator=(const ResultInterface_SyncMethod_ResponseParam_Result& other) = delete;
+
+  // Clone() is a template so it is only instantiated if it is used. Thus, the
+  // bindings generator does not need to know whether Clone() or copy
+  // constructor/assignment are available for members.
+  template <typename UnionPtrType = ResultInterface_SyncMethod_ResponseParam_ResultPtr>
+  ResultInterface_SyncMethod_ResponseParam_ResultPtr Clone() const;
+
+  // Equals() is a template so it is only instantiated if it is used. Thus, the
+  // bindings generator does not need to know whether Equals() or == operator
+  // are available for members.
+  template <typename T,
+            typename std::enable_if<std::is_same<
+                T, ResultInterface_SyncMethod_ResponseParam_Result>::value>::type* = nullptr>
+  bool Equals(const T& other) const;
+
+  template <typename T,
+            typename std::enable_if<std::is_same<
+                T, ResultInterface_SyncMethod_ResponseParam_Result>::value>::type* = nullptr>
+  bool operator==(const T& rhs) const { return Equals(rhs); }
+  size_t Hash(size_t seed) const;
+
+  Tag which() const {
+    return tag_;
+  }
+
+
+  
+  bool is_success() const { return tag_ == Tag::kSuccess; }
+
+  
+  bool get_success() const {
+    CHECK(tag_ == Tag::kSuccess);
+    return data_.success;
+  }
+
+  
+  void set_success(
+      bool success);
+  
+  bool is_failure() const { return tag_ == Tag::kFailure; }
+
+  
+  ResultTestErrorPtr& get_failure() const {
+    CHECK(tag_ == Tag::kFailure);
+    return *(data_.failure);
+  }
+
+  
+  void set_failure(
+      ResultTestErrorPtr failure);
+
+  template <typename UserType>
+  static mojo::Message SerializeAsMessage(UserType* input) {
+    return mojo::internal::SerializeAsMessageImpl<
+        ResultInterface_SyncMethod_ResponseParam_Result::DataView>(input);
+  }
+
+  template <typename UserType>
+  static bool DeserializeFromMessage(mojo::Message input,
+                                     UserType* output) {
+    return mojo::internal::DeserializeImpl<ResultInterface_SyncMethod_ResponseParam_Result::DataView>(
+        input, input.payload(), input.payload_num_bytes(), output, Validate);
+  }
+
+ private:
+  union Union_ {
+    Union_() = default;
+    ~Union_() = default;
+    bool success;
+    ResultTestErrorPtr* failure;
+  };
+
+  static bool Validate(const void* data,
+                       mojo::internal::ValidationContext* validation_context);
+
+  void DestroyActive();
+  Tag tag_;
+  Union_ data_;
+};
+
+
 template <typename UnionPtrType>
 ResultInterface_Method_ResponseParam_ResultPtr ResultInterface_Method_ResponseParam_Result::Clone() const {
   switch (tag_) {
@@ -443,6 +602,35 @@ template <typename T,
           typename std::enable_if<std::is_same<
               T, ResultInterface_Method_ResponseParam_Result>::value>::type*>
 bool ResultInterface_Method_ResponseParam_Result::Equals(const T& other) const {
+  if (tag_ != other.which())
+    return false;
+
+  switch (tag_) {
+    case Tag::kSuccess:
+      return mojo::Equals(data_.success, other.data_.success);
+    case Tag::kFailure:
+      return mojo::Equals(*(data_.failure), *(other.data_.failure));
+  }
+
+  return false;
+}
+template <typename UnionPtrType>
+ResultInterface_SyncMethod_ResponseParam_ResultPtr ResultInterface_SyncMethod_ResponseParam_Result::Clone() const {
+  switch (tag_) {
+    case Tag::kSuccess:
+      return NewSuccess(
+          mojo::Clone(data_.success));
+    case Tag::kFailure:
+      return NewFailure(
+          mojo::Clone(*data_.failure));
+  }
+  return nullptr;
+}
+
+template <typename T,
+          typename std::enable_if<std::is_same<
+              T, ResultInterface_SyncMethod_ResponseParam_Result>::value>::type*>
+bool ResultInterface_SyncMethod_ResponseParam_Result::Equals(const T& other) const {
   if (tag_ != other.which())
     return false;
 
@@ -506,6 +694,28 @@ struct  UnionTraits<::golden::ResultInterface_Method_ResponseParam_Result::DataV
   }
 
   static bool Read(::golden::ResultInterface_Method_ResponseParam_Result::DataView input, ::golden::ResultInterface_Method_ResponseParam_ResultPtr* output);
+};
+
+
+template <>
+struct  UnionTraits<::golden::ResultInterface_SyncMethod_ResponseParam_Result::DataView,
+                                        ::golden::ResultInterface_SyncMethod_ResponseParam_ResultPtr> {
+  static bool IsNull(const ::golden::ResultInterface_SyncMethod_ResponseParam_ResultPtr& input) { return !input; }
+  static void SetToNull(::golden::ResultInterface_SyncMethod_ResponseParam_ResultPtr* output) { output->reset(); }
+
+  static ::golden::ResultInterface_SyncMethod_ResponseParam_Result::Tag GetTag(const ::golden::ResultInterface_SyncMethod_ResponseParam_ResultPtr& input) {
+    return input->which();
+  }
+
+  static  bool success(const ::golden::ResultInterface_SyncMethod_ResponseParam_ResultPtr& input) {
+    return input->get_success();
+  }
+
+  static const ::golden::ResultTestErrorPtr& failure(const ::golden::ResultInterface_SyncMethod_ResponseParam_ResultPtr& input) {
+    return input->get_failure();
+  }
+
+  static bool Read(::golden::ResultInterface_SyncMethod_ResponseParam_Result::DataView input, ::golden::ResultInterface_SyncMethod_ResponseParam_ResultPtr* output);
 };
 
 }  // namespace mojo

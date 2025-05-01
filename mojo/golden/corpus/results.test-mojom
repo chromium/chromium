@@ -8,4 +8,7 @@ struct ResultTestError {
 
 interface ResultInterface {
   Method(bool a) => result<bool, ResultTestError>;
+
+  [Sync]
+  SyncMethod(bool a) => result<bool, ResultTestError>;
 };

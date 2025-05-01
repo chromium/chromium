@@ -283,7 +283,7 @@ bool IFaceWithTypemap_Echo_ForwardToCallback::Accept(
           internal::IFaceWithTypemap_Echo_ResponseParams_Data*>(
               message->mutable_payload());
   
-  
+
   // Validation for IFaceWithTypemap.0
   bool success = true;
   TypemappedPtr p_out{};
@@ -390,7 +390,7 @@ bool IFaceWithTypemapStubDispatch::AcceptWithResponder(
               internal::IFaceWithTypemap_Echo_Params_Data*>(
                   message->mutable_payload());
       
-      
+
       // Validation for IFaceWithTypemap.0
       bool success = true;
       TypemappedPtr p_param{};

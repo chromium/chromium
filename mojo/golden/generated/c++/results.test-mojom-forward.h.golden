@@ -25,12 +25,17 @@ namespace golden {
 class ResultTestErrorDataView;
 
 class ResultInterface_Method_ResponseParam_ResultDataView;
+class ResultInterface_SyncMethod_ResponseParam_ResultDataView;
 class ResultTestError;
 using ResultTestErrorPtr = mojo::InlinedStructPtr<ResultTestError>;
 
 class ResultInterface_Method_ResponseParam_Result;
 
 using ResultInterface_Method_ResponseParam_ResultPtr = mojo::StructPtr<ResultInterface_Method_ResponseParam_Result>;
+
+class ResultInterface_SyncMethod_ResponseParam_Result;
+
+using ResultInterface_SyncMethod_ResponseParam_ResultPtr = mojo::StructPtr<ResultInterface_SyncMethod_ResponseParam_Result>;
 
 class ResultInterface;
 

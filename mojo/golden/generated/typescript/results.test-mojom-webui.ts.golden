@@ -31,6 +31,7 @@ export class ResultInterfacePendingReceiver implements
 
 export interface ResultInterfaceInterface {
   method(a: boolean): Promise<boolean>;
+  syncMethod(a: boolean): Promise<boolean>;
 }
 
 export class ResultInterfaceRemote implements ResultInterfaceInterface {
@@ -55,6 +56,18 @@ export class ResultInterfaceRemote implements ResultInterfaceInterface {
         0,
         ResultInterface_Method_ParamsSpec.$,
         ResultInterface_Method_ResponseParamsSpec.$,
+        [
+          a
+        ],
+        true);
+  }
+
+  syncMethod(
+      a: boolean): Promise<boolean> {
+    return this.proxy.sendMessage(
+        1,
+        ResultInterface_SyncMethod_ParamsSpec.$,
+        ResultInterface_SyncMethod_ResponseParamsSpec.$,
         [
           a
         ],
@@ -89,6 +102,12 @@ export class ResultInterfaceReceiver {
         ResultInterface_Method_ResponseParamsSpec.$,
         impl.method.bind(impl),
         true);
+    this.helper_internal_.registerHandler(
+        1,
+        ResultInterface_SyncMethod_ParamsSpec.$,
+        ResultInterface_SyncMethod_ResponseParamsSpec.$,
+        impl.syncMethod.bind(impl),
+        true);
     this.onConnectionError = this.helper_internal_.getConnectionErrorEventRouter();
   }
 }
@@ -122,6 +141,7 @@ export class ResultInterfaceCallbackRouter {
   router_: mojo.internal.interfaceSupport.CallbackRouter;
 
   method: mojo.internal.interfaceSupport.InterfaceCallbackReceiver;
+  syncMethod: mojo.internal.interfaceSupport.InterfaceCallbackReceiver;
   onConnectionError: mojo.internal.interfaceSupport.ConnectionErrorEventRouter;
 
   constructor() {
@@ -141,6 +161,16 @@ export class ResultInterfaceCallbackRouter {
         ResultInterface_Method_ParamsSpec.$,
         ResultInterface_Method_ResponseParamsSpec.$,
         this.method.createReceiverHandler(true /* expectsResponse */),
+        true);
+    this.syncMethod =
+        new mojo.internal.interfaceSupport.InterfaceCallbackReceiver(
+            this.router_);
+
+    this.helper_internal_.registerHandler(
+        1,
+        ResultInterface_SyncMethod_ParamsSpec.$,
+        ResultInterface_SyncMethod_ResponseParamsSpec.$,
+        this.syncMethod.createReceiverHandler(true /* expectsResponse */),
         true);
     this.onConnectionError = this.helper_internal_.getConnectionErrorEventRouter();
   }
@@ -163,7 +193,16 @@ export const ResultInterface_Method_ParamsSpec: { $: mojo.internal.MojomType } =
 export const ResultInterface_Method_ResponseParamsSpec: { $: mojo.internal.MojomType } =
     { $: {} as unknown as mojo.internal.MojomType };
 
+export const ResultInterface_SyncMethod_ParamsSpec: { $: mojo.internal.MojomType } =
+    { $: {} as unknown as mojo.internal.MojomType };
+
+export const ResultInterface_SyncMethod_ResponseParamsSpec: { $: mojo.internal.MojomType } =
+    { $: {} as unknown as mojo.internal.MojomType };
+
 export const ResultInterface_Method_ResponseParam_ResultSpec: { $: mojo.internal.MojomType } =
+    { $: {} as unknown as mojo.internal.MojomType };
+
+export const ResultInterface_SyncMethod_ResponseParam_ResultSpec: { $: mojo.internal.MojomType } =
     { $: {} as unknown as mojo.internal.MojomType };
 
 
@@ -237,6 +276,60 @@ mojo.internal.Struct<ResultInterface_Method_ResponseParamsMojoType>(
 
 
 
+
+
+export interface ResultInterface_SyncMethod_ParamsMojoType {
+  a: boolean;
+}
+
+
+export type ResultInterface_SyncMethod_Params = ResultInterface_SyncMethod_ParamsMojoType;
+mojo.internal.Struct<ResultInterface_SyncMethod_ParamsMojoType>(
+    ResultInterface_SyncMethod_ParamsSpec.$,
+    'ResultInterface_SyncMethod_Params',
+    [
+      mojo.internal.StructField<ResultInterface_SyncMethod_ParamsMojoType, boolean>(
+        'a', 0,
+        0,
+        mojo.internal.Bool,
+        false,
+        false /* nullable */,
+        0,
+        undefined,
+        undefined,
+    ),
+    ],
+    [[0, 16],]);
+
+
+
+
+
+export interface ResultInterface_SyncMethod_ResponseParamsMojoType {
+  result: ResultInterface_SyncMethod_ResponseParam_Result;
+}
+
+
+export type ResultInterface_SyncMethod_ResponseParams = ResultInterface_SyncMethod_ResponseParamsMojoType;
+mojo.internal.Struct<ResultInterface_SyncMethod_ResponseParamsMojoType>(
+    ResultInterface_SyncMethod_ResponseParamsSpec.$,
+    'ResultInterface_SyncMethod_ResponseParams',
+    [
+      mojo.internal.StructField<ResultInterface_SyncMethod_ResponseParamsMojoType, ResultInterface_SyncMethod_ResponseParam_Result>(
+        'result', 0,
+        0,
+        ResultInterface_SyncMethod_ResponseParam_ResultSpec.$,
+        null,
+        false /* nullable */,
+        0,
+        undefined,
+        undefined,
+    ),
+    ],
+    [[0, 24],]);
+
+
+
 mojo.internal.Union(
     ResultInterface_Method_ResponseParam_ResultSpec.$, 'ResultInterface_Method_ResponseParam_Result',
     {
@@ -251,6 +344,23 @@ mojo.internal.Union(
     });
 
 export interface ResultInterface_Method_ResponseParam_Result {
+  success?: boolean,
+  failure?: ResultTestError,
+}
+mojo.internal.Union(
+    ResultInterface_SyncMethod_ResponseParam_ResultSpec.$, 'ResultInterface_SyncMethod_ResponseParam_Result',
+    {
+      'success': {
+        'ordinal': 0,
+        'type': mojo.internal.Bool,
+      },
+      'failure': {
+        'ordinal': 1,
+        'type': ResultTestErrorSpec.$,
+      },
+    });
+
+export interface ResultInterface_SyncMethod_ResponseParam_Result {
   success?: boolean,
   failure?: ResultTestError,
 }

@@ -10,6 +10,14 @@ interface TestResultInterface {
 
   // Echos the failure message with failure.
   TestFailure(string failure) => result<bool, string>;
+
+  // Echos the input value with success.
+  [Sync]
+  TestSyncSuccess(int32 value) => result<int32, bool>;
+
+  // Echos the failure message with failure.
+  [Sync]
+  TestSyncFailure(string failure) => result<bool, string>;
 };
 
 struct ResultValue {
