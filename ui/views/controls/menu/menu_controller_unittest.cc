@@ -1912,10 +1912,10 @@ TEST_F(MenuControllerTest, ForwardsEventsToNativeViewForGestures) {
   // the NativeView for gestures.
   menu_controller()->Cancel(MenuController::ExitType::kAll);
 
-  menu_controller()->Run(owner(), nullptr, menu_item(), gfx::Rect(),
-                         MenuAnchorPosition::kBottomCenter,
-                         ui::mojom::MenuSourceType::kNone, false, false,
-                         child_window.get());
+  menu_controller()->Run(
+      owner(), nullptr, menu_item(), gfx::Rect(),
+      MenuAnchorPosition::kBottomCenter, ui::mojom::MenuSourceType::kNone,
+      MenuController::MenuType::kNormal, false, child_window.get());
   ShowSubmenu(nullptr, [&](auto& params) {
     params.native_view_for_gestures = child_window.get();
   });
@@ -2624,7 +2624,8 @@ TEST_F(MenuControllerTest, RepostEventToEmptyMenuItem) {
   menu_controller()->AddNestedDelegate(nested_controller_delegate_1.get());
   menu_controller()->Run(
       owner(), nullptr, nested_menu_item_1.get(), gfx::Rect(150, 50, 100, 100),
-      MenuAnchorPosition::kTopLeft, ui::mojom::MenuSourceType::kNone, true);
+      MenuAnchorPosition::kTopLeft, ui::mojom::MenuSourceType::kNone,
+      MenuController::MenuType::kContextMenu);
 
   // Press down outside of the context menu, and within the empty menu item.
   // This should close the first context menu.
@@ -2672,7 +2673,8 @@ TEST_F(MenuControllerTest, RepostEventToEmptyMenuItem) {
   menu_controller()->AddNestedDelegate(nested_controller_delegate_2.get());
   menu_controller()->Run(
       owner(), nullptr, nested_menu_item_2.get(), gfx::Rect(150, 50, 100, 100),
-      MenuAnchorPosition::kTopLeft, ui::mojom::MenuSourceType::kNone, true);
+      MenuAnchorPosition::kTopLeft, ui::mojom::MenuSourceType::kNone,
+      MenuController::MenuType::kContextMenu);
 
   // The escape key should only close the nested menu. SelectByChar should not
   // crash.
@@ -2742,7 +2744,7 @@ TEST_F(MenuControllerTest, ContextMenuInitializesAuraWindowWhenShown) {
   SetUpMenuControllerForCalculateBounds(options, menu_item());
   menu_controller()->Run(owner(), nullptr, menu_item(), options.anchor_bounds,
                          options.menu_anchor, ui::mojom::MenuSourceType::kNone,
-                         true);
+                         MenuController::MenuType::kContextMenu);
 
   SubmenuView* const submenu = menu_item()->GetSubmenu();
   const aura::Window* window = submenu->GetWidget()->GetNativeWindow();
@@ -3454,7 +3456,8 @@ TEST_F(MenuControllerTest, FirstMenuItemSelectedWhenOpenedFromKeyboard) {
   menu_controller()->Run(owner(), /*button_controller=*/nullptr, root,
                          gfx::Rect(), MenuAnchorPosition::kTopLeft,
                          ui::mojom::MenuSourceType::kKeyboard,
-                         /*context_menu=*/false, /*is_nested_drag=*/false);
+                         /*menu_type=*/MenuController::MenuType::kNormal,
+                         /*is_nested_drag=*/false);
 
   EXPECT_TRUE(item1->IsSelected());
   EXPECT_FALSE(item2->IsSelected());
@@ -3472,7 +3475,8 @@ TEST_F(MenuControllerTest, NoItemSelectedWhenOpenedFromMouse) {
   menu_controller()->Run(owner(), /*button_controller=*/nullptr, root,
                          gfx::Rect(), MenuAnchorPosition::kTopLeft,
                          ui::mojom::MenuSourceType::kMouse,
-                         /*context_menu=*/false, /*is_nested_drag=*/false);
+                         /*menu_type=*/MenuController::MenuType::kNormal,
+                         /*is_nested_drag=*/false);
 
   EXPECT_FALSE(item1->IsSelected());
   EXPECT_FALSE(item2->IsSelected());
@@ -3496,7 +3500,8 @@ TEST_F(MenuControllerTest,
   menu_controller()->Run(owner(), /*button_controller=*/nullptr, menu_item(),
                          gfx::Rect(), MenuAnchorPosition::kTopLeft,
                          ui::mojom::MenuSourceType::kKeyboard,
-                         /*context_menu=*/false, /*is_nested_drag=*/false);
+                         /*menu_type=*/MenuController::MenuType::kNormal,
+                         /*is_nested_drag=*/false);
 
   EXPECT_TRUE(first_item->IsSelected());
 
@@ -3523,7 +3528,8 @@ TEST_F(MenuControllerTest,
   menu_controller()->Run(owner(), /*button_controller=*/nullptr, menu_item(),
                          gfx::Rect(), MenuAnchorPosition::kTopLeft,
                          ui::mojom::MenuSourceType::kMouse,
-                         /*context_menu=*/false, /*is_nested_drag=*/false);
+                         /*menu_type=*/MenuController::MenuType::kNormal,
+                         /*is_nested_drag=*/false);
 
   EXPECT_FALSE(first_item->IsSelected());
 
