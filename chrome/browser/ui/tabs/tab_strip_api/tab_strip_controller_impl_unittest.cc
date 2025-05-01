@@ -54,18 +54,12 @@ class TabStripControllerImplTest : public testing::Test {
 };
 
 TEST_F(TabStripControllerImplTest, CreatNewTab) {
-  base::RunLoop loop;
+  tabs_api::mojom::TabStripController::CreateNewTabResult result;
+  bool success = client_->CreateNewTab(&result);
 
-  // TODO(crbug.com/40841428): the synchronous version of the method does not
-  // correctly unwrap the shadow type. This should be fixed in mojo.
-  client_->CreateNewTab(base::BindLambdaForTesting(
-      [&](base::expected<bool, mojo_base::mojom::ErrorPtr> result) {
-        EXPECT_FALSE(result.has_value());
-        EXPECT_EQ(result.error()->code, mojo_base::mojom::Code::kUnimplemented);
-        loop.Quit();
-      }));
-
-  loop.Run();
+  ASSERT_TRUE(success);
+  ASSERT_FALSE(result.has_value());
+  ASSERT_EQ(result.error()->code, mojo_base::mojom::Code::kUnimplemented);
 }
 
 }  // namespace
