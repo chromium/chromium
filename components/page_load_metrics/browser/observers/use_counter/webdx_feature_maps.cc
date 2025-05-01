@@ -392,6 +392,8 @@ UseCounterMetricsRecorder::GetWebFeatureToWebDXFeatureMap() {
            WebDXFeature::kWebauthnPublicKeyEasy},
           {WebFeature::kDisplayNames, WebDXFeature::kIntlDisplayNames},
           {WebFeature::kCSSSelectorPseudoState, WebDXFeature::kState},
+          {WebFeature::kV8Window_GetScreenDetails_Method,
+           WebDXFeature::kWindowManagement},
           // Add new features above this line.
       }};
 
