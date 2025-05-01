@@ -22,7 +22,7 @@ bool IsTailoredNonModalDBPromoEnabled() {
 
 BASE_FEATURE(kShareDefaultBrowserStatus,
              "ShareDefaultBrowserStatus",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsShareDefaultBrowserStatusEnabled() {
   return base::FeatureList::IsEnabled(kShareDefaultBrowserStatus);
