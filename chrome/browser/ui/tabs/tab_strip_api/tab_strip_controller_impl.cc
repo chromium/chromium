@@ -7,6 +7,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
+#include "mojo/public/mojom/base/error.mojom.h"
 
 TabStripControllerImpl::TabStripControllerImpl(BrowserWindowInterface* browser,
                                                TabStripModel* tab_strip_model)
@@ -21,11 +22,7 @@ void TabStripControllerImpl::CreateNewTab(CreateNewTabCallback callback) {
   // method to create a new tab should be chrome::AddTabAt. Currently
   // chrome::AddTabAt requires a Browser pointer which is not available with
   // BrowserWindowFeatures.
-
-  // TODO (crbug.com/409821664) Currently this just always calls success because
-  // AddTabAt is considered a fire and forget. There needs to be additional
-  // validation to confirm that the TabStripModel has added a new tab.
-  //
-  // Send a result back that the method succeeded.
-  std::move(callback).Run(base::ok(true));
+  // Currently unimplemented, so return the appropriate error code.
+  std::move(callback).Run(base::unexpected(mojo_base::mojom::Error::New(
+      mojo_base::mojom::Code::kUnimplemented, "unimplemented")));
 }

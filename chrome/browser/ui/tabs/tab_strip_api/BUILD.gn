@@ -28,3 +28,15 @@ source_set("impl") {
     "//chrome/browser/ui/tabs:tab_strip",
   ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "tab_strip_controller_impl_unittest.cc" ]
+
+  deps = [
+    ":tab_strip_api",
+    "//base/test:test_support",
+    "//testing/gtest",
+  ]
+}

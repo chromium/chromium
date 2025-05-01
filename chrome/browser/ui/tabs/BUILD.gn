@@ -560,6 +560,7 @@ if (!is_android) {
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/startup:startup_tab",
       "//chrome/browser/ui/tab_contents",
+      "//chrome/browser/ui/tabs/tab_strip_api:unit_tests",
       "//chrome/common:non_code_constants",
       "//chrome/test:test_support",
       "//components/commerce/core:account_checker_test_support",

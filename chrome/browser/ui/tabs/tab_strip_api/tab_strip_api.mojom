@@ -4,6 +4,8 @@
 
 module tabs_api.mojom;
 
+import "mojo/public/mojom/base/error.mojom";
+
 // The TabStripController is an object that lives alongside the
 // TabStripViewModel. It acts as the bridge between the model and any UI Dialog
 // or client.
@@ -11,9 +13,9 @@ interface TabStripController {
 
   // Creates a new tab.
   // TODO (crbug.com/409821664). Returns a result type of bool for success or
-  // string for errors. These result types are temporary and will be changed
-  // once they are defined.
+  // Error for errors. The success type is temporary and will be changed once
+  // it is defined.
   [Sync]
-  CreateNewTab() => result<bool, string>;
+  CreateNewTab() => result<bool, mojo_base.mojom.Error>;
 };
 
