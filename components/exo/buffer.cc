@@ -712,10 +712,11 @@ bool Buffer::ProduceTransferableResource(
   if (secure_output_only &&
       protected_buffer_state_ == ProtectedBufferState::UNKNOWN &&
       !gpu_memory_buffer_handle_.is_null() && protected_native_pixmap_query) {
-    gfx::GpuMemoryBufferHandle gmb_handle = gpu_memory_buffer_handle_.Clone();
-    if (!gmb_handle.native_pixmap_handle.planes.empty()) {
-      base::ScopedFD pixmap_handle(HANDLE_EINTR(
-          dup(gmb_handle.native_pixmap_handle.planes[0].fd.get())));
+    if (!gpu_memory_buffer_handle_.native_pixmap_handle().planes.empty()) {
+      base::ScopedFD pixmap_handle(
+          HANDLE_EINTR(dup(gpu_memory_buffer_handle_.native_pixmap_handle()
+                               .planes[0]
+                               .fd.get())));
       if (pixmap_handle.is_valid()) {
         protected_buffer_state_ = ProtectedBufferState::QUERYING;
         protected_native_pixmap_query->IsProtectedNativePixmapHandle(
