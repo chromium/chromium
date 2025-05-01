@@ -7446,4 +7446,45 @@ TEST_F(HttpStreamPoolAttemptManagerTest, EndpointDisapperDuringTcpHandshake) {
   EXPECT_THAT(requester.result(), Optional(IsError(ERR_ABORTED)));
 }
 
+TEST_F(HttpStreamPoolAttemptManagerTest,
+       EndpointCryptoReadyChangeDuringTcpHandshake) {
+  MockConnectCompleter completer;
+  SequencedSocketData data;
+  data.set_connect_data(MockConnect(&completer));
+  socket_factory()->AddSocketDataProvider(&data);
+  SSLSocketDataProvider ssl(ASYNC, OK);
+  socket_factory()->AddSSLSocketDataProvider(&ssl);
+
+  FakeServiceEndpointRequest* endpoint_request = resolver()->AddFakeRequest();
+
+  StreamRequester requester;
+  requester.set_destination(kDefaultDestination)
+      .set_enable_alternative_services(false)
+      .RequestStream(pool());
+
+  endpoint_request
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+      .set_crypto_ready(true)
+      .CallOnServiceEndpointsUpdated();
+
+  // Endpoints become empty and crypto handshake becomes not ready tentatively.
+  // In production code, this could happen when a DnsTask is canceled during
+  // resolution.
+  endpoint_request->set_endpoints({}).set_crypto_ready(false);
+
+  // Complete the TCP handshake. Since crypto handshake is not ready, the
+  // request doesn't complete yet.
+  completer.Complete(OK);
+  ASSERT_FALSE(requester.result().has_value());
+
+  // Complete DNS resolution. The request should succeed.
+  endpoint_request
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+      .set_crypto_ready(true)
+      .CallOnServiceEndpointRequestFinished(OK);
+
+  requester.WaitForResult();
+  EXPECT_THAT(requester.result(), Optional(IsOk()));
+}
+
 }  // namespace net
