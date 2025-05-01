@@ -143,7 +143,7 @@ class SuggestMgr {
   int check_forbidden(const char*, int);
 
   void capchars(std::vector<std::string>&, const char*, int);
-  int replchars(std::vector<std::string>&, const char*, int);
+  int replchars(std::vector<std::string>&, const std::string&, int);
   int doubletwochars(std::vector<std::string>&, const char*, int);
   int forgotchar(std::vector<std::string>&, const char*, int);
   int swapchar(std::vector<std::string>&, const char*, int);

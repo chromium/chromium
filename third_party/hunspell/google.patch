@@ -1,5 +1,5 @@
 diff --git a/src/hunspell/affixmgr.cxx b/src/hunspell/affixmgr.cxx
-index 6371fc9..e42b6f4 100644
+index 602de46..fbc33df 100644
 --- a/src/hunspell/affixmgr.cxx
 +++ b/src/hunspell/affixmgr.cxx
 @@ -86,11 +86,19 @@
@@ -161,7 +161,7 @@ index 6371fc9..e42b6f4 100644
  
   return 0;
  }
-@@ -4469,6 +4545,7 @@ bool AffixMgr::parse_affix(const std::string& line,
+@@ -4474,6 +4550,7 @@ bool AffixMgr::parse_affix(const std::string& line,
        case 1: {
          np++;
          aflag = pHMgr->decode_flag(std::string(start_piece, iter).c_str());
@@ -169,7 +169,7 @@ index 6371fc9..e42b6f4 100644
          if (((at == 'S') && (dupflags[aflag] & dupSFX)) ||
              ((at == 'P') && (dupflags[aflag] & dupPFX))) {
            HUNSPELL_WARNING(
-@@ -4477,6 +4554,7 @@ bool AffixMgr::parse_affix(const std::string& line,
+@@ -4482,6 +4559,7 @@ bool AffixMgr::parse_affix(const std::string& line,
                af->getlinenum());
          }
          dupflags[aflag] += (char)((at == 'S') ? dupSFX : dupPFX);
@@ -1131,7 +1131,7 @@ index 00a4918..16e0e06 100644
  
  #include <string>
 diff --git a/src/hunspell/suggestmgr.cxx b/src/hunspell/suggestmgr.cxx
-index 6b363de..2be03dd 100644
+index cae3c1a..7ce0994 100644
 --- a/src/hunspell/suggestmgr.cxx
 +++ b/src/hunspell/suggestmgr.cxx
 @@ -82,7 +82,112 @@ const w_char W_VLINE = {'\0', '|'};
@@ -1248,7 +1248,7 @@ index 6b363de..2be03dd 100644
    // try when building candidate suggestions
    pAMgr = aptr;
 @@ -455,6 +560,21 @@ int SuggestMgr::replchars(std::vector<std::string>& wlst,
-   int wl = strlen(word);
+   int wl = word.size();
    if (wl < 2 || !pAMgr)
      return wlst.size();
 +
@@ -1257,27 +1257,27 @@ index 6b363de..2be03dd 100644
 +  const char *pattern, *pattern2;
 +  hunspell::ReplacementIterator iterator = bdict_reader->GetReplacementIterator();
 +  while (iterator.GetNext(&pattern, &pattern2)) {
-+    const char* r = word;
++    size_t r = 0;
 +    size_t lenr = strlen(pattern2);
 +    size_t lenp = strlen(pattern);
 +
 +    // search every occurence of the pattern in the word
-+    while ((r=strstr(r, pattern)) != NULL) {
++    while ((r = word.find(pattern, r)) != std::string::npos) {
 +      candidate = word;
-+      candidate.replace(r-word, lenp, pattern2);
++      candidate.replace(r, lenp, pattern2);
 +#else
    const std::vector<replentry>& reptable = pAMgr->get_reptable();
    for (size_t i = 0; i < reptable.size(); ++i) {
-     const char* r = word;
-@@ -474,6 +594,7 @@ int SuggestMgr::replchars(std::vector<std::string>& wlst,
-       candidate.resize(r - word);
+     size_t r = 0;
+@@ -473,6 +593,7 @@ int SuggestMgr::replchars(std::vector<std::string>& wlst,
+       candidate.assign(word, 0, r);
        candidate.append(reptable[i].outstrings[type]);
-       candidate.append(r + reptable[i].pattern.size());
+       candidate.append(word, r + reptable[i].pattern.size(), std::string::npos);
 +#endif
        testsug(wlst, candidate, cpdsuggest, NULL, NULL);
        // check REP suggestions with space
        size_t sp = candidate.find(' ');
-@@ -1131,6 +1252,9 @@ void SuggestMgr::ngsuggest(std::vector<std::string>& wlst,
+@@ -1130,6 +1251,9 @@ void SuggestMgr::ngsuggest(std::vector<std::string>& wlst,
  
    struct hentry* hp = NULL;
    int col = -1;
@@ -1287,7 +1287,7 @@ index 6b363de..2be03dd 100644
    phonetable* ph = (pAMgr) ? pAMgr->get_phonetable() : NULL;
    std::string target;
    std::string candidate;
-@@ -1257,7 +1381,11 @@ void SuggestMgr::ngsuggest(std::vector<std::string>& wlst,
+@@ -1256,7 +1380,11 @@ void SuggestMgr::ngsuggest(std::vector<std::string>& wlst,
  
        if (sc > scores[lp]) {
          scores[lp] = sc;
@@ -1299,7 +1299,7 @@ index 6b363de..2be03dd 100644
          lval = sc;
          for (int j = 0; j < MAX_ROOTS; j++)
            if (scores[j] < lval) {
-@@ -2197,8 +2325,8 @@ void SuggestMgr::lcs(const char* s,
+@@ -2196,8 +2324,8 @@ void SuggestMgr::lcs(const char* s,
      m = strlen(s);
      n = strlen(s2);
    }
@@ -1310,7 +1310,7 @@ index 6b363de..2be03dd 100644
    if (!c || !b) {
      if (c)
        free(c);
-@@ -2207,10 +2335,6 @@ void SuggestMgr::lcs(const char* s,
+@@ -2206,10 +2334,6 @@ void SuggestMgr::lcs(const char* s,
      *result = NULL;
      return;
    }
@@ -1322,7 +1322,7 @@ index 6b363de..2be03dd 100644
      for (j = 1; j <= n; j++) {
        if (((utf8) && (su[i - 1] == su2[j - 1])) ||
 diff --git a/src/hunspell/suggestmgr.hxx b/src/hunspell/suggestmgr.hxx
-index 4c2fb69..925c6a0 100644
+index 1e44205..9162931 100644
 --- a/src/hunspell/suggestmgr.hxx
 +++ b/src/hunspell/suggestmgr.hxx
 @@ -116,7 +116,11 @@ class SuggestMgr {

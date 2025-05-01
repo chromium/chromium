@@ -529,7 +529,7 @@ int SuggestMgr::map_related(const char* word,
   for (size_t j = 0; j < maptable.size(); ++j) {
     for (size_t k = 0; k < maptable[j].size(); ++k) {
       size_t len = maptable[j][k].size();
-      if (strncmp(maptable[j][k].c_str(), word + wn, len) == 0) {
+      if (len && strncmp(maptable[j][k].c_str(), word + wn, len) == 0) {
         in_map = 1;
         size_t cn = candidate.size();
         for (size_t l = 0; l < maptable[j].size(); ++l) {
@@ -554,10 +554,10 @@ int SuggestMgr::map_related(const char* word,
 // suggestions for a typical fault of spelling, that
 // differs with more, than 1 letter from the right form.
 int SuggestMgr::replchars(std::vector<std::string>& wlst,
-                          const char* word,
+                          const std::string& word,
                           int cpdsuggest) {
   std::string candidate;
-  int wl = strlen(word);
+  int wl = word.size();
   if (wl < 2 || !pAMgr)
     return wlst.size();
 
@@ -566,34 +566,33 @@ int SuggestMgr::replchars(std::vector<std::string>& wlst,
   const char *pattern, *pattern2;
   hunspell::ReplacementIterator iterator = bdict_reader->GetReplacementIterator();
   while (iterator.GetNext(&pattern, &pattern2)) {
-    const char* r = word;
+    size_t r = 0;
     size_t lenr = strlen(pattern2);
     size_t lenp = strlen(pattern);
 
     // search every occurence of the pattern in the word
-    while ((r=strstr(r, pattern)) != NULL) {
+    while ((r = word.find(pattern, r)) != std::string::npos) {
       candidate = word;
-      candidate.replace(r-word, lenp, pattern2);
+      candidate.replace(r, lenp, pattern2);
 #else
   const std::vector<replentry>& reptable = pAMgr->get_reptable();
   for (size_t i = 0; i < reptable.size(); ++i) {
-    const char* r = word;
+    size_t r = 0;
     // search every occurence of the pattern in the word
-    while ((r = strstr(r, reptable[i].pattern.c_str())) != NULL) {
-      int type = (r == word) ? 1 : 0;
-      if (r - word + reptable[i].pattern.size() == strlen(word))
+    while ((r = word.find(reptable[i].pattern, r)) != std::string::npos) {
+      int type = (r == 0) ? 1 : 0;
+      if (r + reptable[i].pattern.size() == word.size())
         type += 2;
       while (type && reptable[i].outstrings[type].empty())
-        type = (type == 2 && r != word) ? 0 : type - 1;
+        type = (type == 2 && r != 0) ? 0 : type - 1;
       const std::string&out = reptable[i].outstrings[type];
       if (out.empty()) {
         ++r;
         continue;
       }
-      candidate.assign(word);
-      candidate.resize(r - word);
+      candidate.assign(word, 0, r);
       candidate.append(reptable[i].outstrings[type]);
-      candidate.append(r + reptable[i].pattern.size());
+      candidate.append(word, r + reptable[i].pattern.size(), std::string::npos);
 #endif
       testsug(wlst, candidate, cpdsuggest, NULL, NULL);
       // check REP suggestions with space

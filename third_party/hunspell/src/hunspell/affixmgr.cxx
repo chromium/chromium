@@ -4319,6 +4319,11 @@ bool AffixMgr::parse_maptable(const std::string& line, FileMgr* af) {
                 --k;
               }
             }
+            if (chb == che) {
+              HUNSPELL_WARNING(stderr, "error: line %d: table is corrupt\n",
+                              af->getlinenum());
+            }
+
             maptable.back().push_back(std::string(chb, che));
           }
           break;
