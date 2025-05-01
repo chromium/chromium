@@ -2,7 +2,19 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//third_party/protobuf/proto_library.gni")
 import("//ui/webui/resources/tools/build_webui.gni")
+
+proto_library("config_proto") {
+  generator_visibility = [ ":copy_mojo" ]
+  sources =
+      [ "//third_party/perfetto/protos/perfetto/config/perfetto_config.proto" ]
+  proto_in_dir = "//third_party/perfetto/"
+  generate_typescript = true
+  generate_cc = false
+  generate_python = false
+  generate_library = false
+}
 
 build_webui("build") {
   grd_prefix = "traces_internals"
@@ -43,9 +55,21 @@ build_webui("build") {
 
   webui_context_type = "trusted"
 
-  mojo_files_deps =
-      [ "//content/browser/tracing/trace_report:mojo_bindings_ts__generator" ]
-  mojo_files = [ "$root_gen_dir/content/browser/tracing/trace_report/trace_report.mojom-webui.ts" ]
+  mojo_files_deps = [
+    ":config_proto_gen",
+    "//content/browser/tracing/trace_report:mojo_bindings_ts__generator",
+  ]
+  mojo_files = [
+    "$root_gen_dir/content/browser/tracing/trace_report/trace_report.mojom-webui.ts",
+    "$root_gen_dir/tsproto/third_party/perfetto/protos/perfetto/config/perfetto_config.ts",
+  ]
+
+  extra_grdp_deps = [ "//third_party/protobuf:bufbuild_grdp" ]
+  extra_grdp_files = [ "$root_gen_dir/bufbuild.grdp" ]
+
+  ts_path_mappings = [ "/@bufbuild/protobuf/wire/index.js|" + rebase_path(
+                           "//third_party/node/node_modules/@bufbuild/protobuf/dist/esm/wire/index.d.ts",
+                           target_gen_dir) ]
 
   grit_output_dir = "$root_gen_dir/content"
 }

@@ -184,6 +184,98 @@ _protoc_gen_js_label =
     "//third_party/protobuf-javascript:protoc-gen-js($host_toolchain)"
 _protoc_gen_js_path = get_label_info(_protoc_gen_js_label, "root_out_dir") +
                       "/protoc-gen-js" + _host_executable_suffix
+if (host_os == "win") {
+  _protoc_gen_ts_path = "//tools/protoc_wrapper/protoc-gen-ts_proto.bat"
+} else {
+  _protoc_gen_ts_path = "//tools/protoc_wrapper/protoc-gen-ts_proto.py"
+}
+
+_protoc_gen_ts_runtime_deps = [
+  "//third_party/node/node.py",
+  "//third_party/node/node_modules.py",
+  "//third_party/node/node_modules.tar.gz.sha1",
+  "//third_party/node/node_modules/@bufbuild/protobuf/dist/cjs/create.js",
+  "//third_party/node/node_modules/@bufbuild/protobuf/dist/cjs/descriptors.js",
+  "//third_party/node/node_modules/@bufbuild/protobuf/dist/cjs/from-binary.js",
+  "//third_party/node/node_modules/@bufbuild/protobuf/dist/cjs/is-message.js",
+  "//third_party/node/node_modules/@bufbuild/protobuf/dist/cjs/package.json",
+  "//third_party/node/node_modules/@bufbuild/protobuf/dist/cjs/proto-int64.js",
+  "//third_party/node/node_modules/@bufbuild/protobuf/dist/cjs/reflect/error.js",
+  "//third_party/node/node_modules/@bufbuild/protobuf/dist/cjs/reflect/guard.js",
+  "//third_party/node/node_modules/@bufbuild/protobuf/dist/cjs/reflect/reflect-check.js",
+  "//third_party/node/node_modules/@bufbuild/protobuf/dist/cjs/reflect/reflect.js",
+  "//third_party/node/node_modules/@bufbuild/protobuf/dist/cjs/reflect/scalar.js",
+  "//third_party/node/node_modules/@bufbuild/protobuf/dist/cjs/reflect/unsafe.js",
+  "//third_party/node/node_modules/@bufbuild/protobuf/dist/cjs/to-binary.js",
+  "//third_party/node/node_modules/@bufbuild/protobuf/dist/cjs/wire/base64-encoding.js",
+  "//third_party/node/node_modules/@bufbuild/protobuf/dist/cjs/wire/binary-encoding.js",
+  "//third_party/node/node_modules/@bufbuild/protobuf/dist/cjs/wire/index.js",
+  "//third_party/node/node_modules/@bufbuild/protobuf/dist/cjs/wire/size-delimited.js",
+  "//third_party/node/node_modules/@bufbuild/protobuf/dist/cjs/wire/text-encoding.js",
+  "//third_party/node/node_modules/@bufbuild/protobuf/dist/cjs/wire/text-format.js",
+  "//third_party/node/node_modules/@bufbuild/protobuf/dist/cjs/wire/varint.js",
+  "//third_party/node/node_modules/@bufbuild/protobuf/dist/cjs/wkt/wrappers.js",
+  "//third_party/node/node_modules/@bufbuild/protobuf/package.json",
+  "//third_party/node/node_modules/case-anything/dist/cjs/index.cjs",
+  "//third_party/node/node_modules/case-anything/package.json",
+  "//third_party/node/node_modules/ts-poet/build/Code.js",
+  "//third_party/node/node_modules/ts-poet/build/ConditionalOutput.js",
+  "//third_party/node/node_modules/ts-poet/build/Import.js",
+  "//third_party/node/node_modules/ts-poet/build/Literal.js",
+  "//third_party/node/node_modules/ts-poet/build/Node.js",
+  "//third_party/node/node_modules/ts-poet/build/index.js",
+  "//third_party/node/node_modules/ts-poet/build/is-plain-object.js",
+  "//third_party/node/node_modules/ts-poet/build/saveFiles.js",
+  "//third_party/node/node_modules/ts-poet/build/utils.js",
+  "//third_party/node/node_modules/ts-poet/package.json",
+  "//third_party/node/node_modules/ts-proto-descriptors/dist/google/protobuf/compiler/plugin.js",
+  "//third_party/node/node_modules/ts-proto-descriptors/dist/google/protobuf/descriptor.js",
+  "//third_party/node/node_modules/ts-proto-descriptors/dist/index.js",
+  "//third_party/node/node_modules/ts-proto-descriptors/package.json",
+  "//third_party/node/node_modules/ts-proto/build/src/case.js",
+  "//third_party/node/node_modules/ts-proto/build/src/context.js",
+  "//third_party/node/node_modules/ts-proto/build/src/encode.js",
+  "//third_party/node/node_modules/ts-proto/build/src/enums.js",
+  "//third_party/node/node_modules/ts-proto/build/src/generate-async-iterable.js",
+  "//third_party/node/node_modules/ts-proto/build/src/generate-generic-service-definition.js",
+  "//third_party/node/node_modules/ts-proto/build/src/generate-grpc-js.js",
+  "//third_party/node/node_modules/ts-proto/build/src/generate-grpc-web.js",
+  "//third_party/node/node_modules/ts-proto/build/src/generate-nestjs.js",
+  "//third_party/node/node_modules/ts-proto/build/src/generate-nice-grpc.js",
+  "//third_party/node/node_modules/ts-proto/build/src/generate-services.js",
+  "//third_party/node/node_modules/ts-proto/build/src/generate-struct-wrappers.js",
+  "//third_party/node/node_modules/ts-proto/build/src/generate-type-registry.js",
+  "//third_party/node/node_modules/ts-proto/build/src/main.js",
+  "//third_party/node/node_modules/ts-proto/build/src/options.js",
+  "//third_party/node/node_modules/ts-proto/build/src/options.js",
+  "//third_party/node/node_modules/ts-proto/build/src/plugin.js",
+  "//third_party/node/node_modules/ts-proto/build/src/schema.js",
+  "//third_party/node/node_modules/ts-proto/build/src/sourceInfo.js",
+  "//third_party/node/node_modules/ts-proto/build/src/types.js",
+  "//third_party/node/node_modules/ts-proto/build/src/utils.js",
+  "//third_party/node/node_modules/ts-proto/build/src/visit.js",
+  "//third_party/node/node_modules/ts-proto/package.json",
+  "//third_party/node/node_modules/ts-proto/protoc-gen-ts_proto",
+]
+
+# When use_remoteexec=true, node actions may run on remote
+# Linux worker. So it should include linux node binary in inputs.
+if (is_linux || is_chromeos || use_remoteexec) {
+  _protoc_gen_ts_runtime_deps +=
+      [ "//third_party/node/linux/node-linux-x64/bin/node" ]
+}
+if (is_win && host_os == "win") {
+  _protoc_gen_ts_runtime_deps += [ "//third_party/node/win/node.exe" ]
+}
+if (is_mac && host_os == "mac") {
+  if (host_cpu == "arm64") {
+    _protoc_gen_ts_runtime_deps +=
+        [ "//third_party/node/mac_arm64/node-darwin-arm64/bin/node" ]
+  } else {
+    _protoc_gen_ts_runtime_deps +=
+        [ "//third_party/node/mac/node-darwin-x64/bin/node" ]
+  }
+}
 
 template("proto_library") {
   assert(defined(invoker.sources), "Need sources for proto_library")
@@ -205,6 +297,12 @@ template("proto_library") {
     generate_javascript = invoker.generate_javascript
   } else {
     generate_javascript = false
+  }
+
+  if (defined(invoker.generate_typescript)) {
+    generate_typescript = invoker.generate_typescript
+  } else {
+    generate_typescript = false
   }
 
   if (defined(invoker.generate_descriptor)) {
@@ -308,6 +406,10 @@ template("proto_library") {
     js_out_dir = "$root_out_dir/jsproto/" + proto_out_dir
     rel_js_out_dir = rebase_path(js_out_dir, root_build_dir)
   }
+  if (generate_typescript) {
+    ts_out_dir = "$root_gen_dir/tsproto/" + proto_out_dir
+    rel_ts_out_dir = rebase_path(ts_out_dir, root_build_dir)
+  }
   if (generate_descriptor != "") {
     descriptor_out =
         "$root_gen_dir/" + proto_out_dir + "/" + generate_descriptor
@@ -319,10 +421,11 @@ template("proto_library") {
   protogens_py = []
   protogens_cc = []
   protogens_js = []
+  protogens_ts = []
 
   # Whether source code bindings should be generated.
   generate_sources = generate_cc || generate_python || generate_with_plugin ||
-                     generate_javascript
+                     generate_javascript || generate_typescript
 
   # Whether library should be generated.
   # Library is not needed when proto_library is used to generate binary descriptor, in which case
@@ -357,6 +460,9 @@ template("proto_library") {
       if (generate_javascript) {
         protogens_js += [ "$js_out_dir/${proto_path}.js" ]
       }
+      if (generate_typescript) {
+        protogens_ts += [ "$ts_out_dir/${proto_path}.ts" ]
+      }
     }
   }
 
@@ -369,6 +475,7 @@ template("proto_library") {
   input_config_name = "${target_name}_input_config"
   source_set_name = target_name
   javascript_name = "${target_name}_js"
+  typescript_name = "${target_name}_ts"
   py_runtime_name = "${target_name}_py_runtime"
 
   config(input_config_name) {
@@ -381,6 +488,7 @@ template("proto_library") {
       ":$javascript_name",
       ":$py_runtime_name",
       ":$source_set_name",
+      ":$typescript_name",
     ]
     if (defined(invoker.generator_visibility)) {
       visibility += invoker.generator_visibility
@@ -390,9 +498,9 @@ template("proto_library") {
 
     sources = proto_sources
 
-    outputs =
-        get_path_info(protogens + protogens_cc + protogens_js + protogens_py,
-                      "abspath")
+    outputs = get_path_info(protogens + protogens_cc + protogens_js +
+                                protogens_ts + protogens_py,
+                            "abspath")
 
     if (defined(invoker.testonly)) {
       testonly = invoker.testonly
@@ -448,6 +556,14 @@ template("proto_library") {
         rel_js_out_dir,
         "--protoc-gen-js",
         "./" + rebase_path(_protoc_gen_js_path, root_build_dir),
+      ]
+    }
+    if (generate_typescript) {
+      args += [
+        "--ts-out-dir",
+        rel_ts_out_dir,
+        "--protoc-gen-ts",
+        "./" + rebase_path(_protoc_gen_ts_path, root_build_dir),
       ]
     }
 
@@ -506,8 +622,15 @@ template("proto_library") {
     }
 
     if (enable_js_protobuf) {
-      inputs += [ _protoc_gen_js_path ]
-      deps += [ _protoc_gen_js_label ]
+      inputs += [
+                  _protoc_gen_js_path,
+                  _protoc_gen_ts_path,
+                  "//tools/protoc_wrapper/protoc-gen-ts_proto.py",
+                ] + _protoc_gen_ts_runtime_deps
+      deps += [
+        "//third_party/node:check_version",
+        _protoc_gen_js_label,
+      ]
     }
 
     if (generate_with_plugin) {
