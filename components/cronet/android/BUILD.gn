@@ -1402,6 +1402,10 @@ android_library("cronet_javatests") {
     "test/javatests/src/org/chromium/net/urlconnection/TestUtil.java",
   ]
 
+  if (is_cronet_for_aosp_build) {
+    sources += [ "//components/cronet/android/platform-only/org/chromium/net/AndroidPlatformQuicTest.java" ]
+  }
+
   # Adding deps here won't include those deps in the cronet_tests_java.jar.
   # Please add to cronet_javatests_deps_to_package_no_build_info instead.
   deps = [

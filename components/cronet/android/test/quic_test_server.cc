@@ -169,4 +169,9 @@ void JNI_QuicTestServer_DelayResponse(JNIEnv* env,
       base::BindOnce(&SetResponseDelayOnServerThread, path, delay));
 }
 
+int JNI_QuicTestServer_NumSessions(JNIEnv* env) {
+  CHECK(g_quic_server);
+  return g_quic_server->NumSessions();
+}
+
 }  // namespace cronet

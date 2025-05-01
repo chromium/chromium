@@ -80,6 +80,10 @@ public final class QuicTestServer {
         return MockCertVerifier.createMockCertVerifier(CERTS_USED, true);
     }
 
+    public static int numSessions() {
+        return QuicTestServerJni.get().numSessions();
+    }
+
     @NativeMethods("cronet_tests")
     interface Natives {
         /*
@@ -113,5 +117,10 @@ public final class QuicTestServer {
          * The expected error code is QUIC_NO_ERROR.
          */
         String getConnectionClosePath();
+
+        /*
+         * Returns the number of sessions.
+         */
+        int numSessions();
     }
 }
