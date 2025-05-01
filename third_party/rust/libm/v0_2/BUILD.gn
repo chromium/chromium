@@ -208,6 +208,7 @@ cargo_crate("lib") {
   build_root = "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/build.rs"
   build_sources =
       [ "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/build.rs" ]
+  build_script_inputs = [ "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/../configure.rs" ]
   rustflags = [
     "--cap-lints=allow",  # Suppress all warnings in crates.io crates
   ]

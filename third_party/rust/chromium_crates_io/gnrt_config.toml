@@ -202,6 +202,7 @@ ban_features = [
 
 [crate.libm]
 license_files= ["LICENSE.txt"]
+extra_build_script_src_roots = ['../configure.rs']
 
 [crate.log]
 
