@@ -58,8 +58,6 @@ class SchedulingEmbedder
   bool TryCancel(TaskId task_id) override;
 
  private:
-  friend class SchedulingEmbedderPublic;
-
   // A job consists of multiple passages, and each passage must have its
   // embedding computed. When all are finished, the job is done and its
   // callback will be invoked. Multiple jobs may be batched together when

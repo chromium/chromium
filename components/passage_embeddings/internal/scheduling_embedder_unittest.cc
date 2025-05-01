@@ -53,36 +53,17 @@ void GetEmbeddings(std::vector<std::string> passages,
 
 }  // namespace
 
-class SchedulingEmbedderPublic : public SchedulingEmbedder {
- public:
-  SchedulingEmbedderPublic(EmbedderMetadataProvider* embedder_metadata_provider,
-                           GetEmbeddingsCallback get_embeddings_callback,
-                           size_t max_jobs,
-                           size_t scheduled_max_batch_size,
-                           bool use_performance_scenario)
-      : SchedulingEmbedder(embedder_metadata_provider,
-                           get_embeddings_callback,
-                           max_jobs,
-                           scheduled_max_batch_size,
-                           use_performance_scenario) {}
-
-  using SchedulingEmbedder::embedder_metadata_;
-  using SchedulingEmbedder::GetEmbeddingsCallback;
-  using SchedulingEmbedder::GetEmbeddingsResultCallback;
-};
-
 class SchedulingEmbedderTest : public testing::Test {
  public:
   void SetUp() override {
     embedder_metadata_provider_ =
         std::make_unique<TestEmbedderMetadataProvider>();
-    embedder_ = std::make_unique<SchedulingEmbedderPublic>(
+    embedder_ = std::make_unique<SchedulingEmbedder>(
         /*embedder_metadata_provider=*/embedder_metadata_provider_.get(),
         /*get_embeddings_callback=*/base::BindRepeating(&GetEmbeddings),
         /*max_jobs=*/4u,
         /*max_batch_size=*/1u,
         /*use_performance_scenario=*/false);
-    ASSERT_TRUE(embedder_->embedder_metadata_.IsValid());
   }
 
  protected:
@@ -90,7 +71,7 @@ class SchedulingEmbedderTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::HistogramTester histogram_tester_;
   std::unique_ptr<EmbedderMetadataProvider> embedder_metadata_provider_;
-  std::unique_ptr<SchedulingEmbedderPublic> embedder_;
+  std::unique_ptr<SchedulingEmbedder> embedder_;
 };
 
 TEST_F(SchedulingEmbedderTest, UserInitiatedJobTakesPriority) {
