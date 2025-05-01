@@ -21,7 +21,6 @@
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome.mojom.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_section.h"
 #include "chrome/common/search/ntp_logging_events.h"
-#include "chrome/common/webui_url_constants.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/search_engines/template_url_service_observer.h"
 #include "components/themes/ntp_background_service.h"
@@ -91,7 +90,7 @@ class CustomizeChromePageHandler
   void ScrollToSection(CustomizeChromeSection section);
 
   // Passes AttachedTabStateUpdated calls to the CustomizeChromePage.
-  void AttachedTabStateUpdated(const GURL& url);
+  void AttachedTabStateUpdated(bool is_source_tab_first_party_ntp);
 
   // Helper method to determine if the search engine is overriding the first
   // party NTP.
@@ -146,9 +145,6 @@ class CustomizeChromePageHandler
 
   std::u16string GetManagingThirdPartyName() const;
 
-  // Returns the type of New Tab Page the SidePanel is attached to.
-  side_panel::mojom::NewTabPageType GetNewTabPageType(const GURL& url);
-
   // ui::NativeThemeObserver:
   void OnNativeThemeUpdated(ui::NativeTheme* observed_theme) override;
 
@@ -194,7 +190,7 @@ class CustomizeChromePageHandler
 
   // Caches the attached tab state provided to the handler, in cases where the
   // value needs to be requeried by the page.
-  GURL last_source_url_{GURL(chrome::kChromeUINewTabPageURL)};
+  bool last_is_source_tab_first_party_ntp_ = true;
 
   PrefChangeRegistrar pref_change_registrar_;
   base::ScopedObservation<ui::NativeTheme, ui::NativeThemeObserver>

@@ -305,11 +305,13 @@ void CustomizeChromeUI::ScrollToSection(CustomizeChromeSection section) {
   }
 }
 
-void CustomizeChromeUI::AttachedTabStateUpdated(const GURL& url) {
+void CustomizeChromeUI::AttachedTabStateUpdated(
+    bool is_source_tab_first_party_ntp) {
   if (customize_chrome_page_handler_) {
-    customize_chrome_page_handler_->AttachedTabStateUpdated(url);
+    customize_chrome_page_handler_->AttachedTabStateUpdated(
+        is_source_tab_first_party_ntp);
   } else {
-    source_tab_url_ = url;
+    is_source_tab_first_party_ntp_ = is_source_tab_first_party_ntp;
   }
 }
 
@@ -407,8 +409,10 @@ void CustomizeChromeUI::CreatePageHandler(
     customize_chrome_page_handler_->ScrollToSection(*section_);
     section_.reset();
   }
-  if (!source_tab_url_.is_empty()) {
-    customize_chrome_page_handler_->AttachedTabStateUpdated(source_tab_url_);
+  if (is_source_tab_first_party_ntp_.has_value()) {
+    customize_chrome_page_handler_->AttachedTabStateUpdated(
+        is_source_tab_first_party_ntp_.value());
+    is_source_tab_first_party_ntp_.reset();
   }
   if (is_theme_editable_.has_value()) {
     customize_chrome_page_handler_->UpdateThemeEditable(

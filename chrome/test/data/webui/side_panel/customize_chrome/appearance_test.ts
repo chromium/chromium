@@ -7,7 +7,7 @@ import 'chrome://customize-chrome-side-panel.top-chrome/appearance.js';
 import type {AppearanceElement} from 'chrome://customize-chrome-side-panel.top-chrome/appearance.js';
 import {CustomizeChromeAction} from 'chrome://customize-chrome-side-panel.top-chrome/common.js';
 import type {CustomizeChromePageRemote} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome.mojom-webui.js';
-import {CustomizeChromePageCallbackRouter, CustomizeChromePageHandlerRemote, NewTabPageType} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome.mojom-webui.js';
+import {CustomizeChromePageCallbackRouter, CustomizeChromePageHandlerRemote} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome_api_proxy.js';
 import type {ManagedDialogElement} from 'chrome://resources/cr_components/managed_dialog/managed_dialog.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -619,7 +619,7 @@ suite('AppearanceTest', () => {
     });
   });
 
-  test('source tab type should update the content', async () => {
+  test('isSourceTabFirstPartyNtp should update the content', async () => {
     const idsControlledByIsSourceTabFirstPartyNtp = [
       '#editButtonsContainer',
       '#themeSnapshot',
@@ -637,29 +637,19 @@ suite('AppearanceTest', () => {
       '#editThemeIcon',
     ];
 
-    const newTabPageTypes = [
-      NewTabPageType.kFirstPartyWebUI,
-      NewTabPageType.kThirdPartyWebUI,
-      NewTabPageType.kThirdPartyRemote,
-      NewTabPageType.kExtension,
-      NewTabPageType.kIncognito,
-      NewTabPageType.kGuestMode,
-      NewTabPageType.kNone,
-    ];
-
-    const checkIdsVisibility = (sourceTabType: NewTabPageType) => {
+    const checkIdsVisibility = (isSourceTabFirstPartyNtp: boolean) => {
       idsControlledByIsSourceTabFirstPartyNtp.forEach(
           id => assertEquals(
-              sourceTabType === NewTabPageType.kFirstPartyWebUI,
+              isSourceTabFirstPartyNtp,
               !!appearanceElement.shadowRoot.querySelector(id)));
       idsNotControlledByIsSourceTabFirstPartyNtp.forEach(
           id => assertTrue(!!appearanceElement.shadowRoot.querySelector(id)));
     };
 
-    await newTabPageTypes.forEach(async t => {
-      callbackRouterRemote.attachedTabStateUpdated(t);
+    await[true, false].forEach(async b => {
+      callbackRouterRemote.attachedTabStateUpdated(b);
       await microtasksFinished();
-      checkIdsVisibility(t);
+      checkIdsVisibility(b);
     });
   });
 });
