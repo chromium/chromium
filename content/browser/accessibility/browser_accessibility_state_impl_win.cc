@@ -690,7 +690,7 @@ void BrowserAccessibilityStateImplWin::OnDiscoveredAssistiveTech(
   OnAssistiveTechFound(most_important_assistive_tech);
 
   // Add kScreenReader mode flag for products with screen reader features, which
-  // includes some magnifiers with light screen reader features (e.g.) heading
+  // includes some magnifiers with light screen reader features (e.g. heading
   // navigation).
   if (ui::IsScreenReader(most_important_assistive_tech)) {
     if (!screen_reader_mode_) {

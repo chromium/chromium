@@ -1201,7 +1201,8 @@ TEST_F(AccessibilityTest, SlotIsLineBreakingObject) {
   EXPECT_TRUE(slot2->ParentObjectUnignored()->IsLineBreakingObject());
 }
 
-TEST_F(AccessibilityTest, LineBreakInDisplayLockedIsLineBreakingObject) {
+TEST_F(AccessibilityTest,
+       LineBreakInDisplayLockedWithScreenReaderIsLineBreakingObject) {
   SetBodyInnerHTML(R"HTML(
       <div id="spacer"
           style="height: 30000px; contain-intrinsic-size: 1px 30000px;"></div>
@@ -1232,6 +1233,28 @@ TEST_F(AccessibilityTest, LineBreakInDisplayLockedIsLineBreakingObject) {
                 *br->GetNode()))
       << "The <br> child should be display locked.";
   EXPECT_TRUE(br->IsLineBreakingObject());
+}
+
+TEST_F(AccessibilityTest, DisplayLockedContentWithoutScreenReaderIsHidden) {
+  ax_context_ = std::make_unique<AXContext>(GetDocument(), ui::kAXModeComplete);
+  SetBodyInnerHTML(R"HTML(
+      <div id="spacer"
+          style="height: 30000px; contain-intrinsic-size: 1px 30000px;"></div>
+      <p id="lockedContainer" style="content-visibility: auto">
+        Line 1
+        <br id="br" style="content-visibility: hidden">
+        Line 2
+      </p>
+      )HTML");
+
+  const AXObject* paragraph = GetAXObjectByElementId("lockedContainer");
+  ASSERT_NE(nullptr, paragraph);
+  ASSERT_EQ(ax::mojom::Role::kParagraph, paragraph->RoleValue());
+  ASSERT_EQ(0, paragraph->UnignoredChildCount());
+  ASSERT_EQ(paragraph->GetNode(),
+            DisplayLockUtilities::LockedInclusiveAncestorPreventingPaint(
+                *paragraph->GetNode()))
+      << "The <p> element should be display locked.";
 }
 
 TEST_F(AccessibilityTest, ListMarkerIsNotLineBreakingObject) {
@@ -1288,7 +1311,7 @@ TEST_F(AccessibilityTest, ListMarkerIsNotLineBreakingObject) {
 
 TEST_F(AccessibilityTest, CheckNoDuplicateChildren) {
   // Clear inline text boxes and refresh the tree.
-  ui::AXMode mode(ui::kAXModeComplete);
+  ui::AXMode mode(ui::kAXModeDefaultForTests);
   mode.set_mode(ui::AXMode::kInlineTextBoxes, false);
   ax_context_->SetAXMode(mode);
   GetAXObjectCache().MarkDocumentDirty();
@@ -1321,7 +1344,8 @@ TEST_F(AccessibilityTest, InitRelationCacheLabelFor) {
 
   // Now recreate an AXContext, simulating what happens if accessibility
   // is enabled after the document is loaded.
-  ax_context_ = std::make_unique<AXContext>(GetDocument(), ui::kAXModeComplete);
+  ax_context_ =
+      std::make_unique<AXContext>(GetDocument(), ui::kAXModeDefaultForTests);
 
   const AXObject* root = GetAXRootObject();
   ASSERT_NE(nullptr, root);
@@ -1347,7 +1371,8 @@ TEST_F(AccessibilityTest, InitRelationCacheAriaOwns) {
 
   // Now recreate an AXContext, simulating what happens if accessibility
   // is enabled after the document is loaded.
-  ax_context_ = std::make_unique<AXContext>(GetDocument(), ui::kAXModeComplete);
+  ax_context_ =
+      std::make_unique<AXContext>(GetDocument(), ui::kAXModeDefaultForTests);
 
   const AXObject* root = GetAXRootObject();
   ASSERT_NE(nullptr, root);
