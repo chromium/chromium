@@ -413,9 +413,6 @@ class ASH_EXPORT DesksController : public chromeos::DesksHelper,
   void OnActiveUserSessionChanged(const AccountId& account_id) override;
   void OnFirstSessionStarted() override;
 
-  // Fires the timer used for recording desk traversals immediately.
-  void FireMetricsTimerForTesting();
-
   // Resets the animation if there is any ongiong one.
   void ResetAnimation();
 
