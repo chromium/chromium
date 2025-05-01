@@ -34,14 +34,9 @@ component("features") {
 }
 
 source_set("privacy_sandbox_survey_service") {
-  sources = [
-    "privacy_sandbox_survey_service.cc",
+  public = [
     "privacy_sandbox_survey_service.h",
   ]
-
-  deps = [ "//components/keyed_service/core:core" ]
-
-  public_deps = [ "//base" ]
 }
 
 source_set("tracking_protection_onboarding") {
@@ -215,7 +210,6 @@ if (use_blink) {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "privacy_sandbox_survey_service_unittest.cc",
     "tracking_protection_onboarding_unittest.cc",
   ]
 
@@ -224,7 +218,6 @@ source_set("unit_tests") {
   deps = [
     ":features",
     ":privacy_sandbox_prefs",
-    ":privacy_sandbox_survey_service",
     ":tracking_protection_onboarding",
     ":tracking_protection_prefs",
     ":tracking_protection_settings",
