@@ -118,7 +118,8 @@ class LayerContextImpl : public cc::LayerTreeHostImplClient,
   // mojom::LayerContext:
   void SetVisible(bool visible) override;
   void UpdateDisplayTree(mojom::LayerTreeUpdatePtr update) override;
-  void UpdateDisplayTiling(mojom::TilingPtr tiling) override;
+  void UpdateDisplayTiling(mojom::TilingPtr tiling,
+                           bool update_damage) override;
 
   base::expected<void, std::string> DoUpdateDisplayTree(
       mojom::LayerTreeUpdatePtr update);

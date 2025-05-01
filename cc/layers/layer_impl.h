@@ -155,7 +155,7 @@ class CC_EXPORT LayerImpl {
                                      gfx::Size* resource_size,
                                      gfx::SizeF* resource_uv_size) const;
 
-  virtual void NotifyTileStateChanged(const Tile* tile) {}
+  virtual void NotifyTileStateChanged(const Tile* tile, bool update_damage) {}
 
   virtual bool IsScrollbarLayer() const;
 

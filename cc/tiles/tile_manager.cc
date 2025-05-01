@@ -579,6 +579,12 @@ void TileManager::Release(Tile* tile) {
   DCHECK_GE(num_of_tiles_with_checker_images_, 0);
 
   FreeResourcesForTile(tile);
+
+  // Notify client that the tile state has changed. Note that
+  // TileManager::Release() is only called when a Tile is being deleted. In this
+  // case we never update the damage. So make sure that NotifyTileStateChanged()
+  // does not update the damage for this tile.
+  client_->NotifyTileStateChanged(tile, /*update_damage=*/false);
   tiles_.erase(tile->id());
 }
 
@@ -1119,8 +1125,12 @@ void TileManager::FreeResourcesForOccludedTiles() {
   std::unique_ptr<TilesWithResourceIterator> iterator =
       client_->CreateTilesWithResourceIterator();
   for (; !iterator->AtEnd(); iterator->Next()) {
-    if (iterator->IsCurrentTileOccluded())
+    if (iterator->IsCurrentTileOccluded()) {
       FreeResourcesForTile(iterator->GetCurrent());
+      // We don't update the damage when Occluded tiles are released.
+      client_->NotifyTileStateChanged(iterator->GetCurrent(),
+                                      /*update_damage=*/false);
+    }
   }
 }
 

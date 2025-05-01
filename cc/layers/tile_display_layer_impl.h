@@ -107,7 +107,7 @@ class CC_EXPORT TileDisplayLayerImpl : public LayerImpl {
     void SetTilingRect(const gfx::Rect& rect);
     void SetTileContents(const TileIndex& key,
                          const TileContents& contents,
-                         bool is_incremental_update);
+                         bool update_damage);
 
     CoverageIterator Cover(const gfx::Rect& coverage_rect,
                            float coverage_scale) const;

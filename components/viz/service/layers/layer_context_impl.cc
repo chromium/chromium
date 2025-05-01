@@ -622,7 +622,7 @@ DeserializeTileContents(mojom::TileContents& wire) {
 base::expected<void, std::string> DeserializeTiling(
     cc::TileDisplayLayerImpl& layer,
     mojom::Tiling& wire,
-    bool is_incremental_update) {
+    bool update_damage) {
   const float scale_key =
       std::max(wire.raster_scale.x(), wire.raster_scale.y());
   auto& tiling = layer.GetOrCreateTilingFromScaleKey(scale_key);
@@ -636,7 +636,7 @@ base::expected<void, std::string> DeserializeTiling(
     tiling.SetTileContents(
         cc::TileIndex{base::saturated_cast<int>(wire_tile->column_index),
                       base::saturated_cast<int>(wire_tile->row_index)},
-        std::move(contents), is_incremental_update);
+        std::move(contents), update_damage);
   }
   return base::ok();
 }
@@ -1289,7 +1289,7 @@ base::expected<void, std::string> LayerContextImpl::DoUpdateDisplayTree(
       }
       RETURN_IF_ERROR(
           DeserializeTiling(static_cast<cc::TileDisplayLayerImpl&>(*layer),
-                            *tiling, /*is_incremental_update=*/false));
+                            *tiling, /*update_damage=*/false));
     }
   }
 
@@ -1388,7 +1388,8 @@ base::expected<void, std::string> LayerContextImpl::DoUpdateDisplayTree(
   return base::ok();
 }
 
-void LayerContextImpl::UpdateDisplayTiling(mojom::TilingPtr tiling) {
+void LayerContextImpl::UpdateDisplayTiling(mojom::TilingPtr tiling,
+                                           bool update_damage) {
   cc::LayerTreeImpl& layers = *host_impl_->active_tree();
   if (cc::LayerImpl* layer = layers.LayerById(tiling->layer_id)) {
     if (layer->GetLayerType() != cc::mojom::LayerType::kTileDisplay) {
@@ -1396,9 +1397,8 @@ void LayerContextImpl::UpdateDisplayTiling(mojom::TilingPtr tiling) {
       return;
     }
 
-    auto result =
-        DeserializeTiling(static_cast<cc::TileDisplayLayerImpl&>(*layer),
-                          *tiling, /*is_incremental_update=*/true);
+    auto result = DeserializeTiling(
+        static_cast<cc::TileDisplayLayerImpl&>(*layer), *tiling, update_damage);
     if (!result.has_value()) {
       receiver_.ReportBadMessage(result.error());
       return;

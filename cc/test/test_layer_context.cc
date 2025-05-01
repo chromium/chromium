@@ -18,6 +18,7 @@ void TestLayerContext::UpdateDisplayTile(
     PictureLayerImpl& layer,
     const Tile& tile,
     viz::ClientResourceProvider& resource_provider,
-    viz::RasterContextProvider& context_provider) {}
+    viz::RasterContextProvider& context_provider,
+    bool update_damage) {}
 
 }  // namespace cc

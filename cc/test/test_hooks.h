@@ -70,7 +70,8 @@ class TestHooks : public AnimationDelegate {
   virtual void NotifyReadyToDrawOnThread(LayerTreeHostImpl* host_impl) {}
   virtual void NotifyAllTileTasksCompleted(LayerTreeHostImpl* host_impl) {}
   virtual void NotifyTileStateChangedOnThread(LayerTreeHostImpl* host_impl,
-                                              const Tile* tile) {}
+                                              const Tile* tile,
+                                              bool update_damage) {}
   virtual void DidRunBeginMainFrame() {}
   virtual void DidReceivePresentationTimeOnThread(
       LayerTreeHostImpl* host_impl,

@@ -997,11 +997,12 @@ void VizLayerContext::UpdateDisplayTile(
     PictureLayerImpl& layer,
     const Tile& tile,
     viz::ClientResourceProvider& resource_provider,
-    viz::RasterContextProvider& context_provider) {
+    viz::RasterContextProvider& context_provider,
+    bool update_damage) {
   const Tile* tiles[] = {&tile};
   if (auto tiling = SerializeTiling(layer, *tile.tiling(), tiles,
                                     resource_provider, context_provider)) {
-    service_->UpdateDisplayTiling(std::move(tiling));
+    service_->UpdateDisplayTiling(std::move(tiling), update_damage);
   }
 }
 

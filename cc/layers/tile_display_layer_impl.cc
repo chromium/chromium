@@ -103,8 +103,8 @@ void TileDisplayLayerImpl::Tiling::SetTilingRect(const gfx::Rect& rect) {
 
 void TileDisplayLayerImpl::Tiling::SetTileContents(const TileIndex& key,
                                                    const TileContents& contents,
-                                                   bool is_incremental_update) {
-  if (is_incremental_update) {
+                                                   bool update_damage) {
+  if (update_damage) {
     // Full tree updates receive damage as part of the LayerImpl::update_rect.
     // For incremental tile updates on an Active tree, we need to record the
     // damage caused by each tile change.

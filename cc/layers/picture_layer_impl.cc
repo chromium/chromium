@@ -943,15 +943,19 @@ PictureLayerImpl::ComputeLCDTextDisallowedReasonForTesting() const {
       CalculateRasterTranslation(raster_translation));
 }
 
-void PictureLayerImpl::NotifyTileStateChanged(const Tile* tile) {
-  if (layer_tree_impl()->IsActiveTree())
-    damage_rect_.Union(tile->enclosing_layer_rect());
-  if (tile->draw_info().NeedsRaster()) {
-    PictureLayerTiling* tiling =
-        tilings_->FindTilingWithScaleKey(tile->contents_scale_key());
-    if (tiling) {
-      tiling->set_all_tiles_done(false);
-      tilings_->set_all_tiles_done(false);
+void PictureLayerImpl::NotifyTileStateChanged(const Tile* tile,
+                                              bool update_damage) {
+  if (update_damage) {
+    if (layer_tree_impl()->IsActiveTree()) {
+      damage_rect_.Union(tile->enclosing_layer_rect());
+    }
+    if (tile->draw_info().NeedsRaster()) {
+      PictureLayerTiling* tiling =
+          tilings_->FindTilingWithScaleKey(tile->contents_scale_key());
+      if (tiling) {
+        tiling->set_all_tiles_done(false);
+        tilings_->set_all_tiles_done(false);
+      }
     }
   }
 

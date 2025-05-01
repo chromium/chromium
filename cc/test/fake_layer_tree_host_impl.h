@@ -43,7 +43,7 @@ class FakeLayerTreeHostImpl : public LayerTreeHostImpl {
   void CreatePendingTree() override;
   void EnsureSyncTree();
 
-  void NotifyTileStateChanged(const Tile* tile) override;
+  void NotifyTileStateChanged(const Tile* tile, bool update_damage) override;
   const viz::BeginFrameArgs& CurrentBeginFrameArgs() const override;
   void AdvanceToNextFrame(base::TimeDelta advance_by);
   TargetColorParams GetTargetColorParams(

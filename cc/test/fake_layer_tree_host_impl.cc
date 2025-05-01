@@ -83,9 +83,10 @@ void FakeLayerTreeHostImpl::EnsureSyncTree() {
   CHECK(sync_tree());
 }
 
-void FakeLayerTreeHostImpl::NotifyTileStateChanged(const Tile* tile) {
-  LayerTreeHostImpl::NotifyTileStateChanged(tile);
-  notify_tile_state_changed_called_ = true;
+void FakeLayerTreeHostImpl::NotifyTileStateChanged(const Tile* tile,
+                                                   bool update_damage) {
+  LayerTreeHostImpl::NotifyTileStateChanged(tile, update_damage);
+  notify_tile_state_changed_called_ = update_damage;
 }
 
 TargetColorParams FakeLayerTreeHostImpl::GetTargetColorParams(

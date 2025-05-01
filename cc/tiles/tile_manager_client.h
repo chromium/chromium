@@ -41,7 +41,8 @@ class CC_EXPORT TileManagerClient {
   // - Tile version initialized.
   // - Tile resources freed.
   // - Tile marked for on-demand raster.
-  virtual void NotifyTileStateChanged(const Tile* tile) = 0;
+  virtual void NotifyTileStateChanged(const Tile* tile,
+                                      bool update_damage = true) = 0;
 
   // Given an empty raster tile priority queue, this will build a priority queue
   // that will return tiles in the order in which they should be rasterized.

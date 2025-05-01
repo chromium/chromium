@@ -2173,7 +2173,8 @@ void LayerTreeHostImpl::NotifyAllTileTasksCompleted() {
   }
 }
 
-void LayerTreeHostImpl::NotifyTileStateChanged(const Tile* tile) {
+void LayerTreeHostImpl::NotifyTileStateChanged(const Tile* tile,
+                                               bool update_damage) {
   DCHECK(!settings_.is_display_tree);
 
   TRACE_EVENT0("cc", "LayerTreeHostImpl::NotifyTileStateChanged");
@@ -2190,7 +2191,7 @@ void LayerTreeHostImpl::NotifyTileStateChanged(const Tile* tile) {
     layer_impl = active_tree_->FindActiveTreeLayerById(tile->layer_id());
   }
 
-  layer_impl->NotifyTileStateChanged(tile);
+  layer_impl->NotifyTileStateChanged(tile, update_damage);
 
   if (settings_.UseLayerContextForDisplay() && !is_pending_tree &&
       !CommitsToActiveTree()) {
@@ -2200,7 +2201,8 @@ void LayerTreeHostImpl::NotifyTileStateChanged(const Tile* tile) {
     // UpdateDisplayTile.
     layer_context_->UpdateDisplayTile(
         static_cast<PictureLayerImpl&>(*layer_impl), *tile,
-        *resource_provider(), *layer_tree_frame_sink_->context_provider());
+        *resource_provider(), *layer_tree_frame_sink_->context_provider(),
+        update_damage);
   }
 
   if (!client_->IsInsideDraw() && tile->required_for_draw()) {

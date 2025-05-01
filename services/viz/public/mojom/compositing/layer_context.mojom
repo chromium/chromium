@@ -131,8 +131,10 @@ interface LayerContext {
   // Flushes pending updates from the client to the service-side display tree.
   UpdateDisplayTree(LayerTreeUpdate update);
 
-  // Updates one or more tiles in a specific tiling.
-  UpdateDisplayTiling(Tiling tiling);
+  // Updates one or more tiles in a specific tiling. |update_damage| indicates
+  // whether the tiles in the tiling should update the damage for GPU-side
+  // LayerTreeHostImpl.
+  UpdateDisplayTiling(Tiling tiling, bool update_damage);
 };
 
 // Provides feedback from a GPU-side LayerTreeHostImpl to its corresponding

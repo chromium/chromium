@@ -7358,7 +7358,8 @@ class LayerTreeHostTestCrispUpAfterPinchEnds : public LayerTreeHostTest {
   }
 
   void NotifyTileStateChangedOnThread(LayerTreeHostImpl* host_impl,
-                                      const Tile* tile) override {
+                                      const Tile* tile,
+                                      bool update_damage) override {
     if (frame_ == 3) {
       // On frame 3, we will have a lower res tile complete for the pinch-out
       // gesture even though it's not displayed. We wait for it here to prevent
@@ -7586,7 +7587,8 @@ class LayerTreeHostTestContinuousDrawWhenCreatingVisibleTiles
   }
 
   void NotifyTileStateChangedOnThread(LayerTreeHostImpl* host_impl,
-                                      const Tile* tile) override {
+                                      const Tile* tile,
+                                      bool update_damage) override {
     // On step_ == 2, we are preventing texture uploads from completing,
     // so this verifies they are not completing before step_ == 3.
     // Flaky failures here indicate we're failing to prevent uploads from
@@ -10061,7 +10063,15 @@ class LayerTreeHostTestOccludedTileReleased
   }
 
   void NotifyTileStateChangedOnThread(LayerTreeHostImpl* host_impl,
-                                      const Tile* tile) override {
+                                      const Tile* tile,
+                                      bool update_damage) override {
+    // |update_damage| is false when a Tile is being destroyed. This can happen
+    // on PictureLayerImpl::ReleaseResources() in which case calling
+    // |picture_layer_impl->GetNumberOfTilesWithResources()| is not safe and can
+    // result in crash as its underlying tilings are already being destroyed.
+    if (!update_damage) {
+      return;
+    }
     FakePictureLayerImpl* picture_layer_impl =
         static_cast<FakePictureLayerImpl*>(
             host_impl->sync_tree()->LayerById(picture_layer_->id()));
