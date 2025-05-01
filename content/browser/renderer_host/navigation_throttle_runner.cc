@@ -4,7 +4,6 @@
 
 #include "content/browser/renderer_host/navigation_throttle_runner.h"
 
-#include "base/check_deref.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
@@ -120,15 +119,12 @@ void RecordExecutionTimeHistogram(NavigationThrottleRunner::Event event,
 
 }  // namespace
 
-NavigationThrottleRunner::NavigationThrottleRunner(
-    Delegate* delegate,
-    int64_t navigation_id,
-    bool is_primary_main_frame)
-  : delegate_(delegate),
-    navigation_id_(navigation_id),
-    is_primary_main_frame_(is_primary_main_frame) {
-  CHECK(delegate_);
-}
+NavigationThrottleRunner::NavigationThrottleRunner(Delegate* delegate,
+                                                   int64_t navigation_id,
+                                                   bool is_primary_main_frame)
+    : delegate_(delegate),
+      navigation_id_(navigation_id),
+      is_primary_main_frame_(is_primary_main_frame) {}
 
 NavigationThrottleRunner::~NavigationThrottleRunner() {
   base::UmaHistogramTimes("Navigation.ThrottleTotalDeferTime",
@@ -139,34 +135,6 @@ NavigationThrottleRunner::~NavigationThrottleRunner() {
                           total_defer_duration_time_for_request_);
   base::UmaHistogramCounts100("Navigation.ThrottleTotalDeferCount.Request",
                               defer_count_for_request_);
-}
-
-NavigationHandle& NavigationThrottleRunner::GetNavigationHandle() {
-  // TODO(https://crbug.com/412524375): Change the NavigationThrottleRunner
-  // to take a NavigationRequest instead of a Delegate. Then use the request
-  // to get the NavigationHandle safely here.
-  // See https://crrev.com/c/6478853/comment/4217a4c3_3e0f336b/.
-  return *static_cast<NavigationRequest*>(delegate_);
-}
-
-void NavigationThrottleRunner::AddThrottle(
-    std::unique_ptr<NavigationThrottle> navigation_throttle) {
-  // TODO(https://crbug.com/412524375): Upgrade this condition check to CHECK
-  // and migrate existing use cases in this class to use MaybeAddThrottle() when
-  // callers want to ignore nullptr cases.
-  if (navigation_throttle) {
-    TRACE_EVENT1("navigation", "NavigationThrottleRunner::AddThrottle",
-                 "navigation_throttle",
-                 navigation_throttle->GetNameForLogging());
-    throttles_.push_back(std::move(navigation_throttle));
-  }
-}
-
-void NavigationThrottleRunner::MaybeAddThrottle(
-    std::unique_ptr<NavigationThrottle> navigation_throttle) {
-  if (navigation_throttle) {
-    AddThrottle(std::move(navigation_throttle));
-  }
 }
 
 void NavigationThrottleRunner::ProcessNavigationEvent(Event event) {
@@ -224,16 +192,7 @@ void NavigationThrottleRunner::RegisterNavigationThrottles() {
   // NavigationRequest.
   NavigationRequest* request = static_cast<NavigationRequest*>(delegate_);
 
-  std::vector<std::unique_ptr<NavigationThrottle>> throttles_under_migration =
-      request->GetDelegate()->CreateThrottlesForNavigation(*this);
-  // TODO(https://crbug.com/412524375): Remove `throttles_under_migration` and
-  // following code to move them to the member variable. When the call returns
-  // above, migrated throttles are already registered in `throttles_` via the
-  // new NavigationThrottleRegistry interface. So, we cannot assign the returned
-  // vector directly to `throttles_`.
-  throttles_.insert(throttles_.end(),
-                    std::make_move_iterator(throttles_under_migration.begin()),
-                    std::make_move_iterator(throttles_under_migration.end()));
+  throttles_ = request->GetDelegate()->CreateThrottlesForNavigation(request);
 
   // Check for renderer-inititated main frame navigations to blocked URL schemes
   // (data, filesystem). This is done early as it may block the main frame
@@ -369,6 +328,16 @@ NavigationThrottle* NavigationThrottleRunner::GetDeferringThrottle() const {
     return nullptr;
   }
   return throttles_[next_index_ - 1].get();
+}
+
+void NavigationThrottleRunner::AddThrottle(
+    std::unique_ptr<NavigationThrottle> navigation_throttle) {
+  if (navigation_throttle) {
+    TRACE_EVENT1("navigation", "NavigationThrottleRunner::AddThrottle",
+                 "navigation_throttle",
+                 navigation_throttle->GetNameForLogging());
+    throttles_.push_back(std::move(navigation_throttle));
+  }
 }
 
 void NavigationThrottleRunner::ProcessInternal() {

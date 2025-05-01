@@ -94,7 +94,6 @@
 #include "content/public/browser/frame_type.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"
-#include "content/public/browser/navigation_throttle_registry.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/prefetch_service_delegate.h"
 #include "content/public/browser/render_frame_host.h"
@@ -669,13 +668,11 @@ void AwContentBrowserClient::OverrideWebPreferences(
 
 std::vector<std::unique_ptr<content::NavigationThrottle>>
 AwContentBrowserClient::CreateThrottlesForNavigation(
-    content::NavigationThrottleRegistry& registry) {
+    content::NavigationHandle* navigation_handle) {
   std::vector<std::unique_ptr<content::NavigationThrottle>> throttles;
   // We allow intercepting only navigations within main frames. This
   // is used to post onPageStarted. We handle shouldOverrideUrlLoading
   // via a sync IPC.
-  content::NavigationHandle* navigation_handle =
-      &registry.GetNavigationHandle();
   if (navigation_handle->IsInMainFrame()) {
     // MetricsNavigationThrottle requires that it runs before
     // NavigationThrottles that may delay or cancel navigations, so only
@@ -724,7 +721,6 @@ AwContentBrowserClient::CreateThrottlesForNavigation(
     }
   }
 
-  // TODO(https://crbug.com/6478853): NavigationThrottleRegistry migration.
   return throttles;
 }
 

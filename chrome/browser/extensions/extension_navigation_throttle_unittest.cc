@@ -15,7 +15,6 @@
 #include "components/crx_file/id_util.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/navigation_handle.h"
-#include "content/public/browser/navigation_throttle_registry.h"
 #include "content/public/common/content_client.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/navigation_simulator.h"
@@ -47,10 +46,10 @@ class MockBrowserClient : public content::ContentBrowserClient {
   // Only construct an ExtensionNavigationThrottle so that we can test it in
   // isolation.
   std::vector<std::unique_ptr<NavigationThrottle>> CreateThrottlesForNavigation(
-      content::NavigationThrottleRegistry& registry) override {
-    registry.AddThrottle(std::make_unique<ExtensionNavigationThrottle>(
-        &registry.GetNavigationHandle()));
-    return {};
+      content::NavigationHandle* handle) override {
+    std::vector<std::unique_ptr<NavigationThrottle>> throttles;
+    throttles.push_back(std::make_unique<ExtensionNavigationThrottle>(handle));
+    return throttles;
   }
 };
 

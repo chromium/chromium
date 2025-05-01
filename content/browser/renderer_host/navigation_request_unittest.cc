@@ -593,11 +593,11 @@ class GetRenderFrameHostOnFailureNavigationThrottle
 
 class ThrottleTestContentBrowserClient : public ContentBrowserClient {
   std::vector<std::unique_ptr<NavigationThrottle>> CreateThrottlesForNavigation(
-      NavigationThrottleRegistry& registry) override {
+      NavigationHandle* navigation_handle) override {
     std::vector<std::unique_ptr<NavigationThrottle>> throttle;
-    registry.AddThrottle(
+    throttle.push_back(
         std::make_unique<GetRenderFrameHostOnFailureNavigationThrottle>(
-            &registry.GetNavigationHandle()));
+            navigation_handle));
     return throttle;
   }
 };

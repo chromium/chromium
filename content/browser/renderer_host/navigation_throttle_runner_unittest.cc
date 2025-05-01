@@ -69,8 +69,7 @@ class NavigationThrottleRunnerTest : public RenderViewHostTestHarness,
 
   void SetUp() override {
     RenderViewHostTestHarness::SetUp();
-    runner_ =
-        std::make_unique<NavigationThrottleRunner>(this, 1, true);
+    runner_ = std::make_unique<NavigationThrottleRunner>(this, 1, true);
   }
 
   void Resume() { runner_->CallResumeForTesting(); }
@@ -345,9 +344,8 @@ TEST_P(NavigationThrottleRunnerTestWithEventAndAction, DeferThenAction) {
 // NavigationThrottle asking to proceed behave correctly. The navigation will
 // be stopped directly, and the second throttle will not be called.
 TEST_P(NavigationThrottleRunnerTestWithEventAndAction, CancelThenProceed) {
-  if (action() == NavigationThrottle::PROCEED) {
+  if (action() == NavigationThrottle::PROCEED)
     return;
-  }
   TestNavigationThrottle* test_throttle =
       CreateTestNavigationThrottle(action());
   TestNavigationThrottle* proceed_throttle =
@@ -371,9 +369,8 @@ TEST_P(NavigationThrottleRunnerTestWithEventAndAction, CancelThenProceed) {
 // NavigationThrottle asking to cancel behave correctly.
 // Both throttles will be called, and the request will be cancelled.
 TEST_P(NavigationThrottleRunnerTestWithEventAndAction, ProceedThenCancel) {
-  if (action() == NavigationThrottle::PROCEED) {
+  if (action() == NavigationThrottle::PROCEED)
     return;
-  }
   TestNavigationThrottle* proceed_throttle =
       CreateTestNavigationThrottle(NavigationThrottle::PROCEED);
   TestNavigationThrottle* test_throttle =

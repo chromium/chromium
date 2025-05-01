@@ -26,7 +26,7 @@ class PageLoadMetricsTestContentBrowserClient
   // content::ContentBrowserClient:
   std::vector<std::unique_ptr<content::NavigationThrottle>>
   CreateThrottlesForNavigation(
-      content::NavigationThrottleRegistry& registry) override;
+      content::NavigationHandle* navigation_handle) override;
 };
 
 }  // namespace page_load_metrics

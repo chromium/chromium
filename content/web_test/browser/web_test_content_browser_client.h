@@ -41,7 +41,6 @@ class FakeBluetoothChooserFactory;
 class FakeBluetoothDelegate;
 class MockBadgeService;
 class MockClipboardHost;
-class NavigationThrottleRegistry;
 class WebTestBrowserContext;
 class WebTestSensorProviderManager;
 
@@ -77,7 +76,7 @@ class WebTestContentBrowserClient : public ShellContentBrowserClient {
                               blink::web_pref::WebPreferences* prefs) override;
   std::vector<std::unique_ptr<content::NavigationThrottle>>
   CreateThrottlesForNavigation(
-      content::NavigationThrottleRegistry& registry) override;
+      content::NavigationHandle* navigation_handle) override;
   void AppendExtraCommandLineSwitches(base::CommandLine* command_line,
                                       int child_process_id) override;
   std::unique_ptr<BrowserMainParts> CreateBrowserMainParts(

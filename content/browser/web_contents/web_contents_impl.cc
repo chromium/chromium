@@ -155,7 +155,6 @@
 #include "content/public/browser/javascript_dialog_manager.h"
 #include "content/public/browser/keyboard_event_processing_result.h"
 #include "content/public/browser/navigation_details.h"
-#include "content/public/browser/navigation_throttle_registry.h"
 #include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/preload_pipeline_info.h"
 #include "content/public/browser/preview_cancel_reason.h"
@@ -9500,11 +9499,14 @@ bool WebContentsImpl::IsHidden() {
 
 std::vector<std::unique_ptr<NavigationThrottle>>
 WebContentsImpl::CreateThrottlesForNavigation(
-    NavigationThrottleRegistry& registry) {
+    NavigationHandle* navigation_handle) {
   OPTIONAL_TRACE_EVENT1("content",
                         "WebContentsImpl::CreateThrottlesForNavigation",
-                        "navigation", registry.GetNavigationHandle());
-  return GetContentClient()->browser()->CreateThrottlesForNavigation(registry);
+                        "navigation", navigation_handle);
+  auto throttles = GetContentClient()->browser()->CreateThrottlesForNavigation(
+      navigation_handle);
+
+  return throttles;
 }
 
 std::vector<std::unique_ptr<CommitDeferringCondition>>

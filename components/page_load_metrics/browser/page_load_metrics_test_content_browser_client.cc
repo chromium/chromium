@@ -9,7 +9,6 @@
 
 #include "components/page_load_metrics/browser/metrics_navigation_throttle.h"
 #include "content/public/browser/navigation_handle.h"
-#include "content/public/browser/navigation_throttle_registry.h"
 
 namespace page_load_metrics {
 
@@ -21,13 +20,13 @@ PageLoadMetricsTestContentBrowserClient::
 
 std::vector<std::unique_ptr<content::NavigationThrottle>>
 PageLoadMetricsTestContentBrowserClient::CreateThrottlesForNavigation(
-    content::NavigationThrottleRegistry& registry) {
-  content::NavigationHandle& navigation_handle = registry.GetNavigationHandle();
-  if (navigation_handle.IsInMainFrame()) {
-    registry.AddThrottle(page_load_metrics::MetricsNavigationThrottle::Create(
-        &navigation_handle));
+    content::NavigationHandle* navigation_handle) {
+  std::vector<std::unique_ptr<content::NavigationThrottle>> throttles;
+  if (navigation_handle->IsInMainFrame()) {
+    throttles.push_back(page_load_metrics::MetricsNavigationThrottle::Create(
+        navigation_handle));
   }
-  return {};
+  return throttles;
 }
 
 }  // namespace page_load_metrics

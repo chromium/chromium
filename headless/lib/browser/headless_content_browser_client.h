@@ -134,8 +134,7 @@ class HeadlessContentBrowserClient : public content::ContentBrowserClient {
 
 #if defined(HEADLESS_USE_POLICY)
   std::vector<std::unique_ptr<content::NavigationThrottle>>
-  CreateThrottlesForNavigation(
-      content::NavigationThrottleRegistry& registry) override;
+  CreateThrottlesForNavigation(content::NavigationHandle* handle) override;
 #endif
 
   void OnNetworkServiceCreated(

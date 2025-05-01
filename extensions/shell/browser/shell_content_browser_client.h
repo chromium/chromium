@@ -30,7 +30,6 @@ class AssociatedInterfaceRegistry;
 
 namespace content {
 class BrowserContext;
-class NavigationThrottleRegistry;
 }
 
 namespace service_manager {
@@ -91,7 +90,7 @@ class ShellContentBrowserClient : public content::ContentBrowserClient {
       blink::AssociatedInterfaceRegistry& associated_registry) override;
   std::vector<std::unique_ptr<content::NavigationThrottle>>
   CreateThrottlesForNavigation(
-      content::NavigationThrottleRegistry& registry) override;
+      content::NavigationHandle* navigation_handle) override;
   std::unique_ptr<content::NavigationUIData> GetNavigationUIData(
       content::NavigationHandle* navigation_handle) override;
   mojo::PendingRemote<network::mojom::URLLoaderFactory>

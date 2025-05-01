@@ -151,7 +151,7 @@ class AwContentBrowserClient : public content::ContentBrowserClient {
       blink::web_pref::WebPreferences* web_prefs) override;
   std::vector<std::unique_ptr<content::NavigationThrottle>>
   CreateThrottlesForNavigation(
-      content::NavigationThrottleRegistry& registry) override;
+      content::NavigationHandle* navigation_handle) override;
   std::unique_ptr<content::PrefetchServiceDelegate>
   CreatePrefetchServiceDelegate(
       content::BrowserContext* browser_context) override;
