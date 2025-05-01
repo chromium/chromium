@@ -83,8 +83,8 @@ class ChromeContentRulesRegistry
   std::string RemoveAllRulesImpl(const ExtensionId& extension_id) override;
 
   // DeclarativeContentConditionTrackerDelegate:
-  void RequestEvaluation(content::WebContents* contents) override;
-  bool ShouldManageConditionsForBrowserContext(
+  void NotifyPredicateStateUpdated(content::WebContents* contents) override;
+  bool ShouldManagePredicatesForBrowserContext(
       content::BrowserContext* context) override;
 
   // Returns the number of active rules.

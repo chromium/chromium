@@ -100,7 +100,7 @@ class TestPredicateEvaluator : public ContentPredicateEvaluator {
   void RequestImmediateEvaluation(content::WebContents* contents,
                                   bool evaluation_result) {
     next_evaluation_result_ = evaluation_result;
-    delegate_->RequestEvaluation(contents);
+    delegate_->NotifyPredicateStateUpdated(contents);
   }
 
   void RequestEvaluationOnNextOperation(content::WebContents* contents,
@@ -112,7 +112,8 @@ class TestPredicateEvaluator : public ContentPredicateEvaluator {
  private:
   void RequestEvaluationIfSpecified() {
     if (contents_for_next_operation_evaluation_) {
-      delegate_->RequestEvaluation(contents_for_next_operation_evaluation_);
+      delegate_->NotifyPredicateStateUpdated(
+          contents_for_next_operation_evaluation_);
     }
     contents_for_next_operation_evaluation_ = nullptr;
   }

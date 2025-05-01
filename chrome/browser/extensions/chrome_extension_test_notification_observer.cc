@@ -20,10 +20,10 @@ namespace extensions {
 
 namespace {
 
-bool HasPageActionVisibilityReachedTarget(
+bool HasPageActionActivityReachedTarget(
     Browser* browser,
     size_t target_visible_page_action_count) {
-  return extension_action_test_util::GetVisiblePageActionCount(
+  return extension_action_test_util::GetActivePageActionCount(
              browser->tab_strip_model()->GetActiveWebContents()) ==
          target_visible_page_action_count;
 }
@@ -63,9 +63,9 @@ bool ChromeExtensionTestNotificationObserver::
                           ExtensionActionDispatcher::Observer>
       observer(this);
   observer.Observe(ExtensionActionDispatcher::Get(GetBrowserContext()));
-  WaitForCondition(base::BindRepeating(&HasPageActionVisibilityReachedTarget,
-                                       browser_, count),
-                   nullptr);
+  WaitForCondition(
+      base::BindRepeating(&HasPageActionActivityReachedTarget, browser_, count),
+      nullptr);
   return true;
 }
 

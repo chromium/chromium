@@ -92,7 +92,7 @@ ToolbarActionsModel* CreateToolbarModelImpl(Profile* profile,
 
 }  // namespace
 
-size_t GetVisiblePageActionCount(content::WebContents* web_contents) {
+size_t GetActivePageActionCount(content::WebContents* web_contents) {
   return GetPageActionCount(web_contents, true);
 }
 

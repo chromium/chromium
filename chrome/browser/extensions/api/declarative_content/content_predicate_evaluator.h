@@ -124,13 +124,11 @@ class ContentPredicateEvaluator::Delegate {
   // Notifies that predicate evaluation state has been updated for
   // `contents`. This must be called whenever the URL or page state changes,
   // even if the value of the predicate evaluation itself doesn't change.
-  // TODO(wittman): rename to something like NotifyPredicateStateUpdated.
-  virtual void RequestEvaluation(content::WebContents* contents) = 0;
+  virtual void NotifyPredicateStateUpdated(content::WebContents* contents) = 0;
 
   // Returns true if the evaluator should manage condition state for
-  // `context`.  TODO(wittman): rename to something like
-  // ShouldManagePredicatesForBrowserContext.
-  virtual bool ShouldManageConditionsForBrowserContext(
+  // `context`.
+  virtual bool ShouldManagePredicatesForBrowserContext(
       content::BrowserContext* context) = 0;
 
  protected:

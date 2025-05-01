@@ -87,7 +87,7 @@ ChromeContentRulesRegistry::ChromeContentRulesRegistry(
       evaluators_(std::move(evaluators_factory).Run(this)),
       evaluation_disposition_(EVALUATE_REQUESTS) {}
 
-void ChromeContentRulesRegistry::RequestEvaluation(
+void ChromeContentRulesRegistry::NotifyPredicateStateUpdated(
     content::WebContents* contents) {
   switch (evaluation_disposition_) {
     case EVALUATE_REQUESTS:
@@ -101,7 +101,7 @@ void ChromeContentRulesRegistry::RequestEvaluation(
   }
 }
 
-bool ChromeContentRulesRegistry::ShouldManageConditionsForBrowserContext(
+bool ChromeContentRulesRegistry::ShouldManagePredicatesForBrowserContext(
     content::BrowserContext* context) {
   return ManagingRulesForBrowserContext(context);
 }
@@ -304,8 +304,9 @@ std::string ChromeContentRulesRegistry::AddRulesImpl(
 
   // Request evaluation for all WebContents, under the assumption that a
   // non-empty condition has been added.
-  for (const auto& web_contents_rules_pair : active_rules_)
-    RequestEvaluation(web_contents_rules_pair.first);
+  for (const auto& web_contents_rules_pair : active_rules_) {
+    NotifyPredicateStateUpdated(web_contents_rules_pair.first);
+  }
 
   return std::string();
 }
