@@ -609,6 +609,8 @@ void MessagingBackendServiceImpl::ClearDirtyTabMessagesForGroup(
     return;
   }
 
+  std::vector<base::Uuid> cleared_tab_ids;
+
   // Since the dirty bits are cleared from DB, hide any dirty dots from the tabs
   // and tab groups if they are already showing.
   for (auto& message : cleared_messages) {
@@ -620,6 +622,11 @@ void MessagingBackendServiceImpl::ClearDirtyTabMessagesForGroup(
     NotifyHidePersistentMessagesForTypes(
         persistent_message, {PersistentNotificationType::CHIP,
                              PersistentNotificationType::DIRTY_TAB});
+    if (persistent_message.attribution.tab_metadata.has_value() &&
+        persistent_message.attribution.tab_metadata->sync_tab_id.has_value()) {
+      cleared_tab_ids.emplace_back(
+          persistent_message.attribution.tab_metadata->sync_tab_id.value());
+    }
 
     if (persistent_message.attribution.tab_group_metadata &&
         persistent_message.attribution.tab_group_metadata->sync_tab_group_id) {
@@ -629,6 +636,11 @@ void MessagingBackendServiceImpl::ClearDirtyTabMessagesForGroup(
       DisplayOrHideTabGroupDirtyDotForTabGroup(collaboration_group_id,
                                                tab_group_id);
     }
+  }
+
+  for (const base::Uuid& tab_id : cleared_tab_ids) {
+    tab_group_sync_service_->UpdateTabLastSeenTime(
+        tab_group->saved_guid(), tab_id, tab_groups::TriggerSource::LOCAL);
   }
 }
 

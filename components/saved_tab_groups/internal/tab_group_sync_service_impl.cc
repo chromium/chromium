@@ -1068,6 +1068,25 @@ void TabGroupSyncServiceImpl::UpdateArchivalStatus(const base::Uuid& sync_id,
   model_->UpdateArchivalStatus(sync_id, archival_status);
 }
 
+void TabGroupSyncServiceImpl::UpdateTabLastSeenTime(const base::Uuid& group_id,
+                                                    const base::Uuid& tab_id,
+                                                    TriggerSource source) {
+  // Verify tab exists before updating. This method may be called from
+  // sync services, such as the MessagingBackendService which doesn't
+  // necessarily know if the tab still exists.
+  std::optional<SavedTabGroup> group = GetGroup(group_id);
+  if (!group.has_value()) {
+    return;
+  }
+
+  const SavedTabGroupTab* tab = group->GetTab(tab_id);
+  if (!tab) {
+    return;
+  }
+
+  model_->UpdateTabLastSeenTime(group_id, tab_id, base::Time::Now(), source);
+}
+
 TabGroupSyncMetricsLogger*
 TabGroupSyncServiceImpl::GetTabGroupSyncMetricsLogger() {
   return metrics_logger_.get();

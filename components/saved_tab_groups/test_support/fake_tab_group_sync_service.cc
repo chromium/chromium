@@ -409,6 +409,12 @@ void FakeTabGroupSyncService::UpdateArchivalStatus(const base::Uuid& sync_id,
   // No op.
 }
 
+void FakeTabGroupSyncService::UpdateTabLastSeenTime(const base::Uuid& group_id,
+                                                    const base::Uuid& tab_id,
+                                                    TriggerSource source) {
+  // No op.
+}
+
 TabGroupSyncMetricsLogger*
 FakeTabGroupSyncService::GetTabGroupSyncMetricsLogger() {
   return nullptr;

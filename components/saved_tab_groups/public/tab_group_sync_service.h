@@ -349,6 +349,11 @@ class TabGroupSyncService : public KeyedService, public base::SupportsUserData {
   virtual void UpdateArchivalStatus(const base::Uuid& sync_id,
                                     bool archival_status) = 0;
 
+  // Update the last seen timestamp for a tab.
+  virtual void UpdateTabLastSeenTime(const base::Uuid& group_id,
+                                     const base::Uuid& tab_id,
+                                     TriggerSource source) = 0;
+
   // For accessing the centralized metrics logger.
   virtual TabGroupSyncMetricsLogger* GetTabGroupSyncMetricsLogger() = 0;
 

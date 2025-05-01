@@ -980,6 +980,7 @@ TEST_F(SavedTabGroupModelTest, GroupsWithNoPositionInsertedAtEnd) {
 
 TEST_F(SavedTabGroupModelTest, SetsLastSeenTime) {
   SavedTabGroup saved_group = test::CreateTestSavedTabGroup();
+  saved_group.SetCollaborationId(tab_groups::CollaborationId("collab_id"));
   saved_tab_group_model_->AddedLocally(saved_group);
   const base::Uuid group_id = saved_group.saved_guid();
 
@@ -1356,6 +1357,7 @@ TEST_F(SavedTabGroupModelObserverTest,
 TEST_F(SavedTabGroupModelObserverTest,
        TriggersObserverWhenSettingTabLastSeenTime) {
   SavedTabGroup saved_group = test::CreateTestSavedTabGroup();
+  saved_group.SetCollaborationId(tab_groups::CollaborationId("collab_id"));
   saved_tab_group_model_->AddedLocally(saved_group);
   const base::Uuid group_id = saved_group.saved_guid();
 

@@ -118,6 +118,9 @@ class MockTabGroupSyncService : public TabGroupSyncService {
               (const));
   MOCK_METHOD(void, RecordTabGroupEvent, (const EventDetails&));
   MOCK_METHOD(void, UpdateArchivalStatus, (const base::Uuid&, bool));
+  MOCK_METHOD(void,
+              UpdateTabLastSeenTime,
+              (const base::Uuid&, const base::Uuid&, TriggerSource));
   MOCK_METHOD(TabGroupSyncMetricsLogger*, GetTabGroupSyncMetricsLogger, ());
 
   MOCK_METHOD(syncer::DataTypeSyncBridge*, bridge, ());
