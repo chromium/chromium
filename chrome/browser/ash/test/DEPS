@@ -20,8 +20,6 @@ specific_include_rules = {
     "+ui/message_center",
   ],
   ".*_browser_test_mixin\.(h|cc)": [
-    "+chrome/browser/ash/settings/scoped_testing_cros_settings.h",
-    "+chrome/browser/ash/settings/stub_cros_settings_provider.h",
     "+chrome/test/base/mixin_based_in_process_browser_test.h",
   ],
   ".*_browsertest\.cc": [

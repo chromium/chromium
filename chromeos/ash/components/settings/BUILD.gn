@@ -44,9 +44,11 @@ static_library("test_support") {
   deps = [
     ":settings",
     "//base",
+    "//components/policy/proto",
     "//components/prefs",
   ]
   sources = [
+    "device_settings_cache_test_support.h",
     "fake_cros_settings_provider.cc",
     "fake_cros_settings_provider.h",
   ]
