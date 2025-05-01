@@ -74,6 +74,7 @@ android_library("java") {
     "java/src/org/chromium/components/browser_ui/widget/dragreorder/DragStateDelegate.java",
     "java/src/org/chromium/components/browser_ui/widget/dragreorder/DragUtils.java",
     "java/src/org/chromium/components/browser_ui/widget/gesture/BackPressHandler.java",
+    "java/src/org/chromium/components/browser_ui/widget/gesture/OnSystemNavigationObserver.java",
     "java/src/org/chromium/components/browser_ui/widget/gesture/SwipeGestureListener.java",
     "java/src/org/chromium/components/browser_ui/widget/highlight/PulseDrawable.java",
     "java/src/org/chromium/components/browser_ui/widget/highlight/PulseInterpolator.java",

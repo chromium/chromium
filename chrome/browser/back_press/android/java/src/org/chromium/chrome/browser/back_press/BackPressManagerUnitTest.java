@@ -5,9 +5,11 @@
 package org.chromium.chrome.browser.back_press;
 
 import android.os.Build;
+import android.window.OnBackInvokedCallback;
 
 import androidx.activity.BackEventCompat;
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -19,6 +21,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 
 import java.util.concurrent.TimeoutException;
@@ -471,6 +474,22 @@ public class BackPressManagerUnitTest {
 
         manager.getCallback().handleOnBackPressed();
         callbackHelper.waitForCallback("Callback should be called again", 1);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
+    @Test
+    @MinAndroidSdkLevel(Build.VERSION_CODES.TIRAMISU)
+    public void testOnSystemNavigationObserver() {
+        BackPressManager manager = new BackPressManager();
+        manager.createOnSystemNavigationCallback();
+        OnBackInvokedCallback callback = manager.getOnSystemNavigationCallback();
+        CallbackHelper callbackHelper = new CallbackHelper();
+
+        manager.addOnSystemNavigationObserver(callbackHelper::notifyCalled);
+        manager.addOnSystemNavigationObserver(callbackHelper::notifyCalled);
+
+        callback.onBackInvoked();
+        Assert.assertEquals("All observers should be called", 2, callbackHelper.getCallCount());
     }
 
     private int getHandlerCount(BackPressManager manager) {

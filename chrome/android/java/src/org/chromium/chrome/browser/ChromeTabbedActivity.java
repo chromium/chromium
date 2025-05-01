@@ -3471,10 +3471,16 @@ public class ChromeTabbedActivity extends ChromeActivity {
                     new MinimizeAppAndCloseTabBackPressHandler(
                             getActivityTabProvider(),
                             this::backShouldCloseTab,
+                            TabAssociatedApp::isOpenedFromExternalApp,
+                            this::closeTabUponMinimization,
                             this::sendToBackground);
             mBackPressManager.addHandler(
                     mMinimizeAppAndCloseTabBackPressHandler,
                     BackPressHandler.Type.MINIMIZE_APP_AND_CLOSE_TAB);
+            if (MinimizeAppAndCloseTabBackPressHandler.supportCloseTabUponMinimization()) {
+                mBackPressManager.addOnSystemNavigationObserver(
+                        mMinimizeAppAndCloseTabBackPressHandler);
+            }
         }
     }
 
@@ -3522,54 +3528,56 @@ public class ChromeTabbedActivity extends ChromeActivity {
     private void sendToBackground(@Nullable final Tab tabToClose) {
         Log.i(TAG, "sendToBackground(): " + tabToClose);
         moveTaskToBack(true);
-        if (tabToClose != null) {
-            // In the case of closing a tab upon minimization, don't allow the close action to
-            // happen until after our app is minimized to make sure we don't get a brief glimpse of
-            // the newly active tab before we exit Chrome.
-            //
-            // If the runnable doesn't run before the Activity dies, Chrome won't crash but the tab
-            // won't be closed (crbug.com/587565).
-            mHandler.postDelayed(
-                    () -> {
-                        if (mTabModelSelector == null
-                                || tabToClose.isClosing()
-                                || tabToClose.isDestroyed()) {
-                            return;
-                        }
+        if (tabToClose != null) closeTabUponMinimization(tabToClose);
+    }
 
-                        final TabModel currentModel = mTabModelSelector.getCurrentModel();
-                        final TabModel tabToCloseModel =
-                                mTabModelSelector.getModel(tabToClose.isIncognito());
-                        if (currentModel != tabToCloseModel) {
-                            // This seems improbable; however, crbug/1463397 suggests otherwise. If
-                            // this happens, remain on the current tab and close the tab in the
-                            // other model.
-                            tabToCloseModel
-                                    .getTabRemover()
-                                    .closeTabs(
-                                            TabClosureParams.closeTab(tabToClose)
-                                                    .uponExit(true)
-                                                    .allowUndo(false)
-                                                    .build(),
-                                            /* allowDialog= */ false);
-                            return;
-                        }
+    private void closeTabUponMinimization(@NonNull Tab tabToClose) {
+        // In the case of closing a tab upon minimization, don't allow the close action to
+        // happen until after our app is minimized to make sure we don't get a brief glimpse of
+        // the newly active tab before we exit Chrome.
+        //
+        // If the runnable doesn't run before the Activity dies, Chrome won't crash but the tab
+        // won't be closed (crbug.com/587565).
+        mHandler.postDelayed(
+                () -> {
+                    if (mTabModelSelector == null
+                            || tabToClose.isClosing()
+                            || tabToClose.isDestroyed()) {
+                        return;
+                    }
 
-                        Tab nextTab =
-                                currentModel.getNextTabIfClosed(
-                                        tabToClose.getId(), /* uponExit= */ true);
+                    final TabModel currentModel = mTabModelSelector.getCurrentModel();
+                    final TabModel tabToCloseModel =
+                            mTabModelSelector.getModel(tabToClose.isIncognito());
+                    if (currentModel != tabToCloseModel) {
+                        // This seems improbable; however, crbug/1463397 suggests otherwise. If
+                        // this happens, remain on the current tab and close the tab in the
+                        // other model.
                         tabToCloseModel
                                 .getTabRemover()
                                 .closeTabs(
                                         TabClosureParams.closeTab(tabToClose)
-                                                .recommendedNextTab(nextTab)
                                                 .uponExit(true)
                                                 .allowUndo(false)
                                                 .build(),
                                         /* allowDialog= */ false);
-                    },
-                    CLOSE_TAB_ON_MINIMIZE_DELAY_MS);
-        }
+                        return;
+                    }
+
+                    Tab nextTab =
+                            currentModel.getNextTabIfClosed(
+                                    tabToClose.getId(), /* uponExit= */ true);
+                    tabToCloseModel
+                            .getTabRemover()
+                            .closeTabs(
+                                    TabClosureParams.closeTab(tabToClose)
+                                            .recommendedNextTab(nextTab)
+                                            .uponExit(true)
+                                            .allowUndo(false)
+                                            .build(),
+                                    /* allowDialog= */ false);
+                },
+                CLOSE_TAB_ON_MINIMIZE_DELAY_MS);
     }
 
     @Override
