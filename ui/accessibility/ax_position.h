@@ -1961,6 +1961,62 @@ class AXPosition {
     return leaf_tree_position;
   }
 
+  // This method is similar to `AsUnignoredPosition`, but it will never cross
+  // an anchor boundary. This means that if the position is at the start or end
+  // of the anchor, it will return a position at the start or end of the anchor,
+  // respectively. This is useful when we want to ensure that the resulting
+  // position is still within the same anchor. If no unignored position can be
+  // found, it will return a null position.
+  AXPositionInstance TryAsUnignoredPositionPreservingAnchor(
+      AXPositionAdjustmentBehavior behavior) const {
+    if (IsNullPosition()) {
+      return Clone();
+    }
+
+    AXPositionInstance new_position = AsUnignoredPosition(behavior);
+    if (GetAnchor() == new_position->GetAnchor()) {
+      return new_position;
+    }
+
+    // As a last resort, AsUnignoredPosition() may return a position that is
+    // anchored at a different node. In such case, we need to create a new
+    // position that is anchored at the same node as this position. To do this,
+    // Try Calling AsUnignoredPosition in the other direction, starting from
+    // one of the ends, as there may not have been any unignored positions in
+    // the original direction.
+    switch (behavior) {
+      case AXPositionAdjustmentBehavior::kMoveBackward:
+        new_position = CreatePositionAtStartOfAnchor()->AsUnignoredPosition(
+            AXPositionAdjustmentBehavior::kMoveForward);
+        break;
+      case AXPositionAdjustmentBehavior::kMoveForward:
+        new_position = CreatePositionAtEndOfAnchor()->AsUnignoredPosition(
+            AXPositionAdjustmentBehavior::kMoveBackward);
+        break;
+    }
+    if (GetAnchor() != new_position->GetAnchor()) {
+      // Check to see if the new position can be expressed in terms of the
+      // current anchor.
+      new_position = new_position->CreateAncestorPosition(
+          GetAnchor(), behavior == AXPositionAdjustmentBehavior::kMoveForward
+                           ? ax::mojom::MoveDirection::kForward
+                           : ax::mojom::MoveDirection::kBackward);
+    }
+    // It could be that there are no unignored positions that can be rooted
+    // at the current anchor. In such case, we return a null position.
+    if (new_position->IsIgnored()) {
+      return CreateNullPosition();
+    }
+
+    // Retain original position type.
+    if (IsTextPosition()) {
+      new_position = new_position->AsTextPosition();
+    } else {
+      new_position = new_position->AsTreePosition();
+    }
+    return new_position;
+  }
+
   // Searches backward and forward from this position until it finds the given
   // text boundary, and creates an AXRange that spans from the former to the
   // latter. The resulting AXRange is always a forward range: its anchor always
@@ -3522,11 +3578,13 @@ class AXPosition {
               case ax::mojom::MoveDirection::kNone:
                 NOTREACHED();
               case ax::mojom::MoveDirection::kBackward:
-                return CreatePositionAtStartOfAnchor()->AsUnignoredPosition(
-                    AXPositionAdjustmentBehavior::kMoveBackward);
+                return CreatePositionAtStartOfAnchor()
+                    ->TryAsUnignoredPositionPreservingAnchor(
+                        AXPositionAdjustmentBehavior::kMoveBackward);
               case ax::mojom::MoveDirection::kForward:
-                return CreatePositionAtEndOfAnchor()->AsUnignoredPosition(
-                    AXPositionAdjustmentBehavior::kMoveForward);
+                return CreatePositionAtEndOfAnchor()
+                    ->TryAsUnignoredPositionPreservingAnchor(
+                        AXPositionAdjustmentBehavior::kMoveForward);
             }
           }
 
@@ -3572,12 +3630,14 @@ class AXPosition {
         case ax::mojom::MoveDirection::kNone:
           NOTREACHED();
         case ax::mojom::MoveDirection::kBackward:
-          text_position = CreatePositionAtStartOfAnchor()->AsUnignoredPosition(
-              AXPositionAdjustmentBehavior::kMoveBackward);
+          text_position = CreatePositionAtStartOfAnchor()
+                              ->TryAsUnignoredPositionPreservingAnchor(
+                                  AXPositionAdjustmentBehavior::kMoveBackward);
           break;
         case ax::mojom::MoveDirection::kForward:
-          text_position = CreatePositionAtEndOfAnchor()->AsUnignoredPosition(
-              AXPositionAdjustmentBehavior::kMoveForward);
+          text_position = CreatePositionAtEndOfAnchor()
+                              ->TryAsUnignoredPositionPreservingAnchor(
+                                  AXPositionAdjustmentBehavior::kMoveForward);
       }
 
       // Preserve affinity for forward upstream positions.
@@ -3685,11 +3745,13 @@ class AXPosition {
               case ax::mojom::MoveDirection::kNone:
                 NOTREACHED();
               case ax::mojom::MoveDirection::kBackward:
-                return CreatePositionAtStartOfAnchor()->AsUnignoredPosition(
-                    AXPositionAdjustmentBehavior::kMoveBackward);
+                return CreatePositionAtStartOfAnchor()
+                    ->TryAsUnignoredPositionPreservingAnchor(
+                        AXPositionAdjustmentBehavior::kMoveBackward);
               case ax::mojom::MoveDirection::kForward:
-                return CreatePositionAtEndOfAnchor()->AsUnignoredPosition(
-                    AXPositionAdjustmentBehavior::kMoveForward);
+                return CreatePositionAtEndOfAnchor()
+                    ->TryAsUnignoredPositionPreservingAnchor(
+                        AXPositionAdjustmentBehavior::kMoveForward);
             }
           }
 
@@ -3735,11 +3797,13 @@ class AXPosition {
         case ax::mojom::MoveDirection::kNone:
           NOTREACHED();
         case ax::mojom::MoveDirection::kBackward:
-          return CreatePositionAtStartOfAnchor()->AsUnignoredPosition(
-              AXPositionAdjustmentBehavior::kMoveBackward);
+          return CreatePositionAtStartOfAnchor()
+              ->TryAsUnignoredPositionPreservingAnchor(
+                  AXPositionAdjustmentBehavior::kMoveBackward);
         case ax::mojom::MoveDirection::kForward:
-          return CreatePositionAtEndOfAnchor()->AsUnignoredPosition(
-              AXPositionAdjustmentBehavior::kMoveForward);
+          return CreatePositionAtEndOfAnchor()
+              ->TryAsUnignoredPositionPreservingAnchor(
+                  AXPositionAdjustmentBehavior::kMoveForward);
       }
     }
 

@@ -12354,6 +12354,143 @@ TEST_F(AXPositionTest, TextNavigationWithCollapsedCombobox) {
   EXPECT_EQ(2, position->text_offset());
 }
 
+TEST_F(AXPositionTest, CreatePositionAtTextBoundaryWithHiddenLineBreak) {
+  // This test simulates a contenteditable div with three lines, where the
+  // middle line has a hidden <br> element. Structure: rootWebArea
+  // ++genericContainer editable
+  // ++++div "first"
+  // ++++div id="parent"
+  // ++++++span (contenteditable=false)
+  // ++++++span "second"
+  // ++++++br (style="display: none")
+  // ++++div "third"
+
+  AXNodeData root_data;
+  root_data.id = 1;
+  root_data.role = ax::mojom::Role::kRootWebArea;
+
+  AXNodeData editable_container;
+  editable_container.id = 12;
+  editable_container.role = ax::mojom::Role::kGenericContainer;
+  editable_container.AddState(ax::mojom::State::kEditable);
+  editable_container.AddState(ax::mojom::State::kFocusable);
+  editable_container.AddState(ax::mojom::State::kMultiline);
+  editable_container.AddState(ax::mojom::State::kRichlyEditable);
+  editable_container.AddBoolAttribute(
+      ax::mojom::BoolAttribute::kIsLineBreakingObject, true);
+
+  AXNodeData first_div;
+  first_div.id = 3;
+  first_div.role = ax::mojom::Role::kGenericContainer;
+  first_div.AddState(ax::mojom::State::kEditable);
+  first_div.AddState(ax::mojom::State::kRichlyEditable);
+  first_div.AddBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject,
+                             true);
+
+  AXNodeData first_static_text;
+  first_static_text.id = 8;
+  first_static_text.role = ax::mojom::Role::kStaticText;
+  first_static_text.AddState(ax::mojom::State::kEditable);
+  first_static_text.AddState(ax::mojom::State::kRichlyEditable);
+  first_static_text.SetName("first");
+
+  AXNodeData parent_div;
+  parent_div.id = 4;
+  parent_div.role = ax::mojom::Role::kGenericContainer;
+  parent_div.AddState(ax::mojom::State::kEditable);
+  parent_div.AddState(ax::mojom::State::kRichlyEditable);
+  parent_div.AddBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject,
+                              true);
+
+  AXNodeData span_noneditable;
+  span_noneditable.id = 13;
+  span_noneditable.role = ax::mojom::Role::kGenericContainer;
+
+  AXNodeData second_static_text;
+  second_static_text.id = 9;
+  second_static_text.role = ax::mojom::Role::kStaticText;
+  second_static_text.AddState(ax::mojom::State::kEditable);
+  second_static_text.AddState(ax::mojom::State::kRichlyEditable);
+  second_static_text.SetName("second");
+
+  AXNodeData hidden_br;
+  hidden_br.id = 15;
+  hidden_br.role = ax::mojom::Role::kGenericContainer;
+  hidden_br.AddState(ax::mojom::State::kIgnored);
+  hidden_br.AddState(ax::mojom::State::kInvisible);
+  hidden_br.AddBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject,
+                             true);
+
+  AXNodeData third_div;
+  third_div.id = 5;
+  third_div.role = ax::mojom::Role::kGenericContainer;
+  third_div.AddState(ax::mojom::State::kEditable);
+  third_div.AddState(ax::mojom::State::kRichlyEditable);
+  third_div.AddBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject,
+                             true);
+
+  AXNodeData third_static_text;
+  third_static_text.id = 10;
+  third_static_text.role = ax::mojom::Role::kStaticText;
+  third_static_text.AddState(ax::mojom::State::kEditable);
+  third_static_text.AddState(ax::mojom::State::kRichlyEditable);
+  third_static_text.SetName("third");
+
+  root_data.child_ids = {editable_container.id};
+  editable_container.child_ids = {first_div.id, parent_div.id, third_div.id};
+  first_div.child_ids = {first_static_text.id};
+  parent_div.child_ids = {span_noneditable.id, second_static_text.id,
+                          hidden_br.id};
+  third_div.child_ids = {third_static_text.id};
+
+  SetTree(
+      CreateAXTree({root_data, editable_container, first_div, first_static_text,
+                    parent_div, span_noneditable, second_static_text, hidden_br,
+                    third_div, third_static_text}));
+
+  TestPositionType text_position =
+      CreateTextPosition(parent_div, 0, ax::mojom::TextAffinity::kDownstream);
+  ASSERT_NE(nullptr, text_position);
+  ASSERT_TRUE(text_position->IsTextPosition());
+
+  // Navigate to the next line start boundary.
+  TestPositionType line_position = text_position->CreatePositionAtTextBoundary(
+      ax::mojom::TextBoundary::kLineStart, ax::mojom::MoveDirection::kForward,
+      {AXBoundaryBehavior::kStopAtAnchorBoundary,
+       AXBoundaryDetection::kDontCheckInitialPosition});
+
+  ASSERT_NE(nullptr, line_position);
+  EXPECT_TRUE(line_position->IsTextPosition());
+  EXPECT_EQ(parent_div.id, line_position->anchor_id());
+  EXPECT_EQ(6, line_position->text_offset());
+
+  line_position = text_position->CreatePositionAtTextBoundary(
+      ax::mojom::TextBoundary::kLineStart, ax::mojom::MoveDirection::kBackward,
+      {AXBoundaryBehavior::kStopAtAnchorBoundary,
+       AXBoundaryDetection::kDontCheckInitialPosition});
+
+  ASSERT_NE(nullptr, line_position);
+  EXPECT_TRUE(line_position->IsTextPosition());
+  EXPECT_EQ(parent_div.id, line_position->anchor_id());
+  EXPECT_EQ(0, line_position->text_offset());
+
+  text_position =
+      CreateTextPosition(third_div, 4, ax::mojom::TextAffinity::kDownstream);
+  ASSERT_NE(nullptr, text_position);
+  ASSERT_TRUE(text_position->IsTextPosition());
+
+  // Navigate to the next line start boundary.
+  line_position = text_position->CreatePositionAtTextBoundary(
+      ax::mojom::TextBoundary::kLineStart, ax::mojom::MoveDirection::kBackward,
+      {AXBoundaryBehavior::kStopAtAnchorBoundary,
+       AXBoundaryDetection::kDontCheckInitialPosition});
+
+  ASSERT_NE(nullptr, line_position);
+  EXPECT_TRUE(line_position->IsTextPosition());
+  EXPECT_EQ(third_div.id, line_position->anchor_id());
+  EXPECT_EQ(0, line_position->text_offset());
+}
+
 TEST_F(AXPositionTest, GetUnignoredSelectionWithLeafNodes) {
   ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
       AXEmbeddedObjectBehavior::kExposeCharacterForHypertext);
