@@ -919,6 +919,7 @@
     "mac13-tests": "try/mac13-tests/gn-args.json",
     "mac14-arm64-rel": "try/mac14-arm64-rel/gn-args.json",
     "mac14-tests": "try/mac14-tests/gn-args.json",
+    "mac15-x64-rel-tests": "try/mac15-x64-rel-tests/gn-args.json",
     "mac_chromium_11.0_rel_ng": "try/mac_chromium_11.0_rel_ng/gn-args.json",
     "mac_chromium_asan_rel_ng": "try/mac_chromium_asan_rel_ng/gn-args.json",
     "mac_chromium_compile_dbg_ng": "try/mac_chromium_compile_dbg_ng/gn-args.json",
