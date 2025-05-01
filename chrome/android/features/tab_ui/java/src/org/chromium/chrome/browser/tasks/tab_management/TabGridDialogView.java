@@ -357,13 +357,15 @@ public class TabGridDialogView extends FrameLayout {
     }
 
     private void clearBackgroundViewAccessibilityImportance() {
-        assert mAccessibilityImportanceMap.size() == 0;
-
+        assert mAccessibilityImportanceMap.isEmpty();
         ViewGroup parent = (ViewGroup) getParent();
         for (int i = 0; i < parent.getChildCount(); i++) {
             View view = parent.getChildAt(i);
             if (view == TabGridDialogView.this) {
-                continue;
+                // Views earlier than us in the child list draw below us. We occlude them, and we
+                // need to turn off their accessibility focus. Views that come after us, like bottom
+                // sheet, may occlude us, and we should not turn off their accessibility focus.
+                break;
             }
             mAccessibilityImportanceMap.put(view, view.getImportantForAccessibility());
             view.setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS);
@@ -375,10 +377,7 @@ public class TabGridDialogView extends FrameLayout {
         for (int i = 0; i < parent.getChildCount(); i++) {
             View view = parent.getChildAt(i);
             if (view == TabGridDialogView.this) {
-                continue;
-            }
-            if (!TabUiUtils.isDataSharingFunctionalityEnabled()) {
-                assert mAccessibilityImportanceMap.containsKey(view);
+                break;
             }
             Integer importance = mAccessibilityImportanceMap.get(view);
             view.setImportantForAccessibility(
