@@ -38,7 +38,8 @@ class CSSIntrinsicLengthInterpolationType : public CSSInterpolationType {
                  double interpolation_fraction) const final;
 
   static InterpolableValue* CreateInterpolableIntrinsicDimension(
-      const StyleIntrinsicLength&);
+      const StyleIntrinsicLength&,
+      float);
 
  private:
   StyleIntrinsicLength GetIntrinsicDimension(const ComputedStyle&) const;

@@ -95,14 +95,16 @@ class InheritedIntrinsicDimensionChecker
 
 InterpolableValue*
 CSSIntrinsicLengthInterpolationType::CreateInterpolableIntrinsicDimension(
-    const StyleIntrinsicLength& intrinsic_dimension) {
+    const StyleIntrinsicLength& intrinsic_dimension,
+    float zoom) {
   const auto& length = intrinsic_dimension.GetLength();
   if (!length) {
     return nullptr;
   }
 
   DCHECK(length->IsFixed());
-  return InterpolableLength::CreatePixels(length->Pixels());
+  CHECK_GT(zoom, 0.f);
+  return InterpolableLength::CreatePixels(length->Pixels() / zoom);
 }
 
 PairwiseInterpolationValue
@@ -148,7 +150,7 @@ InterpolationValue CSSIntrinsicLengthInterpolationType::MaybeConvertInitial(
   StyleIntrinsicLength initial_dimension = GetIntrinsicDimension(
       state.GetDocument().GetStyleResolver().InitialStyle());
   return InterpolationValue(
-      CreateInterpolableIntrinsicDimension(initial_dimension),
+      CreateInterpolableIntrinsicDimension(initial_dimension, 1.f),
       CSSIntrinsicLengthNonInterpolableValue::Create(initial_dimension));
 }
 
@@ -169,7 +171,8 @@ InterpolationValue CSSIntrinsicLengthInterpolationType::MaybeConvertInherit(
   }
 
   return InterpolationValue(
-      CreateInterpolableIntrinsicDimension(inherited_intrinsic_dimension),
+      CreateInterpolableIntrinsicDimension(
+          inherited_intrinsic_dimension, state.ParentStyle()->EffectiveZoom()),
       CSSIntrinsicLengthNonInterpolableValue::Create(
           inherited_intrinsic_dimension));
 }
@@ -179,7 +182,7 @@ InterpolationValue CSSIntrinsicLengthInterpolationType::
         const ComputedStyle& style) const {
   StyleIntrinsicLength dimension = GetIntrinsicDimension(style);
   return InterpolationValue(
-      CreateInterpolableIntrinsicDimension(dimension),
+      CreateInterpolableIntrinsicDimension(dimension, style.EffectiveZoom()),
       CSSIntrinsicLengthNonInterpolableValue::Create(dimension));
 }
 
@@ -190,7 +193,8 @@ InterpolationValue CSSIntrinsicLengthInterpolationType::MaybeConvertValue(
   const StyleIntrinsicLength& dimension =
       StyleBuilderConverter::ConvertIntrinsicDimension(state, value);
   return InterpolationValue(
-      CreateInterpolableIntrinsicDimension(dimension),
+      CreateInterpolableIntrinsicDimension(
+          dimension, state.StyleBuilder().EffectiveZoom()),
       CSSIntrinsicLengthNonInterpolableValue::Create(dimension));
 }
 

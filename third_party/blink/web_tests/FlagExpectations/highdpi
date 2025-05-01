@@ -67,8 +67,6 @@ crbug.com/1179572 animations/cross-fade-webkit-mask-box-image.html [ Failure ]
 crbug.com/1412910 virtual/threaded/external/wpt/css/css-view-transitions/fractional-translation-from-position.html [ Failure ]
 crbug.com/1414855 virtual/threaded/external/wpt/css/css-view-transitions/new-content-captures-spans.html [ Failure ]
 
-crbug.com/1314903 external/wpt/css/css-sizing/contain-intrinsic-size/animation/contain-intrinsic-size-interpolation.html [ Failure ]
-
 crbug.com/1179544 compositing/canvas-with-object-fit-contain-in-composited-layer.html [ Failure ]
 crbug.com/1179544 compositing/composited-replaced-subpixel-location.html [ Failure ]
 crbug.com/1179544 compositing/overflow-trumps-transform-style.html [ Failure ]
