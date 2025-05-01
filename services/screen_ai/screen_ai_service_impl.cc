@@ -53,7 +53,9 @@ namespace {
 constexpr int kMaxOcrDimension = 2048;
 
 // How often it would be checked that the service is idle and can be shutdown.
+// LINT.IfChange(kIdleCheckingDelay)
 constexpr base::TimeDelta kIdleCheckingDelay = base::Seconds(3);
+// LINT.ThenChange(//chrome/browser/screen_ai/optical_character_recognizer_browsertest.cc:kServiceIdleCheckingDelay)
 
 // How long to wait for a request to the library be responded, before assuming
 // that the library is not responsive.
@@ -266,7 +268,7 @@ ScreenAIService::ScreenAIService(
   model_data_holder_ = std::make_unique<ModelDataHolder>();
   idle_checking_timer_ = std::make_unique<base::RepeatingTimer>();
   idle_checking_timer_->Start(FROM_HERE, kIdleCheckingDelay, this,
-                              &ScreenAIService::ShutDownIfNoClients);
+                              &ScreenAIService::ShutDownOnIdle);
 
   background_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
       {base::TaskPriority::BEST_EFFORT,
@@ -666,18 +668,12 @@ ui::AXNodeID ScreenAIService::ComputeMainNodeForTesting(
   return ComputeMainNode(tree, content_node_ids);
 }
 
-void ScreenAIService::ShutDownIfNoClients() {
+void ScreenAIService::ShutDownOnIdle() {
   const base::TimeTicks kIdlenessThreshold =
       base::TimeTicks::Now() - kIdleCheckingDelay;
-  bool ocr_not_needed =
-      !screen_ai_annotators_.size() || ocr_last_used_ < kIdlenessThreshold;
-  bool main_content_extractioncan_not_needed =
-      !screen2x_main_content_extractors_.size() ||
-      mce_last_used_ < kIdlenessThreshold;
-
-  if (ocr_not_needed && main_content_extractioncan_not_needed) {
+  if (ocr_last_used_ < kIdlenessThreshold &&
+      mce_last_used_ < kIdlenessThreshold) {
     screen_ai_shutdown_handler_->ShuttingDownOnIdle();
-    VLOG(2) << "Shutting down since no client or idle.";
     base::Process::TerminateCurrentProcessImmediately(0);
   }
 }

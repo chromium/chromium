@@ -98,9 +98,6 @@ class ScreenAIService : public mojom::ScreenAIServiceFactory,
       InitializeOCRCallback callback) override;
 
   // mojom::ScreenAIServiceFactory:
-  void ShutDownIfNoClients() override;
-
-  // mojom::ScreenAIServiceFactory:
   void BindShutdownHandler(
       mojo::PendingRemote<mojom::ScreenAIServiceShutdownHandler>
           shutdown_handler) override;
@@ -129,6 +126,8 @@ class ScreenAIService : public mojom::ScreenAIServiceFactory,
 
   void OcrReceiverDisconnected();
   void MceReceiverDisconnected();
+
+  void ShutDownOnIdle();
 
   // Last time the feature is used. A null value means never, it is set when the
   // feature is initialized, and each time it is used.

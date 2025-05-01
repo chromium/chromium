@@ -38,6 +38,10 @@
 
 namespace {
 
+// LINT.IfChange(kServiceIdleCheckingDelay)
+constexpr base::TimeDelta kServiceIdleCheckingDelay = base::Seconds(3);
+// LINT.ThenChange(//services/screen_ai/screen_ai_service_impl.cc:kIdleCheckingDelay)
+
 using ::testing::ElementsAre;
 using ::testing::Field;
 using ::testing::IsEmpty;
@@ -88,14 +92,13 @@ void WaitForDisconnecting(screen_ai::ScreenAIServiceRouter* router,
     std::move(callback).Run();
     return;
   }
-  router->ShutDownIfNoClientsForTesting();
 
   // Wait more...
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&WaitForDisconnecting, router, std::move(callback),
                      remaining_tries - 1),
-      base::Milliseconds(200));
+      kServiceIdleCheckingDelay);
 }
 
 // bool: PDF OCR service enabled.
@@ -497,9 +500,9 @@ IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest,
     ASSERT_TRUE(router->IsProcessRunningForTesting());
   }
 
-  // Trigger service shut down and wait for disconnecting.
+  // Wait for shut down due to being idle.
   base::test::TestFuture<void> future;
-  WaitForDisconnecting(router, future.GetCallback(), /*remaining_tries=*/10);
+  WaitForDisconnecting(router, future.GetCallback(), /*remaining_tries=*/2);
   ASSERT_TRUE(future.Wait());
   ASSERT_FALSE(router->IsProcessRunningForTesting());
 
