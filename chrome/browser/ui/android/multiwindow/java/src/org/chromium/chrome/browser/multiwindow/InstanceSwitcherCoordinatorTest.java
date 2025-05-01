@@ -95,9 +95,11 @@ public class InstanceSwitcherCoordinatorTest {
         InstanceInfo[] instances =
                 new InstanceInfo[] {
                     new InstanceInfo(
-                            0, 57, InstanceInfo.Type.CURRENT, "url0", "title0", 1, 0, false),
-                    new InstanceInfo(1, 58, InstanceInfo.Type.OTHER, "ur11", "title1", 2, 0, false),
-                    new InstanceInfo(2, 59, InstanceInfo.Type.OTHER, "url2", "title2", 0, 0, false)
+                            0, 57, InstanceInfo.Type.CURRENT, "url0", "title0", 1, 0, false, 0),
+                    new InstanceInfo(
+                            1, 58, InstanceInfo.Type.OTHER, "ur11", "title1", 2, 0, false, 0),
+                    new InstanceInfo(
+                            2, 59, InstanceInfo.Type.OTHER, "url2", "title2", 0, 0, false, 0)
                 };
         final CallbackHelper itemClickCallbackHelper = new CallbackHelper();
         final int itemClickCount = itemClickCallbackHelper.getCallCount();
@@ -124,9 +126,11 @@ public class InstanceSwitcherCoordinatorTest {
         InstanceInfo[] instances =
                 new InstanceInfo[] {
                     new InstanceInfo(
-                            0, 57, InstanceInfo.Type.CURRENT, "url0", "title0", 1, 0, false),
-                    new InstanceInfo(1, 58, InstanceInfo.Type.OTHER, "ur11", "title1", 2, 0, false),
-                    new InstanceInfo(2, 59, InstanceInfo.Type.OTHER, "url2", "title2", 0, 0, false)
+                            0, 57, InstanceInfo.Type.CURRENT, "url0", "title0", 1, 0, false, 0),
+                    new InstanceInfo(
+                            1, 58, InstanceInfo.Type.OTHER, "ur11", "title1", 2, 0, false, 0),
+                    new InstanceInfo(
+                            2, 59, InstanceInfo.Type.OTHER, "url2", "title2", 0, 0, false, 0)
                 };
         final CallbackHelper itemClickCallbackHelper = new CallbackHelper();
         final int itemClickCount = itemClickCallbackHelper.getCallCount();
@@ -153,9 +157,11 @@ public class InstanceSwitcherCoordinatorTest {
         InstanceInfo[] instances =
                 new InstanceInfo[] {
                     new InstanceInfo(
-                            0, 57, InstanceInfo.Type.CURRENT, "url0", "title0", 1, 0, false),
-                    new InstanceInfo(1, 58, InstanceInfo.Type.OTHER, "ur11", "title1", 2, 0, false),
-                    new InstanceInfo(2, 59, InstanceInfo.Type.OTHER, "url2", "title2", 1, 1, false)
+                            0, 57, InstanceInfo.Type.CURRENT, "url0", "title0", 1, 0, false, 0),
+                    new InstanceInfo(
+                            1, 58, InstanceInfo.Type.OTHER, "ur11", "title1", 2, 0, false, 0),
+                    new InstanceInfo(
+                            2, 59, InstanceInfo.Type.OTHER, "url2", "title2", 1, 1, false, 0)
                 };
         final CallbackHelper itemClickCallbackHelper = new CallbackHelper();
         final int itemClickCount = itemClickCallbackHelper.getCallCount();
@@ -199,11 +205,15 @@ public class InstanceSwitcherCoordinatorTest {
         InstanceInfo[] instances =
                 new InstanceInfo[] {
                     new InstanceInfo(
-                            0, 57, InstanceInfo.Type.CURRENT, "url0", "title0", 1, 0, false),
-                    new InstanceInfo(1, 58, InstanceInfo.Type.OTHER, "ur11", "title1", 2, 0, false),
-                    new InstanceInfo(2, 59, InstanceInfo.Type.OTHER, "url2", "title2", 1, 1, false),
-                    new InstanceInfo(3, 60, InstanceInfo.Type.OTHER, "url3", "title3", 1, 1, false),
-                    new InstanceInfo(4, 61, InstanceInfo.Type.OTHER, "url4", "title4", 1, 1, false)
+                            0, 57, InstanceInfo.Type.CURRENT, "url0", "title0", 1, 0, false, 0),
+                    new InstanceInfo(
+                            1, 58, InstanceInfo.Type.OTHER, "ur11", "title1", 2, 0, false, 0),
+                    new InstanceInfo(
+                            2, 59, InstanceInfo.Type.OTHER, "url2", "title2", 1, 1, false, 0),
+                    new InstanceInfo(
+                            3, 60, InstanceInfo.Type.OTHER, "url3", "title3", 1, 1, false, 0),
+                    new InstanceInfo(
+                            4, 61, InstanceInfo.Type.OTHER, "url4", "title4", 1, 1, false, 0)
                 };
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -234,9 +244,11 @@ public class InstanceSwitcherCoordinatorTest {
         InstanceInfo[] instances =
                 new InstanceInfo[] {
                     new InstanceInfo(
-                            0, 57, InstanceInfo.Type.CURRENT, "url0", "title0", 1, 0, false),
-                    new InstanceInfo(1, 58, InstanceInfo.Type.OTHER, "ur11", "title1", 2, 0, false),
-                    new InstanceInfo(2, 59, InstanceInfo.Type.OTHER, "url2", "title2", 0, 0, false)
+                            0, 57, InstanceInfo.Type.CURRENT, "url0", "title0", 1, 0, false, 0),
+                    new InstanceInfo(
+                            1, 58, InstanceInfo.Type.OTHER, "ur11", "title1", 2, 0, false, 0),
+                    new InstanceInfo(
+                            2, 59, InstanceInfo.Type.OTHER, "url2", "title2", 0, 0, false, 0)
                 };
         final CallbackHelper closeCallbackHelper = new CallbackHelper();
         int itemClickCount = closeCallbackHelper.getCallCount();
@@ -282,9 +294,11 @@ public class InstanceSwitcherCoordinatorTest {
         InstanceInfo[] instances =
                 new InstanceInfo[] {
                     new InstanceInfo(
-                            0, 57, InstanceInfo.Type.CURRENT, "url0", "title0", 1, 0, false),
-                    new InstanceInfo(1, 58, InstanceInfo.Type.OTHER, "ur11", "title1", 2, 0, false),
-                    new InstanceInfo(2, 59, InstanceInfo.Type.OTHER, "url2", "title2", 1, 1, false)
+                            0, 57, InstanceInfo.Type.CURRENT, "url0", "title0", 1, 0, false, 0),
+                    new InstanceInfo(
+                            1, 58, InstanceInfo.Type.OTHER, "ur11", "title1", 2, 0, false, 0),
+                    new InstanceInfo(
+                            2, 59, InstanceInfo.Type.OTHER, "url2", "title2", 1, 1, false, 0)
                 };
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

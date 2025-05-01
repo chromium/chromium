@@ -340,7 +340,8 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
                             readTitle(i),
                             readTabCount(i),
                             readIncognitoTabCount(i),
-                            readIncognitoSelected(i)));
+                            readIncognitoSelected(i),
+                            readLastAccessedTime(i)));
         }
 
         // Move the current instance always to the top of the list.
@@ -801,7 +802,8 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
         return MultiWindowUtils.lastAccessedTimeKey(index);
     }
 
-    private static long readLastAccessedTime(int index) {
+    @VisibleForTesting
+    static long readLastAccessedTime(int index) {
         return MultiWindowUtils.readLastAccessedTime(index);
     }
 
@@ -977,8 +979,8 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
     }
 
     @Override
-    public void onResumeWithNative() {
-        super.onResumeWithNative();
+    public void onTopResumedActivityChanged(boolean isTopResumedActivity) {
+        super.onTopResumedActivityChanged(isTopResumedActivity);
         writeLastAccessedTime(mInstanceId);
     }
 

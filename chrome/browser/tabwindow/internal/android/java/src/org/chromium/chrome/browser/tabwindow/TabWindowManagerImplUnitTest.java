@@ -982,9 +982,12 @@ public class TabWindowManagerImplUnitTest {
     @EnableFeatures(ChromeFeatureList.HEADLESS_TAB_MODEL)
     public void testInitializeAllTabModels() {
         List<InstanceInfo> instanceInfoList = new ArrayList<>();
-        instanceInfoList.add(new InstanceInfo(0, 0, InstanceInfo.Type.OTHER, "", "", 0, 0, false));
-        instanceInfoList.add(new InstanceInfo(1, 0, InstanceInfo.Type.OTHER, "", "", 0, 0, false));
-        instanceInfoList.add(new InstanceInfo(2, 0, InstanceInfo.Type.OTHER, "", "", 0, 0, false));
+        instanceInfoList.add(
+                new InstanceInfo(0, 0, InstanceInfo.Type.OTHER, "", "", 0, 0, false, 0));
+        instanceInfoList.add(
+                new InstanceInfo(1, 0, InstanceInfo.Type.OTHER, "", "", 0, 0, false, 0));
+        instanceInfoList.add(
+                new InstanceInfo(2, 0, InstanceInfo.Type.OTHER, "", "", 0, 0, false, 0));
         when(mMultiInstanceManager.getInstanceInfo()).thenReturn(instanceInfoList);
 
         ActivityController<Activity> activityController0 = createActivity();

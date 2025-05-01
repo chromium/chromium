@@ -230,6 +230,7 @@ public class MultiInstanceManagerApi31UnitTest {
         }
 
         private void addInstanceInfo(int instanceId, int taskId) {
+            MultiInstanceManagerApi31.writeLastAccessedTime(instanceId);
             if (mTestBuildInstancesList) {
                 int numberOfInstances = mTestInstanceInfos.size();
                 int type =
@@ -245,7 +246,8 @@ public class MultiInstanceManagerApi31UnitTest {
                                 "",
                                 0,
                                 0,
-                                false));
+                                false,
+                                MultiInstanceManagerApi31.readLastAccessedTime(instanceId)));
             }
         }
 
@@ -1029,7 +1031,6 @@ public class MultiInstanceManagerApi31UnitTest {
 
         // Store minimal data to get the instance recognized.
         MultiInstanceManagerApi31.writeUrl(instanceId, "url" + instanceId);
-        MultiInstanceManagerApi31.writeLastAccessedTime(index);
         ChromeSharedPreferences.getInstance()
                 .writeInt(MultiInstanceManagerApi31.tabCountKey(index), 1);
         return instanceId;
@@ -1225,7 +1226,8 @@ public class MultiInstanceManagerApi31UnitTest {
                         "",
                         0,
                         0,
-                        false);
+                        false,
+                        0);
 
         mMultiInstanceManager.moveTabAction(info, mTab1, /* tabAtIndex= */ 0);
 
@@ -1375,6 +1377,88 @@ public class MultiInstanceManagerApi31UnitTest {
     @Config(sdk = 30)
     public void testOpenInstance_TaskHasNoRunningActivity() {
         doTestOpenInstanceWithValidTask(/* isActivityAlive= */ false);
+    }
+
+    @Test
+    public void testWriteLastAccessedTime_InstanceCreation() {
+        mMultiInstanceManager.mTestBuildInstancesList = true;
+        MultiWindowTestUtils.enableMultiInstance();
+
+        // Simulate creation of activity |mTabbedActivityTask62| with index 0 and
+        // |mTabbedActivityTask63| with index 1.
+        assertEquals(0, allocInstanceIndex(PASSED_ID_INVALID, mTabbedActivityTask62));
+        assertEquals(1, allocInstanceIndex(PASSED_ID_INVALID, mTabbedActivityTask63));
+
+        long accessTime0 = MultiInstanceManagerApi31.readLastAccessedTime(0);
+        long accessTime1 = MultiInstanceManagerApi31.readLastAccessedTime(1);
+
+        InstanceInfo info0 = mMultiInstanceManager.getInstanceInfoFor(mTabbedActivityTask62);
+        InstanceInfo info1 = mMultiInstanceManager.getInstanceInfoFor(mTabbedActivityTask63);
+
+        // Verify the lastAccessedTime for both instances.
+        assertEquals(
+                "InstanceInfo.lastAccessedTime for instance0 is incorrect.",
+                accessTime0,
+                info0.lastAccessedTime);
+        assertEquals(
+                "InstanceInfo.lastAccessedTime for instance1 is incorrect.",
+                accessTime1,
+                info1.lastAccessedTime);
+        assertTrue(
+                "Access time for instance0 should be older than access time for instance1.",
+                accessTime0 < accessTime1);
+    }
+
+    @Test
+    public void testWriteLastAccessedTime_OnTopResumedActivityChanged() {
+        mMultiInstanceManager.mTestBuildInstancesList = true;
+        MultiWindowTestUtils.enableMultiInstance();
+
+        // Setup instance for |mTabbedActivityTask62| with index 0, make it the top resumed
+        // activity.
+        MultiInstanceManagerApi31 multiInstanceManager0 =
+                new TestMultiInstanceManagerApi31(
+                        mTabbedActivityTask62,
+                        mTabModelOrchestratorSupplier,
+                        mMultiWindowModeStateDispatcher,
+                        mActivityLifecycleDispatcher,
+                        mModalDialogManagerSupplier,
+                        mMenuOrKeyboardActionController,
+                        mDesktopWindowStateManagerSupplier);
+        assertEquals(0, allocInstanceIndex(PASSED_ID_INVALID, mTabbedActivityTask62));
+        multiInstanceManager0.initialize(0, mTabbedActivityTask62.getTaskId());
+        multiInstanceManager0.onTopResumedActivityChanged(true);
+        long instance0CreationTime = MultiInstanceManagerApi31.readLastAccessedTime(0);
+
+        // Setup instance for |mTabbedActivityTask63| with index 1, make it the top resumed
+        // activity.
+        MultiInstanceManagerApi31 multiInstanceManager1 =
+                new TestMultiInstanceManagerApi31(
+                        mTabbedActivityTask63,
+                        mTabModelOrchestratorSupplier,
+                        mMultiWindowModeStateDispatcher,
+                        mActivityLifecycleDispatcher,
+                        mModalDialogManagerSupplier,
+                        mMenuOrKeyboardActionController,
+                        mDesktopWindowStateManagerSupplier);
+        assertEquals(1, allocInstanceIndex(PASSED_ID_INVALID, mTabbedActivityTask63));
+        multiInstanceManager1.initialize(1, mTabbedActivityTask63.getTaskId());
+        multiInstanceManager0.onTopResumedActivityChanged(false);
+        multiInstanceManager1.onTopResumedActivityChanged(true);
+        long instance1CreationTime = MultiInstanceManagerApi31.readLastAccessedTime(1);
+
+        // Resume instance0, so it becomes the top resumed activity.
+        multiInstanceManager0.onTopResumedActivityChanged(true);
+        multiInstanceManager1.onTopResumedActivityChanged(false);
+
+        // Verify the lastAccessedTime for both instances.
+        long accessTime0 = MultiInstanceManagerApi31.readLastAccessedTime(0);
+        long accessTime1 = MultiInstanceManagerApi31.readLastAccessedTime(1);
+
+        assertTrue(
+                "Access time for instance0 is not updated.", accessTime0 > instance0CreationTime);
+        assertTrue(
+                "Access time for instance1 is not updated.", accessTime1 > instance1CreationTime);
     }
 
     private void doTestOpenInstanceWithValidTask(boolean isActivityAlive) {

@@ -281,14 +281,22 @@ public class UiUtilsUnitTest {
     private InstanceInfo mockInstance(
             int taskId, int tabCount, int incognitoTabCount, boolean isIncognito) {
         return new InstanceInfo(
-                1, taskId, 0, "https://url.com", TITLE, tabCount, incognitoTabCount, isIncognito);
+                1,
+                taskId,
+                0,
+                "https://url.com",
+                TITLE,
+                tabCount,
+                incognitoTabCount,
+                isIncognito,
+                0);
     }
 
     private InstanceInfo mockInstance(int type) {
-        return new InstanceInfo(1, 57, type, "https://url.com", TITLE, 1, 1, true);
+        return new InstanceInfo(1, 57, type, "https://url.com", TITLE, 1, 1, true, 0);
     }
 
     private InstanceInfo mockInstanceBeforeLoadingTab(int type) {
-        return new InstanceInfo(1, 57, type, null, null, 1, 0, false);
+        return new InstanceInfo(1, 57, type, null, null, 1, 0, false, 0);
     }
 }

@@ -76,9 +76,11 @@ public class TargetSelectorCoordinatorTest {
         InstanceInfo[] instances =
                 new InstanceInfo[] {
                     new InstanceInfo(
-                            0, 57, InstanceInfo.Type.CURRENT, "url0", "title0", 1, 0, false),
-                    new InstanceInfo(1, 58, InstanceInfo.Type.OTHER, "ur11", "title1", 2, 0, false),
-                    new InstanceInfo(2, 59, InstanceInfo.Type.OTHER, "url2", "title2", 1, 1, false)
+                            0, 57, InstanceInfo.Type.CURRENT, "url0", "title0", 1, 0, false, 0),
+                    new InstanceInfo(
+                            1, 58, InstanceInfo.Type.OTHER, "ur11", "title1", 2, 0, false, 0),
+                    new InstanceInfo(
+                            2, 59, InstanceInfo.Type.OTHER, "url2", "title2", 1, 1, false, 0)
                 };
         final CallbackHelper itemClickCallbackHelper = new CallbackHelper();
         final int itemClickCount = itemClickCallbackHelper.getCallCount();
