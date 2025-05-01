@@ -75,16 +75,28 @@ class MODULES_EXPORT AIPageContentAgent final
     mojom::blink::AIPageContentPtr Build(LocalFrame& frame);
 
    private:
+    class RecursionData {
+      STACK_ALLOCATED();
+
+     public:
+      RecursionData(const ComputedStyle& document_style);
+
+      bool is_aria_disabled = false;
+      const ComputedStyle& document_style;
+      int stack_depth = 0;
+    };
+
     // Returns true if any descendant of `object` has a computed value of
     // visible for `visibility`.
     bool WalkChildren(const LayoutObject& object,
                       mojom::blink::AIPageContentNode& content_node,
-                      const ComputedStyle& document_style);
+                      const RecursionData& recursion_data);
     void ProcessIframe(const LayoutIFrame& object,
-                       mojom::blink::AIPageContentNode& content_node);
+                       mojom::blink::AIPageContentNode& content_node,
+                       const RecursionData& recursion_data);
     mojom::blink::AIPageContentNodePtr MaybeGenerateContentNode(
         const LayoutObject& object,
-        const ComputedStyle& document_style);
+        const RecursionData& recursion_data);
     void AddPageInteractionInfo(const Document& document,
                                 mojom::blink::AIPageContent& page_content);
     void AddFrameData(const LocalFrame& frame,
@@ -95,7 +107,11 @@ class MODULES_EXPORT AIPageContentAgent final
             frame_interaction_info);
     void AddNodeInteractionInfo(
         const LayoutObject& object,
-        mojom::blink::AIPageContentAttributes& attributes) const;
+        mojom::blink::AIPageContentAttributes& attributes,
+        bool is_aria_disabled) const;
+    void AddInteractionInfoForHitTesting(
+        const Node* node,
+        mojom::blink::AIPageContentNodeInteractionInfo& interaction_info) const;
     void AddMetaData(
         const LocalFrame& frame,
         WTF::Vector<mojom::blink::AIPageContentMetaPtr>& meta_data) const;
@@ -123,9 +139,6 @@ class MODULES_EXPORT AIPageContentAgent final
     const raw_ref<const mojom::blink::AIPageContentOptions> options_;
 
     base::flat_map<DOMNodeId, int32_t> dom_node_to_z_order_;
-
-    // The current depth of the tree being walked.
-    int stack_depth_ = 0;
 
     // Whether the stack depth has exceeded the max tree depth.
     bool stack_depth_exceeded_ = false;

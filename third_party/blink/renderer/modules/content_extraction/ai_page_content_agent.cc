@@ -46,6 +46,7 @@
 #include "third_party/blink/renderer/core/layout/table/layout_table_row.h"
 #include "third_party/blink/renderer/core/layout/table/layout_table_section.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
+#include "third_party/blink/renderer/modules/accessibility/ax_object.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "ui/gfx/geometry/point_conversions.h"
@@ -397,6 +398,7 @@ void ProcessFormControlNode(const HTMLFormControlElement& form_control_element,
       select_option->value = option_element.value();
       select_option->text = option_element.text();
       select_option->is_selected = option_element.Selected();
+      select_option->disabled = option_element.IsDisabledFormControl();
       form_control_data->select_options.push_back(std::move(select_option));
     }
   }
@@ -812,7 +814,7 @@ void AIPageContentAgent::ContentBuilder::AddInteractiveNode(
 bool AIPageContentAgent::ContentBuilder::WalkChildren(
     const LayoutObject& object,
     mojom::blink::AIPageContentNode& content_node,
-    const ComputedStyle& document_style) {
+    const RecursionData& recursion_data) {
   if (object.ChildPrePaintBlockedByDisplayLock()) {
     return false;
   }
@@ -821,7 +823,7 @@ bool AIPageContentAgent::ContentBuilder::WalkChildren(
   // room for the root node, attributes of the final node, and mojo wrappers
   // used in message creation.
   static const int kMaxTreeDepth = kMaxRecursionDepth - 8;
-  if (stack_depth_ > kMaxTreeDepth) {
+  if (recursion_data.stack_depth > kMaxTreeDepth) {
     stack_depth_exceeded_ = true;
     return false;
   }
@@ -833,10 +835,19 @@ bool AIPageContentAgent::ContentBuilder::WalkChildren(
       continue;
     }
 
+    RecursionData child_recursion_data(recursion_data);
+    auto* child_element = DynamicTo<Element>(child->GetNode());
+    if (!child_recursion_data.is_aria_disabled && child_element &&
+        AXObject::IsAriaAttributeTrue(*child_element,
+                                      html_names::kAriaDisabledAttr)) {
+      child_recursion_data.is_aria_disabled = true;
+    }
+
     has_visible_content |= IsVisible(*child);
 
     bool child_has_visible_content = false;
-    auto child_content_node = MaybeGenerateContentNode(*child, document_style);
+    auto child_content_node =
+        MaybeGenerateContentNode(*child, child_recursion_data);
     if (child_content_node &&
         // If the child is an iframe, it does its own tree walk.
         // TODO(crbug.com/405173553): Moving ProcessIframe here might simplify
@@ -853,18 +864,14 @@ bool AIPageContentAgent::ContentBuilder::WalkChildren(
              mojom::blink::AIPageContentAttributeType::kCanvas)) {
     } else {
       if (child_content_node) {
-        stack_depth_++;
+        child_recursion_data.stack_depth++;
       }
 
       auto& node_for_child =
           child_content_node ? *child_content_node : content_node;
       child_has_visible_content =
-          WalkChildren(*child, node_for_child, document_style);
+          WalkChildren(*child, node_for_child, child_recursion_data);
       has_visible_content |= child_has_visible_content;
-
-      if (child_content_node) {
-        stack_depth_--;
-      }
     }
 
     const bool should_add_node_for_child =
@@ -879,7 +886,8 @@ bool AIPageContentAgent::ContentBuilder::WalkChildren(
 
 void AIPageContentAgent::ContentBuilder::ProcessIframe(
     const LayoutIFrame& object,
-    mojom::blink::AIPageContentNode& content_node) {
+    mojom::blink::AIPageContentNode& content_node,
+    const RecursionData& recursion_data) {
   CHECK(IsVisible(object));
 
   content_node.content_attributes->attribute_type =
@@ -907,19 +915,21 @@ void AIPageContentAgent::ContentBuilder::ProcessIframe(
   auto* child_layout_view =
       local_frame ? local_frame->ContentLayoutObject() : nullptr;
   if (child_layout_view) {
+    RecursionData child_recursion_data(*child_layout_view->Style());
+    // The aria attribute values don't pierce frame boundaries.
+    child_recursion_data.is_aria_disabled = false;
+    child_recursion_data.stack_depth = recursion_data.stack_depth + 1;
+
     // Add a node for the iframe's LayoutView for consistency with remote
     // frames.
-    auto child_content_node = MaybeGenerateContentNode(
-        *child_layout_view, *child_layout_view->Style());
+    auto child_content_node =
+        MaybeGenerateContentNode(*child_layout_view, child_recursion_data);
     CHECK(child_content_node);
 
     // We could consider removing an iframe with no visible content. But this is
     // likely not common and should be done in the browser so it's consistently
     // done for local and remote frames.
-    stack_depth_++;
-    WalkChildren(*child_layout_view, *child_content_node,
-                 *child_layout_view->Style());
-    stack_depth_--;
+    WalkChildren(*child_layout_view, *child_content_node, child_recursion_data);
     content_node.children_nodes.emplace_back(std::move(child_content_node));
   }
 }
@@ -927,7 +937,7 @@ void AIPageContentAgent::ContentBuilder::ProcessIframe(
 mojom::blink::AIPageContentNodePtr
 AIPageContentAgent::ContentBuilder::MaybeGenerateContentNode(
     const LayoutObject& object,
-    const ComputedStyle& document_style) {
+    const RecursionData& recursion_data) {
   auto content_node = mojom::blink::AIPageContentNode::New();
   content_node->content_attributes =
       mojom::blink::AIPageContentAttributes::New();
@@ -937,7 +947,7 @@ AIPageContentAgent::ContentBuilder::MaybeGenerateContentNode(
   // Compute state that is used to decide whether this node generates a
   // ContentNode before making the decision below.
   AddAnnotatedRoles(object, attributes.annotated_roles);
-  AddNodeInteractionInfo(object, attributes);
+  AddNodeInteractionInfo(object, attributes, recursion_data.is_aria_disabled);
 
   // Set the attribute type and add any special attributes if the attribute type
   // requires it.
@@ -948,7 +958,7 @@ AIPageContentAgent::ContentBuilder::MaybeGenerateContentNode(
     if (!IsVisible(object)) {
       return nullptr;
     }
-    ProcessIframe(*iframe, *content_node);
+    ProcessIframe(*iframe, *content_node, recursion_data);
   } else if (object.IsLayoutView()) {
     attributes.attribute_type = mojom::blink::AIPageContentAttributeType::kRoot;
   } else if (object.IsText()) {
@@ -957,7 +967,8 @@ AIPageContentAgent::ContentBuilder::MaybeGenerateContentNode(
     if (!IsVisible(object)) {
       return nullptr;
     }
-    ProcessTextNode(To<LayoutText>(object), attributes, document_style);
+    ProcessTextNode(To<LayoutText>(object), attributes,
+                    recursion_data.document_style);
   } else if (object.IsLayoutImage()) {
     // Since image is a leaf node, do not create a content node if should skip
     // content.
@@ -1292,9 +1303,24 @@ void AIPageContentAgent::ContentBuilder::AddFrameInteractionInfo(
   }
 }
 
+void AIPageContentAgent::ContentBuilder::AddInteractionInfoForHitTesting(
+    const Node* node,
+    mojom::blink::AIPageContentNodeInteractionInfo& interaction_info) const {
+  if (!options_->enable_experimental_actionable_data) {
+    return;
+  }
+
+  auto it = dom_node_to_z_order_.find(DOMNodeIds::ExistingIdForNode(node));
+  if (it != dom_node_to_z_order_.end()) {
+    interaction_info.document_scoped_z_order = it->second;
+  }
+}
+
 void AIPageContentAgent::ContentBuilder::AddNodeInteractionInfo(
     const LayoutObject& object,
-    mojom::blink::AIPageContentAttributes& attributes) const {
+    mojom::blink::AIPageContentAttributes& attributes,
+    bool is_aria_disabled) const {
+  // The node is not hit-testable which also means no interaction is supported.
   const ComputedStyle& style = *object.Style();
   if (style.UsedPointerEvents() == EPointerEvents::kNone) {
     return;
@@ -1305,13 +1331,24 @@ void AIPageContentAgent::ContentBuilder::AddNodeInteractionInfo(
     return;
   }
 
+  // Nodes which are not interactive can still consume events if they are
+  // hit-testable.
+  auto node_interaction_info =
+      mojom::blink::AIPageContentNodeInteractionInfo::New();
+  AddInteractionInfoForHitTesting(node, *node_interaction_info);
+
   auto* form_control_element = DynamicTo<HTMLFormControlElement>(node);
-  if (form_control_element && form_control_element->IsActuallyDisabled()) {
+  const bool disabled =
+      (form_control_element && form_control_element->IsActuallyDisabled()) ||
+      is_aria_disabled;
+  if (disabled) {
+    if (node_interaction_info->document_scoped_z_order) {
+      attributes.node_interaction_info = std::move(node_interaction_info);
+    }
+
     return;
   }
 
-  auto node_interaction_info =
-      mojom::blink::AIPageContentNodeInteractionInfo::New();
   ComputeScrollerInfo(object, *node_interaction_info);
 
   // If experimental data is disabled, only scrollable nodes are included.
@@ -1327,11 +1364,6 @@ void AIPageContentAgent::ContentBuilder::AddNodeInteractionInfo(
       style.UsedUserSelect() != EUserSelect::kNone;
 
   node_interaction_info->is_editable = IsEditable(*node);
-
-  auto it = dom_node_to_z_order_.find(DOMNodeIds::ExistingIdForNode(node));
-  if (it != dom_node_to_z_order_.end()) {
-    node_interaction_info->document_scoped_z_order = it->second;
-  }
 
   if (auto* box = DynamicTo<LayoutBox>(object)) {
     if (box->CanResize()) {
@@ -1373,5 +1405,9 @@ void AIPageContentAgent::ContentBuilder::AddNodeInteractionInfo(
   attributes.node_interaction_info = std::move(node_interaction_info);
   AddForDomNodeId(object, *attributes.node_interaction_info);
 }
+
+AIPageContentAgent::ContentBuilder::RecursionData::RecursionData(
+    const ComputedStyle& document_style)
+    : document_style(document_style) {}
 
 }  // namespace blink

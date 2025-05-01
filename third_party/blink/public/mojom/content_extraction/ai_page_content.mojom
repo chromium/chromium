@@ -310,6 +310,7 @@ struct AIPageContentSelectOption {
   string? value;
   string? text;
   bool is_selected;
+  bool disabled;
 };
 
 struct AIPageContentFormControlData {
