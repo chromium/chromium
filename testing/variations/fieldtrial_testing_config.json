@@ -22187,6 +22187,36 @@
             ]
         }
     ],
+    "SingleCACertVerificationPhase1": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SingleCACertVerificationPhase1"
+                    ]
+                }
+            ]
+        }
+    ],
+    "SingleCACertVerificationPhase2": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SingleCACertVerificationPhase2"
+                    ]
+                }
+            ]
+        }
+    ],
     "SingleNTPRemoveExtraNTPs": [
         {
             "platforms": [
