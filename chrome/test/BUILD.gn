@@ -8898,6 +8898,11 @@ test("unit_tests") {
   # Unit tests that run on Win/Mac/Linux and Android desktop.
   if (enable_extensions_core) {
     sources += [
+      "../browser/extensions/api/declarative_net_request/action_tracker_unittest.cc",
+      "../browser/extensions/api/declarative_net_request/declarative_net_request_unittest.cc",
+      "../browser/extensions/api/declarative_net_request/dnr_test_base.cc",
+      "../browser/extensions/api/declarative_net_request/dnr_test_base.h",
+      "../browser/extensions/api/declarative_net_request/ruleset_manager_unittest.cc",
       "../browser/extensions/api/webstore_private/extension_install_status_unittest.cc",
       "../browser/extensions/api/webstore_private/webstore_private_unittest.cc",
       "../browser/extensions/chrome_content_verifier_unittest.cc",
@@ -9007,11 +9012,6 @@ test("unit_tests") {
       "../browser/extensions/api/declarative_content/declarative_content_css_condition_tracker_unittest.cc",
       "../browser/extensions/api/declarative_content/declarative_content_is_bookmarked_condition_tracker_unittest.cc",
       "../browser/extensions/api/declarative_content/declarative_content_page_url_condition_tracker_unittest.cc",
-      "../browser/extensions/api/declarative_net_request/action_tracker_unittest.cc",
-      "../browser/extensions/api/declarative_net_request/declarative_net_request_unittest.cc",
-      "../browser/extensions/api/declarative_net_request/dnr_test_base.cc",
-      "../browser/extensions/api/declarative_net_request/dnr_test_base.h",
-      "../browser/extensions/api/declarative_net_request/ruleset_manager_unittest.cc",
       "../browser/extensions/api/declarative_webrequest/webrequest_action_unittest.cc",
       "../browser/extensions/api/declarative_webrequest/webrequest_rules_registry_unittest.cc",
       "../browser/extensions/api/developer_private/developer_private_api_unittest.cc",
