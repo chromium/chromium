@@ -87,10 +87,13 @@ MultiContentsResizeArea::MultiContentsResizeArea(
 }
 
 void MultiContentsResizeArea::OnMouseReleased(const ui::MouseEvent& event) {
-  ResizeArea::OnMouseReleased(event);
-  if (event.IsLeftMouseButton() && event.GetClickCount() == 2) {
+  // If the mouse event was a left double click and was not part of a resizing
+  // event, swap the contents views.
+  if (!is_resizing() && event.IsOnlyLeftMouseButton() &&
+      event.GetClickCount() == 2) {
     multi_contents_view_->OnSwap();
   }
+  ResizeArea::OnMouseReleased(event);
 }
 
 bool MultiContentsResizeArea::OnKeyPressed(const ui::KeyEvent& event) {
