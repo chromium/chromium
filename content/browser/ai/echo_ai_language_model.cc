@@ -134,12 +134,18 @@ void EchoAILanguageModel::Destroy() {
 }
 
 void EchoAILanguageModel::MeasureInputUsage(
-    const std::string& input,
+    std::vector<blink::mojom::AILanguageModelPromptPtr> input,
     mojo::PendingRemote<blink::mojom::AILanguageModelMeasureInputUsageClient>
         client) {
+  int total = 0;
+  for (const auto& prompt : input) {
+    if (prompt->content->is_text()) {
+      total += prompt->content->get_text().size();
+    }
+  }
   mojo::Remote<blink::mojom::AILanguageModelMeasureInputUsageClient>(
       std::move(client))
-      ->OnResult(input.size());
+      ->OnResult(total);
 }
 
 }  // namespace content

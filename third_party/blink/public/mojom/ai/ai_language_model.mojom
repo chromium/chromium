@@ -147,6 +147,6 @@ interface AILanguageModel {
   // Counts the number of token in the given prompt text `input` which can
   // be an arbitrary string from the JavaScript API.
   MeasureInputUsage(
-      string input,
+      array<AILanguageModelPrompt> input,
       pending_remote<AILanguageModelMeasureInputUsageClient> client);
 };

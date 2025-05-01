@@ -135,7 +135,7 @@ class AILanguageModel : public AIContextBoundObject,
           client) override;
   void Destroy() override;
   void MeasureInputUsage(
-      const std::string& input,
+      std::vector<blink::mojom::AILanguageModelPromptPtr> input,
       mojo::PendingRemote<blink::mojom::AILanguageModelMeasureInputUsageClient>
           client) override;
 

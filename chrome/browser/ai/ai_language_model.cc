@@ -493,12 +493,11 @@ AILanguageModel::GetLanguageModelInstanceInfo() {
 }
 
 void AILanguageModel::MeasureInputUsage(
-    const std::string& input,
+    std::vector<blink::mojom::AILanguageModelPromptPtr> input,
     mojo::PendingRemote<blink::mojom::AILanguageModelMeasureInputUsageClient>
         client) {
   Context::ContextItem item;
-  item.prompts.emplace_back(
-      MakeTextPrompt(blink::mojom::AILanguageModelPromptRole::kUser, input));
+  item.prompts = std::move(input);
 
   MultimodalMessage request = EmptyMessage();
   AddCurrentRequest(request, item, session_->GetCapabilities());

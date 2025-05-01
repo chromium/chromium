@@ -124,11 +124,12 @@ class MeasureInputUsageClient
       public mojom::blink::AILanguageModelMeasureInputUsageClient,
       public AIContextObserver<IDLDouble> {
  public:
-  MeasureInputUsageClient(ScriptState* script_state,
-                          LanguageModel* language_model,
-                          ScriptPromiseResolver<IDLDouble>* resolver,
-                          AbortSignal* signal,
-                          const WTF::String& input)
+  MeasureInputUsageClient(
+      ScriptState* script_state,
+      LanguageModel* language_model,
+      ScriptPromiseResolver<IDLDouble>* resolver,
+      AbortSignal* signal,
+      WTF::Vector<mojom::blink::AILanguageModelPromptPtr> input)
       : AIContextObserver(script_state, language_model, resolver, signal),
         language_model_(language_model),
         receiver_(this, language_model->GetExecutionContext()) {
@@ -137,7 +138,7 @@ class MeasureInputUsageClient
     receiver_.Bind(client_remote.InitWithNewPipeAndPassReceiver(),
                    language_model->GetTaskRunner());
     language_model_->GetAILanguageModelRemote()->MeasureInputUsage(
-        input, std::move(client_remote));
+        std::move(input), std::move(client_remote));
   }
   ~MeasureInputUsageClient() override = default;
 
@@ -695,7 +696,8 @@ ScriptPromise<IDLDouble> LanguageModel::measureInputUsage(
   }
 
   // The API impl only accepts a string by default for now, more to come soon!
-  if (!input->IsString()) {
+  if (!input->IsString() &&
+      !RuntimeEnabledFeatures::AIPromptAPIMultimodalInputEnabled()) {
     exception_state.ThrowTypeError("Input type not supported");
     return ScriptPromise<IDLDouble>();
   }
@@ -708,6 +710,13 @@ ScriptPromise<IDLDouble> LanguageModel::measureInputUsage(
       MakeGarbageCollected<ScriptPromiseResolver<IDLDouble>>(script_state);
   auto promise = resolver->Promise();
 
+  auto prompts = BuildPrompts(input, script_state, exception_state,
+                              GetExecutionContext(), input_types_);
+  if (!prompts.has_value()) {
+    resolver->Reject(prompts.error());
+    return promise;
+  }
+
   if (!language_model_remote_) {
     ThrowSessionDestroyedException(exception_state);
     return promise;
@@ -719,8 +728,8 @@ ScriptPromise<IDLDouble> LanguageModel::measureInputUsage(
     return promise;
   }
 
-  MakeGarbageCollected<MeasureInputUsageClient>(script_state, this, resolver,
-                                                signal, input->GetAsString());
+  MakeGarbageCollected<MeasureInputUsageClient>(
+      script_state, this, resolver, signal, std::move(prompts).value());
 
   return promise;
 }
