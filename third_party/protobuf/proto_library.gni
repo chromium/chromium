@@ -473,6 +473,7 @@ template("proto_library") {
 
   action_name = "${target_name}_gen"
   input_config_name = "${target_name}_input_config"
+  input_group_name = "${target_name}_input_group"
   source_set_name = target_name
   javascript_name = "${target_name}_js"
   typescript_name = "${target_name}_ts"
@@ -480,6 +481,24 @@ template("proto_library") {
 
   config(input_config_name) {
     inputs = proto_sources
+  }
+
+  group(input_group_name) {
+    public_configs = [ ":${input_config_name}" ]
+    public_deps = []
+    if (defined(invoker.proto_deps)) {
+      public_deps += invoker.proto_deps
+    }
+    if (defined(invoker.deps)) {
+      # This is to propagate input deps for imported proto to ancestor targets.
+      foreach(dep, invoker.deps) {
+        canonicalized_dep = get_label_info(dep, "label_no_toolchain")
+        public_deps += [ "${canonicalized_dep}_input_group" ]
+      }
+    }
+    if (defined(invoker.testonly)) {
+      testonly = invoker.testonly
+    }
   }
 
   # Generate protobuf stubs.
@@ -645,8 +664,8 @@ template("proto_library") {
       }
     }
 
-    public_configs = [ ":${input_config_name}" ]
-    public_deps = []
+    public_configs = []
+    public_deps = [ ":${input_group_name}" ]
 
     # The deps may have steps that have to run before running protoc.
     if (defined(invoker.proto_deps)) {
@@ -654,12 +673,6 @@ template("proto_library") {
     }
     if (defined(invoker.deps)) {
       public_deps += invoker.deps
-
-      # This is to propagate input deps for imported proto to ancestor targets.
-      foreach(dep, invoker.deps) {
-        canonicalized_dep = get_label_info(dep, "label_no_toolchain")
-        public_configs += [ "${canonicalized_dep}_input_config" ]
-      }
     }
   }
 
