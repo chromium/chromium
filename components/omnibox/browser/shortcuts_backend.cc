@@ -416,8 +416,9 @@ ShortcutsDatabase::Shortcut::MatchCore ShortcutsBackend::MatchToMatchCore(
 
   // TODO(crbug.com/410023142): Remove `CreateShortcutSearchSuggestion()` and
   // stop storing match classifications.
-  if (AutocompleteMatch::IsSearchType(match.type)) {
-    DCHECK(match.search_terms_args);
+  // Note: `search_terms_args` might not be populated for all search types
+  // (e.g., VOICE_SUGGEST, CLIPBOARD_TEXT, CLIPBOARD_IMAGE).
+  if (AutocompleteMatch::IsSearchType(match.type) && match.search_terms_args) {
     temp = BaseSearchProvider::CreateShortcutSearchSuggestion(
         match.search_terms_args->search_terms, match_type,
         match.GetTemplateURL(template_url_service, false), *search_terms_data);
