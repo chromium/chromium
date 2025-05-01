@@ -94,6 +94,7 @@ public class SurfaceColorUpdateUtils {
      */
     public static @ColorInt int getGridTabSwitcherBackgroundColor(
             Context context, boolean isIncognito) {
+        // TODO(crbug.com/414404094): Add semantic color for incognito.
         if (ChromeFeatureList.sGridTabSwitcherSurfaceColorUpdate.isEnabled()) {
             return isIncognito
                     ? ContextCompat.getColor(
