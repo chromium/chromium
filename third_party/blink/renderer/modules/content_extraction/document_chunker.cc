@@ -93,6 +93,9 @@ Vector<String> DocumentChunker::Chunk(const Node& tree) {
   if (max_passages_ != 0 && passages.size() > max_passages_) {
     passages.Shrink(max_passages_);
   }
+  for (String& passage : passages) {
+    passage.Truncate(1024);
+  }
 
   return passages;
 }
