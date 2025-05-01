@@ -6,6 +6,7 @@
 #include "ash/shell.h"
 #include "chrome/browser/ash/accessibility/accessibility_feature_browsertest.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
+#include "chrome/browser/ash/accessibility/accessibility_test_utils.h"
 #include "chrome/browser/ash/accessibility/automation_test_utils.h"
 #include "chrome/browser/ash/accessibility/switch_access_test_utils.h"
 #include "chrome/browser/ui/browser.h"
@@ -13,6 +14,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/aura/client/cursor_client.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/display/screen.h"
@@ -20,12 +22,27 @@
 
 namespace ash {
 
-class SwitchAccessTest : public AccessibilityFeatureBrowserTest {
+class SwitchAccessTest : public AccessibilityFeatureBrowserTest,
+                         public ::testing::WithParamInterface<ManifestVersion> {
  protected:
   SwitchAccessTest() = default;
   ~SwitchAccessTest() override = default;
   SwitchAccessTest(const SwitchAccessTest&) = delete;
   SwitchAccessTest& operator=(const SwitchAccessTest&) = delete;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+    if (GetParam() == ManifestVersion::kTwo) {
+      disabled_features.push_back(
+          ::features::kAccessibilityManifestV3SwitchAccess);
+    } else if (GetParam() == ManifestVersion::kThree) {
+      enabled_features.push_back(
+          ::features::kAccessibilityManifestV3SwitchAccess);
+    }
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+    InProcessBrowserTest::SetUpCommandLine(command_line);
+  }
 
   void SetUpOnMainThread() override {
     switch_access_test_utils_ = std::make_unique<SwitchAccessTestUtils>(
@@ -74,10 +91,17 @@ class SwitchAccessTest : public AccessibilityFeatureBrowserTest {
  private:
   std::unique_ptr<SwitchAccessTestUtils> switch_access_test_utils_;
   std::unique_ptr<ui::test::EventGenerator> generator_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+INSTANTIATE_TEST_SUITE_P(ManifestV2,
+                         SwitchAccessTest,
+                         ::testing::Values(ManifestVersion::kTwo));
+
+// TODO(https://crbug.com/388867933): Add manifest v3 variant.
+
 // Flaky. See https://crbug.com/1224254.
-IN_PROC_BROWSER_TEST_F(SwitchAccessTest, DISABLED_ConsumesKeyEvents) {
+IN_PROC_BROWSER_TEST_P(SwitchAccessTest, DISABLED_ConsumesKeyEvents) {
   utils()->EnableSwitchAccess({'1', 'A'} /* select */, {'2', 'B'} /* next */,
                               {'3', 'C'} /* previous */);
   AutomationTestUtils test_utils(extension_misc::kSwitchAccessExtensionId);
@@ -104,7 +128,7 @@ IN_PROC_BROWSER_TEST_F(SwitchAccessTest, DISABLED_ConsumesKeyEvents) {
                test_utils.GetValueForNodeWithClassName("sa_input").c_str());
 }
 
-IN_PROC_BROWSER_TEST_F(SwitchAccessTest, NavigateGroupings) {
+IN_PROC_BROWSER_TEST_P(SwitchAccessTest, NavigateGroupings) {
   utils()->EnableSwitchAccess({'1', 'A'} /* select */, {'2', 'B'} /* next */,
                               {'3', 'C'} /* previous */);
 
@@ -155,7 +179,7 @@ IN_PROC_BROWSER_TEST_F(SwitchAccessTest, NavigateGroupings) {
   utils()->WaitForFocusRing("primary", "button", "Southeast");
 }
 
-IN_PROC_BROWSER_TEST_F(SwitchAccessTest, NavigateButtonsInTextFieldMenu) {
+IN_PROC_BROWSER_TEST_P(SwitchAccessTest, NavigateButtonsInTextFieldMenu) {
   utils()->EnableSwitchAccess({'1', 'A'} /* select */, {'2', 'B'} /* next */,
                               {'3', 'C'} /* previous */);
 
@@ -217,7 +241,7 @@ IN_PROC_BROWSER_TEST_F(SwitchAccessTest, NavigateButtonsInTextFieldMenu) {
 }
 
 // TODO(crbug.com/40926594): Enable after fixing flakiness.
-IN_PROC_BROWSER_TEST_F(SwitchAccessTest, DISABLED_TypeIntoVirtualKeyboard) {
+IN_PROC_BROWSER_TEST_P(SwitchAccessTest, DISABLED_TypeIntoVirtualKeyboard) {
   utils()->EnableSwitchAccess({'1', 'A'} /* select */, {'2', 'B'} /* next */,
                               {'3', 'C'} /* previous */);
 
@@ -257,7 +281,7 @@ IN_PROC_BROWSER_TEST_F(SwitchAccessTest, DISABLED_TypeIntoVirtualKeyboard) {
 #define MAYBE_PointScanClickWhenMouseEventsEnabled \
   PointScanClickWhenMouseEventsEnabled
 #endif
-IN_PROC_BROWSER_TEST_F(SwitchAccessTest,
+IN_PROC_BROWSER_TEST_P(SwitchAccessTest,
                        MAYBE_PointScanClickWhenMouseEventsEnabled) {
   utils()->EnableSwitchAccess({'1', 'A'} /* select */, {'2', 'B'} /* next */,
                               {'3', 'C'} /* previous */);
@@ -296,7 +320,7 @@ IN_PROC_BROWSER_TEST_F(SwitchAccessTest,
 #define MAYBE_PointScanClickWhenMouseEventsDisabled \
   PointScanClickWhenMouseEventsDisabled
 #endif
-IN_PROC_BROWSER_TEST_F(SwitchAccessTest,
+IN_PROC_BROWSER_TEST_P(SwitchAccessTest,
                        MAYBE_PointScanClickWhenMouseEventsDisabled) {
   utils()->EnableSwitchAccess({'1', 'A'} /* select */, {'2', 'B'} /* next */,
                               {'3', 'C'} /* previous */);
