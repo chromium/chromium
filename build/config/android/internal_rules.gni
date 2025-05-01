@@ -368,6 +368,12 @@ template("write_build_config") {
             rebase_path(invoker.incremental_apk_path, root_build_dir)
         incremental_install_json_path =
             rebase_path(invoker.incremental_install_json_path, root_build_dir)
+      } else if (_type == "android_apk" && incremental_install) {
+        # A never_incremental apk that is used as an apk_under_test must
+        # still defined these keys.
+        # GN does not allow assigning "" to a variable with a _path suffix.
+        incremental_apk_path = "<invalid>"
+        incremental_install_json_path = "<invalid>"
       }
       if (defined(invoker.aar_path)) {
         aar_path = rebase_path(invoker.aar_path, root_build_dir)
