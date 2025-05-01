@@ -178,9 +178,9 @@ fn generate_for_std(args: GenCommandArgs, paths: &paths::ChromiumPaths) -> Resul
         .filter(|p| p.lib_target.is_some())
         .map(|p| {
             crates::collect_crate_files(p, &config, crates::IncludeCrateTargets::LibOnly)
-                .expect("missing a stdlib input file, did you gclient sync?")
+                .with_context(|| format!("Failed to collect crate files for {p}"))
         })
-        .collect();
+        .collect::<Result<_>>()?;
 
     let build_file = gn::build_file_from_deps(
         dependencies.iter(),

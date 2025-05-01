@@ -23,6 +23,7 @@ use itertools::Itertools;
 pub use semver::Version;
 use std::{
     collections::{HashMap, HashSet},
+    fmt::{self, Display},
     path::PathBuf,
 };
 
@@ -68,6 +69,12 @@ pub struct Package {
 impl Package {
     pub fn crate_id(&self) -> crates::VendoredCrate {
         crates::VendoredCrate { name: self.package_name.clone(), version: self.version.clone() }
+    }
+}
+
+impl Display for Package {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "`{}-{}`", &self.package_name, &self.version)
     }
 }
 

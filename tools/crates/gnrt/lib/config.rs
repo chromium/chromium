@@ -11,6 +11,8 @@ use anyhow::{Context, Result};
 use serde::Deserialize;
 use std::{
     collections::{BTreeMap, HashMap, HashSet},
+    hash::Hash,
+    ops::Deref,
     path::Path,
 };
 
@@ -32,16 +34,23 @@ pub struct BuildConfig {
 }
 
 impl BuildConfig {
-    /// Combines the global and per-crate `CrateConfig` for a single
-    /// `Vec<String>` entry.
-    pub fn get_combined_set(
-        &self,
+    /// Combines the global and per-crate `CrateConfig` for a single entry.
+    /// Combined `Vec<String>` entries will be returned as `HashSet<&str>`.
+    /// Combined `Vec<PathBuf>` entries will be returned as `HashSet<&Path>`.
+    pub fn get_combined_set<'a, T>(
+        &'a self,
         package_name: &str,
-        entry_getter: impl Fn(&CrateConfig) -> &Vec<String>,
-    ) -> HashSet<&str> {
-        let all: Option<&Vec<String>> = Some(entry_getter(&self.all_config));
-        let per: Option<&Vec<String>> = self.per_crate_config.get(package_name).map(entry_getter);
-        all.into_iter().chain(per).flatten().map(String::as_str).collect()
+        entry_getter: impl Fn(&CrateConfig) -> &Vec<T>,
+    ) -> HashSet<&'a <T as Deref>::Target>
+    where
+        T: Deref + 'a,
+        T::Target: Hash + Eq + PartialEq,
+    {
+        let all_crates_vec: &Vec<T> = entry_getter(&self.all_config);
+        let maybe_per_crate_vec: Option<&Vec<T>> =
+            self.per_crate_config.get(package_name).map(entry_getter);
+        let combined_vecs = std::iter::once(all_crates_vec).chain(maybe_per_crate_vec);
+        combined_vecs.flatten().map(Deref::deref).collect()
     }
 
     pub fn from_path(path: &Path) -> Result<Self> {
