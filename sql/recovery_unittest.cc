@@ -31,11 +31,9 @@
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/buildflag.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
-#include "sql/sql_features.h"
 #include "sql/sqlite_result_code.h"
 #include "sql/sqlite_result_code_values.h"
 #include "sql/statement.h"
@@ -70,8 +68,6 @@ class SqlRecoveryTest : public testing::Test,
  public:
   SqlRecoveryTest()
       : db_(DatabaseOptions().set_wal_mode(ShouldEnableWal()), test::kTestTag) {
-    scoped_feature_list_.InitWithFeatureStates(
-        {{features::kEnableWALModeByDefault, ShouldEnableWal()}});
   }
 
   bool ShouldEnableWal() { return GetParam(); }
@@ -106,7 +102,6 @@ class SqlRecoveryTest : public testing::Test,
   }
 
  protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
   base::ScopedTempDir temp_dir_;
   base::FilePath db_path_;
   Database db_;

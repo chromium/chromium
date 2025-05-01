@@ -20,7 +20,6 @@
 #include "base/check_op.h"
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
-#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
@@ -36,7 +35,6 @@
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
 #include "sql/internal_api_token.h"
-#include "sql/sql_features.h"
 #include "sql/sql_name_variants.h"
 #include "sql/sqlite_result_code.h"
 #include "sql/sqlite_result_code_values.h"
@@ -280,8 +278,7 @@ struct COMPONENT_EXPORT(SQL) DatabaseOptions {
 
   bool exclusive_locking_ = true;
   bool exclusive_database_file_lock_ = false;
-  bool wal_mode_ =
-      base::FeatureList::IsEnabled(sql::features::kEnableWALModeByDefault);
+  bool wal_mode_ = false;
   bool flush_to_media_ = false;
   int page_size_ = kDefaultPageSize;
   int cache_size_ = 0;
