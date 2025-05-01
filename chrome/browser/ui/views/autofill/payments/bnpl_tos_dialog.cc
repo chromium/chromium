@@ -120,6 +120,11 @@ void BnplTosDialog::AddedToWidget() {
   GetViewAccessibility().AnnouncePolitely(title);
 }
 
+void BnplTosDialog::OnWidgetInitialized() {
+  views::DialogDelegateView::OnWidgetInitialized();
+  GetOkButton()->RequestFocus();
+}
+
 TitleWithIconAfterLabelView::Icon BnplTosDialog::GetTitleIcon() const {
   switch (controller_->GetIssuerId()) {
     case BnplIssuer::IssuerId::kBnplAffirm:
