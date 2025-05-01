@@ -89,6 +89,7 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_conversions.h"
+#include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size.h"
@@ -1339,7 +1340,6 @@ bool PDFiumEngine::OnMouseDown(const blink::WebMouseEvent& event) {
 }
 
 void PDFiumEngine::OnSingleClick(int page_index, int char_index) {
-  SetSelecting(true);
   selection_.push_back(PDFiumRange(pages_[page_index].get(), char_index, 0));
 }
 
@@ -1381,6 +1381,20 @@ void PDFiumEngine::OnMultipleClick(int click_count,
   }
 }
 
+void PDFiumEngine::OnTextOrLinkAreaClickInternal(const PointData& point_data,
+                                                 int click_count) {
+  CHECK(IsSelectableArea(point_data.area));
+  if (point_data.page_index < 0 || point_data.char_index < 0) {
+    return;
+  }
+
+  if (click_count == 1) {
+    OnSingleClick(point_data.page_index, point_data.char_index);
+  } else if (click_count == 2 || click_count == 3) {
+    OnMultipleClick(click_count, point_data.page_index, point_data.char_index);
+  }
+}
+
 bool PDFiumEngine::OnLeftMouseDown(const blink::WebMouseEvent& event) {
   DCHECK_EQ(blink::WebPointerProperties::Button::kLeft, event.button);
 
@@ -1401,6 +1415,7 @@ bool PDFiumEngine::OnLeftMouseDown(const blink::WebMouseEvent& event) {
     return true;
   }
 
+  int click_count = event.ClickCount();
   if (point_data.page_index != -1) {
     UpdateFocusElementType(FocusElementType::kPage);
     last_focused_page_ = point_data.page_index;
@@ -1422,9 +1437,9 @@ bool PDFiumEngine::OnLeftMouseDown(const blink::WebMouseEvent& event) {
 
     FPDF_PAGE page = pages_[point_data.page_index]->GetPage();
 
-    if (event.ClickCount() == 1) {
+    if (click_count == 1) {
       FORM_OnLButtonDown(form(), page, event.GetModifiers(), page_x, page_y);
-    } else if (event.ClickCount() == 2) {
+    } else if (click_count == 2) {
       FORM_OnLButtonDoubleClick(form(), page, event.GetModifiers(), page_x,
                                 page_y);
     }
@@ -1438,12 +1453,11 @@ bool PDFiumEngine::OnLeftMouseDown(const blink::WebMouseEvent& event) {
     return true;  // Return true so WebKit doesn't do its own highlighting.
   }
 
-  if (event.ClickCount() == 1)
-    OnSingleClick(point_data.page_index, point_data.char_index);
-  else if (event.ClickCount() == 2 || event.ClickCount() == 3)
-    OnMultipleClick(event.ClickCount(), point_data.page_index,
-                    point_data.char_index);
+  if (click_count == 1) {
+    SetSelecting(true);
+  }
 
+  OnTextOrLinkAreaClickInternal(point_data, click_count);
   return true;
 }
 
@@ -4684,6 +4698,44 @@ void PDFiumEngine::RegenerateContents() {
     CHECK(result);
   }
   ink_stroked_pages_needing_regeneration_.clear();
+}
+
+bool PDFiumEngine::ExtendSelectionByPoint(const gfx::PointF& point) {
+  auto point_data = GetPointData(point);
+  if (point_data.page_index < 0 || point_data.char_index < 0) {
+    return false;
+  }
+
+  SelectionChangeInvalidator selection_invalidator(this);
+  return ExtendSelection(point_data.page_index, point_data.char_index);
+}
+
+std::vector<gfx::Rect> PDFiumEngine::GetSelectionRects() {
+  std::vector<gfx::Rect> selection_rects;
+  for (auto& selection : selection_) {
+    std::vector<gfx::Rect> screen_rects = selection.GetScreenRects(
+        GetVisibleRect().origin(), current_zoom_, GetCurrentOrientation());
+    for (auto& screen_rect : screen_rects) {
+      selection_rects.push_back(screen_rect);
+    }
+  }
+  return selection_rects;
+}
+
+bool PDFiumEngine::IsSelectableTextOrLinkArea(const gfx::PointF& point) {
+  auto point_data = GetPointData(point);
+  // Excludes form fields as callers may not necessarily consider them
+  // selectable.
+  return IsSelectableArea(point_data.area);
+}
+
+void PDFiumEngine::OnTextOrLinkAreaClick(const gfx::PointF& point,
+                                         int click_count) {
+  if (click_count < 1 || click_count > 3) {
+    return;
+  }
+
+  OnTextOrLinkAreaClickInternal(GetPointData(point), click_count);
 }
 
 std::vector<FPDF_PAGEOBJECT> PDFiumEngine::GetActiveInkPageObjectsForPage(

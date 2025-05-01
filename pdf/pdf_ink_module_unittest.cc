@@ -21,6 +21,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
+#include "pdf/page_orientation.h"
 #include "pdf/pdf_features.h"
 #include "pdf/pdf_ink_brush.h"
 #include "pdf/pdf_ink_conversions.h"
@@ -255,6 +256,8 @@ class FakeClient : public PdfInkModuleClient {
 
   PageOrientation GetOrientation() const override { return orientation_; }
 
+  MOCK_METHOD(std::vector<gfx::Rect>, GetSelectionRects, (), (override));
+
   gfx::Size GetThumbnailSize(int page_index) override {
     CHECK_GE(page_index, 0);
     CHECK_LT(static_cast<size_t>(page_index), page_layouts_.size());
@@ -290,10 +293,17 @@ class FakeClient : public PdfInkModuleClient {
     return base::Contains(visible_page_indices_, page_index);
   }
 
+  MOCK_METHOD(bool,
+              IsSelectableTextOrLinkArea,
+              (const gfx::PointF& point),
+              (override));
+
   MOCK_METHOD(PdfInkModuleClient::DocumentV2InkPathShapesMap,
               LoadV2InkPathsFromPdf,
               (),
               (override));
+
+  MOCK_METHOD(int, PageIndexFromPoint, (const gfx::PointF& point), (override));
 
   MOCK_METHOD(void, PostMessage, (base::Value::Dict message), (override));
 

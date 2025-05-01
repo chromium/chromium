@@ -44,9 +44,16 @@ class PdfInkModuleClient {
 
   virtual ~PdfInkModuleClient() = default;
 
+  // Notifies the client to clear the current text selection.
+  virtual void ClearSelection() {}
+
   // Asks the client to discard the stroke identified by `id` on the page at
   // `page_index`.
   virtual void DiscardStroke(int page_index, InkStrokeId id) {}
+
+  // Extends the current text selection to the nearest page and character to
+  // `point`. `point` must be in device coordinates.
+  virtual void ExtendSelectionByPoint(const gfx::PointF& point) {}
 
   // Gets the current page orientation.
   virtual PageOrientation GetOrientation() const = 0;
@@ -59,6 +66,9 @@ class PdfInkModuleClient {
   // Gets the page size in points for `page_index`.  Must be non-empty for any
   // non-negative page index returned from `VisiblePageIndexFromPoint()`.
   virtual gfx::SizeF GetPageSizeInPoints(int page_index) = 0;
+
+  // Returns all current text selection rects in device coordinates.
+  virtual std::vector<gfx::Rect> GetSelectionRects() = 0;
 
   // Gets the thumbnail size for `page_index`. The size must be non-empty for
   // any valid page index.
@@ -82,11 +92,27 @@ class PdfInkModuleClient {
   // Returns whether the page at `page_index` is visible or not.
   virtual bool IsPageVisible(int page_index) = 0;
 
+  // Returns whether `point` is within a selectable text area or a link area.
+  // `point` must be in device coordinates.
+  virtual bool IsSelectableTextOrLinkArea(const gfx::PointF& point) = 0;
+
   // Asks the client to load Ink data from the PDF.
   virtual DocumentV2InkPathShapesMap LoadV2InkPathsFromPdf() = 0;
 
   // Notifies the client whether annotation mode is enabled or not.
   virtual void OnAnnotationModeToggled(bool enable) {}
+
+  // Notifies the client that a text area was clicked at `point` `click_count`
+  // times during Ink annotation mode. It is the client's responsibility to
+  // handle text selection, copying behavior from Blink. Two click counts should
+  // select the word at `point`, while three click counts should select the
+  // entire line at `point`. `point` must be in device coordinates.
+  virtual void OnTextOrLinkAreaClick(const gfx::PointF& point,
+                                     int click_count) {}
+
+  // Returns the 0-based page index for the given `point`. `point` must be on a
+  // page, otherwise returns -1. `point` must be in device coordinates.
+  virtual int PageIndexFromPoint(const gfx::PointF& point) = 0;
 
   // Asks the client to post `message`.
   virtual void PostMessage(base::Value::Dict message) {}
@@ -121,8 +147,8 @@ class PdfInkModuleClient {
   virtual void UpdateStrokeActive(int page_index, InkStrokeId id, bool active) {
   }
 
-  // Returns the 0-based page index for the given `point` if it is on a
-  // visible page, or -1 if `point` is not on a visible page.
+  // Same as `PageIndexFromPoint()`, but `point` must be on a visible page,
+  // otherwise returns -1.
   virtual int VisiblePageIndexFromPoint(const gfx::PointF& point) = 0;
 };
 

@@ -290,8 +290,14 @@ class PdfViewWebPlugin::PdfInkModuleClientImpl : public PdfInkModuleClient {
   ~PdfInkModuleClientImpl() override = default;
 
   // PdfInkModuleClient:
+  void ClearSelection() override { plugin_->engine_->ClearTextSelection(); }
+
   void DiscardStroke(int page_index, InkStrokeId id) override {
     plugin_->engine_->DiscardStroke(page_index, id);
+  }
+
+  void ExtendSelectionByPoint(const gfx::PointF& point) override {
+    plugin_->engine_->ExtendSelectionByPoint(point);
   }
 
   PageOrientation GetOrientation() const override {
@@ -310,6 +316,12 @@ class PdfViewWebPlugin::PdfInkModuleClientImpl : public PdfInkModuleClient {
       return gfx::SizeF();
     }
     return plugin_->engine_->GetPageSizeInPoints(page_index).value();
+  }
+
+  std::vector<gfx::Rect> GetSelectionRects() override {
+    // Screen coordinates in PDFiumEngine is equivalent to device coordinates in
+    // PdfInkModuleClient.
+    return plugin_->engine_->GetSelectionRects();
   }
 
   gfx::Size GetThumbnailSize(int page_index) override {
@@ -333,6 +345,10 @@ class PdfViewWebPlugin::PdfInkModuleClientImpl : public PdfInkModuleClient {
     return plugin_->engine_->IsPageVisible(page_index);
   }
 
+  bool IsSelectableTextOrLinkArea(const gfx::PointF& point) override {
+    return plugin_->engine_->IsSelectableTextOrLinkArea(point);
+  }
+
   DocumentV2InkPathShapesMap LoadV2InkPathsFromPdf() override {
     DocumentV2InkPathShapesMap shapes_map;
 
@@ -354,6 +370,15 @@ class PdfViewWebPlugin::PdfInkModuleClientImpl : public PdfInkModuleClient {
     if (enable) {
       plugin_->engine_->ClearTextSelection();
     }
+  }
+
+  void OnTextOrLinkAreaClick(const gfx::PointF& point,
+                             int click_count) override {
+    plugin_->engine_->OnTextOrLinkAreaClick(point, click_count);
+  }
+
+  int PageIndexFromPoint(const gfx::PointF& point) override {
+    return PageIndexFromPointImpl(point, /*must_be_visible=*/false);
   }
 
   void PostMessage(base::Value::Dict message) override {
@@ -400,8 +425,13 @@ class PdfViewWebPlugin::PdfInkModuleClientImpl : public PdfInkModuleClient {
   }
 
   int VisiblePageIndexFromPoint(const gfx::PointF& point) override {
+    return PageIndexFromPointImpl(point, /*must_be_visible=*/true);
+  }
+
+ private:
+  int PageIndexFromPointImpl(const gfx::PointF& point, bool must_be_visible) {
     for (int i = 0; i < plugin_->engine_->GetNumberOfPages(); ++i) {
-      if (!IsPageVisible(i)) {
+      if (must_be_visible && !IsPageVisible(i)) {
         continue;
       }
 
@@ -416,7 +446,6 @@ class PdfViewWebPlugin::PdfInkModuleClientImpl : public PdfInkModuleClient {
     return -1;
   }
 
- private:
   const raw_ref<PdfViewWebPlugin> plugin_;
 };
 #endif  // BUILDFLAG(ENABLE_PDF_INK2)
