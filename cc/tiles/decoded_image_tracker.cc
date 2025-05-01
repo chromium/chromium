@@ -39,7 +39,8 @@ DecodedImageTracker::~DecodedImageTracker() {
 
 void DecodedImageTracker::QueueImageDecode(
     const DrawImage& image,
-    base::OnceCallback<void(bool)> callback) {
+    base::OnceCallback<void(bool)> callback,
+    bool speculative) {
   TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
                "DecodedImageTracker::QueueImageDecode", "frame_key",
                image.frame_key().ToString());
@@ -47,9 +48,11 @@ void DecodedImageTracker::QueueImageDecode(
   // Queue the decode in the image controller, but switch out the callback for
   // our own.
   image_controller_->QueueImageDecode(
-      image, base::BindOnce(&DecodedImageTracker::ImageDecodeFinished,
-                            base::Unretained(this), std::move(callback),
-                            image.paint_image().stable_id()));
+      image,
+      base::BindOnce(&DecodedImageTracker::ImageDecodeFinished,
+                     base::Unretained(this), std::move(callback),
+                     image.paint_image().stable_id()),
+      speculative);
 }
 
 void DecodedImageTracker::UnlockAllImages() {

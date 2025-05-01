@@ -17,9 +17,9 @@ class StubDecodeCache : public ImageDecodeCache {
   TaskResult GetTaskForImageAndRef(ClientId client_id,
                                    const DrawImage& image,
                                    const TracingInfo& tracing_info) override;
-  TaskResult GetOutOfRasterDecodeTaskForImageAndRef(
-      ClientId client_id,
-      const DrawImage& image) override;
+  TaskResult GetOutOfRasterDecodeTaskForImageAndRef(ClientId client_id,
+                                                    const DrawImage& image,
+                                                    bool speculative) override;
   void UnrefImage(const DrawImage& image) override {}
   DecodedDrawImage GetDecodedImageForDraw(const DrawImage& image) override;
   void DrawWithImageFinished(const DrawImage& image,

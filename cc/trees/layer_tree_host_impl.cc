@@ -710,8 +710,10 @@ void LayerTreeHostImpl::FinishCommit(
   PullLayerTreeHostPropertiesFrom(state);
 
   // Transfer image decode requests to the impl thread.
-  for (auto& entry : state.queued_image_decodes)
-    QueueImageDecode(entry.first, *entry.second);
+  for (auto& entry : state.queued_image_decodes) {
+    QueueImageDecode(std::get<0>(entry), *std::get<1>(entry),
+                     std::get<2>(entry));
+  }
 
   for (auto& benchmark : state.benchmarks)
     ScheduleMicroBenchmark(std::move(benchmark));
@@ -4300,7 +4302,8 @@ void LayerTreeHostImpl::SetPaintWorkletLayerPainter(
 }
 
 void LayerTreeHostImpl::QueueImageDecode(int request_id,
-                                         const DrawImage& image) {
+                                         const DrawImage& image,
+                                         bool speculative) {
   DCHECK(!settings_.is_display_tree);
   const PaintImage& paint_image = image.paint_image();
   TRACE_EVENT1(
@@ -4314,8 +4317,10 @@ void LayerTreeHostImpl::QueueImageDecode(int request_id,
       /*frame_index=*/PaintImage::kDefaultFrameIndex,
       GetTargetColorParams(paint_image.GetContentColorUsage()));
   tile_manager_.decoded_image_tracker().QueueImageDecode(
-      image_copy, base::BindOnce(&LayerTreeHostImpl::ImageDecodeFinished,
-                                 weak_factory_.GetWeakPtr(), request_id));
+      image_copy,
+      base::BindOnce(&LayerTreeHostImpl::ImageDecodeFinished,
+                     weak_factory_.GetWeakPtr(), request_id),
+      speculative);
   tile_manager_.checker_image_tracker().DisallowCheckeringForImage(paint_image);
 }
 

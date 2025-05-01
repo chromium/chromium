@@ -297,7 +297,8 @@ class CORE_EXPORT ChromeClientImpl final : public ChromeClient {
 
   void RequestDecode(LocalFrame*,
                      const cc::DrawImage&,
-                     base::OnceCallback<void(bool)>) override;
+                     base::OnceCallback<void(bool)>,
+                     bool speculative) override;
 
   void NotifyPresentationTime(LocalFrame& frame,
                               ReportTimeCallback callback) override;

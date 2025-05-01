@@ -998,8 +998,9 @@ base::SingleThreadTaskRunner* ProxyImpl::MainThreadTaskRunner() {
 }
 
 void ProxyImpl::QueueImageDecodeOnImpl(int request_id,
-                                       std::unique_ptr<DrawImage> image) {
-  host_impl_->QueueImageDecode(request_id, *image);
+                                       std::unique_ptr<DrawImage> image,
+                                       bool speculative) {
+  host_impl_->QueueImageDecode(request_id, *image, speculative);
 }
 
 void ProxyImpl::SetSourceURL(ukm::SourceId source_id, const GURL& url) {

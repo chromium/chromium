@@ -169,9 +169,9 @@ class CC_EXPORT GpuImageDecodeCache
                                    const DrawImage& image,
                                    const TracingInfo& tracing_info) override;
   // See |GetTaskForImageAndRefInternal| to learn about the |client_id|.
-  TaskResult GetOutOfRasterDecodeTaskForImageAndRef(
-      ClientId client_id,
-      const DrawImage& image) override;
+  TaskResult GetOutOfRasterDecodeTaskForImageAndRef(ClientId client_id,
+                                                    const DrawImage& image,
+                                                    bool speculative) override;
   void UnrefImage(const DrawImage& image) override;
   DecodedDrawImage GetDecodedImageForDraw(const DrawImage& draw_image) override;
   void DrawWithImageFinished(const DrawImage& image,
@@ -602,6 +602,7 @@ class CC_EXPORT GpuImageDecodeCache
               bool is_bitmap_backed,
               bool can_do_hardware_accelerated_decode,
               bool do_hardware_accelerated_decode,
+              bool speculative_decode,
               base::span<ImageInfo, kAuxImageCount> image_info);
 
     bool IsGpuOrTransferCache() const;
@@ -623,6 +624,16 @@ class CC_EXPORT GpuImageDecodeCache
     // when a gainmap or HDR tonemapping is applied). This includes the memory
     // used by all auxiliary images.
     size_t GetTotalSize() const;
+
+    bool IsSpeculativeDecode() const {
+      return speculative_decode_usage_stats_.has_value();
+    }
+    bool SpeculativeDecodeHasMatched() const {
+      return IsSpeculativeDecode() &&
+             speculative_decode_usage_stats_->min_raster_mip_level < INT_MAX;
+    }
+    void RecordSpeculativeDecodeMatch(int mip_level);
+    void RecordSpeculativeDecodeRasterTaskTakeover();
 
     const PaintImage::Id paint_image_id;
     const DecodedDataMode mode;
@@ -649,6 +660,13 @@ class CC_EXPORT GpuImageDecodeCache
     DecodedImageData decode;
     UploadedImageData upload;
 
+    struct SpeculativeDecodeUsageStats {
+      int speculative_decode_mip_level = -1;
+      int min_raster_mip_level = INT_MAX;
+      bool raster_task_takeover = false;
+    };
+    std::optional<SpeculativeDecodeUsageStats> speculative_decode_usage_stats_;
+
    private:
     friend class base::RefCountedThreadSafe<ImageData>;
     ~ImageData();
@@ -671,7 +689,7 @@ class CC_EXPORT GpuImageDecodeCache
   struct InUseCacheKeyHash;
   struct InUseCacheKey {
     InUseCacheKey(const DrawImage& draw_image, int mip_level);
-
+    int mip_level() const { return upload_scale_mip_level; }
     bool operator==(const InUseCacheKey& other) const;
 
    private:
@@ -714,7 +732,8 @@ class CC_EXPORT GpuImageDecodeCache
   TaskResult GetTaskForImageAndRefInternal(ClientId client_id,
                                            const DrawImage& image,
                                            const TracingInfo& tracing_info,
-                                           TaskType task_type);
+                                           TaskType task_type,
+                                           bool speculative);
 
   void RefImageDecode(const DrawImage& draw_image,
                       const InUseCacheKey& cache_key)
@@ -771,7 +790,8 @@ class CC_EXPORT GpuImageDecodeCache
 
   scoped_refptr<GpuImageDecodeCache::ImageData> CreateImageData(
       const DrawImage& image,
-      bool allow_hardware_decode);
+      bool allow_hardware_decode,
+      bool speculative_decode);
   void WillAddCacheEntry(const DrawImage& draw_image)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
@@ -783,8 +803,10 @@ class CC_EXPORT GpuImageDecodeCache
 
   // Finds the ImageData that should be used for the given DrawImage. Looks
   // first in the |in_use_cache_|, and then in the |persistent_cache_|.
-  ImageData* GetImageDataForDrawImage(const DrawImage& image,
-                                      const InUseCacheKey& key)
+  ImageData* GetImageDataForDrawImage(
+      const DrawImage& image,
+      const InUseCacheKey& key,
+      bool record_speculative_decode_stats = false)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   // Returns true if the given ImageData can be used to draw the specified

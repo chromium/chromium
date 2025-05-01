@@ -563,7 +563,8 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
 
   virtual void RequestDecode(LocalFrame*,
                              const cc::DrawImage& image,
-                             base::OnceCallback<void(bool)> callback) {
+                             base::OnceCallback<void(bool)> callback,
+                             bool speculative) {
     std::move(callback).Run(false);
   }
 

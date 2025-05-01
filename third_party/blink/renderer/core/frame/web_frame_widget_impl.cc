@@ -1598,11 +1598,11 @@ WebFrameWidgetImpl::GetAssociatedFrameWidgetHost() const {
   return frame_widget_host_.get();
 }
 
-void WebFrameWidgetImpl::RequestDecode(
-    const cc::DrawImage& image,
-    base::OnceCallback<void(bool)> callback) {
+void WebFrameWidgetImpl::RequestDecode(const cc::DrawImage& image,
+                                       base::OnceCallback<void(bool)> callback,
+                                       bool speculative) {
   if (auto* layer_tree_host = widget_base_->LayerTreeHost()) {
-    layer_tree_host->QueueImageDecode(image, std::move(callback));
+    layer_tree_host->QueueImageDecode(image, std::move(callback), speculative);
   } else {
     std::move(callback).Run(false);
   }

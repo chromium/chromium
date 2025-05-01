@@ -281,7 +281,8 @@ class TestWebFrameWidget : public WebFrameWidgetImpl {
   }
 
   void RequestDecode(const cc::DrawImage&,
-                     base::OnceCallback<void(bool)>) override;
+                     base::OnceCallback<void(bool)>,
+                     bool speculative) override;
 
   using WebFrameWidgetImpl::GetOriginalScreenInfo;
 

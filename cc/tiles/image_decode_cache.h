@@ -136,7 +136,8 @@ class CC_EXPORT ImageDecodeCache {
   // worker thread which may not have the right GPU context for upload.
   virtual TaskResult GetOutOfRasterDecodeTaskForImageAndRef(
       ClientId client_id,
-      const DrawImage& image) = 0;
+      const DrawImage& image,
+      bool speculative = false) = 0;
 
   // Unrefs an image. When the tile is finished, this should be called for every
   // GetTaskForImageAndRef call that returned true.

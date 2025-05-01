@@ -1012,9 +1012,9 @@ void TestWebFrameWidget::DispatchThroughCcInputHandler(
   FlushInputHandlerTasks();
 }
 
-void TestWebFrameWidget::RequestDecode(
-    const cc::DrawImage&,
-    base::OnceCallback<void(bool)> callback) {
+void TestWebFrameWidget::RequestDecode(const cc::DrawImage&,
+                                       base::OnceCallback<void(bool)> callback,
+                                       bool speculative) {
   // TODO(paint-dev): probably this should `std::move(callback).Run(true)`, but
   // that could cause deep recursion into
   // ResourceFetcher::MaybeStartSpeculativeImageDecode(). Currently, nothing

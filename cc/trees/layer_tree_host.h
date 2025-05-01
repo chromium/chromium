@@ -900,7 +900,8 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
                                          ElementListType tree_type) override {}
 
   void QueueImageDecode(const DrawImage& image,
-                        base::OnceCallback<void(bool)> callback);
+                        base::OnceCallback<void(bool)> callback,
+                        bool speculative);
   void ImageDecodesFinished(const std::vector<std::pair<int, bool>>& results);
 
   void RequestBeginMainFrameNotExpected(bool new_state);
@@ -1126,7 +1127,7 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
 
   raw_ptr<RasterDarkModeFilter> dark_mode_filter_;
 
-  std::unordered_map<int, base::OnceCallback<void(bool)>>
+  std::unordered_map<int, std::pair<base::OnceCallback<void(bool)>, bool>>
       pending_image_decodes_;
 
   struct ScrollAnimationState {

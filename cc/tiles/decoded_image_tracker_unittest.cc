@@ -30,9 +30,9 @@ class TestImageController : public ImageController {
     locked_ids_.erase(it);
   }
 
-  ImageDecodeRequestId QueueImageDecode(
-      const DrawImage& image,
-      ImageDecodedCallback callback) override {
+  ImageDecodeRequestId QueueImageDecode(const DrawImage& image,
+                                        ImageDecodedCallback callback,
+                                        bool speculative) override {
     auto id = next_id_++;
     locked_ids_.insert(
         std::make_pair(id, SoftwareImageDecodeCache::CacheKey::FromDrawImage(
@@ -93,7 +93,8 @@ TEST_F(DecodedImageTrackerTest, QueueImageLocksImages) {
       DrawImageForDecoding(CreateDiscardablePaintImage(gfx::Size(1, 1)),
                            TargetColorParams()),
       base::BindOnce([](bool* locked, bool success) { *locked = true; },
-                     base::Unretained(&locked)));
+                     base::Unretained(&locked)),
+      /*speculative*/ false);
   EXPECT_TRUE(locked);
   EXPECT_EQ(1u, image_controller()->num_locked_images());
 }
@@ -109,7 +110,8 @@ TEST_F(DecodedImageTrackerTest, Colorspace) {
   decoded_image_tracker()->QueueImageDecode(
       DrawImageForDecoding(paint_image, target_color_params),
       base::BindOnce([](bool* locked, bool success) { *locked = true; },
-                     base::Unretained(&locked)));
+                     base::Unretained(&locked)),
+      /*speculative*/ false);
 
   // Check that the decoded color space images are locked, but if the color
   // space differs then that image is not locked. Note that we use the high
@@ -134,7 +136,8 @@ TEST_F(DecodedImageTrackerTest, ImagesTimeOut) {
       DrawImageForDecoding(CreateDiscardablePaintImage(gfx::Size(1, 1)),
                            TargetColorParams()),
       base::BindOnce([](bool* locked, bool success) { *locked = true; },
-                     base::Unretained(&locked)));
+                     base::Unretained(&locked)),
+      /*speculative*/ false);
   EXPECT_TRUE(locked);
   EXPECT_EQ(1u, image_controller()->num_locked_images());
 
@@ -148,7 +151,8 @@ TEST_F(DecodedImageTrackerTest, ImagesTimeOut) {
       DrawImageForDecoding(CreateDiscardablePaintImage(gfx::Size(1, 1)),
                            TargetColorParams()),
       base::BindOnce([](bool* locked, bool success) { *locked = true; },
-                     base::Unretained(&locked)));
+                     base::Unretained(&locked)),
+      /*speculative*/ false);
   EXPECT_TRUE(locked);
   EXPECT_EQ(2u, image_controller()->num_locked_images());
 
@@ -171,7 +175,8 @@ TEST_F(DecodedImageTrackerTest, ImageUsedInDraw) {
   decoded_image_tracker()->QueueImageDecode(
       DrawImageForDecoding(paint_image_1, target_color_params),
       base::BindOnce([](bool* locked, bool success) { *locked = true; },
-                     base::Unretained(&locked)));
+                     base::Unretained(&locked)),
+      /*speculative*/ false);
   EXPECT_TRUE(locked);
   EXPECT_EQ(1u, image_controller()->num_locked_images());
 
@@ -180,7 +185,8 @@ TEST_F(DecodedImageTrackerTest, ImageUsedInDraw) {
   decoded_image_tracker()->QueueImageDecode(
       DrawImageForDecoding(paint_image_2, target_color_params),
       base::BindOnce([](bool* locked, bool success) { *locked = true; },
-                     base::Unretained(&locked)));
+                     base::Unretained(&locked)),
+      /*speculative*/ false);
   EXPECT_TRUE(locked);
   EXPECT_EQ(2u, image_controller()->num_locked_images());
 
@@ -211,7 +217,8 @@ TEST_F(DecodedImageTrackerTest, UnlockAllImages) {
       DrawImageForDecoding(CreateDiscardablePaintImage(gfx::Size(1, 1)),
                            TargetColorParams()),
       base::BindOnce([](bool* locked, bool success) { *locked = true; },
-                     base::Unretained(&locked)));
+                     base::Unretained(&locked)),
+      /*speculative*/ false);
   EXPECT_TRUE(locked);
   EXPECT_EQ(1u, image_controller()->num_locked_images());
   locked = false;
@@ -219,7 +226,8 @@ TEST_F(DecodedImageTrackerTest, UnlockAllImages) {
       DrawImageForDecoding(CreateDiscardablePaintImage(gfx::Size(1, 1)),
                            TargetColorParams()),
       base::BindOnce([](bool* locked, bool success) { *locked = true; },
-                     base::Unretained(&locked)));
+                     base::Unretained(&locked)),
+      /*speculative*/ false);
   EXPECT_TRUE(locked);
   EXPECT_EQ(2u, image_controller()->num_locked_images());
 

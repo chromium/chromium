@@ -924,10 +924,23 @@ bool FrameFetchContext::StartSpeculativeImageDecode(
         static_cast<cc::PaintFlags::FilterQuality>(
             image_resource->GetContent()->MaxInterpolationQuality()),
         matrix, PaintImage::kDefaultFrameIndex);
+    auto paint_image_id = image->paint_image_id();
+    TRACE_EVENT_INSTANT2(
+        TRACE_DISABLED_BY_DEFAULT("loading"), "SpeculativeImageDecodeStarted",
+        TRACE_EVENT_SCOPE_THREAD, "url", resource->Url().GetString().Utf8(),
+        "image_id", paint_image_id);
     document_->GetFrame()->GetChromeClient().RequestDecode(
         document_->GetFrame(), draw_image,
-        WTF::BindOnce([](base::OnceClosure cb, bool) { std::move(cb).Run(); },
-                      std::move(callback)));
+        WTF::BindOnce(
+            [](base::OnceClosure cb, PaintImage::Id paint_image_id, bool) {
+              TRACE_EVENT_INSTANT1(TRACE_DISABLED_BY_DEFAULT("loading"),
+                                   "SpeculativeImageDecodeFinished",
+                                   TRACE_EVENT_SCOPE_THREAD, "image_id",
+                                   paint_image_id);
+              std::move(cb).Run();
+            },
+            std::move(callback), paint_image_id),
+        /*speculative*/ true);
     return true;
   }
   return false;

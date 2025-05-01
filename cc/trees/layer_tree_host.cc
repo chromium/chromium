@@ -288,8 +288,9 @@ LayerTreeHost::~LayerTreeHost() {
   property_tree_delegate_->SetLayerTreeHost(nullptr);
 
   // Fail any pending image decodes.
-  for (auto& pair : pending_image_decodes_)
-    std::move(pair.second).Run(false);
+  for (auto& entry : pending_image_decodes_) {
+    std::move(entry.second.first).Run(false);
+  }
 
   if (proxy_) {
     proxy_->Stop();
@@ -521,7 +522,7 @@ void LayerTreeHost::NotifyImageDecodeFinished(int request_id,
   auto it = pending_image_decodes_.find(request_id);
   CHECK(it != pending_image_decodes_.end(), base::NotFatalUntil::M130);
   // Issue stored callback and remove them from the pending list.
-  std::move(it->second).Run(decode_succeeded);
+  std::move(it->second.first).Run(decode_succeeded);
   pending_image_decodes_.erase(it);
 }
 
@@ -1898,17 +1899,19 @@ bool LayerTreeHost::RunsOnCurrentThread() const {
 }
 
 void LayerTreeHost::QueueImageDecode(const DrawImage& image,
-                                     base::OnceCallback<void(bool)> callback) {
+                                     base::OnceCallback<void(bool)> callback,
+                                     bool speculative) {
   TRACE_EVENT0("cc", "LayerTreeHost::QueueImageDecode");
   int next_id = s_image_decode_sequence_number.GetNext();
   if (base::FeatureList::IsEnabled(
           features::kSendExplicitDecodeRequestsImmediately)) {
-    proxy()->QueueImageDecode(next_id, image);
+    proxy()->QueueImageDecode(next_id, image, speculative);
   } else {
-    pending_commit_state()->queued_image_decodes.emplace_back(
-        next_id, std::make_unique<DrawImage>(image));
+    pending_commit_state()->queued_image_decodes.emplace_back(std::make_tuple(
+        next_id, std::make_unique<DrawImage>(image), speculative));
   }
-  pending_image_decodes_.emplace(next_id, std::move(callback));
+  pending_image_decodes_.emplace(
+      next_id, std::make_pair(std::move(callback), speculative));
   SetNeedsCommit();
 }
 

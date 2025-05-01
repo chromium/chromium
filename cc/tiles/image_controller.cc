@@ -333,7 +333,8 @@ std::vector<scoped_refptr<TileTask>> ImageController::SetPredecodeImages(
 
 ImageController::ImageDecodeRequestId ImageController::QueueImageDecode(
     const DrawImage& draw_image,
-    ImageDecodedCallback callback) {
+    ImageDecodedCallback callback,
+    bool speculative) {
   // We must not receive any image requests if we have no worker.
   CHECK(worker_task_runner_);
 
@@ -356,7 +357,7 @@ ImageController::ImageDecodeRequestId ImageController::QueueImageDecode(
       return id;
     }
     result = cache_->GetOutOfRasterDecodeTaskForImageAndRef(
-        image_cache_client_id_, draw_image);
+        image_cache_client_id_, draw_image, speculative);
   }
   // If we don't need to unref this, we don't actually have a task.
   DCHECK(result.need_unref || !result.task);

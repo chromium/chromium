@@ -3895,9 +3895,11 @@ TEST_F(DecodedImageTrackerTileManagerTest, DecodedImageTrackerDropsLocksOnUse) {
 
   // Add the images to our decoded_image_tracker.
   host_impl()->tile_manager()->decoded_image_tracker().QueueImageDecode(
-      DrawImageForDecoding(image1, TargetColorParams()), base::DoNothing());
+      DrawImageForDecoding(image1, TargetColorParams()), base::DoNothing(),
+      /*speculative*/ false);
   host_impl()->tile_manager()->decoded_image_tracker().QueueImageDecode(
-      DrawImageForDecoding(image2, TargetColorParams()), base::DoNothing());
+      DrawImageForDecoding(image2, TargetColorParams()), base::DoNothing(),
+      /*speculative*/ false);
   EXPECT_EQ(0u, host_impl()
                     ->tile_manager()
                     ->decoded_image_tracker()
@@ -3979,8 +3981,8 @@ class HdrImageTileManagerTest : public CheckerImagingTileManagerTest {
     TargetColorParams target_color_params;
     target_color_params.color_space = output_cs;
     host_impl()->tile_manager()->decoded_image_tracker().QueueImageDecode(
-        DrawImageForDecoding(hdr_image, target_color_params),
-        base::DoNothing());
+        DrawImageForDecoding(hdr_image, target_color_params), base::DoNothing(),
+        /*speculative*/ false);
     FlushDecodeTasks();
 
     // Add images to a fake recording source.

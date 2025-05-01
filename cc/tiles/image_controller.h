@@ -75,7 +75,8 @@ class CC_EXPORT ImageController {
   // unlocked using UnlockImageDecode.
   // Virtual for testing.
   virtual ImageDecodeRequestId QueueImageDecode(const DrawImage& draw_image,
-                                                ImageDecodedCallback callback);
+                                                ImageDecodedCallback callback,
+                                                bool speculative);
 
   // Signals that an external dependency of `task` has completed.
   void ExternalDependencyCompletedForTask(scoped_refptr<TileTask> task);
