@@ -12071,6 +12071,12 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
             <message name ="IDS_DATA_SHARING_SHARE_GROUP_TITLE" desc="The Title for the creation flow for a shared group.">
               Share “<ph name="GROUP_NAME">$1<ex>Vacation</ex></ph>” Tab Group
             </message>
+            <message name ="IDS_DATA_SHARING_COPY_LINK" desc="Label of the copy link button for the data sharing dialog.">
+              Copy Link
+            </message>
+            <message name ="IDS_DATA_SHARING_COPY_LINK_SUCCESS" desc="Label of the copy link button for the data sharing dialog after copy link succeeds.">
+              Link Copied
+            </message>
           <!-- /Data Sharing Create Flow -->
 
           <!-- Data Sharing Owner Manage Flow -->
@@ -12217,6 +12223,12 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
             <message name ="IDS_DATA_SHARING_SHARE_GROUP_TITLE" desc="The Title for the creation flow for a shared group.">
               Share “<ph name="GROUP_NAME">$1<ex>Vacation</ex></ph>” tab group
             </message>
+          <message name ="IDS_DATA_SHARING_COPY_LINK" desc="Label of the copy link button for the data sharing dialog.">
+            Copy link
+          </message>
+          <message name ="IDS_DATA_SHARING_COPY_LINK_SUCCESS" desc="Label of the copy link button for the data sharing dialog after copy link succeeds.">
+            Link copied
+          </message>
           <!-- /Data Sharing Create Flow -->
 
           <!-- Data Sharing Owner Manage Flow -->
@@ -12593,12 +12605,6 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         </message>
         <message name ="IDS_DATA_SHARING_LOADING" desc="Alt text of the loading indicator for the data sharing dialog.">
           Loading
-        </message>
-        <message name ="IDS_DATA_SHARING_COPY_LINK" desc="Label of the copy link button for the data sharing dialog.">
-          Copy link
-        </message>
-        <message name ="IDS_DATA_SHARING_COPY_LINK_SUCCESS" desc="Label of the copy link button for the data sharing dialog after copy link succeeds.">
-          Link copied
         </message>
         <message name ="IDS_DATA_SHARING_COPY_LINK_FAILED" desc="Label of the copy link button for the data sharing dialog after copy link fails.">
           Failed to copy link
