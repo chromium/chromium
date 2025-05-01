@@ -295,11 +295,6 @@ class ReadAnythingAppController
   // where this isn't needed.
   void InitAXPositionWithNode(const ui::AXNodeID& starting_node_id);
 
-  // TODO(crbug.com/40927698): Random access to processed nodes might not always
-  // work (e.g. if we're switching granularities or jumping to a specific node),
-  // so we should implement a method of retrieving previous text from
-  // AXPosition.
-
   // Increments the processed_granularity_index_, updating ReadAloud's state of
   // the current granularity to refer to the next granularity. The current
   // behavior allows the client to increment past the end of the page's content.
