@@ -688,7 +688,7 @@ Sinon, le pavé tactile intégré sera réactivé dans <ph name="TIMEOUT_SECONDS
 <translation id="334927402682780278">Sélectionner le texte entre le curseur et la fin de la ligne</translation>
 <translation id="3349345708646875009">Ouvrir le gestionnaire de tâches</translation>
 <translation id="3364721542077212959">Outils de stylet</translation>
-<translation id="3365281428003534650">Créer un minuteur et une tâche</translation>
+<translation id="3365281428003534650">Ajoutez une durée et une tâche</translation>
 <translation id="3365977133351922112">Votre téléphone est trop loin. Rapprochez-le.</translation>
 <translation id="3368922792935385530">Connecté</translation>
 <translation id="3369111525500416043">À rendre bientôt</translation>
@@ -1599,7 +1599,7 @@ Aucun appareil connecté.</translation>
 <translation id="6220928844947387476">Vous pouvez maintenant enregistrer votre écran et vous-même en même temps</translation>
 <translation id="622484624075952240">Bas</translation>
 <translation id="6228457605945141550">Réduire la luminosité</translation>
-<translation id="623116199192908855">Caster l'écran de votre Chromebook</translation>
+<translation id="623116199192908855">Castez l'écran de votre Chromebook</translation>
 <translation id="6231419273573514727">Les performances du périphérique risquent d'être limitées</translation>
 <translation id="6232416233079464213">Source : <ph name="SESSION_NAME" /></translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> utilise actuellement votre caméra et votre micro</translation>

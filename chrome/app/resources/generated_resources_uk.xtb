@@ -814,7 +814,7 @@
 <translation id="1556127816860282890">Можуть обмежуватися дії у фоновому режимі й деякі візуальні ефекти, як-от плавне прокручування</translation>
 <translation id="1556537182262721003">Не вдалося перемістити каталог розширення в профіль.</translation>
 <translation id="1557939148300698553">Створити профіль</translation>
-<translation id="155803912725350982">Повільні клавіші</translation>
+<translation id="155803912725350982">Довге натискання клавіш</translation>
 <translation id="155865706765934889">Сенсорна панель</translation>
 <translation id="1558671750917454373">Відновити трансляцію на пристрій "<ph name="DEVICE_NAME" />"</translation>
 <translation id="1561331397460162942">Доступ до геоданих отримають додатки, вебсайти з відповідним дозволом і системні сервіси</translation>
@@ -3082,7 +3082,7 @@
 <translation id="3117791853215125017">{COUNT,plural, =1{Не вдалося надіслати <ph name="ATTACHMENTS" /> на пристрій <ph name="DEVICE_NAME" />}one{Не вдалося надіслати <ph name="ATTACHMENTS" /> на пристрій <ph name="DEVICE_NAME" />}few{Не вдалося надіслати <ph name="ATTACHMENTS" /> на пристрій <ph name="DEVICE_NAME" />}many{Не вдалося надіслати <ph name="ATTACHMENTS" /> на пристрій <ph name="DEVICE_NAME" />}other{Не вдалося надіслати <ph name="ATTACHMENTS" /> на пристрій <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3118319026408854581">Довідка <ph name="PRODUCT_NAME" /></translation>
 <translation id="3118748462829336648">Відкрити бічну панель</translation>
-<translation id="3119743309973425629">Швидкість блимання текстового курсора</translation>
+<translation id="3119743309973425629">Частота блимання текстового курсора</translation>
 <translation id="3119948370277171654">Укажіть тип контенту, який Ви транслювали, або URL-адресу.</translation>
 <translation id="3122464029669770682">ЦП</translation>
 <translation id="3122496702278727796">Не вдалося створити каталог даних</translation>
@@ -8531,7 +8531,7 @@
 <translation id="7017219178341817193">Додати нову сторінку</translation>
 <translation id="7017354871202642555">Неможливо вибрати режим після налаштування вікна.</translation>
 <translation id="7019546817926942979">Пристрій потрібно підключити до живлення. Оновлення Linux може значно виснажити акумулятор. Підключіть зарядний пристрій і повторіть спробу.</translation>
-<translation id="7019805045859631636">Швидка</translation>
+<translation id="7019805045859631636">Швидко</translation>
 <translation id="7021524108486027008">Користуйтесь інструментами, редакторами й ІСР у середовищі, яким керує ваша організація на пристрої <ph name="DEVICE_TYPE" />.</translation>
 <translation id="7022222879220069865">Усі сенсорні панелі відключено</translation>
 <translation id="7022562585984256452">Вашу домашню сторінку налаштовано.</translation>
@@ -9963,7 +9963,7 @@
 <translation id="8042142357103597104">Прозорість тексту</translation>
 <translation id="8042331986490021244">Ваші паролі шифруються на пристрої, а потім зберігаються в Менеджері паролів Google</translation>
 <translation id="8044262338717486897">Додаток <ph name="LINUX_APP_NAME" /> не відповідає.</translation>
-<translation id="8044899503464538266">Повільна</translation>
+<translation id="8044899503464538266">Повільно</translation>
 <translation id="8045253504249021590">Синхронізацію припинено за допомогою Інформаційної панелі Google.</translation>
 <translation id="8045752459073395242">Докладніше про використання генеративного ШІ для роботи</translation>
 <translation id="8045923671629973368">Введіть ідентифікатор додатка або URL-адресу веб-магазину</translation>

@@ -1160,7 +1160,7 @@
 <translation id="1782196717298160133">သင်၏ ဖုန်းကို ရှာကြည့်ခြင်း</translation>
 <translation id="1784707308176068866">ပူးပေါင်းဆောင်ရွက်နေသော မူလအပလီကေးရှင်းက တောင်းဆိုသည့်အခါ နောက်ခံတွင် လုပ်ဆောင်သည်</translation>
 <translation id="1784849162047402014">စက်ပစ္စည်းသိုလှောင်ခန်းနည်းနေပါသည်</translation>
-<translation id="1784864038959330497">{NUM_SUB_APPS,plural, =1{“<ph name="APP_NAME" />” ကို ဖယ်ရှားခြင်းက ဤအက်ပ်ကိုလည်း ဖယ်ရှားမည်-}other{“<ph name="APP_NAME" />” ကို ဖယ်ရှားခြင်းက ဤအက်ပ်များကိုလည်း ဖယ်ရှားမည်-}}</translation>
+<translation id="1784864038959330497">{NUM_SUB_APPS,plural, =1{“<ph name="APP_NAME" />” ကို ဖြုတ်ခြင်းက ဤအက်ပ်ကိုလည်း ဖြုတ်မည်-}other{“<ph name="APP_NAME" />” ကို ဖြုတ်ခြင်းက ဤအက်ပ်များကိုလည်း ဖြုတ်မည်-}}</translation>
 <translation id="1786290960428378411">ဖတ်ပြီးပြောင်းရန် တောင်းဆိုနေသည်</translation>
 <translation id="1787350673646245458">အသုံးပြုသူ၏ ပုံ</translation>
 <translation id="1790976235243700817">အသုံးပြုခွင့်ကို ဖယ်ရှားရန်</translation>

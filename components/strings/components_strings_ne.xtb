@@ -1439,7 +1439,7 @@
 <translation id="3542628208405253498">कार्डको फोटो</translation>
 <translation id="3542768452570884558">यो लिंक नयाँ विन्डोमा खोल्नुहोस्</translation>
 <translation id="3543935938072367282">अटोफिलका सहायताले अझ छिटो चेक आउट गर्नुहोस्</translation>
-<translation id="3547442767634383572">कार्य प्रोफाइलको संक्षिप्त जानकारी</translation>
+<translation id="3547442767634383572">वर्क प्रोफाइलको संक्षिप्त जानकारी</translation>
 <translation id="3547746132308051926">२० x २४ इन्च</translation>
 <translation id="3552155506104542239">चेतावनी: यो नीति <ph name="POLICY_NAME" /> सँग बाझिएको छ र यसले Android एपमा कुनै प्रभाव पार्ने छैन। अन्यथा यो नीतिले अपेक्षा गरेअनुसार नै काम गरिरहेको छ।</translation>
 <translation id="3552297013052089404">Sans Serif फन्ट</translation>
@@ -2409,7 +2409,7 @@
 <translation id="52517543715119994">Chrome का सुविधाहरूका बारेमा जान्नुहोस्</translation>
 <translation id="5251803541071282808">क्लाउड</translation>
 <translation id="5254043433801397071">छाप्ने सामग्री अनुकूलन गर्नुहोस्</translation>
-<translation id="5255583962255635076">तपाईंको कार्य प्रोफाइलमा लागू गरिएका ब्राउजरसम्बन्धी नीतिहरू</translation>
+<translation id="5255583962255635076">तपाईंको वर्क प्रोफाइलमा लागू गरिएका ब्राउजरसम्बन्धी नीतिहरू</translation>
 <translation id="5255690596502591079">जे भए पनि खिच्नुहोस्</translation>
 <translation id="5255771248404149177">तपाईंको कार्ड प्रदायक तपाईंको पहिचान पुष्टि गर्न चाहन्छ</translation>
 <translation id="5255833070095767006">३५० x ४६० मिलिमिटर</translation>
@@ -3633,7 +3633,7 @@
 <translation id="7421067045979951561">प्रोटोकोल ह्यान्ड्लर्स</translation>
 <translation id="7422347648202898039">लेबल (सेकुरिटी)</translation>
 <translation id="7423283032694727565">कुकीहरू व्यवस्थापन गर्ने बटन, Chrome का सेटिङमा गई कुकीसम्बन्धी आफ्ना प्राथमिकताहरू व्यवस्थापन गर्न यो बटन थिच्नुहोस्</translation>
-<translation id="742435751935045381">तपाईंको कार्य प्रोफाइलमा इन्स्टल गरिएका एप तथा एक्स्टेन्सनहरू</translation>
+<translation id="742435751935045381">तपाईंको वर्क प्रोफाइलमा इन्स्टल गरिएका एप तथा एक्स्टेन्सनहरू</translation>
 <translation id="7424421098814895617">ठेगाना मेटाउने विकल्प चयन गरियो</translation>
 <translation id="7425037327577270384">मलाई लेख्न मद्दत गर्नुहोस्</translation>
 <translation id="7425878584435172632">भिजुअल आर्ट तथा डिजाइन</translation>
@@ -4207,7 +4207,7 @@
 थप विवरणहरू:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">अहिले माइक्रोफोन प्रयोग गर्ने अनुमति दिइएको छ</translation>
-<translation id="8421158157346464398">कार्य प्रोफाइलसम्बन्धी जानकारी (तपाईंको कार्य प्रोफाइलको युजरनेम जस्ता)</translation>
+<translation id="8421158157346464398">वर्क प्रोफाइलसम्बन्धी जानकारी (तपाईंको वर्क प्रोफाइलको युजरनेम जस्ता)</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">परिवर्तन गर्नुहोस्</translation>
 <translation id="8426945547715537628">किबोर्ड ओभरराइड गर्न दिने हो?</translation>

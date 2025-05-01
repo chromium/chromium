@@ -4,7 +4,7 @@
 <translation id="1018939186200882850">مورد منو</translation>
 <translation id="10623998915015855">دکمه تغییر حالت</translation>
 <translation id="1088086359088493902">ثانیه</translation>
-<translation id="1142001580032786438">نمایش انتخابگر هفته</translation>
+<translation id="1142001580032786438">نشان دادن انتخاب‌گر هفته</translation>
 <translation id="1188858454923323853">تکمیلی</translation>
 <translation id="1206619573307042055">محتوای متحرک</translation>
 <translation id="1206693055195146388">لغزنده</translation>
@@ -94,15 +94,15 @@
 <translation id="479989351350248267">جستجو</translation>
 <translation id="4912200001568447310">مورد کنونی</translation>
 <translation id="4912536737030637138">ورودی فهرست منابع</translation>
-<translation id="4915360478455618802">نمایش انتخابگر زمان</translation>
+<translation id="4915360478455618802">نشان دادن انتخاب‌گر زمان</translation>
 <translation id="492244087561876220">نظر</translation>
 <translation id="4924138096460353083">نامعین</translation>
-<translation id="4950364064308314478">نمایش انتخابگر تاریخ و زمان محلی</translation>
+<translation id="4950364064308314478">نشان دادن انتخاب‌گر تاریخ و زمان محلی</translation>
 <translation id="495046168593986294">پیمایش به بالا</translation>
 <translation id="4971739861736909480"><ph name="ACCNAME" /> انتخاب شد</translation>
 <translation id="5022314756875057021">گروه ردیف</translation>
 <translation id="5034860022980953847">نشانگر پیشرفت</translation>
-<translation id="5090250355906949916">انتخابگر زمان ویدیو</translation>
+<translation id="5090250355906949916">انتخاب‌گر زمان ویدیو</translation>
 <translation id="5093189678851173835">نقل‌قول آغازین</translation>
 <translation id="509897012892853729">کانال آبی</translation>
 <translation id="5117590920725113268">نمایش ماه بعدی</translation>
@@ -202,7 +202,7 @@
 <translation id="8053789581856978548">فیلد نوشتاری جستجو</translation>
 <translation id="8057695513531652401">اطلاعیه</translation>
 <translation id="8105797009065549151">مرجع یادداشت</translation>
-<translation id="8208673686607688524">انتخابگر تاریخ و زمان محلی</translation>
+<translation id="8208673686607688524">انتخاب‌گر تاریخ و زمان محلی</translation>
 <translation id="8261464734335370856">املای نامعتبر</translation>
 <translation id="8346634859695247203">بخش</translation>
 <translation id="838869780401515933">علامت‌گذاری</translation>
@@ -220,7 +220,7 @@
 <translation id="860475260694818407">فهرست مطالب</translation>
 <translation id="8613126697340063924">کنترل بازپخش راه دور</translation>
 <translation id="862370744433916922">زیرنویس</translation>
-<translation id="8634971699417195529">نمایش انتخابگر ماه</translation>
+<translation id="8634971699417195529">نشان دادن انتخاب‌گر ماه</translation>
 <translation id="8711688047404765493">خروجی</translation>
 <translation id="8808573423886751634">فصل</translation>
 <translation id="8851136666856101339">اصلی</translation>
@@ -238,7 +238,7 @@
 <translation id="9138385573473225930">هشدار</translation>
 <translation id="9155987714137265666"><ph name="WEEK" />، شروع از <ph name="WEEK_START_DATE" /></translation>
 <translation id="9168329111483466115">پانویس</translation>
-<translation id="945780513535800434">برخی موارد علامت‌گذاری شده است</translation>
+<translation id="945780513535800434">ناقص علامت زده‌شده</translation>
 <translation id="954003015749068518">ورود به تصویر در تصویر</translation>
 <translation id="966787709310836684">منو</translation>
 </translationbundle>
