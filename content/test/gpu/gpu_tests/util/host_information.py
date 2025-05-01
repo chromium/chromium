@@ -19,6 +19,9 @@ import subprocess
 import sys
 from typing import Any
 
+# vpython-provided modules.
+import psutil  # pylint: disable=import-error
+
 from gpu_tests import constants
 
 if sys.platform == 'win32':
@@ -45,12 +48,12 @@ _MAC_VENDOR_NAME_REGEX = re.compile(r'sppci_vendor_([a-z]+)$')
 
 # The format of Qualcomm device IDs retrieved via WMI is different from what
 # Chrome extracts. This table translates to what Chrome produces.
-# 043a = older Adreno 680/685/690 GPUs (such as Surface Pro X, Dell trybots)
-# 0636 = Adreno 690 GPU (such as Surface Pro 9 5G)
-# 0c36 = Adreno 741 GPU (such as Surface Pro 11th Edition)
 _QUALCOMM_DEVICE_MAP = {
+    # Older Adreno 680/685/690 GPUs (such as Surface Pro X, Dell trybots).
     '043a': '41333430',
+    # Adreno 690 GPU (such as Surface Pro 9 5G).
     '0636': '36333630',
+    # Adreno 741 GPU (such as Surface Pro 11th Edition).
     '0c36': '36334330',
 }
 
@@ -70,6 +73,12 @@ def IsLinux() -> bool:
 @functools.lru_cache(maxsize=1)
 def IsMac() -> bool:
   return sys.platform == 'darwin'
+
+
+@functools.lru_cache(maxsize=1)
+def GetSystemMemoryBytes() -> int:
+  memory_stats = psutil.virtual_memory()
+  return memory_stats.total
 
 
 @functools.lru_cache(maxsize=1)

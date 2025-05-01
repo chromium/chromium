@@ -11,6 +11,7 @@ import unittest
 from gpu_tests import common_typing as ct
 from gpu_tests import gpu_integration_test
 from gpu_tests import webgl_conformance_integration_test_base
+from gpu_tests.util import host_information
 
 
 class WebGL2ConformanceIntegrationTest(
@@ -21,7 +22,18 @@ class WebGL2ConformanceIntegrationTest(
     return 'webgl2_conformance'
 
   def _GetSerialGlobs(self) -> set[str]:
-    return super()._GetSerialGlobs() | set()
+    serial_globs = super()._GetSerialGlobs()
+    # Serialize tests which allocate a large amount of memory on lower memory
+    # machines to avoid flakes.
+    # Should apply to all non-remote platforms, but we cannot distinguish
+    # between Linux test machines and hosts at this point in the test harness.
+    if host_information.IsWindows() or host_information.IsMac():
+      gigabyte = 1_000_000_000
+      if host_information.GetSystemMemoryBytes() < 16 * gigabyte:
+        serial_globs |= {
+            'conformance2/wasm/*16gb*',
+        }
+    return serial_globs
 
   def _GetSerialTests(self) -> set[str]:
     return super()._GetSerialTests() | set()

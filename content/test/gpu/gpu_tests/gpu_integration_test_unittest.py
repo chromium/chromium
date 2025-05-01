@@ -320,7 +320,9 @@ class GpuIntegrationTestUnittest(unittest.TestCase):
     self.assertFalse(test_class._is_asan)
 
   @mock.patch('gpu_tests.util.host_information.IsLinux', return_value=False)
-  def testGenerateNvidiaExampleTags(self, _) -> None:
+  @mock.patch('gpu_tests.util.host_information.GetSystemMemoryBytes',
+              return_value=32_000_000_000)
+  def testGenerateNvidiaExampleTags(self, _, __) -> None:
     platform = fakes.FakePlatform('win', 'win10')
     browser = fakes.FakeBrowser(platform, 'release')
     browser._returned_system_info = _GetSystemInfo(
@@ -340,10 +342,13 @@ class GpuIntegrationTestUnittest(unittest.TestCase):
             'target-cpu-64',
             'no-clang-coverage',
             'graphite-disabled',
+            'memory_ge_16gb',
         ]))
 
   @mock.patch('gpu_tests.util.host_information.IsLinux', return_value=False)
-  def testGenerateVendorTagUsingVendorString(self, _) -> None:
+  @mock.patch('gpu_tests.util.host_information.GetSystemMemoryBytes',
+              return_value=32_000_000_000)
+  def testGenerateVendorTagUsingVendorString(self, _, __) -> None:
     platform = fakes.FakePlatform('mac', 'mojave')
     browser = fakes.FakeBrowser(platform, 'release')
     browser._returned_system_info = _GetSystemInfo(
@@ -366,10 +371,13 @@ class GpuIntegrationTestUnittest(unittest.TestCase):
             'renderer-skia-gl',
             'no-clang-coverage',
             'graphite-disabled',
+            'memory_ge_16gb',
         ]))
 
   @mock.patch('gpu_tests.util.host_information.IsLinux', return_value=False)
-  def testGenerateVendorTagUsingDeviceString(self, _) -> None:
+  @mock.patch('gpu_tests.util.host_information.GetSystemMemoryBytes',
+              return_value=32_000_000_000)
+  def testGenerateVendorTagUsingDeviceString(self, _, __) -> None:
     platform = fakes.FakePlatform('mac', 'mojave')
     browser = fakes.FakeBrowser(platform, 'release')
     browser._returned_system_info = _GetSystemInfo(
@@ -390,7 +398,27 @@ class GpuIntegrationTestUnittest(unittest.TestCase):
             'renderer-skia-gl',
             'no-clang-coverage',
             'graphite-disabled',
+            'memory_ge_16gb',
         ]))
+
+  @mock.patch('gpu_tests.util.host_information.IsLinux', return_value=False)
+  def testGenerateMemoryTags(self, _):
+    platform = fakes.FakePlatform('win', 'win10')
+    browser = fakes.FakeBrowser(platform, 'release')
+    browser._returned_system_info = _GetSystemInfo(
+        gpu=VENDOR_NVIDIA, device=0x1cb3, gl_renderer='ANGLE Direct3D9')
+
+    with mock.patch('gpu_tests.util.host_information.GetSystemMemoryBytes',
+                    return_value=8_000_000_000):
+      tags = _GetTagsToTest(browser)
+      self.assertIn('memory_lt_16gb', tags)
+      self.assertNotIn('memory_ge_16gb', tags)
+
+    with mock.patch('gpu_tests.util.host_information.GetSystemMemoryBytes',
+                    return_value=16_000_000_000):
+      tags = _GetTagsToTest(browser)
+      self.assertNotIn('memory_lt_16gb', tags)
+      self.assertIn('memory_ge_16gb', tags)
 
   @mock.patch.dict(os.environ, clear=True)
   def testGenerateDisplayServer(self) -> None:

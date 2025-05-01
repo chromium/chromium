@@ -28,7 +28,7 @@ EXPECTATIONS_DRIVER_TAGS = frozenset([
 
 # Driver tag format: VENDOR_OPERATION_VERSION
 DRIVER_TAG_MATCHER = re.compile(
-    r'^([a-z\d]+)_(eq|ne|ge|gt|le|lt)_([a-z\d\.]+)$')
+    r'^(amd|intel|mesa|nvidia)_(eq|ne|ge|gt|le|lt)_([a-z\d\.]+)$')
 
 REMOTE_BROWSER_TYPES = [
     'android-chromium',

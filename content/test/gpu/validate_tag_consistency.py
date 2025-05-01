@@ -243,6 +243,8 @@ TAG_HEADER = """\
 # tags: [ clang-coverage no-clang-coverage ]
 # Skia Graphite
 # tags: [ graphite-enabled graphite-disabled ]
+# Memory capacity
+# tags: [ memory_lt_16gb memory_ge_16gb ]
 # results: [ Failure RetryOnFailure Skip Slow ]
 """.format(**_GenerateTagSpecializationStrings())
 
