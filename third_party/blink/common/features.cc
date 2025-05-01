@@ -2484,10 +2484,6 @@ const base::FeatureParam<bool> kSpeculativeServiceWorkerWarmUpOnPointerover{
 const base::FeatureParam<bool> kSpeculativeServiceWorkerWarmUpOnPointerdown{
     &kSpeculativeServiceWorkerWarmUp, "sw_warm_up_on_pointerdown", true};
 
-// Warms up service worker after service worker is stopped on idle timeout.
-const base::FeatureParam<bool> kSpeculativeServiceWorkerWarmUpOnIdleTimeout{
-    &kSpeculativeServiceWorkerWarmUp, "sw_warm_up_on_idle_timeout", false};
-
 // (crbug.com/352578800): Enables building a sysnthetic response by
 // ServiceWorker. For navigation requests, the pre-learned static response
 // header is returned in parallel with dispatching the network request.
