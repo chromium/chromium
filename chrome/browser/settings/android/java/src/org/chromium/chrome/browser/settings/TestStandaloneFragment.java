@@ -53,4 +53,9 @@ public class TestStandaloneFragment extends PreferenceFragmentCompat
     public ObservableSupplierImpl<Boolean> getHandleBackPressChangedSupplier() {
         return mBackPressStateSupplier;
     }
+
+    @Override
+    public @AnimationType int getAnimationType() {
+        return AnimationType.PROPERTY;
+    }
 }

@@ -163,9 +163,14 @@ public class PrivacyGuideFragment extends Fragment
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+        updateButtonVisibility();
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
-        updateButtonVisibility();
         mHandleBackPressChangedSupplier.set(shouldHandleBackPress());
     }
 
@@ -311,5 +316,10 @@ public class PrivacyGuideFragment extends Fragment
     @Override
     public void setProfile(Profile profile) {
         mProfile = profile;
+    }
+
+    @Override
+    public @AnimationType int getAnimationType() {
+        return AnimationType.PROPERTY;
     }
 }

@@ -33,9 +33,5 @@ public interface SettingsFragment {
     }
 
     /** Returns animation type to be used for fragment transition. */
-    default @AnimationType int getAnimationType() {
-        // TODO(crbug.com/404074032): Each leaf subclass should override this method to use
-        // PROPERTY animation with auditing.
-        return AnimationType.TWEEN;
-    }
+    public @AnimationType int getAnimationType();
 }

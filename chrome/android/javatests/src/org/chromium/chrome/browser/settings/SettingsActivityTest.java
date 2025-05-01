@@ -116,5 +116,10 @@ public class SettingsActivityTest {
                 SettingsActivity.class, Stage.CREATED, () -> activity.startActivity(intent3));
     }
 
-    public static class TestFragment extends Fragment implements SettingsFragment {}
+    public static class TestFragment extends Fragment implements SettingsFragment {
+        @Override
+        public @AnimationType int getAnimationType() {
+            return AnimationType.PROPERTY;
+        }
+    }
 }

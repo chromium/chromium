@@ -202,4 +202,9 @@ public class SelectLanguageFragment extends Fragment
     public void setProfile(Profile profile) {
         mProfile = profile;
     }
+
+    @Override
+    public @AnimationType int getAnimationType() {
+        return AnimationType.PROPERTY;
+    }
 }
