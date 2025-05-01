@@ -1140,6 +1140,9 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
 // cache data.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLCPPPrefetchSubresource);
 
+// If enabled, doing prefetch task async after main resource fetching.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLCPPPrefetchSubresourceAsync);
+
 // If enabled, prewarm HTTP disk cache based on the previous navigation.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kHttpDiskCachePrewarming);
 

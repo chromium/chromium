@@ -1671,6 +1671,10 @@ BASE_FEATURE(kLCPPPrefetchSubresource,
              "LCPPPrefetchSubresource",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kLCPPPrefetchSubresourceAsync,
+             "LCPPPrefetchSubresourceAsync",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kHttpDiskCachePrewarming,
              "HttpDiskCachePrewarming",
              base::FEATURE_DISABLED_BY_DEFAULT);

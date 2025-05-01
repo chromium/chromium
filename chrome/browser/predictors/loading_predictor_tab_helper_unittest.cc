@@ -8,6 +8,7 @@
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
@@ -64,8 +65,16 @@ MockLoadingDataCollector::MockLoadingDataCollector(
     const LoadingPredictorConfig& config)
     : LoadingDataCollector(nullptr, nullptr, config) {}
 
-class LoadingPredictorTabHelperTest : public ChromeRenderViewHostTestHarness {
+class LoadingPredictorTabHelperTest : public ChromeRenderViewHostTestHarness,
+                                      public testing::WithParamInterface<bool> {
  public:
+  LoadingPredictorTabHelperTest() {
+    if (GetParam()) {
+      scoped_feature_list_.InitAndEnableFeature(
+          blink::features::kLCPPPrefetchSubresourceAsync);
+    }
+  }
+
   void SetUp() override;
   void TearDown() override;
 
@@ -83,6 +92,8 @@ class LoadingPredictorTabHelperTest : public ChromeRenderViewHostTestHarness {
       mock_optimization_guide_keyed_service_;
   // Owned by |web_contents()|.
   raw_ptr<LoadingPredictorTabHelper, DanglingUntriaged> tab_helper_;
+
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 void LoadingPredictorTabHelperTest::SetUp() {
@@ -159,18 +170,20 @@ void LoadingPredictorTabHelperTest::NavigateAndCommitInFrame(
   // events dispatched by NavigationSimulator.
   navigation->SetKeepLoading(true);
   navigation->Start();
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return tab_helper_->IsPrepareForPageloadCalledForTesting(); }));
   navigation->Commit();
 }
 
 // Tests that a main frame navigation is correctly recorded by the
 // LoadingDataCollector.
-TEST_F(LoadingPredictorTabHelperTest, MainFrameNavigation) {
+TEST_P(LoadingPredictorTabHelperTest, MainFrameNavigation) {
   NavigateAndCommitInMainFrameAndVerifyMetrics("http://test.org");
 }
 
 // Tests that an old and new navigation ids are correctly set if a navigation
 // has redirects.
-TEST_F(LoadingPredictorTabHelperTest, MainFrameNavigationWithRedirects) {
+TEST_P(LoadingPredictorTabHelperTest, MainFrameNavigationWithRedirects) {
   GURL main_frame_url("http://test.org");
   auto navigation = content::NavigationSimulator::CreateRendererInitiated(
       main_frame_url, main_rfh());
@@ -197,7 +210,7 @@ TEST_F(LoadingPredictorTabHelperTest, MainFrameNavigationWithRedirects) {
 }
 
 // Tests that a subframe navigation is not recorded.
-TEST_F(LoadingPredictorTabHelperTest, SubframeNavigation) {
+TEST_P(LoadingPredictorTabHelperTest, SubframeNavigation) {
   // We need to have a committed main frame navigation before navigating in sub
   // frames.
   NavigateAndCommitInMainFrameAndVerifyMetrics("http://test.org");
@@ -209,7 +222,7 @@ TEST_F(LoadingPredictorTabHelperTest, SubframeNavigation) {
 }
 
 // Tests that a failed navigation is correctly recorded.
-TEST_F(LoadingPredictorTabHelperTest, MainFrameNavigationFailed) {
+TEST_P(LoadingPredictorTabHelperTest, MainFrameNavigationFailed) {
   GURL url("http://test.org");
   auto navigation =
       content::NavigationSimulator::CreateRendererInitiated(url, main_rfh());
@@ -234,7 +247,7 @@ TEST_F(LoadingPredictorTabHelperTest, MainFrameNavigationFailed) {
 }
 
 // Tests that a same document navigation is not recorded.
-TEST_F(LoadingPredictorTabHelperTest, MainFrameNavigationSameDocument) {
+TEST_P(LoadingPredictorTabHelperTest, MainFrameNavigationSameDocument) {
   NavigateAndCommitInMainFrameAndVerifyMetrics("http://test.org");
 
   // Same document navigation shouldn't be recorded.
@@ -245,7 +258,7 @@ TEST_F(LoadingPredictorTabHelperTest, MainFrameNavigationSameDocument) {
 
 // Tests that document on load completed is recorded with correct navigation
 // id.
-TEST_F(LoadingPredictorTabHelperTest, DocumentOnLoadCompleted) {
+TEST_P(LoadingPredictorTabHelperTest, DocumentOnLoadCompleted) {
   NavigateAndCommitInMainFrameAndVerifyMetrics("http://test.org");
 
   // Adding subframe navigation to ensure that the committed main frame url will
@@ -259,7 +272,7 @@ TEST_F(LoadingPredictorTabHelperTest, DocumentOnLoadCompleted) {
 }
 
 // Tests that a resource load is correctly recorded.
-TEST_F(LoadingPredictorTabHelperTest, ResourceLoadComplete) {
+TEST_P(LoadingPredictorTabHelperTest, ResourceLoadComplete) {
   NavigateAndCommitInMainFrameAndVerifyMetrics("http://test.org");
 
   auto resource_load_info = CreateResourceLoadInfo(
@@ -271,7 +284,7 @@ TEST_F(LoadingPredictorTabHelperTest, ResourceLoadComplete) {
 }
 
 // Tests that a resource loaded in a subframe is not recorded.
-TEST_F(LoadingPredictorTabHelperTest, ResourceLoadCompleteInSubFrame) {
+TEST_P(LoadingPredictorTabHelperTest, ResourceLoadCompleteInSubFrame) {
   NavigateAndCommitInMainFrameAndVerifyMetrics("http://test.org");
 
   auto* subframe =
@@ -288,7 +301,7 @@ TEST_F(LoadingPredictorTabHelperTest, ResourceLoadCompleteInSubFrame) {
 }
 
 // Tests that a resource load from the memory cache is correctly recorded.
-TEST_F(LoadingPredictorTabHelperTest, LoadResourceFromMemoryCache) {
+TEST_P(LoadingPredictorTabHelperTest, LoadResourceFromMemoryCache) {
   NavigateAndCommitInMainFrameAndVerifyMetrics("http://test.org");
 
   auto resource_load_info = CreateResourceLoadInfo(
@@ -302,6 +315,10 @@ TEST_F(LoadingPredictorTabHelperTest, LoadResourceFromMemoryCache) {
       main_rfh(), GURL("http://test.org/script.js"), "application/javascript",
       network::mojom::RequestDestination::kScript);
 }
+
+INSTANTIATE_TEST_SUITE_P(LCPPPrefetchSubresourceAsyncFlag,
+                         LoadingPredictorTabHelperTest,
+                         testing::Bool());
 
 class LoadingPredictorTabHelperOptimizationGuideDeciderTest
     : public LoadingPredictorTabHelperTest {
@@ -328,7 +345,7 @@ class LoadingPredictorTabHelperOptimizationGuideDeciderTest
 
 // Tests that document on load completed is recorded with correct navigation
 // id and that optimization guide is not consulted when from same-origin.
-TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
+TEST_P(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
        DocumentOnLoadCompletedOptimizationGuideSameOrigin) {
   NavigateAndCommitInMainFrameAndVerifyMetrics("http://test.org");
 
@@ -350,7 +367,7 @@ TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
 }
 
 // Tests that document on load completed is recorded.
-TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
+TEST_P(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
        DocumentOnLoadCompletedOptimizationGuide) {
   base::HistogramTester histogram_tester;
 
@@ -379,7 +396,7 @@ TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
 
 // Tests that page destruction is recorded with the correct navigation id and
 // optimization guide prediction.
-TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
+TEST_P(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
        PageDestroyedOptimizationGuide) {
   base::HistogramTester histogram_tester;
 
@@ -422,7 +439,7 @@ TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
 
 // Tests that predictions are recorded correctly when they come after the
 // navigation commits.
-TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
+TEST_P(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
        PageDestroyedOptimizationGuidePredictionComesAfterCommit) {
   base::HistogramTester histogram_tester;
 
@@ -472,7 +489,7 @@ TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
 
 // Tests that predictions are recorded correctly when they arrive after a
 // redirect.
-TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
+TEST_P(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
        PageDestroyedOptimizationGuidePredictionArrivedAfterRedirect) {
   base::HistogramTester histogram_tester;
 
@@ -541,7 +558,7 @@ TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
 
 // Tests that page destruction is recorded with correct navigation id and
 // optimization guide prediction when the prediction has not arrived.
-TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
+TEST_P(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
        PageDestroyedOptimizationGuidePredictionHasNotArrived) {
   base::HistogramTester histogram_tester;
 
@@ -566,7 +583,7 @@ TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
 // Tests that page destroyed is recorded with correct navigation id and
 // optimization guide prediction and does not crash if callback comes after
 // everything has been recorded.
-TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
+TEST_P(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
        PageDestroyedOptimizationGuidePredictionComesAfterPageDestroyed) {
   base::HistogramTester histogram_tester;
 
@@ -615,7 +632,7 @@ TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
 
 // Tests that page destruction is recorded with correct navigation and
 // optimization guide prediction with no prediction..
-TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
+TEST_P(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
        PageDestroyedOptimizationGuidePredictionArrivedNoPrediction) {
   base::HistogramTester histogram_tester;
 
@@ -648,7 +665,7 @@ TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
 
 // Tests that page destruction is recorded with correct navigation id and
 // optimization guide prediction with no prediction..
-TEST_F(
+TEST_P(
     LoadingPredictorTabHelperOptimizationGuideDeciderTest,
     PageDestroyedOptimizationGuidePredictionArrivedNoLoadingPredictorMetadata) {
   base::HistogramTester histogram_tester;
@@ -683,6 +700,10 @@ TEST_F(
               RecordPageDestroyed(_, optimization_guide_prediction));
 }
 
+INSTANTIATE_TEST_SUITE_P(LCPPPrefetchSubresourceAsyncFlag,
+                         LoadingPredictorTabHelperOptimizationGuideDeciderTest,
+                         testing::Bool());
+
 class LoadingPredictorTabHelperOptimizationGuideDeciderWithPrefetchTest
     : public LoadingPredictorTabHelperOptimizationGuideDeciderTest {
  public:
@@ -703,7 +724,7 @@ class LoadingPredictorTabHelperOptimizationGuideDeciderWithPrefetchTest
 
 // Tests that page destruction is recorded with correct navigation id and
 // optimization guide prediction.
-TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderWithPrefetchTest,
+TEST_P(LoadingPredictorTabHelperOptimizationGuideDeciderWithPrefetchTest,
        PageDestroyedOptimizationGuide) {
   base::HistogramTester histogram_tester;
 
@@ -756,6 +777,11 @@ TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderWithPrefetchTest,
   // Called when frame is destroyed by test destructor.
   EXPECT_CALL(*mock_collector_, RecordPageDestroyed(_, prediction));
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    LCPPPrefetchSubresourceAsyncFlag,
+    LoadingPredictorTabHelperOptimizationGuideDeciderWithPrefetchTest,
+    testing::Bool());
 
 class TestLoadingDataCollector : public LoadingDataCollector {
  public:
@@ -826,7 +852,7 @@ void LoadingPredictorTabHelperTestCollectorTest::SetUp() {
 }
 
 // Tests that a resource load is correctly recorded with the correct priority.
-TEST_F(LoadingPredictorTabHelperTestCollectorTest, ResourceLoadComplete) {
+TEST_P(LoadingPredictorTabHelperTestCollectorTest, ResourceLoadComplete) {
   NavigateAndCommitInFrame("http://test.org", main_rfh());
 
   // Set expected priority to HIGHEST and load a HIGHEST priority resource.
@@ -846,6 +872,10 @@ TEST_F(LoadingPredictorTabHelperTestCollectorTest, ResourceLoadComplete) {
   EXPECT_EQ(2u, test_collector_->count_resource_loads_completed());
 }
 
+INSTANTIATE_TEST_SUITE_P(LCPPPrefetchSubresourceAsyncFlag,
+                         LoadingPredictorTabHelperTestCollectorTest,
+                         testing::Bool());
+
 class LoadingPredictorTabHelperTestCollectorFencedFramesTest
     : public LoadingPredictorTabHelperTestCollectorTest {
  public:
@@ -859,7 +889,7 @@ class LoadingPredictorTabHelperTestCollectorFencedFramesTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(LoadingPredictorTabHelperTestCollectorFencedFramesTest,
+TEST_P(LoadingPredictorTabHelperTestCollectorFencedFramesTest,
        DoNotRecordResourceLoadComplete) {
   NavigateAndCommitInFrame("http://test.org", main_rfh());
   content::RenderFrameHost* fenced_frame_root =
@@ -887,5 +917,9 @@ TEST_F(LoadingPredictorTabHelperTestCollectorFencedFramesTest,
       fenced_frame_root, content::GlobalRequestID(), *resource_load_info);
   EXPECT_EQ(1u, test_collector_->count_resource_loads_completed());
 }
+
+INSTANTIATE_TEST_SUITE_P(LCPPPrefetchSubresourceAsyncFlag,
+                         LoadingPredictorTabHelperTestCollectorFencedFramesTest,
+                         testing::Bool());
 
 }  // namespace predictors

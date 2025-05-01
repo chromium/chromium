@@ -357,8 +357,9 @@ void LoadingPredictorTabHelper::DidStartNavigation(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   TRACE_EVENT("navigation", "LoadingPredictorTabHelper::DidStartNavigation");
 
-  if (!predictor_)
+  if (!predictor_ || predictor_->WasShutdown()) {
     return;
+  }
 
   MaybeSetLCPPNavigationHint(*navigation_handle, *predictor_);
 
@@ -369,44 +370,71 @@ void LoadingPredictorTabHelper::DidStartNavigation(
     return;
   }
 
+  const bool should_consult_optimization_guide = ShouldConsultOptimizationGuide(
+      navigation_handle->GetURL(), web_contents());
+
   PageData& page_data = PageData::CreateForNavigationHandle(*navigation_handle);
   page_data.predictor_ = predictor_;
 
-  page_data.has_local_preconnect_predictions_for_current_navigation_ =
-      predictor_->OnNavigationStarted(
-          page_data.navigation_id_,
-          ukm::ConvertToSourceId(navigation_handle->GetNavigationId(),
-                                 ukm::SourceIdType::NAVIGATION_ID),
-          navigation_handle->GetInitiatorOrigin(), navigation_handle->GetURL(),
-          navigation_handle->NavigationStart());
-  if (page_data.has_local_preconnect_predictions_for_current_navigation_ &&
-      !features::ShouldAlwaysRetrieveOptimizationGuidePredictions()) {
+  predictor_->OnNavigationStarted(
+      page_data.navigation_id_,
+      ukm::ConvertToSourceId(navigation_handle->GetNavigationId(),
+                             ukm::SourceIdType::NAVIGATION_ID),
+      navigation_handle->GetURL(), navigation_handle->NavigationStart());
+
+  if (base::FeatureList::IsEnabled(
+          blink::features::kLCPPPrefetchSubresourceAsync)) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &LoadingPredictorTabHelper::PrepareForPageLoad,
+            weak_ptr_factory_.GetWeakPtr(), base::WrapRefCounted(&page_data),
+            navigation_handle->GetInitiatorOrigin(),
+            navigation_handle->GetURL(), should_consult_optimization_guide));
+  } else {
+    PrepareForPageLoad(base::WrapRefCounted(&page_data),
+                       navigation_handle->GetInitiatorOrigin(),
+                       navigation_handle->GetURL(),
+                       should_consult_optimization_guide);
+  }
+}
+
+void LoadingPredictorTabHelper::PrepareForPageLoad(
+    scoped_refptr<PageData> page_data,
+    const std::optional<url::Origin> initiator_origin,
+    const GURL main_frame_url,
+    bool should_consult_optimization_guide) {
+  TRACE_EVENT("navigation", "LoadingPredictorTabHelper::PrepareForPageLoad.");
+  is_prepare_for_pageload_called_for_testing_ = true;
+  if (!predictor_ || predictor_->WasShutdown()) {
     return;
   }
+  page_data->has_local_preconnect_predictions_for_current_navigation_ =
+      predictor_->PrepareForPageLoad(initiator_origin, main_frame_url,
+                                     HintOrigin::NAVIGATION);
 
-  if (!optimization_guide_decider_)
-    return;
-
-  if (!ShouldConsultOptimizationGuide(navigation_handle->GetURL(),
-                                      web_contents())) {
+  if ((page_data->has_local_preconnect_predictions_for_current_navigation_ &&
+       !features::ShouldAlwaysRetrieveOptimizationGuidePredictions()) ||
+      !optimization_guide_decider_ || !should_consult_optimization_guide) {
     return;
   }
 
   TRACE_EVENT("navigation",
-              "LoadingPredictorTabHelper::DidStartNavigation."
+              "LoadingPredictorTabHelper::PrepareForPageLoad."
               "OptimizationGuidePrediction");
-
-  page_data.last_optimization_guide_prediction_ = OptimizationGuidePrediction();
-  page_data.last_optimization_guide_prediction_->decision =
+  page_data->last_optimization_guide_prediction_ =
+      OptimizationGuidePrediction();
+  page_data->last_optimization_guide_prediction_->decision =
       optimization_guide::OptimizationGuideDecision::kUnknown;
 
   optimization_guide_decider_->CanApplyOptimization(
-      navigation_handle->GetURL(), optimization_guide::proto::LOADING_PREDICTOR,
+      main_frame_url, optimization_guide::proto::LOADING_PREDICTOR,
       base::BindOnce(
           &LoadingPredictorTabHelper::OnOptimizationGuideDecision,
-          weak_ptr_factory_.GetWeakPtr(), base::WrapRefCounted(&page_data),
-          navigation_handle->GetInitiatorOrigin(), navigation_handle->GetURL(),
-          !page_data.has_local_preconnect_predictions_for_current_navigation_));
+          weak_ptr_factory_.GetWeakPtr(), std::move(page_data),
+          initiator_origin, main_frame_url,
+          !page_data
+               ->has_local_preconnect_predictions_for_current_navigation_));
 }
 
 void LoadingPredictorTabHelper::DidRedirectNavigation(

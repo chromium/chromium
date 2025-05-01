@@ -92,13 +92,12 @@ class LoadingPredictor : public KeyedService,
 
   // KeyedService:
   void Shutdown() override;
+  bool WasShutdown() { return shutdown_; }
 
   // OnNavigationStarted is invoked when navigation |navigation_id| with
-  // |main_frame_url| has started navigating. It returns whether any actions
-  // were taken, such as preconnecting to known resource hosts, at that time.
-  bool OnNavigationStarted(NavigationId navigation_id,
+  // |main_frame_url| has started navigating.
+  void OnNavigationStarted(NavigationId navigation_id,
                            ukm::SourceId ukm_source_id,
-                           const std::optional<url::Origin>& initiator_origin,
                            const GURL& main_frame_url,
                            base::TimeTicks creation_time);
   void OnNavigationFinished(NavigationId navigation_id,
