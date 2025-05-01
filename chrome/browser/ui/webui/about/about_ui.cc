@@ -416,86 +416,6 @@ using about_ui::AppendHeader;
 
 namespace {
 
-bool CompareConfigInfos(const content::WebUIConfigInfo& config1,
-                        const content::WebUIConfigInfo& config2) {
-  // Schemes must be either chrome:// or chrome-untrusted://
-  CHECK(config1.origin.scheme() == content::kChromeUIScheme ||
-        config1.origin.scheme() == content::kChromeUIUntrustedScheme);
-  CHECK(config2.origin.scheme() == content::kChromeUIScheme ||
-        config2.origin.scheme() == content::kChromeUIUntrustedScheme);
-  // Sort chrome:// before chrome-untrusted://. If the schemes are not equal,
-  // given the check above one must be chrome:// and one chrome-untrusted://.
-  if (config1.origin.scheme() != config2.origin.scheme()) {
-    return config1.origin.scheme() == content::kChromeUIScheme;
-  }
-  return config1.origin.host() < config2.origin.host();
-}
-
-std::string ChromeURLs(content::BrowserContext* browser_context) {
-  std::string html;
-  AppendHeader(&html, "Chrome URLs");
-  AppendBody(&html);
-
-  html += "<h2>List of Chrome URLs</h2>\n<ul>\n";
-  const base::span<const base::cstring_view> hosts = chrome::ChromeURLHosts();
-  std::vector<content::WebUIConfigInfo> infos;
-  for (base::cstring_view host : hosts) {
-    GURL url(base::StrCat(
-        {content::kChromeUIScheme, url::kStandardSchemeSeparator, host}));
-    infos.push_back({.origin = url::Origin::Create(url), .enabled = true});
-  }
-
-  // Add any extra hosts found in the config map
-  auto& map = content::WebUIConfigMap::GetInstance();
-  for (const content::WebUIConfigInfo& config_info :
-       map.GetWebUIConfigList(browser_context)) {
-    if (config_info.origin.scheme() == content::kChromeUIUntrustedScheme ||
-        std::find(hosts.begin(), hosts.end(), config_info.origin.host()) ==
-            hosts.end()) {
-      infos.push_back(config_info);
-    }
-  }
-
-  // Sort the URLs.
-  std::sort(infos.begin(), infos.end(), &CompareConfigInfos);
-
-  {
-    for (const content::WebUIConfigInfo& info : infos) {
-      std::string host = info.origin.host();
-      std::string scheme = info.origin.scheme();
-      std::string url =
-          base::StrCat({scheme, url::kStandardSchemeSeparator, host});
-      html +=
-          info.enabled
-              ? base::StrCat({"<li><a href='", url, "/'>", url, "</a></li>\n"})
-              : base::StrCat({"<li>", url, "</li>\n"});
-    }
-  }
-
-#if BUILDFLAG(ENABLE_SESSION_SERVICE)
-  // Add the session service internals page to the end.
-  html += base::StrCat(
-      {"<li><a href='chrome://internals/",
-       chrome::kChromeUISessionServiceInternalsPath, "'>chrome://internals/",
-       chrome::kChromeUISessionServiceInternalsPath, "</a></li>\n"});
-#endif  // BUILDFLAG(ENABLE_SESSION_SERVICE)
-
-  html +=
-      "</ul>\n<h2>For Debug</h2>\n"
-      "<p>The following pages are for debugging purposes only. Because they "
-      "crash or hang the renderer, they're not linked directly; you can type "
-      "them into the address bar if you need them.</p>\n<ul>";
-  {
-    for (base::cstring_view url : chrome::ChromeDebugURLs()) {
-      html += base::StrCat({"<li>", url, "</li>\n"});
-    }
-  }
-  html += "</ul>\n";
-
-  AppendFooter(&html);
-  return html;
-}
-
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_OPENBSD)
 std::string AboutLinuxProxyConfig() {
   std::string data;
@@ -517,18 +437,6 @@ std::string AboutLinuxProxyConfig() {
 
 AboutUIConfigBase::AboutUIConfigBase(std::string_view host)
     : DefaultWebUIConfig(content::kChromeUIScheme, host) {}
-
-ChromeURLsUIConfig::ChromeURLsUIConfig()
-    : WebUIConfig(content::kChromeUIScheme, chrome::kChromeUIChromeURLsHost) {}
-
-std::unique_ptr<content::WebUIController>
-ChromeURLsUIConfig::CreateWebUIController(content::WebUI* web_ui,
-                                          const GURL& url) {
-  if (base::FeatureList::IsEnabled(chrome_urls::kInternalOnlyUisPref)) {
-    return std::make_unique<chrome_urls::ChromeUrlsUI>(web_ui);
-  }
-  return std::make_unique<AboutUI>(web_ui, url);
-}
 
 CreditsUIConfig::CreditsUIConfig()
     : AboutUIConfigBase(chrome::kChromeUICreditsHost) {}
@@ -575,9 +483,7 @@ void AboutUIHTMLSource::StartDataRequest(
   const std::string path = content::URLDataSource::URLToRequestPath(url);
   std::string response;
   // Add your data source here, in alphabetical order.
-  if (source_name_ == chrome::kChromeUIChromeURLsHost) {
-    response = ChromeURLs(profile_);
-  } else if (source_name_ == chrome::kChromeUICreditsHost) {
+  if (source_name_ == chrome::kChromeUICreditsHost) {
     int idr = IDR_ABOUT_UI_CREDITS_HTML;
     if (path == kCreditsJsPath) {
       idr = IDR_ABOUT_UI_CREDITS_JS;

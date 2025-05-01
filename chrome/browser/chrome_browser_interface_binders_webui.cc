@@ -43,7 +43,6 @@
 #include "components/safe_browsing/buildflags.h"
 #include "components/services/on_device_translation/buildflags/buildflags.h"
 #include "components/site_engagement/core/mojom/site_engagement_details.mojom.h"
-#include "components/webui/chrome_urls/features.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_ui_browser_interface_broker_registry.h"
 #include "content/public/browser/web_ui_controller_interface_binder.h"
@@ -430,10 +429,8 @@ void PopulateChromeWebUIFrameBinders(
       commerce::mojom::CommerceInternalsHandlerFactory,
       commerce::CommerceInternalsUI>(map);
 
-  if (base::FeatureList::IsEnabled(chrome_urls::kInternalOnlyUisPref)) {
-    RegisterWebUIControllerInterfaceBinder<
-        chrome_urls::mojom::PageHandlerFactory, chrome_urls::ChromeUrlsUI>(map);
-  }
+  RegisterWebUIControllerInterfaceBinder<chrome_urls::mojom::PageHandlerFactory,
+                                         chrome_urls::ChromeUrlsUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
       data_sharing_internals::mojom::PageHandlerFactory,

@@ -11,7 +11,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/prefs/pref_service.h"
-#include "components/webui/chrome_urls/features.h"
 #include "components/webui/chrome_urls/pref_names.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/internal_webui_config.h"
@@ -63,7 +62,6 @@ ChromeUrlsHandler::ChromeUrlsHandler(
     : receiver_(this, std::move(receiver)),
       page_(std::move(page)),
       browser_context_(browser_context) {
-  DCHECK(base::FeatureList::IsEnabled(chrome_urls::kInternalOnlyUisPref));
 }
 
 ChromeUrlsHandler::~ChromeUrlsHandler() = default;

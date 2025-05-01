@@ -6,7 +6,9 @@
 #define CHROME_BROWSER_UI_WEBUI_CHROME_URLS_CHROME_URLS_UI_H_
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/common/webui_url_constants.h"
 #include "components/webui/chrome_urls/mojom/chrome_urls.mojom.h"
+#include "content/public/browser/webui_config.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -19,9 +21,17 @@ class WebUI;
 class Profile;
 
 namespace chrome_urls {
-
 class ChromeUrlsHandler;
 class ChromeUrlsUI;
+
+// chrome://chrome-urls. Note that HandleChromeAboutAndChromeSyncRewrite()
+// rewrites chrome://about -> chrome://chrome-urls.
+class ChromeUrlsUIConfig : public content::DefaultWebUIConfig<ChromeUrlsUI> {
+ public:
+  ChromeUrlsUIConfig()
+      : DefaultWebUIConfig(content::kChromeUIScheme,
+                           chrome::kChromeUIChromeURLsHost) {}
+};
 
 // The Web UI controller for the chrome://chrome-urls page.
 class ChromeUrlsUI : public ui::MojoWebUIController,

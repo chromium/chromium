@@ -10,7 +10,6 @@
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/webui/chrome_urls/features.h"
 #include "components/webui/chrome_urls/mojom/chrome_urls.mojom.h"
 #include "components/webui/chrome_urls/pref_names.h"
 #include "content/public/browser/internal_webui_config.h"
@@ -111,8 +110,6 @@ class ChromeUrlsHandlerTest : public testing::Test {
   }
 
  protected:
-  base::test::ScopedFeatureList feature_list_{
-      chrome_urls::kInternalOnlyUisPref};
   content::BrowserTaskEnvironment task_environment_;
   ScopedTestingLocalState local_state_;
   std::unique_ptr<TestingProfile> profile_;
