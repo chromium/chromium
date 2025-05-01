@@ -14,7 +14,6 @@ import android.view.View;
 import android.widget.FrameLayout;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.build.annotations.NullMarked;
@@ -166,7 +165,7 @@ class NegativeFeedbackMenuSheetContent extends MenuSheetContent {
     }
 
     @Override
-    public @NonNull String getSheetContentDescription(Context context) {
+    public String getSheetContentDescription(Context context) {
         return context.getString(R.string.readaloud_negative_feedback_menu_description);
     }
 

@@ -23,7 +23,11 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
 import androidx.annotation.ColorInt;
+
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.readaloud.player.Colors;
 import org.chromium.chrome.browser.readaloud.player.InteractionHandler;
 import org.chromium.chrome.browser.readaloud.player.R;
@@ -34,6 +38,7 @@ import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.interpolators.Interpolators;
 
 /** Convenience class for manipulating mini player UI layout. */
+@NullMarked
 public class MiniPlayerLayout extends LinearLayout {
     private static final long FADE_DURATION_MS = 300L;
     private static final Interpolator FADE_INTERPOLATOR =
@@ -55,7 +60,7 @@ public class MiniPlayerLayout extends LinearLayout {
 
     private @PlaybackListener.State int mLastPlaybackState;
     private boolean mEnableAnimations;
-    private ObjectAnimator mAnimator;
+    private @Nullable ObjectAnimator mAnimator;
     private MiniPlayerMediator mMediator;
     private float mFinalOpacity;
     private @ColorInt int mBackgroundColorArgb;
@@ -283,7 +288,7 @@ public class MiniPlayerLayout extends LinearLayout {
         }
     }
 
-    ObjectAnimator getAnimatorForTesting() {
+    @Nullable ObjectAnimator getAnimatorForTesting() {
         return mAnimator;
     }
 }

@@ -6,10 +6,12 @@ package org.chromium.chrome.browser.readaloud.player;
 
 import android.widget.SeekBar;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackMode;
 import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackVoice;
 
 /** Callbacks for player buttons and seek bar. */
+@NullMarked
 public interface InteractionHandler {
     /** Called when the play/pause button is clicked. */
     void onPlayPauseClick();

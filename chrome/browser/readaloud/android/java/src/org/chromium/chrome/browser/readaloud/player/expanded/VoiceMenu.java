@@ -15,10 +15,12 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
+import org.chromium.build.annotations.EnsuresNonNull;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.readaloud.player.InteractionHandler;
 import org.chromium.chrome.browser.readaloud.player.PlayerProperties;
 import org.chromium.chrome.browser.readaloud.player.R;
@@ -29,15 +31,17 @@ import org.chromium.ui.modelutil.PropertyModel;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 /** Read Aloud voices submenu. */
+@NullMarked
 class VoiceMenu {
     private static final String TAG = "ReadAloudVoices";
     private final Context mContext;
-    private PlaybackVoice[] mVoices;
-    private HashMap<String, Integer> mVoiceIdToMenuItemId;
+    private final HashMap<String, Integer> mVoiceIdToMenuItemId = new HashMap<>();
     private final Menu mMenu;
     private final PropertyModel mModel;
+    private PlaybackVoice[] mVoices;
 
     VoiceMenu(
             Context context,
@@ -67,7 +71,6 @@ class VoiceMenu {
         });
 
         mContext = context;
-        mVoiceIdToMenuItemId = new HashMap<>();
         setVoices(model.get(PlayerProperties.VOICES_LIST));
         setVoiceSelection(model.get(PlayerProperties.SELECTED_VOICE_ID));
         mMenu.setRadioTrueHandler(this::onItemSelected);
@@ -77,6 +80,7 @@ class VoiceMenu {
         return mMenu;
     }
 
+    @EnsuresNonNull("mVoices")
     void setVoices(List<PlaybackVoice> voices) {
         mMenu.clearItems();
         if (voices == null || voices.isEmpty()) {
@@ -95,11 +99,12 @@ class VoiceMenu {
             } else {
                 displayLocale = null;
             }
+            String displayName = voice.getDisplayName();
             MenuItem item =
                     mMenu.addItem(
                             id,
                             /* iconId= */ 0,
-                            voice.getDisplayName(),
+                            displayName == null ? "" : displayName,
                             displayLocale,
                             MenuItem.Action.RADIO);
             item.addPlayButton();
@@ -115,7 +120,7 @@ class VoiceMenu {
 
     private boolean isDifferentLocale(PlaybackVoice current, PlaybackVoice previous) {
         return (!current.getLanguage().equals(previous.getLanguage())
-                || !current.getAccentRegionCode().equals(previous.getAccentRegionCode()));
+                || !Objects.equals(current.getAccentRegionCode(), previous.getAccentRegionCode()));
     }
 
     void setVoiceSelection(String voiceId) {
@@ -135,7 +140,9 @@ class VoiceMenu {
         }
 
         // Let menu handle unchecking the existing selection.
-        mMenu.getItem(id).setValue(true);
+        MenuItem item = mMenu.getItem(id);
+        if (item == null) return;
+        item.setValue(true);
     }
 
     void updatePreviewButtons(String voiceId, @PlaybackListener.State int state) {
@@ -143,6 +150,7 @@ class VoiceMenu {
         assert maybeId != null : "Tried to preview a voice that isn't in the menu";
 
         MenuItem item = mMenu.getItem(maybeId.intValue());
+        if (item == null) return;
         switch (state) {
             case BUFFERING:
                 item.showPlayButtonSpinner();

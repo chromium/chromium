@@ -10,9 +10,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewStub;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.readaloud.ReadAloudMiniPlayerSceneLayer;
@@ -26,8 +27,9 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /** Coordinator responsible for Read Aloud mini player lifecycle. */
+@NullMarked
 public class MiniPlayerCoordinator {
-    private static ViewStub sViewStubForTesting;
+    private static @Nullable ViewStub sViewStubForTesting;
     private final MiniPlayerMediator mMediator;
     private final MiniPlayerLayout mLayout;
     private final PlayerCoordinator mPlayerCoordinator;

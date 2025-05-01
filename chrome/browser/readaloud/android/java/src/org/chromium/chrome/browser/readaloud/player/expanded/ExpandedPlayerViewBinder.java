@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.readaloud.player.expanded;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.readaloud.player.PlayerProperties;
 import org.chromium.chrome.browser.readaloud.player.VisibilityState;
 import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackMode;
@@ -15,6 +16,7 @@ import org.chromium.ui.modelutil.PropertyModel;
  * View binder as described in //docs/ui/android/mvc_overview.md. Updates views based on model
  * state.
  */
+@NullMarked
 public class ExpandedPlayerViewBinder {
     /**
      * Called by {@link PropertyModelChangeProcessor} on creation and each time the model is

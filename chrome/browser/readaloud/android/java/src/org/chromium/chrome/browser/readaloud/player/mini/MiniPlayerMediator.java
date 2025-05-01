@@ -4,13 +4,16 @@
 
 package org.chromium.chrome.browser.readaloud.player.mini;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.view.View;
 
 import androidx.annotation.ColorInt;
-import androidx.annotation.Nullable;
 
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BottomControlsLayer;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerScrollBehavior;
@@ -37,10 +40,11 @@ import org.chromium.ui.modelutil.PropertyModel;
  * <li>Shrink the bottom controls and move the scene layer down along with the changing bottom
  *     controls min height.
  */
+@NullMarked
 public class MiniPlayerMediator implements BottomControlsLayer {
     private final PropertyModel mModel;
     private final BottomControlsStacker mBottomControlsStacker;
-    private MiniPlayerCoordinator mCoordinator;
+    private @Nullable MiniPlayerCoordinator mCoordinator;
     // Height of MiniPlayerLayout's background (without shadow).
     private int mLayoutHeightPx;
     // Height of the mini player for the purposes of calculations for the bottom browser controls.
@@ -158,6 +162,7 @@ public class MiniPlayerMediator implements BottomControlsLayer {
     void onFullOpacityReached(@Nullable View containerForNonErrorView) {
         // show() is finished!
         onTransitionFinished(VisibilityState.VISIBLE);
+        assumeNonNull(mCoordinator);
         mCoordinator.onShown(containerForNonErrorView);
     }
 

@@ -4,7 +4,9 @@
 
 package org.chromium.chrome.browser.readaloud;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.modules.readaloud.Playback;
+import org.chromium.chrome.modules.readaloud.Playback.Metadata;
 import org.chromium.chrome.modules.readaloud.Playback.PlaybackTextPart;
 import org.chromium.chrome.modules.readaloud.Playback.PlaybackTextType;
 
@@ -26,6 +28,7 @@ import java.util.Comparator;
  * The full text and content has had all whitespaces replaced with a single space to remove new
  * lines and duplicate white spaces.
  */
+@NullMarked
 public class TapToSeekHandler {
     /**
      * Finds the first substring match of content in the playback's full text and seeks playback to
@@ -42,10 +45,11 @@ public class TapToSeekHandler {
      */
     public static void tapToSeek(
             String content, int beginOffset, int endOffset, Playback playback, boolean playing) {
-        if (content == null || content.isEmpty()) {
+        Metadata metadata = playback.getMetadata();
+        if (content == null || content.isEmpty() || metadata == null) {
             return;
         }
-        char[] fullText = playback.getMetadata().fullText().toCharArray();
+        char[] fullText = metadata.fullText().toCharArray();
         // Set the needle to the word +- 15 characters on either side.
         int substringStartIndex = Math.max(0, beginOffset - 15);
         int substringEndIndex = Math.min(content.length() - 1, endOffset + 15);
@@ -114,8 +118,11 @@ public class TapToSeekHandler {
      * @param playback playback that will be seeked
      */
     private static void maybeTapToSeek(int index, Playback playback, boolean playing) {
-        int paragraphIndex = findParagraph(playback.getMetadata().paragraphs(), index);
-        int wordIndex = findWord(playback.getMetadata().paragraphs()[paragraphIndex], index);
+        Metadata metadata = playback.getMetadata();
+        if (metadata == null) return;
+
+        int paragraphIndex = findParagraph(metadata.paragraphs(), index);
+        int wordIndex = findWord(metadata.paragraphs()[paragraphIndex], index);
         if (wordIndex < 0) {
             ReadAloudMetrics.recordHasTapToSeekFoundMatch(false);
         } else {

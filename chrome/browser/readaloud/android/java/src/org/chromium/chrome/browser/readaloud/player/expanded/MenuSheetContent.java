@@ -7,16 +7,18 @@ package org.chromium.chrome.browser.readaloud.player.expanded;
 import android.content.res.Resources;
 import android.view.View;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
 import org.chromium.base.Log;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.readaloud.player.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 
 /** Base class for menu bottom sheets. */
+@NullMarked
 abstract class MenuSheetContent implements BottomSheetContent {
     private static final String TAG = "ReadAloudMenu";
     protected final BottomSheetController mBottomSheetController;

@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.readaloud.player.mini;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.readaloud.ReadAloudMiniPlayerSceneLayer;
 import org.chromium.chrome.browser.readaloud.player.PlayerProperties;
 import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackMode;
@@ -11,9 +12,10 @@ import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /**
- * View binder as described in //docs/ui/android/mvc_overview.md. Updates views
- * based on model state.
+ * View binder as described in //docs/ui/android/mvc_overview.md. Updates views based on model
+ * state.
  */
+@NullMarked
 public class MiniPlayerViewBinder {
     static class ViewHolder {
         public MiniPlayerLayout view;

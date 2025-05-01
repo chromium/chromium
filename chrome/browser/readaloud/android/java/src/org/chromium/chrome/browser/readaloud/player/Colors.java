@@ -13,10 +13,12 @@ import android.widget.ProgressBar;
 
 import androidx.annotation.ColorInt;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.util.ColorUtils;
 
 /** Common functions for dynamic colors needed by both players. */
+@NullMarked
 public class Colors {
     /**
      * Returns the color that should be used for the player background.

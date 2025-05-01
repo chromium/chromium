@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.readaloud.player.expanded;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.readaloud.player.VisibilityState.GONE;
 import static org.chromium.chrome.browser.readaloud.player.VisibilityState.HIDING;
 import static org.chromium.chrome.browser.readaloud.player.VisibilityState.SHOWING;
@@ -20,9 +21,10 @@ import android.view.View;
 import android.widget.FrameLayout;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.readaloud.player.Colors;
 import org.chromium.chrome.browser.readaloud.player.InteractionHandler;
 import org.chromium.chrome.browser.readaloud.player.R;
@@ -36,12 +38,13 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** Bottom sheet content for Read Aloud expanded player advanced options menu. */
+@NullMarked
 class OptionsMenuSheetContent extends MenuSheetContent {
     private static final String TAG = "ReadAloudOptions";
     private static final long VOICE_MENU_TRANSITION_MS = 600;
     private final Context mContext;
     private final PropertyModel mModel;
-    private InteractionHandler mHandler;
+    private @Nullable InteractionHandler mHandler;
 
     // Contents
     private final FrameLayout mContainer;
@@ -185,20 +188,21 @@ class OptionsMenuSheetContent extends MenuSheetContent {
 
     void setInteractionHandler(InteractionHandler handler) {
         mHandler = handler;
-        mOptionsMenu
-                .getItem(Item.HIGHLIGHT)
-                .setToggleHandler(
-                        (value) -> {
-                            handler.onHighlightingChange(value);
-                        });
+        MenuItem item = mOptionsMenu.getItem(Item.HIGHLIGHT);
+        assert item != null;
+        item.setToggleHandler(handler::onHighlightingChange);
     }
 
     void setHighlightingSupported(boolean supported) {
-        mOptionsMenu.getItem(Item.HIGHLIGHT).setItemEnabled(supported);
+        MenuItem item = mOptionsMenu.getItem(Item.HIGHLIGHT);
+        assert item != null;
+        item.setItemEnabled(supported);
     }
 
     void setHighlightingEnabled(boolean enabled) {
-        mOptionsMenu.getItem(Item.HIGHLIGHT).setValue(enabled);
+        MenuItem item = mOptionsMenu.getItem(Item.HIGHLIGHT);
+        assert item != null;
+        item.setValue(enabled);
     }
 
     @Override
@@ -229,13 +233,13 @@ class OptionsMenuSheetContent extends MenuSheetContent {
     @Override
     public int getVerticalScrollOffset() {
         if (mVoiceMenuState == VISIBLE) {
-            return mVoiceMenu.getMenu().getScrollView().getScrollY();
+            return assumeNonNull(mVoiceMenu.getMenu().getScrollView()).getScrollY();
         }
-        return mOptionsMenu.getScrollView().getScrollY();
+        return assumeNonNull(mOptionsMenu.getScrollView()).getScrollY();
     }
 
     @Override
-    public @NonNull String getSheetContentDescription(Context context) {
+    public String getSheetContentDescription(Context context) {
         // "Options menu"
         // Automatically appended: "Swipe down to close."
         return context.getString(R.string.readaloud_options_menu_description);

@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.readaloud;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
-import org.chromium.build.annotations.Nullable;
 import static org.chromium.chrome.modules.readaloud.PlaybackListener.State.PAUSED;
 import static org.chromium.chrome.modules.readaloud.PlaybackListener.State.PLAYING;
 import static org.chromium.chrome.modules.readaloud.PlaybackListener.State.STOPPED;
@@ -18,7 +17,6 @@ import android.util.LruCache;
 import android.view.WindowManager;
 
 import androidx.annotation.IntDef;
-
 import androidx.annotation.VisibleForTesting;
 
 import com.google.common.collect.ImmutableMap;
@@ -42,7 +40,9 @@ import org.chromium.base.supplier.OneShotCallback;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.EnsuresNonNullIf;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.device.DeviceConditions;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
@@ -1569,7 +1569,10 @@ public class ReadAloudController
                     mVoicePreviewPlayback.play();
                 },
                 exception -> {
-                    Log.e(TAG, "Failed to create voice preview: %s", assumeNonNull(exception).getMessage());
+                    Log.e(
+                            TAG,
+                            "Failed to create voice preview: %s",
+                            assumeNonNull(exception).getMessage());
                 });
         return promise;
     }
@@ -1834,6 +1837,7 @@ public class ReadAloudController
     }
 
     /** if the current focused tab has an active playback */
+    @EnsuresNonNullIf("mPlayback")
     public boolean isPlayingCurrentTab() {
         return mPlayback != null
                 && mActivePlaybackTabSupplier.get() != null

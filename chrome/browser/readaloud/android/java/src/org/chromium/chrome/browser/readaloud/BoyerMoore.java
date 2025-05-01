@@ -4,10 +4,13 @@
 
 package org.chromium.chrome.browser.readaloud;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * A string searching algorithm that finds the index of the first match of a substring within a
  * string. Preprocesses the substring with an offset table to skip sections of the text.
  */
+@NullMarked
 public class BoyerMoore {
     /**
      * Returns the index within the haystack of the first occurrence of the needle. Returns -1 if no

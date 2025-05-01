@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.readaloud.player.expanded;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.content.res.Configuration;
 import android.util.AttributeSet;
@@ -13,28 +15,29 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.readaloud.player.R;
 
 import java.util.HashMap;
 import java.util.Map;
 
+@NullMarked
 public class Menu extends LinearLayout {
     // Menu item constructor params.
     private final Context mContext;
     private final Map<Integer, Integer> mItemIdToIndex;
-    private LinearLayout mItemsContainer;
+    private @Nullable LinearLayout mItemsContainer;
     private int mFirstItemIndex;
     private int mLastItemIndex;
 
-    private Callback<Integer> mItemClickHandler;
-    private Callback<Integer> mRadioTrueHandler;
-    private Callback<Integer> mPlayButtonClickHandler;
+    private @Nullable Callback<Integer> mItemClickHandler;
+    private @Nullable Callback<Integer> mRadioTrueHandler;
+    private @Nullable Callback<Integer> mPlayButtonClickHandler;
 
     private MaxHeightScrollView mScrollView;
-    private Runnable mAfterInflatingRunnable;
+    private @Nullable Runnable mAfterInflatingRunnable;
 
     public Menu(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -113,10 +116,11 @@ public class Menu extends LinearLayout {
         return item;
     }
 
-    public MenuItem getItem(int itemId) {
+    public @Nullable MenuItem getItem(int itemId) {
         if (!mItemIdToIndex.containsKey(itemId)) {
             return null;
         }
+        assumeNonNull(mItemsContainer);
         return (MenuItem) mItemsContainer.getChildAt(mItemIdToIndex.get(itemId));
     }
 
@@ -127,6 +131,7 @@ public class Menu extends LinearLayout {
 
     void clearItems() {
         if (mFirstItemIndex >= 0) {
+            assumeNonNull(mItemsContainer);
             mItemsContainer.removeViews(mFirstItemIndex, mLastItemIndex - mFirstItemIndex + 1);
         }
         mFirstItemIndex = -1;
@@ -161,6 +166,7 @@ public class Menu extends LinearLayout {
     void onRadioButtonSelected(int itemId) {
         for (Map.Entry<Integer, Integer> itemIndex : mItemIdToIndex.entrySet()) {
             if (itemIndex.getKey() != itemId) {
+                assumeNonNull(mItemsContainer);
                 MenuItem item = (MenuItem) mItemsContainer.getChildAt(itemIndex.getValue());
                 item.setValue(false);
             }
