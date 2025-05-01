@@ -263,7 +263,7 @@ class GlicWindowController::WindowEventObserver : public ui::EventObserver {
         glic_window_controller_->ShouldStartDrag(initial_press_loc_,
                                                  mouse_location)) {
       glic_window_controller_->HandleWindowDragWithOffset(
-          mouse_location.OffsetFromOrigin());
+          initial_press_loc_.OffsetFromOrigin());
     }
   }
 
@@ -1126,7 +1126,7 @@ void GlicWindowController::HandleWindowDragWithOffset(
       GetGlicWidget()->SetZOrderLevel(ui::ZOrderLevel::kFloatingWindow);
     }
     GetGlicWidget()->RunMoveLoop(
-        GetClampedMouseDragOffset(mouse_offset), move_loop_source,
+        mouse_offset, move_loop_source,
         views::Widget::MoveLoopEscapeBehavior::kDontHide);
     in_move_loop_ = false;
     scoped_glic_button_indicator_.reset();
@@ -1134,6 +1134,7 @@ void GlicWindowController::HandleWindowDragWithOffset(
     // request.
     glic_window_animator_->MaybeAnimateToTargetSize();
 
+    AdjustPositionIfNeeded();
     SaveWidgetPosition();
 
     if (!AlwaysDetached()) {
@@ -1150,16 +1151,22 @@ const mojom::PanelState& GlicWindowController::GetPanelState() const {
   return panel_state_;
 }
 
-gfx::Vector2d GlicWindowController::GetClampedMouseDragOffset(
-    const gfx::Vector2d& mouse_offset) {
-  static const int kMinimumDragOffset = 10;
-  const int max_x = GetGlicView()->width() - kMinimumDragOffset;
-  const int max_y = GlicWidget::GetInitialSize().height() - kMinimumDragOffset;
-  CHECK_GT(max_x, kMinimumDragOffset);
-  CHECK_GT(max_y, kMinimumDragOffset);
+void GlicWindowController::AdjustPositionIfNeeded() {
+  // Always have at least `kMinimumVisible` px visible from glic window in
+  // both vertical and horizontal directions.
+  constexpr int kMinimumVisible = 40;
+  const auto widget_size = GetGlicWidget()->GetSize();
+  const int horizontal_buffer = widget_size.width() - kMinimumVisible;
+  const int vertical_buffer = widget_size.height() - kMinimumVisible;
 
-  return {std::clamp(mouse_offset.x(), kMinimumDragOffset, max_x),
-          std::clamp(mouse_offset.y(), kMinimumDragOffset, max_y)};
+  // Adjust bounds of visible area screen to allow part of glic to go off
+  // screen.
+  auto workarea = GetGlicWidget()->GetWorkAreaBoundsInScreen();
+  workarea.Outset(gfx::Outsets::VH(vertical_buffer, horizontal_buffer));
+
+  auto rect = GetGlicWidget()->GetRestoredBounds();
+  rect.AdjustToFit(workarea);
+  GetGlicWidget()->SetBounds(rect);
 }
 
 void GlicWindowController::OnDragComplete() {
