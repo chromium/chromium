@@ -173,21 +173,21 @@ public class WebContentsAccessibilityEventsTest {
     @EnableFeatures(ContentFeatureList.ACCESSIBILITY_DEPRECATE_TYPE_ANNOUNCE)
     @DisabledTest(message = "https://crbug.com/414363686")
     public void test_addAlertContent_exp() {
-        performTest("add-alert-content.html", EMPTY_EXPECTATIONS_FILE);
+        performTest("add-alert-content.html", "add-alert-content-expected-android-exp.txt");
     }
 
     @Test
     @SmallTest
     @DisabledTest(message = "https://crbug.com/414363686")
     public void test_addChild() {
-        performTest("add-child.html", EMPTY_EXPECTATIONS_FILE);
+        performTest("add-child.html", "add-child-expected-android.txt");
     }
 
     @Test
     @SmallTest
     @DisabledTest(message = "https://crbug.com/414363686")
     public void test_addChildOfBody() {
-        performTest("add-child-of-body.html", EMPTY_EXPECTATIONS_FILE);
+        performTest("add-child-of-body.html", "add-child-of-body-expected-android.txt");
     }
 
     @Test
@@ -218,7 +218,7 @@ public class WebContentsAccessibilityEventsTest {
     @SmallTest
     @DisabledTest(message = "https://crbug.com/414363686")
     public void test_addHiddenAttribute() {
-        performTest("add-hidden-attribute.html", EMPTY_EXPECTATIONS_FILE);
+        performTest("add-hidden-attribute.html", "add-hidden-attribute-expected-android.txt");
     }
 
     @Test
@@ -241,35 +241,37 @@ public class WebContentsAccessibilityEventsTest {
     @SmallTest
     @DisabledTest(message = "https://crbug.com/414363686")
     public void test_anonymousBlockChildrenChanged() {
-        performTest("anonymous-block-children-changed.html", EMPTY_EXPECTATIONS_FILE);
+        performTest(
+                "anonymous-block-children-changed.html",
+                "anonymous-block-children-changed-expected-android.txt");
     }
 
     @Test
     @SmallTest
     @DisabledTest(message = "https://crbug.com/414363686")
     public void test_ariaAtomicChanged() {
-        performTest("aria-atomic-changed.html", EMPTY_EXPECTATIONS_FILE);
+        performTest("aria-atomic-changed.html", "aria-atomic-changed-expected-android.txt");
     }
 
     @Test
     @SmallTest
     @DisabledTest(message = "https://crbug.com/414363686")
     public void test_ariaAtomicChanged2() {
-        performTest("aria-atomic-changed2.html", EMPTY_EXPECTATIONS_FILE);
+        performTest("aria-atomic-changed2.html", "aria-atomic-changed2-expected-android.txt");
     }
 
     @Test
     @SmallTest
     @DisabledTest(message = "https://crbug.com/414363686")
     public void test_ariaBusyChanged() {
-        performTest("aria-busy-changed.html", EMPTY_EXPECTATIONS_FILE);
+        performTest("aria-busy-changed.html", "aria-busy-changed-expected-android.txt");
     }
 
     @Test
     @SmallTest
     @DisabledTest(message = "https://crbug.com/414363686")
     public void test_ariaButtonExpand() {
-        performTest("aria-button-expand.html", EMPTY_EXPECTATIONS_FILE);
+        performTest("aria-button-expand.html", "aria-button-expand-expected-android.txt");
     }
 
     @Test
@@ -330,77 +332,84 @@ public class WebContentsAccessibilityEventsTest {
     @SmallTest
     @DisabledTest(message = "https://crbug.com/414363686")
     public void test_ariaComboboxUneditable() {
-        performTest("aria-combo-box-uneditable.html", EMPTY_EXPECTATIONS_FILE);
+        performTest(
+                "aria-combo-box-uneditable.html", "aria-combo-box-uneditable-expected-android.txt");
     }
 
     @Test
     @SmallTest
     @DisabledTest(message = "https://crbug.com/414363686")
     public void test_ariaControlsChanged() {
-        performTest("aria-controls-changed.html", EMPTY_EXPECTATIONS_FILE);
+        performTest("aria-controls-changed.html", "aria-controls-changed-expected-android.txt");
     }
 
     @Test
     @SmallTest
     @DisabledTest(message = "https://crbug.com/414363686")
     public void test_ariaCurrentChanged() {
-        performTest("aria-current-changed.html", EMPTY_EXPECTATIONS_FILE);
+        performTest("aria-current-changed.html", "aria-current-changed-expected-android.txt");
     }
 
     @Test
     @SmallTest
     @DisabledTest(message = "https://crbug.com/414363686")
     public void test_ariaDisabledChanged() {
-        performTest("aria-disabled-changed.html", EMPTY_EXPECTATIONS_FILE);
+        performTest("aria-disabled-changed.html", "aria-disabled-changed-expected-android.txt");
     }
 
     @Test
     @SmallTest
     @DisabledTest(message = "https://crbug.com/414363686")
     public void test_ariaFlowTo() {
-        performTest("aria-flow-to.html", EMPTY_EXPECTATIONS_FILE);
+        performTest("aria-flow-to.html", "aria-flow-to-expected-android.txt");
     }
 
     @Test
     @SmallTest
     @DisabledTest(message = "https://crbug.com/414363686")
     public void test_ariaHasPopupChanged() {
-        performTest("aria-haspopup-changed.html", EMPTY_EXPECTATIONS_FILE);
+        performTest("aria-haspopup-changed.html", "aria-haspopup-changed-expected-android.txt");
     }
 
     @Test
     @SmallTest
     @DisabledTest(message = "https://crbug.com/414363686")
     public void test_ariaHiddenChanged() {
-        performTest("aria-hidden-changed.html", EMPTY_EXPECTATIONS_FILE);
+        performTest("aria-hidden-changed.html", "aria-hidden-changed-expected-android.txt");
     }
 
     @Test
     @SmallTest
     @DisabledTest(message = "https://crbug.com/414363686")
     public void test_ariaHiddenDescendantsAlreadyIgnored() {
-        performTest("aria-hidden-descendants-already-ignored.html", EMPTY_EXPECTATIONS_FILE);
+        performTest(
+                "aria-hidden-descendants-already-ignored.html",
+                "aria-hidden-descendants-already-ignored-expected-android.txt");
     }
 
     @Test
     @SmallTest
     @DisabledTest(message = "https://crbug.com/414363686")
     public void test_ariaHiddenDescendants() {
-        performTest("aria-hidden-descendants.html", EMPTY_EXPECTATIONS_FILE);
+        performTest("aria-hidden-descendants.html", "aria-hidden-descendants-expected-android.txt");
     }
 
     @Test
     @SmallTest
     @DisabledTest(message = "https://crbug.com/414363686")
     public void test_ariaHiddenDescendantDisplayNone() {
-        performTest("aria-hidden-single-descendant-display-none.html", EMPTY_EXPECTATIONS_FILE);
+        performTest(
+                "aria-hidden-single-descendant-display-none.html",
+                "aria-hidden-single-descendant-display-none-expected-android.txt");
     }
 
     @Test
     @SmallTest
     @DisabledTest(message = "https://crbug.com/414363686")
     public void test_ariaHiddenSingleDescendant() {
-        performTest("aria-hidden-single-descendant.html", EMPTY_EXPECTATIONS_FILE);
+        performTest(
+                "aria-hidden-single-descendant.html",
+                "aria-hidden-single-descendant-expected-android.txt");
     }
 
     @Test
@@ -408,49 +417,52 @@ public class WebContentsAccessibilityEventsTest {
     @DisabledTest(message = "https://crbug.com/414363686")
     public void test_ariaHiddenSingleDescendantVisibilityHidden() {
         performTest(
-                "aria-hidden-single-descendant-visibility-hidden.html", EMPTY_EXPECTATIONS_FILE);
+                "aria-hidden-single-descendant-visibility-hidden.html",
+                "aria-hidden-single-descendant-visibility-hidden-expected-android.txt");
     }
 
     @Test
     @SmallTest
     @DisabledTest(message = "https://crbug.com/414363686")
     public void test_ariaLevelChanged() {
-        performTest("aria-level-changed.html", EMPTY_EXPECTATIONS_FILE);
+        performTest("aria-level-changed.html", "aria-level-changed-expected-android.txt");
     }
 
     @Test
     @SmallTest
     @DisabledTest(message = "https://crbug.com/414363686")
     public void test_ariaLiveChanged() {
-        performTest("aria-live-changed.html", EMPTY_EXPECTATIONS_FILE);
+        performTest("aria-live-changed.html", "aria-live-changed-expected-android.txt");
     }
 
     @Test
     @SmallTest
     @DisabledTest(message = "https://crbug.com/1190218")
     public void test_ariaMenuItemFocus() {
-        performTest("aria-menuitem-focus.html", EMPTY_EXPECTATIONS_FILE);
+        performTest("aria-menuitem-focus.html", "aria-menuitem-focus-expected-android.txt");
     }
 
     @Test
     @SmallTest
     @DisabledTest(message = "https://crbug.com/414363686")
     public void test_ariaMultilineChanged() {
-        performTest("aria-multiline-changed.html", EMPTY_EXPECTATIONS_FILE);
+        performTest("aria-multiline-changed.html", "aria-multiline-changed-expected-android.txt");
     }
 
     @Test
     @SmallTest
     @DisabledTest(message = "https://crbug.com/414363686")
     public void test_ariaMultiselectableChanged() {
-        performTest("aria-multiselectable-changed.html", EMPTY_EXPECTATIONS_FILE);
+        performTest(
+                "aria-multiselectable-changed.html",
+                "aria-multiselectable-changed-expected-android.txt");
     }
 
     @Test
     @SmallTest
     @DisabledTest(message = "https://crbug.com/414363686")
     public void test_ariaPosinsetChanged() {
-        performTest("aria-posinset-changed.html", EMPTY_EXPECTATIONS_FILE);
+        performTest("aria-posinset-changed.html", "aria-posinset-changed-expected-android.txt");
     }
 
     @Test
@@ -473,28 +485,28 @@ public class WebContentsAccessibilityEventsTest {
     @SmallTest
     @DisabledTest(message = "https://crbug.com/414363686")
     public void test_ariaReadonlyChanged() {
-        performTest("aria-readonly-changed.html", EMPTY_EXPECTATIONS_FILE);
+        performTest("aria-readonly-changed.html", "aria-readonly-changed-expected-android.txt");
     }
 
     @Test
     @SmallTest
     @DisabledTest(message = "https://crbug.com/414363686")
     public void test_ariaRelevantChanged() {
-        performTest("aria-relevant-changed.html", EMPTY_EXPECTATIONS_FILE);
+        performTest("aria-relevant-changed.html", "aria-relevant-changed-expected-android.txt");
     }
 
     @Test
     @SmallTest
     @DisabledTest(message = "https://crbug.com/414363686")
     public void test_ariaRelevantChanged2() {
-        performTest("aria-relevant-changed2.html", EMPTY_EXPECTATIONS_FILE);
+        performTest("aria-relevant-changed2.html", "aria-relevant-changed2-expected-android.txt");
     }
 
     @Test
     @SmallTest
     @DisabledTest(message = "https://crbug.com/414363686")
     public void test_ariaRequiredChanged() {
-        performTest("aria-required-changed.html", EMPTY_EXPECTATIONS_FILE);
+        performTest("aria-required-changed.html", "aria-required-changed-expected-android.txt");
     }
 
     @Test
@@ -508,14 +520,16 @@ public class WebContentsAccessibilityEventsTest {
     @SmallTest
     @DisabledTest(message = "https://crbug.com/414363686")
     public void test_ariaSelectedChangedNewSubtree() {
-        performTest("aria-selected-changed-new-subtree.html", EMPTY_EXPECTATIONS_FILE);
+        performTest(
+                "aria-selected-changed-new-subtree.html",
+                "aria-selected-changed-new-subtree-expected-android.txt");
     }
 
     @Test
     @SmallTest
     @DisabledTest(message = "https://crbug.com/414363686")
     public void test_ariaSetsizeChanged() {
-        performTest("aria-setsize-changed.html", EMPTY_EXPECTATIONS_FILE);
+        performTest("aria-setsize-changed.html", "aria-setsize-changed-expected-android.txt");
     }
 
     @Test
@@ -548,70 +562,82 @@ public class WebContentsAccessibilityEventsTest {
     @SmallTest
     @DisabledTest(message = "https://crbug.com/414363686")
     public void test_ariaSortChanged() {
-        performTest("aria-sort-changed.html", EMPTY_EXPECTATIONS_FILE);
+        performTest("aria-sort-changed.html", "aria-sort-changed-expected-android.txt");
     }
 
     @Test
     @SmallTest
     @DisabledTest(message = "https://crbug.com/414363686")
     public void test_ariaSpinbuttonValueBothChanged() {
-        performTest("aria-spinbutton-value-both-change.html", EMPTY_EXPECTATIONS_FILE);
+        performTest(
+                "aria-spinbutton-value-both-change.html",
+                "aria-spinbutton-value-both-change-expected-android.txt");
     }
 
     @Test
     @SmallTest
     @DisabledTest(message = "https://crbug.com/414363686")
     public void test_ariaSpinbuttonValueChanged() {
-        performTest("aria-spinbutton-value-change.html", EMPTY_EXPECTATIONS_FILE);
+        performTest(
+                "aria-spinbutton-value-change.html",
+                "aria-spinbutton-value-change-expected-android.txt");
     }
 
     @Test
     @SmallTest
     @DisabledTest(message = "https://crbug.com/414363686")
     public void test_ariaSpinbuttonValuetextChanged() {
-        performTest("aria-spinbutton-valuetext-change.html", EMPTY_EXPECTATIONS_FILE);
+        performTest(
+                "aria-spinbutton-valuetext-change.html",
+                "aria-spinbutton-valuetext-change-expected-android.txt");
     }
 
     @Test
     @SmallTest
     @DisabledTest(message = "https://crbug.com/414363686")
     public void test_ariaTextboxChildrenChange() {
-        performTest("aria-textbox-children-change.html", EMPTY_EXPECTATIONS_FILE);
+        performTest(
+                "aria-textbox-children-change.html",
+                "aria-textbox-children-change-expected-android.txt");
     }
 
     @Test
     @SmallTest
     @DisabledTest(message = "https://crbug.com/414363686")
     public void test_ariaTextboxEditabilityChanges() {
-        performTest("aria-textbox-editability-changes.html", EMPTY_EXPECTATIONS_FILE);
+        performTest(
+                "aria-textbox-editability-changes.html",
+                "aria-textbox-editability-changes-expected-android.txt");
     }
 
     @Test
     @SmallTest
     @DisabledTest(message = "https://crbug.com/414363686")
     public void test_ariaTextboxWithFocusableChildren() {
-        performTest("aria-textbox-with-focusable-children.html", EMPTY_EXPECTATIONS_FILE);
+        performTest(
+                "aria-textbox-with-focusable-children.html",
+                "aria-textbox-with-focusable-children-expected-android.txt");
     }
 
     @Test
     @SmallTest
     @DisabledTest(message = "https://crbug.com/414363686")
     public void test_ariaTreeCollapse() {
-        performTest("aria-tree-collapse.html", EMPTY_EXPECTATIONS_FILE);
+        performTest("aria-tree-collapse.html", "aria-tree-collapse-expected-android.txt");
     }
 
     @Test
     @SmallTest
     @DisabledTest(message = "https://crbug.com/414363686")
     public void test_ariaTreeExpand() {
-        performTest("aria-tree-expand.html", EMPTY_EXPECTATIONS_FILE);
+        performTest("aria-tree-expand.html", "aria-tree-expand-expected-android.txt");
     }
 
     @Test
     @SmallTest
     @DisabledTest(message = "https://crbug.com/414363686")
     public void test_ariaTreeItemFocus() {
-        performTest("aria-treeitem-focus.html", EMPTY_EXPECTATIONS_FILE);
+        performTest("aria-treeitem-focus.html", "aria-treeitem-focus-expected-android.txt");
     }
 
     @Test
@@ -625,7 +651,7 @@ public class WebContentsAccessibilityEventsTest {
     @SmallTest
     @DisabledTest(message = "https://crbug.com/414363686")
     public void test_buttonRemoveChildren() {
-        performTest("button-remove-children.html", EMPTY_EXPECTATIONS_FILE);
+        performTest("button-remove-children.html", "button-remove-children-expected-android.txt");
     }
 
     @Test
@@ -675,35 +701,37 @@ public class WebContentsAccessibilityEventsTest {
     @SmallTest
     @DisabledTest(message = "https://crbug.com/414363686")
     public void test_checkboxValidity() {
-        performTest("checkbox-validity.html", EMPTY_EXPECTATIONS_FILE);
+        performTest("checkbox-validity.html", "checkbox-validity-expected-android.txt");
     }
 
     @Test
     @SmallTest
     @DisabledTest(message = "https://crbug.com/414363686")
     public void test_checkedMixedChanged() {
-        performTest("checked-mixed-changed.html", EMPTY_EXPECTATIONS_FILE);
+        performTest("checked-mixed-changed.html", "checked-mixed-changed-expected-android.txt");
     }
 
     @Test
     @SmallTest
     @DisabledTest(message = "https://crbug.com/414363686")
     public void test_checkedStateChanged() {
-        performTest("checked-state-changed.html", EMPTY_EXPECTATIONS_FILE);
+        performTest("checked-state-changed.html", "checked-state-changed-expected-android.txt");
     }
 
     @Test
     @SmallTest
     @DisabledTest(message = "https://crbug.com/414363686")
     public void test_childrenChangedOnlyOnAncestor() {
-        performTest("children-changed-only-on-ancestor.html", EMPTY_EXPECTATIONS_FILE);
+        performTest(
+                "children-changed-only-on-ancestor.html",
+                "children-changed-only-on-ancestor-expected-android.txt");
     }
 
     @Test
     @SmallTest
     @DisabledTest(message = "https://crbug.com/414363686")
     public void test_cssDisplayDescendants() {
-        performTest("css-display-descendants.html", EMPTY_EXPECTATIONS_FILE);
+        performTest("css-display-descendants.html", "css-display-descendants-expected-android.txt");
     }
 
     @Test
@@ -717,28 +745,30 @@ public class WebContentsAccessibilityEventsTest {
     @SmallTest
     @DisabledTest(message = "https://crbug.com/414363686")
     public void test_cssFlexTextUpdate() {
-        performTest("css-flex-text-update.html", EMPTY_EXPECTATIONS_FILE);
+        performTest("css-flex-text-update.html", "css-flex-text-update-expected-android.txt");
     }
 
     @Test
     @SmallTest
     @DisabledTest(message = "https://crbug.com/414363686")
     public void test_cssVisibilityCollapse() {
-        performTest("css-visibility-collapse.html", EMPTY_EXPECTATIONS_FILE);
+        performTest("css-visibility-collapse.html", "css-visibility-collapse-expected-android.txt");
     }
 
     @Test
     @SmallTest
     @DisabledTest(message = "https://crbug.com/414363686")
     public void test_cssVisibilityDescendants() {
-        performTest("css-visibility-descendants.html", EMPTY_EXPECTATIONS_FILE);
+        performTest(
+                "css-visibility-descendants.html",
+                "css-visibility-descendants-expected-android.txt");
     }
 
     @Test
     @SmallTest
     @DisabledTest(message = "https://crbug.com/414363686")
     public void test_cssVisibility() {
-        performTest("css-visibility.html", EMPTY_EXPECTATIONS_FILE);
+        performTest("css-visibility.html", "css-visibility-expected-android.txt");
     }
 
     @Test
@@ -752,7 +782,7 @@ public class WebContentsAccessibilityEventsTest {
     @SmallTest
     @DisabledTest(message = "https://crbug.com/414363686")
     public void test_descriptionChanged() {
-        performTest("description-change.html", EMPTY_EXPECTATIONS_FILE);
+        performTest("description-change.html", "description-change-expected-android.txt");
     }
 
     @Test
@@ -777,35 +807,39 @@ public class WebContentsAccessibilityEventsTest {
     @SmallTest
     @DisabledTest(message = "https://crbug.com/414363686")
     public void test_descriptionChangedIndirect() {
-        performTest("description-change-indirect.html", EMPTY_EXPECTATIONS_FILE);
+        performTest(
+                "description-change-indirect.html",
+                "description-change-indirect-expected-android.txt");
     }
 
     @Test
     @SmallTest
     @DisabledTest(message = "https://crbug.com/414363686")
     public void test_descriptionChangedNoRelation() {
-        performTest("description-change-no-relation.html", EMPTY_EXPECTATIONS_FILE);
+        performTest(
+                "description-change-no-relation.html",
+                "description-change-no-relation-expected-android.txt");
     }
 
     @Test
     @SmallTest
     @DisabledTest(message = "https://crbug.com/414363686")
     public void test_disabledStateChanged() {
-        performTest("disabled-state-changed.html", EMPTY_EXPECTATIONS_FILE);
+        performTest("disabled-state-changed.html", "disabled-state-changed-expected-android.txt");
     }
 
     @Test
     @SmallTest
     @DisabledTest(message = "https://crbug.com/414363686")
     public void test_documentTitleChanged() {
-        performTest("document-title-change.html", EMPTY_EXPECTATIONS_FILE);
+        performTest("document-title-change.html", "document-title-change-expected-android.txt");
     }
 
     @Test
     @SmallTest
     @DisabledTest(message = "https://crbug.com/414363686")
     public void test_expandedChanged() {
-        performTest("expanded-changed.html", EMPTY_EXPECTATIONS_FILE);
+        performTest("expanded-changed.html", "expanded-changed-expected-android.txt");
     }
 
     @Test
@@ -820,21 +854,22 @@ public class WebContentsAccessibilityEventsTest {
     @SmallTest
     @DisabledTest(message = "https://crbug.com/1190218")
     public void test_focusListbox() {
-        performTest("focus-listbox.html", EMPTY_EXPECTATIONS_FILE);
+        performTest("focus-listbox.html", "focus-listbox-expected-android.txt");
     }
 
     @Test
     @SmallTest
     @DisabledTest(message = "https://crbug.com/1190218")
     public void test_focusListboxMultiselect() {
-        performTest("focus-listbox-multiselect.html", EMPTY_EXPECTATIONS_FILE);
+        performTest(
+                "focus-listbox-multiselect.html", "focus-listbox-multiselect-expected-android.txt");
     }
 
     @Test
     @SmallTest
     @DisabledTest(message = "https://crbug.com/414363686")
     public void test_formDisabledChanged() {
-        performTest("form-disabled-changed.html", EMPTY_EXPECTATIONS_FILE);
+        performTest("form-disabled-changed.html", "form-disabled-changed-expected-android.txt");
     }
 
     @Test
@@ -848,21 +883,21 @@ public class WebContentsAccessibilityEventsTest {
     @SmallTest
     @DisabledTest(message = "https://crbug.com/1392791")
     public void test_immediateRefresh() {
-        performTest("immediate-refresh.html", EMPTY_EXPECTATIONS_FILE);
+        performTest("immediate-refresh.html", "immediate-refresh-expected-android.txt");
     }
 
     @Test
     @SmallTest
     @DisabledTest(message = "https://crbug.com/414363686")
     public void test_innerHtmlChanged() {
-        performTest("inner-html-change.html", EMPTY_EXPECTATIONS_FILE);
+        performTest("inner-html-change.html", "inner-html-change-expected-android.txt");
     }
 
     @Test
     @SmallTest
     @DisabledTest(message = "https://crbug.com/414363686")
     public void test_iframeSrcChanged() {
-        performTest("iframe-src-changed.html", EMPTY_EXPECTATIONS_FILE);
+        performTest("iframe-src-changed.html", "iframe-src-changed-expected-android.txt");
     }
 
     @Test
@@ -890,21 +925,23 @@ public class WebContentsAccessibilityEventsTest {
     @SmallTest
     @DisabledTest(message = "https://crbug.com/414363686")
     public void test_inputTypeTextValueChanged() {
-        performTest("input-type-text-value-changed.html", EMPTY_EXPECTATIONS_FILE);
+        performTest(
+                "input-type-text-value-changed.html",
+                "input-type-text-value-changed-expected-android.txt");
     }
 
     @Test
     @SmallTest
     @DisabledTest(message = "https://crbug.com/1190218")
     public void test_listboxFocus() {
-        performTest("listbox-focus.html", EMPTY_EXPECTATIONS_FILE);
+        performTest("listbox-focus.html", "listbox-focus-expected-android.txt");
     }
 
     @Test
     @SmallTest
     @DisabledTest(message = "https://crbug.com/414363686")
     public void test_listboxNext() {
-        performTest("listbox-next.html", EMPTY_EXPECTATIONS_FILE);
+        performTest("listbox-next.html", "listbox-next-expected-android.txt");
     }
 
     @Test
@@ -920,14 +957,16 @@ public class WebContentsAccessibilityEventsTest {
     @EnableFeatures(ContentFeatureList.ACCESSIBILITY_DEPRECATE_TYPE_ANNOUNCE)
     @DisabledTest(message = "https://crbug.com/414363686")
     public void test_liveRegionAdd_exp() {
-        performTest("live-region-add.html", EMPTY_EXPECTATIONS_FILE);
+        performTest("live-region-add.html", "live-region-add-expected-android-exp.txt");
     }
 
     @Test
     @SmallTest
     @DisabledTest(message = "https://crbug.com/414363686")
     public void test_liveRegionAddLiveAttribute() {
-        performTest("live-region-add-live-attribute.html", EMPTY_EXPECTATIONS_FILE);
+        performTest(
+                "live-region-add-live-attribute.html",
+                "live-region-add-live-attribute-expected-android.txt");
     }
 
     @Test
@@ -943,7 +982,7 @@ public class WebContentsAccessibilityEventsTest {
     @EnableFeatures(ContentFeatureList.ACCESSIBILITY_DEPRECATE_TYPE_ANNOUNCE)
     @DisabledTest(message = "https://crbug.com/414363686")
     public void test_liveRegionChanged_exp() {
-        performTest("live-region-change.html", EMPTY_EXPECTATIONS_FILE);
+        performTest("live-region-change.html", "live-region-change-expected-android-exp.txt");
     }
 
     @Test
@@ -961,7 +1000,9 @@ public class WebContentsAccessibilityEventsTest {
     @EnableFeatures(ContentFeatureList.ACCESSIBILITY_DEPRECATE_TYPE_ANNOUNCE)
     @DisabledTest(message = "https://crbug.com/414363686")
     public void test_liveRegionChangedInnerHtml_exp() {
-        performTest("live-region-change-innerhtml.html", EMPTY_EXPECTATIONS_FILE);
+        performTest(
+                "live-region-change-innerhtml.html",
+                "live-region-change-innerhtml-expected-android-exp.txt");
     }
 
     @Test
@@ -979,14 +1020,16 @@ public class WebContentsAccessibilityEventsTest {
     @EnableFeatures(ContentFeatureList.ACCESSIBILITY_DEPRECATE_TYPE_ANNOUNCE)
     @DisabledTest(message = "https://crbug.com/414363686")
     public void test_liveRegionChangedInnerText_exp() {
-        performTest("live-region-change-innertext.html", EMPTY_EXPECTATIONS_FILE);
+        performTest(
+                "live-region-change-innertext.html",
+                "live-region-change-innertext-expected-android-exp.txt");
     }
 
     @Test
     @SmallTest
     @DisabledTest(message = "https://crbug.com/414363686")
     public void test_liveRegionCreate() {
-        performTest("live-region-create.html", EMPTY_EXPECTATIONS_FILE);
+        performTest("live-region-create.html", "live-region-create-expected-android.txt");
     }
 
     @Test
@@ -1020,91 +1063,93 @@ public class WebContentsAccessibilityEventsTest {
     @SmallTest
     @DisabledTest(message = "https://crbug.com/414363686")
     public void test_liveRegionOff() {
-        performTest("live-region-off.html", EMPTY_EXPECTATIONS_FILE);
+        performTest("live-region-off.html", "live-region-off-expected-android.txt");
     }
 
     @Test
     @SmallTest
     @DisabledTest(message = "https://crbug.com/414363686")
     public void test_liveRegionRemove() {
-        performTest("live-region-remove.html", EMPTY_EXPECTATIONS_FILE);
+        performTest("live-region-remove.html", "live-region-remove-expected-android.txt");
     }
 
     @Test
     @SmallTest
     @DisabledTest(message = "https://crbug.com/414363686")
     public void test_menuBarShowHideMenus() {
-        performTest("menubar-show-hide-menus.html", EMPTY_EXPECTATIONS_FILE);
+        performTest("menubar-show-hide-menus.html", "menubar-show-hide-menus-expected-android.txt");
     }
 
     @Test
     @SmallTest
     @DisabledTest(message = "https://crbug.com/414363686")
     public void test_menulistCollapse() {
-        performTest("menulist-collapse.html", EMPTY_EXPECTATIONS_FILE);
+        performTest("menulist-collapse.html", "menulist-collapse-expected-android.txt");
     }
 
     @Test
     @SmallTest
     @DisabledTest(message = "https://crbug.com/414363686")
     public void test_menulistCollapseNext() {
-        performTest("menulist-collapse-next.html", EMPTY_EXPECTATIONS_FILE);
+        performTest("menulist-collapse-next.html", "menulist-collapse-next-expected-android.txt");
     }
 
     @Test
     @SmallTest
     @DisabledTest(message = "https://crbug.com/414363686")
     public void test_menulistExpand() {
-        performTest("menulist-expand.html", EMPTY_EXPECTATIONS_FILE);
+        performTest("menulist-expand.html", "menulist-expand-expected-android.txt");
     }
 
     @Test
     @SmallTest
     @DisabledTest(message = "https://crbug.com/1190218")
     public void test_menulistFocus() {
-        performTest("menulist-focus.html", EMPTY_EXPECTATIONS_FILE);
+        performTest("menulist-focus.html", "menulist-focus-expected-android.txt");
     }
 
     @Test
     @SmallTest
     @DisabledTest(message = "https://crbug.com/414363686")
     public void test_menulistNext() {
-        performTest("menulist-next.html", EMPTY_EXPECTATIONS_FILE);
+        performTest("menulist-next.html", "menulist-next-expected-android.txt");
     }
 
     @Test
     @SmallTest
     @DisabledTest(message = "https://crbug.com/414363686")
     public void test_menuOpenedClosed() {
-        performTest("menu-opened-closed.html", EMPTY_EXPECTATIONS_FILE);
+        performTest("menu-opened-closed.html", "menu-opened-closed-expected-android.txt");
     }
 
     @Test
     @SmallTest
     @DisabledTest(message = "https://crbug.com/414363686")
     public void test_multipleAriaPropertiesChanged() {
-        performTest("multiple-aria-properties-changed.html", EMPTY_EXPECTATIONS_FILE);
+        performTest(
+                "multiple-aria-properties-changed.html",
+                "multiple-aria-properties-changed-expected-android.txt");
     }
 
     @Test
     @SmallTest
     @DisabledTest(message = "https://crbug.com/414363686")
     public void test_nameChanged() {
-        performTest("name-change.html", EMPTY_EXPECTATIONS_FILE);
+        performTest("name-change.html", "name-change-expected-android.txt");
     }
 
     @Test
     @SmallTest
     @DisabledTest(message = "https://crbug.com/414363686")
     public void test_nameChangedIndirect() {
-        performTest("name-change-indirect.html", EMPTY_EXPECTATIONS_FILE);
+        performTest("name-change-indirect.html", "name-change-indirect-expected-android.txt");
     }
 
     @Test
     @SmallTest
     @DisabledTest(message = "crbug.com/382549182")
     public void test_navigationApi() {
-        performTest("navigation-api.html", EMPTY_EXPECTATIONS_FILE);
+        performTest("navigation-api.html", "navigation-api-expected-android.txt");
     }
 
     @Test
@@ -1118,28 +1163,35 @@ public class WebContentsAccessibilityEventsTest {
     @SmallTest
     @DisabledTest(message = "https://crbug.com/414363686")
     public void test_rangeValueIsReadonlyChanged() {
-        performTest("range-value-is-readonly-changed.html", EMPTY_EXPECTATIONS_FILE);
+        performTest(
+                "range-value-is-readonly-changed.html",
+                "range-value-is-readonly-changed-expected-android.txt");
     }
 
     @Test
     @SmallTest
     @DisabledTest(message = "https://crbug.com/414363686")
     public void test_rangeValueMaximumChanged() {
-        performTest("range-value-maximum-changed.html", EMPTY_EXPECTATIONS_FILE);
+        performTest(
+                "range-value-maximum-changed.html",
+                "range-value-maximum-changed-expected-android.txt");
     }
 
     @Test
     @SmallTest
     @DisabledTest(message = "https://crbug.com/414363686")
     public void test_rangeValueMinimumChanged() {
-        performTest("range-value-minimum-changed.html", EMPTY_EXPECTATIONS_FILE);
+        performTest(
+                "range-value-minimum-changed.html",
+                "range-value-minimum-changed-expected-android.txt");
     }
 
     @Test
     @SmallTest
     @DisabledTest(message = "https://crbug.com/414363686")
     public void test_rangeValueStepChanged() {
-        performTest("range-value-step-changed.html", EMPTY_EXPECTATIONS_FILE);
+        performTest(
+                "range-value-step-changed.html", "range-value-step-changed-expected-android.txt");
     }
 
     @Test
@@ -1154,14 +1206,14 @@ public class WebContentsAccessibilityEventsTest {
     @SmallTest
     @DisabledTest(message = "https://crbug.com/414363686")
     public void test_removeChild() {
-        performTest("remove-child.html", EMPTY_EXPECTATIONS_FILE);
+        performTest("remove-child.html", "remove-child-expected-android.txt");
     }
 
     @Test
     @SmallTest
     @DisabledTest(message = "https://crbug.com/414363686")
     public void test_removeHiddenAttribute() {
-        performTest("remove-hidden-attribute.html", EMPTY_EXPECTATIONS_FILE);
+        performTest("remove-hidden-attribute.html", "remove-hidden-attribute-expected-android.txt");
     }
 
     @Test
@@ -1228,14 +1280,16 @@ public class WebContentsAccessibilityEventsTest {
     @SmallTest
     @DisabledTest(message = "https://crbug.com/414363686")
     public void test_selectSelectedAddRemove() {
-        performTest("select-selected-add-remove.html", EMPTY_EXPECTATIONS_FILE);
+        performTest(
+                "select-selected-add-remove.html",
+                "select-selected-add-remove-expected-android.txt");
     }
 
     @Test
     @SmallTest
     @DisabledTest(message = "https://crbug.com/414363686")
     public void test_styleChanged() {
-        performTest("style-changed.html", EMPTY_EXPECTATIONS_FILE);
+        performTest("style-changed.html", "style-changed-expected-android.txt");
     }
 
     @Test
@@ -1269,63 +1323,73 @@ public class WebContentsAccessibilityEventsTest {
     @SmallTest
     @DisabledTest(message = "https://crbug.com/414363686")
     public void test_tabIndexAddedOnAriaHidden() {
-        performTest("tabindex-added-on-aria-hidden.html", EMPTY_EXPECTATIONS_FILE);
+        performTest(
+                "tabindex-added-on-aria-hidden.html",
+                "tabindex-added-on-aria-hidden-expected-android.txt");
     }
 
     @Test
     @SmallTest
     @DisabledTest(message = "https://crbug.com/414363686")
     public void test_tabIndexAddedOnPlainDiv() {
-        performTest("tabindex-added-on-plain-div.html", EMPTY_EXPECTATIONS_FILE);
+        performTest(
+                "tabindex-added-on-plain-div.html",
+                "tabindex-added-on-plain-div-expected-android.txt");
     }
 
     @Test
     @SmallTest
     @DisabledTest(message = "https://crbug.com/414363686")
     public void test_tabIndexRemoveOnAriaHidden() {
-        performTest("tabindex-removed-on-aria-hidden.html", EMPTY_EXPECTATIONS_FILE);
+        performTest(
+                "tabindex-removed-on-aria-hidden.html",
+                "tabindex-removed-on-aria-hidden-expected-android.txt");
     }
 
     @Test
     @SmallTest
     @DisabledTest(message = "https://crbug.com/414363686")
     public void test_tabIndexRemovedOnPlainDiv() {
-        performTest("tabindex-removed-on-plain-div.html", EMPTY_EXPECTATIONS_FILE);
+        performTest(
+                "tabindex-removed-on-plain-div.html",
+                "tabindex-removed-on-plain-div-expected-android.txt");
     }
 
     @Test
     @SmallTest
     @DisabledTest(message = "https://crbug.com/1190218")
     public void test_tbodyFocus() {
-        performTest("tbody-focus.html", EMPTY_EXPECTATIONS_FILE);
+        performTest("tbody-focus.html", "tbody-focus-expected-android.txt");
     }
 
     @Test
     @SmallTest
     @DisabledTest(message = "https://crbug.com/414363686")
     public void test_textAlignChanged() {
-        performTest("text-align-changed.html", EMPTY_EXPECTATIONS_FILE);
+        performTest("text-align-changed.html", "text-align-changed-expected-android.txt");
     }
 
     @Test
     @SmallTest
     @DisabledTest(message = "https://crbug.com/414363686")
     public void test_textChangedContenteditable() {
-        performTest("text-changed-contenteditable.html", EMPTY_EXPECTATIONS_FILE);
+        performTest(
+                "text-changed-contenteditable.html",
+                "text-changed-contenteditable-expected-android.txt");
     }
 
     @Test
     @SmallTest
     @DisabledTest(message = "https://crbug.com/414363686")
     public void test_textChanged() {
-        performTest("text-changed.html", EMPTY_EXPECTATIONS_FILE);
+        performTest("text-changed.html", "text-changed-expected-android.txt");
     }
 
     @Test
     @SmallTest
     @DisabledTest(message = "https://crbug.com/414363686")
     public void test_textIndentChanged() {
-        performTest("text-indent-changed.html", EMPTY_EXPECTATIONS_FILE);
+        performTest("text-indent-changed.html", "text-indent-changed-expected-android.txt");
     }
 
     @Test
@@ -1357,34 +1421,36 @@ public class WebContentsAccessibilityEventsTest {
     @SmallTest
     @DisabledTest(message = "https://crbug.com/1190218")
     public void test_tfootFocus() {
-        performTest("tfoot-focus.html", EMPTY_EXPECTATIONS_FILE);
+        performTest("tfoot-focus.html", "tfoot-focus-expected-android.txt");
     }
 
     @Test
     @SmallTest
     @DisabledTest(message = "https://crbug.com/1190218")
     public void test_theadFocus() {
-        performTest("thead-focus.html", EMPTY_EXPECTATIONS_FILE);
+        performTest("thead-focus.html", "thead-focus-expected-android.txt");
     }
 
     @Test
     @SmallTest
     @DisabledTest(message = "https://crbug.com/414363686")
     public void test_valudIsReadonlyChanged() {
-        performTest("value-is-readonly-changed.html", EMPTY_EXPECTATIONS_FILE);
+        performTest(
+                "value-is-readonly-changed.html", "value-is-readonly-changed-expected-android.txt");
     }
 
     @Test
     @SmallTest
     @DisabledTest(message = "https://crbug.com/414363686")
     public void test_ValueValueChanged() {
-        performTest("value-value-changed.html", EMPTY_EXPECTATIONS_FILE);
+        performTest("value-value-changed.html", "value-value-changed-expected-android.txt");
     }
 
     @Test
     @SmallTest
     @DisabledTest(message = "https://crbug.com/414363686")
     public void test_visibilityHiddenChanged() {
-        performTest("visibility-hidden-changed.html", EMPTY_EXPECTATIONS_FILE);
+        performTest(
+                "visibility-hidden-changed.html", "visibility-hidden-changed-expected-android.txt");
     }
 }
