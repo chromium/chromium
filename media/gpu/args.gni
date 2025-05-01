@@ -57,3 +57,7 @@ declare_args() {
   # outside of chromeos, even if video decoding is enabled.
   use_vaapi_image_codecs = use_vaapi && is_chromeos
 }
+
+declare_args() {
+  use_linux_video_acceleration = use_vaapi || use_v4l2_codec
+}

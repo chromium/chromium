@@ -822,11 +822,9 @@ void GpuServiceImpl::CreateArcVideoDecodeAcceleratorOnMainThread(
 void GpuServiceImpl::CreateArcVideoDecoderOnMainThread(
     mojo::PendingReceiver<arc::mojom::VideoDecoder> vd_receiver) {
   DCHECK(main_runner_->BelongsToCurrentThread());
-#if BUILDFLAG(USE_VAAPI) || BUILDFLAG(USE_V4L2_CODEC)
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<arc::GpuArcVideoDecoder>(protected_buffer_manager_),
       std::move(vd_receiver));
-#endif
 }
 
 void GpuServiceImpl::CreateArcVideoEncodeAcceleratorOnMainThread(

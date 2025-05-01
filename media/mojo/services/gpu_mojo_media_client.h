@@ -143,7 +143,7 @@ class MEDIA_MOJO_EXPORT GpuMojoMediaClient : public MojoMediaClient {
   // Queries the platform decoder type.
   virtual VideoDecoderType GetPlatformDecoderImplementationType() = 0;
 
-#if BUILDFLAG(USE_VAAPI) || BUILDFLAG(USE_V4L2_CODEC)
+#if BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
   // Ensures that the platform video decoder supported configurations are known.
   // When they are, |cb| is called with a PendingRemote that corresponds to the
   // same connection as |oop_video_decoder| (which may be |oop_video_decoder|

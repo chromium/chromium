@@ -70,7 +70,7 @@ buildflag_header("media_buildflags") {
     "USE_OPENSLES=$media_use_opensles",
   ]
 
-  if (use_vaapi || use_v4l2_codec) {
+  if (use_linux_video_acceleration) {
     flags += [ "USE_LINUX_VIDEO_ACCELERATION=true" ]
   } else {
     flags += [ "USE_LINUX_VIDEO_ACCELERATION=false" ]

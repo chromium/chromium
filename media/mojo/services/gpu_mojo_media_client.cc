@@ -203,17 +203,7 @@ GpuMojoMediaClient::GetSupportedVideoDecoderConfigs() {
 void GpuMojoMediaClient::NotifyDecoderSupportKnown(
     mojo::PendingRemote<mojom::VideoDecoder> oop_video_decoder,
     base::OnceCallback<void(mojo::PendingRemote<mojom::VideoDecoder>)> cb) {
-#if BUILDFLAG(USE_VAAPI) || BUILDFLAG(USE_V4L2_CODEC)
-  // TODO(b/195769334): this call should ideally be guarded only by
-  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER) because eventually, the GPU process
-  // should not need to know what video acceleration API is used. Until then, we
-  // must guard this with (USE_VAAPI || USE_V4L2_CODEC) to be able to compile
-  // Linux/CrOS builds that don't use either API (e.g., linux-x64-castos).
   NotifyPlatformDecoderSupport(std::move(oop_video_decoder), std::move(cb));
-#else
-  DCHECK(!oop_video_decoder);
-  std::move(cb).Run(std::move(oop_video_decoder));
-#endif  // BUILDFLAG(USE_VAAPI) || BUILDFLAG(USE_V4L2_CODEC)
 }
 #endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
 

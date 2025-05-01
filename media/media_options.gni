@@ -30,8 +30,7 @@ is_cast_media_device = is_castos || is_cast_android
 # allow_oop_video_decoder where appropriate. Also, finish replacing usages of
 # (is_linux || is_chromeos) with allow_hosting_oop_video_decoder where
 # appropriate.
-allow_hosting_oop_video_decoder =
-    (is_chromeos || is_linux) && (use_vaapi || use_v4l2_codec)
+allow_hosting_oop_video_decoder = use_linux_video_acceleration
 allow_oop_video_decoder = allow_hosting_oop_video_decoder
 
 declare_args() {
@@ -295,7 +294,7 @@ if (is_cast_media_device) {
     "video_decoder",
   ]
   _default_mojo_media_host = "gpu"
-} else if (is_chromeos || (is_linux && (use_vaapi || use_v4l2_codec))) {
+} else if (use_linux_video_acceleration) {
   _default_mojo_media_services = [ "video_decoder" ]
   _default_mojo_media_host = "gpu"
 }

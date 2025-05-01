@@ -95,18 +95,14 @@ extern sandbox::TargetServices* g_utility_target_services;
 #include "media/mojo/services/mediadrm_support_service.h"  // nogncheck
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_CHROMEOS) && \
-    (BUILDFLAG(USE_VAAPI) || BUILDFLAG(USE_V4L2_CODEC))
+#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
 #include "chromeos/ash/experiences/arc/video_accelerator/oop_arc_video_accelerator_factory.h"
-#endif  // BUILDFLAG(IS_CHROMEOS) && (BUILDFLAG(USE_VAAPI) ||
-        // BUILDFLAG(USE_V4L2_CODEC))
+#endif  // BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
 
-#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && \
-    (BUILDFLAG(USE_VAAPI) || BUILDFLAG(USE_V4L2_CODEC))
+#if BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
 #include "content/common/features.h"
 #include "media/mojo/services/oop_video_decoder_factory_process_service.h"  // nogncheck
-#endif  // (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) &&
-        // (BUILDFLAG(USE_VAAPI) || BUILDFLAG(USE_V4L2_CODEC))
+#endif
 
 #if BUILDFLAG(ENABLE_ACCESSIBILITY_SERVICE)
 #if BUILDFLAG(SUPPORTS_OS_ACCESSIBILITY_SERVICE)
@@ -371,25 +367,22 @@ auto RunXrDeviceService(
 }
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS) && \
-    (BUILDFLAG(USE_VAAPI) || BUILDFLAG(USE_V4L2_CODEC))
+#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
 auto RunOOPArcVideoAcceleratorFactoryService(
     mojo::PendingReceiver<arc::mojom::VideoAcceleratorFactory> receiver) {
   return std::make_unique<arc::OOPArcVideoAcceleratorFactory>(
       std::move(receiver));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS) && \
-        // (BUILDFLAG(USE_VAAPI) || BUILDFLAG(USE_V4L2_CODEC))
+        // BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
 
-#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && \
-    (BUILDFLAG(USE_VAAPI) || BUILDFLAG(USE_V4L2_CODEC))
+#if BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
 auto RunOOPVideoDecoderFactoryProcessService(
     mojo::PendingReceiver<media::mojom::VideoDecoderFactoryProcess> receiver) {
   return std::make_unique<media::OOPVideoDecoderFactoryProcessService>(
       std::move(receiver));
 }
-#endif  // (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) &&
-        // (BUILDFLAG(USE_VAAPI) || BUILDFLAG(USE_V4L2_CODEC))
+#endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 auto RunVideoEncodeAcceleratorProviderFactory(
@@ -414,11 +407,9 @@ void RegisterIOThreadServices(mojo::ServiceFactory& services) {
   // loop of type IO that can get notified when pipes have data.
   services.Add(RunNetworkService);
 
-#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && \
-    (BUILDFLAG(USE_VAAPI) || BUILDFLAG(USE_V4L2_CODEC))
+#if BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
   services.Add(RunOOPVideoDecoderFactoryProcessService);
-#endif  // (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) &&
-        // (BUILDFLAG(USE_VAAPI) || BUILDFLAG(USE_V4L2_CODEC))
+#endif
 
   // Add new IO-thread services above this line.
   GetContentClient()->utility()->RegisterIOThreadServices(services);
@@ -461,11 +452,10 @@ void RegisterMainThreadServices(mojo::ServiceFactory& services) {
   services.Add(RunXrDeviceService);
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS) && \
-    (BUILDFLAG(USE_VAAPI) || BUILDFLAG(USE_V4L2_CODEC))
+#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
   services.Add(RunOOPArcVideoAcceleratorFactoryService);
 #endif  // BUILDFLAG(IS_CHROMEOS) && \
-        // (BUILDFLAG(USE_VAAPI) || BUILDFLAG(USE_V4L2_CODEC))
+        // BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   services.Add(RunVideoEncodeAcceleratorProviderFactory);

@@ -43,7 +43,7 @@ mojom("gl") {
     enabled_features += [ "use_clang_profiling_inside_sandbox" ]
   }
 
-  if (is_chromeos && (use_vaapi || use_v4l2_codec)) {
+  if (is_chromeos && use_linux_video_acceleration) {
     enabled_features += [ "enable_arc_media" ]
   }
 
