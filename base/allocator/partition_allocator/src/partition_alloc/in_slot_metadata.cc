@@ -84,8 +84,10 @@ InSlotMetadata::DoubleFreeOrCorruptionDetected(
   // will have `slot_size` in its stack data.
   PA_DEBUG_DATA_ON_STACK("slotsize", slot_size);
 
-  if (auto* thread_cache = root->GetThreadCache()) {
-    if (thread_cache->IsInFreelist(slot_start, slot_size, position)) {
+  auto* thread_cache = root->GetThreadCache();
+  if (ThreadCache::IsValid(thread_cache)) {
+    size_t bucket_index = slot_span->bucket - root->buckets;
+    if (thread_cache->IsInFreelist(slot_start, bucket_index, position)) {
       DoubleFreeDetected(position);
     }
   }

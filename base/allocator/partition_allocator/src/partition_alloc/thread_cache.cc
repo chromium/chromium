@@ -867,6 +867,13 @@ bool ThreadCache::IsInFreelist(uintptr_t address,
                                size_t& position) {
   PA_REENTRANCY_GUARD(is_in_thread_cache_);
 
+  // ThreadCache's bucket count can be smaller than PartitionRoot's count.
+  // If `bucket_index` is no less than `kBucketCount`, it is not inside
+  // `ThreadCache`.
+  if (bucket_index >= kBucketCount) {
+    return false;
+  }
+
   auto& bucket = buckets_[bucket_index];
   if (!bucket.freelist_head) [[unlikely]] {
     return false;
