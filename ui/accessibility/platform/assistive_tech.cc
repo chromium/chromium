@@ -24,8 +24,9 @@ bool IsScreenReader(AssistiveTech assistive_tech) {
     case AssistiveTech::kTalkback:
     case AssistiveTech::kVoiceOver:
     case AssistiveTech::kZdsr:
-    // ZoomText is a screen magnifier with some screen reader features, such
-    // as the ability to navigate by heading.
+    // ZoomText And Windows Magnifier are screen magnifier with some screen
+    // reader features, such as the ability to navigate by heading.
+    case AssistiveTech::kWinMagnifier:
     case AssistiveTech::kZoomText:
     case AssistiveTech::kGenericScreenReader:
       return true;

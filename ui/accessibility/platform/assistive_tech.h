@@ -30,7 +30,8 @@ enum class AssistiveTech {
   kZoomText = 10,
   kZdsr = 11,
   kGenericScreenReader = 12,
-  kMaxValue = 12
+  kWinMagnifier = 13,
+  kMaxValue = 13
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/accessibility/enums.xml:AssistiveTech)
 

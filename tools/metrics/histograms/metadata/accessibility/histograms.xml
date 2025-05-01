@@ -3691,6 +3691,8 @@ even if they fit the naming pattern. -->
     <variant name="Mac.VoiceOver"
         summary="This tracks VoiceOver screen reader usage specifically"/>
     <variant name="WinJAWS" summary="Windows, specifically JAWS."/>
+    <variant name="WinMagnifier"
+        summary="Windows, specifically Windows Magnifier."/>
     <variant name="WinNarrator" summary="Windows, specifically Narrator."/>
     <variant name="WinNVDA" summary="Windows, specifically NVDA"/>
     <variant name="WinSupernova" summary="Windows, specifically Supernova."/>
