@@ -161,6 +161,7 @@ PdfInkModule::PdfInkModule(PdfInkModuleClient& client)
 PdfInkModule::~PdfInkModule() = default;
 
 bool PdfInkModule::HasInputsToDraw() const {
+  // TODO(crbug.com/342445982): Handle text highlighting inputs.
   if (!enabled_ || !is_drawing_stroke()) {
     return false;
   }
@@ -192,6 +193,8 @@ void PdfInkModule::Draw(SkCanvas& canvas) {
     auto status = skia_renderer.Draw(nullptr, segment, transform, canvas);
     CHECK(status.ok());
   }
+
+  // TODO(crbug.com/342445982): Draw text highlighting strokes.
 }
 
 void PdfInkModule::GenerateAndSendInkThumbnail(
@@ -966,6 +969,7 @@ void PdfInkModule::HandleSetAnnotationBrushMessage(
 
   const std::string& brush_type_string = *data->FindString("type");
   if (brush_type_string == "eraser") {
+    // TODO(crbug.com/342445982): Handle tool changes during text highlighting.
     if (is_drawing_stroke()) {
       DrawingStrokeState& state = drawing_stroke_state();
       if (state.start_time.has_value()) {
@@ -1007,6 +1011,7 @@ void PdfInkModule::HandleSetAnnotationBrushMessage(
   }
 
   // All brush types except the eraser should have a color and size.
+  // TODO(crbug.com/342445982): Handle tool changes during text highlighting.
   const base::Value::Dict* color = data->FindDict("color");
   CHECK(color);
 
@@ -1397,6 +1402,10 @@ PdfInkModule::DrawingStrokeState::~DrawingStrokeState() = default;
 PdfInkModule::EraserState::EraserState() = default;
 
 PdfInkModule::EraserState::~EraserState() = default;
+
+PdfInkModule::TextHighlightState::TextHighlightState() = default;
+
+PdfInkModule::TextHighlightState::~TextHighlightState() = default;
 
 PdfInkModule::FinishedStrokeState::FinishedStrokeState(ink::Stroke stroke,
                                                        InkStrokeId id)

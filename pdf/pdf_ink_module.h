@@ -283,6 +283,21 @@ class PdfInkModule {
     ink::StrokeInput::ToolType tool_type;
   };
 
+  struct TextHighlightState {
+    TextHighlightState();
+    TextHighlightState(const TextHighlightState&) = delete;
+    TextHighlightState& operator=(const TextHighlightState&) = delete;
+    ~TextHighlightState();
+
+    // A mapping of 0-based page indices to a list of strokes on pages that
+    // represent the user's highlighter text selections. Unlike drawing strokes
+    // which are limited to one page, text selection may cover multiple pages.
+    // For example, when the user has the highlighter brush selected, they may
+    // select text from page A to page B. Strokes will be drawn to cover any
+    // selected text and stored in the page index of the page they are on.
+    std::map<int, std::vector<ink::Stroke>> highlight_strokes;
+  };
+
   // Drawing brush state changes that are pending the completion of an
   // in-progress stroke.
   struct PendingDrawingBrushState {
@@ -344,6 +359,9 @@ class PdfInkModule {
   bool is_erasing_stroke() const {
     return std::holds_alternative<EraserState>(current_tool_state_);
   }
+  bool is_text_highlighting() const {
+    return std::holds_alternative<TextHighlightState>(current_tool_state_);
+  }
   const DrawingStrokeState& drawing_stroke_state() const {
     return std::get<DrawingStrokeState>(current_tool_state_);
   }
@@ -355,6 +373,12 @@ class PdfInkModule {
   }
   EraserState& erasing_stroke_state() {
     return std::get<EraserState>(current_tool_state_);
+  }
+  const TextHighlightState& text_highlight_state() const {
+    return std::get<TextHighlightState>(current_tool_state_);
+  }
+  TextHighlightState& text_highlight_state() {
+    return std::get<TextHighlightState>(current_tool_state_);
   }
 
   // Returns the current brush. Must be in a drawing stroke state.
@@ -442,7 +466,8 @@ class PdfInkModule {
   std::optional<PendingDrawingBrushState> pending_drawing_brush_state_;
 
   // The state of the current tool that is in use.
-  std::variant<DrawingStrokeState, EraserState> current_tool_state_;
+  std::variant<DrawingStrokeState, EraserState, TextHighlightState>
+      current_tool_state_;
 
   // The state of the strokes that have been completed.
   DocumentStrokesMap strokes_;
