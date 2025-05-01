@@ -1276,17 +1276,17 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(tab_strip_model->GetActiveWebContents()->GetLastCommittedURL(),
             google_docs_url);
   WaitForUrlBlocklistUpdate();
-  VerifyUrlBlockedToastShown(/*toast_was_shown=*/false);
 
-  // Navigate to URLs that should be blocked.
   const GURL google_search_url =
       embedded_test_server()->GetURL(kTabGoogleHost, "/search?q=test");
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(boca_app_browser, google_search_url));
-  EXPECT_NE(tab_strip_model->GetActiveWebContents()->GetLastCommittedURL(),
+  EXPECT_EQ(tab_strip_model->GetActiveWebContents()->GetLastCommittedURL(),
             google_search_url);
   WaitForUrlBlocklistUpdate();
+  VerifyUrlBlockedToastShown(/*toast_was_shown=*/false);
 
+  // Navigate to URLs that should be blocked.
   const GURL different_domain_url =
       embedded_test_server()->GetURL(kTabUrl2Host, "/");
   ASSERT_TRUE(

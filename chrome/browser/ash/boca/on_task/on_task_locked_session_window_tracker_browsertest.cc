@@ -777,7 +777,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionWindowTrackerBrowserTest,
   const GURL google_search_url =
       embedded_test_server()->GetURL(kTabGoogleHost, "/search?q=test");
   EXPECT_EQ(on_task_blocklist->GetURLBlocklistState(google_search_url),
-            policy::URLBlocklist::URLBlocklistState::URL_IN_BLOCKLIST);
+            policy::URLBlocklist::URLBlocklistState::URL_IN_ALLOWLIST);
   const GURL google_redirect_url = embedded_test_server()->GetURL(
       kTabGoogleHost, "/url?q=https://classroom.google.com");
   EXPECT_EQ(on_task_blocklist->GetURLBlocklistState(google_redirect_url),

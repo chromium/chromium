@@ -59,26 +59,6 @@ base::Value::List GetLimitedTrafficFilter(const GURL& url) {
   allowed_traffic.Append("." + url.spec());
   return allowed_traffic;
 }
-
-// Forked version of `google_util::IsGoogleSearchUrl` with loosened checks to
-// allow for all subdomains of Google domain URLs.
-bool IsGoogleSearchUrl(const GURL& url) {
-  if (!url.is_valid()) {
-    return false;
-  }
-
-  const std::string_view url_path = url.path_piece();
-  bool is_home_page_path = (url_path == "/") || (url_path == "/webhp");
-  if (!is_home_page_path && url_path != "/search" && url_path != "/imgres") {
-    return false;
-  }
-
-  // Check for query parameter in URL parameter and hash fragment, depending on
-  // the path type.
-  return google_util::HasGoogleSearchQueryParam(url.ref_piece()) ||
-         (!is_home_page_path &&
-          google_util::HasGoogleSearchQueryParam(url.query_piece()));
-}
 }  // namespace
 
 OnTaskBlocklist::OnTaskBlocklist(
@@ -96,13 +76,12 @@ policy::URLBlocklist::URLBlocklistState OnTaskBlocklist::GetURLBlocklistState(
     return policy::URLBlocklist::URLBlocklistState::URL_IN_ALLOWLIST;
   }
 
-  // Only allow users to navigate within Google domain URLs (except Google
-  // search) if the nav restriction is set to `WORKSPACE_NAVIGATION`.
+  // Only allow users to navigate within Google domain URLs if the nav
+  // restriction is set to `WORKSPACE_NAVIGATION`.
   if (current_page_restriction_level_ ==
       LockedNavigationOptions::WORKSPACE_NAVIGATION) {
     if (google_util::IsGoogleDomainUrl(url, google_util::ALLOW_SUBDOMAIN,
-                                       google_util::ALLOW_NON_STANDARD_PORTS) &&
-        !IsGoogleSearchUrl(url)) {
+                                       google_util::ALLOW_NON_STANDARD_PORTS)) {
       return policy::URLBlocklist::URLBlocklistState::URL_IN_ALLOWLIST;
     }
     return policy::URLBlocklist::URLBlocklistState::URL_IN_BLOCKLIST;
