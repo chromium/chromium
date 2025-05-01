@@ -501,13 +501,28 @@ void SerializeMirrorLayerExtra(MirrorLayerImpl& layer,
 }
 
 void SerializeTextureLayerExtra(TextureLayerImpl& layer,
-                                viz::mojom::TextureLayerExtraPtr& extra) {
+                                viz::mojom::TextureLayerExtraPtr& extra,
+                                viz::ClientResourceProvider& resource_provider,
+                                viz::RasterContextProvider& context_provider) {
   extra->premultiplied_alpha = layer.premultiplied_alpha();
   extra->blend_background_color = layer.blend_background_color();
   extra->force_texture_to_opaque = layer.force_texture_to_opaque();
   extra->uv_top_left = layer.uv_top_left();
   extra->uv_bottom_right = layer.uv_bottom_right();
-  extra->transferable_resource = layer.transferable_resource();
+
+  if (layer.needs_set_resource_push()) {
+    if (layer.resource_id() != viz::kInvalidResourceId) {
+      std::vector<viz::ResourceId> ids(1, layer.resource_id());
+      std::vector<viz::TransferableResource> resources;
+      resource_provider.PrepareSendToParent(ids, &resources, &context_provider);
+      CHECK_EQ(resources.size(), 1u);
+      extra->transferable_resource = resources[0];
+    } else {
+      extra->transferable_resource = viz::TransferableResource();
+    }
+
+    layer.ClearNeedsSetResourcePush();
+  }
 }
 
 void SerializeSurfaceLayerExtra(SurfaceLayerImpl& layer,
@@ -584,7 +599,8 @@ void SerializeLayer(LayerImpl& layer,
     case mojom::LayerType::kTexture: {
       auto texture_layer_extra = viz::mojom::TextureLayerExtra::New();
       SerializeTextureLayerExtra(static_cast<TextureLayerImpl&>(layer),
-                                 texture_layer_extra);
+                                 texture_layer_extra, resource_provider,
+                                 context_provider);
       wire.layer_extra = viz::mojom::LayerExtra::NewTextureLayerExtra(
           std::move(texture_layer_extra));
       break;

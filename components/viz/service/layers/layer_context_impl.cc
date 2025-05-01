@@ -399,8 +399,23 @@ void UpdateTextureLayerExtra(const mojom::TextureLayerExtraPtr& extra,
   layer.SetForceTextureToOpaque(extra->force_texture_to_opaque);
   layer.SetUVTopLeft(extra->uv_top_left);
   layer.SetUVBottomRight(extra->uv_bottom_right);
-  layer.SetTransferableResource(extra->transferable_resource, ReleaseCallback{},
-                                /*own_resource=*/false);
+
+  if (extra->transferable_resource) {
+    ReleaseCallback release_callback;
+    if (!extra->transferable_resource->is_empty()) {
+      release_callback = base::BindOnce(
+          [](cc::LayerTreeHostImpl* host_impl, ResourceId id,
+             const gpu::SyncToken& sync_token, bool is_lost) {
+            host_impl->ReturnResource({id, sync_token,
+                                       /*release_fence=*/gfx::GpuFenceHandle(),
+                                       /*count=*/1, is_lost});
+          },
+          layer.layer_tree_impl()->host_impl(),
+          extra->transferable_resource->id);
+    }
+    layer.SetTransferableResource(extra->transferable_resource.value(),
+                                  std::move(release_callback));
+  }
 }
 
 void UpdateSurfaceLayerExtra(const mojom::SurfaceLayerExtraPtr& extra,

@@ -56,10 +56,10 @@ void TextureLayerImpl::PushPropertiesTo(LayerImpl* layer) {
   texture_layer->SetPremultipliedAlpha(premultiplied_alpha_);
   texture_layer->SetBlendBackgroundColor(blend_background_color_);
   texture_layer->SetForceTextureToOpaque(force_texture_to_opaque_);
-  if (own_resource_) {
+  if (needs_set_resource_push_) {
     texture_layer->SetTransferableResource(transferable_resource_,
                                            std::move(release_callback_));
-    own_resource_ = false;
+    needs_set_resource_push_ = false;
   }
 }
 
@@ -210,17 +210,14 @@ void TextureLayerImpl::SetUVBottomRight(const gfx::PointF& bottom_right) {
 
 void TextureLayerImpl::SetTransferableResource(
     const viz::TransferableResource& resource,
-    viz::ReleaseCallback release_callback,
-    bool own_resource) {
+    viz::ReleaseCallback release_callback) {
+  DCHECK_EQ(resource.is_empty(), !release_callback);
   FreeTransferableResource();
-
-  if (own_resource) {
-    DCHECK_EQ(resource.is_empty(), !release_callback);
-  }
 
   transferable_resource_ = resource;
   release_callback_ = std::move(release_callback);
-  own_resource_ = own_resource;
+  own_resource_ = true;
+  needs_set_resource_push_ = true;
 }
 
 void TextureLayerImpl::FreeTransferableResource() {
