@@ -44,6 +44,9 @@ _IGNORED_CLASSES_RE = [
     # The target boundary_interface_java sets chromium_code=false in
     # //android_webview/support_library/boundary_interfaces/BUILD.gn.
     r'org.chromium.support_lib_boundary.*',
+    # False positive, version used in Chrome is @NullMarked; Cronet version
+    # is not marked.
+    r'org.chromium.net.ConnectivityManagerShim',
 ]
 
 
