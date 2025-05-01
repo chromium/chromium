@@ -38,10 +38,11 @@ std::optional<GURL> GetUrlOverride() {
   if (command_line->HasSwitch(switches::kCloudBinaryUploadServiceUrlFlag)) {
     GURL url = GURL(command_line->GetSwitchValueASCII(
         switches::kCloudBinaryUploadServiceUrlFlag));
-    if (url.is_valid())
+    if (url.is_valid()) {
       return url;
-    else
+    } else {
       LOG(ERROR) << "--binary-upload-service-url is set to an invalid URL";
+    }
   }
 
   return std::nullopt;
@@ -148,8 +149,9 @@ void BinaryUploadService::Request::set_digest(const std::string& digest) {
 void BinaryUploadService::Request::clear_dlp_scan_request() {
   auto* tags = content_analysis_request_.mutable_tags();
   auto it = std::ranges::find(*tags, "dlp");
-  if (it != tags->end())
+  if (it != tags->end()) {
     tags->erase(it);
+  }
 }
 
 void BinaryUploadService::Request::set_analysis_connector(
@@ -265,6 +267,13 @@ void BinaryUploadService::Request::set_blocking(bool blocking) {
 void BinaryUploadService::Request::add_local_ips(
     const std::string& ip_address) {
   content_analysis_request_.add_local_ips(ip_address);
+}
+
+void BinaryUploadService::Request::set_referrer_chain(
+    const google::protobuf::RepeatedPtrField<safe_browsing::ReferrerChainEntry>
+        referrer_chain) {
+  *content_analysis_request_.mutable_request_data()->mutable_referrer_chain() =
+      std::move(referrer_chain);
 }
 
 std::string BinaryUploadService::Request::SetRandomRequestToken() {

@@ -8,6 +8,7 @@
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/enterprise/connectors/core/analysis_settings.h"
+#include "components/safe_browsing/core/common/proto/csd.pb.h"
 
 namespace enterprise_connectors {
 
@@ -28,6 +29,9 @@ class ContentAnalysisInfo {
   virtual std::string url() const = 0;
   virtual const GURL& tab_url() const = 0;
   virtual ContentAnalysisRequest::Reason reason() const = 0;
+  virtual google::protobuf::RepeatedPtrField<
+      ::safe_browsing::ReferrerChainEntry>
+  referrer_chain() const = 0;
 
   // Adds shared fields to `request` before sending it to the binary upload
   // service. Connector-specific fields need to be added to the request

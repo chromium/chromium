@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_info.h"
 #include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/cloud_binary_upload_service.h"
@@ -16,6 +17,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/enterprise/connectors/core/analysis_settings.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -79,6 +81,12 @@ class TestContentAnalysisInfo : public ContentAnalysisInfo {
     return ContentAnalysisRequest::PRINT_PREVIEW_PRINT;
   }
 
+  google::protobuf::RepeatedPtrField<::safe_browsing::ReferrerChainEntry>
+  referrer_chain() const override {
+    return google::protobuf::RepeatedPtrField<
+        ::safe_browsing::ReferrerChainEntry>();
+  }
+
  private:
   GURL tab_url_{kTabUrl};
   AnalysisSettings settings_;
@@ -101,6 +109,9 @@ class PagePrintRequestHandlerTest : public testing::Test {
     binary_upload_service_.SetResponse(
         safe_browsing::CloudBinaryUploadService::Result::SUCCESS,
         std::move(response));
+
+    scoped_feature_list_.InitAndEnableFeature(
+        safe_browsing::kEnhancedFieldsForSecOps);
   }
 
   AnalysisSettings cloud_settings() {
@@ -123,6 +134,7 @@ class PagePrintRequestHandlerTest : public testing::Test {
   raw_ptr<TestingProfile> profile_;
   std::unique_ptr<test::EventReportValidatorHelper> helper_;
   safe_browsing::TestBinaryUploadService binary_upload_service_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 }  // namespace
