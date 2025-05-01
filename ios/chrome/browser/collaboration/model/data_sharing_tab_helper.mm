@@ -22,6 +22,8 @@ namespace {
 // Return whether the navigation should be handled if it is a share URL.
 bool ShouldHandleShareURLNavigation(
     web::WebStatePolicyDecider::RequestInfo request_info) {
+  // Make sure to keep it in sync between platforms.
+  // LINT.IfChange(ShouldHandleShareURLNavigation)
   if (!request_info.target_frame_is_main) {
     return false;
   }
@@ -31,6 +33,7 @@ bool ShouldHandleShareURLNavigation(
   }
 
   return true;
+  // LINT.ThenChange(/chrome/browser/data_sharing/data_sharing_navigation_throttle.cc:ShouldHandleShareURLNavigation)
 }
 
 }  // namespace

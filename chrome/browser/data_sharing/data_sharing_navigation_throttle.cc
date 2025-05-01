@@ -16,6 +16,8 @@ namespace data_sharing {
 namespace {
 bool ShouldHandleShareURLNavigation(
     content::NavigationHandle* navigation_handle) {
+  // Make sure to keep it in sync between platforms.
+  // LINT.IfChange(ShouldHandleShareURLNavigation)
   if (!navigation_handle->IsInMainFrame()) {
     return false;
   }
@@ -44,6 +46,7 @@ bool ShouldHandleShareURLNavigation(
   }
 
   return true;
+  // LINT.ThenChange(/ios/chrome/browser/collaboration/model/data_sharing_tab_helper.mm:ShouldHandleShareURLNavigation)
 }
 }  // namespace
 
