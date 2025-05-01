@@ -67,7 +67,7 @@ public class ChromeAsyncTabLauncher implements AsyncTabLauncher {
     public void launchTabInOtherWindow(
             LoadUrlParams loadUrlParams, Activity activity, int parentId, Activity otherActivity) {
         Intent intent = createNewTabIntent(new AsyncTabCreationParams(loadUrlParams), parentId,
-                TabLaunchType.UNSET);
+                TabLaunchType.FROM_CHROME_UI);
 
         Class<? extends Activity> targetActivity =
                 MultiWindowUtils.getInstance().getOpenInOtherWindowActivity(activity);
