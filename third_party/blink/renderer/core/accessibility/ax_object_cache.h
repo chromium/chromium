@@ -73,8 +73,10 @@ class CORE_EXPORT AXObjectCache : public GarbageCollected<AXObjectCache> {
 
   virtual void Dispose() = 0;
 
-  virtual const ui::AXMode& GetAXMode() = 0;
+  virtual const ui::AXMode& GetAXMode() const = 0;
   virtual void SetAXMode(const ui::AXMode&) = 0;
+  // Contact accessibility owners before using.
+  virtual bool IsScreenReaderActive() const = 0;
 
   // A Freeze() occurs during a serialization run.
   virtual void Freeze() = 0;

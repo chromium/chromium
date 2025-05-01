@@ -104,7 +104,7 @@ class CORE_EXPORT DisplayLockContext final
             ActivatableDisplayLocksForced()) ||
            (IsAuto() && HasScrollerWithScrollMarkerGroup()) ||
            (IsActivatable(DisplayLockActivationReason::kAccessibility) &&
-            document_->ExistingAXObjectCache());
+            IsScreenReaderActive());
   }
 
   void DidStyleSelf();
@@ -125,7 +125,7 @@ class CORE_EXPORT DisplayLockContext final
            (IsAuto() && HasScrollerWithScrollMarkerGroup()) ||
            (document_->GetStyleEngine().SkippedContainerRecalc() &&
             IsActivatable(DisplayLockActivationReason::kAccessibility) &&
-            document_->ExistingAXObjectCache());
+            IsScreenReaderActive());
   }
   void DidLayoutChildren();
   ALWAYS_INLINE bool ShouldPrePaintChildren() const {
@@ -426,6 +426,8 @@ class CORE_EXPORT DisplayLockContext final
     return render_affecting_state_[static_cast<int>(
         RenderAffectingState::kHasScrollerWithScrollMarkerGroup)];
   }
+
+  bool IsScreenReaderActive() const;
 
   WeakMember<Element> element_;
   WeakMember<Document> document_;

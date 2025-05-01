@@ -1037,12 +1037,16 @@ AXObject* AXObjectCacheImpl::EnsureFocusedObject() {
   return obj;
 }
 
-const ui::AXMode& AXObjectCacheImpl::GetAXMode() {
+const ui::AXMode& AXObjectCacheImpl::GetAXMode() const {
   return ax_mode_;
 }
 
 void AXObjectCacheImpl::SetAXMode(const ui::AXMode& ax_mode) {
   ax_mode_ = ax_mode;
+}
+
+bool AXObjectCacheImpl::IsScreenReaderActive() const {
+  return ax_mode_.has_mode(ui::AXMode::kScreenReader);
 }
 
 AXObject* AXObjectCacheImpl::Get(const LayoutObject* layout_object,
@@ -3072,6 +3076,12 @@ void AXObjectCacheImpl::FinalizeTree() {
 
 void AXObjectCacheImpl::CheckStyleIsComplete(Document& document) const {
 #if EXPENSIVE_DCHECKS_ARE_ON()
+  // Style is only guaranteed to be complete for display locked objects when a
+  // screen reader is active.
+  if (!IsScreenReaderActive()) {
+    return;
+  }
+
   Element* root_element = document.documentElement();
   if (!root_element) {
     return;

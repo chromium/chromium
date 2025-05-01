@@ -4730,16 +4730,31 @@ bool AXObject::ComputeCanSetFocusAttribute() {
       << "\n* LayoutObject: " << GetLayoutObject();
 
   // Focusable: an element is focusable if it is either mouse or keyboard
-  // focusable. An element is only mouse focusable if it has negative tabindex.
-  // An element is only keyboard focusable if it a scroller without tabindex and
-  // no focusable child. In the case of a scroll element without tabindex and
+  // focusable. Most elements that are mouse focusable are also keyboard
+  // focusable, but given a negative tabindex it is only mouse focusable.
+  if (elem->IsMouseFocusable(Element::UpdateBehavior::kNoneForAccessibility)) {
+    return true;
+  }
+
+  // Most keyboard focusable elements are also mouse focusable and already
+  // covered by the above mouse focusable check. However, an element can be
+  // only keyboard focusable if it a scroller without tabindex and no focusable
+  // child. In the case of a scroll element without tabindex and
   // with focusable child, this should return false.
   // Calling Element::SupportsFocus() is not enough because scroll elements
   // support focus, but are not always focusable.
-  return elem->IsMouseFocusable(
-             Element::UpdateBehavior::kNoneForAccessibility) ||
-         elem->IsKeyboardFocusableSlow(
-             Element::UpdateBehavior::kNoneForAccessibility);
+  // This is only done for screen readers, which need exact info on the
+  // focusable state, because we only are ensured to have a fully updated
+  // style and layout subtree for the slow traversals in that case.
+  // In the other cases, optimizing for performance is more important.
+  if (AXObjectCache().IsScreenReaderActive()) {
+    if (elem->IsKeyboardFocusableSlow(
+            Element::UpdateBehavior::kNoneForAccessibility)) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 bool AXObject::CanSetSelectedAttribute() const {
@@ -5067,7 +5082,7 @@ bool AXObject::ComputeIsHiddenViaStyle(const ComputedStyle* style) {
 
   // For screen readers, check for situations involving content-visibility.
   // For non-screen readers, display locked content is already pruned.
-  if (AXObjectCache().GetAXMode().has_mode(ui::AXMode::kScreenReader) &&
+  if (AXObjectCache().IsScreenReaderActive() &&
       DisplayLockUtilities::IsDisplayLockedPreventingPaint(node)) {
     // Ensure contents of head, style and script are not exposed when
     // display-locked --the only time they are ever exposed is if author
