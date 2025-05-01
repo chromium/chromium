@@ -177,4 +177,7 @@
   <message name="IDS_FACEGAZE_ACTIVE" desc="A message displayed in the FaceGaze bubble UI informing the user that FaceGaze is active. This is meant to be informational text that is shown when nothing else populates the bubble UI.">
     Face control active
   </message>
+  <message name="IDS_FACEGAZE_INVALID_RESULT" desc="A message displayed in the FaceGaze bubble UI informing the user that FaceGaze couldn't process the most recent camera frame." translateable="false">
+    Can't use the camera, please ensure your camera is enabled and unobstructed
+  </message>
 </grit-part>

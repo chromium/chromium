@@ -28,6 +28,9 @@ export class FaceGaze {
   private actionsEnabled_ = false;
   private cursorControlEnabled_ = false;
   private initialized_ = false;
+  // isFaceLandmarkerResultValid_ is initialized to true to ensure the correct
+  // UI messages are shown on startup.
+  private isFaceLandmarkerResultValid_ = true;
   private onInitCallbackForTest_: (() => void)|undefined;
   private prefsListener_: (prefs: PrefObject[]) => void;
 
@@ -56,6 +59,7 @@ export class FaceGaze {
         precision: this.mouseController_.isPrecisionActive() ?
             this.gestureHandler_.getGestureForPrecision() :
             undefined,
+        isFaceLandmarkerResultValid: this.isFaceLandmarkerResultValid_,
       };
     });
 
@@ -229,6 +233,20 @@ export class FaceGaze {
       return;
     }
 
+    if (result.faceBlendshapes.length === 0 &&
+        result.faceLandmarks.length === 0 &&
+        result.facialTransformationMatrixes.length === 0) {
+      // In practice, we can get results that are empty. Typically this happens
+      // when the camera is obstructed, blocked by permissions, if the user is
+      // out of frame, or if the user's face can't be detected for any other
+      // reason. In all of these cases, the camera feed is active but either
+      // gives us empty frames or frames where a face cannot be recognized,
+      // which causes the FaceLandmarker to return this type of result.
+      this.updateIsFaceLandmarkerResultValid_(/*valid=*/ false);
+      return;
+    }
+
+    this.updateIsFaceLandmarkerResultValid_(/*valid=*/ true);
     if (latency !== undefined) {
       this.metricsUtils_.addFaceLandmarkerResultLatency(latency);
     }
@@ -260,6 +278,15 @@ export class FaceGaze {
         this.bubbleController_.updateBubble(displayText);
       }
     }
+  }
+
+  private updateIsFaceLandmarkerResultValid_(valid: boolean): void {
+    if (valid === this.isFaceLandmarkerResultValid_) {
+      return;
+    }
+
+    this.isFaceLandmarkerResultValid_ = valid;
+    this.bubbleController_.resetBubble();
   }
 
   /** Destructor to remove any listeners. */

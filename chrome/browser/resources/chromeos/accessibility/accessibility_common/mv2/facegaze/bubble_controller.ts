@@ -17,6 +17,7 @@ interface State {
   dictation: FacialGesture|undefined;
   heldMacros: string[];
   precision: FacialGesture|undefined;
+  isFaceLandmarkerResultValid: boolean|undefined;
 }
 
 /** Handles setting the text content of the FaceGaze bubble UI. */
@@ -57,7 +58,14 @@ export class BubbleController {
       dictation,
       heldMacros,
       precision,
+      isFaceLandmarkerResultValid,
     } = this.getState_();
+
+
+    if (isFaceLandmarkerResultValid !== undefined &&
+        !isFaceLandmarkerResultValid) {
+      this.baseText_.push(chrome.i18n.getMessage('facegaze_invalid_result'));
+    }
 
     if (heldMacros) {
       heldMacros.forEach((displayText) => {

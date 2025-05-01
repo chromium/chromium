@@ -3020,3 +3020,24 @@ AX_TEST_F(
           chrome.accessibilityPrivate.SyntheticMouseEventButton.RIGHT,
           mouseEvents[1].mouseButton);
     });
+
+AX_TEST_F('FaceGazeMV2Test', 'InvalidResult', async function() {
+  const config = new Config();
+  await this.configureFaceGaze(config);
+
+  assertNullOrUndefined(this.getBubbleText());
+
+  // Send an invalid result.
+  let result = new MockFaceLandmarkerResult().invalidate();
+  this.processFaceLandmarkerResult(result, false);
+  assertEquals(
+      `Can't use the camera, please ensure your camera is enabled ` +
+          `and unobstructed`,
+      this.getBubbleText());
+
+  // Send a valid result.
+  result = new MockFaceLandmarkerResult().addGestureWithConfidence(
+      MediapipeFacialGesture.MOUTH_PUCKER, 0.2);
+  this.processFaceLandmarkerResult(result, false);
+  assertEquals(this.getDefaultBubbleText(), this.getBubbleText());
+});
