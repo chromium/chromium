@@ -19,6 +19,7 @@ class NoticeCatalog {
   // Accessors.
   virtual const std::vector<std::unique_ptr<NoticeApi>>& GetNoticeApis() = 0;
   virtual const NoticeMap& GetNoticeMap() = 0;
+  virtual Notice* GetNotice(NoticeId notice_id) = 0;
 };
 
 class NoticeCatalogImpl : public NoticeCatalog {
@@ -28,6 +29,7 @@ class NoticeCatalogImpl : public NoticeCatalog {
 
   const std::vector<std::unique_ptr<NoticeApi>>& GetNoticeApis() override;
   const NoticeMap& GetNoticeMap() override;
+  Notice* GetNotice(NoticeId notice_id) override;
 
  private:
   // Registers a new API and returns a pointer to it.

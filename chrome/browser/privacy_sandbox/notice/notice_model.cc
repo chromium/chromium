@@ -90,7 +90,7 @@ Notice* Notice::SetTargetApis(const std::vector<NoticeApi*>& apis) {
   return this;
 }
 
-NoticeId Notice::GetNoticeId() {
+NoticeId Notice::GetNoticeId() const {
   return notice_id_;
 }
 

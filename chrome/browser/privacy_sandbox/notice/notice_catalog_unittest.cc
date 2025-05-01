@@ -21,6 +21,7 @@ using testing::IsEmpty;
 
 using enum privacy_sandbox::NoticeType;
 using enum privacy_sandbox::SurfaceType;
+using enum privacy_sandbox::notice::mojom::PrivacySandboxNotice;
 
 // TODO(crbug.com/392612108): Add a test library util class that implements
 // these, so these can be reused with browsertests later.
@@ -146,6 +147,28 @@ TEST_F(PrivacySandboxNoticeCatalogTest, PrerequisiteApisAreValid) {
       EXPECT_THAT(valid_api_pointers, Contains(prereq_api));
     }
   }
+}
+
+TEST_F(PrivacySandboxNoticeCatalogTest,
+       GetNotice_ReturnsNoticeWhenExistsAndMatchesMap) {
+  NoticeId id = {kTopicsConsentNotice, kDesktopNewTab};
+
+  const Notice* notice_from_get_notice = catalog_.GetNotice(id);
+
+  // Verify the notice was found.
+  ASSERT_NE(notice_from_get_notice, nullptr);
+  EXPECT_EQ(notice_from_get_notice->GetNoticeId(), id);
+
+  // Verify that GetNotice points to the same object as what's found in the map.
+  EXPECT_EQ(notice_from_get_notice,
+            catalog_.GetNoticeMap().find(id)->second.get());
+}
+
+TEST_F(PrivacySandboxNoticeCatalogTest, GetNotice_ReturnsNullptrWhenNotExists) {
+  NoticeId not_found_id = {static_cast<PrivacySandboxNotice>(999),
+                           SurfaceType::kDesktopNewTab};
+
+  EXPECT_EQ(catalog_.GetNotice(not_found_id), nullptr);
 }
 
 class PrivacySandboxNoticeCatalogPopulateAllNoticesTest

@@ -62,7 +62,7 @@ class Notice {
   // Accessors.
   const std::vector<raw_ptr<NoticeApi>>& GetTargetApis();
   const std::vector<raw_ptr<NoticeApi>>& GetPreReqApis();
-  NoticeId GetNoticeId();
+  NoticeId GetNoticeId() const;
   const base::Feature* GetFeature() const;
   const char* GetStorageName() const;
 

@@ -20,6 +20,7 @@ class MockNoticeCatalog : public NoticeCatalog {
               (),
               (override));
   MOCK_METHOD(const NoticeMap&, GetNoticeMap, (), (override));
+  MOCK_METHOD(Notice*, GetNotice, (NoticeId), (override));
 };
 
 }  // namespace privacy_sandbox

@@ -63,6 +63,11 @@ const NoticeMap& NoticeCatalogImpl::GetNoticeMap() {
   return notices_;
 }
 
+Notice* NoticeCatalogImpl::GetNotice(NoticeId notice_id) {
+  auto notice_ptr = notices_.find(notice_id);
+  return notice_ptr != notices_.end() ? notice_ptr->second.get() : nullptr;
+}
+
 void NoticeCatalogImpl::Populate() {
   // TODO(crbug.com/392612108): Add all eligibility and result callbacks.
 
