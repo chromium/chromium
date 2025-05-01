@@ -6,20 +6,20 @@
 
 emulator_package {
   package_name: "chromium/third_party/android_sdk/public/emulator"
-  version: "bgmdN-Lg8WrwUIDnImxbAizwHkLLliL8Gggb4E9wAKgC"  # 35.4.6 (Canary)
+  version: "zbW-DiZAD3fm8BoSXv4L6FYVN79w8r_wMrqWZZ7azxwC"  # 35.4.9 (Stable)
 }
 
 system_image_package {
   package_name: "chromium/third_party/android_sdk/public/system-images/android-35/google_apis_tablet/x86_64"
-  version: "QTV_MFoiBsNSno9Znwd2unkBc6A0viaSxZuoZ6LL7hYC"  # r1, AE3A.240806.011.T2
+  version: "ijXE50a-ClKl5Fyqr04FHQYICMkCy2QEAb_25BkKY-IC"  # r2, AE3A.240806.046.T1
 }
 system_image_name: "system-images;android-35;google_apis_tablet;x86_64"
 
 avd_package {
   package_name: "chromium/third_party/android_sdk/public/avds/android-35/google_apis_tablet/x86_64"
-  # Created in https://ci.chromium.org/ui/b/8724841977457683057
-  # Patched gmscore version 24.26.32 in https://crrev.com/c/6196777
-  version: "YreUr5f3-luG4vtfa00v0SYUjqT-e9q-Hy7ajuwkBokC"
+  # Created in https://ci.chromium.org/ui/b/8717301379735335985
+  # Patched gmscore version 25.07.33 in https://crrev.com/c/6377466
+  version: "lCF_QhnpyTmxV_eYSYXJtKj5vUKiD92igpnEYQkMiyYC"
 }
 avd_name: "android_35_google_apis_tablet_x64"
 
