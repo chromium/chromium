@@ -35779,6 +35779,10 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Settings.IpProtection.OpenedFromPrivacyPage">
+  <obsolete>
+    Deprecated 04/2025. The IP Protection page has been redesigned and no longer
+    opens from the privacy page.
+  </obsolete>
   <owner>dembski@google.com</owner>
   <owner>koilos@google.com</owner>
   <description>
