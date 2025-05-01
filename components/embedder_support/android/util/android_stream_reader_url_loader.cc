@@ -384,10 +384,7 @@ void AndroidStreamReaderURLLoader::SetCookies() {
     while (
         std::optional<std::string_view> cookie_string =
             response_head_->headers->EnumerateHeader(&iter, kSetCookieHeader)) {
-      // TODO(crbug.com/378650092): This std::move() is incorrect. It's unclear
-      // what the intention of the code is, but this should be fixed.
-      std::move(set_cookie_header_)
-          ->Run(resource_request_, *cookie_string, server_time);
+      set_cookie_header_->Run(resource_request_, *cookie_string, server_time);
     }
   }
 }

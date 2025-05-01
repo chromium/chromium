@@ -8,6 +8,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "components/embedder_support/android/util/input_stream.h"
 #include "mojo/core/embedder/embedder.h"
@@ -79,6 +80,8 @@ class FakeFailingInputStream : public embedder_support::InputStream {
   }
 };
 
+using MockResponseHeader = std::pair<std::string, std::string>;
+
 class TestResponseDelegate
     : public AndroidStreamReaderURLLoader::ResponseDelegate {
  public:
@@ -93,12 +96,10 @@ class TestResponseDelegate
   TestResponseDelegate(
       std::unique_ptr<embedder_support::InputStream> input_stream,
       const std::string& custom_status,
-      const std::string& custom_header_name,
-      const std::string& custom_header_value)
+      const std::vector<MockResponseHeader>& custom_headers)
       : input_stream_(std::move(input_stream)),
         custom_status_(custom_status),
-        custom_header_name_(custom_header_name),
-        custom_header_value_(custom_header_value) {}
+        response_headers_(custom_headers) {}
   ~TestResponseDelegate() override = default;
 
   std::unique_ptr<InputStream> OpenInputStream(JNIEnv* env) override {
@@ -128,21 +129,19 @@ class TestResponseDelegate
 
   void AppendResponseHeaders(JNIEnv* env,
                              net::HttpResponseHeaders* headers) override {
-    if (custom_status_.empty() && custom_header_name_.empty() &&
-        custom_header_value_.empty()) {
-      // no-op
-      return;
+    if (!custom_status_.empty()) {
+      headers->ReplaceStatusLine(custom_status_);
     }
-    headers->ReplaceStatusLine(custom_status_);
-    headers->AddHeader(custom_header_name_, custom_header_value_);
+    for (const auto& [name, value] : response_headers_) {
+      headers->AddHeader(name, value);
+    }
   }
 
  private:
   std::unique_ptr<embedder_support::InputStream> input_stream_;
   const std::string custom_mime_type_;
   const std::string custom_status_;
-  const std::string custom_header_name_;
-  const std::string custom_header_value_;
+  const std::vector<MockResponseHeader> response_headers_;
 
   base::ThreadChecker thread_checker_;
 };
@@ -202,14 +201,12 @@ class AndroidStreamReaderURLLoaderTest : public ::testing::Test {
       network::TestURLLoaderClient* client,
       std::unique_ptr<embedder_support::InputStream> input_stream,
       const std::string custom_status,
-      const std::string custom_header_name,
-      const std::string custom_header_value) {
+      const std::vector<MockResponseHeader>& custom_headers) {
     return new AndroidStreamReaderURLLoader(
         request, client->CreateRemote(),
         net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
-        std::make_unique<TestResponseDelegate>(
-            std::move(input_stream), custom_status, custom_header_name,
-            custom_header_value),
+        std::make_unique<TestResponseDelegate>(std::move(input_stream),
+                                               custom_status, custom_headers),
         std::nullopt);
   }
 
@@ -224,8 +221,9 @@ class AndroidStreamReaderURLLoaderTest : public ::testing::Test {
     options.flags = MOJO_READ_DATA_FLAG_QUERY;
     MojoResult result = MojoReadData(consumer, &options, nullptr, &num_bytes);
     CHECK_EQ(MOJO_RESULT_OK, result);
-    if (num_bytes == 0)
+    if (num_bytes == 0) {
       return std::string();
+    }
 
     std::vector<char> buffer(num_bytes);
     result = MojoReadData(consumer, nullptr, buffer.data(), &num_bytes);
@@ -396,7 +394,7 @@ TEST_F(AndroidStreamReaderURLLoaderTest, CustomResponseHeaderAndStatus) {
       CreateLoaderWithCustomizedResponseHeader(
           request, client.get(),
           std::make_unique<FakeInputStream>(expected_body), custom_status_line,
-          custom_header_name, custom_header_value);
+          {{custom_header_name, custom_header_value}});
   loader->Start(nullptr);
   client->RunUntilComplete();
   EXPECT_EQ(net::OK, client->completion_status().error_code);
@@ -404,6 +402,49 @@ TEST_F(AndroidStreamReaderURLLoaderTest, CustomResponseHeaderAndStatus) {
             client->response_head()->headers->GetStatusLine());
   VerifyHeaderNameAndValue(client->response_head()->headers.get(),
                            custom_header_name, custom_header_value);
+}
+
+TEST_F(AndroidStreamReaderURLLoaderTest, ProcessSetCookieHeadersOnRequest) {
+  const std::string set_cookie = "Set-Cookie";
+  const std::string cookie_header_value_a = "foo=bar";
+  const std::string cookie_header_value_b = "bar=baz";
+  network::ResourceRequest request = CreateRequest();
+
+  std::unique_ptr<network::TestURLLoaderClient> client =
+      std::make_unique<network::TestURLLoaderClient>();
+
+  // Set a callback that simply captures the received cookie header values
+  base::flat_set<std::string> cookie_headers;
+  AndroidStreamReaderURLLoader::SetCookieHeader set_cookie_callback =
+      base::BindLambdaForTesting(
+          [&cookie_headers](const network::ResourceRequest& request,
+                            std::string_view value,
+                            const std::optional<base::Time>& server_time) {
+            cookie_headers.emplace(value);
+          });
+
+  std::vector<MockResponseHeader> response_headers = {
+      {set_cookie, cookie_header_value_a},
+      {set_cookie, cookie_header_value_b},
+      // Add a non-set-cookie header to confirm it is not inadvertently
+      // forwarded as a cookie
+      {"Content-Type", "text/html"}};
+
+  AndroidStreamReaderURLLoader* loader = new AndroidStreamReaderURLLoader(
+      request, client->CreateRemote(),
+      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
+      std::make_unique<TestResponseDelegate>(
+          std::make_unique<FakeInputStream>("test"), "HTTP/1.1 200 OK",
+          response_headers),
+      /*security_options=*/std::nullopt, set_cookie_callback);
+
+  loader->Start(nullptr);
+  client->RunUntilComplete();
+  EXPECT_EQ(net::OK, client->completion_status().error_code);
+
+  EXPECT_EQ(base::flat_set<std::string>(
+                {cookie_header_value_a, cookie_header_value_b}),
+            cookie_headers);
 }
 
 }  // namespace embedder_support
