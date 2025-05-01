@@ -9,6 +9,7 @@
 #import "base/check_is_test.h"
 #import "base/files/file_path.h"
 #import "base/functional/callback_helpers.h"
+#import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
@@ -503,14 +504,19 @@ void ProcessIncomingNotification(
 // none.
 @property(nonatomic, readonly) SceneState* foregroundActiveScene;
 
+// The client manager for notification clients that are app-scoped (rather than
+// profile-scoped).
+@property(nonatomic, readonly)
+    PushNotificationClientManager* appWideClientManager;
+
 @end
 
 @implementation PushNotificationDelegate {
   __weak AppState* _appState;
-  // Stores blocks to execute once the app has reached init stage "final".
-  NSMutableArray<ProceduralBlock>* _runAfterInit;
   // Stores blocks to execute once the app is finished foregrounding.
   NSMutableArray<ProceduralBlock>* _runAfterForeground;
+  // Storage for the lazy-loaded `appWideClientManager` property.
+  raw_ptr<PushNotificationClientManager> _appWideClientManager;
 }
 
 - (instancetype)initWithAppState:(AppState*)appState {
@@ -645,14 +651,9 @@ void ProcessIncomingNotification(
     }
   }
 
-  PushNotificationService* notificationService =
-      GetApplicationContext()->GetPushNotificationService();
-
   // Registers Chrome's PushNotificationClients' Actionable Notifications with
   // iOS.
-  PushNotificationClientManager* appWideClientManager =
-      notificationService->GetPushNotificationClientManager();
-  appWideClientManager->RegisterActionableNotifications();
+  self.appWideClientManager->RegisterActionableNotifications();
 
   PushNotificationConfiguration* config =
       [[PushNotificationConfiguration alloc] init];
@@ -682,6 +683,8 @@ void ProcessIncomingNotification(
   __weak __typeof(self) weakSelf = self;
   base::WeakPtr<ProfileIOS> weakProfile =
       profile ? profile->AsWeakPtr() : base::WeakPtr<ProfileIOS>{};
+  PushNotificationService* notificationService =
+      GetApplicationContext()->GetPushNotificationService();
 
   notificationService->RegisterDevice(config, ^(NSError* error) {
     [weakSelf deviceRegistrationForProfile:weakProfile withError:error];
@@ -703,16 +706,6 @@ void ProcessIncomingNotification(
 }
 
 #pragma mark - AppStateObserver
-
-- (void)appState:(AppState*)appState
-    didTransitionFromInitStage:(AppInitStage)previousInitStage {
-  if (appState.initStage == AppInitStage::kFinal && _runAfterInit) {
-    for (ProceduralBlock block in _runAfterInit) {
-      block();
-    }
-    _runAfterInit = nil;
-  }
-}
 
 - (void)appState:(AppState*)appState
     sceneDidBecomeActive:(SceneState*)sceneState {
@@ -775,6 +768,33 @@ void ProcessIncomingNotification(
   [profileState addObserver:self];
 }
 
+#pragma mark - Property accessors
+
+- (SceneState*)foregroundActiveScene {
+  for (SceneState* sceneState in _appState.connectedScenes) {
+    if (sceneState.activationLevel < SceneActivationLevelForegroundActive) {
+      continue;
+    }
+
+    if (sceneState.profileState.initStage < ProfileInitStage::kFinal) {
+      continue;
+    }
+
+    return sceneState;
+  }
+
+  return nil;
+}
+
+- (PushNotificationClientManager*)appWideClientManager {
+  if (!_appWideClientManager) {
+    _appWideClientManager = GetApplicationContext()
+                                ->GetPushNotificationService()
+                                ->GetPushNotificationClientManager();
+  }
+  return _appWideClientManager;
+}
+
 #pragma mark - Private
 
 // Determines how a notification should be presented when received while the app
@@ -833,12 +853,8 @@ void ProcessIncomingNotification(
 
 // Notifies the client manager that the scene is "foreground active".
 - (void)appDidEnterForeground:(SceneState*)sceneState {
-  PushNotificationClientManager* appWideClientManager =
-      GetApplicationContext()
-          ->GetPushNotificationService()
-          ->GetPushNotificationClientManager();
-  DCHECK(appWideClientManager);
-  appWideClientManager->OnSceneActiveForegroundBrowserReady();
+  DCHECK(self.appWideClientManager);
+  self.appWideClientManager->OnSceneActiveForegroundBrowserReady();
 
   __weak PushNotificationDelegate* weakSelf = self;
   __weak SceneState* weakSceneState = sceneState;
@@ -929,24 +945,6 @@ void ProcessIncomingNotification(
          IsContentNotificationRegistered(profile);
 }
 
-// Returns the first connected foreground active `SceneState`, or nil if there
-// isn't one.
-- (SceneState*)foregroundActiveScene {
-  for (SceneState* sceneState in _appState.connectedScenes) {
-    if (sceneState.activationLevel < SceneActivationLevelForegroundActive) {
-      continue;
-    }
-
-    if (sceneState.profileState.initStage < ProfileInitStage::kFinal) {
-      continue;
-    }
-
-    return sceneState;
-  }
-
-  return nil;
-}
-
 // If user has not previously disabled Send Tab notifications, either 1) If user
 // has authorized full notification permissions, enables Send Tab notifications
 // OR 2) enrolls user in provisional notifications for Send Tab notification
@@ -988,20 +986,6 @@ void ProcessIncomingNotification(
   }
 }
 
-// Runs the given `block` immediately if the app's `initStage` is already
-// final, otherwise stores it to be called when the `initStage is final.
-- (void)executeWhenInitStageFinal:(ProceduralBlock)block {
-  if (_appState.initStage == AppInitStage::kFinal) {
-    block();
-    return;
-  }
-
-  if (!_runAfterInit) {
-    _runAfterInit = [[NSMutableArray alloc] init];
-  }
-  [_runAfterInit addObject:block];
-}
-
 // Runs the given `block` immediately if the app has an active foreground
 // scene connected, otherwise stores it to be called when the app is
 // foregrounded.
@@ -1032,11 +1016,7 @@ void ProcessIncomingNotification(
   // notification is properly handled in a profile specific manager it likely
   // should not be passed onto the app wide manager.
 
-  PushNotificationClientManager* appWideClientManager =
-      GetApplicationContext()
-          ->GetPushNotificationService()
-          ->GetPushNotificationClientManager();
-  appWideClientManager->HandleNotificationInteraction(response);
+  self.appWideClientManager->HandleNotificationInteraction(response);
 }
 
 // Handles a notification interaction specifically for the multi-Profile case.
