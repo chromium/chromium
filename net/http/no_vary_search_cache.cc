@@ -552,12 +552,6 @@ void NoVarySearchCache::MergeFrom(const NoVarySearchCache& newer) {
   }
 }
 
-// This is out-of-line to discourage inlining so the bots can detect if it is
-// accidentally linked into the binary.
-size_t NoVarySearchCache::GetSizeForTesting() const {
-  return size_;
-}
-
 bool NoVarySearchCache::IsTopLevelMapEmptyForTesting() const {
   return map_.empty();
 }
@@ -581,9 +575,6 @@ NoVarySearchCache::QueryStringList::QueryStringList(QueryStringList&& rhs)
 }
 
 NoVarySearchCache::QueryStringList::~QueryStringList() {
-  // The `list.head()` check works around the unfortunate fact that moving from
-  // a base::LinkedList leaves it in an invalid state where `list.empty()` is
-  // false.
   while (!list.empty()) {
     list.head()->value()->ToQueryString()->RemoveAndDelete();
   }

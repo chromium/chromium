@@ -1924,6 +1924,55 @@ Called by update_net_trust_anchors.py.-->
   <int value="2" label="Metered"/>
 </enum>
 
+<!-- LINT.IfChange(NoVarySearchCacheStorageLoadResult) -->
+
+<enum name="NoVarySearchCacheStorageLoadResult">
+  <int value="0" label="Success">Persisted cache was successfully loaded.</int>
+  <int value="1" label="Snapshot file too small">
+    snapshot.baf file was not large enough to contain a magic number. No data
+    restored.
+  </int>
+  <int value="2" label="Snapshot load failed">
+    snapshot.baf file couldn't be loaded into memory. No data restored.
+  </int>
+  <int value="3" label="Bad snapshot magic number">
+    snapshot.baf had an incorrect or old magic number. No data restored.
+  </int>
+  <int value="4" label="Invalid snapshot pickle">
+    Deserialization of snapshot.baf contents failed. No data restored.
+  </int>
+  <int value="5" label="Journal load failed">
+    journal.baj file couldn't be loaded into memory. Journal not restored.
+  </int>
+  <int value="6" label="Journal too old">
+    journal.baj file was older than snapshot.baf. Journal not restored.
+  </int>
+  <int value="7" label="Journal too small">
+    journal.baj file was not large enough to contain a magic number. Journal not
+    restored.
+  </int>
+  <int value="8" label="Bad journal magic number">
+    journal.baj file had an incorrect or old magic number. Journal not restored.
+  </int>
+  <int value="9" label="Corrupt journal">
+    Deserialization of journal.baj contents failed. Journal not restored.
+  </int>
+  <int value="10" label="Corrupt journal entry">
+    Deserialization of a journal entry failed. Journal loading incomplete.
+  </int>
+  <int value="11" label="Couldnt create cache file">
+    Couldn't write a new snapshot.baf file. Persistence abandoned.
+  </int>
+  <int value="12" label="Couldnt Create Journal">
+    Couldn't create a new journal.baj file. Persistence abandoned.
+  </int>
+  <int value="13" label="Couldnt Start Journal">
+    Couldn't write to journal.baj file. Persistence abandoned.
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//net/http/no_vary_search_cache_storage.cc:Result) -->
+
 <!-- LINT.IfChange(NoVarySearchHeaderParseResult) -->
 
 <enum name="NoVarySearchHeaderParseResult">
