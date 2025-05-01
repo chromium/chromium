@@ -85,6 +85,10 @@ void QuickAnswersBrowserTestBase::ShowMenuAndWait(
 
   NavigateToDataUrl(web_contents, params);
 
+  // Before sending a right-click, end paint-holding to enable input event
+  // processing in web_contents.
+  content::SimulateEndOfPaintHoldingOnPrimaryMainFrame(web_contents);
+
   content::ContextMenuInterceptor context_menu_interceptor(
       web_contents->GetPrimaryMainFrame());
   RightClick(web_contents, params);
