@@ -113,9 +113,6 @@ SelectBnplIssuerDialog::SelectBnplIssuerDialog(
       std::make_unique<BnplIssuerView>(controller_, this));
   bnpl_issuer_view_->SetProperty(views::kElementIdentifierKey,
                                  SelectBnplIssuerDialog::kBnplIssuerView);
-  if (!bnpl_issuer_view_->children().empty()) {
-    SetInitiallyFocusedView(bnpl_issuer_view_->children()[0]);
-  }
 
   TextWithLink link_text = controller_.get()->GetLinkText();
   TextLinkInfo link_info;
