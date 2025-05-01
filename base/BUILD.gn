@@ -5467,7 +5467,6 @@ if (is_android) {
       "test/android/javatests/src/org/chromium/base/test/util/Manual.java",
       "test/android/javatests/src/org/chromium/base/test/util/MaxAndroidSdkLevel.java",
       "test/android/javatests/src/org/chromium/base/test/util/MinAndroidSdkLevel.java",
-      "test/android/javatests/src/org/chromium/base/test/util/PackageManagerWrapper.java",
       "test/android/javatests/src/org/chromium/base/test/util/PayloadCallbackHelper.java",
       "test/android/javatests/src/org/chromium/base/test/util/RawFailureHandler.java",
       "test/android/javatests/src/org/chromium/base/test/util/RequiresRestart.java",
@@ -5483,10 +5482,13 @@ if (is_android) {
       "test/android/javatests/src/org/chromium/base/test/util/ViewActionOnDescendant.java",
       "test/android/javatests/src/org/chromium/base/test/util/ViewPrinter.java",
     ]
-    if (!is_cronet_for_aosp_build) {
+    if (is_cronet_for_aosp_build) {
+      sources += [ "//components/cronet/android/platform-only/org/chromium/base/test/util/PackageManagerWrapper.java" ]
+    } else {
       sources += [
         "test/android/java/src/org/chromium/base/multidex/ChromiumMultiDexInstaller.java",
         "test/android/javatests/src/org/chromium/base/test/BaseActivityTestRule.java",
+        "test/android/javatests/src/org/chromium/base/test/util/PackageManagerWrapper.java",
       ]
     }
     if (use_clang_coverage) {

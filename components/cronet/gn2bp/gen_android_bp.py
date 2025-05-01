@@ -50,6 +50,8 @@ cc_defaults_module = 'MODIFIED_BY_MAIN_AFTER_PARSING_ARGS_IF_YOU_SEE_THIS_SOMETH
 additional_args = None
 # Name of the java default module for non-test java modules defined in Android.extras.bp
 java_framework_defaults_module = 'MODIFIED_BY_MAIN_AFTER_PARSING_ARGS_IF_YOU_SEE_THIS_SOMETHING_BROKE_'
+# Name of the java default module for test java modules defined in Android.extras.bp
+java_framework_test_defaults_module = 'MODIFIED_BY_MAIN_AFTER_PARSING_ARGS_IF_YOU_SEE_THIS_SOMETHING_BROKE_'
 # Location of the project in the Android source tree.
 tree_path = 'MODIFIED_BY_MAIN_AFTER_PARSING_ARGS_IF_YOU_SEE_THIS_SOMETHING_BROKE_'
 
@@ -71,6 +73,9 @@ def initialize_globals(import_channel: str):
 
   global java_framework_defaults_module
   java_framework_defaults_module = f'{MODULE_PREFIX}java_framework_defaults'
+
+  global java_framework_test_defaults_module
+  java_framework_test_defaults_module = f'{MODULE_PREFIX}java_framework_test_defaults'
 
   global tree_path
   tree_path = f'external/cronet/{IMPORT_CHANNEL}'
@@ -122,10 +127,8 @@ def initialize_globals(import_channel: str):
       [
           # Needed to @SkipPresubmit annotations
           ('static_libs', {
-              'net-tests-utils',
+              'net-tests-utils-host-device-common',
           }),
-          # This is necessary because net-tests-utils compiles against private SDK.
-          ('sdk_version', ""),
       ],
       f'{MODULE_PREFIX}components_cronet_android_cronet__testing': [
           ('target', ('android_riscv64', {
@@ -2211,10 +2214,9 @@ def create_java_module(bp_module_name, target, is_test_target, blueprint):
   def add_java_library_properties(module):
     module.min_sdk_version = _MIN_SDK_VERSION
     module.apex_available = [tethering_apex]
+    module.defaults.add(java_framework_defaults_module)
     if is_test_target:
-      module.sdk_version = target.sdk_version
-    else:
-      module.defaults.add(java_framework_defaults_module)
+      module.defaults.add(java_framework_test_defaults_module)
     module.build_file_path = target.build_file_path
 
   # As hinted in `parse_gn_desc()`, Java GN targets are... complicated.
