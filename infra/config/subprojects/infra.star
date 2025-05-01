@@ -92,6 +92,16 @@ builders.builder(
         ),
     ],
     properties = {
+        "exclude_builders": [
+            "mac-rel",
+            "mac14-arm64-rel",
+            "ios-simulator",
+            "ios-simulator-full-configs",
+            "android-arm64-rel",
+        ],
+        "exclude_suites": [
+            "chrome_all_tast_tests",
+        ],
         "target_runtime": 15.0,
     },
     service_account = "chromium-autosharder@chops-service-accounts.iam.gserviceaccount.com",
