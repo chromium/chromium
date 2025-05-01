@@ -5,6 +5,8 @@
 #ifndef EXTENSIONS_COMMON_USER_SCRIPTS_ALLOWED_STATE_H_
 #define EXTENSIONS_COMMON_USER_SCRIPTS_ALLOWED_STATE_H_
 
+#include <optional>
+
 #include "extensions/common/extension_id.h"
 
 namespace extensions {
