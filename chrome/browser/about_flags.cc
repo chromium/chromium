@@ -4607,6 +4607,11 @@ const FeatureEntry::FeatureVariation
         {"(retroactive)", kInvalidateChoiceOnRestoreIsRetroactiveOption,
          std::size(kInvalidateChoiceOnRestoreIsRetroactiveOption), nullptr}};
 
+const FeatureEntry::FeatureVariation
+    kAISummarizationAPIWithAdaptationVaration[] = {
+        {"With Adaptation", nullptr, 0, "3389300"},
+};
+
 // RECORDING USER METRICS FOR FLAGS:
 // -----------------------------------------------------------------------------
 // The first line of the entry is the internal name.
@@ -11050,7 +11055,9 @@ const FeatureEntry kFeatureEntries[] = {
     {"summarization-api-for-gemini-nano",
      flag_descriptions::kSummarizationAPIForGeminiNanoName,
      flag_descriptions::kSummarizationAPIForGeminiNanoDescription, kOsAll,
-     FEATURE_VALUE_TYPE(blink::features::kAISummarizationAPI),
+     FEATURE_WITH_PARAMS_VALUE_TYPE(blink::features::kAISummarizationAPI,
+                                    kAISummarizationAPIWithAdaptationVaration,
+                                    "AISummarizationAPIWithAdaptation"),
      flag_descriptions::kAIAPIsForGeminiNanoLinks},
 
     {"writer-api-for-gemini-nano",
