@@ -3389,6 +3389,14 @@ void PDFiumEngine::PaintPageShadow(size_t progressive_index,
 
 void PDFiumEngine::DrawSelections(size_t progressive_index,
                                   SkBitmap& image_data) const {
+#if BUILDFLAG(ENABLE_PDF_INK2)
+  if (features::kPdfInk2TextHighlighting.Get() &&
+      client_->IsInAnnotationMode()) {
+    // Ink2 should handle drawing selections.
+    return;
+  }
+#endif  // BUILDFLAG(ENABLE_PDF_INK2)
+
   CHECK_LT(progressive_index, progressive_paints_.size());
 
   int page_index = progressive_paints_[progressive_index].page_index();

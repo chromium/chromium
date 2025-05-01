@@ -25,7 +25,9 @@
 #include "pdf/pdf_ink_ids.h"
 #include "pdf/pdf_ink_undo_redo_model.h"
 #include "pdf/ui/thumbnail.h"
+#include "third_party/ink/src/ink/geometry/affine_transform.h"
 #include "third_party/ink/src/ink/geometry/partitioned_mesh.h"
+#include "third_party/ink/src/ink/rendering/skia/native/skia_renderer.h"
 #include "third_party/ink/src/ink/strokes/in_progress_stroke.h"
 #include "third_party/ink/src/ink/strokes/input/stroke_input.h"
 #include "third_party/ink/src/ink/strokes/input/stroke_input_batch.h"
@@ -141,11 +143,12 @@ class PdfInkModule {
   // prevent modifying the clipboard content.
   bool ShouldBlockTextSelectionChanged();
 
-  // Determines if there are any `drawing_stroke_state().inputs` to be drawn.
+  // Determines if there are any in-progress inputs to be drawn.
   bool HasInputsToDraw() const;
 
-  // Draws `drawing_stroke_state().inputs` into `canvas`.  Must be in a drawing
-  // stroke state with non-empty `drawing_stroke_state().inputs`.
+  // Draws any in-progress inputs into `canvas`.  Must either be in text
+  // highlighting state or in drawing stroke state with non-empty
+  // `drawing_stroke_state().inputs`.
   void Draw(SkCanvas& canvas);
 
   // Generates a thumbnail of `thumbnail_size` for the page at `page_index`
@@ -312,6 +315,12 @@ class PdfInkModule {
     PdfInkBrush::Type type;
   };
 
+  // The transform to and clip page rect needed to render strokes on screen.
+  struct TransformAndClipRect {
+    ink::AffineTransform transform;
+    SkRect clip_rect;
+  };
+
   // Returns whether the event was handled or not.
   bool OnMouseDown(const blink::WebMouseEvent& event);
   bool OnMouseUp(const blink::WebMouseEvent& event);
@@ -450,6 +459,20 @@ class PdfInkModule {
 
   // Returns whether the drawing brush was set or not.
   bool MaybeSetDrawingBrush();
+
+  void DrawStrokeInRenderer(ink::SkiaRenderer& skia_renderer,
+                            SkCanvas& canvas,
+                            int page_index,
+                            const ink::Stroke& stroke);
+
+  void DrawInProgressStrokeInRenderer(ink::SkiaRenderer& skia_renderer,
+                                      SkCanvas& canvas,
+                                      int page_index,
+                                      const ink::InProgressStroke& stroke);
+
+  // Returns the transform and the clip page rect needed to render strokes on
+  // page `page_index`.
+  TransformAndClipRect GetTransformAndClipRect(int page_index);
 
   // Helper that calls GenerateAndSendInkThumbnail() without needing to specify
   // the thumbnail size. This helper determines the size by asking

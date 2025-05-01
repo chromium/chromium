@@ -3312,7 +3312,9 @@ class PdfViewWebPluginInkTextHighlightTest : public PdfViewWebPluginInkTest {
 };
 
 TEST_P(PdfViewWebPluginInkTextHighlightTest, SelectionDoesNotChange) {
-  UpdatePluginGeometry(/*device_scale=*/1.0f, gfx::Rect(kCanvasSize));
+  constexpr gfx::Rect kScreenRect(kCanvasSize);
+  ON_CALL(*engine_ptr_, GetPageContentsRect).WillByDefault(Return(kScreenRect));
+  UpdatePluginGeometry(/*device_scale=*/1.0f, kScreenRect);
 
   // Enter annotation mode and select the highlighter.
   plugin_->OnMessage(CreateSetAnnotationModeMessageForTesting(/*enable=*/true));
@@ -3336,6 +3338,23 @@ TEST_P(PdfViewWebPluginInkTextHighlightTest, SelectionDoesNotChange) {
   EXPECT_CALL(*client_ptr_, TextSelectionChanged(_, _, _)).Times(0);
 
   plugin_->SetSelectedText("text");
+}
+
+TEST_P(PdfViewWebPluginInkTextHighlightTest, DrawInProgressTextHighlight) {
+  // Enter annotation mode and select the highlighter.
+  plugin_->OnMessage(CreateSetAnnotationModeMessageForTesting(/*enable=*/true));
+  TestAnnotationBrushMessageParams message_params{/*color_r=*/240,
+                                                  /*color_g=*/133,
+                                                  /*color_b=*/0, /*size=*/4.5};
+  plugin_->OnMessage(CreateSetAnnotationBrushMessageForTesting(
+      "highlighter", &message_params));
+
+  SetUpMouseDownMoveTextTestExpectations();
+
+  TestInProgressDraw(
+      /*expected_filename=*/FILE_PATH_LITERAL("text_highlight_stroke.png"),
+      /*start_position=*/gfx::PointF(55, 60),
+      /*end_position=*/gfx::PointF(75, 65));
 }
 
 class PdfViewWebPluginInk2SaveTest : public PdfViewWebPluginSaveTest {

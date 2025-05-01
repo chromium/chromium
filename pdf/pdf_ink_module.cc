@@ -168,40 +168,64 @@ bool PdfInkModule::ShouldBlockTextSelectionChanged() {
 }
 
 bool PdfInkModule::HasInputsToDraw() const {
-  // TODO(crbug.com/342445982): Handle text highlighting inputs.
-  if (!enabled_ || !is_drawing_stroke()) {
+  if (!enabled_ || is_erasing_stroke()) {
     return false;
   }
 
-  const DrawingStrokeState& state = drawing_stroke_state();
-  return !state.inputs.empty();
+  if (is_text_highlighting()) {
+    return !text_highlight_state().highlight_strokes.empty();
+  }
+
+  CHECK(is_drawing_stroke());
+  return !drawing_stroke_state().inputs.empty();
 }
 
 void PdfInkModule::Draw(SkCanvas& canvas) {
   ink::SkiaRenderer skia_renderer;
 
-  const gfx::Vector2dF origin_offset = client_->GetViewportOriginOffset();
-  const PageOrientation rotation = client_->GetOrientation();
+  if (is_text_highlighting()) {
+    const auto& highlight_strokes = text_highlight_state().highlight_strokes;
+    CHECK(!highlight_strokes.empty());
+
+    for (const auto& [page_index, strokes] : highlight_strokes) {
+      SkAutoCanvasRestore save_restore(&canvas, /*doSave=*/true);
+      const auto [transform, clip_rect] = GetTransformAndClipRect(page_index);
+      canvas.clipRect(clip_rect);
+      for (const auto& stroke : strokes) {
+        auto status = skia_renderer.Draw(nullptr, stroke, transform, canvas);
+        CHECK(status.ok());
+      }
+    }
+    return;
+  }
+
+  CHECK(is_drawing_stroke());
 
   auto in_progress_stroke = CreateInProgressStrokeSegmentsFromInputs();
   CHECK(!in_progress_stroke.empty());
 
-  DrawingStrokeState& state = drawing_stroke_state();
-
-  const gfx::Rect content_rect = client_->GetPageContentsRect(state.page_index);
-  const gfx::SizeF page_size_in_points =
-      client_->GetPageSizeInPoints(state.page_index);
-  const ink::AffineTransform transform = GetInkRenderTransform(
-      origin_offset, rotation, content_rect, page_size_in_points);
-
   SkAutoCanvasRestore save_restore(&canvas, /*doSave=*/true);
-  canvas.clipRect(GetDrawPageClipRect(content_rect, origin_offset));
+  const auto [transform, clip_rect] =
+      GetTransformAndClipRect(drawing_stroke_state().page_index);
+  canvas.clipRect(clip_rect);
   for (const auto& segment : in_progress_stroke) {
     auto status = skia_renderer.Draw(nullptr, segment, transform, canvas);
     CHECK(status.ok());
   }
+}
 
-  // TODO(crbug.com/342445982): Draw text highlighting strokes.
+PdfInkModule::TransformAndClipRect PdfInkModule::GetTransformAndClipRect(
+    int page_index) {
+  const gfx::Vector2dF origin_offset = client_->GetViewportOriginOffset();
+  const PageOrientation rotation = client_->GetOrientation();
+
+  const gfx::Rect content_rect = client_->GetPageContentsRect(page_index);
+  const gfx::SizeF page_size_in_points =
+      client_->GetPageSizeInPoints(page_index);
+  ink::AffineTransform transform = GetInkRenderTransform(
+      origin_offset, rotation, content_rect, page_size_in_points);
+
+  return {transform, GetDrawPageClipRect(content_rect, origin_offset)};
 }
 
 void PdfInkModule::GenerateAndSendInkThumbnail(
@@ -953,8 +977,7 @@ bool PdfInkModule::StartTextHighlight(const gfx::PointF& position,
 bool PdfInkModule::ContinueTextHighlight(const gfx::PointF& position) {
   CHECK(is_text_highlighting());
   client_->ExtendSelectionByPoint(position);
-  // TODO(crbug.com/342445982): Update text highlight state to invalidate
-  // strokes during highlighting.
+  text_highlight_state().highlight_strokes = GetTextSelectionAsStrokes();
   return true;
 }
 
