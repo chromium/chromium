@@ -62,7 +62,7 @@ class CONTENT_EXPORT BluetoothEmulationHandler
       std::unique_ptr<SimulateGATTOperationResponseCallback> callback) override;
 
   void SimulateCharacteristicOperationResponse(
-      const std::string& in_characteristicId,
+      const std::string& characteristic_id,
       const std::string& in_type,
       int in_code,
       std::optional<Binary> in_data,
@@ -78,26 +78,29 @@ class CONTENT_EXPORT BluetoothEmulationHandler
       override;
 
   void AddService(const std::string& in_address,
-                  const std::string& in_serviceUuid,
+                  const std::string& service_uuid,
                   std::unique_ptr<AddServiceCallback> callback) override;
-  void RemoveService(const std::string& in_serviceId,
+  void RemoveService(const std::string& service_id,
                      std::unique_ptr<RemoveServiceCallback> callback) override;
 
   void AddCharacteristic(
-      const std::string& in_serviceId,
+      const std::string& service_id,
       const std::string& in_characteristicUuid,
       std::unique_ptr<protocol::BluetoothEmulation::CharacteristicProperties>
           in_properties,
       std::unique_ptr<AddCharacteristicCallback> callback) override;
   void RemoveCharacteristic(
-      const std::string& in_characteristicId,
+      const std::string& characteristic_id,
       std::unique_ptr<RemoveCharacteristicCallback> callback) override;
-  void AddDescriptor(const std::string& in_characteristicId,
-                     const std::string& in_descriptorUuid,
+  void AddDescriptor(const std::string& characteristic_id,
+                     const std::string& descriptor_uuid,
                      std::unique_ptr<AddDescriptorCallback> callback) override;
   void RemoveDescriptor(
       const std::string& in_descriptorId,
       std::unique_ptr<RemoveDescriptorCallback> callback) override;
+  void SimulateGATTDisconnection(
+      const std::string& address,
+      std::unique_ptr<SimulateGATTDisconnectionCallback> callback) override;
 
   // bluetooth::mojom::FakeCentralClient
   void DispatchGATTOperationEvent(

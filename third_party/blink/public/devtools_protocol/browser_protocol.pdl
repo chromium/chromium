@@ -13567,6 +13567,11 @@ experimental domain BluetoothEmulation
     parameters
       string descriptorId
 
+  # Simulates a GATT disconnection from the peripheral with |address|.
+  command simulateGATTDisconnection
+    parameters
+      string address
+
   # Event for when a GATT operation of |type| to the peripheral with |address|
   # happened.
   event gattOperationReceived
