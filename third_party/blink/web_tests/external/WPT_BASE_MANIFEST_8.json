@@ -411,10 +411,12 @@
    "ai": {
     "language_detection": {
      "availability-detached-crash.https.html": [
-      "5f76d59eb3540048bc0586f2a1ac5b3b313a147e",
+      "ee5e27e35b60e89f17f8008d809f4d6040e4eb5b",
       [
        null,
-       {}
+       {
+        "testdriver": true
+       }
       ]
      ]
     }
@@ -774,6 +776,13 @@
       ],
       "chrome-bug-404743651.html": [
        "238862374028415bb2ddb91de5f9a16132ec654d",
+       [
+        null,
+        {}
+       ]
+      ],
+      "chrome-bug-405795970.html": [
+       "5b45527fd9ccb2038fdd3f459bcf10a9514f199c",
        [
         null,
         {}
@@ -7817,6 +7826,13 @@
          {}
         ]
        ],
+       "iframe-hit-test-during-load-event-crash.html": [
+        "f668fc51573647e633fc3ac6430735d6fb4dfea7",
+        [
+         null,
+         {}
+        ]
+       ],
        "iframe-loading-lazy-simple-crash.html": [
         "b0b251438f73811ce2ec4d82fe47ffb3a2445c93",
         [
@@ -10053,6 +10069,13 @@
      ],
      "reparent-animating-element-002.html": [
       "0d3549fc33dae6c4a351f00790e63262b7258ff1",
+      [
+       null,
+       {}
+      ]
+     ],
+     "sibling-index-offset-crash.html": [
+      "812a7952738231f4c1bc2bf22c0d87f9a39c86cd",
       [
        null,
        {}
@@ -134566,7 +134589,7 @@
         ]
        ],
        "multicol-gap-decorations-013.html": [
-        "49f3a8ca57361932ed252d7d0601e20bd8336cce",
+        "d4170084f066688fd136b2abeb40da03b1243816",
         [
          null,
          [
@@ -173131,19 +173154,6 @@
         {}
        ]
       ],
-      "line-clamp-auto-025.tentative.html": [
-       "ab741d3df4d9ba823897ee1bcff1de9118353ada",
-       [
-        null,
-        [
-         [
-          "/css/css-overflow/line-clamp/reference/webkit-line-clamp-005-ref.html",
-          "=="
-         ]
-        ],
-        {}
-       ]
-      ],
       "line-clamp-auto-027.tentative.html": [
        "9ed461d8cfb4c2ee035987148e15b6dcce3cdffa",
        [
@@ -173197,7 +173207,7 @@
        ]
       ],
       "line-clamp-auto-031.tentative.html": [
-       "a723430c83ed7f0ea8ae8f2966d971c5c56d3cff",
+       "737caff7775d59ba02320bf942d479f083a0041c",
        [
         null,
         [
@@ -173365,8 +173375,8 @@
         {}
        ]
       ],
-      "line-clamp-with-abspos-001.tentative.html": [
-       "79667f23fbdc3d941484c343b2cf0a04ec34363f",
+      "line-clamp-with-abspos-001.html": [
+       "fd261493f0653a2cceaac302ca74640b3ce91db3",
        [
         null,
         [
@@ -173378,8 +173388,8 @@
         {}
        ]
       ],
-      "line-clamp-with-abspos-002.tentative.html": [
-       "cecb9d52bc63ec161dd96dfadcef166edd9334ed",
+      "line-clamp-with-abspos-002.html": [
+       "233a345c927e7af439943144a0ee6c989835744e",
        [
         null,
         [
@@ -173391,34 +173401,34 @@
         {}
        ]
       ],
-      "line-clamp-with-abspos-003.tentative.html": [
-       "e4bd1de222e2b75455ae50d4c8bfa5c62b0c47c2",
+      "line-clamp-with-abspos-003.html": [
+       "8b5d681d97c24b180f5dea407b1b94747c1b393a",
        [
         null,
         [
          [
-          "/css/css-overflow/line-clamp/reference/webkit-line-clamp-005-ref.html",
+          "/css/css-overflow/line-clamp/reference/line-clamp-with-abspos-001-ref.html",
           "=="
          ]
         ],
         {}
        ]
       ],
-      "line-clamp-with-abspos-004.tentative.html": [
-       "483e6d1da6dc739599e25f3172b0ad248ac23c1b",
+      "line-clamp-with-abspos-004.html": [
+       "c079974ac5c134474e9d16cd0317f29957a773fa",
        [
         null,
         [
          [
-          "/css/css-overflow/line-clamp/reference/webkit-line-clamp-005-ref.html",
+          "/css/css-overflow/line-clamp/reference/line-clamp-with-abspos-001-ref.html",
           "=="
          ]
         ],
         {}
        ]
       ],
-      "line-clamp-with-abspos-005.tentative.html": [
-       "3dc77831a06ffd28df3a5a4dca6045cba30fe1dd",
+      "line-clamp-with-abspos-005.html": [
+       "58656135cf00e70846cb057a03414879f9bd25f2",
        [
         null,
         [
@@ -173430,86 +173440,73 @@
         {}
        ]
       ],
-      "line-clamp-with-abspos-006.tentative.html": [
-       "f18fed6c2daea0ab6e1ab715c1257407067fa97b",
+      "line-clamp-with-abspos-006.html": [
+       "39f1758fa18f30c72db2c27fb442041e8bc4fdd0",
        [
         null,
         [
          [
-          "/css/css-overflow/line-clamp/reference/line-clamp-with-abspos-006-ref.html",
+          "/css/css-overflow/line-clamp/reference/line-clamp-with-abspos-005-ref.html",
           "=="
          ]
         ],
         {}
        ]
       ],
-      "line-clamp-with-abspos-007.tentative.html": [
-       "f0a1f58c8d304aead5490db007f763d437e9c5ad",
+      "line-clamp-with-abspos-007.html": [
+       "f5b4e6ce291681dd7adfa87302bb2e61ca693a1c",
        [
         null,
         [
          [
-          "/css/css-overflow/line-clamp/reference/line-clamp-with-abspos-007-ref.html",
+          "/css/css-overflow/line-clamp/reference/line-clamp-with-abspos-005-ref.html",
           "=="
          ]
         ],
         {}
        ]
       ],
-      "line-clamp-with-abspos-008.tentative.html": [
-       "9c62e44f3897b5868dde26a6d6c203c7ddea4b8a",
+      "line-clamp-with-abspos-008.html": [
+       "cd619d515383e2dc418b7e6ab1b1da30c076a3b4",
        [
         null,
         [
          [
-          "/css/css-overflow/line-clamp/reference/line-clamp-with-abspos-008-ref.html",
+          "/css/css-overflow/line-clamp/reference/line-clamp-with-abspos-005-ref.html",
           "=="
          ]
         ],
         {}
        ]
       ],
-      "line-clamp-with-abspos-009.tentative.html": [
-       "dce04d720cfc83d82e2228204b7f6d41e244aabf",
+      "line-clamp-with-abspos-009.html": [
+       "b3d332811d6a6539ab9524c47b9eae3ffc09ea57",
        [
         null,
         [
          [
-          "/css/css-overflow/line-clamp/reference/webkit-line-clamp-005-ref.html",
+          "/css/css-overflow/line-clamp/reference/line-clamp-with-abspos-009-ref.html",
           "=="
          ]
         ],
         {}
        ]
       ],
-      "line-clamp-with-abspos-010.tentative.html": [
-       "325278b3a0b44f480ea020c575b9427b33f2ec4e",
+      "line-clamp-with-abspos-010.html": [
+       "8a7c2790d6c997b62ccc1bdf7d2e051822798e8a",
        [
         null,
         [
          [
-          "/css/css-overflow/line-clamp/reference/line-clamp-with-abspos-010-ref.html",
+          "/css/css-overflow/line-clamp/reference/line-clamp-with-abspos-009-ref.html",
           "=="
          ]
         ],
         {}
        ]
       ],
-      "line-clamp-with-abspos-011.tentative.html": [
-       "ab5102a7cf2ea75cdb4729092d7618882e9c6ddf",
-       [
-        null,
-        [
-         [
-          "/css/css-overflow/line-clamp/reference/line-clamp-with-abspos-011-ref.html",
-          "=="
-         ]
-        ],
-        {}
-       ]
-      ],
-      "line-clamp-with-abspos-012.tentative.html": [
-       "bed065f38381a9b151cee045b37b45de8f7cd0fb",
+      "line-clamp-with-abspos-011.html": [
+       "cb4ab0514809e8ce7b6569f922a985f2e429414c",
        [
         null,
         [
@@ -173521,8 +173518,8 @@
         {}
        ]
       ],
-      "line-clamp-with-abspos-013.tentative.html": [
-       "ccea125f7246cf526da15a469261c3e90d4d2609",
+      "line-clamp-with-abspos-012.html": [
+       "ae2f0364f39550edbc1e2ccfe094167bd1551f79",
        [
         null,
         [
@@ -173534,8 +173531,346 @@
         {}
        ]
       ],
-      "line-clamp-with-abspos-014.tentative.html": [
-       "ea2f531207084097c4ab0406a270b045894a0d5d",
+      "line-clamp-with-abspos-013.html": [
+       "66a615ddd1c9b32903447a3aa8332ad87d5536cb",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/line-clamp-with-abspos-013-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-with-abspos-014.html": [
+       "e8257d1d40297ba0603d4c20d8fd79a97e08b714",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/line-clamp-with-abspos-013-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-with-abspos-015.html": [
+       "273610e071dbc2e355b8dc03ba96fae3882a4801",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/webkit-line-clamp-005-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-with-abspos-016.html": [
+       "0b329a7d734b048e563faf8dbcfe6fdc35b9e8ed",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/line-clamp-with-abspos-016-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-with-abspos-017.tentative.html": [
+       "8ae9cc949c69b20a4227d66348c6a7c552de8748",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/webkit-line-clamp-030-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-with-abspos-018.html": [
+       "27139b18b8dec8f18efee3fa6bb9dc198d61c122",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/line-clamp-with-abspos-018-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-with-abspos-019.html": [
+       "237ed69b67d29458ebbf9881b97bc6f5c0abbea4",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/line-clamp-with-abspos-019-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-with-abspos-020.html": [
+       "55fb07c2061593aa17f0404c1eedfaf550ce1dae",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/webkit-line-clamp-005-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-with-abspos-021.html": [
+       "21a0e96eee3fef22f8c44ba418e438db6ea2f0cc",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/webkit-line-clamp-005-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-with-abspos-022.html": [
+       "6599365883b6d0a8507c4de31d033caa153dc114",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/webkit-line-clamp-005-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-with-fixed-pos-001.html": [
+       "7f69c970baa5d81de1f0cf005e073481d44a41d7",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/line-clamp-with-abspos-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-with-fixed-pos-002.html": [
+       "90eecbd6af6a9b0e58413843ab9962ef194be16e",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/line-clamp-with-abspos-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-with-fixed-pos-003.html": [
+       "c4bc8a64784fac808edc4e1249d9a0e3c0a7b19f",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/line-clamp-with-abspos-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-with-fixed-pos-004.html": [
+       "673b7d8c9d811c31e0d8ef383c56512977d6be89",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/line-clamp-with-abspos-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-with-fixed-pos-005.html": [
+       "22cf7e0c132c0159a256a9a503962ac23068ae5e",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/line-clamp-with-abspos-005-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-with-fixed-pos-006.html": [
+       "46f2e0b2b3976325e178f545ba2e00d004faa111",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/line-clamp-with-abspos-005-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-with-fixed-pos-007.html": [
+       "0197ecb6d4a40c2cecc5461667d77bccc653ef8f",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/line-clamp-with-abspos-005-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-with-fixed-pos-008.html": [
+       "b14856a417f3e621085eefa7d2fe1d6a72cc87b4",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/line-clamp-with-abspos-005-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-with-fixed-pos-009.html": [
+       "93faeed3bb10e75fa5357d164bdf4e8f199203b9",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/line-clamp-with-abspos-009-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-with-fixed-pos-010.html": [
+       "8bd64fee61575251b6682ce7e6ccb14d4e4e18d0",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/line-clamp-with-abspos-009-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-with-fixed-pos-011.html": [
+       "70273b36cda05e585483c0f690e58c38504d00d0",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/webkit-line-clamp-005-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-with-fixed-pos-012.html": [
+       "0e5584db10ba179821e784ce8709beb8188edf0d",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/webkit-line-clamp-005-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-with-fixed-pos-013.html": [
+       "580619be41e76bd45fbcde4f5ddbcf64f909ad3d",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/line-clamp-with-abspos-013-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-with-fixed-pos-014.html": [
+       "371fb5957024db34777a4383bb7d981715d51ecd",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/line-clamp-with-abspos-013-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-with-fixed-pos-015.html": [
+       "a458c11c04ea4599982047c8c403eca1212ee955",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/webkit-line-clamp-005-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-with-fixed-pos-016.html": [
+       "07a6f4e4f0d518a270e51a5ee7343677c43f28e3",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/webkit-line-clamp-005-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-with-fixed-pos-017.html": [
+       "97c77429ee49e9d00f9e6b12b852ec22866b1c7d",
        [
         null,
         [
@@ -174327,7 +174662,7 @@
         {}
        ]
       ],
-      "webkit-line-clamp-abspos-001.tentative.html": [
+      "webkit-line-clamp-abspos-001.html": [
        "fb8e027740d7991015313d62df86fbd147aa2f8b",
        [
         null,
@@ -319260,6 +319595,10 @@
       "iframe-helper.html": [
        "fe07de3f8abac59ddbd6ccfd706a5e69c5b8b4c4",
        []
+      ],
+      "util.js": [
+       "7cb3e7c2e13cb0415be019580ccfcc339cd7bd8f",
+       []
       ]
      }
     },
@@ -349435,7 +349774,7 @@
         []
        ],
        "multicol-gap-decorations-013-ref.html": [
-        "effcc9232303802265d81d6ab1aa2b855f1c0af5",
+        "8e426d8ed32b25248e602e063e69678ca94b5e09",
         []
        ],
        "multicol-gap-decorations-014-ref.html": [
@@ -356457,31 +356796,31 @@
         []
        ],
        "line-clamp-with-abspos-001-ref.html": [
-        "d756162dde0c54bd52646597b01bbff8a80f5fd8",
+        "ffa463369c1bcd592661c7d1bb8f8a9eed57a536",
         []
        ],
        "line-clamp-with-abspos-005-ref.html": [
-        "3b1f9218e887a7e50745f0c5e540c099475a59df",
+        "9825838e7b434d38c53cc49f830c7c9120a995ab",
         []
        ],
-       "line-clamp-with-abspos-006-ref.html": [
-        "4b55c37a033ea4d4a9d97b5fdf8035a60aace4bd",
+       "line-clamp-with-abspos-009-ref.html": [
+        "cc3a43df2386b26f6d3ff2de67961503c7700389",
         []
        ],
-       "line-clamp-with-abspos-007-ref.html": [
-        "e3dcc696e39684b47e1785968f29ec9adf8f9c0b",
+       "line-clamp-with-abspos-013-ref.html": [
+        "cae83ecc37c713b710c688d39c528cb2108bf48e",
         []
        ],
-       "line-clamp-with-abspos-008-ref.html": [
-        "373b2755c1d617e1716afe8060c28b246d52c33e",
+       "line-clamp-with-abspos-016-ref.html": [
+        "3c8011394d295ce65eca946b4c88255eefb24631",
         []
        ],
-       "line-clamp-with-abspos-010-ref.html": [
+       "line-clamp-with-abspos-018-ref.html": [
         "ecc2fcee1b5219b310ef15b28f0684b07d84baf6",
         []
        ],
-       "line-clamp-with-abspos-011-ref.html": [
-        "f08b0270e8d7aa8a389910319617528dac6a4240",
+       "line-clamp-with-abspos-019-ref.html": [
+        "f97a972532556b347c95cf5b10bdbd649b5335be",
         []
        ],
        "line-clamp-with-floats-001-ref.html": [
@@ -430527,7 +430866,7 @@
       []
      ],
      "keyframe-tests.js": [
-      "2bcce1ecf47f180d7f91a8160ad548e2ad06f5b9",
+      "34a84f45b20dea524016a6f479e9e0d0f5b7b2e7",
       []
      ],
      "keyframe-utils.js": [
@@ -465889,7 +466228,7 @@
       ]
      ],
      "detector-locale.https.window.js": [
-      "119ba8eb39df466ac3d5474357e3064ad94718b3",
+      "80cbfa485e3944ba13de2aec3ba317e2cc84026f",
       [
        "ai/language_detection/detector-locale.https.window.html",
        {
@@ -465903,6 +466242,18 @@
           "window"
          ],
          [
+          "timeout",
+          "long"
+         ],
+         [
+          "script",
+          "resources/util.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver.js"
+         ],
+         [
           "script",
           "../resources/util.js"
          ],
@@ -465910,12 +466261,13 @@
           "script",
           "../resources/locale-util.js"
          ]
-        ]
+        ],
+        "timeout": "long"
        }
       ]
      ],
      "detector.https.window.js": [
-      "e85ea6d249b17d3ed1505f206f5ac6659b6dfd94",
+      "b0255bc552b0d2f7c71f8567bab9e0102702cd4c",
       [
        "ai/language_detection/detector.https.window.html",
        {
@@ -465929,6 +466281,18 @@
           "window"
          ],
          [
+          "timeout",
+          "long"
+         ],
+         [
+          "script",
+          "resources/util.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver.js"
+         ],
+         [
           "script",
           "../resources/util.js"
          ],
@@ -465936,12 +466300,13 @@
           "script",
           "../resources/locale-util.js"
          ]
-        ]
+        ],
+        "timeout": "long"
        }
       ]
      ],
      "detector.optional.https.window.js": [
-      "7ffa1362dd5f97b68e7c678463dd5afa186d10dc",
+      "1dd248a9ecab667355702d00e865341122a2ebe2",
       [
        "ai/language_detection/detector.optional.https.window.html",
        {
@@ -465955,76 +466320,32 @@
           "window"
          ],
          [
+          "timeout",
+          "long"
+         ],
+         [
+          "script",
+          "resources/util.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver.js"
+         ],
+         [
           "script",
           "../resources/util.js"
          ]
-        ]
+        ],
+        "timeout": "long"
        }
       ]
      ]
     },
     "summarizer": {
-     "summarizer-abort.tentative.https.any.js": [
+     "summarizer-abort.tentative.https.window.js": [
       "64595ea930c9e21b8044a281c2f9f4d467478772",
       [
-       "ai/summarizer/summarizer-abort.tentative.https.any.html",
-       {
-        "script_metadata": [
-         [
-          "title",
-          "Summarizer Abort"
-         ],
-         [
-          "global",
-          "window,worker"
-         ],
-         [
-          "script",
-          "../resources/util.js"
-         ]
-        ]
-       }
-      ],
-      [
-       "ai/summarizer/summarizer-abort.tentative.https.any.serviceworker.html",
-       {
-        "script_metadata": [
-         [
-          "title",
-          "Summarizer Abort"
-         ],
-         [
-          "global",
-          "window,worker"
-         ],
-         [
-          "script",
-          "../resources/util.js"
-         ]
-        ]
-       }
-      ],
-      [
-       "ai/summarizer/summarizer-abort.tentative.https.any.sharedworker.html",
-       {
-        "script_metadata": [
-         [
-          "title",
-          "Summarizer Abort"
-         ],
-         [
-          "global",
-          "window,worker"
-         ],
-         [
-          "script",
-          "../resources/util.js"
-         ]
-        ]
-       }
-      ],
-      [
-       "ai/summarizer/summarizer-abort.tentative.https.any.worker.html",
+       "ai/summarizer/summarizer-abort.tentative.https.window.html",
        {
         "script_metadata": [
          [
@@ -466043,30 +466364,10 @@
        }
       ]
      ],
-     "summarizer-availability-available.tentative.https.any.js": [
+     "summarizer-availability-available.tentative.https.window.js": [
       "31c21ca777fb09fc8058b57d5d8230d3f3798410",
       [
-       "ai/summarizer/summarizer-availability-available.tentative.https.any.html",
-       {
-        "script_metadata": [
-         [
-          "title",
-          "Summarizer Availability Available"
-         ],
-         [
-          "script",
-          "../resources/util.js"
-         ],
-         [
-          "timeout",
-          "long"
-         ]
-        ],
-        "timeout": "long"
-       }
-      ],
-      [
-       "ai/summarizer/summarizer-availability-available.tentative.https.any.worker.html",
+       "ai/summarizer/summarizer-availability-available.tentative.https.window.html",
        {
         "script_metadata": [
          [
@@ -466086,30 +466387,10 @@
        }
       ]
      ],
-     "summarizer-availability.tentative.https.any.js": [
+     "summarizer-availability.tentative.https.window.js": [
       "8691765f6933a576711282750b0d7ebca99e98e8",
       [
-       "ai/summarizer/summarizer-availability.tentative.https.any.html",
-       {
-        "script_metadata": [
-         [
-          "title",
-          "Summarizer Availability"
-         ],
-         [
-          "script",
-          "../resources/util.js"
-         ],
-         [
-          "timeout",
-          "long"
-         ]
-        ],
-        "timeout": "long"
-       }
-      ],
-      [
-       "ai/summarizer/summarizer-availability.tentative.https.any.worker.html",
+       "ai/summarizer/summarizer-availability.tentative.https.window.html",
        {
         "script_metadata": [
          [
@@ -466129,30 +466410,10 @@
        }
       ]
      ],
-     "summarizer-create-available.tentative.https.any.js": [
+     "summarizer-create-available.tentative.https.window.js": [
       "c7e27d9766bee9b62d7b8463654dfea7536cb338",
       [
-       "ai/summarizer/summarizer-create-available.tentative.https.any.html",
-       {
-        "script_metadata": [
-         [
-          "title",
-          "Summarizer Create Available"
-         ],
-         [
-          "script",
-          "../resources/util.js"
-         ],
-         [
-          "timeout",
-          "long"
-         ]
-        ],
-        "timeout": "long"
-       }
-      ],
-      [
-       "ai/summarizer/summarizer-create-available.tentative.https.any.worker.html",
+       "ai/summarizer/summarizer-create-available.tentative.https.window.html",
        {
         "script_metadata": [
          [
@@ -466172,30 +466433,10 @@
        }
       ]
      ],
-     "summarizer-create.tentative.https.any.js": [
+     "summarizer-create.tentative.https.window.js": [
       "328cceefefb11dab0844cfee5773a5194aabd52e",
       [
-       "ai/summarizer/summarizer-create.tentative.https.any.html",
-       {
-        "script_metadata": [
-         [
-          "title",
-          "Summarizer Create"
-         ],
-         [
-          "script",
-          "../resources/util.js"
-         ],
-         [
-          "timeout",
-          "long"
-         ]
-        ],
-        "timeout": "long"
-       }
-      ],
-      [
-       "ai/summarizer/summarizer-create.tentative.https.any.worker.html",
+       "ai/summarizer/summarizer-create.tentative.https.window.html",
        {
         "script_metadata": [
          [
@@ -466222,30 +466463,10 @@
        {}
       ]
      ],
-     "summarizer-measureInputUsage.tentative.https.any.js": [
+     "summarizer-measureInputUsage.tentative.https.window.js": [
       "ce9745acf173c8d94a52427446460a47c6fbb378",
       [
-       "ai/summarizer/summarizer-measureInputUsage.tentative.https.any.html",
-       {
-        "script_metadata": [
-         [
-          "title",
-          "Summarizer measureInputUsage"
-         ],
-         [
-          "script",
-          "../resources/util.js"
-         ],
-         [
-          "timeout",
-          "long"
-         ]
-        ],
-        "timeout": "long"
-       }
-      ],
-      [
-       "ai/summarizer/summarizer-measureInputUsage.tentative.https.any.worker.html",
+       "ai/summarizer/summarizer-measureInputUsage.tentative.https.window.html",
        {
         "script_metadata": [
          [
@@ -466265,30 +466486,10 @@
        }
       ]
      ],
-     "summarizer-summarize-streaming.tentative.https.any.js": [
+     "summarizer-summarize-streaming.tentative.https.window.js": [
       "dbf41cdadbc679e68279886506660262952f0b5e",
       [
-       "ai/summarizer/summarizer-summarize-streaming.tentative.https.any.html",
-       {
-        "script_metadata": [
-         [
-          "title",
-          "Summarizer Summarize Streaming"
-         ],
-         [
-          "script",
-          "../resources/util.js"
-         ],
-         [
-          "timeout",
-          "long"
-         ]
-        ],
-        "timeout": "long"
-       }
-      ],
-      [
-       "ai/summarizer/summarizer-summarize-streaming.tentative.https.any.worker.html",
+       "ai/summarizer/summarizer-summarize-streaming.tentative.https.window.html",
        {
         "script_metadata": [
          [
@@ -466308,30 +466509,10 @@
        }
       ]
      ],
-     "summarizer-summarize.tentative.https.any.js": [
+     "summarizer-summarize.tentative.https.window.js": [
       "62a780a3fc7960f30b2f4ab6beab89f9e570699f",
       [
-       "ai/summarizer/summarizer-summarize.tentative.https.any.html",
-       {
-        "script_metadata": [
-         [
-          "title",
-          "Summarizer Create Available"
-         ],
-         [
-          "script",
-          "../resources/util.js"
-         ],
-         [
-          "timeout",
-          "long"
-         ]
-        ],
-        "timeout": "long"
-       }
-      ],
-      [
-       "ai/summarizer/summarizer-summarize.tentative.https.any.worker.html",
+       "ai/summarizer/summarizer-summarize.tentative.https.window.html",
        {
         "script_metadata": [
          [
@@ -516040,6 +516221,13 @@
      ],
      "host-part-002.html": [
       "d508cd9002412b9cc39fce7eeec51c35e1a2d91c",
+      [
+       null,
+       {}
+      ]
+     ],
+     "host-part-nesting.html": [
+      "c0dc8e20eee9ab3fda124ef99cb7623146b8a321",
       [
        null,
        {}
@@ -720556,7 +720744,7 @@
      ],
      "crashtests": {
       "garbage-collection.any.js": [
-       "b2ba5cd4c27e9120a9e69c358e6ff5be31b107fd",
+       "cf10f7f2e8317ed16dd5fe3a967c6f26efd0a335",
        [
         "streams/readable-streams/crashtests/garbage-collection.any.html",
         {
