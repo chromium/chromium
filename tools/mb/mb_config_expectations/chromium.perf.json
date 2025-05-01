@@ -62,6 +62,26 @@
       "use_remoteexec": true
     }
   },
+  "android-desktop-x64-builder-perf": {
+    "gn_args": {
+      "chrome_pgo_phase": 0,
+      "clang_use_default_sample_profile": false,
+      "dcheck_always_on": false,
+      "debuggable_apks": false,
+      "ffmpeg_branding": "Chrome",
+      "is_chrome_branded": true,
+      "is_desktop_android": true,
+      "is_official_build": true,
+      "proprietary_codecs": true,
+      "strip_absolute_paths_from_debug_symbols": true,
+      "symbol_level": 1,
+      "system_webview_package_name": "com.google.android.webview",
+      "target_cpu": "x64",
+      "target_os": "android",
+      "use_reclient": false,
+      "use_remoteexec": true
+    }
+  },
   "android_arm64-builder-perf": {
     "gn_args": {
       "chrome_pgo_phase": 0,
