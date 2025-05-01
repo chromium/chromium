@@ -12,6 +12,8 @@
 
 namespace {
 
+constexpr char kPassword[] = "mock_password";
+
 // Adds an entry to a local histogram to indicate that the Apple Keychain would
 // have been accessed, if this class were not a mock of the Apple Keychain.
 void IncrementKeychainAccessHistogram() {
@@ -36,7 +38,6 @@ MockAppleKeychain::FindGenericPassword(std::string_view service_name,
   // When simulating |noErr|, return canned |passwordData| and
   // |passwordLength|.  Otherwise, just return given code.
   if (find_generic_result_ == noErr) {
-    static const char kPassword[] = "my_password";
     return base::ToVector(base::byte_span_from_cstring(kPassword));
   }
 
@@ -57,7 +58,7 @@ OSStatus MockAppleKeychain::AddGenericPassword(
 
 std::string MockAppleKeychain::GetEncryptionPassword() const {
   IncrementKeychainAccessHistogram();
-  return "mock_password";
+  return kPassword;
 }
 
 }  // namespace crypto

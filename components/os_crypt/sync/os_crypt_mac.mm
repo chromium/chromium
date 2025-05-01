@@ -81,6 +81,15 @@ OSCryptImpl* OSCryptImpl::GetInstance() {
 OSCryptImpl::OSCryptImpl() = default;
 OSCryptImpl::~OSCryptImpl() = default;
 
+std::unique_ptr<crypto::AppleKeychain> OSCryptImpl::GetKeychain() const {
+  if (use_mock_keychain_ || base::CommandLine::ForCurrentProcess()->HasSwitch(
+                                os_crypt::switches::kUseMockKeychain)) {
+    return std::make_unique<crypto::MockAppleKeychain>();
+  }
+
+  return crypto::AppleKeychain::DefaultKeychain();
+}
+
 bool OSCryptImpl::DeriveKey() {
   base::AutoLock auto_lock(OSCryptImpl::GetLock());
 
@@ -102,26 +111,10 @@ bool OSCryptImpl::DeriveKey() {
     return true;
   }
 
-  const bool mock_keychain_command_line_flag =
-      base::CommandLine::ForCurrentProcess()->HasSwitch(
-          os_crypt::switches::kUseMockKeychain);
-
-  // Do the actual key derivation: for a mock keychain use the keychain's
-  // password directly, and for a real keychain, use a randomly-generated
-  // password stored inside the keychain.
-  // TODO(https://crbug.com/389737048): These code paths should be identical -
-  // it is dangerous that the test key derivation code path is different like
-  // this. At minimum, the test code path should also use `KeychainPassword`'s
-  // logic.
-  std::string password;
-  if (use_mock_keychain_ || mock_keychain_command_line_flag) {
-    crypto::MockAppleKeychain keychain;
-    password = keychain.GetEncryptionPassword();
-  } else {
-    crypto::AppleKeychain keychain;
-    KeychainPassword encryptor_password(keychain);
-    password = encryptor_password.GetPassword();
-  }
+  // Do the actual key derivation.
+  auto keychain = GetKeychain();
+  KeychainPassword encryptor_password(*keychain);
+  std::string password = encryptor_password.GetPassword();
 
   // At this point, whether `encryptor_password.GetPassword()` succeeded or
   // failed, the keychain has been tried. Never try it again.

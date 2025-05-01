@@ -16,6 +16,12 @@
 #include "build/chromecast_buildflags.h"
 #include "crypto/subtle_passkey.h"
 
+#if BUILDFLAG(IS_APPLE)
+namespace crypto {
+class AppleKeychain;
+}
+#endif
+
 #if BUILDFLAG(IS_LINUX)
 class KeyStorageLinux;
 #endif  // BUILDFLAG(IS_LINUX)
@@ -226,6 +232,9 @@ class COMPONENT_EXPORT(OS_CRYPT) OSCryptImpl {
 #endif  // (BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CASTOS))
  private:
 #if BUILDFLAG(IS_APPLE)
+  // Return the keychain to use for accessing the encryption key.
+  std::unique_ptr<crypto::AppleKeychain> GetKeychain() const;
+
   // Derives an encryption key from data stored in the keychain if necessary.
   // Returns true if there is an encryption key available and false otherwise.
   bool DeriveKey();

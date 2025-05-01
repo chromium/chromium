@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "crypto/apple_keychain.h"
+#include "crypto/apple_keychain_seckeychain.h"
 
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
@@ -52,13 +52,14 @@ class OptionalOutParameter {
 
 namespace crypto {
 
-AppleKeychain::AppleKeychain() = default;
+AppleKeychainSecKeychain::AppleKeychainSecKeychain() = default;
 
-AppleKeychain::~AppleKeychain() = default;
+AppleKeychainSecKeychain::~AppleKeychainSecKeychain() = default;
 
 base::expected<std::vector<uint8_t>, OSStatus>
-AppleKeychain::FindGenericPassword(std::string_view service_name,
-                                   std::string_view account_name) const {
+AppleKeychainSecKeychain::FindGenericPassword(
+    std::string_view service_name,
+    std::string_view account_name) const {
   base::AutoLock lock(GetMacSecurityServicesLock());
   uint32_t password_length = 0;
   void* password_data = nullptr;
@@ -79,7 +80,7 @@ AppleKeychain::FindGenericPassword(std::string_view service_name,
   return result;
 }
 
-OSStatus AppleKeychain::AddGenericPassword(
+OSStatus AppleKeychainSecKeychain::AddGenericPassword(
     std::string_view service_name,
     std::string_view account_name,
     base::span<const uint8_t> password) const {

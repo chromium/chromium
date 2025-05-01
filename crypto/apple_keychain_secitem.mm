@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "crypto/apple_keychain.h"
+#include "crypto/apple_keychain_secitem.h"
 
 #import <Foundation/Foundation.h>
 
@@ -17,10 +17,7 @@ using base::apple::NSToCFOwnershipCast;
 
 namespace {
 
-enum KeychainAction {
-  kKeychainActionCreate,
-  kKeychainActionUpdate
-};
+enum KeychainAction { kKeychainActionCreate, kKeychainActionUpdate };
 
 // Creates a dictionary that can be used to query the keystore.
 base::apple::ScopedCFTypeRef<CFDictionaryRef> MakeGenericPasswordQuery(
@@ -90,11 +87,11 @@ base::apple::ScopedCFTypeRef<CFDictionaryRef> MakeKeychainData(
 
 namespace crypto {
 
-AppleKeychain::AppleKeychain() = default;
+AppleKeychainSecItem::AppleKeychainSecItem() = default;
 
-AppleKeychain::~AppleKeychain() = default;
+AppleKeychainSecItem::~AppleKeychainSecItem() = default;
 
-OSStatus AppleKeychain::AddGenericPassword(
+OSStatus AppleKeychainSecItem::AddGenericPassword(
     std::string_view service_name,
     std::string_view account_name,
     base::span<const uint8_t> password) const {
@@ -120,8 +117,8 @@ OSStatus AppleKeychain::AddGenericPassword(
 }
 
 base::expected<std::vector<uint8_t>, OSStatus>
-AppleKeychain::FindGenericPassword(std::string_view service_name,
-                                   std::string_view account_name) const {
+AppleKeychainSecItem::FindGenericPassword(std::string_view service_name,
+                                          std::string_view account_name) const {
   base::apple::ScopedCFTypeRef<CFDictionaryRef> query =
       MakeGenericPasswordQuery(service_name, account_name);
 

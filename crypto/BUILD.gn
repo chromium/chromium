@@ -88,7 +88,10 @@ component("crypto") {
 
   if (is_apple) {
     sources += [
+      "apple_keychain.cc",
       "apple_keychain.h",
+      "apple_keychain_secitem.h",
+      "apple_keychain_secitem.mm",
       "apple_keychain_util.h",
       "apple_keychain_util.mm",
       "apple_keychain_v2.h",
@@ -97,7 +100,8 @@ component("crypto") {
 
     if (is_mac) {
       sources += [
-        "apple_keychain_mac.cc",
+        "apple_keychain_seckeychain.cc",
+        "apple_keychain_seckeychain.h",
         "mac_security_services_lock.cc",
         "mac_security_services_lock.h",
         "scoped_lacontext.h",
@@ -106,8 +110,6 @@ component("crypto") {
         "unexportable_key_mac.mm",
         "user_verifying_key_mac.mm",
       ]
-    } else if (is_ios) {
-      sources += [ "apple_keychain_ios.mm" ]
     }
 
     frameworks = [
