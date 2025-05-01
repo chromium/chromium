@@ -1506,10 +1506,7 @@ void BlockLayoutAlgorithm::HandleOutOfFlowPositioned(
         Style(), origin_bfc_offset, GetExclusionSpace(),
         ChildAvailableSize().inline_size);
 
-    container_builder_.AddOutOfFlowChildCandidate(
-        child, static_offset, LogicalStaticPosition::kInlineStart,
-        LogicalStaticPosition::kBlockStart, LogicalStaticPosition::kBlock,
-        line_clamp_data_.ShouldHideForPaint());
+    container_builder_.AddOutOfFlowChildCandidate(child, static_offset);
   } else {
     WritingDirectionMode parent_writing_direction =
         GetConstraintSpace().GetWritingDirection();
@@ -1541,8 +1538,7 @@ void BlockLayoutAlgorithm::HandleOutOfFlowPositioned(
     }
 
     container_builder_.AddOutOfFlowChildCandidate(
-        child, static_offset, inline_axis_edge, block_axis_edge,
-        LogicalStaticPosition::kBlock, line_clamp_data_.ShouldHideForPaint());
+        child, static_offset, inline_axis_edge, block_axis_edge);
   }
 }
 

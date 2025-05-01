@@ -994,9 +994,9 @@ const LayoutResult* InlineLayoutStateStack::BoxData::CreateBoxFragment(
       // position to be relative to this fragment.
       LogicalOffset static_offset = child.rect.offset - rect.offset;
 
-      box.AddOutOfFlowInlineChildCandidate(
-          oof_box, static_offset, child.container_writing_direction,
-          line_box_line_height, child.is_hidden_for_paint);
+      box.AddOutOfFlowInlineChildCandidate(oof_box, static_offset,
+                                           child.container_writing_direction,
+                                           line_box_line_height);
       child.out_of_flow_positioned_box = nullptr;
       return;
     }

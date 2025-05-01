@@ -513,6 +513,10 @@ OutOfFlowLayoutPart::OutOfFlowLayoutPart(BoxFragmentBuilder* container_builder)
       container_builder_->Node().IsScrollContainer();
   default_containing_block_info_for_fixed_.is_scroll_container =
       container_builder_->Node().IsScrollContainer();
+  default_containing_block_info_for_absolute_.is_hidden_for_paint =
+      container_builder_->GetConstraintSpace().IsHiddenForPaint();
+  default_containing_block_info_for_fixed_.is_hidden_for_paint =
+      container_builder_->GetConstraintSpace().IsHiddenForPaint();
   if (container_builder_->HasBlockSize()) {
     default_containing_block_info_for_absolute_.rect.size =
         ShrinkLogicalSize(container_builder_->Size(), border_scrollbar);
@@ -586,7 +590,6 @@ void OutOfFlowLayoutPart::Run() {
         LogicalStaticPosition::InlineEdge::kInlineStart,
         LogicalStaticPosition::BlockEdge::kBlockStart,
         LogicalStaticPosition::LogicalAlignmentDirection::kBlock,
-        /*is_hidden_for_paint=*/false,
         /*allow_top_layer_nodes=*/true);
 
     // With one top-layer node added, run through the machinery again. Note that
@@ -782,6 +785,8 @@ OutOfFlowLayoutPart::GetContainingBlockInfo(
     const LogicalOofPositionedNode& candidate) {
   const auto* container_object = container_builder_->GetLayoutObject();
   const auto& node_style = candidate.Node().Style();
+  bool is_hidden_for_paint =
+      container_builder_->GetConstraintSpace().IsHiddenForPaint();
 
   auto IsPlacedWithinGridArea = [&](const auto* containing_block) {
     if (!containing_block->IsLayoutGrid()) {
@@ -803,6 +808,7 @@ OutOfFlowLayoutPart::GetContainingBlockInfo(
         MakeGarbageCollected<GridItemData>(candidate.Node(), grid_style);
 
     return {.writing_direction = grid_style.GetWritingDirection(),
+            .is_hidden_for_paint = is_hidden_for_paint,
             .rect = GridLayoutAlgorithm::ComputeOutOfFlowItemContainingRect(
                 containing_grid.CachedPlacementData(), layout_data, grid_style,
                 borders, size, grid_item)};
@@ -856,7 +862,9 @@ OutOfFlowLayoutPart::GetContainingBlockInfo(
       container_offset += fragmentainer_descendant.containing_block.Offset();
 
       ContainingBlockInfo containing_block_info{
-          writing_direction, containing_block_fragment->IsScrollContainer(),
+          writing_direction,
+          containing_block_fragment->IsScrollContainer(),
+          containing_block_fragment->IsHiddenForPaint(),
           LogicalRect(container_offset, content_size),
           fragmentainer_descendant.containing_block.RelativeOffset(),
           fragmentainer_descendant.containing_block.Offset()};
@@ -1138,6 +1146,7 @@ void OutOfFlowLayoutPart::AddInlineContainingBlockInfo(
         ContainingBlockInfo{
             inline_writing_direction,
             /* is_scroll_container */ false,
+            block_info.value->is_hidden_for_paint,
             LogicalRect(container_offset, inline_cb_size),
             total_relative_offset,
             containing_block_offset - block_info.value->relative_offset});
@@ -1842,12 +1851,12 @@ OutOfFlowLayoutPart::NodeInfo OutOfFlowLayoutPart::SetupNodeInfo(
         To<LogicalOofNodeForFragmentation>(oof_node).fixedpos_inline_container;
   }
 
-  return NodeInfo(
-      node, oof_node.static_position, base_container_info,
-      GetConstraintSpace().GetWritingDirection(),
-      /* is_fragmentainer_descendant */ containing_block_fragment,
-      containing_block, fixedpos_containing_block, fixedpos_inline_container,
-      oof_node.requires_content_before_breaking, oof_node.is_hidden_for_paint);
+  return NodeInfo(node, oof_node.static_position, base_container_info,
+                  GetConstraintSpace().GetWritingDirection(),
+                  /* is_fragmentainer_descendant */ containing_block_fragment,
+                  containing_block, fixedpos_containing_block,
+                  fixedpos_inline_container,
+                  oof_node.requires_content_before_breaking);
 }
 
 const LayoutResult* OutOfFlowLayoutPart::LayoutOOFNode(
@@ -2318,9 +2327,7 @@ OutOfFlowLayoutPart::TryCalculateOffset(
                                    /* is_new_fc */ true);
     builder.SetAvailableSize(container_rect.size);
     builder.SetPercentageResolutionSize(container_rect.size);
-    if (node_info.is_hidden_for_paint) {
-      builder.SetIsHiddenForPaint(true);
-    }
+    builder.SetIsHiddenForPaint(container_info.is_hidden_for_paint);
 
     if (container_builder_->IsInitialColumnBalancingPass()) {
       // The |fragmentainer_offset_delta| will not make a difference in the
@@ -2651,7 +2658,8 @@ const LayoutResult* OutOfFlowLayoutPart::GenerateFragment(
   builder.SetAvailableSize(available_size);
   builder.SetPercentageResolutionSize(offset_info.container_content_size);
   builder.SetIsFixedInlineSize(true);
-  builder.SetIsHiddenForPaint(node_info.is_hidden_for_paint);
+  builder.SetIsHiddenForPaint(
+      node_info.base_container_info.is_hidden_for_paint);
 
   // In some cases we will need the fragment size in order to calculate the
   // offset. We may have to lay out to get the fragment size. For block

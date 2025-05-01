@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>CSS Overflow: abspos in line-clamp after clamp point</title>
+<title>CSS Overflow: fixed pos in line-clamp after clamp point</title>
 <link rel="author" title="Andreu Botella" href="mailto:abotella@igalia.com">
 <link rel="help" href="https://drafts.csswg.org/css-overflow-4/#line-clamp">
 <link rel="match" href="reference/webkit-line-clamp-005-ref.html">
-<meta name="assert" content="Absolute positioned boxes in an inline formatting context inside a line-clamp container are always hidden if they are in the box tree after the clamp point. This test specifically tests that this is the case even when they don't have a set height.">
+<meta name="assert" content="Fixed positioned boxes inside a line-clamp container are always hidden if their fixed positioning containing block is after the clamp point. This test specifically tests that this is the case even when they don't have a set height.">
 <style>
 .clamp {
   line-clamp: 4;
@@ -13,8 +13,11 @@
   white-space: pre;
   background-color: yellow;
 }
-.abspos {
-  position: absolute;
+.transformed {
+  transform: scale(1); /* Makes it a fixed-pos containing block */
+}
+.fixed {
+  position: fixed;
   right: 0;
   width: 100px;
   /* No height! */
@@ -27,4 +30,4 @@
 Line 2
 Line 3
 Line 4
-<div class="abspos">This abspos shouldn't be visible</div>Line 5</div>
+<div class="transformed"><div class="fixed">This fixed pos shouldn't be visible</div>Line 5</div></div>

@@ -225,7 +225,6 @@ class CORE_EXPORT FragmentBuilder {
       LogicalStaticPosition::BlockEdge = LogicalStaticPosition::kBlockStart,
       LogicalStaticPosition::LogicalAlignmentDirection align_self_direction =
           LogicalStaticPosition::LogicalAlignmentDirection::kBlock,
-      bool is_hidden_for_paint = false,
       bool allow_top_layer_nodes = false);
 
   // This should only be used for inline-level OOF-positioned nodes.
@@ -235,8 +234,7 @@ class CORE_EXPORT FragmentBuilder {
       BlockNode,
       const LogicalOffset& child_offset,
       WritingDirectionMode inline_container_writing_direction,
-      LayoutUnit line_box_block_size,
-      bool is_hidden_for_paint = false);
+      LayoutUnit line_box_block_size);
 
   void AddOutOfFlowFragmentainerDescendant(
       const LogicalOofNodeForFragmentation& descendant);

@@ -451,7 +451,6 @@ void FragmentBuilder::AddOutOfFlowChildCandidate(
     LogicalStaticPosition::InlineEdge inline_edge,
     LogicalStaticPosition::BlockEdge block_edge,
     LogicalStaticPosition::LogicalAlignmentDirection align_self_direction,
-    bool is_hidden_for_paint,
     bool allow_top_layer_nodes) {
   DCHECK(child);
   // Top-layer elements are processed separately in the OutOfFlowLayoutPart.
@@ -464,16 +463,14 @@ void FragmentBuilder::AddOutOfFlowChildCandidate(
       child,
       LogicalStaticPosition{child_offset, inline_edge, block_edge,
                             align_self_direction},
-      RequiresContentBeforeBreaking(), is_hidden_for_paint,
-      OofInlineContainer<LogicalOffset>());
+      RequiresContentBeforeBreaking());
 }
 
 void FragmentBuilder::AddOutOfFlowInlineChildCandidate(
     BlockNode child,
     const LogicalOffset& child_offset,
     WritingDirectionMode inline_container_writing_direction,
-    LayoutUnit line_box_block_size,
-    bool is_hidden_for_paint) {
+    LayoutUnit line_box_block_size) {
   DCHECK(node_.IsInline() || layout_object_->IsLayoutInline());
 
   LogicalOffset static_offset = child_offset;
@@ -510,8 +507,7 @@ void FragmentBuilder::AddOutOfFlowInlineChildCandidate(
   // system (Direction() is kLtr), we need to know the direction of the
   // parent element to correctly determine an OOF childs static position.
   AddOutOfFlowChildCandidate(child, static_offset, inline_axis_edge,
-                             block_axis_edge, LogicalStaticPosition::kBlock,
-                             is_hidden_for_paint);
+                             block_axis_edge);
 }
 
 void FragmentBuilder::AddOutOfFlowFragmentainerDescendant(
@@ -601,7 +597,7 @@ void FragmentBuilder::TransferOutOfFlowCandidates(
       destination_builder->AddOutOfFlowFragmentainerDescendant(
           {node, candidate.static_position,
            !!candidate.requires_content_before_breaking,
-           !!candidate.is_hidden_for_paint, multicol->fixedpos_inline_container,
+           multicol->fixedpos_inline_container,
            multicol->fixedpos_containing_block,
            multicol->fixedpos_containing_block,
            multicol->fixedpos_inline_container});
@@ -723,9 +719,8 @@ void FragmentBuilder::PropagateOOFPositionedInfo(
         AddOutOfFlowFragmentainerDescendant(
             {node, static_position,
              !!descendant.requires_content_before_breaking,
-             !!descendant.is_hidden_for_paint, new_fixedpos_inline_container,
-             *fixedpos_containing_block, *fixedpos_containing_block,
-             new_fixedpos_inline_container});
+             new_fixedpos_inline_container, *fixedpos_containing_block,
+             *fixedpos_containing_block, new_fixedpos_inline_container});
         continue;
       }
     }
@@ -737,7 +732,7 @@ void FragmentBuilder::PropagateOOFPositionedInfo(
     oof_candidates_may_have_anchor_queries_ |= node.MayHaveAnchorQuery();
     oof_positioned_candidates_.emplace_back(
         node, static_position, descendant.requires_content_before_breaking,
-        descendant.is_hidden_for_paint, new_inline_container);
+        new_inline_container);
   }
 
   const auto* oof_data = fragment.GetFragmentedOofData();
@@ -985,8 +980,7 @@ void FragmentBuilder::PropagateOOFFragmentainerDescendants(
     }
     LogicalOofNodeForFragmentation oof_node(
         descendant.Node(), static_position,
-        descendant.requires_content_before_breaking,
-        descendant.is_hidden_for_paint, new_inline_container,
+        descendant.requires_content_before_breaking, new_inline_container,
         OofContainingBlock<LogicalOffset>(
             containing_block_offset, containing_block_rel_offset,
             containing_block_fragment, clipped_container_block_offset,

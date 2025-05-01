@@ -546,8 +546,7 @@ PhysicalFragment::OofData* PhysicalFragment::OofDataFromBuilder(
       oof_data->OofPositionedDescendants().emplace_back(
           descendant.Node(),
           descendant.static_position.ConvertToPhysical(converter),
-          descendant.requires_content_before_breaking,
-          descendant.is_hidden_for_paint, inline_container);
+          descendant.requires_content_before_breaking, inline_container);
     }
   }
 
@@ -597,8 +596,7 @@ PhysicalFragment::OofData* PhysicalFragment::FragmentedOofDataFromBuilder(
         descendant.Node(),
         descendant.static_position.ConvertToPhysical(
             containing_block_converter),
-        descendant.requires_content_before_breaking,
-        descendant.is_hidden_for_paint, inline_container,
+        descendant.requires_content_before_breaking, inline_container,
         PhysicalContainingBlock(builder, size, containing_block_size,
                                 descendant.containing_block),
         PhysicalContainingBlock(builder, size,

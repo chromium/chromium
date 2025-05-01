@@ -139,6 +139,8 @@ class CORE_EXPORT OutOfFlowLayoutPart {
                                               TextDirection::kLtr};
     // If the container is scrollable.
     bool is_scroll_container;
+    // If the container is hidden for paint, which is also true for the OOFs.
+    bool is_hidden_for_paint;
     // Size and offset of the container.
     LogicalRect rect;
     // The relative positioned offset to be applied after fragmentation is
@@ -177,7 +179,6 @@ class CORE_EXPORT OutOfFlowLayoutPart {
     const OofContainingBlock<LogicalOffset> fixedpos_containing_block;
     const OofInlineContainer<LogicalOffset> fixedpos_inline_container;
     bool requires_content_before_breaking = false;
-    bool is_hidden_for_paint = false;
 
     NodeInfo(BlockNode node,
              const LogicalStaticPosition static_position,
@@ -187,8 +188,7 @@ class CORE_EXPORT OutOfFlowLayoutPart {
              const OofContainingBlock<LogicalOffset>& containing_block,
              const OofContainingBlock<LogicalOffset>& fixedpos_containing_block,
              const OofInlineContainer<LogicalOffset>& fixedpos_inline_container,
-             bool requires_content_before_breaking,
-             bool is_hidden_for_paint)
+             bool requires_content_before_breaking)
         : node(node),
           static_position(static_position),
           base_container_info(base_container_info),
@@ -196,8 +196,7 @@ class CORE_EXPORT OutOfFlowLayoutPart {
           containing_block(containing_block),
           fixedpos_containing_block(fixedpos_containing_block),
           fixedpos_inline_container(fixedpos_inline_container),
-          requires_content_before_breaking(requires_content_before_breaking),
-          is_hidden_for_paint(is_hidden_for_paint) {}
+          requires_content_before_breaking(requires_content_before_breaking) {}
 
     void Trace(Visitor* visitor) const;
   };

@@ -5,24 +5,22 @@
 .clamp {
   font: 16px / 32px serif;
   padding: 0 4px;
+  white-space: pre;
   background-color: yellow;
+}
+.rel {
+  position: relative;
 }
 .abspos {
   position: absolute;
-  right: 0;
-  width: 50px;
-  height: 75px;
-  margin: 4px;
+  top: 0;
+  left: 0;
+  width: 20px;
+  height: 20px;
   background-color: skyblue;
 }
-.pre {
-  white-space: pre;
-}
 </style>
-<div class="clamp">
-<div class="pre">Line 1
+<div class="clamp">Line 1
 Line 2
-Line 3</div>
-<div class="abspos"></div>
-<div class="pre">Line 4…</div>
-</div>
+Line 3
+<div class="rel"><div class="abspos"></div>Line 4…</div></div>
