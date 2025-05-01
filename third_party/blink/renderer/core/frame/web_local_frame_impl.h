@@ -331,7 +331,8 @@ class CORE_EXPORT WebLocalFrameImpl final
   bool CapturePaintPreview(const gfx::Rect& bounds,
                            cc::PaintCanvas* canvas,
                            bool include_linked_destinations,
-                           bool skip_accelerated_content) override;
+                           bool skip_accelerated_content,
+                           bool allow_scrollbars) override;
   WebPerformanceMetricsForReporting PerformanceMetricsForReporting()
       const override;
   WebPerformanceMetricsForNestedContexts PerformanceMetricsForNestedContexts()

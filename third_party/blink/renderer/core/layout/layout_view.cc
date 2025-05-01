@@ -610,7 +610,10 @@ void LayoutView::CalculateScrollbarModes(
   // ClipsContent() is false means that the client wants to paint the whole
   // contents of the frame without scrollbars, which is for printing etc.
   if (!frame->ClipsContent()) {
-    bool disable_scrollbars = true;
+    // Don't disable scrollbars in paint preview capture. This will make sure
+    // that page content will not be shifted during the paint preview capture.
+    bool disable_scrollbars =
+        !GetDocument().AreScrollbarsAllowedInPaintPreview();
 #if BUILDFLAG(IS_ANDROID)
     // However, Android WebView has a setting recordFullDocument. When it's set
     // to true, ClipsContent() is false here, while WebView still expects blink

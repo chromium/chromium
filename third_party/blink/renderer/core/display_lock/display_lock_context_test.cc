@@ -3231,8 +3231,8 @@ TEST_F(DisplayLockContextTest, PrintingUnlocksAutoLocks) {
 
   {
     // Create a paint preview scope.
-    Document::PaintPreviewScope scope(GetDocument(),
-                                      Document::kPaintingPreview);
+    Document::PaintPreviewScope scope(GetDocument(), Document::kPaintingPreview,
+                                      /*allow_scrollbars=*/false);
     UpdateAllLifecyclePhasesForTest();
 
     EXPECT_FALSE(target->GetDisplayLockContext()->IsLocked());

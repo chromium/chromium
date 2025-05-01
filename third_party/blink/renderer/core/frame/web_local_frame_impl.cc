@@ -1978,7 +1978,8 @@ bool WebLocalFrameImpl::GetPrintPresetOptionsForPlugin(
 bool WebLocalFrameImpl::CapturePaintPreview(const gfx::Rect& bounds,
                                             cc::PaintCanvas* canvas,
                                             bool include_linked_destinations,
-                                            bool skip_accelerated_content) {
+                                            bool skip_accelerated_content,
+                                            bool allow_scrollbars) {
   bool success = false;
   {
     // Ignore paint timing while capturing a paint preview as it can change LCP
@@ -1990,7 +1991,8 @@ bool WebLocalFrameImpl::CapturePaintPreview(const gfx::Rect& bounds,
         *GetFrame()->GetDocument(),
         skip_accelerated_content
             ? Document::kPaintingPreviewSkipAcceleratedContent
-            : Document::kPaintingPreview);
+            : Document::kPaintingPreview,
+        allow_scrollbars);
     GetFrame()->StartPaintPreview();
     PaintPreviewContext* paint_preview_context =
         MakeGarbageCollected<PaintPreviewContext>(GetFrame());

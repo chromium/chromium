@@ -79,7 +79,8 @@ void PhishingVisualFeatureExtractor::ExtractFeatures(
 
   if (!frame->CapturePaintPreview(bounds, canvas,
                                   /*include_linked_destinations=*/false,
-                                  /*skip_accelerated_content=*/true)) {
+                                  /*skip_accelerated_content=*/true,
+                                  /*allow_scrollbars=*/false)) {
     RunCallback(nullptr);
     return;
   }

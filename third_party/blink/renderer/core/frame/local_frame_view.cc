@@ -3948,7 +3948,9 @@ void LocalFrameView::Paint(GraphicsContext& context,
           Document::kNotPaintingPreview) {
     paint_preview.emplace(
         *GetFrame().GetDocument(),
-        owner_layout_object->GetDocument().GetPaintPreviewState());
+        owner_layout_object->GetDocument().GetPaintPreviewState(),
+        owner_layout_object->GetDocument()
+            .AreScrollbarsAllowedInPaintPreview());
     // When capturing a Paint Preview we want to capture scrollable embedded
     // content separately. Paint should stop here and ask the browser to
     // coordinate painting such frames as a separate task.

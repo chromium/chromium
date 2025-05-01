@@ -110,7 +110,8 @@ TEST_P(BoxFragmentPainterTest, AddUrlRects) {
   // flagsets when painting. This is the simplest way to check if URLs were
   // annotated.
   Document::PaintPreviewScope paint_preview(GetDocument(),
-                                            Document::kPaintingPreview);
+                                            Document::kPaintingPreview,
+                                            /*allow_scrollbars=*/false);
   UpdateAllLifecyclePhasesForTest();
 
   paint_preview::PaintPreviewTracker tracker(base::UnguessableToken::Create(),

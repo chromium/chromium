@@ -841,10 +841,12 @@ class BLINK_EXPORT WebLocalFrame : public WebFrame {
   // |skip_accelerated_content| is true, the capture will omit GPU accelerated
   // content where applicable. Currently, this setting replaces video frames
   // with a poster or empty space.
+  // |allow_scrollbars| is true, the capture will include scrollbars as well.
   virtual bool CapturePaintPreview(const gfx::Rect& bounds,
                                    cc::PaintCanvas* canvas,
                                    bool include_linked_destinations,
-                                   bool skip_accelerated_content) = 0;
+                                   bool skip_accelerated_content,
+                                   bool allow_scrollbars) = 0;
 
   // Performance --------------------------------------------------------
 
