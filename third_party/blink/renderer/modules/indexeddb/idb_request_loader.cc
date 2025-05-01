@@ -140,7 +140,6 @@ void IDBRequestLoader::DidFail(FileErrorCode error_code) {
   DCHECK(file_reader_loading_);
   file_reader_loading_ = false;
 #endif  // DCHECK_IS_ON()
-  base::UmaHistogramEnumeration("IndexedDB.LargeValueReadError", error_code);
   OnLoadComplete(error_code);
 }
 
@@ -149,6 +148,7 @@ void IDBRequestLoader::OnLoadComplete(FileErrorCode error_code) {
   DCHECK(started_);
   DCHECK(!canceled_);
 #endif  // DCHECK_IS_ON()
+  base::UmaHistogramEnumeration("IndexedDB.LargeValueReadResult", error_code);
   DOMException* exception = nullptr;
   // Translate the error code from the internal file read operation to an
   // appropriate `DOMException` for the IndexedDB operation.

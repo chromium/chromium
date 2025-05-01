@@ -381,15 +381,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="IndexedDB.LargeValueReadError" enum="FileErrorCode"
+<histogram name="IndexedDB.LargeValueReadResult" enum="FileErrorCode"
     expires_after="2025-09-07">
-  <owner>estade@chromium.org</owner>
+  <owner>leimy@chromium.org</owner>
+  <owner>evanstade@microsoft.com</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
-    FileErrorCode when IndexedDB fails to read a blob-wrapped (large) value.
-    Recorded in the renderer process for the first value that failed to be
-    unwrapped in a transaction. This error causes the transaction to abort,
-    preventing further read attempts on other values.
+    Records the status (including success) when IndexedDB finishes reading a
+    blob-wrapped (large) value. If the read fails, the first value that failed
+    to be unwrapped in a transaction will be logged. This error causes the
+    transaction to abort, preventing further read attempts on other values. This
+    metric is recorded in the renderer process.
   </summary>
 </histogram>
 
