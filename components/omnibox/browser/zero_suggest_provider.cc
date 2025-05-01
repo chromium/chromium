@@ -328,13 +328,15 @@ AutocompleteMatch ZeroSuggestProvider::NavigationToMatch(
   match.contents = url_formatter::FormatUrl(navigation.url(), format_types,
                                             base::UnescapeRule::SPACES, nullptr,
                                             nullptr, nullptr);
-  match.contents_class = ClassifyTermMatches({}, match.contents.length(), 0,
+  match.contents_class = ClassifyTermMatches({}, match.contents.length(),
+                                             ACMatchClassification::NONE,
                                              ACMatchClassification::URL);
 
   match.description =
       AutocompleteMatch::SanitizeString(navigation.description());
   match.description_class = ClassifyTermMatches({}, match.description.length(),
-                                                0, ACMatchClassification::NONE);
+                                                ACMatchClassification::NONE,
+                                                ACMatchClassification::NONE);
   match.suggest_type = navigation.suggest_type();
   for (const int subtype : navigation.subtypes()) {
     match.subtypes.insert(SuggestSubtypeForNumber(subtype));

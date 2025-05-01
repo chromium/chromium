@@ -357,7 +357,7 @@ std::string EncodeURIComponent(const std::string& component) {
 }  // namespace
 
 AutocompleteController::OldResult::OldResult(UpdateType update_type,
-                                             AutocompleteInput input,
+                                             const AutocompleteInput& input,
                                              AutocompleteResult* result) {
   if (result->default_match()) {
     last_default_match = *result->default_match();
@@ -769,7 +769,7 @@ void AutocompleteController::StartPrefetch(const AutocompleteInput& input) {
 
     // Avoid starting a prefetch request if a non-prefetch request is in
     // progress. Though explicitly discouraged as per documentation in
-    // AutocompleteProvider::StartPrefetch(), a provider may still cancel its
+    // `AutocompleteProvider::StartPrefetch()`, a provider may still cancel its
     // in-flight non-prefetch request when a prefetch request is started. This
     // may cause the provider to never get a chance to notify the controller of
     // its status; resulting in the controller to remain in an invalid state.

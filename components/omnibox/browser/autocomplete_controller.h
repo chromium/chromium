@@ -400,7 +400,7 @@ class AutocompleteController : public AutocompleteProviderListener,
   // `UpdateResult()`'s helper methods.
   struct OldResult {
     OldResult(UpdateType update_type,
-              AutocompleteInput input,
+              const AutocompleteInput& input,
               AutocompleteResult* result);
     ~OldResult();
 

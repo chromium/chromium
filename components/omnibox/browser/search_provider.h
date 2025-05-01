@@ -132,8 +132,8 @@ class SearchProvider : public BaseSearchProvider,
     // by this class.
     bool equal(const std::u16string& default_provider,
                const std::u16string& keyword_provider) const {
-      return (default_provider == default_provider_) &&
-          (keyword_provider == keyword_provider_);
+      return default_provider == default_provider_ &&
+             keyword_provider == keyword_provider_;
     }
 
     // Resets the cached providers.
@@ -424,7 +424,7 @@ class SearchProvider : public BaseSearchProvider,
   GURL top_navigation_suggestion_;
 
   // Answers prefetch management.
-  AnswersCache answers_cache_;  // Cache for last answers seen.
+  AnswersCache answers_cache_;      // Cache for last answers seen.
   AnswersQueryData prefetch_data_;  // Data to use for query prefetching.
 
   base::ScopedObservation<TemplateURLService, TemplateURLServiceObserver>

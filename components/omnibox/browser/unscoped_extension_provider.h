@@ -41,7 +41,6 @@ class UnscopedExtensionProvider : public AutocompleteProvider {
   void AddToSuggestionGroupsMap(omnibox::GroupId group_id,
                                 omnibox::GroupConfig group_config);
   void set_done(bool done) { done_ = done; }
-  bool done() const { return done_; }
   ACMatches* matches() { return &matches_; }
 
  private:

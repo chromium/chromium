@@ -54,18 +54,19 @@ void KeywordExtensionsDelegateImpl::DeleteSuggestion(
       base::UTF16ToUTF8(suggestion_text));
 }
 
-void  KeywordExtensionsDelegateImpl::IncrementInputId() {
+void KeywordExtensionsDelegateImpl::IncrementInputId() {
   current_input_id_ = ++global_input_uid_;
 }
 
 bool KeywordExtensionsDelegateImpl::IsEnabledExtension(
     const std::string& extension_id) {
   const extensions::Extension* extension =
-      extensions::ExtensionRegistry::Get(
-          profile_)->enabled_extensions().GetByID(extension_id);
+      extensions::ExtensionRegistry::Get(profile_)
+          ->enabled_extensions()
+          .GetByID(extension_id);
   return extension &&
-      (!profile_->IsOffTheRecord() ||
-       extensions::util::IsIncognitoEnabled(extension_id, profile_));
+         (!profile_->IsOffTheRecord() ||
+          extensions::util::IsIncognitoEnabled(extension_id, profile_));
 }
 
 bool KeywordExtensionsDelegateImpl::Start(

@@ -76,8 +76,6 @@ class KeywordProvider : public AutocompleteProvider {
   void Start(const AutocompleteInput& input, bool minimal_changes) override;
   void Stop(AutocompleteStopReason stop_reason) override;
 
-  bool done() const { return done_; }
-
  private:
   friend class KeywordExtensionsDelegateImpl;
 
