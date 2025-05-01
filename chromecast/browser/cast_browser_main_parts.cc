@@ -163,7 +163,8 @@ base::PlatformThreadId g_main_thread_id;
 void RunClosureOnSignal(int signum) {
   if (base::PlatformThread::CurrentId() != g_main_thread_id) {
     RAW_LOG(INFO, "Received signal on non-main thread\n");
-    return;
+    // Signals must still be handled on non-main threads. Linux does not
+    // guarantee which thread receives a signal.
   }
 
   char message[48] = "Received close signal: ";
