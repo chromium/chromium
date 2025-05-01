@@ -508,6 +508,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/customtabs/features/partialcustomtab/PartialCustomTabTabObserver.java",
   "java/src/org/chromium/chrome/browser/customtabs/features/partialcustomtab/PartialCustomTabVersionCompat.java",
   "java/src/org/chromium/chrome/browser/customtabs/features/toolbar/BrandingSecurityButtonAnimationDelegate.java",
+  "java/src/org/chromium/chrome/browser/customtabs/features/toolbar/BrowserServicesThemeColorProvider.java",
   "java/src/org/chromium/chrome/browser/customtabs/features/toolbar/CustomTabBrowserControlsVisibilityDelegate.java",
   "java/src/org/chromium/chrome/browser/customtabs/features/toolbar/CustomTabCaptureStateToken.java",
   "java/src/org/chromium/chrome/browser/customtabs/features/toolbar/CustomTabHistoryIphController.java",
