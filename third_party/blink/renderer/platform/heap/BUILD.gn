@@ -181,7 +181,6 @@ source_set("blink_heap_unittests_sources") {
   ]
 
   deps = [
-    ":test_support",
     "//base",
     "//base/test:test_support",
     "//gin:gin",

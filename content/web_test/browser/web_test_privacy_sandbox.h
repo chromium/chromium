@@ -7,7 +7,7 @@
 
 #include "content/public/browser/web_contents_user_data.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
-#include "third_party/blink/public/mojom/privacy_sandbox/web_privacy_sandbox_automation.mojom.h"
+#include "third_party/blink/public/test/mojom/privacy_sandbox/web_privacy_sandbox_automation.test-mojom.h"
 
 namespace content {
 

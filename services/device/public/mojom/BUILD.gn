@@ -80,6 +80,7 @@ mojom("mojom") {
       "//third_party/blink/renderer/platform:blink_platform_public_deps",
       "//third_party/blink/renderer/platform/media:*",
       "//third_party/blink/public/mojom:mojom_platform_blink",
+      "//third_party/blink/public/test/mojom:modules_test_automation_blink",
     ]
   }
 }
@@ -130,6 +131,7 @@ mojom("generic_sensor") {
     visibility_blink = [
       ":mojom_blink",
       "//third_party/blink/public/mojom:mojom_platform_blink",
+      "//third_party/blink/public/test/mojom:modules_test_automation_blink",
       "//third_party/blink/renderer/platform:blink_platform_public_deps",
     ]
   }

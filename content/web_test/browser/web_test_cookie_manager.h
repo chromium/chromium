@@ -10,7 +10,7 @@
 #include "net/base/isolation_info.h"
 #include "net/cookies/cookie_partition_key.h"
 #include "services/network/public/mojom/cookie_manager.mojom-forward.h"
-#include "third_party/blink/public/mojom/cookie_manager/cookie_manager_automation.mojom.h"
+#include "third_party/blink/public/test/mojom/cookie_manager/cookie_manager_automation.test-mojom.h"
 
 class GURL;
 

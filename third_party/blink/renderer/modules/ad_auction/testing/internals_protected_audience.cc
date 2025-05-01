@@ -5,8 +5,8 @@
 #include "third_party/blink/renderer/modules/ad_auction/testing/internals_protected_audience.h"
 
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/blink/public/mojom/privacy_sandbox/web_privacy_sandbox_automation.mojom-blink.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
+#include "third_party/blink/public/test/mojom/privacy_sandbox/web_privacy_sandbox_automation.test-mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"

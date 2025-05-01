@@ -9,7 +9,7 @@
 #include "content/public/browser/web_contents_user_data.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/device/public/mojom/pressure_update.mojom-shared.h"
-#include "third_party/blink/public/mojom/compute_pressure/web_pressure_manager_automation.mojom.h"
+#include "third_party/blink/public/test/mojom/compute_pressure/web_pressure_manager_automation.test-mojom.h"
 
 namespace content {
 

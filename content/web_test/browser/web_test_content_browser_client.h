@@ -20,14 +20,14 @@
 #include "services/service_manager/public/cpp/binder_registry.h"
 #include "third_party/blink/public/mojom/badging/badging.mojom.h"
 #include "third_party/blink/public/mojom/clipboard/clipboard.mojom.h"
-#include "third_party/blink/public/mojom/compute_pressure/web_pressure_manager_automation.mojom-forward.h"
-#include "third_party/blink/public/mojom/cookie_manager/cookie_manager_automation.mojom-forward.h"
-#include "third_party/blink/public/mojom/device_posture/device_posture_provider_automation.mojom-forward.h"
-#include "third_party/blink/public/mojom/permissions/permission_automation.mojom-forward.h"
-#include "third_party/blink/public/mojom/privacy_sandbox/web_privacy_sandbox_automation.mojom-forward.h"
-#include "third_party/blink/public/mojom/sensor/web_sensor_provider_automation.mojom-forward.h"
-#include "third_party/blink/public/mojom/storage_access/storage_access_automation.mojom-forward.h"
-#include "third_party/blink/public/mojom/webid/federated_auth_request_automation.mojom-forward.h"
+#include "third_party/blink/public/test/mojom/compute_pressure/web_pressure_manager_automation.test-mojom-forward.h"
+#include "third_party/blink/public/test/mojom/cookie_manager/cookie_manager_automation.test-mojom-forward.h"
+#include "third_party/blink/public/test/mojom/device_posture/device_posture_provider_automation.test-mojom-forward.h"
+#include "third_party/blink/public/test/mojom/permissions/permission_automation.test-mojom-forward.h"
+#include "third_party/blink/public/test/mojom/privacy_sandbox/web_privacy_sandbox_automation.test-mojom-forward.h"
+#include "third_party/blink/public/test/mojom/sensor/web_sensor_provider_automation.test-mojom-forward.h"
+#include "third_party/blink/public/test/mojom/storage_access/storage_access_automation.test-mojom-forward.h"
+#include "third_party/blink/public/test/mojom/webid/federated_auth_request_automation.test-mojom-forward.h"
 
 namespace blink {
 namespace web_pref {

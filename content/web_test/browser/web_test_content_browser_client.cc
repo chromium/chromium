@@ -89,7 +89,7 @@
 #include "storage/browser/quota/quota_settings.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
-#include "third_party/blink/public/mojom/device_posture/device_posture_provider_automation.mojom.h"
+#include "third_party/blink/public/test/mojom/device_posture/device_posture_provider_automation.test-mojom.h"
 #include "ui/base/ui_base_switches.h"
 #include "url/origin.h"
 #include "url/url_constants.h"

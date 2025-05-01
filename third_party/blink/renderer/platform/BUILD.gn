@@ -2084,6 +2084,7 @@ static_library("test_support") {
     "//testing/gtest:gtest",
     "//testing/perf",
     "//third_party/blink/public:test_headers",
+    "//third_party/blink/public/test/mojom:modules_test_automation_blink",
     "//third_party/blink/renderer/platform/blob:test_support",
     "//third_party/blink/renderer/platform/heap:test_support",
     "//third_party/blink/renderer/platform/loader:test_support",
