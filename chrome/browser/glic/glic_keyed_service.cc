@@ -193,7 +193,7 @@ void GlicKeyedService::FetchZeroStateSuggestions(
         callback) {
   auto* active_web_contents = GetFocusedTabData().focus();
 
-  if (contextual_cueing_service_ && active_web_contents) {
+  if (contextual_cueing_service_ && active_web_contents && IsWindowShowing()) {
     auto suggestions = mojom::ZeroStateSuggestions::New();
     suggestions->tab_id = GetTabId(active_web_contents);
     suggestions->tab_url = active_web_contents->GetLastCommittedURL();
