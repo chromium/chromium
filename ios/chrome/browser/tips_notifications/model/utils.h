@@ -119,4 +119,8 @@ NotificationType NotificationTypeForTipsNotificationType(
 // experimental settings.
 std::optional<TipsNotificationType> ForcedTipsNotificationType();
 
+// Returns the trigger time (in seconds) that was set in Experimental Settings.
+// Returns 0 if it was not set.
+int TipsNotificationTriggerExperimentalSetting();
+
 #endif  // IOS_CHROME_BROWSER_TIPS_NOTIFICATIONS_MODEL_UTILS_H_

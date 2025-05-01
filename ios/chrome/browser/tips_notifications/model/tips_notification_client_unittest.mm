@@ -728,6 +728,15 @@ TEST_F(TipsNotificationClientTest, TestTriggerTimeDeltas) {
                 false, TipsNotificationUserType::kActiveSeeker),
             base::Days(3));
 
+  // Verify that the experimental settings can override the trigger time.
+  [[NSUserDefaults standardUserDefaults] setInteger:111
+                                             forKey:@"TipsNotificationTrigger"];
+  EXPECT_EQ(
+      TipsNotificationTriggerDelta(false, TipsNotificationUserType::kUnknown),
+      base::Seconds(111));
+  [[NSUserDefaults standardUserDefaults]
+      removeObjectForKey:@"TipsNotificationTrigger"];
+
   // Verify that the Reactivation feature param can set the trigger delta.
   feature_list.Reset();
   feature_list.InitAndEnableFeatureWithParameters(

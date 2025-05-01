@@ -132,6 +132,9 @@ const char kReactivationNotificationsCanceledCount[] =
 // User defaults key for the experimental setting to force a particular
 // notification type.
 NSString* const kForcedTipsNotificationType = @"ForcedTipsNotificationType";
+// User defaults key for the experimental setting to force a specified
+// trigger time in seconds.
+NSString* const kTipsNotificationTrigger = @"TipsNotificationTrigger";
 
 bool IsTipsNotification(UNNotificationRequest* request) {
   return [request.identifier isEqualToString:kTipsNotificationId];
@@ -181,6 +184,9 @@ base::TimeDelta TipsNotificationTriggerDelta(
     return GetFieldTrialParamByFeatureAsTimeDelta(
         kIOSReactivationNotifications,
         kIOSReactivationNotificationsTriggerTimeParam, default_trigger);
+  }
+  if (int setting = TipsNotificationTriggerExperimentalSetting()) {
+    return base::Seconds(setting);
   }
   switch (user_type) {
     case TipsNotificationUserType::kUnknown:
@@ -312,4 +318,9 @@ std::optional<TipsNotificationType> ForcedTipsNotificationType() {
     return std::nullopt;
   }
   return static_cast<TipsNotificationType>(int_value);
+}
+
+int TipsNotificationTriggerExperimentalSetting() {
+  return [[NSUserDefaults standardUserDefaults]
+      integerForKey:kTipsNotificationTrigger];
 }
