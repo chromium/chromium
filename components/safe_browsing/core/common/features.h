@@ -266,10 +266,6 @@ extern const base::FeatureParam<int>
 // notifications.
 BASE_DECLARE_FEATURE(kNotificationTelemetry);
 
-// Enable movement of password leak toggle out of standard protection and into
-// its own section.
-BASE_DECLARE_FEATURE(kPasswordLeakToggleMove);
-
 // Enables HaTS surveys for users encountering red warnings.
 BASE_DECLARE_FEATURE(kRedWarningSurvey);
 

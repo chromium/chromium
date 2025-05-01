@@ -205,11 +205,7 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
 
         ChromeSwitchPreference passwordLeakTogglePref =
                 (ChromeSwitchPreference) findPreference(PREF_PASSWORD_LEAK_DETECTION);
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.PASSWORD_LEAK_TOGGLE_MOVE)) {
-            passwordLeakTogglePref.setOnPreferenceChangeListener(this);
-        } else {
-            passwordLeakTogglePref.setVisible(false);
-        }
+        passwordLeakTogglePref.setOnPreferenceChangeListener(this);
 
         ChromeSwitchPreference canMakePaymentPref =
                 (ChromeSwitchPreference) findPreference(PREF_CAN_MAKE_PAYMENT);
@@ -373,7 +369,7 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
     public void updatePreferences() {
         ChromeSwitchPreference passwordLeakTogglePref =
                 (ChromeSwitchPreference) findPreference(PREF_PASSWORD_LEAK_DETECTION);
-        if (passwordLeakTogglePref != null && passwordLeakTogglePref.isVisible()) {
+        if (passwordLeakTogglePref != null) {
             passwordLeakTogglePref.setEnabled(
                     !UserPrefs.get(getProfile())
                             .isManagedPreference(Pref.PASSWORD_LEAK_DETECTION_ENABLED));

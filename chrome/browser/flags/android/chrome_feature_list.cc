@@ -412,7 +412,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &privacy_sandbox::kTrackingProtectionContentSettingUbControl,
     &privacy_sandbox::kTrackingProtectionUserBypassPwaTrigger,
     &safe_browsing::kHashPrefixRealTimeLookups,
-    &safe_browsing::kPasswordLeakToggleMove,
     &safe_browsing::kReportNotificationContentDetectionData,
     &safe_browsing::kSafetyHubDisruptiveNotificationRevocation,
     &safe_browsing::kShowWarningsForSuspiciousNotifications,

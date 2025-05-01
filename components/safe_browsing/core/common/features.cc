@@ -279,10 +279,6 @@ constexpr base::FeatureParam<int>
         "OnDeviceNotificationContentDetectionModelAllowlistSamplingRate",
         /*default_value=*/0};
 
-BASE_FEATURE(kPasswordLeakToggleMove,
-             "PasswordLeakToggleMove",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kRedWarningSurvey,
              "RedWarningSurvey",
              base::FEATURE_DISABLED_BY_DEFAULT);

@@ -446,7 +446,6 @@ public abstract class ChromeFeatureList {
     public static final String PARTNER_CUSTOMIZATIONS_UMA = "PartnerCustomizationsUma";
     public static final String PASSWORD_FORM_GROUPED_AFFILIATIONS =
             "PasswordFormGroupedAffiliations";
-    public static final String PASSWORD_LEAK_TOGGLE_MOVE = "PasswordLeakToggleMove";
     public static final String PERMISSION_DEDICATED_CPSS_SETTING_ANDROID =
             "PermissionDedicatedCpssSettingAndroid";
     public static final String PERMISSION_SITE_SETTING_RADIO_BUTTON =

@@ -13,9 +13,6 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridge;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
@@ -39,7 +36,6 @@ public class EnhancedProtectionSettingsFragmentTest {
     private TextMessagePreference mEnhancedProtectionBulletTwo;
     private TextMessagePreference mEnhancedProtectionBulletThree;
     private TextMessagePreference mEnhancedProtectionBulletFour;
-    private TextMessagePreference mEnhancedProtectionBulletFive;
     private TextMessagePreference mEnhancedProtectionThingsToConsider;
     private TextMessagePreference mEnhancedProtectionBulletSix;
     private TextMessagePreference mEnhancedProtectionBulletSeven;
@@ -52,7 +48,6 @@ public class EnhancedProtectionSettingsFragmentTest {
     private static final String PREF_BULLETTWO = "bullet_two";
     private static final String PREF_BULLETTHREE = "bullet_three";
     private static final String PREF_BULLETFOUR = "bullet_four";
-    private static final String PREF_BULLETFIVE = "bullet_five";
     private static final String PREF_THINGSTOCONSIDER = "things_to_consider";
     private static final String PREF_BULLETSIX = "bullet_six";
     private static final String PREF_BULLETSEVEN = "bullet_seven";
@@ -67,7 +62,6 @@ public class EnhancedProtectionSettingsFragmentTest {
         mEnhancedProtectionBulletTwo = fragment.findPreference(PREF_BULLETTWO);
         mEnhancedProtectionBulletThree = fragment.findPreference(PREF_BULLETTHREE);
         mEnhancedProtectionBulletFour = fragment.findPreference(PREF_BULLETFOUR);
-        mEnhancedProtectionBulletFive = fragment.findPreference(PREF_BULLETFIVE);
         mEnhancedProtectionThingsToConsider = fragment.findPreference(PREF_THINGSTOCONSIDER);
         mEnhancedProtectionBulletSix = fragment.findPreference(PREF_BULLETSIX);
         mEnhancedProtectionBulletSeven = fragment.findPreference(PREF_BULLETSEVEN);
@@ -80,7 +74,6 @@ public class EnhancedProtectionSettingsFragmentTest {
     @Test
     @SmallTest
     @Feature({"SafeBrowsing"})
-    @EnableFeatures({ChromeFeatureList.PASSWORD_LEAK_TOGGLE_MOVE})
     public void testSafeBrowsingSettingsEnhancedProtection() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -93,8 +86,6 @@ public class EnhancedProtectionSettingsFragmentTest {
                 () -> {
                     // Check that the learn more label is shown
                     Assert.assertNotNull(mEnhancedProtectionLearnMore);
-                    // Check that password leak detection bullet is not visible
-                    Assert.assertFalse(mEnhancedProtectionBulletFive.isVisible());
 
                     EnhancedProtectionSettingsFragment fragment = mTestRule.getFragment();
 
@@ -149,25 +140,6 @@ public class EnhancedProtectionSettingsFragmentTest {
                     Assert.assertEquals(bulletSix, mEnhancedProtectionBulletSix.getSummary());
                     Assert.assertEquals(bulletSeven, mEnhancedProtectionBulletSeven.getSummary());
                     Assert.assertEquals(bulletEight, mEnhancedProtectionBulletEight.getSummary());
-                });
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"SafeBrowsing"})
-    @DisableFeatures({ChromeFeatureList.PASSWORD_LEAK_TOGGLE_MOVE})
-    public void testPasswordLeakDetectionBulletVisible() {
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    new SafeBrowsingBridge(ProfileManager.getLastUsedRegularProfile())
-                            .setSafeBrowsingState(SafeBrowsingState.ENHANCED_PROTECTION);
-                });
-        startSettings();
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    // Check that the password leak detection bullet is visible
-                    Assert.assertTrue(mEnhancedProtectionBulletFive.isVisible());
                 });
     }
 }

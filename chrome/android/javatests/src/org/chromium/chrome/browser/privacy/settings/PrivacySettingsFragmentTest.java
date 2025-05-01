@@ -247,7 +247,6 @@ public class PrivacySettingsFragmentTest {
     @Test
     @LargeTest
     @Feature({"RenderTest"})
-    @EnableFeatures({ChromeFeatureList.PASSWORD_LEAK_TOGGLE_MOVE})
     public void testRenderTopView() throws IOException {
         mSettingsActivityTestRule.startSettingsActivity();
         waitForOptionsMenu();
@@ -262,7 +261,6 @@ public class PrivacySettingsFragmentTest {
     @Test
     @LargeTest
     @Feature({"RenderTest"})
-    @EnableFeatures({ChromeFeatureList.PASSWORD_LEAK_TOGGLE_MOVE})
     public void testRenderBottomView() throws IOException {
         mSettingsActivityTestRule.startSettingsActivity();
         waitForOptionsMenu();
@@ -283,7 +281,6 @@ public class PrivacySettingsFragmentTest {
     @Test
     @LargeTest
     @Feature({"RenderTest"})
-    @EnableFeatures({ChromeFeatureList.PASSWORD_LEAK_TOGGLE_MOVE})
     public void testRenderWhenPrivacyGuideViewed() throws IOException {
         setPrivacyGuideViewed(true);
         mSettingsActivityTestRule.startSettingsActivity();
@@ -299,7 +296,6 @@ public class PrivacySettingsFragmentTest {
     @Test
     @LargeTest
     @Feature({"RenderTest"})
-    @EnableFeatures({ChromeFeatureList.PASSWORD_LEAK_TOGGLE_MOVE})
     public void testRenderWhenPrivacyGuideNotViewed() throws IOException {
         setPrivacyGuideViewed(false);
         mSettingsActivityTestRule.startSettingsActivity();
