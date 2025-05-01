@@ -155,8 +155,6 @@ constexpr auto kHistogramValue = base::MakeFixedFlatMap<ContentSettingsType,
     {ContentSettingsType::CONTROLLED_FRAME, 133},
     {ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS, 134},
     {ContentSettingsType::LOCAL_NETWORK_ACCESS, 135},
-    {ContentSettingsType::ON_DEVICE_SPEECH_RECOGNITION_LANGUAGES_DOWNLOADED,
-     136},
 
     // As mentioned at the top, please don't forget to update ContentType in
     // enums.xml when you add entries here!

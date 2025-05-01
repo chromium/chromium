@@ -256,8 +256,6 @@ constexpr auto kContentSettingsTypeGroupNames = std::to_array<
     // POINTER_LOCK has been deprecated.
     {ContentSettingsType::POINTER_LOCK, nullptr},
     {ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS, nullptr},
-    {ContentSettingsType::ON_DEVICE_SPEECH_RECOGNITION_LANGUAGES_DOWNLOADED,
-     nullptr},
 });
 
 static_assert(

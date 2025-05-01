@@ -6,11 +6,7 @@
 
 #include "base/strings/string_util.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/content_settings/core/browser/host_content_settings_map.h"
-#include "components/content_settings/core/common/content_settings.h"
-#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/language/core/browser/language_prefs.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/language/core/common/locale_util.h"
@@ -32,8 +28,6 @@
 #include "components/soda/soda_util.h"
 
 namespace {
-const char kOnDeviceLanguagesDownloadedKey[] = "ondevice-languages-downloaded";
-
 // Returns a boolean indicating whether the language is enabled.
 bool IsLanguageInstallable(const std::string& language_code,
                            bool is_soda_binary_installed) {
@@ -71,20 +65,7 @@ void OnDeviceSpeechRecognitionImpl::OnDeviceWebSpeechAvailable(
 #if BUILDFLAG(IS_ANDROID)
   std::move(callback).Run(media::mojom::AvailabilityStatus::kUnavailable);
 #else
-  if (!CanRenderFrameHostUseOnDeviceSpeechRecognition()) {
-    std::move(callback).Run(media::mojom::AvailabilityStatus::kUnavailable);
-    return;
-  }
-
-  media::mojom::AvailabilityStatus availability_status =
-      IsOnDeviceSpeechRecognitionAvailable(language);
-  if (availability_status == media::mojom::AvailabilityStatus::kAvailable &&
-      !HasOnDeviceLanguageDownloaded(language)) {
-    std::move(callback).Run(media::mojom::AvailabilityStatus::kDownloadable);
-    return;
-  }
-
-  std::move(callback).Run(availability_status);
+  std::move(callback).Run(IsOnDeviceSpeechRecognitionAvailable(language));
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
@@ -107,11 +88,6 @@ void OnDeviceSpeechRecognitionImpl::InstallOnDeviceSpeechRecognition(
     return;
   }
 
-  if (!CanRenderFrameHostUseOnDeviceSpeechRecognition()) {
-    std::move(callback).Run(false);
-    return;
-  }
-
   if (!CanInstallWithoutUserConsent(language_config.value().language_name)) {
     std::move(callback).Run(false);
 
@@ -130,8 +106,6 @@ void OnDeviceSpeechRecognitionImpl::InstallOnDeviceSpeechRecognition(
   // installed.
   speech::SodaInstaller::GetInstance()->InstallLanguage(
       language_config.value().language_name, g_browser_process->local_state());
-
-  SetOnDeviceLanguageDownloaded(language);
 }
 
 void OnDeviceSpeechRecognitionImpl::OnSodaInstalled(
@@ -185,16 +159,6 @@ bool OnDeviceSpeechRecognitionImpl::CanInstallWithoutUserConsent(
   return false;
 }
 
-bool OnDeviceSpeechRecognitionImpl::
-    CanRenderFrameHostUseOnDeviceSpeechRecognition() {
-  if (render_frame_host().GetStoragePartition() !=
-      render_frame_host().GetBrowserContext()->GetDefaultStoragePartition()) {
-    return !render_frame_host().GetLastCommittedURL().SchemeIsHTTPOrHTTPS();
-  }
-
-  return true;
-}
-
 #if !BUILDFLAG(IS_ANDROID)
 void OnDeviceSpeechRecognitionImpl::RunAndRemoveInstallationCallbacks(
     const std::string& language,
@@ -210,67 +174,7 @@ void OnDeviceSpeechRecognitionImpl::RunAndRemoveInstallationCallbacks(
     language_installation_callbacks_.erase(it);
   }
 }
-
-base::Value
-OnDeviceSpeechRecognitionImpl::GetOnDeviceLanguagesDownloadedValue() {
-  GURL url = render_frame_host().GetLastCommittedOrigin().GetURL();
-  return HostContentSettingsMapFactory::GetForProfile(
-             render_frame_host().GetBrowserContext())
-      ->GetWebsiteSetting(url, url,
-                          ContentSettingsType::
-                              ON_DEVICE_SPEECH_RECOGNITION_LANGUAGES_DOWNLOADED,
-                          /*info=*/nullptr);
-}
-
-void OnDeviceSpeechRecognitionImpl::
-    SetOnDeviceLanguagesDownloadedContentSetting(
-        base::Value on_device_languages_downloaded) {
-  GURL url = render_frame_host().GetLastCommittedOrigin().GetURL();
-  HostContentSettingsMapFactory::GetForProfile(
-      render_frame_host().GetBrowserContext())
-      ->SetWebsiteSettingDefaultScope(
-          url, url,
-          ContentSettingsType::
-              ON_DEVICE_SPEECH_RECOGNITION_LANGUAGES_DOWNLOADED,
-          std::move(on_device_languages_downloaded));
-}
-
-bool OnDeviceSpeechRecognitionImpl::HasOnDeviceLanguageDownloaded(
-    const std::string& language) {
-  base::Value on_device_languages_downloaded_value =
-      GetOnDeviceLanguagesDownloadedValue();
-  if (on_device_languages_downloaded_value.is_dict()) {
-    return on_device_languages_downloaded_value.GetDict()
-        .EnsureList(kOnDeviceLanguagesDownloadedKey)
-        ->contains(language);
-  }
-
-  return false;
-}
-
-void OnDeviceSpeechRecognitionImpl::SetOnDeviceLanguageDownloaded(
-    const std::string& language) {
-  base::Value on_device_languages_downloaded_value =
-      GetOnDeviceLanguagesDownloadedValue();
-
-  // Initialize a list to store data, if none exists.
-  if (!on_device_languages_downloaded_value.is_dict()) {
-    on_device_languages_downloaded_value = base::Value(base::Value::Dict());
-  }
-
-  // Update or initialize the list of targets for the source language.
-  base::Value::List* on_device_languages_downloaded_list =
-      on_device_languages_downloaded_value.GetDict().EnsureList(
-          kOnDeviceLanguagesDownloadedKey);
-  if (!on_device_languages_downloaded_list->contains(language)) {
-    on_device_languages_downloaded_list->Append(language);
-  }
-
-  SetOnDeviceLanguagesDownloadedContentSetting(
-      std::move(on_device_languages_downloaded_value));
-}
 #endif  // !BUILDFLAG(IS_ANDROID)
-
 DOCUMENT_USER_DATA_KEY_IMPL(OnDeviceSpeechRecognitionImpl);
 
 }  // namespace speech

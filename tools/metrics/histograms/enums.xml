@@ -2697,7 +2697,6 @@ Called by update_net_error_codes.py.-->
   <int value="133" label="Controlled Frame"/>
   <int value="134" label="Revoked disruptive notification permissions"/>
   <int value="135" label="Local network access"/>
-  <int value="136" label="On-device languages downloaded by site"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/content_settings/core/browser/content_settings_uma_util.cc:kHistogramValue) -->
