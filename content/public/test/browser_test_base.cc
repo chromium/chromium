@@ -703,8 +703,16 @@ void BrowserTestBase::SetUp() {
 }
 
 void BrowserTestBase::TearDown() {
-  if (embedded_test_server()->Started())
+  // Have to shut down test servers before destruction. Subclasses may have
+  // configured custom handlers using raw pointers to the test fixture itself,
+  // in which case, the test server will maintain a raw pointer to the test
+  // fixture, so needs to be shut down before the test fixture is destroyed.
+  if (embedded_test_server()->Started()) {
     ASSERT_TRUE(embedded_test_server()->ShutdownAndWaitUntilComplete());
+  }
+  if (embedded_https_test_server_ && embedded_https_test_server_->Started()) {
+    ASSERT_TRUE(embedded_https_test_server_->ShutdownAndWaitUntilComplete());
+  }
 
 #if defined(USE_AURA) || BUILDFLAG(IS_MAC)
   ui::test::EventGeneratorDelegate::SetFactoryFunction(
