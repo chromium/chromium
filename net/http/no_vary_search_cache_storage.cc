@@ -597,6 +597,7 @@ void NoVarySearchCacheStorage::Load(
   background_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
       {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN});
+  start_time_ = base::Time::Now();
   background_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&Loader::CreateAndLoad, std::move(file_operations),
