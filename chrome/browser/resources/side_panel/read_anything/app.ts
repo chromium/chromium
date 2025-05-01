@@ -24,6 +24,7 @@ import {getCurrentSpeechRate, minOverflowLengthToScroll, playFromSelectionTimeou
 import type {LanguageToastElement} from './language_toast.js';
 import {NodeStore} from './node_store.js';
 import {ReadAloudHighlighter} from './read_aloud/highlighter.js';
+import {VoicePackController} from './read_aloud/voice_pack_controller.js';
 import {WordBoundaries} from './read_aloud/word_boundaries.js';
 import type {WordBoundaryState} from './read_aloud/word_boundaries.js';
 import {ReadAnythingLogger, TimeFrom} from './read_anything_logger.js';
@@ -116,7 +117,6 @@ export class AppElement extends AppElementBase {
       settingsPrefs_: {type: Object},
       selectedVoice_: {type: Object},
       availableVoices_: {type: Array},
-      voiceStatusLocalState_: {type: Object},
       previewVoicePlaying_: {type: Object},
       localeToDisplayName_: {type: Object},
       hasContent_: {type: Boolean},
@@ -200,15 +200,6 @@ export class AppElement extends AppElementBase {
 
   protected accessor localeToDisplayName_: {[locale: string]: string} = {};
 
-  // Our local representation of the status of voice pack downloads and
-  // availability
-  private accessor voiceStatusLocalState_:
-      {[language: string]: VoiceClientSideStatusCode} = {};
-
-  // Cache of responses from LanguagePackManager
-  private voicePackInstallStatusServerResponses_:
-      {[language: string]: VoicePackStatus} = {};
-
   // Set of languages of the browser and/or of the pages navigated to that we
   // need to download Natural voices for automatically
   private languagesForVoiceDownloads: Set<string> = new Set();
@@ -216,13 +207,16 @@ export class AppElement extends AppElementBase {
   // Metrics captured for logging.
   private playSessionStartTime: number = -1;
 
-  private notificationManager_: VoiceNotificationManager;
+  private notificationManager_ = VoiceNotificationManager.getInstance();
   private logger_: ReadAnythingLogger = ReadAnythingLogger.getInstance();
   private styleUpdater_: AppStyleUpdater;
-  private speech_: SpeechBrowserProxy;
-  private highlighter_: ReadAloudHighlighter;
-  private wordBoundaries_: WordBoundaries;
-  private nodeStore_: NodeStore;
+  private speech_: SpeechBrowserProxy = SpeechBrowserProxyImpl.getInstance();
+  private highlighter_: ReadAloudHighlighter =
+      ReadAloudHighlighter.getInstance();
+  private wordBoundaries_: WordBoundaries = WordBoundaries.getInstance();
+  private nodeStore_: NodeStore = NodeStore.getInstance();
+  private voicePackController_: VoicePackController =
+      VoicePackController.getInstance();
   protected accessor settingsPrefs_: SettingsPrefs = {
     letterSpacing: 0,
     lineSpacing: 0,
@@ -275,11 +269,6 @@ export class AppElement extends AppElementBase {
     this.isReadAloudEnabled_ = chrome.readingMode.isReadAloudEnabled;
     this.speechSynthesisLanguage = chrome.readingMode.baseLanguageForSpeech;
     this.styleUpdater_ = new AppStyleUpdater(this);
-    this.notificationManager_ = VoiceNotificationManager.getInstance();
-    this.speech_ = SpeechBrowserProxyImpl.getInstance();
-    this.highlighter_ = ReadAloudHighlighter.getInstance();
-    this.wordBoundaries_ = WordBoundaries.getInstance();
-    this.nodeStore_ = NodeStore.getInstance();
     this.nodeStore_.clear();
     ColorChangeUpdater.forDocument().start();
   }
@@ -918,7 +907,7 @@ export class AppElement extends AppElementBase {
     const newVoicePackStatus = mojoVoicePackStatusToVoicePackStatusEnum(status);
 
     // Keep the server responses
-    this.setVoicePackServerStatus_(lang, newVoicePackStatus);
+    this.voicePackController_.setServerStatus(lang, newVoicePackStatus);
 
     // Update application state
     this.updateApplicationState(lang, newVoicePackStatus);
@@ -970,13 +959,14 @@ export class AppElement extends AppElementBase {
           // as a language that should be installed
           if (this.languagesForVoiceDownloads.has(lang)) {
             // Don't re-send install request if it's already been sent
-            if (this.getVoicePackLocalStatus_(lang) !==
+            if (this.voicePackController_.getLocalStatus(lang) !==
                 VoiceClientSideStatusCode.SENT_INSTALL_REQUEST) {
               this.forceInstallRequest(lang, /* isRetry = */ false);
             }
           } else {
-            this.setVoicePackLocalStatus(
-                lang, VoiceClientSideStatusCode.NOT_INSTALLED);
+            this.voicePackController_.setLocalStatus(
+                lang, VoiceClientSideStatusCode.NOT_INSTALLED,
+                this.availableVoices_);
           }
           break;
         case VoicePackServerStatusSuccessCode.INSTALLING:
@@ -1005,11 +995,12 @@ export class AppElement extends AppElementBase {
           // If natural voices are currently available for the language or the
           // language does not support natural voices, set the status to
           // available. Otherwise, set the status to install and unavailabled.
-          this.setVoicePackLocalStatus(
+          this.voicePackController_.setLocalStatus(
               lang,
               voicesForLanguageAreAvailable ?
                   VoiceClientSideStatusCode.AVAILABLE :
-                  VoiceClientSideStatusCode.INSTALLED_AND_UNAVAILABLE);
+                  VoiceClientSideStatusCode.INSTALLED_AND_UNAVAILABLE,
+              this.availableVoices_);
           break;
         default:
           // This ensures the switch statement is exhaustive
@@ -1024,12 +1015,14 @@ export class AppElement extends AppElementBase {
         case VoicePackServerStatusErrorCode.WRONG_ID:
         case VoicePackServerStatusErrorCode.NEED_REBOOT:
         case VoicePackServerStatusErrorCode.UNSUPPORTED_PLATFORM:
-          this.setVoicePackLocalStatus(
-              lang, VoiceClientSideStatusCode.ERROR_INSTALLING);
+          this.voicePackController_.setLocalStatus(
+              lang, VoiceClientSideStatusCode.ERROR_INSTALLING,
+              this.availableVoices_);
           break;
         case VoicePackServerStatusErrorCode.ALLOCATION:
-          this.setVoicePackLocalStatus(
-              lang, VoiceClientSideStatusCode.INSTALL_ERROR_ALLOCATION);
+          this.voicePackController_.setLocalStatus(
+              lang, VoiceClientSideStatusCode.INSTALL_ERROR_ALLOCATION,
+              this.availableVoices_);
           break;
         default:
           // This ensures the switch statement is exhaustive
@@ -1037,8 +1030,9 @@ export class AppElement extends AppElementBase {
       }
     } else {
       // Couldn't parse the response
-      this.setVoicePackLocalStatus(
-          lang, VoiceClientSideStatusCode.ERROR_INSTALLING);
+      this.voicePackController_.setLocalStatus(
+          lang, VoiceClientSideStatusCode.ERROR_INSTALLING,
+          this.availableVoices_);
     }
   }
 
@@ -1227,8 +1221,7 @@ export class AppElement extends AppElementBase {
   }
 
   private refreshVoicePackStatuses() {
-    for (const lang of Object.keys(
-             this.voicePackInstallStatusServerResponses_)) {
+    for (const lang of this.voicePackController_.getServerLanguages()) {
       this.sendGetVoicePackInfoRequest(lang);
     }
   }
@@ -2349,7 +2342,7 @@ export class AppElement extends AppElementBase {
     }
 
     const statusForLang =
-        this.voicePackInstallStatusServerResponses_[langCodeForVoicePackManager];
+        this.voicePackController_.getServerStatus(langCodeForVoicePackManager);
 
     if (!statusForLang) {
       if (retryIfPreviousInstallFailed) {
@@ -2390,10 +2383,11 @@ export class AppElement extends AppElementBase {
 
   private forceInstallRequest(
       langCodeForVoicePackManager: string, isRetry: boolean) {
-    this.setVoicePackLocalStatus(
+    this.voicePackController_.setLocalStatus(
         langCodeForVoicePackManager,
         isRetry ? VoiceClientSideStatusCode.SENT_INSTALL_REQUEST_ERROR_RETRY :
-                  VoiceClientSideStatusCode.SENT_INSTALL_REQUEST);
+                  VoiceClientSideStatusCode.SENT_INSTALL_REQUEST,
+        this.availableVoices_);
 
     chrome.readingMode.sendInstallVoicePackRequest(langCodeForVoicePackManager);
   }
@@ -2409,56 +2403,8 @@ export class AppElement extends AppElementBase {
     }
   }
 
-  getVoicePackStatusForTesting(lang: string):
-      {server: VoicePackStatus, client: VoiceClientSideStatusCode} {
-    const server = this.getVoicePackServerStatus_(lang);
-    const client = this.getVoicePackLocalStatus_(lang);
-    assert(server);
-    assert(client);
-    return {server, client};
-  }
-
-  private getVoicePackServerStatus_(lang: string): VoicePackStatus|undefined {
-    const voicePackLanguage = getVoicePackConvertedLangIfExists(lang);
-    return this.voicePackInstallStatusServerResponses_[voicePackLanguage];
-  }
-
-  private getVoicePackLocalStatus_(lang: string): VoiceClientSideStatusCode
-      |undefined {
-    const voicePackLanguage = getVoicePackConvertedLangIfExists(lang);
-    return this.voiceStatusLocalState_[voicePackLanguage];
-  }
-
-  setVoicePackLocalStatus(lang: string, status: VoiceClientSideStatusCode) {
-    const possibleVoicePackLanguage =
-        convertLangOrLocaleForVoicePackManager(lang);
-    const voicePackLanguage =
-        possibleVoicePackLanguage ? possibleVoicePackLanguage : lang;
-    const oldStatus = this.voiceStatusLocalState_[voicePackLanguage];
-    this.voiceStatusLocalState_ = {
-      ...this.voiceStatusLocalState_,
-      [voicePackLanguage]: status,
-    };
-
-    // No need for notifications for non-Google TTS languages.
-    if ((possibleVoicePackLanguage !== undefined) && (oldStatus !== status)) {
-      this.notificationManager_.onVoiceStatusChange(
-          voicePackLanguage, status, this.availableVoices_);
-    }
-  }
-
   resetVoiceForTesting() {
     this.selectedVoice_ = undefined;
-  }
-
-  private setVoicePackServerStatus_(lang: string, status: VoicePackStatus) {
-    // Convert the language string to ensure consistency across
-    // languages and locales when setting the status.
-    const voicePackLanguage = getVoicePackConvertedLangIfExists(lang);
-    this.voicePackInstallStatusServerResponses_ = {
-      ...this.voicePackInstallStatusServerResponses_,
-      [voicePackLanguage]: status,
-    };
   }
 }
 

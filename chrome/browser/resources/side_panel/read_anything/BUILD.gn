@@ -38,6 +38,8 @@ build_webui("build") {
     "node_store.ts",
     "read_aloud/highlighter.ts",
     "read_aloud/word_boundaries.ts",
+    "read_aloud/voice_pack_controller.ts",
+    "read_aloud/voice_pack_model.ts",
     "metrics_browser_proxy.ts",
     "read_anything.ts",
     "read_anything_logger.ts",
