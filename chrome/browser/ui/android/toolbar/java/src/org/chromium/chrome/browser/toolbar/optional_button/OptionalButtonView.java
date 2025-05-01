@@ -45,11 +45,13 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.optional_button.ButtonData.ButtonSpec;
 import org.chromium.chrome.browser.toolbar.optional_button.OptionalButtonConstants.TransitionType;
+import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.listmenu.ListMenuButton;
 
 import java.lang.annotation.Retention;
@@ -501,6 +503,9 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
 
         transition.addTransition(slide).addTransition(shrink).addTransition(fade);
         transition.setDuration(SWAP_TRANSITION_DURATION_MS);
+        if (isCpaSpecUpdateEnabled()) {
+            transition.setInterpolator(Interpolators.DEFAULT_SPATIAL);
+        }
         transition.addListener(this);
 
         return transition;
@@ -531,6 +536,9 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
                 .addTransition(changeBounds);
 
         transition.setDuration(HIDE_TRANSITION_DURATION_MS);
+        if (isCpaSpecUpdateEnabled()) {
+            transition.setInterpolator(Interpolators.DEFAULT_SPATIAL);
+        }
         transition.addListener(this);
 
         return transition;
@@ -554,6 +562,9 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
                 .addTransition(shrinkTransition);
 
         transitionSet.setDuration(SWAP_TRANSITION_DURATION_MS);
+        if (isCpaSpecUpdateEnabled()) {
+            transitionSet.setInterpolator(Interpolators.DEFAULT_SPATIAL);
+        }
         transitionSet.addListener(this);
 
         return transitionSet;
@@ -838,5 +849,12 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
 
     private int getDimensionPixelSize(@DimenRes int dimenId) {
         return getResources().getDimensionPixelSize(dimenId);
+    }
+
+    // ============================================================================================
+    // Flags
+    // ============================================================================================
+    public static boolean isCpaSpecUpdateEnabled() {
+        return ChromeFeatureList.sCpaSpecUpdate.isEnabled();
     }
 }
