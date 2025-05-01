@@ -2047,7 +2047,8 @@ void LensOverlayController::OnAnnotatedPageContentReceived(
         lens::MimeType::kAnnotatedPageContent);
   }
   // Done fetching page contents.
-  std::move(callback).Run(page_contents, lens::MimeType::kHtml, std::nullopt);
+  std::move(callback).Run(page_contents, lens::MimeType::kAnnotatedPageContent,
+                          std::nullopt);
 }
 
 std::vector<lens::mojom::CenterRotatedBoxPtr>
@@ -3812,7 +3813,8 @@ void LensOverlayController::TryCalculateAndRecordOcrDomSimilarity() {
 
   const auto primary_content_type = initialization_data_->primary_content_type_;
   bool is_dom = primary_content_type == lens::MimeType::kHtml ||
-                primary_content_type == lens::MimeType::kPlainText;
+                primary_content_type == lens::MimeType::kPlainText ||
+                primary_content_type == lens::MimeType::kAnnotatedPageContent;
   bool is_dom_too_large =
       page_content_bytes.size() > kMaxDomTextLengthForOcrSimilarity;
   bool is_english = initialization_data_->text_->content_language == "en";
