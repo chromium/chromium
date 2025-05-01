@@ -113,7 +113,6 @@ std::unique_ptr<FrameResourceConverter> MailboxVideoFrameConverter::Create(
 
   scoped_refptr<gpu::SharedImageInterface> sii;
   gpu::Scheduler* scheduler;
-  gpu::SequenceId sequence;
 
   base::WaitableEvent wait;
   bool success = gpu_task_runner->PostTask(
@@ -121,51 +120,27 @@ std::unique_ptr<FrameResourceConverter> MailboxVideoFrameConverter::Create(
       base::BindOnce(
           [](GetCommandBufferStubCB get_stub_cb,
              scoped_refptr<gpu::SharedImageInterface>* sii,
-             gpu::SequenceId* sequence, gpu::Scheduler** scheduler,
-             base::WaitableEvent* wait) {
+             gpu::Scheduler** scheduler, base::WaitableEvent* wait) {
             auto* cb_stub = get_stub_cb.Run();
             if (cb_stub) {
               DCHECK(cb_stub->channel());
               *sii = cb_stub->channel()
                          ->shared_image_stub()
                          ->shared_image_interface();
-              *sequence = cb_stub->channel()->shared_image_stub()->sequence();
               *scheduler = cb_stub->channel()->scheduler();
             }
             wait->Signal();
           },
-          get_stub_cb, &sii, &sequence, &scheduler, &wait));
+          get_stub_cb, &sii, &scheduler, &wait));
   if (success) {
     // Sync wait for retrieval of `sii`, `scheduler`, and `sequence`.
     base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow_wait;
     wait.Wait();
   }
-  base::RepeatingCallback<bool(scoped_refptr<FrameResource> frame,
-                               const gpu::SyncToken& sync_token)>
-      release_cb = base::BindRepeating(
-          [](gpu::Scheduler* scheduler, gpu::SequenceId sequence,
-             scoped_refptr<FrameResource> frame,
-             const gpu::SyncToken& sync_token) {
-            auto keep_video_frame_alive =
-                base::DoNothingWithBoundArgs(std::move(frame));
-            DCHECK(scheduler);
-            scheduler->ScheduleTask(gpu::Scheduler::Task(
-                sequence, std::move(keep_video_frame_alive),
-                std::vector<gpu::SyncToken>({sync_token})));
-            return true;
-          },
-          scheduler, sequence);
-  return Create(sii, std::move(release_cb));
-}
-
-// static
-std::unique_ptr<FrameResourceConverter> MailboxVideoFrameConverter::Create(
-    scoped_refptr<gpu::SharedImageInterface> sii,
-    base::RepeatingCallback<bool(scoped_refptr<FrameResource> frame,
-                                 const gpu::SyncToken& sync_token)>
-        release_cb) {
-  return base::WrapUnique<FrameResourceConverter>(
-      new MailboxVideoFrameConverter(sii, std::move(release_cb)));
+  return (sii && scheduler)
+             ? base::WrapUnique<FrameResourceConverter>(
+                   new MailboxVideoFrameConverter(sii, scheduler))
+             : nullptr;
 }
 
 MailboxVideoFrameConverter::MailboxVideoFrameConverter(
@@ -177,10 +152,38 @@ MailboxVideoFrameConverter::MailboxVideoFrameConverter(
   weak_this_ = weak_this_factory_.GetWeakPtr();
 }
 
+MailboxVideoFrameConverter::MailboxVideoFrameConverter(
+    scoped_refptr<gpu::SharedImageInterface> sii,
+    gpu::Scheduler* scheduler)
+    : shared_image_interface_(sii),
+      scheduler_(scheduler),
+      sequence_(scheduler->CreateSequence(
+          gpu::SchedulingPriority::kNormal,
+          base::SingleThreadTaskRunner::GetCurrentDefault())) {
+  DVLOGF(2);
+  release_cb_ =
+      base::BindRepeating(
+          [](gpu::Scheduler* scheduler, gpu::SequenceId sequence,
+             scoped_refptr<FrameResource> frame,
+             const gpu::SyncToken& sync_token) {
+            auto keep_video_frame_alive =
+                base::DoNothingWithBoundArgs(std::move(frame));
+            scheduler->ScheduleTask(gpu::Scheduler::Task(
+                sequence, std::move(keep_video_frame_alive),
+                std::vector<gpu::SyncToken>({sync_token})));
+            return true;
+          },
+          scheduler_, sequence_);
+  weak_this_ = weak_this_factory_.GetWeakPtr();
+}
+
 void MailboxVideoFrameConverter::Destroy() {
   DCHECK(!parent_task_runner() ||
          parent_task_runner()->RunsTasksInCurrentSequence());
   DVLOGF(2);
+  if (scheduler_) {
+    scheduler_->DestroySequence(sequence_);
+  }
 
   weak_this_factory_.InvalidateWeakPtrs();
   delete this;
