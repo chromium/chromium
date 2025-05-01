@@ -9530,7 +9530,7 @@
   {
     "name": "use-passthrough-command-decoder",
     "owners": [ "//third_party/angle/OWNERS" ],
-    "expiry_milestone": 135
+    "expiry_milestone": 150
   },
   {
     "name": "use-sc-content-sharing-picker",
