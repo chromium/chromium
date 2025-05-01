@@ -220,8 +220,8 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
             assert mLocationBarView != null
                     : "Trying to remove location bar view from toolbar when there is no location"
                             + " bar";
-            mToolbar.getProgressBar().setVisibility(View.INVISIBLE);
-            mToolbarView.setVisibility(View.INVISIBLE);
+            mToolbar.getProgressBar().setVisibility(View.GONE);
+            mToolbarView.setVisibility(View.GONE);
             mToolbarView.removeView(mLocationBarView);
             mToolbarContainer.addView(mLocationBarView);
             setBackgroundColor(mToolbar.getPrimaryColor());

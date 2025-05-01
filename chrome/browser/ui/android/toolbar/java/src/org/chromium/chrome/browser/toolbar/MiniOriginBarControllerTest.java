@@ -10,6 +10,9 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 import android.content.Context;
+import android.view.Gravity;
+import android.view.View;
+import android.widget.FrameLayout;
 
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.coordinatorlayout.widget.CoordinatorLayout.LayoutParams;
@@ -37,10 +40,14 @@ public class MiniOriginBarControllerTest {
 
     @Mock private ControlContainer mControlContainer;
     @Mock private LocationBar mLocationBar;
+    @Mock private View mLocationBarView;
     @Mock private BrowserControlsSizer mBrowserControlsSizer;
 
     private Context mContext;
-    private CoordinatorLayout.LayoutParams mLayoutParams = new LayoutParams(400, 800);
+    private CoordinatorLayout.LayoutParams mControlContainerLayoutParams =
+            new LayoutParams(400, 800);
+    private FrameLayout.LayoutParams mLocationBarLayoutParams =
+            new FrameLayout.LayoutParams(400, 800, Gravity.TOP);
     private FormFieldFocusedSupplier mIsFormFieldFocused = new FormFieldFocusedSupplier();
     private ToolbarPositionControllerTest.FakeKeyboardVisibilityDelegate
             mKeyboardVisibilityDelegate =
@@ -52,8 +59,11 @@ public class MiniOriginBarControllerTest {
     @Before
     public void setUp() {
         mContext = ContextUtils.getApplicationContext();
+        mControlContainerLayoutParams.gravity = Gravity.TOP;
         doReturn(ControlsPosition.TOP).when(mBrowserControlsSizer).getControlsPosition();
-        doReturn(mLayoutParams).when(mControlContainer).mutateLayoutParams();
+        doReturn(mControlContainerLayoutParams).when(mControlContainer).mutateLayoutParams();
+        doReturn(mLocationBarView).when(mLocationBar).getContainerView();
+        doReturn(mLocationBarLayoutParams).when(mLocationBarView).getLayoutParams();
         mMiniOriginBarController =
                 new MiniOriginBarController(
                         mLocationBar,
@@ -79,12 +89,14 @@ public class MiniOriginBarControllerTest {
         verify(mLocationBar).setUrlBarUsesSmallText(true);
         assertEquals(
                 mContext.getResources().getDimensionPixelSize(R.dimen.mini_origin_bar_height),
-                mLayoutParams.height);
+                mControlContainerLayoutParams.height);
+        assertEquals(Gravity.CENTER, mLocationBarLayoutParams.gravity);
 
         mKeyboardVisibilityDelegate.setVisibilityForTests(false);
         verify(mLocationBar).setShowOriginOnly(false);
         verify(mLocationBar).setUrlBarUsesSmallText(false);
-        assertEquals(LayoutParams.WRAP_CONTENT, mLayoutParams.height);
+        assertEquals(LayoutParams.WRAP_CONTENT, mControlContainerLayoutParams.height);
+        assertEquals(Gravity.TOP, mLocationBarLayoutParams.gravity);
     }
 
     @Test

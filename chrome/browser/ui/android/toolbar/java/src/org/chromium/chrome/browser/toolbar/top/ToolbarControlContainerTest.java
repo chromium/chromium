@@ -514,8 +514,8 @@ public class ToolbarControlContainerTest {
                 mFullscreenManager);
 
         controlContainer.toggleLocationBarOnlyMode(true);
-        verify(mProgressBar).setVisibility(View.INVISIBLE);
-        verify(mToolbarView).setVisibility(View.INVISIBLE);
+        verify(mProgressBar).setVisibility(View.GONE);
+        verify(mToolbarView).setVisibility(View.GONE);
         verify(mToolbarView).removeView(mLocationBarView);
         assertEquals(Color.RED, ((ColorDrawable) controlContainer.getBackground()).getColor());
         ToolbarViewResourceFrameLayout toolbarViewResourceFrameLayout =

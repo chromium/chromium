@@ -4,7 +4,9 @@
 package org.chromium.chrome.browser.toolbar;
 
 import android.content.Context;
+import android.view.Gravity;
 import android.view.ViewGroup.LayoutParams;
+import android.widget.FrameLayout;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -34,6 +36,7 @@ public class MiniOriginBarController implements Observer {
     private final ObservableSupplierImpl<Boolean> mSuppressToolbarSceneLayerSupplier;
     private final BrowserControlsSizer mBrowserControlsSizer;
     private boolean mShowMiniOriginBar;
+    private int mDefaultLocationBarGravity;
 
     /**
      * @param locationBar LocationBar instance used to change the presentation of e.g. the UrlBar
@@ -60,6 +63,9 @@ public class MiniOriginBarController implements Observer {
         mControlContainer = controlContainer;
         mSuppressToolbarSceneLayerSupplier = suppressToolbarSceneLayerSupplier;
         mBrowserControlsSizer = browserControlsSizer;
+        mDefaultLocationBarGravity =
+                ((FrameLayout.LayoutParams) mLocationBar.getContainerView().getLayoutParams())
+                        .gravity;
         mBrowserControlsSizer.addObserver(this);
 
         mIsFormFieldFocusedObserver = (focused) -> updateMiniOriginBarState();
@@ -93,6 +99,12 @@ public class MiniOriginBarController implements Observer {
                                 .getDimensionPixelSize(R.dimen.mini_origin_bar_height)
                         : LayoutParams.WRAP_CONTENT;
         mControlContainer.mutateLayoutParams().height = newControlContainerHeight;
+
+        var locationBarLayoutParams =
+                ((FrameLayout.LayoutParams) mLocationBar.getContainerView().getLayoutParams());
+        locationBarLayoutParams.gravity =
+                showMiniOriginBar ? Gravity.CENTER : mDefaultLocationBarGravity;
+        mLocationBar.getContainerView().setLayoutParams(locationBarLayoutParams);
     }
 
     public void destroy() {
