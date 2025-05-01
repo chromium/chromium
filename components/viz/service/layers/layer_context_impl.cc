@@ -637,6 +637,9 @@ base::expected<void, std::string> DeserializeTiling(
         cc::TileIndex{base::saturated_cast<int>(wire_tile->column_index),
                       base::saturated_cast<int>(wire_tile->row_index)},
         std::move(contents), update_damage);
+    if (tiling.tiles().empty()) {
+      layer.RemoveTiling(tiling.contents_scale_key());
+    }
   }
   return base::ok();
 }

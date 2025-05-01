@@ -130,6 +130,7 @@ class CC_EXPORT TileDisplayLayerImpl : public LayerImpl {
   ~TileDisplayLayerImpl() override;
 
   Tiling& GetOrCreateTilingFromScaleKey(float scale_key);
+  void RemoveTiling(float scale_key);
 
   void SetSolidColor(std::optional<SkColor4f> color) { solid_color_ = color; }
   void SetIsBackdropFilterMask(bool is_backdrop_filter_mask) {
