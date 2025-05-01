@@ -9,6 +9,7 @@
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/glic/glic_enabling.h"
 #include "chrome/browser/glic/glic_keyed_service.h"
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
@@ -16,6 +17,7 @@
 #include "chrome/browser/glic/glic_user_status_code.h"
 #include "chrome/browser/glic/glic_user_status_fetcher.h"
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
+#include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/chrome_signin_client_test_util.h"
@@ -23,8 +25,10 @@
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
@@ -43,12 +47,21 @@ namespace glic {
 
 namespace {
 const char kGlicUserStatusRelativeTestUrl[] = "/userstatus";
-const char kTestEmail[] = "testuser@gmail.com";
 
 // Define constants that are used in prefs checks
 static constexpr char kUserStatus[] = "user_status";
 static constexpr char kUpdatedAt[] = "updated_at";
 static constexpr char kAccountId[] = "account_id";
+
+// Simple wrapper to serves as a POD for the test accounts.
+struct TestAccount {
+  const std::string email;
+  const std::string host_domain;
+};
+
+TestAccount nonEnterpriseAccount = {"foo@testbar.com", ""};
+TestAccount enterpriseAccount = {"foo@testenterprise.com",
+                                 "testenterprise.com"};
 
 class GlicUserStatusBrowserTest : public InProcessBrowserTest {
  protected:
@@ -58,8 +71,10 @@ class GlicUserStatusBrowserTest : public InProcessBrowserTest {
          {features::kTabstripComboButton, {}},
          {features::kGlicRollout, {}},
          {features::kGlicUserStatusCheck,
-          {{features::kGlicUserStatusRequestDelay.name, "23h"}}}},
+          {{features::kGlicUserStatusRequestDelay.name, "200ms"}}}},
         {/* disabled_features */});
+
+    RegisterGeminiSettingsPrefs(pref_service_.registry());
   }
 
   void SetUpBrowserContextKeyedServices(
@@ -83,15 +98,18 @@ class GlicUserStatusBrowserTest : public InProcessBrowserTest {
 
     embedded_test_server()->AddDefaultHandlers(GetChromeTestDataDir());
     host_resolver()->AddRule("*", "127.0.0.1");
+
+    profile()->GetPrefs()->SetInteger(
+        ::prefs::kGeminiSettings,
+        static_cast<int>(glic::prefs::SettingsPolicyState::kEnabled));
   }
 
-  // Reset after all browser-related processes have completed,
-  // including tear down.
   void TearDownOnMainThread() override {
     ASSERT_TRUE(embedded_test_server()->ShutdownAndWaitUntilComplete());
     identity_manager_ = nullptr;
     identity_test_env_ = nullptr;
     adaptor_.reset();
+
     InProcessBrowserTest::TearDownOnMainThread();
   }
 
@@ -114,15 +132,28 @@ class GlicUserStatusBrowserTest : public InProcessBrowserTest {
         }));
   }
   // Simulates user signing in and getting a refresh token.
-  void SimulatePrimaryAccountChangedSignIn() {
+  void SimulatePrimaryAccountChangedSignIn(TestAccount* account) {
     identity_test_env_->SetAutomaticIssueOfAccessTokens(true);
 
     AccountInfo account_info = identity_test_env_->MakePrimaryAccountAvailable(
-        kTestEmail, signin::ConsentLevel::kSync);
+        account->email, signin::ConsentLevel::kSync);
 
     AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
     mutator.set_can_use_model_execution_features(true);
     identity_test_env_->UpdateAccountInfoForAccount(account_info);
+
+    SimulateSuccessfulFetchOfAccountInfo(account, &account_info);
+  }
+
+  void SimulateSuccessfulFetchOfAccountInfo(const TestAccount* test_account,
+                                            const AccountInfo* account_info) {
+    identity_test_env_->SimulateSuccessfulFetchOfAccountInfo(
+        account_info->account_id, account_info->email, account_info->gaia,
+        test_account->host_domain,
+        base::StrCat({"full_name-", test_account->email}),
+        base::StrCat({"given_name-", test_account->email}),
+        base::StrCat({"local-", test_account->email}),
+        base::StrCat({"full_name-", test_account->email}));
   }
 
   void SetGlicUserStatusUrlForTest() {
@@ -176,13 +207,18 @@ class GlicUserStatusBrowserTest : public InProcessBrowserTest {
   Profile* profile() { return browser()->profile(); }
 
   base::test::ScopedFeatureList feature_list_;
+  sync_preferences::TestingPrefServiceSyncable pref_service_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor> adaptor_;
   raw_ptr<signin::IdentityManager> identity_manager_;
   raw_ptr<signin::IdentityTestEnvironment> identity_test_env_;
   network::TestURLLoaderFactory test_url_loader_factory_;
 };
 
-IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest, SignIn_Enabled) {
+IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest, Enterprise_SignIn_Enabled) {
+  policy::ScopedManagementServiceOverrideForTesting platform_management(
+      policy::ManagementServiceFactory::GetForProfile(profile()),
+      policy::EnterpriseManagementAuthority::CLOUD);
+
   RegisterUserStatusHandler(
       net::HTTP_OK,
       R"({"isGlicEnabled": true, "isAccessDeniedByAdmin": false})");
@@ -192,7 +228,7 @@ IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest, SignIn_Enabled) {
 
   SetGlicUserStatusUrlForTest();
 
-  SimulatePrimaryAccountChangedSignIn();
+  SimulatePrimaryAccountChangedSignIn(&enterpriseAccount);
 
   // Verify Prefs
   ASSERT_TRUE(base::test::RunUntil(
@@ -208,7 +244,96 @@ IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest, SignIn_Enabled) {
   EXPECT_TRUE(IsGlicEnabled());
 }
 
-IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest, SignIn_DisabledByAdmin) {
+IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest,
+                       Enterprise_SignIn_Enabled_GeminiSettings) {
+  policy::ScopedManagementServiceOverrideForTesting platform_management(
+      policy::ManagementServiceFactory::GetForProfile(profile()),
+      policy::EnterpriseManagementAuthority::CLOUD);
+
+  // Verify request is sent by the non-existence of the Prefs initially and the
+  // existence of it after sign-in simulation.
+  ASSERT_FALSE(GetCachedStatusDict().has_value());
+
+  bool request_received = false;
+  embedded_test_server()->RegisterRequestHandler(base::BindLambdaForTesting(
+      [=, &request_received](const net::test_server::HttpRequest& request)
+          -> std::unique_ptr<net::test_server::HttpResponse> {
+        if (request.relative_url != kGlicUserStatusRelativeTestUrl) {
+          return nullptr;
+        }
+        request_received = true;
+        auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+
+        response->set_code(net::HTTP_OK);
+        response->set_content(
+            R"({"isGlicEnabled": true, "isAccessDeniedByAdmin": false})");
+        response->set_content_type("application/json");
+
+        return response;
+      }));
+  net::test_server::EmbeddedTestServerHandle test_server_handle;
+  ASSERT_TRUE(test_server_handle =
+                  embedded_test_server()->StartAndReturnHandle());
+
+  SetGlicUserStatusUrlForTest();
+
+  SimulatePrimaryAccountChangedSignIn(&enterpriseAccount);
+
+  // Verify request is sent by the existence of the Prefs and request handler is
+  // inovked.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return GetCachedStatusDict().has_value(); }));
+  ASSERT_TRUE(request_received);
+
+  // Sign out to clear the Prefs and reset request_received.
+  identity_test_env_->ClearPrimaryAccount();
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return profile()->GetPrefs()->GetDict(prefs::kGlicUserStatus).empty();
+  }));
+  request_received = false;
+
+  // Make the account non-enterprise by setting kGeminiSettings to
+  // disabled.
+  profile()->GetPrefs()->SetInteger(
+      ::prefs::kGeminiSettings,
+      static_cast<int>(glic::prefs::SettingsPolicyState::kDisabled));
+
+  // Sign in again and wait for a while.
+  SimulatePrimaryAccountChangedSignIn(&enterpriseAccount);
+
+  base::RunLoop run_loop;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(300));
+  run_loop.Run();
+
+  // Verify no request is sent.
+  EXPECT_FALSE(request_received);
+  ASSERT_FALSE(GetCachedStatusDict().has_value());
+
+  // Sign out.
+  identity_test_env_->ClearPrimaryAccount();
+
+  // Make the account enterprise again by setting kGeminiSettings to enabled.
+  profile()->GetPrefs()->SetInteger(
+      ::prefs::kGeminiSettings,
+      static_cast<int>(glic::prefs::SettingsPolicyState::kEnabled));
+
+  // Sign in again.
+  SimulatePrimaryAccountChangedSignIn(&enterpriseAccount);
+
+  // Verify request is sent again by the existence of the Prefs and request
+  // handler is inovked.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return GetCachedStatusDict().has_value(); }));
+  ASSERT_TRUE(request_received);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest,
+                       Enterprise_SignIn_DisabledByAdmin) {
+  policy::ScopedManagementServiceOverrideForTesting platform_management(
+      policy::ManagementServiceFactory::GetForProfile(profile()),
+      policy::EnterpriseManagementAuthority::CLOUD);
+
   RegisterUserStatusHandler(
       net::HTTP_OK,
       R"({"isGlicEnabled": false, "isAccessDeniedByAdmin": true})");
@@ -218,7 +343,7 @@ IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest, SignIn_DisabledByAdmin) {
 
   SetGlicUserStatusUrlForTest();
 
-  SimulatePrimaryAccountChangedSignIn();
+  SimulatePrimaryAccountChangedSignIn(&enterpriseAccount);
 
   // Verify Prefs
   ASSERT_TRUE(base::test::RunUntil(
@@ -233,7 +358,12 @@ IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest, SignIn_DisabledByAdmin) {
   EXPECT_FALSE(IsGlicEnabled());
 }
 
-IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest, SignIn_DisabledOther) {
+IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest,
+                       Enterprise_SignIn_DisabledOther) {
+  policy::ScopedManagementServiceOverrideForTesting platform_management(
+      policy::ManagementServiceFactory::GetForProfile(profile()),
+      policy::EnterpriseManagementAuthority::CLOUD);
+
   RegisterUserStatusHandler(
       net::HTTP_OK,
       R"({"isGlicEnabled": false, "isAccessDeniedByAdmin": false})");
@@ -243,7 +373,7 @@ IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest, SignIn_DisabledOther) {
 
   SetGlicUserStatusUrlForTest();
 
-  SimulatePrimaryAccountChangedSignIn();
+  SimulatePrimaryAccountChangedSignIn(&enterpriseAccount);
 
   // Verify Prefs
   ASSERT_TRUE(base::test::RunUntil(
@@ -259,7 +389,11 @@ IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest, SignIn_DisabledOther) {
 }
 
 IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest,
-                       SignIn_ServerUnavailable_NoStoredResult) {
+                       Enterprise_SignIn_ServerUnavailable_NoStoredResult) {
+  policy::ScopedManagementServiceOverrideForTesting platform_management(
+      policy::ManagementServiceFactory::GetForProfile(profile()),
+      policy::EnterpriseManagementAuthority::CLOUD);
+
   RegisterUserStatusHandler(
       net::HTTP_NOT_FOUND,
       R"({"isGlicEnabled": true, "isAccessDeniedByAdmin": false})");
@@ -269,7 +403,7 @@ IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest,
 
   SetGlicUserStatusUrlForTest();
 
-  SimulatePrimaryAccountChangedSignIn();
+  SimulatePrimaryAccountChangedSignIn(&enterpriseAccount);
 
   // Verify that when the user status code is SERVER_UNAVAILABLE, the glic user
   // status result is not stored.
@@ -280,7 +414,11 @@ IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest,
-                       SignIn_ServerUnavailable_HasStoredResult) {
+                       Enterprise_SignIn_ServerUnavailable_HasStoredResult) {
+  policy::ScopedManagementServiceOverrideForTesting platform_management(
+      policy::ManagementServiceFactory::GetForProfile(profile()),
+      policy::EnterpriseManagementAuthority::CLOUD);
+
   RegisterUserStatusHandler(
       net::HTTP_NOT_FOUND,
       R"({"isGlicEnabled": true, "isAccessDeniedByAdmin": false})");
@@ -290,7 +428,7 @@ IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest,
 
   SetGlicUserStatusUrlForTest();
 
-  SimulatePrimaryAccountChangedSignIn();
+  SimulatePrimaryAccountChangedSignIn(&enterpriseAccount);
 
   auto user_status_code = UserStatusCode::DISABLED_BY_ADMIN;
   SetGlicUserStatus(user_status_code);
@@ -306,7 +444,11 @@ IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest,
   EXPECT_FALSE(IsGlicEnabled());
 }
 
-IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest, SignOut) {
+IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest, Enterprise_SignOut) {
+  policy::ScopedManagementServiceOverrideForTesting platform_management(
+      policy::ManagementServiceFactory::GetForProfile(profile()),
+      policy::EnterpriseManagementAuthority::CLOUD);
+
   // Sign in and set user status to enabled.
   RegisterUserStatusHandler(
       net::HTTP_OK,
@@ -317,7 +459,7 @@ IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest, SignOut) {
 
   SetGlicUserStatusUrlForTest();
 
-  SimulatePrimaryAccountChangedSignIn();
+  SimulatePrimaryAccountChangedSignIn(&enterpriseAccount);
 
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return GetCachedStatusDict().has_value(); }));
@@ -334,6 +476,45 @@ IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest, SignOut) {
   // This is false because the IsNonEnterpriseEnabled() will return false if no
   // account is signed in. The UserStatusCheck is true when pref is cleared.
   EXPECT_FALSE(IsGlicEnabled());
+}
+
+IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest, NonEnterprise_SignIn) {
+  bool request_received = false;
+  embedded_test_server()->RegisterRequestHandler(base::BindLambdaForTesting(
+      [=, &request_received](const net::test_server::HttpRequest& request)
+          -> std::unique_ptr<net::test_server::HttpResponse> {
+        if (request.relative_url != kGlicUserStatusRelativeTestUrl) {
+          return nullptr;
+        }
+        request_received = true;
+        auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+
+        response->set_code(net::HTTP_OK);
+        response->set_content(
+            R"({"isGlicEnabled": true, "isAccessDeniedByAdmin": false})");
+        response->set_content_type("application/json");
+
+        return response;
+      }));
+
+  net::test_server::EmbeddedTestServerHandle test_server_handle;
+  ASSERT_TRUE(test_server_handle =
+                  embedded_test_server()->StartAndReturnHandle());
+
+  SetGlicUserStatusUrlForTest();
+
+  SimulatePrimaryAccountChangedSignIn(&nonEnterpriseAccount);
+
+  // wait for a while.
+  base::RunLoop run_loop;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(300));
+  run_loop.Run();
+
+  ASSERT_FALSE(request_received);
+  ASSERT_FALSE(GetCachedStatusDict().has_value());
+
+  ASSERT_TRUE(IsGlicEnabled());
 }
 
 }  // namespace

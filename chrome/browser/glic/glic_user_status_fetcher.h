@@ -65,6 +65,7 @@ class GlicUserStatusFetcher {
   static std::optional<CachedUserStatus> GetCachedUserStatus(Profile* profile);
   static bool IsDisabled(Profile* profile);
 
+  bool IsEnterpriseAccount();
   void InvalidateCachedStatus();
   void UpdateUserStatus();
   void UpdateUserStatusIfNeeded();

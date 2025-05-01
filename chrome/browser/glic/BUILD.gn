@@ -349,6 +349,7 @@ source_set("browser_tests") {
     "//chrome/browser/background/glic",
     "//chrome/browser/extensions:extensions",
     "//chrome/browser/policy:test_support",
+    "//chrome/browser/prefs:prefs",
     "//chrome/browser/ui",
     "//chrome/common:constants",
     "//chrome/test:test_support",
