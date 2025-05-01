@@ -36,11 +36,17 @@ std::atomic<uint32_t> g_current_idle_id = 0;
 
 GraphiteCacheController::GraphiteCacheController(
     skgpu::graphite::Recorder* recorder,
-    GraphiteSharedContext* context,
+    bool can_handle_context_resources,
     DawnContextProvider* dawn_context_provider)
     : recorder_(recorder),
-      context_(context),
-      dawn_context_provider_(dawn_context_provider) {
+      dawn_context_provider_(dawn_context_provider),
+#if BUILDFLAG(SKIA_USE_DAWN)
+      can_handle_context_resources_(can_handle_context_resources &&
+                                    dawn_context_provider) {
+#else
+      can_handle_context_resources_(false) {
+#endif
+
   CHECK(recorder_);
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
@@ -51,8 +57,8 @@ GraphiteCacheController::~GraphiteCacheController() {
 
 void GraphiteCacheController::ScheduleCleanup() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (context_) {
-    context_->performDeferredCleanup(
+  if (can_handle_context_resources_) {
+    GetGraphiteSharedContext()->performDeferredCleanup(
         std::chrono::seconds(kResourceNotUsedSinceDelay.InSeconds()));
   }
   auto* image_provider =
@@ -74,8 +80,8 @@ void GraphiteCacheController::ScheduleCleanup() {
 
 void GraphiteCacheController::CleanUpScratchResources() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (context_) {
-    context_->freeGpuResources();
+  if (can_handle_context_resources_) {
+    GetGraphiteSharedContext()->freeGpuResources();
   }
   recorder_->freeGpuResources();
 }
@@ -87,7 +93,7 @@ void GraphiteCacheController::CleanUpAllResources() {
 }
 
 bool GraphiteCacheController::UseGlobalIdleId() const {
-  return context_ != nullptr;
+  return dawn_context_provider_ != nullptr;
 }
 
 uint32_t GraphiteCacheController::GetIdleId() const {
@@ -126,7 +132,7 @@ void GraphiteCacheController::CleanUpAllResourcesImpl() {
   CleanUpScratchResources();
 
 #if BUILDFLAG(SKIA_USE_DAWN)
-  if (dawn_context_provider_) {
+  if (can_handle_context_resources_) {
     if (dawn::native::ReduceMemoryUsage(
             dawn_context_provider_->GetDevice().Get())) {
       // There is scheduled work on the GPU that must complete before finishing
@@ -136,6 +142,15 @@ void GraphiteCacheController::CleanUpAllResourcesImpl() {
     dawn::native::PerformIdleTasks(dawn_context_provider_->GetDevice());
   }
 #endif
+}
+
+GraphiteSharedContext* GraphiteCacheController::GetGraphiteSharedContext() {
+#if BUILDFLAG(SKIA_USE_DAWN)
+  if (dawn_context_provider_) {
+    return dawn_context_provider_->GetGraphiteSharedContext();
+  }
+#endif
+  return nullptr;
 }
 
 }  // namespace gpu::raster
