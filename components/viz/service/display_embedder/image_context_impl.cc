@@ -8,9 +8,6 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
-#include "base/debug/alias.h"
-#include "base/debug/crash_logging.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/trace_event/trace_event.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
@@ -78,60 +75,6 @@ enum class CreatePromiseImageResult {
   kMaxValue = kFailedYcbcrMismatch
 };
 
-// DumpWithoutCrashing to get crash reports for cases where we failed to
-// create a promise image. Dump only for DCHECK disabled builds as some
-// GPU integration tests can go through here.
-void SetCrashKeysAndDump(
-    viz::TransferableResource::ResourceSource resource_source,
-    viz::SharedImageFormat format,
-    int32_t client_id) {
-#if BUILDFLAG(IS_ANDROID) && !DCHECK_IS_ON()
-  using ResourceSource = viz::TransferableResource::ResourceSource;
-  auto resource_source_to_string_fn = [resource_source] {
-    switch (resource_source) {
-      case ResourceSource::kUnknown:
-        return "Unknown";
-      case ResourceSource::kAR:
-        return "AR";
-      case ResourceSource::kCanvas:
-        return "Canvas";
-      case ResourceSource::kDrawingBuffer:
-        return "DrawingBuffer";
-      case ResourceSource::kExoBuffer:
-        return "ExoBuffer";
-      case ResourceSource::kHeadsUpDisplay:
-        return "HeadsUpDisplay";
-      case ResourceSource::kImageLayerBridge:
-        return "ImageLayerBridge";
-      case ResourceSource::kPPBGraphics3D:
-        return "PPBGraphics3D";
-      case ResourceSource::kPepperGraphics2D:
-        return "PepperGraphics2D";
-      case ResourceSource::kViewTransition:
-        return "ViewTransition";
-      case ResourceSource::kStaleContent:
-        return "StaleContent";
-      case ResourceSource::kTest:
-        return "Test";
-      case ResourceSource::kTileRasterTask:
-        return "TileRasterTask";
-      case ResourceSource::kUI:
-        return "UI";
-      case ResourceSource::kVideo:
-        return "Video";
-      case ResourceSource::kWebGPUSwapBuffer:
-        return "WebGPUSwapBuffer";
-    }
-  };
-  SCOPED_CRASH_KEY_NUMBER("image context imp", "client id", client_id);
-  SCOPED_CRASH_KEY_STRING32("image context imp", "resource source",
-                            resource_source_to_string_fn());
-  SCOPED_CRASH_KEY_STRING64("image context imp", "si format",
-                            format.ToString());
-  base::debug::DumpWithoutCrashing();
-#endif  //  BUILDFLAG(IS_ANDROID) && !DCHECK_IS_ON()
-}
-
 #if BUILDFLAG(IS_ANDROID) && BUILDFLAG(SKIA_USE_DAWN)
 bool DawnYCbCrVkDescriptorsAreCompatible(const wgpu::YCbCrVkDescriptor& left,
                                          const wgpu::YCbCrVkDescriptor& right) {
@@ -195,8 +138,7 @@ ImageContextImpl::ImageContextImpl(const TransferableResource& resource,
                                    uint32_t client_id)
     : ImageContext(resource),
       maybe_concurrent_reads_(maybe_concurrent_reads),
-      raw_draw_if_possible_(raw_draw_if_possible),
-      client_id_(client_id) {}
+      raw_draw_if_possible_(raw_draw_if_possible) {}
 
 ImageContextImpl::ImageContextImpl(const gpu::Mailbox& mailbox,
                                    const gfx::Size& size,
@@ -478,7 +420,6 @@ bool ImageContextImpl::BeginAccessIfNecessaryInternal(
       DLOG(ERROR) << "Failed to fulfill the promise texture - SharedImage "
                      "mailbox not found in SharedImageManager.";
       result = CreatePromiseImageResult::kFailedCreateRepresentation;
-      SetCrashKeysAndDump(resource_source(), format(), client_id_);
       return false;
     }
 
@@ -508,7 +449,6 @@ bool ImageContextImpl::BeginAccessIfNecessaryInternal(
     DLOG(ERROR) << "Failed to fulfill the promise texture - SharedImage "
                    "begin read access failed..";
     result = CreatePromiseImageResult::kFailedBeginReadAccess;
-    SetCrashKeysAndDump(resource_source(), format(), client_id_);
     return false;
   }
 
@@ -541,9 +481,6 @@ bool ImageContextImpl::BeginAccessIfNecessaryInternal(
       graphite_ycbcr_info_mismatch_ = true;
       representation_scoped_read_access_.reset();
       result = CreatePromiseImageResult::kFailedYcbcrMismatch;
-      base::debug::Alias(&promise_texture_ycbcr_desc);
-      base::debug::Alias(&fulfillment_texture_ycbcr_desc);
-      SetCrashKeysAndDump(resource_source(), format(), client_id_);
       return false;
     }
 #endif
