@@ -18,6 +18,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
@@ -28,6 +29,8 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.sync.SyncTestRule;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncIntegrationTestHelper.GroupInfo;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncIntegrationTestHelper.TabInfo;
@@ -35,6 +38,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.sync.protocol.SavedTabGroup.SavedTabGroupColor;
 import org.chromium.components.sync.protocol.SyncEntity;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.base.DeviceFormFactor;
 
 /** On-device sync integration tests for tab group sync from remote to local. */
@@ -75,6 +79,11 @@ public class TabGroupSyncRemoteToLocalTest {
         mSyncTestRule.setUpAccountAndEnableHistorySync();
         SyncTestUtil.waitForHistorySyncEnabled();
         mHelper.assertSyncEntityCount(0);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Profile profile = mSyncTestRule.getProfile(/* incognito= */ false);
+                    UserPrefs.get(profile).setBoolean(Pref.AUTO_OPEN_SYNCED_TAB_GROUPS, true);
+                });
 
         CriteriaHelper.pollUiThread(
                 mSyncTestRule.getActivity().getTabModelSelector()::isTabStateInitialized);

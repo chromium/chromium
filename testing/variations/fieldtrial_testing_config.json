@@ -22982,24 +22982,6 @@
             ]
         }
     ],
-    "TabGroupSyncAutoOpenOffByDefault": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "auto_open_synced_tab_groups": "false"
-                    },
-                    "enable_features": [
-                        "TabGroupSyncAndroid"
-                    ]
-                }
-            ]
-        }
-    ],
     "TabGroupSyncServiceDesktopMigration": [
         {
             "platforms": [
