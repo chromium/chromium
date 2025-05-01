@@ -3,12 +3,16 @@
 // found in the LICENSE file.
 package org.chromium.chrome.browser.toolbar;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 import android.content.Context;
+
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.coordinatorlayout.widget.CoordinatorLayout.LayoutParams;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -36,6 +40,7 @@ public class MiniOriginBarControllerTest {
     @Mock private BrowserControlsSizer mBrowserControlsSizer;
 
     private Context mContext;
+    private CoordinatorLayout.LayoutParams mLayoutParams = new LayoutParams(400, 800);
     private FormFieldFocusedSupplier mIsFormFieldFocused = new FormFieldFocusedSupplier();
     private ToolbarPositionControllerTest.FakeKeyboardVisibilityDelegate
             mKeyboardVisibilityDelegate =
@@ -48,6 +53,7 @@ public class MiniOriginBarControllerTest {
     public void setUp() {
         mContext = ContextUtils.getApplicationContext();
         doReturn(ControlsPosition.TOP).when(mBrowserControlsSizer).getControlsPosition();
+        doReturn(mLayoutParams).when(mControlContainer).mutateLayoutParams();
         mMiniOriginBarController =
                 new MiniOriginBarController(
                         mLocationBar,
@@ -71,10 +77,14 @@ public class MiniOriginBarControllerTest {
         mMiniOriginBarController.onControlsPositionChanged(ControlsPosition.BOTTOM);
         verify(mLocationBar).setShowOriginOnly(true);
         verify(mLocationBar).setUrlBarUsesSmallText(true);
+        assertEquals(
+                mContext.getResources().getDimensionPixelSize(R.dimen.mini_origin_bar_height),
+                mLayoutParams.height);
 
         mKeyboardVisibilityDelegate.setVisibilityForTests(false);
         verify(mLocationBar).setShowOriginOnly(false);
         verify(mLocationBar).setUrlBarUsesSmallText(false);
+        assertEquals(LayoutParams.WRAP_CONTENT, mLayoutParams.height);
     }
 
     @Test

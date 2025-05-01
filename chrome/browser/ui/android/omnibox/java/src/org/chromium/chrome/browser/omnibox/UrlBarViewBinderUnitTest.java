@@ -208,12 +208,27 @@ public class UrlBarViewBinderUnitTest {
     @Test
     @SmallTest
     public void testTextSize() {
+        mUrlBar.setPaddingRelative(13, 0, 17, 0);
+        int normalPadding =
+                mActivity.getResources().getDimensionPixelSize(R.dimen.url_bar_vertical_padding);
+        int smallPadding = 0;
         float normalTextSize =
                 mActivity.getResources().getDimension(R.dimen.location_bar_url_text_size);
         float smallTextSize = mActivity.getResources().getDimension(R.dimen.text_size_small);
+
         Assert.assertEquals(normalTextSize, mUrlBar.getTextSize(), MathUtils.EPSILON);
 
         mModel.set(UrlBarProperties.USE_SMALL_TEXT, true);
         Assert.assertEquals(smallTextSize, mUrlBar.getTextSize(), MathUtils.EPSILON);
+        Assert.assertEquals(smallPadding, mUrlBar.getPaddingBottom());
+        Assert.assertEquals(smallPadding, mUrlBar.getPaddingTop());
+        Assert.assertEquals(13, mUrlBar.getPaddingStart());
+        Assert.assertEquals(17, mUrlBar.getPaddingEnd());
+
+        mModel.set(UrlBarProperties.USE_SMALL_TEXT, false);
+        Assert.assertEquals(normalPadding, mUrlBar.getPaddingBottom());
+        Assert.assertEquals(normalPadding, mUrlBar.getPaddingTop());
+        Assert.assertEquals(13, mUrlBar.getPaddingStart());
+        Assert.assertEquals(17, mUrlBar.getPaddingEnd());
     }
 }

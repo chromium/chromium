@@ -92,6 +92,18 @@ class UrlBarViewBinder {
                             ? view.getResources().getDimension(R.dimen.text_size_small)
                             : view.getResources().getDimension(R.dimen.location_bar_url_text_size);
             view.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
+
+            // Small text mode is used in a state where available vertical space is much lower and
+            // there
+            // is no location bar "pill" that we must draw inside. Removing the padding avoids
+            // over-constraining the text size to the point of illegibility.
+            int verticalPadding =
+                    useSmallText
+                            ? 0
+                            : view.getResources()
+                                    .getDimensionPixelSize(R.dimen.url_bar_vertical_padding);
+            view.setPaddingRelative(
+                    view.getPaddingStart(), verticalPadding, view.getPaddingEnd(), verticalPadding);
         } else if (UrlBarProperties.HINT_TEXT_COLOR.equals(propertyKey)) {
             view.setHintTextColor(model.get(UrlBarProperties.HINT_TEXT_COLOR));
         } else if (UrlBarProperties.INCOGNITO_COLORS_ENABLED.equals(propertyKey)) {

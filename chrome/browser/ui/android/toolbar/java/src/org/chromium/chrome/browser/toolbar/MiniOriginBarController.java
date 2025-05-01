@@ -4,6 +4,7 @@
 package org.chromium.chrome.browser.toolbar;
 
 import android.content.Context;
+import android.view.ViewGroup.LayoutParams;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -85,6 +86,13 @@ public class MiniOriginBarController implements Observer {
         mLocationBar.setUrlBarUsesSmallText(mShowMiniOriginBar);
         mSuppressToolbarSceneLayerSupplier.set(mShowMiniOriginBar);
         mControlContainer.toggleLocationBarOnlyMode(mShowMiniOriginBar);
+
+        int newControlContainerHeight =
+                showMiniOriginBar
+                        ? mContext.getResources()
+                                .getDimensionPixelSize(R.dimen.mini_origin_bar_height)
+                        : LayoutParams.WRAP_CONTENT;
+        mControlContainer.mutateLayoutParams().height = newControlContainerHeight;
     }
 
     public void destroy() {
