@@ -2587,6 +2587,23 @@ Keep consistent with active providers. Doesn't need to include every provider in
 </histogram>
 
 <histogram
+    name="Omnibox.SuggestRequestsSent.ResponseTime.{OmniboxPageContext}{RemoteRequestType}{RemoteRequestSuccess}"
+    units="ms" expires_after="2025-08-10">
+  <owner>mahmadi@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    How long it took in milliseconds to receive responses from the omnibox
+    suggest backends for completed requests only, sliced by the request type,
+    response success status, and the page context (a.k.a. page classification).
+    Recorded once per response received, which is at most one time per
+    Omnibox.SuggestRequestsSent is recorded, since some requests are cancelled.
+  </summary>
+  <token key="OmniboxPageContext" variants="OmniboxPageContext"/>
+  <token key="RemoteRequestType" variants="RemoteRequestType"/>
+  <token key="RemoteRequestSuccess" variants="RemoteRequestSuccess"/>
+</histogram>
+
+<histogram
     name="Omnibox.SuggestRequestsSent.ResponseTime2.RequestState{RemoteRequestType}{RemoteRequestCompleted}"
     units="ms" expires_after="2025-08-10">
   <owner>ananyaseelam@google.com</owner>
@@ -2603,18 +2620,18 @@ Keep consistent with active providers. Doesn't need to include every provider in
 </histogram>
 
 <histogram
-    name="Omnibox.SuggestRequestsSent.ResponseTime{OmniboxPageContext}{RemoteRequestType}{RemoteRequestSuccess}"
+    name="Omnibox.SuggestRequestsSent.ResponseTime{RemoteRequestType}{RemoteRequestSuccess}"
     units="ms" expires_after="2025-08-10">
+  <owner>khalidpeer@chromium.org</owner>
   <owner>mahmadi@chromium.org</owner>
   <owner>chrome-desktop-search@google.com</owner>
   <summary>
     How long it took in milliseconds to receive responses from the omnibox
     suggest backends for completed requests only, sliced by the request type,
-    response success status, and the page context (a.k.a. page classification).
-    Recorded once per response received, which is at most one time per
-    Omnibox.SuggestRequestsSent is recorded, since some requests are cancelled.
+    and response success status. Recorded once per response received, which is
+    at most one time per Omnibox.SuggestRequestsSent is recorded, since some
+    requests are cancelled.
   </summary>
-  <token key="OmniboxPageContext" variants="OmniboxPageContext"/>
   <token key="RemoteRequestType" variants="RemoteRequestType"/>
   <token key="RemoteRequestSuccess" variants="RemoteRequestSuccess"/>
 </histogram>
