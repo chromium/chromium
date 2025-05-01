@@ -214,6 +214,8 @@ class Tab : public gfx::AnimationDelegate,
   FRIEND_TEST_ALL_PREFIXES(TabHoverCardInteractiveUiTest,
                            HoverCardVisibleOnTabCloseButtonFocusAfterTabFocus);
   FRIEND_TEST_ALL_PREFIXES(AlertIndicatorButtonTest, AccessibleNameChanged);
+  FRIEND_TEST_ALL_PREFIXES(AlertIndicatorButtonTest,
+                           AccessibleNameChangesWithCollaborationMessages);
 
   bool ShouldUpdateAccessibleName(TabRendererData& old_data,
                                   TabRendererData& new_data);
