@@ -71,24 +71,22 @@ std::vector<tab_groups::SavedTabGroupTab> GetRemovedTabs(
       removed_tabs.emplace_back(tab);
 
       // Update user attributions for tab removal since they are still pointing
-      // to the last update.
-      if (source == tab_groups::TriggerSource::LOCAL) {
+      // to the last update. Because ProcessTabGroupUpdates() are called on a
+      // posted task, don't trust the TriggerSource here. Instead, we should
+      // rely on the RemovedTabMetadata to figure out the right attribution.
+      if (auto it = removed_tabs_metadata.find(tab.saved_tab_guid());
+          it != removed_tabs_metadata.end()) {
+        // Copy over metadata for the removed tabs from SavedTabGroup.
+        const tab_groups::SavedTabGroup::RemovedTabMetadata& metadata =
+            it->second;
+        removed_tabs.back().SetUpdatedByAttribution(metadata.removed_by);
+        removed_tabs.back().SetUpdateTimeWindowsEpochMicros(
+            metadata.removal_time);
+      } else if (source == tab_groups::TriggerSource::LOCAL) {
         // If it's a local tab removal, it must by by the current signed-in
         // user.
         removed_tabs.back().SetUpdatedByAttribution(account_gaia);
         removed_tabs.back().SetUpdateTimeWindowsEpochMicros(base::Time::Now());
-      } else {
-        // For remote tab removals, find the removed by attributions cached on
-        // the SavedTabGroup.
-        if (auto it = removed_tabs_metadata.find(tab.saved_tab_guid());
-            it != removed_tabs_metadata.end()) {
-          // Copy over metadata for the removed tabs from SavedTabGroup.
-          const tab_groups::SavedTabGroup::RemovedTabMetadata& metadata =
-              it->second;
-          removed_tabs.back().SetUpdatedByAttribution(metadata.removed_by);
-          removed_tabs.back().SetUpdateTimeWindowsEpochMicros(
-              metadata.removal_time);
-        }
       }
     }
   }
