@@ -14,6 +14,7 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/json/json_reader.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
@@ -509,10 +510,17 @@ TEST_F(SandboxedUnpackerTest, InvalidMessagesFile) {
   // Check that there is no _locales folder.
   base::FilePath install_path = GetInstallPath().Append(kLocaleFolder);
   EXPECT_FALSE(base::PathExists(install_path));
-  EXPECT_TRUE(base::MatchPattern(GetInstallErrorMessage(),
-                                 u"*_locales?en_US?messages.json': EOF while "
-                                 u"parsing a string at line 4*"))
-      << GetInstallErrorMessage();
+  if (base::JSONReader::UsingRust()) {
+    EXPECT_TRUE(base::MatchPattern(GetInstallErrorMessage(),
+                                   u"*_locales?en_US?messages.json': EOF while "
+                                   u"parsing a string at line 4*"))
+        << GetInstallErrorMessage();
+  } else {
+    EXPECT_TRUE(base::MatchPattern(
+        GetInstallErrorMessage(),
+        u"*_locales?en_US?messages.json': Line: 4, column: 1,*"))
+        << GetInstallErrorMessage();
+  }
   ASSERT_EQ(CrxInstallErrorType::SANDBOXED_UNPACKER_FAILURE,
             GetInstallErrorType());
   EXPECT_EQ(static_cast<int>(
@@ -556,6 +564,21 @@ TEST_F(SandboxedUnpackerTest, UnzipperServiceFails) {
             GetInstallErrorType());
   EXPECT_EQ(static_cast<int>(SandboxedUnpackerFailureReason::UNZIP_FAILED),
             GetInstallErrorDetail());
+}
+
+TEST_F(SandboxedUnpackerTest, JsonParserFails) {
+  // Disable the Rust JSON parser, as it is in-process and cannot crash.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatureState(base::features::kUseRustJsonParser, false);
+
+  in_process_data_decoder().SimulateJsonParserCrash(true);
+  InitSandboxedUnpacker();
+
+  SetupUnpacker("good_package.crx", "");
+  EXPECT_FALSE(InstallSucceeded());
+  EXPECT_FALSE(GetInstallErrorMessage().empty());
+  ASSERT_EQ(CrxInstallErrorType::SANDBOXED_UNPACKER_FAILURE,
+            GetInstallErrorType());
 }
 
 TEST_F(SandboxedUnpackerTest, ImageDecoderFails) {

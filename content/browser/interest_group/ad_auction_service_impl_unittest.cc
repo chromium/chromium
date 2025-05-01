@@ -4224,6 +4224,78 @@ TEST_F(AdAuctionServiceImplTest, UpdateInvalidJSONIgnored) {
   EXPECT_EQ(group.ads.value()[0].render_url(), "https://example.com/render");
 }
 
+// UpdateJSONParserCrash fails on Android or with the Rust parser because in
+// those conditions the data decoder doesn't use a separate process to parse
+// JSON. On other platforms, the C++ parser runs out-of-proc for safety.
+#if !BUILDFLAG(IS_ANDROID)
+
+// The server response is valid, but we simulate the JSON parser (which may
+// run in a separate process) crashing, so the update doesn't happen.
+TEST_F(AdAuctionServiceImplTest, UpdateJSONParserCrash) {
+  // Disable the Rust JSON parser, as it is in-process and cannot crash.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatureState(base::features::kUseRustJsonParser, false);
+
+  network_responder_->RegisterUpdateResponse(kUpdateUrlPath, R"({
+"ads": [{"renderURL": "https://example.com/new_render"
+        }]
+})");
+
+  blink::InterestGroup interest_group = CreateInterestGroup();
+  // Set a long expiration delta so that we can advance to the next rate limit
+  // period without the interest group expiring.
+  interest_group.expiry = base::Time::Now() + base::Days(30);
+  interest_group.update_url = kUpdateUrlA;
+  interest_group.bidding_url = kBiddingLogicUrlA;
+  interest_group.trusted_bidding_signals_url = kTrustedBiddingSignalsUrlA;
+  interest_group.trusted_bidding_signals_keys.emplace();
+  interest_group.trusted_bidding_signals_keys->push_back("key1");
+  interest_group.ads.emplace();
+  blink::InterestGroup::Ad ad(
+      /*render_gurl=*/GURL("https://example.com/render"),
+      /*metadata=*/std::nullopt);
+  interest_group.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group);
+  EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
+
+  // Simulate the JSON service crashing instead of returning a result.
+  data_decoder::test::InProcessDataDecoder in_process_data_decoder;
+  in_process_data_decoder.SimulateJsonParserCrash(
+      /*drop=*/true);
+
+  UpdateInterestGroupNoFlush();
+  task_environment()->RunUntilIdle();
+
+  // Check that the ads didn't change.
+  scoped_refptr<StorageInterestGroups> groups =
+      GetInterestGroupsForOwner(kOriginA);
+  ASSERT_EQ(groups->size(), 1u);
+  auto group = groups->GetInterestGroups()[0]->interest_group;
+  ASSERT_TRUE(group.ads.has_value());
+  ASSERT_EQ(group.ads->size(), 1u);
+  EXPECT_EQ(group.ads.value()[0].render_url(), "https://example.com/render");
+
+  // Try another IG update, this time with no crash. It should succceed.
+  // (We need to advance time since this next attempt is rate-limited).
+  in_process_data_decoder.SimulateJsonParserCrash(
+      /*drop=*/false);
+  task_environment()->FastForwardBy(
+      InterestGroupStorage::kUpdateSucceededBackoffPeriod);
+  UpdateInterestGroupNoFlush();
+  task_environment()->RunUntilIdle();
+
+  // Check that the ads *did* change this time.
+  groups = GetInterestGroupsForOwner(kOriginA);
+  ASSERT_EQ(groups->size(), 1u);
+  group = groups->GetInterestGroups()[0]->interest_group;
+  ASSERT_TRUE(group.ads.has_value());
+  ASSERT_EQ(group.ads->size(), 1u);
+  EXPECT_EQ(group.ads.value()[0].render_url(),
+            "https://example.com/new_render");
+}
+
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 // Trigger an update, but block it via ContentBrowserClient policy.
 // The update shouldn't happen.
 TEST_F(AdAuctionServiceImplTest, UpdateBlockedByContentBrowserClient) {

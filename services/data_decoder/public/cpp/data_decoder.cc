@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "base/features.h"
 #include "base/functional/callback.h"
 #include "base/json/json_reader.h"
 #include "base/memory/ref_counted.h"
@@ -26,6 +27,11 @@
 #include "services/data_decoder/public/mojom/json_parser.mojom.h"
 #include "services/data_decoder/public/mojom/structured_headers_parser.mojom.h"
 #include "services/data_decoder/public/mojom/xml_parser.mojom.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/types/expected_macros.h"
+#include "services/data_decoder/public/cpp/json_sanitizer.h"
+#endif
 
 #if !BUILDFLAG(USE_BLINK)
 #include "services/data_decoder/data_decoder_service.h"  // nogncheck
@@ -198,11 +204,62 @@ void DataDecoder::ParseJson(const std::string& json,
       },
       base::ElapsedTimer(), std::move(callback));
 
-  base::JSONReader::Result result =
-      base::JSONReader::ReadAndReturnValueWithError(json, base::JSON_PARSE_RFC);
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&ParsingComplete, cancel_requests_,
-                                std::move(callback), std::move(result)));
+  if (base::JSONReader::UsingRust()) {
+    if (base::features::kUseRustJsonParserInCurrentSequence.Get()) {
+      base::JSONReader::Result result =
+          base::JSONReader::ReadAndReturnValueWithError(json,
+                                                        base::JSON_PARSE_RFC);
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, base::BindOnce(&ParsingComplete, cancel_requests_,
+                                    std::move(callback), std::move(result)));
+    } else {
+      base::ThreadPool::PostTaskAndReplyWithResult(
+          FROM_HERE, {base::TaskPriority::USER_VISIBLE},
+          base::BindOnce(
+              [](const std::string& json) {
+                return base::JSONReader::ReadAndReturnValueWithError(
+                    json, base::JSON_PARSE_RFC);
+              },
+              json),
+          base::BindOnce(&ParsingComplete, cancel_requests_,
+                         std::move(callback)));
+    }
+    return;
+  }
+
+#if BUILDFLAG(IS_ANDROID)
+  // For Android, if the full Rust parser is not available, we use the
+  // in-process sanitizer and then parse in-process.
+  JsonSanitizer::Sanitize(
+      json, base::BindOnce(
+                [](ValueParseCallback callback,
+                   scoped_refptr<CancellationFlag> is_cancelled,
+                   JsonSanitizer::Result result) {
+                  if (is_cancelled->data) {
+                    return;
+                  }
+
+                  RETURN_IF_ERROR(result, [&](std::string error) {
+                    std::move(callback).Run(base::unexpected(std::move(error)));
+                  });
+
+                  ParsingComplete(is_cancelled, std::move(callback),
+                                  base::JSONReader::ReadAndReturnValueWithError(
+                                      result.value(), base::JSON_PARSE_RFC));
+                },
+                std::move(callback), cancel_requests_));
+#else   // BUILDFLAG(IS_ANDROID)
+  // Parse JSON out-of-process.
+  auto request =
+      base::MakeRefCounted<ValueParseRequest<mojom::JsonParser, base::Value>>(
+          std::move(callback), cancel_requests_);
+  GetService()->BindJsonParser(request->BindRemote());
+  request->remote()->Parse(
+      json, base::JSON_PARSE_RFC,
+      base::BindOnce(&ValueParseRequest<mojom::JsonParser,
+                                        base::Value>::OnServiceValueOrError,
+                     request));
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 // static

@@ -7,13 +7,13 @@
 #include <string_view>
 #include <utility>
 
+#include "base/features.h"
+#include "base/json/json_parser.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
 
-#if BUILDFLAG(IS_NACL)
-#include "base/json/json_parser.h"
-#else
+#if !BUILDFLAG(IS_NACL)
 #include "base/strings/string_view_rust.h"
 #include "third_party/rust/serde_json_lenient/v0_2/wrapper/functions.h"
 #include "third_party/rust/serde_json_lenient/v0_2/wrapper/lib.rs.h"
@@ -142,13 +142,17 @@ std::optional<Value> JSONReader::Read(std::string_view json,
   return parser.Parse(json);
 #else   // BUILDFLAG(IS_NACL)
   SCOPED_UMA_HISTOGRAM_TIMER_MICROS(kSecurityJsonParsingTime);
-
-  JSONReader::Result result =
-      serde_json_lenient::DecodeJSONInRust(json, options, max_depth);
-  if (!result.has_value()) {
-    return std::nullopt;
+  if (UsingRust()) {
+    JSONReader::Result result =
+        serde_json_lenient::DecodeJSONInRust(json, options, max_depth);
+    if (!result.has_value()) {
+      return std::nullopt;
+    }
+    return std::move(*result);
+  } else {
+    internal::JSONParser parser(options, max_depth);
+    return parser.Parse(json);
   }
-  return std::move(*result);
 #endif  // BUILDFLAG(IS_NACL)
 }
 
@@ -192,9 +196,38 @@ JSONReader::Result JSONReader::ReadAndReturnValueWithError(
   return std::move(*value);
 #else   // BUILDFLAG(IS_NACL)
   SCOPED_UMA_HISTOGRAM_TIMER_MICROS(kSecurityJsonParsingTime);
-  return serde_json_lenient::DecodeJSONInRust(json, options,
-                                              internal::kAbsoluteMaxDepth);
+  if (UsingRust()) {
+    return serde_json_lenient::DecodeJSONInRust(json, options,
+                                                internal::kAbsoluteMaxDepth);
+  } else {
+    internal::JSONParser parser(options);
+    auto value = parser.Parse(json);
+    if (!value) {
+      Error error;
+      error.message = parser.GetErrorMessage();
+      error.line = parser.error_line();
+      error.column = parser.error_column();
+      return base::unexpected(std::move(error));
+    }
+
+    return std::move(*value);
+  }
 #endif  // BUILDFLAG(IS_NACL)
+}
+
+// static
+bool JSONReader::UsingRust() {
+  // If features have not yet been enabled, we cannot check the feature, so fall
+  // back to the C++ parser. In practice, this seems to apply to
+  // `ReadPrefsFromDisk()`, which is parsing trusted JSON.
+  if (!base::FeatureList::GetInstance()) {
+    return false;
+  }
+#if BUILDFLAG(IS_NACL)
+  return false;
+#else
+  return base::FeatureList::IsEnabled(base::features::kUseRustJsonParser);
+#endif
 }
 
 }  // namespace base
