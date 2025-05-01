@@ -652,6 +652,7 @@ inline constexpr char kSearchSubPage[] = "search";
 inline constexpr char kSignOutSubPage[] = "signOut";
 inline constexpr char kSiteDetailsSubpage[] = "content/siteDetails";
 inline constexpr char kSyncSetupSubPage[] = "syncSetup";
+inline constexpr char kSyncSetupAdvancedSubPage[] = "syncSetup/advanced";
 inline constexpr char kTriggeredResetProfileSettingsSubPage[] =
     "triggeredResetProfileSettings";
 

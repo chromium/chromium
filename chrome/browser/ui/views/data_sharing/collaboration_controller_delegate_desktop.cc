@@ -390,7 +390,8 @@ void CollaborationControllerDelegateDesktop::MaybeShowSignInAndSyncUi() {
           ShowSignInAndSyncUi(profile);
           break;
         case collaboration::SyncStatus::kSyncWithoutTabGroup:
-          chrome::ShowSettingsSubPage(browser_, chrome::kSyncSetupSubPage);
+          chrome::ShowSettingsSubPage(browser_,
+                                      chrome::kSyncSetupAdvancedSubPage);
           break;
         case collaboration::SyncStatus::kSyncEnabled:
           NOTREACHED();
