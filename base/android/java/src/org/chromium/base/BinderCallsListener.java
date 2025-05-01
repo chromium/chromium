@@ -76,6 +76,7 @@ public class BinderCallsListener {
                 "android.hardware.devicestate.IDeviceStateManager",
                 "com.android.internal.telephony.ISub",
                 "com.android.internal.app.IAppOpsService",
+                "com.android.internal.app.IBatteryStats",
                 "android.view.IGraphicsStats",
                 "android.app.job.IJobCallback",
                 "android.app.trust.ITrustManager",
@@ -93,6 +94,8 @@ public class BinderCallsListener {
                 "android.app.IActivityClientController",
                 // Used to check if stylus is enabled.
                 "com.android.internal.view.IInputMethodManager",
+                // Updates cursor anchor info - https://crbug.com/407792620.
+                "com.android.internal.view.IInputMethodSession",
                 // Registers content observers.
                 "android.content.IContentService",
                 // BackgroundTaskScheduler.
@@ -151,11 +154,21 @@ public class BinderCallsListener {
                 // Wraps CCT callbacks with a CustomTabsConnection#safeExtraCallback -
                 // https://crbug.com/407696847.
                 "android.support.customtabs.ICustomTabsCallback",
+                // CCT scroll events - https://crbug.com/407591642.
+                "android.support.customtabs.IEngagementSignalsCallback",
                 // Called onWindowFocusChanged - https://crbug.com/407570292.
                 "android.app.unipnp.IUnionManager",
                 // Checks if the Browser role is available to promote dialogs -
                 // https://crbug.com/407477867.
-                "android.app.role.IRoleManager");
+                "android.app.role.IRoleManager",
+                // Quick Delete's haptic feedback - https://crbug.com/407955365.
+                "android.os.IVibratorService",
+                // Creates Smart Selection session - https://crbug.com/407821966.
+                "android.service.textclassifier.ITextClassifierService",
+                // Checks if Advanced Protection is enabled - https://crbug.com/407749727.
+                "android.security.advancedprotection.IAdvancedProtectionService",
+                // Web APK Notification permissions check - https://crbug.com/407749507.
+                "org.chromium.webapk.lib.runtime_library.IWebApkApi");
     }
 
     private @Nullable Object mImplementation;
@@ -286,15 +299,22 @@ public class BinderCallsListener {
                     try {
                         mCurrentInterfaceDescriptor = binder.getInterfaceDescriptor();
                     } catch (RemoteException e) {
-                        mCurrentInterfaceDescriptor = null;
                         return null;
                     }
+                    if (mCurrentInterfaceDescriptor == null) return null;
 
                     TraceEvent.begin("BinderCallsListener.invoke", mCurrentInterfaceDescriptor);
                     if (mObserver != null) {
                         mObserver.accept("onTransactStarted", mCurrentInterfaceDescriptor);
                     }
-                    if (!sSlowBinderCallAllowList.contains(mCurrentInterfaceDescriptor)) {
+                    // There are some Binder calls that don't have an interface descriptor (e.g.
+                    // https://crbug.com/407792383). Ignore these for now, but the empty string
+                    // check here could be the source of discrepancies in the future.
+                    boolean shouldTrackBinderIpc =
+                            !(mCurrentInterfaceDescriptor.equals("")
+                                    || sSlowBinderCallAllowList.contains(
+                                            mCurrentInterfaceDescriptor));
+                    if (shouldTrackBinderIpc) {
                         return mCurrentTransactionId;
                     }
                     return null;
