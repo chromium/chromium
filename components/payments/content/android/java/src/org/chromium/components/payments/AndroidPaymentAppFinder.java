@@ -65,7 +65,12 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
     private static boolean sBypassIsReadyToPayServiceInTest;
     private static @Nullable AndroidIntentLauncher sAndroidIntentLauncherForTest;
 
-    private final Set<GURL> mUrlPaymentMethods = new HashSet<>();
+    /**
+     * The set of payment methods that the merchant website has specified in the Payment Request
+     * API. This is the set of payment methods that the merchant supports.
+     */
+    private final Set<GURL> mMerchantRequestedUrlPaymentMethods = new HashSet<>();
+
     private final PaymentManifestDownloader mDownloader;
     private final PaymentManifestWebDataService mWebDataService;
     private final PaymentManifestParser mParser;
@@ -300,7 +305,7 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
             GURL url = new GURL(method); // Only URL payment method names are supported.
             if (mAppStores.containsValue(url)) continue;
             if (UrlUtil.isValidUrlBasedPaymentMethodIdentifier(url)) {
-                mUrlPaymentMethods.add(url);
+                mMerchantRequestedUrlPaymentMethods.add(url);
             }
         }
 
@@ -339,7 +344,11 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
         // in this set:
         //
         // ("https://bobpay.com/personal", "https://alicepay.com/webpay")
-        Set<GURL> urlMethods = new HashSet<>(mUrlPaymentMethods);
+        //
+        // Manifests from all of these URLs will be downloaded for verification of app package
+        // names, versions, and signatures.
+        Set<GURL> urlMethodsForManifestDownload =
+                new HashSet<>(mMerchantRequestedUrlPaymentMethods);
 
         // A mapping from all known payment method names to the corresponding payment apps that
         // claim to support these payment methods. Example contents:
@@ -405,7 +414,7 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
                 methodToAppsMapping.get(defaultMethod).add(app);
 
                 if (UrlUtil.isURLValid(defaultUrlMethod)) {
-                    urlMethods.add(defaultUrlMethod);
+                    urlMethodsForManifestDownload.add(defaultUrlMethod);
 
                     if (!urlMethodToDefaultAppsMapping.containsKey(defaultUrlMethod)) {
                         urlMethodToDefaultAppsMapping.put(
@@ -476,8 +485,9 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
         }
 
         List<PaymentManifestVerifier> manifestVerifiers = new ArrayList<>();
-        for (GURL urlMethodName : urlMethods) {
-            if (!methodToAppsMapping.containsKey(urlToStringWithoutTrailingSlash(urlMethodName))) {
+        for (GURL urlMethodNameForManifestDownload : urlMethodsForManifestDownload) {
+            if (!methodToAppsMapping.containsKey(
+                    urlToStringWithoutTrailingSlash(urlMethodNameForManifestDownload))) {
                 continue;
             }
 
@@ -496,9 +506,9 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
             manifestVerifiers.add(
                     new PaymentManifestVerifier(
                             mFactoryDelegate.getParams().getPaymentRequestSecurityOrigin(),
-                            urlMethodName,
-                            urlMethodToDefaultAppsMapping.get(urlMethodName),
-                            urlMethodToSupportedOriginsMapping.get(urlMethodName),
+                            urlMethodNameForManifestDownload,
+                            urlMethodToDefaultAppsMapping.get(urlMethodNameForManifestDownload),
+                            urlMethodToSupportedOriginsMapping.get(urlMethodNameForManifestDownload),
                             mWebDataService,
                             mDownloader,
                             mParser,
@@ -610,7 +620,9 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
 
         for (Map.Entry<GURL, PaymentMethod> nameAndMethod : mVerifiedPaymentMethods.entrySet()) {
             GURL methodName = nameAndMethod.getKey();
-            if (!mUrlPaymentMethods.contains(methodName)) continue;
+            if (!mMerchantRequestedUrlPaymentMethods.contains(methodName)) {
+                continue;
+            }
 
             PaymentMethod method = nameAndMethod.getValue();
             String methodNameString = urlToStringWithoutTrailingSlash(methodName);
