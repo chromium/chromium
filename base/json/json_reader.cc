@@ -11,6 +11,8 @@
 #include "base/json/json_parser.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
 
 #if !BUILDFLAG(IS_NACL)
@@ -132,6 +134,11 @@ base::JSONReader::Result DecodeJSONInRust(std::string_view json,
 #endif  // !BUILDFLAG(IS_NACL)
 
 namespace base {
+
+std::string JSONReader::Error::ToString() const {
+  return base::StrCat({"line ", base::NumberToString(line), ", column ",
+                       base::NumberToString(column), ": ", message});
+}
 
 // static
 std::optional<Value> JSONReader::Read(std::string_view json,
