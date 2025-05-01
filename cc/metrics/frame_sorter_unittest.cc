@@ -17,10 +17,11 @@
 namespace cc {
 
 // Test class for FrameSorter
-class FrameSorterTest : public testing::Test, FrameSorterObserver {
+class FrameSorterTest : public testing::Test {
  public:
-  FrameSorterTest() {
-    frame_sorter_.AddObserver(this);
+  FrameSorterTest()
+      : frame_sorter_(base::BindRepeating(&FrameSorterTest::FlushFrame,
+                                          base::Unretained(this))) {
     IncreaseSourceId();
   }
   ~FrameSorterTest() override = default;
@@ -120,8 +121,7 @@ class FrameSorterTest : public testing::Test, FrameSorterObserver {
   }
 
  private:
-  void AddSortedFrame(const viz::BeginFrameArgs& args,
-                      const FrameInfo& frame) override {
+  void FlushFrame(const viz::BeginFrameArgs& args, const FrameInfo& frame) {
     sorted_frames_.emplace_back(args, frame.IsDroppedAffectingSmoothness());
   }
 

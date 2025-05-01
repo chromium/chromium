@@ -481,7 +481,7 @@ LayerTreeHostImpl::LayerTreeHostImpl(
               /*should_report_ukm=*/!settings.single_thread_proxy_scheduler,
               id)),
       frame_trackers_(settings.single_thread_proxy_scheduler,
-                      &dropped_frame_counter_),
+                      compositor_frame_reporting_controller_.get()),
       lcd_text_metrics_reporter_(LCDTextMetricsReporter::CreateIfNeeded(this)),
       frame_rate_estimator_(GetTaskRunner()),
       contains_srgb_cache_(kContainsSrgbCacheSize),
@@ -525,7 +525,6 @@ LayerTreeHostImpl::LayerTreeHostImpl(
   }
 
   SetDebugState(settings.initial_debug_state);
-  compositor_frame_reporting_controller_->SetFrameSorter(&frame_sorter_);
   compositor_frame_reporting_controller_->SetDroppedFrameCounter(
       &dropped_frame_counter_);
   compositor_frame_reporting_controller_->SetFrameSequenceTrackerCollection(
@@ -537,8 +536,8 @@ LayerTreeHostImpl::LayerTreeHostImpl(
 
 #if BUILDFLAG(IS_CHROMEOS)
     dropped_frame_counter_.EnableReportForUI();
-    frame_trackers_.StartSequence(
-        FrameSequenceTrackerType::kCompositorAnimation);
+    compositor_frame_reporting_controller_->SetThreadAffectsSmoothness(
+        FrameInfo::SmoothEffectDrivingThread::kMain, true);
 #endif  // BUILDFLAG(IS_CHROMEOS)
   }
 
@@ -585,17 +584,19 @@ LayerTreeHostImpl::~LayerTreeHostImpl() {
   mutator_host_->ClearMutators();
   mutator_host_->SetMutatorHostClient(nullptr);
 
-  // The `compositor_frame_reporting_controller_`
-  // was given a `this` pointer for the event_latency_tracker and thus needs
-  // to be nulled to prevent it dangling. Members will be destroyed in reverse
-  // order of their declaration, so since event latency tracker is destroyed
-  // first, we need to clar the pointer that
+  // `frame_trackers_` holds a pointer to
+  // `compositor_frame_reporting_controller_`. Setting
+  // `compositor_frame_reporting_controller_` to nullptr here leads to
+  // `frame_trackers_` holding a dangling ptr. Don't set to null here and let
+  // members be destroyed in reverse order of declaration.
+  // Since `frame_trackers_` is destroyed first, we need to clear the ptr that
   // `compositor_frame_reporting_controller_` holds.
+  compositor_frame_reporting_controller_->SetFrameSequenceTrackerCollection(
+      nullptr);
+  // Similar to the logic above. The `compositor_frame_reporting_controller_`
+  // was given a `this` pointer for the event_latency_tracker and thus needs
+  // to be nulled to prevent it dangling.
   compositor_frame_reporting_controller_->set_event_latency_tracker(nullptr);
-  // CFRC needs to unregister the frame trackers from the frame_sorter observer
-  // set before being cleaned up.
-  compositor_frame_reporting_controller_->ClearFrameSequenceTrackerCollection();
-  compositor_frame_reporting_controller_->ClearDroppedFrameCounter();
 }
 
 InputHandler& LayerTreeHostImpl::GetInputHandler() {
@@ -3780,7 +3781,7 @@ void LayerTreeHostImpl::DidLoseLayerTreeFrameSink() {
   has_valid_layer_tree_frame_sink_ = false;
   client_->DidLoseLayerTreeFrameSinkOnImplThread();
   lag_tracking_manager_.Clear();
-  frame_sorter_.Reset();
+
   dropped_frame_counter_.ResetPendingFrames(base::TimeTicks::Now());
 }
 
@@ -4088,7 +4089,6 @@ void LayerTreeHostImpl::SetVisible(bool visible) {
   } else {
     auto now = base::TimeTicks::Now();
     total_frame_counter_.OnHide(now);
-    frame_sorter_.Reset();
     dropped_frame_counter_.ResetPendingFrames(now);
 
     // When page is invisible, throw away corresponding EventsMetrics since
@@ -5936,7 +5936,6 @@ void LayerTreeHostImpl::SetActiveURL(const GURL& url, ukm::SourceId source_id) {
   // The source id has already been associated to the URL.
   compositor_frame_reporting_controller_->SetSourceId(source_id);
   total_frame_counter_.Reset();
-  frame_sorter_.Reset();
   dropped_frame_counter_.Reset();
   is_measuring_smoothness_ = false;
 }
