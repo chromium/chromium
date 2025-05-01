@@ -42,6 +42,11 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "url/gurl.h"
 
+using endpoint_fetcher::EndpointFetcher;
+using endpoint_fetcher::EndpointResponse;
+using endpoint_fetcher::FetchErrorType;
+using endpoint_fetcher::HttpMethod;
+
 namespace ash::quick_start {
 
 namespace {

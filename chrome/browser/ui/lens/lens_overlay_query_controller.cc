@@ -69,6 +69,12 @@
 #include "third_party/zstd/src/lib/zstd.h"
 #include "ui/gfx/geometry/rect.h"
 
+using endpoint_fetcher::CredentialsMode;
+using endpoint_fetcher::EndpointFetcher;
+using endpoint_fetcher::EndpointFetcherCallback;
+using endpoint_fetcher::EndpointResponse;
+using endpoint_fetcher::HttpMethod;
+
 namespace lens {
 
 using LatencyType = LensOverlayGen204Controller::LatencyType;
@@ -909,11 +915,11 @@ std::unique_ptr<EndpointFetcher>
 LensOverlayQueryController::CreateEndpointFetcher(
     std::string request_string,
     const GURL& fetch_url,
-    const HttpMethod& http_method,
-    const base::TimeDelta& timeout,
+    HttpMethod http_method,
+    base::TimeDelta timeout,
     const std::vector<std::string>& request_headers,
     const std::vector<std::string>& cors_exempt_headers,
-    const UploadProgressCallback upload_progress_callback) {
+    UploadProgressCallback upload_progress_callback) {
   return std::make_unique<EndpointFetcher>(
       /*url_loader_factory=*/profile_
           ? profile_->GetURLLoaderFactory().get()
@@ -921,7 +927,7 @@ LensOverlayQueryController::CreateEndpointFetcher(
       /*url=*/fetch_url,
       /*content_type=*/kContentType,
       /*timeout=*/timeout,
-      /*post_data=*/request_string,
+      /*post_data=*/std::move(request_string),
       /*headers=*/request_headers,
       /*cors_exempt_headers=*/cors_exempt_headers, chrome::GetChannel(),
       /*request_params=*/
@@ -929,7 +935,7 @@ LensOverlayQueryController::CreateEndpointFetcher(
                                               kTrafficAnnotationTag)
           .SetCredentialsMode(CredentialsMode::kInclude)
           .SetSetSiteForCookies(true)
-          .SetUploadProgressCallback(upload_progress_callback)
+          .SetUploadProgressCallback(std::move(upload_progress_callback))
           .Build());
 }
 
@@ -1507,7 +1513,7 @@ void LensOverlayQueryController::FetchUploadChunkRequest(
   CHECK(request.SerializeToString(&request_string));
 
   PerformFetchRequest(
-      request_string, &pending_upload_chunk_headers_,
+      std::move(request_string), &pending_upload_chunk_headers_,
       base::Milliseconds(
           lens::features::GetLensOverlayUploadChunkRequestTimeoutMs()),
       base::BindOnce(
@@ -2136,29 +2142,29 @@ void LensOverlayQueryController::SendInitialLatencyGen204IfNotAlreadySent(
 void LensOverlayQueryController::PerformFetchRequest(
     lens::LensOverlayServerRequest* request,
     std::vector<std::string>* request_headers,
-    const base::TimeDelta& timeout,
+    base::TimeDelta timeout,
     base::OnceCallback<void(std::unique_ptr<EndpointFetcher>)>
         fetcher_created_callback,
     EndpointFetcherCallback response_received_callback,
-    const UploadProgressCallback upload_progress_callback) {
+    UploadProgressCallback upload_progress_callback) {
   CHECK(request);
   std::string request_string;
   CHECK(request->SerializeToString(&request_string));
   GURL fetch_url = GURL(lens::features::GetLensOverlayEndpointURL());
-  PerformFetchRequest(request_string, request_headers, timeout,
+  PerformFetchRequest(std::move(request_string), request_headers, timeout,
                       std::move(fetcher_created_callback),
                       std::move(response_received_callback),
-                      upload_progress_callback, fetch_url);
+                      std::move(upload_progress_callback), fetch_url);
 }
 
 void LensOverlayQueryController::PerformFetchRequest(
     std::string request_string,
     std::vector<std::string>* request_headers,
-    const base::TimeDelta& timeout,
+    base::TimeDelta timeout,
     base::OnceCallback<void(std::unique_ptr<EndpointFetcher>)>
         fetcher_created_callback,
     EndpointFetcherCallback response_received_callback,
-    const UploadProgressCallback upload_progress_callback,
+    UploadProgressCallback upload_progress_callback,
     GURL fetch_url) {
   CHECK(request_headers);
 
@@ -2178,8 +2184,9 @@ void LensOverlayQueryController::PerformFetchRequest(
   // Create the EndpointFetcher, responsible for making the request using our
   // given params.
   std::unique_ptr<EndpointFetcher> endpoint_fetcher = CreateEndpointFetcher(
-      request_string, fetch_url, HttpMethod::kPost, timeout, *request_headers,
-      cors_exempt_headers, upload_progress_callback);
+      std::move(request_string), fetch_url, HttpMethod::kPost, timeout,
+      *request_headers, cors_exempt_headers,
+      std::move(upload_progress_callback));
   EndpointFetcher* fetcher = endpoint_fetcher.get();
 
   // Run callback that the fetcher was created. This is used to keep the

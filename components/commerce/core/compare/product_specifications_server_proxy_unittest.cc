@@ -26,6 +26,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
+using endpoint_fetcher::MockEndpointFetcher;
+
 namespace commerce {
 namespace {
 
@@ -108,7 +110,7 @@ class MockProductSpecificationsServerProxy
   MockProductSpecificationsServerProxy operator=(
       const MockProductSpecificationsServerProxy&) = delete;
   ~MockProductSpecificationsServerProxy() override = default;
-  MOCK_METHOD(std::unique_ptr<EndpointFetcher>,
+  MOCK_METHOD(std::unique_ptr<endpoint_fetcher::EndpointFetcher>,
               CreateEndpointFetcher,
               (const GURL& url,
                const std::string& http_method,

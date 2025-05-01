@@ -12,6 +12,9 @@
 #include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
 
+using endpoint_fetcher::EndpointFetcher;
+using endpoint_fetcher::EndpointResponse;
+
 namespace data_sharing {
 
 namespace {

@@ -25,7 +25,9 @@
 #include "base/types/cxx23_to_underlying.h"
 #include "base/values.h"
 
+namespace endpoint_fetcher {
 class EndpointFetcher;
+}
 
 namespace ash {
 
@@ -98,7 +100,7 @@ class ASH_EXPORT QuickInsertSearchRequest {
 
   std::unique_ptr<QuickInsertClipboardHistoryProvider> clipboard_provider_;
   QuickInsertSearchDebouncer gif_search_debouncer_;
-  std::unique_ptr<EndpointFetcher> gif_fetcher_;
+  std::unique_ptr<endpoint_fetcher::EndpointFetcher> gif_fetcher_;
 
   SearchResultsCallback current_callback_;
   // Set to true once all the searches have started at the end of the ctor.

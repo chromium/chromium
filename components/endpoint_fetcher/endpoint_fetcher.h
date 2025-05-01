@@ -18,17 +18,6 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/data_decoder/public/cpp/json_sanitizer.h"
 
-namespace {
-
-enum class CredentialsMode {
-  kOmit = 0,
-  kInclude = 1,
-};
-
-}  // namespace
-
-class EndpointFetcherTest;
-
 namespace base {
 class TimeDelta;
 }  // namespace base
@@ -49,6 +38,15 @@ enum class Channel;
 
 class GoogleServiceAuthError;
 class GURL;
+
+namespace endpoint_fetcher {
+
+class EndpointFetcherTest;
+
+enum class CredentialsMode {
+  kOmit = 0,
+  kInclude = 1,
+};
 
 enum class FetchErrorType {
   kAuthError = 0,
@@ -337,7 +335,7 @@ class EndpointFetcher {
       const net::NetworkTrafficAnnotationTag& annotation_tag);
 
  private:
-  friend class ::EndpointFetcherTest;
+  friend class EndpointFetcherTest;
   void OnAuthTokenFetched(EndpointFetcherCallback callback,
                           GoogleServiceAuthError error,
                           signin::AccessTokenInfo access_token_info);
@@ -376,5 +374,7 @@ class EndpointFetcher {
 
   base::WeakPtrFactory<EndpointFetcher> weak_ptr_factory_{this};
 };
+
+}  // namespace endpoint_fetcher
 
 #endif  // COMPONENTS_ENDPOINT_FETCHER_ENDPOINT_FETCHER_H_

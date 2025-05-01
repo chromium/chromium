@@ -29,6 +29,11 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using endpoint_fetcher::EndpointFetcher;
+using endpoint_fetcher::EndpointFetcherCallback;
+using endpoint_fetcher::EndpointResponse;
+using endpoint_fetcher::FetchErrorType;
+
 using MockDiscoveryDeviceCallback = base::MockCallback<
     media_router::AccessCodeCastDiscoveryInterface::DiscoveryDeviceCallback>;
 

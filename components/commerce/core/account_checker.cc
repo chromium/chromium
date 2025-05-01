@@ -24,6 +24,9 @@
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
+using endpoint_fetcher::EndpointFetcher;
+using endpoint_fetcher::EndpointResponse;
+
 namespace {
 
 constexpr base::TimeDelta kTimeout = base::Milliseconds(10000);

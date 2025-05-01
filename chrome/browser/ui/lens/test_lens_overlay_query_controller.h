@@ -11,16 +11,17 @@
 
 namespace lens {
 
-class FakeEndpointFetcher : public EndpointFetcher {
+class FakeEndpointFetcher : public endpoint_fetcher::EndpointFetcher {
  public:
-  explicit FakeEndpointFetcher(EndpointResponse response);
-  void PerformRequest(EndpointFetcherCallback endpoint_fetcher_callback,
-                      const char* key) override;
+  explicit FakeEndpointFetcher(endpoint_fetcher::EndpointResponse response);
+  void PerformRequest(
+      endpoint_fetcher::EndpointFetcherCallback endpoint_fetcher_callback,
+      const char* key) override;
 
   bool disable_responding_ = false;
 
  private:
-  EndpointResponse response_;
+  endpoint_fetcher::EndpointResponse response_;
 };
 
 // Helper for testing features that use the LensOverlayQueryController.
@@ -256,14 +257,14 @@ class TestLensOverlayQueryController : public LensOverlayQueryController {
   void ResetTestingState();
 
  protected:
-  std::unique_ptr<EndpointFetcher> CreateEndpointFetcher(
+  std::unique_ptr<endpoint_fetcher::EndpointFetcher> CreateEndpointFetcher(
       std::string request_string,
       const GURL& fetch_url,
-      const HttpMethod& http_method,
-      const base::TimeDelta& timeout,
+      endpoint_fetcher::HttpMethod http_method,
+      base::TimeDelta timeout,
       const std::vector<std::string>& request_headers,
       const std::vector<std::string>& cors_exempt_headers,
-      const UploadProgressCallback upload_progress_callback) override;
+      UploadProgressCallback upload_progress_callback) override;
 
   void SendLatencyGen204IfEnabled(
       lens::LensOverlayGen204Controller::LatencyType latency_type,

@@ -48,8 +48,8 @@ class PreviewServerProxy {
           callback);
 
  protected:
-  virtual std::unique_ptr<EndpointFetcher> CreateEndpointFetcher(
-      const GURL& url);
+  virtual std::unique_ptr<endpoint_fetcher::EndpointFetcher>
+  CreateEndpointFetcher(const GURL& url);
   virtual version_info::Channel GetChannel() const;
 
  private:
@@ -57,8 +57,8 @@ class PreviewServerProxy {
       base::OnceCallback<
           void(const DataSharingService::SharedDataPreviewOrFailureOutcome&)>
           callback,
-      std::unique_ptr<EndpointFetcher> endpoint_fetcher,
-      std::unique_ptr<EndpointResponse> response);
+      std::unique_ptr<endpoint_fetcher::EndpointFetcher> endpoint_fetcher,
+      std::unique_ptr<endpoint_fetcher::EndpointResponse> response);
 
   void OnResponseJsonParsed(
       base::OnceCallback<

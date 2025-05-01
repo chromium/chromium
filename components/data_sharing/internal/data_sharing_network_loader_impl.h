@@ -51,17 +51,18 @@ class DataSharingNetworkLoaderImpl : public DataSharingNetworkLoader {
 
  protected:
   // This method could be overridden in tests.
-  virtual std::unique_ptr<EndpointFetcher> CreateEndpointFetcher(
-      const GURL& url,
-      const std::vector<std::string>& scopes,
-      const std::string& post_data,
-      const net::NetworkTrafficAnnotationTag& annotation_tag);
+  virtual std::unique_ptr<endpoint_fetcher::EndpointFetcher>
+  CreateEndpointFetcher(const GURL& url,
+                        const std::vector<std::string>& scopes,
+                        const std::string& post_data,
+                        const net::NetworkTrafficAnnotationTag& annotation_tag);
 
  private:
   // Called when response is received
-  void OnDownloadComplete(NetworkLoaderCallback callback,
-                          std::unique_ptr<EndpointFetcher> fetcher,
-                          std::unique_ptr<EndpointResponse> response);
+  void OnDownloadComplete(
+      NetworkLoaderCallback callback,
+      std::unique_ptr<endpoint_fetcher::EndpointFetcher> fetcher,
+      std::unique_ptr<endpoint_fetcher::EndpointResponse> response);
 
   const net::NetworkTrafficAnnotationTag& GetNetworkTrafficAnnotationTag(
       DataSharingRequestType request_type);

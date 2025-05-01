@@ -30,6 +30,9 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using endpoint_fetcher::EndpointFetcher;
+using endpoint_fetcher::FetchErrorType;
+using endpoint_fetcher::MockEndpointFetcher;
 using testing::_;
 using testing::InSequence;
 

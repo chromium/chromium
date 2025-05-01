@@ -21,6 +21,8 @@
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
+namespace endpoint_fetcher {
+
 namespace {
 const char kContentTypeKey[] = "Content-Type";
 const char kDeveloperKey[] = "X-Developer-Key";
@@ -418,3 +420,5 @@ UploadProgressCallback EndpointFetcher::GetUploadProgressCallback() const {
 std::string EndpointFetcher::GetUrlForTesting() {
   return request_params_.url().spec();
 }
+
+}  // namespace endpoint_fetcher

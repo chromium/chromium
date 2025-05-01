@@ -24,8 +24,10 @@ namespace signin {
 class IdentityManager;
 }  // namespace signin
 
+namespace endpoint_fetcher {
 class EndpointFetcher;
 struct EndpointResponse;
+}  // namespace endpoint_fetcher
 
 namespace commerce {
 
@@ -64,11 +66,11 @@ class SubscriptionsServerProxy {
 
  protected:
   // This method could be overridden in tests.
-  virtual std::unique_ptr<EndpointFetcher> CreateEndpointFetcher(
-      const GURL& url,
-      const std::string& http_method,
-      const std::string& post_data,
-      const net::NetworkTrafficAnnotationTag& annotation_tag);
+  virtual std::unique_ptr<endpoint_fetcher::EndpointFetcher>
+  CreateEndpointFetcher(const GURL& url,
+                        const std::string& http_method,
+                        const std::string& post_data,
+                        const net::NetworkTrafficAnnotationTag& annotation_tag);
 
  private:
   // Handle Create or Delete response.
@@ -78,8 +80,8 @@ class SubscriptionsServerProxy {
       // lifetime extends to the callback and is not destroyed
       // prematurely (which would result in cancellation of the request).
       // TODO(crbug.com/40238190): Avoid passing this fetcher.
-      std::unique_ptr<EndpointFetcher> endpoint_fetcher,
-      std::unique_ptr<EndpointResponse> responses);
+      std::unique_ptr<endpoint_fetcher::EndpointFetcher> endpoint_fetcher,
+      std::unique_ptr<endpoint_fetcher::EndpointResponse> responses);
 
   // This is called when Create or Delete response is parsed.
   void OnManageSubscriptionsJsonParsed(
@@ -93,8 +95,8 @@ class SubscriptionsServerProxy {
       // lifetime extends to the callback and is not destroyed
       // prematurely (which would result in cancellation of the request).
       // TODO(crbug.com/40238190): Avoid passing this fetcher.
-      std::unique_ptr<EndpointFetcher> endpoint_fetcher,
-      std::unique_ptr<EndpointResponse> responses);
+      std::unique_ptr<endpoint_fetcher::EndpointFetcher> endpoint_fetcher,
+      std::unique_ptr<endpoint_fetcher::EndpointResponse> responses);
 
   // This is called when Get response is parsed.
   void OnGetSubscriptionsJsonParsed(

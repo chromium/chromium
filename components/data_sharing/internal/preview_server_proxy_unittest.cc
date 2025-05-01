@@ -29,6 +29,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using endpoint_fetcher::MockEndpointFetcher;
 using testing::_;
 
 namespace data_sharing {
@@ -195,7 +196,7 @@ class FakePreviewServerProxy : public PreviewServerProxy {
     return PreviewServerProxy::GetChannel();
   }
 
-  MOCK_METHOD(std::unique_ptr<EndpointFetcher>,
+  MOCK_METHOD(std::unique_ptr<endpoint_fetcher::EndpointFetcher>,
               CreateEndpointFetcher,
               (const GURL& url),
               (override));

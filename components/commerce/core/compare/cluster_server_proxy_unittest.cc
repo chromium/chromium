@@ -32,6 +32,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using endpoint_fetcher::MockEndpointFetcher;
 using testing::_;
 
 namespace commerce {
@@ -89,7 +90,7 @@ class FakeClusterServerProxy : public ClusterServerProxy {
   FakeClusterServerProxy(const FakeClusterServerProxy&) = delete;
   FakeClusterServerProxy operator=(const FakeClusterServerProxy&) = delete;
   ~FakeClusterServerProxy() override = default;
-  MOCK_METHOD(std::unique_ptr<EndpointFetcher>,
+  MOCK_METHOD(std::unique_ptr<endpoint_fetcher::EndpointFetcher>,
               CreateEndpointFetcher,
               (const GURL& url, const std::string& post_data),
               (override));

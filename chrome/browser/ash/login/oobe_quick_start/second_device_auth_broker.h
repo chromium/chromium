@@ -189,8 +189,9 @@ class SecondDeviceAuthBroker {
 
  private:
   // Callback for handling challenge bytes response from Gaia.
-  void OnChallengeBytesFetched(ChallengeBytesCallback challenge_callback,
-                               std::unique_ptr<EndpointResponse> response);
+  void OnChallengeBytesFetched(
+      ChallengeBytesCallback challenge_callback,
+      std::unique_ptr<endpoint_fetcher::EndpointResponse> response);
 
   // Callback for handling the response from Gaia to our request for an OAuth
   // authorization code.
@@ -198,8 +199,9 @@ class SecondDeviceAuthBroker {
   // `auth_code_callback`.
   // Otherwise `auth_code_callback` is completed with an appropriate
   // `AuthCodeResponse` error type.
-  void OnAuthorizationCodeFetched(AuthCodeCallback auth_code_callback,
-                                  std::unique_ptr<EndpointResponse> response);
+  void OnAuthorizationCodeFetched(
+      AuthCodeCallback auth_code_callback,
+      std::unique_ptr<endpoint_fetcher::EndpointResponse> response);
 
   // Same as `FetchAttestationCertificate` except that it is called with
   // `attestation_features`.
@@ -217,13 +219,13 @@ class SecondDeviceAuthBroker {
   // Internal helper method to respond to `auth_code_callback`.
   void RunAuthCodeCallbackFromParsedResponse(
       SecondDeviceAuthBroker::AuthCodeCallback auth_code_callback,
-      std::unique_ptr<EndpointResponse> unparsed_response,
+      std::unique_ptr<endpoint_fetcher::EndpointResponse> unparsed_response,
       data_decoder::DataDecoder::ValueOrError response);
 
   // Internal helper methods to respond to `challenge_callback`.
   void HandleFetchChallengeBytesErrorResponse(
       SecondDeviceAuthBroker::ChallengeBytesCallback challenge_callback,
-      std::unique_ptr<EndpointResponse> response);
+      std::unique_ptr<endpoint_fetcher::EndpointResponse> response);
   void RunChallengeBytesCallbackWithError(
       SecondDeviceAuthBroker::ChallengeBytesCallback challenge_callback,
       const GoogleServiceAuthError& error);
@@ -239,7 +241,8 @@ class SecondDeviceAuthBroker {
   QuickStartMetrics metrics_;
 
   // Used for fetching results from Gaia endpoints.
-  std::unique_ptr<EndpointFetcher> endpoint_fetcher_ = nullptr;
+  std::unique_ptr<endpoint_fetcher::EndpointFetcher> endpoint_fetcher_ =
+      nullptr;
 
   // Used for interacting with Google's Privacy CA, for getting a Remote
   // Attestation certificate.
