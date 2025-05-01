@@ -770,6 +770,10 @@ crbug.com/angleproject/5221 [ mac passthrough angle-opengl intel ] deqp/function
 crbug.com/angleproject/5221 [ mac passthrough angle-opengl intel ] deqp/functional/gles3/transformfeedback/random_separate_points.html [ Failure ]
 crbug.com/angleproject/5221 [ mac passthrough angle-opengl intel ] deqp/functional/gles3/transformfeedback/random_separate_triangles.html [ Failure ]
 
+## Mac / Apple Silicon ##
+
+crbug.com/413035866 [ sequoia apple angle-opengl ] conformance2/canvas/drawingbuffer-storage-test.html [ Failure ]
+
 ## Mac / M1 / OpenGL ##
 
 crbug.com/angleproject/5223 [ angle-opengl apple mac mac-arm64 no-asan passthrough ] conformance2/textures/misc/tex-mipmap-levels.html [ Failure ]
@@ -796,7 +800,6 @@ crbug.com/412955603 [ mac apple-apple-m3 angle-opengl ] conformance2/wasm/buffer
 crbug.com/412955603 [ mac apple-apple-m3 angle-opengl ] conformance2/wasm/getbuffersubdata-16gb-wasm-memory.html [ Failure ]
 crbug.com/412955603 [ mac apple-apple-m3 angle-opengl ] conformance2/wasm/teximage2d-16gb-wasm-memory.html [ Failure ]
 crbug.com/412955603 [ mac apple-apple-m3 angle-opengl ] conformance2/wasm/texsubimage2d-16gb-wasm-memory.html [ Failure ]
-crbug.com/413035866 [ mac apple-apple-m3 angle-opengl ] conformance2/canvas/drawingbuffer-storage-test.html [ Failure ]
 
 # Newly added tests on NVIDIA passthrough
 crbug.com/982292 [ mac nvidia angle-opengl passthrough ] conformance/extensions/webgl-multi-draw.html [ Failure ]
