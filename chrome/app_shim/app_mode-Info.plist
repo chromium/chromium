@@ -30,8 +30,6 @@
        <dict>
               <key>MallocNanoZone</key>
               <string>0</string>
-              <key>MallocProbGuard</key>
-              <string>0</string>
        </dict>
        <key>LSMinimumSystemVersion</key>
        <string>${CHROMIUM_MIN_SYSTEM_VERSION}</string>
