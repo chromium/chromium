@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<script src='../../../resources/testharness.js'></script>
+<script src='../../../resources/testharnessreport.js'></script>
+
+<menubar>
+  <menuitem checked="true" disabled="true">Command 1</menuitem>
+  <menuitem>Command 2</menuitem>
+</menubar>
+
+<menulist>
+ <menuitem>Command 1</menuitem>
+ <menuitem>Command 2</menuitem>
+</menulist>
+
+<script>
+
+test(() => {
+ const menubar = document.querySelector("menubar");
+ const menuitem = document.querySelector("menuitem");
+ const menulist = document.querySelector("menulist");
+
+ assert_equals(menubar.constructor, HTMLElement);
+ assert_equals(menuitem.constructor, HTMLElement);
+ assert_equals(menulist.constructor, HTMLElement);
+}, "Menu elements are HTML elements.");
+</script>

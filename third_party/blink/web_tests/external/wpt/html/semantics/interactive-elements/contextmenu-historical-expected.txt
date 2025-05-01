@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] HTMLMenuItemElement must not be not present
+  assert_equals: A <menuitem> must be HTMLUnknownElement expected function "function HTMLUnknownElement() { [native code] }" but got function "function HTMLElement() { [native code] }"
+[FAIL] :enabled must not match menuitems
+  assert_array_equals: lengths differ, expected array [] length 0, got object "[object NodeList]" length 3
+[FAIL] :disabled must not match menuitems
+  assert_array_equals: lengths differ, expected array [] length 0, got object "[object NodeList]" length 1
+[FAIL] :default must not match menuitems
+  assert_array_equals: lengths differ, expected array [] length 0, got object "[object NodeList]" length 1
+Harness: the test ran to completion.
+

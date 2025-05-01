@@ -2982,6 +2982,10 @@
       },
     },
     {
+      name: "MenuElements",
+      status: "test",
+    },
+    {
       name: "MessagePortCloseEvent",
       status: "test",
     },
