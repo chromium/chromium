@@ -115,7 +115,7 @@ class AutofillImageFetcherTest : public testing::Test {
   std::unique_ptr<AutofillImageFetcherForTest> autofill_image_fetcher_;
 };
 
-TEST_F(AutofillImageFetcherTest, FetchImage_Success) {
+TEST_F(AutofillImageFetcherTest, FetchCreditCardArtImagesForURLs_Success) {
   // The credit card network images cannot be found in the tests, but it should
   // be okay since we don't care what the images are.
   gfx::Image fake_image1 = GetTestImage(IDR_DEFAULT_FAVICON);
@@ -151,7 +151,8 @@ TEST_F(AutofillImageFetcherTest, FetchImage_Success) {
       *autofill_image_fetcher()->GetCachedImageForUrl(
           fake_url2,
           AutofillImageFetcherBase::ImageType::kCreditCardArtImage)));
-  EXPECT_THAT(histogram_tester.GetAllSamples("Autofill.ImageFetcher.Result"),
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "Autofill.ImageFetcher.CreditCardArt.Result"),
               BucketsAre(Bucket(false, 0), Bucket(true, 2)));
   EXPECT_THAT(
       histogram_tester.GetAllSamples(
@@ -180,7 +181,8 @@ TEST_F(AutofillImageFetcherTest, FetchImage_ResolveCardArtImage) {
           AutofillImageFetcherBase::ImageType::kCreditCardArtImage)));
 }
 
-TEST_F(AutofillImageFetcherTest, FetchImage_Failure_RetryFailure) {
+TEST_F(AutofillImageFetcherTest,
+       FetchCreditCardArtImagesForURLs_Failure_RetryFailure) {
   GURL fake_url = GURL("https://www.example.com/fake_image1");
   std::vector<GURL> urls = {fake_url};
   base::HistogramTester histogram_tester;
@@ -198,7 +200,8 @@ TEST_F(AutofillImageFetcherTest, FetchImage_Failure_RetryFailure) {
   EXPECT_FALSE(autofill_image_fetcher()->GetCachedImageForUrl(
       fake_url, AutofillImageFetcherBase::ImageType::kCreditCardArtImage));
   // Verify one failure logged.
-  EXPECT_THAT(histogram_tester.GetAllSamples("Autofill.ImageFetcher.Result"),
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "Autofill.ImageFetcher.CreditCardArt.Result"),
               BucketsAre(Bucket(false, 1), Bucket(true, 0)));
   // Verify overall histogram is not logged yet.
   EXPECT_THAT(
@@ -219,7 +222,8 @@ TEST_F(AutofillImageFetcherTest, FetchImage_Failure_RetryFailure) {
   EXPECT_FALSE(autofill_image_fetcher()->GetCachedImageForUrl(
       fake_url, AutofillImageFetcherBase::ImageType::kCreditCardArtImage));
   // Verify two failures logged.
-  EXPECT_THAT(histogram_tester.GetAllSamples("Autofill.ImageFetcher.Result"),
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "Autofill.ImageFetcher.CreditCardArt.Result"),
               BucketsAre(Bucket(false, 2), Bucket(true, 0)));
   // Verify a single overall failure logged.
   EXPECT_THAT(
@@ -233,7 +237,8 @@ TEST_F(AutofillImageFetcherTest, FetchImage_Failure_RetryFailure) {
   task_environment().FastForwardBy(base::Minutes(2));
 }
 
-TEST_F(AutofillImageFetcherTest, FetchImage_Failure_RetrySuccess) {
+TEST_F(AutofillImageFetcherTest,
+       FetchCreditCardArtImagesForURLs_Failure_RetrySuccess) {
   GURL fake_url = GURL("https://www.example.com/fake_image1");
   gfx::Image fake_image = GetTestImage(IDR_DEFAULT_FAVICON);
   std::vector<GURL> urls = {fake_url};
@@ -252,7 +257,8 @@ TEST_F(AutofillImageFetcherTest, FetchImage_Failure_RetrySuccess) {
   EXPECT_FALSE(autofill_image_fetcher()->GetCachedImageForUrl(
       fake_url, AutofillImageFetcherBase::ImageType::kCreditCardArtImage));
   // Verify one failure logged.
-  EXPECT_THAT(histogram_tester.GetAllSamples("Autofill.ImageFetcher.Result"),
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "Autofill.ImageFetcher.CreditCardArt.Result"),
               BucketsAre(Bucket(false, 1), Bucket(true, 0)));
   // Verify the overall histogram is not logged yet.
   EXPECT_THAT(
@@ -274,7 +280,8 @@ TEST_F(AutofillImageFetcherTest, FetchImage_Failure_RetrySuccess) {
       *autofill_image_fetcher()->GetCachedImageForUrl(
           fake_url, AutofillImageFetcherBase::ImageType::kCreditCardArtImage)));
   // Verify one failure and one success logged.
-  EXPECT_THAT(histogram_tester.GetAllSamples("Autofill.ImageFetcher.Result"),
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "Autofill.ImageFetcher.CreditCardArt.Result"),
               BucketsAre(Bucket(false, 1), Bucket(true, 1)));
   // Verify a single overall success logged.
   EXPECT_THAT(
@@ -283,7 +290,8 @@ TEST_F(AutofillImageFetcherTest, FetchImage_Failure_RetrySuccess) {
       BucketsAre(Bucket(false, 0), Bucket(true, 1)));
 }
 
-TEST_F(AutofillImageFetcherTest, FetchImage_Failure_RetryDisabled) {
+TEST_F(AutofillImageFetcherTest,
+       FetchCreditCardArtImagesForURLs_Failure_RetryDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{},
@@ -306,7 +314,8 @@ TEST_F(AutofillImageFetcherTest, FetchImage_Failure_RetryDisabled) {
   EXPECT_FALSE(autofill_image_fetcher()->GetCachedImageForUrl(
       fake_url, AutofillImageFetcherBase::ImageType::kCreditCardArtImage));
   // Verify one failure logged.
-  EXPECT_THAT(histogram_tester.GetAllSamples("Autofill.ImageFetcher.Result"),
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "Autofill.ImageFetcher.CreditCardArt.Result"),
               BucketsAre(Bucket(false, 1), Bucket(true, 0)));
   // Verify the overall histogram is not logged.
   EXPECT_THAT(
@@ -321,7 +330,7 @@ TEST_F(AutofillImageFetcherTest, FetchImage_Failure_RetryDisabled) {
   task_environment().FastForwardBy(base::Minutes(2));
 }
 
-TEST_F(AutofillImageFetcherTest, FetchValuableImage_Success) {
+TEST_F(AutofillImageFetcherTest, FetchValuableImagesForURLs_Success) {
   gfx::Image fake_image = GetTestImage(IDR_DEFAULT_FAVICON);
   GURL fake_url = GURL("https://www.example.com/fake_image");
 
@@ -336,7 +345,7 @@ TEST_F(AutofillImageFetcherTest, FetchValuableImage_Success) {
           fake_url, AutofillImageFetcherBase::ImageType::kValuableImage)));
 }
 
-TEST_F(AutofillImageFetcherTest, FetchValuableImage_Failure) {
+TEST_F(AutofillImageFetcherTest, FetchValuableImagesForURLs_Failure) {
   gfx::Image fake_image;
   GURL fake_url = GURL("https://www.example.com/fake_image");
 

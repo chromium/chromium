@@ -130,6 +130,7 @@ void AutofillImageFetcher::OnCardArtImageFetched(
     const gfx::Image& card_art_image,
     const image_fetcher::RequestMetadata& metadata) {
   AutofillMetrics::LogImageFetchResult(
+      AutofillImageFetcherBase::ImageType::kCreditCardArtImage,
       /* succeeded= */ !card_art_image.IsEmpty());
 
   // Images are cached by the resolved URLs. This allows caching the same image
@@ -143,7 +144,9 @@ void AutofillImageFetcher::OnCardArtImageFetched(
   // Unlike the `CachedImageFetcher`, the `AutofillImageFetcher` stores the
   // post-processed image in the in-memory cache.
   if (!resolved_image.IsEmpty()) {
-    AutofillMetrics::LogImageFetchOverallResult(/* succeeded= */ true);
+    AutofillMetrics::LogImageFetchOverallResult(
+        AutofillImageFetcherBase::ImageType::kCreditCardArtImage,
+        /* succeeded= */ true);
 
     cached_images_[resolved_url] = std::make_unique<gfx::Image>(resolved_image);
     return;
@@ -151,7 +154,9 @@ void AutofillImageFetcher::OnCardArtImageFetched(
 
   // Image fetching failed, and max retry attempts reached.
   if (fetch_attempt_counter_[resolved_url] >= kMaxFetchAttempts) {
-    AutofillMetrics::LogImageFetchOverallResult(/* succeeded= */ false);
+    AutofillMetrics::LogImageFetchOverallResult(
+        AutofillImageFetcherBase::ImageType::kCreditCardArtImage,
+        /* succeeded= */ false);
     return;
   }
 

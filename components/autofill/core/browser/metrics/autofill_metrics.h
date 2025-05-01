@@ -849,11 +849,17 @@ class AutofillMetrics {
   static void LogVerificationStatusOfAddressTokensOnProfileUsage(
       const AutofillProfile& profile);
 
-  // Logs the image fetching result for one image in AutofillImageFetcher.
-  static void LogImageFetchResult(bool succeeded);
-  // Logs the overall image fetching result for a credit card art image in
-  // AutofillImageFetcher after a maximum preset number of attempts.
-  static void LogImageFetchOverallResult(bool succeeded);
+  // Logs the image fetching result for one `image_type` in
+  // AutofillImageFetcher.
+  static void LogImageFetchResult(
+      AutofillImageFetcherBase::ImageType image_type,
+      bool succeeded);
+  // Logs the overall image fetching result for a `image_type` in
+  // AutofillImageFetcher after a maximum preset number of attempts during
+  // browser startup.
+  static void LogImageFetchOverallResult(
+      AutofillImageFetcherBase::ImageType image_type,
+      bool succeeded);
 
   // Logs a field's (PredictionState, AutocompleteState) pair on form submit.
   static void LogAutocompletePredictionCollisionState(

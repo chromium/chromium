@@ -228,10 +228,10 @@ public class AutofillImageFetcher {
             String resolvedUrl,
             Function<Bitmap, Bitmap> treatImageFunction,
             String imageTypeString) {
-        String overallSuccessHistogram =
-                "Autofill.ImageFetcher." + imageTypeString + ".OverallResultOnBrowserStart";
+        String histogramPrefix = "Autofill.ImageFetcher." + imageTypeString;
+        String overallSuccessHistogram = histogramPrefix + ".OverallResultOnBrowserStart";
 
-        RecordHistogram.recordBooleanHistogram("Autofill.ImageFetcher.Result", bitmap != null);
+        RecordHistogram.recordBooleanHistogram(histogramPrefix + ".Result", bitmap != null);
 
         if (bitmap != null) {
             RecordHistogram.recordBooleanHistogram(overallSuccessHistogram, /* sample= */ true);

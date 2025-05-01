@@ -14,6 +14,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
+#include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "base/types/cxx23_to_underlying.h"
@@ -93,6 +94,20 @@ constexpr auto kStructuredAddressTypeToNameMap =
          {ADDRESS_HOME_FLOOR, "FloorNumber"},
          {ADDRESS_HOME_APT_NUM, "ApartmentNumber"},
          {ADDRESS_HOME_SUBPREMISE, "SubPremise"}});
+
+const std::string GetImageTypeString(
+    AutofillImageFetcherBase::ImageType image_type) {
+  switch (image_type) {
+    case AutofillImageFetcherBase::ImageType::kCreditCardArtImage:
+      return "CreditCardArt";
+    case AutofillImageFetcherBase::ImageType::kPixAccountImage:
+      NOTREACHED() << "Pix account images are available only on Android.";
+    case AutofillImageFetcherBase::ImageType::kValuableImage:
+      return "ValuableImage";
+  }
+  NOTREACHED() << "Unhandled AutofillImageFetcherBase::ImageType "
+               << base::to_underlying(image_type);
+}
 
 }  // namespace
 
@@ -1380,15 +1395,22 @@ void AutofillMetrics::LogVirtualCardMetadataSynced(bool existing_card) {
 }
 
 // static
-void AutofillMetrics::LogImageFetchResult(bool succeeded) {
-  base::UmaHistogramBoolean("Autofill.ImageFetcher.Result", succeeded);
+void AutofillMetrics::LogImageFetchResult(
+    AutofillImageFetcherBase::ImageType image_type,
+    bool succeeded) {
+  base::UmaHistogramBoolean(
+      "Autofill.ImageFetcher." + GetImageTypeString(image_type) + ".Result",
+      succeeded);
 }
 
 // static
-void AutofillMetrics::LogImageFetchOverallResult(bool succeeded) {
-  base::UmaHistogramBoolean(
-      "Autofill.ImageFetcher.CreditCardArt.OverallResultOnBrowserStart",
-      succeeded);
+void AutofillMetrics::LogImageFetchOverallResult(
+    AutofillImageFetcherBase::ImageType image_type,
+    bool succeeded) {
+  base::UmaHistogramBoolean("Autofill.ImageFetcher." +
+                                GetImageTypeString(image_type) +
+                                ".OverallResultOnBrowserStart",
+                            succeeded);
 }
 
 // static

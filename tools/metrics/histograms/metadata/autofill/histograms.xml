@@ -3568,16 +3568,6 @@ Called by update_autofill_enums.py. This is a manual comment.-->
       variants="Autofill.PaymentsSigninState"/>
 </histogram>
 
-<histogram name="Autofill.ImageFetcher.Result" enum="BooleanSuccess"
-    expires_after="2025-08-31">
-  <owner>siyua@chromium.org</owner>
-  <owner>payments-autofill-team@google.com</owner>
-  <summary>
-    Record the image fetch result of one image. If true, then the image was
-    fetched successfully.
-  </summary>
-</histogram>
-
 <histogram
     name="Autofill.ImageFetcher.{AutofillImage}.OverallResultOnBrowserStart"
     enum="BooleanSuccess" expires_after="2025-07-01">
@@ -3590,6 +3580,20 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     successful or when a preset maximum number of fetching attempts were made.
     Logs true if the image was fetched successfully, and false if the image
     fetching was unsuccessful after a preset maximum number of attempts.
+  </summary>
+  <token key="AutofillImage" variants="AutofillImage"/>
+</histogram>
+
+<histogram name="Autofill.ImageFetcher.{AutofillImage}.Result"
+    enum="BooleanSuccess" expires_after="2025-07-01">
+  <owner>siyua@chromium.org</owner>
+  <owner>vishwasuppoor@google.org</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Records the image fetch result of a {AutofillImage} image. Logged every time
+    an attempt is made to fetch the {AutofillImage}, including retries. All
+    attempts are made during browser startup. If the image was fetched
+    successfully, logs true, false otherwise.
   </summary>
   <token key="AutofillImage" variants="AutofillImage"/>
 </histogram>
