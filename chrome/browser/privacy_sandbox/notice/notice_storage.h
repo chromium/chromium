@@ -21,29 +21,6 @@ namespace privacy_sandbox {
 enum class SurfaceType;
 class NoticeCatalog;
 
-// Startup states. These values are persisted to logs. Entries should not be
-// renumbered and numeric values should never be reused.
-// LINT.IfChange(NoticeStartupState)
-enum class NoticeStartupState {
-  // Incorrect or unknown states, for example if the notice hasn't been shown
-  // but an action is set.
-  kUnknownState = 0,
-  // Prompt/notice not shown.
-  kPromptNotShown = 1,
-  // Notice action flow completed.
-  kFlowCompleted = 2,
-  // Notice action flow completed with action opt in.
-  kFlowCompletedWithOptIn = 3,
-  // Notice action flow completed with action opt out.
-  kFlowCompletedWithOptOut = 4,
-  // Prompt/notice still waiting for action.
-  kPromptWaiting = 5,
-  // kPromptOtherAction = 6,  // no longer used
-  // kTimedOut = 7,  // no longer used,
-  kMaxValue = kPromptWaiting,
-};
-// LINT.ThenChange(//tools/metrics/histograms/enums.xml:PrivacySandboxNoticeStartupState)
-
 // TODO(crbug.com/392088228): Remove this once all values are migrated and
 // histograms are migrated to use UA. This is deprecated and should only be used
 // for histograms.
@@ -128,6 +105,8 @@ struct V1MigrationData {
       base::JSONValueConverter<V1MigrationData>* converter);
 };
 
+// TODO(crbug.com/414648495): These are only used in tests now, refactor the
+// tests & remove.
 std::optional<base::Time> GetNoticeFirstShownFromEvents(
     const NoticeStorageData& notice_data);
 
@@ -146,9 +125,7 @@ class NoticeStorage {
   virtual ~NoticeStorage();
 
   // Reads PrivacySandbox notice & consent prefs. Returns std::nullopt if all
-  // prefs aren't set. If an event is tracked but the event timestamp is
-  // missing, return base::Time(). If an event timestamp is tracked but the
-  // event itself is missing, return PrivacySandboxNoticeEvent::kUnknownAction.
+  // prefs aren't set.
   virtual std::optional<NoticeStorageData> ReadNoticeData(
       std::string_view notice) const = 0;
 

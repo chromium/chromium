@@ -1631,24 +1631,13 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
   <token key="PSNotice" variants="PSNotice"/>
 </histogram>
 
-<histogram name="PrivacySandbox.Notice.NoticeStartupState.{PSNotice}"
-    enum="PrivacySandboxNoticeStartupState" expires_after="2026-05-07">
+<histogram name="PrivacySandbox.Notice.Startup.LastRecordedEvent.{PSNotice}"
+    enum="PrivacySandboxNoticeEvent" expires_after="2026-05-07">
   <owner>chrstne@google.com</owner>
   <owner>koilos@google.com</owner>
   <summary>
-    This histogram will be deprecated soon, use
-    PrivacySandbox.Notice.NoticeStartupStateV2.{PSNotice} instead as it tracks
-    Schema V2.
-  </summary>
-  <token key="PSNotice" variants="PSNotice"/>
-</histogram>
-
-<histogram name="PrivacySandbox.Notice.NoticeStartupState2.{PSNotice}"
-    enum="PrivacySandboxNoticeStartupState" expires_after="2026-05-07">
-  <owner>chrstne@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <summary>
-    Records startup state of a notice {PSNotice} during the profile start up.
+    Records last recorded event of a notice {PSNotice} at the time of profile
+    start up.
   </summary>
   <token key="PSNotice" variants="PSNotice"/>
 </histogram>

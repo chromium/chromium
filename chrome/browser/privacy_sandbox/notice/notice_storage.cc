@@ -188,21 +188,6 @@ void MaybeEraseV1Fields(PrefService* pref_service, std::string_view notice) {
   }
 }
 
-NoticeStartupState GetNoticeStartupStateFromEvent(Event event) {
-  switch (event) {
-    case kShown:
-      return NoticeStartupState::kPromptWaiting;
-    case kOptIn:
-      return NoticeStartupState::kFlowCompletedWithOptIn;
-    case kOptOut:
-      return NoticeStartupState::kFlowCompletedWithOptOut;
-    case kAck:
-    case kClosed:
-    case kSettings:
-      return NoticeStartupState::kFlowCompleted;
-  }
-}
-
 // Emits histograms for new events, comparing against existing notice_data for
 // certain histograms.
 void EmitNewEventHistograms(
@@ -470,25 +455,11 @@ void PrivacySandboxNoticeStorage::RecordStartupHistograms() const {
   for (const auto [notice, notice_value] :
        pref_service_->GetDict(kNoticeDataPath)) {
     auto notice_data = ConvertTo<NoticeStorageData>(&notice_value);
-
-    NoticeStartupState startup_state;
-
-    if (!notice_data.has_value() || notice_data->notice_events.empty() ||
-        (GetNoticeFirstShownFromEvents(*notice_data) == std::nullopt &&
-         GetNoticeActionTakenForFirstShownFromEvents(*notice_data) ==
-             std::nullopt)) {
-      startup_state = NoticeStartupState::kPromptNotShown;
-    } else if (auto time = GetNoticeFirstShownFromEvents(*notice_data);
-               time == std::nullopt || time == base::Time()) {
-      // E.g. UnknownActionPreMigration && no first shown time set.
-      startup_state = NoticeStartupState::kUnknownState;
-    } else {  // Notice has been shown, action handling below.
-      startup_state = GetNoticeStartupStateFromEvent(
-          notice_data->notice_events.back()->event);
+    if (!notice_data.has_value() || notice_data->notice_events.empty()) {
+      continue;
     }
-    // TODO(chrstne): Deprecate existing histogram.
-    RecordEnum("NoticeStartupState", notice, startup_state);
-    RecordEnum("NoticeStartupState2", notice, startup_state);
+    RecordEnum("Startup.LastRecordedEvent", notice,
+               notice_data->notice_events.back()->event);
   }
 }
 

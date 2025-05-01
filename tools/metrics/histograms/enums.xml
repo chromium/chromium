@@ -23233,19 +23233,6 @@ Called by update_net_error_codes.py.-->
 
 <!-- LINT.ThenChange(/chrome/browser/privacy_sandbox/notice/notice.mojom:PrivacySandboxNoticeEvent) -->
 
-<!-- LINT.IfChange(PrivacySandboxNoticeStartupState) -->
-
-<enum name="PrivacySandboxNoticeStartupState">
-  <int value="0" label="UnknownState"/>
-  <int value="1" label="PromptNotShown"/>
-  <int value="2" label="FlowCompleted"/>
-  <int value="3" label="FlowCompletedWithOptIn"/>
-  <int value="4" label="FlowCompletedWithOptOut"/>
-  <int value="5" label="PromptWaiting"/>
-</enum>
-
-<!-- LINT.ThenChange(/chrome/browser/privacy_sandbox/notice/notice_storage.h:NoticeStartupState) -->
-
 <!-- LINT.IfChange(PrivacySandboxPrimaryAccountUserGroups) -->
 
 <enum name="PrivacySandboxPrimaryAccountUserGroups">
