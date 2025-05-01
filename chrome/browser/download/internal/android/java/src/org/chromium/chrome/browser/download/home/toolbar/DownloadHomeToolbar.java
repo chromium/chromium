@@ -11,6 +11,7 @@ import android.view.View;
 
 import org.chromium.base.BuildInfo;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.download.home.list.ListItem;
@@ -24,6 +25,7 @@ import java.util.List;
 @NullMarked
 public class DownloadHomeToolbar extends SelectableListToolbar<ListItem> {
     private @Nullable UiConfig mUiConfig;
+    private View mListContentView;
 
     public DownloadHomeToolbar(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -95,5 +97,22 @@ public class DownloadHomeToolbar extends SelectableListToolbar<ListItem> {
                 RecordUserAction.record("Android.DownloadManager.SelectionEstablished");
             }
         }
+    }
+
+    // SelectableListToolbar implementation.
+    @Override
+    protected boolean handleEnterKeyPress() {
+        return getMenu().performIdentifierAction(R.id.search_menu_id, 0);
+    }
+
+    @Override
+    protected View getNextFocusForward() {
+        // Move focus to list content view.
+        return mListContentView;
+    }
+
+    @Initializer
+    void setListContentView(View listContentView) {
+        mListContentView = listContentView;
     }
 }
