@@ -4,10 +4,6 @@
 
 #include "chrome/browser/ui/lens/lens_side_panel_untrusted_ui.h"
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "base/strings/strcat.h"
 #include "chrome/browser/profiles/profile.h"
