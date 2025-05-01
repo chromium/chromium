@@ -27,7 +27,7 @@ bool ParseBluetoothAddress(std::string_view input, base::span<uint8_t> output);
 // is a hex digit.  If the input |address| is invalid, returns an empty string.
 std::string CanonicalizeBluetoothAddress(std::string_view address);
 std::string CanonicalizeBluetoothAddress(
-    const std::array<uint8_t, 6>& address_bytes);
+    base::span<const uint8_t, 6> address_bytes);
 
 }  // namespace device
 

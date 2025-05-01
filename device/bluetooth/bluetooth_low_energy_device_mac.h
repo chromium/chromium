@@ -13,7 +13,6 @@
 #include <string_view>
 
 #include "build/build_config.h"
-#include "crypto/sha2.h"
 #include "device/bluetooth/bluetooth_device_mac.h"
 
 #if !BUILDFLAG(IS_IOS)
