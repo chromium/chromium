@@ -473,16 +473,8 @@ TEST_F(ContextualCueingServiceTestZeroStateSuggestions,
   service()->GetContextualGlicZeroStateSuggestions(
       web_contents(), /*is_fre=*/false, future.GetCallback());
 
-  // Simulate FCP coming in later.
-  auto* zss_data = ZeroStateSuggestionsPageData::GetOrCreateForPage(
-      web_contents()->GetPrimaryPage());
-  zss_data->InitiatePageContentExtraction(true);
-
-  ASSERT_TRUE(future.Wait());
-
-  EXPECT_GE(histogram_tester.GetTotalSum(
-                "ContextualCueing.ZeroStateSuggestions.ContextExtractionDone"),
-            0);
+  EXPECT_NE(nullptr, ZeroStateSuggestionsPageData::GetForPage(
+                         web_contents()->GetPrimaryPage()));
 }
 
 TEST_F(ContextualCueingServiceTestZeroStateSuggestions,
@@ -499,6 +491,9 @@ TEST_F(ContextualCueingServiceTestZeroStateSuggestions,
 
   histogram_tester.ExpectTotalCount(
       "ContextualCueing.ZeroStateSuggestions.ContextExtractionDone", 0);
+
+  EXPECT_EQ(nullptr, ZeroStateSuggestionsPageData::GetForPage(
+                         web_contents()->GetPrimaryPage()));
 }
 #endif
 

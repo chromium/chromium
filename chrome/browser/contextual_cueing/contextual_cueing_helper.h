@@ -52,6 +52,12 @@ class ContextualCueingHelper
     return last_same_doc_navigation_committed_;
   }
 
+  // Returns whether the last primary main frame navigation that was committed
+  // has already past FCP.
+  bool has_first_contentful_paint() const {
+    return has_first_contentful_paint_;
+  }
+
   tabs::GlicNudgeController* GetGlicNudgeController();
 
  private:
@@ -74,6 +80,8 @@ class ContextualCueingHelper
 
   // When the last same doc navigation was committed.
   std::optional<base::TimeTicks> last_same_doc_navigation_committed_;
+
+  bool has_first_contentful_paint_ = false;
 
   // Not owned and guaranteed to outlive `this`.
   raw_ptr<OptimizationGuideKeyedService> optimization_guide_keyed_service_ =

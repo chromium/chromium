@@ -47,7 +47,7 @@ class ZeroStateSuggestionsPageData
   ~ZeroStateSuggestionsPageData() override;
 
   // Initiates page content extraction.
-  void InitiatePageContentExtraction(bool has_first_contentful_paint);
+  void InitiatePageContentExtraction();
 
   // Explicitly fetch suggestions for this page.
   void FetchSuggestions(bool is_fre, GlicSuggestionsCallback callback);
