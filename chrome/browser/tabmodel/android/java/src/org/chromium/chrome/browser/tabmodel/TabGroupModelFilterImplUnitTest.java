@@ -1214,11 +1214,14 @@ public class TabGroupModelFilterImplUnitTest {
         mTabGroupModelFilter.mergeTabsToGroup(mTab5.getId(), mTab1.getId());
 
         verify(mTabGroupModelFilterObserver)
+                .willMergeTabToGroup(mTab1, TAB1_ROOT_ID, TAB5_TAB_GROUP_ID);
+        verify(mTabGroupModelFilterObserver)
                 .willMergeTabToGroup(mTab5, TAB1_ROOT_ID, TAB5_TAB_GROUP_ID);
         verify(mTabGroupModelFilterObserver)
                 .willMergeTabToGroup(mTab6, TAB1_ROOT_ID, TAB5_TAB_GROUP_ID);
         verify(mTabModel).moveTab(mTab5.getId(), ++startIndex);
         verify(mTabModel).moveTab(mTab6.getId(), ++startIndex);
+        verify(mTabGroupModelFilterObserver).didMergeTabToGroup(mTab1);
         verify(mTabGroupModelFilterObserver).didMergeTabToGroup(mTab5);
         verify(mTabGroupModelFilterObserver).didMergeTabToGroup(mTab6);
         verify(mTabGroupModelFilterObserver, never())
@@ -1311,11 +1314,14 @@ public class TabGroupModelFilterImplUnitTest {
         mTabGroupModelFilter.mergeTabsToGroup(mTab2.getId(), mTab4.getId());
 
         verify(mTabGroupModelFilterObserver)
+                .willMergeTabToGroup(mTab4, TAB4_ROOT_ID, TAB2_TAB_GROUP_ID);
+        verify(mTabGroupModelFilterObserver)
                 .willMergeTabToGroup(mTab2, TAB4_ROOT_ID, TAB2_TAB_GROUP_ID);
         verify(mTabGroupModelFilterObserver)
                 .willMergeTabToGroup(mTab3, TAB4_ROOT_ID, TAB2_TAB_GROUP_ID);
         verify(mTabModel).moveTab(mTab2.getId(), startIndex + 1);
         verify(mTabModel).moveTab(mTab3.getId(), startIndex + 1);
+        verify(mTabGroupModelFilterObserver).didMergeTabToGroup(mTab4);
         verify(mTabGroupModelFilterObserver).didMergeTabToGroup(mTab2);
         verify(mTabGroupModelFilterObserver).didMergeTabToGroup(mTab3);
         verify(mTabGroupModelFilterObserver, never())

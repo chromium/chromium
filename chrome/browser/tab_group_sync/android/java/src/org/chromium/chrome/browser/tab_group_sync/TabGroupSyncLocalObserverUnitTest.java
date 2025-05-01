@@ -561,7 +561,7 @@ public class TabGroupSyncLocalObserverUnitTest {
     }
 
     @Test
-    public void testDidMoveTabOutOfGroup() {
+    public void testWillMoveTabOutOfGroup() {
         // Add tab 1 and 2 to the tab model and create a group.
         mTabModel.addTab(
                 mTab1, 0, TabLaunchType.FROM_TAB_GROUP_UI, TabCreationState.LIVE_IN_BACKGROUND);
@@ -570,7 +570,9 @@ public class TabGroupSyncLocalObserverUnitTest {
         when(mTabGroupModelFilter.getRepresentativeTabAt(0)).thenReturn(mTab1);
 
         // Move tab 2 out of group and verify.
-        mTabGroupModelFilterObserverCaptor.getValue().didMoveTabOutOfGroup(mTab2, 0);
+        mTabGroupModelFilterObserverCaptor
+                .getValue()
+                .willMoveTabOutOfGroup(mTab2, /* destinationTabGroupId= */ null);
         verify(mTabGroupSyncService, times(1)).removeTab(eq(LOCAL_TAB_GROUP_ID_1), eq(2));
     }
 
