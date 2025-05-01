@@ -16,8 +16,8 @@ import subprocess
 import sys
 import pathlib
 
-DEFAULT_SYSROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..',
-                               '..', 'third_party', 'rust-toolchain')
+DEFAULT_SYSROOT = pathlib.Path(__file__).parents[2].joinpath(
+    'third_party', 'rust-toolchain')
 
 # Determine the cargo executable name based on whether `subprocess` thinks
 # we're on a Windows platform or not, which is more accurate than checking it
@@ -67,6 +67,7 @@ def main():
     parser = argparse.ArgumentParser(description='run cargo')
     parser.add_argument('--rust-sysroot',
                         default=DEFAULT_SYSROOT,
+                        type=pathlib.Path,
                         help='use cargo and rustc from here')
     (args, cargo_args) = parser.parse_known_args()
     return RunCargo(args.rust_sysroot, None, cargo_args)

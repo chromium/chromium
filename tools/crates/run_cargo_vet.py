@@ -14,6 +14,7 @@ Arguments are passed through to `cargo vet`.
 
 import argparse
 import os
+import pathlib
 import platform
 import subprocess
 import sys
@@ -46,6 +47,7 @@ def main():
         'run `cargo vet` against `//third_party/rust/chromium_crates_io`')
     parser.add_argument('--rust-sysroot',
                         default=DEFAULT_SYSROOT,
+                        type=pathlib.Path,
                         help='use cargo and rustc from here')
     (args, unrecognized_args) = parser.parse_known_args()
 
