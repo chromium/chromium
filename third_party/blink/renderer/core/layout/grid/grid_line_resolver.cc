@@ -50,10 +50,13 @@ GridLineResolver::GridLineResolver(const ComputedStyle& grid_style,
           grid_style.TemplateTracks(kForColumns).named_grid_lines),
       subgridded_rows_merged_explicit_grid_line_names_(
           grid_style.TemplateTracks(kForRows).named_grid_lines) {
-  if (subgrid_area.columns.IsTranslatedDefinite()) {
+  const bool has_subgridded_columns =
+      subgrid_area.columns.IsTranslatedDefinite();
+  const bool has_subgridded_rows = subgrid_area.rows.IsTranslatedDefinite();
+  if (has_subgridded_columns) {
     subgridded_columns_span_size_ = subgrid_area.SpanSize(kForColumns);
   }
-  if (subgrid_area.rows.IsTranslatedDefinite()) {
+  if (has_subgridded_rows) {
     subgridded_rows_span_size_ = subgrid_area.SpanSize(kForRows);
   }
 
@@ -321,7 +324,7 @@ GridLineResolver::GridLineResolver(const ComputedStyle& grid_style,
       IsParallelWritingMode(grid_style.GetWritingMode(),
                             parent_line_resolver.style_->GetWritingMode());
 
-  if (subgrid_area.columns.IsTranslatedDefinite()) {
+  if (has_subgridded_columns) {
     const auto track_direction_in_parent =
         is_parallel_to_parent ? kForColumns : kForRows;
     MergeNamedGridLinesWithParent(
@@ -339,7 +342,7 @@ GridLineResolver::GridLineResolver(const ComputedStyle& grid_style,
         is_opposite_direction_to_parent,
         parent_line_resolver.IsSubgridded(track_direction_in_parent));
   }
-  if (subgrid_area.rows.IsTranslatedDefinite()) {
+  if (has_subgridded_rows) {
     const auto track_direction_in_parent =
         is_parallel_to_parent ? kForRows : kForColumns;
     MergeNamedGridLinesWithParent(
@@ -385,12 +388,16 @@ GridLineResolver::GridLineResolver(const ComputedStyle& grid_style,
   // If we have a merged named grid area map, we need to generate new implicit
   // lines based on the merged map.
   if (subgrid_merged_named_areas_) {
-    subgridded_columns_merged_implicit_grid_line_names_ =
-        ComputedGridTemplateAreas::CreateImplicitNamedGridLinesFromGridArea(
-            *subgrid_merged_named_areas_, kForColumns);
-    subgridded_rows_merged_implicit_grid_line_names_ =
-        ComputedGridTemplateAreas::CreateImplicitNamedGridLinesFromGridArea(
-            *subgrid_merged_named_areas_, kForRows);
+    if (has_subgridded_columns) {
+      subgridded_columns_merged_implicit_grid_line_names_ =
+          ComputedGridTemplateAreas::CreateImplicitNamedGridLinesFromGridArea(
+              *subgrid_merged_named_areas_, kForColumns);
+    }
+    if (has_subgridded_rows) {
+      subgridded_rows_merged_implicit_grid_line_names_ =
+          ComputedGridTemplateAreas::CreateImplicitNamedGridLinesFromGridArea(
+              *subgrid_merged_named_areas_, kForRows);
+    }
   }
 }
 
