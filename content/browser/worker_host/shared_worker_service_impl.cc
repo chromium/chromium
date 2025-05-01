@@ -229,11 +229,10 @@ void SharedWorkerServiceImpl::ConnectToWorker(
     return;
   }
   auto partition_domain = site_instance->GetPartitionDomain(storage_partition_);
-  SharedWorkerInstance instance(info->url, info->options->type,
-                                info->options->credentials, info->options->name,
-                                storage_key, creation_context_type,
-                                info->same_site_cookies,
-                                /*extended_lifetime=*/false);
+  SharedWorkerInstance instance(
+      info->url, info->options->type, info->options->credentials,
+      info->options->name, storage_key, creation_context_type,
+      info->same_site_cookies, info->extended_lifetime);
   host = CreateWorker(
       *render_frame_host, instance, std::move(info->content_security_policies),
       std::move(info->outside_fetch_client_settings_object), partition_domain,
