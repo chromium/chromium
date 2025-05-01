@@ -21,10 +21,10 @@ def PostprocessJSON(file_name, run_test_args):
   # The file is not necessarily written depending on the arguments - only
   # postprocess it in case it is.
   if os.path.isfile(file_name):
-    with open(file_name) as f:
+    with open(file_name, encoding='utf-8') as f:
       test_result = json.load(f)
     test_result['run_test_args'] = run_test_args
-    with open(file_name, 'w') as f:
+    with open(file_name, 'w', encoding='utf-8') as f:
       json.dump(test_result, f, indent=2)
 
 

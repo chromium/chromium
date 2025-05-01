@@ -199,13 +199,13 @@ gather_swarming_json_results.py \
                                                options.step)
 
   logging.debug('Saving output to %s', options.output)
-  with open(options.output, 'w') as f:
+  with open(options.output, 'w', encoding='utf-8') as f:
     json.dump(
         extracted_times, f, sort_keys=True, indent=2, separators=(',', ': '))
 
   if options.full_output is not None:
     logging.debug('Saving full output to %s', options.full_output)
-    with open(options.full_output, 'w') as f:
+    with open(options.full_output, 'w', encoding='utf-8') as f:
       json.dump(
           merged_json, f, sort_keys=True, indent=2, separators=(',', ': '))
 

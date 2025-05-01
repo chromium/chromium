@@ -236,7 +236,7 @@ def SaveResultsAsCSV(results, output_filename):
       continue
     csv_data.extend(entries)
   if len(csv_data) > 0:
-    with open(output_filename, 'w') as csv_file:
+    with open(output_filename, 'w', encoding='utf-8') as csv_file:
       labels = sorted(csv_data[0].keys())
       w = csv.DictWriter(csv_file, fieldnames=labels)
       w.writeheader()
@@ -329,7 +329,7 @@ def main():
     ProcessStepStdout(stdout_url, results['builds'][-1])
 
   logging.debug('Saving output to %s', options.output_json)
-  with open(options.output_json, 'w') as f:
+  with open(options.output_json, 'w', encoding='utf-8') as f:
     json.dump(results, f, sort_keys=True, indent=2, separators=(',', ': '))
 
   logging.debug('Saving output to %s', options.output_csv)

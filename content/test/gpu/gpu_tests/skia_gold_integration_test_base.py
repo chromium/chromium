@@ -135,14 +135,14 @@ class SkiaGoldIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
   def _SetClassVariablesFromOptions(cls, options: ct.ParsedCmdArgs) -> None:
     super()._SetClassVariablesFromOptions(options)
     if not cls._dom_automation_controller_script:
-      with open(
-          os.path.join(gpu_path_util.GPU_TEST_HARNESS_JAVASCRIPT_DIR,
-                       'websocket_heartbeat.js')) as f:
+      with open(os.path.join(gpu_path_util.GPU_TEST_HARNESS_JAVASCRIPT_DIR,
+                             'websocket_heartbeat.js'),
+                encoding='utf-8') as f:
         cls._dom_automation_controller_script = f.read()
       cls._dom_automation_controller_script += '\n'
-      with open(
-          os.path.join(gpu_path_util.GPU_TEST_HARNESS_JAVASCRIPT_DIR,
-                       'dom_automation_controller.js')) as f:
+      with open(os.path.join(gpu_path_util.GPU_TEST_HARNESS_JAVASCRIPT_DIR,
+                             'dom_automation_controller.js'),
+                encoding='utf-8') as f:
         cls._dom_automation_controller_script += f.read()
 
   @classmethod

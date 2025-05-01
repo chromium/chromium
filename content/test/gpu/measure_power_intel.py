@@ -294,7 +294,8 @@ def main():
       logging.error("Can't locate file at %s",
                     options.extra_browser_args_filename)
     else:
-      with open(options.extra_browser_args_filename, 'r') as f:
+      with open(options.extra_browser_args_filename, 'r',
+                encoding='utf-8') as f:
         extra_browser_args.extend(f.read().split())
         f.close()
 

@@ -177,7 +177,7 @@ class GpuIntegrationTestUnittest(unittest.TestCase):
         telemetry_args = browser_test_runner.ProcessConfig(
             unittest_config, processed_args)
         run_browser_tests.RunTests(telemetry_args)
-        with open(temp_file.name) as f:
+        with open(temp_file.name, encoding='utf-8') as f:
           self._test_result = json.load(f)
       finally:
         temp_file.close()
@@ -626,9 +626,9 @@ class GpuIntegrationTestUnittest(unittest.TestCase):
               '--use-global-pool',
           ] + test_args.additional_args)
       run_browser_tests.RunTests(args)
-      with open(test_results_path) as f:
+      with open(test_results_path, encoding='utf-8') as f:
         self._test_result = json.load(f)
-      with open(test_state_path) as f:
+      with open(test_state_path, encoding='utf-8') as f:
         self._test_state = json.load(f)
       actual_successes, actual_failures, actual_skips = (_ExtractTestResults(
           self._test_result))

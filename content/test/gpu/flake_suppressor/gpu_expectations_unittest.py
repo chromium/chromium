@@ -110,13 +110,15 @@ class GetLocalCheckoutExpectationFileContentsUnittest(
   def testBasic(self) -> None:
     """Tests basic functionality."""
     os.makedirs(gpu_expectations.ABSOLUTE_EXPECTATION_FILE_DIRECTORY)
-    with open(
-        os.path.join(gpu_expectations.ABSOLUTE_EXPECTATION_FILE_DIRECTORY,
-                     'foo.txt'), 'w') as outfile:
+    with open(os.path.join(gpu_expectations.ABSOLUTE_EXPECTATION_FILE_DIRECTORY,
+                           'foo.txt'),
+              'w',
+              encoding='utf-8') as outfile:
       outfile.write('foo.txt contents')
-    with open(
-        os.path.join(gpu_expectations.ABSOLUTE_EXPECTATION_FILE_DIRECTORY,
-                     'bar.txt'), 'w') as outfile:
+    with open(os.path.join(gpu_expectations.ABSOLUTE_EXPECTATION_FILE_DIRECTORY,
+                           'bar.txt'),
+              'w',
+              encoding='utf-8') as outfile:
       outfile.write('bar.txt contents')
     foo_txt = os.path.join(gpu_expectations.RELATIVE_EXPECTATION_FILE_DIRECTORY,
                            'foo.txt')

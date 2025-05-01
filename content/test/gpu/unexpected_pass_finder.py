@@ -139,7 +139,7 @@ def main() -> None:
   unused_expectations = test_expectation_map.FilterOutUnusedExpectations()
   stale, semi_stale, active = test_expectation_map.SplitByStaleness()
   if args.result_output_file:
-    with open(args.result_output_file, 'w') as outfile:
+    with open(args.result_output_file, 'w', encoding='utf-8') as outfile:
       result_output.OutputResults(stale, semi_stale, active, unmatched,
                                   unused_expectations, args.output_format,
                                   outfile)
@@ -174,7 +174,7 @@ def main() -> None:
   if affected_urls:
     orphaned_urls = expectations_instance.FindOrphanedBugs(affected_urls)
     if args.bug_output_file:
-      with open(args.bug_output_file, 'w') as bug_outfile:
+      with open(args.bug_output_file, 'w', encoding='utf-8') as bug_outfile:
         result_output.OutputAffectedUrls(affected_urls,
                                          orphaned_urls,
                                          bug_outfile,

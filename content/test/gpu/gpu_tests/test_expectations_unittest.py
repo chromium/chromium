@@ -69,7 +69,7 @@ def _ExtractUnitTestTestExpectations(file_name: str) -> list[str]:
       os.path.dirname(os.path.abspath(__file__)), '..', 'unittest_data',
       'test_expectations', file_name)
   test_expectations_list = []
-  with open(file_name, 'r') as test_data:
+  with open(file_name, 'r', encoding='utf-8') as test_data:
     test_expectations = ''
     reach_end = False
     while not reach_end:
@@ -99,7 +99,7 @@ def CheckTestExpectationsAreForExistingTests(
       args[0] for args in test_class.GenerateTestCases__RunGpuTest(mock_options)
   ]
   expectations_file = test_class.ExpectationsFiles()[0]
-  with open(expectations_file, 'r') as f:
+  with open(expectations_file, 'r', encoding='utf-8') as f:
     test_expectations = expectations_parser.TestExpectations()
     test_expectations.parse_tagged_list(f.read(), f.name)
     broke_expectations = '\n'.join([
@@ -150,7 +150,7 @@ class GpuTestExpectationsValidation(unittest.TestCase):
             test_case.GenerateTestCases__RunGpuTest(
                 gpu_helper.GetMockArgs(webgl_version=(f'{webgl_version}.0.0'))))
         if test_case.ExpectationsFiles():
-          with open(test_case.ExpectationsFiles()[0]) as f:
+          with open(test_case.ExpectationsFiles()[0], encoding='utf-8') as f:
             errors += CheckTestExpectationPatternsForConflicts(
                 f.read(), os.path.basename(f.name),
                 test_case.GetTagConflictChecker())
@@ -166,7 +166,7 @@ class GpuTestExpectationsValidation(unittest.TestCase):
             test_case.GenerateTestCases__RunGpuTest(
                 gpu_helper.GetMockArgs(webgl_version=(f'{webgl_version}.0.0'))))
         if test_case.ExpectationsFiles():
-          with open(test_case.ExpectationsFiles()[0]) as f:
+          with open(test_case.ExpectationsFiles()[0], encoding='utf-8') as f:
             test_expectations = expectations_parser.TestExpectations()
             ret, err = test_expectations.parse_tagged_list(f.read(), f.name)
             self.assertEqual(
@@ -189,7 +189,8 @@ class GpuTestExpectationsValidation(unittest.TestCase):
       _ = list(
           webgl_test_class.GenerateTestCases__RunGpuTest(
               gpu_helper.GetMockArgs(webgl_version=f'{webgl_version}.0.0')))
-      with open(webgl_test_class.ExpectationsFiles()[0], 'r') as f:
+      with open(webgl_test_class.ExpectationsFiles()[0], 'r',
+                encoding='utf-8') as f:
         expectations = expectations_parser.TestExpectations()
         expectations.parse_tagged_list(f.read())
         for pattern, _ in expectations.individual_exps.items():
@@ -259,7 +260,8 @@ class GpuTestExpectationsValidation(unittest.TestCase):
                                    'test_expectations')
     for expectation_file in (f for f in os.listdir(expectation_dir)
                              if f.endswith('.txt')):
-      with open(os.path.join(expectation_dir, expectation_file)) as f:
+      with open(os.path.join(expectation_dir, expectation_file),
+                encoding='utf-8') as f:
         content = f.read()
       list_parser = expectations_parser.TaggedTestListParser(content)
       for expectation in list_parser.expectations:
@@ -282,7 +284,9 @@ class GpuTestExpectationsValidation(unittest.TestCase):
       _ = list(
           webgl_conformance_test_class.GenerateTestCases__RunGpuTest(
               gpu_helper.GetMockArgs(webgl_version=(f'{webgl_version}.0.0'))))
-      with open(webgl_conformance_test_class.ExpectationsFiles()[0], 'r') as f:
+      with open(webgl_conformance_test_class.ExpectationsFiles()[0],
+                'r',
+                encoding='utf-8') as f:
         parser = expectations_parser.TestExpectations()
         parser.parse_tagged_list(f.read(), f.name)
         driver_tag_set = set()

@@ -97,7 +97,7 @@ def AnalyzeIPGLogFile(logfile: str | None = None,
   labels = []
   sums = []
   col_time = None
-  for line in open(logfile):
+  for line in open(logfile, encoding='utf-8'):
     tokens = [token.strip('" ') for token in line.split(',')]
     if first_line:
       first_line = False
@@ -195,7 +195,7 @@ def ProcessResultsFromMultipleIPGRuns(
   output['summary'] = summary
 
   if output_json:
-    json_file = open(output_json, 'w')
+    json_file = open(output_json, 'w', encoding='utf-8')
     json_file.write(json.dumps(output, indent=4))
     json_file.close()
 

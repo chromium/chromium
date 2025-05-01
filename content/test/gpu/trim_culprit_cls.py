@@ -135,7 +135,7 @@ def QueryTrybotsForCl(cl_number, project):
       '--use_legacy_sql=false',
       query,
   ]
-  with open('/dev/null', 'w') as devnull:
+  with open('/dev/null', 'w', encoding='utf-8') as devnull:
     stdout = subprocess.check_output(cmd, stderr=devnull)
   return json.loads(stdout)
 

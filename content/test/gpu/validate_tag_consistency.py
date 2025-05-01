@@ -257,7 +257,7 @@ EXPECTATION_DIR = os.path.join(os.path.dirname(__file__), 'gpu_tests',
 def Validate():
   retval = 0
   for f in (f for f in os.listdir(EXPECTATION_DIR) if f.endswith('.txt')):
-    with open(os.path.join(EXPECTATION_DIR, f)) as infile:
+    with open(os.path.join(EXPECTATION_DIR, f), encoding='utf-8') as infile:
       content = infile.read()
       start_index = content.find(TAG_HEADER_BEGIN)
       end_index = content.find(TAG_HEADER_END)
@@ -279,7 +279,7 @@ def Apply():
   retval = 0
   for f in (f for f in os.listdir(EXPECTATION_DIR) if f.endswith('.txt')):
     filepath = os.path.join(EXPECTATION_DIR, f)
-    with open(filepath) as infile:
+    with open(filepath, encoding='utf-8') as infile:
       content = infile.read()
     start_index = content.find(TAG_HEADER_BEGIN)
     if start_index < 0:
@@ -297,7 +297,7 @@ def Apply():
       continue
     content = (content[:start_index + len(TAG_HEADER_BEGIN)] + '\n' +
                TAG_HEADER + content[end_index:])
-    with open(filepath, 'w') as outfile:
+    with open(filepath, 'w', encoding='utf-8') as outfile:
       outfile.write(content)
   return retval
 

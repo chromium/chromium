@@ -148,20 +148,20 @@ class WebGLConformanceIntegrationTestBase(
     super()._SetClassVariablesFromOptions(options)
     cls._webgl_version = int(options.webgl_conformance_version.split('.')[0])
     if not cls._conformance_harness_script:
-      with open(
-          os.path.join(gpu_path_util.GPU_TEST_HARNESS_JAVASCRIPT_DIR,
-                       'websocket_heartbeat.js')) as f:
+      with open(os.path.join(gpu_path_util.GPU_TEST_HARNESS_JAVASCRIPT_DIR,
+                             'websocket_heartbeat.js'),
+                encoding='utf-8') as f:
         cls._conformance_harness_script = f.read()
       cls._conformance_harness_script += '\n'
-      with open(
-          os.path.join(gpu_path_util.GPU_TEST_HARNESS_JAVASCRIPT_DIR,
-                       'webgl_conformance_harness_script.js')) as f:
+      with open(os.path.join(gpu_path_util.GPU_TEST_HARNESS_JAVASCRIPT_DIR,
+                             'webgl_conformance_harness_script.js'),
+                encoding='utf-8') as f:
         cls._conformance_harness_script += f.read()
     if not cls._extension_harness_additional_script:
-      with open(
-          os.path.join(
-              gpu_path_util.GPU_TEST_HARNESS_JAVASCRIPT_DIR,
-              'webgl_conformance_extension_harness_additional_script.js')) as f:
+      with open(os.path.join(
+          gpu_path_util.GPU_TEST_HARNESS_JAVASCRIPT_DIR,
+          'webgl_conformance_extension_harness_additional_script.js'),
+                encoding='utf-8') as f:
         cls._extension_harness_additional_script = f.read()
 
   @classmethod

@@ -61,7 +61,7 @@ def _GetUsedTags():
   expectation_file_path = os.path.join(os.path.dirname(__file__), 'gpu_tests',
                                        'test_expectations',
                                        'info_collection_expectations.txt')
-  with open(expectation_file_path) as f:
+  with open(expectation_file_path, encoding='utf-8') as f:
     list_parser = expectations_parser.TaggedTestListParser(f.read())
   used_tags = set()
   for tag_set in list_parser.tag_sets:
@@ -86,7 +86,7 @@ def _GetGeneratedTags(args):
         '--use_legacy_sql=false',
         query,
     ]
-    with open(os.devnull, 'w') as devnull:
+    with open(os.devnull, 'w', encoding='utf-8') as devnull:
       try:
         stdout = subprocess.check_output(cmd, stderr=devnull)
       except subprocess.CalledProcessError as e:
