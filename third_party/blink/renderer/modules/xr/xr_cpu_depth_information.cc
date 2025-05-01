@@ -50,16 +50,14 @@ static_assert(GetBytesPerElement(device::mojom::XRDepthDataFormat::kFloat32) ==
 namespace blink {
 
 XRCPUDepthInformation::XRCPUDepthInformation(
-    const XRFrame* xr_frame,
-    const gfx::Transform& ref_space_from_mojo,
+    const XRView* view,
     const device::mojom::blink::XRViewGeometryPtr& view_geometry,
     const gfx::Size& size,
     const gfx::Transform& norm_texture_from_norm_view,
     float raw_value_to_meters,
     device::mojom::XRDepthDataFormat data_format,
     DOMArrayBuffer* data)
-    : XRDepthInformation(xr_frame,
-                         ref_space_from_mojo,
+    : XRDepthInformation(view,
                          view_geometry,
                          size,
                          norm_texture_from_norm_view,

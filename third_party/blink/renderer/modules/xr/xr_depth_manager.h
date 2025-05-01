@@ -11,16 +11,12 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 
-namespace gfx {
-class Transform;
-}
-
 namespace blink {
 
 class ExceptionState;
 class XRCPUDepthInformation;
 class XRWebGLDepthInformation;
-class XRFrame;
+class XRView;
 class XRViewData;
 
 // Helper class, used to separate the code related to depth buffer processing
@@ -35,13 +31,11 @@ class XRDepthManager : public GarbageCollected<XRDepthManager> {
   void ProcessDepthInformation(device::mojom::blink::XRDepthDataPtr depth_data);
 
   XRCPUDepthInformation* GetCpuDepthInformation(
-      const XRFrame* xr_frame,
-      const gfx::Transform& ref_space_from_mojo,
+      const XRView* xr_view,
       ExceptionState& exception_state);
 
   XRWebGLDepthInformation* GetWebGLDepthInformation(
-      const XRFrame* xr_frame,
-      const gfx::Transform& ref_space_from_mojo,
+      const XRView* xr_view,
       ExceptionState& exception_state);
 
   void Trace(Visitor* visitor) const;

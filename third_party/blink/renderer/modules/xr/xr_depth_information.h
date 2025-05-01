@@ -17,7 +17,7 @@
 namespace blink {
 
 class ExceptionState;
-class XRFrame;
+class XRView;
 class XRRigidTransform;
 
 class XRDepthInformation : public ScriptWrappable {
@@ -25,8 +25,7 @@ class XRDepthInformation : public ScriptWrappable {
 
  protected:
   XRDepthInformation(
-      const XRFrame* xr_frame,
-      const gfx::Transform& ref_space_from_mojo,
+      const XRView* xr_view,
       const device::mojom::blink::XRViewGeometryPtr& view_geometry,
       const gfx::Size& size,
       const gfx::Transform& norm_depth_buffer_from_norm_view,
@@ -49,14 +48,13 @@ class XRDepthInformation : public ScriptWrappable {
   void Trace(Visitor* visitor) const override;
 
  protected:
-  const Member<const XRFrame> xr_frame_;
+  const Member<const XRView> xr_view_;
 
   const gfx::Size size_;
 
   const gfx::Transform norm_depth_buffer_from_norm_view_;
   const float raw_value_to_meters_;
   const std::optional<XRViewGeometry> view_geometry_;
-  const gfx::Transform ref_space_from_mojo_;
 };
 
 }  // namespace blink

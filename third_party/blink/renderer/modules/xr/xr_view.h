@@ -108,13 +108,11 @@ class MODULES_EXPORT XRViewData final : public GarbageCollected<XRViewData>,
   bool IsFirstPersonObserver() const { return is_first_person_observer_; }
 
   XRCPUDepthInformation* GetCpuDepthInformation(
-      const XRFrame* xr_frame,
-      const gfx::Transform& ref_space_from_mojo,
+      const XRView* xr_view,
       ExceptionState& exception_state) const;
 
   XRWebGLDepthInformation* GetWebGLDepthInformation(
-      const XRFrame* xr_frame,
-      const gfx::Transform& ref_space_from_mojo,
+      const XRView* xr_view,
       ExceptionState& exception_state) const;
 
   std::optional<double> recommendedViewportScale() const;

@@ -18,15 +18,14 @@ class Transform;
 namespace blink {
 
 class ExceptionState;
-class XRFrame;
+class XRView;
 
 class XRCPUDepthInformation final : public XRDepthInformation {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
   XRCPUDepthInformation(
-      const XRFrame* xr_frame,
-      const gfx::Transform& ref_space_from_mojo,
+      const XRView* xr_view,
       const device::mojom::blink::XRViewGeometryPtr& view_geometry,
       const gfx::Size& size,
       const gfx::Transform& norm_texture_from_norm_view,

@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/modules/xr/xr_rigid_transform.h"
 #include "third_party/blink/renderer/modules/xr/xr_session.h"
 #include "third_party/blink/renderer/modules/xr/xr_utils.h"
+#include "third_party/blink/renderer/modules/xr/xr_view.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "ui/gfx/geometry/transform.h"
 
@@ -28,21 +29,19 @@ constexpr char kFrameNotAnimated[] =
 namespace blink {
 
 XRDepthInformation::XRDepthInformation(
-    const XRFrame* xr_frame,
-    const gfx::Transform& ref_space_from_mojo,
+    const XRView* xr_view,
     const device::mojom::blink::XRViewGeometryPtr& view_geometry,
     const gfx::Size& size,
     const gfx::Transform& norm_depth_buffer_from_norm_view,
     float raw_value_to_meters)
-    : xr_frame_(xr_frame),
+    : xr_view_(xr_view),
       size_(size),
       norm_depth_buffer_from_norm_view_(norm_depth_buffer_from_norm_view),
       raw_value_to_meters_(raw_value_to_meters),
       view_geometry_(view_geometry ? std::make_optional<XRViewGeometry>(
                                          view_geometry,
-                                         xr_frame->session()->GraphicsApi())
-                                   : std::nullopt),
-      ref_space_from_mojo_(ref_space_from_mojo) {
+                                         xr_view->session()->GraphicsApi())
+                                   : std::nullopt) {
   CHECK_NE(raw_value_to_meters_, 0);
   DVLOG(3) << __func__ << ": size_=" << size_.ToString()
            << ", norm_depth_buffer_from_norm_view_="
@@ -68,15 +67,15 @@ XRRigidTransform* XRDepthInformation::normDepthBufferFromNormView() const {
 }
 
 XRRigidTransform* XRDepthInformation::viewGeometryTransform() const {
-  // Transform is given in the supplied reference space:
+  // Transform is given in the view's reference space:
   // https://immersive-web.github.io/depth-sensing/#xr-depth-info-section
   if (view_geometry_) {
     return MakeGarbageCollected<XRRigidTransform>(
-        ref_space_from_mojo_ * view_geometry_->MojoFromView());
+        xr_view_->refSpaceFromMojo() * view_geometry_->MojoFromView());
   }
 
-  // If we don't have a view_geometry_ we need to return identity.
-  return MakeGarbageCollected<XRRigidTransform>(gfx::Transform());
+  // If we don't have a view_geometry_ we need to return data from the xr_view_.
+  return xr_view_->viewGeometryTransform();
 }
 
 NotShared<DOMFloat32Array> XRDepthInformation::projectionMatrix() const {
@@ -85,18 +84,18 @@ NotShared<DOMFloat32Array> XRDepthInformation::projectionMatrix() const {
         view_geometry_->ProjectionMatrix());
   }
 
-  // If we don't have a view_geometry_ we need to return identity.
-  return transformationMatrixToDOMFloat32Array(gfx::Transform());
+  // If we don't have a view_geometry_ we need to return data from the xr_view_.
+  return xr_view_->projectionMatrix();
 }
 
 bool XRDepthInformation::ValidateFrame(ExceptionState& exception_state) const {
-  if (!xr_frame_->IsActive()) {
+  if (!xr_view_->frame()->IsActive()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       kFrameInactive);
     return false;
   }
 
-  if (!xr_frame_->IsAnimationFrame()) {
+  if (!xr_view_->frame()->IsAnimationFrame()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       kFrameNotAnimated);
     return false;
@@ -106,7 +105,7 @@ bool XRDepthInformation::ValidateFrame(ExceptionState& exception_state) const {
 }
 
 void XRDepthInformation::Trace(Visitor* visitor) const {
-  visitor->Trace(xr_frame_);
+  visitor->Trace(xr_view_);
   ScriptWrappable::Trace(visitor);
 }
 
