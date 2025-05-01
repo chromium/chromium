@@ -119,8 +119,6 @@ struct FrameSenderConfig {
                     int min_bitrate,
                     int start_bitrate,
                     double max_frame_rate,
-                    std::string aes_key,
-                    std::string aes_iv_mask,
                     std::optional<VideoCodecParams> video_codec_params,
                     std::optional<AudioCodecParams> audio_codec_params);
   FrameSenderConfig(const FrameSenderConfig& other);
@@ -176,12 +174,6 @@ struct FrameSenderConfig {
   int start_bitrate = 0;
 
   double max_frame_rate = kDefaultMaxFrameRate;
-
-  // The AES crypto key and initialization vector.  Each of these strings
-  // contains the data in binary form, of size kAesKeySize.  If they are empty
-  // strings, crypto is not being used.
-  std::string aes_key;
-  std::string aes_iv_mask;
 
   // These are codec specific parameters for video streams only.
   std::optional<VideoCodecParams> video_codec_params;

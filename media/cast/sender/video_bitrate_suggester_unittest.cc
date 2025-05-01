@@ -16,6 +16,7 @@
 #include "media/cast/cast_config.h"
 #include "media/cast/cast_environment.h"
 #include "media/cast/common/openscreen_conversion_helpers.h"
+#include "media/cast/test/openscreen_test_helpers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -24,8 +25,6 @@ namespace {
 
 constexpr uint32_t kFirstSsrc = 35535;
 constexpr int kRtpTimebase = 9000;
-constexpr char kAesSecretKey[] = "65386FD9BCC30BC7FB6A4DD1D3B0FA5E";
-constexpr char kAesIvMask[] = "64A6AAC2821880145271BB15B0188821";
 
 static const FrameSenderConfig kVideoConfig{
     kFirstSsrc + 2,
@@ -39,12 +38,8 @@ static const FrameSenderConfig kVideoConfig{
     kDefaultMinVideoBitrate,
     std::midpoint<int>(kDefaultMinVideoBitrate, kDefaultMaxVideoBitrate),
     kDefaultMaxFrameRate,
-    kAesSecretKey,
-    kAesIvMask,
     VideoCodecParams(VideoCodec::kVP8),
     std::nullopt};
-static const openscreen::cast::SessionConfig kOpenscreenVideoConfig =
-    ToOpenscreenSessionConfig(kVideoConfig, /* is_pli_enabled= */ true);
 
 }  // namespace
 
