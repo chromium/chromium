@@ -23,7 +23,7 @@ namespace media {
 namespace {
 const int kAacMainProfile = 0;
 const int kAacLowComplexityProfile = 1;
-} // namespace
+}  // namespace
 
 // Class for testing the FFmpegAACBitstreamConverter.
 class FFmpegAACBitstreamConverterTest : public testing::Test {
@@ -69,7 +69,7 @@ TEST_F(FFmpegAACBitstreamConverterTest, Conversion_Success) {
   for (size_t i = 0;
        i < (dummy_packet.size() * sizeof(decltype(dummy_packet)::value_type));
        i++) {
-    dummy_packet[i] = i & 0xFF; // Repeated sequences of 0-255
+    dummy_packet[i] = i & 0xFF;  // Repeated sequences of 0-255
   }
 
   auto test_packet = ScopedAVPacket::Allocate();
@@ -111,8 +111,9 @@ TEST_F(FFmpegAACBitstreamConverterTest, Conversion_FailureNullParams) {
   auto test_packet = ScopedAVPacket::Allocate();
   CreatePacket(test_packet.get(), dummy_packet, sizeof(dummy_packet));
 
-  // Try out the actual conversion. This should fail due to missing extradata.
-  EXPECT_FALSE(converter.ConvertPacket(test_packet.get()));
+  // Try out the actual conversion. This should not fail - conversion is
+  // necessary only when we have `extradata`.
+  EXPECT_TRUE(converter.ConvertPacket(test_packet.get()));
 }
 
 TEST_F(FFmpegAACBitstreamConverterTest, Conversion_AudioProfileType) {
@@ -121,8 +122,7 @@ TEST_F(FFmpegAACBitstreamConverterTest, Conversion_AudioProfileType) {
   uint8_t dummy_packet[1000] = {};
 
   auto test_packet = ScopedAVPacket::Allocate();
-  CreatePacket(test_packet.get(), dummy_packet,
-               sizeof(dummy_packet));
+  CreatePacket(test_packet.get(), dummy_packet, sizeof(dummy_packet));
 
   EXPECT_TRUE(converter.ConvertPacket(test_packet.get()));
 
@@ -135,8 +135,7 @@ TEST_F(FFmpegAACBitstreamConverterTest, Conversion_AudioProfileType) {
   FFmpegAACBitstreamConverter converter_he(&test_parameters_);
 
   test_packet = ScopedAVPacket::Allocate();
-  CreatePacket(test_packet.get(), dummy_packet,
-               sizeof(dummy_packet));
+  CreatePacket(test_packet.get(), dummy_packet, sizeof(dummy_packet));
 
   EXPECT_TRUE(converter_he.ConvertPacket(test_packet.get()));
 
@@ -148,8 +147,7 @@ TEST_F(FFmpegAACBitstreamConverterTest, Conversion_AudioProfileType) {
   FFmpegAACBitstreamConverter converter_eld(&test_parameters_);
 
   test_packet = ScopedAVPacket::Allocate();
-  CreatePacket(test_packet.get(), dummy_packet,
-               sizeof(dummy_packet));
+  CreatePacket(test_packet.get(), dummy_packet, sizeof(dummy_packet));
 
   EXPECT_FALSE(converter_eld.ConvertPacket(test_packet.get()));
 }
@@ -160,8 +158,7 @@ TEST_F(FFmpegAACBitstreamConverterTest, Conversion_MultipleLength) {
   uint8_t dummy_packet[1000];
 
   auto test_packet = ScopedAVPacket::Allocate();
-  CreatePacket(test_packet.get(), dummy_packet,
-               sizeof(dummy_packet));
+  CreatePacket(test_packet.get(), dummy_packet, sizeof(dummy_packet));
 
   // Try out the actual conversion (should be successful and allocate new
   // packet and destroy the old one).
