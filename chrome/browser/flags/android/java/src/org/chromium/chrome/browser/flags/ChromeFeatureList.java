@@ -196,6 +196,8 @@ public abstract class ChromeFeatureList {
             "AndroidTabDeclutterArchiveTabGroups";
     public static final String ANDROID_TAB_DECLUTTER_DEDUPE_TAB_IDS_KILL_SWITCH =
             "AndroidTabDeclutterDedupeTabIdsKillSwitch";
+    public static final String ANDROID_TAB_DECLUTTER_PERFORMANCE_IMPROVEMENTS =
+            "AndroidTabDeclutterPerformanceImprovements";
     public static final String ANDROID_TAB_DECLUTTER_RESCUE_KILLSWITCH =
             "AndroidTabDeclutterRescueKillswitch";
     public static final String ANDROID_TAB_SKIP_SAVE_TABS_TASK_KILLSWITCH =
@@ -990,6 +992,8 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(ANDROID_TAB_DECLUTTER_ARCHIVE_DUPLICATE_TABS, true);
     public static final MutableFlagWithSafeDefault sAndroidTabDeclutterArchiveTabGroups =
             newMutableFlagWithSafeDefault(ANDROID_TAB_DECLUTTER_ARCHIVE_TAB_GROUPS, false);
+    public static final MutableFlagWithSafeDefault sAndroidTabDeclutterPerformanceImprovements =
+            newMutableFlagWithSafeDefault(ANDROID_TAB_DECLUTTER_PERFORMANCE_IMPROVEMENTS, false);
     public static final MutableFlagWithSafeDefault sAndroidTabDeclutterRescueKillSwitch =
             newMutableFlagWithSafeDefault(ANDROID_TAB_DECLUTTER_RESCUE_KILLSWITCH, true);
     public static final MutableFlagWithSafeDefault sBcivBottomControls =

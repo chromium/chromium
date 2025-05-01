@@ -2649,6 +2649,9 @@ extern const char kAndroidTabDeclutterArchiveDuplicateTabsDescription[];
 extern const char kAndroidTabDeclutterArchiveTabGroupsName[];
 extern const char kAndroidTabDeclutterArchiveTabGroupsDescription[];
 
+extern const char kAndroidTabDeclutterPerformanceImprovementsName[];
+extern const char kAndroidTabDeclutterPerformanceImprovementsDescription[];
+
 extern const char kAndroidThemeModuleName[];
 extern const char kAndroidThemeModuleDescription[];
 

@@ -690,6 +690,21 @@
             ]
         }
     ],
+    "AndroidTabDeclutterPerformanceImprovements": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AndroidTabDeclutterPerformanceImprovements"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidUseFrameIntervalDeciderAdaptiveFrameRate": [
         {
             "platforms": [

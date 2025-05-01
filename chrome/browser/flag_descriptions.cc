@@ -4531,6 +4531,11 @@ const char kAndroidTabDeclutterArchiveTabGroupsName[] =
 const char kAndroidTabDeclutterArchiveTabGroupsDescription[] =
     "Enables auto-archival of inactive tab groups and their inactive tabs.";
 
+const char kAndroidTabDeclutterPerformanceImprovementsName[] =
+    "Android Tab Declutter performance improvements";
+const char kAndroidTabDeclutterPerformanceImprovementsDescription[] =
+    "Enables performance improvements to the android tab declutter process.";
+
 const char kAndroidThemeModuleName[] = "Android Theme Module";
 const char kAndroidThemeModuleDescription[] =
     "Enables external theme overlays for Chrome activities when available.";

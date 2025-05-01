@@ -10474,6 +10474,8 @@ from previous Chrome versions.
   <int value="-1485461805" label="EnterpriseReportingInBrowser:enabled"/>
   <int value="-1484786356" label="ClipboardHistoryUrlTitles:enabled"/>
   <int value="-1484372060" label="BlockMigratedDefaultChromeAppSync:enabled"/>
+  <int value="-1484070946"
+      label="AndroidTabDeclutterPerformanceImprovements:enabled"/>
   <int value="-1483720693" label="ChipLocationIconOverride:enabled"/>
   <int value="-1483451894" label="SystemNudgeV2:enabled"/>
   <int value="-1483131886" label="ExperimentalWebAppProfileIsolation:disabled"/>
@@ -15506,6 +15508,8 @@ from previous Chrome versions.
   <int value="427184788" label="WebFeed:enabled"/>
   <int value="427351143" label="StartSurfaceSpareTab:enabled"/>
   <int value="427807224" label="IPH_Snooze:disabled"/>
+  <int value="427860496"
+      label="AndroidTabDeclutterPerformanceImprovements:disabled"/>
   <int value="427945554" label="StrictExtensionIsolation:enabled"/>
   <int value="428554364" label="OffsetParentNewSpecBehavior:disabled"/>
   <int value="428631746" label="BackGestureActivityTabProvider:disabled"/>

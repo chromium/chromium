@@ -326,6 +326,11 @@
     "expiry_milestone": 142
   },
   {
+    "name": "android-tab-declutter-performance-improvements",
+    "owners": [ "wylieb@google.com", "clank-tab-dev@google.com" ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "android-theme-module",
     "owners": [
       "wenyufu@chromium.org"
