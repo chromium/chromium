@@ -214,7 +214,10 @@ public class CronetUrlRequestTest {
         testSimpleGet();
         mTestLogger.waitForLogCronetTrafficInfo();
         assertThat(mTestLogger.getLastCronetTrafficInfo().getCronetSource())
-                .isEqualTo(CronetSource.CRONET_SOURCE_STATICALLY_LINKED);
+                .isEqualTo(
+                        BuildConfig.CRONET_FOR_AOSP_BUILD
+                                ? CronetSource.CRONET_SOURCE_PLATFORM
+                                : CronetSource.CRONET_SOURCE_STATICALLY_LINKED);
     }
 
     @Test
