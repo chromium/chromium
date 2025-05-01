@@ -56,11 +56,11 @@ public class AwContextMenuPopulator implements ContextMenuPopulator {
 
         ModelList items = new ModelList();
 
-        items.add(createListItem(Item.COPY_LINK_TEXT));
         items.add(createListItem(Item.COPY_LINK_ADDRESS));
-        items.add(createListItem(Item.OPEN_IN_BROWSER));
+        items.add(createListItem(Item.COPY_LINK_TEXT));
+        items.add(createListItem(Item.OPEN_LINK));
 
-        groupedItems.add(new Pair<>(R.string.context_menu_copy_link_text, items));
+        groupedItems.add(new Pair<>(R.string.context_menu_copy_link_address, items));
 
         return groupedItems;
     }
@@ -84,7 +84,7 @@ public class AwContextMenuPopulator implements ContextMenuPopulator {
         } else if (itemId == R.id.contextmenu_copy_link_text) {
             mItemDelegate.onSaveToClipboard(
                     mParams.getLinkText(), ContextMenuItemDelegate.ClipboardType.LINK_TEXT);
-        } else if (itemId == R.id.contextmenu_open_in_browser_id) {
+        } else if (itemId == R.id.contextmenu_open_link_id) {
             mItemDelegate.onOpenInDefaultBrowser(mParams.getUrl());
         } else {
             assert false;

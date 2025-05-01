@@ -186,8 +186,8 @@
       <message name="IDS_CONTEXT_MENU_COPY_LINK_TEXT" desc="Context menu item for copying the selected link's text. [CHAR_LIMIT=30]">
         Copy link text
       </message>
-      <message name="IDS_CONTEXT_MENU_OPEN_IN_BROWSER" desc="Context menu item to open the selected link in a new tab. [CHAR_LIMIT=30]">
-        Open in browser
+      <message name="IDS_CONTEXT_MENU_OPEN_LINK" desc="Context menu item to open the selected link in a relevant application. [CHAR_LIMIT=30]">
+        Open link
       </message>
     </messages>
   </release>

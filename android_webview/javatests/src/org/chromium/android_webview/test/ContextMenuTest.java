@@ -198,7 +198,7 @@ public class ContextMenuTest extends AwParameterizedTest {
             intending(IntentMatchers.hasAction(equalTo(Intent.ACTION_VIEW)))
                     .respondWith(new Instrumentation.ActivityResult(Activity.RESULT_OK, null));
 
-            int item = Item.OPEN_IN_BROWSER;
+            int item = Item.OPEN_LINK;
 
             final String url = mWebServer.setResponse(FILE, DATA, null);
             loadUrlSync(url);
@@ -317,9 +317,9 @@ public class ContextMenuTest extends AwParameterizedTest {
     @Feature({"AndroidWebView"})
     public void testBuildingContextMenuItems() throws Throwable {
         Integer[] expectedItems = {
-            R.id.contextmenu_copy_link_text,
             R.id.contextmenu_copy_link_address,
-            R.id.contextmenu_open_in_browser_id,
+            R.id.contextmenu_copy_link_text,
+            R.id.contextmenu_open_link_id,
         };
 
         ContextMenuParams params =

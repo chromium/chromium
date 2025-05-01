@@ -11,4 +11,7 @@ found in the LICENSE file.
     <item type="id" name="contextmenu_open_in_browser_id" />
     <item type="id" name="contextmenu_copy_link_address" />
     <item type="id" name="contextmenu_copy_link_text" />
+
+    <!-- Only used by WebView -->
+    <item type="id" name="contextmenu_open_link_id" />
 </resources>

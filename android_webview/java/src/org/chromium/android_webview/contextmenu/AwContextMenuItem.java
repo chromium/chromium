@@ -21,7 +21,7 @@ public class AwContextMenuItem {
     @IntDef({
         Item.COPY_LINK_ADDRESS,
         Item.COPY_LINK_TEXT,
-        Item.OPEN_IN_BROWSER,
+        Item.OPEN_LINK,
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface Item {
@@ -29,20 +29,20 @@ public class AwContextMenuItem {
         // The menu and string IDs below must be kept in sync with this list.
         int COPY_LINK_ADDRESS = 0;
         int COPY_LINK_TEXT = 1;
-        int OPEN_IN_BROWSER = 2;
+        int OPEN_LINK = 2;
         int NUM_ENTRIES = 3;
     }
 
     private static final int[] MENU_IDS = {
         R.id.contextmenu_copy_link_address, // Item.COPY_LINK_ADDRESS
         R.id.contextmenu_copy_link_text, // Item.COPY_LINK_TEXT
-        R.id.contextmenu_open_in_browser_id, // Item.OPEN_IN_BROWSER
+        R.id.contextmenu_open_link_id, // Item.OPEN_LINK
     };
 
     private static final int[] STRING_IDS = {
         R.string.context_menu_copy_link_address, // Item.COPY_LINK_ADDRESS
         R.string.context_menu_copy_link_text, // Item.COPY_LINK_TEXT
-        R.string.context_menu_open_in_browser, // Item.OPEN_IN_BROWSER
+        R.string.context_menu_open_link, // Item.OPEN_LINK
     };
 
     /**
