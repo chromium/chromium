@@ -10,6 +10,12 @@
 #include "base/functional/callback.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 
+namespace optimization_guide {
+namespace proto {
+class ContentNode;
+}  // namespace proto
+}  // namespace optimization_guide
+
 namespace content {
 class WebContents;
 }  // namespace content
@@ -26,10 +32,10 @@ class GlicMediaIntegration {
   // May return null if no integration is needed.
   static GlicMediaIntegration* GetFor(content::WebContents*);
 
-  // This may call back synchronously.
-  virtual void ComputeContext(content::WebContents*,
-                              size_t max_size_bytes,
-                              ContextCallback) = 0;
+  // Use `context_root` to store our context information.  `context_root` will
+  // be overwritten.
+  virtual void AppendContext(
+      optimization_guide::proto::ContentNode* context_root) = 0;
 };
 
 }  // namespace glic

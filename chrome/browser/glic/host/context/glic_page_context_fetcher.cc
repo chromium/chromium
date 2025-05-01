@@ -162,20 +162,6 @@ void GlicPageContextFetcher::Fetch(
     inner_text_done_ = true;
   }
 
-  // Get the media context if we'll have somewhere to store it.
-  if (auto* media_integration =
-          options.include_annotated_page_content
-              ? GlicMediaIntegration::GetFor(web_contents())
-              : nullptr) {
-    media_integration->ComputeContext(
-        web_contents(),
-        /*max_size_bytes_=*/20000,
-        base::BindOnce(&GlicPageContextFetcher::ReceivedMediaContext,
-                       GetWeakPtr()));
-  } else {
-    media_context_done_ = true;
-  }
-
   pdf_done_ = true;  // Will not fetch PDF contents by default.
   if (options.include_pdf) {
     bool is_pdf_document =
@@ -218,13 +204,6 @@ void GlicPageContextFetcher::ReceivedPdfBytes(
   pdf_done_ = true;
   pdf_status_ = status;
   pdf_bytes_ = pdf_bytes;
-  RunCallbackIfComplete();
-}
-
-void GlicPageContextFetcher::ReceivedMediaContext(
-    const std::string& media_context) {
-  media_context_done_ = true;
-  media_context_ = media_context;
   RunCallbackIfComplete();
 }
 
@@ -303,10 +282,9 @@ void GlicPageContextFetcher::ReceivedAnnotatedPageContent(
 
 void GlicPageContextFetcher::RunCallbackIfComplete() {
   // Continue only if the primary page changed or work is complete.
-  bool work_complete =
-      (screenshot_done_ && inner_text_done_ && annotated_page_content_done_ &&
-       pdf_done_ && media_context_done_) ||
-      primary_page_changed_;
+  bool work_complete = (screenshot_done_ && inner_text_done_ &&
+                        annotated_page_content_done_ && pdf_done_) ||
+                       primary_page_changed_;
   if (!work_complete) {
     return;
   }
@@ -354,16 +332,13 @@ void GlicPageContextFetcher::RunCallbackIfComplete() {
     if (annotated_page_content_result_) {
       auto annotated_page_data = mojom::AnnotatedPageData::New();
 
-      if (media_context_.length() > 0) {
+      if (auto* media_integration =
+              GlicMediaIntegration::GetFor(web_contents())) {
         optimization_guide::proto::ContentNode* media_node =
             annotated_page_content_result_->proto.mutable_root_node()
                 ->add_children_nodes();
-        media_node->mutable_content_attributes()->set_attribute_type(
-            optimization_guide::proto::CONTENT_ATTRIBUTE_TEXT);
-        media_node->mutable_content_attributes()
-            ->mutable_text_data()
-            ->set_text_content(std::move(media_context_));
-        media_context_.clear();
+
+        media_integration->AppendContext(media_node);
       }
 
       annotated_page_data->annotated_page_content =

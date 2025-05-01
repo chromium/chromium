@@ -56,7 +56,6 @@ class GlicPageContextFetcher : public content::WebContentsObserver {
   void ReceivedPdfBytes(pdf::mojom::PdfListener_GetPdfBytesStatus status,
                         const std::vector<uint8_t>& pdf_bytes,
                         uint32_t page_count);
-  void ReceivedMediaContext(const std::string& media_context);
 
   base::WeakPtr<GlicPageContextFetcher> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
@@ -73,7 +72,6 @@ class GlicPageContextFetcher : public content::WebContentsObserver {
   bool inner_text_done_ = false;
   bool pdf_done_ = false;
   bool annotated_page_content_done_ = false;
-  bool media_context_done_ = false;
   // Whether the primary page has changed since context fetching began.
   bool primary_page_changed_ = false;
   url::Origin pdf_origin_;
@@ -86,7 +84,6 @@ class GlicPageContextFetcher : public content::WebContentsObserver {
   std::optional<optimization_guide::AIPageContentResult>
       annotated_page_content_result_;
   base::TimeTicks start_time_;
-  std::string media_context_;
 
   base::WeakPtrFactory<GlicPageContextFetcher> weak_ptr_factory_{this};
 };
