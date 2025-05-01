@@ -6,11 +6,13 @@ package org.chromium.chrome.browser.educational_tip;
 
 import android.view.View.OnClickListener;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 /** Properties for the educational tip module. */
+@NullMarked
 interface EducationalTipModuleProperties {
     WritableObjectPropertyKey<String> MODULE_CONTENT_TITLE_STRING =
             new WritableObjectPropertyKey<>();

@@ -4,9 +4,11 @@
 
 package org.chromium.chrome.browser.educational_tip;
 
-import androidx.annotation.NonNull;
+import static org.chromium.build.NullUtil.assumeNonNull;
 
 import org.chromium.base.CallbackController;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
@@ -18,6 +20,7 @@ import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Mediator for the educational tip module. */
+@NullMarked
 public class EducationalTipModuleMediator {
     private final EducationTipModuleActionDelegate mActionDelegate;
     private final Profile mProfile;
@@ -26,16 +29,16 @@ public class EducationalTipModuleMediator {
     private final ModuleDelegate mModuleDelegate;
     private final CallbackController mCallbackController;
 
-    private EducationalTipCardProvider mEducationalTipCardProvider;
+    private @Nullable EducationalTipCardProvider mEducationalTipCardProvider;
     private DefaultBrowserPromoTriggerStateListener mDefaultBrowserPromoTriggerStateListener;
     private Tracker mTracker;
 
     EducationalTipModuleMediator(
             @ModuleType int moduleType,
-            @NonNull PropertyModel model,
-            @NonNull ModuleDelegate moduleDelegate,
+            PropertyModel model,
+            ModuleDelegate moduleDelegate,
             EducationTipModuleActionDelegate actionDelegate,
-            @NonNull Profile profile) {
+            Profile profile) {
         mModuleType = moduleType;
         mModel = model;
         mModuleDelegate = moduleDelegate;
@@ -63,6 +66,7 @@ public class EducationalTipModuleMediator {
                         () -> {
                             mModuleDelegate.removeModule(mModuleType);
                         });
+        assumeNonNull(mEducationalTipCardProvider);
 
         mModel.set(
                 EducationalTipModuleProperties.MODULE_CONTENT_TITLE_STRING,
@@ -79,7 +83,7 @@ public class EducationalTipModuleMediator {
         mModel.set(
                 EducationalTipModuleProperties.MODULE_BUTTON_ON_CLICK_LISTENER,
                 v -> {
-                    mEducationalTipCardProvider.onCardClicked();
+                    assumeNonNull(mEducationalTipCardProvider).onCardClicked();
                 });
 
         mModuleDelegate.onDataReady(mModuleType, mModel);

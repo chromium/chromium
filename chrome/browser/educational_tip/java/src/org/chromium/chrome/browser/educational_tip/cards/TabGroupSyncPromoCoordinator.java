@@ -5,15 +5,16 @@
 package org.chromium.chrome.browser.educational_tip.cards;
 
 import androidx.annotation.DrawableRes;
-import androidx.annotation.NonNull;
 
 import org.chromium.base.CallbackController;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.educational_tip.EducationTipModuleActionDelegate;
 import org.chromium.chrome.browser.educational_tip.EducationalTipCardProvider;
 import org.chromium.chrome.browser.educational_tip.R;
 import org.chromium.chrome.browser.hub.PaneId;
 
 /** Coordinator for the Tab group sync promo card. */
+@NullMarked
 public class TabGroupSyncPromoCoordinator implements EducationalTipCardProvider {
     private final EducationTipModuleActionDelegate mActionDelegate;
     private final Runnable mOnClickedRunnable;
@@ -24,9 +25,9 @@ public class TabGroupSyncPromoCoordinator implements EducationalTipCardProvider 
      * @param actionDelegate The instance of {@link EducationTipModuleActionDelegate}.
      */
     public TabGroupSyncPromoCoordinator(
-            @NonNull Runnable onModuleClickedCallback,
-            @NonNull CallbackController callbackController,
-            @NonNull EducationTipModuleActionDelegate actionDelegate) {
+            Runnable onModuleClickedCallback,
+            CallbackController callbackController,
+            EducationTipModuleActionDelegate actionDelegate) {
         mActionDelegate = actionDelegate;
 
         mOnClickedRunnable =

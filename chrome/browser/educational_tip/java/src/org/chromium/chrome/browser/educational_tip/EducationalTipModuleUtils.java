@@ -4,11 +4,13 @@
 
 package org.chromium.chrome.browser.educational_tip;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 
 import java.util.HashSet;
 
 /** Utilities for educational tip modules. */
+@NullMarked
 public class EducationalTipModuleUtils {
 
     /** Returns a list of module types supported by EducationalTip builder and mediator. */

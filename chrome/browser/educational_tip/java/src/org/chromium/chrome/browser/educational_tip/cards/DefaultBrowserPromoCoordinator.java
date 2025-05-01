@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.educational_tip.cards;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.content.Intent;
 import android.provider.Settings;
@@ -11,9 +13,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 
 import androidx.annotation.DrawableRes;
-import androidx.annotation.NonNull;
 
 import org.chromium.base.IntentUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.educational_tip.EducationTipModuleActionDelegate;
 import org.chromium.chrome.browser.educational_tip.EducationalTipCardProvider;
 import org.chromium.chrome.browser.educational_tip.R;
@@ -22,21 +25,21 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.Stat
 import org.chromium.ui.widget.ButtonCompat;
 
 /** Coordinator for the default browser promo card. */
+@NullMarked
 public class DefaultBrowserPromoCoordinator implements EducationalTipCardProvider {
     // For the default browser promo card specifically, it is triggered only when the user clicks on
     // the bottom sheet, directing them to the default app settings page.
     private final Runnable mOnModuleClickedCallback;
     private final EducationTipModuleActionDelegate mActionDelegate;
 
-    private DefaultBrowserPromoBottomSheetContent mDefaultBrowserBottomSheetContent;
+    private @Nullable DefaultBrowserPromoBottomSheetContent mDefaultBrowserBottomSheetContent;
 
     /**
      * @param onModuleClickedCallback The callback to be called when the bottom sheet is clicked.
      * @param actionDelegate The instance of {@link EducationTipModuleActionDelegate}.
      */
     public DefaultBrowserPromoCoordinator(
-            @NonNull Runnable onModuleClickedCallback,
-            @NonNull EducationTipModuleActionDelegate actionDelegate) {
+            Runnable onModuleClickedCallback, EducationTipModuleActionDelegate actionDelegate) {
         mOnModuleClickedCallback = onModuleClickedCallback;
         mActionDelegate = actionDelegate;
     }
@@ -83,7 +86,7 @@ public class DefaultBrowserPromoCoordinator implements EducationalTipCardProvide
                 (v) -> {
                     IntentUtils.safeStartActivity(context, createBottomSheetOnClickIntent());
                     bottomSheetController.hideContent(
-                            mDefaultBrowserBottomSheetContent,
+                            assumeNonNull(mDefaultBrowserBottomSheetContent),
                             /* animate= */ true,
                             StateChangeReason.INTERACTION_COMPLETE);
                     mOnModuleClickedCallback.run();
@@ -104,7 +107,7 @@ public class DefaultBrowserPromoCoordinator implements EducationalTipCardProvide
         return intent;
     }
 
-    public DefaultBrowserPromoBottomSheetContent getDefaultBrowserBottomSheetContent() {
+    public @Nullable DefaultBrowserPromoBottomSheetContent getDefaultBrowserBottomSheetContent() {
         return mDefaultBrowserBottomSheetContent;
     }
 }

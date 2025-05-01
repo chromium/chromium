@@ -8,18 +8,19 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.view.View;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.educational_tip.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 
 /** Bottom sheet content of the default browser promo card. */
+@NullMarked
 public class DefaultBrowserPromoBottomSheetContent implements BottomSheetContent {
     private View mContentView;
 
-    public DefaultBrowserPromoBottomSheetContent(@NonNull View view) {
+    public DefaultBrowserPromoBottomSheetContent(View view) {
         mContentView = view;
     }
 
@@ -28,9 +29,8 @@ public class DefaultBrowserPromoBottomSheetContent implements BottomSheetContent
         return mContentView;
     }
 
-    @Nullable
     @Override
-    public View getToolbarView() {
+    public @Nullable View getToolbarView() {
         return null;
     }
 
@@ -63,7 +63,7 @@ public class DefaultBrowserPromoBottomSheetContent implements BottomSheetContent
     }
 
     @Override
-    public @NonNull String getSheetContentDescription(Context context) {
+    public String getSheetContentDescription(Context context) {
         return context.getString(
                 R.string.educational_tip_default_browser_bottom_sheet_content_description);
     }
