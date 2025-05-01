@@ -11,10 +11,10 @@ config("warnings") {
 
 component("liburlpattern") {
   defines = [ "IS_LIBURLPATTERN_IMPL" ]
-  deps = [
+  deps = [ "//third_party/icu:icu" ]
+  public_deps = [
     "//base:base",
     "//third_party/abseil-cpp:absl",
-    "//third_party/icu:icu",
   ]
 
   configs += [ ":warnings" ]
