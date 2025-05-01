@@ -182,6 +182,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kAdaptiveButtonInTopToolbarCustomizationV2,
     &kAdaptiveButtonInTopToolbarPageSummary,
     &kAllowNewIncognitoTabIntents,
+    &kAllowTabClosingUponMinimization,
     &kAndroidAppIntegration,
     &kAndroidAppIntegrationV2,
     &kNewTabPageCustomization,
@@ -468,6 +469,10 @@ BASE_FEATURE(kAdaptiveButtonInTopToolbarPageSummary,
 BASE_FEATURE(kAllowNewIncognitoTabIntents,
              "AllowNewIncognitoTabIntents",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kAllowTabClosingUponMinimization,
+             "AllowTabClosingUponMinimization",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDisableCompositedProgressBar,
              "DisableCompositedProgressBar",

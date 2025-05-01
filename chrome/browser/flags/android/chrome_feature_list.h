@@ -18,6 +18,7 @@ namespace android {
 BASE_DECLARE_FEATURE(kAdaptiveButtonInTopToolbarCustomizationV2);
 BASE_DECLARE_FEATURE(kAdaptiveButtonInTopToolbarPageSummary);
 BASE_DECLARE_FEATURE(kAllowNewIncognitoTabIntents);
+BASE_DECLARE_FEATURE(kAllowTabClosingUponMinimization);
 BASE_DECLARE_FEATURE(kAndroidAppIntegration);
 BASE_DECLARE_FEATURE(kAndroidAppIntegrationV2);
 BASE_DECLARE_FEATURE(kNewTabPageCustomization);

@@ -96,6 +96,12 @@ const char kAllowLegacyMV2ExtensionsDescription[] =
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
+const char kAllowTabClosingUponMinimizationName[] =
+    "Allow tab to be closed during minimization";
+const char kAllowTabClosingUponMinimizationDescription[] =
+    "Utilize Android 16's new API to allow tab to be closed during minimization"
+    " triggered by back press.";
+
 const char kAndroidAdaptiveFrameRateName[] =
     "Android Adaptive Refresh Rate features";
 const char kAndroidAdaptiveFrameRateDescription[] =

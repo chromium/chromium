@@ -79,6 +79,9 @@ extern const char kAllowLegacyMV2ExtensionsDescription[];
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
         //
 #if BUILDFLAG(IS_ANDROID)
+extern const char kAllowTabClosingUponMinimizationName[];
+extern const char kAllowTabClosingUponMinimizationDescription[];
+
 extern const char kAndroidAdaptiveFrameRateName[];
 extern const char kAndroidAdaptiveFrameRateDescription[];
 #endif
