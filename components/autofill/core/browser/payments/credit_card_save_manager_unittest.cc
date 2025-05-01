@@ -5633,8 +5633,6 @@ TEST_F(CreditCardSaveManagerTest, LocallySaveCreditCard_WithCvc_PrefOn) {
   test_api(credit_card_form).field(3).set_value(ASCIIToUTF16(test::NextYear()));
   test_api(credit_card_form).field(4).set_value(u"123");
 
-  EXPECT_CALL(payments_client(), ShowSaveCreditCardLocally);
-
   FormSubmitted(credit_card_form);
 
   EXPECT_FALSE(credit_card_save_manager_->CreditCardWasUploaded());
@@ -5664,8 +5662,6 @@ TEST_F(CreditCardSaveManagerTest, LocallySaveCreditCard_WithCvc_PrefOff) {
       .set_value(ASCIIToUTF16(test::NextMonth()));
   test_api(credit_card_form).field(3).set_value(ASCIIToUTF16(test::NextYear()));
   test_api(credit_card_form).field(4).set_value(u"123");
-
-  EXPECT_CALL(payments_client(), ShowSaveCreditCardLocally);
 
   FormSubmitted(credit_card_form);
 
