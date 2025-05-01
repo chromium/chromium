@@ -27,10 +27,9 @@ namespace content {
 // The SiteInstance selection model heavily relies on this function to be
 // correct, and documents these assumptions, many of which would crash the
 // browser if incorrect. In particular, it assumes that returning a value of
-// CoopSwapResult::kSwapRelated means that the current browsing context group
-// will NOT be found suitable for reuse, as that would effectively mean no swap
-// has happened.
-CoopSwapResult ShouldSwapBrowsingInstanceForCrossOriginOpenerPolicy(
+// true means that the current browsing context group will NOT be found suitable
+// for reuse, as that would effectively mean no swap has happened.
+bool ShouldSwapBrowsingInstanceForCrossOriginOpenerPolicy(
     network::mojom::CrossOriginOpenerPolicyValue initiator_coop,
     const url::Origin& initiator_origin,
     bool is_navigation_from_initial_empty_document,
@@ -42,12 +41,12 @@ CoopSwapResult ShouldSwapBrowsingInstanceForCrossOriginOpenerPolicy(
     case CrossOriginOpenerPolicyValue::kUnsafeNone:
       switch (destination_coop) {
         case CrossOriginOpenerPolicyValue::kUnsafeNone:
-          return CoopSwapResult::kNoSwap;
+          return false;
         case CrossOriginOpenerPolicyValue::kSameOriginAllowPopups:
         case CrossOriginOpenerPolicyValue::kSameOrigin:
         case CrossOriginOpenerPolicyValue::kSameOriginPlusCoep:
         case CrossOriginOpenerPolicyValue::kNoopenerAllowPopups:
-          return CoopSwapResult::kSwap;
+          return true;
       }
 
     // "same-origin-allow-popups" is used to stay in the same BrowsingInstance
@@ -55,41 +54,33 @@ CoopSwapResult ShouldSwapBrowsingInstanceForCrossOriginOpenerPolicy(
     case CrossOriginOpenerPolicyValue::kSameOriginAllowPopups:
       switch (destination_coop) {
         case CrossOriginOpenerPolicyValue::kUnsafeNone:
-          return is_navigation_from_initial_empty_document
-                     ? CoopSwapResult::kNoSwap
-                     : CoopSwapResult::kSwap;
+          return !is_navigation_from_initial_empty_document;
         case CrossOriginOpenerPolicyValue::kSameOriginAllowPopups:
-          return initiator_origin.IsSameOriginWith(destination_origin)
-                     ? CoopSwapResult::kNoSwap
-                     : CoopSwapResult::kSwap;
+          return !initiator_origin.IsSameOriginWith(destination_origin);
         case CrossOriginOpenerPolicyValue::kSameOrigin:
         case CrossOriginOpenerPolicyValue::kSameOriginPlusCoep:
         case CrossOriginOpenerPolicyValue::kNoopenerAllowPopups:
-          return CoopSwapResult::kSwap;
+          return true;
       }
 
     case CrossOriginOpenerPolicyValue::kNoopenerAllowPopups:
       switch (destination_coop) {
         case CrossOriginOpenerPolicyValue::kUnsafeNone:
-          return CoopSwapResult::kNoSwap;
+          return false;
         case CrossOriginOpenerPolicyValue::kNoopenerAllowPopups:
           return (is_navigation_from_initial_empty_document ||
-                  !initiator_origin.IsSameOriginWith(destination_origin))
-                     ? CoopSwapResult::kSwap
-                     : CoopSwapResult::kNoSwap;
+                  !initiator_origin.IsSameOriginWith(destination_origin));
         case CrossOriginOpenerPolicyValue::kSameOriginAllowPopups:
         case CrossOriginOpenerPolicyValue::kSameOrigin:
         case CrossOriginOpenerPolicyValue::kSameOriginPlusCoep:
-          return CoopSwapResult::kSwap;
+          return true;
       }
 
     // "same-origin" requires that both policies and origin match.
     case CrossOriginOpenerPolicyValue::kSameOrigin:
     case CrossOriginOpenerPolicyValue::kSameOriginPlusCoep:
-      return (initiator_coop == destination_coop &&
-              initiator_origin.IsSameOriginWith(destination_origin))
-                 ? CoopSwapResult::kNoSwap
-                 : CoopSwapResult::kSwap;
+      return initiator_coop != destination_coop ||
+             !initiator_origin.IsSameOriginWith(destination_origin);
   }
 }
 
@@ -178,10 +169,10 @@ CrossOriginOpenerPolicyStatus::SanitizeResponse(
     // We should force a COOP browsing instance swap to avoid certain
     // opener+error pages exploits, see https://crbug.com/1256823 and
     // https://github.com/whatwg/html/issues/7345.
-    browsing_instance_swap_result_ = CoopSwapResult::kSwap;
+    browsing_instance_swap_ = true;
     virtual_browsing_context_group_ =
         CrossOriginOpenerPolicyAccessReportManager::
-            GetNewVirtualBrowsingContextGroup();
+            NextVirtualBrowsingContextGroup();
 
     return network::mojom::BlockedByResponseReason::
         kCoopSandboxedIFrameCannotNavigateToCoopPage;
@@ -243,35 +234,34 @@ void CrossOriginOpenerPolicyStatus::EnforceCOOP(
   const url::Origin current_coop_origin =
       current_coop_.origin.value_or(url::Origin());
 
-  CoopSwapResult cross_origin_policy_swap =
+  bool cross_origin_policy_swap =
       ShouldSwapBrowsingInstanceForCrossOriginOpenerPolicy(
           current_coop_.value, current_coop_origin,
           is_navigation_from_initial_empty_document_, response_coop.value,
           response_coop_origin);
 
-  // Over the whole redirect chain, keep track of the "strongest" way the new
-  // context must be separated from the previous one.
-  // kNoSwap < kSwapRelated < kSwap.
-  if (cross_origin_policy_swap > browsing_instance_swap_result_) {
-    browsing_instance_swap_result_ = cross_origin_policy_swap;
-  }
+  // Any mismatch in COOP during any step of the redirect chain will result in
+  // the whole navigation requiring a BrowsingInstance swap. Update the tracking
+  // of necessary browsing instance swap for the navigation based on the result
+  // of checking COOP for this step of the redirect chain.
+  browsing_instance_swap_ |= cross_origin_policy_swap;
 
   // Both report only cases (navigation from and to document) use the following
   // result, computing the need of a browsing context group swap based on both
   // documents' report-only values.
-  CoopSwapResult report_only_coop_swap =
+  bool report_only_coop_swap =
       ShouldSwapBrowsingInstanceForCrossOriginOpenerPolicy(
           current_coop_.report_only_value, current_coop_origin,
           is_navigation_from_initial_empty_document_,
           response_coop.report_only_value, response_coop_origin);
 
-  CoopSwapResult navigating_to_report_only_coop_swap =
+  bool navigating_to_report_only_coop_swap =
       ShouldSwapBrowsingInstanceForCrossOriginOpenerPolicy(
           current_coop_.value, current_coop_origin,
           is_navigation_from_initial_empty_document_,
           response_coop.report_only_value, response_coop_origin);
 
-  CoopSwapResult navigating_from_report_only_coop_swap =
+  bool navigating_from_report_only_coop_swap =
       ShouldSwapBrowsingInstanceForCrossOriginOpenerPolicy(
           current_coop_.report_only_value, current_coop_origin,
           is_navigation_from_initial_empty_document_, response_coop.value,
@@ -280,15 +270,14 @@ void CrossOriginOpenerPolicyStatus::EnforceCOOP(
   bool has_other_window_in_browsing_context_group =
       frame_tree_node_->current_frame_host()
           ->delegate()
-          ->GetActiveTopLevelDocumentsInCoopRelatedGroup(
+          ->GetActiveTopLevelDocumentsInBrowsingContextGroup(
               frame_tree_node_->current_frame_host())
           .size() > 1;
 
-  // If this response's COOP causes a BrowsingInstance swap in another
-  // CoopRelatedGroup, report this to the previous COOP reporter and/or the COOP
-  // reporter of the response if they exist. Do not report swaps in the same
-  // CoopRelatedGroup, as these do not sever the opener.
-  if (cross_origin_policy_swap == CoopSwapResult::kSwap) {
+  // If this response's COOP causes a BrowsingInstance swap, report this to the
+  // previous COOP reporter and/or the COOP reporter of the response if they
+  // exist.
+  if (cross_origin_policy_swap) {
     // Using current_origin_ instead of current_coop_.origin here because
     // we only care about whether the actual origin has changed when determining
     // whether to show previous URL.
@@ -313,32 +302,14 @@ void CrossOriginOpenerPolicyStatus::EnforceCOOP(
   // (from/to). If both report-only values match however, skip reports, as the
   // website likely wants to deploy COOP on both pages and is not interested in
   // these kind of reports.
-  bool has_matching_report_only =
-      report_only_coop_swap == CoopSwapResult::kNoSwap;
-  CoopSwapResult virtual_browsing_instance_swap_result =
-      CoopSwapResult::kNoSwap;
-  if (!has_matching_report_only) {
-    // Find the strongest type of swap that would happen, between the previous
-    // and next report-only values.
-    if (navigating_from_report_only_coop_swap == CoopSwapResult::kSwap ||
-        navigating_to_report_only_coop_swap == CoopSwapResult::kSwap) {
-      virtual_browsing_instance_swap_result = CoopSwapResult::kSwap;
-    } else if (navigating_from_report_only_coop_swap ==
-                   CoopSwapResult::kSwapRelated ||
-               navigating_to_report_only_coop_swap ==
-                   CoopSwapResult::kSwapRelated) {
-      virtual_browsing_instance_swap_result = CoopSwapResult::kSwapRelated;
-    }
-  }
+  bool virtual_browsing_instance_swap =
+      report_only_coop_swap && (navigating_from_report_only_coop_swap ||
+                                navigating_to_report_only_coop_swap);
 
-  // If this response's report-only COOP would cause a BrowsingInstance swap
-  // in another CoopRelatedGroup, report this to the previous COOP reporter
-  // and/or the COOP reporter of the response if they exist. Do not report swaps
-  // in the same CoopRelatedGroup, as these do not sever the opener.
-  if (virtual_browsing_instance_swap_result == CoopSwapResult::kSwap) {
-    // If this response's report-only COOP would cause a BrowsingInstance swap,
-    // report this to the previous COOP reporter and/or the COOP reporter of
-    // the response if they exist.
+  // If this response's report-only COOP would cause a BrowsingInstance swap,
+  // report this to the previous COOP reporter and/or the COOP reporter of the
+  // response if they exist.
+  if (virtual_browsing_instance_swap) {
     if (has_other_window_in_browsing_context_group) {
       if (response_origin.IsSameOriginWith(response_coop_origin)) {
         response_reporter->QueueNavigationToCOOPReport(
@@ -356,14 +327,10 @@ void CrossOriginOpenerPolicyStatus::EnforceCOOP(
     }
   }
 
-  if (browsing_instance_swap_result_ != CoopSwapResult::kNoSwap ||
-      virtual_browsing_instance_swap_result != CoopSwapResult::kNoSwap) {
+  if (browsing_instance_swap_ || virtual_browsing_instance_swap) {
     virtual_browsing_context_group_ =
         CrossOriginOpenerPolicyAccessReportManager::
-            GetVirtualBrowsingContextGroup(
-                browsing_instance_swap_result_,
-                virtual_browsing_instance_swap_result,
-                virtual_browsing_context_group_);
+            NextVirtualBrowsingContextGroup();
   }
 
   // Check if a COOP of same-origin-allow-popups by default would result in a
@@ -371,11 +338,10 @@ void CrossOriginOpenerPolicyStatus::EnforceCOOP(
   if (ShouldSwapBrowsingInstanceForCrossOriginOpenerPolicy(
           current_coop_.soap_by_default_value, current_coop_origin,
           is_navigation_from_initial_empty_document_,
-          response_coop.soap_by_default_value,
-          response_coop_origin) != CoopSwapResult::kNoSwap) {
+          response_coop.soap_by_default_value, response_coop_origin)) {
     soap_by_default_virtual_browsing_context_group_ =
         CrossOriginOpenerPolicyAccessReportManager::
-            GetNewVirtualBrowsingContextGroup();
+            NextVirtualBrowsingContextGroup();
   }
 
   // Finally, update the current COOP, origin and reporter to those of the

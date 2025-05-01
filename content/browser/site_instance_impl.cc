@@ -144,8 +144,7 @@ scoped_refptr<SiteInstanceImpl> SiteInstanceImpl::Create(
   return base::WrapRefCounted(new SiteInstanceImpl(new BrowsingInstance(
       browser_context, WebExposedIsolationInfo::CreateNonIsolated(),
       /*is_guest=*/false, /*is_fenced=*/false,
-      /*is_fixed_storage_partition=*/false,
-      /*coop_related_group=*/nullptr, /*common_coop_origin=*/std::nullopt)));
+      /*is_fixed_storage_partition=*/false)));
 }
 
 // static
@@ -163,12 +162,11 @@ scoped_refptr<SiteInstanceImpl> SiteInstanceImpl::CreateForUrlInfo(
   DCHECK(browser_context);
 
   // This will create a new SiteInstance and BrowsingInstance.
-  scoped_refptr<BrowsingInstance> instance(new BrowsingInstance(
-      browser_context,
-      url_info.web_exposed_isolation_info.value_or(
-          WebExposedIsolationInfo::CreateNonIsolated()),
-      is_guest, is_fenced, is_fixed_storage_partition,
-      /*coop_related_group=*/nullptr, url_info.common_coop_origin));
+  scoped_refptr<BrowsingInstance> instance(
+      new BrowsingInstance(browser_context,
+                           url_info.web_exposed_isolation_info.value_or(
+                               WebExposedIsolationInfo::CreateNonIsolated()),
+                           is_guest, is_fenced, is_fixed_storage_partition));
 
   // Note: The |allow_default_instance| value used here MUST match the value
   // used in DoesSiteForURLMatch().
@@ -198,8 +196,7 @@ scoped_refptr<SiteInstanceImpl> SiteInstanceImpl::CreateForServiceWorker(
       // It should be safe to just default this to true since the
       // BrowsingInstance is not shared with frames, and there are no
       // navigations happening in service workers.
-      /*is_fixed_storage_partition=*/true,
-      /*coop_related_group=*/nullptr, url_info.common_coop_origin));
+      /*is_fixed_storage_partition=*/true));
 
   // We do NOT want to allow the default site instance here because workers
   // need to be kept separate from other sites.
@@ -238,9 +235,7 @@ scoped_refptr<SiteInstanceImpl> SiteInstanceImpl::CreateForGuest(
           browser_context, guest_site_info.web_exposed_isolation_info(),
           /*is_guest=*/true,
           /*is_fenced=*/false,
-          /*is_fixed_storage_partition=*/true,
-          /*coop_related_group=*/nullptr,
-          /*common_coop_origin=*/std::nullopt)));
+          /*is_fixed_storage_partition=*/true)));
 
   site_instance->SetSiteInfoInternal(guest_site_info);
   return site_instance;
@@ -274,9 +269,7 @@ scoped_refptr<SiteInstanceImpl> SiteInstanceImpl::CreateForFencedFrame(
           browser_context, embedder_site_instance->GetWebExposedIsolationInfo(),
           embedder_site_instance->IsGuest(),
           /*is_fenced=*/should_isolate_fenced_frames,
-          embedder_site_instance->IsFixedStoragePartition(),
-          /*coop_related_group=*/nullptr,
-          /*common_coop_origin=*/std::nullopt)));
+          embedder_site_instance->IsFixedStoragePartition())));
 
   // Give the new fenced frame SiteInstance the same site url as its embedder's
   // SiteInstance to allow it to reuse its embedder's process. We avoid doing
@@ -321,9 +314,7 @@ SiteInstanceImpl::CreateReusableInstanceForTesting(
   scoped_refptr<BrowsingInstance> instance(new BrowsingInstance(
       browser_context, WebExposedIsolationInfo::CreateNonIsolated(),
       /*is_guest=*/false, /*is_fenced=*/false,
-      /*is_fixed_storage_partition=*/false,
-      /*coop_related_group=*/nullptr,
-      /*common_coop_origin=*/std::nullopt));
+      /*is_fixed_storage_partition=*/false));
   auto site_instance = instance->GetSiteInstanceForURL(
       UrlInfo(UrlInfoInit(url)), /* allow_default_instance */ false);
   site_instance->set_process_reuse_policy(
@@ -795,12 +786,6 @@ SiteInstanceImpl::GetMaybeGroupRelatedSiteInstanceImpl(
       url_info, site_instance_group_.get());
 }
 
-scoped_refptr<SiteInstanceImpl>
-SiteInstanceImpl::GetCoopRelatedSiteInstanceImpl(const UrlInfo& url_info) {
-  return browsing_instance_->GetCoopRelatedSiteInstanceForURL(
-      url_info, /* allow_default_instance */ true);
-}
-
 AgentSchedulingGroupHost& SiteInstanceImpl::GetOrCreateAgentSchedulingGroup() {
   // Currently GetOrCreateAgentSchedulingGroup is called in the following
   // cases:
@@ -850,7 +835,7 @@ bool SiteInstanceImpl::IsRelatedSiteInstance(const SiteInstance* instance) {
 }
 
 size_t SiteInstanceImpl::GetRelatedActiveContentsCount() {
-  return browsing_instance_->GetCoopRelatedGroupActiveContentsCount();
+  return browsing_instance_->active_contents_count();
 }
 
 namespace {
@@ -1364,12 +1349,6 @@ bool SiteInstanceImpl::DoesSiteInfoForURLMatch(const UrlInfo& url_info) {
     return false;
   }
 
-  // Similarly, the common_coop_origin in the UrlInfo and in this
-  // SiteInstance's BrowsingInstance must be compatible.
-  if (url_info.common_coop_origin != GetCommonCoopOrigin()) {
-    return false;
-  }
-
   // Similarly, the CrossOriginIsolationKeys should match.
   if (GetSiteInfo().agent_cluster_key() &&
       GetSiteInfo().agent_cluster_key()->GetCrossOriginIsolationKey() !=
@@ -1562,11 +1541,6 @@ bool SiteInstanceImpl::IsCrossOriginIsolated() const {
               CrossOriginIsolationMode::kConcrete);
 }
 
-const std::optional<url::Origin>& SiteInstanceImpl::GetCommonCoopOrigin()
-    const {
-  return browsing_instance_->common_coop_origin();
-}
-
 // static
 void SiteInstance::StartIsolatingSite(
     BrowserContext* context,
@@ -1661,12 +1635,6 @@ RenderProcessHost* SiteInstanceImpl::GetDefaultProcessForBrowsingInstance() {
                                           : nullptr;
   }
   return nullptr;
-}
-
-bool SiteInstanceImpl::IsCoopRelatedSiteInstance(
-    const SiteInstanceImpl* instance) const {
-  return instance->browsing_instance_->coop_related_group_token() ==
-         browsing_instance_->coop_related_group_token();
 }
 
 void SiteInstanceImpl::SetProcessForTesting(RenderProcessHost* process) {

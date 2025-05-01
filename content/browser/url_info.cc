@@ -29,7 +29,6 @@ UrlInfo::UrlInfo(const UrlInfoInit& init)
       storage_partition_config(init.storage_partition_config_),
       web_exposed_isolation_info(init.web_exposed_isolation_info_),
       is_pdf(init.is_pdf_),
-      common_coop_origin(init.common_coop_origin_),
       cross_origin_isolation_key(init.cross_origin_isolation_key_) {
   // An origin-keyed process can only be used for origin-keyed agent clusters.
   // We can check this for the explicit header case here, and it is checked more
@@ -162,12 +161,6 @@ UrlInfoInit& UrlInfoInit::WithWebExposedIsolationInfo(
 
 UrlInfoInit& UrlInfoInit::WithIsPdf(bool is_pdf) {
   is_pdf_ = is_pdf;
-  return *this;
-}
-
-UrlInfoInit& UrlInfoInit::WithCommonCoopOrigin(
-    const url::Origin& common_coop_origin) {
-  common_coop_origin_ = common_coop_origin;
   return *this;
 }
 

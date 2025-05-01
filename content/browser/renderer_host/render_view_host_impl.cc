@@ -604,11 +604,16 @@ bool RenderViewHostImpl::CreateRenderView(
   // cross-browsing-context-group popup to B, the RenderViewHost for the opener
   // in B's process should have A's BrowsingContextGroupInfo, which is the
   // current page in the opener.
+  // TODO(crbug.com/412965095): Now that the CoopRelatedGroup no longer exist,
+  // BrowsingContextGroupInfo can be replaced by a simple
+  // BrowsingContextGroupToken. In the meantime, just pass the
+  // BrowsingInstanceToken as a CoopGroupToken so that we do not send an empty
+  // token.
   params->browsing_context_group_info = blink::BrowsingContextGroupInfo(
       frame_tree_->GetMainFrame()->GetSiteInstance()->browsing_instance_token(),
       frame_tree_->GetMainFrame()
           ->GetSiteInstance()
-          ->coop_related_group_token());
+          ->browsing_instance_token());
 
   // RenderViewHostImpl is reused after a crash, so reset any endpoint that
   // might be a leftover from a crash.

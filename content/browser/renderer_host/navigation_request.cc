@@ -4132,13 +4132,6 @@ UrlInfo NavigationRequest::GetUrlInfo() {
       .WithCrossOriginIsolationKey(cross_origin_isolation_key)
       .WithIsPdf(is_pdf_);
 
-  // Records in the UrlInfo if COOP: same-origin or COOP: restrict-properties
-  // was set, and from which origin.
-  auto common_coop_origin = ComputeCommonCoopOrigin();
-  if (common_coop_origin.has_value()) {
-    url_info_init.WithCommonCoopOrigin(common_coop_origin.value());
-  }
-
   // Navigations with SiteInstances which have fixed storage partition (e.g.
   // <webview> tags) should always stay in the current StoragePartition.
   SiteInstanceImpl* current_instance =
@@ -6736,8 +6729,7 @@ void NavigationRequest::CommitPageActivation() {
         frame_tree_node_->current_frame_host()->GetSiteInstance();
     SiteInstanceImpl* target_site_instance =
         activated_entry->render_frame_host()->GetSiteInstance();
-    CHECK(!target_site_instance->IsCoopRelatedSiteInstance(
-        current_site_instance));
+    CHECK(!target_site_instance->IsRelatedSiteInstance(current_site_instance));
     browsing_context_group_swap_ =
         BrowsingContextGroupSwap::CreateSecuritySwap();
 
@@ -10666,42 +10658,6 @@ NavigationRequest::ComputeWebExposedIsolationInfo() {
              GetNavigationController()->GetBrowserContext(), url)
              ? WebExposedIsolationInfo::CreateIsolatedApplication(origin)
              : WebExposedIsolationInfo::CreateIsolated(origin);
-}
-
-std::optional<url::Origin> NavigationRequest::ComputeCommonCoopOrigin() {
-  // Embedded content that cannot set COOP directly should inherit their COOP
-  // common origin from their embedder. For iframes, this is to ensure that they
-  // do not reuse a SiteInstance in the wrong page. For other embedded
-  // content it is simply for consistency as they should never try to get
-  // another SiteInstance in the same CoopRelatedGroup anyway. For this reason
-  // we use IsOutermostMainFrame.
-  if (!frame_tree_node_->IsOutermostMainFrame()) {
-    return frame_tree_node_->current_frame_host()
-        ->GetMainFrame()
-        ->GetSiteInstance()
-        ->GetCommonCoopOrigin();
-  }
-
-  using CoopValue = network::mojom::CrossOriginOpenerPolicyValue;
-
-  switch (coop_status().current_coop().value) {
-    case CoopValue::kSameOrigin:
-    case CoopValue::kSameOriginPlusCoep:
-    case CoopValue::kNoopenerAllowPopups:
-      // If we're early in the navigation process and the PolicyContainer was
-      // not yet computed, use a best effort origin.
-      // TODO(crbug.com/40879437): This is probably not very helpful. If
-      // we have a { Value+Origin } COOP bundle, we should be able to return a
-      // nullopt value that is distinct from { unsafe-none, nullopt }, similar
-      // to what exists for WebExposedIsolationInfo.
-      return policy_container_builder_->HasComputedPolicies()
-                 ? coop_status().current_coop().origin
-                 : GetTentativeOriginAtRequestTime();
-
-    case CoopValue::kUnsafeNone:
-    case CoopValue::kSameOriginAllowPopups:
-      return std::nullopt;
-  };
 }
 
 void NavigationRequest::MaybeAssignInvalidPrerenderFrameTreeNodeId() {

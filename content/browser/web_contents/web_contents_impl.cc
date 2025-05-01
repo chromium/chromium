@@ -9248,9 +9248,8 @@ void WebContentsImpl::UpdateWindowPreferredSize(
 }
 
 std::vector<RenderFrameHostImpl*>
-WebContentsImpl::GetActiveTopLevelDocumentsInGroup(
-    RenderFrameHostImpl* render_frame_host,
-    GroupType group_type) {
+WebContentsImpl::GetActiveTopLevelDocumentsInBrowsingContextGroup(
+    RenderFrameHostImpl* render_frame_host) {
   std::vector<RenderFrameHostImpl*> out;
   for (WebContentsImpl* web_contents : GetAllWebContents()) {
     RenderFrameHostImpl* other_render_frame_host =
@@ -9262,18 +9261,8 @@ WebContentsImpl::GetActiveTopLevelDocumentsInGroup(
       continue;
     }
 
-    // If we're looking for frames in the same browsing context group, filter
-    // frames in different browsing context groups.
-    if (group_type == GroupType::kBrowsingContextGroup &&
-        !render_frame_host->GetSiteInstance()->IsRelatedSiteInstance(
-            other_render_frame_host->GetSiteInstance())) {
-      continue;
-    }
-
-    // If we're looking for frames in the same CoopRelatedGroup, filter frames
-    // in different CoopRelatedGroups.
-    if (group_type == GroupType::kCoopRelatedGroup &&
-        !render_frame_host->GetSiteInstance()->IsCoopRelatedSiteInstance(
+    // Filter frames in different browsing context groups.
+    if (!render_frame_host->GetSiteInstance()->IsRelatedSiteInstance(
             other_render_frame_host->GetSiteInstance())) {
       continue;
     }
@@ -9281,20 +9270,6 @@ WebContentsImpl::GetActiveTopLevelDocumentsInGroup(
     out.push_back(other_render_frame_host);
   }
   return out;
-}
-
-std::vector<RenderFrameHostImpl*>
-WebContentsImpl::GetActiveTopLevelDocumentsInBrowsingContextGroup(
-    RenderFrameHostImpl* render_frame_host) {
-  return GetActiveTopLevelDocumentsInGroup(render_frame_host,
-                                           GroupType::kBrowsingContextGroup);
-}
-
-std::vector<RenderFrameHostImpl*>
-WebContentsImpl::GetActiveTopLevelDocumentsInCoopRelatedGroup(
-    RenderFrameHostImpl* render_frame_host) {
-  return GetActiveTopLevelDocumentsInGroup(render_frame_host,
-                                           GroupType::kCoopRelatedGroup);
 }
 
 PrerenderHostRegistry* WebContentsImpl::GetPrerenderHostRegistry() {

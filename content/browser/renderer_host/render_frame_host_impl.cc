@@ -2588,10 +2588,10 @@ RenderFrameHostImpl::RenderFrameHostImpl(
   // 1) Their opener in RenderFrameHostImpl::CreateNewWindow().
   // 2) Their navigation in RenderFrameHostImpl::DidCommitNavigationInternal().
   virtual_browsing_context_group_ = CrossOriginOpenerPolicyAccessReportManager::
-      GetNewVirtualBrowsingContextGroup();
+      NextVirtualBrowsingContextGroup();
   soap_by_default_virtual_browsing_context_group_ =
       CrossOriginOpenerPolicyAccessReportManager::
-          GetNewVirtualBrowsingContextGroup();
+          NextVirtualBrowsingContextGroup();
 
   // IdleManager should be unique per RenderFrame to provide proper isolation
   // of overrides.
@@ -9836,12 +9836,12 @@ void RenderFrameHostImpl::CreateNewWindow(
   int popup_virtual_browsing_context_group =
       params->opener_suppressed
           ? CrossOriginOpenerPolicyAccessReportManager::
-                GetNewVirtualBrowsingContextGroup()
+                NextVirtualBrowsingContextGroup()
           : top_level_opener->virtual_browsing_context_group();
   int popup_soap_by_default_virtual_browsing_context_group =
       params->opener_suppressed
           ? CrossOriginOpenerPolicyAccessReportManager::
-                GetNewVirtualBrowsingContextGroup()
+                NextVirtualBrowsingContextGroup()
           : top_level_opener->soap_by_default_virtual_browsing_context_group();
 
   // If the opener is suppressed or script access is disallowed, we should
@@ -9940,9 +9940,14 @@ void RenderFrameHostImpl::CreateNewWindow(
       new_main_rfh->GetDevToolsFrameToken(), wait_for_debugger,
       new_main_rfh->GetDocumentToken(),
       new_main_rfh->policy_container_host()->CreatePolicyContainerForBlink(),
+      // TODO(crbug.com/412965095): Now that the CoopRelatedGroup no longer
+      // exists, replace BrowsingContextGroupInfo by a single token. In the
+      // meantime, just pass the BrowsingInstanceToken as a CoopGroupToken so
+      // that we do not send an empty token.
       blink::BrowsingContextGroupInfo(
           new_main_rfh->GetSiteInstance()->browsing_instance_token(),
-          new_main_rfh->GetSiteInstance()->coop_related_group_token()),
+          /*coop_related_group_token=*/new_main_rfh->GetSiteInstance()
+              ->browsing_instance_token()),
       delegate_->GetColorProviderColorMaps(),
       std::move(partitioned_popin_params), /*widget_screen_rect=*/std::nullopt,
       /*window_screen_rect=*/std::nullopt);
@@ -16121,10 +16126,15 @@ void RenderFrameHostImpl::SendCommitNavigation(
   CHECK(!commit_params->browsing_context_group_info.has_value());
   if (is_main_frame() &&
       navigation_request->browsing_context_group_swap().ShouldSwap()) {
+    // TODO(crbug.com/412965095): Now that the CoopRelatedGroup no longer
+    // exists, replace BrowsingContextGroupInfo by a single token. In the
+    // meantime, just pass the BrowsingInstanceToken as a CoopGroupToken so that
+    // we do not send an empty token.
     commit_params->browsing_context_group_info =
         blink::BrowsingContextGroupInfo(
             GetSiteInstance()->browsing_instance_token(),
-            GetSiteInstance()->coop_related_group_token());
+            /*coop_related_group_token=*/GetSiteInstance()
+                ->browsing_instance_token());
   }
 
   auto* cookie_deprecation_label_manager =
@@ -16204,10 +16214,15 @@ void RenderFrameHostImpl::SendCommitFailedNavigation(
   CHECK(!commit_params->browsing_context_group_info.has_value());
   if (is_main_frame() &&
       navigation_request->browsing_context_group_swap().ShouldSwap()) {
+    // TODO(crbug.com/412965095): Now that the CoopRelatedGroup no longer
+    // exists, replace BrowsingContextGroupInfo by a single token. In the
+    // meantime, just pass the BrowsingInstanceToken as a CoopGroupToken so that
+    // we do not send an empty token.
     commit_params->browsing_context_group_info =
         blink::BrowsingContextGroupInfo(
             GetSiteInstance()->browsing_instance_token(),
-            GetSiteInstance()->coop_related_group_token());
+            /*coop_related_group_token=*/GetSiteInstance()
+                ->browsing_instance_token());
   }
 
   {

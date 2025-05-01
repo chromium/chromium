@@ -4070,21 +4070,27 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
   int rph_id_3 = current_frame_host()->GetProcess()->GetDeprecatedID();
   EXPECT_EQ(rph_id_2, rph_id_3);
 
-  // The original speculative RFH should always be destroyed.
-  //
-  // Subtle note: this happens even when bfcache is enabled. With bfcache,
-  // we force a BrowsingInstance swap at the very beginning when the navigation
-  // to `url_2` starts.  So when we learn about COOP at response time, the
+  // This test is parameterized on whether the bfcache is enabled.  With
+  // bfcache, we force a BrowsingInstance swap at the very beginning when the
+  // navigation to `url_2` starts, so there's no need to create a new
+  // SiteInstance when we learn about COOP at response time, since the
   // candidate (speculative RFH's) SiteInstance is already in a fresh
-  // BrowsingInstance. However, it cannot be reused, because COOP requires a
-  // BrowsingInstance with b.test as its common_coop_origin(), and the
-  // candidate SiteInstance's BrowsingInstance has no common_coop_origin(), so
-  // it cannot be reused, and we end up creating a new speculative RFH and
-  // destroying the original one.
-  EXPECT_TRUE(speculative_rfh.IsDestroyed());
+  // BrowsingInstance.  Therefore, with bfcache, the original speculative RFH
+  // will be the RFH that eventually commits.  Otherwise, the original
+  // speculative RFH should be destroyed and replaced by another RFH.
+  //
+  // When BackForwardCache is not enabled, the speculative RFH is created in the
+  // current BrowsingInstance, and is not appropriate for a navigation to the
+  // COOP page. So we destroy it, but we can still reuse its process for the new
+  // SiteInstance we create for the navigation.
+  if (IsBackForwardCacheEnabled()) {
+    EXPECT_FALSE(speculative_rfh.IsDestroyed());
+  } else {
+    EXPECT_TRUE(speculative_rfh.IsDestroyed());
 
-  histogram_tester.ExpectUniqueSample(
-      "Navigation.ProcessReuseOnCOOP.DifferentSiteInstance", true, 1);
+    histogram_tester.ExpectUniqueSample(
+        "Navigation.ProcessReuseOnCOOP.DifferentSiteInstance", true, 1);
+  }
 }
 
 // Ensure that same-site navigations that result in a COOP mismatch avoid an
@@ -4113,13 +4119,14 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
   // process because the navigation is same-site.  Otherwise, the navigation
   // should stay in the current RenderFrameHost.
   int rph_id_2;
+  RenderFrameHost* speculative_rfh = nullptr;
   if (IsBackForwardCacheEnabled() || ShouldCreateNewHostForAllFrames()) {
     navigation.WaitForSpeculativeRenderFrameHostCreation();
-    RenderFrameHost* speculative_rfh = web_contents()
-                                           ->GetPrimaryFrameTree()
-                                           .root()
-                                           ->render_manager()
-                                           ->speculative_frame_host();
+    speculative_rfh = web_contents()
+                          ->GetPrimaryFrameTree()
+                          .root()
+                          ->render_manager()
+                          ->speculative_frame_host();
     ASSERT_TRUE(speculative_rfh);
     rph_id_2 = speculative_rfh->GetProcess()->GetDeprecatedID();
     EXPECT_EQ(rph_id_1, rph_id_2);
@@ -4131,6 +4138,8 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
                      ->speculative_frame_host());
     rph_id_2 = rph_id_1;
   }
+
+  RenderFrameHostWrapper speculative_rfh_checker(speculative_rfh);
 
   // Allow the navigation to receive the response commit.
   EXPECT_TRUE(navigation.WaitForNavigationFinished());
@@ -4145,6 +4154,12 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
   // and the old process wasn't already locked to a.test.  In that case, a
   // process swap is required, since we are going from an unlocked process to a
   // locked process.
+  //
+  // When BFCache is enabled, we do a proactive BrowsingInstance swap at the
+  // beginning of navigation, which has created a brand new speculative
+  // RenderFrameHost. This speculative RenderFrameHost in a new BrowsingInstance
+  // can be used to commit the navigation to the COOP page, so it is not
+  // destroyed.
   int rph_id_3 = current_frame_host()->GetProcess()->GetDeprecatedID();
   if (SiteIsolationPolicy::IsSiteIsolationForCOOPEnabled()) {
     EXPECT_NE(rph_id_2, rph_id_3);
@@ -4158,7 +4173,9 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
   } else {
     EXPECT_EQ(rph_id_2, rph_id_3);
 
-    if (IsBackForwardCacheEnabled() || ShouldCreateNewHostForAllFrames()) {
+    if (IsBackForwardCacheEnabled()) {
+      EXPECT_FALSE(speculative_rfh_checker.IsDestroyed());
+    } else if (ShouldCreateNewHostForAllFrames()) {
       histogram_tester.ExpectUniqueSample(
           "Navigation.ProcessReuseOnCOOP.DifferentSiteInstance", true, 1);
     } else {

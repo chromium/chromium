@@ -410,12 +410,6 @@ class CONTENT_EXPORT RenderFrameHostManager {
       const scoped_refptr<BrowsingContextState>& browsing_context_state,
       BatchedProxyIPCSender* batched_proxy_ipc_sender = nullptr);
 
-  // Similar to `CreateRenderFrameProxy` but also creates the minimal ancestor
-  // chain of proxies in `group` to support a subframe. This only exists to
-  // support CoopRelatedGroup proxy creation and should not be used for other
-  // cases. It is CHECKed that `group` must be cross-BrowsingInstance.
-  void CreateRenderFrameProxyAndAncestorChainIfNeeded(SiteInstanceGroup* group);
-
   // Creates proxies for a new child frame at FrameTreeNode |child| in all
   // SiteInstances for which the current frame has proxies.  This method is
   // called on the parent of a new child frame before the child leaves the
@@ -719,10 +713,6 @@ class CONTENT_EXPORT RenderFrameHostManager {
     // Note: Using this value requires passing in a valid `source_site_instance`
     // to ConvertToSiteInstance.
     RELATED_IN_GROUP,
-    // A SiteInstance in a different BrowsingInstance, but in the same
-    // CoopRelatedGroup. Only used for COOP: restrict-properties
-    // navigations.
-    RELATED_IN_COOP_GROUP,
     // A SiteInstance in the same browsing instance as the current.
     RELATED,
     // A pre-existing SiteInstance that might or might not be in the same
@@ -802,7 +792,7 @@ class CONTENT_EXPORT RenderFrameHostManager {
       bool is_reload,
       bool is_same_document,
       IsSameSiteGetter& is_same_site,
-      CoopSwapResult coop_swap_result,
+      bool coop_swap,
       bool was_server_redirect,
       bool should_replace_current_entry,
       bool has_rel_opener);
@@ -829,7 +819,7 @@ class CONTENT_EXPORT RenderFrameHostManager {
       IsSameSiteGetter& is_same_site,
       bool dest_is_view_source_mode,
       bool was_server_redirect,
-      CoopSwapResult coop_swap_result,
+      bool coop_swap,
       bool should_replace_current_entry,
       bool force_new_browsing_instance,
       bool has_rel_opener,
@@ -957,17 +947,10 @@ class CONTENT_EXPORT RenderFrameHostManager {
   // etc). If the traversal encounters a node with an opener pointing to a
   // FrameTree that has already been traversed (such as when there's a cycle),
   // the node is added to `nodes_with_back_links`.
-  //
-  // This function does not recursively iterate on trees living in a different
-  // BrowsingInstance from `site_instance_group`, which may have maintained an
-  // opener using COOP: restrict-properties. When such openers are encountered,
-  // they are added to `cross_browsing_context_group_openers`. Tests can set
-  // `site_instance_group` to null to iterate through all trees.
   void CollectOpenerFrameTrees(
       SiteInstanceGroup* site_instance_group,
       std::vector<FrameTree*>* opener_frame_trees,
-      std::unordered_set<FrameTreeNode*>* nodes_with_back_links,
-      std::unordered_set<FrameTreeNode*>* cross_browsing_context_group_openers);
+      std::unordered_set<FrameTreeNode*>* nodes_with_back_links);
 
   // Create RenderFrameProxies and inactive RenderViewHosts in the given
   // SiteInstanceGroup for the current node's FrameTree. Used as a helper

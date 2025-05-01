@@ -589,8 +589,7 @@ class RenderFrameHostManagerTest
       std::unordered_set<FrameTreeNode*>*
           cross_browsing_context_group_openers) {
     node->render_manager()->CollectOpenerFrameTrees(
-        site_instance_group, opener_frame_trees, nodes_with_back_links,
-        cross_browsing_context_group_openers);
+        site_instance_group, opener_frame_trees, nodes_with_back_links);
   }
 
  private:

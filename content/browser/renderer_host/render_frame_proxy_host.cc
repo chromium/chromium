@@ -375,19 +375,7 @@ void RenderFrameProxyHost::VisibilityChanged(
 void RenderFrameProxyHost::UpdateOpener() {
   // Another frame in this proxy's SiteInstanceGroup may reach the new opener by
   // first reaching this proxy and then referencing its window.opener.  Ensure
-  // the new opener's proxy exists in this case. If this is already a proxy for
-  // a frame in another BrowsingInstance in the same CoopRelatedGroup, we should
-  // not add extra proxies, as these are not discoverable via window.opener
-  // because property access is restricted.
-  SiteInstanceGroup* current_group =
-      frame_tree_node_->current_frame_host()->GetSiteInstance()->group();
-  bool is_coop_rp_proxy =
-      current_group->IsCoopRelatedSiteInstanceGroup(site_instance_group()) &&
-      !current_group->IsRelatedSiteInstanceGroup(site_instance_group());
-  if (is_coop_rp_proxy) {
-    return;
-  }
-
+  // the new opener's proxy exists in this case.
   if (frame_tree_node_->opener()) {
     frame_tree_node_->opener()->render_manager()->CreateOpenerProxies(
         site_instance_group(), frame_tree_node_,
@@ -618,7 +606,7 @@ void RenderFrameProxyHost::RouteMessageEvent(
     // but that the source is related to the embedder, allowing frames related
     // to the embedder to also message the guest.
     if (target_embedder_rfh &&
-        site_instance_group()->IsCoopRelatedSiteInstanceGroup(
+        site_instance_group()->IsRelatedSiteInstanceGroup(
             target_embedder_rfh->GetSiteInstance()->group())) {
       is_embedder_to_guest_communication = true;
     }
@@ -636,7 +624,7 @@ void RenderFrameProxyHost::RouteMessageEvent(
       // Note that this is not checking that the source and target are related,
       // but that the target is related to the embedder.
       if (source_embedder_rfh &&
-          target_group->IsCoopRelatedSiteInstanceGroup(
+          target_group->IsRelatedSiteInstanceGroup(
               source_embedder_rfh->GetSiteInstance()->group())) {
         is_guest_to_embedder_communication = true;
       }
@@ -644,9 +632,9 @@ void RenderFrameProxyHost::RouteMessageEvent(
   }
 
   // Only deliver the message if the request came from a RenderFrameHost in the
-  // same CoopRelatedGroup or if this is a message between a guest and its
+  // same BrowsingInstance or if this is a message between a guest and its
   // embedder.
-  if (!target_group->IsCoopRelatedSiteInstanceGroup(site_instance_group()) &&
+  if (!target_group->IsRelatedSiteInstanceGroup(site_instance_group()) &&
       !is_embedder_to_guest_communication &&
       !is_guest_to_embedder_communication) {
     return;
@@ -684,16 +672,7 @@ void RenderFrameProxyHost::RouteMessageEvent(
             ->SynchronizeVisualPropertiesIgnoringPendingAck();
       }
 
-      if (!target_group->IsRelatedSiteInstanceGroup(site_instance_group()) &&
-          target_group->IsCoopRelatedSiteInstanceGroup(site_instance_group())) {
-        // If we're getting messaged by a frame in a different BrowsingInstance
-        // in the same CoopRelatedGroup, we should create only the proxies
-        // needed for event.source (and its ancestor chain).
-        source_rfh->frame_tree_node()
-            ->render_manager()
-            ->CreateRenderFrameProxyAndAncestorChainIfNeeded(
-                target_rfh->GetSiteInstance()->group());
-      } else if (is_embedder_to_guest_communication) {
+      if (is_embedder_to_guest_communication) {
         // We create a RenderFrameProxyHost for the embedder in the guest's
         // render process but we intentionally do not expose the embedder's
         // opener chain to it.
