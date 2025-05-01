@@ -4576,10 +4576,6 @@ void RenderFrameImpl::FinalizeRequest(blink::WebURLRequest& request) {
   // a navigation concept. We pass ui::PAGE_TRANSITION_LINK as default one.
   FinalizeRequestInternal(request, /*for_outermost_main_frame=*/false,
                           ui::PAGE_TRANSITION_LINK);
-  for (auto& observer : observers_) {
-    // TODO(sky): rename to FinalizeRequest.
-    observer.WillSendRequest(request);
-  }
 }
 
 std::optional<blink::WebURL> RenderFrameImpl::WillSendRequest(

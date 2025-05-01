@@ -273,9 +273,6 @@ class CONTENT_EXPORT RenderFrameObserver
   virtual void DidObserveLayoutShift(double score, bool after_input_or_scroll) {
   }
 
-  // Reports that a resource will be requested.
-  virtual void WillSendRequest(const blink::WebURLRequest& request) {}
-
   // Notification when the renderer a response started, completed or canceled.
   // Complete or Cancel is guaranteed to be called for a response that started.
   // |request_id| uniquely identifies the request within this render frame.
