@@ -1574,11 +1574,6 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             if (optionalButtonStub == null) return;
             optionalButtonStub.setLayoutResource(R.layout.optional_button_layout);
             View optionalButton = optionalButtonStub.inflate();
-            if (mCustomActionButtons.getChildCount() >= 2) {
-                // Place the optional button at the leftmost position.
-                mCustomActionButtons.removeView(optionalButton);
-                mCustomActionButtons.addView(optionalButton, 0);
-            }
             mOptionalButtonCoordinator =
                     new OptionalButtonCoordinator(
                             optionalButton,
