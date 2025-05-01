@@ -4,6 +4,8 @@
 
 #include "chrome/browser/privacy_sandbox/notice/notice_model.h"
 
+#include "chrome/browser/privacy_sandbox/notice/notice_storage.h"
+
 namespace privacy_sandbox {
 
 using notice::mojom::PrivacySandboxNoticeEvent;
@@ -51,7 +53,7 @@ bool NoticeApi::IsFulfilled() {
         notice->GetNoticeType() == NoticeType::kNotice) {
       continue;
     }
-    return notice->WasFulfilled();
+    return notice->was_fulfilled();
   }
   return false;
 }
@@ -101,10 +103,23 @@ const char* Notice::GetStorageName() const {
   return feature_->name;
 }
 
-bool Notice::WasFulfilled() {
-  // TODO(crbug.com/392612108): Check if an action was taken on this notice, if
-  // it was check if it was one of the fulfillment actions.
-  return false;
+void Notice::RefreshFulfillmentStatus(NoticeStorage& storage) {
+  auto data = storage.ReadNoticeData(GetStorageName());
+  if (!data) {
+    was_fulfilled_ = false;
+    return;
+  }
+
+  for (const auto& event_pair_ptr : data->notice_events) {
+    if (!event_pair_ptr) {
+      continue;
+    }
+    if (EvaluateNoticeEvent(event_pair_ptr->event).has_value()) {
+      was_fulfilled_ = true;
+      return;
+    }
+  }
+  was_fulfilled_ = false;
 }
 
 std::optional<bool> Notice::EvaluateNoticeEvent(

@@ -10,6 +10,7 @@
 
 namespace privacy_sandbox {
 class NoticeApi;
+class NoticeStorage;
 
 // Types of notices that can be shown.
 enum class NoticeType {
@@ -52,7 +53,11 @@ class Notice {
   Notice* SetPreReqApis(const std::vector<NoticeApi*>& apis);
   Notice* SetFeature(const base::Feature* feature);
 
-  bool WasFulfilled();
+  // Returns the cached was_fulfilled status.
+  bool was_fulfilled() const { return was_fulfilled_; }
+
+  // Update the cached was_fulfilled status for the notice.
+  void RefreshFulfillmentStatus(NoticeStorage& storage);
 
   // Accessors.
   const std::vector<raw_ptr<NoticeApi>>& GetTargetApis();
@@ -85,6 +90,7 @@ class Notice {
       notice::mojom::PrivacySandboxNoticeEvent event);
 
   NoticeId notice_id_;
+  bool was_fulfilled_ = false;
   std::vector<raw_ptr<NoticeApi>> target_apis_;
   std::vector<raw_ptr<NoticeApi>> pre_req_apis_;
   raw_ptr<const base::Feature> feature_;
