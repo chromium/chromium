@@ -44,6 +44,7 @@
 #import "ios/chrome/app/application_delegate/url_opener.h"
 #import "ios/chrome/app/application_delegate/url_opener_params.h"
 #import "ios/chrome/app/application_mode.h"
+#import "ios/chrome/app/change_profile_commands.h"
 #import "ios/chrome/app/chrome_overlay_window.h"
 #import "ios/chrome/app/deferred_initialization_runner.h"
 #import "ios/chrome/app/deferred_initialization_task_names.h"
@@ -58,6 +59,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/account_menu/account_menu_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/account_menu/account_menu_coordinator_delegate.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow.h"
+#import "ios/chrome/browser/authentication/ui_bundled/change_profile/change_profile_authentication_continuation.h"
 #import "ios/chrome/browser/authentication/ui_bundled/change_profile/change_profile_load_url.h"
 #import "ios/chrome/browser/authentication/ui_bundled/continuation.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/features.h"
@@ -510,6 +512,8 @@ SystemIdentityManager::IteratorResult IdentitiesOnDevice(
   // This is used to ensure that the image search is only triggered when the BVC
   // is active.
   NSData* _imageSearchData;
+
+  AuthenticationFlow* _authenticationFlow;
 }
 
 @synthesize startupParameters = _startupParameters;
@@ -882,20 +886,55 @@ SystemIdentityManager::IteratorResult IdentitiesOnDevice(
   // Find the first context that requires an account change.
   WidgetContext* context = [self findContextRequiringAccountChange:contexts];
   if (context) {
-    // This may destroy `self`, so nothing should happen after this
-    // method call.
-    [self changeAccountForContext:context];
-    return;
+    // Perform profile switching if needed.
+    id<ChangeProfileCommands> changeProfileHandler = HandlerForProtocol(
+        self.sceneState.profileState.appState.appCommandDispatcher,
+        ChangeProfileCommands);
+
+    std::optional<std::string> profileName;
+
+    if ([context.gaiaID isEqualToString:@"Default"]) {
+      // Use the personal profile name if there is no GaiaID (this happens in
+      // the sign-out scenario).
+      profileName = GetApplicationContext()
+                        ->GetProfileManager()
+                        ->GetProfileAttributesStorage()
+                        ->GetPersonalProfileName();
+    } else {
+      profileName = GetApplicationContext()
+                        ->GetAccountProfileMapper()
+                        ->FindProfileNameForGaiaID(GaiaId(context.gaiaID));
+    }
+    // TODO(crbug.com/388520520): Make sure that ENABLE_WIDGETS_FOR_MIM is
+    // enabled only when AreSeparateProfilesForManagedAccountsEnabled() is true.
+    // If not, add implementation.
+    if (profileName.has_value()) {
+      [changeProfileHandler
+          changeProfile:*profileName
+               forScene:self.sceneState
+           continuation:CreateChangeProfileAuthenticationContinuation(
+                            context, contexts)];
+      return;
+    }
   }
 #endif
 
   [self openURLContexts:contexts];
 }
 
-- (void)changeAccountForContext:(WidgetContext*)context {
+- (void)changeAccountForContext:(WidgetContext*)context
+                   openContexts:(NSSet<UIOpenURLContext*>*)contexts {
 #if BUILDFLAG(ENABLE_WIDGETS_FOR_MIM)
   if (context.type == AccountSwitchType::kSignOut) {
-    [self signoutForContext:context];
+    AuthenticationService* authService =
+        AuthenticationServiceFactory::GetForProfile(
+            self.sceneState.profileState.profile);
+    // Perform sign-out only if there is a signed-in account in the profile.
+    if (authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
+      [self signoutAndOpenContexts:contexts];
+    } else {
+      self.sceneState.URLContextsToOpen = contexts;
+    }
   } else {
     [self signinForContext:context];
   }
@@ -952,8 +991,8 @@ SystemIdentityManager::IteratorResult IdentitiesOnDevice(
   return nil;
 }
 
-// Sign out profile to open widget context.
-- (void)signoutForContext:(WidgetContext*)context {
+// Sign out and open URL contexts.
+- (void)signoutAndOpenContexts:(NSSet<UIOpenURLContext*>*)contexts {
   DCHECK(!self.signoutActionSheetCoordinator);
 
   UIViewController* viewController = [self activeViewController];
@@ -970,6 +1009,7 @@ SystemIdentityManager::IteratorResult IdentitiesOnDevice(
                                      kSignoutFromWidgets
                       completion:^(BOOL success, SceneState* scene_state) {
                         [weakSelf handleAuthenticationOperationDidFinish];
+                        scene_state.URLContextsToOpen = contexts;
                       }];
 
   self.signoutActionSheetCoordinator.delegate = self;
@@ -998,7 +1038,7 @@ SystemIdentityManager::IteratorResult IdentitiesOnDevice(
 
   UIViewController* viewController = [self activeViewController];
 
-  AuthenticationFlow* authenticationFlow = [[AuthenticationFlow alloc]
+  _authenticationFlow = [[AuthenticationFlow alloc]
                initWithBrowser:self.sceneState.browserProviderInterface
                                    .currentBrowserProvider.browser
                       identity:newIdentity
@@ -1010,7 +1050,7 @@ SystemIdentityManager::IteratorResult IdentitiesOnDevice(
                     anchorView:nil
                     anchorRect:viewController.view.frame];
 
-  [authenticationFlow startSignIn];
+  [_authenticationFlow startSignIn];
   // TODO(crbug.com/376679167): Handle URL opening when account is switched.
 }
 

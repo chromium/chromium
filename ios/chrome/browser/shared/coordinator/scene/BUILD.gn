@@ -84,6 +84,7 @@ source_set("scene") {
     "//components/web_resource",
     "//ios/chrome/app",
     "//ios/chrome/app:blocking_scene_commands",
+    "//ios/chrome/app:change_profile_commands",
     "//ios/chrome/app:mode",
     "//ios/chrome/app:task_names",
     "//ios/chrome/app:tests_hook",
