@@ -291,13 +291,13 @@ TEST_F(FeaturedSearchProviderTest, StarterPackExpansion) {
   RunTest(typing_scheme_cases);
 }
 
-// TODO(crbug.com/413598265): Fix flaky test.
-TEST_F(FeaturedSearchProviderTest, FLAKY_StarterPackExpansionRelevance) {
+TEST_F(FeaturedSearchProviderTest, StarterPackExpansionRelevance) {
   base::test::ScopedFeatureList features;
-  features.InitWithFeatures(
-      {omnibox::kStarterPackExpansion,
-       omnibox_feature_configs::ContextualSearch::kStarterPackPage},
-      {});
+  features.InitWithFeatures({omnibox::kStarterPackExpansion}, {});
+  omnibox_feature_configs::ScopedConfigForTesting<
+      omnibox_feature_configs::ContextualSearch>
+      scoped_config;
+  scoped_config.Get().starter_pack_page = true;
 
   AddStarterPackEntriesToTemplateUrlService();
 
