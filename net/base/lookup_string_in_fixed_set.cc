@@ -4,10 +4,11 @@
 
 #include "net/base/lookup_string_in_fixed_set.h"
 
-#include <cstdint>
+#include <stdint.h>
+
+#include <string_view>
 
 #include "base/check.h"
-#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 
 namespace net {
@@ -186,16 +187,14 @@ int FixedSetIncrementalLookup::GetResultForCurrentSequence() const {
 }
 
 int LookupStringInFixedSet(base::span<const uint8_t> graph,
-                           const char* key,
-                           size_t key_length) {
+                           std::string_view key) {
   // Do an incremental lookup until either the end of the graph is reached, or
-  // until every character in |key| is consumed.
+  // until every character in `key` is consumed.
   FixedSetIncrementalLookup lookup(graph);
-  const char* key_end = UNSAFE_TODO(key + key_length);
-  while (key != key_end) {
-    if (!lookup.Advance(*key))
+  for (char input : key) {
+    if (!lookup.Advance(input)) {
       return kDafsaNotFound;
-    UNSAFE_TODO(key++);
+    }
   }
   // The entire input was consumed without reaching the end of the graph. Return
   // the result code (if present) for the current position, or kDafsaNotFound.

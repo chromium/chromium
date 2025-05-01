@@ -9,12 +9,12 @@
 
 #include "net/base/lookup_string_in_fixed_set.h"
 
-#include <string.h>
-
 #include <algorithm>
 #include <cstdint>
 #include <limits>
 #include <ostream>
+#include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -46,7 +46,7 @@ namespace test6 {
 }
 
 struct Expectation {
-  const char* const key;
+  std::string_view key;
   int value;
 };
 
@@ -56,8 +56,8 @@ void PrintTo(const Expectation& expectation, std::ostream* os) {
 
 class LookupStringInFixedSetTest : public testing::TestWithParam<Expectation> {
  protected:
-  int LookupInGraph(base::span<const uint8_t> graph, const char* key) {
-    return LookupStringInFixedSet(graph, key, strlen(key));
+  int LookupInGraph(base::span<const uint8_t> graph, std::string_view key) {
+    return LookupStringInFixedSet(graph, key);
   }
 };
 

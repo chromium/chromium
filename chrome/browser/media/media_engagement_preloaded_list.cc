@@ -127,5 +127,5 @@ MediaEngagementPreloadedList::DafsaResult
 MediaEngagementPreloadedList::CheckStringIsPresent(
     const std::string& input) const {
   return static_cast<MediaEngagementPreloadedList::DafsaResult>(
-      net::LookupStringInFixedSet(dafsa_, input.c_str(), input.size()));
+      net::LookupStringInFixedSet(dafsa_, input));
 }
