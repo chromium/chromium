@@ -30,7 +30,7 @@ public class ActivityElement<ActivityT extends Activity> extends Element<Activit
     }
 
     @Override
-    public ConditionWithResult<ActivityT> createEnterCondition() {
+    public @Nullable ConditionWithResult<ActivityT> createEnterCondition() {
         return new ActivityExistsCondition();
     }
 

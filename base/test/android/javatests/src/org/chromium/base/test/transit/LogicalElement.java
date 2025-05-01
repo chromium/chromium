@@ -158,7 +158,7 @@ public class LogicalElement<ParamT> extends Element<Void> {
     }
 
     @Override
-    public ConditionWithResult<Void> createEnterCondition() {
+    public @Nullable ConditionWithResult<Void> createEnterCondition() {
         return new EnterCondition(mIsRunOnUiThread);
     }
 

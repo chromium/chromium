@@ -351,7 +351,11 @@ public class ConditionWaiter {
 
         for (ConditionalState conditionalState : mTransition.getEnteredStates()) {
             final Elements destinationElements = conditionalState.getElements();
-            allConditionsGuardingFactories.putAll(destinationElements.getElementFactories());
+            for (Map.Entry<Element<?>, ElementFactory> entry :
+                    destinationElements.getElementFactories().entrySet()) {
+                allConditionsGuardingFactories.put(
+                        entry.getKey().getEnterConditionChecked(), entry.getValue());
+            }
         }
 
         return allConditionsGuardingFactories;
@@ -426,7 +430,11 @@ public class ConditionWaiter {
                 }
             }
 
-            mConditionsGuardingFactories.putAll(newElements.getElementFactories());
+            for (Map.Entry<Element<?>, ElementFactory> entry :
+                    newElements.getElementFactories().entrySet()) {
+                mConditionsGuardingFactories.put(
+                        entry.getKey().getEnterConditionChecked(), entry.getValue());
+            }
             newElementIds.addAll(newElements.getElementIds());
         }
 

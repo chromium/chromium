@@ -49,6 +49,16 @@ public class TrafficControl {
         sActiveStation = newActiveStation;
     }
 
+    /**
+     * Hop off Public Transit - set the active station to null so that a subsequent test can go
+     * through an entry point again on the same process.
+     *
+     * <p>Useful in Robolectric tests.
+     */
+    public static void hopOffPublicTransit() {
+        sActiveStation = null;
+    }
+
     public static List<Pair<String, String>> getAllStationsNames() {
         return sAllStationNames;
     }

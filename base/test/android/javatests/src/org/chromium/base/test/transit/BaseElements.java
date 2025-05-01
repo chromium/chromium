@@ -17,7 +17,7 @@ import java.util.Set;
  */
 class BaseElements {
     protected ArrayList<Element<?>> mElements = new ArrayList<>();
-    protected Map<Condition, ElementFactory> mElementFactories = new HashMap<>();
+    protected Map<Element<?>, ElementFactory> mElementFactories = new HashMap<>();
     protected ArrayList<Condition> mOtherEnterConditions = new ArrayList<>();
     protected ArrayList<Condition> mOtherExitConditions = new ArrayList<>();
 
@@ -33,7 +33,7 @@ class BaseElements {
         return mElements;
     }
 
-    Map<Condition, ElementFactory> getElementFactories() {
+    Map<Element<?>, ElementFactory> getElementFactories() {
         return mElementFactories;
     }
 

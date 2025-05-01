@@ -12,6 +12,7 @@ import org.chromium.base.test.transit.ConditionWithResult;
 import org.chromium.base.test.transit.Element;
 import org.chromium.base.test.transit.Transition;
 import org.chromium.base.test.transit.TravelException;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.transit.HtmlConditions.DisplayedCondition;
 import org.chromium.content_public.browser.test.transit.HtmlConditions.NotDisplayedCondition;
@@ -34,7 +35,7 @@ public class HtmlElement extends Element<Rect> {
     }
 
     @Override
-    public ConditionWithResult<Rect> createEnterCondition() {
+    public @Nullable ConditionWithResult<Rect> createEnterCondition() {
         return new DisplayedCondition(mWebContentsSupplier, mHtmlElementSpec.getHtmlId());
     }
 

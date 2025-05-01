@@ -67,7 +67,7 @@ public class ViewElement<ViewT extends View> extends Element<ViewT> {
     }
 
     @Override
-    public ConditionWithResult<ViewT> createEnterCondition() {
+    public @Nullable ConditionWithResult<ViewT> createEnterCondition() {
         Matcher<View> viewMatcher = mViewSpec.getViewMatcher();
         DisplayedCondition.Options conditionOptions =
                 DisplayedCondition.newOptions()

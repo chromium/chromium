@@ -49,7 +49,7 @@ public class Elements extends BaseElements {
     public static class Builder {
         private @Nullable Elements mOwner;
         private final ArrayList<Element<?>> mElements = new ArrayList<>();
-        private final Map<Condition, ElementFactory> mElementFactories = new HashMap<>();
+        private final Map<Element<?>, ElementFactory> mElementFactories = new HashMap<>();
         private final ArrayList<Condition> mOtherEnterConditions = new ArrayList<>();
         private final ArrayList<Condition> mOtherExitConditions = new ArrayList<>();
 
@@ -76,22 +76,11 @@ public class Elements extends BaseElements {
             return declareElement(element);
         }
 
-        /**
-         * See {@link ConditionalState#declareElementFactory(Condition, Callback)}.
-         *
-         * @deprecated Use {@link #declareElementFactory(Element, Callback)} instead.}
-         */
-        @Deprecated
-        public void declareElementFactory(
-                Condition condition, Callback<Builder> delayedDeclarations) {
-            assertNotBuilt();
-            mElementFactories.put(condition, new ElementFactory(mOwner, delayedDeclarations));
-        }
-
         /** See {@link ConditionalState#declareElementFactory(Element, Callback)}. */
         public void declareElementFactory(
                 Element<?> element, Callback<Elements.Builder> delayedDeclarations) {
-            declareElementFactory(element.getEnterCondition(), delayedDeclarations);
+            assertNotBuilt();
+            mElementFactories.put(element, new ElementFactory(mOwner, delayedDeclarations));
         }
 
         /** See {@link ConditionalState#declareNoView(ViewSpec)}. */
@@ -111,14 +100,14 @@ public class Elements extends BaseElements {
             mOtherEnterConditions.add(condition);
         }
 
-        /** See {@link ConditionalState#declareEnterConditionAsElement(Condition)}. */
+        /** See {@link ConditionalState#declareEnterConditionAsElement(ConditionWithResult)}. */
         public <ProductT, T extends ConditionWithResult<ProductT>>
                 Element<ProductT> declareEnterConditionAsElement(T condition) {
             assertNotBuilt();
             Element<ProductT> element =
                     new Element<>("CE/" + condition.getDescription()) {
                         @Override
-                        public ConditionWithResult<ProductT> createEnterCondition() {
+                        public @Nullable ConditionWithResult<ProductT> createEnterCondition() {
                             return condition;
                         }
 

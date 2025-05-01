@@ -20,7 +20,7 @@ import java.util.Set;
 public abstract class Element<ProductT extends @Nullable Object> implements Supplier<ProductT> {
     private final String mId;
     protected ConditionalState mOwner;
-    private ConditionWithResult<ProductT> mEnterCondition;
+    private @Nullable ConditionWithResult<ProductT> mEnterCondition;
     private @Nullable Condition mExitCondition;
 
     /**
@@ -38,7 +38,9 @@ public abstract class Element<ProductT extends @Nullable Object> implements Supp
         mOwner = owner;
 
         mEnterCondition = createEnterCondition();
-        mEnterCondition.bindToState(owner);
+        if (mEnterCondition != null) {
+            mEnterCondition.bindToState(owner);
+        }
 
         mExitCondition = createExitCondition();
         if (mExitCondition != null) {
@@ -47,13 +49,21 @@ public abstract class Element<ProductT extends @Nullable Object> implements Supp
     }
 
     /** Must create an ENTER Condition to ensure the element is present in the ConditionalState. */
-    public abstract ConditionWithResult<ProductT> createEnterCondition();
+    public abstract @Nullable ConditionWithResult<ProductT> createEnterCondition();
 
     /**
      * May create an EXIT Condition to ensure the element is not present after leaving the
      * ConditionalState.
      */
     public abstract @Nullable Condition createExitCondition();
+
+    /** Replace the enter Condition. */
+    protected void replaceEnterCondition(ConditionWithResult<ProductT> newEnterCondition) {
+        assert mOwner != null : "Must be called after bind()";
+
+        mEnterCondition = newEnterCondition;
+        mEnterCondition.bindToState(mOwner);
+    }
 
     // Supplier implementation
     /**
@@ -63,13 +73,13 @@ public abstract class Element<ProductT extends @Nullable Object> implements Supp
      */
     @Override
     public ProductT get() {
-        return getEnterCondition().get();
+        return getEnterConditionChecked().get();
     }
 
     // Supplier implementation
     @Override
     public boolean hasValue() {
-        return getEnterCondition().hasValue();
+        return getEnterConditionChecked().hasValue();
     }
 
     /**
@@ -79,14 +89,21 @@ public abstract class Element<ProductT extends @Nullable Object> implements Supp
      * @return the product of the element (View, Activity, etc.) from a non-NEW ConditionalState
      */
     public ProductT getFromPast() {
-        return getEnterCondition().getFromPast();
+        return getEnterConditionChecked().getFromPast();
     }
 
     /**
      * @return an ENTER Condition to ensure the element is present in the ConditionalState.
      */
-    ConditionWithResult<ProductT> getEnterCondition() {
+    @Nullable ConditionWithResult<ProductT> getEnterCondition() {
         return mEnterCondition;
+    }
+
+    ConditionWithResult<ProductT> getEnterConditionChecked() {
+        ConditionWithResult<ProductT> enterCondition = getEnterCondition();
+        assert enterCondition != null
+                : String.format("Element %s is missing an enter condition", this);
+        return enterCondition;
     }
 
     /**
