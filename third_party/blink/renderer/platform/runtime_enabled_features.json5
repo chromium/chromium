@@ -5262,6 +5262,10 @@
       public: true,
     },
     {
+      name: "WebGLOnWebGPU",
+      status: "experimental",
+    },
+    {
       name: "WebGPUAdapterInfoIsFallbackAdapter",
       status: "stable",
     },
