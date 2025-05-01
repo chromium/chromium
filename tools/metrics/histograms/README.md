@@ -625,11 +625,14 @@ not entirely so.
 ## Revising Histograms {#revising}
 
 When changing the semantics of a histogram (when it's emitted, what the buckets
-represent, the bucket range or number of buckets, etc.), create a new histogram
-with a new name. Otherwise analysis that mixes the data pre- and post- change
-may be misleading. If the histogram name is still the best name choice, the
-recommendation is to simply append a '2' to the name. See [Cleaning Up Histogram
-Entries](#obsolete) for details on how to handle the XML changes.
+represent, the bucket range or number of buckets for numeric histograms, etc.),
+create a new histogram with a new name. A new histogram name is not required
+when adding a new value to an enum if users will not move between buckets, and
+bucket proportion is not meaningful. Otherwise analysis that mixes the data pre-
+and post- change may be misleading. If the histogram name is still the best name
+choice, the recommendation is to simply append a '2' to the name. See
+[Cleaning Up Histogram Entries](#obsolete) for details on how to handle the XML
+changes.
 
 Changes to a histogram are allowed in some cases when the semantics have not
 changed at all. Here are some examples that would be allowed:
