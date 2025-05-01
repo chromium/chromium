@@ -148,10 +148,11 @@ QuotaManagerImpl::QuotaOverride::~QuotaOverride() = default;
 
 class QuotaManagerImpl::UsageAndQuotaInfoGatherer : public QuotaTask {
  public:
-  UsageAndQuotaInfoGatherer(QuotaManagerImpl* manager,
-                            const StorageKey& storage_key,
-                            bool is_incognito,
-                            UsageAndQuotaForDevtoolsCallback callback)
+  UsageAndQuotaInfoGatherer(
+      QuotaManagerImpl* manager,
+      const StorageKey& storage_key,
+      bool is_incognito,
+      UsageAndQuotaWithBreakdownAndOverrideFlagCallback callback)
       : QuotaTask(manager),
         storage_key_(storage_key),
         callback_(std::move(callback)),
@@ -161,10 +162,11 @@ class QuotaManagerImpl::UsageAndQuotaInfoGatherer : public QuotaTask {
     DCHECK(callback_);
   }
 
-  UsageAndQuotaInfoGatherer(QuotaManagerImpl* manager,
-                            const BucketInfo& bucket_info,
-                            bool is_incognito,
-                            UsageAndQuotaForDevtoolsCallback callback)
+  UsageAndQuotaInfoGatherer(
+      QuotaManagerImpl* manager,
+      const BucketInfo& bucket_info,
+      bool is_incognito,
+      UsageAndQuotaWithBreakdownAndOverrideFlagCallback callback)
       : UsageAndQuotaInfoGatherer(manager,
                                   bucket_info.storage_key,
                                   is_incognito,
@@ -331,7 +333,7 @@ class QuotaManagerImpl::UsageAndQuotaInfoGatherer : public QuotaTask {
   // Non-null iff usage info is to be gathered for an individual bucket. If
   // null, usage is gathered for all buckets in the given host/StorageKey.
   std::optional<BucketInfo> bucket_info_;
-  QuotaManagerImpl::UsageAndQuotaForDevtoolsCallback callback_;
+  QuotaManagerImpl::UsageAndQuotaWithBreakdownAndOverrideFlagCallback callback_;
   const bool is_unlimited_;
   const bool is_incognito_;
 
@@ -1203,7 +1205,7 @@ void QuotaManagerImpl::GetUsageAndQuotaWithBreakdown(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(callback);
 
-  GetUsageAndQuotaForDevtools(
+  HandleGetUsageAndQuotaRequest(
       storage_key,
       base::BindOnce(&DidGetUsageAndQuotaStripOverride, std::move(callback)));
 }
@@ -1216,7 +1218,7 @@ void QuotaManagerImpl::GetUsageAndReportedQuotaWithBreakdown(
 
   if (base::FeatureList::IsEnabled(storage::features::kStaticStorageQuota) &&
       !IsStorageUnlimited(storage_key)) {
-    GetUsageAndQuotaForDevtools(
+    HandleGetUsageAndQuotaRequest(
         storage_key,
         base::BindOnce(
             [](UsageAndQuotaWithBreakdownCallback callback,
@@ -1232,14 +1234,22 @@ void QuotaManagerImpl::GetUsageAndReportedQuotaWithBreakdown(
     return;
   }
 
-  GetUsageAndQuotaForDevtools(
+  HandleGetUsageAndQuotaRequest(
       storage_key,
       base::BindOnce(&DidGetUsageAndQuotaStripOverride, std::move(callback)));
 }
 
 void QuotaManagerImpl::GetUsageAndQuotaForDevtools(
     const StorageKey& storage_key,
-    UsageAndQuotaForDevtoolsCallback callback) {
+    UsageAndQuotaWithBreakdownAndOverrideFlagCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(callback);
+  HandleGetUsageAndQuotaRequest(storage_key, std::move(callback));
+}
+
+void QuotaManagerImpl::HandleGetUsageAndQuotaRequest(
+    const StorageKey& storage_key,
+    UsageAndQuotaWithBreakdownAndOverrideFlagCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(callback);
   EnsureDatabaseOpened();

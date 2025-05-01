@@ -147,7 +147,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
                               int64_t quota,
                               blink::mojom::UsageBreakdownPtr usage_breakdown)>;
 
-  using UsageAndQuotaForDevtoolsCallback =
+  using UsageAndQuotaWithBreakdownAndOverrideFlagCallback =
       base::OnceCallback<void(blink::mojom::QuotaStatusCode,
                               int64_t usage,
                               int64_t quota,
@@ -269,7 +269,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   // Called by DevTools.
   virtual void GetUsageAndQuotaForDevtools(
       const blink::StorageKey& storage_key,
-      UsageAndQuotaForDevtoolsCallback callback);
+      UsageAndQuotaWithBreakdownAndOverrideFlagCallback callback);
 
   // Called by storage backends.
   //
@@ -699,6 +699,9 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   void GetUsageAndQuotaWithBreakdown(
       const blink::StorageKey& storage_key,
       UsageAndQuotaWithBreakdownCallback callback);
+  void HandleGetUsageAndQuotaRequest(
+      const blink::StorageKey& storage_key,
+      UsageAndQuotaWithBreakdownAndOverrideFlagCallback callback);
   void GetQuotaSettings(QuotaSettingsCallback callback);
   void DidGetSettings(std::optional<QuotaSettings> settings);
   void GetStorageCapacity(StorageCapacityCallback callback);
