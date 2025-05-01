@@ -417,6 +417,7 @@ class LensOverlayQueryController {
   // request.
   void UploadChunkResponseHandler(lens::LensOverlayRequestId request_id,
                                   size_t total_chunks,
+                                  bool is_last,
                                   std::unique_ptr<EndpointResponse> response);
 
   // Creates the PageContentRequest that is sent to the server and performs the
@@ -438,6 +439,10 @@ class LensOverlayQueryController {
   // Handles the endpoint fetch response for the page content request.
   void PageContentResponseHandler(lens::LensOverlayRequestId request_id,
                                   std::unique_ptr<EndpointResponse> response);
+
+  // Sends a page content upload latency Gen204 ping if enabled.
+  void MaybeSendPageContentUploadLatencyGen204(
+      lens::LensOverlayRequestId request_id);
 
   // Handles the prgress of the page content upload request.
   void PageContentUploadProgressHandler(uint64_t position, uint64_t total);
@@ -776,12 +781,21 @@ class LensOverlayQueryController {
   // cancelled, and all other tasks will wait on it if needed.
   std::unique_ptr<base::CancelableTaskTracker> encoding_task_tracker_;
 
-  // Bounding boxes for significant regions identified in the original
-  // screenshot image.
+  // Upload chunk requests being sent.
   std::vector<lens::LensOverlayUploadChunkRequest>
       pending_upload_chunk_requests_;
 
+  // Headers to be sent with each upload chunk request.
   std::vector<std::string> pending_upload_chunk_headers_;
+
+  // Number of upload chunk responses expected. Set to
+  // pending_upload_chunk_requests_.size() when starting to send requests, and
+  // decremented each time a request receives a response.
+  size_t remaining_upload_chunk_responses_;
+
+  // The sequence ID for the upload chunk requests that were last started. Used
+  // to verify that the responses received correspond to the latest upload.
+  int upload_chunk_sequence_id;
 
   // The current suggest inputs. The fields in this proto are updated
   // whenever new data is available (i.e. after an objects or interaction
