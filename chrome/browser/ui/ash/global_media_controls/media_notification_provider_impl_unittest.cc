@@ -19,7 +19,9 @@
 #include "chrome/browser/ui/global_media_controls/cast_media_notification_item.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "components/global_media_controls/public/constants.h"
 #include "components/global_media_controls/public/media_item_manager.h"
 #include "components/global_media_controls/public/media_session_item_producer.h"
@@ -191,7 +193,10 @@ class MediaNotificationProviderImplTest : public ChromeAshTestBase {
   std::unique_ptr<MockMediaNotificationProviderObserver> observer_;
   raw_ptr<MediaNotificationProviderImpl, DanglingUntriaged> provider_ = nullptr;
   raw_ptr<MediaTestShellDelegate, DanglingUntriaged> shell_delegate_ = nullptr;
-  crosapi::TestCrosapiEnvironment crosapi_environment_;
+  TestingProfileManager testing_profile_manager_{
+      TestingBrowserProcess::GetGlobal()};
+  crosapi::TestCrosapiEnvironment crosapi_environment_{
+      &testing_profile_manager_};
 };
 
 TEST_F(MediaNotificationProviderImplTest, NotificationListTest) {
@@ -266,8 +271,7 @@ class CastStartStopMediaNotificationProviderImplTest
     // starts the GPU service thread.
     MediaNotificationProviderImplTest::SetUp();
 
-    profile_ =
-        crosapi_environment_.profile_manager()->CreateTestingProfile("Profile");
+    profile_ = testing_profile_manager_.CreateTestingProfile("Profile");
     InitProvider();
   }
 

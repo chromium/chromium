@@ -23,7 +23,9 @@
 #include "chrome/browser/ui/media_router/media_route_starter.h"
 #include "chrome/browser/ui/media_router/query_result_manager.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "components/global_media_controls/public/media_item_manager.h"
 #include "components/global_media_controls/public/media_session_item_producer.h"
 #include "components/global_media_controls/public/media_session_notification_item.h"
@@ -185,7 +187,10 @@ class MediaNotificationServiceTest : public ChromeRenderViewHostTestHarness {
  private:
   std::unique_ptr<MediaNotificationService> service_;
 #if BUILDFLAG(IS_CHROMEOS)
-  crosapi::TestCrosapiEnvironment crosapi_environment_;
+  TestingProfileManager testing_profile_manager_{
+      TestingBrowserProcess::GetGlobal()};
+  crosapi::TestCrosapiEnvironment crosapi_environment_{
+      &testing_profile_manager_};
 #endif
 };
 
