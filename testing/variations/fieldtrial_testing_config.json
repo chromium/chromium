@@ -12108,7 +12108,9 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "StatelessFormSuggestionController"
+                        "IOSStatelessFillDataFlow",
+                        "StatelessFormSuggestionController",
+                        "StatelessFormSuggestionControllerWithRequestDeduping"
                     ]
                 }
             ]
