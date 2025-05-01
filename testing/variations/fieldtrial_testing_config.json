@@ -11498,6 +11498,36 @@
             ]
         }
     ],
+    "IOSFeedCUI1Refinements": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnableCUI1Refinements"
+                    ]
+                }
+            ]
+        }
+    ],
+    "IOSFeedCUI3NextPageAppFlow": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnableCUI3NextPageAppFlow"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSFollowUIUpdate": [
         {
             "platforms": [
