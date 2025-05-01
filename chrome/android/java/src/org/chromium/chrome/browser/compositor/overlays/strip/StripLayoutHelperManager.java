@@ -1139,9 +1139,9 @@ public class StripLayoutHelperManager
             Rect msbRect =
                     new Rect(
                             (int) Math.floor(msbTouchRect.left * mDensity),
-                            (int) Math.max(Math.floor(msbTouchRect.top * mDensity), mTopPadding),
+                            (int) Math.floor(Math.max(msbTouchRect.top, mTopPadding) * mDensity),
                             (int) Math.ceil(msbTouchRect.right * mDensity),
-                            (int) Math.min(Math.ceil(msbTouchRect.bottom * mDensity), mHeight));
+                            (int) Math.ceil(Math.min(msbTouchRect.bottom, mHeight) * mDensity));
             rects.add(msbRect);
         }
         mToolbarControlContainer.setSystemGestureExclusionRects(rects);
