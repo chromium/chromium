@@ -19,6 +19,7 @@
 #include "base/rand_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/typed_macros.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/autocomplete/autocomplete_classifier_factory.h"
@@ -61,6 +62,8 @@
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/omnibox/chrome_omnibox_navigation_observer.h"
 #include "chrome/browser/ui/omnibox/omnibox_tab_helper.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/pref_names.h"
 #include "components/bookmarks/browser/bookmark_model.h"
@@ -388,11 +391,24 @@ void ChromeOmniboxClient::MaybeShowOnFocusHatsSurvey(
       omnibox_feature_configs::HappinessTrackingSurveyForOmniboxOnFocusZps::
           Get()
               .survey_delay;
-  HatsService* hats_service =
-      HatsServiceFactory::GetForProfile(profile_, /*create_if_necessary=*/true);
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&ChromeOmniboxClient::CheckConditionsAndLaunchSurvey,
+                     weak_factory_.GetWeakPtr()),
+      base::Milliseconds(survey_delay_time_ms));
+}
+
+void ChromeOmniboxClient::CheckConditionsAndLaunchSurvey() {
   // Roll the dice as we want to show one of two surveys to the treatment
   // group but only one survey to the control group.
   bool show_happiness_survey = base::RandInt(0, 1) == 0;
+
+  // Don't show the suggestions utility survey to control group.
+  if (!omnibox_feature_configs::OmniboxUrlSuggestionsOnFocus::Get().enabled &&
+      !show_happiness_survey) {
+    return;
+  }
+
   // Get channel string to return as PSD.
   std::string channel;
   switch (chrome::GetChannel()) {
@@ -411,35 +427,36 @@ void ChromeOmniboxClient::MaybeShowOnFocusHatsSurvey(
     default:
       channel = "unknown";
   }
-  if (omnibox_feature_configs::OmniboxUrlSuggestionsOnFocus::Get().enabled) {
-    if (show_happiness_survey) {
-      hats_service->LaunchDelayedSurvey(
-          kHatsSurveyTriggerOnFocusZpsSuggestionsHappiness,
-          survey_delay_time_ms, {},
-          {{"page classification",
-            metrics::OmniboxEventProto::PageClassification_Name(
-                classification)},
-           {"channel", channel}});
-    } else {
-      hats_service->LaunchDelayedSurvey(
-          kHatsSurveyTriggerOnFocusZpsSuggestionsUtility, survey_delay_time_ms,
-          {},
-          {{"page classification",
-            metrics::OmniboxEventProto::PageClassification_Name(
-                classification)},
-           {"channel", channel}});
-    }
-  } else {
-    // Control
-    if (show_happiness_survey) {
-      hats_service->LaunchDelayedSurvey(
-          kHatsSurveyTriggerOnFocusZpsSuggestionsHappiness,
-          survey_delay_time_ms, {},
-          {{"page classification",
-            metrics::OmniboxEventProto::PageClassification_Name(
-                classification)},
-           {"channel", channel}});
-    }
+
+  const std::string& survey_trigger =
+      show_happiness_survey ? kHatsSurveyTriggerOnFocusZpsSuggestionsHappiness
+                            : kHatsSurveyTriggerOnFocusZpsSuggestionsUtility;
+
+  HatsService* hats_service =
+      HatsServiceFactory::GetForProfile(profile_, /*create_if_necessary=*/true);
+
+  if (!browser_) {
+    return;
+  }
+
+  auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser_);
+
+  if (!browser_view) {
+    return;
+  }
+
+  auto* location_bar_view = browser_view->GetLocationBarView();
+
+  // Don't show the HaTS survey if the location bar has focus.
+  if (location_bar_view &&
+      !location_bar_view->Contains(
+          location_bar_view->GetFocusManager()->GetFocusedView())) {
+    hats_service->LaunchSurvey(
+        survey_trigger, base::DoNothing(), base::DoNothing(), {},
+        {{"page classification",
+          metrics::OmniboxEventProto::PageClassification_Name(
+              GetPageClassification(/*is_prefetch=*/false))},
+         {"channel", channel}});
   }
 }
 

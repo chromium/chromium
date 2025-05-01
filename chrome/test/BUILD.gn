@@ -11294,6 +11294,7 @@ if (!is_android && !is_chromeos_device) {
         "//chrome/browser/ui/commerce:test_support",
         "//chrome/browser/ui/find_bar",
         "//chrome/browser/ui/hats:hats",
+        "//chrome/browser/ui/hats:test_support",
         "//chrome/browser/ui/lens",
         "//chrome/browser/ui/media_router",
         "//chrome/browser/ui/tabs",

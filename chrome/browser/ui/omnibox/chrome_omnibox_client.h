@@ -75,6 +75,7 @@ class ChromeOmniboxClient final : public OmniboxClient {
   void OnFocusChanged(OmniboxFocusState state,
                       OmniboxFocusChangeReason reason) override;
   void MaybeShowOnFocusHatsSurvey(AutocompleteProviderClient* client) override;
+  void CheckConditionsAndLaunchSurvey();
   void OnResultChanged(const AutocompleteResult& result,
                        bool default_match_changed,
                        bool should_prerender,
