@@ -261,4 +261,16 @@ public class AuxiliarySearchUtilsUnitTest {
         assertEquals(
                 MetaDataVersion.MULTI_TYPE_V2, AuxiliarySearchUtils.getMetadataVersion(dataEntry));
     }
+
+    @Test
+    public void testSchemaVersion() {
+        var sharedPreference = ChromeSharedPreferences.getInstance();
+        sharedPreference.removeKey(ChromePreferenceKeys.AUXILIARY_SEARCH_SCHEMA_VERSION);
+
+        assertEquals(0, AuxiliarySearchUtils.getSchemaVersion());
+
+        int version = 10;
+        AuxiliarySearchUtils.setSchemaVersion(version);
+        assertEquals(version, AuxiliarySearchUtils.getSchemaVersion());
+    }
 }

@@ -117,6 +117,10 @@ public final class ChromePreferenceKeys {
     public static final String AUXILIARY_SEARCH_IS_SCHEMA_V2_SET =
             "Chrome.AuxiliarySearch.IsSchemaV2Set";
 
+    /** The current version of the WebPage schema sent to the App search. */
+    public static final String AUXILIARY_SEARCH_SCHEMA_VERSION =
+            "Chrome.AuxiliarySearch.SchemaVersion";
+
     /** Whether the consumer schema for Tabs sharing exists. */
     public static final String AUXILIARY_SEARCH_CONSUMER_SCHEMA_FOUND =
             "Chrome.AuxiliarySearch.ConsumerSchemaFound";
@@ -988,6 +992,7 @@ public final class ChromePreferenceKeys {
                 AUXILIARY_SEARCH_MODULE_IMPRESSION,
                 AUXILIARY_SEARCH_IS_SCHEMA_SET,
                 AUXILIARY_SEARCH_IS_SCHEMA_V2_SET,
+                AUXILIARY_SEARCH_SCHEMA_VERSION,
                 APP_LAUNCH_LAST_KNOWN_ACTIVE_TAB_STATE,
                 APP_LAUNCH_SEARCH_ENGINE_HAD_LOGO,
                 APPLICATION_OVERRIDE_LANGUAGE,

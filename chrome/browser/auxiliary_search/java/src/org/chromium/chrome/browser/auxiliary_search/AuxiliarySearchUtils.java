@@ -28,6 +28,7 @@ import java.io.File;
 public class AuxiliarySearchUtils {
     @VisibleForTesting static final String TAB_DONATE_FILE_NAME = "tabs_donate";
     @VisibleForTesting static final int MODULE_SHOWN_MAX_IMPRESSIONS = 3;
+    @VisibleForTesting static final int CURRENT_SCHEMA_VERSION = 1;
 
     @VisibleForTesting
     static final BooleanCachedFeatureParam SKIP_DEVICE_CHECK =
@@ -156,6 +157,18 @@ public class AuxiliarySearchUtils {
             return MetaDataVersion.V1;
         }
         return MetaDataVersion.MULTI_TYPE_V2;
+    }
+
+    /** Returns the schema version cached in the shared preference. */
+    public static int getSchemaVersion() {
+        return ChromeSharedPreferences.getInstance()
+                .readInt(ChromePreferenceKeys.AUXILIARY_SEARCH_SCHEMA_VERSION, 0);
+    }
+
+    /** Caches the schema version sent to the App search in the shared preference. */
+    public static void setSchemaVersion(int version) {
+        ChromeSharedPreferences.getInstance()
+                .writeInt(ChromePreferenceKeys.AUXILIARY_SEARCH_SCHEMA_VERSION, version);
     }
 
     public static void resetSharedPreferenceForTesting() {
