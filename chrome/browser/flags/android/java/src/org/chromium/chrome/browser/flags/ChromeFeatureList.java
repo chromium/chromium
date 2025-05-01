@@ -325,6 +325,7 @@ public abstract class ChromeFeatureList {
     public static final String CONTROLS_VISIBILITY_FROM_NAVIGATIONS =
             "ControlsVisibilityFromNavigations";
     public static final String CORMORANT = "Cormorant";
+    public static final String CPA_SPEC_UPDATE = "CpaSpecUpdate";
     public static final String CROSS_DEVICE_TAB_PANE_ANDROID = "CrossDeviceTabPaneAndroid";
     public static final String DARKEN_WEBSITES_CHECKBOX_IN_THEMES_SETTING =
             "DarkenWebsitesCheckboxInThemesSetting";
@@ -708,6 +709,7 @@ public abstract class ChromeFeatureList {
                     /* defaultValueInTests= */ true);
     public static final CachedFlag sCommandLineOnNonRooted =
             newCachedFlag(COMMAND_LINE_ON_NON_ROOTED, false);
+    public static final CachedFlag sCpaSpecUpdate = newCachedFlag(CPA_SPEC_UPDATE, false);
     public static final CachedFlag sCrossDeviceTabPaneAndroid =
             newCachedFlag(CROSS_DEVICE_TAB_PANE_ANDROID, false);
     public static final CachedFlag sDisableInstanceLimit =
@@ -894,6 +896,7 @@ public abstract class ChromeFeatureList {
                     sClankStartupLatencyInjection,
                     sCollectAndroidFrameTimelineMetrics,
                     sCommandLineOnNonRooted,
+                    sCpaSpecUpdate,
                     sCrossDeviceTabPaneAndroid,
                     sDisableInstanceLimit,
                     sDisableListTabSwitcher,

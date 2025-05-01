@@ -12257,6 +12257,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kGridTabSwitcherSurfaceColorUpdateDescription,
      kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kGridTabSwitcherSurfaceColorUpdate)},
+
+    // Contextual Page Action button.
+    {"cpa-spec-update", flag_descriptions::kCpaSpecUpdateName,
+     flag_descriptions::kCpaSpecUpdateDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kCpaSpecUpdate)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)

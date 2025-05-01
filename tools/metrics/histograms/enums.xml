@@ -14193,6 +14193,7 @@ from previous Chrome versions.
   <int value="-67176255" label="PeripheralNotification:disabled"/>
   <int value="-66834375" label="SharesheetCopyToClipboard:enabled"/>
   <int value="-66535194" label="DesktopMinimalUI:enabled"/>
+  <int value="-65929089" label="CpaSpecUpdate:enabled"/>
   <int value="-64839201" label="SyncUSSAutofillWalletData:disabled"/>
   <int value="-64824628" label="VizHitTestSurfaceLayer:disabled"/>
   <int value="-64747770" label="IncognitoDownloadsWarning:disabled"/>
@@ -18046,6 +18047,7 @@ from previous Chrome versions.
   <int value="1408331660" label="enhanced-bookmarks-experiment"/>
   <int value="1409120591" label="PassiveMixedContentWarning:disabled"/>
   <int value="1409437197" label="OfflinePagesLimitlessPrefetching:enabled"/>
+  <int value="1409625676" label="CpaSpecUpdate:disabled"/>
   <int value="1409653883"
       label="GetUserMediaDeferredDeviceSettingsSelection:disabled"/>
   <int value="1410403456" label="AndroidBrowserControlsInViz:enabled"/>

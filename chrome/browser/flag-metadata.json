@@ -1735,6 +1735,11 @@
     "expiry_milestone": 136
   },
   {
+    "name": "cpa-spec-update",
+    "owners": [ "eleanorlee@google.com", "wenyufu@chromium.org" ],
+    "expiry_milestone": 145
+  },
+  {
     "name": "cpe-automatic-passkey-upgrade",
     "owners": ["sugoi@chromium.org", "bling-transactions-eng@google.com"],
     "expiry_milestone": 145

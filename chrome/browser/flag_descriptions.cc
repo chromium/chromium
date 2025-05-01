@@ -4681,6 +4681,11 @@ const char kConvertTrackpadEventsToMouseName[] =
 const char kConvertTrackpadEventsToMouseDescription[] =
     "Convert trackpad events to mouse events to improve gesture support";
 
+const char kCpaSpecUpdateName[] = "CpaSpecUpdate";
+const char kCpaSpecUpdateDescription[] =
+    "Updates the Cpa button animation and changes the shape of the checked "
+    "state button for stateful CPAs.";
+
 const char kDeprecatedExternalPickerFunctionName[] =
     "Use deprecated External Picker method";
 const char kDeprecatedExternalPickerFunctionDescription[] =

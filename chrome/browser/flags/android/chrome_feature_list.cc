@@ -269,6 +269,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kContextualSearchDisableOnlineDetection,
     &kContextualSearchSuppressShortView,
     &kControlsVisibilityFromNavigations,
+    &kCpaSpecUpdate,
     &kCrossDeviceTabPaneAndroid,
     &kDeviceAuthenticatorAndroidx,
     &kDisableCompositedProgressBar,
@@ -844,6 +845,10 @@ BASE_FEATURE(kContextualSearchSuppressShortView,
 BASE_FEATURE(kControlsVisibilityFromNavigations,
              "ControlsVisibilityFromNavigations",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kCpaSpecUpdate,
+             "CpaSpecUpdate",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCrossDeviceTabPaneAndroid,
              "CrossDeviceTabPaneAndroid",
