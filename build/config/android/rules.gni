@@ -3944,7 +3944,25 @@ if (!is_robolectric && enable_java_templates) {
   #     ]
   #   }
   template("android_aidl") {
-    action_with_pydeps(target_name) {
+    _aidl_target = target_name
+    if (enable_javaless_renderers && defined(invoker.cpp_root_names)) {
+      _do_cpp_gen = true
+      _header_output_folder =
+          "$target_gen_dir/gen/aidl/" + invoker.cpp_package_name
+      _cpp_outputs = []
+      _header_outputs = []
+      foreach(_cpp_root_name, invoker.cpp_root_names) {
+        _cpp_outputs += [ "$target_gen_dir/I${_cpp_root_name}.cpp" ]
+        _header_outputs += [
+          "${_header_output_folder}/I${_cpp_root_name}.h",
+          "${_header_output_folder}/Bn${_cpp_root_name}.h",
+          "${_header_output_folder}/Bp${_cpp_root_name}.h",
+        ]
+      }
+    } else {
+      _do_cpp_gen = false
+    }
+    action_with_pydeps(_aidl_target) {
       forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
 
       script = "//build/android/gyp/aidl.py"
@@ -3973,6 +3991,24 @@ if (!is_robolectric && enable_java_templates) {
         "--depfile",
         rebase_path(depfile, root_build_dir),
       ]
+      if (_do_cpp_gen) {
+        args += [
+          "--header-output-dir",
+
+          # The aidl tool automatically inserts aidl/<package>/<package>...
+          # folders wherever it's told to output headers, but outputs the cpp
+          # files exactly where it's told. So, we assume (in
+          # _header_output_folder) that aidl is going to do this on our behalf.
+          rebase_path("$target_gen_dir/gen", root_build_dir),
+        ]
+        foreach(_cpp_output, _cpp_outputs) {
+          args += [
+            "--cpp-output",
+            rebase_path(_cpp_output, root_build_dir),
+          ]
+        }
+        outputs += _cpp_outputs + _header_outputs
+      }
       if (defined(invoker.import_include) && invoker.import_include != []) {
         _rebased_import_paths = []
         foreach(_import_path, invoker.import_include) {
@@ -3983,6 +4019,14 @@ if (!is_robolectric && enable_java_templates) {
         args += [ "--includes=$_rebased_import_paths" ]
       }
       args += rebase_path(sources, root_build_dir)
+    }
+    if (_do_cpp_gen) {
+      source_set("${_aidl_target}_native") {
+        sources = _cpp_outputs + _header_outputs
+        deps = [ ":$_aidl_target" ]
+        libs = [ "binder_ndk" ]
+        public_configs = [ "//third_party/android_sdk:libbinder_include" ]
+      }
     }
   }
 

@@ -16,6 +16,8 @@ declare_args() {
   # Java debug on Android. Having this on enables multidexing, and turning it
   # off will enable proguard.
   is_java_debug = is_debug || incremental_install
+
+  enable_javaless_renderers = false
 }
 
 # These two combinations could theoretically be made to work, but they are
@@ -74,6 +76,9 @@ if (is_android) {
     default_min_sdk_version = 26
     if (is_asan) {
       default_min_sdk_version = 27
+    }
+    if (enable_javaless_renderers) {
+      default_min_sdk_version = 29
     }
 
     # Static analysis can be either "on" or "off" or "build_server". This
