@@ -91,10 +91,15 @@ class BrowserAccessibilityStateImplAuralinux
 
   // BrowserAccessibilityStateImpl:
   void RefreshAssistiveTech() override;
+  void RefreshAssistiveTechIfNecessary(ui::AXMode new_mode) override;
   void OnExtendedPropertiesUsed() override;
 
  private:
   void OnDiscoveredOrca(bool is_orca_active);
+
+  // A ScopedAccessibilityMode that holds AXMode::kScreenReader when
+  // an active screen reader has been detected.
+  std::unique_ptr<ScopedAccessibilityMode> screen_reader_mode_;
 
   // The presence of an AssistiveTech is currently being recomputed.
   // Will be updated via DiscoverOrca().
@@ -114,6 +119,32 @@ void BrowserAccessibilityStateImplAuralinux::RefreshAssistiveTech() {
         base::BindOnce(
             &BrowserAccessibilityStateImplAuralinux::OnDiscoveredOrca,
             base::Unretained(this)));
+  }
+}
+
+void BrowserAccessibilityStateImplAuralinux::RefreshAssistiveTechIfNecessary(
+    ui::AXMode new_mode) {
+  bool was_screen_reader_active = ax_platform().IsScreenReaderActive();
+  bool has_screen_reader_mode = new_mode.has_mode(ui::AXMode::kScreenReader);
+  if (was_screen_reader_active != has_screen_reader_mode) {
+    OnAssistiveTechFound(has_screen_reader_mode
+                             ? ui::AssistiveTech::kGenericScreenReader
+                             : ui::AssistiveTech::kNone);
+    return;
+  }
+
+  // An expensive check is required to determine which type of assistive tech is
+  // in use. Make this check only when `kExtendedProperties` is added or removed
+  // from the process-wide mode flags and no previous assistive tech has been
+  // discovered (in the former case) or one had been discovered (in the latter
+  // case). `kScreenReader` will be added/removed from the process-wide mode
+  // flags on completion and `OnAssistiveTechFound()` will be called with the
+  // results of the check.
+  bool has_extended_properties =
+      new_mode.has_mode(ui::AXMode::kExtendedProperties);
+  if (was_screen_reader_active != has_extended_properties) {
+    // Perform expensive assistive tech detection.
+    RefreshAssistiveTech();
   }
 }
 
@@ -137,12 +168,19 @@ void BrowserAccessibilityStateImplAuralinux::OnDiscoveredOrca(
   UMA_HISTOGRAM_BOOLEAN("Accessibility.Linux.Orca", is_orca_active);
   static auto* ax_orca_crash_key = base::debug::AllocateCrashKeyString(
       "ax_orca", base::debug::CrashKeySize::Size32);
+  // Save the current assistive tech before toggling AXModes, so
+  // that RefreshAssistiveTechIfNecessary() is a noop.
   if (is_orca_active) {
     base::debug::SetCrashKeyString(ax_orca_crash_key, "true");
     OnAssistiveTechFound(ui::AssistiveTech::kOrca);
+    if (!screen_reader_mode_) {
+      screen_reader_mode_ = CreateScopedModeForProcess(
+          ui::kAXModeComplete | ui::AXMode::kScreenReader);
+    }
   } else {
     base::debug::ClearCrashKeyString(ax_orca_crash_key);
     OnAssistiveTechFound(ui::AssistiveTech::kNone);
+    screen_reader_mode_.reset();
   }
 }
 

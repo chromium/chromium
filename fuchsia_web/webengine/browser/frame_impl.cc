@@ -1651,10 +1651,12 @@ void FrameImpl::SetAccessibilityEnabled(bool enabled) {
   if (!enabled) {
     scoped_accessibility_mode_.reset();
   } else if (!scoped_accessibility_mode_) {
+    // Fuchsia a11y only has one consumer, which is the Fuchsia screen reader.
     scoped_accessibility_mode_ =
         content::BrowserAccessibilityState::GetInstance()
             ->CreateScopedModeForProcess(ui::kAXModeComplete |
-                                         ui::AXMode::kFromPlatform);
+                                         ui::AXMode::kFromPlatform |
+                                         ui::AXMode::kScreenReader);
   }
 }
 

@@ -449,6 +449,7 @@ class BrowserAccessibilityStateImplWin : public BrowserAccessibilityStateImpl {
 
  protected:
   void RefreshAssistiveTech() override;
+  void RefreshAssistiveTechIfNecessary(ui::AXMode new_mode) override;
   ui::AXPlatform::ProductStrings GetProductStrings() override;
   void OnUiaProviderRequested(bool uia_provider_enabled) override;
   void OnUiaProviderDisabled() override;
@@ -458,6 +459,10 @@ class BrowserAccessibilityStateImplWin : public BrowserAccessibilityStateImpl {
       const std::vector<AssistiveTechInfo>& discovered_ats);
 
   std::unique_ptr<gfx::SingletonHwndObserver> singleton_hwnd_observer_;
+
+  // A ScopedAccessibilityMode that holds AXMode::kScreenReader when
+  // an active screen reader has been detected.
+  std::unique_ptr<ScopedAccessibilityMode> screen_reader_mode_;
 
   // The presence of an AssistiveTech is currently being recomputed.
   // Will be updated via DiscoverAssistiveTech().
@@ -485,6 +490,32 @@ void BrowserAccessibilityStateImplWin::RefreshAssistiveTech() {
         base::BindOnce(
             &BrowserAccessibilityStateImplWin::OnDiscoveredAssistiveTech,
             base::Unretained(this)));
+  }
+}
+
+void BrowserAccessibilityStateImplWin::RefreshAssistiveTechIfNecessary(
+    ui::AXMode new_mode) {
+  bool was_screen_reader_active = ax_platform().IsScreenReaderActive();
+  bool has_screen_reader_mode = new_mode.has_mode(ui::AXMode::kScreenReader);
+  if (was_screen_reader_active != has_screen_reader_mode) {
+    OnAssistiveTechFound(has_screen_reader_mode
+                             ? ui::AssistiveTech::kGenericScreenReader
+                             : ui::AssistiveTech::kNone);
+    return;
+  }
+
+  // An expensive check is required to determine which type of assistive tech is
+  // in use. Make this check only when `kExtendedProperties` is added or removed
+  // from the process-wide mode flags and no previous assistive tech has been
+  // discovered (in the former case) or one had been discovered (in the latter
+  // case). `kScreenReader` will be added/removed from the process-wide mode
+  // flags on completion and `OnAssistiveTechFound()` will be called with the
+  // results of the check.
+  bool has_extended_properties =
+      new_mode.has_mode(ui::AXMode::kExtendedProperties);
+  if (was_screen_reader_active != has_extended_properties) {
+    // Perform expensive assistive tech detection.
+    RefreshAssistiveTech();
   }
 }
 
@@ -629,7 +660,21 @@ void BrowserAccessibilityStateImplWin::OnDiscoveredAssistiveTech(
     }
   }
 
+  // Save the current assistive tech before toggling AXModes, so
+  // that RefreshAssistiveTechIfNecessary() is a noop.
   OnAssistiveTechFound(most_important_assistive_tech);
+
+  // Add kScreenReader mode flag for products with screen reader features, which
+  // includes some magnifiers with light screen reader features (e.g.) heading
+  // navigation).
+  if (ui::IsScreenReader(most_important_assistive_tech)) {
+    if (!screen_reader_mode_) {
+      screen_reader_mode_ = CreateScopedModeForProcess(
+          ui::kAXModeComplete | ui::AXMode::kScreenReader);
+    }
+  } else {
+    screen_reader_mode_.reset();
+  }
 }
 
 ui::AXPlatform::ProductStrings

@@ -626,14 +626,6 @@ void WebContentsAccessibilityAndroid::SetBrowserAXMode(
     jboolean is_complex_accessibility_service_enabled,
     jboolean is_form_controls_candidate,
     jboolean is_on_screen_mode_candidate) {
-  BrowserAccessibilityStateImpl* accessibility_state =
-      BrowserAccessibilityStateImpl::GetInstance();
-
-  auto* accessibility_state_android =
-      static_cast<BrowserAccessibilityStateImplAndroid*>(accessibility_state);
-  accessibility_state_android->SetScreenReaderAppActive(
-      is_known_screen_reader_enabled);
-
   // Set the AXMode based on currently running services, sent from Java-side
   // code, in the following priority:
   //
@@ -642,17 +634,15 @@ void WebContentsAccessibilityAndroid::SetBrowserAXMode(
   // mode must be the most complete mode possible (i.e. no performance
   // optimizations). (ui::kAXModeComplete)
   //
-  // 2. When a known screen reader is running, use the complete mode.
-  // (ui::kAXModeComplete)
+  // 2. When a known screen reader is running, use
+  // ui::kAXModeComplete | ui::AXMode::kAXModeScreenReader.
   //     2a. (Experimental) If a known screen reader is the only service
   //     running, then this is a candidate to use the "on screen only"
-  //     experimental mode. (ui::kAXModeOnScreen)
+  //     experimental mode. (ui::kAXModeOnScreen | ui::kAXModeScreenReader)
   //
   // 3. When services are running that require detailed information according to
   // the Java-side code (i.e. a "complex" accessibility service), use the
   // complete mode. (ui::kAXModeComplete)
-  // TODO(aleventahl): We should split this from the known screen reader case by
-  // adding a mode specific to screen readers.
   //
   // 4. When the only services running are password managers, then this is a
   // candidate for filtering for only form controls. (ui::kAXModeFormControls)
@@ -668,16 +658,17 @@ void WebContentsAccessibilityAndroid::SetBrowserAXMode(
   // seconds before turning off accessibility, to account for quick toggling of
   // the state. Analysis of existing data could show whether the 5 second wait
   // is necessary.
+  BrowserAccessibilityStateImpl* accessibility_state =
+      BrowserAccessibilityStateImpl::GetInstance();
   ui::AXMode target_mode;
   if (!accessibility_state->IsPerformanceFilteringAllowed()) {
-    target_mode = ui::kAXModeComplete;
+    // Adds kScreenReader to ensure no filtering via the non-screen-reader case.
+    target_mode = ui::kAXModeComplete | ui::AXMode::kScreenReader;
   } else if (is_known_screen_reader_enabled) {
-    if (is_on_screen_mode_candidate) {
-      target_mode = features::IsAccessibilityOnScreenAXModeEnabled()
-                        ? ui::kAXModeOnScreen
-                        : ui::kAXModeComplete;
-    } else {
-      target_mode = ui::kAXModeComplete;
+    target_mode = ui::kAXModeComplete | ui::AXMode::kScreenReader;
+    if (is_on_screen_mode_candidate &&
+        features::IsAccessibilityOnScreenAXModeEnabled()) {
+      target_mode = ui::kAXModeOnScreen | ui::AXMode::kScreenReader;
     }
   } else if (is_complex_accessibility_service_enabled) {
     target_mode = ui::kAXModeComplete;
@@ -687,8 +678,10 @@ void WebContentsAccessibilityAndroid::SetBrowserAXMode(
     target_mode = ui::kAXModeBasic;
   }
 
-  scoped_accessibility_mode_ = accessibility_state->CreateScopedModeForProcess(
-      target_mode | ui::AXMode::kFromPlatform);
+  target_mode |= ui::AXMode::kFromPlatform;
+
+  scoped_accessibility_mode_ =
+      accessibility_state->CreateScopedModeForProcess(target_mode);
 }
 
 jboolean WebContentsAccessibilityAndroid::IsRootManagerConnected(JNIEnv* env) {
@@ -1773,6 +1766,9 @@ void WebContentsAccessibilityAndroid::RecordInlineTextBoxMetrics(
   ui::AXMode mode = accessibility_state->GetAccessibilityMode();
 
   ui::AXMode::BundleHistogramValue bundle;
+  // Clear out any modes that will confuse the bundle detection.
+  mode &= ui::kAXModeComplete | ui::kAXModeFormControls;
+
   if (mode == ui::kAXModeBasic) {
     bundle = ui::AXMode::BundleHistogramValue::kBasic;
   } else if (mode == ui::kAXModeWebContentsOnly) {

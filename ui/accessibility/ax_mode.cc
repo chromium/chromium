@@ -66,6 +66,9 @@ std::string AXMode::ToString() const {
       case kFromPlatform:
         flag_name = "kFromPlatform";
         break;
+      case AXMode::kScreenReader:
+        flag_name = "kScreenReader";
+        break;
     }
 
     DCHECK(!flag_name.empty());

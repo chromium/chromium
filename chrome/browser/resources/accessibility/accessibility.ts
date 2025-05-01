@@ -23,6 +23,7 @@ enum AxMode {
   PDF_OCR = 1 << 8,
   ANNOTATE_MAIN_NODE = 1 << 9,
   FROM_PLATFORM = 1 << 10,
+  SCREEN_READER = 1 << 11,
 }
 
 interface Data {
@@ -79,6 +80,7 @@ interface InitData {
   extendedProperties: boolean;
   text: boolean;
   web: boolean;
+  screenReader: boolean;
 
   lockedPlatformModes: {
     native: boolean,
@@ -86,13 +88,14 @@ interface InitData {
     html: boolean,
     extendedProperties: boolean,
     text: boolean,
+    screenReader: boolean,
   };
 }
 
 type RequestType = 'showOrRefreshTree';
 
-type GlobalStateName =
-    'native'|'web'|'metadata'|'pdfPrinting'|'extendedProperties';
+type GlobalStateName = 'native'|'web'|'html'|'text'|'metadata'|'pdfPrinting'|
+    'extendedProperties'|'screenReader'|'labelImages'|'annotateMainNode';
 
 class BrowserProxy {
   toggleAccessibility(
@@ -258,6 +261,8 @@ function initialize() {
   bindCheckbox(
       'extendedProperties', data.extendedProperties,
       data.lockedPlatformModes.extendedProperties);
+  bindCheckbox(
+      'screenReader', data.screenReader, data.lockedPlatformModes.screenReader);
   bindCheckbox('html', data.html, data.lockedPlatformModes.html);
   bindDropdown('apiType', data.supportedApiTypes, data.apiType);
   bindCheckbox('isolate', data.isolate);
@@ -404,22 +409,26 @@ function formatRow(
     }
     row.appendChild(siteInfo);
 
+    // Create a row of buttons that can be used to read and modify the
+    // AXModes scoped to a specific WebContents.
     row.appendChild(createModeElement(AxMode.NATIVE_APIS, pageData, 'native'));
-    row.appendChild(createModeElement(AxMode.WEB_CONTENTS, pageData, 'native'));
+    row.appendChild(createModeElement(AxMode.WEB_CONTENTS, pageData, 'web'));
     row.appendChild(
-        createModeElement(AxMode.INLINE_TEXT_BOXES, pageData, 'web'));
+        createModeElement(AxMode.INLINE_TEXT_BOXES, pageData, 'text'));
+    row.appendChild(createModeElement(
+        AxMode.EXTENDED_PROPERTIES, pageData, 'extendedProperties'));
     row.appendChild(
-        createModeElement(AxMode.EXTENDED_PROPERTIES, pageData, 'web'));
-    row.appendChild(createModeElement(AxMode.HTML, pageData, 'web'));
+        createModeElement(AxMode.SCREEN_READER, pageData, 'screenReader'));
+    row.appendChild(createModeElement(AxMode.HTML, pageData, 'html'));
     row.appendChild(
         createModeElement(AxMode.HTML_METADATA, pageData, 'metadata'));
     row.appendChild(
         createModeElement(AxMode.PDF_PRINTING, pageData, 'pdfPrinting'));
     row.appendChild(createModeElement(
-        AxMode.LABEL_IMAGES, pageData, 'extendedProperties',
+        AxMode.LABEL_IMAGES, pageData, 'labelImages',
         /*readonly=*/ true));
     row.appendChild(createModeElement(
-        AxMode.ANNOTATE_MAIN_NODE, pageData, 'extendedProperties',
+        AxMode.ANNOTATE_MAIN_NODE, pageData, 'annotateMainNode',
         /* readOnly= */ true));
     // AxMode.FROM_PLATFORM is unconditionally filtered out and is therefore
     // never presented to renderers or the user.
@@ -528,11 +537,17 @@ function getNameForAccessibilityMode(mode: AxMode): string {
       return 'PDF OCR';
     case AxMode.ANNOTATE_MAIN_NODE:
       return 'Annotate main node';
+    case AxMode.SCREEN_READER:
+      return 'Screen reader';
     default:
       assertNotReached();
   }
 }
 
+// Create a button element that can be used to modify the AXMode in the given
+// WebContents/page only. The label consists of the name for the AXMode
+// (via globalStateName) and the value of the AXMode (via PageData).
+// AXModes that do not allow modification this way should pass readOnly == true.
 function createModeElement(
     mode: AxMode, data: PageData, globalStateName: GlobalStateName,
     readOnly = false) {

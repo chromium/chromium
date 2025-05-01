@@ -56,7 +56,7 @@ void AccessibilityBrowserTest::ExecuteScript(const std::u16string& script) {
 void AccessibilityBrowserTest::LoadInitialAccessibilityTreeFromHtml(
     const std::string& html) {
   if (!accessibility_mode_) {
-    accessibility_mode_.emplace(ui::kAXModeComplete);
+    accessibility_mode_.emplace(ui::kAXModeDefaultForTests);
   }
   AccessibilityNotificationWaiter waiter(shell()->web_contents(),
                                          ax::mojom::Event::kLoadComplete);

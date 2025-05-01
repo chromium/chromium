@@ -30,7 +30,7 @@ using NewTabPageAppA11yTest = NewTabPageA11yBrowserTest;
 IN_PROC_BROWSER_TEST_F(NewTabPageAppA11yTest, Clicks) {
   ASSERT_EQ(
       content::BrowserAccessibilityState::GetInstance()->GetAccessibilityMode(),
-      ui::kAXModeComplete);
+      ui::kAXModeComplete | ui::AXMode::kScreenReader);
   RunTest("new_tab_page/app_test.js",
           "runMochaSuite('NewTabPageAppTest Clicks')");
 }

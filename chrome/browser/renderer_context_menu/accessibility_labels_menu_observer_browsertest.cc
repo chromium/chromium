@@ -16,6 +16,7 @@
 #include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/scoped_accessibility_mode_override.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -102,8 +103,8 @@ IN_PROC_BROWSER_TEST_F(AccessibilityLabelsMenuObserverTest,
 IN_PROC_BROWSER_TEST_F(AccessibilityLabelsMenuObserverTest,
                        MAYBE_AccessibilityLabelsShowWithScreenReaderEnabled) {
   // Spoof a screen reader.
-  content::BrowserAccessibilityState::GetInstance()->SetScreenReaderAppActive(
-      true);
+  content::ScopedAccessibilityModeOverride screen_reader_mode(
+      ui::AXMode::kScreenReader);
   menu()->GetPrefs()->SetBoolean(prefs::kAccessibilityImageLabelsEnabled,
                                  false);
   InitMenu();

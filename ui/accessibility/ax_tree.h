@@ -15,6 +15,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include "base/dcheck_is_on.h"
 #include "base/debug/crash_logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
@@ -541,6 +542,11 @@ class AX_EXPORT AXTree {
 
   // Indicates if the tree represents a paginated document
   bool has_pagination_support_ = false;
+
+#if DCHECK_IS_ON()
+  bool is_destroyed_ = false;
+  int unserialize_count_ = 0;
+#endif
 
   std::unique_ptr<AXEvent> event_data_;
 

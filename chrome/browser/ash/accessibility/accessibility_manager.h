@@ -32,6 +32,7 @@
 #include "components/session_manager/core/session_manager_observer.h"
 #include "components/soda/soda_installer.h"
 #include "components/user_manager/user_manager.h"
+#include "content/public/browser/scoped_accessibility_mode.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
@@ -675,6 +676,8 @@ class AccessibilityManager
 
   void MaybeLogBrailleDisplayConnectedTime();
 
+  bool spoken_feedback_enabled() const { return bool(screen_reader_mode_); }
+
   // Profile which has the current a11y context.
   raw_ptr<Profile> profile_ = nullptr;
   base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
@@ -686,7 +689,8 @@ class AccessibilityManager
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
   std::unique_ptr<PrefChangeRegistrar> local_state_pref_change_registrar_;
 
-  bool spoken_feedback_enabled_ = false;
+  // Only used for ChromeVox aka when spoken feedback is enabled.
+  std::unique_ptr<content::ScopedAccessibilityMode> screen_reader_mode_;
   bool select_to_speak_enabled_ = false;
   bool switch_access_enabled_ = false;
 

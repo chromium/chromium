@@ -1062,6 +1062,12 @@ void AutomationTreeManagerOwner::DispatchAccessibilityEvents(
   if (is_new_tree) {
     tree_wrapper = new AutomationAXTreeWrapper(this);
     CacheAutomationTreeWrapperForTreeID(tree_id, tree_wrapper);
+    // A new tree requires at least a root node. This is similar to early
+    // return logic in RenderFrameHostImpl::UpdateAXTreeData() for the case
+    // where needs_ax_root_id_ is true.
+    if (updates.size() == 1 && updates[0].nodes.empty()) {
+      return;
+    }
   }
 
   if (!tree_wrapper->OnAccessibilityEvents(tree_id, updates, events,

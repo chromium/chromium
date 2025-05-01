@@ -103,7 +103,7 @@ public class AccessibilityContentShellActivityTestRule extends ContentShellActiv
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     AccessibilityState.setIsAnyAccessibilityServiceEnabledForTesting(true);
-                    AccessibilityState.setIsComplexUserInteractionServiceEnabledForTesting(true);
+                    AccessibilityState.setIsKnownScreenReaderEnabledForTesting(true);
                     AccessibilityState.setStateMaskForTesting(EVENT_TYPE_MASK, EVENT_TYPE_MASK_ALL);
                 });
 

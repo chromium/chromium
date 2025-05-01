@@ -49,13 +49,10 @@ constexpr int kAutoDisableAccessibilityEventCount = 3;
 // good for perf. Instead, delay the update task.
 constexpr int kOnAccessibilityUsageUpdateDelaySecs = 5;
 
-// Used for validating the 'basic' bundle parameter for
-// --force-renderer-accessibility.
+// Parameter values for --force-renderer-accessibility=[bundle-name].
 const char kAXModeBundleBasic[] = "basic";
-
-// Used for validating the 'form-controls' bundle parameter for
-// --force-renderer-accessibility.
 const char kAXModeBundleFormControls[] = "form-controls";
+const char kAXModeBundleComplete[] = "complete";
 
 // A holder of a ScopedModeCollection targeting a specific BrowserContext or
 // WebContents. The collection is bound to the lifetime of the target.
@@ -216,17 +213,23 @@ BrowserAccessibilityStateImpl::BrowserAccessibilityStateImpl() {
 
     if (ax_mode_bundle.empty()) {
       // For backwards compatibility, when --force-renderer-accessibility has no
-      // parameter, use the complete bundle but allow changes.
-      initial_mode = ui::kAXModeComplete;
+      // parameter, use the screen reader bundle but allow changes.
+      // This is the best general choice in development and testing scenarios.
+      initial_mode = ui::kAXModeComplete | ui::AXMode::kScreenReader;
     } else {
-      // Support --force-renderer-accessibility=[basic|form-controls|complete]
+      // Support
+      // --force-renderer-accessibility=[basic|form-controls|complete|
+      //                                 screen-reader]
       if (ax_mode_bundle.compare(kAXModeBundleBasic) == 0) {
         initial_mode = ui::kAXModeBasic;
       } else if (ax_mode_bundle.compare(kAXModeBundleFormControls) == 0) {
         initial_mode = ui::kAXModeFormControls;
-      } else {
-        // If AXMode is 'complete' or invalid, default to complete bundle.
+      } else if (ax_mode_bundle.compare(kAXModeBundleComplete) == 0) {
         initial_mode = ui::kAXModeComplete;
+      } else {
+        // If 'screen-reader', or invalid, default to screen reader bundle,
+        // which is the most useful in development and testing scenarios.
+        initial_mode = ui::kAXModeComplete | ui::AXMode::kScreenReader;
       }
       disallow_changes = true;
     }
@@ -258,13 +261,28 @@ void BrowserAccessibilityStateImpl::OnAssistiveTechFound(
   ax_platform_.NotifyAssistiveTechChanged(assistive_tech);
 }
 
-void BrowserAccessibilityStateImpl::SetScreenReaderAppActive(bool is_active) {
-  OnAssistiveTechFound(is_active ? ui::AssistiveTech::kGenericScreenReader
+void BrowserAccessibilityStateImpl::RefreshAssistiveTech() {
+  bool sr_active = GetAccessibilityMode().has_mode(ui::AXMode::kScreenReader);
+  OnAssistiveTechFound(sr_active ? ui::AssistiveTech::kGenericScreenReader
                                  : ui::AssistiveTech::kNone);
 }
 
+void BrowserAccessibilityStateImpl::RefreshAssistiveTechIfNecessary(
+    ui::AXMode new_mode) {
+  // Platforms that use this default implementation have a perfect signal
+  // for screen reader launches. These platforms use AXMode::kScreenReader to
+  // actively indicate that a screen reader is active.
+  // Other platforms don't have this perfect signal and compute this off-thread,
+  // adding/removing AXMode::kScreenReader after detection is complete.
+  bool was_screen_reader_active = ax_platform_.IsScreenReaderActive();
+  bool has_screen_reader_mode = new_mode.has_mode(ui::AXMode::kScreenReader);
+  if (was_screen_reader_active != has_screen_reader_mode) {
+    RefreshAssistiveTech();
+  }
+}
+
 ui::AssistiveTech BrowserAccessibilityStateImpl::ActiveAssistiveTech() const {
-  return ui::AXPlatform::GetInstance().active_assistive_tech();
+  return ax_platform_.active_assistive_tech();
 }
 
 void BrowserAccessibilityStateImpl::SetPerformanceFilteringAllowed(
@@ -469,12 +487,6 @@ BrowserAccessibilityStateImpl::CreateScopedModeForProcess(ui::AXMode mode) {
 // scopers targeting the process changes.
 void BrowserAccessibilityStateImpl::OnModeChanged(ui::AXMode old_mode,
                                                   ui::AXMode new_mode) {
-  // If the AXMode changes, there's a good chance an assistive technology was
-  // activated. Allow platforms that must perform special detection to update
-  // their notion of which tech is running. The platform-specific implementation
-  // is responsible for calling `OnAssistiveTechFound()` in response.
-  RefreshAssistiveTech();
-
   if (!new_mode.is_mode_off()) {
     // Unless the mode is being turned off, setting accessibility flags is
     // generally caused by accessibility API call, so we should also reset the
@@ -495,6 +507,9 @@ void BrowserAccessibilityStateImpl::OnModeChanged(ui::AXMode old_mode,
     UMA_HISTOGRAM_COUNTS_10000("Accessibility.EngineUse.PageNavsUntilStart",
                                num_page_navs_before_first_use_);
   }
+
+  RefreshAssistiveTechIfNecessary(new_mode);
+
   // Add a crash key with the ax_mode, to enable searching for top crashes that
   // occur when accessibility is turned on. This adds it for the browser
   // process, and elsewhere the same key is added to renderer processes.

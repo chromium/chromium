@@ -316,8 +316,8 @@ void DumpAccessibilityTestBase::RunTest(
     const base::FilePath file_path,
     const char* file_dir,
     const base::FilePath::StringType& expectations_qualifier) {
-  RunTestForPlatform(ui::kAXModeComplete | ui::AXMode::kHTML, file_path,
-                     file_dir, expectations_qualifier);
+  RunTestForPlatform(ui::kAXModeDefaultForTests, file_path, file_dir,
+                     expectations_qualifier);
 }
 
 // TODO(accessibility) Consider renaming these things to

@@ -60,11 +60,6 @@ class CONTENT_EXPORT BrowserAccessibilityState {
   CreateScopedModeForWebContents(WebContents* web_contents,
                                  ui::AXMode mode) = 0;
 
-  // Some platforms have a strong signal indicating the presence of a
-  // screen reader and can call in to let us know when one has
-  // been enabled/disabled. This should be called for screen readers only.
-  virtual void SetScreenReaderAppActive(bool is_active) = 0;
-
   // Return the last active assistive technology. If multiple ATs are
   // running concurrently (rare case), the result will prefer a screen reader.
   // This will use the last known value, so it is possible for it to be out of

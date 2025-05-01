@@ -2495,7 +2495,7 @@ bool WebContentsImpl::IsWebContentsOnlyAccessibilityModeForTesting() {
 }
 
 bool WebContentsImpl::IsFullAccessibilityModeForTesting() {
-  return accessibility_mode_ == ui::kAXModeComplete;
+  return accessibility_mode_ == ui::kAXModeDefaultForTests;
 }
 
 #if BUILDFLAG(IS_ANDROID)

@@ -796,10 +796,6 @@ void AccessibilityManager::OnSpokenFeedbackChanged() {
   const bool enabled = profile_->GetPrefs()->GetBoolean(
       prefs::kAccessibilitySpokenFeedbackEnabled);
 
-  content::BrowserAccessibilityState* browser_ax_state =
-      content::BrowserAccessibilityState::GetInstance();
-  browser_ax_state->SetScreenReaderAppActive(enabled);
-
   if (IsUserBrowserContext(profile_)) {
     user_manager::KnownUser known_user(g_browser_process->local_state());
     known_user.SetBooleanPref(
@@ -819,13 +815,21 @@ void AccessibilityManager::OnSpokenFeedbackChanged() {
                        weak_ptr_factory_.GetWeakPtr()));
   }
 
-  if (spoken_feedback_enabled_ == enabled)
+  bool was_enabled = spoken_feedback_enabled();
+  if (was_enabled == enabled) {
     return;
+  }
+
+  if (enabled) {
+    screen_reader_mode_ =
+        content::BrowserAccessibilityState::GetInstance()
+            ->CreateScopedModeForProcess(ui::AXMode::kScreenReader);
+  } else {
+    screen_reader_mode_.reset();
+  }
 
   if (accessibility_service_client_)
     accessibility_service_client_->SetChromeVoxEnabled(enabled);
-
-  spoken_feedback_enabled_ = enabled;
 
   AccessibilityStatusEventDetails details(
       AccessibilityNotificationType::kToggleSpokenFeedback, enabled);
@@ -2203,8 +2207,9 @@ void AccessibilityManager::PostLoadChromeVox() {
       base::Value::List()));
   event_router->DispatchEventWithLazyListener(extension_id, std::move(event));
 
-  if (!chromevox_panel_ && spoken_feedback_enabled_)
+  if (!chromevox_panel_ && spoken_feedback_enabled()) {
     CreateChromeVoxPanel();
+  }
 
   audio_focus_manager_->SetEnforcementMode(
       media_session::mojom::EnforcementMode::kNone);
@@ -2245,7 +2250,7 @@ void AccessibilityManager::PostUnloadChromeVox() {
 }
 
 void AccessibilityManager::CreateChromeVoxPanel() {
-  DCHECK(!chromevox_panel_ && spoken_feedback_enabled_);
+  DCHECK(!chromevox_panel_ && spoken_feedback_enabled());
   chromevox_panel_ = new ChromeVoxPanel(profile_);
   chromevox_panel_widget_observer_ =
       std::make_unique<AccessibilityPanelWidgetObserver>(
@@ -2259,8 +2264,9 @@ void AccessibilityManager::PostSwitchChromeVoxProfile() {
     chromevox_panel_->CloseNow();
     chromevox_panel_ = nullptr;
   }
-  if (!chromevox_panel_ && spoken_feedback_enabled_)
+  if (!chromevox_panel_ && spoken_feedback_enabled()) {
     CreateChromeVoxPanel();
+  }
 }
 
 void AccessibilityManager::OnChromeVoxPanelDestroying() {
@@ -2548,7 +2554,7 @@ const std::string AccessibilityManager::GetBluetoothBrailleDisplayAddress()
 
 void AccessibilityManager::UpdateBluetoothBrailleDisplayAddress(
     const std::string& address) {
-  CHECK(spoken_feedback_enabled_);
+  CHECK(spoken_feedback_enabled());
   if (!profile_)
     return;
 

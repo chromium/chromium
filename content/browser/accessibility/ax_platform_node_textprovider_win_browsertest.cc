@@ -60,7 +60,7 @@ namespace content {
 class AXPlatformNodeTextProviderWinBrowserTest : public ContentBrowserTest {
  protected:
   void SetUpOnMainThread() override {
-    accessibility_mode_.emplace(ui::kAXModeComplete);
+    accessibility_mode_.emplace(ui::kAXModeDefaultForTests);
   }
 
   void TearDownOnMainThread() override { accessibility_mode_.reset(); }

@@ -21,7 +21,8 @@ AccessibilityTest::AccessibilityTest(LocalFrameClient* local_frame_client)
 
 void AccessibilityTest::SetUp() {
   RenderingTest::SetUp();
-  ax_context_ = std::make_unique<AXContext>(GetDocument(), ui::kAXModeComplete);
+  ax_context_ =
+      std::make_unique<AXContext>(GetDocument(), ui::kAXModeDefaultForTests);
 }
 
 AXObjectCacheImpl& AccessibilityTest::GetAXObjectCache() const {

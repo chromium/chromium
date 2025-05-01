@@ -22,7 +22,7 @@ class BrowserAccessibilityStateImplMac : public BrowserAccessibilityStateImpl {
   ~BrowserAccessibilityStateImplMac() override {}
 
  protected:
-  void SetScreenReaderAppActive(bool is_active) override;
+  void RefreshAssistiveTech() override;
 };
 
 BrowserAccessibilityStateImplMac::BrowserAccessibilityStateImplMac() {
@@ -64,8 +64,9 @@ BrowserAccessibilityStateImplMac::BrowserAccessibilityStateImplMac() {
                                      context:this];
 }
 
-void BrowserAccessibilityStateImplMac::SetScreenReaderAppActive(
-    bool is_active) {
+void BrowserAccessibilityStateImplMac::RefreshAssistiveTech() {
+  bool is_active = GetAccessibilityMode().has_mode(ui::AXMode::kScreenReader);
+
   static auto* ax_voiceover_crash_key = base::debug::AllocateCrashKeyString(
       "ax_voiceover", base::debug::CrashKeySize::Size32);
   if (is_active) {

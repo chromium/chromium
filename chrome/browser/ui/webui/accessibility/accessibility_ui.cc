@@ -107,6 +107,7 @@ static const char kNative[] = "native";
 static const char kPage[] = "page";
 static const char kPDFPrinting[] = "pdfPrinting";
 static const char kExtendedProperties[] = "extendedProperties";
+static const char kScreenReader[] = "screenReader";
 static const char kShowOrRefreshTree[] = "showOrRefreshTree";
 static const char kText[] = "text";
 static const char kWeb[] = "web";
@@ -198,6 +199,7 @@ void HandleAccessibilityRequestCallback(
   bool web = mode.has_mode(ui::AXMode::kWebContents);
   bool text = mode.has_mode(ui::AXMode::kInlineTextBoxes);
   bool extended_properties = mode.has_mode(ui::AXMode::kExtendedProperties);
+  bool screen_reader = mode.has_mode(ui::AXMode::kScreenReader);
   bool html = mode.has_mode(ui::AXMode::kHTML);
   bool pdf_printing = mode.has_mode(ui::AXMode::kPDFPrinting);
   bool allow_platform_activation =
@@ -212,6 +214,7 @@ void HandleAccessibilityRequestCallback(
   // meaningful if "web" is enabled.
   data.Set(kText, text);
   data.Set(kExtendedProperties, extended_properties);
+  data.Set(kScreenReader, screen_reader);
   data.Set(kHTML, html);
 
   // The "pdfPrinting" flag is independent of the others.
@@ -236,6 +239,9 @@ void HandleAccessibilityRequestCallback(
                                         extended_properties &&
                                         initial_process_mode.has_mode(
                                             ui::AXMode::kExtendedProperties))
+          .Set(kScreenReader,
+               allow_platform_activation && screen_reader &&
+                   initial_process_mode.has_mode(ui::AXMode::kScreenReader))
           .Set(kHTML, allow_platform_activation &&
                           initial_process_mode.has_mode(ui::AXMode::kHTML)));
 
@@ -301,6 +307,7 @@ void HandleAccessibilityRequestCallback(
     base::Value::Dict descriptor = BuildTargetDescriptor(rvh);
     descriptor.Set(kNative, native);
     descriptor.Set(kExtendedProperties, extended_properties);
+    descriptor.Set(kScreenReader, screen_reader);
     descriptor.Set(kWeb, web);
     page_list.Append(std::move(descriptor));
   }
@@ -748,6 +755,8 @@ void AccessibilityUIMessageHandler::SetGlobalFlag(
     new_mode = ui::AXMode::kInlineTextBoxes;
   } else if (flag_name == kExtendedProperties) {
     new_mode = ui::AXMode::kExtendedProperties;
+  } else if (flag_name == kScreenReader) {
+    new_mode = ui::AXMode::kScreenReader;
   } else if (flag_name == kHTML) {
     new_mode = ui::AXMode::kHTML;
   } else {

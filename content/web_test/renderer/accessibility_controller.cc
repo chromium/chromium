@@ -165,8 +165,8 @@ void AccessibilityController::Reset() {
 }
 
 void AccessibilityController::Install(blink::WebLocalFrame* frame) {
-  ax_context_ = std::make_unique<blink::WebAXContext>(frame->GetDocument(),
-                                                      ui::kAXModeComplete);
+  ax_context_ = std::make_unique<blink::WebAXContext>(
+      frame->GetDocument(), ui::kAXModeDefaultForTests);
   elements_ = std::make_unique<WebAXObjectProxyList>(
       frame->GetAgentGroupScheduler()->Isolate(), *ax_context_);
 

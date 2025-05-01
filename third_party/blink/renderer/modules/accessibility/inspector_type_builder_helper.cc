@@ -925,7 +925,7 @@ std::unique_ptr<AXNode> BuildProtocolAXNodeForUnignoredAXObject(
           .build();
   auto properties = std::make_unique<protocol::Array<AXProperty>>();
   ui::AXNodeData node_data;
-  ax_object.Serialize(&node_data, ui::kAXModeComplete);
+  ax_object.Serialize(&node_data, ui::kAXModeInspector);
   node_object->setRole(CreateRoleNameValue(node_data.role));
   node_object->setChromeRole(CreateInternalRoleValue(node_data.role));
   FillLiveRegionProperties(ax_object, node_data, *(properties.get()));

@@ -20,7 +20,8 @@ metrics::SystemProfileProto::AccessibilityState::AXMode ModeFlagsToProtoEnum(
     case ui::AXMode::kInlineTextBoxes:
       return metrics::SystemProfileProto::AccessibilityState::INLINE_TEXT_BOXES;
     case ui::AXMode::kExtendedProperties:
-      return metrics::SystemProfileProto::AccessibilityState::SCREEN_READER;
+      return metrics::SystemProfileProto::AccessibilityState::
+          EXTENDED_PROPERTIES;
     case ui::AXMode::kHTML:
       return metrics::SystemProfileProto::AccessibilityState::HTML;
     case ui::AXMode::kHTMLMetadata:
@@ -34,6 +35,8 @@ metrics::SystemProfileProto::AccessibilityState::AXMode ModeFlagsToProtoEnum(
     case ui::AXMode::kAnnotateMainNode:
       return metrics::SystemProfileProto::AccessibilityState::
           ANNOTATE_MAIN_NODE;
+    case ui::AXMode::kScreenReader:
+      return metrics::SystemProfileProto::AccessibilityState::SCREEN_READER;
     default:
       NOTREACHED();
   }
@@ -74,4 +77,6 @@ void AccessibilityStateProvider::ProvideSystemProfileMetrics(
   MaybeAddAccessibilityModeFlags(mode, ui::AXMode::kAnnotateMainNode, state);
   // ui::AXMode::kFromPlatform is unconditionally filtered out and is therefore
   // never present in `mode`.
+  CHECK(!mode.has_mode(ui::AXMode::kFromPlatform));
+  MaybeAddAccessibilityModeFlags(mode, ui::AXMode::kScreenReader, state);
 }

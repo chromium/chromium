@@ -453,7 +453,7 @@ void InspectorAccessibilityAgent::CompleteQuery(
       continue;
     }
     ui::AXNodeData node_data;
-    ax_object->Serialize(&node_data, ui::kAXModeComplete);
+    ax_object->Serialize(&node_data, ui::kAXModeInspector);
     reachable.pop_back();
     const AXObject::AXObjectVector& children =
         ax_object->ChildrenIncludingIgnored();

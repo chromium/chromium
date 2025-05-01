@@ -105,7 +105,7 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="0" label="Native APIs"/>
   <int value="1" label="Web Contents"/>
   <int value="2" label="Inline Text Boxes"/>
-  <int value="3" label="Screen Reader"/>
+  <int value="3" label="Extended Properties"/>
   <int value="4" label="HTML"/>
   <int value="5" label="HTML Metadata"/>
   <int value="6" label="Label images"/>
@@ -113,6 +113,7 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="8" label="PDF OCR"/>
   <int value="9" label="Annotate Main Node"/>
   <int value="10" label="From Platform"/>
+  <int value="11" label="Screen Reader"/>
 </enum>
 
 <enum name="AccountManagerAccountAdditionSource">

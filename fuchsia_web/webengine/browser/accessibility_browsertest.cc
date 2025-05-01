@@ -129,14 +129,15 @@ class FuchsiaFrameAccessibilityTest : public WebEngineBrowserTest {
 
     // Change the accessibility mode on the Fuchsia side and check that it is
     // propagated correctly.
-    ASSERT_FALSE(frame_impl_->web_contents_for_test()
-                     ->IsFullAccessibilityModeForTesting());
+    ASSERT_TRUE(frame_impl_->web_contents_for_test()
+                    ->GetAccessibilityMode()
+                    .is_mode_off());
 
     semantics_manager_.SetSemanticsModeEnabled(true);
     base::RunLoop().RunUntilIdle();
 
-    ASSERT_TRUE(frame_impl_->web_contents_for_test()
-                    ->IsFullAccessibilityModeForTesting());
+    ASSERT_EQ(frame_impl_->web_contents_for_test()->GetAccessibilityMode(),
+              ui::kAXModeComplete | ui::AXMode::kScreenReader);
   }
 
   void TearDownOnMainThread() override {
@@ -411,16 +412,17 @@ IN_PROC_BROWSER_TEST_F(FuchsiaFrameAccessibilityTest, TogglesSemanticsUpdates) {
   semantics_manager_.SetSemanticsModeEnabled(false);
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_FALSE(frame_impl_->web_contents_for_test()
-                   ->IsFullAccessibilityModeForTesting());
+  EXPECT_TRUE(frame_impl_->web_contents_for_test()
+                  ->GetAccessibilityMode()
+                  .is_mode_off());
 
   // The tree gets cleared when semantic updates are off.
   EXPECT_EQ(semantics_manager_.semantic_tree()->tree_size(), 0u);
   semantics_manager_.SetSemanticsModeEnabled(true);
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_TRUE(frame_impl_->web_contents_for_test()
-                  ->IsFullAccessibilityModeForTesting());
+  EXPECT_EQ(frame_impl_->web_contents_for_test()->GetAccessibilityMode(),
+            ui::kAXModeComplete | ui::AXMode::kScreenReader);
 }
 
 // This test performs several tree modifications (insertions, changes, and

@@ -101,14 +101,13 @@ class AXMainNodeAnnotatorControllerBrowserTest : public InProcessBrowserTest {
       speech_monitor_.Replay();
     }
 #else
-    content::BrowserAccessibilityState::GetInstance()->SetScreenReaderAppActive(
-        enabled);
     // Spoof a screen reader.
     if (!enabled) {
       ax_mode_override_.reset();
     } else if (!ax_mode_override_) {
       ax_mode_override_.emplace(ui::AXMode::kWebContents |
-                                ui::AXMode::kExtendedProperties);
+                                ui::AXMode::kExtendedProperties |
+                                ui::AXMode::kScreenReader);
     }
 #endif  // BUILDFLAG(IS_CHROMEOS)
   }

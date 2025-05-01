@@ -858,6 +858,7 @@ _CONFIG = [
             'ui::AXTreeUpdate',
             'ui::kAXModeBasic',
             'ui::kAXModeComplete',
+            'ui::kAXModeInspector',
             'ui::kFirstGeneratedRendererNodeID',
             'ui::kInvalidAXNodeID',
             'ui::kLastGeneratedRendererNodeID',
