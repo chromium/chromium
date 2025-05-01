@@ -463,13 +463,8 @@ void ChromeExtensionSystem::InstallUpdate(
 void ChromeExtensionSystem::PerformActionBasedOnOmahaAttributes(
     const std::string& extension_id,
     const base::Value::Dict& attributes) {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  // TODO(crbug.com/413460628): Port ExtensionService to desktop Android.
   extension_service()->PerformActionBasedOnOmahaAttributes(extension_id,
                                                            attributes);
-#else
-  NOTIMPLEMENTED();
-#endif
 }
 
 }  // namespace extensions

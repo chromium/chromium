@@ -16,6 +16,8 @@
 #include "chrome/browser/extensions/permissions/permissions_updater.h"
 #include "chrome/browser/extensions/shared_module_service.h"
 #include "chrome/browser/extensions/updater/chrome_update_client_config.h"
+#include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
+#include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/extensions/extension_icon_source.h"
 #include "chrome/common/extensions/api/url_handlers/url_handlers_parser.h"
@@ -34,6 +36,7 @@
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/pref_names.h"
 #include "extensions/browser/renderer_startup_helper.h"
+#include "extensions/browser/updater/scoped_extension_updater_keep_alive.h"
 #include "extensions/browser/user_script_manager.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_urls.h"
@@ -62,6 +65,18 @@ namespace {
 
 constexpr std::string_view kCrxUrlPath = "/service/update2/crx";
 constexpr std::string_view kJsonUrlPath = "/service/update2/json";
+
+class UpdaterKeepAlive : public ScopedExtensionUpdaterKeepAlive {
+ public:
+  UpdaterKeepAlive(Profile* profile, ProfileKeepAliveOrigin origin)
+      : profile_keep_alive_(profile, origin) {}
+  UpdaterKeepAlive(const UpdaterKeepAlive&) = delete;
+  UpdaterKeepAlive& operator=(const UpdaterKeepAlive&) = delete;
+  ~UpdaterKeepAlive() override = default;
+
+ private:
+  ScopedProfileKeepAlive profile_keep_alive_;
+};
 
 // Returns |extension_id|. See note below.
 std::string ReloadExtension(const std::string& extension_id,
@@ -370,6 +385,13 @@ scoped_refptr<update_client::UpdateClient> CreateUpdateClient(
   }
   return update_client::UpdateClientFactory(
       ChromeUpdateClientConfig::Create(context, override_url));
+}
+
+std::unique_ptr<ScopedExtensionUpdaterKeepAlive> CreateUpdaterKeepAlive(
+    content::BrowserContext* context) {
+  return std::make_unique<UpdaterKeepAlive>(
+      Profile::FromBrowserContext(context),
+      ProfileKeepAliveOrigin::kExtensionUpdater);
 }
 
 } // namespace extensions::util

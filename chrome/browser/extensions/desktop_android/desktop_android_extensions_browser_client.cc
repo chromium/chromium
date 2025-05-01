@@ -36,6 +36,7 @@
 #include "extensions/browser/kiosk/kiosk_delegate.h"
 #include "extensions/browser/null_app_sorting.h"
 #include "extensions/browser/updater/null_extension_cache.h"
+#include "extensions/browser/updater/scoped_extension_updater_keep_alive.h"
 #include "extensions/browser/url_request_util.h"
 #include "extensions/common/features/feature_channel.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
@@ -346,6 +347,12 @@ scoped_refptr<update_client::UpdateClient>
 DesktopAndroidExtensionsBrowserClient::CreateUpdateClient(
     content::BrowserContext* context) {
   return util::CreateUpdateClient(context);
+}
+
+std::unique_ptr<ScopedExtensionUpdaterKeepAlive>
+DesktopAndroidExtensionsBrowserClient::CreateUpdaterKeepAlive(
+    content::BrowserContext* context) {
+  return util::CreateUpdaterKeepAlive(context);
 }
 
 KioskDelegate* DesktopAndroidExtensionsBrowserClient::GetKioskDelegate() {

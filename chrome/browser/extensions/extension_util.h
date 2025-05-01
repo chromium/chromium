@@ -36,6 +36,7 @@ class Profile;
 namespace extensions {
 
 class Extension;
+class ScopedExtensionUpdaterKeepAlive;
 
 namespace util {
 
@@ -98,7 +99,15 @@ std::u16string GetFixupExtensionNameForUIDisplay(
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
 // Returns a new UpdateClient.
+// TODO(crbug.com/415033270): Move this to ChromeExtensionsBrowserClient when
+// DesktopAndroidExtensionsBrowserClient is deleted.
 scoped_refptr<update_client::UpdateClient> CreateUpdateClient(
+    content::BrowserContext* context);
+
+// Returns a new ScopedExtensionUpdaterKeepAlive.
+// TODO(crbug.com/415033270): Move this to ChromeExtensionsBrowserClient when
+// DesktopAndroidExtensionsBrowserClient is deleted.
+std::unique_ptr<ScopedExtensionUpdaterKeepAlive> CreateUpdaterKeepAlive(
     content::BrowserContext* context);
 
 }  // namespace util

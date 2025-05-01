@@ -55,8 +55,6 @@
 #include "chrome/browser/media/webrtc/media_device_salt_service_factory.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/prefetch/pref_names.h"
-#include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
-#include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_selections.h"
@@ -141,16 +139,6 @@ bool ExtensionsDisabled(const base::CommandLine& command_line) {
   return command_line.HasSwitch(extensions::switches::kDisableExtensions) ||
          command_line.HasSwitch(extensions::switches::kDisableExtensionsExcept);
 }
-
-class UpdaterKeepAlive : public ScopedExtensionUpdaterKeepAlive {
- public:
-  UpdaterKeepAlive(Profile* profile, ProfileKeepAliveOrigin origin)
-      : profile_keep_alive_(profile, origin) {}
-  ~UpdaterKeepAlive() override = default;
-
- private:
-  ScopedProfileKeepAlive profile_keep_alive_;
-};
 
 bool ShouldLogExtensionAction(content::BrowserContext* browser_context,
                               const ExtensionId& extension_id) {
@@ -657,9 +645,7 @@ ChromeExtensionsBrowserClient::CreateUpdateClient(
 std::unique_ptr<ScopedExtensionUpdaterKeepAlive>
 ChromeExtensionsBrowserClient::CreateUpdaterKeepAlive(
     content::BrowserContext* context) {
-  return std::make_unique<UpdaterKeepAlive>(
-      Profile::FromBrowserContext(context),
-      ProfileKeepAliveOrigin::kExtensionUpdater);
+  return util::CreateUpdaterKeepAlive(context);
 }
 
 bool ChromeExtensionsBrowserClient::IsActivityLoggingEnabled(

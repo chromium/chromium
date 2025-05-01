@@ -7695,7 +7695,10 @@ static_library("browser") {
       "extensions/desktop_android/desktop_android_runtime_api_delegate.h",
     ]
 
-    deps += [ "//chrome/browser/extensions" ]
+    deps += [
+      "//chrome/browser/extensions",
+      "//extensions/browser/updater:keepalive",
+    ]
 
     # Circular dependency due to some utility function in
     # //chrome/browser/extensions/extension_util.cc calling
