@@ -1086,23 +1086,23 @@ index 8640a35..d2dde16 100644
    /* spell(word) - spellcheck word
     * output: false = bad word, true = good word
 diff --git a/src/hunspell/replist.cxx b/src/hunspell/replist.cxx
-index 1395ade..9d52f33 100644
+index e91e130..c12c1d4 100644
 --- a/src/hunspell/replist.cxx
 +++ b/src/hunspell/replist.cxx
-@@ -161,6 +161,7 @@ int RepList::add(const std::string& in_pat1, const std::string& pat2) {
+@@ -151,6 +151,7 @@ int RepList::add(const std::string& in_pat1, const std::string& pat2) {
    mystrrep(r->outstrings[type], "_", " ");
-   dat[pos++] = r;
+   dat.push_back(r);
    // sort to the right place in the list
 +#if 0
-   int i;
-   for (i = pos - 1; i > 0; i--) {
+   size_t i;
+   for (i = dat.size() - 1; i > 0; --i) {
      if (strcmp(r->pattern.c_str(), dat[i - 1]->pattern.c_str()) < 0) {
-@@ -169,6 +170,15 @@ int RepList::add(const std::string& in_pat1, const std::string& pat2) {
+@@ -159,6 +160,15 @@ int RepList::add(const std::string& in_pat1, const std::string& pat2) {
        break;
    }
    dat[i] = r;
 +#else
-+  for (int i = pos - 1; i > 0; i--) {
++  for (int i = dat.size() - 1; i > 0; --i) {
 +    r = dat[i];
 +    if (r->pattern < dat[i - 1]->pattern) {
 +      dat[i] = dat[i - 1];
@@ -1114,7 +1114,7 @@ index 1395ade..9d52f33 100644
  }
  
 diff --git a/src/hunspell/replist.hxx b/src/hunspell/replist.hxx
-index 08daeb4..2bc8aa7 100644
+index 00a4918..16e0e06 100644
 --- a/src/hunspell/replist.hxx
 +++ b/src/hunspell/replist.hxx
 @@ -72,6 +72,12 @@

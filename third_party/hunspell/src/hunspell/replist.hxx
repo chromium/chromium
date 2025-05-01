@@ -88,17 +88,13 @@ class RepList {
   RepList(const RepList&);
   RepList& operator=(const RepList&);
 
- protected:
-  replentry** dat;
-  int size;
-  int pos;
+  std::vector<replentry*> dat;
 
  public:
   explicit RepList(int n);
   ~RepList();
 
   int add(const std::string& pat1, const std::string& pat2);
-  replentry* item(int n);
   int find(const char* word);
   std::string replace(const char* word, int n, bool atstart);
   bool conv(const std::string& word, std::string& dest);

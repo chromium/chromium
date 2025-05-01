@@ -77,28 +77,18 @@
 #include "csutil.hxx"
 
 RepList::RepList(int n) {
-  dat = (replentry**)malloc(sizeof(replentry*) * n);
-  if (dat == 0)
-    size = 0;
-  else
-    size = n;
-  pos = 0;
+  dat.reserve(n);
 }
 
 RepList::~RepList() {
-  for (int i = 0; i < pos; i++) {
+  for (size_t i = 0, pos = dat.size(); i < pos; ++i) {
     delete dat[i];
   }
-  free(dat);
-}
-
-replentry* RepList::item(int n) {
-  return dat[n];
 }
 
 int RepList::find(const char* word) {
   int p1 = 0;
-  int p2 = pos - 1;
+  int p2 = dat.size() - 1;
   int ret = -1;
   while (p1 <= p2) {
     int m = ((unsigned)p1 + (unsigned)p2) >> 1;
@@ -127,7 +117,7 @@ std::string RepList::replace(const char* word, int ind, bool atstart) {
 }
 
 int RepList::add(const std::string& in_pat1, const std::string& pat2) {
-  if (pos >= size || in_pat1.empty() || pat2.empty()) {
+  if (in_pat1.empty() || pat2.empty()) {
     return 1;
   }
   // analyse word context
@@ -159,11 +149,11 @@ int RepList::add(const std::string& in_pat1, const std::string& pat2) {
   r->pattern = pat1;
   r->outstrings[type] = pat2;
   mystrrep(r->outstrings[type], "_", " ");
-  dat[pos++] = r;
+  dat.push_back(r);
   // sort to the right place in the list
 #if 0
-  int i;
-  for (i = pos - 1; i > 0; i--) {
+  size_t i;
+  for (i = dat.size() - 1; i > 0; --i) {
     if (strcmp(r->pattern.c_str(), dat[i - 1]->pattern.c_str()) < 0) {
       dat[i] = dat[i - 1];
     } else
@@ -171,7 +161,7 @@ int RepList::add(const std::string& in_pat1, const std::string& pat2) {
   }
   dat[i] = r;
 #else
-  for (int i = pos - 1; i > 0; i--) {
+  for (int i = dat.size() - 1; i > 0; --i) {
     r = dat[i];
     if (r->pattern < dat[i - 1]->pattern) {
       dat[i] = dat[i - 1];
