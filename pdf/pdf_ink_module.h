@@ -9,6 +9,7 @@
 #include <memory>
 #include <optional>
 #include <set>
+#include <utility>
 #include <variant>
 #include <vector>
 
@@ -19,6 +20,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "pdf/buildflags.h"
+#include "pdf/page_orientation.h"
 #include "pdf/pdf_ink_brush.h"
 #include "pdf/pdf_ink_ids.h"
 #include "pdf/pdf_ink_undo_redo_model.h"
@@ -134,6 +136,10 @@ class PdfInkModule {
   ~PdfInkModule();
 
   bool enabled() const { return enabled_; }
+
+  // Returns whether the text selection change event should be blocked to
+  // prevent modifying the clipboard content.
+  bool ShouldBlockTextSelectionChanged();
 
   // Determines if there are any `drawing_stroke_state().inputs` to be drawn.
   bool HasInputsToDraw() const;
@@ -335,6 +341,31 @@ class PdfInkModule {
 
   // Shared code for the Erase methods above.
   void EraseHelper(const gfx::PointF& position, int page_index);
+
+  // Return values have the same semantics as On{Mouse,Touch}*() above.
+  bool StartTextHighlight(const gfx::PointF& position,
+                          int click_count,
+                          base::TimeTicks timestamp);
+  bool ContinueTextHighlight(const gfx::PointF& position);
+  bool FinishTextHighlight();
+
+  // Returns a highlighter stroke that matches the position and size of
+  // `selection_rect`. `selection_rect` must be in screen coordinates.
+  ink::Stroke GetHighlightStrokeFromSelectionRect(
+      const gfx::Rect& selection_rect);
+
+  // Returns the start and end point of a stroke that covers `selection_rect`
+  // with a size of `brush_size`. `brush_size` must be large enough to cover
+  // `selection_rect`'s smallest dimension. `selection_rect` must be in screen
+  // coordinates.
+  std::pair<gfx::PointF, gfx::PointF> GetPointsForTextSelectionHighlightStroke(
+      const gfx::Rect& selection_rect,
+      float brush_size);
+
+  // Converts PdfInkModuleClient's text selection to strokes and returns a
+  // mapping of 0-based page indices to a list of those strokes. See comments
+  // for `TextHighlightState::highlight_strokes`.
+  std::map<int, std::vector<ink::Stroke>> GetTextSelectionAsStrokes();
 
   // Sets `using_stylus_instead_of_touch_` to true if `tool_type` is
   // `ink::StrokeInput::ToolType::kStylus`. Otherwise do nothing.

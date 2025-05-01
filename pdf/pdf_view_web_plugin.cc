@@ -1507,6 +1507,13 @@ void PdfViewWebPlugin::DocumentFocusChanged(bool document_has_focus) {
 }
 
 void PdfViewWebPlugin::SetSelectedText(const std::string& selected_text) {
+#if BUILDFLAG(ENABLE_PDF_INK2)
+  // Ignore the selected text if `ink_module_` is currently text highlighting.
+  if (features::kPdfInk2TextHighlighting.Get() &&
+      ink_module_->ShouldBlockTextSelectionChanged()) {
+    return;
+  }
+#endif  // BUILDFLAG(ENABLE_PDF_INK2)
   selected_text_ = blink::WebString::FromUTF8(selected_text);
   client_->TextSelectionChanged(selected_text_, /*offset=*/0,
                                 gfx::Range(0, selected_text_.length()));

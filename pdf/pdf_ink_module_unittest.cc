@@ -20,6 +20,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/values_test_util.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "pdf/page_orientation.h"
 #include "pdf/pdf_features.h"
@@ -40,6 +41,7 @@
 #include "third_party/ink/src/ink/brush/brush.h"
 #include "third_party/ink/src/ink/brush/type_matchers.h"
 #include "third_party/ink/src/ink/geometry/affine_transform.h"
+#include "third_party/ink/src/ink/strokes/input/stroke_input_batch.h"
 #include "third_party/ink/src/ink/strokes/input/type_matchers.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/cursor/cursor.h"
@@ -254,6 +256,11 @@ class FakeClient : public PdfInkModuleClient {
               (int page_index, InkStrokeId id),
               (override));
 
+  MOCK_METHOD(void,
+              ExtendSelectionByPoint,
+              (const gfx::PointF& point),
+              (override));
+
   PageOrientation GetOrientation() const override { return orientation_; }
 
   MOCK_METHOD(std::vector<gfx::Rect>, GetSelectionRects, (), (override));
@@ -301,6 +308,11 @@ class FakeClient : public PdfInkModuleClient {
   MOCK_METHOD(PdfInkModuleClient::DocumentV2InkPathShapesMap,
               LoadV2InkPathsFromPdf,
               (),
+              (override));
+
+  MOCK_METHOD(void,
+              OnTextOrLinkAreaClick,
+              (const gfx::PointF& point, int click_count),
               (override));
 
   MOCK_METHOD(int, PageIndexFromPoint, (const gfx::PointF& point), (override));
@@ -3040,6 +3052,609 @@ TEST_P(PdfInkModuleMetricsTest, StrokeInputDevicePen) {
                                 StrokeMetricInputDeviceType::kPen, 2);
 }
 
+class PdfInkModuleTextHighlightTest : public PdfInkModuleStrokeTest {
+ public:
+  static constexpr gfx::Rect kHorizontalSelection{10, 15, 30, 10};
+  static constexpr gfx::Rect kVerticalSelection{10, 15, 6, 10};
+  static constexpr gfx::PointF kStartPointInsidePage0{10.0, 10.0};
+  static constexpr gfx::PointF kEndPointInsidePage0{15.0, 10.0};
+  static constexpr SkColor kOrangeColor = SkColorSetRGB(0xFF, 0x63, 0x0C);
+
+ protected:
+  // Helper method for running a simple text selection highlight test with a
+  // single selection rect on page zero.
+  void RunSingleSelectionTest(const gfx::Rect& selection_rect,
+                              base::span<const PdfInkInputData> expected_inputs,
+                              float expected_size) {
+    EnableAnnotationMode();
+    InitializeSimpleSinglePageBasicLayout();
+
+    // Select the highlighter tool with an "Orange" color.
+    TestAnnotationBrushMessageParams params = {/*color_r=*/0xFF,
+                                               /*color_g=*/0x63,
+                                               /*color_b=*/0x0C, /*size=*/6.0f};
+    SelectBrushTool(PdfInkBrush::Type::kHighlighter, params);
+
+    std::vector<gfx::Rect> selection_rects{selection_rect};
+    EXPECT_CALL(client(), GetSelectionRects())
+        .WillRepeatedly(Return(selection_rects));
+    EXPECT_CALL(client(), IsSelectableTextOrLinkArea(kStartPointInsidePage0))
+        .WillRepeatedly(Return(true));
+
+    EXPECT_CALL(client(), OnTextOrLinkAreaClick(kStartPointInsidePage0,
+                                                /*click_count=*/1));
+    EXPECT_CALL(client(), ExtendSelectionByPoint(kEndPointInsidePage0));
+
+    // Apply a text highlight stroke at the given points.
+    ApplyStrokeWithMouseAtPoints(kStartPointInsidePage0, {kEndPointInsidePage0},
+                                 kEndPointInsidePage0);
+
+    EXPECT_EQ(1, client().stroke_finished_count());
+    EXPECT_THAT(updated_ink_thumbnail_page_indices(), ElementsAre(0));
+
+    std::optional<ink::StrokeInputBatch> expected_batch =
+        CreateInkInputBatch(expected_inputs);
+    ASSERT_TRUE(expected_batch.has_value());
+
+    std::map<int, std::vector<raw_ref<const ink::Stroke>>> collected_strokes =
+        CollectVisibleStrokes(ink_module().GetVisibleStrokesIterator());
+    const PdfInkBrush expected_brush(PdfInkBrush::Type::kHighlighter,
+                                     kOrangeColor, expected_size);
+    EXPECT_THAT(
+        collected_strokes,
+        ElementsAre(Pair(0, Pointwise(InkStrokeEq(expected_brush.ink_brush()),
+                                      {expected_batch.value()}))));
+
+    // The current brush should remain a highlighter.
+    const PdfInkBrush* brush = ink_module().GetPdfInkBrushForTesting();
+    ASSERT_TRUE(brush);
+    const ink::Brush& ink_brush = brush->ink_brush();
+    ASSERT_EQ(1u, ink_brush.CoatCount());
+    const ink::BrushCoat& coat = ink_brush.GetCoats()[0];
+
+    EXPECT_EQ(kOrangeColor, GetSkColorFromInkBrush(ink_brush));
+    EXPECT_EQ(6.0f, ink_brush.GetSize());
+    EXPECT_EQ(0.4f, coat.tip.opacity_multiplier);
+  }
+
+  void ClickTextAtPoint(const gfx::PointF& point, int click_count) {
+    EXPECT_CALL(client(), IsSelectableTextOrLinkArea(_))
+        .WillRepeatedly(Return(true));
+
+    blink::WebMouseEvent mouse_down_event =
+        MouseEventBuilder()
+            .CreateLeftClickAtPosition(point)
+            .SetClickCount(click_count)
+            .Build();
+    EXPECT_TRUE(ink_module().HandleInputEvent(mouse_down_event));
+
+    // Do not create a mouse move event, as it would reset the click count.
+
+    blink::WebMouseEvent mouse_up_event =
+        MouseEventBuilder().CreateLeftMouseUpAtPosition(point).Build();
+    EXPECT_TRUE(ink_module().HandleInputEvent(mouse_up_event));
+  }
+};
+
+TEST_P(PdfInkModuleTextHighlightTest, PenDoesNotSelectText) {
+  EnableAnnotationMode();
+  InitializeSimpleSinglePageBasicLayout();
+
+  // Select the pen tool with a "Light Red" color.
+  TestAnnotationBrushMessageParams params = {/*color_r=*/0xF2, /*color_g=*/0x8B,
+                                             /*color_b=*/0x82, /*size=*/6.0f};
+  SelectBrushTool(PdfInkBrush::Type::kPen, params);
+
+  EXPECT_CALL(client(), GetSelectionRects()).Times(0);
+  EXPECT_CALL(client(), IsSelectableTextOrLinkArea(kStartPointInsidePage0))
+      .WillRepeatedly(Return(true));
+
+  EXPECT_CALL(client(), OnTextOrLinkAreaClick(_, _)).Times(0);
+  EXPECT_CALL(client(), ExtendSelectionByPoint(_)).Times(0);
+
+  // Apply a pen stroke at the given points.
+  ApplyStrokeWithMouseAtPoints(kStartPointInsidePage0, {kEndPointInsidePage0},
+                               kEndPointInsidePage0);
+
+  EXPECT_EQ(1, client().stroke_finished_count());
+  EXPECT_THAT(updated_ink_thumbnail_page_indices(), ElementsAre(0));
+
+  // The stroke inputs should match exactly.
+  std::optional<ink::StrokeInputBatch> expected_batch =
+      CreateInkInputBatch({PdfInkInputData(kStartPointInsidePage0),
+                           PdfInkInputData(kEndPointInsidePage0)});
+  ASSERT_TRUE(expected_batch.has_value());
+
+  std::map<int, std::vector<raw_ref<const ink::Stroke>>> collected_strokes =
+      CollectVisibleStrokes(ink_module().GetVisibleStrokesIterator());
+
+  // The stroke should be a pen stroke.
+  const PdfInkBrush* brush = ink_module().GetPdfInkBrushForTesting();
+  ASSERT_TRUE(brush);
+
+  EXPECT_THAT(collected_strokes,
+              ElementsAre(Pair(0, Pointwise(InkStrokeEq(brush->ink_brush()),
+                                            {expected_batch.value()}))));
+}
+
+TEST_P(PdfInkModuleTextHighlightTest, SingleHorizontalSelection) {
+  RunSingleSelectionTest(
+      /*selection_rect=*/kHorizontalSelection,
+      /*expected_inputs=*/
+      {PdfInkInputData(gfx::PointF(15.0, 20.0)),
+       PdfInkInputData(gfx::PointF(35.0, 20.0))},
+      /*expected_size=*/10.0);
+}
+
+TEST_P(PdfInkModuleTextHighlightTest, SingleVerticalSelection) {
+  RunSingleSelectionTest(
+      /*selection_rect=*/kVerticalSelection,
+      /*expected_inputs=*/
+      {PdfInkInputData(gfx::PointF(13.0, 18.0)),
+       PdfInkInputData(gfx::PointF(13.0, 22.0))},
+      /*expected_size=*/6.0);
+}
+
+TEST_P(PdfInkModuleTextHighlightTest, SingleSquareSelection) {
+  RunSingleSelectionTest(
+      /*selection_rect=*/gfx::Rect(10, 15, 12, 12),
+      /*expected_inputs=*/
+      {PdfInkInputData(gfx::PointF(16.0, 21.0))},
+      /*expected_size=*/12.0);
+}
+
+TEST_P(PdfInkModuleTextHighlightTest,
+       SingleHorizontalSelectionRotatedClockwise90) {
+  client().set_orientation(PageOrientation::kClockwise90);
+  RunSingleSelectionTest(
+      /*selection_rect=*/kHorizontalSelection,
+      /*expected_inputs=*/
+      {PdfInkInputData(gfx::PointF(20.0, 14.0)),
+       PdfInkInputData(gfx::PointF(20.0, 34.0))},
+      /*expected_size=*/10.0);
+}
+
+TEST_P(PdfInkModuleTextHighlightTest,
+       SingleVerticalSelectionRotatedClockwise90) {
+  client().set_orientation(PageOrientation::kClockwise90);
+  RunSingleSelectionTest(
+      /*selection_rect=*/kVerticalSelection,
+      /*expected_inputs=*/
+      {PdfInkInputData(gfx::PointF(18.0, 36.0)),
+       PdfInkInputData(gfx::PointF(22.0, 36.0))},
+      /*expected_size=*/6.0);
+}
+
+TEST_P(PdfInkModuleTextHighlightTest,
+       SingleHorizontalSelectionRotatedClockwise180) {
+  client().set_orientation(PageOrientation::kClockwise180);
+  RunSingleSelectionTest(
+      /*selection_rect=*/kHorizontalSelection,
+      /*expected_inputs=*/
+      {PdfInkInputData(gfx::PointF(14.0, 39.0)),
+       PdfInkInputData(gfx::PointF(34.0, 39.0))},
+      /*expected_size=*/10.0);
+}
+
+TEST_P(PdfInkModuleTextHighlightTest,
+       SingleVerticalSelectionRotatedClockwise180) {
+  client().set_orientation(PageOrientation::kClockwise180);
+  RunSingleSelectionTest(
+      /*selection_rect=*/kVerticalSelection,
+      /*expected_inputs=*/
+      {PdfInkInputData(gfx::PointF(36.0, 37.0)),
+       PdfInkInputData(gfx::PointF(36.0, 41.0))},
+      /*expected_size=*/6.0);
+}
+
+TEST_P(PdfInkModuleTextHighlightTest,
+       SingleHorizontalSelectionRotatedClockwise270) {
+  client().set_orientation(PageOrientation::kClockwise270);
+  RunSingleSelectionTest(
+      /*selection_rect=*/kHorizontalSelection,
+      /*expected_inputs=*/
+      {PdfInkInputData(gfx::PointF(39.0, 15.0)),
+       PdfInkInputData(gfx::PointF(39.0, 35.0))},
+      /*expected_size=*/10.0);
+}
+
+TEST_P(PdfInkModuleTextHighlightTest,
+       SingleVerticalSelectionRotatedClockwise270) {
+  client().set_orientation(PageOrientation::kClockwise270);
+  RunSingleSelectionTest(
+      /*selection_rect=*/kVerticalSelection,
+      /*expected_inputs=*/
+      {PdfInkInputData(gfx::PointF(37.0, 13.0)),
+       PdfInkInputData(gfx::PointF(41.0, 13.0))},
+      /*expected_size=*/6.0);
+}
+
+TEST_P(PdfInkModuleTextHighlightTest, SingleSelectionZoomedIn) {
+  EnableAnnotationMode();
+  InitializeSimpleSinglePageBasicLayout();
+  client().set_zoom(2.0f);
+
+  RunSingleSelectionTest(
+      /*selection_rect=*/kHorizontalSelection,
+      /*expected_inputs=*/
+      {PdfInkInputData(gfx::PointF(7.5, 10.0)),
+       PdfInkInputData(gfx::PointF(17.5, 10.0))},
+      /*expected_size=*/5.0);
+}
+
+TEST_P(PdfInkModuleTextHighlightTest, SingleSelectionZoomedOut) {
+  EnableAnnotationMode();
+  InitializeSimpleSinglePageBasicLayout();
+  client().set_zoom(0.5f);
+
+  RunSingleSelectionTest(
+      /*selection_rect=*/kHorizontalSelection,
+      /*expected_inputs=*/
+      {PdfInkInputData(gfx::PointF(30.0, 40.0)),
+       PdfInkInputData(gfx::PointF(70.0, 40.0))},
+      /*expected_size=*/20.0);
+}
+
+TEST_P(PdfInkModuleTextHighlightTest, MultipleSelection) {
+  EnableAnnotationMode();
+  InitializeSimpleSinglePageBasicLayout();
+
+  // Select the highlighter tool with an "Orange" color.
+  TestAnnotationBrushMessageParams params = {/*color_r=*/0xFF,
+                                             /*color_g=*/0x63,
+                                             /*color_b=*/0x0C, /*size=*/6.0f};
+  SelectBrushTool(PdfInkBrush::Type::kHighlighter, params);
+
+  constexpr gfx::Rect kHorizontalSelection2{15, 25, 10, 5};
+  std::vector<gfx::Rect> selection_rects{kHorizontalSelection,
+                                         kHorizontalSelection2};
+  EXPECT_CALL(client(), GetSelectionRects())
+      .WillRepeatedly(Return(selection_rects));
+  EXPECT_CALL(client(), IsSelectableTextOrLinkArea(kStartPointInsidePage0))
+      .WillRepeatedly(Return(true));
+
+  EXPECT_CALL(client(), OnTextOrLinkAreaClick(kStartPointInsidePage0,
+                                              /*click_count=*/1));
+  constexpr gfx::PointF kEndPoint2InsidePage0{25.0, 30.0};
+  EXPECT_CALL(client(), ExtendSelectionByPoint(kEndPoint2InsidePage0));
+
+  // Apply a text highlight stroke at the given points.
+  ApplyStrokeWithMouseAtPoints(kStartPointInsidePage0, {kEndPoint2InsidePage0},
+                               kEndPoint2InsidePage0);
+
+  EXPECT_EQ(1, client().stroke_finished_count());
+  EXPECT_THAT(updated_ink_thumbnail_page_indices(), ElementsAre(0));
+
+  std::optional<ink::StrokeInputBatch> expected_selection0_batch =
+      CreateInkInputBatch({PdfInkInputData(gfx::PointF(15.0, 20.0)),
+                           PdfInkInputData(gfx::PointF(35.0, 20.0))});
+  ASSERT_TRUE(expected_selection0_batch.has_value());
+  std::optional<ink::StrokeInputBatch> expected_selection1_batch =
+      CreateInkInputBatch({PdfInkInputData(gfx::PointF(17.5, 27.0)),
+                           PdfInkInputData(gfx::PointF(22.5, 27.0))});
+  ASSERT_TRUE(expected_selection1_batch.has_value());
+
+  std::map<int, std::vector<raw_ref<const ink::Stroke>>> collected_strokes =
+      CollectVisibleStrokes(ink_module().GetVisibleStrokesIterator());
+  ASSERT_EQ(1u, collected_strokes.size());
+
+  std::vector<raw_ref<const ink::Stroke>>& strokes_on_page0 =
+      collected_strokes[0];
+  ASSERT_EQ(2u, strokes_on_page0.size());
+
+  const PdfInkBrush expected_selection0_brush(PdfInkBrush::Type::kHighlighter,
+                                              kOrangeColor, /*size=*/10.0f);
+
+  raw_ref<const ink::Stroke> actual_selection0 = strokes_on_page0[0];
+  EXPECT_THAT(actual_selection0->GetBrush(),
+              ink::BrushEq(expected_selection0_brush.ink_brush()));
+  EXPECT_THAT(actual_selection0->GetInputs(),
+              ink::StrokeInputBatchEq(expected_selection0_batch.value()));
+
+  const PdfInkBrush expected_selection1_brush(PdfInkBrush::Type::kHighlighter,
+                                              kOrangeColor, /*size=*/5.0f);
+
+  raw_ref<const ink::Stroke> actual_selection1 = strokes_on_page0[1];
+  EXPECT_THAT(actual_selection1->GetBrush(),
+              ink::BrushEq(expected_selection1_brush.ink_brush()));
+  EXPECT_THAT(actual_selection1->GetInputs(),
+              ink::StrokeInputBatchEq(expected_selection1_batch.value()));
+}
+
+TEST_P(PdfInkModuleTextHighlightTest, OneClickCount) {
+  EnableAnnotationMode();
+  InitializeSimpleSinglePageBasicLayout();
+
+  // Select the highlighter tool with an "Orange" color.
+  TestAnnotationBrushMessageParams params = {/*color_r=*/0xFF,
+                                             /*color_g=*/0x63,
+                                             /*color_b=*/0x0C, /*size=*/6.0};
+  SelectBrushTool(PdfInkBrush::Type::kHighlighter, params);
+
+  // There will be no text selection rects.
+  std::vector<gfx::Rect> selection_rects{};
+  EXPECT_CALL(client(), GetSelectionRects()).WillOnce(Return(selection_rects));
+  EXPECT_CALL(client(), IsSelectableTextOrLinkArea(kStartPointInsidePage0))
+      .WillRepeatedly(Return(true));
+
+  EXPECT_CALL(client(), OnTextOrLinkAreaClick(kStartPointInsidePage0,
+                                              /*click_count=*/1));
+  EXPECT_CALL(client(), ExtendSelectionByPoint(_)).Times(0);
+
+  ClickTextAtPoint(kStartPointInsidePage0, /*click_count=*/1);
+
+  EXPECT_EQ(0, client().stroke_finished_count());
+  EXPECT_TRUE(updated_ink_thumbnail_page_indices().empty());
+
+  std::map<int, std::vector<raw_ref<const ink::Stroke>>> collected_strokes =
+      CollectVisibleStrokes(ink_module().GetVisibleStrokesIterator());
+  EXPECT_TRUE(collected_strokes.empty());
+}
+
+TEST_P(PdfInkModuleTextHighlightTest, TwoClickCount) {
+  EnableAnnotationMode();
+  InitializeSimpleSinglePageBasicLayout();
+
+  // Select the highlighter tool with an "Orange" color.
+  TestAnnotationBrushMessageParams params = {/*color_r=*/0xFF,
+                                             /*color_g=*/0x63,
+                                             /*color_b=*/0x0C, /*size=*/6.0};
+  SelectBrushTool(PdfInkBrush::Type::kHighlighter, params);
+
+  ClickTextAtPoint(kStartPointInsidePage0, /*click_count=*/1);
+
+  // The second text click will select the word.
+  std::vector<gfx::Rect> selection_rects{kHorizontalSelection};
+  EXPECT_CALL(client(), GetSelectionRects()).WillOnce(Return(selection_rects));
+  EXPECT_CALL(client(), IsSelectableTextOrLinkArea(kStartPointInsidePage0))
+      .WillRepeatedly(Return(true));
+
+  EXPECT_CALL(client(), OnTextOrLinkAreaClick(kStartPointInsidePage0,
+                                              /*click_count=*/2));
+  EXPECT_CALL(client(), ExtendSelectionByPoint(_)).Times(0);
+
+  ClickTextAtPoint(kStartPointInsidePage0, /*click_count=*/2);
+
+  EXPECT_EQ(1, client().stroke_finished_count());
+  EXPECT_THAT(updated_ink_thumbnail_page_indices(), ElementsAre(0));
+
+  std::optional<ink::StrokeInputBatch> expected_batch =
+      CreateInkInputBatch({PdfInkInputData(gfx::PointF(15.0, 20.0)),
+                           PdfInkInputData(gfx::PointF(35.0, 20.0))});
+  ASSERT_TRUE(expected_batch.has_value());
+
+  std::map<int, std::vector<raw_ref<const ink::Stroke>>> collected_strokes =
+      CollectVisibleStrokes(ink_module().GetVisibleStrokesIterator());
+  const PdfInkBrush expected_brush(PdfInkBrush::Type::kHighlighter,
+                                   kOrangeColor,
+                                   /*size=*/10.0f);
+  EXPECT_THAT(
+      collected_strokes,
+      ElementsAre(Pair(0, Pointwise(InkStrokeEq(expected_brush.ink_brush()),
+                                    {expected_batch.value()}))));
+}
+
+TEST_P(PdfInkModuleTextHighlightTest, ThreeClickCount) {
+  EnableAnnotationMode();
+  InitializeSimpleSinglePageBasicLayout();
+
+  // Select the highlighter tool with an "Orange" color.
+  TestAnnotationBrushMessageParams params = {/*color_r=*/0xFF,
+                                             /*color_g=*/0x63,
+                                             /*color_b=*/0x0C, /*size=*/6.0};
+  SelectBrushTool(PdfInkBrush::Type::kHighlighter, params);
+
+  ClickTextAtPoint(kStartPointInsidePage0, /*click_count=*/1);
+
+  std::vector<gfx::Rect> two_click_selection_rects{kHorizontalSelection};
+  EXPECT_CALL(client(), GetSelectionRects())
+      .WillOnce(Return(two_click_selection_rects));
+  ClickTextAtPoint(kStartPointInsidePage0, /*click_count=*/2);
+
+  // The third text click will remove the original word text highlight and
+  // select the line.
+  std::vector<gfx::Rect> three_click_selection_rects{gfx::Rect(5, 15, 45, 12)};
+  EXPECT_CALL(client(), GetSelectionRects())
+      .WillOnce(Return(three_click_selection_rects));
+  EXPECT_CALL(client(), IsSelectableTextOrLinkArea(kStartPointInsidePage0))
+      .WillRepeatedly(Return(true));
+
+  EXPECT_CALL(client(), OnTextOrLinkAreaClick(kStartPointInsidePage0,
+                                              /*click_count=*/3));
+  EXPECT_CALL(client(), ExtendSelectionByPoint(_)).Times(0);
+
+  ClickTextAtPoint(kStartPointInsidePage0, /*click_count=*/3);
+
+  // Two strokes: one from the two click rect and another from the three click
+  // rect.
+  // Three ink thumbnail updates: one from the two click rect, one from the
+  // undo, and another from the three click rect.
+  EXPECT_EQ(2, client().stroke_finished_count());
+  EXPECT_THAT(updated_ink_thumbnail_page_indices(), ElementsAre(0, 0, 0));
+
+  std::optional<ink::StrokeInputBatch> expected_batch =
+      CreateInkInputBatch({PdfInkInputData(gfx::PointF(11.0, 21.0)),
+                           PdfInkInputData(gfx::PointF(44.0, 21.0))});
+  ASSERT_TRUE(expected_batch.has_value());
+
+  std::map<int, std::vector<raw_ref<const ink::Stroke>>> collected_strokes =
+      CollectVisibleStrokes(ink_module().GetVisibleStrokesIterator());
+  const PdfInkBrush expected_brush(PdfInkBrush::Type::kHighlighter,
+                                   kOrangeColor,
+                                   /*size=*/12.0f);
+  EXPECT_THAT(
+      collected_strokes,
+      ElementsAre(Pair(0, Pointwise(InkStrokeEq(expected_brush.ink_brush()),
+                                    {expected_batch.value()}))));
+}
+
+TEST_P(PdfInkModuleTextHighlightTest, MouseUpOnNonSelection) {
+  EnableAnnotationMode();
+  InitializeSimpleSinglePageBasicLayout();
+
+  // Select the highlighter tool with an "Orange" color.
+  TestAnnotationBrushMessageParams params = {/*color_r=*/0xFF,
+                                             /*color_g=*/0x63,
+                                             /*color_b=*/0x0C, /*size=*/6.0f};
+  SelectBrushTool(PdfInkBrush::Type::kHighlighter, params);
+
+  // Start in a text area.
+  EXPECT_CALL(client(), IsSelectableTextOrLinkArea(_)).WillOnce(Return(true));
+
+  EXPECT_CALL(client(), OnTextOrLinkAreaClick(kStartPointInsidePage0,
+                                              /*click_count=*/1));
+
+  blink::WebMouseEvent mouse_down_event =
+      MouseEventBuilder()
+          .CreateLeftClickAtPosition(kStartPointInsidePage0)
+          .Build();
+  EXPECT_TRUE(ink_module().HandleInputEvent(mouse_down_event));
+
+  VerifyAndClearExpectations();
+
+  // Move and end in a non-text area. Make the mock selection rect smaller than
+  // the distance between the mousedown and mouseup points.
+  constexpr gfx::Rect kSmallHorizontalSelection{10, 15, 2, 10};
+  std::vector<gfx::Rect> selection_rects{kSmallHorizontalSelection};
+  EXPECT_CALL(client(), GetSelectionRects())
+      .WillRepeatedly(Return(selection_rects));
+  EXPECT_CALL(client(), IsSelectableTextOrLinkArea(kEndPointInsidePage0))
+      .WillRepeatedly(Return(false));
+
+  EXPECT_CALL(client(), ExtendSelectionByPoint(kEndPointInsidePage0));
+
+  blink::WebMouseEvent mouse_move_event =
+      CreateMouseMoveWithLeftButtonEventAtPoint(kEndPointInsidePage0);
+  EXPECT_TRUE(ink_module().HandleInputEvent(mouse_move_event));
+
+  blink::WebMouseEvent mouse_up_event =
+      MouseEventBuilder()
+          .CreateLeftMouseUpAtPosition(kEndPointInsidePage0)
+          .Build();
+  EXPECT_TRUE(ink_module().HandleInputEvent(mouse_up_event));
+
+  EXPECT_EQ(1, client().stroke_finished_count());
+  EXPECT_THAT(updated_ink_thumbnail_page_indices(), ElementsAre(0));
+
+  std::optional<ink::StrokeInputBatch> expected_batch =
+      CreateInkInputBatch({PdfInkInputData(gfx::PointF(11.0, 16.0)),
+                           PdfInkInputData(gfx::PointF(11.0, 24.0))});
+  ASSERT_TRUE(expected_batch.has_value());
+
+  std::map<int, std::vector<raw_ref<const ink::Stroke>>> collected_strokes =
+      CollectVisibleStrokes(ink_module().GetVisibleStrokesIterator());
+  const PdfInkBrush expected_brush(PdfInkBrush::Type::kHighlighter,
+                                   kOrangeColor,
+                                   /*size=*/2.0f);
+  EXPECT_THAT(
+      collected_strokes,
+      ElementsAre(Pair(0, Pointwise(InkStrokeEq(expected_brush.ink_brush()),
+                                    {expected_batch.value()}))));
+}
+
+TEST_P(PdfInkModuleTextHighlightTest, MultiplePages) {
+  EnableAnnotationMode();
+  InitializeVerticalTwoPageLayout();
+
+  // Select the highlighter tool with an "Orange" color.
+  TestAnnotationBrushMessageParams params = {/*color_r=*/0xFF,
+                                             /*color_g=*/0x63,
+                                             /*color_b=*/0x0C, /*size=*/6.0f};
+  SelectBrushTool(PdfInkBrush::Type::kHighlighter, params);
+
+  // Start on page 0.
+  EXPECT_CALL(client(), IsSelectableTextOrLinkArea(_))
+      .WillRepeatedly(Return(true));
+
+  EXPECT_CALL(client(), OnTextOrLinkAreaClick(kStartPointInsidePage0,
+                                              /*click_count=*/1));
+
+  blink::WebMouseEvent mouse_down_event =
+      MouseEventBuilder()
+          .CreateLeftClickAtPosition(kStartPointInsidePage0)
+          .Build();
+  EXPECT_TRUE(ink_module().HandleInputEvent(mouse_down_event));
+
+  // Move to page 1. Select rects from both pages.
+  constexpr gfx::Rect kHorizontalSelectionInPage1{10, 75, 15, 14};
+  std::vector<gfx::Rect> selection_rects{kHorizontalSelection,
+                                         kHorizontalSelectionInPage1};
+  EXPECT_CALL(client(), GetSelectionRects())
+      .WillRepeatedly(Return(selection_rects));
+  EXPECT_CALL(client(),
+              PageIndexFromPoint(gfx::PointF(kHorizontalSelection.origin())))
+      .WillRepeatedly(Return(0));
+  EXPECT_CALL(client(), PageIndexFromPoint(
+                            gfx::PointF(kHorizontalSelectionInPage1.origin())))
+      .WillRepeatedly(Return(1));
+
+  EXPECT_CALL(client(),
+              ExtendSelectionByPoint(kTwoPageVerticalLayoutPoint1InsidePage1));
+
+  blink::WebMouseEvent mouse_move_event =
+      CreateMouseMoveWithLeftButtonEventAtPoint(
+          kTwoPageVerticalLayoutPoint1InsidePage1);
+  EXPECT_TRUE(ink_module().HandleInputEvent(mouse_move_event));
+
+  blink::WebMouseEvent mouse_up_event =
+      MouseEventBuilder()
+          .CreateLeftMouseUpAtPosition(kTwoPageVerticalLayoutPoint1InsidePage1)
+          .Build();
+  EXPECT_TRUE(ink_module().HandleInputEvent(mouse_up_event));
+
+  // All the selection strokes are considered one stroke.
+  EXPECT_EQ(1, client().stroke_finished_count());
+  EXPECT_THAT(updated_ink_thumbnail_page_indices(), ElementsAre(0, 1));
+
+  std::optional<ink::StrokeInputBatch> expected_page0_batch =
+      CreateInkInputBatch({PdfInkInputData(gfx::PointF(10.0, 15.0)),
+                           PdfInkInputData(gfx::PointF(30.0, 15.0))});
+  ASSERT_TRUE(expected_page0_batch.has_value());
+  std::optional<ink::StrokeInputBatch> expected_page1_batch =
+      CreateInkInputBatch({PdfInkInputData(gfx::PointF(12.0, 12.0)),
+                           PdfInkInputData(gfx::PointF(13.0, 12.0))});
+  ASSERT_TRUE(expected_page1_batch.has_value());
+
+  std::map<int, std::vector<raw_ref<const ink::Stroke>>> collected_strokes =
+      CollectVisibleStrokes(ink_module().GetVisibleStrokesIterator());
+
+  const PdfInkBrush expected_page0_brush(PdfInkBrush::Type::kHighlighter,
+                                         kOrangeColor, /*size=*/10.0f);
+  const PdfInkBrush expected_page1_brush(PdfInkBrush::Type::kHighlighter,
+                                         kOrangeColor, /*size=*/14.0f);
+  EXPECT_THAT(
+      collected_strokes,
+      ElementsAre(
+          Pair(0, Pointwise(InkStrokeEq(expected_page0_brush.ink_brush()),
+                            {expected_page0_batch.value()})),
+          Pair(1, Pointwise(InkStrokeEq(expected_page1_brush.ink_brush()),
+                            {expected_page1_batch.value()}))));
+}
+
+TEST_P(PdfInkModuleTextHighlightTest,
+       StrokeMissedEndEventThenMouseMoveDuringTextSelecting) {
+  EnableAnnotationMode();
+  InitializeSimpleSinglePageBasicLayout();
+
+  // Select the highlighter tool with an "Orange" color.
+  TestAnnotationBrushMessageParams params = {/*color_r=*/0xFF,
+                                             /*color_g=*/0x63,
+                                             /*color_b=*/0x0C, /*size=*/6.0f};
+  SelectBrushTool(PdfInkBrush::Type::kHighlighter, params);
+
+  std::vector<gfx::Rect> selection_rects{gfx::Rect(9, 14, 5, 10)};
+  EXPECT_CALL(client(), GetSelectionRects())
+      .WillRepeatedly(Return(selection_rects));
+  EXPECT_CALL(client(), IsSelectableTextOrLinkArea(kMouseDownPoint))
+      .WillRepeatedly(Return(true));
+
+  // There should not be any text selection extension after the miss, as the
+  // initial text selection has been terminated.
+  EXPECT_CALL(client(), ExtendSelectionByPoint(_)).Times(0);
+
+  RunStrokeMissedEndEventThenMouseMoveTest();
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          PdfInkModuleTest,
                          testing::ValuesIn(GetAllInkTestVariations()));
@@ -3055,5 +3670,9 @@ INSTANTIATE_TEST_SUITE_P(All,
 INSTANTIATE_TEST_SUITE_P(All,
                          PdfInkModuleMetricsTest,
                          testing::ValuesIn(GetAllInkTestVariations()));
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    PdfInkModuleTextHighlightTest,
+    testing::ValuesIn(GetInkTestVariationsWithTextHighlighting()));
 
 }  // namespace chrome_pdf

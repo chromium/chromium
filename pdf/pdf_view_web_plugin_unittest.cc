@@ -3290,6 +3290,54 @@ TEST_P(PdfViewWebPluginInkTest, DrawInProgressStroke) {
       /*end_position=*/gfx::PointF(50, 45));
 }
 
+class PdfViewWebPluginInkTextHighlightTest : public PdfViewWebPluginInkTest {
+ public:
+  static constexpr gfx::PointF kStartTextPosition{55.0f, 60.0f};
+  static constexpr gfx::PointF kEndTextPosition{75.0f, 65.0f};
+
+  // Sets up test expectations for clicking on `kStartTextPosition` and moving
+  // to `kEndTextPosition` with a mouse.
+  void SetUpMouseDownMoveTextTestExpectations() {
+    // The start position and end position are in screen coordinates, while the
+    // values passed to and returned from PDFiumEngine are in device
+    // coordinates.
+    EXPECT_CALL(*engine_ptr_, OnTextOrLinkAreaClick(gfx::PointF(5, 60), 1));
+    EXPECT_CALL(*engine_ptr_, ExtendSelectionByPoint(gfx::PointF(25, 65)));
+    std::vector<gfx::Rect> mock_selection_rects = {gfx::Rect(5, 60, 20, 5)};
+    ON_CALL(*engine_ptr_, GetSelectionRects())
+        .WillByDefault(Return(mock_selection_rects));
+    ON_CALL(*engine_ptr_, IsSelectableTextOrLinkArea(_))
+        .WillByDefault(Return(true));
+  }
+};
+
+TEST_P(PdfViewWebPluginInkTextHighlightTest, SelectionDoesNotChange) {
+  UpdatePluginGeometry(/*device_scale=*/1.0f, gfx::Rect(kCanvasSize));
+
+  // Enter annotation mode and select the highlighter.
+  plugin_->OnMessage(CreateSetAnnotationModeMessageForTesting(/*enable=*/true));
+  TestAnnotationBrushMessageParams message_params{/*color_r=*/240,
+                                                  /*color_g=*/133,
+                                                  /*color_b=*/0, /*size=*/4.5};
+  plugin_->OnMessage(CreateSetAnnotationBrushMessageForTesting(
+      "highlighter", &message_params));
+
+  SetUpMouseDownMoveTextTestExpectations();
+  TestSendInputEvent(
+      MouseEventBuilder().CreateLeftClickAtPosition(kStartTextPosition).Build(),
+      blink::WebInputEventResult::kHandledApplication);
+  TestSendInputEvent(MouseEventBuilder()
+                         .SetType(blink::WebInputEvent::Type::kMouseMove)
+                         .SetPosition(kEndTextPosition)
+                         .SetButton(blink::WebPointerProperties::Button::kLeft)
+                         .Build(),
+                     blink::WebInputEventResult::kHandledApplication);
+
+  EXPECT_CALL(*client_ptr_, TextSelectionChanged(_, _, _)).Times(0);
+
+  plugin_->SetSelectedText("text");
+}
+
 class PdfViewWebPluginInk2SaveTest : public PdfViewWebPluginSaveTest {
  private:
   base::test::ScopedFeatureList feature_list_{features::kPdfInk2};
@@ -3409,6 +3457,10 @@ INSTANTIATE_TEST_SUITE_P(All,
 INSTANTIATE_TEST_SUITE_P(All,
                          PdfViewWebPluginInkMetricTest,
                          testing::ValuesIn(GetAllInkTestVariations()));
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    PdfViewWebPluginInkTextHighlightTest,
+    testing::ValuesIn(GetInkTestVariationsWithTextHighlighting()));
 #endif  // BUILDFLAG(ENABLE_PDF_INK2)
 
 }  // namespace chrome_pdf

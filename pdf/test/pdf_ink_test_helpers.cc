@@ -33,6 +33,13 @@ constexpr auto kInkTestVariations = std::to_array<InkTestVariation>({
     kInkTestVariationTextHighlightingAndAnnotations,
 });
 
+// Variations of Ink tests with text highlighting enabled.
+constexpr auto kInkTestVariationsWithTextHighlighting =
+    std::to_array<InkTestVariation>({
+        kInkTestVariationTextHighlighting,
+        kInkTestVariationTextHighlightingAndAnnotations,
+    });
+
 }  // namespace
 
 std::optional<ink::StrokeInputBatch> CreateInkInputBatch(
@@ -95,6 +102,10 @@ base::FilePath GetInkTestDataFilePath(base::FilePath::StringViewType filename) {
 
 base::span<const InkTestVariation> GetAllInkTestVariations() {
   return kInkTestVariations;
+}
+
+base::span<const InkTestVariation> GetInkTestVariationsWithTextHighlighting() {
+  return kInkTestVariationsWithTextHighlighting;
 }
 
 }  // namespace chrome_pdf

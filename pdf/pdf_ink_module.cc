@@ -27,6 +27,7 @@
 #include "pdf/draw_utils/page_boundary_intersect.h"
 #include "pdf/input_utils.h"
 #include "pdf/message_util.h"
+#include "pdf/page_orientation.h"
 #include "pdf/pdf_features.h"
 #include "pdf/pdf_ink_brush.h"
 #include "pdf/pdf_ink_conversions.h"
@@ -53,6 +54,8 @@
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/cursor/cursor.h"
+#include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -159,6 +162,10 @@ PdfInkModule::PdfInkModule(PdfInkModuleClient& client)
 }
 
 PdfInkModule::~PdfInkModule() = default;
+
+bool PdfInkModule::ShouldBlockTextSelectionChanged() {
+  return is_text_highlighting();
+}
 
 bool PdfInkModule::HasInputsToDraw() const {
   // TODO(crbug.com/342445982): Handle text highlighting inputs.
@@ -404,6 +411,7 @@ bool PdfInkModule::OnMouseDown(const blink::WebMouseEvent& event) {
     return false;
   }
 
+  gfx::PointF position = normalized_event.PositionInWidget();
   if (is_drawing_stroke()) {
     DrawingStrokeState& state = drawing_stroke_state();
     if (state.start_time.has_value()) {
@@ -414,8 +422,14 @@ bool PdfInkModule::OnMouseDown(const blink::WebMouseEvent& event) {
           input_last_event.position, input_last_event.timestamp));
       CHECK(mouse_up_result);
     }
+
+    if (features::kPdfInk2TextHighlighting.Get() &&
+        state.brush_type == PdfInkBrush::Type::kHighlighter &&
+        client_->IsSelectableTextOrLinkArea(position)) {
+      return StartTextHighlight(position, event.ClickCount(),
+                                event.TimeStamp());
+    }
   }
-  gfx::PointF position = normalized_event.PositionInWidget();
   return is_drawing_stroke()
              ? StartStroke(position, event.TimeStamp(),
                            ink::StrokeInput::ToolType::kMouse)
@@ -429,6 +443,10 @@ bool PdfInkModule::OnMouseUp(const blink::WebMouseEvent& event) {
     return false;
   }
 
+  if (features::kPdfInk2TextHighlighting.Get() && is_text_highlighting()) {
+    return FinishTextHighlight();
+  }
+
   gfx::PointF position = event.PositionInWidget();
   return is_drawing_stroke()
              ? FinishStroke(position, event.TimeStamp(),
@@ -439,10 +457,17 @@ bool PdfInkModule::OnMouseUp(const blink::WebMouseEvent& event) {
 bool PdfInkModule::OnMouseMove(const blink::WebMouseEvent& event) {
   CHECK(enabled());
 
+  // TODO(crbug.com/342445982): Set the cursor for hovering over text with the
+  // highlighter brush while not drawing.
+
   gfx::PointF position = event.PositionInWidget();
   bool still_interacting_with_ink =
       event.GetModifiers() & blink::WebInputEvent::kLeftButtonDown;
   if (still_interacting_with_ink) {
+    if (features::kPdfInk2TextHighlighting.Get() && is_text_highlighting()) {
+      return ContinueTextHighlight(position);
+    }
+
     return is_drawing_stroke()
                ? ContinueStroke(position, event.TimeStamp(),
                                 ink::StrokeInput::ToolType::kMouse)
@@ -465,6 +490,13 @@ bool PdfInkModule::OnMouseMove(const blink::WebMouseEvent& event) {
         state.input_last_event.value();
     return OnMouseUp(GenerateLeftMouseUpEvent(input_last_event.position,
                                               input_last_event.timestamp));
+  }
+
+  if (features::kPdfInk2TextHighlighting.Get() && is_text_highlighting()) {
+    // Mouse up event does not modify the text selection, so the position does
+    // not matter here.
+    return OnMouseUp(
+        GenerateLeftMouseUpEvent(gfx::PointF(), base::TimeTicks::Now()));
   }
 
   CHECK(is_erasing_stroke());
@@ -492,6 +524,8 @@ bool PdfInkModule::OnTouchStart(const blink::WebTouchEvent& event) {
   if (ShouldIgnoreTouchInput(tool_type)) {
     return false;
   }
+
+  // TODO(crbug.com/342445982): Handle text selection for touch.
 
   gfx::PointF position = event.touches[0].PositionInWidget();
   return is_drawing_stroke()
@@ -890,6 +924,179 @@ void PdfInkModule::EraseHelper(const gfx::PointF& position, int page_index) {
   if (erased_partitioned_mesh) {
     state.page_indices_with_partitioned_mesh_erasures.insert(page_index);
   }
+}
+
+bool PdfInkModule::StartTextHighlight(const gfx::PointF& position,
+                                      int click_count,
+                                      base::TimeTicks timestamp) {
+  current_tool_state_.emplace<TextHighlightState>();
+
+  if (click_count == 3) {
+    // Clicking the same text position two times will select the word. An
+    // additional third click will select the line. `StartTextHighlight()` is
+    // called for every click count, so the two click text selection has already
+    // been processed in a previous call. Undo that highlight.
+    ApplyUndoRedoCommands(undo_redo_model_.Undo());
+  }
+
+  std::optional<PdfInkUndoRedoModel::DiscardedDrawCommands> discards =
+      undo_redo_model_.StartDraw();
+  CHECK(discards.has_value());
+  ApplyUndoRedoDiscards(discards.value());
+
+  // Notifying the client will update the text selection.
+  client_->OnTextOrLinkAreaClick(position, click_count);
+
+  return true;
+}
+
+bool PdfInkModule::ContinueTextHighlight(const gfx::PointF& position) {
+  CHECK(is_text_highlighting());
+  client_->ExtendSelectionByPoint(position);
+  // TODO(crbug.com/342445982): Update text highlight state to invalidate
+  // strokes during highlighting.
+  return true;
+}
+
+bool PdfInkModule::FinishTextHighlight() {
+  CHECK(is_text_highlighting());
+
+  auto& highlight_strokes = text_highlight_state().highlight_strokes;
+  highlight_strokes = GetTextSelectionAsStrokes();
+  for (const auto& [page_index, strokes] : highlight_strokes) {
+    for (const auto& stroke : strokes) {
+      InkStrokeId id = stroke_id_generator_.GetIdAndAdvance();
+      client_->StrokeAdded(page_index, id, stroke);
+      strokes_[page_index].push_back(
+          FinishedStrokeState(std::move(stroke), id));
+      bool undo_redo_success = undo_redo_model_.Draw(id);
+      CHECK(undo_redo_success);
+    }
+
+    GenerateAndSendInkThumbnailInternal(page_index);
+  }
+
+  if (!highlight_strokes.empty()) {
+    client_->StrokeFinished();
+
+    // TODO(crbug.com/342445982): Add text highlighting metrics.
+
+    // Invalidation is already handled by the client during text selection.
+  }
+
+  bool undo_redo_success = undo_redo_model_.FinishDraw();
+  CHECK(undo_redo_success);
+
+  // Reset state back to a drawing highlighter brush.
+  current_tool_state_.emplace<DrawingStrokeState>();
+  drawing_stroke_state().brush_type = PdfInkBrush::Type::kHighlighter;
+
+  client_->ClearSelection();
+  return true;
+}
+
+ink::Stroke PdfInkModule::GetHighlightStrokeFromSelectionRect(
+    const gfx::Rect& selection_rect) {
+  CHECK(is_text_highlighting());
+
+  // The stroke should be drawn along the largest dimension, so have the brush
+  // size equal the smallest dimension.
+  float brush_size = std::min(selection_rect.width(), selection_rect.height()) /
+                     client_->GetZoom();
+
+  // Strokes will be drawn using one or two input points.
+  std::pair<gfx::PointF, gfx::PointF> points =
+      GetPointsForTextSelectionHighlightStroke(selection_rect, brush_size);
+
+  ink::StrokeInputBatch batch;
+  ink::StrokeInput input =
+      CreateInkStrokeInput(ink::StrokeInput::ToolType::kMouse, points.first,
+                           /*elapsed_time=*/base::TimeDelta());
+  auto result = batch.Append(input);
+  CHECK(result.ok()) << result.message();
+
+  // Skip the second input point if it matches the first input point.
+  if (points.first != points.second) {
+    input =
+        CreateInkStrokeInput(ink::StrokeInput::ToolType::kMouse, points.second,
+                             /*elapsed_time=*/base::TimeDelta());
+    result = batch.Append(input);
+    CHECK(result.ok()) << result.message();
+  }
+
+  // Make a copy of the ink brush to avoid modifying the drawing highlighter.
+  ink::Brush ink_brush = highlighter_brush_.ink_brush();
+  result = ink_brush.SetSize(brush_size);
+  CHECK(result.ok()) << result.message();
+  return ink::Stroke(ink_brush, batch);
+}
+
+std::pair<gfx::PointF, gfx::PointF>
+PdfInkModule::GetPointsForTextSelectionHighlightStroke(
+    const gfx::Rect& selection_rect,
+    float brush_size) {
+  bool is_vertical_stroke = selection_rect.height() > selection_rect.width();
+  PageOrientation orientation = client_->GetOrientation();
+
+  // The first input point will always either be the top center of the text
+  // characters or the left center of the text characters, depending on the
+  // orientation and whether `selection_rect` is longer vertically. The second
+  // input point will be on the opposite end of the rect.
+  gfx::Point start;
+  gfx::Point end;
+  if (is_vertical_stroke) {
+    start = selection_rect.top_center();
+    end = selection_rect.bottom_center();
+    if (orientation == PageOrientation::kClockwise180 ||
+        orientation == PageOrientation::kClockwise270) {
+      std::swap(start, end);
+    }
+  } else {
+    start = selection_rect.left_center();
+    end = selection_rect.right_center();
+    if (orientation == PageOrientation::kClockwise90 ||
+        orientation == PageOrientation::kClockwise180) {
+      std::swap(start, end);
+    }
+  }
+
+  int page_index =
+      client_->PageIndexFromPoint(gfx::PointF(selection_rect.origin()));
+  CHECK_GE(page_index, 0);
+  gfx::PointF start_f =
+      ConvertEventPositionToCanonicalPosition(gfx::PointF(start), page_index);
+  gfx::PointF end_f =
+      ConvertEventPositionToCanonicalPosition(gfx::PointF(end), page_index);
+
+  // These points need to be offset to account for brush size. Depending on the
+  // direction of the stroke, the points will need to be offset in either the x
+  // or y axis. Strokes will always be drawn along the largest dimension of the
+  // rectangle.
+  bool should_offset_y =
+      (is_vertical_stroke && (orientation == PageOrientation::kOriginal ||
+                              orientation == PageOrientation::kClockwise180)) ||
+      (!is_vertical_stroke && (orientation == PageOrientation::kClockwise90 ||
+                               orientation == PageOrientation::kClockwise270));
+  float offset = brush_size / 2;
+  start_f.Offset(should_offset_y ? 0 : offset, should_offset_y ? offset : 0);
+  end_f.Offset(should_offset_y ? 0 : -offset, should_offset_y ? -offset : 0);
+
+  return {start_f, end_f};
+}
+
+std::map<int, std::vector<ink::Stroke>>
+PdfInkModule::GetTextSelectionAsStrokes() {
+  std::map<int, std::vector<ink::Stroke>> result;
+  for (const gfx::Rect& selection_rect : client_->GetSelectionRects()) {
+    int page_index =
+        client_->PageIndexFromPoint(gfx::PointF(selection_rect.origin()));
+    // A selection rect's origin should always be on a page.
+    CHECK_GE(page_index, 0);
+
+    result[page_index].push_back(
+        {GetHighlightStrokeFromSelectionRect(selection_rect)});
+  }
+  return result;
 }
 
 void PdfInkModule::MaybeRecordPenInput(ink::StrokeInput::ToolType tool_type) {
@@ -1372,6 +1579,11 @@ void PdfInkModule::MaybeSetCursor() {
   if (!enabled()) {
     // Do nothing when disabled. The code outside of PdfInkModule will select a
     // normal mouse cursor and switch to that.
+    return;
+  }
+
+  if (features::kPdfInk2TextHighlighting.Get() && is_text_highlighting()) {
+    // TODO(crbug.com/342445982): Set the cursor for text highlighting.
     return;
   }
 

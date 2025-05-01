@@ -83,6 +83,9 @@ base::FilePath GetInkTestDataFilePath(base::FilePath::StringViewType filename);
 // Returns all variations of Ink tests to cover all features in development.
 base::span<const InkTestVariation> GetAllInkTestVariations();
 
+// Returns all variations of Ink tests that have text highlighting enabled.
+base::span<const InkTestVariation> GetInkTestVariationsWithTextHighlighting();
+
 }  // namespace chrome_pdf
 
 #endif  // PDF_TEST_PDF_INK_TEST_HELPERS_H_
