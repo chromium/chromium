@@ -101,8 +101,7 @@ class HashMgr {
   std::map<std::string_view, int> custom_word_to_affix_id_map_;
   std::vector<std::string*> pointer_to_strings_;
 #endif
-  int tablesize;
-  struct hentry** tableptr;
+  std::vector<struct hentry*> tableptr;
   flag flag_mode;
   int complexprefixes;
   int utf8;

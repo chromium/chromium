@@ -89,8 +89,6 @@ HashMgr::HashMgr(hunspell::BDictReader* reader)
 HashMgr::HashMgr(const char* tpath, const char* apath, const char* key)
     :
 #endif
-      tablesize(0),
-      tableptr(NULL),
       flag_mode(FLAG_CHAR),
       complexprefixes(0),
       utf8(0),
@@ -110,12 +108,8 @@ HashMgr::HashMgr(const char* tpath, const char* apath, const char* key)
     /* error condition - what should we do here */
     HUNSPELL_WARNING(stderr, "Hash Manager Error : %d\n", ec);
     free_table();
-    //keep tablesize to 1 to fix possible division with zero
-    tablesize = 1;
-    tableptr = (struct hentry**)calloc(tablesize, sizeof(struct hentry*));
-    if (!tableptr) {
-      tablesize = 0;
-    }
+    //keep table size to 1 to fix possible division with zero
+    tableptr.resize(1, nullptr);
   }
 }
 
@@ -125,22 +119,19 @@ void HashMgr::free_flag(unsigned short* astr, short alen) {
 }
 
 void HashMgr::free_table() {
-  if (tableptr) {
-    // now pass through hash table freeing up everything
-    // go through column by column of the table
-    for (int i = 0; i < tablesize; i++) {
-      struct hentry* pt = tableptr[i];
-      struct hentry* nt = NULL;
-      while (pt) {
-        nt = pt->next;
-        free_flag(pt->astr, pt->alen);
-        free(pt);
-        pt = nt;
-      }
+  // now pass through hash table freeing up everything
+  // go through column by column of the table
+  for (size_t i = 0; i < tableptr.size(); ++i) {
+    struct hentry* pt = tableptr[i];
+    struct hentry* nt = NULL;
+    while (pt) {
+      nt = pt->next;
+      free_flag(pt->astr, pt->alen);
+      free(pt);
+      pt = nt;
     }
-    free(tableptr);
   }
-  tablesize = 0;
+  tableptr.clear();
 }
 
 HashMgr::~HashMgr() {
@@ -212,15 +203,12 @@ struct hentry* HashMgr::lookup(const char* word) const {
 
   return AffixIDsToHentry(word_buf, affix_ids, affix_count);
 #else
-  struct hentry* dp;
-  if (tableptr) {
-    dp = tableptr[hash(word)];
-    if (!dp)
-      return NULL;
-    for (; dp != NULL; dp = dp->next) {
-      if (strcmp(word, dp->word) == 0)
-        return dp;
-    }
+  struct hentry* dp = tableptr[hash(word)];
+  if (!dp)
+    return NULL;
+  for (; dp != NULL; dp = dp->next) {
+    if (strcmp(word, dp->word) == 0)
+      return dp;
   }
   return NULL;
 #endif
@@ -321,8 +309,9 @@ int HashMgr::add_word(const std::string& in_word,
       hp->var |= H_OPT_PHON;
       // store ph: fields (pronounciation, misspellings, old orthography etc.)
       // of a morphological description in reptable to use in REP replacements.
-      if (reptable.capacity() < (unsigned int)(tablesize/MORPH_PHON_RATIO))
-          reptable.reserve(tablesize/MORPH_PHON_RATIO);
+      size_t predicted = tableptr.size() / MORPH_PHON_RATIO;
+      if (reptable.capacity() < predicted)
+          reptable.reserve(predicted);
       std::string fields = HENTRY_DATA(hp);
       std::string::const_iterator iter = fields.begin();
       std::string::const_iterator start_piece = mystrsep(fields, iter);
@@ -674,7 +663,7 @@ struct hentry* HashMgr::walk_hashtable(int& col, struct hentry* hp) const {
 #else
   if (hp && hp->next != NULL)
     return hp->next;
-  for (col++; col < tablesize; col++) {
+  for (col++; col < (int)tableptr.size(); ++col) {
     if (tableptr[col])
       return tableptr[col];
   }
@@ -692,7 +681,7 @@ int HashMgr::load_tables(const char* tpath, const char* key) {
   if (dict == NULL)
     return 1;
 
-  // first read the first line of file to get hash table size */
+  // first read the first line of file to get hash table size
   std::string ts;
   if (!dict->getline(ts)) {
     HUNSPELL_WARNING(stderr, "error: empty dic file %s\n", tpath);
@@ -706,7 +695,7 @@ int HashMgr::load_tables(const char* tpath, const char* key) {
     ts.erase(0, 3);
   }
 
-  tablesize = atoi(ts.c_str());
+  int tablesize = atoi(ts.c_str());
 
   int nExtra = 5 + USERWORD;
 
@@ -723,11 +712,7 @@ int HashMgr::load_tables(const char* tpath, const char* key) {
     tablesize++;
 
   // allocate the hash table
-  tableptr = (struct hentry**)calloc(tablesize, sizeof(struct hentry*));
-  if (!tableptr) {
-    delete dict;
-    return 3;
-  }
+  tableptr.resize(tablesize, nullptr);
 
   // loop through all words on much list and add to hash
   // table and create word and affix strings
@@ -834,7 +819,7 @@ int HashMgr::hash(const char* word) const {
     ROTATE(hv, ROTATE_LEN);
     hv ^= (*word++);
   }
-  return (unsigned long)hv % tablesize;
+  return (unsigned long)hv % tableptr.size();
 #endif
 }
 
