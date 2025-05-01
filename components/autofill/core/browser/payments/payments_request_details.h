@@ -300,38 +300,6 @@ struct GetDetailsForEnrollmentResponseDetails {
   LegalMessageLines issuer_legal_message;
 };
 
-// A collection of the information required to make a credit card upload
-// request.
-struct UploadCardRequestDetails {
-  UploadCardRequestDetails();
-  UploadCardRequestDetails(const UploadCardRequestDetails& other);
-  ~UploadCardRequestDetails();
-
-  int64_t billing_customer_number = 0;
-  int detected_values;
-  CreditCard card;
-  std::u16string cvc;
-  std::vector<AutofillProfile> profiles;
-  std::u16string context_token;
-  std::string risk_data;
-  std::string app_locale;
-  std::vector<ClientBehaviorConstants> client_behavior_signals;
-};
-
-// A collection of information required to make an IBAN upload request.
-struct UploadIbanRequestDetails {
-  UploadIbanRequestDetails();
-  UploadIbanRequestDetails(const UploadIbanRequestDetails& other);
-  ~UploadIbanRequestDetails();
-
-  std::string app_locale;
-  int64_t billing_customer_number = 0;
-  std::u16string context_token;
-  std::u16string value;
-  std::u16string nickname;
-  std::string risk_data;
-};
-
 // An enum set in the GetCardUploadDetailsRequest indicating the source of the
 // request when uploading a card to Google Payments. It should stay consistent
 // with the same enum in Google Payments server code.
@@ -348,6 +316,40 @@ enum UploadCardSource {
   // Single card is being uploaded from the Save and Fill dialog during a
   // non-post-checkout flow.
   UPSTREAM_SAVE_AND_FILL,
+};
+
+// A collection of the information required to make a credit card upload
+// request.
+struct UploadCardRequestDetails {
+  UploadCardRequestDetails();
+  UploadCardRequestDetails(const UploadCardRequestDetails& other);
+  ~UploadCardRequestDetails();
+
+  int64_t billing_customer_number = 0;
+  int detected_values;
+  CreditCard card;
+  std::u16string cvc;
+  std::vector<AutofillProfile> profiles;
+  std::u16string context_token;
+  std::string risk_data;
+  std::string app_locale;
+  std::vector<ClientBehaviorConstants> client_behavior_signals;
+  UploadCardSource upload_card_source =
+      UploadCardSource::UNKNOWN_UPLOAD_CARD_SOURCE;
+};
+
+// A collection of information required to make an IBAN upload request.
+struct UploadIbanRequestDetails {
+  UploadIbanRequestDetails();
+  UploadIbanRequestDetails(const UploadIbanRequestDetails& other);
+  ~UploadIbanRequestDetails();
+
+  std::string app_locale;
+  int64_t billing_customer_number = 0;
+  std::u16string context_token;
+  std::u16string value;
+  std::u16string nickname;
+  std::string risk_data;
 };
 
 // A collection of information received in the response for an
