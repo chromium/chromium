@@ -289,6 +289,7 @@ source_set("browser_sources") {
     "navigation_handle_user_data.h",
     "navigation_throttle.cc",
     "navigation_throttle.h",
+    "navigation_throttle_registry.h",
     "navigation_ui_data.h",
     "network_context_client_base.h",
     "network_quality_observer_factory.h",

@@ -26,6 +26,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/client_certificate_delegate.h"
 #include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/navigation_throttle_registry.h"
 #include "content/public/browser/overlay_window.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
@@ -454,16 +455,18 @@ void HeadlessContentBrowserClient::SessionEnding(
 #if defined(HEADLESS_USE_POLICY)
 std::vector<std::unique_ptr<content::NavigationThrottle>>
 HeadlessContentBrowserClient::CreateThrottlesForNavigation(
-    content::NavigationHandle* handle) {
+    content::NavigationThrottleRegistry& registry) {
   std::vector<std::unique_ptr<content::NavigationThrottle>> throttles;
 
   // Avoid creating naviagtion throttle if preferences are not available
   // (happens in tests).
+  content::NavigationHandle& handle = registry.GetNavigationHandle();
   if (browser_->GetPrefs()) {
     throttles.push_back(std::make_unique<PolicyBlocklistNavigationThrottle>(
-        handle, handle->GetWebContents()->GetBrowserContext()));
+        &handle, handle.GetWebContents()->GetBrowserContext()));
   }
 
+  // TODO(https://crbug.com/412524375): NavigationThrottleRegistry migration.
   return throttles;
 }
 #endif  // defined(HEADLESS_USE_POLICY)

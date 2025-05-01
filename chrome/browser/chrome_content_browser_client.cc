@@ -347,6 +347,7 @@
 #include "content/public/browser/legacy_tech_cookie_issue_details.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"
+#include "content/public/browser/navigation_throttle_registry.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/overlay_window.h"
 #include "content/public/browser/permission_controller.h"
@@ -5339,7 +5340,7 @@ void ChromeContentBrowserClient::RemovePresentationObserver(
 
 std::vector<std::unique_ptr<content::NavigationThrottle>>
 ChromeContentBrowserClient::CreateThrottlesForNavigation(
-    content::NavigationHandle* handle) {
+    content::NavigationThrottleRegistry& registry) {
   std::vector<std::unique_ptr<content::NavigationThrottle>> throttles;
 
   // MetricsNavigationThrottle requires that it runs before NavigationThrottles
@@ -5347,6 +5348,7 @@ ChromeContentBrowserClient::CreateThrottlesForNavigation(
   // don't delay or cancel navigations (e.g. throttles that are only observing
   // callbacks without affecting navigation behavior) should be added before
   // MetricsNavigationThrottle.
+  content::NavigationHandle* handle = &registry.GetNavigationHandle();
   if (handle->IsInMainFrame()) {
     throttles.push_back(
         page_load_metrics::MetricsNavigationThrottle::Create(handle));
@@ -5743,6 +5745,7 @@ ChromeContentBrowserClient::CreateThrottlesForNavigation(
       &throttles);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+  // TODO(https://crbug.com/412524375): NavigationThrottleRegistry migration.
   return throttles;
 }
 

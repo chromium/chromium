@@ -24,6 +24,7 @@
 #include "content/public/browser/client_certificate_delegate.h"
 #include "content/public/browser/devtools_manager_delegate.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/navigation_throttle_registry.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/common/content_switches.h"
 #include "fuchsia_web/common/fuchsia_dir_scheme.h"
@@ -311,8 +312,10 @@ base::OnceClosure WebEngineContentBrowserClient::SelectClientCertificate(
 
 std::vector<std::unique_ptr<content::NavigationThrottle>>
 WebEngineContentBrowserClient::CreateThrottlesForNavigation(
-    content::NavigationHandle* navigation_handle) {
+    content::NavigationThrottleRegistry& registry) {
   std::vector<std::unique_ptr<content::NavigationThrottle>> throttles;
+  content::NavigationHandle* navigation_handle =
+      &registry.GetNavigationHandle();
   auto* frame_impl =
       FrameImpl::FromWebContents(navigation_handle->GetWebContents());
   DCHECK(frame_impl);
@@ -334,6 +337,7 @@ WebEngineContentBrowserClient::CreateThrottlesForNavigation(
         *explicit_sites_filter_error_page));
   }
 
+  // TODO(https://crbug.com/412524375): NavigationThrottleRegistry migration.
   return throttles;
 }
 

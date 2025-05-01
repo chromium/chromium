@@ -1066,7 +1066,7 @@ class CONTENT_EXPORT WebContentsImpl
   const blink::UserAgentOverride& GetUserAgentOverride(
       FrameTree& frame_tree) override;
   std::vector<std::unique_ptr<NavigationThrottle>> CreateThrottlesForNavigation(
-      NavigationHandle* navigation_handle) override;
+      NavigationThrottleRegistry& registry) override;
   std::vector<std::unique_ptr<CommitDeferringCondition>>
   CreateDeferringConditionsForNavigationCommit(
       NavigationHandle& navigation_handle,

@@ -26,6 +26,7 @@ class BluetoothDelegateImpl;
 #endif
 
 namespace content {
+class NavigationThrottleRegistry;
 class ShellBrowserContext;
 class ShellBrowserMainParts;
 
@@ -125,7 +126,7 @@ class ShellContentBrowserClient : public ContentBrowserClient {
                const OpenURLParams& params,
                base::OnceCallback<void(WebContents*)> callback) override;
   std::vector<std::unique_ptr<NavigationThrottle>> CreateThrottlesForNavigation(
-      NavigationHandle* navigation_handle) override;
+      NavigationThrottleRegistry& registry) override;
   std::unique_ptr<LoginDelegate> CreateLoginDelegate(
       const net::AuthChallengeInfo& auth_info,
       content::WebContents* web_contents,
