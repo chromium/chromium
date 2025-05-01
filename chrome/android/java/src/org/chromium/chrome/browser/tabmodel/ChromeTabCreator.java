@@ -713,6 +713,7 @@ public class ChromeTabCreator extends TabCreator
             case TabLaunchType.FROM_BOOKMARK_BAR_BACKGROUND:
             case TabLaunchType.FROM_HISTORY_NAVIGATION_BACKGROUND:
             case TabLaunchType.FROM_REPARENTING_BACKGROUND:
+            case TabLaunchType.FROM_SPECULATIVE_BACKGROUND_CREATION:
                 // On low end devices tabs are backgrounded in a frozen state, so we set the
                 // transition type to RELOAD to avoid handling intents when the tab is foregrounded.
                 // (https://crbug.com/758027)
