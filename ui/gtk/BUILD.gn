@@ -86,8 +86,6 @@ component("gtk") {
     "gtk_ui_platform_stub.h",
     "gtk_util.cc",
     "gtk_util.h",
-    "ime_compat_check.cc",
-    "ime_compat_check.h",
     "input_method_context_impl_gtk.cc",
     "input_method_context_impl_gtk.h",
     "native_theme_gtk.cc",
