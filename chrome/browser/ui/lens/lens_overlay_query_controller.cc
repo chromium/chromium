@@ -1370,6 +1370,7 @@ void LensOverlayQueryController::PrepareAndFetchPageContentRequest() {
 
   compression_task_tracker_->TryCancelAll();
   page_contents_request_start_time_ = base::TimeTicks::Now();
+  page_content_request_in_progress_ = true;
 
   // The initial request id should be set by the time we get here. If not, call
   // below will crash.
@@ -1515,7 +1516,6 @@ void LensOverlayQueryController::PerformPageContentRequest(
     std::vector<std::string> headers) {
   page_content_access_token_fetcher_.reset();
 
-  page_content_request_in_progress_ = true;
   PerformFetchRequest(
       &request, &headers,
       base::Milliseconds(

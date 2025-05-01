@@ -421,7 +421,11 @@ class LensOverlayQueryController {
 
   // Creates the PageContentRequest that is sent to the server and performs the
   // request. Prefer to use PrepareAndFetchPageContentRequest() directly since
-  // it calls this method after doing the necessary preprocessing.
+  // it calls this method after doing the necessary preprocessing. By this
+  // point, the preprocessing should be complete and it is expected that the
+  // request will be sent. If a check needs to be done before sending the
+  // request, it myst be done in PrepareAndFetchPageContentRequest() instead of
+  // this method.
   void PrepareAndFetchPageContentRequestPart2(
       lens::LensOverlayRequestId request_id,
       lens::Payload payload);
