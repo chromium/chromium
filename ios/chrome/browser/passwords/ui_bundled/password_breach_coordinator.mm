@@ -120,7 +120,7 @@ using password_manager::CredentialLeakType;
       "PasswordManager.ManagePasswordsReferrer",
       password_manager::ManagePasswordsReferrer::kPasswordBreachDialog);
   base::RecordAction(
-      base::UserMetricsAction("MobilePasswordBreachOpenPasswordManager"));
+      base::UserMetricsAction("MobilePasswordBreachOpenPasswordCheckup"));
 
   [handler dismissModalsAndShowPasswordCheckupPageForReferrer:
                password_manager::PasswordCheckReferrer::kPasswordBreachDialog];

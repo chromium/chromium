@@ -25281,10 +25281,10 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
-<action name="MobilePasswordBreachOpenPasswordManager">
+<action name="MobilePasswordBreachOpenPasswordCheckup">
   <owner>noemies@google.com</owner>
   <description>
-    Reported when user opens the Password Manager page from the password breach
+    Reported when user opens the Password Checkup page from the password breach
     view. iOS only.
   </description>
 </action>
