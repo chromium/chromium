@@ -32,7 +32,6 @@ per-file DEPS=*
 per-file DEPS=bryner@google.com # For new DEPS hook
 per-file DEPS=dpranke@google.com # For new DEPS hook
 per-file DEPS=gatong@chromium.org # For new DEPS hook
-per-file DEPS=guterman@google.com # For new DEPS hook
 per-file DEPS=treilly@google.com # For new DEPS hook
 per-file PRESUBMIT*.py=agrieve@chromium.org  # For .pydeps changes
 per-file PRESUBMIT*.py=dcheng@chromium.org
