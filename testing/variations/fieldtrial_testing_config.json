@@ -15946,7 +15946,8 @@
                         "PartitionAllocSchedulerLoopQuarantine",
                         "PartitionAllocWithAdvancedChecks",
                         "PartitionAllocZappingByFreeFlags"
-                    ]
+                    ],
+                    "disable_benchmarking": "true"
                 }
             ]
         }
