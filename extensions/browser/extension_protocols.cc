@@ -126,6 +126,21 @@ BASE_FEATURE(kOverrideExtensionFilesMimeTypes,
 
 ExtensionProtocolTestHandler* g_test_handler = nullptr;
 
+// Stores relevant info about an ExtensionResource, namely: its file path, last
+// modified time and file size.
+struct ResourceInfo {
+  ResourceInfo(base::FilePath file_path,
+               base::Time last_modified_time,
+               int64_t size)
+      : file_path(std::move(file_path)),
+        last_modified_time(last_modified_time),
+        size(size) {}
+
+  base::FilePath file_path;
+  base::Time last_modified_time;
+  int64_t size = 0;
+};
+
 void GenerateBackgroundPageContents(const Extension* extension,
                                     std::string* mime_type,
                                     std::string* charset,
@@ -141,24 +156,23 @@ void GenerateBackgroundPageContents(const Extension* extension,
   }
 }
 
-base::Time GetFileLastModifiedTime(const base::FilePath& filename) {
-  if (base::PathExists(filename)) {
-    base::File::Info info;
-    if (base::GetFileInfo(filename, &info)) {
-      return info.last_modified;
-    }
-  }
-  return base::Time();
-}
-
-std::pair<base::FilePath, base::Time> ReadResourceFilePathAndLastModifiedTime(
-    const extensions::ExtensionResource& resource,
-    const base::FilePath& directory) {
+ResourceInfo ReadResourceInfo(const extensions::ExtensionResource& resource,
+                              const base::FilePath& directory) {
   // NOTE: ExtensionResource::GetFilePath() must be called on a sequence which
   // tolerates blocking operations.
   base::FilePath file_path = resource.GetFilePath();
-  base::Time last_modified_time = GetFileLastModifiedTime(file_path);
-  return std::make_pair(file_path, last_modified_time);
+
+  base::Time last_modified_time;
+  int64_t size = 0;
+  if (base::PathExists(file_path)) {
+    base::File::Info info;
+    if (base::GetFileInfo(file_path, &info)) {
+      last_modified_time = info.last_modified;
+      size = info.size;
+    }
+  }
+
+  return ResourceInfo(file_path, last_modified_time, size);
 }
 
 bool ExtensionCanLoadInIncognito(bool is_main_frame,
@@ -472,8 +486,7 @@ class FileLoaderObserver : public content::FileURLLoaderObserver {
     DCHECK_EQ(seek_position_, 0);
     base::AutoLock auto_lock(lock_);
     seek_position_ = result;
-    // TODO(asargent) - we'll need to add proper support for range headers.
-    // crbug.com/369895.
+    // TODO(crbug.com/410916670) Add proper support for range headers.
     const bool is_seek_contiguous = result == bytes_read_;
     if (result > 0 && verify_job_.get() && !is_seek_contiguous) {
       verify_job_ = nullptr;
@@ -643,26 +656,49 @@ class ExtensionURLLoader : public network::mojom::URLLoader {
     LoadExtension(extension, std::move(directory_path));
   }
 
-  void OnFilePathAndLastModifiedTimeRead(
-      const extensions::ExtensionResource& resource,
-      scoped_refptr<net::HttpResponseHeaders> headers,
-      scoped_refptr<ContentVerifier> content_verifier,
-      std::pair<base::FilePath, base::Time> file_path_and_time) {
+  void OnResourceInfoRead(const extensions::ExtensionResource& resource,
+                          scoped_refptr<net::HttpResponseHeaders> headers,
+                          scoped_refptr<ContentVerifier> content_verifier,
+                          const ResourceInfo& resource_info) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-    const auto& read_file_path = file_path_and_time.first;
-    const auto& last_modified_time = file_path_and_time.second;
+    const auto& read_file_path = resource_info.file_path;
+    const auto& last_modified_time = resource_info.last_modified_time;
+    const auto& file_size = resource_info.size;
     request_.url = net::FilePathToFileURL(read_file_path);
 
     AddCacheHeaders(*headers, last_modified_time);
 
-    // TODO(https://crbug.com/400647848): Remove this if-check and always
-    // override mime type headers in M139.
+    // TODO(crbug.com/400647848): Remove this if-check and always override mime
+    // type headers in M139.
     if (base::FeatureList::IsEnabled(kOverrideExtensionFilesMimeTypes)) {
       AddMimeTypeHeaders(*headers, read_file_path);
     }
 
+    // TODO(crbug.com/405286894, crbug.com/410916670): Properly implement
+    // content verification for range headers which return a subset of the
+    // extension's file. Currently end headers may trigger unintentional
+    // corruptions.
+    bool should_verify_content = true;
+
+    if (std::optional<std::string> range_header =
+            request_.headers.GetHeader(net::HttpRequestHeaders::kRange);
+        range_header) {
+      std::vector<net::HttpByteRange> ranges;
+      if (net::HttpUtil::ParseRangeHeader(*range_header, &ranges) &&
+          ranges.size() == 1) {
+        // For now, skip content verification if the file will be read before
+        // its end.
+        should_verify_content = !ranges[0].HasLastBytePosition() ||
+                                ranges[0].last_byte_position() == file_size - 1;
+      } else {
+        // Malformed range header or multiple ranges detected. The FileURLLoader
+        // will also detect this and return an error.
+        should_verify_content = false;
+      }
+    }
+
     scoped_refptr<ContentVerifyJob> verify_job;
-    if (content_verifier) {
+    if (content_verifier && should_verify_content) {
       verify_job = ContentVerifier::CreateAndStartJobFor(
           resource.extension_id(), resource.extension_root(),
           resource.relative_path(), content_verifier);
@@ -851,9 +887,8 @@ class ExtensionURLLoader : public network::mojom::URLLoader {
 
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE, {base::MayBlock()},
-        base::BindOnce(&ReadResourceFilePathAndLastModifiedTime, resource,
-                       directory_path),
-        base::BindOnce(&ExtensionURLLoader::OnFilePathAndLastModifiedTimeRead,
+        base::BindOnce(&ReadResourceInfo, resource, directory_path),
+        base::BindOnce(&ExtensionURLLoader::OnResourceInfoRead,
                        weak_ptr_factory_.GetWeakPtr(), resource,
                        std::move(headers), std::move(content_verifier)));
   }
