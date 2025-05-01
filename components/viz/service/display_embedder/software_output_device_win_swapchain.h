@@ -43,6 +43,13 @@ class VIZ_SERVICE_EXPORT SoftwareOutputDeviceWinSwapChain
   const gfx::Size& GetViewportPixelSize() const override;
   void ReleaseCanvas() override;
 
+  bool HasSwapChainForTesting() const { return !!dxgi_swapchain_; }
+
+  bool HasDeviceContextForTesting() const { return !!d3d11_device_context_; }
+
+ protected:
+  virtual bool UpdateWindowSize(const gfx::Size& viewport_pixel_size);
+
  private:
   raw_ptr<OutputDeviceBacking> const output_backing_;
   gl::ChildWindowWin child_window_;

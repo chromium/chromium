@@ -68,13 +68,19 @@ SoftwareOutputDeviceWinSwapChain::~SoftwareOutputDeviceWinSwapChain() {
   }
 }
 
+bool SoftwareOutputDeviceWinSwapChain::UpdateWindowSize(
+    const gfx::Size& viewport_pixel_size) {
+  // Update the size of the child window.
+  return SetWindowPos(child_window_.window(), nullptr, 0, 0,
+                      viewport_pixel_size.width(), viewport_pixel_size.height(),
+                      SWP_NOMOVE | SWP_NOACTIVATE | SWP_NOCOPYBITS |
+                          SWP_NOOWNERZORDER | SWP_NOZORDER);
+}
+
 bool SoftwareOutputDeviceWinSwapChain::ResizeDelegated(
     const gfx::Size& viewport_pixel_size) {
   // Update window size.
-  if (!SetWindowPos(child_window_.window(), nullptr, 0, 0,
-                    viewport_pixel_size.width(), viewport_pixel_size.height(),
-                    SWP_NOMOVE | SWP_NOACTIVATE | SWP_NOCOPYBITS |
-                        SWP_NOOWNERZORDER | SWP_NOZORDER)) {
+  if (!UpdateWindowSize(viewport_pixel_size)) {
     return false;
   }
 
