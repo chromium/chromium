@@ -581,8 +581,21 @@ void ProcessIncomingNotification(
 - (void)userNotificationCenter:(UNUserNotificationCenter*)center
     openSettingsForNotification:(UNNotification*)notification {
   __weak __typeof(self) weakSelf = self;
+  if (IsIOSMultiProfilePushNotificationHandlingEnabled()) {
+    std::string profileName =
+        GetProfileNameFromUserInfo(notification.request.content.userInfo);
+    if (!profileName.empty()) {
+      [self executeWhenForeground:^{
+        [weakSelf openSettingsForNotification:notification
+                                  profileName:profileName];
+      }];
+      return;
+    }
+  }
   [self executeWhenForeground:^{
-    [weakSelf openSettingsForNotification:notification];
+    [weakSelf openSettingsForNotification:notification
+                                    scene:weakSelf.foregroundActiveScene
+                               completion:base::DoNothing()];
   }];
 }
 
@@ -1076,11 +1089,38 @@ void ProcessIncomingNotification(
             continuation:CreateNotificationInteractionContinuation(response)];
 }
 
-// Shows the app's notification settings in the first foreground active
-// connected scene. Must only be called when the app has a foreground active
-// scene.
-- (void)openSettingsForNotification:(UNNotification*)notification {
+// Shows the app's notification settings, switching to the given `profileName`
+// profile if needed.
+- (void)openSettingsForNotification:(UNNotification*)notification
+                        profileName:(std::string_view)profileName {
   SceneState* sceneState = self.foregroundActiveScene;
+  CHECK(sceneState);
+  CHECK(IsIOSMultiProfilePushNotificationHandlingEnabled());
+
+  id<ChangeProfileCommands> handler =
+      HandlerForProtocol(_appState.appCommandDispatcher, ChangeProfileCommands);
+
+  __weak __typeof(self) weakSelf = self;
+  ChangeProfileContinuation continuation = base::BindOnce(
+      [](__typeof(self) strong_self, UNNotification* notification,
+         SceneState* new_scene_state, base::OnceClosure completion_closure) {
+        [strong_self openSettingsForNotification:notification
+                                           scene:new_scene_state
+                                      completion:std::move(completion_closure)];
+      },
+      weakSelf, notification);
+
+  [handler changeProfile:profileName
+                forScene:sceneState
+                  reason:ChangeProfileReason::kHandlePushNotification
+            continuation:std::move(continuation)];
+}
+
+// Shows the app's notification settings in the given `sceneState`, and calls
+// `completion` when finished.
+- (void)openSettingsForNotification:(UNNotification*)notification
+                              scene:(SceneState*)sceneState
+                         completion:(base::OnceClosure)completion {
   CHECK(sceneState);
   Browser* browser =
       sceneState.browserProviderInterface.mainBrowserProvider.browser;
@@ -1089,8 +1129,10 @@ void ProcessIncomingNotification(
       HandlerForProtocol(dispatcher, ApplicationCommands);
   id<SettingsCommands> settingsHandler =
       HandlerForProtocol(dispatcher, SettingsCommands);
+  __block base::OnceClosure completion2 = std::move(completion);
   [applicationHandler prepareToPresentModal:^{
     [settingsHandler showNotificationsSettings];
+    std::move(completion2).Run();
   }];
 }
 
