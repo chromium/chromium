@@ -24,7 +24,9 @@
 #include "base/strings/utf_string_conversions.h"
 #include "net/base/ip_address.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "net/base/schemeful_site.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 #include "url/scheme_host_port.h"
 #include "url/url_canon.h"
 #include "url/url_canon_internal.h"
@@ -505,6 +507,22 @@ bool IsStandardSchemeWithNetworkHost(std::string_view scheme) {
   }
   return scheme_type == url::SCHEME_WITH_HOST_PORT_AND_USER_INFORMATION ||
          scheme_type == url::SCHEME_WITH_HOST_AND_PORT;
+}
+
+OriginRelation GetOriginRelation(const url::Origin& target_origin,
+                                 const url::Origin& related_origin) {
+  if (target_origin == related_origin) {
+    return OriginRelation::kSameOrigin;
+  }
+
+  return SchemefulSite::IsSameSite(target_origin, related_origin)
+             ? OriginRelation::kSameSite
+             : OriginRelation::kCrossSite;
+}
+
+OriginRelation GetOriginRelation(const GURL& target_url,
+                                 const url::Origin& related_origin) {
+  return GetOriginRelation(url::Origin::Create(target_url), related_origin);
 }
 
 void GetIdentityFromURL(const GURL& url,

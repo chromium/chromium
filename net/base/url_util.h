@@ -16,6 +16,7 @@
 
 #include "base/memory/raw_ref.h"
 #include "net/base/net_export.h"
+#include "url/origin.h"
 #include "url/third_party/mozilla/url_parse.h"
 
 class GURL;
@@ -237,6 +238,30 @@ NET_EXPORT GURL ChangeWebSocketSchemeToHttpScheme(const GURL& url);
 // have hostnames representing domains (i.e. network hosts).
 // See url::SchemeType.
 NET_EXPORT bool IsStandardSchemeWithNetworkHost(std::string_view scheme);
+
+// This enumerated class provides values that are useful for describing the
+// relationship between two origins.
+//
+// Note that the order of enum values below is significant - it is important for
+// std::max invocations that kSameOrigin < kSameSite < kCrossSite.
+enum class OriginRelation {
+  // Value for origins that are equal to each other.
+  kSameOrigin,
+  // Value for origins that are not equal, but share a scheme and site.
+  kSameSite,
+  // Value for origins that do not share a scheme and/or site.
+  kCrossSite,
+};
+
+// Returns the relationship between two url::Origins expressed as an
+// OriginRelation.
+NET_EXPORT OriginRelation GetOriginRelation(const url::Origin& target_origin,
+                                            const url::Origin& related_origin);
+
+// Returns the relationship between a GURL and a url::Origin expressed as an
+// OriginRelation. Prefer overload with two origins when possible.
+NET_EXPORT OriginRelation GetOriginRelation(const GURL& target_url,
+                                            const url::Origin& related_origin);
 
 // Extracts the unescaped username/password from |url|, saving the results
 // into |*username| and |*password|.
