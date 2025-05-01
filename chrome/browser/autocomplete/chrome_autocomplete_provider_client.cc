@@ -609,22 +609,18 @@ bool ChromeAutocompleteProviderClient::OpenJourneys(const std::string& query) {
 
 void ChromeAutocompleteProviderClient::OpenLensOverlay(bool show) {
 #if !BUILDFLAG(IS_ANDROID)
-  if (show) {
-    if (auto* lens_search_controller =
-            GetLensSearchController(GetWebContents(web_contents_getter_))) {
+  if (auto* lens_search_controller =
+          GetLensSearchController(GetWebContents(web_contents_getter_))) {
+    if (show) {
       // TODO(crbug.com/402497756): For prototyping, reusing the existing
       // omnibox entry point. However, for production, create a new invocation
       // source for this new entry point.
       lens_search_controller->OpenLensOverlay(
           lens::LensOverlayInvocationSource::kOmnibox);
+    } else {
+      lens_search_controller->StartContextualization(
+          lens::LensOverlayInvocationSource::kOmnibox);
     }
-    return;
-  }
-
-  if (auto* lens_overlay_controller =
-          GetLensOverlayController(GetWebContents(web_contents_getter_))) {
-    lens_overlay_controller->StartContextualizationWithoutOverlay(
-        lens::LensOverlayInvocationSource::kOmnibox);
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
@@ -634,9 +630,9 @@ void ChromeAutocompleteProviderClient::IssueContextualSearchRequest(
       AutocompleteMatchType::Type match_type,
       bool is_zero_prefix_suggestion) {
 #if !BUILDFLAG(IS_ANDROID)
-  if (auto* lens_overlay_controller =
-          GetLensOverlayController(GetWebContents(web_contents_getter_))) {
-    lens_overlay_controller->IssueContextualSearchRequest(
+  if (auto* lens_search_controller =
+          GetLensSearchController(GetWebContents(web_contents_getter_))) {
+    lens_search_controller->IssueContextualSearchRequest(
         destination_url, match_type, is_zero_prefix_suggestion);
   }
 #endif  // !BUILDFLAG(IS_ANDROID)

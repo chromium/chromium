@@ -378,74 +378,6 @@ LensOverlayController* LensOverlayController::FromTabWebContents(
       tabs::TabInterface::GetFromContents(tab_web_contents));
 }
 
-void LensOverlayController::IssueContextualSearchRequest(
-    const GURL& destination_url,
-    AutocompleteMatchType::Type match_type,
-    bool is_zero_prefix_suggestion) {
-  // Ignore the request if the overlay is off or closing.
-  if (IsOverlayClosing()) {
-    return;
-  }
-
-  // If the overlay is off, turn it on so the request can be fulfilled.
-  if (state_ == State::kOff) {
-    // TODO(crbug.com/402497756): For prototyping, reusing the existing
-    // omnibox entry point. However, for production, create a new invocation
-    // source for this new entry point.
-    // TODO(crbug.com/403573362): This is a temporary fix to unblock
-    // prototyping. Since this flow goes straight to the side panel results with
-    // not overlay UI, this flow does a lot of unnecessary work. There should be
-    // a new flow that can contextualize without the overlay UI being
-    // initialized.
-    StartContextualizationWithoutOverlay(
-        lens::LensOverlayInvocationSource::kOmnibox);
-  }
-
-  // Hold the request until the overlay has finished initializing.
-  if (IsOverlayInitializing()) {
-    pending_contextual_search_request_ =
-        base::BindOnce(&LensOverlayController::IssueContextualSearchRequest,
-                       weak_factory_.GetWeakPtr(), destination_url, match_type,
-                       is_zero_prefix_suggestion);
-    return;
-  }
-
-  // TODO(crbug.com/401583049): Revisit if this should go through the
-  // OnSuggestionAccepted flow or if there should be a more direct contextual
-  // search flow.
-  OnSuggestionAccepted(destination_url, match_type, is_zero_prefix_suggestion);
-}
-
-void LensOverlayController::StartContextualizationWithoutOverlay(
-    lens::LensOverlayInvocationSource invocation_source) {
-  should_show_overlay_ = false;
-  ShowUI(invocation_source);
-}
-
-void LensOverlayController::ShowUIWithPendingRegion(
-    lens::LensOverlayInvocationSource invocation_source,
-    const gfx::Rect& tab_bounds,
-    const gfx::Rect& view_bounds,
-    const gfx::Rect& image_bounds,
-    const SkBitmap& region_bitmap) {
-  ShowUIWithPendingRegion(invocation_source,
-                          lens::GetCenterRotatedBoxFromTabViewAndImageBounds(
-                              tab_bounds, view_bounds, image_bounds),
-                          region_bitmap);
-}
-
-void LensOverlayController::ShowUIWithPendingRegion(
-    lens::LensOverlayInvocationSource invocation_source,
-    lens::mojom::CenterRotatedBoxPtr region,
-    const SkBitmap& region_bitmap) {
-  pending_region_ = std::move(region);
-  pending_region_bitmap_ = region_bitmap;
-  ShowUI(invocation_source);
-  // Overrides value set in ShowUI since invoking lens overlay with a pending
-  // region is considered a search.
-  search_performed_in_session_ = true;
-}
-
 void LensOverlayController::CloseUIAsync(
     lens::LensOverlayDismissalSource dismissal_source) {
   if (state_ == State::kOff || IsOverlayClosing()) {
@@ -1146,6 +1078,62 @@ void LensOverlayController::ShowUI(
   } else {
     CaptureScreenshot();
   }
+}
+
+void LensOverlayController::IssueContextualSearchRequest(
+    const GURL& destination_url,
+    AutocompleteMatchType::Type match_type,
+    bool is_zero_prefix_suggestion) {
+  // Ignore the request if the overlay is off or closing.
+  if (IsOverlayClosing()) {
+    return;
+  }
+
+  // If the overlay is off, turn it on so the request can be fulfilled.
+  if (state_ == State::kOff) {
+    // TODO(crbug.com/402497756): For prototyping, reusing the existing
+    // omnibox entry point. However, for production, create a new invocation
+    // source for this new entry point.
+    // TODO(crbug.com/403573362): This is a temporary fix to unblock
+    // prototyping. Since this flow goes straight to the side panel results with
+    // not overlay UI, this flow does a lot of unnecessary work. There should be
+    // a new flow that can contextualize without the overlay UI being
+    // initialized.
+    StartContextualizationWithoutOverlay(
+        lens::LensOverlayInvocationSource::kOmnibox);
+  }
+
+  // Hold the request until the overlay has finished initializing.
+  if (IsOverlayInitializing()) {
+    pending_contextual_search_request_ =
+        base::BindOnce(&LensOverlayController::IssueContextualSearchRequest,
+                       weak_factory_.GetWeakPtr(), destination_url, match_type,
+                       is_zero_prefix_suggestion);
+    return;
+  }
+
+  // TODO(crbug.com/401583049): Revisit if this should go through the
+  // OnSuggestionAccepted flow or if there should be a more direct contextual
+  // search flow.
+  OnSuggestionAccepted(destination_url, match_type, is_zero_prefix_suggestion);
+}
+
+void LensOverlayController::StartContextualizationWithoutOverlay(
+    lens::LensOverlayInvocationSource invocation_source) {
+  should_show_overlay_ = false;
+  ShowUI(invocation_source);
+}
+
+void LensOverlayController::ShowUIWithPendingRegion(
+    lens::LensOverlayInvocationSource invocation_source,
+    lens::mojom::CenterRotatedBoxPtr region,
+    const SkBitmap& region_bitmap) {
+  pending_region_ = std::move(region);
+  pending_region_bitmap_ = region_bitmap;
+  ShowUI(invocation_source);
+  // Overrides value set in ShowUI since invoking lens overlay with a pending
+  // region is considered a search.
+  search_performed_in_session_ = true;
 }
 
 std::string LensOverlayController::GetVsridForNewTab() {

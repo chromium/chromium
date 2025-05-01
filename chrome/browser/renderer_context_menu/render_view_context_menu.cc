@@ -94,7 +94,6 @@
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/keyboard_lock_controller.h"
-#include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_entry_point_controller.h"
 #include "chrome/browser/ui/lens/lens_search_controller.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
@@ -4395,10 +4394,10 @@ void RenderViewContextMenu::OpenLensOverlayWithPreselectedRegion(
   // Scale the region bounds, which are in physical pixels, to device pixels.
   auto scaled_region_bounds =
       gfx::ScaleToEnclosedRect(region_bounds, 1.f / device_scale_factor);
-  LensOverlayController* const controller =
-      LensOverlayController::FromTabWebContents(source_web_contents_);
+  LensSearchController* const controller =
+      LensSearchController::FromTabWebContents(source_web_contents_);
   CHECK(controller);
-  controller->ShowUIWithPendingRegion(
+  controller->OpenLensOverlayWithPendingRegion(
       lens::LensOverlayInvocationSource::kContentAreaContextMenuImage,
       tab_bounds, view_bounds, scaled_region_bounds, region_bitmap);
 }

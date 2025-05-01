@@ -9,12 +9,17 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/lens/core/mojom/geometry.mojom.h"
 #include "components/lens/lens_overlay_dismissal_source.h"
 #include "components/lens/lens_overlay_invocation_source.h"
+#include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/optimization_guide/content/browser/page_context_eligibility.h"
 #include "components/tabs/public/tab_interface.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/gfx/geometry/rect.h"
 
 class LensOverlayController;
+class GURL;
 
 namespace lens {
 class LensOverlaySidePanelCoordinator;
@@ -72,6 +77,39 @@ class LensSearchController {
   // for testing.
   virtual void OpenLensOverlay(
       lens::LensOverlayInvocationSource invocation_source);
+
+  // Sets a region to search after the overlay loads, then calls ShowUI().
+  // All units are in device pixels. region_bitmap contains the high definition
+  // image bytes to use for the search instead of cropping the region from the
+  // viewport. Virtual for testing.
+  virtual void OpenLensOverlayWithPendingRegion(
+      lens::LensOverlayInvocationSource invocation_source,
+      lens::mojom::CenterRotatedBoxPtr region,
+      const SkBitmap& region_bitmap);
+
+  // Convenience method for calling OpenLensOverlayWithPendingRegion, that will
+  // convert the bounds into a CenterRotated Box to pass to the overlay.
+  void OpenLensOverlayWithPendingRegion(
+      lens::LensOverlayInvocationSource invocation_source,
+      const gfx::Rect& tab_bounds,
+      const gfx::Rect& view_bounds,
+      const gfx::Rect& region_bounds,
+      const SkBitmap& region_bitmap);
+
+  // Starts the contextualization flow without the overlay being shown to the
+  // user. Virtual for testing.
+  virtual void StartContextualization(
+      lens::LensOverlayInvocationSource invocation_source);
+
+  // Issues a contextual search request for Lens to fulfill. Starts
+  // contextualization flow if its not already in progress. If the Lens Overlay
+  // is in the process of opening, the request will be queued until the overlay
+  // is fully opened.
+  // TODO(crbug.com/403629222): Revisit if it makes sense to pass the
+  // destination URL instead of the query text directly.
+  void IssueContextualSearchRequest(const GURL& destination_url,
+                                    AutocompleteMatchType::Type match_type,
+                                    bool is_zero_prefix_suggestion);
 
   // Starts the closing process of the overlay. This is an asynchronous process
   // with the following sequence:

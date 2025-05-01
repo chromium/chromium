@@ -175,45 +175,6 @@ class LensOverlayController : public LensSearchboxClient,
   static LensOverlayController* FromTabWebContents(
       content::WebContents* tab_web_contents);
 
-  // Issues a contextual search request for Lens to fulfill.
-  // No-op if the Lens Overlay is off or closing. If the Lens Overlay is in the
-  // process of opening, the request will be queued until the overlay is fully
-  // opened.
-  // TODO(crbug.com/403629222): Revisit if it makes sense to pass the
-  // destination URL instead of the query text directly.
-  void IssueContextualSearchRequest(const GURL& destination_url,
-                                    AutocompleteMatchType::Type match_type,
-                                    bool is_zero_prefix_suggestion);
-
-  // Starts the contextualization flow without the overlay being shown to the
-  // user.
-  // TODO(crbug.com/404941800): This still goes through the entire
-  // initialization flow for the overlay. This is not efficeient, but is being
-  // done to unblock the contextual searchbox prototype. This should be
-  // refactored to be done in the LensSearchController to not go through the
-  // overlay controller.
-  // Virtual for testing.
-  virtual void StartContextualizationWithoutOverlay(
-      lens::LensOverlayInvocationSource invocation_source);
-
-  // Sets a region to search after the overlay loads, then calls ShowUI().
-  // All units are in device pixels. region_bitmap contains the high definition
-  // image bytes to use for the search instead of cropping the region from the
-  // viewport.
-  void ShowUIWithPendingRegion(
-      lens::LensOverlayInvocationSource invocation_source,
-      const gfx::Rect& tab_bounds,
-      const gfx::Rect& view_bounds,
-      const gfx::Rect& region_bounds,
-      const SkBitmap& region_bitmap);
-
-  // Implementation detail of above, exposed for testing. Do not call this
-  // directly.
-  void ShowUIWithPendingRegion(
-      lens::LensOverlayInvocationSource invocation_source,
-      lens::mojom::CenterRotatedBoxPtr region,
-      const SkBitmap& region_bitmap);
-
   // This method is used to set up communication between this instance and the
   // overlay WebUI. This is called by the WebUIController when the WebUI is
   // executing javascript and ready to bind.
@@ -578,6 +539,36 @@ class LensOverlayController : public LensSearchboxClient,
   // overlay is successfully invoked, then the value of `invocation_source` will
   // be recorded in the relevant metrics.
   void ShowUI(lens::LensOverlayInvocationSource invocation_source);
+
+  // Issues a contextual search request for Lens to fulfill.
+  // No-op if the Lens Overlay is off or closing. If the Lens Overlay is in the
+  // process of opening, the request will be queued until the overlay is fully
+  // opened.
+  // TODO(crbug.com/403629222): Revisit if it makes sense to pass the
+  // destination URL instead of the query text directly.
+  void IssueContextualSearchRequest(const GURL& destination_url,
+                                    AutocompleteMatchType::Type match_type,
+                                    bool is_zero_prefix_suggestion);
+
+  // Starts the contextualization flow without the overlay being shown to the
+  // user.
+  // TODO(crbug.com/404941800): This still goes through the entire
+  // initialization flow for the overlay. This is not efficeient, but is being
+  // done to unblock the contextual searchbox prototype. This should be
+  // refactored to be done in the LensSearchController to not go through the
+  // overlay controller.
+  // Virtual for testing.
+  virtual void StartContextualizationWithoutOverlay(
+      lens::LensOverlayInvocationSource invocation_source);
+
+  // Sets a region to search after the overlay loads, then calls ShowUI().
+  // All units are in device pixels. region_bitmap contains the high definition
+  // image bytes to use for the search instead of cropping the region from the
+  // viewport.
+  void ShowUIWithPendingRegion(
+      lens::LensOverlayInvocationSource invocation_source,
+      lens::mojom::CenterRotatedBoxPtr region,
+      const SkBitmap& region_bitmap);
 
   // Starts the closing process of the overlay. This is an asynchronous process
   // with the following sequence:

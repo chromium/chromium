@@ -811,6 +811,14 @@ class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
     GetLensSearchController()->OpenLensOverlay(invocation_source);
   }
 
+  void OpenLensOverlayWithPendingRegion(
+      lens::LensOverlayInvocationSource invocation_source,
+      lens::mojom::CenterRotatedBoxPtr region,
+      const SkBitmap& region_bitmap) {
+    GetLensSearchController()->OpenLensOverlayWithPendingRegion(
+        invocation_source, std::move(region), region_bitmap);
+  }
+
   void SimulateLeftClickDrag(gfx::Point from, gfx::Point to) {
     auto* overlay_web_contents = GetOverlayWebContents();
 
@@ -1343,8 +1351,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 
   // Showing UI should change the state to screenshot and eventually to overlay.
   SkBitmap initial_bitmap = CreateNonEmptyBitmap(100, 100);
-  controller->ShowUIWithPendingRegion(LensOverlayInvocationSource::kAppMenu,
-                                      kTestRegion->Clone(), initial_bitmap);
+  OpenLensOverlayWithPendingRegion(LensOverlayInvocationSource::kAppMenu,
+                                   kTestRegion->Clone(), initial_bitmap);
   ASSERT_EQ(controller->state(), State::kScreenshot);
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOverlayAndResults; }));
@@ -3509,7 +3517,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   ASSERT_EQ(controller->state(), State::kOff);
 
   // Showing UI should change the state to screenshot and eventually to overlay.
-  controller->ShowUIWithPendingRegion(
+  OpenLensOverlayWithPendingRegion(
       LensOverlayInvocationSource::kContentAreaContextMenuImage,
       kTestRegion->Clone(), CreateNonEmptyBitmap(100, 100));
   ASSERT_EQ(controller->state(), State::kScreenshot);
@@ -3857,7 +3865,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   ASSERT_EQ(controller->state(), State::kOff);
 
   // Showing UI should change the state to screenshot and eventually to overlay.
-  controller->ShowUIWithPendingRegion(
+  OpenLensOverlayWithPendingRegion(
       LensOverlayInvocationSource::kContentAreaContextMenuImage,
       kTestRegion->Clone(), CreateNonEmptyBitmap(100, 100));
   ASSERT_EQ(controller->state(), State::kScreenshot);
@@ -3978,7 +3986,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Showing UI should change the state to screenshot and eventually to overlay.
   SkBitmap initial_bitmap = CreateNonEmptyBitmap(100, 100);
-  controller->ShowUIWithPendingRegion(
+  OpenLensOverlayWithPendingRegion(
       LensOverlayInvocationSource::kContentAreaContextMenuImage,
       kTestRegion->Clone(), initial_bitmap);
   ASSERT_EQ(controller->state(), State::kScreenshot);
@@ -6446,7 +6454,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   ASSERT_EQ(controller->state(), State::kOff);
 
   // Showing UI should change the state to screenshot and eventually to overlay.
-  controller->ShowUIWithPendingRegion(
+  OpenLensOverlayWithPendingRegion(
       LensOverlayInvocationSource::kContentAreaContextMenuImage,
       kTestRegion->Clone(), CreateNonEmptyBitmap(100, 100));
   ASSERT_EQ(controller->state(), State::kScreenshot);
