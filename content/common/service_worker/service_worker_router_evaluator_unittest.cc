@@ -1383,6 +1383,25 @@ TEST(ServiceWorkerRouterEvaluator, ToValueBasicSimpleRule) {
       source.cache_source = cache_source;
       rule.sources.push_back(source);
     }
+    {
+      blink::ServiceWorkerRouterSource source;
+      source.type =
+          network::mojom::ServiceWorkerRouterSourceType::kRaceNetworkAndCache;
+      source.race_network_and_cache_source.emplace();
+      blink::ServiceWorkerRouterCacheSource cache_source;
+      source.race_network_and_cache_source->cache_source = cache_source;
+      rule.sources.push_back(source);
+    }
+    {
+      blink::ServiceWorkerRouterSource source;
+      source.type =
+          network::mojom::ServiceWorkerRouterSourceType::kRaceNetworkAndCache;
+      source.race_network_and_cache_source.emplace();
+      blink::ServiceWorkerRouterCacheSource cache_source;
+      cache_source.cache_name = "example_cache_name";
+      source.race_network_and_cache_source->cache_source = cache_source;
+      rule.sources.push_back(source);
+    }
     rules.rules.push_back(rule);
   }
   ASSERT_EQ(1U, rules.rules.size());
@@ -1429,6 +1448,12 @@ TEST(ServiceWorkerRouterEvaluator, ToValueBasicSimpleRule) {
         {
           base::Value::Dict source;
           source.Set("cache_name", "example_cache_name");
+          sources.Append(std::move(source));
+        }
+        sources.Append("race-network-and-cache");
+        {
+          base::Value::Dict source;
+          source.Set("race_network_and_cache_cache_name", "example_cache_name");
           sources.Append(std::move(source));
         }
         rule.Set("source", std::move(sources));

@@ -136,6 +136,11 @@ struct ServiceWorkerSubresourceLoadMetrics {
   // Routing API, from navigation start till onload event.
   uint32_t matched_race_network_and_fetch_router_source_count = 0;
 
+  // Total number of sub-resources which were matched to the
+  // `RouterSourceEnum.race-network-and-cache` in ServiceWorker Static
+  // Routing API, from navigation start till onload event.
+  uint32_t matched_race_network_and_cache_router_source_count = 0;
+
   // Total router evaluation time of ServiceWorker Static Routing API
   // for sub-resources.
   base::TimeDelta total_router_evaluation_time_for_subresources;
@@ -183,6 +188,8 @@ struct ServiceWorkerSubresourceLoadMetrics {
                other.matched_cache_router_source_count &&
            matched_race_network_and_fetch_router_source_count ==
                other.matched_race_network_and_fetch_router_source_count &&
+           matched_race_network_and_cache_router_source_count ==
+               other.matched_race_network_and_cache_router_source_count &&
            total_router_evaluation_time_for_subresources ==
                other.total_router_evaluation_time_for_subresources &&
            total_cache_lookup_time_for_subresources ==
