@@ -319,21 +319,7 @@ class EndpointFetcher {
       signin::IdentityManager* identity_manager,
       signin::ConsentLevel consent_level);
 
-  // This Constructor can be used in a background thread.
-  EndpointFetcher(
-      const GURL& url,
-      const std::string& http_method,
-      const std::string& content_type,
-      const base::TimeDelta& timeout,
-      const std::string& post_data,
-      const std::vector<std::string>& headers,
-      const std::vector<std::string>& cors_exempt_headers,
-      const net::NetworkTrafficAnnotationTag& annotation_tag,
-      const scoped_refptr<network::SharedURLLoaderFactory>& url_loader_factory,
-      bool is_oauth_fetch);
-
   EndpointFetcher(const EndpointFetcher& endpoint_fetcher) = delete;
-
   EndpointFetcher& operator=(const EndpointFetcher& endpoint_fetcher) = delete;
 
   virtual ~EndpointFetcher();
