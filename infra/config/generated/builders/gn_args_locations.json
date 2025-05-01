@@ -345,6 +345,7 @@
     "mac13-wpt-chromium-rel": "ci/mac13-wpt-chromium-rel/gn-args.json",
     "win-annotator-rel": "ci/win-annotator-rel/gn-args.json",
     "win-fieldtrial-rel": "ci/win-fieldtrial-rel/gn-args.json",
+    "win-no-safe-browsing-rel": "ci/win-no-safe-browsing-rel/gn-args.json",
     "win-perfetto-rel": "ci/win-perfetto-rel/gn-args.json",
     "win-upload-perfetto": "ci/win-upload-perfetto/gn-args.json",
     "win10-rel-no-external-ip": "ci/win10-rel-no-external-ip/gn-args.json",
@@ -525,8 +526,7 @@
     "Windows deterministic": "ci/Windows deterministic/gn-args.json",
     "linux-win-cross-rel": "ci/linux-win-cross-rel/gn-args.json",
     "win-arm64-dbg": "ci/win-arm64-dbg/gn-args.json",
-    "win-arm64-rel": "ci/win-arm64-rel/gn-args.json",
-    "win-no-safe-browsing-rel": "ci/win-no-safe-browsing-rel/gn-args.json"
+    "win-arm64-rel": "ci/win-arm64-rel/gn-args.json"
   },
   "tryserver.blink": {
     "linux-blink-rel": "try/linux-blink-rel/gn-args.json",
