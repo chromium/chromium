@@ -150,6 +150,7 @@ UPLOAD_SKIA_JSON_BUILDERS = frozenset([
 
 PUBLIC_PERF_BUILDERS = [
     'linux-perf-fyi',  # ChromiumPerfFyi
+    'linux-r350-perf',  # ChromiumPerf
     'win-10-perf',  # ChromiumPerf
 ]
 

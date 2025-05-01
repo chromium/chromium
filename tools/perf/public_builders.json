@@ -3,6 +3,7 @@
   "AAAAA2 See //tools/perf/generate_perf_data to make changes": {},
   "public_perf_builders": [
     "linux-perf-fyi",
+    "linux-r350-perf",
     "win-10-perf"
   ]
 }
