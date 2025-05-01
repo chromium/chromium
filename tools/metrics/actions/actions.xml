@@ -37030,6 +37030,10 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Settings.TrackingProtection.OpenedFromPrivacyPage">
+  <obsolete>
+    Deprecated 04/2025. The Tracking Protection page was deprecated and removed
+    in Q4 2024.
+  </obsolete>
   <owner>alvingo@google.com</owner>
   <owner>koilos@google.com</owner>
   <description>
