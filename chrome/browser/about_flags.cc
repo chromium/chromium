@@ -5587,6 +5587,11 @@ const FeatureEntry kFeatureEntries[] = {
          switches::kCastStreamingForceEnableHardwareH264,
          switches::kCastStreamingForceDisableHardwareH264)},
 
+    {"cast-streaming-hardware-hevc",
+     flag_descriptions::kCastStreamingHardwareHevcName,
+     flag_descriptions::kCastStreamingHardwareHevcDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(media::kCastStreamingHardwareHevc)},
+
     {"cast-streaming-hardware-vp8",
      flag_descriptions::kCastStreamingHardwareVp8Name,
      flag_descriptions::kCastStreamingHardwareVp8Description, kOsDesktop,

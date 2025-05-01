@@ -269,14 +269,14 @@ const char kEnablePrimaryNodeAccessForVkmsTesting[] =
 
 const char kCastStreamingForceDisableHardwareH264[] =
     "cast-streaming-force-disable-hardware-h264";
-const char kCastStreamingForceDisableHardwareVp8[] =
-    "cast-streaming-force-disable-hardware-vp8";
-const char kCastStreamingForceDisableHardwareVp9[] =
-    "cast-streaming-force-disable-hardware-vp9";
 const char kCastStreamingForceEnableHardwareH264[] =
     "cast-streaming-force-enable-hardware-h264";
+const char kCastStreamingForceDisableHardwareVp8[] =
+    "cast-streaming-force-disable-hardware-vp8";
 const char kCastStreamingForceEnableHardwareVp8[] =
     "cast-streaming-force-enable-hardware-vp8";
+const char kCastStreamingForceDisableHardwareVp9[] =
+    "cast-streaming-force-disable-hardware-vp9";
 const char kCastStreamingForceEnableHardwareVp9[] =
     "cast-streaming-force-enable-hardware-vp9";
 
@@ -1558,6 +1558,10 @@ BASE_FEATURE(kCastStreamingAv1,
 // the legacy linear algorithm.
 BASE_FEATURE(kCastStreamingExponentialVideoBitrateAlgorithm,
              "CastStreamingExponentialVideoBitrateAlgorithm",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kCastStreamingHardwareHevc,
+             "CastStreamingHardwareHevc",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // TODO(crbug.com/282984511): Remove after M151.

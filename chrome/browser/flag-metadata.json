@@ -1325,6 +1325,11 @@
     "expiry_milestone": 151
   },
   {
+    "name": "cast-streaming-hardware-hevc",
+    "owners": [ "jophba@chromium.org", "openscreen-eng@chromium.org" ],
+    "expiry_milestone": 151
+  },
+  {
     "name": "cast-streaming-hardware-vp8",
     "owners": [ "jophba@chromium.org", "openscreen-eng@chromium.org" ],
     "expiry_milestone": 151

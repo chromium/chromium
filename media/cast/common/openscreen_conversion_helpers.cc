@@ -114,12 +114,14 @@ openscreen::cast::VideoCodec ToOpenscreenVideoCodec(media::VideoCodec codec) {
       return openscreen::cast::VideoCodec::kNotSpecified;
     case media::VideoCodec::kVP8:
       return openscreen::cast::VideoCodec::kVp8;
-    case media::VideoCodec::kH264:
-      return openscreen::cast::VideoCodec::kH264;
     case media::VideoCodec::kVP9:
       return openscreen::cast::VideoCodec::kVp9;
     case media::VideoCodec::kAV1:
       return openscreen::cast::VideoCodec::kAv1;
+    case media::VideoCodec::kH264:
+      return openscreen::cast::VideoCodec::kH264;
+    case media::VideoCodec::kHEVC:
+      return openscreen::cast::VideoCodec::kHevc;
     default:
       NOTREACHED();
   }

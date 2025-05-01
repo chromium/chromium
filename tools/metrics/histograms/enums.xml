@@ -10745,6 +10745,7 @@ from previous Chrome versions.
   <int value="-1390005994" label="AppCache:disabled"/>
   <int value="-1389948505" label="InitialNavigationEntry:disabled"/>
   <int value="-1388956102" label="OmniboxTouchDownTriggerForPrefetch:disabled"/>
+  <int value="-1388933740" label="CastStreamingHardwareHevc:enabled"/>
   <int value="-1388817073" label="OmniboxReverseAnswers:disabled"/>
   <int value="-1388546778" label="WebAppManifestImmediateUpdating:disabled"/>
   <int value="-1388233453"
@@ -17751,6 +17752,7 @@ from previous Chrome versions.
   <int value="1295005331" label="SupportPepperVideoDecoderDevAPI:enabled"/>
   <int value="1295669314" label="OmniboxOnClobberFocusTypeOnContent:enabled"/>
   <int value="1295688198" label="ClipboardHistoryRefresh:enabled"/>
+  <int value="1295868587" label="CastStreamingHardwareHevc:disabled"/>
   <int value="1295887301" label="ShowNtpAtStartupAndroid:disabled"/>
   <int value="1296474231" label="SafetyHubAndroidSurvey:disabled"/>
   <int value="1296512860" label="AndroidAppIntegrationV2:disabled"/>
