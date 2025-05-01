@@ -197,6 +197,7 @@ class BinaryUploadService : public KeyedService {
     void add_local_ips(const std::string& ip_address);
     void set_referrer_chain(const google::protobuf::RepeatedPtrField<
                             safe_browsing::ReferrerChainEntry> referrer_chain);
+    void set_content_area_account_email(const std::string& email);
 
     std::string SetRandomRequestToken();
 

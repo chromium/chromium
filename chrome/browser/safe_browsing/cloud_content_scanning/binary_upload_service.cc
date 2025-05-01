@@ -276,6 +276,12 @@ void BinaryUploadService::Request::set_referrer_chain(
       std::move(referrer_chain);
 }
 
+void BinaryUploadService::Request::set_content_area_account_email(
+    const std::string& email) {
+  content_analysis_request_.mutable_request_data()
+      ->set_content_area_account_email(email);
+}
+
 std::string BinaryUploadService::Request::SetRandomRequestToken() {
   DCHECK(request_token().empty());
   content_analysis_request_.set_request_token(

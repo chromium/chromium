@@ -2117,6 +2117,8 @@ std::string SerializeContentAnalysisRequest(
     request_data.Set("destination", request.request_data().destination());
     request_data.Set("email", request.request_data().email());
     request_data.Set("tab_title", request.request_data().tab_title());
+    request_data.Set("content_area_account_email",
+                     request.request_data().content_area_account_email());
 
     if (request.request_data().has_print_metadata()) {
       base::Value::Dict print_metadata;
