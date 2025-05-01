@@ -245,7 +245,8 @@ void NetworkFetcherTask::InvokePostRequestCompleteCallback(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::move(post_request_complete_callback_)
       .Run(std::move(response_body), network_error, header_etag,
-           header_x_cup_server_proof, x_header_retry_after_sec);
+           header_x_cup_server_proof, /*header_cookie=*/"",
+           x_header_retry_after_sec);
 }
 
 }  // namespace android_webview

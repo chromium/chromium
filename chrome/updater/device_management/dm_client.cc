@@ -162,6 +162,7 @@ class DMFetch : public base::RefCountedThreadSafe<DMFetch> {
                          int net_error,
                          const std::string& header_etag,
                          const std::string& header_x_cup_server_proof,
+                         const std::string& header_cookie,
                          int64_t xheader_retry_after_sec);
 
   std::unique_ptr<DMClient::Configurator> config_;
@@ -275,6 +276,7 @@ void DMFetch::OnRequestComplete(std::optional<std::string> response_body,
                                 int net_error,
                                 const std::string& header_etag,
                                 const std::string& header_x_cup_server_proof,
+                                const std::string& header_cookie,
                                 int64_t xheader_retry_after_sec) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(2) << __func__;

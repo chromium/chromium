@@ -62,10 +62,11 @@ class PostRequestObserverWrapper
                          int32_t net_error,
                          const std::string& header_etag,
                          const std::string& header_x_cup_server_proof,
+                         const std::string& header_cookie,
                          int64_t xheader_retry_after_sec) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     observer_->OnRequestComplete(*response_body, net_error, header_etag,
-                                 header_x_cup_server_proof,
+                                 header_x_cup_server_proof, header_cookie,
                                  xheader_retry_after_sec);
   }
 
@@ -172,7 +173,8 @@ void FetchServiceImpl::PostRequest(
       base::MakeRefCounted<PostRequestObserverWrapper>(std::move(callback));
   if (fetcher_ || file_fetcher_) {
     LOG(ERROR) << "Each service instance can do only one fetch request.";
-    wrapper->OnRequestComplete(nullptr, kErrorMojoRequestRejected, {}, {}, -1);
+    wrapper->OnRequestComplete(nullptr, kErrorMojoRequestRejected, {}, {}, {},
+                               -1);
     std::move(on_complete_callback_).Run(kErrorMojoRequestRejected);
     return;
   }
@@ -195,10 +197,11 @@ void FetchServiceImpl::PostRequest(
              std::optional<std::string> response_body, int32_t net_error,
              const std::string& header_etag,
              const std::string& header_x_cup_server_proof,
+             const std::string& header_cookie,
              int64_t xheader_retry_after_sec) {
             wrapper->OnRequestComplete(std::move(response_body), net_error,
                                        header_etag, header_x_cup_server_proof,
-                                       xheader_retry_after_sec);
+                                       header_cookie, xheader_retry_after_sec);
             std::move(callback).Run(net_error);
           },
           wrapper, std::move(on_complete_callback_)));
