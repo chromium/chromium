@@ -137,6 +137,7 @@ import org.chromium.chrome.browser.toolbar.back_button.BackButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.bottom.BottomControlsContentDelegate;
 import org.chromium.chrome.browser.toolbar.bottom.BottomControlsCoordinator;
 import org.chromium.chrome.browser.toolbar.bottom.ScrollingBottomViewResourceFrameLayout;
+import org.chromium.chrome.browser.toolbar.extensions.ExtensionToolbarManager;
 import org.chromium.chrome.browser.toolbar.home_button.HomeButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.load_progress.LoadProgressCoordinator;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
@@ -302,6 +303,8 @@ public class ToolbarManager
     private HomeButtonCoordinator mHomeButtonCoordinator;
     private ToggleTabStackButtonCoordinator mTabSwitcherButtonCoordinator;
     private @Nullable BackButtonCoordinator mBackButtonCoordinator;
+    private @Nullable ExtensionToolbarManager mExtensionToolbarManager;
+
     private BrowserStateBrowserControlsVisibilityDelegate mControlsVisibilityDelegate;
     private int mFullscreenFocusToken = TokenHolder.INVALID_TOKEN;
     private int mFullscreenFindInPageToken = TokenHolder.INVALID_TOKEN;
@@ -1592,6 +1595,14 @@ public class ToolbarManager
         mWindowAndroid.setProgressBarConfigProvider(mProgressBarConfigProvider);
         initializeToolbarPositionController();
 
+        ViewStub extensionToolbarStub =
+                controlContainer.findViewById(R.id.extension_toolbar_container_stub);
+        if (extensionToolbarStub != null) {
+            mExtensionToolbarManager =
+                    ExtensionToolbarManager.maybeCreate(
+                            mActivity, extensionToolbarStub, profileSupplier, tabProvider);
+        }
+
         TraceEvent.end("ToolbarManager.ToolbarManager");
     }
 
@@ -2306,6 +2317,11 @@ public class ToolbarManager
         if (mTabSwitcherButtonCoordinator != null) {
             mTabSwitcherButtonCoordinator.destroy();
             mTabSwitcherButtonCoordinator = null;
+        }
+
+        if (mExtensionToolbarManager != null) {
+            mExtensionToolbarManager.destroy();
+            mExtensionToolbarManager = null;
         }
 
         if (mCallbackController != null) {
