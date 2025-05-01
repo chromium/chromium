@@ -16,6 +16,7 @@
 #include "net/base/tracing.h"
 #include "net/log/net_log_entry.h"
 #include "net/log/net_log_event_type.h"
+#include "third_party/perfetto/include/perfetto/tracing/track_event.h"
 
 namespace net {
 
@@ -61,22 +62,23 @@ void TraceNetLogObserver::OnAddEntry(const NetLogEntry& entry) {
              NetLog::TickCountToString(entry.source.start_time));
   switch (entry.phase) {
     case NetLogEventPhase::BEGIN:
-      TRACE_EVENT_NESTABLE_ASYNC_BEGIN2(
-          kNetLogTracingCategory, NetLogEventTypeToString(entry.type),
-          entry.source.id, "source_type",
+      TRACE_EVENT_BEGIN(
+          kNetLogTracingCategory,
+          perfetto::StaticString(NetLogEventTypeToString(entry.type)),
+          perfetto::Track(entry.source.id), "source_type",
           NetLog::SourceTypeToString(entry.source.type), "params",
           std::make_unique<TracedValue>(std::move(params)));
       break;
     case NetLogEventPhase::END:
-      TRACE_EVENT_NESTABLE_ASYNC_END1(
-          kNetLogTracingCategory, NetLogEventTypeToString(entry.type),
-          entry.source.id, "params",
-          std::make_unique<TracedValue>(std::move(params)));
+      TRACE_EVENT_END(kNetLogTracingCategory, perfetto::Track(entry.source.id),
+                      "params",
+                      std::make_unique<TracedValue>(std::move(params)));
       break;
     case NetLogEventPhase::NONE:
-      TRACE_EVENT_NESTABLE_ASYNC_INSTANT2(
-          kNetLogTracingCategory, NetLogEventTypeToString(entry.type),
-          entry.source.id, "source_type",
+      TRACE_EVENT_INSTANT(
+          kNetLogTracingCategory,
+          perfetto::StaticString(NetLogEventTypeToString(entry.type)),
+          perfetto::Track(entry.source.id), "source_type",
           NetLog::SourceTypeToString(entry.source.type), "params",
           std::make_unique<TracedValue>(std::move(params)));
       break;
