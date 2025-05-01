@@ -56,7 +56,7 @@ _BUILD_GRADLE = 'build.gradle'
 # Location of the android_deps libs directory relative to custom 'android_deps' directory.
 _LIBS_DIR = 'libs'
 
-_GN_PATH = os.path.join(_CHROMIUM_SRC, 'third_party', 'depot_tools', 'gn')
+_GN_PATH = os.path.join(_CHROMIUM_SRC, 'third_party', 'depot_tools', 'gn.py')
 
 _GRADLEW = os.path.join(_CHROMIUM_SRC, 'third_party', 'android_build_tools',
                         'gradle_wrapper', 'gradlew')
