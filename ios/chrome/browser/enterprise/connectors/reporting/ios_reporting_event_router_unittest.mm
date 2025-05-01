@@ -474,4 +474,36 @@ TEST_F(IOSReportingEventRouterTest, TestInterstitialProceeded) {
       GURL("https://phishing.com/"), "PHISHING", 0);
 }
 
+// Tests that password reuse reporting events warned as expected.
+TEST_F(IOSReportingEventRouterTest, TestPasswordReuseWarned) {
+  test::SetOnSecurityEventReporting(
+      profile_->GetTestingPrefService(), /*enabled=*/true,
+      /*enabled_event_names=*/{kKeyPasswordReuseEvent},
+      /*enabled_opt_in_events=*/{});
+
+  test::EventReportValidatorBase validator(client_.get());
+  validator.ExpectPasswordReuseEvent(
+      "https://phishing.com/", "user_name_1", true, "EVENT_RESULT_WARNED",
+      profile_->GetProfileName(), GetProfileIdentifier());
+  reporting_event_router_->OnPasswordReuse(
+      GURL("https://phishing.com/"), "user_name_1", /*is_phishing_url*/ true,
+      /*warning_shown*/ true);
+}
+
+// Tests that password reuse reporting events allowed as expected.
+TEST_F(IOSReportingEventRouterTest, TestPasswordReuseAllowed) {
+  test::SetOnSecurityEventReporting(
+      profile_->GetTestingPrefService(), /*enabled=*/true,
+      /*enabled_event_names=*/{kKeyPasswordReuseEvent},
+      /*enabled_opt_in_events=*/{});
+
+  test::EventReportValidatorBase validator(client_.get());
+  validator.ExpectPasswordReuseEvent(
+      "https://phishing.com/", "user_name_1", true, "EVENT_RESULT_ALLOWED",
+      profile_->GetProfileName(), GetProfileIdentifier());
+  reporting_event_router_->OnPasswordReuse(
+      GURL("https://phishing.com/"), "user_name_1", /*is_phishing_url*/ true,
+      /*warning_shown*/ false);
+}
+
 }  // namespace enterprise_connectors

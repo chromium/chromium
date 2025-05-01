@@ -75,9 +75,11 @@ constexpr char kKeyTriggeredRuleInfo[] = "triggeredRuleInfo";
 constexpr char kKeyTriggeredRuleName[] = "ruleName";
 constexpr char kKeyTriggeredRuleId[] = "ruleId";
 constexpr char kKeyUrlCategory[] = "urlCategory";
+constexpr char kKeyUserName[] = "userName";
 constexpr char kKeyAction[] = "action";
 constexpr char kKeyHasWatermarking[] = "hasWatermarking";
 constexpr char kKeyIsFederated[] = "isFederated";
+constexpr char kKeyIsPhishingUrl[] = "isPhishingUrl";
 constexpr char kKeyFederatedOrigin[] = "federatedOrigin";
 constexpr char kKeyProfileIdentifier[] = "profileIdentifier";
 constexpr char kKeyProfileUserName[] = "profileUserName";
@@ -353,6 +355,42 @@ void EventReportValidatorBase::ExpectPasswordBreachEvent(
         if (!done_closure_.is_null()) {
           done_closure_.Run();
         }
+      });
+}
+
+void EventReportValidatorBase::ExpectPasswordReuseEvent(
+    const std::string& expected_url,
+    const std::string& expected_username,
+    bool expected_is_phishing_url,
+    const std::string& event_result,
+    const std::string& expected_profile_username,
+    const std::string& expected_profile_identifier) {
+  EXPECT_CALL(*client_, UploadSecurityEventReport)
+      .WillOnce([this, expected_url, expected_username,
+                 expected_is_phishing_url, event_result,
+                 expected_profile_username, expected_profile_identifier](
+                    bool include_device_info, base::Value::Dict report,
+                    base::OnceCallback<void(policy::CloudPolicyClient::Result)>
+                        callback) {
+        // Extract the event list.
+        const base::Value::List* event_list = report.FindList(
+            policy::RealtimeReportingJobConfiguration::kEventListKey);
+        ASSERT_TRUE(event_list);
+
+        // There should only be 1 event per test.
+        ASSERT_EQ(1u, event_list->size());
+        const base::Value::Dict& wrapper = (*event_list)[0].GetDict();
+        const base::Value::Dict* event =
+            wrapper.FindDict(enterprise_connectors::kKeyPasswordReuseEvent);
+        ASSERT_TRUE(event);
+
+        ValidateField(event, kKeyURL, expected_url);
+        ValidateField(event, kKeyUserName, expected_username);
+        ValidateField(event, kKeyIsPhishingUrl, expected_is_phishing_url);
+        ValidateField(event, kKeyEventResult, event_result);
+        ValidateField(event, kKeyProfileUserName, expected_profile_username);
+        ValidateField(event, kKeyProfileIdentifier,
+                      expected_profile_identifier);
       });
 }
 

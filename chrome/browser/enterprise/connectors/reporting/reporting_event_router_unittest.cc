@@ -438,4 +438,34 @@ TEST_F(ReportingEventRouterTest, TestInterstitialProceeded) {
       GURL("https://phishing.com/"), "PHISHING", 0);
 }
 
+TEST_F(ReportingEventRouterTest, TestPasswordReuseWarned) {
+  test::SetOnSecurityEventReporting(
+      profile_->GetPrefs(), /*enabled=*/true,
+      /*enabled_event_names=*/{kKeyPasswordReuseEvent},
+      /*enabled_opt_in_events=*/{});
+
+  test::EventReportValidatorBase validator(client_.get());
+  validator.ExpectPasswordReuseEvent(
+      "https://phishing.com/", "user_name_1", true, "EVENT_RESULT_WARNED",
+      profile_->GetProfileUserName(), GetProfileIdentifier());
+  reporting_event_router_->OnPasswordReuse(
+      GURL("https://phishing.com/"), "user_name_1", /*is_phishing_url*/ true,
+      /*warning_shown*/ true);
+}
+
+TEST_F(ReportingEventRouterTest, TestPasswordReuseAllowed) {
+  test::SetOnSecurityEventReporting(
+      profile_->GetPrefs(), /*enabled=*/true,
+      /*enabled_event_names=*/{kKeyPasswordReuseEvent},
+      /*enabled_opt_in_events=*/{});
+
+  test::EventReportValidatorBase validator(client_.get());
+  validator.ExpectPasswordReuseEvent(
+      "https://phishing.com/", "user_name_1", true, "EVENT_RESULT_ALLOWED",
+      profile_->GetProfileUserName(), GetProfileIdentifier());
+  reporting_event_router_->OnPasswordReuse(
+      GURL("https://phishing.com/"), "user_name_1", /*is_phishing_url*/ true,
+      /*warning_shown*/ false);
+}
+
 }  // namespace enterprise_connectors
