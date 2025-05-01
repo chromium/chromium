@@ -342,11 +342,7 @@
     {
       name: "AIPromptAPIForWorkers",
       public: true,
-      origin_trial_feature_name: "AIPromptAPIForExtension",
-      origin_trial_allows_third_party: true,
       status: "experimental",
-      base_feature_status: "enabled",
-      copied_from_base_feature_if: "overridden",
     },
     {
       name: "AIPromptAPIMultimodalInput",
