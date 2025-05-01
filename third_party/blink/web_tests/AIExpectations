@@ -4,8 +4,3 @@
 # are skipped or marked as flaky by the defaut TestExpectations.
 # When Optimization Guide Bots run AI related API tests, the default
 # TestExpectations file is ignored and this file is referred.
-
-
-# Temporarily disable Language Detector iframe tests until Permissions Policy
-# and individual test setup is updated.
-crbug.com/414403946 external/wpt/ai/language_detection/detector-iframe.https.html [ Skip ]
