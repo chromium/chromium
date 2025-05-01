@@ -2305,6 +2305,10 @@ Your Google account may have other forms of browsing history like searches and a
           desc="Text for the dialog showing a list of tabs for capture to ask user if tab audio should be shared.">
           Also share tab audio
         </message>
+        <message name="IDS_MEDIA_CAPTURE_PICKER_DIALOG_WINDOW_OR_SCREEN_TEXT"
+          desc="Text for the dialog showing a list of tabs for capture to ask user whether to share a window or screen instead of a tab.">
+          Share window or screen instead
+        </message>
       </if>
 
       <!-- Download open dialog -->

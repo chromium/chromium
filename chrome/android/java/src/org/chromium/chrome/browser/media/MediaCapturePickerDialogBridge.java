@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.media;
 
 import android.app.Activity;
 
+import androidx.annotation.NonNull;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
@@ -15,7 +17,7 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
 
 /** Glue for the media capture picker dialog UI code and communication with the native backend. */
-public class MediaCapturePickerDialogBridge {
+public class MediaCapturePickerDialogBridge implements MediaCapturePickerDialog.Delegate {
     private long mNativeMediaCapturePickerDialogBridge;
 
     /**
@@ -55,14 +57,7 @@ public class MediaCapturePickerDialogBridge {
                 ((ModalDialogManagerHolder) activity).getModalDialogManager(),
                 appName,
                 requestAudio,
-                (webContents, audioShare) -> {
-                    // We know `mNativeMediaCapturePickerDialogBridge` is non-zero because
-                    // `destroy` will only be called after the dialog is dismissed.
-                    assert mNativeMediaCapturePickerDialogBridge != 0;
-                    MediaCapturePickerDialogBridgeJni.get()
-                            .onResult(
-                                    mNativeMediaCapturePickerDialogBridge, webContents, audioShare);
-                });
+                this);
     }
 
     @CalledByNative
@@ -70,11 +65,50 @@ public class MediaCapturePickerDialogBridge {
         mNativeMediaCapturePickerDialogBridge = 0;
     }
 
+    @Override
+    public void onPickTab(@NonNull WebContents webContents, boolean audioShare) {
+        // We know `mNativeMediaCapturePickerDialogBridge` is non-zero because
+        // `destroy` will only be called after the dialog is dismissed.
+        assert mNativeMediaCapturePickerDialogBridge != 0;
+        MediaCapturePickerDialogBridgeJni.get()
+                .onPickTab(mNativeMediaCapturePickerDialogBridge, webContents, audioShare);
+    }
+
+    @Override
+    public void onPickWindow() {
+        // We know `mNativeMediaCapturePickerDialogBridge` is non-zero because
+        // `destroy` will only be called after the dialog is dismissed.
+        assert mNativeMediaCapturePickerDialogBridge != 0;
+        MediaCapturePickerDialogBridgeJni.get().onPickWindow(mNativeMediaCapturePickerDialogBridge);
+    }
+
+    @Override
+    public void onPickScreen() {
+        // We know `mNativeMediaCapturePickerDialogBridge` is non-zero because
+        // `destroy` will only be called after the dialog is dismissed.
+        assert mNativeMediaCapturePickerDialogBridge != 0;
+        MediaCapturePickerDialogBridgeJni.get().onPickScreen(mNativeMediaCapturePickerDialogBridge);
+    }
+
+    @Override
+    public void onCancel() {
+        // We know `mNativeMediaCapturePickerDialogBridge` is non-zero because
+        // `destroy` will only be called after the dialog is dismissed.
+        assert mNativeMediaCapturePickerDialogBridge != 0;
+        MediaCapturePickerDialogBridgeJni.get().onCancel(mNativeMediaCapturePickerDialogBridge);
+    }
+
     @NativeMethods
     interface Natives {
-        void onResult(
+        void onPickTab(
                 long nativeMediaCapturePickerDialogBridge,
                 WebContents webContents,
                 boolean audioShare);
+
+        void onPickWindow(long nativeMediaCapturePickerDialogBridge);
+
+        void onPickScreen(long nativeMediaCapturePickerDialogBridge);
+
+        void onCancel(long nativeMediaCapturePickerDialogBridge);
     }
 }

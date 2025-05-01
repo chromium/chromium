@@ -52,26 +52,35 @@ void MediaCapturePickerDialogBridge::Show(
       request_audio);
 }
 
-void MediaCapturePickerDialogBridge::OnResult(
+void MediaCapturePickerDialogBridge::OnPickTab(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& java_web_contents,
     bool audio_share) {
-  content::DesktopMediaID desktop_media_id;
-
-  // If no web contents was selected to capture, return a null DesktopMediaID.
-  // TODO(crbug.com/352186941): Implement for window and screen sharing.
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(java_web_contents);
-  if (web_contents) {
-    desktop_media_id = content::DesktopMediaID(
-        content::DesktopMediaID::TYPE_WEB_CONTENTS,
-        content::DesktopMediaID::kNullId,
-        content::WebContentsMediaCaptureId(
-            web_contents->GetPrimaryMainFrame()
-                ->GetProcess()
-                ->GetDeprecatedID(),
-            web_contents->GetPrimaryMainFrame()->GetRoutingID()));
-    desktop_media_id.audio_share = audio_share;
-  }
+  CHECK(web_contents);
+  auto desktop_media_id = content::DesktopMediaID(
+      content::DesktopMediaID::TYPE_WEB_CONTENTS,
+      content::DesktopMediaID::kNullId,
+      content::WebContentsMediaCaptureId(
+          web_contents->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID(),
+          web_contents->GetPrimaryMainFrame()->GetRoutingID()));
+  desktop_media_id.audio_share = audio_share;
   std::move(callback_).Run(desktop_media_id);
+}
+
+void MediaCapturePickerDialogBridge::OnPickWindow(JNIEnv* env) {
+  auto desktop_media_id = content::DesktopMediaID(
+      content::DesktopMediaID::TYPE_WINDOW, content::DesktopMediaID::kNullId);
+  std::move(callback_).Run(desktop_media_id);
+}
+
+void MediaCapturePickerDialogBridge::OnPickScreen(JNIEnv* env) {
+  auto desktop_media_id = content::DesktopMediaID(
+      content::DesktopMediaID::TYPE_SCREEN, content::DesktopMediaID::kNullId);
+  std::move(callback_).Run(desktop_media_id);
+}
+
+void MediaCapturePickerDialogBridge::OnCancel(JNIEnv* env) {
+  std::move(callback_).Run({});
 }

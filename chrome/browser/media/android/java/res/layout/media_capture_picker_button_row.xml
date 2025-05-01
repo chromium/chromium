@@ -53,6 +53,15 @@ found in the LICENSE file.
     </LinearLayout>
 
 
+    <org.chromium.ui.widget.ButtonCompat
+    android:id="@+id/screen_button"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="@dimen/dialog_padding_sides"
+    android:layout_gravity="end"
+    android:text="@string/media_capture_picker_dialog_window_or_screen_text"
+    style="@style/TextButton" />
+
     <org.chromium.components.browser_ui.widget.DualControlLayout
         android:id="@+id/button_bar"
         android:layout_width="match_parent"
