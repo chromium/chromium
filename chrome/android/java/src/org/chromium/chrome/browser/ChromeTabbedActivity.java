@@ -3785,7 +3785,7 @@ public class ChromeTabbedActivity extends ChromeActivity {
         mAppLaunchDrawBlocker.destroy();
 
         if (mAuxiliarySearchController != null) {
-            mAuxiliarySearchController.destroy();
+            mAuxiliarySearchController.destroy(getLifecycleDispatcher());
         }
 
         if (mDragDropDelegate != null) {

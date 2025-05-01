@@ -10,6 +10,7 @@ import androidx.annotation.IntDef;
 
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 
@@ -63,7 +64,7 @@ public interface AuxiliarySearchController extends PauseResumeWithNativeObserver
     default void onPauseWithNative() {}
 
     /** Destroy and unhook objects at destruction. */
-    default void destroy() {}
+    default void destroy(@Nullable ActivityLifecycleDispatcher lifecycleDispatcher) {}
 
     /**
      * Called after the background task has fetched metadata.
