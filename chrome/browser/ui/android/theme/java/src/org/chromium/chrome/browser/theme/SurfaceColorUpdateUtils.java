@@ -117,8 +117,7 @@ public class SurfaceColorUpdateUtils {
         if (ChromeFeatureList.sGridTabSwitcherSurfaceColorUpdate.isEnabled()) {
             // TODO(crbug.com/414404094): Add semantic color for incognito tab card view.
             return isIncognito
-                    ? ContextCompat.getColor(
-                            context, R.color.gm3_baseline_surface_container_high_dark)
+                    ? ContextCompat.getColor(context, R.color.gm3_baseline_surface_dim_dark)
                     : SemanticColorUtils.getColorSurfaceDim(context);
         }
         // Checking night mode to keep color behaviour the same as in tab_card_view_bg_color.

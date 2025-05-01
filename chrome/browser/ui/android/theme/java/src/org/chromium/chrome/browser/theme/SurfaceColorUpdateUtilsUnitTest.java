@@ -100,7 +100,7 @@ public class SurfaceColorUpdateUtilsUnitTest {
                 SurfaceColorUpdateUtils.getCardViewBackgroundColor(
                         mContext, /* isIncognito= */ true);
         assertEquals(
-                ContextCompat.getColor(mContext, R.color.gm3_baseline_surface_container_high_dark),
+                ContextCompat.getColor(mContext, R.color.gm3_baseline_surface_dim_dark),
                 tabCardViewBackgroundColorIncognito);
     }
 
