@@ -32,7 +32,7 @@ SpeculationRulesTags& SpeculationRulesTags::operator=(
     SpeculationRulesTags&&) noexcept = default;
 
 net::structured_headers::List
-SpeculationRulesTags::ConvertStringToStructuredHeader() {
+SpeculationRulesTags::ConvertStringToStructuredHeader() const {
   net::structured_headers::List tag_list;
 
   for (const std::optional<std::string>& tag : tags_) {
@@ -52,7 +52,8 @@ SpeculationRulesTags::ConvertStringToStructuredHeader() {
   return tag_list;
 }
 
-std::optional<std::string> SpeculationRulesTags::ConvertStringToHeaderString() {
+std::optional<std::string> SpeculationRulesTags::ConvertStringToHeaderString()
+    const {
   return SerializeList(ConvertStringToStructuredHeader());
 }
 

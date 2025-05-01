@@ -30,10 +30,10 @@ class CONTENT_EXPORT SpeculationRulesTags {
   SpeculationRulesTags(SpeculationRulesTags&& tags) noexcept;
   SpeculationRulesTags& operator=(SpeculationRulesTags&&) noexcept;
 
-  std::optional<std::string> ConvertStringToHeaderString();
+  std::optional<std::string> ConvertStringToHeaderString() const;
 
  private:
-  net::structured_headers::List ConvertStringToStructuredHeader();
+  net::structured_headers::List ConvertStringToStructuredHeader() const;
 
   std::set<std::optional<std::string>> tags_;
 };
