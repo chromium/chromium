@@ -40,12 +40,14 @@ import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.browser.hub.PaneManager;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabArchiveSettings;
 import org.chromium.chrome.browser.tab_ui.OnTabSelectingListener;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
+import org.chromium.chrome.browser.tab_ui.TabSwitcherUtils;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
@@ -199,6 +201,43 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
                     return null;
                 }
 
+                @Nullable
+                @Override
+                public TabActionListener openTabGridDialog(@NonNull String syncId) {
+                    return new TabActionListener() {
+                        @Override
+                        public void run(View view, int tabId) {
+                            // Intentional no-op.
+                        }
+
+                        @Override
+                        public void run(View view, String syncId) {
+                            TabSwitcherPaneBase tabSwitcherPaneBase =
+                                    (TabSwitcherPaneBase)
+                                            mPaneManagerSupplier
+                                                    .get()
+                                                    .getPaneForId(PaneId.TAB_SWITCHER);
+                            Callback<Integer> requestOpenTabGroupDialog =
+                                    (rootId) -> {
+                                        hide(
+                                                ANIM_DURATION_MS,
+                                                () -> {
+                                                    tabSwitcherPaneBase.requestOpenTabGroupDialog(
+                                                            rootId);
+                                                });
+                                    };
+                            // Archive status is reset through any tab group open action in
+                            // LocalTabGroupMutationHelper#createNewTabGroup().
+                            TabSwitcherUtils.openTabGroupDialog(
+                                    syncId,
+                                    mTabGroupSyncService,
+                                    mTabGroupUiActionHandlerSupplier.get(),
+                                    mCurrentTabGroupModelFilterSupplier.get(),
+                                    requestOpenTabGroupDialog);
+                        }
+                    };
+                }
+
                 @Override
                 public void onTabSelecting(int tabId, boolean fromActionButton) {
                     mIsOpeningLastTab = mArchivedTabModel.getCount() == 1;
@@ -299,6 +338,10 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
     private final @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
     private final @NonNull ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeSupplier;
     private final @Nullable TabGroupSyncService mTabGroupSyncService;
+    private final @NonNull Supplier<PaneManager> mPaneManagerSupplier;
+    private final @NonNull Supplier<TabGroupUiActionHandler> mTabGroupUiActionHandlerSupplier;
+    private final @NonNull ObservableSupplier<TabGroupModelFilter>
+            mCurrentTabGroupModelFilterSupplier;
     private @Nullable EdgeToEdgePadAdjuster mEdgeToEdgePadAdjuster;
     private TabListRecyclerView mDialogRecyclerView;
     private WeakReference<TabListRecyclerView> mTabSwitcherRecyclerView;
@@ -399,6 +442,9 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
         }
 
         mTabGroupSyncService = tabGroupSyncService;
+        mPaneManagerSupplier = paneManagerSupplier;
+        mTabGroupUiActionHandlerSupplier = tabGroupUiActionHandlerSupplier;
+        mCurrentTabGroupModelFilterSupplier = currentTabGroupModelFilterSupplier;
     }
 
     /** Hides the dialog. */
@@ -801,6 +847,10 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
 
     View getViewForTesting() {
         return mDialogView;
+    }
+
+    GridCardOnClickListenerProvider getGridCardOnClickListenerProviderForTesting() {
+        return mGridCardOnCLickListenerProvider;
     }
 
     /** Returns the Edge to edge pad adjuster. */

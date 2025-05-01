@@ -250,6 +250,13 @@ class TabListMediator implements TabListNotificationHandler {
         TabActionListener openTabGridDialog(@NonNull Tab tab);
 
         /**
+         * @return {@link TabActionListener} to open Tab Grid dialog. If the given syncId is not
+         *     able to create group, return null;
+         */
+        @Nullable
+        TabActionListener openTabGridDialog(@NonNull String syncId);
+
+        /**
          * Run additional actions on tab selection.
          *
          * @param tabId The ID of selected {@link Tab}.
@@ -1896,11 +1903,15 @@ class TabListMediator implements TabListNotificationHandler {
         }
     }
 
-    private void bindTabGroupActionStateProperties(PropertyModel model) {
+    private void bindTabGroupActionStateProperties(
+            SavedTabGroup savedTabGroup, PropertyModel model) {
         TabActionButtonData tabActionButtonData =
                 new TabActionButtonData(
                         TabActionButtonData.TabActionButtonType.CLOSE, mTabClosedListener);
         model.set(TabProperties.TAB_ACTION_BUTTON_DATA, tabActionButtonData);
+        model.set(
+                TabProperties.TAB_CLICK_LISTENER,
+                mGridCardOnClickListenerProvider.openTabGridDialog(savedTabGroup.syncId));
     }
 
     private TabActionListener getTabActionListener(Tab tab, boolean isInTabGroup) {
@@ -2043,7 +2054,7 @@ class TabListMediator implements TabListNotificationHandler {
                         .with(TabProperties.USE_SHRINK_CLOSE_ANIMATION, false)
                         .build();
 
-        bindTabGroupActionStateProperties(tabGroupInfo);
+        bindTabGroupActionStateProperties(savedTabGroup, tabGroupInfo);
 
         mModelList.add(
                 index,

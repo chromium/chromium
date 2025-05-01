@@ -284,6 +284,12 @@ public class TabSwitcherPaneMediator
     }
 
     @Override
+    public @Nullable TabActionListener openTabGridDialog(String syncId) {
+        // Intentional no-op.
+        return null;
+    }
+
+    @Override
     public void onTabSelecting(int tabId, boolean fromActionButton) {
         mOnTabClickCallback.onResult(tabId);
     }

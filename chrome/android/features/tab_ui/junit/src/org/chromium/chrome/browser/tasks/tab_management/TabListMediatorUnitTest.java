@@ -471,6 +471,9 @@ public class TabListMediatorUnitTest {
         doReturn(mOpenGroupActionListener)
                 .when(mGridCardOnClickListenerProvider)
                 .openTabGridDialog(any(Tab.class));
+        doReturn(mOpenGroupActionListener)
+                .when(mGridCardOnClickListenerProvider)
+                .openTabGridDialog(anyString());
         doNothing().when(mActivity).registerComponentCallbacks(mComponentCallbacksCaptor.capture());
         doReturn(mGridLayoutManager).when(mRecyclerView).getLayoutManager();
         doReturn(TabListCoordinator.GRID_LAYOUT_SPAN_COUNT_COMPACT)
@@ -4805,6 +4808,22 @@ public class TabListMediatorUnitTest {
         // Assert that the tab group has been removed from the model list and archive status reset.
         assertEquals(TAB, mModelList.get(0).model.get(CARD_TYPE));
         verify(mTabGroupSyncService).updateArchivalStatus(eq(SYNC_GROUP_ID1), eq(false));
+    }
+
+    @Test
+    public void sendsOpenGroupSignalCorrectly_SavedTabGroupType() {
+        List<Tab> tabs = Arrays.asList(mTab1);
+        List<String> syncIds = new ArrayList<>(Arrays.asList(SYNC_GROUP_ID1));
+        mMediator.setDefaultGridCardSize(new Size(100, 200));
+
+        mMediator.resetWithListOfTabs(tabs, syncIds, false);
+        mModelList
+                .get(0)
+                .model
+                .get(TabProperties.TAB_CLICK_LISTENER)
+                .run(mItemView1, mModelList.get(0).model.get(TabProperties.TAB_GROUP_SYNC_ID));
+
+        verify(mOpenGroupActionListener).run(mItemView1, SYNC_GROUP_ID1);
     }
 
     private void setUpTabGroupCardDescriptionString() {
