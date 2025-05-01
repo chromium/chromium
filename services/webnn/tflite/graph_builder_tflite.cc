@@ -376,12 +376,20 @@ GraphBuilderTflite::CreateAndBuild(
     const base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>&
         constant_operands,
     const base::flat_map<uint64_t, base::flat_set<size_t>>&
-        operand_to_dependent_operations) {
+        operand_to_dependent_operations,
+    const base::flat_map<uint64_t, size_t>& operand_to_producing_operation) {
   GraphBuilderTflite builder(std::move(context_properties), graph_info,
-                             constant_operands,
-                             operand_to_dependent_operations);
+                             constant_operands, operand_to_dependent_operations,
+                             operand_to_producing_operation);
 
   bool graph_requires_fp32_precision = false;
+  for (size_t i = 0; i < graph_info.operations.size(); ++i) {
+    const mojom::OperationPtr& operation = graph_info.operations[i];
+    if (operation->is_dequantize_linear()) {
+      RETURN_IF_ERROR(builder.TryTraverseToSerializeQuantizedInput(
+          *operation->get_dequantize_linear()));
+    }
+  }
   for (size_t i = 0; i < graph_info.operations.size(); ++i) {
     const mojom::OperationPtr& operation = graph_info.operations[i];
     if (!graph_requires_fp32_precision &&
@@ -746,11 +754,13 @@ GraphBuilderTflite::GraphBuilderTflite(
     const base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>&
         constant_operands,
     const base::flat_map<uint64_t, base::flat_set<size_t>>&
-        operand_to_dependent_operations)
+        operand_to_dependent_operations,
+    const base::flat_map<uint64_t, size_t>& operand_to_producing_operation)
     : context_properties_(std::move(context_properties)),
       graph_info_(graph_info),
       constant_operands_(constant_operands),
-      operand_to_dependent_operations_(operand_to_dependent_operations) {
+      operand_to_dependent_operations_(operand_to_dependent_operations),
+      operand_to_producing_operation_(operand_to_producing_operation) {
   // TFLite requires the first entry in FlatBuffer to be an empty buffer.
   buffers_.push_back(
       ::tflite::CreateBuffer(builder_, builder_.CreateVector({})));
@@ -895,7 +905,10 @@ GraphBuilderTflite::SerializeOutputTensorInfo(
     QuantizateParametersOffset quantize_params,
     bool operation_supports_float16,
     std::optional<::tflite::TensorType> override_tensor_type) {
-  CHECK(!operand_to_tensor_info_map_.contains(operand_id));
+  auto it = operand_to_tensor_info_map_.find(operand_id);
+  if (it != operand_to_tensor_info_map_.end()) {
+    return it->second;
+  }
   const mojom::Operand& operand =
       *graph_info_->id_to_operand_map.at(operand_id);
   bool is_graph_output = operand.name.has_value();
@@ -1783,6 +1796,59 @@ const mojom::QuantizeLinear& GraphBuilderTflite::GetQuantizeOp(
   const mojom::Operation& operation = *graph_info_->operations[operation_index];
   CHECK(operation.is_quantize_linear());
   return *operation.get_quantize_linear();
+}
+
+base::expected<void, std::string>
+GraphBuilderTflite::TryTraverseToSerializeQuantizedInput(
+    const mojom::DequantizeLinear& dequantize_linear) {
+  const mojom::Operand& input_operand =
+      GetOperand(dequantize_linear.input_operand_id);
+  // Required by all the quantization agnostic operations.
+  if (!IsInts8AndScalarScale(dequantize_linear)) {
+    return base::ok();
+  }
+
+  std::optional<QuantizateParametersOffset> quantize_params =
+      SerializeQuantizeParams(dequantize_linear.zero_point_operand_id,
+                              dequantize_linear.scale_operand_id,
+                              input_operand.descriptor.shape().size());
+  if (!quantize_params) {
+    return base::ok();
+  }
+  auto producing_operation_it =
+      operand_to_producing_operation_->find(dequantize_linear.input_operand_id);
+
+  std::vector<uint64_t> operands_to_serialize{
+      dequantize_linear.input_operand_id};
+  while (producing_operation_it != operand_to_producing_operation_->end()) {
+    size_t operation_index = producing_operation_it->second;
+    const mojom::Operation& operation =
+        *graph_info_->operations[operation_index];
+
+    uint64_t input_operand_id;
+    switch (operation.which()) {
+      case (mojom::Operation::Tag::kTranspose): {
+        input_operand_id = operation.get_transpose()->input_operand_id;
+        break;
+      }
+      case (mojom::Operation::Tag::kReshape): {
+        input_operand_id = operation.get_reshape()->input_operand_id;
+        break;
+      }
+      // Can't serialize with quantization params if there is an upstream
+      // operation that's not quantization agnostic.
+      default:
+        return base::ok();
+    }
+    operands_to_serialize.push_back(input_operand_id);
+    producing_operation_it =
+        operand_to_producing_operation_->find(input_operand_id);
+  }
+
+  for (uint64_t operand_id : operands_to_serialize) {
+    RETURN_IF_ERROR(SerializeInputTensorInfo(operand_id, *quantize_params));
+  }
+  return base::ok();
 }
 
 bool GraphBuilderTflite::TrySerializeQuantizedInput(

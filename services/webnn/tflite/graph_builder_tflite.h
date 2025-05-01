@@ -87,7 +87,8 @@ class GraphBuilderTflite final {
       const base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>&
           constant_operands,
       const base::flat_map<uint64_t, base::flat_set<size_t>>&
-          operand_to_dependent_operations);
+          operand_to_dependent_operations,
+      const base::flat_map<uint64_t, size_t>& operand_to_producing_operation);
 
   static ContextProperties GetContextProperties();
 
@@ -107,7 +108,8 @@ class GraphBuilderTflite final {
       const base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>&
           constant_operands,
       const base::flat_map<uint64_t, base::flat_set<size_t>>&
-          operand_to_dependent_operations);
+          operand_to_dependent_operations,
+      const base::flat_map<uint64_t, size_t>& operand_to_producing_operation);
   ~GraphBuilderTflite();
 
   // Maps to WebNN operand information.
@@ -729,6 +731,13 @@ class GraphBuilderTflite final {
   // Get the dequantize op by its output operand id.
   const mojom::DequantizeLinear& GetDequantizeOp(uint64_t operand_id);
   const mojom::QuantizeLinear& GetQuantizeOp(size_t operation_index);
+
+  // Called before graph serialization to attach quantization params to
+  // dequantizeLinear input and upstream nodes if they are quantization agnostic
+  // operations.
+  base::expected<void, std::string> TryTraverseToSerializeQuantizedInput(
+      const mojom::DequantizeLinear& dequantize_linear);
+
   // Try to serialize `dequantize_linear`'s input with quantization params and
   // return if it's successful.
   bool TrySerializeQuantizedInput(
@@ -775,10 +784,15 @@ class GraphBuilderTflite final {
       const base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>>
       constant_operands_;
 
-  // A reference to operand dependency map. The creator of
-  // `this` must ensure this reference is valid for as long as `this` exists.
+  // A reference to output operand dependency map. The creator of `this` must
+  // ensure this reference is valid for as long as `this` exists.
   base::raw_ref<const base::flat_map<uint64_t, base::flat_set<size_t>>>
       operand_to_dependent_operations_;
+
+  // A reference to input operand dependency map. The creator of `this` must
+  // ensure this reference is valid for as long as `this` exists.
+  base::raw_ref<const base::flat_map<uint64_t, size_t>>
+      operand_to_producing_operation_;
 
   flatbuffers::FlatBufferBuilder builder_;
   // `is_created_model_` indicates whether the tflite model is created and the
