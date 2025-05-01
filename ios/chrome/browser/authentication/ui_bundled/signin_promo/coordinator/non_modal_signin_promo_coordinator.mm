@@ -7,6 +7,7 @@
 #import "base/notreached.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_promo/coordinator/non_modal_signin_promo_mediator.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_promo/coordinator/non_modal_signin_promo_metrics_util.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_promo/signin_promo_types.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/infobars/ui_bundled/banners/infobar_banner_delegate.h"
@@ -178,6 +179,9 @@ constexpr CGFloat kLogoSize = 22;
 
   [self configureBanner];
 
+  // Record metrics for promo is appearing.
+  LogNonModalSignInPromoAction(NonModalSignInPromoAction::kAppear, _promoType);
+
   [self presentInfobarBannerAnimated:YES completion:nil];
 }
 
@@ -221,6 +225,9 @@ constexpr CGFloat kLogoSize = 22;
 }
 
 - (void)performInfobarAction {
+  // Log sign-in action when user taps the sign-in button
+  LogNonModalSignInPromoAction(NonModalSignInPromoAction::kAccept, _promoType);
+
   [self hideBannerUI];
 
   id<ApplicationCommands> handler = HandlerForProtocol(
@@ -239,11 +246,14 @@ constexpr CGFloat kLogoSize = 22;
 - (void)infobarBannerWillBeDismissed:(BOOL)userInitiated {
   // Stop showing the promo if user manually dismissed it.
   if (userInitiated) {
-    [self sendPromoDismissalNotification];
+    // Log user dismissal.
+    LogNonModalSignInPromoAction(NonModalSignInPromoAction::kDismiss,
+                                 _promoType);
   }
 }
 
 - (void)infobarWasDismissed {
+  [self sendPromoDismissalNotification];
   self.bannerViewController = nil;
 }
 

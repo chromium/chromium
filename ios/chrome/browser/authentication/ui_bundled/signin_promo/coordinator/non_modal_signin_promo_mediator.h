@@ -24,7 +24,7 @@ enum class SignInPromoType;
 // Handles mediator timer expiration event.
 - (void)nonModalSignInPromoMediatorTimerExpired:
     (NonModalSignInPromoMediator*)mediator;
-// Handles timeout or dismissal events
+// Handles timeout or dismissal events.
 - (void)nonModalSignInPromoMediatorShouldDismiss:
     (NonModalSignInPromoMediator*)mediator;
 @end

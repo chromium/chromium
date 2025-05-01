@@ -5231,6 +5231,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.SignInPromo.NonModal.Bookmark"
+    enum="NonModalSignInPromoAction" expires_after="2026-04-28">
+  <owner>kanouche@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <summary>
+    Records actions taken on the non-modal sign-in promo shown after a user adds
+    a bookmark. Recorded when a user interacts with the promo or when the promo
+    is shown or dismissed.
+  </summary>
+</histogram>
+
+<histogram name="IOS.SignInPromo.NonModal.Password"
+    enum="NonModalSignInPromoAction" expires_after="2026-04-28">
+  <owner>kanouche@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <summary>
+    Records actions taken on the non-modal sign-in promo shown after a user
+    saves a password. Recorded when a user interacts with the promo or when the
+    promo is shown or dismissed.
+  </summary>
+</histogram>
+
 <histogram name="IOS.SiriShortcuts.Count" units="shortcuts"
     expires_after="2025-10-25">
   <owner>gujen@google.com</owner>

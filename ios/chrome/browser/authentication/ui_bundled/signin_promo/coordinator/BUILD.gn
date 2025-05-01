@@ -8,6 +8,8 @@ source_set("coordinator") {
     "non_modal_signin_promo_coordinator.mm",
     "non_modal_signin_promo_mediator.h",
     "non_modal_signin_promo_mediator.mm",
+    "non_modal_signin_promo_metrics_util.h",
+    "non_modal_signin_promo_metrics_util.mm",
   ]
   deps = [
     "//base",
