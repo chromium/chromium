@@ -381,11 +381,9 @@ def FindTestTargets(target_cache, out_dir, paths, run_all):
     # Use gn refs to recursively find all targets that depend on |path|, filter
     # internal gn targets, and match against well-known test suffixes, falling
     # back to a list of known test targets if that fails.
-    gn_path = os.path.join(DEPOT_TOOLS_DIR, 'gn')
-    if sys.platform.startswith('win32'):
-      gn_path += '.bat'
+    gn_path = os.path.join(DEPOT_TOOLS_DIR, 'gn.py')
 
-    cmd = [gn_path, 'refs', out_dir, '--all'] + paths
+    cmd = [sys.executable, gn_path, 'refs', out_dir, '--all'] + paths
     targets = RunCommand(cmd).splitlines()
     test_targets = _TestTargetsFromGnRefs(targets)
 
