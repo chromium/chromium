@@ -6,6 +6,8 @@
 
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_map.h"
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/glic_pref_names.h"
@@ -106,6 +108,7 @@ bool ApplicationHotkeyDelegate::AcceleratorPressed(
   switch (hotkey) {
     case LocalHotkeyManager::Hotkey::kFocusToggle:
       window_controller_->FocusIfOpen();
+      base::UserMetricsAction("Glic.FocusHotKey");
       return true;
     default:
       NOTREACHED()

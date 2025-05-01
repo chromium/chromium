@@ -6,6 +6,8 @@
 
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_map.h"
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/widget/glic_view.h"
@@ -85,6 +87,7 @@ bool GlicWindowHotkeyDelegate::AcceleratorPressed(
       }
       if (auto* last_active = BrowserList::GetInstance()->GetLastActive()) {
         last_active->window()->Activate();
+        base::RecordAction(base::UserMetricsAction("Glic.FocusHotKey"));
         return true;
       }
       return false;

@@ -12347,6 +12347,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Glic.FocusHotKey">
+  <owner>andreaxg@google.com</owner>
+  <owner>erikchen@chromium.org</owner>
+  <description>
+    Logged if the user uses the focus hotkey while glic is open. Triggered by
+    hotkey presses captured in Chrome as well as in the glic window.
+  </description>
+</action>
+
 <action name="Glic.Fre.Accept">
   <owner>iwells@google.com</owner>
   <owner>erikchen@chromium.org</owner>
