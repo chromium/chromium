@@ -711,8 +711,10 @@ export class Viewport {
 
   /**
    * Get the page at a given y position. If there are multiple pages
-   * overlapping the given y-coordinate, return the page with the smallest
-   * index.
+   * overlapping the given y-coordinate, returns one of the two of them (does
+   * a binary search so returns whichever of the two happens to be hit first).
+   * Note: May return the wrong result in two-up view. See getTwoUpPageAtY_()
+   * for a version of this method that accounts for two-up view.
    * @param y The y-coordinate to get the page at.
    * @return The index of a page overlapping the given y-coordinate.
    */
@@ -761,6 +763,70 @@ export class Viewport {
   }
 
   /**
+   * Get the first page at a given y position in two up view. Always returns
+   * the lower index page at the y position.
+   * @param y The y-coordinate to get the page at.
+   * @return The index of a page overlapping the given y-coordinate.
+   */
+  private getTwoUpPageAtY_(y: number): number {
+    assert(y >= 0);
+
+    // Drop decimal part of |y| otherwise it can appear as larger than the
+    // bottom of the last page in the document (even without the presence of a
+    // horizontal scrollbar).
+    y = Math.floor(y);
+
+    // Search through pairs of pages. min and max are in terms of page pairs.
+    let min = 0;
+    const numPairs = Math.ceil(this.pageDimensions_.length / 2);
+    let max = numPairs - 1;
+    if (max === min) {
+      return min;
+    }
+
+    while (max >= min) {
+      const pair = min + Math.floor((max - min) / 2);
+      // page is always the even page, i.e. the first page in the pair.
+      const page = 2 * pair;
+      // There might be a gap between pairs of pages. Use the bottom of the
+      // previous pair as the top for finding the correct pair.
+      const top = page > 0 ?
+          Math.max(
+              this.getPageBottom_(page - 2), this.getPageBottom_(page - 1)) :
+          0;
+
+      // Use the bottom of the longer of the two pages in the pair as the
+      // pair's bottom.
+      let bottom = this.getPageBottom_(page);
+      if (page < this.pageDimensions_.length - 1) {
+        bottom = Math.max(bottom, this.getPageBottom_(page + 1));
+      }
+
+      if (top <= y && y <= bottom) {
+        return page;
+      }
+
+      // If the search reached the last pair, return the first page in that pair
+      // (may be the only page if document length is odd). |y| is larger than
+      // the last pair's |bottom|, which can happen either because a
+      // horizontal scrollbar exists, or the document is zoomed out enough for
+      // free space to exist at the bottom.
+      if (pair === numPairs - 1) {
+        return page;
+      }
+
+      if (top > y) {
+        max = pair - 1;
+      } else {
+        min = pair + 1;
+      }
+    }
+
+    // Should always return within the while loop above.
+    assertNotReached('Could not find page for Y position: ' + y);
+  }
+
+  /**
    * Return the last page visible in the viewport. Returns the last index of the
    * document if the viewport is below the document.
    * @return The highest index of the pages visible in the viewport.
@@ -799,6 +865,72 @@ export class Viewport {
     const minX = (outerWidth - pageWidth) / 2;
     const maxX = outerWidth - minX;
     return x >= minX && x <= maxX;
+  }
+
+  /**
+   * @return The page at |point|, or -1 if there is no page at |point|.
+   */
+  getPageAtPoint(point: Point) {
+    const zoom = this.getZoom();
+    const position = this.position;
+    const size = this.size;
+    const documentWidth = this.getDocumentDimensions().width * zoom;
+    const y = position.y + point.y;
+    const pageDimensions = this.pageDimensions_;
+
+    // Checks if y is actually on `page`, and not just closer to it than other
+    // pages.
+    function yOnPage(page: number): boolean {
+      const minY = pageDimensions[page]!.y * zoom;
+      const maxY = pageDimensions[page]!.height * zoom + minY;
+      return y >= minY && y <= maxY;
+    }
+
+    if (!this.twoUpViewEnabled()) {
+      const page = this.getPageAtY_(y / zoom);
+      if (!yOnPage(page)) {
+        // The point is in the space between pages.
+        return -1;
+      }
+
+      const outerWidth = Math.max(size.width, documentWidth);
+      const pageWidth = pageDimensions[page]!.width * zoom;
+      if (pageWidth >= outerWidth) {
+        return page;
+      }
+
+      const minX = (outerWidth - pageWidth) / 2;
+      const maxX = outerWidth - minX;
+      const x = point.x + position.x;
+      return x >= minX && x <= maxX ? page : -1;
+    }
+
+    // Handle two-up view.
+    const pageAtY = this.getTwoUpPageAtY_(y / zoom);
+    const pageX = pageDimensions[pageAtY]!.x * zoom;
+    const x = point.x + position.x;
+    const documentMargin = Math.max(0, (size.width - documentWidth) / 2);
+    const minX = pageX + documentMargin;
+    if (x < minX) {
+      // The point is outside the left page boundary.
+      return -1;
+    }
+
+    const boundaryX = minX + pageDimensions[pageAtY]!.width * zoom;
+    if (x <= boundaryX) {
+      // x is in range for the left page. Check that y is actually on the page.
+      return yOnPage(pageAtY) ? pageAtY : -1;
+    }
+
+    if (pageAtY === pageDimensions.length - 1) {
+      // x is out of bounds for the left page, and there is no right page.
+      return -1;
+    }
+
+    // Check if x is in bounds for the right side of the right page, and y is on
+    // the page.
+    const maxX = pageDimensions[pageAtY + 1]!.width * zoom + boundaryX;
+    return x <= maxX && yOnPage(pageAtY + 1) ? pageAtY + 1 : -1;
   }
 
   /**

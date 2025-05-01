@@ -5,16 +5,34 @@
 import {assert} from 'chrome://resources/js/assert.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 
-import type {AnnotationBrush, Color, TextAttributes, TextBoxRect, TextStyles} from './constants.js';
+import type {AnnotationBrush, Color, Point, TextAnnotation, TextAttributes, TextBoxRect, TextStyles} from './constants.js';
 import {AnnotationBrushType, TextAlignment, TextStyle} from './constants.js';
-import type {MessageData} from './controller.js';
-import {PluginController, PluginControllerEventType} from './controller.js';
+import {PluginController} from './controller.js';
 import type {Viewport} from './viewport.js';
 
 export interface ViewportParams {
   pageX: number;
   pageY: number;
   zoom: number;
+}
+
+export interface TextBoxInit {
+  annotation: TextAnnotation;
+  pageCoordinates: Point;
+}
+
+export const DEFAULT_TEXTBOX_WIDTH: number = 200;
+export const DEFAULT_TEXTBOX_HEIGHT: number = 100;
+
+export function colorsEqual(color1: Color, color2: Color): boolean {
+  return color1.r === color2.r && color1.g === color2.g &&
+      color1.b === color2.b;
+}
+
+export function stylesEqual(style1: TextStyles, style2: TextStyles): boolean {
+  return style1.bold === style2.bold && style1.italic === style2.italic &&
+      style1.underline === style2.underline &&
+      style1.strikethrough === style2.strikethrough;
 }
 
 export class Ink2Manager extends EventTarget {
@@ -33,27 +51,49 @@ export class Ink2Manager extends EventTarget {
   };
   private brushResolver_: PromiseResolver<void>|null = null;
   private fontNamesResolver_: PromiseResolver<string[]>|null = null;
+  private pageNumber_: number = -1;
   private pluginController_: PluginController = PluginController.getInstance();
   private viewport_: Viewport|null = null;
   private viewportParams_: ViewportParams = {pageX: 0, pageY: 0, zoom: 1.0};
-
-  constructor() {
-    super();
-    this.pluginController_.getEventTarget().addEventListener(
-        PluginControllerEventType.PLUGIN_MESSAGE,
-        (e: Event) => this.handlePluginMessage_(e as CustomEvent<MessageData>));
-  }
 
   setViewport(viewport: Viewport) {
     this.viewport_ = viewport;
   }
 
-  private handlePluginMessage_(e: CustomEvent<MessageData>) {
-    const data = e.detail;
-    if (data.type.toString() === 'updateTextAnnotTextBoxRect') {
-      const detail = data as unknown as TextBoxRect;
-      this.dispatchEvent(new CustomEvent('update-text-box', {detail}));
+  // Initialize a text annotation at `location` in screen coordinates.
+  // No-op if there is no PDF page at `location`.
+  initializeTextAnnotation(location: Point) {
+    assert(this.viewport_);
+    const page = this.viewport_.getPageAtPoint(location);
+    if (page === -1) {
+      return;
     }
+
+    this.pageNumber_ = page;
+    const annotation = {
+      text: '',
+      id: 0,
+      pageNumber: page,
+      textAttributes: this.attributes_,
+      textBoxRect: {
+        height: DEFAULT_TEXTBOX_HEIGHT,
+        locationX: location.x,
+        locationY: location.y,
+        width: DEFAULT_TEXTBOX_WIDTH,
+      },
+    };
+
+    const pageDimensions = this.viewport_.getPageScreenRect(page);
+    this.dispatchEvent(new CustomEvent('initialize-text-box', {
+      detail: {
+        // structuredClone to avoid passing a reference to this.attributes_
+        annotation: structuredClone(annotation),
+        pageCoordinates: {x: pageDimensions.x, y: pageDimensions.y},
+      },
+    }));
+
+    // viewportChanged() in case this is a different page.
+    this.viewportChanged();
   }
 
   getViewportParams(): ViewportParams {
@@ -62,8 +102,9 @@ export class Ink2Manager extends EventTarget {
 
   viewportChanged() {
     assert(this.viewport_, 'Must call setViewport() before viewportChanged()');
-    const visiblePage = this.viewport_.getMostVisiblePage();
-    const visiblePageDimensions = this.viewport_.getPageScreenRect(visiblePage);
+    const page = this.pageNumber_ !== -1 ? this.pageNumber_ :
+                                           this.viewport_.getMostVisiblePage();
+    const visiblePageDimensions = this.viewport_.getPageScreenRect(page);
     const zoom = this.viewport_.getZoom();
     if (visiblePageDimensions.x === this.viewportParams_.pageX &&
         visiblePageDimensions.y === this.viewportParams_.pageY &&
@@ -172,9 +213,7 @@ export class Ink2Manager extends EventTarget {
   }
 
   setTextColor(color: Color) {
-    if (this.attributes_.color.r === color.r &&
-        this.attributes_.color.g === color.g &&
-        this.attributes_.color.b === color.b) {
+    if (colorsEqual(this.attributes_.color, color)) {
       return;
     }
 
@@ -192,13 +231,7 @@ export class Ink2Manager extends EventTarget {
   }
 
   setTextStyles(styles: TextStyles) {
-    if (this.attributes_.styles[TextStyle.BOLD] === styles[TextStyle.BOLD] &&
-        this.attributes_.styles[TextStyle.ITALIC] ===
-            styles[TextStyle.ITALIC] &&
-        this.attributes_.styles[TextStyle.UNDERLINE] ===
-            styles[TextStyle.UNDERLINE] &&
-        this.attributes_.styles[TextStyle.STRIKETHROUGH] ===
-            styles[TextStyle.STRIKETHROUGH]) {
+    if (stylesEqual(this.attributes_.styles, styles)) {
       return;
     }
 
@@ -245,8 +278,8 @@ export class Ink2Manager extends EventTarget {
   }
 
   private fireFontChanged_() {
-    this.dispatchEvent(
-        new CustomEvent('attributes-changed', {detail: this.attributes_}));
+    this.dispatchEvent(new CustomEvent(
+        'attributes-changed', {detail: structuredClone(this.attributes_)}));
   }
 
   static getInstance(): Ink2Manager {

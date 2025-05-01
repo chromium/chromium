@@ -160,6 +160,21 @@ function relaySwipe(e: Event): void {
 const swipeDetector = new SwipeDetector(plugin);
 swipeDetector.getEventTarget().addEventListener('swipe', relaySwipe);
 
+// <if expr="enable_pdf_ink2">
+document.addEventListener('pointerdown', e => {
+  // Only forward left click.
+  if (e.button !== 0) {
+    return;
+  }
+
+  channel.port1.postMessage({
+    type: 'sendClickEvent',
+    x: e.clientX,
+    y: e.clientY,
+  });
+});
+// </if>
+
 document.addEventListener('keydown', e => {
   // Only forward potential shortcut keys.
   switch (e.key) {

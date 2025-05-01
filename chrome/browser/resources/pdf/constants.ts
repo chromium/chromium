@@ -34,6 +34,18 @@ export interface AnnotationBrush {
   size?: number;
 }
 
+export interface TextAnnotation {
+  id: number;
+  pageNumber: number;
+  text: string;
+  textAttributes: TextAttributes;
+  // Location of the text box relative to the top left corner of the page
+  // specified by pageNumber. This rect is in screen coordinates in the UI,
+  // and is in page coordinates when this annotation is sent or received in
+  // a message to/from the plugin.
+  textBoxRect: TextBoxRect;
+}
+
 export enum TextAlignment {
   LEFT = 'left',
   CENTER = 'center',

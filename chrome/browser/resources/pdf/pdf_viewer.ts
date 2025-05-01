@@ -1043,8 +1043,13 @@ export class PdfViewerElement extends PdfViewerBaseElement {
                 PluginControllerEventType.UPDATE_INK_THUMBNAIL,
                 {detail: thumbnailData}));
         return;
-      case 'updateTextAnnotTextBoxRect':
-        // Handled by Ink2Manager.
+      case 'sendClickEvent':
+        // Ignore click events outside of text annotation mode.
+        if (this.annotationMode_ !== AnnotationMode.TEXT) {
+          return;
+        }
+        const location = data as unknown as Point;
+        Ink2Manager.getInstance().initializeTextAnnotation(location);
         return;
         // </if>
     }

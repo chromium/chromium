@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {AnnotationBrush, TextAttributes} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
-import {AnnotationBrushType, Ink2Manager, TextAlignment} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import type {AnnotationBrush, TextAttributes, TextBoxInit} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {AnnotationBrushType, DEFAULT_TEXTBOX_HEIGHT, DEFAULT_TEXTBOX_WIDTH, Ink2Manager, TextAlignment} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
@@ -229,23 +229,27 @@ chrome.test.runTests([
     chrome.test.succeed();
   },
 
-  async function testDispatchUpdateTextBox() {
-    const whenUpdateEvent = eventToPromise('update-text-box', manager);
-    mockPlugin.dispatchEvent(new MessageEvent('message', {
-      data: {
-        type: 'updateTextAnnotTextBoxRect',
-        height: 50,
-        locationX: 150,
-        locationY: 250,
-        width: 200,
-      },
-      origin: '*',
-    }));
+  async function testInitializeTextBox() {
+    const attributes = manager.getCurrentTextAttributes();
+    const whenUpdateEvent = eventToPromise('initialize-text-box', manager);
+    Ink2Manager.getInstance().initializeTextAnnotation({x: 40, y: 50});
     const event = await whenUpdateEvent;
-    chrome.test.assertEq(50, event.detail.height);
-    chrome.test.assertEq(150, event.detail.locationX);
-    chrome.test.assertEq(250, event.detail.locationY);
-    chrome.test.assertEq(200, event.detail.width);
+    const initData = (event as CustomEvent<TextBoxInit>).detail;
+    chrome.test.assertEq('', initData.annotation.text);
+    assertDeepEquals(attributes, initData.annotation.textAttributes);
+    chrome.test.assertEq(
+        DEFAULT_TEXTBOX_HEIGHT, initData.annotation.textBoxRect.height);
+    chrome.test.assertEq(40, initData.annotation.textBoxRect.locationX);
+    chrome.test.assertEq(50, initData.annotation.textBoxRect.locationY);
+    chrome.test.assertEq(
+        DEFAULT_TEXTBOX_WIDTH, initData.annotation.textBoxRect.width);
+    chrome.test.assertEq(0, initData.annotation.pageNumber);
+    chrome.test.assertEq(0, initData.annotation.id);
+    // Placeholder viewport has a 90x90 page and 100x100 window. This creates
+    // pageX and pageY offsets of 10px = (100 - 90)/2 + 5px and 3px
+    // respectively.
+    chrome.test.assertEq(10, initData.pageCoordinates.x);
+    chrome.test.assertEq(3, initData.pageCoordinates.y);
     chrome.test.succeed();
   },
 
