@@ -73,22 +73,6 @@ PA_ALWAYS_INLINE void DebugMemset(void* ptr, int value, size_t size) {
 }
 #endif  // PA_BUILDFLAG(EXPENSIVE_DCHECKS_ARE_ON)
 
-// Returns true if we've hit the end of a random-length period. We don't want to
-// invoke `RandomValue` too often, because we call this function in a hot spot
-// (`Free`), and `RandomValue` incurs the cost of atomics.
-#if !PA_BUILDFLAG(DCHECKS_ARE_ON)
-PA_ALWAYS_INLINE bool RandomPeriod() {
-  static thread_local uint8_t counter = 0;
-  if (counter == 0) [[unlikely]] {
-    // It's OK to truncate this value.
-    counter = static_cast<uint8_t>(RandomValue());
-  }
-  // If `counter` is 0, this will wrap. That is intentional and OK.
-  counter--;
-  return counter == 0;
-}
-#endif  // !PA_BUILDFLAG(DCHECKS_ARE_ON)
-
 PA_ALWAYS_INLINE uintptr_t ObjectInnerPtr2Addr(const void* ptr) {
   return UntagPtr(ptr);
 }

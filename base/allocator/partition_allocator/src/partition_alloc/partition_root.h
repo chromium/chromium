@@ -1634,15 +1634,7 @@ PA_ALWAYS_INLINE void PartitionRoot::FreeNoHooksImmediate(
 #if PA_BUILDFLAG(EXPENSIVE_DCHECKS_ARE_ON)
   internal::DebugMemset(internal::SlotStartAddr2Ptr(slot_start),
                         internal::kFreedByte, slot_span->GetUtilizedSlotSize());
-#elif PA_CONFIG(ZERO_RANDOMLY_ON_FREE)
-  // `memset` only once in a while: we're trading off safety for time
-  // efficiency.
-  if (internal::RandomPeriod() [[unlikely]] &&
-      !IsDirectMappedBucket(slot_span->bucket)) {
-    internal::SecureMemset(internal::SlotStartAddr2Ptr(slot_start), 0,
-                           slot_span->GetUtilizedSlotSize());
-  }
-#endif  // PA_CONFIG(ZERO_RANDOMLY_ON_FREE)
+#endif  // PA_BUILDFLAG(EXPENSIVE_DCHECKS_ARE_ON)
   // TODO(keishi): Create function to convert |object| to |slot_start_ptr|.
   void* slot_start_ptr = object;
   RawFreeWithThreadCache(slot_start, slot_start_ptr, slot_span);
