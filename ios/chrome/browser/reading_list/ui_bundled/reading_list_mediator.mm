@@ -12,7 +12,6 @@
 #import "base/metrics/histogram_macros.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/reading_list/core/reading_list_model.h"
-#import "components/reading_list/features/reading_list_switches.h"
 #import "components/reading_list/ios/reading_list_model_bridge_observer.h"
 #import "components/url_formatter/url_formatter.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"

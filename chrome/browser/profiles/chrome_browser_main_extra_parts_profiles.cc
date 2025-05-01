@@ -255,7 +255,6 @@
 #include "components/permissions/features.h"
 #include "components/policy/content/policy_blocklist_service.h"
 #include "components/policy/content/safe_search_service.h"
-#include "components/reading_list/features/reading_list_switches.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/services/on_device_translation/buildflags/buildflags.h"

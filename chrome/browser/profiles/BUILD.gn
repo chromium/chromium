@@ -278,7 +278,6 @@ source_set("profiles_extra_parts_impl") {
     "//components/permissions:permissions_common",
     "//components/policy/content",
     "//components/policy/content:safe_sites_navigation_throttle",
-    "//components/reading_list/features:flags",
     "//components/safe_browsing/core/common:features",
     "//components/signin/public/base",
     "//components/site_engagement/content",

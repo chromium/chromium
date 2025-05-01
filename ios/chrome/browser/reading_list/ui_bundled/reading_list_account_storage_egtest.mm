@@ -4,7 +4,6 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
-#import "components/reading_list/features/reading_list_switches.h"
 #import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/base/signin_pref_names.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_constants.h"

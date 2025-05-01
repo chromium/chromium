@@ -18,7 +18,6 @@
 #include "components/feed/core/v2/test/test_util.h"
 #include "components/feed/core/v2/types.h"
 #include "components/feed/feed_feature_list.h"
-#include "components/reading_list/features/reading_list_switches.h"
 #include "components/version_info/channel.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

@@ -32,7 +32,6 @@
 #include "components/commerce/core/commerce_constants.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/feed/feed_feature_list.h"
-#include "components/reading_list/features/reading_list_switches.h"
 #include "ui/base/l10n/l10n_util.h"
 
 using base::UserMetricsAction;

@@ -15,7 +15,6 @@
 #import "components/bookmarks/common/bookmark_features.h"
 #import "components/policy/core/browser/signin/profile_separation_policies.h"
 #import "components/prefs/pref_service.h"
-#import "components/reading_list/features/reading_list_switches.h"
 #import "components/signin/core/browser/active_primary_accounts_metrics_recorder.h"
 #import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/base/signin_pref_names.h"

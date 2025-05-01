@@ -68,7 +68,6 @@ if (!is_android) {
       "//components/commerce/core:commerce_constants",
       "//components/commerce/core:feature_list",
       "//components/feed:feature_list",
-      "//components/reading_list/features:flags",
     ]
   }
 

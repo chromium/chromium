@@ -28,7 +28,6 @@
 #include "components/feed/core/v2/feed_stream.h"
 #include "components/feed/core/v2/public/feed_api.h"
 #include "components/feed/feed_feature_list.h"
-#include "components/reading_list/features/reading_list_switches.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"

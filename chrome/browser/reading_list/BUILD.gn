@@ -21,7 +21,6 @@ source_set("reading_list") {
     "//chrome/browser/sync:factories",
     "//chrome/common:non_code_constants",
     "//components/pref_registry",
-    "//components/reading_list/features:flags",
     "//components/sync/base:features",
     "//components/sync/model",
   ]

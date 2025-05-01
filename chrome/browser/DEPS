@@ -304,7 +304,6 @@ include_rules = [
   "+components/query_tiles",
   "+components/quirks",
   "+components/reading_list/core",
-  "+components/reading_list/features",
   "+components/remote_cocoa/app_shim",
   "+components/regional_capabilities",
   "+components/remote_cocoa/browser",

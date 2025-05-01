@@ -26,7 +26,6 @@ source_set("ui_bundled") {
     "//components/infobars/core",
     "//components/policy/core/common",
     "//components/prefs",
-    "//components/reading_list/features:flags",
     "//components/signin/ios/browser",
     "//components/signin/public/base",
     "//components/signin/public/base:signin_switches",

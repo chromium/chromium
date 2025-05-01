@@ -22,7 +22,6 @@
 #include "components/reading_list/core/reading_list_model_impl.h"
 #include "components/reading_list/core/reading_list_model_storage_impl.h"
 #include "components/reading_list/core/reading_list_pref_names.h"
-#include "components/reading_list/features/reading_list_switches.h"
 #include "components/sync/base/features.h"
 #include "components/sync/model/data_type_store_service.h"
 #include "components/sync/model/wipe_model_upon_sync_disabled_behavior.h"
