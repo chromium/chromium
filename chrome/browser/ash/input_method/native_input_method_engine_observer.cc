@@ -475,6 +475,8 @@ std::optional<mojom::NamedDomKey> NamedDomKeyToMojom(
       return mojom::NamedDomKey::kAudioVolumeDown;
     case ui::DomKey::AUDIO_VOLUME_UP:
       return mojom::NamedDomKey::kAudioVolumeUp;
+    case ui::DomKey::NUM_LOCK:
+      return mojom::NamedDomKey::kNumLock;
     default:
       return std::nullopt;
   }
