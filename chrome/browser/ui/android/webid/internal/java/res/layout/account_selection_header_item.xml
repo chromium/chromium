@@ -63,7 +63,8 @@ found in the LICENSE file.
                 android:focusable="true"
                 android:screenReaderFocusable="true"
                 android:importantForAccessibility="yes"
-                android:src="@drawable/btn_close" />
+                android:src="@drawable/btn_close"
+                app:tint="@color/default_icon_color_tint_list" />
         </LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"
