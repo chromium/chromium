@@ -8,7 +8,6 @@ The pipeline module orchestrates the entire signing process, which includes:
     3. Signing the DMG.
 """
 
-import asyncio
 import os.path
 
 from signing import commands, model, notarize, parts, signing
@@ -150,11 +149,11 @@ def _package_zip(paths, config):
     return zip_path
 
 
-def sign_all(orig_paths,
-             config,
-             disable_packaging=False,
-             skip_brands=[],
-             channels=[]):
+async def sign_all(orig_paths,
+                   config,
+                   disable_packaging=False,
+                   skip_brands=[],
+                   channels=[]):
     """Code signs, packages, and signs the package, placing the result into
     |orig_paths.output|. |orig_paths.input| must contain the products to
     customize and sign.
@@ -181,7 +180,7 @@ def sign_all(orig_paths,
                     zip_file, config.app_dir
                 ],
                                      cwd=dest_dir)
-                uuid = asyncio.run(notarize.submit(zip_file, config))
+                await notarize.submit(zip_file, config)
 
         if config.notarize.should_staple():
             notarize.staple_bundled_parts(
@@ -204,7 +203,7 @@ def sign_all(orig_paths,
 
         # Notarize the packages, then staple.
         if config.notarize.should_notarize():
-            asyncio.run(notarize.submit(pkg_path, config))
-            asyncio.run(notarize.submit(dmg_path, config))
+            await notarize.submit(pkg_path, config)
+            await notarize.submit(dmg_path, config)
             notarize.staple(dmg_path)
             notarize.staple(pkg_path)
