@@ -153,6 +153,11 @@ class WebClient implements GlicWebClient {
         updatePermissionSwitch(permission, enabled);
       });
     }
+    const closedCaptioningState =
+        await this.browser.getClosedCaptioningSetting?.();
+    closedCaptioningState?.subscribe((enabled) => {
+      $.closedCaptioningSwitch.checked = enabled;
+    });
     browser.canAttachPanel?.().subscribe((canAttach) => {
       $.canAttachCheckbox.checked = canAttach;
     });

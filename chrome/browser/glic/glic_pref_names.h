@@ -84,6 +84,10 @@ inline constexpr char kGlicWindowLastDismissedTime[] =
 inline constexpr char kGlicPreviousPositionX[] = "glic.previous_bounds.x";
 inline constexpr char kGlicPreviousPositionY[] = "glic.previous_bounds.y";
 
+// Bool pref for the closed captioning setting.
+inline constexpr char kGlicClosedCaptioningEnabled[] =
+    "glic.closed_captioning_enabled";
+
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 

@@ -203,6 +203,10 @@ struct WebClientInitialState {
   bool enable_scroll_to;
   // Whether features::kGlicUserResize is enabled.
   bool enable_drag_to_resize_panel;
+  // Whether features::kGlicClosedCaptioning is enabled.
+  bool enable_closed_captioning_feature;
+  // Whether the glic closed captioning setting is enabled.
+  bool closed_captioning_setting_enabled;
 };
 
 // Options for getting tab context.
@@ -439,6 +443,11 @@ interface WebClientHandler {
   // pref value.
   SetTabContextPermissionState(bool enabled) => ();
 
+  // Set the state of the closed captioning glic setting pref:
+  // prefs::kGlicClosedCaptioningEnabled. Returns when the browser has stored
+  // the new pref value.
+  SetClosedCaptioningSetting(bool enabled) => ();
+
   // Returns whether a media permission request from the guest should be granted
   // or denied.
   ShouldAllowMediaPermissionRequest() => (bool is_allowed);
@@ -639,6 +648,9 @@ interface WebClient {
 
   // True if the browser has at least one open window.
   NotifyBrowserIsOpenChanged(bool browser_is_open);
+
+  // Notify that the closed captioning setting has changed.
+  NotifyClosedCaptioningSettingChanged(bool enabled);
 };
 
 // Information extracted from a tab.

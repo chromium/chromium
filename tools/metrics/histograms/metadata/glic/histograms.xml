@@ -86,6 +86,7 @@ chromium-metrics-reviews@google.com.
     <variant name="ResizeWindow"/>
     <variant name="ScrollTo"/>
     <variant name="SetAudioDucking"/>
+    <variant name="SetClosedCaptioningState"/>
     <variant name="SetContextAccessIndicator"/>
     <variant name="SetLocationPermissionState"/>
     <variant name="SetMicrophonePermissionState"/>

@@ -166,6 +166,26 @@ $.hang.addEventListener('click', () => {
   busyWork(durationMs);
 });
 
+$.setClosedCaptioningTrue.addEventListener('click', async () => {
+  logMessage('Setting closed captioning to true');
+  try {
+    await getBrowser()?.setClosedCaptioningSetting?.(true);
+    logMessage('Set closed captioning true done.');
+  } catch (e) {
+    logMessage(`Error setting closed captioning true: ${e}`);
+  }
+});
+
+$.setClosedCaptioningFalse.addEventListener('click', async () => {
+  logMessage('Setting closed captioning to false');
+  try {
+    await getBrowser()?.setClosedCaptioningSetting?.(false);
+    logMessage('Set closed captioning false done.');
+  } catch (e) {
+    logMessage(`Error setting closed captioning false: ${e}`);
+  }
+});
+
 window.addEventListener('load', () => {
   $.desktopScreenshot.addEventListener('click', async () => {
     logMessage('Requesting desktop screenshot...');

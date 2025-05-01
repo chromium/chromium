@@ -128,6 +128,11 @@ export declare interface HostRequestTypes {
       enabled: boolean,
     },
   };
+  glicBrowserSetClosedCaptioningSetting: {
+    request: {
+      enabled: boolean,
+    },
+  };
   glicBrowserSetContextAccessIndicator: {
     request: {
       show: boolean,
@@ -230,6 +235,11 @@ export declare interface WebClientRequestTypes {
       enabled: boolean,
     },
   };
+  glicWebClientNotifyClosedCaptioningSettingChanged: {
+    request: {
+      enabled: boolean,
+    },
+  };
   glicWebClientNotifyFocusedTabChanged: {
     request: {
       focusedTabDataPrivate: FocusedTabDataPrivate,
@@ -303,6 +313,7 @@ type HostRequestEnumNamesType = {
     OpenOsPermissionSettingsMenu: 0,
     GetOsMicrophonePermissionStatus: 0,
     GetZeroStateSuggestionsForFocusedTab: 0,
+    SetClosedCaptioningSetting: 0,
   };
   return apiRequestTypes;
   // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/histograms.xml:ApiRequestType)

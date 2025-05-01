@@ -115,6 +115,9 @@ export interface PageElementTypes {
   actionUpdatedScreenshotImg: HTMLImageElement;
   macOsPermissionsFieldset: HTMLFieldSetElement;
   attachmentControlsFieldset: HTMLFieldSetElement;
+  closedCaptioningSwitch: HTMLInputElement;
+  setClosedCaptioningTrue: HTMLButtonElement;
+  setClosedCaptioningFalse: HTMLButtonElement;
 }
 
 export const $: PageElementTypes = new Proxy({}, {

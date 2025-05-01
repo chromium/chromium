@@ -160,7 +160,8 @@ class GlicApiTest : public test::InteractiveGlicTest {
               {features::kGlicMinLoadingTimeMs.name, "40"},
           }},
          {features::kGlicScrollTo, {}},
-         {features::kGlicUserResize, {}}},
+         {features::kGlicUserResize, {}},
+         {features::kGlicClosedCaptioning, {}}},
         /*disabled_features=*/
         {
             features::kGlicWarming,
@@ -851,6 +852,10 @@ IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, DISABLED_testCaptureScreenshot) {
 }
 
 IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testPermissionAccess) {
+  ExecuteJsTest();
+}
+
+IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testClosedCaptioning) {
   ExecuteJsTest();
 }
 

@@ -12466,6 +12466,20 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="GlicClosedCaptioningDisabled">
+  <owner>birnie@google.com</owner>
+  <description>
+    Logged when the user disables closed captioning in glic.
+  </description>
+</action>
+
+<action name="GlicClosedCaptioningEnabled">
+  <owner>birnie@google.com</owner>
+  <description>
+    Logged when the user enables closed captioning in glic.
+  </description>
+</action>
+
 <action name="GlicLocationPermissionDisabled">
   <owner>tommasin@chromium.org</owner>
   <owner>erikchen@chromium.org</owner>

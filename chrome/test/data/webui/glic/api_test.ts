@@ -527,6 +527,16 @@ class ApiTests extends ApiTestFixtureBase {
     assertEquals(expectedHotkey, hotkeyState.hotkey);
   }
 
+  async testClosedCaptioning() {
+    assertTrue(!!this.host.getClosedCaptioningSetting);
+    assertTrue(!!this.host.setClosedCaptioningSetting);
+    const closedCaptioningState =
+        observeSequence(this.host.getClosedCaptioningSetting());
+    assertFalse(await closedCaptioningState.next());
+    await this.host.setClosedCaptioningSetting(true);
+    assertTrue(await closedCaptioningState.next());
+  }
+
   async testGetUserProfileInfo() {
     assertTrue(!!this.host.getUserProfileInfo);
     const profileInfo = await this.host.getUserProfileInfo();

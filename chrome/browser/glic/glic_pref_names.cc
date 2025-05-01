@@ -34,6 +34,9 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
 
   // Dict pref to store GlicUserStatus information.
   registry->RegisterDictionaryPref(prefs::kGlicUserStatus);
+
+  // Boolean pref for the closed captioning setting.
+  registry->RegisterBooleanPref(prefs::kGlicClosedCaptioningEnabled, false);
 }
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {

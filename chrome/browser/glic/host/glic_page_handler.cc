@@ -284,6 +284,10 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
         prefs::kGlicTabContextEnabled,
         base::BindRepeating(&GlicWebClientHandler::OnPrefChanged,
                             base::Unretained(this)));
+    pref_change_registrar_.Add(
+        prefs::kGlicClosedCaptioningEnabled,
+        base::BindRepeating(&GlicWebClientHandler::OnPrefChanged,
+                            base::Unretained(this)));
     glic_service_->window_controller().AddStateObserver(this);
 
     focus_changed_subscription_ = glic_service_->AddFocusedTabChangedCallback(
@@ -342,6 +346,10 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
         base::BindRepeating(&GlicWebClientHandler::OnLocalStatePrefChanged,
                             base::Unretained(this)));
     state->hotkey = GetHotkeyString();
+    state->enable_closed_captioning_feature =
+        base::FeatureList::IsEnabled(features::kGlicClosedCaptioning);
+    state->closed_captioning_setting_enabled =
+        pref_service_->GetBoolean(prefs::kGlicClosedCaptioningEnabled);
 
     std::move(callback).Run(std::move(state));
   }
@@ -497,6 +505,20 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     } else {
       base::RecordAction(
           base::UserMetricsAction("GlicTabContextPermissionDisabled"));
+    }
+    std::move(callback).Run();
+  }
+
+  void SetClosedCaptioningSetting(
+      bool enabled,
+      SetClosedCaptioningSettingCallback callback) override {
+    pref_service_->SetBoolean(prefs::kGlicClosedCaptioningEnabled, enabled);
+    if (enabled) {
+      base::RecordAction(
+          base::UserMetricsAction("GlicClosedCaptioningEnabled"));
+    } else {
+      base::RecordAction(
+          base::UserMetricsAction("GlicClosedCaptioningDisabled"));
     }
     std::move(callback).Run();
   }
@@ -712,6 +734,8 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
       web_client_->NotifyLocationPermissionStateChanged(is_enabled);
     } else if (pref_name == prefs::kGlicTabContextEnabled) {
       web_client_->NotifyTabContextPermissionStateChanged(is_enabled);
+    } else if (pref_name == prefs::kGlicClosedCaptioningEnabled) {
+      web_client_->NotifyClosedCaptioningSettingChanged(is_enabled);
     } else {
       DCHECK(false) << "Unknown Glic permission pref changed: " << pref_name;
     }

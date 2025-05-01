@@ -519,6 +519,10 @@ BASE_FEATURE(kGlicRollout, "GlicRollout", base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kGlicUserStatusCheck,
              "GlicUserStatusCheck",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kGlicClosedCaptioning,
+             "GlicClosedCaptioning",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
 BASE_FEATURE(kTabstripComboButton,

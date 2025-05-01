@@ -164,6 +164,13 @@ class WebClientImpl implements WebClientInterface {
         });
   }
 
+  notifyClosedCaptioningSettingChanged(enabled: boolean): void {
+    this.sender.requestNoResponse(
+        'glicWebClientNotifyClosedCaptioningSettingChanged', {
+          enabled: enabled,
+        });
+  }
+
   notifyFocusedTabChanged(focusedTabData: (FocusedTabDataMojo)): void {
     const extras = new ResponseExtras();
     this.sender.requestNoResponse(
@@ -413,6 +420,10 @@ class HostMessageHandler implements HostMessageHandlerInterface {
 
   glicBrowserSetTabContextPermissionState(request: {enabled: boolean}) {
     return this.handler.setTabContextPermissionState(request.enabled);
+  }
+
+  glicBrowserSetClosedCaptioningSetting(request: {enabled: boolean}) {
+    return this.handler.setClosedCaptioningSetting(request.enabled);
   }
 
   async glicBrowserGetUserProfileInfo(_request: void, extras: ResponseExtras) {

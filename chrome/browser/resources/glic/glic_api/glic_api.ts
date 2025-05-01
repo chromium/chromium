@@ -327,6 +327,9 @@ export declare interface GlicBrowserHost {
   /** Returns the state of the OS hotkey. */
   getOsHotkeyState?(): ObservableValue<{hotkey: string}>;
 
+  /** Returns the state of the glic closed captioning setting. */
+  getClosedCaptioningSetting?(): ObservableValue<boolean>;
+
   /**
    * Set the state of the microphone permission in settings. Returns a promise
    * that resolves when the browser has stored the new pref value.
@@ -344,6 +347,12 @@ export declare interface GlicBrowserHost {
    * that resolves when the browser has stored the new pref value.
    */
   setTabContextPermissionState(enabled: boolean): Promise<void>;
+
+  /**
+   * Set the state of the closed captioning permission in settings. Returns a
+   * promise that resolves when the browser has stored the new pref value.
+   */
+  setClosedCaptioningSetting?(enabled: boolean): Promise<void>;
 
   /** Returns the user profile information. */
   getUserProfileInfo?(): Promise<UserProfileInfo>;
