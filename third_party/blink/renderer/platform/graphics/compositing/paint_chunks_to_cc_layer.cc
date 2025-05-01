@@ -899,8 +899,8 @@ void ConversionContext<cc::DisplayItemList>::EmitDrawScrollingContentsOp(
   scrolling_contents_list->Finalize();
 
   gfx::Rect visual_rect = chunk_to_layer_mapper_.MapVisualRectFromState(
-      InfiniteIntRect(),
-      PropertyTreeState(scroll_translation,
+      scroll_translation.ScrollNode()->ContainerRect(),
+      PropertyTreeState(*scroll_container_transform,
                         *scroll_translation.ScrollNode()->OverflowClipNode(),
                         // The effect state doesn't matter.
                         chunk_to_layer_mapper_.LayerState().Effect()));
