@@ -168,12 +168,10 @@ class ServiceWorkerTaskQueue
 
   // Render process worker state of an activated extension.
   enum class RendererState {
-    // Initial state, neither started nor stopped.
-    kInitial,
-    // Worker thread has started.
-    kStarted,
-    // Worker thread has not started or has been stopped.
-    kStopped,
+    // Worker thread has not started or has been stopped/terminated.
+    kNotActive,
+    // Worker thread has started and it's running.
+    kActive,
   };
 
   // The current worker related state of an activated extension.
@@ -204,7 +202,7 @@ class ServiceWorkerTaskQueue
 
    private:
     BrowserState browser_state_ = BrowserState::kInitial;
-    RendererState renderer_state_ = RendererState::kInitial;
+    RendererState renderer_state_ = RendererState::kNotActive;
 
     // Contains the worker's WorkerId associated with this WorkerState, once we
     // have discovered info about the worker.
