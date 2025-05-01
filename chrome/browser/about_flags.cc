@@ -3296,6 +3296,32 @@ const FeatureEntry::FeatureVariation
 };
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+// Feature variation for kPdfInk2.
+#if BUILDFLAG(ENABLE_PDF_INK2)
+const FeatureEntry::FeatureParam kPdfInk2TextHighlighting[] = {
+    {"text-annotations", "false"},
+    {"text-highlighting", "true"},
+};
+const FeatureEntry::FeatureParam kPdfInk2TextAnnotations[] = {
+    {"text-annotations", "true"},
+    {"text-highlighting", "false"},
+};
+const FeatureEntry::FeatureParam kPdfInk2TextHighlightingAndAnnotations[] = {
+    {"text-annotations", "true"},
+    {"text-highlighting", "true"},
+};
+
+const FeatureEntry::FeatureVariation kPdfInk2Variations[] = {
+    {"with text highlighting", kPdfInk2TextHighlighting,
+     std::size(kPdfInk2TextHighlighting), nullptr},
+    {"with text annotations", kPdfInk2TextAnnotations,
+     std::size(kPdfInk2TextAnnotations), nullptr},
+    {"with text highlighting and annotations",
+     kPdfInk2TextHighlightingAndAnnotations,
+     std::size(kPdfInk2TextHighlightingAndAnnotations), nullptr},
+};
+#endif  // BUILDFLAG(ENABLE_PDF_INK2)
+
 const FeatureEntry::FeatureParam kWebRtcApmDownmixMethodAverage[] = {
     {"method", "average"}};
 const FeatureEntry::FeatureParam kWebRtcApmDownmixMethodFirstChannel[] = {
@@ -7390,7 +7416,9 @@ const FeatureEntry kFeatureEntries[] = {
 #if BUILDFLAG(ENABLE_PDF_INK2)
     {"pdf-ink2", flag_descriptions::kPdfInk2Name,
      flag_descriptions::kPdfInk2Description, kOsDesktop,
-     FEATURE_VALUE_TYPE(chrome_pdf::features::kPdfInk2)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome_pdf::features::kPdfInk2,
+                                    kPdfInk2Variations,
+                                    "PdfInk2")},
 #endif  // BUILDFLAG(ENABLE_PDF_INK2)
 
 #endif  // BUILDFLAG(ENABLE_PDF)
