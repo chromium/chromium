@@ -94,6 +94,9 @@ class ResultInterface
   using MethodCallback = base::OnceCallback<void(base::expected<
   bool,
   ResultTestErrorPtr>)>;
+  using MethodResult = base::expected<
+  bool,
+  ResultTestErrorPtr>;
   using MethodMojoCallback = base::OnceCallback<void(ResultInterface_Method_ResponseParam_ResultPtr)>;
 
   virtual void Method(bool a, MethodCallback callback) = 0;
@@ -108,6 +111,9 @@ base::expected<
   using SyncMethodCallback = base::OnceCallback<void(base::expected<
   bool,
   ResultTestErrorPtr>)>;
+  using SyncMethodResult = base::expected<
+  bool,
+  ResultTestErrorPtr>;
   using SyncMethodMojoCallback = base::OnceCallback<void(ResultInterface_SyncMethod_ResponseParam_ResultPtr)>;
 
   virtual void SyncMethod(bool a, SyncMethodCallback callback) = 0;

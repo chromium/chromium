@@ -101,6 +101,7 @@ class {{export_attribute|append_space_if_nonempty}}{{interface.name}}
 
 {%-     if method.result_response != None %}
   using {{method.name}}Callback = {{interface_macros.declare_result_callback(method)}};
+  using {{method.name}}Result = {{interface_macros.result_response_to_expected(method.result_response)}};
 {%-     else %}
   using {{method.name}}Callback = {{interface_macros.declare_callback(method, for_blink)}};
 {%-     endif %}
