@@ -16,6 +16,7 @@ import android.print.PrintDocumentInfo;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -57,6 +58,8 @@ public class PrintingControllerImpl implements PrintingController, PdfGenerator 
 
     /** The singleton instance for this class. */
     @VisibleForTesting protected static @Nullable PrintingController sInstance;
+
+    private static @Nullable PrintingController sInstanceForTesting;
 
     private @Nullable String mErrorMessage;
 
@@ -103,6 +106,11 @@ public class PrintingControllerImpl implements PrintingController, PdfGenerator 
         mPrintDocumentAdapterWrapper = new PrintDocumentAdapterWrapper(this);
     }
 
+    public static void setInstanceForTesting(PrintingController instanceForTesting) {
+        sInstanceForTesting = instanceForTesting;
+        ResettersForTesting.register(() -> sInstanceForTesting = null);
+    }
+
     /**
      * Returns the singleton instance, lazily creating one if needed.
      *
@@ -110,6 +118,8 @@ public class PrintingControllerImpl implements PrintingController, PdfGenerator 
      */
     public static PrintingController getInstance() {
         ThreadUtils.assertOnUiThread();
+
+        if (sInstanceForTesting != null) return sInstanceForTesting;
 
         if (sInstance == null) {
             sInstance = new PrintingControllerImpl();
@@ -150,6 +160,11 @@ public class PrintingControllerImpl implements PrintingController, PdfGenerator 
     @Override
     public boolean isBusy() {
         return mIsBusy;
+    }
+
+    @VisibleForTesting
+    public @Nullable Printable getPrintable() {
+        return mPrintable;
     }
 
     @Override
