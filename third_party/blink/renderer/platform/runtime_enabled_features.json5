@@ -5274,6 +5274,14 @@
       status: "stable",
     },
     {
+      // Launch feature flag for WebGPU Compatibility Mode
+      // https://chromestatus.com/feature/6436406437871616
+      name: "WebGPUCompatibilityMode",
+      status: "experimental",
+      // Also enabled as part of all experimental WebGPU features.
+      implied_by: ["WebGPUExperimentalFeatures"],
+    },
+    {
       name: "WebGPUCopyBufferToBufferOverload",
       status: "stable",
     },
@@ -5296,8 +5304,9 @@
       // https://chromestatus.com/feature/5154347661656064
       name: "WebGPUFeatureLevel",
       status: "experimental",
-      // Also enabled as part of all experimental WebGPU features.
-      implied_by: ["WebGPUExperimentalFeatures"],
+      // Also enabled as part of all experimental WebGPU features and
+      // as part of Compatibility Mode.
+      implied_by: ["WebGPUExperimentalFeatures", "WebGPUCompatibilityMode"],
     },
     {
       name: "WebHID",

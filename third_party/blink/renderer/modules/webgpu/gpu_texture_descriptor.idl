@@ -12,7 +12,7 @@ dictionary GPUTextureDescriptor : GPUObjectDescriptorBase {
     required GPUTextureFormat format;
     required GPUTextureUsageFlags usage;
     sequence<GPUTextureFormat> viewFormats = [];
-    [RuntimeEnabled=WebGPUExperimentalFeatures] GPUTextureViewDimension textureBindingViewDimension;
+    [RuntimeEnabled=WebGPUCompatibilityMode] GPUTextureViewDimension textureBindingViewDimension;
 };
 
 enum GPUTextureDimension {
