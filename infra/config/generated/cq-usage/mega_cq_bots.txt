@@ -82,7 +82,6 @@ chromium/try/ios-simulator
 chromium/try/ios-simulator-exp
 chromium/try/ios-simulator-full-configs
 chromium/try/ios-simulator-noncq
-chromium/try/layout_test_leak_detection
 chromium/try/linux-asan-dbg
 chromium/try/linux-asan-media-rel
 chromium/try/linux-asan-media-v8-arm-rel
@@ -90,6 +89,9 @@ chromium/try/linux-asan-rel
 chromium/try/linux-asan-v8-arm-dbg
 chromium/try/linux-asan-v8-arm-rel
 chromium/try/linux-bfcache-rel
+chromium/try/linux-blink-asan-rel
+chromium/try/linux-blink-leak-rel
+chromium/try/linux-blink-msan-rel
 chromium/try/linux-blink-web-tests-force-accessibility-rel
 chromium/try/linux-cast-arm-rel
 chromium/try/linux-cast-arm64-rel
@@ -118,8 +120,6 @@ chromium/try/linux-ubsan-rel
 chromium/try/linux-ubsan-vptr-rel
 chromium/try/linux-v4l2-codec-rel
 chromium/try/linux-wayland-rel
-chromium/try/linux-webkit-asan-rel
-chromium/try/linux-webkit-msan-rel
 chromium/try/linux-win-cross-rel
 chromium/try/linux_chromium_archive_rel_ng
 chromium/try/linux_chromium_asan_rel_ng

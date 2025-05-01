@@ -88,7 +88,7 @@ crbug.com/1048761 external/wpt/infrastructure/server/wpt-server-wpt-flags.sub.ht
 # The results of failures could be also different depending on the underlying protocol.
 crbug.com/1048761 external/wpt/websockets/unload-a-document/002.html?wss [ Failure Pass ]
 
-# Flaking on WebKit Linux MSAN
+# Flaking on Linux MSAN
 crbug.com/1207373 [ Linux ] external/wpt/uievents/order-of-events/mouse-events/mousemove-across.html [ Failure Timeout ]
 crbug.com/1339285 [ Mac ] fast/loader/iframe-window-open-stealing-focus.html [ Pass Timeout ]
 
@@ -4732,7 +4732,7 @@ crbug.com/793771 [ Mac ] media/controls/scrubbing.html [ Crash Failure Pass Time
 skbug.com/7641 external/wpt/css/css-paint-api/paint2d-paths.https.html [ Failure Pass ]
 
 # Sheriff failures 2018-01-25
-# Flaking on Linux Tests, WebKit Linux (also ASAN, Leak)
+# Flaking on Linux Tests (also ASAN, Leak)
 crbug.com/805794 [ Debug Linux ] virtual/android/url-bar/bottom-fixed-adjusted-when-showing-url-bar.html [ Failure Pass ]
 
 # Sheriff failures 2018-02-05
@@ -6124,7 +6124,7 @@ crbug.com/1244896 fast/mediacapturefromelement/CanvasCaptureMediaStream-set-size
 
 crbug.com/1316341 virtual/fenced-frame-mparch/external/wpt/fenced-frame/script-focus.https.html [ Failure Pass Timeout ]
 
-# Sheriff 2022-04-18, failing on Mac and WebKit Win10 builders.
+# Sheriff 2022-04-18, failing on Mac and Win10 builders.
 crbug.com/1317007 external/wpt/mimesniff/mime-types/charset-parameter.window.html [ Failure Pass ]
 
 # Sheriff 2022-04-18
@@ -6460,7 +6460,7 @@ crbug.com/1347675 virtual/fenced-frame-mparch/external/wpt/fenced-frame/fragment
 # TODO(crbug.com/1225773): Re-enable this test
 crbug.com/1225773 external/wpt/html/webappapis/scripting/processing-model-2/unhandled-promise-rejections/promise-rejection-event-during-parse.html [ Failure ]
 
-# Flaky timeouts on WebKit Linux MSAN
+# Flaky timeouts on Linux MSAN
 crbug.com/1218100 [ Linux ] external/wpt/IndexedDB/idb-partitioned-coverage.sub.html [ Pass Timeout ]
 
 # Sheriff 2022-08-06
@@ -7631,7 +7631,7 @@ crbug.com/1509073 [ Release ] external/wpt/clipboard-apis/async-navigator-clipbo
 fast/events/download-on-alt-click.html [ Pass Timeout ]
 fast/events/simulated-click-by-alt-enter.html [ Failure Pass ]
 
-# Failing on WebKit Linux MSAN
+# Failing on Linux MSAN
 crbug.com/1510005 [ Linux ] external/wpt/css/filter-effects/backdrop-filter-svg.html [ Crash Failure Pass Timeout ]
 crbug.com/1510005 [ Linux ] virtual/scalefactor200/external/wpt/css/filter-effects/backdrop-filter-svg.html [ Crash Failure Pass Timeout ]
 
@@ -8849,7 +8849,7 @@ crbug.com/372372940 http/tests/inspector-protocol/prerender/prerender-status-upd
 crbug.com/372372940 http/tests/inspector-protocol/prerender/prerender-ua-override.js [ Failure Pass ]
 crbug.com/372372940 wpt_internal/prerender/focus-on-prerendered-window-client.https.html [ Pass Timeout ]
 
-# Flaky on WebKit Linux ASAN and Win
+# Flaky on Linux ASAN and Win
 crbug.com/369670465 [ Linux ] external/wpt/picture-in-picture/removed-from-document.html [ Failure Pass ]
 crbug.com/369670465 [ Debug Win10.20h2 ] external/wpt/picture-in-picture/removed-from-document.html [ Failure Pass ]
 crbug.com/369670465 [ Debug Win11-arm64 ] external/wpt/picture-in-picture/removed-from-document.html [ Failure Pass ]
@@ -9075,7 +9075,7 @@ crbug.com/383946052 [ Android ] external/wpt/screen-capture/tentative/getdisplay
 crbug.com/383946052 [ Fuchsia ] external/wpt/screen-capture/tentative/getdisplaymedia-captured-surface-resolution.https.html [ Failure ]
 crbug.com/383946052 [ Linux ] external/wpt/screen-capture/tentative/getdisplaymedia-captured-surface-resolution.https.html [ Failure ]
 
-# Also failing on WebKit Linux ASAN
+# Also failing on Linux ASAN
 crbug.com/391728750 [ Linux ] external/wpt/ai/translator/translator-translate.tentative.https.window.html [ Failure Timeout ]
 
 #Gardener 2025-02-12
@@ -9198,7 +9198,7 @@ crbug.com/412431600 [ Win10.20h2 ] virtual/webnn-service-on-cpu/external/wpt/web
 # Gardener 2025-04-28
 crbug.com/414234413 [ Mac13-arm64 ] http/tests/devtools/elements/styles-1/edit-value-with-trimmed-url.js [ Failure Pass ]
 
-# Gardener 2025-04-28. Fails on WebKit Linux ASAN
+# Gardener 2025-04-28. Fails on Linux ASAN
 crbug.com/414243950 [ Linux ] virtual/webnn-service-on-cpu/external/wpt/webnn/conformance_tests/qdq_subgraph.https.any.html?cpu [ Crash ]
 crbug.com/414243950 [ Linux ] virtual/webnn-service-on-cpu/external/wpt/webnn/conformance_tests/qdq_subgraph.https.any.serviceworker.html?cpu [ Crash ]
 crbug.com/414243950 [ Linux ] virtual/webnn-service-on-cpu/external/wpt/webnn/conformance_tests/qdq_subgraph.https.any.sharedworker.html?cpu [ Crash ]

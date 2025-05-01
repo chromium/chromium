@@ -1,5 +1,5 @@
 {
-  "WebKit Linux MSAN": {
+  "linux-blink-msan-rel": {
     "isolated_scripts": [
       {
         "args": [

@@ -83,9 +83,9 @@ try_.builder(
 )
 
 try_.builder(
-    name = "layout_test_leak_detection",
+    name = "linux-blink-leak-rel",
     mirrors = [
-        "ci/WebKit Linux Leak",
+        "ci/linux-blink-leak-rel",
     ],
     gn_args = gn_args.config(
         configs = [
@@ -95,6 +95,7 @@ try_.builder(
             "x64",
         ],
     ),
+    contact_team_email = "chrome-sanitizer-builder-owners@google.com",
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
 
@@ -611,20 +612,22 @@ try_.builder(
 )
 
 try_.builder(
-    name = "linux-webkit-asan-rel",
+    name = "linux-blink-asan-rel",
     mirrors = [
-        "ci/WebKit Linux ASAN",
+        "ci/linux-blink-asan-rel",
     ],
-    gn_args = "ci/WebKit Linux ASAN",
+    gn_args = "ci/linux-blink-asan-rel",
+    contact_team_email = "chrome-sanitizer-builder-owners@google.com",
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
 
 try_.builder(
-    name = "linux-webkit-msan-rel",
+    name = "linux-blink-msan-rel",
     mirrors = [
-        "ci/WebKit Linux MSAN",
+        "ci/linux-blink-msan-rel",
     ],
-    gn_args = "ci/WebKit Linux MSAN",
+    gn_args = "ci/linux-blink-msan-rel",
+    contact_team_email = "chrome-sanitizer-builder-owners@google.com",
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
 

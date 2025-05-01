@@ -12,8 +12,8 @@ from unexpected_passes_common import data_types
 VIRTUAL_PREFIX = 'virtual/'
 
 SANITIZER_BUILDERS = {
-    'chromium/ci:WebKit Linux ASAN',
-    'chromium/ci:WebKit Linux MSAN',
+    'chromium/ci:linux-blink-asan-rel',
+    'chromium/ci:linux-blink-msan-rel',
 }
 
 

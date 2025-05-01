@@ -58,9 +58,6 @@ ci/TSAN Debug
 ci/TSAN Release
 ci/UBSan Release
 ci/UBSan vptr Release
-ci/WebKit Linux ASAN
-ci/WebKit Linux Leak
-ci/WebKit Linux MSAN
 ci/WebKit Win10
 ci/Win ASan Release
 ci/Win ASan Release Media
@@ -92,6 +89,9 @@ ci/ios-simulator-full-configs
 ci/ios-simulator-noncq
 ci/linux-archive-rel
 ci/linux-bfcache-rel
+ci/linux-blink-asan-rel
+ci/linux-blink-leak-rel
+ci/linux-blink-msan-rel
 ci/linux-blink-web-tests-force-accessibility-rel
 ci/linux-cast-arm-rel
 ci/linux-cast-arm64-rel

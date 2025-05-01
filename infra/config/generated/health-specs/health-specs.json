@@ -5667,69 +5667,6 @@
           }
         ]
       },
-      "WebKit Linux ASAN": {
-        "contact_team_email": "chrome-sanitizer-builder-owners@google.com",
-        "problem_specs": [
-          {
-            "name": "Unhealthy",
-            "period_days": 7,
-            "score": 5,
-            "thresholds": {
-              "_default": "_default"
-            }
-          },
-          {
-            "name": "Low Value",
-            "period_days": 90,
-            "score": 1,
-            "thresholds": {
-              "_default": "_default"
-            }
-          }
-        ]
-      },
-      "WebKit Linux Leak": {
-        "contact_team_email": "chrome-sanitizer-builder-owners@google.com",
-        "problem_specs": [
-          {
-            "name": "Unhealthy",
-            "period_days": 7,
-            "score": 5,
-            "thresholds": {
-              "_default": "_default"
-            }
-          },
-          {
-            "name": "Low Value",
-            "period_days": 90,
-            "score": 1,
-            "thresholds": {
-              "_default": "_default"
-            }
-          }
-        ]
-      },
-      "WebKit Linux MSAN": {
-        "contact_team_email": "chrome-sanitizer-builder-owners@google.com",
-        "problem_specs": [
-          {
-            "name": "Unhealthy",
-            "period_days": 7,
-            "score": 5,
-            "thresholds": {
-              "_default": "_default"
-            }
-          },
-          {
-            "name": "Low Value",
-            "period_days": 90,
-            "score": 1,
-            "thresholds": {
-              "_default": "_default"
-            }
-          }
-        ]
-      },
       "WebKit Win10": {
         "contact_team_email": "chrome-desktop-engprod@google.com",
         "problem_specs": [
@@ -9675,7 +9612,70 @@
           }
         ]
       },
+      "linux-blink-asan-rel": {
+        "contact_team_email": "chrome-sanitizer-builder-owners@google.com",
+        "problem_specs": [
+          {
+            "name": "Unhealthy",
+            "period_days": 7,
+            "score": 5,
+            "thresholds": {
+              "_default": "_default"
+            }
+          },
+          {
+            "name": "Low Value",
+            "period_days": 90,
+            "score": 1,
+            "thresholds": {
+              "_default": "_default"
+            }
+          }
+        ]
+      },
       "linux-blink-heap-verification": {
+        "problem_specs": [
+          {
+            "name": "Unhealthy",
+            "period_days": 7,
+            "score": 5,
+            "thresholds": {
+              "_default": "_default"
+            }
+          },
+          {
+            "name": "Low Value",
+            "period_days": 90,
+            "score": 1,
+            "thresholds": {
+              "_default": "_default"
+            }
+          }
+        ]
+      },
+      "linux-blink-leak-rel": {
+        "contact_team_email": "chrome-sanitizer-builder-owners@google.com",
+        "problem_specs": [
+          {
+            "name": "Unhealthy",
+            "period_days": 7,
+            "score": 5,
+            "thresholds": {
+              "_default": "_default"
+            }
+          },
+          {
+            "name": "Low Value",
+            "period_days": 90,
+            "score": 1,
+            "thresholds": {
+              "_default": "_default"
+            }
+          }
+        ]
+      },
+      "linux-blink-msan-rel": {
+        "contact_team_email": "chrome-sanitizer-builder-owners@google.com",
         "problem_specs": [
           {
             "name": "Unhealthy",

@@ -2,14 +2,14 @@
   "$build/chromium_tests_builder_config": {
     "builder_config": {
       "additional_exclusions": [
-        "infra/config/generated/builders/ci/WebKit Linux Leak/gn-args.json"
+        "infra/config/generated/builders/ci/linux-blink-leak-rel/gn-args.json"
       ],
       "builder_db": {
         "entries": [
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "WebKit Linux Leak",
+              "builder": "linux-blink-leak-rel",
               "project": "chromium"
             },
             "builder_spec": {
@@ -35,18 +35,18 @@
       "builder_ids": [
         {
           "bucket": "ci",
-          "builder": "WebKit Linux Leak",
+          "builder": "linux-blink-leak-rel",
           "project": "chromium"
         }
       ],
       "mirroring_builder_group_and_names": [
         {
-          "builder": "layout_test_leak_detection",
+          "builder": "linux-blink-leak-rel",
           "group": "tryserver.chromium.linux"
         }
       ],
       "retry_failed_shards": true,
-      "targets_spec_directory": "src/infra/config/generated/builders/ci/WebKit Linux Leak/targets"
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/linux-blink-leak-rel/targets"
     }
   },
   "$build/siso": {
