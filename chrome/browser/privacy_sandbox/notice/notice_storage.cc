@@ -131,11 +131,9 @@ base::DictValue BuildDictEntryEvent(NoticeEventTimestampPair* pair) {
 }
 
 const Notice& FindNotice(NoticeId notice_id, NoticeCatalog* catalog) {
-  const auto& notice_map = catalog->GetNoticeMap();
-  auto notice_ptr = catalog->GetNoticeMap().find(notice_id);
-  CHECK(notice_ptr != notice_map.end());
-  CHECK(notice_ptr->second != nullptr);
-  return *(notice_ptr->second.get());
+  Notice* notice = catalog->GetNotice(notice_id);
+  CHECK(notice);
+  return *notice;
 }
 
 bool MaybeValueToTime(const base::Value* value, base::Time* time) {

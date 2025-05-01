@@ -30,6 +30,8 @@ using enum Event;
 using ::testing::ElementsAre;
 using ::testing::Eq;
 using ::testing::Pointee;
+using ::testing::Return;
+using ::testing::ReturnRef;
 
 using EventTimePair = NoticeEventTimestampPair;
 
@@ -95,7 +97,13 @@ class PrivacySandboxNoticeStorageTest : public testing::Test {
 
     default_notice_map_ = BuildDefaultNoticeMap();
     ON_CALL(*mock_catalog(), GetNoticeMap())
-        .WillByDefault(testing::ReturnRef(default_notice_map_));
+        .WillByDefault(ReturnRef(default_notice_map_));
+    ON_CALL(*mock_catalog(), GetNotice(kNotice1InCatalog))
+        .WillByDefault(Return(default_notice_map_[kNotice1InCatalog].get()));
+    ON_CALL(*mock_catalog(), GetNotice(kNotice2InCatalog))
+        .WillByDefault(Return(default_notice_map_[kNotice2InCatalog].get()));
+    ON_CALL(*mock_catalog(), GetNotice(kNoticeIdNotInCatalog))
+        .WillByDefault(Return(nullptr));
   }
 
   PrivacySandboxNoticeStorage* notice_storage() {

@@ -52,13 +52,12 @@ void PrivacySandboxNoticeService::EventOccurred(
     PrivacySandboxNoticeEvent event) {
   notice_storage()->RecordEvent(notice_id, event);
 
-  auto notice_ptr = catalog_->GetNoticeMap().find(notice_id);
-  CHECK(notice_ptr != catalog_->GetNoticeMap().end());
-  CHECK(notice_ptr->second != nullptr);
+  Notice* notice = catalog_->GetNotice(notice_id);
+  CHECK(notice);
 
   // Refresh fulfillment status after an event has occurred.
-  notice_ptr->second->RefreshFulfillmentStatus(*notice_storage());
-  notice_ptr->second->UpdateTargetApiResults(event);
+  notice->RefreshFulfillmentStatus(*notice_storage());
+  notice->UpdateTargetApiResults(event);
 }
 
 // TODO(crbug.com/392612108): Implement this function.
