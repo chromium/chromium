@@ -299,6 +299,7 @@ void OnDeviceExecution::OnComplete(
 }
 
 void OnDeviceExecution::OnComplete(uint32_t tokens_processed) {
+  execute_input_token_count_ = tokens_processed;
   MutableLoggedRequest()->set_execution_num_tokens_processed(tokens_processed);
 }
 
@@ -503,9 +504,11 @@ void OnDeviceExecution::SendSuccessCompletionCallback(
   // Return the execution response.
   auto self = weak_ptr_factory_.GetWeakPtr();
   std::move(callback_).Run(OptimizationGuideModelStreamingExecutionResult(
-      base::ok(StreamingResponse{.response = success_response_metadata,
-                                 .is_complete = true,
-                                 .output_token_count = output_token_count_}),
+      base::ok(
+          StreamingResponse{.response = success_response_metadata,
+                            .is_complete = true,
+                            .input_token_count = execute_input_token_count_,
+                            .output_token_count = output_token_count_}),
       /*provided_by_on_device=*/true, std::move(model_execution_info)));
   if (self) {
     self->Cleanup(/*healthy=*/true);

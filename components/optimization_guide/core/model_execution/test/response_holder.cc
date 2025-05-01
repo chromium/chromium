@@ -81,6 +81,8 @@ void ResponseHolder::OnStreamingResponse(
     final_status_future_.SetValue(false);
     return;
   }
+  input_token_count_ = result.response->input_token_count;
+  output_token_count_ = result.response->output_token_count;
   std::string full_response;
   for (auto partial_response : partial_responses_) {
     full_response += partial_response;

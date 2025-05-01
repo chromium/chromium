@@ -251,6 +251,8 @@ class OnDeviceExecution final
 
   // The number of tokens in the returned output.
   size_t output_token_count_ = 0;
+  // The number of tokens in execute portion of the input.
+  size_t execute_input_token_count_ = 0;
 
   // Callback to provide the execution result.
   OptimizationGuideModelExecutionResultStreamingCallback callback_;

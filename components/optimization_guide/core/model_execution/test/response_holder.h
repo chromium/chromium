@@ -66,6 +66,10 @@ class ResponseHolder {
     return model_execution_info_received_.get();
   }
 
+  size_t input_token_count() const { return input_token_count_; }
+
+  size_t output_token_count() const { return output_token_count_; }
+
  private:
   void OnStreamingResponse(
       OptimizationGuideModelStreamingExecutionResult result);
@@ -77,6 +81,8 @@ class ResponseHolder {
   std::unique_ptr<proto::ModelExecutionInfo> model_execution_info_received_;
   std::optional<OptimizationGuideModelExecutionError::ModelExecutionError>
       response_error_;
+  size_t input_token_count_ = 0;
+  size_t output_token_count_ = 0;
   base::WeakPtrFactory<ResponseHolder> weak_ptr_factory_;
 };
 

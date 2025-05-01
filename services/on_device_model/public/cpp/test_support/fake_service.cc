@@ -180,10 +180,13 @@ void FakeOnDeviceSession::GenerateImpl(
     remote->OnResponse(std::move(chunk));
   }
 
+  int output_token_count = 0;
   if (settings_->model_execute_result.empty()) {
     for (const auto& context : context_) {
+      std::string text = CtxToString(*context, capabilities_);
+      output_token_count += text.size();
       auto chunk = mojom::ResponseChunk::New();
-      chunk->text = "Context: " + CtxToString(*context, capabilities_) + "\n";
+      chunk->text = "Context: " + text + "\n";
       remote->OnResponse(std::move(chunk));
     }
     if (options->top_k > 1) {
@@ -195,12 +198,14 @@ void FakeOnDeviceSession::GenerateImpl(
     }
   } else {
     for (const auto& text : settings_->model_execute_result) {
+      output_token_count += text.size();
       auto chunk = mojom::ResponseChunk::New();
       chunk->text = text;
       remote->OnResponse(std::move(chunk));
     }
   }
   auto summary = mojom::ResponseSummary::New();
+  summary->output_token_count = output_token_count;
   remote->OnComplete(std::move(summary));
 }
 

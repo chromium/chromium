@@ -3582,7 +3582,6 @@ TEST_F(OnDeviceModelServiceControllerTest, Broker) {
 TEST_F(OnDeviceModelServiceControllerTest, Priority) {
   Initialize(standard_assets_);
 
-  base::HistogramTester histogram_tester;
   auto session = CreateSession();
   EXPECT_TRUE(session);
 
@@ -3603,7 +3602,6 @@ TEST_F(OnDeviceModelServiceControllerTest, Priority) {
 TEST_F(OnDeviceModelServiceControllerTest, PriorityClone) {
   Initialize(standard_assets_);
 
-  base::HistogramTester histogram_tester;
   auto session = CreateSession();
   EXPECT_TRUE(session);
 
@@ -3624,7 +3622,6 @@ TEST_F(OnDeviceModelServiceControllerTest, PriorityClone) {
 TEST_F(OnDeviceModelServiceControllerTest, SetInputCallback) {
   Initialize(standard_assets_);
 
-  base::HistogramTester histogram_tester;
   auto session = CreateSession();
   ASSERT_TRUE(session);
 
@@ -3646,7 +3643,6 @@ TEST_F(OnDeviceModelServiceControllerTest, SetInputCallback) {
 TEST_F(OnDeviceModelServiceControllerTest, SetInputCallbackCancelled) {
   Initialize(standard_assets_);
 
-  base::HistogramTester histogram_tester;
   auto session = CreateSession();
   ASSERT_TRUE(session);
 
@@ -3677,7 +3673,6 @@ TEST_F(OnDeviceModelServiceControllerTest, SetInputCallbackCancelled) {
 TEST_F(OnDeviceModelServiceControllerTest, SetInputCallbackError) {
   Initialize(standard_assets_);
 
-  base::HistogramTester histogram_tester;
   auto session = CreateSession();
   ASSERT_TRUE(session);
 
@@ -3689,6 +3684,21 @@ TEST_F(OnDeviceModelServiceControllerTest, SetInputCallbackError) {
   EXPECT_EQ(future.Get().error().error(),
             OptimizationGuideModelExecutionError::ModelExecutionError::
                 kInvalidRequest);
+}
+
+TEST_F(OnDeviceModelServiceControllerTest, TokenCounts) {
+  Initialize(standard_assets_);
+
+  auto session = CreateSession();
+  ASSERT_TRUE(session);
+
+  session->ExecuteModel(PageUrlRequest("foo"),
+                        response_.GetStreamingCallback());
+  ASSERT_TRUE(response_.GetFinalStatus());
+  EXPECT_EQ(response_.value(), "Context: execute:foo off:0 max:1024\n");
+  EXPECT_EQ(response_.input_token_count(), strlen("execute:foo"));
+  EXPECT_EQ(response_.output_token_count(),
+            strlen("execute:foo off:0 max:1024"));
 }
 
 }  // namespace optimization_guide
