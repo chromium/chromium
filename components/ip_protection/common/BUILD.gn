@@ -610,6 +610,7 @@ source_set("ip_protection_probabilistic_reveal_token_direct_fetcher_unittest") {
   deps = [
     ":ip_protection_probabilistic_reveal_token_crypter",
     ":ip_protection_probabilistic_reveal_token_direct_fetcher",
+    ":probabilistic_reveal_token_test_issuer",
     "//base",
     "//base/test:test_support",
     "//base/version_info:channel",

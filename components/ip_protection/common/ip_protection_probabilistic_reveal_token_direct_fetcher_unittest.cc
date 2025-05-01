@@ -24,15 +24,16 @@
 #include "base/types/expected.h"
 #include "base/version_info/channel.h"
 #include "components/ip_protection/common/ip_protection_probabilistic_reveal_token_fetcher.h"
+#include "components/ip_protection/common/probabilistic_reveal_token_test_issuer.h"
 #include "components/ip_protection/get_probabilistic_reveal_token.pb.h"
 #include "net/base/features.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_request_headers.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
-#include "services/network/public/cpp/resource_request.h"
-#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "services/network/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -54,15 +55,6 @@ using ::testing::StartsWith;
 constexpr size_t kGetProbabilisticRevealTokenResponseMaxBodySize = 40 * 1024;
 constexpr char kIssuerServerUrl[] =
     "https://aaftokenissuer.pa.googleapis.com/v1/issueprts";
-
-absl::StatusOr<std::string> GetTestPublicKeyBytes(uint64_t private_key) {
-  Context context;
-  PJC_ASSIGN_OR_RETURN(ECGroup group,
-                       ECGroup::Create(NID_X9_62_prime256v1, &context));
-  PJC_ASSIGN_OR_RETURN(ECPoint g, group.GetFixedGenerator());
-  PJC_ASSIGN_OR_RETURN(ECPoint y, g.Mul(context.CreateBigNum(private_key)));
-  return y.ToBytesCompressed();
-}
 
 }  // namespace
 
@@ -272,10 +264,14 @@ class IpProtectionProbabilisticRevealTokenDirectFetcherTest
             test_url_loader_factory_.GetSafeWeakWrapper()->Clone(),
             version_info::Channel::DEFAULT);
 
-    absl::StatusOr<std::string> maybe_public_key_bytes =
-        GetTestPublicKeyBytes(/*private_key=*/1);
-    ASSERT_TRUE(maybe_public_key_bytes.ok());
-    public_key_bytes_ = maybe_public_key_bytes.value();
+    base::expected<std::unique_ptr<ProbabilisticRevealTokenTestIssuer>,
+                   absl::Status>
+        maybe_issuer =
+            ProbabilisticRevealTokenTestIssuer::Create(/*private_key=*/1);
+    ASSERT_TRUE(maybe_issuer.has_value())
+        << "creating test issuer failed with error: " << maybe_issuer.error();
+    auto issuer = std::move(maybe_issuer).value();
+    public_key_bytes_ = issuer->GetSerializedPublicKey();
   }
 
   GetProbabilisticRevealTokenResponse BuildProbabilisticRevealTokenResponse(
