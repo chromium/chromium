@@ -805,7 +805,7 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       /*presupplied_trigger_id=*/"DzFWc1ACp0ugnJ3q1cK0RPxBRdLT",
       /*product_specific_bits_data_fields=*/std::vector<std::string>{},
       /*product_specific_string_data_fields=*/
-      std::vector<std::string>{"page classification"});
+      std::vector<std::string>{"page classification", "channel"});
 
   survey_configs.emplace_back(
       &omnibox_feature_configs::HappinessTrackingSurveyForOmniboxOnFocusZps::
@@ -814,7 +814,7 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       /*presupplied_trigger_id=*/"7USxn1X280ugnJ3q1cK0P67JEQ7Y",
       /*product_specific_bits_data_fields=*/std::vector<std::string>{},
       /*product_specific_string_data_fields=*/
-      std::vector<std::string>{"page classification"});
+      std::vector<std::string>{"page classification", "channel"});
 
   return survey_configs;
 }

@@ -61,6 +61,7 @@
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/omnibox/chrome_omnibox_navigation_observer.h"
 #include "chrome/browser/ui/omnibox/omnibox_tab_helper.h"
+#include "chrome/common/channel_info.h"
 #include "chrome/common/pref_names.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/favicon/content/content_favicon_driver.h"
@@ -392,6 +393,24 @@ void ChromeOmniboxClient::MaybeShowOnFocusHatsSurvey(
   // Roll the dice as we want to show one of two surveys to the treatment
   // group but only one survey to the control group.
   bool show_happiness_survey = base::RandInt(0, 1) == 0;
+  // Get channel string to return as PSD.
+  std::string channel;
+  switch (chrome::GetChannel()) {
+    case version_info::Channel::STABLE:
+      channel = "stable";
+      break;
+    case version_info::Channel::BETA:
+      channel = "beta";
+      break;
+    case version_info::Channel::DEV:
+      channel = "dev";
+      break;
+    case version_info::Channel::CANARY:
+      channel = "canary";
+      break;
+    default:
+      channel = "unknown";
+  }
   if (omnibox_feature_configs::OmniboxUrlSuggestionsOnFocus::Get().enabled) {
     if (show_happiness_survey) {
       hats_service->LaunchDelayedSurvey(
@@ -399,14 +418,16 @@ void ChromeOmniboxClient::MaybeShowOnFocusHatsSurvey(
           survey_delay_time_ms, {},
           {{"page classification",
             metrics::OmniboxEventProto::PageClassification_Name(
-                classification)}});
+                classification)},
+           {"channel", channel}});
     } else {
       hats_service->LaunchDelayedSurvey(
           kHatsSurveyTriggerOnFocusZpsSuggestionsUtility, survey_delay_time_ms,
           {},
           {{"page classification",
             metrics::OmniboxEventProto::PageClassification_Name(
-                classification)}});
+                classification)},
+           {"channel", channel}});
     }
   } else {
     // Control
@@ -416,7 +437,8 @@ void ChromeOmniboxClient::MaybeShowOnFocusHatsSurvey(
           survey_delay_time_ms, {},
           {{"page classification",
             metrics::OmniboxEventProto::PageClassification_Name(
-                classification)}});
+                classification)},
+           {"channel", channel}});
     }
   }
 }
