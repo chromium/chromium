@@ -3,10 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/test/mock_callback.h"
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include <linux/input.h>
 #include <wayland-server.h>
