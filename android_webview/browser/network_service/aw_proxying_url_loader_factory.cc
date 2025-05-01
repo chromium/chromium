@@ -403,12 +403,11 @@ XrwEnabledMap& GetXrwEnabledMap() {
 }
 
 // Persistent Origin Trials can only be checked on the UI thread.
-bool CheckXrwOriginTrial(const GURL& request_url,
+bool CheckXrwOriginTrial(content::OriginTrialsControllerDelegate* delegate,
+                         const GURL& request_url,
                          content::FrameTreeNodeId frame_tree_node_id,
                          blink::mojom::ResourceType resource_type) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  content::OriginTrialsControllerDelegate* delegate =
-      AwBrowserContext::GetDefault()->GetOriginTrialsControllerDelegate();
   if (!delegate)
     return false;
 
@@ -449,24 +448,36 @@ bool CheckXrwOriginTrial(const GURL& request_url,
 
 // Persistent Origin Trials can only be checked on the UI thread.
 // |result_args| is owned by a BarrierClosure that executes after this call.
-void CheckXrwOriginTrialOnUiThread(GURL request_url,
-                                   content::FrameTreeNodeId frame_tree_node_id,
-                                   blink::mojom::ResourceType resource_type,
-                                   InterceptResponseReceivedArgs* result_args) {
-  result_args->xrw_origin_trial_enabled =
-      CheckXrwOriginTrial(request_url, frame_tree_node_id, resource_type);
+void CheckXrwOriginTrialOnUiThread(
+    scoped_refptr<AwBrowserContextIoThreadHandle> browser_context_handle,
+    GURL request_url,
+    content::FrameTreeNodeId frame_tree_node_id,
+    blink::mojom::ResourceType resource_type,
+    InterceptResponseReceivedArgs* result_args) {
+  // If we don't have a handle, that means the request isn't associated
+  // with WebContents and so we can't retrieve the delegate. If this is the
+  // case, the request is expected to fail anyway so we can just pass a nullptr
+  // for the delegate.
+  content::OriginTrialsControllerDelegate* delegate =
+      browser_context_handle ? browser_context_handle->GetOnUiThread()
+                                   ->GetOriginTrialsControllerDelegate()
+                             : nullptr;
+  result_args->xrw_origin_trial_enabled = CheckXrwOriginTrial(
+      delegate, request_url, frame_tree_node_id, resource_type);
 }
 
 // Post a call to the UI thread to check if the XRW deprecation trial is enabled
 // for |request_url|, saving the result in |result_args|.
 // |result_args| is owned by the |done_callback|. If |cached_result| is present,
 // will call |done_callback| synchronously.
-void CheckXrwOriginTrialAsync(std::optional<bool> cached_result,
-                              GURL request_url,
-                              content::FrameTreeNodeId frame_tree_node_id,
-                              blink::mojom::ResourceType resource_type,
-                              InterceptResponseReceivedArgs* result_args,
-                              base::OnceClosure done_callback) {
+void CheckXrwOriginTrialAsync(
+    scoped_refptr<AwBrowserContextIoThreadHandle> browser_context_handle,
+    std::optional<bool> cached_result,
+    GURL request_url,
+    content::FrameTreeNodeId frame_tree_node_id,
+    blink::mojom::ResourceType resource_type,
+    InterceptResponseReceivedArgs* result_args,
+    base::OnceClosure done_callback) {
   if (cached_result) {
     result_args->xrw_origin_trial_enabled = *cached_result;
     std::move(done_callback).Run();
@@ -475,8 +486,8 @@ void CheckXrwOriginTrialAsync(std::optional<bool> cached_result,
 
   content::GetUIThreadTaskRunner({})->PostTaskAndReply(
       FROM_HERE,
-      base::BindOnce(&CheckXrwOriginTrialOnUiThread, std::move(request_url),
-                     frame_tree_node_id, resource_type,
+      base::BindOnce(&CheckXrwOriginTrialOnUiThread, browser_context_handle,
+                     std::move(request_url), frame_tree_node_id, resource_type,
                      base::Unretained(result_args)),
       std::move(done_callback));
 }
@@ -562,7 +573,7 @@ void InterceptedRequest::Restart(std::optional<bool> xrw_enabled) {
     }
 
     CheckXrwOriginTrialAsync(
-        xrw_enabled, request_.url, frame_tree_node_id_,
+        browser_context_handle_, xrw_enabled, request_.url, frame_tree_node_id_,
         static_cast<blink::mojom::ResourceType>(request_.resource_type),
         intercept_response_received_args, arg_ready_closure);
 
@@ -1004,7 +1015,7 @@ void InterceptedRequest::SendNoIntercept(std::optional<bool> xrw_enabled) {
           std::make_unique<InterceptResponseReceivedArgs>();
 
   CheckXrwOriginTrialAsync(
-      xrw_enabled, request_.url, frame_tree_node_id_,
+      browser_context_handle_, xrw_enabled, request_.url, frame_tree_node_id_,
       static_cast<blink::mojom::ResourceType>(request_.resource_type),
       intercept_response_received_args.get(),
       base::BindOnce(&InterceptedRequest::InterceptResponseReceived,
@@ -1063,12 +1074,14 @@ AwProxyingURLLoaderFactory::~AwProxyingURLLoaderFactory() = default;
 
 // static
 void AwProxyingURLLoaderFactory::SetXrwResultForNavigation(
+    content::OriginTrialsControllerDelegate* delegate,
     const GURL& url,
     blink::mojom::ResourceType resource_type,
     content::FrameTreeNodeId frame_tree_node_id,
     int64_t navigation_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  bool result = CheckXrwOriginTrial(url, frame_tree_node_id, resource_type);
+  bool result =
+      CheckXrwOriginTrial(delegate, url, frame_tree_node_id, resource_type);
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(
                      [](int64_t navigation_id, GURL url, bool result) {

@@ -184,8 +184,12 @@ class XrwNavigationThrottle : public content::NavigationThrottle {
 
   ThrottleCheckResult WillStartRequest() override {
     auto* handle = navigation_handle();
+    content::OriginTrialsControllerDelegate* delegate =
+        handle->GetWebContents()
+            ->GetBrowserContext()
+            ->GetOriginTrialsControllerDelegate();
     AwProxyingURLLoaderFactory::SetXrwResultForNavigation(
-        handle->GetURL(),
+        delegate, handle->GetURL(),
         handle->IsInOutermostMainFrame()
             ? blink::mojom::ResourceType::kMainFrame
             : blink::mojom::ResourceType::kSubFrame,

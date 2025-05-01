@@ -215,6 +215,15 @@ AwBrowserContext::AwBrowserContext(std::string name,
 
   EnsureResourceContextInitialized();
   prefetch_manager_ = std::make_unique<AwPrefetchManager>(this);
+
+  // This should be initialized as soon as possible when creating the profile,
+  // in order to load the database from disk.
+  origin_trials_controller_delegate_ =
+      std::make_unique<origin_trials::OriginTrials>(
+          std::make_unique<origin_trials::LevelDbPersistenceProvider>(
+              GetPath(),
+              GetDefaultStoragePartition()->GetProtoDatabaseProvider()),
+          std::make_unique<blink::TrialTokenValidator>());
 }
 
 AwBrowserContext::~AwBrowserContext() {
@@ -489,14 +498,6 @@ AwBrowserContext::RetrieveInProgressDownloadManager() {
 
 content::OriginTrialsControllerDelegate*
 AwBrowserContext::GetOriginTrialsControllerDelegate() {
-  if (!origin_trials_controller_delegate_) {
-    origin_trials_controller_delegate_ =
-        std::make_unique<origin_trials::OriginTrials>(
-            std::make_unique<origin_trials::LevelDbPersistenceProvider>(
-                GetPath(),
-                GetDefaultStoragePartition()->GetProtoDatabaseProvider()),
-            std::make_unique<blink::TrialTokenValidator>());
-  }
   return origin_trials_controller_delegate_.get();
 }
 
