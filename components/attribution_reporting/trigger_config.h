@@ -25,7 +25,6 @@
 namespace base {
 class DictValue;
 class ListValue;
-class TimeDelta;
 }  // namespace base
 
 namespace attribution_reporting {
@@ -61,15 +60,6 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) TriggerSpecs {
  public:
   using TriggerDataIndices = base::flat_map<uint32_t, uint8_t>;
   using value_type = std::pair<uint32_t, const TriggerSpec&>;
-
-  // TODO: Merge `ParseTopLevelTriggerData()` into this function and rename it
-  // to `Parse()`.
-  static base::expected<TriggerSpecs, mojom::SourceRegistrationError>
-  ParseFullFlexForTesting(const base::DictValue&,
-                          mojom::SourceType,
-                          base::TimeDelta expiry,
-                          EventReportWindows default_report_windows,
-                          mojom::TriggerDataMatching);
 
   // Parses the top-level `trigger_data` field. The resulting value is either
   // `empty()` or `SingleSharedSpec()`.

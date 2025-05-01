@@ -100,11 +100,6 @@ base::CheckedNumeric<uint32_t> GetNumStatesRecursive(TriggerSpecs::Iterator it,
   }
 
   // Case 2: wB = 0.
-  //
-  // TODO(csharrison): Use the actual spec's max reports when that is
-  // implemented. Currently we set `max_reports_per_type` to be equal to
-  // `max_reports` for every type, but in the future it will be specified on the
-  // `TriggerSpec` as part of the `summary_buckets` field.
   if (window_val == 0) {
     base::CheckedNumeric<uint32_t> result = GetNumStatesRecursive(
         it, max_reports, (*it).second.event_report_windows().end_times().size(),
@@ -144,11 +139,6 @@ base::expected<void, RandomizedResponseError> GetReportsFromIndexRecursive(
 
   // Case 2: there are no more windows to consider for the current trigger data,
   // so generate based on the remaining trigger data types.
-  //
-  // TODO(csharrison): Use the actual spec's max reports when that is
-  // implemented. Currently we set `max_reports_per_type` to be equal to
-  // `max_reports` for every type, but in the future it will be specified on the
-  // `TriggerSpec` as part of the `summary_buckets` field.
   if (window_val == 0) {
     return GetReportsFromIndexRecursive(
         it, max_reports, (*it).second.event_report_windows().end_times().size(),

@@ -34,7 +34,6 @@ class MaxEventLevelReports;
 class RandomizedResponseData;
 class SourceAggregatableDebugReportingConfig;
 class SuitableOrigin;
-class SummaryBuckets;
 
 struct AggregatableDebugReportingConfig;
 struct AggregatableDedupKey;
@@ -91,8 +90,6 @@ std::ostream& operator<<(std::ostream&, const SuitableOrigin&);
 std::ostream& operator<<(std::ostream&, const AggregatableDedupKey&);
 
 std::ostream& operator<<(std::ostream&, const OsRegistrationItem&);
-
-std::ostream& operator<<(std::ostream&, const SummaryBuckets&);
 
 std::ostream& operator<<(std::ostream&, const TriggerSpec&);
 

@@ -362,7 +362,7 @@ chromium-metrics-reviews@google.com.
   <int value="25" label="event_report_windows' start_time value is invalid"/>
   <int value="26" label="event_report_windows' end time value is invalid"/>
   <int value="27" label="trigger_data_matching value is invalid"/>
-  <int value="28" label="trigger_specs has wrong type"/>
+  <int value="28" label="(Obsolete) trigger_specs has wrong type"/>
   <int value="29" label="trigger spec's trigger_data missing"/>
   <int value="30" label="trigger_spec's trigger_data not a valid list"/>
   <int value="31" label="trigger_data not a valid list"/>
@@ -373,9 +373,9 @@ chromium-metrics-reviews@google.com.
   <int value="36" label="invalid trigger data for matching mode"/>
   <int value="37"
       label="top-level trigger_data and specs are mutually exclusive"/>
-  <int value="38" label="summary_operator value is invalid"/>
-  <int value="39" label="summary_buckets not a valid list"/>
-  <int value="40" label="summary_buckets value invalid"/>
+  <int value="38" label="(Obsolete) summary_operator value is invalid"/>
+  <int value="39" label="(Obsolete) summary_buckets not a valid list"/>
+  <int value="40" label="(Obsolete) summary_buckets value invalid"/>
   <int value="41" label="event_level_epsilon value is invalid"/>
   <int value="42" label="destination_limit_priority is invalid"/>
   <int value="43" label="attribution_scopes' limit value is invalid"/>
