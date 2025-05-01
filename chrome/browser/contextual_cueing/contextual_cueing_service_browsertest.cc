@@ -14,6 +14,8 @@
 #include "chrome/browser/contextual_cueing/contextual_cueing_service_factory.h"
 #include "chrome/browser/extensions/keyed_services/browser_context_keyed_service_factories.h"
 #include "chrome/browser/optimization_guide/browser_test_util.h"
+#include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser.h"
@@ -22,6 +24,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/optimization_guide/proto/contextual_cueing_metadata.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url_service.h"
 #include "content/public/test/browser_test.h"
@@ -33,6 +36,10 @@
 #endif
 
 namespace contextual_cueing {
+
+using ::testing::_;
+using ::testing::An;
+using ::testing::WithArgs;
 
 class ContextualCueingServiceBrowserTest : public InProcessBrowserTest {
  public:
@@ -308,6 +315,131 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingServiceBrowserTestZSSFlag,
       "ZeroStateSuggestions",
       0);
 }
+
+class ContextualCueingServiceBrowserTestZSSHistogram
+    : public ContextualCueingServiceBrowserTest {
+ public:
+  ContextualCueingServiceBrowserTestZSSHistogram() {
+    scoped_feature_list_.InitAndEnableFeature(kGlicZeroStateSuggestions);
+  }
+
+  void SetUpOnMainThread() override {
+    browser()->profile()->GetPrefs()->SetBoolean(
+        glic::prefs::kGlicTabContextEnabled, true);
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        optimization_guide::switches::
+            kDisableCheckingUserPermissionsForTesting);
+  }
+
+  void PostRunTestOnMainThread() override {
+    mock_optimization_guide_keyed_service_ = nullptr;
+    InProcessBrowserTest::PostRunTestOnMainThread();
+  }
+
+  void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* browser_context) override {
+    mock_optimization_guide_keyed_service_ =
+        static_cast<testing::NiceMock<MockOptimizationGuideKeyedService>*>(
+            OptimizationGuideKeyedServiceFactory::GetInstance()
+                ->SetTestingFactoryAndUse(
+                    browser_context,
+                    base::BindRepeating([](content::BrowserContext* context)
+                                            -> std::unique_ptr<KeyedService> {
+                      return std::make_unique<testing::NiceMock<
+                          MockOptimizationGuideKeyedService>>();
+                    })));
+  }
+
+  MockOptimizationGuideKeyedService& mock_optimization_guide_keyed_service() {
+    return *mock_optimization_guide_keyed_service_;
+  }
+
+  void SetUpHints(bool allow_contextual) {
+    ON_CALL(mock_optimization_guide_keyed_service(),
+            CanApplyOptimization(
+                _, optimization_guide::proto::GLIC_ZERO_STATE_SUGGESTIONS,
+                An<optimization_guide::OptimizationGuideDecisionCallback>()))
+        .WillByDefault(WithArgs<2>(
+            [=](optimization_guide::OptimizationGuideDecisionCallback
+                    callback) {
+              optimization_guide::proto::GlicZeroStateSuggestionsMetadata
+                  metadata;
+              metadata.set_contextual_suggestions_eligible(allow_contextual);
+              if (allow_contextual) {
+                metadata.mutable_contextual_suggestions()->Add("suggestion");
+              }
+
+              optimization_guide::OptimizationMetadata og_metadata;
+              og_metadata.SetAnyMetadataForTesting(metadata);
+              std::move(callback).Run(
+                  optimization_guide::OptimizationGuideDecision::kTrue,
+                  og_metadata);
+            }));
+  }
+
+ protected:
+  raw_ptr<testing::NiceMock<MockOptimizationGuideKeyedService>>
+      mock_optimization_guide_keyed_service_;
+};
+
+IN_PROC_BROWSER_TEST_F(ContextualCueingServiceBrowserTestZSSHistogram,
+                       LogsLatencyForValidSuggestions) {
+  base::HistogramTester histogram_tester;
+  SetUpHints(/*allow_contextual=*/true);
+
+  auto* service =
+      ContextualCueingServiceFactory::GetForProfile(browser()->profile());
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_test_server()->GetURL("/optimization_guide/zss_page.html")));
+
+  base::test::TestFuture<std::optional<std::vector<std::string>>> future;
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  service->GetContextualGlicZeroStateSuggestions(web_contents, /*is_fre=*/true,
+                                                 future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+
+  histogram_tester.ExpectTotalCount(
+      "ContextualCueing.GlicSuggestions.SuggestionsFetchLatency."
+      "ValidSuggestions",
+      1);
+  histogram_tester.ExpectTotalCount(
+      "ContextualCueing.GlicSuggestions.SuggestionsFetchLatency."
+      "EmptySuggestions",
+      0);
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualCueingServiceBrowserTestZSSHistogram,
+                       LogsLatencyForEmptySuggestions) {
+  base::HistogramTester histogram_tester;
+  SetUpHints(/*allow_contextual=*/false);
+
+  auto* service =
+      ContextualCueingServiceFactory::GetForProfile(browser()->profile());
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_test_server()->GetURL("/optimization_guide/zss_page.html")));
+
+  base::test::TestFuture<std::optional<std::vector<std::string>>> future;
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  service->GetContextualGlicZeroStateSuggestions(web_contents, /*is_fre=*/true,
+                                                 future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+
+  histogram_tester.ExpectTotalCount(
+      "ContextualCueing.GlicSuggestions.SuggestionsFetchLatency."
+      "EmptySuggestions",
+      1);
+  histogram_tester.ExpectTotalCount(
+      "ContextualCueing.GlicSuggestions.SuggestionsFetchLatency."
+      "ValidSuggestions",
+      0);
+}
+
 #endif
 
 class ContextualCueingServiceBrowserTestCCFlag

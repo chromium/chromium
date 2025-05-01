@@ -55,6 +55,27 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="ContextualCueing.GlicSuggestions.SuggestionsFetchLatency.{ResultType}"
+    units="ms" expires_after="2025-08-30">
+  <owner>zekunjiang@google.com</owner>
+  <owner>rajendrant@google.com</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <summary>
+    Recorded every time something is returned as a result of invoking the
+    suggestions fetch API. The results are split by the type of results returned
+    (e.g. results with no suggestions vs results with valid suggestions).
+  </summary>
+  <token key="ResultType">
+    <variant name="EmptySuggestions"
+        summary="When no suggestions are returned as a result of a
+                 suggestions fetch"/>
+    <variant name="ValidSuggestions"
+        summary="When valid suggestions are returned as a result of a
+                 suggestions fetch"/>
+  </token>
+</histogram>
+
+<histogram
     name="ContextualCueing.NudgeDecision.{ContextualCueingOptimizationType}"
     enum="ContextualCueingNudgeDecision" expires_after="2025-08-30">
   <owner>sophiechang@chromium.org</owner>

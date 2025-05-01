@@ -294,21 +294,30 @@ void ContextualCueingService::GetContextualGlicZeroStateSuggestions(
     return;
   }
 
-  // Remote suggestions generation.
   ZeroStateSuggestionsPageData* page_data =
       ZeroStateSuggestionsPageData::GetOrCreateForPage(
           web_contents->GetPrimaryPage());
-  page_data->FetchSuggestions(is_fre, std::move(callback));
+  page_data->FetchSuggestions(
+      is_fre, base::BindOnce(&ContextualCueingService::OnSuggestionsReceived,
+                             weak_ptr_factory_.GetWeakPtr(),
+                             base::TimeTicks::Now(), std::move(callback)));
 #else
   std::move(callback).Run(std::nullopt);
 #endif
 }
 
 void ContextualCueingService::OnSuggestionsReceived(
-    content::WebContents* web_contents,
+    base::TimeTicks fetch_begin_time,
     GlicSuggestionsCallback callback,
     std::optional<std::vector<std::string>> suggestions) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  base::UmaHistogramTimes(suggestions
+                              ? "ContextualCueing.GlicSuggestions."
+                                "SuggestionsFetchLatency.ValidSuggestions"
+                              : "ContextualCueing.GlicSuggestions."
+                                "SuggestionsFetchLatency.EmptySuggestions",
+                          base::TimeTicks::Now() - fetch_begin_time);
 
   std::move(callback).Run(suggestions);
 }
