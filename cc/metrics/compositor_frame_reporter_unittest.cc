@@ -197,8 +197,14 @@ class CompositorFrameReporterTest : public testing::Test {
   }
 
   std::unique_ptr<CompositorFrameReporter> CreatePipelineReporter() {
-    GlobalMetricsTrackers trackers{&dropped_frame_counter_, nullptr, nullptr,
-                                   nullptr, nullptr};
+    GlobalMetricsTrackers trackers{&dropped_frame_counter_,
+                                   nullptr,
+                                   nullptr,
+                                   nullptr,
+                                   nullptr,
+                                   nullptr,
+                                   nullptr,
+                                   &frame_sorter_};
     auto reporter = std::make_unique<CompositorFrameReporter>(
         ActiveTrackers(), viz::BeginFrameArgs(),
         /*should_report_metrics=*/true,
@@ -240,6 +246,7 @@ class CompositorFrameReporterTest : public testing::Test {
 
   DroppedFrameCounter dropped_frame_counter_;
   TotalFrameCounter total_frame_counter_;
+  FrameSorter frame_sorter_;
   std::unique_ptr<CompositorFrameReporter> pipeline_reporter_;
 
   // Number of breakdown stages of the current PipelineReporter

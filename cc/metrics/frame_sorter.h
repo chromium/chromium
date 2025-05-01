@@ -9,9 +9,13 @@
 
 #include <map>
 #include <optional>
+#include <vector>
 
 #include "base/containers/circular_deque.h"
+#include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "cc/cc_export.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 
@@ -19,9 +23,16 @@ namespace cc {
 
 struct FrameInfo;
 
+// FrameSorterObserver class notifies registered
+// observers when frames are flushed by the FrameSorter.
+class FrameSorterObserver : public base::CheckedObserver {
+ public:
+  virtual void AddSortedFrame(const viz::BeginFrameArgs&, const FrameInfo&) = 0;
+};
+
 // This class is used to process the frames in order of initiation.
-// So regardless of which order frames are terminated, the  callback function
-// will frames sorter will br called on the frames in the order of initiation
+// So regardless of which order frames are terminated, the frames
+// sorter will be called on the frames in the order of initiation
 // (e.g. frame_time of that frame).
 class CC_EXPORT FrameSorter {
  public:
@@ -41,10 +52,9 @@ class CC_EXPORT FrameSorter {
     bool should_ignore_ = false;    // Flags if there was a reset prior to acks.
   };
 
-  using InOrderBeginFramesCallback =
-      base::RepeatingCallback<void(const viz::BeginFrameArgs&,
-                                   const FrameInfo&)>;
-  explicit FrameSorter(InOrderBeginFramesCallback callback);
+  FrameSorter();
+  void AddObserver(FrameSorterObserver* frame_sorter_observer);
+  void RemoveObserver(FrameSorterObserver* frame_sorter_observer);
   ~FrameSorter();
 
   FrameSorter(const FrameSorter&) = delete;
@@ -69,7 +79,7 @@ class CC_EXPORT FrameSorter {
   const uint64_t kPendingFramesMaxSize = 300u;
 
   // The callback to run for each flushed frame.
-  const InOrderBeginFramesCallback flush_callback_;
+  base::ObserverList<FrameSorterObserver> observers_;
 
   // Frames which are started.
   base::circular_deque<viz::BeginFrameArgs> pending_frames_;

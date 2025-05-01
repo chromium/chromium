@@ -868,6 +868,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   DroppedFrameCounter* dropped_frame_counter_for_testing() {
     return &dropped_frame_counter_;
   }
+  FrameSorter* frame_sorter_for_testing() { return &frame_sorter_; }
 
   // Returns true if the client is currently compositing synchronously.
   bool IsInSynchronousComposite() const;
@@ -1259,7 +1260,8 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   PresentationTimeCallbackBuffer presentation_time_callbacks_;
 
   // `compositor_frame_reporting_controller_` has a dependency on
-  // `dropped_frame_counter_` so it must be declared last and deleted first;
+  // `dropped_frame_counter_` so it must be declared last and deleted first.
+  FrameSorter frame_sorter_;
   std::unique_ptr<CompositorFrameReportingController>
       compositor_frame_reporting_controller_;
   FrameSequenceTrackerCollection frame_trackers_;
