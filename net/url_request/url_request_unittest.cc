@@ -3,10 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/android/android_info.h"
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
 
 #include <stdint.h>
 
@@ -3958,15 +3954,15 @@ class URLRequestTestHTTP : public URLRequestTest {
   void HTTPUploadDataOperationTest(const std::string& method) {
     const int kMsgSize = 20000;  // multiple of 10
     const int kIterations = 50;
-    auto uploadBytes = base::HeapArray<char>::Uninit(kMsgSize);
-    char* ptr = uploadBytes.data();
+    auto upload_bytes = base::HeapArray<char>::Uninit(kMsgSize);
     char marker = 'a';
-    for (int idx = 0; idx < kMsgSize / 10; idx++) {
-      memcpy(ptr, "----------", 10);
-      ptr += 10;
+    const size_t kStrideSize = 10;
+    for (size_t idx = 0; idx < kMsgSize / kStrideSize; idx++) {
+      auto span =
+          upload_bytes.as_span().subspan(idx * kStrideSize, kStrideSize);
+      std::ranges::fill(span, '-');
       if (idx % 100 == 0) {
-        ptr--;
-        *ptr++ = marker;
+        span[kStrideSize - 1] = marker;
         if (++marker > 'z')
           marker = 'a';
       }
@@ -3980,7 +3976,7 @@ class URLRequestTestHTTP : public URLRequestTest {
       r->set_method(method);
 
       r->set_upload(
-          CreateSimpleUploadData(base::as_bytes(uploadBytes.as_span())));
+          CreateSimpleUploadData(base::as_bytes(upload_bytes.as_span())));
 
       r->Start();
       EXPECT_TRUE(r->is_pending());
@@ -3991,7 +3987,8 @@ class URLRequestTestHTTP : public URLRequestTest {
           << "request failed. Error: " << d.request_status();
 
       EXPECT_FALSE(d.received_data_before_response());
-      EXPECT_EQ(base::as_string_view(uploadBytes.as_span()), d.data_received());
+      EXPECT_EQ(base::as_string_view(upload_bytes.as_span()),
+                d.data_received());
     }
   }
 
@@ -4767,17 +4764,17 @@ TEST_F(URLRequestTestHTTP, GetTestLoadTiming) {
 namespace {
 
 // Sends the correct Content-Length matching the compressed length.
-const char kZippedContentLengthCompressed[] = "C";
+constexpr std::string_view kZippedContentLengthCompressed = "C";
 // Sends an incorrect Content-Length matching the uncompressed length.
-const char kZippedContentLengthUncompressed[] = "U";
+constexpr std::string_view kZippedContentLengthUncompressed = "U";
 // Sends an incorrect Content-Length shorter than the compressed length.
-const char kZippedContentLengthShort[] = "S";
+constexpr std::string_view kZippedContentLengthShort = "S";
 // Sends an incorrect Content-Length between the compressed and uncompressed
 // lengths.
-const char kZippedContentLengthMedium[] = "M";
+constexpr std::string_view kZippedContentLengthMedium = "M";
 // Sends an incorrect Content-Length larger than both compressed and
 // uncompressed lengths.
-const char kZippedContentLengthLong[] = "L";
+constexpr std::string_view kZippedContentLengthLong = "L";
 
 // Sends |compressed_content| which, when decoded with deflate, should have
 // length |uncompressed_length|. The Content-Length header will be sent based on
@@ -4833,7 +4830,7 @@ TEST_F(URLRequestTestHTTP, GetZippedTest) {
   ASSERT_TRUE(http_test_server()->Start());
 
   static const struct {
-    const char* parameter;
+    std::string_view parameter;
     bool expect_success;
   } kTests[] = {
       // Sending the compressed Content-Length is correct.
@@ -4875,7 +4872,7 @@ TEST_F(URLRequestTestHTTP, GetZippedTest) {
     if (test.expect_success) {
       EXPECT_EQ(OK, d.request_status())
           << " Parameter = \"" << test_file << "\"";
-      if (strcmp(test.parameter, kZippedContentLengthShort) == 0) {
+      if (test.parameter == kZippedContentLengthShort) {
         // When content length is smaller than both compressed length and
         // uncompressed length, HttpStreamParser might not read the full
         // response body.
