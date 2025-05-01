@@ -439,6 +439,15 @@ std::optional<LayoutUnit> ResolveRowGapLength(const ComputedStyle&,
 LayoutUnit ResolveRowGapForMulticol(const ComputedStyle&,
                                     LayoutUnit available_size);
 
+// Return the used value of `item-tolerance` if it is a `<length-percentage>`.
+// Otherwise, if it's `normal`, whose resolution is algorithm-specific,
+// `std::nullopt` is returned.
+std::optional<LayoutUnit> ResolveItemToleranceLength(const ComputedStyle&,
+                                                     LayoutUnit available_size);
+
+LayoutUnit ResolveItemToleranceForMasonry(const ComputedStyle&,
+                                          const LogicalSize& available_size);
+
 CORE_EXPORT LayoutUnit ColumnInlineProgression(const ComputedStyle&,
                                                LayoutUnit available_size);
 

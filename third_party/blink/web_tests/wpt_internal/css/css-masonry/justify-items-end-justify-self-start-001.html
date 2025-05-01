@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html>
-<link rel="help" href="https://drafts.csswg.org/css-grid-3">
-<link href="resources/masonry.css" rel="stylesheet">
-<link rel="match" href="justify-items-end-justify-self-start-001-ref.html">
+<title>CSS Masonry Test: Alignment for items and self in grid axis</title>
 <link rel="author" title="Celeste Pan" href="mailto:celestepan@microsoft.com">
+<link rel="help" href="https://drafts.csswg.org/css-grid-3/#alignment">
+<link rel="match" href="justify-items-end-justify-self-start-001-ref.html">
+<link rel="stylesheet" href="resources/masonry.css">
 <style>
 .masonry {
     grid-template-columns: repeat(3, 100px);
@@ -15,20 +16,20 @@
   <p>Test that using justify-items moves each masonry item to the end of the grid-axis track it is on</p>
   <p>and that justify-self overrides justify-items.</p>
   <div class="masonry">
-    <div class="fifty-width" style="height: 54px;">
+    <div class="fifty-width">
       This is some text
     </div>
-    <div class="fifty-width" style="justify-self: start; height: 100px;">
+    <div class="fifty-width" style="justify-self: start">
       Some larger words in this sentence
     </div>
-    <div class="fifty-width" style="height: 108px;">
+    <div class="fifty-width">
       The cat cannot be taken from milk
     </div>
     <div style="background-color: lightpink">
-      This is some text
+      This is text
     </div>
     <div style="background-color: lightpink">
-      This is some text
+      This is text
     </div>
   </div>
 </body>

@@ -1,25 +1,22 @@
 <!DOCTYPE html>
 <html>
-<link rel="help" href="https://drafts.csswg.org/css-grid-3">
 <link href="resources/masonry.css" rel="stylesheet">
-<link rel="author" title="Celeste Pan" href="mailto:celestepan@microsoft.com">
 <style>
 .grid {
     display: grid;
     grid-template-columns: repeat(3, 100px);
     background: gray;
     width: 300px;
+    align-items: start;
     justify-items: end;
 }
 .flex {
     display: flex;
+    align-items: end;
     flex-direction: column;
-    width: 100%;
-    align-items: flex-end;
 }
 .two-span-item {
     background-color: lightpink;
-    width: 100%;
 }
 </style>
 <body>
@@ -27,22 +24,20 @@
   <p>and that justify-self overrides justify-items.</p>
   <div class="grid">
     <div class="flex">
-      <div class="fifty-width" style="grid-column: 1; height: 54px;">
+      <div class="fifty-width">
         This is some text
       </div>
       <div class="two-span-item">
-        This is some text
+        This is text
       </div>
       <div class="two-span-item">
-        This is some text
+        This is text
       </div>
     </div>
-    <div class="flex" style="align-items: flex-start;">
-      <div class="fifty-width" style="height: 100px;">
-        Some larger words in this sentence
-      </div>
+    <div class="fifty-width" style="justify-self: start">
+      Some larger words in this sentence
     </div>
-    <div class="fifty-width" style="grid-column: 3; height: 108px;">
+    <div class="fifty-width">
       The cat cannot be taken from milk
     </div>
   </div>

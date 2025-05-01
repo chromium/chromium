@@ -81,8 +81,10 @@ LayoutUnit CalculateAlignmentOffset(AxisEdge alignment, LayoutUnit free_space) {
 void MasonryLayoutAlgorithm::PlaceMasonryItems(
     const GridLayoutTrackCollection& track_collection,
     GridItems& masonry_items) {
+  const auto& available_size = ChildAvailableSize();
   const auto& border_scrollbar_padding = BorderScrollbarPadding();
   const auto& container_space = GetConstraintSpace();
+  const auto& style = Style();
 
   const auto container_writing_direction =
       container_space.GetWritingDirection();
@@ -96,10 +98,10 @@ void MasonryLayoutAlgorithm::PlaceMasonryItems(
       /*initial_running_position=*/
       is_for_columns ? border_scrollbar_padding.block_start
                      : border_scrollbar_padding.inline_start,
-      CalculateTieThreshold(Style()));
+      ResolveItemToleranceForMasonry(style, available_size));
 
   const auto stacking_axis_gap = GridTrackSizingAlgorithm::CalculateGutterSize(
-      Style(), ChildAvailableSize(), is_for_columns ? kForRows : kForColumns);
+      style, available_size, is_for_columns ? kForRows : kForColumns);
 
   for (auto& masonry_item : masonry_items) {
     // Find the definite span that the masonry items should be placed in.
@@ -355,12 +357,6 @@ ConstraintSpace MasonryLayoutAlgorithm::CreateConstraintSpaceForMeasure(
   containing_size.inline_size = kIndefiniteSize;
   return CreateConstraintSpace(masonry_item, containing_size,
                                LayoutResultCacheSlot::kMeasure);
-}
-
-LayoutUnit MasonryLayoutAlgorithm::CalculateTieThreshold(
-    const ComputedStyle& style) const {
-  return style.ItemTolerance() ? LayoutUnit(style.ItemTolerance()->Pixels())
-                               : LayoutUnit();
 }
 
 }  // namespace blink

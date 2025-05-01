@@ -1423,6 +1423,25 @@ LayoutUnit ResolveRowGapForMulticol(const ComputedStyle& style,
       .value_or(LayoutUnit(style.GetFontDescription().ComputedPixelSize()));
 }
 
+std::optional<LayoutUnit> ResolveItemToleranceLength(
+    const ComputedStyle& style,
+    LayoutUnit available_size) {
+  if (const auto& item_tolerance = style.ItemTolerance()) {
+    return MinimumValueForLength(*item_tolerance,
+                                 available_size.ClampIndefiniteToZero());
+  }
+  return std::nullopt;
+}
+
+LayoutUnit ResolveItemToleranceForMasonry(const ComputedStyle& style,
+                                          const LogicalSize& available_size) {
+  return ResolveItemToleranceLength(
+             style, (style.MasonryTrackSizingDirection() == kForColumns)
+                        ? available_size.block_size
+                        : available_size.inline_size)
+      .value_or(LayoutUnit(style.GetFontDescription().ComputedPixelSize()));
+}
+
 LayoutUnit ColumnInlineProgression(const ComputedStyle& style,
                                    LayoutUnit available_size) {
   return ResolveUsedColumnInlineSize(style, available_size) +

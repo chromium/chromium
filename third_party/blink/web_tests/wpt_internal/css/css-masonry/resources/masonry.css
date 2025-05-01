@@ -2,6 +2,7 @@
     display: masonry;
     background: gray;
     position: relative;
+    item-tolerance: 0;
 }
 
 .first-track {
@@ -19,7 +20,7 @@
     grid-column-start: 3;
 }
 
-.auto-item, .gap-item {
+.auto-item {
     padding: 10px;
 }
 
@@ -35,6 +36,10 @@
     background: lightgreen;
 }
 
+.auto-item:nth-of-type(4) {
+    background: palegoldenrod;
+}
+
 .two-track-spanner {
     background: lightpink;
     grid-column: span 2;
@@ -47,6 +52,6 @@
 }
 
 .square-100x100 {
-  width: 100px;
-  height: 100px;
+    width: 100px;
+    height: 100px;
 }
