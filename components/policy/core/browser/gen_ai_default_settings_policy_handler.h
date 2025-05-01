@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/values.h"
 #include "components/policy/core/browser/configuration_policy_handler.h"
 #include "components/policy/policy_export.h"
@@ -23,14 +24,25 @@ class PolicyMap;
 class POLICY_EXPORT GenAiDefaultSettingsPolicyHandler
     : public policy::TypeCheckingPolicyHandler {
  public:
+  using PolicyValueToPrefMap = base::flat_map<int, int>;
+
   // Struct containing the necessary info to set the default value of each
   // covered GenAI policy.
-  struct GenAiPolicyDetails {
-    GenAiPolicyDetails(std::string name, std::string pref_path)
-        : name(std::move(name)), pref_path(std::move(pref_path)) {}
+  struct POLICY_EXPORT GenAiPolicyDetails {
+    explicit GenAiPolicyDetails(std::string name, std::string pref_path);
+    explicit GenAiPolicyDetails(std::string name,
+                                std::string pref_path,
+                                PolicyValueToPrefMap policy_value_to_pref_map);
+    GenAiPolicyDetails(const GenAiPolicyDetails& other);
+    ~GenAiPolicyDetails();
 
     std::string name;
     std::string pref_path;
+    // Optional map to translate the integer value from `GenAiDefaultSettings`
+    // policy to a specific integer value for this policy's preference. If an
+    // entry for the `GenAiDefaultSettings` value doesn't exist in this map,
+    // the integer value itself will be used for the preference.
+    PolicyValueToPrefMap policy_value_to_pref_map;
   };
 
   explicit GenAiDefaultSettingsPolicyHandler(
@@ -50,7 +62,7 @@ class POLICY_EXPORT GenAiDefaultSettingsPolicyHandler
  private:
   // Returns a list of covered GenAI policies to which the default value can be
   // applied.
-  std::vector<GenAiPolicyDetails> GetUnsetGenAiPolicies(
+  std::vector<GenAiPolicyDetails> GetControlledGenAiPolicies(
       const PolicyMap& policies);
 
   // GenAI policies for which the default should be applied when unset.

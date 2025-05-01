@@ -3371,6 +3371,10 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
       optimization_guide::prefs::kProductSpecificationsEnterprisePolicyAllowed);
   gen_ai_default_policies.emplace_back(key::kGenAiLensOverlaySettings,
                                        lens::prefs::kGenAiLensOverlaySettings);
+  gen_ai_default_policies.emplace_back(
+      key::kGeminiSettings, prefs::kGeminiSettings,
+      GenAiDefaultSettingsPolicyHandler::PolicyValueToPrefMap(
+          {{0, 0}, {1, 0}, {2, 1}}));
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
 #if BUILDFLAG(IS_CHROMEOS)

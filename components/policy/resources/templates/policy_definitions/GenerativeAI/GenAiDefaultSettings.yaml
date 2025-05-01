@@ -35,12 +35,14 @@ items:
 owners:
 - igorruvinov@chromium.org
 - file://components/policy/OWNERS
+# LINT.IfChange
 schema:
   enum:
   - 0
   - 1
   - 2
   type: integer
+# LINT.ThenChange(//components/policy/core/browser/gen_ai_default_settings_policy_handler.cc, //chrome/browser/policy/configuration_policy_handler_list_factory.cc)
 supported_on:
 - android:130-
 - chrome.*:130-
