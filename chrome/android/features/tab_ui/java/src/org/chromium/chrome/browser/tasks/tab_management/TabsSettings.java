@@ -162,4 +162,9 @@ public class TabsSettings extends ChromeBaseSettingsFragment {
     void onLearnMoreClicked(@NonNull View view) {
         getCustomTabLauncher().openUrlInCct(getContext(), LEARN_MORE_URL);
     }
+
+    @Override
+    public @AnimationType int getAnimationType() {
+        return AnimationType.PROPERTY;
+    }
 }

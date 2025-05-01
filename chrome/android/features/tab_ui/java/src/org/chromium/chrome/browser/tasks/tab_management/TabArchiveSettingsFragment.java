@@ -109,4 +109,9 @@ public class TabArchiveSettingsFragment extends ChromeBaseSettingsFragment {
                     return true;
                 });
     }
+
+    @Override
+    public @AnimationType int getAnimationType() {
+        return AnimationType.PROPERTY;
+    }
 }
