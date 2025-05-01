@@ -15,6 +15,7 @@
 #include "base/types/pass_key.h"
 #include "services/webnn/error.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
+#include "services/webnn/public/cpp/webnn_types.h"
 #include "services/webnn/webnn_context_impl.h"
 #include "services/webnn/webnn_tensor_impl.h"
 
@@ -68,9 +69,9 @@ bool ValidateWebNNTensorsUsage(
 WebNNGraphImpl::ComputeResourceInfo::ComputeResourceInfo(
     base::flat_map<std::string, OperandDescriptor> input_names_to_descriptors,
     base::flat_map<std::string, OperandDescriptor> output_names_to_descriptors,
-    base::flat_map<uint64_t, base::flat_set<size_t>>
+    base::flat_map<OperandId, base::flat_set<OperationId>>
         operand_to_dependent_operations,
-    base::flat_map<uint64_t, size_t> operand_to_producing_operation,
+    base::flat_map<OperandId, OperationId> operand_to_producing_operation,
     base::PassKey<WebNNGraphBuilderImpl> pass_key)
     : input_names_to_descriptors(std::move(input_names_to_descriptors)),
       output_names_to_descriptors(std::move(output_names_to_descriptors)),

@@ -17,6 +17,7 @@
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "services/webnn/error.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
+#include "services/webnn/public/cpp/webnn_types.h"
 #include "services/webnn/public/mojom/features.mojom-features.h"
 #include "services/webnn/public/mojom/webnn_tensor.mojom.h"
 #include "services/webnn/webnn_constant_operand.h"
@@ -35,9 +36,9 @@ mojom::GraphInfoPtr BuildSimpleGraphInfo(
     mojo::AssociatedRemote<mojom::WebNNGraphBuilder>& graph_builder_remote) {
   // Build a simple graph.
   GraphInfoBuilder builder(graph_builder_remote);
-  uint64_t input_operand_id = builder.BuildInput("input", /*dimensions=*/{2, 3},
-                                                 OperandDataType::kFloat32);
-  uint64_t output_operand_id = builder.BuildOutput(
+  OperandId input_operand_id = builder.BuildInput(
+      "input", /*dimensions=*/{2, 3}, OperandDataType::kFloat32);
+  OperandId output_operand_id = builder.BuildOutput(
       "output", /*dimensions=*/{2, 3}, OperandDataType::kFloat32);
   builder.BuildClamp(input_operand_id, output_operand_id, /*min_value=*/0.0,
                      /*max_value=*/1.0);
@@ -89,7 +90,7 @@ class FakeWebNNContextImpl final : public WebNNContextImpl {
       mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
       mojom::GraphInfoPtr graph_info,
       WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
-      base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>
+      base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
       /*constant_operands*/,
       CreateGraphImplCallback callback) override {
     // Asynchronously resolve `callback` so there's an opportunity for
@@ -233,10 +234,10 @@ TEST_F(WebNNGraphBuilderImplTest, CreateGraphWithConstant) {
   const std::array<float, 6> kConstantData{3.0, 4.0, 5.0, 6.0, 7.0, 8.0};
 
   GraphInfoBuilder builder(graph_builder_remote());
-  uint64_t constant_operand_id = builder.BuildConstant(
+  OperandId constant_operand_id = builder.BuildConstant(
       /*dimensions=*/{2, 3}, OperandDataType::kFloat32,
       base::as_byte_span(base::allow_nonunique_obj, kConstantData));
-  uint64_t output_operand_id = builder.BuildOutput(
+  OperandId output_operand_id = builder.BuildOutput(
       "output", /*dimensions=*/{2, 3}, OperandDataType::kFloat32);
   builder.BuildClamp(constant_operand_id, output_operand_id, /*min_value=*/5.0,
                      /*max_value=*/7.0);
@@ -315,10 +316,10 @@ TEST_F(WebNNGraphBuilderImplTest, CreateInvalidGraphForTensorByteLengthLimit) {
       base::checked_cast<uint32_t>(std::numeric_limits<int32_t>::max() / 4), 2};
 
   GraphInfoBuilder builder(graph_builder_remote());
-  uint64_t input_operand_id = builder.BuildInput("input", large_tensor_shape,
-                                                 OperandDataType::kFloat32);
-  uint64_t output_operand_id = builder.BuildOutput("output", large_tensor_shape,
-                                                   OperandDataType::kFloat32);
+  OperandId input_operand_id = builder.BuildInput("input", large_tensor_shape,
+                                                  OperandDataType::kFloat32);
+  OperandId output_operand_id = builder.BuildOutput(
+      "output", large_tensor_shape, OperandDataType::kFloat32);
   builder.BuildClamp(input_operand_id, output_operand_id, /*min_value=*/0.0,
                      /*max_value=*/1.0);
   EXPECT_FALSE(
