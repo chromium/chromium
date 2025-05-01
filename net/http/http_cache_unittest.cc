@@ -2150,10 +2150,87 @@ TEST_F(HttpCacheTest, PrefetchTruncateCancelInConnectedCallback) {
   }
 }
 
+TEST_F(HttpCacheTest, StaleWhileRevalidateTruncated) {
+  MockHttpCache cache;
+  RangeTransactionServer range_support;
+  range_support.set_length(20);
+
+  ScopedMockTransaction transaction(kSimpleGET_Transaction);
+  transaction.response_headers =
+      "Last-Modified: Wed, 28 Nov 2007 00:40:09 GMT\n"
+      "Content-Length: 20\n"
+      "Cache-Control: max-age=0, stale-while-revalidate=60\n"
+      "Etag: foopy\n";
+  transaction.data = "01234567890123456789";
+  transaction.load_flags |= LOAD_SUPPORT_ASYNC_REVALIDATION;
+
+  // Do a truncated read of a stale-while-revalidate resource.
+  {
+    MockHttpRequest request(transaction);
+    Context c;
+
+    int rv = cache.CreateTransaction(&c.trans);
+    ASSERT_THAT(rv, IsOk());
+
+    rv = c.callback.GetResult(
+        c.trans->Start(&request, c.callback.callback(), NetLogWithSource()));
+    ASSERT_THAT(rv, IsOk());
+
+    // Read less than the whole thing.
+    scoped_refptr<IOBufferWithSize> buf =
+        base::MakeRefCounted<IOBufferWithSize>(10);
+    rv = c.callback.GetResult(
+        c.trans->Read(buf.get(), buf->size(), c.callback.callback()));
+    EXPECT_EQ(buf->size(), rv);
+
+    // Destroy the transaction.
+    c.trans.reset();
+    base::RunLoop().RunUntilIdle();
+
+    VerifyTruncatedFlag(&cache, request.CacheKey(), /*flag_value=*/true,
+                        /*data_size=*/10);
+  }
+
+  {
+    bool first = true;
+    transaction.handler = base::BindLambdaForTesting(
+        [&](const HttpRequestInfo* request, std::string* response_status,
+            std::string* response_headers, std::string* response_data) {
+          if (first) {
+            // We should first try sending an If-Range to verify this thing is
+            // valid.
+            EXPECT_EQ(request->extra_headers.GetHeader("Range"), "bytes=10-10");
+            EXPECT_EQ(request->extra_headers.GetHeader("If-Range"), "foopy");
+            response_status->assign("HTTP/1.1 206 Partial Content");
+            response_headers->assign(
+                "Content-Range: bytes 10-10/20\n"
+                "Content-Length: 1");
+            response_data->assign("0");
+            first = false;
+          } else {
+            // Now a range request to the second part.
+            EXPECT_EQ(request->extra_headers.GetHeader("Range"), "bytes=10-19");
+            response_status->assign("HTTP/1.1 206 Partial Content");
+            response_headers->assign(
+                "Content-Range: bytes 10-19/20\n"
+                "Content-Length: 10");
+            *response_data = "0123456789";
+          }
+        });
+    MockHttpRequest request(transaction);
+    RunTransactionTestWithRequest(cache.http_cache(), transaction, request,
+                                  /*response_info=*/nullptr);
+    base::RunLoop().RunUntilIdle();
+
+    VerifyTruncatedFlag(&cache, request.CacheKey(), /*flag_value=*/false,
+                        /*data_size=*/20);
+  }
+}
+
 // Make sure that if a stale-while-revalidate entry is truncated, then an
 // attempt to re-use it gets aborted in connected handler that truncated bit is
 // not lost.
-TEST_F(HttpCacheTest, StaleWhiteRevalidateTruncateCancelInConnectedCallback) {
+TEST_F(HttpCacheTest, StaleWhileRevalidateTruncateCancelInConnectedCallback) {
   MockHttpCache cache;
 
   ScopedMockTransaction transaction(kSimpleGET_Transaction);
