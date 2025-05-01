@@ -2845,6 +2845,9 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_IDLE_TIMEOUT_SIGNOUT_TITLE" desc="Title of the idle timeout policy dialog when the user is about to be signed out.">
         You'll be signed out
       </message>
+      <message name="IDS_IOS_IMPORT_PASSWORDS" desc="Button that the user can press to import passwords. [Length: 22em] [iOS only]">
+        Import passwords…
+      </message>
       <message name="IDS_IOS_INACTIVE_TABS_BUTTON_SUBTITLE" desc="Subtitle of the button in the Tab Grid that opens the grid of inactive tabs.">
         Tabs not used for <ph name="THRESHOLD">$1<ex>14</ex></ph> days
       </message>
