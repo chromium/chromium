@@ -319,7 +319,7 @@
     ],
 
     'asan_lsan_release_trybot_remoteexec': [
-      'asan', 'lsan', 'release_trybot_minimal_symbols_remoteexec', 'use_siso', 'reclient',
+      'asan', 'lsan', 'release_trybot_minimal_symbols_remoteexec', 'use_siso',
     ],
 
     'cast_binary_size_remoteexec': [
@@ -387,7 +387,7 @@
     ],
 
     'debug_bot_blink': [
-      'debug_bot_blink', 'use_siso', 'reclient',
+      'debug_bot_blink', 'use_siso',
     ],
 
     'debug_bot_remoteexec': [
@@ -412,15 +412,15 @@
     ],
 
     'gpu_tests_release_trybot_minimal_symbol_x86_resource_allowlisting_remoteexec': [
-      'gpu_tests', 'release_trybot_minimal_symbols_remoteexec', 'x86', 'resource_allowlisting', 'use_siso', 'reclient',
+      'gpu_tests', 'release_trybot_minimal_symbols_remoteexec', 'x86', 'resource_allowlisting', 'use_siso',
     ],
 
     'gpu_tests_release_trybot_minimal_symbols_remoteexec': [
-      'gpu_tests', 'release_trybot_minimal_symbols_remoteexec', 'use_siso', 'reclient',
+      'gpu_tests', 'release_trybot_minimal_symbols_remoteexec', 'use_siso',
     ],
 
     'gpu_tests_release_trybot_ptr_comp_remoteexec': [
-      'gpu_tests', 'release_trybot_minimal_symbols_remoteexec', 'v8_pointer_compression', 'use_siso', 'reclient',
+      'gpu_tests', 'release_trybot_minimal_symbols_remoteexec', 'v8_pointer_compression', 'use_siso',
     ],
 
     'gpu_tests_release_trybot_remoteexec_siso': [
@@ -637,15 +637,15 @@
     ],
 
     'release_bot_blink': [
-      'release_bot_blink', 'use_siso', 'reclient',
+      'release_bot_blink', 'use_siso',
     ],
 
     'release_bot_blink_v8_debug_remoteexec': [
-      'release_bot_blink', 'v8_enable_debugging_features', 'use_siso', 'reclient'
+      'release_bot_blink', 'v8_enable_debugging_features', 'use_siso'
     ],
 
     'release_bot_remoteexec': [
-      'release_bot_remoteexec', 'reclient',
+      'release_bot_remoteexec', 'use_siso',
     ],
 
     'release_trybot_blink_do_typecheck_siso': [
@@ -1011,11 +1011,6 @@
     # chrome_with_codecs or chromeos_with_codecs mixins.
     'proprietary_codecs': {
       'gn_args': 'proprietary_codecs=true',
-    },
-
-    # TODO: crbug.com/379584977 - Remove this mixin after dropping reclient.
-    'reclient': {
-      'gn_args': 'use_reclient=true',
     },
 
     # Historically, a 'release' bot had DCHECKs turned off. DCHECKs are now
