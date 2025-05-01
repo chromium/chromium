@@ -71,6 +71,13 @@ ZeroStateSuggestionsPageData::ZeroStateSuggestionsPageData(content::Page& page)
   optimization_guide_keyed_service_ =
       OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
 
+  OPTIMIZATION_GUIDE_LOG(
+      optimization_guide_common::mojom::LogSource::MODEL_EXECUTION,
+      optimization_guide_keyed_service_->GetOptimizationGuideLogger(),
+      base::StringPrintf(
+          "ZeroStateSuggestionsPageData: Creating page data for %s.",
+          web_contents->GetLastCommittedURL().spec()));
+
   base::TimeDelta initiate_page_content_extraction_delay;
   if (auto* helper = ContextualCueingHelper::FromWebContents(web_contents)) {
     std::optional<base::TimeTicks> last_same_doc_navigation_time =
@@ -103,12 +110,27 @@ ZeroStateSuggestionsPageData::ZeroStateSuggestionsPageData(content::Page& page)
   }
 }
 
-ZeroStateSuggestionsPageData::~ZeroStateSuggestionsPageData() = default;
+ZeroStateSuggestionsPageData::~ZeroStateSuggestionsPageData() {
+  OPTIMIZATION_GUIDE_LOG(
+      optimization_guide_common::mojom::LogSource::MODEL_EXECUTION,
+      optimization_guide_keyed_service_->GetOptimizationGuideLogger(),
+      base::StringPrintf(
+          "ZeroStateSuggestionsPageData: Destructing page data for %s.",
+          GetUrl().spec()));
+}
 
 void ZeroStateSuggestionsPageData::InitiatePageContentExtraction(
     bool has_first_contentful_paint) {
+  const GURL url = GetUrl();
+
   if (content_extraction_initiated_) {
     // Do not re-fetch content.
+    OPTIMIZATION_GUIDE_LOG(
+        optimization_guide_common::mojom::LogSource::MODEL_EXECUTION,
+        optimization_guide_keyed_service_->GetOptimizationGuideLogger(),
+        base::StringPrintf("ZeroStateSuggestionsPageData: Content extraction "
+                           "already initiated for %s. Not trying again",
+                           url.spec()));
     return;
   }
 
@@ -118,6 +140,13 @@ void ZeroStateSuggestionsPageData::InitiatePageContentExtraction(
         "ContextualCueing.ZeroStateSuggestions.ContentExtractionWait", true);
     // Wait for signal from tab helper to initiate content extraction if not
     // loaded yet.
+
+    OPTIMIZATION_GUIDE_LOG(
+        optimization_guide_common::mojom::LogSource::MODEL_EXECUTION,
+        optimization_guide_keyed_service_->GetOptimizationGuideLogger(),
+        base::StringPrintf("ZeroStateSuggestionsPageData: Page not "
+                           "sufficiently loaded for %s. Waiting until ready",
+                           url.spec()));
     return;
   }
   content_extraction_initiated_ = true;
@@ -128,7 +157,7 @@ void ZeroStateSuggestionsPageData::InitiatePageContentExtraction(
       optimization_guide_keyed_service_->GetOptimizationGuideLogger(),
       base::StringPrintf("ZeroStateSuggestionsPageData: Initiating page "
                          "content extraction for %s.",
-                         GetUrl().spec()));
+                         url.spec()));
 
   content::WebContents* web_contents =
       content::WebContents::FromRenderFrameHost(&(page().GetMainDocument()));
@@ -166,6 +195,12 @@ void ZeroStateSuggestionsPageData::FetchSuggestions(
     bool is_fre,
     GlicSuggestionsCallback callback) {
   if (cached_suggestions_) {
+    OPTIMIZATION_GUIDE_LOG(
+        optimization_guide_common::mojom::LogSource::MODEL_EXECUTION,
+        optimization_guide_keyed_service_->GetOptimizationGuideLogger(),
+        base::StringPrintf("ZeroStateSuggestionsPageData: Returning cached "
+                           "suggestions for %s.",
+                           GetUrl().spec()));
     std::move(callback).Run(cached_suggestions_->empty()
                                 ? std::nullopt
                                 : std::make_optional(*cached_suggestions_));
