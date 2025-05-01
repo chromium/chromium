@@ -361,9 +361,6 @@ void DBusSchedQOSStateHandler::SetThreadTypeOnThread(
     case base::ThreadType::kUtility:
       state = resource_manager::ThreadState::kUtility;
       break;
-    case base::ThreadType::kResourceEfficient:
-      state = resource_manager::ThreadState::kEco;
-      break;
     case base::ThreadType::kDefault:
       state = resource_manager::ThreadState::kBalanced;
       break;

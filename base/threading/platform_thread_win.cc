@@ -386,7 +386,6 @@ void SetCurrentThreadPriority(ThreadType thread_type,
     case ThreadType::kUtility:
       desired_priority = THREAD_PRIORITY_BELOW_NORMAL;
       break;
-    case ThreadType::kResourceEfficient:
     case ThreadType::kDefault:
       desired_priority = THREAD_PRIORITY_NORMAL;
       break;
@@ -436,7 +435,6 @@ void SetCurrentThreadQualityOfService(ThreadType thread_type) {
   switch (thread_type) {
     case ThreadType::kBackground:
     case ThreadType::kUtility:
-    case ThreadType::kResourceEfficient:
       desire_ecoqos = true;
       break;
     case ThreadType::kDefault:

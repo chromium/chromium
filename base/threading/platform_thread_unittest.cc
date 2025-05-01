@@ -260,8 +260,7 @@ namespace {
 
 constexpr ThreadType kAllThreadTypes[] = {
     ThreadType::kRealtimeAudio, ThreadType::kDisplayCritical,
-    ThreadType::kDefault,       ThreadType::kResourceEfficient,
-    ThreadType::kUtility,       ThreadType::kBackground};
+    ThreadType::kDefault, ThreadType::kUtility, ThreadType::kBackground};
 
 class ThreadTypeTestThread : public FunctionTestThread {
  public:
@@ -388,8 +387,6 @@ TEST(PlatformThreadTest, CanChangeThreadType) {
 #if BUILDFLAG(IS_FUCHSIA)
   EXPECT_FALSE(PlatformThread::CanChangeThreadType(ThreadType::kBackground,
                                                    ThreadType::kUtility));
-  EXPECT_FALSE(PlatformThread::CanChangeThreadType(
-      ThreadType::kBackground, ThreadType::kResourceEfficient));
   EXPECT_FALSE(PlatformThread::CanChangeThreadType(ThreadType::kBackground,
                                                    ThreadType::kDefault));
   EXPECT_FALSE(PlatformThread::CanChangeThreadType(ThreadType::kDefault,
@@ -397,9 +394,6 @@ TEST(PlatformThreadTest, CanChangeThreadType) {
 #else
   EXPECT_EQ(PlatformThread::CanChangeThreadType(ThreadType::kBackground,
                                                 ThreadType::kUtility),
-            kCanIncreasePriority);
-  EXPECT_EQ(PlatformThread::CanChangeThreadType(ThreadType::kBackground,
-                                                ThreadType::kResourceEfficient),
             kCanIncreasePriority);
   EXPECT_EQ(PlatformThread::CanChangeThreadType(ThreadType::kBackground,
                                                 ThreadType::kDefault),
@@ -431,18 +425,6 @@ TEST(PlatformThreadTest, SetCurrentThreadTypeTest) {
                                       ThreadPriorityForTest::kBackground);
   TestPriorityResultingFromThreadType(ThreadType::kUtility,
                                       ThreadPriorityForTest::kUtility);
-
-#if BUILDFLAG(IS_APPLE)
-  TestPriorityResultingFromThreadType(ThreadType::kResourceEfficient,
-                                      ThreadPriorityForTest::kUtility);
-#elif BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
-  TestPriorityResultingFromThreadType(
-      ThreadType::kResourceEfficient,
-      ThreadPriorityForTest::kResourceEfficient);
-#else
-  TestPriorityResultingFromThreadType(ThreadType::kResourceEfficient,
-                                      ThreadPriorityForTest::kNormal);
-#endif  // BUILDFLAG(IS_APPLE)
 
   TestPriorityResultingFromThreadType(ThreadType::kDefault,
                                       ThreadPriorityForTest::kNormal);

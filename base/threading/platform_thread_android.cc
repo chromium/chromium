@@ -36,7 +36,6 @@ const ThreadPriorityToNiceValuePairForTest
         {ThreadPriorityForTest::kRealtimeAudio, -16},
         {ThreadPriorityForTest::kDisplay, -4},
         {ThreadPriorityForTest::kNormal, 0},
-        {ThreadPriorityForTest::kResourceEfficient, 0},
         {ThreadPriorityForTest::kUtility, 1},
         {ThreadPriorityForTest::kBackground, 10},
 };
@@ -48,9 +47,9 @@ const ThreadPriorityToNiceValuePairForTest
 // - kDisplayCritical corresponds to Android's PRIORITY_DISPLAY = -4 value.
 // - kRealtimeAudio corresponds to Android's PRIORITY_AUDIO = -16 value.
 const ThreadTypeToNiceValuePair kThreadTypeToNiceValueMap[7] = {
-    {ThreadType::kBackground, 10},       {ThreadType::kUtility, 1},
-    {ThreadType::kResourceEfficient, 0}, {ThreadType::kDefault, 0},
-    {ThreadType::kDisplayCritical, -4},  {ThreadType::kRealtimeAudio, -16},
+    {ThreadType::kBackground, 10},     {ThreadType::kUtility, 1},
+    {ThreadType::kDefault, 0},         {ThreadType::kDisplayCritical, -4},
+    {ThreadType::kRealtimeAudio, -16},
 };
 
 bool CanSetThreadTypeToRealtimeAudio() {
