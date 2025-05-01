@@ -110,18 +110,7 @@ public class AccessibilityActionAndEventTracker {
      * @return String representation of the given event
      */
     private static @Nullable String eventToString(AccessibilityEvent event) {
-        // Convert event type to a human readable String (except TYPE_WINDOW_CONTENT_CHANGED with no
-        // CONTENT_CHANGE_TYPE_STATE_DESCRIPTION flag or CONTENT_CHANGE_TYPE_PANE_TITLE flag)
-        if (event.getEventType() == AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED
-                && (event.getContentChangeTypes()
-                                & AccessibilityEvent.CONTENT_CHANGE_TYPE_STATE_DESCRIPTION)
-                        == 0
-                && (event.getContentChangeTypes()
-                                & AccessibilityEvent.CONTENT_CHANGE_TYPE_PANE_TITLE)
-                        == 0) {
-            return null;
-        }
-
+        // Convert event type to a human readable String
         StringBuilder builder = new StringBuilder();
         builder.append(AccessibilityEvent.eventTypeToString(event.getEventType()));
 
