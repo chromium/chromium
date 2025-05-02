@@ -37,12 +37,17 @@ def __host_cpu():
         return "x64"
     return runtime.arch
 
-def __enabled(ctx):
+def __target_is_windows(ctx):
     if "args.gn" in ctx.metadata:
         gn_args = gn.args(ctx)
         if gn_args.get("target_os") == '"win"':
             return True
     return runtime.os == "windows"
+
+def __enabled(ctx):
+    if __target_is_windows(ctx) and __win_toolchain_dir(ctx):
+        return True
+    return False
 
 def __filegroups(ctx):
     win_toolchain_dir = __win_toolchain_dir(ctx)

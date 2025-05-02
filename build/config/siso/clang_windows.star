@@ -58,9 +58,14 @@ def __step_config(ctx, step_config):
         # When building with ToT Clang, we can't run clang-cl
         # remotely, too.
         remote = False
+        link_inputs = []
         win_toolchain_dir = win_sdk.toolchain_dir(ctx)
         if win_toolchain_dir:
             remote = True
+            link_inputs = [
+                "third_party/llvm-build/Release+Asserts/bin/lld-link.exe",
+                win_toolchain_dir + ":libs",
+            ]
             if reproxy_config["platform"]["OSFamily"] == "Windows":
                 step_config["input_deps"].update({
                     win_toolchain_dir + ":headers": [
@@ -151,10 +156,7 @@ def __step_config(ctx, step_config):
                 "action": "(.*_)?solink",
                 "command_prefix": "..\\..\\third_party\\llvm-build\\Release+Asserts\\bin\\lld-link.exe",
                 "handler": "lld_link",
-                "inputs": [
-                    "third_party/llvm-build/Release+Asserts/bin/lld-link.exe",
-                    win_sdk.toolchain_dir(ctx) + ":libs",
-                ],
+                "inputs": link_inputs,
                 "exclude_input_patterns": [
                     "*.cc",
                     "*.h",
@@ -174,10 +176,7 @@ def __step_config(ctx, step_config):
                 "action": "(.*_)?solink_module",
                 "command_prefix": "..\\..\\third_party\\llvm-build\\Release+Asserts\\bin\\lld-link.exe",
                 "handler": "lld_link",
-                "inputs": [
-                    "third_party/llvm-build/Release+Asserts/bin/lld-link.exe",
-                    win_sdk.toolchain_dir(ctx) + ":libs",
-                ],
+                "inputs": link_inputs,
                 "exclude_input_patterns": [
                     "*.cc",
                     "*.h",
@@ -197,10 +196,7 @@ def __step_config(ctx, step_config):
                 "action": "(.*_)?link",
                 "command_prefix": "..\\..\\third_party\\llvm-build\\Release+Asserts\\bin\\lld-link.exe",
                 "handler": "lld_link",
-                "inputs": [
-                    "third_party/llvm-build/Release+Asserts/bin/lld-link.exe",
-                    win_sdk.toolchain_dir(ctx) + ":libs",
-                ],
+                "inputs": link_inputs,
                 "exclude_input_patterns": [
                     "*.cc",
                     "*.h",
