@@ -10,6 +10,7 @@
 #include "base/callback_list.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "chrome/browser/glic/host/glic.mojom-shared.h"
+#include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "content/public/browser/weak_document_ptr.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -47,7 +48,8 @@ class GlicAnnotationManager {
   // highlight is currently persisted until either the page with the highlight
   // is navigated from or ScrollTo() is called again.
   class AnnotationTask : public blink::mojom::AnnotationAgentHost,
-                         content::WebContentsObserver {
+                         content::WebContentsObserver,
+                         GlicWindowController::StateObserver {
    public:
     AnnotationTask(GlicAnnotationManager* manager,
                    mojo::Remote<blink::mojom::AnnotationAgent> annotation_agent,
@@ -105,6 +107,10 @@ class GlicAnnotationManager {
 
     // content::WebContentsObserver overrides.
     void PrimaryPageChanged(content::Page& page) override;
+
+    // `GlicWindowController::StateObserver`:
+    void PanelStateChanged(const mojom::PanelState& panel_state,
+                           Browser* attached_browser) override;
 
     // GlicFocusedTabManager::FocusedTabChangedCallback
     void OnFocusedTabChanged(FocusedTabData focused_tab_data);

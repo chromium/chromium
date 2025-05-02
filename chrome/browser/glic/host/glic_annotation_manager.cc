@@ -112,6 +112,14 @@ void GlicAnnotationManager::ScrollTo(
     return;
   }
 
+  // Note: `GlicWindowController::IsShowing()` will be false and
+  // `focused_primary_page` will be non-null when `GlicWindowController` is
+  // running the close animation.
+  if (!service_->window_controller().IsShowing()) {
+    std::move(callback).Run(mojom::ScrollToErrorReason::kNoFocusedTab);
+    return;
+  }
+
   if (annotation_agent_container_.has_value() &&
       annotation_agent_container_->document.AsRenderFrameHostIfValid() !=
           &focused_primary_page->GetMainDocument()) {
@@ -189,6 +197,9 @@ GlicAnnotationManager::AnnotationTask::AnnotationTask(
   // Using base::Unretained is safe because `this` owns the receiver.
   annotation_agent_host_receiver_.set_disconnect_handler(base::BindOnce(
       &AnnotationTask::RemoteDisconnected, base::Unretained(this)));
+
+  // Listens to the panel-closing notification.
+  annotation_manager_->service_->window_controller().AddStateObserver(this);
 }
 
 GlicAnnotationManager::AnnotationTask::~AnnotationTask() {
@@ -197,6 +208,7 @@ GlicAnnotationManager::AnnotationTask::~AnnotationTask() {
     std::move(scroll_to_callback_)
         .Run(mojom::ScrollToErrorReason::kNotSupported);
   }
+  annotation_manager_->service_->window_controller().RemoveStateObserver(this);
 }
 
 bool GlicAnnotationManager::AnnotationTask::IsRunning() const {
@@ -259,6 +271,7 @@ void GlicAnnotationManager::AnnotationTask::ResetConnections() {
   annotation_agent_host_receiver_.reset();
   tab_change_subscription_ = base::CallbackListSubscription();
   content::WebContentsObserver::Observe(nullptr);
+  annotation_manager_->service_->window_controller().RemoveStateObserver(this);
 }
 
 void GlicAnnotationManager::AnnotationTask::DidFinishAttachment(
@@ -304,6 +317,31 @@ void GlicAnnotationManager::AnnotationTask::DidFinishAttachment(
 void GlicAnnotationManager::AnnotationTask::PrimaryPageChanged(
     content::Page& page) {
   DropAnnotation();
+}
+
+// Remove the annotation when the panel is closed. When the web client is closed
+// the `GlicAnnotationManager` is destroyed, removing all the annotation tasks
+// as well.
+void GlicAnnotationManager::AnnotationTask::PanelStateChanged(
+    const mojom::PanelState& panel_state,
+    Browser* attached_browser) {
+  if (panel_state.kind != mojom::PanelState_Kind::kHidden) {
+    return;
+  }
+  switch (state_) {
+    case State::kRunning: {
+      FailTask(mojom::ScrollToErrorReason::kFocusedTabChangedOrNavigated);
+      break;
+    }
+    case State::kActive: {
+      DropAnnotation();
+      break;
+    }
+    case State::kFailed:
+    case State::kInactive: {
+      break;
+    }
+  }
 }
 
 // Note: In addition to when the focused tab changes, this gets called when

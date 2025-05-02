@@ -1324,9 +1324,7 @@ void GlicWindowController::NotifyIfPanelStateChanged() {
 }
 
 mojom::PanelState GlicWindowController::ComputePanelState() const {
-  bool widget_visible =
-      state_ != State::kClosed && state_ != State::kCloseAnimation;
-  return CreatePanelState(widget_visible, attached_browser_);
+  return CreatePanelState(IsShowing(), attached_browser_);
 }
 
 bool GlicWindowController::IsActive() {

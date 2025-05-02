@@ -8,6 +8,7 @@
 #include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/glic/host/context/glic_page_context_fetcher.h"
@@ -768,6 +769,73 @@ IN_PROC_BROWSER_TEST_F(GlicAnnotationManagerUiTest,
                   ScrollToWithDocumentIdExpectingError(
                       NodeIdSelector(base::BindOnce([]() { return -1; })),
                       mojom::ScrollToErrorReason::kNoMatchFound));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicAnnotationManagerUiTest,
+                       AnnotationTaskRemovedWhenPanelClosed) {
+  RunTestSequence(
+      InstrumentTab(kActiveTabId),  //
+      NavigateWebContents(
+          kActiveTabId,
+          embedded_test_server()->GetURL("/scrollable_page_with_content.html")),
+      OpenGlicWindow(GlicWindowMode::kDetached),  //
+      InsertFakeAnnotationService(),              //
+      ScrollToAsync(ExactTextSelector("does not matter")),
+      WaitForEvent(kBrowserViewElementId, kScrollToRequestReceived),  //
+      Do([&]() {
+        fake_service()->NotifyAttachment(
+            gfx::Rect(20, 20), blink::mojom::AttachmentResult::kSuccess);
+      }),
+      CloseGlicWindow(),
+      Check([&]() { return !fake_service()->HighlightIsActive(); },
+            "Annotations should be dropped"));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicAnnotationManagerUiTest,
+                       AnnotationTaskRemovedWhenPanelClosedBeforeAttachment) {
+  RunTestSequence(
+      InstrumentTab(kActiveTabId),  //
+      NavigateWebContents(
+          kActiveTabId,
+          embedded_test_server()->GetURL("/scrollable_page_with_content.html")),
+      OpenGlicWindow(GlicWindowMode::kDetached),  //
+      InsertFakeAnnotationService(),              //
+      ScrollToAsync(ExactTextSelector("does not matter")),
+      WaitForEvent(kBrowserViewElementId, kScrollToRequestReceived),  //
+      CloseGlicWindow(),                                              //
+      Check([&]() {
+        // At this point, the glic WebContents is already hidden. Unfortunately
+        // we can't use `WaitForScrollToError()` on a hidden contents.
+        return base::test::RunUntil([&]() {
+          return ExecJs(
+              glic_service()->host().webui_contents(),
+              content::JsReplace(
+                  "window.scrollToError === $1",
+                  static_cast<int>(mojom::ScrollToErrorReason::
+                                       kFocusedTabChangedOrNavigated)));
+        });
+      }));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicAnnotationManagerUiTest,
+                       AnnotationTaskRemovedWhenWebClientClosed) {
+  RunTestSequence(
+      InstrumentTab(kActiveTabId),  //
+      NavigateWebContents(
+          kActiveTabId,
+          embedded_test_server()->GetURL("/scrollable_page_with_content.html")),
+      OpenGlicWindow(GlicWindowMode::kDetached),  //
+      InsertFakeAnnotationService(),              //
+      ScrollToAsync(ExactTextSelector("does not matter")),
+      WaitForEvent(kBrowserViewElementId, kScrollToRequestReceived),  //
+      Do([&]() {
+        fake_service()->NotifyAttachment(
+            gfx::Rect(20, 20), blink::mojom::AttachmentResult::kSuccess);
+      }),
+      Do([&]() { glic_service()->CloseUI(); }),  //
+      WaitForHide(kGlicViewElementId),           //
+      Check([&]() { return !fake_service()->HighlightIsActive(); },
+            "Annotations should be dropped"));
 }
 
 class GlicAnnotationManagerWithScrollToDisabledUiTest
