@@ -22,7 +22,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
-#include "crypto/sha2.h"
+#include "crypto/hash.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "url/origin.h"
 
@@ -101,9 +101,8 @@ ValueStore* LockScreenStorageHelper::GetValueStoreForOrigin(
   // need to appear identical if the two origins need to compare equal. Hence
   // if two origins are equal, the serialized origins should also be equal.
   std::string serialized_origin = origin.Serialize();
-  uint8_t hash[crypto::kSHA256Length];
-  crypto::SHA256HashString(serialized_origin, hash, sizeof(hash));
-  std::string filename = base::HexEncode(hash);
+  std::string filename =
+      base::HexEncode(crypto::hash::Sha256(serialized_origin));
 
   auto iter = storage_map_.find(filename);
   if (iter != storage_map_.end())

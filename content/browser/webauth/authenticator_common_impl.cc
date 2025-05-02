@@ -59,7 +59,7 @@
 #include "content/public/browser/web_authentication_request_proxy.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
-#include "crypto/sha2.h"
+#include "crypto/hash.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/fido/attestation_object.h"
@@ -153,12 +153,9 @@ WebAuthenticationDelegate* GetWebAuthenticationDelegate() {
 // The application parameter is the SHA-256 hash of the UTF-8 encoding of
 // the application identity (i.e. relying_party_id) of the application
 // requesting the registration.
-std::array<uint8_t, crypto::kSHA256Length> CreateApplicationParameter(
+std::array<uint8_t, crypto::hash::kSha256Size> CreateApplicationParameter(
     const std::string& relying_party_id) {
-  std::array<uint8_t, crypto::kSHA256Length> application_parameter;
-  crypto::SHA256HashString(relying_party_id, application_parameter.data(),
-                           application_parameter.size());
-  return application_parameter;
+  return crypto::hash::Sha256(relying_party_id);
 }
 
 device::CtapGetAssertionRequest CreateCtapGetAssertionRequest(
