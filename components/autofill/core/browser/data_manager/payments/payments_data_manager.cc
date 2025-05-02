@@ -1002,7 +1002,9 @@ bool PaymentsDataManager::IsCardBenefitsFeatureEnabled() {
   return base::FeatureList::IsEnabled(
              features::kAutofillEnableCardBenefitsForAmericanExpress) ||
          base::FeatureList::IsEnabled(
-             features::kAutofillEnableCardBenefitsForBmo);
+             features::kAutofillEnableCardBenefitsForBmo) ||
+         base::FeatureList::IsEnabled(
+             features::kAutofillEnableFlatRateCardBenefitsFromCurinos);
 }
 
 bool PaymentsDataManager::ShouldBlockCardBenefitSuggestionLabels(

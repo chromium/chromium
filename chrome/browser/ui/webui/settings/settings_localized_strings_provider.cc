@@ -1457,12 +1457,8 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
 
   html_source->AddBoolean("enableNewFopDisplay", EnableNewFopDisplayDesktop());
 
-  html_source->AddBoolean(
-      "autofillCardBenefitsAvailable",
-      base::FeatureList::IsEnabled(
-          autofill::features::kAutofillEnableCardBenefitsForAmericanExpress) ||
-          base::FeatureList::IsEnabled(
-              autofill::features::kAutofillEnableCardBenefitsForBmo));
+  html_source->AddBoolean("autofillCardBenefitsAvailable",
+                          payments_data.IsCardBenefitsFeatureEnabled());
 
   html_source->AddString(
       "cardBenefitsToggleSublabel",

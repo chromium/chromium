@@ -2685,18 +2685,20 @@ TEST_F(PaymentsDataManagerTest, ProcessCardArtUrlChanges) {
 // 1. Whether the benefits toggle is turned on or off.
 // 2. Whether the American Express benefits flag is enabled.
 // 3. Whether the BMO benefits flag is enabled.
+// 4. Whether the Curinos flat rate benefits flag is enabled.
 class PaymentsDataManagerStartupBenefitsTest
     : public PaymentsDataManagerHelper,
       public testing::Test,
-      public testing::WithParamInterface<std::tuple<bool, bool, bool>> {
+      public testing::WithParamInterface<std::tuple<bool, bool, bool, bool>> {
  public:
   PaymentsDataManagerStartupBenefitsTest() {
     feature_list_.InitWithFeatureStates(
         /*feature_states=*/
         {{features::kAutofillEnableCardBenefitsForAmericanExpress,
           AreAmericanExpressBenefitsEnabled()},
-         {features::kAutofillEnableCardBenefitsForBmo,
-          AreBmoBenefitsEnabled()}});
+         {features::kAutofillEnableCardBenefitsForBmo, AreBmoBenefitsEnabled()},
+         {features::kAutofillEnableFlatRateCardBenefitsFromCurinos,
+          AreCurinosFlatRateBenefitsEnabled()}});
     SetUpTest();
   }
 
@@ -2707,6 +2709,9 @@ class PaymentsDataManagerStartupBenefitsTest
     return std::get<1>(GetParam());
   }
   bool AreBmoBenefitsEnabled() const { return std::get<2>(GetParam()); }
+  bool AreCurinosFlatRateBenefitsEnabled() const {
+    return std::get<3>(GetParam());
+  }
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -2715,6 +2720,7 @@ class PaymentsDataManagerStartupBenefitsTest
 INSTANTIATE_TEST_SUITE_P(,
                          PaymentsDataManagerStartupBenefitsTest,
                          testing::Combine(testing::Bool(),
+                                          testing::Bool(),
                                           testing::Bool(),
                                           testing::Bool()));
 
@@ -2725,7 +2731,8 @@ TEST_P(PaymentsDataManagerStartupBenefitsTest,
   prefs::SetPaymentCardBenefits(prefs_.get(), IsBenefitsPrefTurnedOn());
   base::HistogramTester histogram_tester;
   ResetPaymentsDataManager();
-  if (!AreAmericanExpressBenefitsEnabled() && !AreBmoBenefitsEnabled()) {
+  if (!AreAmericanExpressBenefitsEnabled() && !AreBmoBenefitsEnabled() &&
+      !AreCurinosFlatRateBenefitsEnabled()) {
     histogram_tester.ExpectTotalCount(
         "Autofill.PaymentMethods.CardBenefitsIsEnabled.Startup", 0);
   } else {
