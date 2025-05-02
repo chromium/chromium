@@ -18,8 +18,6 @@ namespace policy {
 
 class HeadlessEnterpriseStartupDialogTest : public ::testing::Test {
  public:
-  static constexpr char kHeadlessSwitchValue[] = "new";
-
   HeadlessEnterpriseStartupDialogTest() = default;
   HeadlessEnterpriseStartupDialogTest(
       const HeadlessEnterpriseStartupDialogTest&) = delete;
@@ -28,8 +26,7 @@ class HeadlessEnterpriseStartupDialogTest : public ::testing::Test {
 
  protected:
   void SetUp() override {
-    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-        switches::kHeadless, kHeadlessSwitchValue);
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(switches::kHeadless);
 
     ASSERT_TRUE(headless::IsHeadlessMode());
   }

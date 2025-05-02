@@ -21,8 +21,6 @@ namespace headless {
 
 class HeadlessModeBrowserTest : public InProcessBrowserTest {
  public:
-  static constexpr char kHeadlessSwitchValue[] = "new";
-
   HeadlessModeBrowserTest();
 
   HeadlessModeBrowserTest(const HeadlessModeBrowserTest&) = delete;

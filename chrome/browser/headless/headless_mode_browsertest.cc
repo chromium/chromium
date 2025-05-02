@@ -105,8 +105,7 @@ void HeadlessModeBrowserTest::AppendHeadlessCommandLineSwitches(
   if (command_line->HasSwitch(switches::kHeadfulMode)) {
     headful_mode_ = true;
   } else {
-    command_line->AppendSwitchASCII(::switches::kHeadless,
-                                    kHeadlessSwitchValue);
+    command_line->AppendSwitch(::switches::kHeadless);
     headless::InitHeadlessMode();
   }
 }
