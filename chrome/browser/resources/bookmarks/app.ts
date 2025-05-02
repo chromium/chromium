@@ -101,9 +101,11 @@ export class BookmarksAppElement extends BookmarksAppElementBase {
     // properly when listeners are added to a Polymer element, because the
     // event is considered AT_TARGET for the element, and is evaluated
     // after inner captures.
-    this.eventTracker_.add(document, 'mousedown', () => this.onMousedown_());
     this.eventTracker_.add(
-        document, 'keydown', (e: Event) => this.onKeydown_(e as KeyboardEvent));
+        document, 'mousedown', () => this.onMousedown_(), true);
+    this.eventTracker_.add(
+        document, 'keydown', (e: Event) => this.onKeydown_(e as KeyboardEvent),
+        true);
 
     this.router_.initialize();
 

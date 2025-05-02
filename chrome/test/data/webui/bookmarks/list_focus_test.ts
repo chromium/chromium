@@ -227,6 +227,16 @@ suite('<bookmarks-list>', function() {
     focusedItem = items[2]!;
     assertDeepEquals(['2'], normalizeIterable(store.data.selection.items));
 
+    // Space toggles selection with ctrl key held down.
+    keydown(focusedItem, ' ', multiKey);
+    await microtasksFinished();
+    assertDeepEquals(['2', '4'], normalizeIterable(store.data.selection.items));
+
+    keydown(focusedItem, ' ', multiKey);
+    await microtasksFinished();
+    assertDeepEquals(['2'], normalizeIterable(store.data.selection.items));
+
+    // Space toggles selection without ctrl key held down.
     keydown(focusedItem, ' ');
     await microtasksFinished();
     assertDeepEquals(['2', '4'], normalizeIterable(store.data.selection.items));

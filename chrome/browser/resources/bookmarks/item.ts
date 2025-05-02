@@ -230,11 +230,13 @@ export class BookmarksItemElement extends BookmarksItemElementBase {
   }
 
   private onKeydown_(e: KeyboardEvent) {
+    const cursorModifier = isMac ? e.metaKey : e.ctrlKey;
     if (e.key === 'ArrowLeft') {
       this.focus();
     } else if (e.key === 'ArrowRight') {
       this.$.menuButton.focus();
-    } else if (e.key === ' ') {
+    } else if (e.key === ' ' && !cursorModifier) {
+      // Spacebar with the modifier is handled by the list.
       this.dispatch(selectItem(this.itemId, this.getState(), {
         clear: false,
         range: false,
