@@ -4493,11 +4493,26 @@ interface HTMLMediaElement : HTMLElement
     setter src
     setter srcObject
     setter volume
+interface HTMLMenuBarElement : HTMLElement
+    attribute @@toStringTag
+    method constructor
 interface HTMLMenuElement : HTMLElement
     attribute @@toStringTag
     getter compact
     method constructor
     setter compact
+interface HTMLMenuItemElement : HTMLElement
+    attribute @@toStringTag
+    getter checked
+    getter defaultChecked
+    getter disabled
+    method constructor
+    setter checked
+    setter defaultChecked
+    setter disabled
+interface HTMLMenuListElement : HTMLElement
+    attribute @@toStringTag
+    method constructor
 interface HTMLMetaElement : HTMLElement
     attribute @@toStringTag
     getter content

@@ -10,6 +10,8 @@
 namespace blink {
 
 class HTMLMenuListElement final : public HTMLElement {
+  DEFINE_WRAPPERTYPEINFO();
+
  public:
   explicit HTMLMenuListElement(Document&);
 };

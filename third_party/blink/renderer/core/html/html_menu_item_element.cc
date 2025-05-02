@@ -41,7 +41,7 @@ void HTMLMenuItemElement::ParseAttribute(
     }
   } else if (name == html_names::kCheckedAttr) {
     if (params.old_value.IsNull() != params.new_value.IsNull() && !is_dirty_) {
-      SetChecked(!params.new_value.IsNull());
+      setChecked(!params.new_value.IsNull());
       is_dirty_ = false;
     }
     PseudoStateChanged(CSSSelector::kPseudoDefault);
@@ -54,7 +54,7 @@ bool HTMLMenuItemElement::Checked() const {
   return is_checked_;
 }
 
-void HTMLMenuItemElement::SetChecked(bool checked) {
+void HTMLMenuItemElement::setChecked(bool checked) {
   is_dirty_ = true;
   if (is_checked_ == checked) {
     return;

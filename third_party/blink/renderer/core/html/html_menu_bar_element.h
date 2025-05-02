@@ -10,6 +10,8 @@
 namespace blink {
 
 class HTMLMenuBarElement final : public HTMLElement {
+  DEFINE_WRAPPERTYPEINFO();
+
  public:
   explicit HTMLMenuBarElement(Document&);
 };

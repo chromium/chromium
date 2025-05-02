@@ -879,6 +879,9 @@ html element menu
     property compact
 html element menubar
 html element menuitem
+    property checked
+    property defaultChecked
+    property disabled
 html element menulist
 html element meta
     property content

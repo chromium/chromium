@@ -10,6 +10,8 @@
 
 namespace blink {
 class CORE_EXPORT HTMLMenuItemElement final : public HTMLElement {
+  DEFINE_WRAPPERTYPEINFO();
+
  public:
   explicit HTMLMenuItemElement(Document&);
   ~HTMLMenuItemElement() override;
@@ -17,7 +19,7 @@ class CORE_EXPORT HTMLMenuItemElement final : public HTMLElement {
   int index() const;
 
   bool Checked() const;
-  void SetChecked(bool);
+  void setChecked(bool);
 
   // TODO
   // HTMLMenuBarElement* OwnerMenuBarElement(bool skip_check = false) const;
