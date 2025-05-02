@@ -1129,6 +1129,8 @@ void FlagsState::SetFlags(
     std::string feature_internal_name = flag.substr(0, at_index);
     const flags_ui::FeatureEntry* entry =
         FindFeatureEntryByName(feature_internal_name);
+    // Since this flag is currently enabled, we know for sure that we can find
+    // its feature entry using its internal name.
     CHECK(entry);
 
     if (entry->type == FeatureEntry::FEATURE_VALUE ||
@@ -1186,7 +1188,12 @@ void FlagsState::SetFlags(
       std::string feature_internal_name = flag.substr(0, at_index);
       const flags_ui::FeatureEntry* entry =
           FindFeatureEntryByName(feature_internal_name);
-      CHECK(entry);
+      // Since this flag is enabled previously but not enabled right now, it is
+      // possible that we have removed this flag from the codebase. Therefore,
+      // if we cannot find the feature entry, we just move on.
+      if (entry == nullptr) {
+        continue;
+      }
 
       if (entry->type == FeatureEntry::FEATURE_VALUE ||
           entry->type == FeatureEntry::FEATURE_WITH_PARAMS_VALUE) {
