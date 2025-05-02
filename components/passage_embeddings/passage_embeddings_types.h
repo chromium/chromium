@@ -157,7 +157,6 @@ class Embedding {
 class Embedder {
  public:
   using TaskId = uint64_t;
-  static constexpr TaskId kInvalidTaskId = 0;
 
   virtual ~Embedder() = default;
 
