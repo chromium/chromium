@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.toolbar.load_progress;
 import org.chromium.base.MathUtils;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.CurrentTabObserver;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
@@ -33,7 +34,8 @@ public class LoadProgressMediator {
      * @param tabSupplier An observable supplier of the current {@link Tab}.
      * @param model MVC property model instance used for load progress bar.
      */
-    public LoadProgressMediator(ObservableSupplier<Tab> tabSupplier, PropertyModel model) {
+    public LoadProgressMediator(
+            ObservableSupplier<@Nullable Tab> tabSupplier, PropertyModel model) {
         mModel = model;
         mLoadProgressSimulator = new LoadProgressSimulator(model);
         mTabObserver =
@@ -124,7 +126,7 @@ public class LoadProgressMediator {
         mPreventUpdates = preventUpdates;
     }
 
-    private void onNewTabObserved(Tab tab) {
+    private void onNewTabObserved(@Nullable Tab tab) {
         if (tab == null) {
             return;
         }

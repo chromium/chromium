@@ -140,7 +140,7 @@ public class EdgeToEdgeControllerImpl
     public EdgeToEdgeControllerImpl(
             Activity activity,
             WindowAndroid windowAndroid,
-            ObservableSupplier<Tab> tabObservableSupplier,
+            ObservableSupplier<@Nullable Tab> tabObservableSupplier,
             @Nullable EdgeToEdgeOSWrapper edgeToEdgeOsWrapper,
             EdgeToEdgeManager edgeToEdgeManager,
             BrowserControlsStateProvider browserControlsStateProvider,
@@ -158,7 +158,7 @@ public class EdgeToEdgeControllerImpl
         mTabSupplierObserver =
                 new TabSupplierObserver(tabObservableSupplier) {
                     @Override
-                    protected void onObservingDifferentTab(Tab tab) {
+                    protected void onObservingDifferentTab(@Nullable Tab tab) {
                         onTabSwitched(tab);
                     }
                 };

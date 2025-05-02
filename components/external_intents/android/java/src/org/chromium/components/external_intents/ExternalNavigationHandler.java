@@ -186,7 +186,7 @@ public class ExternalNavigationHandler {
         }
     }
 
-    private static class IntentBasedSupplier<T> extends LazySupplier<T> {
+    private static class IntentBasedSupplier<T extends @Nullable Object> extends LazySupplier<T> {
         protected final Intent mIntent;
         private @Nullable Intent mIntentCopy;
 
@@ -358,7 +358,9 @@ public class ExternalNavigationHandler {
         }
     }
 
-    protected static class ResolveActivitySupplier extends IntentBasedSupplier<ResolveInfo> {
+    protected static class ResolveActivitySupplier
+            extends IntentBasedSupplier<@Nullable ResolveInfo> {
+        @SuppressWarnings("NullAway") // https://github.com/uber/NullAway/issues/1209
         public ResolveActivitySupplier(Intent intent) {
             super(
                     intent,
@@ -1189,9 +1191,10 @@ public class ExternalNavigationHandler {
         }
         if (!isExternalProtocol) return false;
         if (!resolveInfoContainsSelf(resolvingInfos.get())) return false;
-        if (resolveActivity.get() == null) return false;
+        ResolveInfo intentResolveInfo = resolveActivity.get();
+        if (intentResolveInfo == null) return false;
 
-        ActivityInfo info = resolveActivity.get().activityInfo;
+        ActivityInfo info = intentResolveInfo.activityInfo;
         if (info != null && mDelegate.getContext().getPackageName().equals(info.packageName)) {
             if (debug()) Log.i(TAG, "Navigation to self.");
             return true;
@@ -1199,7 +1202,7 @@ public class ExternalNavigationHandler {
 
         // We don't want the user seeing the chooser and choosing the browser, but resolving to
         // another app is fine.
-        if (resolvesToChooser(resolveActivity.get(), resolvingInfos)) {
+        if (resolvesToChooser(intentResolveInfo, resolvingInfos)) {
             if (debug()) Log.i(TAG, "Navigation to chooser including self.");
             return true;
         }
@@ -1254,11 +1257,12 @@ public class ExternalNavigationHandler {
             }
         }
         if (!matchesBrowser) return false;
-        if (resolveActivity.get().activityInfo == null) return false;
+        ResolveInfo intentResolveInfo = resolveActivity.get();
+        if (intentResolveInfo == null || intentResolveInfo.activityInfo == null) return false;
 
         // If the intent resolves to a non-browser even through a browser is included in
         // queryIntentActivities, it's not really targeting a browser.
-        return browserPackages.contains(resolveActivity.get().activityInfo.packageName);
+        return browserPackages.contains(intentResolveInfo.activityInfo.packageName);
     }
 
     private static Set<String> getInstalledBrowserPackages() {

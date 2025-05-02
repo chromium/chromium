@@ -23,8 +23,6 @@ import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageScopeType;
 import org.chromium.ui.modelutil.PropertyModel;
 
-import java.util.Objects;
-
 /** Abstracts the logic needed to schedule a message using {@link MessageDispatcher} framework. */
 @SuppressWarnings("SynchronizeOnNonFinalField") // Non-final in tests.
 @NullMarked
@@ -33,14 +31,14 @@ public class MerchantTrustMessageScheduler {
 
     private final MessageDispatcher mMessageDispatcher;
     private final MerchantTrustMetrics mMetrics;
-    private final ObservableSupplier<Tab> mTabSupplier;
+    private final ObservableSupplier<@Nullable Tab> mTabSupplier;
     private Handler mEnqueueMessageTimer;
     private @Nullable Pair<MerchantTrustMessageContext, PropertyModel> mScheduledMessage;
 
     public MerchantTrustMessageScheduler(
             MessageDispatcher messageDispatcher,
             MerchantTrustMetrics metrics,
-            ObservableSupplier<Tab> tabSupplier) {
+            ObservableSupplier<@Nullable Tab> tabSupplier) {
         mEnqueueMessageTimer = new Handler(ThreadUtils.getUiThreadLooper());
         mMessageDispatcher = messageDispatcher;
         mMetrics = metrics;
@@ -78,11 +76,13 @@ public class MerchantTrustMessageScheduler {
         mMetrics.recordMetricsForMessagePrepared();
         mEnqueueMessageTimer.postDelayed(
                 () -> {
-                    if (messageContext.isValid()
-                            && mTabSupplier.hasValue()
-                            && Objects.equals(
-                                    messageContext.getWebContents(),
-                                    mTabSupplier.get().getWebContents())) {
+                    boolean hasMessageContext = messageContext.isValid();
+                    Tab tab = mTabSupplier.get();
+                    boolean sameWebContents =
+                            hasMessageContext
+                                    && tab != null
+                                    && messageContext.getWebContents() == tab.getWebContents();
+                    if (sameWebContents) {
                         mMetrics.startRecordingMessageImpact(
                                 messageContext.getHostName(), starRating);
                         if (MerchantViewerConfig.isTrustSignalsMessageDisabledForImpactStudy()) {
@@ -101,18 +101,12 @@ public class MerchantTrustMessageScheduler {
                         }
                     } else {
                         messageEnqueuedCallback.onResult(null);
-                        if (!messageContext.isValid()) {
-                            clearScheduledMessage(
-                                    MessageClearReason.MESSAGE_CONTEXT_NO_LONGER_VALID);
-                        } else if (mTabSupplier.hasValue()
-                                && !Objects.equals(
-                                        messageContext.getWebContents(),
-                                        mTabSupplier.get().getWebContents())) {
-                            clearScheduledMessage(
-                                    MessageClearReason.SWITCH_TO_DIFFERENT_WEBCONTENTS);
-                        } else {
-                            clearScheduledMessage(MessageClearReason.UNKNOWN);
-                        }
+                        clearScheduledMessage(
+                                !hasMessageContext
+                                        ? MessageClearReason.MESSAGE_CONTEXT_NO_LONGER_VALID
+                                        : tab != null
+                                                ? MessageClearReason.SWITCH_TO_DIFFERENT_WEBCONTENTS
+                                                : MessageClearReason.UNKNOWN);
                     }
                 },
                 delayInMillis);

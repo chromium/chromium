@@ -69,6 +69,7 @@ public class TransitiveObservableSupplier<P extends @Nullable Object, T extends 
     }
 
     @Override
+    @SuppressWarnings("NullAway") // https://github.com/uber/NullAway/issues/1209
     public @Nullable T get() {
         if (mDelegateSupplier.hasObservers()) {
             return mDelegateSupplier.get();

@@ -85,7 +85,7 @@ public class TopToolbarOverlayMediator {
     /** Whether a layout that this overlay can be displayed on is showing. */
     private boolean mIsOnValidLayout;
 
-    private ObservableSupplier<Tab> mTabSupplier;
+    private ObservableSupplier<@Nullable Tab> mTabSupplier;
     private float mViewportHeight;
 
     private @Nullable OffsetTag mTopControlsOffsetTag;
@@ -97,7 +97,7 @@ public class TopToolbarOverlayMediator {
             Context context,
             LayoutStateProvider layoutStateProvider,
             Callback<ClipDrawableProgressBar.DrawingInfo> progressInfoCallback,
-            ObservableSupplier<Tab> tabSupplier,
+            ObservableSupplier<@Nullable Tab> tabSupplier,
             BrowserControlsStateProvider browserControlsStateProvider,
             TopUiThemeColorProvider topUiThemeColorProvider,
             ObservableSupplier<Integer> bottomToolbarControlsOffsetSupplier,
@@ -132,7 +132,7 @@ public class TopToolbarOverlayMediator {
 
         // Keep an observer attached to the visible tab (and only the visible tab) to update
         // properties including theme color.
-        Callback<Tab> activityTabCallback =
+        Callback<@Nullable Tab> activityTabCallback =
                 (tab) -> {
                     if (tab == null) return;
                     updateVisibility();

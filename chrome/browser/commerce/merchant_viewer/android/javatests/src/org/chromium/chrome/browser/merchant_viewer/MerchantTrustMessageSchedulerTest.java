@@ -23,6 +23,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
@@ -72,7 +73,6 @@ public class MerchantTrustMessageSchedulerTest {
                 .when(mMockHandler)
                 .postDelayed(any(Runnable.class), anyLong());
         doReturn(mMockTab).when(mMockTabProvider).get();
-        doReturn(true).when(mMockTabProvider).hasValue();
     }
 
     @Test
@@ -232,7 +232,8 @@ public class MerchantTrustMessageSchedulerTest {
         doReturn(true).when(mockMessagesContext).isValid();
         doReturn(mMockWebContents).when(mockMessagesContext).getWebContents();
         doReturn(mMockWebContents).when(mMockTab).getWebContents();
-        doReturn(false).when(mMockTabProvider).hasValue();
+        Mockito.reset(mMockTabProvider);
+        doReturn(null).when(mMockTabProvider).get();
 
         scheduler.setHandlerForTesting(mMockHandler);
 

@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tab_group_suggestion;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.view.View;
 import android.view.View.OnClickListener;
 
@@ -72,7 +74,8 @@ public class GroupSuggestionsPromotionMediator implements GroupSuggestionsServic
                     // TODO(crbug.com/397221723): Replace with group creation using
                     // TabGroupCreationDialogManager.
                     Tab currentTab = mTabModel.getCurrentTabSupplier().get();
-                    Tab rootTab = tabs.contains(currentTab) ? currentTab : tabs.get(0);
+                    Tab rootTab =
+                            tabs.contains(currentTab) ? assumeNonNull(currentTab) : tabs.get(0);
                     mTabGroupModelFilter.mergeListOfTabsToGroup(tabs, rootTab, true);
                     mBottomSheetController.hideContent(mCurrentSheetContent, true);
                     mCurrentSheetContent

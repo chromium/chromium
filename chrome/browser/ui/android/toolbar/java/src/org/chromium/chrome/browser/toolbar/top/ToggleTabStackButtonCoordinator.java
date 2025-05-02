@@ -87,7 +87,7 @@ public class ToggleTabStackButtonCoordinator {
             Supplier<Boolean> isIncognitoSupplier,
             OneshotSupplier<Boolean> promoShownOneshotSupplier,
             OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier,
-            ObservableSupplier<Tab> activityTabSupplier,
+            ObservableSupplier<@Nullable Tab> activityTabSupplier,
             ObservableSupplier<TabModelSelector> tabModelSelectorSupplier) {
         mContext = context;
         mToggleTabStackButton = toggleTabStackButton;

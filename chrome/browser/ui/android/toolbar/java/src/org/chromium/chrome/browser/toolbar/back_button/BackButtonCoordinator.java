@@ -13,6 +13,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.top.NavigationPopup;
@@ -28,7 +29,7 @@ import org.chromium.ui.widget.ChromeImageButton;
 public class BackButtonCoordinator {
     private final BackButtonMediator mMediator;
     private final NavigationPopup.HistoryDelegate mHistoryDelegate;
-    private final Supplier<Tab> mTabSupplier;
+    private final Supplier<@Nullable Tab> mTabSupplier;
     private final View mView;
 
     /**
@@ -47,7 +48,7 @@ public class BackButtonCoordinator {
             ChromeImageButton view,
             Callback<Integer> onBackPressed,
             ThemeColorProvider themeColorProvider,
-            ObservableSupplier<Tab> tabSupplier,
+            ObservableSupplier<@Nullable Tab> tabSupplier,
             NavigationPopup.HistoryDelegate historyDelegate) {
         mView = view;
         mTabSupplier = tabSupplier;

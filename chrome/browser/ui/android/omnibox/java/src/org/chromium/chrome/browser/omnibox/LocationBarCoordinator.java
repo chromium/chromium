@@ -181,7 +181,7 @@ public class LocationBarCoordinator
             LocationBarDataProvider locationBarDataProvider,
             ActionMode.Callback actionModeCallback,
             WindowAndroid windowAndroid,
-            Supplier<Tab> activityTabSupplier,
+            Supplier<@Nullable Tab> activityTabSupplier,
             Supplier<ModalDialogManager> modalDialogManagerSupplier,
             Supplier<ShareDelegate> shareDelegateSupplier,
             IncognitoStateProvider incognitoStateProvider,

@@ -31,10 +31,11 @@ public class OptionalBrowsingModeButtonController {
     private @Nullable ButtonDataProvider mCurrentProvider;
     private List<ButtonDataProvider> mButtonDataProviders;
     private final ToolbarLayout mToolbarLayout;
-    private final Supplier<Tab> mTabSupplier;
+    private final Supplier<@Nullable Tab> mTabSupplier;
 
     /**
      * Creates a new OptionalBrowsingModeButtonController.
+     *
      * @param buttonDataProviders List of button data providers in precedence order.
      * @param userEducationHelper Helper for displaying in-product help on a button.
      * @param toolbarLayout Toolbar layout where buttons will be displayed.
@@ -43,7 +44,7 @@ public class OptionalBrowsingModeButtonController {
             List<ButtonDataProvider> buttonDataProviders,
             UserEducationHelper userEducationHelper,
             ToolbarLayout toolbarLayout,
-            Supplier<Tab> tabSupplier) {
+            Supplier<@Nullable Tab> tabSupplier) {
         mButtonDataProviders = buttonDataProviders;
         mUserEducationHelper = userEducationHelper;
         mToolbarLayout = toolbarLayout;

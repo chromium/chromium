@@ -50,7 +50,7 @@ public class WebAppHeaderLayoutCoordinator implements DesktopWindowStateManager.
     private @Nullable BackButtonCoordinator mBackButtonCoordinator;
     private final ViewStub mViewStub;
     private final DesktopWindowStateManager mDesktopWindowStateManager;
-    private final ObservableSupplier<Tab> mTabSupplier;
+    private final ObservableSupplier<@Nullable Tab> mTabSupplier;
     private final ThemeColorProvider mThemeColorProvider;
     private final @DisplayMode.EnumType int mDisplayMode;
     private final NavigationPopup.HistoryDelegate mHistoryDelegate;
@@ -70,7 +70,7 @@ public class WebAppHeaderLayoutCoordinator implements DesktopWindowStateManager.
     public WebAppHeaderLayoutCoordinator(
             ViewStub viewStub,
             DesktopWindowStateManager desktopWindowStateManager,
-            ObservableSupplier<Tab> tabSupplier,
+            ObservableSupplier<@Nullable Tab> tabSupplier,
             ThemeColorProvider themeColorProvider,
             BrowserServicesIntentDataProvider browserServicesIntentDataProvider,
             NavigationPopup.HistoryDelegate historyDelegate) {

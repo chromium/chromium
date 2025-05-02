@@ -60,7 +60,7 @@ class ReloadButtonMediator implements ThemeColorProvider.TintObserver {
             PropertyModel model,
             ReloadButtonCoordinator.Delegate delegate,
             ThemeColorProvider themeColorProvider,
-            ObservableSupplier<Tab> tabSupplier,
+            ObservableSupplier<@Nullable Tab> tabSupplier,
             ObservableSupplier<Boolean> ntpLoadingSupplier,
             Callback<String> showToast,
             Resources resources) {
@@ -94,7 +94,7 @@ class ReloadButtonMediator implements ThemeColorProvider.TintObserver {
         mTabObserver =
                 new TabSupplierObserver(tabSupplier, /* shouldTrigger= */ true) {
                     @Override
-                    protected void onObservingDifferentTab(Tab tab) {
+                    protected void onObservingDifferentTab(@Nullable Tab tab) {
                         mCurrentTab = tab;
                         updateReloadingState(tab);
                     }
@@ -126,7 +126,7 @@ class ReloadButtonMediator implements ThemeColorProvider.TintObserver {
         }
     }
 
-    private void updateReloadingState(Tab tab) {
+    private void updateReloadingState(@Nullable Tab tab) {
         final boolean isReloading = tab != null && !SadTab.isShowing(tab) && tab.isLoading();
         setReloading(isReloading);
     }

@@ -72,7 +72,7 @@ public class MerchantTrustBottomSheetCoordinator implements View.OnLayoutChangeL
             Context context,
             WindowAndroid windowAndroid,
             BottomSheetController bottomSheetController,
-            Supplier<Tab> tabSupplier,
+            Supplier<@Nullable Tab> tabSupplier,
             View layoutView,
             MerchantTrustMetrics metrics,
             IntentRequestTracker intentRequestTracker,

@@ -12,6 +12,7 @@ import android.widget.ImageButton;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -51,7 +52,7 @@ public class ReloadButtonCoordinator {
     public ReloadButtonCoordinator(
             ImageButton view,
             ReloadButtonCoordinator.Delegate delegate,
-            ObservableSupplier<Tab> tabSupplier,
+            ObservableSupplier<@Nullable Tab> tabSupplier,
             ObservableSupplier<Boolean> ntpLoadingSupplier,
             ThemeColorProvider themeColorProvider) {
         mView = view;

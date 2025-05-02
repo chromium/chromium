@@ -77,7 +77,7 @@ public class MerchantTrustSignalsCoordinator
     private final MerchantTrustSignalsStorageFactory mStorageFactory;
     private final ObservableSupplier<Profile> mProfileSupplier;
     private final WindowAndroid mWindowAndroid;
-    private final ObservableSupplier<Tab> mTabSupplier;
+    private final ObservableSupplier<@Nullable Tab> mTabSupplier;
     private @Nullable OmniboxIconController mOmniboxIconController;
 
     /** Creates a new instance. */
@@ -87,7 +87,7 @@ public class MerchantTrustSignalsCoordinator
             BottomSheetController bottomSheetController,
             View layoutView,
             MessageDispatcher messageDispatcher,
-            ObservableSupplier<Tab> tabSupplier,
+            ObservableSupplier<@Nullable Tab> tabSupplier,
             ObservableSupplier<Profile> profileSupplier,
             MerchantTrustMetrics metrics,
             IntentRequestTracker intentRequestTracker) {
@@ -116,7 +116,7 @@ public class MerchantTrustSignalsCoordinator
             Context context,
             WindowAndroid windowAndroid,
             MerchantTrustMessageScheduler messageScheduler,
-            ObservableSupplier<Tab> tabSupplier,
+            ObservableSupplier<@Nullable Tab> tabSupplier,
             MerchantTrustSignalsDataProvider dataProvider,
             ObservableSupplier<Profile> profileSupplier,
             MerchantTrustMetrics metrics,
@@ -296,8 +296,9 @@ public class MerchantTrustSignalsCoordinator
 
         // TODO(crbug.com/40216480): Pass webContents directly to this method instead of using
         // mTabSupplier.
-        if (mTabSupplier.hasValue()) {
-            mMetrics.recordUkmOnMessageClicked(mTabSupplier.get().getWebContents());
+        Tab tab = mTabSupplier.get();
+        if (tab != null) {
+            mMetrics.recordUkmOnMessageClicked(tab.getWebContents());
         }
         launchDetailsPage(
                 merchantInfo.detailsPageUrl,

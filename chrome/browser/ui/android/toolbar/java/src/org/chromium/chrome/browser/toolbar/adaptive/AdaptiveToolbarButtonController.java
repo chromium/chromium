@@ -359,7 +359,7 @@ public class AdaptiveToolbarButtonController
      *
      * @param tabSupplier Supplier of current tab.
      */
-    public void initializePageLoadMetricsRecorder(ObservableSupplier<Tab> tabSupplier) {
+    public void initializePageLoadMetricsRecorder(ObservableSupplier<@Nullable Tab> tabSupplier) {
         if (mPageLoadMetricsRecorder != null) return;
         mPageLoadMetricsRecorder =
                 new CurrentTabObserver(

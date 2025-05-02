@@ -134,7 +134,7 @@ public class ToolbarPhone extends ToolbarLayout
 
     private @Nullable ObservableSupplier<Integer> mTabCountSupplier;
 
-    private @Nullable UserEducationHelper mUserEducationHelper;
+    private UserEducationHelper mUserEducationHelper;
     protected LocationBarCoordinator mLocationBar;
     private ObservableSupplier<Tracker> mTrackerSupplier;
 

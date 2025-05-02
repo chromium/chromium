@@ -52,7 +52,7 @@ class BackButtonMediator implements ThemeColorProvider.TintObserver {
             PropertyModel model,
             Callback<Integer> onBackPressed,
             ThemeColorProvider themeColorProvider,
-            ObservableSupplier<Tab> tabSupplier,
+            ObservableSupplier<@Nullable Tab> tabSupplier,
             Callback<Tab> showNavigationPopup) {
         mModel = model;
         mThemeColorProvider = themeColorProvider;
@@ -78,7 +78,7 @@ class BackButtonMediator implements ThemeColorProvider.TintObserver {
         mTabObserver =
                 new TabSupplierObserver(tabSupplier, /* shouldTrigger= */ true) {
                     @Override
-                    protected void onObservingDifferentTab(Tab tab) {
+                    protected void onObservingDifferentTab(@Nullable Tab tab) {
                         // ActivityTabProvider returns null for non-interactive tabs, e.g. tab
                         // switcher, and we actually want to keep the most recent tab.
                         // Skipping null to keep recent.

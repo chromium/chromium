@@ -16,28 +16,31 @@ import org.chromium.build.annotations.Nullable;
  */
 @NullMarked
 public class CurrentTabObserver {
-    private final ObservableSupplier<Tab> mTabSupplier;
+    private final ObservableSupplier<@Nullable Tab> mTabSupplier;
     private final TabObserver mTabObserver;
-    private final Callback<Tab> mTabSupplierCallback;
+    private final Callback<@Nullable Tab> mTabSupplierCallback;
     private CallbackController mCallbackController;
     private @Nullable Tab mTab;
 
-    /** @see #CurrentTabObserver(ObservableSupplier, TabObserver, Callback) */
-    public CurrentTabObserver(ObservableSupplier<Tab> tabSupplier, TabObserver tabObserver) {
+    /**
+     * @see #CurrentTabObserver(ObservableSupplier, TabObserver, Callback)
+     */
+    public CurrentTabObserver(
+            ObservableSupplier<@Nullable Tab> tabSupplier, TabObserver tabObserver) {
         this(tabSupplier, tabObserver, null);
     }
 
     /**
-     * @param tabSupplier An observable supplier of the current {@link Tab}. NOT to be owned
-     *        by this class, and should be destroyed by callsite later.
-     * @param tabObserver {@link TabObserver} that we want to observe the current tab with.
-     *        Owned by this class.
+     * @param tabSupplier An observable supplier of the current {@link Tab}. NOT to be owned by this
+     *     class, and should be destroyed by callsite later.
+     * @param tabObserver {@link TabObserver} that we want to observe the current tab with. Owned by
+     *     this class.
      * @param swapCallback Callback to invoke when the current tab is swapped.
      */
     public CurrentTabObserver(
-            ObservableSupplier<Tab> tabSupplier,
+            ObservableSupplier<@Nullable Tab> tabSupplier,
             TabObserver tabObserver,
-            @Nullable Callback<Tab> swapCallback) {
+            @Nullable Callback<@Nullable Tab> swapCallback) {
         mTabSupplier = tabSupplier;
         mTabObserver = tabObserver;
         mCallbackController = new CallbackController();

@@ -95,4 +95,16 @@ public class ChromeNullAwayLibraryModel implements LibraryModels {
     public ImmutableSetMultimap<MethodRef, Integer> castToNonNullMethods() {
         return ImmutableSetMultimap.of();
     }
+
+    @Override
+    public ImmutableSetMultimap<String, Integer> typeVariablesWithNullableUpperBounds() {
+        return new ImmutableSetMultimap.Builder<String, Integer>()
+                .put("java.util.function.Supplier", 0)
+                .build();
+    }
+
+    @Override
+    public ImmutableSet<String> nullMarkedClasses() {
+        return ImmutableSet.of("java.util.function.Supplier");
+    }
 }

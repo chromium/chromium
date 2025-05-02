@@ -84,7 +84,7 @@ public class NavigationPopup implements AdapterView.OnItemClickListener {
     private final @Type int mType;
     private final int mFaviconSize;
     private final @Nullable OnLayoutChangeListener mAnchorViewLayoutChangeListener;
-    private final Supplier<Tab> mCurrentTabSupplier;
+    private final Supplier<@Nullable Tab> mCurrentTabSupplier;
     private final HistoryDelegate mHistoryDelegate;
 
     private DefaultFaviconHelper mDefaultFaviconHelper;
@@ -112,7 +112,7 @@ public class NavigationPopup implements AdapterView.OnItemClickListener {
             Context context,
             @Nullable NavigationController navigationController,
             @Type int type,
-            Supplier<Tab> currentTabSupplier,
+            Supplier<@Nullable Tab> currentTabSupplier,
             HistoryDelegate historyDelegate) {
         mProfile = profile;
         mContext = context;
@@ -309,6 +309,7 @@ public class NavigationPopup implements AdapterView.OnItemClickListener {
         if (entry.getIndex() == FULL_HISTORY_ENTRY_INDEX) {
             RecordUserAction.record(buildComputedAction("ShowFullHistory"));
             Tab currentTab = mCurrentTabSupplier.get();
+            assert currentTab != null;
             mHistoryDelegate.show(currentTab);
         } else {
             // 1-based index to keep in line with Desktop implementation.

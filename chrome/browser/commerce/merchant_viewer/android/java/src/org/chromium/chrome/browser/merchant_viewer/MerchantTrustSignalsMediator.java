@@ -8,6 +8,7 @@ import android.text.TextUtils;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.CurrentTabObserver;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
@@ -32,7 +33,7 @@ class MerchantTrustSignalsMediator {
     private final CurrentTabObserver mCurrentTabObserver;
 
     MerchantTrustSignalsMediator(
-            ObservableSupplier<Tab> tabSupplier,
+            ObservableSupplier<@Nullable Tab> tabSupplier,
             MerchantTrustSignalsCallback delegate,
             MerchantTrustMetrics metrics) {
         mCurrentTabObserver =

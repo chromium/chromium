@@ -32,7 +32,7 @@ class WebAppHeaderLayoutMediator implements DesktopWindowStateManager.AppHeaderO
 
     private final PropertyModel mModel;
     private final DesktopWindowStateManager mDesktopWindowStateManager;
-    private final ObservableSupplier<Tab> mTabSupplier;
+    private final ObservableSupplier<@Nullable Tab> mTabSupplier;
     private final Supplier<List<Rect>> mNonDraggableAreasSupplier;
     private final ObservableSupplierImpl<Integer> mWidthSupplier;
     private final Callback<Integer> mOnWidthChangedCallback;
@@ -52,7 +52,7 @@ class WebAppHeaderLayoutMediator implements DesktopWindowStateManager.AppHeaderO
     public WebAppHeaderLayoutMediator(
             PropertyModel model,
             DesktopWindowStateManager desktopWindowStateManager,
-            ObservableSupplier<Tab> tabSupplier,
+            ObservableSupplier<@Nullable Tab> tabSupplier,
             Supplier<List<Rect>> nonDraggableAreasSupplier,
             int webAppHeaderMinHeightFromResources) {
         mWebAppMinHeaderHeight = webAppHeaderMinHeightFromResources;

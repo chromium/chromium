@@ -326,7 +326,7 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
             ViewGroup toolbarView,
             boolean isIncognito,
             ObservableSupplier<Integer> constraintsSupplier,
-            Supplier<Tab> tabSupplier,
+            Supplier<@Nullable Tab> tabSupplier,
             ObservableSupplier<Boolean> compositorInMotionSupplier,
             BrowserStateBrowserControlsVisibilityDelegate
                     browserStateBrowserControlsVisibilityDelegate,
@@ -434,7 +434,7 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
         public void setPostInitializationDependencies(
                 Toolbar toolbar,
                 ObservableSupplier<Integer> constraintsSupplier,
-                Supplier<Tab> tabSupplier,
+                Supplier<@Nullable Tab> tabSupplier,
                 ObservableSupplier<Boolean> compositorInMotionSupplier,
                 BrowserStateBrowserControlsVisibilityDelegate
                         browserStateBrowserControlsVisibilityDelegate,
@@ -499,7 +499,7 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
 
         private Toolbar mToolbar;
         private ConstraintsChecker mConstraintsObserver;
-        private Supplier<Tab> mTabSupplier;
+        private Supplier<@Nullable Tab> mTabSupplier;
         private ObservableSupplier<Boolean> mCompositorInMotionSupplier;
 
         private BrowserStateBrowserControlsVisibilityDelegate
@@ -537,7 +537,7 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
         public void setPostInitializationDependencies(
                 Toolbar toolbar,
                 ObservableSupplier<Integer> constraintsSupplier,
-                Supplier<Tab> tabSupplier,
+                Supplier<@Nullable Tab> tabSupplier,
                 ObservableSupplier<Boolean> compositorInMotionSupplier,
                 BrowserStateBrowserControlsVisibilityDelegate
                         browserStateBrowserControlsVisibilityDelegate,
