@@ -443,7 +443,8 @@ ServiceWorkerClientOwner::CreateServiceWorkerClientForWindow(
     FrameTreeNodeId ongoing_navigation_frame_tree_node_id) {
   auto client = std::make_unique<ServiceWorkerClient>(
       context_->AsWeakPtr(), are_ancestors_secure,
-      ongoing_navigation_frame_tree_node_id);
+      ongoing_navigation_frame_tree_node_id,
+      /*is_initiated_by_prefetch=*/false);
   auto weak_client = client->AsWeakPtr();
   auto inserted = service_worker_clients_by_uuid_
                       .emplace(weak_client->client_uuid(), std::move(client))
@@ -458,7 +459,8 @@ ServiceWorkerClientOwner::CreateServiceWorkerClientForPrefetch() {
   const bool are_ancestors_secure = true;
 
   auto client = std::make_unique<ServiceWorkerClient>(
-      context_->AsWeakPtr(), are_ancestors_secure, FrameTreeNodeId());
+      context_->AsWeakPtr(), are_ancestors_secure, FrameTreeNodeId(),
+      /*is_initiated_by_prefetch=*/true);
   auto weak_client = client->AsWeakPtr();
   auto inserted = service_worker_clients_by_uuid_
                       .emplace(weak_client->client_uuid(), std::move(client))

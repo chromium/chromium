@@ -358,7 +358,8 @@ void ServiceWorkerMainResourceLoader::StartRequest(
     fetch_dispatcher_ = std::make_unique<ServiceWorkerFetchDispatcher>(
         blink::mojom::FetchAPIRequest::From(resource_request_),
         resource_request_.destination, /*client_id=*/fetch_event_client_id_,
-        /*resulting_client_id=*/service_worker_client_->client_uuid(),
+        /*resulting_client_id=*/
+        service_worker_client_->client_uuid_for_resulting_client_id(),
         active_worker,
         base::BindOnce(&ServiceWorkerMainResourceLoader::DidPrepareFetchEvent,
                        weak_factory_.GetWeakPtr(), active_worker,
