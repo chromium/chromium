@@ -415,12 +415,9 @@ public class CafMessageHandlerTest {
         JSONObject innerMessage =
                 new JSONObject()
                         .put("type", "SET_VOLUME")
-                        .put(
-                                "volume",
-                                new JSONObject().put("level", (double) 1).put("muted", false));
+                        .put("volume", new JSONObject().put("level", 1.0).put("muted", false));
         JSONObject message = buildCastV2Message(CLIENT_ID1, innerMessage);
         assertTrue(mMessageHandler.handleMessageFromClient(message.toString()));
-        JSONObject volumeMessage = innerMessage.getJSONObject("volume");
         verify(mSession).setMute(false);
         verify(mSession).setVolume(1.0);
         verify(mMessageHandler)
@@ -438,12 +435,9 @@ public class CafMessageHandlerTest {
         JSONObject innerMessage =
                 new JSONObject()
                         .put("type", "SET_VOLUME")
-                        .put(
-                                "volume",
-                                new JSONObject().put("level", (double) 1).put("muted", false));
+                        .put("volume", new JSONObject().put("level", 1.0).put("muted", false));
         JSONObject message = buildCastV2Message(CLIENT_ID1, innerMessage);
         assertTrue(mMessageHandler.handleMessageFromClient(message.toString()));
-        JSONObject volumeMessage = innerMessage.getJSONObject("volume");
         verify(mSession, never()).setMute(anyBoolean());
         verify(mSession, never()).setVolume(anyDouble());
         verify(mMessageHandler)

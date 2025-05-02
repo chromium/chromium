@@ -287,11 +287,11 @@ public final class TabGroupSyncLocalObserver {
             @Override
             public void willCloseTabGroup(Token tabGroupId, boolean isHiding) {
                 if (!mIsObserving) return;
-                StringBuilder builder =
-                        new StringBuilder("willCloseTabGroup, tabGroupId = ")
-                                .append(tabGroupId)
-                                .append(" wasHiding = ")
-                                .append(isHiding);
+                String builder =
+                        "willCloseTabGroup, tabGroupId = "
+                                + tabGroupId
+                                + " wasHiding = "
+                                + isHiding;
                 LogUtils.log(TAG, builder.toString());
 
                 mRemoteTabGroupMutationHelper.handleWillCloseTabGroup(

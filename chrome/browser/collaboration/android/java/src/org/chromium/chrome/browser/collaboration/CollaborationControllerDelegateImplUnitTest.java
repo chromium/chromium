@@ -112,9 +112,7 @@ public class CollaborationControllerDelegateImplUnitTest {
                 .getServiceStatus();
         doReturn(mSigninManager).when(mIdentityServicesProvider).getSigninManager(mProfile);
         doReturn(true).when(mSigninManager).isSigninAllowed();
-        doReturn((long) 0)
-                .when(mCollaborationControllerDelegateImplNativeMock)
-                .createNativeObject(any());
+        doReturn(0L).when(mCollaborationControllerDelegateImplNativeMock).createNativeObject(any());
         mActivityScenarioRule.getScenario().onActivity(this::onActivityCreated);
         doReturn(mProfile).when(mDataSharingTabManager).getProfile();
         doReturn(mWindowAndroid).when(mDataSharingTabManager).getWindowAndroid();

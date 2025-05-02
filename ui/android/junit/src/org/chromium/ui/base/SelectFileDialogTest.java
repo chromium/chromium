@@ -830,7 +830,7 @@ public class SelectFileDialogTest {
 
     /** Returns the determined scope for the accepted |fileTypes|. */
     private int scopeForFileTypes(String... fileTypes) {
-        SelectFileDialog instance = SelectFileDialog.create((long) /* nativeSelectFileDialog= */ 0);
+        SelectFileDialog instance = SelectFileDialog.create(/* nativeSelectFileDialog= */ 0L);
         instance.setFileTypesForTests(new ArrayList<String>(Arrays.asList(fileTypes)));
 
         return instance.determineSelectFileDialogScope();
