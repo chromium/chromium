@@ -18,6 +18,7 @@
 #include <vector>
 
 #include "base/containers/span_reader.h"
+#include "base/containers/to_vector.h"
 #include "base/numerics/safe_conversions.h"
 #include "net/dns/dns_util.h"
 #include "net/dns/public/dns_protocol.h"
@@ -446,12 +447,11 @@ TEST(DnsNamesUtilTest,
 }
 
 TEST(DnsNamesUtilTest, NetworkToDottedNameShouldRejectCompression) {
-  std::string dns_name = CreateNamePointer(152);
+  std::vector<uint8_t> dns_name = base::ToVector(CreateNamePointer(152));
 
   EXPECT_EQ(NetworkToDottedName(base::as_byte_span(dns_name)), std::nullopt);
 
-  dns_name = "\005hello";
-  dns_name += CreateNamePointer(152);
+  dns_name.insert(dns_name.begin(), {'\005', 'h', 'e', 'l', 'l', 'o'});
 
   EXPECT_EQ(NetworkToDottedName(base::as_byte_span(dns_name)), std::nullopt);
 }
