@@ -126,7 +126,7 @@ TEST_F(MahiPanelViewPixelTest, MainPanel) {
   views::test::RunScheduledLayout(widget());
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "panel_view", /*revision_number=*/11, panel_view()));
+      "panel_view", /*revision_number=*/13, panel_view()));
 }
 
 TEST_F(MahiPanelViewPixelTest, ContentSourceButton) {
@@ -203,6 +203,7 @@ TEST_F(MahiPanelViewPixelTest, QuestionAnswerViewBasic) {
   // Set a valid text in the question textfield.
   const std::u16string question(u"question");
   question_textfield->SetText(question);
+  send_button->SetEnabled(true);
 
   // Pressing the send button should create a question and answer text bubble.
   LeftClickOn(send_button);
@@ -210,7 +211,7 @@ TEST_F(MahiPanelViewPixelTest, QuestionAnswerViewBasic) {
   views::test::RunScheduledLayout(widget());
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "question_answer_view_basic", /*revision_number=*/8,
+      "question_answer_view_basic", /*revision_number=*/9,
       panel_view()->GetViewByID(mahi_constants::ViewId::kScrollView)));
 }
 
@@ -235,6 +236,7 @@ TEST_F(MahiPanelViewPixelTest, QuestionAnswerViewLongText) {
   const std::u16string question =
       base::StrCat(std::vector<std::u16string>(25, u"Long Question "));
   question_textfield->SetText(question);
+  send_button->SetEnabled(true);
 
   // Pressing the send button should create a question and answer text bubble.
   LeftClickOn(send_button);
@@ -242,7 +244,7 @@ TEST_F(MahiPanelViewPixelTest, QuestionAnswerViewLongText) {
   views::test::RunScheduledLayout(widget());
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "question_answer_view_long_text", /*revision_number=*/10,
+      "question_answer_view_long_text", /*revision_number=*/11,
       panel_view()->GetViewByID(mahi_constants::ViewId::kScrollView)));
 }
 
@@ -284,15 +286,17 @@ TEST_F(MahiPanelViewPixelTest, QuestionAnswerViewScrollToBottom) {
       ->SetText(question);
 
   // Pressing the send button should create a question and answer text bubble.
-  LeftClickOn(panel_view()->GetViewByID(
-      mahi_constants::ViewId::kAskQuestionSendButton));
+  auto* const send_button =
+      panel_view()->GetViewByID(mahi_constants::ViewId::kAskQuestionSendButton);
+  send_button->SetEnabled(true);
+  LeftClickOn(send_button);
 
   views::test::RunScheduledLayout(widget());
 
   ScrollToBottom();
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "question_answer_bottom", /*revision_number=*/7,
+      "question_answer_bottom", /*revision_number=*/8,
       panel_view()->GetViewByID(mahi_constants::ViewId::kScrollView)));
 }
 

@@ -57,6 +57,7 @@ class ASH_EXPORT MahiPanelView : public SystemPanelView,
   // views::TextfieldController:
   bool HandleKeyEvent(views::Textfield* textfield,
                       const ui::KeyEvent& key_event) override;
+  void OnAfterUserAction(views::Textfield* sender) override;
 
   // MahiUiController::Delegate:
   views::View* GetView() override;
@@ -95,6 +96,9 @@ class ASH_EXPORT MahiPanelView : public SystemPanelView,
   raw_ptr<IconButton> send_button_ = nullptr;
   raw_ptr<IconButton> thumbs_up_button_ = nullptr;
   raw_ptr<IconButton> thumbs_down_button_ = nullptr;
+
+  // Whether a question is sent and waiting for answer / error response.
+  bool pending_answer_ = false;
 
   // The time when this view is constructed, which is when the user opens this
   // view.

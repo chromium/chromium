@@ -162,10 +162,11 @@ TEST_P(MahiErrorStatusViewPixelTest, QuestionAnswerView) {
   auto* const send_button = mahi_contents_view->GetViewByID(
       mahi_constants::ViewId::kAskQuestionSendButton);
   ASSERT_TRUE(send_button);
+  send_button->SetEnabled(true);
   LeftClickOn(send_button);
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      GetScreenShotNameForErrorStatus(GetParam()), /*revision_number=*/7,
+      GetScreenShotNameForErrorStatus(GetParam()), /*revision_number=*/8,
       mahi_contents_view->GetViewByID(mahi_constants::ViewId::kScrollView)));
 }
 
