@@ -48,6 +48,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "net/http/http_status_code.h"
 #include "pdf/buildflags.h"
+#include "read_anything_untrusted_page_handler.h"
 #include "services/network/public/cpp/header_util.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/accessibility/accessibility_features.h"
@@ -294,6 +295,10 @@ void ReadAnythingWebContentsObserver::PrimaryPageChanged(content::Page& page) {
   page_handler_->PrimaryPageChanged();
 }
 
+void ReadAnythingWebContentsObserver::DidStopLoading() {
+  page_handler_->DidStopLoading();
+}
+
 void ReadAnythingWebContentsObserver::WebContentsDestroyed() {
   page_handler_->WebContentsDestroyed();
 }
@@ -431,6 +436,31 @@ ReadAnythingUntrustedPageHandler::~ReadAnythingUntrustedPageHandler() {
 void ReadAnythingUntrustedPageHandler::PrimaryPageChanged() {
   SetUpPdfObserver();
   OnActiveAXTreeIDChanged();
+}
+
+void ReadAnythingUntrustedPageHandler::DidStopLoading() {
+#if BUILDFLAG(ENABLE_PDF)
+  content::WebContents* main_contents = main_observer_->web_contents();
+  if (!chrome_pdf::features::IsOopifPdfEnabled()) {
+    std::vector<content::WebContents*> inner_contents =
+        main_contents ? main_contents->GetInnerWebContents()
+                      : std::vector<content::WebContents*>();
+    // If this page was previously recognized as not a pdf from the original
+    // call to PrimaryPageChanged() but it's now recognized as a PDF after the
+    // page has finished loaded, call PrimaryPageChanged() again to redistill.
+    if (!is_pdf_ && AreInnerContentsPdfContent(inner_contents)) {
+      PrimaryPageChanged();
+    }
+  }
+#endif
+}
+
+bool ReadAnythingUntrustedPageHandler::AreInnerContentsPdfContent(
+    std::vector<content::WebContents*> inner_contents) {
+  return inner_contents.size() == 1 &&
+         IsPdfExtensionOrigin(inner_contents[0]
+                                  ->GetPrimaryMainFrame()
+                                  ->GetLastCommittedOrigin());
 }
 
 void ReadAnythingUntrustedPageHandler::WebContentsDestroyed() {
@@ -821,10 +851,7 @@ void ReadAnythingUntrustedPageHandler::SetUpPdfObserver() {
         main_contents ? main_contents->GetInnerWebContents()
                       : std::vector<content::WebContents*>();
     // Check if this is a pdf.
-    if (inner_contents.size() == 1 &&
-        IsPdfExtensionOrigin(inner_contents[0]
-                                 ->GetPrimaryMainFrame()
-                                 ->GetLastCommittedOrigin())) {
+    if (AreInnerContentsPdfContent(inner_contents)) {
       pdf_observer_ = std::make_unique<ReadAnythingWebContentsObserver>(
           weak_factory_.GetSafeRef(), inner_contents[0], kReadAnythingAXMode);
     }
@@ -839,6 +866,7 @@ void ReadAnythingUntrustedPageHandler::SetUpPdfObserver() {
 }
 
 void ReadAnythingUntrustedPageHandler::OnActiveAXTreeIDChanged() {
+  is_pdf_ = false;
   if (!active_) {
     page_->OnActiveAXTreeIDChanged(ui::AXTreeIDUnknown(), ukm::kInvalidSourceId,
                                    /*is_pdf=*/false);
@@ -887,6 +915,7 @@ void ReadAnythingUntrustedPageHandler::OnActiveAXTreeIDChanged() {
     // What happens if there are multiple such `rfhs`?
     contents->ForEachRenderFrameHost([this](content::RenderFrameHost* rfh) {
       if (rfh->GetProcess()->IsPdf()) {
+        is_pdf_ = true;
         page_->OnActiveAXTreeIDChanged(rfh->GetAXTreeID(),
                                        rfh->GetPageUkmSourceId(),
                                        /*is_pdf=*/true);

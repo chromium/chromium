@@ -64,6 +64,7 @@ class ReadAnythingWebContentsObserver : public content::WebContentsObserver {
       ui::AXLocationAndScrollUpdates& details) override;
   void PrimaryPageChanged(content::Page& page) override;
   void WebContentsDestroyed() override;
+  void DidStopLoading() override;
 
   // base::SafeRef used since the lifetime of ReadAnythingWebContentsObserver is
   // completely contained by page_handler_. See
@@ -113,6 +114,7 @@ class ReadAnythingUntrustedPageHandler :
       const ui::AXTreeID& tree_id,
       ui::AXLocationAndScrollUpdates& details);
   void PrimaryPageChanged();
+  void DidStopLoading();
   void WebContentsDestroyed();
   void OnActiveAXTreeIDChanged();
 
@@ -217,6 +219,9 @@ class ReadAnythingUntrustedPageHandler :
 
   void PerformActionInTargetTree(const ui::AXActionData& data);
 
+  bool AreInnerContentsPdfContent(
+      std::vector<content::WebContents*> inner_contents);
+
   raw_ptr<ReadAnythingSidePanelController> side_panel_controller_;
   const raw_ptr<Profile> profile_;
   const raw_ptr<content::WebUI> web_ui_;
@@ -252,6 +257,11 @@ class ReadAnythingUntrustedPageHandler :
   const bool use_screen_ai_service_;
 
   bool extension_installed_ = false;
+
+  // Whether the currently distilled page is recognized as a pdf. This allows
+  // the page handler to trigger distillation if the page would now be
+  // recognized as a pdf after it finishes loading.
+  bool is_pdf_ = false;
 
   void OnScreenAIServiceInitialized(bool successful);
 
