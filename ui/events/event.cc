@@ -10,6 +10,8 @@
 #include <string>
 #include <utility>
 
+#include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram.h"
@@ -886,8 +888,24 @@ void KeyEvent::InitializeNative() {
 
   // Check if this is a key repeat. This must be called before initial flags
   // processing, e.g: NormalizeFlags(), to avoid issues like crbug.com/1069690.
-  if (synthesize_key_repeat_enabled_ && IsRepeated(GetLastKeyEvent()))
+  if (synthesize_key_repeat_enabled_ && IsRepeated(GetLastKeyEvent())) {
+    if (!(flags() & EF_IS_REPEAT) && !(code_ == DomCode::ALT_LEFT)) {
+      // If this branch is reached, it means that IsRepeated thinks this should
+      // be a repeat key event, while the native event repeat information was
+      // either incorrect or not preserved. This is unexpected, but execution
+      // is permitted to continue as it is no worse than the old behavior.
+      //
+      // An exception is made for Alt, which is known to cause IsRepeated to
+      // erroneously return true when Alt+Tab is used to rapidly toggle focus.
+      //
+      // TODO(https://crbug.com/411681432) Remove IsRepeated once it is deemed
+      // strictly redundant.
+      SCOPED_CRASH_KEY_STRING32("ui", "key_code", GetCodeString());
+      SCOPED_CRASH_KEY_STRING32("ui", "key_event_type", GetName());
+      base::debug::DumpWithoutCrashing();
+    }
     SetFlags(flags() | EF_IS_REPEAT);
+  }
 
 #if BUILDFLAG(IS_LINUX)
   NormalizeFlags();
