@@ -2761,6 +2761,9 @@ void NavigationRequest::BeginNavigationImpl() {
       false /* has_followed redirect */,
       false /* url_upgraded_after_redirect */, false /* is_response_check */);
   if (net_error != net::OK) {
+    SCOPED_CRASH_KEY_NUMBER("NavReq", "net_error", static_cast<int>(net_error));
+    SCOPED_CRASH_KEY_NUMBER("NavReq", "navigating_frame_type",
+                            static_cast<int>(GetNavigatingFrameType()));
     // Create a navigation handle so that the correct error code can be set on
     // it by OnRequestFailedInternal().
     StartNavigation();
