@@ -135,7 +135,7 @@ void PhysicalDeviceRecoveryFactor::ClearRegistrationAttemptInfo(
   storage_->WriteDataToDisk();
 }
 
-TrustedVaultDeviceRegistrationStateForUMA
+TrustedVaultRecoveryFactorRegistrationStateForUMA
 PhysicalDeviceRecoveryFactor::MaybeRegister(
     TrustedVaultThrottlingConnection* connection,
     RegisterCallback cb) {
@@ -143,7 +143,8 @@ PhysicalDeviceRecoveryFactor::MaybeRegister(
 
   if (per_user_vault->local_device_registration_info().device_registered()) {
     static_assert(kCurrentDeviceRegistrationVersion == 1);
-    return TrustedVaultDeviceRegistrationStateForUMA::kAlreadyRegisteredV1;
+    return TrustedVaultRecoveryFactorRegistrationStateForUMA::
+        kAlreadyRegisteredV1;
   }
 
   if (per_user_vault->local_device_registration_info()
@@ -151,11 +152,13 @@ PhysicalDeviceRecoveryFactor::MaybeRegister(
     // Client already knows that existing vault keys (or their absence) isn't
     // sufficient for device registration. Fresh keys should be obtained
     // first.
-    return TrustedVaultDeviceRegistrationStateForUMA::kLocalKeysAreStale;
+    return TrustedVaultRecoveryFactorRegistrationStateForUMA::
+        kLocalKeysAreStale;
   }
 
   if (connection->AreRequestsThrottled(*primary_account_)) {
-    return TrustedVaultDeviceRegistrationStateForUMA::kThrottledClientSide;
+    return TrustedVaultRecoveryFactorRegistrationStateForUMA::
+        kThrottledClientSide;
   }
 
   std::unique_ptr<SecureBoxKeyPair> key_pair;
@@ -202,10 +205,11 @@ PhysicalDeviceRecoveryFactor::MaybeRegister(
 
   CHECK(ongoing_registration_request_);
 
-  return had_generated_key_pair ? TrustedVaultDeviceRegistrationStateForUMA::
-                                      kAttemptingRegistrationWithExistingKeyPair
-                                : TrustedVaultDeviceRegistrationStateForUMA::
-                                      kAttemptingRegistrationWithNewKeyPair;
+  return had_generated_key_pair
+             ? TrustedVaultRecoveryFactorRegistrationStateForUMA::
+                   kAttemptingRegistrationWithExistingKeyPair
+             : TrustedVaultRecoveryFactorRegistrationStateForUMA::
+                   kAttemptingRegistrationWithNewKeyPair;
 }
 
 trusted_vault_pb::LocalTrustedVaultPerUser*

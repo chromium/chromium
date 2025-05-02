@@ -85,30 +85,32 @@ GetRecoverKeysOutcomeForUMAFromRecoveryStatus(
   NOTREACHED();
 }
 
-TrustedVaultDeviceRegistrationOutcomeForUMA
-GetDeviceRegistrationOutcomeForUMAFromResponse(
+TrustedVaultRecoveryFactorRegistrationOutcomeForUMA
+GetRecoveryFactorRegistrationOutcomeForUMAFromResponse(
     TrustedVaultRegistrationStatus response_status) {
   switch (response_status) {
     case TrustedVaultRegistrationStatus::kSuccess:
-      return TrustedVaultDeviceRegistrationOutcomeForUMA::kSuccess;
+      return TrustedVaultRecoveryFactorRegistrationOutcomeForUMA::kSuccess;
     case TrustedVaultRegistrationStatus::kAlreadyRegistered:
-      return TrustedVaultDeviceRegistrationOutcomeForUMA::kAlreadyRegistered;
+      return TrustedVaultRecoveryFactorRegistrationOutcomeForUMA::
+          kAlreadyRegistered;
     case TrustedVaultRegistrationStatus::kLocalDataObsolete:
-      return TrustedVaultDeviceRegistrationOutcomeForUMA::kLocalDataObsolete;
+      return TrustedVaultRecoveryFactorRegistrationOutcomeForUMA::
+          kLocalDataObsolete;
     case TrustedVaultRegistrationStatus::kTransientAccessTokenFetchError:
-      return TrustedVaultDeviceRegistrationOutcomeForUMA::
+      return TrustedVaultRecoveryFactorRegistrationOutcomeForUMA::
           kTransientAccessTokenFetchError;
     case TrustedVaultRegistrationStatus::kPersistentAccessTokenFetchError:
-      return TrustedVaultDeviceRegistrationOutcomeForUMA::
+      return TrustedVaultRecoveryFactorRegistrationOutcomeForUMA::
           kPersistentAccessTokenFetchError;
     case TrustedVaultRegistrationStatus::
         kPrimaryAccountChangeAccessTokenFetchError:
-      return TrustedVaultDeviceRegistrationOutcomeForUMA::
+      return TrustedVaultRecoveryFactorRegistrationOutcomeForUMA::
           kPrimaryAccountChangeAccessTokenFetchError;
     case TrustedVaultRegistrationStatus::kNetworkError:
-      return TrustedVaultDeviceRegistrationOutcomeForUMA::kNetworkError;
+      return TrustedVaultRecoveryFactorRegistrationOutcomeForUMA::kNetworkError;
     case TrustedVaultRegistrationStatus::kOtherError:
-      return TrustedVaultDeviceRegistrationOutcomeForUMA::kOtherError;
+      return TrustedVaultRecoveryFactorRegistrationOutcomeForUMA::kOtherError;
   }
   NOTREACHED();
 }
@@ -569,8 +571,8 @@ void StandaloneTrustedVaultBackend::ClearLocalDataForAccount(
 
   // This codepath invoked as part of sync reset. While sync reset can cause
   // resetting primary account, this is not the case for Chrome OS and Butter
-  // mode. Trigger device registration attempt immediately as it can succeed in
-  // these cases.
+  // mode. Trigger recovery factor registration attempt immediately as it can
+  // succeed in these cases.
   MaybeRegisterLocalRecoveryFactors();
 }
 
@@ -628,33 +630,33 @@ void StandaloneTrustedVaultBackend::MaybeRegisterLocalRecoveryFactors() {
   }
 
   if (!primary_account_.has_value()) {
-    // Device registration is supported only for |primary_account_|.
+    // Recovery factor registration is supported only for |primary_account_|.
     return;
   }
 
   const bool should_record_metrics =
-      !device_registration_state_recorded_to_uma_;
+      !recovery_factor_registration_state_recorded_to_uma_;
   for (auto& factor : local_recovery_factors_) {
     // Unretained because |this| outlives |local_recovery_factors_| (and
     // destroying |local_recovery_factors_| cancels all callbacks).
-    const std::optional<TrustedVaultDeviceRegistrationStateForUMA>
+    const std::optional<TrustedVaultRecoveryFactorRegistrationStateForUMA>
         registration_state = factor->MaybeRegister(
             connection_.get(),
-            base::BindOnce(&StandaloneTrustedVaultBackend::OnDeviceRegistered,
-                           base::Unretained(this),
-                           factor->GetRecoveryFactorType()));
+            base::BindOnce(
+                &StandaloneTrustedVaultBackend::OnRecoveryFactorRegistered,
+                base::Unretained(this), factor->GetRecoveryFactorType()));
 
     if (registration_state.has_value() && should_record_metrics) {
-      device_registration_state_recorded_to_uma_ = true;
+      recovery_factor_registration_state_recorded_to_uma_ = true;
       base::UmaHistogramBoolean(
-          base::StrCat({"TrustedVault.DeviceRegistered.",
+          base::StrCat({"TrustedVault.RecoveryFactorRegistered.",
                         GetLocalRecoveryFactorNameForUma(
                             factor->GetRecoveryFactorType()),
                         ".", GetSecurityDomainNameForUma(security_domain_id_)}),
           factor->IsRegistered());
-      RecordTrustedVaultDeviceRegistrationState(factor->GetRecoveryFactorType(),
-                                                security_domain_id_,
-                                                *registration_state);
+      RecordTrustedVaultRecoveryFactorRegistrationState(
+          factor->GetRecoveryFactorType(), security_domain_id_,
+          *registration_state);
     }
   }
 }
@@ -679,7 +681,7 @@ void StandaloneTrustedVaultBackend::MaybeProcessPendingTrustedRecoveryMethod() {
   DCHECK(!pending_trusted_recovery_method_.has_value());
 }
 
-void StandaloneTrustedVaultBackend::OnDeviceRegistered(
+void StandaloneTrustedVaultBackend::OnRecoveryFactorRegistered(
     LocalRecoveryFactorType local_recovery_factor_type,
     TrustedVaultRegistrationStatus status,
     int key_version,
@@ -692,18 +694,18 @@ void StandaloneTrustedVaultBackend::OnDeviceRegistered(
       storage_->FindUserVault(primary_account_->gaia);
   DCHECK(per_user_vault);
 
-  RecordTrustedVaultDeviceRegistrationOutcome(
+  RecordTrustedVaultRecoveryFactorRegistrationOutcome(
       local_recovery_factor_type, security_domain_id_,
-      GetDeviceRegistrationOutcomeForUMAFromResponse(status));
+      GetRecoveryFactorRegistrationOutcomeForUMAFromResponse(status));
 
   switch (status) {
     case TrustedVaultRegistrationStatus::kSuccess:
     case TrustedVaultRegistrationStatus::kAlreadyRegistered:
       if (!had_local_keys) {
-        // Device registration was triggered while no local non-constant keys
-        // were available. Detected server-side key should be stored upon
-        // successful completion (or if device was already registered, e.g.
-        // previous response wasn't handled properly), but absence of
+        // Recover factor registration was triggered while no local non-constant
+        // keys were available. Detected server-side key should be stored upon
+        // successful completion (or if recovery factor was already registered,
+        // e.g. previous response wasn't handled properly), but absence of
         // keys (non-constant or constant) still needs to be checked before that
         // - there might be StoreKeys() call during handling the request.
         if (per_user_vault->vault_key_size() == 0) {

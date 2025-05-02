@@ -25,25 +25,29 @@ enum class TrustedVaultHintDegradedRecoverabilityChangedReasonForUMA {
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
-// LINT.IfChange(TrustedVaultDeviceRegistrationState)
-enum class TrustedVaultDeviceRegistrationStateForUMA {
+// LINT.IfChange(TrustedVaultRecoveryFactorRegistrationState)
+enum class TrustedVaultRecoveryFactorRegistrationStateForUMA {
   kAlreadyRegisteredV0 = 0,  // Used only on iOS.
   kLocalKeysAreStale = 1,
   kThrottledClientSide = 2,
   kAttemptingRegistrationWithNewKeyPair = 3,
   kAttemptingRegistrationWithExistingKeyPair = 4,
   // Deprecated, replaced with more detailed
-  // TrustedVaultDeviceRegistrationOutcomeForUMA.
+  // TrustedVaultRecoveryFactorRegistrationOutcomeForUMA.
   kDeprecatedAttemptingRegistrationWithPersistentAuthError = 5,
   kAlreadyRegisteredV1 = 6,
   kMaxValue = kAlreadyRegisteredV1,
 };
-// LINT.ThenChange(/tools/metrics/histograms/metadata/trusted_vault/enums.xml:TrustedVaultDeviceRegistrationState)
+// TODO(crbug.com/369980730): this is used in internals, replace usages with the
+// version above and delete this alias.
+using TrustedVaultDeviceRegistrationStateForUMA =
+    TrustedVaultRecoveryFactorRegistrationStateForUMA;
+// LINT.ThenChange(/tools/metrics/histograms/metadata/trusted_vault/enums.xml:TrustedVaultRecoveryFactorRegistrationState)
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
-// LINT.IfChange(TrustedVaultDeviceRegistrationOutcome)
-enum class TrustedVaultDeviceRegistrationOutcomeForUMA {
+// LINT.IfChange(TrustedVaultRecoveryFactorRegistrationOutcome)
+enum class TrustedVaultRecoveryFactorRegistrationOutcomeForUMA {
   kSuccess = 0,
   kAlreadyRegistered = 1,
   kLocalDataObsolete = 2,
@@ -54,7 +58,7 @@ enum class TrustedVaultDeviceRegistrationOutcomeForUMA {
   kOtherError = 7,
   kMaxValue = kOtherError,
 };
-// LINT.ThenChange(/tools/metrics/histograms/metadata/trusted_vault/enums.xml:TrustedVaultDeviceRegistrationOutcome)
+// LINT.ThenChange(/tools/metrics/histograms/metadata/trusted_vault/enums.xml:TrustedVaultRecoveryFactorRegistrationOutcome)
 
 // Used to provide UMA metric breakdowns.
 enum class TrustedVaultURLFetchReasonForUMA {
@@ -147,15 +151,15 @@ void RecordTrustedVaultHintDegradedRecoverabilityChangedReason(
 void RecordTrustedVaultDeviceRegistrationState(
     TrustedVaultDeviceRegistrationStateForUMA registration_state);
 
-void RecordTrustedVaultDeviceRegistrationState(
+void RecordTrustedVaultRecoveryFactorRegistrationState(
     LocalRecoveryFactorType local_recovery_factor_type,
     SecurityDomainId security_domain_id,
-    TrustedVaultDeviceRegistrationStateForUMA registration_state);
+    TrustedVaultRecoveryFactorRegistrationStateForUMA registration_state);
 
-void RecordTrustedVaultDeviceRegistrationOutcome(
+void RecordTrustedVaultRecoveryFactorRegistrationOutcome(
     LocalRecoveryFactorType local_recovery_factor_type,
     SecurityDomainId security_domain_id,
-    TrustedVaultDeviceRegistrationOutcomeForUMA registration_outcome);
+    TrustedVaultRecoveryFactorRegistrationOutcomeForUMA registration_outcome);
 
 // Records url fetch response status (combined http and net error code) for
 // requests to security domain service. If |http_response_code| is non-zero, it

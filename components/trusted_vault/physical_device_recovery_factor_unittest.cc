@@ -223,9 +223,9 @@ TEST_F(PhysicalDeviceRecoveryFactorTest, ShouldRegisterDevice) {
 
   // Register the device.
   base::MockCallback<LocalRecoveryFactor::RegisterCallback> register_callback;
-  TrustedVaultDeviceRegistrationStateForUMA status =
+  TrustedVaultRecoveryFactorRegistrationStateForUMA status =
       recovery_factor()->MaybeRegister(connection(), register_callback.Get());
-  EXPECT_EQ(status, TrustedVaultDeviceRegistrationStateForUMA::
+  EXPECT_EQ(status, TrustedVaultRecoveryFactorRegistrationStateForUMA::
                         kAttemptingRegistrationWithNewKeyPair);
   ASSERT_FALSE(device_registration_callback.is_null());
 
@@ -260,10 +260,11 @@ TEST_F(PhysicalDeviceRecoveryFactorTest, ShouldNotRegisterIfAlreadyRegistered) {
   EXPECT_CALL(*connection(), RegisterAuthenticationFactor).Times(0);
   EXPECT_CALL(*connection(), RegisterLocalDeviceWithoutKeys).Times(0);
 
-  TrustedVaultDeviceRegistrationStateForUMA status =
+  TrustedVaultRecoveryFactorRegistrationStateForUMA status =
       recovery_factor()->MaybeRegister(connection(), base::DoNothing());
-  EXPECT_EQ(status,
-            TrustedVaultDeviceRegistrationStateForUMA::kAlreadyRegisteredV1);
+  EXPECT_EQ(
+      status,
+      TrustedVaultRecoveryFactorRegistrationStateForUMA::kAlreadyRegisteredV1);
 }
 
 TEST_F(PhysicalDeviceRecoveryFactorTest,
@@ -281,10 +282,11 @@ TEST_F(PhysicalDeviceRecoveryFactorTest,
   EXPECT_CALL(*connection(), RegisterAuthenticationFactor).Times(0);
   EXPECT_CALL(*connection(), RegisterLocalDeviceWithoutKeys).Times(0);
 
-  TrustedVaultDeviceRegistrationStateForUMA status =
+  TrustedVaultRecoveryFactorRegistrationStateForUMA status =
       recovery_factor()->MaybeRegister(connection(), base::DoNothing());
-  EXPECT_EQ(status,
-            TrustedVaultDeviceRegistrationStateForUMA::kAlreadyRegisteredV1);
+  EXPECT_EQ(
+      status,
+      TrustedVaultRecoveryFactorRegistrationStateForUMA::kAlreadyRegisteredV1);
 }
 
 TEST_F(PhysicalDeviceRecoveryFactorTest,
@@ -315,9 +317,9 @@ TEST_F(PhysicalDeviceRecoveryFactorTest,
 
   // Register the device.
   base::MockCallback<LocalRecoveryFactor::RegisterCallback> register_callback;
-  TrustedVaultDeviceRegistrationStateForUMA status =
+  TrustedVaultRecoveryFactorRegistrationStateForUMA status =
       recovery_factor()->MaybeRegister(connection(), register_callback.Get());
-  EXPECT_EQ(status, TrustedVaultDeviceRegistrationStateForUMA::
+  EXPECT_EQ(status, TrustedVaultRecoveryFactorRegistrationStateForUMA::
                         kAttemptingRegistrationWithNewKeyPair);
   ASSERT_FALSE(device_registration_callback.is_null());
 
@@ -375,11 +377,12 @@ TEST_F(PhysicalDeviceRecoveryFactorTest,
   EXPECT_CALL(*connection(), RegisterAuthenticationFactor).Times(0);
   EXPECT_CALL(*connection(), RegisterLocalDeviceWithoutKeys).Times(0);
 
-  TrustedVaultDeviceRegistrationStateForUMA status =
+  TrustedVaultRecoveryFactorRegistrationStateForUMA status =
       recovery_factor()->MaybeRegister(connection(), base::DoNothing());
 
-  EXPECT_EQ(status,
-            TrustedVaultDeviceRegistrationStateForUMA::kLocalKeysAreStale);
+  EXPECT_EQ(
+      status,
+      TrustedVaultRecoveryFactorRegistrationStateForUMA::kLocalKeysAreStale);
 }
 
 TEST_F(PhysicalDeviceRecoveryFactorTest, ShouldClearRegistrationAttemptInfo) {
@@ -413,11 +416,12 @@ TEST_F(PhysicalDeviceRecoveryFactorTest,
   EXPECT_CALL(*connection(), RegisterAuthenticationFactor).Times(0);
   EXPECT_CALL(*connection(), RegisterLocalDeviceWithoutKeys).Times(0);
 
-  TrustedVaultDeviceRegistrationStateForUMA status =
+  TrustedVaultRecoveryFactorRegistrationStateForUMA status =
       recovery_factor()->MaybeRegister(connection(), base::DoNothing());
 
-  EXPECT_EQ(status,
-            TrustedVaultDeviceRegistrationStateForUMA::kThrottledClientSide);
+  EXPECT_EQ(
+      status,
+      TrustedVaultRecoveryFactorRegistrationStateForUMA::kThrottledClientSide);
 }
 
 TEST_F(PhysicalDeviceRecoveryFactorTest,
@@ -622,9 +626,9 @@ TEST_F(PhysicalDeviceRecoveryFactorTest,
 
   // Attempt device registration.
   base::MockCallback<LocalRecoveryFactor::RegisterCallback> register_callback;
-  TrustedVaultDeviceRegistrationStateForUMA status =
+  TrustedVaultRecoveryFactorRegistrationStateForUMA status =
       recovery_factor()->MaybeRegister(connection(), register_callback.Get());
-  EXPECT_EQ(status, TrustedVaultDeviceRegistrationStateForUMA::
+  EXPECT_EQ(status, TrustedVaultRecoveryFactorRegistrationStateForUMA::
                         kAttemptingRegistrationWithNewKeyPair);
 
   // Mimic successful device registration and verify the state.

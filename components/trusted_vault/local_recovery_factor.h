@@ -78,7 +78,7 @@ class LocalRecoveryFactor {
   // and currently available local data is sufficient to do it. It returns an
   // enum representing the registration state, intended to be used for metric
   // recording.
-  virtual TrustedVaultDeviceRegistrationStateForUMA MaybeRegister(
+  virtual TrustedVaultRecoveryFactorRegistrationStateForUMA MaybeRegister(
       TrustedVaultThrottlingConnection* connection,
       RegisterCallback cb) = 0;
 };

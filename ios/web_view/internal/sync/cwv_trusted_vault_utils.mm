@@ -9,30 +9,30 @@
 #import "components/trusted_vault/trusted_vault_server_constants.h"
 
 namespace {
-trusted_vault::TrustedVaultDeviceRegistrationStateForUMA
+trusted_vault::TrustedVaultRecoveryFactorRegistrationStateForUMA
 CWVConvertTrustedVaultState(CWVTrustedVaultState state) {
   switch (state) {
     case CWVTrustedVaultStateAlreadyRegisteredV0:
-      return trusted_vault::TrustedVaultDeviceRegistrationStateForUMA::
+      return trusted_vault::TrustedVaultRecoveryFactorRegistrationStateForUMA::
           kAlreadyRegisteredV0;
     case CWVTrustedVaultStateLocalKeysAreStale:
-      return trusted_vault::TrustedVaultDeviceRegistrationStateForUMA::
+      return trusted_vault::TrustedVaultRecoveryFactorRegistrationStateForUMA::
           kLocalKeysAreStale;
     case CWVTrustedVaultStateThrottledClientSide:
-      return trusted_vault::TrustedVaultDeviceRegistrationStateForUMA::
+      return trusted_vault::TrustedVaultRecoveryFactorRegistrationStateForUMA::
           kThrottledClientSide;
     case CWVTrustedVaultStateAttemptingRegistrationWithNewKeyPair:
-      return trusted_vault::TrustedVaultDeviceRegistrationStateForUMA::
+      return trusted_vault::TrustedVaultRecoveryFactorRegistrationStateForUMA::
           kAttemptingRegistrationWithNewKeyPair;
     case CWVTrustedVaultStateAttemptingRegistrationWithExistingKeyPair:
-      return trusted_vault::TrustedVaultDeviceRegistrationStateForUMA::
+      return trusted_vault::TrustedVaultRecoveryFactorRegistrationStateForUMA::
           kAttemptingRegistrationWithExistingKeyPair;
     case CWVTrustedVaultStateAttemptingRegistrationWithPersistentAuthError:
       // TODO(crbug.com/40257503): remove CWV version of this bucket.
-      return trusted_vault::TrustedVaultDeviceRegistrationStateForUMA::
+      return trusted_vault::TrustedVaultRecoveryFactorRegistrationStateForUMA::
           kDeprecatedAttemptingRegistrationWithPersistentAuthError;
     case CWVTrustedVaultStateAlreadyRegisteredV1:
-      return trusted_vault::TrustedVaultDeviceRegistrationStateForUMA::
+      return trusted_vault::TrustedVaultRecoveryFactorRegistrationStateForUMA::
           kAlreadyRegisteredV1;
   }
 }
@@ -41,7 +41,7 @@ CWVConvertTrustedVaultState(CWVTrustedVaultState state) {
 @implementation CWVTrustedVaultUtils
 
 + (void)logTrustedVaultDidUpdateState:(CWVTrustedVaultState)state {
-  trusted_vault::RecordTrustedVaultDeviceRegistrationState(
+  trusted_vault::RecordTrustedVaultRecoveryFactorRegistrationState(
       trusted_vault::LocalRecoveryFactorType::kPhysicalDevice,
       trusted_vault::SecurityDomainId::kChromeSync,
       CWVConvertTrustedVaultState(state));

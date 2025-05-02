@@ -42,12 +42,12 @@ void ICloudKeychainRecoveryFactor::ClearRegistrationAttemptInfo(
   NOTIMPLEMENTED();
 }
 
-TrustedVaultDeviceRegistrationStateForUMA
+TrustedVaultRecoveryFactorRegistrationStateForUMA
 ICloudKeychainRecoveryFactor::MaybeRegister(
     TrustedVaultThrottlingConnection* connection,
     RegisterCallback cb) {
   NOTIMPLEMENTED();
-  return TrustedVaultDeviceRegistrationStateForUMA::kLocalKeysAreStale;
+  return TrustedVaultRecoveryFactorRegistrationStateForUMA::kLocalKeysAreStale;
 }
 
 }  // namespace trusted_vault

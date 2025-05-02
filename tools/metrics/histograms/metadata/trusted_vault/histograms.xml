@@ -45,67 +45,6 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="TrustedVault.DeviceRegistered{LocalRecoveryFactorType}{SecurityDomainId}"
-    enum="Boolean" expires_after="2026-05-03">
-  <owner>mmoskvitin@google.com</owner>
-  <owner>mastiz@chromium.org</owner>
-  <owner>thomasth@google.com</owner>
-  <summary>
-    Simplified version of TrustedVault.DeviceRegistrationState. Records whether,
-    according to information on this device, a recovery factor is registered
-    (and ignores whether re-registration was completed/pending/in-flight) upon
-    startup (if signed in) or upon first signin.
-
-    Recorded at most once for every recovery factor / security domain
-    combination per profile within the browser process lifetime.
-
-    Recovery factor: {LocalRecoveryFactorType}
-
-    Security domain: {SecurityDomainId}
-  </summary>
-  <token key="LocalRecoveryFactorType" variants="LocalRecoveryFactorType"/>
-  <token key="SecurityDomainId" variants="SecurityDomainId"/>
-</histogram>
-
-<histogram
-    name="TrustedVault.DeviceRegistrationOutcome{LocalRecoveryFactorType}{SecurityDomainId}"
-    enum="TrustedVaultDeviceRegistrationOutcome" expires_after="2026-05-05">
-  <owner>mmoskvitin@google.com</owner>
-  <owner>mastiz@chromium.org</owner>
-  <owner>thomasth@google.com</owner>
-  <summary>
-    Records the outcome of a device registration attempt for a private key
-    stored in/on {LocalRecoveryFactorType} upon request completion or failure.
-
-    Security domain: {SecurityDomainId}
-  </summary>
-  <token key="LocalRecoveryFactorType" variants="LocalRecoveryFactorType"/>
-  <token key="SecurityDomainId" variants="SecurityDomainId"/>
-</histogram>
-
-<histogram
-    name="TrustedVault.DeviceRegistrationState{LocalRecoveryFactorType}{SecurityDomainId}"
-    enum="TrustedVaultDeviceRegistrationState" expires_after="2026-05-09">
-  <owner>mmoskvitin@google.com</owner>
-  <owner>mastiz@chromium.org</owner>
-  <owner>thomasth@google.com</owner>
-  <summary>
-    Records whether, according to information on this device, a recovery factor
-    is registered on the server upon startup (if signed in) or upon first
-    signin, and if not registered, provides insights into why.
-
-    Recorded at most once for every recovery factor / security domain
-    combination per browser process lifetime.
-
-    Recovery factor: {LocalRecoveryFactorType}
-
-    Security domain: {SecurityDomainId}
-  </summary>
-  <token key="LocalRecoveryFactorType" variants="LocalRecoveryFactorType"/>
-  <token key="SecurityDomainId" variants="SecurityDomainId"/>
-</histogram>
-
-<histogram
     name="TrustedVault.DownloadAuthenticationFactorsRegistrationState{SecurityDomainId}"
     enum="DownloadAuthenticationFactorsRegistrationStateResult"
     expires_after="2025-10-05">
@@ -224,6 +163,71 @@ chromium-metrics-reviews@google.com.
 
     Note: If this fails, then user interaction is required to fetch keys.
   </summary>
+  <token key="SecurityDomainId" variants="SecurityDomainId"/>
+</histogram>
+
+<histogram
+    name="TrustedVault.RecoveryFactorRegistered{LocalRecoveryFactorType}{SecurityDomainId}"
+    enum="Boolean" expires_after="2026-05-03">
+  <owner>mmoskvitin@google.com</owner>
+  <owner>mastiz@chromium.org</owner>
+  <owner>thomasth@google.com</owner>
+  <summary>
+    Simplified version of TrustedVault.RecoveryFactorRegistrationState. Records
+    whether, according to information on this device, a recovery factor is
+    registered (and ignores whether re-registration was
+    completed/pending/in-flight) upon startup (if signed in) or upon first
+    signin.
+
+    Recorded at most once for every recovery factor / security domain
+    combination per profile within the browser process lifetime.
+
+    Recovery factor: {LocalRecoveryFactorType}
+
+    Security domain: {SecurityDomainId}
+  </summary>
+  <token key="LocalRecoveryFactorType" variants="LocalRecoveryFactorType"/>
+  <token key="SecurityDomainId" variants="SecurityDomainId"/>
+</histogram>
+
+<histogram
+    name="TrustedVault.RecoveryFactorRegistrationOutcome{LocalRecoveryFactorType}{SecurityDomainId}"
+    enum="TrustedVaultRecoveryFactorRegistrationOutcome"
+    expires_after="2026-05-05">
+  <owner>mmoskvitin@google.com</owner>
+  <owner>mastiz@chromium.org</owner>
+  <owner>thomasth@google.com</owner>
+  <summary>
+    Records the outcome of a recovery factor registration attempt for a private
+    key stored in/on {LocalRecoveryFactorType} upon request completion or
+    failure.
+
+    Security domain: {SecurityDomainId}
+  </summary>
+  <token key="LocalRecoveryFactorType" variants="LocalRecoveryFactorType"/>
+  <token key="SecurityDomainId" variants="SecurityDomainId"/>
+</histogram>
+
+<histogram
+    name="TrustedVault.RecoveryFactorRegistrationState{LocalRecoveryFactorType}{SecurityDomainId}"
+    enum="TrustedVaultRecoveryFactorRegistrationState"
+    expires_after="2026-05-09">
+  <owner>mmoskvitin@google.com</owner>
+  <owner>mastiz@chromium.org</owner>
+  <owner>thomasth@google.com</owner>
+  <summary>
+    Records whether, according to information on this device, a recovery factor
+    is registered on the server upon startup (if signed in) or upon first
+    signin, and if not registered, provides insights into why.
+
+    Recorded at most once for every recovery factor / security domain
+    combination per browser process lifetime.
+
+    Recovery factor: {LocalRecoveryFactorType}
+
+    Security domain: {SecurityDomainId}
+  </summary>
+  <token key="LocalRecoveryFactorType" variants="LocalRecoveryFactorType"/>
   <token key="SecurityDomainId" variants="SecurityDomainId"/>
 </histogram>
 

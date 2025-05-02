@@ -91,30 +91,30 @@ void RecordTrustedVaultHintDegradedRecoverabilityChangedReason(
 
 void RecordTrustedVaultDeviceRegistrationState(
     TrustedVaultDeviceRegistrationStateForUMA registration_state) {
-  RecordTrustedVaultDeviceRegistrationState(
+  RecordTrustedVaultRecoveryFactorRegistrationState(
       LocalRecoveryFactorType::kPhysicalDevice, SecurityDomainId::kChromeSync,
       registration_state);
 }
 
-void RecordTrustedVaultDeviceRegistrationState(
+void RecordTrustedVaultRecoveryFactorRegistrationState(
     LocalRecoveryFactorType local_recovery_factor_type,
     SecurityDomainId security_domain_id,
-    TrustedVaultDeviceRegistrationStateForUMA registration_state) {
+    TrustedVaultRecoveryFactorRegistrationStateForUMA registration_state) {
   base::UmaHistogramEnumeration(
       base::StrCat(
-          {"TrustedVault.DeviceRegistrationState.",
+          {"TrustedVault.RecoveryFactorRegistrationState.",
            GetLocalRecoveryFactorNameForUma(local_recovery_factor_type), ".",
            GetSecurityDomainNameForUma(security_domain_id)}),
       registration_state);
 }
 
-void RecordTrustedVaultDeviceRegistrationOutcome(
+void RecordTrustedVaultRecoveryFactorRegistrationOutcome(
     LocalRecoveryFactorType local_recovery_factor_type,
     SecurityDomainId security_domain_id,
-    TrustedVaultDeviceRegistrationOutcomeForUMA registration_outcome) {
+    TrustedVaultRecoveryFactorRegistrationOutcomeForUMA registration_outcome) {
   base::UmaHistogramEnumeration(
       base::StrCat(
-          {"TrustedVault.DeviceRegistrationOutcome.",
+          {"TrustedVault.RecoveryFactorRegistrationOutcome.",
            GetLocalRecoveryFactorNameForUma(local_recovery_factor_type), ".",
            GetSecurityDomainNameForUma(security_domain_id)}),
       registration_outcome);

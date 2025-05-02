@@ -47,7 +47,7 @@ class PhysicalDeviceRecoveryFactor : public LocalRecoveryFactor {
 
   void ClearRegistrationAttemptInfo(const GaiaId& gaia_id) override;
 
-  TrustedVaultDeviceRegistrationStateForUMA MaybeRegister(
+  TrustedVaultRecoveryFactorRegistrationStateForUMA MaybeRegister(
       TrustedVaultThrottlingConnection* connection,
       RegisterCallback cb) override;
 
