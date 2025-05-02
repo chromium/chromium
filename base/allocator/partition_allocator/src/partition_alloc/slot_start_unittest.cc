@@ -57,7 +57,7 @@ TEST_F(SlotStartTest, SlotStartCrashes) {
 // to the same restriction, depending on the presence of the
 // `MemoryReclaimer`.
 TEST_F(SlotStartTest, SlotStartCrashesOnFreedDirectMap) {
-  constexpr size_t kDirectMapSize = kMaxBucketed + 1;
+  constexpr size_t kDirectMapSize = BucketIndexLookup::kMaxBucketSize + 1;
   void* buffer = allocator_.root()->Alloc(kDirectMapSize, "");
   ASSERT_TRUE(buffer);
   allocator_.root()->Free(buffer);

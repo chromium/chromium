@@ -11,6 +11,7 @@
 #include <limits>
 
 #include "partition_alloc/address_pool_manager_types.h"
+#include "partition_alloc/bucket_lookup.h"
 #include "partition_alloc/build_config.h"
 #include "partition_alloc/buildflags.h"
 #include "partition_alloc/flags.h"
@@ -374,42 +375,9 @@ DirectMapAllocationGranularityOffsetMask() {
   return DirectMapAllocationGranularity() - 1;
 }
 
-// The "order" of an allocation is closely related to the power-of-1 size of the
-// allocation. More precisely, the order is the bit index of the
-// most-significant-bit in the allocation size, where the bit numbers starts at
-// index 1 for the least-significant-bit.
-//
-// In terms of allocation sizes, order 0 covers 0, order 1 covers 1, order 2
-// covers 2->3, order 3 covers 4->7, order 4 covers 8->15.
-
-// PartitionAlloc should return memory properly aligned for any type, to behave
-// properly as a generic allocator. This is not strictly required as long as
-// types are explicitly allocated with PartitionAlloc, but is to use it as a
-// malloc() implementation, and generally to match malloc()'s behavior.
-//
-// In practice, this means 8 bytes alignment on 32 bit architectures, and 16
-// bytes on 64 bit ones.
-//
-// Keep in sync with //tools/memory/partition_allocator/objects_per_size_py.
-constexpr size_t kMinBucketedOrder =
-    kAlignment == 16 ? 5 : 4;  // 2^(order - 1), that is 16 or 8.
-// The largest bucketed order is 1 << (20 - 1), storing [512 KiB, 1 MiB):
-constexpr size_t kMaxBucketedOrder = 20;
-constexpr size_t kNumBucketedOrders =
-    (kMaxBucketedOrder - kMinBucketedOrder) + 1;
-// 8 buckets per order (for the higher orders).
-// Note: this is not what is used by default, but the maximum amount of buckets
-// per order. By default, only 4 are used.
-constexpr size_t kNumBucketsPerOrderBits = 3;
-constexpr size_t kNumBucketsPerOrder = 1 << kNumBucketsPerOrderBits;
-constexpr size_t kNumBuckets = kNumBucketedOrders * kNumBucketsPerOrder;
-constexpr size_t kSmallestBucket = 1 << (kMinBucketedOrder - 1);
-constexpr size_t kMaxBucketSpacing =
-    1 << ((kMaxBucketedOrder - 1) - kNumBucketsPerOrderBits);
-constexpr size_t kMaxBucketed = (1 << (kMaxBucketedOrder - 1)) +
-                                ((kNumBucketsPerOrder - 1) * kMaxBucketSpacing);
 // Limit when downsizing a direct mapping using `realloc`:
-constexpr size_t kMinDirectMappedDownsize = kMaxBucketed + 1;
+constexpr size_t kMinDirectMappedDownsize =
+    BucketIndexLookup::kMaxBucketSize + 1;
 // Intentionally set to less than 2GiB to make sure that a 2GiB allocation
 // fails. This is a security choice in Chrome, to help making size_t vs int bugs
 // harder to exploit.
@@ -434,8 +402,6 @@ constexpr size_t kMaxSupportedAlignment = kSuperPageSize / 4;
 #else
 constexpr size_t kMaxSupportedAlignment = kSuperPageSize / 2;
 #endif
-
-constexpr size_t kBitsPerSizeT = sizeof(void*) * CHAR_BIT;
 
 // When a SlotSpan becomes empty, the allocator tries to avoid re-using it
 // immediately, to help with fragmentation. At this point, it becomes dirty
@@ -496,11 +462,6 @@ constexpr unsigned char kFreedByte = 0xCD;
 
 constexpr unsigned char kQuarantinedByte = 0xEF;
 
-// 1 is smaller than anything we can use, as it is not properly aligned. Not
-// using a large size, since PartitionBucket::slot_size is a uint32_t, and
-// static_cast<uint32_t>(-1) is too close to a "real" size.
-constexpr size_t kInvalidBucketSize = 1;
-
 #if PA_CONFIG(MAYBE_ENABLE_MAC11_MALLOC_SIZE_HACK)
 // Requested size that requires the hack.
 constexpr size_t kMac11MallocSizeHackRequestedSize = 32;
@@ -521,10 +482,8 @@ static_assert(kThreadCacheLargeSizeThreshold <=
 
 // These constants are used outside PartitionAlloc itself, so we provide
 // non-internal aliases here.
-using ::partition_alloc::internal::kInvalidBucketSize;
 using ::partition_alloc::internal::kMaxSuperPagesInPool;
 using ::partition_alloc::internal::kMaxSupportedAlignment;
-using ::partition_alloc::internal::kNumBuckets;
 using ::partition_alloc::internal::kSuperPageSize;
 using ::partition_alloc::internal::MaxDirectMapped;
 using ::partition_alloc::internal::PartitionPageSize;

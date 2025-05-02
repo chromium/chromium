@@ -38,6 +38,7 @@
 
 #include "partition_alloc/address_pool_manager_types.h"
 #include "partition_alloc/allocation_guard.h"
+#include "partition_alloc/bucket_lookup.h"
 #include "partition_alloc/build_config.h"
 #include "partition_alloc/buildflags.h"
 #include "partition_alloc/freeslot_bitmap.h"
@@ -63,7 +64,6 @@
 #include "partition_alloc/partition_alloc_forward.h"
 #include "partition_alloc/partition_alloc_hooks.h"
 #include "partition_alloc/partition_bucket.h"
-#include "partition_alloc/partition_bucket_lookup.h"
 #include "partition_alloc/partition_cookie.h"
 #include "partition_alloc/partition_dcheck_helper.h"
 #include "partition_alloc/partition_direct_map_extent.h"
@@ -303,7 +303,8 @@ struct alignas(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
   // path of the central allocator.
   alignas(internal::kPartitionCachelineSize) internal::Lock lock_;
 
-  Bucket buckets[internal::kNumBuckets] = {};
+  // Add last bucket as sentinel.
+  Bucket buckets[BucketIndexLookup::kNumBuckets] = {};
   Bucket sentinel_bucket{};
 
   // All fields below this comment are not accessed on the fast path.
@@ -378,7 +379,8 @@ struct alignas(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
       0;
   uint16_t purge_next_bucket_index
       PA_GUARDED_BY(internal::PartitionRootLock(this)) = 0;
-  static_assert(kNumBuckets < std::numeric_limits<uint16_t>::max());
+  static_assert(BucketIndexLookup::kNumBuckets <
+                std::numeric_limits<uint16_t>::max());
 
   // Integrity check = ~reinterpret_cast<uintptr_t>(this).
   uintptr_t inverted_self = 0;
@@ -949,17 +951,18 @@ struct alignas(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
   PA_ALWAYS_INLINE static bool FreeProlog(void* object,
                                           const PartitionRoot* root);
 
-  // |buckets| has `kNumBuckets` elements, but we sometimes access it at index
-  // `kNumBuckets`, which is occupied by the sentinel bucket. The correct layout
-  // is enforced by a static_assert() in partition_root.cc, so this is
-  // fine. However, UBSAN is correctly pointing out that there is an
-  // out-of-bounds access, so disable it for these accesses.
+  // |buckets| has `BucketIndexLookup::kNumBuckets` elements, but we
+  // sometimes access it at index `BucketIndexLookup::kNumBuckets`, which is
+  // occupied by the sentinel bucket. The correct layout is enforced by a
+  // static_assert() in partition_root.cc, so this is fine. However, UBSAN is
+  // correctly pointing out that there is an out-of-bounds access, so disable it
+  // for these accesses.
   //
   // See crbug.com/1150772 for an instance of Clusterfuzz / UBSAN detecting
   // this.
   PA_NO_SANITIZE("undefined")
   PA_ALWAYS_INLINE const Bucket& bucket_at(size_t i) const {
-    PA_DCHECK(i <= internal::kNumBuckets);
+    PA_DCHECK(i <= BucketIndexLookup::kNumBuckets);
     return buckets[i];
   }
 
@@ -2096,9 +2099,9 @@ PartitionRoot::SizeToBucketIndex(size_t size,
                                  BucketDistribution bucket_distribution) {
   switch (bucket_distribution) {
     case BucketDistribution::kNeutral:
-      return internal::BucketIndexLookup::GetIndexForNeutralBuckets(size);
+      return BucketIndexLookup::GetIndexForNeutralBuckets(size);
     case BucketDistribution::kDenser:
-      return internal::BucketIndexLookup::GetIndexForDenserBuckets(size);
+      return BucketIndexLookup::GetIndexForDenserBuckets(size);
   }
 }
 
@@ -2564,7 +2567,7 @@ PartitionRoot::AllocationCapacityFromRequestedSize(size_t size) const {
   size = AdjustSizeForExtrasAdd(size);
   auto& bucket = bucket_at(SizeToBucketIndex(size, GetBucketDistribution()));
   PA_DCHECK(!bucket.slot_size || bucket.slot_size >= size);
-  PA_DCHECK(!(bucket.slot_size % internal::kSmallestBucket));
+  PA_DCHECK(!(bucket.slot_size % internal::kAlignment));
 
   if (!bucket.is_direct_mapped()) [[likely]] {
     size = bucket.slot_size;

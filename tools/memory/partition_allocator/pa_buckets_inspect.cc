@@ -36,8 +36,7 @@
 namespace partition_alloc::tools {
 namespace {
 
-using partition_alloc::internal::BucketIndexLookup;
-using partition_alloc::internal::kNumBuckets;
+using partition_alloc::BucketIndexLookup;
 
 constexpr const char* kDumpName = "dump.dat";
 constexpr const char* kTmpDumpName = "dump.dat.tmp";
@@ -50,16 +49,15 @@ void DisplayPerBucketData(
     const std::unordered_map<uintptr_t, size_t>& live_allocs,
     size_t allocations,
     double allocations_per_second) {
-  constexpr BucketIndexLookup lookup{};
   std::cout << "Per-bucket stats:"
             << "\nIndex\tBucket Size\t#Allocs\tTotal size\tFragmentation"
             << std::string(80, '-') << "\n";
 
   // Direct mapped allocations have an index of |kNumBuckets|, so add 1 here.
-  size_t alloc_size[kNumBuckets + 1] = {};
-  size_t alloc_nums[kNumBuckets + 1] = {};
-  size_t alt_alloc_size[kNumBuckets + 1] = {};
-  size_t alt_alloc_nums[kNumBuckets + 1] = {};
+  size_t alloc_size[BucketIndexLookup::kNumBuckets + 1] = {};
+  size_t alloc_nums[BucketIndexLookup::kNumBuckets + 1] = {};
+  size_t alt_alloc_size[BucketIndexLookup::kNumBuckets + 1] = {};
+  size_t alt_alloc_nums[BucketIndexLookup::kNumBuckets + 1] = {};
   size_t total_memory = 0;
   for (const auto& pair : live_allocs) {
     const auto requested_size = pair.second;
@@ -87,8 +85,8 @@ void DisplayPerBucketData(
                base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
   // Do not record the direct mapped allocations below, since we only care about
   // the bucket distribution, which direct mapped allocations do not affect.
-  for (size_t i = 0; i < kNumBuckets; i++) {
-    const auto bucket_size = lookup.bucket_sizes()[i];
+  for (size_t i = 0; i < BucketIndexLookup::kNumBuckets; i++) {
+    const auto bucket_size = BucketIndexLookup::GetBucketSize(i);
     const size_t fragmentation =
         alloc_nums[i] == 0
             ? 0

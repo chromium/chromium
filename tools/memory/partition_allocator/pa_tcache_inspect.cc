@@ -39,6 +39,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "partition_alloc/bucket_lookup.h"
 #include "partition_alloc/partition_alloc_base/threading/platform_thread.h"
 #include "partition_alloc/partition_root.h"
 #include "partition_alloc/partition_stats.h"
@@ -47,7 +48,7 @@
 
 namespace partition_alloc::tools {
 
-using partition_alloc::internal::BucketIndexLookup;
+using partition_alloc::BucketIndexLookup;
 using partition_alloc::internal::MetadataKind;
 using partition_alloc::internal::PartitionBucket;
 using partition_alloc::internal::base::PlatformThreadId;
@@ -247,9 +248,8 @@ ThreadCacheInspector::AccumulateThreadCacheBuckets() {
     }
   }
 
-  BucketIndexLookup lookup{};
   for (int i = 0; i < ThreadCache::kBucketCount; i++) {
-    result[i].size = lookup.bucket_sizes()[i];
+    result[i].size = BucketIndexLookup::GetBucketSize(i);
   }
   return result;
 }

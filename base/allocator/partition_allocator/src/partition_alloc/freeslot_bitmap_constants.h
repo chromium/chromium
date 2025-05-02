@@ -24,7 +24,7 @@ constexpr size_t kFreeSlotBitmapOffsetMask = kFreeSlotBitmapBitsPerCell - 1;
 // The number of bits necessary for the bitmap is equal to the maximum number of
 // slots in a super page.
 constexpr size_t kFreeSlotBitmapSize =
-    (kSuperPageSize / kSmallestBucket) / CHAR_BIT;
+    (kSuperPageSize / BucketIndexLookup::kMinBucketSize) / CHAR_BIT;
 
 PA_ALWAYS_INLINE PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR size_t
 ReservedFreeSlotBitmapSize() {

@@ -354,25 +354,29 @@ TEST_P(PartitionAllocThreadCacheTest, DirectMappedReallocMetrics) {
             root()->get_total_size_of_allocated_bytes());
   EXPECT_EQ(expected_allocated_size, root()->get_max_size_of_allocated_bytes());
 
-  void* ptr = root()->Alloc(
-      root()->AdjustSizeForExtrasSubtract(10 * internal::kMaxBucketed), "");
+  void* ptr = root()->Alloc(root()->AdjustSizeForExtrasSubtract(
+                                10 * BucketIndexLookup::kMaxBucketSize),
+                            "");
 
-  EXPECT_EQ(expected_allocated_size + 10 * internal::kMaxBucketed,
+  EXPECT_EQ(expected_allocated_size + 10 * BucketIndexLookup::kMaxBucketSize,
             root()->get_total_size_of_allocated_bytes());
 
-  void* ptr2 = root()->Realloc(
-      ptr, root()->AdjustSizeForExtrasSubtract(9 * internal::kMaxBucketed), "");
+  void* ptr2 = root()->Realloc(ptr,
+                               root()->AdjustSizeForExtrasSubtract(
+                                   9 * BucketIndexLookup::kMaxBucketSize),
+                               "");
 
   ASSERT_EQ(ptr, ptr2);
-  EXPECT_EQ(expected_allocated_size + 9 * internal::kMaxBucketed,
+  EXPECT_EQ(expected_allocated_size + 9 * BucketIndexLookup::kMaxBucketSize,
             root()->get_total_size_of_allocated_bytes());
 
-  ptr2 = root()->Realloc(
-      ptr, root()->AdjustSizeForExtrasSubtract(10 * internal::kMaxBucketed),
-      "");
+  ptr2 = root()->Realloc(ptr,
+                         root()->AdjustSizeForExtrasSubtract(
+                             10 * BucketIndexLookup::kMaxBucketSize),
+                         "");
 
   ASSERT_EQ(ptr, ptr2);
-  EXPECT_EQ(expected_allocated_size + 10 * internal::kMaxBucketed,
+  EXPECT_EQ(expected_allocated_size + 10 * BucketIndexLookup::kMaxBucketSize,
             root()->get_total_size_of_allocated_bytes());
 
   root()->Free(ptr);

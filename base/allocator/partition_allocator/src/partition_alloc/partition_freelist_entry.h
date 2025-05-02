@@ -7,6 +7,7 @@
 
 #include <cstddef>
 
+#include "partition_alloc/bucket_lookup.h"
 #include "partition_alloc/buildflags.h"
 #include "partition_alloc/partition_alloc_base/bits.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
@@ -35,10 +36,12 @@ namespace partition_alloc::internal {
 
 // Assertions that are agnostic to the implementation of the freelist.
 
-static_assert(kSmallestBucket >= sizeof(EncodedNextFreelistEntry),
+static_assert(BucketIndexLookup::kMinBucketSize >=
+                  sizeof(EncodedNextFreelistEntry),
               "Need enough space for freelist entries in the smallest slot");
 #if PA_BUILDFLAG(USE_FREELIST_DISPATCHER)
-static_assert(kSmallestBucket >= sizeof(PoolOffsetFreelistEntry),
+static_assert(BucketIndexLookup::kMinBucketSize >=
+                  sizeof(PoolOffsetFreelistEntry),
               "Need enough space for freelist entries in the smallest slot");
 #endif
 

@@ -65,9 +65,10 @@ void PartitionAllocGlobalInit(OomFunction on_out_of_memory) {
       "maximum direct mapped allocation");
 
   // Check that some of our zanier calculations worked out as expected.
-  static_assert(internal::kSmallestBucket == internal::kAlignment,
+  static_assert(BucketIndexLookup::kMinBucketSize == internal::kAlignment,
                 "generic smallest bucket");
-  static_assert(internal::kMaxBucketed == 983040, "generic max bucketed");
+  static_assert(BucketIndexLookup::kMaxBucketSize == 983040,
+                "generic max bucketed");
   STATIC_ASSERT_OR_PA_CHECK(
       internal::MaxSystemPagesPerRegularSlotSpan() <= 16,
       "System pages per slot span must be no greater than 16.");

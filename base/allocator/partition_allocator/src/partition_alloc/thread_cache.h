@@ -10,6 +10,7 @@
 #include <limits>
 #include <memory>
 
+#include "partition_alloc/bucket_lookup.h"
 #include "partition_alloc/build_config.h"
 #include "partition_alloc/buildflags.h"
 #include "partition_alloc/lightweight_quarantine.h"
@@ -22,7 +23,6 @@
 #include "partition_alloc/partition_alloc_config.h"
 #include "partition_alloc/partition_alloc_constants.h"
 #include "partition_alloc/partition_alloc_forward.h"
-#include "partition_alloc/partition_bucket_lookup.h"
 #include "partition_alloc/partition_freelist_entry.h"
 #include "partition_alloc/partition_lock.h"
 #include "partition_alloc/partition_stats.h"
@@ -176,7 +176,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ThreadCacheRegistry {
   bool is_purging_configured_ = false;
 
   uint16_t largest_active_bucket_index_ =
-      internal::BucketIndexLookup::GetIndexForNeutralBuckets(
+      BucketIndexLookup::GetIndexForNeutralBuckets(
           kThreadCacheDefaultSizeThreshold);
 };
 
@@ -367,11 +367,11 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ThreadCache {
       kThreadCacheDefaultSizeThreshold;
   static constexpr size_t kLargeSizeThreshold = kThreadCacheLargeSizeThreshold;
   static constexpr uint16_t kBucketCount =
-      internal::BucketIndexLookup::GetIndexForNeutralBuckets(
+      BucketIndexLookup::GetIndexForNeutralBuckets(
           kThreadCacheLargeSizeThreshold) +
       1;
   static_assert(
-      kBucketCount < internal::kNumBuckets,
+      kBucketCount <= BucketIndexLookup::kNumBuckets,
       "Cannot have more cached buckets than what the allocator supports");
 
   const ThreadCache* prev_for_testing() const

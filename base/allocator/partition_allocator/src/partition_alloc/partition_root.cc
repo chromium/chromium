@@ -6,6 +6,7 @@
 
 #include <cstdint>
 
+#include "partition_alloc/bucket_lookup.h"
 #include "partition_alloc/build_config.h"
 #include "partition_alloc/buildflags.h"
 #include "partition_alloc/freeslot_bitmap.h"
@@ -1233,24 +1234,10 @@ void PartitionRoot::Init(PartitionOptions opts) {
         opts.use_small_single_slot_spans == PartitionOptions::kEnabled;
 
     // Set up the actual usable buckets first.
-    constexpr internal::BucketIndexLookup lookup{};
-    size_t bucket_index = 0;
-    while (lookup.bucket_sizes()[bucket_index] !=
-           internal::kInvalidBucketSize) {
-      buckets[bucket_index].Init(lookup.bucket_sizes()[bucket_index],
-                                 use_small_single_slot_spans);
-      bucket_index++;
-    }
-    PA_DCHECK(bucket_index < internal::kNumBuckets);
-
-    // Remaining buckets are not usable, and not real.
-    for (size_t index = bucket_index; index < internal::kNumBuckets; index++) {
-      // Cannot init with size 0 since it computes 1 / size, but make sure the
-      // bucket is invalid.
-      buckets[index].Init(internal::kInvalidBucketSize,
-                          use_small_single_slot_spans);
-      buckets[index].active_slot_spans_head = nullptr;
-      PA_DCHECK(!buckets[index].is_valid());
+    for (size_t bucket_index = 0; bucket_index < BucketIndexLookup::kNumBuckets;
+         ++bucket_index) {
+      const size_t slot_size = BucketIndexLookup::GetBucketSize(bucket_index);
+      buckets[bucket_index].Init(slot_size, use_small_single_slot_spans);
     }
 
 #if !PA_CONFIG(THREAD_CACHE_SUPPORTED)
@@ -1585,7 +1572,7 @@ void PartitionRoot::PurgeMemory(int flags) {
     }
 
     for (unsigned int bucket_index = local_purge_next_bucket_index;
-         bucket_index < internal::kNumBuckets; bucket_index++) {
+         bucket_index < BucketIndexLookup::kNumBuckets; bucket_index++) {
       // Only acquire the lock for a single iteration, so that if there is a
       // waiter blocked on it, it can steal it from us before the next
       // one.
@@ -1593,9 +1580,6 @@ void PartitionRoot::PurgeMemory(int flags) {
           internal::PartitionRootLock(this)};
 
       Bucket& bucket = buckets[bucket_index];
-      if (bucket.slot_size == internal::kInvalidBucketSize) {
-        continue;
-      }
 
       if (bucket.slot_size >= min_bucket_size_to_purge) {
         internal::PartitionPurgeBucket(this, &bucket);
@@ -1617,7 +1601,8 @@ void PartitionRoot::PurgeMemory(int flags) {
       if (flags & PurgeFlags::kLimitDuration &&
           (now_maybe_overridden_for_testing() - start > kMaxPurgeDuration)) {
         // Pick up where we stopped next time.
-        purge_next_bucket_index = (bucket_index + 1) % kNumBuckets;
+        purge_next_bucket_index =
+            (bucket_index + 1) % BucketIndexLookup::kNumBuckets;
         return;
       }
     }
@@ -1680,7 +1665,7 @@ void PartitionRoot::DumpStats(const char* partition_name,
     direct_map_lengths =
         std::unique_ptr<uint32_t[]>(new uint32_t[kMaxReportableDirectMaps]);
   }
-  PartitionBucketMemoryStats bucket_stats[internal::kNumBuckets];
+  PartitionBucketMemoryStats bucket_stats[BucketIndexLookup::kNumBuckets];
   size_t num_direct_mapped_allocations = 0;
   PartitionMemoryStats stats = {};
 
@@ -1718,7 +1703,7 @@ void PartitionRoot::DumpStats(const char* partition_name,
 #endif
 
     size_t direct_mapped_allocations_total_size = 0;
-    for (size_t i = 0; i < internal::kNumBuckets; ++i) {
+    for (size_t i = 0; i < BucketIndexLookup::kNumBuckets; ++i) {
       const Bucket* bucket = &bucket_at(i);
       // Don't report the pseudo buckets that the generic allocator sets up in
       // order to preserve a fast size->bucket map (see
@@ -2100,7 +2085,8 @@ EXPORT_TEMPLATE void* PartitionRoot::AlignedAlloc<AllocFlags::kNone>(size_t,
 #endif
 static_assert(offsetof(PartitionRoot, sentinel_bucket) ==
                   offsetof(PartitionRoot, buckets) +
-                      internal::kNumBuckets * sizeof(PartitionRoot::Bucket),
+                      BucketIndexLookup::kNumBuckets *
+                          sizeof(PartitionRoot::Bucket),
               "sentinel_bucket must be just after the regular buckets.");
 
 static_assert(

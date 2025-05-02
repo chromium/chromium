@@ -10,6 +10,7 @@
 #include <type_traits>
 
 #include "partition_alloc/buildflags.h"
+#include "partition_alloc/partition_alloc_base/bits.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_base/component_export.h"
 #include "partition_alloc/partition_alloc_base/cxx_wrapper/algorithm.h"
@@ -28,12 +29,24 @@ namespace internal {
 // the second one 16. We could technically return something different for
 // malloc() and operator new(), but this would complicate things, and most of
 // our allocations are presumably coming from operator new() anyway.
-constexpr size_t kAlignment =
+constexpr inline size_t kAlignment =
     std::max(alignof(max_align_t),
              static_cast<size_t>(__STDCPP_DEFAULT_NEW_ALIGNMENT__));
+static_assert(base::bits::HasSingleBit(kAlignment),
+              "Alignment must be power of two.");
 static_assert(kAlignment <= 16,
               "PartitionAlloc doesn't support a fundamental alignment larger "
               "than 16 bytes.");
+
+constexpr inline size_t kAlignmentIndex = base::bits::CountrZero(kAlignment);
+static_assert(kAlignment == (1 << kAlignmentIndex));
+
+static constexpr size_t kBitsPerSizeT = std::numeric_limits<size_t>::digits;
+#if PA_BUILDFLAG(HAS_64_BIT_POINTERS)
+static_assert(kBitsPerSizeT == 64);
+#else
+static_assert(kBitsPerSizeT == 32);
+#endif  // PA_BUILDFLAG(HAS_64_BIT_POINTERS)
 
 class PA_LOCKABLE Lock;
 
