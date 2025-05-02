@@ -426,17 +426,12 @@ bool AwContentBrowserClient::IsHandledURL(const GURL& url) {
   const std::string scheme = url.scheme();
   DCHECK_EQ(scheme, base::ToLowerASCII(scheme));
   static const char* const kProtocolList[] = {
-    url::kHttpScheme,
-    url::kHttpsScheme,
+      url::kHttpScheme,         url::kHttpsScheme,
 #if BUILDFLAG(ENABLE_WEBSOCKETS)
-    url::kWsScheme,
-    url::kWssScheme,
+      url::kWsScheme,           url::kWssScheme,
 #endif  // BUILDFLAG(ENABLE_WEBSOCKETS)
-    url::kDataScheme,
-    url::kBlobScheme,
-    url::kFileSystemScheme,
-    content::kChromeUIScheme,
-    url::kContentScheme,
+      url::kDataScheme,         url::kBlobScheme,    url::kFileSystemScheme,
+      content::kChromeUIScheme, url::kContentScheme,
   };
   if (scheme == url::kFileScheme) {
     // Return false for the "special" file URLs, so they can be loaded
@@ -670,62 +665,54 @@ void AwContentBrowserClient::OverrideWebPreferences(
 std::vector<std::unique_ptr<content::NavigationThrottle>>
 AwContentBrowserClient::CreateThrottlesForNavigation(
     content::NavigationThrottleRegistry& registry) {
-  std::vector<std::unique_ptr<content::NavigationThrottle>> throttles;
   // We allow intercepting only navigations within main frames. This
   // is used to post onPageStarted. We handle shouldOverrideUrlLoading
   // via a sync IPC.
-  content::NavigationHandle* navigation_handle =
-      &registry.GetNavigationHandle();
-  if (navigation_handle->IsInMainFrame()) {
+  content::NavigationHandle& navigation_handle = registry.GetNavigationHandle();
+  if (navigation_handle.IsInMainFrame()) {
     // MetricsNavigationThrottle requires that it runs before
     // NavigationThrottles that may delay or cancel navigations, so only
     // NavigationThrottles that don't delay or cancel navigations (e.g.
     // throttles that are only observing callbacks without affecting navigation
     // behavior) should be added before MetricsNavigationThrottle.
-    throttles.push_back(page_load_metrics::MetricsNavigationThrottle::Create(
-        navigation_handle));
+    registry.AddThrottle(page_load_metrics::MetricsNavigationThrottle::Create(
+        &navigation_handle));
   }
   // Use Synchronous mode for the navigation interceptor, since this class
   // doesn't actually call into an arbitrary client, it just posts a task to
   // call onPageStarted. shouldOverrideUrlLoading happens earlier (see
   // ContentBrowserClient::ShouldOverrideUrlLoading).
-  std::unique_ptr<content::NavigationThrottle> intercept_navigation_throttle =
+  registry.MaybeAddThrottle(
       navigation_interception::InterceptNavigationDelegate::
-          MaybeCreateThrottleFor(navigation_handle,
-                                 navigation_interception::SynchronyMode::kSync);
-  if (intercept_navigation_throttle) {
-    throttles.push_back(std::move(intercept_navigation_throttle));
-  }
+          MaybeCreateThrottleFor(
+              &navigation_handle,
+              navigation_interception::SynchronyMode::kSync));
 
-  throttles.push_back(std::make_unique<PolicyBlocklistNavigationThrottle>(
-      navigation_handle,
-      AwBrowserContext::FromWebContents(navigation_handle->GetWebContents())));
+  registry.AddThrottle(std::make_unique<PolicyBlocklistNavigationThrottle>(
+      &navigation_handle,
+      AwBrowserContext::FromWebContents(navigation_handle.GetWebContents())));
 
-  std::unique_ptr<AwSafeBrowsingNavigationThrottle> safe_browsing_throttle =
+  registry.MaybeAddThrottle(
       AwSafeBrowsingNavigationThrottle::MaybeCreateThrottleFor(
-          navigation_handle);
-  if (safe_browsing_throttle) {
-    throttles.push_back(std::move(safe_browsing_throttle));
-  }
+          &navigation_handle));
   if (base::FeatureList::IsEnabled(kWebViewOptimizeXrwNavigationFlow)) {
-    throttles.push_back(
-        std::make_unique<XrwNavigationThrottle>(navigation_handle));
+    registry.AddThrottle(
+        std::make_unique<XrwNavigationThrottle>(&navigation_handle));
   }
 
-  if ((navigation_handle->GetNavigatingFrameType() ==
+  if ((navigation_handle.GetNavigatingFrameType() ==
            FrameType::kPrimaryMainFrame ||
-       navigation_handle->GetNavigatingFrameType() == FrameType::kSubframe) &&
-      navigation_handle->GetURL().SchemeIsHTTPOrHTTPS()) {
+       navigation_handle.GetNavigatingFrameType() == FrameType::kSubframe) &&
+      navigation_handle.GetURL().SchemeIsHTTPOrHTTPS()) {
     AwSupervisedUserUrlClassifier* urlClassifier =
         AwSupervisedUserUrlClassifier::GetInstance();
     if (urlClassifier->ShouldCreateThrottle()) {
-      throttles.push_back(std::make_unique<AwSupervisedUserThrottle>(
-          navigation_handle, urlClassifier));
+      registry.AddThrottle(std::make_unique<AwSupervisedUserThrottle>(
+          &navigation_handle, urlClassifier));
     }
   }
 
-  // TODO(https://crbug.com/6478853): NavigationThrottleRegistry migration.
-  return throttles;
+  return {};
 }
 
 std::unique_ptr<content::PrefetchServiceDelegate>
