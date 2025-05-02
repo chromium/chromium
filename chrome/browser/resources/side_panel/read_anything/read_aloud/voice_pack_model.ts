@@ -4,6 +4,7 @@
 
 import type {VoiceClientSideStatusCode, VoicePackStatus} from '../voice_language_util.js';
 
+// Holds state around languages and associated voices used by read aloud.
 export class VoicePackModel {
   // Local representation of the status of voice pack downloads and
   // availability.
@@ -13,6 +14,28 @@ export class VoicePackModel {
   // Cache of responses from LanguagePackManager.
   private voicePackInstallStatusServerResponses_: Map<string, VoicePackStatus> =
       new Map();
+
+  // All possible available voices for the current speech engine.
+  private availableVoices_: SpeechSynthesisVoice[] = [];
+
+  // The set of languages found in availableVoices_.
+  private availableLangs_: Set<string> = new Set();
+
+  getAvailableLangs(): Set<string> {
+    return this.availableLangs_;
+  }
+
+  setAvailableLangs(langs: string[]): void {
+    this.availableLangs_ = new Set(langs);
+  }
+
+  getAvailableVoices(): SpeechSynthesisVoice[] {
+    return this.availableVoices_;
+  }
+
+  setAvailableVoices(voices: SpeechSynthesisVoice[]): void {
+    this.availableVoices_ = voices;
+  }
 
   getServerStatus(lang: string): VoicePackStatus|null {
     const status = this.voicePackInstallStatusServerResponses_.get(lang);

@@ -19,6 +19,7 @@ suite('AppReceivesToolbarChanges', () => {
   let app: AppElement;
   let speech: TestSpeechBrowserProxy;
   let metrics: TestMetricsBrowserProxy;
+  let voicePackController: VoicePackController;
 
   function containerLetterSpacing(): number {
     return +window.getComputedStyle(app.$.container)
@@ -82,6 +83,8 @@ suite('AppReceivesToolbarChanges', () => {
     const readingMode = new FakeReadingMode();
     chrome.readingMode = readingMode as unknown as typeof chrome.readingMode;
     metrics = mockMetrics();
+    voicePackController = new VoicePackController();
+    VoicePackController.setInstance(voicePackController);
     app = await createApp();
   });
 

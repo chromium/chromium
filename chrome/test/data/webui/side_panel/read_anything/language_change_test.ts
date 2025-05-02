@@ -57,6 +57,7 @@ suite('LanguageChanged', () => {
 
   let app: AppElement;
   let speech: TestSpeechBrowserProxy;
+  let voicePackController: VoicePackController;
 
   function enableLangs(...langs: string[]) {
     for (const l of langs) {
@@ -80,6 +81,8 @@ suite('LanguageChanged', () => {
     speech = new TestSpeechBrowserProxy();
     SpeechBrowserProxyImpl.setInstance(speech);
     speech.setVoices(voices);
+    voicePackController = new VoicePackController();
+    VoicePackController.setInstance(voicePackController);
 
     app = await createApp();
     for (const v of voices) {
@@ -341,5 +344,4 @@ suite('LanguageChanged', () => {
       assertTrue(sentRequest);
     });
   });
-
 });

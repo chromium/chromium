@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {BrowserProxy, SpeechBrowserProxyImpl, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {BrowserProxy, SpeechBrowserProxyImpl, ToolbarEvent, VoicePackController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
@@ -15,6 +15,7 @@ import {TestSpeechBrowserProxy} from './test_speech_browser_proxy.js';
 suite('PrefsTest', () => {
   let app: AppElement;
   let speech: TestSpeechBrowserProxy;
+  let voicePackController: VoicePackController;
 
   setup(async () => {
     // Clearing the DOM should always be done first.
@@ -25,6 +26,8 @@ suite('PrefsTest', () => {
     chrome.readingMode.isReadAloudEnabled = true;
     speech = new TestSpeechBrowserProxy();
     SpeechBrowserProxyImpl.setInstance(speech);
+    voicePackController = new VoicePackController();
+    VoicePackController.setInstance(voicePackController);
     app = await createApp();
   });
 

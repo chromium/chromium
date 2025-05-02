@@ -176,7 +176,7 @@ suite('UpdateVoicePack', () => {
       app.updateVoicePackStatus(lang, 'kNotInstalled');
       // then we request install
       voicePackController.setLocalStatus(
-          lang, VoiceClientSideStatusCode.SENT_INSTALL_REQUEST, []);
+          lang, VoiceClientSideStatusCode.SENT_INSTALL_REQUEST);
       app.updateVoicePackStatus(lang, 'kInstalling');
       // install completes
       app.updateVoicePackStatus(lang, 'kInstalled');

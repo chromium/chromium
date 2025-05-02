@@ -40,41 +40,41 @@ suite('VoicePackController', () => {
 
     test('no notification for non-Google language', () => {
       voicePackController.setLocalStatus(
-          'zh', VoiceClientSideStatusCode.ERROR_INSTALLING, []);
+          'zh', VoiceClientSideStatusCode.ERROR_INSTALLING);
       assertFalse(listenerNotified);
     });
 
     test('no notification for invalid language', () => {
       voicePackController.setLocalStatus(
-          'klingon', VoiceClientSideStatusCode.ERROR_INSTALLING, []);
+          'klingon', VoiceClientSideStatusCode.ERROR_INSTALLING);
       assertFalse(listenerNotified);
     });
 
     test('no notification for same status', () => {
       voicePackController.setLocalStatus(
-          'pt-br', VoiceClientSideStatusCode.ERROR_INSTALLING, []);
+          'pt-br', VoiceClientSideStatusCode.ERROR_INSTALLING);
       assertTrue(listenerNotified);
       listenerNotified = false;
 
       voicePackController.setLocalStatus(
-          'pt-br', VoiceClientSideStatusCode.ERROR_INSTALLING, []);
+          'pt-br', VoiceClientSideStatusCode.ERROR_INSTALLING);
 
       assertFalse(listenerNotified);
     });
 
     test('notifies for new status with Google-supported language', () => {
       voicePackController.setLocalStatus(
-          'it-it', VoiceClientSideStatusCode.ERROR_INSTALLING, []);
+          'it-it', VoiceClientSideStatusCode.ERROR_INSTALLING);
       assertTrue(listenerNotified);
 
       listenerNotified = false;
       voicePackController.setLocalStatus(
-          'it-it', VoiceClientSideStatusCode.AVAILABLE, []);
+          'it-it', VoiceClientSideStatusCode.AVAILABLE);
       assertTrue(listenerNotified);
 
       listenerNotified = false;
       voicePackController.setLocalStatus(
-          'hi', VoiceClientSideStatusCode.ERROR_INSTALLING, []);
+          'hi', VoiceClientSideStatusCode.ERROR_INSTALLING);
       assertTrue(listenerNotified);
     });
   });

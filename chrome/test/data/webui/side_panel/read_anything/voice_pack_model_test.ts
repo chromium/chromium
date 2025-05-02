@@ -3,8 +3,9 @@
 // found in the LICENSE file.
 
 import {BrowserProxy, mojoVoicePackStatusToVoicePackStatusEnum, VoiceClientSideStatusCode, VoicePackModel} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {assertArrayEquals, assertEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {assertArrayEquals, assertEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
+import {createSpeechSynthesisVoice} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
 import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
 
@@ -18,6 +19,30 @@ suite('VoicePackModel', () => {
     const readingMode = new FakeReadingMode();
     chrome.readingMode = readingMode as unknown as typeof chrome.readingMode;
     voicePackModel = new VoicePackModel();
+  });
+
+  test('setAvailableLangs', () => {
+    const lang1 = 'de';
+    const lang2 = 'hi';
+    const lang3 = 'xyz';
+
+    voicePackModel.setAvailableLangs([lang1, lang2, lang3, lang3]);
+
+    assertEquals(3, voicePackModel.getAvailableLangs().size);
+    assertTrue(voicePackModel.getAvailableLangs().has(lang1));
+    assertTrue(voicePackModel.getAvailableLangs().has(lang2));
+    assertTrue(voicePackModel.getAvailableLangs().has(lang3));
+  });
+
+  test('setAvailableVoices', () => {
+    const voice1 = createSpeechSynthesisVoice({lang: 'tr', name: 'Jane'});
+    const voice2 = createSpeechSynthesisVoice({lang: 'it-it', name: 'Kat'});
+    const voice3 = createSpeechSynthesisVoice({lang: 'pr', name: 'Anne'});
+
+    voicePackModel.setAvailableVoices([voice1, voice2, voice3]);
+
+    assertArrayEquals(
+        [voice1, voice2, voice3], voicePackModel.getAvailableVoices());
   });
 
   test('setServerStatus', () => {
