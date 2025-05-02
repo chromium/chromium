@@ -106,11 +106,12 @@ void SystemLiveCaptionService::OnSpeechResult(
                              target_language, result->is_final));
     } else {
       exec_result = controller_->DispatchTranscription(
-          &context_,
+          /*web_contents=*/nullptr, &context_,
           media::SpeechRecognitionResult(cached_translation, result->is_final));
     }
   } else {
-    exec_result = controller_->DispatchTranscription(&context_, *result);
+    exec_result = controller_->DispatchTranscription(
+        /*web_contents=*/nullptr, &context_, *result);
   }
 
   if (!exec_result) {
@@ -130,7 +131,8 @@ void SystemLiveCaptionService::OnLanguageIdentificationEvent(
       media::mojom::AsrSwitchResult::kSwitchSucceeded) {
     source_language_ = event->language;
   }
-  controller_->OnLanguageIdentificationEvent(&context_, std::move(event));
+  controller_->OnLanguageIdentificationEvent(
+      /*web_contents=*/nullptr, &context_, std::move(event));
 }
 
 void SystemLiveCaptionService::OnSpeechSoundLevelChanged(int16_t level) {}
@@ -180,7 +182,7 @@ void SystemLiveCaptionService::OnSpeechRecognitionStateChanged(
 
 void SystemLiveCaptionService::OnSpeechRecognitionStopped() {
   if (controller_) {
-    controller_->OnAudioStreamEnd(&context_);
+    controller_->OnAudioStreamEnd(/*web_contents=*/nullptr, &context_);
   }
   client_.reset();
 }
@@ -361,7 +363,8 @@ void SystemLiveCaptionService::OnTranslationCallback(
 void SystemLiveCaptionService::AttemptDispatch(const std::string& text,
                                                bool is_final) {
   if (!controller_->DispatchTranscription(
-          &context_, media::SpeechRecognitionResult(text, is_final))) {
+          /*web_contents=*/nullptr, &context_,
+          media::SpeechRecognitionResult(text, is_final))) {
     StopRecognizing();
   }
 }

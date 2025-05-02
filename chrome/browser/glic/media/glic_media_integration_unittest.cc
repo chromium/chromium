@@ -115,16 +115,25 @@ TEST_F(GlicMediaIntegrationTest, ContextContainsTranscript) {
   // It would be nice if we could set the max content size for testing.
   const std::string test_cap_1("ABC");
   const std::string test_cap_2("DEF");
-  const std::string test_cap_3("XYZ");  // Should be ignored as non-final.
+  const std::string test_cap_3("XYZ");  // Should be ignored in all cases.
   const std::string test_cap_4("GHIJ");
   live_caption_controller()->DispatchTranscription(
-      nullptr, media::SpeechRecognitionResult(test_cap_1, /*is_final=*/true));
+      web_contents(), nullptr,
+      media::SpeechRecognitionResult(test_cap_1, /*is_final=*/true));
   live_caption_controller()->DispatchTranscription(
-      nullptr, media::SpeechRecognitionResult(test_cap_2, /*is_final=*/true));
+      web_contents(), nullptr,
+      media::SpeechRecognitionResult(test_cap_2, /*is_final=*/true));
+  // Non-final captions should be ignored.
   live_caption_controller()->DispatchTranscription(
-      nullptr, media::SpeechRecognitionResult(test_cap_3, /*is_final=*/false));
+      web_contents(), nullptr,
+      media::SpeechRecognitionResult(test_cap_3, /*is_final=*/false));
+  // nullptr `web_contents` should be ignored.
   live_caption_controller()->DispatchTranscription(
-      nullptr, media::SpeechRecognitionResult(test_cap_4, /*is_final=*/true));
+      /*web_contents=*/nullptr, nullptr,
+      media::SpeechRecognitionResult(test_cap_3, /*is_final=*/true));
+  live_caption_controller()->DispatchTranscription(
+      web_contents(), nullptr,
+      media::SpeechRecognitionResult(test_cap_4, /*is_final=*/true));
 
   // Expect a leaf node with the entire context.
   optimization_guide::proto::ContentNode root_node;

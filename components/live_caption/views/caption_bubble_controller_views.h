@@ -46,7 +46,8 @@ class CaptionBubbleControllerViews : public CaptionBubbleController,
   // Called when a transcription is received from the service. Returns whether
   // the transcription result was set on the caption bubble successfully.
   // Transcriptions will halt if this returns false.
-  bool OnTranscription(CaptionBubbleContext* caption_bubble_context,
+  bool OnTranscription(content::WebContents* web_contents,
+                       CaptionBubbleContext* caption_bubble_context,
                        const media::SpeechRecognitionResult& result) override;
 
   // Called when the speech service has an error.
@@ -57,7 +58,8 @@ class CaptionBubbleControllerViews : public CaptionBubbleController,
       OnDoNotShowAgainClickedCallback error_silenced_callback) override;
 
   // Called when the audio stream has ended.
-  void OnAudioStreamEnd(CaptionBubbleContext* caption_bubble_context) override;
+  void OnAudioStreamEnd(content::WebContents* web_contents,
+                        CaptionBubbleContext* caption_bubble_context) override;
 
   // Called when the caption style changes.
   void UpdateCaptionStyle(
@@ -67,6 +69,7 @@ class CaptionBubbleControllerViews : public CaptionBubbleController,
   bool IsGenericErrorMessageVisibleForTesting() override;
   std::string GetBubbleLabelTextForTesting() override;
   void OnLanguageIdentificationEvent(
+      content::WebContents* web_contents,
       CaptionBubbleContext* caption_bubble_context,
       const media::mojom::LanguageIdentificationEventPtr& event) override;
   void CloseActiveModelForTesting() override;

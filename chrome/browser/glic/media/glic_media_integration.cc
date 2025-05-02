@@ -46,8 +46,13 @@ class CaptionListenerImpl : public captions::CaptionControllerBase::Listener {
   explicit CaptionListenerImpl(Profile* profile) : profile_(profile) {}
   ~CaptionListenerImpl() override = default;
 
-  bool OnTranscription(captions::CaptionBubbleContext*,
+  bool OnTranscription(content::WebContents* web_contents,
+                       captions::CaptionBubbleContext*,
                        const media::SpeechRecognitionResult& result) override {
+    if (!web_contents) {
+      return false;
+    }
+
     auto* media_integration = static_cast<GlicMediaIntegrationImpl*>(
         profile_->GetUserData(kGlicMediaIntegrationKey));
 
@@ -59,8 +64,10 @@ class CaptionListenerImpl : public captions::CaptionControllerBase::Listener {
     return true;
   }
 
-  void OnAudioStreamEnd(captions::CaptionBubbleContext*) override {}
+  void OnAudioStreamEnd(content::WebContents*,
+                        captions::CaptionBubbleContext*) override {}
   void OnLanguageIdentificationEvent(
+      content::WebContents*,
       captions::CaptionBubbleContext*,
       const media::mojom::LanguageIdentificationEventPtr&) override {}
 

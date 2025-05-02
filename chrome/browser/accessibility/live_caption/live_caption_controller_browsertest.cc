@@ -93,6 +93,7 @@ class LiveCaptionControllerTest : public LiveCaptionBrowserTest {
 
   bool DispatchTranscriptionToProfile(std::string text, Profile* profile) {
     return GetControllerForProfile(profile)->DispatchTranscription(
+        browser()->tab_strip_model()->GetActiveWebContents(),
         GetCaptionBubbleContextBrowser(),
         media::SpeechRecognitionResult(text, /* is_final */ false));
   }
@@ -111,6 +112,7 @@ class LiveCaptionControllerTest : public LiveCaptionBrowserTest {
 
   void OnAudioStreamEndOnProfile(Profile* profile) {
     GetControllerForProfile(profile)->OnAudioStreamEnd(
+        browser()->tab_strip_model()->GetActiveWebContents(),
         GetCaptionBubbleContextBrowser());
   }
 

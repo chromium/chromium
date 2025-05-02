@@ -283,6 +283,7 @@ class CaptionBubbleControllerViewsTest : public InProcessBrowserTest {
   bool OnPartialTranscription(std::string text,
                               CaptionBubbleContext* caption_bubble_context) {
     return GetController()->OnTranscription(
+        browser()->tab_strip_model()->GetActiveWebContents(),
         caption_bubble_context, media::SpeechRecognitionResult(text, false));
   }
 
@@ -300,6 +301,7 @@ class CaptionBubbleControllerViewsTest : public InProcessBrowserTest {
   bool OnFinalTranscription(std::string text,
                             CaptionBubbleContext* caption_bubble_context) {
     return GetController()->OnTranscription(
+        browser()->tab_strip_model()->GetActiveWebContents(),
         caption_bubble_context, media::SpeechRecognitionResult(text, true));
   }
 
@@ -308,8 +310,9 @@ class CaptionBubbleControllerViewsTest : public InProcessBrowserTest {
         media::mojom::LanguageIdentificationEvent::New();
     event->language = language;
     event->asr_switch_result = media::mojom::AsrSwitchResult::kSwitchSucceeded;
-    GetController()->OnLanguageIdentificationEvent(GetCaptionBubbleContext(),
-                                                   event);
+    GetController()->OnLanguageIdentificationEvent(
+        browser()->tab_strip_model()->GetActiveWebContents(),
+        GetCaptionBubbleContext(), event);
   }
 
   void OnError() { OnError(GetCaptionBubbleContext()); }
@@ -336,7 +339,9 @@ class CaptionBubbleControllerViewsTest : public InProcessBrowserTest {
   }
 
   void OnAudioStreamEnd() {
-    GetController()->OnAudioStreamEnd(GetCaptionBubbleContext());
+    GetController()->OnAudioStreamEnd(
+        browser()->tab_strip_model()->GetActiveWebContents(),
+        GetCaptionBubbleContext());
   }
 
   std::vector<ui::AXNodeData> GetAXLinesNodeData() {

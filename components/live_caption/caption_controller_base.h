@@ -18,6 +18,10 @@
 class PrefChangeRegistrar;
 class PrefService;
 
+namespace content {
+class WebContents;
+}  // namespace content
+
 namespace captions {
 
 class CaptionBubbleContext;
@@ -53,17 +57,26 @@ class CaptionControllerBase : public ui::NativeThemeObserver {
    public:
     virtual ~Listener() = default;
 
-    // Called when a transcription is received from the service.
+    // Called when a transcription is received from the service for audio that
+    // originated in `web_contents`.  `web_contents` may be null if the audio
+    // was not associated with any particulat WebContents.
+    //
     // Transcriptions will halt if this returns false.
     virtual bool OnTranscription(
+        content::WebContents*,
         CaptionBubbleContext*,
         const media::SpeechRecognitionResult& result) = 0;
 
-    // Called when the audio stream has ended.
+    // Called when the audio stream has ended for audio from `web_contents`,
+    // which may be null.
     virtual void OnAudioStreamEnd(
+        content::WebContents*,
         CaptionBubbleContext* caption_bubble_context) = 0;
 
+    // Called when the language is identified for audio from `web_contents`,
+    // which may be null.
     virtual void OnLanguageIdentificationEvent(
+        content::WebContents*,
         CaptionBubbleContext* caption_bubble_context,
         const media::mojom::LanguageIdentificationEventPtr& event) = 0;
 
@@ -87,14 +100,17 @@ class CaptionControllerBase : public ui::NativeThemeObserver {
   // there's at most one listener anyway.
   //
   // Transcriptions will halt if this returns false.
-  bool DispatchTranscription(CaptionBubbleContext* caption_bubble_context,
+  bool DispatchTranscription(content::WebContents* web_contents,
+                             CaptionBubbleContext* caption_bubble_context,
                              const media::SpeechRecognitionResult& result);
 
   // Alerts all listeners that the audio stream has ended.
-  void OnAudioStreamEnd(CaptionBubbleContext* caption_bubble_context);
+  void OnAudioStreamEnd(content::WebContents* web_contents,
+                        CaptionBubbleContext* caption_bubble_context);
 
   // Notifies all listeners about a language identification event.
   void OnLanguageIdentificationEvent(
+      content::WebContents* web_contents,
       CaptionBubbleContext* caption_bubble_context,
       const media::mojom::LanguageIdentificationEventPtr& event);
 

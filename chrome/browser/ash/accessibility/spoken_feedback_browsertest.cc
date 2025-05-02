@@ -516,7 +516,7 @@ class CaptionSpokenFeedbackTest : public LoggedInSpokenFeedbackTest {
         ::captions::LiveCaptionControllerFactory::GetForProfile(
             AccessibilityManager::Get()->profile());
     live_caption_controller->DispatchTranscription(
-        GetCaptionBubbleContext(),
+        /*web_contents=*/nullptr, GetCaptionBubbleContext(),
         media::SpeechRecognitionResult(text, /*is_final=*/false));
   }
 
