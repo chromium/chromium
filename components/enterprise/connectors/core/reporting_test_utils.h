@@ -67,6 +67,13 @@ class EventReportValidatorBase {
                                 const std::string& expected_profile_username,
                                 const std::string& expected_profile_identifier);
 
+  // TODO(crbug.com/396437063): Use password changed event proto instead of raw
+  // json string for validation.
+  void ExpectPassowrdChangedEvent(
+      const std::string& expected_username,
+      const std::string& expected_profile_username,
+      const std::string& expected_profile_identifier);
+
   // TODO(crbug.com/396437371): Use secutiry interstital event proto instead of
   // raw json string for validation.
   void ExpectSecurityInterstitialEvent(

@@ -394,6 +394,35 @@ void EventReportValidatorBase::ExpectPasswordReuseEvent(
       });
 }
 
+void EventReportValidatorBase::ExpectPassowrdChangedEvent(
+    const std::string& expected_username,
+    const std::string& expected_profile_username,
+    const std::string& expected_profile_identifier) {
+  EXPECT_CALL(*client_, UploadSecurityEventReport)
+      .WillOnce([this, expected_username, expected_profile_username,
+                 expected_profile_identifier](
+                    bool include_device_info, base::Value::Dict report,
+                    base::OnceCallback<void(policy::CloudPolicyClient::Result)>
+                        callback) {
+        // Extract the event list.
+        const base::Value::List* event_list = report.FindList(
+            policy::RealtimeReportingJobConfiguration::kEventListKey);
+        ASSERT_TRUE(event_list);
+
+        // There should only be 1 event per test.
+        ASSERT_EQ(1u, event_list->size());
+        const base::Value::Dict& wrapper = (*event_list)[0].GetDict();
+        const base::Value::Dict* event =
+            wrapper.FindDict(enterprise_connectors::kKeyPasswordChangedEvent);
+        ASSERT_TRUE(event);
+
+        ValidateField(event, kKeyUserName, expected_username);
+        ValidateField(event, kKeyProfileUserName, expected_profile_username);
+        ValidateField(event, kKeyProfileIdentifier,
+                      expected_profile_identifier);
+      });
+}
+
 void EventReportValidatorBase::ExpectSecurityInterstitialEvent(
     const std::string& expected_url,
     const std::string& expected_reason,

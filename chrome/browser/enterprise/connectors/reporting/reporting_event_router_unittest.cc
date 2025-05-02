@@ -468,4 +468,16 @@ TEST_F(ReportingEventRouterTest, TestPasswordReuseAllowed) {
       /*warning_shown*/ false);
 }
 
+TEST_F(ReportingEventRouterTest, TestPasswordChanged) {
+  test::SetOnSecurityEventReporting(
+      profile_->GetPrefs(), /*enabled=*/true,
+      /*enabled_event_names=*/{kKeyPasswordChangedEvent},
+      /*enabled_opt_in_events=*/{});
+
+  test::EventReportValidatorBase validator(client_.get());
+  validator.ExpectPassowrdChangedEvent(
+      "user_name_1", profile_->GetProfileUserName(), GetProfileIdentifier());
+  reporting_event_router_->OnPasswordChanged("user_name_1");
+}
+
 }  // namespace enterprise_connectors
