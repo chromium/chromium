@@ -5898,6 +5898,22 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Android.WebView.CachedFlagMigration" enum="Boolean"
+    expires_after="2026-04-28">
+  <owner>alexmitra@chromium.org</owner>
+  <owner>bewise@chromium.org</owner>
+  <owner>colibie@google.com</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records when any experiment is being migrated from manual shared preferences
+    to the generic WebViewCachedFlags implementation. This is recorded once per
+    startup and records true for startups where a migration takes place and
+    false otherwise. We expect to use this metric to determine when to remove
+    the migration code (when no more or a negligble amount of experiments are
+    being migrated).
+  </summary>
+</histogram>
+
 <histogram name="Android.WebView.Callback.Counts" enum="WebViewCallbackType"
     expires_after="2025-09-14">
   <owner>ntfschr@chromium.org</owner>
