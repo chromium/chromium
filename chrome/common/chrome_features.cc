@@ -357,7 +357,7 @@ const base::FeatureParam<int> kGlicReloadMaxLoadingTimeMs{
 const base::FeatureParam<int> kGlicInitialWidth{&kGlic, "glic-initial-width",
                                                 352};
 const base::FeatureParam<int> kGlicInitialHeight{&kGlic, "glic-initial-height",
-                                                 48};
+                                                 86};
 
 const base::FeatureParam<int> kGlicFreInitialWidth{
     &kGlic, "glic-fre-initial-width", 512};
