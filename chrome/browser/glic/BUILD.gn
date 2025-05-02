@@ -134,6 +134,8 @@ source_set("impl") {
     "host/host.cc",
     "host/webui_contents_container.cc",
     "host/webui_contents_container.h",
+    "media/glic_media_context.cc",
+    "media/glic_media_context.h",
     "media/glic_media_integration.cc",
     "media/glic_media_integration.h",
     "widget/application_hotkey_delegate.cc",
@@ -248,6 +250,7 @@ source_set("unit_tests") {
     "glic_metrics_unittest.cc",
     "host/context/glic_screenshot_capturer_unittest.cc",
     "host/glic_cookie_synchronizer_unittest.cc",
+    "media/glic_media_context_unittest.cc",
     "media/glic_media_integration_unittest.cc",
   ]
   deps = [

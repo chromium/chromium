@@ -26,7 +26,6 @@ namespace glic {
 class GlicMediaIntegrationTest : public ChromeRenderViewHostTestHarness {
  public:
   void SetUp() override {
-    base::test::ScopedFeatureList features(media::kHeadlessLiveCaption);
     ChromeRenderViewHostTestHarness::SetUp();
     // Return a mock Live Caption controller.
     auto controller = CreateLiveCaptionController();
@@ -137,7 +136,7 @@ TEST_F(GlicMediaIntegrationTest, ContextContainsTranscript) {
 
   // Expect a leaf node with the entire context.
   optimization_guide::proto::ContentNode root_node;
-  integration->AppendContext(&root_node);
+  integration->AppendContext(web_contents(), &root_node);
   EXPECT_EQ(root_node.children_nodes_size(), 0);
   EXPECT_TRUE(root_node.has_content_attributes());
   EXPECT_EQ(root_node.content_attributes().text_data().text_content(),
@@ -151,7 +150,7 @@ TEST_F(GlicMediaIntegrationTest, ContextContainsNoTranscript) {
 
   // Expect a leaf node with any text.
   optimization_guide::proto::ContentNode root_node;
-  integration->AppendContext(&root_node);
+  integration->AppendContext(web_contents(), &root_node);
   EXPECT_EQ(root_node.children_nodes_size(), 0);
   EXPECT_TRUE(root_node.has_content_attributes());
   EXPECT_GT(root_node.content_attributes().text_data().text_content().length(),
@@ -166,6 +165,14 @@ TEST_F(GlicMediaIntegrationTest, HeadlessPrefTurnsOnAndOff) {
   EXPECT_TRUE(get_headless_pref());
   auto controller = CreateLiveCaptionController();
   EXPECT_FALSE(get_headless_pref());
+}
+
+TEST_F(GlicMediaIntegrationTest, NullWebContentsIsOkay) {
+  // Make sure that cases where no WebContents is provided don't crash.  This
+  // includes cases where there is no media context for the given contents.
+  optimization_guide::proto::ContentNode root_node;
+  GetIntegration()->AppendContext(/*web_contents=*/nullptr, &root_node);
+  // As long as nothing bad happens, it's good.
 }
 
 }  // namespace glic

@@ -347,7 +347,7 @@ void GlicPageContextFetcher::RunCallbackIfComplete() {
             annotated_page_content_result_->proto.mutable_root_node()
                 ->add_children_nodes();
 
-        media_integration->AppendContext(media_node);
+        media_integration->AppendContext(web_contents(), media_node);
       }
 
       annotated_page_data->annotated_page_content =

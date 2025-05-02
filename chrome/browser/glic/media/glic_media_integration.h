@@ -35,6 +35,7 @@ class GlicMediaIntegration {
   // Use `context_root` to store our context information.  `context_root` will
   // be overwritten.
   virtual void AppendContext(
+      content::WebContents* web_contents,
       optimization_guide::proto::ContentNode* context_root) = 0;
 };
 

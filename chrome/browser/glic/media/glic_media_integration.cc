@@ -8,6 +8,7 @@
 #include "base/no_destructor.h"
 #include "base/supports_user_data.h"
 #include "chrome/browser/accessibility/live_caption/live_caption_controller_factory.h"
+#include "chrome/browser/glic/media/glic_media_context.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/live_caption/caption_controller_base.h"
 #include "components/live_caption/caption_util.h"
@@ -30,13 +31,11 @@ class GlicMediaIntegrationImpl : public glic::GlicMediaIntegration,
 
   // glic::GlicMediaIntegration
   void AppendContext(
+      content::WebContents* web_contents,
       optimization_guide::proto::ContentNode* context_root) override;
-
-  void OnTranscription(const media::SpeechRecognitionResult&);
 
  protected:
   raw_ptr<Profile> profile_;
-  std::string context_;
   // Don't let the transcript grow unbounded.
   static constexpr size_t max_size_bytes_ = 20000;
 };
@@ -49,18 +48,10 @@ class CaptionListenerImpl : public captions::CaptionControllerBase::Listener {
   bool OnTranscription(content::WebContents* web_contents,
                        captions::CaptionBubbleContext*,
                        const media::SpeechRecognitionResult& result) override {
-    if (!web_contents) {
-      return false;
+    if (auto* context = glic::GlicMediaContext::GetOrCreateFor(web_contents)) {
+      context->OnResult(result);
     }
 
-    auto* media_integration = static_cast<GlicMediaIntegrationImpl*>(
-        profile_->GetUserData(kGlicMediaIntegrationKey));
-
-    if (!media_integration) {
-      return false;
-    }
-
-    media_integration->OnTranscription(result);
     return true;
   }
 
@@ -85,40 +76,37 @@ GlicMediaIntegrationImpl::GlicMediaIntegrationImpl(Profile* profile)
   profile->GetPrefs()->SetBoolean(prefs::kHeadlessCaptionEnabled, true);
 }
 
-void GlicMediaIntegrationImpl::OnTranscription(
-    const media::SpeechRecognitionResult& result) {
-  if (!result.is_final) {
-    return;
-  }
-
-  context_ += result.transcription;
-
-  // Trim to `max_size`.  Note that we should utf8-trim, but this is easier.
-  if (size_t context_size = context_.length()) {
-    if (context_size > max_size_bytes_) {
-      // Remove the beginning of the context, leaving the end.
-      context_ = context_.substr(context_size - max_size_bytes_);
-    }
-  }
-}
-
 void GlicMediaIntegrationImpl::AppendContext(
+    content::WebContents* web_contents,
     optimization_guide::proto::ContentNode* context_root) {
   context_root->mutable_content_attributes()->set_attribute_type(
       optimization_guide::proto::CONTENT_ATTRIBUTE_TEXT);
 
-  if (context_.length() == 0) {
-    context_root->mutable_content_attributes()
-        ->mutable_text_data()
-        ->set_text_content("There is no transcript available.");
-    return;
+  // Get the context for `web_contents`, which is not the right thing to do.
+  auto* context = glic::GlicMediaContext::GetOrCreateFor(web_contents);
+  std::string result;
+  if (context != nullptr) {
+    result = context->GetContext();
+  }
+
+  // Provide a default.
+  if (result.length() == 0) {
+    result = "There is no transcript available.";
+  }
+
+  // Trim to `max_size_bytes_`.  Note that we should utf8-trim.
+  if (size_t result_size = result.length()) {
+    if (result_size > max_size_bytes_) {
+      // Remove the beginning of the result, leaving the end.
+      result = result.substr(result_size - max_size_bytes_);
+    }
   }
 
   // Include the entire context in one node.  This could be split into multiple
   // nodes too.
   context_root->mutable_content_attributes()
       ->mutable_text_data()
-      ->set_text_content(context_);
+      ->set_text_content(std::move(result));
 }
 
 }  // namespace
