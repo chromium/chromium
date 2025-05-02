@@ -14,14 +14,11 @@ import java.lang.annotation.RetentionPolicy;
 /**
  * The different types of view that a suggestion can be.
  *
- * <p>When modifying this list, please also update the - {@link PreWarmingRecycledViewPool}, -
- * OmniboxSuggestionUiType histogram enum to reflect the expected/anticipated volume of views that
- * may be reused and appropriate histogram details.
- *
  * <p>Please note that the types below are also being recorded in a separate histogram, see: -
  * SuggestionsMetrics#recordSuggestionsViewCreatedType() -
  * SuggestionsMetrics#recordSuggestionsViewReusedType().
  */
+// LINT.IfChange(OmniboxSuggestionUiType)
 @IntDef({
     OmniboxSuggestionUiType.DEFAULT,
     OmniboxSuggestionUiType.EDIT_URL_SUGGESTION,
@@ -32,7 +29,7 @@ import java.lang.annotation.RetentionPolicy;
     OmniboxSuggestionUiType.HEADER,
     OmniboxSuggestionUiType.TILE_NAVSUGGEST,
     OmniboxSuggestionUiType.GROUP_SEPARATOR,
-    OmniboxSuggestionUiType.QUERY_TILES,
+    OmniboxSuggestionUiType.OBSOLETE_QUERY_TILES,
     OmniboxSuggestionUiType.COUNT
 })
 @Retention(RetentionPolicy.SOURCE)
@@ -47,7 +44,8 @@ public @interface OmniboxSuggestionUiType {
     int HEADER = 6;
     int TILE_NAVSUGGEST = 7;
     int GROUP_SEPARATOR = 8;
-    int QUERY_TILES = 9;
+    int OBSOLETE_QUERY_TILES = 9;
 
     int COUNT = 10;
 }
+// LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:OmniboxSuggestionUiType)

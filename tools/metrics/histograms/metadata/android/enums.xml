@@ -1276,6 +1276,8 @@ chromium-metrics-reviews@google.com.
   <int value="17" label="Focus restored on activity recreation."/>
 </enum>
 
+<!-- LINT.IfChange(OmniboxSuggestionUiType) -->
+
 <enum name="OmniboxSuggestionUiType">
   <int value="0" label="DEFAULT"/>
   <int value="1" label="EDIT_URL_SUGGESTION"/>
@@ -1285,10 +1287,11 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="CLIPBOARD_SUGGESTION"/>
   <int value="6" label="HEADER"/>
   <int value="7" label="TILE_NAVSUGGEST"/>
-  <int value="8" label="PEDAL_SUGGESTION"/>
-  <int value="9" label="DIVIDER_LINE"/>
-  <int value="10" label="QUERY_TILES"/>
+  <int value="8" label="GROUP_SEPARATOR"/>
+  <int value="9" label="OBSOLETE_QUERY_TILES"/>
 </enum>
+
+<!-- LINT.ThenChange(//components/omnibox/browser/android/java/src/org/chromium/components/omnibox/suggestions/OmniboxSuggestionUiType.java:OmniboxSuggestionUiType) -->
 
 <enum name="PartnerCustomizationProviderDelegate">
   <int value="0" label="None: default delegate inValid"/>

@@ -96,11 +96,6 @@ public class OmniboxSuggestionsDropdownAdapter extends SimpleRecyclerViewAdapter
                 OmniboxSuggestionUiType.GROUP_SEPARATOR,
                 parent -> new GroupSeparatorView(parent.getContext()),
                 (m, v, p) -> {});
-
-        registerType(
-                OmniboxSuggestionUiType.QUERY_TILES,
-                BaseCarouselSuggestionItemViewBuilder::createView,
-                BaseCarouselSuggestionViewBinder::bind);
     }
 
     /* package */ void recordSessionMetrics() {
