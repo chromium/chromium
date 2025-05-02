@@ -2373,6 +2373,11 @@ void MainThreadSchedulerImpl::OnTaskCompleted(
     queue->GetFrameScheduler()->AddTaskTime(task_timing->wall_duration());
   main_thread_only().running_queues.pop();
 
+  // Note: Thread time is already subsampled in sequence manager by a factor of
+  // |kTaskSamplingRateForRecordingCPUTime|. So renderer main can piggy back on
+  // that subsampling to record histograms without fear of oversampling.
+  task_timing->RecordUmaOnCpuMetrics("RendererScheduler.RendererMain");
+
   // The overriding TaskRunnerHandle scope ends here.
   if (scheduling_settings().mbi_override_task_runner_handle)
     EndAgentGroupSchedulerScope();

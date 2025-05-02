@@ -5,11 +5,14 @@
 #include "base/task/sequence_manager/task_queue.h"
 
 #include <optional>
+#include <string_view>
 #include <utility>
 
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "base/task/sequence_manager/associated_thread_id.h"
 #include "base/task/sequence_manager/sequence_manager_impl.h"
 #include "base/task/sequence_manager/task_queue_impl.h"
@@ -42,8 +45,8 @@ void TaskQueue::QueueEnabledVoter::SetVoteToEnable(bool enabled) {
   }
 }
 
-TaskQueue::TaskTiming::TaskTiming(bool has_wall_time)
-    : has_wall_time_(has_wall_time) {}
+TaskQueue::TaskTiming::TaskTiming(bool has_wall_time, bool has_thread_time)
+    : has_wall_time_(has_wall_time), has_thread_time_(has_thread_time) {}
 
 void TaskQueue::TaskTiming::RecordTaskStart(LazyNow* now) {
   DCHECK_EQ(State::NotStarted, state_);
@@ -51,6 +54,9 @@ void TaskQueue::TaskTiming::RecordTaskStart(LazyNow* now) {
 
   if (has_wall_time()) {
     start_time_ = now->Now();
+  }
+  if (has_thread_time()) {
+    start_thread_time_ = base::ThreadTicks::Now();
   }
 }
 
@@ -63,6 +69,29 @@ void TaskQueue::TaskTiming::RecordTaskEnd(LazyNow* now) {
 
   if (has_wall_time()) {
     end_time_ = now->Now();
+  }
+  if (has_thread_time()) {
+    end_thread_time_ = base::ThreadTicks::Now();
+  }
+}
+
+void TaskQueue::TaskTiming::RecordUmaOnCpuMetrics(
+    const std::string_view& prefix) const {
+  if (has_wall_time() && has_thread_time()) {
+    base::TimeDelta wall_time = wall_duration();
+    base::TimeDelta thread_time = thread_duration();
+    if (!wall_time.is_zero() && !thread_time.is_zero()) {
+      UmaHistogramCustomMicrosecondsTimes(
+          base::StrCat({prefix, ".TaskOnCpuDuration"}), thread_time,
+          base::Microseconds(1), base::Milliseconds(100), 50);
+      UmaHistogramCustomMicrosecondsTimes(
+          base::StrCat({prefix, ".TaskOffCpuDuration"}),
+          wall_time - thread_time, base::Microseconds(1),
+          base::Milliseconds(100), 50);
+      UmaHistogramPercentage(
+          base::StrCat({prefix, ".TaskOnCpuPercentage"}),
+          base::checked_cast<int>((thread_time * 100).IntDiv(wall_time)));
+    }
   }
 }
 

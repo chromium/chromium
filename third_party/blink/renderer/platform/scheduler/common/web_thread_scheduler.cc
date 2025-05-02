@@ -29,6 +29,7 @@ WebThreadScheduler::CreateMainThreadScheduler(
     std::unique_ptr<base::MessagePump> message_pump) {
   auto settings = base::sequence_manager::SequenceManager::Settings::Builder()
                       .SetMessagePumpType(base::MessagePumpType::DEFAULT)
+                      .SetShouldSampleCPUTime(true)
                       .SetAddQueueTimeToTasks(true)
                       .SetPrioritySettings(CreatePrioritySettings())
                       .Build();

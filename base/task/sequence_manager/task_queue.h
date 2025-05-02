@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <memory>
 #include <optional>
+#include <string_view>
 #include <type_traits>
 
 #include "base/base_export.h"
@@ -178,6 +179,8 @@ class BASE_EXPORT TaskQueue {
   //
   // Wall-time related methods (start_time, end_time, wall_duration) can be
   // called only when |has_wall_time()| is true.
+  // Thread-time related methods (start_thread_time, end_thread_time,
+  // thread_duration) can be called only when |has_thread_time()| is true.
   //
   // start_* should be called after RecordTaskStart.
   // end_* and *_duration should be called after RecordTaskEnd.
@@ -186,7 +189,7 @@ class BASE_EXPORT TaskQueue {
     enum class State { NotStarted, Running, Finished };
     enum class TimeRecordingPolicy { DoRecord, DoNotRecord };
 
-    explicit TaskTiming(bool has_wall_time);
+    explicit TaskTiming(bool has_wall_time, bool has_thread_time = false);
 
     bool has_wall_time() const { return has_wall_time_; }
     bool has_thread_time() const { return has_thread_time_; }
@@ -203,11 +206,28 @@ class BASE_EXPORT TaskQueue {
       DCHECK(has_wall_time());
       return end_time_ - start_time_;
     }
+    base::ThreadTicks start_thread_time() const {
+      DCHECK(has_thread_time());
+      return start_thread_time_;
+    }
+    base::ThreadTicks end_thread_time() const {
+      DCHECK(has_thread_time());
+      return end_thread_time_;
+    }
+    base::TimeDelta thread_duration() const {
+      DCHECK(has_thread_time());
+      return end_thread_time_ - start_thread_time_;
+    }
 
     State state() const { return state_; }
 
     void RecordTaskStart(LazyNow* now);
     void RecordTaskEnd(LazyNow* now);
+
+    // Records on-CPU duration, off-CPU duration and on-CPU percentage for this
+    // task timing object prefixed with the provided string. These metrics are
+    // only captured if both |has_wall_time| and |has_thread_time()| are true.
+    void RecordUmaOnCpuMetrics(const std::string_view& prefix) const;
 
     // Protected for tests.
    protected:
@@ -218,6 +238,8 @@ class BASE_EXPORT TaskQueue {
 
     base::TimeTicks start_time_;
     base::TimeTicks end_time_;
+    base::ThreadTicks start_thread_time_;
+    base::ThreadTicks end_thread_time_;
   };
 
   // An interface that lets the owner vote on whether or not the associated

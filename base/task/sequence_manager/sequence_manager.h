@@ -142,6 +142,11 @@ class BASE_EXPORT SequenceManager {
     ~Settings();
 
     MessagePumpType message_loop_type = MessagePumpType::DEFAULT;
+
+    // Whether or not CPU time should be sampled for a fixed percentage of
+    // tasks.
+    bool sample_cpu_time = false;
+
     raw_ptr<const TickClock, DanglingUntriaged> clock =
         DefaultTickClock::GetInstance();
 
@@ -291,6 +296,10 @@ class BASE_EXPORT SequenceManager::Settings::Builder {
 
   // Sets the MessagePumpType which is used to create a MessagePump.
   Builder& SetMessagePumpType(MessagePumpType message_loop_type);
+
+  // Whether or not CPU time will be sampled for tasks at a fixed sampling
+  // ratio.
+  Builder& SetShouldSampleCPUTime(bool enable);
 
   // Sets the TickClock the SequenceManager uses to obtain Now.
   Builder& SetTickClock(const TickClock* clock);
