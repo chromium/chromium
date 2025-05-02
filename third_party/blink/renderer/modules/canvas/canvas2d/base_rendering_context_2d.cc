@@ -186,30 +186,49 @@ CanvasRenderingContext2DSettings* BaseRenderingContext2D::getContextAttributes()
   return ToCanvasRenderingContext2DSettings(CreationAttributes());
 }
 
-void BaseRenderingContext2D::placeElement(Element* element,
-                                          double x,
-                                          double y,
-                                          ExceptionState& exception_state) {
+bool BaseRenderingContext2D::IsDrawElementEligible(
+    Element* element,
+    ExceptionState& exception_state) {
   HTMLCanvasElement* canvas_element = HostAsHTMLCanvasElement();
-  DCHECK(canvas_element);
+  if (!canvas_element || !canvas_element->GetDocument().View()) {
+    return false;
+  }
+
+  if (!GetOrCreatePaintCanvas()) {
+    return false;
+  }
 
   if (element->parentElement() != canvas_element) {
     exception_state.ThrowTypeError(
         "Only immediate children of the <canvas> element can be used with "
         "placeElement().");
-    return;
+    return false;
   }
 
+  // TODO(crbug.com/413728246): Maybe we can support canvas element.
   if (IsA<HTMLCanvasElement>(element)) {
     exception_state.ThrowTypeError(
         "<canvas> elements cannot be used with placeElement().");
+    return false;
+  }
+
+  // TODO(crbug.com/413408522): Verify that `canvas_element` has the
+  // `withlayout` attribute.
+
+  return true;
+}
+
+void BaseRenderingContext2D::placeElement(Element* element,
+                                          double x,
+                                          double y,
+                                          ExceptionState& exception_state) {
+  CHECK(RuntimeEnabledFeatures::CanvasPlaceElementEnabled());
+  if (!IsDrawElementEligible(element, exception_state)) {
     return;
   }
 
-  cc::PaintCanvas* paint_canvas = GetOrCreatePaintCanvas();
-  if (!paint_canvas) {
-    return;
-  }
+  HTMLCanvasElement* canvas_element = HostAsHTMLCanvasElement();
+  DCHECK(canvas_element);
 
   // TODO(crbug.com/380277045): Only taint for x-origin content.
   SetOriginTaintedByContent();
@@ -249,9 +268,8 @@ void BaseRenderingContext2D::placeElement(Element* element,
   WillDraw(SkIRect::MakeXYWH(0, 0, Width(), Height()),
            CanvasPerformanceMonitor::DrawType::kOther);
 
-  paint_canvas->drawImage(paint_image, x, y);
+  GetOrCreatePaintCanvas()->drawImage(paint_image, x, y);
 }
-
 
 void BaseRenderingContext2D::DispatchContextLostEvent(TimerBase*) {
   // If `need_dispatch_context_restored_` is `true`, the context has been

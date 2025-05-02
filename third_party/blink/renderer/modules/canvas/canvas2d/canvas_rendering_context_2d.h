@@ -182,6 +182,11 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   void MarkPlacedElementDirty(Element* placedElement) final;
   bool HasPlacedElements() const final;
 
+  void drawElement(Element* element,
+                   double x,
+                   double y,
+                   ExceptionState& exceptionState);
+
   CanvasRenderingContextHost* GetCanvasRenderingContextHost() const override;
   ExecutionContext* GetTopExecutionContext() const override;
 

@@ -58,6 +58,9 @@ interface CanvasRenderingContext2D {
     [RuntimeEnabled=CanvasPlaceElement, RaisesException] void placeElement(Element element, unrestricted double x,
                                         unrestricted double y);
 
+    [RuntimeEnabled=CanvasElementDrawImage, RaisesException]
+    void drawElement(Element element, unrestricted double x, unrestricted double y);
+
     [MeasureAs=GetCanvas2DContextAttributes] CanvasRenderingContext2DSettings getContextAttributes();
 };
 

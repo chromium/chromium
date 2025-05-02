@@ -687,6 +687,58 @@ bool CanvasRenderingContext2D::HasPlacedElements() const {
   return !placed_elements_.empty();
 }
 
+void CanvasRenderingContext2D::drawElement(Element* element,
+                                           double x,
+                                           double y,
+                                           ExceptionState& exception_state) {
+  CHECK(RuntimeEnabledFeatures::CanvasElementDrawImageEnabled());
+  if (!IsDrawElementEligible(element, exception_state)) {
+    return;
+  }
+
+  HTMLCanvasElement* canvas_element = HostAsHTMLCanvasElement();
+  DCHECK(canvas_element);
+
+  // TODO(crbug.com/380277045): Only taint for x-origin content.
+  SetOriginTaintedByContent();
+
+  canvas_element->GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint(
+      DocumentUpdateReason::kCanvasPlaceElement);
+
+  PaintRecordBuilder builder;
+  LayoutBox* layout_box = element->GetLayoutBox();
+  // All placed elements should have their own stacking contexts.
+  CHECK(layout_box->HasLayer());
+  CHECK(layout_box->IsStacked());
+  PaintLayer* layer = layout_box->EnclosingLayer();
+
+  PaintLayerPainter paint_layer_painter = PaintLayerPainter(*layer);
+  paint_layer_painter.Paint(builder.Context(), PaintFlag::kPlacedElement);
+
+  PropertyTreeState property_tree_state = layer->GetLayoutObject()
+                                              .FirstFragment()
+                                              .LocalBorderBoxProperties()
+                                              .Unalias();
+
+  cc::PaintRecord paint_record = builder.EndRecording(property_tree_state);
+
+  cc::PaintImage paint_image =
+      PaintImageBuilder::WithDefault()
+          .set_id(PaintImage::GetNextId())
+          .set_paint_record(
+              std::move(paint_record),
+              gfx::Rect(ToCeiledSize(layer->GetLayoutBox()->Size())),
+              PaintImage::GetNextId())
+          .TakePaintImage();
+
+  // TODO(https://issues.chromium.org/379143301): Figure out the actual visual
+  // rect of the element.
+  WillDraw(SkIRect::MakeXYWH(0, 0, Width(), Height()),
+           CanvasPerformanceMonitor::DrawType::kOther);
+
+  GetOrCreatePaintCanvas()->drawImage(paint_image, x, y);
+}
+
 void CanvasRenderingContext2D::PaintPlacedElements() {
   bool placed_elements_need_repainting = false;
   for (auto deferred_paint_record : placed_elements_.Values()) {

@@ -1266,6 +1266,7 @@ interface CanvasRenderingContext2D
     method createMesh2DVertexBuffer
     method createPattern
     method createRadialGradient
+    method drawElement
     method drawFocusIfNeeded
     method drawImage
     method drawMesh
