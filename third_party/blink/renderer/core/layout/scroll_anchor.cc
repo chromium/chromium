@@ -257,7 +257,7 @@ static const String UniqueSimpleSelectorAmongSiblings(Element* element) {
   return ":nth-child(" +
          String::Number(NthIndexCache::NthChildIndex(
              *element, /*filter=*/nullptr, /*selector_checker=*/nullptr,
-             /*context=*/nullptr, NthIndexData::kLightTree)) +
+             /*context=*/nullptr)) +
          ")";
 }
 
