@@ -319,10 +319,6 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ThreadCache {
   // The Partition lock must *not* be held when calling this.
   // Must be called from the thread this cache is for.
   void Purge();
-  // |TryPurge| is the same as |Purge|, except that |TryPurge| will
-  // not crash if the thread cache is inconsistent. Normally inconsistency
-  // is a sign of a bug somewhere, so |Purge| should be preferred in most cases.
-  void TryPurge();
   // Amount of cached memory for this thread's cache, in bytes.
   size_t CachedMemory() const;
   void AccumulateStats(ThreadCacheStats* stats) const;
@@ -411,19 +407,14 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ThreadCache {
   static void operator delete(void* ptr);
 
   void PurgeInternal();
-  template <bool crash_on_corruption>
-  void PurgeInternalHelper();
 
   // Fills a bucket from the central allocator.
   void FillBucket(size_t bucket_index);
   // Empties the |bucket| until there are at most |limit| objects in it.
-  template <bool crash_on_corruption>
-  void ClearBucketHelper(Bucket& bucket, size_t limit);
   void ClearBucket(Bucket& bucket, size_t limit);
   PA_ALWAYS_INLINE void PutInBucket(Bucket& bucket, uintptr_t slot_start);
   void ResetForTesting();
   // Releases the entire freelist starting at |head| to the root.
-  template <bool crash_on_corruption>
   void FreeAfter(internal::PartitionFreelistEntry* head, size_t slot_size);
   static void SetGlobalLimits(PartitionRoot* root, float multiplier);
 
@@ -567,13 +558,8 @@ PA_ALWAYS_INLINE uintptr_t ThreadCache::GetFromCache(size_t bucket_index,
   // does not introduce another cache miss.
   const internal::PartitionFreelistDispatcher* freelist_dispatcher =
       get_freelist_dispatcher_from_root();
-#if PA_BUILDFLAG(USE_FREELIST_DISPATCHER)
   internal::PartitionFreelistEntry* next =
-      freelist_dispatcher->GetNextForThreadCacheTrue(entry, bucket.slot_size);
-#else
-  internal::PartitionFreelistEntry* next =
-      freelist_dispatcher->GetNextForThreadCache<true>(entry, bucket.slot_size);
-#endif  // PA_BUILDFLAG(USE_FREELIST_DISPATCHER)
+      freelist_dispatcher->GetNextForThreadCache(entry, bucket.slot_size);
 
   PA_DCHECK(entry != next);
   bucket.count--;

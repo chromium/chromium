@@ -1205,13 +1205,8 @@ TEST_P(PartitionAllocThreadCacheTest, ClearFromTail) {
     uint8_t count = 0;
     auto* head = tcache->bucket_for_testing(index).freelist_head;
     while (head) {
-#if PA_BUILDFLAG(USE_FREELIST_DISPATCHER)
-      head = freelist_dispatcher->GetNextForThreadCacheTrue(
+      head = freelist_dispatcher->GetNextForThreadCache(
           head, tcache->bucket_for_testing(index).slot_size);
-#else
-      head = freelist_dispatcher->GetNextForThreadCache<true>(
-          head, tcache->bucket_for_testing(index).slot_size);
-#endif  // PA_BUILDFLAG(USE_FREELIST_DISPATCHER)
       count++;
     }
     return count;
@@ -1298,33 +1293,6 @@ TEST_P(PartitionAllocThreadCacheTest, MAYBE_Bookkeeping) {
   EXPECT_EQ(root()->get_total_size_of_allocated_bytes(),
             expected_allocated_size);
   tcache->Purge();
-}
-
-TEST_P(PartitionAllocThreadCacheTest, TryPurgeNoAllocs) {
-  auto* tcache = root()->thread_cache_for_testing();
-  tcache->TryPurge();
-}
-
-TEST_P(PartitionAllocThreadCacheTest, TryPurgeMultipleCorrupted) {
-  auto* tcache = root()->thread_cache_for_testing();
-
-  void* ptr =
-      root()->Alloc(root()->AdjustSizeForExtrasSubtract(kMediumSize), "");
-
-  auto* medium_bucket = root()->buckets + SizeToIndex(kMediumSize);
-
-  auto* curr = medium_bucket->active_slot_spans_head->get_freelist_head();
-  const internal::PartitionFreelistDispatcher* freelist_dispatcher =
-      root()->get_freelist_dispatcher();
-#if PA_BUILDFLAG(USE_FREELIST_DISPATCHER)
-  curr = freelist_dispatcher->GetNextForThreadCacheTrue(curr, kMediumSize);
-#else
-  curr = freelist_dispatcher->GetNextForThreadCache<true>(curr, kMediumSize);
-#endif  // PA_BUILDFLAG(USE_FREELIST_DISPATCHER)
-  freelist_dispatcher->CorruptNextForTesting(curr, 0x12345678);
-  tcache->TryPurge();
-  freelist_dispatcher->SetNext(curr, nullptr);
-  root()->Free(ptr);
 }
 
 TEST_P(PartitionAllocThreadCacheTest, AllocationRecording) {

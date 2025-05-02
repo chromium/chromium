@@ -180,14 +180,12 @@ class PoolOffsetFreelistEntry {
 
   // Puts `slot_size` on the stack before crashing in case of memory
   // corruption. Meant to be used to report the failed allocation size.
-  template <bool crash_on_corruption>
   PA_ALWAYS_INLINE PoolOffsetFreelistEntry* GetNextForThreadCache(
       size_t slot_size) const {
-    return GetNextInternal<crash_on_corruption, /*for_thread_cache=*/true>(
-        slot_size);
+    return GetNextInternal</*for_thread_cache=*/true>(slot_size);
   }
   PA_ALWAYS_INLINE PoolOffsetFreelistEntry* GetNext(size_t slot_size) const {
-    return GetNextInternal<true, /*for_thread_cache=*/false>(slot_size);
+    return GetNextInternal</*for_thread_cache=*/false>(slot_size);
   }
 
   PA_NOINLINE void CheckFreeList(size_t slot_size) const {
@@ -198,7 +196,7 @@ class PoolOffsetFreelistEntry {
 
   PA_NOINLINE void CheckFreeListForThreadCache(size_t slot_size) const {
     for (auto* entry = this; entry;
-         entry = entry->GetNextForThreadCache<true>(slot_size)) {
+         entry = entry->GetNextForThreadCache(slot_size)) {
       // `GetNextForThreadCache()` calls `IsWellFormed()`.
     }
   }
@@ -240,7 +238,7 @@ class PoolOffsetFreelistEntry {
   }
 
  private:
-  template <bool crash_on_corruption, bool for_thread_cache>
+  template <bool for_thread_cache>
   PA_ALWAYS_INLINE PoolOffsetFreelistEntry* GetNextInternal(
       size_t slot_size) const {
     // GetNext() can be called on discarded memory, in which case
@@ -256,17 +254,14 @@ class PoolOffsetFreelistEntry {
     // a corruption (see PoolOffsetFreelistEntry class-level comment).
     auto* ret = encoded_next_.Decode(pool_info);
     if (!IsWellFormed<for_thread_cache>(pool_info, this, ret)) [[unlikely]] {
-      if constexpr (crash_on_corruption) {
-        // Put the corrupted data on the stack, it may give us more information
-        // about what kind of corruption that was.
-        PA_DEBUG_DATA_ON_STACK("first",
-                               static_cast<size_t>(encoded_next_.encoded_));
+      // Put the corrupted data on the stack, it may give us more information
+      // about what kind of corruption that was.
+      PA_DEBUG_DATA_ON_STACK("first",
+                             static_cast<size_t>(encoded_next_.encoded_));
 #if PA_CONFIG(HAS_FREELIST_SHADOW_ENTRY)
         PA_DEBUG_DATA_ON_STACK("second", static_cast<size_t>(shadow_));
 #endif
         FreelistCorruptionDetected(slot_size);
-      }
-      return nullptr;
     }
 
     // In real-world profiles, the load of |encoded_next_| above is responsible

@@ -200,7 +200,7 @@ void ThreadCacheRegistry::ForcePurgeAllThreadAfterForkUnsafe() {
     // passes. See crbug.com/1216964.
     tcache->cached_memory_ = tcache->CachedMemory();
 
-    // At this point, we should call |TryPurge|. However, due to the thread
+    // At this point, we should call |Purge|. However, due to the thread
     // cache being possibly inconsistent at this point, this may crash. Rather
     // than crash, we'd prefer to simply not purge, even though this may leak
     // memory in some cases.
@@ -666,11 +666,6 @@ void ThreadCache::FillBucket(size_t bucket_index) {
 }
 
 void ThreadCache::ClearBucket(Bucket& bucket, size_t limit) {
-  ClearBucketHelper<true>(bucket, limit);
-}
-
-template <bool crash_on_corruption>
-void ThreadCache::ClearBucketHelper(Bucket& bucket, size_t limit) {
   // Avoids acquiring the lock needlessly.
   if (!bucket.count || bucket.count <= limit) {
     return;
@@ -690,13 +685,11 @@ void ThreadCache::ClearBucketHelper(Bucket& bucket, size_t limit) {
   const internal::PartitionFreelistDispatcher* freelist_dispatcher =
       root_->get_freelist_dispatcher();
 
-  if constexpr (crash_on_corruption) {
-    freelist_dispatcher->CheckFreeListForThreadCache(bucket.freelist_head,
-                                                     bucket.slot_size);
-  }
+  freelist_dispatcher->CheckFreeListForThreadCache(bucket.freelist_head,
+                                                   bucket.slot_size);
   uint8_t count_before = bucket.count;
   if (limit == 0) {
-    FreeAfter<crash_on_corruption>(bucket.freelist_head, bucket.slot_size);
+    FreeAfter(bucket.freelist_head, bucket.slot_size);
     bucket.freelist_head = nullptr;
   } else {
     // Free the *end* of the list, not the head, since the head contains the
@@ -705,24 +698,20 @@ void ThreadCache::ClearBucketHelper(Bucket& bucket, size_t limit) {
     size_t items = 1;  // Cannot free the freelist head.
     while (items < limit) {
 #if PA_BUILDFLAG(USE_FREELIST_DISPATCHER)
-      head = freelist_dispatcher->GetNextForThreadCacheBool(
-          head, crash_on_corruption, bucket.slot_size);
+      head = freelist_dispatcher->GetNextForThreadCache(head, bucket.slot_size);
 #else
-      head = freelist_dispatcher->GetNextForThreadCache<crash_on_corruption>(
-          head, bucket.slot_size);
+      head = freelist_dispatcher->GetNextForThreadCache(head, bucket.slot_size);
 #endif  // PA_BUILDFLAG(USE_FREELIST_DISPATCHER)
       items++;
     }
 
 #if PA_BUILDFLAG(USE_FREELIST_DISPATCHER)
-    FreeAfter<crash_on_corruption>(
-        freelist_dispatcher->GetNextForThreadCacheBool(
-            head, crash_on_corruption, bucket.slot_size),
+    FreeAfter(
+        freelist_dispatcher->GetNextForThreadCache(head, bucket.slot_size),
         bucket.slot_size);
 #else
-    FreeAfter<crash_on_corruption>(
-        freelist_dispatcher->GetNextForThreadCache<crash_on_corruption>(
-            head, bucket.slot_size),
+    FreeAfter(
+        freelist_dispatcher->GetNextForThreadCache(head, bucket.slot_size),
         bucket.slot_size);
 #endif  // PA_BUILDFLAG(USE_FREELIST_DISPATCHER)
     freelist_dispatcher->SetNext(head, nullptr);
@@ -736,7 +725,6 @@ void ThreadCache::ClearBucketHelper(Bucket& bucket, size_t limit) {
   PA_DCHECK(cached_memory_ == CachedMemory());
 }
 
-template <bool crash_on_corruption>
 void ThreadCache::FreeAfter(internal::PartitionFreelistEntry* head,
                             size_t slot_size) {
   // Acquire the lock once. Deallocation from the same bucket are likely to be
@@ -748,11 +736,9 @@ void ThreadCache::FreeAfter(internal::PartitionFreelistEntry* head,
     const internal::PartitionFreelistDispatcher* freelist_dispatcher =
         root_->get_freelist_dispatcher();
 #if PA_BUILDFLAG(USE_FREELIST_DISPATCHER)
-    head = freelist_dispatcher->GetNextForThreadCacheBool(
-        head, crash_on_corruption, slot_size);
+    head = freelist_dispatcher->GetNextForThreadCache(head, slot_size);
 #else
-    head = freelist_dispatcher->GetNextForThreadCache<crash_on_corruption>(
-        head, slot_size);
+    head = freelist_dispatcher->GetNextForThreadCache(head, slot_size);
 #endif  // PA_BUILDFLAG(USE_FREELIST_DISPATCHER)
     root_->RawFreeLocked(slot_start);
   }
@@ -826,11 +812,6 @@ void ThreadCache::Purge() {
   PurgeInternal();
 }
 
-void ThreadCache::TryPurge() {
-  PA_REENTRANCY_GUARD(is_in_thread_cache_);
-  PurgeInternalHelper<false>();
-}
-
 // static
 void ThreadCache::PurgeCurrentThread() {
   auto* tcache = Get();
@@ -839,16 +820,11 @@ void ThreadCache::PurgeCurrentThread() {
   }
 }
 
-void ThreadCache::PurgeInternal() {
-  PurgeInternalHelper<true>();
-}
-
 void ThreadCache::ResetPerThreadAllocationStatsForTesting() {
   thread_alloc_stats_ = {};
 }
 
-template <bool crash_on_corruption>
-void ThreadCache::PurgeInternalHelper() {
+void ThreadCache::PurgeInternal() {
   should_purge_.store(false, std::memory_order_relaxed);
   // TODO(lizeb): Investigate whether lock acquisition should be less
   // frequent.
@@ -858,7 +834,7 @@ void ThreadCache::PurgeInternalHelper() {
   // memory already cached in the inactive buckets. They should still be
   // purged.
   for (auto& bucket : buckets_) {
-    ClearBucketHelper<crash_on_corruption>(bucket, 0);
+    ClearBucket(bucket, 0);
   }
 }
 
@@ -889,14 +865,8 @@ bool ThreadCache::IsInFreelist(uintptr_t address,
       position = index;
       return true;
     }
-#if PA_BUILDFLAG(USE_FREELIST_DISPATCHER)
     internal::PartitionFreelistEntry* next =
-        freelist_dispatcher->GetNextForThreadCacheTrue(entry, bucket.slot_size);
-#else
-    internal::PartitionFreelistEntry* next =
-        freelist_dispatcher->GetNextForThreadCache<true>(entry,
-                                                         bucket.slot_size);
-#endif  // PA_BUILDFLAG(USE_FREELIST_DISPATCHER)
+        freelist_dispatcher->GetNextForThreadCache(entry, bucket.slot_size);
     entry = next;
     ++index;
   }

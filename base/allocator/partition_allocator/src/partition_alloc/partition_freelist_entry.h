@@ -83,15 +83,8 @@ struct PartitionFreelistDispatcher {
   PA_ALWAYS_INLINE virtual void CorruptNextForTesting(
       PartitionFreelistEntry* entry,
       uintptr_t v) const = 0;
-  PA_ALWAYS_INLINE virtual PartitionFreelistEntry* GetNextForThreadCacheTrue(
+  PA_ALWAYS_INLINE virtual PartitionFreelistEntry* GetNextForThreadCache(
       PartitionFreelistEntry* entry,
-      size_t slot_size) const = 0;
-  PA_ALWAYS_INLINE virtual PartitionFreelistEntry* GetNextForThreadCacheFalse(
-      PartitionFreelistEntry* entry,
-      size_t slot_size) const = 0;
-  PA_ALWAYS_INLINE virtual PartitionFreelistEntry* GetNextForThreadCacheBool(
-      PartitionFreelistEntry* entry,
-      bool crash_on_corruption,
       size_t slot_size) const = 0;
   PA_ALWAYS_INLINE virtual PartitionFreelistEntry* GetNext(
       PartitionFreelistEntry* entry,
@@ -147,12 +140,11 @@ struct PartitionFreelistDispatcher {
     return entry->CorruptNextForTesting(v);
   }
 
-  template <bool crash_on_corruption>
   PA_ALWAYS_INLINE PartitionFreelistEntry* GetNextForThreadCache(
       PartitionFreelistEntry* entry,
       size_t slot_size) const {
     return reinterpret_cast<PartitionFreelistEntry*>(
-        entry->GetNextForThreadCache<crash_on_corruption>(slot_size));
+        entry->GetNextForThreadCache(slot_size));
   }
 
   PA_ALWAYS_INLINE PartitionFreelistEntry* GetNext(
@@ -236,29 +228,11 @@ struct PartitionFreelistDispatcherImpl final : PartitionFreelistDispatcher {
     return GetEntryImpl(entry)->CorruptNextForTesting(v);
   }
 
-  PA_ALWAYS_INLINE PartitionFreelistEntry* GetNextForThreadCacheTrue(
+  PA_ALWAYS_INLINE PartitionFreelistEntry* GetNextForThreadCache(
       PartitionFreelistEntry* entry,
       size_t slot_size) const override {
     return reinterpret_cast<PartitionFreelistEntry*>(
-        GetEntryImpl(entry)->template GetNextForThreadCache<true>(slot_size));
-  }
-
-  PA_ALWAYS_INLINE PartitionFreelistEntry* GetNextForThreadCacheFalse(
-      PartitionFreelistEntry* entry,
-      size_t slot_size) const override {
-    return reinterpret_cast<PartitionFreelistEntry*>(
-        GetEntryImpl(entry)->template GetNextForThreadCache<false>(slot_size));
-  }
-
-  PA_ALWAYS_INLINE PartitionFreelistEntry* GetNextForThreadCacheBool(
-      PartitionFreelistEntry* entry,
-      bool crash_on_corruption,
-      size_t slot_size) const override {
-    if (crash_on_corruption) {
-      return GetNextForThreadCacheTrue(entry, slot_size);
-    } else {
-      return GetNextForThreadCacheFalse(entry, slot_size);
-    }
+        GetEntryImpl(entry)->GetNextForThreadCache(slot_size));
   }
 
   PA_ALWAYS_INLINE PartitionFreelistEntry* GetNext(
