@@ -12,6 +12,8 @@ import {ObservableValue} from '/glic/observable.js';
 
 import {createGlicHostRegistryOnLoad} from './api_boot.js';
 
+let maxTimeoutEndTime = performance.now() + 10000;
+
 function getTestName(): string|null {
   let testName = new URL(window.location.href).searchParams.get('test');
   if (testName?.startsWith('DISABLED_')) {
@@ -422,7 +424,6 @@ class ApiTests extends ApiTestFixtureBase {
     assertFalse(!!result.viewportScreenshot);
   }
 
-  // TODO(harringtond): Add a test for a PDF.
   async testGetContextFromFocusedTabWithAllRequestedData() {
     await this.host.setTabContextPermissionState(true);
 
@@ -471,6 +472,38 @@ class ApiTests extends ApiTestFixtureBase {
     assertTrue(!!metaTag);
     assertEquals(metaTag.name, 'author');
     assertEquals(metaTag.content, 'George');
+  }
+
+  async testGetContextFromFocusedTabWithPdfFile() {
+    await this.host.setTabContextPermissionState(true);
+
+    // Pdf pages have two loads: one of the WebContents, and another of the
+    // element within an iframe that contains the actual pdf. We need to wait
+    // for both to be finished before running the test. The cpp side waits for
+    // the WebContents to be loaded, but we must still wait here.
+    const result = await runUntil(async () => {
+      const result =
+          await this.host.getContextFromFocusedTab?.({pdfData: true});
+      if (!result || !result.pdfDocumentData ||
+          !result.pdfDocumentData.pdfData) {
+        return undefined;
+      }
+      return result;
+    });
+
+    assertTrue(
+        result.tabData.url.endsWith('pdf/test.pdf') ?? false,
+        `Tab data has unexpected url ${result.tabData.url}`);
+    assertFalse(!!result.webPageData);
+
+    // Original PDF size is 7984 bytes, because Chrome reserializes the PDF,
+    // the size can change, but it shouldn't be too small.
+    const pdfData = await readStream(result.pdfDocumentData!.pdfData!);
+    assertTrue(
+        pdfData.byteLength > 5000,
+        `PDF data is too short. length=${pdfData.byteLength}`);
+    assertEquals('%PDF', new TextDecoder().decode(pdfData.slice(0, 4)));
+    assertFalse(result.pdfDocumentData!.pdfSizeLimitExceeded);
   }
 
   // TODO(harringtond): This is disabled because it hangs. Fix it.
@@ -1012,8 +1045,9 @@ class TestRunner implements TestStepper {
   }
 
   // Sets up the test and starts running it.
-  async run(payload: any): Promise<TestResult> {
+  async run(maxTimeoutMs: number, payload: any): Promise<TestResult> {
     assertTrue(this.testFound, `Test not found`);
+    maxTimeoutEndTime = performance.now() + maxTimeoutMs;
     console.info(`Running test ${this.testName} with payload ${
         JSON.stringify(payload)}`);
     this.fixture!.testParams = payload;
@@ -1098,9 +1132,10 @@ async function main() {
   const testRunner = new TestRunner(getTestName() ?? 'testDoNothing');
   await testRunner.setUp();
 
-  (window as any).runApiTest = (payload: any): Promise<TestResult> => {
-    return testRunner.run(payload);
-  };
+  (window as any).runApiTest =
+      (maxTimeoutMs: number, payload: any): Promise<TestResult> => {
+        return testRunner.run(maxTimeoutMs, payload);
+      };
 
   (window as any).continueApiTest = (payload: any): Promise<TestResult> => {
     return testRunner.stepComplete(payload);
@@ -1136,17 +1171,47 @@ function sleep(timeoutMs: number): Promise<void> {
   });
 }
 
+function getTimeout(timeoutMs?: number): number {
+  if (timeoutMs === undefined) {
+    return Math.max(0, maxTimeoutEndTime - performance.now());
+  }
+  return timeoutMs;
+}
+
 // Waits for a promise to resolve. If the timeout is reached first, throws an
 // exception. Note this is useful because if the test times out in the normal
 // way, we do not receive a very useful error.
-async function waitFor<T>(value: Promise<T>, timeoutMs = 5000): Promise<T> {
+async function waitFor<T>(value: Promise<T>, timeoutMs?: number): Promise<T> {
   const timeoutResult = Symbol();
-  const result =
-      await Promise.race([value, sleep(timeoutMs).then(() => timeoutResult)]);
+  const result = await Promise.race(
+      [value, sleep(getTimeout(timeoutMs)).then(() => timeoutResult)]);
   if (result === timeoutResult) {
     throw new Error(`Timed out while waiting`);
   }
   return value;
+}
+
+
+// Run until `condition()` returns a truthy value. Throws an exception if the
+// timeout is reached first. Otherwise, this returns the value returned by
+// condition.
+async function runUntil<T>(
+    condition: () => Promise<T>, timeoutMs?: number): Promise<NonNullable<T>> {
+  timeoutMs = getTimeout(timeoutMs);
+  const sleepMs = getTimeout(timeoutMs) / 20;
+  const timeout = performance.now() + timeoutMs;
+  while (performance.now() < timeout) {
+    const result = await condition();
+    if (result) {
+      return result;
+    }
+    await sleep(sleepMs);
+  }
+  throw new Error('runUntil timed out');
+}
+
+function readStream(stream: ReadableStream<Uint8Array>): Promise<Uint8Array> {
+  return new Response(stream).bytes();
 }
 
 main();

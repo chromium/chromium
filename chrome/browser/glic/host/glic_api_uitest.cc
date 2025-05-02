@@ -14,12 +14,14 @@
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
 #include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "base/test/test_timeouts.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -51,6 +53,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
+#include "pdf/buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/screen.h"
@@ -194,8 +197,13 @@ class GlicApiTest : public test::InteractiveGlicTest {
     base::JSONWriter::Write(options.params, &param_json);
     ProcessTestResult(
         options,
-        content::EvalJs(glic_guest_frame,
-                        base::StrCat({"runApiTest(", param_json, ")"})));
+        content::EvalJs(
+            glic_guest_frame,
+            base::StrCat(
+                {"runApiTest(",
+                 base::NumberToString((TestTimeouts::action_max_timeout() * 0.9)
+                                          .InMilliseconds()),
+                 ",", param_json, ")"})));
   }
 
   // Continues test execution if `advanceToNextStep()` was used to return
@@ -843,6 +851,22 @@ IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab,
 
 IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab,
                        testGetContextFromFocusedTabWithAllRequestedData) {
+  ExecuteJsTest();
+}
+
+#if BUILDFLAG(ENABLE_PDF)
+#define MAYBE_testGetContextFromFocusedTabWithPdfFile \
+  testGetContextFromFocusedTabWithPdfFile
+#else
+#define MAYBE_testGetContextFromFocusedTabWithPdfFile \
+  DISABLED_testGetContextFromFocusedTabWithPdfFile
+#endif
+IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab,
+                       MAYBE_testGetContextFromFocusedTabWithPdfFile) {
+  RunTestSequence(NavigateWebContents(
+      kFirstTab,
+      InProcessBrowserTest::embedded_test_server()->GetURL("/pdf/test.pdf")));
+
   ExecuteJsTest();
 }
 

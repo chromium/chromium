@@ -169,10 +169,11 @@ void GlicPageContextFetcher::Fetch(
     pdf::PDFDocumentHelper* pdf_helper =
         pdf::PDFDocumentHelper::MaybeGetForWebContents(web_contents());
     RecordPdfRequestState(is_pdf_document, /*pdf_found=*/pdf_helper != nullptr);
-    if (is_pdf_document && pdf_helper) {
+    // GetPdfBytes() is not safe before IsDocumentLoadComplete() = true.
+    if (is_pdf_document && pdf_helper && pdf_helper->IsDocumentLoadComplete()) {
       pdf_origin_ = pdf_helper->render_frame_host().GetLastCommittedOrigin();
       pdf_helper->GetPdfBytes(
-          options.pdf_size_limit,
+          options_.pdf_size_limit,
           base::BindOnce(&GlicPageContextFetcher::ReceivedPdfBytes,
                          GetWeakPtr()));
       pdf_done_ = false;  // Will fetch PDF contents.
@@ -322,10 +323,18 @@ void GlicPageContextFetcher::RunCallbackIfComplete() {
     if (pdf_status_) {
       auto pdf_document_data = mojom::PdfDocumentData::New();
       pdf_document_data->origin = pdf_origin_;
-      pdf_document_data->pdf_data = std::move(pdf_bytes_);
+
+      // Warning!: `pdf_bytes_` can be larger than pdf_size_limit.
+      // `pdf_size_limit` applies to the original PDF size, but the PDF is
+      // re-serialized and returned, so it is not identical to the original.
       pdf_document_data->size_limit_exceeded =
           *pdf_status_ ==
-          pdf::mojom::PdfListener_GetPdfBytesStatus::kSizeLimitExceeded;
+              pdf::mojom::PdfListener_GetPdfBytesStatus::kSizeLimitExceeded ||
+          pdf_bytes_.size() > options_.pdf_size_limit;
+      if (!pdf_document_data->size_limit_exceeded) {
+        pdf_document_data->pdf_data = std::move(pdf_bytes_);
+      }
+
       tab_context->pdf_document_data = std::move(pdf_document_data);
     }
 
