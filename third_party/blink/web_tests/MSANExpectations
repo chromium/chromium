@@ -151,3 +151,6 @@ crbug.com/389367896 [ Linux ] external/wpt/IndexedDB/nested-cloning-small.any.ht
 crbug.com/389367896 [ Linux ] external/wpt/IndexedDB/nested-cloning-small.any.serviceworker.html [ Skip ]
 crbug.com/389367896 [ Linux ] external/wpt/IndexedDB/nested-cloning-small.any.sharedworker.html [ Skip ]
 crbug.com/389367896 [ Linux ] external/wpt/IndexedDB/nested-cloning-small.any.worker.html [ Skip ]
+
+# Gardener 2025-05-02
+crbug.com/415293999 [ Linux ] external/wpt/storage-access-api/requestStorageAccess-nested-cross-site-iframe.sub.https.window.html [ Skip ]
