@@ -160,7 +160,8 @@ void SelectBnplIssuerDialog::AddedToWidget() {
   GetBubbleFrameView()->SetTitleView(
       std::make_unique<TitleWithIconAfterLabelView>(
           title, TitleWithIconAfterLabelView::Icon::GOOGLE_PAY));
-  GetViewAccessibility().AnnouncePolitely(title);
+  SetAccessibleWindowRole(ax::mojom::Role::kDialog);
+  SetAccessibleTitle(title);
 }
 
 void SelectBnplIssuerDialog::OnSettingsLinkClicked() {

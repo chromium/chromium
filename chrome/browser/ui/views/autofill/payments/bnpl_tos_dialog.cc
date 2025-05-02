@@ -117,7 +117,8 @@ void BnplTosDialog::AddedToWidget() {
   // view.
   GetBubbleFrameView()->SetTitleView(
       std::make_unique<TitleWithIconAfterLabelView>(title, GetTitleIcon()));
-  GetViewAccessibility().AnnouncePolitely(title);
+  SetAccessibleWindowRole(ax::mojom::Role::kDialog);
+  SetAccessibleTitle(title);
 }
 
 void BnplTosDialog::OnWidgetInitialized() {
