@@ -518,6 +518,11 @@ class CreditCard : public FormGroup {
     product_terms_url_ = product_terms_url;
   }
 
+  const std::string& benefit_source() const { return benefit_source_; }
+  void set_benefit_source(std::string_view benefit_source) {
+    benefit_source_ = std::string(benefit_source);
+  }
+
   const std::u16string& cvc() const { return cvc_; }
   void clear_cvc() { cvc_.clear(); }
   void set_cvc(const std::u16string& cvc) { cvc_ = cvc; }
@@ -662,6 +667,10 @@ class CreditCard : public FormGroup {
   // The URL for issuer terms of service to be displayed on the settings
   // page.
   GURL product_terms_url_;
+
+  // The source of the card benefits. This is set for server cards with
+  // benefits available only (both actual cards and virtual cards).
+  std::string benefit_source_;
 
   // The card verification code of the card. May be empty.
   std::u16string cvc_;
