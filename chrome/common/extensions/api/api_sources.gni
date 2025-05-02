@@ -17,6 +17,7 @@ schema_sources_ = [
   "developer_private.idl",
   "identity.idl",
   "notifications.idl",
+  "scripting.idl",
   "webstore_private.json",
 ]
 
@@ -72,7 +73,6 @@ if (enable_extensions) {
     "reading_list.idl",
     "resources_private.idl",
     "safe_browsing_private.idl",
-    "scripting.idl",
     "search.idl",
     "sessions.json",
     "settings_private.idl",

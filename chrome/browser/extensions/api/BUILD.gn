@@ -31,9 +31,11 @@ group("api_implementations") {
     "//chrome/browser/extensions/api/cookies",
     "//chrome/browser/extensions/api/module",
     "//chrome/browser/extensions/api/notifications",
+    "//chrome/browser/extensions/api/scripting",
   ]
 
   if (enable_extensions) {
+    # APIs supported on Win/Mac/Linux but NOT desktop Android go here.
     # TODO(crbug.com/40245282): Add more API implementations here.
     public_deps += [
       "//chrome/browser/extensions/api/autofill_private",
@@ -61,7 +63,6 @@ group("api_implementations") {
       "//chrome/browser/extensions/api/resources_private",
       "//chrome/browser/extensions/api/runtime",
       "//chrome/browser/extensions/api/safe_browsing_private",
-      "//chrome/browser/extensions/api/scripting",
       "//chrome/browser/extensions/api/search",
       "//chrome/browser/extensions/api/settings_overrides",
       "//chrome/browser/extensions/api/side_panel",

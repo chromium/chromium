@@ -15,8 +15,11 @@
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/script_executor.h"
 #include "extensions/browser/scripting_utils.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/mojom/code_injection.mojom.h"
 #include "extensions/common/user_script.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
