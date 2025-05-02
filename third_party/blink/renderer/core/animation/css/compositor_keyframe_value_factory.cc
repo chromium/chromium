@@ -85,9 +85,8 @@ CompositorKeyframeValue* CompositorKeyframeValueFactory::Create(
       // TODO: Add supported for interpolable color values from
       // CSSIdentifierValue when given a value of currentcolor
       if (const auto* color_value = DynamicTo<cssvalue::CSSColor>(value)) {
-        Color color = color_value->Value();
-        return MakeGarbageCollected<CompositorKeyframeColor>(SkColorSetARGB(
-            color.AlphaAsInteger(), color.Red(), color.Green(), color.Blue()));
+        return MakeGarbageCollected<CompositorKeyframeColor>(
+            color_value->Value().toSkColor4f().toSkColor());
       }
 
       return nullptr;
