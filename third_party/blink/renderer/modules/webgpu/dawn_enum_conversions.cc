@@ -730,6 +730,8 @@ wgpu::FeatureName AsDawnEnum(const V8GPUFeatureName& webgpu_enum) {
       return wgpu::FeatureName::Unorm16TextureFormats;
     case V8GPUFeatureName::Enum::kChromiumExperimentalSnorm16TextureFormats:
       return wgpu::FeatureName::Snorm16TextureFormats;
+    case V8GPUFeatureName::Enum::kChromiumExperimentalSubgroupMatrix:
+      return wgpu::FeatureName::ChromiumExperimentalSubgroupMatrix;
   }
 }
 

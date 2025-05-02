@@ -1319,6 +1319,8 @@ bool WebGPUDecoderImpl::IsFeatureExposed(wgpu::FeatureName feature) const {
     }
     case wgpu::FeatureName::SharedBufferMemoryD3D12Resource:
       return safety_level_ == webgpu::SafetyLevel::kUnsafe;
+    case wgpu::FeatureName::ChromiumExperimentalSubgroupMatrix:
+      return safety_level_ == webgpu::SafetyLevel::kUnsafe;
     default:
       return false;
   }
