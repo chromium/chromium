@@ -60,27 +60,25 @@ void TraceNetLogObserver::OnAddEntry(const NetLogEntry& entry) {
   // Add source's start time as a parameter. The net-log viewer requires it.
   params.Set("source_start_time",
              NetLog::TickCountToString(entry.source.start_time));
+  const auto track = perfetto::Track(track_id_base_ + entry.source.id);
   switch (entry.phase) {
     case NetLogEventPhase::BEGIN:
       TRACE_EVENT_BEGIN(
           kNetLogTracingCategory,
-          perfetto::StaticString(NetLogEventTypeToString(entry.type)),
-          perfetto::Track(entry.source.id), "source_type",
-          NetLog::SourceTypeToString(entry.source.type), "params",
-          std::make_unique<TracedValue>(std::move(params)));
+          perfetto::StaticString(NetLogEventTypeToString(entry.type)), track,
+          "source_type", NetLog::SourceTypeToString(entry.source.type),
+          "params", std::make_unique<TracedValue>(std::move(params)));
       break;
     case NetLogEventPhase::END:
-      TRACE_EVENT_END(kNetLogTracingCategory, perfetto::Track(entry.source.id),
-                      "params",
+      TRACE_EVENT_END(kNetLogTracingCategory, track, "params",
                       std::make_unique<TracedValue>(std::move(params)));
       break;
     case NetLogEventPhase::NONE:
       TRACE_EVENT_INSTANT(
           kNetLogTracingCategory,
-          perfetto::StaticString(NetLogEventTypeToString(entry.type)),
-          perfetto::Track(entry.source.id), "source_type",
-          NetLog::SourceTypeToString(entry.source.type), "params",
-          std::make_unique<TracedValue>(std::move(params)));
+          perfetto::StaticString(NetLogEventTypeToString(entry.type)), track,
+          "source_type", NetLog::SourceTypeToString(entry.source.type),
+          "params", std::make_unique<TracedValue>(std::move(params)));
       break;
   }
 }
