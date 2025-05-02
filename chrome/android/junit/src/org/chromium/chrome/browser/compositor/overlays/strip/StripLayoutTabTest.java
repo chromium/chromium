@@ -262,6 +262,6 @@ public class StripLayoutTabTest {
     }
 
     private StripLayoutTab createStripLayoutTab(boolean incognito) {
-        return new StripLayoutTab(mContext, 0, null, null, null, incognito);
+        return new StripLayoutTab(mContext, 0, null, null, null, null, incognito);
     }
 }

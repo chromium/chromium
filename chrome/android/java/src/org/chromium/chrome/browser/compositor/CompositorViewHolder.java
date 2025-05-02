@@ -1688,7 +1688,6 @@ public class CompositorViewHolder extends FrameLayout
 
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
-        // TODO(crbug.com/6341205): Handle scrolling.
         // If mSceneOverlay == null, i.e. we're not handling keyboard focus, return early.
         // If the event is not one of the ones we need to process, return early.
         // Returning early allows us to avoid getting the list of virtual views.

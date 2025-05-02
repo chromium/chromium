@@ -68,6 +68,7 @@ import org.chromium.chrome.browser.compositor.layouts.components.TintedComposito
 import org.chromium.chrome.browser.compositor.layouts.phone.stack.StackScroller;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutGroupTitle.StripLayoutGroupTitleDelegate;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView.StripLayoutViewOnClickHandler;
+import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView.StripLayoutViewOnKeyboardFocusHandler;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripTabModelActionListener.ActionType;
 import org.chromium.chrome.browser.compositor.overlays.strip.TabLoadTracker.TabLoadTrackerCallback;
 import org.chromium.chrome.browser.compositor.overlays.strip.TabStripIphController.IphType;
@@ -117,6 +118,7 @@ import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_group_sync.TriggerSource;
 import org.chromium.components.tab_groups.TabGroupColorId;
+import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -142,6 +144,7 @@ import java.util.Set;
 public class StripLayoutHelper
         implements StripLayoutGroupTitleDelegate,
                 StripLayoutViewOnClickHandler,
+                StripLayoutViewOnKeyboardFocusHandler,
                 StripUpdateDelegate,
                 AnimationHost,
                 TabListNotificationHandler {
@@ -615,7 +618,8 @@ public class StripLayoutHelper
                         null,
                         NEW_TAB_BUTTON_BACKGROUND_WIDTH_DP,
                         NEW_TAB_BUTTON_BACKGROUND_HEIGHT_DP,
-                        this,
+                        /* clickHandler= */ this,
+                        /* keyboardFocusHandler= */ this,
                         R.drawable.ic_new_tab_button,
                         NEW_TAB_BUTTON_CLICK_SLOP_DP);
         mNewTabButton.setBackgroundResourceId(R.drawable.bg_circle_tab_strip_button);
@@ -1029,17 +1033,17 @@ public class StripLayoutHelper
 
     /**
      * Sets the {@link TabModel} that this {@link StripLayoutHelper} will visually represent.
+     *
      * @param model The {@link TabModel} to visually represent.
      * @param tabCreator The {@link TabCreator}, used to create new tabs.
      * @param tabStateInitialized Whether the tab model's tab state is fully initialized after
-     *                            startup or not.
+     *     startup or not.
      */
     public void setTabModel(TabModel model, TabCreator tabCreator, boolean tabStateInitialized) {
         if (mModel == model) return;
         mModel = model;
         mTabCreator = tabCreator;
         mTabStateInitialized = tabStateInitialized;
-
         // If the tabs are still restoring and the refactoring experiment is enabled, we'll create a
         // placeholder strip. This means we don't need to call rebuildStripTabs() to generate "real"
         // strip tabs.
@@ -1389,6 +1393,10 @@ public class StripLayoutHelper
             setAccessibilityDescription(stripTab, getTabById(id));
             setAccessibilityDescription(findTabById(prevId), getTabById(prevId));
         }
+        StripLayoutTab previouslyFocusedTab = findTabById(prevId);
+        if (previouslyFocusedTab != null) previouslyFocusedTab.setIsSelected(false);
+        StripLayoutTab newFocusedTab = findTabById(id);
+        if (newFocusedTab != null) newFocusedTab.setIsSelected(true);
     }
 
     /**
@@ -1550,7 +1558,7 @@ public class StripLayoutHelper
         if (stripTab != null && !closureCancelled && !collapsed) {
             boolean animate = !onStartup;
             if (selected) {
-                float delta = calculateDeltaToMakeTabVisible(stripTab);
+                float delta = calculateDeltaToMakeViewVisible(stripTab);
                 setScrollForScrollingTabStacker(
                         delta, /* isDeltaHorizontal= */ true, animate, time);
             } else {
@@ -2769,6 +2777,16 @@ public class StripLayoutHelper
         }
     }
 
+    @Override
+    public void onKeyboardFocus(boolean isFocused, StripLayoutView view) {
+        if (!isFocused) return;
+        bringViewToVisibleArea(
+                view,
+                LayoutManagerImpl.time(),
+                /* animate= */ !AccessibilityState.isAccessibilityToolPresent());
+        mUpdateHost.requestUpdate();
+    }
+
     private void showContextMenu(StripLayoutView clickedView) {
         if (clickedView instanceof StripLayoutTab clickedTab
                 && ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_STRIP_CONTEXT_MENU)) {
@@ -3350,7 +3368,12 @@ public class StripLayoutHelper
         // Delay setting the collapsed state, since mStripViews may not yet be up to date.
         StripLayoutGroupTitle groupTitle =
                 new StripLayoutGroupTitle(
-                        mContext, /* delegate= */ this, mIncognito, rootId, tabGroupId);
+                        mContext,
+                        /* delegate= */ this,
+                        /* keyboardFocusHandler= */ this,
+                        mIncognito,
+                        rootId,
+                        tabGroupId);
         pushPropertiesToGroupTitle(groupTitle);
 
         // Must pass in the group title instead of rootId, since the StripLayoutGroupTitle has not
@@ -3551,7 +3574,8 @@ public class StripLayoutHelper
                 new StripLayoutTab(
                         mContext,
                         Tab.INVALID_TAB_ID,
-                        this,
+                        /* clickHandler= */ this,
+                        /* keyboardFocusHandler= */ this,
                         mTabLoadTrackerHost,
                         mUpdateHost,
                         mIncognito);
@@ -3575,7 +3599,13 @@ public class StripLayoutHelper
         // TODO: Cache these
         StripLayoutTab tab =
                 new StripLayoutTab(
-                        mContext, id, this, mTabLoadTrackerHost, mUpdateHost, mIncognito);
+                        mContext,
+                        id,
+                        /* clickHandler= */ this,
+                        /* keyboardFocusHandler= */ this,
+                        mTabLoadTrackerHost,
+                        mUpdateHost,
+                        mIncognito);
 
         if (isSelectedTab(id)) {
             tab.setContainerOpacity(TAB_OPACITY_VISIBLE);
@@ -3969,46 +3999,43 @@ public class StripLayoutHelper
     }
 
     /**
-     * @param tab The tab to make fully visible.
+     * @param view The {@link StripLayoutView} to make fully visible.
      * @return a 1-D vector on the X axis of the window coordinate system that can make the tab
      *     fully visible.
      */
-    private float calculateDeltaToMakeTabVisible(StripLayoutTab tab) {
-        if (tab == null) return 0.f;
+    private float calculateDeltaToMakeViewVisible(StripLayoutView view) {
+        if (view == null) return 0.f;
+        // These are always in view.
+        if (view.equals(mNewTabButton) || view.equals(mModelSelectorButton)) return 0.f;
 
-        // 1. Calculate offsets to fully show the tab on the left/right side of the
+        // 1. Calculate offsets to fully show the view on the left/right side of the
         // strip. These offsets are scalars.
         // TODO(wenyufu): Account for offsetX{Left,Right} result too much offset. Is this expected?
         final float rightOffset = mRightFadeWidth + mRightMargin;
         final float leftOffset = mLeftFadeWidth + mLeftMargin;
 
-        // 2. Calculate vectors from the tab's ideal position to the farthest left/right point where
-        // the tab can be visible.
+        // 2. Calculate vectors from the view's ideal position to the farthest left/right point
+        // where
+        // the view can be visible.
         // These are 1-D vectors on the X axis of the window coordinate system.
-        final float deltaToFarLeft = leftOffset - tab.getIdealX();
+        if (view instanceof TintedCompositorButton closeButton
+                && closeButton.getParentView() instanceof StripLayoutTab stripTab) {
+            view = stripTab;
+        }
+        final float deltaToFarLeft = leftOffset - view.getIdealX();
         final float deltaToFarRight =
-                mWidth - rightOffset - mCachedTabWidthSupplier.get() - tab.getIdealX();
+                mWidth - rightOffset - mCachedTabWidthSupplier.get() - view.getIdealX();
 
-        // 3. The following case means the tab is already completely in the visible area of the
+        // 3. The following case means the view is already completely in the visible area of the
         // strip, i.e., it needs to be:
         // moved left to reach the far left point, and
         // moved right to reach the far right point.
         if (deltaToFarLeft < 0 && deltaToFarRight > 0) return 0.f;
 
-        // 4. Return the vector with less distance for the tab to travel.
+        // 4. Return the vector with less distance for the view to travel.
         return Math.abs(deltaToFarLeft) < Math.abs(deltaToFarRight)
                 ? deltaToFarLeft
                 : deltaToFarRight;
-    }
-
-    /**
-     * @param index The index of the tab to make fully visible.
-     * @return Scroll delta to make the tab at the given index fully visible.
-     */
-    private float calculateDeltaToMakeIndexVisible(int index) {
-        if (index == TabModel.INVALID_TAB_INDEX) return 0.f;
-
-        return calculateDeltaToMakeTabVisible(mStripTabs[index]);
     }
 
     void setTabAtPositionForTesting(StripLayoutTab tab) {
@@ -4324,16 +4351,13 @@ public class StripLayoutHelper
 
     /** Scrolls to the selected tab if it's not fully visible. */
     private void bringSelectedTabToVisibleArea(long time, boolean animate) {
+        bringViewToVisibleArea(getSelectedStripTab(), time, animate);
+    }
+
+    /** Scrolls to {@param view} if it's not fully visible. */
+    private void bringViewToVisibleArea(StripLayoutView view, long time, boolean animate) {
         if (mWidth == 0) return;
-
-        int index = getSelectedStripTabIndex();
-        StripLayoutTab selectedLayoutTab =
-                index >= 0 && index < mStripTabs.length ? mStripTabs[index] : null;
-        if (selectedLayoutTab == null || isViewCompletelyVisible(selectedLayoutTab)) {
-            return;
-        }
-
-        float delta = calculateDeltaToMakeIndexVisible(index);
+        float delta = calculateDeltaToMakeViewVisible(view);
         setScrollForScrollingTabStacker(delta, /* isDeltaHorizontal= */ true, animate, time);
     }
 

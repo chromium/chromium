@@ -39,9 +39,18 @@ public class TintedCompositorButton extends CompositorButton {
             float width,
             float height,
             StripLayoutViewOnClickHandler clickHandler,
+            StripLayoutViewOnKeyboardFocusHandler keyboardFocusHandler,
             @DrawableRes int resource,
             float clickSlopDp) {
-        super(context, type, parentView, width, height, clickHandler, clickSlopDp);
+        super(
+                context,
+                type,
+                parentView,
+                width,
+                height,
+                clickHandler,
+                keyboardFocusHandler,
+                clickSlopDp);
         mContext = context;
         mResource = resource;
     }

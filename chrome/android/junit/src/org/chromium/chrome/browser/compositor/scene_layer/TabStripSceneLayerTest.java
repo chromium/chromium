@@ -47,6 +47,7 @@ import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutGroupTit
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutTab;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView.StripLayoutViewOnClickHandler;
+import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView.StripLayoutViewOnKeyboardFocusHandler;
 import org.chromium.chrome.browser.compositor.overlays.strip.TabLoadTracker.TabLoadTrackerCallback;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
 import org.chromium.ui.resources.ResourceManager;
@@ -63,6 +64,7 @@ public class TabStripSceneLayerTest {
     @Mock private LayerTitleCache mLayerTitleCache;
     @Mock private SceneLayer mSceneLayer;
     @Mock private StripLayoutViewOnClickHandler mOnClickHandler;
+    @Mock private StripLayoutViewOnKeyboardFocusHandler mKeyboardFocusHandler;
     @Mock private TabLoadTrackerCallback mTabLoadTrackerCallback;
     @Mock private LayoutRenderHost mLayoutRenderHost;
     @Mock private LayoutUpdateHost mLayoutUpdateHost;
@@ -108,6 +110,7 @@ public class TabStripSceneLayerTest {
                         32.f,
                         32.f,
                         mOnClickHandler,
+                        mKeyboardFocusHandler,
                         R.drawable.ic_incognito,
                         12.f);
         mNewTabButton =
@@ -118,6 +121,7 @@ public class TabStripSceneLayerTest {
                         32.f,
                         32.f,
                         mOnClickHandler,
+                        mKeyboardFocusHandler,
                         R.drawable.ic_new_tab_button,
                         8.f);
         mStripLayoutTab =
@@ -126,6 +130,7 @@ public class TabStripSceneLayerTest {
                                 mContext,
                                 1,
                                 mOnClickHandler,
+                                mKeyboardFocusHandler,
                                 mTabLoadTrackerCallback,
                                 mLayoutUpdateHost,
                                 false));

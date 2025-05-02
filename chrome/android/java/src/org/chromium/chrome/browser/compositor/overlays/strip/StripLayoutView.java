@@ -35,6 +35,17 @@ public abstract class StripLayoutView implements VirtualView {
         void onClick(long time, StripLayoutView view);
     }
 
+    /** Handler for keyboard focus on VirtualViews. */
+    public interface StripLayoutViewOnKeyboardFocusHandler {
+        /**
+         * Handles keyboard focus change on this {@param view}.
+         *
+         * @param isFocused Whether {@param view} is now focused.
+         * @param view The {@link StripLayoutView} in question.
+         */
+        void onKeyboardFocus(boolean isFocused, StripLayoutView view);
+    }
+
     /** A property for animations to use for changing the drawX of the view. */
     public static final FloatProperty<StripLayoutView> DRAW_X =
             new FloatProperty<>("drawX") {
@@ -107,6 +118,7 @@ public abstract class StripLayoutView implements VirtualView {
 
     // Event handlers.
     private final StripLayoutViewOnClickHandler mOnClickHandler;
+    private final StripLayoutViewOnKeyboardFocusHandler mOnKeyboardFocusHandler;
 
     // Tab group share properties.
     private boolean mShowNotificationBubble;
@@ -117,12 +129,17 @@ public abstract class StripLayoutView implements VirtualView {
     /**
      * @param incognito The incognito state of the view.
      * @param clickHandler StripLayoutViewOnClickHandler for this view.
+     * @param keyboardFocusHandler Handles keyboard focus gain/loss for this view.
      * @param context The context for the view.
      */
     protected StripLayoutView(
-            boolean incognito, StripLayoutViewOnClickHandler clickHandler, Context context) {
+            boolean incognito,
+            StripLayoutViewOnClickHandler clickHandler,
+            StripLayoutViewOnKeyboardFocusHandler keyboardFocusHandler,
+            Context context) {
         mIsIncognito = incognito;
         mOnClickHandler = clickHandler;
+        mOnKeyboardFocusHandler = keyboardFocusHandler;
         mContext = context;
     }
 
@@ -430,6 +447,7 @@ public abstract class StripLayoutView implements VirtualView {
     @Override
     public void setKeyboardFocused(boolean keyboardFocused) {
         mKeyboardFocused = keyboardFocused;
+        mOnKeyboardFocusHandler.onKeyboardFocus(keyboardFocused, this);
     }
 
     @Override

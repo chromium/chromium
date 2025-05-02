@@ -50,6 +50,7 @@ import org.chromium.chrome.browser.compositor.layouts.components.TintedComposito
 import org.chromium.chrome.browser.compositor.layouts.eventfilter.AreaMotionEventFilter;
 import org.chromium.chrome.browser.compositor.layouts.eventfilter.MotionEventHandler;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView.StripLayoutViewOnClickHandler;
+import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView.StripLayoutViewOnKeyboardFocusHandler;
 import org.chromium.chrome.browser.compositor.overlays.strip.reorder.TabDragSource;
 import org.chromium.chrome.browser.compositor.scene_layer.TabStripSceneLayer;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
@@ -487,7 +488,11 @@ public class StripLayoutHelperManager
         if (!ChromeFeatureList.sTabStripIncognitoMigration.isEnabled()) {
             StripLayoutViewOnClickHandler selectorClickHandler =
                     (time, view) -> handleModelSelectorButtonClick();
-            createModelSelectorButton(context, selectorClickHandler);
+            StripLayoutViewOnKeyboardFocusHandler selectorKeyboardFocusHandler =
+                    (isFocused, view) -> {
+                        getActiveStripLayoutHelper().onKeyboardFocus(isFocused, view);
+                    };
+            createModelSelectorButton(context, selectorClickHandler, selectorKeyboardFocusHandler);
         }
         // Use toolbar menu button padding to align MSB with menu button.
         mStripEndPadding = res.getDimension(R.dimen.button_end_padding) / mDensity;
@@ -609,7 +614,9 @@ public class StripLayoutHelperManager
 
     // Incognito button for Tab Strip Redesign.
     private void createModelSelectorButton(
-            Context context, StripLayoutViewOnClickHandler selectorClickHandler) {
+            Context context,
+            StripLayoutViewOnClickHandler selectorClickHandler,
+            StripLayoutViewOnKeyboardFocusHandler keyboardFocusHandler) {
         mModelSelectorButton =
                 new TintedCompositorButton(
                         context,
@@ -618,6 +625,7 @@ public class StripLayoutHelperManager
                         MODEL_SELECTOR_BUTTON_BACKGROUND_WIDTH_DP,
                         MODEL_SELECTOR_BUTTON_BACKGROUND_HEIGHT_DP,
                         selectorClickHandler,
+                        keyboardFocusHandler,
                         R.drawable.ic_incognito,
                         MODEL_SELECTOR_BUTTON_CLICK_SLOP_DP);
 

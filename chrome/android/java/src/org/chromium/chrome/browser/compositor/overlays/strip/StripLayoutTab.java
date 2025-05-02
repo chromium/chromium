@@ -145,6 +145,7 @@ public class StripLayoutTab extends StripLayoutView {
 
     private boolean mIsDying;
     private boolean mIsClosed;
+    private boolean mIsSelected;
     private boolean mCanShowCloseButton = true;
     private boolean mFolioAttached = true;
     private boolean mStartDividerVisible;
@@ -177,6 +178,8 @@ public class StripLayoutTab extends StripLayoutView {
      *
      * @param context An Android context for accessing system resources.
      * @param id The id of the {@link Tab} to visually represent.
+     * @param clickHandler Handles clicks on this {@link StripLayoutTab}.
+     * @param keyboardFocusHandler Handles keyboard focus gain/loss on this {@link StripLayoutTab}.
      * @param loadTrackerCallback The {@link TabLoadTrackerCallback} to be notified of loading state
      *     changes.
      * @param updateHost The {@link LayoutRenderHost}.
@@ -186,10 +189,11 @@ public class StripLayoutTab extends StripLayoutView {
             Context context,
             int id,
             StripLayoutViewOnClickHandler clickHandler,
+            StripLayoutViewOnKeyboardFocusHandler keyboardFocusHandler,
             TabLoadTrackerCallback loadTrackerCallback,
             LayoutUpdateHost updateHost,
             boolean incognito) {
-        super(incognito, clickHandler, context);
+        super(incognito, clickHandler, keyboardFocusHandler, context);
         mTabId = id;
         mLoadTracker = new TabLoadTracker(id, loadTrackerCallback);
         mUpdateHost = updateHost;
@@ -201,6 +205,7 @@ public class StripLayoutTab extends StripLayoutView {
                         /* width= */ 0,
                         /* height= */ 0,
                         clickHandler,
+                        keyboardFocusHandler,
                         R.drawable.btn_tab_close_normal,
                         0f);
         mCloseButton.setTintResources(
@@ -264,7 +269,7 @@ public class StripLayoutTab extends StripLayoutView {
     public void getVirtualViews(List<VirtualView> views) {
         if (isCollapsed() || mIsDying) return;
         super.getVirtualViews(views);
-        if (mShowingCloseButton) mCloseButton.getVirtualViews(views);
+        if (mShowingCloseButton || mIsSelected) mCloseButton.getVirtualViews(views);
     }
 
     /**
@@ -781,6 +786,10 @@ public class StripLayoutTab extends StripLayoutView {
     /** {@return The width of the keyboard focus ring stroke and tab group color line in px} */
     public int getLineWidth() {
         return TabUiThemeUtil.getLineWidth(mContext);
+    }
+
+    public void setIsSelected(boolean isSelected) {
+        mIsSelected = isSelected;
     }
 
     // TODO(dtrainor): Don't animate this if we're selecting or deselecting this tab.

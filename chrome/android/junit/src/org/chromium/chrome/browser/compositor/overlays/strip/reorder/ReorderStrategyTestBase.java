@@ -107,13 +107,13 @@ public abstract class ReorderStrategyTestBase {
 
     protected StripLayoutGroupTitle buildGroupTitle(Integer rootId, Token groupId, int x) {
         StripLayoutGroupTitle title =
-                new StripLayoutGroupTitle(mActivity, null, false, rootId, groupId);
+                new StripLayoutGroupTitle(mActivity, null, null, false, rootId, groupId);
         setDrawProperties(title, x);
         return title;
     }
 
     protected StripLayoutTab buildStripTab(int id, int x) {
-        StripLayoutTab tab = new StripLayoutTab(mActivity, id, null, null, null, false);
+        StripLayoutTab tab = new StripLayoutTab(mActivity, id, null, null, null, null, false);
         setDrawProperties(tab, x);
         return tab;
     }

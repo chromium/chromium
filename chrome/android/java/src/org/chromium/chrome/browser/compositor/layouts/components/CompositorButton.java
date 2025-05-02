@@ -74,6 +74,7 @@ public class CompositorButton extends StripLayoutView {
      * @param width The button width.
      * @param height The button height.
      * @param clickHandler The action to be performed on click.
+     * @param keyboardFocusHandler The action to be performed on keyboard focus.
      * @param clickSlopDp The click slop for the button, in dp.
      */
     public CompositorButton(
@@ -83,8 +84,9 @@ public class CompositorButton extends StripLayoutView {
             float width,
             float height,
             StripLayoutViewOnClickHandler clickHandler,
+            StripLayoutViewOnKeyboardFocusHandler keyboardFocusHandler,
             float clickSlopDp) {
-        super(false, clickHandler, context);
+        super(false, clickHandler, keyboardFocusHandler, context);
         mDrawBounds.set(0, 0, width, height);
 
         mType = type;
