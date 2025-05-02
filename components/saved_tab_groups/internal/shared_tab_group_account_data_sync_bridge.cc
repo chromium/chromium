@@ -608,7 +608,7 @@ void SharedTabGroupAccountDataSyncBridge::WriteEntityToSync(
     // For tab details, remove them from the missing tabs.
     storage_keys_for_missing_tabs_.erase(storage_key);
   }
-  batch->WriteData(storage_key, entity->specifics.SerializeAsString());
+  batch->WriteData(storage_key, specifics.SerializeAsString());
 
   change_processor()->Put(storage_key, std::move(entity),
                           batch->GetMetadataChangeList());
