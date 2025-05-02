@@ -81,13 +81,13 @@ interface TouchToFillPaymentMethodComponent {
      * @param shouldShowScanCreditCard A boolean that conveys whether 'ScanCreditCard' should be
      *     shown.
      */
-    void showSheet(
+    void showCreditCards(
             List<PersonalDataManager.CreditCard> cards,
             List<AutofillSuggestion> suggestions,
             boolean shouldShowScanCreditCard);
 
     /** Displays a new IBAN bottom sheet. */
-    void showSheet(List<PersonalDataManager.Iban> ibans);
+    void showIbans(List<PersonalDataManager.Iban> ibans);
 
     /** Hides the bottom sheet if shown. */
     void hideSheet();

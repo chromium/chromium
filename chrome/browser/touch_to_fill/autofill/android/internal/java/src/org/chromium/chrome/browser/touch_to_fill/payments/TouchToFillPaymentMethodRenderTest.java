@@ -349,7 +349,7 @@ public class TouchToFillPaymentMethodRenderTest {
     public void testShowsOneCard() throws IOException {
         runOnUiThreadBlocking(
                 () -> {
-                    mCoordinator.showSheet(
+                    mCoordinator.showCreditCards(
                             List.of(VISA),
                             List.of(VISA_SUGGESTION),
                             /* shouldShowScanCreditCard= */ true);
@@ -366,7 +366,7 @@ public class TouchToFillPaymentMethodRenderTest {
     public void testShowsOneCardHalfState() throws IOException {
         runOnUiThreadBlocking(
                 () -> {
-                    mCoordinator.showSheet(
+                    mCoordinator.showCreditCards(
                             List.of(VISA),
                             List.of(VISA_SUGGESTION),
                             /* shouldShowScanCreditCard= */ true);
@@ -386,7 +386,7 @@ public class TouchToFillPaymentMethodRenderTest {
     public void testShowsTwoCards() throws IOException {
         runOnUiThreadBlocking(
                 () -> {
-                    mCoordinator.showSheet(
+                    mCoordinator.showCreditCards(
                             List.of(VISA, MASTERCARD),
                             List.of(VISA_SUGGESTION, MASTERCARD_SUGGESTION),
                             /* shouldShowScanCreditCard= */ true);
@@ -403,7 +403,7 @@ public class TouchToFillPaymentMethodRenderTest {
     public void testShowsTwoCardsHalfState() throws IOException {
         runOnUiThreadBlocking(
                 () -> {
-                    mCoordinator.showSheet(
+                    mCoordinator.showCreditCards(
                             List.of(VISA, MASTERCARD),
                             List.of(VISA_SUGGESTION, MASTERCARD_SUGGESTION),
                             /* shouldShowScanCreditCard= */ true);
@@ -423,7 +423,7 @@ public class TouchToFillPaymentMethodRenderTest {
     public void testShowsThreeCards() throws IOException {
         runOnUiThreadBlocking(
                 () -> {
-                    mCoordinator.showSheet(
+                    mCoordinator.showCreditCards(
                             List.of(VISA, MASTERCARD, DISCOVER),
                             List.of(VISA_SUGGESTION, MASTERCARD_SUGGESTION, DISCOVER_SUGGESTION),
                             /* shouldShowScanCreditCard= */ true);
@@ -440,7 +440,7 @@ public class TouchToFillPaymentMethodRenderTest {
     public void testShowsThreeCardsHalfState() throws IOException {
         runOnUiThreadBlocking(
                 () -> {
-                    mCoordinator.showSheet(
+                    mCoordinator.showCreditCards(
                             List.of(VISA, MASTERCARD, DISCOVER),
                             List.of(VISA_SUGGESTION, MASTERCARD_SUGGESTION, DISCOVER_SUGGESTION),
                             /* shouldShowScanCreditCard= */ true);
@@ -460,7 +460,7 @@ public class TouchToFillPaymentMethodRenderTest {
     public void testShowsFourCards() throws IOException {
         runOnUiThreadBlocking(
                 () -> {
-                    mCoordinator.showSheet(
+                    mCoordinator.showCreditCards(
                             List.of(VISA, MASTERCARD, DISCOVER, AMERICAN_EXPRESS),
                             List.of(
                                     VISA_SUGGESTION,
@@ -481,7 +481,7 @@ public class TouchToFillPaymentMethodRenderTest {
     public void testShowsFourCardsHalfState() throws IOException {
         runOnUiThreadBlocking(
                 () -> {
-                    mCoordinator.showSheet(
+                    mCoordinator.showCreditCards(
                             List.of(VISA, MASTERCARD, DISCOVER, AMERICAN_EXPRESS),
                             List.of(
                                     VISA_SUGGESTION,
@@ -505,7 +505,7 @@ public class TouchToFillPaymentMethodRenderTest {
     public void testShowsLocalAndServerAndVirtualCards() throws IOException {
         runOnUiThreadBlocking(
                 () -> {
-                    mCoordinator.showSheet(
+                    mCoordinator.showCreditCards(
                             List.of(VISA, MASTERCARD_VIRTUAL_CARD, SERVER_MASTERCARD),
                             List.of(
                                     VISA_SUGGESTION,
@@ -527,7 +527,7 @@ public class TouchToFillPaymentMethodRenderTest {
     public void testShowsLocalAndServerAndNonAcceptableVirtualCards() throws IOException {
         runOnUiThreadBlocking(
                 () -> {
-                    mCoordinator.showSheet(
+                    mCoordinator.showCreditCards(
                             List.of(VISA, MASTERCARD_VIRTUAL_CARD, SERVER_MASTERCARD),
                             List.of(
                                     VISA_SUGGESTION,
@@ -549,7 +549,7 @@ public class TouchToFillPaymentMethodRenderTest {
     public void testShowsServerAndVirtualCardsWithCardBenefits() throws IOException {
         runOnUiThreadBlocking(
                 () -> {
-                    mCoordinator.showSheet(
+                    mCoordinator.showCreditCards(
                             List.of(VISA, MASTERCARD_VIRTUAL_CARD),
                             List.of(
                                     VISA_SUGGESTION_WITH_CARD_BENEFITS,
@@ -570,7 +570,7 @@ public class TouchToFillPaymentMethodRenderTest {
     public void testShowsServerCardWithLongName() throws IOException {
         runOnUiThreadBlocking(
                 () -> {
-                    mCoordinator.showSheet(
+                    mCoordinator.showCreditCards(
                             List.of(LONG_CARD_NAME_CARD),
                             List.of(LONG_CARD_NAME_CARD_SUGGESTION),
                             /* shouldShowScanCreditCard= */ true);
@@ -589,7 +589,7 @@ public class TouchToFillPaymentMethodRenderTest {
     public void testScanNewCardButtonIsHidden() throws IOException {
         runOnUiThreadBlocking(
                 () -> {
-                    mCoordinator.showSheet(
+                    mCoordinator.showCreditCards(
                             List.of(VISA),
                             List.of(VISA_SUGGESTION),
                             /* shouldShowScanCreditCard= */ false);
@@ -607,7 +607,7 @@ public class TouchToFillPaymentMethodRenderTest {
     public void testShowsOneIban() throws IOException {
         runOnUiThreadBlocking(
                 () -> {
-                    mCoordinator.showSheet(List.of(LOCAL_IBAN));
+                    mCoordinator.showIbans(List.of(LOCAL_IBAN));
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
@@ -621,7 +621,7 @@ public class TouchToFillPaymentMethodRenderTest {
     public void testShowsOneIbanHalfState() throws IOException {
         runOnUiThreadBlocking(
                 () -> {
-                    mCoordinator.showSheet(List.of(LOCAL_IBAN));
+                    mCoordinator.showIbans(List.of(LOCAL_IBAN));
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
@@ -638,7 +638,7 @@ public class TouchToFillPaymentMethodRenderTest {
     public void testShowsTwoIbans() throws IOException {
         runOnUiThreadBlocking(
                 () -> {
-                    mCoordinator.showSheet(List.of(LOCAL_IBAN, LOCAL_IBAN_NO_NICKNAME));
+                    mCoordinator.showIbans(List.of(LOCAL_IBAN, LOCAL_IBAN_NO_NICKNAME));
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
@@ -652,7 +652,7 @@ public class TouchToFillPaymentMethodRenderTest {
     public void testShowsTwoIbansHalfState() throws IOException {
         runOnUiThreadBlocking(
                 () -> {
-                    mCoordinator.showSheet(List.of(LOCAL_IBAN, LOCAL_IBAN_NO_NICKNAME));
+                    mCoordinator.showIbans(List.of(LOCAL_IBAN, LOCAL_IBAN_NO_NICKNAME));
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 

@@ -879,7 +879,7 @@ bool ChromePaymentsAutofillClient::ShowTouchToFillCreditCard(
           ManualFillingController::FillingSource::CREDIT_CARD_FALLBACKS,
           !cards_to_suggest.empty());
 
-  return touch_to_fill_payment_method_controller_.Show(
+  return touch_to_fill_payment_method_controller_.ShowCreditCards(
       std::make_unique<TouchToFillPaymentMethodViewImpl>(web_contents()),
       delegate, std::move(cards_to_suggest), std::move(suggestions));
 #else
@@ -892,7 +892,7 @@ bool ChromePaymentsAutofillClient::ShowTouchToFillIban(
     base::WeakPtr<TouchToFillDelegate> delegate,
     base::span<const autofill::Iban> ibans_to_suggest) {
 #if BUILDFLAG(IS_ANDROID)
-  return touch_to_fill_payment_method_controller_.Show(
+  return touch_to_fill_payment_method_controller_.ShowIbans(
       std::make_unique<TouchToFillPaymentMethodViewImpl>(web_contents()),
       delegate, std::move(ibans_to_suggest));
 #else

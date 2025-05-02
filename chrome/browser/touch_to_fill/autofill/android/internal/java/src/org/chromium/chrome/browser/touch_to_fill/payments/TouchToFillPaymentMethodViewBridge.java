@@ -67,19 +67,19 @@ class TouchToFillPaymentMethodViewBridge {
     }
 
     @CalledByNative
-    private void showSheet(
+    private void showCreditCards(
             @JniType("std::vector") Object[] cards,
             @JniType("std::vector") Object[] suggestions,
             boolean shouldShowScanCreditCard) {
-        mComponent.showSheet(
+        mComponent.showCreditCards(
                 (List<PersonalDataManager.CreditCard>) (List<?>) Arrays.asList(cards),
                 (List<AutofillSuggestion>) (List<?>) Arrays.asList(suggestions),
                 shouldShowScanCreditCard);
     }
 
     @CalledByNative
-    private void showSheet(@JniType("std::vector") List<PersonalDataManager.Iban> ibans) {
-        mComponent.showSheet(ibans);
+    private void showIbans(@JniType("std::vector") List<PersonalDataManager.Iban> ibans) {
+        mComponent.showIbans(ibans);
     }
 
     @CalledByNative

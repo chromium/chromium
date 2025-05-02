@@ -65,7 +65,7 @@ bool TouchToFillPaymentMethodViewImpl::IsReadyToShow(
   return true;
 }
 
-bool TouchToFillPaymentMethodViewImpl::Show(
+bool TouchToFillPaymentMethodViewImpl::ShowCreditCards(
     TouchToFillPaymentMethodViewController* controller,
     base::span<const autofill::CreditCard> cards_to_suggest,
     base::span<const Suggestion> suggestions,
@@ -117,13 +117,13 @@ bool TouchToFillPaymentMethodViewImpl::Show(
             android_icon_id, suggestion.HasDeactivatedStyle(),
             payments_payload.should_display_terms_available));
   }
-  Java_TouchToFillPaymentMethodViewBridge_showSheet(
+  Java_TouchToFillPaymentMethodViewBridge_showCreditCards(
       env, java_object_, std::move(credit_cards_array),
       std::move(suggestions_array), should_show_scan_credit_card);
   return true;
 }
 
-bool TouchToFillPaymentMethodViewImpl::Show(
+bool TouchToFillPaymentMethodViewImpl::ShowIbans(
     TouchToFillPaymentMethodViewController* controller,
     base::span<const autofill::Iban> ibans_to_suggest) {
   JNIEnv* env = base::android::AttachCurrentThread();
@@ -137,7 +137,7 @@ bool TouchToFillPaymentMethodViewImpl::Show(
     ibans_array.push_back(
         PersonalDataManagerAndroid::CreateJavaIbanFromNative(env, iban));
   }
-  Java_TouchToFillPaymentMethodViewBridge_showSheet(env, java_object_,
+  Java_TouchToFillPaymentMethodViewBridge_showIbans(env, java_object_,
                                                     std::move(ibans_array));
   return true;
 }

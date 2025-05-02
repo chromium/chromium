@@ -149,7 +149,7 @@ class TouchToFillPaymentMethodMediator {
         mBottomSheetFocusHelper = bottomSheetFocusHelper;
     }
 
-    void showSheet(
+    void showCreditCards(
             List<CreditCard> cards,
             List<AutofillSuggestion> suggestions,
             boolean shouldShowScanCreditCard,
@@ -198,7 +198,7 @@ class TouchToFillPaymentMethodMediator {
         RecordHistogram.recordCount100Histogram(TOUCH_TO_FILL_NUMBER_OF_CARDS_SHOWN, mCards.size());
     }
 
-    public void showSheet(List<Iban> ibans) {
+    public void showIbans(List<Iban> ibans) {
         mInputProtector.markShowTime();
 
         assert ibans != null;

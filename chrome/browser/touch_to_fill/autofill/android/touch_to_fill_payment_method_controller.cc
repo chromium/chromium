@@ -87,7 +87,7 @@ void TouchToFillPaymentMethodController::OnContentAutofillDriverCreated(
       std::make_unique<TouchToFillDelegateAndroidImpl>(&manager));
 }
 
-bool TouchToFillPaymentMethodController::Show(
+bool TouchToFillPaymentMethodController::ShowCreditCards(
     std::unique_ptr<TouchToFillPaymentMethodView> view,
     base::WeakPtr<TouchToFillDelegate> delegate,
     base::span<const CreditCard> cards_to_suggest,
@@ -100,8 +100,8 @@ bool TouchToFillPaymentMethodController::Show(
   if (view_)
     return false;
 
-  if (!view->Show(this, cards_to_suggest, suggestions,
-                  delegate->ShouldShowScanCreditCard())) {
+  if (!view->ShowCreditCards(this, cards_to_suggest, suggestions,
+                             delegate->ShouldShowScanCreditCard())) {
     ResetJavaObject();
     return false;
   }
@@ -111,7 +111,7 @@ bool TouchToFillPaymentMethodController::Show(
   return true;
 }
 
-bool TouchToFillPaymentMethodController::Show(
+bool TouchToFillPaymentMethodController::ShowIbans(
     std::unique_ptr<TouchToFillPaymentMethodView> view,
     base::WeakPtr<TouchToFillDelegate> delegate,
     base::span<const Iban> ibans_to_suggest) {
@@ -124,7 +124,7 @@ bool TouchToFillPaymentMethodController::Show(
     return false;
   }
 
-  if (!view->Show(this, ibans_to_suggest)) {
+  if (!view->ShowIbans(this, ibans_to_suggest)) {
     ResetJavaObject();
     return false;
   }
