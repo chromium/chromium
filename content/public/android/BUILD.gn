@@ -644,6 +644,7 @@ android_library("content_javatests") {
     "javatests/src/org/chromium/content/browser/JavaBridgeFieldsTest.java",
     "javatests/src/org/chromium/content/browser/JavaBridgeReturnValuesTest.java",
     "javatests/src/org/chromium/content/browser/MediaSessionTest.java",
+    "javatests/src/org/chromium/content/browser/NavigationHandleTest.java",
     "javatests/src/org/chromium/content/browser/NavigationTest.java",
     "javatests/src/org/chromium/content/browser/ScreenOrientationListenerTest.java",
     "javatests/src/org/chromium/content/browser/TestsJavaScriptEvalTest.java",
