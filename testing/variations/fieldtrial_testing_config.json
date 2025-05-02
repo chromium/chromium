@@ -3695,16 +3695,16 @@
                 {
                     "name": "EnabledWithEffectiveSize200Percent",
                     "params": {
-                        "delete_factor": "1.0",
-                        "delete_offset": "0ms",
-                        "has_factor": "1.0",
-                        "has_offset": "0ms",
-                        "keys_factor": "2.0",
-                        "keys_offset": "0ms",
-                        "match_factor": "2.0",
-                        "match_offset": "0ms",
-                        "open_factor": "1.0",
-                        "open_offset": "0ms"
+                        "delete_factor": "0",
+                        "delete_offset": "8ms",
+                        "has_factor": "0",
+                        "has_offset": "0.5ms",
+                        "keys_factor": "0",
+                        "keys_offset": "0.5ms",
+                        "match_factor": "0",
+                        "match_offset": "1.5ms",
+                        "open_factor": "0",
+                        "open_offset": "0.5ms"
                     },
                     "enable_features": [
                         "CacheStorageAblation"
@@ -3713,16 +3713,16 @@
                 {
                     "name": "EnabledWithEffectiveSize100Percent",
                     "params": {
-                        "delete_factor": "0.5",
-                        "delete_offset": "0ms",
-                        "has_factor": "0.5",
-                        "has_offset": "0ms",
-                        "keys_factor": "1.0",
-                        "keys_offset": "0ms",
-                        "match_factor": "1.0",
-                        "match_offset": "0ms",
-                        "open_factor": "0.5",
-                        "open_offset": "0ms"
+                        "delete_factor": "0",
+                        "delete_offset": "4ms",
+                        "has_factor": "0",
+                        "has_offset": "0.25ms",
+                        "keys_factor": "0",
+                        "keys_offset": "0.25ms",
+                        "match_factor": "0",
+                        "match_offset": "0.75ms",
+                        "open_factor": "0",
+                        "open_offset": "0.25ms"
                     },
                     "enable_features": [
                         "CacheStorageAblation"
@@ -3731,16 +3731,16 @@
                 {
                     "name": "EnabledWithEffectiveSize50Percent",
                     "params": {
-                        "delete_factor": "0.25",
-                        "delete_offset": "0ms",
-                        "has_factor": "0.25",
-                        "has_offset": "0ms",
-                        "keys_factor": "0.5",
-                        "keys_offset": "0ms",
-                        "match_factor": "0.5",
-                        "match_offset": "0ms",
-                        "open_factor": "0.25",
-                        "open_offset": "0ms"
+                        "delete_factor": "0",
+                        "delete_offset": "2ms",
+                        "has_factor": "0",
+                        "has_offset": "0.125ms",
+                        "keys_factor": "0",
+                        "keys_offset": "0.125ms",
+                        "match_factor": "0",
+                        "match_offset": "0.375ms",
+                        "open_factor": "0",
+                        "open_offset": "0.125ms"
                     },
                     "enable_features": [
                         "CacheStorageAblation"
