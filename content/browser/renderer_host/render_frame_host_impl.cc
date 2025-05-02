@@ -60,6 +60,7 @@
 #include "components/download/public/common/download_url_parameters.h"
 #include "components/input/input_router.h"
 #include "components/input/timeout_monitor.h"
+#include "components/input/utils.h"
 #include "components/viz/common/features.h"
 #include "content/browser/about_url_loader_factory.h"
 #include "content/browser/accessibility/render_accessibility_host.h"
@@ -314,6 +315,7 @@
 #include "content/browser/android/content_url_loader_factory.h"
 #include "content/browser/android/java_interfaces_impl.h"
 #include "content/browser/renderer_host/render_frame_host_android.h"
+#include "content/browser/renderer_host/render_widget_host_view_android.h"
 #include "content/public/browser/android/java_interfaces.h"
 #include "content/public/browser/authenticator_request_client_delegate.h"
 #else
@@ -10853,10 +10855,25 @@ void RenderFrameHostImpl::StartDragging(
     const gfx::Vector2d& cursor_offset_in_dip,
     const gfx::Rect& drag_obj_rect_in_dip,
     blink::mojom::DragEventSourceInfoPtr event_info) {
+#if BUILDFLAG(IS_ANDROID)
+  RenderWidgetHostImpl* widget = GetRenderWidgetHost();
+  RenderWidgetHostViewBase* view = (widget) ? widget->GetView() : nullptr;
+  if (view && input::IsTransferInputToVizSupported()) {
+    RenderWidgetHostViewAndroid* view_android =
+        static_cast<RenderWidgetHostViewAndroid*>(view);
+    if (view_android->IsTouchSequencePotentiallyActiveOnViz()) {
+      view_android->RequestInputBackForDragAndDrop(
+          std::move(drag_data), GetLastCommittedOrigin(), drag_operations_mask,
+          std::move(unsafe_bitmap), std::move(cursor_offset_in_dip),
+          std::move(drag_obj_rect_in_dip), std::move(event_info));
+      return;
+    }
+  }
+#endif
   GetRenderWidgetHost()->StartDragging(
       std::move(drag_data), GetLastCommittedOrigin(), drag_operations_mask,
-      unsafe_bitmap, cursor_offset_in_dip, drag_obj_rect_in_dip,
-      std::move(event_info));
+      std::move(unsafe_bitmap), std::move(cursor_offset_in_dip),
+      std::move(drag_obj_rect_in_dip), std::move(event_info));
 }
 
 void RenderFrameHostImpl::IssueKeepAliveHandle(

@@ -1413,6 +1413,10 @@ bool RenderWidgetHostViewAndroid::OnGestureEvent(
   return true;
 }
 
+void RenderWidgetHostViewAndroid::CleanupDraggingCallback() {
+  start_dragging_callback_.Reset();
+}
+
 bool RenderWidgetHostViewAndroid::OnTouchEvent(
     const ui::MotionEventAndroid& event) {
   // WARNING: Adding any code above `FilterRedundantDownEvent` check will likely
@@ -1426,6 +1430,11 @@ bool RenderWidgetHostViewAndroid::OnTouchEvent(
     // event.
     if (input_transfer_handler_ &&
         input_transfer_handler_->FilterRedundantDownEvent(event)) {
+      if (start_dragging_callback_) {
+        std::move(start_dragging_callback_).Run();
+        cleanup_dragging_callback_timer_.Stop();
+        return true;
+      }
       // OverscrollController needs to observe redundant ACTION_DOWN event to
       // correctly calculate the scroll deltas from MotionEvents, in case
       // browser gets the transferred back sequence from Viz to do an overscroll
@@ -1936,7 +1945,9 @@ void RenderWidgetHostViewAndroid::OnSelectionEvent(
     if (input_transfer_handler_) {
       // TODO(397429301): Handle potential pointer inversion which might happen
       // if a new pointer down is racing with request input back.
-      input_transfer_handler_->RequestInputBack();
+      input_transfer_handler_->RequestInputBack(
+          InputTransferHandlerAndroid::RequestInputBackReason::
+              kStartTouchSelectionDragGesture);
     }
     if (gesture_provider_.GetCurrentDownEvent()) {
       ResetGestureDetection();
@@ -2539,6 +2550,37 @@ void RenderWidgetHostViewAndroid::MoveCaret(const gfx::Point& point) {
     host()->delegate()->MoveCaret(point);
 }
 
+bool RenderWidgetHostViewAndroid::IsTouchSequencePotentiallyActiveOnViz() {
+  if (!input_transfer_handler_) {
+    return false;
+  }
+  return input_transfer_handler_->IsTouchSequencePotentiallyActiveOnViz();
+}
+
+void RenderWidgetHostViewAndroid::RequestInputBackForDragAndDrop(
+    blink::mojom::DragDataPtr drag_data,
+    const url::Origin& source_origin,
+    blink::DragOperationsMask drag_operations_mask,
+    SkBitmap bitmap,
+    gfx::Vector2d cursor_offset_in_dip,
+    gfx::Rect drag_obj_rect_in_dip,
+    blink::mojom::DragEventSourceInfoPtr event_info) {
+  CHECK(input_transfer_handler_);
+  input_transfer_handler_->RequestInputBack(
+      InputTransferHandlerAndroid::RequestInputBackReason::
+          kStartDragAndDropGesture);
+  cleanup_dragging_callback_timer_.Start(
+      FROM_HERE, base::Milliseconds(100),
+      base::BindOnce(&RenderWidgetHostViewAndroid::CleanupDraggingCallback,
+                     GetWeakPtrAndroid()));
+  CHECK(host());
+  start_dragging_callback_ = base::BindOnce(
+      &RenderWidgetHostImpl::StartDragging, host()->GetWeakPtr(),
+      std::move(drag_data), std::move(source_origin), drag_operations_mask,
+      std::move(bitmap), std::move(cursor_offset_in_dip),
+      std::move(drag_obj_rect_in_dip), std::move(event_info));
+}
+
 void RenderWidgetHostViewAndroid::DismissTextHandles() {
   if (touch_selection_controller_)
     touch_selection_controller_->HideAndDisallowShowingAutomatically();
@@ -2571,7 +2613,9 @@ void RenderWidgetHostViewAndroid::DidOverscroll(
     // going to consume the rest of the input sequence.
     if (overscroll_controller_->IsHandlingInputSequence() &&
         input_transfer_handler_) {
-      input_transfer_handler_->RequestInputBack();
+      input_transfer_handler_->RequestInputBack(
+          InputTransferHandlerAndroid::RequestInputBackReason::
+              kStartOverscrollGestures);
     }
   }
 }
