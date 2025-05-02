@@ -41,6 +41,7 @@ namespace metrics {
 namespace {
 
 using TabsStats = TabStatsDataStore::TabsStats;
+using TabStripInterface = TabStatsTracker::TabStripInterface;
 
 std::string GetHistogramNameWithBatteryStateSuffix(const char* histogram_name) {
   const char* suffix = base::PowerMonitor::GetInstance()->IsOnBatteryPower()
@@ -108,6 +109,32 @@ class TestTabStatsObserver : public TabStatsObserver {
   bool video_playing_in_tab_ = false;
 };
 
+// Modifies the TabStripModel (on Desktop) or TabModel (on Android).
+// TODO(crbug.com/412634171): Implement for Android.
+
+class TabStripModifier {
+ public:
+  TabStripModifier(const TabStripInterface* tab_strip, Browser* browser)
+      : tab_strip_(tab_strip), browser_(browser) {}
+
+  const TabStripInterface& tab_strip() const { return *tab_strip_; }
+
+  void InsertWebContentsAt(size_t index,
+                           std::unique_ptr<content::WebContents> web_contents) {
+    browser_->tab_strip_model()->InsertWebContentsAt(
+        index, std::move(web_contents), AddTabTypes::ADD_ACTIVE);
+  }
+
+  void CloseWebContentsAt(size_t index) {
+    browser_->tab_strip_model()->CloseWebContentsAt(
+        index, TabCloseTypes::CLOSE_USER_GESTURE);
+  }
+
+ private:
+  raw_ptr<const TabStripInterface> tab_strip_;
+  raw_ptr<Browser> browser_;
+};
+
 class TestTabStatsTracker : public TabStatsTracker {
  public:
   using TabStatsTracker::OnHeartbeatEvent;
@@ -125,25 +152,25 @@ class TestTabStatsTracker : public TabStatsTracker {
 
   size_t AddTabs(size_t tab_count,
                  ChromeRenderViewHostTestHarness* test_harness,
-                 TabStripModel* tab_strip_model) {
+                 TabStripModifier* tab_strip_modifier) {
     EXPECT_TRUE(test_harness);
     for (size_t i = 0; i < tab_count; ++i) {
       std::unique_ptr<content::WebContents> tab =
           test_harness->CreateTestWebContents();
-      tab_strip_model->InsertWebContentsAt(
-          tab_strip_model->count(), std::move(tab), AddTabTypes::ADD_ACTIVE);
+      tab_strip_modifier->InsertWebContentsAt(
+          tab_strip_modifier->tab_strip().GetTabCount(), std::move(tab));
     }
     EXPECT_EQ(tab_stats_data_store()->tab_stats().total_tab_count,
-              static_cast<size_t>(tab_strip_model->count()));
+              tab_strip_modifier->tab_strip().GetTabCount());
     return tab_stats_data_store()->tab_stats().total_tab_count;
   }
 
-  size_t RemoveTabs(size_t tab_count, TabStripModel* tab_strip_model) {
+  size_t RemoveTabs(size_t tab_count, TabStripModifier* tab_strip_modifier) {
     EXPECT_LE(tab_count, tab_stats_data_store()->tab_stats().total_tab_count);
-    EXPECT_LE(tab_count, static_cast<size_t>(tab_strip_model->count()));
+    EXPECT_LE(tab_count, tab_strip_modifier->tab_strip().GetTabCount());
     for (size_t i = 0; i < tab_count; ++i) {
-      tab_strip_model->CloseWebContentsAt(tab_strip_model->count() - 1,
-                                          TabCloseTypes::CLOSE_USER_GESTURE);
+      tab_strip_modifier->CloseWebContentsAt(
+          tab_strip_modifier->tab_strip().GetTabCount() - 1);
     }
     return tab_stats_data_store()->tab_stats().total_tab_count;
   }
@@ -244,16 +271,20 @@ class TabStatsTrackerTest : public ChromeRenderViewHostTestHarness {
     ChromeRenderViewHostTestHarness::SetUp();
     browser_ = CreateBrowserWithTestWindowForParams(
         Browser::CreateParams(profile(), true));
-    tab_strip_model_ = browser_->tab_strip_model();
+    tab_strip_interface_ = std::make_unique<TabStripInterface>(browser_.get());
+    tab_strip_modifier_ = std::make_unique<TabStripModifier>(
+        tab_strip_interface_.get(), browser_.get());
   }
 
   void TearDown() override {
-    tab_stats_tracker_->RemoveTabs(tab_strip_model_->count(), tab_strip_model_);
+    tab_stats_tracker_->RemoveTabs(tab_strip_interface_->GetTabCount(),
+                                   tab_strip_modifier_.get());
     tab_stats_tracker_.reset();
 
     // Everything depending on `profile()` must be destroyed before it's deleted
     // in TearDown.
-    tab_strip_model_ = nullptr;
+    tab_strip_modifier_.reset();
+    tab_strip_interface_.reset();
     browser_.reset();
     ChromeRenderViewHostTestHarness::TearDown();
   }
@@ -327,7 +358,10 @@ class TabStatsTrackerTest : public ChromeRenderViewHostTestHarness {
   TestingPrefServiceSimple pref_service_;
 
   std::unique_ptr<Browser> browser_;
-  raw_ptr<TabStripModel> tab_strip_model_;
+
+  // Wrappers for the TabStripModel on desktop or TabModel on Android.
+  std::unique_ptr<TabStripInterface> tab_strip_interface_;
+  std::unique_ptr<TabStripModifier> tab_strip_modifier_;
 };
 
 TestTabStatsTracker::TestTabStatsTracker(PrefService* pref_service)
@@ -373,7 +407,7 @@ TEST_F(TabStatsTrackerTest, OnResume) {
 
   // Creates some tabs.
   size_t expected_tab_count =
-      tab_stats_tracker_->AddTabs(12, this, tab_strip_model_);
+      tab_stats_tracker_->AddTabs(12, this, tab_strip_modifier_.get());
 
   EXPECT_EQ(power_monitor_source_.GetBatteryPowerStatus(),
             base::PowerStateObserver::BatteryPowerStatus::kUnknown);
@@ -394,7 +428,7 @@ TEST_F(TabStatsTrackerTest, OnResume) {
 
   // Removes some tabs and update the expectations.
   size_t expected_tab_count2 =
-      tab_stats_tracker_->RemoveTabs(5, tab_strip_model_);
+      tab_stats_tracker_->RemoveTabs(5, tab_strip_modifier_.get());
 
   power_monitor_source_.GeneratePowerStateEvent(
       base::PowerStateObserver::BatteryPowerStatus::kBatteryPower);
@@ -422,12 +456,13 @@ TEST_F(TabStatsTrackerTest, StatsGetReportedDaily) {
   // Adds some tabs and windows, then remove some so the maximums are not equal
   // to the current state.
   size_t expected_tab_count =
-      tab_stats_tracker_->AddTabs(12, this, tab_strip_model_);
+      tab_stats_tracker_->AddTabs(12, this, tab_strip_modifier_.get());
   size_t expected_window_count = tab_stats_tracker_->AddWindows(5);
   size_t expected_max_tab_per_window = expected_tab_count;
   tab_stats_tracker_->data_store()->UpdateMaxTabsPerWindowIfNeeded(
       expected_max_tab_per_window);
-  expected_tab_count = tab_stats_tracker_->RemoveTabs(5, tab_strip_model_);
+  expected_tab_count =
+      tab_stats_tracker_->RemoveTabs(5, tab_strip_modifier_.get());
   expected_window_count = tab_stats_tracker_->RemoveWindows(2);
   expected_max_tab_per_window = expected_tab_count;
 
@@ -516,7 +551,7 @@ TEST_F(TabStatsTrackerTest, DailyDiscards) {
   // daily event triggers.
 
   // Daily report is skipped when there is no tab. Adds tabs to avoid that.
-  tab_stats_tracker_->AddTabs(1, this, tab_strip_model_);
+  tab_stats_tracker_->AddTabs(1, this, tab_strip_modifier_.get());
 
   constexpr size_t kExpectedDiscardsExternal = 1;
   constexpr size_t kExpectedDiscardsUrgent = 2;
@@ -700,7 +735,7 @@ TEST_F(TabStatsTrackerTest, DailyDiscards) {
 
 TEST_F(TabStatsTrackerTest, HeartbeatMetrics) {
   size_t expected_tab_count =
-      tab_stats_tracker_->AddTabs(12, this, tab_strip_model_);
+      tab_stats_tracker_->AddTabs(12, this, tab_strip_modifier_.get());
   size_t expected_window_count = tab_stats_tracker_->AddWindows(5);
 
   tab_stats_tracker_->OnHeartbeatEvent();
@@ -710,7 +745,8 @@ TEST_F(TabStatsTrackerTest, HeartbeatMetrics) {
   ExpectBucketedSample(UmaStatsReportingDelegate::kWindowCountHistogramName,
                        expected_window_count, 1);
 
-  expected_tab_count = tab_stats_tracker_->RemoveTabs(4, tab_strip_model_);
+  expected_tab_count =
+      tab_stats_tracker_->RemoveTabs(4, tab_strip_modifier_.get());
   expected_window_count = tab_stats_tracker_->RemoveWindows(3);
 
   tab_stats_tracker_->OnHeartbeatEvent();

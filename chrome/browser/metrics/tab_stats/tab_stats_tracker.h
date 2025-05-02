@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/functional/function_ref.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
@@ -19,13 +20,17 @@
 #include "build/build_config.h"
 #include "chrome/browser/metrics/tab_stats/tab_stats_data_store.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_observer.h"
-#include "chrome/browser/ui/browser_list_observer.h"
-#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "components/metrics/daily_event.h"
 #include "content/public/browser/web_contents_observer.h"
 
+class Browser;
 class PrefRegistrySimple;
 class PrefService;
+class Profile;
+
+namespace content {
+class WebContents;
+}
 
 namespace metrics {
 FORWARD_DECLARE_TEST(TabStatsTrackerBrowserTest,
@@ -37,11 +42,13 @@ FORWARD_DECLARE_TEST(TabStatsTrackerBrowserTest,
 // method, e.g.:
 //     TabStatsTracker::SetInstance(
 //         std::make_unique<TabStatsTracker>(g_browser_process->local_state()));
-class TabStatsTracker : public TabStripModelObserver,
-                        public BrowserListObserver,
-                        public base::PowerSuspendObserver,
+class TabStatsTracker : public base::PowerSuspendObserver,
                         public resource_coordinator::LifecycleUnitObserver {
  public:
+  // Abstraction of a Browser + TabStripModel (on desktop) or a TabModel (on
+  // Android).
+  class TabStripInterface;
+
   // Constructor. |pref_service| must outlive this object.
   explicit TabStatsTracker(PrefService* pref_service);
 
@@ -147,16 +154,6 @@ class TabStatsTracker : public TabStripModelObserver,
     tab_stats_data_store_.reset(data_store);
   }
 
-  // BrowserListObserver:
-  void OnBrowserAdded(Browser* browser) override;
-  void OnBrowserRemoved(Browser* browser) override;
-
-  // TabStripModelObserver:
-  void OnTabStripModelChanged(
-      TabStripModel* tab_strip_model,
-      const TabStripModelChange& change,
-      const TabStripSelectionChange& selection) override;
-
   // base::PowerSuspendObserver:
   void OnResume() override;
 
@@ -166,8 +163,16 @@ class TabStatsTracker : public TabStripModelObserver,
       ::mojom::LifecycleUnitState previous_state,
       ::mojom::LifecycleUnitStateChangeReason reason) override;
 
+  // Functions to call when a tab strip (or the Android equivalent) is added,
+  // removed or modified.
+  void OnTabStripAdded();
+  void OnTabStripRemoved();
+  void OnTabStripNewTabCount(size_t tab_count);
+
   // Functions to call to start tracking a new tab.
   void OnInitialOrInsertedTab(content::WebContents* web_contents);
+  void OnTabReplaced(content::WebContents* old_contents,
+                     content::WebContents* new_contents);
 
   // Functions to call when a WebContents get destroyed.
   void OnWebContentsDestroyed(content::WebContents* web_contents);
@@ -182,6 +187,13 @@ class TabStatsTracker : public TabStripModelObserver,
 
   // For access to |tab_stats_observers_|
   friend class WebContentsUsageObserver;
+
+  // A class that watches for tabs to be added and removed. Abstracts away
+  // tab strip differences on Android and desktop.
+  class TabWatcher;
+
+  // For access to OnTabStripAdded() and OnTabStripRemoved().
+  friend class TabWatcher;
 
   // The delegate that reports the events.
   std::unique_ptr<UmaStatsReportingDelegate> reporting_delegate_;
@@ -206,7 +218,63 @@ class TabStatsTracker : public TabStripModelObserver,
   std::map<content::WebContents*, std::unique_ptr<WebContentsUsageObserver>>
       web_contents_usage_observers_;
 
+  std::unique_ptr<TabWatcher> tab_watcher_;
+
   SEQUENCE_CHECKER(sequence_checker_);
+};
+
+// A Browser + TabStripModel (on desktop) or a TabModel (on Android).
+// The TabStripInterface must not outlive the underlying model.
+// TODO(crbug.com/412634171): Implement for Android.
+class TabStatsTracker::TabStripInterface {
+ public:
+  using PlatformModel = Browser;
+
+  const Browser* browser() const { return model_.get(); }
+  Browser* browser() { return model_.get(); }
+
+  explicit TabStripInterface(PlatformModel* model);
+  ~TabStripInterface();
+
+  TabStripInterface(const TabStripInterface&) = delete;
+  TabStripInterface& operator=(const TabStripInterface&) = delete;
+
+  // Calls `func` for each tab in the tab strip that has a non-null
+  // WebContents. On Android, tabs will be skipped if their WebContents isn't
+  // initialized yet.
+  void ForEachWebContents(
+      base::FunctionRef<void(content::WebContents*)> func) const;
+
+  // Returns the count of tabs in this tab strip.
+  size_t GetTabCount() const;
+
+  // Returns the active tab for this tab strip. On Android this may return
+  // nullptr if the tab's WebContents isn't initialized yet.
+  content::WebContents* GetActiveWebContents() const;
+
+  // Returns the tab at `index` of this tab strip. On Android this may return
+  // nullptr if the tab's WebContents isn't initialized yet.
+  content::WebContents* GetWebContentsAt(size_t index) const;
+
+  // Returns the profile this tab strip is attached to.
+  Profile* GetProfile() const;
+
+  // Returns true if this tab strip is attached to a TYPE_NORMAL Browser.
+  // Always returns true on Android.
+  bool IsInNormalBrowser() const;
+
+  // Activates the tab at `index` of this tab strip.
+  void ActivateTabAtForTesting(size_t index);
+
+  // Closes the tab at `index` of this tab strip.
+  void CloseTabAtForTesting(size_t index);
+
+  // Calls `func` for each existing Browser + TabStripModel (or TabModel on
+  // Android).
+  static void ForEach(base::FunctionRef<void(const TabStripInterface&)> func);
+
+ private:
+  raw_ptr<PlatformModel> model_;
 };
 
 // The reporting delegate, which reports metrics via UMA.
