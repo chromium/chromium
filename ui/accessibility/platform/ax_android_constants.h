@@ -31,6 +31,7 @@ COMPONENT_EXPORT(AX_PLATFORM) extern const char kAXListViewClassname[];
 COMPONENT_EXPORT(AX_PLATFORM) extern const char kAXMenuItemClassname[];
 COMPONENT_EXPORT(AX_PLATFORM)
 extern const char kAXMultiAutoCompleteTextViewClassname[];
+COMPONENT_EXPORT(AX_PLATFORM) extern const char kAXNavigationViewClassname[];
 COMPONENT_EXPORT(AX_PLATFORM) extern const char kAXPagerClassname[];
 COMPONENT_EXPORT(AX_PLATFORM) extern const char kAXProgressBarClassname[];
 COMPONENT_EXPORT(AX_PLATFORM) extern const char kAXRadioButtonClassname[];
