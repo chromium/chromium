@@ -46,6 +46,10 @@ class TestSharedStorageObserver
   TestSharedStorageObserver();
   ~TestSharedStorageObserver() override;
 
+  GlobalRenderFrameHostId AssociatedMainFrameId() const override;
+
+  bool ShouldReceiveAllReports() const override;
+
   void OnSharedStorageAccessed(base::Time access_time,
                                AccessScope scope,
                                AccessMethod method,

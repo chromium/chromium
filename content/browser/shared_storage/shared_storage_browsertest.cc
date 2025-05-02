@@ -21,6 +21,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
+#include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
@@ -60,6 +61,7 @@
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/shared_storage_test_utils.h"
+#include "content/public/test/test_devtools_protocol_client.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_select_url_fenced_frame_config_observer.h"
 #include "content/public/test/test_shared_storage_header_observer.h"
@@ -93,6 +95,7 @@
 
 namespace content {
 
+using testing::ElementsAre;
 using testing::Pair;
 using testing::UnorderedElementsAre;
 using SharedStorageReportingMap = base::flat_map<std::string, ::GURL>;
@@ -154,6 +157,95 @@ std::string ReplacePortInString(std::string str, uint16_t port) {
 
 auto describe_param = [](const auto& info) {
   return base::StrCat({"ResolveSelectURLTo", info.param ? "Config" : "URN"});
+};
+
+FrameTreeNode* PrimaryFrameTreeNodeRootFromShell(Shell* shell) {
+  return static_cast<WebContentsImpl*>(shell->web_contents())
+      ->GetPrimaryFrameTree()
+      .root();
+}
+
+std::string ValueToString(const base::Value* value) {
+  if (!value) {
+    return "[[NULL]]";
+  }
+  switch (value->type()) {
+    case base::Value::Type::STRING:
+      return value->GetString();
+    case base::Value::Type::NONE:
+      return "[[NONE]]";
+    case base::Value::Type::BOOLEAN:
+      return value->GetBool() ? "true" : "false";
+    case base::Value::Type::INTEGER:
+      return base::NumberToString(value->GetInt());
+    case base::Value::Type::DOUBLE:
+      return base::NumberToString(value->GetDouble());
+    case base::Value::Type::BINARY: {
+      const std::vector<uint8_t>& value_blob = value->GetBlob();
+      return std::string(value_blob.begin(), value_blob.end());
+    }
+    case base::Value::Type::LIST:
+      return base::WriteJson(value->GetList()).value_or("[[LIST]]");
+    case base::Value::Type::DICT:
+      return base::WriteJson(value->GetDict()).value_or("[[DICT]]");
+  }
+  NOTREACHED();
+}
+
+class TestSharedStorageDevToolsClient : public TestDevToolsProtocolClient {
+ public:
+  explicit TestSharedStorageDevToolsClient(RenderFrameHost* rfh) {
+    AttachToFrameTreeHost(rfh);
+    SendCommandSync("Storage.setSharedStorageTracking",
+                    base::Value::Dict().Set("enable", true));
+  }
+  ~TestSharedStorageDevToolsClient() override { DetachProtocolClient(); }
+
+  void DispatchProtocolMessage(DevToolsAgentHost* agent_host,
+                               base::span<const uint8_t> message) override {
+    std::string_view message_str(reinterpret_cast<const char*>(message.data()),
+                                 message.size());
+    base::Value parsed = *base::JSONReader::Read(message_str);
+    std::optional<int> id = parsed.GetDict().FindInt("id");
+    if (!id) {
+      const std::string* notification = parsed.GetDict().FindString("method");
+      ASSERT_TRUE(notification);
+      if (expected_notification_method_ == *notification) {
+        base::Value* params = parsed.GetDict().Find("params");
+        ASSERT_TRUE(params);
+        params_for_notifications_with_expected_method_.push_back(
+            std::move(*params).TakeDict());
+      }
+    }
+
+    TestDevToolsProtocolClient::DispatchProtocolMessage(agent_host,
+                                                        std::move(message));
+  }
+
+  std::vector<std::map<std::string, std::string>>
+  GetSelectedParamsAsStringsForNotificationsWithExpectedMethod(
+      std::vector<std::string> selected_key_paths) const {
+    std::sort(selected_key_paths.begin(), selected_key_paths.end());
+    std::vector<std::map<std::string, std::string>>
+        selected_params_for_notifications_;
+    for (const base::Value::Dict& params :
+         params_for_notifications_with_expected_method_) {
+      selected_params_for_notifications_.push_back(
+          std::map<std::string, std::string>());
+      for (const std::string& path : selected_key_paths) {
+        const base::Value* param = params.FindByDottedPath(path);
+        if (param) {
+          selected_params_for_notifications_.back().emplace(
+              path, ValueToString(param));
+        }
+      }
+    }
+    return selected_params_for_notifications_;
+  }
+
+ private:
+  std::string expected_notification_method_ = "Storage.sharedStorageAccessed";
+  std::vector<base::Value::Dict> params_for_notifications_with_expected_method_;
 };
 
 }  // namespace
@@ -9538,6 +9630,133 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
         /*worklet_id=*/0, MainFrameId(), origin_str},
        {base::TimeDelta(), AccessMethod::kRun, /*operation_id=*/0,
         /*worklet_id=*/1, MainFrameId(), origin_str}});
+}
+
+IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
+                       TwoWindows_DevToolsNotificationsFilteredByMainFrame) {
+  GURL url1 = https_server()->GetURL("a.test", kPageWithBlankIframePath);
+  GURL url2 = https_server()->GetURL("b.test", kPageWithBlankIframePath);
+  GURL iframe_url1 = https_server()->GetURL("c.test", kSimplePagePath);
+  GURL iframe_url2 = https_server()->GetURL("d.test", kSimplePagePath);
+
+  EXPECT_TRUE(NavigateToURL(shell(), url1));
+
+  RenderFrameHost* main_rfh1 = PrimaryFrameTreeNodeRoot()->current_frame_host();
+  TestSharedStorageDevToolsClient devtools_client1(main_rfh1);
+
+  EXPECT_TRUE(
+      NavigateIframeToURL(shell()->web_contents(), "test_iframe", iframe_url1));
+  RenderFrameHost* iframe1 =
+      PrimaryFrameTreeNodeRoot()->child_at(0)->current_frame_host();
+
+  EXPECT_TRUE(ExecJs(iframe1, "sharedStorage.delete('key0')"));
+
+  Shell* shell2 = Shell::CreateNewWindow(
+      shell()->web_contents()->GetBrowserContext(), url2, nullptr, gfx::Size());
+  ASSERT_TRUE(WaitForLoadStop(shell2->web_contents()));
+
+  RenderFrameHost* main_rfh2 =
+      PrimaryFrameTreeNodeRootFromShell(shell2)->current_frame_host();
+  TestSharedStorageDevToolsClient devtools_client2(main_rfh2);
+
+  EXPECT_TRUE(
+      NavigateIframeToURL(shell2->web_contents(), "test_iframe", iframe_url2));
+  RenderFrameHost* iframe2 = PrimaryFrameTreeNodeRootFromShell(shell2)
+                                 ->child_at(0)
+                                 ->current_frame_host();
+
+  EXPECT_TRUE(ExecJs(iframe2, "sharedStorage.set('key2', 'value2')"));
+
+  GURL out_script_url1;
+  ExecuteScriptInWorklet(main_rfh1, R"(
+      sharedStorage.set('key0', 'value0');
+      sharedStorage.append('key0', 'value1');
+    )",
+                         &out_script_url1);
+
+  GURL out_script_url2;
+  ExecuteScriptInWorkletUsingCreateWorklet(main_rfh2, R"(
+      sharedStorage.delete('key1');
+      sharedStorage.clear();
+    )",
+                                           &out_script_url2,
+                                           /*expected_total_host_count=*/2u);
+
+  std::vector<std::string> selected_key_paths(
+      {"method", "ownerSite", "params.operationName", "params.ignoreIfPresent",
+       "params.key", "params.value", "params.workletId", "scope"});
+  std::vector<std::map<std::string, std::string>> selected_params_observed1 =
+      devtools_client1
+          .GetSelectedParamsAsStringsForNotificationsWithExpectedMethod(
+              selected_key_paths);
+
+  // `devtools_client1` receives the expected shared storage notifications for
+  // `shell()` but, no further "Storage.sharedStorageAccessed" notifications. In
+  // particular, it does not receive those from `shell2`.
+  ASSERT_EQ(selected_params_observed1.size(), 5u);
+  EXPECT_THAT(
+      selected_params_observed1[0],
+      ElementsAre(Pair("method", "delete"), Pair("ownerSite", "https://c.test"),
+                  Pair("params.key", "key0"), Pair("scope", "window")));
+  EXPECT_THAT(
+      selected_params_observed1[1],
+      ElementsAre(Pair("method", "addModule"),
+                  Pair("ownerSite", "https://a.test"),
+                  Pair("params.workletId", "0"), Pair("scope", "window")));
+  EXPECT_THAT(
+      selected_params_observed1[2],
+      ElementsAre(Pair("method", "run"), Pair("ownerSite", "https://a.test"),
+                  Pair("params.operationName", "test-operation"),
+                  Pair("params.workletId", "0"), Pair("scope", "window")));
+  EXPECT_THAT(
+      selected_params_observed1[3],
+      ElementsAre(Pair("method", "set"), Pair("ownerSite", "https://a.test"),
+                  Pair("params.ignoreIfPresent", "false"),
+                  Pair("params.key", "key0"), Pair("params.value", "value0"),
+                  Pair("params.workletId", "0"),
+                  Pair("scope", "sharedStorageWorklet")));
+  EXPECT_THAT(
+      selected_params_observed1[4],
+      ElementsAre(Pair("method", "append"), Pair("ownerSite", "https://a.test"),
+                  Pair("params.key", "key0"), Pair("params.value", "value1"),
+                  Pair("params.workletId", "0"),
+                  Pair("scope", "sharedStorageWorklet")));
+
+  std::vector<std::map<std::string, std::string>> selected_params_observed2 =
+      devtools_client2
+          .GetSelectedParamsAsStringsForNotificationsWithExpectedMethod(
+              std::move(selected_key_paths));
+
+  // `devtools_client2` receives the expected shared storage notifications for
+  // `shell2` but, no further "Storage.sharedStorageAccessed" notifications. In
+  // particular, it does not receive those from `shell()`.
+  ASSERT_EQ(selected_params_observed2.size(), 5u);
+  EXPECT_THAT(
+      selected_params_observed2[0],
+      ElementsAre(Pair("method", "set"), Pair("ownerSite", "https://d.test"),
+                  Pair("params.ignoreIfPresent", "false"),
+                  Pair("params.key", "key2"), Pair("params.value", "value2"),
+                  Pair("scope", "window")));
+  EXPECT_THAT(
+      selected_params_observed2[1],
+      ElementsAre(Pair("method", "createWorklet"),
+                  Pair("ownerSite", "https://b.test"),
+                  Pair("params.workletId", "1"), Pair("scope", "window")));
+  EXPECT_THAT(
+      selected_params_observed2[2],
+      ElementsAre(Pair("method", "run"), Pair("ownerSite", "https://b.test"),
+                  Pair("params.operationName", "test-operation"),
+                  Pair("params.workletId", "1"), Pair("scope", "window")));
+  EXPECT_THAT(
+      selected_params_observed2[3],
+      ElementsAre(Pair("method", "delete"), Pair("ownerSite", "https://b.test"),
+                  Pair("params.key", "key1"), Pair("params.workletId", "1"),
+                  Pair("scope", "sharedStorageWorklet")));
+  EXPECT_THAT(
+      selected_params_observed2[4],
+      ElementsAre(Pair("method", "clear"), Pair("ownerSite", "https://b.test"),
+                  Pair("params.workletId", "1"),
+                  Pair("scope", "sharedStorageWorklet")));
 }
 
 }  // namespace content

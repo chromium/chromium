@@ -373,10 +373,18 @@ class StorageHandler::SharedStorageObserver
   ~SharedStorageObserver() override { DCHECK_CURRENTLY_ON(BrowserThread::UI); }
 
   // content::SharedStorageObserverInterface
+  GlobalRenderFrameHostId AssociatedMainFrameId() const override {
+    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    return owner_->frame_host_
+               ? owner_->frame_host_->GetOutermostMainFrame()->GetGlobalId()
+               : GlobalRenderFrameHostId();
+  }
 
-  // TODO(crbug.com/401011862): Update this and all other shared storage
-  // notifications to filter by frames, so that only the handlers in the
-  // relevant frame subtrees receive notifications.
+  bool ShouldReceiveAllReports() const override {
+    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    return false;
+  }
+
   void OnSharedStorageAccessed(
       base::Time access_time,
       blink::SharedStorageAccessScope scope,

@@ -60,6 +60,10 @@ class CONTENT_EXPORT SharedStorageRuntimeManager {
       kRemainingBudget,
     };
 
+    virtual GlobalRenderFrameHostId AssociatedMainFrameId() const = 0;
+
+    virtual bool ShouldReceiveAllReports() const = 0;
+
     virtual void OnSharedStorageAccessed(
         base::Time access_time,
         AccessScope scope,

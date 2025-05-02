@@ -123,6 +123,10 @@ void SharedStorageRuntimeManager::NotifySharedStorageAccessed(
   }
   base::Time now = base::Time::Now();
   for (SharedStorageObserverInterface& observer : observers_) {
+    if (!observer.ShouldReceiveAllReports() &&
+        observer.AssociatedMainFrameId() != main_frame_id) {
+      continue;
+    }
     observer.OnSharedStorageAccessed(now, scope, method, main_frame_id,
                                      owner_origin, params);
   }
@@ -141,6 +145,10 @@ void SharedStorageRuntimeManager::NotifyWorkletOperationExecutionFinished(
   }
   base::Time now = base::Time::Now();
   for (SharedStorageObserverInterface& observer : observers_) {
+    if (!observer.ShouldReceiveAllReports() &&
+        observer.AssociatedMainFrameId() != main_frame_id) {
+      continue;
+    }
     // TODO(crbug.com/401011862): Consider sending start time as well as
     // "finish" time/report time as part of the DevTools notification. Note,
     // however, that there may be a discrepancy between `execution_time` and

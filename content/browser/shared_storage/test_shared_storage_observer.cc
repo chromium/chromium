@@ -94,6 +94,15 @@ void ExpectObservations(const std::string& observation_name,
 TestSharedStorageObserver::TestSharedStorageObserver() = default;
 TestSharedStorageObserver::~TestSharedStorageObserver() = default;
 
+GlobalRenderFrameHostId TestSharedStorageObserver::AssociatedMainFrameId()
+    const {
+  return GlobalRenderFrameHostId();
+}
+
+bool TestSharedStorageObserver::ShouldReceiveAllReports() const {
+  return true;
+}
+
 void TestSharedStorageObserver::OnSharedStorageAccessed(
     base::Time access_time,
     AccessScope scope,

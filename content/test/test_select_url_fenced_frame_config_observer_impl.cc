@@ -16,6 +16,16 @@ TestSelectURLFencedFrameConfigObserverImpl::
 TestSelectURLFencedFrameConfigObserverImpl::
     ~TestSelectURLFencedFrameConfigObserverImpl() = default;
 
+GlobalRenderFrameHostId
+TestSelectURLFencedFrameConfigObserverImpl::AssociatedMainFrameId() const {
+  return GlobalRenderFrameHostId();
+}
+
+bool TestSelectURLFencedFrameConfigObserverImpl::ShouldReceiveAllReports()
+    const {
+  return true;
+}
+
 void TestSelectURLFencedFrameConfigObserverImpl::OnSharedStorageAccessed(
     base::Time access_time,
     AccessScope scope,

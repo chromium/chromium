@@ -77,6 +77,9 @@ class TestDevToolsProtocolClient : public DevToolsAgentHostClient {
                                         bool allow_existing);
 
  protected:
+  void DispatchProtocolMessage(DevToolsAgentHost* agent_host,
+                               base::span<const uint8_t> message) override;
+
   bool HasExistingNotification() const { return !notifications_.empty(); }
   bool HasExistingNotification(const std::string& notification) const;
   bool HasExistingNotificationMatching(
@@ -123,8 +126,6 @@ class TestDevToolsProtocolClient : public DevToolsAgentHostClient {
   void WaitForResponse();
   void RunLoopUpdatingQuitClosure();
 
-  void DispatchProtocolMessage(DevToolsAgentHost* agent_host,
-                               base::span<const uint8_t> message) override;
   void AgentHostClosed(DevToolsAgentHost* agent_host) override;
   std::optional<url::Origin> GetNavigationInitiatorOrigin() override;
   bool AllowUnsafeOperations() override;
