@@ -170,6 +170,12 @@ void SyncSessionDurationsMetricsRecorder::OnAccountsInCookieUpdated(
   }
 }
 
+void SyncSessionDurationsMetricsRecorder::OnIdentityManagerShutdown(
+    signin::IdentityManager* identity_manager) {
+  CHECK_EQ(identity_manager, identity_manager_);
+  identity_manager_observation_.Reset();
+}
+
 void SyncSessionDurationsMetricsRecorder::OnStateChanged(SyncService* sync) {
   DVLOG(1) << "Sync state change";
   HandleSyncAndAccountChange();

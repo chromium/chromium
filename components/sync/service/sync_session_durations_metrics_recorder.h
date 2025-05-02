@@ -70,6 +70,8 @@ class SyncSessionDurationsMetricsRecorder
   void OnAccountsInCookieUpdated(
       const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
       const GoogleServiceAuthError& error) override;
+  void OnIdentityManagerShutdown(
+      signin::IdentityManager* identity_manager) override;
 
  private:
   // The state the feature is in. The state starts as UNKNOWN. After it moves
