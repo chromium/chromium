@@ -95,7 +95,7 @@ AudioParameters AudioManagerAlsa::GetInputStreamParameters(
                          kDefaultInputBufferSize);
 }
 
-const char* AudioManagerAlsa::GetName() {
+const std::string_view AudioManagerAlsa::GetName() {
   return "ALSA";
 }
 

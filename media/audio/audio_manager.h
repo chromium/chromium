@@ -178,7 +178,7 @@ class MEDIA_EXPORT AudioManager {
       base::WeakPtr<AecdumpRecordingManager> aecdump_recording_manager) = 0;
 
   // Gets the name of the audio manager (e.g., Windows, Mac, PulseAudio).
-  virtual const char* GetName() = 0;
+  virtual const std::string_view GetName() = 0;
 
   // Starts or stops tracing when a peak in Audio signal amplitude is detected.
   // Does nothing if a call to stop tracing is made without first starting the
