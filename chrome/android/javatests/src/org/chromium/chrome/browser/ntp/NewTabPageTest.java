@@ -22,6 +22,7 @@ import static org.chromium.ui.test.util.ViewUtils.waitForView;
 
 import android.content.ComponentCallbacks2;
 import android.content.res.Resources;
+import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
@@ -931,6 +932,30 @@ public class NewTabPageTest {
                 expectedTitleTopMargin,
                 ((MarginLayoutParams) suggestionsTileElement.getTitleView().getLayoutParams())
                         .topMargin);
+    }
+
+    /**
+     * Test whether the last touch position in {@link NewTabPage} is been set correctly. This is
+     * used for {@link
+     * org.chromium.chrome.browser.compositor.layouts.phone.NewBackgroundTabAnimationHostView}.
+     */
+    @Test
+    @SmallTest
+    @Feature({"NewTabPage"})
+    public void testLastTouchPosition() {
+        // TODO(crbug.com/40282469): Update test to assert y-coordinate with exact value.
+        Point ntpPoint = mNtp.getLastTouchPosition();
+        Point defaultPoint = new Point(-1, -1);
+        Assert.assertEquals(defaultPoint, ntpPoint);
+
+        Assert.assertNotNull(mMvTilesLayout);
+        View mvTile = mMvTilesLayout.getTileAt(0);
+
+        int[] location = new int[2];
+        mvTile.getLocationOnScreen(location);
+        TouchCommon.longPressView(mvTile, 0, 0);
+        Assert.assertEquals(location[0], ntpPoint.x);
+        Assert.assertNotEquals(-1, ntpPoint.y);
     }
 
     private void verifyMostVisitedTileMargin() {

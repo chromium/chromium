@@ -23,10 +23,13 @@ public interface FeedSurfaceDelegate {
     FeedSurfaceLifecycleManager createStreamLifecycleManager(
             Activity activity, SurfaceCoordinator coordinator, Profile profile);
 
+    /** Notifies the delegate of a motion event. */
+    void sendMotionEventForInputTracking(MotionEvent ev);
+
     /**
      * Checks whether the delegate want to intercept the given touch event.
      *
-     * @param ev The given {@link MotioneEvent}
+     * @param ev The given {@link MotionEvent}
      * @return True if the delegate want to intercept the event, otherwise return false.
      */
     boolean onInterceptTouchEvent(MotionEvent ev);
