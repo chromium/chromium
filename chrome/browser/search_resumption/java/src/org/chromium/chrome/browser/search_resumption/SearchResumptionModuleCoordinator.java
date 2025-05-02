@@ -4,9 +4,13 @@
 
 package org.chromium.chrome.browser.search_resumption;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.view.ViewGroup;
 
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_resumption.SearchResumptionTileBuilder.OnSuggestionClickCallback;
 import org.chromium.chrome.browser.search_resumption.SearchResumptionUserData.SuggestionResult;
@@ -17,6 +21,7 @@ import org.chromium.content_public.browser.LoadUrlParams;
  * The Coordinator for search resumption module which can be embedded by surfaces like NTP or Start
  * surface.
  */
+@NullMarked
 public class SearchResumptionModuleCoordinator {
     private final SearchResumptionModuleMediator mMediator;
     private final SearchResumptionTileBuilder mTileBuilder;
@@ -27,10 +32,10 @@ public class SearchResumptionModuleCoordinator {
             Tab currentTab,
             Profile profile,
             int moduleContainerStbuId,
-            SuggestionResult cachedSuggestions) {
+            @Nullable SuggestionResult cachedSuggestions) {
         OnSuggestionClickCallback callback =
                 (gurl) -> {
-                    currentTab.loadUrl(new LoadUrlParams(gurl));
+                    currentTab.loadUrl(new LoadUrlParams(assumeNonNull(gurl)));
                     RecordUserAction.record(SearchResumptionModuleUtils.ACTION_CLICK);
                 };
         mTileBuilder = new SearchResumptionTileBuilder(callback);

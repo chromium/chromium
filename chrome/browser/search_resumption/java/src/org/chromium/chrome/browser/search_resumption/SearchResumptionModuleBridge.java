@@ -4,23 +4,28 @@
 
 package org.chromium.chrome.browser.search_resumption;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.url.GURL;
 
 /** Bridge, providing access to the native-side functionalities to fetch search suggestions. */
 @JNINamespace("search_resumption_module")
+@NullMarked
 public class SearchResumptionModuleBridge {
     interface OnSuggestionsReceivedCallback {
         void onSuggestionsReceived(String[] suggestionTexts, GURL[] suggestionUrls);
     }
 
     private long mSearchResumptionModuleBridge;
-    private OnSuggestionsReceivedCallback mCallback;
+    private @Nullable OnSuggestionsReceivedCallback mCallback;
 
     public SearchResumptionModuleBridge(Profile profile) {
         mSearchResumptionModuleBridge =
@@ -49,6 +54,7 @@ public class SearchResumptionModuleBridge {
     void onSuggestionsReceived(
             @JniType("std::vector<const std::u16string*>") String[] suggestionTexts,
             @JniType("std::vector<const GURL*>") GURL[] suggestionUrls) {
+        assumeNonNull(mCallback);
         mCallback.onSuggestionsReceived(suggestionTexts, suggestionUrls);
     }
 

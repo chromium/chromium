@@ -10,9 +10,9 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 
@@ -20,6 +20,7 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
  * The view for the entire search resumption layout, including a header, an option button to
  * collapse or expand the suggestion section, and the section of a set of search suggestions.
  */
+@NullMarked
 public class SearchResumptionModuleView extends LinearLayout {
     private View mHeaderView;
     private ImageView mOptionView;
