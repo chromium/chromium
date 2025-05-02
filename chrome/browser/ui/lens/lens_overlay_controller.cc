@@ -3438,6 +3438,10 @@ void LensOverlayController::HandleStartQueryResponse(
 void LensOverlayController::HandleInteractionURLResponse(
     lens::proto::LensOverlayUrlResponse response) {
   MaybeOpenSidePanel();
+  if (lens::features::IsLensSearchSidePanelScrollToAPIEnabled()) {
+    results_side_panel_coordinator_->SetLatestPageUrlWithResponse(
+        GURL(response.page_url()));
+  }
   results_side_panel_coordinator_->LoadURLInResultsFrame(GURL(response.url()));
 }
 

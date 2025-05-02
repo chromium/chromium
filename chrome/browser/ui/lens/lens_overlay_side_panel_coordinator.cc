@@ -409,6 +409,42 @@ void LensOverlaySidePanelCoordinator::GetIsContextualSearchbox(
   GetLensOverlayController()->GetIsContextualSearchbox(std::move(callback));
 }
 
+void LensOverlaySidePanelCoordinator::OnScrollToMessage(
+    const std::vector<std::string>& text_fragments,
+    uint32_t pdf_page_number) {
+  if (!latest_page_url_with_response_.SchemeIsFile() ||
+      !latest_page_url_with_response_.is_valid()) {
+    return;
+  }
+
+  const auto& latest_page_url_with_viewport_params =
+      AddPDFScrollToParametersToUrl(latest_page_url_with_response_,
+                                    text_fragments, pdf_page_number);
+#if BUILDFLAG(ENABLE_PDF)
+  content::WebContents* web_contents =
+      lens_search_controller_->GetTabInterface()->GetContents();
+
+  // If a PDFDocumentHelper is found attached to the current web contents,
+  // that means that the PDF viewer is currently loaded in it.
+  auto* pdf_helper =
+      pdf::PDFDocumentHelper::MaybeGetForWebContents(web_contents);
+  if (pdf_helper) {
+    if (ShouldHandlePDFViewportChange(latest_page_url_with_viewport_params)) {
+      pdf_extension_util::DispatchShouldUpdateViewportEvent(
+          web_contents->GetPrimaryMainFrame(),
+          latest_page_url_with_viewport_params);
+    }
+    return;
+  }
+#endif  // BUILDFLAG(ENABLE_PDF)
+
+  // Open it in a new tab if the URL is no longer on the main tab.
+  lens_search_controller_->GetTabInterface()
+      ->GetBrowserWindowInterface()
+      ->OpenGURL(latest_page_url_with_viewport_params,
+                 WindowOpenDisposition::NEW_FOREGROUND_TAB);
+}
+
 void LensOverlaySidePanelCoordinator::ExecuteCommand(int command_id,
                                                      int event_flags) {
   switch (command_id) {
@@ -459,6 +495,11 @@ bool LensOverlaySidePanelCoordinator::IsShowingProtectedErrorPage() {
   return side_panel_should_show_error_page_ &&
          side_panel_result_status_ ==
              mojom::SidePanelResultStatus::kErrorPageShownProtected;
+}
+
+void LensOverlaySidePanelCoordinator::SetLatestPageUrlWithResponse(
+    const GURL& url) {
+  latest_page_url_with_response_ = url;
 }
 
 void LensOverlaySidePanelCoordinator::BindSidePanel(

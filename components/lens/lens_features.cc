@@ -75,6 +75,10 @@ BASE_FEATURE(kLensSearchSidePanelNewFeedback,
              "LensSearchSidePanelNewFeedback",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kLensSearchSidePanelScrollToAPI,
+             "LensSearchSidePanelScrollToAPI",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables the Lens Overlay omnibox entry point. This is a separate feature from
 // kLensOverlay so that the omnibox entry point can be disabled without a
 // dependency on the rest of the Lens Overlay features. This means if can be
@@ -1051,6 +1055,10 @@ int GetLensOverlaySliderChangedTimeout() {
 
 bool IsLensSearchProtectedPageEnabled() {
   return base::FeatureList::IsEnabled(kLensSearchProtectedPage);
+}
+
+bool IsLensSearchSidePanelScrollToAPIEnabled() {
+  return base::FeatureList::IsEnabled(kLensSearchSidePanelScrollToAPI);
 }
 
 }  // namespace lens::features

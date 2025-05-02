@@ -14,7 +14,8 @@ class LensSidePanelWebUIBrowserTest : public WebUIMochaBrowserTest {
     set_test_loader_scheme(content::kChromeUIUntrustedScheme);
     set_test_loader_host(chrome::kChromeUILensSidePanelHost);
     scoped_feature_list_.InitWithFeatures(
-        {lens::features::kLensOverlay},
+        {lens::features::kLensOverlay,
+         lens::features::kLensSearchSidePanelScrollToAPI},
         {lens::features::kLensOverlayContextualSearchbox});
   }
 
@@ -45,6 +46,10 @@ IN_PROC_BROWSER_TEST_F(LensSidePanelTest, MessageToast) {
 
 IN_PROC_BROWSER_TEST_F(LensSidePanelTest, FeedbackToast) {
   RunTest("lens/side_panel/feedback_toast_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(LensSidePanelTest, PostMessageCommunication) {
+  RunTest("lens/side_panel/post_message_communication_test.js", "mocha.run()");
 }
 
 using LensGhostLoaderTest = LensSidePanelWebUIBrowserTest;
