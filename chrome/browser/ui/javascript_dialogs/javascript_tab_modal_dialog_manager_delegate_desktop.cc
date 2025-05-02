@@ -7,8 +7,8 @@
 #include <utility>
 
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tab_modal_confirm_dialog.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/javascript_dialogs/app_modal_dialog_manager.h"
@@ -61,14 +61,15 @@ void JavaScriptTabModalDialogManagerDelegateDesktop::DidCloseDialog() {
 
 void JavaScriptTabModalDialogManagerDelegateDesktop::SetTabNeedsAttention(
     bool attention) {
-  Browser* browser = chrome::FindBrowserWithTab(web_contents_);
+  tabs::TabInterface* tab = tabs::TabInterface::GetFromContents(web_contents_);
+  BrowserWindowInterface* browser = tab->GetBrowserWindowInterface();
   if (!browser) {
     // It's possible that the WebContents is no longer in the tab strip. If so,
     // just give up. https://crbug.com/786178
     return;
   }
 
-  TabStripModel* tab_strip_model = browser->tab_strip_model();
+  TabStripModel* tab_strip_model = browser->GetTabStripModel();
   SetTabNeedsAttentionImpl(
       attention, tab_strip_model,
       tab_strip_model->GetIndexOfWebContents(web_contents_));
@@ -87,8 +88,11 @@ bool JavaScriptTabModalDialogManagerDelegateDesktop::IsWebContentsForemost() {
 }
 
 bool JavaScriptTabModalDialogManagerDelegateDesktop::IsApp() {
-  Browser* browser = chrome::FindBrowserWithTab(web_contents_);
-  return browser && (browser->is_type_app() || browser->is_type_app_popup());
+  tabs::TabInterface* tab = tabs::TabInterface::GetFromContents(web_contents_);
+  BrowserWindowInterface* browser = tab->GetBrowserWindowInterface();
+  return browser &&
+         (browser->GetType() == BrowserWindowInterface::Type::TYPE_APP ||
+          browser->GetType() == BrowserWindowInterface::Type::TYPE_APP_POPUP);
 }
 
 bool JavaScriptTabModalDialogManagerDelegateDesktop::CanShowModalUI() {

@@ -20,6 +20,7 @@ source_set("javascript_dialogs") {
     sources += [ "javascript_tab_modal_dialog_manager_delegate_desktop.h" ]
     public_deps += [
       "//chrome/browser/ui:browser_list",
+      "//chrome/browser/ui/browser_window:browser_window",
       "//chrome/browser/ui/tabs:tab_strip_model_observer",
       "//chrome/browser/ui/tabs:tabs_public",
     ]
