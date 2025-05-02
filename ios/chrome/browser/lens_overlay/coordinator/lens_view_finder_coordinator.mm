@@ -117,9 +117,10 @@ LensViewFinderTransition TransitionFromPresentationStyle(
       UIModalTransitionStyleCrossDissolve;
 
   [_metricsRecorder recordLensViewFinderOpened];
-  [self.baseViewController presentViewController:_lensViewController
-                                        animated:YES
-                                      completion:nil];
+  [self.baseViewController
+      presentViewController:_lensViewController
+                   animated:YES
+                 completion:command.presentationCompletion];
 }
 
 - (void)lensOverlayWillDismissWithCause:
