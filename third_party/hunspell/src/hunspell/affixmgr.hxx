@@ -350,8 +350,8 @@ class AffixMgr {
   const std::vector<std::string>& get_breaktable() const;
   const std::string& get_encoding();
   int get_langnum() const;
-  char* get_key_string();
-  char* get_try_string() const;
+  const std::string& get_key_string();
+  const std::string& get_try_string() const;
   const std::string& get_wordchars() const;
   const std::vector<w_char>& get_wordchars_utf16() const;
   const char* get_ignore() const;

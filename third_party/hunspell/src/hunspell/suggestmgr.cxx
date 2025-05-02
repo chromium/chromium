@@ -181,12 +181,12 @@ hentry* ScopedHashEntryFactory::CreateScopedHashEntry(int index,
 
 #ifdef HUNSPELL_CHROME_CLIENT
 SuggestMgr::SuggestMgr(hunspell::BDictReader* reader,
-                       const char * tryme, int maxn, 
+                       const std::string& tryme, int maxn, 
                        AffixMgr * aptr)
 {
   bdict_reader = reader;
 #else
-SuggestMgr::SuggestMgr(const char* tryme, unsigned int maxn, AffixMgr* aptr) {
+SuggestMgr::SuggestMgr(const std::string& tryme, unsigned int maxn, AffixMgr* aptr) {
 #endif
   // register affix manager and check in string of chars to
   // try when building candidate suggestions
@@ -195,10 +195,8 @@ SuggestMgr::SuggestMgr(const char* tryme, unsigned int maxn, AffixMgr* aptr) {
   csconv = NULL;
 
   ckeyl = 0;
-  ckey = NULL;
 
   ctryl = 0;
-  ctry = NULL;
 
   utf8 = 0;
   langnum = 0;
@@ -224,36 +222,32 @@ SuggestMgr::SuggestMgr(const char* tryme, unsigned int maxn, AffixMgr* aptr) {
     complexprefixes = pAMgr->get_complexprefixes();
   }
 
-  if (ckey) {
+  if (!ckey.empty()) {
     if (utf8) {
       ckeyl = u8_u16(ckey_utf, ckey);
     } else {
-      ckeyl = strlen(ckey);
+      ckeyl = ckey.size();
     }
   }
 
-  if (tryme) {
-    ctry = mystrdup(tryme);
-    if (ctry)
-      ctryl = strlen(ctry);
-    if (ctry && utf8) {
-      ctryl = u8_u16(ctry_utf, tryme);
+  ctry = tryme;
+  if (!ctry.empty()) {
+    if (utf8) {
+      ctryl = u8_u16(ctry_utf, ctry);
+    } else {
+      ctryl = ctry.size();
     }
   }
 
   // language with possible dash usage
   // (latin letters or dash in TRY characters)
-  lang_with_dash_usage = (ctry &&
-      ((strchr(ctry, '-') != NULL) || (strchr(ctry, 'a') != NULL)));
+  lang_with_dash_usage = ctry.find('-') != std::string::npos ||
+	                 ctry.find('a') != std::string::npos;
 }
 
 SuggestMgr::~SuggestMgr() {
   pAMgr = NULL;
-  delete[] ckey;
-  ckey = NULL;
   ckeyl = 0;
-  delete[] ctry;
-  ctry = NULL;
   ctryl = 0;
   maxSug = 0;
 #ifdef MOZILLA_CLIENT
@@ -700,19 +694,23 @@ int SuggestMgr::badcharkey(std::vector<std::string>& wlst,
       candidate[i] = tmpc;
     }
     // check neighbor characters in keyboard string
-    if (!ckey)
+    if (ckey.empty())
       continue;
-    char* loc = strchr(ckey, tmpc);
-    while (loc) {
-      if ((loc > ckey) && (*(loc - 1) != '|')) {
-        candidate[i] = *(loc - 1);
+    size_t loc = 0;
+    while ((loc < ckeyl) && ckey[loc] != tmpc)
+      ++loc;
+    while (loc < ckeyl) {
+      if ((loc > 0) && ckey[loc - 1] != '|') {
+        candidate[i] = ckey[loc - 1];
         testsug(wlst, candidate, cpdsuggest, NULL, NULL);
       }
-      if ((*(loc + 1) != '|') && (*(loc + 1) != '\0')) {
-        candidate[i] = *(loc + 1);
+      if (((loc + 1) < ckeyl) && (ckey[loc + 1] != '|')) {
+        candidate[i] = ckey[loc + 1];
         testsug(wlst, candidate, cpdsuggest, NULL, NULL);
       }
-      loc = strchr(loc + 1, tmpc);
+      do {
+        loc++;
+      } while ((loc < ckeyl) && ckey[loc] != tmpc);
     }
     candidate[i] = tmpc;
   }
@@ -739,7 +737,7 @@ int SuggestMgr::badcharkey_utf(std::vector<std::string>& wlst,
       candidate_utf[i] = tmpc;
     }
     // check neighbor characters in keyboard string
-    if (!ckey)
+    if (ckey_utf.empty())
       continue;
     size_t loc = 0;
     while ((loc < ckeyl) && ckey_utf[loc] != tmpc)

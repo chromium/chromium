@@ -3671,17 +3671,15 @@ const std::vector<w_char>& AffixMgr::get_ignore_utf16() const {
 }
 
 // return the keyboard string for suggestions
-char* AffixMgr::get_key_string() {
+const std::string& AffixMgr::get_key_string() {
   if (keystring.empty())
     keystring = SPELL_KEYSTRING;
-  return mystrdup(keystring.c_str());
+  return keystring;
 }
 
 // return the preferred try string for suggestions
-char* AffixMgr::get_try_string() const {
-  if (trystring.empty())
-    return NULL;
-  return mystrdup(trystring.c_str());
+const std::string& AffixMgr::get_try_string() const {
+  return trystring;
 }
 
 // return the preferred try string for suggestions

@@ -214,7 +214,7 @@ HunspellImpl::HunspellImpl(const char* affpath, const char* dpath, const char* k
 
   /* get the preferred try string and the dictionary */
   /* encoding from the Affix Manager for that dictionary */
-  char* try_string = pAMgr->get_try_string();
+  std::string try_string = pAMgr->get_try_string();
   encoding = pAMgr->get_encoding();
   langnum = pAMgr->get_langnum();
   utf8 = pAMgr->get_utf8();
@@ -229,7 +229,6 @@ HunspellImpl::HunspellImpl(const char* affpath, const char* dpath, const char* k
 #else
   pSMgr = new SuggestMgr(try_string, MAXSUGGESTION, pAMgr);
 #endif
-  delete[] try_string;
 }
 
 HunspellImpl::~HunspellImpl() {

@@ -96,11 +96,11 @@ class SuggestMgr {
   SuggestMgr& operator=(const SuggestMgr&);
 
  private:
-  char* ckey;
+  std::string ckey;
   size_t ckeyl;
   std::vector<w_char> ckey_utf;
 
-  char* ctry;
+  std::string ctry;
   size_t ctryl;
   std::vector<w_char> ctry_utf;
   bool lang_with_dash_usage;
@@ -117,9 +117,9 @@ class SuggestMgr {
 
  public:
 #ifdef HUNSPELL_CHROME_CLIENT
-  SuggestMgr(hunspell::BDictReader* reader, const char * tryme, int maxn, AffixMgr *aptr);
+  SuggestMgr(hunspell::BDictReader* reader, const std::string& tryme, int maxn, AffixMgr *aptr);
 #else
-  SuggestMgr(const char* tryme, unsigned int maxn, AffixMgr* aptr);
+  SuggestMgr(const std::string& tryme, unsigned int maxn, AffixMgr* aptr);
 #endif
   ~SuggestMgr();
 
