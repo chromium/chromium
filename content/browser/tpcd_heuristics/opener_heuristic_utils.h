@@ -6,6 +6,9 @@
 #define CONTENT_BROWSER_TPCD_HEURISTICS_OPENER_HEURISTIC_UTILS_H_
 
 #include <map>
+#include <set>
+#include <string>
+#include <utility>
 
 #include "base/types/optional_ref.h"
 #include "content/common/content_export.h"
