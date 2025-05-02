@@ -530,6 +530,7 @@ void InputManager::NotifySiteIsMobileOptimized(
 
   auto metadata_itr = frame_sink_metadata_map_.find(frame_sink_id);
   CHECK(metadata_itr != frame_sink_metadata_map_.end());
+  metadata_itr->second.is_mobile_optimized = is_mobile_optimized;
   metadata_itr->second.rir_support->NotifySiteIsMobileOptimized(
       is_mobile_optimized);
 }
@@ -639,10 +640,12 @@ void InputManager::MaybeRecreateRootRenderInputRouterSupports(
     // associated with layer tree frame sinks.
     if (iter != frame_sink_metadata_map_.end() &&
         iter->second.rir_support->IsRenderInputRouterSupportChildFrame()) {
-      iter->second.rir_support.reset();
+      FrameSinkMetadata& metadata = iter->second;
+      metadata.rir_support.reset();
       auto* rir = rir_map_.find(frame_sink_id)->second.get();
-      iter->second.rir_support =
-          MakeRenderInputRouterSupport(rir, frame_sink_id);
+      metadata.rir_support = MakeRenderInputRouterSupport(rir, frame_sink_id);
+      metadata.rir_support->NotifySiteIsMobileOptimized(
+          metadata.is_mobile_optimized);
     }
   }
 }
@@ -657,6 +660,8 @@ void InputManager::RecreateRenderInputRouterSupport(
   frame_sink_metadata.rir_support.reset();
   frame_sink_metadata.rir_support =
       MakeRenderInputRouterSupport(rir, child_frame_sink_id);
+  frame_sink_metadata.rir_support->NotifySiteIsMobileOptimized(
+      frame_sink_metadata.is_mobile_optimized);
 }
 
 std::unique_ptr<RenderInputRouterSupportBase>
