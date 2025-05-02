@@ -12,6 +12,7 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/mock_callback.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -20,6 +21,7 @@
 #include "components/themes/ntp_background_data.h"
 #include "components/themes/ntp_background_service_observer.h"
 #include "components/version_info/version_info.h"
+#include "ntp_background_data.h"
 #include "services/network/public/cpp/data_element.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -348,8 +350,7 @@ TEST_F(NtpBackgroundServiceTest, ImageInCollectionHasNetworkError) {
   collection_image.asset_id = image.asset_id();
   collection_image.thumbnail_image_url =
       GURL(image.image_url() + GetThumbnailImageOptions());
-  collection_image.image_url =
-      GURL(image.image_url() + service()->GetImageOptionsForTesting());
+  collection_image.image_url = GURL(image.image_url() + GetImageOptions());
   collection_image.attribution.push_back(image.attribution(0).text());
   collection_image.attribution_action_url = GURL(image.action_url());
 
@@ -383,8 +384,7 @@ TEST_F(NtpBackgroundServiceTest, GoodCollectionImagesResponse) {
   collection_image.asset_id = image.asset_id();
   collection_image.thumbnail_image_url =
       GURL(image.image_url() + GetThumbnailImageOptions());
-  collection_image.image_url =
-      GURL(image.image_url() + service()->GetImageOptionsForTesting());
+  collection_image.image_url = GURL(image.image_url() + GetImageOptions());
   collection_image.attribution.push_back(image.attribution(0).text());
   collection_image.attribution_action_url = GURL(image.action_url());
 
@@ -392,6 +392,148 @@ TEST_F(NtpBackgroundServiceTest, GoodCollectionImagesResponse) {
   EXPECT_THAT(service()->collection_images().at(0), Eq(collection_image));
   EXPECT_EQ(service()->collection_images_error_info().error_type,
             ErrorType::NONE);
+}
+
+TEST_F(NtpBackgroundServiceTest, CollectionImagesNetworkErrorWithCallback) {
+  SetUpResponseWithNetworkError(service()->GetImagesURLForTesting());
+
+  ASSERT_TRUE(service()->collection_images().empty());
+
+  EXPECT_CALL(observer_, OnCollectionImagesAvailable).Times(0);
+
+  std::vector<CollectionImage> collection_images;
+  ErrorType error_type;
+  base::MockCallback<NtpBackgroundService::FetchCollectionImageCallback>
+      callback;
+  EXPECT_CALL(callback, Run(testing::_, testing::_))
+      .Times(1)
+      .WillOnce(testing::DoAll(testing::SaveArg<0>(&collection_images),
+                               testing::SaveArg<1>(&error_type)));
+
+  service()->FetchCollectionImageInfo("shapes", callback.Get());
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(collection_images.empty());
+  EXPECT_EQ(collection_images.size(), 0u);
+  EXPECT_EQ(error_type, ErrorType::NET_ERROR);
+}
+
+TEST_F(NtpBackgroundServiceTest, BadCollectionImagesWithCallback) {
+  SetUpResponseWithData(service()->GetImagesURLForTesting(),
+                        "bad serialized GetImagesInCollectionResponse");
+
+  ASSERT_TRUE(service()->collection_images().empty());
+
+  EXPECT_CALL(observer_, OnCollectionImagesAvailable).Times(0);
+
+  std::vector<CollectionImage> collection_images;
+  ErrorType error_type;
+  base::MockCallback<NtpBackgroundService::FetchCollectionImageCallback>
+      callback;
+  EXPECT_CALL(callback, Run(testing::_, testing::_))
+      .Times(1)
+      .WillOnce(testing::DoAll(testing::SaveArg<0>(&collection_images),
+                               testing::SaveArg<1>(&error_type)));
+
+  service()->FetchCollectionImageInfo("shapes", callback.Get());
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(collection_images.empty());
+  EXPECT_EQ(collection_images.size(), 0u);
+  EXPECT_EQ(error_type, ErrorType::SERVICE_ERROR);
+}
+
+TEST_F(NtpBackgroundServiceTest, GoodCollectionImagesResponseWithCallback) {
+  ntp::background::Image image;
+  image.set_asset_id(12345);
+  image.set_image_url(kTestImageUrl);
+  image.add_attribution()->set_text("attribution text");
+  image.set_action_url(kTestActionUrl);
+  ntp::background::GetImagesInCollectionResponse response;
+  *response.add_images() = image;
+  std::string response_string;
+  response.SerializeToString(&response_string);
+
+  SetUpResponseWithData(service()->GetImagesURLForTesting(), response_string);
+
+  ASSERT_TRUE(service()->collection_images().empty());
+
+  EXPECT_CALL(observer_, OnCollectionImagesAvailable).Times(0);
+
+  std::vector<CollectionImage> collection_images;
+  ErrorType error_type;
+  base::MockCallback<NtpBackgroundService::FetchCollectionImageCallback>
+      callback;
+  EXPECT_CALL(callback, Run(testing::_, testing::_))
+      .Times(1)
+      .WillOnce(testing::DoAll(testing::SaveArg<0>(&collection_images),
+                               testing::SaveArg<1>(&error_type)));
+
+  service()->FetchCollectionImageInfo("shapes", callback.Get());
+  base::RunLoop().RunUntilIdle();
+
+  std::string expected_image_url =
+      std::string(kTestImageUrl) + GetImageOptions();
+  std::string expected_thumbnail_image_url =
+      std::string(kTestImageUrl) + GetThumbnailImageOptions();
+  EXPECT_EQ(collection_images[0].image_url, GURL(expected_image_url));
+  EXPECT_EQ(collection_images[0].thumbnail_image_url,
+            GURL(expected_thumbnail_image_url));
+  EXPECT_EQ(collection_images[0].collection_id, "shapes");
+  EXPECT_EQ(collection_images.size(), 1u);
+  EXPECT_FALSE(collection_images.empty());
+  EXPECT_EQ(error_type, ErrorType::NONE);
+}
+
+TEST_F(NtpBackgroundServiceTest,
+       MultipleGoodCollectionImagesResponseWithCallback) {
+  ntp::background::Image image;
+  image.set_asset_id(12345);
+  image.set_image_url(kTestImageUrl);
+  image.add_attribution()->set_text("attribution text");
+  image.set_action_url(kTestActionUrl);
+  ntp::background::GetImagesInCollectionResponse response;
+  *response.add_images() = image;
+  std::string response_string;
+  response.SerializeToString(&response_string);
+
+  SetUpResponseWithData(service()->GetImagesURLForTesting(), response_string);
+
+  ASSERT_TRUE(service()->collection_images().empty());
+
+  EXPECT_CALL(observer_, OnCollectionImagesAvailable).Times(0);
+
+  std::vector<CollectionImage> first_collection_images;
+  ErrorType first_error_type;
+  base::MockCallback<NtpBackgroundService::FetchCollectionImageCallback>
+      first_callback;
+  EXPECT_CALL(first_callback, Run(testing::_, testing::_))
+      .Times(1)
+      .WillOnce(testing::DoAll(testing::SaveArg<0>(&first_collection_images),
+                               testing::SaveArg<1>(&first_error_type)));
+
+  std::vector<CollectionImage> second_collection_images;
+  ErrorType second_error_type;
+  base::MockCallback<NtpBackgroundService::FetchCollectionImageCallback>
+      second_callback;
+  EXPECT_CALL(second_callback, Run(testing::_, testing::_))
+      .Times(1)
+      .WillOnce(testing::DoAll(testing::SaveArg<0>(&second_collection_images),
+                               testing::SaveArg<1>(&second_error_type)));
+
+  service()->FetchCollectionImageInfo("shapes", first_callback.Get());
+  service()->FetchCollectionImageInfo("art", second_callback.Get());
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(first_collection_images[0].collection_id, "shapes");
+  EXPECT_EQ(first_collection_images.size(), 1u);
+  EXPECT_FALSE(first_collection_images.empty());
+  EXPECT_EQ(first_error_type, ErrorType::NONE);
+
+  EXPECT_EQ(second_collection_images[0].collection_id, "art");
+  EXPECT_EQ(second_collection_images.size(), 1u);
+  EXPECT_FALSE(second_collection_images.empty());
+  EXPECT_EQ(second_error_type, ErrorType::NONE);
 }
 
 TEST_F(NtpBackgroundServiceTest,
@@ -441,8 +583,7 @@ TEST_F(NtpBackgroundServiceTest,
   collection_image.asset_id = image.asset_id();
   collection_image.thumbnail_image_url =
       GURL(image.image_url() + GetThumbnailImageOptions());
-  collection_image.image_url =
-      GURL(image.image_url() + service()->GetImageOptionsForTesting());
+  collection_image.image_url = GURL(image.image_url() + GetImageOptions());
   collection_image.attribution.push_back(image.attribution(0).text());
 
   EXPECT_FALSE(service()->collection_info().empty());
@@ -522,8 +663,7 @@ TEST_F(NtpBackgroundServiceTest, GoodNextImageResponse) {
   collection_image.asset_id = image.asset_id();
   collection_image.thumbnail_image_url =
       GURL(image.image_url() + GetThumbnailImageOptions());
-  collection_image.image_url =
-      GURL(image.image_url() + service()->GetImageOptionsForTesting());
+  collection_image.image_url = GURL(image.image_url() + GetImageOptions());
   collection_image.attribution.push_back(image.attribution(0).text());
   collection_image.attribution_action_url = GURL(image.action_url());
 
@@ -562,8 +702,7 @@ TEST_F(NtpBackgroundServiceTest, MultipleRequestsNextImage) {
   collection_image.asset_id = image.asset_id();
   collection_image.thumbnail_image_url =
       GURL(image.image_url() + GetThumbnailImageOptions());
-  collection_image.image_url =
-      GURL(image.image_url() + service()->GetImageOptionsForTesting());
+  collection_image.image_url = GURL(image.image_url() + GetImageOptions());
   collection_image.attribution.push_back(image.attribution(0).text());
   collection_image.attribution_action_url = GURL(image.action_url());
 
@@ -594,7 +733,7 @@ TEST_F(NtpBackgroundServiceTest, CheckValidAndInvalidBackdropUrls) {
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(service()->IsValidBackdropUrl(
-      GURL(image.image_url() + service()->GetImageOptionsForTesting())));
+      GURL(image.image_url() + GetImageOptions())));
   EXPECT_FALSE(service()->IsValidBackdropUrl(
       GURL("http://wallpapers.co/some_image=imageOptions")));
   EXPECT_FALSE(service()->IsValidBackdropUrl(

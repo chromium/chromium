@@ -583,8 +583,7 @@ TEST_F(NtpCustomBackgroundServiceTest, RefreshesBackgroundAfter24Hours) {
   task_environment_.RunUntilIdle();
 
   auto custom_background = custom_background_service_->GetCustomBackground();
-  const std::string image_options =
-      mock_ntp_background_service().GetImageOptionsForTesting();
+  const std::string image_options = GetImageOptions();
   EXPECT_EQ(GURL(kImageUrl1.spec() + image_options),
             custom_background->custom_background_url);
   EXPECT_EQ(kValidId, custom_background->collection_id);
@@ -853,8 +852,7 @@ TEST_F(NtpCustomBackgroundServiceTest,
   const std::string kValidId("art");
   const std::string kImageUrl1("https://www.test.com/1/");
   const std::string kImageUrl2("https://www.test.com/2/");
-  const std::string image_options(
-      mock_ntp_background_service().GetImageOptionsForTesting());
+  const std::string image_options(GetImageOptions());
   const GURL kImageUrl1WithOptions(kImageUrl1 + image_options);
   const GURL kImageUrl2WithOptions(kImageUrl2 + image_options);
 

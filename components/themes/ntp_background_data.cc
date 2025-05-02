@@ -7,17 +7,27 @@
 #include "build/build_config.h"
 
 namespace {
-// The options to be added to a thumbnail image URL, specifying resolution,
-// cropping, etc. Options appear on an image URL after the '=' character. This
-// resolution matches the height an width of bg-sel-tile.
-constexpr char kThumbnailImageOptions[] = "=w156-h117-p-k-no-nd-mv";
-
 #if BUILDFLAG(IS_IOS)
 // iOS label added to request to filter out unwanted collections.
 constexpr char kFilteringLabel[] = "chrome_ios_ntp";
+// The iOS options to be added to a thumbnail image URL, specifying resolution,
+// cropping, etc. Options appear on an image URL after the '=' character. This
+// resolution matches the height an width of bg-sel-tile.
+constexpr char kThumbnailImageOptions[] = "=s639-k-no-nd";
+// The iOS options to be added to an image URL, specifying resolution, cropping,
+// etc. Options appear on an image URL after the '=' character.
+constexpr char kImageOptions[] = "=s2556-k-no-nd";
 #else
 // Desktop label added to request to filter out unwanted collections.
 constexpr char kFilteringLabel[] = "chrome_desktop_ntp";
+// The desktop options to be added to a thumbnail image URL, specifying
+// resolution, cropping, etc. Options appear on an image URL after the '='
+// character. This resolution matches the height an width of bg-sel-tile.
+constexpr char kThumbnailImageOptions[] = "=w156-h117-p-k-no-nd-mv";
+// The desktop options to be added to an image URL, specifying resolution,
+// cropping, etc. Options appear on an image URL after the '=' character.
+// TODO(crbug.com/41408116): Set options based on display resolution capability.
+constexpr char kImageOptions[] = "=w3840-h2160-p-k-no-nd-mv";
 #endif
 
 }  // namespace
@@ -28,6 +38,10 @@ std::string GetThumbnailImageOptions() {
 
 std::string GetFilteringLabel() {
   return kFilteringLabel;
+}
+
+std::string GetImageOptions() {
+  return kImageOptions;
 }
 
 GURL AddOptionsToImageURL(const std::string& image_url,

@@ -62,6 +62,16 @@ class NtpBackgroundService : public KeyedService {
   // completes, OnCollectionInfoAvailable will be called on the observers.
   virtual void FetchCollectionInfo();
 
+  // Callback type for fetching collection images, invoked with a vector of
+  // CollectionImage.
+  using FetchCollectionImageCallback =
+      base::OnceCallback<void(const std::vector<CollectionImage>&, ErrorType)>;
+  // Requests an asynchronous fetch of metadata about images in the specified
+  // collection. After the update completes, a callback will be executed with
+  // the images metadata.
+  virtual void FetchCollectionImageInfo(const std::string& collection_id,
+                                        FetchCollectionImageCallback callback);
+
   // Requests an asynchronous fetch of metadata about images in the specified
   // collection. After the update completes, OnCollectionImagesAvailable will be
   // called on the observers. Requests that are made while an asynchronous fetch
@@ -143,7 +153,6 @@ class NtpBackgroundService : public KeyedService {
     return next_image_error_info_;
   }
 
-  std::string GetImageOptionsForTesting();
   GURL GetCollectionsLoadURLForTesting() const;
   GURL GetImagesURLForTesting() const;
   GURL GetNextImageURLForTesting() const;
@@ -176,11 +185,16 @@ class NtpBackgroundService : public KeyedService {
   void OnCollectionInfoFetchComplete(
       std::unique_ptr<std::string> response_body);
 
-  // Callback that processes the response from the FetchCollectionImages
-  // request, refreshing the contents of collection_images_ with
-  // server-provided data.
+  // Callback that processes the response from a FetchCollectionImages
+  // request and then executes a provided callback with the server-provided
+  // data. This allows for parallel fetching of collection images without
+  // updating states such as collection_images_, requested_collection_id_, and
+  // collection_images_error_info_. To update these states,
+  // use FetchCollectionImageInfo(const std::string& collection_id).
   void OnCollectionImageInfoFetchComplete(
-      ntp::background::GetImagesInCollectionResponse images_response,
+      const std::string& collection_id,
+      FetchCollectionImageCallback callback,
+      ntp::background::GetImagesInCollectionResponse images_responsfe,
       ErrorType error_type);
 
   // Callback that processes the response from VerifyCollectionImageURL request.
@@ -211,6 +225,13 @@ class NtpBackgroundService : public KeyedService {
   // request, refreshing the contents of next_collection_image_ and
   // next_resume_token_ with server-provided data.
   void OnNextImageInfoFetchComplete(std::unique_ptr<std::string> response_body);
+
+  // Callback that processes the response from the FetchCollectionImages
+  // request, refreshing the contents of collection_images_ with
+  // server-provided data.
+  void OnCollectionImageInfoReceived(
+      const std::vector<CollectionImage>& collection_images,
+      ErrorType error_type);
 
   // Requests an asynchronous fetch of metadata about images in the specified
   // collection.

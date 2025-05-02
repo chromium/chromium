@@ -51,11 +51,6 @@ constexpr char kCollectionImagesPath[] =
 constexpr char kNextCollectionImagePath[] =
     "/cast/chromecast/home/wallpaper/image?rt=b";
 
-// The options to be added to an image URL, specifying resolution, cropping,
-// etc. Options appear on an image URL after the '=' character.
-// TODO(crbug.com/41408116): Set options based on display resolution capability.
-constexpr char kImageOptions[] = "=w3840-h2160-p-k-no-nd-mv";
-
 // Returns the configured collections base URL with |path| appended.
 GURL GetUrl(std::string_view path) {
   return GURL(base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -76,7 +71,7 @@ NtpBackgroundService::NtpBackgroundService(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : application_locale_storage_(CHECK_DEREF(application_locale_storage)),
       url_loader_factory_(url_loader_factory) {
-  default_image_options_ = kImageOptions;
+  default_image_options_ = GetImageOptions();
   thumbnail_image_options_ = GetThumbnailImageOptions();
   collections_api_url_ = GetUrl(kCollectionsPath);
   collection_images_api_url_ = GetUrl(kCollectionImagesPath);
@@ -215,6 +210,16 @@ void NtpBackgroundService::OnCollectionInfoFetchComplete(
 }
 
 void NtpBackgroundService::FetchCollectionImageInfo(
+    const std::string& collection_id,
+    FetchCollectionImageCallback callback) {
+  FetchCollectionImageInfoInternal(
+      collection_id,
+      base::BindOnce(&NtpBackgroundService::OnCollectionImageInfoFetchComplete,
+                     base::Unretained(this), collection_id,
+                     std::move(callback)));
+}
+
+void NtpBackgroundService::FetchCollectionImageInfo(
     const std::string& collection_id) {
   collection_images_error_info_.ClearError();
   // Ignore subsequent requests to fetch collection image info.
@@ -227,40 +232,55 @@ void NtpBackgroundService::FetchCollectionImageInfo(
   pending_image_url_header_loaders_.clear();
   FetchCollectionImageInfoInternal(
       collection_id,
-      base::BindOnce(&NtpBackgroundService::OnCollectionImageInfoFetchComplete,
-                     base::Unretained(this)));
+      base::BindOnce(
+          &NtpBackgroundService::OnCollectionImageInfoFetchComplete,
+          base::Unretained(this), collection_id,
+          base::BindOnce(&NtpBackgroundService::OnCollectionImageInfoReceived,
+                         base::Unretained(this))));
 }
 
 void NtpBackgroundService::OnCollectionImageInfoFetchComplete(
+    const std::string& collection_id,
+    FetchCollectionImageCallback callback,
     ntp::background::GetImagesInCollectionResponse images_response,
     ErrorType error_type) {
-  collection_images_.clear();
+  std::vector<CollectionImage> collection_images;
 
   if (error_type == ErrorType::NET_ERROR) {
     // This represents network errors (i.e. the server did not provide
     // a response).
     DVLOG(1) << "Request failed with error: "
              << collection_images_error_info_.net_error;
-    collection_images_error_info_.error_type = error_type;
-    NotifyObservers(FetchComplete::COLLECTION_IMAGE_INFO);
-    return;
   } else if (error_type == ErrorType::SERVICE_ERROR) {
     DVLOG(1) << "Deserializing Backdrop wallpaper proto for image "
                 "info failed.";
+  } else {
+    for (int i = 0; i < images_response.images_size(); ++i) {
+      const ntp::background::Image image = images_response.images(i);
+      collection_images.push_back(CollectionImage::CreateFromProto(
+          collection_id, image,
+          /*default_image_url=*/
+          AddOptionsToImageURL(image.image_url(), default_image_options_),
+          /*thumbnail_image_url=*/
+          AddOptionsToImageURL(image.image_url(), thumbnail_image_options_)));
+    }
+  }
+
+  // Execute callback with the fetched collection images data.
+  std::move(callback).Run(collection_images, error_type);
+}
+
+void NtpBackgroundService::OnCollectionImageInfoReceived(
+    const std::vector<CollectionImage>& collection_images,
+    ErrorType error_type) {
+  collection_images_.clear();
+  if (error_type != ErrorType::NONE) {
     collection_images_error_info_.error_type = error_type;
     NotifyObservers(FetchComplete::COLLECTION_IMAGE_INFO);
     return;
   }
 
-  for (int i = 0; i < images_response.images_size(); ++i) {
-    const ntp::background::Image image = images_response.images(i);
-    collection_images_.push_back(CollectionImage::CreateFromProto(
-        requested_collection_id_, image,
-        /*default_image_url=*/
-        AddOptionsToImageURL(image.image_url(), default_image_options_),
-        /*thumbnail_image_url=*/
-        AddOptionsToImageURL(image.image_url(), thumbnail_image_options_)));
-  }
+  collection_images_ = collection_images;
   NotifyObservers(FetchComplete::COLLECTION_IMAGE_INFO);
 }
 
@@ -728,10 +748,6 @@ void NtpBackgroundService::NotifyObservers(FetchComplete fetch_complete) {
         break;
     }
   }
-}
-
-std::string NtpBackgroundService::GetImageOptionsForTesting() {
-  return kImageOptions;
 }
 
 GURL NtpBackgroundService::GetCollectionsLoadURLForTesting() const {

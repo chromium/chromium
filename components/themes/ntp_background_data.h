@@ -24,10 +24,14 @@ enum class ErrorType {
   SERVICE_ERROR,
 };
 
+// Retrieve the options to be added to a thumbnail image URL.
 std::string GetThumbnailImageOptions();
 
 // Label added to request to filter out unwanted collections.
 std::string GetFilteringLabel();
+
+// Retrieve the options to be added to an image URL.
+std::string GetImageOptions();
 
 // Adds options for resizing an image to its url.
 // Without options added to the image, it is 512x512.
