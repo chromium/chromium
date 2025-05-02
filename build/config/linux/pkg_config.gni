@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/compute_inputs_for_analyze.gni")
+import("//build/config/gclient_args.gni")
 import("//build/config/sysroot.gni")
 import("//build/toolchain/rbe.gni")
 
@@ -55,11 +57,33 @@ pkg_config_script = "//build/config/linux/pkg-config.py"
 pkg_config_args = []
 
 common_pkg_config_args = []
+
+# Chrome OS uses custom pkg_config wrappers that require absolute paths as inputs.
+# See https://chromium-review.googlesource.com/c/chromium/src/+/6506002
+_pkg_config_requires_abs_path =
+    pkg_config != "" ||
+    (current_toolchain == host_toolchain && host_pkg_config != "")
+
+# Chrome-adjacent repos might be using different sysroot versions (e.g. ANGLE).
+_enable_cache =
+    !_pkg_config_requires_abs_path && defined(build_with_chromium) &&
+    build_with_chromium && sysroot != ""
+
 if (sysroot != "") {
+  if (_pkg_config_requires_abs_path) {
+    _rebased_sysroot = rebase_path(sysroot)
+  } else {
+    _rebased_sysroot = rebase_path(sysroot, root_build_dir)
+  }
+  if (_enable_cache) {
+    _cached_results = read_file("cached_results.scope", "scope")
+    _cached_results = _cached_results.data
+  }
+
   # Pass the sysroot if we're using one (it requires the CPU arch also).
   common_pkg_config_args += [
     "-s",
-    rebase_path(sysroot),
+    _rebased_sysroot,
     "-a",
     current_cpu,
   ]
@@ -93,30 +117,74 @@ template("pkg_config") {
   assert(defined(invoker.packages),
          "Variable |packages| must be defined to be a list in pkg_config.")
   config(target_name) {
-    if (host_toolchain == current_toolchain) {
-      args = common_pkg_config_args + host_pkg_config_args + invoker.packages
+    if (current_toolchain == host_toolchain) {
+      _cache_args = host_pkg_config_args + invoker.packages
     } else {
-      args = common_pkg_config_args + pkg_config_args + invoker.packages
+      _cache_args = pkg_config_args + invoker.packages
     }
     if (defined(invoker.extra_args)) {
-      args += invoker.extra_args
+      _cache_args += invoker.extra_args
     }
 
-    pkgresult = exec_script(pkg_config_script, args, "json")
+    # exec_script() is slow, so cache results.
+    if (_enable_cache) {
+      foreach(_entry, _cached_results) {
+        if (_rebased_sysroot == _entry.sysroot) {
+          foreach(_subentry, _entry.entries) {
+            if (_subentry.args == _cache_args) {
+              pkgresult = _subentry.pkgresult
+            }
+          }
+
+          # Do not expect cache hits when:
+          #  * No entries exist for the sysroot.
+          #  * It's a package outside of the core ones in //build/config/linux
+          _expected_cache_hit =
+              filter_include([ get_path_info(".", "abspath") ],
+                             [ "//build/config/linux/*" ]) != []
+          not_needed([ "_expected_cache_hit" ])
+        }
+      }
+    }
+
+    if (!defined(pkgresult)) {
+      _script_args = common_pkg_config_args + _cache_args
+      pkgresult = exec_script(pkg_config_script, _script_args, "json")
+      if (defined(_expected_cache_hit) && _expected_cache_hit) {
+        print("sysroot=$_rebased_sysroot")
+        print("      {")
+        print("        args = $_cache_args")
+        print("        pkgresult = $pkgresult")
+        print("      },")
+        assert(
+            false,
+            "Non-cached pkg_config query. Please update //build/config/linux/cached_results.scope with the above.")
+      }
+    } else if (compute_inputs_for_analyze) {
+      # Generally, only bots add this arg. Use it to ensure cache is not stale.
+      _script_args = common_pkg_config_args + _cache_args
+      _expected_pkgresult = exec_script(pkg_config_script, _script_args, "json")
+      if (pkgresult != _expected_pkgresult) {
+        print("sysroot=$_rebased_sysroot")
+        print("      {")
+        print("        args = $_cache_args")
+        print("        pkgresult = $_expected_pkgresult")
+        print("      },")
+        assert(
+            false,
+            "Outdated pkg_config query result detected. Please update //build/config/linux/cached_results.scope with the above.")
+      }
+    }
     cflags = pkgresult[1]
 
-    foreach(include, pkgresult[0]) {
+    foreach(_path, pkgresult[0]) {
+      if (_pkg_config_requires_abs_path && (use_sysroot || use_remoteexec)) {
+        _path = rebase_path(_path, root_build_dir)
+      }
+
       # We want the system include paths to use -isystem instead of -I to
       # suppress warnings in those headers.
-      # When building remotely, we make the path relative just as for use_sysroot.
-      # This ensures we are using the header files that match the platform we are
-      # building for.
-      if (use_sysroot || use_remoteexec) {
-        include_relativized = rebase_path(include, root_build_dir)
-        cflags += [ "-isystem$include_relativized" ]
-      } else {
-        cflags += [ "-isystem$include" ]
-      }
+      cflags += [ "-isystem$_path" ]
     }
 
     if (!defined(invoker.ignore_libs) || !invoker.ignore_libs) {
