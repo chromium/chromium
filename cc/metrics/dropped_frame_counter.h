@@ -61,7 +61,6 @@ class CC_EXPORT DroppedFrameCounter {
     std::array<uint32_t, 101> histogram_bins_ = {0};
     std::array<uint32_t, 7> smoothness_buckets_ = {0};
     uint32_t total_count_ = 0;
-    bool export_extra_metrics_ = !features::StopExportDFCMetrics();
   };
 
   DroppedFrameCounter();
@@ -139,14 +138,6 @@ class CC_EXPORT DroppedFrameCounter {
     return sliding_window_max_percent_dropped_After_5_sec_;
   }
 
-  uint32_t SlidingWindow95PercentilePercentDropped(
-      SmoothnessStrategy strategy) const {
-    DCHECK_GT(SmoothnessStrategy::kStrategyCount, strategy);
-    return export_extra_metrics_ ? sliding_window_histogram_[strategy]
-                                       .GetPercentDroppedFramePercentile(0.95)
-                                 : 0.0;
-  }
-
   uint32_t SlidingWindowMedianPercentDropped(
       SmoothnessStrategy strategy) const {
     DCHECK_GT(SmoothnessStrategy::kStrategyCount, strategy);
@@ -176,7 +167,6 @@ class CC_EXPORT DroppedFrameCounter {
   base::TimeDelta ComputeCurrentWindowSize() const;
 
   void PopSlidingWindow();
-  void UpdateMaxPercentDroppedFrame(double percent_dropped_frame);
 
   // Adds count to dropped_frame_count_in_window_ of each strategy.
   void UpdateDroppedFrameCountInWindow(const FrameInfo& frame_info, int count);
@@ -215,7 +205,6 @@ class CC_EXPORT DroppedFrameCounter {
 
   bool report_for_ui_ = false;
   std::optional<double> sliding_window_current_percent_dropped_;
-  bool export_extra_metrics_ = !features::StopExportDFCMetrics();
 
   // Sets to true on a newly dropped frame and stays true as long as the frames
   // that follow are dropped. Reset when a frame is presented. It is used to

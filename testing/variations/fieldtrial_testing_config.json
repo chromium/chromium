@@ -22624,21 +22624,16 @@
             ]
         }
     ],
-    "StopExportDFCMetricsExperiment": [
+    "StartupImprovements": [
         {
             "platforms": [
-                "android",
-                "chromeos",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
+                "ios"
             ],
             "experiments": [
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "StopExportDFCMetrics"
+                        "EnableStartupImprovements"
                     ]
                 }
             ]

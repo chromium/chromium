@@ -233,15 +233,6 @@ BASE_FEATURE(kViewTransitionCaptureAndDisplay,
              "ViewTransitionCaptureAndDisplay",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// When enabled, this flag stops the export of most of the
-// UKMs calculated by the DroppedFrameCounter.
-BASE_FEATURE(kStopExportDFCMetrics,
-             "StopExportDFCMetrics",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-bool StopExportDFCMetrics() {
-  return base::FeatureList::IsEnabled(features::kStopExportDFCMetrics);
-}
-
 BASE_FEATURE(kZeroScrollMetricsUpdate,
              "ZeroScrollMetricsUpdate",
              base::FEATURE_DISABLED_BY_DEFAULT);
