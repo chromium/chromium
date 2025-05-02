@@ -734,8 +734,7 @@ void HTMLTreeBuilder::ProcessStartTagForInBody(AtomicHTMLToken* token) {
       ProcessCloseWhenNestedTag<IsLi>(token);
       break;
     case HTMLTag::kInput: {
-      if (RuntimeEnabledFeatures::InputClosesSelectEnabled() &&
-          HTMLSelectElement::SelectParserRelaxationEnabled(
+      if (HTMLSelectElement::SelectParserRelaxationEnabled(
               tree_.CurrentNode())) {
         if (tree_.OpenElements()->InScope(HTMLTag::kSelect)) {
           bool parent_select = IsA<HTMLSelectElement>(tree_.CurrentNode());
