@@ -363,8 +363,8 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                     boolean showNewLabel = shouldTriggerEphemeralTabHelpUi();
                     boolean isDataUrl =
                             mParams.getUrl().getScheme().equals(UrlConstants.DATA_SCHEME);
-                    if (!(mMode == ContextMenuMode.CUSTOM_TAB && isDataUrl)) {
-                        // Do not show the item if CCT opens data: url as it could potentially
+                    if (!isDataUrl) {
+                        // Do not show the item if BrApp/CCT opens data: url as it could potentially
                         // cause a security issue.
                         linkGroup.add(createListItem(Item.OPEN_IN_EPHEMERAL_TAB, showNewLabel));
                         mShowEphemeralTabNewLabel = showNewLabel;
