@@ -359,6 +359,11 @@ class FakePdfViewWebPluginClient : public PdfViewWebPlugin::Client {
               (override));
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   MOCK_METHOD(void,
+              GetOcrMaxImageDimension,
+              (base::OnceCallback<void(uint32_t)> callback),
+              (override));
+
+  MOCK_METHOD(void,
               PerformOcr,
               (const SkBitmap& image,
                base::OnceCallback<void(screen_ai::mojom::VisualAnnotationPtr)>

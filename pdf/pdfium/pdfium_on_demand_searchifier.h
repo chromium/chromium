@@ -26,7 +26,8 @@ class PDFiumOnDemandSearchifier {
   // Starts performing searchify on the scheduled pages. The function should be
   // called only once. If pages are added for searchifying later, they are
   // automatically picked up from the queue.
-  void Start(PerformOcrCallbackAsync callback);
+  void Start(GetOcrMaxImageDimensionCallbackAsync get_max_dimension_callback,
+             PerformOcrCallbackAsync perform_ocr_callback);
 
   // Called when OCR service is disconnected and is not available anymore.
   void OnOcrDisconnected();
@@ -73,6 +74,8 @@ class PDFiumOnDemandSearchifier {
     gfx::Size image_size;
   };
 
+  void OnGotOcrMaxImageDimension(uint32_t max_image_dimension);
+
   std::optional<BitmapResult> GetNextBitmap();
   void OnGotOcrResult(int image_index,
                       const gfx::Size& image_size,
@@ -85,6 +88,13 @@ class PDFiumOnDemandSearchifier {
 
   // Callback function to perform OCR.
   PerformOcrCallbackAsync perform_ocr_callback_;
+
+  // Maximum dimension size for images to be sent to OCR. This value is updated
+  // after OCR service is connected and stored for subsequent calls.
+  // OCR service downsamples images before processing if their dimensions are
+  // above this threshold. Sending larger images has processing and memory
+  // overhead and does not have any other negative effect.
+  uint32_t max_image_dimension_ = 0;
 
   // The page that is currently OCRed.
   raw_ptr<PDFiumPage> current_page_ = nullptr;

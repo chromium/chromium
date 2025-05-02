@@ -244,6 +244,12 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
         bool print_preview) = 0;
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+    // Returns the maximum expected dimension of the images to be OCRed. If
+    // images are larger than the returned value, they will be downsampled
+    // before processing.
+    virtual void GetOcrMaxImageDimension(
+        base::OnceCallback<void(uint32_t)> callback) = 0;
+
     // Performs OCR on `image` and sends the recognized text to `callback`.
     // In case OCR service gets disconnected before or during running this
     // request, `callback` will not be called.

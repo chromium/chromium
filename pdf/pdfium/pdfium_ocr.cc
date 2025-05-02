@@ -24,10 +24,6 @@
 
 namespace chrome_pdf {
 
-// The maximum image dimension which is processed without downsampling by OCR.
-// TODO(crbug.com/413318481): Get this from OCR library.
-constexpr int kMaxImageDimensionForOcr = 2048;
-
 gfx::SizeF GetImageSize(FPDF_PAGEOBJECT page_object) {
   float left;
   float bottom;
@@ -42,7 +38,8 @@ gfx::SizeF GetImageSize(FPDF_PAGEOBJECT page_object) {
 
 SkBitmap GetImageForOcr(FPDF_DOCUMENT doc,
                         FPDF_PAGE page,
-                        FPDF_PAGEOBJECT page_object) {
+                        FPDF_PAGEOBJECT page_object,
+                        uint32_t max_image_dimension) {
   SkBitmap bitmap;
 
   if (FPDFPageObj_GetType(page_object) != FPDF_PAGEOBJ_IMAGE) {
@@ -73,9 +70,8 @@ SkBitmap GetImageForOcr(FPDF_DOCUMENT doc,
   // Reduce size if resolution is above need.
   float effective_width;
   float effective_height;
-  if (pixel_width > kMaxImageDimensionForOcr ||
-      pixel_height > kMaxImageDimensionForOcr) {
-    float reduction_ratio = static_cast<float>(kMaxImageDimensionForOcr) /
+  if (pixel_width > max_image_dimension || pixel_height > max_image_dimension) {
+    float reduction_ratio = static_cast<float>(max_image_dimension) /
                             std::max(pixel_width, pixel_height);
     effective_width = pixel_width * reduction_ratio;
     effective_height = pixel_height * reduction_ratio;

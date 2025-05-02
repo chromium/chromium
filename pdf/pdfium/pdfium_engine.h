@@ -501,9 +501,11 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
 #endif  // defined(PDF_ENABLE_XFA)
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-  // Starts the searchify process and passes a callback to a function that
-  // performs OCR. This function is expected to be called only once.
-  void StartSearchify(PerformOcrCallbackAsync perform_ocr_callback);
+  // Starts the searchify process and passes two callbacks to functions that
+  // return the maximum image dimension and performs OCR.
+  // This function is expected to be called only once.
+  void StartSearchify(GetOcrMaxImageDimensionCallbackAsync get_max_dimension,
+                      PerformOcrCallbackAsync perform_ocr_callback);
 
   // Returns a function to pass OCR disconnection events to the searchifier.
   base::RepeatingClosure GetOcrDisconnectHandler();

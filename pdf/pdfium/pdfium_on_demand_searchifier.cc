@@ -40,16 +40,37 @@ PDFiumOnDemandSearchifier::PDFiumOnDemandSearchifier(PDFiumEngine* engine)
 
 PDFiumOnDemandSearchifier::~PDFiumOnDemandSearchifier() = default;
 
-void PDFiumOnDemandSearchifier::Start(PerformOcrCallbackAsync callback) {
-  CHECK(!callback.is_null());
+void PDFiumOnDemandSearchifier::Start(
+    GetOcrMaxImageDimensionCallbackAsync get_max_dimension_callback,
+    PerformOcrCallbackAsync perform_ocr_callback) {
+  CHECK(perform_ocr_callback);
+  CHECK(get_max_dimension_callback);
   CHECK_EQ(state_, State::kIdle);
 
   // Expected to be called only once.
   CHECK(perform_ocr_callback_.is_null());
 
   font_ = CreateFont(engine_->doc());
-  perform_ocr_callback_ = std::move(callback);
+  perform_ocr_callback_ = std::move(perform_ocr_callback);
 
+  std::move(get_max_dimension_callback)
+      .Run(base::BindOnce(&PDFiumOnDemandSearchifier::OnGotOcrMaxImageDimension,
+                          weak_factory_.GetWeakPtr()));
+  state_ = State::kWaitingForResults;
+}
+
+void PDFiumOnDemandSearchifier::OnGotOcrMaxImageDimension(
+    uint32_t max_image_dimension) {
+  // A state changed while waiting for max image dimension indicates that OCR
+  // got disconnnected and cannot be used.
+  if (state_ != State::kWaitingForResults) {
+    return;
+  }
+
+  CHECK(max_image_dimension);
+  max_image_dimension_ = max_image_dimension;
+
+  state_ = State::kIdle;
   SearchifyNextPage();
 }
 
@@ -96,7 +117,8 @@ void PDFiumOnDemandSearchifier::SchedulePage(int page_index) {
     engine_->OnSearchifyStateChange(/*busy=*/true);
   }
   pages_queue_.push_back(page_index);
-  if (state_ == State::kWaitingForResults || !perform_ocr_callback_) {
+  // OCR service cannot be used before max image dimension is received.
+  if (state_ == State::kWaitingForResults || !max_image_dimension_) {
     return;
   }
 
@@ -214,7 +236,8 @@ PDFiumOnDemandSearchifier::GetNextBitmap() {
   while (!current_page_image_object_indices_.empty()) {
     int image_index = current_page_image_object_indices_.back();
     current_page_image_object_indices_.pop_back();
-    SkBitmap bitmap = current_page_->GetImageForOcr(image_index);
+    SkBitmap bitmap =
+        current_page_->GetImageForOcr(image_index, max_image_dimension_);
     if (!bitmap.drawsNothing()) {
       return BitmapResult{bitmap, image_index};
     }

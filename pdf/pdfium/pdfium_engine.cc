@@ -2711,7 +2711,11 @@ void PDFiumEngine::HandleLongPress(const blink::WebTouchEvent& event) {
 
 SkBitmap PDFiumEngine::GetImageForOcr(int page_index, int image_index) {
   DCHECK(PageIndexInBounds(page_index));
-  return pages_[page_index]->GetImageForOcr(image_index);
+  // This function is not used after launch of PDF Searchify. Default OCR
+  // expected resolution is used to avoid unnecessary update of the call chain.
+  // TODO(crbug.com/360803943): Remove this function and call chain.
+  return pages_[page_index]->GetImageForOcr(image_index,
+                                            /*max_image_dimension=*/2048);
 }
 
 bool PDFiumEngine::GetPrintScaling() {
@@ -4402,7 +4406,12 @@ void PDFiumEngine::UpdatePageCount() {
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 void PDFiumEngine::StartSearchify(
+    GetOcrMaxImageDimensionCallbackAsync get_max_dimension,
     PerformOcrCallbackAsync perform_ocr_callback) {
+  if (!base::FeatureList::IsEnabled(chrome_pdf::features::kPdfSearchify) ||
+      !base::FeatureList::IsEnabled(ax::mojom::features::kScreenAIOCREnabled)) {
+    return;
+  }
   // Searchify requests may be sent to the engine when PDF pages are loaded and
   // before this function is called. In that case, `searchifier_` is already
   // created and is waiting for the `Start` command to start processing the
@@ -4410,7 +4419,8 @@ void PDFiumEngine::StartSearchify(
   if (!searchifier_) {
     searchifier_ = std::make_unique<PDFiumOnDemandSearchifier>(this);
   }
-  searchifier_->Start(std::move(perform_ocr_callback));
+  searchifier_->Start(std::move(get_max_dimension),
+                      std::move(perform_ocr_callback));
 }
 
 base::RepeatingClosure PDFiumEngine::GetOcrDisconnectHandler() {

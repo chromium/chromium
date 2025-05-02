@@ -512,6 +512,11 @@ void ScreenAIService::MceReceiverDisconnected() {
   mce_last_used_ = base::TimeTicks::Now();
 }
 
+void ScreenAIService::GetMaxImageDimension(
+    GetMaxImageDimensionCallback callback) {
+  std::move(callback).Run(kMaxOcrDimension);
+}
+
 void ScreenAIService::PerformOcrAndReturnAnnotation(
     const SkBitmap& image,
     PerformOcrAndReturnAnnotationCallback callback) {

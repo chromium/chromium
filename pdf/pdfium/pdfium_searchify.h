@@ -28,6 +28,9 @@ using PerformOcrCallbackAsync = base::RepeatingCallback<void(
     base::OnceCallback<void(
         screen_ai::mojom::VisualAnnotationPtr annotation)>)>;
 
+using GetOcrMaxImageDimensionCallbackAsync =
+    base::OnceCallback<void(base::OnceCallback<void(uint32_t)>)>;
+
 struct SearchifyBoundingBoxOrigin {
   gfx::PointF point;
   float theta;

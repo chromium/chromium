@@ -950,11 +950,12 @@ std::vector<int> PDFiumPage::GetImageObjectIndices() {
 }
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-SkBitmap PDFiumPage::GetImageForOcr(int page_object_index) {
+SkBitmap PDFiumPage::GetImageForOcr(int page_object_index,
+                                    int max_image_dimension) {
   FPDF_PAGE page = GetPage();
   FPDF_PAGEOBJECT page_object = FPDFPage_GetObject(page, page_object_index);
-  SkBitmap bitmap =
-      ::chrome_pdf::GetImageForOcr(engine_->doc(), page, page_object);
+  SkBitmap bitmap = ::chrome_pdf::GetImageForOcr(
+      engine_->doc(), page, page_object, max_image_dimension);
 
   SkBitmapOperations::RotationAmount rotation;
   switch (FPDFPage_GetRotation(page)) {

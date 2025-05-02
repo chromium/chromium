@@ -1379,8 +1379,11 @@ void PdfViewWebPlugin::DocumentLoadComplete() {
 
   // To avoid delaying page load for searchify, start searchify after document
   // load is completed.
+  // Maximum image dimension is asked once and stored for the next usages, so
+  // `BindOnce` is sufficient.
   client_->SetOcrDisconnectedCallback(engine_->GetOcrDisconnectHandler());
   engine_->StartSearchify(
+      base::BindOnce(&Client::GetOcrMaxImageDimension, client_->GetWeakPtr()),
       base::BindRepeating(&Client::PerformOcr, client_->GetWeakPtr()));
 
   if (!full_frame_)

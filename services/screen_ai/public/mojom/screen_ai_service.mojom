@@ -135,6 +135,11 @@ interface ScreenAIAnnotator {
 
   // Sets OCR client type for metrics.
   SetClientType(OcrClientType client_type);
+
+  // Returns the maximum dimension for which images are processed without
+  // downsampling. This value is not expected to change after initialization of
+  // the service and is expected to be non-zero.
+  GetMaxImageDimension() => (uint32 max_dimension);
 };
 
 // Main interface a client uses for Main Content Extraction function of Screen
