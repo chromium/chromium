@@ -34,7 +34,7 @@ To roll to a new JDK major version:
      2) Add 'checkout_android_prebuilts_build_tools': True, to your .gclient custom_vars
      3) Use the GN args from https://ci.chromium.org/ui/p/infra/builders/codesearch/codesearch-gen-chromium-android
      4) Build: cd out/kythe; KYTHE_CORPUS=foo KYTHE_OUTPUT_DIRECTORY=$PWD KYTHE_ROOT_DIRECTORY=$PWD/../.. autoninja base:base_java
-     5) Build: third_party/android_deps/fetch_all.py --ignore-vulnerabilities --local
+     5) Build: third_party/android_deps/fetch_all.py --local
         * If this fails, see: https://docs.gradle.org/current/userguide/compatibility.html
  * Test locally that builds (with Errorprone enabled) work.
  * Pause the auto-roller: https://skia-autoroll.corp.goog/r/jdk-chromium

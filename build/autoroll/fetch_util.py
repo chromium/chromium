@@ -177,10 +177,8 @@ def run_fetch_all(android_deps_dir,
                   extra_args,
                   verbose_count=0,
                   output_subdir=None):
-  fetch_all_cmd = [
-      _FETCH_ALL_PATH, '--android-deps-dir', android_deps_dir,
-      '--ignore-vulnerabilities'
-  ] + ['-v'] * verbose_count
+  fetch_all_cmd = [_FETCH_ALL_PATH, '--android-deps-dir', android_deps_dir]
+  fetch_all_cmd += ['-v'] * verbose_count
   if output_subdir:
     fetch_all_cmd += ['--output-subdir', output_subdir]
 

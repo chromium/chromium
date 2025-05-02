@@ -69,7 +69,6 @@ _PRIMARY_ANDROID_DEPS_FILES = [
     'buildSrc',
     'licenses',
     'settings.gradle.template',
-    'vulnerability_supressions.xml',
 ]
 
 # Git-controlled files needed by and updated by this tool.
@@ -361,41 +360,6 @@ def _BuildGradleCmd(build_android_deps_dir, task):
     ]
 
 
-def _CheckVulnerabilities(build_android_deps_dir, report_dst):
-    logging.warning('Running Gradle dependencyCheckAnalyze. This may take a '
-                    'few minutes the first time.')
-
-    # Separate command from main gradle command so that we can provide specific
-    # diagnostics in case of failure of this step.
-    gradle_cmd = _BuildGradleCmd(build_android_deps_dir,
-                                 'dependencyCheckAnalyze')
-
-    report_src = os.path.join(build_android_deps_dir, 'build', 'reports')
-    if os.path.exists(report_dst):
-        shutil.rmtree(report_dst)
-
-    try:
-        logging.info('CMD: %s', ' '.join(gradle_cmd))
-        RunCommand(gradle_cmd, print_stdout=True)
-    except Exception:
-        report_path = os.path.join(report_dst, 'dependency-check-report.html')
-        logging.error(
-            textwrap.dedent("""
-               =============================================================================
-               A package has a known vulnerability. It may not be in a package or packages
-               which you just added, but you need to resolve the problem before proceeding.
-               If you can't easily fix it by rolling the package to a fixed version now,
-               please file a crbug of type= Bug-Security providing all relevant information,
-               and then rerun this command with --ignore-vulnerabilities.
-               The html version of the report is avialable at: {}
-               =============================================================================
-               """.format(report_path)))
-        raise
-    finally:
-        if os.path.exists(report_src):
-            CopyFileOrDirectory(report_src, report_dst)
-
-
 def _ReduceNameLength(path_str):
     """Returns a shorter path string if needed.
 
@@ -549,9 +513,6 @@ def main():
     parser.add_argument('--ignore-licenses',
                         help='Ignores licenses for these deps.',
                         action='store_true')
-    parser.add_argument('--ignore-vulnerabilities',
-                        help='Ignores vulnerabilities for these deps.',
-                        action='store_true')
     parser.add_argument('--override-artifact',
                         action='append',
                         help='lib_subpath:url of .aar / .jar to override.')
@@ -634,11 +595,6 @@ def main():
             os.path.join(_PRIMARY_ANDROID_DEPS_DIR,
                          'settings.gradle.template'),
             os.path.join(build_android_deps_dir, 'settings.gradle'))
-
-        if not args.ignore_vulnerabilities:
-            report_dst = os.path.join(args.android_deps_dir,
-                                      'vulnerability_reports')
-            _CheckVulnerabilities(build_android_deps_dir, report_dst)
 
         logging.info('Running Gradle.')
 

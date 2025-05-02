@@ -15,8 +15,6 @@ How To Update:
   - Add new version and URL to 3pp/fetch.py for the android_all jar.
   - Update the old versions to the latest instrumented versioned files
     for backwards compatibility.
-  - Update robolectric version in third_party/android_deps/build.gradle.
-  - Run `third_party/android_deps/fetch_all.py --local --ignore-vulnerabilities`
   - Upload a CL without DEPS and BUILD.gn changes.
 - Kickoff 3pp run:
   - Open ci.chromium.org
@@ -26,5 +24,3 @@ How To Update:
 - Second CL:
   - Add new version(s) as data to third_party/robolectric/BUILD.gn.
   - Update DEPS to point to new cipd instance.
-  - Apply any other DEPS and BUILD.gn changes from running
-    `third_party/android_deps/fetch_all.py --local --ignore-vulnerabilities`

@@ -35,7 +35,6 @@ try_.builder(
                 "cmd": [
                     "{CHECKOUT}/src/third_party/android_deps/fetch_all.py",
                     "-v",
-                    "--ignore-vulnerabilities",
                 ],
             }],
             "gclient_config": "chromium",
