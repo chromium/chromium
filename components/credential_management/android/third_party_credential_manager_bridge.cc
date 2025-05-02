@@ -75,15 +75,15 @@ class JniDelegateImpl : public JniDelegate {
         base::android::ToJniCallback(env, std::move(completion_callback)));
   }
 
-  void Store(const std::string& username,
-             const std::string& password,
+  void Store(const std::u16string& username,
+             const std::u16string& password,
              const std::string& origin,
              base::OnceCallback<void(bool)> completion_callback) override {
     JNIEnv* env = jni_zero::AttachCurrentThread();
     Java_ThirdPartyCredentialManagerBridge_store(
         env, java_bridge_,
-        base::android::ConvertUTF8ToJavaString(env, username),
-        base::android::ConvertUTF8ToJavaString(env, password),
+        base::android::ConvertUTF16ToJavaString(env, username),
+        base::android::ConvertUTF16ToJavaString(env, password),
         base::android::ConvertUTF8ToJavaString(env, origin),
         base::android::ToJniCallback(env, std::move(completion_callback)));
   }
@@ -117,8 +117,8 @@ void ThirdPartyCredentialManagerBridge::Get(const std::string& origin,
 }
 
 void ThirdPartyCredentialManagerBridge::Store(
-    const std::string& username,
-    const std::string& password,
+    const std::u16string& username,
+    const std::u16string& password,
     const std::string& origin,
     StoreCallback completion_callback) {
   base::OnceCallback<void(bool)> on_complete = base::BindOnce(

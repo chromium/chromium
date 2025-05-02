@@ -11,7 +11,14 @@ namespace credential_management {
 
 ThirdPartyCredentialManagerImpl::ThirdPartyCredentialManagerImpl(
     content::RenderFrameHost* render_frame_host)
-    : DocumentUserData(render_frame_host) {}
+    : DocumentUserData(render_frame_host),
+      bridge_(std::make_unique<ThirdPartyCredentialManagerBridge>()) {}
+
+ThirdPartyCredentialManagerImpl::ThirdPartyCredentialManagerImpl(
+    base::PassKey<class ThirdPartyCredentialManagerImplTest>,
+    content::RenderFrameHost* render_frame_host,
+    std::unique_ptr<CredentialManagerBridge> bridge)
+    : DocumentUserData(render_frame_host), bridge_(std::move(bridge)) {}
 
 DOCUMENT_USER_DATA_KEY_IMPL(ThirdPartyCredentialManagerImpl);
 
@@ -20,8 +27,11 @@ ThirdPartyCredentialManagerImpl::~ThirdPartyCredentialManagerImpl() = default;
 void ThirdPartyCredentialManagerImpl::Store(
     const password_manager::CredentialInfo& credential,
     StoreCallback callback) {
-  // TODO(crbug.com/374710839): Implement.
-  NOTIMPLEMENTED();
+  std::u16string username = credential.id.value_or(u"");
+  std::u16string password = credential.password.value_or(u"");
+  bridge_->Store(username, password,
+                 render_frame_host().GetLastCommittedOrigin().Serialize(),
+                 std::move(callback));
 }
 
 void ThirdPartyCredentialManagerImpl::PreventSilentAccess(

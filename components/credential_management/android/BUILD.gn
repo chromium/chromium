@@ -67,7 +67,10 @@ static_library("browser_sources") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "third_party_credential_manager_bridge_unittest.cc" ]
+  sources = [
+    "third_party_credential_manager_bridge_unittest.cc",
+    "third_party_credential_manager_impl_unittest.cc",
+  ]
   deps = [
     ":browser_sources",
     ":jni_headers",

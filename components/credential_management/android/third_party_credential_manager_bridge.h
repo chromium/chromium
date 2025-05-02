@@ -21,10 +21,23 @@ using GetCallback = base::OnceCallback<void(
     password_manager::CredentialManagerError,
     const std::optional<password_manager::CredentialInfo>&)>;
 
+class CredentialManagerBridge {
+ public:
+  virtual ~CredentialManagerBridge() = default;
+
+  virtual void Get(const std::string& origin,
+                   GetCallback completion_callback) = 0;
+
+  virtual void Store(const std::u16string& username,
+                     const std::u16string& password,
+                     const std::string& origin,
+                     StoreCallback completion_callback) = 0;
+};
+
 // This class is a bridge between the browser and the Android Credential
 // Manager. It allows the browser to get credentials from the Android Credential
 // Manager.
-class ThirdPartyCredentialManagerBridge {
+class ThirdPartyCredentialManagerBridge : public CredentialManagerBridge {
  public:
   // This class allows to mock/fake the actual JNI calls. The implementation
   // should perform no work other than JNI calls. No logic, no conditions.
@@ -45,8 +58,8 @@ class ThirdPartyCredentialManagerBridge {
     // Stores a credential to the Android Credential Manager.
     // The `completion_callback` should always be invoked on completion, passing
     // a success status.
-    virtual void Store(const std::string& username,
-                       const std::string& password,
+    virtual void Store(const std::u16string& username,
+                       const std::u16string& password,
                        const std::string& origin,
                        base::OnceCallback<void(bool)> completion_callback) = 0;
   };
@@ -61,17 +74,16 @@ class ThirdPartyCredentialManagerBridge {
   ThirdPartyCredentialManagerBridge& operator=(
       const ThirdPartyCredentialManagerBridge&) = delete;
 
-  ~ThirdPartyCredentialManagerBridge();
+  ~ThirdPartyCredentialManagerBridge() override;
 
   void Create();
 
-  void Get(const std::string& origin, GetCallback completion_callback);
-  void OnGetPasswordCredentialError(JNIEnv* env);
+  void Get(const std::string& origin, GetCallback completion_callback) override;
 
-  void Store(const std::string& username,
-             const std::string& password,
+  void Store(const std::u16string& username,
+             const std::u16string& password,
              const std::string& origin,
-             StoreCallback completion_callback);
+             StoreCallback completion_callback) override;
 
  private:
   // Forwards all requests to JNI. Can be replaced in tests.
