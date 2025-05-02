@@ -11,8 +11,7 @@
     </print-preview-search-box>
     <div id="itemList" class="${this.isSearching_()}">
       ${this.getVendorCapabilities_().map(item => html`
-        <print-preview-advanced-settings-item .capability="${item}"
-            .settings="${this.settings}">
+        <print-preview-advanced-settings-item .capability="${item}">
         </print-preview-advanced-settings-item>
       `)}
     </div>

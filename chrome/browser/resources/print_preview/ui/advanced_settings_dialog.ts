@@ -16,7 +16,6 @@ import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {VendorCapability} from '../data/cdd.js';
 import type {Destination} from '../data/destination.js';
-import type {Settings} from '../data/model.js';
 import {MetricsContext, PrintSettingsUiBucket} from '../metrics.js';
 
 import {getCss} from './advanced_settings_dialog.css.js';
@@ -57,15 +56,12 @@ export class PrintPreviewAdvancedSettingsDialogElement extends
         type: Boolean,
         notify: true,
       },
-
-      settings: {type: Object},
     };
   }
 
   accessor destination: Destination;
   protected accessor searchQuery_: RegExp|null = null;
   private accessor hasMatching_: boolean;
-  accessor settings: Settings;
 
   private highlights_: HTMLElement[] = [];
   private bubbles_: Map<HTMLElement, number> = new Map();

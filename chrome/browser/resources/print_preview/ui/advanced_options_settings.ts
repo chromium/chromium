@@ -10,7 +10,6 @@ import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {Destination} from '../data/destination.js';
-import type {Settings} from '../data/model.js';
 
 import {getCss} from './advanced_options_settings.css.js';
 import {getHtml} from './advanced_options_settings.html.js';
@@ -38,14 +37,12 @@ class PrintPreviewAdvancedOptionsSettingsElement extends CrLitElement {
     return {
       disabled: {type: Boolean},
       destination: {type: Object},
-      settings: {type: Object},
       showAdvancedDialog_: {type: Boolean},
     };
   }
 
   accessor disabled: boolean;
   accessor destination: Destination;
-  accessor settings: Settings;
   protected accessor showAdvancedDialog_: boolean = false;
 
   protected onButtonClick_() {

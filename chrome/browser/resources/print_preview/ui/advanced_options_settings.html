@@ -9,7 +9,6 @@
 </print-preview-settings-section>
 ${this.showAdvancedDialog_ ? html`
   <print-preview-advanced-settings-dialog
-      .settings="${this.settings}" .destination="${this.destination}"
-      @close="${this.onDialogClose_}">
+      .destination="${this.destination}" @close="${this.onDialogClose_}">
   </print-preview-advanced-settings-dialog>
 ` : ''}
