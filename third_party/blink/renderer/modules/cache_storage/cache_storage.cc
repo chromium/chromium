@@ -76,7 +76,7 @@ BASE_FEATURE(kCacheStorageAblation,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls the ablation delay time per each API call.
-BASE_FEATURE_PARAM(int,
+BASE_FEATURE_PARAM(double,
                    kCacheStorageAblationOpenFactor,
                    &kCacheStorageAblation,
                    "open_factor",
@@ -87,7 +87,7 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    "open_offset",
                    base::Milliseconds(0));
 
-BASE_FEATURE_PARAM(int,
+BASE_FEATURE_PARAM(double,
                    kCacheStorageAblationHasFactor,
                    &kCacheStorageAblation,
                    "has_factor",
@@ -98,7 +98,7 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    "has_offset",
                    base::Milliseconds(0));
 
-BASE_FEATURE_PARAM(int,
+BASE_FEATURE_PARAM(double,
                    kCacheStorageAblationDeleteFactor,
                    &kCacheStorageAblation,
                    "delete_factor",
@@ -109,7 +109,7 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    "delete_offset",
                    base::Milliseconds(0));
 
-BASE_FEATURE_PARAM(int,
+BASE_FEATURE_PARAM(double,
                    kCacheStorageAblationMatchFactor,
                    &kCacheStorageAblation,
                    "match_factor",
@@ -120,7 +120,7 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    "match_offset",
                    base::Milliseconds(0));
 
-BASE_FEATURE_PARAM(int,
+BASE_FEATURE_PARAM(double,
                    kCacheStorageAblationKeysFactor,
                    &kCacheStorageAblation,
                    "keys_factor",
