@@ -203,6 +203,7 @@ source_set("grid_ui") {
     "grid_theme.h",
     "group_grid_cell.h",
     "group_grid_cell.mm",
+    "incognito_grid_commands.h",
   ]
 
   deps = [
