@@ -14,10 +14,22 @@ class ContentInfoBarManager;
 class InfoBar;
 }  // namespace infobars
 
+// Potential user interactions with the PDF infobar.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. Exposed for testing.
+enum class PdfInfoBarUserInteraction {
+  kAccepted = 0,
+  kDismissed = 1,
+  kIgnored = 2,
+  kMaxValue = kIgnored,
+};
+
 // The PDF infobar offers to set Chrome as the default PDF viewer. This class
 // customizes its appearance and behavior.
 class PdfInfoBarDelegate : public ConfirmInfoBarDelegate {
  public:
+  ~PdfInfoBarDelegate() override;
+
   // Creates a `PdfInfoBarDelegate` instance and adds it to `infobar_manager`.
   static infobars::InfoBar* Create(
       infobars::ContentInfoBarManager* infobar_manager);
@@ -31,6 +43,12 @@ class PdfInfoBarDelegate : public ConfirmInfoBarDelegate {
   int GetButtons() const override;
   std::u16string GetButtonLabel(InfoBarButton button) const override;
   bool Accept() override;
+  void InfoBarDismissed() override;
+
+ private:
+  // Indicates whether the user interacted with the infobar, in order to detect
+  // when the infobar was ignored.
+  bool action_taken_ = false;
 };
 
 #endif  // CHROME_BROWSER_UI_PDF_INFOBAR_PDF_INFOBAR_DELEGATE_H_

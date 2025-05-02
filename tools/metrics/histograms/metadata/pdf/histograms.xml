@@ -36,6 +36,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PDF.DefaultState" enum="DefaultBrowserState"
+    expires_after="2026-04-25">
+  <owner>jessemckenna@google.com</owner>
+  <owner>davidbienvenu@chromium.org</owner>
+  <summary>
+    Whether Chrome is the default PDF viewer at startup. Only recorded on
+    Windows and Mac.
+  </summary>
+</histogram>
+
 <histogram name="PDF.EngineLifetime" units="ms" expires_after="2025-11-01">
   <owner>rhalavati@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
@@ -74,6 +84,22 @@ chromium-metrics-reviews@google.com.
   <summary>
     Measures if PDFs opened in the PDF viewer have attachments. This is logged
     whenever a document is opened in the PDF viewer.
+  </summary>
+</histogram>
+
+<histogram name="PDF.InfoBar.Shown" enum="BooleanShown"
+    expires_after="2026-04-25">
+  <owner>jessemckenna@google.com</owner>
+  <owner>davidbienvenu@chromium.org</owner>
+  <summary>Recorded every time the PDF infobar is shown.</summary>
+</histogram>
+
+<histogram name="PDF.InfoBar.UserInteraction" units="PDFInfoBarUserInteraction"
+    expires_after="2026-04-25">
+  <owner>jessemckenna@google.com</owner>
+  <owner>davidbienvenu@chromium.org</owner>
+  <summary>
+    User interaction with the PDF infobar (e.g., accepted, ignored, dismissed).
   </summary>
 </histogram>
 
