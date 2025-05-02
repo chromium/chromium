@@ -10,6 +10,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -127,6 +128,8 @@ class SyncAuthManager : public signin::IdentityManager::Observer {
       signin_metrics::SourceForRefreshTokenOperation token_operation_source)
       override;
   void OnRefreshTokensLoaded() override;
+  void OnIdentityManagerShutdown(
+      signin::IdentityManager* identity_manager) override;
 
   // Test-only methods for inspecting/modifying internal state.
   bool IsRetryingAccessTokenFetchForTest() const;
@@ -168,6 +171,9 @@ class SyncAuthManager : public signin::IdentityManager::Observer {
   void SetLastAuthError(const GoogleServiceAuthError& error);
 
   const raw_ptr<signin::IdentityManager> identity_manager_;
+  base::ScopedObservation<signin::IdentityManager,
+                          signin::IdentityManager::Observer>
+      identity_manager_observation_{this};
   const raw_ptr<Delegate> delegate_;
 
   bool registered_for_auth_notifications_ = false;
