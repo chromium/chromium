@@ -22,7 +22,6 @@
 #include "partition_alloc/build_config.h"
 #include "partition_alloc/buildflags.h"
 #include "partition_alloc/dangling_raw_ptr_checks.h"
-#include "partition_alloc/freeslot_bitmap.h"
 #include "partition_alloc/in_slot_metadata.h"
 #include "partition_alloc/lightweight_quarantine.h"
 #include "partition_alloc/memory_reclaimer.h"
@@ -854,9 +853,7 @@ TEST_P(PartitionAllocTest, Basic) {
   EXPECT_TRUE(ptr);
   EXPECT_EQ(kPointerOffset, UntagPtr(ptr) & PartitionPageOffsetMask());
   // Check that the offset appears to include a guard page.
-  EXPECT_EQ(PartitionPageSize() +
-                partition_alloc::internal::ReservedFreeSlotBitmapSize() +
-                kPointerOffset,
+  EXPECT_EQ(PartitionPageSize() + kPointerOffset,
             UntagPtr(ptr) & kSuperPageOffsetMask);
 
   allocator.root()->Free(ptr);
@@ -1154,9 +1151,7 @@ TEST_P(PartitionAllocTest, MultiPageAllocs) {
   size_t num_pages_per_slot_span = GetNumPagesPerSlotSpan(kTestAllocSize);
   // 1 super page has 2 guard partition pages and a tag bitmap.
   size_t num_slot_spans_needed =
-      (NumPartitionPagesPerSuperPage() - 2 -
-       partition_alloc::internal::NumPartitionPagesPerFreeSlotBitmap()) /
-      num_pages_per_slot_span;
+      (NumPartitionPagesPerSuperPage() - 2) / num_pages_per_slot_span;
 
   // We need one more slot span in order to cross super page boundary.
   ++num_slot_spans_needed;
@@ -1178,9 +1173,7 @@ TEST_P(PartitionAllocTest, MultiPageAllocs) {
       EXPECT_FALSE(second_super_page_base == first_super_page_base);
       // Check that we allocated a guard page and the reserved tag bitmap for
       // the second page.
-      EXPECT_EQ(PartitionPageSize() +
-                    partition_alloc::internal::ReservedFreeSlotBitmapSize(),
-                second_super_page_offset);
+      EXPECT_EQ(PartitionPageSize(), second_super_page_offset);
     }
   }
   for (i = 0; i < num_slot_spans_needed; ++i) {
@@ -2279,9 +2272,7 @@ TEST_P(PartitionAllocTest, MappingCollision) {
   // The -2 is because the first and last partition pages in a super page are
   // guard pages. We also discount the partition pages used for the tag bitmap.
   size_t num_slot_span_needed =
-      (NumPartitionPagesPerSuperPage() - 2 -
-       partition_alloc::internal::NumPartitionPagesPerFreeSlotBitmap()) /
-      num_pages_per_slot_span;
+      (NumPartitionPagesPerSuperPage() - 2) / num_pages_per_slot_span;
   size_t num_partition_pages_needed =
       num_slot_span_needed * num_pages_per_slot_span;
 
@@ -2297,12 +2288,8 @@ TEST_P(PartitionAllocTest, MappingCollision) {
 
   uintptr_t slot_span_start =
       SlotSpan::ToSlotSpanStart(first_super_page_pages[0]);
-  EXPECT_EQ(PartitionPageSize() +
-                partition_alloc::internal::ReservedFreeSlotBitmapSize(),
-            slot_span_start & kSuperPageOffsetMask);
-  uintptr_t super_page =
-      slot_span_start - PartitionPageSize() -
-      partition_alloc::internal::ReservedFreeSlotBitmapSize();
+  EXPECT_EQ(PartitionPageSize(), slot_span_start & kSuperPageOffsetMask);
+  uintptr_t super_page = slot_span_start - PartitionPageSize();
   // Map a single system page either side of the mapping for our allocations,
   // with the goal of tripping up alignment of the next mapping.
   uintptr_t map1 =
@@ -2328,11 +2315,8 @@ TEST_P(PartitionAllocTest, MappingCollision) {
   FreePages(map2, PageAllocationGranularity());
 
   super_page = SlotSpan::ToSlotSpanStart(second_super_page_pages[0]);
-  EXPECT_EQ(PartitionPageSize() +
-                partition_alloc::internal::ReservedFreeSlotBitmapSize(),
-            super_page & kSuperPageOffsetMask);
-  super_page -= PartitionPageSize() +
-                partition_alloc::internal::ReservedFreeSlotBitmapSize();
+  EXPECT_EQ(PartitionPageSize(), super_page & kSuperPageOffsetMask);
+  super_page -= PartitionPageSize();
   // Map a single system page either side of the mapping for our allocations,
   // with the goal of tripping up alignment of the next mapping.
   map1 = AllocPages(super_page - PageAllocationGranularity(),
@@ -6216,56 +6200,6 @@ TEST_P(PartitionAllocTest, SortActiveSlotSpans) {
   run_test(0);
   run_test(1);
 }
-
-#if PA_BUILDFLAG(USE_FREESLOT_BITMAP)
-TEST_P(PartitionAllocTest, FreeSlotBitmapMarkedAsUsedAfterAlloc) {
-  void* ptr = allocator.root()->Alloc(kTestAllocSize, type_name);
-  uintptr_t slot_start = allocator.root()->ObjectToSlotStart(ptr);
-  EXPECT_TRUE(FreeSlotBitmapSlotIsUsed(slot_start));
-
-  allocator.root()->Free(ptr);
-}
-
-TEST_P(PartitionAllocTest, FreeSlotBitmapMarkedAsFreeAfterFree) {
-  void* ptr = allocator.root()->Alloc(kTestAllocSize, type_name);
-  uintptr_t slot_start = allocator.root()->ObjectToSlotStart(ptr);
-  EXPECT_TRUE(FreeSlotBitmapSlotIsUsed(slot_start));
-
-  allocator.root()->Free(ptr);
-  EXPECT_FALSE(FreeSlotBitmapSlotIsUsed(slot_start));
-}
-
-TEST_P(PartitionAllocTest, FreeSlotBitmapResetAfterDecommit) {
-  void* ptr1 = allocator.root()->Alloc(
-      SystemPageSize() - ExtraAllocSize(allocator), type_name);
-  uintptr_t slot_start = allocator.root()->ObjectToSlotStart(ptr1);
-  allocator.root()->Free(ptr1);
-
-  EXPECT_FALSE(FreeSlotBitmapSlotIsUsed(slot_start));
-  // Decommit the slot span. Bitmap will be rewritten in Decommit().
-  allocator.root()->PurgeMemory(PurgeFlags::kDecommitEmptySlotSpans);
-  EXPECT_TRUE(FreeSlotBitmapSlotIsUsed(slot_start));
-}
-
-TEST_P(PartitionAllocTest, FreeSlotBitmapResetAfterPurge) {
-  void* ptr1 = allocator.root()->Alloc(
-      SystemPageSize() - ExtraAllocSize(allocator), type_name);
-  char* ptr2 = static_cast<char*>(allocator.root()->Alloc(
-      SystemPageSize() - ExtraAllocSize(allocator), type_name));
-  uintptr_t slot_start = allocator.root()->ObjectToSlotStart(ptr2);
-  allocator.root()->Free(ptr2);
-
-  CHECK_PAGE_IN_CORE(ptr2 - kPointerOffset, true);
-  EXPECT_FALSE(FreeSlotBitmapSlotIsUsed(slot_start));
-  // Bitmap will be rewritten in PartitionPurgeSlotSpan().
-  allocator.root()->PurgeMemory(PurgeFlags::kDiscardUnusedSystemPages);
-  CHECK_PAGE_IN_CORE(ptr2 - kPointerOffset, false);
-  EXPECT_TRUE(FreeSlotBitmapSlotIsUsed(slot_start));
-
-  allocator.root()->Free(ptr1);
-}
-
-#endif  // PA_BUILDFLAG(USE_FREESLOT_BITMAP)
 
 #if PA_BUILDFLAG(USE_LARGE_EMPTY_SLOT_SPAN_RING)
 TEST_P(PartitionAllocTest, GlobalEmptySlotSpanRingIndexResets) {

@@ -7,7 +7,6 @@
 #if PA_BUILDFLAG(ENABLE_GWP_ASAN_SUPPORT)
 
 #include "partition_alloc/build_config.h"
-#include "partition_alloc/freeslot_bitmap_constants.h"
 #include "partition_alloc/in_slot_metadata.h"
 #include "partition_alloc/page_allocator_constants.h"
 #include "partition_alloc/partition_alloc_base/no_destructor.h"
@@ -95,8 +94,7 @@ void* GwpAsanSupport::MapRegion(size_t slot_count,
           internal::PartitionSuperPageToMetadataArea(super_page);
 
       // Index 0 is invalid because it is the super page extent metadata.
-      for (size_t partition_page_idx =
-               1 + internal::NumPartitionPagesPerFreeSlotBitmap();
+      for (size_t partition_page_idx = 1;
            partition_page_idx + bucket->get_pages_per_slot_span() <
            internal::NumPartitionPagesPerSuperPage();
            partition_page_idx += bucket->get_pages_per_slot_span()) {

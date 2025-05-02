@@ -10,7 +10,6 @@
 
 #include "partition_alloc/build_config.h"
 #include "partition_alloc/buildflags.h"
-#include "partition_alloc/freeslot_bitmap.h"
 #include "partition_alloc/partition_alloc-inl.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_config.h"
@@ -251,7 +250,6 @@ class EncodedNextFreelistEntry {
     // - Unless this is a thread-cache freelist, `here` and `next` must belong
     //   to the same super page (as a matter of fact, they must belong to the
     //   same slot span, but that'd be too expensive to check here).
-    // - `next` is marked as free in the free slot bitmap (if present).
 
     const uintptr_t here_address = SlotStartPtr2Addr(here);
     const uintptr_t next_address = SlotStartPtr2Addr(next);
@@ -275,14 +273,7 @@ class EncodedNextFreelistEntry {
     const bool same_super_page = (here_address & kSuperPageBaseMask) ==
                                  (next_address & kSuperPageBaseMask);
 
-#if PA_BUILDFLAG(USE_FREESLOT_BITMAP)
-    bool marked_as_free_in_bitmap = !FreeSlotBitmapSlotIsUsed(next_address);
-#else
-    constexpr bool marked_as_free_in_bitmap = true;
-#endif
-
-    return shadow_ptr_ok & same_super_page & marked_as_free_in_bitmap &
-           not_in_metadata;
+    return shadow_ptr_ok & same_super_page & not_in_metadata;
   }
 
   EncodedFreelistPtr encoded_next_;

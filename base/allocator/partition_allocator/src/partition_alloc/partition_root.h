@@ -41,7 +41,6 @@
 #include "partition_alloc/bucket_lookup.h"
 #include "partition_alloc/build_config.h"
 #include "partition_alloc/buildflags.h"
-#include "partition_alloc/freeslot_bitmap.h"
 #include "partition_alloc/in_slot_metadata.h"
 #include "partition_alloc/lightweight_quarantine.h"
 #include "partition_alloc/page_allocator.h"
@@ -1353,12 +1352,6 @@ PartitionRoot::AllocFromBucket(Bucket* bucket,
   IncreaseTotalSizeOfAllocatedBytes(
       slot_start, slot_span->GetSlotSizeForBookkeeping(), raw_size);
 
-#if PA_BUILDFLAG(USE_FREESLOT_BITMAP)
-  if (!slot_span->bucket->is_direct_mapped()) {
-    internal::FreeSlotBitmapMarkSlotAsUsed(slot_start);
-  }
-#endif
-
   *slot_size = slot_span->bucket->slot_size;
   return slot_start;
 }
@@ -1641,11 +1634,6 @@ PA_ALWAYS_INLINE void PartitionRoot::FreeInSlotSpan(
     ReadOnlySlotSpanMetadata* slot_span) {
   DecreaseTotalSizeOfAllocatedBytes(slot_start,
                                     slot_span->GetSlotSizeForBookkeeping());
-#if PA_BUILDFLAG(USE_FREESLOT_BITMAP)
-  if (!slot_span->bucket->is_direct_mapped()) {
-    internal::FreeSlotBitmapMarkSlotAsFree(slot_start);
-  }
-#endif
 
   return slot_span->ToWritable(this)->Free(
       slot_start, this, PartitionRoot::get_freelist_dispatcher());

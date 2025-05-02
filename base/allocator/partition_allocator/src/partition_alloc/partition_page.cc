@@ -8,7 +8,6 @@
 
 #include "partition_alloc/address_pool_manager.h"
 #include "partition_alloc/buildflags.h"
-#include "partition_alloc/freeslot_bitmap.h"
 #include "partition_alloc/page_allocator.h"
 #include "partition_alloc/page_allocator_constants.h"
 #include "partition_alloc/partition_address_space.h"
@@ -258,11 +257,6 @@ void SlotSpanMetadata<MetadataKind::kWritable>::Decommit(PartitionRoot* root) {
   root->DecommitSystemPagesForData(
       slot_span_start, size_to_decommit,
       PageAccessibilityDisposition::kAllowKeepForPerf);
-
-#if PA_BUILDFLAG(USE_FREESLOT_BITMAP)
-  FreeSlotBitmapReset(slot_span_start, slot_span_start + size_to_decommit,
-                      bucket->slot_size);
-#endif
 
   // We actually leave the decommitted slot span in the active list. We'll sweep
   // it on to the decommitted list when we next walk the active list.

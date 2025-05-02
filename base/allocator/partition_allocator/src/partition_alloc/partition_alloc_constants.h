@@ -182,17 +182,12 @@ MaxRegularSlotSpanSize() {
 //     | Guard page (4 KiB)    |
 //     | Metadata page (4 KiB) |
 //     | Guard pages (8 KiB)   |
-//     | Free Slot Bitmap      |
-//     | *Scan State Bitmap    |
 //     | Slot span             |
 //     | Slot span             |
 //     | ...                   |
 //     | Slot span             |
 //     | Guard pages (16 KiB)  |
 //     +-----------------------+
-//
-// Free Slot Bitmap is only present when USE_FREESLOT_BITMAP is true. State
-// Bitmap is inserted for partitions that may have quarantine enabled.
 //
 // If ENABLE_BACKUP_REF_PTR_SUPPORT is on, InSlotMetadataTable(4KiB) is inserted
 // after the Metadata page, which hosts what normally would be in-slot metadata,

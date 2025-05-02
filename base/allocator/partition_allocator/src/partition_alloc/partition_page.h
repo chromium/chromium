@@ -11,7 +11,6 @@
 #include "partition_alloc/address_pool_manager_types.h"
 #include "partition_alloc/build_config.h"
 #include "partition_alloc/buildflags.h"
-#include "partition_alloc/freeslot_bitmap_constants.h"
 #include "partition_alloc/partition_address_space.h"
 #include "partition_alloc/partition_alloc_base/bits.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
@@ -567,8 +566,7 @@ ReservedStateBitmapSize() {
 
 PA_ALWAYS_INLINE uintptr_t
 SuperPagePayloadStartOffset(bool is_managed_by_normal_buckets) {
-  return PartitionPageSize() +
-         (is_managed_by_normal_buckets ? ReservedFreeSlotBitmapSize() : 0);
+  return PartitionPageSize();
 }
 
 PA_ALWAYS_INLINE uintptr_t SuperPagePayloadBegin(uintptr_t super_page) {
