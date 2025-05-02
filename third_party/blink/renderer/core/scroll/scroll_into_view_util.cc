@@ -441,7 +441,6 @@ mojom::blink::ScrollIntoViewParamsPtr CreateScrollIntoViewParams(
   return params;
 }
 
-namespace {
 mojom::blink::ScrollAlignment ResolveToPhysicalAlignment(
     V8ScrollLogicalPosition::Enum inline_alignment,
     V8ScrollLogicalPosition::Enum block_alignment,
@@ -509,8 +508,6 @@ V8ScrollLogicalPosition::Enum SnapAlignmentToV8ScrollLogicalPosition(
       return V8ScrollLogicalPosition::Enum::kCenter;
   }
 }
-
-}  // namespace
 
 mojom::blink::ScrollIntoViewParamsPtr CreateScrollIntoViewParams(
     const ScrollIntoViewOptions& options,

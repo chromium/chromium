@@ -26,6 +26,29 @@ Element* ScrollTargetElement(Element* scroll_marker) {
   return scroll_marker;
 }
 
+mojom::blink::ScrollAlignment GetAlignmentForScrollTarget(
+    ScrollOrientation axis,
+    const LayoutBox* target_box) {
+  cc::ScrollSnapAlign snap = target_box->Style()->GetScrollSnapAlign();
+
+  cc::SnapAlignment x_snap_align =
+      snap.alignment_inline == cc::SnapAlignment::kNone
+          ? cc::SnapAlignment::kStart
+          : snap.alignment_inline;
+  cc::SnapAlignment y_snap_align =
+      snap.alignment_block == cc::SnapAlignment::kNone
+          ? cc::SnapAlignment::kStart
+          : snap.alignment_block;
+  V8ScrollLogicalPosition::Enum x_position =
+      scroll_into_view_util::SnapAlignmentToV8ScrollLogicalPosition(
+          x_snap_align);
+  V8ScrollLogicalPosition::Enum y_position =
+      scroll_into_view_util::SnapAlignmentToV8ScrollLogicalPosition(
+          y_snap_align);
+  return scroll_into_view_util::ResolveToPhysicalAlignment(
+      x_position, y_position, axis, *target_box->Style());
+}
+
 }  // namespace
 
 std::optional<ScrollMarkerChooser::ScrollTargetOffsetData>
@@ -63,13 +86,14 @@ ScrollMarkerChooser::GetScrollTargetOffsetData(Element* scroll_marker) {
   PhysicalRect rect_to_scroll = scroller_box_->AbsoluteToLocalRect(
       bounding_box_object->AbsoluteBoundingBoxRectForScrollIntoView(), flag);
   rect_to_scroll.Expand(scroll_margin);
+
+  mojom::blink::ScrollAlignment align_y =
+      GetAlignmentForScrollTarget(kVerticalScroll, target_box);
+  mojom::blink::ScrollAlignment align_x =
+      GetAlignmentForScrollTarget(kHorizontalScroll, target_box);
   ScrollOffset target_scroll_offset =
       scroll_into_view_util::GetScrollOffsetToExpose(
-          *scrollable_area_, rect_to_scroll, scroll_margin,
-          scroll_into_view_util::PhysicalAlignmentFromSnapAlignStyle(
-              *target_box, kHorizontalScroll),
-          scroll_into_view_util::PhysicalAlignmentFromSnapAlignStyle(
-              *target_box, kVerticalScroll));
+          *scrollable_area_, rect_to_scroll, scroll_margin, align_x, align_y);
   // The result of GetScrollOffsetToExpose is adjusted for the current scroll
   // offset. Undo this adjustment as ScrollTargetOffsetData::layout_offset
   // represents the offset in coordinates within the scrollable content
