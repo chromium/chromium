@@ -7,8 +7,8 @@
 
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
-// Coordinator that manages the privacy consent flow shown to new Glic users.
-@interface GlicConsentCoordinator : ChromeCoordinator
+// Coordinator that manages the privacy consent flow shown to new GLIC users.
+@interface GLICConsentCoordinator : ChromeCoordinator
 
 @end
 

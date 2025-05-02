@@ -4,6 +4,7 @@
 
 source_set("ui") {
   sources = [
+    "glic_consent_mutator.h",
     "glic_consent_view_controller.h",
     "glic_consent_view_controller.mm",
     "glic_promo_display_handler.h",

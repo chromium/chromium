@@ -8,10 +8,14 @@ source_set("coordinator") {
     "glic_consent_coordinator.mm",
     "glic_consent_mediator.h",
     "glic_consent_mediator.mm",
+    "glic_consent_mediator_delegate.h",
   ]
   deps = [
     "//base",
+    "//components/prefs:prefs",
     "//ios/chrome/browser/intelligence/glic/ui",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile",
   ]
 }

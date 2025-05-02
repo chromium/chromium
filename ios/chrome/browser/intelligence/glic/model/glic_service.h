@@ -13,7 +13,7 @@
 
 class AuthenticationService;
 
-// A browser-context keyed service for glic.
+// A browser-context keyed service for Glic.
 class GlicService : public KeyedService {
  public:
   GlicService(AuthenticationService* auth_service);

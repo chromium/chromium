@@ -7,8 +7,19 @@
 
 #import <Foundation/Foundation.h>
 
-// Glic Consent Mediator.
-@interface GlicConsentMediator : NSObject
+#import "ios/chrome/browser/intelligence/glic/ui/glic_consent_mutator.h"
+
+class PrefService;
+
+@protocol GLICConsentMediatorDelegate;
+
+// GLIC consent Mediator.
+@interface GLICConsentMediator : NSObject <GLICConsentMutator>
+
+- (instancetype)initWithPrefService:(PrefService*)prefService;
+
+// The delegate for this mediator.
+@property(nonatomic, weak) id<GLICConsentMediatorDelegate> delegate;
 
 @end
 

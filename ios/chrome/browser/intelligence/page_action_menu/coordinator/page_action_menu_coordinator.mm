@@ -5,18 +5,23 @@
 #import "ios/chrome/browser/intelligence/page_action_menu/coordinator/page_action_menu_coordinator.h"
 
 #import "base/functional/callback_helpers.h"
+#import "components/prefs/pref_service.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/intelligence/glic/coordinator/glic_consent_coordinator.h"
 #import "ios/chrome/browser/intelligence/glic/model/glic_service.h"
 #import "ios/chrome/browser/intelligence/glic/model/glic_service_factory.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/page_action_menu_commands.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 
 @implementation PageActionMenuCoordinator {
   // The PageContext wrapper used to provide context about a page.
   PageContextWrapper* _pageContextWrapper;
-  GlicConsentCoordinator* _glicConsentCoordinator;
+  GLICConsentCoordinator* _glicConsentCoordinator;
 }
 
 #pragma mark - ChromeCoordinator
@@ -36,29 +41,55 @@
 
 // TODO(crbug.com/408006823): Rename this function.
 - (void)handleEntryPointPressed {
-  if ([self shouldShowGlicConsent]) {
-    [self showGlicConsent];
+  if (![self checkCapabilities]) {
     return;
   }
-  [self prepareGlicOverlay];
+
+  if ([self shouldShowGLICConsent]) {
+    [self showGLICConsent];
+    return;
+  }
+
+  [self prepareGLICOverlay];
 }
 
-// TODO(crbug.com/414419915): Present Consent UI when Glic is used for the first
-// time or the user declined it.
-- (BOOL)shouldShowGlicConsent {
-  return NO;
+// Decides whether GLIC consent should be shown.
+- (BOOL)shouldShowGLICConsent {
+  PrefService* prefService = self.profile->GetPrefs();
+  CHECK(prefService);
+  return !prefService->GetBoolean(prefs::kIOSGLICConsent);
 }
 
-- (void)showGlicConsent {
-  _glicConsentCoordinator = [[GlicConsentCoordinator alloc]
+// Checks capabilities for GLIC feature.
+- (BOOL)checkCapabilities {
+  signin::IdentityManager* identityManager =
+      IdentityManagerFactory::GetForProfile(self.profile);
+
+  if (!identityManager) {
+    return NO;
+  }
+
+  AccountCapabilities capabilities =
+      identityManager
+          ->FindExtendedAccountInfo(identityManager->GetPrimaryAccountInfo(
+              signin::ConsentLevel::kSignin))
+          .capabilities;
+
+  return capabilities.can_use_model_execution_features() ==
+         signin::Tribool::kTrue;
+}
+
+// Shows GLIC consent.
+- (void)showGLICConsent {
+  _glicConsentCoordinator = [[GLICConsentCoordinator alloc]
       initWithBaseViewController:self.baseViewController
                          browser:self.browser];
 
   [_glicConsentCoordinator start];
 }
 
-// Prepare Glic overlay.
-- (void)prepareGlicOverlay {
+// Prepares GLIC overlay.
+- (void)prepareGLICOverlay {
   // Cancel any ongoing page context operation.
   if (_pageContextWrapper) {
     _pageContextWrapper = nil;
@@ -71,7 +102,7 @@
       page_context_completion_callback = base::BindOnce(
           ^void(std::unique_ptr<optimization_guide::proto::PageContext>
                     page_context) {
-            [weakSelf openGlicOverlayForPage:std::move(page_context)];
+            [weakSelf openGLICOverlayForPage:std::move(page_context)];
           });
 
   // Collect the PageContext and execute the callback once it's ready.
@@ -83,8 +114,8 @@
   [_pageContextWrapper populatePageContextFieldsAsync];
 }
 
-// Opens the Glic overlay with a given page context.
-- (void)openGlicOverlayForPage:
+// Opens the GLIC overlay with a given page context.
+- (void)openGLICOverlayForPage:
     (std::unique_ptr<optimization_guide::proto::PageContext>)pageContext {
   GlicService* glicService = GlicServiceFactory::GetForProfile(self.profile);
   glicService->PresentOverlayOnViewController(self.baseViewController,

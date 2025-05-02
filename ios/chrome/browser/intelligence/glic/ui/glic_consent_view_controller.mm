@@ -4,12 +4,20 @@
 
 #import "ios/chrome/browser/intelligence/glic/ui/glic_consent_view_controller.h"
 
-@implementation GlicConsentViewController
+#import "ios/chrome/browser/intelligence/glic/ui/glic_consent_mutator.h"
+#import "ios/chrome/common/ui/promo_style/promo_style_view_controller_delegate.h"
+
+@interface GLICConsentViewController () <PromoStyleViewControllerDelegate>
+
+@end
+
+@implementation GLICConsentViewController
 
 #pragma mark - UIViewController
 
 // TODO(crbug.com/414777915): Implement a basic UI.
 - (void)viewDidLoad {
+  self.delegate = self;
   self.layoutBehindNavigationBar = YES;
   self.shouldHideBanner = YES;
   self.headerImageType = PromoStyleImageType::kNone;
@@ -34,6 +42,16 @@
 
   self.bannerSize = BannerImageSizeType::kStandard;
   [super viewDidLoad];
+}
+
+#pragma mark - PromoStyleViewControllerDelegate
+
+- (void)didTapPrimaryActionButton {
+  [self.mutator didConsentGLIC];
+}
+
+- (void)didTapSecondaryActionButton {
+  [self.mutator didRefuseGLICConsent];
 }
 
 @end

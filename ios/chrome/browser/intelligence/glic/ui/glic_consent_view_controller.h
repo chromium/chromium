@@ -9,8 +9,13 @@
 
 #import "ios/chrome/common/ui/promo_style/promo_style_view_controller.h"
 
-// Glic Consent View Controller.
-@interface GlicConsentViewController : PromoStyleViewController
+@protocol GLICConsentMutator;
+
+// GLIC consent View Controller.
+@interface GLICConsentViewController : PromoStyleViewController
+
+// The mutator for this view controller to communicate to the mediator.
+@property(nonatomic, weak) id<GLICConsentMutator> mutator;
 
 @end
 
