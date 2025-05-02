@@ -19,6 +19,7 @@ export class TestBookmarksBrowserProxy extends TestBrowserProxy implements
       'getCanEditBookmarks',
       'getCanUploadBookmarkToAccountStorage',
       'recordInHistogram',
+      'onSingleBookmarkUploadClicked',
       'getBatchUploadPromoInfo',
       'onBatchUploadPromoClicked',
       'onBatchUploadPromoDismissed',
@@ -46,6 +47,10 @@ export class TestBookmarksBrowserProxy extends TestBrowserProxy implements
 
   recordInHistogram(histogram: string, bucket: number, maxBucket: number) {
     this.methodCalled('recordInHistogram', [histogram, bucket, maxBucket]);
+  }
+
+  onSingleBookmarkUploadClicked(bookmarkId: string) {
+    this.methodCalled('onSingleBookmarkUploadClicked', [bookmarkId]);
   }
 
   getBatchUploadPromoInfo() {

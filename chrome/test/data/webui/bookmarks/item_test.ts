@@ -111,4 +111,25 @@ suite('<bookmarks-item>', function() {
 
     assertTrue(isChildVisible(item, '#account-upload-button'));
   });
+
+  test(
+      'cloud icon for upload to account storage click forwards call',
+      async function() {
+        // Show the cloud upload icon.
+        testBrowserProxy.setCanUploadAsAccountBookmark(true);
+        item.itemId = '3';
+        await microtasksFinished();
+        assertTrue(isChildVisible(item, '#account-upload-button'));
+
+        // Click on the upload icon.
+        const uploadIcon = item.shadowRoot.querySelector<HTMLElement>(
+            '#account-upload-button');
+        assertTrue(!!uploadIcon);
+        uploadIcon.click();
+
+        // The call should be forwarded with the correct id.
+        const [idRequested] =
+            await testBrowserProxy.whenCalled('onSingleBookmarkUploadClicked');
+        assertEquals('3', idRequested);
+      });
 });

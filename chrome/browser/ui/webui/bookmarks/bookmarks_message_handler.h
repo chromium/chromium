@@ -30,6 +30,8 @@ class BookmarksMessageHandler : public content::WebUIMessageHandler {
   void HandleGetCanUploadBookmarkToAccountStorage(
       const base::Value::List& args);
 
+  void HandleSingleUploadClicked(const base::Value::List& args);
+
   // content::WebUIMessageHandler:
   void RegisterMessages() override;
   void OnJavascriptAllowed() override;

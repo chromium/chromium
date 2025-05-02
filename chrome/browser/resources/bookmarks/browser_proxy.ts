@@ -18,6 +18,7 @@ export interface BrowserProxy {
   getCanEditBookmarks(): Promise<boolean>;
   getCanUploadBookmarkToAccountStorage(id: string): Promise<boolean>;
   recordInHistogram(histogram: string, bucket: number, maxBucket: number): void;
+  onSingleBookmarkUploadClicked(bookmarkId: string): void;
 
   // Promo/BatchUpload functions
   // TODO(crbug.com/411439975): Consider using it's own handler, with a mojo
@@ -43,6 +44,10 @@ export class BrowserProxyImpl implements BrowserProxy {
   recordInHistogram(histogram: string, bucket: number, maxBucket: number) {
     chrome.send(
         'metricsHandler:recordInHistogram', [histogram, bucket, maxBucket]);
+  }
+
+  onSingleBookmarkUploadClicked(bookmarkId: string) {
+    chrome.send('onSingleBookmarkUploadClicked', [bookmarkId]);
   }
 
   getBatchUploadPromoInfo() {

@@ -195,8 +195,7 @@ export class BookmarksItemElement extends BookmarksItemElementBase {
       this.selectThisItem_();
     }
 
-    // TODO(crbug.com/411366112): Add a call to show the dialog to upload the
-    // bookmark to account storage here.
+    BrowserProxyImpl.getInstance().onSingleBookmarkUploadClicked(this.itemId);
   }
 
   private selectThisItem_() {
