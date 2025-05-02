@@ -159,12 +159,19 @@ int kSignalsToRunClosure[] = {
 // Closure to run on SIGTERM and SIGINT.
 base::OnceClosure* g_signal_closure = nullptr;
 base::PlatformThreadId g_main_thread_id;
+pthread_t g_main_pthread;
 
 void RunClosureOnSignal(int signum) {
   if (base::PlatformThread::CurrentId() != g_main_thread_id) {
     RAW_LOG(INFO, "Received signal on non-main thread\n");
-    // Signals must still be handled on non-main threads. Linux does not
-    // guarantee which thread receives a signal.
+
+    // Resend the signal to the main thread to avoid concurrency issues when
+    // accessing g_signal_closure. pthread_kill is required to be
+    // async-signal-safe by POSIX.1 (see "man 7 signal-safety").
+    if (pthread_kill(g_main_pthread, signum) != 0) {
+      RAW_LOG(ERROR, "Failed to send signal to main thread\n");
+    }
+    return;
   }
 
   char message[48] = "Received close signal: ";
@@ -185,6 +192,7 @@ void RegisterClosureOnSignal(base::OnceClosure closure) {
   // process exit.
   g_signal_closure = new base::OnceClosure(std::move(closure));
   g_main_thread_id = base::PlatformThread::CurrentId();
+  g_main_pthread = pthread_self();
 
   struct sigaction sa_new;
   memset(&sa_new, 0, sizeof(sa_new));
