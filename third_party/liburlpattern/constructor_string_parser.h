@@ -10,7 +10,8 @@
 #include <string_view>
 
 #include "base/component_export.h"
-#include "third_party/abseil-cpp/absl/status/statusor.h"
+#include "base/types/expected.h"
+#include "third_party/abseil-cpp/absl/status/status.h"
 #include "third_party/liburlpattern/tokenize.h"
 
 namespace liburlpattern {
@@ -36,7 +37,7 @@ class COMPONENT_EXPORT(LIBURLPATTERN) ConstructorStringParser {
     std::optional<std::string_view> hash;
   };
   using ProtocolCheckCallback =
-      std::function<absl::StatusOr<bool>(std::string_view)>;
+      std::function<base::expected<bool, absl::Status>(std::string_view)>;
 
   explicit ConstructorStringParser(std::string_view constructor_string);
 

@@ -7,6 +7,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/types/expected.h"
 #include "third_party/abseil-cpp/absl/base/macros.h"
 
 namespace liburlpattern {
@@ -108,10 +109,10 @@ absl::Status ConstructorStringParser::Parse(
       case StringParseState::kProtocol:
         // If we find the end of the protocol component...
         if (IsProtocolSuffix()) {
-          absl::StatusOr<bool> protocol_check_result =
+          base::expected protocol_check_result =
               protocol_matches_special_scheme(MakeComponentString());
-          if (!protocol_check_result.ok()) {
-            return protocol_check_result.status();
+          if (!protocol_check_result.has_value()) {
+            return protocol_check_result.error();
           }
           should_treat_as_standard_url_ = protocol_check_result.value();
 
