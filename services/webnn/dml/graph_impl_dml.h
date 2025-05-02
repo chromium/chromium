@@ -17,6 +17,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
 #include "base/types/fixed_array.h"
+#include "services/webnn/public/cpp/webnn_types.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"
 #include "services/webnn/webnn_constant_operand.h"
@@ -78,10 +79,10 @@ class GraphImplDml final : public WebNNGraphImpl {
       const ContextProperties& context_properties,
       scoped_refptr<Adapter> adapter,
       mojom::GraphInfoPtr& graph_info,
-      base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>&
+      base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>&
           constant_operands,
       GraphBuilderDml& graph_builder,
-      std::unordered_map<uint64_t, uint32_t>& constant_id_to_input_index_map,
+      std::unordered_map<OperandId, uint32_t>& constant_id_to_input_index_map,
       GraphBufferBindingInfo& graph_buffer_binding_info);
 
   // This method builds and compiles a DML graph from mojom::GraphInfo via
@@ -96,7 +97,7 @@ class GraphImplDml final : public WebNNGraphImpl {
       base::WeakPtr<ContextImplDml> context,
       mojom::GraphInfoPtr graph_info,
       ComputeResourceInfo compute_resource_info,
-      base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>
+      base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
           constant_operands,
       WebNNContextImpl::CreateGraphImplCallback callback,
       bool disable_dml_meta_commands_for_gpu);
@@ -223,10 +224,10 @@ class GraphImplDml final : public WebNNGraphImpl {
       scoped_refptr<Adapter> adapter,
       base::WeakPtr<ContextImplDml> context,
       WebNNContextImpl::CreateGraphImplCallback callback,
-      std::unordered_map<uint64_t, uint32_t> constant_id_to_input_index_map,
+      std::unordered_map<OperandId, uint32_t> constant_id_to_input_index_map,
       GraphBufferBindingInfo graph_buffer_binding_info,
       ComputeResourceInfo compute_resource_info,
-      base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>
+      base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
           constant_operands,
       base::expected<Microsoft::WRL::ComPtr<IDMLCompiledOperator>, HRESULT>
           compilation_result);
