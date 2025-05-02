@@ -95,7 +95,7 @@ class FirstRunCoordinatorMetricsHelper final {
                                       completion:completion];
 }
 
-- (void)stop {
+- (void)stopWithCompletion:(ProceduralBlock)completionHandler {
   if (self.childCoordinator) {
     // If the child coordinator is not nil, then the FRE is stopped because
     // Chrome is being shutdown.
@@ -103,9 +103,14 @@ class FirstRunCoordinatorMetricsHelper final {
                                   first_run::kFirstRunInterrupted);
     [self stopChildCoordinator];
   }
-  [self.baseViewController dismissViewControllerAnimated:YES completion:nil];
+  [self.baseViewController dismissViewControllerAnimated:YES
+                                              completion:completionHandler];
   _navigationController = nil;
   [super stop];
+}
+
+- (void)stop {
+  [self stopWithCompletion:nil];
 }
 
 #pragma mark - FirstRunScreenDelegate

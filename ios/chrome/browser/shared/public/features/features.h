@@ -1089,4 +1089,7 @@ BASE_DECLARE_FEATURE(kBestOfAppFRE);
 // enabled.
 bool IsBestOfAppFREEnabled();
 
+// Whether the Guided Tour variant of `kBestOfAppFRE` is enabled.
+bool IsBestOfAppGuidedTourEnabled();
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_

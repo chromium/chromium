@@ -197,11 +197,13 @@ source_set("first_run_profile_agent") {
     "//ios/chrome/browser/device_orientation/ui_bundled",
     "//ios/chrome/browser/first_run/ui_bundled",
     "//ios/chrome/browser/first_run/ui_bundled:first_run_provider",
+    "//ios/chrome/browser/first_run/ui_bundled/guided_tour",
     "//ios/chrome/browser/scoped_ui_blocker/ui_bundled",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_observer",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:signin_util",
   ]

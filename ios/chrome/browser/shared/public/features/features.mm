@@ -1303,3 +1303,8 @@ BASE_FEATURE(kBestOfAppFRE, "BestOfAppFRE", base::FEATURE_DISABLED_BY_DEFAULT);
 bool IsBestOfAppFREEnabled() {
   return base::FeatureList::IsEnabled(kBestOfAppFRE);
 }
+
+bool IsBestOfAppGuidedTourEnabled() {
+  return base::GetFieldTrialParamValueByFeature(kBestOfAppFRE, "variant") ==
+         "4";
+}

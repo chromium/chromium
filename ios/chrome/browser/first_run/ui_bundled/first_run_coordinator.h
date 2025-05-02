@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_FIRST_RUN_UI_BUNDLED_FIRST_RUN_COORDINATOR_H_
 #define IOS_CHROME_BROWSER_FIRST_RUN_UI_BUNDLED_FIRST_RUN_COORDINATOR_H_
 
+#import "base/ios/block_types.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
 @class ScreenProvider;
@@ -30,6 +31,10 @@
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser NS_UNAVAILABLE;
+
+// Designated stop method for this coordinator with `completionHandler` executed
+// after its UI finishes dismissing.
+- (void)stopWithCompletion:(ProceduralBlock)completionHandler;
 
 @property(nonatomic, weak) id<FirstRunCoordinatorDelegate> delegate;
 
