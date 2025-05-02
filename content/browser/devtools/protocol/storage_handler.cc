@@ -1415,7 +1415,10 @@ Response StorageHandler::SetSharedStorageTracking(bool enable) {
     if (!manager) {
       return Response::ServerError("Shared storage is disabled.");
     }
-    if (!shared_storage_observation_.IsObserving()) {
+    // Only enable tracking if this handler is associated with a main render
+    // frame host, and if tracking isn't already enabled.
+    if (frame_host_ && frame_host_->IsOutermostMainFrame() &&
+        !shared_storage_observation_.IsObserving()) {
       shared_storage_observation_.Observe(manager);
     }
   } else {
@@ -1454,8 +1457,7 @@ void StorageHandler::ResetSharedStorageBudget(
 
 GlobalRenderFrameHostId StorageHandler::AssociatedMainFrameId() const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return frame_host_ ? frame_host_->GetOutermostMainFrame()->GetGlobalId()
-                     : GlobalRenderFrameHostId();
+  return frame_host_ ? frame_host_->GetGlobalId() : GlobalRenderFrameHostId();
 }
 
 bool StorageHandler::ShouldReceiveAllReports() const {

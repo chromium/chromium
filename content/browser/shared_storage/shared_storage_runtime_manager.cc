@@ -11,6 +11,23 @@
 
 namespace content {
 
+namespace {
+
+bool ShouldSendObserverReportForMainFrameId(
+    const SharedStorageRuntimeManager::SharedStorageObserverInterface& observer,
+    GlobalRenderFrameHostId main_frame_id) {
+  // We should send a report if and only if (1) the observer is subscribed to
+  // receiving all reports, or (2) the observer has a valid associated main
+  // frame ID (i.e. is an observer attached to a main render frame host), and
+  // that main frame ID matches the main frame ID passed as a parameter of the
+  // report.
+  return observer.ShouldReceiveAllReports() ||
+         (observer.AssociatedMainFrameId() &&
+          observer.AssociatedMainFrameId() == main_frame_id);
+}
+
+}  // namespace
+
 using AccessScope = blink::SharedStorageAccessScope;
 
 SharedStorageRuntimeManager::SharedStorageRuntimeManager(
@@ -123,8 +140,7 @@ void SharedStorageRuntimeManager::NotifySharedStorageAccessed(
   }
   base::Time now = base::Time::Now();
   for (SharedStorageObserverInterface& observer : observers_) {
-    if (!observer.ShouldReceiveAllReports() &&
-        observer.AssociatedMainFrameId() != main_frame_id) {
+    if (!ShouldSendObserverReportForMainFrameId(observer, main_frame_id)) {
       continue;
     }
     observer.OnSharedStorageAccessed(now, scope, method, main_frame_id,
@@ -145,8 +161,7 @@ void SharedStorageRuntimeManager::NotifyWorkletOperationExecutionFinished(
   }
   base::Time now = base::Time::Now();
   for (SharedStorageObserverInterface& observer : observers_) {
-    if (!observer.ShouldReceiveAllReports() &&
-        observer.AssociatedMainFrameId() != main_frame_id) {
+    if (!ShouldSendObserverReportForMainFrameId(observer, main_frame_id)) {
       continue;
     }
     // TODO(crbug.com/401011862): Consider sending start time as well as
