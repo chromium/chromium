@@ -9,6 +9,7 @@ import static org.chromium.chrome.browser.touch_to_fill.password_generation.Touc
 import static org.chromium.chrome.browser.touch_to_fill.password_generation.TouchToFillPasswordGenerationProperties.PASSWORD_ACCEPTED_CALLBACK;
 import static org.chromium.chrome.browser.touch_to_fill.password_generation.TouchToFillPasswordGenerationProperties.PASSWORD_REJECTED_CALLBACK;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -16,6 +17,7 @@ import org.chromium.ui.modelutil.PropertyModel;
  * Maps the {@link TouchToFillPasswordGenerationProperties} model properties to the {@link
  * TouchToFillPasswordGenerationView}.
  */
+@NullMarked
 class TouchToFillPasswordGenerationViewBinder {
     /**
      * Called whenever a property in the given model changes. It updates the given view accordingly.

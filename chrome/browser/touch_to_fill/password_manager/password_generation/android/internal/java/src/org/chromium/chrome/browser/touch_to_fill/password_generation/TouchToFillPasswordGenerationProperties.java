@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.touch_to_fill.password_generation;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.touch_to_fill.password_generation.TouchToFillPasswordGenerationCoordinator.GenerationCallback;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
@@ -11,6 +12,7 @@ import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 /**
  * Properties defined here reflect the visible state of the TouchToFillPasswordGeneration component.
  */
+@NullMarked
 class TouchToFillPasswordGenerationProperties {
 
     public static final ReadableObjectPropertyKey<String> ACCOUNT_EMAIL =
