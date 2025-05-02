@@ -420,11 +420,18 @@ std::optional<Value> BuildGetRequest(
   return Value(std::move(out));
 }
 
-Value BuildCreateRequest(blink::mojom::DigitalCredentialRequestPtr request) {
-  auto result = Value::Dict();
-  result.Set("protocol", request->protocol);
-  result.Set("data", request->data->get_str());
-  return Value(std::move(result));
+Value BuildCreateRequest(
+    std::vector<blink::mojom::DigitalCredentialCreateRequestPtr>
+        digital_credential_requests) {
+  auto requests = Value::List();
+  for (const auto& request : digital_credential_requests) {
+    auto result = Value::Dict();
+    result.Set("protocol", request->protocol);
+    result.Set("data", std::move(request->data));
+    requests.Append(std::move(result));
+  }
+  Value::Dict out = Value::Dict().Set("requests", std::move(requests));
+  return Value(std::move(out));
 }
 
 void DigitalIdentityRequestImpl::Get(
@@ -514,7 +521,8 @@ void DigitalIdentityRequestImpl::Get(
 }
 
 void DigitalIdentityRequestImpl::Create(
-    blink::mojom::DigitalCredentialRequestPtr digital_credential_request,
+    std::vector<blink::mojom::DigitalCredentialCreateRequestPtr>
+        digital_credential_requests,
     CreateCallback callback) {
   if (!IsWebIdentityDigitalCredentialsCreationEnabled()) {
     std::move(callback).Run(RequestDigitalIdentityStatus::kError,
@@ -544,7 +552,7 @@ void DigitalIdentityRequestImpl::Create(
     return;
   }
 
-  if (digital_credential_request.is_null()) {
+  if (digital_credential_requests.empty()) {
     CompleteRequestWithError(RequestStatusForMetrics::kErrorNoRequests);
     return;
   }
@@ -556,22 +564,46 @@ void DigitalIdentityRequestImpl::Create(
     return;
   }
 
-  std::string protocol = digital_credential_request->protocol;
-  std::string request_json_string =
-      digital_credential_request->data->is_str()
-          ? digital_credential_request->data->get_str()
-          : "";
+  // Store the protocol to return it in tests when no digital wallet is
+  // available. Pick the first one arbitrarily since it covers most of the tests
+  // that send only one request.
+  std::string protocol = digital_credential_requests[0]->protocol;
 
   Value request_to_send =
-      BuildCreateRequest(std::move(digital_credential_request));
+      BuildCreateRequest(std::move(digital_credential_requests));
 
-  // TODO(crbug.com/378330032): consider using Value over mojo instead of string
-  // since the param is already a JSON object.
-  data_decoder::DataDecoder::ParseJsonIsolated(
-      std::move(request_json_string),
-      base::BindOnce(&DigitalIdentityRequestImpl::OnCreateRequestJsonParsed,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(protocol),
-                     std::move(request_to_send)));
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kUseFakeUIForDigitalIdentity)) {
+    // Post delayed task to enable testing abort+.
+    GetUIThreadTaskRunner()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&DigitalIdentityRequestImpl::CompleteRequest,
+                       weak_ptr_factory_.GetWeakPtr(), protocol,
+                       DigitalIdentityProvider::DigitalCredential(
+                           protocol, Value(Value::Dict().Set(
+                                         "token", "fake_test_token")))),
+        base::Milliseconds(1));
+    return;
+  }
+
+  provider_ = GetContentClient()->browser()->CreateDigitalIdentityProvider();
+  if (!provider_) {
+    CompleteRequestWithError(RequestStatusForMetrics::kErrorOther);
+    return;
+  }
+
+  if (!render_frame_host().IsActive() ||
+      render_frame_host().GetVisibilityState() !=
+          content::PageVisibilityState::kVisible) {
+    CompleteRequestWithError(RequestStatusForMetrics::kErrorOther);
+    return;
+  }
+  // TODO(crbug.com/378330032): Instead of passing the protocol here, it should
+  // be read from the wallet response.
+  provider_->Create(WebContents::FromRenderFrameHost(&render_frame_host()),
+                    origin(), request_to_send,
+                    base::BindOnce(&DigitalIdentityRequestImpl::CompleteRequest,
+                                   weak_ptr_factory_.GetWeakPtr(), protocol));
 }
 
 void DigitalIdentityRequestImpl::Abort() {
@@ -640,48 +672,6 @@ void DigitalIdentityRequestImpl::OnGetRequestJsonParsed(
                          std::move(request_to_send)));
 }
 
-void DigitalIdentityRequestImpl::OnCreateRequestJsonParsed(
-    std::string protocol,
-    Value request_to_send,
-    data_decoder::DataDecoder::ValueOrError parsed_result) {
-  if (!parsed_result.has_value()) {
-    CompleteRequestWithError(RequestStatusForMetrics::kErrorInvalidJson);
-    return;
-  }
-
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kUseFakeUIForDigitalIdentity)) {
-    // Post delayed task to enable testing abort+.
-    GetUIThreadTaskRunner()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(&DigitalIdentityRequestImpl::CompleteRequest,
-                       weak_ptr_factory_.GetWeakPtr(), protocol,
-                       DigitalIdentityProvider::DigitalCredential(
-                           protocol, Value(Value::Dict().Set(
-                                         "token", "fake_test_token")))),
-        base::Milliseconds(1));
-    return;
-  }
-
-  provider_ = GetContentClient()->browser()->CreateDigitalIdentityProvider();
-  if (!provider_) {
-    CompleteRequestWithError(RequestStatusForMetrics::kErrorOther);
-    return;
-  }
-
-  if (!render_frame_host().IsActive() ||
-      render_frame_host().GetVisibilityState() !=
-          content::PageVisibilityState::kVisible) {
-    CompleteRequestWithError(RequestStatusForMetrics::kErrorOther);
-    return;
-  }
-
-  provider_->Create(
-      WebContents::FromRenderFrameHost(&render_frame_host()), origin(),
-      request_to_send,
-      base::BindOnce(&DigitalIdentityRequestImpl::CompleteRequest,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(protocol)));
-}
 
 void DigitalIdentityRequestImpl::OnInterstitialDone(
     std::optional<std::string> protocol,

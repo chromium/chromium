@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_object_string.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_credential_creation_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_credential_request_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_digital_credential_create_request.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_digital_credential_creation_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_digital_credential_request.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_digital_credential_request_options.h"
@@ -70,8 +71,9 @@ class MockDigitalIdentityRequest : public mojom::DigitalIdentityRequest {
                GetCallback callback),
               (override));
 
-  void Create(blink::mojom::DigitalCredentialRequestPtr request,
-              CreateCallback callback) override {
+  void Create(
+      std::vector<blink::mojom::DigitalCredentialCreateRequestPtr> requests,
+      CreateCallback callback) override {
     // Return a Value::String instead of a Dict because V8ValueConverterForTest
     // doesn't support converting Dict.
     std::move(callback).Run(mojom::RequestDigitalIdentityStatus::kSuccess,
@@ -136,11 +138,16 @@ CredentialRequestOptions* CreateValidGetOptions(ScriptState* script_state) {
 CredentialCreationOptions* CreateValidCreateOptions() {
   v8::Isolate* isolate = v8::Isolate::GetCurrent();
 
+  DigitalCredentialCreateRequest* request =
+      DigitalCredentialCreateRequest::Create();
+  request->setProtocol("openid4vci");
+  request->setData(ScriptObject(isolate, v8::Object::New(isolate)));
+  HeapVector<Member<DigitalCredentialCreateRequest>> requests;
+  requests.push_back(request);
+
   DigitalCredentialCreationOptions* digital_credential_creation_options =
       DigitalCredentialCreationOptions::Create();
-  digital_credential_creation_options->setProtocol("openid4vci");
-  digital_credential_creation_options->setData(
-      ScriptObject(isolate, v8::Object::New(isolate)));
+  digital_credential_creation_options->setRequests(requests);
 
   CredentialCreationOptions* options = CredentialCreationOptions::Create();
   options->setDigital(digital_credential_creation_options);
