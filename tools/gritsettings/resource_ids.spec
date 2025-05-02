@@ -1095,7 +1095,7 @@
     "META": {"sizes": {"includes": [30]}},
     "includes": [7420],
   },
-  "<(SHARED_INTERMEDIATE_DIR)/components/safe_browsing/content/browser/web_ui/resources/resources.grd": {
+  "<(SHARED_INTERMEDIATE_DIR)/components/webui/safe_browsing/resources/resources.grd": {
     "META": {"sizes": {"includes": [5]}},
     "includes": [7425],
   },

@@ -7,6 +7,7 @@ group("resources") {
     "chrome_urls/resources:resources",
     "flags/resources:resources",
     "internal_debug_pages_disabled/resources:resources",
+    "safe_browsing/resources",
     "user_actions/resources:resources",
     "version/resources:resources",
   ]

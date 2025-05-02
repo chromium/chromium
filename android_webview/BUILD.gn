@@ -887,7 +887,7 @@ if (_is_default_toolchain) {
       ":generate_mojo_resources",
       ":generate_webui_resources",
       "//components/metrics:server_urls_grd",
-      "//components/safe_browsing/content/browser/web_ui/resources:resources",
+      "//components/webui/safe_browsing/resources",
       "//content:content_resources",
       "//content/browser/resources/histograms:resources",
       "//net:net_resources",
