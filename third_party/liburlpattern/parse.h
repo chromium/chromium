@@ -9,7 +9,8 @@
 #include <string_view>
 
 #include "base/component_export.h"
-#include "third_party/abseil-cpp/absl/status/statusor.h"
+#include "base/types/expected.h"
+#include "third_party/abseil-cpp/absl/status/status.h"
 #include "third_party/liburlpattern/options.h"
 
 namespace liburlpattern {
@@ -27,8 +28,8 @@ class Pattern;
 // The callback should validate the input and potentially perform any encoding
 // necessary.  For example, some characters could be percent encoded.  The
 // final encoded value for the input should be returned.
-typedef std::function<absl::StatusOr<std::string>(std::string_view)>
-    EncodeCallback;
+using EncodeCallback =
+    std::function<base::expected<std::string, absl::Status>(std::string_view)>;
 
 // Parse a pattern string and return the result.  The parse will fail if the
 // input |pattern| is not valid UTF-8.  Currently only group names may actually
@@ -37,9 +38,9 @@ typedef std::function<absl::StatusOr<std::string>(std::string_view)>
 // provided to validate and encode plain text parts of the pattern.  An
 // |options| value may be provided to override default behavior.
 COMPONENT_EXPORT(LIBURLPATTERN)
-absl::StatusOr<Pattern> Parse(std::string_view pattern,
-                              EncodeCallback callback,
-                              const Options& options = Options());
+base::expected<Pattern, absl::Status> Parse(std::string_view pattern,
+                                            EncodeCallback callback,
+                                            const Options& options = Options());
 
 }  // namespace liburlpattern
 

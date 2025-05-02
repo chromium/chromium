@@ -41,7 +41,7 @@ TEST(ServiceWorkerRouterRulesTest, SimpleRoundTrip) {
         auto parse_result = liburlpattern::Parse(
             "/test/*",
             [](std::string_view input) { return std::string(input); });
-        ASSERT_TRUE(parse_result.ok());
+        ASSERT_TRUE(parse_result.has_value());
         url_pattern.pathname = parse_result.value().PartList();
       }
       blink::ServiceWorkerRouterRequestCondition request;

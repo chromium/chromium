@@ -127,9 +127,9 @@ SimpleUrlPatternMatcher::Component::Create(
     std::optional<std::string_view> pattern,
     liburlpattern::EncodeCallback encode_callback,
     const liburlpattern::Options& options) {
-  absl::StatusOr<liburlpattern::Pattern> parse_result =
+  base::expected<liburlpattern::Pattern, absl::Status> parse_result =
       liburlpattern::Parse(pattern.value_or("*"), encode_callback, options);
-  if (!parse_result.ok()) {
+  if (!parse_result.has_value()) {
     return base::unexpected("Failed to parse pattern");
   }
   if (parse_result->HasRegexGroups()) {

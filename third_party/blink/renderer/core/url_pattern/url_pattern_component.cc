@@ -200,10 +200,10 @@ Component* Component::Compile(v8::Isolate* isolate,
       utf8.AsStringView(),
       GetEncodeCallback(utf8.AsStringView(), type, protocol_component),
       options);
-  if (!parse_result.ok()) {
+  if (!parse_result.has_value()) {
     exception_state.ThrowTypeError(
         "Invalid " + TypeToString(type) + " pattern '" + final_pattern + "'. " +
-        String::FromUTF8(parse_result.status().message()));
+        String::FromUTF8(parse_result.error().message()));
     return nullptr;
   }
 

@@ -16,7 +16,7 @@ std::vector<liburlpattern::Part> ParsePatternInitField(std::string_view field) {
       field, [](std::string_view input) { return std::string(input); });
 
   // Should never fail because the input is coming from the test.
-  DCHECK(parse_result.ok());
+  DCHECK(parse_result.has_value());
 
   return parse_result.value().PartList();
 }

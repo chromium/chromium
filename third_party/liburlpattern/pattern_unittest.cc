@@ -5,6 +5,7 @@
 #include "third_party/liburlpattern/pattern.h"
 
 #include <optional>
+#include <string>
 #include <string_view>
 
 #include "testing/gtest/include/gtest/gtest.h"
@@ -12,7 +13,7 @@
 
 namespace {
 
-absl::StatusOr<std::string> PassThrough(std::string_view input) {
+base::expected<std::string, absl::Status> PassThrough(std::string_view input) {
   return std::string(input);
 }
 
@@ -25,7 +26,7 @@ void RunRegexTest(std::string_view input,
                   std::vector<std::string> expected_name_list,
                   Options options = Options()) {
   auto result = Parse(input, PassThrough, options);
-  ASSERT_TRUE(result.ok());
+  ASSERT_TRUE(result.has_value());
   auto& pattern = result.value();
   std::vector<std::string> name_list;
   std::string regex = pattern.GenerateRegexString(&name_list);
@@ -203,14 +204,14 @@ TEST(PatternRegexTest, EndsWithNoEndNameWithPrefixAndOneOrMoreModifier) {
 void RunPatternStringTest(std::string_view input,
                           std::string_view expected_pattern_string) {
   auto result = Parse(input, PassThrough);
-  ASSERT_TRUE(result.ok());
+  ASSERT_TRUE(result.has_value());
   auto& pattern = result.value();
   std::string pattern_string = pattern.GeneratePatternString();
   EXPECT_EQ(pattern_string, expected_pattern_string);
 
   // The computed pattern string should be valid and parse correctly.
   auto result2 = Parse(pattern_string, PassThrough);
-  EXPECT_TRUE(result.ok());
+  EXPECT_TRUE(result.has_value());
 
   // The second Pattern object may or may not be identical to the first
   // due to normalization.  For example, stripping the unnecessary grouping
@@ -459,7 +460,7 @@ void RunDirectMatchTest(std::string_view input,
   auto result =
       Parse(input, PassThrough,
             {.sensitive = true, .strict = true, .end = true, .start = true});
-  ASSERT_TRUE(result.ok());
+  ASSERT_TRUE(result.has_value());
   auto& pattern = result.value();
   EXPECT_TRUE(pattern.CanDirectMatch());
   for (const auto& c : case_list) {
@@ -479,7 +480,7 @@ void RunDirectMatchUnsupportedTest(std::string_view input,
                                                       .end = true,
                                                       .start = true}) {
   auto result = Parse(input, PassThrough, options);
-  ASSERT_TRUE(result.ok());
+  ASSERT_TRUE(result.has_value());
   auto& pattern = result.value();
   EXPECT_FALSE(pattern.CanDirectMatch());
 }
