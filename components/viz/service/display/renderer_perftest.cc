@@ -373,7 +373,8 @@ class RendererPerfTest : public VizPerfTest {
             ResourceId recorded_id = tile_quad->resource_id;
             ResourceId actual_id = this->MapResourceId(
                 &resource_map, recorded_id, tile_quad->texture_size,
-                SkColor4f{0.0f, 1.0f, 0.0f, 0.5f}, tile_quad->is_premultiplied);
+                SkColor4f{0.0f, 1.0f, 0.0f, 0.5f},
+                /*premultiplied_alpha=*/true);
             tile_quad->resource_id = actual_id;
           } break;
           case DrawQuad::Material::kTextureContent: {

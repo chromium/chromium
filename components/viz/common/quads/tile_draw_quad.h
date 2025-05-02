@@ -48,8 +48,6 @@ class VIZ_COMMON_EXPORT TileDrawQuad : public ContentDrawQuadBase {
 
   static const TileDrawQuad* MaterialCast(const DrawQuad*);
 
-  bool is_premultiplied = false;
-
  private:
   void ExtendValue(base::trace_event::TracedValue* value) const override;
 };

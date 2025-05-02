@@ -107,7 +107,6 @@ struct TextureQuadState {
 struct TileQuadState {
   gfx.mojom.RectF tex_coord_rect;
   gfx.mojom.Size texture_size;
-  bool is_premultiplied;
   ResourceId resource_id;
   bool nearest_neighbor;
   bool force_anti_aliasing_off;

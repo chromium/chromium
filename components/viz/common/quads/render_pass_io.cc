@@ -1279,7 +1279,10 @@ void TileDrawQuadToDict(const TileDrawQuad* draw_quad,
                         base::Value::Dict* dict) {
   DCHECK(draw_quad);
   DCHECK(dict);
-  dict->Set("is_premultiplied", draw_quad->is_premultiplied);
+
+  // Set is_premultiplied to not break backwards-compatibility with unit test
+  // data.
+  dict->Set("is_premultiplied", true);
 
   ContentDrawQuadCommonToDict(draw_quad, dict);
 }
