@@ -4,13 +4,15 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.net.Uri;
 import android.text.TextUtils;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.embedder_support.util.UrlConstants;
 
@@ -21,6 +23,7 @@ import java.lang.annotation.Target;
 import java.util.Objects;
 
 /** A class representing the UI state of the {@link BookmarkManagerMediator}. */
+@NullMarked
 public class BookmarkUiState {
     @IntDef({
         BookmarkUiMode.INVALID,
@@ -38,7 +41,7 @@ public class BookmarkUiState {
     }
 
     final @BookmarkUiMode int mUiMode;
-    final @NonNull String mUrl;
+    final String mUrl;
     final @Nullable BookmarkId mFolder;
 
     // The following fields be non-null if and only if in SEARCHING mode.
@@ -49,7 +52,7 @@ public class BookmarkUiState {
                 BookmarkUiMode.LOADING, /* url= */ "", /* folder= */ null, /* queryString= */ null);
     }
 
-    static BookmarkUiState createSearchState(@NonNull String queryString) {
+    static BookmarkUiState createSearchState(String queryString) {
         return new BookmarkUiState(
                 BookmarkUiMode.SEARCHING, /* url= */ "", /* folder= */ null, queryString);
     }
@@ -74,10 +77,11 @@ public class BookmarkUiState {
 
         BookmarkUiState tempState = null;
         if (url.equals(UrlConstants.BOOKMARKS_URL)) {
+            assumeNonNull(bookmarkModel.getDefaultFolderViewLocation());
             return createFolderState(bookmarkModel.getDefaultFolderViewLocation(), bookmarkModel);
         } else if (url.startsWith(UrlConstants.BOOKMARKS_FOLDER_URL)) {
             String path = uri.getLastPathSegment();
-            if (!path.isEmpty()) {
+            if (path != null && !path.isEmpty()) {
                 tempState =
                         new BookmarkUiState(
                                 BookmarkUiMode.FOLDER,
@@ -90,6 +94,7 @@ public class BookmarkUiState {
         if (tempState != null && tempState.isValid(bookmarkModel)) {
             return tempState;
         } else {
+            assumeNonNull(bookmarkModel.getDefaultFolderViewLocation());
             return createFolderState(bookmarkModel.getDefaultFolderViewLocation(), bookmarkModel);
         }
     }
@@ -104,8 +109,8 @@ public class BookmarkUiState {
 
     private BookmarkUiState(
             @BookmarkUiMode int uiMode,
-            @NonNull String url,
-            BookmarkId folder,
+            String url,
+            @Nullable BookmarkId folder,
             @Nullable String queryString) {
         assert (uiMode == BookmarkUiMode.SEARCHING) != (queryString == null);
         mUiMode = uiMode;

@@ -12,12 +12,15 @@ import androidx.annotation.IntDef;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ObserverList;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** Self-documenting preference class for bookmarks. */
+@NullMarked
 public class BookmarkUiPrefs {
     private static final @BookmarkRowDisplayPref int INITIAL_BOOKMARK_ROW_DISPLAY_PREF =
             BookmarkRowDisplayPref.VISUAL;
@@ -75,11 +78,12 @@ public class BookmarkUiPrefs {
     private SharedPreferences.OnSharedPreferenceChangeListener mPrefsListener =
             new SharedPreferences.OnSharedPreferenceChangeListener() {
                 @Override
-                public void onSharedPreferenceChanged(SharedPreferences sharedPrefs, String key) {
-                    if (key.equals(ChromePreferenceKeys.BOOKMARKS_VISUALS_PREF)) {
+                public void onSharedPreferenceChanged(
+                        SharedPreferences sharedPrefs, @Nullable String key) {
+                    if (ChromePreferenceKeys.BOOKMARKS_VISUALS_PREF.equals(key)) {
                         notifyObserversForDisplayPrefChange(
                                 mPrefsManager.readInt(ChromePreferenceKeys.BOOKMARKS_VISUALS_PREF));
-                    } else if (key.equals(ChromePreferenceKeys.BOOKMARKS_SORT_ORDER)) {
+                    } else if (ChromePreferenceKeys.BOOKMARKS_SORT_ORDER.equals(key)) {
                         notifyObserversForSortOrderChange(
                                 mPrefsManager.readInt(ChromePreferenceKeys.BOOKMARKS_SORT_ORDER));
                     }

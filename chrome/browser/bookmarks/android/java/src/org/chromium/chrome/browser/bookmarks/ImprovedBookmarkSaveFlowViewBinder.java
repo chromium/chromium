@@ -4,10 +4,12 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** ViewBinder for the improved bookmarks save flow. */
+@NullMarked
 class ImprovedBookmarkSaveFlowViewBinder {
     static void bind(
             PropertyModel model,

@@ -14,9 +14,9 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.text.EmptyTextWatcher;
 import org.chromium.ui.widget.ChromeImageButton;
@@ -25,6 +25,7 @@ import org.chromium.ui.widget.ChromeImageButton;
  * Row in a {@link androidx.recyclerview.widget.RecyclerView} for querying and filtering shown
  * bookmarks.
  */
+@NullMarked
 public class BookmarkSearchBoxRow extends LinearLayout {
     private EditText mSearchText;
     private ChromeImageButton mClearSearchTextButton;

@@ -9,13 +9,13 @@ import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.LazyOneshotSupplierImpl;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.bookmarks.BookmarkImageFetcher;
 import org.chromium.chrome.browser.bookmarks.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -36,6 +36,7 @@ import java.util.Collection;
 import java.util.function.BiConsumer;
 
 /** Utilities for the bookmark bar which provides users with bookmark access from top chrome. */
+@NullMarked
 public class BookmarkBarUtils {
 
     /** Enumeration of view type identifiers for views which are rendered in the bookmark bar. */
@@ -46,19 +47,19 @@ public class BookmarkBarUtils {
     }
 
     /** Whether the bookmark bar feature is forcibly allowed/disallowed for testing. */
-    private static Boolean sFeatureAllowedForTesting;
+    private static @Nullable Boolean sFeatureAllowedForTesting;
 
     /** Whether the bookmark bar feature is forcibly enabled/disabled for testing. */
-    private static Boolean sFeatureEnabledForTesting;
+    private static @Nullable Boolean sFeatureEnabledForTesting;
 
     /** Whether the bookmark bar feature is forcibly visible/invisible for testing. */
-    private static Boolean sFeatureVisibleForTesting;
+    private static @Nullable Boolean sFeatureVisibleForTesting;
 
     /** Whether the bookmark bar user setting is forcibly enabled/disabled for testing. */
-    private static Boolean sSettingEnabledForTesting;
+    private static @Nullable Boolean sSettingEnabledForTesting;
 
     /** Collection in which to cache bookmark bar user setting observers for testing. */
-    private static Collection<PrefObserver> sSettingObserverCacheForTesting;
+    private static @Nullable Collection<PrefObserver> sSettingObserverCacheForTesting;
 
     private BookmarkBarUtils() {}
 
@@ -70,7 +71,7 @@ public class BookmarkBarUtils {
      * @param context The context in which feature eligibility should be assessed.
      * @return Whether the feature is currently allowed.
      */
-    public static boolean isFeatureAllowed(@NonNull Context context) {
+    public static boolean isFeatureAllowed(Context context) {
         if (sFeatureAllowedForTesting != null) {
             return sFeatureAllowedForTesting;
         }
@@ -86,7 +87,7 @@ public class BookmarkBarUtils {
      * @param context The context in which feature enablement should be assessed.
      * @return Whether the feature is currently enabled.
      */
-    public static boolean isFeatureEnabled(@NonNull Context context) {
+    public static boolean isFeatureEnabled(Context context) {
         if (sFeatureEnabledForTesting != null) {
             return sFeatureEnabledForTesting;
         }
@@ -102,7 +103,7 @@ public class BookmarkBarUtils {
      * @param profile The profile for which the user setting should be assessed.
      * @return Whether the feature is currently visible.
      */
-    public static boolean isFeatureVisible(@NonNull Context context, @Nullable Profile profile) {
+    public static boolean isFeatureVisible(Context context, @Nullable Profile profile) {
         if (sFeatureVisibleForTesting != null) {
             return sFeatureVisibleForTesting;
         }
@@ -128,7 +129,7 @@ public class BookmarkBarUtils {
      * @param profile The profile for which the user setting should be set.
      * @param enabled Whether the user setting should be set to enabled/disabled.
      */
-    public static void setSettingEnabled(@NonNull Profile profile, boolean enabled) {
+    public static void setSettingEnabled(Profile profile, boolean enabled) {
         getPrefService(profile).setBoolean(Pref.SHOW_BOOKMARK_BAR, enabled);
     }
 
@@ -137,7 +138,7 @@ public class BookmarkBarUtils {
      *
      * @param profile The profile for which the user setting should be toggled.
      */
-    public static void toggleSettingEnabled(@NonNull Profile profile) {
+    public static void toggleSettingEnabled(Profile profile) {
         final var prefService = getPrefService(profile);
         prefService.setBoolean(
                 Pref.SHOW_BOOKMARK_BAR, !prefService.getBoolean(Pref.SHOW_BOOKMARK_BAR));
@@ -149,8 +150,7 @@ public class BookmarkBarUtils {
      * @param registrar The registrar with which to register the observer.
      * @param observer The observer to be notified of changes.
      */
-    public static void addSettingObserver(
-            @NonNull PrefChangeRegistrar registrar, @NonNull PrefObserver observer) {
+    public static void addSettingObserver(PrefChangeRegistrar registrar, PrefObserver observer) {
         registrar.addObserver(Pref.SHOW_BOOKMARK_BAR, observer);
         if (sSettingObserverCacheForTesting != null) {
             sSettingObserverCacheForTesting.add(observer);
@@ -162,7 +162,7 @@ public class BookmarkBarUtils {
      *
      * @param registrar The registrar from which to unregistar all observers.
      */
-    public static void removeSettingObservers(@NonNull PrefChangeRegistrar registrar) {
+    public static void removeSettingObservers(PrefChangeRegistrar registrar) {
         registrar.removeObserver(Pref.SHOW_BOOKMARK_BAR);
         if (sSettingObserverCacheForTesting != null) {
             sSettingObserverCacheForTesting.clear();
@@ -178,11 +178,11 @@ public class BookmarkBarUtils {
      * @param item The bookmark item for which to create a renderable list item.
      * @return The created list item to render in the bookmark bar.
      */
-    static @NonNull ListItem createListItemFor(
-            @NonNull BiConsumer<BookmarkItem, Integer> clickCallback,
-            @NonNull Context context,
-            @NonNull BookmarkImageFetcher imageFetcher,
-            @NonNull BookmarkItem item) {
+    static ListItem createListItemFor(
+            BiConsumer<BookmarkItem, Integer> clickCallback,
+            Context context,
+            BookmarkImageFetcher imageFetcher,
+            BookmarkItem item) {
         return new ListItem(
                 ViewType.ITEM,
                 new PropertyModel.Builder(BookmarkBarButtonProperties.ALL_KEYS)
@@ -201,10 +201,8 @@ public class BookmarkBarUtils {
                         .build());
     }
 
-    private static @NonNull LazyOneshotSupplier<Drawable> createIconSupplierFor(
-            @NonNull Context context,
-            @NonNull BookmarkImageFetcher imageFetcher,
-            @NonNull BookmarkItem item) {
+    private static LazyOneshotSupplier<Drawable> createIconSupplierFor(
+            Context context, BookmarkImageFetcher imageFetcher, BookmarkItem item) {
         if (item.isFolder()) {
             return LazyOneshotSupplier.fromSupplier(
                     () ->
@@ -219,7 +217,7 @@ public class BookmarkBarUtils {
         };
     }
 
-    private static @NonNull PrefService getPrefService(@NonNull Profile profile) {
+    private static PrefService getPrefService(Profile profile) {
         return UserPrefs.get(profile.getOriginalProfile());
     }
 

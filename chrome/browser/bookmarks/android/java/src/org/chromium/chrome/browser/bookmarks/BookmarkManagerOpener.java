@@ -7,9 +7,8 @@ package org.chromium.chrome.browser.bookmarks;
 import android.app.Activity;
 import android.content.Context;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.bookmarks.BookmarkId;
 

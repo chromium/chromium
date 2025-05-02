@@ -8,11 +8,13 @@ import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.widget.CompoundButton;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 /** Hosts the properties for the improved bookmarks save flow. */
+@NullMarked
 public class ImprovedBookmarkSaveFlowProperties {
     /** Encapsulates the display text for folders. */
     static class FolderText {

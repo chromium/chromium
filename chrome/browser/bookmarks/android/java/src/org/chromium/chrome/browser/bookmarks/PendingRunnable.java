@@ -7,11 +7,13 @@ package org.chromium.chrome.browser.bookmarks;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
 
 /**
  * Simple interface to collapse multiple posts of the same runnable into a single deduplicated
  * execution.
  */
+@NullMarked
 public class PendingRunnable {
     private final ThreadUtils.ThreadChecker mThreadChecker = new ThreadUtils.ThreadChecker();
     private final @TaskTraits int mTaskTraits;

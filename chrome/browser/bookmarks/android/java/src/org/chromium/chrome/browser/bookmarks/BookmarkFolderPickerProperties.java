@@ -4,11 +4,13 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 /** Properties for the folder picker activity. */
+@NullMarked
 class BookmarkFolderPickerProperties {
     static final WritableObjectPropertyKey<String> TOOLBAR_TITLE =
             new WritableObjectPropertyKey<>();

@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.bookmarks.bar;
 import android.graphics.drawable.Drawable;
 
 import org.chromium.base.supplier.LazyOneshotSupplier;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
@@ -17,6 +18,7 @@ import java.util.function.IntConsumer;
  * Properties for a button in the bookmark bar which provides users with bookmark access from top
  * chrome.
  */
+@NullMarked
 class BookmarkBarButtonProperties {
 
     /**

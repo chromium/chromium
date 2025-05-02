@@ -4,14 +4,14 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.content.Context;
 import android.os.Handler;
 import android.os.LocaleList;
 import android.os.Looper;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.BuildInfo;
@@ -20,6 +20,8 @@ import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -53,11 +55,12 @@ import java.util.concurrent.TimeUnit;
 
 /** A class holding static util functions for bookmark. */
 // TODO(crbug.com/400793886): Audit arg ordering for functions.
+@NullMarked
 public class BookmarkUtils {
     private static final String TAG = "BookmarkUtils";
     private static final int READING_LIST_SESSION_LENGTH_MS = (int) TimeUnit.HOURS.toMillis(1);
 
-    private static Boolean sReadingListSupportedForTesting;
+    private static @Nullable Boolean sReadingListSupportedForTesting;
 
     /**
      * If the tab has already been bookmarked, start {@link BookmarkEditActivity} for the normal
@@ -83,7 +86,7 @@ public class BookmarkUtils {
             BottomSheetController bottomSheetController,
             Activity activity,
             @BookmarkType int bookmarkType,
-            Callback<BookmarkId> callback,
+            Callback<@Nullable BookmarkId> callback,
             boolean fromExplicitTrackUi,
             BookmarkManagerOpener bookmarkManagerOpener,
             PriceDropNotificationManager priceDropNotificationManager) {
@@ -145,15 +148,15 @@ public class BookmarkUtils {
      * @param priceDropNotificationManager Manages price drop notifications.
      */
     static void showSaveFlow(
-            @NonNull Activity activity,
-            @NonNull BottomSheetController bottomSheetController,
-            @NonNull Profile profile,
+            Activity activity,
+            BottomSheetController bottomSheetController,
+            Profile profile,
             @Nullable BookmarkId bookmarkId,
             boolean fromExplicitTrackUi,
             boolean wasBookmarkMoved,
             boolean isNewBookmark,
-            @NonNull BookmarkManagerOpener bookmarkManagerOpener,
-            @NonNull PriceDropNotificationManager priceDropNotificationManager) {
+            BookmarkManagerOpener bookmarkManagerOpener,
+            PriceDropNotificationManager priceDropNotificationManager) {
         if (bookmarkId == null) {
             Log.e(TAG, "Null bookmark found when showing the save flow, aborting.");
             return;
@@ -161,11 +164,13 @@ public class BookmarkUtils {
 
         ShoppingService shoppingService = ShoppingServiceFactory.getForProfile(profile);
         UserEducationHelper userEducationHelper =
-                new UserEducationHelper(activity, profile, new Handler(Looper.myLooper()));
+                new UserEducationHelper(
+                        activity, profile, new Handler(assumeNonNull(Looper.myLooper())));
         // Redirect the original profile when getting the identity manager, it's not done
         // automatically in native.
         IdentityManager identityManager =
                 IdentityServicesProvider.get().getIdentityManager(profile.getOriginalProfile());
+        assumeNonNull(identityManager);
 
         BookmarkSaveFlowCoordinator bookmarkSaveFlowCoordinator =
                 new BookmarkSaveFlowCoordinator(
@@ -183,7 +188,7 @@ public class BookmarkUtils {
 
     // The legacy code path to add or edit bookmark without triggering the bookmark bottom sheet.
     // Used for feed and GTS.
-    private static BookmarkId addBookmarkAndShowSnackbar(
+    private static @Nullable BookmarkId addBookmarkAndShowSnackbar(
             BookmarkModel bookmarkModel,
             Tab tab,
             SnackbarManager snackbarManager,
@@ -212,10 +217,11 @@ public class BookmarkUtils {
                                     activity.getString(R.string.bookmark_page_failed),
                                     new SnackbarController() {
                                         @Override
-                                        public void onDismissNoAction(Object actionData) {}
+                                        public void onDismissNoAction(
+                                                @Nullable Object actionData) {}
 
                                         @Override
-                                        public void onAction(Object actionData) {}
+                                        public void onAction(@Nullable Object actionData) {}
                                     },
                                     Snackbar.TYPE_NOTIFICATION,
                                     Snackbar.UMA_BOOKMARK_ADDED)
@@ -224,7 +230,7 @@ public class BookmarkUtils {
         } else {
             String folderName =
                     bookmarkModel.getBookmarkTitle(
-                            bookmarkModel.getBookmarkById(bookmarkId).getParentId());
+                            assumeNonNull(bookmarkModel.getBookmarkById(bookmarkId)).getParentId());
             SnackbarController snackbarController =
                     createSnackbarControllerForEditButton(
                             activity, tab.getProfile(), bookmarkId, bookmarkManagerOpener);
@@ -280,16 +286,16 @@ public class BookmarkUtils {
      *     bookmarker).
      */
     @Deprecated
-    public static BookmarkId addToReadingList(
-            @NonNull Activity activity,
-            @NonNull BookmarkModel bookmarkModel,
-            @NonNull String title,
-            @NonNull GURL url,
-            @NonNull SnackbarManager snackbarManager,
-            @NonNull Profile profile,
-            @NonNull BottomSheetController bottomSheetController,
-            @NonNull BookmarkManagerOpener bookmarkManagerOpener,
-            @NonNull PriceDropNotificationManager priceDropNotificationManager) {
+    public static @Nullable BookmarkId addToReadingList(
+            Activity activity,
+            BookmarkModel bookmarkModel,
+            String title,
+            GURL url,
+            SnackbarManager snackbarManager,
+            Profile profile,
+            BottomSheetController bottomSheetController,
+            BookmarkManagerOpener bookmarkManagerOpener,
+            PriceDropNotificationManager priceDropNotificationManager) {
         assert bookmarkModel.isBookmarkModelLoaded();
         BookmarkId bookmarkId =
                 addBookmarkInternal(
@@ -344,13 +350,13 @@ public class BookmarkUtils {
      */
     public static void addBookmarksOnMultiSelect(
             Activity activity,
-            @NonNull BookmarkModel bookmarkModel,
-            @NonNull List<Tab> tabList,
-            @NonNull SnackbarManager snackbarManager,
-            @NonNull BookmarkManagerOpener bookmarkManagerOpener) {
+            BookmarkModel bookmarkModel,
+            List<Tab> tabList,
+            SnackbarManager snackbarManager,
+            BookmarkManagerOpener bookmarkManagerOpener) {
         // TODO(crbug.com/40879467): Refactor the bookmark folder select activity to allow for the
         // view to display in a dialog implementation approach.
-        assert bookmarkModel != null;
+        assert bookmarkModel != null && !tabList.isEmpty();
 
         // For a single selected bookmark, default to the single tab-to-bookmark approach.
         if (tabList.size() == 1) {
@@ -375,6 +381,9 @@ public class BookmarkUtils {
                         dateFormat.format(new Date(System.currentTimeMillis())));
         BookmarkId newFolder =
                 bookmarkModel.addFolder(bookmarkModel.getDefaultBookmarkFolder(), 0, fileName);
+
+        assumeNonNull(newFolder);
+
         int tabsBookmarkedCount = 0;
 
         Profile profile = null;
@@ -404,7 +413,7 @@ public class BookmarkUtils {
 
         SnackbarController snackbarController =
                 createSnackbarControllerForBookmarkFolderEditButton(
-                        activity, profile, newFolder, bookmarkManagerOpener);
+                        activity, assumeNonNull(profile), newFolder, bookmarkManagerOpener);
         Snackbar snackbar =
                 Snackbar.make(
                         activity.getString(R.string.bookmark_page_saved_default),
@@ -423,7 +432,7 @@ public class BookmarkUtils {
      * @param tab The tab to add or edit a bookmark.
      * @param bookmarkModel The current {@link BookmarkModel} which talks to native.
      */
-    public static BookmarkId addBookmarkWithoutShowingSaveFlow(
+    public static @Nullable BookmarkId addBookmarkWithoutShowingSaveFlow(
             Context context, Tab tab, BookmarkModel bookmarkModel) {
         BookmarkId parent =
                 bookmarkModel.areAccountBookmarkFoldersActive()
@@ -452,7 +461,7 @@ public class BookmarkUtils {
      * @param parent The {@link BookmarkId} which is the parent of the bookmark. If this is null,
      *     then the default parent is used.
      */
-    static BookmarkId addBookmarkInternal(
+    static @Nullable BookmarkId addBookmarkInternal(
             Context context,
             Profile profile,
             BookmarkModel bookmarkModel,
@@ -475,6 +484,7 @@ public class BookmarkUtils {
                             ? bookmarkModel.getDefaultReadingListFolder()
                             : bookmarkModel.getDefaultBookmarkFolder();
         }
+        assumeNonNull(parent);
 
         // Reading list items will be added when either one of the 2 conditions is met:
         // 1. The bookmark type explicitly specifies READING_LIST.
@@ -512,12 +522,12 @@ public class BookmarkUtils {
             BookmarkManagerOpener bookmarkManagerOpener) {
         return new SnackbarController() {
             @Override
-            public void onDismissNoAction(Object actionData) {
+            public void onDismissNoAction(@Nullable Object actionData) {
                 RecordUserAction.record("EnhancedBookmarks.EditAfterCreateButtonNotClicked");
             }
 
             @Override
-            public void onAction(Object actionData) {
+            public void onAction(@Nullable Object actionData) {
                 RecordUserAction.record("EnhancedBookmarks.EditAfterCreateButtonClicked");
                 bookmarkManagerOpener.startEditActivity(activity, profile, bookmarkId);
             }
@@ -535,12 +545,12 @@ public class BookmarkUtils {
             BookmarkManagerOpener bookmarkManagerOpener) {
         return new SnackbarController() {
             @Override
-            public void onDismissNoAction(Object actionData) {
+            public void onDismissNoAction(@Nullable Object actionData) {
                 RecordUserAction.record("TabMultiSelectV2.BookmarkTabsSnackbarEditNotClicked");
             }
 
             @Override
-            public void onAction(Object actionData) {
+            public void onAction(@Nullable Object actionData) {
                 RecordUserAction.record("TabMultiSelectV2.BookmarkTabsSnackbarEditClicked");
                 bookmarkManagerOpener.startEditActivity(activity, profile, folder);
             }
@@ -629,7 +639,8 @@ public class BookmarkUtils {
      * of {@link #canAddBookmarkToParent} with the additional constraint that a folder can't be
      * added to the reading list.
      */
-    public static boolean canAddFolderToParent(BookmarkModel bookmarkModel, BookmarkId parentId) {
+    public static boolean canAddFolderToParent(
+            BookmarkModel bookmarkModel, @Nullable BookmarkId parentId) {
         if (!canAddBookmarkToParent(bookmarkModel, parentId)) {
             return false;
         }
@@ -642,7 +653,8 @@ public class BookmarkUtils {
     }
 
     /** Returns whether the given folder can have a bookmark added to it. */
-    public static boolean canAddBookmarkToParent(BookmarkModel bookmarkModel, BookmarkId parentId) {
+    public static boolean canAddBookmarkToParent(
+            BookmarkModel bookmarkModel, @Nullable BookmarkId parentId) {
         BookmarkItem parentItem = bookmarkModel.getBookmarkById(parentId);
         if (parentItem == null) return false;
         if (parentItem.isManaged()) return false;

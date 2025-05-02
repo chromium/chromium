@@ -6,10 +6,12 @@ package org.chromium.chrome.browser.bookmarks;
 
 import android.view.View;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Binds model properties to view methods for ShoppingAccessoryView. */
+@NullMarked
 class ShoppingAccessoryViewBinder {
     static void bind(PropertyModel model, View view, PropertyKey key) {
         ShoppingAccessoryView shoppingView = (ShoppingAccessoryView) view;

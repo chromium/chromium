@@ -4,8 +4,7 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
-import androidx.annotation.NonNull;
-
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
 
@@ -18,6 +17,7 @@ import java.util.Objects;
  * A scoped object which observes and propagates events for the supplied bookmark model if and only
  * if they involve the supplied bookmark folder's direct descendants.
  */
+@NullMarked
 public class ScopedBookmarkModelObservation extends BookmarkModelObserver {
 
     public static final int NO_ID = -1;
@@ -34,7 +34,7 @@ public class ScopedBookmarkModelObservation extends BookmarkModelObserver {
          * @param item the direct descendant that was added.
          * @param index the index at which the direct descendant was added.
          */
-        public void onBookmarkItemAdded(int observationId, @NonNull BookmarkItem item, int index);
+        public void onBookmarkItemAdded(int observationId, BookmarkItem item, int index);
 
         /**
          * Invoked when a direct descendant of the supplied bookmark folder is moved.
@@ -60,7 +60,7 @@ public class ScopedBookmarkModelObservation extends BookmarkModelObserver {
          * @param item the direct descendant that was updated.
          * @param index the index at which the direct descendant was updated.
          */
-        public void onBookmarkItemUpdated(int observationId, @NonNull BookmarkItem item, int index);
+        public void onBookmarkItemUpdated(int observationId, BookmarkItem item, int index);
 
         /**
          * Invoked when the direct descendants of the supplied bookmark folder have changed. Note
@@ -70,7 +70,7 @@ public class ScopedBookmarkModelObservation extends BookmarkModelObserver {
          * @param observationId the ID for the observation that propagated the event.
          * @param items the direct descendants that changed.
          */
-        public void onBookmarkItemsChanged(int observationId, @NonNull List<BookmarkItem> items);
+        public void onBookmarkItemsChanged(int observationId, List<BookmarkItem> items);
     }
 
     private final int mId;
@@ -86,9 +86,7 @@ public class ScopedBookmarkModelObservation extends BookmarkModelObserver {
      * @param observer the observer to which events are propagated.
      */
     public ScopedBookmarkModelObservation(
-            @NonNull BookmarkId folderId,
-            @NonNull BookmarkModel model,
-            @NonNull Observer observer) {
+            BookmarkId folderId, BookmarkModel model, Observer observer) {
         this(NO_ID, folderId, model, observer);
     }
 
@@ -101,10 +99,7 @@ public class ScopedBookmarkModelObservation extends BookmarkModelObserver {
      * @param observer the observer to which events are propagated.
      */
     public ScopedBookmarkModelObservation(
-            int id,
-            @NonNull BookmarkId folderId,
-            @NonNull BookmarkModel model,
-            @NonNull Observer observer) {
+            int id, BookmarkId folderId, BookmarkModel model, Observer observer) {
         assert model.isBookmarkModelLoaded();
 
         mId = id;
@@ -181,7 +176,7 @@ public class ScopedBookmarkModelObservation extends BookmarkModelObserver {
         }
     }
 
-    private @NonNull BookmarkItem getBookmarkByIndex(int index) {
+    private BookmarkItem getBookmarkByIndex(int index) {
         final BookmarkId id = mModel.getChildAt(mFolderId, index);
         assert id != null;
 

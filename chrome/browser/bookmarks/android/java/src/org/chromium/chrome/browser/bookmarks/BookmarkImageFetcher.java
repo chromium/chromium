@@ -12,6 +12,8 @@ import android.util.Pair;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.page_image_service.ImageServiceBridge;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
@@ -28,6 +30,7 @@ import org.chromium.url.GURL;
 import java.util.Iterator;
 
 /** Class which encapsulates fetching images for bookmarks. */
+@NullMarked
 public class BookmarkImageFetcher {
     private final Profile mProfile;
     private final Context mContext;
@@ -101,7 +104,9 @@ public class BookmarkImageFetcher {
      * @param callback The callback to receive the images.
      */
     public void fetchFirstTwoImagesForFolder(
-            BookmarkItem folder, int imageSize, Callback<Pair<Drawable, Drawable>> callback) {
+            BookmarkItem folder,
+            int imageSize,
+            Callback<Pair<@Nullable Drawable, @Nullable Drawable>> callback) {
         fetchFirstTwoImagesForFolderImpl(
                 mBookmarkModel.getChildIds(folder.getId()).iterator(),
                 /* firstDrawable= */ null,
@@ -120,9 +125,7 @@ public class BookmarkImageFetcher {
      */
     public void fetchImageForBookmarkWithFaviconFallback(
             BookmarkItem item, int imageSize, Callback<Drawable> callback) {
-        fetchImageForBookmark(
-                item,
-                imageSize,
+        Callback<@Nullable Drawable> imageCallback =
                 mCallbackController.makeCancelable(
                         drawable -> {
                             if (drawable == null) {
@@ -130,7 +133,9 @@ public class BookmarkImageFetcher {
                             } else {
                                 callback.onResult(drawable);
                             }
-                        }));
+                        });
+
+        fetchImageForBookmark(item, imageSize, imageCallback);
     }
 
     /**
@@ -164,8 +169,8 @@ public class BookmarkImageFetcher {
     }
 
     private void fetchImageForBookmark(
-            BookmarkItem item, int imageSize, Callback<Drawable> callback) {
-        final Callback<Bitmap> imageCallback =
+            BookmarkItem item, int imageSize, Callback<@Nullable Drawable> callback) {
+        final Callback<@Nullable Bitmap> imageCallback =
                 mCallbackController.makeCancelable(
                         (image) -> {
                             if (image == null) {
@@ -197,10 +202,10 @@ public class BookmarkImageFetcher {
 
     private void fetchFirstTwoImagesForFolderImpl(
             Iterator<BookmarkId> childIdIterator,
-            Drawable firstDrawable,
-            Drawable secondDrawable,
+            @Nullable Drawable firstDrawable,
+            @Nullable Drawable secondDrawable,
             int imageSize,
-            Callback<Pair<Drawable, Drawable>> callback) {
+            Callback<Pair<@Nullable Drawable, @Nullable Drawable>> callback) {
         if (!childIdIterator.hasNext() || (firstDrawable != null && secondDrawable != null)) {
             callback.onResult(new Pair<>(firstDrawable, secondDrawable));
             return;
@@ -217,9 +222,7 @@ public class BookmarkImageFetcher {
             return;
         }
 
-        fetchImageForBookmark(
-                item,
-                imageSize,
+        Callback<@Nullable Drawable> imageCallback =
                 mCallbackController.makeCancelable(
                         drawable -> {
                             Drawable newFirstDrawable = firstDrawable;
@@ -235,6 +238,8 @@ public class BookmarkImageFetcher {
                                     newSecondDrawable,
                                     imageSize,
                                     callback);
-                        }));
+                        });
+
+        fetchImageForBookmark(item, imageSize, imageCallback);
     }
 }

@@ -4,18 +4,22 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.content.res.Resources;
 import android.text.TextUtils;
 
 import androidx.annotation.IdRes;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.content.res.ResourcesCompat;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.build.annotations.RequiresNonNull;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayPref;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowSortOrder;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.Observer;
@@ -35,6 +39,7 @@ import java.util.List;
 import java.util.function.BooleanSupplier;
 
 /** Responsible for the business logic for the BookmarkManagerToolbar. */
+@NullMarked
 class BookmarkToolbarMediator
         implements BookmarkUiObserver,
                 DragListener,
@@ -83,7 +88,7 @@ class BookmarkToolbarMediator
     // TODO(crbug.com/40255666): Remove reference to BookmarkDelegate if possible.
     private @Nullable BookmarkDelegate mBookmarkDelegate;
 
-    private BookmarkId mCurrentFolder;
+    private @Nullable BookmarkId mCurrentFolder;
     private @BookmarkUiMode int mCurrentUiMode;
 
     BookmarkToolbarMediator(
@@ -143,7 +148,7 @@ class BookmarkToolbarMediator
     boolean onMenuIdClick(@IdRes int id) {
         // Sorting/viewing submenu needs to be caught, but haven't been implemented yet.
         if (id == R.id.create_new_folder_menu_id) {
-            mBookmarkAddNewFolderCoordinator.show(mCurrentFolder);
+            mBookmarkAddNewFolderCoordinator.show(assumeNonNull(mCurrentFolder));
             return true;
         } else if (id == R.id.normal_options_submenu) {
             return true;
@@ -186,7 +191,8 @@ class BookmarkToolbarMediator
             mModel.set(BookmarkToolbarProperties.CHECKED_VIEW_MENU_ID, id);
             return true;
         } else if (id == R.id.edit_menu_id) {
-            mBookmarkManagerOpener.startEditActivity(mContext, mProfile, mCurrentFolder);
+            mBookmarkManagerOpener.startEditActivity(
+                    mContext, mProfile, assumeNonNull(mCurrentFolder));
             return true;
         } else if (id == R.id.close_menu_id) {
             mBookmarkManagerOpener.finishActivityOnPhone(mContext);
@@ -195,6 +201,7 @@ class BookmarkToolbarMediator
             List<BookmarkId> list = mSelectionDelegate.getSelectedItemsAsList();
             assert list.size() == 1;
             BookmarkItem item = mBookmarkModel.getBookmarkById(list.get(0));
+            assumeNonNull(item);
             mBookmarkManagerOpener.startEditActivity(mContext, mProfile, item.getId());
             return true;
         } else if (id == R.id.selection_mode_move_menu_id) {
@@ -237,6 +244,7 @@ class BookmarkToolbarMediator
                 if (bookmark.getType() != BookmarkType.READING_LIST) continue;
 
                 BookmarkItem bookmarkItem = mBookmarkModel.getBookmarkById(bookmark);
+                assumeNonNull(bookmarkItem);
                 mBookmarkModel.setReadStatusForReadingList(
                         bookmarkItem.getId(), /* read= */ id == R.id.reading_list_mark_as_read_id);
             }
@@ -291,7 +299,7 @@ class BookmarkToolbarMediator
     }
 
     @Override
-    public void onFolderStateSet(BookmarkId folder) {
+    public void onFolderStateSet(@Nullable BookmarkId folder) {
         mCurrentFolder = folder;
 
         BookmarkItem folderItem =
@@ -301,11 +309,13 @@ class BookmarkToolbarMediator
                 folderItem != null && folderItem.isEditable());
         if (folderItem == null) return;
 
+        assumeNonNull(mCurrentFolder);
+
         // Title, navigation buttons.
         String title;
         @NavigationButton int navigationButton;
         Resources res = mContext.getResources();
-        if (folder.equals(mBookmarkModel.getRootFolderId())) {
+        if (mCurrentFolder.equals(mBookmarkModel.getRootFolderId())) {
             title = res.getString(R.string.bookmarks);
             navigationButton = NavigationButton.NONE;
         } else if (mBookmarkModel.getTopLevelFolderIds().contains(folderItem.getParentId())
@@ -414,6 +424,7 @@ class BookmarkToolbarMediator
         for (int i = 0; i < selectedBookmarks.size(); i++) {
             BookmarkId bookmark = selectedBookmarks.get(i);
             BookmarkItem bookmarkItem = mBookmarkModel.getBookmarkById(bookmark);
+            assumeNonNull(bookmarkItem);
             if (bookmark.getType() == BookmarkType.READING_LIST) {
                 numReadingListItems++;
                 if (bookmarkItem.isRead()) numRead++;
@@ -467,12 +478,14 @@ class BookmarkToolbarMediator
 
     // Private methods.
 
+    @RequiresNonNull("mBookmarkDelegate")
     private void onNavigateBack() {
         if (mCurrentUiMode == BookmarkUiMode.SEARCHING) {
             mEndSearchRunnable.run();
             return;
         }
 
-        mBookmarkDelegate.openFolder(mBookmarkModel.getBookmarkById(mCurrentFolder).getParentId());
+        mBookmarkDelegate.openFolder(
+                assumeNonNull(mBookmarkModel.getBookmarkById(mCurrentFolder)).getParentId());
     }
 }

@@ -9,10 +9,12 @@ import android.view.View;
 
 import androidx.appcompat.widget.Toolbar;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** View binder for the folder picker activity. */
+@NullMarked
 public class BookmarkFolderPickerViewBinder {
     public static void bind(PropertyModel model, View view, PropertyKey key) {
         if (key == BookmarkFolderPickerProperties.TOOLBAR_TITLE) {

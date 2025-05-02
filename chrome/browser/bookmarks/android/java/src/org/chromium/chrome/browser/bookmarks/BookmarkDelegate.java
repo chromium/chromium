@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiState.BookmarkUiMode;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.browser_ui.widget.dragreorder.DragStateDelegate;
@@ -16,6 +17,7 @@ import java.util.List;
  * Interface used by UI components in the main bookmarks UI to broadcast UI change notifications and
  * get bookmark data model.
  */
+@NullMarked
 public interface BookmarkDelegate {
     /**
      * Returns whether the bookmarks UI will be shown in a dialog, instead of a NativePage. This is

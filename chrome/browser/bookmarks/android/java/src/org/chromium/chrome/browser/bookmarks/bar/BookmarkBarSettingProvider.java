@@ -4,12 +4,11 @@
 
 package org.chromium.chrome.browser.bookmarks.bar;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.preferences.PrefServiceUtil;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.prefs.PrefChangeRegistrar;
@@ -20,6 +19,7 @@ import org.chromium.components.prefs.PrefChangeRegistrar;
  * and preference change events in order to track the current state of the bookmark bar user
  * setting.
  */
+@NullMarked
 public class BookmarkBarSettingProvider {
 
     private final Callback<Boolean> mCallback;
@@ -35,8 +35,7 @@ public class BookmarkBarSettingProvider {
      * @param profile The profile for which to observe the user setting.
      * @param callback The callback to notify of changes to the user setting.
      */
-    public BookmarkBarSettingProvider(
-            @NonNull Profile profile, @NonNull Callback<Boolean> callback) {
+    public BookmarkBarSettingProvider(Profile profile, Callback<Boolean> callback) {
         this(new ObservableSupplierImpl<>(profile), callback);
     }
 
@@ -47,8 +46,7 @@ public class BookmarkBarSettingProvider {
      * @param callback The callback to notify of changes to the user setting.
      */
     public BookmarkBarSettingProvider(
-            @NonNull ObservableSupplier<Profile> profileSupplier,
-            @NonNull Callback<Boolean> callback) {
+            ObservableSupplier<Profile> profileSupplier, Callback<Boolean> callback) {
         mCallback = callback;
 
         mProfileSupplier = profileSupplier;

@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.bookmarks;
 
 import android.view.View;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiState.BookmarkUiMode;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -20,6 +21,7 @@ import java.util.function.Function;
  * Responsible for hosting properties of BookmarkToolbar views. TODO(crbug.com/40265005) Remove all
  * skipEquality=true usage.
  */
+@NullMarked
 class BookmarkToolbarProperties {
     /** Dependencies */
     static final WritableObjectPropertyKey<SelectionDelegate> SELECTION_DELEGATE =

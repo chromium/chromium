@@ -18,10 +18,13 @@ import android.widget.TextView;
 
 import androidx.core.widget.ImageViewCompat;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.bookmarks.ShoppingAccessoryViewProperties.PriceInfo;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 
 /** View for the shopping price chip. */
+@NullMarked
 public class ShoppingAccessoryView extends FrameLayout {
     private ViewGroup mContainer;
     private ImageView mPriceTrackedIcon;
@@ -32,7 +35,7 @@ public class ShoppingAccessoryView extends FrameLayout {
     // Used for the original price when there's a price drop.
     private TextView mOriginalPriceText;
 
-    private PriceInfo mInfo;
+    private @Nullable PriceInfo mInfo;
 
     /** Constructor for inflating from XML. */
     public ShoppingAccessoryView(Context context, AttributeSet attrs) {

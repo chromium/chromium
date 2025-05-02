@@ -5,11 +5,13 @@
 package org.chromium.chrome.browser.bookmarks.bar;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 /** Properties for the bookmark bar which provides users with bookmark access from top chrome. */
+@NullMarked
 class BookmarkBarProperties {
 
     /**

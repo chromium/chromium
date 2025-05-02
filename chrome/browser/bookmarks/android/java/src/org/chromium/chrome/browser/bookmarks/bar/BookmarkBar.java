@@ -10,16 +10,16 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.bookmarks.R;
 
 /** View for the bookmark bar which provides users with bookmark access from top chrome. */
+@NullMarked
 class BookmarkBar extends LinearLayout implements View.OnLayoutChangeListener {
 
-    private Callback<Integer> mHeightChangeCallback;
+    private @Nullable Callback<Integer> mHeightChangeCallback;
     private ImageButton mOverflowButton;
 
     /**
@@ -28,7 +28,7 @@ class BookmarkBar extends LinearLayout implements View.OnLayoutChangeListener {
      * @param context the context the bookmark bar is running in.
      * @param attrs the attributes of the XML tag that is inflating the bookmark bar.
      */
-    public BookmarkBar(@NonNull Context context, @Nullable AttributeSet attrs) {
+    public BookmarkBar(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         addOnLayoutChangeListener(this);
     }

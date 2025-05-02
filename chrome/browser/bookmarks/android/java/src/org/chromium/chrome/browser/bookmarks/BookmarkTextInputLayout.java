@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.text.Editable;
@@ -12,14 +14,17 @@ import android.util.AttributeSet;
 
 import com.google.android.material.textfield.TextInputLayout;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.text.EmptyTextWatcher;
 
 /**
  * Wraps around {@link TextInputLayout} to implement a basic empty field error behavior for the
  * Bookmark related TextInputLayouts.
  */
+@NullMarked
 public class BookmarkTextInputLayout extends TextInputLayout {
-    private String mEmptyErrorMessage;
+    private @Nullable String mEmptyErrorMessage;
 
     public BookmarkTextInputLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -38,7 +43,7 @@ public class BookmarkTextInputLayout extends TextInputLayout {
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
-        getEditText()
+        assertNonNull(getEditText())
                 .addTextChangedListener(
                         new EmptyTextWatcher() {
                             @Override
@@ -52,7 +57,7 @@ public class BookmarkTextInputLayout extends TextInputLayout {
      * @return Trimmed text for validation.
      */
     public String getTrimmedText() {
-        return getEditText().getText().toString().trim();
+        return assertNonNull(getEditText()).getText().toString().trim();
     }
 
     /**

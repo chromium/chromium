@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.bookmarks.BookmarkItem;
 
 /**
@@ -13,6 +14,7 @@ import org.chromium.components.bookmarks.BookmarkItem;
  * bookmarkModelChanged. Unless noted otherwise, all the functions won't be called during extensive
  * change.
  */
+@NullMarked
 public abstract class BookmarkModelObserver {
     /**
      * Invoked when a node has moved.
