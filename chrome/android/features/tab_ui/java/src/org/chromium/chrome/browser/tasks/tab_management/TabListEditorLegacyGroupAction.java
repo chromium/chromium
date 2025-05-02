@@ -75,24 +75,27 @@ public class TabListEditorLegacyGroupAction extends TabListEditorAction {
      * group has its Tab ID used.
      */
     @Override
-    public void onSelectionStateChange(List<Integer> tabIds) {
+    public void onSelectionStateChange(List<TabListEditorItemSelectionId> itemIds) {
         int tabCount =
                 editorSupportsActionOnRelatedTabs()
-                        ? getTabCountIncludingRelatedTabs(getTabGroupModelFilter(), tabIds)
-                        : tabIds.size();
+                        ? getTabCountIncludingRelatedTabs(getTabGroupModelFilter(), itemIds)
+                        : itemIds.size();
 
         TabGroupModelFilter filter = getTabGroupModelFilter();
         TabModel tabModel = filter.getTabModel();
 
         boolean isEnabled = true;
-        int tabIdsSize = tabIds.size();
+        int tabIdsSize = itemIds.size();
         if (tabIdsSize == 0) {
             isEnabled = false;
         } else if (tabIdsSize == 1) {
-            Tab tab = tabModel.getTabById(tabIds.get(0));
-            isEnabled = tab != null && !filter.isTabInTabGroup(tab);
+            assert !itemIds.get(0).isTabGroupSyncId();
+            if (itemIds.get(0).isTabId()) {
+                Tab tab = tabModel.getTabById(itemIds.get(0).getTabId());
+                isEnabled = tab != null && !filter.isTabInTabGroup(tab);
+            }
         } else {
-            isEnabled = !hasMultipleCollaborations(tabModel, tabIds);
+            isEnabled = !hasMultipleCollaborations(tabModel, itemIds);
         }
         setEnabledAndItemCount(isEnabled, tabCount);
     }
@@ -200,10 +203,12 @@ public class TabListEditorLegacyGroupAction extends TabListEditorAction {
      * Computes whether multiple collaborations are selected.
      *
      * @param tabModel The {@link TabModel} to use for checking.
-     * @param tabIds The list of Tab IDs to check for collaboration membership. For tab groups only
-     *     a single tab ID for one of the members of the tab group is provided.
+     * @param itemIds The list of Tab IDs to check for collaboration membership. For tab groups only
+     *     a single tab ID for one of the members of the tab group is provided. This can also be a a
+     *     sync ID representing a saved tab group.
      */
-    private boolean hasMultipleCollaborations(TabModel tabModel, List<Integer> tabIds) {
+    private boolean hasMultipleCollaborations(
+            TabModel tabModel, List<TabListEditorItemSelectionId> itemIds) {
         if (tabModel.isIncognitoBranded()) return false;
 
         @Nullable
@@ -212,12 +217,16 @@ public class TabListEditorLegacyGroupAction extends TabListEditorAction {
         if (tabGroupSyncService == null) return false;
 
         boolean foundCollaboration = false;
-        for (int tabId : tabIds) {
-            if (TabShareUtils.isCollaborationIdValid(
-                    TabShareUtils.getCollaborationIdOrNull(tabId, tabModel, tabGroupSyncService))) {
-                if (foundCollaboration) return true;
+        for (TabListEditorItemSelectionId itemId : itemIds) {
+            assert !itemId.isTabGroupSyncId();
+            if (itemId.isTabId()) {
+                if (TabShareUtils.isCollaborationIdValid(
+                        TabShareUtils.getCollaborationIdOrNull(
+                                itemId.getTabId(), tabModel, tabGroupSyncService))) {
+                    if (foundCollaboration) return true;
 
-                foundCollaboration = true;
+                    foundCollaboration = true;
+                }
             }
         }
         return false;

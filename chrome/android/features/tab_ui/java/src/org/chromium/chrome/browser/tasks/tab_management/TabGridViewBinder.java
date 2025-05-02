@@ -260,7 +260,7 @@ class TabGridViewBinder {
         if (TabProperties.TAB_SELECTION_DELEGATE == propertyKey) {
             ((TabGridView) view)
                     .setSelectionDelegate(model.get(TabProperties.TAB_SELECTION_DELEGATE));
-            ((TabGridView) view).setItem(tabId);
+            ((TabGridView) view).setItem(TabListEditorItemSelectionId.createTabId(tabId));
         } else if (TabProperties.IS_SELECTED == propertyKey
                 || TabProperties.TAB_ACTION_BUTTON_DATA == propertyKey) {
             updateColorForSelectionToggleButton(

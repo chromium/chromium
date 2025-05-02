@@ -463,9 +463,11 @@ class TabListMediator implements TabListNotificationHandler {
             new TabActionListener() {
                 @Override
                 public void run(View view, int tabId) {
-                    SelectionDelegate<Integer> selectionDelegate = getTabSelectionDelegate();
+                    SelectionDelegate<TabListEditorItemSelectionId> selectionDelegate =
+                            getTabSelectionDelegate();
                     assert selectionDelegate != null;
-                    selectionDelegate.toggleSelectionForItem(tabId);
+                    selectionDelegate.toggleSelectionForItem(
+                            TabListEditorItemSelectionId.createTabId(tabId));
 
                     @Nullable PropertyModel model = mModelList.getModelFromTabId(tabId);
                     if (model == null) return;
@@ -1579,11 +1581,13 @@ class TabListMediator implements TabListNotificationHandler {
     }
 
     private boolean isSelectedTab(Tab tab, int tabModelSelectedTabId) {
-        SelectionDelegate<Integer> selectionDelegate = getTabSelectionDelegate();
+        SelectionDelegate<TabListEditorItemSelectionId> selectionDelegate =
+                getTabSelectionDelegate();
         if (selectionDelegate == null) {
             return tab.getId() == tabModelSelectedTabId;
         } else {
-            return selectionDelegate.isItemSelected(tab.getId());
+            return selectionDelegate.isItemSelected(
+                    TabListEditorItemSelectionId.createTabId(tab.getId()));
         }
     }
 
@@ -1933,7 +1937,8 @@ class TabListMediator implements TabListNotificationHandler {
         if (tabActionState == TabActionState.SELECTABLE) {
             SelectionDelegate selectionDelegate = getTabSelectionDelegate();
             assert selectionDelegate != null : "Null selection delegate while in SELECTABLE state.";
-            return selectionDelegate.isItemSelected(tab.getId());
+            return selectionDelegate.isItemSelected(
+                    TabListEditorItemSelectionId.createTabId(tab.getId()));
         } else {
             TabModel tabModel = mCurrentTabGroupModelFilterSupplier.get().getTabModel();
             // If the tab is part of a group and also being displayed with single tabs, then there
@@ -2207,7 +2212,7 @@ class TabListMediator implements TabListNotificationHandler {
     }
 
     @Nullable
-    private SelectionDelegate<Integer> getTabSelectionDelegate() {
+    private SelectionDelegate<TabListEditorItemSelectionId> getTabSelectionDelegate() {
         return mSelectionDelegateProvider == null
                 ? null
                 : mSelectionDelegateProvider.getSelectionDelegate();

@@ -37,7 +37,7 @@ import java.lang.ref.WeakReference;
 
 // TODO(crbug.com/339038505): De-dupe logic in TabListView.
 /** Holds the view for a selectable tab grid. */
-public class TabGridView extends SelectableItemViewBase<Integer> {
+public class TabGridView extends SelectableItemViewBase<TabListEditorItemSelectionId> {
     private static final long RESTORE_ANIMATION_DURATION_MS = 50;
     private static final long BASE_ANIMATION_DURATION_MS = 218;
     private static final float ZOOM_IN_SCALE = 0.8f;

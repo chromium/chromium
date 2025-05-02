@@ -98,12 +98,12 @@ public class TabListEditorBookmarkAction extends TabListEditorAction {
     }
 
     @Override
-    public void onSelectionStateChange(List<Integer> tabIds) {
+    public void onSelectionStateChange(List<TabListEditorItemSelectionId> itemIds) {
         int size =
                 editorSupportsActionOnRelatedTabs()
-                        ? getTabCountIncludingRelatedTabs(getTabGroupModelFilter(), tabIds)
-                        : tabIds.size();
-        setEnabledAndItemCount(!tabIds.isEmpty(), size);
+                        ? getTabCountIncludingRelatedTabs(getTabGroupModelFilter(), itemIds)
+                        : itemIds.size();
+        setEnabledAndItemCount(!itemIds.isEmpty(), size);
     }
 
     @Override

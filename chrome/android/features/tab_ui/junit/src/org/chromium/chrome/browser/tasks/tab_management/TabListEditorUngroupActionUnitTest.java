@@ -48,7 +48,7 @@ import java.util.Set;
 public class TabListEditorUngroupActionUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private SelectionDelegate<Integer> mSelectionDelegate;
+    @Mock private SelectionDelegate<TabListEditorItemSelectionId> mSelectionDelegate;
     @Mock private TabGroupModelFilter mGroupFilter;
     @Mock private TabUngrouper mTabUngrouper;
     @Mock private ActionDelegate mDelegate;
@@ -94,8 +94,8 @@ public class TabListEditorUngroupActionUnitTest {
 
     @Test
     public void testUngroupActionDisabled() {
-        List<Integer> tabIds = new ArrayList<>();
-        mAction.onSelectionStateChange(tabIds);
+        List<TabListEditorItemSelectionId> itemIds = new ArrayList<>();
+        mAction.onSelectionStateChange(itemIds);
         Assert.assertEquals(
                 false, mAction.getPropertyModel().get(TabListEditorActionProperties.ENABLED));
         Assert.assertEquals(
@@ -105,15 +105,20 @@ public class TabListEditorUngroupActionUnitTest {
     @Test
     public void testUngroupActionWithTabs() throws Exception {
         List<Integer> tabIds = Arrays.asList(5, 3, 7);
+        List<TabListEditorItemSelectionId> itemIds =
+                Arrays.asList(
+                        TabListEditorItemSelectionId.createTabId(5),
+                        TabListEditorItemSelectionId.createTabId(3),
+                        TabListEditorItemSelectionId.createTabId(7));
         List<Tab> tabs = new ArrayList<>();
         for (int id : tabIds) {
             tabs.add(mTabModel.addTab(id));
         }
         when(mGroupFilter.getRelatedTabList(anyInt())).thenReturn(tabs);
-        Set<Integer> tabIdsSet = new LinkedHashSet<>(tabIds);
-        when(mSelectionDelegate.getSelectedItems()).thenReturn(tabIdsSet);
+        Set<TabListEditorItemSelectionId> itemIdsSet = new LinkedHashSet<>(itemIds);
+        when(mSelectionDelegate.getSelectedItems()).thenReturn(itemIdsSet);
 
-        mAction.onSelectionStateChange(tabIds);
+        mAction.onSelectionStateChange(itemIds);
         Assert.assertEquals(
                 true, mAction.getPropertyModel().get(TabListEditorActionProperties.ENABLED));
         Assert.assertEquals(

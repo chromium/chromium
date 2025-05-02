@@ -81,8 +81,8 @@ public class TabListEditorSelectionAction extends TabListEditorAction {
     }
 
     @Override
-    public void onSelectionStateChange(List<Integer> tabIds) {
-        setEnabledAndItemCount(true, tabIds.size());
+    public void onSelectionStateChange(List<TabListEditorItemSelectionId> itemIds) {
+        setEnabledAndItemCount(true, itemIds.size());
         updateState(
                 getActionDelegate().areAllTabsSelected()
                         ? ActionState.DESELECT_ALL

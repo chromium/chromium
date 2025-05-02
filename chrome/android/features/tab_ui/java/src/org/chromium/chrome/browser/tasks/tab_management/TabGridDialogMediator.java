@@ -588,7 +588,8 @@ public class TabGridDialogMediator
                             TabListEditorController tabListEditorController =
                                     mTabListEditorControllerSupplier.get();
                             if (tabListEditorController != null) {
-                                tabListEditorController.selectTabs(Set.of(tabId));
+                                tabListEditorController.selectTabs(
+                                        Set.of(TabListEditorItemSelectionId.createTabId(tabId)));
                             }
                         };
                 mTabGridContextMenuCoordinator =

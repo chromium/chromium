@@ -30,6 +30,7 @@ import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /** Action to add one or more tabs to a tab group for the {@link TabListEditorMenu}. */
@@ -120,17 +121,24 @@ public class TabListEditorAddToGroupAction extends TabListEditorAction {
     }
 
     @Override
-    public void onSelectionStateChange(List<Integer> tabIds) {
+    public void onSelectionStateChange(List<TabListEditorItemSelectionId> itemIds) {
         TabGroupModelFilter filter = getTabGroupModelFilter();
         TabModel tabModel = filter.getTabModel();
+        List<Integer> tabIds = new ArrayList<>();
+        for (TabListEditorItemSelectionId itemId : itemIds) {
+            assert !itemId.isTabGroupSyncId();
+            if (itemId.isTabId()) {
+                tabIds.add(itemId.getTabId());
+            }
+        }
         List<Tab> tabs = TabModelUtils.getTabsById(tabIds, tabModel, false);
         int numTabs =
                 editorSupportsActionOnRelatedTabs()
-                        ? getTabCountIncludingRelatedTabs(filter, tabIds)
-                        : tabIds.size();
+                        ? getTabCountIncludingRelatedTabs(filter, itemIds)
+                        : itemIds.size();
 
         setEnabledAndItemCount(
-                !areAnyTabsPartOfSharedGroup(tabModel, tabs, null) && !tabIds.isEmpty(), numTabs);
+                !areAnyTabsPartOfSharedGroup(tabModel, tabs, null) && !itemIds.isEmpty(), numTabs);
     }
 
     @Override
@@ -159,7 +167,7 @@ public class TabListEditorAddToGroupAction extends TabListEditorAction {
     @Override
     void configure(
             @NonNull Supplier<TabGroupModelFilter> currentTabGroupModelFilterSupplier,
-            @NonNull SelectionDelegate<Integer> selectionDelegate,
+            @NonNull SelectionDelegate<TabListEditorItemSelectionId> selectionDelegate,
             @NonNull ActionDelegate actionDelegate,
             boolean editorSupportsActionOnRelatedTabs) {
         super.configure(

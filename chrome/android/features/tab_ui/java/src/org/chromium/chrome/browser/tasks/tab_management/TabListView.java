@@ -23,7 +23,7 @@ import org.chromium.components.browser_ui.widget.selectable_list.SelectableItemV
 
 // TODO(crbug.com/339038505): De-dupe logic in TabGridView.
 /** Holds the view for a tab list. */
-public class TabListView extends SelectableItemViewBase<Integer> {
+public class TabListView extends SelectableItemViewBase<TabListEditorItemSelectionId> {
     private @TabActionState int mTabActionState = TabActionState.UNSET;
     private ImageView mActionButton;
 

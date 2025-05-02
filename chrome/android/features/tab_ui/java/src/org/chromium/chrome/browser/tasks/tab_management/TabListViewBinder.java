@@ -255,7 +255,7 @@ class TabListViewBinder {
         TabListView tabListView = (TabListView) view;
         if (TabProperties.TAB_SELECTION_DELEGATE == propertyKey) {
             tabListView.setSelectionDelegate(model.get(TabProperties.TAB_SELECTION_DELEGATE));
-            tabListView.setItem(tabId);
+            tabListView.setItem(TabListEditorItemSelectionId.createTabId(tabId));
         } else if (TabProperties.IS_SELECTED == propertyKey
                 || TabProperties.TAB_ACTION_BUTTON_DATA == propertyKey) {
             boolean isSelected = model.get(TabProperties.IS_SELECTED);

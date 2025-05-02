@@ -27,8 +27,9 @@ import java.util.Collections;
 import java.util.List;
 
 /** Handles toolbar functionality for TabListEditor. */
-class TabListEditorToolbar extends SelectableListToolbar<Integer> {
-    private static final List<Integer> sEmptyIntegerList = Collections.emptyList();
+class TabListEditorToolbar extends SelectableListToolbar<TabListEditorItemSelectionId> {
+    private static final List<TabListEditorItemSelectionId> sEmptyIntegerList =
+            Collections.emptyList();
     private ChromeImageButton mMenuButton;
     private TabListEditorActionViewLayout mActionViewLayout;
     @ColorInt private int mBackgroundColor;
@@ -37,10 +38,10 @@ class TabListEditorToolbar extends SelectableListToolbar<Integer> {
 
     public interface RelatedTabCountProvider {
         /**
-         * @param tabIds the selected items.
+         * @param itemIds the selected items.
          * @return the count of tabs including related tabs.
          */
-        int getRelatedTabCount(List<Integer> tabIds);
+        int getRelatedTabCount(List<TabListEditorItemSelectionId> itemIds);
     }
 
     public TabListEditorToolbar(Context context, AttributeSet attrs) {
@@ -84,7 +85,7 @@ class TabListEditorToolbar extends SelectableListToolbar<Integer> {
     }
 
     @Override
-    public void onSelectionStateChange(List<Integer> selectedItems) {
+    public void onSelectionStateChange(List<TabListEditorItemSelectionId> selectedItems) {
         super.onSelectionStateChange(selectedItems);
 
         if (mRelatedTabCountProvider == null) return;
@@ -105,7 +106,8 @@ class TabListEditorToolbar extends SelectableListToolbar<Integer> {
     }
 
     @Override
-    protected void showSelectionView(List<Integer> selectedItems, boolean wasSelectionEnabled) {
+    protected void showSelectionView(
+            List<TabListEditorItemSelectionId> selectedItems, boolean wasSelectionEnabled) {
         super.showSelectionView(selectedItems, wasSelectionEnabled);
         if (mBackgroundColor != Color.TRANSPARENT) {
             setBackgroundColor(mBackgroundColor);

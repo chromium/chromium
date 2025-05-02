@@ -24,7 +24,6 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabContentManagerThumbnailProvider;
@@ -155,9 +154,10 @@ class TabListEditorCoordinator {
         /**
          * Selects tabs through this TabListEditor.
          *
-         * @param tabIds The tab ids representing the tabs to be selected.
+         * @param itemIds The item ids representing the tabs to be selected. This can either be a
+         *     tabId for tabs or syncId for groups.
          */
-        void selectTabs(Set<@TabId Integer> tabIds);
+        void selectTabs(Set<TabListEditorItemSelectionId> itemIds);
     }
 
     /** An interface for embedders to provide navigation. */
@@ -268,8 +268,8 @@ class TabListEditorCoordinator {
                 }
 
                 @Override
-                public void selectTabs(Set<@TabId Integer> tabIds) {
-                    mTabListEditorMediator.selectTabs(tabIds);
+                public void selectTabs(Set<TabListEditorItemSelectionId> itemIds) {
+                    mTabListEditorMediator.selectTabs(itemIds);
                 }
             };
 
@@ -283,7 +283,8 @@ class TabListEditorCoordinator {
     // Make sure the selection delegate starts out with selection mode enabled for 0 items.
     // Otherwise we'll trigger notifyObservers when we enable the selection mode, and that will
     // result in an accessibility announcement.
-    private final SelectionDelegate<Integer> mSelectionDelegate = new SelectionDelegate<>(true);
+    private final SelectionDelegate<TabListEditorItemSelectionId> mSelectionDelegate =
+            new SelectionDelegate<>(true);
     private final PropertyModel mModel;
     private final TabListEditorMediator mTabListEditorMediator;
     private final Callback<RecyclerViewPosition> mClientTabListRecyclerViewPositionSetter;
@@ -389,7 +390,7 @@ class TabListEditorCoordinator {
     /**
      * @return The {@link SelectionDelegate} that is used in this component.
      */
-    SelectionDelegate<Integer> getSelectionDelegate() {
+    SelectionDelegate<TabListEditorItemSelectionId> getSelectionDelegate() {
         return mSelectionDelegate;
     }
 

@@ -26,7 +26,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.CreationMode;
@@ -45,7 +44,7 @@ public final class TabListEditorMediatorUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private DesktopWindowStateManager mDesktopWindowStateManager;
-    @Mock private SelectionDelegate<Integer> mSelectionDelegate;
+    @Mock private SelectionDelegate<TabListEditorItemSelectionId> mSelectionDelegate;
     @Mock private TabListCoordinator mTabListCoordinator;
     @Mock private ResetHandler mResetHandler;
     @Mock private TabListEditorLayout mTabListEditorLayout;
@@ -102,9 +101,10 @@ public final class TabListEditorMediatorUnitTest {
 
     @Test
     public void testSelectTabs() {
-        Set<@TabId Integer> tabIds = Set.of(1);
-        mMediator.selectTabs(tabIds);
-        verify(mSelectionDelegate).setSelectedItems(tabIds);
+        Set<TabListEditorItemSelectionId> itemIds =
+                Set.of(TabListEditorItemSelectionId.createTabId(1));
+        mMediator.selectTabs(itemIds);
+        verify(mSelectionDelegate).setSelectedItems(itemIds);
         verify(mResetHandler).resetWithListOfTabs(anyList(), eq(null), eq(null), eq(true));
     }
 }

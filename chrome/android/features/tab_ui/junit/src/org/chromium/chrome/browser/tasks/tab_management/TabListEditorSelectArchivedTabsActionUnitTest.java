@@ -32,7 +32,7 @@ public class TabListEditorSelectArchivedTabsActionUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private TabGroupModelFilter mTabGroupModelFilter;
-    @Mock private SelectionDelegate<Integer> mSelectionDelegate;
+    @Mock private SelectionDelegate<TabListEditorItemSelectionId> mSelectionDelegate;
     @Mock private ActionDelegate mDelegate;
     @Mock private Profile mProfile;
     @Mock private ArchivedTabsDialogCoordinator.ArchiveDelegate mArchiveDelegate;

@@ -151,6 +151,7 @@ internal_tab_management_java_sources = [
   "//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/TabListEditorCloseAction.java",
   "//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/TabListEditorCloseArchivedTabsAction.java",
   "//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/TabListEditorCoordinator.java",
+  "//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/TabListEditorItemSelectionId.java",
   "//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/TabListEditorLayout.java",
   "//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/TabListEditorLayoutBinder.java",
   "//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/TabListEditorLegacyGroupAction.java",

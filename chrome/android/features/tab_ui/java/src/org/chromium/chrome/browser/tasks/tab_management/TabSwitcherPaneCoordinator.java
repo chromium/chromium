@@ -836,7 +836,8 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                     TabListEditorController tabListEditorController =
                             mTabListEditorManager.getControllerSupplier().get();
                     if (tabListEditorController != null) {
-                        tabListEditorController.selectTabs(Set.of(tabId));
+                        tabListEditorController.selectTabs(
+                                Set.of(TabListEditorItemSelectionId.createTabId(tabId)));
                     }
                 };
         mContextMenuCoordinator =

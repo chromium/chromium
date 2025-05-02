@@ -97,7 +97,7 @@ public class TabProperties {
 
     public static final WritableIntPropertyKey CARD_ANIMATION_STATUS = new WritableIntPropertyKey();
 
-    public static final WritableObjectPropertyKey<SelectionDelegate<Integer>>
+    public static final WritableObjectPropertyKey<SelectionDelegate<TabListEditorItemSelectionId>>
             TAB_SELECTION_DELEGATE = new WritableObjectPropertyKey<>();
 
     public static final WritableObjectPropertyKey<String> URL_DOMAIN =
