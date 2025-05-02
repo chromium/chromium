@@ -1,7 +1,7 @@
 # Prerender WPT tests
 
 This directory contains [Web Platform
-Tests](third_party/blink/web_tests/external/wpt) for [Prerendering
+Tests](/third_party/blink/web_tests/external/wpt) for [Prerendering
 Revamped](https://wicg.github.io/nav-speculation/prerendering.html).
 
 These tests are generally intended to be upstreamed to the Web Platform Tests
@@ -10,7 +10,7 @@ reasons they cannot be upstreamed today. The main blocker is
 https://crbug.com/1226460.
 
 In general, these tests should follow Chromium's [web tests
-guidelines](docs/testing/web_tests_tips.md) and [web-platform-tests
+guidelines](/docs/testing/web_tests_tips.md) and [web-platform-tests
 guidelines](/docs/testing/web_platform_tests.md). This document describes
 additional conventions for these particular tests.
 
