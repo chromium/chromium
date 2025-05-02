@@ -83,12 +83,8 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.IfChange(BookmarkAccountStorageMoveDialogType) -->
 
 <enum name="BookmarkAccountStorageMoveDialogType">
-  <int value="0"
-      label="The version of the dialog for moving a bookmark between local
-             and account storage."/>
-  <int value="1"
-      label="The version of the dialog for uploading a bookmark to account
-             storage."/>
+  <int value="0" label="Download or upload version"/>
+  <int value="1" label="Upload only version"/>
 </enum>
 
 <!-- LINT.ThenChange(/chrome/browser/ui/views/bookmarks/bookmark_account_storage_move_dialog.h:BookmarkAccountStorageMoveDialogType) -->
