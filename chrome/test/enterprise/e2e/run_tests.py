@@ -146,7 +146,7 @@ if __name__ == '__main__':
   except KeyboardInterrupt:
     logging.error('Test run aborted.')
     should_write_logs = False
-  except:
+  except Exception:
     print(traceback.format_exc())
     logging.error('Test run failed.')
 

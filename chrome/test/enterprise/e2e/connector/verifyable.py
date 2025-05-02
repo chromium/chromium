@@ -19,4 +19,3 @@ class Verifyable(ABC):
         timestamp: A datetime of the start time for the events
         eventId: the id\name of the event to verify
     """
-    pass

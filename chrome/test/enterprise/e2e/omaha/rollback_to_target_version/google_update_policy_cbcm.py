@@ -42,7 +42,7 @@ class GoogleUpdatePolicyCloud(ChromeEnterpriseTestCase):
 
     dir = os.path.dirname(os.path.abspath(__file__))
     # Launch Chrome and trigger the cloud enrollment and policy fetch.
-    output = self.RunWebDriverTest(
+    self.RunWebDriverTest(
         self.win_config['client'],
         os.path.join(dir, 'google_update_policy_webdriver.py'))
 

@@ -8,7 +8,7 @@ import attrs
 
 
 @attrs.frozen(kw_only=True)
-class PanEvent(object):
+class PanEvent:
   """Maps to a event reported to the pan console.
 
   This class stores a event that is to match a xdr queried event from pan.

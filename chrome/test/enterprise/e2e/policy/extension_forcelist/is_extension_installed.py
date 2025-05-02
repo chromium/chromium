@@ -33,7 +33,7 @@ def RunTest(driver):
         driver, extension_item_list_el,
         "extensions-item#%s" % FLAGS.extension_id)
     extension_page = (extension_item_el != None)
-  except:
+  except Exception:
     print(traceback.format_exc())
 
   if extension_page:

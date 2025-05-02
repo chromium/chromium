@@ -98,7 +98,7 @@ def main(argv):
     ]:
       try:
         fingerprints[key] = get_fingerprint(driver)
-      except:
+      except Exception:
         traceback.print_exc()
 
     results = {'policies': policies_by_name, 'fingerprints': fingerprints}
