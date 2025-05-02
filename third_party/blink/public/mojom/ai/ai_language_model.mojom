@@ -77,7 +77,7 @@ union AILanguageModelPromptContent {
   string text;
 
   // Bitmap provided as input.
-  skia.mojom.BitmapMappedFromTrustedProcess bitmap;
+  skia.mojom.BitmapN32 bitmap;
 
   // Audio provided as input.
   on_device_model.mojom.AudioData audio;
