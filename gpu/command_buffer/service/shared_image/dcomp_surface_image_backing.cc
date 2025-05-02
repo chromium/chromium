@@ -248,7 +248,11 @@ DCompSurfaceImageBacking::DCompSurfaceImageBacking(
   DCHECK(success);
 }
 
-DCompSurfaceImageBacking::~DCompSurfaceImageBacking() = default;
+DCompSurfaceImageBacking::~DCompSurfaceImageBacking() {
+  if (cached_wgpu_texture_) {
+    cached_wgpu_texture_.Destroy();
+  }
+}
 
 SharedImageBackingType DCompSurfaceImageBacking::GetType() const {
   return SharedImageBackingType::kDCompSurface;
@@ -469,14 +473,14 @@ wgpu::Texture DCompSurfaceImageBacking::BeginDrawDawn(
   update_rect_ = update_rect;
 
   // Import the texture into dawn
-
-  DCHECK(!shared_texture_memory_);
-  shared_texture_memory_ =
-      CreateDawnSharedTextureMemory(device, dcomp_surface_draw_texture_copy_,
-                                    /*requires_dawn_signal_fence=*/false);
   if (!shared_texture_memory_) {
-    LOG(ERROR) << "Failed to create shared texture memory.";
-    return nullptr;
+    shared_texture_memory_ =
+        CreateDawnSharedTextureMemory(device, dcomp_surface_draw_texture_copy_,
+                                      /*requires_dawn_signal_fence=*/false);
+    if (!shared_texture_memory_) {
+      LOG(ERROR) << "Failed to create shared texture memory.";
+      return nullptr;
+    }
   }
 
   wgpu::SharedTextureMemoryD3DSwapchainBeginState swapchain_begin_state = {};
@@ -486,25 +490,36 @@ wgpu::Texture DCompSurfaceImageBacking::BeginDrawDawn(
   desc.initialized = true;
   desc.nextInChain = &swapchain_begin_state;
 
-  wgpu::Texture texture =
-      CreateDawnSharedTexture(shared_texture_memory_, usage, internal_usage,
-                              /*view_formats=*/{});
-  if (!texture || shared_texture_memory_.BeginAccess(texture, &desc) !=
-                      wgpu::Status::Success) {
+  if (!cached_wgpu_texture_ || cached_wgpu_texture_usage_ != usage) {
+    if (cached_wgpu_texture_) {
+      cached_wgpu_texture_.Destroy();
+    }
+    // Only Graphite should use this backing, thus internal_usage should be
+    // none.
+    CHECK_EQ(internal_usage, wgpu::TextureUsage::None);
+
+    cached_wgpu_texture_ =
+        CreateDawnSharedTexture(shared_texture_memory_, usage, internal_usage,
+                                /*view_formats=*/{});
+    cached_wgpu_texture_usage_ = usage;
+  }
+
+  if (!cached_wgpu_texture_ ||
+      shared_texture_memory_.BeginAccess(cached_wgpu_texture_, &desc) !=
+          wgpu::Status::Success) {
     LOG(ERROR) << "Failed to begin access and produce WGPUTexture";
     return nullptr;
   }
-  return texture;
+  return cached_wgpu_texture_;
 }
 
 void DCompSurfaceImageBacking::EndDrawDawn(const wgpu::Device& device,
                                            wgpu::Texture texture) {
+  DCHECK_EQ(cached_wgpu_texture_.Get(), texture.Get());
   // We don't need any synchronization here because dawn and dcomp are using the
   // same d3d11 device.
   wgpu::SharedTextureMemoryEndAccessState end_state = {};
-  shared_texture_memory_.EndAccess(texture.Get(), &end_state);
-  shared_texture_memory_ = nullptr;
-  texture.Destroy();
+  shared_texture_memory_.EndAccess(texture, &end_state);
 
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device;
   dcomp_surface_draw_texture_->GetDevice(&d3d11_device);
