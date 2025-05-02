@@ -107,10 +107,7 @@ public class MessageBannerRenderTest {
                         .with(MessageBannerProperties.DESCRIPTION, "Secondary Title")
                         .with(MessageBannerProperties.PRIMARY_BUTTON_TEXT, "Action")
                         .build();
-        MessageBannerView view =
-                (MessageBannerView)
-                        LayoutInflater.from(sActivity)
-                                .inflate(R.layout.message_banner_view, null, false);
+        MessageBannerView view = inflateMessageViewOnUiThread();
         PropertyModelChangeProcessor.create(model, view, MessageBannerViewBinder::bind);
         LayoutParams params =
                 new LayoutParams(
@@ -142,10 +139,7 @@ public class MessageBannerRenderTest {
                         .with(MessageBannerProperties.DESCRIPTION, "Secondary Title")
                         .with(MessageBannerProperties.PRIMARY_BUTTON_TEXT, "Action")
                         .build();
-        MessageBannerView view =
-                (MessageBannerView)
-                        LayoutInflater.from(sActivity)
-                                .inflate(R.layout.message_banner_view, null, false);
+        MessageBannerView view = inflateMessageViewOnUiThread();
         PropertyModelChangeProcessor.create(model, view, MessageBannerViewBinder::bind);
         LayoutParams params =
                 new LayoutParams(
@@ -181,10 +175,7 @@ public class MessageBannerRenderTest {
                         .with(MessageBannerProperties.PRIMARY_BUTTON_TEXT, "Action")
                         .with(MessageBannerProperties.SECONDARY_ICON, drawable2)
                         .build();
-        MessageBannerView view =
-                (MessageBannerView)
-                        LayoutInflater.from(sActivity)
-                                .inflate(R.layout.message_banner_view, null, false);
+        MessageBannerView view = inflateMessageViewOnUiThread();
         PropertyModelChangeProcessor.create(model, view, MessageBannerViewBinder::bind);
         LayoutParams params =
                 new LayoutParams(
@@ -219,10 +210,7 @@ public class MessageBannerRenderTest {
                         .with(MessageBannerProperties.DESCRIPTION, spannable)
                         .with(MessageBannerProperties.PRIMARY_BUTTON_TEXT, "Action")
                         .build();
-        MessageBannerView view =
-                (MessageBannerView)
-                        LayoutInflater.from(sActivity)
-                                .inflate(R.layout.message_banner_view, null, false);
+        MessageBannerView view = inflateMessageViewOnUiThread();
         PropertyModelChangeProcessor.create(model, view, MessageBannerViewBinder::bind);
         LayoutParams params =
                 new LayoutParams(
@@ -252,10 +240,7 @@ public class MessageBannerRenderTest {
                         .with(MessageBannerProperties.DESCRIPTION_MAX_LINES, 2)
                         .with(MessageBannerProperties.PRIMARY_BUTTON_TEXT, "Action")
                         .build();
-        MessageBannerView view =
-                (MessageBannerView)
-                        LayoutInflater.from(sActivity)
-                                .inflate(R.layout.message_banner_view, null, false);
+        MessageBannerView view = inflateMessageViewOnUiThread();
         PropertyModelChangeProcessor.create(model, view, MessageBannerViewBinder::bind);
         LayoutParams params =
                 new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
@@ -283,10 +268,7 @@ public class MessageBannerRenderTest {
                         .with(MessageBannerProperties.DESCRIPTION_MAX_LINES, 2)
                         .with(MessageBannerProperties.PRIMARY_BUTTON_TEXT, veryLongButtonText)
                         .build();
-        MessageBannerView view =
-                (MessageBannerView)
-                        LayoutInflater.from(sActivity)
-                                .inflate(R.layout.message_banner_view, null, false);
+        MessageBannerView view = inflateMessageViewOnUiThread();
         PropertyModelChangeProcessor.create(model, view, MessageBannerViewBinder::bind);
         LayoutParams params =
                 new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
@@ -360,10 +342,7 @@ public class MessageBannerRenderTest {
                         .with(MessageBannerProperties.DESCRIPTION, "Secondary Title")
                         .with(MessageBannerProperties.PRIMARY_BUTTON_TEXT, "Action")
                         .build();
-        MessageBannerView view =
-                (MessageBannerView)
-                        LayoutInflater.from(sActivity)
-                                .inflate(R.layout.message_banner_view, null, false);
+        MessageBannerView view = inflateMessageViewOnUiThread();
         PropertyModelChangeProcessor.create(model, view, MessageBannerViewBinder::bind);
         LayoutParams params =
                 new LayoutParams(
@@ -397,10 +376,7 @@ public class MessageBannerRenderTest {
                         .with(MessageBannerProperties.PRIMARY_BUTTON_TEXT, "Action")
                         .with(MessageBannerProperties.LARGE_ICON, true)
                         .build();
-        MessageBannerView view =
-                (MessageBannerView)
-                        LayoutInflater.from(sActivity)
-                                .inflate(R.layout.message_banner_view, null, false);
+        MessageBannerView view = inflateMessageViewOnUiThread();
         PropertyModelChangeProcessor.create(model, view, MessageBannerViewBinder::bind);
         LayoutParams params =
                 new LayoutParams(
@@ -437,10 +413,7 @@ public class MessageBannerRenderTest {
                         .with(MessageBannerProperties.LARGE_ICON, true)
                         .with(MessageBannerProperties.ICON_ROUNDED_CORNER_RADIUS_PX, radius)
                         .build();
-        MessageBannerView view =
-                (MessageBannerView)
-                        LayoutInflater.from(sActivity)
-                                .inflate(R.layout.message_banner_view, null, false);
+        MessageBannerView view = inflateMessageViewOnUiThread();
         PropertyModelChangeProcessor.create(model, view, MessageBannerViewBinder::bind);
         LayoutParams params =
                 new LayoutParams(
@@ -475,10 +448,7 @@ public class MessageBannerRenderTest {
                         .with(MessageBannerProperties.DESCRIPTION_ICON, descriptionIcon)
                         .with(MessageBannerProperties.PRIMARY_BUTTON_TEXT, "Action")
                         .build();
-        MessageBannerView view =
-                (MessageBannerView)
-                        LayoutInflater.from(sActivity)
-                                .inflate(R.layout.message_banner_view, null, false);
+        MessageBannerView view = inflateMessageViewOnUiThread();
         PropertyModelChangeProcessor.create(model, view, MessageBannerViewBinder::bind);
         LayoutParams params =
                 new LayoutParams(
@@ -514,10 +484,7 @@ public class MessageBannerRenderTest {
                         .with(MessageBannerProperties.RESIZE_DESCRIPTION_ICON, true)
                         .with(MessageBannerProperties.PRIMARY_BUTTON_TEXT, "Action")
                         .build();
-        MessageBannerView view =
-                (MessageBannerView)
-                        LayoutInflater.from(sActivity)
-                                .inflate(R.layout.message_banner_view, null, false);
+        MessageBannerView view = inflateMessageViewOnUiThread();
         PropertyModelChangeProcessor.create(model, view, MessageBannerViewBinder::bind);
         LayoutParams params =
                 new LayoutParams(
@@ -554,10 +521,7 @@ public class MessageBannerRenderTest {
                         .with(MessageBannerProperties.DESCRIPTION, "Secondary Title")
                         .with(MessageBannerProperties.PRIMARY_BUTTON_TEXT, "Action")
                         .build();
-        MessageBannerView view =
-                (MessageBannerView)
-                        LayoutInflater.from(sActivity)
-                                .inflate(R.layout.message_banner_view, null, false);
+        MessageBannerView view = inflateMessageViewOnUiThread();
         PropertyModelChangeProcessor.create(model, view, MessageBannerViewBinder::bind);
         LayoutParams params =
                 new LayoutParams(
@@ -589,10 +553,7 @@ public class MessageBannerRenderTest {
                         .with(MessageBannerProperties.DESCRIPTION, "Secondary Title")
                         .with(MessageBannerProperties.PRIMARY_BUTTON_TEXT, "Action")
                         .build();
-        MessageBannerView view =
-                (MessageBannerView)
-                        LayoutInflater.from(sActivity)
-                                .inflate(R.layout.message_banner_view, null, false);
+        MessageBannerView view = inflateMessageViewOnUiThread();
         PropertyModelChangeProcessor.create(model, view, MessageBannerViewBinder::bind);
         LayoutParams params =
                 new LayoutParams(
@@ -624,10 +585,7 @@ public class MessageBannerRenderTest {
                         .with(MessageBannerProperties.DESCRIPTION, "Secondary Title")
                         .with(MessageBannerProperties.PRIMARY_BUTTON_TEXT, "Action")
                         .build();
-        MessageBannerView view =
-                (MessageBannerView)
-                        LayoutInflater.from(sActivity)
-                                .inflate(R.layout.message_banner_view, null, false);
+        MessageBannerView view = inflateMessageViewOnUiThread();
         PropertyModelChangeProcessor.create(model, view, MessageBannerViewBinder::bind);
         LayoutParams params =
                 new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
@@ -644,5 +602,13 @@ public class MessageBannerRenderTest {
         View mainContent = message.getMainContentForTesting();
         ((ViewGroup) mainContent.getParent()).removeView(mainContent);
         return mainContent;
+    }
+
+    private MessageBannerView inflateMessageViewOnUiThread() {
+        return ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        (MessageBannerView)
+                                LayoutInflater.from(sActivity)
+                                        .inflate(R.layout.message_banner_view, null, false));
     }
 }

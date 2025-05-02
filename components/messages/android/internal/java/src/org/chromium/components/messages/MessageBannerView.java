@@ -28,13 +28,11 @@ import androidx.annotation.ColorInt;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.graphics.drawable.RoundedBitmapDrawable;
 import androidx.core.widget.ImageViewCompat;
-import androidx.swiperefreshlayout.widget.CircularProgressDrawable;
 
 import org.chromium.base.SysUtils;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.components.browser_ui.widget.RoundedCornerOutlineProvider;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener;
@@ -62,7 +60,7 @@ public class MessageBannerView extends RelativeLayout {
             PrimaryWidgetAppearance.BUTTON_IF_TEXT_IS_SET;
     private TextView mPrimaryButton;
     private @Nullable String mPrimaryButtonText;
-    private Drawable mPrimaryButtonDrawable;
+    private View mProgressIndicator;
     private ListMenuButton mSecondaryButton;
     private boolean mEnableCloseButton;
     private ChromeImageButton mCloseButton;
@@ -89,6 +87,7 @@ public class MessageBannerView extends RelativeLayout {
         mTitle = findViewById(R.id.message_title);
         mDescription = findViewById(R.id.message_description);
         mPrimaryButton = findViewById(R.id.message_primary_button);
+        mProgressIndicator = findViewById(R.id.message_primary_progress_indicator);
         mIconView = findViewById(R.id.message_icon);
         mSecondaryButton = findViewById(R.id.message_secondary_button);
         mCloseButton = findViewById(R.id.message_close_button);
@@ -104,7 +103,6 @@ public class MessageBannerView extends RelativeLayout {
             mMessageBanner.setBackground(
                     AppCompatResources.getDrawable(getContext(), R.drawable.dialog_bg_baseline));
         }
-        mPrimaryButtonDrawable = mPrimaryButton.getBackground();
         int radius = getResources().getDimensionPixelOffset(R.dimen.message_close_button_size) / 2;
         mCloseButton.setOutlineProvider(new CloseButtonOutlineProvider(radius));
         mCloseButton.setClipToOutline(true);
@@ -215,23 +213,13 @@ public class MessageBannerView extends RelativeLayout {
     }
 
     private void updatePrimaryWidgetAppearance() {
-        if (mPrimaryWidgetAppearance == PrimaryWidgetAppearance.BUTTON_IF_TEXT_IS_SET
-                && !TextUtils.isEmpty(mPrimaryButtonText)) {
-            mPrimaryButton.setBackground(mPrimaryButtonDrawable);
-            mPrimaryButton.setText(mPrimaryButtonText);
-            mPrimaryButton.setVisibility(VISIBLE);
-        } else if (mPrimaryWidgetAppearance == PrimaryWidgetAppearance.PROGRESS_SPINNER) {
-            mPrimaryButton.setText("");
-            var spinner = new CircularProgressDrawable(getContext());
-            spinner.setStyle(CircularProgressDrawable.DEFAULT);
-            spinner.setColorSchemeColors(
-                    SemanticColorUtils.getDefaultIconColorAccent1(getContext()));
-            mPrimaryButton.setBackground(spinner);
-            spinner.start();
-            mPrimaryButton.setVisibility(VISIBLE);
-        } else {
-            mPrimaryButton.setVisibility(GONE);
-        }
+        boolean showSpinner = mPrimaryWidgetAppearance == PrimaryWidgetAppearance.PROGRESS_SPINNER;
+        boolean showButton =
+                mPrimaryWidgetAppearance == PrimaryWidgetAppearance.BUTTON_IF_TEXT_IS_SET
+                        && !TextUtils.isEmpty(mPrimaryButtonText);
+        assert !(showButton && showSpinner) : "Spinner and button cannot show at the same time. ";
+        mProgressIndicator.setVisibility(showSpinner ? VISIBLE : GONE);
+        mPrimaryButton.setVisibility(showButton ? VISIBLE : GONE);
     }
 
     void setPrimaryButtonClickListener(OnClickListener listener) {

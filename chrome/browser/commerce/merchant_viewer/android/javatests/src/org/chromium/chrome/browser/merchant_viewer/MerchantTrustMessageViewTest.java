@@ -95,9 +95,12 @@ public class MerchantTrustMessageViewTest {
     @Before
     public void setUp() {
         mMessageBannerView =
-                (MessageBannerView)
-                        LayoutInflater.from(sActivity)
-                                .inflate(R.layout.message_banner_view, null, false);
+                ThreadUtils.runOnUiThreadBlocking(
+                        () ->
+                                (MessageBannerView)
+                                        LayoutInflater.from(sActivity)
+                                                .inflate(
+                                                        R.layout.message_banner_view, null, false));
         mParams =
                 new LayoutParams(
                         LayoutParams.MATCH_PARENT,

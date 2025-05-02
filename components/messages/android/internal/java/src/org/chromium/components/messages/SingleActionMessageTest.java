@@ -30,6 +30,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
 import org.chromium.base.FakeTimeTestRule;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
@@ -409,9 +410,11 @@ public class SingleActionMessageTest {
     }
 
     private MessageBannerView createMessageBannerView(MessageContainer container) {
-        return (MessageBannerView)
-                LayoutInflater.from(container.getContext())
-                        .inflate(R.layout.message_banner_view, container, false);
+        return ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        (MessageBannerView)
+                                LayoutInflater.from(container.getContext())
+                                        .inflate(R.layout.message_banner_view, container, false));
     }
 
     private PropertyModel createBasicSingleActionMessageModel(int id) {
