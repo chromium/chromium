@@ -168,7 +168,8 @@ class LanguageDetectorCreateTask
     }
 
     std::optional<Vector<String>> expected_input_languages;
-    if (options_->hasExpectedInputLanguages()) {
+    if (options_->hasExpectedInputLanguages() &&
+        !options_->expectedInputLanguages().empty()) {
       expected_input_languages = GetBestFitLanguages(
           kSupportedLanguages, options_->expectedInputLanguages());
       if (!expected_input_languages.has_value()) {
