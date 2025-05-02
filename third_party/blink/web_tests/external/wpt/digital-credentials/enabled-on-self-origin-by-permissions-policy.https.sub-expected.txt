@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] Permissions-Policy header digital-credentials-create=(self) allows the top-level document.
+  promise_test: Unhandled rejection with value: object "ReferenceError: makeCreateOptions is not defined"
+[FAIL] Permissions-Policy header digital-credentials-create=(self) disallows cross-origin iframes.
+  assert_false: Digital Credential API expected false got true
+[FAIL] Permissions-Policy header explicitly set to digital-credentials-create=(self) cannot be overridden by allow attribute.
+  assert_false: Digital Credential API expected false got true
+Harness: the test ran to completion.
+

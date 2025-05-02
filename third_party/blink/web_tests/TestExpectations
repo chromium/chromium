@@ -2641,6 +2641,9 @@ crbug.com/413411328 external/wpt/css/css-values/urls/referrer-policy/unsafe-url/
 crbug.com/413411328 external/wpt/css/css-values/urls/referrer-policy/unsafe-url/url-image-referrerpolicy-same-origin.sub.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+external/wpt/digital-credentials/allow-attribute-with-create.https.html [ Failure Pass Timeout ]
+external/wpt/digital-credentials/allow-attribute-with-get.https.html [ Pass Timeout ]
+external/wpt/digital-credentials/enabled-on-self-origin-by-permissions-policy.https.sub.html [ Pass Timeout ]
 crbug.com/414710218 [ Mac14 ] external/wpt/html/cross-origin-opener-policy/popup-unsafe-none-with-same-site.https.html [ Crash ]
 crbug.com/414687402 [ Mac12 ] external/wpt/webrtc/RTCDataChannel-send-close.html [ Skip Timeout ]
 crbug.com/414673568 [ Win10.20h2 ] external/wpt/font-access/font_access_detached_iframe.tentative.https.window.html [ Skip Timeout ]
