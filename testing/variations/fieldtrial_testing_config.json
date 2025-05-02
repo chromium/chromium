@@ -19670,7 +19670,8 @@
                 {
                     "name": "RestrictAbusePorts",
                     "params": {
-                        "PortsToRestrictForAbuse": "30987,30988,30989"
+                        "monitor_ports": "30986",
+                        "restrict_ports": "30987,30988,30989"
                     },
                     "enable_features": [
                         "RestrictAbusePorts"

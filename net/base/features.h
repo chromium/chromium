@@ -777,6 +777,8 @@ NET_EXPORT BASE_DECLARE_FEATURE(kIncludeDeprecatedClientCertLookup);
 NET_EXPORT BASE_DECLARE_FEATURE(kRestrictAbusePorts);
 NET_EXPORT extern const base::FeatureParam<std::string>
     kPortsToRestrictForAbuse;
+NET_EXPORT extern const base::FeatureParam<std::string>
+    kPortsToRestrictForAbuseMonitorOnly;
 
 }  // namespace net::features
 

@@ -764,10 +764,5 @@ BASE_FEATURE(kIncludeDeprecatedClientCertLookup,
 BASE_FEATURE(kRestrictAbusePorts,
              "RestrictAbusePorts",
              base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE_PARAM(std::string,
-                   kPortsToRestrictForAbuse,
-                   &kRestrictAbusePorts,
-                   "PortsToRestrictForAbuse",
-                   "");
 
 }  // namespace net::features
