@@ -57,6 +57,11 @@ class CONTENT_EXPORT BrowserUIThreadScheduler {
   void CommonSequenceManagerSetup(
       base::sequence_manager::SequenceManager* sequence_manager);
 
+  void OnTaskCompleted(
+      const base::sequence_manager::Task& task,
+      base::sequence_manager::TaskQueue::TaskTiming* task_timing,
+      base::LazyNow* lazy_now);
+
   // In production the BrowserUIThreadScheduler will own its SequenceManager,
   // but in tests it may not.
   std::unique_ptr<base::sequence_manager::SequenceManager>

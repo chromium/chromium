@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/message_loop/message_pump.h"
 #include "base/message_loop/message_pump_type.h"
@@ -50,9 +51,12 @@ BrowserUIThreadScheduler::BrowserUIThreadScheduler()
                   .SetCanRunTasksByBatches(true)
                   .SetPrioritySettings(
                       internal::CreateBrowserTaskPrioritySettings())
+                  .SetShouldSampleCPUTime(true)
                   .Build())),
       task_queues_(BrowserThread::UI, owned_sequence_manager_.get()),
       handle_(task_queues_.GetHandle()) {
+  task_queues_.SetOnTaskCompletedHandler(base::BindRepeating(
+      &BrowserUIThreadScheduler::OnTaskCompleted, base::Unretained(this)));
   CommonSequenceManagerSetup(owned_sequence_manager_.get());
   owned_sequence_manager_->SetDefaultTaskRunner(
       handle_->GetDefaultTaskRunner());
@@ -75,6 +79,17 @@ void BrowserUIThreadScheduler::CommonSequenceManagerSetup(
   DCHECK_EQ(static_cast<size_t>(sequence_manager->GetPriorityCount()),
             static_cast<size_t>(internal::BrowserTaskPriority::kPriorityCount));
   sequence_manager->EnableCrashKeys("ui_scheduler_async_stack");
+}
+
+void BrowserUIThreadScheduler::OnTaskCompleted(
+    const base::sequence_manager::Task& task,
+    base::sequence_manager::TaskQueue::TaskTiming* task_timing,
+    base::LazyNow* lazy_now) {
+  // Note: Thread time is already subsampled in sequence manager by a factor of
+  // |kTaskSamplingRateForRecordingCPUTime|. So browser main can piggy back on
+  // that subsampling to record histograms without fear of oversampling.
+  task_timing->RecordTaskEnd(lazy_now);
+  task_timing->RecordUmaOnCpuMetrics("BrowserScheduler.UIThread");
 }
 
 }  // namespace content

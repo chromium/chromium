@@ -1564,6 +1564,39 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="BrowserScheduler.UIThread.TaskOffCpuDuration" units="ms"
+    expires_after="2025-12-25">
+  <owner>anandrv@google.com</owner>
+  <owner>clank-performance-team@google.com</owner>
+  <summary>
+    Records the duration spent off-CPU by tasks running on the browser UI
+    thread. Recorded with 0.001 probability when a task scheduled on the main
+    thread finishes running.
+  </summary>
+</histogram>
+
+<histogram name="BrowserScheduler.UIThread.TaskOnCpuDuration" units="ms"
+    expires_after="2025-12-25">
+  <owner>anandrv@google.com</owner>
+  <owner>clank-performance-team@google.com</owner>
+  <summary>
+    Records the duration spent on-CPU by tasks running on the browser UI thread.
+    Recorded with 0.001 probability when a task scheduled on the main thread
+    finishes running.
+  </summary>
+</histogram>
+
+<histogram name="BrowserScheduler.UIThread.TaskOnCpuPercentage" units="%"
+    expires_after="2025-12-25">
+  <owner>anandrv@google.com</owner>
+  <owner>clank-performance-team@google.com</owner>
+  <summary>
+    Records the percentage of wall time spent on-CPU by tasks running on the
+    browser UI thread. Recorded with 0.001 probability when a task scheduled on
+    the main thread finishes running.
+  </summary>
+</histogram>
+
 <histogram name="BrowserServices.TwaOpenTime.V2" units="ms"
     expires_after="2024-09-01">
   <owner>peconn@chromium.org</owner>
