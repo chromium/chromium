@@ -2600,6 +2600,16 @@
       status: "stable",
     },
     {
+      // The HTML parser inserts a </select> end tag before inserting <input>
+      // when parsing inside of a <select> tag. We want to allow <input> inside
+      // <select>, but it isn't web compatible enough. This flag allows <input>
+      // inside <select> but only if there is another open tag in between the
+      // <input> and the <select>, like <select><div><input>.
+      name: "InputInSelect",
+      status: "experimental",
+      depends_on: ["SelectParserRelaxation"],
+    },
+    {
       name: "InputMultipleFieldsUI",
       // No plan to support complex UI for date/time INPUT types on Android and
       // iOS.

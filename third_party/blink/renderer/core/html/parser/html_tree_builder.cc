@@ -741,11 +741,16 @@ void HTMLTreeBuilder::ProcessStartTagForInBody(AtomicHTMLToken* token) {
           if (parent_select) {
             UseCounter::Count(tree_.CurrentNode()->GetDocument(),
                               WebFeature::kInputParsedParentSelect);
+            if (RuntimeEnabledFeatures::InputInSelectEnabled()) {
+              ProcessFakeEndTag(HTMLTag::kSelect);
+            }
           } else {
             UseCounter::Count(tree_.CurrentNode()->GetDocument(),
                               WebFeature::kInputParsedAncestorSelect);
           }
-          ProcessFakeEndTag(HTMLTag::kSelect);
+          if (!RuntimeEnabledFeatures::InputInSelectEnabled()) {
+            ProcessFakeEndTag(HTMLTag::kSelect);
+          }
         }
       }
       // Per spec https://html.spec.whatwg.org/C/#parsing-main-inbody,
