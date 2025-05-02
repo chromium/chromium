@@ -3736,6 +3736,13 @@ const FeatureEntry::FeatureVariation
          std::size(kBottomBrowserControlsRefactorParams), nullptr},
 };
 
+const FeatureEntry::FeatureParam sAndroidThemeModuleParams[] = {
+    {"force_theme_module_dependencies", "true"}};
+const FeatureEntry::FeatureVariation kAndroidThemeModuleVariations[] = {
+    {"force dependencies", sAndroidThemeModuleParams,
+     std::size(sAndroidThemeModuleParams), nullptr},
+};
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
@@ -12169,7 +12176,10 @@ const FeatureEntry kFeatureEntries[] = {
 #if BUILDFLAG(IS_ANDROID)
     {"android-theme-module", flag_descriptions::kAndroidThemeModuleName,
      flag_descriptions::kAndroidThemeModuleDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kAndroidThemeModule)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kAndroidThemeModule,
+                                    kAndroidThemeModuleVariations,
+                                    "AndroidThemeModule")},
+
     {"display-edge-to-edge-fullscreen",
      flag_descriptions::kDisplayEdgeToEdgeFullscreenName,
      flag_descriptions::kDisplayEdgeToEdgeFullscreenDescription, kOsAndroid,

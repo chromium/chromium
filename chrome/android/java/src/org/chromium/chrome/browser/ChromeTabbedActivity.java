@@ -137,6 +137,7 @@ import org.chromium.chrome.browser.hub.HubLayoutDependencyHolder;
 import org.chromium.chrome.browser.hub.HubManager;
 import org.chromium.chrome.browser.hub.HubProvider;
 import org.chromium.chrome.browser.hub.HubShowPaneHelper;
+import org.chromium.chrome.browser.hub.HubUtils;
 import org.chromium.chrome.browser.hub.Pane;
 import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.browser.hub.PaneManager;
@@ -4083,7 +4084,7 @@ public class ChromeTabbedActivity extends ChromeActivity {
             }
         }
 
-        if (!ChromeFeatureList.sGridTabSwitcherUpdate.isEnabled()) {
+        if (!HubUtils.isGtsUpdateEnabled()) {
             applySingleThemeOverlay(R.style.HubToolbarActionButtonStyleOverlay_Baseline);
         } else if (!useThemeModule) {
             applySingleThemeOverlay(R.style.HubToolbarActionButtonStyleOverlay_Fill);

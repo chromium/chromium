@@ -23,6 +23,11 @@ public final class ThemeModuleUtils {
         return ChromeFeatureList.sAndroidThemeModule.isEnabled();
     }
 
+    /** Returns whether enable all the dependency features. */
+    public static boolean isForceEnableDependencies() {
+        return isEnabled() && ChromeFeatureList.sAndroidThemeModuleForceDependencies.getValue();
+    }
+
     /**
      * Get the theme module to provide the overlay. This will be a theme resource used for {@link
      * android.content.res.Resources.Theme#applyStyle(int, boolean)}.

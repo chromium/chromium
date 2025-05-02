@@ -9,6 +9,8 @@ import android.view.View;
 import androidx.annotation.IdRes;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.theme.ThemeModuleUtils;
 
 /** Feature related utilities for Hub. */
 @NullMarked
@@ -32,5 +34,11 @@ public class HubUtils {
         int hubToolbarBottom = hubToolbarView.getBottom();
         int searchBoxContainerBottom = searchBoxContainerView.getBottom();
         return hubToolbarBottom - searchBoxContainerBottom;
+    }
+
+    /** Whether enable the grid tab switcher UI update. */
+    public static boolean isGtsUpdateEnabled() {
+        return ChromeFeatureList.sGridTabSwitcherUpdate.isEnabled()
+                || ThemeModuleUtils.isForceEnableDependencies();
     }
 }
