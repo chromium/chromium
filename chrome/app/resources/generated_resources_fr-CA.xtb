@@ -1660,7 +1660,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2136476978468204130">La phrase de passe entrée est incorrecte</translation>
 <translation id="2137128126782078222">Ne pas autoriser les notifications provenant de <ph name="WEBSITE" /></translation>
 <translation id="2139919072249842737">Bouton de configuration</translation>
-<translation id="2140788884185208305">État de la pile</translation>
+<translation id="2140788884185208305">État de santé de la pile</translation>
 <translation id="2142328300403846845">Ouvrir le lien en tant que</translation>
 <translation id="2142484069755256151">Créer un NIP de récupération à 6 chiffres pour le gestionnaire de mots de passe Google; chiffre <ph name="NUM_DIGIT" /> sur 6 du NIP</translation>
 <translation id="2142582065325732898">Activez la <ph name="LINK1_BEGIN" />synchronisation Chrome<ph name="LINK1_END" /> pour afficher les onglets Chrome récents. <ph name="LINK2_BEGIN" />En savoir plus<ph name="LINK2_END" /></translation>
