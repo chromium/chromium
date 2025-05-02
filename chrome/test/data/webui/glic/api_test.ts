@@ -70,6 +70,7 @@ class WebClient implements GlicWebClient {
   host?: GlicBrowserHost;
   firstOpened = Promise.withResolvers<void>();
   initializedPromise = Promise.withResolvers<void>();
+  onNotifyPanelWasClosed: () => void = () => {};
 
   async initialize(glicBrowserHost: GlicBrowserHost): Promise<void> {
     this.host = glicBrowserHost;
@@ -92,6 +93,10 @@ class WebClient implements GlicWebClient {
 
   waitForInitialize(): Promise<void> {
     return this.initializedPromise.promise;
+  }
+
+  async notifyPanelWasClosed?(): Promise<void> {
+    this.onNotifyPanelWasClosed();
   }
 }
 
@@ -210,7 +215,12 @@ class ApiTests extends ApiTestFixtureBase {
 
   async testClosePanel() {
     assertTrue(!!this.host.closePanel);
+
+    // Close the panel, and verify notifyPanelWasClosed is called.
+    const closedPromise = Promise.withResolvers<void>();
+    this.client.onNotifyPanelWasClosed = closedPromise.resolve;
     await this.host.closePanel();
+    await waitFor(closedPromise.promise);
   }
 
   async testAttachPanel() {
@@ -1056,6 +1066,19 @@ function sleep(timeoutMs: number): Promise<void> {
   return new Promise((resolve) => {
     window.setTimeout(resolve, timeoutMs);
   });
+}
+
+// Waits for a promise to resolve. If the timeout is reached first, throws an
+// exception. Note this is useful because if the test times out in the normal
+// way, we do not receive a very useful error.
+async function waitFor<T>(value: Promise<T>, timeoutMs = 5000): Promise<T> {
+  const timeoutResult = Symbol();
+  const result =
+      await Promise.race([value, sleep(timeoutMs).then(() => timeoutResult)]);
+  if (result === timeoutResult) {
+    throw new Error(`Timed out while waiting`);
+  }
+  return value;
 }
 
 main();
