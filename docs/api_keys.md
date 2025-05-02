@@ -15,8 +15,8 @@ purchase.
 
 **Googlers only:**
 
-*   For a simpler approach to API keys, see https://go/chrome-api-key-setup
-*   If you need a new API enabled in Chrome, use https://b/new?component=165132
+*   For a simpler approach to API keys, see http://go/chrome-api-key-setup
+*   If you need a new API enabled in Chrome, use http://b/new?component=165132
 
 **How-to:**
 First, acquire API keys. Then, specify the API keys to use either when you build
