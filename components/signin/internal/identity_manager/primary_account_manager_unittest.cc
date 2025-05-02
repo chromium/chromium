@@ -1462,6 +1462,9 @@ TEST_F(PrimaryAccountManagerTest,
 
   EXPECT_FALSE(
       SigninPrefs(*prefs()).GetBookmarksExplicitBrowserSignin(gaia_id));
+  histogram_tester_.ExpectUniqueSample(
+      "Signin.Bookmarks.SyncTurnedOnWithAccountStorageEnabled",
+      /*sample=*/true, /*expected_bucket_count=*/1);
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
