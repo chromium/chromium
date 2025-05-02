@@ -561,7 +561,12 @@ void TabGroupSyncServiceImpl::RemoveTab(const LocalTabGroupID& group_id,
   UpdateAttributions(group_id);
   LogEvent(TabGroupEvent::kTabRemoved, group_id, tab_id);
   model_->UpdateLastUserInteractionTimeLocally(group_id);
-  model_->RemoveTabFromGroupLocally(sync_id, tab->saved_tab_guid());
+  std::optional<GaiaId> local_gaia_id =
+      group->is_shared_tab_group()
+          ? sync_bridge_mediator_->GetTrackingAccountIdForSharedBridge()
+          : std::nullopt;
+  model_->RemoveTabFromGroupLocally(sync_id, tab->saved_tab_guid(),
+                                    std::move(local_gaia_id));
 }
 
 void TabGroupSyncServiceImpl::MoveTab(const LocalTabGroupID& group_id,

@@ -307,7 +307,11 @@ SavedTabGroup& SavedTabGroup::AddTabFromSync(SavedTabGroupTab tab) {
 }
 
 SavedTabGroup& SavedTabGroup::RemoveTabLocally(
-    const base::Uuid& saved_tab_guid) {
+    const base::Uuid& saved_tab_guid,
+    std::optional<GaiaId> local_gaia_id) {
+  if (local_gaia_id.has_value()) {
+    UpdateLastRemovedTabMetadata(saved_tab_guid, local_gaia_id.value());
+  }
   RemoveTabImpl(saved_tab_guid);
   UpdateTabPositionsImpl();
   SetUpdateTimeWindowsEpochMicros(base::Time::Now());
@@ -319,23 +323,7 @@ SavedTabGroup& SavedTabGroup::RemoveTabFromSync(
     GaiaId removed_by,
     bool ignore_empty_groups_for_testing) {
   CHECK(removed_by.empty() || is_shared_tab_group());
-  if (!removed_by.empty()) {
-    last_removed_tabs_metadata_[saved_tab_guid].removed_by =
-        std::move(removed_by);
-    last_removed_tabs_metadata_[saved_tab_guid].removal_time =
-        base::Time::Now();
-
-    // Clean up old removed tabs metadata.
-    if (last_removed_tabs_metadata_.size() > kMaxLastRemovedTabsMetadata) {
-      // Erase only one minimal element because it should be the case in
-      // practice.
-      last_removed_tabs_metadata_.erase(std::ranges::min_element(
-          last_removed_tabs_metadata_, std::ranges::less(),
-          [](const auto& guid_and_metadata) {
-            return guid_and_metadata.second.removal_time;
-          }));
-    }
-  }
+  UpdateLastRemovedTabMetadata(saved_tab_guid, removed_by);
   RemoveTabImpl(saved_tab_guid, /*allow_empty_groups=*/true);
   SetUpdateTimeWindowsEpochMicros(base::Time::Now());
   return *this;
@@ -522,6 +510,28 @@ SavedTabGroup SavedTabGroup::CopyBaseFieldsWithTabs() const {
     cloned_group.AddTabLocally(std::move(cloned_tab));
   }
   return cloned_group;
+}
+
+void SavedTabGroup::UpdateLastRemovedTabMetadata(
+    const base::Uuid& saved_tab_guid,
+    GaiaId removed_by) {
+  if (removed_by.empty()) {
+    return;
+  }
+  last_removed_tabs_metadata_[saved_tab_guid].removed_by =
+      std::move(removed_by);
+  last_removed_tabs_metadata_[saved_tab_guid].removal_time = base::Time::Now();
+
+  // Clean up old removed tabs metadata.
+  if (last_removed_tabs_metadata_.size() > kMaxLastRemovedTabsMetadata) {
+    // Erase only one minimal element because it should be the case in
+    // practice.
+    last_removed_tabs_metadata_.erase(std::ranges::min_element(
+        last_removed_tabs_metadata_, std::ranges::less(),
+        [](const auto& guid_and_metadata) {
+          return guid_and_metadata.second.removal_time;
+        }));
+  }
 }
 
 }  // namespace tab_groups
