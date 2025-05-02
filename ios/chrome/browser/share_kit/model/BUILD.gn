@@ -81,6 +81,8 @@ source_set("test_support") {
   sources = [
     "fake_share_kit_flow_view_controller.h",
     "fake_share_kit_flow_view_controller.mm",
+    "test_share_kit_avatar_primitive.h",
+    "test_share_kit_avatar_primitive.mm",
     "test_share_kit_service.h",
     "test_share_kit_service.mm",
   ]

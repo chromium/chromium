@@ -23,6 +23,7 @@
 #import "ios/chrome/browser/share_kit/model/share_kit_read_configuration.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_share_group_configuration.h"
 #import "ios/chrome/browser/share_kit/model/test_constants.h"
+#import "ios/chrome/browser/share_kit/model/test_share_kit_avatar_primitive.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/test/app/sync_test_util.h"
@@ -282,8 +283,7 @@ void TestShareKitService::LookupGaiaIdByEmail(
 
 id<ShareKitAvatarPrimitive> TestShareKitService::AvatarImage(
     ShareKitAvatarConfiguration* config) {
-  // TODO(crbug.com/375366568): add fake implementation.
-  return nil;
+  return [[TestShareKitAvatarPrimitive alloc] init];
 }
 
 void TestShareKitService::Shutdown() {

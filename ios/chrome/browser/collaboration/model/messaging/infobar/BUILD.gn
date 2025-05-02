@@ -29,3 +29,29 @@ source_set("infobar") {
     "//ui/base",
   ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "collaboration_group_infobar_delegate_unittest.mm" ]
+  deps = [
+    ":infobar",
+    "//base/test:test_support",
+    "//components/collaboration:test_support",
+    "//components/collaboration/public",
+    "//components/saved_tab_groups/test_support",
+    "//ios/chrome/browser/infobars/model",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/model/web_state_list/test:test_support",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/sync/model",
+    "//ios/chrome/browser/url_loading/model",
+    "//ios/chrome/browser/url_loading/model:test_support",
+    "//ios/web/public/test",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
+}

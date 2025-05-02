@@ -252,6 +252,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/bubble/ui_bundled:unit_tests",
     "//ios/chrome/browser/collaboration/model:unit_tests",
     "//ios/chrome/browser/collaboration/model/messaging:unit_tests",
+    "//ios/chrome/browser/collaboration/model/messaging/infobar:unit_tests",
     "//ios/chrome/browser/commerce/model:unit_tests",
     "//ios/chrome/browser/commerce/model/push_notification:unit_tests",
     "//ios/chrome/browser/complex_tasks/model:unit_tests",
