@@ -442,15 +442,6 @@ const char kEnableFeedCardMenuSignInPromoDescription[] =
     "Display a sign-in promotion UI when signed out users click on "
     "personalization options within the feed card menu.";
 
-const char kEnableFollowIPHExpParamsName[] =
-    "Enable Follow IPH Experiment Parameters";
-const char kEnableFollowIPHExpParamsDescription[] =
-    "Enable follow IPH experiment parameters.";
-
-const char kEnableFollowUIUpdateName[] = "Enable the Follow UI Update";
-const char kEnableFollowUIUpdateDescription[] =
-    "Enable Follow UI Update for the Feed.";
-
 const char kEnableTraitCollectionRegistrationName[] =
     "Enable Customizable Trait Registration";
 const char kEnableTraitCollectionRegistrationDescription[] =
@@ -480,11 +471,6 @@ const char kEnableSignedOutViewDemotionDescription[] =
 const char kEnableIdentityInAuthErrorName[] = "Enable Identities in Auth Error";
 const char kEnableIdentityInAuthErrorDescription[] =
     "Enable identities in auth error state.";
-
-const char kEnableWebChannelsName[] = "Enable WebFeed";
-const char kEnableWebChannelsDescription[] =
-    "Enable folowing content from web and display Following feed on NTP based "
-    "on sites that users followed.";
 
 const char kEnhancedCalendarName[] = "Enable Enhanced Calendar integration";
 const char kEnhancedCalendarDescription[] =

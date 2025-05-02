@@ -451,10 +451,6 @@ BASE_FEATURE(kIOSManageAccountStorage,
              "IOSManageAccountStorage",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEnableWebChannels,
-             "EnableWebChannels",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kDeprecateFeedHeader,
              "DeprecateFeedHeader",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -469,10 +465,6 @@ BASE_FEATURE(kCreateDiscoverFeedServiceEarly,
 
 BASE_FEATURE(kEnableFeedAblation,
              "EnableFeedAblation",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kEnableFollowUIUpdate,
-             "EnableFollowUIUpdate",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 const char kContentPushNotificationsExperimentType[] =
@@ -637,15 +629,7 @@ int HoursInactiveForOldUsersUntilShowingDockingPromo() {
 }
 
 bool IsWebChannelsEnabled() {
-  if (ShouldDeprecateFeedHeader()) {
-    return false;
-  }
-  std::string launched_countries[6] = {"AU", "CA", "GB", "NZ", "US", "ZA"};
-  if (base::Contains(launched_countries,
-                     country_codes::GetCurrentCountryID().CountryCode())) {
-    return true;
-  }
-  return base::FeatureList::IsEnabled(kEnableWebChannels);
+  return false;
 }
 
 bool IsDiscoverFeedServiceCreatedEarly() {
@@ -735,12 +719,7 @@ bool IsFeedAblationEnabled() {
 }
 
 bool IsFollowUIUpdateEnabled() {
-  std::string launched_countries[1] = {"US"};
-  if (base::Contains(launched_countries,
-                     country_codes::GetCurrentCountryID().CountryCode())) {
-    return true;
-  }
-  return base::FeatureList::IsEnabled(kEnableFollowUIUpdate);
+  return false;
 }
 
 bool IsContentPushNotificationsEnabled() {

@@ -11562,21 +11562,6 @@
             ]
         }
     ],
-    "IOSFollowUIUpdate": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EnableFollowUIUpdate"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSFullscreenImprovement": [
         {
             "platforms": [
@@ -12191,21 +12176,6 @@
                     "name": "Disabled",
                     "disable_features": [
                         "UseUserDefaultsForExitedCleanlyBeaconEnabler"
-                    ]
-                }
-            ]
-        }
-    ],
-    "IOSWebChannels": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledWebChannels",
-                    "enable_features": [
-                        "EnableWebChannels"
                     ]
                 }
             ]

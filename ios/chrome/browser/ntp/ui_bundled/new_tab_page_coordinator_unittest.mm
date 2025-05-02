@@ -6,7 +6,6 @@
 
 #import "base/memory/raw_ptr.h"
 #import "base/test/metrics/histogram_tester.h"
-#import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "components/commerce/core/mock_shopping_service.h"
 #import "components/metrics/metrics_state_manager.h"
@@ -208,11 +207,6 @@ class NewTabPageCoordinatorTest : public PlatformTest {
     toolbar_delegate_ =
         OCMProtocolMock(@protocol(NewTabPageControllerDelegate));
     histogram_tester_ = std::make_unique<base::HistogramTester>();
-
-    std::vector<base::test::FeatureRef> enabled;
-    enabled.push_back(kEnableWebChannels);
-    std::vector<base::test::FeatureRef> disabled;
-    scoped_feature_list_.InitWithFeatures(enabled, disabled);
   }
 
   ProfileIOS* GetProfile() { return profile_.get(); }
@@ -421,7 +415,6 @@ class NewTabPageCoordinatorTest : public PlatformTest {
   id lens_handler_mock_;
   id browser_coordinator_handler_mock_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests that the coordinator doesn't vend an IncognitoViewController VC on the
@@ -700,12 +693,10 @@ TEST_F(NewTabPageCoordinatorTest, TestSaveNTPState) {
   EXPECT_NEAR(scrollPosition, -[coordinator_.NTPViewController heightAboveFeed],
               1);
 
-  // Change the selected feed and set some scroll position.
-  [coordinator_ selectFeedType:FeedTypeFollowing];
+  // Set some scroll position.
   [coordinator_.NTPViewController
       setContentOffsetToTopOfFeedOrLess:scrollPosition + 100];
 
-  FeedType selectedFeed = coordinator_.selectedFeed;
   scrollPosition = coordinator_.NTPViewController.scrollPosition;
 
   // Navigate away from the NTP and stop the coordinator.
@@ -717,53 +708,7 @@ TEST_F(NewTabPageCoordinatorTest, TestSaveNTPState) {
   [coordinator_ didNavigateToNTPInWebState:web_state_];
 
   // Check that newly opened NTP restores saved state.
-  EXPECT_EQ(coordinator_.selectedFeed, selectedFeed);
   EXPECT_NEAR(coordinator_.NTPViewController.scrollPosition, scrollPosition, 1);
-
-  [coordinator_ stop];
-}
-
-// Tests that following feed and discover feed can be selected.
-TEST_F(NewTabPageCoordinatorTest, SelectFeedType) {
-  // Following feed is only available in the US, so we need to override the
-  // VariationsService's stored permenant country to test.
-  ScopedVariationsService scoped_variations_service;
-  scoped_variations_service.Get()->OverrideStoredPermanentCountry("us");
-
-  CreateCoordinator(/*off_the_record=*/false);
-  SetupCommandHandlerMocks();
-  [coordinator_ start];
-  // Simulate the view appearing.
-  [coordinator_.NTPViewController beginAppearanceTransition:YES animated:NO];
-  [coordinator_.NTPViewController endAppearanceTransition];
-  SignIn();
-  // Scroll down slightly.
-  CGFloat scrollPosition =
-      round(coordinator_.NTPViewController.scrollPosition + 100);
-  [coordinator_.NTPViewController
-      setContentOffsetToTopOfFeedOrLess:scrollPosition];
-
-  // Expect the Following feed to be loaded, and scroll position to be
-  // maintained.
-  OCMExpect([component_factory_mock_
-                    followingFeedForBrowser:browser_.get()
-                viewControllerConfiguration:[OCMArg any]
-                                   sortType:FollowingFeedSortTypeByLatest])
-      .andReturn(fake_feed_view_controller_);
-  [coordinator_ selectFeedType:FeedTypeFollowing];
-  EXPECT_OCMOCK_VERIFY(component_factory_mock_);
-  EXPECT_EQ(coordinator_.selectedFeed, FeedTypeFollowing);
-  EXPECT_EQ(coordinator_.NTPViewController.scrollPosition, scrollPosition);
-
-  // Expect the Discover feed to be loaded, and scroll position to be
-  // maintained.
-  OCMExpect([component_factory_mock_ discoverFeedForBrowser:browser_.get()
-                                viewControllerConfiguration:[OCMArg any]])
-      .andReturn(fake_feed_view_controller_);
-  [coordinator_ selectFeedType:FeedTypeDiscover];
-  EXPECT_OCMOCK_VERIFY(component_factory_mock_);
-  EXPECT_EQ(coordinator_.selectedFeed, FeedTypeDiscover);
-  EXPECT_EQ(coordinator_.NTPViewController.scrollPosition, scrollPosition);
 
   [coordinator_ stop];
 }

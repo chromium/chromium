@@ -231,12 +231,6 @@ extern const char kEnableFeedHeaderSettingsDescription[];
 extern const char kEnableFeedCardMenuSignInPromoName[];
 extern const char kEnableFeedCardMenuSignInPromoDescription[];
 
-extern const char kEnableFollowIPHExpParamsName[];
-extern const char kEnableFollowIPHExpParamsDescription[];
-
-extern const char kEnableFollowUIUpdateName[];
-extern const char kEnableFollowUIUpdateDescription[];
-
 extern const char kEnableTraitCollectionRegistrationName[];
 extern const char kEnableTraitCollectionRegistrationDescription[];
 
@@ -275,9 +269,6 @@ extern const char kEnableIdentityInAuthErrorDescription[];
 
 extern const char kEnableVariationsGoogleGroupFilteringName[];
 extern const char kEnableVariationsGoogleGroupFilteringDescription[];
-
-extern const char kEnableWebChannelsName[];
-extern const char kEnableWebChannelsDescription[];
 
 extern const char kEnhancedCalendarName[];
 extern const char kEnhancedCalendarDescription[];

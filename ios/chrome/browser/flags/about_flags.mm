@@ -91,7 +91,6 @@
 #import "ios/chrome/browser/first_run/ui_bundled/features.h"
 #import "ios/chrome/browser/flags/chrome_switches.h"
 #import "ios/chrome/browser/flags/ios_chrome_flag_descriptions.h"
-#import "ios/chrome/browser/follow/model/follow_features.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/features.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/lens/ui_bundled/features.h"
@@ -1666,9 +1665,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      commerce::flag_descriptions::kTrackByDefaultOnMobileName,
      commerce::flag_descriptions::kTrackByDefaultOnMobileDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(commerce::kTrackByDefaultOnMobile)},
-    {"web-feed-ios", flag_descriptions::kEnableWebChannelsName,
-     flag_descriptions::kEnableWebChannelsDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kEnableWebChannels)},
     {"ntp-view-hierarchy-repair",
      flag_descriptions::kNTPViewHierarchyRepairName,
      flag_descriptions::kNTPViewHierarchyRepairDescription, flags_ui::kOsIos,
@@ -1895,13 +1891,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kWebFeedFeedbackRerouteName,
      flag_descriptions::kWebFeedFeedbackRerouteDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kWebFeedFeedbackReroute)},
-    {"enable-follow-IPH-exp-params",
-     flag_descriptions::kEnableFollowIPHExpParamsName,
-     flag_descriptions::kEnableFollowIPHExpParamsDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kEnableFollowIPHExpParams)},
-    {"enable-follow-ui-update", flag_descriptions::kEnableFollowUIUpdateName,
-     flag_descriptions::kEnableFollowUIUpdateDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kEnableFollowUIUpdate)},
     {"ios-browser-edit-menu-metrics",
      flag_descriptions::kIOSBrowserEditMenuMetricsName,
      flag_descriptions::kIOSBrowserEditMenuMetricsDescription, flags_ui::kOsIos,
