@@ -15,6 +15,7 @@
 #include "services/webnn/public/cpp/context_properties.h"
 #include "services/webnn/public/cpp/graph_validation_utils.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
+#include "services/webnn/public/cpp/webnn_types.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom-blink-forward.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_arg_min_max_options.h"
@@ -202,30 +203,30 @@ using blink_mojom::Size2d;
 
 // Maps MLOperand to its id which is used to identify the `mojo::Operand` across
 // processes.
-using OperandToIdMap = HeapHashMap<Member<const MLOperand>, uint64_t>;
+using OperandToIdMap = HeapHashMap<Member<const MLOperand>, webnn::OperandId>;
 
-uint64_t GetOperatorInputId(const MLOperator* op,
-                            const OperandToIdMap& operand_to_id_map,
-                            wtf_size_t index = 0) {
+webnn::OperandId GetOperatorInputId(const MLOperator* op,
+                                    const OperandToIdMap& operand_to_id_map,
+                                    wtf_size_t index = 0) {
   CHECK(op);
   CHECK_LT(index, op->Inputs().size());
   const auto* input = op->Inputs()[index].Get();
   return operand_to_id_map.at(input);
 }
 
-uint64_t GetOperatorOutputId(const MLOperator* op,
-                             const OperandToIdMap& operand_to_id_map,
-                             wtf_size_t index = 0) {
+webnn::OperandId GetOperatorOutputId(const MLOperator* op,
+                                     const OperandToIdMap& operand_to_id_map,
+                                     wtf_size_t index = 0) {
   CHECK(op);
   CHECK_LT(index, op->Outputs().size());
   const auto* output = op->Outputs()[index].Get();
   return operand_to_id_map.at(output);
 }
 
-uint64_t InsertTemporaryOperand(const OperandToIdMap& operand_to_id_map,
-                                webnn::OperandDescriptor descriptor,
-                                blink_mojom::GraphInfo* graph_info) {
-  uint64_t operand_id = NextOperandId(*graph_info);
+webnn::OperandId InsertTemporaryOperand(const OperandToIdMap& operand_to_id_map,
+                                        webnn::OperandDescriptor descriptor,
+                                        blink_mojom::GraphInfo* graph_info) {
+  webnn::OperandId operand_id = NextOperandId(*graph_info);
 
   auto mojo_operand = blink_mojom::Operand::New();
   mojo_operand->kind = blink_mojom::Operand::Kind::kOutput;
@@ -250,14 +251,14 @@ Vector<uint32_t> PermuteShape(base::span<const uint32_t> shape,
 
 // Insert a transpose operation after the given operand. Returns the ID of the
 // operand holding the transposed result.
-uint64_t InsertInputTranspose(
+webnn::OperandId InsertInputTranspose(
     const webnn::ContextProperties& context_properties,
     const OperandToIdMap& operand_to_id_map,
     const MLOperand* operand,
     base::span<const uint32_t> permutation,
     blink_mojom::GraphInfo* graph_info,
     const String& label) {
-  uint64_t operand_id = InsertTemporaryOperand(
+  webnn::OperandId operand_id = InsertTemporaryOperand(
       operand_to_id_map,
       *webnn::OperandDescriptor::Create(
           context_properties, operand->DataType(),
@@ -601,10 +602,10 @@ void SerializeBatchNormalizationOperation(
   }
 
   const MLOperand* input_operand = batch_normalization->Inputs()[0];
-  uint64_t input_operand_id = operand_to_id_map.at(input_operand);
+  webnn::OperandId input_operand_id = operand_to_id_map.at(input_operand);
 
   const MLOperand* output_operand = batch_normalization->Outputs()[0];
-  uint64_t output_operand_id = operand_to_id_map.at(output_operand);
+  webnn::OperandId output_operand_id = operand_to_id_map.at(output_operand);
 
   uint32_t axis = options->axis();
   const std::optional<std::vector<uint32_t>> input_permutation =
@@ -664,7 +665,7 @@ OperationPtr CreateConcatOperation(const OperandToIdMap& operand_to_id_map,
                                    const MLOperator* concat) {
   const auto& inputs = concat->Inputs();
 
-  Vector<uint64_t> input_operand_ids;
+  Vector<webnn::OperandId> input_operand_ids;
   input_operand_ids.reserve(inputs.size());
   std::ranges::transform(inputs, std::back_inserter(input_operand_ids),
                          [operand_to_id_map](const auto& input) {
@@ -738,7 +739,7 @@ std::optional<String> SerializeConv2dOperation(
 
   const MLOperand* input_operand = conv2d->Inputs()[0];
   const MLOperand* output_operand = conv2d->Outputs()[0];
-  uint64_t output_operand_id = operand_to_id_map.at(output_operand);
+  webnn::OperandId output_operand_id = operand_to_id_map.at(output_operand);
 
   const std::optional<base::span<const uint32_t>> input_permutation =
       GetInputOperandPermutation(options->inputLayout().AsEnum(),
@@ -858,11 +859,11 @@ OperationPtr CreateElementWiseBinaryOperator(
     const OperandToIdMap& operand_to_id_map,
     const MLOperator* binary,
     const blink_mojom::ElementWiseBinary::Kind& kind) {
-  const uint64_t lhs_operand_id =
+  const webnn::OperandId lhs_operand_id =
       GetOperatorInputId(binary, operand_to_id_map, 0);
-  const uint64_t rhs_operand_id =
+  const webnn::OperandId rhs_operand_id =
       GetOperatorInputId(binary, operand_to_id_map, 1);
-  const uint64_t output_operand_id =
+  const webnn::OperandId output_operand_id =
       GetOperatorOutputId(binary, operand_to_id_map);
 
   auto operator_mojo = ElementWiseBinary::New();
@@ -1025,13 +1026,13 @@ OperationPtr CreateGruOperation(const OperandToIdMap& operand_to_id_map,
 base::expected<OperationPtr, String> CreateGruCellOperation(
     const OperandToIdMap& operand_to_id_map,
     const MLOperator* gru_cell) {
-  uint64_t input_operand_id =
+  webnn::OperandId input_operand_id =
       GetOperatorInputId(gru_cell, operand_to_id_map, 0);
-  uint64_t weight_operand_id =
+  webnn::OperandId weight_operand_id =
       GetOperatorInputId(gru_cell, operand_to_id_map, 1);
-  uint64_t recurrent_weight_operand_id =
+  webnn::OperandId recurrent_weight_operand_id =
       GetOperatorInputId(gru_cell, operand_to_id_map, 2);
-  uint64_t hidden_state_operand_id =
+  webnn::OperandId hidden_state_operand_id =
       GetOperatorInputId(gru_cell, operand_to_id_map, 3);
 
   const auto* gru_cell_operator =
@@ -1042,11 +1043,11 @@ base::expected<OperationPtr, String> CreateGruCellOperation(
       static_cast<const MLGruCellOptions*>(gru_cell->Options());
   CHECK(options);
 
-  std::optional<uint64_t> bias_operand_id;
+  std::optional<webnn::OperandId> bias_operand_id;
   if (options->hasBias()) {
     bias_operand_id = operand_to_id_map.at(options->bias());
   }
-  std::optional<uint64_t> recurrent_bias_operand_id;
+  std::optional<webnn::OperandId> recurrent_bias_operand_id;
   if (options->hasRecurrentBias()) {
     recurrent_bias_operand_id = operand_to_id_map.at(options->recurrentBias());
   }
@@ -1061,7 +1062,8 @@ base::expected<OperationPtr, String> CreateGruCellOperation(
         mojo::BlinkRecurrentNetworkActivationToMojo(activation));
   }
 
-  uint64_t output_operand_id = GetOperatorOutputId(gru_cell, operand_to_id_map);
+  webnn::OperandId output_operand_id =
+      GetOperatorOutputId(gru_cell, operand_to_id_map);
 
   auto gru_cell_mojo = blink_mojom::GruCell::New(
       input_operand_id, weight_operand_id, recurrent_weight_operand_id,
@@ -1126,7 +1128,7 @@ void SerializeInstanceNormalizationOperation(
       webnn::mojom::blink::InstanceNormalization::New();
   const MLOperand* input_operand = instance_normalization->Inputs()[0];
   const MLOperand* output_operand = instance_normalization->Outputs()[0];
-  uint64_t output_operand_id = operand_to_id_map.at(output_operand);
+  webnn::OperandId output_operand_id = operand_to_id_map.at(output_operand);
 
   const auto* options = static_cast<const MLInstanceNormalizationOptions*>(
       instance_normalization->Options());
@@ -1242,30 +1244,30 @@ OperationPtr CreateLstmOperation(const OperandToIdMap& operand_to_id_map,
 base::expected<OperationPtr, String> CreateLstmCellOperation(
     const OperandToIdMap& operand_to_id_map,
     const MLOperator* lstm_cell) {
-  uint64_t input_operand_id =
+  webnn::OperandId input_operand_id =
       GetOperatorInputId(lstm_cell, operand_to_id_map, 0);
-  uint64_t weight_operand_id =
+  webnn::OperandId weight_operand_id =
       GetOperatorInputId(lstm_cell, operand_to_id_map, 1);
-  uint64_t recurrent_weight_operand_id =
+  webnn::OperandId recurrent_weight_operand_id =
       GetOperatorInputId(lstm_cell, operand_to_id_map, 2);
-  uint64_t hidden_state_operand_id =
+  webnn::OperandId hidden_state_operand_id =
       GetOperatorInputId(lstm_cell, operand_to_id_map, 3);
-  uint64_t cell_state_operand_id =
+  webnn::OperandId cell_state_operand_id =
       GetOperatorInputId(lstm_cell, operand_to_id_map, 4);
 
   const auto* options =
       static_cast<const MLLstmCellOptions*>(lstm_cell->Options());
   CHECK(options);
 
-  std::optional<uint64_t> bias_operand_id;
+  std::optional<webnn::OperandId> bias_operand_id;
   if (options->hasBias()) {
     bias_operand_id = operand_to_id_map.at(options->bias());
   }
-  std::optional<uint64_t> recurrent_bias_operand_id;
+  std::optional<webnn::OperandId> recurrent_bias_operand_id;
   if (options->hasRecurrentBias()) {
     recurrent_bias_operand_id = operand_to_id_map.at(options->recurrentBias());
   }
-  std::optional<uint64_t> peephole_weight_operand_id;
+  std::optional<webnn::OperandId> peephole_weight_operand_id;
   if (options->hasPeepholeWeight()) {
     peephole_weight_operand_id =
         operand_to_id_map.at(options->peepholeWeight());
@@ -1281,7 +1283,7 @@ base::expected<OperationPtr, String> CreateLstmCellOperation(
         mojo::BlinkRecurrentNetworkActivationToMojo(activation));
   }
 
-  Vector<uint64_t> output_operand_ids;
+  Vector<webnn::OperandId> output_operand_ids;
   CHECK_EQ(lstm_cell->Outputs().size(), 2u);
   output_operand_ids.reserve(lstm_cell->Outputs().size());
   output_operand_ids.push_back(
@@ -1362,7 +1364,7 @@ void SerializePool2dOperation(
   pool2d_mojo->kind = kind;
   const MLOperand* input_operand = pool2d->Inputs()[0];
   const MLOperand* output_operand = pool2d->Outputs()[0];
-  uint64_t output_operand_id = operand_to_id_map.at(output_operand);
+  webnn::OperandId output_operand_id = operand_to_id_map.at(output_operand);
   const auto* options =
       static_cast<const blink::MLPool2dOptions*>(pool2d->Options());
   CHECK(options);
@@ -1534,8 +1536,8 @@ void SerializeResample2dOperation(
 
   const MLOperand* input_operand = resample2d->Inputs()[0];
   const MLOperand* output_operand = resample2d->Outputs()[0];
-  uint64_t input_operand_id = operand_to_id_map.at(input_operand);
-  uint64_t output_operand_id = operand_to_id_map.at(output_operand);
+  webnn::OperandId input_operand_id = operand_to_id_map.at(input_operand);
+  webnn::OperandId output_operand_id = operand_to_id_map.at(output_operand);
 
   std::ranges::sort(axes);
   const std::optional<std::vector<uint32_t>> input_permutation =
@@ -1796,7 +1798,8 @@ OperationPtr CreateWhereOperation(const OperandToIdMap& operand_to_id_map,
 
 }  // namespace
 
-uint64_t NextOperandId(const webnn::mojom::blink::GraphInfo& graph_info) {
+webnn::OperandId NextOperandId(
+    const webnn::mojom::blink::GraphInfo& graph_info) {
   // This count must start at 1 because 0 is a reserved element in a
   // WTF::HashMap (yes, really).
   return graph_info.id_to_operand_map.size() + 1;
@@ -1804,7 +1807,8 @@ uint64_t NextOperandId(const webnn::mojom::blink::GraphInfo& graph_info) {
 
 // TODO(crbug.com/1504405): Use a lookup table to simplifie the switch logic.
 std::optional<String> SerializeMojoOperation(
-    const HeapHashMap<Member<const MLOperand>, uint64_t>& operand_to_id_map,
+    const HeapHashMap<Member<const MLOperand>, webnn::OperandId>&
+        operand_to_id_map,
     const webnn::ContextProperties& context_properties,
     const MLOperator* op,
     webnn::mojom::blink::GraphInfo* graph_info) {

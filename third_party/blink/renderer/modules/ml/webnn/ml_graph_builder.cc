@@ -21,6 +21,7 @@
 #include "services/webnn/public/cpp/supported_tensors.h"
 #include "services/webnn/public/cpp/webnn_errors.h"
 #include "services/webnn/public/cpp/webnn_trace.h"
+#include "services/webnn/public/cpp/webnn_types.h"
 #include "services/webnn/public/mojom/features.mojom-blink.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom-blink.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom-blink.h"
@@ -1074,13 +1075,13 @@ MLOperand* BuildPool2d(MLGraphBuilder* builder,
   return output;
 }
 
-Vector<uint64_t> GetInputs(const blink_mojom::Operation& operation) {
+Vector<webnn::OperandId> GetInputs(const blink_mojom::Operation& operation) {
   switch (operation.which()) {
     case blink_mojom::Operation::Tag::kArgMinMax:
       return {operation.get_arg_min_max()->input_operand_id};
     case blink_mojom::Operation::Tag::kBatchNormalization: {
       const auto& batch_normalization = *operation.get_batch_normalization();
-      Vector<uint64_t> inputs;
+      Vector<webnn::OperandId> inputs;
       inputs.reserve(3 + batch_normalization.bias_operand_id.has_value() +
                      batch_normalization.scale_operand_id.has_value());
 
@@ -1102,7 +1103,7 @@ Vector<uint64_t> GetInputs(const blink_mojom::Operation& operation) {
       return operation.get_concat()->input_operand_ids;
     case blink_mojom::Operation::Tag::kConv2d: {
       const auto& conv2d = *operation.get_conv2d();
-      Vector<uint64_t> inputs;
+      Vector<webnn::OperandId> inputs;
       inputs.reserve(2 + conv2d.bias_operand_id.has_value());
 
       inputs.push_back(conv2d.input_operand_id);
@@ -1141,7 +1142,7 @@ Vector<uint64_t> GetInputs(const blink_mojom::Operation& operation) {
       return {operation.get_gelu()->input_operand_id};
     case blink_mojom::Operation::Tag::kGemm: {
       const auto& gemm = *operation.get_gemm();
-      Vector<uint64_t> inputs;
+      Vector<webnn::OperandId> inputs;
       inputs.reserve(2 + gemm.c_operand_id.has_value());
 
       inputs.push_back(gemm.a_operand_id);
@@ -1154,7 +1155,7 @@ Vector<uint64_t> GetInputs(const blink_mojom::Operation& operation) {
     }
     case blink_mojom::Operation::Tag::kGru: {
       const auto& gru = *operation.get_gru();
-      Vector<uint64_t> inputs;
+      Vector<webnn::OperandId> inputs;
       inputs.reserve(3 + gru.bias_operand_id.has_value() +
                      gru.recurrent_bias_operand_id.has_value() +
                      gru.initial_hidden_state_operand_id.has_value());
@@ -1176,7 +1177,7 @@ Vector<uint64_t> GetInputs(const blink_mojom::Operation& operation) {
     }
     case blink_mojom::Operation::Tag::kGruCell: {
       const auto& gru_cell = *operation.get_gru_cell();
-      Vector<uint64_t> inputs;
+      Vector<webnn::OperandId> inputs;
       inputs.reserve(4 + gru_cell.bias_operand_id.has_value() +
                      gru_cell.recurrent_bias_operand_id.has_value());
 
@@ -1199,7 +1200,7 @@ Vector<uint64_t> GetInputs(const blink_mojom::Operation& operation) {
       return {operation.get_hard_swish()->input_operand_id};
     case blink_mojom::Operation::Tag::kLayerNormalization: {
       const auto& layer_normalization = *operation.get_layer_normalization();
-      Vector<uint64_t> inputs;
+      Vector<webnn::OperandId> inputs;
       inputs.reserve(1 + layer_normalization.bias_operand_id.has_value() +
                      layer_normalization.scale_operand_id.has_value());
 
@@ -1216,7 +1217,7 @@ Vector<uint64_t> GetInputs(const blink_mojom::Operation& operation) {
     case blink_mojom::Operation::Tag::kInstanceNormalization: {
       const auto& instance_normalization =
           *operation.get_instance_normalization();
-      Vector<uint64_t> inputs;
+      Vector<webnn::OperandId> inputs;
       inputs.reserve(1 + instance_normalization.bias_operand_id.has_value() +
                      instance_normalization.scale_operand_id.has_value());
 
@@ -1236,7 +1237,7 @@ Vector<uint64_t> GetInputs(const blink_mojom::Operation& operation) {
       return {operation.get_linear()->input_operand_id};
     case blink_mojom::Operation::Tag::kLstm: {
       const auto& lstm = *operation.get_lstm();
-      Vector<uint64_t> inputs;
+      Vector<webnn::OperandId> inputs;
       inputs.reserve(3 + lstm.bias_operand_id.has_value() +
                      lstm.recurrent_bias_operand_id.has_value() +
                      lstm.peephole_weight_operand_id.has_value() +
@@ -1266,7 +1267,7 @@ Vector<uint64_t> GetInputs(const blink_mojom::Operation& operation) {
     }
     case blink_mojom::Operation::Tag::kLstmCell: {
       const auto& lstm_cell = *operation.get_lstm_cell();
-      Vector<uint64_t> inputs;
+      Vector<webnn::OperandId> inputs;
       inputs.reserve(5 + lstm_cell.bias_operand_id.has_value() +
                      lstm_cell.recurrent_bias_operand_id.has_value() +
                      lstm_cell.peephole_weight_operand_id.has_value());
@@ -1465,13 +1466,13 @@ base::expected<blink_mojom::GraphInfoPtr, String> BuildWebNNGraphInfo(
   // The `GraphInfo` represents an entire information of WebNN graph.
   auto graph_info = blink_mojom::GraphInfo::New();
 
-  HeapHashMap<Member<const MLOperand>, uint64_t> operand_to_id_map;
+  HeapHashMap<Member<const MLOperand>, webnn::OperandId> operand_to_id_map;
   for (const auto& [name, operand] : named_outputs) {
     // Create `mojo::Operand` for output operands of graph with the name.
     auto output_operand =
         mojo::ConvertTo<blink_mojom::OperandPtr>(operand.Get());
     output_operand->name = name;
-    uint64_t operand_id = NextOperandId(*graph_info);
+    webnn::OperandId operand_id = NextOperandId(*graph_info);
     graph_info->id_to_operand_map.insert(operand_id, std::move(output_operand));
     graph_info->output_operands.push_back(operand_id);
     operand_to_id_map.insert(operand, operand_id);
@@ -1489,7 +1490,7 @@ base::expected<blink_mojom::GraphInfoPtr, String> BuildWebNNGraphInfo(
       switch (operand->Kind()) {
         case blink_mojom::Operand::Kind::kInput: {
           // Create `mojo::Operand` for the input MLOperand.
-          uint64_t operand_id = NextOperandId(*graph_info);
+          webnn::OperandId operand_id = NextOperandId(*graph_info);
           graph_info->id_to_operand_map.insert(
               operand_id,
               mojo::ConvertTo<blink_mojom::OperandPtr>(operand.Get()));
@@ -1500,7 +1501,7 @@ base::expected<blink_mojom::GraphInfoPtr, String> BuildWebNNGraphInfo(
         }
         case blink_mojom::Operand::Kind::kConstant: {
           // Convert `mojo::Operand` for constant operand.
-          uint64_t operand_id = NextOperandId(*graph_info);
+          webnn::OperandId operand_id = NextOperandId(*graph_info);
           graph_info->id_to_operand_map.insert(
               operand_id,
               mojo::ConvertTo<webnn::mojom::blink::OperandPtr>(operand.Get()));
@@ -1526,7 +1527,7 @@ base::expected<blink_mojom::GraphInfoPtr, String> BuildWebNNGraphInfo(
       // Because the graph's output operands are already converted before, this
       // operand should be an intermediate operand that connects with two
       // operators. Create `mojo::Operand` for this operand.
-      uint64_t operand_id = NextOperandId(*graph_info);
+      webnn::OperandId operand_id = NextOperandId(*graph_info);
       graph_info->id_to_operand_map.insert(
           operand_id, mojo::ConvertTo<blink_mojom::OperandPtr>(operand.Get()));
       operand_to_id_map.insert(operand, operand_id);
@@ -1548,11 +1549,11 @@ base::expected<blink_mojom::GraphInfoPtr, String> BuildWebNNGraphInfo(
 // its reshaped form.
 void FoldReshapableConstants(blink_mojom::GraphInfo& graph_info) {
   // Keep track of new IDs for constant operands.
-  HashMap<uint64_t, uint64_t> constant_id_remappings;
+  HashMap<webnn::OperandId, webnn::OperandId> constant_id_remappings;
 
   for (const auto& [initial_constant_id, handle] :
        graph_info.constant_operand_ids_to_handles) {
-    uint64_t constant_operand_id = initial_constant_id;
+    webnn::OperandId constant_operand_id = initial_constant_id;
 
     // For each constant operand, keep walking down the dependencies until no
     // reshape is found.
@@ -1596,7 +1597,7 @@ void FoldReshapableConstants(blink_mojom::GraphInfo& graph_info) {
       auto constant_operand =
           graph_info.id_to_operand_map.Take(constant_operand_id);
 
-      uint64_t reshape_output_id =
+      webnn::OperandId reshape_output_id =
           (*reshape_operation_it)->get_reshape()->output_operand_id;
       auto reshape_operand =
           graph_info.id_to_operand_map.Take(reshape_output_id);
