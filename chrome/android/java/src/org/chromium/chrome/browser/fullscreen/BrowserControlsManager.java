@@ -718,11 +718,13 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
 
             updateControlOffset();
 
-            // If there's an animation, updating offsets here causes incorrect animation frames
-            // because the browser submits a frame with the height update before the offsets in the
-            // renderer and browser are updated.
+            // With BCIV, if there's an animation, updating offsets here causes incorrect animation
+            // frames because the browser submits a frame with the height update before the offsets
+            // in the renderer and browser are updated.
+            // When visibility is forced, BCIV doesn't apply, so offsets should still be updated.
             if (!ChromeFeatureList.sBcivBottomControls.isEnabled()
-                    || !shouldAnimateBrowserControlsHeightChanges()) {
+                    || !shouldAnimateBrowserControlsHeightChanges()
+                    || isVisibilityForced()) {
                 notifyControlOffsetChanged();
             }
             notifyControlsPositionChanged();
