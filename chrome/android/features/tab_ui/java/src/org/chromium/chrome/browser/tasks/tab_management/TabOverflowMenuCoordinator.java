@@ -8,6 +8,7 @@ import android.app.Activity;
 import android.content.ComponentCallbacks;
 import android.content.Context;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.database.DataSetObserver;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
@@ -286,8 +287,16 @@ public abstract class TabOverflowMenuCoordinator<T> {
 
     private static void offsetPopupRect(Context context, boolean isIncognito, Rect rect) {
         if (isIncognito) return;
-        rect.offset(
-                0, -context.getResources().getDimensionPixelSize(R.dimen.popup_menu_shadow_length));
+        Resources resources = context.getResources();
+        rect.offset(0, -resources.getDimensionPixelSize(R.dimen.popup_menu_shadow_length));
+        Drawable menuBackground = getMenuBackground(context, isIncognito);
+        Rect padding = new Rect();
+        menuBackground.getPadding(padding);
+        // Subtract off the horizontal padding (for dark mode).
+        rect.right -= (padding.left + padding.right);
+        // Make up for padding lost above and then additionally add in the shadow padding so the
+        // content will be the correct width.
+        rect.right += resources.getDimensionPixelSize(R.dimen.popup_menu_shadow_length) * 4;
     }
 
     // TODO(crbug.com/357878838): Pass the activity through constructor and setup test to test this

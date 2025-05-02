@@ -769,7 +769,7 @@ public class StripLayoutTab extends StripLayoutView {
         out.set(
                 Math.round((getDrawX() + FOLIO_FOOT_LENGTH_DP) * dpToPx),
                 Math.round(getDrawY() * dpToPx),
-                Math.round((getDrawX() + getWidth()) * dpToPx),
+                Math.round((getDrawX() + getWidth() - FOLIO_FOOT_LENGTH_DP) * dpToPx),
                 Math.round((getDrawY() + getHeight()) * dpToPx));
     }
 

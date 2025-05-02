@@ -492,8 +492,23 @@ public class TabContextMenuCoordinatorUnitTest {
         rectProvider.setRect(new Rect(0, 10, 50, 40));
         mTabContextMenuCoordinator.showMenu(rectProvider, 0);
         assertEquals(
-                "Expected anchor rect to have been offset by popup_menu_shadow_length",
-                new Rect(0, 4, 50, 34),
+                "Expected anchor rect to have a top offset of popup_menu_shadow_length, "
+                        + "and a width which accounts for the popup_menu_shadow_length",
+                new Rect(0, 4, 74, 34),
+                rectProvider.getRect());
+        // Clean up to avoid "object not destroyed after test".
+        mTabContextMenuCoordinator.destroyMenuForTesting();
+    }
+
+    @Test
+    public void testAnchor_offset_incognito() {
+        setupWithIncognito(/* incognito= */ true);
+        RectProvider rectProvider = new RectProvider();
+        rectProvider.setRect(new Rect(0, 10, 50, 40));
+        mTabContextMenuCoordinator.showMenu(rectProvider, 0);
+        assertEquals(
+                "Expected anchor rect to not have any offset in incognito",
+                new Rect(0, 10, 50, 40),
                 rectProvider.getRect());
         // Clean up to avoid "object not destroyed after test".
         mTabContextMenuCoordinator.destroyMenuForTesting();

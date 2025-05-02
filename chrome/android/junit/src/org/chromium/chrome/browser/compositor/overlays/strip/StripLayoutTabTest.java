@@ -250,14 +250,15 @@ public class StripLayoutTabTest {
         int folioFootLengthPx =
                 Math.round(
                         mContext.getResources().getDisplayMetrics().density * FOLIO_FOOT_LENGTH_DP);
-        int width = folioFootLengthPx + 20; // Should be larger than folioFootLengthPx
+        int widthWithoutFolio = 20;
+        int width = folioFootLengthPx + widthWithoutFolio; // Should be > than folioFootLengthPx
         int height = 10; // Arbitrary
         mNormalTab.setWidth(width);
         mNormalTab.setHeight(10);
 
         Rect rect = new Rect();
         mNormalTab.getAnchorRect(rect);
-        assertEquals(new Rect(folioFootLengthPx, 0, width, height), rect);
+        assertEquals(new Rect(folioFootLengthPx, 0, widthWithoutFolio, height), rect);
     }
 
     private StripLayoutTab createStripLayoutTab(boolean incognito) {
