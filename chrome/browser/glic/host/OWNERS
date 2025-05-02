@@ -8,5 +8,7 @@ per-file glic_actor_controller.cc=file://chrome/browser/actor/OWNERS
 per-file glic_actor_controller.h=file://chrome/browser/actor/OWNERS
 per-file glic_actor_controller_interactive_uitest.cc=file://chrome/browser/actor/OWNERS
 
+per-file glic_annotation_manager*=adithyas@chromium.org
+
 per-file *.mojom=set noparent
 per-file *.mojom=file://ipc/SECURITY_OWNERS
