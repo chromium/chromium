@@ -604,8 +604,15 @@ void EventReportValidator::ValidateDlpRule(
     const ContentAnalysisResponse::Result::TriggeredRule& expected_rule) {
   ValidateField(value, SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleName,
                 expected_rule.rule_name());
-  ValidateField(value, SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleId,
-                expected_rule.rule_id());
+  if (expected_rule.rule_id().empty()) {
+    ValidateField(value, SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleId,
+                  std::optional<int>());
+  } else {
+    int expected_rule_id = 0;
+    ASSERT_TRUE(base::StringToInt(expected_rule.rule_id(), &expected_rule_id));
+    ValidateField(value, SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleId,
+                  std::optional<int>(expected_rule_id));
+  }
 }
 
 void EventReportValidator::ValidateFilenameMappedAttributes(
@@ -676,13 +683,21 @@ void EventReportValidator::ValidateDataControlsAttributes(
           SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleName);
       ASSERT_TRUE(name);
 
-      const std::string* id = rule.GetDict().FindString(
-          SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleId);
-      ASSERT_TRUE(id);
-
       ASSERT_TRUE(data_controls_triggered_rules_.count(i));
       ASSERT_EQ(data_controls_triggered_rules_[i].rule_name, *name);
-      ASSERT_EQ(data_controls_triggered_rules_[i].rule_id, *id);
+
+      std::optional<int> id = rule.GetDict().FindInt(
+          SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleId);
+      if (id) {
+        int expected_rule_id = 0;
+        ASSERT_TRUE(base::StringToInt(data_controls_triggered_rules_[i].rule_id,
+                                      &expected_rule_id));
+        ASSERT_EQ(expected_rule_id, *id);
+      } else {
+        ASSERT_TRUE(data_controls_triggered_rules_[i].rule_id.empty())
+            << " Got rule_id " << data_controls_triggered_rules_[i].rule_id
+            << " instead of nothing.";
+      }
 
       ++i;
     }

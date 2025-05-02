@@ -162,21 +162,21 @@ TEST_F(DataControlsReportingServiceTest, NoReportInUnmanagedProfile) {
           .size = 1234,
           .format_type = ui::ClipboardFormatType::PlainTextType(),
       },
-      Verdict::Warn({{0, {"rule_1_id", "rule_1_name"}}}));
+      Verdict::Warn({{0, {"1", "rule_1_name"}}}));
   service->ReportPasteWarningBypassed(
       managed_endpoint(GURL(kGoogleUrl)),
       unmanaged_endpoint(GURL(kChromiumUrl)), {},
-      Verdict::Warn({{0, {"rule_1_id", "rule_1_name"}}}));
+      Verdict::Warn({{0, {"1", "rule_1_name"}}}));
   service->ReportCopy(
       unmanaged_endpoint(GURL(kChromiumUrl)),
       {
           .size = 1234,
           .format_type = ui::ClipboardFormatType::PlainTextType(),
       },
-      Verdict::Warn({{0, {"rule_1_id", "rule_1_name"}}}));
+      Verdict::Warn({{0, {"1", "rule_1_name"}}}));
   service->ReportCopyWarningBypassed(
       unmanaged_endpoint(GURL(kChromiumUrl)), {},
-      Verdict::Warn({{0, {"rule_1_id", "rule_1_name"}}}));
+      Verdict::Warn({{0, {"1", "rule_1_name"}}}));
 }
 
 TEST_F(DataControlsReportingServiceTest, NoReportWithoutTriggeredRules) {
@@ -253,7 +253,7 @@ TEST_F(DataControlsReportingServiceTest, NoReportWithoutTriggeredRules) {
 
 TEST_F(DataControlsReportingServiceTest,
        PasteInManagedProfile_ManagedSourceProfile) {
-  Verdict::TriggeredRules triggered_rules = {{0, {"rule_1_id", "rule_1_name"}}};
+  Verdict::TriggeredRules triggered_rules = {{0, {"1", "rule_1_name"}}};
   auto validator = helper_->CreateValidator();
   validator.ExpectDataControlsSensitiveDataEvent(
       /*expected_url=*/
@@ -287,8 +287,8 @@ TEST_F(DataControlsReportingServiceTest,
 TEST_F(DataControlsReportingServiceTest,
        PasteInManagedProfile_IncognitoManagedSourceProfile) {
   Verdict::TriggeredRules triggered_rules = {
-      {0, {"rule_1_id", "rule_1_name"}},
-      {1, {"rule_2_id", "rule_2_name"}},
+      {0, {"1", "rule_1_name"}},
+      {1, {"2", "rule_2_name"}},
   };
   auto validator = helper_->CreateValidator();
   validator.ExpectDataControlsSensitiveDataEvent(
@@ -323,7 +323,7 @@ TEST_F(DataControlsReportingServiceTest,
 
 TEST_F(DataControlsReportingServiceTest,
        PasteInManagedProfile_UnmanagedSourceProfile) {
-  Verdict::TriggeredRules triggered_rules = {{0, {"rule_1_id", "rule_1_name"}}};
+  Verdict::TriggeredRules triggered_rules = {{0, {"1", "rule_1_name"}}};
   auto validator = helper_->CreateValidator();
   validator.ExpectDataControlsSensitiveDataEvent(
       /*expected_url=*/
@@ -362,7 +362,7 @@ TEST_F(DataControlsReportingServiceTest,
   managed_profile_->GetPrefs()->SetInteger(kDataControlsRulesScopePref,
                                            policy::POLICY_SCOPE_MACHINE);
 
-  Verdict::TriggeredRules triggered_rules = {{0, {"rule_1_id", "rule_1_name"}}};
+  Verdict::TriggeredRules triggered_rules = {{0, {"1", "rule_1_name"}}};
   auto validator = helper_->CreateValidator();
   validator.ExpectDataControlsSensitiveDataEvent(
       /*expected_url=*/
@@ -394,7 +394,7 @@ TEST_F(DataControlsReportingServiceTest,
 }
 
 TEST_F(DataControlsReportingServiceTest, CopyInManagedProfile) {
-  Verdict::TriggeredRules triggered_rules = {{0, {"rule_1_id", "rule_1_name"}}};
+  Verdict::TriggeredRules triggered_rules = {{0, {"1", "rule_1_name"}}};
   auto* service = ReportingServiceFactory::GetInstance()->GetForBrowserContext(
       managed_profile_);
 

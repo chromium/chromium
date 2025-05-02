@@ -473,10 +473,16 @@ void EventReportValidatorBase::ValidateField(
     const base::Value::Dict* value,
     const std::string& field_key,
     const std::optional<int>& expected_value) {
-  ASSERT_EQ(value->FindInt(field_key), expected_value)
-      << "Mismatch in field " << field_key
-      << "\nActual value: " << value->FindInt(field_key).value()
-      << "\nExpected value: " << expected_value.value();
+  if (expected_value.has_value()) {
+    ASSERT_EQ(value->FindInt(field_key), expected_value)
+        << "Mismatch in field " << field_key
+        << "\nActual value: " << value->FindInt(field_key).value()
+        << "\nExpected value: " << expected_value.value();
+  } else {
+    ASSERT_FALSE(value->FindInt(field_key).has_value())
+        << "Field " << field_key << " should not be populated. It has value "
+        << *value->FindInt(field_key);
+  }
 }
 
 void EventReportValidatorBase::ValidateField(const base::Value::Dict* value,
@@ -503,7 +509,7 @@ void EventReportValidatorBase::ValidateThreatInfo(
         expected_rule_info) {
   ValidateField(value, kKeyTriggeredRuleName, expected_rule_info.rule_name());
   ValidateField(value, kKeyTriggeredRuleId,
-                base::NumberToString(expected_rule_info.rule_id()));
+                std::optional<int>(expected_rule_info.rule_id()));
   ValidateField(value, kKeyUrlCategory, expected_rule_info.url_category());
   ValidateField(value, kKeyAction,
                 chrome::cros::reporting::proto::TriggeredRuleInfo::Action_Name(

@@ -139,8 +139,11 @@ void AddTriggeredRuleInfoToUrlFilteringInterstitialEvent(
     base::Value::Dict triggered_rule;
     triggered_rule.Set(kKeyTriggeredRuleName,
                        threat_info.matched_url_navigation_rule().rule_name());
-    triggered_rule.Set(kKeyTriggeredRuleId,
-                       threat_info.matched_url_navigation_rule().rule_id());
+    int rule_id = 0;
+    if (base::StringToInt(threat_info.matched_url_navigation_rule().rule_id(),
+                          &rule_id)) {
+      triggered_rule.Set(kKeyTriggeredRuleId, rule_id);
+    }
     triggered_rule.Set(
         kKeyUrlCategory,
         threat_info.matched_url_navigation_rule().matched_url_category());

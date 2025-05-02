@@ -1225,8 +1225,8 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestDataControlsSensitiveDataEvent) {
       .WillOnce(CaptureArg(&report));
 
   TriggerOnDataControlsSensitiveDataEvent({
-      {0, {"rule_id_1", "rule_name_1"}},
-      {1, {"rule_id_2", "rule_name_2"}},
+      {0, {"1", "rule_name_1"}},
+      {1, {"2", "rule_name_2"}},
   });
   base::RunLoop().RunUntilIdle();
 
@@ -1266,15 +1266,13 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestDataControlsSensitiveDataEvent) {
       *rule_1.FindString(SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleName),
       "rule_name_1");
   EXPECT_EQ(
-      *rule_1.FindString(SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleId),
-      "rule_id_1");
+      *rule_1.FindInt(SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleId), 1);
   const base::Value::Dict& rule_2 = (*triggered_rule_info)[1].GetDict();
   EXPECT_EQ(
       *rule_2.FindString(SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleName),
       "rule_name_2");
   EXPECT_EQ(
-      *rule_2.FindString(SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleId),
-      "rule_id_2");
+      *rule_2.FindInt(SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleId), 2);
 }
 #endif  // BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
 

@@ -132,7 +132,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
         return &set;
       }(),
       /*trigger=*/"WEB_CONTENT_UPLOAD",
-      /*triggered_rules=*/{{0, {"id", "name"}}},
+      /*triggered_rules=*/{{0, {"123", "name"}}},
       /*event_result=*/"EVENT_RESULT_BLOCKED",
       /*profile_username=*/kUserName,
       /*profile_identifier=*/browser()->profile()->GetPath().AsUTF8Unsafe(),
@@ -140,7 +140,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
 
   data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
                                    "name": "name",
-                                   "rule_id": "id",
+                                   "rule_id": "123",
                                    "destinations": {
                                      "urls": ["google.com"]
                                    },
@@ -194,7 +194,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
         return &set;
       }(),
       /*trigger=*/"WEB_CONTENT_UPLOAD",
-      /*triggered_rules=*/{{0, {"rule_id", "rule_name"}}},
+      /*triggered_rules=*/{{0, {"222", "rule_name"}}},
       /*event_result=*/"EVENT_RESULT_BLOCKED",
       /*profile_username=*/kUserName,
       /*profile_identifier=*/browser()->profile()->GetPath().AsUTF8Unsafe(),
@@ -202,7 +202,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
 
   data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
                                    "name": "rule_name",
-                                   "rule_id": "rule_id",
+                                   "rule_id": "222",
                                    "destinations": {
                                      "urls": ["google.com"]
                                    },
@@ -256,7 +256,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
         return &set;
       }(),
       /*trigger=*/"WEB_CONTENT_UPLOAD",
-      /*triggered_rules=*/{{0, {"warn_rule_ID", "warn_rule_name"}}},
+      /*triggered_rules=*/{{0, {"333", "warn_rule_name"}}},
       /*event_result=*/"EVENT_RESULT_WARNED",
       /*profile_username=*/kUserName,
       /*profile_identifier=*/browser()->profile()->GetPath().AsUTF8Unsafe(),
@@ -264,7 +264,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
 
   data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
                                    "name": "warn_rule_name",
-                                   "rule_id": "warn_rule_ID",
+                                   "rule_id": "333",
                                    "destinations": {
                                      "urls": ["google.com"]
                                    },
@@ -313,7 +313,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
         return &set;
       }(),
       /*trigger=*/"WEB_CONTENT_UPLOAD",
-      /*triggered_rules=*/{{0, {"warn_rule_ID", "warn_rule_name"}}},
+      /*triggered_rules=*/{{0, {"333", "warn_rule_name"}}},
       /*event_result=*/"EVENT_RESULT_BYPASSED",
       /*profile_username=*/kUserName,
       /*profile_identifier=*/browser()->profile()->GetPath().AsUTF8Unsafe(),
@@ -351,7 +351,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
         return &set;
       }(),
       /*trigger=*/"WEB_CONTENT_UPLOAD",
-      /*triggered_rules=*/{{0, {"warn rule ID", "warn rule name"}}},
+      /*triggered_rules=*/{{0, {"1416", "warn rule name"}}},
       /*event_result=*/"EVENT_RESULT_WARNED",
       /*profile_username=*/kUserName,
       /*profile_identifier=*/browser()->profile()->GetPath().AsUTF8Unsafe(),
@@ -359,7 +359,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
 
   data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
                                    "name": "warn rule name",
-                                   "rule_id": "warn rule ID",
+                                   "rule_id": "1416",
                                    "destinations": {
                                      "urls": ["google.com"]
                                    },
@@ -412,7 +412,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
 
   data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
                                    "name": "report_rule_name",
-                                   "rule_id": "report_rule_ID",
+                                   "rule_id": "4321",
                                    "destinations": {
                                      "urls": ["google.com"]
                                    },
@@ -469,7 +469,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
 
   data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
                                    "name": "report_rule_name",
-                                   "rule_id": "report_rule_ID",
+                                   "rule_id": "6543",
                                    "destinations": {
                                      "urls": ["google.com"]
                                    },
@@ -531,7 +531,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
 
   data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
                                    "name": "report_rule_name",
-                                   "rule_id": "report_rule_ID",
+                                   "rule_id": "7654",
                                    "destinations": {
                                      "urls": ["google.com"]
                                    },
@@ -601,7 +601,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
         return &set;
       }(),
       /*trigger=*/"WEB_CONTENT_UPLOAD",
-      /*triggered_rules=*/{{0, {"report_rule_ID", "report_rule_name"}}},
+      /*triggered_rules=*/{{0, {"8765", "report_rule_name"}}},
       /*event_result=*/"EVENT_RESULT_ALLOWED",
       /*profile_username=*/kUserName,
       /*profile_identifier=*/browser()->profile()->GetPath().AsUTF8Unsafe(),
@@ -609,7 +609,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
 
   data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
                                    "name": "report_rule_name",
-                                   "rule_id": "report_rule_ID",
+                                   "rule_id": "8765",
                                    "destinations": {
                                      "urls": ["google.com"]
                                    },
@@ -657,7 +657,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
 
   data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
                                    "name": "report_rule_name",
-                                   "rule_id": "report_rule_ID",
+                                   "rule_id": "9753",
                                    "destinations": {
                                      "urls": ["google.com"]
                                    },
@@ -748,7 +748,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest, CopyReported) {
         return &set;
       }(),
       /*trigger=*/"CLIPBOARD_COPY",
-      /*triggered_rules=*/{{0, {"report_only_id", "report_only"}}},
+      /*triggered_rules=*/{{0, {"1248", "report_only"}}},
       /*event_result=*/"EVENT_RESULT_ALLOWED",
       /*profile_username=*/kUserName,
       /*profile_identifier=*/browser()->profile()->GetPath().AsUTF8Unsafe(),
@@ -756,7 +756,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest, CopyReported) {
 
   data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
                                    "name": "report_only",
-                                   "rule_id": "report_only_id",
+                                   "rule_id": "1248",
                                    "sources": {
                                      "urls": ["google.com"]
                                    },
@@ -807,7 +807,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest, CopyBlocked) {
         return &set;
       }(),
       /*trigger=*/"CLIPBOARD_COPY",
-      /*triggered_rules=*/{{0, {"block_id", "block"}}},
+      /*triggered_rules=*/{{0, {"987", "block"}}},
       /*event_result=*/"EVENT_RESULT_BLOCKED",
       /*profile_username=*/kUserName,
       /*profile_identifier=*/browser()->profile()->GetPath().AsUTF8Unsafe(),
@@ -815,7 +815,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest, CopyBlocked) {
 
   data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
                                    "name": "block",
-                                   "rule_id": "block_id",
+                                   "rule_id": "987",
                                    "sources": {
                                      "urls": ["google.com"]
                                    },
@@ -869,7 +869,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
         return &set;
       }(),
       /*trigger=*/"CLIPBOARD_COPY",
-      /*triggered_rules=*/{{0, {"warn_id", "warn"}}},
+      /*triggered_rules=*/{{0, {"3927", "warn"}}},
       /*event_result=*/"EVENT_RESULT_WARNED",
       /*profile_username=*/kUserName,
       /*profile_identifier=*/browser()->profile()->GetPath().AsUTF8Unsafe(),
@@ -877,7 +877,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
 
   data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
                                    "name": "warn",
-                                   "rule_id": "warn_id",
+                                   "rule_id": "3927",
                                    "sources": {
                                      "urls": ["google.com"]
                                    },
@@ -940,7 +940,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
         return &set;
       }(),
       /*trigger=*/"CLIPBOARD_COPY",
-      /*triggered_rules=*/{{0, {"warn_cancel_id", "warn_cancel"}}},
+      /*triggered_rules=*/{{0, {"101", "warn_cancel"}}},
       /*event_result=*/"EVENT_RESULT_WARNED",
       /*profile_username=*/kUserName,
       /*profile_identifier=*/browser()->profile()->GetPath().AsUTF8Unsafe(),
@@ -948,7 +948,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
 
   data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
                                    "name": "warn_cancel",
-                                   "rule_id": "warn_cancel_id",
+                                   "rule_id": "101",
                                    "sources": {
                                      "urls": ["google.com"]
                                    },
@@ -1014,7 +1014,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
         return &set;
       }(),
       /*trigger=*/"CLIPBOARD_COPY",
-      /*triggered_rules=*/{{0, {"warn_bypass_id", "warn_bypass"}}},
+      /*triggered_rules=*/{{0, {"12345", "warn_bypass"}}},
       /*event_result=*/"EVENT_RESULT_WARNED",
       /*profile_username=*/kUserName,
       /*profile_identifier=*/browser()->profile()->GetPath().AsUTF8Unsafe(),
@@ -1022,7 +1022,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
 
   data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
                                    "name": "warn_bypass",
-                                   "rule_id": "warn_bypass_id",
+                                   "rule_id": "12345",
                                    "sources": {
                                      "urls": ["google.com"]
                                    },
@@ -1077,7 +1077,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
         return &set;
       }(),
       /*trigger=*/"CLIPBOARD_COPY",
-      /*triggered_rules=*/{{0, {"warn_bypass_id", "warn_bypass"}}},
+      /*triggered_rules=*/{{0, {"12345", "warn_bypass"}}},
       /*event_result=*/"EVENT_RESULT_BYPASSED",
       /*profile_username=*/kUserName,
       /*profile_identifier=*/browser()->profile()->GetPath().AsUTF8Unsafe(),
@@ -1111,7 +1111,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
         return &set;
       }(),
       /*trigger=*/"CLIPBOARD_COPY",
-      /*triggered_rules=*/{{0, {"warn_bypass_os_id", "warn_bypass_os"}}},
+      /*triggered_rules=*/{{0, {"111", "warn_bypass_os"}}},
       /*event_result=*/"EVENT_RESULT_WARNED",
       /*profile_username=*/kUserName,
       /*profile_identifier=*/browser()->profile()->GetPath().AsUTF8Unsafe(),
@@ -1119,7 +1119,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
 
   data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
                                    "name": "warn_bypass_os",
-                                   "rule_id": "warn_bypass_os_id",
+                                   "rule_id": "111",
                                    "sources": {
                                      "urls": ["google.com"]
                                    },
@@ -1176,7 +1176,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
         return &set;
       }(),
       /*trigger=*/"CLIPBOARD_COPY",
-      /*triggered_rules=*/{{0, {"warn_bypass_os_id", "warn_bypass_os"}}},
+      /*triggered_rules=*/{{0, {"111", "warn_bypass_os"}}},
       /*event_result=*/"EVENT_RESULT_BYPASSED",
       /*profile_username=*/kUserName,
       /*profile_identifier=*/browser()->profile()->GetPath().AsUTF8Unsafe(),

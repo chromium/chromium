@@ -97,8 +97,11 @@ void AddAnalysisConnectorVerdictToEvent(
     base::Value::Dict triggered_rule;
     triggered_rule.Set(SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleName,
                        trigger.rule_name());
-    triggered_rule.Set(SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleId,
-                       trigger.rule_id());
+    int rule_id_int = 0;
+    if (base::StringToInt(trigger.rule_id(), &rule_id_int)) {
+      triggered_rule.Set(SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleId,
+                         rule_id_int);
+    }
     triggered_rule.Set(SafeBrowsingPrivateEventRouter::kKeyUrlCategory,
                        trigger.url_category());
 
@@ -778,8 +781,11 @@ void SafeBrowsingPrivateEventRouter::OnDataControlsSensitiveDataEvent(
   triggered_rule_info.reserve(triggered_rules.size());
   for (const auto& [index, rule] : triggered_rules) {
     base::Value::Dict triggered_rule;
-    triggered_rule.Set(SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleId,
-                       rule.rule_id);
+    int rule_id_int = 0;
+    if (base::StringToInt(rule.rule_id, &rule_id_int)) {
+      triggered_rule.Set(SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleId,
+                         rule_id_int);
+    }
     triggered_rule.Set(SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleName,
                        rule.rule_name);
 
