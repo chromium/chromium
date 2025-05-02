@@ -36,21 +36,13 @@ source_set("messaging") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "instant_messaging_service_unittest.mm",
-    "messaging_backend_service_factory_unittest.mm",
-  ]
+  sources = [ "messaging_backend_service_factory_unittest.mm" ]
   deps = [
     ":messaging",
     "//base",
     "//base/test:test_support",
-    "//components/collaboration/public:features",
     "//components/data_sharing/public",
-    "//ios/chrome/browser/infobars/model",
-    "//ios/chrome/browser/shared/model/browser",
-    "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/profile/test",
-    "//ios/chrome/browser/shared/model/web_state_list/test:test_support",
     "//ios/chrome/browser/shared/public/features",
     "//ios/web/public/test",
   ]
