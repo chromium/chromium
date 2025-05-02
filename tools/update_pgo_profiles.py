@@ -141,6 +141,7 @@ def main():
           'linux',
           'android-arm32',
           'android-arm64',
+          'android-desktop-x64',
       ],
       help='Identifier of a specific target platform + architecture.')
   subparsers = parser.add_subparsers()
