@@ -75,7 +75,6 @@ public class XrHelper {
 
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     private JxrPlatformAdapterAxr createJxrPlatformAdapter(@NonNull Activity activity) {
-        // TODO(crbug.com/397984536) Upstream ClankListeningScheduledExecutorService.
         return JxrPlatformAdapterAxr.create(
                 activity,
                 ChromiumExecutorServiceFactory.create(TaskTraits.BEST_EFFORT_MAY_BLOCK),
