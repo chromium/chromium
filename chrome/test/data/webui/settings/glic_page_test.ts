@@ -449,8 +449,13 @@ suite('GlicPage', function() {
       // No url, so the element should be hidden.
       page.setPrefValue(PrefName.LAUNCHER_ENABLED, true);
       assertTrue($<SettingsToggleButtonElement>('launcherToggle')!.checked);
-      const learnMoreElement = page.shadowRoot!.querySelector<HTMLElement>(
-          '#shortcutsLearnMoreLabel')!;
+      const learnMoreElement = $('shortcutsLearnMoreLabel');
+      assertFalse(isVisible(learnMoreElement));
+    });
+
+    test('settingsPageLearnMoreHidden', () => {
+      // No url, so the element should be hidden.
+      const learnMoreElement = $('settingsPageLearnMoreLabel');
       assertFalse(isVisible(learnMoreElement));
     });
   });
@@ -460,15 +465,26 @@ suite('GlicPage', function() {
       page.setPrefValue(PrefName.LAUNCHER_ENABLED, true);
       assertTrue($<SettingsToggleButtonElement>('launcherToggle')!.checked);
 
-      const learnMoreElement =
-          page.shadowRoot!.querySelector<HTMLAnchorElement>(
-              '#shortcutsLearnMoreLabel')!;
+      const learnMoreElement = $<HTMLAnchorElement>('shortcutsLearnMoreLabel');
       assertTrue(!!learnMoreElement);
-      assertEquals(learnMoreElement.href, 'https://google.com/');
+      assertEquals('https://google.com/', learnMoreElement.href);
 
       learnMoreElement.click();
       await assertFeatureInteractionMetrics(
           AiPageActions.GLIC_SHORTCUTS_LEARN_MORE_CLICKED);
+    });
+  });
+
+  suite('HeaderLearnMoreEnabled', () => {
+    test('settingsPageLearnMoreShown', async () => {
+      const learnMoreElement =
+          $<HTMLAnchorElement>('settingsPageLearnMoreLabel');
+      assertTrue(!!learnMoreElement);
+      assertEquals('https://google.com/', learnMoreElement.href);
+
+      learnMoreElement.click();
+      await assertFeatureInteractionMetrics(
+          AiPageActions.GLIC_COLLAPSED_LEARN_MORE_CLICKED);
     });
   });
 

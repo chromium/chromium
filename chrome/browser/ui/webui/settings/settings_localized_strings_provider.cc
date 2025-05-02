@@ -771,16 +771,20 @@ void AddGlicStrings(content::WebUIDataSource* html_source) {
   auto* command_line = base::CommandLine::ForCurrentProcess();
   bool has_url =
       command_line->HasSwitch(::switches::kGlicShortcutsLearnMoreURL);
-  const std::string url = has_url ? command_line->GetSwitchValueASCII(
-                                        ::switches::kGlicShortcutsLearnMoreURL)
-                                  : features::kGlicLearnMoreURL.Get();
-  html_source->AddString("glicKeyboardShortcutLearnMoreUrl", url);
+  const std::string keyboard_shortcut_learn_more_url =
+      has_url ? command_line->GetSwitchValueASCII(
+                    ::switches::kGlicShortcutsLearnMoreURL)
+              : features::kGlicShortcutsLearnMoreURL.Get();
+  html_source->AddString("glicKeyboardShortcutLearnMoreUrl",
+                         keyboard_shortcut_learn_more_url);
   html_source->AddString("glicLauncherToggleLearnMoreUrl",
                          features::kGlicLauncherToggleLearnMoreURL.Get());
   html_source->AddString("glicLocationToggleLearnMoreUrl",
                          features::kGlicLocationToggleLearnMoreURL.Get());
   html_source->AddString("glicTabAccessToggleLearnMoreUrl",
                          features::kGlicTabAccessToggleLearnMoreURL.Get());
+  html_source->AddString("glicSettingsPageLearnMoreUrl",
+                         features::kGlicSettingsPageLearnMoreURL.Get());
 }
 #endif  // BUILDFLAG(ENABLE_GLIC)
 

@@ -35401,6 +35401,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Settings.AiPage.Collapsed.LearnMoreClicked">
+  <owner>bryantchandler@google.com</owner>
+  <owner>iwells@chromium.org</owner>
+  <description>
+    Logged when the user clicks on the 'Learn more' link in the collapsed Glic
+    row in the chrome://settings/ai page.
+  </description>
+</action>
+
 <action name="Settings.AiPage.Compare.FeatureLinkClicked">
   <owner>zalmashni@google.com</owner>
   <owner>rainhard@chromium.org</owner>

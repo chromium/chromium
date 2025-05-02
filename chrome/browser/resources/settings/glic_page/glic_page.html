@@ -21,7 +21,7 @@
     align-items: center;
   }
 
-  #shortcutsLearnMoreLabel[href=''] {
+  .learn-more-label[href=''] {
     display: none;
   }
 </style>
@@ -37,8 +37,18 @@
         start-icon="settings-internal:spark"
 </if>
         label="$i18n{glicRowLabel}"
-        sub-label="$i18n{glicRowSublabel}"
-        on-click="onGlicPageClick_"></cr-link-row>
+        on-click="onGlicPageClick_">
+
+    <div slot="sub-label">
+      $i18n{glicRowSublabel}
+      <a id="settingsPageLearnMoreLabel" class="learn-more-label"
+          href="$i18n{glicSettingsPageLearnMoreUrl}"
+          aria-description="$i18n{opensInNewTab}"
+          on-click="onSettingsPageLearnMoreClick_" target="_blank">
+        $i18n{learnMore}
+      </a>
+    </div>
+  </cr-link-row>
   </div>
   <template is="dom-if" route-path="/ai/gemini">
     <settings-subpage page-title="$i18n{glicPageTitle}"
@@ -85,11 +95,11 @@
                 <div class="secondary"
                     learn-more-url="$i18n{glicKeyboardShortcutLearnMoreUrl}">
                   $i18n{glicKeyboardShortcutSublabel}
-                  <a id="shortcutsLearnMoreLabel"
+                  <a id="shortcutsLearnMoreLabel" class="learn-more-label"
                       href="$i18n{glicKeyboardShortcutLearnMoreUrl}"
                       aria-label="$i18n{glicKeyboardShortcutLearnMoreLabel}"
                       aria-description="$i18n{opensInNewTab}"
-                      on-click="onLearnMoreClick_" target="_blank">
+                      on-click="onShortcutsLearnMoreClick_" target="_blank">
                     $i18n{glicKeyboardShortcutLearnMoreLabel}
                   </a>
                 </div>

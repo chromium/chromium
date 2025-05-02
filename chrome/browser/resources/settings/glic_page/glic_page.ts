@@ -207,7 +207,7 @@ export class SettingsGlicPageElement extends SettingsGlicPageElementBase {
         this.i18n('glicActivityButtonUrl'));
   }
 
-  private onLearnMoreClick_() {
+  private onShortcutsLearnMoreClick_() {
     this.metricsBrowserProxy_.recordAction(
         AiPageActions.GLIC_SHORTCUTS_LEARN_MORE_CLICKED);
   }
@@ -225,6 +225,14 @@ export class SettingsGlicPageElement extends SettingsGlicPageElementBase {
   private onTabAccessToggleLearnMoreClick_() {
     this.metricsBrowserProxy_.recordAction(
         AiPageActions.GLIC_SHORTCUTS_TAB_ACCESS_TOGGLE_LEARN_MORE_CLICKED);
+  }
+
+  private onSettingsPageLearnMoreClick_(event: Event) {
+    this.metricsBrowserProxy_.recordAction(
+        AiPageActions.GLIC_COLLAPSED_LEARN_MORE_CLICKED);
+    // Prevent navigation to the Glic page if only the learn more link was
+    // clicked.
+    event.stopPropagation();
   }
 }
 

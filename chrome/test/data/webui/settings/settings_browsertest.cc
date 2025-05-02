@@ -384,6 +384,27 @@ IN_PROC_BROWSER_TEST_F(SettingsGlicPageLearnMoreTest,
           "runMochaSuite('GlicPage LearnMoreEnabled')");
 }
 
+class SettingsGlicPageHeaderLearnMoreTest : public SettingsBrowserTest {
+ public:
+  SettingsGlicPageHeaderLearnMoreTest() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{features::kGlicLearnMoreURLConfig,
+          {
+              {"glic-settings-page-learn-more-url", "https://google.com/"},
+          }}},
+        /*disabled_features=*/{});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SettingsGlicPageHeaderLearnMoreTest,
+                       GlicSettingsHeaderLearnMoreEnabled) {
+  RunTest("settings/glic_page_test.js",
+          "runMochaSuite('GlicPage HeaderLearnMoreEnabled')");
+}
+
 class SettingsGlicPageLauncherToggleLearnMoreTest : public SettingsBrowserTest {
  public:
   SettingsGlicPageLauncherToggleLearnMoreTest() {
