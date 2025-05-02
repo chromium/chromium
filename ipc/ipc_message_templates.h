@@ -69,11 +69,11 @@ void DispatchToMethodImpl(ObjT* obj,
 // The following function is for async IPCs which have a dispatcher with an
 // extra parameter specified using IPC_BEGIN_MESSAGE_MAP_WITH_PARAM.
 template <typename ObjT, typename P, typename... Args, typename Tuple>
-std::enable_if_t<sizeof...(Args) == std::tuple_size<std::decay_t<Tuple>>::value>
-DispatchToMethod(ObjT* obj,
-                 void (ObjT::*method)(P*, Args...),
-                 P* parameter,
-                 Tuple&& tuple) {
+  requires(sizeof...(Args) == std::tuple_size_v<std::decay_t<Tuple>>)
+void DispatchToMethod(ObjT* obj,
+                      void (ObjT::*method)(P*, Args...),
+                      P* parameter,
+                      Tuple&& tuple) {
   constexpr size_t size = std::tuple_size<std::decay_t<Tuple>>::value;
   DispatchToMethodImpl(obj, method, parameter, std::forward<Tuple>(tuple),
                        std::make_index_sequence<size>());
