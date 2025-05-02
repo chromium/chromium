@@ -27,8 +27,9 @@ build_webui("build") {
     "glic_app_controller.ts",
     "icons.html.ts",
     "main.ts",
-    "webview.ts",
     "observable.ts",
+    "timer.ts",
+    "webview.ts",
   ]
 
   webui_context_type = "trusted"

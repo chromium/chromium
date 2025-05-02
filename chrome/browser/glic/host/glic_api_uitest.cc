@@ -728,5 +728,46 @@ IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testSetMinimumWidgetSize) {
   RunTestSequence(CheckWidgetMinimumSize(gfx::Size(width, height)));
   ContinueJsTest();
 }
+
+IN_PROC_BROWSER_TEST_F(GlicApiTest, testNavigateToDifferentClientPage) {
+  WebUIStateListener listener(&window_controller());
+  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
+                                 GlicInstrumentMode::kHostAndContents));
+  listener.WaitForWebUiState(mojom::WebUiState::kReady);
+  ExecuteJsTest({.params = base::Value(0)});  // test run count: 0.
+  listener.WaitForWebUiState(mojom::WebUiState::kBeginLoad);
+  listener.WaitForWebUiState(mojom::WebUiState::kReady);
+  ExecuteJsTest({.params = base::Value(1)});  // test run count: 1.
+}
+
+// TODO(crbug.com/410881522): Re-enable this test
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_testNavigateToBadPage DISABLED_testNavigateToBadPage
+#else
+#define MAYBE_testNavigateToBadPage testNavigateToBadPage
+#endif
+IN_PROC_BROWSER_TEST_F(GlicApiTestWithFastTimeout,
+                       MAYBE_testNavigateToBadPage) {
+#if defined(SLOW_BINARY)
+  GTEST_SKIP() << "skip timeout test for slow binary";
+#else
+  // Client loads, and navigates to a new URL. We try to load the client again,
+  // but it fails.
+  WebUIStateListener listener(&window_controller());
+  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
+                                 GlicInstrumentMode::kHostAndContents));
+  listener.WaitForWebUiState(mojom::WebUiState::kReady);
+  ExecuteJsTest({.params = base::Value(0)});
+  listener.WaitForWebUiState(mojom::WebUiState::kBeginLoad);
+  listener.WaitForWebUiState(mojom::WebUiState::kError);
+
+  // Open the glic window to trigger reloading the client.
+  // This time the client should load, falling back to the original URL.
+  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
+                                 GlicInstrumentMode::kHostAndContents));
+  ExecuteJsTest({.params = base::Value(1)});
+#endif
+}
+
 }  // namespace
 }  // namespace glic

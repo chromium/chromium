@@ -111,6 +111,9 @@ class InteractiveGlicTestT : public T {
         base::PathService::CheckedGet(base::DIR_ASSETS)
             .AppendASCII("gen/chrome/test/data/webui/glic/"));
 
+    Test::embedded_test_server()->ServeFilesFromSourceDirectory(
+        "chrome/test/data/webui/glic/");
+
     ASSERT_TRUE(Test::embedded_test_server()->Start());
 
     // Need to set this here rather than in SetUpCommandLine because we need to

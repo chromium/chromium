@@ -6,6 +6,7 @@ import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 
 import type {BrowserProxyImpl} from './browser_proxy.js';
+import type {Subscriber} from './glic_api/glic_api.js';
 import {GlicApiHost, WebClientState} from './glic_api_impl/glic_api_host.js';
 import type {ApiHostEmbedder} from './glic_api_impl/glic_api_host.js';
 import {ObservableValue} from './observable.js';
@@ -33,11 +34,44 @@ enum ResourceType {
   MAIN_FRAME = 'main_frame',
 }
 
+// State for the WebviewController which lives as long as the WebUI content.
+// This is necessary because we may destroy and rebuild the WebviewController
+// multiple times.
+export class WebviewPersistentState {
+  // Normally, we load only the glicGuestURL. However, if that guest decides to
+  // navigate to a different URL after the client connects, we will remember
+  // that URL for loading later. To avoid getting stuck on a bad URL, we will
+  // allow using `loadUrl` only once unless a client successfully connects.
+  // Note that this supports internal development.
+  private loadUrl: string|undefined;
+  private loadUrlUsed = false;
+
+  useLoadUrl(): string {
+    if (this.loadUrl && !this.loadUrlUsed) {
+      this.loadUrlUsed = true;
+      return this.loadUrl;
+    } else {
+      return loadTimeData.getString('glicGuestURL');
+    }
+  }
+
+  onCommitAfterConnect(newUrl: string) {
+    this.loadUrl = newUrl;
+    this.loadUrlUsed = false;
+  }
+
+  onClientReady() {
+    // Web client became ready, allow loadUrl to be used again.
+    this.loadUrlUsed = false;
+  }
+}
+
 // Creates and manages the <webview> element, and the GlicApiHost which
 // communicates with it.
 export class WebviewController {
   webview: chrome.webviewTag.WebView;
   private host?: GlicApiHost;
+  private hostSubscriber?: Subscriber;
   private onDestroy: Array<() => void> = [];
   private eventTracker = new EventTracker();
   private webClientState =
@@ -48,6 +82,7 @@ export class WebviewController {
       private browserProxy: BrowserProxyImpl,
       private delegate: WebviewDelegate,
       private hostEmbedder: ApiHostEmbedder,
+      private persistentState: WebviewPersistentState,
   ) {
     this.webview =
         document.createElement('webview') as chrome.webviewTag.WebView;
@@ -82,7 +117,7 @@ export class WebviewController {
         this.webview, 'unresponsive', this.onUnresponsive.bind(this));
     this.eventTracker.add(this.webview, 'exit', this.onExit.bind(this));
 
-    this.webview.src = loadTimeData.getString('glicGuestURL');
+    this.webview.src = this.persistentState.useLoadUrl();
   }
 
   getWebClientState(): ObservableValueReadOnly<WebClientState> {
@@ -101,6 +136,10 @@ export class WebviewController {
   }
 
   private destroyHost(webClientState: WebClientState) {
+    if (this.hostSubscriber) {
+      this.hostSubscriber.unsubscribe();
+      this.hostSubscriber = undefined;
+    }
     if (this.host) {
       this.host.destroy();
       this.host = undefined;
@@ -170,13 +209,20 @@ export class WebviewController {
     if (!isTopLevel) {
       return;
     }
+    if (this.getWebClientState().getCurrentValue() ===
+        WebClientState.RESPONSIVE) {
+      this.persistentState.onCommitAfterConnect(url);
+    }
     this.destroyHost(WebClientState.UNINITIALIZED);
 
     if (this.webview.contentWindow) {
       this.host = new GlicApiHost(
           this.browserProxy, this.webview.contentWindow, new URL(url).origin,
           this.hostEmbedder);
-      this.host.getWebClientState().subscribe(state => {
+      this.hostSubscriber = this.host.getWebClientState().subscribe(state => {
+        if (state === WebClientState.RESPONSIVE) {
+          this.persistentState.onClientReady();
+        }
         this.webClientState.assignAndSignal(state);
       });
     }

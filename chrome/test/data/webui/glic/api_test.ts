@@ -515,6 +515,52 @@ class ApiTests extends ApiTestFixtureBase {
     await this.advanceToNextStep(minSize);
   }
 
+  // Test navigating successfully after client connection.
+  async testNavigateToDifferentClientPage() {
+    // This test function is run twice.
+    const runCount: number = this.testParams;
+
+    const url = new URL(window.location.href);
+    // First time:
+    if (runCount === 0) {
+      url.searchParams.set('foobar', '1');
+      (async () => {
+        await sleep(100);
+        location.href = url.toString();
+      })();
+      return;
+    }
+
+    // Second time:
+    assertEquals(runCount, 1);
+    assertEquals(url.searchParams.get('foobar'), '1');
+  }
+
+  // Test navigating unsuccessfully after client connection.
+  async testNavigateToBadPage() {
+    // This test function is run twice.
+    const runCount: number = this.testParams;
+
+    const url = new URL(window.location.href);
+    // First time:
+    if (runCount === 0) {
+      // Close the panel so that it can be opened again later to trigger
+      // loading the client.
+      await this.host.closePanel!();
+      // A regular web page with no client.
+      url.pathname = '/test_data/page.html';
+      (async () => {
+        await sleep(100);
+        location.href = url.toString();
+      })();
+      return;
+    }
+
+    // Second time:
+    assertEquals(runCount, 1);
+    assertEquals(url.pathname, '/glic/test.html');
+  }
+
   private async waitForPanelState(kind: PanelStateKind): Promise<void> {
     assertTrue(!!this.host.getPanelState);
     await observeSequence(this.host.getPanelState())
@@ -796,20 +842,21 @@ type ComparableValue = boolean|string|number|undefined|null;
 
 function assertTrue(x: boolean, message?: string): asserts x {
   if (!x) {
-    throw new Error(`assertTrue failed: ${x} is not true. ${message ?? ''}`);
+    throw new Error(`assertTrue failed: '${x}' is not true. ${message ?? ''}`);
   }
 }
 
 function assertFalse(x: boolean, message?: string): asserts x is false {
   if (x) {
-    throw new Error(`assertFalse failed: ${x} is not false. ${message ?? ''}`);
+    throw new Error(
+        `assertFalse failed: '${x}' is not false. ${message ?? ''}`);
   }
 }
 
 function assertEquals(
     a: ComparableValue, b: ComparableValue, message?: string) {
   if (a !== b) {
-    throw new Error(`assertEquals(${a}, ${b}) failed. ${message ?? ''}`);
+    throw new Error(`assertEquals('${a}', '${b}') failed. ${message ?? ''}`);
   }
 }
 
