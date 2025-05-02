@@ -19,7 +19,7 @@ export {BookmarksEditDialogElement} from './edit_dialog.js';
 export {BookmarksFolderNodeElement} from './folder_node.js';
 export {BookmarksItemElement} from './item.js';
 export {BookmarksListElement} from './list.js';
-export {reduceAction, updateFolderOpenState, updateNodes, updateSelectedFolder, updateSelection} from './reducers.js';
+export {reduceAction, updateFolderOpenState, updateNodes, updateSelection} from './reducers.js';
 export {BookmarksRouter} from './router.js';
 export {Store} from './store.js';
 export {StoreClientMixinLit} from './store_client_mixin_lit.js';
