@@ -22,8 +22,8 @@
 // more details (Googlers only).
 namespace base::fuchsia_component {
 
-template <typename Protocol,
-          typename = std::enable_if_t<fidl::IsProtocolV<Protocol>>>
+template <typename Protocol>
+  requires(fidl::IsProtocolV<Protocol>)
 BASE_EXPORT zx::result<> Connect(
     fidl::ServerEnd<Protocol> server_end,
     std::string name = fidl::DiscoverableProtocolName<Protocol>) {
@@ -32,16 +32,16 @@ BASE_EXPORT zx::result<> Connect(
       name);
 }
 
-template <typename Protocol,
-          typename = std::enable_if_t<fidl::IsProtocolV<Protocol>>>
+template <typename Protocol>
+  requires(fidl::IsProtocolV<Protocol>)
 BASE_EXPORT zx::result<fidl::ClientEnd<Protocol>> Connect(
     std::string name = fidl::DiscoverableProtocolName<Protocol>) {
   return component::ConnectAt<Protocol>(
       base::BorrowIncomingServiceDirectoryForProcess(), name);
 }
 
-template <typename Protocol,
-          typename = std::enable_if_t<fidl::IsProtocolV<Protocol>>>
+template <typename Protocol>
+  requires(fidl::IsProtocolV<Protocol>)
 BASE_EXPORT zx::result<fidl::ClientEnd<Protocol>> ConnectAt(
     fidl::UnownedClientEnd<fuchsia_io::Directory> service_directory,
     std::string name = fidl::DiscoverableProtocolName<Protocol>) {
