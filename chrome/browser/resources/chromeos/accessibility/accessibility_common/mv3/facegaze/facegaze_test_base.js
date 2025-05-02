@@ -157,6 +157,9 @@ class MockFaceLandmarkerResult {
 
     /** @type {!Array<!Object>} */
     this.faceBlendshapes = [{categories: []}];
+
+    /** @type {!Array} */
+    this.facialTransformationMatrixes = [];
   }
 
   /**
@@ -182,6 +185,13 @@ class MockFaceLandmarkerResult {
     };
 
     this.faceBlendshapes[0].categories.push(data);
+    return this;
+  }
+
+  invalidate() {
+    this.faceBlendshapes = [];
+    this.faceLandmarks = [];
+    this.facialTransformationMatrixes = [];
     return this;
   }
 }
@@ -574,5 +584,9 @@ FaceGazeTestBase = class extends E2ETestBase {
 
   getLatestCursorPosition() {
     return this.mockAccessibilityPrivate.getLatestCursorPosition();
+  }
+
+  runLatestTimeout() {
+    this.timeoutCallbacks_[this.nextTimeoutId_ - 1]();
   }
 };

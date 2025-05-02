@@ -1307,19 +1307,6 @@ AX_TEST_F('FaceGazeTest', 'KeyEvents', async function() {
   assertEquals(KeyCode.MEDIA_PLAY_PAUSE, keyEvents[13].keyCode);
 });
 
-// TODO(b/345059065): Test is flaky.
-AX_TEST_F('FaceGazeTest', 'DISABLED_ClosesCameraStream', async function() {
-  await this.getFaceGaze().cameraStreamReadyPromise_;
-  let win = chrome.extension.getViews().find(
-      view => view.location.href.includes('camera_stream.html'));
-  assertTrue(!!win);
-  this.getFaceGaze().onFaceGazeDisabled();
-  await this.getFaceGaze().cameraStreamClosedPromise_;
-  win = chrome.extension.getViews().find(
-      view => view.location.href.includes('camera_stream.html'));
-  assertFalse(!!win);
-});
-
 // TODO(crbug.com/348603598): Test is flaky.
 AX_TEST_F(
     'FaceGazeTest', 'DISABLED_ToggleFaceGazeGesturesShort', async function() {
@@ -2515,7 +2502,8 @@ AX_TEST_F('FaceGazeTest', 'ValidTimeDurationGestureDetected', async function() {
   // Set min duration very short so actions with any duration should be
   // recognized. It is possible for a gesture to execute so quickly during a
   // test that the duration appears to be 0 ms, so set the min duration
-  // threshold to -1 to ensure gestures with duration of 0 ms are recognized.
+  // threshold to -1 to ensure gestures with duration of 0 ms are
+  // recognized.
   const config = new Config()
                      .withMouseLocation({x: 600, y: 400})
                      .withBindings(gestureToMacroName, gestureToConfidence)
@@ -2546,8 +2534,8 @@ AX_TEST_F('FaceGazeTest', 'ValidTimeDurationGestureDetected', async function() {
   assertEquals(1, gestureHandler.gestureTimer_.gestureStart_.size);
   this.assertNumMouseEvents(2);
 
-  // Check that the start times are cleared if no gestures are detected at any
-  // confidence levels.
+  // Check that the start times are cleared if no gestures are detected at
+  // any confidence levels.
   result = new MockFaceLandmarkerResult();
   this.processFaceLandmarkerResult(result);
   assertEquals(0, gestureHandler.gestureTimer_.gestureStart_.size);
@@ -3002,4 +2990,92 @@ AX_TEST_F('FaceGazeTest', 'PrecisionRightClickMouseEvents', async function() {
   assertEquals(
       chrome.accessibilityPrivate.SyntheticMouseEventButton.RIGHT,
       mouseEvents[1].mouseButton);
+});
+
+AX_TEST_F('FaceGazeTest', 'InvalidResult', async function() {
+  const config = new Config();
+  await this.configureFaceGaze(config);
+
+  assertNullOrUndefined(this.getBubbleText());
+
+  // Send an invalid result.
+  let result = new MockFaceLandmarkerResult().invalidate();
+  this.processFaceLandmarkerResult(result, false);
+  assertEquals(
+      `Can't use the camera, please ensure your camera is enabled ` +
+          `and unobstructed`,
+      this.getBubbleText());
+
+  // Send a valid result.
+  result = new MockFaceLandmarkerResult().addGestureWithConfidence(
+      MediapipeFacialGesture.MOUTH_PUCKER, 0.2);
+  this.processFaceLandmarkerResult(result, false);
+  assertEquals(this.getDefaultBubbleText(), this.getBubbleText());
+});
+
+// Verifies that FaceGaze can handle scenarios where the camera is muted, which
+// happens when the screen has been locked for a short amount of time, and then
+// unmuted, which happens when the user signs back in.
+AX_TEST_F('FaceGazeTest', 'CameraMutedAndUnmuted', async function() {
+  const config = new Config();
+  await this.configureFaceGaze(config);
+
+  // Mute the camera.
+  this.getFaceGaze().webCamFaceLandmarker_.onTrackMutedHandler_();
+  assertEquals(
+      `Camera temporarily unavailable, please ensure you're signed ` +
+          `in and that your camera is enabled`,
+      this.getBubbleText());
+
+  // Unmute the camera.
+  this.getFaceGaze().webCamFaceLandmarker_.onTrackUnmutedHandler_();
+  assertEquals(this.getDefaultBubbleText(), this.getBubbleText());
+});
+
+// Verifies that FaceGaze can handle cases where no camera is available.
+AX_TEST_F('FaceGazeTest', 'NoCamera', async function() {
+  // Pretend that there is no available camera.
+  globalThis.navigator = {};
+  navigator.mediaDevices = {};
+  navigator.mediaDevices.getUserMedia = () => {
+    throw new Error('Requested device not found');
+  };
+
+  // Verify initial state.
+  const webCamFaceLandmarker = this.getFaceGaze().webCamFaceLandmarker_;
+  assertEquals(10, webCamFaceLandmarker.connectToWebCamRetriesRemaining_);
+
+  // Attempt to connect to the webcam. This should cause a message to appear
+  // in the UI and queue up another attempt.
+  webCamFaceLandmarker.connectToWebCam_();
+  assertEquals(
+      'Attempting to connect to camera, Face control will turn off in 10 ' +
+          'seconds otherwise',
+      this.getBubbleText());
+  assertEquals(9, webCamFaceLandmarker.connectToWebCamRetriesRemaining_);
+
+  // Pretend that the timeout has elapsed so that we try to reconnect to the
+  // webcam.
+  this.runLatestTimeout();
+  assertEquals(
+      'Attempting to connect to camera, Face control will turn off in 9 ' +
+          'seconds otherwise',
+      this.getBubbleText());
+  assertEquals(8, webCamFaceLandmarker.connectToWebCamRetriesRemaining_);
+
+  // Mock out the setPref API.
+  let latestPref;
+  let latestValue;
+  chrome.settingsPrivate = {};
+  chrome.settingsPrivate.setPref = (pref, value) => {
+    latestPref = pref;
+    latestValue = value;
+  };
+
+  // Pretend that we've exhausted our retry limit. The next failed attempt
+  // will cause FaceGaze to be turned off.
+  webCamFaceLandmarker.connectToWebCamRetriesRemaining_ = 0;
+  this.runLatestTimeout();
+  assertEquals('settings.a11y.face_gaze.enabled', latestPref);
+  assertFalse(latestValue);
 });
