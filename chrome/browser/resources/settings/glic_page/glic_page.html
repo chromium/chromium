@@ -1,9 +1,14 @@
 <style include="cr-icons cr-shared-style settings-columned-section settings-shared">
-  #keyboardShortcutSetting {
+  .keyboard-shortcut-setting {
     align-items: start;
   }
 
-  #shortcutInput {
+  #mainShortcutSetting {
+    /* Remove the separator. */
+    border-top: none;
+  }
+
+  .shortcut-input {
     margin-top: 2px;
   }
 
@@ -87,9 +92,10 @@
               on-settings-boolean-control-change="onLauncherToggleChange_">
           </settings-toggle-button>
           <cr-collapse opened="[[launcherToggleOn_]]">
-            <div class="cr-row" id="keyboardShortcutSetting">
+            <div class="cr-row keyboard-shortcut-setting"
+                 id="mainShortcutSetting">
               <div class="flex cr-padded-text">
-                <div id="keyboardShortcut" aria-hidden>
+                <div class="shortcut-label" aria-hidden>
                   $i18n{glicKeyboardShortcut}
                 </div>
                 <div class="secondary"
@@ -104,7 +110,7 @@
                   </a>
                 </div>
               </div>
-              <cr-shortcut-input id="shortcutInput" class="cr-padded-text"
+              <cr-shortcut-input class="cr-padded-text shortcut-input"
                   input-aria-label="$i18n{glicKeyboardShortcut}"
                   shortcut="[[registeredShortcut_]]"
                   allow-ctrl-alt-shortcuts
@@ -113,6 +119,21 @@
               </cr-shortcut-input>
             </div>
           </cr-collapse>
+          <div class="cr-row keyboard-shortcut-setting"
+               id="focusToggleShortcutSetting">
+            <div class="flex cr-padded-text">
+              <div class="shortcut-label" aria-hidden>
+                $i18n{glicNavigationShortcut}
+              </div>
+              <div class="secondary">$i18n{glicNavigationShortcutSublabel}</div>
+            </div>
+            <cr-shortcut-input class="cr-padded-text shortcut-input"
+                input-aria-label="$i18n{glicNavigationShortcut}"
+                shortcut="[[registeredFocusToggleShortcut_]]"
+                allow-ctrl-alt-shortcuts
+                on-shortcut-updated="onFocusToggleShortcutUpdated_">
+            </cr-shortcut-input>
+          </div>
         </template>
       </div>
       <div class="section">

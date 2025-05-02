@@ -42,6 +42,13 @@ class GlicHandler : public SettingsPageUIHandler {
   // Updates the GlobalAcceleratorListener to suspend/unsuspend listening for
   // accelerator input based on `args`.
   void HandleSetShortcutSuspensionState(const base::Value::List& args);
+
+  // Sends the last saved glic focus toggle shortcut to the settings page.
+  void HandleGetGlicFocusToggleShortcut(const base::Value::List& args);
+
+  // Updates the glic focus toggle hotkey with the one provided in
+  // `args`.
+  void HandleSetGlicFocusToggleShortcut(const base::Value::List& args);
 };
 
 }  // namespace settings

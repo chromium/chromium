@@ -12,10 +12,15 @@ import {keyDownOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {TestGlicBrowserProxy} from './test_glic_browser_proxy.js';
+import {Shortcut, TestGlicBrowserProxy} from './test_glic_browser_proxy.js';
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 
 const POLICY_ENABLED_VALUE = 0;
+
+interface Shortcuts {
+  main?: string;
+  focusToggle?: string;
+}
 
 suite('GlicPageFocusTest', function() {
   let page: SettingsGlicPageElement;
@@ -37,13 +42,15 @@ suite('GlicPageFocusTest', function() {
     return CrSettingsPrefs.initialized;
   });
 
-  async function createGlicPage(initialShortcut: string) {
+  async function createGlicPage(initialShortcuts: Shortcuts) {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     metricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
 
     glicBrowserProxy = new TestGlicBrowserProxy();
-    glicBrowserProxy.setGlicShortcutResponse(initialShortcut);
+    glicBrowserProxy.setGlicShortcutResponse(initialShortcuts.main || '');
+    glicBrowserProxy.setGlicFocusToggleShortcutResponse(
+        initialShortcuts.focusToggle || '');
     GlicBrowserProxyImpl.setInstance(glicBrowserProxy);
 
     page = document.createElement('settings-glic-page');
@@ -60,8 +67,11 @@ suite('GlicPageFocusTest', function() {
   }
 
   test('ShortcutInputSuspends', async () => {
-    await createGlicPage(/*initialShortcut=*/ '⌃A');
-    const shortcutInput = $<CrShortcutInputElement>('shortcutInput');
+    await createGlicPage(/*initialShortcuts=*/ {
+      main: '⌃A',
+    });
+    const shortcutInput =
+        $<CrShortcutInputElement>('mainShortcutSetting .shortcut-input');
     assertTrue(!!shortcutInput);
 
     // Clicking on the edit button should suspend shortcuts because the input is
@@ -80,8 +90,11 @@ suite('GlicPageFocusTest', function() {
   });
 
   test('UpdateShortcut', async () => {
-    await createGlicPage(/*initialShortcut=*/ '⌃A');
-    const shortcutInput = $<CrShortcutInputElement>('shortcutInput');
+    await createGlicPage(/*initialShortcuts=*/ {
+      main: '⌃A',
+    });
+    const shortcutInput =
+        $<CrShortcutInputElement>('mainShortcutSetting .shortcut-input');
     assertTrue(!!shortcutInput);
 
     const field = shortcutInput.$.input;
@@ -112,6 +125,44 @@ suite('GlicPageFocusTest', function() {
     assertEquals('⌃A', shortcutInput.shortcut);
   });
 
+  test('UpdateFocusToggleShortcut', async () => {
+    await createGlicPage(/*initialShortcuts=*/ {
+      focusToggle: 'Alt+Shift+G',
+    });
+    const shortcutInput =
+        $<CrShortcutInputElement>('focusToggleShortcutSetting .shortcut-input');
+    assertTrue(!!shortcutInput);
+
+    const field = shortcutInput.$.input;
+    assertEquals(
+        1, glicBrowserProxy.getCallCount('getGlicFocusToggleShortcut'));
+    assertEquals('Alt+Shift+G', shortcutInput.shortcut);
+
+    // Clicking on the edit button should clear out the shortcut.
+    glicBrowserProxy.setGlicFocusToggleShortcutResponse('');
+    shortcutInput.$.edit.click();
+    let arg = await glicBrowserProxy.whenCalled('setGlicFocusToggleShortcut');
+    await microtasksFinished();
+    assertEquals('', arg);
+    assertEquals('', shortcutInput.shortcut);
+    glicBrowserProxy.reset();
+
+    // Verify that inputting an invalid shortcut doesn't update the shortcut.
+    keyDownOn(field, 65);
+    await microtasksFinished();
+    assertEquals(
+        0, glicBrowserProxy.getCallCount('setGlicFocusToggleShortcut'));
+    glicBrowserProxy.reset();
+
+    // Inputting a valid shortcut should update the shortcut.
+    glicBrowserProxy.setGlicFocusToggleShortcutResponse('⌃A');
+    keyDownOn(field, 65, ['ctrl']);
+    arg = await glicBrowserProxy.whenCalled('setGlicFocusToggleShortcut');
+    await microtasksFinished();
+    assertEquals('Ctrl+A', arg);
+    assertEquals('⌃A', shortcutInput.shortcut);
+  });
+
   suite('Metrics', () => {
     let booleanHistograms: Array<[string, boolean]> = [];
     let userActions: string[] = [];
@@ -137,100 +188,125 @@ suite('GlicPageFocusTest', function() {
       assertTrue(userActions.includes(userAction));
     }
 
-    test('ClearShortcut', async () => {
-      // Arrange.
-      await createGlicPage(/*initialShortcut=*/ '⌃A');
-      await assertNoBooleanHistogramsRecorded();
-      await assertNoUserActionsRecorded();
-      const shortcutInput = $<CrShortcutInputElement>('shortcutInput');
-      assertTrue(!!shortcutInput);
-      const field = shortcutInput.$.input;
-      assertEquals('⌃A', field.value);
+    for (const params
+             of [{
+               shortcutSettingId: 'mainShortcutSetting',
+               initialShortcuts: {main: '⌃A'},
+               customizationMetric: 'Glic.OsEntrypoint.Settings.Shortcut',
+               shortcut: Shortcut.MAIN,
+               enablementPrefix: 'GlicOsEntrypoint.Settings.Shortcut',
+             },
+                 {
+                   shortcutSettingId: 'focusToggleShortcutSetting',
+                   initialShortcuts: {focusToggle: '⌃A'},
+                   customizationMetric:
+                       'Glic.Focus.Settings.Shortcut.Customized',
+                   shortcut: Shortcut.FOCUS_TOGGLE,
+                 }]) {
+      test(`ClearShortcut_${params.shortcutSettingId}`, async () => {
+        // Arrange.
+        await createGlicPage(params.initialShortcuts);
+        await assertNoBooleanHistogramsRecorded();
+        await assertNoUserActionsRecorded();
+        const shortcutInput = $<CrShortcutInputElement>(
+            `${params.shortcutSettingId} .shortcut-input`);
+        assertTrue(!!shortcutInput);
+        const field = shortcutInput.$.input;
+        assertEquals('⌃A', field.value);
 
-      // Act.
-      shortcutInput.$.edit.click();
-      await metricsBrowserProxy.whenCalled('recordBooleanHistogram');
-      await microtasksFinished();
-      glicBrowserProxy.setGlicShortcutResponse('');
-      keyDownOn(field, 27);  // Escape key.
-      await microtasksFinished();
-      assertEquals('', field.value);
+        // Act.
+        shortcutInput.$.edit.click();
+        await metricsBrowserProxy.whenCalled('recordBooleanHistogram');
+        await microtasksFinished();
+        glicBrowserProxy.setShortcutResponse(params.shortcut, /*response=*/ '');
+        keyDownOn(field, 27);  // Escape key.
+        await microtasksFinished();
+        assertEquals('', field.value);
 
-      // Assert.
-      booleanHistograms =
-          await metricsBrowserProxy.getArgs('recordBooleanHistogram');
-      assertEquals(1, booleanHistograms.length);
-      const hasValue = 'Glic.OsEntrypoint.Settings.Shortcut';
-      verifyBooleanMetric(hasValue, false);
-      userActions = await metricsBrowserProxy.getArgs('recordAction');
-      assertEquals(1, userActions.length);
-      verifyUserAction('GlicOsEntrypoint.Settings.ShortcutDisabled');
-    });
+        // Assert.
+        booleanHistograms =
+            await metricsBrowserProxy.getArgs('recordBooleanHistogram');
+        assertEquals(1, booleanHistograms.length);
+        verifyBooleanMetric(params.customizationMetric, false);
+        if (params.enablementPrefix) {
+          userActions = await metricsBrowserProxy.getArgs('recordAction');
+          assertEquals(1, userActions.length);
+          verifyUserAction(`${params.enablementPrefix}Disabled`);
+        }
+      });
 
-    test('SetShortcut', async () => {
-      // Arrange.
-      await createGlicPage(/*initialShortcut=*/ '');
-      await assertNoBooleanHistogramsRecorded();
-      await assertNoUserActionsRecorded();
-      const shortcutInput = $<CrShortcutInputElement>('shortcutInput');
-      assertTrue(!!shortcutInput);
-      const field = shortcutInput.$.input;
-      assertEquals('', field.value);
+      test(`SetShortcut_${params.shortcutSettingId}`, async () => {
+        // Arrange.
+        await createGlicPage(/*initialShortcuts=*/ {});
+        await assertNoBooleanHistogramsRecorded();
+        await assertNoUserActionsRecorded();
+        const shortcutInput = $<CrShortcutInputElement>(
+            `${params.shortcutSettingId} .shortcut-input`);
+        assertTrue(!!shortcutInput);
+        const field = shortcutInput.$.input;
+        assertEquals('', field.value);
 
-      // Act.
-      shortcutInput.$.edit.click();
-      await metricsBrowserProxy.whenCalled('recordBooleanHistogram');
-      await microtasksFinished();
-      glicBrowserProxy.setGlicShortcutResponse('Ctrl + A');
-      keyDownOn(field, 65, ['ctrl']);
-      await metricsBrowserProxy.whenCalled('recordBooleanHistogram');
-      await microtasksFinished();
+        // Act.
+        shortcutInput.$.edit.click();
+        await metricsBrowserProxy.whenCalled('recordBooleanHistogram');
+        await microtasksFinished();
+        glicBrowserProxy.setShortcutResponse(
+            params.shortcut, /*response=*/ 'Ctrl + A');
+        keyDownOn(field, 65, ['ctrl']);
+        await metricsBrowserProxy.whenCalled('recordBooleanHistogram');
+        await microtasksFinished();
 
-      // Assert.
-      booleanHistograms =
-          await metricsBrowserProxy.getArgs('recordBooleanHistogram');
-      assertEquals(2, booleanHistograms.length);
-      const hasValue = 'Glic.OsEntrypoint.Settings.Shortcut';
-      verifyBooleanMetric(hasValue, false);
-      verifyBooleanMetric(hasValue, true);
-      userActions = await metricsBrowserProxy.getArgs('recordAction');
-      assertEquals(1, userActions.length);
-      verifyUserAction('GlicOsEntrypoint.Settings.ShortcutEnabled');
-    });
+        // Assert.
+        booleanHistograms =
+            await metricsBrowserProxy.getArgs('recordBooleanHistogram');
+        assertEquals(2, booleanHistograms.length);
+        verifyBooleanMetric(params.customizationMetric, false);
+        verifyBooleanMetric(params.customizationMetric, true);
+        if (params.enablementPrefix) {
+          userActions = await metricsBrowserProxy.getArgs('recordAction');
+          assertEquals(1, userActions.length);
+          verifyUserAction(`${params.enablementPrefix}Enabled`);
+        }
+      });
 
-    test('EditShortcut', async () => {
-      // Arrange.
-      await createGlicPage(/*initialShortcut=*/ '⌃A');
-      await assertNoBooleanHistogramsRecorded();
-      await assertNoUserActionsRecorded();
-      const shortcutInput = $<CrShortcutInputElement>('shortcutInput');
-      assertTrue(!!shortcutInput);
-      const field = shortcutInput.$.input;
-      assertEquals('⌃A', field.value);
+      test(`EditShortcut_${params.shortcutSettingId}`, async () => {
+        // Arrange.
+        await createGlicPage(params.initialShortcuts);
+        await assertNoBooleanHistogramsRecorded();
+        await assertNoUserActionsRecorded();
+        const shortcutInput = $<CrShortcutInputElement>(
+            `${params.shortcutSettingId} .shortcut-input`);
+        assertTrue(!!shortcutInput);
+        const field = shortcutInput.$.input;
+        assertEquals('⌃A', field.value);
 
-      // Act.
-      shortcutInput.$.edit.click();
-      await metricsBrowserProxy.whenCalled('recordBooleanHistogram');
-      await microtasksFinished();
-      glicBrowserProxy.setGlicShortcutResponse('Ctrl + B');
-      keyDownOn(field, 66, ['ctrl']);
-      await microtasksFinished();
+        // Act.
+        shortcutInput.$.edit.click();
+        await metricsBrowserProxy.whenCalled('recordBooleanHistogram');
+        await microtasksFinished();
+        glicBrowserProxy.setShortcutResponse(params.shortcut, 'Ctrl + B');
+        keyDownOn(field, 66, ['ctrl']);
+        await microtasksFinished();
 
-      // Assert.
-      booleanHistograms =
-          await metricsBrowserProxy.getArgs('recordBooleanHistogram');
-      assertEquals(2, booleanHistograms.length);
-      const hasValue = 'Glic.OsEntrypoint.Settings.Shortcut';
-      verifyBooleanMetric(hasValue, true);
-      verifyBooleanMetric(hasValue, true);
-      userActions = await metricsBrowserProxy.getArgs('recordAction');
-      assertEquals(1, userActions.length);
-      verifyUserAction('GlicOsEntrypoint.Settings.ShortcutEdited');
-    });
+        // Assert.
+        booleanHistograms =
+            await metricsBrowserProxy.getArgs('recordBooleanHistogram');
+        assertEquals(2, booleanHistograms.length);
+        verifyBooleanMetric(params.customizationMetric, true);
+        verifyBooleanMetric(params.customizationMetric, true);
+        if (params.enablementPrefix) {
+          userActions = await metricsBrowserProxy.getArgs('recordAction');
+          assertEquals(1, userActions.length);
+          verifyUserAction(`${params.enablementPrefix}Edited`);
+        }
+      });
+    }
 
     test('ToggleOSEntrypoint', async () => {
       // Arrange.
-      await createGlicPage(/*initialShortcut=*/ '⌃A');
+      await createGlicPage(/*initialShortcuts=*/ {
+        main: '^A',
+      });
       await assertNoUserActionsRecorded();
       const launcherToggle = $<SettingsToggleButtonElement>('launcherToggle');
       assertTrue(!!launcherToggle);

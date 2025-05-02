@@ -63,6 +63,11 @@ export class SettingsGlicPageElement extends SettingsGlicPageElementBase {
         value: '',
       },
 
+      registeredFocusToggleShortcut_: {
+        type: String,
+        value: '',
+      },
+
       tabAccessToggleExpanded_: {
         type: Boolean,
         value: false,
@@ -83,8 +88,10 @@ export class SettingsGlicPageElement extends SettingsGlicPageElementBase {
   }
 
   private shortcutInput_: string;
+  private focusToggleShortcutInput_: string;
   private removedShortcut_: string|null = null;
   declare private registeredShortcut_: string;
+  declare private registeredFocusToggleShortcut_: string;
   declare private fakePref_: chrome.settingsPrivate.PrefObject;
   private browserProxy_: GlicBrowserProxy = GlicBrowserProxyImpl.getInstance();
   private metricsBrowserProxy_: MetricsBrowserProxy =
@@ -94,6 +101,8 @@ export class SettingsGlicPageElement extends SettingsGlicPageElementBase {
   override async connectedCallback() {
     super.connectedCallback();
     this.registeredShortcut_ = await this.browserProxy_.getGlicShortcut();
+    this.registeredFocusToggleShortcut_ =
+        await this.browserProxy_.getGlicFocusToggleShortcut();
     await CrSettingsPrefs.initialized;
     this.tabAccessToggleExpanded_ =
         this.getPref<boolean>(
@@ -116,7 +125,7 @@ export class SettingsGlicPageElement extends SettingsGlicPageElementBase {
             '#launcherToggle');
     const shortcutInput =
         this.shadowRoot!.querySelector<CrShortcutInputElement>(
-            '#shortcutInput');
+            '#mainShortcutSetting .shortcut-input');
     assert(launcherToggle);
     assert(shortcutInput);
 
@@ -154,10 +163,25 @@ export class SettingsGlicPageElement extends SettingsGlicPageElementBase {
       this.removedShortcut_ = this.registeredShortcut_;
     }
     this.registeredShortcut_ = await this.browserProxy_.getGlicShortcut();
-    // Records true if the shortcut string is not undefined or the empty string.
+    // Records true if the shortcut string is defined and not empty.
     this.metricsBrowserProxy_.recordBooleanHistogram(
         'Glic.OsEntrypoint.Settings.Shortcut', !!this.shortcutInput_);
     this.hideHelpBubble(OS_WIDGET_KEYBOARD_SHORTCUT_ELEMENT_ID);
+  }
+
+  private async onFocusToggleShortcutUpdated_(event: CustomEvent<string>) {
+    this.focusToggleShortcutInput_ = event.detail;
+    await this.browserProxy_.setGlicFocusToggleShortcut(
+        this.focusToggleShortcutInput_);
+    // Update the shortcut to reflect what the browser proxy returns. This
+    // ensures that the displayed shortcut is accurate in the event that
+    // registration failed.
+    this.registeredFocusToggleShortcut_ =
+        await this.browserProxy_.getGlicFocusToggleShortcut();
+    // Records true if the shortcut string is defined and not empty.
+    this.metricsBrowserProxy_.recordBooleanHistogram(
+        'Glic.Focus.Settings.Shortcut.Customized',
+        !!this.focusToggleShortcutInput_);
   }
 
   // Records whether the shortcut enablement state transitioned from disabled to
