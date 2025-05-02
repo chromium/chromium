@@ -192,6 +192,7 @@ class RasterBufferProviderTest
       case RASTER_BUFFER_PROVIDER_TYPE_GPU:
         Create3dResourceProvider();
         raster_buffer_provider_ = std::make_unique<GpuRasterBufferProvider>(
+            worker_context_provider_->SharedImageInterface(),
             context_provider_.get(), worker_context_provider_.get(),
             /*is_overlay_candidate=*/false, gfx::Size(),
             pending_raster_queries_.get(), 1);

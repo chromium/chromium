@@ -4264,6 +4264,7 @@ LayerTreeHostImpl::CreateRasterBufferProvider() {
     DCHECK(worker_context_provider);
 
     return std::make_unique<GpuRasterBufferProvider>(
+        worker_context_provider->SharedImageInterface(),
         compositor_context_provider, worker_context_provider,
         raster_caps_.tile_overlay_candidate, settings_.max_gpu_raster_tile_size,
         pending_raster_queries_.get());
