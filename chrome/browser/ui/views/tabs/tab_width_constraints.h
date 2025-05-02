@@ -15,21 +15,13 @@ class TabWidthConstraints {
                       const TabSizeInfo& size_info);
 
   // The smallest width this tab should ever have.
-  //
-  // Split tabs will have a different min width. When `compensate_for_splits`
-  // is set to true and the tab is split, return the split tab minimum width.
-  float GetMinimumWidth(bool compensate_for_splits = false) const;
+  float GetMinimumWidth() const;
 
   // The width this tab should have at the crossover point between the
-  // tabstrip's two layout domains. Above this width, inactive tabs have the
+  // tabstrip's two layout domains.  Above this width, inactive tabs have the
   // same width as active tabs.  Below this width, inactive tabs are smaller
   // than active tabs.
-  //
-  // Split tabs will have a different crossover width because they should stop
-  // shrinking before they reach the crossover width. When
-  // `compensate_for_splits` is set to true and the tab is split, return the
-  // split tab layout crossover width.
-  float GetLayoutCrossoverWidth(bool compensate_for_splits = false) const;
+  float GetLayoutCrossoverWidth() const;
 
   // The width this tab would like to have, if space is available.
   float GetPreferredWidth() const;

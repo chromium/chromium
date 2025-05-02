@@ -195,17 +195,6 @@ TEST(TabStripLayoutTest, MiddleWidthRoundedAndSplitTab) {
   EXPECT_EQ("116 115 213 212", TabWidthsAsString(bounds));
 }
 
-TEST(TabStripLayoutTest, MiddleWidthAndMinWidthSplitTab) {
-  TestCase test_case;
-  test_case.tabstrip_width = 140;
-  test_case.num_tabs = 4;
-  test_case.split_tabs = {0, 1};
-  test_case.active_index = 2;
-
-  auto bounds = CalculateTabBounds(test_case);
-  EXPECT_EQ("53 53 58 58", TabWidthsAsString(bounds));
-}
-
 TEST(TabStripLayoutTest, BelowMinActiveWidthOneTab) {
   TestCase test_case;
   test_case.tabstrip_width = 15;
@@ -266,17 +255,6 @@ TEST(TabStripLayoutTest, BelowMinActiveWidthActivePinnedTabRounded) {
 
   EXPECT_EQ("64 56 55 55 55 55",
             TabWidthsAsString(CalculateTabBounds(test_case)));
-}
-
-TEST(TabStripLayoutTest, BelowMinActiveWidthSplitTab) {
-  TestCase test_case;
-  test_case.tabstrip_width = 200;
-  test_case.num_tabs = 6;
-  test_case.split_tabs = {0, 1};
-  test_case.active_index = 2;
-
-  auto bounds = CalculateTabBounds(test_case);
-  EXPECT_EQ("50 50 56 53 53 53", TabWidthsAsString(bounds));
 }
 
 TEST(TabStripLayoutTest, NotEnoughSpace) {
