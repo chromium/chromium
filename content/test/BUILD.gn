@@ -1980,15 +1980,20 @@ test("content_browsertests") {
   if (is_ios) {
     entitlements_path = "//content/app/ios/appex/app.entitlements"
     bundle_deps = [
-      ":content_process_bundle",
       ":content_test_bundle_data",
       ":content_test_perfetto_bundle_data",
-      ":gpu_process_bundle",
-      ":network_process_bundle",
       "//media/test:media_bundle_data",
       "//mojo/public/interfaces/bindings/tests:validation_unittest_bundle_data",
       "//testing/buildbot/filters:content_browsertests_filter_bundle_data",
     ]
+
+    if (target_platform == "iphoneos") {
+      bundle_deps += [
+        ":content_process_bundle",
+        ":gpu_process_bundle",
+        ":network_process_bundle",
+      ]
+    }
   } else {
     data_deps += [
       "//testing/buildbot/filters:content_browsertests_filters",
