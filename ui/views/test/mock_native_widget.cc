@@ -8,10 +8,13 @@ using testing::Return;
 
 namespace views {
 
-MockNativeWidget::MockNativeWidget(Widget* widget) : widget_(widget) {}
+MockNativeWidget::MockNativeWidget(Widget* widget)
+    : widget_(widget->GetWeakPtr()) {}
 
 MockNativeWidget::~MockNativeWidget() {
-  widget_->OnNativeWidgetDestroyed();
+  if (widget_) {
+    widget_->OnNativeWidgetDestroyed();
+  }
 }
 
 base::WeakPtr<internal::NativeWidgetPrivate> MockNativeWidget::GetWeakPtr() {

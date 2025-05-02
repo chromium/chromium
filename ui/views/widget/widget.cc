@@ -281,6 +281,15 @@ Widget::~Widget() {
       native_widget_->Close();
     }
     HandleWidgetDestroying();
+
+    // Specifically in the case of CLIENT_OWNS_WIDGET the native widget is
+    // notified to allow clearing of any widget-associated state. Do so before
+    // the call to `HandleWidgetDestroyed()` below which will invalidate
+    // `native_widget_`.
+    if (native_widget_) {
+      native_widget_->ClientDestroyedWidget();
+    }
+
     HandleWidgetDestroyed();
     if (widget_delegate_) {
       widget_delegate_->WidgetDestroying();

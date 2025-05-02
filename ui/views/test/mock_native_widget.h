@@ -46,6 +46,7 @@ class MockNativeWidget : public internal::NativeWidgetPrivate {
   MOCK_METHOD(const ui::Layer*, GetLayer, (), (const override));
   MOCK_METHOD(void, ReorderNativeViews, (), (override));
   MOCK_METHOD(void, ViewRemoved, (View * view), (override));
+  MOCK_METHOD(void, ClientDestroyedWidget, (), (override));
   MOCK_METHOD(void,
               SetNativeWindowProperty,
               (const char* name, void* value),
@@ -187,7 +188,7 @@ class MockNativeWidget : public internal::NativeWidgetPrivate {
   base::WeakPtr<NativeWidgetPrivate> GetWeakPtr() override;
 
  private:
-  raw_ptr<Widget> widget_;
+  base::WeakPtr<Widget> widget_;
   base::WeakPtrFactory<MockNativeWidget> weak_factory_{this};
 };
 

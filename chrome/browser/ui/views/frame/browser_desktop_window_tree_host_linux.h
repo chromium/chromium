@@ -71,6 +71,7 @@ class BrowserDesktopWindowTreeHostLinux
   DesktopWindowTreeHost* AsDesktopWindowTreeHost() override;
   int GetMinimizeButtonOffset() const override;
   bool UsesNativeSystemMenu() const override;
+  void ClientDestroyedWidget() override;
 
   // BrowserWindowTreeHostPlatform:
   void FrameTypeChanged() override;

@@ -31,7 +31,6 @@ DesktopBrowserFrameAura::DesktopBrowserFrameAura(BrowserFrame* browser_frame,
       browser_view_(browser_view),
       browser_frame_(browser_frame),
       browser_desktop_window_tree_host_(nullptr) {
-  widget_observation_.Observe(browser_frame);
   GetNativeWindow()->SetName("BrowserFrameAura");
 }
 
@@ -132,8 +131,8 @@ bool DesktopBrowserFrameAura::ShouldUseInitialVisibleOnAllWorkspaces() const {
   return true;
 }
 
-void DesktopBrowserFrameAura::OnWidgetDestroyed(views::Widget* widget) {
+void DesktopBrowserFrameAura::ClientDestroyedWidget() {
+  browser_desktop_window_tree_host_->ClientDestroyedWidget();
   browser_frame_ = nullptr;
   browser_view_ = nullptr;
-  widget_observation_.Reset();
 }
