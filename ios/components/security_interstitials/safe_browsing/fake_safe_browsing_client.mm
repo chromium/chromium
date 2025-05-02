@@ -50,3 +50,7 @@ bool FakeSafeBrowsingClient::OnMainFrameUrlQueryCancellationDecided(
   main_frame_cancellation_decided_called_ = true;
   return main_frame_cancellation_decided_called_;
 }
+
+bool FakeSafeBrowsingClient::ShouldForceSyncRealTimeUrlChecks() const {
+  return should_force_sync_real_time_url_checks_;
+}

@@ -8,6 +8,8 @@
 #import "base/memory/weak_ptr.h"
 #import "components/safe_browsing/core/browser/realtime/url_lookup_service.h"
 #import "components/security_interstitials/core/unsafe_resource.h"
+#import "ios/chrome/browser/enterprise/connectors/connectors_service.h"
+#import "ios/chrome/browser/enterprise/connectors/connectors_util.h"
 #import "ios/chrome/browser/prerender/model/prerender_service.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/web/public/web_state.h"
@@ -16,11 +18,15 @@ SafeBrowsingClientImpl::SafeBrowsingClientImpl(
     PrefService* pref_service,
     safe_browsing::HashRealTimeService* hash_real_time_service,
     PrerenderService* prerender_service,
-    UrlLookupServiceFactory url_lookup_service_factory)
+    UrlLookupServiceFactory url_lookup_service_factory,
+    enterprise_connectors::ConnectorsService* connectors_service)
     : pref_service_(pref_service),
       hash_real_time_service_(hash_real_time_service),
       prerender_service_(prerender_service),
-      url_lookup_service_factory_(url_lookup_service_factory) {}
+      url_lookup_service_factory_(url_lookup_service_factory),
+      connectors_service_(connectors_service) {
+  CHECK(connectors_service_);
+}
 
 SafeBrowsingClientImpl::~SafeBrowsingClientImpl() = default;
 
@@ -69,4 +75,9 @@ bool SafeBrowsingClientImpl::OnMainFrameUrlQueryCancellationDecided(
   }
 
   return true;
+}
+
+bool SafeBrowsingClientImpl::ShouldForceSyncRealTimeUrlChecks() const {
+  return enterprise_connectors::IsEnterpriseUrlFilteringEnabled(
+      connectors_service_);
 }
