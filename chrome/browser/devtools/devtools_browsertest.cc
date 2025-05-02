@@ -3793,9 +3793,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsFetchTest, DevToolsFetchFromHttpDisallowed) {
   CloseDevToolsWindow();
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(DevToolsFetchTest, FetchFromDevToolsSchemeIsProhibited) {
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+  ASSERT_TRUE(content::NavigateToURL(GetInspectedTab(), GURL("about:blank")));
 
   const auto result =
       Fetch(GetInspectedTab(),
@@ -3826,10 +3825,11 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest, HostBindingsSyncIntegration) {
               DevToolsSettings::kSyncDevToolsPreferencesFrontendName)));
 
   const base::Value::Dict& synced_settings =
-      browser()->profile()->GetPrefs()->GetDict(
+      chrome_test_utils::GetProfile(this)->GetPrefs()->GetDict(
           prefs::kDevToolsSyncedPreferencesSyncDisabled);
   const base::Value::Dict& unsynced_settings =
-      browser()->profile()->GetPrefs()->GetDict(prefs::kDevToolsPreferences);
+      chrome_test_utils::GetProfile(this)->GetPrefs()->GetDict(
+          prefs::kDevToolsPreferences);
   EXPECT_EQ(*synced_settings.FindString("synced_setting"), "synced value");
   EXPECT_EQ(*unsynced_settings.FindString("unsynced_setting"),
             "unsynced value");
@@ -3848,6 +3848,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest, NoJavascriptUrlOnDevtools) {
   EXPECT_EQ(false, content::EvalJs(wc, "!!window.xss"));
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 // According to DevToolsTest.AutoAttachToWindowOpen, using
 // `waitForDebuggerPaused()` is flaky on Linux.
 // TODO(crbug.com/40770357): Enable the test on Linux.
