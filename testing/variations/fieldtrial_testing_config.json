@@ -22166,7 +22166,7 @@
             ]
         }
     ],
-    "SingleCACertVerificationPhase1": [
+    "SingleCaCertVerificationPhase1": [
         {
             "platforms": [
                 "chromeos"
@@ -22175,13 +22175,13 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "SingleCACertVerificationPhase1"
+                        "SingleCaCertVerificationPhase1"
                     ]
                 }
             ]
         }
     ],
-    "SingleCACertVerificationPhase2": [
+    "SingleCaCertVerificationPhase2": [
         {
             "platforms": [
                 "chromeos"
@@ -22190,7 +22190,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "SingleCACertVerificationPhase2"
+                        "SingleCaCertVerificationPhase2"
                     ]
                 }
             ]
