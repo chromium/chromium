@@ -27342,6 +27342,7 @@ should be able to be added at any place in this file.
 
 <action name="MobileToolbarBackInNewBackgroundTab">
   <owner>jhimawan@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
   <description>
     The user navigated back, opening the page in a background tab.
   </description>
@@ -27349,6 +27350,7 @@ should be able to be added at any place in this file.
 
 <action name="MobileToolbarBackInNewForegroundTab">
   <owner>jhimawan@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
   <description>
     The user navigated back, opening the page in a foreground tab.
   </description>
@@ -27356,6 +27358,7 @@ should be able to be added at any place in this file.
 
 <action name="MobileToolbarBackInNewForegroundWindow">
   <owner>jhimawan@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
   <description>
     The user navigated back, opening the page in a foreground window.
   </description>
@@ -27410,6 +27413,7 @@ should be able to be added at any place in this file.
 
 <action name="MobileToolbarForwardInNewBackgroundTab">
   <owner>jhimawan@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
   <description>
     The user navigated forward, opening the page in a background tab.
   </description>
@@ -27417,6 +27421,7 @@ should be able to be added at any place in this file.
 
 <action name="MobileToolbarForwardInNewForegroundTab">
   <owner>jhimawan@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
   <description>
     The user navigated forward, opening the page in a foreground tab.
   </description>
@@ -27424,6 +27429,7 @@ should be able to be added at any place in this file.
 
 <action name="MobileToolbarForwardInNewForegroundWindow">
   <owner>jhimawan@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
   <description>
     The user navigated forward, opening the page in a foreground window.
   </description>
