@@ -235,9 +235,15 @@ chromium-metrics-reviews@google.com.
   <int value="12" label="SignalParseFailed"/>
 </enum>
 
-<!-- From https://github.com/apple-oss-distributions/Security/blob/3dab46a11f45f2ffdbd70e2127cc5a8ce4a1f222/base/SecBase.h#L320 -->
+<!-- Values from various error header files to cover errors reported from the
+field, as of the macOS 15.4 SDK:
+- <CarbonCore.framework/MacErrors.h>
+- <Security.framework/CSCommon.h>
+- <Security.framework/SecBase.h>
+-->
 
 <enum name="SecurityFrameworkOSStatus">
+  <int value="-67904" label="errSecMissingQualifiedCertStatement"/>
   <int value="-67903" label="errSecCertificateDuplicateExtension"/>
   <int value="-67902" label="errSecCertificateIsCA"/>
   <int value="-67901" label="errSecCertificateValidityPeriodTooLong"/>
@@ -557,6 +563,88 @@ chromium-metrics-reviews@google.com.
   <int value="-67587" label="errSecDeviceReset"/>
   <int value="-67586" label="errSecInsufficientClientID"/>
   <int value="-67585" label="errSecServiceNotAvailable"/>
+  <int value="-67072" label="errSecCSUnimplemented"/>
+  <int value="-67071" label="errSecCSInvalidObjectRef"/>
+  <int value="-67070" label="errSecCSInvalidFlags"/>
+  <int value="-67069" label="errSecCSObjectRequired"/>
+  <int value="-67068" label="errSecCSStaticCodeNotFound"/>
+  <int value="-67067" label="errSecCSUnsupportedGuestAttributes"/>
+  <int value="-67066" label="errSecCSInvalidAttributeValues"/>
+  <int value="-67065" label="errSecCSNoSuchCode"/>
+  <int value="-67064" label="errSecCSMultipleGuests"/>
+  <int value="-67063" label="errSecCSGuestInvalid"/>
+  <int value="-67062" label="errSecCSUnsigned"/>
+  <int value="-67061" label="errSecCSSignatureFailed"/>
+  <int value="-67060" label="errSecCSSignatureNotVerifiable"/>
+  <int value="-67059" label="errSecCSSignatureUnsupported"/>
+  <int value="-67058" label="errSecCSBadDictionaryFormat"/>
+  <int value="-67057" label="errSecCSResourcesNotSealed"/>
+  <int value="-67056" label="errSecCSResourcesNotFound"/>
+  <int value="-67055" label="errSecCSResourcesInvalid"/>
+  <int value="-67054" label="errSecCSBadResource"/>
+  <int value="-67053" label="errSecCSResourceRulesInvalid"/>
+  <int value="-67052" label="errSecCSReqInvalid"/>
+  <int value="-67051" label="errSecCSReqUnsupported"/>
+  <int value="-67050" label="errSecCSReqFailed"/>
+  <int value="-67049" label="errSecCSBadObjectFormat"/>
+  <int value="-67048" label="errSecCSInternalError"/>
+  <int value="-67047" label="errSecCSHostReject"/>
+  <int value="-67046" label="errSecCSNotAHost"/>
+  <int value="-67045" label="errSecCSSignatureInvalid"/>
+  <int value="-67044" label="errSecCSHostProtocolRelativePath"/>
+  <int value="-67043" label="errSecCSHostProtocolContradiction"/>
+  <int value="-67042" label="errSecCSHostProtocolDedicationError"/>
+  <int value="-67041" label="errSecCSHostProtocolNotProxy"/>
+  <int value="-67040" label="errSecCSHostProtocolStateError"/>
+  <int value="-67039" label="errSecCSHostProtocolUnrelated"/>
+  <int value="-67037" label="errSecCSNotSupported"/>
+  <int value="-67036" label="errSecCSCMSTooLarge"/>
+  <int value="-67035" label="errSecCSHostProtocolInvalidHash"/>
+  <int value="-67034" label="errSecCSStaticCodeChanged"/>
+  <int value="-67033" label="errSecCSSigDBDenied"/>
+  <int value="-67032" label="errSecCSSigDBAccess"/>
+  <int value="-67031" label="errSecCSHostProtocolInvalidAttribute"/>
+  <int value="-67030" label="errSecCSInfoPlistFailed"/>
+  <int value="-67029" label="errSecCSNoMainExecutable"/>
+  <int value="-67028" label="errSecCSBadBundleFormat"/>
+  <int value="-67027" label="errSecCSNoMatches"/>
+  <int value="-67026" label="errSecCSFileHardQuarantined"/>
+  <int value="-67025" label="errSecCSOutdated"/>
+  <int value="-67024" label="errSecCSDbCorrupt"/>
+  <int value="-67023" label="errSecCSResourceDirectoryFailed"/>
+  <int value="-67022" label="errSecCSUnsignedNestedCode"/>
+  <int value="-67021" label="errSecCSBadNestedCode"/>
+  <int value="-67020" label="errSecCSBadCallbackValue"/>
+  <int value="-67019" label="errSecCSHelperFailed"/>
+  <int value="-67018" label="errSecCSVetoed"/>
+  <int value="-67017" label="errSecCSBadLVArch"/>
+  <int value="-67016" label="errSecCSResourceNotSupported"/>
+  <int value="-67015" label="errSecCSRegularFile"/>
+  <int value="-67014" label="errSecCSUnsealedAppRoot"/>
+  <int value="-67013" label="errSecCSWeakResourceRules"/>
+  <int value="-67012" label="errSecCSDSStoreSymlink"/>
+  <int value="-67011" label="errSecCSAmbiguousBundleFormat"/>
+  <int value="-67010" label="errSecCSBadMainExecutable"/>
+  <int value="-67009" label="errSecCSBadFrameworkVersion"/>
+  <int value="-67008" label="errSecCSUnsealedFrameworkRoot"/>
+  <int value="-67007" label="errSecCSWeakResourceEnvelope"/>
+  <int value="-67006" label="errSecCSCancelled"/>
+  <int value="-67005" label="errSecCSInvalidPlatform"/>
+  <int value="-67004" label="errSecCSTooBig"/>
+  <int value="-67003" label="errSecCSInvalidSymlink"/>
+  <int value="-67002" label="errSecCSNotAppLike"/>
+  <int value="-67001" label="errSecCSBadDiskImageFormat"/>
+  <int value="-67000" label="errSecCSUnsupportedDigestAlgorithm"/>
+  <int value="-66999" label="errSecCSInvalidAssociatedFileData"/>
+  <int value="-66998" label="errSecCSInvalidTeamIdentifier"/>
+  <int value="-66997" label="errSecCSBadTeamIdentifier"/>
+  <int value="-66996" label="errSecCSSignatureUntrusted"/>
+  <int value="-66995" label="errSecMultipleExecSegments"/>
+  <int value="-66994" label="errSecCSInvalidEntitlements"/>
+  <int value="-66993" label="errSecCSInvalidRuntimeVersion"/>
+  <int value="-66992" label="errSecCSRevokedNotarization"/>
+  <int value="-66991" label="errSecCSCMSConstructionFailed"/>
+  <int value="-66990" label="errSecCSRemoteSignerFailed"/>
   <int value="-34020" label="errSecRestrictedAPI"/>
   <int value="-34018" label="errSecMissingEntitlement"/>
   <int value="-26275" label="errSecDecode"/>
@@ -618,6 +706,108 @@ chromium-metrics-reviews@google.com.
   <int value="-34" label="errSecDiskFull"/>
   <int value="-4" label="errSecUnimplemented"/>
   <int value="0" label="errSecSuccess"/>
+  <int value="100001" label="kPOSIXErrorEPERM"/>
+  <int value="100002" label="kPOSIXErrorENOENT"/>
+  <int value="100003" label="kPOSIXErrorESRCH"/>
+  <int value="100004" label="kPOSIXErrorEINTR"/>
+  <int value="100005" label="kPOSIXErrorEIO"/>
+  <int value="100006" label="kPOSIXErrorENXIO"/>
+  <int value="100007" label="kPOSIXErrorE2BIG"/>
+  <int value="100008" label="kPOSIXErrorENOEXEC"/>
+  <int value="100009" label="kPOSIXErrorEBADF"/>
+  <int value="100010" label="kPOSIXErrorECHILD"/>
+  <int value="100011" label="kPOSIXErrorEDEADLK"/>
+  <int value="100012" label="kPOSIXErrorENOMEM"/>
+  <int value="100013" label="kPOSIXErrorEACCES"/>
+  <int value="100014" label="kPOSIXErrorEFAULT"/>
+  <int value="100015" label="kPOSIXErrorENOTBLK"/>
+  <int value="100016" label="kPOSIXErrorEBUSY"/>
+  <int value="100017" label="kPOSIXErrorEEXIST"/>
+  <int value="100018" label="kPOSIXErrorEXDEV"/>
+  <int value="100019" label="kPOSIXErrorENODEV"/>
+  <int value="100020" label="kPOSIXErrorENOTDIR"/>
+  <int value="100021" label="kPOSIXErrorEISDIR"/>
+  <int value="100022" label="kPOSIXErrorEINVAL"/>
+  <int value="100023" label="kPOSIXErrorENFILE"/>
+  <int value="100024" label="kPOSIXErrorEMFILE"/>
+  <int value="100025" label="kPOSIXErrorENOTTY"/>
+  <int value="100026" label="kPOSIXErrorETXTBSY"/>
+  <int value="100027" label="kPOSIXErrorEFBIG"/>
+  <int value="100028" label="kPOSIXErrorENOSPC"/>
+  <int value="100029" label="kPOSIXErrorESPIPE"/>
+  <int value="100030" label="kPOSIXErrorEROFS"/>
+  <int value="100031" label="kPOSIXErrorEMLINK"/>
+  <int value="100032" label="kPOSIXErrorEPIPE"/>
+  <int value="100033" label="kPOSIXErrorEDOM"/>
+  <int value="100034" label="kPOSIXErrorERANGE"/>
+  <int value="100035" label="kPOSIXErrorEAGAIN"/>
+  <int value="100036" label="kPOSIXErrorEINPROGRESS"/>
+  <int value="100037" label="kPOSIXErrorEALREADY"/>
+  <int value="100038" label="kPOSIXErrorENOTSOCK"/>
+  <int value="100039" label="kPOSIXErrorEDESTADDRREQ"/>
+  <int value="100040" label="kPOSIXErrorEMSGSIZE"/>
+  <int value="100041" label="kPOSIXErrorEPROTOTYPE"/>
+  <int value="100042" label="kPOSIXErrorENOPROTOOPT"/>
+  <int value="100043" label="kPOSIXErrorEPROTONOSUPPORT"/>
+  <int value="100044" label="kPOSIXErrorESOCKTNOSUPPORT"/>
+  <int value="100045" label="kPOSIXErrorENOTSUP"/>
+  <int value="100046" label="kPOSIXErrorEPFNOSUPPORT"/>
+  <int value="100047" label="kPOSIXErrorEAFNOSUPPORT"/>
+  <int value="100048" label="kPOSIXErrorEADDRINUSE"/>
+  <int value="100049" label="kPOSIXErrorEADDRNOTAVAIL"/>
+  <int value="100050" label="kPOSIXErrorENETDOWN"/>
+  <int value="100051" label="kPOSIXErrorENETUNREACH"/>
+  <int value="100052" label="kPOSIXErrorENETRESET"/>
+  <int value="100053" label="kPOSIXErrorECONNABORTED"/>
+  <int value="100054" label="kPOSIXErrorECONNRESET"/>
+  <int value="100055" label="kPOSIXErrorENOBUFS"/>
+  <int value="100056" label="kPOSIXErrorEISCONN"/>
+  <int value="100057" label="kPOSIXErrorENOTCONN"/>
+  <int value="100058" label="kPOSIXErrorESHUTDOWN"/>
+  <int value="100059" label="kPOSIXErrorETOOMANYREFS"/>
+  <int value="100060" label="kPOSIXErrorETIMEDOUT"/>
+  <int value="100061" label="kPOSIXErrorECONNREFUSED"/>
+  <int value="100062" label="kPOSIXErrorELOOP"/>
+  <int value="100063" label="kPOSIXErrorENAMETOOLONG"/>
+  <int value="100064" label="kPOSIXErrorEHOSTDOWN"/>
+  <int value="100065" label="kPOSIXErrorEHOSTUNREACH"/>
+  <int value="100066" label="kPOSIXErrorENOTEMPTY"/>
+  <int value="100067" label="kPOSIXErrorEPROCLIM"/>
+  <int value="100068" label="kPOSIXErrorEUSERS"/>
+  <int value="100069" label="kPOSIXErrorEDQUOT"/>
+  <int value="100070" label="kPOSIXErrorESTALE"/>
+  <int value="100071" label="kPOSIXErrorEREMOTE"/>
+  <int value="100072" label="kPOSIXErrorEBADRPC"/>
+  <int value="100073" label="kPOSIXErrorERPCMISMATCH"/>
+  <int value="100074" label="kPOSIXErrorEPROGUNAVAIL"/>
+  <int value="100075" label="kPOSIXErrorEPROGMISMATCH"/>
+  <int value="100076" label="kPOSIXErrorEPROCUNAVAIL"/>
+  <int value="100077" label="kPOSIXErrorENOLCK"/>
+  <int value="100078" label="kPOSIXErrorENOSYS"/>
+  <int value="100079" label="kPOSIXErrorEFTYPE"/>
+  <int value="100080" label="kPOSIXErrorEAUTH"/>
+  <int value="100081" label="kPOSIXErrorENEEDAUTH"/>
+  <int value="100082" label="kPOSIXErrorEPWROFF"/>
+  <int value="100083" label="kPOSIXErrorEDEVERR"/>
+  <int value="100084" label="kPOSIXErrorEOVERFLOW"/>
+  <int value="100085" label="kPOSIXErrorEBADEXEC"/>
+  <int value="100086" label="kPOSIXErrorEBADARCH"/>
+  <int value="100087" label="kPOSIXErrorESHLIBVERS"/>
+  <int value="100088" label="kPOSIXErrorEBADMACHO"/>
+  <int value="100089" label="kPOSIXErrorECANCELED"/>
+  <int value="100090" label="kPOSIXErrorEIDRM"/>
+  <int value="100091" label="kPOSIXErrorENOMSG"/>
+  <int value="100092" label="kPOSIXErrorEILSEQ"/>
+  <int value="100093" label="kPOSIXErrorENOATTR"/>
+  <int value="100094" label="kPOSIXErrorEBADMSG"/>
+  <int value="100095" label="kPOSIXErrorEMULTIHOP"/>
+  <int value="100096" label="kPOSIXErrorENODATA"/>
+  <int value="100097" label="kPOSIXErrorENOLINK"/>
+  <int value="100098" label="kPOSIXErrorENOSR"/>
+  <int value="100099" label="kPOSIXErrorENOSTR"/>
+  <int value="100100" label="kPOSIXErrorEPROTO"/>
+  <int value="100101" label="kPOSIXErrorETIME"/>
+  <int value="100102" label="kPOSIXErrorEOPNOTSUPP"/>
 </enum>
 
 <enum name="SilentPushEvent">

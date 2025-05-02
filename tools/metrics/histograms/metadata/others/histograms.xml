@@ -7150,6 +7150,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="OSCrypt.Mac.FindGenericPasswordError"
     enum="SecurityFrameworkOSStatus" expires_after="2025-12-01">
+  <owner>avi@chromium.org</owner>
+  <owner>lgrey@chromium.org</owner>
   <owner>markrowe@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>
