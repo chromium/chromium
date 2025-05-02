@@ -47,6 +47,7 @@ class TabLookupFromWebContents
   ~TabLookupFromWebContents() override = default;
 
   TabModel* model() { return model_; }
+  const TabModel* model() const { return model_; }
 
  private:
   friend WebContentsUserData;
@@ -392,6 +393,12 @@ void TabModel::DestroyTabFeatures() {
 // static
 TabInterface* TabInterface::GetFromContents(
     content::WebContents* web_contents) {
+  return TabLookupFromWebContents::FromWebContents(web_contents)->model();
+}
+
+// static
+const TabInterface* TabInterface::GetFromContents(
+    const content::WebContents* web_contents) {
   return TabLookupFromWebContents::FromWebContents(web_contents)->model();
 }
 

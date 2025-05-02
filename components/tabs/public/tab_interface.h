@@ -59,6 +59,8 @@ class TabInterface : public SupportsHandles<TabInterface> {
   // This method should only be called on instances of WebContents that are
   // known to be tabs. Calling this on a non-tab will crash.
   static TabInterface* GetFromContents(content::WebContents* web_contents);
+  static const TabInterface* GetFromContents(
+      const content::WebContents* web_contents);
 
   // Code that references a WebContents should already know whether the
   // WebContents is a tab, and thus should use GetFromContents(). For historical
