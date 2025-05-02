@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [4.2.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v4.1.1...chromium-bidi-v4.2.0) (2025-04-30)
+
+
+### Features
+
+* emulate geolocation positionUnavailable ([#3359](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3359)) ([6975bcc](https://github.com/GoogleChromeLabs/chromium-bidi/commit/6975bcc8fa626d8620934328d25496998dcf95f8))
+* provide proper context id in `browsingContext.userPrompt` ([#3349](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3349)) ([e504ba1](https://github.com/GoogleChromeLabs/chromium-bidi/commit/e504ba19c93381f874798e40ee1050d7122f55e7))
+
 ## [4.1.1](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v4.1.0...chromium-bidi-v4.1.1) (2025-04-24)
 
 
