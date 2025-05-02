@@ -101,7 +101,6 @@ class BrowserCommandController;
 }
 
 namespace content {
-struct DropData;
 class NavigationHandle;
 class SessionStorageNamespace;
 }  // namespace content
@@ -765,8 +764,6 @@ class Browser : public TabStripModelObserver,
   void SetFocusToLocationBar() override;
   bool PreHandleMouseEvent(content::WebContents* source,
                            const blink::WebMouseEvent& event) override;
-  void PreHandleDragUpdate(const content::DropData& drop_data,
-                           const gfx::PointF& client_pt) override;
   content::KeyboardEventProcessingResult PreHandleKeyboardEvent(
       content::WebContents* source,
       const input::NativeWebKeyboardEvent& event) override;

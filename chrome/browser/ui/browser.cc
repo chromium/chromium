@@ -1831,11 +1831,6 @@ bool Browser::PreHandleMouseEvent(content::WebContents* source,
   return window()->PreHandleMouseEvent(event);
 }
 
-void Browser::PreHandleDragUpdate(const content::DropData& drop_data,
-                                  const gfx::PointF& client_pt) {
-  window()->PreHandleDragUpdate(drop_data, client_pt);
-}
-
 content::KeyboardEventProcessingResult Browser::PreHandleKeyboardEvent(
     content::WebContents* source,
     const NativeWebKeyboardEvent& event) {

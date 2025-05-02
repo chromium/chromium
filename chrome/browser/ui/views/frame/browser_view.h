@@ -72,7 +72,6 @@ class AccessibilityFocusHighlight;
 class BookmarkBarView;
 class Browser;
 class ContentsLayoutManager;
-struct DropData;
 class ExclusiveAccessBubbleViews;
 class FullscreenControlHost;
 class InfoBarContainerView;
@@ -655,8 +654,6 @@ class BrowserView : public BrowserWindow,
   void UserChangedTheme(BrowserThemeChangeType theme_change_type) override;
   void ShowAppMenu() override;
   bool PreHandleMouseEvent(const blink::WebMouseEvent& event) override;
-  void PreHandleDragUpdate(const content::DropData& drop_data,
-                           const gfx::PointF& point) override;
   content::KeyboardEventProcessingResult PreHandleKeyboardEvent(
       const input::NativeWebKeyboardEvent& event) override;
   bool HandleKeyboardEvent(const input::NativeWebKeyboardEvent& event) override;

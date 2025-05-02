@@ -308,9 +308,6 @@ void DropCompletionCallback(WebDragDest* drag_dest,
     return NSDragOperationNone;
   }
 
-  _webContents->PreHandleDragUpdate(*_dropDataUnfiltered,
-                                    info->location_in_view);
-
   gfx::PointF transformedPt;
   content::RenderWidgetHostImpl* targetRWH =
       [self GetRenderWidgetHostAtPoint:info->location_in_view

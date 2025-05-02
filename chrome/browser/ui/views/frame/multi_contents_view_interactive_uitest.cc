@@ -4,26 +4,18 @@
 
 #include "base/numerics/clamped_math.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/bookmarks/bookmark_model_factory.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/tabs/split_tab_collection.h"
 #include "chrome/browser/ui/tabs/split_tab_visual_data.h"
 #include "chrome/browser/ui/tabs/test/split_tabs_interactive_test_mixin.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
-#include "chrome/browser/ui/views/bookmarks/bookmark_button.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/multi_contents_resize_area.h"
 #include "chrome/browser/ui/views/frame/multi_contents_view.h"
-#include "chrome/browser/ui/views/frame/multi_contents_view_drag_entrypoint_controller.h"
-#include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
-#include "components/bookmarks/browser/bookmark_model.h"
-#include "components/bookmarks/common/bookmark_pref_names.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
@@ -361,118 +353,3 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest,
       WaitForState(kMultiContentsViewSwapObserver, true), CheckTabIsActive(1),
       CheckActiveContentsHasFocus());
 }
-
-// TODO(crbug.com/414590951): There's limited support for testing drag and drop
-// on various platforms. These should be re-enabled as support is added.
-#if !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_CHROMEOS)
-class MultiContentsViewDragEntrypointsUiTest : public MultiContentsViewUiTest {
- public:
-  using MultiContentsViewUiTest::MultiContentsViewUiTest;
-
-  void SetUp() override {
-    http_server_.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
-    ASSERT_TRUE(http_server_.InitializeAndListen());
-    MultiContentsViewUiTest::SetUp();
-  }
-
-  void SetUpOnMainThread() override {
-    http_server_.StartAcceptingConnections();
-    InteractiveBrowserTest::SetUpOnMainThread();
-  }
-
-  GURL GetURL(std::string path) { return http_server_.GetURL(path); }
-
-  auto PointForDropTarget() const {
-    return base::BindLambdaForTesting([&](ui::TrackedElement* el) {
-      return el->AsA<views::TrackedElementViews>()
-                 ->view()
-                 ->GetBoundsInScreen()
-                 .right_center() -
-             gfx::Vector2d(10, 0);
-    });
-  }
-
- private:
-  net::EmbeddedTestServer http_server_;
-};
-
-IN_PROC_BROWSER_TEST_F(MultiContentsViewDragEntrypointsUiTest,
-                       ShowsDropTargetOnLinkDragged) {
-  RunTestSequence(AddInstrumentedTab(kNewTab, GetURL("/links.html"), 0),
-                  CheckTabIsActive(0),
-                  // Drag an href element to the drop target area. The drop
-                  // target should be shown.
-                  MoveMouseTo(kNewTab, DeepQuery{"#title1"}),
-                  DragMouseTo(MultiContentsView::kMultiContentsViewElementId,
-                              PointForDropTarget(), /*release=*/false),
-                  WaitForShow(kMultiContentsViewDropTargetElementId),
-                  // Drag the element back to the center. The drop target should
-                  // be hidden.
-                  MoveMouseTo(MultiContentsView::kMultiContentsViewElementId,
-                              CenterPoint()),
-                  WaitForHide(kMultiContentsViewDropTargetElementId));
-}
-
-IN_PROC_BROWSER_TEST_F(MultiContentsViewDragEntrypointsUiTest,
-                       DoesNotShowDropTargetOnNonURLDragged) {
-  RunTestSequence(AddInstrumentedTab(kNewTab, GetURL("/button.html"), 0),
-                  CheckTabIsActive(0),
-                  // Dragging a non-url to the drop target area should have no
-                  // effect.
-                  MoveMouseTo(kNewTab, DeepQuery{"#button"}),
-                  DragMouseTo(MultiContentsView::kMultiContentsViewElementId,
-                              PointForDropTarget(), /*release=*/false),
-                  WaitForHide(kMultiContentsViewDropTargetElementId));
-}
-
-class MultiContentsViewBookmarkDragEntrypointsUiTest
-    : public MultiContentsViewDragEntrypointsUiTest {
- public:
-  using MultiContentsViewDragEntrypointsUiTest::
-      MultiContentsViewDragEntrypointsUiTest;
-
-  void SetUpOnMainThread() override {
-    MultiContentsViewDragEntrypointsUiTest::SetUpOnMainThread();
-    browser()->profile()->GetPrefs()->SetBoolean(
-        bookmarks::prefs::kShowBookmarkBar, true);
-  }
-
-  // Names the bookmark bar button for the given bookmark folder.
-  auto NameBookmarkButton(std::string assigned_name,
-                          std::u16string node_title) {
-    return NameViewRelative(
-        kBookmarkBarElementId, assigned_name,
-        base::BindLambdaForTesting([=](views::View* view) -> views::View* {
-          auto* const bookmark_bar = views::AsViewClass<BookmarkBarView>(view);
-          CHECK(bookmark_bar);
-          for (views::View* child : bookmark_bar->children()) {
-            auto* bookmark_button = views::AsViewClass<BookmarkButton>(child);
-            if (bookmark_button && bookmark_button->GetText() == node_title) {
-              return bookmark_button;
-            }
-          }
-          NOTREACHED() << "Bookmark button with title " << node_title
-                       << " not found.";
-        }));
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(MultiContentsViewBookmarkDragEntrypointsUiTest,
-                       ShowsDropTargetOnBookmarkedLinkDragged) {
-  bookmarks::BookmarkModel* const model =
-      BookmarkModelFactory::GetForBrowserContext(browser()->profile());
-  const std::u16string bookmark_title = u"Bookmark";
-  model->AddNewURL(model->bookmark_bar_node(), 0, u"Bookmark",
-                   GetURL("/links.html"));
-
-  const std::string kBookmarkButtonId = "bookmark_button";
-  RunTestSequence(
-      AddInstrumentedTab(kNewTab, GURL(chrome::kChromeUISettingsURL), 0),
-      CheckTabIsActive(0), WaitForShow(kBookmarkBarElementId),
-      NameBookmarkButton(kBookmarkButtonId, bookmark_title),
-      MoveMouseTo(kBookmarkButtonId),
-      DragMouseTo(MultiContentsView::kMultiContentsViewElementId,
-                  PointForDropTarget(), /*release=*/false),
-      WaitForShow(kMultiContentsViewDropTargetElementId));
-}
-#endif  // !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_CHROMEOS)
