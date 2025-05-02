@@ -94,8 +94,10 @@
     </cr-button>
   </div>
 </div>
-<privacy-sandbox-privacy-policy-dialog
-    id="privacyPolicyDialog"
-    should-show="[[hideConsentNoticePage_]]"
-    on-back-button-clicked="onBackButtonClicked_">
-</privacy-sandbox-privacy-policy-dialog>
+<template is="dom-if" if="[[loadPrivacyPolicy_]]">
+  <privacy-sandbox-privacy-policy-dialog
+      id="privacyPolicyDialog"
+      should-show="[[hideConsentNoticePage_]]"
+      on-back-button-clicked="onBackButtonClicked_">
+  </privacy-sandbox-privacy-policy-dialog>
+</template>

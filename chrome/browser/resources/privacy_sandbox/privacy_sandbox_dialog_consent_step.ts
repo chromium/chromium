@@ -91,6 +91,7 @@ export class PrivacySandboxDialogConsentStepElement extends
   }
 
   private onConsentLearnMoreExpanded_(newValue: boolean, oldValue: boolean) {
+    this.loadPrivacyPolicyOnExpand(newValue, oldValue);
     this.onConsentLearnMoreExpandedChanged(newValue, oldValue);
   }
 
