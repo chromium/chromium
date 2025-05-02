@@ -100,6 +100,7 @@ void OnTaskSessionManager::OnSessionEnded(const std::string& session_id) {
     system_web_app_manager_->CloseSystemWebAppWindow(window_id);
   }
   active_session_id_ = std::nullopt;
+  provider_url_set_.clear();
   provider_url_tab_ids_map_.clear();
   provider_url_restriction_level_map_.clear();
   should_lock_window_ = false;
@@ -149,12 +150,12 @@ void OnTaskSessionManager::OnBundleUpdated(const ::boca::Bundle& bundle) {
 
   // Process bundle content.
   bool has_new_content = false;
-  base::flat_set<GURL> current_urls_set;
+  provider_url_set_.clear();
   active_tab_url_ = GURL();
   for (const ::boca::ContentConfig& content_config : bundle.content_configs()) {
     CHECK(content_config.has_url());
     const GURL url(content_config.url());
-    current_urls_set.insert(url);
+    provider_url_set_.insert(url);
 
     ::boca::LockedNavigationOptions::NavigationType restriction_level;
     if (content_config.has_locked_navigation_options()) {
@@ -194,7 +195,7 @@ void OnTaskSessionManager::OnBundleUpdated(const ::boca::Bundle& bundle) {
 
   bool has_removed_content = false;
   for (auto const& [provider_sent_url, tab_ids] : provider_url_tab_ids_map_) {
-    if (!current_urls_set.contains(provider_sent_url)) {
+    if (!provider_url_set_.contains(provider_sent_url)) {
       has_removed_content = true;
       system_web_app_launch_helper_->RemoveTab(
           tab_ids,
@@ -273,6 +274,9 @@ void OnTaskSessionManager::OnAppReloaded() {
   // clear stale tab ids that were tracked with the previous instance.
   for (auto& [provider_sent_url, tab_ids] : provider_url_tab_ids_map_) {
     tab_ids.clear();
+    if (!provider_url_set_.contains(provider_sent_url)) {
+      continue;
+    }
     ::boca::LockedNavigationOptions::NavigationType restriction_level =
         ::boca::LockedNavigationOptions::DOMAIN_NAVIGATION;  // Default
                                                              // restriction.
