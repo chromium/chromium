@@ -1384,9 +1384,57 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarContainerFeatureUITest,
       container->GetViewForId(extensionB->id());
   EXPECT_TRUE(action_viewB->GetVisible());
 
+  // Install extension C and pin it.
+  scoped_refptr<const extensions::Extension> extensionC =
+      LoadTestExtension("extensions/uitest/window_open");
+  ASSERT_TRUE(extensionC);
+
+  toolbar_model->SetActionVisibility(extensionC->id(), true);
+  EXPECT_TRUE(toolbar_model->IsActionPinned(extensionC->id()));
+
+  views::test::WaitForAnimatingLayoutManager(container);
+
+  EXPECT_TRUE(container->IsActionVisibleOnToolbar(extensionC->id()));
+  ToolbarActionView* const action_viewC =
+      container->GetViewForId(extensionC->id());
+  EXPECT_TRUE(action_viewC->GetVisible());
+
+  // Verify order of visible items in container:
+  //   A | B | C | ExtensionsToolbarButton
+  std::vector<views::View*> visible_children = GetVisibleChildrenInContainer();
+  EXPECT_EQ(visible_children.size(), 4u);
+  EXPECT_TRUE(views::IsViewClass<ToolbarActionView>(visible_children[0]));
+  EXPECT_EQ(views::AsViewClass<ToolbarActionView>(visible_children[0])
+                ->view_controller()
+                ->GetActionName(),
+            base::ASCIIToUTF16(extensionA->name()));
+  EXPECT_TRUE(views::IsViewClass<ToolbarActionView>(visible_children[1]));
+  EXPECT_EQ(views::AsViewClass<ToolbarActionView>(visible_children[1])
+                ->view_controller()
+                ->GetActionName(),
+            base::ASCIIToUTF16(extensionB->name()));
+  EXPECT_TRUE(views::IsViewClass<ToolbarActionView>(visible_children[2]));
+  EXPECT_EQ(views::AsViewClass<ToolbarActionView>(visible_children[2])
+                ->view_controller()
+                ->GetActionName(),
+            base::ASCIIToUTF16(extensionC->name()));
+  EXPECT_TRUE(views::IsViewClass<ExtensionsToolbarButton>(visible_children[3]));
+
+  // Shrink the window enough to hide the first pinned extension.
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  ASSERT_TRUE(browser_view);
+
+  gfx::Size size_to_shrink(1, 1);
+  gfx::Rect new_bounds(browser_view->GetBounds());
+  while (visible_children[2]->GetVisible() && new_bounds.width() > 0 &&
+         new_bounds.height() > 0) {
+    new_bounds.set_size(browser_view->GetBounds().size() - size_to_shrink);
+    browser_view->SetBounds(new_bounds);
+  }
+
   // Verify order of visible items in container:
   //   A | B | ExtensionsToolbarButton
-  std::vector<views::View*> visible_children = GetVisibleChildrenInContainer();
+  visible_children = GetVisibleChildrenInContainer();
   EXPECT_EQ(visible_children.size(), 3u);
   EXPECT_TRUE(views::IsViewClass<ToolbarActionView>(visible_children[0]));
   EXPECT_EQ(views::AsViewClass<ToolbarActionView>(visible_children[0])
@@ -1399,28 +1447,6 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarContainerFeatureUITest,
                 ->GetActionName(),
             base::ASCIIToUTF16(extensionB->name()));
   EXPECT_TRUE(views::IsViewClass<ExtensionsToolbarButton>(visible_children[2]));
-
-  // Shrink the window enough to hide the first pinned extension.
-  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
-  ASSERT_TRUE(browser_view);
-
-  gfx::Size size_to_shrink(1, 1);
-  gfx::Rect new_bounds(browser_view->GetBounds());
-  while (visible_children[1]->GetVisible()) {
-    new_bounds.set_size(browser_view->GetBounds().size() - size_to_shrink);
-    browser_view->SetBounds(new_bounds);
-  }
-
-  // Verify order of visible items in container:
-  //   A | ExtensionsToolbarButton
-  visible_children = GetVisibleChildrenInContainer();
-  EXPECT_EQ(visible_children.size(), 2u);
-  EXPECT_TRUE(views::IsViewClass<ToolbarActionView>(visible_children[0]));
-  EXPECT_EQ(views::AsViewClass<ToolbarActionView>(visible_children[0])
-                ->view_controller()
-                ->GetActionName(),
-            base::ASCIIToUTF16(extensionA->name()));
-  EXPECT_TRUE(views::IsViewClass<ExtensionsToolbarButton>(visible_children[1]));
 }
 
 // Temporary test class to test functionality while kExtensionsMenuAccessControl
