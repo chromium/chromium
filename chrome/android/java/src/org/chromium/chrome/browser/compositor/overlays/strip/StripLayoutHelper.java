@@ -2607,9 +2607,15 @@ public class StripLayoutHelper
                 hovered ? FOLIO_DETACHED_BOTTOM_MARGIN_DP : FOLIO_ATTACHED_BOTTOM_MARGIN_DP);
     }
 
-    private void handleCloseTab(final StripLayoutTab tab) {
+    /**
+     * Closes the given {@link StripLayoutTab}.
+     *
+     * @param tab the {@link StripLayoutTab} to close.
+     * @param allowUndo whether to allow undo of tab closure, such as showing the "undo" snackbar.
+     */
+    private void handleCloseTab(StripLayoutTab tab, boolean allowUndo) {
         mMultiStepTabCloseAnimRunning = false;
-        finishAnimationsAndPushTabUpdates();
+        finishAnimationsAndCloseDyingTabs(allowUndo);
 
         // When a tab is closed #resizeStripOnTabClose will run animations for the new tab offset
         // and tab x offsets. When there is only 1 tab remaining, we do not need to run those
@@ -2626,7 +2632,7 @@ public class StripLayoutHelper
                     public void onAnimationEnd(Animator animation) {
                         if (runImprovedTabAnimations) {
                             // This removes any closed tabs from the tabModel.
-                            finishAnimationsAndPushTabUpdates();
+                            finishAnimationsAndCloseDyingTabs(allowUndo);
                             resizeStripOnTabClose(getTabById(tab.getTabId()));
                         } else {
                             mMultiStepTabCloseAnimRunning = false;
@@ -2849,9 +2855,21 @@ public class StripLayoutHelper
                         /* onSuccess= */ null);
         Callback<TabClosureParams> onPreparedCallback =
                 (tabClosureParams) -> {
+                    // Note: the documentation of TabRemover#prepareCloseTabs() says we should use
+                    // the TabClosureParams here to close the tab, but historically this class
+                    // ignores this TabClosureParams and creates a new one later, in
+                    // finishAnimationsAndCloseDyingTabs().
+                    //
+                    // For now, we follow the status quo by passing parameters such as "allowUndo"
+                    // so that the new TabClosureParams created in
+                    // finishAnimationsAndCloseDyingTabs() can get these parameters.
+                    //
+                    // TODO(crbug.com/415079634): check if passing TabClosureParams to
+                    //  finishAnimationsAndCloseDyingTabs() is the right thing to do since this
+                    //  indicates only closing the tab that was clicked instead of all dying tabs.
                     assert tabClosureParams.tabs.size() == 1
                             && tabClosureParams.tabs.get(0) == realTab;
-                    handleCloseTab(tab);
+                    handleCloseTab(tab, tabClosureParams.allowUndo);
                 };
         TabClosureParams params = TabClosureParams.closeTab(realTab).allowUndo(true).build();
         mTabGroupModelFilter
@@ -2944,23 +2962,33 @@ public class StripLayoutHelper
 
     @Override
     public void finishAnimationsAndPushTabUpdates() {
+        finishAnimationsAndCloseDyingTabs(/* allowUndo= */ true);
+    }
+
+    /**
+     * Finishes any outstanding animations and closes tabs that are dying.
+     *
+     * <p>Note that this method creates new {@link TabClosureParams} using the parameters passed in.
+     *
+     * @param allowUndo whether to allow undo of tab closure, such as showing the "undo" snackbar.
+     */
+    private void finishAnimationsAndCloseDyingTabs(boolean allowUndo) {
         if (mRunningAnimator == null) return;
 
         // 1. Finish animations.
         finishAnimations();
 
         // 2. Figure out which tabs need to be closed.
-        ArrayList<StripLayoutTab> tabsToRemove = new ArrayList<StripLayoutTab>();
-        for (int i = 0; i < mStripTabs.length; i++) {
-            StripLayoutTab tab = mStripTabs[i];
+        ArrayList<StripLayoutTab> tabsToRemove = new ArrayList<>();
+        for (StripLayoutTab tab : mStripTabs) {
             if (tab.isDying()) tabsToRemove.add(tab);
         }
 
         if (tabsToRemove.isEmpty()) return;
 
-        // 3. Pass the close notifications to the model if the tab isn't already closing.
-        //    Do this as a post task as if more tabs are added inside commit all tab closures that
-        //    is a concurrent modification exception.
+        // 3. Pass the close notifications to TabModel if the tab isn't already closing.
+        //    Do this as a PostTask to avoid a ConcurrentModificationException if more tabs are
+        //    added inside TabModel#commitAllTabClosures().
         for (StripLayoutTab tab : tabsToRemove) tab.setIsClosed(true);
         PostTask.postTask(
                 TaskTraits.UI_DEFAULT,
@@ -2972,7 +3000,9 @@ public class StripLayoutHelper
                         // related to them can be bypassed.
                         mModel.getTabRemover()
                                 .forceCloseTabs(
-                                        TabClosureParams.closeTab(tab).allowUndo(true).build());
+                                        TabClosureParams.closeTab(tab)
+                                                .allowUndo(allowUndo)
+                                                .build());
                     }
 
                     if (!tabsToRemove.isEmpty()) mUpdateHost.requestUpdate();
