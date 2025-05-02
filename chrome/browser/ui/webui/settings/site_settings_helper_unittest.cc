@@ -88,8 +88,6 @@ constexpr ContentSettingsType kContentTypeFileSystem =
     ContentSettingsType::FILE_SYSTEM_WRITE_GUARD;
 constexpr ContentSettingsType kContentTypeNotifications =
     ContentSettingsType::NOTIFICATIONS;
-constexpr ContentSettingsType kContentTypeTrackingProtection =
-    ContentSettingsType::TRACKING_PROTECTION;
 }  // namespace
 
 class SiteSettingsHelperTest : public testing::Test {
@@ -699,115 +697,6 @@ TEST_F(SiteSettingsHelperTest, CookieExceptions) {
       });
 
   EXPECT_THAT(actual, testing::UnorderedElementsAreArray(expected));
-}
-
-TEST_F(SiteSettingsHelperTest,
-       TrackingProtectionExceptionsListIncludes3pcExceptions) {
-  TestingProfile profile;
-  HostContentSettingsMap* map =
-      HostContentSettingsMapFactory::GetForProfile(&profile);
-  // Add Tracking Protection exception
-  map->SetContentSettingCustomScope(
-      ContentSettingsPattern::Wildcard(),
-      ContentSettingsPattern::FromString("some-site.com"),
-      kContentTypeTrackingProtection, CONTENT_SETTING_ALLOW);
-  // Add 3PC exception
-  map->SetContentSettingCustomScope(
-      ContentSettingsPattern::Wildcard(),
-      ContentSettingsPattern::FromString("third-party-cookies.com"),
-      kContentTypeCookies, CONTENT_SETTING_ALLOW);
-  // Add 1PC exception
-  map->SetContentSettingCustomScope(
-      ContentSettingsPattern::FromString("first-party-cookies.com"),
-      ContentSettingsPattern::Wildcard(), kContentTypeCookies,
-      CONTENT_SETTING_ALLOW);
-
-  // Check that cookies list has two exceptions.
-  base::Value::List cookie_exceptions;
-  site_settings::GetExceptionsForContentType(kContentTypeCookies, &profile,
-                                             /*web_ui=*/nullptr,
-                                             /*incognito=*/false,
-                                             &cookie_exceptions);
-  ASSERT_EQ(2U, cookie_exceptions.size());
-
-  // Check that Tracking Protection list has two exceptions.
-  base::Value::List tp_exceptions;
-  site_settings::GetExceptionsForContentType(
-      kContentTypeTrackingProtection, &profile,
-      /*web_ui=*/nullptr,
-      /*incognito=*/false, &tp_exceptions);
-  ASSERT_EQ(2U, tp_exceptions.size());
-
-  // Verify the TP exception
-  ASSERT_TRUE(tp_exceptions[0].GetDict().contains(kType));
-  EXPECT_EQ(ContentSettingsTypeFromGroupName(
-                *tp_exceptions[0].GetDict().FindString(kType)),
-            kContentTypeTrackingProtection);
-  ASSERT_TRUE(tp_exceptions[0].GetDict().contains(kEmbeddingOrigin));
-  EXPECT_EQ(*tp_exceptions[0].GetDict().FindString(kEmbeddingOrigin),
-            "some-site.com");
-  EXPECT_FALSE(tp_exceptions[0].GetDict().contains(kDescription));
-  // Verify the 3PC exception
-  ASSERT_TRUE(tp_exceptions[1].GetDict().contains(kType));
-  EXPECT_EQ(ContentSettingsTypeFromGroupName(
-                *tp_exceptions[1].GetDict().FindString(kType)),
-            kContentTypeCookies);
-  ASSERT_TRUE(tp_exceptions[1].GetDict().contains(kEmbeddingOrigin));
-  EXPECT_EQ(*tp_exceptions[1].GetDict().FindString(kEmbeddingOrigin),
-            "third-party-cookies.com");
-  ASSERT_TRUE(tp_exceptions[1].GetDict().contains(kDescription));
-  EXPECT_EQ(
-      base::UTF8ToUTF16(*tp_exceptions[1].GetDict().FindString(kDescription)),
-      l10n_util::GetStringUTF16(
-          IDS_SETTINGS_THIRD_PARTY_COOKIES_ONLY_EXCEPTION_LABEL));
-}
-
-TEST_F(SiteSettingsHelperTest,
-       TrackingProtectionExceptionsListIncludes3pcExceptionsWithSamePattern) {
-  TestingProfile profile;
-  HostContentSettingsMap* map =
-      HostContentSettingsMapFactory::GetForProfile(&profile);
-  // Add Tracking Protection exception
-  map->SetContentSettingCustomScope(
-      ContentSettingsPattern::Wildcard(),
-      ContentSettingsPattern::FromString("some-site.com"),
-      kContentTypeTrackingProtection, CONTENT_SETTING_ALLOW);
-  // Add 3PC exception for same pattern
-  map->SetContentSettingCustomScope(
-      ContentSettingsPattern::Wildcard(),
-      ContentSettingsPattern::FromString("some-site.com"), kContentTypeCookies,
-      CONTENT_SETTING_ALLOW);
-
-  // Check that Tracking Protection list has two exceptions.
-  base::Value::List tp_exceptions;
-  site_settings::GetExceptionsForContentType(
-      kContentTypeTrackingProtection, &profile,
-      /*web_ui=*/nullptr,
-      /*incognito=*/false, &tp_exceptions);
-  ASSERT_EQ(2U, tp_exceptions.size());
-
-  // Verify the TP exception
-  ASSERT_TRUE(tp_exceptions[0].GetDict().contains(kType));
-  EXPECT_EQ(ContentSettingsTypeFromGroupName(
-                *tp_exceptions[0].GetDict().FindString(kType)),
-            kContentTypeTrackingProtection);
-  ASSERT_TRUE(tp_exceptions[0].GetDict().contains(kEmbeddingOrigin));
-  EXPECT_EQ(*tp_exceptions[0].GetDict().FindString(kEmbeddingOrigin),
-            "some-site.com");
-  EXPECT_FALSE(tp_exceptions[0].GetDict().contains(kDescription));
-  // Verify the 3PC exception, which will have the same embedding origin
-  ASSERT_TRUE(tp_exceptions[1].GetDict().contains(kType));
-  EXPECT_EQ(ContentSettingsTypeFromGroupName(
-                *tp_exceptions[1].GetDict().FindString(kType)),
-            kContentTypeCookies);
-  ASSERT_TRUE(tp_exceptions[1].GetDict().contains(kEmbeddingOrigin));
-  EXPECT_EQ(*tp_exceptions[1].GetDict().FindString(kEmbeddingOrigin),
-            "some-site.com");
-  ASSERT_TRUE(tp_exceptions[1].GetDict().contains(kDescription));
-  EXPECT_EQ(
-      base::UTF8ToUTF16(*tp_exceptions[1].GetDict().FindString(kDescription)),
-      l10n_util::GetStringUTF16(
-          IDS_SETTINGS_THIRD_PARTY_COOKIES_ONLY_EXCEPTION_LABEL));
 }
 
 TEST_F(SiteSettingsHelperTest, GetExpirationDescription) {

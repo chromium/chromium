@@ -1098,23 +1098,6 @@ void GetRawExceptionsForContentSettingsType(
   }
 }
 
-void Append3pcExceptions(Profile* profile,
-                         content::WebUI* web_ui,
-                         base::Value::List* exceptions) {
-  base::Value::List cookie_exceptions;
-  GetExceptionsForContentType(ContentSettingsType::COOKIES, profile, web_ui,
-                              /*incognito=*/false, &cookie_exceptions);
-  for (auto& cookie_exception : cookie_exceptions) {
-    auto& dict = cookie_exception.GetDict();
-    if (dict.contains(kOrigin) && *dict.FindString(kOrigin) == "*") {
-      dict.Set(kDescription,
-               l10n_util::GetStringUTF16(
-                   IDS_SETTINGS_THIRD_PARTY_COOKIES_ONLY_EXCEPTION_LABEL));
-      exceptions->Append(std::move(cookie_exception));
-    }
-  }
-}
-
 void GetExceptionsForContentType(ContentSettingsType type,
                                  Profile* profile,
                                  content::WebUI* web_ui,
@@ -1176,11 +1159,6 @@ void GetExceptionsForContentType(ContentSettingsType type,
     for (auto& exception : one_provider_exceptions.second) {
       exceptions->Append(std::move(exception));
     }
-  }
-
-  // The TP exceptions list should also contain 3PC exceptions.
-  if (type == ContentSettingsType::TRACKING_PROTECTION) {
-    Append3pcExceptions(profile, web_ui, exceptions);
   }
 }
 

@@ -318,10 +318,6 @@
         Third-party cookies limited
       </message>
       <!-- Privacy UX WebUI -->
-      <!-- General -->
-      <message name="IDS_SETTINGS_THIRD_PARTY_COOKIES_ONLY_EXCEPTION_LABEL" desc="Label for an exception in the Tracking Protection exceptions list indicating that the exception only applies to third-party cookie blocking." translateable="false">
-        Only applies to third-party cookie blocking
-      </message>
       <!-- Privacy Sandbox Ads Notice -->
       <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_LEARN_MORE_V2_CLANK" desc="A sentence that appears alone at the bottom of the learn more page. It offers the user a path towards additional information about how Google protects their data." formatter_data="android_java">
         Learn more about how Google protects your data in our <ph name="BEGIN_LINK">&lt;link&gt;</ph>Privacy Policy<ph name="END_LINK">&lt;/link&gt;</ph>.
