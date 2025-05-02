@@ -4,8 +4,10 @@
 
 #include "cc/paint/tone_map_util.h"
 
+#include <string_view>
 #include <utility>
 
+#include "base/json/json_reader.h"
 #include "cc/paint/paint_image.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColorFilter.h"

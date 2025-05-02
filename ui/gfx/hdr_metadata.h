@@ -136,6 +136,8 @@ struct COLOR_SPACE_EXPORT HdrMetadataAgtm {
   HdrMetadataAgtm& operator=(const HdrMetadataAgtm& other);
   ~HdrMetadataAgtm();
 
+  // Return whether or not use of AGTM metadata is enabled by default or not.
+  static bool IsEnabled();
   std::string ToString() const;
 
   bool operator==(const HdrMetadataAgtm& rhs) const;

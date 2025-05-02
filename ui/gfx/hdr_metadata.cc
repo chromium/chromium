@@ -7,11 +7,20 @@
 #include <iomanip>
 #include <sstream>
 
+#include "base/feature_list.h"
 #include "skia/ext/skcolorspace_primaries.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkData.h"
 
 namespace gfx {
+
+namespace {
+
+BASE_FEATURE(kAgtmToneMapping,
+             "AgtmToneMapping",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+}
 
 std::string HdrMetadataCta861_3::ToString() const {
   std::stringstream ss;
@@ -64,6 +73,12 @@ HdrMetadataAgtm& HdrMetadataAgtm::operator=(const HdrMetadataAgtm& other) =
     default;
 
 HdrMetadataAgtm::~HdrMetadataAgtm() = default;
+
+// static
+bool HdrMetadataAgtm::IsEnabled() {
+  static bool result = base::FeatureList::IsEnabled(kAgtmToneMapping);
+  return result;
+}
 
 std::string HdrMetadataAgtm::ToString() const {
   return "agtm placeholder";
