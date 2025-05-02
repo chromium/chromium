@@ -1642,9 +1642,16 @@ const char kUMAIppActiveDisableProtections[] =
 const char kUMAIppActiveEnableProtections[] =
     "TrackingProtections.Bubble.IppActive.EnableProtections";
 
+enum class ActFeatureState {
+  kActFeaturesEnabled = 0,
+  kFppDisabled = 1,
+  kIppDisabled = 2,
+};
+
 class CookieControlsUserBypassTrackingProtectionUiTest
     : public CookieControlsUserBypassTest,
-      public testing::WithParamInterface<testing::tuple<bool, bool, bool>> {
+      public testing::WithParamInterface<
+          testing::tuple<bool, ActFeatureState>> {
  public:
   CookieControlsUserBypassTrackingProtectionUiTest() = default;
   ~CookieControlsUserBypassTrackingProtectionUiTest() override = default;
@@ -1661,15 +1668,14 @@ class CookieControlsUserBypassTrackingProtectionUiTest
     CookieControlsUserBypassTest::SetUp();
 
     std::vector<base::test::FeatureRef> enabled_features = {
-        privacy_sandbox::kTrackingProtectionContentSettingUbControl};
-    if (std::get<1>(GetParam())) {
-      enabled_features.push_back(privacy_sandbox::kActUserBypassUx);
+        privacy_sandbox::kTrackingProtectionContentSettingUbControl,
+        privacy_sandbox::kActUserBypassUx};
+    if (std::get<1>(GetParam()) != ActFeatureState::kIppDisabled) {
       enabled_features.push_back(privacy_sandbox::kIpProtectionUx);
       enabled_features.push_back(net::features::kEnableIpProtectionProxy);
       profile()->GetPrefs()->SetBoolean(prefs::kIpProtectionEnabled, true);
     }
-    if (std::get<2>(GetParam())) {
-      enabled_features.push_back(privacy_sandbox::kActUserBypassUx);
+    if (std::get<1>(GetParam()) != ActFeatureState::kFppDisabled) {
       enabled_features.push_back(privacy_sandbox::kFingerprintingProtectionUx);
       enabled_features.push_back(fingerprinting_protection_filter::features::
                                      kEnableFingerprintingProtectionFilter);
@@ -1699,9 +1705,6 @@ class CookieControlsUserBypassTrackingProtectionUiTest
   }
 
   void ProxyIpSubresource() {
-    if (!std::get<1>(GetParam())) {
-      return;
-    }
     ip_protection::IpProtectionStatus::FromWebContents(web_contents())
         ->ResourceLoadComplete(ChromeRenderViewHostTestHarness::main_rfh(),
                                content::GlobalRequestID(),
@@ -1709,9 +1712,6 @@ class CookieControlsUserBypassTrackingProtectionUiTest
   }
 
   void BlockFingerprintingSubresource() {
-    if (!std::get<2>(GetParam())) {
-      return;
-    }
     fingerprinting_protection_filter::
         FingerprintingProtectionWebContentsHelper::FromWebContents(
             web_contents())
@@ -1794,18 +1794,13 @@ TEST_P(CookieControlsUserBypassTrackingProtectionUiTest,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
                            /*should_highlight=*/false));
 
-  bool act_features_enabled =
-      std::get<1>(GetParam()) || std::get<2>(GetParam());
-  bool protections_on = act_features_enabled && std::get<0>(GetParam());
+  bool protections_on = std::get<0>(GetParam());
 
   EXPECT_CALL(*incognito_mock(),
               OnStatusChanged(
                   /*controls_visible=*/true, protections_on,
                   CookieControlsEnforcement::kEnforcedByCookieSetting,
-                  CookieBlocking3pcdStatus::kNotIn3pcd,
-                  std::get<0>(GetParam()) && !act_features_enabled
-                      ? expiration()
-                      : zero_expiration()));
+                  CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
   EXPECT_CALL(*incognito_mock(),
               OnCookieControlsIconStatusChanged(
                   /*icon_visible=*/
@@ -1822,8 +1817,9 @@ TEST_P(CookieControlsUserBypassTrackingProtectionUiTest,
 TEST_P(CookieControlsUserBypassTrackingProtectionUiTest,
        RecordUmaToggleMetricWhenActFeaturesAreActive) {
   bool protections_on = std::get<0>(GetParam());
-  bool ipp_enabled = std::get<1>(GetParam());
-  bool fpp_enabled = std::get<2>(GetParam());
+  bool ipp_enabled = std::get<1>(GetParam()) != ActFeatureState::kIppDisabled;
+  bool fpp_enabled = std::get<1>(GetParam()) != ActFeatureState::kFppDisabled;
+
   incognito_cookie_controls()->Update(web_contents());
 
   // Add site exception when protections are on so toggling UB initiates the
@@ -1844,8 +1840,12 @@ TEST_P(CookieControlsUserBypassTrackingProtectionUiTest,
 
   NavigateAndCommit(GURL(kUrl));
 
-  ProxyIpSubresource();
-  BlockFingerprintingSubresource();
+  if (ipp_enabled) {
+    ProxyIpSubresource();
+  }
+  if (fpp_enabled) {
+    BlockFingerprintingSubresource();
+  }
 
   EXPECT_CALL(*incognito_mock(),
               OnStatusChanged(
@@ -1853,8 +1853,7 @@ TEST_P(CookieControlsUserBypassTrackingProtectionUiTest,
                   CookieControlsEnforcement::kNoEnforcement,
                   CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
   EXPECT_CALL(*incognito_mock(), OnCookieControlsIconStatusChanged(
-                                     /*icon_visible=*/ipp_enabled ||
-                                         fpp_enabled || !protections_on,
+                                     /*icon_visible=*/true,
                                      /*protections_on=*/protections_on,
                                      CookieBlocking3pcdStatus::kNotIn3pcd,
                                      /*should_highlight=*/false));
@@ -1880,12 +1879,18 @@ std::string ParamToTestSuffixTrackingProtection(
   } else {
     name << "ProtectionsOff";
   }
-  if (std::get<1>(info.param)) {
-    name << "_IppActive";
+  switch (std::get<1>(info.param)) {
+    case ActFeatureState::kActFeaturesEnabled:
+      name << "_kActFeaturesEnabled";
+      break;
+    case ActFeatureState::kIppDisabled:
+      name << "_kIppDisabled";
+      break;
+    case ActFeatureState::kFppDisabled:
+      name << "_kFppDisabled";
+      break;
   }
-  if (std::get<2>(info.param)) {
-    name << "_FppActive";
-  }
+
   return name.str();
 }
 
@@ -1893,6 +1898,7 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     CookieControlsUserBypassTrackingProtectionUiTest,
     testing::Combine(/*protections_on*/ testing::Bool(),
-                     /*kIpProtectionUx*/ testing::Bool(),
-                     /*kFingerprintingProtectionUx*/ testing::Bool()),
+                     testing::Values(ActFeatureState::kActFeaturesEnabled,
+                                     ActFeatureState::kIppDisabled,
+                                     ActFeatureState::kFppDisabled)),
     &ParamToTestSuffixTrackingProtection);
