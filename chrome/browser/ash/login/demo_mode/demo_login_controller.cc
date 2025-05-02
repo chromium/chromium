@@ -83,10 +83,10 @@ const char kErrorStatusPath[] = "error.status";
 //    "status": {
 //      "code": 8
 //    }
-//    "retry_details": {}
+//    "retryDetails": {}
 //  }
 constexpr char kStatusCodePath[] = "status.code";
-constexpr char kRetryDetailsPath[] = "retry_details";
+constexpr char kRetryDetailsPath[] = "retryDetails";
 
 // TODO(crbugs.com/355727308): Consider using
 // components/enterprise/common/proto/google3_protos.proto.
