@@ -218,21 +218,25 @@ class AffixMgr {
   AffixMgr(const char* affpath, const std::vector<HashMgr*>& ptr, const char* key = NULL);
 #endif
   ~AffixMgr();
-  struct hentry* affix_check(const char* word,
+  struct hentry* affix_check(const std::string& word,
+                             int start,
                              int len,
                              const unsigned short needflag = (unsigned short)0,
                              char in_compound = IN_CPD_NOT);
-  struct hentry* prefix_check(const char* word,
+  struct hentry* prefix_check(const std::string& word,
+                              int start,
                               int len,
                               char in_compound,
                               const FLAG needflag = FLAG_NULL);
   inline int isSubset(const char* s1, const char* s2);
   struct hentry* prefix_check_twosfx(const std::string& word,
+                                     int start,
                                      int len,
                                      char in_compound,
                                      const FLAG needflag = FLAG_NULL);
   inline int isRevSubset(const char* s1, const char* end_of_s2, int len);
-  struct hentry* suffix_check(const char* word,
+  struct hentry* suffix_check(const std::string& word,
+                              int start,
                               int len,
                               int sfxopts,
                               PfxEntry* ppfx,
@@ -240,6 +244,7 @@ class AffixMgr {
                               const FLAG needflag = FLAG_NULL,
                               char in_compound = IN_CPD_NOT);
   struct hentry* suffix_check_twosfx(const std::string& word,
+                                     int start,
                                      int len,
                                      int sfxopts,
                                      PfxEntry* ppfx,

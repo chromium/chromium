@@ -1,5 +1,5 @@
 diff --git a/src/hunspell/affixmgr.cxx b/src/hunspell/affixmgr.cxx
-index 98608cd..b42cbcd 100644
+index fb00203..801f63a 100644
 --- a/src/hunspell/affixmgr.cxx
 +++ b/src/hunspell/affixmgr.cxx
 @@ -86,11 +86,19 @@
@@ -128,7 +128,7 @@ index 98608cd..b42cbcd 100644
    }
  
    finishFileMgr(afflst);
-@@ -1272,6 +1329,24 @@ std::string AffixMgr::prefix_check_twosfx_morph(const char* word,
+@@ -1274,6 +1331,24 @@ std::string AffixMgr::prefix_check_twosfx_morph(const char* word,
  // Is word a non-compound with a REP substitution (see checkcompoundrep)?
  int AffixMgr::cpdrep_check(const char* word, int wl) {
  
@@ -153,7 +153,7 @@ index 98608cd..b42cbcd 100644
    if ((wl < 2) || get_reptable().empty())
      return 0;
  
-@@ -1290,6 +1365,7 @@ int AffixMgr::cpdrep_check(const char* word, int wl) {
+@@ -1292,6 +1367,7 @@ int AffixMgr::cpdrep_check(const char* word, int wl) {
        }
      }
    }
@@ -161,7 +161,7 @@ index 98608cd..b42cbcd 100644
  
   return 0;
  }
-@@ -4475,6 +4551,7 @@ bool AffixMgr::parse_affix(const std::string& line,
+@@ -4480,6 +4556,7 @@ bool AffixMgr::parse_affix(const std::string& line,
        case 1: {
          np++;
          aflag = pHMgr->decode_flag(std::string(start_piece, iter));
@@ -169,7 +169,7 @@ index 98608cd..b42cbcd 100644
          if (((at == 'S') && (dupflags[aflag] & dupSFX)) ||
              ((at == 'P') && (dupflags[aflag] & dupPFX))) {
            HUNSPELL_WARNING(
-@@ -4483,6 +4560,7 @@ bool AffixMgr::parse_affix(const std::string& line,
+@@ -4488,6 +4565,7 @@ bool AffixMgr::parse_affix(const std::string& line,
                af->getlinenum());
          }
          dupflags[aflag] += (char)((at == 'S') ? dupSFX : dupPFX);
@@ -178,7 +178,7 @@ index 98608cd..b42cbcd 100644
        }
        // piece 3 - is cross product indicator
 diff --git a/src/hunspell/affixmgr.hxx b/src/hunspell/affixmgr.hxx
-index 47f432d..aafc9f6 100644
+index e920235..16abf7b 100644
 --- a/src/hunspell/affixmgr.hxx
 +++ b/src/hunspell/affixmgr.hxx
 @@ -89,6 +89,40 @@
@@ -240,9 +240,9 @@ index 47f432d..aafc9f6 100644
    AffixMgr(const char* affpath, const std::vector<HashMgr*>& ptr, const char* key = NULL);
 +#endif
    ~AffixMgr();
-   struct hentry* affix_check(const char* word,
-                              int len,
-@@ -333,6 +375,10 @@ class AffixMgr {
+   struct hentry* affix_check(const std::string& word,
+                              int start,
+@@ -338,6 +380,10 @@ class AffixMgr {
    int get_fullstrip() const;
  
   private:
@@ -829,7 +829,7 @@ index 44366b1..38bdee0 100644
  
  #define ROTATE(v, q) \
 diff --git a/src/hunspell/hunspell.cxx b/src/hunspell/hunspell.cxx
-index d811896..2fea5ff 100644
+index 19e48b5..63f7cc1 100644
 --- a/src/hunspell/hunspell.cxx
 +++ b/src/hunspell/hunspell.cxx
 @@ -77,19 +77,28 @@
@@ -966,21 +966,21 @@ index d811896..2fea5ff 100644
    struct hentry* rv = NULL;
  
    int info2 = 0;
-@@ -781,6 +827,13 @@ struct hentry* HunspellImpl::checkword(const std::string& w, int* info, std::str
+@@ -778,6 +824,13 @@ struct hentry* HunspellImpl::checkword(const std::string& w, int* info, std::str
    if (!len)
      return NULL;
  
 +#ifdef HUNSPELL_CHROME_CLIENT
 +  // We need to check if the word length is valid to make coverity (Event
 +  // fixed_size_dest: Possible overrun of N byte fixed size buffer) happy.
-+  if ((utf8 && strlen(word) >= MAXWORDUTF8LEN) || (!utf8 && strlen(word) >= MAXWORDLEN))
++  if ((utf8 && word.size() >= MAXWORDUTF8LEN) || (!utf8 && word.size() >= MAXWORDLEN))
 +    return NULL;
 +#endif
 +
    // word reversing wrapper for complex prefixes
    if (complexprefixes) {
      if (utf8)
-@@ -975,6 +1028,9 @@ std::vector<std::string> HunspellImpl::suggest(const std::string& word) {
+@@ -970,6 +1023,9 @@ std::vector<std::string> HunspellImpl::suggest(const std::string& word) {
  
  std::vector<std::string> HunspellImpl::suggest_internal(const std::string& word,
          bool& capwords, size_t& abbv, int& captype) {
@@ -990,7 +990,7 @@ index d811896..2fea5ff 100644
    captype = NOCAP;
    abbv = 0;
    capwords = false;
-@@ -2019,18 +2075,25 @@ int HunspellImpl::input_conv(const char* word, char* dest, size_t destsize) {
+@@ -2014,18 +2070,25 @@ int HunspellImpl::input_conv(const char* word, char* dest, size_t destsize) {
    return 0;
  }
  
@@ -1016,7 +1016,7 @@ index d811896..2fea5ff 100644
  
  bool Hunspell::spell(const std::string& word, int* info, std::string* root) {
    return m_Impl->spell(word, info, root);
-@@ -2157,22 +2220,32 @@ int Hunspell::input_conv(const char* word, char* dest, size_t destsize) {
+@@ -2152,22 +2215,32 @@ int Hunspell::input_conv(const char* word, char* dest, size_t destsize) {
  }
  
  Hunhandle* Hunspell_create(const char* affpath, const char* dpath) {
@@ -1129,7 +1129,7 @@ index ea0524a..35fe025 100644
  
  #include <string>
 diff --git a/src/hunspell/suggestmgr.cxx b/src/hunspell/suggestmgr.cxx
-index bf3e70c..97b7703 100644
+index f430df8..3cdd879 100644
 --- a/src/hunspell/suggestmgr.cxx
 +++ b/src/hunspell/suggestmgr.cxx
 @@ -82,7 +82,112 @@ const w_char W_VLINE = {'\0', '|'};
