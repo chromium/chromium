@@ -7,7 +7,7 @@ import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 
 // clang-format off
 // <if expr="enable_pdf_ink2">
-import type {AnnotationBrush, AnnotationBrushType, AnnotationMode, Color, TextAlignment, TextBoxRect, TextStyles} from './constants.js';
+import type {AnnotationBrush, AnnotationBrushType, AnnotationMode, TextAnnotation} from './constants.js';
 // </if>
 import type {NamedDestinationMessageData, Rect, SaveRequestType} from './constants.js';
 // clang-format on
@@ -54,30 +54,20 @@ interface AnnotationBrushMessage {
   data: AnnotationBrush;
 }
 
-interface AnnotationTextMessageData {
-  typeface: string;
-  fontSize: number;
-  alignment: TextAlignment;
-  style: TextStyles;
-  color: Color;
+interface StartTextAnnotationMessage {
+  type: 'startTextAnnotation';
+  data: number;
 }
 
-// setTextAnnotationFont goes from the viewer to the plugin.
-// updateTextAnnotationFont goes from the plugin to the viewer.
-// They contain the same data fields.
-interface AnnotationTextMessage {
-  type: 'setTextAnnotationFont'|'updateTextAnnotationFont';
-  data: AnnotationTextMessageData;
+// finishTextAnnotation goes from the viewer to the plugin.
+interface FinishTextAnnotationMessage {
+  type: 'finishTextAnnotation';
+  data: TextAnnotation;
 }
 
 interface AnnotationFontsMessage {
   type: 'getTextAnnotFontNames';
   data: string[];
-}
-
-interface AnnotationTextBoxMessage {
-  type: 'setTextAnnotTextBoxRect'|'updateTextAnnotTextBoxRect';
-  data: TextBoxRect;
 }
 // </if>
 
@@ -266,19 +256,19 @@ export class PluginController implements ContentController {
     this.postMessage_(message);
   }
 
-  setTextAnnotationFont(textData: AnnotationTextMessageData) {
-    const message: AnnotationTextMessage = {
-      type: 'setTextAnnotationFont',
-      data: textData,
+  startTextAnnotation(id: number) {
+    const message: StartTextAnnotationMessage = {
+      type: 'startTextAnnotation',
+      data: id,
     };
 
     this.postMessage_(message);
   }
 
-  setTextAnnotTextBoxRect(update: TextBoxRect) {
-    const message: AnnotationTextBoxMessage = {
-      type: 'setTextAnnotTextBoxRect',
-      data: update,
+  finishTextAnnotation(annotation: TextAnnotation) {
+    const message: FinishTextAnnotationMessage = {
+      type: 'finishTextAnnotation',
+      data: annotation,
     };
 
     this.postMessage_(message);

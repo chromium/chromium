@@ -14,7 +14,7 @@ export {BeforeUnloadProxy, BeforeUnloadProxyImpl} from './before_unload_proxy.js
 export {Bookmark} from './bookmark_type.js';
 export {BrowserApi, ZoomBehavior} from './browser_api.js';
 // <if expr="enable_pdf_ink2">
-export {AnnotationBrush, AnnotationBrushType, Color, TextAlignment, TextAttributes, TextStyle} from './constants.js';
+export {AnnotationBrush, AnnotationBrushType, Color, TextAlignment, TextAnnotation, TextAttributes, TextStyle} from './constants.js';
 // </if>
 // <if expr="enable_pdf_ink2 or enable_ink">
 export {AnnotationMode} from './constants.js';

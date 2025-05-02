@@ -3,14 +3,15 @@
 // found in the LICENSE file.
 
 import {hexToColor, Ink2Manager, TEXT_COLORS, TextAlignment, TextStyle} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import type {TextAnnotation} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {getRequiredElement, setupTestViewportAndMockPluginForInk} from './test_util.js';
+import {assertDeepEquals, getRequiredElement, setupTestViewportAndMockPluginForInk} from './test_util.js';
 
 // Set up a dummy viewport so that we can get a predictable initial state.
-setupTestViewportAndMockPluginForInk();
+const {viewport, mockPlugin} = setupTestViewportAndMockPluginForInk();
 const manager = Ink2Manager.getInstance();
-// Initialize a font, since this starts out empty.
+// Initialize a typeface, since this starts out empty.
 manager.setTextTypeface('Roboto');
 const textbox = document.createElement('ink-text-box');
 document.body.appendChild(textbox);
@@ -78,7 +79,7 @@ chrome.test.runTests([
   // Test drawing the box based on data from the manager.
   async function testDrawsBox() {
     // Initial state. Textbox is not visible because it hasn't received an
-    // update-text-box event yet.
+    // initialize-text-box event yet.
     chrome.test.assertTrue(textbox.hidden);
     chrome.test.assertFalse(isVisible(textbox));
 
@@ -88,6 +89,7 @@ chrome.test.runTests([
     chrome.test.assertFalse(textbox.hidden);
     chrome.test.assertTrue(isVisible(textbox));
     assertPositionAndSize(textbox, '160px', '40px', '80px', '120px');
+    chrome.test.assertEq('Sample Text', textbox.$.textbox.value);
 
     // Update to a 100x200 box at 400, 300 with existing "Hello World" text.
     initializeBox(100, 200, 400, 300, true);
@@ -149,6 +151,18 @@ chrome.test.runTests([
     chrome.test.assertEq(
         newColorStyle, textboxStyles.getPropertyValue('color'));
 
+    // Reset everything for later tests.
+    manager.setTextTypeface('Roboto');
+    manager.setTextSize(12);
+    manager.setTextStyles({
+      [TextStyle.BOLD]: false,
+      [TextStyle.ITALIC]: false,
+      [TextStyle.UNDERLINE]: false,
+      [TextStyle.STRIKETHROUGH]: false,
+    });
+    manager.setTextColor(hexToColor(TEXT_COLORS[0]!.color));
+    manager.setTextAlignment(TextAlignment.LEFT);
+    await microtasksFinished();
     chrome.test.succeed();
   },
 
@@ -352,6 +366,136 @@ chrome.test.runTests([
     chrome.test.assertEq(
         '12px',
         getComputedStyle(textbox.$.textbox).getPropertyValue('font-size'));
+    chrome.test.succeed();
+  },
+
+  async function testCommit() {
+    // Initialize to a 100x100 box at 400, 300.
+    initializeBox(100, 100, 400, 300);
+    chrome.test.assertTrue(isVisible(textbox));
+    await microtasksFinished();
+    // Reset viewport to less offset page values and a non-1.0 zoom to validate
+    // coordinate conversion.
+    viewport.setZoom(2.0);
+    await microtasksFinished();
+
+    // With no edits, starting a new box just deletes the existing one; the
+    // plugin won't get a message.
+    mockPlugin.clearMessages();
+    initializeBox(100, 100, 400, 300);
+    await microtasksFinished();
+    chrome.test.assertTrue(isVisible(textbox));
+    chrome.test.assertEq(
+        undefined, mockPlugin.findMessage('finishTextAnnotation'));
+
+    // Editing text --> commit annotation on event.
+    initializeBox(100, 100, 400, 300);
+    await microtasksFinished();
+    chrome.test.assertTrue(isVisible(textbox));
+    const testAnnotation: TextAnnotation = {
+      text: 'Hello World',
+      id: 0,
+      pageNumber: 0,
+      textAttributes: {
+        size: 12,
+        typeface: 'Roboto',
+        styles: {
+          [TextStyle.BOLD]: false,
+          [TextStyle.ITALIC]: false,
+          [TextStyle.UNDERLINE]: false,
+          [TextStyle.STRIKETHROUGH]: false,
+        },
+        alignment: TextAlignment.LEFT,
+        color: hexToColor(TEXT_COLORS[0]!.color),
+      },
+      // Messages to the backend are in page coordinates.
+      textBoxRect: {locationX: 195, locationY: 147, height: 50, width: 50},
+    };
+
+    function startNewAnnotationAndVerifyMessage(existing: boolean = false) {
+      mockPlugin.clearMessages();
+      initializeBox(100, 100, 400, 300, existing);
+      const message = mockPlugin.findMessage('finishTextAnnotation');
+      chrome.test.assertTrue(message !== undefined);
+      chrome.test.assertEq('finishTextAnnotation', message.type);
+      assertDeepEquals(testAnnotation, message.data);
+    }
+
+    textbox.$.textbox.value = testAnnotation.text;
+    textbox.$.textbox.dispatchEvent(new CustomEvent('input'));
+    await microtasksFinished();
+    startNewAnnotationAndVerifyMessage();
+    await microtasksFinished();
+    // Reset expectation.
+    testAnnotation.text = 'Sample Text';
+
+    // Moving (or resizing) the box is an edit.
+    chrome.test.assertTrue(isVisible(textbox));
+    await dragHandle(textbox, 100, 100);
+    // Adjust expectations for new box. Text is reset.
+    // At 2x zoom, a 100px move in screen coordinates is a 50px move in page
+    // coordinates.
+    testAnnotation
+        .textBoxRect = {height: 50, width: 50, locationX: 245, locationY: 197};
+    startNewAnnotationAndVerifyMessage();
+    await microtasksFinished();
+    // Reset expectation.
+    testAnnotation
+        .textBoxRect = {height: 50, width: 50, locationX: 195, locationY: 147};
+
+    // Any modifications to font are an edit.
+    chrome.test.assertTrue(isVisible(textbox));
+    manager.setTextTypeface('Monospace');
+    await microtasksFinished();
+    testAnnotation.textAttributes.typeface = 'Monospace';
+    startNewAnnotationAndVerifyMessage();
+    await microtasksFinished();
+    // Reset expectation.
+    testAnnotation.textAttributes.typeface = 'Roboto';
+
+    // If all the text is deleted, there is also no commit message.
+    chrome.test.assertTrue(isVisible(textbox));
+    textbox.$.textbox.value = '';
+    textbox.$.textbox.dispatchEvent(new CustomEvent('input'));
+    await microtasksFinished();
+    mockPlugin.clearMessages();
+    // Initialize an existing box to set up the next test.
+    initializeBox(100, 100, 400, 300, true);
+    await microtasksFinished();
+    chrome.test.assertEq(
+        undefined, mockPlugin.findMessage('finishTextAnnotation'));
+
+    // If we are editing an existing box, a finish message should be sent
+    // regardless of edits or text.
+    chrome.test.assertTrue(isVisible(textbox));
+    testAnnotation.text = 'Hello World';
+    startNewAnnotationAndVerifyMessage(/* existing= */ true);
+    await microtasksFinished();
+
+    // Existing box, text cleared.
+    chrome.test.assertTrue(isVisible(textbox));
+    textbox.$.textbox.value = '';
+    textbox.$.textbox.dispatchEvent(new CustomEvent('input'));
+    await microtasksFinished();
+    testAnnotation.text = '';
+    startNewAnnotationAndVerifyMessage(/* existing= */ true);
+    await microtasksFinished();
+
+    // Message should also be sent if the element is disconnected.
+    chrome.test.assertTrue(isVisible(textbox));
+    testAnnotation.text = 'Hello World';
+    await microtasksFinished();
+    mockPlugin.clearMessages();
+    // This happens if the user changes annotation mode.
+    textbox.remove();
+    const message = mockPlugin.findMessage('finishTextAnnotation');
+    chrome.test.assertTrue(message !== undefined);
+    chrome.test.assertEq('finishTextAnnotation', message.type);
+    assertDeepEquals(testAnnotation, message.data);
+
+    // Reset for future tests.
+    document.body.appendChild(textbox);
+
     chrome.test.succeed();
   },
 ]);

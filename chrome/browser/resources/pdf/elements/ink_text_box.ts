@@ -22,6 +22,12 @@ export interface InkTextBoxElement {
   };
 }
 
+enum TextBoxState {
+  INACTIVE = 0,  // No active text annotation being edited; box is hidden.
+  NEW = 1,  // Box initialized with an annotation, but user has not made edits.
+  EDITED = 2,  // User has edited the annotation (position, text, style).
+}
+
 // This is 12px of padding + 24px. For some reason, Blink crashes at < 24px wide
 // textarea. Since the textarea won't resize width-wise automatically, it also
 // doesn't work to set this dynamically like we do with the height; just set a
@@ -50,6 +56,7 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
       locationX_: {type: Number},
       locationY_: {type: Number},
       minHeight_: {type: Number},
+      state_: {type: Number},
       textValue_: {type: String},
       width_: {type: Number},
       zoom_: {type: Number},
@@ -63,15 +70,22 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
   private accessor minHeight_: number = 0;
   private accessor height_: number = 0;
   protected accessor textValue_: string = '';
+  private accessor state_: TextBoxState = TextBoxState.INACTIVE;
   private accessor width_: number = 0;
   private accessor zoom_: number = 1.0;
 
   private attributes_?: TextAttributes;
   private eventTracker_: EventTracker = new EventTracker();
+  // Whether this is an existing textbox. Tracked so that the textbox can
+  // correctly notify the backend about changes (e.g. deleting all text in an
+  // existing annotation should remove it from the PDF, so we need to commit
+  // this change where we wouldn't commit an empty new annotation).
+  private existing_: boolean = false;
+  private id_: number = -1;
+  private pageNumber_: number = -1;
   private pageX_: number = 0;
   private pageY_: number = 0;
   private pointerStart_: {x: number, y: number}|null = null;
-  private sendTextboxUpdateTimeout_: number|null = null;
   private startPosition_: TextBoxRect|null = null;
 
   override connectedCallback() {
@@ -91,6 +105,9 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
 
   override disconnectedCallback() {
     super.disconnectedCallback();
+    // This element is disconnected when the user exits text annotation mode.
+    // Send the current annotation to the backend.
+    this.commitTextAnnotation_();
     this.eventTracker_.removeAll();
   }
 
@@ -112,9 +129,8 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
       }
     }
 
-    if (changedPrivateProperties.has('width_') ||
-        changedPrivateProperties.has('height_')) {
-      this.hidden = this.width_ === 0 && this.height_ === 0;
+    if (changedPrivateProperties.has('state_')) {
+      this.hidden = this.state_ === TextBoxState.INACTIVE;
     }
   }
 
@@ -152,23 +168,13 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
 
   protected onTextValueInput_() {
     this.textValue_ = this.$.textbox.value;
+    this.textBoxEdited_();
     this.updateMinimumHeight_();
-    if (this.minHeight_ > this.height_) {
-      // Height will adjust to minHeight_ on the next update cycle. Notify the
-      // backend. Debouncing by 10ms.
-      const update = {
-        height: this.minHeight_ / this.zoom_,
-        locationX: (this.locationX_ - this.pageX_) / this.zoom_,
-        locationY: (this.locationY_ - this.pageY_) / this.zoom_,
-        width: this.width_ / this.zoom_,
-      };
-      if (this.sendTextboxUpdateTimeout_) {
-        clearTimeout(this.sendTextboxUpdateTimeout_);
-      }
-      this.sendTextboxUpdateTimeout_ = setTimeout(() => {
-        this.sendTextboxUpdateTimeout_ = null;
-        Ink2Manager.getInstance().setTextBoxRect(update);
-      }, 10);
+  }
+
+  private textBoxEdited_() {
+    if (this.state_ === TextBoxState.NEW) {
+      this.state_ = TextBoxState.EDITED;
     }
   }
 
@@ -180,7 +186,42 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
     }
   }
 
+  private commitTextAnnotation_() {
+    // If this is a new/inactive box or a new box edited to empty, nothing to do
+    // unless it was initialized from an existing annotation. If this was
+    // an existing annotation, we need to notify the backend to re-render it,
+    // if unchanged, or delete it, if the text was set to empty.
+    if ((this.state_ !== TextBoxState.EDITED || this.textValue_ === '') &&
+        !this.existing_) {
+      this.state_ = TextBoxState.INACTIVE;
+      return;
+    }
+
+    // Notify the backend.
+    assert(this.attributes_);
+    Ink2Manager.getInstance().commitTextAnnotation({
+      text: this.textValue_,
+      id: this.id_,
+      pageNumber: this.pageNumber_,
+      textAttributes: this.attributes_,
+      textBoxRect: {
+        height: this.height_,
+        locationX: this.locationX_,
+        locationY: this.locationY_,
+        width: this.width_,
+      },
+    });
+
+    this.state_ = TextBoxState.INACTIVE;
+  }
+
   private onInitializeTextBox_(data: TextBoxInit) {
+    // If we are already editing an annotation, commit it first before
+    // switching to the new one.
+    if (this.state_ !== TextBoxState.INACTIVE) {
+      this.commitTextAnnotation_();
+    }
+
     // Update is in screen coordinates.
     this.pageX_ = data.pageCoordinates.x;
     this.pageY_ = data.pageCoordinates.y;
@@ -189,8 +230,12 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
     this.minHeight_ = 0;
     this.locationX_ = data.annotation.textBoxRect.locationX;
     this.locationY_ = data.annotation.textBoxRect.locationY;
+    this.state_ = TextBoxState.NEW;
+    this.existing_ = data.annotation.text !== '';
     this.textValue_ =
         data.annotation.text === '' ? 'Sample Text' : data.annotation.text;
+    this.id_ = data.annotation.id;
+    this.pageNumber_ = data.annotation.pageNumber;
     this.updateTextAttributes_(data.annotation.textAttributes);
   }
 
@@ -293,12 +338,7 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
     this.eventTracker_.remove(target, 'pointercancel');
     this.eventTracker_.remove(target, 'pointerup');
     this.eventTracker_.remove(target, 'pointermove');
-    Ink2Manager.getInstance().setTextBoxRect({
-      height: this.height_ / this.zoom_,
-      locationX: (this.locationX_ - this.pageX_) / this.zoom_,
-      locationY: (this.locationY_ - this.pageY_) / this.zoom_,
-      width: this.width_ / this.zoom_,
-    });
+    this.textBoxEdited_();
   }
 
   private updateTextAttributes_(newAttributes: TextAttributes) {
@@ -331,7 +371,10 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
     }
 
     this.updateTextAttributes_(newAttributes);
-    this.updateMinimumHeight_();
+    this.textBoxEdited_();
+    if (this.state_ !== TextBoxState.INACTIVE) {
+      this.updateMinimumHeight_();
+    }
   }
 }
 
