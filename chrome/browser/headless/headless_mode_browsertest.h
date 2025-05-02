@@ -44,14 +44,6 @@ class HeadlessModeBrowserTest : public InProcessBrowserTest {
   bool headful_mode_ = false;
 };
 
-class HeadlessModeBrowserTestWithUserDataDir : public HeadlessModeBrowserTest {
- public:
-  HeadlessModeBrowserTestWithUserDataDir() = default;
-  ~HeadlessModeBrowserTestWithUserDataDir() override = default;
-
-  base::FilePath GetUserDataDir() const;
-};
-
 enum StartWindowMode {
   kStartWindowNormal,
   kStartWindowMaximized,

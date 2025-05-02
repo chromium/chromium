@@ -114,14 +114,6 @@ content::WebContents* HeadlessModeBrowserTest::GetActiveWebContents() {
   return browser()->tab_strip_model()->GetActiveWebContents();
 }
 
-base::FilePath HeadlessModeBrowserTestWithUserDataDir::GetUserDataDir() const {
-  // InProcessBrowserTest class HeadlessModeBrowserTest is derived from
-  // guarantees that user data dir exists.
-  base::FilePath user_data_dir;
-  base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir);
-  return user_data_dir;
-}
-
 void HeadlessModeBrowserTestWithStartWindowMode::SetUpCommandLine(
     base::CommandLine* command_line) {
   HeadlessModeBrowserTest::SetUpCommandLine(command_line);
@@ -323,32 +315,27 @@ IN_PROC_BROWSER_TEST_F(HeadlessModeUserAgentBrowserTest, UserAgentHasHeadless) {
 
 // Incognito mode tests ------------------------------------------------------
 
-IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTestWithUserDataDir,
-                       StartWithUserDataDir) {
-  // InProcessBrowserTest always provdies temporary user data dir.
-  const base::CommandLine& command_line =
-      CHECK_DEREF(base::CommandLine::ForCurrentProcess());
-  ASSERT_EQ(command_line.GetSwitchValuePath(::switches::kUserDataDir),
-            GetUserDataDir());
-
-  // With user data dir expect to start in non incognito mode.
+IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTest, StartNonIncognito) {
+  // HeadlessModeBrowserTest class is derived from InProcessBrowserTest which
+  // guarantees that tests are running with a unique user data dir, so expect to
+  // start in non incognito mode which is the default when user data dir is
+  // specified.
   EXPECT_FALSE(browser()->profile()->IsOffTheRecord());
 }
 
-class HeadlessModeBrowserTestWithUserDataDirAndIncognito
-    : public HeadlessModeBrowserTestWithUserDataDir {
+class HeadlessModeBrowserTestWithIncognito : public HeadlessModeBrowserTest {
  public:
-  HeadlessModeBrowserTestWithUserDataDirAndIncognito() = default;
-  ~HeadlessModeBrowserTestWithUserDataDirAndIncognito() override = default;
+  HeadlessModeBrowserTestWithIncognito() = default;
+  ~HeadlessModeBrowserTestWithIncognito() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    HeadlessModeBrowserTestWithUserDataDir::SetUpCommandLine(command_line);
+    HeadlessModeBrowserTest::SetUpCommandLine(command_line);
     command_line->AppendSwitch(::switches::kIncognito);
   }
 };
 
-IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTestWithUserDataDirAndIncognito,
-                       StartWithUserDataDirAndIncognito) {
+IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTestWithIncognito,
+                       StartWithIncognito) {
   // With user data dir and incognito expect to start in incognito mode.
   EXPECT_TRUE(browser()->profile()->IsOffTheRecord());
 }
