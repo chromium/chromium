@@ -236,6 +236,12 @@ public class ChildProcessService {
 
                 @Override
                 public void onSelfFreeze() {
+                    synchronized (mLibraryInitializedLock) {
+                        if (!mLibraryInitialized) {
+                            Log.w(TAG, "Cannot do SelfFreeze before native is loaded");
+                            return;
+                        }
+                    }
                     ChildProcessServiceJni.get().onSelfFreeze();
                 }
 
