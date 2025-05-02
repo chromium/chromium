@@ -192,7 +192,6 @@ source_set("x11_display_utils") {
   ]
   deps = [
     ":x11",
-    "//build/config/linux/gtk",
     "//remoting/base:logging",
     "//remoting/host:display_layout",
     "//remoting/host/linux/dbus_interfaces:interface_headers",
