@@ -4568,21 +4568,28 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Net.QuicSession.ConnectionDuration" units="ms"
-    expires_after="2025-10-26">
-  <owner>renjietang@chromium.org</owner>
-  <owner>src/net/quic/OWNERS</owner>
-  <summary>
-    The duration of a QUIC connection starting from 1-RTT key available to
-    connection close.
-  </summary>
-</histogram>
-
 <histogram name="Net.QuicSession.ConnectionDurationWithPublicReset" units="ms"
     expires_after="2024-06-30">
   <owner>fayang@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>Duration of connections received PUBLIC_RESET.</summary>
+</histogram>
+
+<histogram name="Net.QuicSession.ConnectionDuration{HostType}" units="ms"
+    expires_after="2025-10-26">
+  <owner>renjietang@chromium.org</owner>
+  <owner>suzukikeita@chromium.org</owner>
+  <owner>src/net/quic/OWNERS</owner>
+  <summary>
+    The duration of a QUIC connection starting from 1-RTT key available to
+    connection close for {HostType}. This is recorded when the QUIC connection
+    is closed.
+  </summary>
+  <token key="HostType">
+    <variant name="" summary="any server"/>
+    <variant name=".GoogleWithAlpnH3"
+        summary="Google hosted servers with ALPN h3"/>
+  </token>
 </histogram>
 
 <histogram name="Net.QuicSession.ConnectionFlowControlBlocked"
@@ -5097,14 +5104,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.QuicSession.NumActiveStreamsOnIdleTimeout" units="streams"
-    expires_after="2022-12-18">
+<histogram name="Net.QuicSession.NumActiveStreamsOnIdleTimeout{HostType}"
+    units="streams" expires_after="2025-08-24">
   <owner>renjietang@chromium.org</owner>
+  <owner>suzukikeita@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
     The number of active streams when idle timeout is detected and connection is
-    being closed.
+    being closed for {HostType}. This is recorded when the QUIC connection is
+    closed because of idle timeout. This metric has been re-enabled on M138, and
+    any data prior to this is missing.
   </summary>
+  <token key="HostType">
+    <variant name="" summary="any server"/>
+    <variant name=".GoogleWithAlpnH3"
+        summary="Google hosted servers with ALPN h3"/>
+  </token>
 </histogram>
 
 <histogram name="Net.QuicSession.NumDefaultPathDegrading" units="times"
@@ -5164,13 +5179,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.QuicSession.NumPingsSent" units="pings"
-    expires_after="2024-10-13">
+<histogram name="Net.QuicSession.NumPingsSent{HostType}" units="pings"
+    expires_after="2025-08-24">
   <owner>renjietang@chromium.org</owner>
+  <owner>suzukikeita@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
-    The number of pings a QUIC connection sends during its lifetime.
+    The number of pings a QUIC connection sends during its lifetime. This is
+    recorded when the QUIC connection is closed for {HostType}. This metric has
+    been re-enabled on M138, and any data prior to this is missing.
   </summary>
+  <token key="HostType">
+    <variant name="" summary="any server"/>
+    <variant name=".GoogleWithAlpnH3"
+        summary="Google hosted servers with ALPN h3"/>
+  </token>
 </histogram>
 
 <histogram name="Net.QuicSession.NumReceivedOrigins" units="origins"
@@ -5184,14 +5207,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.QuicSession.NumStreamsWaitingToWriteOnIdleTimeout"
+<histogram
+    name="Net.QuicSession.NumStreamsWaitingToWriteOnIdleTimeout{HostType}"
     units="streams" expires_after="2025-08-24">
   <owner>renjietang@chromium.org</owner>
+  <owner>suzukikeita@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
     The number of streams waiting to write when idle timeout is detected and
-    connection is being closed.
+    connection is being closed for {HostType}. This is recorded when the QUIC
+    connection is closed because of idle timeout. This metric has been
+    re-enabled on M138, and any data prior to this is missing.
   </summary>
+  <token key="HostType">
+    <variant name="" summary="any server"/>
+    <variant name=".GoogleWithAlpnH3"
+        summary="Google hosted servers with ALPN h3"/>
+  </token>
 </histogram>
 
 <histogram name="Net.QuicSession.NumTotalStreams" units="units"
