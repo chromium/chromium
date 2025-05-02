@@ -7691,8 +7691,6 @@ static_library("browser") {
       "extensions/desktop_android/desktop_android_extension_host_delegate.h",
       "extensions/desktop_android/desktop_android_extensions_browser_client.cc",
       "extensions/desktop_android/desktop_android_extensions_browser_client.h",
-      "extensions/desktop_android/desktop_android_runtime_api_delegate.cc",
-      "extensions/desktop_android/desktop_android_runtime_api_delegate.h",
     ]
 
     deps += [
