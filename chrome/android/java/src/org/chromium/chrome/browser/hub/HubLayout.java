@@ -367,6 +367,7 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
                 queueAnimation();
                 forceAnimationToFinish();
                 hideCurrentTab();
+                maybeUpdateLayout();
             } else {
                 containerView.runOnNextLayout(this::queueAnimation);
             }
