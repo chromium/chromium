@@ -268,6 +268,8 @@ class CC_EXPORT LayerImpl {
         PaintFlags::DynamicRangeLimit::kHigh};
   };
 
+  bool HasAnyRarePropertySet() { return !!rare_properties_; }
+
   RareProperties& EnsureRareProperties() {
     if (!rare_properties_)
       rare_properties_ = std::make_unique<RareProperties>();

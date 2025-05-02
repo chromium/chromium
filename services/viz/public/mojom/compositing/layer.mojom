@@ -22,6 +22,12 @@ import "services/viz/public/mojom/compositing/transferable_resource.mojom";
 import "services/viz/public/mojom/compositing/view_transition_element_resource_id.mojom";
 import "ui/gfx/mojom/transform.mojom";
 
+// Some properties on the Layer are rarely set, and so are bundled
+// under a single optional field.
+struct RareProperties {
+  cc.mojom.FilterQuality filter_quality;
+};
+
 // Extra fields in a cc::MirrorLayerImpl that has been added to a tree or
 // modified in some interesting way since a prior tree update.
 struct MirrorLayerExtra {
@@ -149,7 +155,7 @@ struct Layer {
 
   bool should_check_backface_visibility;
 
-  cc.mojom.FilterQuality filter_quality;
+  RareProperties? rare_properties;
 
   // Extra properties that are specific to a layerImpl type.
   LayerExtra? layer_extra;

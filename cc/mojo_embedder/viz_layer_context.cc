@@ -567,7 +567,11 @@ void SerializeLayer(LayerImpl& layer,
   wire.scroll_tree_index = layer.scroll_tree_index();
   wire.should_check_backface_visibility =
       layer.should_check_backface_visibility();
-  wire.filter_quality = layer.GetFilterQuality();
+  if (layer.HasAnyRarePropertySet()) {
+    auto rare_properties = viz::mojom::RareProperties::New();
+    rare_properties->filter_quality = layer.GetFilterQuality();
+    wire.rare_properties = std::move(rare_properties);
+  }
   switch (layer.GetLayerType()) {
     case mojom::LayerType::kMirror: {
       auto mirror_layer_extra = viz::mojom::MirrorLayerExtra::New();
