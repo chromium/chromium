@@ -943,7 +943,9 @@ void CollectDawnInfo(const gpu::GpuPreferences& gpu_preferences,
       wgpu::AdapterInfo info = {};
       adapter.GetInfo(&info);
       if (featureLevel == wgpu::FeatureLevel::Compatibility &&
-          info.backendType != wgpu::BackendType::OpenGLES) {
+          adapter.HasFeature(wgpu::FeatureName::CoreFeaturesAndLimits)) {
+        // If this adapter also supports Core feature level, then skip listing it as Compat
+        // mode adapter.
         continue;
       }
 
