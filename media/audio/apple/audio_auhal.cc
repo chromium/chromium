@@ -611,8 +611,8 @@ void AUHALStream::UpdatePlayoutTimestamp(const AudioTimeStamp* timestamp) {
 bool AUHALStream::ConfigureAUHAL() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  std::unique_ptr<ScopedAudioUnit> local_audio_unit(
-      new ScopedAudioUnit(device_, AUElement::OUTPUT));
+  auto local_audio_unit =
+      std::make_unique<ScopedAudioUnit>(device_, AUElement::OUTPUT);
   if (!local_audio_unit->is_valid())
     return false;
 
