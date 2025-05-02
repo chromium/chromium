@@ -9127,6 +9127,9 @@ crbug.com/397311089 [ Debug Linux ] external/wpt/fetch/fetch-later/new-window.te
 crbug.com/396746625 [ Linux ] wpt_internal/mediacapture-extensions/MediaStreamTrack-configurationchange.https.window.html [ Failure Pass ]
 
 # Gardener 2025-03-11
+crbug.com/402339999 [ Mac14-arm64 ] compositing/geometry/video-opacity-overlay.html [ Failure ]
+crbug.com/402339999 [ Mac14-arm64 ] compositing/overlap-blending/children-opacity-no-overlap.html [ Failure ]
+crbug.com/402339999 [ Mac14-arm64 ] compositing/reflections/nested-reflection-animated.html [ Failure ]
 crbug.com/402377886 [ Win11-arm64 ] external/wpt/webtransport/stats.https.any.sharedworker.html [ Failure ]
 
 # Gardener 2025-03-12
