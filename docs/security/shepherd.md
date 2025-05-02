@@ -74,7 +74,7 @@ All this is hard, so please remember to [ask for help](#Ask-for-help).
 Here are some of the important references and resources you need or may need
 during your shepherding shift:
 
-* [Current Shepherds](https://script.google.com/a/macros/google.com/s/AKfycbz02xD4ghSzZu_tXyNRgjC95wFURATZeD_FHq0KRMHeqA-b0b9sow4NV1lhi0P2vy1j/exec)
+* [Current Shepherds](https://goto.google.com/whos-the-shepherd)
 * [Chrome Security Bug Dashboard](https://goto.google.com/chrome-security-bugs)
 * [Security Severity Guidelines](severity-guidelines.md)
 * [Security Labels](security-labels.md)
