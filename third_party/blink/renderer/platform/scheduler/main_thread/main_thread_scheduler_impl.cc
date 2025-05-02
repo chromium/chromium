@@ -14,6 +14,7 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/message_loop/message_pump.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
@@ -166,12 +167,34 @@ perfetto::StaticString RenderingPrioritizationStateToString(
   }
 }
 
+BASE_FEATURE(kBusyLoopOnRendererMain,
+             "BusyLoopOnMainThread",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kBusyLoopTime,
+                   &kBusyLoopOnRendererMain,
+                   "busy_loop_for",
+                   base::Milliseconds(2));
+
+void MaybeSetBusyLoop(raw_ptr<base::MessagePump> message_pump,
+                      bool backgrounded) {
+  if (!message_pump || !base::FeatureList::IsEnabled(kBusyLoopOnRendererMain)) {
+    return;
+  }
+
+  base::TimeDelta busy_loop_duration =
+      backgrounded ? base::Microseconds(0) : kBusyLoopTime.Get();
+  message_pump->SetBusyLoop(busy_loop_duration);
+}
+
 }  // namespace
 
 MainThreadSchedulerImpl::MainThreadSchedulerImpl(
     std::unique_ptr<base::sequence_manager::SequenceManager> sequence_manager)
     : MainThreadSchedulerImpl(sequence_manager.get()) {
   owned_sequence_manager_ = std::move(sequence_manager);
+  MaybeSetBusyLoop(main_thread_only().message_pump,
+                   main_thread_only().renderer_backgrounded);
 }
 
 MainThreadSchedulerImpl::MainThreadSchedulerImpl(
@@ -395,7 +418,9 @@ MainThreadSchedulerImpl::MainThreadOnly::MainThreadOnly(
       last_frame_time(now),
       agent_group_schedulers(
           MakeGarbageCollected<
-              GCedHeapHashSet<WeakMember<AgentGroupSchedulerImpl>>>()) {}
+              GCedHeapHashSet<WeakMember<AgentGroupSchedulerImpl>>>()),
+      message_pump(
+          main_thread_scheduler_impl->sequence_manager_->GetMessagePump()) {}
 
 MainThreadSchedulerImpl::MainThreadOnly::~MainThreadOnly() = default;
 
@@ -541,6 +566,7 @@ void MainThreadSchedulerImpl::Shutdown() {
   // from |idle_helper_| early-outs and doesn't do anything.
   helper_.Shutdown();
   idle_helper_.Shutdown();
+  main_thread_only().message_pump = nullptr;
   sequence_manager_ = nullptr;
   owned_sequence_manager_.reset();
   main_thread_only().rail_mode_observers.Clear();
@@ -968,6 +994,7 @@ void MainThreadSchedulerImpl::SetRendererBackgrounded(bool backgrounded) {
   base::TimeTicks now = NowTicks();
   main_thread_only().background_status_changed_at = now;
   main_thread_only().metrics_helper.SetRendererBackgrounded(backgrounded, now);
+  MaybeSetBusyLoop(main_thread_only().message_pump, backgrounded);
 
   UpdatePolicy();
 

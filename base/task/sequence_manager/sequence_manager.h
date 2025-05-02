@@ -197,6 +197,10 @@ class BASE_EXPORT SequenceManager {
   // circumstances. The ownership of the pump is transferred to SequenceManager.
   virtual void BindToMessagePump(std::unique_ptr<MessagePump> message_pump) = 0;
 
+  // Gets a pointer to the message pump that this sequence manager is bound to,
+  // if any.
+  virtual MessagePump* GetMessagePump() const = 0;
+
   // Must be called on the main thread.
   // Can be called only once, before creating TaskQueues.
   // Observer must outlive the SequenceManager.
