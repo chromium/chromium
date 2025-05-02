@@ -199,7 +199,6 @@ struct PartitionOptions {
   ThreadIsolationOption thread_isolation;
 #endif
 
-  EnableToggle use_pool_offset_freelists = kDisabled;
   EnableToggle use_small_single_slot_spans = kDisabled;
 };
 
@@ -224,7 +223,7 @@ struct alignas(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
   using WritableSlotSpanMetadata =
       internal::SlotSpanMetadata<internal::MetadataKind::kWritable>;
   using Bucket = internal::PartitionBucket;
-  using FreeListEntry = internal::PartitionFreelistEntry;
+  using FreeListEntry = internal::FreelistEntry;
   using WritableSuperPageExtentEntry = internal::PartitionSuperPageExtentEntry<
       internal::MetadataKind::kWritable>;
   using ReadOnlySuperPageExtentEntry = internal::PartitionSuperPageExtentEntry<
@@ -280,8 +279,6 @@ struct alignas(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
 #if PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
     ThreadIsolationOption thread_isolation;
 #endif
-
-    bool use_pool_offset_freelists = false;
 
 #if PA_CONFIG(EXTRAS_REQUIRED)
     uint32_t extras_size = 0;
@@ -903,17 +900,6 @@ struct alignas(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
         scheduler_loop_quarantine_root, config);
   }
 
-  const internal::PartitionFreelistDispatcher* get_freelist_dispatcher() {
-#if PA_BUILDFLAG(USE_FREELIST_DISPATCHER)
-    if (settings.use_pool_offset_freelists) {
-      return internal::PartitionFreelistDispatcher::Create(
-          internal::PartitionFreelistEncoding::kPoolOffsetFreeList);
-    }
-#endif  // PA_BUILDFLAG(USE_FREELIST_DISPATCHER)
-    return internal::PartitionFreelistDispatcher::Create(
-        internal::PartitionFreelistEncoding::kEncodedFreeList);
-  }
-
 #if PA_CONFIG(ENABLE_SHADOW_METADATA)
   // TODO(crbug.com/40238514) This is an unused function. Start using it in
   // tests and/or in production code.
@@ -1325,9 +1311,7 @@ PartitionRoot::AllocFromBucket(Bucket* bucket,
     PA_DCHECK(!slot_span->CanStoreRawSize());
     PA_DCHECK(!slot_span->bucket->is_direct_mapped());
 
-    void* entry = slot_span->ToWritable(this)->PopForAlloc(
-        bucket->slot_size, PartitionRoot::FromSlotSpanMetadata(slot_span)
-                               ->get_freelist_dispatcher());
+    void* entry = slot_span->ToWritable(this)->PopForAlloc(bucket->slot_size);
 
     PA_DCHECK(internal::SlotStartPtr2Addr(entry) == slot_start);
 
@@ -1635,8 +1619,7 @@ PA_ALWAYS_INLINE void PartitionRoot::FreeInSlotSpan(
   DecreaseTotalSizeOfAllocatedBytes(slot_start,
                                     slot_span->GetSlotSizeForBookkeeping());
 
-  return slot_span->ToWritable(this)->Free(
-      slot_start, this, PartitionRoot::get_freelist_dispatcher());
+  return slot_span->ToWritable(this)->Free(slot_start, this);
 }
 
 #if PA_CONFIG(IS_NONCLANG_MSVC)

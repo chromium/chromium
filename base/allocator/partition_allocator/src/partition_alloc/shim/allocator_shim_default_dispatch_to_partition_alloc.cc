@@ -682,8 +682,6 @@ void ConfigurePartitions(
                            ? partition_alloc::PartitionOptions::kEnabled
                            : partition_alloc::PartitionOptions::kDisabled,
             .reporting_mode = memory_tagging_reporting_mode};
-        opts.use_pool_offset_freelists =
-            partition_alloc::PartitionOptions::kEnabled;
         opts.use_small_single_slot_spans =
             use_small_single_slot_spans
                 ? partition_alloc::PartitionOptions::kEnabled

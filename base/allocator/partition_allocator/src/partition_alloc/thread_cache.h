@@ -232,7 +232,7 @@ class ReentrancyGuard {
 class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ThreadCache {
  public:
   struct Bucket {
-    internal::PartitionFreelistEntry* freelist_head = nullptr;
+    internal::FreelistEntry* freelist_head = nullptr;
     // Want to keep sizeof(Bucket) small, using small types.
     uint8_t count = 0;
     std::atomic<uint8_t> limit{};  // Can be changed from another thread.
@@ -283,9 +283,6 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ThreadCache {
   // Create a new ThreadCache associated with |root|.
   // Must be called without the partition locked, as this may allocate.
   static ThreadCache* Create(PartitionRoot* root);
-
-  const internal::PartitionFreelistDispatcher*
-  get_freelist_dispatcher_from_root();
 
   ~ThreadCache();
 
@@ -415,7 +412,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ThreadCache {
   PA_ALWAYS_INLINE void PutInBucket(Bucket& bucket, uintptr_t slot_start);
   void ResetForTesting();
   // Releases the entire freelist starting at |head| to the root.
-  void FreeAfter(internal::PartitionFreelistEntry* head, size_t slot_size);
+  void FreeAfter(internal::FreelistEntry* head, size_t slot_size);
   static void SetGlobalLimits(PartitionRoot* root, float multiplier);
 
   // On some architectures, ThreadCache::Get() can be called and return
@@ -538,7 +535,7 @@ PA_ALWAYS_INLINE uintptr_t ThreadCache::GetFromCache(size_t bucket_index,
   }
 
   PA_DCHECK(bucket.count != 0);
-  internal::PartitionFreelistEntry* entry = bucket.freelist_head;
+  internal::FreelistEntry* entry = bucket.freelist_head;
   // TODO(lizeb): Consider removing once crbug.com/1382658 is fixed.
 #if PA_BUILDFLAG(IS_CHROMEOS) && PA_BUILDFLAG(PA_ARCH_CPU_X86_64) && \
     PA_BUILDFLAG(HAS_64_BIT_POINTERS)
@@ -556,10 +553,8 @@ PA_ALWAYS_INLINE uintptr_t ThreadCache::GetFromCache(size_t bucket_index,
   // corruption, we know the bucket size that lead to the crash, helping to
   // narrow down the search for culprit. |bucket| was touched just now, so this
   // does not introduce another cache miss.
-  const internal::PartitionFreelistDispatcher* freelist_dispatcher =
-      get_freelist_dispatcher_from_root();
-  internal::PartitionFreelistEntry* next =
-      freelist_dispatcher->GetNextForThreadCache(entry, bucket.slot_size);
+  internal::FreelistEntry* next =
+      entry->GetNextForThreadCache(bucket.slot_size);
 
   PA_DCHECK(entry != next);
   bucket.count--;
@@ -626,9 +621,8 @@ PA_ALWAYS_INLINE void ThreadCache::PutInBucket(Bucket& bucket,
 #endif  // PA_CONFIG(HAS_FREELIST_SHADOW_ENTRY) &&
         // PA_BUILDFLAG(PA_ARCH_CPU_X86_64) && PA_BUILDFLAG(HAS_64_BIT_POINTERS)
 
-  auto* entry =
-      get_freelist_dispatcher_from_root()->EmplaceAndInitForThreadCache(
-          slot_start, bucket.freelist_head);
+  auto* entry = internal::FreelistEntry::EmplaceAndInitForThreadCache(
+      slot_start, bucket.freelist_head);
   bucket.freelist_head = entry;
   bucket.count++;
 }

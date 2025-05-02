@@ -457,8 +457,7 @@ SlotSpanMetadata<MetadataKind::kReadOnly>* PartitionDirectMap(
       return nullptr;
     }
 
-    auto* next_entry =
-        root->get_freelist_dispatcher()->EmplaceAndInitNull(slot_start);
+    auto* next_entry = FreelistEntry::EmplaceAndInitNull(slot_start);
 
     writable_page_metadata->slot_span_metadata.SetFreelistHead(next_entry,
                                                                root);
@@ -1015,11 +1014,9 @@ PA_ALWAYS_INLINE uintptr_t PartitionBucket::ProvisionMoreSlotsAndAllocOne(
   }
 #endif  // PA_BUILDFLAG(HAS_MEMORY_TAGGING)
   // Add all slots that fit within so far committed pages to the free list.
-  PartitionFreelistEntry* prev_entry = nullptr;
+  FreelistEntry* prev_entry = nullptr;
   uintptr_t next_slot_end = next_slot + slot_size;
   size_t free_list_entries_added = 0;
-
-  const auto* freelist_dispatcher = root->get_freelist_dispatcher();
 
   while (next_slot_end <= commit_end) {
     void* next_slot_ptr;
@@ -1037,7 +1034,7 @@ PA_ALWAYS_INLINE uintptr_t PartitionBucket::ProvisionMoreSlotsAndAllocOne(
     next_slot_ptr = reinterpret_cast<void*>(next_slot);
 #endif
 
-    auto* entry = freelist_dispatcher->EmplaceAndInitNull(next_slot_ptr);
+    auto* entry = FreelistEntry::EmplaceAndInitNull(next_slot_ptr);
 
     if (!slot_span->get_freelist_head()) {
       PA_DCHECK(!prev_entry);
@@ -1045,7 +1042,7 @@ PA_ALWAYS_INLINE uintptr_t PartitionBucket::ProvisionMoreSlotsAndAllocOne(
       writable_slot_span->SetFreelistHead(entry, root);
     } else {
       PA_DCHECK(free_list_entries_added);
-      freelist_dispatcher->SetNext(prev_entry, entry);
+      prev_entry->SetNext(entry);
     }
     next_slot = next_slot_end;
     next_slot_end = next_slot + slot_size;
@@ -1063,8 +1060,7 @@ PA_ALWAYS_INLINE uintptr_t PartitionBucket::ProvisionMoreSlotsAndAllocOne(
   // is large), meaning that |slot_span->freelist_head| can be nullptr.
   if (slot_span->get_freelist_head()) {
     PA_DCHECK(free_list_entries_added);
-    freelist_dispatcher->CheckFreeList(slot_span->get_freelist_head(),
-                                       slot_size);
+    slot_span->get_freelist_head()->CheckFreeList(slot_size);
   }
 #endif
 
@@ -1535,16 +1531,13 @@ uintptr_t PartitionBucket::SlowPathAlloc(
   // If we found an active slot span with free slots, or an empty slot span, we
   // have a usable freelist head.
   if (new_slot_span->get_freelist_head() != nullptr) [[likely]] {
-    const PartitionFreelistDispatcher* freelist_dispatcher =
-        root->get_freelist_dispatcher();
-    PartitionFreelistEntry* entry =
-        new_slot_span->ToWritable(root)->PopForAlloc(new_bucket->slot_size,
-                                                     freelist_dispatcher);
+    FreelistEntry* entry =
+        new_slot_span->ToWritable(root)->PopForAlloc(new_bucket->slot_size);
 
     // We may have set *is_already_zeroed to true above, make sure that the
     // freelist entry doesn't contain data. Either way, it wouldn't be a good
     // idea to let users see our internal data.
-    uintptr_t slot_start = freelist_dispatcher->ClearForAllocation(entry);
+    uintptr_t slot_start = entry->ClearForAllocation();
     return slot_start;
   }
 

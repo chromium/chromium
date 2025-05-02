@@ -15,15 +15,6 @@ if (!defined(partition_alloc_remove_configs)) {
   partition_alloc_remove_configs = []
 }
 
-# Enables compilation of the freelist dispatcher, which we'll use to
-# carry out runtime evaluation of PartitionAlloc's two freelist
-# implementations: the existing encoded-next freelist and the new
-# pool offset freelist. When false, the latter is not built.
-use_freelist_dispatcher = has_64_bit_pointers
-
-assert(has_64_bit_pointers || !use_freelist_dispatcher,
-       "freelist dispatcher can't be used without 64-bit pointers")
-
 record_alloc_info = false
 
 # GWP-ASan is tied to BRP's enablement.
@@ -188,7 +179,6 @@ pa_buildflag_header("buildflags") {
     "STACK_SCAN_SUPPORTED=$stack_scan_supported",
     "USE_ALLOCATOR_SHIM=$use_allocator_shim",
     "USE_ASAN_BACKUP_REF_PTR=$use_asan_backup_ref_ptr",
-    "USE_FREELIST_DISPATCHER=$use_freelist_dispatcher",
     "USE_FULL_MTE=$use_full_mte",
     "USE_LARGE_EMPTY_SLOT_SPAN_RING=$use_large_empty_slot_span_ring",
     "USE_PARTITION_ALLOC=$use_partition_alloc",
@@ -533,13 +523,13 @@ if (is_clang_or_gcc) {
       assert(!stack_scan_supported)
     }
 
-    # TODO(crbug.com/40274683): once we evaluate pool offset freelists,
-    # we should erase the dispatcher and compile (& use) exactly one
-    # freelist implementation.
-    if (use_freelist_dispatcher) {
+    # Pool-offset encoding has better security characteristics, but requires
+    # contiguous pool hence limited to 64-bit systems.
+    if (has_64_bit_pointers) {
       sources += [ "pool_offset_freelist.h" ]
+    } else {
+      sources += [ "encoded_next_freelist.h" ]
     }
-    sources += [ "encoded_next_freelist.h" ]
 
     public_deps = [
       ":build_config",

@@ -83,11 +83,6 @@ ThreadCacheRegistry& ThreadCacheRegistry::Instance() {
   return g_instance;
 }
 
-const internal::PartitionFreelistDispatcher*
-ThreadCache::get_freelist_dispatcher_from_root() {
-  return root_->get_freelist_dispatcher();
-}
-
 void ThreadCacheRegistry::RegisterThreadCache(ThreadCache* cache) {
   internal::ScopedGuard scoped_locker(GetLock());
   cache->next_ = nullptr;
@@ -682,11 +677,7 @@ void ThreadCache::ClearBucket(Bucket& bucket, size_t limit) {
   //    triggers a major page fault, and we are running on a low-priority
   //    thread, we don't want the thread to be blocked while holding the lock,
   //    causing a priority inversion.
-  const internal::PartitionFreelistDispatcher* freelist_dispatcher =
-      root_->get_freelist_dispatcher();
-
-  freelist_dispatcher->CheckFreeListForThreadCache(bucket.freelist_head,
-                                                   bucket.slot_size);
+  bucket.freelist_head->CheckFreeListForThreadCache(bucket.slot_size);
   uint8_t count_before = bucket.count;
   if (limit == 0) {
     FreeAfter(bucket.freelist_head, bucket.slot_size);
@@ -697,24 +688,12 @@ void ThreadCache::ClearBucket(Bucket& bucket, size_t limit) {
     auto* head = bucket.freelist_head;
     size_t items = 1;  // Cannot free the freelist head.
     while (items < limit) {
-#if PA_BUILDFLAG(USE_FREELIST_DISPATCHER)
-      head = freelist_dispatcher->GetNextForThreadCache(head, bucket.slot_size);
-#else
-      head = freelist_dispatcher->GetNextForThreadCache(head, bucket.slot_size);
-#endif  // PA_BUILDFLAG(USE_FREELIST_DISPATCHER)
+      head = head->GetNextForThreadCache(bucket.slot_size);
       items++;
     }
 
-#if PA_BUILDFLAG(USE_FREELIST_DISPATCHER)
-    FreeAfter(
-        freelist_dispatcher->GetNextForThreadCache(head, bucket.slot_size),
-        bucket.slot_size);
-#else
-    FreeAfter(
-        freelist_dispatcher->GetNextForThreadCache(head, bucket.slot_size),
-        bucket.slot_size);
-#endif  // PA_BUILDFLAG(USE_FREELIST_DISPATCHER)
-    freelist_dispatcher->SetNext(head, nullptr);
+    FreeAfter(head->GetNextForThreadCache(bucket.slot_size), bucket.slot_size);
+    head->SetNext(nullptr);
   }
   bucket.count = limit;
   uint8_t count_after = bucket.count;
@@ -725,21 +704,14 @@ void ThreadCache::ClearBucket(Bucket& bucket, size_t limit) {
   PA_DCHECK(cached_memory_ == CachedMemory());
 }
 
-void ThreadCache::FreeAfter(internal::PartitionFreelistEntry* head,
-                            size_t slot_size) {
+void ThreadCache::FreeAfter(internal::FreelistEntry* head, size_t slot_size) {
   // Acquire the lock once. Deallocation from the same bucket are likely to be
   // hitting the same cache lines in the central allocator, and lock
   // acquisitions can be expensive.
   internal::ScopedGuard guard(internal::PartitionRootLock(root_));
   while (head) {
     uintptr_t slot_start = internal::SlotStartPtr2Addr(head);
-    const internal::PartitionFreelistDispatcher* freelist_dispatcher =
-        root_->get_freelist_dispatcher();
-#if PA_BUILDFLAG(USE_FREELIST_DISPATCHER)
-    head = freelist_dispatcher->GetNextForThreadCache(head, slot_size);
-#else
-    head = freelist_dispatcher->GetNextForThreadCache(head, slot_size);
-#endif  // PA_BUILDFLAG(USE_FREELIST_DISPATCHER)
+    head = head->GetNextForThreadCache(slot_size);
     root_->RawFreeLocked(slot_start);
   }
 }
@@ -854,10 +826,8 @@ bool ThreadCache::IsInFreelist(uintptr_t address,
   if (!bucket.freelist_head) [[unlikely]] {
     return false;
   }
-  internal::PartitionFreelistEntry* entry = bucket.freelist_head;
+  internal::FreelistEntry* entry = bucket.freelist_head;
 
-  const internal::PartitionFreelistDispatcher* freelist_dispatcher =
-      get_freelist_dispatcher_from_root();
   size_t index = 0;
   size_t length = bucket.count;
   while (entry != nullptr && index < length) {
@@ -865,8 +835,8 @@ bool ThreadCache::IsInFreelist(uintptr_t address,
       position = index;
       return true;
     }
-    internal::PartitionFreelistEntry* next =
-        freelist_dispatcher->GetNextForThreadCache(entry, bucket.slot_size);
+    internal::FreelistEntry* next =
+        entry->GetNextForThreadCache(bucket.slot_size);
     entry = next;
     ++index;
   }

@@ -216,9 +216,7 @@ void SlotSpanMetadata<MetadataKind::kWritable>::FreeSlowPath(
     }
 
 #if PA_BUILDFLAG(DCHECKS_ARE_ON)
-    const PartitionFreelistDispatcher* freelist_dispatcher =
-        PartitionRoot::FromSlotSpanMetadata(this)->get_freelist_dispatcher();
-    freelist_dispatcher->CheckFreeList(freelist_head, bucket->slot_size);
+    freelist_head->CheckFreeList(bucket->slot_size);
 #endif  // PA_BUILDFLAG(DCHECKS_ARE_ON)
 
     // If it's the current active slot span, change it. We bounce the slot span
@@ -297,11 +295,8 @@ void SlotSpanMetadata<MetadataKind::kWritable>::SortFreelist(
   size_t num_free_slots = 0;
   size_t slot_size = bucket->slot_size;
 
-  const PartitionFreelistDispatcher* freelist_dispatcher =
-      PartitionRoot::FromSlotSpanMetadata(this)->get_freelist_dispatcher();
-
-  for (PartitionFreelistEntry* head = freelist_head; head;
-       head = freelist_dispatcher->GetNext(head, slot_size)) {
+  for (FreelistEntry* head = freelist_head; head;
+       head = head->GetNext(slot_size)) {
     ++num_free_slots;
     size_t offset_in_slot_span = SlotStartPtr2Addr(head) - slot_span_start;
     size_t slot_number = bucket->GetSlotNumber(offset_in_slot_span);
@@ -312,18 +307,18 @@ void SlotSpanMetadata<MetadataKind::kWritable>::SortFreelist(
 
   // Empty or single-element list is always sorted.
   if (num_free_slots > 1) {
-    PartitionFreelistEntry* back = nullptr;
-    PartitionFreelistEntry* head = nullptr;
+    FreelistEntry* back = nullptr;
+    FreelistEntry* head = nullptr;
 
     for (size_t slot_number = 0; slot_number < num_provisioned_slots;
          slot_number++) {
       if (free_slots[slot_number]) {
         uintptr_t slot_start = slot_span_start + (slot_size * slot_number);
-        auto* entry = freelist_dispatcher->EmplaceAndInitNull(slot_start);
+        auto* entry = FreelistEntry::EmplaceAndInitNull(slot_start);
         if (!head) {
           head = entry;
         } else {
-          freelist_dispatcher->SetNext(back, entry);
+          back->SetNext(entry);
         }
 
         back = entry;

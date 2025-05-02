@@ -5,297 +5,242 @@
 #ifndef PARTITION_ALLOC_PARTITION_FREELIST_ENTRY_H_
 #define PARTITION_ALLOC_PARTITION_FREELIST_ENTRY_H_
 
-#include <cstddef>
-
-#include "partition_alloc/bucket_lookup.h"
 #include "partition_alloc/buildflags.h"
-#include "partition_alloc/partition_alloc_base/bits.h"
-#include "partition_alloc/partition_alloc_base/compiler_specific.h"
-#include "partition_alloc/partition_alloc_base/component_export.h"
-#include "partition_alloc/partition_alloc_base/notreached.h"
 #include "partition_alloc/partition_alloc_constants.h"
 
+// Pool-offset encoding has better security characteristics, but requires
+// contiguous pool hence limited to 64-bit systems.
+#if PA_BUILDFLAG(HAS_64_BIT_POINTERS)
+#include "partition_alloc/pool_offset_freelist.h"
+#else
+#include "partition_alloc/encoded_next_freelist.h"
+#endif  // PA_BUILDFLAG(HAS_64_BIT_POINTERS)
+
 namespace partition_alloc::internal {
 
-[[noreturn]] PA_NOINLINE PA_COMPONENT_EXPORT(
-    PARTITION_ALLOC) void FreelistCorruptionDetected(size_t slot_size);
+// Freelist entries are encoded for security reasons. See
+// //base/allocator/partition_allocator/PartitionAlloc.md
+// and |Transform()| for the rationale and mechanism, respectively.
+class FreelistEntry {
+#if PA_BUILDFLAG(HAS_64_BIT_POINTERS)
+  using EncodedPtr = EncodedPoolOffset;
+#else
+  using EncodedPtr = EncodedFreelistPtr;
+#endif  // PA_BUILDFLAG(HAS_64_BIT_POINTERS)
 
-}  // namespace partition_alloc::internal
+  constexpr explicit FreelistEntry(std::nullptr_t)
+      : encoded_next_(EncodedPtr(nullptr))
+#if PA_CONFIG(HAS_FREELIST_SHADOW_ENTRY)
+        ,
+        shadow_(encoded_next_.Inverted())
+#endif
+  {
+  }
+  explicit FreelistEntry(FreelistEntry* next)
+      : encoded_next_(EncodedPtr(next))
+#if PA_CONFIG(HAS_FREELIST_SHADOW_ENTRY)
+        ,
+        shadow_(encoded_next_.Inverted())
+#endif
+  {
+  }
+  // For testing only.
+  FreelistEntry(void* next, bool make_shadow_match)
+      : encoded_next_(EncodedPtr(next))
+#if PA_CONFIG(HAS_FREELIST_SHADOW_ENTRY)
+        ,
+        shadow_(make_shadow_match ? encoded_next_.Inverted() : 12345)
+#endif
+  {
+  }
 
-#include "partition_alloc/encoded_next_freelist.h"  // IWYU pragma: export
+ public:
+  ~FreelistEntry() = delete;
 
-// PA defaults to a freelist whose "next" links are encoded pointers.
-// We are assessing an alternate implementation using an alternate
-// encoding (pool offsets). When build support is enabled, the
-// freelist implementation is determined at runtime.
-#if PA_BUILDFLAG(USE_FREELIST_DISPATCHER)
-#include "partition_alloc/pool_offset_freelist.h"  // IWYU pragma: export
+  // Emplaces the freelist entry at the beginning of the given slot span, and
+  // initializes it as null-terminated.
+  PA_ALWAYS_INLINE static FreelistEntry* EmplaceAndInitNull(
+      void* slot_start_tagged) {
+    // |slot_start_tagged| is MTE-tagged.
+    auto* entry = new (slot_start_tagged) FreelistEntry(nullptr);
+    return entry;
+  }
+  PA_ALWAYS_INLINE static FreelistEntry* EmplaceAndInitNull(
+      uintptr_t slot_start) {
+    return EmplaceAndInitNull(SlotStartAddr2Ptr(slot_start));
+  }
+
+  // Emplaces the freelist entry at the beginning of the given slot span, and
+  // initializes it with the given |next| pointer, but encoded.
+  //
+  // This freelist is built for the purpose of thread-cache. This means that we
+  // can't perform a check that this and the next pointer belong to the same
+  // super page, as thread-cache spans may chain slots across super pages.
+  PA_ALWAYS_INLINE static FreelistEntry* EmplaceAndInitForThreadCache(
+      uintptr_t slot_start,
+      FreelistEntry* next) {
+    auto* entry = new (SlotStartAddr2Ptr(slot_start)) FreelistEntry(next);
+    return entry;
+  }
+
+  // Emplaces the freelist entry at the beginning of the given slot span, and
+  // initializes it with the given |next| pointer.
+  //
+  // This is for testing purposes only! |make_shadow_match| allows you to choose
+  // if the shadow matches the next pointer properly or is trash.
+  PA_ALWAYS_INLINE static void EmplaceAndInitForTest(uintptr_t slot_start,
+                                                     void* next,
+                                                     bool make_shadow_match) {
+    new (SlotStartAddr2Ptr(slot_start)) FreelistEntry(next, make_shadow_match);
+  }
+
+  void CorruptNextForTesting(uintptr_t v) {
+    // We just need a value that can never be a valid value here.
+    encoded_next_.Override(EncodedPtr::Transform(v));
+  }
+
+  // Puts `slot_size` on the stack before crashing in case of memory
+  // corruption. Meant to be used to report the failed allocation size.
+  PA_ALWAYS_INLINE FreelistEntry* GetNextForThreadCache(
+      size_t slot_size) const {
+    return GetNextInternal</*for_thread_cache=*/true>(slot_size);
+  }
+  PA_ALWAYS_INLINE FreelistEntry* GetNext(size_t slot_size) const {
+    return GetNextInternal</*for_thread_cache=*/false>(slot_size);
+  }
+
+  PA_NOINLINE void CheckFreeList(size_t slot_size) const {
+    for (auto* entry = this; entry; entry = entry->GetNext(slot_size)) {
+      // `GetNext()` calls `IsWellFormed()`.
+    }
+  }
+
+  PA_NOINLINE void CheckFreeListForThreadCache(size_t slot_size) const {
+    for (auto* entry = this; entry;
+         entry = entry->GetNextForThreadCache(slot_size)) {
+      // `GetNextForThreadCache()` calls `IsWellFormed()`.
+    }
+  }
+
+  PA_ALWAYS_INLINE void SetNext(FreelistEntry* entry) {
+    // SetNext() is either called on the freelist head, when provisioning new
+    // slots, or when GetNext() has been called before, no need to pass the
+    // size.
+#if PA_BUILDFLAG(DCHECKS_ARE_ON)
+    // Regular freelists always point to an entry within the same super page.
+    //
+    // This is most likely a PartitionAlloc bug if this triggers.
+    if (entry && (SlotStartPtr2Addr(this) & kSuperPageBaseMask) !=
+                     (SlotStartPtr2Addr(entry) & kSuperPageBaseMask))
+        [[unlikely]] {
+      FreelistCorruptionDetected(0);
+    }
+#endif  // PA_BUILDFLAG(DCHECKS_ARE_ON)
+
+    encoded_next_ = EncodedPtr(entry);
+#if PA_CONFIG(HAS_FREELIST_SHADOW_ENTRY)
+    shadow_ = encoded_next_.Inverted();
+#endif
+  }
+
+  // Zeroes out |this| before returning the slot. The pointer to this memory
+  // will be returned to the user (caller of Alloc()), thus can't have internal
+  // data.
+  PA_ALWAYS_INLINE uintptr_t ClearForAllocation() {
+    encoded_next_.Override(0);
+#if PA_CONFIG(HAS_FREELIST_SHADOW_ENTRY)
+    shadow_ = 0;
+#endif
+    return SlotStartPtr2Addr(this);
+  }
+
+  PA_ALWAYS_INLINE constexpr bool IsEncodedNextPtrZero() const {
+    return !encoded_next_;
+  }
+
+ private:
+  template <bool for_thread_cache>
+  PA_ALWAYS_INLINE FreelistEntry* GetNextInternal(size_t slot_size) const {
+    // GetNext() can be called on discarded memory, in which case
+    // |encoded_next_| is 0, and none of the checks apply. Don't prefetch
+    // nullptr either.
+    if (IsEncodedNextPtrZero()) {
+      return nullptr;
+    }
+
+    auto* ret = encoded_next_.Decode(slot_size);
+    if (!IsWellFormed<for_thread_cache>(this, ret)) [[unlikely]] {
+      // Put the corrupted data on the stack, it may give us more information
+      // about what kind of corruption that was.
+      PA_DEBUG_DATA_ON_STACK("first",
+                             static_cast<size_t>(encoded_next_.encoded_));
+#if PA_CONFIG(HAS_FREELIST_SHADOW_ENTRY)
+      PA_DEBUG_DATA_ON_STACK("second", static_cast<size_t>(shadow_));
+#endif
+      FreelistCorruptionDetected(slot_size);
+    }
+
+    // In real-world profiles, the load of |encoded_next_| above is responsible
+    // for a large fraction of the allocation cost. However, we cannot
+    // anticipate it enough since it is accessed right after we know its
+    // address.
+    //
+    // In the case of repeated allocations, we can prefetch the access that will
+    // be done at the *next* allocation, which will touch *ret, prefetch it.
+    PA_PREFETCH(ret);
+    return ret;
+  }
+
+  template <bool for_thread_cache>
+  PA_ALWAYS_INLINE static bool IsWellFormed(const FreelistEntry* here,
+                                            const FreelistEntry* next) {
+    // Don't allow the freelist to be blindly followed to any location.
+    // Checks following constraints:
+    // - `here->shadow_` must match an inversion of `here->next_` (if present).
+    // - `next` mustn't point inside the super page metadata area.
+    // - Unless this is a thread-cache freelist, `here` and `next` must belong
+    //   to the same super page (as a matter of fact, they must belong to the
+    //   same slot span, but that'd be too expensive to check here).
+    // - `next` is marked as free in the free slot bitmap (if present).
+
+    const uintptr_t here_address = SlotStartPtr2Addr(here);
+    const uintptr_t next_address = SlotStartPtr2Addr(next);
+
+#if PA_CONFIG(HAS_FREELIST_SHADOW_ENTRY)
+    bool shadow_ptr_ok = here->encoded_next_.Inverted() == here->shadow_;
+#else
+    constexpr bool shadow_ptr_ok = true;
 #endif
 
-namespace partition_alloc::internal {
+    // This is necessary but not sufficient when quarantine is enabled, see
+    // SuperPagePayloadBegin() in partition_page.h. However we don't want to
+    // fetch anything from the root in this function.
+    const bool not_in_metadata =
+        (next_address & kSuperPageOffsetMask) >= PartitionPageSize();
+
+    if constexpr (for_thread_cache) {
+      return shadow_ptr_ok & not_in_metadata;
+    }
+
+    const bool same_super_page = (here_address & kSuperPageBaseMask) ==
+                                 (next_address & kSuperPageBaseMask);
+
+    return shadow_ptr_ok & same_super_page & not_in_metadata;
+  }
+
+  EncodedPtr encoded_next_;
+  // This is intended to detect unintentional corruptions of the freelist.
+  // These can happen due to a Use-after-Free, or overflow of the previous
+  // allocation in the slot span.
+#if PA_CONFIG(HAS_FREELIST_SHADOW_ENTRY)
+  uintptr_t shadow_;
+#endif
+};
 
 // Assertions that are agnostic to the implementation of the freelist.
-
 static_assert(BucketIndexLookup::kMinBucketSize >=
-                  sizeof(EncodedNextFreelistEntry),
+                  sizeof(partition_alloc::internal::FreelistEntry),
               "Need enough space for freelist entries in the smallest slot");
-#if PA_BUILDFLAG(USE_FREELIST_DISPATCHER)
-static_assert(BucketIndexLookup::kMinBucketSize >=
-                  sizeof(PoolOffsetFreelistEntry),
-              "Need enough space for freelist entries in the smallest slot");
-#endif
-
-enum class PartitionFreelistEncoding {
-  kEncodedFreeList,
-  kPoolOffsetFreeList,
-};
-
-#if PA_BUILDFLAG(USE_FREELIST_DISPATCHER)
-union PartitionFreelistEntry {
-  EncodedNextFreelistEntry encoded_entry_;
-  PoolOffsetFreelistEntry pool_offset_entry_;
-};
-#else
-using PartitionFreelistEntry = EncodedNextFreelistEntry;
-#endif  // PA_BUILDFLAG(USE_FREELIST_DISPATCHER)
-
-#if PA_BUILDFLAG(USE_FREELIST_DISPATCHER)
-static_assert(offsetof(PartitionFreelistEntry, encoded_entry_) == 0ull);
-static_assert(offsetof(PartitionFreelistEntry, pool_offset_entry_) == 0ull);
-#endif
-
-struct PartitionFreelistDispatcher {
-#if PA_BUILDFLAG(USE_FREELIST_DISPATCHER)
-  static const PartitionFreelistDispatcher* Create(
-      PartitionFreelistEncoding encoding);
-
-  PA_ALWAYS_INLINE virtual PartitionFreelistEntry* EmplaceAndInitNull(
-      void* slot_start_tagged) const = 0;
-  PA_ALWAYS_INLINE virtual PartitionFreelistEntry* EmplaceAndInitNull(
-      uintptr_t slot_start) const = 0;
-  PA_ALWAYS_INLINE virtual PartitionFreelistEntry* EmplaceAndInitForThreadCache(
-      uintptr_t slot_start,
-      PartitionFreelistEntry* next) const = 0;
-  PA_ALWAYS_INLINE virtual void EmplaceAndInitForTest(
-      uintptr_t slot_start,
-      void* next,
-      bool make_shadow_match) const = 0;
-  PA_ALWAYS_INLINE virtual void CorruptNextForTesting(
-      PartitionFreelistEntry* entry,
-      uintptr_t v) const = 0;
-  PA_ALWAYS_INLINE virtual PartitionFreelistEntry* GetNextForThreadCache(
-      PartitionFreelistEntry* entry,
-      size_t slot_size) const = 0;
-  PA_ALWAYS_INLINE virtual PartitionFreelistEntry* GetNext(
-      PartitionFreelistEntry* entry,
-      size_t slot_size) const = 0;
-  PA_NOINLINE virtual void CheckFreeList(PartitionFreelistEntry* entry,
-                                         size_t slot_size) const = 0;
-  PA_NOINLINE virtual void CheckFreeListForThreadCache(
-      PartitionFreelistEntry* entry,
-      size_t slot_size) const = 0;
-  PA_ALWAYS_INLINE virtual void SetNext(PartitionFreelistEntry* entry,
-                                        PartitionFreelistEntry* next) const = 0;
-  PA_ALWAYS_INLINE virtual uintptr_t ClearForAllocation(
-      PartitionFreelistEntry* entry) const = 0;
-  PA_ALWAYS_INLINE virtual bool IsEncodedNextPtrZero(
-      PartitionFreelistEntry* entry) const = 0;
-#else
-  static const PartitionFreelistDispatcher* Create(
-      PartitionFreelistEncoding encoding) {
-    PA_CONSTINIT static PartitionFreelistDispatcher dispatcher =
-        PartitionFreelistDispatcher();
-    return &dispatcher;
-  }
-
-  PA_ALWAYS_INLINE PartitionFreelistEntry* EmplaceAndInitNull(
-      void* slot_start_tagged) const {
-    return reinterpret_cast<PartitionFreelistEntry*>(
-        EncodedNextFreelistEntry::EmplaceAndInitNull(slot_start_tagged));
-  }
-
-  PA_ALWAYS_INLINE PartitionFreelistEntry* EmplaceAndInitNull(
-      uintptr_t slot_start) const {
-    return reinterpret_cast<PartitionFreelistEntry*>(
-        EncodedNextFreelistEntry::EmplaceAndInitNull(slot_start));
-  }
-
-  PA_ALWAYS_INLINE PartitionFreelistEntry* EmplaceAndInitForThreadCache(
-      uintptr_t slot_start,
-      PartitionFreelistEntry* next) const {
-    return reinterpret_cast<PartitionFreelistEntry*>(
-        EncodedNextFreelistEntry::EmplaceAndInitForThreadCache(slot_start,
-                                                               next));
-  }
-
-  PA_ALWAYS_INLINE void EmplaceAndInitForTest(uintptr_t slot_start,
-                                              void* next,
-                                              bool make_shadow_match) const {
-    return EncodedNextFreelistEntry::EmplaceAndInitForTest(slot_start, next,
-                                                           make_shadow_match);
-  }
-
-  PA_ALWAYS_INLINE void CorruptNextForTesting(PartitionFreelistEntry* entry,
-                                              uintptr_t v) const {
-    return entry->CorruptNextForTesting(v);
-  }
-
-  PA_ALWAYS_INLINE PartitionFreelistEntry* GetNextForThreadCache(
-      PartitionFreelistEntry* entry,
-      size_t slot_size) const {
-    return reinterpret_cast<PartitionFreelistEntry*>(
-        entry->GetNextForThreadCache(slot_size));
-  }
-
-  PA_ALWAYS_INLINE PartitionFreelistEntry* GetNext(
-      PartitionFreelistEntry* entry,
-      size_t slot_size) const {
-    return reinterpret_cast<PartitionFreelistEntry*>(entry->GetNext(slot_size));
-  }
-
-  PA_NOINLINE void CheckFreeList(PartitionFreelistEntry* entry,
-                                 size_t slot_size) const {
-    return entry->CheckFreeList(slot_size);
-  }
-
-  PA_NOINLINE void CheckFreeListForThreadCache(PartitionFreelistEntry* entry,
-                                               size_t slot_size) const {
-    return entry->CheckFreeListForThreadCache(slot_size);
-  }
-
-  PA_ALWAYS_INLINE void SetNext(PartitionFreelistEntry* entry,
-                                PartitionFreelistEntry* next) const {
-    return entry->SetNext(next);
-  }
-
-  PA_ALWAYS_INLINE uintptr_t
-  ClearForAllocation(PartitionFreelistEntry* entry) const {
-    return entry->ClearForAllocation();
-  }
-
-  PA_ALWAYS_INLINE bool IsEncodedNextPtrZero(
-      PartitionFreelistEntry* entry) const {
-    return entry->IsEncodedNextPtrZero();
-  }
-
-  ~PartitionFreelistDispatcher() = default;
-#endif  // PA_BUILDFLAG(USE_FREELIST_DISPATCHER)
-};
-
-#if PA_BUILDFLAG(USE_FREELIST_DISPATCHER)
-template <PartitionFreelistEncoding encoding>
-struct PartitionFreelistDispatcherImpl final : PartitionFreelistDispatcher {
-  using Entry =
-      std::conditional_t<encoding ==
-                             PartitionFreelistEncoding::kEncodedFreeList,
-                         EncodedNextFreelistEntry,
-                         PoolOffsetFreelistEntry>;
-
-  // `entry` can be passed in as `nullptr`
-  Entry* GetEntryImpl(PartitionFreelistEntry* entry) const {
-    return reinterpret_cast<Entry*>(entry);
-  }
-
-  PA_ALWAYS_INLINE PartitionFreelistEntry* EmplaceAndInitNull(
-      void* slot_start_tagged) const override {
-    return reinterpret_cast<PartitionFreelistEntry*>(
-        Entry::EmplaceAndInitNull(slot_start_tagged));
-  }
-
-  PA_ALWAYS_INLINE PartitionFreelistEntry* EmplaceAndInitNull(
-      uintptr_t slot_start) const override {
-    return reinterpret_cast<PartitionFreelistEntry*>(
-        Entry::EmplaceAndInitNull(slot_start));
-  }
-
-  // `next` can be passed in as `nullptr`
-  PA_ALWAYS_INLINE PartitionFreelistEntry* EmplaceAndInitForThreadCache(
-      uintptr_t slot_start,
-      PartitionFreelistEntry* next) const override {
-    return reinterpret_cast<PartitionFreelistEntry*>(
-        Entry::EmplaceAndInitForThreadCache(slot_start, GetEntryImpl(next)));
-  }
-
-  PA_ALWAYS_INLINE void EmplaceAndInitForTest(
-      uintptr_t slot_start,
-      void* next,
-      bool make_shadow_match) const override {
-    return Entry::EmplaceAndInitForTest(slot_start, next, make_shadow_match);
-  }
-
-  PA_ALWAYS_INLINE void CorruptNextForTesting(PartitionFreelistEntry* entry,
-                                              uintptr_t v) const override {
-    return GetEntryImpl(entry)->CorruptNextForTesting(v);
-  }
-
-  PA_ALWAYS_INLINE PartitionFreelistEntry* GetNextForThreadCache(
-      PartitionFreelistEntry* entry,
-      size_t slot_size) const override {
-    return reinterpret_cast<PartitionFreelistEntry*>(
-        GetEntryImpl(entry)->GetNextForThreadCache(slot_size));
-  }
-
-  PA_ALWAYS_INLINE PartitionFreelistEntry* GetNext(
-      PartitionFreelistEntry* entry,
-      size_t slot_size) const override {
-    return reinterpret_cast<PartitionFreelistEntry*>(
-        GetEntryImpl(entry)->GetNext(slot_size));
-  }
-
-  PA_NOINLINE void CheckFreeList(PartitionFreelistEntry* entry,
-                                 size_t slot_size) const override {
-    return GetEntryImpl(entry)->CheckFreeList(slot_size);
-  }
-
-  PA_NOINLINE void CheckFreeListForThreadCache(
-      PartitionFreelistEntry* entry,
-      size_t slot_size) const override {
-    return GetEntryImpl(entry)->CheckFreeListForThreadCache(slot_size);
-  }
-
-  // `next` can be passed in as `nullptr`
-  PA_ALWAYS_INLINE void SetNext(PartitionFreelistEntry* entry,
-                                PartitionFreelistEntry* next) const override {
-    return GetEntryImpl(entry)->SetNext(GetEntryImpl(next));
-  }
-
-  PA_ALWAYS_INLINE uintptr_t
-  ClearForAllocation(PartitionFreelistEntry* entry) const override {
-    return GetEntryImpl(entry)->ClearForAllocation();
-  }
-
-  PA_ALWAYS_INLINE bool IsEncodedNextPtrZero(
-      PartitionFreelistEntry* entry) const override {
-    return GetEntryImpl(entry)->IsEncodedNextPtrZero();
-  }
-};
-
-// Both dispatchers are constexpr
-// 1. to avoid "declaration requires an exit-time destructor" error
-//    e.g. on android-cronet-mainline-clang-arm64-dbg.
-// 2. to not create re-entrancy issues with Windows CRT
-//    (crbug.com/336007395).
-inline static constexpr PartitionFreelistDispatcherImpl<
-    PartitionFreelistEncoding::kEncodedFreeList>
-    kEncodedImplDispatcher{};
-inline static constexpr PartitionFreelistDispatcherImpl<
-    PartitionFreelistEncoding::kPoolOffsetFreeList>
-    kPoolOffsetImplDispatcher{};
-
-PA_ALWAYS_INLINE const PartitionFreelistDispatcher*
-PartitionFreelistDispatcher::Create(PartitionFreelistEncoding encoding) {
-  switch (encoding) {
-    case PartitionFreelistEncoding::kEncodedFreeList: {
-      return &kEncodedImplDispatcher;
-    }
-    case PartitionFreelistEncoding::kPoolOffsetFreeList: {
-      return &kPoolOffsetImplDispatcher;
-    }
-  }
-  PA_NOTREACHED();
-}
-
-#endif  // PA_BUILDFLAG(USE_FREELIST_DISPATCHER)
 
 }  // namespace partition_alloc::internal
 

@@ -33,26 +33,14 @@
 namespace partition_alloc {
 
 using BucketDistribution = PartitionRoot::BucketDistribution;
-using PartitionFreelistEncoding = internal::PartitionFreelistEncoding;
 
 struct ThreadCacheTestParam {
   BucketDistribution bucket_distribution;
-  PartitionFreelistEncoding freelist_encoding;
 };
 
 const std::vector<ThreadCacheTestParam> params = {
-    {ThreadCacheTestParam{
-        BucketDistribution::kNeutral,
-        internal::PartitionFreelistEncoding::kPoolOffsetFreeList}},
-    {ThreadCacheTestParam{
-        BucketDistribution::kDenser,
-        internal::PartitionFreelistEncoding::kEncodedFreeList}},
-    {ThreadCacheTestParam{
-        BucketDistribution::kNeutral,
-        internal::PartitionFreelistEncoding::kPoolOffsetFreeList}},
-    {ThreadCacheTestParam{
-        BucketDistribution::kDenser,
-        internal::PartitionFreelistEncoding::kEncodedFreeList}}};
+    {ThreadCacheTestParam{BucketDistribution::kNeutral}},
+    {ThreadCacheTestParam{BucketDistribution::kNeutral}}};
 
 namespace {
 
@@ -82,17 +70,11 @@ class DeltaCounter {
 };
 
 // Forbid extras, since they make finding out which bucket is used harder.
-std::unique_ptr<PartitionAllocatorForTesting> CreateAllocator(
-    internal::PartitionFreelistEncoding encoding =
-        internal::PartitionFreelistEncoding::kEncodedFreeList) {
+std::unique_ptr<PartitionAllocatorForTesting> CreateAllocator() {
   PartitionOptions opts;
 #if !PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   opts.thread_cache = PartitionOptions::kEnabled;
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-  opts.use_pool_offset_freelists =
-      (encoding == internal::PartitionFreelistEncoding::kPoolOffsetFreeList)
-          ? PartitionOptions::kEnabled
-          : PartitionOptions::kDisabled;
   std::unique_ptr<PartitionAllocatorForTesting> allocator =
       std::make_unique<PartitionAllocatorForTesting>(opts);
   allocator->root()->UncapEmptySlotSpanMemoryForTesting();
@@ -105,8 +87,7 @@ class PartitionAllocThreadCacheTest
     : public ::testing::TestWithParam<ThreadCacheTestParam> {
  public:
   PartitionAllocThreadCacheTest()
-      : allocator_(CreateAllocator(GetParam().freelist_encoding)),
-        scope_(allocator_->root()) {}
+      : allocator_(CreateAllocator()), scope_(allocator_->root()) {}
 
   ~PartitionAllocThreadCacheTest() override {
     ThreadCache::SetLargestCachedSize(ThreadCache::kDefaultSizeThreshold);
@@ -1199,14 +1180,12 @@ TEST_P(PartitionAllocThreadCacheTest, DISABLED_DynamicSizeThresholdPurge) {
 }
 
 TEST_P(PartitionAllocThreadCacheTest, ClearFromTail) {
-  auto count_items = [this](ThreadCache* tcache, size_t index) {
-    const internal::PartitionFreelistDispatcher* freelist_dispatcher =
-        this->root()->get_freelist_dispatcher();
+  auto count_items = [](ThreadCache* tcache, size_t index) {
     uint8_t count = 0;
     auto* head = tcache->bucket_for_testing(index).freelist_head;
     while (head) {
-      head = freelist_dispatcher->GetNextForThreadCache(
-          head, tcache->bucket_for_testing(index).slot_size);
+      head = head->GetNextForThreadCache(
+          tcache->bucket_for_testing(index).slot_size);
       count++;
     }
     return count;

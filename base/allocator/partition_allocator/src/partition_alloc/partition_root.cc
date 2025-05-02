@@ -501,11 +501,8 @@ static size_t PartitionPurgeSlotSpan(
       internal::MetadataKind::kReadOnly>::ToSlotSpanStart(slot_span);
   // First, walk the freelist for this slot span and make a bitmap of which
   // slots are not in use.
-  const PartitionFreelistDispatcher* freelist_dispatcher =
-      root->get_freelist_dispatcher();
-
-  for (PartitionFreelistEntry* entry = slot_span->get_freelist_head(); entry;
-       entry = freelist_dispatcher->GetNext(entry, slot_size)) {
+  for (FreelistEntry* entry = slot_span->get_freelist_head(); entry;
+       entry = entry->GetNext(slot_size)) {
     size_t slot_number =
         bucket->GetSlotNumber(SlotStartPtr2Addr(entry) - slot_span_start);
     PA_DCHECK(slot_number < num_provisioned_slots);
@@ -516,7 +513,7 @@ static size_t PartitionPurgeSlotSpan(
     // return the original content or 0. (Note that this optimization won't be
     // effective on big-endian machines because the masking function is
     // negation.)
-    if (freelist_dispatcher->IsEncodedNextPtrZero(entry)) {
+    if (entry->IsEncodedNextPtrZero()) {
       last_slot = slot_number;
     }
 #endif
@@ -580,7 +577,7 @@ static size_t PartitionPurgeSlotSpan(
         new_unprovisioned_slots;
 
     size_t num_new_freelist_entries = 0;
-    internal::PartitionFreelistEntry* back = nullptr;
+    internal::FreelistEntry* back = nullptr;
     if (straighten) {
       // Rewrite the freelist to "straighten" it. This achieves two things:
       // getting rid of unprovisioned entries, ordering etnries based on how
@@ -595,16 +592,16 @@ static size_t PartitionPurgeSlotSpan(
         }
         // Add the slot to the end of the list. The most proper thing to do
         // would be to null-terminate the new entry with:
-        //   auto* entry = PartitionFreelistEntry::EmplaceAndInitNull(
+        //   auto* entry = FreelistEntry::EmplaceAndInitNull(
         //       slot_span_start + (slot_size * slot_index));
         // But no need to do this, as it's last-ness is likely temporary, and
         // the next iteration's back->SetNext(), or the post-loop
-        // PartitionFreelistEntry::EmplaceAndInitNull(back) will override it
+        // FreelistEntry::EmplaceAndInitNull(back) will override it
         // anyway.
-        auto* entry = static_cast<PartitionFreelistEntry*>(
+        auto* entry = static_cast<FreelistEntry*>(
             SlotStartAddr2Ptr(slot_span_start + (slot_size * slot_index)));
         if (num_new_freelist_entries) {
-          freelist_dispatcher->SetNext(back, entry);
+          back->SetNext(entry);
         } else {
           slot_span->ToWritable(root)->SetFreelistHead(entry, root);
         }
@@ -617,8 +614,8 @@ static size_t PartitionPurgeSlotSpan(
       uintptr_t first_unprovisioned_slot =
           slot_span_start + (num_provisioned_slots * slot_size);
       bool skipped = false;
-      for (PartitionFreelistEntry* entry = slot_span->get_freelist_head();
-           entry; entry = freelist_dispatcher->GetNext(entry, slot_size)) {
+      for (FreelistEntry* entry = slot_span->get_freelist_head(); entry;
+           entry = entry->GetNext(slot_size)) {
         uintptr_t entry_addr = SlotStartPtr2Addr(entry);
         if (entry_addr >= first_unprovisioned_slot) {
           skipped = true;
@@ -629,7 +626,7 @@ static size_t PartitionPurgeSlotSpan(
         // if no entry exists). Otherwise the link is already correct.
         if (skipped) {
           if (num_new_freelist_entries) {
-            freelist_dispatcher->SetNext(back, entry);
+            back->SetNext(entry);
           } else {
             slot_span->ToWritable(root)->SetFreelistHead(entry, root);
           }
@@ -644,7 +641,7 @@ static size_t PartitionPurgeSlotSpan(
     if (straighten || unprovisioned_bytes) {
       if (num_new_freelist_entries) {
         PA_DCHECK(back);
-        freelist_dispatcher->EmplaceAndInitNull(back);
+        FreelistEntry::EmplaceAndInitNull(back);
 #if !PA_BUILDFLAG(IS_WIN)
         // Memorize index of the last slot in the list, as it may be able to
         // participate in an optimization related to page discaring (below), due
@@ -705,12 +702,12 @@ static size_t PartitionPurgeSlotSpan(
     bool can_discard_free_list_pointer = false;
 #if !PA_BUILDFLAG(IS_WIN)
     if (i != last_slot) {
-      begin_addr += sizeof(internal::PartitionFreelistEntry);
+      begin_addr += sizeof(internal::FreelistEntry);
     } else {
       can_discard_free_list_pointer = true;
     }
 #else
-    begin_addr += sizeof(internal::PartitionFreelistEntry);
+    begin_addr += sizeof(internal::FreelistEntry);
 #endif
 
     uintptr_t rounded_up_begin_addr = RoundUpToSystemPage(begin_addr);
@@ -1178,9 +1175,6 @@ void PartitionRoot::Init(PartitionOptions opts) {
     settings.memory_tagging_reporting_mode_ =
         opts.memory_tagging.reporting_mode;
 #endif  // PA_BUILDFLAG(HAS_MEMORY_TAGGING)
-
-    settings.use_pool_offset_freelists =
-        opts.use_pool_offset_freelists == PartitionOptions::kEnabled;
 
     // brp_enabled() is not supported in the configurable pool because
     // BRP requires objects to be in a different Pool.
