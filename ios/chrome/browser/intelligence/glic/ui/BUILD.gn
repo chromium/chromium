@@ -6,9 +6,14 @@ source_set("ui") {
   sources = [
     "glic_consent_view_controller.h",
     "glic_consent_view_controller.mm",
+    "glic_promo_display_handler.h",
+    "glic_promo_display_handler.mm",
   ]
   deps = [
     "//base",
+    "//components/feature_engagement/public:feature_constants",
+    "//ios/chrome/browser/promos_manager/model:types",
+    "//ios/chrome/browser/promos_manager/ui_bundled:promos",
     "//ios/chrome/common/ui/promo_style",
   ]
   frameworks = [ "UIKit.framework" ]

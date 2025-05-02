@@ -48618,6 +48618,7 @@ should be able to be added at any place in this file.
       label="For iOSFeedSwipeAnimatedFeature feature"/>
   <suffix name="iOSFeedSwipeStaticFeature"
       label="For iOSFeedSwipeStaticFeature feature"/>
+  <suffix name="IOSGLICPromoFeature" label="For IOSGLICPromoFeature feature"/>
   <suffix name="iOSHistoryOnOverflowMenuFeature"
       label="For iOSHistoryOnOverflowMenuFeature feature"/>
   <suffix name="iOSInlineEnhancedSafeBrowsingPromoFeature"
