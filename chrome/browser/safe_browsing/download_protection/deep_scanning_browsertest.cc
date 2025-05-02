@@ -900,9 +900,11 @@ IN_PROC_BROWSER_TEST_P(DownloadDeepScanningBrowserTest,
             enterprise_connectors::ContentAnalysisRequest::NORMAL_DOWNLOAD);
 
   // Both the DLP and malware violations generate an event.
+  base::RunLoop run_loop;
   std::set<std::string> zip_types = {"application/zip",
                                      "application/x-zip-compressed"};
   enterprise_connectors::test::EventReportValidator validator(client());
+  validator.SetDoneClosure(run_loop.QuitClosure());
   validator.ExpectSensitiveDataEventAndDangerousDeepScanningResult(
       /*url*/ url.spec(),
       /*tab_url*/ url.spec(),
@@ -929,6 +931,8 @@ IN_PROC_BROWSER_TEST_P(DownloadDeepScanningBrowserTest,
       /*profile_identifier*/ GetProfileIdentifier(),
       /*scan_id*/ last_request().request_token());
   WaitForDownloadToFinish();
+
+  run_loop.Run();
 
   // The file should be blocked.
   ASSERT_EQ(download_items().size(), 1u);
@@ -1005,7 +1009,9 @@ IN_PROC_BROWSER_TEST_P(DownloadRestrictionsDeepScanningBrowserTest,
   base::FilePath main_file = DownloadPrefs(browser()->profile())
                                  .DownloadPath()
                                  .AppendASCII("zipfile_two_archives.zip");
+  base::RunLoop run_loop;
   enterprise_connectors::test::EventReportValidator validator(client());
+  validator.SetDoneClosure(run_loop.QuitClosure());
   std::set<std::string> zip_types = {"application/zip",
                                      "application/x-zip-compressed"};
   validator.ExpectDangerousDownloadEvent(
@@ -1029,6 +1035,8 @@ IN_PROC_BROWSER_TEST_P(DownloadRestrictionsDeepScanningBrowserTest,
       /*profile_identifier*/ GetProfileIdentifier());
 
   WaitForDownloadToFinish();
+
+  run_loop.Run();
 
   ASSERT_EQ(download_items().size(), 1u);
   download::DownloadItem* item = *download_items().begin();
