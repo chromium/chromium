@@ -15,6 +15,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/timer/elapsed_timer.h"
 #include "components/autofill/core/common/save_password_progress_logger.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/leak_detection/leak_detection_delegate_interface.h"
 #include "components/password_manager/core/browser/leak_detection/leak_detection_request_utils.h"
 #include "components/password_manager/core/browser/leak_detection/single_lookup_response.h"
@@ -229,12 +230,12 @@ bool LeakDetectionCheck::CanStartLeakCheck(
     std::unique_ptr<autofill::SavePasswordProgressLogger> logger) {
   const bool is_leak_protection_on =
       prefs.GetBoolean(prefs::kPasswordLeakDetectionEnabled);
-    if (!is_leak_protection_on && logger) {
-      logger->LogMessage(autofill::SavePasswordProgressLogger::
-                             STRING_LEAK_DETECTION_DISABLED_FEATURE);
-    }
-    return is_leak_protection_on && !LeakDetectionCheck::IsURLBlockedByPolicy(
-                                        prefs, form_url, logger.get());
+  if (!is_leak_protection_on && logger) {
+    logger->LogMessage(autofill::SavePasswordProgressLogger::
+                           STRING_LEAK_DETECTION_DISABLED_FEATURE);
+  }
+  return is_leak_protection_on && !LeakDetectionCheck::IsURLBlockedByPolicy(
+                                      prefs, form_url, logger.get());
 }
 
 void LeakDetectionCheckImpl::OnAccessTokenRequestCompleted(
@@ -268,6 +269,10 @@ void LeakDetectionCheckImpl::DoLeakRequest(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
   payload_helper_.reset();
   encryption_key_ = std::move(data.encryption_key);
+  if (base::FeatureList::IsEnabled(features::kMarkAllCredentialsAsLeaked)) {
+    OnAnalyzeSingleLeakResponse(AnalyzeResponseResult::kLeaked);
+    return;
+  }
   request_ = network_request_factory_->CreateNetworkRequest();
   request_->LookupSingleLeak(
       url_loader_factory.get(), access_token, api_key, std::move(data.payload),
