@@ -228,7 +228,7 @@ std::optional<Jades2QwacHeader> ParseJades2QwacHeader(
 
   // "alg" (Algorithm) parameter - RFC 7515, section 4.1.1
   std::string* alg = header.FindString("alg");
-  if (!alg) {
+  if (!alg || *alg == "") {
     return std::nullopt;
   }
   parsed_header.sig_alg = *alg;

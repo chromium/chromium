@@ -485,6 +485,11 @@ TEST(ParseTlsCertificateBinding, InvalidFields) {
           base::Value(1),
       },
       {
+          // "alg" expects a non-empty string
+          "alg",
+          base::Value(""),
+      },
+      {
           // "cty" expects a string
           "cty",
           base::Value(1),

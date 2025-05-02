@@ -2649,6 +2649,7 @@ if (!is_cronet_build) {
       "CookieIndicesFuzzTest.FuzzParseFromHeader",
       "QwacFuzzTest.FuzzParseQcStatements",
       "QwacFuzzTest.FuzzParseQcTypeInfo",
+      "QwacFuzzTest.FuzzParseTwoQwacCertBinding",
       "X509CertificateFuzzTest.FuzzCreateFromDERCertChain",
     ]
 
