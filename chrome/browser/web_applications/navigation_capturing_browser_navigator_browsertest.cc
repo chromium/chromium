@@ -25,11 +25,13 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/metrics/content/subprocess_metrics_provider.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/mojom/manifest/manifest_launch_handler.mojom-shared.h"
+#include "ui/base/window_open_disposition.h"
 
 namespace web_app {
 
@@ -47,6 +49,8 @@ constexpr char kFocusExistingUrl[] =
     "/web_apps/simple_focus_existing/index.html";
 constexpr char kFocusExistingSecondUrl[] =
     "/web_apps/simple_focus_existing/index2.html";
+constexpr char kLaunchParamsEnqueueMetric[] =
+    "WebApp.NavigationCapturing.LaunchParamsConsumedTime";
 
 // Actually start a navigation in an existing web contents for the
 // `navigate-existing` use-case.
@@ -184,12 +188,18 @@ class NavigationCapturingBrowserNavigatorBrowserTest
   }
 
  protected:
+  void AwaitMetricsAvailableFromRenderer() {
+    content::FetchHistogramsFromChildProcesses();
+    metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  }
+
   base::test::ScopedFeatureList feature_list_;
   std::vector<base::test::FeatureRefAndParams> enabled_features;
 };
 
 IN_PROC_BROWSER_TEST_F(NavigationCapturingBrowserNavigatorBrowserTest,
                        NavigateBrowserUserForBrowserTabAppLaunch) {
+  base::HistogramTester histograms;
   // Test that the browser provided in NavigateParams is used when using a
   // browser to open a browser tab app in a tab, instead of the most recently
   // active browser.
@@ -203,18 +213,22 @@ IN_PROC_BROWSER_TEST_F(NavigationCapturingBrowserNavigatorBrowserTest,
   // Do a capturable navigation to the landing page, and ensure that it opens in
   // the browser().
   ui_test_utils::AllBrowserTabAddedWaiter new_tab_observer;
-  base::HistogramTester histograms;
   NavigateParams params(browser(), GetLandingPage(), ui::PAGE_TRANSITION_LINK);
   params.source_contents =
       new_browser->tab_strip_model()->GetActiveWebContents();
   params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
   Navigate(&params);
   content::WebContents* new_tab = new_tab_observer.Wait();
+
   content::WaitForLoadStop(new_tab);
+  apps::test::FlushLaunchQueuesForAllBrowserTabs();
+  AwaitMetricsAvailableFromRenderer();
 
   // Ensure that capturing happened.
   histograms.ExpectUniqueSample(
       "WebApp.LaunchSource", apps::LaunchSource::kFromNavigationCapturing, 1);
+  histograms.ExpectTotalCount(kLaunchParamsEnqueueMetric, 1);
+
   ASSERT_TRUE(new_tab);
 
   // Make sure that web contents is a tab in `browser()` and not `new_browser`.
@@ -258,6 +272,7 @@ IN_PROC_BROWSER_TEST_F(NavigationCapturingBrowserNavigatorBrowserTest,
 
   url_observer.Wait();
   apps::test::FlushLaunchQueuesForAllBrowserTabs();
+  AwaitMetricsAvailableFromRenderer();
   content::WebContents* contents_navigation_happened_in =
       url_observer.web_contents();
 
@@ -269,6 +284,9 @@ IN_PROC_BROWSER_TEST_F(NavigationCapturingBrowserNavigatorBrowserTest,
   // Ensure that capturing happened.
   histograms.ExpectUniqueSample(
       "WebApp.LaunchSource", apps::LaunchSource::kFromNavigationCapturing, 1);
+
+  // This is measured twice, once for each launch param obtained.
+  histograms.ExpectTotalCount(kLaunchParamsEnqueueMetric, 2);
 }
 
 // Test that the browser provided in NavigateParams is used when finding an app
@@ -307,6 +325,7 @@ IN_PROC_BROWSER_TEST_F(NavigationCapturingBrowserNavigatorBrowserTest,
 
   test::CompletePageLoadForAllWebContents();
   apps::test::FlushLaunchQueuesForAllBrowserTabs();
+  AwaitMetricsAvailableFromRenderer();
 
   content::WebContents* contents_to_finish =
       app_browser_1->tab_strip_model()->GetActiveWebContents();
@@ -325,6 +344,9 @@ IN_PROC_BROWSER_TEST_F(NavigationCapturingBrowserNavigatorBrowserTest,
                                        ->GetLastCommittedURL());
   histograms.ExpectUniqueSample(
       "WebApp.LaunchSource", apps::LaunchSource::kFromNavigationCapturing, 1);
+
+  // This is measured twice, once for each launch param obtained.
+  histograms.ExpectTotalCount(kLaunchParamsEnqueueMetric, 2);
 }
 
 IN_PROC_BROWSER_TEST_F(NavigationCapturingBrowserNavigatorBrowserTest,
@@ -358,7 +380,10 @@ IN_PROC_BROWSER_TEST_F(NavigationCapturingBrowserNavigatorBrowserTest,
     Navigate(&params);
   }
   Browser* new_app_browser = added.Wait();
+
   test::CompletePageLoadForAllWebContents();
+  apps::test::FlushLaunchQueuesForAllBrowserTabs();
+  AwaitMetricsAvailableFromRenderer();
 
   EXPECT_EQ(out_of_scope, app_browser->tab_strip_model()
                               ->GetActiveWebContents()
@@ -369,6 +394,7 @@ IN_PROC_BROWSER_TEST_F(NavigationCapturingBrowserNavigatorBrowserTest,
 
   histograms.ExpectUniqueSample(
       "WebApp.LaunchSource", apps::LaunchSource::kFromNavigationCapturing, 1);
+  histograms.ExpectTotalCount(kLaunchParamsEnqueueMetric, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(NavigationCapturingBrowserNavigatorBrowserTest,
@@ -402,6 +428,8 @@ IN_PROC_BROWSER_TEST_F(NavigationCapturingBrowserNavigatorBrowserTest,
   }
   Browser* new_app_browser = added.Wait();
   test::CompletePageLoadForAllWebContents();
+  apps::test::FlushLaunchQueuesForAllBrowserTabs();
+  AwaitMetricsAvailableFromRenderer();
 
   EXPECT_EQ(image_url, app_browser->tab_strip_model()
                            ->GetActiveWebContents()
@@ -412,6 +440,7 @@ IN_PROC_BROWSER_TEST_F(NavigationCapturingBrowserNavigatorBrowserTest,
 
   histograms.ExpectUniqueSample(
       "WebApp.LaunchSource", apps::LaunchSource::kFromNavigationCapturing, 1);
+  histograms.ExpectTotalCount(kLaunchParamsEnqueueMetric, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(NavigationCapturingBrowserNavigatorBrowserTest,
@@ -454,12 +483,16 @@ IN_PROC_BROWSER_TEST_F(NavigationCapturingBrowserNavigatorBrowserTest,
 
   test::CompletePageLoadForAllWebContents();
   url_observer.Wait();
+  apps::test::FlushLaunchQueuesForAllBrowserTabs();
+  AwaitMetricsAvailableFromRenderer();
+
   content::WebContents* contents_navigation_happened_in =
       url_observer.web_contents();
 
   // Ensure that capturing happened.
   histograms.ExpectUniqueSample(
       "WebApp.LaunchSource", apps::LaunchSource::kFromNavigationCapturing, 1);
+  histograms.ExpectTotalCount(kLaunchParamsEnqueueMetric, 1);
 
   EXPECT_NE(contents_navigation_happened_in,
             new_browser->tab_strip_model()->GetActiveWebContents());
@@ -504,10 +537,16 @@ IN_PROC_BROWSER_TEST_F(NavigationCapturingBrowserNavigatorBrowserTest,
   }
 
   test::CompletePageLoadForAllWebContents();
+  apps::test::FlushLaunchQueuesForAllBrowserTabs();
+  AwaitMetricsAvailableFromRenderer();
 
   // Ensure that capturing happened.
   histograms.ExpectUniqueSample(
       "WebApp.LaunchSource", apps::LaunchSource::kFromNavigationCapturing, 1);
+
+  // With the absence of a consumer set on the site, launch params will not be
+  // enqueued, and hence this metric will not be measured.
+  histograms.ExpectTotalCount(kLaunchParamsEnqueueMetric, 0);
 
   // browser() should still be at the GetAppUrl() page.
   EXPECT_EQ(GetAppNoManifestUrl(), browser()
@@ -565,6 +604,8 @@ IN_PROC_BROWSER_TEST_F(
   test::CompletePageLoadForAllWebContents();
   url_observer.Wait();
   apps::test::FlushLaunchQueuesForAllBrowserTabs();
+  AwaitMetricsAvailableFromRenderer();
+
   content::WebContents* contents_navigation_happened_in =
       url_observer.web_contents();
   EXPECT_NE(contents_navigation_happened_in, blank_new_tab);
@@ -572,6 +613,7 @@ IN_PROC_BROWSER_TEST_F(
   // Ensure that capturing happened.
   histograms.ExpectUniqueSample(
       "WebApp.LaunchSource", apps::LaunchSource::kFromNavigationCapturing, 1);
+  histograms.ExpectTotalCount(kLaunchParamsEnqueueMetric, 1);
 
   EXPECT_EQ(contents_navigation_happened_in,
             app_browser_to_use->tab_strip_model()->GetActiveWebContents());
@@ -625,15 +667,68 @@ IN_PROC_BROWSER_TEST_F(
 
   test::CompletePageLoadForAllWebContents();
   apps::test::FlushLaunchQueuesForAllBrowserTabs();
+  AwaitMetricsAvailableFromRenderer();
 
   // Ensure that capturing happened.
   histograms.ExpectUniqueSample(
       "WebApp.LaunchSource", apps::LaunchSource::kFromNavigationCapturing, 1);
+  histograms.ExpectTotalCount(kLaunchParamsEnqueueMetric, 1);
 
   EXPECT_EQ(GetFocusExistingUrl(), app_browser_to_use->tab_strip_model()
                                        ->GetActiveWebContents()
                                        ->GetLastCommittedURL());
 }
+
+using LaunchQueueLatencyMetricBrowserTest =
+    NavigationCapturingBrowserNavigatorBrowserTest;
+
+IN_PROC_BROWSER_TEST_F(LaunchQueueLatencyMetricBrowserTest,
+                       ReloadsDoNotMeasure) {
+  base::HistogramTester histograms;
+  // Test that the browser provided in NavigateParams is used when using a
+  // browser to open a browser tab app in a tab, instead of the most recently
+  // active browser.
+  InstallTestWebApp(GetLandingPage(), mojom::UserDisplayMode::kBrowser);
+
+  // Create a new browser which will be considered the most recently active one.
+  Browser* new_browser =
+      ui_test_utils::OpenNewEmptyWindowAndWaitUntilActivated(profile());
+  chrome::NewTab(new_browser);
+
+  // Do a capturable navigation to the landing page, and ensure that it opens in
+  // the browser().
+  ui_test_utils::AllBrowserTabAddedWaiter new_tab_observer;
+  {
+    NavigateParams params(browser(), GetLandingPage(),
+                          ui::PAGE_TRANSITION_LINK);
+    params.source_contents =
+        new_browser->tab_strip_model()->GetActiveWebContents();
+    params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+    Navigate(&params);
+  }
+
+  // Measure the first set of launch params that are enqueued.
+  content::WebContents* new_tab = new_tab_observer.Wait();
+  content::WaitForLoadStop(new_tab);
+  apps::test::FlushLaunchQueuesForAllBrowserTabs();
+  AwaitMetricsAvailableFromRenderer();
+  histograms.ExpectTotalCount(kLaunchParamsEnqueueMetric, 1);
+  EXPECT_THAT(apps::test::GetLaunchParamUrlsInContents(
+                  new_tab, "launchParamsTargetUrls"),
+              testing::ElementsAre(GetLandingPage()));
+
+  // Reloading the tab should not measure the latency of launch params being
+  // enqueued again, but the launch params will still be resent.
+  chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
+  content::WaitForLoadStop(new_tab);
+  apps::test::FlushLaunchQueuesForAllBrowserTabs();
+  AwaitMetricsAvailableFromRenderer();
+  histograms.ExpectTotalCount(kLaunchParamsEnqueueMetric, 1);
+  EXPECT_THAT(apps::test::GetLaunchParamUrlsInContents(
+                  new_tab, "launchParamsTargetUrls"),
+              testing::ElementsAre(GetLandingPage()));
+}
+
 class NavigationCapturingWithRedirectionBrowserNavigatorTest
     : public NavigationCapturingBrowserNavigatorBrowserTest {
  public:
@@ -693,10 +788,13 @@ IN_PROC_BROWSER_TEST_F(NavigationCapturingWithRedirectionBrowserNavigatorTest,
   Navigate(&params);
   content::WebContents* new_tab = new_tab_observer.Wait();
   content::WaitForLoadStop(new_tab);
+  apps::test::FlushLaunchQueuesForAllBrowserTabs();
+  AwaitMetricsAvailableFromRenderer();
 
   // Ensure that capturing happened.
   histograms.ExpectUniqueSample(
       "WebApp.LaunchSource", apps::LaunchSource::kFromNavigationCapturing, 1);
+  histograms.ExpectTotalCount(kLaunchParamsEnqueueMetric, 1);
 
   // Make sure that web contents is a tab in `browser()` and not `new_browser`.
   EXPECT_NE(browser()->tab_strip_model()->GetIndexOfWebContents(new_tab),
@@ -727,8 +825,12 @@ IN_PROC_BROWSER_TEST_F(NavigationCapturingWithRedirectionBrowserNavigatorTest,
   Navigate(&params);
   content::WebContents* new_tab = new_tab_observer.Wait();
   content::WaitForLoadStop(new_tab);
+  apps::test::FlushLaunchQueuesForAllBrowserTabs();
+  AwaitMetricsAvailableFromRenderer();
+
   histograms.ExpectUniqueSample(
       "WebApp.LaunchSource", apps::LaunchSource::kFromNavigationCapturing, 0);
+  histograms.ExpectTotalCount(kLaunchParamsEnqueueMetric, 0);
 
   // Make sure that web contents is a tab in `browser()` and not `new_browser`.
   EXPECT_NE(browser()->tab_strip_model()->GetIndexOfWebContents(new_tab),

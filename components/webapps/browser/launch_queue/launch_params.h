@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/files/file_path.h"
+#include "base/time/time.h"
 #include "components/webapps/common/web_app_id.h"
 #include "url/gurl.h"
 
@@ -42,6 +43,10 @@ struct LaunchParams {
 
   // The files to launch with (may be empty).
   std::vector<base::FilePath> paths;
+
+  // Stores the time when the browser process receives the navigation that
+  // causes the `LaunchParams` to be created.
+  base::TimeTicks time_navigation_started_for_enqueue;
 };
 
 }  // namespace webapps

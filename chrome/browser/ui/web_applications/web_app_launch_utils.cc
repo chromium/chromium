@@ -423,6 +423,7 @@ bool MaybeHandleIntentPickerFocusExistingOrNavigateExisting(
     const GURL& launch_url,
     content::WebContents* contents,
     const webapps::AppId& app_id,
+    base::TimeTicks time_reparent_started,
     WebAppRegistrar& registrar) {
   LaunchHandler::ClientMode client_mode = registrar.GetAppById(app_id)
                                               ->launch_handler()
@@ -472,7 +473,8 @@ bool MaybeHandleIntentPickerFocusExistingOrNavigateExisting(
                       preexisting_web_contents);
   EnqueueLaunchParams(preexisting_web_contents, app_id, launch_url,
                       /*wait_for_navigation_to_complete=*/client_mode ==
-                          LaunchHandler::ClientMode::kNavigateExisting);
+                          LaunchHandler::ClientMode::kNavigateExisting,
+                      time_reparent_started);
   return true;
 }
 
@@ -489,6 +491,7 @@ Browser* ReparentWebContentsIntoAppBrowser(
     content::WebContents* contents,
     const webapps::AppId& app_id,
     base::OnceCallback<void(content::WebContents*)> completion_callback) {
+  base::TimeTicks time_reparent_started = base::TimeTicks::Now();
   Profile* profile = Profile::FromBrowserContext(contents->GetBrowserContext());
   // Incognito tabs reparent correctly, but remain incognito without any
   // indication to the user, so disallow it.
@@ -540,7 +543,8 @@ Browser* ReparentWebContentsIntoAppBrowser(
     // by focusing such apps in the background instead of re-parenting the
     // current contents.
     if (MaybeHandleIntentPickerFocusExistingOrNavigateExisting(
-            profile, launch_url, contents, app_id, registrar)) {
+            profile, launch_url, contents, app_id, time_reparent_started,
+            registrar)) {
       return nullptr;
     }
   }
@@ -969,12 +973,16 @@ void LaunchWebApp(apps::AppLaunchParams params,
 void EnqueueLaunchParams(content::WebContents* contents,
                          const webapps::AppId& app_id,
                          const GURL& url,
-                         bool wait_for_navigation_to_complete) {
+                         bool wait_for_navigation_to_complete,
+                         base::TimeTicks time_navigation_started) {
   CHECK(contents);
   webapps::LaunchParams launch_params;
   launch_params.started_new_navigation = wait_for_navigation_to_complete;
   launch_params.app_id = app_id;
   launch_params.target_url = url;
+  if (!time_navigation_started.is_null()) {
+    launch_params.time_navigation_started_for_enqueue = time_navigation_started;
+  }
   WebAppTabHelper::FromWebContents(contents)->EnsureLaunchQueue().Enqueue(
       std::move(launch_params));
 }
