@@ -289,7 +289,11 @@ int SourcePriority(AuthenticatorType source) {
 std::optional<std::pair<int, AuthenticatorTransport>> GetWindowsAPIButtonLabel(
     const device::FidoRequestHandlerBase::TransportAvailabilityInfo&
         transport_availability,
-    bool specific_phones_listed) {
+    bool specific_phones_listed,
+    UIPresentation ui_presentation) {
+  if (ui_presentation == UIPresentation::kModalImmediate) {
+    return std::nullopt;
+  }
   if (!transport_availability.has_win_native_api_authenticator) {
     return std::nullopt;
   }
@@ -2350,8 +2354,8 @@ void AuthenticatorRequestDialogController::PopulateMechanisms() {
   }
 
   std::optional<std::pair<int, AuthenticatorTransport>> windows_button_label;
-  windows_button_label =
-      GetWindowsAPIButtonLabel(transport_availability_, specific_phones_listed);
+  windows_button_label = GetWindowsAPIButtonLabel(
+      transport_availability_, specific_phones_listed, ui_presentation());
   if (windows_button_label &&
       windows_button_label->second == AuthenticatorTransport::kInternal) {
     // Add the Windows button before phones if it can trigger Windows Hello.
