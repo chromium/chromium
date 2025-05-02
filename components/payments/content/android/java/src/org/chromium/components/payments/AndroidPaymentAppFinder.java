@@ -593,11 +593,13 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
             ServiceInfo service = services.get(i).serviceInfo;
             packageNameToServiceNameMap.put(service.packageName, service.name);
         }
-        Log.i(
-                TAG,
-                "\"%s\" intent apps: %s.",
-                intentName,
-                String.join(", ", packageNameToServiceNameMap.keySet()));
+        if (!packageNameToServiceNameMap.isEmpty()) {
+            Log.i(
+                    TAG,
+                    "\"%s\" intent apps: %s.",
+                    intentName,
+                    String.join(", ", packageNameToServiceNameMap.keySet()));
+        }
     }
 
     /**
