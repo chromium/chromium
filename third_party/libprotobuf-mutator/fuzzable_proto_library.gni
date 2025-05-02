@@ -46,6 +46,11 @@ template("fuzzable_proto_library") {
       extra_configs = [ "//third_party/protobuf:protobuf_config" ]
     }
 
+    # This is to work with proto_library template in proto_library.gni.
+    group("${target_name}_input_group") {
+      public_deps = [ ":proto_library_${target_name}" ]
+    }
+
     # Inspired by proto_library.gni's handling of
     # component_build_force_source_set.
     if (defined(component_build_force_source_set) &&
