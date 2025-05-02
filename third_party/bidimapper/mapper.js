@@ -904,16 +904,32 @@
             this.#browsingContextStorage = browsingContextStorage;
         }
         async setGeolocationOverride(params) {
-            if ((params.coordinates?.altitude ?? null) === null &&
-                (params.coordinates?.altitudeAccuracy ?? null) !== null) {
-                throw new InvalidArgumentException('Geolocation altitudeAccuracy can be set only with altitude');
+            if ('coordinates' in params && 'error' in params) {
+                throw new InvalidArgumentException('Coordinates and error cannot be set at the same time');
+            }
+            let geolocation = null;
+            if ('coordinates' in params) {
+                if ((params.coordinates?.altitude ?? null) === null &&
+                    (params.coordinates?.altitudeAccuracy ?? null) !== null) {
+                    throw new InvalidArgumentException('Geolocation altitudeAccuracy can be set only with altitude');
+                }
+                geolocation = params.coordinates;
+            }
+            else if ('error' in params) {
+                if (params.error.type !== 'positionUnavailable') {
+                    throw new InvalidArgumentException(`Unknown geolocation error ${params.error.type}`);
+                }
+                geolocation = params.error;
+            }
+            else {
+                throw new InvalidArgumentException(`Coordinates or error should be set`);
             }
             const browsingContexts = await this.#getRelatedTopLevelBrowsingContexts(params.contexts, params.userContexts);
             for (const userContextId of params.userContexts ?? []) {
                 const userContextConfig = this.#userContextStorage.getConfig(userContextId);
-                userContextConfig.emulatedGeolocation = params.coordinates;
+                userContextConfig.geolocation = geolocation;
             }
-            await Promise.all(browsingContexts.map(async (context) => await context.cdpTarget.setGeolocationOverride(params.coordinates)));
+            await Promise.all(browsingContexts.map(async (context) => await context.cdpTarget.setGeolocationOverride(geolocation)));
             return {};
         }
         async #getRelatedTopLevelBrowsingContexts(browsingContextIds, userContextIds) {
@@ -4402,6 +4418,10 @@
                     return await this.#bluetoothProcessor.simulateAdapter(this.#parser.parseSimulateAdapterParameters(command.params));
                 case 'bluetooth.simulateAdvertisement':
                     return await this.#bluetoothProcessor.simulateAdvertisement(this.#parser.parseSimulateAdvertisementParameters(command.params));
+                case 'bluetooth.simulateGattConnectionResponse':
+                    throw new UnknownErrorException(`Method ${command.method} is not implemented.`);
+                case 'bluetooth.simulateGattDisconnection':
+                    throw new UnknownErrorException(`Method ${command.method} is not implemented.`);
                 case 'bluetooth.simulatePreconnectedPeripheral':
                     return await this.#bluetoothProcessor.simulatePreconnectedPeripheral(this.#parser.parseSimulatePreconnectedPeripheralParameters(command.params));
                 case 'browser.close':
@@ -4657,7 +4677,7 @@
         userContextId;
         viewport;
         devicePixelRatio;
-        emulatedGeolocation;
+        geolocation;
         constructor(userContextId) {
             this.userContextId = userContextId;
         }
@@ -6087,7 +6107,7 @@
                 });
             });
             this.#cdpTarget.cdpClient.on('Page.javascriptDialogClosed', (params) => {
-                if (this.cdpTarget === this.parent?.cdpTarget) {
+                if (this.id !== params.frameId) {
                     return;
                 }
                 const accepted = params.result;
@@ -6108,7 +6128,7 @@
                 this.#lastUserPromptType = undefined;
             });
             this.#cdpTarget.cdpClient.on('Page.javascriptDialogOpening', (params) => {
-                if (this.cdpTarget === this.parent?.cdpTarget) {
+                if (this.id !== params.frameId) {
                     return;
                 }
                 const promptType = _a$5.#getPromptType(params.type);
@@ -7627,9 +7647,9 @@
                 this.#userContextConfig.devicePixelRatio !== undefined) {
                 promises.push(this.setViewport(this.#userContextConfig.viewport, this.#userContextConfig.devicePixelRatio));
             }
-            if (this.#userContextConfig.emulatedGeolocation !== undefined &&
-                this.#userContextConfig.emulatedGeolocation !== null) {
-                promises.push(this.setGeolocationOverride(this.#userContextConfig.emulatedGeolocation));
+            if (this.#userContextConfig.geolocation !== undefined &&
+                this.#userContextConfig.geolocation !== null) {
+                promises.push(this.setGeolocationOverride(this.#userContextConfig.geolocation));
             }
             await Promise.all(promises);
         }
@@ -7645,20 +7665,29 @@
                 "ignore" ) ===
                 "ignore" );
         }
-        async setGeolocationOverride(coordinates) {
-            if (coordinates === null) {
+        async setGeolocationOverride(geolocation) {
+            if (geolocation === null) {
                 await this.cdpClient.sendCommand('Emulation.clearGeolocationOverride');
             }
-            else {
+            else if ('type' in geolocation) {
+                if (geolocation.type !== 'positionUnavailable') {
+                    throw new UnknownErrorException(`Unknown geolocation error ${geolocation.type}`);
+                }
+                await this.cdpClient.sendCommand('Emulation.setGeolocationOverride', {});
+            }
+            else if ('latitude' in geolocation) {
                 await this.cdpClient.sendCommand('Emulation.setGeolocationOverride', {
-                    latitude: coordinates.latitude,
-                    longitude: coordinates.longitude,
-                    accuracy: coordinates.accuracy ?? 1,
-                    altitude: coordinates.altitude ?? undefined,
-                    altitudeAccuracy: coordinates.altitudeAccuracy ?? undefined,
-                    heading: coordinates.heading ?? undefined,
-                    speed: coordinates.speed ?? undefined,
+                    latitude: geolocation.latitude,
+                    longitude: geolocation.longitude,
+                    accuracy: geolocation.accuracy ?? 1,
+                    altitude: geolocation.altitude ?? undefined,
+                    altitudeAccuracy: geolocation.altitudeAccuracy ?? undefined,
+                    heading: geolocation.heading ?? undefined,
+                    speed: geolocation.speed ?? undefined,
                 });
+            }
+            else {
+                throw new UnknownErrorException('Unexpected geolocation coordinates value');
             }
         }
     }
@@ -14075,6 +14104,8 @@
         Bluetooth$1.DisableSimulationSchema,
         Bluetooth$1.SimulatePreconnectedPeripheralSchema,
         Bluetooth$1.SimulateAdvertisementSchema,
+        Bluetooth$1.SimulateGattConnectionResponseSchema,
+        Bluetooth$1.SimulateGattDisconnectionSchema,
         z.object({}),
     ]));
     (function (Bluetooth) {
@@ -14164,6 +14195,31 @@
         }));
     })(Bluetooth$1 || (Bluetooth$1 = {}));
     (function (Bluetooth) {
+        Bluetooth.SimulateGattConnectionResponseSchema = z.lazy(() => z.object({
+            method: z.literal('bluetooth.simulateGattConnectionResponse'),
+            params: Bluetooth.SimulateGattConnectionResponseParametersSchema,
+        }));
+    })(Bluetooth$1 || (Bluetooth$1 = {}));
+    (function (Bluetooth) {
+        Bluetooth.SimulateGattConnectionResponseParametersSchema = z.lazy(() => z.object({
+            context: z.string(),
+            address: z.string(),
+            code: z.number().int().nonnegative(),
+        }));
+    })(Bluetooth$1 || (Bluetooth$1 = {}));
+    (function (Bluetooth) {
+        Bluetooth.SimulateGattDisconnectionSchema = z.lazy(() => z.object({
+            method: z.literal('bluetooth.simulateGattDisconnection'),
+            params: Bluetooth.SimulateGattDisconnectionParametersSchema,
+        }));
+    })(Bluetooth$1 || (Bluetooth$1 = {}));
+    (function (Bluetooth) {
+        Bluetooth.SimulateGattDisconnectionParametersSchema = z.lazy(() => z.object({
+            context: z.string(),
+            address: z.string(),
+        }));
+    })(Bluetooth$1 || (Bluetooth$1 = {}));
+    (function (Bluetooth) {
         Bluetooth.RequestDevicePromptUpdatedSchema = z.lazy(() => z.object({
             method: z.literal('bluetooth.requestDevicePromptUpdated'),
             params: Bluetooth.RequestDevicePromptUpdatedParametersSchema,
@@ -14174,6 +14230,18 @@
             context: z.string(),
             prompt: Bluetooth.RequestDevicePromptSchema,
             devices: z.array(Bluetooth.RequestDeviceInfoSchema),
+        }));
+    })(Bluetooth$1 || (Bluetooth$1 = {}));
+    (function (Bluetooth) {
+        Bluetooth.GattConnectionAttemptedSchema = z.lazy(() => z.object({
+            method: z.literal('bluetooth.gattConnectionAttempted'),
+            params: Bluetooth.GattConnectionAttemptedParametersSchema,
+        }));
+    })(Bluetooth$1 || (Bluetooth$1 = {}));
+    (function (Bluetooth) {
+        Bluetooth.GattConnectionAttemptedParametersSchema = z.lazy(() => z.object({
+            context: z.string(),
+            address: z.string(),
         }));
     })(Bluetooth$1 || (Bluetooth$1 = {}));
 
@@ -15137,14 +15205,25 @@
         }));
     })(Emulation$1 || (Emulation$1 = {}));
     (function (Emulation) {
-        Emulation.SetGeolocationOverrideParametersSchema = z.lazy(() => z.object({
-            coordinates: z.union([Emulation.GeolocationCoordinatesSchema, z.null()]),
+        Emulation.SetGeolocationOverrideParametersSchema = z.lazy(() => z
+            .union([
+            z.object({
+                coordinates: z.union([
+                    Emulation.GeolocationCoordinatesSchema,
+                    z.null(),
+                ]),
+            }),
+            z.object({
+                error: Emulation.GeolocationPositionErrorSchema,
+            }),
+        ])
+            .and(z.object({
             contexts: z
                 .array(BrowsingContext$1.BrowsingContextSchema)
                 .min(1)
                 .optional(),
             userContexts: z.array(Browser$1.UserContextSchema).min(1).optional(),
-        }));
+        })));
     })(Emulation$1 || (Emulation$1 = {}));
     (function (Emulation) {
         Emulation.GeolocationCoordinatesSchema = z.lazy(() => z.object({
@@ -15159,6 +15238,11 @@
                 .union([z.number().gt(0).lt(360), z.null().default(null)])
                 .optional(),
             speed: z.union([z.number().gte(0), z.null().default(null)]).optional(),
+        }));
+    })(Emulation$1 || (Emulation$1 = {}));
+    (function (Emulation) {
+        Emulation.GeolocationPositionErrorSchema = z.lazy(() => z.object({
+            type: z.literal('positionUnavailable'),
         }));
     })(Emulation$1 || (Emulation$1 = {}));
     const NetworkCommandSchema = z.lazy(() => z.union([
@@ -16805,6 +16889,9 @@
     var Emulation;
     (function (Emulation) {
         function parseSetGeolocationOverrideParams(params) {
+            if ('coordinates' in params && 'error' in params) {
+                throw new InvalidArgumentException('Coordinates and error cannot be set at the same time');
+            }
             return parseObject(params, Emulation$1.SetGeolocationOverrideParametersSchema);
         }
         Emulation.parseSetGeolocationOverrideParams = parseSetGeolocationOverrideParams;
