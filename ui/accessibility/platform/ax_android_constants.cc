@@ -33,6 +33,7 @@ const char kAXProgressBarClassname[] = "android.widget.ProgressBar";
 const char kAXRadioButtonClassname[] = "android.widget.RadioButton";
 const char kAXRadioGroupClassname[] = "android.widget.RadioGroup";
 const char kAXScrollViewClassname[] = "android.widget.ScrollView";
+const char kAXSearchViewClassname[] = "android.widget.SearchView";
 const char kAXSeekBarClassname[] = "android.widget.SeekBar";
 const char kAXSpinnerClassname[] = "android.widget.Spinner";
 const char kAXSwitchClassname[] = "android.widget.Switch";

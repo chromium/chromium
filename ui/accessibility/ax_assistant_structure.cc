@@ -448,6 +448,8 @@ const char* AXRoleToAndroidClassName(ax::mojom::Role role, bool has_parent) {
     case ax::mojom::Role::kDirectoryDeprecated:
     case ax::mojom::Role::kPreDeprecated:
       NOTREACHED();
+    case ax::mojom::Role::kSearch:
+      return kAXSearchViewClassname;
     default:
       return kAXViewClassname;
   }

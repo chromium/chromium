@@ -13,7 +13,7 @@ WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="ro
 ++View text:"This is an ARIA form landmark." containerTitle:"Named form" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="form"]
 ++View text:"This is an ARIA main landmark." actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="main", roleDescription="main"]
 ++NavigationView text:"This is an ARIA navigation landmark." actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="navigation", roleDescription="navigation"]
-++View text:"This is an ARIA search landmark." actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="search", roleDescription="search"]
+++SearchView text:"This is an ARIA search landmark." actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="search", roleDescription="search"]
 ++View actions:[AX_FOCUS] bundle:[chromeRole="article", roleDescription="article"]
 ++++View text:"This should NOT banner role." actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="sectionHeader"]
 ++View actions:[AX_FOCUS] bundle:[chromeRole="complementary", roleDescription="complementary"]
