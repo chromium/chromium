@@ -54,10 +54,7 @@ class BnplManager {
   // micros). `on_bnpl_vcn_fetched_callback` is the callback that should be run
   // if the flow is completed successfully, to fill the form with the VCN that
   // will facilitate the BNPL transaction.
-  //
-  // TODO(crbug.com/409358161): Rename `InitBnplFlow` to
-  // `OnDidAcceptBnplSuggestion`.
-  virtual void InitBnplFlow(
+  virtual void OnDidAcceptBnplSuggestion(
       uint64_t final_checkout_amount,
       OnBnplVcnFetchedCallback on_bnpl_vcn_fetched_callback);
 

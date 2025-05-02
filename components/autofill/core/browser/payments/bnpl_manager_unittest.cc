@@ -280,9 +280,9 @@ class BnplManagerTest : public Test {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
 // Tests that the initial state for a BNPL flow is set when
-// BnplManager::InitBnplFlow() is triggered.
-TEST_F(BnplManagerTest, InitBnplFlow_SetsInitialState) {
-  bnpl_manager_->InitBnplFlow(kAmount, base::DoNothing());
+// BnplManager::OnDidAcceptBnplSuggestion() is triggered.
+TEST_F(BnplManagerTest, OnDidAcceptBnplSuggestion_SetsInitialState) {
+  bnpl_manager_->OnDidAcceptBnplSuggestion(kAmount, base::DoNothing());
 
   EXPECT_EQ(
       kAmount,
@@ -301,13 +301,15 @@ TEST_F(BnplManagerTest, InitBnplFlow_SetsInitialState) {
 }
 
 // Tests that the initial state for a BNPL flow is set when
-// BnplManager::InitBnplFlow() is triggered, even if the app locale is not
-// "en-US". This helps test that the flow is easily scalable to other app
+// BnplManager::OnDidAcceptBnplSuggestion() is triggered, even if the app locale
+// is not "en-US". This helps test that the flow is easily scalable to other app
 // locales.
-TEST_F(BnplManagerTest, InitBnplFlow_SetsInitialStateWithDifferentAppLocale) {
+TEST_F(BnplManagerTest,
+       OnDidAcceptBnplSuggestion_SetsInitialStateWithDifferentAppLocale) {
   uint64_t final_checkout_amount = 1000000;
   autofill_client_->set_app_locale("en_GB");
-  bnpl_manager_->InitBnplFlow(final_checkout_amount, base::DoNothing());
+  bnpl_manager_->OnDidAcceptBnplSuggestion(final_checkout_amount,
+                                           base::DoNothing());
 
   EXPECT_EQ(
       final_checkout_amount,
@@ -329,8 +331,8 @@ TEST_F(BnplManagerTest, InitBnplFlow_SetsInitialStateWithDifferentAppLocale) {
 // CreatePaymentInstrument request and loads risk data after ToS dialog
 // acceptance if it was not already loaded.
 TEST_F(BnplManagerTest, TosDialogAccepted_PrefetchedRiskDataNotLoaded) {
-  bnpl_manager_->InitBnplFlow(/*final_checkout_amount=*/1000000,
-                              base::DoNothing());
+  bnpl_manager_->OnDidAcceptBnplSuggestion(/*final_checkout_amount=*/1000000,
+                                           base::DoNothing());
   auto* ongoing_flow_state = test_api(*bnpl_manager_).GetOngoingFlowState();
   std::string test_context_token = "test_context_token";
   BnplIssuer test_issuer = test::GetTestLinkedBnplIssuer();
@@ -362,8 +364,8 @@ TEST_F(BnplManagerTest, TosDialogAccepted_PrefetchedRiskDataNotLoaded) {
 // Tests that the the user accepting the ToS dialog triggers a
 // CreatePaymentInstrument request with the loaded risk data, if it is present.
 TEST_F(BnplManagerTest, TosDialogAccepted_PrefetchedRiskDataLoaded) {
-  bnpl_manager_->InitBnplFlow(/*final_checkout_amount=*/kAmount,
-                              base::DoNothing());
+  bnpl_manager_->OnDidAcceptBnplSuggestion(/*final_checkout_amount=*/kAmount,
+                                           base::DoNothing());
   auto* ongoing_flow_state = test_api(*bnpl_manager_).GetOngoingFlowState();
   std::string test_context_token = "test_context_token";
   BnplIssuer test_issuer = test::GetTestLinkedBnplIssuer();
@@ -402,7 +404,7 @@ TEST_F(BnplManagerTest, TosDialogAccepted_PrefetchedRiskDataLoaded) {
 // request details filled out correctly, and verifies that the VCN is correctly
 // filled and the state of BnplManager is reset.
 TEST_F(BnplManagerTest, FetchVcnDetails_CallsGetBnplPaymentInstrument) {
-  bnpl_manager_->InitBnplFlow(kAmount, base::DoNothing());
+  bnpl_manager_->OnDidAcceptBnplSuggestion(kAmount, base::DoNothing());
   // TODO(crbug.com/400500799): Remove test helper method and set arguments from
   // source.
   BnplIssuer issuer = test::GetTestLinkedBnplIssuer();
@@ -465,7 +467,7 @@ TEST_F(BnplManagerTest, FetchVcnDetails_CallsGetBnplPaymentInstrument) {
 // Tests that OnVcnDetailsFetched shows an error dialog when there is a
 // PaymentsRpcResult error.
 TEST_F(BnplManagerTest, FetchVcnDetails_RpcError) {
-  bnpl_manager_->InitBnplFlow(1'000'000, base::DoNothing());
+  bnpl_manager_->OnDidAcceptBnplSuggestion(1'000'000, base::DoNothing());
   // TODO(crbug.com/400500799): Remove test helper method and set arguments from
   // source.
   BnplIssuer issuer = test::GetTestLinkedBnplIssuer();
@@ -504,7 +506,7 @@ TEST_F(BnplManagerTest, FetchVcnDetails_RpcError) {
 TEST_F(
     BnplManagerTest,
     OnIssuerSelected_CallsGetBnplPaymentInstrumentForFetchingUrl_LinkedIssuer) {
-  bnpl_manager_->InitBnplFlow(kAmount, base::DoNothing());
+  bnpl_manager_->OnDidAcceptBnplSuggestion(kAmount, base::DoNothing());
   BnplIssuer linked_issuer = test::GetTestLinkedBnplIssuer();
 
   auto* ongoing_flow_state = test_api(*bnpl_manager_).GetOngoingFlowState();
@@ -537,7 +539,7 @@ TEST_F(
 TEST_F(
     BnplManagerTest,
     OnIssuerSelected_CallsGetBnplPaymentInstrumentForFetchingUrl_LinkedIssuer_RiskDataLoaded) {
-  bnpl_manager_->InitBnplFlow(kAmount, base::DoNothing());
+  bnpl_manager_->OnDidAcceptBnplSuggestion(kAmount, base::DoNothing());
   BnplIssuer linked_issuer = test::GetTestLinkedBnplIssuer();
 
   // Set up risk data cache.
@@ -576,7 +578,7 @@ TEST_F(
 // Tests that the manager set flow state based on the url fetch result and
 // init the flow to redirect user to the site of the selected issuer.
 TEST_F(BnplManagerTest, OnIssuerSelected_OnRedirectUrlFetched) {
-  bnpl_manager_->InitBnplFlow(kAmount, base::DoNothing());
+  bnpl_manager_->OnDidAcceptBnplSuggestion(kAmount, base::DoNothing());
   BnplIssuer linked_issuer = test::GetTestLinkedBnplIssuer();
 
   BnplFetchUrlResponseDetails response;
@@ -610,7 +612,7 @@ TEST_F(BnplManagerTest, OnIssuerSelected_OnRedirectUrlFetched) {
 // temporary error.
 TEST_F(BnplManagerTest,
        OnIssuerSelected_OnRedirectUrlFetched_TemporaryFailure) {
-  bnpl_manager_->InitBnplFlow(kAmount, base::DoNothing());
+  bnpl_manager_->OnDidAcceptBnplSuggestion(kAmount, base::DoNothing());
   BnplIssuer linked_issuer = test::GetTestLinkedBnplIssuer();
 
   BnplFetchUrlResponseDetails response;
@@ -639,7 +641,7 @@ TEST_F(BnplManagerTest,
 // Tests that the error message is shown when redirect url fetch fails.
 TEST_F(BnplManagerTest,
        OnIssuerSelected_OnRedirectUrlFetched_PermanentFailure) {
-  bnpl_manager_->InitBnplFlow(kAmount, base::DoNothing());
+  bnpl_manager_->OnDidAcceptBnplSuggestion(kAmount, base::DoNothing());
   BnplIssuer linked_issuer = test::GetTestLinkedBnplIssuer();
 
   BnplFetchUrlResponseDetails response;
@@ -669,7 +671,7 @@ TEST_F(BnplManagerTest,
 // Tests that when BNPL flow completed successfully, the manager will attempt to
 // fetch VCN.
 TEST_F(BnplManagerTest, OnPopupWindowCompleted_WithSuccess) {
-  bnpl_manager_->InitBnplFlow(kAmount, base::DoNothing());
+  bnpl_manager_->OnDidAcceptBnplSuggestion(kAmount, base::DoNothing());
 
   // Init the `PaymentsWindowManager` BNPL flow.
   EXPECT_CALL(*payments_network_interface_,
@@ -706,7 +708,7 @@ TEST_F(BnplManagerTest, OnPopupWindowCompleted_WithSuccess) {
 // Tests that when BNPL flow completed with user closed, the flow status will
 // be reset.
 TEST_F(BnplManagerTest, OnPopupWindowCompleted_UserClosed) {
-  bnpl_manager_->InitBnplFlow(kAmount, base::DoNothing());
+  bnpl_manager_->OnDidAcceptBnplSuggestion(kAmount, base::DoNothing());
 
   // Init the `PaymentsWindowManager` BNPL flow.
   EXPECT_CALL(*payments_network_interface_,
@@ -736,7 +738,7 @@ TEST_F(BnplManagerTest, OnPopupWindowCompleted_UserClosed) {
 
 // Tests that when BNPL flow completed with failure, the error message is shown.
 TEST_F(BnplManagerTest, OnPopupWindowCompleted_Failure) {
-  bnpl_manager_->InitBnplFlow(kAmount, base::DoNothing());
+  bnpl_manager_->OnDidAcceptBnplSuggestion(kAmount, base::DoNothing());
 
   // Init the `PaymentsWindowManager` BNPL flow.
   EXPECT_CALL(*payments_network_interface_,
@@ -768,7 +770,7 @@ TEST_F(BnplManagerTest, OnPopupWindowCompleted_Failure) {
 
 // Tests that FetchVcnDetails will display an autofill progress dialog.
 TEST_F(BnplManagerTest, FetchVcnDetails_ShowAutofillProgressDialog) {
-  bnpl_manager_->InitBnplFlow(1'000'000, base::DoNothing());
+  bnpl_manager_->OnDidAcceptBnplSuggestion(1'000'000, base::DoNothing());
   test_api(*bnpl_manager_)
       .PopulateManagerWithUserAndBnplIssuerDetails(
           kBillingCustomerNumber, kInstrumentId, kRiskData, kContextToken,
@@ -790,7 +792,7 @@ TEST_F(BnplManagerTest, FetchVcnDetails_ShowAutofillProgressDialog) {
 // Tests that calling Reset while fetching VCN details will reset the status of
 // BnplManager.
 TEST_F(BnplManagerTest, FetchVcnDetails_Reset) {
-  bnpl_manager_->InitBnplFlow(1'000'000, base::DoNothing());
+  bnpl_manager_->OnDidAcceptBnplSuggestion(1'000'000, base::DoNothing());
   test_api(*bnpl_manager_)
       .PopulateManagerWithUserAndBnplIssuerDetails(
           kBillingCustomerNumber, kInstrumentId, kRiskData, kContextToken,
@@ -822,7 +824,7 @@ TEST_F(BnplManagerTest, FetchVcnDetails_Reset) {
 TEST_F(
     BnplManagerTest,
     OnIssuerSelected_CallsGetDetailsForCreateBnplPaymentInstrument_UnlinkedIssuer) {
-  bnpl_manager_->InitBnplFlow(kAmount, base::DoNothing());
+  bnpl_manager_->OnDidAcceptBnplSuggestion(kAmount, base::DoNothing());
 
   ASSERT_EQ(test_api(*bnpl_manager_).GetOngoingFlowState()->app_locale,
             kAppLocale);
@@ -854,7 +856,7 @@ TEST_F(
 TEST_F(
     BnplManagerTest,
     OnDidGetDetailsForCreateBnplPaymentInstrument_ClosesTosAfterRedirectUrlReceived) {
-  bnpl_manager_->InitBnplFlow(1'000'000, base::DoNothing());
+  bnpl_manager_->OnDidAcceptBnplSuggestion(1'000'000, base::DoNothing());
   BnplIssuer unlinked_issuer = test::GetTestUnlinkedBnplIssuer();
 
   EXPECT_CALL(*payments_network_interface_,
@@ -893,7 +895,7 @@ TEST_F(
 TEST_F(
     BnplManagerTest,
     OnDidGetDetailsForCreateBnplPaymentInstrument_TosCancellationResetsFlow) {
-  bnpl_manager_->InitBnplFlow(1'000'000, base::DoNothing());
+  bnpl_manager_->OnDidAcceptBnplSuggestion(1'000'000, base::DoNothing());
   BnplIssuer unlinked_issuer = test::GetTestUnlinkedBnplIssuer();
 
   EXPECT_CALL(*payments_network_interface_,
@@ -919,7 +921,7 @@ TEST_F(
 // when there is a PaymentsRpcResult error.
 TEST_F(BnplManagerTest,
        OnDidGetDetailsForCreateBnplPaymentInstrument_RpcError) {
-  bnpl_manager_->InitBnplFlow(1'000'000, base::DoNothing());
+  bnpl_manager_->OnDidAcceptBnplSuggestion(1'000'000, base::DoNothing());
   BnplIssuer unlinked_issuer = test::GetTestUnlinkedBnplIssuer();
 
   EXPECT_CALL(*payments_network_interface_,
@@ -938,11 +940,12 @@ TEST_F(BnplManagerTest,
   EXPECT_EQ(test_api(*bnpl_manager_).GetOngoingFlowState(), nullptr);
 }
 
-// Tests that `InitBnplFlow()` show trigger `ShowSelectBnplIssuerDialog()` call.
-TEST_F(BnplManagerTest, InitBnplFlow_ShowSelectBnplIssuerDialog) {
+// Tests that `OnDidAcceptBnplSuggestion()` show trigger
+// `ShowSelectBnplIssuerDialog()` call.
+TEST_F(BnplManagerTest, OnDidAcceptBnplSuggestion_ShowSelectBnplIssuerDialog) {
   EXPECT_CALL(GetPaymentsAutofillClient(), ShowSelectBnplIssuerDialog);
 
-  bnpl_manager_->InitBnplFlow(kAmount, base::DoNothing());
+  bnpl_manager_->OnDidAcceptBnplSuggestion(kAmount, base::DoNothing());
 }
 
 // Tests that the BNPL flow will be reset if the user cancels the select issuer
@@ -952,7 +955,7 @@ TEST_F(BnplManagerTest, ShowSelectBnplIssuerDialog_UserCancelled) {
   EXPECT_CALL(GetPaymentsAutofillClient(), ShowSelectBnplIssuerDialog)
       .WillOnce(base::test::RunOnceCallback<3>());
 
-  bnpl_manager_->InitBnplFlow(kAmount, base::DoNothing());
+  bnpl_manager_->OnDidAcceptBnplSuggestion(kAmount, base::DoNothing());
 
   EXPECT_EQ(test_api(*bnpl_manager_).GetOngoingFlowState(), nullptr);
 }
@@ -974,7 +977,7 @@ TEST_F(
           GetExpectedLegalMessageLines()));
   EXPECT_CALL(GetPaymentsAutofillClient(), DismissSelectBnplIssuerDialog);
 
-  bnpl_manager_->InitBnplFlow(kAmount, base::DoNothing());
+  bnpl_manager_->OnDidAcceptBnplSuggestion(kAmount, base::DoNothing());
 
   EXPECT_EQ(test_api(*bnpl_manager_).GetOngoingFlowState()->issuer,
             unlinked_issuer);
@@ -1000,7 +1003,7 @@ TEST_F(BnplManagerTest,
           PaymentsAutofillClient::PaymentsRpcResult::kSuccess, response));
   EXPECT_CALL(GetPaymentsAutofillClient(), DismissSelectBnplIssuerDialog);
 
-  bnpl_manager_->InitBnplFlow(kAmount, base::DoNothing());
+  bnpl_manager_->OnDidAcceptBnplSuggestion(kAmount, base::DoNothing());
 }
 
 // Tests that update suggestions callback is called when suggestions are shown
@@ -1379,7 +1382,7 @@ TEST_F(BnplManagerTest, AddBnplSuggestion_BnplManagerNotNotified) {
 // response, expecting GetBnplPaymentInstrumentForFetchingUrl call with the
 // returned instrument ID.
 TEST_F(BnplManagerTest, CreateBnplPaymentInstrument_Success) {
-  bnpl_manager_->InitBnplFlow(kAmount, base::DoNothing());
+  bnpl_manager_->OnDidAcceptBnplSuggestion(kAmount, base::DoNothing());
   auto* ongoing_flow_state = test_api(*bnpl_manager_).GetOngoingFlowState();
   ongoing_flow_state->app_locale = kAppLocale;
   ongoing_flow_state->billing_customer_number = kBillingCustomerNumber;
@@ -1413,7 +1416,7 @@ TEST_F(BnplManagerTest, CreateBnplPaymentInstrument_Success) {
 // Tests that when CreateBnplPaymentInstrument fails with an error the error
 // dialog is shown and the flow is reset.
 TEST_F(BnplManagerTest, CreateBnplPaymentInstrument_Failure) {
-  bnpl_manager_->InitBnplFlow(kAmount, base::DoNothing());
+  bnpl_manager_->OnDidAcceptBnplSuggestion(kAmount, base::DoNothing());
   auto* ongoing_flow_state = test_api(*bnpl_manager_).GetOngoingFlowState();
   ongoing_flow_state->app_locale = kAppLocale;
   ongoing_flow_state->billing_customer_number = kBillingCustomerNumber;
@@ -1486,7 +1489,7 @@ TEST_F(BnplManagerTest, GetSortedBnplIssuerContext_OrdersEligibleFirst) {
   EXPECT_CALL(GetPaymentsAutofillClient(), ShowSelectBnplIssuerDialog)
       .WillOnce(MoveArg<0>(&issuer_context));
 
-  bnpl_manager_->InitBnplFlow(15'000'000, base::DoNothing());
+  bnpl_manager_->OnDidAcceptBnplSuggestion(15'000'000, base::DoNothing());
 
   EXPECT_THAT(
       issuer_context,
@@ -1549,7 +1552,7 @@ TEST_F(BnplManagerTest, GetSortedBnplIssuerContext_OrdersUneligibleLast) {
   EXPECT_CALL(GetPaymentsAutofillClient(), ShowSelectBnplIssuerDialog)
       .WillOnce(MoveArg<0>(&issuer_context));
 
-  bnpl_manager_->InitBnplFlow(15'000'000, base::DoNothing());
+  bnpl_manager_->OnDidAcceptBnplSuggestion(15'000'000, base::DoNothing());
 
   EXPECT_THAT(
       issuer_context,
@@ -1583,7 +1586,7 @@ TEST_F(BnplManagerTest, GetSortedBnplIssuerContext_IsEligible) {
   EXPECT_CALL(GetPaymentsAutofillClient(), ShowSelectBnplIssuerDialog)
       .WillOnce(MoveArg<0>(&issuer_context));
 
-  bnpl_manager_->InitBnplFlow(15'000'000, base::DoNothing());
+  bnpl_manager_->OnDidAcceptBnplSuggestion(15'000'000, base::DoNothing());
 
   EXPECT_THAT(issuer_context, ElementsAre(EqualsBnplIssuerContext(
                                   IssuerId::kBnplAfterpay,
@@ -1608,7 +1611,7 @@ TEST_F(BnplManagerTest, GetSortedBnplIssuerContext_NotSupportedMerchant) {
   EXPECT_CALL(GetPaymentsAutofillClient(), ShowSelectBnplIssuerDialog)
       .WillOnce(MoveArg<0>(&issuer_context));
 
-  bnpl_manager_->InitBnplFlow(15'000'000, base::DoNothing());
+  bnpl_manager_->OnDidAcceptBnplSuggestion(15'000'000, base::DoNothing());
 
   EXPECT_THAT(issuer_context,
               ElementsAre(EqualsBnplIssuerContext(
@@ -1634,7 +1637,7 @@ TEST_F(BnplManagerTest, GetSortedBnplIssuerContext_CheckoutAmountTooHigh) {
   EXPECT_CALL(GetPaymentsAutofillClient(), ShowSelectBnplIssuerDialog)
       .WillOnce(MoveArg<0>(&issuer_context));
 
-  bnpl_manager_->InitBnplFlow(1'001'000'000, base::DoNothing());
+  bnpl_manager_->OnDidAcceptBnplSuggestion(1'001'000'000, base::DoNothing());
 
   EXPECT_THAT(
       issuer_context,
@@ -1660,7 +1663,7 @@ TEST_F(BnplManagerTest, GetSortedBnplIssuerContext_CheckoutAmountTooLow) {
   EXPECT_CALL(GetPaymentsAutofillClient(), ShowSelectBnplIssuerDialog)
       .WillOnce(MoveArg<0>(&issuer_context));
 
-  bnpl_manager_->InitBnplFlow(1'001'000'000, base::DoNothing());
+  bnpl_manager_->OnDidAcceptBnplSuggestion(1'001'000'000, base::DoNothing());
 
   EXPECT_THAT(
       issuer_context,
@@ -1670,19 +1673,19 @@ TEST_F(BnplManagerTest, GetSortedBnplIssuerContext_CheckoutAmountTooLow) {
 }
 
 // Tests that the `kBnplSuggestionAccepted` event is logged once when
-// `InitBnplFlow()` is called.
-TEST_F(BnplManagerTest, InitBnplFlow_SuggestionAcceptedLogged) {
+// `OnDidAcceptBnplSuggestion()` is called.
+TEST_F(BnplManagerTest, OnDidAcceptBnplSuggestion_SuggestionAcceptedLogged) {
   base::HistogramTester histogram_tester;
 
-  bnpl_manager_->InitBnplFlow(kAmount, base::DoNothing());
+  bnpl_manager_->OnDidAcceptBnplSuggestion(kAmount, base::DoNothing());
   histogram_tester.ExpectUniqueSample(
       "Autofill.FormEvents.CreditCard.Bnpl",
       /*sample=*/autofill_metrics::BnplFormEvent::kBnplSuggestionAccepted,
       /*expected_bucket_count=*/1);
 
   // Test that `kBnplSuggestionAccepted` is logged only once even if
-  // `InitBnplFlow()` is called more than once on the same page.
-  bnpl_manager_->InitBnplFlow(kAmount, base::DoNothing());
+  // `OnDidAcceptBnplSuggestion()` is called more than once on the same page.
+  bnpl_manager_->OnDidAcceptBnplSuggestion(kAmount, base::DoNothing());
   histogram_tester.ExpectUniqueSample(
       "Autofill.FormEvents.CreditCard.Bnpl",
       /*sample=*/autofill_metrics::BnplFormEvent::kBnplSuggestionAccepted,

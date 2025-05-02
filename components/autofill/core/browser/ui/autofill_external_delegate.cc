@@ -1366,7 +1366,7 @@ void AutofillExternalDelegate::DidAcceptPaymentsSuggestion(
       payments::BnplManager* bnpl_manager = manager_->GetPaymentsBnplManager();
       CHECK(bnpl_manager);
 
-      bnpl_manager->InitBnplFlow(
+      bnpl_manager->OnDidAcceptBnplSuggestion(
           /*final_checkout_amount=*/suggestion
               .GetPayload<Suggestion::PaymentsPayload>()
               .extracted_amount_in_micros.value(),

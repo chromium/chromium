@@ -74,7 +74,7 @@ BnplManager::GetSupportedBnplIssuerIds() {
   return kBnplIssuers;
 }
 
-void BnplManager::InitBnplFlow(
+void BnplManager::OnDidAcceptBnplSuggestion(
     uint64_t final_checkout_amount,
     OnBnplVcnFetchedCallback on_bnpl_vcn_fetched_callback) {
   ongoing_flow_state_ = std::make_unique<OngoingFlowState>();
