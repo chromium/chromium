@@ -36,13 +36,13 @@ class ServiceBridge {
   TabStripControllerImpl impl_;
 };
 
-class TabStripControllerImplTest : public testing::Test {
+class TabsApiControllerImplTest : public testing::Test {
  protected:
-  TabStripControllerImplTest() = default;
-  TabStripControllerImplTest(const TabStripControllerImplTest&) = delete;
-  TabStripControllerImplTest operator=(const TabStripControllerImplTest&) =
+  TabsApiControllerImplTest() = default;
+  TabsApiControllerImplTest(const TabsApiControllerImplTest&) = delete;
+  TabsApiControllerImplTest operator=(const TabsApiControllerImplTest&) =
       delete;
-  ~TabStripControllerImplTest() override = default;
+  ~TabsApiControllerImplTest() override = default;
 
   void SetUp() override { client_.Bind(bridge_.GetRemote()); }
 
@@ -53,7 +53,7 @@ class TabStripControllerImplTest : public testing::Test {
   ServiceBridge bridge_;
 };
 
-TEST_F(TabStripControllerImplTest, CreatNewTab) {
+TEST_F(TabsApiControllerImplTest, CreatNewTab) {
   tabs_api::mojom::TabStripController::CreateNewTabResult result;
   bool success = client_->CreateNewTab(&result);
 

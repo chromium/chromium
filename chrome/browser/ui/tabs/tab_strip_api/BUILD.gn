@@ -11,6 +11,31 @@ mojom("mojom") {
     "//mojo/public/mojom/base",
     "//url/mojom:url_mojom_gurl",
   ]
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "tabs_api.mojom.TabId"
+          cpp = "::tabs_api::TabId"
+        },
+        {
+          mojom = "tabs_api.mojom.TabId.Type"
+          cpp = "enum ::tabs_api::TabId::Type"
+        },
+      ]
+      traits_headers = [
+        "//chrome/browser/ui/tabs/tab_strip_api/tab_id.h",
+        "//chrome/browser/ui/tabs/tab_strip_api/tab_id_traits.h",
+      ]
+      traits_sources =
+          [ "//chrome/browser/ui/tabs/tab_strip_api/tab_id_traits.cc" ]
+      traits_public_deps = [
+        ":types",
+        "//base",
+      ]
+    },
+  ]
 }
 
 source_set("tab_strip_api") {
@@ -24,17 +49,30 @@ source_set("impl") {
 
   deps = [
     ":tab_strip_api",
+    ":types",
     "//chrome/browser/ui/browser_window:browser_window",
     "//chrome/browser/ui/tabs:tab_strip",
+  ]
+}
+
+source_set("types") {
+  sources = [
+    "tab_id.cc",
+    "tab_id.h",
   ]
 }
 
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "tab_strip_controller_impl_unittest.cc" ]
+  sources = [
+    "tab_id_traits_unittest.cc",
+    "tab_id_unittest.cc",
+    "tab_strip_controller_impl_unittest.cc",
+  ]
 
   deps = [
+    ":impl",
     ":tab_strip_api",
     "//base/test:test_support",
     "//testing/gtest",

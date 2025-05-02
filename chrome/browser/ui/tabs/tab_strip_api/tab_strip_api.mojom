@@ -6,6 +6,30 @@ module tabs_api.mojom;
 
 import "mojo/public/mojom/base/error.mojom";
 
+// References a tab object. The id can refer to different types of underlying
+// resource. The |type| field can be used to differentiate between the type
+// of underlying resources.
+struct TabId {
+  // The type of object referenced by the id.
+  enum Type {
+    // An unknown type. This will never be returned by the service and usually
+    // indicates an invalid argument from the client.
+    kUnknown,
+    // A content tab.
+    kContent,
+    // A collection of tabs.
+    kCollection,
+  };
+
+  // An opaque string that uniquely identifies the underlying resource. This
+  // id will be unique across all resource types. Users should not try to
+  // extrapolate any sort of pattern from this string.
+  string id;
+
+  // The type of resource referenced by this id.
+  Type type;
+};
+
 // The TabStripController is an object that lives alongside the
 // TabStripViewModel. It acts as the bridge between the model and any UI Dialog
 // or client.
