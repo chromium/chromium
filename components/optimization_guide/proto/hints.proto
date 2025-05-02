@@ -143,7 +143,7 @@ message GetHintsResponse {
 // enum in enums.xml and optimization/histograms.xml for metric recording.
 enum OptimizationType {
   // Values for obsolete optimizations.
-  reserved 11, 12, 16, 29, 32, 66, 72, 73, 89;
+  reserved 11, 12, 16, 29, 32, 66, 72, 73, 89, 94, 95;
 
   TYPE_UNSPECIFIED = 0;
   // This optimization blocks JavaScript on the page.
@@ -322,10 +322,6 @@ enum OptimizationType {
   // Provides information about FedCM API clickthrough rate aggregated across
   // all users on the page.
   FEDCM_CLICKTHROUGH_RATE = 93;
-  // Provides a list of commonly abused hosting service providers.
-  SOSS_HOSTING_SERVICE_PROVIDERS = 94;
-  // Provides a list of commonly abused TLDs.
-  SOSS_TLDS = 95;
 }
 
 // Presents semantics for how page load URLs should be matched.
