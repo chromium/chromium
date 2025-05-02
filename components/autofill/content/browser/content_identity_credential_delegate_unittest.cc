@@ -44,7 +44,7 @@ IdentityRequestAccountPtr CreateTestAccount() {
   IdentityRequestAccountPtr account =
       base::MakeRefCounted<content::IdentityRequestAccount>(
           "id", "display_identifier", "display_name", "john@email.com", "name",
-          "given_name", GURL(), "phone", "username",
+          "given_name", GURL(), "+1 (234) 567-8910", "username",
           /*login_hints=*/std::vector<std::string>(),
           /*domain_hints=*/std::vector<std::string>(),
           /*labels=*/std::vector<std::string>());
@@ -119,6 +119,53 @@ TEST_F(ContentIdentityCredentialDelegateTest, GetVerifiedEmailRequest) {
   // Expect that name isn't previewed/filled because it wasn't requested in the
   // conditional request.
   EXPECT_FALSE(payload.fields.contains(NAME_FULL));
+}
+
+TEST_F(ContentIdentityCredentialDelegateTest, SuggestPhoneNumbers) {
+  MockFederatedAuthAutofillSource mock;
+
+  ContentIdentityCredentialDelegate delegate(
+      base::BindLambdaForTesting([&mock]() {
+        content::FederatedAuthAutofillSource* result = &mock;
+        return result;
+      }));
+
+  IdentityRequestAccountPtr account = CreateTestAccount();
+  // Use "email" AND "phone-number" in the selective disclosure request.
+  account->identity_provider->disclosure_fields = {
+      content::IdentityRequestDialogDisclosureField::kPhoneNumber,
+      content::IdentityRequestDialogDisclosureField::kEmail};
+  std::vector<IdentityRequestAccountPtr> accounts = {account};
+
+  EXPECT_CALL(mock, GetAutofillSuggestions).WillOnce(Return(accounts));
+
+  std::vector<Suggestion> suggestions =
+      delegate.GetVerifiedAutofillSuggestions(PHONE_HOME_WHOLE_NUMBER);
+  EXPECT_EQ(1ul, suggestions.size());
+
+  Suggestion suggestion = suggestions[0];
+  EXPECT_EQ(suggestion.main_text.value, u"+1 (234) 567-8910");
+  EXPECT_EQ(suggestion.labels.size(), 1ul);
+  EXPECT_EQ(suggestion.minor_texts.size(), 1ul);
+
+  // Expect the payload to be populated properly.
+  Suggestion::IdentityCredentialPayload payload =
+      suggestion.GetPayload<Suggestion::IdentityCredentialPayload>();
+  EXPECT_EQ(payload.account_id, "id");
+  EXPECT_EQ(payload.config_url, GURL("https://idp.example"));
+
+  // Expect two fields to be available in the payload: emails and usernames.
+  EXPECT_EQ(payload.fields.size(), 2ul);
+
+  // Expect that email is previewed/filled because it was requested in the
+  // conditional request.
+  EXPECT_TRUE(payload.fields.contains(EMAIL_ADDRESS));
+  EXPECT_EQ(payload.fields[EMAIL_ADDRESS], u"john@email.com");
+
+  // Expect that email is previewed/filled because it was requested in the
+  // conditional request.
+  EXPECT_TRUE(payload.fields.contains(PHONE_HOME_WHOLE_NUMBER));
+  EXPECT_EQ(payload.fields[PHONE_HOME_WHOLE_NUMBER], u"+1 (234) 567-8910");
 }
 
 TEST_F(ContentIdentityCredentialDelegateTest,

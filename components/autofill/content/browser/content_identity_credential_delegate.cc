@@ -38,7 +38,7 @@ std::vector<Suggestion>
 ContentIdentityCredentialDelegate::GetVerifiedAutofillSuggestions(
     const FieldType& field_type) const {
   if (!(field_type == PASSWORD || field_type == EMAIL_ADDRESS ||
-        field_type == NAME_FULL)) {
+        field_type == NAME_FULL || field_type == PHONE_HOME_WHOLE_NUMBER)) {
     return {};
   }
   // TODO(crbug.com/380367784): reproduce and add a test to make sure this
@@ -74,7 +74,16 @@ ContentIdentityCredentialDelegate::GetVerifiedAutofillSuggestions(
       payload.fields[NAME_FULL] = base::UTF8ToUTF16(account->name);
     }
 
-    if (field_type == EMAIL_ADDRESS || field_type == NAME_FULL) {
+    if (!account->phone.empty() &&
+        base::Contains(
+            account->identity_provider->disclosure_fields,
+            content::IdentityRequestDialogDisclosureField::kPhoneNumber)) {
+      payload.fields[PHONE_HOME_WHOLE_NUMBER] =
+          base::UTF8ToUTF16(account->phone);
+    }
+
+    if (field_type == EMAIL_ADDRESS || field_type == NAME_FULL ||
+        field_type == PHONE_HOME_WHOLE_NUMBER) {
       if (!payload.fields.contains(field_type)) {
         continue;
       }
