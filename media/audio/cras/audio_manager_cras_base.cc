@@ -45,7 +45,7 @@ AudioManagerCrasBase::AudioManagerCrasBase(
 
 AudioManagerCrasBase::~AudioManagerCrasBase() = default;
 
-const std::string_view AudioManagerCrasBase::GetName() {
+const char* AudioManagerCrasBase::GetName() {
   return "CRAS";
 }
 

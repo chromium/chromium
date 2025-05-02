@@ -761,7 +761,7 @@ std::string AudioManagerMac::GetAssociatedOutputDeviceID(
   return std::string();
 }
 
-const std::string_view AudioManagerMac::GetName() {
+const char* AudioManagerMac::GetName() {
   return "Mac";
 }
 
