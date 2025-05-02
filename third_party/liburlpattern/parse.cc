@@ -9,6 +9,7 @@
 #include <unordered_set>
 
 #include "third_party/abseil-cpp/absl/base/macros.h"
+#include "third_party/abseil-cpp/absl/status/statusor.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
 #include "third_party/liburlpattern/pattern.h"
 #include "third_party/liburlpattern/tokenize.h"
@@ -283,8 +284,9 @@ base::expected<Pattern, absl::Status> Parse(std::string_view pattern,
                                             EncodeCallback encode_callback,
                                             const Options& options) {
   auto result = Tokenize(pattern);
-  if (!result.ok())
-    return base::unexpected(result.status());
+  if (!result.has_value()) {
+    return base::unexpected(result.error());
+  }
 
   State state(std::move(result.value()), std::move(encode_callback), options);
 

@@ -10,7 +10,7 @@
 #include <string_view>
 
 #include "base/component_export.h"
-#include "third_party/abseil-cpp/absl/status/status.h"
+#include "third_party/abseil-cpp/absl/status/statusor.h"
 #include "third_party/liburlpattern/tokenize.h"
 
 namespace liburlpattern {

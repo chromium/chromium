@@ -21,9 +21,9 @@ absl::Status ConstructorStringParser::Parse(
   ABSL_ASSERT(token_index_ == 0u);
 
   auto tokenize_result = Tokenize(input_, TokenizePolicy::kLenient);
-  if (!tokenize_result.ok()) {
+  if (!tokenize_result.has_value()) {
     // This should not happen with kLenient mode, but we handle it anyway.
-    return tokenize_result.status();
+    return tokenize_result.error();
   }
 
   token_list_ = std::move(tokenize_result.value());
