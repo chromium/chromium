@@ -2452,6 +2452,32 @@ TEST_F(TabGroupSyncServiceTest, OnCollaborationRemoved) {
   EXPECT_FALSE(model_->Contains(shared_group->saved_guid()));
 }
 
+TEST_F(TabGroupSyncServiceTest, OnLastSharedTabClosed) {
+  std::string collaboration_id_str = "collaboration_id";
+  CollaborationId collaboration_id = CollaborationId(collaboration_id_str);
+  MakeTabGroupShared(local_group_id_1_, collaboration_id_str);
+
+  std::optional<SavedTabGroup> group =
+      tab_group_sync_service_->GetGroup(local_group_id_1_);
+  EXPECT_EQ(1u, group->saved_tabs().size());
+  SavedTabGroupTab tab = group->saved_tabs()[0];
+
+  // Close the only tab in this group. One tab will be added, and the original
+  // tab will be removed.
+  EXPECT_CALL(*observer_,
+              BeforeTabGroupUpdateFromRemote(
+                  testing::TypedEq<const base::Uuid&>(group->saved_guid())));
+  EXPECT_CALL(*observer_,
+              AfterTabGroupUpdateFromRemote(
+                  testing::TypedEq<const base::Uuid&>(group->saved_guid())));
+  tab_group_sync_service_->OnLastTabClosed(
+      tab_group_sync_service_->GetGroup(local_group_id_1_).value());
+  group = tab_group_sync_service_->GetGroup(local_group_id_1_);
+  EXPECT_TRUE(group.has_value());
+  EXPECT_EQ(1u, group->saved_tabs().size());
+  EXPECT_NE(tab.saved_tab_guid(), group->saved_tabs()[0].saved_tab_guid());
+}
+
 class PinningTabGroupSyncServiceTest : public TabGroupSyncServiceTest {
  public:
   PinningTabGroupSyncServiceTest() = default;
