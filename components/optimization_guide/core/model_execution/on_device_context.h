@@ -13,6 +13,7 @@
 #include "components/optimization_guide/core/optimization_guide_logger.h"
 #include "components/optimization_guide/proto/model_quality_metadata.pb.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom.h"
 
@@ -92,7 +93,7 @@ class OnDeviceContext : public on_device_model::mojom::ContextClient {
   void SetPriority(on_device_model::mojom::Priority priority);
 
  private:
-  void AddContext();
+  void Append(on_device_model::mojom::InputPtr input);
 
   // on_device_model::mojom::ContextClient:
   void OnComplete(uint32_t tokens_processed) override;
@@ -100,11 +101,13 @@ class OnDeviceContext : public on_device_model::mojom::ContextClient {
   OnDeviceOptions opts_;
   ModelBasedCapabilityKey feature_;
   mojo::Remote<on_device_model::mojom::Session> session_;
-  on_device_model::mojom::InputPtr input_;
+  on_device_model::mojom::InputPtr input_ =
+      on_device_model::mojom::Input::New();
+  uint32_t tokens_processed_ = 0;
   on_device_model::mojom::Priority priority_ =
       on_device_model::mojom::Priority::kForeground;
   OptimizationGuideModelExecutor::Session::SetInputCallback callback_;
-  mojo::Receiver<on_device_model::mojom::ContextClient> client_{this};
+  mojo::ReceiverSet<on_device_model::mojom::ContextClient> clients_;
 };
 
 }  // namespace optimization_guide

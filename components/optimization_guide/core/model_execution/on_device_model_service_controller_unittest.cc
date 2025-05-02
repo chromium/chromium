@@ -63,6 +63,7 @@
 #include "components/optimization_guide/public/mojom/model_broker.mojom.h"
 #include "components/prefs/testing_pref_service.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "services/on_device_model/public/cpp/capabilities.h"
 #include "services/on_device_model/public/cpp/service_client.h"
 #include "services/on_device_model/public/cpp/test_support/fake_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -3249,11 +3250,7 @@ TEST_F(OnDeviceModelServiceControllerTest, ImageExecutionSuccess) {
          ->mutable_proto_field() = ProtoField(
         {RequestProto::kNested2FieldNumber, NestedProto::kMediaFieldNumber});
   }
-  {
-    auto& output_config = *config.mutable_output_config();
-    output_config.set_proto_type(proto::ComposeResponse().GetTypeName());
-    *output_config.mutable_proto_field() = OutputField();
-  }
+  *config.mutable_output_config() = ResponseHolderOutputConfig();
   FakeAdaptationAsset compose_asset({
       .config = config,
   });
@@ -3307,6 +3304,111 @@ proto::SubstitutedString EmptySubstitution() {
   return result;
 }
 
+TEST_F(OnDeviceModelServiceControllerTest, KeepInputOnExtension) {
+  using Request = proto::ExampleForTestingRequest;
+  auto kRepeatedTag = Request::kRepeatedFieldFieldNumber;
+  using Msg = proto::ExampleForTestingMessage;
+  // A simple config that includes content from the
+  // proto::ExampleForTestingRequest::repeated_field
+  FakeAdaptationAsset compose_asset({
+      .config =
+          []() {
+            proto::OnDeviceModelExecutionFeatureConfig config;
+            config.set_feature(ToModelExecutionFeatureProto(
+                ModelBasedCapabilityKey::kCompose));
+            *config.mutable_input_config() = TestInputConfig(
+                ForEachRepeated(FormatTestMessage()), EmptySubstitution());
+            *config.mutable_output_config() = ResponseHolderOutputConfig();
+            return config;
+          }(),
+  });
+  Initialize(InitializeParams{
+      .base_model = &standard_assets_.base_model,
+      .safety = &standard_assets_.safety,
+      .language = &standard_assets_.language,
+      .adaptations = {&compose_asset},
+  });
+  base::test::TestFuture<
+      base::expected<size_t, OptimizationGuideModelExecutionError>>
+      set_input_future;
+
+  auto session = CreateSession(SessionConfigParams{
+      .capabilities = {on_device_model::CapabilityFlags::kImageInput,
+                       on_device_model::CapabilityFlags::kAudioInput},
+  });
+  ASSERT_TRUE(session);
+  MultimodalMessage request((Request()));
+  request.edit()
+      .MutableRepeatedField(kRepeatedTag)
+      .Add()
+      .Set(Msg::kStringValueFieldNumber, "v1");
+  request.edit()
+      .MutableRepeatedField(kRepeatedTag)
+      .Add()
+      .Set(Msg::kMediaFieldNumber, CreateBlackSkBitmap(1, 1));
+  request.edit()
+      .MutableRepeatedField(kRepeatedTag)
+      .Add()
+      .Set(Msg::kMediaFieldNumber, CreateDummyAudioBuffer());
+  session->SetInput(request.Clone(), {});
+  request.edit()
+      .MutableRepeatedField(kRepeatedTag)
+      .Add()
+      .Set(Msg::kStringValueFieldNumber, "v2");
+  session->SetInput(request.Clone(), set_input_future.GetCallback());
+  // Waiting for outstanding calls should let max_tokens be updated.
+  EXPECT_EQ(*set_input_future.Take(), 18ul);
+  request.edit()
+      .MutableRepeatedField(kRepeatedTag)
+      .Add()
+      .Set(Msg::kStringValueFieldNumber, "v3");
+  session->SetInput(request.Clone(), {});
+
+  // Make a clone that extends from the original input.
+  auto extended_clone = session->Clone();
+  request.edit()
+      .MutableRepeatedField(kRepeatedTag)
+      .Add()
+      .Set(Msg::kStringValueFieldNumber, "v4");
+  extended_clone->SetInput(request.Clone(), {});
+
+  // Make a clone that also alters the original request.
+  auto altered_clone = session->Clone();
+  request.edit()
+      .MutableRepeatedField(kRepeatedTag)
+      .Get(1)
+      .Set(Msg::kMediaFieldNumber, CreateBlackSkBitmap(2, 2));
+  altered_clone->SetInput(request.Clone(), {});
+
+  // The altered clone should have reset + resent all input in one chunk.
+  ResponseHolder altered_response;
+  altered_clone->ExecuteModel(proto::ExampleForTestingRequest(),
+                              altered_response.GetStreamingCallback());
+  ASSERT_TRUE(altered_response.GetFinalStatus());
+  EXPECT_EQ(*altered_response.value(),
+            "Context: v1<image><audio>v2v3v4 off:0 max:22\n");
+
+  // The clone that only extended should have sent input in separate chunks.
+  ResponseHolder extended_response;
+  extended_clone->ExecuteModel(proto::ExampleForTestingRequest(),
+                               extended_response.GetStreamingCallback());
+  ASSERT_TRUE(extended_response.GetFinalStatus());
+  EXPECT_EQ(*extended_response.value(),
+            "Context: v1<image><audio> off:0 max:22\n"
+            "Context: v2 off:0 max:22\n"
+            "Context: v3 off:0 max:4\n"
+            "Context: v4 off:0 max:4\n");
+
+  // The original should have input in separate chunks.
+  session->ExecuteModel(proto::ExampleForTestingRequest(),
+                        response_.GetStreamingCallback());
+  ASSERT_TRUE(response_.GetFinalStatus());
+  EXPECT_EQ(*response_.value(),
+            "Context: v1<image><audio> off:0 max:22\n"
+            "Context: v2 off:0 max:22\n"
+            "Context: v3 off:0 max:4\n");
+}
+
 TEST_F(OnDeviceModelServiceControllerTest, OmitEmptyInputs) {
   // Avoid calling Append with empty inputs.
   FakeAdaptationAsset compose_asset({
@@ -3321,12 +3423,7 @@ TEST_F(OnDeviceModelServiceControllerTest, OmitEmptyInputs) {
             *input_config.add_input_context_substitutions() =
                 EmptySubstitution();
             *input_config.add_execute_substitutions() = EmptySubstitution();
-            {
-              auto& output_config = *config.mutable_output_config();
-              output_config.set_proto_type(
-                  proto::ComposeResponse().GetTypeName());
-              *output_config.mutable_proto_field() = OutputField();
-            }
+            *config.mutable_output_config() = ResponseHolderOutputConfig();
             return config;
           }(),
   });
