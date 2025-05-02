@@ -20,6 +20,7 @@
 #include "services/webnn/buildflags.h"
 #include "services/webnn/error.h"
 #include "services/webnn/public/cpp/webnn_trace.h"
+#include "services/webnn/public/cpp/webnn_types.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/public/mojom/webnn_error.mojom.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"
@@ -107,7 +108,7 @@ class GraphImplTflite::ComputeResources {
   Create(WebNNContextImpl* context,
          flatbuffers::DetachedBuffer buffer,
          std::vector<uint8_t> buffer_data,
-         const base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>&
+         const base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>&
              constant_operands,
          bool graph_requires_fp32_precision) {
     auto self = std::make_unique<ComputeResources>();
@@ -286,7 +287,7 @@ GraphImplTflite::CreateAndBuild(
     mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
     mojom::GraphInfoPtr graph_info,
     ComputeResourceInfo compute_resource_info,
-    base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>
+    base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
         constant_operands,
     ContextImplTflite* context) {
   ASSIGN_OR_RETURN(GraphBuilderTflite::Result result,

@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
 #include "mojo/public/cpp/base/big_buffer.h"
+#include "services/webnn/public/cpp/webnn_types.h"
 #include "services/webnn/public/mojom/webnn_error.mojom-forward.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom-forward.h"
 #include "services/webnn/queueable_resource_state.h"
@@ -33,12 +34,13 @@ class ContextImplTflite;
 class GraphImplTflite final : public WebNNGraphImpl {
  public:
   static base::expected<std::unique_ptr<GraphImplTflite>, mojom::ErrorPtr>
-  CreateAndBuild(mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
-                 mojom::GraphInfoPtr graph_info,
-                 ComputeResourceInfo compute_resource_info,
-                 base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>
-                     constant_operands,
-                 ContextImplTflite* context);
+  CreateAndBuild(
+      mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
+      mojom::GraphInfoPtr graph_info,
+      ComputeResourceInfo compute_resource_info,
+      base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
+          constant_operands,
+      ContextImplTflite* context);
 
   GraphImplTflite(const GraphImplTflite&) = delete;
   GraphImplTflite& operator=(const GraphImplTflite&) = delete;

@@ -21,6 +21,7 @@
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "services/webnn/public/cpp/context_properties.h"
 #include "services/webnn/public/cpp/supported_data_types.h"
+#include "services/webnn/public/cpp/webnn_types.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom-forward.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom-forward.h"
 #include "third_party/flatbuffers/src/include/flatbuffers/flatbuffers.h"
@@ -84,16 +85,17 @@ class GraphBuilderTflite final {
   [[nodiscard]] static base::expected<Result, std::string> CreateAndBuild(
       ContextProperties context_properties,
       const mojom::GraphInfo& graph_info,
-      const base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>&
+      const base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>&
           constant_operands,
-      const base::flat_map<uint64_t, base::flat_set<size_t>>&
+      const base::flat_map<OperandId, base::flat_set<OperationId>>&
           operand_to_dependent_operations,
-      const base::flat_map<uint64_t, size_t>& operand_to_producing_operation);
+      const base::flat_map<OperandId, OperationId>&
+          operand_to_producing_operation);
 
   static ContextProperties GetContextProperties();
 
  private:
-  using IdToOperandMap = base::flat_map<uint64_t, mojom::OperandPtr>;
+  using IdToOperandMap = base::flat_map<OperandId, mojom::OperandPtr>;
   using OperatorCodeOffset = flatbuffers::Offset<::tflite::OperatorCode>;
   using OperatorOffset = flatbuffers::Offset<::tflite::Operator>;
   using BufferOffset = flatbuffers::Offset<::tflite::Buffer>;
@@ -105,11 +107,12 @@ class GraphBuilderTflite final {
   GraphBuilderTflite(
       ContextProperties context_properties,
       const mojom::GraphInfo& graph_info,
-      const base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>&
+      const base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>&
           constant_operands,
-      const base::flat_map<uint64_t, base::flat_set<size_t>>&
+      const base::flat_map<OperandId, base::flat_set<OperationId>>&
           operand_to_dependent_operations,
-      const base::flat_map<uint64_t, size_t>& operand_to_producing_operation);
+      const base::flat_map<OperandId, OperationId>&
+          operand_to_producing_operation);
   ~GraphBuilderTflite();
 
   // Maps to WebNN operand information.
@@ -140,7 +143,7 @@ class GraphBuilderTflite final {
   // to override the tensor type, such as when dequantising a float16 operator
   // to float32 before serializing an operator which does not support float32.
   base::expected<TensorInfo, std::string> SerializeOperand(
-      uint64_t operand_id,
+      OperandId operand_id,
       QuantizateParametersOffset quantize_params,
       std::optional<::tflite::TensorType> override_tensor_type = std::nullopt);
 
@@ -150,7 +153,7 @@ class GraphBuilderTflite final {
   // operation doesn't support float16 inference (`operation_supports_float16`
   // is false).
   base::expected<TensorInfo, std::string> SerializeInputTensorInfo(
-      uint64_t operand_id,
+      OperandId operand_id,
       QuantizateParametersOffset quantize_params = 0,
       bool operation_supports_float16 = false,
       bool fuse_dequantize_quantize = false);
@@ -163,7 +166,7 @@ class GraphBuilderTflite final {
   // intermediate operands (Reshape), so the output tensor type should be
   // float32 with the argument.
   base::expected<TensorInfo, std::string> SerializeOutputTensorInfo(
-      uint64_t operand_id,
+      OperandId operand_id,
       QuantizateParametersOffset quantize_params = 0,
       bool operation_supports_float16 = false,
       std::optional<::tflite::TensorType> override_tensor_type = std::nullopt);
@@ -177,7 +180,7 @@ class GraphBuilderTflite final {
   // options or it is otherwise invalid.
   base::expected<void, std::string> SerializeOperation(
       const mojom::Operation& op,
-      size_t operation_index);
+      OperationId operation_index);
 
   // Serializes the constant data (e.g. weights) to the flat buffer and returns
   // the index in the `tflite::Buffer` array if it's successful.
@@ -206,15 +209,15 @@ class GraphBuilderTflite final {
 
   // Returns the Operand corresponding to an `operand_id` from `graph_info_`.
   // Will crash if `graph_info_` does not contain `operand_id`.
-  const mojom::Operand& GetOperand(uint64_t operand_id) const;
+  const mojom::Operand& GetOperand(OperandId operand_id) const;
 
   // Get the value if the operand is constant.
   template <typename DataType>
     requires internal::IsSupportedTensorType<DataType>
-  base::span<const DataType> GetConstantValue(uint64_t operand_id);
+  base::span<const DataType> GetConstantValue(OperandId operand_id);
 
   // Get the value from constant operand and cast it to int64 data type.
-  base::FixedArray<int64_t> GetConstantInt64Value(uint64_t operand_id);
+  base::FixedArray<int64_t> GetConstantInt64Value(OperandId operand_id);
 
   // Operation serialization helpers for operations not directly declared in
   // the mojom::Operation union.
@@ -298,12 +301,12 @@ class GraphBuilderTflite final {
 
   // Get int64 zero point from int4 constant operand.
   base::FixedArray<int64_t> GetInt64ZeroPointFromInt4(
-      uint64_t zero_point_operand_id);
-  base::FixedArray<int64_t> GetInt64ZeroPoint(uint64_t zero_point_operand_id);
+      OperandId zero_point_operand_id);
+  base::FixedArray<int64_t> GetInt64ZeroPoint(OperandId zero_point_operand_id);
   // Serialize quantize params for quantizeLinear and dequantizeLinear.
   std::optional<QuantizateParametersOffset> SerializeQuantizeParams(
-      uint64_t zero_point_operand_id,
-      uint64_t scale_operand_id,
+      OperandId zero_point_operand_id,
+      OperandId scale_operand_id,
       size_t input_rank);
 
   // This function is called by `SerializeMatmul` to serialize WebNN
@@ -566,7 +569,7 @@ class GraphBuilderTflite final {
   // Get initial hidden and cell state tensor index if existed or serialize an
   // empty tensor.
   base::expected<int32_t, std::string> GetInitialHiddenAndCellState(
-      std::optional<uint64_t> state_operand_id,
+      std::optional<OperandId> state_operand_id,
       base::span<const int32_t> state_dimensions);
 
   // Reshape hidden and cell state, concat the reshaped tensor if the input
@@ -669,8 +672,8 @@ class GraphBuilderTflite final {
   base::expected<OperatorOffset, std::string> SerializeResample2d(
       const mojom::Resample2d& resample2d);
   base::expected<OperatorOffset, std::string> SerializeReshape(
-      uint64_t input_operand_id,
-      uint64_t output_operand_id);
+      OperandId input_operand_id,
+      OperandId output_operand_id);
   base::expected<OperatorOffset, std::string> SerializeReverse(
       const mojom::Reverse& reverse);
   base::expected<OperatorOffset, std::string> SerializeScatterElements(
@@ -726,11 +729,12 @@ class GraphBuilderTflite final {
   // if so.
   // This is shared by `tanh`, `sigmoid` and `leakyRelu`.
   template <typename OpType>
-  std::optional<size_t> CanFuseQuantizeForActivationOperation(const OpType& op);
-  bool IsDequantizeOutput(uint64_t operand_id);
+  std::optional<OperationId> CanFuseQuantizeForActivationOperation(
+      const OpType& op);
+  bool IsDequantizeOutput(OperandId operand_id);
   // Get the dequantize op by its output operand id.
-  const mojom::DequantizeLinear& GetDequantizeOp(uint64_t operand_id);
-  const mojom::QuantizeLinear& GetQuantizeOp(size_t operation_index);
+  const mojom::DequantizeLinear& GetDequantizeOp(OperandId operand_id);
+  const mojom::QuantizeLinear& GetQuantizeOp(OperationId operation_index);
 
   // Called before graph serialization to attach quantization params to
   // dequantizeLinear input and upstream nodes if they are quantization agnostic
@@ -742,14 +746,15 @@ class GraphBuilderTflite final {
   // return if it's successful.
   bool TrySerializeQuantizedInput(
       const mojom::DequantizeLinear& dequantize_linear,
-      size_t operation_index);
+      OperationId operation_index);
   // Try to serialize `quantize_linear`'s output with quantization params and
   // mark the `quantize_linear` to be skipped.
-  std::optional<TensorInfo> TrySerializeQuantizedOutput(size_t quantize_op_idx);
+  std::optional<TensorInfo> TrySerializeQuantizedOutput(
+      OperationId quantize_op_idx);
   // Check if next op is quantize, if so mark it to-be skipped and return the
   // quantized output.
-  std::optional<size_t> IsNextOpQuantize(
-      uint64_t output_operand_id,
+  std::optional<OperationId> IsNextOpQuantize(
+      OperandId output_operand_id,
       SupportedDataTypes supported_quantized_types);
   // Check if the input is dequantized from (u)int8, and its scale and zero
   // point are scalar values.
@@ -759,16 +764,16 @@ class GraphBuilderTflite final {
   bool IsInts8AndScalarScale(const mojom::DequantizeLinear& dequantize_linear);
 
   bool IsSerializedWithMismatchQuantizeParameters(
-      uint64_t operand_id,
+      OperandId operand_id,
       QuantizateParametersOffset quantize_params);
 
-  bool AreConstantOperandsEqual(uint64_t lhs_operand_id,
-                                uint64_t rhs_operand_id);
+  bool AreConstantOperandsEqual(OperandId lhs_operand_id,
+                                OperandId rhs_operand_id);
 
   // No further methods may be called on this class after calling this method
   // because the buffer of `buffer_` is now owned by the detached buffer.
-  Result FinishAndTakeResult(base::span<const uint64_t> input_operands,
-                             base::span<const uint64_t> output_operands,
+  Result FinishAndTakeResult(base::span<const OperandId> input_operands,
+                             base::span<const OperandId> output_operands,
                              bool has_fp32_operation);
 
   const ContextProperties context_properties_;
@@ -781,17 +786,17 @@ class GraphBuilderTflite final {
   // A reference to the constant operands used by this graph. The creator of
   // `this` must ensure this reference is valid for as long as `this` exists.
   base::raw_ref<
-      const base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>>
+      const base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>>
       constant_operands_;
 
   // A reference to output operand dependency map. The creator of `this` must
   // ensure this reference is valid for as long as `this` exists.
-  base::raw_ref<const base::flat_map<uint64_t, base::flat_set<size_t>>>
+  base::raw_ref<const base::flat_map<OperandId, base::flat_set<OperationId>>>
       operand_to_dependent_operations_;
 
   // A reference to input operand dependency map. The creator of `this` must
   // ensure this reference is valid for as long as `this` exists.
-  base::raw_ref<const base::flat_map<uint64_t, size_t>>
+  base::raw_ref<const base::flat_map<OperandId, OperationId>>
       operand_to_producing_operation_;
 
   flatbuffers::FlatBufferBuilder builder_;
@@ -814,7 +819,7 @@ class GraphBuilderTflite final {
   //              |                                      Relu
   //           [output]                                   |
   //                                                   [output]
-  std::map<uint64_t, TensorInfo> operand_to_tensor_info_map_;
+  std::map<OperandId, TensorInfo> operand_to_tensor_info_map_;
 
   // The following std::vector<Offset<tflite:XXX>>> stores the weights of model
   // and the tensor information (shape, data type).
@@ -846,17 +851,17 @@ class GraphBuilderTflite final {
 
   // output_operand_id -> [dequantize_operation_index, serialized].
   // Tracks dequantizeLinear operations to be lazily serialized.
-  base::flat_map<uint64_t, std::pair<size_t, bool>>
+  base::flat_map<OperandId, std::pair<OperationId, bool>>
       lazy_serialized_dequantize_operations_;
 
-  base::flat_set<size_t> quantize_ops_to_skip_;
+  base::flat_set<OperationId> quantize_ops_to_skip_;
 
   // Mapping of the offset to scale_operand_id and zero_point_operand_id.
   // Because there is no way to retrieve the underlying data from the flatbuffer
   // offset, we store mapping to constant operands to check when encountering
   // Q->DQ, whether their quantization params match.
   base::flat_map<QuantizateParametersOffset::offset_type,
-                 std::pair<uint64_t, uint64_t>>
+                 std::pair<OperandId, OperandId>>
       quantize_param_data_;
 };
 
