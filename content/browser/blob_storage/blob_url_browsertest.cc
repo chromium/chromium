@@ -51,8 +51,10 @@ class MockContentBrowserClient : public ContentBrowserTestContentBrowserClient {
       const GURL& url,
       const blink::StorageKey& storage_key,
       net::CookieSettingOverrides overrides) override {
-    return false;
+    return allow_cookie_access_;
   }
+
+  bool allow_cookie_access_ = false;
 };
 }  // namespace
 
@@ -217,6 +219,7 @@ IN_PROC_BROWSER_TEST_F(BlobUrlBrowserTest, ReplaceStateToAddAuthorityToBlob) {
 
 IN_PROC_BROWSER_TEST_F(BlobUrlBrowserTest,
                        TestUseCounterForCrossPartitionSameOriginBlobURLFetch) {
+  GetMockClient().allow_cookie_access_ = true;
   GURL main_url = embedded_test_server()->GetURL(
       "c.com", "/cross_site_iframe_factory.html?c(b(c))");
   EXPECT_TRUE(NavigateToURL(shell(), main_url));

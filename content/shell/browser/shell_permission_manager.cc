@@ -37,11 +37,6 @@ bool IsAllowlistedPermissionType(PermissionType permission) {
 
     case PermissionType::IDLE_DETECTION:
 
-    // Storage Access API web platform tests require permission to be granted by
-    // default.
-    case PermissionType::STORAGE_ACCESS_GRANT:
-    case PermissionType::TOP_LEVEL_STORAGE_ACCESS:
-
     // WebNFC browser tests require permission to be granted by default.
     case PermissionType::NFC:
       return true;
@@ -64,10 +59,12 @@ bool IsAllowlistedPermissionType(PermissionType permission) {
     case PermissionType::HAND_TRACKING:
     case PermissionType::VR:
     case PermissionType::AR:
+    case PermissionType::STORAGE_ACCESS_GRANT:
     case PermissionType::CAMERA_PAN_TILT_ZOOM:
     case PermissionType::WINDOW_MANAGEMENT:
     case PermissionType::LOCAL_FONTS:
     case PermissionType::DISPLAY_CAPTURE:
+    case PermissionType::TOP_LEVEL_STORAGE_ACCESS:
     case PermissionType::CAPTURED_SURFACE_CONTROL:
     case PermissionType::SMART_CARD:
     case PermissionType::WEB_PRINTING:
