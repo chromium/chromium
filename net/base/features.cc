@@ -157,7 +157,7 @@ BASE_FEATURE_PARAM(int,
 BASE_FEATURE_PARAM(base::TimeDelta,
                    kShortSessionThreshold,
                    &kSearchEnginePreconnect2,
-                   "MaxShortSessionThreashold",
+                   "MaxShortSessionThreshold",
                    base::Seconds(30));
 
 extern const base::FeatureParam<int> kMaxPreconnectRetryInterval(
