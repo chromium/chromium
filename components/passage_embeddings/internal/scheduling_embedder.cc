@@ -275,17 +275,14 @@ void SchedulingEmbedder::OnInputScenarioChanged(ScenarioScope scope,
 void SchedulingEmbedder::OnEmbeddingsComputed(
     std::vector<mojom::PassageEmbeddingsResultPtr> results,
     ComputeEmbeddingsStatus status) {
-  std::vector<std::string> passages;
   std::vector<Embedding> embeddings;
   for (auto& result : results) {
-    passages.push_back(result->passage);
     embeddings.emplace_back(result->embeddings);
     embeddings.back().Normalize();
   }
 
-  VLOG(3) << embeddings.size() << " embeddings computed for " << passages.size()
-          << " passages with status " << static_cast<int>(status);
-  CHECK_EQ(passages.size(), embeddings.size());
+  VLOG(3) << embeddings.size() << " embeddings computed with status "
+          << static_cast<int>(status);
 
   if (embeddings.empty()) {
     FinishJob(std::move(jobs_.front()), status);
@@ -302,13 +299,14 @@ void SchedulingEmbedder::OnEmbeddingsComputed(
     // strategy, but the underlying embedder is not expected to fail at all.
   }
 
-  // Take embeddings into jobs and pop them as they're filled.
+  // Take embeddings into jobs and pop them as they're filled. The
+  // !jobs_.empty() check ensures we don't overrun the available jobs if the
+  // service were to maliciously send too many embeddings.
   size_t read_index = 0;
-  while (read_index < embeddings.size()) {
+  while (read_index < embeddings.size() && !jobs_.empty()) {
     Job& job = jobs_.front();
     while (job.embeddings.size() < job.passages.size() &&
            read_index < embeddings.size()) {
-      CHECK_EQ(job.passages[job.embeddings.size()], passages[read_index]);
       job.embeddings.push_back(std::move(embeddings[read_index]));
       read_index++;
     }

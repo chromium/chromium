@@ -9,11 +9,9 @@ import "mojo/public/mojom/base/time.mojom";
 import "sandbox/policy/mojom/context.mojom";
 import "sandbox/policy/mojom/sandbox.mojom";
 
-// The embeddings generated with a single input passage, contains both the raw
-// embeddings and the original passage.
+// The embeddings generated from a single input passage.
 struct PassageEmbeddingsResult {
   array<float> embeddings;
-  string passage;
 };
 
 // Classfies the priority of embeddings generation requests. Execution of user

@@ -220,7 +220,6 @@ void PassageEmbedder::GenerateEmbeddings(
   for (const std::string& input : inputs) {
     mojom::PassageEmbeddingsResultPtr result =
         mojom::PassageEmbeddingsResult::New();
-    result->passage = input;
 
     auto cache_value = embeddings_cache_.Get(input);
     bool cache_hit = cache_value != embeddings_cache_.end();

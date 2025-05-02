@@ -141,9 +141,6 @@ TEST_F(PassageEmbeddingsServiceTest, RespondsWithEmbeddings) {
                                       execute_future.GetCallback());
   auto results = execute_future.Take();
   EXPECT_EQ(results.size(), 3u);
-  EXPECT_EQ(results[0]->passage, "hello");
-  EXPECT_EQ(results[1]->passage, "world");
-  EXPECT_EQ(results[2]->passage, "");
   for (const auto& result : results) {
     EXPECT_EQ(result->embeddings.size(), kEmbeddingsOutputSize);
   }
@@ -169,10 +166,6 @@ TEST_F(PassageEmbeddingsServiceTest, CacheHits) {
   auto results = execute_future.Take();
 
   EXPECT_EQ(results.size(), 6u);
-  EXPECT_EQ(results[0]->passage, "hello");
-  EXPECT_EQ(results[1]->passage, "world");
-  EXPECT_EQ(results[2]->passage, "hello");
-  EXPECT_EQ(results[3]->passage, "world");
 
   EXPECT_EQ(results[0]->embeddings, results[2]->embeddings);
   EXPECT_EQ(results[1]->embeddings, results[3]->embeddings);

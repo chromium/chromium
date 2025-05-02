@@ -38,9 +38,9 @@ using ComputePassagesEmbeddingsFuture =
 std::vector<mojom::PassageEmbeddingsResultPtr> GenerateExpectedServiceOutput(
     std::initializer_list<std::string> passages) {
   std::vector<mojom::PassageEmbeddingsResultPtr> results;
-  for (const std::string& passage : passages) {
+  for (size_t i = 0; i < passages.size(); ++i) {
     results.push_back(
-        mojom::PassageEmbeddingsResult::New(std::vector<float>{1.0f}, passage));
+        mojom::PassageEmbeddingsResult::New(std::vector<float>{1.0f}));
   }
   return results;
 }
@@ -127,9 +127,9 @@ TEST_F(SchedulingEmbedderTest, TranslatesServiceOutput) {
                     SchedulingEmbedder::GetEmbeddingsResultCallback callback) {
             std::vector<mojom::PassageEmbeddingsResultPtr> results;
             results.push_back(mojom::PassageEmbeddingsResult::New(
-                std::vector<float>{1.0f, 0.0f}, "test passage 1"));
+                std::vector<float>{1.0f, 0.0f}));
             results.push_back(mojom::PassageEmbeddingsResult::New(
-                std::vector<float>{0.0f, 1.0f}, "test passage 2"));
+                std::vector<float>{0.0f, 1.0f}));
             std::move(callback).Run(std::move(results),
                                     ComputeEmbeddingsStatus::kSuccess);
           }));
