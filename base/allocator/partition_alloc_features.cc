@@ -192,7 +192,7 @@ BASE_FEATURE_ENUM_PARAM(BackupRefPtrEnabledProcesses,
                         kBackupRefPtrEnabledProcessesParam,
                         &kPartitionAllocBackupRefPtr,
                         kPAFeatureEnabledProcessesStr,
-#if PA_BUILDFLAG(IS_MAC) && PA_BUILDFLAG(PA_ARCH_CPU_ARM64)
+#if PA_BUILDFLAG(IS_ANDROID)
                         BackupRefPtrEnabledProcesses::kNonRenderer,
 #else
                         BackupRefPtrEnabledProcesses::kAllProcesses,
