@@ -171,6 +171,8 @@ class TestContentAnalysisInfo : public ContentAnalysisInfo {
 
   const AnalysisSettings& settings() const override { return settings_.get(); }
 
+  signin::IdentityManager* identity_manager() const override { return nullptr; }
+
   // These methods correspond to fields in `BinaryUploadService::Request`.
   int user_action_requests_count() const override {
     return user_action_requests_count_;

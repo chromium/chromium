@@ -273,6 +273,7 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase,
 
   // ContentAnalysisInfo:
   const AnalysisSettings& settings() const override;
+  signin::IdentityManager* identity_manager() const override;
   int user_action_requests_count() const override;
   std::string tab_title() const override;
   std::string user_action_id() const override;

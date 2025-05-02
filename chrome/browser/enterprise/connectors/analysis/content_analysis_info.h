@@ -27,7 +27,7 @@ class ContentAnalysisInfo {
 
   // The `signin::IdentityManager` that corresponds to the browser context where
   // content analysis is taking place.
-  virtual signin::IdentityManager* identity_manager() const;
+  virtual signin::IdentityManager* identity_manager() const = 0;
 
   // These methods correspond to fields in `BinaryUploadService::Request`.
   virtual int user_action_requests_count() const = 0;

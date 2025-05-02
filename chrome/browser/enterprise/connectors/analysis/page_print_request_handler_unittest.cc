@@ -65,6 +65,8 @@ class TestContentAnalysisInfo : public ContentAnalysisInfo {
 
   const AnalysisSettings& settings() const override { return settings_; }
 
+  signin::IdentityManager* identity_manager() const override { return nullptr; }
+
   int user_action_requests_count() const override { return 1; }
 
   std::string tab_title() const override { return kTabTitle; }

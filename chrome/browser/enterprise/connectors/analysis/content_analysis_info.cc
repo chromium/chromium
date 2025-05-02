@@ -72,10 +72,6 @@ std::optional<size_t> GetUserIndex(const GURL& url) {
 
 }  // namespace
 
-signin::IdentityManager* ContentAnalysisInfo::identity_manager() const {
-  return nullptr;
-}
-
 void ContentAnalysisInfo::InitializeRequest(
     safe_browsing::BinaryUploadService::Request* request,
     bool include_enterprise_only_fields) {
@@ -101,6 +97,11 @@ void ContentAnalysisInfo::InitializeRequest(
 
     if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedFieldsForSecOps)) {
       request->set_referrer_chain(referrer_chain());
+    }
+
+    std::string email = GetContentAreaAccountEmail();
+    if (!email.empty()) {
+      request->set_content_area_account_email(email);
     }
   }
 

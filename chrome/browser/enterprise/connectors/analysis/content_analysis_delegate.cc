@@ -44,6 +44,7 @@
 #include "chrome/browser/safe_browsing/cloud_content_scanning/file_analysis_request.h"
 #include "chrome/browser/safe_browsing/download_protection/check_client_download_request.h"
 #include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/enterprise/buildflags/buildflags.h"
 #include "components/enterprise/common/files_scan_data.h"
@@ -974,6 +975,10 @@ bool ContentAnalysisDelegate::image_request_required() const {
 
 const AnalysisSettings& ContentAnalysisDelegate::settings() const {
   return data_.settings;
+}
+
+signin::IdentityManager* ContentAnalysisDelegate::identity_manager() const {
+  return IdentityManagerFactory::GetForProfile(profile_);
 }
 
 int ContentAnalysisDelegate::user_action_requests_count() const {
