@@ -179,6 +179,14 @@ void RecordClientManagerAccessFailure(
       "IOS.PushNotification.ClientManagerAccessFailure", failure_point);
 }
 
+// Records the outcome of handling a multi-profile notification interaction.
+void RecordPushNotificationTargetProfileHandlingResult(
+    PushNotificationTargetProfileHandlingResult result) {
+  base::UmaHistogramEnumeration("IOS.PushNotification.MultiProfile."
+                                "PushNotificationTargetProfileHandlingResult",
+                                result);
+}
+
 // Helper function to get the profile-specific PushNotificationClientManager
 // directly from a ProfileIOS object. Returns nullptr if the manager cannot be
 // retrieved.
@@ -1057,6 +1065,9 @@ void ProcessIncomingNotification(
     RecordClientManagerAccessFailure(PushNotificationClientManagerFailurePoint::
                                          kHandleInteractionInvalidProfileName);
 
+    RecordPushNotificationTargetProfileHandlingResult(
+        PushNotificationTargetProfileHandlingResult::kProfileUnidentifiable);
+
     return;
   }
 
@@ -1075,7 +1086,21 @@ void ProcessIncomingNotification(
         PushNotificationClientManagerFailurePoint::
             kHandleInteractionMissingFallbackScene);
 
+    RecordPushNotificationTargetProfileHandlingResult(
+        PushNotificationTargetProfileHandlingResult::kFailureSceneUnavailable);
+
     return;
+  }
+
+  ProfileIOS* sceneProfile = targetSceneState.profileState.profile;
+
+  if (!sceneProfile || profileName != sceneProfile->GetProfileName()) {
+    RecordPushNotificationTargetProfileHandlingResult(
+        PushNotificationTargetProfileHandlingResult::
+            kSwitchEnsuredCorrectProfile);
+  } else {
+    RecordPushNotificationTargetProfileHandlingResult(
+        PushNotificationTargetProfileHandlingResult::kCorrectProfileActive);
   }
 
   id<ChangeProfileCommands> handler =

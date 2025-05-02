@@ -1522,6 +1522,35 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Invalid"/>
 </enum>
 
+<!-- LINT.IfChange(PushNotificationTargetProfileHandlingResult) -->
+
+<enum name="PushNotificationTargetProfileHandlingResult">
+  <summary>
+    Records the outcome of handling a push notification interaction in a
+    multi-profile environment. Tracks whether the correct target Profile handled
+    the interaction, either because it was already active or because a profile
+    switch was initiated. Recorded in
+    IOS.PushNotification.MultiProfile.PushNotificationTargetProfileHandlingResult.
+  </summary>
+  <int value="0" label="CorrectProfileActive">
+    Success: The notification's target Profile was already the active Profile in
+    the target UI scene.
+  </int>
+  <int value="1" label="SwitchEnsuredCorrectProfile">
+    Success: The notification's target Profile was not the active Profile; a
+    profile switch was initiated.
+  </int>
+  <int value="2" label="ProfileUnidentifiable">
+    The originating Profile could not be determined from the notification's
+    metadata.
+  </int>
+  <int value="3" label="FailureSceneUnavailable">
+    Failure: No suitable UI scene could be found to handle the interaction.
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(/ios/chrome/browser/push_notification/model/constants.h:PushNotificationTargetProfileHandlingResult) -->
+
 <!-- LINT.IfChange(ReaderModeAmpClassification) -->
 
 <enum name="ReaderModeAmpClassification">

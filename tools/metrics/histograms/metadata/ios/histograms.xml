@@ -4254,6 +4254,24 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="IOS.PushNotification.MultiProfile.PushNotificationTargetProfileHandlingResult"
+    enum="PushNotificationTargetProfileHandlingResult"
+    expires_after="2025-08-01">
+  <owner>bwwilliams@google.com</owner>
+  <owner>scottyoder@google.com</owner>
+  <owner>treib@google.com</owner>
+  <owner>bling-get-set-up@google.com</owner>
+  <summary>
+    Records the outcome of handling a push notification interaction in a
+    multi-Profile environment. Tracks whether the correct target Profile handled
+    the interaction, either because it was already active or because a Profile
+    switch was initiated to ensure correctness. Also tracks unidentifiable
+    Profiles or unavailable UI scenes. Helps measure the effectiveness of the
+    multi-Profile notification routing logic.
+  </summary>
+</histogram>
+
+<histogram
     name="IOS.PushNotification.NotificationAutorizationStatusChangedToAuthorized"
     enum="PushNotificationSettingsAuthorizationStatus"
     expires_after="2025-10-26">
