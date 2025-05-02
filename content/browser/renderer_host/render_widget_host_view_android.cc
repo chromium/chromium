@@ -15,8 +15,6 @@
 #include "base/auto_reset.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
-#include "base/debug/crash_logging.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -1494,14 +1492,6 @@ bool RenderWidgetHostViewAndroid::OnTouchEvent(
     }
     is_sequence_overscrolling_ = true;
     return true;
-  }
-
-  if (is_sequence_overscrolling_) {
-    // TODO(407571917): Remove crash keys after investigation.
-    SCOPED_CRASH_KEY_STRING1024(
-        "crbug407571917", "event_type",
-        base::NumberToString(static_cast<int>(event.GetAction())));
-    base::debug::DumpWithoutCrashing();
   }
 
   // In case input transfer to Viz is supported, let `input_transfer_handler_`
