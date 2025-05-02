@@ -4119,6 +4119,44 @@ public class StripLayoutHelperTest {
     }
 
     @Test
+    public void testClickingClearsTabHoverState() {
+        // Initialize hover card, then hover on a tab.
+        initializeTabHoverTest();
+        StripLayoutTab hoveredTab = mStripLayoutHelper.getStripLayoutTabsForTesting()[0];
+        mStripLayoutHelper.updateLastHoveredTab(hoveredTab);
+
+        // Now click on the tab that's originating the hovercard.
+        mStripLayoutHelper.click(1000L, hoveredTab.getDrawX() + 1, hoveredTab.getDrawY() + 1, 0);
+
+        // Assert that the hover card view is closed and the last hovered tab is null.
+        verify(mTabHoverCardView, times(1)).hide();
+        assertNull(mStripLayoutHelper.getLastHoveredTab());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TAB_STRIP_CONTEXT_MENU)
+    public void testRightClickingClearsTabHoverState() {
+        // Initialize hover card, then hover on a tab.
+        initializeTabHoverTest();
+        StripLayoutTab hoveredTab = mStripLayoutHelper.getStripLayoutTabsForTesting()[0];
+        mStripLayoutHelper.updateLastHoveredTab(hoveredTab);
+
+        // Set up things necessary for right-click.
+        setupForIndividualTabContextMenu();
+
+        // Now right-click on the tab that's originating the hovercard.
+        mStripLayoutHelper.click(
+                1000L,
+                hoveredTab.getDrawX() + 1,
+                hoveredTab.getDrawY() + 1,
+                MotionEvent.BUTTON_SECONDARY);
+
+        // Assert that the hover card view is closed and the last hovered tab is null.
+        verify(mTabHoverCardView, times(1)).hide();
+        assertNull(mStripLayoutHelper.getLastHoveredTab());
+    }
+
+    @Test
     public void testFlingLeft() {
         // Arrange
         initializeTest(false, false, 11, 12);
