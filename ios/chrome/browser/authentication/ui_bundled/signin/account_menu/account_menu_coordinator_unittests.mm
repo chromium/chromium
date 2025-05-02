@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/authentication/ui_bundled/account_menu/account_menu_coordinator.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/account_menu/account_menu_coordinator.h"
 
 #import <MaterialComponents/MaterialSnackbar.h>
 
@@ -10,16 +10,14 @@
 #import "base/test/scoped_feature_list.h"
 #import "components/sync/service/sync_service_utils.h"
 #import "components/trusted_vault/trusted_vault_server_constants.h"
-#import "ios/chrome/browser/authentication/ui_bundled/account_menu/account_menu_constants.h"
-#import "ios/chrome/browser/authentication/ui_bundled/account_menu/account_menu_coordinator_delegate.h"
-#import "ios/chrome/browser/authentication/ui_bundled/account_menu/account_menu_mediator.h"
-#import "ios/chrome/browser/authentication/ui_bundled/account_menu/account_menu_mediator_delegate.h"
-#import "ios/chrome/browser/authentication/ui_bundled/account_menu/account_menu_view_controller.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/account_menu/account_menu_constants.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/account_menu/account_menu_mediator.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/account_menu/account_menu_mediator_delegate.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/account_menu/account_menu_view_controller.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/add_account_signin/add_account_signin_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator+protected.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signout_action_sheet/signout_action_sheet_coordinator.h"
-#import "ios/chrome/browser/settings/ui_bundled/google_services/sync_error_settings_command_handler.h"
 #import "ios/chrome/browser/settings/ui_bundled/sync/sync_encryption_passphrase_table_view_controller.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/test/stub_browser_provider_interface.h"
@@ -63,7 +61,6 @@ const FakeSystemIdentity* kManagedIdentity =
 @interface AccountMenuCoordinator (Testing) <
     AccountMenuMediatorDelegate,
     SignoutActionSheetCoordinatorDelegate,
-    SyncErrorSettingsCommandHandler,
     UIAdaptivePresentationControllerDelegate,
     UINavigationControllerDelegate>
 
@@ -135,15 +132,14 @@ class AccountMenuCoordinatorTest : public PlatformTest {
     coordinator_ = [[AccountMenuCoordinator alloc]
         initWithBaseViewController:nil
                            browser:browser_.get()
+                      contextStyle:SigninContextStyle::kDefault
                         anchorView:nil
                        accessPoint:AccountMenuAccessPoint::kNewTabPage
                                URL:GURL()];
-    id<AccountMenuCoordinatorDelegate> delegate =
-        OCMStrictProtocolMock(@protocol(AccountMenuCoordinatorDelegate));
-    OCMExpect([delegate accountMenuCoordinatorWantsToBeStopped:coordinator_])
-        .andDo(^(NSInvocation*) {
+    coordinator_.signinCompletion =
+        ^(SigninCoordinatorResult, id<SystemIdentity>) {
           Stop();
-        });
+        };
     [coordinator_ start];
 
     // Replacing the view controller and mediator by mock.

@@ -187,6 +187,7 @@ source_set("unit_tests") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/authentication/ui_bundled/cells",
     "//ios/chrome/browser/settings/ui_bundled/cells",
+    "//ios/chrome/browser/settings/ui_bundled/google_services",
     "//ios/chrome/browser/settings/ui_bundled/google_services:constants",
     "//ios/chrome/browser/settings/ui_bundled/google_services/manage_accounts",
     "//ios/chrome/browser/shared/model/application_context",

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/authentication/ui_bundled/account_menu/account_menu_coordinator.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/account_menu/account_menu_coordinator.h"
 
 #import <MaterialComponents/MaterialSnackbar.h>
 
@@ -21,13 +21,15 @@
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/change_profile_commands.h"
 #import "ios/chrome/app/profile/profile_state.h"
-#import "ios/chrome/browser/authentication/ui_bundled/account_menu/account_menu_constants.h"
-#import "ios/chrome/browser/authentication/ui_bundled/account_menu/account_menu_coordinator_delegate.h"
-#import "ios/chrome/browser/authentication/ui_bundled/account_menu/account_menu_mediator.h"
-#import "ios/chrome/browser/authentication/ui_bundled/account_menu/account_menu_mediator_delegate.h"
-#import "ios/chrome/browser/authentication/ui_bundled/account_menu/account_menu_view_controller.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow.h"
 #import "ios/chrome/browser/authentication/ui_bundled/continuation.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/account_menu/account_menu_constants.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/account_menu/account_menu_mediator.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/account_menu/account_menu_mediator_delegate.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/account_menu/account_menu_view_controller.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/add_account_signin/add_account_signin_coordinator.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator+protected.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signout_action_sheet/signout_action_sheet_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/trusted_vault_reauthentication/trusted_vault_reauthentication_coordinator.h"
@@ -36,7 +38,6 @@
 #import "ios/chrome/browser/push_notification/model/push_notification_service.h"
 #import "ios/chrome/browser/settings/ui_bundled/google_services/manage_accounts/manage_accounts_coordinator.h"
 #import "ios/chrome/browser/settings/ui_bundled/google_services/manage_accounts/manage_accounts_coordinator_delegate.h"
-#import "ios/chrome/browser/settings/ui_bundled/google_services/sync_error_settings_command_handler.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_controller_protocol.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_root_view_controlling.h"
 #import "ios/chrome/browser/settings/ui_bundled/sync/sync_encryption_passphrase_table_view_controller.h"
@@ -65,27 +66,10 @@
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
-#import "url/gurl.h"
-
-namespace {
-
-// Potentially shows an IPH, informing the user that they can find Settings in
-// the overflow menu. The handler contains the logic for whether to actually
-// show it.
-void maybeShowSettingsIPH(Browser* browser) {
-  CommandDispatcher* dispatcher = browser->GetCommandDispatcher();
-  id<HelpCommands> helpCommandsHandler =
-      HandlerForProtocol(dispatcher, HelpCommands);
-  [helpCommandsHandler
-      presentInProductHelpWithType:InProductHelpType::kSettingsInOverflowMenu];
-}
-
-}  // namespace
 
 @interface AccountMenuCoordinator () <
     AccountMenuMediatorDelegate,
     ManageAccountsCoordinatorDelegate,
-    SyncErrorSettingsCommandHandler,
     TrustedVaultReauthenticationCoordinatorDelegate,
     UIAdaptivePresentationControllerDelegate>
 
@@ -131,12 +115,16 @@ void maybeShowSettingsIPH(Browser* browser) {
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
+                              contextStyle:(SigninContextStyle)contextStyle
                                 anchorView:(UIView*)anchorView
                                accessPoint:(AccountMenuAccessPoint)accessPoint
                                        URL:(const GURL&)url {
-  self = [super initWithBaseViewController:viewController browser:browser];
+  self = [super
+      initWithBaseViewController:viewController
+                         browser:browser
+                    contextStyle:contextStyle
+                     accessPoint:signin_metrics::AccessPoint::kAccountMenu];
   if (self) {
-    _accessPoint = accessPoint;
     _anchorView = anchorView;
     _accessPoint = accessPoint;
     _url = url;
@@ -190,7 +178,6 @@ void maybeShowSettingsIPH(Browser* browser) {
                                            accessPoint:_accessPoint
                                                    URL:_url];
   _mediator.delegate = self;
-  _mediator.syncErrorSettingsCommandHandler = self;
   _mediator.consumer = _viewController;
   _viewController.mutator = _mediator;
   _viewController.dataSource = _mediator;
@@ -200,7 +187,9 @@ void maybeShowSettingsIPH(Browser* browser) {
                                       completion:nil];
 }
 
-- (void)stop {
+#pragma mark - AnimatedCoordinator
+
+- (void)stopAnimated:(BOOL)animated {
   // TODO(crbug.com/336719423): Change condition to CHECK(_mediator). But
   // first inform the parent coordinator at didTapClose that this view was
   // dismissed.
@@ -208,7 +197,7 @@ void maybeShowSettingsIPH(Browser* browser) {
     return;
   }
   [self stopTrustedVaultReauthenticationCoordinator];
-  [self stopChildrenAndViewController];
+  [self stopChildrenAndViewControllerAnimated:animated];
   [_syncEncryptionPassphraseTableViewController settingsWillBeDismissed];
   _syncEncryptionPassphraseTableViewController = nil;
   [_syncEncryptionTableViewController settingsWillBeDismissed];
@@ -224,7 +213,7 @@ void maybeShowSettingsIPH(Browser* browser) {
   _identityManager = nil;
   _syncService = nullptr;
   _accountManagerService = nullptr;
-  [super stop];
+  [super stopAnimated:animated];
 }
 
 #pragma mark - UIAdaptivePresentationControllerDelegate
@@ -233,11 +222,9 @@ void maybeShowSettingsIPH(Browser* browser) {
     (UIPresentationController*)presentationController {
   base::RecordAction(
       base::UserMetricsAction("Signin_AccountMenu_Dismissed_By_User"));
-  // `self` may be deallocated when -accountMenuCoordinatorWantsToBeStopped
-  // returns. We must access the browser first.
-  Browser* browser = self.browser;
-  [self.delegate accountMenuCoordinatorWantsToBeStopped:self];
-  maybeShowSettingsIPH(browser);
+  [self runCompletionWithSigninResult:SigninCoordinatorResultCanceledByUser
+                   completionIdentity:nil];
+  [self maybeShowSettingsIPH];
 }
 
 #pragma mark - AccountMenuMediatorDelegate
@@ -273,10 +260,11 @@ void maybeShowSettingsIPH(Browser* browser) {
 - (void)didTapSettingsButton {
   CHECK(IdentityDiscAccountMenuEnabledWithSettings());
   // Close the account menu and open the Settings page.
-  [self stopChildrenAndViewController];
+  [self stopChildrenAndViewControllerAnimated:YES];
+  [self runCompletionWithSigninResult:SigninCoordinatorResultCanceledByUser
+                   completionIdentity:nil];
   id<ApplicationCommands> applicationHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), ApplicationCommands);
-  [self.delegate accountMenuCoordinatorWantsToBeStopped:self];
   [applicationHandler showSettingsFromViewController:nil];
 }
 
@@ -319,15 +307,12 @@ void maybeShowSettingsIPH(Browser* browser) {
                     signedIdentity:(id<SystemIdentity>)signedIdentity
                    userTappedClose:(BOOL)userTappedClose {
   CHECK_EQ(mediator, _mediator);
-  [self stopChildrenAndViewController];
-  [self.delegate accountMenuCoordinatorWantsToBeStopped:self];
+  [self stopChildrenAndViewControllerAnimated:YES];
+  [self runCompletionWithSigninResult:signinResult
+                   completionIdentity:signedIdentity];
 
   if (userTappedClose) {
-    // `self` may be deallocated when -accountMenuCoordinatorWantsToBeStopped
-    // returns. We must access the browser first.
-    Browser* browser = self.browser;
-    [self.delegate accountMenuCoordinatorWantsToBeStopped:self];
-    maybeShowSettingsIPH(browser);
+    [self maybeShowSettingsIPH];
   }
 }
 
@@ -416,12 +401,11 @@ void maybeShowSettingsIPH(Browser* browser) {
       signin_metrics::AccessPoint::kAccountMenu;
   signin_metrics::PromoAction promoAction =
       signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO;
-  auto style = SigninContextStyle::kDefault;
   _signinCoordinator = [SigninCoordinator
       primaryAccountReauthCoordinatorWithBaseViewController:
           _navigationController
                                                     browser:self.browser
-                                               contextStyle:style
+                                               contextStyle:self.contextStyle
                                                 accessPoint:accessPoint
                                                 promoAction:promoAction
                                        continuationProvider:
@@ -482,13 +466,11 @@ void maybeShowSettingsIPH(Browser* browser) {
                                   completion:
                                       (SigninCoordinatorCompletionCallback)
                                           completion {
-  auto style = SigninContextStyle::kDefault;
-  auto accessPoint = signin_metrics::AccessPoint::kAccountMenu;
   _signinCoordinator = [SigninCoordinator
       addAccountCoordinatorWithBaseViewController:baseViewController
                                           browser:self.browser
-                                     contextStyle:style
-                                      accessPoint:accessPoint
+                                     contextStyle:self.contextStyle
+                                      accessPoint:self.accessPoint
                              continuationProvider:
                                  DoNothingContinuationProvider()];
   [self startSigninCoordinatorWithCompletion:completion];
@@ -536,7 +518,7 @@ void maybeShowSettingsIPH(Browser* browser) {
 
 // Stops all children, then dismiss the view controller. Executes
 // `completion` synchronously.
-- (void)stopChildrenAndViewController {
+- (void)stopChildrenAndViewControllerAnimated:(BOOL)animated {
   // Stopping all potentially open children views.
   if (!_accountDetailsControllerDismissCallback.is_null()) {
     std::move(_accountDetailsControllerDismissCallback).Run(/*animated=*/false);
@@ -546,7 +528,7 @@ void maybeShowSettingsIPH(Browser* browser) {
   // Add Account coordinator should be stopped before the Manage Accounts
   // Coordinator, as the former may be presented by the latter.
   [self stopManageAccountsCoordinator];
-  [self dismissViewControllerAnimated:NO];
+  [self dismissViewControllerAnimated:animated];
 }
 
 // Unplugs the view and navigation controller. Dismisses the navigation
@@ -566,6 +548,17 @@ void maybeShowSettingsIPH(Browser* browser) {
   [navigationController.presentingViewController
       dismissViewControllerAnimated:animated
                          completion:nil];
+}
+
+// Potentially shows an IPH, informing the user that they can find Settings in
+// the overflow menu. The handler contains the logic for whether to actually
+// show it.
+- (void)maybeShowSettingsIPH {
+  CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
+  id<HelpCommands> helpCommandsHandler =
+      HandlerForProtocol(dispatcher, HelpCommands);
+  [helpCommandsHandler
+      presentInProductHelpWithType:InProductHelpType::kSettingsInOverflowMenu];
 }
 
 #pragma mark - TrustedVaultReauthenticationCoordinatorDelegate
