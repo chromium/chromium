@@ -1128,7 +1128,7 @@ ci.builder(
         },
     ),
     console_view_entry = consoles.console_view_entry(
-        category = "linux|webkit",
+        category = "linux|blink",
         short_name = "asn",
     ),
 )
@@ -1203,7 +1203,7 @@ ci.builder(
         },
     ),
     console_view_entry = consoles.console_view_entry(
-        category = "linux|webkit",
+        category = "linux|blink",
         short_name = "lk",
     ),
 )
@@ -1288,7 +1288,7 @@ ci.builder(
         },
     ),
     console_view_entry = consoles.console_view_entry(
-        category = "linux|webkit",
+        category = "linux|blink",
         short_name = "msn",
     ),
 )
