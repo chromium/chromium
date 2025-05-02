@@ -46,8 +46,10 @@ export enum Command {
   OPEN_BOOKMARK = 21,
   OPEN_FOLDER = 22,
 
+  OPEN_SPLIT_VIEW = 23,
+
   // Append new values to the end of the enum.
-  MAX_VALUE = 23,
+  MAX_VALUE = 24,
 }
 
 /**

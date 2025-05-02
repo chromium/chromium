@@ -3,6 +3,11 @@
 // found in the LICENSE file.
 import type {ChromeEvent} from '/tools/typescript/definitions/chrome_event.js';
 
+export interface OpenInNewTabParams {
+  active?: boolean;
+  split?: boolean;
+}
+
 export interface BookmarkManagerApiProxy {
   onDragEnter:
       ChromeEvent<(p1: chrome.bookmarkManagerPrivate.DragData) => void>;
@@ -14,7 +19,7 @@ export interface BookmarkManagerApiProxy {
   removeTrees(idList: string[]): Promise<void>;
   canPaste(parentId: string): Promise<boolean>;
   openInNewWindow(idList: string[], incognito: boolean): void;
-  openInNewTab(id: string, active: boolean): void;
+  openInNewTab(id: string, params?: OpenInNewTabParams): void;
   cut(idList: string[]): Promise<void>;
   paste(parentId: string, selectedIdList?: string[]): Promise<void>;
   copy(idList: string[]): Promise<void>;
@@ -43,11 +48,12 @@ export class BookmarkManagerApiProxyImpl implements BookmarkManagerApiProxy {
   }
 
   openInNewWindow(idList: string[], incognito: boolean) {
-    return chrome.bookmarkManagerPrivate.openInNewWindow(idList, incognito);
+    chrome.bookmarkManagerPrivate.openInNewWindow(idList, incognito);
   }
 
-  openInNewTab(id: string, active: boolean) {
-    return chrome.bookmarkManagerPrivate.openInNewTab(id, active);
+  openInNewTab(id: string, params: OpenInNewTabParams) {
+    chrome.bookmarkManagerPrivate.openInNewTab(
+        id, {active: params.active, split: params.split});
   }
 
   cut(idList: string[]) {

@@ -8,7 +8,7 @@ export {CrRouter} from '//resources/js/cr_router.js';
 export {changeFolderOpen, clearSearch, createBookmark, deselectItems, editBookmark, moveBookmark, removeBookmark, reorderChildren, selectFolder, SelectFolderAction, selectItem, SelectItemsAction, setSearchResults, setSearchTerm, StartSearchAction, updateAnchor} from './actions.js';
 export {setDebouncerForTesting} from './api_listener.js';
 export {BookmarksAppElement, HIDE_FOCUS_RING_ATTRIBUTE} from './app.js';
-export {BookmarkManagerApiProxy, BookmarkManagerApiProxyImpl} from './bookmark_manager_api_proxy.js';
+export {BookmarkManagerApiProxy, BookmarkManagerApiProxyImpl, OpenInNewTabParams} from './bookmark_manager_api_proxy.js';
 export {BookmarksApiProxy, BookmarksApiProxyImpl, Query} from './bookmarks_api_proxy.js';
 export {BrowserProxy, BrowserProxyImpl} from './browser_proxy.js';
 export {BookmarksCommandManagerElement} from './command_manager.js';

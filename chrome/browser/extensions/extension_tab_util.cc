@@ -14,6 +14,7 @@
 
 #include "chrome/browser/extensions/window_controller_list.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/tabs/split_tab_visual_data.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
@@ -296,6 +297,10 @@ base::expected<base::Value::Dict, std::string> ExtensionTabUtil::OpenTab(
   // will override this default.
   bool active = params.active.value_or(true);
 
+  // Default to unsplit for the new tab. The presence of the 'split' property
+  // will override this default.
+  bool split = params.split.value_or(false);
+
   // Default to not pinning the tab. Setting the 'pinned' property to true
   // will override this default.
   bool pinned = params.pinned.value_or(false);
@@ -373,6 +378,11 @@ base::expected<base::Value::Dict, std::string> ExtensionTabUtil::OpenTab(
 
   if (active)
     navigate_params.navigated_or_inserted_contents->SetInitialFocus();
+
+  if (split) {
+    tab_strip->AddToNewSplit({new_index},
+                             split_tabs::SplitTabLayout::kVertical);
+  }
 
   ExtensionTabUtil::ScrubTabBehavior scrub_tab_behavior =
       ExtensionTabUtil::GetScrubTabBehavior(

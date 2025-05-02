@@ -653,7 +653,10 @@ BookmarkManagerPrivateOpenInNewTabFunction::RunOnReady() {
 
   ExtensionTabUtil::OpenTabParams options;
   options.url = node->url().spec();
-  options.active = params->active;
+  if (params->params.has_value()) {
+    options.active = params->params.value().active;
+    options.split = params->params.value().split;
+  }
   options.bookmark_id = node->id();
 
   auto result =

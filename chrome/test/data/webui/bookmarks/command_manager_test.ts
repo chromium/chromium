@@ -4,6 +4,7 @@
 
 import type {BookmarksFolderNodeElement, BookmarksItemElement, BookmarksListElement, SelectFolderAction, SelectItemsAction} from 'chrome://bookmarks/bookmarks.js';
 import {BookmarkManagerApiProxyImpl, BookmarksApiProxyImpl, BookmarksCommandManagerElement, Command, createBookmark, DialogFocusManager, getDisplayedList, MenuSource, selectFolder, setDebouncerForTesting} from 'chrome://bookmarks/bookmarks.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {isMac} from 'chrome://resources/js/platform.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {pressAndReleaseKeyOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
@@ -23,6 +24,10 @@ suite('<bookmarks-command-manager>', function() {
   let bookmarkManagerProxy: TestBookmarkManagerApiProxy;
 
   setup(function() {
+    loadTimeData.overrideValues({
+      splitViewEnabled: true,
+    });
+
     const bulkChildren = [];
     for (let i = 1; i <= 20; i++) {
       const id = '3' + i;
@@ -309,6 +314,21 @@ suite('<bookmarks-command-manager>', function() {
     assertEquals(20, ids.length);
   });
 
+  test('"Open in Split View" passes correct args', async function() {
+    const items = new Set(['141']);
+    assertTrue(commandManager.canExecute(Command.OPEN_SPLIT_VIEW, items));
+
+    commandManager.handle(Command.OPEN_SPLIT_VIEW, items);
+    await microtasksFinished();
+
+    const [id, {active, split}] =
+        await bookmarkManagerProxy.whenCalled('openInNewTab');
+
+    assertEquals('141', id);
+    assertFalse(active);
+    assertTrue(split);
+  });
+
   test(
       'cannot execute "Open in New Tab" on folders with no items', async () => {
         const items = new Set(['2']);
@@ -335,6 +355,10 @@ suite('<bookmarks-command-manager>', function() {
         assertFalse(commandItem[Command.OPEN_NEW_WINDOW].hidden);
 
         assertTrue(!!commandItem[Command.OPEN_INCOGNITO]);
+        assertTrue(commandItem[Command.OPEN_INCOGNITO].disabled);
+        assertFalse(commandItem[Command.OPEN_INCOGNITO].hidden);
+
+        assertTrue(!!commandItem[Command.OPEN_SPLIT_VIEW]);
         assertTrue(commandItem[Command.OPEN_INCOGNITO].disabled);
         assertFalse(commandItem[Command.OPEN_INCOGNITO].hidden);
       });
@@ -541,10 +565,10 @@ suite('<bookmarks-item> CommandManager integration', function() {
   test('double click opens items in foreground tab', async function() {
     simulateDoubleClick(items[1]!);
 
-    const [id, active] = await bookmarkManagerProxy.whenCalled('openInNewTab');
+    const [id, params] = await bookmarkManagerProxy.whenCalled('openInNewTab');
 
     assertEquals('12', id);
-    assertTrue(active);
+    assertEquals(undefined, params);
   });
 
   test('shift-double click opens full selection', function() {
@@ -595,10 +619,12 @@ suite('<bookmarks-item> CommandManager integration', function() {
     // Only the middle-clicked item is opened.
     simulateMiddleClick(item2);
 
-    const [id, active] = await bookmarkManagerProxy.whenCalled('openInNewTab');
+    const [id, {active, split}] =
+        await bookmarkManagerProxy.whenCalled('openInNewTab');
 
     assertEquals('13', id);
     assertFalse(active);
+    assertEquals(undefined, split);
   });
 
   test('middle-click does not open folders', function() {
@@ -616,10 +642,10 @@ suite('<bookmarks-item> CommandManager integration', function() {
     assertTrue(!!item);
 
     simulateMiddleClick(item, {shiftKey: true});
-    const [id, active] = await bookmarkManagerProxy.whenCalled('openInNewTab');
+    const [id, params] = await bookmarkManagerProxy.whenCalled('openInNewTab');
 
     assertEquals('12', id);
-    assertTrue(active);
+    assertEquals(undefined, params);
   });
 
   test(

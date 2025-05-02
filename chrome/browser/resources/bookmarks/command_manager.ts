@@ -256,6 +256,7 @@ export class BookmarksCommandManagerElement extends
       case Command.OPEN_NEW_TAB:
       case Command.OPEN_NEW_WINDOW:
       case Command.OPEN_INCOGNITO:
+      case Command.OPEN_SPLIT_VIEW:
         return itemIds.size > 0;
       case Command.ADD_BOOKMARK:
       case Command.ADD_FOLDER:
@@ -284,6 +285,8 @@ export class BookmarksCommandManagerElement extends
         return this.expandIds_(itemIds).length > 0 &&
             state.prefs.incognitoAvailability !==
             IncognitoAvailability.DISABLED;
+      case Command.OPEN_SPLIT_VIEW:
+        return this.expandIds_(itemIds).length === 1;
       case Command.SORT:
         return this.canChangeList_() &&
             state.nodes[state.selectedFolder]!.children!.length > 1;
@@ -397,6 +400,7 @@ export class BookmarksCommandManagerElement extends
       case Command.OPEN_NEW_TAB:
       case Command.OPEN_NEW_WINDOW:
       case Command.OPEN_INCOGNITO:
+      case Command.OPEN_SPLIT_VIEW:
         this.openBookmarkIds_(this.expandIds_(itemIds), command);
         break;
       case Command.OPEN:
@@ -516,10 +520,15 @@ export class BookmarksCommandManagerElement extends
     assert(
         command === Command.OPEN || command === Command.OPEN_NEW_TAB ||
         command === Command.OPEN_NEW_WINDOW ||
-        command === Command.OPEN_INCOGNITO);
+        command === Command.OPEN_INCOGNITO ||
+        command === Command.OPEN_SPLIT_VIEW);
 
     if (ids.length === 0) {
       return;
+    }
+
+    if (command === Command.OPEN_SPLIT_VIEW) {
+      assert(ids.length === 1);
     }
 
     const openBookmarkIdsCallback = function() {
@@ -527,14 +536,16 @@ export class BookmarksCommandManagerElement extends
       if (command === Command.OPEN_NEW_WINDOW || incognito) {
         BookmarkManagerApiProxyImpl.getInstance().openInNewWindow(
             ids, incognito);
+      } else if (command === Command.OPEN_SPLIT_VIEW) {
+        BookmarkManagerApiProxyImpl.getInstance().openInNewTab(
+            ids.shift()!, {active: false, split: true});
       } else {
         if (command === Command.OPEN) {
-          BookmarkManagerApiProxyImpl.getInstance().openInNewTab(
-              ids.shift()!, /*active=*/ true);
+          BookmarkManagerApiProxyImpl.getInstance().openInNewTab(ids.shift()!);
         }
         ids.forEach(function(id) {
           BookmarkManagerApiProxyImpl.getInstance().openInNewTab(
-              id, /*active=*/ false);
+              id, {active: false});
         });
       }
     };
@@ -646,6 +657,9 @@ export class BookmarksCommandManagerElement extends
       case Command.HELP_CENTER:
         label = 'menuHelpCenter';
         break;
+      case Command.OPEN_SPLIT_VIEW:
+        label = 'menuOpenSplitView';
+        break;
     }
     if (label !== null) {
       return loadTimeData.getString(label);
@@ -691,7 +705,7 @@ export class BookmarksCommandManagerElement extends
     switch (this.menuSource_) {
       case MenuSource.ITEM:
       case MenuSource.TREE:
-        return [
+        const commands = [
           Command.EDIT,
           Command.SHOW_IN_FOLDER,
           Command.DELETE,
@@ -704,6 +718,10 @@ export class BookmarksCommandManagerElement extends
           Command.OPEN_NEW_WINDOW,
           Command.OPEN_INCOGNITO,
         ];
+        if (loadTimeData.getBoolean('splitViewEnabled')) {
+          commands.push(Command.OPEN_SPLIT_VIEW);
+        }
+        return commands;
       case MenuSource.TOOLBAR:
         return [
           Command.SORT,

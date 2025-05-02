@@ -106,6 +106,7 @@ class ExtensionTabUtil {
     std::optional<int> opener_tab_id;
     std::optional<std::string> url;
     std::optional<bool> active;
+    std::optional<bool> split;
     std::optional<bool> pinned;
     std::optional<int> index;
     std::optional<int> bookmark_id;

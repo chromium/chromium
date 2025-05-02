@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {BookmarkManagerApiProxy} from 'chrome://bookmarks/bookmarks.js';
+import type {BookmarkManagerApiProxy, OpenInNewTabParams} from 'chrome://bookmarks/bookmarks.js';
 import {FakeChromeEvent} from 'chrome://webui-test/fake_chrome_event.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
@@ -54,8 +54,8 @@ export class TestBookmarkManagerApiProxy extends TestBrowserProxy implements
     this.methodCalled('openInNewWindow', [idList, incognito]);
   }
 
-  openInNewTab(id: string, active: boolean) {
-    this.methodCalled('openInNewTab', [id, active]);
+  openInNewTab(id: string, params?: OpenInNewTabParams) {
+    this.methodCalled('openInNewTab', [id, params]);
   }
 
   cut(idList: string[]) {

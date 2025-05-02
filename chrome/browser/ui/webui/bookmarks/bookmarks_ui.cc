@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/bookmarks/bookmarks_message_handler.h"
@@ -57,6 +58,8 @@ content::WebUIDataSource* CreateAndAddBookmarksUIHTMLSource(Profile* profile) {
   source->AddString("undoDescription", l10n_util::GetStringFUTF16(
                                            IDS_UNDO_DESCRIPTION,
                                            undo_accelerator.GetShortcutText()));
+  source->AddBoolean("splitViewEnabled",
+                     base::FeatureList::IsEnabled(features::kSideBySide));
 
   // Localized strings (alphabetical order).
   static constexpr webui::LocalizedString kStrings[] = {
@@ -102,6 +105,7 @@ content::WebUIDataSource* CreateAndAddBookmarksUIHTMLSource(Profile* profile) {
       {"menuOpenNewTab", IDS_BOOKMARK_MANAGER_MENU_OPEN_IN_NEW_TAB},
       {"menuOpenNewWindow", IDS_BOOKMARK_MANAGER_MENU_OPEN_IN_NEW_WINDOW},
       {"menuOpenIncognito", IDS_BOOKMARK_MANAGER_MENU_OPEN_INCOGNITO},
+      {"menuOpenSplitView", IDS_BOOKMARK_MANAGER_MENU_OPEN_IN_SPLIT_VIEW},
       {"menuRename", IDS_BOOKMARK_MANAGER_MENU_RENAME},
       {"menuShowInFolder", IDS_BOOKMARK_MANAGER_MENU_SHOW_IN_FOLDER},
       {"menuSort", IDS_BOOKMARK_MANAGER_MENU_SORT},
