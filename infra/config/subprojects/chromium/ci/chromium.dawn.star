@@ -2795,7 +2795,7 @@ ci.thin_tester(
         short_name = "770",
     ),
     # Can hit the default build timeout if no tasks end up being deduped.
-    execution_timeout = 4 * time.hour,
+    execution_timeout = 5 * time.hour,
 )
 
 ci.thin_tester(
