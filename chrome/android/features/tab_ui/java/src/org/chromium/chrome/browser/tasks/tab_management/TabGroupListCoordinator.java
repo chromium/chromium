@@ -178,7 +178,8 @@ public class TabGroupListCoordinator {
                         tabGroupUiActionHandler,
                         actionConfirmationManager,
                         syncService,
-                        modalDialogManager);
+                        modalDialogManager,
+                        enableContainment());
 
         if (EdgeToEdgeUtils.isDrawKeyNativePageToEdgeEnabled()) {
             mEdgeToEdgePadAdjuster =

@@ -31,6 +31,7 @@ import org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupFaviconCluster.ClusterData;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupRowView.TabGroupRowViewTitleData;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupTimeAgo.TimestampEvent;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.ActionConfirmationResult;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.data_sharing.DataSharingService;
@@ -76,6 +77,7 @@ class TabGroupRowMediator {
      * @param actionConfirmationManager Used to show confirmation dialogs.
      * @param faviconResolver Used to fetch favicon images for some tabs.
      * @param fetchGroupState Used to fetch which window the group is in.
+     * @param enableContainment Whether the tab group row is in a container.
      */
     public TabGroupRowMediator(
             Context context,
@@ -89,7 +91,8 @@ class TabGroupRowMediator {
             ModalDialogManager modalDialogManager,
             ActionConfirmationManager actionConfirmationManager,
             FaviconResolver faviconResolver,
-            Supplier<@GroupWindowState Integer> fetchGroupState) {
+            Supplier<@GroupWindowState Integer> fetchGroupState,
+            boolean enableContainment) {
         mContext = context;
         mSavedTabGroup = savedTabGroup;
         mTabGroupModelFilter = tabGroupModelFilter;
@@ -132,7 +135,7 @@ class TabGroupRowMediator {
             groupData = mCollaborationService.getGroupData(collaborationId);
             sharedState = TabShareUtils.discernSharedGroupState(groupData);
         }
-        setSharedProperties(sharedState, groupData, numberOfTabs);
+        setSharedProperties(sharedState, groupData, numberOfTabs, enableContainment);
     }
 
     /**
@@ -152,7 +155,10 @@ class TabGroupRowMediator {
     }
 
     private void setSharedProperties(
-            @GroupSharedState int sharedState, @Nullable GroupData groupData, int numberOfTabs) {
+            @GroupSharedState int sharedState,
+            @Nullable GroupData groupData,
+            int numberOfTabs,
+            boolean enableContainment) {
         if (sharedState == GroupSharedState.NOT_SHARED) {
             mPropertyModel.set(DELETE_RUNNABLE, this::processDeleteGroup);
             mPropertyModel.set(LEAVE_RUNNABLE, null);
@@ -183,10 +189,14 @@ class TabGroupRowMediator {
         } else if (sharedState == GroupSharedState.HAS_OTHER_USERS) {
             mPropertyModel.set(TabGroupRowProperties.DISPLAY_AS_SHARED, true);
             if (mSharedImageTilesCoordinator == null) {
-                @ColorInt
-                int backgroundColor =
-                        TabUiThemeProvider.getTabGridDialogBackgroundColor(
-                                mContext, /* isIncognito= */ false);
+                final @ColorInt int backgroundColor;
+                if (enableContainment) {
+                    backgroundColor = SemanticColorUtils.getColorSurfaceBright(mContext);
+                } else {
+                    backgroundColor =
+                            TabUiThemeProvider.getTabGridDialogBackgroundColor(
+                                    mContext, /* isIncognito= */ false);
+                }
                 SharedImageTilesConfig config =
                         new SharedImageTilesConfig.Builder(mContext)
                                 .setBackgroundColor(backgroundColor)

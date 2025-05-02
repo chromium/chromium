@@ -206,7 +206,8 @@ public class TabGroupListMediatorUnitTest {
                         mTabGroupUiActionHandler,
                         mActionConfirmationManager,
                         mSyncService,
-                        mModalDialogManager);
+                        mModalDialogManager,
+                        /* enableContainment= */ true);
         verify(mSyncService).addSyncStateChangedListener(mSyncStateChangedListenerCaptor.capture());
         return mediator;
     }
