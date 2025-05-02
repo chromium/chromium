@@ -699,8 +699,8 @@ void CanvasRenderingContext2D::drawElement(Element* element,
   HTMLCanvasElement* canvas_element = HostAsHTMLCanvasElement();
   DCHECK(canvas_element);
 
-  // TODO(crbug.com/380277045): Only taint for x-origin content.
-  SetOriginTaintedByContent();
+  // TODO(crbug.com/380277045): Taint for cross-origin and PII content.
+  // SetOriginTaintedByContent();
 
   canvas_element->GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint(
       DocumentUpdateReason::kCanvasPlaceElement);

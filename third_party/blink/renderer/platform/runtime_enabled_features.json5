@@ -740,9 +740,9 @@
       status: "test",
     },
     {
-      // https://github.com/WICG/canvas-place-element/blob/main/README.md
+      // https://github.com/WICG/html-in-canvas/blob/main/README.md
       name: "CanvasElementDrawImage",
-      status: "experimental",
+      status: "test",
       implied_by: ["CanvasPlaceElement"],
     },
     {
@@ -769,9 +769,9 @@
       base_feature: "none",
     },
     {
-      // https://github.com/Igalia/explainers/blob/main/canvas-formatted-text/html-in-canvas.md
+      // https://github.com/WICG/html-in-canvas/blob/main/README.md
       name: "CanvasPlaceElement",
-      status: "experimental",
+      status: "test",
     },
     {
       // https://chromestatus.com/feature/5066778773028864
