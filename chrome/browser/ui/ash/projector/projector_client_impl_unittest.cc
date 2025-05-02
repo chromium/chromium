@@ -32,6 +32,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/application_locale_storage/application_locale_storage.h"
 #include "components/prefs/pref_service.h"
+#include "components/soda/mock_soda_installer.h"
 #include "components/soda/soda_installer.h"
 #include "components/soda/soda_installer_impl_chromeos.h"
 #include "content/public/test/browser_task_environment.h"
@@ -57,35 +58,6 @@ inline void SetLocale(const std::string& locale) {
       ->application_locale_storage()
       ->Set(locale);
 }
-
-// A mocked version instance of SodaInstaller for testing purposes.
-class MockSodaInstaller : public speech::SodaInstaller {
- public:
-  MockSodaInstaller() = default;
-  MockSodaInstaller(const MockSodaInstaller&) = delete;
-  MockSodaInstaller& operator=(const MockSodaInstaller&) = delete;
-  ~MockSodaInstaller() override = default;
-
-  MOCK_METHOD(base::FilePath, GetSodaBinaryPath, (), (const, override));
-  MOCK_METHOD(base::FilePath,
-              GetLanguagePath,
-              (const std::string&),
-              (const, override));
-  MOCK_METHOD(void,
-              InstallLanguage,
-              (const std::string&, PrefService*),
-              (override));
-  MOCK_METHOD(void,
-              UninstallLanguage,
-              (const std::string&, PrefService*),
-              (override));
-  MOCK_METHOD(std::vector<std::string>,
-              GetAvailableLanguages,
-              (),
-              (const, override));
-  MOCK_METHOD(void, InstallSoda, (PrefService*), (override));
-  MOCK_METHOD(void, UninstallSoda, (PrefService*), (override));
-};
 
 class MockLocaleUpdateController : public ash::LocaleUpdateController {
  public:
@@ -147,7 +119,7 @@ class ProjectorClientImplUnitTest
     testing_profile_ = ProfileManager::GetPrimaryUserProfile();
     ASSERT_TRUE(testing_profile_);
     SetLocale(kEnglishUS);
-    soda_installer_ = std::make_unique<MockSodaInstaller>();
+    soda_installer_ = std::make_unique<speech::MockSodaInstaller>();
     ON_CALL(*soda_installer_, GetAvailableLanguages)
         .WillByDefault(testing::Return(std::vector<std::string>({kEnglishUS})));
     soda_installer_->NotifySodaInstalledForTesting();
@@ -238,7 +210,7 @@ class ProjectorClientImplUnitTest
 
   MockProjectorController projector_controller_;
   std::unique_ptr<ProjectorClient> projector_client_;
-  std::unique_ptr<MockSodaInstaller> soda_installer_;
+  std::unique_ptr<speech::MockSodaInstaller> soda_installer_;
   std::unique_ptr<MockAppClient> mock_app_client_;
   std::unique_ptr<MockLocaleUpdateController> mock_locale_controller_;
   raw_ptr<speech::FakeSpeechRecognitionService> fake_service_;

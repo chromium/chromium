@@ -692,6 +692,7 @@ static_library("test_support") {
         "../browser/speech/fake_speech_recognition_manager_delegate.h",
       ]
       deps += [ "//components/soda:soda" ]
+      public_deps += [ "//components/soda:test_support" ]
     }
 
     if (is_win) {

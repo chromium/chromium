@@ -92,6 +92,7 @@ source_set("unit_tests") {
     "//components/application_locale_storage",
     "//components/prefs",
     "//components/soda:constants",
+    "//components/soda:test_support",
     "//content/test:test_support",
     "//testing/gmock",
     "//testing/gtest",

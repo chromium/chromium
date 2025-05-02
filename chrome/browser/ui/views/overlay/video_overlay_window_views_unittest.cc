@@ -15,10 +15,12 @@
 #include "chrome/browser/picture_in_picture/auto_pip_setting_overlay_view.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_occlusion_tracker.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
+#include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/overlay/back_to_tab_button.h"
 #include "chrome/browser/ui/views/overlay/close_image_button.h"
 #include "chrome/browser/ui/views/overlay/hang_up_button.h"
 #include "chrome/browser/ui/views/overlay/minimize_button.h"
+#include "chrome/browser/ui/views/overlay/overlay_window_live_caption_dialog.h"
 #include "chrome/browser/ui/views/overlay/playback_image_button.h"
 #include "chrome/browser/ui/views/overlay/simple_overlay_window_image_button.h"
 #include "chrome/browser/ui/views/overlay/toggle_camera_button.h"
@@ -26,6 +28,10 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/global_media_controls/public/views/media_progress_view.h"
+#include "components/live_caption/pref_names.h"
+#include "components/prefs/pref_service.h"
+#include "components/prefs/testing_pref_service.h"
+#include "components/soda/mock_soda_installer.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/overlay_window.h"
 #include "content/public/browser/video_picture_in_picture_window_controller.h"
@@ -43,6 +49,7 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/views/controls/button/label_button.h"
+#include "ui/views/controls/button/toggle_button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/test/button_test_api.h"
@@ -161,6 +168,10 @@ class VideoOverlayWindowViewsTest : public ChromeViewsTestBase {
     // Purposely skip ChromeViewsTestBase::SetUp() as that creates ash::Shell
     // on ChromeOS, which we don't want.
     ViewsTestBase::SetUp();
+    test_views_delegate()->set_layout_provider(
+        ChromeLayoutProvider::CreateLayoutProvider());
+    mock_soda_installer_ = std::make_unique<speech::MockSodaInstaller>();
+    mock_soda_installer_->NeverDownloadSodaForTesting();
     // web_contents_ needs to be created after the constructor, so that
     // |feature_list_| can be initialized before other threads check if a
     // feature is enabled.
@@ -234,11 +245,14 @@ class VideoOverlayWindowViewsTest : public ChromeViewsTestBase {
     enabled_features_.push_back(feature);
   }
 
+  TestingProfile& profile() { return profile_; }
+
  private:
   std::unique_ptr<AutoPipSettingOverlayView> GetOverlayViewImpl() {
     return std::move(overlay_view_);
   }
 
+  std::unique_ptr<speech::MockSodaInstaller> mock_soda_installer_;
   TestingProfile profile_;
   content::TestWebContentsFactory web_contents_factory_;
   raw_ptr<content::WebContents> web_contents_;
@@ -804,6 +818,22 @@ TEST_F(VideoOverlayWindowViewsTest, OriginNotDrawnWhen2024UIIsDisabled) {
   ASSERT_EQ(nullptr, origin);
 }
 
+TEST_F(VideoOverlayWindowViewsTest,
+       LiveCaptionButtonNotDrawnWhen2024UIIsDisabled) {
+  overlay_window().ForceControlsVisibleForTesting(true);
+  SimpleOverlayWindowImageButton* live_caption_button =
+      overlay_window().live_caption_button_for_testing();
+  ASSERT_EQ(nullptr, live_caption_button);
+}
+
+TEST_F(VideoOverlayWindowViewsTest,
+       LiveCaptionDialogNotDrawnWhen2024UIIsDisabled) {
+  overlay_window().ForceControlsVisibleForTesting(true);
+  OverlayWindowLiveCaptionDialog* live_caption_dialog =
+      overlay_window().live_caption_dialog_for_testing();
+  ASSERT_EQ(nullptr, live_caption_dialog);
+}
+
 class VideoOverlayWindowViewsWith2024UITest
     : public VideoOverlayWindowViewsTest {
  public:
@@ -1235,4 +1265,53 @@ TEST_F(VideoOverlayWindowViewsWith2024UITest, VideoConferencingUI) {
   EXPECT_FALSE(toggle_microphone_button->IsDrawn());
   EXPECT_FALSE(hang_up_button->IsDrawn());
   EXPECT_TRUE(progress_view->IsDrawn());
+}
+
+TEST_F(VideoOverlayWindowViewsWith2024UITest, LiveCaption) {
+  overlay_window().ForceControlsVisibleForTesting(true);
+  profile().GetPrefs()->SetBoolean(prefs::kLiveCaptionEnabled, false);
+  SimpleOverlayWindowImageButton* live_caption_button =
+      overlay_window().live_caption_button_for_testing();
+  OverlayWindowLiveCaptionDialog* live_caption_dialog =
+      overlay_window().live_caption_dialog_for_testing();
+
+  ASSERT_NE(nullptr, live_caption_button);
+  ASSERT_NE(nullptr, live_caption_dialog);
+
+  // The live caption button should start visible and the live caption dialog
+  // should start invisible.
+  WaitForLayout();
+  EXPECT_TRUE(live_caption_button->IsDrawn());
+  EXPECT_FALSE(live_caption_dialog->IsDrawn());
+
+  // Pressing the live caption button should display the live caption dialog.
+  views::test::ButtonTestApi live_caption_button_clicker(live_caption_button);
+  ui::MouseEvent dummy_event(ui::EventType::kMousePressed, gfx::Point(0, 0),
+                             gfx::Point(0, 0), ui::EventTimeForNow(), 0, 0);
+  live_caption_button_clicker.NotifyClick(dummy_event);
+  WaitForLayout();
+  EXPECT_TRUE(live_caption_dialog->IsDrawn());
+
+  // The live caption button should be enabled and toggled off, while the live
+  // translate button should be disabled and toggled off.
+  EXPECT_FALSE(profile().GetPrefs()->GetBoolean(prefs::kLiveCaptionEnabled));
+  views::ToggleButton* live_caption_toggle_button =
+      live_caption_dialog->live_caption_button_for_testing();
+  views::ToggleButton* live_translate_toggle_button =
+      live_caption_dialog->live_translate_button_for_testing();
+  EXPECT_TRUE(live_caption_toggle_button->GetEnabled());
+  EXPECT_FALSE(live_caption_toggle_button->GetIsOn());
+  EXPECT_FALSE(live_translate_toggle_button->GetEnabled());
+  EXPECT_FALSE(live_translate_toggle_button->GetIsOn());
+
+  // Toggling the live caption button should enable the live translate button
+  // and also enable the live caption pref.
+  views::test::ButtonTestApi live_caption_toggle_button_clicker(
+      live_caption_toggle_button);
+  live_caption_toggle_button_clicker.NotifyClick(dummy_event);
+  WaitForLayout();
+  EXPECT_TRUE(profile().GetPrefs()->GetBoolean(prefs::kLiveCaptionEnabled));
+  EXPECT_TRUE(live_caption_toggle_button->GetIsOn());
+  EXPECT_TRUE(live_translate_toggle_button->GetEnabled());
+  EXPECT_FALSE(live_translate_toggle_button->GetIsOn());
 }

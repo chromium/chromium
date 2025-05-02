@@ -10032,6 +10032,7 @@ test("unit_tests") {
       "//components/safe_browsing/core/browser/realtime:test_support",
       "//components/safe_browsing/core/browser/realtime:url_lookup_service_base",
       "//components/saved_tab_groups/test_support",
+      "//components/soda:test_support",
       "//components/user_education/views",
       "//components/user_education/views:test_support",
       "//components/web_modal:test_support",

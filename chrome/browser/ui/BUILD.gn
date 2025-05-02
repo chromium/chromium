@@ -4308,6 +4308,8 @@ static_library("ui") {
       "views/overlay/minimize_button.h",
       "views/overlay/overlay_window_image_button.cc",
       "views/overlay/overlay_window_image_button.h",
+      "views/overlay/overlay_window_live_caption_dialog.cc",
+      "views/overlay/overlay_window_live_caption_dialog.h",
       "views/overlay/playback_image_button.cc",
       "views/overlay/playback_image_button.h",
       "views/overlay/resize_handle_button.cc",

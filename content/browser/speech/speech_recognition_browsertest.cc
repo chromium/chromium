@@ -45,6 +45,7 @@
 
 #if !BUILDFLAG(IS_FUCHSIA)
 #include "base/test/scoped_feature_list.h"
+#include "components/soda/mock_soda_installer.h"  // nogncheck
 #include "components/soda/soda_util.h"
 #include "content/browser/speech/fake_speech_recognition_manager_delegate.h"
 #include "content/browser/speech/soda_speech_recognition_engine_impl.h"
@@ -243,7 +244,7 @@ class SpeechRecognitionBrowserTest : public ContentBrowserTest {
   // Set SODA On-Device speech recognition features flags.
   base::test::ScopedFeatureList scoped_feature_list_;
   // Setup mock SODA installer
-  MockSodaInstaller mock_soda_installer_;
+  speech::MockSodaInstaller mock_soda_installer_;
 #endif  // !BUILDFLAG(IS_FUCHSIA)
 
  private:

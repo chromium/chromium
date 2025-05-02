@@ -29,6 +29,7 @@
 #include "chrome/browser/ui/views/overlay/constants.h"
 #include "chrome/browser/ui/views/overlay/hang_up_button.h"
 #include "chrome/browser/ui/views/overlay/minimize_button.h"
+#include "chrome/browser/ui/views/overlay/overlay_window_live_caption_dialog.h"
 #include "chrome/browser/ui/views/overlay/playback_image_button.h"
 #include "chrome/browser/ui/views/overlay/resize_handle_button.h"
 #include "chrome/browser/ui/views/overlay/simple_overlay_window_image_button.h"
@@ -86,7 +87,7 @@ namespace {
 
 // Lower bound size of the window is a fixed value to allow for minimal sizes
 // on UI affordances, such as buttons.
-constexpr gfx::Size kMinWindowSize(260, 146);
+constexpr gfx::Size kMinWindowSize(284, 160);
 
 constexpr int kOverlayBorderThickness = 10;
 
@@ -676,11 +677,13 @@ void VideoOverlayWindowViews::OnMouseEvent(ui::MouseEvent* event) {
       // controls are visible if the mouse is still over the window.
       // We also check that the user isn't currently dragging the progress bar,
       // since setting visibility to false during the drag will prevent the drag
-      // from functioning properly (and we'll lose the drag end).
+      // from functioning properly (and we'll lose the drag end). Additionally,
+      // while the live caption dialog is open we also don't hide the controls.
       const bool should_update_control_visibility =
           !GetWindowBackgroundView()->bounds().Contains(event->location()) &&
           progress_view_drag_state_ ==
-              global_media_controls::DragState::kDragEnded;
+              global_media_controls::DragState::kDragEnded &&
+          !IsLiveCaptionDialogVisible();
       if (should_update_control_visibility) {
         UpdateControlsVisibility(false);
       }
@@ -751,6 +754,11 @@ void VideoOverlayWindowViews::UpdateControlsVisibility(bool is_visible) {
   // this gets us stuck in the `kDragStarted` state.
   if (progress_view_drag_state_ ==
       global_media_controls::DragState::kDragStarted) {
+    return;
+  }
+
+  // We should not hide the controls while the live caption dialog is open.
+  if (IsLiveCaptionDialogVisible()) {
     return;
   }
 
@@ -889,7 +897,9 @@ bool VideoOverlayWindowViews::ControlsHitTestContainsPoint(
       GetHangUpButtonBounds().Contains(point) ||
       GetPreviousSlideControlsBounds().Contains(point) ||
       GetNextSlideControlsBounds().Contains(point) ||
-      GetProgressViewBounds().Contains(point)) {
+      GetProgressViewBounds().Contains(point) ||
+      GetLiveCaptionButtonBounds().Contains(point) ||
+      GetLiveCaptionDialogBounds().Contains(point)) {
     return true;
   }
   return false;
@@ -949,6 +959,8 @@ void VideoOverlayWindowViews::SetUpViews() {
   std::unique_ptr<global_media_controls::MediaProgressView> progress_view;
   std::unique_ptr<views::Label> timestamp;
   std::unique_ptr<views::Label> live_status;
+  std::unique_ptr<SimpleOverlayWindowImageButton> live_caption_button;
+  std::unique_ptr<OverlayWindowLiveCaptionDialog> live_caption_dialog;
 
   if (Use2024UI()) {
     play_pause_controls_view->SetSize({kCenterButtonSize, kCenterButtonSize});
@@ -1079,6 +1091,18 @@ void VideoOverlayWindowViews::SetUpViews() {
     live_status->SetBackground(
         views::CreateRoundedRectBackground(ui::kColorSysOnTonalContainer, 4));
     live_status->SetVisible(false);
+    live_caption_button = std::make_unique<SimpleOverlayWindowImageButton>(
+        base::BindRepeating(
+            &VideoOverlayWindowViews::OnLiveCaptionButtonPressed,
+            base::Unretained(this)),
+        vector_icons::kLiveCaptionOnIcon,
+        l10n_util::GetStringUTF16(
+            IDS_PICTURE_IN_PICTURE_LIVE_CAPTION_CONTROL_TEXT));
+    live_caption_button->SetSize(kActionButtonSize);
+    live_caption_dialog = std::make_unique<OverlayWindowLiveCaptionDialog>(
+        Profile::FromBrowserContext(
+            controller_->GetWebContents()->GetBrowserContext()));
+    live_caption_dialog->SetVisible(false);
     toggle_microphone_button =
         std::make_unique<ToggleMicrophoneButton>(base::BindRepeating(
             [](VideoOverlayWindowViews* overlay) {
@@ -1290,6 +1314,14 @@ void VideoOverlayWindowViews::SetUpViews() {
     live_status->SetPaintToLayer(ui::LAYER_TEXTURED);
     live_status->layer()->SetFillsBoundsOpaquely(false);
     live_status->layer()->SetName("LiveStatus");
+
+    live_caption_button->SetPaintToLayer(ui::LAYER_TEXTURED);
+    live_caption_button->layer()->SetFillsBoundsOpaquely(false);
+    live_caption_button->layer()->SetName("LiveCaptionButton");
+
+    live_caption_dialog->SetPaintToLayer(ui::LAYER_TEXTURED);
+    live_caption_dialog->layer()->SetFillsBoundsOpaquely(false);
+    live_caption_dialog->layer()->SetName("LiveCaptionDialog");
   } else {
     // views::View that holds the skip-ad label button.
     // -------------------------
@@ -1392,6 +1424,12 @@ void VideoOverlayWindowViews::SetUpViews() {
 
     live_status_ =
         playback_controls_container_view_->AddChildView(std::move(live_status));
+
+    live_caption_button_ = playback_controls_container_view_->AddChildView(
+        std::move(live_caption_button));
+
+    live_caption_dialog_ =
+        controls_container_view->AddChildView(std::move(live_caption_dialog));
   }
 
   next_track_controls_view_ =
@@ -1669,6 +1707,19 @@ void VideoOverlayWindowViews::OnUpdateControlsBounds() {
              .width(),
          kTimestampHeight});
     live_status_->SetVisible(is_live_);
+
+    gfx::Rect live_caption_button_bounds(
+        bottom_controls_bounds.right() - kBottomControlsHorizontalMargin -
+            kActionButtonSize.width(),
+        bottom_controls_bounds.bottom() - kBottomControlsVerticalMargin -
+            kActionButtonSize.height(),
+        live_caption_button_->width(), live_caption_button_->height());
+
+    live_caption_button_->SetPosition(live_caption_button_bounds.origin());
+
+    live_caption_dialog_->SetPosition(
+        {live_caption_button_bounds.right() - live_caption_dialog_->width(),
+         live_caption_button_bounds.y() - live_caption_dialog_->height()});
 
     // The play/pause button and replay/forward 10 seconds buttons should not be
     // visible while dragging the progress bar or for live media.
@@ -2135,6 +2186,9 @@ void VideoOverlayWindowViews::OnGestureEvent(ui::GestureEvent* event) {
   } else if (GetHangUpButtonBounds().Contains(event->location())) {
     controller_->HangUp();
     event->SetHandled();
+  } else if (GetLiveCaptionButtonBounds().Contains(event->location())) {
+    OnLiveCaptionButtonPressed();
+    event->SetHandled();
   }
 }
 
@@ -2231,6 +2285,20 @@ gfx::Rect VideoOverlayWindowViews::GetProgressViewBounds() {
     return gfx::Rect();
   }
   return progress_view_->GetMirroredBounds();
+}
+
+gfx::Rect VideoOverlayWindowViews::GetLiveCaptionButtonBounds() {
+  if (!Use2024UI()) {
+    return gfx::Rect();
+  }
+  return live_caption_button_->GetMirroredBounds();
+}
+
+gfx::Rect VideoOverlayWindowViews::GetLiveCaptionDialogBounds() {
+  if (!IsLiveCaptionDialogVisible()) {
+    return gfx::Rect();
+  }
+  return live_caption_dialog_->GetMirroredBounds();
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -2333,6 +2401,16 @@ views::Label* VideoOverlayWindowViews::live_status_for_testing() const {
   return live_status_;
 }
 
+SimpleOverlayWindowImageButton*
+VideoOverlayWindowViews::live_caption_button_for_testing() const {
+  return live_caption_button_;
+}
+
+OverlayWindowLiveCaptionDialog*
+VideoOverlayWindowViews::live_caption_dialog_for_testing() const {
+  return live_caption_dialog_;
+}
+
 views::ImageView* VideoOverlayWindowViews::favicon_view_for_testing() const {
   return favicon_view_;
 }
@@ -2405,6 +2483,10 @@ void VideoOverlayWindowViews::RemoveOverlayViewIfExists() {
   }
 }
 
+bool VideoOverlayWindowViews::IsLiveCaptionDialogVisible() const {
+  return Use2024UI() && live_caption_dialog_->GetVisible();
+}
+
 void VideoOverlayWindowViews::OnProgressDragStateChanged(
     global_media_controls::DragState drag_state) {
   progress_view_drag_state_ = drag_state;
@@ -2446,6 +2528,10 @@ void VideoOverlayWindowViews::UpdateTimestampLabel(base::TimeDelta current_time,
   if (was_live != is_live_) {
     OnUpdateControlsBounds();
   }
+}
+
+void VideoOverlayWindowViews::OnLiveCaptionButtonPressed() {
+  live_caption_dialog_->SetVisible(!live_caption_dialog_->GetVisible());
 }
 
 void VideoOverlayWindowViews::OnFaviconReceived(const SkBitmap& image) {

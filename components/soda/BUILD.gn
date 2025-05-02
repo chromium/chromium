@@ -103,3 +103,18 @@ source_set("unit_tests") {
     ]
   }
 }
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "mock_soda_installer.cc",
+    "mock_soda_installer.h",
+  ]
+
+  deps = [
+    ":soda",
+    "//base",
+    "//testing/gmock",
+  ]
+}

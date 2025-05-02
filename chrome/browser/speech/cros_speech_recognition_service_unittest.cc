@@ -16,6 +16,7 @@
 #include "base/test/test_future.h"
 #include "chrome/services/speech/cros_speech_recognition_recognizer_impl.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/soda/mock_soda_installer.h"
 #include "content/browser/speech/fake_speech_recognition_manager_delegate.h"
 #include "content/public/test/browser_task_environment.h"
 #include "media/mojo/mojom/speech_recognition_service.mojom.h"
@@ -57,7 +58,7 @@ TEST_P(CrosSpeechRecognitionServiceTest, SetMaskOffensiveWords) {
       ash::features::kOnDeviceSpeechRecognition);
   content::BrowserTaskEnvironment task_environment;
   TestingProfile profile;
-  testing::NiceMock<content::MockSodaInstaller> soda_installer;
+  testing::NiceMock<speech::MockSodaInstaller> soda_installer;
   base::test::TestFuture<bool> test_future;
   auto test_cb = base::BindLambdaForTesting(
       [&test_future](

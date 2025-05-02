@@ -85,6 +85,7 @@ source_set("unit_tests") {
       "//chromeos/services/machine_learning/public/cpp:stub",
       "//chromeos/services/machine_learning/public/mojom",
       "//components/soda:soda",
+      "//components/soda:test_support",
       "//content/test:test_support",
       "//services/audio/public/cpp:test_support",
     ]

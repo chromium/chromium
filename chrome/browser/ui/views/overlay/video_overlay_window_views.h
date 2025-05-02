@@ -37,6 +37,7 @@ class BackToTabLabelButton;
 class CloseImageButton;
 class HangUpButton;
 class OverlayWindowBackToTabButton;
+class OverlayWindowLiveCaptionDialog;
 class OverlayWindowMinimizeButton;
 class PlaybackImageButton;
 class ResizeHandleButton;
@@ -171,6 +172,8 @@ class VideoOverlayWindowViews : public content::VideoOverlayWindow,
   gfx::Rect GetPreviousSlideControlsBounds();
   gfx::Rect GetNextSlideControlsBounds();
   gfx::Rect GetProgressViewBounds();
+  gfx::Rect GetLiveCaptionButtonBounds();
+  gfx::Rect GetLiveCaptionDialogBounds();
 
   PlaybackImageButton* play_pause_controls_view_for_testing() const;
   SimpleOverlayWindowImageButton* replay_10_seconds_button_for_testing() const;
@@ -188,6 +191,8 @@ class VideoOverlayWindowViews : public content::VideoOverlayWindow,
   global_media_controls::MediaProgressView* progress_view_for_testing() const;
   views::Label* timestamp_for_testing() const;
   views::Label* live_status_for_testing() const;
+  SimpleOverlayWindowImageButton* live_caption_button_for_testing() const;
+  OverlayWindowLiveCaptionDialog* live_caption_dialog_for_testing() const;
   views::ImageView* favicon_view_for_testing() const;
   views::Label* origin_for_testing() const;
   CloseImageButton* close_button_for_testing() const;
@@ -305,6 +310,8 @@ class VideoOverlayWindowViews : public content::VideoOverlayWindow,
   // Removes the `overlay_view_` if it exists.
   void RemoveOverlayViewIfExists();
 
+  bool IsLiveCaptionDialogVisible() const;
+
   void OnProgressDragStateChanged(global_media_controls::DragState drag_state);
   void ChangePlaybackStateForProgressDrag(
       global_media_controls::PlaybackStateChangeForDragging
@@ -314,6 +321,8 @@ class VideoOverlayWindowViews : public content::VideoOverlayWindow,
 
   void UpdateTimestampLabel(base::TimeDelta current_time,
                             base::TimeDelta duration);
+
+  void OnLiveCaptionButtonPressed();
 
   void OnFaviconReceived(const SkBitmap& image);
   void UpdateFavicon(const gfx::ImageSkia& favicon);
@@ -397,6 +406,8 @@ class VideoOverlayWindowViews : public content::VideoOverlayWindow,
   raw_ptr<global_media_controls::MediaProgressView> progress_view_ = nullptr;
   raw_ptr<views::Label> timestamp_ = nullptr;
   raw_ptr<views::Label> live_status_ = nullptr;
+  raw_ptr<SimpleOverlayWindowImageButton> live_caption_button_ = nullptr;
+  raw_ptr<OverlayWindowLiveCaptionDialog> live_caption_dialog_ = nullptr;
   raw_ptr<AutoPipSettingOverlayView> overlay_view_ = nullptr;
 
 #if BUILDFLAG(IS_CHROMEOS)
