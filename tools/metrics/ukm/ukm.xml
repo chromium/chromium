@@ -11317,6 +11317,51 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="GroupSuggestionPromo.Suggestion">
+  <owner>yuezhanggg@chromium.org</owner>
+  <owner>ssid@chromium.org</owner>
+  <summary>
+    Collects information about member tabs that are in a tab group suggestion.
+    Recorded after a suggestion is shown and user has reacted to the suggestion.
+  </summary>
+  <metric name="GroupSuggestionID">
+    <summary>
+      An int ID corresponding to the suggestion. This will enable joining all
+      tabs of the suggestion together.
+    </summary>
+  </metric>
+  <metric name="GroupSuggestionType" enum="TabGroupSuggesiton.SuggestionType">
+    <summary>
+      Enum of the type of the suggestion. This is decided by the type of
+      heuristics used to trigger the suggestion.
+    </summary>
+  </metric>
+  <metric name="IsActiveTab" enum="Boolean">
+    <summary>
+      Boolean indicating whether this source is the active tab for the trigger,
+      only recorded for 1 tab within all GroupSuggestionPromo.Suggestion events
+      recorded with the same GroupSuggestionID.
+    </summary>
+  </metric>
+  <metric name="RecentForegroundCount">
+    <summary>
+      Int recording the number of times that the tab has been foregrounded in a
+      predefined time window, currently 10 minutes.
+    </summary>
+  </metric>
+  <metric name="SecondsSinceLastActive">
+    <summary>
+      Int recording the number of seconds since the tab was last active.
+      Exponentially bucketed using GetExponentialBucketMin with a spacing of 1.3
+    </summary>
+  </metric>
+  <metric name="UserResponseType" enum="TabGroupSuggesiton.UserResponse">
+    <summary>
+      Enum of the type of user response.
+    </summary>
+  </metric>
+</event>
+
 <event name="HistoryApi">
   <owner>yaoxia@chromium.org</owner>
   <owner>shivanisha@chromium.org</owner>

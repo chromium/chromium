@@ -71,19 +71,21 @@ class GroupingHeuristicsTest : public testing::Test {
   std::optional<GroupSuggestions> GetSuggestionsFor(
       std::vector<URLVisitAggregate> candidates,
       GroupSuggestion::SuggestionReason reason) {
-    base::test::TestFuture<std::optional<GroupSuggestions>> suggestions_future;
+    base::test::TestFuture<GroupingHeuristics::SuggestionsResult>
+        suggestions_future;
     heuristics_->GetSuggestions(std::move(candidates), {reason},
                                 suggestions_future.GetCallback());
-    return suggestions_future.Take();
+    return suggestions_future.Take().suggestions;
   }
 
   std::optional<GroupSuggestions> GetSuggestionsFor(
       std::vector<URLVisitAggregate> candidates,
       std::vector<GroupSuggestion::SuggestionReason> reason) {
-    base::test::TestFuture<std::optional<GroupSuggestions>> suggestions_future;
+    base::test::TestFuture<GroupingHeuristics::SuggestionsResult>
+        suggestions_future;
     heuristics_->GetSuggestions(std::move(candidates), reason,
                                 suggestions_future.GetCallback());
-    return suggestions_future.Take();
+    return suggestions_future.Take().suggestions;
   }
 
  protected:

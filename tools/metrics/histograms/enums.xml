@@ -25806,6 +25806,22 @@ Called by update_net_error_codes.py.-->
   <int value="3" label="Background (app in background)"/>
 </enum>
 
+<enum name="TabGroupSuggesiton.SuggestionType">
+  <int value="0" label="Uknown"/>
+  <int value="1" label="Recently opened"/>
+  <int value="2" label="Switched between"/>
+  <int value="3" label="Similar source"/>
+  <int value="4" label="Same origin"/>
+</enum>
+
+<enum name="TabGroupSuggesiton.UserResponse">
+  <int value="0" label="Uknown"/>
+  <int value="1" label="Not shown"/>
+  <int value="2" label="Accepted"/>
+  <int value="3" label="Rejected"/>
+  <int value="4" label="Ignored"/>
+</enum>
+
 <enum name="TabRevisitTracker.TabState">
   <int value="0" label="Active"/>
   <int value="1" label="Background"/>

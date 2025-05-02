@@ -47,6 +47,7 @@ enum URLVisitAggregateRankingModelInputSignals {
   kTabId = 32,
   kTabUrlOriginHash = 33,
   kTabUkmSourceId = 34,
+  kIsTabSelected = 35,
 };
 
 // Represents a field's metadata and is leveraged for the processing and
@@ -65,7 +66,7 @@ extern const std::array<FieldSchema, kTabResumptionNumInputs>
     kURLVisitAggregateSchema;
 
 // Collection of relevant fields for URL grouping computation.
-static constexpr size_t kSuggestionsNumInputs = 12;
+static constexpr size_t kSuggestionsNumInputs = 13;
 extern const std::array<FieldSchema, kSuggestionsNumInputs>
     kSuggestionsPredictionSchema;
 

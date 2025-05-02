@@ -373,6 +373,12 @@ scoped_refptr<InputContext> AsInputContextInternal(
               tab_data->last_active_tab.tab_metadata.ukm_source_id);
         }
         break;
+      case kIsTabSelected:
+        if (tab_data) {
+          value = ProcessedValue::FromFloat(
+              tab_data->last_active_tab.tab_metadata.is_currently_active);
+        }
+        break;
     }
 
     signal_value_map.emplace(field_schema.name, std::move(value));

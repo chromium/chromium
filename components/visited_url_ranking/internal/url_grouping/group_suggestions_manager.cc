@@ -4,25 +4,33 @@
 
 #include "components/visited_url_ranking/internal/url_grouping/group_suggestions_manager.h"
 
+#include "base/containers/contains.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/rand_util.h"
 #include "base/strings/strcat.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "components/prefs/pref_service.h"
 #include "components/segmentation_platform/public/input_context.h"
-#include "components/visited_url_ranking/internal/url_grouping/grouping_heuristics.h"
+#include "components/segmentation_platform/public/types/processed_value.h"
 #include "components/visited_url_ranking/public/fetch_options.h"
 #include "components/visited_url_ranking/public/url_grouping/group_suggestions.h"
 #include "components/visited_url_ranking/public/url_grouping/group_suggestions_delegate.h"
 #include "components/visited_url_ranking/public/url_grouping/group_suggestions_service.h"
+#include "components/visited_url_ranking/public/url_visit_schema.h"
 #include "components/visited_url_ranking/public/visited_url_ranking_service.h"
+#include "services/metrics/public/cpp/metrics_utils.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
 
 namespace visited_url_ranking {
 
 namespace {
+
+using segmentation_platform::processing::ProcessedValue;
 
 const base::FeatureParam<int> kConsecutiveComputationDelaySec{
     &features::kGroupSuggestionService, "consecutive_computation_delay_sec", 0};
@@ -47,6 +55,66 @@ FetchOptions GetFetchOptionsForSuggestions() {
                       std::move(transforms));
 }
 
+const char* GetNameForInput(URLVisitAggregateRankingModelInputSignals signal) {
+  for (const auto& field : kSuggestionsPredictionSchema) {
+    if (field.signal == signal) {
+      return field.name;
+    }
+  }
+  return nullptr;
+}
+
+void RecordSuggestionUKM(
+    const GroupSuggestion& shown_suggestion,
+    const std::vector<scoped_refptr<segmentation_platform::InputContext>>&
+        inputs,
+    const GroupSuggestionsDelegate::UserResponseMetadata& user_response) {
+  const char* tab_id_input =
+      GetNameForInput(URLVisitAggregateRankingModelInputSignals::kTabId);
+  const char* is_tab_selected_input = GetNameForInput(
+      URLVisitAggregateRankingModelInputSignals::kIsTabSelected);
+  const char* time_since_active_input = GetNameForInput(
+      URLVisitAggregateRankingModelInputSignals::kTimeSinceLastActiveSec);
+  const char* tab_recent_foreground_count_input = GetNameForInput(
+      URLVisitAggregateRankingModelInputSignals::kTabRecentForegroundCount);
+  const char* ukm_source_id_input = GetNameForInput(
+      URLVisitAggregateRankingModelInputSignals::kTabUkmSourceId);
+
+  // Create an event id to tie the UKM rows together.
+  uint64_t suggestion_event_id = base::RandUint64();
+
+  // `inputs` is constructed as heuristics input and then carried over to here
+  // for metrics collection. Should only get meta data from
+  // kSuggestionsPredictionSchema in below.
+  for (const auto& input : inputs) {
+    std::optional<ProcessedValue> tab_id =
+        input->GetMetadataArgument(tab_id_input);
+    std::optional<ProcessedValue> is_tab_selected =
+        input->GetMetadataArgument(is_tab_selected_input);
+    std::optional<ProcessedValue> time_since_last_active =
+        input->GetMetadataArgument(time_since_active_input);
+    std::optional<ProcessedValue> foreground_count =
+        input->GetMetadataArgument(tab_recent_foreground_count_input);
+    std::optional<ProcessedValue> ukm_source_id =
+        input->GetMetadataArgument(ukm_source_id_input);
+    if (!base::Contains(shown_suggestion.tab_ids, tab_id->float_val) ||
+        ukm_source_id->int64_val == ukm::kInvalidSourceId) {
+      continue;
+    }
+    ukm::builders::GroupSuggestionPromo_Suggestion(ukm_source_id->int64_val)
+        .SetIsActiveTab(is_tab_selected->float_val)
+        .SetSecondsSinceLastActive(
+            ukm::GetExponentialBucketMinForFineUserTiming(
+                time_since_last_active->float_val))
+        .SetRecentForegroundCount(foreground_count->float_val)
+        .SetGroupSuggestionType(
+            static_cast<int>(shown_suggestion.suggestion_reason))
+        .SetUserResponseType(static_cast<int>(user_response.user_response))
+        .SetGroupSuggestionID(suggestion_event_id)
+        .Record(ukm::UkmRecorder::Get());
+  }
+}
+
 }  // namespace
 
 class GroupSuggestionsManager::GroupSuggestionComputer {
@@ -60,7 +128,7 @@ class GroupSuggestionsManager::GroupSuggestionComputer {
   GroupSuggestionComputer(const GroupSuggestionComputer&) = delete;
   GroupSuggestionComputer& operator=(const GroupSuggestionComputer&) = delete;
 
-  void Start(GroupingHeuristics::SuggestionsCallback callback) {
+  void Start(GroupingHeuristics::SuggestionResultCallback callback) {
     visited_url_ranking_service_->FetchURLVisitAggregates(
         GetFetchOptionsForSuggestions(),
         base::BindOnce(&GroupSuggestionComputer::OnFetchedCandidates,
@@ -68,10 +136,11 @@ class GroupSuggestionsManager::GroupSuggestionComputer {
   }
 
  private:
-  void OnFetchedCandidates(GroupingHeuristics::SuggestionsCallback callback,
-                           ResultStatus status,
-                           URLVisitsMetadata metadata,
-                           std::vector<URLVisitAggregate> candidates) {
+  void OnFetchedCandidates(
+      GroupingHeuristics::SuggestionResultCallback callback,
+      ResultStatus status,
+      URLVisitsMetadata metadata,
+      std::vector<URLVisitAggregate> candidates) {
     VLOG(1) << "GroupSuggestionComputer::OnFetchedCandidates: "
             << candidates.size();
     std::erase_if(candidates,
@@ -98,7 +167,6 @@ class GroupSuggestionsManager::GroupSuggestionComputer {
   GroupingHeuristics heuristics_;
   const raw_ptr<VisitedURLRankingService> visited_url_ranking_service_;
   GroupSuggestionsService::Scope suggestion_scope_;
-  GroupingHeuristics::SuggestionsCallback callback_;
 
   base::WeakPtrFactory<GroupSuggestionComputer> weak_ptr_factory{this};
 };
@@ -157,7 +225,8 @@ void GroupSuggestionsManager::UnregisterDelegate(
 
 void GroupSuggestionsManager::OnFinishComputeSuggestions(
     const GroupSuggestionsService::Scope& scope,
-    std::optional<GroupSuggestions> suggestions) {
+    GroupingHeuristics::SuggestionsResult result) {
+  std::optional<GroupSuggestions> suggestions = std::move(result.suggestions);
   base::UmaHistogramCounts100(
       "GroupSuggestionsService.SuggestionsCount",
       suggestions ? suggestions->suggestions.size() : 0);
@@ -192,14 +261,17 @@ void GroupSuggestionsManager::OnFinishComputeSuggestions(
       suggestions->suggestions[0].tab_ids.size());
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&GroupSuggestionsManager::ShowSuggestion,
-                                weak_ptr_factory_.GetWeakPtr(), scope,
-                                std::move(*suggestions)));
+      FROM_HERE,
+      base::BindOnce(&GroupSuggestionsManager::ShowSuggestion,
+                     weak_ptr_factory_.GetWeakPtr(), scope,
+                     std::move(*suggestions), std::move(result.inputs)));
 }
 
 void GroupSuggestionsManager::ShowSuggestion(
     const GroupSuggestionsService::Scope& scope,
-    std::optional<GroupSuggestions> suggestions) {
+    std::optional<GroupSuggestions> suggestions,
+    const std::vector<scoped_refptr<segmentation_platform::InputContext>>&
+        inputs) {
   VLOG(1) << "Showing suggestion to group tabs "
           << suggestions->suggestions.size();
 
@@ -211,7 +283,7 @@ void GroupSuggestionsManager::ShowSuggestion(
     auto result_callback =
         base::BindOnce(&GroupSuggestionsManager::OnSuggestionResult,
                        weak_ptr_factory_.GetWeakPtr(),
-                       suggestions->suggestions.front().DeepCopy());
+                       suggestions->suggestions.front().DeepCopy(), inputs);
 
     delegate->ShowSuggestion(std::move(*suggestions),
                              std::move(result_callback));
@@ -223,6 +295,8 @@ void GroupSuggestionsManager::ShowSuggestion(
 
 void GroupSuggestionsManager::OnSuggestionResult(
     GroupSuggestion shown_suggestion,
+    const std::vector<scoped_refptr<segmentation_platform::InputContext>>&
+        inputs,
     GroupSuggestionsDelegate::UserResponseMetadata user_response) {
   if (user_response.user_response ==
           GroupSuggestionsDelegate::UserResponse::kNotShown ||
@@ -234,6 +308,7 @@ void GroupSuggestionsManager::OnSuggestionResult(
   DCHECK_EQ(user_response.suggestion_id, shown_suggestion.suggestion_id);
   suggestion_tracker_->AddSuggestion(shown_suggestion,
                                      user_response.user_response);
+  RecordSuggestionUKM(shown_suggestion, inputs, user_response);
 }
 
 }  // namespace visited_url_ranking

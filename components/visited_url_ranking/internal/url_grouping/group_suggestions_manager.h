@@ -9,6 +9,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "components/visited_url_ranking/internal/url_grouping/group_suggestions_tracker.h"
+#include "components/visited_url_ranking/internal/url_grouping/grouping_heuristics.h"
 #include "components/visited_url_ranking/public/url_grouping/group_suggestions.h"
 #include "components/visited_url_ranking/public/url_grouping/group_suggestions_delegate.h"
 #include "components/visited_url_ranking/public/url_grouping/group_suggestions_service.h"
@@ -47,6 +48,8 @@ class GroupSuggestionsManager {
   }
 
  private:
+  friend class GroupSuggestionsManagerTest;
+
   class GroupSuggestionComputer;
 
   struct DelegateMetadata {
@@ -55,13 +58,18 @@ class GroupSuggestionsManager {
   };
 
   void OnFinishComputeSuggestions(const GroupSuggestionsService::Scope& scope,
-                                  std::optional<GroupSuggestions> suggestions);
+                                  GroupingHeuristics::SuggestionsResult result);
 
-  void ShowSuggestion(const GroupSuggestionsService::Scope& scope,
-                      std::optional<GroupSuggestions> suggestions);
+  void ShowSuggestion(
+      const GroupSuggestionsService::Scope& scope,
+      std::optional<GroupSuggestions> suggestions,
+      const std::vector<scoped_refptr<segmentation_platform::InputContext>>&
+          inputs);
 
   void OnSuggestionResult(
       GroupSuggestion shown_suggestion,
+      const std::vector<scoped_refptr<segmentation_platform::InputContext>>&
+          inputs,
       GroupSuggestionsDelegate::UserResponseMetadata user_response);
 
   const raw_ptr<VisitedURLRankingService> visited_url_ranking_service_;

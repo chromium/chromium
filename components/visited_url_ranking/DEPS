@@ -11,6 +11,7 @@ include_rules = [
   "+components/sync/protocol",
   "+components/sync_device_info",
   "+components/sync_sessions",
+  "+components/ukm",
   "+components/url_deduplication",
   "+services/metrics/public/cpp",
   "+ui/base",
