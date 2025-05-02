@@ -56,7 +56,7 @@ suite('PrintButtonTest', function() {
       // that the preview is ready.
       const sidebar = page.$.sidebar;
       const buttonStrip =
-          sidebar.shadowRoot!.querySelector('print-preview-button-strip');
+          sidebar.shadowRoot.querySelector('print-preview-button-strip');
       assertTrue(!!buttonStrip);
       if (printBeforePreviewReady) {
         const printButton =

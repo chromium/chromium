@@ -37,7 +37,7 @@ export class PrintPreviewMediaSizeSettingsElement extends
     };
   }
 
-  accessor capability: MediaSizeCapability;
+  accessor capability: MediaSizeCapability|null;
   accessor disabled: boolean;
   private lastSelectedValue_: string = '';
 

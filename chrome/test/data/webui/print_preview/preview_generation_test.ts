@@ -562,7 +562,7 @@ suite('PreviewGenerationTest', function() {
           const originalTicket: PreviewTicket = JSON.parse(args.printTicket);
           destinationSettings =
               page.shadowRoot!.querySelector('print-preview-sidebar')!
-                  .shadowRoot!.querySelector(
+                  .shadowRoot.querySelector(
                       'print-preview-destination-settings')!;
           assertEquals('FooDevice', destinationSettings.destination.id);
           assertEquals('FooDevice', originalTicket.deviceName);
@@ -582,7 +582,8 @@ suite('PreviewGenerationTest', function() {
           barDestination.capabilities = capabilities;
           nativeLayer.resetResolver('getPreview');
           destinationSettings.destinationState = DestinationState.SET;
-          destinationSettings.set('destination', barDestination);
+          destinationSettings.getDestinationStoreForTest().selectDestination(
+              barDestination);
           destinationSettings.destinationState = DestinationState.UPDATED;
           return nativeLayer.whenCalled('getPreview');
         })

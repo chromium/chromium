@@ -51,14 +51,14 @@ suite('SystemDialogTest', function() {
           nativeLayer.whenCalled('getPrinterCapabilities'),
         ])
         .then(function() {
-          linkContainer = sidebar.shadowRoot!.querySelector(
-              'print-preview-link-container')!;
+          linkContainer =
+              sidebar.shadowRoot.querySelector('print-preview-link-container')!;
           return nativeLayer.whenCalled('getPreview');
         })
         .then(function() {
           assertEquals(
               'FooDevice',
-              sidebar.shadowRoot!
+              sidebar.shadowRoot
                   .querySelector(
                       'print-preview-destination-settings')!.destination.id);
           // <if expr="is_win">
@@ -86,10 +86,10 @@ suite('SystemDialogTest', function() {
     assertFalse(link.hidden);
 
     const moreSettingsElement =
-        sidebar.shadowRoot!.querySelector('print-preview-more-settings')!;
+        sidebar.shadowRoot.querySelector('print-preview-more-settings')!;
     moreSettingsElement.$.label.click();
     const scalingSettings =
-        sidebar.shadowRoot!.querySelector('print-preview-scaling-settings')!;
+        sidebar.shadowRoot.querySelector('print-preview-scaling-settings')!;
     assertFalse(scalingSettings.hidden);
     nativeLayer.resetResolver('getPreview');
     let previewCalls = 0;
@@ -111,7 +111,7 @@ suite('SystemDialogTest', function() {
     await microtasksFinished();
     // Expect disabled print button
     const parentElement =
-        sidebar.shadowRoot!.querySelector('print-preview-button-strip')!;
+        sidebar.shadowRoot.querySelector('print-preview-button-strip')!;
     const printButton = parentElement.shadowRoot.querySelector<CrButtonElement>(
         '.action-button')!;
     assertTrue(printButton.disabled);

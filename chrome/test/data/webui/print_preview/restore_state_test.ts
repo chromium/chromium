@@ -5,6 +5,7 @@
 import type {NativeInitialSettings, PrintPreviewAppElement, SerializedSettings, Settings, SettingsMixinInterface} from 'chrome://print/print_preview.js';
 import {getInstance, MarginsType, NativeLayerImpl, PluginProxyImpl, ScalingType} from 'chrome://print/print_preview.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {NativeLayerStub} from './native_layer_stub.js';
 import {getCddTemplateWithAdvancedSettings, getDefaultInitialSettings} from './print_preview_test_utils.js';
@@ -86,6 +87,7 @@ suite('RestoreStateTest', function() {
       nativeLayer.whenCalled('getInitialSettings'),
       nativeLayer.whenCalled('getPrinterCapabilities'),
     ]);
+    await microtasksFinished();
     verifyStickySettingsApplied(stickySettings);
   }
 
@@ -300,7 +302,7 @@ suite('RestoreStateTest', function() {
       // production, just use the model instead of creating the dialog.
       const element = testValue.settingName === 'vendorItems' ?
           getInstance() :
-          page.shadowRoot!.querySelector('print-preview-sidebar')!.shadowRoot!
+          page.shadowRoot!.querySelector('print-preview-sidebar')!.shadowRoot
               .querySelector<SettingsMixinInterface&HTMLElement>(
                   testValue.section)!;
       element.setSetting(testValue.settingName, testValue.value);

@@ -1,127 +1,94 @@
-<style include="cr-hidden-style cr-shared-style">
-  :host {
-    background-color: white;
-    border-inline-start: var(--print-preview-settings-border);
-    display: flex;
-    flex-direction: column;
-  }
-
-  @media (prefers-color-scheme: dark) {
-    :host {
-      background-color: rgba(255, 255, 255, .04);
-    }
-  }
-
-  #container {
-    color: var(--cr-primary-text-color);
-    flex: 1;
-    overflow: overlay;
-  }
-
-  :host #destinationSettings {
-    margin-top: 12px;
-  }
-
-  /* Print Preview uses lighter box-shadows compared to the default
-   * styling. */
-  :host #cr-container-shadow-top,
-  :host #cr-container-shadow-bottom {
-    box-shadow: inset 0 5px 3px -3px rgba(0, 0, 0, .2);
-  }
-
-  .settings-section {
-    display: block;
-    margin-bottom: 16px;
-    margin-top: 16px;
-  }
-</style>
-<print-preview-header id="header" destination="[[destination]]"
-    error="[[error]]" state="[[state]]" managed="[[controlsManaged]]">
+<print-preview-header id="header" .destination="${this.destination}"
+    error="${this.error}" .state="${this.state}"
+    ?managed="${this.controlsManaged}">
 </print-preview-header>
 <div id="container" show-bottom-shadow>
   <print-preview-destination-settings id="destinationSettings"
-      dark="[[inDarkMode]]" destination="{{destination}}"
-      destination-state="{{destinationState}}"
-      error="{{error}}" first-load="[[firstLoad_]]" settings="[[settings]]"
-      state="[[state]]" app-kiosk-mode="[[isInAppKioskMode_]]"
-      disabled="[[controlsDisabled_]]"
+      ?dark="${this.inDarkMode}" .destination="${this.destination}"
+      @destination-changed="${this.onDestinationChanged_}"
+      destination-state="${this.destinationState}"
+      @destination-state-changed="${this.onDestinationStateChanged_}"
+      error="${this.error}" @error-changed="${this.onErrorChanged_}"
+      ?first-load="${this.firstLoad_}" .settings="${this.settings}"
+      .state="${this.state}" ?app-kiosk-mode="${this.isInAppKioskMode_}"
+      ?disabled="${this.controlsDisabled_}"
       available class="settings-section"
-      on-destination-capabilities-changed="onDestinationCapabilitiesChanged_">
+      @destination-capabilities-changed="${this.onDestinationCapabilitiesChanged_}">
   </print-preview-destination-settings>
   <print-preview-pages-settings
-      page-count="[[pageCount]]" disabled="[[controlsDisabled_]]"
-      hidden$="[[!settings.pages.available]]" class="settings-section">
+      page-count="${this.pageCount}" ?disabled="${this.controlsDisabled_}"
+      ?hidden="${!this.settings?.pages.available || false}" class="settings-section">
   </print-preview-pages-settings>
   <print-preview-copies-settings
-      capability="[[destination.capabilities.printer.copies]]"
-      disabled="[[controlsDisabled_]]"
-      hidden$="[[!settings.copies.available]]" class="settings-section">
+      .capability="${this.destinationCapabilities_?.printer.copies || null}"
+      ?disabled="${this.controlsDisabled_}"
+      ?hidden="${!this.settings?.copies.available || false}" class="settings-section">
   </print-preview-copies-settings>
   <print-preview-layout-settings
-      disabled="[[controlsDisabled_]]"
-      hidden$="[[!settings.layout.available]]" class="settings-section">
+      ?disabled="${this.controlsDisabled_}"
+      ?hidden="${!this.settings?.layout.available || false}" class="settings-section">
   </print-preview-layout-settings>
   <print-preview-color-settings
-      disabled="[[controlsDisabled_]]"
-      hidden$="[[!settings.color.available]]" class="settings-section">
+      ?disabled="${this.controlsDisabled_}"
+      ?hidden="${!this.settings?.color.available || false}" class="settings-section">
   </print-preview-color-settings>
   <print-preview-more-settings
-      settings-expanded-by-user="{{settingsExpandedByUser_}}"
-      disabled="[[controlsDisabled_]]"
-      hidden$="[[!shouldShowMoreSettings_]]">
+      ?settings-expanded-by-user="${this.settingsExpandedByUser_}"
+      @settings-expanded-by-user-changed="${this.onSettingsExpandedByUserChanged_}"
+      ?disabled="${this.controlsDisabled_}"
+      ?hidden="${!this.shouldShowMoreSettings_}">
   </print-preview-more-settings>
   <cr-collapse id="moreSettings"
-      opened="[[shouldExpandSettings_(
-          settingsExpandedByUser_, shouldShowMoreSettings_)]]">
+      ?opened="${this.shouldExpandSettings_()}">
     <print-preview-media-size-settings
-        capability="[[destination.capabilities.printer.media_size]]"
-        disabled="[[controlsDisabled_]]"
-        hidden$="[[!settings.mediaSize.available]]"
+        .capability="${this.destinationCapabilities_?.printer.media_size || null}"
+        ?disabled="${this.controlsDisabled_}"
+        ?hidden="${!this.settings?.mediaSize.available || false}"
         class="settings-section">
     </print-preview-media-size-settings>
     <print-preview-pages-per-sheet-settings
-        disabled="[[controlsDisabled_]]"
-        hidden$="[[!settings.pagesPerSheet.available]]"
+        ?disabled="${this.controlsDisabled_}"
+        ?hidden="${!this.settings?.pagesPerSheet.available || false}"
         class="settings-section">
     </print-preview-pages-per-sheet-settings>
-    <print-preview-margins-settings state="[[state]]"
-        disabled="[[controlsDisabled_]]"
-        hidden$="[[!settings.margins.available]]"
+    <print-preview-margins-settings .state="${this.state}"
+        ?disabled="${this.controlsDisabled_}"
+        ?hidden="${!this.settings?.margins.available || false}"
         class="settings-section">
     </print-preview-margins-settings>
     <print-preview-dpi-settings
-        capability="[[destination.capabilities.printer.dpi]]"
-        disabled="[[controlsDisabled_]]"
-        hidden$="[[!settings.dpi.available]]" class="settings-section">
+        .capability="${this.destinationCapabilities_?.printer.dpi || null}"
+        ?disabled="${this.controlsDisabled_}"
+        ?hidden="${!this.settings?.dpi.available || false}" class="settings-section">
     </print-preview-dpi-settings>
     <print-preview-scaling-settings
-        disabled="[[controlsDisabled_]]" is-pdf="[[isPdf]]"
-        hidden$="[[!settings.scaling.available]]"
+        ?disabled="${this.controlsDisabled_}" ?is-pdf="${this.isPdf}"
+        ?hidden="${!this.settings?.scaling.available || false}"
         class="settings-section">
     </print-preview-scaling-settings>
     <print-preview-duplex-settings
-        disabled="[[controlsDisabled_]]" dark="[[inDarkMode]]"
-        hidden$="[[!settings.duplex.available]]"
+        ?disabled="${this.controlsDisabled_}" ?dark="${this.inDarkMode}"
+        ?hidden="${!this.settings?.duplex.available || false}"
         class="settings-section">
     </print-preview-duplex-settings>
     <print-preview-other-options-settings
-        disabled="[[controlsDisabled_]]"
-        hidden$="[[!settings.otherOptions.available]]"
+        ?disabled="${this.controlsDisabled_}"
+        ?hidden="${!this.settings?.otherOptions.available || false}"
         class="settings-section">
     </print-preview-other-options-settings>
     <print-preview-advanced-options-settings
-        destination="[[destination]]"
-        disabled="[[controlsDisabled_]]"
-        hidden$="[[!settings.vendorItems.available]]"
+        .destination="${this.destination}"
+        ?disabled="${this.controlsDisabled_}"
+        ?hidden="${!this.settings?.vendorItems.available || false}"
         class="settings-section">
     </print-preview-advanced-options-settings>
-    <print-preview-link-container destination="[[destination]]"
-        app-kiosk-mode="[[isInAppKioskMode_]]"
-        disabled="[[controlsDisabled_]]">
+    <print-preview-link-container .destination="${this.destination}"
+        ?app-kiosk-mode="${this.isInAppKioskMode_}"
+        ?disabled="${this.controlsDisabled_}">
     </print-preview-link-container>
   </cr-collapse>
 </div>
-<print-preview-button-strip destination="[[destination]]"
-    state="[[state]]" first-load="[[firstLoad_]]" is-pin-valid="[[isPinValid_]]"
-    on-print-button-focused="onPrintButtonFocused_">
+<print-preview-button-strip .destination="${this.destination}"
+    .state="${this.state}" ?first-load="${this.firstLoad_}"
+    @print-button-focused="${this.onPrintButtonFocused_}">
 </print-preview-button-strip>

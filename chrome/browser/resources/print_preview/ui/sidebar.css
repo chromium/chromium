@@ -1,0 +1,47 @@
+/* Copyright 2025 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://resources/cr_elements/cr_hidden_style_lit.css.js
+ * #import=chrome://resources/cr_elements/cr_shared_style_lit.css.js
+ * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
+ * #include=cr-hidden-style-lit cr-shared-style-lit
+ * #css_wrapper_metadata_end */
+
+:host {
+  background-color: white;
+  border-inline-start: var(--print-preview-settings-border);
+  display: flex;
+  flex-direction: column;
+}
+
+@media (prefers-color-scheme: dark) {
+  :host {
+    background-color: rgba(255, 255, 255, .04);
+  }
+}
+
+#container {
+  color: var(--cr-primary-text-color);
+  flex: 1;
+  overflow: overlay;
+}
+
+:host #destinationSettings {
+  margin-top: 12px;
+}
+
+/* Print Preview uses lighter box-shadows compared to the default
+ * styling. */
+:host #cr-container-shadow-top,
+:host #cr-container-shadow-bottom {
+  box-shadow: inset 0 5px 3px -3px rgba(0, 0, 0, .2);
+}
+
+.settings-section {
+  display: block;
+  margin-bottom: 16px;
+  margin-top: 16px;
+}

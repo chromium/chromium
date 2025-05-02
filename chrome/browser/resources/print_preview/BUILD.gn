@@ -54,6 +54,7 @@ build_webui("build") {
 
   ts_files = [
     "dark_mode_mixin.ts",
+    "dark_mode_mixin_lit.ts",
     "data/cdd.ts",
     "data/coordinate2d.ts",
     "data/destination.ts",
@@ -111,6 +112,7 @@ build_webui("build") {
     "ui/print_preview_vars.css",
     "ui/settings_section.css",
     "ui/settings_select.css",
+    "ui/sidebar.css",
     "ui/throbber.css",
     "ui/throbber_lit.css",
   ]

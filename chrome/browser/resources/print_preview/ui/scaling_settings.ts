@@ -59,7 +59,7 @@ export class PrintPreviewScalingSettingsElement extends
   }
 
   accessor disabled: boolean;
-  accessor isPdf: boolean;
+  accessor isPdf: boolean = false;
   protected accessor currentValue_: string;
   protected accessor customSelected_: boolean;
   protected accessor dropdownDisabled_: boolean = false;

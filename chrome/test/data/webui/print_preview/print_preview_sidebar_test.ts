@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {PrintPreviewModelElement, PrintPreviewSidebarElement} from 'chrome://print/print_preview.js';
+import 'chrome://print/print_preview.js';
+
+import type {PrintPreviewModelElement, PrintPreviewSidebarElement, Settings} from 'chrome://print/print_preview.js';
 import {NativeLayerImpl} from 'chrome://print/print_preview.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
-import {fakeDataBind} from 'chrome://webui-test/polymer_test_util.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {NativeLayerStub} from './native_layer_stub.js';
 import {getCddTemplate} from './print_preview_test_utils.js';
@@ -13,9 +15,7 @@ import {getCddTemplate} from './print_preview_test_utils.js';
 
 suite('PrintPreviewSidebarTest', function() {
   let sidebar: PrintPreviewSidebarElement;
-
   let model: PrintPreviewModelElement;
-
   let nativeLayer: NativeLayerStub;
 
   setup(function() {
@@ -32,33 +32,43 @@ suite('PrintPreviewSidebarTest', function() {
     sidebar.settings = model.settings;
     sidebar.setSetting('duplex', false);
     sidebar.pageCount = 1;
-    fakeDataBind(model, sidebar, 'settings');
     document.body.appendChild(sidebar);
     sidebar.init(false, 'FooDevice', null, false);
 
     return nativeLayer.whenCalled('getPrinterCapabilities');
   });
 
-  test(
-      'SettingsSectionsVisibilityChange', function() {
-        const moreSettingsElement =
-            sidebar.shadowRoot!.querySelector('print-preview-more-settings')!;
-        moreSettingsElement.$.label.click();
-        function camelToKebab(s: string): string {
-          return s.replace(/([A-Z])/g, '-$1').toLowerCase();
-        }
+  test('SettingsSectionsVisibilityChange', async function() {
+    const moreSettingsElement =
+        sidebar.shadowRoot.querySelector('print-preview-more-settings')!;
+    moreSettingsElement.$.label.click();
 
-        ['copies', 'layout', 'color', 'mediaSize', 'margins', 'dpi', 'scaling',
-         'duplex', 'otherOptions']
-            .forEach(setting => {
-              const element = sidebar.shadowRoot!.querySelector<HTMLElement>(
-                  `print-preview-${camelToKebab(setting)}-settings`)!;
-              // Show, hide and reset.
-              [true, false, true].forEach(value => {
-                sidebar.set(`settings.${setting}.available`, value);
-                // Element expected to be visible when available.
-                assertEquals(!value, element.hidden);
-              });
-            });
-      });
+    function camelToKebab(s: string): string {
+      return s.replace(/([A-Z])/g, '-$1').toLowerCase();
+    }
+
+    const keys: Array<keyof Settings> = [
+      'copies',
+      'layout',
+      'color',
+      'mediaSize',
+      'margins',
+      'dpi',
+      'scaling',
+      'duplex',
+      'otherOptions',
+    ];
+
+    for (const setting of keys) {
+      const element = sidebar.shadowRoot.querySelector<HTMLElement>(
+          `print-preview-${camelToKebab(setting)}-settings`)!;
+      // Show, hide and reset.
+      for (const value of [true, false, true]) {
+        model.set(`settings.${setting}.available`, value);
+        await microtasksFinished();
+        // Element expected to be visible when available.
+        assertEquals(!value, element.hidden);
+      }
+    }
+  });
 });

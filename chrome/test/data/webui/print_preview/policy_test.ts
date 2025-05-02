@@ -4,9 +4,9 @@
 
 import type {CrCheckboxElement, NativeInitialSettings, PolicyObjectEntry, PrintPreviewAppElement, SerializedSettings} from 'chrome://print/print_preview.js';
 import {BackgroundGraphicsModeRestriction, NativeLayerImpl, PluginProxyImpl} from 'chrome://print/print_preview.js';
-
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse} from 'chrome://webui-test/chai_assert.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {NativeLayerStub} from './native_layer_stub.js';
 import {getDefaultInitialSettings} from './print_preview_test_utils.js';
@@ -50,6 +50,7 @@ suite('PolicyTest', function() {
         ])
         .then(function() {
           flush();
+          return microtasksFinished();
         });
   }
 
@@ -98,13 +99,13 @@ suite('PolicyTest', function() {
 
   function toggleMoreSettings() {
     const moreSettingsElement =
-        page.shadowRoot!.querySelector('print-preview-sidebar')!.shadowRoot!
+        page.shadowRoot!.querySelector('print-preview-sidebar')!.shadowRoot
             .querySelector('print-preview-more-settings')!;
     moreSettingsElement.$.label.click();
   }
 
   function getCheckbox(settingName: string): CrCheckboxElement {
-    return page.shadowRoot!.querySelector('print-preview-sidebar')!.shadowRoot!
+    return page.shadowRoot!.querySelector('print-preview-sidebar')!.shadowRoot
         .querySelector('print-preview-other-options-settings')!.shadowRoot
         .querySelector<CrCheckboxElement>(`#${settingName}`)!;
   }
@@ -245,7 +246,7 @@ suite('PolicyTest', function() {
       }]);
       toggleMoreSettings();
       const mediaSettingsSelect =
-          page.shadowRoot!.querySelector('print-preview-sidebar')!.shadowRoot!
+          page.shadowRoot!.querySelector('print-preview-sidebar')!.shadowRoot
               .querySelector('print-preview-media-size-settings')!.shadowRoot
               .querySelector('print-preview-settings-select')!.shadowRoot
               .querySelector('select')!;
