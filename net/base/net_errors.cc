@@ -92,6 +92,17 @@ bool IsRequestBlockedError(int error) {
   }
 }
 
+bool IsOkOrDefinedError(int error) {
+  switch (error) {
+    case OK:
+#define NET_ERROR(label, value) case value:
+#include "net/base/net_error_list.h"
+#undef NET_ERROR
+      return true;
+  }
+  return false;
+}
+
 Error FileErrorToNetError(base::File::Error file_error) {
   switch (file_error) {
     case base::File::FILE_OK:

@@ -75,6 +75,16 @@ TEST(NetErrorsTest, IsClientCertificateError) {
   EXPECT_FALSE(IsClientCertificateError(ERR_CERT_WEAK_KEY));
 }
 
+TEST(NetErrorsTest, IsOkOrDefinedError) {
+  EXPECT_TRUE(IsOkOrDefinedError(OK));
+#define NET_ERROR(label, value) EXPECT_TRUE(IsOkOrDefinedError(value));
+#include "net/base/net_error_list.h"
+#undef NET_ERROR
+
+  // Error -813 was removed and is not defined.
+  EXPECT_FALSE(IsOkOrDefinedError(-813));
+}
+
 }  // namespace
 
 }  // namespace net
