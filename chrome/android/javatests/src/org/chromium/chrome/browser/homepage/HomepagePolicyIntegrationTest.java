@@ -25,6 +25,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -127,6 +128,7 @@ public class HomepagePolicyIntegrationTest {
                         mActivityTestRule.getActivity().getActivityTab()));
     }
 
+    @DisabledTest(message = "crbug.com/415374799")
     @Test
     @MediumTest
     @Feature({"Homepage"})
