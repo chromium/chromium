@@ -379,11 +379,10 @@ const base::FeatureParam<bool> kSkiaGraphiteDawnBackendValidation{
     &kSkiaGraphite, "dawn_backend_validation", false};
 
 // Whether Dawn backend debug labels are enabled for Skia Graphite.
-// Only enable backend labels by default on Windows or DCHECK builds on other
-// platforms since it can have non-trivial performance overhead e.g. with Metal.
+// Only enable backend labels by default on DCHECK builds since it
+// can have non-trivial performance overhead e.g. with Metal.
 const base::FeatureParam<bool> kSkiaGraphiteDawnBackendDebugLabels{
-    &kSkiaGraphite, "dawn_backend_debug_labels",
-    BUILDFLAG(IS_WIN) || DCHECK_IS_ON()};
+    &kSkiaGraphite, "dawn_backend_debug_labels", DCHECK_IS_ON()};
 
 #if BUILDFLAG(IS_WIN)
 BASE_FEATURE(kSkiaGraphiteDawnUseD3D12,
