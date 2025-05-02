@@ -51,6 +51,18 @@ class SwitchAccessTest : public AccessibilityFeatureBrowserTest,
         Shell::Get()->GetPrimaryRootWindow());
   }
 
+  void TearDownOnMainThread() override {
+    if (switch_access_test_utils_->console_observer() &&
+        !switch_access_test_utils_->console_observer()->HasErrorsOrWarnings()) {
+      // In manifest v3, there are errors that get fired during tear down that
+      // can cause tests to flake. To avoid flakiness, we reset the console
+      // observer, but only if there were no errors during the test.
+      switch_access_test_utils_->ResetConsoleObserver();
+    }
+
+    AccessibilityFeatureBrowserTest::TearDownOnMainThread();
+  }
+
   void SendVirtualKeyPress(ui::KeyboardCode key) {
     generator_->PressAndReleaseKey(key);
   }
@@ -98,7 +110,9 @@ INSTANTIATE_TEST_SUITE_P(ManifestV2,
                          SwitchAccessTest,
                          ::testing::Values(ManifestVersion::kTwo));
 
-// TODO(https://crbug.com/388867933): Add manifest v3 variant.
+INSTANTIATE_TEST_SUITE_P(ManifestV3,
+                         SwitchAccessTest,
+                         ::testing::Values(ManifestVersion::kThree));
 
 // Flaky. See https://crbug.com/1224254.
 IN_PROC_BROWSER_TEST_P(SwitchAccessTest, DISABLED_ConsumesKeyEvents) {
@@ -128,10 +142,15 @@ IN_PROC_BROWSER_TEST_P(SwitchAccessTest, DISABLED_ConsumesKeyEvents) {
                test_utils.GetValueForNodeWithClassName("sa_input").c_str());
 }
 
-IN_PROC_BROWSER_TEST_P(SwitchAccessTest, NavigateGroupings) {
+// TODO(crbug.com/388867933): flaky on MSAN. Deflake and re-enable the test.
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_NavigateGroupings DISABLED_NavigateGroupings
+#else
+#define MAYBE_NavigateGroupings NavigateGroupings
+#endif
+IN_PROC_BROWSER_TEST_P(SwitchAccessTest, MAYBE_NavigateGroupings) {
   utils()->EnableSwitchAccess({'1', 'A'} /* select */, {'2', 'B'} /* next */,
                               {'3', 'C'} /* previous */);
-
   // Load a webpage with two groups of controls.
   NavigateToUrl(GURL(R"HTML(data:text/html,
       <div role="group" aria-label="Top">
@@ -154,6 +173,8 @@ IN_PROC_BROWSER_TEST_P(SwitchAccessTest, NavigateGroupings) {
   // Next is the back button.
   SendVirtualKeyPress(ui::KeyboardCode::VKEY_2);
   utils()->WaitForFocusRing("primary", "back", "");
+
+  utils()->WaitForBackButtonInitialized();
 
   // Press the select key to press the back button, which should focus
   // on the Top container, with Northwest as the preview.
@@ -179,7 +200,14 @@ IN_PROC_BROWSER_TEST_P(SwitchAccessTest, NavigateGroupings) {
   utils()->WaitForFocusRing("primary", "button", "Southeast");
 }
 
-IN_PROC_BROWSER_TEST_P(SwitchAccessTest, NavigateButtonsInTextFieldMenu) {
+// TODO(crbug.com/388867933): flaky on MSAN. Deflake and re-enable the test.
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_NavigateButtonsInTextFieldMenu \
+  DISABLED_NavigateButtonsInTextFieldMenu
+#else
+#define MAYBE_NavigateButtonsInTextFieldMenu NavigateButtonsInTextFieldMenu
+#endif
+IN_PROC_BROWSER_TEST_P(SwitchAccessTest, MAYBE_NavigateButtonsInTextFieldMenu) {
   utils()->EnableSwitchAccess({'1', 'A'} /* select */, {'2', 'B'} /* next */,
                               {'3', 'C'} /* previous */);
 

@@ -78,6 +78,25 @@
     node.addEventListener(eventType, listener);
   };
 
+  globalThis.waitForBackButtonInitialized = async function() {
+    const check = () => {
+      const node = BackButtonNode.automationNode_;
+      return Boolean(node);
+    };
+
+    if (check()) {
+      chrome.test.sendScriptResult('ok');
+      return;
+    }
+
+    const id = setInterval(() => {
+      if (check()) {
+        clearInterval(id);
+        chrome.test.sendScriptResult('ok');
+      }
+    }, 500);
+  };
+
   FocusRingManager.setObserver((primary, preview) => {
     if (primary && primary instanceof BackButtonNode) {
       focusRingState['primary']['role'] = 'back';
