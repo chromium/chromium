@@ -28,6 +28,17 @@ PERFETTO_DEFINE_TEST_CATEGORY_PREFIXES("cat",
 //
 // Since spaces aren't allowed, use '_' to separate words in category names
 // (e.g., "content_capture").
+//
+// To ensure a category is not traced by default, use:
+//   perfetto::Category(TRACE_DISABLED_BY_DEFAULT("my_category"))
+// This introduces a category called "disabled-by-default-my_category".
+// Internally, Perfetto treats the "disabled-by-default-" prefix specially and
+// automatically slaps a "slow" tag on it (see kLegacySlowPrefix in Perfetto
+// internals), which is excluded from the default trace config (see
+// `TrackEventConfig.disabled_tags`). Note that since this is a prefix on the
+// category name, you'll need to use TRACE_DISABLED_BY_DEFAULT when logging
+// events as well.
+//
 // clang-format off
 PERFETTO_DEFINE_CATEGORIES_IN_NAMESPACE_WITH_ATTRS(
     base,
