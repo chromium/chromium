@@ -32,7 +32,6 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.c
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.enterTabSwitcher;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.getSwipeToDismissAction;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.mergeAllNormalTabsToAGroup;
-import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.switchTabModel;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.verifyTabModelTabCount;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.verifyTabSwitcherCardCount;
 import static org.chromium.components.embedder_support.util.UrlConstants.NTP_URL;
@@ -198,20 +197,6 @@ public class TabSwitcherLayoutTest {
                                     TabClosureParams.closeTab(tab).build(),
                                     /* allowDialog= */ false);
                 });
-        mActivityTestRule.loadUrlInTab(
-                mUrl, PageTransition.TYPED | PageTransition.FROM_ADDRESS_BAR, tab);
-    }
-
-    @Test
-    @MediumTest
-    public void testUrlUpdatedNotCrashing_ForTabNotInCurrentModel() throws Exception {
-        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        prepareTabs(1, 1, null);
-        enterTabSwitcher(cta);
-
-        Tab tab = cta.getTabModelSelector().getCurrentTab();
-        switchTabModel(cta, false);
-
         mActivityTestRule.loadUrlInTab(
                 mUrl, PageTransition.TYPED | PageTransition.FROM_ADDRESS_BAR, tab);
     }

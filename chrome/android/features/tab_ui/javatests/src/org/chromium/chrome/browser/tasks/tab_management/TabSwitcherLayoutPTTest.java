@@ -47,6 +47,7 @@ import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.TestAnimations.EnableAnimations;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
@@ -59,6 +60,7 @@ import org.chromium.chrome.test.transit.hub.TabSwitcherGroupCardFacility;
 import org.chromium.chrome.test.transit.hub.TabSwitcherListEditorFacility;
 import org.chromium.chrome.test.transit.hub.TabSwitcherStation;
 import org.chromium.chrome.test.transit.hub.UndoSnackbarFacility;
+import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.chrome.test.transit.page.PageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
@@ -67,6 +69,7 @@ import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.components.tab_groups.TabGroupColorPickerUtils;
+import org.chromium.ui.base.PageTransition;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
@@ -83,7 +86,6 @@ import java.util.concurrent.ExecutionException;
 // or enable Google Sans (Text) in //chrome/ tests on Android T+.
 @DisableFeatures({ANDROID_ELEGANT_TEXT_HEIGHT, TAB_GROUP_PARITY_BOTTOM_SHEET_ANDROID})
 public class TabSwitcherLayoutPTTest {
-
     private static final String TEST_URL = "/chrome/test/data/android/google.html";
 
     @Rule
@@ -696,5 +698,26 @@ public class TabSwitcherLayoutPTTest {
                                                             false)),
                                     drawable.getColor());
                         });
+    }
+
+    @Test
+    @MediumTest
+    public void testUrlUpdatedNotCrashing_ForTabNotInCurrentModel() throws Exception {
+        ChromeTabbedActivity cta = mCtaTestRule.getActivity();
+        WebPageStation regularPage = mCtaTestRule.startOnBlankPage();
+        Tab regularTab = regularPage.loadedTabElement.get();
+        IncognitoNewTabPageStation incognitoPage = regularPage.openNewIncognitoTabFast();
+        Tab incognitoTab = incognitoPage.loadedTabElement.get();
+        IncognitoTabSwitcherStation incognitoTabSwitcherStation = incognitoPage.openIncognitoTabSwitcher();
+        // Load URL in Regular Model
+        mCtaTestRule.loadUrlInTab(
+                mCtaTestRule.getTestServer().getURL(TEST_URL), PageTransition.TYPED | PageTransition.FROM_ADDRESS_BAR, regularTab);
+
+        RegularTabSwitcherStation regularTabSwitcherStation = incognitoTabSwitcherStation.selectRegularTabList();
+        // Load URL in Incognito Model
+        mCtaTestRule.loadUrlInTab(
+                mCtaTestRule.getTestServer().getURL(TEST_URL), PageTransition.TYPED | PageTransition.FROM_ADDRESS_BAR, incognitoTab);
+
+        regularTabSwitcherStation.selectTabAtIndex(0, WebPageStation.newBuilder().withExpectedUrlSubstring(TEST_URL));
     }
 }
