@@ -752,16 +752,22 @@ static const char* kInterstitialDetails = "Details";
   [ChromeEarlGrey loadURL:blockedURL];
   [self checkInterstitalIsShown];
 
-  // Verify the Zoom Text button is available and clickable.
   [ChromeEarlGreyUI openToolsMenu];
-  [[[EarlGrey
-      selectElementWithMatcher:grey_allOf(
-                                   grey_accessibilityID(kToolsMenuTextZoom),
-                                   grey_sufficientlyVisible(), nil)]
+
+  // Verify the Zoom Text button is available and has the correct enabled state.
+  UIAccessibilityTraits trait = [ChromeEarlGrey isIPadIdiom]
+                                    ? UIAccessibilityTraitNotEnabled
+                                    : UIAccessibilityTraitButton;
+  id<GREYMatcher> zoomActionMatcher = grey_allOf(
+      grey_accessibilityID(kToolsMenuTextZoom), grey_accessibilityTrait(trait),
+      grey_sufficientlyVisible(), nil);
+  id<GREYMatcher> tableViewMatcher =
+      [ChromeEarlGrey isNewOverflowMenuEnabled]
+          ? grey_accessibilityID(kPopupMenuToolsMenuActionListId)
+          : grey_accessibilityID(kPopupMenuToolsMenuTableViewId);
+  [[[EarlGrey selectElementWithMatcher:zoomActionMatcher]
          usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 200)
-      onElementWithMatcher:chrome_test_util::ToolsMenuView()]
-      assertWithMatcher:grey_not(grey_accessibilityTrait(
-                            UIAccessibilityTraitNotEnabled))];
+      onElementWithMatcher:tableViewMatcher] assertWithMatcher:grey_notNil()];
 }
 
 // Tests that users can initiate the local web approval flow.
