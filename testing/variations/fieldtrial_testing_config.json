@@ -12392,7 +12392,7 @@
             ]
         }
     ],
-    "ImageDescriptionsAlternativeRouting": [
+    "ImageDescriptionsAlternateRouting": [
         {
             "platforms": [
                 "android",
@@ -12405,7 +12405,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "ImageDescriptionsAlternativeRouting"
+                        "ImageDescriptionsAlternateRouting"
                     ]
                 }
             ]
