@@ -1502,12 +1502,12 @@ targets.mixin(
 )
 
 targets.mixin(
-    name = "mac_14_vm_optional",
+    name = "mac_15_vm_optional",
     generate_pyl_entry = False,
     swarming = targets.swarming(
         dimensions = {
             "cpu": "arm64",  # fallback on bare metal if no VMs are available
-            "os": "Mac-14",
+            "os": "Mac-15",
         },
         optional_dimensions = {
             30: {
@@ -1607,7 +1607,7 @@ targets.mixin(
     swarming = targets.swarming(
         dimensions = {
             "cpu": "arm64",
-            "os": "Mac-14",
+            "os": "Mac-14|Mac-15",
         },
     ),
 )
@@ -1617,18 +1617,18 @@ targets.mixin(
     swarming = targets.swarming(
         dimensions = {
             "cpu": "x86-64",
-            "os": "Mac-14",
+            "os": "Mac-14|Mac-15",
         },
     ),
 )
 
 targets.mixin(
-    name = "mac_14_beta_arm64",
+    name = "mac_15_beta_arm64",
     generate_pyl_entry = False,
     swarming = targets.swarming(
         dimensions = {
             "cpu": "arm64",
-            "os": "Mac-14.5",
+            "os": "Mac-15",
         },
     ),
 )
