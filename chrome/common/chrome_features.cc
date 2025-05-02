@@ -1071,7 +1071,7 @@ BASE_FEATURE(kOverridePrefetchOnSingleton,
 // Skips requesting the Parent Access Code for reauth.
 BASE_FEATURE(kSkipParentAccessCodeForReauth,
              "SkipParentAccessCodeForReauth",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enable support for "Plugin VMs" on Chrome OS.
 BASE_FEATURE(kPluginVm, "PluginVm", base::FEATURE_DISABLED_BY_DEFAULT);
