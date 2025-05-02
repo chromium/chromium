@@ -2,15 +2,14 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//ui/webui/resources/tools/bundle_js.gni")
-import("//ui/webui/resources/tools/generate_grd.gni")
-import("//ui/webui/resources/tools/minify_js.gni")
-
 # Includes default args like 'enable_js_protobuf'.
 import("proto_library.gni")
 import("proto_sources.gni")
 if (enable_js_protobuf) {
   import("//third_party/closure_compiler/compile_js.gni")
+  import("//ui/webui/resources/tools/bundle_js.gni")
+  import("//ui/webui/resources/tools/generate_grd.gni")
+  import("//ui/webui/resources/tools/minify_js.gni")
 }
 
 config("protobuf_config") {
