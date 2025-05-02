@@ -16,6 +16,7 @@ export interface BatchUploadPromoData {
 export interface BrowserProxy {
   getIncognitoAvailability(): Promise<IncognitoAvailability>;
   getCanEditBookmarks(): Promise<boolean>;
+  getCanUploadBookmarkToAccountStorage(id: string): Promise<boolean>;
   recordInHistogram(histogram: string, bucket: number, maxBucket: number): void;
 
   // Promo/BatchUpload functions
@@ -33,6 +34,10 @@ export class BrowserProxyImpl implements BrowserProxy {
 
   getCanEditBookmarks() {
     return sendWithPromise('getCanEditBookmarks');
+  }
+
+  getCanUploadBookmarkToAccountStorage(id: string) {
+    return sendWithPromise('getCanUploadBookmarkToAccountStorage', id);
   }
 
   recordInHistogram(histogram: string, bucket: number, maxBucket: number) {

@@ -26,6 +26,10 @@ class BookmarksMessageHandler : public content::WebUIMessageHandler {
   void HandleGetCanEditBookmarks(const base::Value::List& args);
   void UpdateCanEditBookmarks();
 
+  bool CanUploadBookmarkToAccountStorage(const std::string& id);
+  void HandleGetCanUploadBookmarkToAccountStorage(
+      const base::Value::List& args);
+
   // content::WebUIMessageHandler:
   void RegisterMessages() override;
   void OnJavascriptAllowed() override;
