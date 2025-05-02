@@ -46,6 +46,9 @@ import android.graphics.Bitmap;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.autofill.AutofillImageFetcherFactory;
 import org.chromium.chrome.browser.autofill.AutofillUiUtils.IconSpecs;
 import org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsComponent.Delegate;
@@ -74,6 +77,7 @@ import java.util.Optional;
  * Contains the logic for the facilitated payments component. It sets the state of the model and
  * reacts to events like clicks.
  */
+@NullMarked
 class FacilitatedPaymentsPaymentMethodsMediator {
     static final String PIX_BANK_ACCOUNT_TRANSACTION_LIMIT = "500";
 
@@ -95,6 +99,7 @@ class FacilitatedPaymentsPaymentMethodsMediator {
     private Profile mProfile;
     private InputProtector mInputProtector = new InputProtector();
 
+    @Initializer
     void initialize(Context context, PropertyModel model, Delegate delegate, Profile profile) {
         mContext = context;
         mModel = model;
@@ -437,7 +442,7 @@ class FacilitatedPaymentsPaymentMethodsMediator {
         }
     }
 
-    private static ListItem findOnlyItemOfType(ModelList screenItems, int targetType) {
+    private static @Nullable ListItem findOnlyItemOfType(ModelList screenItems, int targetType) {
         // Look for exactly one match.
         ListItem foundItem = null;
         for (ListItem item : screenItems) {

@@ -14,6 +14,8 @@ import android.content.Context;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.autofill.payments.BankAccount;
 import org.chromium.components.autofill.payments.Ewallet;
@@ -27,11 +29,12 @@ import java.util.List;
  * Implements the FacilitatedPaymentsPaymentMethodsComponent. It uses a bottom sheet to let the user
  * select a form of payment.
  */
+@NullMarked
 public class FacilitatedPaymentsPaymentMethodsCoordinator
         implements FacilitatedPaymentsPaymentMethodsComponent {
     private final FacilitatedPaymentsPaymentMethodsMediator mMediator =
             new FacilitatedPaymentsPaymentMethodsMediator();
-    private PropertyModel mFacilitatedPaymentsPaymentMethodsModel;
+    private @Nullable PropertyModel mFacilitatedPaymentsPaymentMethodsModel;
 
     @Override
     public void initialize(
@@ -101,7 +104,7 @@ public class FacilitatedPaymentsPaymentMethodsCoordinator
                 .build();
     }
 
-    PropertyModel getModelForTesting() {
+    @Nullable PropertyModel getModelForTesting() {
         return mFacilitatedPaymentsPaymentMethodsModel;
     }
 

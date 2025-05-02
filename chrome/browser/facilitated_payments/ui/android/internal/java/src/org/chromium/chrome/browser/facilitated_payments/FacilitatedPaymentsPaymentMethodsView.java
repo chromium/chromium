@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.facilitated_payments;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.content.res.Resources;
 import android.view.LayoutInflater;
@@ -11,11 +13,11 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
@@ -29,6 +31,7 @@ import org.chromium.ui.base.LocalizationUtils;
  * bottom sheet. It is a View in the Model-View-Controller component and doesn't inherit but holds
  * Android Views.
  */
+@NullMarked
 class FacilitatedPaymentsPaymentMethodsView implements BottomSheetContent {
     // Contains everything to be shown in the bottom sheet. Includes the drag handler.
     private final LinearLayout mView;
@@ -37,10 +40,10 @@ class FacilitatedPaymentsPaymentMethodsView implements BottomSheetContent {
     private final FrameLayout mScreenHolder;
     private final BottomSheetController mBottomSheetController;
     // The screen currently being shown.
-    private FacilitatedPaymentsSequenceView mCurrentScreen;
+    private @Nullable FacilitatedPaymentsSequenceView mCurrentScreen;
     // The new screen to be shown replacing {@link #mCurrentScreen}.
-    private FacilitatedPaymentsSequenceView mNextScreen;
-    private Callback<Integer> mUiEventListener;
+    private @Nullable FacilitatedPaymentsSequenceView mNextScreen;
+    private @Nullable Callback<Integer> mUiEventListener;
 
     private final BottomSheetObserver mBottomSheetObserver =
             new EmptyBottomSheetObserver() {
@@ -98,11 +101,11 @@ class FacilitatedPaymentsPaymentMethodsView implements BottomSheetContent {
      */
     void setVisible(boolean isVisible) {
         if (isVisible) {
-            assert mUiEventListener != null;
+            assert mUiEventListener != null && mNextScreen != null;
             // If the bottom sheet is already showing a screen, replace it with {@link
             // #mNextScreen}. Else, open the bottom sheet and show the {@link mNextScreen}.
             if (mBottomSheetController.isSheetOpen()) {
-                assert (mCurrentScreen != null && mNextScreen != null);
+                assert mCurrentScreen != null;
                 mScreenHolder.addView(mNextScreen.getView());
                 mScreenHolder.removeView(mCurrentScreen.getView());
             } else {
@@ -156,9 +159,8 @@ class FacilitatedPaymentsPaymentMethodsView implements BottomSheetContent {
         return mView;
     }
 
-    @Nullable
     @Override
-    public View getToolbarView() {
+    public @Nullable View getToolbarView() {
         return null;
     }
 
@@ -192,11 +194,11 @@ class FacilitatedPaymentsPaymentMethodsView implements BottomSheetContent {
 
     @Override
     public int getVerticalScrollOffset() {
-        return mCurrentScreen.getVerticalScrollOffset();
+        return assumeNonNull(mCurrentScreen).getVerticalScrollOffset();
     }
 
     @Override
-    public @NonNull String getSheetContentDescription(Context context) {
+    public String getSheetContentDescription(Context context) {
         return context.getString(
                 R.string.facilitated_payments_payment_methods_bottom_sheet_content_description);
     }

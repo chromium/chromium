@@ -18,6 +18,7 @@ import android.widget.TextView;
 
 import androidx.appcompat.content.res.AppCompatResources;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.EwalletProperties;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -26,6 +27,7 @@ import org.chromium.ui.modelutil.PropertyModel;
  * Provides functions that map changes of {@link EwalletProperties} in a {@link PropertyModel} to
  * the suitable method in {@link FacilitatedPaymentsPaymentMethodsView}.
  */
+@NullMarked
 class EwalletViewBinder {
     static View createEwalletItemView(ViewGroup parent) {
         return LayoutInflater.from(parent.getContext())
