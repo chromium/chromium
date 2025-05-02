@@ -79,3 +79,9 @@
 # crbug.com/394675204
 -org.chromium.chrome.browser.page_info.PageInfoViewDarkModeTest.testChromePage
 -org.chromium.chrome.browser.page_info.PageInfoViewDarkModeTest.testShowOnSecureWebsiteDark
+
+# crbug.com/415101606
+-org.chromium.chrome.browser.contextmenu.ContextMenuTest.testSavePage
+
+# crbug.com/415118264
+-org.chromium.chrome.browser.customtabs.CustomTabActivityIncognitoTest.ensureAddCustomMenuItemHasNoEffect

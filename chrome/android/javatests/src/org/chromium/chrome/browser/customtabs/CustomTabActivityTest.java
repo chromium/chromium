@@ -2304,10 +2304,9 @@ public class CustomTabActivityTest {
 
     @Test
     @SmallTest
-    @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
+    // See crbug.com/350394860 and crbug.com/415104768
+    @Restriction(DeviceFormFactor.PHONE)
     @EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_FOR_THIRD_PARTIES})
-    // crbug.com/350394860
-    @DisableIf.Device(value = DeviceFormFactor.TABLET)
     public void testLaunchPartialCustomTabActivity_startActivityForResult() {
         CustomTabsIntent customTabsIntent =
                 new CustomTabsIntent.Builder().setInitialActivityHeightPx(200).build();
