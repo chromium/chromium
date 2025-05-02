@@ -10,6 +10,10 @@
 #include "components/enterprise/connectors/core/analysis_settings.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 
+namespace signin {
+class IdentityManager;
+}  // namespace signin
+
 namespace enterprise_connectors {
 
 // Interface providing data about a given content analysis action. This should
@@ -20,6 +24,10 @@ class ContentAnalysisInfo {
  public:
   // The `AnalysisSettings` that should be applied to the content analysis scan.
   virtual const AnalysisSettings& settings() const = 0;
+
+  // The `signin::IdentityManager` that corresponds to the browser context where
+  // content analysis is taking place.
+  virtual signin::IdentityManager* identity_manager() const;
 
   // These methods correspond to fields in `BinaryUploadService::Request`.
   virtual int user_action_requests_count() const = 0;
@@ -38,6 +46,12 @@ class ContentAnalysisInfo {
   // separately.
   void InitializeRequest(safe_browsing::BinaryUploadService::Request* request,
                          bool include_enterprise_only_fields = true);
+
+  // Returns email of the active Gaia user based on the values provided by
+  // `tab_url()` and `identity_manager()`. Only returns a value for Workspace
+  // sites.
+  // TODO(crbug.com/415002299): Add tests for this.
+  std::string GetContentAreaAccountEmail() const;
 };
 
 }  // namespace enterprise_connectors
