@@ -68,17 +68,17 @@ bool GenerateAdtsHeader(int codec,
   hdr[1] |= 1;
 
   switch (audio_profile) {
-    case FF_PROFILE_AAC_MAIN:
+    case AV_PROFILE_AAC_MAIN:
       break;
-    case FF_PROFILE_AAC_HE:
-    case FF_PROFILE_AAC_HE_V2:
-    case FF_PROFILE_AAC_LOW:
+    case AV_PROFILE_AAC_HE:
+    case AV_PROFILE_AAC_HE_V2:
+    case AV_PROFILE_AAC_LOW:
       hdr[2] |= (1 << 6);
       break;
-    case FF_PROFILE_AAC_SSR:
+    case AV_PROFILE_AAC_SSR:
       hdr[2] |= (2 << 6);
       break;
-    case FF_PROFILE_AAC_LTP:
+    case AV_PROFILE_AAC_LTP:
       hdr[2] |= (3 << 6);
       break;
     default:

@@ -41,7 +41,7 @@ class FFmpegAACBitstreamConverterTest : public testing::Test {
     // Set up reasonable aac parameters
     memset(&test_parameters_, 0, sizeof(AVCodecParameters));
     test_parameters_.codec_id = AV_CODEC_ID_AAC;
-    test_parameters_.profile = FF_PROFILE_AAC_MAIN;
+    test_parameters_.profile = AV_PROFILE_AAC_MAIN;
     test_parameters_.ch_layout.nb_channels = 2;
     test_parameters_.extradata = extradata_header_;
     test_parameters_.extradata_size = sizeof(extradata_header_);
@@ -131,7 +131,7 @@ TEST_F(FFmpegAACBitstreamConverterTest, Conversion_AudioProfileType) {
 
   EXPECT_EQ(profile, kAacMainProfile);
 
-  test_parameters_.profile = FF_PROFILE_AAC_HE;
+  test_parameters_.profile = AV_PROFILE_AAC_HE;
   FFmpegAACBitstreamConverter converter_he(&test_parameters_);
 
   test_packet = ScopedAVPacket::Allocate();
@@ -143,7 +143,7 @@ TEST_F(FFmpegAACBitstreamConverterTest, Conversion_AudioProfileType) {
 
   EXPECT_EQ(profile, kAacLowComplexityProfile);
 
-  test_parameters_.profile = FF_PROFILE_AAC_ELD;
+  test_parameters_.profile = AV_PROFILE_AAC_ELD;
   FFmpegAACBitstreamConverter converter_eld(&test_parameters_);
 
   test_packet = ScopedAVPacket::Allocate();
