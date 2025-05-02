@@ -101,7 +101,16 @@ using base::UserMetricsAction;
                                                     toolbarClass:nil];
   _navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
 
-  [self presentScreen:[_screenProvider nextScreenType]];
+  // Check if there is a valid next screen to present. This handles the case
+  // where the flow is already completed (kStepsCompleted) or if other
+  // conditions prevent showing the next screen. Crucially, if
+  // `presentScreenIfNeeded` returns NO (e.g., because the flow completed and it
+  // called `finishPresentingScreens`), `_navigationController` might have been
+  // set to nil. Returning here prevents attempting to present a nil navigation
+  // controller.
+  if (![self presentScreenIfNeeded:[_screenProvider nextScreenType]]) {
+    return;
+  }
   // Set the presentation delegate after the child coordinator creation to
   // override the default implementation.
   _navigationController.presentationController.delegate = self;
@@ -152,15 +161,16 @@ using base::UserMetricsAction;
 }
 
 // Presents the screen of certain `type`.
-- (void)presentScreen:(ScreenType)type {
+- (BOOL)presentScreenIfNeeded:(ScreenType)type {
   // If there are no screens remaining, call delegate to stop presenting
   // screens.
   if (type == kStepsCompleted) {
     [self finishPresentingScreens];
-    return;
+    return NO;
   }
   _childCoordinator = [self createChildCoordinatorWithScreenType:type];
   [_childCoordinator start];
+  return YES;
 }
 
 // Creates a screen coordinator according to `type`.
@@ -219,7 +229,7 @@ using base::UserMetricsAction;
 - (void)screenWillFinishPresenting {
   CHECK(_childCoordinator) << base::SysNSStringToUTF8([self description]);
   [self stopChildCoordinator];
-  [self presentScreen:[_screenProvider nextScreenType]];
+  [self presentScreenIfNeeded:[_screenProvider nextScreenType]];
 }
 
 #pragma mark - HistorySyncCoordinatorDelegate
