@@ -39,7 +39,7 @@ namespace {
 const char kPrivacySandboxDialogDisplayHostHistogram[] =
     "Settings.PrivacySandbox.DialogDisplayHost";
 constexpr char kPrivacySandboxPromptHelperEventHistogram[] =
-    "Settings.PrivacySandbox.PromptHelperEvent";
+    "Settings.PrivacySandbox.PromptHelperEvent2";
 
 std::unique_ptr<KeyedService> CreateTestSyncService(content::BrowserContext*) {
   return std::make_unique<syncer::TestSyncService>();
@@ -610,9 +610,6 @@ IN_PROC_BROWSER_TEST_P(
   ValidatePromptEventEntries(
       &histogram_tester,
       {{PrivacySandboxPromptHelper::SettingsPrivacySandboxPromptHelperEvent::
-            kCreated,
-        1},
-       {PrivacySandboxPromptHelper::SettingsPrivacySandboxPromptHelperEvent::
             kSearchEngineChoiceDialogShown,
         1}});
 

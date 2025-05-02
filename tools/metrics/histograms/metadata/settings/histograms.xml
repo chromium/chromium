@@ -583,14 +583,19 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
   </summary>
 </histogram>
 
-<histogram name="Settings.PrivacySandbox.PromptHelperEvent"
+<histogram name="Settings.PrivacySandbox.PromptHelperEvent2"
     enum="SettingsPrivacySandboxPromptHelperEvent" expires_after="2026-05-07">
   <owner>boujane@google.com</owner>
   <owner>koilos@google.com</owner>
   <summary>
-    Records each event that occurs when the Privacy Sandbox prompt helper is
-    attempting to find a suitable location to show any pending Privacy Sandbox
-    prompt.
+    V2 of PromptHelperEvent because kSearchEngineChoiceDialogShown check and
+    enum emission was moved from DidFinishNavigation to ProfileRequiresPrompt.
+    Still should only be emitted if a prompt is required. All other enums
+    emitted the same. See original histogram description for more details.
+
+    Original Description: Records each event that occurs when the Privacy
+    Sandbox prompt helper is attempting to find a suitable location to show any
+    pending Privacy Sandbox prompt.
 
     The helper is only created and attached to the tab when a prompt is
     required, and so these metrics are only recorded when a prompt is required.

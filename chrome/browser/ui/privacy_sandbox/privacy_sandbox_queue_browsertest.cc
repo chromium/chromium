@@ -282,8 +282,7 @@ class PrivacySandboxQueueTestNoticeWithSearchEngine
 // Navigate to a page where the DMA notice should show and ensure suppression.
 IN_PROC_BROWSER_TEST_F(PrivacySandboxQueueTestNoticeWithSearchEngine,
                        PromptSuppressed) {
-  // When we navigate to valid page for SE dialog, we should unqueue and set the
-  // suppress flag.
+  // When we navigate to valid page for SE dialog, we should unqueue.
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL(url::kAboutBlankURL), WindowOpenDisposition::NEW_WINDOW,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
@@ -296,7 +295,7 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxQueueTestNoticeWithSearchEngine,
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
-  // After second nav do not queue or hold the handle. Suppress should be true.
+  // After second nav do not queue or hold the handle.
   ASSERT_FALSE(queue_manager().IsNoticeQueued());
   ASSERT_FALSE(queue_manager().IsHoldingHandle());
 }

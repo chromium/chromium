@@ -32,7 +32,7 @@
 
 namespace {
 constexpr char kPrivacySandboxPromptHelperEventHistogram[] =
-    "Settings.PrivacySandbox.PromptHelperEvent";
+    "Settings.PrivacySandbox.PromptHelperEvent2";
 constexpr int kMinRequiredDialogHeight = 100;
 
 // Gets the type of prompt that should be displayed for |profile|, this includes
@@ -158,30 +158,6 @@ void PrivacySandboxPromptHelper::DidFinishNavigation(
     }
   }
 
-  // `SearchEngineChoiceDialogService` may need to suppress this dialog to avoid
-  // dialog conflicts and too frequent promos.
-  // TODO(crbug.com/370804492): When we add DMA notice to queue, put this behind
-  // flag / remove.
-  SearchEngineChoiceDialogService* search_engine_choice_dialog_service =
-      SearchEngineChoiceDialogServiceFactory::GetForProfile(profile());
-  if (search_engine_choice_dialog_service &&
-      search_engine_choice_dialog_service->CanSuppressPrivacySandboxPromo()) {
-    base::UmaHistogramEnumeration(kPrivacySandboxPromptHelperEventHistogram,
-                                  SettingsPrivacySandboxPromptHelperEvent::
-                                      kSearchEngineChoiceDialogShown);
-    if (auto* privacy_sandbox_service =
-            PrivacySandboxServiceFactory::GetForProfile(profile())) {
-      privacy_sandbox::PrivacySandboxQueueManager& queue_manager =
-          privacy_sandbox_service->GetPrivacySandboxNoticeQueueManager();
-
-      queue_manager.MaybeUnqueueNotice();
-      // Set suppress queue to prevent queueing after DMA notice is
-      // shown.
-      queue_manager.SetSuppressQueue(true);
-    }
-    return;
-  }
-
   auto* browser =
       chrome::FindBrowserWithTab(navigation_handle->GetWebContents());
 
@@ -287,6 +263,18 @@ void PrivacySandboxPromptHelper::DidFinishNavigation(
 bool PrivacySandboxPromptHelper::ProfileRequiresPrompt(Profile* profile) {
   bool eligible = GetRequiredPromptType(profile) !=
                   PrivacySandboxService::PromptType::kNone;
+
+  // TODO(crbug.com/370804492): When we add DMA notice to queue, put this behind
+  // flag / remove.
+  SearchEngineChoiceDialogService* search_engine_choice_dialog_service =
+      SearchEngineChoiceDialogServiceFactory::GetForProfile(profile);
+  if (search_engine_choice_dialog_service &&
+      search_engine_choice_dialog_service->CanSuppressPrivacySandboxPromo()) {
+    base::UmaHistogramEnumeration(kPrivacySandboxPromptHelperEventHistogram,
+                                  SettingsPrivacySandboxPromptHelperEvent::
+                                      kSearchEngineChoiceDialogShown);
+    eligible = false;
+  }
 
   if (auto* privacy_sandbox_service =
           PrivacySandboxServiceFactory::GetForProfile(profile)) {
