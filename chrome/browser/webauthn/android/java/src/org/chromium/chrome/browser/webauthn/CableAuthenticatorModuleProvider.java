@@ -18,6 +18,8 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.PackageUtils;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.enterprise.util.EnterpriseInfo;
 import org.chromium.components.browser_ui.notifications.NotificationProxyUtils;
 import org.chromium.components.externalauth.ExternalAuthUtils;
@@ -29,6 +31,7 @@ import org.chromium.components.webauthn.Fido2ApiCall;
  * <p>TODO(crbug.com/348204152): Rename this class to CableInformationProvider and consider
  * providing the information from GMSCore.
  */
+@NullMarked
 public class CableAuthenticatorModuleProvider {
     // TAG is subject to a 20 character limit.
     private static final String TAG = "CableAuthModuleProv";
@@ -58,9 +61,15 @@ public class CableAuthenticatorModuleProvider {
         ThreadUtils.assertOnUiThread();
         EnterpriseInfo enterpriseInfo = EnterpriseInfo.getInstance();
         enterpriseInfo.getDeviceEnterpriseInfo(
-                (state) ->
-                        CableAuthenticatorModuleProviderJni.get()
-                                .onHaveWorkProfileResult(pointer, state.mProfileOwned));
+                (state) -> {
+                    // If the state is unable to determine, assume it's not a work profile.
+                    boolean isWorkProfile = false;
+                    if (state != null) {
+                        isWorkProfile = state.mProfileOwned;
+                    }
+                    CableAuthenticatorModuleProviderJni.get()
+                            .onHaveWorkProfileResult(pointer, isWorkProfile);
+                });
     }
 
     @CalledByNative
@@ -112,7 +121,7 @@ public class CableAuthenticatorModuleProvider {
         // onHaveLinkingInformation is called when pre-link information has been received from Play
         // Services. The argument is a CBOR-encoded linking structure, as defined in CTAP 2.2, or is
         // null on error.
-        void onHaveLinkingInformation(long pointer, byte[] cbor);
+        void onHaveLinkingInformation(long pointer, byte @Nullable [] cbor);
 
         // onHaveWorkProfileResult is called when it has been determined if
         // Chrome is running in a work profile or not.
