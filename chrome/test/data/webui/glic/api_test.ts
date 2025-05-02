@@ -596,8 +596,6 @@ class ApiTests extends ApiTestFixtureBase {
     assertEquals('', profileInfo.givenName);
     assertEquals(false, profileInfo.isManaged!);
     assertTrue((profileInfo.localProfileName?.length ?? 0) > 0);
-
-    await this.advanceToNextStep();
   }
 
   async testSetContextAccessIndicator() {
