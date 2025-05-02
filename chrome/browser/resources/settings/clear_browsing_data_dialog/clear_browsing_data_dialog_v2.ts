@@ -28,6 +28,7 @@ export interface SettingsClearBrowsingDataDialogV2Element {
     clearButton: CrButtonElement,
     deleteBrowsingDataDialog: CrDialogElement,
     showMoreButton: CrButtonElement,
+    manageOtherGoogleDataRow: HTMLElement,
   };
 }
 

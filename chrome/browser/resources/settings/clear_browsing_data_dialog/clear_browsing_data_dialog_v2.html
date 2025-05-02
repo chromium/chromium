@@ -20,6 +20,15 @@
     margin-bottom: 2px;
   }
 
+  #manageOtherGoogleDataRow {
+    border-radius: var(--dbd-container-border-radius);
+    color: var(--cr-primary-text-color);
+    background: var(--dbd-container-color);
+    margin-top: 16px;
+    display: flex;
+    align-items: center;
+  }
+
   #showMoreButton {
     --cr-button-background-color: var(--dbd-container-color);
     --cr-button-height: auto;
@@ -92,7 +101,13 @@
       <cr-icon icon="cr:expand-more" aria-hidden="true" role="presentation">
       </cr-icon>
     </cr-button>
+    <cr-link-row id="manageOtherGoogleDataRow"
+        label="$i18n{manageOtherGoogleDataTitle}"
+        sub-label="$i18n{manageOtherGoogleDataDescription}"
+        role-description="$i18n{subpageArrowRoleDescription}">
+    </cr-link-row>
   </div>
+
   <div slot="button-container" class="row-aligned">
 <if expr="not is_chromeos">
     <settings-clear-browsing-data-account-indicator>
