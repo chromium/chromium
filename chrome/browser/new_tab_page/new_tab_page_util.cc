@@ -12,6 +12,7 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/common/pref_names.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
+#include "components/page_content_annotations/core/page_content_annotations_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/search/ntp_features.h"
 #include "components/sync/service/sync_service.h"
@@ -129,6 +130,15 @@ bool IsGoogleCalendarModuleEnabled(bool is_managed_profile) {
   }
 
   return IsFeatureEnabled(ntp_features::kNtpCalendarModule);
+}
+
+bool IsMostRelevantTabResumeModuleEnabled() {
+  return g_browser_process &&
+         page_content_annotations::features::
+             ShouldExecutePageVisibilityModelOnPageContent(
+                 g_browser_process->GetApplicationLocale()) &&
+         base::FeatureList::IsEnabled(
+             ntp_features::kNtpMostRelevantTabResumptionModule);
 }
 
 bool IsMicrosoftFilesModuleEnabledForProfile(Profile* profile) {
