@@ -660,15 +660,8 @@ struct alignas(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
       PA_EXCLUSIVE_LOCKS_REQUIRED(internal::PartitionRootLock(this));
 
   // Frees memory, with |slot_start| as returned by |RawAlloc()|.
-  PA_ALWAYS_INLINE void RawFree(uintptr_t slot_start);
   PA_ALWAYS_INLINE void RawFree(uintptr_t slot_start,
                                 ReadOnlySlotSpanMetadata* slot_span)
-      PA_LOCKS_EXCLUDED(internal::PartitionRootLock(this));
-
-  PA_ALWAYS_INLINE void RawFreeBatch(FreeListEntry* head,
-                                     FreeListEntry* tail,
-                                     size_t size,
-                                     ReadOnlySlotSpanMetadata* slot_span)
       PA_LOCKS_EXCLUDED(internal::PartitionRootLock(this));
 
   PA_ALWAYS_INLINE void RawFreeWithThreadCache(
@@ -1658,12 +1651,6 @@ PA_ALWAYS_INLINE void PartitionRoot::FreeInSlotSpan(
       slot_start, this, PartitionRoot::get_freelist_dispatcher());
 }
 
-PA_ALWAYS_INLINE void PartitionRoot::RawFree(uintptr_t slot_start) {
-  ReadOnlySlotSpanMetadata* slot_span =
-      ReadOnlySlotSpanMetadata::FromSlotStart(slot_start);
-  RawFree(slot_start, slot_span);
-}
-
 #if PA_CONFIG(IS_NONCLANG_MSVC)
 // MSVC only supports inline assembly on x86. This preprocessor directive
 // is intended to be a replacement for the same.
@@ -1732,31 +1719,6 @@ PA_ALWAYS_INLINE void PartitionRoot::RawFree(
 #if PA_CONFIG(IS_NONCLANG_MSVC)
 #pragma optimize("", on)
 #endif
-
-PA_ALWAYS_INLINE void PartitionRoot::RawFreeBatch(
-    FreeListEntry* head,
-    FreeListEntry* tail,
-    size_t size,
-    ReadOnlySlotSpanMetadata* slot_span) {
-  PA_DCHECK(head);
-  PA_DCHECK(tail);
-  PA_DCHECK(size > 0);
-  PA_DCHECK(slot_span);
-  PA_CHECK(DeducedRootIsValid(slot_span));
-  // The passed freelist is likely to be just built up, which means that the
-  // corresponding pages were faulted in (without acquiring the lock). So there
-  // is no need to touch pages manually here before the lock.
-  ::partition_alloc::internal::ScopedGuard guard{
-      internal::PartitionRootLock(this)};
-  // TODO(thiabaud): Fix the accounting here. The size is correct, but the
-  // pointer is not. This only affects local tools that record each allocation,
-  // not our metrics.
-  DecreaseTotalSizeOfAllocatedBytes(
-      0u, slot_span->GetSlotSizeForBookkeeping() * size);
-
-  slot_span->ToWritable(this)->AppendFreeList(head, tail, size, this,
-                                              this->get_freelist_dispatcher());
-}
 
 #if PA_BUILDFLAG(HAS_MEMORY_TAGGING)
 PA_ALWAYS_INLINE void PartitionRoot::RetagSlotIfNeeded(void* slot_start_ptr,
