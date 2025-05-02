@@ -227,6 +227,11 @@ public class AuxiliarySearchDonor {
             return false;
         }
 
+        int schemaVersion = AuxiliarySearchUtils.getSchemaVersion();
+        if (schemaVersion < AuxiliarySearchUtils.CURRENT_SCHEMA_VERSION) {
+            mIsSchemaSet = false;
+        }
+
         if (mIsSchemaSet) {
             // The WebPage schema only needs to be set once. Early exits if it has been set before.
             handlePendingDonations();
@@ -309,6 +314,7 @@ public class AuxiliarySearchDonor {
 
         mIsSchemaSet = true;
         ChromeSharedPreferences.getInstance().writeBoolean(getSchemaSetPreferenceKey(), true);
+        AuxiliarySearchUtils.setSchemaVersion(AuxiliarySearchUtils.CURRENT_SCHEMA_VERSION);
 
         handlePendingDonations();
     }
