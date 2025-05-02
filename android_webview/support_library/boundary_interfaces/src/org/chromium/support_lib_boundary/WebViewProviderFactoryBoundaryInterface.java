@@ -10,10 +10,11 @@ import org.jspecify.annotations.NullMarked;
 
 import java.lang.reflect.InvocationHandler;
 
-/**
- */
+/** */
 @NullMarked
 public interface WebViewProviderFactoryBoundaryInterface {
+    /* WebViewBuilderBoundaryInterface */ InvocationHandler getWebViewBuilder();
+
     /* SupportLibraryWebViewChromium */ InvocationHandler createWebView(WebView webview);
 
     /* SupportLibWebkitToCompatConverter */ InvocationHandler getWebkitToCompatConverter();

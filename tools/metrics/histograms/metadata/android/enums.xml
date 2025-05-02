@@ -644,6 +644,7 @@ chromium-metrics-reviews@google.com.
   <int value="142" label="WebSettingsCompat.getPaymentRequestEnabled"/>
   <int value="143" label="WebSettingsCompat.setHasEnrolledInstrumentEnabled"/>
   <int value="144" label="WebSettingsCompat.getHasEnrolledInstrumentEnabled"/>
+  <int value="145" label="WebViewBuilder"/>
 <!-- LINT.ThenChange(/android_webview/support_library/java/src/org/chromium/support_lib_glue/SupportLibWebViewChromiumFactory.java:ApiCall) -->
 
 </enum>

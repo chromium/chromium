@@ -113,6 +113,7 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
                 Features.ASYNC_SHOULD_INTERCEPT_REQUEST + Features.DEV_SUFFIX,
                 Features.PROVIDER_WEAKLY_REF_WEBVIEW,
                 Features.PAYMENT_REQUEST,
+                Features.WEBVIEW_BUILDER + Features.DEV_SUFFIX,
                 // Add new features above. New features must include `+ Features.DEV_SUFFIX`
                 // when they're initially added (this can be removed in a future CL). The final
                 // feature should have a trailing comma for cleaner diffs.
@@ -266,6 +267,7 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
         ApiCall.GET_PAYMENT_REQUEST_ENABLED,
         ApiCall.SET_HAS_ENROLLED_INSTRUMENT_ENABLED,
         ApiCall.GET_HAS_ENROLLED_INSTRUMENT_ENABLED,
+        ApiCall.GET_WEBVIEW_BUILDER,
         // Add new constants above. The final constant should have a trailing comma for cleaner
         // diffs.
         ApiCall.COUNT, // Added to suppress WrongConstant in #recordApiCall
@@ -417,9 +419,10 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
         int GET_PAYMENT_REQUEST_ENABLED = 142;
         int SET_HAS_ENROLLED_INSTRUMENT_ENABLED = 143;
         int GET_HAS_ENROLLED_INSTRUMENT_ENABLED = 144;
+        int GET_WEBVIEW_BUILDER = 145;
 
         // Remember to update AndroidXWebkitApiCall in enums.xml when adding new values here
-        int COUNT = 145;
+        int COUNT = 146;
     }
 
     // LINT.ThenChange(/tools/metrics/histograms/metadata/android/enums.xml:AndroidXWebkitApiCall)
@@ -452,6 +455,15 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
                 BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
                         new SupportLibWebkitToCompatConverterAdapter());
         mAwInit = WebkitToSharedGlueConverter.getGlobalAwInit();
+    }
+
+    @Override
+    public /* WebViewBuilderBoundaryInterface */ InvocationHandler getWebViewBuilder() {
+        try (TraceEvent event = TraceEvent.scoped("WebView.APICall.AndroidX.GET_WEBVIEW_BUILDER")) {
+            recordApiCall(ApiCall.GET_WEBVIEW_BUILDER);
+            return BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
+                    new SupportLibWebViewBuilderAdapter());
+        }
     }
 
     @Override

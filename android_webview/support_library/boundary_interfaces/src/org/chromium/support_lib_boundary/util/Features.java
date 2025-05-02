@@ -364,4 +364,7 @@ public class Features {
     // WebSettingsCompat#setHasEnrolledInstrumentEnabled
     // WebSettingsCompat#getHasEnrolledInstrumentEnabled
     public static final String PAYMENT_REQUEST = "PAYMENT_REQUEST";
+
+    // WebViewBuilder
+    public static final String WEBVIEW_BUILDER = "WEBVIEW_BUILDER";
 }

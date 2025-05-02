@@ -225,4 +225,6 @@ public class SharedWebViewChromium {
 
         mAwContents.saveState(outState, maxSize, includeForwardState);
     }
+
+    public void configureBaseline(int baseline) {}
 }
