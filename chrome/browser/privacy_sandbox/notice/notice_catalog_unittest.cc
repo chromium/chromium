@@ -18,6 +18,8 @@ using privacy_sandbox::notice::mojom::PrivacySandboxNotice;
 using testing::Contains;
 using testing::ElementsAre;
 using testing::IsEmpty;
+using testing::Not;
+using testing::Truly;
 
 using enum privacy_sandbox::NoticeType;
 using enum privacy_sandbox::SurfaceType;
@@ -33,28 +35,28 @@ class PrivacySandboxNoticeCatalogTest : public testing::Test {
 // Test that Populate actually registers APIs and Notices.
 TEST_F(PrivacySandboxNoticeCatalogTest, PopulatesCatalog) {
   EXPECT_THAT(catalog_.GetNoticeApis(), Not(IsEmpty()));
-  EXPECT_THAT(catalog_.GetNoticeMap(), Not(IsEmpty()));
+  EXPECT_THAT(catalog_.GetNotices(), Not(IsEmpty()));
 }
 
 // No duplicate Notices (same pair of Name and surface).
 TEST_F(PrivacySandboxNoticeCatalogTest, NoDuplicateNoticeIds) {
-  EXPECT_THAT(catalog_.GetNoticeMap(), Not(IsEmpty()));
+  EXPECT_THAT(catalog_.GetNotices(), Not(IsEmpty()));
 
   std::set<Notice*> notice_pointers;
-  for (const auto& [_, notice] : catalog_.GetNoticeMap()) {
-    ASSERT_NE(notice.get(), nullptr);
-    EXPECT_TRUE(notice_pointers.insert(notice.get()).second);
+  for (Notice* notice : catalog_.GetNotices()) {
+    ASSERT_NE(notice, nullptr);
+    EXPECT_TRUE(notice_pointers.insert(notice).second);
   }
-  EXPECT_EQ(notice_pointers.size(), catalog_.GetNoticeMap().size());
+  EXPECT_EQ(notice_pointers.size(), catalog_.GetNotices().size());
 }
 
 // All notices must point to a unique Feature.
 TEST_F(PrivacySandboxNoticeCatalogTest, UniqueFeaturesPerNoticeInstance) {
-  EXPECT_THAT(catalog_.GetNoticeMap(), Not(IsEmpty()));
+  EXPECT_THAT(catalog_.GetNotices(), Not(IsEmpty()));
 
   std::set<const base::Feature*> features_seen;
-  for (const auto& [_, notice] : catalog_.GetNoticeMap()) {
-    ASSERT_NE(notice.get(), nullptr);
+  for (const Notice* notice : catalog_.GetNotices()) {
+    ASSERT_NE(notice, nullptr);
     const base::Feature* feature = notice->GetFeature();
     ASSERT_NE(feature, nullptr);
     EXPECT_TRUE(features_seen.insert(feature).second);
@@ -63,21 +65,21 @@ TEST_F(PrivacySandboxNoticeCatalogTest, UniqueFeaturesPerNoticeInstance) {
 
 // All notices have a unique storage name.
 TEST_F(PrivacySandboxNoticeCatalogTest, UniqueStorageNamePerNoticeInstance) {
-  EXPECT_THAT(catalog_.GetNoticeMap(), Not(IsEmpty()));
+  EXPECT_THAT(catalog_.GetNotices(), Not(IsEmpty()));
 
   std::set<std::string> storage_names;
-  for (const auto& [_, notice] : catalog_.GetNoticeMap()) {
-    ASSERT_NE(notice.get(), nullptr);
+  for (const Notice* notice : catalog_.GetNotices()) {
+    ASSERT_NE(notice, nullptr);
     EXPECT_TRUE(storage_names.insert(notice->GetStorageName()).second);
   }
 }
 
 // All notices must map to at least one target API.
 TEST_F(PrivacySandboxNoticeCatalogTest, AllNoticesTargetAtLeastOneApi) {
-  EXPECT_THAT(catalog_.GetNoticeMap(), Not(IsEmpty()));
+  EXPECT_THAT(catalog_.GetNotices(), Not(IsEmpty()));
 
-  for (const auto& [notice_id, notice] : catalog_.GetNoticeMap()) {
-    ASSERT_NE(notice.get(), nullptr);
+  for (Notice* notice : catalog_.GetNotices()) {
+    ASSERT_NE(notice, nullptr);
     EXPECT_THAT(notice->GetTargetApis(), Not(IsEmpty()));
   }
 }
@@ -108,7 +110,7 @@ TEST_F(PrivacySandboxNoticeCatalogTest, UniqueApiInstances) {
 // registered APIs.
 TEST_F(PrivacySandboxNoticeCatalogTest, TargetApisAreValid) {
   EXPECT_THAT(catalog_.GetNoticeApis(), Not(IsEmpty()));
-  EXPECT_THAT(catalog_.GetNoticeMap(), Not(IsEmpty()));
+  EXPECT_THAT(catalog_.GetNotices(), Not(IsEmpty()));
 
   std::set<const NoticeApi*> valid_api_pointers;
   for (const auto& api : catalog_.GetNoticeApis()) {
@@ -118,8 +120,8 @@ TEST_F(PrivacySandboxNoticeCatalogTest, TargetApisAreValid) {
 
   EXPECT_THAT(valid_api_pointers, Not(IsEmpty()));
 
-  for (const auto& [notice_id, notice] : catalog_.GetNoticeMap()) {
-    ASSERT_NE(notice.get(), nullptr);
+  for (Notice* notice : catalog_.GetNotices()) {
+    ASSERT_NE(notice, nullptr);
     for (const NoticeApi* target_api : notice->GetTargetApis()) {
       EXPECT_THAT(valid_api_pointers, Contains(target_api));
     }
@@ -130,7 +132,7 @@ TEST_F(PrivacySandboxNoticeCatalogTest, TargetApisAreValid) {
 // of registered APIs.
 TEST_F(PrivacySandboxNoticeCatalogTest, PrerequisiteApisAreValid) {
   EXPECT_THAT(catalog_.GetNoticeApis(), Not(IsEmpty()));
-  EXPECT_THAT(catalog_.GetNoticeMap(), Not(IsEmpty()));
+  EXPECT_THAT(catalog_.GetNotices(), Not(IsEmpty()));
 
   // Create a set of valid API pointers for quick lookup.
   std::set<const NoticeApi*> valid_api_pointers;
@@ -141,8 +143,8 @@ TEST_F(PrivacySandboxNoticeCatalogTest, PrerequisiteApisAreValid) {
 
   EXPECT_THAT(valid_api_pointers, Not(IsEmpty()));
 
-  for (const auto& [notice_id, notice] : catalog_.GetNoticeMap()) {
-    ASSERT_NE(notice.get(), nullptr);
+  for (Notice* notice : catalog_.GetNotices()) {
+    ASSERT_NE(notice, nullptr);
     for (const NoticeApi* prereq_api : notice->GetPreReqApis()) {
       EXPECT_THAT(valid_api_pointers, Contains(prereq_api));
     }
@@ -150,18 +152,16 @@ TEST_F(PrivacySandboxNoticeCatalogTest, PrerequisiteApisAreValid) {
 }
 
 TEST_F(PrivacySandboxNoticeCatalogTest,
-       GetNotice_ReturnsNoticeWhenExistsAndMatchesMap) {
+       GetNotice_ReturnsNoticeWhenExistsAndIsInList) {
   NoticeId id = {kTopicsConsentNotice, kDesktopNewTab};
-
-  const Notice* notice_from_get_notice = catalog_.GetNotice(id);
+  Notice* notice_from_get_notice = catalog_.GetNotice(id);
 
   // Verify the notice was found.
   ASSERT_NE(notice_from_get_notice, nullptr);
   EXPECT_EQ(notice_from_get_notice->GetNoticeId(), id);
 
-  // Verify that GetNotice points to the same object as what's found in the map.
-  EXPECT_EQ(notice_from_get_notice,
-            catalog_.GetNoticeMap().find(id)->second.get());
+  // Verify that GetNotice returns an object that's also in GetNotices.
+  EXPECT_THAT(catalog_.GetNotices(), Contains(notice_from_get_notice));
 }
 
 TEST_F(PrivacySandboxNoticeCatalogTest, GetNotice_ReturnsNullptrWhenNotExists) {
@@ -176,22 +176,17 @@ class PrivacySandboxNoticeCatalogPopulateAllNoticesTest
       public testing::WithParamInterface<int> {};
 
 TEST_P(PrivacySandboxNoticeCatalogPopulateAllNoticesTest,
-       AllNoticeEnumsExistsInTheNoticeMap) {
+       AllNoticeEnumsExistsInTheNoticesList) {
   PrivacySandboxNotice notice_enum_to_find =
       static_cast<PrivacySandboxNotice>(GetParam());
 
-  bool found = false;
-  for (const auto& [notice_id, notice_ptr] : catalog_.GetNoticeMap()) {
-    if (notice_id.first != notice_enum_to_find) {
-      continue;
-    }
-    found = true;
-    EXPECT_NE(notice_ptr, nullptr);
-    break;
-  }
-
-  EXPECT_TRUE(found) << "Notice enum value " << notice_enum_to_find
-                     << " was not found in the NoticeCatalog map.";
+  EXPECT_THAT(catalog_.GetNotices(),
+              Contains(Truly([notice_enum_to_find](Notice* notice) {
+                return notice &&
+                       notice->GetNoticeId().first == notice_enum_to_find;
+              })))
+      << "Notice enum value " << notice_enum_to_find
+      << " was not found in the NoticeCatalog's list.";
 }
 
 INSTANTIATE_TEST_SUITE_P(

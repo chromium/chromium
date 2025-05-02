@@ -41,8 +41,10 @@ NoticeCatalogImpl::GetNoticeApis() {
 Notice* NoticeCatalogImpl::RegisterAndRetrieveNewNotice(
     std::unique_ptr<Notice> (*notice_creator)(NoticeId),
     NoticeId notice_id) {
-  notices_.emplace(notice_id, notice_creator(notice_id));
-  return notices_[notice_id].get();
+  Notice* notice = notices_.emplace(notice_id, notice_creator(notice_id))
+                       .first->second.get();
+  notice_ptrs_.push_back(notice);
+  return notice;
 }
 
 void NoticeCatalogImpl::RegisterNoticeGroup(
@@ -59,8 +61,8 @@ void NoticeCatalogImpl::RegisterNoticeGroup(
   }
 }
 
-const NoticeMap& NoticeCatalogImpl::GetNoticeMap() {
-  return notices_;
+base::span<Notice*> NoticeCatalogImpl::GetNotices() {
+  return notice_ptrs_;
 }
 
 Notice* NoticeCatalogImpl::GetNotice(NoticeId notice_id) {

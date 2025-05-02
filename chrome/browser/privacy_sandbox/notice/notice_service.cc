@@ -31,7 +31,7 @@ PrivacySandboxNoticeService::PrivacySandboxNoticeService(
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   // Refresh fulfillment status for all notices at service initialization.
-  for (auto& [_, notice] : catalog_->GetNoticeMap()) {
+  for (Notice* notice : catalog_->GetNotices()) {
     CHECK(notice);
     notice->RefreshFulfillmentStatus(*notice_storage_);
   }

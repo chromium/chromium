@@ -27,9 +27,8 @@ TEST(PrivacySandboxNoticeHistogramsTest, CheckPSNoticeHistograms) {
     ASSERT_TRUE(notices.has_value());
   }
   NoticeCatalogImpl catalog;
-  const auto& notice_map = catalog.GetNoticeMap();
-  EXPECT_EQ(catalog.GetNoticeMap().size(), notices->size());
-  for (const auto& [_, notice] : notice_map) {
+  EXPECT_EQ(catalog.GetNotices().size(), notices->size());
+  for (const Notice* notice : catalog.GetNotices()) {
     // TODO(crbug.com/333406690): Implement something to clean up notices that
     // don't exist.
     if (!base::Contains(*notices, notice->GetStorageName())) {

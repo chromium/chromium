@@ -4,13 +4,13 @@
 
 #include "chrome/browser/privacy_sandbox/notice/notice_service.h"
 
-#include <map>
 #include <memory>
 #include <string>
 #include <utility>
 #include <vector>
 
 #include "base/check.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/privacy_sandbox/notice/mocks/mock_notice_catalog.h"
@@ -84,13 +84,12 @@ class PrivacySandboxNoticeServiceTest : public Test {
     catalog_unique_ptr_ = std::make_unique<NiceMock<MockNoticeCatalog>>();
     mock_catalog_ = catalog_unique_ptr_.get();
 
-    default_notice_map_ = BuildDefaultNoticeMap();
-    ON_CALL(*mock_catalog(), GetNoticeMap())
-        .WillByDefault(ReturnRef(default_notice_map_));
+    ON_CALL(*mock_catalog(), GetNotices())
+        .WillByDefault(Return(base::span(notices_)));
     ON_CALL(*mock_catalog(), GetNotice(kNotice1InCatalog))
-        .WillByDefault(Return(default_notice_map_[kNotice1InCatalog].get()));
+        .WillByDefault(Return(notice_1_.get()));
     ON_CALL(*mock_catalog(), GetNotice(kNotice2InCatalog))
-        .WillByDefault(Return(default_notice_map_[kNotice2InCatalog].get()));
+        .WillByDefault(Return(notice_2_.get()));
     ON_CALL(*mock_catalog(), GetNotice(kNoticeIdNotInCatalog))
         .WillByDefault(Return(nullptr));
   }
@@ -112,15 +111,6 @@ class PrivacySandboxNoticeServiceTest : public Test {
     return browser_task_environment_;
   }
 
-  NoticeMap BuildDefaultNoticeMap() {
-    NoticeMap map;
-    map.emplace(kNotice1InCatalog,
-                MakeNoticeWithFeature(kNotice1InCatalog, kTestFeatureA));
-    map.emplace(kNotice2InCatalog,
-                MakeNoticeWithFeature(kNotice2InCatalog, kTestFeatureB));
-    return map;
-  }
-
  private:
   content::BrowserTaskEnvironment browser_task_environment_;
   std::unique_ptr<TestingProfile> profile_;
@@ -133,7 +123,12 @@ class PrivacySandboxNoticeServiceTest : public Test {
   raw_ptr<MockNoticeStorage> mock_storage_ = nullptr;
   raw_ptr<MockNoticeCatalog> mock_catalog_ = nullptr;
 
-  NoticeMap default_notice_map_;
+  // Notices
+  std::unique_ptr<Notice> notice_1_ =
+      MakeNoticeWithFeature(kNotice1InCatalog, kTestFeatureA);
+  std::unique_ptr<Notice> notice_2_ =
+      MakeNoticeWithFeature(kNotice2InCatalog, kTestFeatureB);
+  std::vector<Notice*> notices_{notice_1_.get(), notice_2_.get()};
 };
 
 TEST_F(PrivacySandboxNoticeServiceTest,

@@ -56,6 +56,13 @@ constexpr NoticeId kNotice2InCatalog = {
 constexpr NoticeId kNoticeIdNotInCatalog = {
     PrivacySandboxNotice::kMeasurementNotice, SurfaceType::kClankCustomTab};
 
+std::unique_ptr<Notice> MakeNoticeWithFeature(NoticeId id,
+                                              const base::Feature& feature) {
+  auto notice = std::make_unique<Notice>(id);
+  notice->SetFeature(&feature);
+  return notice;
+}
+
 base::Time TimeFromMs(int64_t ms) {
   return base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(ms));
 }
@@ -98,13 +105,12 @@ class PrivacySandboxNoticeStorageTest : public testing::Test {
     scoped_feature_list_.InitAndEnableFeature(
         kPrivacySandboxMigratePrefsToSchemaV2);
 
-    default_notice_map_ = BuildDefaultNoticeMap();
-    ON_CALL(*mock_catalog(), GetNoticeMap())
-        .WillByDefault(ReturnRef(default_notice_map_));
+    ON_CALL(*mock_catalog(), GetNotices())
+        .WillByDefault(Return(base::span(notices_)));
     ON_CALL(*mock_catalog(), GetNotice(kNotice1InCatalog))
-        .WillByDefault(Return(default_notice_map_[kNotice1InCatalog].get()));
+        .WillByDefault(Return(notice_1_.get()));
     ON_CALL(*mock_catalog(), GetNotice(kNotice2InCatalog))
-        .WillByDefault(Return(default_notice_map_[kNotice2InCatalog].get()));
+        .WillByDefault(Return(notice_2_.get()));
     ON_CALL(*mock_catalog(), GetNotice(kNoticeIdNotInCatalog))
         .WillByDefault(Return(nullptr));
   }
@@ -118,22 +124,6 @@ class PrivacySandboxNoticeStorageTest : public testing::Test {
   TestingPrefServiceSimple* prefs() { return &prefs_; }
 
  protected:
-  virtual NoticeMap BuildDefaultNoticeMap() {
-    NoticeMap map;
-
-    std::unique_ptr<Notice> notice_1 =
-        std::make_unique<Consent>(kNotice1InCatalog);
-    notice_1->SetFeature(&kTestFeature1);
-    map.emplace(kNotice1InCatalog, std::move(notice_1));
-
-    std::unique_ptr<Notice> notice_2 =
-        std::make_unique<Consent>(kNotice2InCatalog);
-    notice_2->SetFeature(&kTestFeature2);
-    map.emplace(kNotice2InCatalog, std::move(notice_2));
-
-    return map;
-  }
-
   void SetNoticeStateFromJSON(const std::string& notice_name,
                               std::string&& json_data_string) {
     base::Value::Dict notice_data_dict;
@@ -155,7 +145,12 @@ class PrivacySandboxNoticeStorageTest : public testing::Test {
   base::test::ScopedFeatureList scoped_feature_list_;
 
  private:
-  NoticeMap default_notice_map_;
+  // Notices
+  std::unique_ptr<Notice> notice_1_ =
+      MakeNoticeWithFeature(kNotice1InCatalog, kTestFeature1);
+  std::unique_ptr<Notice> notice_2_ =
+      MakeNoticeWithFeature(kNotice2InCatalog, kTestFeature2);
+  std::vector<Notice*> notices_{notice_1_.get(), notice_2_.get()};
 };
 
 TEST_F(PrivacySandboxNoticeStorageTest, NoticePathNotFound) {

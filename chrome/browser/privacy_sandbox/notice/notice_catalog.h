@@ -7,18 +7,17 @@
 
 #include <absl/container/flat_hash_map.h>
 
+#include "base/containers/span.h"
 #include "chrome/browser/privacy_sandbox/notice/notice_model.h"
 
 namespace privacy_sandbox {
-
-using NoticeMap = absl::flat_hash_map<NoticeId, std::unique_ptr<Notice>>;
 
 class NoticeCatalog {
  public:
   virtual ~NoticeCatalog() = default;
   // Accessors.
   virtual const std::vector<std::unique_ptr<NoticeApi>>& GetNoticeApis() = 0;
-  virtual const NoticeMap& GetNoticeMap() = 0;
+  virtual base::span<Notice*> GetNotices() = 0;
   virtual Notice* GetNotice(NoticeId notice_id) = 0;
 };
 
@@ -28,7 +27,7 @@ class NoticeCatalogImpl : public NoticeCatalog {
   ~NoticeCatalogImpl() override;
 
   const std::vector<std::unique_ptr<NoticeApi>>& GetNoticeApis() override;
-  const NoticeMap& GetNoticeMap() override;
+  base::span<Notice*> GetNotices() override;
   Notice* GetNotice(NoticeId notice_id) override;
 
  private:
@@ -52,7 +51,8 @@ class NoticeCatalogImpl : public NoticeCatalog {
   void Populate();
 
   std::vector<std::unique_ptr<NoticeApi>> apis_;
-  NoticeMap notices_;
+  absl::flat_hash_map<NoticeId, std::unique_ptr<Notice>> notices_;
+  std::vector<Notice*> notice_ptrs_;
 };
 
 }  // namespace privacy_sandbox
