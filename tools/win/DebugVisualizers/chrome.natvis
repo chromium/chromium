@@ -27,8 +27,7 @@
   <Type Name="gfx::AxisTransform2d">
     <DisplayString>({scale_.x_}, {scale_.y_}) + ({translation_.x_}, {translation_.y_})</DisplayString>
   </Type>
-  </Type>
-    <Type Name="gfx::Transform">
+  <Type Name="gfx::Transform">
     <DisplayString Condition="full_matrix_">{{ full_matrix_={full_matrix_} }}</DisplayString>
     <DisplayString Condition="!full_matrix_">{{ axis_2d_={axis_2d_} }}</DisplayString>
     <Expand>
