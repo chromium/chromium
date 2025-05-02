@@ -499,7 +499,10 @@ export class PrintPreviewModelElement extends PolymerElement {
         value: false,
       },
 
-      destination: Object,
+      destination: {
+        type: Object,
+        observer: 'updateSettingsFromDestination',
+      },
 
       documentSettings: Object,
 
@@ -511,7 +514,6 @@ export class PrintPreviewModelElement extends PolymerElement {
 
   static get observers() {
     return [
-      'updateSettingsFromDestination_(destination.capabilities)',
       'updateSettingsAvailabilityFromDocumentSettings_(' +
           'documentSettings.isModifiable,' +
           'documentSettings.allPagesHaveCustomSize,' +
@@ -670,7 +672,7 @@ export class PrintPreviewModelElement extends PolymerElement {
    * Updates the availability of the settings sections and values of various
    * settings based on the destination capabilities.
    */
-  private updateSettingsFromDestination_() {
+  updateSettingsFromDestination() {
     if (!this.destination || !this.settings) {
       return;
     }

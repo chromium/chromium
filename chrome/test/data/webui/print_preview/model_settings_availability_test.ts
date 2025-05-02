@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {DuplexOption, MediaSizeOption, PrintPreviewModelElement} from 'chrome://print/print_preview.js';
+import type {Cdd, DuplexOption, MediaSizeOption, PrintPreviewModelElement} from 'chrome://print/print_preview.js';
 import {Destination, DestinationOrigin, DuplexType, Margins, MarginsType, Size} from 'chrome://print/print_preview.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
@@ -10,6 +10,13 @@ import {getCddTemplate, getSaveAsPdfDestination} from './print_preview_test_util
 
 suite('ModelSettingsAvailabilityTest', function() {
   let model: PrintPreviewModelElement;
+
+  function simulateCapabilitiesChange(capabilities: Cdd) {
+    model.destination.capabilities = capabilities;
+    // In prod code, capabilities changes are detected by print-preview-app
+    // which then calls updateSettingsFromDestination().
+    model.updateSettingsFromDestination();
+  }
 
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -33,9 +40,8 @@ suite('ModelSettingsAvailabilityTest', function() {
     // Create a test destination.
     model.destination =
         new Destination('FooDevice', DestinationOrigin.LOCAL, 'FooName');
-    model.set(
-        'destination.capabilities',
-        getCddTemplate(model.destination.id).capabilities);
+    simulateCapabilitiesChange(
+        getCddTemplate(model.destination.id).capabilities!);
     model.applyStickySettings();
   });
 
@@ -48,25 +54,25 @@ suite('ModelSettingsAvailabilityTest', function() {
     let caps = getCddTemplate(model.destination.id).capabilities!;
     const copiesCap = {max: 1};
     caps.printer.copies = copiesCap;
-    model.set('destination.capabilities', caps);
+    simulateCapabilitiesChange(caps);
     assertFalse(model.settings.copies.available);
 
     // Set max copies to 2 (> 1).
     caps = getCddTemplate(model.destination.id).capabilities!;
     copiesCap.max = 2;
     caps.printer.copies = copiesCap;
-    model.set('destination.capabilities', caps);
+    simulateCapabilitiesChange(caps);
     assertTrue(model.settings.copies.available);
 
     // Remove copies capability.
     caps = getCddTemplate(model.destination.id).capabilities!;
     delete caps.printer.copies;
-    model.set('destination.capabilities', caps);
+    simulateCapabilitiesChange(caps);
     assertFalse(model.settings.copies.available);
 
     // Copies is restored.
     caps = getCddTemplate(model.destination.id).capabilities!;
-    model.set('destination.capabilities', caps);
+    simulateCapabilitiesChange(caps);
     assertTrue(model.settings.copies.available);
     assertFalse(model.settings.copies.setFromUi);
   });
@@ -77,14 +83,14 @@ suite('ModelSettingsAvailabilityTest', function() {
     // Remove collate capability.
     let capabilities = getCddTemplate(model.destination.id).capabilities!;
     delete capabilities.printer.collate;
-    model.set('destination.capabilities', capabilities);
+    simulateCapabilitiesChange(capabilities);
 
     // Copies is no longer available.
     assertFalse(model.settings.collate.available);
 
     // Copies is restored.
     capabilities = getCddTemplate(model.destination.id).capabilities!;
-    model.set('destination.capabilities', capabilities);
+    simulateCapabilitiesChange(capabilities);
     assertTrue(model.settings.collate.available);
     assertFalse(model.settings.collate.setFromUi);
   });
@@ -102,13 +108,13 @@ suite('ModelSettingsAvailabilityTest', function() {
       const capabilities = getCddTemplate(model.destination.id).capabilities!;
       capabilities.printer.page_orientation = layoutCap;
       // Layout section should now be hidden.
-      model.set('destination.capabilities', capabilities);
+      simulateCapabilitiesChange(capabilities);
       assertFalse(model.settings.layout.available);
     });
 
     // Reset full capabilities
     const capabilities = getCddTemplate(model.destination.id).capabilities!;
-    model.set('destination.capabilities', capabilities);
+    simulateCapabilitiesChange(capabilities);
     assertTrue(model.settings.layout.available);
 
     // Test with PDF - should be hidden.
@@ -167,7 +173,7 @@ suite('ModelSettingsAvailabilityTest', function() {
      }].forEach(capabilityAndValue => {
       const capabilities = getCddTemplate(model.destination.id).capabilities!;
       capabilities.printer.color = capabilityAndValue.colorCap;
-      model.set('destination.capabilities', capabilities);
+      simulateCapabilitiesChange(capabilities);
       assertFalse(model.settings.color.available);
       assertEquals(
           capabilityAndValue.expectedValue,
@@ -205,7 +211,7 @@ suite('ModelSettingsAvailabilityTest', function() {
      }].forEach(capabilityAndValue => {
       const capabilities = getCddTemplate(model.destination.id).capabilities!;
       capabilities.printer.color = capabilityAndValue.colorCap;
-      model.set('destination.capabilities', capabilities);
+      simulateCapabilitiesChange(capabilities);
       assertEquals(
           capabilityAndValue.expectedValue, model.settings.color.value);
       assertTrue(model.settings.color.available);
@@ -227,7 +233,7 @@ suite('ModelSettingsAvailabilityTest', function() {
     delete capabilities.printer.media_size;
 
     // Section should now be hidden.
-    model.set('destination.capabilities', capabilities);
+    simulateCapabilitiesChange(capabilities);
     assertFalse(model.settings.mediaSize.available);
 
     // Set Save as PDF printer.
@@ -276,14 +282,14 @@ suite('ModelSettingsAvailabilityTest', function() {
     delete capabilities.printer.dpi;
 
     // Section should now be hidden.
-    model.set('destination.capabilities', capabilities);
+    simulateCapabilitiesChange(capabilities);
     assertFalse(model.settings.dpi.available);
 
     // Does not show up for only 1 option. Unavailable value should be set to
     // the only available option.
     capabilities = getCddTemplate(model.destination.id).capabilities!;
     capabilities.printer.dpi!.option.pop();
-    model.set('destination.capabilities', capabilities);
+    simulateCapabilitiesChange(capabilities);
     assertFalse(model.settings.dpi.available);
     assertEquals(200, model.settings.dpi.unavailableValue.horizontal_dpi);
     assertEquals(200, model.settings.dpi.unavailableValue.vertical_dpi);
@@ -409,7 +415,7 @@ suite('ModelSettingsAvailabilityTest', function() {
         },
       ] as MediaSizeOption[],
     };
-    model.set('destination.capabilities', capabilities);
+    simulateCapabilitiesChange(capabilities);
     model.set('settings.margins.value', MarginsType.DEFAULT);
 
     // Header/footer should be available for default big label with
@@ -450,7 +456,7 @@ suite('ModelSettingsAvailabilityTest', function() {
     // Remove duplex capability.
     let capabilities = getCddTemplate(model.destination.id).capabilities!;
     delete capabilities.printer.duplex;
-    model.set('destination.capabilities', capabilities);
+    simulateCapabilitiesChange(capabilities);
     assertFalse(model.settings.duplex.available);
     assertFalse(model.settings.duplexShortEdge.available);
 
@@ -460,7 +466,7 @@ suite('ModelSettingsAvailabilityTest', function() {
     capabilities.printer.duplex = {
       option: [{type: DuplexType.NO_DUPLEX, is_default: true}],
     };
-    model.set('destination.capabilities', capabilities);
+    simulateCapabilitiesChange(capabilities);
     assertFalse(model.settings.duplex.available);
     assertFalse(model.settings.duplexShortEdge.available);
 
@@ -473,7 +479,7 @@ suite('ModelSettingsAvailabilityTest', function() {
         {type: DuplexType.LONG_EDGE, is_default: true},
       ] as DuplexOption[],
     };
-    model.set('destination.capabilities', capabilities);
+    simulateCapabilitiesChange(capabilities);
     assertTrue(model.settings.duplex.available);
     assertFalse(model.settings.duplexShortEdge.available);
     assertFalse(model.settings.duplex.setFromUi);

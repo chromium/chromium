@@ -225,6 +225,10 @@ export class PrintPreviewSidebarElement extends PrintPreviewSidebarElementBase {
         this.shadowRoot!.querySelector('print-preview-link-container');
     return !!linkContainer && linkContainer.systemDialogLinkAvailable();
   }
+
+  private onDestinationCapabilitiesChanged_() {
+    this.notifyPath('destination.capabilities');
+  }
 }
 
 declare global {

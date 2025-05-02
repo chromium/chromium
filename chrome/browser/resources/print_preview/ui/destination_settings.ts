@@ -234,7 +234,10 @@ export class PrintPreviewDestinationSettingsElement extends
   }
 
   private onDestinationCapabilitiesReady_() {
-    this.notifyPath('destination.capabilities');
+    this.dispatchEvent(new CustomEvent('destination-capabilities-changed', {
+      bubbles: true,
+      composed: true,
+    }));
     this.updateRecentDestinations_();
     if (this.destinationState === DestinationState.SET) {
       this.destinationState = DestinationState.UPDATED;

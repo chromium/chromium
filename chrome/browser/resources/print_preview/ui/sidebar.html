@@ -45,7 +45,8 @@
       error="{{error}}" first-load="[[firstLoad_]]" settings="[[settings]]"
       state="[[state]]" app-kiosk-mode="[[isInAppKioskMode_]]"
       disabled="[[controlsDisabled_]]"
-      available class="settings-section">
+      available class="settings-section"
+      on-destination-capabilities-changed="onDestinationCapabilitiesChanged_">
   </print-preview-destination-settings>
   <print-preview-pages-settings
       page-count="[[pageCount]]" disabled="[[controlsDisabled_]]"

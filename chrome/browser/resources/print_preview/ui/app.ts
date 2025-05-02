@@ -536,6 +536,10 @@ export class PrintPreviewAppElement extends PrintPreviewAppElementBase {
   private close_() {
     this.$.state.transitTo(State.CLOSING);
   }
+
+  private onDestinationCapabilitiesChanged_() {
+    this.$.model.updateSettingsFromDestination();
+  }
 }
 
 declare global {
