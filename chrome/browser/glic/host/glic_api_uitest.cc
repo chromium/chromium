@@ -867,7 +867,13 @@ IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testRefreshSignInCookies) {
   ExecuteJsTest();
 }
 
-IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testSignInPauseState) {
+// TODO(crbug.com/415129912): test is flaky on MSAN builds.
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_testSignInPauseState DISABLED_testSignInPauseState
+#else
+#define MAYBE_testSignInPauseState testSignInPauseState
+#endif
+IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, MAYBE_testSignInPauseState) {
   // Check that Glic web client is open and can retrieve the user's info.
   ExecuteJsTest({.expect_guest_frame_destroyed = false});
 
