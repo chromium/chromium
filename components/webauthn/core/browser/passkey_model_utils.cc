@@ -13,6 +13,7 @@
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
+#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/rand_util.h"
 #include "base/strings/strcat.h"
@@ -311,6 +312,12 @@ bool DecryptWebauthnCredentialSpecificsData(
       out->set_private_key(plaintext);
       return true;
     }
+    case sync_pb::WebauthnCredentialSpecifics::kSecurityDomainEncrypted: {
+      // TODO(crbug.com/405036010): Implement handling of the new encryption
+      // scheme.
+      NOTIMPLEMENTED();
+      return false;
+    }
     case sync_pb::WebauthnCredentialSpecifics::ENCRYPTED_DATA_NOT_SET:
       DVLOG(1) << "WebauthnCredentialSpecifics.encrypted_data not set";
       return false;
@@ -335,6 +342,8 @@ bool EncryptWebauthnCredentialSpecificsData(
           kAadWebauthnCredentialSpecificsEncrypted, &ciphertext)) {
     return false;
   }
+  // TODO(crbug.com/405036010): Implement encrypting with the new encryption
+  // scheme.
   *out->mutable_encrypted() = base::StrCat({nonce, ciphertext});
   return true;
 }
