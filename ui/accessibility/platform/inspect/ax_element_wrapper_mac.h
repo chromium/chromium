@@ -109,9 +109,8 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXElementWrapper final {
 
   // Invokes a method of the given signature.
   template <typename ReturnType, typename... Args>
-  typename std::enable_if<!std::is_same<ReturnType, void>::value,
-                          ReturnType>::type
-  Invoke(SEL selector, Args... args) const {
+    requires(!std::is_same_v<ReturnType, void>)
+  ReturnType Invoke(SEL selector, Args... args) const {
     NSInvocation* invocation = InvokeInternal(selector, args...);
     ReturnType return_value;
     [invocation getReturnValue:&return_value];
@@ -119,8 +118,8 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXElementWrapper final {
   }
 
   template <typename ReturnType, typename... Args>
-  typename std::enable_if<std::is_same<ReturnType, void>::value, void>::type
-  Invoke(SEL selector, Args... args) const {
+    requires(std::is_same_v<ReturnType, void>)
+  void Invoke(SEL selector, Args... args) const {
     InvokeInternal(selector, args...);
   }
 

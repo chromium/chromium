@@ -32,13 +32,14 @@ namespace x11 {
 
 class Connection;
 
-template <typename T, typename Enable = void>
+template <typename T>
 struct EnumBase {
   using type = T;
 };
 
 template <typename T>
-struct EnumBase<T, typename std::enable_if_t<std::is_enum<T>::value>> {
+  requires(std::is_enum_v<T>)
+struct EnumBase<T> {
   using type = typename std::underlying_type<T>::type;
 };
 

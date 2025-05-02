@@ -54,14 +54,10 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXOptional final {
   bool constexpr IsError() const { return state_ == kError; }
 
   template <typename T = ValueType>
-  bool constexpr IsNotNull(
-      typename std::enable_if<!is_variant_v<T>>::type* = 0) const {
-    return value_ != nullptr;
-  }
-
-  template <typename T = ValueType>
-  bool constexpr IsNotNull(
-      typename std::enable_if<is_variant_v<T>>::type* = 0) const {
+  bool constexpr IsNotNull() const {
+    if constexpr (!is_variant_v<T>) {
+      return value_ != nullptr;
+    }
     return true;
   }
 
@@ -106,17 +102,13 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXOptional final {
   };
 
   template <typename T = ValueType>
-  explicit constexpr AXOptional(
-      State state,
-      const std::string& state_text = {},
-      typename std::enable_if<!is_variant_v<T>>::type* = 0)
+    requires(!is_variant_v<T>)
+  explicit constexpr AXOptional(State state, const std::string& state_text = {})
       : value_(nullptr), state_(state), state_text_(state_text) {}
 
   template <typename T = ValueType>
-  explicit constexpr AXOptional(
-      State state,
-      const std::string& state_text = {},
-      typename std::enable_if<is_variant_v<T>>::type* = 0)
+    requires(is_variant_v<T>)
+  explicit constexpr AXOptional(State state, const std::string& state_text = {})
       : value_(std::monostate()), state_(state), state_text_(state_text) {}
 
   explicit constexpr AXOptional(ValueType value, State state)

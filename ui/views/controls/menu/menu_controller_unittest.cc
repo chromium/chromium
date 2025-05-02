@@ -471,9 +471,8 @@ class MenuControllerTest : public ViewsTestBase,
   // default), displays `menu_item()->GetSubmenu()`. Supply a second arg if you
   // want a callback to modify the init params before calling
   // `SubmenuView::ShowAt()`.
-  template <typename T = void (*)(MenuHost::InitParams&),
-            typename =
-                std::enable_if_t<std::is_invocable_v<T, MenuHost::InitParams&>>>
+  template <typename T = void (*)(MenuHost::InitParams&)>
+    requires(std::is_invocable_v<T, MenuHost::InitParams&>)
   void ShowSubmenu(
       SubmenuView* submenu = nullptr,
       T&& adjust_params = [](auto&) {}) {

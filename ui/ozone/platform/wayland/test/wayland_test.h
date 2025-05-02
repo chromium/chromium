@@ -62,11 +62,10 @@ class WaylandTestBase {
 
   // Similar to the two methods above, but provides the convenience of using a
   // capturing lambda directly.
-  template <
-      typename Lambda,
-      typename = std::enable_if_t<
-          std::is_invocable_r_v<void, Lambda, wl::TestWaylandServerThread*> ||
-          std::is_invocable_r_v<void, Lambda>>>
+  template <typename Lambda>
+    requires(
+        std::is_invocable_r_v<void, Lambda, wl::TestWaylandServerThread*> ||
+        std::is_invocable_r_v<void, Lambda>)
   void PostToServerAndWait(Lambda&& lambda, bool no_nested_runloops = true) {
     PostToServerAndWait(base::BindLambdaForTesting(std::move(lambda)),
                         no_nested_runloops);

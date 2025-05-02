@@ -35,10 +35,10 @@ class VIEWS_EXPORT LinkFragment : public Link {
  private:
   // Returns the short-circuiting logical-"or" of invoking `f` on all linked
   // fragments, beginning with `initial_fragment`.
-  template <
-      typename F,
-      typename Fragment,  // Templated to allow const or non-const LinkFragments
-      typename = std::enable_if_t<std::is_invocable_r_v<bool, F, Fragment*>>>
+  template <typename F,
+            typename Fragment>  // Templated to allow const or non-const
+                                // LinkFragments
+    requires(std::is_invocable_r_v<bool, F, Fragment*>)
   static bool InvokeOnFragments(F&& f, Fragment* initial_fragment) {
     Fragment* fragment = initial_fragment;
     bool result = false;
