@@ -9340,13 +9340,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kHttpsFirstDialogUiDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kHttpsFirstDialogUi)},
 
-    {"https-first-mode-interstitial-august2024-refresh",
-     flag_descriptions::kHttpsFirstModeInterstitialAugust2024RefreshName,
-     flag_descriptions::kHttpsFirstModeInterstitialAugust2024RefreshDescription,
-     kOsDesktop | kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         features::kHttpsFirstModeInterstitialAugust2024Refresh)},
-
     {"https-first-mode-v2-for-engaged-sites",
      flag_descriptions::kHttpsFirstModeV2ForEngagedSitesName,
      flag_descriptions::kHttpsFirstModeV2ForEngagedSitesDescription,

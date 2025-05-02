@@ -308,7 +308,6 @@ CreateHttpsOnlyModePage(content::WebContents* web_contents) {
       std::make_unique<HttpsOnlyModeControllerClient>(web_contents,
                                                       request_url),
       state,
-      /*use_new_interstitial=*/IsNewHttpsFirstModeInterstitialEnabled(),
       /*metrics_callback=*/base::DoNothing());
 }
 

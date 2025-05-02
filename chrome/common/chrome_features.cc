@@ -825,11 +825,6 @@ BASE_FEATURE(kHttpsFirstDialogUi,
              "HttpsFirstDialogUi",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables the new interstitial UI for HTTPS-First Mode.
-BASE_FEATURE(kHttpsFirstModeInterstitialAugust2024Refresh,
-             "HttpsFirstModeInterstitialAugust2024Refresh",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Kill switch for crbug.com/1414633.
 BASE_FEATURE(kHttpsFirstModeForAdvancedProtectionUsers,
              "HttpsOnlyModeForAdvancedProtectionUsers",

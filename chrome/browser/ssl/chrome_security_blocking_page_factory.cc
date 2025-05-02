@@ -294,7 +294,6 @@ ChromeSecurityBlockingPageFactory::CreateHttpsOnlyModeBlockingPage(
   auto page =
       std::make_unique<security_interstitials::HttpsOnlyModeBlockingPage>(
           web_contents, request_url, std::move(client), interstitial_state,
-          /*use_new_interstitial=*/IsNewHttpsFirstModeInterstitialEnabled(),
           metrics_callback);
   return page;
 }
@@ -339,8 +338,9 @@ void ChromeSecurityBlockingPageFactory::OpenLoginTabForWebContents(
   Browser* browser = chrome::FindBrowserWithTab(web_contents);
 
   // If the Profile doesn't have a tabbed browser window open, do nothing.
-  if (!browser)
+  if (!browser) {
     return;
+  }
 
   SecureDnsConfig secure_dns_config =
       SystemNetworkContextManager::GetStubResolverConfigReader()
@@ -379,8 +379,9 @@ void ChromeSecurityBlockingPageFactory::OpenLoginTabForWebContents(
     captive_portal::CaptivePortalTabHelper* captive_portal_tab_helper =
         captive_portal::CaptivePortalTabHelper::FromWebContents(contents);
     if (captive_portal_tab_helper->IsLoginTab()) {
-      if (focus)
+      if (focus) {
         browser->tab_strip_model()->ActivateTabAt(i);
+      }
       return;
     }
   }
