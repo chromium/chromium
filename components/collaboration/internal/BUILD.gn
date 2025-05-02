@@ -37,6 +37,7 @@ static_library("core_internal") {
   ]
 
   deps = [
+    "//components/data_sharing/public:group_data",
     "//components/data_sharing/public:logger",
     "//components/sync/service",
     "//ui/base",

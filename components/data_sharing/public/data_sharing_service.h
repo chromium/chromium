@@ -70,15 +70,6 @@ class DataSharingService : public KeyedService, public base::SupportsUserData {
     kPersistentFailure = 3
   };
 
-  // GENERATED_JAVA_ENUM_PACKAGE: (
-  //   org.chromium.components.data_sharing)
-  enum class ParseUrlStatus {
-    kUnknown = 0,
-    kSuccess = 1,
-    kHostOrPathMismatchFailure = 2,
-    kQueryMissingFailure = 3
-  };
-
   class Observer : public base::CheckedObserver {
    public:
     Observer() = default;
@@ -124,7 +115,6 @@ class DataSharingService : public KeyedService, public base::SupportsUserData {
       base::expected<std::set<GroupData>, PeopleGroupActionFailure>;
   using SharedDataPreviewOrFailureOutcome =
       base::expected<SharedDataPreview, DataPreviewActionFailure>;
-  using ParseUrlResult = base::expected<GroupToken, ParseUrlStatus>;
 
 #if BUILDFLAG(IS_ANDROID)
   // Returns a Java object of the type DataSharingService for the given
@@ -241,10 +231,8 @@ class DataSharingService : public KeyedService, public base::SupportsUserData {
   // observer that were created after DataSharingService was started.
   virtual std::vector<GroupEvent> GetGroupEventsSinceStartup() = 0;
 
-  // DEPRECATED: Check if the given URL should be intercepted.
-  virtual bool ShouldInterceptNavigationForShareURL(const GURL& url) = 0;
-
   // DEPRECATED: Called when a data sharing type URL has been intercepted.
+  // Called when a data sharing type URL has been intercepted.
   virtual void HandleShareURLNavigationIntercepted(
       const GURL& url,
       std::unique_ptr<ShareURLInterceptionContext> context) = 0;
@@ -255,11 +243,6 @@ class DataSharingService : public KeyedService, public base::SupportsUserData {
   // EnsureGroupVisibility API is called before getting the URL for the group.
   virtual std::unique_ptr<GURL> GetDataSharingUrl(
       const GroupData& group_data) = 0;
-
-  // Parse and validate a data sharing URL. This simply parses the url. The
-  // returned group may not be valid, the caller needs to check ReadGroup or
-  // other apis to validate the group.
-  virtual ParseUrlResult ParseDataSharingUrl(const GURL& url) = 0;
 
   // This ensures that the group is open for new members to join. Only owner can
   // call this API. The owner must always call this API before

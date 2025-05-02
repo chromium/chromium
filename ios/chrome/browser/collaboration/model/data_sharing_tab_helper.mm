@@ -7,6 +7,7 @@
 #import "base/check.h"
 #import "components/collaboration/public/collaboration_flow_entry_point.h"
 #import "components/collaboration/public/collaboration_service.h"
+#import "components/data_sharing/public/data_sharing_utils.h"
 #import "ios/chrome/browser/collaboration/model/collaboration_service_factory.h"
 #import "ios/chrome/browser/data_sharing/model/ios_share_url_interception_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -55,7 +56,8 @@ void DataSharingTabHelper::ShouldAllowRequest(
 
   GURL url = net::GURLWithNSURL(request.URL);
   if (collaboration_service &&
-      collaboration_service->ShouldInterceptNavigationForShareURL(url)) {
+      data_sharing::DataSharingUtils::ShouldInterceptNavigationForShareURL(
+          url)) {
     BrowserList* browser_list = BrowserListFactory::GetForProfile(profile);
 
     std::set<Browser*> regular_browsers =

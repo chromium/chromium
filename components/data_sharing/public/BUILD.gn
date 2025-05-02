@@ -18,14 +18,13 @@ source_set("public") {
     "data_sharing_sdk_delegate.h",
     "data_sharing_service.h",
     "data_sharing_ui_delegate.h",
-    "group_data.cc",
-    "group_data.h",
     "share_url_interception_context.cc",
     "share_url_interception_context.h",
   ]
 
   public_deps = [
     ":features",
+    ":group_data",
     ":logger",
     "//base",
     "//components/data_sharing/public/protocol",
@@ -34,8 +33,6 @@ source_set("public") {
     "//net/traffic_annotation",
     "//url",
   ]
-
-  deps = [ "//components/url_formatter:url_formatter" ]
 }
 
 source_set("logger") {
@@ -64,6 +61,40 @@ static_library("features") {
   ]
 
   public_deps = [ "//base" ]
+}
+
+static_library("group_data") {
+  sources = [
+    "data_sharing_utils.cc",
+    "data_sharing_utils.h",
+    "group_data.cc",
+    "group_data.h",
+  ]
+
+  public_deps = [
+    ":features",
+    "//base",
+    "//components/data_sharing/public/protocol",
+    "//google_apis",
+    "//net",
+    "//url",
+  ]
+
+  deps = [ "//components/url_formatter:url_formatter" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  visibility = [ "//components/data_sharing:unit_tests" ]
+
+  sources = [ "data_sharing_utils_unittest.cc" ]
+
+  deps = [
+    ":group_data",
+    "//base",
+    "//testing/gtest",
+  ]
 }
 
 if (is_android) {
@@ -118,6 +149,7 @@ if (is_android) {
     sources = [
       "data_sharing_network_loader.h",
       "data_sharing_service.h",
+      "data_sharing_utils.h",
       "group_data.h",
       "server_environment.h",
     ]

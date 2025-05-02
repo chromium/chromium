@@ -571,22 +571,6 @@ DataSharingServiceImpl::GetCollaborationGroupSyncBridgeForTesting() {
   return collaboration_group_sync_bridge_.get();
 }
 
-bool DataSharingServiceImpl::ShouldInterceptNavigationForShareURL(
-    const GURL& url) {
-  ParseUrlResult result = ParseDataSharingUrl(url);
-  if (result.has_value()) {
-    return true;
-  }
-  switch (result.error()) {
-    case ParseUrlStatus::kUnknown:
-    case ParseUrlStatus::kHostOrPathMismatchFailure:
-      return false;
-    case ParseUrlStatus::kQueryMissingFailure:
-    case ParseUrlStatus::kSuccess:
-      return true;
-  }
-}
-
 void DataSharingServiceImpl::HandleShareURLNavigationIntercepted(
     const GURL& url,
     std::unique_ptr<ShareURLInterceptionContext> context) {
@@ -602,30 +586,6 @@ std::unique_ptr<GURL> DataSharingServiceImpl::GetDataSharingUrl(
     return nullptr;
   }
   return GetDataSharingUrl(group_data.group_token);
-}
-
-DataSharingService::ParseUrlResult DataSharingServiceImpl::ParseDataSharingUrl(
-    const GURL& url) {
-  GURL data_sharing_url = GURL(data_sharing::features::kDataSharingURL.Get());
-  if (url.host() != data_sharing_url.host() ||
-      url.path() != data_sharing_url.path()) {
-    return base::unexpected(ParseUrlStatus::kHostOrPathMismatchFailure);
-  }
-
-  std::string group_id;
-  std::string access_token;
-  if (!net::GetValueForKeyInQuery(url, kGroupIdKey, &group_id)) {
-    group_id.clear();
-  }
-  if (!net::GetValueForKeyInQuery(url, kTokenBlobKey, &access_token)) {
-    access_token.clear();
-  }
-
-  if (group_id.empty()) {
-    return base::unexpected(ParseUrlStatus::kQueryMissingFailure);
-  }
-
-  return base::ok(GroupToken(GroupId(group_id), access_token));
 }
 
 void DataSharingServiceImpl::EnsureGroupVisibility(

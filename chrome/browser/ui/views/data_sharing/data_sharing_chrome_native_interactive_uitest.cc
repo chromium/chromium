@@ -31,7 +31,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/interaction/interaction_test_util_browser.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
-#include "components/data_sharing/public/data_sharing_service.h"
+#include "components/data_sharing/public/data_sharing_utils.h"
 #include "components/data_sharing/public/features.h"
 #include "components/data_sharing/public/group_data.h"
 #include "components/saved_tab_groups/public/features.h"
@@ -149,12 +149,10 @@ IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiTest, ShowJoinBubble) {
       Do([=, this]() {
         auto share_link = data_sharing::GetShareLink(
             fake_collab_id, fake_access_token, browser()->profile());
-        auto* data_sharing_service =
-            data_sharing::DataSharingServiceFactory::GetForProfile(
-                browser()->profile());
         // Directly show join UI to bypass sign in flow.
         data_sharing::RequestInfo request_info(
-            data_sharing_service->ParseDataSharingUrl(share_link).value(),
+            data_sharing::DataSharingUtils::ParseDataSharingUrl(share_link)
+                .value(),
             data_sharing::FlowType::kJoin);
         DataSharingBubbleController::GetOrCreateForBrowser(browser())->Show(
             request_info);

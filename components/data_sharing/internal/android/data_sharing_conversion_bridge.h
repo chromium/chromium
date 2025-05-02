@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/data_sharing/public/data_sharing_service.h"
+#include "components/data_sharing/public/data_sharing_utils.h"
 #include "components/data_sharing/public/group_data.h"
 
 using base::android::ScopedJavaLocalRef;
@@ -43,7 +44,7 @@ class DataSharingConversionBridge {
   // org.chromium.components.data_sharing.DataSharingService.ParseUrlResult.
   static ScopedJavaLocalRef<jobject> CreateParseUrlResult(
       JNIEnv* env,
-      const DataSharingService::ParseUrlResult& data);
+      const ParseUrlResult& data);
 
   // Creates an object of
   // org.chromium.components.data_sharing.DataSharingService.

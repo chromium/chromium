@@ -21,7 +21,7 @@
 #import "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #import "components/autofill/core/browser/data_model/payments/credit_card.h"
 #import "components/breadcrumbs/core/breadcrumbs_status.h"
-#import "components/data_sharing/public/data_sharing_service.h"
+#import "components/data_sharing/public/data_sharing_utils.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/infobars/core/infobar_manager.h"
@@ -3858,12 +3858,8 @@ using UserFeedbackDataCallback =
     }
   }
 
-  data_sharing::DataSharingService* dataSharingService =
-      data_sharing::DataSharingServiceFactory::GetForProfile(targetProfile);
-
   BOOL isSharedTabGroupJoinURL =
-      dataSharingService &&
-      dataSharingService->ShouldInterceptNavigationForShareURL(
+      data_sharing::DataSharingUtils::ShouldInterceptNavigationForShareURL(
           urlLoadParams.web_params.url);
 
   CHECK(!(isSharedTabGroupJoinURL && alwaysInsertNewTab));

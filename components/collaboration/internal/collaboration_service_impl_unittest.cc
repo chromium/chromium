@@ -209,12 +209,6 @@ TEST_F(CollaborationServiceImplTest, GetServiceStatus_ManagedAccount) {
 
 TEST_F(CollaborationServiceImplTest, StartJoinFlow) {
   GURL url("http://www.example.com/");
-  data_sharing::GroupToken token(data_sharing::GroupId(kGroupId), kAccessToken);
-
-  EXPECT_CALL(mock_data_sharing_service_, ParseDataSharingUrl(url))
-      .WillOnce(Return(
-          base::unexpected(data_sharing::MockDataSharingService::
-                               ParseUrlStatus::kHostOrPathMismatchFailure)));
 
   // Invalid url parsing starts a join flow with empty GroupToken.
   std::unique_ptr<MockCollaborationControllerDelegate> mock_delegate_invalid =
@@ -233,8 +227,8 @@ TEST_F(CollaborationServiceImplTest, StartJoinFlow) {
 
   // New join flow will be appended with a valid url parsing and will stop all
   // conflicting flows.
-  EXPECT_CALL(mock_data_sharing_service_, ParseDataSharingUrl(url))
-      .WillRepeatedly(Return(base::ok(token)));
+  url = GURL(data_sharing::features::kDataSharingURL.Get() + "?g=" + kGroupId +
+             "&t=" + kAccessToken);
   std::unique_ptr<MockCollaborationControllerDelegate> mock_delegate =
       std::make_unique<MockCollaborationControllerDelegate>();
   MockCollaborationControllerDelegate* delegate_ptr = mock_delegate.get();
@@ -367,13 +361,11 @@ TEST_F(CollaborationServiceImplTest, LeaveGroup) {
 }
 
 TEST_F(CollaborationServiceImplTest, CancelAllFlows) {
-  GURL url("http://www.example.com/");
-  data_sharing::GroupToken token(data_sharing::GroupId(kGroupId), kAccessToken);
+  GURL url = GURL(data_sharing::features::kDataSharingURL.Get() +
+                  "?g=" + kGroupId + "&t=" + kAccessToken);
 
   // New join flow will be appended with a valid url parsing and will stop all
   // conflicting flows.
-  EXPECT_CALL(mock_data_sharing_service_, ParseDataSharingUrl(url))
-      .WillRepeatedly(Return(base::ok(token)));
   std::unique_ptr<MockCollaborationControllerDelegate> mock_delegate =
       std::make_unique<MockCollaborationControllerDelegate>();
   MockCollaborationControllerDelegate* delegate_ptr = mock_delegate.get();

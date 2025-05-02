@@ -9,6 +9,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/uuid.h"
 #include "build/build_config.h"
+#include "components/data_sharing/public/data_sharing_utils.h"
+#include "components/data_sharing/public/features.h"
 #include "components/saved_tab_groups/public/types.h"
 #include "components/url_formatter/url_formatter.h"
 #include "ui/gfx/text_constants.h"
@@ -73,6 +75,11 @@ std::optional<LocalTabGroupID> LocalTabGroupIDFromString(
 }
 
 bool IsURLValidForSavedTabGroups(const GURL& gurl) {
+  if (data_sharing::features::IsDataSharingFunctionalityEnabled() &&
+      data_sharing::DataSharingUtils::ShouldInterceptNavigationForShareURL(
+          gurl)) {
+    return false;
+  }
   return gurl.SchemeIsHTTPOrHTTPS() || gurl == GURL(kChromeUINewTabURL);
 }
 

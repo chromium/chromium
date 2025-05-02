@@ -7,6 +7,7 @@ include_rules = [
   "+components/url_formatter/elide_url.h",
   "+google_apis/gaia/gaia_id.h",
   "+net/android",
+  "+net/base",
   "+net/traffic_annotation",
   "+services/network/public/cpp",
 ]

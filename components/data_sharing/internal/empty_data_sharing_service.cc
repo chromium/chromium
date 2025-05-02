@@ -101,11 +101,6 @@ std::vector<GroupEvent> EmptyDataSharingService::GetGroupEventsSinceStartup() {
   return {};
 }
 
-bool EmptyDataSharingService::ShouldInterceptNavigationForShareURL(
-    const GURL& url) {
-  return false;
-}
-
 void EmptyDataSharingService::HandleShareURLNavigationIntercepted(
     const GURL& url,
     std::unique_ptr<ShareURLInterceptionContext> context) {}
@@ -113,11 +108,6 @@ void EmptyDataSharingService::HandleShareURLNavigationIntercepted(
 std::unique_ptr<GURL> EmptyDataSharingService::GetDataSharingUrl(
     const GroupData& group_data) {
   return nullptr;
-}
-
-DataSharingService::ParseUrlResult EmptyDataSharingService::ParseDataSharingUrl(
-    const GURL& url) {
-  return GroupToken();
 }
 
 void EmptyDataSharingService::EnsureGroupVisibility(

@@ -13,6 +13,7 @@
 #include "components/collaboration/public/pref_names.h"
 #include "components/collaboration/public/service_status.h"
 #include "components/data_sharing/public/data_sharing_service.h"
+#include "components/data_sharing/public/data_sharing_utils.h"
 #include "components/data_sharing/public/features.h"
 #include "components/data_sharing/public/group_data.h"
 #include "components/prefs/pref_service.h"
@@ -37,8 +38,8 @@ using Flow = CollaborationController::Flow;
 using metrics::CollaborationServiceJoinEvent;
 using metrics::CollaborationServiceShareOrManageEvent;
 using Outcome = signin::AccountManagedStatusFinder::Outcome;
-using ParseUrlResult = data_sharing::DataSharingService::ParseUrlResult;
-using ParseUrlStatus = data_sharing::DataSharingService::ParseUrlStatus;
+using ParseUrlResult = data_sharing::ParseUrlResult;
+using ParseUrlStatus = data_sharing::ParseUrlStatus;
 
 CollaborationServiceImpl::CollaborationServiceImpl(
     tab_groups::TabGroupSyncService* tab_group_sync_service,
@@ -85,7 +86,7 @@ void CollaborationServiceImpl::StartJoinFlow(
     std::unique_ptr<CollaborationControllerDelegate> delegate,
     const GURL& url) {
   const ParseUrlResult parse_result =
-      data_sharing_service_->ParseDataSharingUrl(url);
+      data_sharing::DataSharingUtils::ParseDataSharingUrl(url);
 
   GroupToken token;
   if (parse_result.has_value() && parse_result.value().IsValid()) {
@@ -244,7 +245,8 @@ void CollaborationServiceImpl::LeaveGroup(
 
 bool CollaborationServiceImpl::ShouldInterceptNavigationForShareURL(
     const GURL& url) {
-  ParseUrlResult result = data_sharing_service_->ParseDataSharingUrl(url);
+  ParseUrlResult result =
+      data_sharing::DataSharingUtils::ParseDataSharingUrl(url);
   if (result.has_value()) {
     return true;
   }

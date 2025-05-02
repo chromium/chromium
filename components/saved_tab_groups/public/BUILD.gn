@@ -28,6 +28,7 @@ source_set("public") {
   ]
   deps = [
     "//base",
+    "//components/data_sharing/public:group_data",
     "//components/saved_tab_groups/proto",
     "//components/sync",
     "//components/sync_device_info",

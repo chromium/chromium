@@ -7,6 +7,7 @@
 #include "chrome/browser/collaboration/collaboration_service_factory.h"
 #include "chrome/browser/data_sharing/data_sharing_navigation_utils.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/data_sharing/public/data_sharing_utils.h"
 #include "components/data_sharing/public/features.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
@@ -101,7 +102,7 @@ DataSharingNavigationThrottle::CheckIfShouldIntercept() {
 
   const GURL& url = navigation_handle()->GetURL();
   if (collaboration_service &&
-      collaboration_service->ShouldInterceptNavigationForShareURL(url)) {
+      DataSharingUtils::ShouldInterceptNavigationForShareURL(url)) {
     if (ShouldHandleShareURLNavigation(navigation_handle())) {
       collaboration_service->HandleShareURLNavigationIntercepted(
           url, /* context = */ nullptr,

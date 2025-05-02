@@ -1,4 +1,5 @@
 include_rules = [
+  "+components/data_sharing/public/data_sharing_utils.h",
   "+components/data_sharing/public/data_type_controller",
   "+components/data_sharing/public/logger.h",
   "+components/data_sharing/public/logger_utils.h",
