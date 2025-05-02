@@ -5,9 +5,11 @@
 package org.chromium.chrome.browser.pwd_migration;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Properties defined here reflect the visible state of the post password migration sheet */
+@NullMarked
 class PostPasswordMigrationSheetProperties {
     static final PropertyModel.WritableBooleanPropertyKey VISIBLE =
             new PropertyModel.WritableBooleanPropertyKey("visible");

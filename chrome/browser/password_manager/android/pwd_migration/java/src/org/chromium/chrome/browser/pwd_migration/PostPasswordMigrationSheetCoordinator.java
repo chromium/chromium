@@ -6,12 +6,14 @@ package org.chromium.chrome.browser.pwd_migration;
 
 import android.content.Context;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /** The coordinator of the post password migration sheet. */
+@NullMarked
 public class PostPasswordMigrationSheetCoordinator {
     private final PostPasswordMigrationSheetMediator mMediator =
             new PostPasswordMigrationSheetMediator();

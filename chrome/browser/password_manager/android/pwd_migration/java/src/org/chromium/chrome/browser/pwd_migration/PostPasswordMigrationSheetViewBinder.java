@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.pwd_migration;
 import static org.chromium.chrome.browser.pwd_migration.PostPasswordMigrationSheetProperties.DISMISS_HANDLER;
 import static org.chromium.chrome.browser.pwd_migration.PostPasswordMigrationSheetProperties.VISIBLE;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -14,6 +15,7 @@ import org.chromium.ui.modelutil.PropertyModel;
  * Provides functions that map {@link PostPasswordMigrationSheetProperties} changes in a {@link
  * PropertyModel} to the suitable method in {@link PostPasswordMigrationSheetView}.
  */
+@NullMarked
 class PostPasswordMigrationSheetViewBinder {
     /**
      * Called whenever a property in the given model changes. It updates the given view accordingly.
