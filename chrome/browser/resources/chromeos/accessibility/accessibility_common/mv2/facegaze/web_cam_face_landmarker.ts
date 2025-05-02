@@ -41,7 +41,13 @@ export class WebCamFaceLandmarker {
   // Callbacks.
   private onFaceLandmarkerResult_:
       (resultWithLatency: FaceLandmarkerResultWithLatency) => void;
-  private onTrackEndedHandler_: () => void;
+  private onTrackMuted_: VoidFunction;
+  private onTrackUnmuted_: VoidFunction;
+
+  // Event handlers that route to either private member functions or callbacks.
+  private onTrackEndedHandler_: VoidFunction;
+  private onTrackMutedHandler_: VoidFunction;
+  private onTrackUnmutedHandler_: VoidFunction;
 
   // State-related members.
   private stopped_ = true;
@@ -49,13 +55,23 @@ export class WebCamFaceLandmarker {
 
   // Testing-related members.
   declare private readyForTesting_: Promise<void>;
-  private setReadyForTesting_?: () => void;
+  private setReadyForTesting_?: VoidFunction;
 
   constructor(
       onFaceLandmarkerResult:
-          (resultWithLatency: FaceLandmarkerResultWithLatency) => void) {
+          (resultWithLatency: FaceLandmarkerResultWithLatency) => void,
+      onTrackMuted: VoidFunction, onTrackUnmuted: VoidFunction) {
+    // Save callbacks.
     this.onFaceLandmarkerResult_ = onFaceLandmarkerResult;
+    this.onTrackMuted_ = onTrackMuted;
+    this.onTrackUnmuted_ = onTrackUnmuted;
+
+    // Create handlers that run the above callbacks.
     this.onTrackEndedHandler_ = () => this.onTrackEnded_();
+    this.onTrackMutedHandler_ = () => {
+      this.onTrackMuted_();
+    };
+    this.onTrackUnmutedHandler_ = () => this.onTrackUnmuted_();
     this.intervalID_ = null;
 
     this.readyForTesting_ = new Promise(resolve => {
@@ -144,12 +160,17 @@ export class WebCamFaceLandmarker {
     this.imageCapture_ = new ImageCapture(tracks[0]);
     this.imageCapture_.track.addEventListener(
         'ended', this.onTrackEndedHandler_);
+    this.imageCapture_.track.addEventListener(
+        'mute', this.onTrackMutedHandler_);
+    this.imageCapture_.track.addEventListener(
+        'unmute', this.onTrackUnmutedHandler_);
   }
 
   private onTrackEnded_(): void {
     if (this.imageCapture_) {
       // Tell MediaStreamTrack that we are no longer using this ended track.
       this.imageCapture_.track.stop();
+      this.removeEventListeners_();
     }
     this.imageCapture_ = undefined;
     this.connectToWebCam_();
@@ -182,11 +203,21 @@ export class WebCamFaceLandmarker {
     this.onFaceLandmarkerResult_({result, latency});
   }
 
-  stop(): void {
-    this.stopped_ = true;
+  private removeEventListeners_(): void {
     if (this.imageCapture_) {
       this.imageCapture_.track.removeEventListener(
           'ended', this.onTrackEndedHandler_);
+      this.imageCapture_.track.removeEventListener(
+          'mute', this.onTrackMutedHandler_);
+      this.imageCapture_.track.removeEventListener(
+          'unmute', this.onTrackUnmutedHandler_);
+    }
+  }
+
+  stop(): void {
+    this.stopped_ = true;
+    if (this.imageCapture_) {
+      this.removeEventListeners_();
       this.imageCapture_.track.stop();
       this.imageCapture_ = undefined;
     }

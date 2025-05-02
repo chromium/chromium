@@ -31,6 +31,7 @@ export class FaceGaze {
   // isFaceLandmarkerResultValid_ is initialized to true to ensure the correct
   // UI messages are shown on startup.
   private isFaceLandmarkerResultValid_ = true;
+  private isCameraMuted_ = false;
   private onInitCallbackForTest_: (() => void)|undefined;
   private prefsListener_: (prefs: PrefObject[]) => void;
 
@@ -39,7 +40,8 @@ export class FaceGaze {
         (resultWithLatency: FaceLandmarkerResultWithLatency) => {
           const {result, latency} = resultWithLatency;
           this.processFaceLandmarkerResult_(result, latency);
-        });
+        },
+        () => this.onCameraFeedMuted_(), () => this.onCameraFeedUnmuted_());
 
     this.bubbleController_ = new BubbleController(() => {
       return {
@@ -60,6 +62,7 @@ export class FaceGaze {
             this.gestureHandler_.getGestureForPrecision() :
             undefined,
         isFaceLandmarkerResultValid: this.isFaceLandmarkerResultValid_,
+        isCameraMuted: this.isCameraMuted_,
       };
     });
 
@@ -289,6 +292,24 @@ export class FaceGaze {
     this.bubbleController_.resetBubble();
   }
 
+  private onCameraFeedMuted_(): void {
+    if (this.isCameraMuted_) {
+      return;
+    }
+
+    this.isCameraMuted_ = true;
+    this.bubbleController_.resetBubble();
+  }
+
+  private onCameraFeedUnmuted_(): void {
+    if (!this.isCameraMuted_) {
+      return;
+    }
+
+    this.isCameraMuted_ = false;
+    this.bubbleController_.resetBubble();
+  }
+
   /** Destructor to remove any listeners. */
   onFaceGazeDisabled(): void {
     this.mouseController_.reset();
@@ -298,7 +319,7 @@ export class FaceGaze {
   }
 
   /** Allows tests to wait for FaceGaze to be fully initialized. */
-  setOnInitCallbackForTest(callback: () => void): void {
+  setOnInitCallbackForTest(callback: VoidFunction): void {
     if (!this.initialized_) {
       this.onInitCallbackForTest_ = callback;
       return;

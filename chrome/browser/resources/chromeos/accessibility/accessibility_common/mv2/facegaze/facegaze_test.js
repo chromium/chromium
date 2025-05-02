@@ -3041,3 +3041,22 @@ AX_TEST_F('FaceGazeMV2Test', 'InvalidResult', async function() {
   this.processFaceLandmarkerResult(result, false);
   assertEquals(this.getDefaultBubbleText(), this.getBubbleText());
 });
+
+// Verifies that FaceGaze can handle scenarios where the camera is muted, which
+// happens when the screen has been locked for a short amount of time, and then
+// unmuted, which happens when the user signs back in.
+AX_TEST_F('FaceGazeMV2Test', 'CameraMutedAndUnmuted', async function() {
+  const config = new Config();
+  await this.configureFaceGaze(config);
+
+  // Mute the camera.
+  this.getFaceGaze().webCamFaceLandmarker_.onTrackMutedHandler_();
+  assertEquals(
+      `Camera temporarily unavailable, please ensure you're signed ` +
+          `in and that your camera is enabled`,
+      this.getBubbleText());
+
+  // Unmute the camera.
+  this.getFaceGaze().webCamFaceLandmarker_.onTrackUnmutedHandler_();
+  assertEquals(this.getDefaultBubbleText(), this.getBubbleText());
+});

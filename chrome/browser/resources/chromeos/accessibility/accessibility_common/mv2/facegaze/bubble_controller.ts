@@ -18,6 +18,7 @@ interface State {
   heldMacros: string[];
   precision: FacialGesture|undefined;
   isFaceLandmarkerResultValid: boolean|undefined;
+  isCameraMuted: boolean;
 }
 
 /** Handles setting the text content of the FaceGaze bubble UI. */
@@ -59,12 +60,17 @@ export class BubbleController {
       heldMacros,
       precision,
       isFaceLandmarkerResultValid,
+      isCameraMuted,
     } = this.getState_();
 
 
     if (isFaceLandmarkerResultValid !== undefined &&
         !isFaceLandmarkerResultValid) {
       this.baseText_.push(chrome.i18n.getMessage('facegaze_invalid_result'));
+    }
+
+    if (isCameraMuted) {
+      this.baseText_.push(chrome.i18n.getMessage('facegaze_camera_muted'));
     }
 
     if (heldMacros) {

@@ -180,4 +180,7 @@
   <message name="IDS_FACEGAZE_INVALID_RESULT" desc="A message displayed in the FaceGaze bubble UI informing the user that FaceGaze couldn't process the most recent camera frame." translateable="false">
     Can't use the camera, please ensure your camera is enabled and unobstructed
   </message>
+  <message name="IDS_FACEGAZE_CAMERA_MUTED" desc="A message displayed in the FaceGaze bubble UI informing the user that the camera is temporarily disconnected." translateable="false">
+    Camera temporarily unavailable, please ensure you're signed in and that your camera is enabled
+  </message>
 </grit-part>
