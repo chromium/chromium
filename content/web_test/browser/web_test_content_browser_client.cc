@@ -30,6 +30,7 @@
 #include "content/public/browser/client_hints_controller_delegate.h"
 #include "content/public/browser/login_delegate.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/navigation_throttle_registry.h"
 #include "content/public/browser/overlay_window.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/site_isolation_policy.h"
@@ -421,16 +422,18 @@ void WebTestContentBrowserClient::OverrideWebPreferences(
 
 std::vector<std::unique_ptr<content::NavigationThrottle>>
 WebTestContentBrowserClient::CreateThrottlesForNavigation(
-    content::NavigationHandle* navigation_handle) {
+    content::NavigationThrottleRegistry& registry) {
+  content::NavigationHandle* navigation_handle =
+      &registry.GetNavigationHandle();
   std::vector<std::unique_ptr<content::NavigationThrottle>> throttles =
-      ShellContentBrowserClient::CreateThrottlesForNavigation(
-          navigation_handle);
+      ShellContentBrowserClient::CreateThrottlesForNavigation(registry);
 
   throttles.push_back(std::make_unique<WebTestOriginTrialThrottle>(
       navigation_handle, navigation_handle->GetWebContents()
                              ->GetBrowserContext()
                              ->GetOriginTrialsControllerDelegate()));
 
+  // TODO(https://crbug.com/412524375): NavigationThrottleRegistry migration.
   return throttles;
 }
 

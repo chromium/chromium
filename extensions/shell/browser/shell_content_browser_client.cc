@@ -18,6 +18,7 @@
 #include "content/public/browser/browser_main_runner.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/navigation_throttle_registry.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/service_worker_version_base_info.h"
@@ -253,20 +254,18 @@ void ShellContentBrowserClient::
 
 std::vector<std::unique_ptr<content::NavigationThrottle>>
 ShellContentBrowserClient::CreateThrottlesForNavigation(
-    content::NavigationHandle* navigation_handle) {
-  std::vector<std::unique_ptr<content::NavigationThrottle>> throttles;
+    content::NavigationThrottleRegistry& registry) {
+  content::NavigationHandle& navigation_handle =
+      registry.GetNavigationHandle();
   if (!extensions::ExtensionsBrowserClient::Get()
            ->AreExtensionsDisabledForContext(
-               navigation_handle->GetWebContents()->GetBrowserContext())) {
-    throttles.push_back(
-        std::make_unique<ExtensionNavigationThrottle>(navigation_handle));
+               navigation_handle.GetWebContents()->GetBrowserContext())) {
+    registry.AddThrottle(
+        std::make_unique<ExtensionNavigationThrottle>(&navigation_handle));
   }
-
-  if (auto throttle =
-          WebViewGuest::MaybeCreateNavigationThrottle(navigation_handle)) {
-    throttles.push_back(std::move(throttle));
-  }
-  return throttles;
+  registry.MaybeAddThrottle(
+      WebViewGuest::MaybeCreateNavigationThrottle(&navigation_handle));
+  return {};
 }
 
 std::unique_ptr<content::NavigationUIData>

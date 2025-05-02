@@ -349,7 +349,7 @@ bool CastContentBrowserClient::EnableRemoteDebuggingImmediately() {
 std::vector<std::string> CastContentBrowserClient::GetStartupServices() {
   return {
 #if BUILDFLAG(ENABLE_EXTERNAL_MOJO_SERVICES)
-    external_mojo::BrokerService::kServiceName
+      external_mojo::BrokerService::kServiceName
 #endif
   };
 }
@@ -811,16 +811,15 @@ CastContentBrowserClient::CreateCrashHandlerHost(
 
 std::vector<std::unique_ptr<content::NavigationThrottle>>
 CastContentBrowserClient::CreateThrottlesForNavigation(
-    content::NavigationHandle* handle) {
-  std::vector<std::unique_ptr<content::NavigationThrottle>> throttles;
-
+    content::NavigationThrottleRegistry& registry) {
   if (chromecast::IsFeatureEnabled(kEnableGeneralAudienceBrowsing)) {
-    throttles.push_back(
+    registry.AddThrottle(
         std::make_unique<GeneralAudienceBrowsingNavigationThrottle>(
-            handle, general_audience_browsing_service_.get()));
+            &registry.GetNavigationHandle(),
+            general_audience_browsing_service_.get()));
   }
 
-  return throttles;
+  return {};
 }
 
 void CastContentBrowserClient::RegisterNonNetworkSubresourceURLLoaderFactories(

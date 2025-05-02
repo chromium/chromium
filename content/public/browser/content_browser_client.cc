@@ -994,7 +994,7 @@ void ContentBrowserClient::OpenURL(
 
 std::vector<std::unique_ptr<NavigationThrottle>>
 content::ContentBrowserClient::CreateThrottlesForNavigation(
-    NavigationHandle* navigation_handle) {
+    NavigationThrottleRegistry& registry) {
   return std::vector<std::unique_ptr<NavigationThrottle>>();
 }
 

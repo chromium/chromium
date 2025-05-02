@@ -64,7 +64,7 @@ class WebEngineContentBrowserClient final
       std::unique_ptr<content::ClientCertificateDelegate> delegate) override;
   std::vector<std::unique_ptr<content::NavigationThrottle>>
   CreateThrottlesForNavigation(
-      content::NavigationHandle* navigation_handle) override;
+      content::NavigationThrottleRegistry& registry) override;
   std::vector<std::unique_ptr<blink::URLLoaderThrottle>>
   CreateURLLoaderThrottles(
       const network::ResourceRequest& request,
