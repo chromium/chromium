@@ -6,12 +6,22 @@ import {TestImportManager} from '/common/testing/test_import_manager.js';
 import type {FaceLandmarkerOptions, FaceLandmarkerResult} from '/third_party/mediapipe/vision.js';
 import {FaceLandmarker} from 'chrome-extension://egfdjlfmgnehecnclamagfafdccgfndp/accessibility_common/mv2/third_party/mediapipe_task_vision/vision_bundle.mjs';
 
+import {BubbleController} from './bubble_controller.js';
 import {PrefNames} from './constants.js';
 
 export interface FaceLandmarkerResultWithLatency {
   result: FaceLandmarkerResult;
   latency: number;
 }
+
+const CONNECT_TO_WEBCAM_TIMEOUT = 1000;
+
+/**
+ * The default number of times we should try to connect to the webcam. If we
+ * cannot establish a connection after trying this many times, then we should
+ * notify the user and turn off FaceGaze.
+ */
+const DEFAULT_CONNECT_TO_WEBCAM_RETRIES = 10;
 
 /**
  * The interval, in milliseconds, for which we request results from the
@@ -38,6 +48,8 @@ export class WebCamFaceLandmarker {
   private faceLandmarker_: FaceLandmarker|null = null;
   private imageCapture_: ImageCapture|undefined;
 
+  private bubbleController_: BubbleController;
+
   // Callbacks.
   private onFaceLandmarkerResult_:
       (resultWithLatency: FaceLandmarkerResultWithLatency) => void;
@@ -53,14 +65,21 @@ export class WebCamFaceLandmarker {
   private stopped_ = true;
   declare private intervalID_: number|null;
 
+  // Members to track the connection to the webcam.
+  private connectToWebCamRetriesRemaining_ = DEFAULT_CONNECT_TO_WEBCAM_RETRIES;
+  declare private webCamConnected_: Promise<void>;
+  private setWebCamConnected_?: () => void;
+
   // Testing-related members.
   declare private readyForTesting_: Promise<void>;
   private setReadyForTesting_?: VoidFunction;
 
   constructor(
+      bubbleController: BubbleController,
       onFaceLandmarkerResult:
           (resultWithLatency: FaceLandmarkerResultWithLatency) => void,
       onTrackMuted: VoidFunction, onTrackUnmuted: VoidFunction) {
+    this.bubbleController_ = bubbleController;
     // Save callbacks.
     this.onFaceLandmarkerResult_ = onFaceLandmarkerResult;
     this.onTrackMuted_ = onTrackMuted;
@@ -74,6 +93,10 @@ export class WebCamFaceLandmarker {
     this.onTrackUnmutedHandler_ = () => this.onTrackUnmuted_();
     this.intervalID_ = null;
 
+    this.webCamConnected_ = new Promise(resolve => {
+      this.setWebCamConnected_ = resolve;
+    });
+
     this.readyForTesting_ = new Promise(resolve => {
       this.setReadyForTesting_ = resolve;
     });
@@ -86,7 +109,8 @@ export class WebCamFaceLandmarker {
   async init(): Promise<void> {
     this.stopped_ = false;
     await this.createFaceLandmarker_();
-    await this.connectToWebCam_();
+    this.connectToWebCam_();
+    await this.webCamConnected_!;
     this.startDetectingFaceLandmarks_();
   }
 
@@ -146,9 +170,26 @@ export class WebCamFaceLandmarker {
         facingMode: 'user',
       },
     };
-    const stream = await navigator.mediaDevices.getUserMedia(constraints);
-    const tracks = stream.getVideoTracks();
 
+    let stream;
+    try {
+      stream = await navigator.mediaDevices.getUserMedia(constraints);
+    } catch (error) {
+      if (this.connectToWebCamRetriesRemaining_ > 0) {
+        const message = chrome.i18n.getMessage(
+            'facegaze_connect_to_camera',
+            [this.connectToWebCamRetriesRemaining_]);
+        this.bubbleController_.updateBubble(message);
+        this.connectToWebCamRetriesRemaining_ -= 1;
+        setTimeout(() => this.connectToWebCam_(), CONNECT_TO_WEBCAM_TIMEOUT);
+      } else {
+        chrome.settingsPrivate.setPref(PrefNames.FACE_GAZE_ENABLED, false);
+      }
+
+      return;
+    }
+
+    const tracks = stream.getVideoTracks();
     // It is possible for FaceGaze to be turned off before getUserMedia()
     // completes. If FaceGaze has stopped when we finish this promise, then
     // clean up the webcam resources so the webcam does not stay on.
@@ -164,6 +205,10 @@ export class WebCamFaceLandmarker {
         'mute', this.onTrackMutedHandler_);
     this.imageCapture_.track.addEventListener(
         'unmute', this.onTrackUnmutedHandler_);
+
+    // Once we make it here, we know that the webcam is connected.
+    this.connectToWebCamRetriesRemaining_ = DEFAULT_CONNECT_TO_WEBCAM_RETRIES;
+    this.setWebCamConnected_!();
   }
 
   private onTrackEnded_(): void {

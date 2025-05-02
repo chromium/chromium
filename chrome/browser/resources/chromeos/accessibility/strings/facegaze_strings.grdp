@@ -183,4 +183,7 @@
   <message name="IDS_FACEGAZE_CAMERA_MUTED" desc="A message displayed in the FaceGaze bubble UI informing the user that the camera is temporarily disconnected." translateable="false">
     Camera temporarily unavailable, please ensure you're signed in and that your camera is enabled
   </message>
+  <message name="IDS_FACEGAZE_CONNECT_TO_CAMERA" desc="A message displayed in the FaceGaze bubble UI informing the user that FaceGaze couldn't connect to the camera and that it will be turned off soon." translateable="false">
+    Attempting to connect to camera, Face control will turn off in <ph name="seconds">$1<ex>10</ex></ph> seconds otherwise
+  </message>
 </grit-part>

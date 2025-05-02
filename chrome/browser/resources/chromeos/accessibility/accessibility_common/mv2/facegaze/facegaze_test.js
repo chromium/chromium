@@ -1315,19 +1315,6 @@ AX_TEST_F('FaceGazeMV2Test', 'KeyEvents', async function() {
   assertEquals(KeyCode.MEDIA_PLAY_PAUSE, keyEvents[13].keyCode);
 });
 
-// TODO(b/345059065): Test is flaky.
-AX_TEST_F('FaceGazeMV2Test', 'DISABLED_ClosesCameraStream', async function() {
-  await this.getFaceGaze().cameraStreamReadyPromise_;
-  let win = chrome.extension.getViews().find(
-      view => view.location.href.includes('camera_stream.html'));
-  assertTrue(!!win);
-  this.getFaceGaze().onFaceGazeDisabled();
-  await this.getFaceGaze().cameraStreamClosedPromise_;
-  win = chrome.extension.getViews().find(
-      view => view.location.href.includes('camera_stream.html'));
-  assertFalse(!!win);
-});
-
 // TODO(crbug.com/348603598): Test is flaky.
 AX_TEST_F(
     'FaceGazeMV2Test', 'DISABLED_ToggleFaceGazeGesturesShort',
@@ -3059,4 +3046,52 @@ AX_TEST_F('FaceGazeMV2Test', 'CameraMutedAndUnmuted', async function() {
   // Unmute the camera.
   this.getFaceGaze().webCamFaceLandmarker_.onTrackUnmutedHandler_();
   assertEquals(this.getDefaultBubbleText(), this.getBubbleText());
+});
+
+// Verifies that FaceGaze can handle cases where no camera is available.
+AX_TEST_F('FaceGazeMV2Test', 'NoCamera', async function() {
+  // Pretend that there is no available camera.
+  globalThis.navigator = {};
+  navigator.mediaDevices = {};
+  navigator.mediaDevices.getUserMedia = () => {
+    throw new Error('Requested device not found');
+  };
+
+  // Verify initial state.
+  const webCamFaceLandmarker = this.getFaceGaze().webCamFaceLandmarker_;
+  assertEquals(10, webCamFaceLandmarker.connectToWebCamRetriesRemaining_);
+
+  // Attempt to connect to the webcam. This should cause a message to appear
+  // in the UI and queue up another attempt.
+  webCamFaceLandmarker.connectToWebCam_();
+  assertEquals(
+      'Attempting to connect to camera, Face control will turn off in 10 ' +
+          'seconds otherwise',
+      this.getBubbleText());
+  assertEquals(9, webCamFaceLandmarker.connectToWebCamRetriesRemaining_);
+
+  // Pretend that the timeout has elapsed so that we try to reconnect to the
+  // webcam.
+  this.runLatestTimeout();
+  assertEquals(
+      'Attempting to connect to camera, Face control will turn off in 9 ' +
+          'seconds otherwise',
+      this.getBubbleText());
+  assertEquals(8, webCamFaceLandmarker.connectToWebCamRetriesRemaining_);
+
+  // Mock out the setPref API.
+  let latestPref;
+  let latestValue;
+  chrome.settingsPrivate = {};
+  chrome.settingsPrivate.setPref = (pref, value) => {
+    latestPref = pref;
+    latestValue = value;
+  };
+
+  // Pretend that we've exhausted our retry limit. The next failed attempt
+  // will cause FaceGaze to be turned off.
+  webCamFaceLandmarker.connectToWebCamRetriesRemaining_ = 0;
+  this.runLatestTimeout();
+  assertEquals('settings.a11y.face_gaze.enabled', latestPref);
+  assertFalse(latestValue);
 });

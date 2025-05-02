@@ -585,4 +585,8 @@ FaceGazeTestBase = class extends E2ETestBase {
   getLatestCursorPosition() {
     return this.mockAccessibilityPrivate.getLatestCursorPosition();
   }
+
+  runLatestTimeout() {
+    this.timeoutCallbacks_[this.nextTimeoutId_ - 1]();
+  }
 };

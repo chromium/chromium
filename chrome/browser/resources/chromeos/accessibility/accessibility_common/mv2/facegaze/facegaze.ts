@@ -36,13 +36,6 @@ export class FaceGaze {
   private prefsListener_: (prefs: PrefObject[]) => void;
 
   constructor(isDictationActive: () => boolean) {
-    this.webCamFaceLandmarker_ = new WebCamFaceLandmarker(
-        (resultWithLatency: FaceLandmarkerResultWithLatency) => {
-          const {result, latency} = resultWithLatency;
-          this.processFaceLandmarkerResult_(result, latency);
-        },
-        () => this.onCameraFeedMuted_(), () => this.onCameraFeedUnmuted_());
-
     this.bubbleController_ = new BubbleController(() => {
       return {
         paused: this.gestureHandler_.isPaused() ?
@@ -65,6 +58,14 @@ export class FaceGaze {
         isCameraMuted: this.isCameraMuted_,
       };
     });
+
+    this.webCamFaceLandmarker_ = new WebCamFaceLandmarker(
+        this.bubbleController_,
+        (resultWithLatency: FaceLandmarkerResultWithLatency) => {
+          const {result, latency} = resultWithLatency;
+          this.processFaceLandmarkerResult_(result, latency);
+        },
+        () => this.onCameraFeedMuted_(), () => this.onCameraFeedUnmuted_());
 
     this.mouseController_ = new MouseController(this.bubbleController_);
     this.gestureHandler_ = new GestureHandler(
