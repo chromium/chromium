@@ -806,11 +806,40 @@ ci.thin_tester(
             "isolate_profile_data",
         ],
         per_test_modifications = {
+            # https://crbug.com/1084469
+            "browser_tests": targets.mixin(
+                args = [
+                    # crbug.com/414750476 PDF extension tests fail with the
+                    # default 1920x1200 resolution used for mutter.
+                    "--mutter-display=1280x800",
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/ozone-linux.browser_tests_mutter.filter",
+                ],
+                # Only retry the individual failed tests instead of rerunning
+                # entire shards.
+                # crbug.com/1473501
+                retry_only_failed_tests = True,
+                swarming = targets.swarming(
+                    # TODO(crbug.com/401284929) Bump this up to 20 shards and
+                    # possibly revisit the expiration and timeout when more
+                    # noble bots are available.
+                    expiration_sec = 18000,
+                    hard_timeout_sec = 14400,
+                    shards = 10,
+                ),
+            ),
             "content_browsertests": targets.mixin(
                 # Only retry the individual failed tests instead of rerunning
                 # entire shards.
                 # crbug.com/1473501
                 retry_only_failed_tests = True,
+                swarming = targets.swarming(
+                    # TODO(crbug.com/401284929) Bump this up to 20 shards and
+                    # possibly revisit the expiration and timeout when more
+                    # noble bots are available.
+                    expiration_sec = 18000,
+                    hard_timeout_sec = 14400,
+                    shards = 10,
+                ),
             ),
             "interactive_ui_tests": targets.mixin(
                 # https://crbug.com/1192997
@@ -838,6 +867,8 @@ ci.thin_tester(
     ############################################################################
     cq_mirrors_console_view = "mirrors",
     contact_team_email = "chrome-linux-engprod@google.com",
+    # TODO(crbug.com/401284929): Remove this when noble pool is increased.
+    execution_timeout = 7 * time.hour,
 )
 
 # For documentation, see //services/network/README.md.

@@ -49,3 +49,6 @@
 
 # TODO(crbug.com/414635394): Re-enable once right click for bookmark empty submenu works.
 -BookmarkBarViewTest21.ContextMenusForEmptyFolder
+
+# Failing on try bot due to DCHECK
+-AnimationTimingTestSuiteInstantiation/PictureInPictureBrowserFrameViewTest.TestAnimationTiming/*

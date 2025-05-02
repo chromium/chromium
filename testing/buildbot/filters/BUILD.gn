@@ -94,6 +94,7 @@ source_set("browser_tests_filters") {
     "//testing/buildbot/filters/mac.mac-rel.browser_tests.filter",
     "//testing/buildbot/filters/mac.mac11-arm64-rel.browser_tests.filter",
     "//testing/buildbot/filters/mac.mac12-arm64-rel.browser_tests.filter",
+    "//testing/buildbot/filters/ozone-linux.browser_tests_mutter.filter",
     "//testing/buildbot/filters/ozone-linux.wayland_browser_tests.filter",
     "//testing/buildbot/filters/pixel_tests.filter",
     "//testing/buildbot/filters/views_ax_chromeos.browser_tests.filter",

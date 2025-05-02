@@ -1,0 +1,31 @@
+# TODO(crbug.com/395595608) Failing due to per-surface scaling.
+-All/GetDisplayMediaHiDpiBrowserTest.Capture/1
+-DesktopBrowserFrameAuraLinuxTest.NewWindowSize
+
+# Very flaky/failing on mutter (less flaky/passing on weston)
+-All/OmniboxSearchAggregatorHTTPErrorTest.HTTPErrorResponse/404
+-BackForwardCachePageLoadMetricsObserverBrowserTest.LayoutShiftNormalization_AfterBackForwardCacheRestore
+-All/PDFExtensionJSInk2Test.Ink2/*
+-All/PDFExtensionJSInk2Test.Ink2BottomToolbar/*
+-All/PDFExtensionJSInk2Test.Ink2TextBottomToolbar/*
+-All/PDFExtensionScrollTest.WithArrowLeftRightScrollToPage/*
+-PageLoadMetricsBrowserTest.MainFrameIntersectionsMainFrame
+-AdsPageLoadMetricsObserverBrowserTest.PageAdDensityMultipleFrames
+-AdsPageLoadMetricsObserverBrowserTest.PageAdDensityRecordsPageMax
+-ProfilePickerEnterpriseCreationFlowBrowserTest.CreateSignedInProfileWithSuggestedTwoFactorAuthSetup
+
+# Failing on both mutter and weston
+-BackForwardCachePageLoadMetricsObserverBrowserTest.CumulativeLayoutShiftAfterBackForwardCacheRestore
+-BrowserViewTest.GetAccessibleTabModalDialogTree
+-ProfileHelperTest.OpenNewWindowForProfile
+
+# TODO(crbug.com/40688401) This test requires full Picture-in-Picture support.
+-FedCmAccountSelectionViewBrowserTest.DisabledWhenOccluded
+
+# TODO(crbug.com/395595608) Also disabled in weston, but maybe this could work
+# in mutter with some additional steps.
+-All/WebRtcScreenCaptureBrowserTestWithPicker.ScreenCaptureVideo/1
+-All/WebRtcScreenCaptureBrowserTestWithPicker.ScreenCaptureVideoAndAudio/1
+
+# TODO(crbug.com/395595608) Failing on exit due to dangling ptr
+-IFrameTest.FileChooserInDestroyedSubframe

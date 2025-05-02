@@ -1650,10 +1650,16 @@ targets.bundle(
 targets.bundle(
     name = "chromium_gtests_for_linux_wayland_mutter",
     targets = [
+        "browser_tests",
         "content_browsertests",
         "interactive_ui_tests",
     ],
     per_test_modifications = {
+        "browser_tests": targets.mixin(
+            swarming = targets.swarming(
+                shards = 8,
+            ),
+        ),
         "content_browsertests": targets.mixin(
             swarming = targets.swarming(
                 shards = 8,

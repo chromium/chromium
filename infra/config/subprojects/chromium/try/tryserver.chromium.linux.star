@@ -596,6 +596,8 @@ try_.builder(
     #         "ui/views/widget/.+test.+",
     #     ],
     # ),
+    # TODO(crbug.com/401284929): Remove this when noble pool is increased.
+    execution_timeout = 7 * time.hour,
     use_clang_coverage = True,
 )
 
