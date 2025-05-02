@@ -3476,6 +3476,7 @@ test("content_unittests") {
       "//base:base_unittest_support_java",
       "//build/config/freetype",
       "//cc/slim",
+      "//components/crash/android:anr_collector_java",
       "//components/download/internal/common:internal_java",
       "//content/browser:fontations_name_table_ffi",
       "//content/public/android:content_java",

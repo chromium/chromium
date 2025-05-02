@@ -63,6 +63,7 @@ robolectric_library("junit") {
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
     "//base:tasks_java",
+    "//base/version_info/android:version_constants_java",
     "//components/minidump_uploader:minidump_uploader_java_test_support",
     "//content/public/test/android:content_java_test_support",
     "//third_party/androidx:androidx_test_runner_java",
@@ -80,7 +81,6 @@ source_set("crash_android") {
     "pure_java_exception_handler.h",
   ]
   deps = [
-    ":anr_collector_jni_headers",
     ":jni_headers",
     "//base",
     "//components/crash/core/common:crash_key",
@@ -147,6 +147,7 @@ android_library("anr_collector_java") {
   deps = [
     ":anr_data_proto_java",
     "//base:base_java",
+    "//base/version_info/android:version_constants_java",
     "//build/android:build_java",
     "//third_party/android_deps:protobuf_lite_runtime_java",
     "//third_party/androidx:androidx_annotation_annotation_java",

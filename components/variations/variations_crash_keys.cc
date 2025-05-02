@@ -22,8 +22,16 @@
 #include "components/variations/synthetic_trials.h"
 #include "components/variations/variations_switches.h"
 
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 #include "base/task/thread_pool.h"
+#endif
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/task/cancelable_task_tracker.h"
+#include "components/variations/variations_crash_keys_android.h"
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS)
 #include "components/variations/variations_crash_keys_chromeos.h"
 #endif
 
@@ -31,9 +39,9 @@ namespace variations {
 
 namespace {
 
-// Size of the "num-experiments" crash key in bytes. 1024*6 bytes should be able
-// to hold about 341 entries, given each entry is 18 bytes long (due to being
-// of the form "8e7abfb0-c16397b7,").
+// Size of the "variations" crash key (kExperimentListKey) in bytes.
+// 1024*6 bytes should be able to hold about 341 entries, given each entry is
+// 18 bytes long (due to being of the form "8e7abfb0-c16397b7,").
 #if BUILDFLAG(LARGE_VARIATION_KEY_SIZE)
 constexpr size_t kVariationsKeySize = 1024 * 8;
 constexpr char kVariationKeySizeHistogram[] =
@@ -104,11 +112,17 @@ class VariationsCrashKeys final : public base::FieldTrialList::Observer {
   // observer calls that happen on a different thread.
   scoped_refptr<base::SequencedTaskRunner> ui_thread_task_runner_;
 
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
   // Task runner corresponding to a background thread, used for tasks that may
   // block.
   scoped_refptr<base::SequencedTaskRunner> background_thread_task_runner_;
-#endif  // IS_CHROMEOS
+#endif  // IS_CHROMEOS || IS_ANDROID
+
+#if BUILDFLAG(IS_ANDROID)
+  // A task tracker that allows us to cancel any tasks that have been posted
+  // but have not started to run.
+  base::CancelableTaskTracker cancelable_task_tracker_;
+#endif  // IS_ANDROID
 
   // A serialized string containing the variations state.
   std::string variations_string_;
@@ -148,10 +162,10 @@ VariationsCrashKeys::VariationsCrashKeys() {
   for (const auto& entry : active_groups) {
     AppendFieldTrial(entry.trial_name, entry.group_name, entry.is_overridden);
   }
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
   background_thread_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
       {base::TaskPriority::BEST_EFFORT, base::MayBlock()});
-#endif  // IS_CHROMEOS
+#endif  // IS_CHROMEOS || IS_ANDROID
 
   UpdateCrashKeys();
 }
@@ -250,6 +264,11 @@ void VariationsCrashKeys::UpdateCrashKeys() {
     SetVariationsSeedVersionCrashKey(command_line->GetSwitchValueASCII(
         variations::switches::kVariationsSeedVersion));
   }
+
+#if BUILDFLAG(IS_ANDROID)
+  SaveVariationsForAnrReporting(&cancelable_task_tracker_,
+                                background_thread_task_runner_, info);
+#endif  // IS_ANDROID
 
 #if BUILDFLAG(IS_CHROMEOS)
   ReportVariationsToChromeOs(background_thread_task_runner_, info);

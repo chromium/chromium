@@ -5,6 +5,7 @@ include_rules = [
   "+chromeos/ash/components/dbus/featured",
   "-components",
   "+components/compression",
+  "+components/crash/android",
   "+components/crash/core/common",
   "+components/keyed_service",
   "+components/metrics",
