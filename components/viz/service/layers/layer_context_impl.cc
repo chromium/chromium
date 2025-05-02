@@ -453,6 +453,7 @@ base::expected<void, std::string> UpdateLayer(const mojom::Layer& wire,
   if (wire.rare_properties) {
     layer.SetFilterQuality(wire.rare_properties->filter_quality);
   }
+  layer.SetMayContainVideo(wire.may_contain_video);
 
   if (layer.GetLayerType() == cc::mojom::LayerType::kTileDisplay) {
     auto& tile_display_layer = static_cast<cc::TileDisplayLayerImpl&>(layer);

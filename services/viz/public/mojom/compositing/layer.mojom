@@ -154,6 +154,7 @@ struct Layer {
   int32 scroll_tree_index;
 
   bool should_check_backface_visibility;
+  bool may_contain_video;
 
   RareProperties? rare_properties;
 

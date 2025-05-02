@@ -572,6 +572,7 @@ void SerializeLayer(LayerImpl& layer,
     rare_properties->filter_quality = layer.GetFilterQuality();
     wire.rare_properties = std::move(rare_properties);
   }
+  wire.may_contain_video = layer.may_contain_video();
   switch (layer.GetLayerType()) {
     case mojom::LayerType::kMirror: {
       auto mirror_layer_extra = viz::mojom::MirrorLayerExtra::New();
