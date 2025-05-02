@@ -125,8 +125,6 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/omnibox/suggestions/carousel/BaseCarouselSuggestionViewProperties.java",
     "java/src/org/chromium/chrome/browser/omnibox/suggestions/clipboard/ClipboardSuggestionProcessor.java",
     "java/src/org/chromium/chrome/browser/omnibox/suggestions/editurl/EditUrlSuggestionProcessor.java",
-    "java/src/org/chromium/chrome/browser/omnibox/suggestions/editurl/EditUrlSuggestionView.java",
-    "java/src/org/chromium/chrome/browser/omnibox/suggestions/editurl/EditUrlSuggestionViewBinder.java",
     "java/src/org/chromium/chrome/browser/omnibox/suggestions/entity/EntitySuggestionProcessor.java",
     "java/src/org/chromium/chrome/browser/omnibox/suggestions/entity/EntitySuggestionViewBinder.java",
     "java/src/org/chromium/chrome/browser/omnibox/suggestions/entity/EntitySuggestionViewProperties.java",
