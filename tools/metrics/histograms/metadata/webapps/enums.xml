@@ -108,6 +108,13 @@ chromium-metrics-reviews@google.com.
   <int value="13" label="Short name, App name, and Icon changing."/>
   <int value="14" label="Short name, App name, and Mask changing."/>
   <int value="15" label="Short name, App name, Mask and Icon changing."/>
+  <int value="17" label="App Icon changing, icon below threshold."/>
+  <int value="19" label="App Icon and Mask changing, icon below threshold."/>
+  <int value="21" label="App Icon and Name changing, icon below threshold."/>
+  <int value="23"
+      label="App Icon, Mask, and Name changing, icon below threshold."/>
+  <int value="29"
+      label="App Icon, Name, and Short Name changing, icon below threshold."/>
 </enum>
 
 <enum name="AppSettingsPageEntryPoints">

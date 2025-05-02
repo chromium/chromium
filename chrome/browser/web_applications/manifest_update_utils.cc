@@ -350,11 +350,11 @@ void RecordIdentityConfirmationMetrics(
     kAppNameAndIconChanging = 5,
     // Values 6 through 15 (inclusive) are reserved for Android (icon mask/app
     // short name).
-    kLastAndroidSpecificValue = 15,
+    kLastAndroidSpecificValue = 29,
 
     // Add any new values above this one, and update kMaxValue to the highest
     // enumerator value.
-    kMaxValue = 15
+    kMaxValue = kLastAndroidSpecificValue,
   };
 
   AppIdentityDisplayMetric app_id_changes = [&] {
