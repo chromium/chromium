@@ -1459,3 +1459,6 @@ crbug.com/407795725 http/tests/inspector-protocol/tracing/frame-postmessage.js [
 crbug.com/413283544 [ Linux ] external/wpt/css/selectors/focus-visible-003.html [ Slow ]
 
 crbug.com/378014598 external/wpt/nav-tracking-mitigations/* [ Slow ]
+
+# Gardener 2025-05-02
+crbug.com/387598611 fast/overflow/scrollbar-drag-origin.html [ Slow ]
