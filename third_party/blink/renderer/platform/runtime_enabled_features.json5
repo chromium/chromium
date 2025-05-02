@@ -341,7 +341,6 @@
     {
       name: "AIPromptAPIForWorkers",
       public: true,
-      status: "experimental",
     },
     {
       name: "AIPromptAPIMultimodalInput",
@@ -369,7 +368,6 @@
     {
       name: "AIRewriterAPIForWorkers",
       public: true,
-      status: "experimental",
     },
     {
       name: "AISummarizationAPI",
@@ -383,7 +381,6 @@
     {
       name: "AISummarizationAPIForWorkers",
       public: true,
-      status: "experimental",
     },
     {
       name: "AIWriterAPI",
@@ -397,7 +394,6 @@
     {
       name: "AIWriterAPIForWorkers",
       public: true,
-      status: "experimental",
     },
     {
       name: "AllowContentInitiatedDataUrlNavigations",
@@ -2728,7 +2724,6 @@
     {
       name: "LanguageDetectionAPIForWorkers",
       public: true,
-      status: "experimental",
     },
     {
       name: "LayoutFlexNewRowAlgorithm",
@@ -4788,7 +4783,6 @@
     {
       name: "TranslationAPIForWorkers",
       public: true,
-      status: "experimental",
     },
     {
       name: "TranslationAPIV1",
