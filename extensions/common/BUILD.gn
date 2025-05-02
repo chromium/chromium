@@ -75,6 +75,7 @@ source_set("extension_features") {
   public_deps = [
     "//base",
     "//build:branding_buildflags",
+    "//extensions/buildflags",
   ]
 }
 
