@@ -42,6 +42,7 @@ import org.chromium.ui.base.MimeTypeUtils;
 import org.chromium.ui.dragdrop.AnimatedImageDragShadowBuilder.CursorOffset;
 import org.chromium.ui.dragdrop.AnimatedImageDragShadowBuilder.DragShadowSpec;
 import org.chromium.ui.dragdrop.DragDropMetricUtils.UrlIntentSource;
+import org.chromium.ui.util.XrUtils;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -149,8 +150,11 @@ public class DragAndDropDelegateImpl implements DragAndDropDelegate, DragStateTr
     private static boolean isA11yStateEnabled() {
         // Drag and drop is disabled when gesture related a11y service is enabled.
         // See https://crbug.com/1250067.
+        // On XR devices, gesture control is always enabled. Therefore, to verify accessibility
+        // (A11y) status on these devices for drag and drop functionalities, we examine the
+        // `isTouchExplorationEnabled` state, effectively limiting our check to this condition.
         return AccessibilityState.isTouchExplorationEnabled()
-                || AccessibilityState.isPerformGesturesEnabled();
+                || (AccessibilityState.isPerformGesturesEnabled() && !XrUtils.isXrDevice());
     }
 
     private boolean startDragAndDropInternal(
