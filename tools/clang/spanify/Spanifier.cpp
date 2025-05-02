@@ -5,7 +5,9 @@
 #include <assert.h>
 
 #include <algorithm>
+#include <array>
 #include <map>
+#include <optional>
 #include <set>
 #include <sstream>
 #include <string>
@@ -53,6 +55,9 @@ const char kBaseSpanIncludePath[] = "base/containers/span.h";
 // Include path that needs to be added to all the files where
 // base::raw_span<...> replaces a raw_ptr<...>.
 const char kBaseRawSpanIncludePath[] = "base/memory/raw_span.h";
+
+const char kBaseAutoSpanificationHelperIncludePath[] =
+    "base/containers/auto_spanification_helper.h";
 
 const char kArrayIncludePath[] = "array";
 
@@ -165,6 +170,46 @@ AST_MATCHER(clang::ArraySubscriptExpr, isSafeArraySubscript) {
 
   // The subscript is guaranteed to be safe!
   return true;
+}
+
+struct UnsafeCxxMethodToMacro {
+  // The qualified class name of an unsafe method to be rewritten.
+  const std::string_view class_name;
+  // The name of an unsafe method to be rewritten.
+  const std::string_view method_name;
+  // The helper macro name to be rewritten to.
+  const std::string_view macro_name;
+};
+
+// Given a clang::CXXMethodDecl, find a corresponding UnsafeCxxMethodToMacro
+// instance if the method matches. Returns nullptr if not found.
+std::optional<UnsafeCxxMethodToMacro> FindUnsafeCxxMethodToBeRewrittenToMacro(
+    const clang::CXXMethodDecl* method_decl) {
+  // The table of unsafe methods to be rewritten to helper macro calls.
+  // Note that C++20 is not supported in tools/clang/spanify/ and we cannot use
+  // std::to_array.
+  static constexpr UnsafeCxxMethodToMacro unsafe_cxx_method_table[] = {
+      {"SkBitmap", "NoArgForTesting", "UNSAFE_SKBITMAP_NOARGFORTESTING"},
+      // https://source.chromium.org/chromium/chromium/src/+/main:third_party/skia/include/core/SkBitmap.h;drc=f72bd467feb15edd9323e46eab1b74ab6025bc5b;l=936
+      {"SkBitmap", "getAddr32", "UNSAFE_SKBITMAP_GETADDR32"},
+  };
+
+  const clang::CXXRecordDecl* class_decl = method_decl->getParent();
+  const std::string& method_name = method_decl->getNameAsString();
+  const std::string& class_name = class_decl->getQualifiedNameAsString();
+
+  for (const auto& entry : unsafe_cxx_method_table) {
+    if (method_name == entry.method_name && class_name == entry.class_name) {
+      return entry;
+    }
+  }
+
+  return std::nullopt;
+}
+
+AST_MATCHER(clang::CXXMethodDecl, unsafeCxxMethodToBeRewrittenToMacro) {
+  const clang::CXXMethodDecl* method_decl = &Node;
+  return bool(FindUnsafeCxxMethodToBeRewrittenToMacro(method_decl));
 }
 
 // Convert a number to a string with leading zeros. This is useful to ensure
@@ -1060,6 +1105,87 @@ static void EmitSingleVariableSpan(const std::string& key,
       key, GetReplacementDirective(
                getExprRange(operand_expr, source_manager, lang_opts).getEnd(),
                ", 1u)", source_manager));
+}
+
+// Rewrites unsafe third-party function calls to helper macro calls.
+//
+// Example)
+//     SkBitmap sk_bitmap;
+//     uint32_t* image_row = sk_bitmap.getAddr32(x, y);
+// will be rewritten to
+//     base::span<uint32_t> image_row =
+//         UNSAFE_SKBITMAP_GETADDR32(sk_bitmap, x, y);
+// where the receiver expr "sk_bitmap" is moved into the macro call, and the
+// macro performs essentially the following.
+//     uint32_t* tmp_row = sk_bitmap.getAddr32(x, y);
+//     int tmp_width = sk_bitmap.width();
+//     base::span<uint32_t> image_row(tmp_row, tmp_width - x);
+//
+// Tests are in: unsafe-cxx-methods-original.cc and
+// //base/containers/auto_spanification_helper_unittest.cc
+static std::string getNodeFromUnsafeCxxMethodCall(
+    const clang::Expr* size_expr,
+    const clang::CXXMemberCallExpr* member_call_expr,
+    const MatchFinder::MatchResult& result) {
+  const clang::SourceManager& source_manager = *result.SourceManager;
+
+  const auto* method_decl = GetNodeOrCrash<clang::CXXMethodDecl>(
+      result, "unsafe_cxx_method_decl",
+      "`unsafe_cxx_method_call_expr` implies `unsafe_cxx_method_decl`");
+  // The match with using `unsafeCxxMethodToBeRewrittenToMacro` guarantees that
+  // there exists an `UnsafeCxxMethodToMacro` instance, so the following
+  // "Find..." always succeeds.
+  const UnsafeCxxMethodToMacro entry =
+      FindUnsafeCxxMethodToBeRewrittenToMacro(method_decl).value();
+
+  // A CXXMemberCallExpr must have a MemberExpr as the callee.
+  const clang::MemberExpr* member_expr =
+      clang::dyn_cast<clang::MemberExpr>(member_call_expr->getCallee());
+  assert(member_expr);
+
+  // `key` is compatible with getNodeFromSizeExpr.
+  const std::string& key = NodeKey(size_expr, source_manager);
+
+  // Rewrite a method call into a macro call in two steps. The total rewrite we
+  // want is the following. Note that the receiver expression moves into the
+  // argument list.
+  //
+  //     "receier.method(args...)" ==> "MACRO(receiver, args...)"
+  //
+  // Step 1) Prepend "MACRO(" to make it a macro call.
+  //         "receiver.method(args...)"
+  //     ==> "MACRO(" + "receiver.method(args...)"
+  //
+  // Step 2) Replace ".method(" with ", " to make a new argument list including
+  //     the receiver expression.
+  //         "receiver" + ".method(" + "args...)"
+  //     ==> "receiver" + ", " + "args...)"
+  //
+  // The open parenthesis of the argument list is moved from the right after
+  // "method" to the right after "MACRO" while the close parenthesis doesn't
+  // change.
+  //
+  // The arrow operator "->" is supported in the same way as the dot operator
+  // ".".
+  EmitReplacement(  // Step 1
+      key, GetReplacementDirective(
+               member_call_expr->getImplicitObjectArgument()->getBeginLoc(),
+               llvm::formatv("{0}(", entry.macro_name), source_manager));
+  const bool has_arg = member_call_expr->getNumArgs() > 0;
+  EmitReplacement(  // Step 2
+      key,
+      GetReplacementDirective(
+          clang::SourceRange(member_expr->getOperatorLoc(),  // "." or "->"
+                             has_arg
+                                 ? member_call_expr->getArg(0)->getBeginLoc()
+                                 : member_call_expr->getRParenLoc()),
+          has_arg ? ", " : "", source_manager));
+
+  EmitReplacement(
+      key, GetIncludeDirective(size_expr->getSourceRange(), source_manager,
+                               kBaseAutoSpanificationHelperIncludePath));
+  EmitSink(key);
+  return key;
 }
 
 static std::string getNodeFromSizeExpr(const clang::Expr* size_expr,
@@ -2063,6 +2189,19 @@ std::string GetRHS(const MatchFinder::MatchResult& result) {
 
   if (const clang::Expr* size_expr =
           result.Nodes.getNodeAs<clang::Expr>("size_node")) {
+    // "size_node" assumes that third party functions that return a buffer
+    // provide some way to know the size, however special handling is required
+    // to extract that, thus here we add support for classes that have methods
+    // returning a buffer that also have size support.
+    //
+    // TODO(yukishiino): Add support for non-member functions that return
+    // buffers.
+    if (const auto* member_call_expr =
+            result.Nodes.getNodeAs<clang::CXXMemberCallExpr>(
+                "unsafe_cxx_method_call_expr")) {
+      return getNodeFromUnsafeCxxMethodCall(size_expr, member_call_expr,
+                                            result);
+    }
     return getNodeFromSizeExpr(size_expr, result);
   }
 
@@ -2302,13 +2441,18 @@ class Spanifier {
     //                  which is a subset of size_node.
     auto size_node_matcher = expr(anyOf(
         member_data_call,
-        expr(anyOf(callExpr(callee(functionDecl(
-                       hasReturnTypeLoc(pointerTypeLoc()),
-                       anyOf(raw_ptr_plugin::isInThirdPartyLocation(),
-                             isExpansionInSystemHeader(),
-                             raw_ptr_plugin::isInExternCContext())))),
-                   cxxNullPtrLiteralExpr().bind("nullptr_expr"), cxxNewExpr(),
-                   buff_address_from_container, buff_address_from_single_var))
+        expr(anyOf(
+                 cxxMemberCallExpr(
+                     callee(cxxMethodDecl(unsafeCxxMethodToBeRewrittenToMacro())
+                                .bind("unsafe_cxx_method_decl")))
+                     .bind("unsafe_cxx_method_call_expr"),
+                 callExpr(callee(functionDecl(
+                     hasReturnTypeLoc(pointerTypeLoc()),
+                     anyOf(raw_ptr_plugin::isInThirdPartyLocation(),
+                           isExpansionInSystemHeader(),
+                           raw_ptr_plugin::isInExternCContext())))),
+                 cxxNullPtrLiteralExpr().bind("nullptr_expr"), cxxNewExpr(),
+                 buff_address_from_container, buff_address_from_single_var))
             .bind("size_node")));
 
     auto rhs_expr =
