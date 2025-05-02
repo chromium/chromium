@@ -305,20 +305,16 @@ _BANNED_JAVA_FUNCTIONS : Sequence[BanRule] = (
     BanRule(
         pattern=(r'IS_DESKTOP_ANDROID'),
         explanation=(
-            'Features which depend on IS_DESKTOP_ANDROID should only exist in '
-            'chrome/ layer and similar layers. Lower layers such as content/ '
-            'should not have features which are only designed for '
-            'desktop-android builds. See https://crbug.com/401628399.', ),
+            'Do not add new uses of IS_DESKTOP_ANDROID build flag until you '
+            'have the approval of tedchoc@ or twellington@. '
+            'Background: it is highly important to reduce the divergence of '
+            'features across platforms. '
+            'Allowances may be granted to only the directories below: '
+            '[build/, chrome/, components/, extensions/, infra/, tools/] ',
+            'Note: in particular we need to avoid components shared with '
+            'WebView.',
+        ),
         treat_as_error=False,
-        excluded_paths=[
-          _THIRD_PARTY_EXCEPT_BLINK, # Don't warn in third_party folders.
-          r'^build/', # This is permitted in build/ folder.
-          r'^chrome/', # This is permitted in chrome/ folder.
-          r'^components/', # This is permitted only for components/ that are not shared by WebView.
-          r'^extensions/', # This is permitted in chrome/ folder.
-          r'^infra/', # This is permitted in infra/ folder.
-          r'^tools/', # This is permitted in tools/ folder.
-        ],
         surface_as_gerrit_lint=True,
     ),
 )
@@ -2217,20 +2213,16 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
     BanRule(
         pattern=(r'IS_DESKTOP_ANDROID'),
         explanation=(
-            'Features which depend on IS_DESKTOP_ANDROID should only exist in '
-            'chrome/ layer and similar layers. Lower layers such as content/ '
-            'should not have features which are only designed for '
-            'desktop-android builds. See https://crbug.com/401628399.', ),
+            'Do not add new uses of IS_DESKTOP_ANDROID build flag until you '
+            'have the approval of tedchoc@ or twellington@. '
+            'Background: it is highly important to reduce the divergence of '
+            'features across platforms. '
+            'Allowances may be granted to only the directories below: '
+            '[build/, chrome/, components/, extensions/, infra/, tools/] ',
+            'Note: in particular we need to avoid components shared with '
+            'WebView.',
+        ),
         treat_as_error=False,
-        excluded_paths=[
-          _THIRD_PARTY_EXCEPT_BLINK, # Don't warn in third_party folders.
-          r'^build/', # This is permitted in build/ folder.
-          r'^chrome/', # This is permitted in chrome/ folder.
-          r'^components/', # This is permitted only for components/ that are not shared by WebView.
-          r'^extensions/', # This is permitted in chrome/ folder.
-          r'^infra/', # This is permitted in infra/ folder.
-          r'^tools/', # This is permitted in tools/ folder.
-        ],
         surface_as_gerrit_lint=True,
     ),
 )
