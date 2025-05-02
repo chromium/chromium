@@ -451,6 +451,8 @@ class COMPONENT_EXPORT(X11) Connection final : public XProto,
 
   bool WmSupportsHint(Atom atom) const;
 
+  const std::map<std::string, std::string> GetXResources();
+
   // The viz compositor thread hangs a PlatformEventSource off the connection so
   // that it gets destroyed at the appropriate time.
   // TODO(thomasanderson): This is a layering violation and this should be moved
@@ -603,6 +605,8 @@ class COMPONENT_EXPORT(X11) Connection final : public XProto,
 
   std::unique_ptr<PropertyCache> root_props_;
   std::unique_ptr<PropertyCache> wm_props_;
+
+  std::map<std::string, std::string> xresources_;
 };
 
 // Grab/release the X server connection within a scope. This can help avoid race
