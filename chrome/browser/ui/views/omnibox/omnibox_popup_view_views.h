@@ -129,6 +129,7 @@ class OmniboxPopupViewViews : public views::View,
   // when its window is destroyed.  This is a WeakPtr because it's possible for
   // the OS to destroy the window and thus delete this object before we're
   // deleted, or without our knowledge.
+  // TODO(crbug.com/40232479): Migrate this to CLIENT_OWNS_WIDGET.
   base::WeakPtr<AutocompletePopupWidget> popup_;
 
   // Timestamp for when the current omnibox popup creation started.
