@@ -1730,8 +1730,7 @@
                     "name": "Enabled",
                     "enable_features": [
                         "AutofillEnableAmountExtractionDesktop",
-                        "AutofillEnableBuyNowPayLater",
-                        "IPH_AutofillBnplAffirmOrZipSuggestion"
+                        "AutofillEnableBuyNowPayLater"
                     ]
                 }
             ]
