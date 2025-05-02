@@ -198,8 +198,6 @@ public class NewTabAnimationLayoutUnitTest {
         when(mAnimationHostView.findViewById(R.id.tab_switcher_button))
                 .thenReturn(mTabSwitcherButton);
         when(mAnimationHostView.findViewById(R.id.toolbar)).thenReturn(mToolbar);
-        when(mAnimationHostView.getWidth()).thenReturn(40);
-        when(mAnimationHostView.getHeight()).thenReturn(40);
         mNewTabAnimationLayout.onFinishNativeInitialization();
     }
 
@@ -343,8 +341,8 @@ public class NewTabAnimationLayoutUnitTest {
                 CURRENT_TAB_ID,
                 /* newIsIncognito= */ false,
                 /* background= */ true,
-                /* originX= */ 0f,
-                /* originY= */ 0f);
+                /* originX= */ -1f,
+                /* originY= */ -1f);
 
         layoutTabs = mNewTabAnimationLayout.getLayoutTabsToRender();
         assertEquals(1, layoutTabs.length);

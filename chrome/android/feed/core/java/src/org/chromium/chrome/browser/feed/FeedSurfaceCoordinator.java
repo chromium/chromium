@@ -190,14 +190,6 @@ public class FeedSurfaceCoordinator
 
         @Override
         public boolean onInterceptTouchEvent(MotionEvent ev) {
-            // This is for caching the last touch position on the NTP. {@link
-            // ViewGroup#onInterceptTouchEvent} is called for every motion event that will be
-            // consumed by this view or any of its child views. This location allows us to cache
-            // the last touch before any views actually perform an intercept or handle the touch
-            // event. Placing this call later in the method would mean at least a subset of events
-            // would be missed.
-            mDelegate.sendMotionEventForInputTracking(ev);
-
             if (super.onInterceptTouchEvent(ev)) return true;
             if (mMediator != null && !mMediator.getTouchEnabled()) return true;
 

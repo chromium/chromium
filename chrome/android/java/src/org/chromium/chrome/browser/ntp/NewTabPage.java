@@ -138,7 +138,6 @@ public class NewTabPage
     private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
 
     private final String mTitle;
-    private final Point mLastTouchPosition = new Point(-1, -1);
     private final JankTracker mJankTracker;
     private final Context mContext;
     private final int mBackgroundColor;
@@ -610,19 +609,19 @@ public class NewTabPage
                 mCallbackController.makeCancelable(
                         unusedTabModelSelector -> mayCreateSearchResumptionModule(profile)));
 
-        View view = getView();
-        view.addOnAttachStateChangeListener(
-                new View.OnAttachStateChangeListener() {
+        getView()
+                .addOnAttachStateChangeListener(
+                        new View.OnAttachStateChangeListener() {
 
-                    @Override
-                    public void onViewAttachedToWindow(View view) {
-                        updateMargins();
-                        view.removeOnAttachStateChangeListener(this);
-                    }
+                            @Override
+                            public void onViewAttachedToWindow(View view) {
+                                updateMargins();
+                                getView().removeOnAttachStateChangeListener(this);
+                            }
 
-                    @Override
-                    public void onViewDetachedFromWindow(View view) {}
-                });
+                            @Override
+                            public void onViewDetachedFromWindow(View view) {}
+                        });
         mBrowserControlsStateProvider.addObserver(this);
 
         mToolbarHeight =
@@ -952,14 +951,6 @@ public class NewTabPage
         }
     }
 
-    /**
-     * Returns the last touch position in the view. It will be (-1, -1) if no touches have been
-     * received.
-     */
-    public Point getLastTouchPosition() {
-        return mLastTouchPosition;
-    }
-
     @Override
     public void notifyHidingWithBack() {
         FeedReliabilityLogger feedReliabilityLogger = mFeedSurfaceProvider.getReliabilityLogger();
@@ -1166,14 +1157,6 @@ public class NewTabPage
             Activity activity, SurfaceCoordinator coordinator, Profile profile) {
         return new NtpFeedSurfaceLifecycleManager(
                 activity, mTab, (FeedSurfaceCoordinator) coordinator);
-    }
-
-    @Override
-    public void sendMotionEventForInputTracking(MotionEvent ev) {
-        if (ev.getAction() == MotionEvent.ACTION_DOWN) {
-            mLastTouchPosition.x = Math.round(ev.getX());
-            mLastTouchPosition.y = Math.round(ev.getY());
-        }
     }
 
     @Override
