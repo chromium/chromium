@@ -250,15 +250,18 @@ class AffixMgr {
                                      PfxEntry* ppfx,
                                      const FLAG needflag = FLAG_NULL);
 
-  std::string affix_check_morph(const char* word,
+  std::string affix_check_morph(const std::string& word,
+                                int start,
                                 int len,
                                 const FLAG needflag = FLAG_NULL,
                                 char in_compound = IN_CPD_NOT);
-  std::string prefix_check_morph(const char* word,
+  std::string prefix_check_morph(const std::string& word,
+                                 int start,
                                  int len,
                                  char in_compound,
                                  const FLAG needflag = FLAG_NULL);
-  std::string suffix_check_morph(const char* word,
+  std::string suffix_check_morph(const std::string& word,
+                                 int start,
                                  int len,
                                  int sfxopts,
                                  PfxEntry* ppfx,
@@ -266,11 +269,13 @@ class AffixMgr {
                                  const FLAG needflag = FLAG_NULL,
                                  char in_compound = IN_CPD_NOT);
 
-  std::string prefix_check_twosfx_morph(const char* word,
+  std::string prefix_check_twosfx_morph(const std::string& word,
+                                        int start,
                                         int len,
                                         char in_compound,
                                         const FLAG needflag = FLAG_NULL);
-  std::string suffix_check_twosfx_morph(const char* word,
+  std::string suffix_check_twosfx_morph(const std::string& word,
+                                        int start,
                                         int len,
                                         int sfxopts,
                                         PfxEntry* ppfx,

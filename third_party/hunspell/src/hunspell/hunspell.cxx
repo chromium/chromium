@@ -137,7 +137,7 @@ private:
   std::vector<HashMgr*> m_HMgrs;
   SuggestMgr* pSMgr;
 #ifndef HUNSPELL_CHROME_CLIENT // We are using BDict instead.
-  char* affixpath;
+  std::string affixpath;
 #endif
   std::string encoding;
   struct cs_info* csconv;
@@ -188,14 +188,12 @@ private:
 #ifdef HUNSPELL_CHROME_CLIENT
 HunspellImpl::HunspellImpl(base::span<const unsigned char> bdict_data) {
 #else
-HunspellImpl::HunspellImpl(const char* affpath, const char* dpath, const char* key) {
+HunspellImpl::HunspellImpl(const char* affpath, const char* dpath, const char* key)
+  : affixpath(affpath) {
 #endif
   csconv = NULL;
   utf8 = 0;
   complexprefixes = 0;
-#ifndef HUNSPELL_CHROME_CLIENT
-  affixpath = mystrdup(affpath);
-#endif
 
 #ifdef HUNSPELL_CHROME_CLIENT
   bdict_reader = new hunspell::BDictReader;
@@ -248,18 +246,13 @@ HunspellImpl::~HunspellImpl() {
 #ifdef HUNSPELL_CHROME_CLIENT
     if (bdict_reader) delete bdict_reader;
     bdict_reader = NULL;
-#else
-  delete[] affixpath;
-  affixpath = NULL;
 #endif
 }
 
 #ifndef HUNSPELL_CHROME_CLIENT
 // load extra dictionaries
 int HunspellImpl::add_dic(const char* dpath, const char* key) {
-  if (!affixpath)
-    return 1;
-  m_HMgrs.push_back(new HashMgr(dpath, affixpath, key));
+  m_HMgrs.push_back(new HashMgr(dpath, affixpath.c_str(), key));
   return 0;
 }
 #endif
@@ -762,7 +755,10 @@ bool HunspellImpl::spell_internal(const std::string& word, int* info, std::strin
         // to recognize dictionary words with wordbreak
         if (found2 > 0 && (found2 < wl - plen))
             found = found2;
-        if (!spell(scw.substr(found + plen)))
+        std::string substring(scw.substr(found + plen));
+        if (word == substring) // that's broken, cannot complete spelling
+          continue;
+        if (!spell(substring))
           continue;
         std::string suffix(scw.substr(found));
         scw.resize(found);

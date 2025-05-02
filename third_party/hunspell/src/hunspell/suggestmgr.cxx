@@ -1887,7 +1887,7 @@ std::string SuggestMgr::suggest_morph(const std::string& in_w) {
     rv = rv->next_homonym;
   }
 
-  std::string st = pAMgr->affix_check_morph(w.c_str(), w.size());
+  std::string st = pAMgr->affix_check_morph(w, 0, w.size());
   if (!st.empty()) {
     result.append(st);
   }

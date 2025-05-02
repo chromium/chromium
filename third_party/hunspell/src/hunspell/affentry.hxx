@@ -106,12 +106,14 @@ class PfxEntry : public AffEntry {
                               char in_compound,
                               const FLAG needflag = FLAG_NULL);
 
-  std::string check_morph(const char* word,
+  std::string check_morph(const std::string& word,
+                          int start,
                           int len,
                           char in_compound,
                           const FLAG needflag = FLAG_NULL);
 
-  std::string check_twosfx_morph(const char* word,
+  std::string check_twosfx_morph(const std::string& word,
+                                 int start,
                                  int len,
                                  char in_compound,
                                  const FLAG needflag = FLAG_NULL);
@@ -181,7 +183,8 @@ class SfxEntry : public AffEntry {
                               PfxEntry* ppfx,
                               const FLAG needflag = FLAG_NULL);
 
-  std::string check_twosfx_morph(const char* word,
+  std::string check_twosfx_morph(const std::string& word,
+                                 int start,
                                  int len,
                                  int optflags,
                                  PfxEntry* ppfx,

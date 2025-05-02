@@ -1125,7 +1125,7 @@ int AffixMgr::encodeit(AffEntry& entry, const std::string& cs) {
 
 // return 1 if s1 is a leading subset of s2 (dots are for infixes)
 inline int AffixMgr::isSubset(const char* s1, const char* s2) {
-  while (((*s1 == *s2) || (*s1 == '.')) && (*s1 != '\0')) {
+  while (((*s1 == *s2) || (*s1 == '.')) && (*s1 != '\0') && (*s2 != '\0')) {
     s1++;
     s2++;
   }
@@ -1241,7 +1241,8 @@ struct hentry* AffixMgr::prefix_check_twosfx(const std::string& word,
 }
 
 // check word for prefixes and morph
-std::string AffixMgr::prefix_check_morph(const char* word,
+std::string AffixMgr::prefix_check_morph(const std::string& word,
+                                         int start,
                                          int len,
                                          char in_compound,
                                          const FLAG needflag) {
@@ -1255,7 +1256,7 @@ std::string AffixMgr::prefix_check_morph(const char* word,
   // first handle the special case of 0 length prefixes
   PfxEntry* pe = pStart[0];
   while (pe) {
-    std::string st = pe->check_morph(word, len, in_compound, needflag);
+    std::string st = pe->check_morph(word, start, len, in_compound, needflag);
     if (!st.empty()) {
       result.append(st);
     }
@@ -1263,12 +1264,12 @@ std::string AffixMgr::prefix_check_morph(const char* word,
   }
 
   // now handle the general case
-  unsigned char sp = *((const unsigned char*)word);
+  unsigned char sp = word[start];
   PfxEntry* pptr = pStart[sp];
 
   while (pptr) {
-    if (isSubset(pptr->getKey(), word)) {
-      std::string st = pptr->check_morph(word, len, in_compound, needflag);
+    if (isSubset(pptr->getKey(), word.c_str() + start)) {
+      std::string st = pptr->check_morph(word, start, len, in_compound, needflag);
       if (!st.empty()) {
         // fogemorpheme
         if ((in_compound != IN_CPD_NOT) ||
@@ -1288,7 +1289,8 @@ std::string AffixMgr::prefix_check_morph(const char* word,
 }
 
 // check word for prefixes and morph and two-level suffixes
-std::string AffixMgr::prefix_check_twosfx_morph(const char* word,
+std::string AffixMgr::prefix_check_twosfx_morph(const std::string& word,
+                                                int start,
                                                 int len,
                                                 char in_compound,
                                                 const FLAG needflag) {
@@ -1301,7 +1303,7 @@ std::string AffixMgr::prefix_check_twosfx_morph(const char* word,
   // first handle the special case of 0 length prefixes
   PfxEntry* pe = pStart[0];
   while (pe) {
-    std::string st = pe->check_twosfx_morph(word, len, in_compound, needflag);
+    std::string st = pe->check_twosfx_morph(word, start, len, in_compound, needflag);
     if (!st.empty()) {
       result.append(st);
     }
@@ -1309,12 +1311,12 @@ std::string AffixMgr::prefix_check_twosfx_morph(const char* word,
   }
 
   // now handle the general case
-  unsigned char sp = *((const unsigned char*)word);
+  unsigned char sp = word[start];
   PfxEntry* pptr = pStart[sp];
 
   while (pptr) {
-    if (isSubset(pptr->getKey(), word)) {
-      std::string st = pptr->check_twosfx_morph(word, len, in_compound, needflag);
+    if (isSubset(pptr->getKey(), word.c_str() + start)) {
+      std::string st = pptr->check_twosfx_morph(word, start, len, in_compound, needflag);
       if (!st.empty()) {
         result.append(st);
         pfx = pptr;
@@ -2431,12 +2433,12 @@ int AffixMgr::compound_check_morph(const std::string& word,
                                   compoundmiddle)))))) {
           std::string p;
           if (compoundflag)
-            p = affix_check_morph(st.c_str(), i, compoundflag);
+            p = affix_check_morph(st, 0, i, compoundflag);
           if (p.empty()) {
             if ((wordnum == 0) && compoundbegin) {
-              p = affix_check_morph(st.c_str(), i, compoundbegin);
+              p = affix_check_morph(st, 0, i, compoundbegin);
             } else if ((wordnum > 0) && compoundmiddle) {
-              p = affix_check_morph(st.c_str(), i, compoundmiddle);
+              p = affix_check_morph(st, 0, i, compoundmiddle);
             }
           }
           if (!p.empty()) {
@@ -2660,9 +2662,9 @@ int AffixMgr::compound_check_morph(const std::string& word,
           if (rv && words && defcpd_check(&words, wnum + 1, rv, NULL, 1)) {
             std::string m;
             if (compoundflag)
-              m = affix_check_morph((word.c_str() + i), strlen(word.c_str() + i), compoundflag);
+              m = affix_check_morph(word, i, word.size() - i, compoundflag);
             if (m.empty() && compoundend) {
-              m = affix_check_morph((word.c_str() + i), strlen(word.c_str() + i), compoundend);
+              m = affix_check_morph(word, i, word.size() - i, compoundend);
             }
             result.append(presult);
             if (!m.empty()) {
@@ -2752,9 +2754,9 @@ int AffixMgr::compound_check_morph(const std::string& word,
             ((!checkcompounddup || (rv != rv_first)))) {
           std::string m;
           if (compoundflag)
-            m = affix_check_morph((word.c_str() + i), strlen(word.c_str() + i), compoundflag);
+            m = affix_check_morph(word, i, word.size() - i, compoundflag);
           if (m.empty() && compoundend) {
-            m = affix_check_morph((word.c_str() + i), strlen(word.c_str() + i), compoundend);
+            m = affix_check_morph(word, i, word.size() - i, compoundend);
           }
           result.append(presult);
           if (!m.empty()) {
@@ -2972,7 +2974,8 @@ struct hentry* AffixMgr::suffix_check_twosfx(const std::string& word,
 }
 
 // check word for two-level suffixes and morph
-std::string AffixMgr::suffix_check_twosfx_morph(const char* word,
+std::string AffixMgr::suffix_check_twosfx_morph(const std::string& word,
+                                                int start,
                                                 int len,
                                                 int sfxopts,
                                                 PfxEntry* ppfx,
@@ -2985,7 +2988,7 @@ std::string AffixMgr::suffix_check_twosfx_morph(const char* word,
   SfxEntry* se = sStart[0];
   while (se) {
     if (contclasses[se->getFlag()]) {
-      std::string st = se->check_twosfx_morph(word, len, sfxopts, ppfx, needflag);
+      std::string st = se->check_twosfx_morph(word, start, len, sfxopts, ppfx, needflag);
       if (!st.empty()) {
         if (ppfx) {
           if (ppfx->getMorph()) {
@@ -3009,13 +3012,13 @@ std::string AffixMgr::suffix_check_twosfx_morph(const char* word,
   // now handle the general case
   if (len == 0)
     return std::string();  // FULLSTRIP
-  unsigned char sp = *((const unsigned char*)(word + len - 1));
+  unsigned char sp = word[start + len - 1];
   SfxEntry* sptr = sStart[sp];
 
   while (sptr) {
-    if (isRevSubset(sptr->getKey(), word + len - 1, len)) {
+    if (isRevSubset(sptr->getKey(), word.c_str() + start + len - 1, len)) {
       if (contclasses[sptr->getFlag()]) {
-        std::string st = sptr->check_twosfx_morph(word, len, sfxopts, ppfx, needflag);
+        std::string st = sptr->check_twosfx_morph(word, start, len, sfxopts, ppfx, needflag);
         if (!st.empty()) {
           sfxflag = sptr->getFlag();  // BUG: sfxflag not stateless
           if (!sptr->getCont())
@@ -3043,7 +3046,8 @@ std::string AffixMgr::suffix_check_twosfx_morph(const char* word,
   return result;
 }
 
-std::string AffixMgr::suffix_check_morph(const char* word,
+std::string AffixMgr::suffix_check_morph(const std::string& word,
+                                         int start,
                                          int len,
                                          int sfxopts,
                                          PfxEntry* ppfx,
@@ -3087,7 +3091,7 @@ std::string AffixMgr::suffix_check_morph(const char* word,
             (ppfx &&
              !((ep->getCont()) &&
                TESTAFF(ep->getCont(), needaffix, ep->getContLen()))))))
-        rv = se->checkword(word, 0, len, sfxopts, ppfx, cclass,
+        rv = se->checkword(word, start, len, sfxopts, ppfx, cclass,
                            needflag, FLAG_NULL);
       while (rv) {
         if (ppfx) {
@@ -3124,11 +3128,11 @@ std::string AffixMgr::suffix_check_morph(const char* word,
   // now handle the general case
   if (len == 0)
     return std::string();  // FULLSTRIP
-  unsigned char sp = *((const unsigned char*)(word + len - 1));
+  unsigned char sp = word[start + len - 1];
   SfxEntry* sptr = sStart[sp];
 
   while (sptr) {
-    if (isRevSubset(sptr->getKey(), word + len - 1, len)) {
+    if (isRevSubset(sptr->getKey(), word.c_str() + start + len - 1, len)) {
       // suffixes are not allowed in beginning of compounds
       if (((((in_compound != IN_CPD_BEGIN)) ||  // && !cclass
             // except when signed with compoundpermitflag flag
@@ -3154,7 +3158,7 @@ std::string AffixMgr::suffix_check_morph(const char* word,
            (cclass ||
             !(sptr->getCont() &&
               TESTAFF(sptr->getCont(), needaffix, sptr->getContLen())))))
-        rv = sptr->checkword(word, 0, len, sfxopts, ppfx, cclass,
+        rv = sptr->checkword(word, start, len, sfxopts, ppfx, cclass,
                              needflag, FLAG_NULL);
       while (rv) {
         if (ppfx) {
@@ -3228,20 +3232,21 @@ struct hentry* AffixMgr::affix_check(const std::string& word,
 }
 
 // check if word with affixes is correctly spelled
-std::string AffixMgr::affix_check_morph(const char* word,
+std::string AffixMgr::affix_check_morph(const std::string& word,
+                                  int start,
                                   int len,
                                   const FLAG needflag,
                                   char in_compound) {
   std::string result;
 
   // check all prefixes (also crossed with suffixes if allowed)
-  std::string st = prefix_check_morph(word, len, in_compound);
+  std::string st = prefix_check_morph(word, start, len, in_compound);
   if (!st.empty()) {
     result.append(st);
   }
 
   // if still not found check all suffixes
-  st = suffix_check_morph(word, len, 0, NULL, '\0', needflag, in_compound);
+  st = suffix_check_morph(word, start, len, 0, NULL, '\0', needflag, in_compound);
   if (!st.empty()) {
     result.append(st);
   }
@@ -3250,13 +3255,13 @@ std::string AffixMgr::affix_check_morph(const char* word,
     sfx = NULL;
     pfx = NULL;
     // if still not found check all two-level suffixes
-    st = suffix_check_twosfx_morph(word, len, 0, NULL, needflag);
+    st = suffix_check_twosfx_morph(word, start, len, 0, NULL, needflag);
     if (!st.empty()) {
       result.append(st);
     }
 
     // if still not found check all two-level suffixes
-    st = prefix_check_twosfx_morph(word, len, IN_CPD_NOT, needflag);
+    st = prefix_check_twosfx_morph(word, start, len, IN_CPD_NOT, needflag);
     if (!st.empty()) {
       result.append(st);
     }
