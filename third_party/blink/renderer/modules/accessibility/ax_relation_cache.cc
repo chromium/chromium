@@ -923,10 +923,7 @@ void AXRelationCache::UpdateAriaOwnsWithCleanLayout(AXObject* owner,
                             html_names::kAriaOwnsAttr)) {
     // TODO (crbug.com/41469336): Also check ElementInternals here.
     UpdateAriaOwnsFromAttrAssociatedElementsWithCleanLayout(
-        owner,
-        // TODO (crbug.com/353750122): Set resolve_reference_target to false.
-        *element->GetAttrAssociatedElements(html_names::kAriaOwnsAttr,
-                                            /*resolve_reference_target*/ true),
+        owner, *element->GetAttrAssociatedElements(html_names::kAriaOwnsAttr),
         owned_children, force);
   } else {
     // Figure out the ids that actually correspond to children that exist

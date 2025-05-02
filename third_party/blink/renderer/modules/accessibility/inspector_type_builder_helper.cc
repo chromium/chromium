@@ -604,9 +604,7 @@ void AccessibilityChildrenFromAttribute(const AXObject& ax_object,
     return;
   }
   GCedHeapVector<Member<Element>>* elements =
-      ax_object.GetElement()->GetAttrAssociatedElements(
-          attribute,
-          /*resolve_reference_target=*/true);
+      ax_object.GetElement()->GetAttrAssociatedElements(attribute);
   if (!elements) {
     return;
   }

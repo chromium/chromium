@@ -352,8 +352,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
       const QualifiedName& name) const;
   void SetElementAttribute(const QualifiedName&, Element*);
   GCedHeapVector<Member<Element>>* GetAttrAssociatedElements(
-      const QualifiedName& name,
-      bool resolve_reference_target) const;
+      const QualifiedName& name) const;
 
   // If treescope_element is connected, then we will search treescope_element's
   // TreeScope for an element with the id. If treescope_element is disconnected,
