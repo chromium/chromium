@@ -156,10 +156,7 @@ group("apk_installer_data") {
   # Other //build users let devil library fetch these from Google Storage.
   if (build_with_chromium) {
     if (!is_component_build) {
-      data_deps = [
-        "//build/android/pylib/device/commands",
-        "//tools/android/devil_util",
-      ]
+      data_deps = [ "//tools/android/devil_util" ]
     }
     data =
         [ "//third_party/android_build_tools/bundletool/cipd/bundletool.jar" ]

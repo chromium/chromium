@@ -55,13 +55,6 @@ _DEVIL_BUILD_PRODUCT_DEPS = {
             'path_components': ['devil_util_host'],
         },
     ],
-    'chromium_commands': [{
-        'platform':
-        'linux2',
-        'arch':
-        'x86_64',
-        'path_components': ['lib.java', 'chromium_commands.dex.jar'],
-    }],
     'forwarder_device': [
         {
             'platform': 'android',
