@@ -2121,12 +2121,7 @@ public class AwContents implements SmartClipProvider {
     // --------------------------------------------------------------------------------------------
 
     public void onDraw(Canvas canvas) {
-        try {
-            TraceEvent.begin("AwContents.onDraw");
-            mAwViewMethods.onDraw(canvas);
-        } finally {
-            TraceEvent.end("AwContents.onDraw");
-        }
+        mAwViewMethods.onDraw(canvas);
     }
 
     public void setLayoutParams(final ViewGroup.LayoutParams layoutParams) {
@@ -2576,7 +2571,6 @@ public class AwContents implements SmartClipProvider {
 
     /** @see android.view.View#setLayerType() */
     public void setLayerType(int layerType, Paint paint) {
-        if (TRACE) Log.i(TAG, "%s setLayerType", this);
         mAwViewMethods.setLayerType(layerType, paint);
     }
 
@@ -3362,16 +3356,12 @@ public class AwContents implements SmartClipProvider {
 
     /** @see android.view.View#onGenericMotionEvent() */
     public boolean onGenericMotionEvent(MotionEvent event) {
-        return isDestroyed(NO_WARN) ? false : mAwViewMethods.onGenericMotionEvent(event);
+        return mAwViewMethods.onGenericMotionEvent(event);
     }
 
     /** @see android.view.View#onConfigurationChanged() */
     public void onConfigurationChanged(Configuration newConfig) {
-        if (TRACE) Log.i(TAG, "%s onConfigurationChanged", this);
         mAwViewMethods.onConfigurationChanged(newConfig);
-        if (!isDestroyed(NO_WARN)) {
-            AwContentsJni.get().onConfigurationChanged(mNativeAwContents);
-        }
     }
 
     /** @see android.view.View#onAttachedToWindow() */
@@ -3436,9 +3426,7 @@ public class AwContents implements SmartClipProvider {
 
     /** @see android.view.View#onFocusChanged() */
     public void onFocusChanged(boolean focused, int direction, Rect previouslyFocusedRect) {
-        if (!mTemporarilyDetached) {
-            mAwViewMethods.onFocusChanged(focused, direction, previouslyFocusedRect);
-        }
+        mAwViewMethods.onFocusChanged(focused, direction, previouslyFocusedRect);
     }
 
     /** @see android.view.View#onStartTemporaryDetach() */
@@ -3456,7 +3444,6 @@ public class AwContents implements SmartClipProvider {
      */
     public void onSizeChanged(int w, int h, int ow, int oh) {
         mAwViewMethods.onSizeChanged(w, h, ow, oh);
-        if (mDisplayCutoutController != null) mDisplayCutoutController.onSizeChanged();
     }
 
     /** @see android.view.View#onVisibilityChanged() */
@@ -4388,9 +4375,18 @@ public class AwContents implements SmartClipProvider {
 
         private boolean mSizeIsSmallForFrameRateHints;
 
-        @SuppressLint("DrawAllocation") // For new AwFunctor.
         @Override
         public void onDraw(Canvas canvas) {
+            try {
+                TraceEvent.begin("AwContents.onDraw");
+                onDrawInner(canvas);
+            } finally {
+                TraceEvent.end("AwContents.onDraw");
+            }
+        }
+
+        @SuppressLint("DrawAllocation") // For new AwFunctor.
+        private void onDrawInner(Canvas canvas) {
             if (isDestroyed(NO_WARN)) {
                 TraceEvent.instant("EarlyOut_destroyed");
                 canvas.drawColor(getEffectiveBackgroundColor());
@@ -4513,6 +4509,7 @@ public class AwContents implements SmartClipProvider {
 
         @Override
         public void setLayerType(int layerType, Paint paint) {
+            if (TRACE) Log.i(TAG, "%s setLayerType", AwContents.this);
             mLayerType = layerType;
             updateHardwareAcceleratedFeaturesToggle();
         }
@@ -4629,9 +4626,12 @@ public class AwContents implements SmartClipProvider {
 
         @Override
         public void onConfigurationChanged(Configuration newConfig) {
+            if (TRACE) Log.i(TAG, "%s onConfigurationChanged", AwContents.this);
+
             if (!isDestroyed(NO_WARN)) {
                 mViewEventSink.onConfigurationChanged(newConfig);
                 mInternalAccessAdapter.super_onConfigurationChanged(newConfig);
+                mWebContents.notifyRendererPreferenceUpdate();
             }
         }
 
@@ -4652,6 +4652,11 @@ public class AwContents implements SmartClipProvider {
                             mContainerView.getHeight());
             updateHardwareAcceleratedFeaturesToggle();
             postUpdateWebContentsVisibility();
+
+            // Web Contents preferences depends on the device configuration for dark mode. While
+            // the View was detached from the Window, we may have missed an onConfigurationChanged,
+            // so trigger an update when reattached.
+            mWebContents.notifyRendererPreferenceUpdate();
 
             updateDefaultLocale();
 
@@ -4706,7 +4711,7 @@ public class AwContents implements SmartClipProvider {
 
         @Override
         public void onFocusChanged(boolean focused, int direction, Rect previouslyFocusedRect) {
-            if (isDestroyed(NO_WARN)) return;
+            if (isDestroyed(NO_WARN) || mTemporarilyDetached) return;
             mContainerViewFocused = focused;
             mViewEventSink.onViewFocusChanged(focused);
         }
@@ -4714,6 +4719,8 @@ public class AwContents implements SmartClipProvider {
         @Override
         public void onSizeChanged(int w, int h, int ow, int oh) {
             if (isDestroyed(NO_WARN)) return;
+
+            if (mDisplayCutoutController != null) mDisplayCutoutController.onSizeChanged();
 
             DisplayMetrics displayMetrics = mContext.getResources().getDisplayMetrics();
             float pixelCount = (float) displayMetrics.widthPixels * displayMetrics.heightPixels;
@@ -4991,8 +4998,6 @@ public class AwContents implements SmartClipProvider {
 
         @JniType("std::vector")
         StartupJavascriptInfo[] getDocumentStartupJavascripts(long nativeAwContents);
-
-        void onConfigurationChanged(long nativeAwContents);
 
         void flushBackForwardCache(long nativeAwContents, int reason);
 

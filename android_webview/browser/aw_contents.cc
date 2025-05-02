@@ -1048,11 +1048,6 @@ void AwContents::OnSizeChanged(JNIEnv* env, int w, int h, int ow, int oh) {
       ->ClientVisibilityChanged(this);
 }
 
-void AwContents::OnConfigurationChanged(JNIEnv* env) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  web_contents()->OnWebPreferencesChanged();
-}
-
 void AwContents::SetViewVisibility(JNIEnv* env, bool visible) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   browser_view_renderer_.SetViewVisibility(visible);
