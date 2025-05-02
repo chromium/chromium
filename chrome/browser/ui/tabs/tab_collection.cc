@@ -22,7 +22,8 @@ TabCollection::Iterator::Iterator(base::PassKey<TabCollection>,
 TabCollection::Iterator::Iterator(const tabs::TabCollection* root, bool is_end)
     : cur_(nullptr), root_(root) {
   if (!is_end && root) {
-    stack_.push({root, 0});
+    stack_.reserve(10);
+    stack_.push_back({root, 0});
     Next();
   }
 }
@@ -36,7 +37,7 @@ void TabCollection::Iterator::Next() {
   cur_ = nullptr;
   while (!stack_.empty()) {
     // Copy by reference to update the index below.
-    Frame& frame = stack_.top();
+    Frame& frame = stack_[stack_.size() - 1];
     const TabCollection* collection = frame.collection;
 
     const auto& children = collection->GetChildren();
@@ -49,10 +50,14 @@ void TabCollection::Iterator::Next() {
       } else {
         TabCollection* child_collection =
             std::get<std::unique_ptr<TabCollection>>(child).get();
-        stack_.push({child_collection, 0});
+        // Optimization for `pinned_collection_` which can exist even without
+        // any children.
+        if (child_collection->ChildCount() > 0) {
+          stack_.push_back({child_collection, 0});
+        }
       }
     } else {
-      stack_.pop();
+      stack_.pop_back();
     }
   }
 }
