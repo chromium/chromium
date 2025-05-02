@@ -1023,7 +1023,7 @@ void FragmentBuilder::AdjustFixedposContainerInfo(
           box_fragment->GetLayoutObject()->IsLayoutInline()) {
         *fixedpos_inline_container = OofInlineContainer<LogicalOffset>(
             To<LayoutInline>(box_fragment->GetLayoutObject()), relative_offset);
-      } else {
+      } else if (!box_fragment->GetLayoutObject()->IsLayoutInline()) {
         *fixedpos_containing_block_fragment = box_fragment;
       }
     } else if (fixedpos_inline_container->container) {
