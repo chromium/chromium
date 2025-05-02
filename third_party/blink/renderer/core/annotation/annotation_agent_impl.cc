@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
+#include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/scroll/scroll_alignment.h"
 #include "third_party/blink/renderer/core/scroll/scroll_into_view_util.h"
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
@@ -39,6 +40,7 @@
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
+#include "ui/display/screen_info.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
 namespace blink {
@@ -161,7 +163,7 @@ bool ShouldUseIsValidRangeAndMarkable(mojom::blink::AnnotationType type) {
 // The maximum scroll distance for which an AnnotationAgent of type kGlic should
 // use a smooth (animated) scroll. For longer distances, the scroll will be
 // instant.
-int kGlicSmoothScrollThreshold = 7000;
+int kGlicSmoothScrollThresholdInDIPs = 7000;
 
 std::optional<DocumentMarker::MarkerTypes> GetMarkerTypesForAnnotationType(
     mojom::blink::AnnotationType annotation_type) {
@@ -591,9 +593,18 @@ mojom::blink::ScrollBehavior AnnotationAgentImpl::ComputeScrollIntoViewBehavior(
                 *params.align_x, *params.align_y);
         gfx::Vector2dF scroll_distance =
             scroll_offset - view->GetScrollableArea()->GetScrollOffset();
-        float max_distance = std::max(std::abs(scroll_distance.x()),
-                                      std::abs(scroll_distance.y()));
-        if (max_distance < kGlicSmoothScrollThreshold) {
+        float max_distance_in_dips = std::max(std::abs(scroll_distance.x()),
+                                              std::abs(scroll_distance.y()));
+        if (ChromeClient* client = view->GetChromeClient()) {
+          // Note: We explicitly don't use `LocalFrame::DevicePixelRatio` or
+          // `LocalFrame::LayoutZoomFactor` as both are affected by browser
+          // zoom, and we don't want to allow longer scrolls (in physical
+          // pixels) when content is zoomed.
+          const float device_scale_factor =
+              client->GetScreenInfo(view->GetFrame()).device_scale_factor;
+          max_distance_in_dips = max_distance_in_dips / device_scale_factor;
+        }
+        if (max_distance_in_dips < kGlicSmoothScrollThresholdInDIPs) {
           return ScrollBehavior::kSmooth;
         }
       }
