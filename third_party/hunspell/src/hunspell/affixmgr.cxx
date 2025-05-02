@@ -1072,13 +1072,10 @@ int AffixMgr::process_sfx_order() {
 
 // add flags to the result for dictionary debugging
 std::string& AffixMgr::debugflag(std::string& result, unsigned short flag) {
-  char* st = encode_flag(flag);
+  std::string st = encode_flag(flag);
   result.push_back(MSEP_FLD);
   result.append(MORPH_FLAG);
-  if (st) {
-    result.append(st);
-    free(st);
-  }
+  result.append(st);
   return result;
 }
 
@@ -1115,9 +1112,7 @@ int AffixMgr::encodeit(AffEntry& entry, const std::string& cs) {
       //a long condition
       entry.opts |= aeLONGCOND;
       size_t remaining = cs.size() - MAXCONDLEN_1;
-      entry.c.l.conds2 = (char*)malloc(1 + remaining);
-      if (!entry.c.l.conds2)
-        return 1;
+      entry.c.l.conds2 = new char[1 + remaining];
       memcpy(entry.c.l.conds2, cs.data() + MAXCONDLEN_1, remaining);
       entry.c.l.conds2[remaining] = 0;
     }
@@ -3649,7 +3644,7 @@ int AffixMgr::get_checksharps() const {
   return checksharps;
 }
 
-char* AffixMgr::encode_flag(unsigned short aflag) const {
+std::string AffixMgr::encode_flag(unsigned short aflag) const {
   return pHMgr->encode_flag(aflag);
 }
 
@@ -4582,12 +4577,9 @@ bool AffixMgr::parse_affix(const std::string& line,
         numents = atoi(std::string(start_piece, iter).c_str());
         if ((numents <= 0) || ((std::numeric_limits<size_t>::max() /
                                 sizeof(AffEntry)) < static_cast<size_t>(numents))) {
-          char* err = pHMgr->encode_flag(aflag);
-          if (err) {
-            HUNSPELL_WARNING(stderr, "error: line %d: bad entry number\n",
-                             af->getlinenum());
-            free(err);
-          }
+          std::string err = pHMgr->encode_flag(aflag);
+          HUNSPELL_WARNING(stderr, "error: line %d: bad entry number\n",
+                           af->getlinenum());
           return false;
         }
 
@@ -4609,12 +4601,9 @@ bool AffixMgr::parse_affix(const std::string& line,
   }
   // check to make sure we parsed enough pieces
   if (np != 4) {
-    char* err = pHMgr->encode_flag(aflag);
-    if (err) {
-      HUNSPELL_WARNING(stderr, "error: line %d: missing data\n",
-                       af->getlinenum());
-      free(err);
-    }
+    std::string err = pHMgr->encode_flag(aflag);
+    HUNSPELL_WARNING(stderr, "error: line %d: missing data\n",
+                     af->getlinenum());
     return false;
   }
 
@@ -4647,13 +4636,10 @@ bool AffixMgr::parse_affix(const std::string& line,
           np++;
           std::string chunk(start_piece, iter);
           if (pHMgr->decode_flag(chunk) != aflag) {
-            char* err = pHMgr->encode_flag(aflag);
-            if (err) {
-              HUNSPELL_WARNING(stderr,
-                               "error: line %d: affix %s is corrupt\n",
-                               af->getlinenum(), err);
-              free(err);
-            }
+            std::string err = pHMgr->encode_flag(aflag);
+            HUNSPELL_WARNING(stderr,
+                             "error: line %d: affix %s is corrupt\n",
+                             af->getlinenum(), err.c_str());
             return false;
           }
 
@@ -4805,12 +4791,9 @@ bool AffixMgr::parse_affix(const std::string& line,
     }
     // check to make sure we parsed enough pieces
     if (np < 4) {
-      char* err = pHMgr->encode_flag(aflag);
-      if (err) {
-        HUNSPELL_WARNING(stderr, "error: line %d: affix %s is corrupt\n",
-                         af->getlinenum(), err);
-        free(err);
-      }
+      std::string err = pHMgr->encode_flag(aflag);
+      HUNSPELL_WARNING(stderr, "error: line %d: affix %s is corrupt\n",
+                       af->getlinenum(), err.c_str());
       return false;
     }
 

@@ -183,7 +183,7 @@ class SuggestMgr {
   int leftcommonsubstring(const char* s1, const char* s2);
   int commoncharacterpositions(const char* s1, const char* s2, int* is_swap);
   void bubblesort(char** rwd, char** rwd2, int* rsc, int n);
-  void lcs(const char* s, const char* s2, int* l1, int* l2, char** result);
+  char* lcs(const char* s, const char* s2, int* l1, int* l2);
   int lcslen(const char* s, const char* s2);
   int lcslen(const std::string& s, const std::string& s2);
   std::string suggest_hentry_gen(hentry* rv, const char* pattern);

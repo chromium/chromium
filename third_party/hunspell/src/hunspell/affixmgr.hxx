@@ -371,7 +371,7 @@ class AffixMgr {
   FLAG get_warn(void) const;
   int get_forbidwarn(void) const;
   int get_checksharps(void) const;
-  char* encode_flag(unsigned short aflag) const;
+  std::string encode_flag(unsigned short aflag) const;
   int get_fullstrip() const;
 
  private:

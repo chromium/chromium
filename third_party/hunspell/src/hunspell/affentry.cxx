@@ -78,11 +78,11 @@
 
 AffEntry::~AffEntry() {
   if (opts & aeLONGCOND)
-    free(c.l.conds2);
+    delete[] c.l.conds2;
   if (morphcode && !(opts & aeALIASM))
-    free(morphcode);
+    delete[] morphcode;
   if (contclass && !(opts & aeALIASF))
-    free(contclass);
+    delete[] contclass;
 }
 
 PfxEntry::PfxEntry(AffixMgr* pmgr)
@@ -418,11 +418,10 @@ std::string PfxEntry::check_morph(const char* word,
               result.append(HENTRY_DATA2(he));
             } else {
               // return with debug information
-              char* flag = pmyMgr->encode_flag(getFlag());
+              std::string flag = pmyMgr->encode_flag(getFlag());
               result.push_back(MSEP_FLD);
               result.append(MORPH_FLAG);
               result.append(flag);
-              free(flag);
             }
             result.push_back(MSEP_REC);
           }

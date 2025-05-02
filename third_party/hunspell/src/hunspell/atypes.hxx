@@ -109,6 +109,12 @@ struct guessword {
   char* word;
   bool allow;
   char* orig;
+  guessword()
+    : word(nullptr)
+    , allow(false)
+    , orig(nullptr)
+  {
+  }
 };
 
 typedef std::vector<std::string> mapentry;
