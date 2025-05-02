@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.pwd_check_wrapper;
 import static org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge.usesSplitStoresAndUPMForLocal;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.password_manager.PasswordCheckReferrer;
 import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
 import org.chromium.chrome.browser.password_manager.PasswordStoreBridge;
@@ -24,7 +25,7 @@ import java.util.concurrent.CompletableFuture;
 @NullMarked
 class GmsCorePasswordCheckController
         implements PasswordCheckController, PasswordStoreBridge.PasswordStoreObserver {
-    private final SyncService mSyncService;
+    private final @Nullable SyncService mSyncService;
     private final PrefService mPrefService;
     private final PasswordStoreBridge mPasswordStoreBridge;
     private final PasswordManagerHelper mPasswordManagerHelper;
@@ -32,7 +33,7 @@ class GmsCorePasswordCheckController
     private final CompletableFuture<Integer> mPasswordsCountLocalStorage;
 
     GmsCorePasswordCheckController(
-            SyncService syncService,
+            @Nullable SyncService syncService,
             PrefService prefService,
             PasswordStoreBridge passwordStoreBridge,
             PasswordManagerHelper passwordManagerHelper) {

@@ -63,11 +63,12 @@ public interface PasswordCheckController {
     }
 
     static @Nullable String getAccountNameForPasswordStorageType(
-            @PasswordStorageType int passwordStorageType, SyncService syncService) {
+            @PasswordStorageType int passwordStorageType, @Nullable SyncService syncService) {
         switch (passwordStorageType) {
             case PasswordStorageType.LOCAL_STORAGE:
                 return null;
             case PasswordStorageType.ACCOUNT_STORAGE:
+                assert syncService != null;
                 assert PasswordManagerHelper.hasChosenToSyncPasswords(syncService)
                         : "The account storage is only available if password sync is on.";
                 return CoreAccountInfo.getEmailFrom(syncService.getAccountInfo());

@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.safety_check;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.password_check.PasswordCheckUIStatus;
 import org.chromium.chrome.browser.password_manager.CredentialManagerLauncher.CredentialManagerError;
 import org.chromium.chrome.browser.password_manager.PasswordCheckupClientHelper.PasswordCheckBackendException;
@@ -20,6 +21,7 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
+@NullMarked
 class PasswordsCheckPreferenceProperties {
     /** State of the passwords check, one of the {@link PasswordsState} values. */
     static final WritableIntPropertyKey PASSWORDS_STATE = new WritableIntPropertyKey();

@@ -33,6 +33,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.Contract;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -584,7 +585,7 @@ public class PasswordManagerHelper {
      * @param syncService the service to query about the sync status.
      * @return true if syncing passwords is enabled
      */
-    public static boolean hasChosenToSyncPasswords(SyncService syncService) {
+    public static boolean hasChosenToSyncPasswords(@Nullable SyncService syncService) {
         return PasswordManagerHelperJni.get().hasChosenToSyncPasswords(syncService);
     }
 
@@ -972,6 +973,8 @@ public class PasswordManagerHelper {
 
     @NativeMethods
     public interface Natives {
-        boolean hasChosenToSyncPasswords(@JniType("syncer::SyncService*") SyncService syncService);
+        @Contract("null -> false")
+        boolean hasChosenToSyncPasswords(
+                @JniType("syncer::SyncService*") @Nullable SyncService syncService);
     }
 }

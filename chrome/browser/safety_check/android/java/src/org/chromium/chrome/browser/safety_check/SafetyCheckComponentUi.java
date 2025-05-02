@@ -4,7 +4,10 @@
 
 package org.chromium.chrome.browser.safety_check;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** This interface is responsible for handling UI logic for the safety check fragment's view. */
+@NullMarked
 public interface SafetyCheckComponentUi {
 
     /**

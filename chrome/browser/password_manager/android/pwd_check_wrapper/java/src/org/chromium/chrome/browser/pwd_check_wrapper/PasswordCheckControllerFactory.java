@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.pwd_check_wrapper;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.LOGIN_DB_DEPRECATION_ANDROID;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
 import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge;
@@ -17,7 +18,7 @@ import org.chromium.components.sync.SyncService;
 @NullMarked
 public class PasswordCheckControllerFactory {
     public PasswordCheckController create(
-            SyncService syncService,
+            @Nullable SyncService syncService,
             PrefService prefService,
             PasswordStoreBridge passwordStoreBridge,
             PasswordManagerHelper passwordManagerHelper) {

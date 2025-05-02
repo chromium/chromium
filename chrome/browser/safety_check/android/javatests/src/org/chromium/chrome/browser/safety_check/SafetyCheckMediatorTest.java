@@ -86,6 +86,7 @@ import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConf
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.WithAccountSigninMode;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
+import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.base.CoreAccountInfo;
@@ -151,6 +152,7 @@ public class SafetyCheckMediatorTest {
     @Mock private PasswordManagerHelper.Natives mPasswordManagerHelperNativeMock;
     @Mock LoadingModalDialogCoordinator mLoadingModalDialogCoordinator;
     private FakePasswordCheckControllerFactory mPasswordCheckControllerFactory;
+    @Mock private SettingsCustomTabLauncher mSettingsCustomTabLauncher;
 
     private SafetyCheckMediator mMediator;
 
@@ -242,11 +244,12 @@ public class SafetyCheckMediatorTest {
                 mSigninLauncher,
                 mSyncService,
                 mPrefService,
+                mHandler,
                 mPasswordStoreBridge,
                 mPasswordCheckControllerFactory,
                 PasswordManagerHelper.getForProfile(mProfile),
-                mHandler,
-                mModalDialogManagerSupplier);
+                mModalDialogManagerSupplier,
+                mSettingsCustomTabLauncher);
     }
 
     private Preference.OnPreferenceClickListener getPasswordsClickListener(
