@@ -203,8 +203,11 @@ public class SafeBrowsingReferringAppBridge {
                 return "camera";
             case ExternalAppId.PIXEL_LAUNCHER:
                 return "pixel.launcher";
-            case ExternalAppId.THIRD_PARTY_LAUNCHER:
+            case ExternalAppId.DEPRECATED_THIRD_PARTY_LAUNCHER:
                 return "third-party.launcher";
+            case ExternalAppId.SAMSUNG_LAUNCHER:
+                return "samsung.launcher";
+
             default:
                 assert false : "not reached";
                 return "";
