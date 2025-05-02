@@ -39,7 +39,7 @@ $ ./run_tests ScriptsSmokeTest.testRunPerformanceTests
 """
 
 import argparse
-from collections import OrderedDict
+from collections import deque, OrderedDict
 import datetime
 import json
 import os
@@ -891,6 +891,17 @@ class CrossbenchTest(object):
             pathlib.Path(output_paths.benchmark_path) / 'output',
             pathlib.Path(output_paths.perf_results), display_name,
             self.STORY_LABEL, self.options.results_label)
+      elif os.path.exists(output_paths.logs):
+        # To avoid printing too large log file, we print the last 100 lines.
+        bottom_of_log = deque(maxlen=100)
+        with open(output_paths.logs, 'r') as handle:
+          for line in handle:
+            if line.strip():
+              bottom_of_log.append(line.replace('\n', ''))
+        print(f'The last 100 lines of {output_paths.logs}:')
+        while bottom_of_log:
+          print(f'    {bottom_of_log.popleft()}')
+        print('See the complete logs in the CAS Outputs')
     except Exception:  # pylint: disable=broad-except
       print('The following exception may have prevented the code from '
             'outputing structured test results and perf results output:')
