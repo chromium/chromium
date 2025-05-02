@@ -26,11 +26,11 @@ schema:
   - 1
   type: integer
 items:
-- caption: Use the Shared Tab Group feature.
-  name: UseSharedTabGroup
+- caption: Use the tab group sharing feature.
+  name: UseTabGroupSharing
   value: 0
-- caption: Do not use the Shared Tab Group feature.
-  name: DoNotUseSharedTabGroup
+- caption: Do not use the tab group sharing feature.
+  name: DoNotUseTabGroupSharing
   value: 1
 default: 0
 example_value: 0
