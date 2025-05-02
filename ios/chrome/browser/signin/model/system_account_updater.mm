@@ -65,13 +65,10 @@ SystemAccountUpdater::SystemAccountUpdater(
 SystemAccountUpdater::~SystemAccountUpdater() = default;
 
 void SystemAccountUpdater::OnIdentityListChanged() {
-#if BUILDFLAG(ENABLE_WIDGETS_FOR_MIM)
   UpdateLoadedAccounts();
-#endif
 }
 
 void SystemAccountUpdater::OnIdentityUpdated(id<SystemIdentity> identity) {
-#if BUILDFLAG(ENABLE_WIDGETS_FOR_MIM)
   UIImage* image =
       system_identity_manager_->GetCachedAvatarForIdentity(identity);
   NSData* png_data = UIImagePNGRepresentation(image);
@@ -87,7 +84,6 @@ void SystemAccountUpdater::OnIdentityUpdated(id<SystemIdentity> identity) {
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
       base::BindOnce(&StoreAvatarDataToDisk, identity_file, png_data),
       base::BindOnce(&ReloadAllTimelines));
-#endif
 }
 
 #pragma mark - Private
