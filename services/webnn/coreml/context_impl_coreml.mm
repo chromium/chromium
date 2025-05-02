@@ -11,6 +11,7 @@
 #include "services/webnn/coreml/graph_impl_coreml.h"
 #include "services/webnn/coreml/tensor_impl_coreml.h"
 #include "services/webnn/public/cpp/context_properties.h"
+#include "services/webnn/public/cpp/webnn_types.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/webnn_constant_operand.h"
 #include "services/webnn/webnn_context_impl.h"
@@ -38,7 +39,7 @@ void ContextImplCoreml::CreateGraphImpl(
     mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
     mojom::GraphInfoPtr graph_info,
     WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
-    base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>
+    base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
         constant_operands,
     CreateGraphImplCallback callback) {
   GraphImplCoreml::CreateAndBuild(

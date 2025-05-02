@@ -51,6 +51,7 @@
 #include "services/webnn/public/cpp/supported_data_types.h"
 #include "services/webnn/public/cpp/supported_tensors.h"
 #include "services/webnn/public/cpp/webnn_errors.h"
+#include "services/webnn/public/cpp/webnn_types.h"
 #include "services/webnn/public/mojom/webnn_error.mojom.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"
 #include "services/webnn/webnn_constant_operand.h"
@@ -309,7 +310,8 @@ struct WeightHeader {
 static_assert(sizeof(WeightHeader) == 64, "WeightHeader must be 64 bytes");
 
 struct WeightMetadata {
-  WeightMetadata(BlobDataType mil_data_type, uint64_t size_in_bytes,
+  WeightMetadata(BlobDataType mil_data_type,
+                 uint64_t size_in_bytes,
                  uint64_t offset)
       : mil_data_type(mil_data_type),
         size_in_bytes(size_in_bytes),
@@ -930,7 +932,7 @@ GraphBuilderCoreml::WeightsFileHandle::~WeightsFileHandle() = default;
 
 base::expected<CoreML::Specification::MILSpec::Value, mojom::ErrorPtr>
 GraphBuilderCoreml::WeightsFileHandle::Write(
-    uint64_t operand_id,
+    OperandId operand_id,
     const WebNNConstantOperand& constant_operand,
     std::optional<base::span<const uint32_t>> reshape_dimensions) {
   CHECK(!has_error_ && !finalized_);
@@ -1063,7 +1065,7 @@ size_t GraphBuilderCoreml::WeightsFileHandle::GetByteSize(
 }
 
 std::string GetCoreMLNameFromInput(std::string_view input_name,
-                                   uint64_t operand_id) {
+                                   OperandId operand_id) {
   // Prefix is added to user provided names to avoid collision with intermediate
   // operands' names. `operand_id` is added to avoid collision with other
   // inputs' sanitized values.
@@ -1073,7 +1075,7 @@ std::string GetCoreMLNameFromInput(std::string_view input_name,
 }
 
 std::string GetCoreMLNameFromOutput(std::string_view output_name,
-                                    uint64_t operand_id) {
+                                    OperandId operand_id) {
   // Prefix is added to user provided names to avoid collision with intermediate
   // operands' names. `operand_id` is added to avoid collision with other
   // outputs' sanitized values.
@@ -1088,7 +1090,7 @@ GraphBuilderCoreml::CreateAndBuild(
     const mojom::GraphInfo& graph_info,
     ContextProperties context_properties,
     mojom::CreateContextOptions::Device device,
-    const base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>&
+    const base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>&
         constant_operands,
     const base::FilePath& working_directory) {
   // Use a random string for the model package directory, because MLModel
@@ -1403,7 +1405,7 @@ GraphBuilderCoreml::GraphBuilderCoreml(
     const mojom::GraphInfo& graph_info,
     ContextProperties context_properties,
     mojom::CreateContextOptions::Device device,
-    const base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>&
+    const base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>&
         constant_operands,
     base::FilePath ml_package_dir,
     std::unique_ptr<WeightsFileHandle> weights_file_handle)
@@ -1461,7 +1463,7 @@ GraphBuilderCoreml::BuildCoreMLModel() {
   }
 
   // Add inputs.
-  for (uint64_t input_id : graph_info_->input_operands) {
+  for (OperandId input_id : graph_info_->input_operands) {
     RETURN_IF_ERROR(AddInput(input_id, main_function, block));
   }
 
@@ -1730,7 +1732,7 @@ GraphBuilderCoreml::BuildCoreMLModel() {
   }
 
   // Add output.
-  for (uint64_t output_id : graph_info_->output_operands) {
+  for (OperandId output_id : graph_info_->output_operands) {
     block.add_outputs(GetOperandInfo(output_id).coreml_name);
     RETURN_IF_ERROR(AddOutput(output_id));
   }
@@ -1808,7 +1810,7 @@ void GraphBuilderCoreml::AddPlaceholderInput(
 
 [[nodiscard]] base::expected<void, mojom::ErrorPtr>
 GraphBuilderCoreml::AddInput(
-    uint64_t input_id,
+    OperandId input_id,
     CoreML::Specification::MILSpec::Function& main_function,
     CoreML::Specification::MILSpec::Block& block) {
   auto* mutable_description = ml_model_.mutable_description();
@@ -1822,7 +1824,7 @@ GraphBuilderCoreml::AddInput(
 
   if (operand.descriptor.shape().empty()) {
     ASSIGN_OR_RETURN(
-        uint64_t internal_operand_id,
+        OperandId internal_operand_id,
         GenerateInternalOperandInfo(
             OperandTypeToMILDataType(operand.descriptor.data_type()), {}));
     RETURN_IF_ERROR(
@@ -1836,7 +1838,7 @@ GraphBuilderCoreml::AddInput(
 }
 
 [[nodiscard]] base::expected<void, mojom::ErrorPtr>
-GraphBuilderCoreml::AddOutput(uint64_t output_id) {
+GraphBuilderCoreml::AddOutput(OperandId output_id) {
   CHECK(id_to_operand_info_map().contains(output_id));
   auto* mutable_description = ml_model_.mutable_description();
   auto* feature_description = mutable_description->add_output();
@@ -1848,8 +1850,8 @@ base::expected<CoreML::Specification::MILSpec::Operation*, mojom::ErrorPtr>
 GraphBuilderCoreml::CreateUnaryOperation(
     SupportedDataType supported_data_type,
     std::string_view op_name,
-    uint64_t input_operand_id,
-    uint64_t output_operand_id,
+    OperandId input_operand_id,
+    OperandId output_operand_id,
     CoreML::Specification::MILSpec::Block& block,
     std::string_view operand_op_name) {
   const OperandInfo& input_operand_info = GetOperandInfo(input_operand_id);
@@ -1886,8 +1888,8 @@ GraphBuilderCoreml::CreateUnaryOperation(
 base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddUnaryOperation(
     SupportedDataType supported_data_type,
     std::string_view op_name,
-    uint64_t input_operand_id,
-    uint64_t output_operand_id,
+    OperandId input_operand_id,
+    OperandId output_operand_id,
     CoreML::Specification::MILSpec::Block& block,
     std::string_view operand_op_name) {
   RETURN_IF_ERROR(CreateUnaryOperation(supported_data_type, op_name,
@@ -1899,8 +1901,8 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddUnaryOperation(
 [[nodiscard]] base::expected<void, mojom::ErrorPtr>
 GraphBuilderCoreml::AddUnaryOperation(
     std::string_view op_name,
-    uint64_t input_operand_id,
-    uint64_t output_operand_id,
+    OperandId input_operand_id,
+    OperandId output_operand_id,
     CoreML::Specification::MILSpec::Block& block) {
   CoreML::Specification::MILSpec::Operation* op = block.add_operations();
   op->set_type(std::string(op_name));
@@ -1937,8 +1939,8 @@ GraphBuilderCoreml::AddUnaryOperation(
 [[nodiscard]] base::expected<void, mojom::ErrorPtr>
 GraphBuilderCoreml::AddUnaryFloatsOperationWithEpsilon(
     std::string_view op_name,
-    uint64_t input_operand_id,
-    uint64_t output_operand_id,
+    OperandId input_operand_id,
+    OperandId output_operand_id,
     float epsilon,
     CoreML::Specification::MILSpec::Block& block) {
   const OperandInfo& input_operand_info = GetOperandInfo(input_operand_id);
@@ -1984,7 +1986,7 @@ GraphBuilderCoreml::AddOperationForArgMinMax(
   CHECK(context_properties_.data_type_limits.arg_min_max_output.Has(
       MILDataTypeToOperandType(output_operand_info.mil_data_type)));
 
-  uint64_t input_operand_id = operation.input_operand_id;
+  OperandId input_operand_id = operation.input_operand_id;
   // CoreML doesn't support scalar input, in this case reshape to 1D then
   // reshape back.
   if (input_operand_info.dimensions.empty()) {
@@ -2038,7 +2040,7 @@ GraphBuilderCoreml::AddOperationForBatchNormalization(
   CHECK(context_properties_.data_type_limits.batch_normalization_input.Supports(
       GetOperand(operation.input_operand_id).descriptor));
 
-  uint64_t input_operand_id = operation.input_operand_id;
+  OperandId input_operand_id = operation.input_operand_id;
   const OperandInfo& input_operand_info = GetOperandInfo(input_operand_id);
   // Rank of 5 causes crashes when not targeting `MLComputeUnitsCPUOnly`, see
   // crbug.com/391566721, so reshape to 4 to perform batch norm, then reshape
@@ -2100,7 +2102,7 @@ GraphBuilderCoreml::AddOperationForBatchNormalization(
       CreateFloatValue(input_operand_info.mil_data_type, operation.epsilon));
 
   if (input_operand_id != operation.input_operand_id) {
-    ASSIGN_OR_RETURN(uint64_t output_operand_id,
+    ASSIGN_OR_RETURN(OperandId output_operand_id,
                      GenerateInternalOperandInfo(
                          input_operand_info.mil_data_type,
                          GetOperandInfo(input_operand_id).dimensions));
@@ -2116,8 +2118,8 @@ GraphBuilderCoreml::AddOperationForBatchNormalization(
 
 [[nodiscard]] base::expected<void, mojom::ErrorPtr>
 GraphBuilderCoreml::AddOperationForCast(
-    uint64_t input_operand_id,
-    uint64_t output_operand_id,
+    OperandId input_operand_id,
+    OperandId output_operand_id,
     CoreML::Specification::MILSpec::Block& block) {
   CoreML::Specification::MILSpec::Operation* op = block.add_operations();
   const OperandInfo& input_operand_info = GetOperandInfo(input_operand_id);
@@ -2152,8 +2154,8 @@ GraphBuilderCoreml::AddOperationForCast(
 
 [[nodiscard]] base::expected<void, mojom::ErrorPtr>
 GraphBuilderCoreml::AddOperationForClamp(
-    uint64_t input_operand_id,
-    uint64_t output_operand_id,
+    OperandId input_operand_id,
+    OperandId output_operand_id,
     float min_value,
     float max_value,
     CoreML::Specification::MILSpec::Block& block) {
@@ -2191,11 +2193,11 @@ GraphBuilderCoreml::AddOperationForClamp(
 
 [[nodiscard]] base::expected<void, mojom::ErrorPtr>
 GraphBuilderCoreml::AddOperationForConcat(
-    base::span<const uint64_t> input_operand_ids,
-    uint64_t output_operand_id,
+    base::span<const OperandId> input_operand_ids,
+    OperandId output_operand_id,
     uint32_t axis,
     CoreML::Specification::MILSpec::Block& block) {
-  CHECK(std::ranges::all_of(input_operand_ids, [&](uint64_t input_operand_id) {
+  CHECK(std::ranges::all_of(input_operand_ids, [&](OperandId input_operand_id) {
     return context_properties_.data_type_limits.concat_inputs.data_types.Has(
         MILDataTypeToOperandType(
             GetOperandInfo(input_operand_id).mil_data_type));
@@ -2207,7 +2209,7 @@ GraphBuilderCoreml::AddOperationForConcat(
   CoreML::Specification::MILSpec::Operation* op = block.add_operations();
   op->set_type(kOpConcatTypeName);
 
-  for (uint64_t input_operand_id : input_operand_ids) {
+  for (OperandId input_operand_id : input_operand_ids) {
     RETURN_IF_ERROR(SetInputFromOperand(*op->mutable_inputs(), kParamValues,
                                         input_operand_id));
   }
@@ -2423,7 +2425,7 @@ GraphBuilderCoreml::AddOperationForDequantizeLinear(
                                                 scale_vector_size <= 1, block);
   }
 
-  uint64_t input_operand_id = operation.input_operand_id;
+  OperandId input_operand_id = operation.input_operand_id;
   if (input_operand_info.dimensions.empty()) {
     ASSIGN_OR_RETURN(input_operand_id, GenerateInternalOperandInfo(
                                            input_operand_info.mil_data_type,
@@ -2460,7 +2462,7 @@ GraphBuilderCoreml::AddOperationForDequantizeLinear(
 
   if (input_operand_id != operation.input_operand_id) {
     ASSIGN_OR_RETURN(
-        uint64_t output_operand_id,
+        OperandId output_operand_id,
         GenerateInternalOperandInfo(
             GetOperandInfo(operation.output_operand_id).mil_data_type,
             std::array<uint32_t, 1>{1}));
@@ -2523,7 +2525,7 @@ GraphBuilderCoreml::AddOperationForDequantizeLinearConst(
 
   if (input_operand_info.dimensions.empty()) {
     ASSIGN_OR_RETURN(
-        uint64_t output_operand_id,
+        OperandId output_operand_id,
         GenerateInternalOperandInfo(
             GetOperandInfo(operation.output_operand_id).mil_data_type,
             std::array<uint32_t, 1>{1}));
@@ -2585,7 +2587,7 @@ GraphBuilderCoreml::AddOperationForDequantizeLinearConstBlockwise(
                                   operation.scale_operand_id, scale_shape));
   if (input_needs_reshape) {
     ASSIGN_OR_RETURN(
-        uint64_t output_operand_id,
+        OperandId output_operand_id,
         GenerateInternalOperandInfo(
             GetOperandInfo(operation.output_operand_id).mil_data_type,
             std::array<uint32_t, 1>{1}));
@@ -2612,8 +2614,8 @@ GraphBuilderCoreml::AddOperationForDequantizeLinearEmulate(
       GetOperandInfo(operation.zero_point_operand_id);
 
   // cast(zero_point, scale_type)
-  uint64_t scale_operand_id = operation.scale_operand_id;
-  uint64_t zero_point_operand_id = operation.zero_point_operand_id;
+  OperandId scale_operand_id = operation.scale_operand_id;
+  OperandId zero_point_operand_id = operation.zero_point_operand_id;
   ASSIGN_OR_RETURN(
       zero_point_operand_id,
       GenerateInternalOperandInfo(scale_operand_info.mil_data_type,
@@ -2629,13 +2631,13 @@ GraphBuilderCoreml::AddOperationForDequantizeLinearEmulate(
   std::tie(scale_operand_id, zero_point_operand_id) = result;
 
   // `output = (input - zeroPoint) * scale`.
-  ASSIGN_OR_RETURN(uint64_t casted_input,
+  ASSIGN_OR_RETURN(OperandId casted_input,
                    GenerateInternalOperandInfo(scale_operand_info.mil_data_type,
                                                input_operand_info.dimensions));
   RETURN_IF_ERROR(
       AddOperationForCast(operation.input_operand_id, casted_input, block));
 
-  ASSIGN_OR_RETURN(uint64_t minus_zero_point,
+  ASSIGN_OR_RETURN(OperandId minus_zero_point,
                    GenerateInternalOperandInfo(scale_operand_info.mil_data_type,
                                                input_operand_info.dimensions));
   RETURN_IF_ERROR(AddOperationForElementwiseBinary(
@@ -2648,11 +2650,11 @@ GraphBuilderCoreml::AddOperationForDequantizeLinearEmulate(
   return base::ok();
 }
 
-[[nodiscard]] base::expected<std::pair<uint64_t, uint64_t>, mojom::ErrorPtr>
+[[nodiscard]] base::expected<std::pair<OperandId, OperandId>, mojom::ErrorPtr>
 GraphBuilderCoreml::ExpandForBlockwise(
-    uint64_t input_operand_id,
-    uint64_t scale_operand_id,
-    uint64_t zero_point_operand_id,
+    OperandId input_operand_id,
+    OperandId scale_operand_id,
+    OperandId zero_point_operand_id,
     CoreML::Specification::MILSpec::Block& block) {
   base::span<const uint32_t> input_dimensions =
       GetOperandInfo(input_operand_id).dimensions;
@@ -2679,11 +2681,11 @@ GraphBuilderCoreml::ExpandForBlockwise(
       CHECK_EQ(input_dimensions[current_axis] % scale_vector_size, 0u);
       const int32_t repetitions =
           input_dimensions[current_axis] / scale_vector_size;
-      uint64_t prev_scale = scale_operand_id;
+      OperandId prev_scale = scale_operand_id;
       ASSIGN_OR_RETURN(
           scale_operand_id,
           ExpandDimForBlockwise(prev_scale, i, repetitions, block));
-      uint64_t prev_zero_point = zero_point_operand_id;
+      OperandId prev_zero_point = zero_point_operand_id;
       ASSIGN_OR_RETURN(
           zero_point_operand_id,
           ExpandDimForBlockwise(prev_zero_point, i, repetitions, block));
@@ -2692,9 +2694,9 @@ GraphBuilderCoreml::ExpandForBlockwise(
   return std::make_pair(scale_operand_id, zero_point_operand_id);
 }
 
-[[nodiscard]] base::expected<uint64_t, mojom::ErrorPtr>
+[[nodiscard]] base::expected<OperandId, mojom::ErrorPtr>
 GraphBuilderCoreml::ExpandDimForBlockwise(
-    uint64_t input_operand_id,
+    OperandId input_operand_id,
     size_t repetition_axis,
     int32_t repetitions,
     CoreML::Specification::MILSpec::Block& block) {
@@ -2713,7 +2715,7 @@ GraphBuilderCoreml::ExpandDimForBlockwise(
   reshaped_dimensions_last[0] = 1;
   reshaped_dimensions_last.subspan(1u).copy_from(dimensions_last);
 
-  uint64_t prev_operand = input_operand_id;
+  OperandId prev_operand = input_operand_id;
   ASSIGN_OR_RETURN(input_operand_id,
                    GenerateInternalOperandInfo(input_operand_info.mil_data_type,
                                                reshaped_dimensions));
@@ -2734,7 +2736,7 @@ GraphBuilderCoreml::ExpandDimForBlockwise(
   std::vector<uint32_t> output_dimensions(input_operand_info.dimensions);
   output_dimensions[repetition_axis] =
       dimensions[repetition_axis] * repetitions;
-  ASSIGN_OR_RETURN(uint64_t output_operand_id,
+  ASSIGN_OR_RETURN(OperandId output_operand_id,
                    GenerateInternalOperandInfo(input_operand_info.mil_data_type,
                                                output_dimensions));
 
@@ -2745,14 +2747,14 @@ GraphBuilderCoreml::ExpandDimForBlockwise(
 
 base::expected<void, mojom::ErrorPtr>
 GraphBuilderCoreml::AddOperationForElementwiseBinary(
-    std::variant<uint64_t, CoreML::Specification::MILSpec::Value> lhs_operand,
-    std::variant<uint64_t, CoreML::Specification::MILSpec::Value> rhs_operand,
-    uint64_t output_operand_id,
+    std::variant<OperandId, CoreML::Specification::MILSpec::Value> lhs_operand,
+    std::variant<OperandId, CoreML::Specification::MILSpec::Value> rhs_operand,
+    OperandId output_operand_id,
     const mojom::ElementWiseBinary::Kind kind,
     CoreML::Specification::MILSpec::Block& block) {
   CoreML::Specification::MILSpec::DataType mil_data_type;
   std::visit(base::Overloaded{
-                 [&](uint64_t lhs_operand_id) {
+                 [&](OperandId lhs_operand_id) {
                    const OperandInfo& lhs_operand_info =
                        GetOperandInfo(lhs_operand_id);
                    mil_data_type = lhs_operand_info.mil_data_type;
@@ -2870,9 +2872,9 @@ GraphBuilderCoreml::AddOperationForElementwiseBinary(
       kind == mojom::ElementWiseBinary::Kind::kLogicalOr ||
       kind == mojom::ElementWiseBinary::Kind::kLogicalXor) {
     // Logical binary ops in CoreML require both operands to be boolean tensors.
-    CHECK(std::holds_alternative<uint64_t>(lhs_operand));
-    uint64_t lhs_operand_id = std::get<uint64_t>(lhs_operand);
-    ASSIGN_OR_RETURN(uint64_t cast_to_lhs_operand_id,
+    CHECK(std::holds_alternative<OperandId>(lhs_operand));
+    OperandId lhs_operand_id = std::get<OperandId>(lhs_operand);
+    ASSIGN_OR_RETURN(OperandId cast_to_lhs_operand_id,
                      GenerateInternalOperandInfo(
                          CoreML::Specification::MILSpec::DataType::BOOL,
                          GetOperandInfo(lhs_operand_id).dimensions));
@@ -2881,9 +2883,9 @@ GraphBuilderCoreml::AddOperationForElementwiseBinary(
     lhs_operand = cast_to_lhs_operand_id;
     mil_data_type = CoreML::Specification::MILSpec::DataType::BOOL;
 
-    CHECK(std::holds_alternative<uint64_t>(rhs_operand));
-    uint64_t rhs_operand_id = std::get<uint64_t>(rhs_operand);
-    ASSIGN_OR_RETURN(uint64_t cast_to_rhs_operand_id,
+    CHECK(std::holds_alternative<OperandId>(rhs_operand));
+    OperandId rhs_operand_id = std::get<OperandId>(rhs_operand);
+    ASSIGN_OR_RETURN(OperandId cast_to_rhs_operand_id,
                      GenerateInternalOperandInfo(
                          CoreML::Specification::MILSpec::DataType::BOOL,
                          GetOperandInfo(rhs_operand_id).dimensions));
@@ -2896,7 +2898,7 @@ GraphBuilderCoreml::AddOperationForElementwiseBinary(
   op->set_type(op_type_name);
   std::optional<mojom::ErrorPtr> set_input_error;
   std::visit(
-      base::Overloaded{[&](uint64_t lhs_operand_id) {
+      base::Overloaded{[&](OperandId lhs_operand_id) {
                          auto result = SetInputFromOperand(
                              *op->mutable_inputs(), kOpParamX, lhs_operand_id);
                          if (!result.has_value()) {
@@ -2909,7 +2911,7 @@ GraphBuilderCoreml::AddOperationForElementwiseBinary(
                        }},
       lhs_operand);
   std::visit(
-      base::Overloaded{[&](uint64_t rhs_operand_id) {
+      base::Overloaded{[&](OperandId rhs_operand_id) {
                          const OperandInfo& rhs_operand_info =
                              GetOperandInfo(rhs_operand_id);
                          CHECK_EQ(mil_data_type,
@@ -2932,7 +2934,7 @@ GraphBuilderCoreml::AddOperationForElementwiseBinary(
   if (IsLogicalElementWiseBinary(kind)) {
     // The output of logical binary ops need to be cast from a boolean
     // tensor that CoreML provides to an UInt8 that WebNN expects.
-    ASSIGN_OR_RETURN(uint64_t internal_output_id,
+    ASSIGN_OR_RETURN(OperandId internal_output_id,
                      GenerateInternalOperandInfo(
                          CoreML::Specification::MILSpec::DataType::BOOL,
                          GetOperandInfo(output_operand_id).dimensions));
@@ -2948,8 +2950,8 @@ GraphBuilderCoreml::AddOperationForElementwiseBinary(
 base::expected<void, mojom::ErrorPtr>
 GraphBuilderCoreml::AddOperationForElementwiseUnary(
     mojom::ElementWiseUnary::Kind kind,
-    uint64_t input_operand_id,
-    uint64_t output_operand_id,
+    OperandId input_operand_id,
+    OperandId output_operand_id,
     CoreML::Specification::MILSpec::Block& block) {
   const OperandInfo& input_operand_info = GetOperandInfo(input_operand_id);
   const CoreML::Specification::MILSpec::DataType input_data_type =
@@ -3079,13 +3081,13 @@ GraphBuilderCoreml::AddOperationForElementwiseUnary(
       CHECK(
           context_properties_.data_type_limits.logical_not_input.data_types.Has(
               input_operand_data_type));
-      ASSIGN_OR_RETURN(uint64_t cast_to_bool_operand_id,
+      ASSIGN_OR_RETURN(OperandId cast_to_bool_operand_id,
                        GenerateInternalOperandInfo(
                            CoreML::Specification::MILSpec::DataType::BOOL,
                            input_operand_info.dimensions));
       RETURN_IF_ERROR(AddOperationForCast(input_operand_id,
                                           cast_to_bool_operand_id, block));
-      ASSIGN_OR_RETURN(uint64_t logical_not_output_operand_id,
+      ASSIGN_OR_RETURN(OperandId logical_not_output_operand_id,
                        GenerateInternalOperandInfo(
                            CoreML::Specification::MILSpec::DataType::BOOL,
                            input_operand_info.dimensions));
@@ -3127,7 +3129,7 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForExpand(
   CHECK(context_properties_.data_type_limits.expand_input.data_types.Has(
       MILDataTypeToOperandType(input_operand_info.mil_data_type)));
 
-  uint64_t reshaped_input = operation.input_operand_id;
+  OperandId reshaped_input = operation.input_operand_id;
   size_t input_rank = input_operand_info.dimensions.size();
   size_t output_rank = output_operand_info.dimensions.size();
   std::vector<uint32_t> reshaped_dimensions(output_rank, 1);
@@ -3171,7 +3173,7 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForExpand(
 
 void GraphBuilderCoreml::AddOperationForFill(
     CoreML::Specification::MILSpec::Value value,
-    uint64_t output_operand_id,
+    OperandId output_operand_id,
     CoreML::Specification::MILSpec::Block& block) {
   CoreML::Specification::MILSpec::Operation* op = block.add_operations();
   op->set_type(kOpFillTypeName);
@@ -3199,7 +3201,7 @@ GraphBuilderCoreml::AddOperationForGather(
 
   // crbug.com/391672283 - Gather crashes with 5D input and 0D
   // indices, so reshape indices to 1D.
-  uint64_t indices_operand_id = operation.indices_operand_id;
+  OperandId indices_operand_id = operation.indices_operand_id;
   if (indices_operand_info.dimensions.empty() &&
       input_operand_info.dimensions.size() == 5) {
     ASSIGN_OR_RETURN(indices_operand_id, GenerateInternalOperandInfo(
@@ -3230,7 +3232,7 @@ GraphBuilderCoreml::AddOperationForGather(
     // There is a single value at the gathered axis because indices is a single
     // value.
     output_shape[operation.axis] = 1u;
-    ASSIGN_OR_RETURN(uint64_t output_operand_id,
+    ASSIGN_OR_RETURN(OperandId output_operand_id,
                      GenerateInternalOperandInfo(
                          input_operand_info.mil_data_type, output_shape));
     PopulateNamedValueType(output_operand_id, *op->add_outputs());
@@ -3319,10 +3321,10 @@ GraphBuilderCoreml::AddOperationForGelu(
 }
 
 base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForGemm(
-    uint64_t a_operand_id,
-    uint64_t b_operand_id,
-    std::optional<uint64_t> c_operand_id,
-    uint64_t output_operand_id,
+    OperandId a_operand_id,
+    OperandId b_operand_id,
+    std::optional<OperandId> c_operand_id,
+    OperandId output_operand_id,
     CoreML::Specification::MILSpec::Block& block,
     bool a_transpose,
     bool b_transpose,
@@ -3347,14 +3349,14 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForGemm(
                                  b_transpose, output_operand_id, block);
   }
 
-  ASSIGN_OR_RETURN(uint64_t matmul_output,
+  ASSIGN_OR_RETURN(OperandId matmul_output,
                    GenerateInternalOperandInfo(a_operand_info.mil_data_type,
                                                matmul_dimensions));
   RETURN_IF_ERROR(AddOperationForMatmul(a_operand_id, b_operand_id, a_transpose,
                                         b_transpose, matmul_output, block));
 
   if (alpha != 1.0f) {
-    uint64_t with_alpha_output = output_operand_id;
+    OperandId with_alpha_output = output_operand_id;
     if (c_operand_id) {
       ASSIGN_OR_RETURN(with_alpha_output,
                        GenerateInternalOperandInfo(a_operand_info.mil_data_type,
@@ -3375,7 +3377,7 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForGemm(
   CHECK_EQ(a_operand_info.mil_data_type, c_operand_info.mil_data_type);
 
   if (beta != 1.0f) {
-    ASSIGN_OR_RETURN(uint64_t with_beta_output,
+    ASSIGN_OR_RETURN(OperandId with_beta_output,
                      GenerateInternalOperandInfo(a_operand_info.mil_data_type,
                                                  matmul_dimensions));
     RETURN_IF_ERROR(AddOperationForElementwiseBinary(
@@ -3443,11 +3445,11 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForGru(
   uint32_t steps = operation.steps;
   size_t num_of_directions =
       operation.direction == mojom::RecurrentNetworkDirection::kBoth ? 2 : 1;
-  base::FixedArray<uint64_t> initial_hidden_states(num_of_directions);
-  base::FixedArray<uint64_t> weights(num_of_directions);
-  base::FixedArray<uint64_t> recurrent_weights(num_of_directions);
-  base::FixedArray<uint64_t> biases(num_of_directions);
-  base::FixedArray<uint64_t> recurrent_biases(num_of_directions);
+  base::FixedArray<OperandId> initial_hidden_states(num_of_directions);
+  base::FixedArray<OperandId> weights(num_of_directions);
+  base::FixedArray<OperandId> recurrent_weights(num_of_directions);
+  base::FixedArray<OperandId> biases(num_of_directions);
+  base::FixedArray<OperandId> recurrent_biases(num_of_directions);
 
   if (operation.initial_hidden_state_operand_id) {
     RETURN_IF_ERROR(SplitAndSqueeze(*operation.initial_hidden_state_operand_id,
@@ -3481,8 +3483,8 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForGru(
     RETURN_IF_ERROR(SplitAndSqueeze(*operation.recurrent_bias_operand_id,
                                     recurrent_biases, /*axis=*/0, block));
   }
-  base::FixedArray<uint64_t> hidden_results(num_of_directions);
-  base::FixedArray<uint64_t> last_step_results(num_of_directions);
+  base::FixedArray<OperandId> hidden_results(num_of_directions);
+  base::FixedArray<OperandId> last_step_results(num_of_directions);
 
   for (size_t direction = 0; direction < num_of_directions; direction++) {
     bool backward_direction =
@@ -3495,10 +3497,10 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForGru(
         {hidden_size, hidden_size});
     base::FixedArray<uint32_t> bias_shape({hidden_size});
 
-    base::FixedArray<uint64_t> weights_per_gate(3);
-    base::FixedArray<uint64_t> recurrent_weights_per_gate(3);
-    base::FixedArray<uint64_t> biases_per_gate(3);
-    base::FixedArray<uint64_t> recurrent_biases_per_gate(3);
+    std::array<OperandId, 3> weights_per_gate;
+    std::array<OperandId, 3> recurrent_weights_per_gate;
+    std::array<OperandId, 3> biases_per_gate;
+    std::array<OperandId, 3> recurrent_biases_per_gate;
     for (size_t i = 0; i < 3; i++) {
       ASSIGN_OR_RETURN(weights_per_gate[i],
                        GenerateInternalOperandInfo(data_type, weight_shape));
@@ -3526,7 +3528,7 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForGru(
     }
 
     // Setup hidden_list: [steps, batch_size, hidden_size]
-    ASSIGN_OR_RETURN(uint64_t hidden_list,
+    ASSIGN_OR_RETURN(OperandId hidden_list,
                      GenerateInternalOperandInfo(
                          data_type, base::span<const uint32_t>(
                                         {steps, batch_size, hidden_size})));
@@ -3534,13 +3536,13 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForGru(
 
     // Previous hidden state from previous step, starts with
     // initial_hidden_state.
-    uint64_t hidden_prev = initial_hidden_states[direction];
+    OperandId hidden_prev = initial_hidden_states[direction];
     for (size_t step = 0; step < steps; step++) {
       size_t step_index = backward_direction ? steps - step - 1 : step;
       ASSIGN_OR_RETURN(
-          uint64_t sliced_input,
+          OperandId sliced_input,
           SliceFirstDimension(operation.input_operand_id, step_index, block));
-      ASSIGN_OR_RETURN(uint64_t new_hidden_state,
+      ASSIGN_OR_RETURN(OperandId new_hidden_state,
                        GenerateInternalOperandInfo(
                            data_type, base::span<const uint32_t>(
                                           {batch_size, hidden_size})));
@@ -3548,28 +3550,28 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForGru(
           sliced_input, hidden_prev, new_hidden_state, weights_per_gate,
           recurrent_weights_per_gate,
           operation.bias_operand_id
-              ? std::optional<base::span<const uint64_t>>(biases_per_gate)
+              ? std::optional<base::span<const OperandId>>(biases_per_gate)
               : std::nullopt,
           operation.recurrent_bias_operand_id
-              ? std::optional<base::span<const uint64_t>>(
+              ? std::optional<base::span<const OperandId>>(
                     recurrent_biases_per_gate)
               : std::nullopt,
           operation.hidden_size, operation.layout, operation.activations[0],
           operation.activations[1], operation.reset_after, block));
       // Expand `new_hidden_state` to [1, batch_size, hidden_dim] so can be
       // added to hidden_list
-      ASSIGN_OR_RETURN(uint64_t h,
+      ASSIGN_OR_RETURN(OperandId h,
                        GenerateInternalOperandInfo(
                            data_type, base::span<const uint32_t>(
                                           {1, batch_size, hidden_size})));
       RETURN_IF_ERROR(AddOperationForReshape(new_hidden_state, h, block));
-      ASSIGN_OR_RETURN(uint64_t scatter_indices,
+      ASSIGN_OR_RETURN(OperandId scatter_indices,
                        GenerateInternalOperandInfo(
                            CoreML::Specification::MILSpec::DataType::INT32,
                            base::span<const uint32_t>({1, 1})));
       AddOperationForFill(CreateScalarImmediateValue<int32_t>(step_index),
                           scatter_indices, block);
-      uint64_t hidden_list_prev = hidden_list;
+      OperandId hidden_list_prev = hidden_list;
       ASSIGN_OR_RETURN(hidden_list,
                        GenerateInternalOperandInfo(
                            data_type, base::span<const uint32_t>(
@@ -3654,10 +3656,10 @@ GraphBuilderCoreml::AddOperationForGruCell(
   base::FixedArray<uint32_t> recurrent_weight_shape({hidden_size, hidden_size});
   base::FixedArray<uint32_t> bias_shape({hidden_size});
 
-  base::FixedArray<uint64_t> weights_per_gate(3);
-  base::FixedArray<uint64_t> recurrent_weights_per_gate(3);
-  base::FixedArray<uint64_t> biases_per_gate(3);
-  base::FixedArray<uint64_t> recurrent_biases_per_gate(3);
+  std::array<OperandId, 3> weights_per_gate;
+  std::array<OperandId, 3> recurrent_weights_per_gate;
+  std::array<OperandId, 3> biases_per_gate;
+  std::array<OperandId, 3> recurrent_biases_per_gate;
 
   for (size_t i = 0; i < 3; i++) {
     ASSIGN_OR_RETURN(weights_per_gate[i],
@@ -3689,10 +3691,11 @@ GraphBuilderCoreml::AddOperationForGruCell(
       operation.input_operand_id, operation.hidden_state_operand_id,
       operation.output_operand_id, weights_per_gate, recurrent_weights_per_gate,
       operation.bias_operand_id
-          ? std::optional<base::span<const uint64_t>>(biases_per_gate)
+          ? std::optional<base::span<const OperandId>>(biases_per_gate)
           : std::nullopt,
       operation.recurrent_bias_operand_id
-          ? std::optional<base::span<const uint64_t>>(recurrent_biases_per_gate)
+          ? std::optional<base::span<const OperandId>>(
+                recurrent_biases_per_gate)
           : std::nullopt,
       operation.hidden_size, operation.layout, operation.activations[0],
       operation.activations[1], operation.reset_after, block);
@@ -3700,13 +3703,13 @@ GraphBuilderCoreml::AddOperationForGruCell(
 
 base::expected<void, mojom::ErrorPtr>
 GraphBuilderCoreml::AddOperationForGruSingleStep(
-    uint64_t input_operand_id,
-    uint64_t hidden_state_operand_id,
-    uint64_t output_operand_id,
-    base::span<const uint64_t> weights,
-    base::span<const uint64_t> recurrent_weights,
-    std::optional<base::span<const uint64_t>> biases,
-    std::optional<base::span<const uint64_t>> recurrent_biases,
+    OperandId input_operand_id,
+    OperandId hidden_state_operand_id,
+    OperandId output_operand_id,
+    base::span<const OperandId> weights,
+    base::span<const OperandId> recurrent_weights,
+    std::optional<base::span<const OperandId>> biases,
+    std::optional<base::span<const OperandId>> recurrent_biases,
     uint32_t hidden_size,
     mojom::GruWeightLayout layout,
     mojom::RecurrentNetworkActivation activation,
@@ -3722,14 +3725,14 @@ GraphBuilderCoreml::AddOperationForGruSingleStep(
       input_operand_info.mil_data_type;
 
   // Results for reset and update gate.
-  base::FixedArray<uint64_t> r_z_results(2);
+  std::array<OperandId, 2> r_z_results;
   // The formula is the same for reset and update gate.
   for (size_t result_index = 0; result_index < r_z_results.size();
        result_index++) {
     size_t gate_index = GetGruGateIndex(
         (result_index == 0) ? GruGate::kReset : GruGate::kUpdate, layout);
     // Holds intermediate results for current gate calculation.
-    base::FixedArray<uint64_t> gate_results(4);
+    std::array<OperandId, 4> gate_results;
     for (size_t i = 0; i < 4; i++) {
       ASSIGN_OR_RETURN(gate_results[i],
                        GenerateInternalOperandInfo(
@@ -3739,13 +3742,13 @@ GraphBuilderCoreml::AddOperationForGruSingleStep(
 
     RETURN_IF_ERROR(AddOperationForGemm(
         input_operand_id, weights[gate_index],
-        biases ? std::optional<uint64_t>((*biases)[gate_index]) : std::nullopt,
+        biases ? std::optional<OperandId>((*biases)[gate_index]) : std::nullopt,
         gate_results[0], block, /*a_transpose=*/false, /*b_transpose=*/true));
 
     RETURN_IF_ERROR(AddOperationForGemm(
         hidden_state_operand_id, recurrent_weights[gate_index],
         recurrent_biases
-            ? std::optional<uint64_t>((*recurrent_biases)[gate_index])
+            ? std::optional<OperandId>((*recurrent_biases)[gate_index])
             : std::nullopt,
         gate_results[1], block, /*a_transpose=*/false, /*b_transpose=*/true));
 
@@ -3761,24 +3764,24 @@ GraphBuilderCoreml::AddOperationForGruSingleStep(
   size_t gate_index = GetGruGateIndex(GruGate::kNew, layout);
 
   // Holds intermediate results for new gate.
-  base::FixedArray<uint64_t> new_results(5);
+  std::array<OperandId, 5> new_results;
   for (size_t i = 0; i < new_results.size(); i++) {
     ASSIGN_OR_RETURN(
         new_results[i],
         GenerateInternalOperandInfo(
             data_type, base::span<const uint32_t>({batch_size, hidden_size})));
   }
-  uint64_t reset = r_z_results[0];
-  uint64_t update = r_z_results[1];
+  OperandId reset = r_z_results[0];
+  OperandId update = r_z_results[1];
   RETURN_IF_ERROR(AddOperationForGemm(
       input_operand_id, weights[gate_index],
-      biases ? std::optional<uint64_t>((*biases)[gate_index]) : std::nullopt,
+      biases ? std::optional<OperandId>((*biases)[gate_index]) : std::nullopt,
       new_results[0], block, /*a_transpose=*/false, /*b_transpose=*/true));
   if (reset_after) {
     RETURN_IF_ERROR(AddOperationForGemm(
         hidden_state_operand_id, recurrent_weights[gate_index],
         recurrent_biases
-            ? std::optional<uint64_t>((*recurrent_biases)[gate_index])
+            ? std::optional<OperandId>((*recurrent_biases)[gate_index])
             : std::nullopt,
         new_results[1], block, /*a_transpose=*/false, /*b_transpose=*/true));
     RETURN_IF_ERROR(AddOperationForElementwiseBinary(
@@ -3791,7 +3794,7 @@ GraphBuilderCoreml::AddOperationForGruSingleStep(
     RETURN_IF_ERROR(AddOperationForGemm(
         new_results[1], recurrent_weights[gate_index],
         recurrent_biases
-            ? std::optional<uint64_t>((*recurrent_biases)[gate_index])
+            ? std::optional<OperandId>((*recurrent_biases)[gate_index])
             : std::nullopt,
         new_results[2], block, /*a_transpose=*/false, /*b_transpose=*/true));
   }
@@ -3804,7 +3807,7 @@ GraphBuilderCoreml::AddOperationForGruSingleStep(
 
   // h = (1-update_result) * new_result + update_result * h_prev
   // h : (batch_size, hidden_dim)
-  base::FixedArray<uint64_t> hidden_results(3);
+  std::array<OperandId, 3> hidden_results;
   for (size_t i = 0; i < hidden_results.size(); i++) {
     ASSIGN_OR_RETURN(
         hidden_results[i],
@@ -3828,10 +3831,10 @@ GraphBuilderCoreml::AddOperationForGruSingleStep(
 
 [[nodiscard]] base::expected<void, mojom::ErrorPtr>
 GraphBuilderCoreml::AddOperationForHardSigmoid(
-    uint64_t input_operand_id,
+    OperandId input_operand_id,
     float alpha,
     float beta,
-    uint64_t output_operand_id,
+    OperandId output_operand_id,
     CoreML::Specification::MILSpec::Block& block) {
   const OperandInfo& input_operand_info = GetOperandInfo(input_operand_id);
   CHECK(context_properties_.data_type_limits.hard_sigmoid_input.data_types.Has(
@@ -3879,7 +3882,7 @@ GraphBuilderCoreml::AddOperationForHardSwish(
       GetOperandInfo(operation.input_operand_id);
   CHECK(context_properties_.data_type_limits.hard_swish_input.data_types.Has(
       MILDataTypeToOperandType(input_operand_info.mil_data_type)));
-  ASSIGN_OR_RETURN(uint64_t hardsigmoid_output,
+  ASSIGN_OR_RETURN(OperandId hardsigmoid_output,
                    GenerateInternalOperandInfo(input_operand_info.mil_data_type,
                                                input_operand_info.dimensions));
 
@@ -3940,7 +3943,7 @@ GraphBuilderCoreml::AddOperationForLayerNormalization(
   // CoreML doesn't support empty axes. When axes is empty, the mean equals to
   // input, output = bias + (scale * 0)
   if (operation.axes.empty()) {
-    uint64_t zeros = operation.output_operand_id;
+    OperandId zeros = operation.output_operand_id;
     if (operation.bias_operand_id) {
       ASSIGN_OR_RETURN(
           zeros, GenerateInternalOperandInfo(input_operand_info.mil_data_type,
@@ -4038,7 +4041,7 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForLinear(
   //   add(mul(alpha, a), beta)
 
   // Perform: mul(alpha, a)
-  ASSIGN_OR_RETURN(uint64_t mul_output,
+  ASSIGN_OR_RETURN(OperandId mul_output,
                    GenerateInternalOperandInfo(input_operand_info.mil_data_type,
                                                input_operand_info.dimensions));
   RETURN_IF_ERROR(AddOperationForElementwiseBinary(
@@ -4060,20 +4063,20 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForLinear(
 
 [[nodiscard]] base::expected<void, mojom::ErrorPtr>
 GraphBuilderCoreml::AddOperationForLstm(
-    uint64_t input_operand_id,
-    uint64_t weight_operand_id,
-    uint64_t recurrent_weight_operand_id,
+    OperandId input_operand_id,
+    OperandId weight_operand_id,
+    OperandId recurrent_weight_operand_id,
     uint32_t hidden_size,
-    std::optional<uint64_t> bias_operand_id,
-    std::optional<uint64_t> recurrent_bias_operand_id,
-    std::optional<uint64_t> peephole_weight_operand_id,
-    std::optional<uint64_t> initial_hidden_state_operand_id,
-    std::optional<uint64_t> initial_cell_state_operand_id,
+    std::optional<OperandId> bias_operand_id,
+    std::optional<OperandId> recurrent_bias_operand_id,
+    std::optional<OperandId> peephole_weight_operand_id,
+    std::optional<OperandId> initial_hidden_state_operand_id,
+    std::optional<OperandId> initial_cell_state_operand_id,
     bool return_sequence,
     mojom::RecurrentNetworkDirection direction,
     mojom::LstmWeightLayout layout,
     base::span<const mojom::RecurrentNetworkActivation> activations,
-    base::span<const uint64_t> output_operand_ids,
+    base::span<const OperandId> output_operand_ids,
     CoreML::Specification::MILSpec::Block& block) {
   if (!constant_operands_->contains(weight_operand_id)) {
     return NewNotSupportedError("lstm argument weight must be constant.");
@@ -4148,7 +4151,7 @@ GraphBuilderCoreml::AddOperationForLstm(
   // change dimensions: [numDirections, batchSize, hiddenSize] -> [batchSize,
   // numDirections * hiddenSize]. Otherwise create tensors filled with zeros.
   ASSIGN_OR_RETURN(
-      uint64_t initial_hidden_state,
+      OperandId initial_hidden_state,
       GenerateInternalOperandInfo(
           data_type, base::span<const uint32_t>(
                          {batch_size, hidden_size * num_of_directions})));
@@ -4156,7 +4159,7 @@ GraphBuilderCoreml::AddOperationForLstm(
     CHECK_EQ(GetOperandInfo(*initial_hidden_state_operand_id).mil_data_type,
              input_operand_info.mil_data_type);
     ASSIGN_OR_RETURN(
-        uint64_t transposed_initial_hidden_state,
+        OperandId transposed_initial_hidden_state,
         GenerateInternalOperandInfo(
             data_type, base::span<const uint32_t>(
                            {batch_size, num_of_directions, hidden_size})));
@@ -4172,7 +4175,7 @@ GraphBuilderCoreml::AddOperationForLstm(
   }
 
   ASSIGN_OR_RETURN(
-      uint64_t initial_cell_state,
+      OperandId initial_cell_state,
       GenerateInternalOperandInfo(
           data_type, base::span<const uint32_t>(
                          {batch_size, hidden_size * num_of_directions})));
@@ -4180,7 +4183,7 @@ GraphBuilderCoreml::AddOperationForLstm(
     CHECK_EQ(GetOperandInfo(*initial_cell_state_operand_id).mil_data_type,
              input_operand_info.mil_data_type);
     ASSIGN_OR_RETURN(
-        uint64_t transposed_initial_cell_state,
+        OperandId transposed_initial_cell_state,
         GenerateInternalOperandInfo(
             data_type, base::span<const uint32_t>(
                            {batch_size, num_of_directions, hidden_size})));
@@ -4305,7 +4308,7 @@ GraphBuilderCoreml::AddOperationForLstm(
     base::FixedArray<uint32_t> peephole_weight_dimension{3 * hidden_size};
     // WebNN peephole weight layout is [input, output, forget], CoreML takes
     // [input, forget, output]
-    base::FixedArray<size_t> peephole_layout_reorder{0, 2, 1};
+    std::array<size_t, 3> peephole_layout_reorder{0, 2, 1};
     base::FixedArray<std::pair<size_t, size_t>> peephole_new_order(
         peephole_layout_reorder.size());
     for (size_t i = 0; i < peephole_new_order.size(); i++) {
@@ -4355,7 +4358,7 @@ GraphBuilderCoreml::AddOperationForLstm(
           operand_data_type, bias_dimensions, bias_new_order));
     }
   } else if (bias_operand_id || recurrent_bias_operand_id) {
-    uint64_t coreml_bias_param =
+    OperandId coreml_bias_param =
         bias_operand_id.value_or(*recurrent_bias_operand_id);
     base::span<const uint8_t> bias =
         constant_operands_->at(coreml_bias_param)->ByteSpan();
@@ -4377,13 +4380,13 @@ GraphBuilderCoreml::AddOperationForLstm(
     // outputs of every step [steps, batchSize, numDirections * hiddenSize] that
     // need to be reshaped to [steps, numDirections, batchSize, hiddenSize].
     CHECK_EQ(output_operand_ids.size(), 3u);
-    ASSIGN_OR_RETURN(uint64_t coreml_first_output_id,
+    ASSIGN_OR_RETURN(OperandId coreml_first_output_id,
                      GenerateInternalOperandInfo(
                          data_type, base::span<const uint32_t>(
                                         {steps, batch_size,
                                          num_of_directions * hidden_size})));
     PopulateNamedValueType(coreml_first_output_id, *op->add_outputs());
-    ASSIGN_OR_RETURN(uint64_t coreml_first_output_id_reshaped,
+    ASSIGN_OR_RETURN(OperandId coreml_first_output_id_reshaped,
                      GenerateInternalOperandInfo(
                          data_type, base::span<const uint32_t>(
                                         {steps, batch_size, num_of_directions,
@@ -4400,7 +4403,7 @@ GraphBuilderCoreml::AddOperationForLstm(
     // Else, the first output of CoreML lstm is the output of the last step with
     // shape [1, batchSize, hiddenSize].
     ASSIGN_OR_RETURN(
-        uint64_t unused_second_output,
+        OperandId unused_second_output,
         GenerateInternalOperandInfo(
             data_type, base::span<const uint32_t>(
                            {1, batch_size, num_of_directions * hidden_size})));
@@ -4413,13 +4416,13 @@ GraphBuilderCoreml::AddOperationForLstm(
   CHECK_GE(output_operand_ids.size(), 2u);
   for (size_t i = 0; i < 2u; i++) {
     ASSIGN_OR_RETURN(
-        uint64_t output_id,
+        OperandId output_id,
         GenerateInternalOperandInfo(
             data_type, base::span<const uint32_t>(
                            {batch_size, num_of_directions * hidden_size})));
     PopulateNamedValueType(output_id, *op->add_outputs());
     ASSIGN_OR_RETURN(
-        uint64_t output_id_reshaped,
+        OperandId output_id_reshaped,
         GenerateInternalOperandInfo(
             data_type, base::span<const uint32_t>(
                            {batch_size, num_of_directions, hidden_size})));
@@ -4471,7 +4474,7 @@ GraphBuilderCoreml::AddOperationForLstmCell(
                      &recurrent_weight_operand_info, &hidden_state_operand_info,
                      &cell_state_operand_info}));
   uint32_t batch_size = input_operand_info.dimensions[0];
-  ASSIGN_OR_RETURN(uint64_t reshaped_input,
+  ASSIGN_OR_RETURN(OperandId reshaped_input,
                    GenerateInternalOperandInfo(
                        input_operand_info.mil_data_type,
                        base::span<const uint32_t>(
@@ -4482,7 +4485,7 @@ GraphBuilderCoreml::AddOperationForLstmCell(
 
   // hidden_state, cell_state, output_hidden_state, output_cell_state all need
   // to add a numOfDirections dimension.
-  std::array<uint64_t, 4> reshaped_operands;
+  std::array<OperandId, 4> reshaped_operands;
   for (auto& reshaped_operand : reshaped_operands) {
     ASSIGN_OR_RETURN(
         reshaped_operand,
@@ -4491,10 +4494,10 @@ GraphBuilderCoreml::AddOperationForLstmCell(
             base::span<const uint32_t>(
                 {/*numOfDirections=*/1, batch_size, operation.hidden_size})));
   }
-  uint64_t hidden_state_operand_id = reshaped_operands[0];
-  uint64_t cell_state_operand_id = reshaped_operands[1];
-  uint64_t output_hidden_state = reshaped_operands[2];
-  uint64_t output_cell_state = reshaped_operands[3];
+  OperandId hidden_state_operand_id = reshaped_operands[0];
+  OperandId cell_state_operand_id = reshaped_operands[1];
+  OperandId output_hidden_state = reshaped_operands[2];
+  OperandId output_cell_state = reshaped_operands[3];
   RETURN_IF_ERROR(AddOperationForReshape(operation.hidden_state_operand_id,
                                          hidden_state_operand_id, block));
   RETURN_IF_ERROR(AddOperationForReshape(operation.cell_state_operand_id,
@@ -4508,7 +4511,7 @@ GraphBuilderCoreml::AddOperationForLstmCell(
       cell_state_operand_id,
       /*return_sequence=*/false, mojom::RecurrentNetworkDirection::kForward,
       operation.layout, operation.activations,
-      base::span<const uint64_t>({output_hidden_state, output_cell_state}),
+      base::span<const OperandId>({output_hidden_state, output_cell_state}),
       block));
   CHECK_EQ(operation.output_operand_ids.size(), 2u);
   RETURN_IF_ERROR(AddOperationForReshape(
@@ -4520,11 +4523,11 @@ GraphBuilderCoreml::AddOperationForLstmCell(
 
 [[nodiscard]] base::expected<void, mojom::ErrorPtr>
 GraphBuilderCoreml::AddOperationForMatmul(
-    uint64_t input_x_operand_id,
-    uint64_t input_y_operand_id,
+    OperandId input_x_operand_id,
+    OperandId input_y_operand_id,
     bool transpose_x,
     bool transpose_y,
-    uint64_t output_operand_id,
+    OperandId output_operand_id,
     CoreML::Specification::MILSpec::Block& block) {
   const OperandInfo& input_operand_info = GetOperandInfo(input_x_operand_id);
 
@@ -4816,7 +4819,7 @@ GraphBuilderCoreml::AddOperationForQuantizeLinear(
     }
   }
 
-  uint64_t input_operand_id = operation.input_operand_id;
+  OperandId input_operand_id = operation.input_operand_id;
   if (input_operand_info.dimensions.empty()) {
     ASSIGN_OR_RETURN(input_operand_id, GenerateInternalOperandInfo(
                                            input_operand_info.mil_data_type,
@@ -4856,7 +4859,7 @@ GraphBuilderCoreml::AddOperationForQuantizeLinear(
       *op->mutable_inputs(), kParamOutputDataType,
       CreateStringImmediateValue(MilDataTypeToString(output_mil_data_type)));
   if (input_operand_id != operation.input_operand_id) {
-    ASSIGN_OR_RETURN(uint64_t output_operand_id,
+    ASSIGN_OR_RETURN(OperandId output_operand_id,
                      GenerateInternalOperandInfo(output_mil_data_type,
                                                  std::array<uint32_t, 1>{1}));
     PopulateNamedValueType(output_operand_id, *op->add_outputs());
@@ -4879,8 +4882,8 @@ GraphBuilderCoreml::AddOperationForQuantizeLinearEmulate(
   const OperandInfo& zero_point_operand_info =
       GetOperandInfo(operation.zero_point_operand_id);
 
-  uint64_t scale_operand_id = operation.scale_operand_id;
-  uint64_t zero_point_operand_id = operation.zero_point_operand_id;
+  OperandId scale_operand_id = operation.scale_operand_id;
+  OperandId zero_point_operand_id = operation.zero_point_operand_id;
   ASSIGN_OR_RETURN(
       zero_point_operand_id,
       GenerateInternalOperandInfo(scale_operand_info.mil_data_type,
@@ -4896,25 +4899,25 @@ GraphBuilderCoreml::AddOperationForQuantizeLinearEmulate(
   std::tie(scale_operand_id, zero_point_operand_id) = result;
 
   // `cast(clamp(round(input / scale) + zeroPoint, min, max))`.
-  ASSIGN_OR_RETURN(uint64_t input_div_scale,
+  ASSIGN_OR_RETURN(OperandId input_div_scale,
                    GenerateInternalOperandInfo(input_operand_info.mil_data_type,
                                                input_operand_info.dimensions));
   RETURN_IF_ERROR(AddOperationForElementwiseBinary(
       operation.input_operand_id, scale_operand_id, input_div_scale,
       mojom::ElementWiseBinary::Kind::kDiv, block));
 
-  ASSIGN_OR_RETURN(uint64_t input_div_scale_rounded,
+  ASSIGN_OR_RETURN(OperandId input_div_scale_rounded,
                    GenerateInternalOperandInfo(input_operand_info.mil_data_type,
                                                input_operand_info.dimensions));
   RETURN_IF_ERROR(
       AddOperationForRound(input_div_scale, input_div_scale_rounded, block));
-  ASSIGN_OR_RETURN(uint64_t plus_zero_point,
+  ASSIGN_OR_RETURN(OperandId plus_zero_point,
                    GenerateInternalOperandInfo(input_operand_info.mil_data_type,
                                                input_operand_info.dimensions));
   RETURN_IF_ERROR(AddOperationForElementwiseBinary(
       input_div_scale_rounded, zero_point_operand_id, plus_zero_point,
       mojom::ElementWiseBinary::Kind::kAdd, block));
-  ASSIGN_OR_RETURN(uint64_t result_clamped,
+  ASSIGN_OR_RETURN(OperandId result_clamped,
                    GenerateInternalOperandInfo(input_operand_info.mil_data_type,
                                                input_operand_info.dimensions));
   float min_value;
@@ -5121,8 +5124,8 @@ GraphBuilderCoreml::AddOperationForResample2d(
 
 base::expected<void, mojom::ErrorPtr>
 GraphBuilderCoreml::AddOperationForReshape(
-    uint64_t input_operand_id,
-    uint64_t output_operand_id,
+    OperandId input_operand_id,
+    OperandId output_operand_id,
     CoreML::Specification::MILSpec::Block& block) {
   const OperandInfo& input_operand_info = GetOperandInfo(input_operand_id);
 
@@ -5181,8 +5184,8 @@ GraphBuilderCoreml::AddOperationForReverse(
 
 [[nodiscard]] base::expected<void, mojom::ErrorPtr>
 GraphBuilderCoreml::AddOperationForRound(
-    uint64_t input_operand_id,
-    uint64_t output_operand_id,
+    OperandId input_operand_id,
+    OperandId output_operand_id,
     CoreML::Specification::MILSpec::Block& block) {
   const OperandInfo& input_operand_info = GetOperandInfo(input_operand_id);
 
@@ -5237,10 +5240,10 @@ GraphBuilderCoreml::AddOperationForScatterElements(
 
 [[nodiscard]] base::expected<void, mojom::ErrorPtr>
 GraphBuilderCoreml::AddOperationForScatterND(
-    uint64_t input_operand_id,
-    uint64_t indices_operand_id,
-    uint64_t updates_operand_id,
-    uint64_t output_operand_id,
+    OperandId input_operand_id,
+    OperandId indices_operand_id,
+    OperandId updates_operand_id,
+    OperandId output_operand_id,
     CoreML::Specification::MILSpec::Block& block) {
   CHECK(context_properties_.data_type_limits.scatter_nd_input.data_types.Has(
       MILDataTypeToOperandType(
@@ -5284,8 +5287,8 @@ GraphBuilderCoreml::AddOperationForScatterND(
 
 [[nodiscard]] base::expected<void, mojom::ErrorPtr>
 GraphBuilderCoreml::AddOperationForSlice(
-    uint64_t input_operand_id,
-    uint64_t output_operand_id,
+    OperandId input_operand_id,
+    OperandId output_operand_id,
     base::span<const int32_t> beginnings,
     base::span<const int32_t> endings,
     base::span<const int32_t> strides,
@@ -5356,8 +5359,8 @@ GraphBuilderCoreml::AddOperationForSoftmax(
 
 [[nodiscard]] base::expected<void, mojom::ErrorPtr>
 GraphBuilderCoreml::AddOperationForSplit(
-    uint64_t input_operand_id,
-    base::span<const uint64_t> output_operand_ids,
+    OperandId input_operand_id,
+    base::span<const OperandId> output_operand_ids,
     uint32_t axis,
     CoreML::Specification::MILSpec::Block& block) {
   if (output_operand_ids.size() == 1) {
@@ -5375,7 +5378,7 @@ GraphBuilderCoreml::AddOperationForSplit(
 
   base::FixedArray<int32_t> split_sizes(output_operand_ids.size());
   for (size_t i = 0; i < output_operand_ids.size(); ++i) {
-    const uint64_t output_operand_id = output_operand_ids[i];
+    const OperandId output_operand_id = output_operand_ids[i];
     PopulateNamedValueType(output_operand_id, *op->add_outputs());
     const OperandInfo& output_operand_info = GetOperandInfo(output_operand_id);
     CHECK_LT(axis, output_operand_info.dimensions.size());
@@ -5401,8 +5404,8 @@ GraphBuilderCoreml::AddOperationForSplit(
 
 [[nodiscard]] base::expected<void, mojom::ErrorPtr>
 GraphBuilderCoreml::AddOperationForTile(
-    uint64_t input_operand_id,
-    uint64_t output_operand_id,
+    OperandId input_operand_id,
+    OperandId output_operand_id,
     base::span<const int32_t> repetitions,
     CoreML::Specification::MILSpec::Block& block) {
   const OperandInfo& input_operand_info = GetOperandInfo(input_operand_id);
@@ -5432,8 +5435,8 @@ GraphBuilderCoreml::AddOperationForTile(
 
 [[nodiscard]] base::expected<void, mojom::ErrorPtr>
 GraphBuilderCoreml::AddOperationForTranspose(
-    uint64_t input_operand_id,
-    uint64_t output_operand_id,
+    OperandId input_operand_id,
+    OperandId output_operand_id,
     base::span<const uint32_t> permutation,
     CoreML::Specification::MILSpec::Block& block) {
   const OperandInfo& input_operand_info = GetOperandInfo(input_operand_id);
@@ -5528,7 +5531,7 @@ GraphBuilderCoreml::AddOperationForPreluEmulate(
       GetOperandInfo(operation.input_operand_id);
 
   // max(0, x) + slope * min(0, x)
-  ASSIGN_OR_RETURN(uint64_t max_result,
+  ASSIGN_OR_RETURN(OperandId max_result,
                    GenerateInternalOperandInfo(input_operand_info.mil_data_type,
                                                input_operand_info.dimensions));
   RETURN_IF_ERROR(AddOperationForElementwiseBinary(
@@ -5536,7 +5539,7 @@ GraphBuilderCoreml::AddOperationForPreluEmulate(
       CreateFloatValue(input_operand_info.mil_data_type, 0.0f), max_result,
       mojom::ElementWiseBinary::Kind::kMax, block));
 
-  ASSIGN_OR_RETURN(uint64_t min_result,
+  ASSIGN_OR_RETURN(OperandId min_result,
                    GenerateInternalOperandInfo(input_operand_info.mil_data_type,
                                                input_operand_info.dimensions));
   RETURN_IF_ERROR(AddOperationForElementwiseBinary(
@@ -5544,7 +5547,7 @@ GraphBuilderCoreml::AddOperationForPreluEmulate(
       CreateFloatValue(input_operand_info.mil_data_type, 0.0f), min_result,
       mojom::ElementWiseBinary::Kind::kMin, block));
 
-  ASSIGN_OR_RETURN(uint64_t mul_slope,
+  ASSIGN_OR_RETURN(OperandId mul_slope,
                    GenerateInternalOperandInfo(input_operand_info.mil_data_type,
                                                input_operand_info.dimensions));
   RETURN_IF_ERROR(AddOperationForElementwiseBinary(
@@ -5572,7 +5575,7 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForWhere(
   CHECK(context_properties_.data_type_limits.where_condition.data_types.Has(
       MILDataTypeToOperandType(condition_operand_info.mil_data_type)));
 
-  ASSIGN_OR_RETURN(uint64_t bool_condition_operand_id,
+  ASSIGN_OR_RETURN(OperandId bool_condition_operand_id,
                    GenerateInternalOperandInfo(
                        CoreML::Specification::MILSpec::DataType::BOOL,
                        condition_operand_info.dimensions));
@@ -5657,18 +5660,18 @@ GraphBuilderCoreml::AddOperationForTriangular(
 }
 
 const mojom::Operand& GraphBuilderCoreml::GetOperand(
-    uint64_t operand_id) const {
+    OperandId operand_id) const {
   return *graph_info_->id_to_operand_map.at(operand_id);
 }
 
 [[nodiscard]] const GraphBuilderCoreml::OperandInfo&
-GraphBuilderCoreml::GetOperandInfo(uint64_t operand_id) const {
+GraphBuilderCoreml::GetOperandInfo(OperandId operand_id) const {
   return result_->GetOperandInfo(operand_id);
 }
 
 base::expected<void, mojom::ErrorPtr>
 GraphBuilderCoreml::PopulateFeatureDescription(
-    uint64_t operand_id,
+    OperandId operand_id,
     ::CoreML::Specification::FeatureDescription& feature_description) {
   const mojom::Operand& operand = GetOperand(operand_id);
   auto* feature_type = feature_description.mutable_type();
@@ -5719,7 +5722,7 @@ GraphBuilderCoreml::PopulateFeatureDescription(
   return base::ok();
 }
 
-base::expected<uint64_t, mojom::ErrorPtr>
+base::expected<OperandId, mojom::ErrorPtr>
 GraphBuilderCoreml::GenerateInternalOperandInfo(
     CoreML::Specification::MILSpec::DataType mil_data_type,
     base::span<const uint32_t> dimensions) {
@@ -5727,7 +5730,7 @@ GraphBuilderCoreml::GenerateInternalOperandInfo(
   if (!internal_operand_id_.IsValid()) {
     return NewUnknownError("Number of operands in graph exceeds limit.");
   }
-  uint64_t operand_id = internal_operand_id_.ValueOrDie();
+  OperandId operand_id = internal_operand_id_.ValueOrDie();
   // Prefix is added to internal operands generated for WebNN operations that
   // need to be decomposed into multiple CoreML operations.
   CHECK(id_to_operand_info_map()
@@ -5742,7 +5745,7 @@ GraphBuilderCoreml::GenerateInternalOperandInfo(
 }
 
 void GraphBuilderCoreml::PopulateNamedValueType(
-    uint64_t operand_id,
+    OperandId operand_id,
     CoreML::Specification::MILSpec::NamedValueType& named_value_type) {
   named_value_type.set_name(GetOperandInfo(operand_id).coreml_name);
   auto& value_type = *named_value_type.mutable_type();
@@ -5760,7 +5763,7 @@ void GraphBuilderCoreml::PopulateNamedValueType(
 }
 
 void GraphBuilderCoreml::PopulateNamedValueTypeForInput(
-    uint64_t operand_id,
+    OperandId operand_id,
     CoreML::Specification::MILSpec::NamedValueType& named_value_type) {
   PopulateNamedValueType(operand_id, named_value_type);
 
@@ -5774,7 +5777,7 @@ void GraphBuilderCoreml::PopulateNamedValueTypeForInput(
   }
 }
 
-void GraphBuilderCoreml::UpdateCoreMLInputInfoMap(uint64_t operand_id) {
+void GraphBuilderCoreml::UpdateCoreMLInputInfoMap(OperandId operand_id) {
   const mojom::Operand& operand = GetOperand(operand_id);
   CHECK(id_to_operand_info_map()
             .try_emplace(operand_id,
@@ -5785,7 +5788,7 @@ void GraphBuilderCoreml::UpdateCoreMLInputInfoMap(uint64_t operand_id) {
             .second);
 }
 
-std::string GraphBuilderCoreml::GetCoreMLNameFromOperand(uint64_t operand_id) {
+std::string GraphBuilderCoreml::GetCoreMLNameFromOperand(OperandId operand_id) {
   const mojom::Operand& operand = GetOperand(operand_id);
   // CoreML doesn't allow op output names to start with numbers, so "var_"
   // prefixes are added.
@@ -5814,7 +5817,7 @@ GraphBuilderCoreml::SetInputFromOperand(
     google::protobuf::Map<std::string,
                           CoreML::Specification::MILSpec::Argument>& inputs,
     std::string_view key,
-    uint64_t operand_id) {
+    OperandId operand_id) {
   // Non-constant operands should already have an entity in the model.
   if (!constant_operands_->contains(operand_id)) {
     inputs[key].add_arguments()->set_name(
@@ -5830,7 +5833,7 @@ GraphBuilderCoreml::SetInputFromConstantOperand(
     google::protobuf::Map<std::string,
                           CoreML::Specification::MILSpec::Argument>& inputs,
     std::string_view key,
-    uint64_t constant_operand_id,
+    OperandId constant_operand_id,
     std::optional<base::span<const uint32_t>> reshaped_dimensions) {
   CHECK(constant_operands_->contains(constant_operand_id));
   ASSIGN_OR_RETURN(
@@ -5982,9 +5985,9 @@ GraphBuilderCoreml::SetInputFromTwoConstantsReordered(
   return base::ok();
 }
 
-base::expected<uint64_t, mojom::ErrorPtr>
+base::expected<OperandId, mojom::ErrorPtr>
 GraphBuilderCoreml::SliceFirstDimension(
-    uint64_t input_operand_id,
+    OperandId input_operand_id,
     int32_t index,
     CoreML::Specification::MILSpec::Block& block) {
   const OperandInfo& input_operand_info = GetOperandInfo(input_operand_id);
@@ -5997,12 +6000,12 @@ GraphBuilderCoreml::SliceFirstDimension(
   base::FixedArray<int32_t> strides(input_operand_info.dimensions.size(), 1);
   beginnings[0] = index;
   endings[0] = index + 1;
-  ASSIGN_OR_RETURN(uint64_t sliced,
+  ASSIGN_OR_RETURN(OperandId sliced,
                    GenerateInternalOperandInfo(input_operand_info.mil_data_type,
                                                sliced_dimensions));
   RETURN_IF_ERROR(AddOperationForSlice(input_operand_id, sliced, beginnings,
                                        Ui32ToI32(endings), strides, block));
-  ASSIGN_OR_RETURN(uint64_t sliced_squeezed,
+  ASSIGN_OR_RETURN(OperandId sliced_squeezed,
                    GenerateInternalOperandInfo(
                        input_operand_info.mil_data_type,
                        base::span<const uint32_t>(sliced_dimensions.begin() + 1,
@@ -6012,14 +6015,14 @@ GraphBuilderCoreml::SliceFirstDimension(
 }
 
 base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::SplitAndSqueeze(
-    uint64_t input_operand_id,
-    base::span<uint64_t> output_operand_ids,
+    OperandId input_operand_id,
+    base::span<OperandId> output_operand_ids,
     int32_t axis,
     CoreML::Specification::MILSpec::Block& block) {
   const OperandInfo& input_operand_info = GetOperandInfo(input_operand_id);
   uint32_t num_of_split = output_operand_ids.size();
   CHECK_EQ(output_operand_ids.size(), input_operand_info.dimensions[axis]);
-  base::FixedArray<uint64_t> outputs(num_of_split);
+  base::FixedArray<OperandId> outputs(num_of_split);
 
   std::vector<uint32_t> output_shape = input_operand_info.dimensions;
   output_shape[axis] = 1;
@@ -6067,7 +6070,7 @@ const base::FilePath& GraphBuilderCoreml::Result::GetModelFilePath() {
 }
 
 const GraphBuilderCoreml::OperandInfo&
-GraphBuilderCoreml::Result::GetOperandInfo(uint64_t operand_id) const {
+GraphBuilderCoreml::Result::GetOperandInfo(OperandId operand_id) const {
   auto it = id_to_operand_info_map.find(operand_id);
   CHECK(it != id_to_operand_info_map.end());
   return it->second;
