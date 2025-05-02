@@ -123,6 +123,16 @@ bool LoadGtk4() {
 }
 
 bool LoadGtkImpl() {
+  // If GTK3 or GTK4 is somehow already loaded, then the preloaded library must
+  // be used, because GTK3 and GTK4 have conflicting symbols and cannot be
+  // loaded simultaneously.
+  if (dlopen("libgtk-3.so.0", RTLD_LAZY | RTLD_GLOBAL | RTLD_NOLOAD)) {
+    return LoadGtk3();
+  }
+  if (dlopen("libgtk-4.so.1", RTLD_LAZY | RTLD_GLOBAL | RTLD_NOLOAD)) {
+    return LoadGtk4();
+  }
+
   auto* cmd = base::CommandLine::ForCurrentProcess();
   unsigned int gtk_version;
   if (!base::StringToUint(cmd->GetSwitchValueASCII(kGtkVersionFlag),
