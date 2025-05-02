@@ -977,8 +977,7 @@ IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab,
   }));
 }
 
-// TODO(harringtond): This is flaky.
-IN_PROC_BROWSER_TEST_F(GlicApiTest, DISABLED_testCloseAndOpenWhileOpening) {
+IN_PROC_BROWSER_TEST_F(GlicApiTest, testCloseAndOpenWhileOpening) {
   RunTestSequence(
       OpenGlicWindow(GlicWindowMode::kDetached, GlicInstrumentMode::kNone));
   ExecuteJsTest();
