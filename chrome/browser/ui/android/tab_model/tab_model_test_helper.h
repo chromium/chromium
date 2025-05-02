@@ -5,13 +5,34 @@
 #ifndef CHROME_BROWSER_UI_ANDROID_TAB_MODEL_TAB_MODEL_TEST_HELPER_H_
 #define CHROME_BROWSER_UI_ANDROID_TAB_MODEL_TAB_MODEL_TEST_HELPER_H_
 
-#include "chrome/browser/ui/android/tab_model/tab_model.h"
-#include "content/public/browser/web_contents.h"
+#include <memory>
+#include <vector>
 
-// TestTabModel is a TabModel that can be used for testing Android tab behavior.
+#include "base/memory/raw_ptr.h"
+#include "base/observer_list.h"
+#include "base/sequence_checker.h"
+#include "chrome/browser/android/tab_android.h"
+#include "chrome/browser/flags/android/chrome_session_state.h"
+#include "chrome/browser/ui/android/tab_model/tab_model.h"
+#include "url/gurl.h"
+
+namespace content {
+class WebContents;
+}
+
+class TabModelObserver;
+
+// TestTabModel is a thin TabModel that can be used for testing Android tab
+// behavior. It holds pointers to WebContents that are owned elsewhere. Many
+// functions are unimplemented. Use OwningTestTabModel for a more complete
+// TabModel implementation.
+// TODO(crbug.com/415309796): Convert tests using this to OwningTestTabModel and
+// remove it.
 class TestTabModel : public TabModel {
  public:
-  explicit TestTabModel(Profile* profile);
+  explicit TestTabModel(Profile* profile,
+                        chrome::android::ActivityType activity_type =
+                            chrome::android::ActivityType::kTabbed);
   ~TestTabModel() override;
 
   // TabModel:
@@ -56,6 +77,89 @@ class TestTabModel : public TabModel {
 
   raw_ptr<TabModelObserver> observer_ = nullptr;
   std::vector<raw_ptr<content::WebContents>> web_contents_list_;
+};
+
+// A TabModel that owns the WebContents for each tab and simulates many of the
+// operations that are provided by the JNI bridge in the production TabModel.
+class OwningTestTabModel : public TabModel {
+ public:
+  // Creates a TabModel that starts empty. The model will automatically be added
+  // to the TabModelList, and removed when it's destroyed.
+  explicit OwningTestTabModel(Profile* profile,
+                              chrome::android::ActivityType activity_type =
+                                  chrome::android::ActivityType::kTabbed);
+
+  ~OwningTestTabModel() override;
+
+  OwningTestTabModel(const OwningTestTabModel&) = delete;
+  OwningTestTabModel& operator=(const OwningTestTabModel&) = delete;
+
+  // TabModel:
+
+  int GetTabCount() const override;
+  int GetActiveIndex() const override;
+  content::WebContents* GetWebContentsAt(int index) const override;
+  TabAndroid* GetTabAt(int index) const override;
+  void SetActiveIndex(int index) override;
+  void ForceCloseAllTabs() override;
+  void CloseTabAt(int index) override;
+  void CreateTab(TabAndroid* parent,
+                 content::WebContents* web_contents,
+                 bool select) override;
+  bool IsActiveModel() const override;
+  void AddObserver(TabModelObserver* observer) override;
+  void RemoveObserver(TabModelObserver* observer) override;
+
+  // Unimplemented methods.
+  base::android::ScopedJavaLocalRef<jobject> GetJavaObject() const override;
+  void HandlePopupNavigation(TabAndroid* parent,
+                             NavigateParams* params) override;
+  content::WebContents* CreateNewTabForDevTools(const GURL& url,
+                                                bool new_window) override;
+  bool IsSessionRestoreInProgress() const override;
+  int GetTabCountNavigatedInTimeWindow(
+      const base::Time& begin_time,
+      const base::Time& end_time) const override;
+  void CloseTabsNavigatedInTimeWindow(const base::Time& begin_time,
+                                      const base::Time& end_time) override;
+
+  // Test accessors:
+
+  // Adds a new tab containing an empty `web_contents` at `index`. If `select`
+  // is true the new tab will become active.
+  TabAndroid* AddEmptyTab(size_t index,
+                          bool select = false,
+                          TabModel::TabLaunchType launch_type =
+                              TabModel::TabLaunchType::FROM_CHROME_UI);
+
+  // Adds a new tab containing `web_contents` at `index`. If `select` is true
+  // the new tab will become active.
+  TabAndroid* AddTabFromWebContents(
+      std::unique_ptr<content::WebContents> web_contents,
+      size_t index,
+      bool select = false,
+      TabModel::TabLaunchType launch_type =
+          TabModel::TabLaunchType::FROM_CHROME_UI);
+
+  void SetIsActiveModel(bool is_active);
+
+ private:
+  void SelectTab(TabAndroid* tab, TabModel::TabSelectionType selection_type);
+
+  SEQUENCE_CHECKER(sequence_checker_);
+
+  base::ObserverList<TabModelObserver>::Unchecked observer_list_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
+  std::vector<std::unique_ptr<TabAndroid>> owned_tabs_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
+  raw_ptr<TabAndroid> active_tab_ GUARDED_BY_CONTEXT(sequence_checker_) =
+      nullptr;
+
+  bool is_active_model_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
+
+  int next_tab_id_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_ANDROID_TAB_MODEL_TAB_MODEL_TEST_HELPER_H_

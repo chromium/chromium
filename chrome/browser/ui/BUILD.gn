@@ -899,8 +899,6 @@ static_library("ui") {
       "android/tab_model/tab_model_observer.h",
       "android/tab_model/tab_model_observer_jni_bridge.cc",
       "android/tab_model/tab_model_observer_jni_bridge.h",
-      "android/tab_model/tab_model_test_helper.cc",
-      "android/tab_model/tab_model_test_helper.h",
       "android/toolbar/adaptive_toolbar_bridge.cc",
       "android/toolbar/adaptive_toolbar_bridge.h",
       "android/toolbar/adaptive_toolbar_enums.h",
@@ -5975,7 +5973,14 @@ static_library("test_support") {
     }
   }
 
-  if (!is_android) {
+  if (is_android) {
+    sources += [
+      "android/tab_model/tab_model_test_helper.cc",
+      "android/tab_model/tab_model_test_helper.h",
+    ]
+
+    deps += [ "//chrome/browser/flags:flags_android" ]
+  } else {
     sources += [
       "browser_window/test/mock_browser_window_interface.cc",
       "browser_window/test/mock_browser_window_interface.h",
