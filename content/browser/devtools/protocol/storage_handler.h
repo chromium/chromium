@@ -40,7 +40,9 @@ class StorageHandler
     : public DevToolsDomainHandler,
       public Storage::Backend,
       public content::InterestGroupManagerImpl::InterestGroupObserver,
-      public AttributionObserver {
+      public AttributionObserver,
+      public content::SharedStorageRuntimeManager::
+          SharedStorageObserverInterface {
  public:
   explicit StorageHandler(DevToolsAgentHostClient* client);
 
@@ -220,15 +222,21 @@ class StorageHandler
                     bool is_debug_report,
                     const SendResult&) override;
 
-  void NotifySharedStorageAccessed(
+  // SharedStorageObserverInterface
+  GlobalRenderFrameHostId AssociatedMainFrameId() const override;
+  bool ShouldReceiveAllReports() const override;
+  void OnSharedStorageAccessed(
       base::Time access_time,
       blink::SharedStorageAccessScope scope,
       SharedStorageRuntimeManager::SharedStorageObserverInterface::AccessMethod
           method,
       GlobalRenderFrameHostId main_frame_id,
       const std::string& owner_origin,
-      const SharedStorageEventParams& params);
-  void NotifySharedStorageWorkletOperationExecutionFinished(
+      const SharedStorageEventParams& params) override;
+  void OnUrnUuidGenerated(const GURL& urn_uuid) override;
+  void OnConfigPopulated(
+      const std::optional<FencedFrameConfig>& config) override;
+  void OnWorkletOperationExecutionFinished(
       base::Time finished_time,
       base::TimeDelta execution_time,
       SharedStorageRuntimeManager::SharedStorageObserverInterface::AccessMethod
@@ -236,7 +244,7 @@ class StorageHandler
       int operation_id,
       int worklet_id,
       GlobalRenderFrameHostId main_frame_id,
-      const std::string& owner_origin);
+      const std::string& owner_origin) override;
 
   void NotifyCacheStorageListChanged(
       const storage::BucketLocator& bucket_locator);
@@ -269,7 +277,6 @@ class StorageHandler
   raw_ptr<RenderFrameHostImpl> frame_host_ = nullptr;
   std::unique_ptr<CacheStorageObserver> cache_storage_observer_;
   std::unique_ptr<IndexedDBObserver> indexed_db_observer_;
-  std::unique_ptr<SharedStorageObserver> shared_storage_observer_;
   std::unique_ptr<QuotaManagerObserver> quota_manager_observer_;
 
   // Exposes the API for managing storage quota overrides.
@@ -281,6 +288,10 @@ class StorageHandler
 
   base::ScopedObservation<AttributionManager, AttributionObserver>
       attribution_observation_{this};
+  base::ScopedObservation<
+      content::SharedStorageRuntimeManager,
+      content::SharedStorageRuntimeManager::SharedStorageObserverInterface>
+      shared_storage_observation_{this};
 
   base::WeakPtrFactory<StorageHandler> weak_ptr_factory_{this};
 };
