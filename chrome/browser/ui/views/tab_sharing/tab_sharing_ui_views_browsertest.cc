@@ -42,6 +42,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/captured_surface_test_utils.h"
+#include "media/capture/capture_switches.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -219,19 +220,23 @@ const policy::DlpContentRestrictionSet kScreenshareRestrictionSet(
 
 class TabSharingUIViewsBrowserTest
     : public InProcessBrowserTest,
-      public ::testing::WithParamInterface<bool> {
+      public ::testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
   TabSharingUIViewsBrowserTest()
-      : favicons_used_for_switch_to_tab_button_(GetParam()) {
+      : favicons_used_for_switch_to_tab_button_(std::get<0>(GetParam())),
+        enable_tab_capture_infobar_links_(std::get<1>(GetParam())) {
     // TODO(crbug.com/40248833): Use HTTPS URLs in tests to avoid having to
     // disable kHttpsUpgrades feature.
 #if BUILDFLAG(IS_CHROMEOS)
     features_.InitWithFeatureStates(
         {{features::kTabCaptureBlueBorderCrOS, true},
-         { features::kHttpsUpgrades,
-           false }});
+         {features::kHttpsUpgrades, false},
+         { features::kTabCaptureInfobarLinks,
+           enable_tab_capture_infobar_links_ }});
 #else
-    features_.InitWithFeatureStates({{features::kHttpsUpgrades, false}});
+    features_.InitWithFeatureStates({{features::kHttpsUpgrades, false},
+                                     {features::kTabCaptureInfobarLinks,
+                                      enable_tab_capture_infobar_links_}});
 #endif  // BUILDFLAG(IS_CHROMEOS)
   }
 
@@ -457,6 +462,7 @@ class TabSharingUIViewsBrowserTest
   base::test::ScopedFeatureList features_;
 
   const bool favicons_used_for_switch_to_tab_button_;
+  const bool enable_tab_capture_infobar_links_;
 
   std::unique_ptr<TabSharingUI> tab_sharing_ui_;
 
@@ -464,7 +470,10 @@ class TabSharingUIViewsBrowserTest
   char next_unique_char_ = 'a';  // Derive https://x.com from x.
 };
 
-INSTANTIATE_TEST_SUITE_P(All, TabSharingUIViewsBrowserTest, ::testing::Bool());
+INSTANTIATE_TEST_SUITE_P(All,
+                         TabSharingUIViewsBrowserTest,
+                         ::testing::Combine(::testing::Bool(),
+                                            ::testing::Bool()));
 
 IN_PROC_BROWSER_TEST_P(TabSharingUIViewsBrowserTest, StartSharing) {
   AddTabs(browser(), 2);
