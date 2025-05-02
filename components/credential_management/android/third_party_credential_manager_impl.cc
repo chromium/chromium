@@ -45,8 +45,9 @@ void ThirdPartyCredentialManagerImpl::Get(
     bool include_passwords,
     const std::vector<GURL>& federations,
     GetCallback callback) {
-  // TODO(crbug.com/374710839): Implement.
-  NOTIMPLEMENTED();
+  // TODO(crbug.com/404199116): Pass all the parameters to the bridge.
+  bridge_->Get(render_frame_host().GetLastCommittedOrigin().Serialize(),
+               std::move(callback));
 }
 
 void ThirdPartyCredentialManagerImpl::ResetPendingRequest() {

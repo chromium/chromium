@@ -23,6 +23,9 @@ const std::string kTestOrigin = "https://origin.com";
 namespace credential_management {
 
 using StoreCallback = base::OnceCallback<void()>;
+using GetCallback = base::OnceCallback<void(
+    password_manager::CredentialManagerError,
+    const std::optional<password_manager::CredentialInfo>&)>;
 
 class MockThirdPartyCredentialManagerBridge : public CredentialManagerBridge {
  public:
@@ -79,6 +82,18 @@ TEST_F(ThirdPartyCredentialManagerImplTest, TestStore) {
       /*federation=*/url::SchemeHostPort(GURL()));
 
   credential_manager()->Store(info, StoreCallback());
+}
+
+TEST_F(ThirdPartyCredentialManagerImplTest, TestGet) {
+  content::WebContentsTester::For(web_contents())
+      ->NavigateAndCommit(GURL(kTestOrigin));
+
+  EXPECT_CALL(*mock_bridge(), Get(kTestOrigin, _));
+
+  credential_manager()->Get(
+      /*mediation=*/password_manager::CredentialMediationRequirement::kSilent,
+      /*include_passwords=*/true,
+      /*federations=*/std::vector<GURL>(), GetCallback());
 }
 
 }  // namespace credential_management
