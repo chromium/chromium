@@ -149,6 +149,8 @@ class TouchToFillPaymentMethodViewBinder {
         if (!TextUtils.isEmpty(model.get(SECOND_LINE_LABEL))) {
             secondLineLabel.setVisibility(View.VISIBLE);
             primaryLabel = secondLineLabel;
+        } else if (secondLineLabel != null) {
+            secondLineLabel.setVisibility(View.GONE);
         }
         if (propertyKey == CARD_IMAGE) {
             icon.setImageDrawable(model.get(CARD_IMAGE));
