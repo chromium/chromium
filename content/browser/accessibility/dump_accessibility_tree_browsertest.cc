@@ -68,6 +68,7 @@ std::vector<ui::AXPropertyFilter> DumpAccessibilityTreeTest::DefaultFilters()
   property_filters.emplace_back("value='http*'", AXPropertyFilter::DENY);
   // Object attributes.value
   property_filters.emplace_back("layout-guess:*", AXPropertyFilter::ALLOW);
+  property_filters.emplace_back("details-from:*", AXPropertyFilter::ALLOW);
 
   property_filters.emplace_back("select*", AXPropertyFilter::ALLOW);
   property_filters.emplace_back("selectedFromFocus=*", AXPropertyFilter::DENY);

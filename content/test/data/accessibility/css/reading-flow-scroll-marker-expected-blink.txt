@@ -12,6 +12,6 @@ rootWebArea focusable
 ++++++++++staticText name='Three'
 ++++++++++++inlineTextBox name='Three'
 ++++++tabList horizontal setSize=3 controlsIds=genericContainer
-++++++++tab focusable name='Two' setSize=3 posInSet=1 selected=false
-++++++++tab focusable name='Three' setSize=3 posInSet=2 selected=false
-++++++++tab focusable name='One' setSize=3 posInSet=3 selected=true
+++++++++tab focusable name='Two' setSize=3 posInSet=1 selected=false detailsIds=genericContainer
+++++++++tab focusable name='Three' setSize=3 posInSet=2 selected=false detailsIds=genericContainer
+++++++++tab focusable name='One' setSize=3 posInSet=3 selected=true detailsIds=genericContainer

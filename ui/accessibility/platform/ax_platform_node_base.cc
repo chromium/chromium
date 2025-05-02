@@ -1482,6 +1482,10 @@ void AXPlatformNodeBase::ComputeAttributes(PlatformAttributeList* attributes) {
       case ax::mojom::DetailsFrom::kCommandfor:
         AddAttributeToList("details-from", "command-for", attributes);
         break;
+      case ax::mojom::DetailsFrom::kCssScrollMarkerPseudoElement:
+        AddAttributeToList("details-from", "css-scroll-marker-pseudo-element",
+                           attributes);
+        break;
     }
   }
 

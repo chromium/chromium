@@ -2703,6 +2703,17 @@ void AXObject::SerializeComputedDetailsRelation(
         ax::mojom::blink::IntListAttribute::kDetailsIds,
         {static_cast<int32_t>(positioned_obj->AXObjectID())});
     node_data->SetDetailsFrom(ax::mojom::blink::DetailsFrom::kCssAnchor);
+    return;
+  }
+
+  // Add aria-details for a scroll marker pseudo-element.
+  if (AXObject* marker_target = GetScrollMarkerTarget()) {
+    node_data->AddIntListAttribute(
+        ax::mojom::blink::IntListAttribute::kDetailsIds,
+        {static_cast<int32_t>(marker_target->AXObjectID())});
+    node_data->SetDetailsFrom(
+        ax::mojom::blink::DetailsFrom::kCssScrollMarkerPseudoElement);
+    return;
   }
 }
 
@@ -2892,6 +2903,18 @@ AXObject* AXObject::GetPositionedObjectForAnchor(ui::AXNodeData* data) const {
   }
 
   return positioned_obj;
+}
+
+AXObject* AXObject::GetScrollMarkerTarget() const {
+  if (!GetElement() || !GetElement()->IsScrollMarkerPseudoElement()) {
+    return nullptr;
+  }
+
+  // The parent element of a ::scroll-marker pseudo-element is the originating
+  // element containing or preceeding the details which is scrolled into view
+  // when you interact with the pseudo-element.
+  // https://www.w3.org/TR/css-overflow-5/#scroll-navigation
+  return AXObjectCache().Get(GetElement()->parentElement());
 }
 
 // Try to get an aria-controls for an <input role="combobox">, because it

@@ -2478,6 +2478,8 @@ const char* ToString(ax::mojom::DetailsFrom details_from) {
       return "interestTarget";
     case ax::mojom::DetailsFrom::kCommandfor:
       return "commandforAttribute";
+    case ax::mojom::DetailsFrom::kCssScrollMarkerPseudoElement:
+      return "cssScrollMarkerPseudoElement";
   }
 
   return "";
