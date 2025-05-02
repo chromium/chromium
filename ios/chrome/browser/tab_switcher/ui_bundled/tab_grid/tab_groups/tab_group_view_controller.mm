@@ -635,6 +635,7 @@ UIButton* TopToolbarButton(NSString* symbol_name,
                 primaryAction:[UIAction actionWithHandler:^(UIAction* action) {
                   [weakSelf didTapFacePileButton];
                 }]];
+  container.accessibilityIdentifier = kTabGroupFacePileButtonIdentifier;
   [self updateFacePileContainer:container withFacePile:_facePileView];
   return container;
 }
@@ -661,6 +662,7 @@ UIButton* TopToolbarButton(NSString* symbol_name,
 
   UIButton* closeButton =
       TopToolbarButton(kXMarkSymbol, closeAction, kCloseImageSize);
+  closeButton.accessibilityLabel = l10n_util::GetNSString(IDS_CLOSE);
 
   [stackView addArrangedSubview:closeButton];
 
@@ -1079,11 +1081,18 @@ UIButton* TopToolbarButton(NSString* symbol_name,
   // Shows the confirmation to ungroup the current group (keep the tab) and
   // close the view. Do nothing when a user cancels the action.
   if (IsTabGroupSyncEnabled()) {
-    [_handler
-        showTabGroupConfirmationForAction:TabGroupActionType::kUngroupTabGroup
-                                    group:_tabGroup->GetWeakPtr()
-                         sourceButtonItem:_navigationBar.topItem
-                                              .rightBarButtonItems[0]];
+    if (IsContainedTabGroupEnabled()) {
+      [_handler
+          showTabGroupConfirmationForAction:TabGroupActionType::kUngroupTabGroup
+                                      group:_tabGroup->GetWeakPtr()
+                                 sourceView:_menuButton];
+    } else {
+      [_handler
+          showTabGroupConfirmationForAction:TabGroupActionType::kUngroupTabGroup
+                                      group:_tabGroup->GetWeakPtr()
+                           sourceButtonItem:_navigationBar.topItem
+                                                .rightBarButtonItems[0]];
+    }
     return;
   }
 
@@ -1102,11 +1111,18 @@ UIButton* TopToolbarButton(NSString* symbol_name,
   if (IsTabGroupSyncEnabled()) {
     // Shows the confirmation to delete the tabs, delete the current group and
     // close the view. Do nothing when a user cancels the action.
-    [_handler
-        showTabGroupConfirmationForAction:TabGroupActionType::kDeleteTabGroup
-                                    group:_tabGroup->GetWeakPtr()
-                         sourceButtonItem:_navigationBar.topItem
-                                              .rightBarButtonItems[0]];
+    if (IsContainedTabGroupEnabled()) {
+      [_handler
+          showTabGroupConfirmationForAction:TabGroupActionType::kDeleteTabGroup
+                                      group:_tabGroup->GetWeakPtr()
+                                 sourceView:_menuButton];
+    } else {
+      [_handler
+          showTabGroupConfirmationForAction:TabGroupActionType::kDeleteTabGroup
+                                      group:_tabGroup->GetWeakPtr()
+                           sourceButtonItem:_navigationBar.topItem
+                                                .rightBarButtonItems[0]];
+    }
     return;
   }
 
@@ -1120,11 +1136,18 @@ UIButton* TopToolbarButton(NSString* symbol_name,
   CHECK(_gridViewController.shared);
   CHECK_EQ(_sharingState, SharingState::kSharedAndOwned);
 
-  [_handler
-      startLeaveOrDeleteSharedGroup:_tabGroup->GetWeakPtr()
-                          forAction:TabGroupActionType::kDeleteSharedTabGroup
-                   sourceButtonItem:_navigationBar.topItem
-                                        .rightBarButtonItems[0]];
+  if (IsContainedTabGroupEnabled()) {
+    [_handler
+        startLeaveOrDeleteSharedGroup:_tabGroup->GetWeakPtr()
+                            forAction:TabGroupActionType::kDeleteSharedTabGroup
+                           sourceView:_menuButton];
+  } else {
+    [_handler
+        startLeaveOrDeleteSharedGroup:_tabGroup->GetWeakPtr()
+                            forAction:TabGroupActionType::kDeleteSharedTabGroup
+                     sourceButtonItem:_navigationBar.topItem
+                                          .rightBarButtonItems[0]];
+  }
 }
 
 // Leaves the shared group and closes the view.
@@ -1133,11 +1156,18 @@ UIButton* TopToolbarButton(NSString* symbol_name,
   CHECK(_gridViewController.shared);
   CHECK_EQ(_sharingState, SharingState::kShared);
 
-  [_handler
-      startLeaveOrDeleteSharedGroup:_tabGroup->GetWeakPtr()
-                          forAction:TabGroupActionType::kLeaveSharedTabGroup
-                   sourceButtonItem:_navigationBar.topItem
-                                        .rightBarButtonItems[0]];
+  if (IsContainedTabGroupEnabled()) {
+    [_handler
+        startLeaveOrDeleteSharedGroup:_tabGroup->GetWeakPtr()
+                            forAction:TabGroupActionType::kLeaveSharedTabGroup
+                           sourceView:_menuButton];
+  } else {
+    [_handler
+        startLeaveOrDeleteSharedGroup:_tabGroup->GetWeakPtr()
+                            forAction:TabGroupActionType::kLeaveSharedTabGroup
+                     sourceButtonItem:_navigationBar.topItem
+                                          .rightBarButtonItems[0]];
+  }
 }
 
 // Called when the size class changed.

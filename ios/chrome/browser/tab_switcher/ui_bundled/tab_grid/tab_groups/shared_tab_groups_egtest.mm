@@ -43,6 +43,7 @@ using base::test::ios::WaitUntilConditionOrTimeout;
 using chrome_test_util::AddTabToGroupSubMenuButton;
 using chrome_test_util::BlueDotOnShowTabsButton;
 using chrome_test_util::BlueDotOnTabStripCellAtIndex;
+using chrome_test_util::CloseTabGroupButton;
 using chrome_test_util::ContextMenuItemWithAccessibilityLabel;
 using chrome_test_util::ContextMenuItemWithAccessibilityLabelId;
 using chrome_test_util::CreateTabGroupAtIndex;
@@ -72,7 +73,6 @@ using chrome_test_util::TabGroupActivityLabelOnGridCellAtIndex;
 using chrome_test_util::TabGroupActivityLabelOnGroupCellAtIndex;
 using chrome_test_util::TabGroupActivitySummaryCell;
 using chrome_test_util::TabGroupActivitySummaryCellCloseButton;
-using chrome_test_util::TabGroupBackButton;
 using chrome_test_util::TabGroupCreationView;
 using chrome_test_util::TabGroupOverflowMenuButton;
 using chrome_test_util::TabGroupRecentActivityCellAtIndex;
@@ -266,7 +266,7 @@ AppLaunchConfiguration SharedTabGroupAppLaunchConfiguration(
                      kConfirmationAlertPrimaryActionAccessibilityIdentifier)]
       performAction:grey_tap()];
   [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:educationScreen];
-  [[EarlGrey selectElementWithMatcher:TabGroupBackButton()]
+  [[EarlGrey selectElementWithMatcher:CloseTabGroupButton()]
       performAction:grey_tap()];
   OpenTabGroupAtIndex(0);
 
@@ -517,7 +517,7 @@ AppLaunchConfiguration SharedTabGroupAppLaunchConfiguration(
 
   // Share the group then foreground the app. The IPH should be visible.
   [ChromeEarlGreyUI openTabGrid];
-  [[EarlGrey selectElementWithMatcher:TabGroupBackButton()]
+  [[EarlGrey selectElementWithMatcher:CloseTabGroupButton()]
       performAction:grey_tap()];
   ShareGroupAtIndex(1);
   [[EarlGrey selectElementWithMatcher:TabGridDoneButton()]
@@ -1266,7 +1266,7 @@ AppLaunchConfiguration SharedTabGroupAppLaunchConfiguration(
                       TabGroupActivityLabelOnGridCellAtIndex(1)];
 
   // Leave from the group view.
-  [[EarlGrey selectElementWithMatcher:TabGroupBackButton()]
+  [[EarlGrey selectElementWithMatcher:CloseTabGroupButton()]
       performAction:grey_tap()];
 
   // Verify that the activity label on the group cell disappears.
@@ -1331,7 +1331,7 @@ AppLaunchConfiguration SharedTabGroupAppLaunchConfiguration(
   [ChromeEarlGreyUI openTabGrid];
 
   // Leave from the group view.
-  [[EarlGrey selectElementWithMatcher:TabGroupBackButton()]
+  [[EarlGrey selectElementWithMatcher:CloseTabGroupButton()]
       performAction:grey_tap()];
 
   // Open a tab outside the group.

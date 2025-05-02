@@ -36,6 +36,7 @@ using chrome_test_util::AddTabToNewGroupButton;
 using chrome_test_util::ButtonWithAccessibilityLabel;
 using chrome_test_util::ButtonWithAccessibilityLabelId;
 using chrome_test_util::CloseGroupButton;
+using chrome_test_util::CloseTabGroupButton;
 using chrome_test_util::ContextMenuItemWithAccessibilityLabel;
 using chrome_test_util::ContextMenuItemWithAccessibilityLabelId;
 using chrome_test_util::CreateTabGroupCancelButton;
@@ -58,7 +59,6 @@ using chrome_test_util::TabGridSearchBar;
 using chrome_test_util::TabGridSearchTabsButton;
 using chrome_test_util::TabGridSelectTabsMenuButton;
 using chrome_test_util::TabGridUndoCloseAllButton;
-using chrome_test_util::TabGroupBackButton;
 using chrome_test_util::TabGroupCreationView;
 using chrome_test_util::TabGroupOverflowMenuButton;
 using chrome_test_util::TabGroupSnackBar;
@@ -450,7 +450,7 @@ UIViewController* TopPresentedViewController() {
   [[EarlGrey selectElementWithMatcher:TabWithTitle(kTab1Title)]
       assertWithMatcher:grey_notNil()];
 
-  [[EarlGrey selectElementWithMatcher:NavigationBarBackButton()]
+  [[EarlGrey selectElementWithMatcher:CloseTabGroupButton()]
       performAction:grey_tap()];
 
   // Create a tab cell with `Tab 2` as its title.
@@ -998,7 +998,7 @@ UIViewController* TopPresentedViewController() {
       assertWithMatcher:grey_notNil()];
 
   // Go back to the tab grid.
-  [[EarlGrey selectElementWithMatcher:TabGroupBackButton()]
+  [[EarlGrey selectElementWithMatcher:CloseTabGroupButton()]
       performAction:grey_tap()];
   // Check that the group still exists.
   [[EarlGrey selectElementWithMatcher:TabGridGroupCellWithName(
@@ -1614,7 +1614,7 @@ UIViewController* TopPresentedViewController() {
       assertWithMatcher:grey_nil()];
 
   // Go back to the tab grid.
-  [[EarlGrey selectElementWithMatcher:TabGroupBackButton()]
+  [[EarlGrey selectElementWithMatcher:CloseTabGroupButton()]
       performAction:grey_tap()];
   [ChromeEarlGrey
       waitForUIElementToAppearWithMatcher:TabGridGroupCellAtIndex(0)];

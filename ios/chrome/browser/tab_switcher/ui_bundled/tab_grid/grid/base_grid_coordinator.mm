@@ -338,6 +338,7 @@ using collaboration::CollaborationControllerDelegate;
                                     group:
                                         (base::WeakPtr<const TabGroup>)tabGroup
                          sourceButtonItem:(UIBarButtonItem*)sourceButtonItem {
+  CHECK(!IsContainedTabGroupEnabled());
   if (!tabGroup) {
     return;
   }
@@ -390,6 +391,7 @@ using collaboration::CollaborationControllerDelegate;
 - (void)startLeaveOrDeleteSharedGroup:(base::WeakPtr<const TabGroup>)group
                             forAction:(TabGroupActionType)actionType
                      sourceButtonItem:(UIBarButtonItem*)sourceButtonItem {
+  CHECK(!IsContainedTabGroupEnabled());
   __weak __typeof(self) weakSelf = self;
   base::OnceCallback<void(ResultCallback)> completionCallback =
       base::BindOnce(^(ResultCallback resultCallback) {

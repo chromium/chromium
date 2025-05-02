@@ -1721,12 +1721,18 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
                     grey_sufficientlyVisible(), nil);
 }
 
-+ (id<GREYMatcher>)tabGroupBackButton {
-  return grey_allOf(
-      [ChromeMatchersAppInterface
-          buttonWithAccessibilityLabel:l10n_util::GetNSString(
-                                           IDS_IOS_ICON_ARROW_BACK)],
-      grey_kindOfClassName(@"UIAccessibilityBackButtonElement"), nil);
++ (id<GREYMatcher>)closeTabGroupButton {
+  if (IsContainedTabGroupEnabled()) {
+    return grey_allOf(
+        grey_accessibilityLabel(l10n_util::GetNSString(IDS_CLOSE)),
+        grey_sufficientlyVisible(), nil);
+  } else {
+    return grey_allOf(
+        [ChromeMatchersAppInterface
+            buttonWithAccessibilityLabel:l10n_util::GetNSString(
+                                             IDS_IOS_ICON_ARROW_BACK)],
+        grey_kindOfClassName(@"UIAccessibilityBackButtonElement"), nil);
+  }
 }
 
 + (id<GREYMatcher>)tabGroupActivitySummaryCell {
