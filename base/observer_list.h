@@ -293,13 +293,17 @@ class ObserverList {
     while (!live_iterators_.empty()) {
       live_iterators_.head()->value()->Invalidate();
     }
-    if (check_empty) {
+    if constexpr (check_empty) {
       Compact();
+      // Note that observer stack traces are only available for DCHECK-enabled
+      // builds (use dcheck_always_on=true).
       // TODO(crbug.com/40063488): Turn into a CHECK once very prevalent
       // failures are weeded out.
       DUMP_WILL_BE_CHECK(observers_.empty())
-          << "\n"
-          << GetObserversCreationStackString();
+#if DCHECK_IS_ON()
+          << GetObserversCreationStackString()
+#endif
+          ;
     }
   }
 
@@ -316,7 +320,7 @@ class ObserverList {
       DUMP_WILL_BE_NOTREACHED() << "Observers can only be added once!";
       return;
     }
-    observers_count_++;
+    ++observers_count_;
     observers_.emplace_back(ObserverStorageType(obs));
   }
 
@@ -330,7 +334,7 @@ class ObserverList {
       return;
     }
     if (!it->IsMarkedForRemoval()) {
-      observers_count_--;
+      --observers_count_;
     }
     if (live_iterators_.empty()) {
       observers_.erase(it);
@@ -410,9 +414,11 @@ class ObserverList {
                   [](const auto& o) { return o.IsMarkedForRemoval(); });
   }
 
-  std::string GetObserversCreationStackString() const {
 #if DCHECK_IS_ON()
-    std::string result;
+  std::string GetObserversCreationStackString() const
+    requires check_empty
+  {
+    std::string result("\n");
 #if BUILDFLAG(IS_IOS)
     result += "Use go/observer-list-empty to interpret.\n";
 #endif
@@ -421,10 +427,8 @@ class ObserverList {
       result += "\n";
     }
     return result;
-#else
-    return "For observer stack traces, build with `dcheck_always_on=true`.";
-#endif  // DCHECK_IS_ON()
   }
+#endif  // DCHECK_IS_ON()
 
   std::vector<ObserverStorageType> observers_;
 
