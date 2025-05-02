@@ -151,6 +151,8 @@ class HeadlessContentBrowserClient : public content::ContentBrowserClient {
 
   content::BluetoothDelegate* GetBluetoothDelegate() override;
 
+  bool IsRendererProcessPriorityEnabled() override;
+
  private:
   class StubBadgeService;
 

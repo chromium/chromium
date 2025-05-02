@@ -1967,6 +1967,10 @@ bool ContentBrowserClient::ShouldPrioritizeForBackForwardCache(
   return false;
 }
 
+bool ContentBrowserClient::IsRendererProcessPriorityEnabled() {
+  return true;
+}
+
 std::unique_ptr<KeepAliveRequestTracker>
 ContentBrowserClient::MaybeCreateKeepAliveRequestTracker(
     const network::ResourceRequest& request,

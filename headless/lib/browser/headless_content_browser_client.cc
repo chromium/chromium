@@ -541,4 +541,10 @@ HeadlessContentBrowserClient::GetBluetoothDelegate() {
   return bluetooth_delegate_.get();
 }
 
+bool HeadlessContentBrowserClient::IsRendererProcessPriorityEnabled() {
+  // Since there is no visible window in headless, the renderer process priority
+  // policy, which is mostly based on visibility, is not needed.
+  return false;
+}
+
 }  // namespace headless
