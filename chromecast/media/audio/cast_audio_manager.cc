@@ -110,7 +110,7 @@ void CastAudioManager::GetAudioInputDeviceNames(
       kDefaultInputBufferSize);
 }
 
-const char* CastAudioManager::GetName() {
+const std::string_view CastAudioManager::GetName() {
   return "Cast";
 }
 

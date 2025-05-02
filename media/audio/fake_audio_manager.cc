@@ -29,7 +29,7 @@ bool FakeAudioManager::HasAudioOutputDevices() { return false; }
 
 bool FakeAudioManager::HasAudioInputDevices() { return false; }
 
-const char* FakeAudioManager::GetName() {
+const std::string_view FakeAudioManager::GetName() {
   return "Fake";
 }
 

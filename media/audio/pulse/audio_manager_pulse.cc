@@ -139,7 +139,7 @@ AudioParameters AudioManagerPulse::GetInputStreamParameters(
                          buffer_size);
 }
 
-const char* AudioManagerPulse::GetName() {
+const std::string_view AudioManagerPulse::GetName() {
   return "PulseAudio";
 }
 

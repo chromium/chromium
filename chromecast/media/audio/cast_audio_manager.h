@@ -66,7 +66,7 @@ class CastAudioManager : public ::media::AudioManagerBase {
       ::media::AudioDeviceNames* device_names) override;
   ::media::AudioParameters GetInputStreamParameters(
       const std::string& device_id) override;
-  const char* GetName() override;
+  const std::string_view GetName() override;
   void ReleaseOutputStream(::media::AudioOutputStream* stream) override;
 
   // Make this public for testing.

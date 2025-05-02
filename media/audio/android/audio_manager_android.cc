@@ -237,7 +237,7 @@ AudioParameters AudioManagerAndroid::GetInputStreamParameters(
   return params;
 }
 
-const char* AudioManagerAndroid::GetName() {
+const std::string_view AudioManagerAndroid::GetName() {
   return "Android";
 }
 
