@@ -18,7 +18,7 @@ found in the LICENSE file.
         <attr name="buttonTextColor" format="reference"/>
         <attr name="rippleColor"/>
         <attr name="borderColor" format="color"/>
-        <attr name="borderWidth" format="reference|dimension"/>
+        <attr name="buttonBorderWidth" format="reference|dimension"/>
         <!-- The vertical inset of the button background drawable. -->
         <attr name="verticalInset"/>
 

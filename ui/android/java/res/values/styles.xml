@@ -53,7 +53,7 @@ found in the LICENSE file.
         <item name="rippleColor">?attr/globalTextButtonRippleColor</item>
     </style>
     <style name="OutlinedButton" parent="TextButton" tools:ignore="UnusedResources">
-        <item name="borderWidth">@dimen/button_outlined_border_width</item>
+        <item name="buttonBorderWidth">@dimen/button_outlined_border_width</item>
         <item name="borderColor">?attr/globalOutlinedButtonBorderColor</item>
     </style>
     <style name="FilledTonalButton" parent="TextButton" tools:ignore="UnusedResources">
