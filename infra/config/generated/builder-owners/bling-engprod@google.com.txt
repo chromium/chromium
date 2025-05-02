@@ -18,10 +18,13 @@ ci/mac13-arm64-rel-tests
 ci/mac14-arm64-rel-tests
 ci/mac14-tests
 ci/mac14-tests-dbg
+ci/mac15-arm64-rel-tests
 ci/mac15-x64-rel-tests
 try/ios-vm
 try/mac-vm
 try/mac14-arm64-rel
 try/mac14-arm64-rel-compilator
 try/mac14-tests
+try/mac15-arm64-rel
+try/mac15-arm64-rel-compilator
 try/mac15-x64-rel-tests
