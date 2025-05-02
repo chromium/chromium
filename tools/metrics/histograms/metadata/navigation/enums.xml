@@ -517,6 +517,18 @@ chromium-metrics-reviews@google.com.
              OriginAgentCluster-by-default)"/>
 </enum>
 
+<!-- LINT.IfChange(PreconnectTriggerEvent) -->
+
+<enum name="PreconnectTriggerEvent">
+  <int value="0" label="kInitialPreconnect"/>
+  <int value="1" label="kPeriodicPreconnect"/>
+  <int value="2" label="kSessionClosed"/>
+  <int value="3" label="kNetworkEvent"/>
+  <int value="4" label="kConnectionFailed"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/navigation_predictor/search_engine_preconnector.h:PreconnectTriggerEvent) -->
+
 <enum name="PrerenderActivationHeaderMismatchType">
   <int value="-2073835455"
       label="experimentalnon-standard: missing in prerendering request's
