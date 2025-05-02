@@ -224,18 +224,6 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl
           pending_receiver,
       int client_id) override;
 
-  void CreateGpuMemoryBuffer(gfx::GpuMemoryBufferId id,
-                             const gfx::Size& size,
-                             gfx::BufferFormat format,
-                             gfx::BufferUsage usage,
-                             int client_id,
-                             gpu::SurfaceHandle surface_handle,
-                             CreateGpuMemoryBufferCallback callback) override;
-  void DestroyGpuMemoryBuffer(gfx::GpuMemoryBufferId id,
-                              int client_id) override;
-  void CopyGpuMemoryBuffer(gfx::GpuMemoryBufferHandle buffer_handle,
-                           base::UnsafeSharedMemoryRegion shared_memory,
-                           CopyGpuMemoryBufferCallback callback) override;
   void GetVideoMemoryUsageStats(
       GetVideoMemoryUsageStatsCallback callback) override;
   // These methods can be called from the CrBrowserMain thread and the

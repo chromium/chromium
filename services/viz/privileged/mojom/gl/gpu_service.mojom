@@ -144,23 +144,6 @@ interface GpuService {
       pending_receiver<webnn.mojom.WebNNContextProvider>? receiver,
       int32 client_id);
 
-  [Sync, NoInterrupt]
-  CreateGpuMemoryBuffer(gfx.mojom.GpuMemoryBufferId id,
-                        gfx.mojom.Size size,
-                        gfx.mojom.BufferFormat format,
-                        gfx.mojom.BufferUsage usage,
-                        int32 client_id,
-                        gpu.mojom.SurfaceHandle surface_handle)
-      => (gfx.mojom.GpuMemoryBufferHandle buffer_handle);
-
-  DestroyGpuMemoryBuffer(gfx.mojom.GpuMemoryBufferId id, int32 client_id);
-
-  // Copies GMB pixel data to |shared_memory|.
-  // Returns |true| if the copy has succeeded.
-  CopyGpuMemoryBuffer(gfx.mojom.GpuMemoryBufferHandle buffer_handle,
-                      mojo_base.mojom.UnsafeSharedMemoryRegion shared_memory)
-      => (bool success);
-
   // Returns current video memory usage.
   GetVideoMemoryUsageStats() => (gpu.mojom.VideoMemoryUsageStats stats);
 

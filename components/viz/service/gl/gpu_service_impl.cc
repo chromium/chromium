@@ -963,61 +963,6 @@ void GpuServiceImpl::BindWebNNContextProvider(
       std::move(pending_receiver));
 }
 
-void GpuServiceImpl::CreateGpuMemoryBuffer(
-    gfx::GpuMemoryBufferId id,
-    const gfx::Size& size,
-    gfx::BufferFormat format,
-    gfx::BufferUsage usage,
-    int client_id,
-    gpu::SurfaceHandle surface_handle,
-    CreateGpuMemoryBufferCallback callback) {
-  // This needs to happen in the IO thread.
-  DCHECK(io_runner_->BelongsToCurrentThread());
-
-  // Create a native buffer handle if supported.
-  if (IsNativeBufferSupported(format, usage)) {
-    gpu_memory_buffer_factory_->CreateGpuMemoryBufferAsync(
-        id, size, format, usage, client_id, surface_handle,
-        std::move(callback));
-    return;
-  }
-
-  // Otherwise, create a shared memory handle if supported.
-  if (gpu::GpuMemoryBufferImplSharedMemory::IsUsageSupported(usage) &&
-      gpu::GpuMemoryBufferImplSharedMemory::IsSizeValidForFormat(size,
-                                                                 format)) {
-    gfx::GpuMemoryBufferHandle shm_handle;
-    shm_handle = gpu::GpuMemoryBufferImplSharedMemory::CreateGpuMemoryBuffer(
-        id, size, format, usage);
-    std::move(callback).Run(std::move(shm_handle));
-    return;
-  }
-
-  // By default, return a null handle.
-  std::move(callback).Run(gfx::GpuMemoryBufferHandle());
-}
-
-void GpuServiceImpl::DestroyGpuMemoryBuffer(gfx::GpuMemoryBufferId id,
-                                            int client_id) {
-  if (!main_runner_->BelongsToCurrentThread()) {
-    main_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&GpuServiceImpl::DestroyGpuMemoryBuffer,
-                                  weak_ptr_, id, client_id));
-    return;
-  }
-  gpu_channel_manager_->DestroyGpuMemoryBuffer(id, client_id);
-}
-
-void GpuServiceImpl::CopyGpuMemoryBuffer(
-    gfx::GpuMemoryBufferHandle buffer_handle,
-    base::UnsafeSharedMemoryRegion shared_memory,
-    CopyGpuMemoryBufferCallback callback) {
-  DCHECK(io_runner_->BelongsToCurrentThread());
-  std::move(callback).Run(
-      gpu_memory_buffer_factory_->FillSharedMemoryRegionWithBufferContents(
-          std::move(buffer_handle), std::move(shared_memory)));
-}
-
 void GpuServiceImpl::GetVideoMemoryUsageStats(
     GetVideoMemoryUsageStatsCallback callback) {
   if (io_runner_->BelongsToCurrentThread()) {
@@ -1549,6 +1494,7 @@ bool GpuServiceImpl::OnBeginFrameDerivedImpl(const BeginFrameArgs& args) {
 
 #if BUILDFLAG(IS_LINUX)
 bool GpuServiceImpl::IsGMBNV12Supported() {
+  CHECK(main_runner_->BelongsToCurrentThread());
   auto buffer_format = gfx::BufferFormat::YUV_420_BIPLANAR;
   auto buffer_usage = gfx::BufferUsage::GPU_READ_CPU_READ_WRITE;
 
@@ -1567,7 +1513,7 @@ bool GpuServiceImpl::IsGMBNV12Supported() {
       client_id, gpu::kNullSurfaceHandle);
 
   // Destroy the gmb_handle since it will be no longer needed.
-  DestroyGpuMemoryBuffer(gmb_id, client_id);
+  gpu_channel_manager_->DestroyGpuMemoryBuffer(gmb_id, client_id);
   return !gmb_handle.is_null();
 }
 #endif
