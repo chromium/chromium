@@ -36,8 +36,6 @@ using ::testing::WithArgs;
 
 namespace {
 
-using ::testing::_;
-
 constexpr char kFooURL[] = "https://foo.com";
 constexpr char kBarURL[] = "https://bar.com";
 constexpr char kBazURL[] = "https://baz.com";
@@ -74,8 +72,8 @@ class ContextualCueingServiceTest : public testing::Test {
 
   ContextualCueingService* service() { return service_.get(); }
 
-  MockOptimizationGuideKeyedService* mock_optimization_guide_keyed_service() {
-    return mock_optimization_guide_keyed_service_.get();
+  MockOptimizationGuideKeyedService& mock_optimization_guide_keyed_service() {
+    return *mock_optimization_guide_keyed_service_;
   }
 
   void FastForwardBy(base::TimeDelta time_delta) {
@@ -178,7 +176,7 @@ TEST_F(ContextualCueingServiceTest, NudgeBlockedByCooldownTime) {
 }
 
 TEST_F(ContextualCueingServiceTest, DoesNotRegisterOptimizationType) {
-  EXPECT_CALL(*mock_optimization_guide_keyed_service(),
+  EXPECT_CALL(mock_optimization_guide_keyed_service(),
               RegisterOptimizationTypes(ElementsAre(
                   optimization_guide::proto::GLIC_ZERO_STATE_SUGGESTIONS)))
       .Times(0);
@@ -394,6 +392,20 @@ class ContextualCueingServiceTestZeroStateSuggestions : public testing::Test {
                   return std::make_unique<MockOptimizationGuideKeyedService>();
                 })));
 
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        optimization_guide::switches::
+            kDisableCheckingUserPermissionsForTesting);
+    ON_CALL(mock_optimization_guide_keyed_service(),
+            CanApplyOptimization(
+                _, optimization_guide::proto::GLIC_ZERO_STATE_SUGGESTIONS,
+                An<optimization_guide::OptimizationGuideDecisionCallback>()))
+        .WillByDefault(WithArgs<2>(
+            [](optimization_guide::OptimizationGuideDecisionCallback callback) {
+              std::move(callback).Run(
+                  optimization_guide::OptimizationGuideDecision::kFalse,
+                  optimization_guide::OptimizationMetadata());
+            }));
+
     loading_predictor_ =
         std::make_unique<testing::NiceMock<MockLoadingPredictor>>(&profile_);
 
@@ -421,8 +433,8 @@ class ContextualCueingServiceTestZeroStateSuggestions : public testing::Test {
 
   MockLoadingPredictor* loading_predictor() { return loading_predictor_.get(); }
 
-  MockOptimizationGuideKeyedService* mock_optimization_guide_keyed_service() {
-    return mock_optimization_guide_keyed_service_;
+  MockOptimizationGuideKeyedService& mock_optimization_guide_keyed_service() {
+    return *mock_optimization_guide_keyed_service_;
   }
 
   content::WebContents* web_contents() { return web_contents_.get(); }
@@ -463,7 +475,7 @@ TEST_F(ContextualCueingServiceTestZeroStateSuggestions,
        InitializesPageDataWithContextEnabled) {
   base::HistogramTester histogram_tester;
   SetGlicTabContextEnabled(true);
-  EXPECT_CALL(*mock_optimization_guide_keyed_service(),
+  EXPECT_CALL(mock_optimization_guide_keyed_service(),
               RegisterOptimizationTypes(ElementsAre(
                   optimization_guide::proto::GLIC_ZERO_STATE_SUGGESTIONS)))
       .Times(1);

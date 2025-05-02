@@ -399,6 +399,7 @@ IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsPageDataBrowserTest,
   base::HistogramTester histogram_tester;
 
   DisableOptimizationPermissionCheck();
+  SetUpHintsNoResult();
   EXPECT_CALL(mock_optimization_guide_keyed_service(), ExecuteModel).Times(0);
 
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -453,6 +454,7 @@ IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsPageDataBrowserTest,
   EXPECT_CALL(mock_optimization_guide_keyed_service(),
               CanApplyOptimizationOnDemand)
       .Times(0);
+  EXPECT_CALL(mock_optimization_guide_keyed_service(), ExecuteModel).Times(0);
 
   ASSERT_TRUE(embedded_test_server()->Start());
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
@@ -549,6 +551,7 @@ IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsPageDataBrowserTest, CacheBehavior) {
 
 IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsPageDataBrowserTest,
                        CacheBehaviorNonTransientError) {
+  DisableOptimizationPermissionCheck();
   ASSERT_TRUE(embedded_test_server()->Start());
 
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
@@ -559,6 +562,7 @@ IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsPageDataBrowserTest,
   // Set up initial flow.
   {
     base::HistogramTester histogram_tester;
+    SetUpHints(/*allow_contextual=*/true, /*suggestions=*/{});
     base::test::TestFuture<std::optional<std::vector<std::string>>> future;
 
     EXPECT_CALL(mock_optimization_guide_keyed_service(),
@@ -704,7 +708,7 @@ IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsPageDataBrowserTest,
                        NonMSBBFlowContextualNotAllowed) {
   base::HistogramTester histogram_tester;
 
-  SetUpEmptyModelExecutionResult();
+  EXPECT_CALL(mock_optimization_guide_keyed_service(), ExecuteModel).Times(0);
   SetUpOnDemandHints(/*allow_contextual=*/false, /*suggestions=*/{});
 
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -717,38 +721,6 @@ IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsPageDataBrowserTest,
 
   auto* page_data = ZeroStateSuggestionsPageData::GetOrCreateForPage(
       web_contents->GetPrimaryPage());
-  page_data->FetchSuggestions(/*is_fre=*/false, future.GetCallback());
-  ASSERT_TRUE(future.Wait());
-  EXPECT_EQ(std::nullopt, future.Get());
-}
-
-IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsPageDataBrowserTest,
-                       OnlyRequestsHintsOnDemandAfterFetchCall) {
-  base::HistogramTester histogram_tester;
-
-  ASSERT_TRUE(embedded_test_server()->Start());
-  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(),
-      embedded_test_server()->GetURL("/optimization_guide/zss_page.html")));
-
-  // Make sure on demand fetch does not start when creating page data.
-  EXPECT_CALL(mock_optimization_guide_keyed_service(),
-              CanApplyOptimizationOnDemand)
-      .Times(0);
-  auto* page_data = ZeroStateSuggestionsPageData::GetOrCreateForPage(
-      web_contents->GetPrimaryPage());
-  optimization_guide::RetryForHistogramUntilCountReached(
-      &histogram_tester,
-      "ContextualCueing.ZeroStateSuggestions.ContextExtractionDone", 1);
-
-  testing::Mock::VerifyAndClearExpectations(
-      &mock_optimization_guide_keyed_service());
-
-  // Make sure on demand fetch starts after FetchSuggestions is invoked.
-  SetUpEmptyModelExecutionResult();
-  base::test::TestFuture<std::optional<std::vector<std::string>>> future;
-  SetUpOnDemandHints(/*allow_contextual=*/false, /*suggestions=*/{});
   page_data->FetchSuggestions(/*is_fre=*/false, future.GetCallback());
   ASSERT_TRUE(future.Wait());
   EXPECT_EQ(std::nullopt, future.Get());
