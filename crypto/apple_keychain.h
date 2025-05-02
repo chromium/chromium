@@ -77,6 +77,9 @@ class CRYPTO_EXPORT ScopedKeychainUserInteractionAllowed {
   ~ScopedKeychainUserInteractionAllowed();
 
  private:
+  // The previous value of whether user interaction was allowed, for
+  // restoration. If this is nullopt, this scoper did not succeed in its
+  // constructor, so it must not attempt to restore the value.
   std::optional<Boolean> was_allowed_;
 };
 
