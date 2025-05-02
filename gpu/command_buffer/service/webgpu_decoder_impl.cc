@@ -478,8 +478,8 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
       // Include list of formats this is tested to work with.
       // See gpu/command_buffer/tests/webgpu_mailbox_unittest.cc
       if (format != viz::SinglePlaneFormat::kBGRA_8888 &&
-// TODO(crbug.com/40823053): Support "rgba8unorm" canvas context format on Mac
-#if !BUILDFLAG(IS_MAC)
+// TODO(crbug.com/40823053): Support "rgba8unorm" canvas context format on Apple
+#if !BUILDFLAG(IS_APPLE)
           format != viz::SinglePlaneFormat::kRGBA_8888 &&
 #endif
           format != viz::SinglePlaneFormat::kRGBA_F16) {
@@ -1785,7 +1785,7 @@ wgpu::Adapter WebGPUDecoderImpl::CreatePreferredAdapter(
     case WebGPUAdapterName::kDefault: {
 #if BUILDFLAG(IS_WIN)
       backend_types = {wgpu::BackendType::D3D12};
-#elif BUILDFLAG(IS_MAC)
+#elif BUILDFLAG(IS_APPLE)
       backend_types = {wgpu::BackendType::Metal};
 #elif BUILDFLAG(IS_LINUX)
       if (shared_context_state_->GrContextIsVulkan() ||
