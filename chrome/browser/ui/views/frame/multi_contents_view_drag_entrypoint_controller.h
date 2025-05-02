@@ -12,10 +12,6 @@ namespace content {
 struct DropData;
 }  // namespace content
 
-// TODO(crbug.com/394369035): The drop target view will eventually have its
-// own class. Move this declaration into the class once ready.
-DECLARE_ELEMENT_IDENTIFIER_VALUE(kMultiContentsViewDropTargetElementId);
-
 // `MultiContentsViewDragEntrypointController` is responsible for handling
 // the drag-entrypoint of a single `MultiContentsView`. This includes dragging
 // links,  bookmarks, or tab headers to create a split view.
@@ -24,7 +20,7 @@ DECLARE_ELEMENT_IDENTIFIER_VALUE(kMultiContentsViewDropTargetElementId);
 class MultiContentsViewDragEntrypointController final {
  public:
   explicit MultiContentsViewDragEntrypointController(
-      views::View& multi_contents_view);
+      views::View& drop_target_view);
   ~MultiContentsViewDragEntrypointController() = default;
   MultiContentsViewDragEntrypointController(
       const MultiContentsViewDragEntrypointController&) = delete;
@@ -37,8 +33,6 @@ class MultiContentsViewDragEntrypointController final {
                                const gfx::PointF& point);
 
  private:
-  const raw_ref<views::View> multi_contents_view_;
-
   // The view that is displayed when drags hover over the "drop" region of
   // the content area.
   const raw_ref<views::View> drop_target_view_;
