@@ -2608,10 +2608,26 @@ public class StripLayoutHelper
     }
 
     /**
-     * Closes the given {@link StripLayoutTab}.
+     * Closes the given {@link StripLayoutTab} with animation.
+     *
+     * <p>Sequence of events:
+     *
+     * <ol>
+     *   <li>Finish ongoing tab removal animation if there is any. This is done by {@link
+     *       #finishAnimationsAndCloseDyingTabs(boolean)}.
+     *   <li>Mark the given tab as "dying".
+     *   <li>Start the tab removal animation for the given tab.
+     *   <li>When the animation ends, remove the tab from {@link TabModel}. This is also done by
+     *       {@link #finishAnimationsAndCloseDyingTabs(boolean)}. We intentionally delay removing
+     *       the tab until the animation ends, since when the tab is removed from {@link TabModel},
+     *       we'll also remove the corresponding {@link StripLayoutTab} from {@link #mStripTabs}. If
+     *       we don't delay the tab removal, we won't be able to animate the matching tab container
+     *       translating off of the strip.
+     * </ol>
      *
      * @param tab the {@link StripLayoutTab} to close.
      * @param allowUndo whether to allow undo of tab closure, such as showing the "undo" snackbar.
+     * @see #finishAnimationsAndCloseDyingTabs(boolean)
      */
     private void handleCloseTab(StripLayoutTab tab, boolean allowUndo) {
         mMultiStepTabCloseAnimRunning = false;
@@ -2837,6 +2853,24 @@ public class StripLayoutHelper
         mTabCreator.launchNtp();
     }
 
+    /**
+     * Closes the given {@link StripLayoutTab}.
+     *
+     * <p>Sequence of events:
+     *
+     * <ol>
+     *   <li>Call {@code TabRemover#prepareCloseTabs()}. We don't call {@code
+     *       TabRemover#forceCloseTabs()} since the {@link TabModel} or other systems might do some
+     *       "pre-work", such as showing the "delete group confirmation dialog" if the last tab in a
+     *       group is being closed.
+     *   <li>Call {@link #handleCloseTab(StripLayoutTab, boolean)} to start the tab removal
+     *       animation and remove the tab when the animation ends.
+     * </ol>
+     *
+     * @param tab the {@link StripLayoutTab} to close.
+     * @param time the time of the click action.
+     * @see #handleCloseTab(StripLayoutTab, boolean)
+     */
     @VisibleForTesting
     void handleCloseButtonClick(final StripLayoutTab tab, long time) {
         // Placeholder tabs are expected to have invalid tab ids.
@@ -2986,10 +3020,16 @@ public class StripLayoutHelper
 
         if (tabsToRemove.isEmpty()) return;
 
-        // 3. Pass the close notifications to TabModel if the tab isn't already closing.
-        //    Do this as a PostTask to avoid a ConcurrentModificationException if more tabs are
-        //    added inside TabModel#commitAllTabClosures().
-        for (StripLayoutTab tab : tabsToRemove) tab.setIsClosed(true);
+        // 3. Mark all StripLayoutTabs to remove as "closed".
+        for (StripLayoutTab tab : tabsToRemove) {
+            tab.setIsClosed(true);
+        }
+
+        // 4. Remove tabs from the TabModel.
+        //    Between when the close button was clicked and when the tab removal animation ended,
+        //    the tab may have already been removed from the TabModel.
+        //    So we call TabRemover#forceCloseTabs() in an async task to avoid
+        //    ConcurrentModificationException.
         PostTask.postTask(
                 TaskTraits.UI_DEFAULT,
                 () -> {
