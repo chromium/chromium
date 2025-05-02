@@ -4,11 +4,15 @@
 
 #include "base/environment.h"
 
-#include <array>
+#include <memory>
+#include <optional>
+#include <string>
 #include <string_view>
 #include <utility>
 
+#include "base/containers/heap_array.h"
 #include "base/memory/ptr_util.h"
+#include "base/strings/cstring_view.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 
@@ -61,16 +65,14 @@ class EnvironmentImpl : public Environment {
   std::optional<std::string> GetVarImpl(cstring_view variable_name) {
 #if BUILDFLAG(IS_WIN)
     std::wstring wide_name = UTF8ToWide(variable_name);
-    // Documented to be the maximum environment variable size.
-    std::array<wchar_t, 32767> value;
-    DWORD value_length =
-        ::GetEnvironmentVariable(wide_name.c_str(), value.data(), value.size());
-    if (value_length == 0) {
-      return std::nullopt;
+    // Documented to be the maximum environment variable size in characters.
+    static constexpr size_t kMaxLength = 32767;
+    auto value = base::HeapArray<wchar_t>::Uninit(kMaxLength);
+    const DWORD value_length =
+        ::GetEnvironmentVariable(wide_name.c_str(), value.data(), kMaxLength);
+    if (value_length == 0 || value_length >= kMaxLength) {
+      return std::nullopt;  // Ignore errors and excessively large values.
     }
-
-    CHECK_LE(value_length, value.size() - 1)
-        << "value should fit in the buffer (including the null terminator)";
     return WideToUTF8(std::wstring_view(value.data(), value_length));
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
     const char* env_value = getenv(variable_name.c_str());
