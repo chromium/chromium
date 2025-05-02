@@ -67,9 +67,14 @@ bool SetupBackgroundTracingFromProtoConfigFile(
     } else {
       config = tracing::ParseEncodedTracingScenariosConfig(config_text);
     }
-  }
-  if (!config) {
+  } else {
     LOG(ERROR) << "Failed to read field tracing config file "
+               << config_file.value() << ".";
+    return false;
+  }
+
+  if (!config) {
+    LOG(ERROR) << "Failed to parse field tracing config file "
                << config_file.value() << "."
                << "Make sure to provide a proto (.pb) or base64 encoded (.txt)"
                << " file that contains scenarios config.";

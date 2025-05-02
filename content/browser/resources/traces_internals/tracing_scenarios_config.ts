@@ -198,7 +198,7 @@ export class TracingScenariosConfigElement extends CrLitElement {
     const handler = this.traceReportProxy_.handler;
 
     if (isTextFile) {
-      const text = (await file.text()).replace('\n', '');
+      const text = await file.text();
       return handler.setScenariosConfigFromString(text);
     } else {
       const bytes = await file.arrayBuffer();
