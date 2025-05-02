@@ -663,23 +663,19 @@ void DocumentSpeculationRules::UpdateSpeculationCandidates() {
               action == mojom::blink::SpeculationAction::kPrefetch);
 
         Vector<WTF::String> tags;
-        if (RuntimeEnabledFeatures::SpeculationRulesTagEnabled(
-                document.domWindow())) {
-          if (rule->rule_tag()) {
-            tags.push_back(rule->rule_tag());
-          }
-          if (rule->ruleset_tag()) {
-            tags.push_back(rule->ruleset_tag());
-          }
-
-          // Put the default value.
-          if (tags.empty()) {
-            tags.push_back(g_null_atom);
-          } else {
-            // Record that the valid tag is specified by the page.
-            UseCounter::Count(GetSupplementable(),
-                              WebFeature::kSpeculationRulesTags);
-          }
+        if (rule->rule_tag()) {
+          tags.push_back(rule->rule_tag());
+        }
+        if (rule->ruleset_tag()) {
+          tags.push_back(rule->ruleset_tag());
+        }
+        // Put the default value.
+        if (tags.empty()) {
+          tags.push_back(g_null_atom);
+        } else {
+          // Record that the valid tag is specified by the page.
+          UseCounter::Count(GetSupplementable(),
+                            WebFeature::kSpeculationRulesTags);
         }
 
         candidates.push_back(MakeGarbageCollected<SpeculationCandidate>(

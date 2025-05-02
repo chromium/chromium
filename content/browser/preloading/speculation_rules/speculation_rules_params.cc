@@ -12,7 +12,7 @@ SpeculationRulesParams::~SpeculationRulesParams() = default;
 SpeculationRulesParams::SpeculationRulesParams(
     blink::mojom::SpeculationTargetHint target_hint,
     blink::mojom::SpeculationEagerness eagerness,
-    std::optional<SpeculationRulesTags> tags)
+    SpeculationRulesTags tags)
     : target_hint(target_hint), eagerness(eagerness), tags(std::move(tags)) {}
 
 SpeculationRulesParams::SpeculationRulesParams(const SpeculationRulesParams&) =

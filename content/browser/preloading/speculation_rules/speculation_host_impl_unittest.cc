@@ -77,6 +77,7 @@ class SpeculationHostImplTest : public RenderViewHostImplTestHarness {
     candidate->action = blink::mojom::SpeculationAction::kPrerender;
     candidate->url = url;
     candidate->referrer = blink::mojom::Referrer::New();
+    candidate->tags = {std::nullopt};
     return candidate;
   }
 
@@ -230,6 +231,35 @@ TEST_F(SpeculationHostImplTest,
   remote.FlushForTesting();
   EXPECT_EQ("SH_INVALID_REQUIRES_ANONYMOUS_CLIENT_IP_WHEN_CROSS_ORIGIN",
             bad_message_error);
+}
+
+// Tests that SpeculationHostImpl crashes the renderer process if it receives
+// candidates whose speculation rules tags are empty.
+TEST_F(SpeculationHostImplTest, ReportEmptySpeculationRulesTags) {
+  RenderFrameHostImpl* render_frame_host = GetRenderFrameHost();
+  mojo::Remote<blink::mojom::SpeculationHost> remote;
+  SpeculationHostImpl::Bind(render_frame_host,
+                            remote.BindNewPipeAndPassReceiver());
+
+  // Set up the error handler for bad mojo messages.
+  std::string bad_message_error;
+  mojo::SetDefaultProcessErrorHandler(
+      base::BindLambdaForTesting([&](const std::string& error) {
+        EXPECT_FALSE(error.empty());
+        EXPECT_TRUE(bad_message_error.empty());
+        bad_message_error = error;
+      }));
+
+  auto candidate =
+      CreatePrerenderCandidate(GetSameOriginUrl("/same-origin.html"));
+  candidate->tags = {};
+
+  std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
+  candidates.push_back(std::move(candidate));
+
+  remote->UpdateSpeculationCandidates(std::move(candidates));
+  remote.FlushForTesting();
+  EXPECT_EQ("SH_EMPTY_TAGS", bad_message_error);
 }
 
 class TestSpeculationHostDelegate : public SpeculationHostDelegate {

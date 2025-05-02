@@ -12488,20 +12488,9 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, VerifyPrerenderProcessVisibility) {
             base::Process::Priority::kBestEffort);
 }
 
-class PrerenderRequestHeadersBrowserTest
-    : public PrerenderBrowserTest,
-      public testing::WithParamInterface<bool> {
+class PrerenderRequestHeadersBrowserTest : public PrerenderBrowserTest {
  public:
-  PrerenderRequestHeadersBrowserTest() {
-    if (IsSpeculationRulesTagsEnabled()) {
-      // Explicitly enables blink::features::kSpeculationRulesTag to enable
-      // SpeculationRulesTag.
-      feature_list_.InitAndEnableFeature(blink::features::kSpeculationRulesTag);
-    } else {
-      feature_list_.InitAndDisableFeature(
-          blink::features::kSpeculationRulesTag);
-    }
-  }
+  PrerenderRequestHeadersBrowserTest() = default;
   ~PrerenderRequestHeadersBrowserTest() override = default;
 
   void SetUp() override {
@@ -12548,8 +12537,6 @@ class PrerenderRequestHeadersBrowserTest
     return true;
   }
 
-  bool IsSpeculationRulesTagsEnabled() const { return GetParam(); }
-
   bool HasSecSpeculationTagsHeader(const GURL& url) {
     net::test_server::HttpRequest::HeaderMap headers = GetRequestHeaders(url);
     return headers.contains(blink::kSecSpeculationTagsHeaderName);
@@ -12560,22 +12547,12 @@ class PrerenderRequestHeadersBrowserTest
     EXPECT_TRUE(headers.contains(blink::kSecSpeculationTagsHeaderName));
     return headers[blink::kSecSpeculationTagsHeaderName];
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         PrerenderRequestHeadersBrowserTest,
-                         testing::Bool(),
-                         [](const testing::TestParamInfo<bool>& info) {
-                           return info.param ? "TagsEnabled" : "TagsDisabled";
-                         });
 
 // Tests that a request for the initial prerender navigation has the
 // Purpose, Sec-Purpose, and Sec-Speculation-Tags headers.
 // TODO(nhiroki): Move this test to WPT.
-IN_PROC_BROWSER_TEST_P(PrerenderRequestHeadersBrowserTest, InitialNavigation) {
+IN_PROC_BROWSER_TEST_F(PrerenderRequestHeadersBrowserTest, InitialNavigation) {
   // Navigate to an initial page.
   ASSERT_TRUE(NavigateToURL(shell(), GetUrl("/empty.html")));
 
@@ -12585,17 +12562,13 @@ IN_PROC_BROWSER_TEST_P(PrerenderRequestHeadersBrowserTest, InitialNavigation) {
 
   // The prerender request should have the headers.
   EXPECT_TRUE(TestPurposePrefetchHeader(kPrerenderingUrl));
-  if (IsSpeculationRulesTagsEnabled()) {
-    EXPECT_TRUE(HasSecSpeculationTagsHeader(kPrerenderingUrl));
-    EXPECT_EQ(GetSecSpeculationTagsHeader(kPrerenderingUrl), "null");
-  } else {
-    EXPECT_FALSE(HasSecSpeculationTagsHeader(kPrerenderingUrl));
-  }
+  EXPECT_TRUE(HasSecSpeculationTagsHeader(kPrerenderingUrl));
+  EXPECT_EQ(GetSecSpeculationTagsHeader(kPrerenderingUrl), "null");
 }
 
 // Tests that a request for the initial prerender navigation has the
 // Purpose and Sec-Purpose headers, but not the Sec-Speculation-Tags header.
-IN_PROC_BROWSER_TEST_P(PrerenderRequestHeadersBrowserTest,
+IN_PROC_BROWSER_TEST_F(PrerenderRequestHeadersBrowserTest,
                        InitialNavigation_Embedder) {
   // Navigate to an initial page.
   ASSERT_TRUE(NavigateToURL(shell(), GetUrl("/empty.html")));
@@ -12615,7 +12588,7 @@ IN_PROC_BROWSER_TEST_P(PrerenderRequestHeadersBrowserTest,
 // Tests that a redirected request for the initial prerender navigation has the
 // Purpose, Sec-Purpose, and Sec-Speculation-Tags headers.
 // TODO(nhiroki): Move this test to WPT.
-IN_PROC_BROWSER_TEST_P(PrerenderRequestHeadersBrowserTest,
+IN_PROC_BROWSER_TEST_F(PrerenderRequestHeadersBrowserTest,
                        RedirectionOnInitialNavigation) {
   // Navigate to an initial page.
   ASSERT_TRUE(NavigateToURL(shell(), GetUrl("/empty.html")));
@@ -12634,25 +12607,17 @@ IN_PROC_BROWSER_TEST_P(PrerenderRequestHeadersBrowserTest,
   // Both the initial request and the redirected request should have the
   // headers.
   EXPECT_TRUE(TestPurposePrefetchHeader(kPrerenderingUrl));
-  if (IsSpeculationRulesTagsEnabled()) {
-    EXPECT_TRUE(HasSecSpeculationTagsHeader(kPrerenderingUrl));
-    EXPECT_EQ(GetSecSpeculationTagsHeader(kPrerenderingUrl), "null");
-  } else {
-    EXPECT_FALSE(HasSecSpeculationTagsHeader(kPrerenderingUrl));
-  }
+  EXPECT_TRUE(HasSecSpeculationTagsHeader(kPrerenderingUrl));
+  EXPECT_EQ(GetSecSpeculationTagsHeader(kPrerenderingUrl), "null");
   EXPECT_TRUE(TestPurposePrefetchHeader(kRedirectedUrl));
-  if (IsSpeculationRulesTagsEnabled()) {
-    EXPECT_TRUE(HasSecSpeculationTagsHeader(kRedirectedUrl));
-    EXPECT_EQ(GetSecSpeculationTagsHeader(kRedirectedUrl), "null");
-  } else {
-    EXPECT_FALSE(HasSecSpeculationTagsHeader(kRedirectedUrl));
-  }
+  EXPECT_TRUE(HasSecSpeculationTagsHeader(kRedirectedUrl));
+  EXPECT_EQ(GetSecSpeculationTagsHeader(kRedirectedUrl), "null");
 }
 
 // Tests that requests from a prerendered page have the Purpose and
 // Sec-Purpose headers, but not the Sec-Speculation-Tags header.
 // TODO(nhiroki): Move this test to WPT.
-IN_PROC_BROWSER_TEST_P(PrerenderRequestHeadersBrowserTest, ResourceRequests) {
+IN_PROC_BROWSER_TEST_F(PrerenderRequestHeadersBrowserTest, ResourceRequests) {
   // Navigate to an initial page.
   ASSERT_TRUE(NavigateToURL(shell(), GetUrl("/empty.html")));
 
@@ -12665,12 +12630,8 @@ IN_PROC_BROWSER_TEST_P(PrerenderRequestHeadersBrowserTest, ResourceRequests) {
 
   // The prerender request should have the "Purpose: prefetch" header.
   TestPurposePrefetchHeader(kPrerenderingUrl);
-  if (IsSpeculationRulesTagsEnabled()) {
-    EXPECT_TRUE(HasSecSpeculationTagsHeader(kPrerenderingUrl));
-    EXPECT_EQ(GetSecSpeculationTagsHeader(kPrerenderingUrl), "null");
-  } else {
-    EXPECT_FALSE(HasSecSpeculationTagsHeader(kPrerenderingUrl));
-  }
+  EXPECT_TRUE(HasSecSpeculationTagsHeader(kPrerenderingUrl));
+  EXPECT_EQ(GetSecSpeculationTagsHeader(kPrerenderingUrl), "null");
 
   // Issue iframe and subresource requests in the prerendered page.
   EXPECT_TRUE(ExecJs(prerender_main_frame.get(), "run('before');",
@@ -12735,7 +12696,7 @@ IN_PROC_BROWSER_TEST_P(PrerenderRequestHeadersBrowserTest, ResourceRequests) {
 
 // Tests that a request for main frame navigation in a prerendered page has the
 // Purpose and Sec-Purpose headers, but not the Sec-Speculation-Tags header.
-IN_PROC_BROWSER_TEST_P(PrerenderRequestHeadersBrowserTest,
+IN_PROC_BROWSER_TEST_F(PrerenderRequestHeadersBrowserTest,
                        MainFrameNavigation) {
   // Navigate to an initial page.
   ASSERT_TRUE(NavigateToURL(shell(), GetUrl("/empty.html")));
@@ -12747,12 +12708,8 @@ IN_PROC_BROWSER_TEST_P(PrerenderRequestHeadersBrowserTest,
 
   // The prerender request should have the headers.
   EXPECT_TRUE(TestPurposePrefetchHeader(prerender_url));
-  if (IsSpeculationRulesTagsEnabled()) {
-    EXPECT_TRUE(HasSecSpeculationTagsHeader(prerender_url));
-    EXPECT_EQ(GetSecSpeculationTagsHeader(prerender_url), "null");
-  } else {
-    EXPECT_FALSE(HasSecSpeculationTagsHeader(prerender_url));
-  }
+  EXPECT_TRUE(HasSecSpeculationTagsHeader(prerender_url));
+  EXPECT_EQ(GetSecSpeculationTagsHeader(prerender_url), "null");
 
   // Navigate the main frame in the prerendered page.
   const GURL next_url = GetUrl("/empty.html?next");
@@ -12767,7 +12724,7 @@ IN_PROC_BROWSER_TEST_P(PrerenderRequestHeadersBrowserTest,
   EXPECT_FALSE(HasSecSpeculationTagsHeader(next_url));
 }
 
-IN_PROC_BROWSER_TEST_P(PrerenderRequestHeadersBrowserTest,
+IN_PROC_BROWSER_TEST_F(PrerenderRequestHeadersBrowserTest,
                        SpeculationRulesTagsMergingForEagerCandidates) {
   const GURL initial_url =
       GetUrl("/prerender/multiple_prerender_with_tags.html");
@@ -12777,15 +12734,11 @@ IN_PROC_BROWSER_TEST_P(PrerenderRequestHeadersBrowserTest,
   ASSERT_TRUE(NavigateToURL(shell(), initial_url));
   WaitForPrerenderLoadCompletion(prerender_url);
 
-  if (IsSpeculationRulesTagsEnabled()) {
-    EXPECT_TRUE(HasSecSpeculationTagsHeader(prerender_url));
-    EXPECT_EQ(GetSecSpeculationTagsHeader(prerender_url), "\"tag1\", \"tag2\"");
-  } else {
-    EXPECT_FALSE(HasSecSpeculationTagsHeader(prerender_url));
-  }
+  EXPECT_TRUE(HasSecSpeculationTagsHeader(prerender_url));
+  EXPECT_EQ(GetSecSpeculationTagsHeader(prerender_url), "\"tag1\", \"tag2\"");
 }
 
-IN_PROC_BROWSER_TEST_P(PrerenderRequestHeadersBrowserTest,
+IN_PROC_BROWSER_TEST_F(PrerenderRequestHeadersBrowserTest,
                        SpeculationRulesTagForSameSiteCrossOrigin) {
   const GURL initial_url = GetUrl("/prerender/empty.html");
   const GURL prerender_url =
@@ -12797,17 +12750,13 @@ IN_PROC_BROWSER_TEST_P(PrerenderRequestHeadersBrowserTest,
   auto* prerendered_rfh = GetPrerenderedMainFrameHost(host_id);
   EXPECT_TRUE(prerendered_rfh != nullptr);
 
-  if (IsSpeculationRulesTagsEnabled()) {
-    EXPECT_TRUE(HasSecSpeculationTagsHeader(prerender_url));
-    EXPECT_EQ(GetSecSpeculationTagsHeader(prerender_url), "\"tag1\"");
-  } else {
-    EXPECT_FALSE(HasSecSpeculationTagsHeader(prerender_url));
-  }
+  EXPECT_TRUE(HasSecSpeculationTagsHeader(prerender_url));
+  EXPECT_EQ(GetSecSpeculationTagsHeader(prerender_url), "\"tag1\"");
 }
 
 // This prefetch test is tentatively implemented here to reuse the test infra.
 // TODO(crbug.com/381687257): Move this test to prefetch browser tests.
-IN_PROC_BROWSER_TEST_P(PrerenderRequestHeadersBrowserTest, Prefetch) {
+IN_PROC_BROWSER_TEST_F(PrerenderRequestHeadersBrowserTest, Prefetch) {
   // Navigate to an initial page.
   ASSERT_TRUE(NavigateToURL(shell(), GetUrl("/empty.html")));
 
@@ -12823,16 +12772,12 @@ IN_PROC_BROWSER_TEST_P(PrerenderRequestHeadersBrowserTest, Prefetch) {
           ->GetDocumentToken(),
       prefetch_url);
 
-  if (IsSpeculationRulesTagsEnabled()) {
-    EXPECT_TRUE(HasSecSpeculationTagsHeader(prefetch_url));
-    EXPECT_EQ(GetSecSpeculationTagsHeader(prefetch_url), "null");
-  } else {
-    EXPECT_FALSE(HasSecSpeculationTagsHeader(prefetch_url));
-  }
+  EXPECT_TRUE(HasSecSpeculationTagsHeader(prefetch_url));
+  EXPECT_EQ(GetSecSpeculationTagsHeader(prefetch_url), "null");
 }
 
 // Test that there is no tags merging if both of the candidates are enacted.
-IN_PROC_BROWSER_TEST_P(PrerenderRequestHeadersBrowserTest,
+IN_PROC_BROWSER_TEST_F(PrerenderRequestHeadersBrowserTest,
                        SpeculationRulesTagsMergingForNonEagerCandidates) {
 #if !BUILDFLAG(IS_ANDROID)
   const GURL initial_url = GetUrl(
@@ -12844,13 +12789,9 @@ IN_PROC_BROWSER_TEST_P(PrerenderRequestHeadersBrowserTest,
   PointerDownToAnchor(prerender_url);
   WaitForPrerenderLoadCompletion(prerender_url);
 
-  if (IsSpeculationRulesTagsEnabled()) {
-    EXPECT_TRUE(HasSecSpeculationTagsHeader(prerender_url));
-    EXPECT_EQ(GetSecSpeculationTagsHeader(prerender_url),
-              "\"conservative\", \"moderate\"");
-  } else {
-    EXPECT_FALSE(HasSecSpeculationTagsHeader(prerender_url));
-  }
+  EXPECT_TRUE(HasSecSpeculationTagsHeader(prerender_url));
+  EXPECT_EQ(GetSecSpeculationTagsHeader(prerender_url),
+            "\"conservative\", \"moderate\"");
 #else
   // Android doesn't support pointer interaction.
   GTEST_SKIP();
@@ -12858,7 +12799,7 @@ IN_PROC_BROWSER_TEST_P(PrerenderRequestHeadersBrowserTest,
 }
 
 // Test that there is no tags merging if only one of the candidates is enacted.
-IN_PROC_BROWSER_TEST_P(PrerenderRequestHeadersBrowserTest,
+IN_PROC_BROWSER_TEST_F(PrerenderRequestHeadersBrowserTest,
                        SpeculationRulesTagsNoMergingForNonEagerCandidates) {
 #if !BUILDFLAG(IS_ANDROID)
   const GURL initial_url = GetUrl(
@@ -12870,12 +12811,8 @@ IN_PROC_BROWSER_TEST_P(PrerenderRequestHeadersBrowserTest,
   PointerHoverToAnchor(prerender_url);
   WaitForPrerenderLoadCompletion(prerender_url);
 
-  if (IsSpeculationRulesTagsEnabled()) {
-    EXPECT_TRUE(HasSecSpeculationTagsHeader(prerender_url));
-    EXPECT_EQ(GetSecSpeculationTagsHeader(prerender_url), "\"moderate\"");
-  } else {
-    EXPECT_FALSE(HasSecSpeculationTagsHeader(prerender_url));
-  }
+  EXPECT_TRUE(HasSecSpeculationTagsHeader(prerender_url));
+  EXPECT_EQ(GetSecSpeculationTagsHeader(prerender_url), "\"moderate\"");
 #else
   // Android doesn't support pointer interaction.
   GTEST_SKIP();

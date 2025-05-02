@@ -209,6 +209,7 @@ class PreloadingDeciderTest : public RenderViewHostTestHarness {
     candidate->action = action;
     candidate->eagerness = eagerness;
     candidate->referrer = blink::mojom::Referrer::New();
+    candidate->tags = {std::nullopt};
 
     return candidate;
   }

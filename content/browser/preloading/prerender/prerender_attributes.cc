@@ -93,8 +93,9 @@ PrerenderAttributes::GetEagerness() const {
 }
 
 std::optional<SpeculationRulesTags> PrerenderAttributes::GetTags() const {
-  return speculation_rules_params.has_value() ? speculation_rules_params->tags
-                                              : std::nullopt;
+  return speculation_rules_params.has_value()
+             ? std::make_optional(speculation_rules_params->tags)
+             : std::nullopt;
 }
 
 }  // namespace content
