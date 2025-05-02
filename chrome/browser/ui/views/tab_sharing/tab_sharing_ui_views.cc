@@ -76,13 +76,6 @@ using content::GlobalRenderFrameHostId;
 using content::RenderFrameHost;
 using content::WebContents;
 
-// Replace InfoBars when updating their content to avoid an animation instead of
-// removing the old InfoBar and then adding the new one, which causes an
-// animation flickering.
-BASE_FEATURE(kTabSharingBarReplace,
-             "TabSharingBarReplace",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Omit http:// and https:// url-schemes for the shared tab in the
 // TabSharingInfoBar.
 // This flag only has an effect if:
@@ -494,10 +487,6 @@ void TabSharingUIViews::CreateInfobarForWebContents(WebContents* contents) {
   if (infobars_entry != infobars_.end()) {
     old_infobar = infobars_entry->second;
     old_infobar->owner()->RemoveObserver(this);
-    if (!base::FeatureList::IsEnabled(kTabSharingBarReplace)) {
-      old_infobar->RemoveSelf();
-      old_infobar = nullptr;
-    }
   }
   auto* infobar_manager =
       infobars::ContentInfoBarManager::FromWebContents(contents);
