@@ -207,8 +207,8 @@ class TabGroupEditorBubbleView : public views::BubbleDialogDelegateView,
   const raw_ptr<const Browser> browser_;
   const tab_groups::TabGroupId group_;
 
-  // ptr access to specific children. must be cleared and reset by
-  // RebuildMenuContents
+  // Ptr access to specific children. Must be cleared and reset by
+  // RebuildMenuContents.
   raw_ptr<TitleField> title_field_ = nullptr;
   raw_ptr<ColorPickerView> color_selector_ = nullptr;
   raw_ptr<Footer> footer_ = nullptr;
@@ -216,7 +216,7 @@ class TabGroupEditorBubbleView : public views::BubbleDialogDelegateView,
   raw_ptr<views::ImageView> save_group_icon_ = nullptr;
   raw_ptr<views::Label> save_group_label_ = nullptr;
 
-  // the different menu items, used for referring back to specific children for
+  // The different menu items, used for referring back to specific children for
   // styling.
   std::vector<raw_ptr<views::LabelButton>> simple_menu_items_;
 

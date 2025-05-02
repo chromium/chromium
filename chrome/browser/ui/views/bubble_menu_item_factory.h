@@ -20,6 +20,7 @@ std::unique_ptr<HoverButton> CreateBubbleMenuItem(
     int button_id,
     const std::u16string& name,
     views::Button::PressedCallback callback,
-    const ui::ImageModel& icon = ui::ImageModel());
+    const ui::ImageModel& icon = ui::ImageModel(),
+    const std::u16string& accelerator_text = std::u16string());
 
 #endif  // CHROME_BROWSER_UI_VIEWS_BUBBLE_MENU_ITEM_FACTORY_H_
