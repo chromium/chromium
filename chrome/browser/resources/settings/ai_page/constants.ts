@@ -37,6 +37,8 @@ export enum AiEnterpriseFeaturePrefName {
       'optimization_guide.model_execution.tab_organization_enterprise_policy_allowed',
   COMPARE =
       'optimization_guide.model_execution.tab_compare_settings_enterprise_policy',
+  AUTOFILL_AI =
+      'optimization_guide.model_execution.autofill_prediction_improvements_enterprise_policy_allowed',
 }
 
 export enum AiPageActions {
