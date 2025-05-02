@@ -1792,22 +1792,13 @@
     "expires": "Jun 1, 2025"
   },
   {
-    "prefix": "fedcm-multi-idp",
-    "owners": ["npm@chromium.org", "web-identity-eng@google.com"],
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": ["external/wpt/fedcm/fedcm-multi-idp/"],
-    "exclusive_tests": "ALL",
-    "args": ["--enable-features=FedCmMultipleIdentityProviders"],
-    "expires": "May 1, 2025"
-  },
-  {
     "prefix": "fedcm-register",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/fedcm/fedcm-register/"],
     "exclusive_tests": "ALL",
-    "args": ["--enable-features=FedCmIdPregistration,FedCmMultipleIdentityProviders"],
-    "owners": ["cbiesinger@chromium.org", "goto@chromium.org"],
-    "expires": "May 1, 2025"
+    "args": ["--enable-features=FedCmIdPregistration"],
+    "owners": ["npm@chromium.org", "cbiesinger@chromium.org", "goto@chromium.org"],
+    "expires": "Aug 1, 2025"
   },
   {
     "prefix": "scoped-custom-element-registry-disabled",

@@ -917,8 +917,8 @@ virtual/direct-sockets/external/wpt/direct-sockets/udp_socket.https.html
 virtual/disable-css-line-clamp/external/wpt/css/css-overflow/line-clamp/webkit-line-clamp-024.html
 virtual/disable-css-line-clamp/external/wpt/css/css-overflow/line-clamp/webkit-line-clamp-025.html
 virtual/disable-css-line-clamp/external/wpt/css/css-overflow/line-clamp/webkit-line-clamp-036.html
-virtual/fedcm-multi-idp/external/wpt/fedcm/fedcm-multi-idp/fedcm-multi-idp-mediation-optional.https.html
-virtual/fedcm-multi-idp/external/wpt/fedcm/fedcm-multi-idp/fedcm-multi-idp-mediation-silent.https.html
+external/wpt/fedcm/fedcm-multi-idp/fedcm-multi-idp-mediation-optional.https.html
+external/wpt/fedcm/fedcm-multi-idp/fedcm-multi-idp-mediation-silent.https.html
 virtual/fedcm-register/external/wpt/fedcm/fedcm-register/fedcm-no-registered-idps.https.html
 virtual/fenced-frame-mparch/external/wpt/fenced-frame/history-length-fenced-navigations-replace-do-not-contribute-to-joint.https.html
 virtual/fenced-frame-mparch/external/wpt/fenced-frame/history-length-outer-page-navigation-not-reflected-in-fenced.https.html

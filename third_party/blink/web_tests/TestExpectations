@@ -7048,10 +7048,6 @@ crbug.com/1480054 [ Win ] external/wpt/fedcm/fedcm-loginhint.https.html [ Pass T
 
 crbug.com/328129675 external/wpt/fedcm/fedcm-button-and-other-account/fedcm-button-mode-priority.tentative.https.html [ Pass Timeout ]
 
-# We skip these tests in the base test suite in NeverFixTests, but we do want
-# to run them in the virtual test suite.
-crbug.com/1373766 virtual/fedcm-multi-idp/external/wpt/fedcm/fedcm-multi-idp/* [ Pass ]
-
 # WebAssembly ESM integration is not yet implemented.
 crbug.com/40575658 external/wpt/wasm/webapi/esm-integration/exported-names.tentative.html [ Timeout ]
 crbug.com/40575658 external/wpt/wasm/webapi/esm-integration/js-wasm-cycle.tentative.html [ Timeout ]
@@ -8996,8 +8992,8 @@ crbug.com/384549646 virtual/threaded/external/wpt/css/css-view-transitions/navig
 # Gardener 2024-12-18
 crbug.com/352331034 [ Debug Linux ] external/wpt/html/semantics/embedded-content/the-object-element/object-svg-only-for-print.html [ Failure Pass ]
 crbug.com/384904807 [ Mac ] http/tests/inspector-protocol/tracing/image-decoding.js [ Failure Pass Timeout ]
-crbug.com/384863732 virtual/fedcm-multi-idp/external/wpt/fedcm/fedcm-multi-idp/fedcm-multi-idp-mediation-silent.https.html [ Timeout ]
-crbug.com/384863733 virtual/fedcm-multi-idp/external/wpt/fedcm/fedcm-multi-idp/fedcm-multi-idp-mediation-optional.https.html [ Timeout ]
+crbug.com/384863732 external/wpt/fedcm/fedcm-multi-idp/fedcm-multi-idp-mediation-silent.https.html [ Timeout ]
+crbug.com/384863733 external/wpt/fedcm/fedcm-multi-idp/fedcm-multi-idp-mediation-optional.https.html [ Timeout ]
 
 crbug.com/366530634 external/wpt/storage-access-api/storage-access-headers.tentative.https.sub.window.html [ Failure Timeout ]
 crbug.com/366530634 external/wpt/storage-access-api/storage-access-permission.sub.https.window.html [ Timeout ]
