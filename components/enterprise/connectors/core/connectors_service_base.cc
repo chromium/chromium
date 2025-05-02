@@ -55,6 +55,16 @@ ConnectorsServiceBase::GetAppliedRealTimeUrlCheck() const {
       GetPrefs()->GetInteger(kEnterpriseRealTimeUrlCheckMode));
 }
 
+std::optional<policy::PolicyScope>
+ConnectorsServiceBase::GetRealtimeUrlCheckScope() const {
+  std::optional<policy::PolicyScope> policy_scope = std::nullopt;
+  if (std::optional<DmToken> dm_token =
+          GetDmToken(kEnterpriseRealTimeUrlCheckScope)) {
+    policy_scope = dm_token.value().scope;
+  }
+  return policy_scope;
+}
+
 std::vector<std::string>
 ConnectorsServiceBase::GetReportingServiceProviderNames() {
   if (!ConnectorsEnabled()) {
