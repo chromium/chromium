@@ -184,4 +184,33 @@
     runTest(configuration);
 }
 
+function testVideoConfigWithKeySystem(
+  keySystem,
+  queryType,
+  contentType) {
+    // Clear previous test result from title.
+    document.title = '';
+
+    log("Testing video content type: " + contentType +
+        ", key system: " + keySystem);
+
+    const configuration = {
+        type: queryType,
+        video: {
+            contentType: contentType,
+
+            // Any reasonable value will do.
+            width: 1920,
+            height: 1080,
+            bitrate: 3382000,
+            framerate: 24
+        },
+        keySystemConfiguration: {
+            keySystem: keySystem
+        },
+    };
+
+    runTest(configuration);
+}
+
 </script>

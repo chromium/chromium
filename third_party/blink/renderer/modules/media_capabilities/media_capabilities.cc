@@ -768,6 +768,13 @@ bool ParseContentType(const String& content_type,
   return true;
 }
 
+#if BUILDFLAG(ENABLE_PLATFORM_ENCRYPTED_DOLBY_VISION)
+bool IsDolbyVisionVideoCodec(const String& video_codec_str) {
+  return video_codec_str.StartsWith("dvh1.", WTF::kTextCaseSensitive) ||
+         video_codec_str.StartsWith("dvhe.", WTF::kTextCaseSensitive);
+}
+#endif  // BUILDFLAG(ENABLE_PLATFORM_ENCRYPTED_DOLBY_VISION)
+
 }  // anonymous namespace
 
 const char MediaCapabilities::kLearningBadWindowThresholdParamName[] =
@@ -1010,9 +1017,21 @@ ScriptPromise<MediaCapabilitiesDecodingInfo> MediaCapabilities::decodingInfo(
   DCHECK(message.empty());
   DCHECK(config->hasVideo());
 
+  const bool is_video_config_supported = IsVideoConfigurationSupported(
+      video_mime_str, video_codec_str, video_color_space, hdr_metadata_type);
+
+#if BUILDFLAG(ENABLE_PLATFORM_ENCRYPTED_DOLBY_VISION)
+  // Defer support check to EME for DV instead of asking from
+  // SupplementalProfileCache.
+  const bool should_defer_support_check_to_eme =
+      IsDolbyVisionVideoCodec(video_codec_str) &&
+      config->hasKeySystemConfiguration();
+#else
+  const bool should_defer_support_check_to_eme = false;
+#endif  // BUILDFLAG(ENABLE_PLATFORM_ENCRYPTED_DOLBY_VISION)
+
   // Return early for unsupported configurations.
-  if (!IsVideoConfigurationSupported(video_mime_str, video_codec_str,
-                                     video_color_space, hdr_metadata_type)) {
+  if (!is_video_config_supported && !should_defer_support_check_to_eme) {
     return CreateResolvedPromiseToDecodingInfoWith(false, script_state, config);
   }
 
