@@ -59,6 +59,18 @@ base::TimeDelta GetDefaultAgeLimit(URLVisitAggregate::URLType url_type) {
   }
 }
 
+// Get the default visit duration limit for the `url_type`.
+std::optional<base::TimeDelta> GetDefaultVisitDurationLimit(
+    URLVisitAggregate::URLType url_type) {
+  switch (url_type) {
+    case URLVisitAggregate::URLType::kCCTVisit:
+      return base::Seconds(
+          chrome::android::kAppIntegrationCCTVisitDurationLimitSecParam.Get());
+    default:
+      return std::nullopt;
+  }
+}
+
 // Returns the maximum count of entries to donate.
 int GetMaxDonationCount() {
   return chrome::android::kAppIntegrationMaxDonationCountParam.Get();
@@ -101,7 +113,8 @@ FetchOptions CreateFetchOptionsForTabDonation(
       result_map;
   for (URLVisitAggregate::URLType type : result_sources) {
     result_map[type] = visited_url_ranking::FetchOptions::ResultOption{
-        .age_limit = GetDefaultAgeLimit(type)};
+        .age_limit = GetDefaultAgeLimit(type),
+        .visit_duration_limit = GetDefaultVisitDurationLimit(type)};
   }
   return FetchOptions(std::move(result_map), std::move(fetcher_sources),
                       base::Time::Now() - base::Hours(query_duration),

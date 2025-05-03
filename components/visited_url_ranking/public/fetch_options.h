@@ -51,18 +51,21 @@ struct FetchOptions {
   struct ResultOption {
     // Any visit within the `age_limit` will be retained.
     base::TimeDelta age_limit;
+    // Any visit with visit duration is longer than the limit will be retained.
+    std::optional<base::TimeDelta> visit_duration_limit;
   };
 
   using Source = URLVisit::Source;
   using FetchSources =
       base::EnumSet<Source, Source::kNotApplicable, Source::kForeign>;
-  FetchOptions(
-      std::map<URLVisitAggregate::URLType, ResultOption> result_sources_arg,
-      std::map<Fetcher, FetchSources> fetcher_sources_arg,
-      base::Time begin_time_arg,
-      std::vector<URLVisitAggregatesTransformType> transforms_arg = {},
-      size_t aggregate_count_limit =
-          features::kURLAggregateCountLimitDefaultValue);
+  using ResultSourceOptions =
+      std::map<URLVisitAggregate::URLType, ResultOption>;
+  FetchOptions(ResultSourceOptions result_sources_arg,
+               std::map<Fetcher, FetchSources> fetcher_sources_arg,
+               base::Time begin_time_arg,
+               std::vector<URLVisitAggregatesTransformType> transforms_arg = {},
+               size_t aggregate_count_limit =
+                   features::kURLAggregateCountLimitDefaultValue);
   FetchOptions(const FetchOptions&);
   FetchOptions(FetchOptions&& other);
   FetchOptions& operator=(FetchOptions&& other);
@@ -85,7 +88,7 @@ struct FetchOptions {
 
   // The source of expected results. A visit can have multiple types, if any of
   // the types match the `result_sources`, then the visit can be returned.
-  std::map<URLVisitAggregate::URLType, ResultOption> result_sources;
+  ResultSourceOptions result_sources;
 
   // A visit can have multiple types, if any of the types matches the
   // `exclude_result_sources` , the visit will be discarded.

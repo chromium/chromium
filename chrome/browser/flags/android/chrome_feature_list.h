@@ -234,6 +234,11 @@ constexpr base::FeatureParam<int> kAppIntegrationMaxDonationCountParam(
     "max_donation_count",
     100);
 
+constexpr base::FeatureParam<int> kAppIntegrationCCTVisitDurationLimitSecParam(
+    &kAndroidAppIntegrationMultiDataSource,
+    "cct_visit_duration_limit_sec",
+    3);
+
 constexpr base::FeatureParam<int> kAuxiliarySearchMaxBookmarksCountParam(
     &kAuxiliarySearchDonation,
     "auxiliary_search_max_donation_bookmark",
