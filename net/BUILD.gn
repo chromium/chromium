@@ -2023,8 +2023,6 @@ static_library("test_support") {
     "base/mock_network_change_notifier.h",
     "base/test_completion_callback.cc",
     "base/test_completion_callback.h",
-    "base/test_data_stream.cc",
-    "base/test_data_stream.h",
     "cert/internal/cert_issuer_source_sync_unittest.h",
     "cert/internal/test_helpers.cc",
     "cert/internal/test_helpers.h",
