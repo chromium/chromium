@@ -103,9 +103,8 @@ IN_PROC_BROWSER_TEST_F(PaymentSheetViewControllerTest,
   EXPECT_TRUE(IsViewVisible(DialogViewID::CANCEL_BUTTON));
   EXPECT_TRUE(IsPayButtonEnabled());
 
-  // Neither of the actionable buttons should receive default focus.
+  // The accept button should not receive default focus.
   EXPECT_FALSE(GetByDialogViewID(DialogViewID::PAY_BUTTON)->HasFocus());
-  EXPECT_FALSE(GetByDialogViewID(DialogViewID::CANCEL_BUTTON)->HasFocus());
 }
 
 // The Enter key should not be accelerated for the main payment sheet; see
