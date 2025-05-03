@@ -297,6 +297,10 @@ public final class ChromePreferenceKeys {
     // BACKUP_FLOW_SIGNIN_ACCOUNT_NAME used to be employed for the FRE too, thus the "first_run_"
     // prefix. The string should NOT be changed without some sort of migration.
     public static final String BACKUP_FLOW_SIGNIN_ACCOUNT_NAME = "first_run_signin_account_name";
+
+    /** Timestamp for when the user opened a ChromeTabbedActivity for the first time. */
+    public static final String FIRST_CTA_START_TIMESTAMP = "Chrome.FirstCtaStart.Timestamp";
+
     public static final String FIRST_RUN_FLOW_SIGNIN_SETUP = "first_run_signin_setup";
     // Needed by ChromeBackupAgent
     public static final String FIRST_RUN_LIGHTWEIGHT_FLOW_COMPLETE = "lightweight_first_run_flow";
@@ -1029,6 +1033,7 @@ public final class ChromePreferenceKeys {
                 HOME_MODULES_IMPRESSION_COUNT_BEFORE_INTERACTION.pattern(),
                 EXPLORE_OFFLINE_CONTENT_AVAILABILITY_STATUS,
                 FIRST_RUN_SKIPPED_BY_POLICY,
+                FIRST_CTA_START_TIMESTAMP,
                 FLAGS_LAST_CACHED_MINIMAL_BROWSER_FLAGS_TIME_MILLIS,
                 HISTORY_APP_SPECIFIC_INFO_SEEN,
                 HOME_MODULES_MODULE_TYPE.pattern(),
