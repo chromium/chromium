@@ -30,14 +30,17 @@ using mojom::WebUiState;
 
 class GlicUiStateHistoryObserver
     : public ui::test::StateObserver<std::vector<WebUiState>>,
-      public Host::Observer {
+      public GlicWindowController::WebUiStateObserver {
  public:
-  explicit GlicUiStateHistoryObserver(Host* host) : host_(*host) {
-    states_.push_back(host->GetPrimaryWebUiState());
-    host->AddObserver(this);
+  explicit GlicUiStateHistoryObserver(GlicWindowController* controller)
+      : controller_(*controller) {
+    states_.push_back(controller->GetWebUiState());
+    controller->AddWebUiStateObserver(this);
   }
 
-  ~GlicUiStateHistoryObserver() override { host_->RemoveObserver(this); }
+  ~GlicUiStateHistoryObserver() override {
+    controller_->RemoveWebUiStateObserver(this);
+  }
 
   ValueType GetStateObserverInitialState() const override { return states_; }
 
@@ -47,7 +50,7 @@ class GlicUiStateHistoryObserver
     OnStateObserverStateChanged(states_);
   }
 
-  const raw_ref<Host> host_;
+  const raw_ref<GlicWindowController> controller_;
   ValueType states_;
 };
 
@@ -246,7 +249,7 @@ INSTANTIATE_TEST_SUITE_P(All, GlicUiConnectedUiTest, testing::Bool());
 
 IN_PROC_BROWSER_TEST_P(GlicUiConnectedUiTest, DisconnectedPanelHidden) {
   RunTestSequence(
-      ObserveState(kGlicUiStateHistory, &host()),
+      ObserveState(kGlicUiStateHistory, &window_controller()),
       OpenGlicWindow(GlicWindowMode::kAttached, GlicInstrumentMode::kHostOnly),
       WaitForState(kGlicUiStateHistory, IsNotCurrently(WebUiState::kOffline)),
       CheckElementVisible(kOfflinePanel, false));
@@ -260,7 +263,7 @@ IN_PROC_BROWSER_TEST_P(GlicUiConnectedUiTest, DisconnectedPanelHidden) {
 IN_PROC_BROWSER_TEST_P(GlicUiConnectedUiTest,
                        DoesNotHidePanelWhenReadyButOffline) {
   RunTestSequence(
-      ObserveState(kGlicUiStateHistory, &host()),
+      ObserveState(kGlicUiStateHistory, &window_controller()),
       OpenGlicWindow(GlicWindowMode::kAttached, GlicInstrumentMode::kHostOnly),
       WaitForState(kGlicUiStateHistory, IsCurrently(WebUiState::kReady)),
       ChangeConnectionState(false), CheckElementVisible(kContentsPanel, true),
@@ -294,7 +297,7 @@ IN_PROC_BROWSER_TEST_P(GlicUiConnectedUiTest,
 IN_PROC_BROWSER_TEST_P(GlicUiConnectedUiTest,
                        DoesNotNavigateToUnsupportedOrigin) {
   RunTestSequence(
-      ObserveState(kGlicUiStateHistory, &host()),
+      ObserveState(kGlicUiStateHistory, &window_controller()),
       OpenGlicWindow(GlicWindowMode::kAttached,
                      GlicInstrumentMode::kHostAndContents),
       WaitForElementVisible(test::kGlicContentsElementId, {"body"}),
@@ -313,7 +316,7 @@ IN_PROC_BROWSER_TEST_P(GlicUiConnectedUiTest,
                        HidesTabAccessUIOnWebClientCrash) {
   content::ScopedAllowRendererCrashes scoped_allow_renderer_crashes;
   RunTestSequence(
-      ObserveState(kGlicUiStateHistory, &host()),
+      ObserveState(kGlicUiStateHistory, &window_controller()),
       ObserveState(kGlicContextAccessIndicatorHistory, glic_service()),
       OpenGlicWindow(GlicWindowMode::kAttached,
                      GlicInstrumentMode::kHostAndContents),
@@ -341,7 +344,7 @@ class GlicUiDisconnectedUiTest : public GlicUiInteractiveUiTestBase {
 
 IN_PROC_BROWSER_TEST_F(GlicUiDisconnectedUiTest, DisconnectedPanelShown) {
   RunTestSequence(
-      ObserveState(kGlicUiStateHistory, &host()),
+      ObserveState(kGlicUiStateHistory, &window_controller()),
       OpenGlicWindow(GlicWindowMode::kAttached, GlicInstrumentMode::kHostOnly),
       WaitForState(kGlicUiStateHistory, IsCurrently(WebUiState::kOffline)),
       CheckElementVisible(kOfflinePanel, true));
@@ -349,7 +352,7 @@ IN_PROC_BROWSER_TEST_F(GlicUiDisconnectedUiTest, DisconnectedPanelShown) {
 
 IN_PROC_BROWSER_TEST_F(GlicUiDisconnectedUiTest, LoadsWhenBackOnline) {
   RunTestSequence(
-      ObserveState(kGlicUiStateHistory, &host()),
+      ObserveState(kGlicUiStateHistory, &window_controller()),
       OpenGlicWindow(GlicWindowMode::kAttached, GlicInstrumentMode::kHostOnly),
       ChangeConnectionState(true),
       WaitForState(kGlicUiStateHistory, IsNotCurrently(WebUiState::kOffline)),
@@ -373,7 +376,7 @@ class GlicUiFullLoadingSequenceTest : public GlicUiInteractiveUiTestBase {
 
 IN_PROC_BROWSER_TEST_F(GlicUiFullLoadingSequenceTest, Test) {
   RunTestSequence(
-      ObserveState(kGlicUiStateHistory, &host()),
+      ObserveState(kGlicUiStateHistory, &window_controller()),
       OpenGlicWindow(GlicWindowMode::kAttached, GlicInstrumentMode::kHostOnly),
       WaitForState(kGlicUiStateHistory, IsCurrently(WebUiState::kError)),
       CheckElementVisible(kErrorPanel, true),
@@ -402,7 +405,7 @@ class GlicUiQuickLoadingSequenceNoHoldTest
 
 IN_PROC_BROWSER_TEST_F(GlicUiQuickLoadingSequenceNoHoldTest, Test) {
   RunTestSequence(
-      ObserveState(kGlicUiStateHistory, &host()),
+      ObserveState(kGlicUiStateHistory, &window_controller()),
       OpenGlicWindow(GlicWindowMode::kAttached, GlicInstrumentMode::kHostOnly),
       WaitForState(kGlicUiStateHistory, IsCurrently(WebUiState::kReady)),
       CheckElementVisible(kContentsPanel, true),
@@ -430,7 +433,7 @@ class GlicUiQuickLoadingSequenceWithHoldTest
 
 IN_PROC_BROWSER_TEST_F(GlicUiQuickLoadingSequenceWithHoldTest, Test) {
   RunTestSequence(
-      ObserveState(kGlicUiStateHistory, &host()),
+      ObserveState(kGlicUiStateHistory, &window_controller()),
       OpenGlicWindow(GlicWindowMode::kAttached, GlicInstrumentMode::kHostOnly),
       WaitForState(kGlicUiStateHistory, IsCurrently(WebUiState::kReady)),
       CheckElementVisible(kContentsPanel, true),
@@ -458,7 +461,7 @@ class GlicUiQuickLoadingSequenceWithPreloadTest
 
 IN_PROC_BROWSER_TEST_F(GlicUiQuickLoadingSequenceWithPreloadTest, Test) {
   RunTestSequence(
-      ObserveState(kGlicUiStateHistory, &host()),
+      ObserveState(kGlicUiStateHistory, &window_controller()),
       OpenGlicWindow(GlicWindowMode::kAttached, GlicInstrumentMode::kHostOnly),
       WaitForState(kGlicUiStateHistory, IsCurrently(WebUiState::kReady)),
       CheckElementVisible(kContentsPanel, true),
@@ -483,7 +486,7 @@ class GlicUiLoadingPanelWaitingTest : public GlicUiInteractiveUiTestBase {
 
 IN_PROC_BROWSER_TEST_F(GlicUiLoadingPanelWaitingTest, Test) {
   RunTestSequence(
-      ObserveState(kGlicUiStateHistory, &host()),
+      ObserveState(kGlicUiStateHistory, &window_controller()),
       OpenGlicWindow(GlicWindowMode::kAttached, GlicInstrumentMode::kHostOnly),
       WaitForState(kGlicUiStateHistory,
                    IsCurrently(WebUiState::kFinishLoading)),
@@ -505,7 +508,7 @@ class GlicUiLoadingPanelHoldingTest : public GlicUiInteractiveUiTestBase {
 
 IN_PROC_BROWSER_TEST_F(GlicUiLoadingPanelHoldingTest, Test) {
   RunTestSequence(
-      ObserveState(kGlicUiStateHistory, &host()),
+      ObserveState(kGlicUiStateHistory, &window_controller()),
       OpenGlicWindow(GlicWindowMode::kAttached, GlicInstrumentMode::kHostOnly),
       WaitForState(kGlicUiStateHistory, IsCurrently(WebUiState::kHoldLoading)),
       CheckElementVisible(kLoadingPanel, true));
@@ -516,7 +519,7 @@ IN_PROC_BROWSER_TEST_F(GlicUiLoadingPanelHoldingTest, Test) {
 
 IN_PROC_BROWSER_TEST_F(GlicUiDisconnectedUiTest, EscapeKeyDismisses) {
   RunTestSequence(
-      ObserveState(kGlicUiStateHistory, &host()),
+      ObserveState(kGlicUiStateHistory, &window_controller()),
       OpenGlicWindow(GlicWindowMode::kAttached, GlicInstrumentMode::kHostOnly),
       WaitForState(kGlicUiStateHistory, IsCurrently(WebUiState::kOffline)),
       CheckEscapeKeyDismisses(kOfflinePanel));
@@ -524,7 +527,7 @@ IN_PROC_BROWSER_TEST_F(GlicUiDisconnectedUiTest, EscapeKeyDismisses) {
 
 IN_PROC_BROWSER_TEST_F(GlicUiLoadingPanelWaitingTest, EscapeKeyDismisses) {
   RunTestSequence(
-      ObserveState(kGlicUiStateHistory, &host()),
+      ObserveState(kGlicUiStateHistory, &window_controller()),
       OpenGlicWindow(GlicWindowMode::kAttached, GlicInstrumentMode::kHostOnly),
       WaitForState(kGlicUiStateHistory,
                    IsCurrently(WebUiState::kFinishLoading)),
@@ -533,7 +536,7 @@ IN_PROC_BROWSER_TEST_F(GlicUiLoadingPanelWaitingTest, EscapeKeyDismisses) {
 
 IN_PROC_BROWSER_TEST_F(GlicUiLoadingPanelHoldingTest, EscapeKeyDismisses) {
   RunTestSequence(
-      ObserveState(kGlicUiStateHistory, &host()),
+      ObserveState(kGlicUiStateHistory, &window_controller()),
       OpenGlicWindow(GlicWindowMode::kAttached, GlicInstrumentMode::kHostOnly),
       WaitForState(kGlicUiStateHistory, IsCurrently(WebUiState::kHoldLoading)),
       CheckEscapeKeyDismisses(kLoadingPanel));
@@ -541,7 +544,7 @@ IN_PROC_BROWSER_TEST_F(GlicUiLoadingPanelHoldingTest, EscapeKeyDismisses) {
 
 IN_PROC_BROWSER_TEST_F(GlicUiFullLoadingSequenceTest, EscapeKeyDismisses) {
   RunTestSequence(
-      ObserveState(kGlicUiStateHistory, &host()),
+      ObserveState(kGlicUiStateHistory, &window_controller()),
       OpenGlicWindow(GlicWindowMode::kAttached, GlicInstrumentMode::kHostOnly),
       WaitForState(kGlicUiStateHistory, IsCurrently(WebUiState::kError)),
       CheckEscapeKeyDismisses(kErrorPanel));

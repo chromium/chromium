@@ -398,7 +398,8 @@ class InteractiveGlicTestT : public T {
   }
 
   content::RenderFrameHost* FindGlicGuestMainFrame() {
-    for (GlicPageHandler* handler : host().GetPageHandlersForTesting()) {
+    for (GlicPageHandler* handler :
+         glic_service()->host().GetPageHandlersForTesting()) {
       if (handler->GetGuestMainFrame()) {
         return handler->GetGuestMainFrame();
       }
@@ -419,8 +420,6 @@ class InteractiveGlicTestT : public T {
   GlicWindowController& window_controller() {
     return glic_service()->window_controller();
   }
-
-  Host& host() { return glic_service()->host(); }
 
   template <typename... M>
   auto EnsureGlicWindowState(const std::string& desc, M&&... matchers) {

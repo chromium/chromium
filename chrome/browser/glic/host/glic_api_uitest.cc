@@ -84,14 +84,17 @@ std::vector<std::string> GetTestSuiteNames() {
 using testing::_;
 
 // Observes the state of the WebUI hosted in the glic window.
-class WebUIStateListener : public Host::Observer {
+class WebUIStateListener : public GlicWindowController::WebUiStateObserver {
  public:
-  explicit WebUIStateListener(Host* host) : host_(host) {
-    host_->AddObserver(this);
-    states_.push_back(host_->GetPrimaryWebUiState());
+  explicit WebUIStateListener(GlicWindowController* controller)
+      : controller_(controller) {
+    controller_->AddWebUiStateObserver(this);
+    states_.push_back(controller_->GetWebUiState());
   }
 
-  ~WebUIStateListener() override { host_->RemoveObserver(this); }
+  ~WebUIStateListener() override {
+    controller_->RemoveWebUiStateObserver(this);
+  }
 
   void WebUiStateChanged(mojom::WebUiState state) override {
     states_.push_back(state);
@@ -110,11 +113,11 @@ class WebUIStateListener : public Host::Observer {
       }
       return false;
     })) << "Timed out waiting for WebUI state "
-        << state << ". State =" << host_->GetPrimaryWebUiState();
+        << state << ". State =" << controller_->GetWebUiState();
   }
 
  private:
-  raw_ptr<Host> host_;
+  raw_ptr<GlicWindowController> controller_;
   std::deque<mojom::WebUiState> states_;
 };
 
@@ -242,7 +245,7 @@ class GlicApiTest : public test::InteractiveGlicTest {
   }
 
   void WaitForWebUiState(mojom::WebUiState state) {
-    WebUIStateListener listener(&host());
+    WebUIStateListener listener(&window_controller());
     listener.WaitForWebUiState(state);
   }
 
@@ -481,7 +484,7 @@ IN_PROC_BROWSER_TEST_F(GlicApiTest, testInitializeFailsWindowOpen) {
 IN_PROC_BROWSER_TEST_F(GlicApiTest, MAYBE_testReload) {
   RunTestSequence(
       OpenGlicWindow(GlicWindowMode::kDetached, GlicInstrumentMode::kNone));
-  WebUIStateListener listener(&host());
+  WebUIStateListener listener(&window_controller());
   ExecuteJsTest({
       .params = base::Value(
           base::Value::Dict().Set("failWith", "reloadAfterInitialize")),
@@ -498,7 +501,7 @@ IN_PROC_BROWSER_TEST_F(GlicApiTest, MAYBE_testReload) {
 IN_PROC_BROWSER_TEST_F(GlicApiTest, testSorryPageBeforeInitialize) {
   RunTestSequence(
       OpenGlicWindow(GlicWindowMode::kDetached, GlicInstrumentMode::kNone));
-  WebUIStateListener listener(&host());
+  WebUIStateListener listener(&window_controller());
   ExecuteJsTest({
       .params = base::Value(base::Value::Dict().Set(
           "failWith", "navigateToSorryPageBeforeInitialize")),
@@ -521,7 +524,7 @@ IN_PROC_BROWSER_TEST_F(GlicApiTest, testSorryPageBeforeInitialize) {
 IN_PROC_BROWSER_TEST_F(GlicApiTest, testSorryPageAfterInitialize) {
   RunTestSequence(
       OpenGlicWindow(GlicWindowMode::kDetached, GlicInstrumentMode::kNone));
-  WebUIStateListener listener(&host());
+  WebUIStateListener listener(&window_controller());
   ExecuteJsTest({
       .params = base::Value(base::Value::Dict().Set(
           "failWith", "navigateToSorryPageAfterInitialize")),
@@ -544,7 +547,7 @@ IN_PROC_BROWSER_TEST_F(GlicApiTest, testSorryPageAfterInitialize) {
 IN_PROC_BROWSER_TEST_F(GlicApiTest, testInitializeFailsAfterReload) {
   RunTestSequence(
       OpenGlicWindow(GlicWindowMode::kDetached, GlicInstrumentMode::kNone));
-  WebUIStateListener listener(&host());
+  WebUIStateListener listener(&window_controller());
   ExecuteJsTest({
       .params = base::Value(
           base::Value::Dict().Set("failWith", "reloadAfterInitialize")),
@@ -564,7 +567,7 @@ IN_PROC_BROWSER_TEST_F(GlicApiTestWithFastTimeout, testNoClientCreated) {
   base::HistogramTester histogram_tester;
   RunTestSequence(
       OpenGlicWindow(GlicWindowMode::kDetached, GlicInstrumentMode::kNone));
-  WebUIStateListener listener(&host());
+  WebUIStateListener listener(&window_controller());
   ExecuteJsTest();
   listener.WaitForWebUiState(mojom::WebUiState::kError);
   // Note that the client does receive the bootstrap message, but never calls
@@ -583,7 +586,7 @@ IN_PROC_BROWSER_TEST_F(GlicApiTestWithFastTimeout, testNoBootstrap) {
   base::HistogramTester histogram_tester;
   RunTestSequence(
       OpenGlicWindow(GlicWindowMode::kDetached, GlicInstrumentMode::kNone));
-  WebUIStateListener listener(&host());
+  WebUIStateListener listener(&window_controller());
   ExecuteJsTest();
   listener.WaitForWebUiState(mojom::WebUiState::kError);
   histogram_tester.ExpectUniqueSample("Glic.Host.WebClientState.OnDestroy",
@@ -598,7 +601,7 @@ IN_PROC_BROWSER_TEST_F(GlicApiTestWithFastTimeout, testInitializeTimesOut) {
   base::HistogramTester histogram_tester;
   RunTestSequence(
       OpenGlicWindow(GlicWindowMode::kDetached, GlicInstrumentMode::kNone));
-  WebUIStateListener listener(&host());
+  WebUIStateListener listener(&window_controller());
   ExecuteJsTest({
       .params = base::Value(base::Value::Dict().Set("failWith", "timeout")),
   });
@@ -1187,7 +1190,8 @@ IN_PROC_BROWSER_TEST_F(GlicApiTestSystemSettingsTest,
 
 IN_PROC_BROWSER_TEST_F(GlicApiTest, testNavigateToDifferentClientPage) {
   base::HistogramTester histogram_tester;
-  WebUIStateListener listener(&host());
+
+  WebUIStateListener listener(&window_controller());
   RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
                                  GlicInstrumentMode::kHostAndContents));
   listener.WaitForWebUiState(mojom::WebUiState::kReady);
@@ -1214,7 +1218,7 @@ IN_PROC_BROWSER_TEST_F(GlicApiTestWithFastTimeout,
 #else
   // Client loads, and navigates to a new URL. We try to load the client again,
   // but it fails.
-  WebUIStateListener listener(&host());
+  WebUIStateListener listener(&window_controller());
   RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
                                  GlicInstrumentMode::kHostAndContents));
   listener.WaitForWebUiState(mojom::WebUiState::kReady);

@@ -14,15 +14,20 @@
 #include "ui/base/interaction/polling_state_observer.h"
 
 namespace base {
-// Set up a custom `ScopedObservationTrait` for `Host::Observer`.
+// Set up a custom |ScopedObservationTrait| for
+// |GlicWindowController::WebUiStateObserver|.
 template <>
 struct ScopedObservationTraits<glic::GlicWindowController,
-                               glic::Host::Observer> {
-  static void AddObserver(glic::Host* host, glic::Host::Observer* observer) {
-    host->AddObserver(observer);
+                               glic::GlicWindowController::WebUiStateObserver> {
+  static void AddObserver(
+      glic::GlicWindowController* controller,
+      glic::GlicWindowController::WebUiStateObserver* observer) {
+    controller->AddWebUiStateObserver(observer);
   }
-  static void RemoveObserver(glic::Host* host, glic::Host::Observer* observer) {
-    host->RemoveObserver(observer);
+  static void RemoveObserver(
+      glic::GlicWindowController* controller,
+      glic::GlicWindowController::WebUiStateObserver* observer) {
+    controller->RemoveWebUiStateObserver(observer);
   }
 };
 }  // namespace base
@@ -44,13 +49,14 @@ DECLARE_STATE_IDENTIFIER_VALUE(GlicWindowControllerStateObserver,
                                kGlicWindowControllerState);
 
 // Observers the glic app internal state.
-class GlicAppStateObserver
-    : public ui::test::
-          ObservationStateObserver<mojom::WebUiState, Host, Host::Observer> {
+class GlicAppStateObserver : public ui::test::ObservationStateObserver<
+                                 mojom::WebUiState,
+                                 GlicWindowController,
+                                 GlicWindowController::WebUiStateObserver> {
  public:
-  explicit GlicAppStateObserver(Host* host);
+  explicit GlicAppStateObserver(GlicWindowController* controller);
   ~GlicAppStateObserver() override;
-  // Host::Observer
+  // GlicWindowController::WebUiStateObserver
   void WebUiStateChanged(mojom::WebUiState state) override;
 };
 

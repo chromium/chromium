@@ -453,7 +453,7 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
   RunTestSequence(
       OpenGlicWindow(GlicWindowMode::kAttached),
       ClickMockGlicElement(kMockGlicClientHangButton, true),
-      ObserveState(test::internal::kGlicAppState, &host()),
+      ObserveState(test::internal::kGlicAppState, &window_controller()),
       WaitForState(test::internal::kGlicAppState,
                    mojom::WebUiState::kUnresponsive),
       // Client should show error after showing the unresponsive UI for 5s.
@@ -463,7 +463,7 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
 IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
                        InvalidatedAccountWhileLoadingGlic) {
   RunTestSequence(
-      ObserveState(test::internal::kGlicAppState, &host()),
+      ObserveState(test::internal::kGlicAppState, &window_controller()),
       SimulateGlicHotkey(), CheckControllerHasWidget(true),
       ForceInvalidateAccount(), WaitForAndInstrumentGlic(kHostOnly),
       WaitForState(test::internal::kGlicAppState, mojom::WebUiState::kSignIn),
@@ -481,7 +481,7 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
 IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
                        InvalidatedAccountSignInOnGlicOpenFlow) {
   RunTestSequence(
-      ObserveState(test::internal::kGlicAppState, &host()),
+      ObserveState(test::internal::kGlicAppState, &window_controller()),
       ForceInvalidateAccount(), SimulateGlicHotkey(),
       CheckControllerHasWidget(false), InstrumentTab(kFirstTab),
       WaitForWebContentsReady(kFirstTab),
@@ -497,7 +497,7 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
                        AccountInvalidatedWhileGlicOpen) {
   RunTestSequence(
       SimulateGlicHotkey(), CheckControllerHasWidget(true),
-      ObserveState(test::internal::kGlicAppState, &host()),
+      ObserveState(test::internal::kGlicAppState, &window_controller()),
       WaitForState(test::internal::kGlicAppState, mojom::WebUiState::kReady),
       ForceInvalidateAccount(),
       WaitForState(test::internal::kGlicAppState, mojom::WebUiState::kSignIn),

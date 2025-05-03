@@ -865,7 +865,7 @@ void GlicPageHandler::EnableDragResize(bool enabled) {
 }
 
 void GlicPageHandler::WebUiStateChanged(glic::mojom::WebUiState new_state) {
-  GetGlicService()->host().WebUiStateChanged(this, new_state);
+  GetGlicService()->window_controller().WebUiStateChanged(new_state);
 }
 
 void GlicPageHandler::AllowedChanged() {

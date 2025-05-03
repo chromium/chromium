@@ -47,10 +47,6 @@ class Host {
     virtual void WebClientInitializeFailed() {}
     // The webview reached a login page.
     virtual void LoginPageCommitted() {}
-    // Called when the WebUI state changes in the glic WebUI.
-    // If the glic WebUI is destroyed, the webUI state is returned to
-    // kUninitialized.
-    virtual void WebUiStateChanged(mojom::WebUiState state) {}
   };
 
   explicit Host(Profile* profile);
@@ -122,15 +118,6 @@ class Host {
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
-  // Informs the host that the WebUi state has changed.
-  void WebUiStateChanged(GlicPageHandler* page_handler,
-                         mojom::WebUiState new_state);
-  // Returns the current WebUI state, or kUninitialized if there is no active
-  // glic WebUI.
-  const mojom::WebUiState& GetPrimaryWebUiState() const {
-    return primary_webui_state_;
-  }
-
  private:
   GlicKeyedService& glic_service();
 
@@ -160,16 +147,16 @@ class Host {
   // The invocation source if the panel is open. nullopt while the panel is
   // closed.
   std::optional<mojom::InvocationSource> invocation_source_;
-  mojom::WebUiState primary_webui_state_ = mojom::WebUiState::kUninitialized;
 
   // The set of live `GlicPageHandler`s.
   std::vector<PageHandlerInfo> page_handlers_;
   // Keep profile alive as long as the glic web contents. This object should be
   // destroyed when the profile needs to be destroyed.
   std::unique_ptr<WebUIContentsContainer> contents_;
-  // The primary page handler. Glic supports only a single primary page handler,
-  // a page handlers becomes the primary when it's created, if there exists no
-  // other primary page handler.
+  // The primary page handler. The first page handler which connects to a client
+  // (normally, the feature's main client) is saved as the primary page handler.
+  // The GlicWindowController supports only a single client, so this owns the
+  // client it will support.
   raw_ptr<GlicPageHandler> primary_page_handler_ = nullptr;
 };
 
