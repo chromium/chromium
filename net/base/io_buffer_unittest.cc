@@ -2,14 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): IOBuffer provides access to its data via a raw
-// pointer. Either remove the accessors that provide access to the raw pointer,
-// and remove this annotation and the tests for them, or add `UNSAFE_BUFFERS`
-// annotations around the code that tests those accessors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/base/io_buffer.h"
 
 #include <array>
@@ -26,15 +18,14 @@ namespace {
 // Compares the data in `io_buffer` to `span`. Tests all const accessors.
 void CompareConstIOBufferToSpan(const IOBuffer& io_buffer,
                                 base::span<const uint8_t> span) {
-  ASSERT_EQ(io_buffer.span(), span);
-  ASSERT_EQ(base::checked_cast<size_t>(io_buffer.size()), span.size());
-  EXPECT_EQ(base::span(reinterpret_cast<const uint8_t*>(io_buffer.bytes()),
-                       static_cast<size_t>(io_buffer.size())),
-            span);
-  EXPECT_EQ(
-      base::span(io_buffer.bytes(), static_cast<size_t>(io_buffer.size())),
-      span);
   EXPECT_EQ(io_buffer.span(), span);
+
+  // For validating the other accessors, it should be sufficient to check size()
+  // and make sure returned pointers match io_buffer.span().data().
+  ASSERT_EQ(base::checked_cast<size_t>(io_buffer.size()), span.size());
+  EXPECT_EQ(reinterpret_cast<const uint8_t*>(io_buffer.data()),
+            io_buffer.span().data());
+  EXPECT_EQ(io_buffer.bytes(), io_buffer.span().data());
 }
 
 // Compares the data in `io_buffer` to `span`. Tests all accessors.
@@ -42,15 +33,12 @@ void CompareIOBufferToSpan(IOBuffer& io_buffer,
                            base::span<const uint8_t> span) {
   CompareConstIOBufferToSpan(io_buffer, span);
 
-  ASSERT_EQ(io_buffer.span(), span);
+  // For validating the other accessors, it should be sufficient to check size()
+  // and make sure returned pointers match io_buffer.span().data().
   ASSERT_EQ(base::checked_cast<size_t>(io_buffer.size()), span.size());
-  EXPECT_EQ(base::span(reinterpret_cast<const uint8_t*>(io_buffer.bytes()),
-                       static_cast<size_t>(io_buffer.size())),
-            span);
-  EXPECT_EQ(
-      base::span(io_buffer.bytes(), static_cast<size_t>(io_buffer.size())),
-      span);
-  EXPECT_EQ(io_buffer.span(), span);
+  EXPECT_EQ(reinterpret_cast<uint8_t*>(io_buffer.data()),
+            io_buffer.span().data());
+  EXPECT_EQ(io_buffer.bytes(), io_buffer.span().data());
 }
 
 TEST(IOBufferTest, VectorIOBuffer) {
