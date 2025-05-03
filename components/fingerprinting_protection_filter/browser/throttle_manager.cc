@@ -33,6 +33,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_handle_user_data.h"
 #include "content/public/browser/navigation_throttle.h"
+#include "content/public/browser/navigation_throttle_registry.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/render_frame_host.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -155,39 +156,39 @@ ThrottleManager* ThrottleManager::FromNavigationHandle(
 }
 
 void ThrottleManager::MaybeAppendNavigationThrottles(
-    content::NavigationHandle* navigation_handle,
-    std::vector<std::unique_ptr<content::NavigationThrottle>>* throttles) {
-  CHECK(!navigation_handle->IsSameDocument());
-  CHECK(!ShouldInheritActivation(navigation_handle->GetURL()));
+    content::NavigationThrottleRegistry& registry) {
+  content::NavigationHandle& navigation_handle = registry.GetNavigationHandle();
+  CHECK(!navigation_handle.IsSameDocument());
+  CHECK(!ShouldInheritActivation(navigation_handle.GetURL()));
 
-  if (IsInSubresourceFilterRoot(navigation_handle)) {
+  if (IsInSubresourceFilterRoot(&navigation_handle)) {
     // Attempt to create root throttles.
-    throttles->push_back(
+    registry.AddThrottle(
         std::make_unique<FingerprintingProtectionPageActivationThrottle>(
-            navigation_handle, web_contents_helper_->content_settings(),
+            &navigation_handle, web_contents_helper_->content_settings(),
             web_contents_helper_->tracking_protection_settings(),
             web_contents_helper_->pref_service(), is_incognito_));
     auto activation_throttle =
         ActivationStateComputingNavigationThrottle::CreateForRoot(
-            navigation_handle, kFingerprintingProtectionRulesetConfig.uma_tag);
+            &navigation_handle, kFingerprintingProtectionRulesetConfig.uma_tag);
     ChildActivationThrottleHandle::CreateForNavigationHandle(
-        *navigation_handle, activation_throttle.get());
-    throttles->push_back(std::move(activation_throttle));
+        navigation_handle, activation_throttle.get());
+    registry.AddThrottle(std::move(activation_throttle));
   } else {
     // Attempt to create child throttles.
     AsyncDocumentSubresourceFilter* parent_filter =
-        GetParentFrameFilter(navigation_handle);
+        GetParentFrameFilter(&navigation_handle);
     if (parent_filter) {
-      if (navigation_handle->GetParentFrame() &&
+      if (navigation_handle.GetParentFrame() &&
           net::SchemefulSite::IsSameSite(
-              url::Origin::Create(navigation_handle->GetURL()),
-              navigation_handle->GetParentFrame()->GetLastCommittedOrigin())) {
+              url::Origin::Create(navigation_handle.GetURL()),
+              navigation_handle.GetParentFrame()->GetLastCommittedOrigin())) {
         // Don't create throttles for first-party requests.
         return;
       }
-      throttles->push_back(
+      registry.AddThrottle(
           std::make_unique<FingerprintingProtectionChildNavigationThrottle>(
-              navigation_handle, parent_filter, is_incognito_,
+              &navigation_handle, parent_filter, is_incognito_,
               base::BindRepeating([](const GURL& url) {
                 return base::StringPrintf(
                     kDisallowChildFrameConsoleMessageFormat,
@@ -196,14 +197,14 @@ void ThrottleManager::MaybeAppendNavigationThrottles(
       CHECK(ruleset_handle_);
       auto activation_throttle =
           ActivationStateComputingNavigationThrottle::CreateForChild(
-              navigation_handle, ruleset_handle_.get(),
+              &navigation_handle, ruleset_handle_.get(),
               parent_filter->activation_state(),
               kFingerprintingProtectionRulesetConfig.uma_tag);
       CHECK(!ChildActivationThrottleHandle::GetForNavigationHandle(
-          *navigation_handle));
+          navigation_handle));
       ChildActivationThrottleHandle::CreateForNavigationHandle(
-          *navigation_handle, activation_throttle.get());
-      throttles->push_back(std::move(activation_throttle));
+          navigation_handle, activation_throttle.get());
+      registry.AddThrottle(std::move(activation_throttle));
     }
   }
 }

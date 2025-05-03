@@ -46,6 +46,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "content/public/test/mock_navigation_throttle_registry.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_navigation_throttle.h"
 #include "content/public/test/test_renderer_host.h"
@@ -233,14 +234,10 @@ class SafeBrowsingPageActivationThrottleTest
           std::make_unique<SafeBrowsingPageActivationThrottle>(
               navigation_handle, delegate(), fake_safe_browsing_database_));
     }
-    std::vector<std::unique_ptr<content::NavigationThrottle>> throttles;
-
+    content::MockNavigationThrottleRegistry registry(navigation_handle);
     ContentSubresourceFilterThrottleManager::FromNavigationHandle(
         *navigation_handle)
-        ->MaybeAppendNavigationThrottles(navigation_handle, &throttles);
-    for (auto& it : throttles) {
-      navigation_handle->RegisterThrottleForTesting(std::move(it));
-    }
+        ->MaybeAppendNavigationThrottles(registry);
   }
 
   // Returns the frame host the navigation committed in, or nullptr if it did

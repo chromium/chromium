@@ -264,6 +264,8 @@ static_library("test_support") {
     "../public/test/mock_media_session.h",
     "../public/test/mock_navigation_handle.cc",
     "../public/test/mock_navigation_handle.h",
+    "../public/test/mock_navigation_throttle_registry.cc",
+    "../public/test/mock_navigation_throttle_registry.h",
     "../public/test/mock_permission_controller.cc",
     "../public/test/mock_permission_controller.h",
     "../public/test/mock_permission_manager.cc",
