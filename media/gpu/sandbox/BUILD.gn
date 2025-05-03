@@ -6,7 +6,7 @@ import("//media/gpu/args.gni")
 
 source_set("sandbox") {
   sources = []
-  if (is_linux || is_chromeos) {
+  if (use_linux_video_acceleration) {
     sources += [
       "hardware_video_decoding_sandbox_hook_linux.cc",
       "hardware_video_decoding_sandbox_hook_linux.h",

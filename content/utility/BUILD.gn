@@ -112,12 +112,16 @@ source_set("utility") {
   if (is_linux || is_chromeos) {
     deps += [
       "//content/utility/speech:speech_recognition_sandbox_hook",
-      "//gpu/config",
       "//media/gpu/sandbox",
       "//media/mojo/services",
       "//services/network:network_sandbox_hook",
-      "//third_party/angle:angle_gpu_info_util",
     ]
+    if (use_linux_video_acceleration) {
+      deps += [
+        "//gpu/config",
+        "//third_party/angle:angle_gpu_info_util",
+      ]
+    }
     if (enable_oop_printing) {
       deps += [ "//printing:printing_sandbox_hook" ]
     }

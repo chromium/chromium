@@ -21,7 +21,7 @@ const sandbox.mojom.Sandbox kMirroringSandbox =
 
 // On ChromeOS, we need a more permissive sandbox for hardware encoding video,
 // including calls to ioctl and other system methods.
-[EnableIf=is_chromeos]
+[EnableIf=is_chromeos_with_video_accelerators]
 const sandbox.mojom.Sandbox kMirroringSandbox =
     sandbox.mojom.Sandbox.kHardwareVideoEncoding;
 
@@ -30,7 +30,7 @@ const sandbox.mojom.Sandbox kMirroringSandbox =
 //
 // NOTE: we don't support hardware encoding on Linux currently. If support is
 // added, its sandbox will likely have to be updated to match ChromeOS.
-[EnableIfNot=is_mac|is_chromeos]
+[EnableIfNot=is_mac|is_chromeos_with_video_accelerators]
 const sandbox.mojom.Sandbox kMirroringSandbox = sandbox.mojom.Sandbox.kService;
 
 // This interface is used to control a Cast mirroring session.

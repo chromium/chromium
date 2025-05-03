@@ -17,6 +17,10 @@
 #include "chromeos/ash/components/assistant/buildflags.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#include "media/gpu/buildflags.h"  // nogncheck
+#endif
+
 namespace sandbox::policy {
 
 namespace {
@@ -65,9 +69,15 @@ constexpr char kVideoCaptureSandbox[] = "video_capture";
 #endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+// USE_LINUX_VIDEO_ACCELERATION implies IS_LINUX || IS_CHROMEOS, so this double
+// #if is redundant, however, we cannot include "media/gpu/buildflags.h" on all
+// platforms, only one those that need to evaluate the use..., hence this
+// pattern, here and elsewhere. This problem is specific to this file.
+#if BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
 constexpr char kHardwareVideoDecodingSandbox[] = "hardware_video_decoding";
 constexpr char kHardwareVideoEncodingSandbox[] = "hardware_video_encoding";
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#endif
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS)
 constexpr char kImeSandbox[] = "ime";
@@ -152,9 +162,11 @@ void SetCommandLineFlagsForSandboxType(base::CommandLine* command_line,
     case Sandbox::kWindowsSystemProxyResolver:
 #endif  // BUILDFLAG(IS_WIN)
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
     case Sandbox::kHardwareVideoDecoding:
     case Sandbox::kHardwareVideoEncoding:
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#endif
+#endif
 #if BUILDFLAG(IS_CHROMEOS)
     case Sandbox::kIme:
     case Sandbox::kTts:
@@ -309,11 +321,13 @@ std::string StringFromUtilitySandboxType(Sandbox sandbox_type) {
       return kMirroringSandbox;
 #endif
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
     case Sandbox::kHardwareVideoDecoding:
       return kHardwareVideoDecodingSandbox;
     case Sandbox::kHardwareVideoEncoding:
       return kHardwareVideoEncodingSandbox;
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#endif
+#endif
 #if BUILDFLAG(IS_CHROMEOS)
     case Sandbox::kIme:
       return kImeSandbox;
@@ -431,13 +445,15 @@ sandbox::mojom::Sandbox UtilitySandboxTypeFromString(
   }
 #endif
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
   if (sandbox_string == kHardwareVideoDecodingSandbox) {
     return Sandbox::kHardwareVideoDecoding;
   }
   if (sandbox_string == kHardwareVideoEncodingSandbox) {
     return Sandbox::kHardwareVideoEncoding;
   }
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#endif
+#endif
 #if BUILDFLAG(IS_CHROMEOS)
   if (sandbox_string == kImeSandbox) {
     return Sandbox::kIme;
