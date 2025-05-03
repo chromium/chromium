@@ -694,7 +694,10 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sCctNestedSecurityIcon =
             newCachedFlag(CCT_NESTED_SECURITY_ICON, true);
     public static final CachedFlag sCctPredictiveBackGesture =
-            newCachedFlag(CCT_PREDICTIVE_BACK_GESTURE, false);
+            newCachedFlag(
+                    CCT_PREDICTIVE_BACK_GESTURE,
+                    /* defaultValue= */ false,
+                    /* defaultValueInTests= */ true);
     public static final CachedFlag sCctOpenInBrowserButtonIfAllowedByEmbedder =
             newCachedFlag(CCT_OPEN_IN_BROWSER_BUTTON_IF_ALLOWED_BY_EMBEDDER, false);
     public static final CachedFlag sCctOpenInBrowserButtonIfEnabledByEmbedder =

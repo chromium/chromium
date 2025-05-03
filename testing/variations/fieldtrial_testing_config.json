@@ -3639,8 +3639,7 @@
                     "name": "Enabled",
                     "enable_features": [
                         "CCTPredictiveBackGesture"
-                    ],
-                    "min_os_version": "16.0.0"
+                    ]
                 }
             ]
         }
