@@ -756,7 +756,7 @@
 <translation id="3573179567135747900">Қайта "<ph name="FROM_LOCALE" />" етіп өзгерту (қайта іске қосуды қажет етеді)</translation>
 <translation id="3576141592585647168">Уақыт белдеуін өзгерту</translation>
 <translation id="3577473026931028326">Бірдеңе дұрыс болмады. Қайталап көріңіз.</translation>
-<translation id="3580650856351781466">Сөз файлдары жүктеп алынуда</translation>
+<translation id="3580650856351781466">Сөз файлдары жүктеп алынып жатыр</translation>
 <translation id="3583350334315908861">{MINUTES,plural, =1{минут}other{минут}}</translation>
 <translation id="3585296979871889131">Телефондағы соңғы фотосуреттерді, медиафайлдарды, хабарландыруларды және қолданбаларды көру</translation>
 <translation id="358832729276157756">ExpressKey 1</translation>
@@ -1041,7 +1041,7 @@
 <translation id="445864333228800152">Қайырлы кеш!</translation>
 <translation id="4458688154122353284">Экран жазуды тоқтату</translation>
 <translation id="445923051607553918">Wi-Fi желісіне қосылу</translation>
-<translation id="4471354919263203780">Айтылған сөзді тану файлдары жүктеп алынуда... <ph name="PERCENT" />%</translation>
+<translation id="4471354919263203780">Айтылған сөзді тану файлдары жүктеп алынып жатыр... <ph name="PERCENT" />%</translation>
 <translation id="4471432286288241507">{0,plural, =0{Құрылғыны қазір жаңарту керек}=1{Құрылғыны 1 секундта жаңарту керек}other{Құрылғыны # секундта жаңарту керек}}</translation>
 <translation id="4472575034687746823">Іске кірісу</translation>
 <translation id="4477350412780666475">Келесі аудиотрек</translation>
@@ -1102,7 +1102,7 @@
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">ChromeVox қосылды</translation>
 <translation id="4666911709726371538">Басқа қолданбалар</translation>
-<translation id="4667099493359681081"><ph name="FILENAME" /> жүктеп алынуда</translation>
+<translation id="4667099493359681081"><ph name="FILENAME" /> жүктеп алынып жатыр</translation>
 <translation id="4672539464599646374">Батареяны үнемдеу режимі қосылды.</translation>
 <translation id="4673427585974421255">Қосулы қалдыру</translation>
 <translation id="4677040906536311086">Google парағы</translation>
@@ -1449,7 +1449,7 @@
 <translation id="5759522586053040964">Басқаларға дауысыңыз қалай естілетінін тыңдаңыз. Тоқтату үшін сынақ белгішесін басыңыз немесе бейнеқоңырау панелін жабыңыз.</translation>
 <translation id="5760866832697883462"><ph name="NAME" /> құрылғысын жалғаңыз</translation>
 <translation id="5762420912707163638">Ауыстырғыш белгілегіші. <ph name="STATE_TEXT" /> Экранда сурет салу үшін сенсорлық тақтаны, сенсорлық экранды және стилусты пайдаланыңыз.</translation>
-<translation id="576341972084747908">Қауіпті <ph name="FILENAME" /> файлы жүктеп алынуда</translation>
+<translation id="576341972084747908">Қауіпті <ph name="FILENAME" /> файлы жүктеп алынып жатыр</translation>
 <translation id="576453121877257266">"Түнгі жарық" функциясы қосулы.</translation>
 <translation id="5764569119212455782">Соңғы таңдалған тілге ауысу</translation>
 <translation id="5767730327234918501">Әкімшіңіз хотспотты өшірді.</translation>
