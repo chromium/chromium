@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {BrowserProxy, mojoVoicePackStatusToVoicePackStatusEnum, VoiceClientSideStatusCode, VoicePackModel} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {assertArrayEquals, assertEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 import {createSpeechSynthesisVoice} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
@@ -19,6 +19,37 @@ suite('VoicePackModel', () => {
     const readingMode = new FakeReadingMode();
     chrome.readingMode = readingMode as unknown as typeof chrome.readingMode;
     voicePackModel = new VoicePackModel();
+  });
+
+  test('enableLang', () => {
+    const lang1 = 'de';
+    const lang2 = 'hi';
+    const lang3 = 'xyz';
+
+    voicePackModel.enableLang(lang1);
+    voicePackModel.enableLang(lang2);
+    voicePackModel.enableLang(lang3);
+
+    assertEquals(3, voicePackModel.getEnabledLangs().size);
+    assertTrue(voicePackModel.getEnabledLangs().has(lang1));
+    assertTrue(voicePackModel.getEnabledLangs().has(lang2));
+    assertTrue(voicePackModel.getEnabledLangs().has(lang3));
+  });
+
+  test('disableLang', () => {
+    const lang1 = 'de';
+    const lang2 = 'hi';
+    const lang3 = 'xyz';
+
+    voicePackModel.enableLang(lang1);
+    voicePackModel.enableLang(lang2);
+    voicePackModel.enableLang(lang3);
+    assertTrue(voicePackModel.disableLang(lang1));
+    assertTrue(voicePackModel.disableLang(lang2));
+    assertFalse(voicePackModel.disableLang('random'));
+
+    assertEquals(1, voicePackModel.getEnabledLangs().size);
+    assertTrue(voicePackModel.getEnabledLangs().has(lang3));
   });
 
   test('setAvailableLangs', () => {
@@ -44,6 +75,38 @@ suite('VoicePackModel', () => {
     assertArrayEquals(
         [voice1, voice2, voice3], voicePackModel.getAvailableVoices());
   });
+
+  // <if expr="not is_chromeos">
+  test('addPossiblyDisabledLang', () => {
+    const lang1 = 'de';
+    const lang2 = 'hi';
+    const lang3 = 'xyz';
+
+    voicePackModel.addPossiblyDisabledLang(lang1);
+    voicePackModel.addPossiblyDisabledLang(lang2);
+    voicePackModel.addPossiblyDisabledLang(lang3);
+
+    assertEquals(3, voicePackModel.getPossiblyDisabledLangs().size);
+    assertTrue(voicePackModel.getPossiblyDisabledLangs().has(lang1));
+    assertTrue(voicePackModel.getPossiblyDisabledLangs().has(lang2));
+    assertTrue(voicePackModel.getPossiblyDisabledLangs().has(lang3));
+  });
+
+  test('removePossiblyDisabledLang', () => {
+    const lang1 = 'de';
+    const lang2 = 'hi';
+    const lang3 = 'xyz';
+
+    voicePackModel.addPossiblyDisabledLang(lang1);
+    voicePackModel.addPossiblyDisabledLang(lang2);
+    voicePackModel.addPossiblyDisabledLang(lang3);
+    voicePackModel.removePossiblyDisabledLang(lang1);
+    voicePackModel.removePossiblyDisabledLang(lang2);
+
+    assertEquals(1, voicePackModel.getPossiblyDisabledLangs().size);
+    assertTrue(voicePackModel.getPossiblyDisabledLangs().has(lang3));
+  });
+  // </if>
 
   test('setServerStatus', () => {
     const lang1 = 'abc';

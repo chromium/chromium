@@ -77,74 +77,79 @@ suite('UpdateVoicePack', () => {
       const lang = 'pt-br';
 
       setup(() => {
-        app.enabledLangs.push(lang);
+        voicePackController.enableLang(lang);
       });
 
       test('and no other voices for language, disables language', () => {
         createAndSetVoices(app, speech, []);
         app.updateVoicePackStatus(lang, 'kOther');
 
-        assertFalse(app.enabledLangs.includes(lang));
+        assertFalse(voicePackController.isLangEnabled(lang));
         assertFalse(
             chrome.readingMode.getLanguagesEnabledInPref().includes(lang));
       });
 
+      // <if expr="is_chromeos">
       test(
           'and only eSpeak voices for language, disables language on ChromeOS',
           () => {
-            chrome.readingMode.isChromeOsAsh = true;
             createAndSetVoices(app, speech, [
               {lang: lang, name: 'eSpeak Portuguese'},
             ]);
 
             app.updateVoicePackStatus(lang, 'kOther');
 
-            assertFalse(app.enabledLangs.includes(lang));
+            assertFalse(voicePackController.isLangEnabled(lang));
             assertFalse(
                 chrome.readingMode.getLanguagesEnabledInPref().includes(lang));
           });
+      // </if>
 
+      // <if expr="not is_chromeos">
       test(
           'and only system voices for language, keeps language for desktop',
           () => {
-            chrome.readingMode.isChromeOsAsh = false;
             createAndSetVoices(app, speech, [
               {lang: lang, name: 'System Portuguese'},
             ]);
 
             app.updateVoicePackStatus(lang, 'kOther');
 
-            assertTrue(app.enabledLangs.includes(lang));
+            assertTrue(voicePackController.isLangEnabled(lang));
             assertTrue(
                 chrome.readingMode.getLanguagesEnabledInPref().includes(lang));
           });
+      // </if>
 
       test(
           'and when language-pack lang does not match voice lang, ' +
               'still disables language',
           () => {
-            app.enabledLangs.push('it-it');
+            voicePackController.enableLang('it-it');
             createAndSetVoices(app, speech, []);
 
             app.updateVoicePackStatus('it', 'kOther');
 
-            assertFalse(app.enabledLangs.includes('it-it'));
-            assertFalse(chrome.readingMode.getLanguagesEnabledInPref().includes(
-                'it-it'));
+            assertFalse(
+                voicePackController.isLangEnabled('it-it'), 'controller');
+            assertFalse(
+                chrome.readingMode.getLanguagesEnabledInPref().includes(
+                    'it-it'),
+                'prefs');
           });
 
       test(
           'and when language-pack lang does not match voice lang, with ' +
               'e-speak voices, still disables language',
           () => {
-            app.enabledLangs.push('it-it');
+            voicePackController.enableLang('it-it');
             createAndSetVoices(app, speech, [
               {lang: 'it', name: 'eSpeak Italian '},
             ]);
 
             app.updateVoicePackStatus('it', 'kOther');
 
-            assertFalse(app.enabledLangs.includes('it-it'));
+            assertFalse(voicePackController.isLangEnabled('it-it'));
             assertFalse(chrome.readingMode.getLanguagesEnabledInPref().includes(
                 'it-it'));
           });
@@ -158,7 +163,7 @@ suite('UpdateVoicePack', () => {
             ]);
             app.updateVoicePackStatus(lang, 'kOther');
 
-            assertTrue(app.enabledLangs.includes(lang));
+            assertTrue(voicePackController.isLangEnabled(lang));
             assertTrue(
                 chrome.readingMode.getLanguagesEnabledInPref().includes(lang));
           });
@@ -361,7 +366,7 @@ suite('UpdateVoicePack', () => {
       () => {
         const lang = 'en-us';
         chrome.readingMode.baseLanguageForSpeech = lang;
-        app.enabledLangs = [lang];
+        voicePackController.enableLang(lang);
         chrome.readingMode.getStoredVoice = () => '';
         setNaturalVoicesForLang(lang);
         app.updateVoicePackStatus(lang, 'kInstalled');
@@ -378,7 +383,8 @@ suite('UpdateVoicePack', () => {
       () => {
         const installedLang = 'en-us';
         chrome.readingMode.baseLanguageForSpeech = 'pt-br';
-        app.enabledLangs = [chrome.readingMode.baseLanguageForSpeech];
+        voicePackController.enableLang(
+            chrome.readingMode.baseLanguageForSpeech);
         const currentVoice = createSpeechSynthesisVoice({
           name: 'Portuguese voice 1',
           lang: chrome.readingMode.baseLanguageForSpeech,

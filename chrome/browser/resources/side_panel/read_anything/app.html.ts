@@ -17,7 +17,7 @@ export function getHtml(this: AppElement) {
         .isReadAloudPlayable="${this.computeIsReadAloudPlayable()}"
         .selectedVoice="${this.selectedVoice_}"
         .settingsPrefs="${this.settingsPrefs_}"
-        .enabledLangs="${this.enabledLangs}"
+        .enabledLangs="${this.enabledLangs_}"
         .availableVoices="${this.availableVoices_}"
         .previewVoicePlaying="${this.previewVoicePlaying_}"
         .localeToDisplayName="${this.localeToDisplayName_}"

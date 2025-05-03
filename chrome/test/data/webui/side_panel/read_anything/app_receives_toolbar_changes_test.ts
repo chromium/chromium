@@ -171,13 +171,13 @@ suite('AppReceivesToolbarChanges', () => {
     test('enabled languages are added', () => {
       const firstLanguage = 'en-us';
       emitLanguageToggle(firstLanguage);
-      assertTrue(app.enabledLangs.includes(firstLanguage));
+      assertTrue(voicePackController.isLangEnabled(firstLanguage));
       assertTrue(chrome.readingMode.getLanguagesEnabledInPref().includes(
           firstLanguage));
 
       const secondLanguage = 'fr';
       emitLanguageToggle(secondLanguage);
-      assertTrue(app.enabledLangs.includes(secondLanguage));
+      assertTrue(voicePackController.isLangEnabled(secondLanguage));
       assertTrue(chrome.readingMode.getLanguagesEnabledInPref().includes(
           secondLanguage));
     });
@@ -185,12 +185,12 @@ suite('AppReceivesToolbarChanges', () => {
     test('disabled languages are removed', () => {
       const firstLanguage = 'en-us';
       emitLanguageToggle(firstLanguage);
-      assertTrue(app.enabledLangs.includes(firstLanguage));
+      assertTrue(voicePackController.isLangEnabled(firstLanguage));
       assertTrue(chrome.readingMode.getLanguagesEnabledInPref().includes(
           firstLanguage));
 
       emitLanguageToggle(firstLanguage);
-      assertFalse(app.enabledLangs.includes(firstLanguage));
+      assertFalse(voicePackController.isLangEnabled(firstLanguage));
       assertFalse(chrome.readingMode.getLanguagesEnabledInPref().includes(
           firstLanguage));
     });
@@ -216,7 +216,7 @@ suite('AppReceivesToolbarChanges', () => {
 
             assertEquals(lang, sentInstallRequestFor);
             assertEquals(
-                VoicePackController.getInstance().getLocalStatus(lang),
+                voicePackController.getLocalStatus(lang),
                 VoiceClientSideStatusCode.SENT_INSTALL_REQUEST_ERROR_RETRY);
           });
 

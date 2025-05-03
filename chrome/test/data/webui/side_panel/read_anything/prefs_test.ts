@@ -45,7 +45,7 @@ suite('PrefsTest', () => {
 
       app.restoreSettingsFromPrefs();
 
-      assertFalse(app.enabledLangs.includes(previouslyAvailableLang));
+      assertFalse(voicePackController.isLangEnabled(previouslyAvailableLang));
       assertFalse(chrome.readingMode.getLanguagesEnabledInPref().includes(
           previouslyAvailableLang));
     });
@@ -60,14 +60,15 @@ suite('PrefsTest', () => {
 
       app.restoreSettingsFromPrefs();
 
-      assertFalse(app.enabledLangs.includes(previouslyAvailableLang));
+      assertFalse(voicePackController.isLangEnabled(previouslyAvailableLang));
       assertFalse(chrome.readingMode.getLanguagesEnabledInPref().includes(
           previouslyAvailableLang));
-      assertTrue(app.enabledLangs.includes(availableLang));
+      assertTrue(voicePackController.isLangEnabled(availableLang));
       assertTrue(chrome.readingMode.getLanguagesEnabledInPref().includes(
           availableLang));
     });
 
+    // <if expr="not is_chromeos">
     test('adds unavailable language to prefs once available', () => {
       const previouslyAvailableLang = 'da-dk';
       chrome.readingMode.onLanguagePrefChange(previouslyAvailableLang, true);
@@ -77,7 +78,7 @@ suite('PrefsTest', () => {
 
       app.restoreSettingsFromPrefs();
 
-      assertFalse(app.enabledLangs.includes(previouslyAvailableLang));
+      assertFalse(voicePackController.isLangEnabled(previouslyAvailableLang));
       assertFalse(chrome.readingMode.getLanguagesEnabledInPref().includes(
           previouslyAvailableLang));
 
@@ -87,10 +88,11 @@ suite('PrefsTest', () => {
         {lang: 'da-dk', name: 'Doctor Dillamond'},
       ]);
 
-      assertTrue(app.enabledLangs.includes(previouslyAvailableLang));
+      assertTrue(voicePackController.isLangEnabled(previouslyAvailableLang));
       assertTrue(chrome.readingMode.getLanguagesEnabledInPref().includes(
           previouslyAvailableLang));
     });
+    // </if>
 
     suite('with no initial voices', () => {
       setup(() => {
@@ -218,7 +220,8 @@ suite('PrefsTest', () => {
 
         app.restoreSettingsFromPrefs();
 
-        assertArrayEquals(app.enabledLangs, langs.concat(locales));
+        assertArrayEquals(
+            langs.concat(locales), voicePackController.getEnabledLangs());
       });
 
       test('with browser lang', () => {
@@ -226,7 +229,8 @@ suite('PrefsTest', () => {
 
         app.restoreSettingsFromPrefs();
 
-        assertArrayEquals(app.enabledLangs, [langs[1], locales[1]]);
+        assertArrayEquals(
+            [langs[1], locales[1]], voicePackController.getEnabledLangs());
       });
     });
 
@@ -275,7 +279,7 @@ suite('PrefsTest', () => {
 
       test('to a default voice if the stored voice is invalid', () => {
         chrome.readingMode.getStoredVoice = () => 'Matt';
-        app.enabledLangs = [langForDefaultVoice];
+        voicePackController.enableLang(langForDefaultVoice);
         app.restoreSettingsFromPrefs();
         assertEquals(defaultVoice, app.getSpeechSynthesisVoice());
       });
@@ -286,7 +290,7 @@ suite('PrefsTest', () => {
         });
 
         test('to the default voice for this language', () => {
-          app.enabledLangs = [lang1];
+          voicePackController.enableLang(lang1);
           app.speechSynthesisLanguage = lang1;
           app.restoreSettingsFromPrefs();
           assertEquals(defaultVoiceWithLang1, app.getSpeechSynthesisVoice());
@@ -296,14 +300,15 @@ suite('PrefsTest', () => {
           app.speechSynthesisLanguage = langWithNoVoices;
           emitEvent(
               app, ToolbarEvent.VOICE, {detail: {selectedVoice: otherVoice}});
-          app.enabledLangs = [otherVoice.lang];
+          voicePackController.enableLang(otherVoice.lang);
           app.restoreSettingsFromPrefs();
           assertEquals(otherVoice, app.getSpeechSynthesisVoice());
         });
 
         test('uses the device default if there\'s no current voice', () => {
           app.speechSynthesisLanguage = langWithNoVoices;
-          app.enabledLangs = [langForDefaultVoice, otherVoice.lang];
+          voicePackController.enableLang(langForDefaultVoice);
+          voicePackController.enableLang(otherVoice.lang);
           app.restoreSettingsFromPrefs();
           assertEquals(defaultVoice, app.getSpeechSynthesisVoice());
         });
@@ -311,7 +316,7 @@ suite('PrefsTest', () => {
         test(
             'to the first listed voice for this language if there\'s no default',
             () => {
-              app.enabledLangs = [lang2];
+              voicePackController.enableLang(lang2);
               app.speechSynthesisLanguage = lang2;
               app.restoreSettingsFromPrefs();
               const currentSelectedVoice = app.getSpeechSynthesisVoice();

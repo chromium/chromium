@@ -21,6 +21,34 @@ export class VoicePackModel {
   // The set of languages found in availableVoices_.
   private availableLangs_: Set<string> = new Set();
 
+  // The set of languages currently enabled for use by Read Aloud. This
+  // includes user-enabled languages and auto-downloaded languages. The former
+  // are stored in preferences. The latter are not.
+  private enabledLangs_: Set<string> = new Set();
+
+  // These are languages that don't exist when restoreEnabledLanguagesFromPref()
+  // is first called when the engine is getting set up. We need to disable
+  // unavailable languages, but since it's possible that these languages may
+  // become available once the TTS engine finishes setting up, we want to save
+  // them so they can be used as soon as they are available. This can happen
+  // when a natural voice is installed (e.g. Danish) when there isn't an
+  // equivalent system voice.
+  // <if expr="not is_chromeos">
+  private possiblyDisabledLangs_: Set<string> = new Set();
+  // </if>
+
+  getEnabledLangs(): Set<string> {
+    return this.enabledLangs_;
+  }
+
+  enableLang(lang: string): void {
+    this.enabledLangs_.add(lang);
+  }
+
+  disableLang(lang: string): boolean {
+    return this.enabledLangs_.delete(lang);
+  }
+
   getAvailableLangs(): Set<string> {
     return this.availableLangs_;
   }
@@ -36,6 +64,20 @@ export class VoicePackModel {
   setAvailableVoices(voices: SpeechSynthesisVoice[]): void {
     this.availableVoices_ = voices;
   }
+
+  // <if expr="not is_chromeos">
+  getPossiblyDisabledLangs(): Set<string> {
+    return this.possiblyDisabledLangs_;
+  }
+
+  addPossiblyDisabledLang(lang: string): void {
+    this.possiblyDisabledLangs_.add(lang);
+  }
+
+  removePossiblyDisabledLang(lang: string): void {
+    this.possiblyDisabledLangs_.delete(lang);
+  }
+  // </if>
 
   getServerStatus(lang: string): VoicePackStatus|null {
     const status = this.voicePackInstallStatusServerResponses_.get(lang);
