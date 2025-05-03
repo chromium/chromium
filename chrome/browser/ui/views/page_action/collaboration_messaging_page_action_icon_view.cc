@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/tabs/collaboration_messaging_page_action_icon_view.h"
+#include "chrome/browser/ui/views/page_action/collaboration_messaging_page_action_icon_view.h"
 
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/browser.h"

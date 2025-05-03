@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_TABS_COLLABORATION_MESSAGING_PAGE_ACTION_ICON_VIEW_H_
-#define CHROME_BROWSER_UI_VIEWS_TABS_COLLABORATION_MESSAGING_PAGE_ACTION_ICON_VIEW_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_PAGE_ACTION_COLLABORATION_MESSAGING_PAGE_ACTION_ICON_VIEW_H_
+#define CHROME_BROWSER_UI_VIEWS_PAGE_ACTION_COLLABORATION_MESSAGING_PAGE_ACTION_ICON_VIEW_H_
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
@@ -62,4 +62,4 @@ class CollaborationMessagingPageActionIconView : public PageActionIconView {
   base::CallbackListSubscription message_changed_callback_;
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_TABS_COLLABORATION_MESSAGING_PAGE_ACTION_ICON_VIEW_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_PAGE_ACTION_COLLABORATION_MESSAGING_PAGE_ACTION_ICON_VIEW_H_
