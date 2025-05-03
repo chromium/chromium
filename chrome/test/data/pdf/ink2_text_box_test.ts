@@ -126,30 +126,43 @@ chrome.test.runTests([
     chrome.test.assertEq(colorStyle, textboxStyles.getPropertyValue('color'));
 
     // Confirm updating styles in the manager updates the style of the textbox.
+    // Each type of update should independently trigger a change.
+    // Typeface
     manager.setTextTypeface('Serif');
+    await microtasksFinished();
+    chrome.test.assertEq(
+        'serif', textboxStyles.getPropertyValue('font-family'));
+
+    // Size
     manager.setTextSize(20);
+    await microtasksFinished();
+    chrome.test.assertEq('20px', textboxStyles.getPropertyValue('font-size'));
+
+    // Styles
     manager.setTextStyles({
       [TextStyle.BOLD]: true,
       [TextStyle.ITALIC]: true,
       [TextStyle.UNDERLINE]: true,
       [TextStyle.STRIKETHROUGH]: false,
     });
-    const newColor = hexToColor(TEXT_COLORS[1]!.color);
-    manager.setTextColor(newColor);
-    manager.setTextAlignment(TextAlignment.RIGHT);
     await microtasksFinished();
-    chrome.test.assertEq('20px', textboxStyles.getPropertyValue('font-size'));
-    chrome.test.assertEq(
-        'serif', textboxStyles.getPropertyValue('font-family'));
     chrome.test.assertEq('700', textboxStyles.getPropertyValue('font-weight'));
     chrome.test.assertEq(
         'italic', textboxStyles.getPropertyValue('font-style'));
-    chrome.test.assertEq('right', textboxStyles.getPropertyValue('text-align'));
     chrome.test.assertTrue(textboxStyles.getPropertyValue('text-decoration')
                                .includes('underline'));
+
+    // Color
+    const newColor = hexToColor(TEXT_COLORS[1]!.color);
+    manager.setTextColor(newColor);
     const newColorStyle = `rgb(${newColor.r}, ${newColor.g}, ${newColor.b})`;
     chrome.test.assertEq(
         newColorStyle, textboxStyles.getPropertyValue('color'));
+
+    // Alignment
+    manager.setTextAlignment(TextAlignment.RIGHT);
+    await microtasksFinished();
+    chrome.test.assertEq('right', textboxStyles.getPropertyValue('text-align'));
 
     // Reset everything for later tests.
     manager.setTextTypeface('Roboto');

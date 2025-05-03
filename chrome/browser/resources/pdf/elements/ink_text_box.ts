@@ -364,6 +364,7 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
   override onTextAttributesChanged(newAttributes: TextAttributes) {
     if (!!this.attributes_ &&
         newAttributes.typeface === this.attributes_.typeface &&
+        newAttributes.size === this.attributes_.size &&
         colorsEqual(newAttributes.color, this.attributes_.color) &&
         newAttributes.alignment === this.attributes_.alignment &&
         stylesEqual(newAttributes.styles, this.attributes_.styles)) {
