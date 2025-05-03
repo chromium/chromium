@@ -16,20 +16,17 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.Browser;
 import android.text.TextUtils;
-import android.window.OnBackInvokedCallback;
-import android.window.OnBackInvokedDispatcher;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
-import androidx.annotation.VisibleForTesting;
 import androidx.core.app.ActivityOptionsCompat;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.base.PackageManagerUtils;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -50,6 +47,7 @@ import org.chromium.chrome.browser.lifecycle.StartStopWithNativeObserver;
 import org.chromium.chrome.browser.preloading.PreloadingDataBridge;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
+import org.chromium.components.browser_ui.widget.gesture.OnSystemNavigationObserver;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
@@ -66,7 +64,7 @@ import java.util.function.Predicate;
 
 /** Responsible for navigating to new pages and going back to previous pages. */
 public class CustomTabActivityNavigationController
-        implements StartStopWithNativeObserver, BackPressHandler {
+        implements StartStopWithNativeObserver, BackPressHandler, OnSystemNavigationObserver {
     private static final String TAG = "CTANavigationCtrl";
 
     @IntDef({
@@ -116,13 +114,13 @@ public class CustomTabActivityNavigationController
 
     @Nullable private FinishHandler mFinishHandler;
 
-    @Nullable private OnBackInvokedCallback mOnSystemBackInvokedCallback;
-
     private boolean mIsFinishing;
 
     private boolean mIsHandlingUserNavigation;
 
     private @FinishReason int mFinishReason;
+
+    private static @Nullable Integer sVersionForTesting;
 
     private final CustomTabActivityTabProvider.Observer mTabObserver =
             new CustomTabActivityTabProvider.Observer() {
@@ -146,7 +144,7 @@ public class CustomTabActivityNavigationController
                     // If this is the first tab created or when all other tabs are closed, we want
                     // the OS to handle the back event then notify the registered observer that the
                     // back event has happened.
-                    if (ChromeFeatureList.sCctPredictiveBackGesture.isEnabled()
+                    if (supportsPredictiveBackGesture()
                             && mTabController.onlyOneTabRemaining()
                             && !mIntentDataProvider.isPartialCustomTab()) {
                         return false;
@@ -155,6 +153,14 @@ public class CustomTabActivityNavigationController
                             && ChromeBrowserInitializer.getInstance().isFullBrowserInitialized();
                 }
             };
+
+    /** Whether the feature of predictive back gesture is supported. */
+    public static boolean supportsPredictiveBackGesture() {
+        boolean isAtLeastB =
+                (sVersionForTesting == null ? Build.VERSION.SDK_INT : sVersionForTesting)
+                        >= Build.VERSION_CODES.BAKLAVA;
+        return isAtLeastB && ChromeFeatureList.sCctPredictiveBackGesture.isEnabled();
+    }
 
     public CustomTabActivityNavigationController(
             CustomTabActivityTabController tabController,
@@ -170,11 +176,6 @@ public class CustomTabActivityNavigationController
         mCustomTabObserver = customTabObserver;
         mCloseButtonNavigator = closeButtonNavigator;
         mActivity = activity;
-
-        if (ChromeFeatureList.sCctPredictiveBackGesture.isEnabled()
-                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.BAKLAVA) {
-            registerPredictiveBackCallback();
-        }
 
         lifecycleDispatcher.register(this);
         mTabProvider.addObserver(mTabObserver);
@@ -436,51 +437,17 @@ public class CustomTabActivityNavigationController
     @Override
     public void onStopWithNative() {
         if (mIsFinishing) {
-            if (ChromeFeatureList.sCctPredictiveBackGesture.isEnabled()
-                    && Build.VERSION.SDK_INT >= Build.VERSION_CODES.BAKLAVA
-                    && mOnSystemBackInvokedCallback != null) {
-                unregisterPredictiveBackCallback();
-            }
             mTabController.closeAndForgetTab();
         } else {
             mTabController.saveState();
         }
     }
 
-    /**
-     * Registers a callback with the system's {@link OnBackInvokedDispatcher} to handle predictive
-     * back navigation events.
-     *
-     * <p>This method initializes an {@link android.window.OnBackInvokedCallback} that, when
-     * invoked, will call the {@code handleNavigateOnBackByOS()} method. The callback is registered
-     * with the priority {@link OnBackInvokedDispatcher#PRIORITY_SYSTEM_NAVIGATION_OBSERVER}.
-     */
-    @VisibleForTesting
-    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
-    void registerPredictiveBackCallback() {
-        mOnSystemBackInvokedCallback = () -> handleNavigateOnBackByOS();
-        mActivity
-                .getOnBackInvokedDispatcher()
-                .registerOnBackInvokedCallback(
-                        OnBackInvokedDispatcher.PRIORITY_SYSTEM_NAVIGATION_OBSERVER,
-                        mOnSystemBackInvokedCallback);
-    }
-
-    /**
-     * Unregisters the predictive back callback previously registered with the system's {@link
-     * OnBackInvokedDispatcher}.
-     *
-     * <p>This method uses the callback instance stored in {@code mOnSystemBackInvokedCallback} to
-     * unregister it from the dispatcher. After unregistration, {@code mOnSystemBackInvokedCallback}
-     * is set to {@code null}.
-     */
-    @VisibleForTesting
-    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
-    void unregisterPredictiveBackCallback() {
-        mActivity
-                .getOnBackInvokedDispatcher()
-                .unregisterOnBackInvokedCallback(mOnSystemBackInvokedCallback);
-        mOnSystemBackInvokedCallback = null;
+    @Override
+    public void onSystemNavigation() {
+        if (supportsPredictiveBackGesture()) {
+            navigateOnBack(FinishReason.HANDLED_BY_OS);
+        }
     }
 
     // Debug log dump for https://crbug.com/374871254.
@@ -508,11 +475,9 @@ public class CustomTabActivityNavigationController
         assert false : assertMsg;
     }
 
-    private void handleNavigateOnBackByOS() {
-        if (ChromeFeatureList.sCctPredictiveBackGesture.isEnabled()
-                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.BAKLAVA) {
-            navigateOnBack(FinishReason.HANDLED_BY_OS);
-        }
+    static void enablePredictiveBackGestureForTesting() {
+        sVersionForTesting = Build.VERSION_CODES.BAKLAVA;
+        ResettersForTesting.register(() -> sVersionForTesting = null);
     }
 
     public BrowserServicesIntentDataProvider getIntentDataProviderForTesting() {
@@ -521,5 +486,9 @@ public class CustomTabActivityNavigationController
 
     public CustomTabActivityTabProvider.Observer getTabObserverForTesting() {
         return mTabObserver;
+    }
+
+    public Integer getVersionForTesting() {
+        return sVersionForTesting;
     }
 }

@@ -693,6 +693,10 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
         mBackPressManager.addHandler(
                 getCustomTabActivityNavigationController(),
                 BackPressHandler.Type.MINIMIZE_APP_AND_CLOSE_TAB);
+        if (CustomTabActivityNavigationController.supportsPredictiveBackGesture()) {
+            mBackPressManager.addOnSystemNavigationObserver(
+                    getCustomTabActivityNavigationController());
+        }
 
         new CustomTabSessionHandler(
                 getIntentDataProvider(),

@@ -7,12 +7,10 @@ package org.chromium.chrome.browser.customtabs.content;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -21,7 +19,6 @@ import android.content.ContextWrapper;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.os.Build;
-import android.window.OnBackInvokedCallback;
 import android.window.OnBackInvokedDispatcher;
 
 import com.google.common.collect.ImmutableList;
@@ -138,11 +135,11 @@ public class CustomTabActivityNavigationControllerTest {
         mNavigationController
                 .getTabObserverForTesting()
                 .onInitialTabCreated(env.prepareTab(), TabCreationMode.DEFAULT);
-        Assert.assertFalse(mNavigationController.getHandleBackPressChangedSupplier().get());
+        Assert.assertTrue(mNavigationController.getHandleBackPressChangedSupplier().get());
 
-        mNavigationController.navigateOnBack(FinishReason.HANDLED_BY_OS);
+        mNavigationController.navigateOnBack(FinishReason.USER_NAVIGATION);
         histogramWatcher.assertExpected();
-        verify(mFinishHandler).onFinish(FinishReason.HANDLED_BY_OS, true);
+        verify(mFinishHandler).onFinish(FinishReason.USER_NAVIGATION, true);
         env.tabProvider.removeTab();
         Assert.assertNull(env.tabProvider.getTab());
     }
@@ -171,11 +168,11 @@ public class CustomTabActivityNavigationControllerTest {
         mNavigationController
                 .getTabObserverForTesting()
                 .onInitialTabCreated(env.prepareTab(), TabCreationMode.DEFAULT);
-        Assert.assertFalse(mNavigationController.getHandleBackPressChangedSupplier().get());
+        Assert.assertTrue(mNavigationController.getHandleBackPressChangedSupplier().get());
 
-        mNavigationController.navigateOnBack(FinishReason.HANDLED_BY_OS);
+        mNavigationController.navigateOnBack(FinishReason.USER_NAVIGATION);
         histogramWatcher.assertExpected();
-        verify(mFinishHandler).onFinish(FinishReason.HANDLED_BY_OS, true);
+        verify(mFinishHandler).onFinish(FinishReason.USER_NAVIGATION, true);
         env.tabProvider.removeTab();
         Assert.assertNull(env.tabProvider.getTab());
     }
@@ -264,6 +261,7 @@ public class CustomTabActivityNavigationControllerTest {
 
     @Test
     public void observerDefaultsToOS_WhenOnlyOneTabRemains() {
+        CustomTabActivityNavigationController.enablePredictiveBackGestureForTesting();
         when(mTabController.onlyOneTabRemaining()).thenReturn(false);
         when(mTabController.dispatchBeforeUnloadIfNeeded()).thenReturn(false);
         mNavigationController.getTabObserverForTesting().onTabSwapped(env.prepareTab());
@@ -277,6 +275,7 @@ public class CustomTabActivityNavigationControllerTest {
 
     @Test
     public void observerDoesNotDefaultToOS_WhenPartialCCT() {
+        CustomTabActivityNavigationController.enablePredictiveBackGestureForTesting();
         when(mTabController.onlyOneTabRemaining()).thenReturn(true);
         when(mTabController.dispatchBeforeUnloadIfNeeded()).thenReturn(false);
         when(mNavigationController.getIntentDataProviderForTesting().isPartialCustomTab())
@@ -288,45 +287,36 @@ public class CustomTabActivityNavigationControllerTest {
     }
 
     @Test
-    @Config(sdk = Build.VERSION_CODES.TIRAMISU)
-    public void registersPredictiveBackCallback_WhenEnabledForPredictiveBack() {
-        mNavigationController.registerPredictiveBackCallback();
+    @Config(sdk = Build.VERSION_CODES.VANILLA_ICE_CREAM)
+    public void predictiveBackGesture_RequiresAndroidBaklava() {
+        Assert.assertFalse(CustomTabActivityNavigationController.supportsPredictiveBackGesture());
 
-        ArgumentCaptor<OnBackInvokedCallback> captor =
-                ArgumentCaptor.forClass(OnBackInvokedCallback.class);
+        // Sets the Android version to Baklava.
+        CustomTabActivityNavigationController.enablePredictiveBackGestureForTesting();
 
-        verify(env.activity, times(1)).getOnBackInvokedDispatcher();
-
-        // TODO(crbug.com/40285983): Update the verify function to use the actual enum value instead
-        // of (-2) once Roboelectric starts supporting Android Baklava.
-
-        // The "-2" value comes from OnBackInvokedDispatcher#PRIORITY_SYSTEM_NAVIGATION_OBSERVER.
-        // However, since Roboelectric is not enabled for API level 36 yet, the actual value of the
-        // flag is used. For reference:
-        // https://developer.android.com/reference/android/window/OnBackInvokedDispatcher#PRIORITY_SYSTEM_NAVIGATION_OBSERVER
-        verify(env.activity.getOnBackInvokedDispatcher(), times(1))
-                .registerOnBackInvokedCallback(eq(-2), captor.capture());
-
-        OnBackInvokedCallback capturedCallback = captor.getValue();
-
-        Assert.assertNotNull(capturedCallback);
+        Assert.assertTrue(CustomTabActivityNavigationController.supportsPredictiveBackGesture());
     }
 
     @Test
-    @Config(sdk = Build.VERSION_CODES.TIRAMISU)
-    public void unregistersPredictiveBackCallback_WhenEnabledForPredictiveBack() {
-        mNavigationController.unregisterPredictiveBackCallback();
+    public void getVersionForTesting_ReturnsSetVersion() {
+        Assert.assertFalse(CustomTabActivityNavigationController.supportsPredictiveBackGesture());
 
-        ArgumentCaptor<OnBackInvokedCallback> captor =
-                ArgumentCaptor.forClass(OnBackInvokedCallback.class);
+        // Sets the Android version to Baklava.
+        CustomTabActivityNavigationController.enablePredictiveBackGestureForTesting();
 
-        verify(env.activity, times(1)).getOnBackInvokedDispatcher();
+        Assert.assertEquals(
+                "The version should be 36, which is the Android API level for Baklava.",
+                /*Android 16 API level*/ 36,
+                (int) mNavigationController.getVersionForTesting());
+    }
 
-        verify(env.activity.getOnBackInvokedDispatcher(), times(1))
-                .unregisterOnBackInvokedCallback(captor.capture());
+    @Test
+    public void whenCallbackInvoked_FinishesWithReasonHandledByOS() {
+        when(mTabController.onlyOneTabRemaining()).thenReturn(true);
+        when(mTabController.dispatchBeforeUnloadIfNeeded()).thenReturn(true);
+        CustomTabActivityNavigationController.enablePredictiveBackGestureForTesting();
+        mNavigationController.onSystemNavigation();
 
-        OnBackInvokedCallback capturedCallback = captor.getValue();
-
-        Assert.assertNull(capturedCallback);
+        verify(mFinishHandler).onFinish(FinishReason.HANDLED_BY_OS, true);
     }
 }
