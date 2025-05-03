@@ -13,6 +13,8 @@
 -AdsPageLoadMetricsObserverBrowserTest.PageAdDensityMultipleFrames
 -AdsPageLoadMetricsObserverBrowserTest.PageAdDensityRecordsPageMax
 -ProfilePickerEnterpriseCreationFlowBrowserTest.CreateSignedInProfileWithSuggestedTwoFactorAuthSetup
+-WebAppBrowserTest.SetBounds
+-PrintBrowserTest.NoResizeEvent
 
 # Failing on both mutter and weston
 -BackForwardCachePageLoadMetricsObserverBrowserTest.CumulativeLayoutShiftAfterBackForwardCacheRestore
