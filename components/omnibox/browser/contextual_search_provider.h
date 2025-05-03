@@ -73,7 +73,7 @@ class ContextualSearchProvider : public BaseSearchProvider {
 
   // Populates `matches_` with special matches that help the user find their
   // way into the '@page' scope.
-  void AddPageSearchActionMatches();
+  void AddPageSearchActionMatches(const AutocompleteInput& input);
 
   // Adds a default match for verbatim input, or keyword instructions if there
   // is no input yet. This is the match that holds the omnibox in keyword mode

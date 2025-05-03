@@ -19,6 +19,7 @@
 #include "base/notreached.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -111,7 +112,7 @@ void ContextualSearchProvider::Start(
         input.current_url().SchemeIsHTTPOrHTTPS() &&
         (input.IsZeroSuggest() ||
          input.type() == metrics::OmniboxInputType::EMPTY)) {
-      AddPageSearchActionMatches();
+      AddPageSearchActionMatches(input);
     }
     return;
   }
@@ -305,7 +306,8 @@ void ContextualSearchProvider::ConvertSuggestResultsToAutocompleteMatches(
   }
 }
 
-void ContextualSearchProvider::AddPageSearchActionMatches() {
+void ContextualSearchProvider::AddPageSearchActionMatches(
+    const AutocompleteInput& input) {
   // These matches are effectively pedals that don't require any query matching.
   AutocompleteMatch match(this, kAdvertActionRelevance, false,
                           AutocompleteMatchType::PEDAL);
@@ -323,6 +325,12 @@ void ContextualSearchProvider::AddPageSearchActionMatches() {
   };
   if (omnibox_feature_configs::ContextualSearch::Get().single_lens_action) {
     add_action(base::MakeRefCounted<ContextualSearchOpenLensAction>());
+    // This one is special in that it also gets secondary text to show URL host.
+    AutocompleteMatch& action_match = matches_.back();
+    action_match.description = action_match.contents;
+    action_match.description_class = action_match.contents_class;
+    action_match.contents = base::UTF8ToUTF16(input.current_url().host());
+    action_match.contents_class = {{0, ACMatchClassification::URL}};
   } else {
     add_action(base::MakeRefCounted<ContextualSearchAskAboutPageAction>());
     add_action(base::MakeRefCounted<ContextualSearchSelectRegionAction>());
