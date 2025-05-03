@@ -67,7 +67,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="1195412055398077112">overscan</translation>
 <translation id="1195667586424773550">Arraste o link para a barra de endereço do separador.</translation>
 <translation id="119944043368869598">Limpar tudo</translation>
-<translation id="1199716647557067911">Tem a certeza de que quer desativar o acesso por comutador?</translation>
+<translation id="1199716647557067911">Tem a certeza de que quer desativar o acesso por switch?</translation>
 <translation id="1201402288615127009">Seguinte</translation>
 <translation id="1210557957257435379">gravação de ecrã</translation>
 <translation id="121097972571826261">Avançar por palavra</translation>
@@ -203,7 +203,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="1620510694547887537">Câmara</translation>
 <translation id="1623768535032616219">Reduzir Google Classroom</translation>
 <translation id="163032029566320584"><ph name="UNAVAILABLE_DLC" /> não está disponível.</translation>
-<translation id="1632985212731562677">O acesso por comutador pode ser desativado em Definições &gt; Acessibilidade.</translation>
+<translation id="1632985212731562677">O acesso por switch pode ser desativado em Definições &gt; Acessibilidade.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> dispositivos</translation>
 <translation id="1639239467298939599">A carregar…</translation>
 <translation id="1647986356840967552">Página anterior</translation>
@@ -657,7 +657,7 @@ Caso contrário, o touchpad incorporado é reativado dentro de <ph name="TIMEOUT
 <translation id="3181441307743005334">O reinício poderá demorar algum tempo</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Ligado a um dispositivo}other{Ligado a # dispositivos}}</translation>
 <translation id="320207200541803018">Define um temporizador</translation>
-<translation id="3203405173652969239">Acesso por comutador ativado</translation>
+<translation id="3203405173652969239">Acesso por switch ativado</translation>
 <translation id="3206735939915734551">Ligar/desligar o Caps Lock</translation>
 <translation id="3207953481422525583">Definições do utilizador</translation>
 <translation id="3208321278970793882">App</translation>

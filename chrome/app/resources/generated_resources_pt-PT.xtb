@@ -1284,7 +1284,7 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1875387611427697908">Só é possível adicioná-la a partir da <ph name="CHROME_WEB_STORE" />.</translation>
 <translation id="1877377290348678128">Etiqueta (opcional)</translation>
 <translation id="1877377730633446520">Vai usar cerca de <ph name="REQUIRED_SPACE" />. Atualmente, tem <ph name="FREE_SPACE" /> de espaço disponível.</translation>
-<translation id="1877860345998737529">Atribuição de ações do acesso por comutador</translation>
+<translation id="1877860345998737529">Atribuição de ações do acesso por switch</translation>
 <translation id="1878155070920054810">O seu Chromebook vai ficar sem bateria antes da conclusão da atualização. Para evitar interrupções, certifique-se de que o mesmo está a carregar corretamente.</translation>
 <translation id="1878477879455105085">Aberto</translation>
 <translation id="1878885068166344708">O item fica realçado quando move o foco. Prima a tecla Tab ou selecione um item para alterar o foco.</translation>
@@ -2119,7 +2119,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="244641233057214044">Relacionado com a sua pesquisa</translation>
 <translation id="2447587550790814052">Já pode usar o Steam para o Chromebook (beta)</translation>
 <translation id="2448312741937722512">Tipo</translation>
-<translation id="2448810255793562605">Análise automática do acesso por comutador</translation>
+<translation id="2448810255793562605">Análise automática do acesso por switch</translation>
 <translation id="2450021089947420533">Percursos</translation>
 <translation id="2450223707519584812">Não pode adicionar utilizadores porque as chaves da API do Google estão em falta. Consulte <ph name="DETAILS_URL" /> para obter detalhes.</translation>
 <translation id="2450849356604136918">Sem vistas ativas</translation>
@@ -2248,7 +2248,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2526590354069164005">Ambiente de trabalho</translation>
 <translation id="2526619973349913024">Procurar atualizações</translation>
 <translation id="2527167509808613699">Qualquer tipo de ligação</translation>
-<translation id="2529887123641260401">Pode sempre alterar as suas definições ou abrir o guia de configuração novamente a partir das definições do acesso por comutador.</translation>
+<translation id="2529887123641260401">Pode sempre alterar as suas definições ou abrir o guia de configuração novamente a partir das definições do acesso por switch.</translation>
 <translation id="2530166226437958497">Resolução de problemas</translation>
 <translation id="2531530485656743109"><ph name="BEGIN_PARAGRAPH1" />Algo correu mal e não foi possível instalar o <ph name="DEVICE_OS" />.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Para obter mais ajuda, visite: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
@@ -4938,7 +4938,7 @@ Quer pará-lo?</translation>
     <ph name="BEGIN_PARAGRAPH2" />Pode iniciar ou parar a autorização destes relatórios a qualquer altura nas definições do dispositivo Chrome. Se for um administrador de domínio, pode alterar esta definição na consola do administrador.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="442528696198546304">As palavras-passe, as chaves de acesso e outros dados vão ser eliminados permanentemente do <ph name="BRAND" /></translation>
 <translation id="4426268963847471040">Apagar <ph name="FILE_NAME" /></translation>
-<translation id="4426464032773610160">Para começar, certifique-se de que o comutador USB ou Bluetooth está ligado ao Chromebook. Também pode utilizar as teclas do teclado.</translation>
+<translation id="4426464032773610160">Para começar, certifique-se de que o switch USB ou Bluetooth está ligado ao Chromebook. Também pode utilizar as teclas do teclado.</translation>
 <translation id="4426490308207168518">Partilhe feedback ou comunique um problema</translation>
 <translation id="4426508677408162512">Todos os marcadores</translation>
 <translation id="4426513927906544654">Receber recomendações de conteúdo</translation>
@@ -5457,7 +5457,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="4809447465126035330">Apagar</translation>
 <translation id="480990236307250886">Abrir a página de início</translation>
 <translation id="4809927044794281115">Tema claro</translation>
-<translation id="4811212958317149293">Análise automática do teclado do acesso por comutador</translation>
+<translation id="4811212958317149293">Análise automática do teclado do acesso por switch</translation>
 <translation id="4811503964269049987">Agrupar o separador selecionado</translation>
 <translation id="4812073856515324252">Escolha onde guardar a sua chave de acesso para a app <ph name="APP_NAME" /></translation>
 <translation id="4813512666221746211">Erro de rede</translation>
@@ -6167,7 +6167,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="5302932258331363306">Mostrar substituições</translation>
 <translation id="5305145881844743843">Esta conta é gerida por <ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" />.</translation>
 <translation id="5307030433605830021">Origem não suportada</translation>
-<translation id="5307386115243749078">Sincronizar comutador Bluetooth</translation>
+<translation id="5307386115243749078">Sincronizar switch Bluetooth</translation>
 <translation id="5308380583665731573">Ligar</translation>
 <translation id="5308989548591363504">Verificar a existência de software malicioso</translation>
 <translation id="5309418307557605830">O Assistente Google também funciona aqui</translation>
@@ -8775,7 +8775,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7210257969463271891">As apps Web que instalar são apresentadas aqui</translation>
 <translation id="7210432570808024354">Tocar e arrastar para mover itens</translation>
 <translation id="7210499381659830293">Impressoras por extensão</translation>
-<translation id="7211783048245131419">Ainda não foi atribuído qualquer comutador</translation>
+<translation id="7211783048245131419">Ainda não foi atribuído qualquer switch</translation>
 <translation id="7212097698621322584">Introduza o seu PIN atual para o alterar. Se não souber qual é o PIN, tem de repor a chave de segurança e, em seguida, criar um novo PIN.</translation>
 <translation id="7214047272988222011">Permitida: <ph name="PERMISSION_DETAILS" />. Ative o <ph name="LINK_BEGIN" />acesso à câmara do sistema<ph name="LINK_END" />.</translation>
 <translation id="721490496276866468">Importar palavras-passe</translation>
@@ -9497,7 +9497,7 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="7717014941119698257">A transferir: <ph name="STATUS" /></translation>
 <translation id="771721654176725387">Esta ação elimina permanentemente os dados de navegação deste dispositivo. Para recuperar os dados, ative Sincronizar como</translation>
 <translation id="7717845620320228976">Procurar atualizações</translation>
-<translation id="7718490543420739837">Teclado no ecrã, ditado, acesso por comutador e muito mais</translation>
+<translation id="7718490543420739837">Teclado no ecrã, ditado, acesso por switch e muito mais</translation>
 <translation id="7719367874908701697">Zoom da página</translation>
 <translation id="7719588063158526969">O nome do dispositivo é demasiado longo.</translation>
 <translation id="7721105961977907890"><ph name="WEBSITE" />, ver detalhes</translation>
@@ -10365,7 +10365,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8314089908545021657">Sincronizar com o novo telemóvel</translation>
 <translation id="8314381333424235892">Extensão em falta ou desinstalada.</translation>
 <translation id="831440797644402910">Não é possível abrir esta pasta</translation>
-<translation id="8314835274931377415">Quer iniciar a configuração do acesso por comutador?</translation>
+<translation id="8314835274931377415">Quer iniciar a configuração do acesso por switch?</translation>
 <translation id="8315018673856831477">Opções da funcionalidade Poupança de memória</translation>
 <translation id="8315514906653279104">A ativar…</translation>
 <translation id="8317671367883557781">Adicionar ligação de rede</translation>

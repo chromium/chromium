@@ -11562,7 +11562,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="9128870381267983090">네트워크에 연결</translation>
 <translation id="9129562557082598582">모든 <ph name="CERT_GROUP" /> 내보내기</translation>
 <translation id="9130015405878219958">잘못된 모드를 입력했습니다.</translation>
-<translation id="9130135798965366513">계속하려면 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />에서 내 <ph name="FIELDS_STRING" />을(를) 이 사이트와 공유해야 합니다. 이 사이트의 <ph name="BEGIN_LINK1" />개인정보처리방침<ph name="END_LINK1" />과 <ph name="BEGIN_LINK2" />서비스 약관<ph name="END_LINK2" />을 확인하세요.</translation>
+<translation id="9130135798965366513">계속하려면 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />에서 내 <ph name="FIELDS_STRING" /> 정보를 이 사이트와 공유해야 합니다. 이 사이트의 <ph name="BEGIN_LINK1" />개인정보처리방침<ph name="END_LINK1" />과 <ph name="BEGIN_LINK2" />서비스 약관<ph name="END_LINK2" />을 확인하세요.</translation>
 <translation id="9130208109420587135">그룹 이름 <ph name="NAME" /> 수정</translation>
 <translation id="9130364135697530260">이 사이트에 삽입된 콘텐츠에서는 나에 관해 저장된 정보를 사용할 수 없습니다.</translation>
 <translation id="9131209053278896908">차단된 사이트가 여기에 표시됩니다.</translation>
