@@ -5,6 +5,7 @@ package org.chromium.chrome.browser.toolbar;
 
 import android.content.Context;
 import android.view.Gravity;
+import android.view.MotionEvent;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.FrameLayout;
 
@@ -16,6 +17,7 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.Observer;
 import org.chromium.chrome.browser.omnibox.LocationBar;
+import org.chromium.components.browser_ui.widget.TouchEventObserver;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.KeyboardVisibilityDelegate.KeyboardVisibilityListener;
 
@@ -37,6 +39,8 @@ public class MiniOriginBarController implements Observer {
     private final BrowserControlsSizer mBrowserControlsSizer;
     private boolean mShowMiniOriginBar;
     private int mDefaultLocationBarGravity;
+    private boolean mOriginBarClickedInSession;
+    private TouchEventObserver mTouchEventObserver;
 
     /**
      * @param locationBar LocationBar instance used to change the presentation of e.g. the UrlBar
@@ -73,6 +77,16 @@ public class MiniOriginBarController implements Observer {
 
         mIsFormFieldFocusedSupplier.addObserver(mIsFormFieldFocusedObserver);
         mKeyboardVisibilityDelegate.addKeyboardVisibilityListener(mKeyboardVisibilityObserver);
+
+        mTouchEventObserver =
+                e -> {
+                    if (!mShowMiniOriginBar) return false;
+                    boolean isDownEvent = e.getActionMasked() == MotionEvent.ACTION_DOWN;
+                    mOriginBarClickedInSession = isDownEvent;
+                    updateMiniOriginBarState();
+                    return isDownEvent;
+                };
+        controlContainer.addTouchEventObserver(mTouchEventObserver);
     }
 
     private void updateMiniOriginBarState() {
@@ -82,9 +96,13 @@ public class MiniOriginBarController implements Observer {
                         mContext, mControlContainer.getView());
         boolean isToolbarBottomAnchored =
                 mBrowserControlsSizer.getControlsPosition() == ControlsPosition.BOTTOM;
+        if (!isFormFieldFocused || !isKeyboardVisible) mOriginBarClickedInSession = false;
 
         boolean showMiniOriginBar =
-                isToolbarBottomAnchored && isFormFieldFocused && isKeyboardVisible;
+                !mOriginBarClickedInSession
+                        && isToolbarBottomAnchored
+                        && isFormFieldFocused
+                        && isKeyboardVisible;
         if (showMiniOriginBar == mShowMiniOriginBar) return;
 
         mShowMiniOriginBar = showMiniOriginBar;

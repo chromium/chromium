@@ -11,6 +11,7 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.widget.ClipDrawableProgressBar;
+import org.chromium.components.browser_ui.widget.TouchEventObserver;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.SwipeHandler;
 import org.chromium.ui.resources.dynamics.ViewResourceAdapter;
 
@@ -93,6 +94,18 @@ public interface ControlContainer {
      * valid in cases where there is a location bar view.
      */
     void toggleLocationBarOnlyMode(boolean showOnlyLocationBar);
+
+    /**
+     * Add a touch event observer that can observe/intercept touch events that occur within the
+     * control container. Observers are processed in order of addition and after any special case
+     * handling for, e.g. swipe events or the tab strip.
+     */
+    void addTouchEventObserver(TouchEventObserver observer);
+
+    /**
+     * Remove a touch event observer added via {@link #addTouchEventObserver(TouchEventObserver)}
+     */
+    void removeTouchEventObserver(TouchEventObserver observer);
 
     /**
      * Destroys the control container, causing it to release any owned native resources and cancel
