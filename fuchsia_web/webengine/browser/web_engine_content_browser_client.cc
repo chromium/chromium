@@ -313,32 +313,29 @@ base::OnceClosure WebEngineContentBrowserClient::SelectClientCertificate(
 std::vector<std::unique_ptr<content::NavigationThrottle>>
 WebEngineContentBrowserClient::CreateThrottlesForNavigation(
     content::NavigationThrottleRegistry& registry) {
-  std::vector<std::unique_ptr<content::NavigationThrottle>> throttles;
-  content::NavigationHandle* navigation_handle =
-      &registry.GetNavigationHandle();
+  auto& navigation_handle = registry.GetNavigationHandle();
   auto* frame_impl =
-      FrameImpl::FromWebContents(navigation_handle->GetWebContents());
+      FrameImpl::FromWebContents(navigation_handle.GetWebContents());
   DCHECK(frame_impl);
 
   // Only create throttle if FrameImpl has a NavigationPolicyProvider,
   // indicating an interest in navigations.
   if (frame_impl->navigation_policy_handler()) {
-    throttles.push_back(std::make_unique<NavigationPolicyThrottle>(
-        navigation_handle, frame_impl->navigation_policy_handler()));
+    registry.AddThrottle(std::make_unique<NavigationPolicyThrottle>(
+        &navigation_handle, frame_impl->navigation_policy_handler()));
   }
 
   const std::optional<std::string>& explicit_sites_filter_error_page =
       frame_impl->explicit_sites_filter_error_page();
 
   if (explicit_sites_filter_error_page) {
-    throttles.push_back(std::make_unique<SafeSitesNavigationThrottle>(
-        navigation_handle,
-        navigation_handle->GetWebContents()->GetBrowserContext(),
+    registry.AddThrottle(std::make_unique<SafeSitesNavigationThrottle>(
+        &navigation_handle,
+        navigation_handle.GetWebContents()->GetBrowserContext(),
         *explicit_sites_filter_error_page));
   }
 
-  // TODO(https://crbug.com/412524375): NavigationThrottleRegistry migration.
-  return throttles;
+  return {};
 }
 
 std::vector<std::unique_ptr<blink::URLLoaderThrottle>>
