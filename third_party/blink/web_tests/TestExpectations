@@ -2641,6 +2641,8 @@ crbug.com/413411328 external/wpt/css/css-values/urls/referrer-policy/unsafe-url/
 crbug.com/413411328 external/wpt/css/css-values/urls/referrer-policy/unsafe-url/url-image-referrerpolicy-same-origin.sub.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+[ Mac15 ] external/wpt/css/css-overflow/scroll-marker-contain-005.tentative.html [ Failure ]
+[ Mac12 ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/view-transition-types-mutable-no-document-element-crashtest.html [ Crash ]
 external/wpt/digital-credentials/allow-attribute-with-create.https.html [ Failure Pass Timeout ]
 external/wpt/digital-credentials/allow-attribute-with-get.https.html [ Pass Timeout ]
 external/wpt/digital-credentials/enabled-on-self-origin-by-permissions-policy.https.sub.html [ Pass Timeout ]
