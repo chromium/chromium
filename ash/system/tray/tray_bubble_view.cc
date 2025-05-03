@@ -327,12 +327,6 @@ TrayBubbleView::TrayBubbleView(const InitParams& init_params)
   SetPaintClientToLayer(false);
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
 
-  const ui::ColorId background_color_id =
-      chromeos::features::IsSystemBlurEnabled()
-          ? cros_tokens::kCrosSysSystemBaseElevated
-          : cros_tokens::kCrosSysSystemBaseElevatedOpaque;
-  set_background_color(background_color_id);
-
   DCHECK(delegate_);
   DCHECK(params_.parent_window);
   // anchor_widget() is computed by BubbleDialogDelegateView().
@@ -348,29 +342,31 @@ TrayBubbleView::TrayBubbleView(const InitParams& init_params)
   set_margins(init_params.margin.has_value() ? init_params.margin.value()
                                              : gfx::Insets());
 
-  if (init_params.translucent) {
-    // TODO(crbug.com/40832096): In the dark light mode feature, remove layer
-    // creation in children views of this view to improve performance.
-    SetPaintToLayer(ui::LAYER_TEXTURED);
+  // Always create a layer so that the layer for FocusRing stays in this view's
+  // layer. Without it, the layer for FocusRing goes above the NativeViewHost
+  // and may steal events.
+  // TODO(crbug.com/40832096): In the dark light mode feature, remove layer
+  // creation in children views of this view to improve performance.
+  SetPaintToLayer(init_params.transparent ? ui::LAYER_NOT_DRAWN
+                                          : ui::LAYER_TEXTURED);
+
+  if (!init_params.transparent) {
     layer()->SetRoundedCornerRadius(
         gfx::RoundedCornersF{static_cast<float>(params_.corner_radius)});
     layer()->SetIsFastRoundedCorner(true);
-    if (chromeos::features::IsSystemBlurEnabled()) {
-      layer()->SetFillsBoundsOpaquely(false);
-      layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
-      layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
-    }
-  } else {
-    // Create a layer so that the layer for FocusRing stays in this view's
-    // layer. Without it, the layer for FocusRing goes above the
-    // NativeViewHost and may steal events.
-    SetPaintToLayer(ui::LAYER_NOT_DRAWN);
 
-    if (!init_params.transparent) {
-      SetPaintToLayer();
-      layer()->SetRoundedCornerRadius(
-          gfx::RoundedCornersF{static_cast<float>(params_.corner_radius)});
-    }
+    set_background_color(cros_tokens::kCrosSysSystemBaseElevatedOpaque);
+    SetBorder(std::make_unique<views::HighlightBorder>(
+        params_.corner_radius,
+        views::HighlightBorder::Type::kHighlightBorderOnShadow));
+  }
+
+  if (init_params.translucent && chromeos::features::IsSystemBlurEnabled()) {
+    CHECK(!init_params.transparent);
+    set_background_color(cros_tokens::kCrosSysSystemBaseElevated);
+    layer()->SetFillsBoundsOpaquely(false);
+    layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
+    layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
   }
 
   if (params_.has_shadow) {
@@ -642,23 +638,6 @@ void TrayBubbleView::OnMouseExited(const ui::MouseEvent& event) {
   if (delegate_ && mouse_actively_entered_) {
     delegate_->OnMouseExitedView();
   }
-}
-
-void TrayBubbleView::OnThemeChanged() {
-  views::BubbleDialogDelegateView::OnThemeChanged();
-  if (params_.transparent) {
-    return;
-  }
-
-  SetBorder(std::make_unique<views::HighlightBorder>(
-      params_.corner_radius,
-      views::HighlightBorder::Type::kHighlightBorderOnShadow));
-
-  const ui::ColorId background_color_id =
-      chromeos::features::IsSystemBlurEnabled()
-          ? cros_tokens::kCrosSysSystemBaseElevated
-          : cros_tokens::kCrosSysSystemBaseElevatedOpaque;
-  set_background_color(GetColorProvider()->GetColor(background_color_id));
 }
 
 void TrayBubbleView::MouseMovedOutOfHost() {

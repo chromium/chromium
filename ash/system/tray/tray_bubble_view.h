@@ -244,7 +244,6 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
       const views::SizeBounds& available_size) const override;
   void OnMouseEntered(const ui::MouseEvent& event) override;
   void OnMouseExited(const ui::MouseEvent& event) override;
-  void OnThemeChanged() override;
 
   // views::MouseWatcherListener:
   void MouseMovedOutOfHost() override;
