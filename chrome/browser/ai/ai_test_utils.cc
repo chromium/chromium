@@ -5,7 +5,6 @@
 #include "chrome/browser/ai/ai_test_utils.h"
 
 #include "chrome/browser/ai/ai_manager.h"
-#include "chrome/browser/ai/ai_summarizer.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "third_party/blink/public/mojom/ai/model_download_progress_observer.mojom.h"
 
@@ -171,50 +170,6 @@ const optimization_guide::TokenLimits& AITestUtils::GetFakeTokenLimits() {
 const optimization_guide::proto::Any& AITestUtils::GetFakeFeatureMetadata() {
   static base::NoDestructor<optimization_guide::proto::Any> data;
   return *data;
-}
-
-// static
-void AITestUtils::CheckWritingAssistanceApiRequest(
-    const google::protobuf::MessageLite& request_metadata,
-    const std::string& expected_shared_context,
-    const std::string& expected_context,
-    const optimization_guide::proto::WritingAssistanceApiOptions&
-        expected_options,
-    const std::string& expected_rewrite_text,
-    const std::string& expected_instructions) {
-  const optimization_guide::proto::WritingAssistanceApiRequest* request =
-      static_cast<
-          const optimization_guide::proto::WritingAssistanceApiRequest*>(
-          &request_metadata);
-  EXPECT_EQ(request->shared_context(), expected_shared_context);
-  EXPECT_EQ(request->context(), expected_context);
-  EXPECT_EQ(request->options().output_tone(), expected_options.output_tone());
-  EXPECT_EQ(request->options().output_format(),
-            expected_options.output_format());
-  EXPECT_EQ(request->options().output_length(),
-            expected_options.output_length());
-  EXPECT_EQ(request->rewrite_text(), expected_rewrite_text);
-  EXPECT_EQ(request->instructions(), expected_instructions);
-}
-
-// static
-void AITestUtils::CheckSummarizeRequest(
-    const google::protobuf::MessageLite& request_metadata,
-    const std::string& expected_shared_context,
-    const std::string& expected_context,
-    const optimization_guide::proto::SummarizeOptions& expected_options,
-    const std::string& expected_input) {
-  const optimization_guide::proto::SummarizeRequest* request =
-      static_cast<const optimization_guide::proto::SummarizeRequest*>(
-          &request_metadata);
-  EXPECT_EQ(request->context(), AISummarizer::CombineContexts(
-                                    expected_shared_context, expected_context));
-  EXPECT_EQ(request->options().output_type(), expected_options.output_type());
-  EXPECT_EQ(request->options().output_format(),
-            expected_options.output_format());
-  EXPECT_EQ(request->options().output_length(),
-            expected_options.output_length());
-  EXPECT_EQ(request->article(), expected_input);
 }
 
 // static

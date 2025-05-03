@@ -4,7 +4,8 @@
 
 #include "chrome/browser/ai/ai_summarizer.h"
 
-#include "base/strings/stringprintf.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "chrome/browser/ai/ai_context_bound_object.h"
 #include "chrome/browser/ai/ai_utils.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
@@ -86,20 +87,12 @@ AISummarizer::ToProtoOptions(
 }
 
 // static
-std::string AISummarizer::CombineContexts(const std::string& shared_context,
-                                          const std::string& input_context) {
-  std::string final_context = shared_context;
-  if (!input_context.empty()) {
-    if (!final_context.empty()) {
-      final_context = final_context + " " + input_context;
-    } else {
-      final_context = input_context;
-    }
-  }
-  if (!final_context.empty()) {
-    final_context += "\n";
-  }
-  return final_context;
+std::string AISummarizer::CombineContexts(std::string_view shared,
+                                          std::string_view input) {
+  std::string result = (!shared.empty() && !input.empty())
+                           ? base::JoinString({shared, input}, " ")
+                           : std::string(shared.empty() ? input : shared);
+  return result.empty() ? result : base::StrCat({result, "\n"});
 }
 
 void AISummarizer::Summarize(

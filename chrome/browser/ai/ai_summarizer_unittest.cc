@@ -7,6 +7,7 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
+#include "base/test/protobuf_matchers.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ai/ai_test_utils.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
@@ -23,6 +24,7 @@
 
 namespace {
 
+using ::base::test::EqualsProto;
 using ::blink::mojom::AILanguageCode;
 using ::blink::mojom::AILanguageCodePtr;
 using ::testing::_;
@@ -88,9 +90,17 @@ blink::mojom::AISummarizerCreateOptionsPtr GetDefaultOptions() {
       /*output_language=*/AILanguageCode::New(""));
 }
 
-std::unique_ptr<optimization_guide::proto::SummarizeOptions>
-GetDefaultExpectedOptions() {
-  return AISummarizer::ToProtoOptions(GetDefaultOptions());
+// Get a request proto matching that expected for ExecuteModel() calls.
+optimization_guide::proto::SummarizeRequest GetExecuteRequest(
+    std::string_view context_string = kContextString,
+    std::string_view article_string = kInputString) {
+  optimization_guide::proto::SummarizeRequest request;
+  request.set_context(
+      AISummarizer::CombineContexts(kSharedContextString, context_string));
+  request.set_allocated_options(
+      AISummarizer::ToProtoOptions(GetDefaultOptions()).release());
+  request.set_article(article_string);
+  return request;
 }
 
 class AISummarizerTest : public AITestUtils::AITestBase {
@@ -121,21 +131,21 @@ class AISummarizerTest : public AITestUtils::AITestBase {
   void RunSimpleSummarizeTest(blink::mojom::AISummarizerType type,
                               blink::mojom::AISummarizerFormat format,
                               blink::mojom::AISummarizerLength length) {
+    auto expected = GetExecuteRequest();
     const auto options = blink::mojom::AISummarizerCreateOptions::New(
         kSharedContextString, type, format, length,
         /*expected_input_languages=*/std::vector<AILanguageCodePtr>(),
         /*expected_context_languages=*/std::vector<AILanguageCodePtr>(),
         /*output_language=*/AILanguageCode::New(""));
-
+    expected.set_allocated_options(
+        AISummarizer::ToProtoOptions(options).release());
     EXPECT_CALL(session_, ExecuteModel(_, _))
         .WillOnce(testing::Invoke(
-            [&](const google::protobuf::MessageLite& request_metadata,
+            [&](const google::protobuf::MessageLite& request,
                 optimization_guide::
                     OptimizationGuideModelExecutionResultStreamingCallback
                         callback) {
-              AITestUtils::CheckSummarizeRequest(
-                  request_metadata, kSharedContextString, kContextString,
-                  *AISummarizer::ToProtoOptions(options), kInputString);
+              EXPECT_THAT(request, EqualsProto(expected));
               callback.Run(CreateExecutionResult("Result text",
                                                  /*is_complete=*/true));
             }));
@@ -179,6 +189,13 @@ class AISummarizerTest : public AITestUtils::AITestBase {
     run_loop.Run();
   }
 };
+
+TEST(AISummarizerStandaloneTest, CombineContexts) {
+  EXPECT_EQ("", AISummarizer::CombineContexts("", ""));
+  EXPECT_EQ("a\n", AISummarizer::CombineContexts("a", ""));
+  EXPECT_EQ("b\n", AISummarizer::CombineContexts("", "b"));
+  EXPECT_EQ("a b\n", AISummarizer::CombineContexts("a", "b"));
+}
 
 TEST_F(AISummarizerTest, CanCreateDefaultOptions) {
   SetupMockOptimizationGuideKeyedService();
@@ -529,13 +546,11 @@ TEST_F(AISummarizerTest, ModelExecutionError) {
   SetupMockSession();
   EXPECT_CALL(session_, ExecuteModel(_, _))
       .WillOnce(testing::Invoke(
-          [](const google::protobuf::MessageLite& request_metadata,
+          [](const google::protobuf::MessageLite& request,
              optimization_guide::
                  OptimizationGuideModelExecutionResultStreamingCallback
                      callback) {
-            AITestUtils::CheckSummarizeRequest(
-                request_metadata, kSharedContextString, kContextString,
-                *GetDefaultExpectedOptions(), kInputString);
+            EXPECT_THAT(request, EqualsProto(GetExecuteRequest()));
             callback.Run(CreateExecutionErrorResult(
                 optimization_guide::OptimizationGuideModelExecutionError::
                     FromModelExecutionError(
@@ -566,14 +581,11 @@ TEST_F(AISummarizerTest, SummarizeMultipleResponse) {
   SetupMockSession();
   EXPECT_CALL(session_, ExecuteModel(_, _))
       .WillOnce(testing::Invoke(
-          [](const google::protobuf::MessageLite& request_metadata,
+          [](const google::protobuf::MessageLite& request,
              optimization_guide::
                  OptimizationGuideModelExecutionResultStreamingCallback
                      callback) {
-            AITestUtils::CheckSummarizeRequest(
-                request_metadata, kSharedContextString, kContextString,
-                *GetDefaultExpectedOptions(), kInputString);
-
+            EXPECT_THAT(request, EqualsProto(GetExecuteRequest()));
             callback.Run(
                 CreateExecutionResult("Result ", /*is_complete=*/false));
             callback.Run(CreateExecutionResult("text",
@@ -605,24 +617,21 @@ TEST_F(AISummarizerTest, MultipleSummarize) {
   SetupMockSession();
   EXPECT_CALL(session_, ExecuteModel(_, _))
       .WillOnce(testing::Invoke(
-          [](const google::protobuf::MessageLite& request_metadata,
+          [](const google::protobuf::MessageLite& request,
              optimization_guide::
                  OptimizationGuideModelExecutionResultStreamingCallback
                      callback) {
-            AITestUtils::CheckSummarizeRequest(
-                request_metadata, kSharedContextString, kContextString,
-                *GetDefaultExpectedOptions(), kInputString);
+            EXPECT_THAT(request, EqualsProto(GetExecuteRequest()));
             callback.Run(CreateExecutionResult("Result text",
                                                /*is_complete=*/true));
           }))
       .WillOnce(testing::Invoke(
-          [](const google::protobuf::MessageLite& request_metadata,
+          [](const google::protobuf::MessageLite& request,
              optimization_guide::
                  OptimizationGuideModelExecutionResultStreamingCallback
                      callback) {
-            AITestUtils::CheckSummarizeRequest(
-                request_metadata, kSharedContextString, "test context 2",
-                *GetDefaultExpectedOptions(), "input string 2");
+            EXPECT_THAT(request, EqualsProto(GetExecuteRequest(
+                                     "test context 2", "input string 2")));
             callback.Run(CreateExecutionResult("Result text 2",
                                                /*is_complete=*/true));
           }));
@@ -674,13 +683,11 @@ TEST_F(AISummarizerTest, ResponderDisconnected) {
       streaming_callback;
   EXPECT_CALL(session_, ExecuteModel(_, _))
       .WillOnce(testing::Invoke(
-          [&](const google::protobuf::MessageLite& request_metadata,
+          [&](const google::protobuf::MessageLite& request,
               optimization_guide::
                   OptimizationGuideModelExecutionResultStreamingCallback
                       callback) {
-            AITestUtils::CheckSummarizeRequest(
-                request_metadata, kSharedContextString, kContextString,
-                *GetDefaultExpectedOptions(), kInputString);
+            EXPECT_THAT(request, EqualsProto(GetExecuteRequest()));
             streaming_callback = std::move(callback);
             run_loop_for_callback.Quit();
           }));
@@ -710,13 +717,11 @@ TEST_F(AISummarizerTest, SummarizerDisconnected) {
       streaming_callback;
   EXPECT_CALL(session_, ExecuteModel(_, _))
       .WillOnce(testing::Invoke(
-          [&](const google::protobuf::MessageLite& request_metadata,
+          [&](const google::protobuf::MessageLite& request,
               optimization_guide::
                   OptimizationGuideModelExecutionResultStreamingCallback
                       callback) {
-            AITestUtils::CheckSummarizeRequest(
-                request_metadata, kSharedContextString, kContextString,
-                *GetDefaultExpectedOptions(), kInputString);
+            EXPECT_THAT(request, EqualsProto(GetExecuteRequest()));
             streaming_callback = std::move(callback);
             run_loop_for_callback.Quit();
           }));

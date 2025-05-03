@@ -11,8 +11,6 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/component_updater/mock_component_updater_service.h"
 #include "components/optimization_guide/core/mock_optimization_guide_model_executor.h"
-#include "components/optimization_guide/proto/features/summarize.pb.h"
-#include "components/optimization_guide/proto/features/writing_assistance_api.pb.h"
 #include "components/update_client/crx_update_item.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -175,21 +173,6 @@ class AITestUtils {
 
   static const optimization_guide::TokenLimits& GetFakeTokenLimits();
   static const optimization_guide::proto::Any& GetFakeFeatureMetadata();
-
-  static void CheckWritingAssistanceApiRequest(
-      const google::protobuf::MessageLite& request_metadata,
-      const std::string& expected_shared_context,
-      const std::string& expected_context,
-      const optimization_guide::proto::WritingAssistanceApiOptions&
-          expected_options,
-      const std::string& expected_rewrite_text,
-      const std::string& expected_instructions);
-  static void CheckSummarizeRequest(
-      const google::protobuf::MessageLite& request_metadata,
-      const std::string& expected_shared_context,
-      const std::string& expected_context,
-      const optimization_guide::proto::SummarizeOptions& expected_options,
-      const std::string& expected_input);
 
   // Converts string language codes to AILanguageCode mojo struct.
   static std::vector<blink::mojom::AILanguageCodePtr> ToMojoLanguageCodes(
