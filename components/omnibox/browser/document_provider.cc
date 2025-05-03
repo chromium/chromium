@@ -498,10 +498,10 @@ void DocumentProvider::Start(const AutocompleteInput& input,
 
   done_ = false;  // Set true in callbacks.
   debouncer_->RequestRun(
-      base::BindOnce(&DocumentProvider::Run, base::Unretained(this)));
+      base::BindOnce(&DocumentProvider::Run, base::Unretained(this), input));
 }
 
-void DocumentProvider::Run() {
+void DocumentProvider::Run(const AutocompleteInput& input) {
   // DocumentSuggestionsServiceFactory does not create a service instance for
   // OTR profiles. We should not get this far for those profiles.
   DCHECK(!client_->IsOffTheRecord());
@@ -509,6 +509,7 @@ void DocumentProvider::Run() {
   client_->GetRemoteSuggestionsService(/*create_if_necessary=*/true)
       ->CreateDocumentSuggestionsRequest(
           input_.text(), /*is_off_the_record=*/false,
+          input.current_page_classification(),
           base::BindOnce(
               &DocumentProvider::OnDocumentSuggestionsLoaderAvailable,
               weak_ptr_factory_.GetWeakPtr()),

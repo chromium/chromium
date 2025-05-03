@@ -2573,6 +2573,22 @@ Keep consistent with active providers. Doesn't need to include every provider in
 </histogram>
 
 <histogram
+    name="Omnibox.SuggestRequestsSent.HttpResponseCode.{OmniboxPageContext}{RemoteRequestType}"
+    enum="HttpResponseCode" expires_after="2025-10-12">
+  <owner>mahmadi@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    The number of responses from the omnibox suggest backends, sliced by the
+    request type and the page context (a.k.a. page classification) and bucketed
+    by the HTTP response code. Recorded once per response received, which is at
+    most one time per Omnibox.SuggestRequestsSent is recorded, since some
+    requests are cancelled.
+  </summary>
+  <token key="OmniboxPageContext" variants="OmniboxPageContext"/>
+  <token key="RemoteRequestType" variants="RemoteRequestType"/>
+</histogram>
+
+<histogram
     name="Omnibox.SuggestRequestsSent.HttpResponseCode{RemoteRequestType}"
     enum="HttpResponseCode" expires_after="2025-10-12">
   <owner>mahmadi@chromium.org</owner>
@@ -2652,6 +2668,23 @@ Keep consistent with active providers. Doesn't need to include every provider in
     <variant name=".People" summary="Number of people suggestions"/>
     <variant name=".Query" summary="Number of query suggestions"/>
   </token>
+</histogram>
+
+<histogram name="Omnibox.SuggestRequestsSent.{OmniboxPageContext}"
+    enum="RemoteRequestType" expires_after="2025-10-12">
+  <owner>mahmadi@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    The number of requests sent by the omnibox to its suggest backends, bucketed
+    by the request type, sliced by the page context (a.k.a. page
+    classification). Recorded when the request starts, i.e., after obtaining the
+    OAuth token if applicable, at most once per omnibox autocompletion cycle as
+    the user types or has focused or cleared the omnibox but has not typed in
+    yet (aka zero-suggest); In other words, at most once per each time the user
+    changes the omnibox input. For zero-suggest prefetching requests, this may
+    be recorded on page load and on tab switch events for eligible pages.
+  </summary>
+  <token key="OmniboxPageContext" variants="OmniboxPageContext"/>
 </histogram>
 
 <histogram name="Omnibox.SuggestTiles.DeletedTileIndex" units="position"
