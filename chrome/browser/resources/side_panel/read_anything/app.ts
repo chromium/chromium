@@ -31,7 +31,7 @@ import {ReadAnythingLogger, TimeFrom} from './read_anything_logger.js';
 import type {ReadAnythingToolbarElement} from './read_anything_toolbar.js';
 import type {SpeechBrowserProxy} from './speech_browser_proxy.js';
 import {SpeechBrowserProxyImpl} from './speech_browser_proxy.js';
-import {areVoicesEqual, AVAILABLE_GOOGLE_TTS_LOCALES, convertLangOrLocaleForVoicePackManager, convertLangOrLocaleToExactVoicePackLocale, convertLangToAnAvailableLangIfPresent, doesLanguageHaveNaturalVoices, EXTENSION_RESPONSE_TIMEOUT_MS, getNaturalVoiceOrDefault, getVoicePackConvertedLangIfExists, isNatural, isVoicePackStatusError, isVoicePackStatusSuccess, mojoVoicePackStatusToVoicePackStatusEnum, VoiceClientSideStatusCode, VoicePackServerStatusErrorCode, VoicePackServerStatusSuccessCode} from './voice_language_util.js';
+import {areVoicesEqual, AVAILABLE_GOOGLE_TTS_LOCALES, convertLangOrLocaleForVoicePackManager, convertLangOrLocaleToExactVoicePackLocale, convertLangToAnAvailableLangIfPresent, doesLanguageHaveNaturalVoices, getNaturalVoiceOrDefault, getVoicePackConvertedLangIfExists, isNatural, isVoicePackStatusError, isVoicePackStatusSuccess, mojoVoicePackStatusToVoicePackStatusEnum, VoiceClientSideStatusCode, VoicePackServerStatusErrorCode, VoicePackServerStatusSuccessCode} from './voice_language_util.js';
 import type {VoicePackStatus} from './voice_language_util.js';
 import {VoiceNotificationManager} from './voice_notification_manager.js';
 
@@ -150,13 +150,6 @@ export class AppElement extends AppElementBase {
   // visual feedback that a voice is about to be spoken.
   private accessor speechEngineLoaded_: boolean = true;
 
-  // The extension is responsible for installing the Natural voices. We need to
-  // keep track of whether the extension is being responsive. If not, the
-  // extension is probably not downloaded and we'll let the user know. This
-  // handle is a reference to the callback that will be invoked if the extension
-  // does not respond in a timely manner.
-  private speechExtensionResponseCallbackHandle_?: number;
-
   // Sometimes distillations are queued up while distillation is happening so
   // when the current distillation finishes, we re-distill immediately. In that
   // case we shouldn't allow playing speech until the next distillation to avoid
@@ -187,10 +180,6 @@ export class AppElement extends AppElementBase {
   protected accessor previewVoicePlaying_: SpeechSynthesisVoice|undefined;
 
   protected accessor localeToDisplayName_: {[locale: string]: string} = {};
-
-  // Set of languages of the browser and/or of the pages navigated to that we
-  // need to download Natural voices for automatically
-  private languagesForVoiceDownloads: Set<string> = new Set();
 
   // Metrics captured for logging.
   private playSessionStartTime: number = -1;
@@ -266,7 +255,7 @@ export class AppElement extends AppElementBase {
     // Even though disconnectedCallback isn't always called reliably in prod,
     // it is called in tests, and the speech extension timeout can cause
     // flakiness.
-    this.cancelSpeechExtensionResponseTimeout();
+    this.voicePackController_.stopWaitingForSpeechExtension();
   }
 
   override connectedCallback() {
@@ -285,7 +274,7 @@ export class AppElement extends AppElementBase {
     this.showLoading();
 
     if (this.isReadAloudEnabled_) {
-      VoiceNotificationManager.getInstance().addListener(this.$.languageToast);
+      this.notificationManager_.addListener(this.$.languageToast);
 
       // Clear state. We don't do this in disconnectedCallback because that's
       // not always reliabled called.
@@ -701,16 +690,6 @@ export class AppElement extends AppElementBase {
     }
   }
 
-  private sendGetVoicePackInfoRequest(langOrLocale: string) {
-    const langOrLocaleForPackManager =
-        convertLangOrLocaleForVoicePackManager(langOrLocale);
-    if (langOrLocaleForPackManager) {
-      this.setSpeechExtensionResponseTimeout();
-      chrome.readingMode.sendGetVoicePackInfoRequest(
-          langOrLocaleForPackManager);
-    }
-  }
-
   private loadImages_() {
     if (!chrome.readingMode.imagesFeatureEnabled) {
       return;
@@ -885,8 +864,7 @@ export class AppElement extends AppElementBase {
   }
 
   updateVoicePackStatus(lang: string, status: string) {
-    // This is called when the extension responds, so let's cancel the timer.
-    this.cancelSpeechExtensionResponseTimeout();
+    this.voicePackController_.stopWaitingForSpeechExtension();
 
     if (!lang) {
       return;
@@ -906,24 +884,6 @@ export class AppElement extends AppElementBase {
     }
   }
 
-
-  // Schedules a timer that will notify the user if the speech extension is
-  // unresponsive. Only schedules a new timer if there is none pending.
-  private setSpeechExtensionResponseTimeout() {
-    if (this.speechExtensionResponseCallbackHandle_ === undefined) {
-      this.speechExtensionResponseCallbackHandle_ = setTimeout(
-          () => this.notificationManager_.onNoEngineConnection(),
-          EXTENSION_RESPONSE_TIMEOUT_MS);
-    }
-  }
-
-  private cancelSpeechExtensionResponseTimeout() {
-    if (this.speechExtensionResponseCallbackHandle_ !== undefined) {
-      clearTimeout(this.speechExtensionResponseCallbackHandle_);
-      this.speechExtensionResponseCallbackHandle_ = undefined;
-    }
-  }
-
   // Store client side voice pack state and trigger side effects
   private updateApplicationState(
       lang: string, newVoicePackStatus: VoicePackStatus) {
@@ -932,18 +892,7 @@ export class AppElement extends AppElementBase {
 
       switch (newStatusCode) {
         case VoicePackServerStatusSuccessCode.NOT_INSTALLED:
-          // Install the voice if it's not currently installed and it's marked
-          // as a language that should be installed
-          if (this.languagesForVoiceDownloads.has(lang)) {
-            // Don't re-send install request if it's already been sent
-            if (this.voicePackController_.getLocalStatus(lang) !==
-                VoiceClientSideStatusCode.SENT_INSTALL_REQUEST) {
-              this.forceInstallRequest(lang, /* isRetry = */ false);
-            }
-          } else {
-            this.voicePackController_.setLocalStatus(
-                lang, VoiceClientSideStatusCode.NOT_INSTALLED);
-          }
+          this.voicePackController_.triggerInstall(lang);
           break;
         case VoicePackServerStatusSuccessCode.INSTALLING:
           // Do nothing- we mark our local state as installing when we send the
@@ -1010,11 +959,11 @@ export class AppElement extends AppElementBase {
   }
 
   protected onLanguageMenuOpen_() {
-    VoiceNotificationManager.getInstance().removeListener(this.$.languageToast);
+    this.notificationManager_.removeListener(this.$.languageToast);
   }
 
   protected onLanguageMenuClose_() {
-    VoiceNotificationManager.getInstance().addListener(this.$.languageToast);
+    this.notificationManager_.addListener(this.$.languageToast);
   }
 
   onVoicesChanged() {
@@ -1067,7 +1016,7 @@ export class AppElement extends AppElementBase {
 
     // Now that the voice list has changed, refresh the VoicePackStatuses in
     // case a language has been uninstalled.
-    this.refreshVoicePackStatuses();
+    this.voicePackController_.refreshVoicePackStatuses();
 
     // If the selected voice is now unavailable, such as after an uninstall,
     // reselect a new voice.
@@ -1179,12 +1128,6 @@ export class AppElement extends AppElementBase {
           this.voicePackController_.getDisplayNamesForLocaleCodes();
     }
     return this.availableVoices_;
-  }
-
-  private refreshVoicePackStatuses() {
-    for (const lang of this.voicePackController_.getServerLanguages()) {
-      this.sendGetVoicePackInfoRequest(lang);
-    }
   }
 
   protected onPreviewVoice_(
@@ -1962,17 +1905,7 @@ export class AppElement extends AppElementBase {
           toggledLanguage, /* onlyInstallExactGoogleLocaleMatch=*/ true,
           /* retryIfPreviousInstallFailed= */ true);
     } else {
-      // If the language has been deselected, remove the language from the
-      // list of language packs to download
-      const langCodeForVoicePackManager =
-          convertLangOrLocaleForVoicePackManager(toggledLanguage);
-      if (langCodeForVoicePackManager) {
-        this.notificationManager_.onCancelDownload(langCodeForVoicePackManager);
-        this.languagesForVoiceDownloads.delete(langCodeForVoicePackManager);
-        // Uninstall the Natural voice when a language is deselected.
-        chrome.readingMode.sendUninstallVoiceRequest(
-            langCodeForVoicePackManager);
-      }
+      this.voicePackController_.uninstall(toggledLanguage);
     }
 
     const updateEnabledLangs = currentlyEnabled ?
@@ -2244,54 +2177,10 @@ export class AppElement extends AppElementBase {
       return;
     }
 
-    const statusForLang =
-        this.voicePackController_.getServerStatus(langCodeForVoicePackManager);
-
-    if (!statusForLang) {
-      if (retryIfPreviousInstallFailed) {
-        this.forceInstallRequest(
-            langCodeForVoicePackManager, /* isRetry = */ false);
-      } else {
-        this.languagesForVoiceDownloads.add(langCodeForVoicePackManager);
-        // Inquire if the voice pack is downloaded. If not, it'll trigger a
-        // download when we get the response in updateVoicePackStatus().
-        this.sendGetVoicePackInfoRequest(langCodeForVoicePackManager);
-      }
-      return;
-    }
-
-    // If we send an install request for this language, we'll auto switch
-    // voices after it installs.
-    if (isVoicePackStatusSuccess(statusForLang) &&
-        statusForLang.code === VoicePackServerStatusSuccessCode.NOT_INSTALLED) {
-      this.languagesForVoiceDownloads.add(langCodeForVoicePackManager);
-      // Inquire if the voice pack is downloaded. If not, it'll trigger a
-      // download when we get the response in updateVoicePackStatus().
-      this.sendGetVoicePackInfoRequest(langCodeForVoicePackManager);
-    } else if (
-        retryIfPreviousInstallFailed && isVoicePackStatusError(statusForLang)) {
-      this.languagesForVoiceDownloads.add(langCodeForVoicePackManager);
-
-      // If the previous install attempt failed (e.g. due to no internet
-      // connection), the PackManager sends a failure for subsequent GetInfo
-      // requests. Therefore, we need to bypass our normal flow of calling
-      // GetInfo to see if the voice is available to install, and just call
-      // sendInstallVoicePackRequest directly
-      this.forceInstallRequest(
-          langCodeForVoicePackManager, /* isRetry = */ true);
-    } else {
+    if (!this.voicePackController_.requestInstall(
+            langCodeForVoicePackManager, retryIfPreviousInstallFailed)) {
       this.autoSwitchVoice_(langCodeForVoicePackManager);
     }
-  }
-
-  private forceInstallRequest(
-      langCodeForVoicePackManager: string, isRetry: boolean) {
-    this.voicePackController_.setLocalStatus(
-        langCodeForVoicePackManager,
-        isRetry ? VoiceClientSideStatusCode.SENT_INSTALL_REQUEST_ERROR_RETRY :
-                  VoiceClientSideStatusCode.SENT_INSTALL_REQUEST);
-
-    chrome.readingMode.sendInstallVoicePackRequest(langCodeForVoicePackManager);
   }
 
   protected onKeyDown_(e: KeyboardEvent) {

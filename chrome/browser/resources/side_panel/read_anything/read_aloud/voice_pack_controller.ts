@@ -4,8 +4,8 @@
 
 import type {SpeechBrowserProxy} from '../speech_browser_proxy.js';
 import {SpeechBrowserProxyImpl} from '../speech_browser_proxy.js';
-import type {VoiceClientSideStatusCode, VoicePackStatus} from '../voice_language_util.js';
-import {areVoicesEqual, AVAILABLE_GOOGLE_TTS_LOCALES, convertLangOrLocaleForVoicePackManager, createInitialListOfEnabledLanguages, getFilteredVoiceList, getVoicePackConvertedLangIfExists} from '../voice_language_util.js';
+import type {VoicePackStatus} from '../voice_language_util.js';
+import {areVoicesEqual, AVAILABLE_GOOGLE_TTS_LOCALES, convertLangOrLocaleForVoicePackManager, createInitialListOfEnabledLanguages, EXTENSION_RESPONSE_TIMEOUT_MS, getFilteredVoiceList, getVoicePackConvertedLangIfExists, isVoicePackStatusError, isVoicePackStatusSuccess, VoiceClientSideStatusCode, VoicePackServerStatusSuccessCode} from '../voice_language_util.js';
 import {VoiceNotificationManager} from '../voice_notification_manager.js';
 
 import {VoicePackModel} from './voice_pack_model.js';
@@ -22,6 +22,12 @@ export class VoicePackController {
       VoiceNotificationManager.getInstance();
   private model_: VoicePackModel = new VoicePackModel();
   private speech_: SpeechBrowserProxy = SpeechBrowserProxyImpl.getInstance();
+
+  // The extension is responsible for installing the Natural voices. If the
+  // extension is not being responsive, the extension is probably not
+  // downloaded. This handle is a reference to the callback that will be invoked
+  // if the extension does not respond in a timely manner.
+  private speechExtensionResponseCallbackHandle_?: number;
 
   getEnabledLangs(): string[] {
     return [...this.model_.getEnabledLangs()];
@@ -185,8 +191,111 @@ export class VoicePackController {
     }
   }
 
-  getServerLanguages(): string[] {
-    return this.model_.getServerLanguages();
+  refreshVoicePackStatuses() {
+    for (const lang of this.model_.getServerLanguages()) {
+      this.requestInfo_(lang);
+    }
+  }
+
+  triggerInstall(voicePackLanguage: string) {
+    // Install the voice if it's not currently installed and it's marked
+    // as a language that should be installed
+    if (this.model_.hasLanguageForDownload(voicePackLanguage)) {
+      // Don't re-send install request if it's already been sent
+      if (this.getLocalStatus(voicePackLanguage) !==
+          VoiceClientSideStatusCode.SENT_INSTALL_REQUEST) {
+        this.forceInstallRequest_(voicePackLanguage, /* isRetry = */ false);
+      }
+    } else {
+      this.setLocalStatus(
+          voicePackLanguage, VoiceClientSideStatusCode.NOT_INSTALLED);
+    }
+  }
+
+  // Returns true if this requested either an install or more info.
+  requestInstall(
+      voicePackLanguage: string,
+      retryIfPreviousInstallFailed: boolean): boolean {
+    const serverStatus = this.getServerStatus(voicePackLanguage);
+    if (!serverStatus) {
+      if (retryIfPreviousInstallFailed) {
+        this.forceInstallRequest_(voicePackLanguage, /* isRetry = */ false);
+      } else {
+        // Inquire if the voice pack is downloaded. If not, it'll trigger a
+        // download in updateVoicePackStatus().
+        this.model_.addLanguageForDownload(voicePackLanguage);
+        this.requestInfo_(voicePackLanguage);
+      }
+      return true;
+    }
+
+    if (isVoicePackStatusSuccess(serverStatus) &&
+        serverStatus.code === VoicePackServerStatusSuccessCode.NOT_INSTALLED) {
+      // Inquire if the voice pack is downloaded. If not, it'll trigger a
+      // download in updateVoicePackStatus().
+      this.model_.addLanguageForDownload(voicePackLanguage);
+      this.requestInfo_(voicePackLanguage);
+      return true;
+    }
+
+    if (retryIfPreviousInstallFailed && isVoicePackStatusError(serverStatus)) {
+      this.model_.addLanguageForDownload(voicePackLanguage);
+
+      // If the previous install attempt failed (e.g. due to no internet
+      // connection), the PackManager sends a failure for subsequent GetInfo
+      // requests. Therefore, bypass the normal flow of calling
+      // GetInfo to see if the voice is available to install, and just call
+      // sendInstallVoicePackRequest directly
+      this.forceInstallRequest_(voicePackLanguage, /* isRetry = */ true);
+      return true;
+    }
+
+    return false;
+  }
+
+  uninstall(langOrLocale: string) {
+    const voicePackLang = convertLangOrLocaleForVoicePackManager(langOrLocale);
+    if (voicePackLang) {
+      this.notificationManager_.onCancelDownload(voicePackLang);
+      this.model_.removeLanguageForDownload(voicePackLang);
+      chrome.readingMode.sendUninstallVoiceRequest(voicePackLang);
+    }
+  }
+
+  stopWaitingForSpeechExtension() {
+    if (this.speechExtensionResponseCallbackHandle_ !== undefined) {
+      clearTimeout(this.speechExtensionResponseCallbackHandle_);
+      this.speechExtensionResponseCallbackHandle_ = undefined;
+    }
+  }
+
+  private requestInfo_(langOrLocale: string) {
+    const langOrLocaleForPackManager =
+        convertLangOrLocaleForVoicePackManager(langOrLocale);
+    if (langOrLocaleForPackManager) {
+      this.setSpeechExtensionResponseTimeout_();
+      chrome.readingMode.sendGetVoicePackInfoRequest(
+          langOrLocaleForPackManager);
+    }
+  }
+
+  private forceInstallRequest_(voicePackLanguage: string, isRetry: boolean) {
+    this.setLocalStatus(
+        voicePackLanguage,
+        isRetry ? VoiceClientSideStatusCode.SENT_INSTALL_REQUEST_ERROR_RETRY :
+                  VoiceClientSideStatusCode.SENT_INSTALL_REQUEST);
+
+    chrome.readingMode.sendInstallVoicePackRequest(voicePackLanguage);
+  }
+
+  // Schedules a timer that will notify the user if the speech extension is
+  // unresponsive. Only schedules a new timer if there is none pending.
+  private setSpeechExtensionResponseTimeout_() {
+    if (this.speechExtensionResponseCallbackHandle_ === undefined) {
+      this.speechExtensionResponseCallbackHandle_ = setTimeout(
+          () => this.notificationManager_.onNoEngineConnection(),
+          EXTENSION_RESPONSE_TIMEOUT_MS);
+    }
   }
 
   private alignPreferencesWithEnabledLangs_(languagesInPref: string[]) {

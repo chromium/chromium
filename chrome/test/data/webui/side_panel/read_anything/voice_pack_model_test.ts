@@ -179,4 +179,34 @@ suite('VoicePackModel', () => {
 
     assertEquals(status2, voicePackModel.getLocalStatus(lang));
   });
+
+  test('addLanguageForDownload', () => {
+    const lang1 = 'de';
+    const lang2 = 'hi';
+    const lang3 = 'xyz';
+
+    voicePackModel.addLanguageForDownload(lang1);
+    voicePackModel.addLanguageForDownload(lang2);
+    voicePackModel.addLanguageForDownload(lang3);
+
+    assertTrue(voicePackModel.hasLanguageForDownload(lang1));
+    assertTrue(voicePackModel.hasLanguageForDownload(lang2));
+    assertTrue(voicePackModel.hasLanguageForDownload(lang3));
+  });
+
+  test('removeLanguageForDownload', () => {
+    const lang1 = 'de';
+    const lang2 = 'hi';
+    const lang3 = 'xyz';
+
+    voicePackModel.addLanguageForDownload(lang1);
+    voicePackModel.addLanguageForDownload(lang2);
+    voicePackModel.addLanguageForDownload(lang3);
+    voicePackModel.removeLanguageForDownload(lang1);
+    voicePackModel.removeLanguageForDownload(lang2);
+
+    assertFalse(voicePackModel.hasLanguageForDownload(lang1));
+    assertFalse(voicePackModel.hasLanguageForDownload(lang2));
+    assertTrue(voicePackModel.hasLanguageForDownload(lang3));
+  });
 });

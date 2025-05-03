@@ -4,9 +4,10 @@
 
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import type {NotificationType, VoiceNotificationListener} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {BrowserProxy, mojoVoicePackStatusToVoicePackStatusEnum, SpeechBrowserProxyImpl, VoiceClientSideStatusCode, VoiceNotificationManager, VoicePackController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {BrowserProxy, EXTENSION_RESPONSE_TIMEOUT_MS, mojoVoicePackStatusToVoicePackStatusEnum, NotificationType, SpeechBrowserProxyImpl, VoiceClientSideStatusCode, VoiceNotificationManager, VoicePackController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import type {VoiceNotificationListener} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {MockTimer} from 'chrome-untrusted://webui-test/mock_timer.js';
 
 import {createSpeechSynthesisVoice} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
@@ -237,4 +238,232 @@ suite('VoicePackController', () => {
     assertTrue(voicePackController.isLangEnabled(lang3));
   });
   // </if>
+
+  suite('installation', () => {
+    let installedLangs: string[];
+    let uninstalledLangs: string[];
+    let requestInfoLangs: string[];
+    let notificationType: NotificationType|null;
+
+    setup(() => {
+      installedLangs = [];
+      uninstalledLangs = [];
+      requestInfoLangs = [];
+      chrome.readingMode.sendGetVoicePackInfoRequest = (lang) => {
+        requestInfoLangs.push(lang);
+      };
+      chrome.readingMode.sendInstallVoicePackRequest = (lang) => {
+        installedLangs.push(lang);
+      };
+      chrome.readingMode.sendUninstallVoiceRequest = (lang) => {
+        uninstalledLangs.push(lang);
+      };
+      const notificationListener = {
+        notify(type: NotificationType, _lang?: string): void {
+          notificationType = type;
+        },
+      };
+      VoiceNotificationManager.getInstance().addListener(notificationListener);
+    });
+
+    test('refreshVoicePackStatuses with no languages does nothing', () => {
+      voicePackController.refreshVoicePackStatuses();
+
+      assertArrayEquals([], requestInfoLangs);
+    });
+
+    test('refreshVoicePackStatuses with languages requests info', () => {
+      const lang1 = 'fi';
+      const lang2 = 'id';
+      const lang3 = 'da';
+      voicePackController.setServerStatus(
+          lang1, mojoVoicePackStatusToVoicePackStatusEnum('kInstalled'));
+      voicePackController.setServerStatus(
+          lang2, mojoVoicePackStatusToVoicePackStatusEnum('kAllocation'));
+      voicePackController.setServerStatus(
+          lang3, mojoVoicePackStatusToVoicePackStatusEnum('kNotInstalled'));
+
+      voicePackController.refreshVoicePackStatuses();
+
+      assertArrayEquals([lang1, lang2, lang3], requestInfoLangs);
+    });
+
+    test(
+        'refreshVoicePackStatuses with languages waits for engine timeout',
+        () => {
+          const lang = 'fi';
+          voicePackController.setServerStatus(
+              lang, mojoVoicePackStatusToVoicePackStatusEnum('kInstalled'));
+          const mockTimer = new MockTimer();
+          mockTimer.install();
+
+          voicePackController.refreshVoicePackStatuses();
+          mockTimer.tick(EXTENSION_RESPONSE_TIMEOUT_MS);
+          mockTimer.uninstall();
+
+          assertEquals(
+              NotificationType.GOOGLE_VOICES_UNAVAILABLE, notificationType);
+        });
+
+    test(
+        'stopWaitingForSpeechExtension stops waiting for engine timeout',
+        () => {
+          const lang = 'fi';
+          voicePackController.setServerStatus(
+              lang, mojoVoicePackStatusToVoicePackStatusEnum('kInstalled'));
+          let notificationType = null;
+          const notificationListener = {
+            notify(type: NotificationType, _lang?: string): void {
+              notificationType = type;
+            },
+          };
+          VoiceNotificationManager.getInstance().addListener(
+              notificationListener);
+          const mockTimer = new MockTimer();
+          mockTimer.install();
+
+          voicePackController.refreshVoicePackStatuses();
+          voicePackController.stopWaitingForSpeechExtension();
+          mockTimer.tick(EXTENSION_RESPONSE_TIMEOUT_MS);
+          mockTimer.uninstall();
+
+          assertFalse(!!notificationType);
+        });
+
+    test(
+        'triggerInstall with lang not marked for download does nothing', () => {
+          const lang = 'es-es';
+
+          voicePackController.triggerInstall(lang);
+
+          assertEquals(
+              VoiceClientSideStatusCode.NOT_INSTALLED,
+              voicePackController.getLocalStatus(lang));
+          assertArrayEquals([], installedLangs);
+        });
+
+    test(
+        'triggerInstall with lang marked for download requests install', () => {
+          const lang = 'fil';
+
+          assertTrue(voicePackController.requestInstall(lang, false));
+          voicePackController.triggerInstall(lang);
+
+          assertEquals(
+              VoiceClientSideStatusCode.SENT_INSTALL_REQUEST,
+              voicePackController.getLocalStatus(lang));
+          assertArrayEquals([lang], installedLangs);
+        });
+
+    test('requestInstall with no status, requests install on retry', () => {
+      const lang = 'ja';
+
+      assertTrue(voicePackController.requestInstall(lang, true));
+
+      assertEquals(
+          VoiceClientSideStatusCode.SENT_INSTALL_REQUEST,
+          voicePackController.getLocalStatus(lang));
+      assertArrayEquals([lang], installedLangs);
+    });
+
+    test('requestInstall when not installed, requests info', () => {
+      const lang = 'ja';
+      voicePackController.setServerStatus(
+          lang, mojoVoicePackStatusToVoicePackStatusEnum('kNotInstalled'));
+
+      assertTrue(voicePackController.requestInstall(lang, true));
+      assertArrayEquals([lang], requestInfoLangs);
+
+      voicePackController.triggerInstall(lang);
+      assertEquals(
+          VoiceClientSideStatusCode.SENT_INSTALL_REQUEST,
+          voicePackController.getLocalStatus(lang));
+      assertArrayEquals([lang], installedLangs);
+    });
+
+    test(
+        'requestInstall when previously failed and should retry, retries',
+        () => {
+          const lang = 'ja';
+          voicePackController.setServerStatus(
+              lang, mojoVoicePackStatusToVoicePackStatusEnum('kOther'));
+
+          assertTrue(voicePackController.requestInstall(lang, true));
+
+          assertEquals(
+              VoiceClientSideStatusCode.SENT_INSTALL_REQUEST_ERROR_RETRY,
+              voicePackController.getLocalStatus(lang));
+          assertArrayEquals([lang], installedLangs);
+        });
+
+    test(
+        'requestInstall when previously failed and should not retry does' +
+            'nothing',
+        () => {
+          const lang = 'ja';
+          voicePackController.setServerStatus(
+              lang, mojoVoicePackStatusToVoicePackStatusEnum('kOther'));
+
+          assertFalse(voicePackController.requestInstall(lang, false));
+
+          assertFalse(!!voicePackController.getLocalStatus(lang));
+          assertArrayEquals([], requestInfoLangs);
+          assertArrayEquals([], installedLangs);
+        });
+
+    test('requestInstall and already installing does nothing', () => {
+      const lang = 'ja';
+      voicePackController.setServerStatus(
+          lang, mojoVoicePackStatusToVoicePackStatusEnum('kInstalling'));
+
+      assertFalse(voicePackController.requestInstall(lang, false));
+
+      assertFalse(!!voicePackController.getLocalStatus(lang));
+      assertArrayEquals([], requestInfoLangs);
+      assertArrayEquals([], installedLangs);
+    });
+
+    test('requestInstall and already installed does nothing', () => {
+      const lang = 'ja';
+      voicePackController.setServerStatus(
+          lang, mojoVoicePackStatusToVoicePackStatusEnum('kInstalled'));
+
+      assertFalse(voicePackController.requestInstall(lang, false));
+
+      assertFalse(!!voicePackController.getLocalStatus(lang));
+      assertArrayEquals([], requestInfoLangs);
+      assertArrayEquals([], installedLangs);
+    });
+
+    test('uninstall with voice pack lang uninstalls', () => {
+      const lang = 'km';
+      voicePackController.requestInstall(lang, false);
+      VoiceNotificationManager.getInstance().onVoiceStatusChange(
+          lang, VoiceClientSideStatusCode.SENT_INSTALL_REQUEST, []);
+
+      voicePackController.uninstall(lang);
+      assertEquals(NotificationType.NONE, notificationType);
+      assertArrayEquals([lang], requestInfoLangs);
+      assertArrayEquals([lang], uninstalledLangs);
+
+      voicePackController.triggerInstall(lang);
+      assertEquals(
+          VoiceClientSideStatusCode.NOT_INSTALLED,
+          voicePackController.getLocalStatus(lang));
+      assertArrayEquals([], installedLangs);
+    });
+
+    test('uninstall with non voice pack lang does nothing', () => {
+      const lang = 'zh';
+      voicePackController.requestInstall(lang, false);
+      notificationType = null;
+
+      voicePackController.uninstall(lang);
+
+      assertFalse(!!notificationType);
+      assertArrayEquals([], requestInfoLangs);
+      assertArrayEquals([], uninstalledLangs);
+      assertArrayEquals([], installedLangs);
+    });
+  });
 });

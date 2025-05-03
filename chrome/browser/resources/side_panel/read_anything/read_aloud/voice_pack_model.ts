@@ -37,6 +37,22 @@ export class VoicePackModel {
   private possiblyDisabledLangs_: Set<string> = new Set();
   // </if>
 
+  // Set of languages of the browser and/or of the pages navigated to that we
+  // need to download Natural voices for automatically
+  private languagesForVoiceDownloads_: Set<string> = new Set();
+
+  addLanguageForDownload(lang: string): void {
+    this.languagesForVoiceDownloads_.add(lang);
+  }
+
+  removeLanguageForDownload(lang: string): void {
+    this.languagesForVoiceDownloads_.delete(lang);
+  }
+
+  hasLanguageForDownload(lang: string): boolean {
+    return this.languagesForVoiceDownloads_.has(lang);
+  }
+
   getEnabledLangs(): Set<string> {
     return this.enabledLangs_;
   }
