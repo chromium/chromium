@@ -324,6 +324,9 @@ void BrokeredUdpClientSocket::SetIOSNetworkServiceType(
 
 net::DscpAndEcn BrokeredUdpClientSocket::GetLastTos() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!socket_) {
+    return net::DscpAndEcn(net::DSCP_DEFAULT, net::ECN_DEFAULT);
+  }
   return socket_->GetLastTos();
 }
 
