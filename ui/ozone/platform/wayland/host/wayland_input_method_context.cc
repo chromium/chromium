@@ -246,9 +246,12 @@ WaylandInputMethodContext::WaylandInputMethodContext(
     : connection_(connection),
       key_delegate_(key_delegate),
       ime_delegate_(ime_delegate),
+      window_(connection_->window_manager()
+                  ->GetWindow(ime_delegate_->GetClientWindowKey())
+                  ->AsWeakPtr()),
       text_input_v1_(nullptr),
       character_composer_(kPreeditStringMode) {
-  connection_->window_manager()->AddObserver(this);
+  window_->set_focus_client(this);
   Init();
 }
 
@@ -259,7 +262,9 @@ WaylandInputMethodContext::~WaylandInputMethodContext() {
     DismissVirtualKeyboard();
     text_input_v1_->OnClientDestroyed(text_input_v1_client_.get());
   }
-  connection_->window_manager()->RemoveObserver(this);
+  if (window_) {
+    window_->set_focus_client(nullptr);
+  }
 }
 
 void WaylandInputMethodContext::CreateTextInput() {
@@ -277,12 +282,7 @@ void WaylandInputMethodContext::CreateTextInput() {
 
   if (enable_using_cmd_line_version &&
       version_from_cmd_line == kWaylandTextInputVersion1) {
-    if (!connection_->text_input_manager_v1()) {
-      LOG(WARNING) << "text-input-v1 is not supported by the compositor.";
-      return;
-    }
-    text_input_v1_ = std::make_unique<ZwpTextInputV1Impl>(
-        connection_, connection_->text_input_manager_v1());
+    text_input_v1_ = connection_->EnsureTextInputV1();
     text_input_v1_client_ =
         std::make_unique<WaylandInputMethodContextV1Client>(this);
   } else if (base::FeatureList::IsEnabled(features::kWaylandTextInputV3) ||
@@ -294,12 +294,7 @@ void WaylandInputMethodContext::CreateTextInput() {
                       "--enable-wayland-ime should be present. Defaulting to "
                       "text-input-v3.";
     }
-    if (!connection_->text_input_manager_v3()) {
-      LOG(WARNING) << "text-input-v3 is not supported by the compositor.";
-      return;
-    }
-    text_input_v3_ = std::make_unique<ZwpTextInputV3Impl>(
-        connection_, connection_->text_input_manager_v3());
+    text_input_v3_ = connection_->EnsureTextInputV3();
     text_input_v3_client_ =
         std::make_unique<WaylandInputmethodContextV3Client>(this);
   }
@@ -320,7 +315,7 @@ void WaylandInputMethodContext::Init() {
 }
 
 void WaylandInputMethodContext::SetTextInputV1ForTesting(
-    std::unique_ptr<ZwpTextInputV1> text_input_v1) {
+    ZwpTextInputV1* text_input_v1) {
   text_input_v1_ = std::move(text_input_v1);
   if (!text_input_v1_client_) {
     text_input_v1_client_ =
@@ -331,7 +326,7 @@ void WaylandInputMethodContext::SetTextInputV1ForTesting(
 }
 
 void WaylandInputMethodContext::SetTextInputV3ForTesting(
-    std::unique_ptr<ZwpTextInputV3> text_input_v3) {
+    ZwpTextInputV3* text_input_v3) {
   text_input_v3_ = std::move(text_input_v3);
   if (!text_input_v3_client_) {
     text_input_v3_client_ =
@@ -438,7 +433,9 @@ void WaylandInputMethodContext::SetCursorLocation(const gfx::Rect& rect) {
     return;
   }
   WaylandWindow* focused_window =
-      connection_->window_manager()->GetCurrentKeyboardFocusedWindow();
+      text_input_v3_
+          ? connection_->window_manager()->GetCurrentTextInputFocusedWindow()
+          : connection_->window_manager()->GetCurrentKeyboardFocusedWindow();
   if (!focused_window) {
     return;
   }
@@ -818,12 +815,32 @@ void WaylandInputMethodContext::OnModifiersMap(
   modifiers_map_ = std::move(modifiers_map);
 }
 
-void WaylandInputMethodContext::OnKeyboardFocusedWindowChanged() {
+void WaylandInputMethodContext::OnTextInputFocusChanged(bool focused) {
+  CHECK(text_input_v3_);
+  window_focused_ = focused;
+  MaybeUpdateActivated(false);
+}
+
+void WaylandInputMethodContext::OnKeyboardFocusChanged(bool focused) {
   if (text_input_v3_) {
     // For text-input-v3, zwp_text_input_l3::{enter,leave} is used instead.
     return;
   }
+  window_focused_ = focused;
   MaybeUpdateActivated(false);
+}
+
+bool WaylandInputMethodContext::WindowIsActiveForTextInputV1() const {
+  if (!text_input_v1_ || !window_) {
+    return false;
+  }
+  return
+      // The associated window has keyboard focus
+      window_focused_ ||
+      // If no keyboard is connected, the toplevel window active state is used
+      // to deduce if this window is active.
+      (!connection_->seat()->keyboard() &&
+       window_->GetRootParentWindow()->IsActive());
 }
 
 void WaylandInputMethodContext::MaybeUpdateActivated(
@@ -832,18 +849,12 @@ void WaylandInputMethodContext::MaybeUpdateActivated(
     return;
   }
 
-  WaylandWindow* focused_window =
-      connection_->window_manager()->GetCurrentKeyboardFocusedWindow();
-  if (!focused_window && !connection_->seat()->keyboard()) {
-    // If no keyboard is connected, the current active window is used.
-    focused_window = connection_->window_manager()->GetCurrentActiveWindow();
-  }
   // Activate Wayland IME only if the following conditions are met:
   // 1) InputMethod has some TextInputClient connected.
-  // 2) There is a focused Chromium window.
-  // 3) The focused window matches the window containing this
-  // WaylandInputMethodContext.
-  bool activated = focused_ && focused_window;
+  // 2) The associated window for this context is focused, or there is an
+  //    active window for text-input-v1.
+  bool activated =
+      focused_ && (window_focused_ || WindowIsActiveForTextInputV1());
   if (activated_ == activated)
     return;
 
@@ -856,7 +867,7 @@ void WaylandInputMethodContext::MaybeUpdateActivated(
                                      attributes_.should_do_learning);
     } else {
       text_input_v1_->SetClient(text_input_v1_client_.get());
-      text_input_v1_->Activate(focused_window);
+      text_input_v1_->Activate(window_.get());
       text_input_v1_->SetContentType(attributes_.input_type, attributes_.flags,
                                      attributes_.should_do_learning);
     }

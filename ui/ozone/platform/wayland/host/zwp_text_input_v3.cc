@@ -13,6 +13,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "ui/base/wayland/wayland_client_input_types.h"
 #include "ui/gfx/range/range.h"
+#include "ui/ozone/platform/wayland/common/wayland_util.h"
 #include "ui/ozone/platform/wayland/host/span_style.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_seat.h"
@@ -333,19 +334,17 @@ void ZwpTextInputV3Impl::Commit() {
 void ZwpTextInputV3Impl::OnEnter(void* data,
                                  struct zwp_text_input_v3* text_input,
                                  struct wl_surface* surface) {
-  // Same as text-input-v1, we don't use this for text-input focus changes and
-  // instead use wayland keyboard enter/leave events to activate or deactivate
-  // text-input.
-  NOTIMPLEMENTED_LOG_ONCE();
+  auto* self = static_cast<ZwpTextInputV3Impl*>(data);
+  if (auto* window = wl::RootWindowFromWlSurface(surface)) {
+    self->connection_->window_manager()->SetTextInputFocusedWindow(window);
+  }
 }
 
 void ZwpTextInputV3Impl::OnLeave(void* data,
                                  struct zwp_text_input_v3* text_input,
                                  struct wl_surface* surface) {
-  // Same as text-input-v1, we don't use this for text-input focus changes and
-  // instead use wayland keyboard enter/leave events to activate or deactivate
-  // text-input.
-  NOTIMPLEMENTED_LOG_ONCE();
+  auto* self = static_cast<ZwpTextInputV3Impl*>(data);
+  self->connection_->window_manager()->SetTextInputFocusedWindow(nullptr);
 }
 
 void ZwpTextInputV3Impl::OnPreeditString(void* data,

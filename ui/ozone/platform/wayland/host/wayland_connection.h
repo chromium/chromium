@@ -67,6 +67,8 @@ class XdgForeignWrapper;
 class XdgSessionManager;
 class ZwpIdleInhibitManager;
 class ZwpPrimarySelectionDeviceManager;
+class ZwpTextInputV1;
+class ZwpTextInputV3;
 
 class WaylandConnection {
  public:
@@ -111,9 +113,6 @@ class WaylandConnection {
   }
   zwp_text_input_manager_v1* text_input_manager_v1() const {
     return text_input_manager_v1_.get();
-  }
-  zwp_text_input_manager_v3* text_input_manager_v3() const {
-    return text_input_manager_v3_.get();
   }
   zwp_linux_explicit_synchronization_v1* linux_explicit_synchronization_v1()
       const {
@@ -206,6 +205,10 @@ class WaylandConnection {
       const {
     return zwp_primary_selection_device_manager_.get();
   }
+
+  ZwpTextInputV1* EnsureTextInputV1();
+  ZwpTextInputV3* EnsureTextInputV3();
+  bool SupportsTextInputFocus() const { return !!text_input_v3_; }
 
   WaylandDataDragController* data_drag_controller() const {
     return data_drag_controller_.get();
@@ -463,6 +466,8 @@ class WaylandConnection {
       gtk_primary_selection_device_manager_;
   std::unique_ptr<ZwpPrimarySelectionDeviceManager>
       zwp_primary_selection_device_manager_;
+  std::unique_ptr<ZwpTextInputV1> text_input_v1_;
+  std::unique_ptr<ZwpTextInputV3> text_input_v3_;
   std::unique_ptr<WaylandClipboard> clipboard_;
 
   // Objects specific to KDE Plasma desktop environment.

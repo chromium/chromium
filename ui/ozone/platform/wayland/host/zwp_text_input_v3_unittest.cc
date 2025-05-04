@@ -35,8 +35,7 @@ class ZwpTextInputV3Test : public WaylandTestSimple {
   void SetUp() override {
     WaylandTestSimple::SetUp();
 
-    text_input_v3_ = std::make_unique<ZwpTextInputV3Impl>(
-        connection_.get(), connection_->text_input_manager_v3());
+    text_input_v3_ = connection_->EnsureTextInputV3();
     text_input_v3_->SetClient(&test_client_);
   }
 
@@ -46,7 +45,7 @@ class ZwpTextInputV3Test : public WaylandTestSimple {
   }
 
   MockZwpTextInputV3Client test_client_;
-  std::unique_ptr<ZwpTextInputV3> text_input_v3_;
+  raw_ptr<ZwpTextInputV3> text_input_v3_;
 };
 
 TEST_F(ZwpTextInputV3Test, Enable) {

@@ -135,6 +135,13 @@ WaylandWindow::~WaylandWindow() {
   for (auto bubble : child_bubbles_) {
     bubble->set_parent_window(nullptr);
   }
+
+  if (focus_client_) {
+    focus_client_->OnKeyboardFocusChanged(false);
+    if (connection_->SupportsTextInputFocus()) {
+      focus_client_->OnTextInputFocusChanged(false);
+    }
+  }
 }
 
 void WaylandWindow::OnWindowLostCapture() {
@@ -316,6 +323,18 @@ void WaylandWindow::OnPointerFocusChanged(bool focused) {
   if (focused && async_cursor_) {
     async_cursor_->AddCursorLoadedCallback(base::BindOnce(
         &WaylandWindow::OnCursorLoaded, AsWeakPtr(), async_cursor_));
+  }
+}
+
+void WaylandWindow::OnKeyboardFocusChanged(bool focused) {
+  if (focus_client_) {
+    focus_client_->OnKeyboardFocusChanged(focused);
+  }
+}
+
+void WaylandWindow::OnTextInputFocusChanged(bool focused) {
+  if (focus_client_) {
+    focus_client_->OnTextInputFocusChanged(focused);
   }
 }
 

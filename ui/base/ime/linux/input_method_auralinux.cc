@@ -43,8 +43,11 @@ bool IsSameKeyEvent(const ui::KeyEvent& lhs, const ui::KeyEvent& rhs) {
 namespace ui {
 
 InputMethodAuraLinux::InputMethodAuraLinux(
-    ImeKeyEventDispatcher* ime_key_event_dispatcher)
+
+    ImeKeyEventDispatcher* ime_key_event_dispatcher,
+    gfx::AcceleratedWidget widget)
     : InputMethodBase(ime_key_event_dispatcher),
+      widget_(widget),
       text_input_type_(TEXT_INPUT_TYPE_NONE),
       is_sync_mode_(false),
       composition_changed_(false) {
@@ -456,6 +459,10 @@ InputMethodAuraLinux::GetVirtualKeyboardController() {
 }
 
 // Overriden from ui::LinuxInputMethodContextDelegate
+
+gfx::AcceleratedWidget InputMethodAuraLinux::GetClientWindowKey() const {
+  return widget_;
+}
 
 void InputMethodAuraLinux::OnCommit(const std::u16string& text) {
   if (IgnoringNonKeyInput() || !GetTextInputClient())

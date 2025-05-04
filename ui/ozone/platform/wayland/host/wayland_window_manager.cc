@@ -17,6 +17,38 @@
 
 namespace ui {
 
+namespace {
+
+void UpdateToplevelActivation(WaylandWindow* old_focused_window,
+                              WaylandWindow* new_focused_window) {
+  auto* old_focused_toplevel_window =
+      old_focused_window
+          ? old_focused_window->GetRootParentWindow()->AsWaylandToplevelWindow()
+          : nullptr;
+  auto* focused_toplevel_window =
+      new_focused_window
+          ? new_focused_window->GetRootParentWindow()->AsWaylandToplevelWindow()
+          : nullptr;
+  if (focused_toplevel_window != old_focused_toplevel_window) {
+    if (old_focused_toplevel_window) {
+      old_focused_toplevel_window->UpdateActivationState();
+    }
+    if (focused_toplevel_window) {
+      focused_toplevel_window->UpdateActivationState();
+    }
+  }
+}
+
+void UpdateParentToplevelAcivationOnRemoval(WaylandWindow* window) {
+  auto* toplevel_window =
+      window->GetRootParentWindow()->AsWaylandToplevelWindow();
+  if (toplevel_window && toplevel_window != window) {
+    toplevel_window->UpdateActivationState();
+  }
+}
+
+}  // namespace
+
 WaylandWindowManager::WaylandWindowManager(WaylandConnection* connection)
     : connection_(connection) {}
 
@@ -166,6 +198,10 @@ WaylandWindow* WaylandWindowManager::GetCurrentKeyboardFocusedWindow() const {
   return keyboard_focused_window_;
 }
 
+WaylandWindow* WaylandWindowManager::GetCurrentTextInputFocusedWindow() const {
+  return text_input_focused_window_;
+}
+
 void WaylandWindowManager::SetPointerFocusedWindow(WaylandWindow* window) {
   auto* old_focused_window = GetCurrentPointerFocusedWindow();
   if (window == old_focused_window)
@@ -192,22 +228,28 @@ void WaylandWindowManager::SetKeyboardFocusedWindow(WaylandWindow* window) {
   if (window == old_focused_window)
     return;
   keyboard_focused_window_ = window;
-  observers_.Notify(&WaylandWindowObserver::OnKeyboardFocusedWindowChanged);
-  auto* old_focused_toplevel_window =
-      old_focused_window
-          ? old_focused_window->GetRootParentWindow()->AsWaylandToplevelWindow()
-          : nullptr;
-  auto* focused_toplevel_window =
-      window ? window->GetRootParentWindow()->AsWaylandToplevelWindow()
-             : nullptr;
-  if (focused_toplevel_window != old_focused_toplevel_window) {
-    if (old_focused_toplevel_window) {
-      old_focused_toplevel_window->UpdateActivationState();
-    }
-    if (focused_toplevel_window) {
-      focused_toplevel_window->UpdateActivationState();
-    }
+  if (old_focused_window) {
+    old_focused_window->OnKeyboardFocusChanged(false);
   }
+  if (window) {
+    window->OnKeyboardFocusChanged(true);
+  }
+  UpdateToplevelActivation(old_focused_window, window);
+}
+
+void WaylandWindowManager::SetTextInputFocusedWindow(WaylandWindow* window) {
+  auto* old_focused_window = GetCurrentTextInputFocusedWindow();
+  if (window == old_focused_window) {
+    return;
+  }
+  text_input_focused_window_ = window;
+  if (old_focused_window) {
+    old_focused_window->OnTextInputFocusChanged(false);
+  }
+  if (window) {
+    window->OnTextInputFocusChanged(true);
+  }
+  UpdateToplevelActivation(old_focused_window, window);
 }
 
 void WaylandWindowManager::AddWindow(gfx::AcceleratedWidget widget,
@@ -223,24 +265,23 @@ void WaylandWindowManager::RemoveWindow(gfx::AcceleratedWidget widget) {
 
   window_map_.erase(widget);
 
-  // Reset `pointer_focused_window_` and `keyboard_focused_window_` before
-  // notifying any observers to make sure GetCurrentPointerFocusedWindow() and
-  // GetCurrentKeyboardFocusedWindow() behave correctly. Especially the former
-  // can be problematic if notifying WaylandWindowDragController that a window
-  // has been removed before resetting `pointer_focused_window_`, because that
-  // leads to WaylandEventSource::OnPointerButtonEvent() being called, which
-  // then calls GetCurrentPointerFocusedWindow().
+  // Reset `*_focused_window_` before notifying any observers to make sure
+  // GetCurrent*FocusedWindow() behave correctly.
+  // The pointer case in particular can be problematic if notifying
+  // WaylandWindowDragController that a window has been removed before resetting
+  // `pointer_focused_window_`, because that leads to
+  // WaylandEventSource::OnPointerButtonEvent() being called, which then calls
+  // GetCurrentPointerFocusedWindow().
   if (window == pointer_focused_window_) {
     pointer_focused_window_ = nullptr;
   }
   if (window == keyboard_focused_window_) {
     keyboard_focused_window_ = nullptr;
-    observers_.Notify(&WaylandWindowObserver::OnKeyboardFocusedWindowChanged);
-    auto* toplevel_window =
-        window->GetRootParentWindow()->AsWaylandToplevelWindow();
-    if (toplevel_window && toplevel_window != window) {
-      toplevel_window->UpdateActivationState();
-    }
+    UpdateParentToplevelAcivationOnRemoval(window);
+  }
+  if (window == text_input_focused_window_) {
+    text_input_focused_window_ = nullptr;
+    UpdateParentToplevelAcivationOnRemoval(window);
   }
 
   observers_.Notify(&WaylandWindowObserver::OnWindowRemoved, window);

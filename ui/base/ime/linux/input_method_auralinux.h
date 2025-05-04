@@ -12,6 +12,7 @@
 #include "ui/base/ime/composition_text.h"
 #include "ui/base/ime/input_method_base.h"
 #include "ui/base/ime/linux/linux_input_method_context.h"
+#include "ui/gfx/native_widget_types.h"
 
 namespace ui {
 
@@ -22,15 +23,15 @@ class COMPONENT_EXPORT(UI_BASE_IME_LINUX) InputMethodAuraLinux
     : public InputMethodBase,
       public LinuxInputMethodContextDelegate {
  public:
-  explicit InputMethodAuraLinux(
-      ImeKeyEventDispatcher* ime_key_event_dispatcher);
+  explicit InputMethodAuraLinux(ImeKeyEventDispatcher* ime_key_event_dispatcher,
+                                gfx::AcceleratedWidget widget);
   InputMethodAuraLinux(const InputMethodAuraLinux&) = delete;
   InputMethodAuraLinux& operator=(const InputMethodAuraLinux&) = delete;
   ~InputMethodAuraLinux() override;
 
   LinuxInputMethodContext* GetContextForTesting();
 
-  // Overriden from InputMethod.
+  // Overridden from InputMethod.
   ui::EventDispatchDetails DispatchKeyEvent(ui::KeyEvent* event) override;
   void OnTextInputTypeChanged(TextInputClient* client) override;
   void OnCaretBoundsChanged(const TextInputClient* client) override;
@@ -38,7 +39,8 @@ class COMPONENT_EXPORT(UI_BASE_IME_LINUX) InputMethodAuraLinux
   bool IsCandidatePopupOpen() const override;
   VirtualKeyboardController* GetVirtualKeyboardController() override;
 
-  // Overriden from ui::LinuxInputMethodContextDelegate
+  // Overridden from ui::LinuxInputMethodContextDelegate
+  gfx::AcceleratedWidget GetClientWindowKey() const override;
   void OnCommit(const std::u16string& text) override;
   void OnConfirmCompositionText(bool keep_selection) override;
   void OnDeleteSurroundingText(size_t before, size_t after) override;
@@ -86,6 +88,8 @@ class COMPONENT_EXPORT(UI_BASE_IME_LINUX) InputMethodAuraLinux
   void UpdateContextFocusState();
   void ResetContext();
   bool IgnoringNonKeyInput() const;
+
+  const gfx::AcceleratedWidget widget_;
 
   std::unique_ptr<LinuxInputMethodContext> context_;
 

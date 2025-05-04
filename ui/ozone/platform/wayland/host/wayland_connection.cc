@@ -64,6 +64,8 @@
 #include "ui/ozone/platform/wayland/host/xdg_session_manager.h"
 #include "ui/ozone/platform/wayland/host/zwp_idle_inhibit_manager.h"
 #include "ui/ozone/platform/wayland/host/zwp_primary_selection_device_manager.h"
+#include "ui/ozone/platform/wayland/host/zwp_text_input_v1.h"
+#include "ui/ozone/platform/wayland/host/zwp_text_input_v3.h"
 #include "ui/platform_window/common/platform_window_defaults.h"
 
 namespace ui {
@@ -364,6 +366,32 @@ std::vector<KeyboardDevice> WaylandConnection::CreateKeyboardDevices() const {
                          "keyboard");
   }
   return devices;
+}
+
+ZwpTextInputV1* WaylandConnection::EnsureTextInputV1() {
+  if (text_input_v1_) {
+    return text_input_v1_.get();
+  }
+  if (text_input_manager_v1_) {
+    text_input_v1_ = std::make_unique<ZwpTextInputV1Impl>(
+        this, text_input_manager_v1_.get());
+  } else {
+    LOG(WARNING) << "text-input-v1 not available.";
+  }
+  return text_input_v1_.get();
+}
+
+ZwpTextInputV3* WaylandConnection::EnsureTextInputV3() {
+  if (text_input_v3_) {
+    return text_input_v3_.get();
+  }
+  if (text_input_manager_v3_) {
+    text_input_v3_ = std::make_unique<ZwpTextInputV3Impl>(
+        this, text_input_manager_v3_.get());
+  } else {
+    LOG(WARNING) << "text-input-v3 not available.";
+  }
+  return text_input_v3_.get();
 }
 
 std::vector<TouchscreenDevice> WaylandConnection::CreateTouchscreenDevices()

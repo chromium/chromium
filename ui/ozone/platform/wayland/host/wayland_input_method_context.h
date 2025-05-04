@@ -20,7 +20,7 @@
 #include "ui/base/ime/virtual_keyboard_controller.h"
 #include "ui/gfx/range/range.h"
 #include "ui/ozone/platform/wayland/host/wayland_keyboard.h"
-#include "ui/ozone/platform/wayland/host/wayland_window_observer.h"
+#include "ui/ozone/platform/wayland/host/wayland_window.h"
 #include "ui/ozone/platform/wayland/host/zwp_text_input_v1.h"
 #include "ui/ozone/platform/wayland/host/zwp_text_input_v3.h"
 
@@ -30,7 +30,7 @@ class WaylandConnection;
 
 class WaylandInputMethodContext : public LinuxInputMethodContext,
                                   public VirtualKeyboardController,
-                                  public WaylandWindowObserver {
+                                  public WaylandWindow::FocusClient {
  public:
   class Delegate;
 
@@ -70,8 +70,9 @@ class WaylandInputMethodContext : public LinuxInputMethodContext,
   void RemoveObserver(VirtualKeyboardControllerObserver* observer) override;
   bool IsKeyboardVisible() override;
 
-  // WaylandWindowObserver overrides:
-  void OnKeyboardFocusedWindowChanged() override;
+  // WaylandWindow::FocusClient overrides:
+  void OnKeyboardFocusChanged(bool focused) override;
+  void OnTextInputFocusChanged(bool focused) override;
 
   // Callbacks from the v1 and v3 clients.
   void OnPreeditString(std::string_view text,
@@ -92,9 +93,9 @@ class WaylandInputMethodContext : public LinuxInputMethodContext,
     return surrounding_text_tracker_.predicted_state();
   }
 
-  void SetTextInputV1ForTesting(std::unique_ptr<ZwpTextInputV1> text_input_v1);
+  void SetTextInputV1ForTesting(ZwpTextInputV1* text_input_v1);
 
-  void SetTextInputV3ForTesting(std::unique_ptr<ZwpTextInputV3> text_input_v3);
+  void SetTextInputV3ForTesting(ZwpTextInputV3* text_input_v3);
 
   void SetDesktopEnvironmentForTesting(
       base::nix::DesktopEnvironment desktop_environment) {
@@ -106,6 +107,7 @@ class WaylandInputMethodContext : public LinuxInputMethodContext,
   void Focus(bool skip_virtual_keyboard_update);
   void Blur(bool skip_virtual_keyboard_update);
   void UpdatePreeditText(const std::u16string& preedit_text);
+  bool WindowIsActiveForTextInputV1() const;
   // If |skip_virtual_keyboard_update| is true, no virtual keyboard show/hide
   // requests will be sent. This is used to prevent flickering the virtual
   // keyboard when it would be immediately reshown anyway, e.g. when changing
@@ -121,13 +123,20 @@ class WaylandInputMethodContext : public LinuxInputMethodContext,
   // Delegate IME-specific events to be handled by //ui code.
   const raw_ptr<LinuxInputMethodContextDelegate> ime_delegate_;
 
+  // Window obtained from IME delegate's widget. This WaylandInputMethodContext
+  // will be associated exclusively with this window and so this object will not
+  // change for the lifetime of the window.
+  base::WeakPtr<WaylandWindow> window_;
   std::unique_ptr<ZwpTextInputV1Client> text_input_v1_client_;
   std::unique_ptr<ZwpTextInputV3Client> text_input_v3_client_;
-  std::unique_ptr<ZwpTextInputV1> text_input_v1_;
-  std::unique_ptr<ZwpTextInputV3> text_input_v3_;
+  raw_ptr<ZwpTextInputV1> text_input_v1_;
+  raw_ptr<ZwpTextInputV3> text_input_v3_;
 
   // Tracks whether InputMethod in Chrome has some focus.
   bool focused_ = false;
+
+  // Tracks whether the window associated with the input method is focused.
+  bool window_focused_ = false;
 
   // Tracks whether a request to activate InputMethod is sent to wayland
   // compositor.

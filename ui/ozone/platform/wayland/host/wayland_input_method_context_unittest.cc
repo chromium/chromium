@@ -183,7 +183,8 @@ class MockZwpTextInputV3 : public ZwpTextInputV3 {
 
 class TestInputMethodContextDelegate : public LinuxInputMethodContextDelegate {
  public:
-  TestInputMethodContextDelegate() = default;
+  explicit TestInputMethodContextDelegate(gfx::AcceleratedWidget window_key)
+      : client_window_key_(window_key) {}
   TestInputMethodContextDelegate(const TestInputMethodContextDelegate&) =
       delete;
   TestInputMethodContextDelegate& operator=(
@@ -218,6 +219,10 @@ class TestInputMethodContextDelegate : public LinuxInputMethodContextDelegate {
   void OnSetVirtualKeyboardOccludedBounds(
       const gfx::Rect& screen_bounds) override {
     virtual_keyboard_bounds_ = screen_bounds;
+  }
+
+  gfx::AcceleratedWidget GetClientWindowKey() const override {
+    return client_window_key_;
   }
 
   bool was_on_commit_called() const { return was_on_commit_called_; }
@@ -256,6 +261,7 @@ class TestInputMethodContextDelegate : public LinuxInputMethodContextDelegate {
   }
 
  private:
+  gfx::AcceleratedWidget client_window_key_;
   bool was_on_commit_called_ = false;
   std::optional<std::u16string> last_commit_text_;
   std::optional<bool> last_on_confirm_composition_arg_;
@@ -323,15 +329,13 @@ class WaylandInputMethodContextTest : public WaylandTest {
  protected:
   void SetUpInternal() {
     input_method_context_delegate_ =
-        std::make_unique<TestInputMethodContextDelegate>();
+        std::make_unique<TestInputMethodContextDelegate>(window_->GetWidget());
     keyboard_delegate_ = std::make_unique<TestKeyboardDelegate>();
     input_method_context_ = std::make_unique<WaylandInputMethodContext>(
         connection_.get(), keyboard_delegate_.get(),
         input_method_context_delegate_.get());
-    auto text_input_v1 = std::make_unique<ZwpTextInputV1Impl>(
-        connection_.get(), connection_->text_input_manager_v1());
-    text_input_v1_ = text_input_v1.get();
-    input_method_context_->SetTextInputV1ForTesting(std::move(text_input_v1));
+    text_input_v1_ = connection_->EnsureTextInputV1();
+    input_method_context_->SetTextInputV1ForTesting(text_input_v1_.get());
     input_method_context_->SetDesktopEnvironmentForTesting(
         // Ensure by default it doesn't pick the current desktop from the system
         // the tests are running on.
@@ -1266,14 +1270,13 @@ class WaylandInputMethodContextWithMockV3Test : public WaylandTestSimple {
   void SetUp() override {
     WaylandTestSimple::SetUp();
     input_method_context_delegate_ =
-        std::make_unique<TestInputMethodContextDelegate>();
+        std::make_unique<TestInputMethodContextDelegate>(window_->GetWidget());
     keyboard_delegate_ = std::make_unique<TestKeyboardDelegate>();
+    mock_wrapper_ = std::make_unique<MockZwpTextInputV3>();
     input_method_context_ = std::make_unique<WaylandInputMethodContext>(
         connection_.get(), keyboard_delegate_.get(),
         input_method_context_delegate_.get());
-    auto mock_wrapper = std::make_unique<MockZwpTextInputV3>();
-    mock_wrapper_ = mock_wrapper.get();
-    input_method_context_->SetTextInputV3ForTesting(std::move(mock_wrapper));
+    input_method_context_->SetTextInputV3ForTesting(mock_wrapper_.get());
     input_method_context_->SetDesktopEnvironmentForTesting(
         // Ensure by default it doesn't pick the current desktop from the system
         // the tests are running on.
@@ -1284,8 +1287,8 @@ class WaylandInputMethodContextWithMockV3Test : public WaylandTestSimple {
   std::unique_ptr<TestInputMethodContextDelegate>
       input_method_context_delegate_;
   std::unique_ptr<TestKeyboardDelegate> keyboard_delegate_;
+  std::unique_ptr<MockZwpTextInputV3> mock_wrapper_;
   std::unique_ptr<WaylandInputMethodContext> input_method_context_;
-  raw_ptr<MockZwpTextInputV3> mock_wrapper_;
 };
 
 TEST_F(WaylandInputMethodContextWithMockV3Test,
