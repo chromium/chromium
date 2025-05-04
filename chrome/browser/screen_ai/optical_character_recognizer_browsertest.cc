@@ -117,6 +117,17 @@ struct OpticalCharacterRecognizerTestParamsToString {
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_BROWSERTESTS) && !BUILDFLAG(USE_FAKE_SCREEN_AI)
 
+// Name of files which have results.
+const int kTestFilenamesCount = 7;
+std::string_view kTestFilenames[kTestFilenamesCount] = {
+    "simple_text_only_sample",
+    "chinese",
+    "farsi",
+    "hindi",
+    "japanese",
+    "korean",
+    "russian"};
+
 // Computes string match based on the edit distance of the two strings.
 // Returns 0 for totally different strings and 1 for totally matching. See
 // `StringMatchTest` for some examples.
@@ -242,9 +253,21 @@ class OpticalCharacterRecognizerTest
     }
   }
 
+  // Returns true if ocr initialization was successful.
+  bool CreateAndInitOCR(mojom::OcrClientType client_type) {
+    base::test::TestFuture<bool> init_future;
+    ocr_ = OpticalCharacterRecognizer::CreateWithStatusCallback(
+        browser()->profile(), client_type, init_future.GetCallback());
+    EXPECT_TRUE(init_future.Wait());
+    return init_future.Get<bool>();
+  }
+
+  scoped_refptr<OpticalCharacterRecognizer> ocr() { return ocr_; }
+
  private:
   base::ScopedObservation<ScreenAIInstallState, ScreenAIInstallState::Observer>
       component_download_observer_{this};
+  scoped_refptr<OpticalCharacterRecognizer> ocr_;
   base::test::ScopedFeatureList feature_list_;
 };
 
@@ -289,20 +312,12 @@ IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest,
 }
 
 IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest, PerformOCR_Empty) {
-  // Init OCR.
-  base::test::TestFuture<bool> init_future;
-  scoped_refptr<OpticalCharacterRecognizer> ocr =
-      OpticalCharacterRecognizer::CreateWithStatusCallback(
-          browser()->profile(), mojom::OcrClientType::kTest,
-          init_future.GetCallback());
-  ASSERT_TRUE(init_future.Wait());
-  ASSERT_EQ(init_future.Get<bool>(), IsOcrAvailable());
+  ASSERT_EQ(CreateAndInitOCR(mojom::OcrClientType::kTest), IsOcrAvailable());
 
-  // Perform OCR.
   SkBitmap bitmap =
       LoadImageFromTestFile(base::FilePath(FILE_PATH_LITERAL("ocr/empty.png")));
   base::test::TestFuture<mojom::VisualAnnotationPtr> perform_future;
-  ocr->PerformOCR(bitmap, perform_future.GetCallback());
+  ocr()->PerformOCR(bitmap, perform_future.GetCallback());
   ASSERT_TRUE(perform_future.Wait());
   ASSERT_TRUE(perform_future.Get<mojom::VisualAnnotationPtr>()->lines.empty());
 }
@@ -314,20 +329,12 @@ IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest, PerformOCR_Empty) {
 IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest, PerformOCR_Simple) {
   base::HistogramTester histograms;
 
-  // Init OCR.
-  base::test::TestFuture<bool> init_future;
-  scoped_refptr<OpticalCharacterRecognizer> ocr =
-      OpticalCharacterRecognizer::CreateWithStatusCallback(
-          browser()->profile(), mojom::OcrClientType::kTest,
-          init_future.GetCallback());
-  ASSERT_TRUE(init_future.Wait());
-  ASSERT_EQ(init_future.Get<bool>(), IsOcrAvailable());
+  ASSERT_EQ(CreateAndInitOCR(mojom::OcrClientType::kTest), IsOcrAvailable());
 
-  // Perform OCR.
   SkBitmap bitmap = LoadImageFromTestFile(
       base::FilePath(FILE_PATH_LITERAL("ocr/just_one_letter.png")));
   base::test::TestFuture<mojom::VisualAnnotationPtr> perform_future;
-  ocr->PerformOCR(bitmap, perform_future.GetCallback());
+  ocr()->PerformOCR(bitmap, perform_future.GetCallback());
   ASSERT_TRUE(perform_future.Wait());
 
 // Fake library always returns empty.
@@ -393,20 +400,13 @@ IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest, PerformOCR_Simple) {
 IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest, PerformOCR_PdfMetrics) {
   base::HistogramTester histograms;
 
-  // Init OCR.
-  base::test::TestFuture<bool> init_future;
-  scoped_refptr<OpticalCharacterRecognizer> ocr =
-      OpticalCharacterRecognizer::CreateWithStatusCallback(
-          browser()->profile(), mojom::OcrClientType::kPdfViewer,
-          init_future.GetCallback());
-  ASSERT_TRUE(init_future.Wait());
-  ASSERT_EQ(init_future.Get<bool>(), IsOcrAvailable());
+  ASSERT_EQ(CreateAndInitOCR(mojom::OcrClientType::kPdfViewer),
+            IsOcrAvailable());
 
-  // Perform OCR.
   SkBitmap bitmap = LoadImageFromTestFile(
       base::FilePath(FILE_PATH_LITERAL("ocr/just_one_letter.png")));
   base::test::TestFuture<mojom::VisualAnnotationPtr> perform_future;
-  ocr->PerformOCR(bitmap, perform_future.GetCallback());
+  ocr()->PerformOCR(bitmap, perform_future.GetCallback());
   ASSERT_TRUE(perform_future.Wait());
 
 // Fake library always returns empty.
@@ -488,39 +488,25 @@ IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest,
       ScreenAIServiceRouterFactory::GetForBrowserContext(browser()->profile());
 
   // Init OCR once and verify service availability.
-  {
-    base::test::TestFuture<bool> init_future;
-    scoped_refptr<OpticalCharacterRecognizer> ocr =
-        OpticalCharacterRecognizer::CreateWithStatusCallback(
-            browser()->profile(), mojom::OcrClientType::kTest,
-            init_future.GetCallback());
-    ASSERT_TRUE(init_future.Wait());
-    ASSERT_TRUE(init_future.Get<bool>());
+  ASSERT_TRUE(CreateAndInitOCR(mojom::OcrClientType::kTest));
+  ASSERT_TRUE(router->IsProcessRunningForTesting());
 
-    ASSERT_TRUE(router->IsProcessRunningForTesting());
-  }
-
-  // Wait for shut down due to being idle.
+  // Release it and wait for shutdown due to being idle.
+  ocr().reset();
   base::test::TestFuture<void> future;
   WaitForDisconnecting(router, future.GetCallback(), /*remaining_tries=*/2);
   ASSERT_TRUE(future.Wait());
   ASSERT_FALSE(router->IsProcessRunningForTesting());
 
   // Init OCR again.
-  base::test::TestFuture<bool> init_future;
-  scoped_refptr<OpticalCharacterRecognizer> ocr =
-      OpticalCharacterRecognizer::CreateWithStatusCallback(
-          browser()->profile(), mojom::OcrClientType::kTest,
-          init_future.GetCallback());
-  ASSERT_TRUE(init_future.Wait());
-  ASSERT_TRUE(init_future.Get<bool>());
+  ASSERT_TRUE(CreateAndInitOCR(mojom::OcrClientType::kTest));
   ASSERT_TRUE(router->IsProcessRunningForTesting());
 
   // Perform OCR.
   SkBitmap bitmap = LoadImageFromTestFile(
       base::FilePath(FILE_PATH_LITERAL("ocr/just_one_letter.png")));
   base::test::TestFuture<mojom::VisualAnnotationPtr> perform_future;
-  ocr->PerformOCR(bitmap, perform_future.GetCallback());
+  ocr()->PerformOCR(bitmap, perform_future.GetCallback());
   ASSERT_TRUE(perform_future.Wait());
 
   // Fake library always returns empty results.
@@ -535,22 +521,14 @@ IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest,
     GTEST_SKIP() << "This test is only available when service is available";
   }
 
-  // Init OCR.
-  base::test::TestFuture<bool> init_future;
-  scoped_refptr<OpticalCharacterRecognizer> ocr =
-      OpticalCharacterRecognizer::CreateWithStatusCallback(
-          browser()->profile(), mojom::OcrClientType::kTest,
-          init_future.GetCallback());
-  ASSERT_TRUE(init_future.Wait());
-  ASSERT_TRUE(init_future.Get<bool>());
-
-  ocr->DisconnectAnnotator();
+  ASSERT_TRUE(CreateAndInitOCR(mojom::OcrClientType::kTest));
+  ocr()->DisconnectAnnotator();
 
   // Perform OCR and get VisualAnnotation.
   SkBitmap bitmap = LoadImageFromTestFile(
       base::FilePath(FILE_PATH_LITERAL("ocr/just_one_letter.png")));
   base::test::TestFuture<mojom::VisualAnnotationPtr> perform_future;
-  ocr->PerformOCR(bitmap, perform_future.GetCallback());
+  ocr()->PerformOCR(bitmap, perform_future.GetCallback());
   ASSERT_TRUE(perform_future.Wait());
 
   // Fake library always returns empty results.
@@ -558,11 +536,11 @@ IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest,
   ASSERT_FALSE(perform_future.Get<mojom::VisualAnnotationPtr>()->lines.empty());
 #endif
 
-  ocr->DisconnectAnnotator();
+  ocr()->DisconnectAnnotator();
 
   // Perform OCR and get AxTreeUpdate.
   base::test::TestFuture<const ui::AXTreeUpdate&> perform_future2;
-  ocr->PerformOCR(bitmap, perform_future2.GetCallback());
+  ocr()->PerformOCR(bitmap, perform_future2.GetCallback());
   ASSERT_TRUE(perform_future2.Wait());
 
   // Fake library always returns empty results.
@@ -590,7 +568,7 @@ TEST(OpticalCharacterRecognizer, StringMatchTest) {
 // Param: Test name.
 class OpticalCharacterRecognizerResultsTest
     : public InProcessBrowserTest,
-      public ::testing::WithParamInterface<const char*> {
+      public ::testing::WithParamInterface<std::string_view> {
  public:
   OpticalCharacterRecognizerResultsTest() {
     feature_list_.InitWithFeatures({ax::mojom::features::kScreenAIOCREnabled,
@@ -605,8 +583,23 @@ class OpticalCharacterRecognizerResultsTest
         GetComponentBinaryPathForTests().DirName());
   }
 
+  // Returns true if ocr initialization was successful.
+  // TODO(crbug.com/378472917): Add a `OpticalCharacterRecognizerTestBase` to
+  // avoid redundancy.
+  bool CreateAndInitOCR() {
+    base::test::TestFuture<bool> init_future;
+    ocr_ = OpticalCharacterRecognizer::CreateWithStatusCallback(
+        browser()->profile(), mojom::OcrClientType::kTest,
+        init_future.GetCallback());
+    EXPECT_TRUE(init_future.Wait());
+    return init_future.Get<bool>();
+  }
+
+  scoped_refptr<OpticalCharacterRecognizer> ocr() { return ocr_; }
+
  private:
   base::test::ScopedFeatureList feature_list_;
+  scoped_refptr<OpticalCharacterRecognizer> ocr_;
 };
 
 // If this test fails after updating the library, the failure can be related to
@@ -615,14 +608,7 @@ class OpticalCharacterRecognizerResultsTest
 // line in the .txt file is the minimum acceptable match and it can be updated.
 IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerResultsTest, PerformOCR) {
   base::ScopedAllowBlockingForTesting allow_blocking;
-  // Init OCR.
-  base::test::TestFuture<bool> init_future;
-  scoped_refptr<OpticalCharacterRecognizer> ocr =
-      OpticalCharacterRecognizer::CreateWithStatusCallback(
-          browser()->profile(), mojom::OcrClientType::kTest,
-          init_future.GetCallback());
-  ASSERT_TRUE(init_future.Wait());
-  ASSERT_EQ(init_future.Get<bool>(), true);
+  ASSERT_TRUE(CreateAndInitOCR());
 
   // Perform OCR.
   base::FilePath image_path =
@@ -630,7 +616,7 @@ IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerResultsTest, PerformOCR) {
           .AppendASCII(base::StringPrintf("%s.png", GetParam()));
   SkBitmap bitmap = LoadImageFromTestFile(image_path);
   base::test::TestFuture<mojom::VisualAnnotationPtr> perform_future;
-  ocr->PerformOCR(bitmap, perform_future.GetCallback());
+  ocr()->PerformOCR(bitmap, perform_future.GetCallback());
   ASSERT_TRUE(perform_future.Wait());
   auto& results = perform_future.Get<mojom::VisualAnnotationPtr>();
 
@@ -665,13 +651,79 @@ IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerResultsTest, PerformOCR) {
 
 INSTANTIATE_TEST_SUITE_P(All,
                          OpticalCharacterRecognizerResultsTest,
-                         testing::Values("simple_text_only_sample",
-                                         "chinese",
-                                         "farsi",
-                                         "hindi",
-                                         "japanese",
-                                         "korean",
-                                         "russian"));
+                         testing::ValuesIn(kTestFilenames));
+
+IN_PROC_BROWSER_TEST_F(OpticalCharacterRecognizerResultsTest,
+                       PerformOCRLargeImage) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+
+  ASSERT_TRUE(CreateAndInitOCR());
+
+  base::FilePath image_path =
+      base::FilePath(FILE_PATH_LITERAL("ocr"))
+          .Append(FILE_PATH_LITERAL("building_chromium_long.png"));
+  SkBitmap bitmap = LoadImageFromTestFile(image_path);
+  base::test::TestFuture<mojom::VisualAnnotationPtr> perform_future;
+  ocr()->PerformOCR(bitmap, perform_future.GetCallback());
+  ASSERT_TRUE(perform_future.Wait());
+  auto& results = perform_future.Get<mojom::VisualAnnotationPtr>();
+
+  // Since OCR downsamples large images, the content of this image becomes quite
+  // small and unreadable, hence nothing is recognized.
+  EXPECT_FALSE(results->lines.size());
+}
+
+IN_PROC_BROWSER_TEST_F(OpticalCharacterRecognizerResultsTest,
+                       PerformOCRMultipleFilesOneByOne) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  ASSERT_TRUE(CreateAndInitOCR());
+
+  for (std::string_view& file_name : kTestFilenames) {
+    base::FilePath image_path =
+        base::FilePath(FILE_PATH_LITERAL("ocr"))
+            .AppendASCII(base::StringPrintf("%s.png", file_name));
+    SkBitmap bitmap = LoadImageFromTestFile(image_path);
+    base::test::TestFuture<mojom::VisualAnnotationPtr> future;
+    ocr()->PerformOCR(bitmap, future.GetCallback());
+    ASSERT_TRUE(future.Wait());
+    auto& results = future.Get<mojom::VisualAnnotationPtr>();
+    EXPECT_TRUE(results->lines.size());
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(OpticalCharacterRecognizerResultsTest,
+                       PerformOCRMultipleFilesNoWaitBetween) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  ASSERT_TRUE(CreateAndInitOCR());
+
+  SkBitmap bitmaps[kTestFilenamesCount];
+  {
+    auto* bitmap = std::begin(bitmaps);
+    for (std::string_view& file_name : kTestFilenames) {
+      base::FilePath image_path =
+          base::FilePath(FILE_PATH_LITERAL("ocr"))
+              .AppendASCII(base::StringPrintf("%s.png", file_name));
+      *bitmap = LoadImageFromTestFile(image_path);
+      bitmap = std::next(bitmap);
+    }
+  }
+
+  base::test::TestFuture<mojom::VisualAnnotationPtr>
+      futures[kTestFilenamesCount];
+  {
+    auto* future = std::begin(futures);
+    for (SkBitmap& bitmap : bitmaps) {
+      ocr()->PerformOCR(bitmap, future->GetCallback());
+      future = std::next(future);
+    }
+  }
+
+  for (auto& future : futures) {
+    ASSERT_TRUE(future.Wait());
+    auto& results = future.Get<mojom::VisualAnnotationPtr>();
+    EXPECT_TRUE(results->lines.size());
+  }
+}
 
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_BROWSERTESTS) && !
         // BUILDFLAG(USE_FAKE_SCREEN_AI)
