@@ -19,6 +19,7 @@ import org.chromium.base.test.transit.TransitAsserts;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
@@ -84,6 +85,7 @@ public class OmniboxPTTest {
 
     @LargeTest
     @Test
+    @DisabledTest(message = "crbug.com/415805917")
     public void testOpenTypeDelete_fromIncognitoNtp() {
         WebPageStation blankPage = mCtaTestRule.start();
         IncognitoNewTabPageStation incognitoNtp = blankPage.openNewIncognitoTabFast();
