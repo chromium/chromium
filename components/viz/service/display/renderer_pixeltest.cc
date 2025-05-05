@@ -6575,7 +6575,7 @@ INSTANTIATE_TEST_SUITE_P(
                      testing::ValuesIn(src_color_spaces),
                      testing::ValuesIn(intermediate_color_spaces),
                      testing::Bool(),
-                     testing::Values(false)),
+                     testing::Bool()),
     &ColorTransformPixelTest::GetParamName);
 
 INSTANTIATE_TEST_SUITE_P(
@@ -6585,7 +6585,7 @@ INSTANTIATE_TEST_SUITE_P(
                      testing::ValuesIn(intermediate_color_spaces),
                      testing::ValuesIn(dst_color_spaces),
                      testing::Bool(),
-                     testing::Values(false)),
+                     testing::Bool()),
     &ColorTransformPixelTest::GetParamName);
 
 // Test cases that simulate HDR content with tone mapping, which may require
