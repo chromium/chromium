@@ -6136,7 +6136,9 @@ TEST_P(VideoPixelRendererPixelTestColorConversion,
     CompositorRenderPassId id{1};
     auto child_pass = CreateTestRootRenderPass(id, rect);
 
-    auto color_space = gfx::ColorSpace::CreateHDR10();
+    auto color_space = gfx::ColorSpace(
+        gfx::ColorSpace::PrimaryID::BT2020, gfx::ColorSpace::TransferID::PQ,
+        gfx::ColorSpace::MatrixID::BT2020_NCL, gfx::ColorSpace::RangeID::FULL);
 
     CreateTestMultiplanarVideoDrawQuad(
         TestVideoFrameBuilder(media::PIXEL_FORMAT_I420, color_space,
