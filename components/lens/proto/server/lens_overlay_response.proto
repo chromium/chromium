@@ -48,4 +48,8 @@ message LensOverlaySuggestInputs {
 message LensOverlayUrlResponse {
   // The side panel url to load.
   optional string url = 1;
+
+  // The page URL that was sent in the request that returned this response, if
+  // any.
+  optional string page_url = 2;
 }

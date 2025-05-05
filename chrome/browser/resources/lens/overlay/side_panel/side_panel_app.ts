@@ -28,6 +28,7 @@ import type {LensSidePanelPageHandlerInterface} from '../lens_side_panel.mojom-w
 import {PageContentType} from '../page_content_type.mojom-webui.js';
 import {handleEscapeSearchbox} from '../searchbox_utils.js';
 
+import {PostMessageReceiver} from './post_message_communication.js';
 import {getTemplate} from './side_panel_app.html.js';
 import {SidePanelBrowserProxyImpl} from './side_panel_browser_proxy.js';
 import type {SidePanelBrowserProxy} from './side_panel_browser_proxy.js';
@@ -196,6 +197,10 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
   // increase, and one for the progress bar height decrease on results load.
   private progressBarAnimation: Animation|null = null;
   private progressBarHideAnimation: Animation|null = null;
+  // A helper object responsible for handling post messages received by the
+  // window.
+  private postMessageReceiver: PostMessageReceiver =
+      new PostMessageReceiver(SidePanelBrowserProxyImpl.getInstance());
 
   private browserProxy: SidePanelBrowserProxy =
       SidePanelBrowserProxyImpl.getInstance();
@@ -254,6 +259,9 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
     this.eventTracker_.add(
         document, 'query-autocomplete',
         this.handleQueryAutocomplete.bind(this));
+
+    // Start listening to postMessages on the window.
+    this.postMessageReceiver.listen();
   }
 
   override disconnectedCallback() {
@@ -263,6 +271,7 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
         id => assert(this.browserProxy.callbackRouter.removeListener(id)));
     this.listenerIds = [];
     this.eventTracker_.removeAll();
+    this.postMessageReceiver.detach();
   }
 
   private onBackArrowClick() {
