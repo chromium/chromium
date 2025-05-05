@@ -52,4 +52,12 @@ TEST_F(AutofillImageFetcherImplTest, ResolveCardArtURL) {
                 AutofillImageFetcherBase::ImageType::kCreditCardArtImage));
 }
 
+TEST_F(AutofillImageFetcherImplTest, ResolveValuableImageURL) {
+  // Valuable images are resized to (24x24) and cropped.
+  EXPECT_EQ(GURL("https://www.example.com/fake_image1=h24-w24-cc"),
+            autofill_image_fetcher()->ResolveImageURL(
+                GURL("https://www.example.com/fake_image1"),
+                AutofillImageFetcherBase::ImageType::kValuableImage));
+}
+
 }  // namespace autofill
