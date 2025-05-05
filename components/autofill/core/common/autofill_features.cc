@@ -278,14 +278,6 @@ BASE_FEATURE(kAutofillExtractOnlyNonAdFrames,
              "AutofillExtractOnlyNonAdFrames",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, focusing on an autofilled field that was traditionally filled
-// with address data (meaning filled with the value of their classified type)
-// will yield field-by-field filling suggestions without prefix matching.
-// TODO(crbug.com/339543182): Remove when launched.
-BASE_FEATURE(kAutofillAddressFieldSwapping,
-             "AutofillAddressFieldSwapping",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When enabled, address field swapping suggestions will not include a
 // suggestion matching the field's current value. This decreases noises in the
 // suggestion UI.

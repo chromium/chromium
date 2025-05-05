@@ -372,10 +372,8 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
       suggestion.type == autofill::SuggestionType::kCreditCardEntry ||
       suggestion.type == autofill::SuggestionType::kCreateNewPlusAddress ||
       suggestion.type == autofill::SuggestionType::kVirtualCreditCardEntry ||
-      ((base::FeatureList::IsEnabled(
-            autofill::features::kAutofillAddressFieldSwapping) &&
-        suggestion.type ==
-            autofill::SuggestionType::kAddressFieldByFieldFilling))) {
+      suggestion.type ==
+          autofill::SuggestionType::kAddressFieldByFieldFilling) {
     _pendingAutocompleteFieldID = fieldRendererID;
     if (_suggestionDelegate) {
       autofill::Suggestion autofill_suggestion;
@@ -593,10 +591,8 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
         popup_suggestion.type == autofill::SuggestionType::kCreditCardEntry ||
         popup_suggestion.type ==
             autofill::SuggestionType::kVirtualCreditCardEntry ||
-        (base::FeatureList::IsEnabled(
-             autofill::features::kAutofillAddressFieldSwapping) &&
-         popup_suggestion.type ==
-             autofill::SuggestionType::kAddressFieldByFieldFilling)) {
+        popup_suggestion.type ==
+            autofill::SuggestionType::kAddressFieldByFieldFilling) {
       // Filter out any key/value suggestions if the user hasn't typed yet.
       if (popup_suggestion.type ==
               autofill::SuggestionType::kAutocompleteEntry &&

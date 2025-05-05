@@ -3205,11 +3205,8 @@ TEST_F(BrowserAutofillManagerTest,
 }
 
 // Tests that when focusing on an autofilled field, the user gets field-by-field
-// filling suggestions without prefix matching, if AutofillAddressFieldSwapping
-// is enabled.
+// filling suggestions without prefix matching.
 TEST_F(BrowserAutofillManagerTest, GetProfileSuggestions_FieldSwapping) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      features::kAutofillAddressFieldSwapping};
   FormData form =
       test::GetFormData({.fields = {{.role = NAME_FULL,
                                      .value = u"Full Name",

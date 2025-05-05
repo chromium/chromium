@@ -2752,7 +2752,7 @@ std::vector<Suggestion> BrowserAutofillManager::GetProfileSuggestions(
   // filling suggestions should be shown so that the user could easily correct
   // values to something present in different stored addresses.
   SuggestionType current_suggestion_type =
-      (trigger_field.is_autofilled() && IsAddressFieldSwappingEnabled())
+      trigger_field.is_autofilled()
           ? SuggestionType::kAddressFieldByFieldFilling
           : SuggestionType::kAddressEntry;
 

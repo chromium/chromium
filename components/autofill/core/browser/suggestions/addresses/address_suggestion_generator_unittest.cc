@@ -774,11 +774,8 @@ TEST_F(AddressSuggestionGeneratorTest,
 TEST_F(
     AddressSuggestionGeneratorTest,
     GetSuggestionsForProfiles_RemoveFieldByFieldFillingSuggestionsMatchingFieldContent) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {features::kAutofillAddressFieldSwapping,
-       features::kAutofillImproveAddressFieldSwapping},
-      /*disabled_features=*/{});
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kAutofillImproveAddressFieldSwapping};
   AutofillProfile profile1 = test::GetFullProfile();
   AutofillProfile profile2 = test::GetFullProfile2();
   address_data().AddProfile(profile1);

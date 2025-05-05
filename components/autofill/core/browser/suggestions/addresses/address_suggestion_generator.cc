@@ -417,11 +417,10 @@ ProfilesToSuggestOptions GetProfilesToSuggestOptions(
       NormalizeForComparisonForType(trigger_field_contents, trigger_field_type)
           .empty();
   // By default, suggestions should be matched with the field content. However,
-  // if AutofillAddressFieldSwapping is enabled, prefix matching is disabled
+  // for field by field filling suggestions, prefix matching is disabled
   // because we want to offer the user suggestions to swap the current value of
   // the field with something else, making the prefix matching not useful.
-  bool should_prefix_match_suggestions =
-      (!trigger_field_is_autofilled || !IsAddressFieldSwappingEnabled());
+  bool should_prefix_match_suggestions = !trigger_field_is_autofilled;
   // By default, prefix matching and deduplication are enough filtering
   // mechanisms for suggestions. However, for field by field filling suggestions
   // we also wanna remove suggestions that have the same value as the trigger
@@ -429,7 +428,6 @@ ProfilesToSuggestOptions GetProfilesToSuggestOptions(
   // the suggestion UI.
   bool should_remove_profiles_with_equal_value_on_trigger_field =
       (suggestion_type == SuggestionType::kAddressFieldByFieldFilling &&
-       IsAddressFieldSwappingEnabled() &&
        base::FeatureList::IsEnabled(
            features::kAutofillImproveAddressFieldSwapping));
   // TODO(crbug.com/378835293): Cleanup trivial options.
