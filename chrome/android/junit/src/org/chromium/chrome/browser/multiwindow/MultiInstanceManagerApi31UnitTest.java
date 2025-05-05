@@ -60,6 +60,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
@@ -102,7 +103,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /** Unit tests for {@link MultiInstanceManagerApi31}. */
@@ -1544,15 +1547,28 @@ public class MultiInstanceManagerApi31UnitTest {
     }
 
     private void doTestReparentGroupToRunningActivity(boolean isGroupShared) {
+        HistogramWatcher histogramExpectation =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord("Android.Reparent.TabGroup.GroupSize", 3)
+                        .expectAnyRecord("Android.Reparent.TabGroup.GroupSize.Diff")
+                        .expectAnyRecord("Android.Reparent.TabGroup.Duration")
+                        .build();
+
         // Setup.
         mMultiInstanceManager.mTestBuildInstancesList = true;
+        LinkedHashMap<Integer, String> tabIdsToUrls =
+                new LinkedHashMap<>(
+                        Map.ofEntries(
+                                Map.entry(1, "https://www.amazon.com"),
+                                Map.entry(2, "https://www.youtube.com"),
+                                Map.entry(3, "https://www.facebook.com")));
         TabGroupMetadata tabGroupMetadata =
                 new TabGroupMetadata(
                         /* rootId= */ -1,
                         /* selectedTabId= */ -1,
                         INSTANCE_ID_1,
                         /* tabGroupId= */ null,
-                        /* tabIdsToUrls= */ null,
+                        tabIdsToUrls,
                         /* tabGroupColor= */ 0,
                         /* tabGroupTitle= */ null,
                         /* mhtmlTabTitle= */ null,
@@ -1579,5 +1595,8 @@ public class MultiInstanceManagerApi31UnitTest {
 
         // Verify we resume the TabGroupSyncService to begin observing local changes.
         verify(mTabGroupSyncService).setLocalObservationMode(/* observeLocalChanges */ true);
+
+        // Verify histograms.
+        histogramExpectation.assertExpected();
     }
 }

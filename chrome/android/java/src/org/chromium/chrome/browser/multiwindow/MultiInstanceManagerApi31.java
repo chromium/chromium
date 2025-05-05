@@ -14,6 +14,7 @@ import android.content.Intent;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.provider.Browser;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
@@ -244,6 +245,12 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
             ChromeTabbedActivity targetActivity,
             TabGroupMetadata tabGroupMetadata,
             int tabAtIndex) {
+        long startTime = SystemClock.elapsedRealtime();
+        int tabGroupSizeBeforeReparent = tabGroupMetadata.tabIdsToUrls.size();
+        // Records tab group reparenting group size histogram.
+        RecordHistogram.recordCount1000Histogram(
+                "Android.Reparent.TabGroup.GroupSize", tabGroupSizeBeforeReparent);
+
         // 1. Temporarily disable sync service from observing local changes to prevent unintended
         // updates during tab group re-parenting.
         @Nullable
@@ -271,6 +278,23 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
                     // Re-enable sync service observation after re-parenting is completed to resume
                     // normal sync behavior.
                     setSyncServiceLocalObservationMode(syncService, /* shouldObserve= */ true);
+
+                    // Records tab group reparenting duration histogram.
+                    long currentTime = SystemClock.elapsedRealtime();
+                    RecordHistogram.recordLongTimesHistogram(
+                            "Android.Reparent.TabGroup.Duration", currentTime - startTime);
+
+                    // Records tab group reparenting group size diff histogram.
+                    int destWindowId =
+                            TabWindowManagerSingleton.getInstance().getIdForWindow(targetActivity);
+                    TabGroupModelFilter destWindowModelFilter =
+                            getTabGroupModelFilterByWindowId(
+                                    destWindowId, tabGroupMetadata.isIncognito);
+                    int tabGroupSizeAfterReparent =
+                            destWindowModelFilter.getTabCountForGroup(tabGroupMetadata.tabGroupId);
+                    RecordHistogram.recordCount1000Histogram(
+                            "Android.Reparent.TabGroup.GroupSize.Diff",
+                            tabGroupSizeBeforeReparent - tabGroupSizeAfterReparent);
                 });
     }
 

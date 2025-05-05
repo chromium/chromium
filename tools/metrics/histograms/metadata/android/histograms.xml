@@ -4589,6 +4589,37 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.Reparent.TabGroup.Duration" units="ms"
+    expires_after="2026-04-30">
+  <owner>zheliooo@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    The duration captured the time between A) before setup reparenting intent
+    and tabs being detached and B) target activity processes the intent and is
+    brought to the foreground.
+  </summary>
+</histogram>
+
+<histogram name="Android.Reparent.TabGroup.GroupSize" units="tabs"
+    expires_after="2026-04-30">
+  <owner>zheliooo@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    Record the number of tabs in the group being reparented to another window.
+  </summary>
+</histogram>
+
+<histogram name="Android.Reparent.TabGroup.GroupSize.Diff" units="tabs"
+    expires_after="2026-04-30">
+  <owner>zheliooo@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    Record the change in the number of tabs in the reparented group before and
+    after the reparenting operation. Should be 0 if all the tabs in the tab
+    group is successfully reparented.
+  </summary>
+</histogram>
+
 <histogram name="Android.RequestDesktopSite.Changed" enum="SiteLayout"
     expires_after="2025-08-24">
   <owner>shuyng@google.com</owner>
