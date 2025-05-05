@@ -178,6 +178,25 @@ void RecordPreClassificationCheckResultWithAndWithoutSuffix(
       result, PreClassificationCheckResult::NO_CLASSIFY_MAX);
 }
 
+void LogLlamaForcedTriggerInfoFields(
+    LlamaForcedTriggerInfo llama_forced_trigger_info) {
+  base::UmaHistogramBoolean(
+      "SBClientPhishing.LlamaForcedTriggerInfo.IntelligentScan",
+      llama_forced_trigger_info.intelligent_scan());
+  size_t rule_infos_size =
+      llama_forced_trigger_info.llama_trigger_rule_infos().size();
+  base::UmaHistogramCounts100(
+      "SBClientPhishing.LlamaForcedTriggerInfo.LlamaTriggerRuleInfosSize",
+      rule_infos_size);
+  for (size_t i = 0; i < rule_infos_size; i++) {
+    base::UmaHistogramCounts1000(
+        "SBClientPhishing.LlamaForcedTriggerInfo.LlamaTriggerRuleId",
+        llama_forced_trigger_info.llama_trigger_rule_infos()
+            .at(i)
+            .llama_trigger_rule_id());
+  }
+}
+
 bool ShouldShowScamWarning(std::optional<IntelligentScanVerdict> verdict) {
   if (!verdict.has_value() ||
       *verdict ==
@@ -1241,6 +1260,10 @@ void ClientSideDetectionHost::MaybeInquireOnDeviceForScamDetection(
           kClientSideDetectionLlamaForcedTriggerInfoForScamDetection) &&
       verdict->has_llama_forced_trigger_info() &&
       verdict->llama_forced_trigger_info().intelligent_scan();
+
+  if (verdict->has_llama_forced_trigger_info()) {
+    LogLlamaForcedTriggerInfoFields(verdict->llama_forced_trigger_info());
+  }
 
   if (IsEnhancedProtectionEnabled(*delegate_->GetPrefs()) &&
       (is_keyboard_lock_requested || is_intelligent_scan_requested)) {

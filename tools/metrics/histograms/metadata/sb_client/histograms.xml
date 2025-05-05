@@ -659,6 +659,38 @@ useful for Chirp alerts (go/crca-alerts). -->
       variants="ClientSideDetectionOnDeviceModelRequestType"/>
 </histogram>
 
+<histogram name="SBClientPhishing.LlamaForcedTriggerInfo.IntelligentScan"
+    enum="BooleanEnabled" expires_after="2026-05-02">
+  <owner>andysjlim@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records whether the intelligent_scan field under LlamaForcedTriggerInfo is
+    set to true or false. This is recorded when the verdict contains the
+    LlamaForcedTriggerInfo.
+  </summary>
+</histogram>
+
+<histogram name="SBClientPhishing.LlamaForcedTriggerInfo.LlamaTriggerRuleId"
+    units="rule_id" expires_after="2026-05-02">
+  <owner>andysjlim@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the field llama_trigger_rule_id under LlamaTriggerRuleInfo. This is
+    recorded for every LlamaTriggerRuleInfo under LlamaForcedTriggerInfo.
+  </summary>
+</histogram>
+
+<histogram
+    name="SBClientPhishing.LlamaForcedTriggerInfo.LlamaTriggerRuleInfosSize"
+    units="count" expires_after="2026-05-02">
+  <owner>andysjlim@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the size of the LlamaTriggerRuleInfo repeated fields. This is
+    recorded when the verdict contains the LlamaForcedTriggerInfo.
+  </summary>
+</histogram>
+
 <histogram name="SBClientPhishing.LocalModelDetectsPhishing{RequestType}"
     enum="BooleanIsPhishing" expires_after="2025-09-14">
   <owner>andysjlim@chromium.org</owner>
