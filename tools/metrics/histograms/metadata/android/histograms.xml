@@ -5887,7 +5887,7 @@ chromium-metrics-reviews@google.com.
     underlying problem. Therefore the workaround should no longer be needed.
     This histogram logs whether the asset path workaround was needed during
     startup so that we can determine if it's safe to remove. This is logged once
-    during WebViewChromiumAwInit#startChromiumLocked.
+    during WebViewChromiumAwInit#startChromium.
   </summary>
 </histogram>
 
@@ -7657,9 +7657,9 @@ chromium-metrics-reviews@google.com.
   <owner>torne@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
-    Records the reason for initialization (startChromiumLocked call), such as
-    creating a WebView instance, calling a static method through getStatics() or
-    other static methods.
+    Records the reason for initialization (startChromium call), such as creating
+    a WebView instance, calling a static method through getStatics() or other
+    static methods.
 
     Recorded in M125+.
   </summary>
@@ -7798,8 +7798,7 @@ chromium-metrics-reviews@google.com.
   <owner>src/android_webview/OWNERS</owner>
   <summary>
     Records how long it took to wait for the UI thread before running
-    startChromiumLocked. Only recorded if startChromiumLocked was posted as a
-    task.
+    startChromium. Only recorded if startChromium was posted as a task.
 
     Recorded in M125+.
   </summary>
