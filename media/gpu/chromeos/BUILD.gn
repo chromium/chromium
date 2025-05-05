@@ -293,6 +293,7 @@ test("image_processor_test") {
   deps = [
     ":chromeos",
     "//base/test:test_support",
+    "//gpu:test_support",
     "//media:test_support",
     "//media/gpu:buildflags",
     "//media/gpu:video_frame_mapper_common",
@@ -350,6 +351,7 @@ if (use_v4l2_codec && enable_vulkan) {
       ":chromeos",
       ":perf_test_utils",
       "//base/test:test_support",
+      "//gpu:test_support",
       "//gpu/command_buffer/service:gles2",
       "//media:test_support",
       "//media/gpu:video_frame_mapper_common",
