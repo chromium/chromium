@@ -490,14 +490,7 @@ using MockTabStatsObserver = testing::NiceMock<LenientMockTabStatsObserver>;
 
 }  // namespace
 
-// TODO(crbug.com/40752198): Fix the flakiness on MacOS and re-enable the test.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_TabStatsObserverBasics DISABLED_TabStatsObserverBasics
-#else
-#define MAYBE_TabStatsObserverBasics TabStatsObserverBasics
-#endif
-IN_PROC_BROWSER_TEST_F(TabStatsTrackerBrowserTest,
-                       MAYBE_TabStatsObserverBasics) {
+IN_PROC_BROWSER_TEST_F(TabStatsTrackerBrowserTest, TabStatsObserverBasics) {
   MockTabStatsObserver mock_observer;
   TestTabStatsObserver count_observer;
   tab_stats_tracker_->AddObserverAndSetInitialState(&count_observer);
@@ -624,13 +617,7 @@ IN_PROC_BROWSER_TEST_F(TabStatsTrackerBrowserTest,
   EXPECT_EQ(expected_window_count, count_observer.window_count());
 }
 
-// TODO(crbug.com/40919431): Re-enable this test
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_TabSwitch DISABLED_TabSwitch
-#else
-#define MAYBE_TabSwitch TabSwitch
-#endif
-IN_PROC_BROWSER_TEST_F(TabStatsTrackerBrowserTest, MAYBE_TabSwitch) {
+IN_PROC_BROWSER_TEST_F(TabStatsTrackerBrowserTest, TabSwitch) {
   MockTabStatsObserver mock_observer;
   TestTabStatsObserver count_observer;
   tab_stats_tracker_->AddObserverAndSetInitialState(&count_observer);
