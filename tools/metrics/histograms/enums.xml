@@ -2841,6 +2841,7 @@ Called by update_net_error_codes.py.-->
   <int value="0" label="Off"/>
   <int value="1" label="BlockThirdParty"/>
   <int value="2" label="IncognitoOnly"/>
+  <int value="3" label="Limited"/>
 </enum>
 
 <enum name="CookieDeprecationFacilitatedTestingProfileEligibility">
