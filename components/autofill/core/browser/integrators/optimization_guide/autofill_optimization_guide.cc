@@ -421,7 +421,7 @@ bool AutofillOptimizationGuide::ShouldBlockBenefitSuggestionLabelsForCardAndUrl(
   return false;
 }
 
-bool AutofillOptimizationGuide::IsUrlEligibleForCheckoutAmountSearchForIssuerId(
+bool AutofillOptimizationGuide::IsUrlEligibleForBnplIssuer(
     BnplIssuer::IssuerId issuer_id,
     const GURL& url) const {
   auto can_apply_optimization = [&url, this](

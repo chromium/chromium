@@ -145,6 +145,7 @@
 #include "components/autofill/core/common/autofill_regexes.h"
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/autofill/core/common/credit_card_number_validation.h"
+#include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_data_predictions.h"
 #include "components/autofill/core/common/form_field_data.h"
@@ -175,6 +176,7 @@ namespace autofill {
 using FillingProductSet = DenseSet<FillingProduct>;
 
 using mojom::SubmissionSource;
+using payments::AmountExtractionManager;
 
 namespace {
 
@@ -1551,15 +1553,26 @@ void BrowserAutofillManager::OnGenerateSuggestionsComplete(
   // When a user interacts with the credit card form on the merchant checkout
   // pages, `this` checks `amount_extraction_manager_` if amount extraction
   // should happen, and if so, triggers amount extraction.
-  if (autofill_field &&
-      amount_extraction_manager_->ShouldTriggerAmountExtraction(
-          context,
-          ShouldSuppressSuggestions(context.suppress_reason, log_manager()),
-          !suggestions.empty(), autofill_field->Type().GetStorableType())) {
-    if (payments::BnplManager* bnpl_manager = GetPaymentsBnplManager()) {
-      bnpl_manager->NotifyOfSuggestionGeneration(trigger_source);
+  if (autofill_field) {
+    const DenseSet<AmountExtractionManager::EligibleFeature> eligible_features =
+        amount_extraction_manager_->GetEligibleFeatures(
+            context,
+            ShouldSuppressSuggestions(context.suppress_reason, log_manager()),
+            !suggestions.empty(), autofill_field->Type().GetStorableType());
+
+    if (!eligible_features.empty()) {
+      for (AmountExtractionManager::EligibleFeature eligible_feature :
+           eligible_features) {
+        switch (eligible_feature) {
+          case AmountExtractionManager::EligibleFeature::kBnpl:
+            GetPaymentsBnplManager()->NotifyOfSuggestionGeneration(
+                trigger_source);
+            continue;
+        }
+        NOTREACHED();
+      }
+      amount_extraction_manager_->TriggerCheckoutAmountExtraction();
     }
-    amount_extraction_manager_->TriggerCheckoutAmountExtraction();
   }
 
   if (show_suggestions) {

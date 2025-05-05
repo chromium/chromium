@@ -942,7 +942,7 @@ class MockAmountExtractionManager : public payments::AmountExtractionManager {
       : AmountExtractionManager(test_manager) {
     ON_CALL(*static_cast<MockAutofillOptimizationGuide*>(
                 test_manager->client().GetAutofillOptimizationGuide()),
-            IsUrlEligibleForCheckoutAmountSearchForIssuerId)
+            IsUrlEligibleForBnplIssuer)
         .WillByDefault(Return(true));
   }
 

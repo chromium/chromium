@@ -67,45 +67,45 @@ AmountExtractionManager::MaybeParseAmountToMonetaryMicroUnits(
   return micro_amount;
 }
 
-bool AmountExtractionManager::ShouldTriggerAmountExtraction(
-    const SuggestionsContext& context,
-    bool should_suppress_suggestions,
-    bool has_suggestions,
-    FieldType field_type) const {
+DenseSet<AmountExtractionManager::EligibleFeature>
+AmountExtractionManager::GetEligibleFeatures(const SuggestionsContext& context,
+                                             bool should_suppress_suggestions,
+                                             bool has_suggestions,
+                                             FieldType field_type) const {
   // If there is an ongoing search, do not trigger the search.
   if (search_request_pending_) {
-    return false;
+    return {};
   }
-  // If autofill is not available, do not offer BNPL.
+  // If autofill is not available, do not trigger the search.
   if (!context.is_autofill_available) {
-    return false;
+    return {};
   }
 
   // If the interacted form field is CVC, do not trigger the search.
   if (kCvcFieldTypes.find(field_type) != kCvcFieldTypes.end()) {
-    return false;
+    return {};
   }
 
-  // If there are no suggestions, do not show a BNPL chip as suggestions showing
-  // is a requirement for BNPL.
+  // If there are no suggestions, do not trigger the search as suggestions
+  // showing is a requirement for amount extraction.
   if (!has_suggestions) {
-    return false;
+    return {};
   }
-  // If there are no suggestions, do not show a BNPL chip as suggestions showing
-  // is a requirement for BNPL.
+  // If there are no suggestions, do not trigger the search as suggestions
+  // showing is a requirement for amount extraction.
   if (should_suppress_suggestions) {
-    return false;
+    return {};
   }
-  // BNPL is only offered for Credit Card filling scenarios.
+  // Amount extraction is only offered for Credit Card filling scenarios.
   if (context.filling_product != FillingProduct::kCreditCard) {
-    return false;
+    return {};
   }
 
   // None of the projects that use amount extraction are intended to be enabled
   // in off-the-record mode, so do not run amount extraction in off-the-record
   // mode.
   if (autofill_manager_->client().IsOffTheRecord()) {
-    return false;
+    return {};
   }
 
   if constexpr (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
@@ -113,22 +113,25 @@ bool AmountExtractionManager::ShouldTriggerAmountExtraction(
     if (base::FeatureList::IsEnabled(
             ::autofill::features::
                 kAutofillEnableAmountExtractionDesktopLogging)) {
-      return true;
+      // Insert all amount extraction eligible features for logging.
+      return DenseSet<EligibleFeature>::all();
     }
   }
-  // If the webpage is not in the amount extraction allowlist, do not trigger
-  // the search.
-  if (!IsUrlEligibleForAmountExtraction()) {
-    return false;
+
+  const DenseSet<EligibleFeature> eligible_features =
+      CheckEligiblilityForFeaturesRequiringAmountExtraction();
+
+  // Run after all other feature eligibilities are checked to only check feature
+  // flag for eligible users.
+  // TODO(crbug.com/414648193): Rename amount extraction feature flag to
+  // remove the platform restriction.
+  if (!eligible_features.empty() &&
+      base::FeatureList::IsEnabled(
+          ::autofill::features::kAutofillEnableAmountExtractionDesktop)) {
+    return eligible_features;
   }
 
-  if constexpr (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
-                BUILDFLAG(IS_CHROMEOS)) {
-    return base::FeatureList::IsEnabled(
-        ::autofill::features::kAutofillEnableAmountExtractionDesktop);
-  } else {
-    return false;
-  }
+  return {};
 }
 
 void AmountExtractionManager::TriggerCheckoutAmountExtraction() {
@@ -159,11 +162,6 @@ void AmountExtractionManager::SetSearchRequestPendingForTesting(
 
 bool AmountExtractionManager::GetSearchRequestPendingForTesting() {
   return search_request_pending_;
-}
-
-bool AmountExtractionManager::IsUrlEligibleForAmountExtractionForTesting()
-    const {
-  return IsUrlEligibleForAmountExtraction();
 }
 
 void AmountExtractionManager::OnCheckoutAmountReceived(
@@ -226,26 +224,22 @@ void AmountExtractionManager::OnTimeoutReached() {
   }
 }
 
-bool AmountExtractionManager::IsUrlEligibleForAmountExtraction() const {
-  if (AutofillOptimizationGuide* autofill_optimization_guide =
-          autofill_manager_->client().GetAutofillOptimizationGuide()) {
-    const GURL& url =
-        autofill_manager_->client().GetLastCommittedPrimaryMainFrameURL();
-    payments::PaymentsAutofillClient* payments_autofill_client =
-        autofill_manager_->client().GetPaymentsAutofillClient();
-    if (!payments_autofill_client) {
-      return false;
-    }
-    for (const BnplIssuer& issuer :
-         payments_autofill_client->GetPaymentsDataManager().GetBnplIssuers()) {
-      if (autofill_optimization_guide
-              ->IsUrlEligibleForCheckoutAmountSearchForIssuerId(
-                  issuer.issuer_id(), url)) {
-        return true;
-      }
+DenseSet<AmountExtractionManager::EligibleFeature>
+AmountExtractionManager::CheckEligiblilityForFeaturesRequiringAmountExtraction()
+    const {
+  DenseSet<EligibleFeature> eligible_features;
+
+  // Check eligibility of BNPL feature.
+  // Currently, BNPL is only offered for desktop platforms.
+  if constexpr (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+                BUILDFLAG(IS_CHROMEOS)) {
+    if (BnplManager* bnpl_manager = autofill_manager_->GetPaymentsBnplManager();
+        bnpl_manager && bnpl_manager->IsEligibleForBnpl()) {
+      eligible_features.insert(EligibleFeature::kBnpl);
     }
   }
-  return false;
+
+  return eligible_features;
 }
 
 AutofillDriver* AmountExtractionManager::GetMainFrameDriver() {

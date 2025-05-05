@@ -79,6 +79,13 @@ class BnplManager {
   virtual void OnAmountExtractionReturned(
       const std::optional<uint64_t>& extracted_amount);
 
+  // Determines if autofill BNPL is supported.
+  // Returns true if:
+  // 1. The BNPL feature flag is enabled.
+  // 2. The client has an `AutofillOptimizationGuide` assigned.
+  // 3. The URL being visited is within the BNPL issuer allowlist.
+  bool IsEligibleForBnpl() const;
+
  private:
   friend class BnplManagerTestApi;
   friend class BnplManagerTest;

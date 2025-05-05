@@ -172,7 +172,7 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
   bool DoSuggestionsIncludeVirtualCard();
   // Checks whether the current website is relevant for BNPL for any known BNPL
   // provider, according to the optimization guide.
-  bool IsEligibleForBnpl(GURL url);
+  bool IsEligibleForBnpl();
 
   size_t server_record_type_count_ = 0;
   size_t local_record_type_count_ = 0;

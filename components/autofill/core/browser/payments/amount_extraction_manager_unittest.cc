@@ -24,6 +24,16 @@
 
 namespace autofill::payments {
 
+namespace {
+using ::testing::_;
+using ::testing::ElementsAre;
+using ::testing::Eq;
+using ::testing::IsEmpty;
+using ::testing::NiceMock;
+using ::testing::Return;
+using ::testing::Test;
+}  // namespace
+
 class MockAutofillDriver : public TestAutofillDriver {
  public:
   explicit MockAutofillDriver(TestAutofillClient* autofill_client)
@@ -51,7 +61,7 @@ class MockAmountExtractionManager : public AmountExtractionManager {
   MOCK_METHOD(void, OnTimeoutReached, (), (override));
 };
 
-class AmountExtractionManagerTest : public testing::Test {
+class AmountExtractionManagerTest : public Test {
  public:
   AmountExtractionManagerTest() {
     scoped_feature_list_.InitWithFeatures(
@@ -72,8 +82,7 @@ class AmountExtractionManagerTest : public testing::Test {
     autofill_client_->GetPersonalDataManager().SetPrefService(
         autofill_client_->GetPrefs());
     mock_autofill_driver_ =
-        std::make_unique<testing::NiceMock<MockAutofillDriver>>(
-            autofill_client_.get());
+        std::make_unique<NiceMock<MockAutofillDriver>>(autofill_client_.get());
     autofill_manager_ = std::make_unique<TestBrowserAutofillManager>(
         mock_autofill_driver_.get());
     amount_extraction_manager_ =
@@ -83,8 +92,8 @@ class AmountExtractionManagerTest : public testing::Test {
 
     ON_CALL(*static_cast<MockAutofillOptimizationGuide*>(
                 autofill_manager_->client().GetAutofillOptimizationGuide()),
-            IsUrlEligibleForCheckoutAmountSearchForIssuerId)
-        .WillByDefault(testing::Return(true));
+            IsUrlEligibleForBnplIssuer)
+        .WillByDefault(Return(true));
   }
 
   TestPaymentsDataManager& payments_data() {
@@ -115,7 +124,7 @@ class AmountExtractionManagerTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<TestAutofillClient> autofill_client_;
-  std::unique_ptr<testing::NiceMock<MockAutofillDriver>> mock_autofill_driver_;
+  std::unique_ptr<NiceMock<MockAutofillDriver>> mock_autofill_driver_;
   std::unique_ptr<TestBrowserAutofillManager> autofill_manager_;
   std::unique_ptr<AmountExtractionManager> amount_extraction_manager_;
   std::unique_ptr<MockAmountExtractionManager> mock_amount_extraction_manager_;
@@ -132,11 +141,12 @@ TEST_F(AmountExtractionManagerTest, ShouldTriggerWhenEligible) {
                                         FieldType::CREDIT_CARD_EXP_MONTH};
 
   for (FieldType field_type : field_types) {
-    EXPECT_TRUE(amount_extraction_manager_->ShouldTriggerAmountExtraction(
-        context,
-        /*should_suppress_suggestions=*/false,
-        /*has_suggestions=*/true,
-        /*field_type=*/field_type));
+    EXPECT_THAT(amount_extraction_manager_->GetEligibleFeatures(
+                    context,
+                    /*should_suppress_suggestions=*/false,
+                    /*has_suggestions=*/true,
+                    /*field_type=*/field_type),
+                ElementsAre(AmountExtractionManager::EligibleFeature::kBnpl));
   }
 }
 
@@ -148,14 +158,17 @@ TEST_F(AmountExtractionManagerTest, ShouldNotTriggerWhenCvcFieldIsClicked) {
   context.is_autofill_available = true;
   context.filling_product = FillingProduct::kCreditCard;
 
-  EXPECT_FALSE(amount_extraction_manager_->ShouldTriggerAmountExtraction(
-      context, /*should_suppress_suggestions=*/false,
-      /*has_suggestions=*/true,
-      /*field_type=*/FieldType::CREDIT_CARD_VERIFICATION_CODE));
-  EXPECT_FALSE(amount_extraction_manager_->ShouldTriggerAmountExtraction(
-      context, /*should_suppress_suggestions=*/false,
-      /*has_suggestions=*/true,
-      /*field_type=*/FieldType::CREDIT_CARD_STANDALONE_VERIFICATION_CODE));
+  EXPECT_THAT(amount_extraction_manager_->GetEligibleFeatures(
+                  context, /*should_suppress_suggestions=*/false,
+                  /*has_suggestions=*/true,
+                  /*field_type=*/FieldType::CREDIT_CARD_VERIFICATION_CODE),
+              IsEmpty());
+  EXPECT_THAT(amount_extraction_manager_->GetEligibleFeatures(
+                  context, /*should_suppress_suggestions=*/false,
+                  /*has_suggestions=*/true,
+                  /*field_type=*/
+                  FieldType::CREDIT_CARD_STANDALONE_VERIFICATION_CODE),
+              IsEmpty());
 }
 
 TEST_F(AmountExtractionManagerTest, ShouldNotTriggerWhenFeatureIsNotEnabled) {
@@ -169,9 +182,11 @@ TEST_F(AmountExtractionManagerTest, ShouldNotTriggerWhenFeatureIsNotEnabled) {
   context.is_autofill_available = true;
   context.filling_product = FillingProduct::kCreditCard;
 
-  EXPECT_FALSE(amount_extraction_manager_->ShouldTriggerAmountExtraction(
-      context, /*should_suppress_suggestions=*/false,
-      /*has_suggestions=*/true, /*field_type=*/FieldType::CREDIT_CARD_NUMBER));
+  EXPECT_THAT(amount_extraction_manager_->GetEligibleFeatures(
+                  context, /*should_suppress_suggestions=*/false,
+                  /*has_suggestions=*/true,
+                  /*field_type=*/FieldType::CREDIT_CARD_NUMBER),
+              IsEmpty());
 }
 
 TEST_F(AmountExtractionManagerTest, ShouldNotTriggerWhenSearchIsOngoing) {
@@ -180,9 +195,11 @@ TEST_F(AmountExtractionManagerTest, ShouldNotTriggerWhenSearchIsOngoing) {
   context.filling_product = FillingProduct::kCreditCard;
   amount_extraction_manager_->SetSearchRequestPendingForTesting(
       /*search_request_pending*/ true);
-  EXPECT_FALSE(amount_extraction_manager_->ShouldTriggerAmountExtraction(
-      context, /*should_suppress_suggestions=*/false,
-      /*has_suggestions=*/true, /*field_type=*/FieldType::CREDIT_CARD_NUMBER));
+  EXPECT_THAT(amount_extraction_manager_->GetEligibleFeatures(
+                  context, /*should_suppress_suggestions=*/false,
+                  /*has_suggestions=*/true,
+                  /*field_type=*/FieldType::CREDIT_CARD_NUMBER),
+              IsEmpty());
 }
 
 TEST_F(AmountExtractionManagerTest, ShouldNotTriggerWhenAutofillUnavailable) {
@@ -190,9 +207,11 @@ TEST_F(AmountExtractionManagerTest, ShouldNotTriggerWhenAutofillUnavailable) {
   context.is_autofill_available = false;
   context.filling_product = FillingProduct::kCreditCard;
 
-  EXPECT_FALSE(amount_extraction_manager_->ShouldTriggerAmountExtraction(
-      context, /*should_suppress_suggestions=*/false,
-      /*has_suggestions=*/true, /*field_type=*/FieldType::CREDIT_CARD_NUMBER));
+  EXPECT_THAT(amount_extraction_manager_->GetEligibleFeatures(
+                  context, /*should_suppress_suggestions=*/false,
+                  /*has_suggestions=*/true,
+                  /*field_type=*/FieldType::CREDIT_CARD_NUMBER),
+              IsEmpty());
 }
 
 TEST_F(AmountExtractionManagerTest, ShouldNotTriggerWhenFormIsNotCreditCard) {
@@ -200,9 +219,11 @@ TEST_F(AmountExtractionManagerTest, ShouldNotTriggerWhenFormIsNotCreditCard) {
   context.is_autofill_available = true;
   context.filling_product = FillingProduct::kAddress;
 
-  EXPECT_FALSE(amount_extraction_manager_->ShouldTriggerAmountExtraction(
-      context, /*should_suppress_suggestions=*/false,
-      /*has_suggestions=*/true, /*field_type=*/FieldType::CREDIT_CARD_NUMBER));
+  EXPECT_THAT(amount_extraction_manager_->GetEligibleFeatures(
+                  context, /*should_suppress_suggestions=*/false,
+                  /*has_suggestions=*/true,
+                  /*field_type=*/FieldType::CREDIT_CARD_NUMBER),
+              IsEmpty());
 }
 
 TEST_F(AmountExtractionManagerTest,
@@ -211,9 +232,11 @@ TEST_F(AmountExtractionManagerTest,
   context.is_autofill_available = true;
   context.filling_product = FillingProduct::kCreditCard;
 
-  EXPECT_FALSE(amount_extraction_manager_->ShouldTriggerAmountExtraction(
-      context, /*should_suppress_suggestions=*/true, /*has_suggestions=*/true,
-      /*field_type=*/FieldType::CREDIT_CARD_NUMBER));
+  EXPECT_THAT(amount_extraction_manager_->GetEligibleFeatures(
+                  context, /*should_suppress_suggestions=*/true,
+                  /*has_suggestions=*/true,
+                  /*field_type=*/FieldType::CREDIT_CARD_NUMBER),
+              IsEmpty());
 }
 
 TEST_F(AmountExtractionManagerTest, ShouldNotTriggerWhenNoSuggestion) {
@@ -221,9 +244,11 @@ TEST_F(AmountExtractionManagerTest, ShouldNotTriggerWhenNoSuggestion) {
   context.is_autofill_available = true;
   context.filling_product = FillingProduct::kCreditCard;
 
-  EXPECT_FALSE(amount_extraction_manager_->ShouldTriggerAmountExtraction(
-      context, /*should_suppress_suggestions=*/false,
-      /*has_suggestions=*/false, /*field_type=*/FieldType::CREDIT_CARD_NUMBER));
+  EXPECT_THAT(amount_extraction_manager_->GetEligibleFeatures(
+                  context, /*should_suppress_suggestions=*/false,
+                  /*has_suggestions=*/false,
+                  /*field_type=*/FieldType::CREDIT_CARD_NUMBER),
+              IsEmpty());
 }
 
 TEST_F(AmountExtractionManagerTest, ShouldNotTriggerIfUrlNotEligible) {
@@ -233,12 +258,14 @@ TEST_F(AmountExtractionManagerTest, ShouldNotTriggerIfUrlNotEligible) {
 
   ON_CALL(*static_cast<MockAutofillOptimizationGuide*>(
               autofill_manager_->client().GetAutofillOptimizationGuide()),
-          IsUrlEligibleForCheckoutAmountSearchForIssuerId)
-      .WillByDefault(testing::Return(false));
+          IsUrlEligibleForBnplIssuer)
+      .WillByDefault(Return(false));
 
-  EXPECT_FALSE(amount_extraction_manager_->ShouldTriggerAmountExtraction(
-      context, /*should_suppress_suggestions=*/false,
-      /*has_suggestions=*/true, /*field_type=*/FieldType::CREDIT_CARD_NUMBER));
+  EXPECT_THAT(amount_extraction_manager_->GetEligibleFeatures(
+                  context, /*should_suppress_suggestions=*/false,
+                  /*has_suggestions=*/true,
+                  /*field_type=*/FieldType::CREDIT_CARD_NUMBER),
+              IsEmpty());
 }
 
 TEST_F(AmountExtractionManagerTest, ShouldNotTriggerInIncognitoMode) {
@@ -251,11 +278,11 @@ TEST_F(AmountExtractionManagerTest, ShouldNotTriggerInIncognitoMode) {
   autofill_client_->set_is_off_the_record(/*is_off_the_record=*/true);
 
   for (FieldType field_type : field_types) {
-    EXPECT_FALSE(amount_extraction_manager_->ShouldTriggerAmountExtraction(
-        context,
-        /*should_suppress_suggestions=*/false,
-        /*has_suggestions=*/true,
-        /*field_type=*/field_type));
+    EXPECT_THAT(amount_extraction_manager_->GetEligibleFeatures(
+                    context, /*should_suppress_suggestions=*/false,
+                    /*has_suggestions=*/true,
+                    /*field_type=*/field_type),
+                IsEmpty());
   }
 }
 
@@ -274,12 +301,14 @@ TEST_F(AmountExtractionManagerTest, ShouldTriggerWhenLoggingFeatureIsEnabled) {
 
   ON_CALL(*static_cast<MockAutofillOptimizationGuide*>(
               autofill_manager_->client().GetAutofillOptimizationGuide()),
-          IsUrlEligibleForCheckoutAmountSearchForIssuerId)
-      .WillByDefault(testing::Return(false));
+          IsUrlEligibleForBnplIssuer)
+      .WillByDefault(Return(false));
 
-  EXPECT_TRUE(amount_extraction_manager_->ShouldTriggerAmountExtraction(
-      context, /*should_suppress_suggestions=*/false,
-      /*has_suggestions=*/true, /*field_type=*/FieldType::CREDIT_CARD_NUMBER));
+  EXPECT_THAT(amount_extraction_manager_->GetEligibleFeatures(
+                  context, /*should_suppress_suggestions=*/false,
+                  /*has_suggestions=*/true,
+                  /*field_type=*/FieldType::CREDIT_CARD_NUMBER),
+              ElementsAre(AmountExtractionManager::EligibleFeature::kBnpl));
 }
 
 TEST_F(AmountExtractionManagerTest, ShouldNotTriggerIfNoBnplIssuer) {
@@ -288,11 +317,11 @@ TEST_F(AmountExtractionManagerTest, ShouldNotTriggerIfNoBnplIssuer) {
   context.filling_product = FillingProduct::kCreditCard;
   payments_data().ClearBnplIssuers();
 
-  EXPECT_FALSE(
-      amount_extraction_manager_->IsUrlEligibleForAmountExtractionForTesting());
-  EXPECT_FALSE(amount_extraction_manager_->ShouldTriggerAmountExtraction(
-      context, /*should_suppress_suggestions=*/false,
-      /*has_suggestions=*/true, /*field_type=*/FieldType::CREDIT_CARD_NUMBER));
+  EXPECT_THAT(amount_extraction_manager_->GetEligibleFeatures(
+                  context, /*should_suppress_suggestions=*/false,
+                  /*has_suggestions=*/true,
+                  /*field_type=*/FieldType::CREDIT_CARD_NUMBER),
+              IsEmpty());
 }
 
 // This test checks when the search is triggered,
@@ -307,7 +336,7 @@ TEST_F(AmountExtractionManagerTest, TriggerCheckoutAmountExtraction) {
                                 .keyword_pattern()),
           AmountExtractionHeuristicRegexes::GetInstance()
               .number_of_ancestor_levels_to_search(),
-          testing::_))
+          _))
       .Times(1);
 
   amount_extraction_manager_->TriggerCheckoutAmountExtraction();
@@ -466,7 +495,7 @@ TEST_F(AmountExtractionManagerTest,
                                 .keyword_pattern()),
           AmountExtractionHeuristicRegexes::GetInstance()
               .number_of_ancestor_levels_to_search(),
-          testing::_))
+          _))
       .Times(1);
 
   amount_extraction_manager_->TriggerCheckoutAmountExtraction();
@@ -494,7 +523,7 @@ TEST_F(AmountExtractionManagerTest,
                                 .keyword_pattern()),
           AmountExtractionHeuristicRegexes::GetInstance()
               .number_of_ancestor_levels_to_search(),
-          testing::_))
+          _))
       .Times(1);
 
   amount_extraction_manager_->TriggerCheckoutAmountExtraction();
@@ -522,7 +551,7 @@ TEST_F(AmountExtractionManagerTest, AmountExtractionResult_Metric_Successful) {
                                 .keyword_pattern()),
           AmountExtractionHeuristicRegexes::GetInstance()
               .number_of_ancestor_levels_to_search(),
-          testing::_))
+          _))
       .Times(1);
 
   amount_extraction_manager_->TriggerCheckoutAmountExtraction();
@@ -547,7 +576,7 @@ TEST_F(AmountExtractionManagerTest,
                                 .keyword_pattern()),
           AmountExtractionHeuristicRegexes::GetInstance()
               .number_of_ancestor_levels_to_search(),
-          testing::_))
+          _))
       .Times(1);
 
   amount_extraction_manager_->TriggerCheckoutAmountExtraction();
@@ -614,7 +643,7 @@ TEST_F(AmountExtractionManagerTest, ResponseBeforeTimeout) {
             std::move(callback).Run("123");
           });
   EXPECT_CALL(*mock_amount_extraction_manager_,
-              OnCheckoutAmountReceived(testing::_, testing::Eq("123")))
+              OnCheckoutAmountReceived(_, Eq("123")))
       .Times(1);
   EXPECT_CALL(*mock_amount_extraction_manager_, OnTimeoutReached()).Times(0);
   mock_amount_extraction_manager_->TriggerCheckoutAmountExtraction();

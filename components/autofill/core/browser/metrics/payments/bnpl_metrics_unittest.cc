@@ -315,7 +315,7 @@ TEST_F(BnplFormEventsMetricsTest, SuggestionsShownOnBnplEligibleMerchant) {
 
   ON_CALL(*static_cast<MockAutofillOptimizationGuide*>(
               autofill_manager().client().GetAutofillOptimizationGuide()),
-          IsUrlEligibleForCheckoutAmountSearchForIssuerId)
+          IsUrlEligibleForBnplIssuer)
       .WillByDefault(testing::Return(true));
 
   DidShowAutofillSuggestions(form(), /*field_index=*/form().fields().size() - 1,
@@ -340,7 +340,7 @@ TEST_F(BnplFormEventsMetricsTest, BnplSuggestionsNotShownDueToUrl) {
 
   ON_CALL(*static_cast<MockAutofillOptimizationGuide*>(
               autofill_manager().client().GetAutofillOptimizationGuide()),
-          IsUrlEligibleForCheckoutAmountSearchForIssuerId)
+          IsUrlEligibleForBnplIssuer)
       .WillByDefault(testing::Return(false));
 
   DidShowAutofillSuggestions(form(), /*field_index=*/form().fields().size() - 1,
