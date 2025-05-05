@@ -434,25 +434,6 @@ void ProcessTableRowNode(const LayoutTableRow& layout_table_row,
   attributes.table_row_data = std::move(table_row_data);
 }
 
-// Adds the control node id if this is a label associated with a form
-// control. This includes both explicit association using for, or
-// implicit association when the input node is a descendant of the label
-// node.
-void AddForDomNodeId(const LayoutObject& object,
-                     mojom::blink::AIPageContentNodeInteractionInfo& info) {
-  auto* label = DynamicTo<HTMLLabelElement>(object.GetNode());
-  if (!label) {
-    return;
-  }
-
-  auto* control = label->Control();
-  if (!control) {
-    return;
-  }
-
-  info.for_dom_node_id = DOMNodeIds::IdForNode(control);
-}
-
 // Records latency metrics for the given latency and total latency.
 void RecordLatencyMetrics(base::TimeTicks start_time,
                           base::TimeTicks synchronous_execution_start_time,
@@ -796,6 +777,10 @@ bool AIPageContentAgent::ContentBuilder::IsGenericContainer(
     return true;
   }
 
+  if (attributes.label_for_dom_node_id) {
+    return true;
+  }
+
   // Use `ExistingIdForNode` since an Id should have already been generated if
   // this node is interactive.
   if (interactive_dom_node_ids_.contains(
@@ -948,6 +933,7 @@ AIPageContentAgent::ContentBuilder::MaybeGenerateContentNode(
   // Compute state that is used to decide whether this node generates a
   // ContentNode before making the decision below.
   AddAnnotatedRoles(object, attributes.annotated_roles);
+  AddForDomNodeId(object, attributes);
   // Interaction info depends on aria role.
   AddAriaRole(object, attributes);
   AddNodeInteractionInfo(object, attributes, recursion_data.is_aria_disabled);
@@ -1092,6 +1078,26 @@ void AIPageContentAgent::ContentBuilder::AddLabel(
   }
 
   attributes.label = accumulated_text.ToString();
+}
+
+void AIPageContentAgent::ContentBuilder::AddForDomNodeId(
+    const LayoutObject& object,
+    mojom::blink::AIPageContentAttributes& attributes) const {
+  if (!options_->enable_experimental_actionable_data) {
+    return;
+  }
+
+  auto* label = DynamicTo<HTMLLabelElement>(object.GetNode());
+  if (!label) {
+    return;
+  }
+
+  auto* control = label->Control();
+  if (!control) {
+    return;
+  }
+
+  attributes.label_for_dom_node_id = DOMNodeIds::IdForNode(control);
 }
 
 void AIPageContentAgent::ContentBuilder::AddAnnotatedRoles(
@@ -1429,7 +1435,6 @@ void AIPageContentAgent::ContentBuilder::AddNodeInteractionInfo(
   }
 
   attributes.node_interaction_info = std::move(node_interaction_info);
-  AddForDomNodeId(object, *attributes.node_interaction_info);
 }
 
 AIPageContentAgent::ContentBuilder::RecursionData::RecursionData(

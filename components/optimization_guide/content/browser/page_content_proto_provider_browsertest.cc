@@ -330,7 +330,26 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTestActionableElements,
   const auto& label = ContentRootNode().children_nodes()[1];
   ASSERT_TRUE(label.content_attributes().has_interaction_info());
   EXPECT_TRUE(label.content_attributes().interaction_info().is_clickable());
-  EXPECT_EQ(label.content_attributes().interaction_info().for_dom_node_id(),
+  EXPECT_EQ(label.content_attributes().label_for_dom_node_id(),
+            input.content_attributes().common_ancestor_dom_node_id());
+}
+
+IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTestActionableElements,
+                       LabelNotActionable) {
+  LoadPage(https_server()->GetURL("/label_not_actionable.html"));
+  EXPECT_EQ(page_content().version(),
+            optimization_guide::proto::
+                ANNOTATED_PAGE_CONTENT_VERSION_ONLY_ACTIONABLE_ELEMENTS_1_0);
+
+  EXPECT_EQ(ContentRootNode().children_nodes().size(), 2);
+
+  const auto& input = ContentRootNode().children_nodes()[0];
+  ASSERT_TRUE(input.content_attributes().has_interaction_info());
+  EXPECT_TRUE(input.content_attributes().interaction_info().is_clickable());
+
+  const auto& label = ContentRootNode().children_nodes()[1];
+  EXPECT_FALSE(label.content_attributes().has_interaction_info());
+  EXPECT_EQ(label.content_attributes().label_for_dom_node_id(),
             input.content_attributes().common_ancestor_dom_node_id());
 }
 

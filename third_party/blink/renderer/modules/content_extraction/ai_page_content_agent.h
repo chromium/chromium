@@ -125,6 +125,13 @@ class MODULES_EXPORT AIPageContentAgent final
                                annotated_roles) const;
     void AddLabel(const LayoutObject& object,
                   mojom::blink::AIPageContentAttributes& attributes) const;
+    // Adds the control node id if this is a label associated with a form
+    // control. This includes both explicit association using for, or
+    // implicit association when the input node is a descendant of the label
+    // node.
+    void AddForDomNodeId(
+        const LayoutObject& object,
+        mojom::blink::AIPageContentAttributes& attributes) const;
     bool IsGenericContainer(
         const LayoutObject& object,
         const mojom::blink::AIPageContentAttributes& attributes) const;

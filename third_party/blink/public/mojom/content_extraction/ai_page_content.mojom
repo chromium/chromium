@@ -145,10 +145,6 @@ struct AIPageContentNodeInteractionInfo {
   // behavior. It also checks for whether the node has a click handler.
   bool is_clickable;
 
-  // If this node is a label associated with an input node, provides the
-  // dom_node_id for the corresponding input node.
-  int32 for_dom_node_id;
-
   // The z-order of the content node relative to other nodes in the same
   // Document. A higher value means the node is in front of other nodes with
   // lower values.
@@ -389,6 +385,10 @@ struct AIPageContentAttributes {
   // The role derived from `aria_role`. Only populated when actionable elements
   // are enabled.
   ax.mojom.Role? aria_role;
+
+  // If this node is a label associated with an input node, provides the
+  // dom_node_id for the corresponding input node.
+  int32? label_for_dom_node_id;
 };
 
 // A semantic chunk of information on a page. It can represent text, structured

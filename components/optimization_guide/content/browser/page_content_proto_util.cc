@@ -174,8 +174,6 @@ void ConvertNodeInteractionInfo(
       mojom_node_interaction_info.is_draggable);
   proto_interaction_info->set_is_clickable(
       mojom_node_interaction_info.is_clickable);
-  proto_interaction_info->set_for_dom_node_id(
-      mojom_node_interaction_info.for_dom_node_id);
 
   if (mojom_node_interaction_info.document_scoped_z_order) {
     proto_interaction_info->set_document_scoped_z_order(
@@ -541,6 +539,11 @@ bool ConvertAttributes(
 
   if (mojom_attributes.aria_role) {
     proto_attributes->set_aria_role(AXRoleToProto(*mojom_attributes.aria_role));
+  }
+
+  if (mojom_attributes.label_for_dom_node_id) {
+    proto_attributes->set_label_for_dom_node_id(
+        *mojom_attributes.label_for_dom_node_id);
   }
 
   return true;
