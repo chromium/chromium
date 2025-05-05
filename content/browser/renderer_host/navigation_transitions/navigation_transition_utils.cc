@@ -4,6 +4,7 @@
 
 #include "content/browser/renderer_host/navigation_transitions/navigation_transition_utils.h"
 
+#include "base/time/time.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "components/viz/host/host_frame_sink_manager.h"
 #include "content/browser/compositor/surface_utils.h"
@@ -446,12 +447,8 @@ bool NavigationTransitionUtils::
   const gfx::Size output_size = g_output_size_for_test;
 
 #if BUILDFLAG(IS_ANDROID)
-  CopyOutputIpcPriority ipc_priority =
-      NavigationTransitionConfig::ShouldTransferScreenshotInBackgroundPriority()
-          ? CopyOutputIpcPriority::kBackground
-          : CopyOutputIpcPriority::kDefault;
   static_cast<RenderWidgetHostViewBase*>(rwhv)
-      ->CopyFromExactSurfaceWithIpcPriority(
+      ->CopyFromExactSurfaceWithIpcDelay(
           /*src_rect=*/gfx::Rect(), output_size,
           base::BindOnce(
               &CacheScreenshotImpl, navigation_controller.GetWeakPtr(),
@@ -459,7 +456,7 @@ bool NavigationTransitionUtils::
               last_committed_entry->navigation_transition_data().unique_id(),
               /*is_copied_from_embedder=*/false, request_sequence,
               SupportsETC1NonPowerOfTwo(navigation_request)),
-          ipc_priority);
+          NavigationTransitionConfig::ScreenshotSendResultDelay());
 #else
   static_cast<RenderWidgetHostViewBase*>(rwhv)->CopyFromExactSurface(
       /*src_rect=*/gfx::Rect(), output_size,

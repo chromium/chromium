@@ -12,6 +12,7 @@
 
 #include "base/functional/callback.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "components/viz/common/frame_sinks/blit_request.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
@@ -52,15 +53,6 @@ class VIZ_COMMON_EXPORT CopyOutputRequest {
   // results will still be returned via ResultDestination::kSystemMemory.
   using ResultDestination = CopyOutputResult::Destination;
 
-  // This setting might influence the thread priority to use when sending the
-  // result over IPC. Currently only implemented for Android.
-  enum class IpcPriority {
-    // Use existing priority.
-    kDefault,
-    // Reduce the priority to background.
-    kBackground
-  };
-
   using CopyOutputRequestCallback =
       base::OnceCallback<void(std::unique_ptr<CopyOutputResult> result)>;
 
@@ -80,10 +72,22 @@ class VIZ_COMMON_EXPORT CopyOutputRequest {
   // Returns the requested result destination.
   ResultDestination result_destination() const { return result_destination_; }
 
-  IpcPriority ipc_priority() const { return ipc_priority_; }
-  // Optionally set the thread priority to use when sending the result over IPC.
-  // Currently only affects Android.
-  void set_ipc_priority(IpcPriority p) { ipc_priority_ = p; }
+  base::TimeDelta send_result_delay() const { return send_result_delay_; }
+
+  // Optionally set a delay for sending the result.
+  // You can use this when you know that the CPU will be busy at the time of
+  // requesting the output and the result can wait.
+  // Because holding tasks can be expensive, we limit the number of pending
+  // tasks to kMaxPendingSendResult. When the limit is reached, results are sent
+  // immediately.
+  // There are no guarantees as to the order in which the SendResults are
+  // called.
+  //
+  // To provide ordering guarantees, we would have to include some form of
+  // queueing and track it across multiple threads. This complexity was not
+  // worth it when this was first introduced with only one usage with minimal
+  // delays.
+  void set_send_result_delay(base::TimeDelta d) { send_result_delay_ = d; }
 
   // Requests that the result callback be run as a task posted to the given
   // |task_runner|. If this is not set, the result callback will be run on the
@@ -181,7 +185,7 @@ class VIZ_COMMON_EXPORT CopyOutputRequest {
 
   const ResultFormat result_format_;
   const ResultDestination result_destination_;
-  IpcPriority ipc_priority_ = IpcPriority::kDefault;
+  base::TimeDelta send_result_delay_;
   CopyOutputRequestCallback result_callback_;
   scoped_refptr<base::SequencedTaskRunner> result_task_runner_;
   gfx::Vector2d scale_from_;

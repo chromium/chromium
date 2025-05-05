@@ -1763,23 +1763,22 @@ void RenderWidgetHostViewAndroid::CopyFromSurface(
           },
           std::move(callback)),
       /*capture_exact_surface_id=*/false,
-      viz::CopyOutputRequest::IpcPriority::kDefault);
+      /*ipc_delay=*/base::TimeDelta());
 }
 
 void RenderWidgetHostViewAndroid::CopyFromExactSurface(
     const gfx::Rect& src_rect,
     const gfx::Size& output_size,
     base::OnceCallback<void(const SkBitmap&)> callback) {
-  CopyFromExactSurfaceWithIpcPriority(
-      src_rect, output_size, std::move(callback),
-      viz::CopyOutputRequest::IpcPriority::kDefault);
+  CopyFromExactSurfaceWithIpcDelay(src_rect, output_size, std::move(callback),
+                                   /*ipc_delay=*/base::TimeDelta());
 }
 
-void RenderWidgetHostViewAndroid::CopyFromExactSurfaceWithIpcPriority(
+void RenderWidgetHostViewAndroid::CopyFromExactSurfaceWithIpcDelay(
     const gfx::Rect& src_rect,
     const gfx::Size& output_size,
     base::OnceCallback<void(const SkBitmap&)> callback,
-    CopyOutputIpcPriority ipc_priority) {
+    base::TimeDelta ipc_delay) {
   CHECK(IsSurfaceAvailableForCopy())
       << "To copy the exact surface, it must be available for copy (embedded "
          "via the browser).";
@@ -1792,7 +1791,7 @@ void RenderWidgetHostViewAndroid::CopyFromExactSurfaceWithIpcPriority(
           [](base::OnceCallback<void(const SkBitmap&)> callback,
              const SkBitmap& bitmap) { std::move(callback).Run(bitmap); },
           std::move(callback)),
-      /*capture_exact_surface_id=*/true, ipc_priority);
+      /*capture_exact_surface_id=*/true, ipc_delay);
 }
 
 void RenderWidgetHostViewAndroid::EnsureSurfaceSynchronizedForWebTest() {
