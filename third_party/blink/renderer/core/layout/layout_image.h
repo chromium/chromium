@@ -165,9 +165,10 @@ class CORE_EXPORT LayoutImage : public LayoutReplaced {
                    const PhysicalOffset& accumulated_offset,
                    HitTestPhase) final;
 
-  void InvalidatePaintAndMarkForLayoutIfNeeded(CanDeferInvalidation);
+  void InvalidatePaintWithoutLayoutChange(CanDeferInvalidation);
   bool UpdateNaturalSizeIfNeeded();
   bool NeedsLayoutOnNaturalSizeChange() const;
+  bool InvalidateLayoutOnNaturalSizeChange();
 
   // The natural dimensions for the image.
   PhysicalNaturalSizingInfo natural_dimensions_;

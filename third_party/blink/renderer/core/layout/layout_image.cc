@@ -166,7 +166,18 @@ void LayoutImage::ImageChanged(WrappedImagePtr new_image,
   // The replaced content transform depends on the intrinsic size (see:
   // FragmentPaintPropertyTreeBuilder::UpdateReplacedContentTransform).
   SetNeedsPaintPropertyUpdate();
-  InvalidatePaintAndMarkForLayoutIfNeeded(defer);
+
+  const bool dimensions_changed = UpdateNaturalSizeIfNeeded();
+
+  // In the case of generated image content using :before/:after/content, we
+  // might not be in the layout tree yet. In that case, we just need to update
+  // our natural size. layout() will be called after we are inserted in the
+  // tree which will take care of what we are doing here.
+  if (ContainingBlock()) {
+    if (!dimensions_changed || !InvalidateLayoutOnNaturalSizeChange()) {
+      InvalidatePaintWithoutLayoutChange(defer);
+    }
+  }
 
   if (!did_increment_visually_non_empty_pixel_count_) {
     PhysicalSize default_object_size{LayoutUnit(kDefaultWidth),
@@ -214,28 +225,20 @@ bool LayoutImage::NeedsLayoutOnNaturalSizeChange() const {
   return !is_fixed_sized;
 }
 
-void LayoutImage::InvalidatePaintAndMarkForLayoutIfNeeded(
+bool LayoutImage::InvalidateLayoutOnNaturalSizeChange() {
+  SetIntrinsicLogicalWidthsDirty();
+
+  if (!NeedsLayoutOnNaturalSizeChange()) {
+    return false;
+  }
+  SetNeedsLayoutAndFullPaintInvalidation(
+      layout_invalidation_reason::kSizeChanged);
+  return true;
+}
+
+void LayoutImage::InvalidatePaintWithoutLayoutChange(
     CanDeferInvalidation defer) {
   NOT_DESTROYED();
-  const bool dimensions_changed = UpdateNaturalSizeIfNeeded();
-
-  // In the case of generated image content using :before/:after/content, we
-  // might not be in the layout tree yet. In that case, we just need to update
-  // our natural size. layout() will be called after we are inserted in the
-  // tree which will take care of what we are doing here.
-  if (!ContainingBlock())
-    return;
-
-  if (dimensions_changed) {
-    SetIntrinsicLogicalWidthsDirty();
-
-    if (NeedsLayoutOnNaturalSizeChange()) {
-      SetNeedsLayoutAndFullPaintInvalidation(
-          layout_invalidation_reason::kSizeChanged);
-      return;
-    }
-  }
-
   SetShouldDoFullPaintInvalidationWithoutLayoutChange(
       PaintInvalidationReason::kImage);
 
@@ -264,7 +267,7 @@ void LayoutImage::AreaElementFocusChanged(HTMLAreaElement* area_element) {
   if (area_element->GetPath(this).IsEmpty())
     return;
 
-  InvalidatePaintAndMarkForLayoutIfNeeded(CanDeferInvalidation::kYes);
+  InvalidatePaintWithoutLayoutChange(CanDeferInvalidation::kYes);
 }
 
 bool LayoutImage::ForegroundIsKnownToBeOpaqueInRect(
