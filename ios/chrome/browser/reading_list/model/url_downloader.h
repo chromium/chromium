@@ -16,7 +16,6 @@
 #import "ios/chrome/browser/dom_distiller/model/distiller_viewer.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_distiller_page.h"
 
-class PrefService;
 class GURL;
 namespace base {
 class FilePath;
@@ -85,7 +84,6 @@ class URLDownloader : reading_list::ReadingListDistillerPageDelegate {
   URLDownloader(
       DistillerService* distiller_service,
       reading_list::ReadingListDistillerPageFactory* distiller_page_factory,
-      PrefService* prefs,
       base::FilePath chrome_profile_path,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const DownloadCompletion& download_completion,
@@ -171,7 +169,6 @@ class URLDownloader : reading_list::ReadingListDistillerPageDelegate {
   raw_ptr<reading_list::ReadingListDistillerPageFactory>
       distiller_page_factory_;
   raw_ptr<DistillerService> distiller_service_;
-  raw_ptr<PrefService> pref_service_;
   const DownloadCompletion download_completion_;
   const SuccessCompletion delete_completion_;
 

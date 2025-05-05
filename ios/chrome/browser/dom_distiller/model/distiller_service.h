@@ -7,17 +7,21 @@
 
 #import <memory>
 
+#import "components/dom_distiller/core/distilled_page_prefs.h"
 #import "components/dom_distiller/core/distiller.h"
 #import "components/dom_distiller/core/distiller_page.h"
 #import "components/keyed_service/core/keyed_service.h"
 #import "url/gurl.h"
 
-// Profile-keyed service that extracts the main content from a given web page
-// and converts it into a structured output.
+class PrefService;
+
+// Profile-keyed service that provides access to attributes related to
+// web page content distillation.
 class DistillerService : public KeyedService {
  public:
   DistillerService(
-      std::unique_ptr<dom_distiller::DistillerFactory> distiller_factory);
+      std::unique_ptr<dom_distiller::DistillerFactory> distiller_factory,
+      PrefService* pref_service);
   ~DistillerService() override;
 
   // Extracts the content from the given `url` web page with instructions
@@ -29,12 +33,17 @@ class DistillerService : public KeyedService {
       dom_distiller::Distiller::DistillationFinishedCallback finished_cb,
       const dom_distiller::Distiller::DistillationUpdateCallback& update_cb);
 
+  // Returns the cross-platform customization preferences for viewing
+  // distillation output.
+  dom_distiller::DistilledPagePrefs* GetDistilledPagePrefs();
+
   // KeyedService implementation.
   void Shutdown() override;
 
  private:
   std::unique_ptr<dom_distiller::DistillerFactory> distiller_factory_;
   std::unique_ptr<dom_distiller::Distiller> distiller_;
+  std::unique_ptr<dom_distiller::DistilledPagePrefs> distilled_page_prefs_;
 };
 
 #endif  // IOS_CHROME_BROWSER_DOM_DISTILLER_MODEL_DISTILLER_SERVICE_H_

@@ -11,7 +11,6 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/time/time.h"
-#import "components/prefs/pref_service.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
 #import "ios/chrome/browser/dom_distiller/model/distiller_viewer.h"
 #import "ios/chrome/browser/reader_mode/model/features.h"
@@ -156,11 +155,8 @@ NSString* GenerateSnackbarMessage(ReaderModeHeuristicResult heuristic_result,
 }  // namespace
 
 ReaderModeTabHelper::ReaderModeTabHelper(web::WebState* web_state,
-                                         DistillerService* distiller_service,
-                                         PrefService* pref_service)
-    : web_state_(web_state),
-      distiller_service_(distiller_service),
-      pref_service_(pref_service) {
+                                         DistillerService* distiller_service)
+    : web_state_(web_state), distiller_service_(distiller_service) {
   CHECK(web_state_);
   web_state_->AddObserver(this);
 }
@@ -283,7 +279,7 @@ void ReaderModeTabHelper::HandleReaderModeHeuristicResult(
       std::make_unique<ReaderModeDistillerPage>(web_state_);
 
   distiller_viewer_.reset(new DistillerViewer(
-      distiller_service_, std::move(distiller_page), pref_service_, url,
+      distiller_service_, std::move(distiller_page), url,
       base::BindRepeating(&ReaderModeTabHelper::PageDistillationCompleted,
                           weak_ptr_factory_.GetWeakPtr(), result,
                           base::TimeTicks::Now())));

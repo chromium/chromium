@@ -37,9 +37,8 @@ class DistillerViewerInterface
                               const std::string& title,
                               const std::string& csp_nonce)>;
 
-  DistillerViewerInterface(PrefService* prefs)
-      : dom_distiller::DomDistillerRequestViewBase(
-            new dom_distiller::DistilledPagePrefs(prefs)) {}
+  DistillerViewerInterface(dom_distiller::DistilledPagePrefs* prefs)
+      : dom_distiller::DomDistillerRequestViewBase(prefs) {}
 
   DistillerViewerInterface(const DistillerViewerInterface&) = delete;
   DistillerViewerInterface& operator=(const DistillerViewerInterface&) = delete;
@@ -63,7 +62,6 @@ class DistillerViewer : public DistillerViewerInterface {
   // containing the distilled page.
   DistillerViewer(DistillerService* distiller_service,
                   std::unique_ptr<dom_distiller::DistillerPage> page,
-                  PrefService* prefs,
                   const GURL& url,
                   DistillationFinishedCallback callback);
 

@@ -210,8 +210,7 @@ void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
         web_state, [[AppLauncherAbuseDetector alloc] init], is_off_the_record);
 
     ReaderModeTabHelper::CreateForWebState(
-        web_state, DistillerServiceFactory::GetForProfile(profile),
-        profile->GetPrefs());
+        web_state, DistillerServiceFactory::GetForProfile(profile));
   }
   security_interstitials::IOSBlockingPageTabHelper::CreateForWebState(
       web_state);

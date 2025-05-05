@@ -7,7 +7,6 @@
 
 #import "base/memory/weak_ptr.h"
 #import "base/timer/timer.h"
-#import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/dom_distiller/model/distiller_service.h"
 #import "ios/chrome/browser/dom_distiller/model/distiller_viewer.h"
 #import "ios/chrome/browser/reader_mode/model/constants.h"
@@ -22,8 +21,7 @@ class ReaderModeTabHelper : public web::WebStateObserver,
                             public web::WebStateUserData<ReaderModeTabHelper> {
  public:
   ReaderModeTabHelper(web::WebState* web_state,
-                      DistillerService* distiller_service,
-                      PrefService* prefs);
+                      DistillerService* distiller_service);
   ReaderModeTabHelper(const ReaderModeTabHelper&) = delete;
   ReaderModeTabHelper& operator=(const ReaderModeTabHelper&) = delete;
 
@@ -94,7 +92,6 @@ class ReaderModeTabHelper : public web::WebStateObserver,
 
   raw_ptr<web::WebState> web_state_ = nullptr;
   raw_ptr<DistillerService> distiller_service_;
-  raw_ptr<PrefService> pref_service_;
 
   std::unique_ptr<DistillerViewer> distiller_viewer_;
 

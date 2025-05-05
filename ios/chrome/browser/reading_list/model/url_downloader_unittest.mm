@@ -82,7 +82,6 @@ class MockURLDownloader : public URLDownloader {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
       : URLDownloader(nullptr,
                       nullptr,
-                      nullptr,
                       path,
                       std::move(url_loader_factory),
                       base::BindRepeating(&MockURLDownloader::OnEndDownload,

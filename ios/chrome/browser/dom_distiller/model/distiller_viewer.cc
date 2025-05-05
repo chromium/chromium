@@ -22,10 +22,9 @@
 DistillerViewer::DistillerViewer(
     DistillerService* distiller_service,
     std::unique_ptr<dom_distiller::DistillerPage> page,
-    PrefService* prefs,
     const GURL& url,
     DistillationFinishedCallback callback)
-    : DistillerViewerInterface(prefs),
+    : DistillerViewerInterface(distiller_service->GetDistilledPagePrefs()),
       url_(url),
       csp_nonce_(base::Base64Encode(base::RandBytesAsVector(16))),
       use_offline_data_(page->ShouldFetchOfflineData()),

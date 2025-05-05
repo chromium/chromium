@@ -16,7 +16,6 @@
 #include "services/network/public/cpp/network_connection_tracker.h"
 
 class GURL;
-class PrefService;
 class ReadingListModel;
 namespace base {
 class FilePath;
@@ -37,7 +36,6 @@ class ReadingListDownloadService
  public:
   ReadingListDownloadService(
       ReadingListModel* reading_list_model,
-      PrefService* prefs,
       base::FilePath chrome_profile_path,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       DistillerService* distiller_service,

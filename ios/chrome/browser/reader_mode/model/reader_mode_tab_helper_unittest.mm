@@ -90,8 +90,7 @@ class ReaderModeTabHelperTest : public PlatformTest {
 
   void CreateTabHelperForWebState(web::WebState* web_state) {
     ReaderModeTabHelper::CreateForWebState(
-        web_state, DistillerServiceFactory::GetForProfile(profile_.get()),
-        profile_->GetPrefs());
+        web_state, DistillerServiceFactory::GetForProfile(profile_.get()));
   }
 
   ReaderModeTabHelper* reader_mode_tab_helper() {

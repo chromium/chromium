@@ -30,8 +30,7 @@ class ReaderModeJavaScriptFeatureTest : public PlatformTest {
     profile_ = TestProfileIOS::Builder().Build();
 
     ReaderModeTabHelper::CreateForWebState(
-        web_state(), DistillerServiceFactory::GetForProfile(profile_.get()),
-        profile_->GetPrefs());
+        web_state(), DistillerServiceFactory::GetForProfile(profile_.get()));
     ukm::InitializeSourceUrlRecorderForWebState(web_state());
   }
 

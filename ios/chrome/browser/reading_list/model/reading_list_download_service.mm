@@ -67,7 +67,6 @@ void CleanUpFiles(base::FilePath root,
 
 ReadingListDownloadService::ReadingListDownloadService(
     ReadingListModel* reading_list_model,
-    PrefService* prefs,
     base::FilePath chrome_profile_path,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     DistillerService* distiller_service,
@@ -82,8 +81,8 @@ ReadingListDownloadService::ReadingListDownloadService(
   DCHECK(reading_list_model);
 
   url_downloader_ = std::make_unique<URLDownloader>(
-      distiller_service_, distiller_page_factory_.get(), prefs,
-      chrome_profile_path, url_loader_factory,
+      distiller_service_, distiller_page_factory_.get(), chrome_profile_path,
+      url_loader_factory,
       base::BindRepeating(&ReadingListDownloadService::OnDownloadEnd,
                           weak_ptr_factory_.GetWeakPtr()),
       base::BindRepeating(&ReadingListDownloadService::OnDeleteEnd,

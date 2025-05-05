@@ -14,6 +14,7 @@ source_set("model") {
   deps = [
     "//base",
     "//components/keyed_service/core",
+    "//components/prefs",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//services/network/public/cpp",

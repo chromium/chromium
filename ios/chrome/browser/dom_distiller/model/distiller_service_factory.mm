@@ -34,8 +34,10 @@ std::unique_ptr<KeyedService> DistillerServiceFactory::BuildServiceInstanceFor(
       std::make_unique<dom_distiller::DistillerURLFetcherFactory>(
           context->GetSharedURLLoaderFactory());
 
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
   dom_distiller::proto::DomDistillerOptions options;
   return std::make_unique<DistillerService>(
       std::make_unique<dom_distiller::DistillerFactoryImpl>(
-          std::move(distiller_url_fetcher_factory), options));
+          std::move(distiller_url_fetcher_factory), options),
+      profile->GetPrefs());
 }
