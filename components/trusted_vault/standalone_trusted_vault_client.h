@@ -42,6 +42,9 @@ class StandaloneTrustedVaultClient : public TrustedVaultClient {
   // files. |identity_manager| must not be null and must outlive this object.
   // |url_loader_factory| must not be null.
   StandaloneTrustedVaultClient(
+#if BUILDFLAG(IS_MAC)
+      const std::string& icloud_keychain_access_group_prefix,
+#endif
       SecurityDomainId security_domain,
       const base::FilePath& base_dir,
       signin::IdentityManager* identity_manager,

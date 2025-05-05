@@ -130,7 +130,11 @@ if (!is_android) {
     ]
 
     if (is_mac) {
-      sources += [ "icloud_recovery_key_mac_unittest.mm" ]
+      sources += [
+        "icloud_keychain_recovery_factor_unittest.mm",
+        "icloud_recovery_key_mac_unittest.mm",
+      ]
+
       deps += [ "//crypto:test_support" ]
     }
   }

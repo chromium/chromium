@@ -118,7 +118,14 @@ GetRecoveryFactorRegistrationOutcomeForUMAFromResponse(
 class LocalRecoveryFactorsFactoryImpl
     : public StandaloneTrustedVaultBackend::LocalRecoveryFactorsFactory {
  public:
+#if BUILDFLAG(IS_MAC)
+  explicit LocalRecoveryFactorsFactoryImpl(
+      const std::string& icloud_keychain_access_group_prefix)
+      : icloud_keychain_access_group_prefix_(
+            icloud_keychain_access_group_prefix) {}
+#else
   LocalRecoveryFactorsFactoryImpl() = default;
+#endif
   LocalRecoveryFactorsFactoryImpl(const LocalRecoveryFactorsFactoryImpl&) =
       delete;
   ~LocalRecoveryFactorsFactoryImpl() override = default;
@@ -143,13 +150,19 @@ class LocalRecoveryFactorsFactoryImpl
       // physical device recovery factor, we want to make sure that the latter
       // is attempted first.
       local_recovery_factors.emplace_back(
-          std::make_unique<ICloudKeychainRecoveryFactor>(storage,
-                                                         primary_account));
+          std::make_unique<ICloudKeychainRecoveryFactor>(
+              icloud_keychain_access_group_prefix_, security_domain_id, storage,
+              primary_account));
     }
 #endif
 
     return local_recovery_factors;
   }
+
+ private:
+#if BUILDFLAG(IS_MAC)
+  const std::string icloud_keychain_access_group_prefix_;
+#endif
 };
 
 }  // namespace
@@ -193,6 +206,9 @@ StandaloneTrustedVaultBackend::OngoingFetchKeys::operator=(OngoingFetchKeys&&) =
 StandaloneTrustedVaultBackend::OngoingFetchKeys::~OngoingFetchKeys() = default;
 
 StandaloneTrustedVaultBackend::StandaloneTrustedVaultBackend(
+#if BUILDFLAG(IS_MAC)
+    const std::string& icloud_keychain_access_group_prefix,
+#endif
     SecurityDomainId security_domain_id,
     std::unique_ptr<StandaloneTrustedVaultStorage> storage,
     std::unique_ptr<Delegate> delegate,
@@ -205,8 +221,16 @@ StandaloneTrustedVaultBackend::StandaloneTrustedVaultBackend(
                             std::move(connection),
                             storage_.get())
                       : nullptr),
+#if BUILDFLAG(IS_MAC)
       local_recovery_factors_factory_(
-          std::make_unique<LocalRecoveryFactorsFactoryImpl>()) {}
+          std::make_unique<LocalRecoveryFactorsFactoryImpl>(
+              icloud_keychain_access_group_prefix))
+#else
+      local_recovery_factors_factory_(
+          std::make_unique<LocalRecoveryFactorsFactoryImpl>())
+#endif
+{
+}
 
 StandaloneTrustedVaultBackend::StandaloneTrustedVaultBackend(
     SecurityDomainId security_domain_id,

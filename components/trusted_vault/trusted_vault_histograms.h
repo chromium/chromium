@@ -100,7 +100,8 @@ enum class TrustedVaultDownloadKeysStatusForUMA {
   kCorruptedLocalDeviceRegistration = 13,
   kAborted = 14,
   kNetworkError = 15,
-  kMaxValue = kNetworkError
+  kKeyProofVerificationNotSupported = 16,
+  kMaxValue = kKeyProofVerificationNotSupported
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/trusted_vault/enums.xml:TrustedVaultDownloadKeysStatus)
 

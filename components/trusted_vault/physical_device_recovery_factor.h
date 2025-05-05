@@ -27,6 +27,8 @@ namespace trusted_vault {
 class PhysicalDeviceRecoveryFactor : public LocalRecoveryFactor {
  public:
   // `storage` must not be null and must outlive this object.
+  // If `primary_account` is present, then `storage` must contain a vault for
+  // that account when calling any method of this class.
   // TODO(crbug.com/405381481): Refactor / remove the usage of
   // StandaloneTrustedVaultStorage in this class.
   PhysicalDeviceRecoveryFactor(SecurityDomainId security_domain_id,

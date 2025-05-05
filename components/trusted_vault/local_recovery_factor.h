@@ -62,6 +62,8 @@ class LocalRecoveryFactor {
   virtual LocalRecoveryFactorType GetRecoveryFactorType() const = 0;
 
   // Attempts a key recovery.
+  // TODO(crbug.com/415292351): Don't pass `connection` here, but in
+  // constructors of implementing classes.
   virtual void AttemptRecovery(TrustedVaultThrottlingConnection* connection,
                                AttemptRecoveryCallback cb) = 0;
 
@@ -78,6 +80,8 @@ class LocalRecoveryFactor {
   // and currently available local data is sufficient to do it. It returns an
   // enum representing the registration state, intended to be used for metric
   // recording.
+  // TODO(crbug.com/415292351): Don't pass `connection` here, but in
+  // constructors of implementing classes.
   virtual TrustedVaultRecoveryFactorRegistrationStateForUMA MaybeRegister(
       TrustedVaultThrottlingConnection* connection,
       RegisterCallback cb) = 0;

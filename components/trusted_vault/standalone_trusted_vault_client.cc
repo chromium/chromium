@@ -241,6 +241,9 @@ class BackendDelegate : public StandaloneTrustedVaultBackend::Delegate {
 }  // namespace
 
 StandaloneTrustedVaultClient::StandaloneTrustedVaultClient(
+#if BUILDFLAG(IS_MAC)
+    const std::string& icloud_keychain_access_group_prefix,
+#endif
     SecurityDomainId security_domain,
     const base::FilePath& base_dir,
     signin::IdentityManager* identity_manager,
@@ -260,6 +263,9 @@ StandaloneTrustedVaultClient::StandaloneTrustedVaultClient(
   }
 
   backend_ = base::MakeRefCounted<StandaloneTrustedVaultBackend>(
+#if BUILDFLAG(IS_MAC)
+      icloud_keychain_access_group_prefix,
+#endif
       security_domain,
       std::make_unique<StandaloneTrustedVaultStorage>(base_dir,
                                                       security_domain),

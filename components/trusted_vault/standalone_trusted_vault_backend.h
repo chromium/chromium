@@ -87,6 +87,9 @@ class StandaloneTrustedVaultBackend
   // interaction with vault service (such as recovery factor registration, keys
   // downloading, etc.) will be disabled.
   StandaloneTrustedVaultBackend(
+#if BUILDFLAG(IS_MAC)
+      const std::string& icloud_keychain_access_group_prefix,
+#endif
       SecurityDomainId security_domain_id,
       std::unique_ptr<StandaloneTrustedVaultStorage> storage,
       std::unique_ptr<Delegate> delegate,

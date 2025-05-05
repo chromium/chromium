@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "base/memory/weak_ptr.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/trusted_vault/local_recovery_factor.h"
 #include "components/trusted_vault/standalone_trusted_vault_storage.h"
@@ -15,16 +16,22 @@
 #include "google_apis/gaia/gaia_id.h"
 
 namespace trusted_vault {
+class ICloudRecoveryKey;
 
 // This class represents the iCloud Keychain as recovery factor.
 // It stores required (private) keys in the iCloud Keychain.
 class ICloudKeychainRecoveryFactor : public LocalRecoveryFactor {
  public:
   // `storage` must not be null and must outlive this object.
+  // If `primary_account` is present, then `storage` must contain a vault for
+  // that account when calling any method of this class.
   // TODO(crbug.com/405381481): Refactor / remove the usage of
   // StandaloneTrustedVaultStorage in this class.
-  ICloudKeychainRecoveryFactor(StandaloneTrustedVaultStorage* storage,
-                               std::optional<CoreAccountInfo> primary_account);
+  ICloudKeychainRecoveryFactor(
+      const std::string& icloud_keychain_access_group_prefix,
+      const SecurityDomainId security_domain_id,
+      StandaloneTrustedVaultStorage* storage,
+      std::optional<CoreAccountInfo> primary_account);
   ICloudKeychainRecoveryFactor(const ICloudKeychainRecoveryFactor&) = delete;
   ICloudKeychainRecoveryFactor& operator=(ICloudKeychainRecoveryFactor&) =
       delete;
@@ -45,8 +52,31 @@ class ICloudKeychainRecoveryFactor : public LocalRecoveryFactor {
       RegisterCallback cb) override;
 
  private:
+  trusted_vault_pb::LocalTrustedVaultPerUser* GetPrimaryAccountVault();
+
+  void OnICloudKeysRetrievedForRecovery(
+      TrustedVaultThrottlingConnection* connection,
+      AttemptRecoveryCallback cb,
+      std::vector<std::unique_ptr<ICloudRecoveryKey>> local_icloud_keys);
+  void OnRecoveryFactorStateDownloadedForRecovery(
+      TrustedVaultThrottlingConnection* connection,
+      AttemptRecoveryCallback cb,
+      std::vector<std::unique_ptr<ICloudRecoveryKey>> local_icloud_keys,
+      DownloadAuthenticationFactorsRegistrationStateResult result);
+  void FulfillRecoveryWithFailure(
+      TrustedVaultDownloadKeysStatusForUMA status_for_uma,
+      AttemptRecoveryCallback cb);
+
+  const std::string icloud_keychain_access_group_;
+  const SecurityDomainId security_domain_id_;
   const raw_ptr<StandaloneTrustedVaultStorage> storage_;
   const std::optional<CoreAccountInfo> primary_account_;
+
+  // Destroying this will cancel the ongoing request.
+  std::unique_ptr<TrustedVaultConnection::Request>
+      ongoing_request_for_recovery_;
+
+  base::WeakPtrFactory<ICloudKeychainRecoveryFactor> weak_ptr_factory_{this};
 };
 
 }  // namespace trusted_vault
