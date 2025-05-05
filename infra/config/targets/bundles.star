@@ -5306,7 +5306,8 @@ targets.bundle(
         "absl_hardening_tests",
         "boringssl_crypto_tests",
         "boringssl_ssl_tests",
-        "crashpad_tests",
+        # TODO(crbug.com/414602629): Re-enable after upgrading to iOS18.4.
+        # "crashpad_tests",
         "crypto_unittests",
         "google_apis_unittests",
         "gwp_asan_unittests",
