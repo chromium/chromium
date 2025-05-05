@@ -8,9 +8,7 @@
 
 DistillerService::DistillerService(
     std::unique_ptr<dom_distiller::DistillerFactory> distiller_factory)
-    : distiller_factory_(std::move(distiller_factory)) {
-  distiller_ = distiller_factory_->CreateDistiller();
-}
+    : distiller_factory_(std::move(distiller_factory)) {}
 
 DistillerService::~DistillerService() = default;
 
@@ -19,6 +17,7 @@ void DistillerService::DistillPage(
     std::unique_ptr<dom_distiller::DistillerPage> distiller_page,
     dom_distiller::Distiller::DistillationFinishedCallback finished_cb,
     const dom_distiller::Distiller::DistillationUpdateCallback& update_cb) {
+  distiller_ = distiller_factory_->CreateDistiller();
   distiller_->DistillPage(url, std::move(distiller_page),
                           std::move(finished_cb), update_cb);
 }
