@@ -32,9 +32,9 @@ ContentSetting NfcPermissionContext::GetPermissionStatusInternal(
 #endif
 
 void NfcPermissionContext::DecidePermission(
-    PermissionRequestData request_data,
+    std::unique_ptr<PermissionRequestData> request_data,
     BrowserPermissionCallback callback) {
-  if (!request_data.user_gesture) {
+  if (!request_data->user_gesture) {
     std::move(callback).Run(CONTENT_SETTING_BLOCK);
     return;
   }

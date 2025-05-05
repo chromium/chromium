@@ -37,6 +37,7 @@
 #include "components/safe_browsing/core/common/features.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/browser/notification_database_data.h"
+#include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/permission_result.h"
 #include "content/public/browser/platform_notification_context.h"
 #include "content/public/browser/storage_partition.h"
@@ -223,8 +224,11 @@ TEST_F(PersistentNotificationHandlerTest, DisableNotifications) {
       std::make_unique<NotificationPermissionContext>(profile_.get());
 
   ASSERT_EQ(permission_context
-                ->GetPermissionStatus(nullptr /* render_frame_host */, origin_,
-                                      origin_)
+                ->GetPermissionStatus(
+                    content::PermissionDescriptorUtil::
+                        CreatePermissionDescriptorForPermissionType(
+                            blink::PermissionType::NOTIFICATIONS),
+                    nullptr /* render_frame_host */, origin_, origin_)
                 .status,
             PermissionStatus::ASK);
 
@@ -259,8 +263,11 @@ TEST_F(PersistentNotificationHandlerTest, DisableNotifications) {
   PermissionStatus kExpectedDisabledStatus = PermissionStatus::DENIED;
 #endif
   ASSERT_EQ(permission_context
-                ->GetPermissionStatus(nullptr /* render_frame_host */, origin_,
-                                      origin_)
+                ->GetPermissionStatus(
+                    content::PermissionDescriptorUtil::
+                        CreatePermissionDescriptorForPermissionType(
+                            blink::PermissionType::NOTIFICATIONS),
+                    nullptr /* render_frame_host */, origin_, origin_)
                 .status,
             kExpectedDisabledStatus);
 }

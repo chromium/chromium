@@ -4,9 +4,14 @@
 
 #include "chrome/browser/download/download_permission_request.h"
 
+#include <memory>
+
 #include "build/build_config.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/content_settings/core/common/content_settings_types.h"
+#include "components/permissions/permission_request_data.h"
 #include "components/permissions/request_type.h"
+#include "components/permissions/resolvers/content_setting_permission_resolver.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -21,9 +26,11 @@ DownloadPermissionRequest::DownloadPermissionRequest(
     base::WeakPtr<DownloadRequestLimiter::TabDownloadState> host,
     const url::Origin& requesting_origin)
     : PermissionRequest(
-          requesting_origin.GetURL(),
-          permissions::RequestType::kMultipleDownloads,
-          /*has_gesture=*/false,
+          std::make_unique<permissions::PermissionRequestData>(
+              std::make_unique<permissions::ContentSettingPermissionResolver>(
+                  permissions::RequestType::kMultipleDownloads),
+              /*user_gesture=*/false,
+              requesting_origin.GetURL()),
           base::BindRepeating(&DownloadPermissionRequest::PermissionDecided,
                               base::Unretained(this)),
           base::BindOnce(&DownloadPermissionRequest::DeleteRequest,
@@ -33,9 +40,11 @@ DownloadPermissionRequest::DownloadPermissionRequest(
 
 DownloadPermissionRequest::~DownloadPermissionRequest() = default;
 
-void DownloadPermissionRequest::PermissionDecided(ContentSetting result,
-                                                  bool is_one_time,
-                                                  bool is_final_decision) {
+void DownloadPermissionRequest::PermissionDecided(
+    ContentSetting result,
+    bool is_one_time,
+    bool is_final_decision,
+    const std::unique_ptr<permissions::PermissionRequestData>& request_data) {
   DCHECK(!is_one_time);
   DCHECK(is_final_decision);
   if (!host_)

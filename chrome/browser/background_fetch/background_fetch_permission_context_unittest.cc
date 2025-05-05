@@ -13,6 +13,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/permission_util.h"
+#include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/web_contents_tester.h"
@@ -44,6 +45,9 @@ class BackgroundFetchPermissionContextTest
     }
 
     auto permission_result = permission_context->GetPermissionStatus(
+        content::PermissionDescriptorUtil::
+            CreatePermissionDescriptorForPermissionType(
+                blink::PermissionType::BACKGROUND_FETCH),
         render_frame_host, url /* requesting_origin */,
         url /* embedding_origin */);
     return permissions::PermissionUtil::PermissionStatusToContentSetting(

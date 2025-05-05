@@ -20,12 +20,11 @@ CapturedSurfaceControlPermissionContext::
           network::mojom::PermissionsPolicyFeature::kCapturedSurfaceControl) {}
 
 void CapturedSurfaceControlPermissionContext::UpdateContentSetting(
-    const GURL& requesting_origin,
-    const GURL& embedding_origin,
+    const std::unique_ptr<PermissionRequestData>& request_data,
     ContentSetting content_setting,
     bool is_one_time) {
   permissions::PermissionContextBase::UpdateContentSetting(
-      requesting_origin, embedding_origin, content_setting, is_one_time);
+      request_data, content_setting, is_one_time);
 }
 
 }  // namespace permissions

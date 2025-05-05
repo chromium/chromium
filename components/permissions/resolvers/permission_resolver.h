@@ -5,9 +5,12 @@
 #ifndef COMPONENTS_PERMISSIONS_RESOLVERS_PERMISSION_RESOLVER_H_
 #define COMPONENTS_PERMISSIONS_RESOLVERS_PERMISSION_RESOLVER_H_
 
+#include <optional>
+
 #include "base/values.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/permissions/request_type.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom.h"
 
 namespace permissions {
@@ -43,16 +46,22 @@ class PermissionResolver {
       ContentSetting decision,
       std::optional<base::Value> prompt_options) = 0;
 
-  // Utility method to obtain the `ContentSettingsType` of the object.
-  ContentSettingsType GetContentSettingsType() const {
+  // Utility method to obtain the `ContentSettingsType` of the object if it
+  // exists.
+  std::optional<ContentSettingsType> GetContentSettingsType() const {
     return content_settings_type_;
   }
 
+  // Utility method to obtain the `RequestType` of the object if it exists.
+  std::optional<RequestType> GetRequestType() const { return request_type_; }
+
  protected:
   explicit PermissionResolver(ContentSettingsType content_settings_type);
+  explicit PermissionResolver(RequestType request_type);
 
  private:
-  ContentSettingsType content_settings_type_;
+  std::optional<ContentSettingsType> content_settings_type_;
+  std::optional<RequestType> request_type_;
 };
 
 }  // namespace permissions

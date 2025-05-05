@@ -23,7 +23,7 @@ PaymentHandlerPermissionContext::PaymentHandlerPermissionContext(
 PaymentHandlerPermissionContext::~PaymentHandlerPermissionContext() = default;
 
 void PaymentHandlerPermissionContext::DecidePermission(
-    permissions::PermissionRequestData request_data,
+    std::unique_ptr<permissions::PermissionRequestData> request_data,
     permissions::BrowserPermissionCallback callback) {
   // The user should never be prompted to authorize payment handler.
   NOTREACHED();

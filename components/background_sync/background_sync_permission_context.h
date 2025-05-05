@@ -29,7 +29,7 @@ class BackgroundSyncPermissionContext
  private:
   // PermissionContextBase:
   void DecidePermission(
-      permissions::PermissionRequestData request_Data,
+      std::unique_ptr<permissions::PermissionRequestData> request_Data,
       permissions::BrowserPermissionCallback callback) override;
 };
 

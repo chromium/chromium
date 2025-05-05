@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PERMISSIONS_PERMISSION_REQUEST_H_
 #define COMPONENTS_PERMISSIONS_PERMISSION_REQUEST_H_
 
+#include <memory>
 #include <optional>
 #include <string>
 
@@ -39,10 +40,11 @@ class PermissionRequest {
   // be passed into this callback.
   // If `is_one_time` is true, the decision will last until all tabs of
   // `requesting_origin_` are closed or navigated away from.
-  using PermissionDecidedCallback =
-      base::RepeatingCallback<void(ContentSetting /*result*/,
-                                   bool /*is_one_time*/,
-                                   bool /*is_final_decision*/)>;
+  using PermissionDecidedCallback = base::RepeatingCallback<void(
+      ContentSetting /*result*/,
+      bool /*is_one_time*/,
+      bool /*is_final_decision*/,
+      const std::unique_ptr<PermissionRequestData>& /*request_data*/)>;
 
   // `permission_decided_callback` is called when the permission request is
   // resolved by the user (see comment on PermissionDecidedCallback above).
@@ -53,16 +55,10 @@ class PermissionRequest {
   // `delete_callback` may be called before `permission_decided_callback`, for
   // example if the tab is closed without user interaction. In this case, the
   // javascript promise from the requesting origin will not be resolved.
-  PermissionRequest(const GURL& requesting_origin,
-                    RequestType request_type,
-                    bool has_gesture,
-                    PermissionDecidedCallback permission_decided_callback,
-                    base::OnceClosure delete_callback);
-
-  PermissionRequest(PermissionRequestData request_data,
+  PermissionRequest(std::unique_ptr<PermissionRequestData> request_data,
                     PermissionDecidedCallback permission_decided_callback,
                     base::OnceClosure delete_callback,
-                    bool uses_automatic_embargo);
+                    bool uses_automatic_embargo = true);
 
   PermissionRequest(const PermissionRequest&) = delete;
   PermissionRequest& operator=(const PermissionRequest&) = delete;
@@ -80,7 +76,7 @@ class PermissionRequest {
 
   virtual ~PermissionRequest();
 
-  GURL requesting_origin() const { return data_.requesting_origin; }
+  GURL requesting_origin() const { return data_->requesting_origin; }
   RequestType request_type() const;
 
   // Whether |this| and |other_request| are duplicates and therefore don't both
@@ -204,11 +200,11 @@ class PermissionRequest {
   ContentSettingsType GetContentSettingsType() const;
 
   void set_requesting_frame_id(content::GlobalRenderFrameHostId id) {
-    data_.id.set_global_render_frame_host_id(id);
+    data_->id.set_global_render_frame_host_id(id);
   }
 
   const content::GlobalRenderFrameHostId& get_requesting_frame_id() {
-    return data_.id.global_render_frame_host_id();
+    return data_->id.global_render_frame_host_id();
   }
 
   // Permission name text fragment which can be used in permission prompts to
@@ -230,7 +226,8 @@ class PermissionRequest {
       bool embedded_permission_element_initiated);
 
  private:
-  PermissionRequestData data_;
+  // The PermissionRequestData associated with this request.
+  std::unique_ptr<PermissionRequestData> data_;
 
   // Called once a decision is made about the permission.
   PermissionDecidedCallback permission_decided_callback_;

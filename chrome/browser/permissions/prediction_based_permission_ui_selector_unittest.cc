@@ -17,10 +17,12 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/permissions/features.h"
+#include "components/permissions/permission_request_data.h"
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/permission_util.h"
 #include "components/permissions/prediction_service/prediction_common.h"
 #include "components/permissions/request_type.h"
+#include "components/permissions/resolvers/content_setting_permission_resolver.h"
 #include "components/permissions/test/mock_permission_request.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -246,11 +248,15 @@ TEST_F(PredictionBasedPermissionUiSelectorTest, GetPredictionTypeToUseTFLite) {
             prediction_selector.GetPredictionTypeToUse(
                 permissions::RequestType::kNotifications));
 
-  auto decided = [](ContentSetting, bool, bool) {};
+  auto decided =
+      [](ContentSetting, bool, bool,
+         const std::unique_ptr<permissions::PermissionRequestData>&) {};
   permissions::PermissionRequest permission_request(
-      GURL("http://example.com/"), permissions::RequestType::kGeolocation,
-      /* user_gesture=*/true, base::BindRepeating(decided),
-      /* delete_callback */ base::NullCallback());
+      std::make_unique<permissions::PermissionRequestData>(
+          std::make_unique<permissions::ContentSettingPermissionResolver>(
+              ContentSettingsType::GEOLOCATION),
+          /*user_gesture=*/true, GURL("http://example.com/")),
+      base::BindRepeating(decided), /*delete_callback=*/base::NullCallback());
 
   permissions::PredictionRequestFeatures features =
       prediction_selector.BuildPredictionRequestFeatures(&permission_request);

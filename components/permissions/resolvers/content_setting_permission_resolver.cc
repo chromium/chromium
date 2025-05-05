@@ -4,19 +4,28 @@
 
 #include "components/permissions/resolvers/content_setting_permission_resolver.h"
 
+#include "components/content_settings/core/browser/content_settings_info.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/permissions/permission_util.h"
+#include "components/permissions/request_type.h"
 
 namespace permissions {
 
 ContentSettingPermissionResolver::ContentSettingPermissionResolver(
     ContentSettingsType content_settings_type)
-    : PermissionResolver(content_settings_type),
-      default_value_(content_settings::ContentSettingsRegistry::GetInstance()
-                         ->Get(content_settings_type)
-                         ->GetInitialDefaultSetting()) {}
+    : PermissionResolver(content_settings_type) {
+  auto* info = content_settings::ContentSettingsRegistry::GetInstance()->Get(
+      content_settings_type);
+  if (info) {
+    default_value_ = info->GetInitialDefaultSetting();
+  }
+}
+
+ContentSettingPermissionResolver::ContentSettingPermissionResolver(
+    RequestType request_type)
+    : PermissionResolver(request_type) {}
 
 blink::mojom::PermissionStatus
 ContentSettingPermissionResolver::DeterminePermissionStatus(

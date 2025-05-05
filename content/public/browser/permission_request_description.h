@@ -46,7 +46,7 @@ struct CONTENT_EXPORT PermissionRequestDescription {
 
   bool operator==(const PermissionRequestDescription& other) const;
 
-  // Define the list of permissions we will request.
+  // Defines the list of permissions we will request.
   std::vector<blink::mojom::PermissionDescriptorPtr> permissions;
 
   // Indicates the request is initiated by a user gesture.

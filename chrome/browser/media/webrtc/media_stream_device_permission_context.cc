@@ -11,6 +11,9 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/permissions/permission_context_base.h"
+#include "components/permissions/permission_util.h"
+#include "content/public/browser/permission_descriptor_util.h"
+#include "content/public/browser/permission_request_description.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
@@ -109,9 +112,7 @@ ContentSetting MediaStreamDevicePermissionContext::GetPermissionStatusInternal(
 // site permission is "Block"). WebXR permissions are following the approach
 // found here.
 void MediaStreamDevicePermissionContext::NotifyPermissionSet(
-    const permissions::PermissionRequestID& id,
-    const GURL& requesting_origin,
-    const GURL& embedding_origin,
+    const std::unique_ptr<permissions::PermissionRequestData>& request_data,
     permissions::BrowserPermissionCallback callback,
     bool persist,
     ContentSetting content_setting,
@@ -151,8 +152,8 @@ void MediaStreamDevicePermissionContext::NotifyPermissionSet(
   // they were actually allowed:
   if (content_setting != ContentSetting::CONTENT_SETTING_ALLOW) {
     PermissionContextBase::NotifyPermissionSet(
-        id, requesting_origin, embedding_origin, std::move(callback), persist,
-        content_setting, is_one_time, is_final_decision);
+        request_data, std::move(callback), persist, content_setting,
+        is_one_time, is_final_decision);
     return;
   }
 
@@ -161,19 +162,20 @@ void MediaStreamDevicePermissionContext::NotifyPermissionSet(
   // won't set `persist=true` when calling
   // `PermissionContextBase::NotifyPermissionSet()` after this point.
   if (persist) {
-    UpdateContentSetting(requesting_origin, embedding_origin, content_setting,
-                         is_one_time);
+    UpdateContentSetting(request_data, content_setting, is_one_time);
   }
 
   content::WebContents* web_contents =
       content::WebContents::FromRenderFrameHost(
-          content::RenderFrameHost::FromID(id.global_render_frame_host_id()));
+          content::RenderFrameHost::FromID(
+              request_data->id.global_render_frame_host_id()));
   if (!web_contents) {
     // If we can't get the web contents, we don't know the state of the OS
     // permission, so assume we don't have it.
-    OnAndroidPermissionDecided(id, requesting_origin, embedding_origin,
-                               std::move(callback),
-                               false /*permission_granted*/);
+    OnAndroidPermissionDecided(
+        request_data->id, request_data->requesting_origin,
+        request_data->embedding_origin, std::move(callback),
+        false /*permission_granted*/);
     return;
   }
 
@@ -183,11 +185,11 @@ void MediaStreamDevicePermissionContext::NotifyPermissionSet(
 
   // For PEPC-initiated permission requests we never need to handle android
   // permissions, so we can shortcut to calling NotifyPermissionSet directly.
-  const permissions::PermissionRequest* request = FindPermissionRequest(id);
+  const auto* request = FindPermissionRequest(request_data->id);
   if (request && request->IsEmbeddedPermissionElementInitiated()) {
     PermissionContextBase::NotifyPermissionSet(
-        id, requesting_origin, embedding_origin, std::move(callback), persist,
-        content_setting, is_one_time, is_final_decision);
+        request_data, std::move(callback), persist, content_setting,
+        is_one_time, is_final_decision);
     return;
   }
 
@@ -198,17 +200,19 @@ void MediaStreamDevicePermissionContext::NotifyPermissionSet(
     case permissions::PermissionRepromptState::kNoNeed:
       // We would have already returned if permission was denied by the user,
       // and this result indicates that we have all the OS permissions we need.
-      OnAndroidPermissionDecided(id, requesting_origin, embedding_origin,
-                                 std::move(callback),
-                                 true /*permission_granted*/);
+      OnAndroidPermissionDecided(
+          request_data->id, request_data->requesting_origin,
+          request_data->embedding_origin, std::move(callback),
+          true /*permission_granted*/);
       return;
 
     case permissions::PermissionRepromptState::kCannotShow:
       // If we cannot show the info bar, then we have to assume we don't have
       // the permissions we need.
-      OnAndroidPermissionDecided(id, requesting_origin, embedding_origin,
-                                 std::move(callback),
-                                 false /*permission_granted*/);
+      OnAndroidPermissionDecided(
+          request_data->id, request_data->requesting_origin,
+          request_data->embedding_origin, std::move(callback),
+          false /*permission_granted*/);
       return;
 
     case permissions::PermissionRepromptState::kShow:
@@ -221,8 +225,9 @@ void MediaStreamDevicePermissionContext::NotifyPermissionSet(
               permission_type, content_settings_type_,
               base::BindOnce(&MediaStreamDevicePermissionContext::
                                  OnAndroidPermissionDecided,
-                             weak_ptr_factory_.GetWeakPtr(), id,
-                             requesting_origin, embedding_origin,
+                             weak_ptr_factory_.GetWeakPtr(), request_data->id,
+                             request_data->requesting_origin,
+                             request_data->embedding_origin,
                              std::move(callback)));
       return;
   }
@@ -245,8 +250,17 @@ void MediaStreamDevicePermissionContext::OnAndroidPermissionDecided(
   // already persisted, and `is_one_time=false` because it is only relevant when
   // persisting permission.
   PermissionContextBase::NotifyPermissionSet(
-      id, requesting_origin, embedding_origin, std::move(callback),
-      false /*persist*/, setting, /*is_one_time=*/false,
+      std::make_unique<permissions::PermissionRequestData>(
+          this, id,
+          content::PermissionRequestDescription(
+              content::PermissionDescriptorUtil::
+                  CreatePermissionDescriptorForPermissionType(
+                      permissions::PermissionUtil::
+                          ContentSettingsTypeToPermissionType(
+                              content_settings_type_))),
+          requesting_origin, embedding_origin),
+      std::move(callback), false /*persist*/, setting,
+      /*is_one_time=*/false,
       /*is_final_decision=*/true);
 }
 

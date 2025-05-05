@@ -18,9 +18,7 @@ PointerLockPermissionContext::PointerLockPermissionContext(
           network::mojom::PermissionsPolicyFeature::kNotFound) {}
 
 void PointerLockPermissionContext::NotifyPermissionSet(
-    const PermissionRequestID& id,
-    const GURL& requesting_origin,
-    const GURL& embedding_origin,
+    const std::unique_ptr<PermissionRequestData>& request_data,
     BrowserPermissionCallback callback,
     bool persist,
     ContentSetting content_setting,
@@ -34,8 +32,8 @@ void PointerLockPermissionContext::NotifyPermissionSet(
     persist = false;
   }
   permissions::PermissionContextBase::NotifyPermissionSet(
-      id, requesting_origin, embedding_origin, std::move(callback), persist,
-      content_setting, is_one_time, is_final_decision);
+      request_data, std::move(callback), persist, content_setting, is_one_time,
+      is_final_decision);
 }
 
 #if !BUILDFLAG(IS_ANDROID)

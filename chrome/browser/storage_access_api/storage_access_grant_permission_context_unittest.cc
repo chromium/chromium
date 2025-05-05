@@ -38,6 +38,7 @@
 #include "components/permissions/test/mock_permission_prompt_factory.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/btm_service.h"
+#include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test_utils.h"
@@ -188,9 +189,9 @@ class StorageAccessGrantPermissionContextTest
   base::test::TestFuture<ContentSetting> DecidePermission(bool user_gesture) {
     base::test::TestFuture<ContentSetting> future;
     permission_context_->DecidePermissionForTesting(
-        permissions::PermissionRequestData(permission_context(), CreateFakeID(),
-                                           user_gesture, GetRequesterURL(),
-                                           GetTopLevelURL()),
+        std::make_unique<permissions::PermissionRequestData>(
+            permission_context(), CreateFakeID(), user_gesture,
+            GetRequesterURL(), GetTopLevelURL()),
         future.GetCallback());
     return future;
   }
@@ -202,9 +203,9 @@ class StorageAccessGrantPermissionContextTest
   ContentSetting RequestPermissionSync() {
     base::test::TestFuture<ContentSetting> future;
     permission_context()->RequestPermission(
-        permissions::PermissionRequestData(permission_context(), CreateFakeID(),
-                                           /*user_gesture=*/true,
-                                           GetRequesterURL()),
+        std::make_unique<permissions::PermissionRequestData>(
+            permission_context(), CreateFakeID(),
+            /*user_gesture=*/true, GetRequesterURL()),
         future.GetCallback());
 
     return future.Get();
@@ -446,11 +447,18 @@ TEST_F(StorageAccessGrantPermissionContextTest, FpsGrantReused) {
 
 TEST_F(StorageAccessGrantPermissionContextTest,
        PermissionStatusAsksWhenFeatureEnabled) {
-  EXPECT_EQ(PermissionStatus::ASK,
-            permission_context()
-                ->GetPermissionStatus(/*render_frame_host=*/nullptr,
-                                      GetRequesterURL(), GetTopLevelURL())
-                .status);
+  EXPECT_EQ(
+      PermissionStatus::ASK,
+      permission_context()
+          ->GetPermissionStatus(
+              content::PermissionDescriptorUtil::
+                  CreatePermissionDescriptorForPermissionType(
+                      permissions::PermissionUtil::
+                          ContentSettingsTypeToPermissionType(
+                              permission_context()->content_settings_type())),
+              /*render_frame_host=*/nullptr, GetRequesterURL(),
+              GetTopLevelURL())
+          .status);
 }
 
 // When 3p cookie access is already allowed by user-agent-specific cookie
@@ -524,10 +532,10 @@ class StorageAccessGrantPermissionContextAPIWithImplicitGrantsTest
                                                          future.GetCallback());
     for (int grant_id = 0; grant_id < implicit_grant_limit; grant_id++) {
       permission_context()->DecidePermissionForTesting(
-          permissions::PermissionRequestData(permission_context(), fake_id,
-                                             /*user_gesture=*/true,
-                                             requesting_origin,
-                                             GetDummyEmbeddingUrl(grant_id)),
+          std::make_unique<permissions::PermissionRequestData>(
+              permission_context(), fake_id,
+              /*user_gesture=*/true, requesting_origin,
+              GetDummyEmbeddingUrl(grant_id)),
           barrier);
     }
     ASSERT_TRUE(future.Wait());
@@ -598,7 +606,7 @@ TEST_F(StorageAccessGrantPermissionContextAPIWithImplicitGrantsTest,
   // it gets auto-granted as the limit has not been reached for it yet.
   base::test::TestFuture<ContentSetting> future;
   permission_context()->DecidePermissionForTesting(
-      permissions::PermissionRequestData(
+      std::make_unique<permissions::PermissionRequestData>(
           permission_context(), CreateFakeID(), /*user_gesture=*/true,
           alternate_requester_url, GetTopLevelURL()),
       future.GetCallback());
@@ -727,11 +735,18 @@ TEST_F(StorageAccessGrantPermissionContextTest,
 
   // However, ensure that the user's denial is not exposed when querying the
   // permission, per the spec.
-  EXPECT_EQ(PermissionStatus::ASK,
-            permission_context()
-                ->GetPermissionStatus(/*render_frame_host=*/nullptr,
-                                      GetRequesterURL(), GetTopLevelURL())
-                .status);
+  EXPECT_EQ(
+      PermissionStatus::ASK,
+      permission_context()
+          ->GetPermissionStatus(
+              content::PermissionDescriptorUtil::
+                  CreatePermissionDescriptorForPermissionType(
+                      permissions::PermissionUtil::
+                          ContentSettingsTypeToPermissionType(
+                              permission_context()->content_settings_type())),
+              /*render_frame_host=*/nullptr, GetRequesterURL(),
+              GetTopLevelURL())
+          .status);
 
   EXPECT_THAT(page_specific_content_settings()->GetTwoSiteRequests(
                   ContentSettingsType::STORAGE_ACCESS),

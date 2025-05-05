@@ -36,6 +36,7 @@
 #include "components/permissions/permission_context_base.h"
 #include "components/permissions/permission_manager.h"
 #include "components/permissions/permission_request.h"
+#include "components/permissions/permission_request_data.h"
 #include "components/permissions/permission_request_id.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/permission_util.h"
@@ -93,11 +94,10 @@ class TestGeolocationPermissionContextDelegate
 #endif
   }
 
-  bool DecidePermission(const PermissionRequestID& id,
-                        const GURL& requesting_origin,
-                        bool user_gesture,
-                        BrowserPermissionCallback* callback,
-                        GeolocationPermissionContext* context) override {
+  bool DecidePermission(
+      const std::unique_ptr<PermissionRequestData>& request_data,
+      BrowserPermissionCallback* callback,
+      GeolocationPermissionContext* context) override {
     return false;
   }
 
@@ -247,8 +247,8 @@ void GeolocationPermissionContextTests::RequestGeolocationPermission(
     const GURL& requesting_frame,
     bool user_gesture) {
   geolocation_permission_context_->RequestPermission(
-      permissions::PermissionRequestData(geolocation_permission_context_, id,
-                                         user_gesture, requesting_frame),
+      std::make_unique<permissions::PermissionRequestData>(
+          geolocation_permission_context_, id, user_gesture, requesting_frame),
       base::BindOnce(&GeolocationPermissionContextTests::PermissionResponse,
                      base::Unretained(this), id));
   content::RunAllTasksUntilIdle();

@@ -35,6 +35,7 @@
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_entry.h"
+#include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/permission_result.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -101,7 +102,7 @@ class TestPermissionContext : public PermissionContextBase {
                                   content_settings_type());
   }
 
-  void RequestPermission(PermissionRequestData request_data,
+  void RequestPermission(std::unique_ptr<PermissionRequestData> request_data,
                          BrowserPermissionCallback callback) override {
     base::RunLoop run_loop;
     quit_closure_ = run_loop.QuitClosure();
@@ -110,7 +111,7 @@ class TestPermissionContext : public PermissionContextBase {
     run_loop.Run();
   }
 
-  void DecidePermission(PermissionRequestData request_data,
+  void DecidePermission(std::unique_ptr<PermissionRequestData> request_data,
                         BrowserPermissionCallback callback) override {
     PermissionContextBase::DecidePermission(std::move(request_data),
                                             std::move(callback));
@@ -252,8 +253,8 @@ class PermissionContextBaseTests : public content::RenderViewHostTestHarness {
         &PermissionContextBaseTests::RespondToPermission,
         base::Unretained(this), &permission_context, id, url, decision));
     permission_context.RequestPermission(
-        PermissionRequestData(&permission_context, id,
-                              /*user_gesture=*/true, url),
+        std::make_unique<PermissionRequestData>(&permission_context, id,
+                                                /*user_gesture=*/true, url),
         base::BindOnce(&TestPermissionContext::TrackPermissionDecision,
                        base::Unretained(&permission_context)));
     EXPECT_THAT(permission_context.decisions(), ElementsAre(decision));
@@ -356,8 +357,8 @@ class PermissionContextBaseTests : public content::RenderViewHostTestHarness {
                          CONTENT_SETTING_ASK));
 
       permission_context.RequestPermission(
-          PermissionRequestData(&permission_context, id,
-                                /*user_gesture=*/true, url),
+          std::make_unique<PermissionRequestData>(&permission_context, id,
+                                                  /*user_gesture=*/true, url),
           base::BindOnce(&TestPermissionContext::TrackPermissionDecision,
                          base::Unretained(&permission_context)));
       histograms.ExpectTotalCount(
@@ -373,6 +374,11 @@ class PermissionContextBaseTests : public content::RenderViewHostTestHarness {
                                   i + 1);
 
       content::PermissionResult result = permission_context.GetPermissionStatus(
+          content::PermissionDescriptorUtil::
+              CreatePermissionDescriptorForPermissionType(
+                  permissions::PermissionUtil::
+                      ContentSettingsTypeToPermissionType(
+                          permission_context.content_settings_type())),
           nullptr /* render_frame_host */, url, url);
 
       histograms.ExpectUniqueSample(
@@ -412,12 +418,17 @@ class PermissionContextBaseTests : public content::RenderViewHostTestHarness {
                        CONTENT_SETTING_ASK));
 
     permission_context.RequestPermission(
-        PermissionRequestData(&permission_context, id,
-                              /*user_gesture=*/true, url),
+        std::make_unique<PermissionRequestData>(&permission_context, id,
+                                                /*user_gesture=*/true, url),
         base::BindOnce(&TestPermissionContext::TrackPermissionDecision,
                        base::Unretained(&permission_context)));
 
     content::PermissionResult result = permission_context.GetPermissionStatus(
+        content::PermissionDescriptorUtil::
+            CreatePermissionDescriptorForPermissionType(
+                permissions::PermissionUtil::
+                    ContentSettingsTypeToPermissionType(
+                        permission_context.content_settings_type())),
         nullptr /* render_frame_host */, url, url);
     EXPECT_EQ(PermissionStatus::DENIED, result.status);
     EXPECT_EQ(content::PermissionStatusSource::MULTIPLE_DISMISSALS,
@@ -456,8 +467,8 @@ class PermissionContextBaseTests : public content::RenderViewHostTestHarness {
                          base::Unretained(this), &permission_context, id, url,
                          CONTENT_SETTING_ASK));
       permission_context.RequestPermission(
-          PermissionRequestData(&permission_context, id,
-                                /*user_gesture=*/true, url),
+          std::make_unique<PermissionRequestData>(&permission_context, id,
+                                                  /*user_gesture=*/true, url),
           base::BindOnce(&TestPermissionContext::TrackPermissionDecision,
                          base::Unretained(&permission_context)));
 
@@ -467,6 +478,11 @@ class PermissionContextBaseTests : public content::RenderViewHostTestHarness {
       EXPECT_THAT(permission_context.on_permission_requested_calls(),
                   ElementsAre(CONTENT_SETTING_ASK));
       content::PermissionResult result = permission_context.GetPermissionStatus(
+          content::PermissionDescriptorUtil::
+              CreatePermissionDescriptorForPermissionType(
+                  permissions::PermissionUtil::
+                      ContentSettingsTypeToPermissionType(
+                          permission_context.content_settings_type())),
           nullptr /* render_frame_host */, url, url);
 
       histograms.ExpectTotalCount(
@@ -498,6 +514,11 @@ class PermissionContextBaseTests : public content::RenderViewHostTestHarness {
     TestPermissionContext permission_context(browser_context(),
                                              ContentSettingsType::MIDI_SYSEX);
     content::PermissionResult result = permission_context.GetPermissionStatus(
+        content::PermissionDescriptorUtil::
+            CreatePermissionDescriptorForPermissionType(
+                permissions::PermissionUtil::
+                    ContentSettingsTypeToPermissionType(
+                        permission_context.content_settings_type())),
         nullptr /* render_frame_host */, url, url);
     EXPECT_EQ(PermissionStatus::DENIED, result.status);
     EXPECT_EQ(content::PermissionStatusSource::MULTIPLE_DISMISSALS,
@@ -522,8 +543,8 @@ class PermissionContextBaseTests : public content::RenderViewHostTestHarness {
                          base::Unretained(this), &permission_context, id, url,
                          CONTENT_SETTING_ASK));
       permission_context.RequestPermission(
-          PermissionRequestData(&permission_context, id,
-                                /*user_gesture=*/true, url),
+          std::make_unique<PermissionRequestData>(&permission_context, id,
+                                                  /*user_gesture=*/true, url),
           base::BindOnce(&TestPermissionContext::TrackPermissionDecision,
                          base::Unretained(&permission_context)));
 
@@ -533,6 +554,11 @@ class PermissionContextBaseTests : public content::RenderViewHostTestHarness {
       EXPECT_THAT(permission_context.on_permission_requested_calls(),
                   ElementsAre(CONTENT_SETTING_ASK));
       content::PermissionResult result = permission_context.GetPermissionStatus(
+          content::PermissionDescriptorUtil::
+              CreatePermissionDescriptorForPermissionType(
+                  permissions::PermissionUtil::
+                      ContentSettingsTypeToPermissionType(
+                          permission_context.content_settings_type())),
           nullptr /* render_frame_host */, url, url);
 
       histograms.ExpectTotalCount(
@@ -560,6 +586,11 @@ class PermissionContextBaseTests : public content::RenderViewHostTestHarness {
                                              ContentSettingsType::MIDI_SYSEX);
     permission_context.SetUsesAutomaticEmbargo(false);
     content::PermissionResult result = permission_context.GetPermissionStatus(
+        content::PermissionDescriptorUtil::
+            CreatePermissionDescriptorForPermissionType(
+                permissions::PermissionUtil::
+                    ContentSettingsTypeToPermissionType(
+                        permission_context.content_settings_type())),
         nullptr /* render_frame_host */, url, url);
     EXPECT_EQ(PermissionStatus::ASK, result.status);
     EXPECT_EQ(content::PermissionStatusSource::UNSPECIFIED, result.source);
@@ -579,8 +610,8 @@ class PermissionContextBaseTests : public content::RenderViewHostTestHarness {
         web_contents()->GetPrimaryMainFrame()->GetGlobalId(),
         PermissionRequestID::RequestLocalId());
     permission_context.RequestPermission(
-        PermissionRequestData(&permission_context, id,
-                              /*user_gesture=*/true, url),
+        std::make_unique<PermissionRequestData>(&permission_context, id,
+                                                /*user_gesture=*/true, url),
         base::BindOnce(&TestPermissionContext::TrackPermissionDecision,
                        base::Unretained(&permission_context)));
 
@@ -611,8 +642,8 @@ class PermissionContextBaseTests : public content::RenderViewHostTestHarness {
                        CONTENT_SETTING_ALLOW));
 
     permission_context.RequestPermission(
-        PermissionRequestData(&permission_context, id,
-                              /*user_gesture=*/true, url),
+        std::make_unique<PermissionRequestData>(&permission_context, id,
+                                                /*user_gesture=*/true, url),
         base::BindOnce(&TestPermissionContext::TrackPermissionDecision,
                        base::Unretained(&permission_context)));
 
@@ -696,8 +727,8 @@ class PermissionContextBaseTests : public content::RenderViewHostTestHarness {
 
     // Request a permission without setting the callback to DecidePermission.
     permission_context.RequestPermission(
-        PermissionRequestData(&permission_context, id1,
-                              /*user_gesture=*/true, url),
+        std::make_unique<PermissionRequestData>(&permission_context, id1,
+                                                /*user_gesture=*/true, url),
         base::BindOnce(&TestPermissionContext::TrackPermissionDecision,
                        base::Unretained(&permission_context)));
 
@@ -709,8 +740,8 @@ class PermissionContextBaseTests : public content::RenderViewHostTestHarness {
         &PermissionContextBaseTests::RespondToPermission,
         base::Unretained(this), &permission_context, id1, url, response));
     permission_context.RequestPermission(
-        PermissionRequestData(&permission_context, id2,
-                              /*user_gesture=*/true, url),
+        std::make_unique<PermissionRequestData>(&permission_context, id2,
+                                                /*user_gesture=*/true, url),
         base::BindOnce(&TestPermissionContext::TrackPermissionDecision,
                        base::Unretained(&permission_context)));
 
@@ -735,6 +766,11 @@ class PermissionContextBaseTests : public content::RenderViewHostTestHarness {
         virtual_url);
 
     content::PermissionResult result = permission_context.GetPermissionStatus(
+        content::PermissionDescriptorUtil::
+            CreatePermissionDescriptorForPermissionType(
+                permissions::PermissionUtil::
+                    ContentSettingsTypeToPermissionType(
+                        permission_context.content_settings_type())),
         web_contents()->GetPrimaryMainFrame(), virtual_url, virtual_url);
     EXPECT_EQ(result.status,
               PermissionUtil::ContentSettingToPermissionStatus(want_response));

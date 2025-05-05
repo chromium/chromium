@@ -21,10 +21,13 @@
 #include "build/build_config.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_request.h"
+#include "components/permissions/permission_request_data.h"
+#include "components/permissions/permission_request_enums.h"
 #include "components/permissions/permission_ui_selector.h"
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/permission_util.h"
 #include "components/permissions/request_type.h"
+#include "components/permissions/resolvers/content_setting_permission_resolver.h"
 #include "components/permissions/test/mock_permission_prompt_factory.h"
 #include "components/permissions/test/mock_permission_request.h"
 #include "components/permissions/test/test_permissions_client.h"
@@ -581,14 +584,21 @@ class QuicklyDeletedRequest : public PermissionRequest {
   QuicklyDeletedRequest(const GURL& requesting_origin,
                         RequestType request_type,
                         PermissionRequestGestureType gesture_type)
-      : PermissionRequest(requesting_origin,
-                          request_type,
-                          gesture_type == PermissionRequestGestureType::GESTURE,
-                          base::BindLambdaForTesting(
-                              [](ContentSetting result,
-                                 bool is_one_time,
-                                 bool is_final_decision) { NOTREACHED(); }),
-                          base::NullCallback()) {}
+      : PermissionRequest(
+            std::make_unique<PermissionRequestData>(
+                std::make_unique<ContentSettingPermissionResolver>(
+                    request_type),
+                /*user_gesture=*/gesture_type ==
+                    PermissionRequestGestureType::GESTURE,
+                requesting_origin),
+            base::BindLambdaForTesting(
+                [](ContentSetting result,
+                   bool is_one_time,
+                   bool is_final_decision,
+                   const std::unique_ptr<PermissionRequestData>&) {
+                  NOTREACHED();
+                }),
+            base::NullCallback()) {}
 
   static std::unique_ptr<QuicklyDeletedRequest> CreateRequest(
       MockPermissionRequest* request) {

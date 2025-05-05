@@ -4,7 +4,12 @@
 
 #include "components/permissions/test/mock_permission_request.h"
 
+#include <memory>
+
+#include "components/permissions/permission_request_data.h"
+#include "components/permissions/permission_request_enums.h"
 #include "components/permissions/request_type.h"
+#include "components/permissions/resolvers/content_setting_permission_resolver.h"
 
 namespace permissions {
 
@@ -29,9 +34,11 @@ MockPermissionRequest::MockPermissionRequest(
     RequestType request_type,
     PermissionRequestGestureType gesture_type)
     : PermissionRequest(
-          requesting_origin,
-          request_type,
-          gesture_type == PermissionRequestGestureType::GESTURE,
+          std::make_unique<PermissionRequestData>(
+              std::make_unique<ContentSettingPermissionResolver>(request_type),
+              /*user_gesture=*/gesture_type ==
+                  PermissionRequestGestureType::GESTURE,
+              requesting_origin),
           base::BindRepeating(&MockPermissionRequest::PermissionDecided,
                               base::Unretained(this)),
           base::BindOnce(&MockPermissionRequest::MarkFinished,
@@ -75,9 +82,11 @@ void MockPermissionRequest::RegisterOnPermissionDecidedCallback(
   on_permission_decided_ = std::move(callback);
 }
 
-void MockPermissionRequest::PermissionDecided(ContentSetting result,
-                                              bool is_one_time,
-                                              bool is_final_decision) {
+void MockPermissionRequest::PermissionDecided(
+    ContentSetting result,
+    bool is_one_time,
+    bool is_final_decision,
+    const std::unique_ptr<permissions::PermissionRequestData>& request_data) {
   granted_ = result == CONTENT_SETTING_ALLOW;
   if (result == CONTENT_SETTING_DEFAULT) {
     cancelled_ = true;

@@ -15,6 +15,9 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/permissions/permission_request_id.h"
+#include "components/permissions/permission_util.h"
+#include "components/permissions/request_type.h"
+#include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
@@ -77,16 +80,27 @@ class MediaStreamDevicePermissionContextTests
                                       secure_url.DeprecatedGetOriginAsURL(),
                                       content_settings_type));
 
-    EXPECT_EQ(PermissionStatus::DENIED,
-              permission_context
-                  .GetPermissionStatus(nullptr /* render_frame_host */,
-                                       insecure_url, insecure_url)
-                  .status);
+    EXPECT_EQ(
+        PermissionStatus::DENIED,
+        permission_context
+            .GetPermissionStatus(
+                content::PermissionDescriptorUtil::
+                    CreatePermissionDescriptorForPermissionType(
+                        permissions::PermissionUtil::
+                            ContentSettingsTypeToPermissionType(
+                                content_settings_type)),
+                nullptr /* render_frame_host */, insecure_url, insecure_url)
+            .status);
 
     EXPECT_EQ(PermissionStatus::DENIED,
               permission_context
-                  .GetPermissionStatus(nullptr /* render_frame_host */,
-                                       insecure_url, secure_url)
+                  .GetPermissionStatus(
+                      content::PermissionDescriptorUtil::
+                          CreatePermissionDescriptorForPermissionType(
+                              permissions::PermissionUtil::
+                                  ContentSettingsTypeToPermissionType(
+                                      content_settings_type)),
+                      nullptr /* render_frame_host */, insecure_url, secure_url)
                   .status);
   }
 
@@ -103,8 +117,13 @@ class MediaStreamDevicePermissionContextTests
 
     EXPECT_EQ(PermissionStatus::ASK,
               permission_context
-                  .GetPermissionStatus(nullptr /* render_frame_host */,
-                                       secure_url, secure_url)
+                  .GetPermissionStatus(
+                      content::PermissionDescriptorUtil::
+                          CreatePermissionDescriptorForPermissionType(
+                              permissions::PermissionUtil::
+                                  ContentSettingsTypeToPermissionType(
+                                      content_settings_type)),
+                      nullptr /* render_frame_host */, secure_url, secure_url)
                   .status);
   }
 
@@ -115,8 +134,13 @@ class MediaStreamDevicePermissionContextTests
 
     EXPECT_EQ(PermissionStatus::ASK,
               permission_context
-                  .GetPermissionStatus(nullptr /* render_frame_host */,
-                                       secure_url, secure_url)
+                  .GetPermissionStatus(
+                      content::PermissionDescriptorUtil::
+                          CreatePermissionDescriptorForPermissionType(
+                              permissions::PermissionUtil::
+                                  ContentSettingsTypeToPermissionType(
+                                      content_setting_type)),
+                      nullptr /* render_frame_host */, secure_url, secure_url)
                   .status);
 
     if (use_deny_switch) {
@@ -130,8 +154,13 @@ class MediaStreamDevicePermissionContextTests
     EXPECT_EQ(
         use_deny_switch ? PermissionStatus::DENIED : PermissionStatus::GRANTED,
         permission_context
-            .GetPermissionStatus(nullptr /* render_frame_host */, secure_url,
-                                 secure_url)
+            .GetPermissionStatus(
+                content::PermissionDescriptorUtil::
+                    CreatePermissionDescriptorForPermissionType(
+                        permissions::PermissionUtil::
+                            ContentSettingsTypeToPermissionType(
+                                content_setting_type)),
+                nullptr /* render_frame_host */, secure_url, secure_url)
             .status);
 
     base::CommandLine::ForCurrentProcess()->RemoveSwitch(

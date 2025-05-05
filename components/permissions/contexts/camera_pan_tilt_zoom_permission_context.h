@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_PERMISSIONS_CONTEXTS_CAMERA_PAN_TILT_ZOOM_PERMISSION_CONTEXT_H_
 #define COMPONENTS_PERMISSIONS_CONTEXTS_CAMERA_PAN_TILT_ZOOM_PERMISSION_CONTEXT_H_
 
+#include <memory>
+
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -53,7 +55,7 @@ class CameraPanTiltZoomPermissionContext
  private:
   // PermissionContextBase
   void RequestPermission(
-      PermissionRequestData request_data,
+      std::unique_ptr<PermissionRequestData> request_data,
       permissions::BrowserPermissionCallback callback) override;
   ContentSetting GetPermissionStatusInternal(
       content::RenderFrameHost* render_frame_host,

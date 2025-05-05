@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "components/custom_handlers/protocol_handler.h"
 #include "components/permissions/permission_request.h"
+#include "components/permissions/permission_request_data.h"
 
 namespace permissions {
 enum class RequestType;
@@ -42,9 +43,11 @@ class RegisterProtocolHandlerPermissionRequest
       permissions::PermissionRequest* other_request) const override;
   std::u16string GetMessageTextFragment() const override;
 
-  void PermissionDecided(ContentSetting result,
-                         bool is_one_time,
-                         bool is_final_decision);
+  void PermissionDecided(
+      ContentSetting result,
+      bool is_one_time,
+      bool is_final_decision,
+      const std::unique_ptr<permissions::PermissionRequestData>& request_data);
   void DeleteRequest();
 
   raw_ptr<custom_handlers::ProtocolHandlerRegistry> registry_;

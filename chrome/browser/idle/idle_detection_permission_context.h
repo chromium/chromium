@@ -27,7 +27,7 @@ class IdleDetectionPermissionContext
                         const GURL& requesting_frame,
                         bool allowed) override;
   void DecidePermission(
-      permissions::PermissionRequestData request_data,
+      std::unique_ptr<permissions::PermissionRequestData> request_data,
       permissions::BrowserPermissionCallback callback) override;
 
   base::WeakPtrFactory<IdleDetectionPermissionContext> weak_factory_{this};

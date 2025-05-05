@@ -7,9 +7,11 @@
 #include "components/permissions/contexts/pointer_lock_permission_context.h"
 #include "components/permissions/features.h"
 #include "components/permissions/test/test_permissions_client.h"
+#include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/permissions/permission_utils.h"
 
 namespace permissions {
 
@@ -37,10 +39,14 @@ TEST_F(KeyboardLockPromptTests, KeyboardLockPromptDisabled) {
 
   KeyboardLockPermissionContext keyboard_permission_context(browser_context());
 
-  EXPECT_EQ(PermissionStatus::GRANTED,
-            keyboard_permission_context
-                .GetPermissionStatus(/*render_frame_host=*/nullptr, url, url)
-                .status);
+  EXPECT_EQ(
+      PermissionStatus::GRANTED,
+      keyboard_permission_context
+          .GetPermissionStatus(content::PermissionDescriptorUtil::
+                                   CreatePermissionDescriptorForPermissionType(
+                                       blink::PermissionType::KEYBOARD_LOCK),
+                               /*render_frame_host=*/nullptr, url, url)
+          .status);
 }
 
 TEST_F(KeyboardLockPromptTests, KeyboardLockPromptEnabled) {
@@ -51,10 +57,14 @@ TEST_F(KeyboardLockPromptTests, KeyboardLockPromptEnabled) {
 
   KeyboardLockPermissionContext keyboard_permission_context(browser_context());
 
-  EXPECT_EQ(PermissionStatus::ASK,
-            keyboard_permission_context
-                .GetPermissionStatus(/*render_frame_host=*/nullptr, url, url)
-                .status);
+  EXPECT_EQ(
+      PermissionStatus::ASK,
+      keyboard_permission_context
+          .GetPermissionStatus(content::PermissionDescriptorUtil::
+                                   CreatePermissionDescriptorForPermissionType(
+                                       blink::PermissionType::KEYBOARD_LOCK),
+                               /*render_frame_host=*/nullptr, url, url)
+          .status);
 }
 #endif
 
