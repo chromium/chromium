@@ -472,11 +472,12 @@ VideoProcessorWrapper* DCLayerTree::InitializeVideoProcessor(
   return &video_processor_wrapper;
 }
 
-Microsoft::WRL::ComPtr<IDXGISwapChain1>
-DCLayerTree::GetLayerSwapChainForTesting(size_t index) const {
+IDXGISwapChain1* DCLayerTree::GetLayerSwapChainForTesting(
+    const gfx::OverlayLayerId& layer_id) const {
   CHECK_IS_TEST();
-  if (index < video_swap_chains_.size())
-    return video_swap_chains_[index]->swap_chain();
+  if (video_swap_chains_.contains(layer_id)) {
+    return video_swap_chains_.at(layer_id)->swap_chain().Get();
+  }
   return nullptr;
 }
 
@@ -1185,39 +1186,56 @@ base::expected<void, CommitError> DCLayerTree::CommitAndClearPendingOverlays(
     }
   }
 
-  // Grow or shrink list of swap chain presenters to match pending overlays.
-  const size_t num_swap_chain_presenters = std::count_if(
-      overlays.begin(), overlays.end(),
-      [](const auto& overlay) { return NeedSwapChainPresenter(overlay); });
-  // Grow or shrink list of swap chain presenters to match pending overlays.
-  if (video_swap_chains_.size() != num_swap_chain_presenters) {
-    video_swap_chains_.resize(num_swap_chain_presenters);
-    // If we need to grow or shrink swap chain presenters, we'll need to add or
-    // remove visuals.
-  }
-
   // Sort layers by z-order.
-  std::sort(overlays.begin(), overlays.end(),
-            [](const auto& a, const auto& b) -> bool {
-              return a.z_order < b.z_order;
-            });
+  std::ranges::sort(overlays, std::ranges::less(),
+                    &DCLayerOverlayParams::z_order);
 
-  // |overlays| and |video_swap_chains_| do not have a 1:1 mapping because the
-  // root surface placeholder overlay does not have SwapChainPresenter, so there
-  // is one less element in |video_swap_chains_| than |overlays|.
-  auto video_swap_iter = video_swap_chains_.begin();
+  // Move unused video swap chains to `unused_video_swap_chains` for potential
+  // reuse (when adjacent frames have a videos that have different layer IDs
+  // which can sometimes happen when a video's src changes), then cleanup.
+  decltype(video_swap_chains_) unused_video_swap_chains;
+  {
+    // Move all video swap chains to `unused_video_swap_chains` and the move
+    // ones that are in the current frame back into `video_swap_chains_`.
+    unused_video_swap_chains = std::move(video_swap_chains_);
+
+    // We may be moving up to all of the swap chains back.
+    video_swap_chains_.reserve(unused_video_swap_chains.size());
+
+    size_t num_swap_chain_presenters = 0;
+    for (auto& overlay : overlays) {
+      if (NeedSwapChainPresenter(overlay)) {
+        auto reused_video_swap_chain_it =
+            unused_video_swap_chains.find(overlay.layer_id);
+        if (reused_video_swap_chain_it != unused_video_swap_chains.end()) {
+          video_swap_chains_.insert(std::move(*reused_video_swap_chain_it));
+          unused_video_swap_chains.erase(reused_video_swap_chain_it);
+        }
+        num_swap_chain_presenters++;
+      }
+    }
+
+    // If there are more videos this frame, reserve enough space for them.
+    video_swap_chains_.reserve(num_swap_chain_presenters);
+  }
 
   // Populate |overlays| with information required to build dcomp visual tree.
   for (auto& overlay : overlays) {
     if (NeedSwapChainPresenter(overlay)) {
       // Present to swap chain and update the overlay with transform, clip
       // and content.
-      auto& video_swap_chain = *(video_swap_iter++);
+      auto& video_swap_chain = video_swap_chains_[overlay.layer_id];
       if (!video_swap_chain) {
         // TODO(sunnyps): Try to find a matching swap chain based on size, type
         // of swap chain, gl image, etc.
-        video_swap_chain = std::make_unique<SwapChainPresenter>(
-            this, d3d11_device_, dcomp_device_);
+        auto unused_video_swap_chain_it = unused_video_swap_chains.begin();
+        if (unused_video_swap_chain_it != unused_video_swap_chains.end()) {
+          video_swap_chain = std::move(unused_video_swap_chain_it->second);
+          unused_video_swap_chains.erase(unused_video_swap_chain_it);
+        } else {
+          video_swap_chain = std::make_unique<SwapChainPresenter>(
+              this, d3d11_device_, dcomp_device_);
+        }
       }
       gfx::Transform transform;
       gfx::Rect clip_rect;

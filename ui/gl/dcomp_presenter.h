@@ -90,7 +90,7 @@ class GL_EXPORT DCompPresenter : public Presenter,
   scoped_refptr<base::TaskRunner> GetWindowTaskRunnerForTesting();
 
   Microsoft::WRL::ComPtr<IDXGISwapChain1> GetLayerSwapChainForTesting(
-      size_t index) const;
+      const gfx::OverlayLayerId& layer_id) const;
 
   void GetSwapChainVisualInfoForTesting(const gfx::OverlayLayerId& layer_id,
                                         gfx::Transform* out_transform,

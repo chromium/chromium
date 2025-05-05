@@ -166,8 +166,9 @@ DCompPresenter::GetWindowTaskRunnerForTesting() {
 }
 
 Microsoft::WRL::ComPtr<IDXGISwapChain1>
-DCompPresenter::GetLayerSwapChainForTesting(size_t index) const {
-  return layer_tree_->GetLayerSwapChainForTesting(index);  // IN-TEST
+DCompPresenter::GetLayerSwapChainForTesting(
+    const gfx::OverlayLayerId& layer_id) const {
+  return layer_tree_->GetLayerSwapChainForTesting(layer_id);  // IN-TEST
 }
 
 void DCompPresenter::GetSwapChainVisualInfoForTesting(
