@@ -53,6 +53,7 @@ class WebSigninTracker : public IdentityManager::Observer,
   void OnAccountsInCookieUpdated(
       const AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
       const GoogleServiceAuthError& error) override;
+  void OnIdentityManagerShutdown(IdentityManager* identity_manager) override;
 
   // AccountReconcilor::Observer:
   void OnStateChanged(signin_metrics::AccountReconcilorState state) override;
