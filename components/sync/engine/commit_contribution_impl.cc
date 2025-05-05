@@ -12,7 +12,6 @@
 #include "base/logging.h"
 #include "base/uuid.h"
 #include "components/sync/base/data_type_histogram.h"
-#include "components/sync/base/features.h"
 #include "components/sync/base/passphrase_enums.h"
 #include "components/sync/base/time.h"
 #include "components/sync/base/unique_position.h"
@@ -281,16 +280,6 @@ void CommitContributionImpl::PopulateCommitProto(
     }
     commit_proto->set_ctime(TimeToProtoTime(entity_data.creation_time));
     commit_proto->mutable_specifics()->CopyFrom(entity_data.specifics);
-
-    if (type == BOOKMARKS && !entity_data.is_deleted() &&
-        base::FeatureList::IsEnabled(
-            kSyncSimulateBookmarksPingPongForTesting)) {
-      // Clear the unique position in specifics to force a ping-pong effect if
-      // another client is online.
-      commit_proto->mutable_specifics()
-          ->mutable_bookmark()
-          ->clear_unique_position();
-    }
   }
 }
 
