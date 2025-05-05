@@ -67,8 +67,6 @@ class TabCollection {
 
     bool operator==(const Iterator& other) const { return cur_ == other.cur_; }
 
-    bool operator!=(const Iterator& other) const { return !(*this == other); }
-
    private:
     Iterator(const tabs::TabCollection* root, bool is_end);
     void Next();

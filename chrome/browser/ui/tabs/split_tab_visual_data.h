@@ -41,13 +41,8 @@ class SplitTabVisualData {
   double split_ratio() const { return split_ratio_; }
 
   // Checks whether two instances are visually equivalent.
-  bool operator==(const SplitTabVisualData& other) const {
-    return split_layout_ == other.split_layout_ &&
-           split_ratio_ == other.split_ratio_;
-  }
-  bool operator!=(const SplitTabVisualData& other) const {
-    return !(*this == other);
-  }
+  friend bool operator==(const SplitTabVisualData&,
+                         const SplitTabVisualData&) = default;
 
  private:
   SplitTabLayout split_layout_;
