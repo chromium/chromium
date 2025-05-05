@@ -44,13 +44,6 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatform {
     // Returns the effective process-wide accessibility mode.
     virtual AXMode GetAccessibilityMode() = 0;
 
-    // The global accessibility mode is automatically enabled based on
-    // usage of accessibility APIs. When we detect a significant amount
-    // of user inputs within a certain time period, but no accessibility
-    // API usage, we automatically disable accessibility. This method
-    // should be called when we detect accessibility API usage.
-    virtual void OnAccessibilityApiUsage() = 0;
-
 #if BUILDFLAG(IS_WIN)
     // Used to retrieve the product name, version, and toolkit version for IA2.
     // Only called the first time the data is needed to fill in the
@@ -68,13 +61,22 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatform {
     virtual void OnUiaProviderDisabled() {}
 #endif
 
-#if BUILDFLAG(IS_LINUX)
-    // Enables AXMode::kExtendedProperties, for advanced ATs such as Orca.
-    // TODO(accessibility): Consider unifying with
-    // WinAccessibilityAPIUsageObserver into a single system for turning on
-    // useful AXModes.
-    virtual void OnExtendedPropertiesUsed() {}
-#endif
+    // A very basic accessible property was used, such as role, name or
+    // location. Only enables AXMode::kNativeAPIs unless the screen reader
+    // honeypot is used.
+    virtual void OnMinimalPropertiesUsed() {}
+    // An a11y property was used in the browser UI. Enable AXMode::kNativeAPIs.
+    virtual void OnPropertiesUsedInBrowserUI() {}
+    // A basic property was used in web content. Enable AXMode::kWebContents.
+    virtual void OnPropertiesUsedInWebContent() {}
+    // Inline textboxes were used. Enable AXMode::kInlineTextBoxes.
+    virtual void OnInlineTextBoxesUsedInWebContent() {}
+    // Extended properties were used. Enable AXMode::kExtendedProperties.
+    virtual void OnExtendedPropertiesUsedInWebContent() {}
+    // HTML properties were used. Enable AXMode::kHTML.
+    virtual void OnHTMLAttributesUsed() {}
+    // An a11y action was used in web content. Enable AXMode::kNativeAPIs.
+    virtual void OnActionFromAssistiveTech() {}
 
    protected:
     Delegate() = default;
@@ -119,9 +121,6 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatform {
   // Is the current active assistive tech a screen reader.
   bool IsScreenReaderActive();
 
-  // Notifies the delegate that an accessibility API has been used.
-  void NotifyAccessibilityApiUsage();
-
   // Returns whether caret browsing is enabled. When caret browsing is enabled,
   // we need to ensure that we keep ATs aware of caret movement.
   bool IsCaretBrowsingEnabled();
@@ -159,9 +158,31 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatform {
   void OnUiaProviderRequested(bool uia_provider_enabled);
 #endif
 
-#if BUILDFLAG(IS_LINUX)
-  // Enables AXMode::kExtendedProperties, for advanced ATs such as Orca.
-  void OnExtendedPropertiesUsed();
+  // A very basic accessible property was used, such as role, name or location.
+  // Always enables AXMode::kNativeAPIs by calling OnMinimalPropertiesUsed() on
+  // the delegate. If the screen reader honeypot is used (currently windows
+  // only), OnPropertiesUsedInWebContent() will also be called, enabling web
+  // content accessibility via AXMode::kWebContents.
+  void OnMinimalPropertiesUsed();
+  // An a11y property was used in the browser UI. Enable AXMode::kNativeAPIs.
+  void OnPropertiesUsedInBrowserUI();
+  // A basic property was used in web content. Enable AXMode::kWebContents.
+  void OnPropertiesUsedInWebContent();
+  // Inline textboxes were used. Enable AXMode::kInlineTextBoxes.
+  void OnInlineTextBoxesUsedInWebContent();
+  // Extended properties were used. Enable AXMode::kExtendedProperties.
+  void OnExtendedPropertiesUsedInWebContent();
+  // HTML properties were used. Enable AXMode::kHTML.
+  void OnHTMLAttributesUsed();
+  // An a11y action was used in web content. Enable AXMode::kNativeAPIs.
+  void OnActionFromAssistiveTech();
+#if BUILDFLAG(IS_WIN)
+  // The honeypot is a fake alert object that is created, with a fake alert
+  // event fired on it. It is considered unlikely that anything but a screen
+  // reader would be query that object, and also query other minimal properties.
+  // TODO(accessibility): We may no longer need this method because we
+  // detect all screen readers directly, although this may happen earlier.
+  void OnScreenReaderHoneyPotQueried();
 #endif
 
   void DetachFromThreadForTesting();
@@ -209,6 +230,12 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatform {
 
   // Keeps track of whether caret browsing is enabled.
   bool caret_browsing_enabled_ GUARDED_BY_CONTEXT(thread_checker_) = false;
+
+#if BUILDFLAG(IS_WIN)
+  bool screen_reader_honeypot_queried_ GUARDED_BY_CONTEXT(thread_checker_) =
+      false;
+  bool minimal_properties_used_ GUARDED_BY_CONTEXT(thread_checker_) = false;
+#endif
 
   THREAD_CHECKER(thread_checker_);
 };

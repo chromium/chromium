@@ -478,8 +478,6 @@ class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibility
 
   std::string SubtreeToStringHelper(size_t level) override;
 
-  void NotifyAccessibilityApiUsage() const override;
-
   // The UIA tree formatter needs access to GetUniqueId() to identify the
   // starting point for tree dumps.
   friend class AccessibilityTreeFormatterUia;

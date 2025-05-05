@@ -85,7 +85,13 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
   void NotifyWebContentsPreferencesChanged() const override;
 
   // ui::AXPlatform::Delegate:
-  void OnAccessibilityApiUsage() override;
+  void OnMinimalPropertiesUsed() override;
+  void OnPropertiesUsedInBrowserUI() override;
+  void OnPropertiesUsedInWebContent() override;
+  void OnInlineTextBoxesUsedInWebContent() override;
+  void OnExtendedPropertiesUsedInWebContent() override;
+  void OnHTMLAttributesUsed() override;
+  void OnActionFromAssistiveTech() override;
 
   // content::RenderWidgetHost::InputEventObserver:
   void OnInputEvent(const RenderWidgetHost& widget,
@@ -150,6 +156,10 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
   void OnModeChangedForWebContents(WebContents* web_contents,
                                    ui::AXMode old_mode,
                                    ui::AXMode new_mode);
+
+  // Add the AXModes + AXMode::kFromPlatform, when corresponding platform APIs
+  // are used.
+  void EnableAXModeFromPlatform(ui::AXMode modes_to_add);
 
   // Refreshes the instance's notion of active assistive technologies.
   // Implementations must call `OnAssistiveTechFound()` with the results of any
@@ -218,6 +228,10 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
   // A ScopedAccessibilityMode that holds the process-wide mode flags modified
   // via --force-renderer-accessibility on the command line.
   std::unique_ptr<ScopedAccessibilityMode> forced_accessibility_mode_;
+
+  // A ScopedAccessibilityMode that holds process-wide mode flags required to
+  // support the platform API calls being used.
+  std::unique_ptr<ScopedAccessibilityMode> platform_ax_mode_;
 
   friend class ui::AXPlatform;
 };

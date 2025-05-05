@@ -38,8 +38,6 @@ AXMode AXPlatformForTest::GetAccessibilityMode() {
   return mode_;
 }
 
-void AXPlatformForTest::OnAccessibilityApiUsage() {}
-
 #if BUILDFLAG(IS_WIN)
 AXPlatform::ProductStrings AXPlatformForTest::GetProductStrings() {
   return {{}, {}, {}};

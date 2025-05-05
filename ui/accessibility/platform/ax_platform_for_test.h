@@ -27,7 +27,6 @@ class AXPlatformForTest : public AXPlatform::Delegate {
 
   // AXPlatform::Delegate:
   AXMode GetAccessibilityMode() override;
-  void OnAccessibilityApiUsage() override;
 #if BUILDFLAG(IS_WIN)
   AXPlatform::ProductStrings GetProductStrings() override;
 #endif

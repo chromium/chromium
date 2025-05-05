@@ -186,7 +186,8 @@ BrowserAccessibilityStateImpl::Create() {
 }
 #endif
 
-BrowserAccessibilityStateImpl::BrowserAccessibilityStateImpl() {
+BrowserAccessibilityStateImpl::BrowserAccessibilityStateImpl()
+    : platform_ax_mode_(CreateScopedModeForProcess(ui::AXMode())) {
   DCHECK_EQ(g_instance, nullptr);
   g_instance = this;
 
@@ -442,7 +443,18 @@ BrowserAccessibilityStateImpl::RegisterFocusChangedCallback(
   return focus_changed_callbacks_.Add(std::move(callback));
 }
 
-void BrowserAccessibilityStateImpl::OnAccessibilityApiUsage() {
+void BrowserAccessibilityStateImpl::EnableAXModeFromPlatform(
+    ui::AXMode modes_to_add) {
+  ui::AXMode old_mode = platform_ax_mode_->mode();
+  ui::AXMode new_mode = old_mode | modes_to_add;
+  if (old_mode != new_mode) {
+    platform_ax_mode_ =
+        CreateScopedModeForProcess(new_mode | ui::AXMode::kFromPlatform);
+  }
+
+  // If AXMode::kWebContent is being requested, turn off auto-disable.
+  // TODO(accessibility) Re-work the auto-disable feature.
+  // Platform accessibility API usage affects auto-disable.
   // See OnUserInputEvent for how this is used to disable accessibility.
   user_input_event_count_ = 0;
 
@@ -457,6 +469,43 @@ void BrowserAccessibilityStateImpl::OnAccessibilityApiUsage() {
             base::Unretained(this)),
         base::Seconds(kOnAccessibilityUsageUpdateDelaySecs));
   }
+}
+
+void BrowserAccessibilityStateImpl::OnMinimalPropertiesUsed() {
+  // When only basic minimal functionality is used, just enable kNativeAPIs.
+  // Enabling kNativeAPIs gives little perf impact, but allows these APIs to
+  // interact with the BrowserAccessibilityManager allowing ATs to be able at
+  // least find the document without using any advanced APIs.
+  EnableAXModeFromPlatform(ui::AXMode::kNativeAPIs);
+}
+
+void BrowserAccessibilityStateImpl::OnPropertiesUsedInBrowserUI() {
+  EnableAXModeFromPlatform(ui::AXMode::kNativeAPIs);
+}
+
+void BrowserAccessibilityStateImpl::OnPropertiesUsedInWebContent() {
+  // When accessibility APIs have been used in content, enable basic web
+  // accessibility support. Full screen reader support is detected later when
+  // specific more advanced APIs are accessed.
+  EnableAXModeFromPlatform(ui::kAXModeBasic);
+}
+
+void BrowserAccessibilityStateImpl::OnInlineTextBoxesUsedInWebContent() {
+  EnableAXModeFromPlatform(ui::kAXModeBasic | ui::AXMode::kInlineTextBoxes);
+}
+
+void BrowserAccessibilityStateImpl::OnExtendedPropertiesUsedInWebContent() {
+  EnableAXModeFromPlatform(ui::kAXModeBasic | ui::AXMode::kExtendedProperties);
+}
+
+void BrowserAccessibilityStateImpl::OnHTMLAttributesUsed() {
+  EnableAXModeFromPlatform(ui::kAXModeBasic | ui::AXMode::kHTML);
+}
+
+void BrowserAccessibilityStateImpl::OnActionFromAssistiveTech() {
+  // Ensure that auto-disable is turned off, e.g. if screen reader scrolls
+  // content into view.
+  EnableAXModeFromPlatform(ui::AXMode::kNativeAPIs);
 }
 
 void BrowserAccessibilityStateImpl::OnPageNavigationComplete() {
@@ -487,13 +536,6 @@ BrowserAccessibilityStateImpl::CreateScopedModeForProcess(ui::AXMode mode) {
 // scopers targeting the process changes.
 void BrowserAccessibilityStateImpl::OnModeChanged(ui::AXMode old_mode,
                                                   ui::AXMode new_mode) {
-  if (!new_mode.is_mode_off()) {
-    // Unless the mode is being turned off, setting accessibility flags is
-    // generally caused by accessibility API call, so we should also reset the
-    // auto-disable accessibility code.
-    OnAccessibilityApiUsage();
-  }
-
   ui::RecordAccessibilityModeHistograms(ui::AXHistogramPrefix::kNone, new_mode,
                                         old_mode);
 

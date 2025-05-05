@@ -245,10 +245,7 @@ LRESULT LegacyRenderWidgetHostHWND::OnGetObject(UINT message,
     // When an MSAA client has responded to fake event for this id,
     // only basic accessibility support is enabled. (Full screen reader support
     // is detected later when specific, more advanced APIs are accessed.)
-    for (ui::WinAccessibilityAPIUsageObserver& observer :
-         ui::GetWinAccessibilityAPIUsageObserverList()) {
-      observer.OnScreenReaderHoneyPotQueried();
-    }
+    ui::AXPlatform::GetInstance().OnScreenReaderHoneyPotQueried();
     return 0;
   }
 

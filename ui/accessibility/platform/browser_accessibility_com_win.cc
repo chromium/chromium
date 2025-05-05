@@ -1132,11 +1132,11 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_attributes(USHORT max_attribs,
   if (!GetDelegate()->IsWebContent()) {
     return E_FAIL;
   }
+
   if (!attrib_names || !name_space_id || !attrib_values || !num_attribs)
     return E_INVALIDARG;
 
-  GetWinAccessibilityAPIUsageObserverList().Notify(
-      &WinAccessibilityAPIUsageObserver::OnHTMLAttributesUsed);
+  AXPlatform::GetInstance().OnHTMLAttributesUsed();
 
 #define ADD_ATTRIBUTE(name, value)                                          \
   if (index < max_attribs) {                                                \
@@ -1398,8 +1398,7 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_innerHTML(BSTR* innerHTML) {
     return E_FAIL;
   }
   // Inner HTML is exposed only for math, only when kExtendedProperties is on.
-  GetWinAccessibilityAPIUsageObserverList().Notify(
-      &WinAccessibilityAPIUsageObserver::OnExtendedPropertiesUsed);
+  OnExtendedPropertiesUsed();
   BrowserAccessibilityWin* const owner = GetOwner();
   if (owner->GetRole() != ax::mojom::Role::kMath &&
       owner->GetRole() != ax::mojom::Role::kMathMLMath) {

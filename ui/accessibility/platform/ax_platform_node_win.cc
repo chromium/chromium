@@ -246,10 +246,6 @@ typedef std::unordered_set<AXPlatformNodeWin*> AXPlatformNodeWinSet;
 base::LazyInstance<AXPlatformNodeWinSet>::Leaky g_alert_targets =
     LAZY_INSTANCE_INITIALIZER;
 
-base::LazyInstance<
-    base::ObserverList<WinAccessibilityAPIUsageObserver>::Unchecked>::Leaky
-    g_win_accessibility_api_usage_observer_list = LAZY_INSTANCE_INITIALIZER;
-
 // Sets the multiplier by which large changes to a RangeValueProvider are
 // greater than small changes.
 constexpr int kLargeChangeScaleFactor = 10;
@@ -346,31 +342,18 @@ void AXPlatformNodeWin::AddAttributeToList(const char* name,
                         base::UTF8ToWide(str_value));
 }
 
-//
-// WinAccessibilityAPIUsageObserver
-//
-
-WinAccessibilityAPIUsageObserver::WinAccessibilityAPIUsageObserver() = default;
-
-WinAccessibilityAPIUsageObserver::~WinAccessibilityAPIUsageObserver() = default;
-
-// static
-base::ObserverList<WinAccessibilityAPIUsageObserver>::Unchecked&
-GetWinAccessibilityAPIUsageObserverList() {
-  return g_win_accessibility_api_usage_observer_list.Get();
-}
-
-// Used to simplify calling StartFiringUIAEvents and EndFiringEvents
+// Used to avoid AXMode changes caused by UIA infrastructure reacting to events.
 WinAccessibilityAPIUsageScopedUIAEventsNotifier::
     WinAccessibilityAPIUsageScopedUIAEventsNotifier() {
-  GetWinAccessibilityAPIUsageObserverList().Notify(
-      &WinAccessibilityAPIUsageObserver::StartFiringUIAEvents);
+  AXPlatformNodeWin::PauseAXModeChanges(true);
 }
 WinAccessibilityAPIUsageScopedUIAEventsNotifier::
     ~WinAccessibilityAPIUsageScopedUIAEventsNotifier() {
-  GetWinAccessibilityAPIUsageObserverList().Notify(
-      &WinAccessibilityAPIUsageObserver::EndFiringUIAEvents);
+  AXPlatformNodeWin::PauseAXModeChanges(false);
 }
+
+// static
+bool AXPlatformNodeWin::pause_ax_mode_changes_ = false;
 
 //
 // AXPlatformNode::Create
@@ -1658,7 +1641,7 @@ IFACEMETHODIMP AXPlatformNodeWin::accLocation(LONG* physical_pixel_left,
   AXPlatformNodeWin* target;
   COM_OBJECT_VALIDATE_VAR_ID_4_ARGS_AND_GET_TARGET(
       var_id, physical_pixel_left, physical_pixel_top, width, height, target);
-  NotifyObserverForMSAAUsage();
+  AXPlatform::GetInstance().OnMinimalPropertiesUsed();
 
   gfx::Rect bounds = target->GetDelegate()->GetBoundsRect(
       AXCoordinateSystem::kScreenPhysicalPixels,
@@ -1889,10 +1872,8 @@ IFACEMETHODIMP AXPlatformNodeWin::get_accName(VARIANT var_id, BSTR* name_bstr) {
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_ACC_NAME);
   AXPlatformNodeWin* target;
   COM_OBJECT_VALIDATE_VAR_ID_1_ARG_AND_GET_TARGET(var_id, name_bstr, target);
-  NotifyObserverForMSAAUsage();
 
-  GetWinAccessibilityAPIUsageObserverList().Notify(
-      &WinAccessibilityAPIUsageObserver::OnAccNameCalled);
+  AXPlatform::GetInstance().OnMinimalPropertiesUsed();
 
   if (!IsNameExposed())
     return S_FALSE;
@@ -1925,7 +1906,7 @@ IFACEMETHODIMP AXPlatformNodeWin::get_accRole(VARIANT var_id, VARIANT* role) {
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_ACC_ROLE);
   AXPlatformNodeWin* target;
   COM_OBJECT_VALIDATE_VAR_ID_1_ARG_AND_GET_TARGET(var_id, role, target);
-  NotifyObserverForMSAAUsage();
+  AXPlatform::GetInstance().OnMinimalPropertiesUsed();
 
   role->vt = VT_I4;
   role->lVal = target->MSAARole();
@@ -1937,7 +1918,7 @@ IFACEMETHODIMP AXPlatformNodeWin::get_accState(VARIANT var_id, VARIANT* state) {
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_ACC_STATE);
   AXPlatformNodeWin* target;
   COM_OBJECT_VALIDATE_VAR_ID_1_ARG_AND_GET_TARGET(var_id, state, target);
-  NotifyObserverForMSAAUsage();
+  OnPropertiesUsed();
 
   state->vt = VT_I4;
   state->lVal = target->MSAAState();
@@ -5927,15 +5908,9 @@ IFACEMETHODIMP AXPlatformNodeWin::QueryService(REFGUID guidService,
               "riid", base::WideToASCII(base::win::WStringFromGUID(riid)));
   COM_OBJECT_VALIDATE_1_ARG(object);
 
-  if (riid == IID_IAccessible2) {
-    for (WinAccessibilityAPIUsageObserver& observer :
-         GetWinAccessibilityAPIUsageObserverList()) {
-      if (GetDelegate()->IsWebContent()) {
-        observer.OnIAccessible2UsedInWebContent();
-      } else {
-        observer.OnIAccessible2UsedInBrowserUI();
-      }
-    }
+  if (riid == IID_IAccessible2 || riid == IID_IAccessible2_2 ||
+      riid == IID_IAccessible2_3 || riid == IID_IAccessible2_4) {
+    OnPropertiesUsed();
   }
 
   if (guidService == IID_IAccessible || guidService == IID_IAccessible2 ||
@@ -8557,40 +8532,29 @@ void AXPlatformNodeWin::SanitizeTextAttributeValue(const std::string& input,
   SanitizeStringAttributeForIA2(input, output);
 }
 
-void AXPlatformNodeWin::NotifyObserverForMSAAUsage() const {
-  GetWinAccessibilityAPIUsageObserverList().Notify(
-      &WinAccessibilityAPIUsageObserver::OnMSAAUsed);
-}
-
 void AXPlatformNodeWin::NotifyAPIObserverForPatternRequest(
     PATTERNID pattern_id) const {
   if (!GetDelegate()->IsWebContent()) {
     return;
   }
 
-  bool probable_advanced_client_detected = false;
-  bool text_pattern_support_needed = false;
+  if (pause_ax_mode_changes_) {
+    return;
+  }
+
   switch (pattern_id) {
     case UIA_TextPatternId:
     case UIA_TextChildPatternId:
       // These properties require information gated behind the kInlineTextBoxes
       // AXMode. See kInlineTextBoxes for details.
-      text_pattern_support_needed = true;
+      OnInlineTextBoxesUsed();
       break;
     // These properties require more advanced accessibility features to be
     // enabled See kExtendedProperties for details.
     case UIA_RangeValuePatternId:
     case UIA_TableItemPatternId:
-      probable_advanced_client_detected = true;
+      OnPropertiesUsed();
       break;
-  }
-
-  for (WinAccessibilityAPIUsageObserver& observer :
-       GetWinAccessibilityAPIUsageObserverList()) {
-    if (probable_advanced_client_detected)
-      observer.OnUIAutomationUsedInWebContent();
-    if (text_pattern_support_needed)
-      observer.OnTextPatternRequested();
   }
 }
 
@@ -8602,8 +8566,10 @@ void AXPlatformNodeWin::NotifyAPIObserverForPropertyRequest(
     return;
   }
 
-  bool probable_advanced_client_detected = false;
-  bool probable_screen_reader_detected = false;
+  if (pause_ax_mode_changes_) {
+    return;
+  }
+
   switch (property_id) {
     // These properties are used by non-screenreader UIA clients. They should
     // not cause additional enablement.
@@ -8675,17 +8641,9 @@ void AXPlatformNodeWin::NotifyAPIObserverForPropertyRequest(
     case UIA_LocalizedLandmarkTypePropertyId:
     case UIA_FullDescriptionPropertyId:
     case UIA_IsDialogPropertyId:
-      probable_screen_reader_detected = true;
-      probable_advanced_client_detected = true;
+      OnPropertiesUsed();
+      OnExtendedPropertiesUsed();
       break;
-  }
-
-  for (WinAccessibilityAPIUsageObserver& observer :
-       GetWinAccessibilityAPIUsageObserverList()) {
-    if (probable_advanced_client_detected)
-      observer.OnUIAutomationUsedInWebContent();
-    if (probable_screen_reader_detected)
-      observer.OnProbableUIAutomationScreenReaderDetected();
   }
 }
 
@@ -8835,17 +8793,23 @@ bool AXPlatformNodeWin::IsInvokeSupported() const {
   return GetData().IsInvocable();
 }
 
+void AXPlatformNodeWin::OnPropertiesUsed() const {
+  if (GetDelegate()->IsWebContent()) {
+    AXPlatform::GetInstance().OnPropertiesUsedInWebContent();
+  } else {
+    AXPlatform::GetInstance().OnPropertiesUsedInBrowserUI();
+  }
+}
+
 void AXPlatformNodeWin::OnExtendedPropertiesUsed() const {
   if (GetDelegate()->IsWebContent()) {
-    GetWinAccessibilityAPIUsageObserverList().Notify(
-        &WinAccessibilityAPIUsageObserver::OnExtendedPropertiesUsed);
+    AXPlatform::GetInstance().OnExtendedPropertiesUsedInWebContent();
   }
 }
 
 void AXPlatformNodeWin::OnInlineTextBoxesUsed() const {
   if (GetDelegate()->IsWebContent()) {
-    GetWinAccessibilityAPIUsageObserverList().Notify(
-        &WinAccessibilityAPIUsageObserver::OnInlineTextBoxesUsed);
+    AXPlatform::GetInstance().OnInlineTextBoxesUsedInWebContent();
   }
 }
 

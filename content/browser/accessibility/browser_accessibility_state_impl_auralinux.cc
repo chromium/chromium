@@ -92,7 +92,6 @@ class BrowserAccessibilityStateImplAuralinux
   // BrowserAccessibilityStateImpl:
   void RefreshAssistiveTech() override;
   void RefreshAssistiveTechIfNecessary(ui::AXMode new_mode) override;
-  void OnExtendedPropertiesUsed() override;
 
  private:
   void OnDiscoveredOrca(bool is_orca_active);
@@ -104,8 +103,6 @@ class BrowserAccessibilityStateImplAuralinux
   // The presence of an AssistiveTech is currently being recomputed.
   // Will be updated via DiscoverOrca().
   bool awaiting_known_assistive_tech_computation_ = false;
-
-  std::unique_ptr<ScopedAccessibilityMode> complete_ax_mode_;
 };
 
 void BrowserAccessibilityStateImplAuralinux::RefreshAssistiveTech() {
@@ -145,13 +142,6 @@ void BrowserAccessibilityStateImplAuralinux::RefreshAssistiveTechIfNecessary(
   if (was_screen_reader_active != has_extended_properties) {
     // Perform expensive assistive tech detection.
     RefreshAssistiveTech();
-  }
-}
-
-void BrowserAccessibilityStateImplAuralinux::OnExtendedPropertiesUsed() {
-  if (!complete_ax_mode_) {
-    complete_ax_mode_ = CreateScopedModeForProcess(ui::kAXModeComplete |
-                                                   ui::AXMode::kFromPlatform);
   }
 }
 
