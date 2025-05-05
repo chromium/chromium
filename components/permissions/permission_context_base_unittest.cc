@@ -41,10 +41,14 @@
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/test_renderer_host.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/url_util.h"
 
 namespace permissions {
+
+using testing::ElementsAre;
+using testing::IsEmpty;
 
 using PermissionStatus = blink::mojom::PermissionStatus;
 
@@ -73,6 +77,10 @@ class TestPermissionContext : public PermissionContextBase {
   const std::vector<ContentSetting>& decisions() const { return decisions_; }
 
   bool tab_context_updated() const { return tab_context_updated_; }
+
+  const std::vector<ContentSetting>& on_permission_requested_calls() const {
+    return on_permission_requested_calls_;
+  }
 
   // Once a decision for the requested permission has been made, run the
   // callback.
@@ -135,8 +143,14 @@ class TestPermissionContext : public PermissionContextBase {
 
   bool UsesAutomaticEmbargo() const override { return uses_automatic_embargo_; }
 
+  void OnPermissionRequested(const PermissionRequestID& id,
+                             ContentSetting content_setting) override {
+    on_permission_requested_calls_.push_back(content_setting);
+  }
+
  private:
   std::vector<ContentSetting> decisions_;
+  std::vector<ContentSetting> on_permission_requested_calls_;
   bool tab_context_updated_;
   base::OnceClosure quit_closure_;
   // Callback for responding to a permission once the request has been completed
@@ -242,9 +256,10 @@ class PermissionContextBaseTests : public content::RenderViewHostTestHarness {
                               /*user_gesture=*/true, url),
         base::BindOnce(&TestPermissionContext::TrackPermissionDecision,
                        base::Unretained(&permission_context)));
-    ASSERT_EQ(1u, permission_context.decisions().size());
-    EXPECT_EQ(decision, permission_context.decisions()[0]);
+    EXPECT_THAT(permission_context.decisions(), ElementsAre(decision));
     EXPECT_TRUE(permission_context.tab_context_updated());
+    EXPECT_THAT(permission_context.on_permission_requested_calls(),
+                ElementsAre(decision));
 
     std::string decision_string;
     std::optional<PermissionAction> action;
@@ -378,9 +393,11 @@ class PermissionContextBaseTests : public content::RenderViewHostTestHarness {
             static_cast<int>(PermissionEmbargoStatus::REPEATED_DISMISSALS), 1);
       }
 
-      ASSERT_EQ(1u, permission_context.decisions().size());
-      EXPECT_EQ(CONTENT_SETTING_ASK, permission_context.decisions()[0]);
+      EXPECT_THAT(permission_context.decisions(),
+                  ElementsAre(CONTENT_SETTING_ASK));
       EXPECT_TRUE(permission_context.tab_context_updated());
+      EXPECT_THAT(permission_context.on_permission_requested_calls(),
+                  ElementsAre(CONTENT_SETTING_ASK));
     }
 
     TestPermissionContext permission_context(browser_context(),
@@ -444,9 +461,11 @@ class PermissionContextBaseTests : public content::RenderViewHostTestHarness {
           base::BindOnce(&TestPermissionContext::TrackPermissionDecision,
                          base::Unretained(&permission_context)));
 
-      EXPECT_EQ(1u, permission_context.decisions().size());
-      ASSERT_EQ(CONTENT_SETTING_ASK, permission_context.decisions()[0]);
+      EXPECT_THAT(permission_context.decisions(),
+                  ElementsAre(CONTENT_SETTING_ASK));
       EXPECT_TRUE(permission_context.tab_context_updated());
+      EXPECT_THAT(permission_context.on_permission_requested_calls(),
+                  ElementsAre(CONTENT_SETTING_ASK));
       content::PermissionResult result = permission_context.GetPermissionStatus(
           nullptr /* render_frame_host */, url, url);
 
@@ -508,9 +527,11 @@ class PermissionContextBaseTests : public content::RenderViewHostTestHarness {
           base::BindOnce(&TestPermissionContext::TrackPermissionDecision,
                          base::Unretained(&permission_context)));
 
-      EXPECT_EQ(1u, permission_context.decisions().size());
-      ASSERT_EQ(CONTENT_SETTING_ASK, permission_context.decisions()[0]);
+      EXPECT_THAT(permission_context.decisions(),
+                  ElementsAre(CONTENT_SETTING_ASK));
       EXPECT_TRUE(permission_context.tab_context_updated());
+      EXPECT_THAT(permission_context.on_permission_requested_calls(),
+                  ElementsAre(CONTENT_SETTING_ASK));
       content::PermissionResult result = permission_context.GetPermissionStatus(
           nullptr /* render_frame_host */, url, url);
 
@@ -563,9 +584,11 @@ class PermissionContextBaseTests : public content::RenderViewHostTestHarness {
         base::BindOnce(&TestPermissionContext::TrackPermissionDecision,
                        base::Unretained(&permission_context)));
 
-    ASSERT_EQ(1u, permission_context.decisions().size());
-    EXPECT_EQ(CONTENT_SETTING_BLOCK, permission_context.decisions()[0]);
+    EXPECT_THAT(permission_context.decisions(),
+                ElementsAre(CONTENT_SETTING_BLOCK));
     EXPECT_TRUE(permission_context.tab_context_updated());
+    EXPECT_THAT(permission_context.on_permission_requested_calls(),
+                ElementsAre(CONTENT_SETTING_BLOCK));
     EXPECT_EQ(CONTENT_SETTING_ASK,
               permission_context.GetContentSettingFromMap(url, url));
     histograms.ExpectTotalCount(
@@ -593,9 +616,11 @@ class PermissionContextBaseTests : public content::RenderViewHostTestHarness {
         base::BindOnce(&TestPermissionContext::TrackPermissionDecision,
                        base::Unretained(&permission_context)));
 
-    ASSERT_EQ(1u, permission_context.decisions().size());
-    EXPECT_EQ(CONTENT_SETTING_ALLOW, permission_context.decisions()[0]);
+    EXPECT_THAT(permission_context.decisions(),
+                ElementsAre(CONTENT_SETTING_ALLOW));
     EXPECT_TRUE(permission_context.tab_context_updated());
+    EXPECT_THAT(permission_context.on_permission_requested_calls(),
+                ElementsAre(CONTENT_SETTING_ALLOW));
     EXPECT_EQ(CONTENT_SETTING_ALLOW,
               permission_context.GetContentSettingFromMap(url, url));
 
@@ -676,7 +701,8 @@ class PermissionContextBaseTests : public content::RenderViewHostTestHarness {
         base::BindOnce(&TestPermissionContext::TrackPermissionDecision,
                        base::Unretained(&permission_context)));
 
-    EXPECT_EQ(0u, permission_context.decisions().size());
+    EXPECT_THAT(permission_context.decisions(), IsEmpty());
+    EXPECT_THAT(permission_context.on_permission_requested_calls(), IsEmpty());
 
     // Set the callback, and make a second permission request.
     permission_context.SetRespondPermissionCallback(base::BindOnce(
@@ -688,9 +714,10 @@ class PermissionContextBaseTests : public content::RenderViewHostTestHarness {
         base::BindOnce(&TestPermissionContext::TrackPermissionDecision,
                        base::Unretained(&permission_context)));
 
-    ASSERT_EQ(2u, permission_context.decisions().size());
-    EXPECT_EQ(response, permission_context.decisions()[0]);
-    EXPECT_EQ(response, permission_context.decisions()[1]);
+    EXPECT_THAT(permission_context.decisions(),
+                ElementsAre(response, response));
+    EXPECT_THAT(permission_context.on_permission_requested_calls(),
+                ElementsAre(response, response));
     EXPECT_TRUE(permission_context.tab_context_updated());
 
     EXPECT_EQ(response, permission_context.GetContentSettingFromMap(url, url));

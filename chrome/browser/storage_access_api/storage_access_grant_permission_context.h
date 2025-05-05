@@ -108,6 +108,8 @@ class StorageAccessGrantPermissionContext
                             const GURL& embedding_origin,
                             ContentSetting content_setting,
                             bool is_one_time) override;
+  void OnPermissionRequested(const permissions::PermissionRequestID& id,
+                             ContentSetting content_setting) override;
 
   // If the request is from a context partitioned as a popin we need to set
   // the embedding origin to the popin opener's origin.
