@@ -181,8 +181,6 @@ public class AddressEditorRenderTest {
 
                     when(mPersonalDataManager.getDefaultCountryCodeForNewAddress())
                             .thenReturn("US");
-                    when(mPersonalDataManager.isCountryEligibleForAccountStorage(anyString()))
-                            .thenReturn(true);
                     PersonalDataManagerFactory.setInstanceForTesting(mPersonalDataManager);
 
                     ProfileManager.setLastUsedProfileForTesting(mProfile);

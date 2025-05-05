@@ -181,14 +181,6 @@ autofill::AutofillProfile CreateNewAutofillProfile(
       adm.IsEligibleForAddressAccountStorage()
           ? autofill::AutofillProfile::RecordType::kAccount
           : autofill::AutofillProfile::RecordType::kLocalOrSyncable;
-  if (country_code &&
-      !adm.IsCountryEligibleForAccountStorage(country_code.value())) {
-    // Note: addresses from unsupported countries can't be saved in account.
-    // TODO(crbug.com/40263955): remove temporary unsupported countries
-    // filtering.
-    record_type = autofill::AutofillProfile::RecordType::kLocalOrSyncable;
-  }
-
   AddressCountryCode address_country_code =
       country_code.has_value()
           ? AddressCountryCode(std::string(*country_code))
@@ -344,10 +336,8 @@ ExtensionFunction::ResponseAction AutofillPrivateGetCountryListFunction::Run() {
           ArgumentList(api::autofill_private::GetCountryList::Results::Create(
               country_list)));
     }
-    country_list = autofill_util::GenerateCountryListForAccountStorage(*adm);
-  } else {
-    country_list = autofill_util::GenerateCountryListForProfileStorage();
   }
+  country_list = autofill_util::GenerateCountryList();
   return RespondNow(ArgumentList(
       api::autofill_private::GetCountryList::Results::Create(country_list)));
 }

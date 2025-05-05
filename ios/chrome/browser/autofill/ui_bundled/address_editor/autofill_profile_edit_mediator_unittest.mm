@@ -137,7 +137,6 @@ class AutofillProfileEditMediatorTest : public PlatformTest {
         GeoIpCountryCode(variations_service
                              ? variations_service->GetLatestCountry()
                              : std::string()),
-        base::RepeatingCallback<bool(const std::string&)>(),
         GetApplicationContext()->GetApplicationLocale());
     return country_model_.countries();
   }
@@ -227,39 +226,6 @@ TEST_F(AutofillProfileEditMediatorTest, TestCountriesList) {
   size_t country_counter_in_mediator = 0;
   for (size_t i = 1; i < countriesVector.size() - 1; i++) {
     if (!countriesVector[i].get()) {
-      continue;
-    }
-
-    EXPECT_EQ(
-        base::SysNSStringToUTF8(fake_autofill_profile_edit_mediator_delegate_
-                                    .allCountries[country_counter_in_mediator]
-                                    .countryCode),
-        countriesVector[i]->country_code());
-    country_counter_in_mediator++;
-  }
-
-  EXPECT_EQ(country_counter_in_mediator + 1, countryCount);
-}
-
-// Tests that the country list used for selecting countries does not contain
-// sanctioned countries for the migration prompt.
-TEST_F(AutofillProfileEditMediatorTest,
-       TestCountriesListExcludesSanctionedOnes) {
-  InitializeMediator(YES, NO);
-  [autofill_profile_edit_mediator_
-      willSelectCountryWithCurrentlySelectedCountry:@"US"];
-  size_t countryCount =
-      [fake_autofill_profile_edit_mediator_delegate_.allCountries count];
-
-  const autofill::CountryComboboxModel::CountryVector& countriesVector =
-      CountriesList();
-  size_t country_counter_in_mediator = 0;
-  for (size_t i = 1; i < countriesVector.size() - 1; i++) {
-    if (!countriesVector[i].get() ||
-        !personal_data_manager()
-             ->address_data_manager()
-             .IsCountryEligibleForAccountStorage(
-                 countriesVector[i]->country_code())) {
       continue;
     }
 

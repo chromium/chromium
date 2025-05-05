@@ -32,16 +32,8 @@ using CallbackAfterSuccessfulUserAuth = base::OnceCallback<void(bool)>;
 // Uses `adm` to generate a list of up-to-date AddressEntry objects.
 AddressEntryList GenerateAddressList(const autofill::AddressDataManager& adm);
 
-// Generate a list of up-to-date `CountryEntry` objects that can be stored in
-// the account. Use `adm` to filter unsupported countries, by calling
-// `AddressDataManager::AutofillEnableAccountStorageForIneligibleCountries`.
-CountryEntryList GenerateCountryListForAccountStorage(
-    const autofill::AddressDataManager& adm);
-
-// Generate a list of up-to-date `CountryEntry` objects that can be stored in
-// the profile. All countries are eligible for profile storage, no filtering is
-// necessary.
-CountryEntryList GenerateCountryListForProfileStorage();
+// Generate a list of up-to-date `CountryEntry` objects that can be stored.
+CountryEntryList GenerateCountryList();
 
 // Uses `paydm` to generate a list of up-to-date CreditCardEntry
 // objects.

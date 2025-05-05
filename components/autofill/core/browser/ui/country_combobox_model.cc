@@ -26,7 +26,6 @@ CountryComboboxModel::~CountryComboboxModel() = default;
 
 void CountryComboboxModel::SetCountries(
     const GeoIpCountryCode& geo_ip_country_code,
-    const base::RepeatingCallback<bool(const std::string&)>& filter,
     const std::string& app_locale) {
   countries_.clear();
 
@@ -37,15 +36,13 @@ void CountryComboboxModel::SetCountries(
           .value();
   DCHECK(!default_country_code.empty());
 
-  if (filter.is_null() || filter.Run(default_country_code)) {
-    countries_.push_back(
-        std::make_unique<AutofillCountry>(default_country_code, app_locale));
+  countries_.push_back(
+      std::make_unique<AutofillCountry>(default_country_code, app_locale));
 #if !BUILDFLAG(IS_ANDROID)
-    // The separator item. On Android, there are separators after all items, so
-    // this is unnecessary.
-    countries_.push_back(nullptr);
+  // The separator item. On Android, there are separators after all items, so
+  // this is unnecessary.
+  countries_.push_back(nullptr);
 #endif
-  }
 
   // The sorted list of country codes.
   const std::vector<std::string>* available_countries =
@@ -65,9 +62,8 @@ void CountryComboboxModel::SetCountries(
 
   CountryVector sorted_countries;
   for (const auto& country_code : *available_countries) {
-    if (filter.is_null() || filter.Run(country_code))
-      sorted_countries.push_back(
-          std::make_unique<AutofillCountry>(country_code, app_locale));
+    sorted_countries.push_back(
+        std::make_unique<AutofillCountry>(country_code, app_locale));
   }
 
   l10n_util::SortStringsUsingMethod(app_locale, &sorted_countries,

@@ -144,31 +144,6 @@ TEST_F(ContactInfoLocalDataBatchUploaderTest, LocalCompleteProfilesOnly) {
               ElementsAre(MatchesModelId(complete_profile.guid())));
 }
 
-TEST_F(ContactInfoLocalDataBatchUploaderTest,
-       LocalWithEligibleCountryProfilesOnly) {
-  base::test::ScopedFeatureList feature;
-  feature.InitAndDisableFeature(
-      features::kAutofillEnableAccountStorageForIneligibleCountries);
-  // These profiles are local profiles by default.
-  AutofillProfile eligible_profile = test::GetFullProfile();
-  AddressCountryCode ineligible_country_code("IR");
-  ASSERT_FALSE(address_data_manager().IsCountryEligibleForAccountStorage(
-      ineligible_country_code.value()));
-  // This profile does not meet the minimum requirement to be retrieved.
-  AutofillProfile ineligible_profile =
-      test::GetFullProfile2(ineligible_country_code);
-  address_data_manager().AddProfile(eligible_profile);
-  address_data_manager().AddProfile(ineligible_profile);
-
-  base::test::TestFuture<syncer::LocalDataDescription> description;
-  uploader().GetLocalDataDescription(description.GetCallback());
-
-  EXPECT_FALSE(HasDataForMobileSet(description.Get()));
-  // Only `eligible_profile` should be retrieved.
-  EXPECT_THAT(description.Get().local_data_models,
-              ElementsAre(MatchesModelId(eligible_profile.guid())));
-}
-
 TEST_F(ContactInfoLocalDataBatchUploaderTest, MigrateAllLocalProfiles) {
   // These profiles are local profiles by default.
   AutofillProfile first_profile = test::GetFullProfile();
@@ -255,42 +230,6 @@ TEST_F(ContactInfoLocalDataBatchUploaderTest,
   EXPECT_THAT(address_data_manager().GetProfilesByRecordType(
                   AutofillProfile::RecordType::kAccount),
               ElementsAre(MatchesProfileContent(complete_profile)));
-}
-
-TEST_F(ContactInfoLocalDataBatchUploaderTest,
-       MigrateWithProfilesIdsWithIneligibleCountryProfile) {
-  base::test::ScopedFeatureList feature;
-  feature.InitAndDisableFeature(
-      features::kAutofillEnableAccountStorageForIneligibleCountries);
-  // These profiles are local profiles by default.
-  AutofillProfile eligible_profile = test::GetFullProfile();
-  AddressCountryCode ineligible_country_code("IR");
-  ASSERT_FALSE(address_data_manager().IsCountryEligibleForAccountStorage(
-      ineligible_country_code.value()));
-  // This profile does not meet the minimum requirement to be retrieved.
-  AutofillProfile ineligible_profile =
-      test::GetFullProfile2(ineligible_country_code);
-  address_data_manager().AddProfile(eligible_profile);
-  address_data_manager().AddProfile(ineligible_profile);
-
-  ASSERT_THAT(address_data_manager().GetProfilesByRecordType(
-                  AutofillProfile::RecordType::kLocalOrSyncable),
-              UnorderedElementsAre(Pointee(ineligible_profile),
-                                   Pointee(eligible_profile)));
-  ASSERT_THAT(address_data_manager().GetProfilesByRecordType(
-                  AutofillProfile::RecordType::kAccount),
-              IsEmpty());
-
-  uploader().TriggerLocalDataMigrationForItems(
-      {eligible_profile.guid(), ineligible_profile.guid()});
-
-  // Only `eligible_profile` migrated, `ineligible_profile` remains.
-  EXPECT_THAT(address_data_manager().GetProfilesByRecordType(
-                  AutofillProfile::RecordType::kLocalOrSyncable),
-              ElementsAre(MatchesProfileContent(ineligible_profile)));
-  EXPECT_THAT(address_data_manager().GetProfilesByRecordType(
-                  AutofillProfile::RecordType::kAccount),
-              ElementsAre(MatchesProfileContent(eligible_profile)));
 }
 
 TEST_F(ContactInfoLocalDataBatchUploaderTest,

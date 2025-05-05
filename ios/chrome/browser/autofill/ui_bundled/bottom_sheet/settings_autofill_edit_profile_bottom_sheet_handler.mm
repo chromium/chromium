@@ -54,9 +54,7 @@
   std::unique_ptr<autofill::AutofillProfile> autofillProfile =
       std::make_unique<autofill::AutofillProfile>(countryCode);
 
-  if (_addressDataManager->IsEligibleForAddressAccountStorage() &&
-      _addressDataManager->IsCountryEligibleForAccountStorage(
-          countryCode.value())) {
+  if (_addressDataManager->IsEligibleForAddressAccountStorage()) {
     autofillProfile = std::make_unique<autofill::AutofillProfile>(
         autofillProfile->ConvertToAccountProfile());
   }

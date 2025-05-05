@@ -792,14 +792,6 @@ TEST_F(AddressDataManagerTest, IsEligibleForAddressAccountStorage) {
   EXPECT_FALSE(address_data_manager().IsEligibleForAddressAccountStorage());
 }
 
-TEST_F(AddressDataManagerTest, IsCountryEligibleForAccountStorage) {
-  base::test::ScopedFeatureList feature;
-  feature.InitAndDisableFeature(
-      features::kAutofillEnableAccountStorageForIneligibleCountries);
-  EXPECT_TRUE(address_data_manager().IsCountryEligibleForAccountStorage("AT"));
-  EXPECT_FALSE(address_data_manager().IsCountryEligibleForAccountStorage("IR"));
-}
-
 TEST_F(AddressDataManagerTest, MigrateProfileToAccount) {
   const AutofillProfile kLocalProfile = test::GetFullProfile();
   ASSERT_EQ(kLocalProfile.record_type(),

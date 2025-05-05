@@ -387,7 +387,6 @@ constexpr std::array<autofill::FieldType, 3> kStaticFieldsTypes = {
       GeoIpCountryCode(variations_service
                            ? variations_service->GetLatestCountry()
                            : std::string()),
-      base::RepeatingCallback<bool(const std::string&)>(),
       GetApplicationContext()->GetApplicationLocale());
   const autofill::CountryComboboxModel::CountryVector& countriesVector =
       countryModel.countries();
@@ -399,12 +398,6 @@ constexpr std::array<autofill::FieldType, 3> kStaticFieldsTypes = {
   // search option.
   for (size_t i = 1; i < countriesVector.size(); ++i) {
     if (countriesVector[i].get()) {
-      if (([self isAccountProfile] || _isMigrationPrompt) &&
-          !_personalDataManager->address_data_manager()
-               .IsCountryEligibleForAccountStorage(
-                   countriesVector[i]->country_code())) {
-        continue;
-      }
       CountryItem* countryItem =
           [[CountryItem alloc] initWithType:ItemTypeCountry];
       countryItem.text = base::SysUTF16ToNSString(countriesVector[i]->name());

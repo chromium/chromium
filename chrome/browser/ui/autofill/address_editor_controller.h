@@ -88,13 +88,6 @@ class AddressEditorController {
   bool IsValid(const EditorField& field, std::u16string_view value);
 
  private:
-  // Returns whether unsupported countries should be filtered out, which is
-  // true iff the profile is an account address profile.
-  bool should_filter_out_unsupported_countries() const {
-    // Validation is turned on only for account address profiles.
-    return is_validatable_;
-  }
-
   AutofillProfile profile_to_edit_;
 
   const raw_ref<PersonalDataManager> pdm_;

@@ -36,25 +36,13 @@ AddressEditorController::AddressEditorController(
       pdm_(*pdm),
       locale_(g_browser_process->GetApplicationLocale()),
       is_validatable_(is_validatable) {
-  base::RepeatingCallback<bool(const std::string&)> filter;
-  if (should_filter_out_unsupported_countries()) {
-    // TODO(crbug.com/40263955): remove temporary unsupported countries
-    // filtering.
-    filter = base::BindRepeating(
-        [](const PersonalDataManager* personal_data,
-           const std::string& country) {
-          return personal_data->address_data_manager()
-              .IsCountryEligibleForAccountStorage(country);
-        },
-        &pdm_.get());
-  }
   const variations::VariationsService* variations_service =
       g_browser_process->variations_service();
   countries_.SetCountries(
       GeoIpCountryCode(variations_service
                            ? variations_service->GetLatestCountry()
                            : std::string()),
-      std::move(filter), locale_);
+      locale_);
   std::u16string profile_country_code =
       profile_to_edit_.GetRawInfo(ADDRESS_HOME_COUNTRY);
   UpdateEditorFields(base::UTF16ToASCII(profile_country_code));

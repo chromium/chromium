@@ -239,13 +239,6 @@ std::string PersonalDataManagerAndroid::GetDefaultCountryCodeForNewAddress(
   return address_data_manager().GetDefaultCountryCodeForNewAddress().value();
 }
 
-bool PersonalDataManagerAndroid::IsCountryEligibleForAccountStorage(
-    JNIEnv* env,
-    std::string& country_code) const {
-  return address_data_manager().IsCountryEligibleForAccountStorage(
-      country_code);
-}
-
 std::string PersonalDataManagerAndroid::SetProfile(
     JNIEnv* env,
     const JavaParamRef<jobject>& jprofile,

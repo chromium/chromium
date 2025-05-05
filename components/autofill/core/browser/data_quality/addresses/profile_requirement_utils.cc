@@ -166,9 +166,7 @@ bool IsEligibleForMigrationToAccount(
 bool IsProfileEligibleForMigrationToAccount(
     const AddressDataManager& address_data_manager,
     const AutofillProfile& profile) {
-  return !address_data_manager.IsProfileMigrationBlocked(profile.guid()) &&
-         address_data_manager.IsCountryEligibleForAccountStorage(
-             base::UTF16ToUTF8(profile.GetRawInfo(ADDRESS_HOME_COUNTRY)));
+  return !address_data_manager.IsProfileMigrationBlocked(profile.guid());
 }
 
 }  // namespace autofill

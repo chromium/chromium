@@ -43,9 +43,7 @@ std::vector<const AutofillProfile*> ContactInfoLocalDataBatchUploader::
   // Only consider profiles that are eligible to be moved to the account
   // storage.
   std::erase_if(local_profiles, [&](const AutofillProfile* profile) {
-    return !IsMinimumAddress(*profile) ||
-           !address_data_manager.IsCountryEligibleForAccountStorage(
-               base::UTF16ToUTF8(profile->GetRawInfo(ADDRESS_HOME_COUNTRY)));
+    return !IsMinimumAddress(*profile);
   });
 
   return local_profiles;

@@ -271,10 +271,7 @@ void ProfileImportProcess::DetermineSourceOfImportCandidate() {
     return;
   }
   CHECK(import_candidate_);
-  if (address_data_manager_->IsEligibleForAddressAccountStorage() &&
-      address_data_manager_->IsCountryEligibleForAccountStorage(
-          base::UTF16ToUTF8(
-              import_candidate_->GetRawInfo(ADDRESS_HOME_COUNTRY)))) {
+  if (address_data_manager_->IsEligibleForAddressAccountStorage()) {
     import_candidate_ = import_candidate_->ConvertToAccountProfile();
   }
 }

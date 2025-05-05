@@ -985,16 +985,6 @@ public class PersonalDataManager implements Destroyable {
     }
 
     /**
-     * Users based in unsupported countries and profiles with a country value set to an unsupported
-     * country are not eligible for account storage. This function determines if the `country_code`
-     * is eligible.
-     */
-    public boolean isCountryEligibleForAccountStorage(String countryCode) {
-        return PersonalDataManagerJni.get()
-                .isCountryEligibleForAccountStorage(mPersonalDataManagerAndroid, countryCode);
-    }
-
-    /**
      * Checks whether the Autofill PersonalDataManager has profiles.
      *
      * @return True If there are profiles.
@@ -1183,9 +1173,6 @@ public class PersonalDataManager implements Destroyable {
 
         @JniType("std::string")
         String getDefaultCountryCodeForNewAddress(long nativePersonalDataManagerAndroid);
-
-        boolean isCountryEligibleForAccountStorage(
-                long nativePersonalDataManagerAndroid, @JniType("std::string") String countryCode);
 
         @JniType("std::string")
         String setProfile(
