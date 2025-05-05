@@ -72,6 +72,11 @@ BASE_FEATURE(kAutofillEnableCardBenefitsIph,
              "AutofillEnableCardBenefitsIph",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, card benefit source will be synced to Chrome clients.
+BASE_FEATURE(kAutofillEnableCardBenefitsSourceSync,
+             "AutofillEnableCardBenefitsSourceSync",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, Chrome will show metadata along with other card information
 // when the virtual card is presented to users.
 BASE_FEATURE(kAutofillEnableCardBenefitsSync,
