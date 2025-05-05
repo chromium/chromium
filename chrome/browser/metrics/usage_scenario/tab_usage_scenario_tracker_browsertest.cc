@@ -19,31 +19,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/metrics/tab_stats/tab_stats_tracker.h"
 #include "chrome/browser/metrics/usage_scenario/usage_scenario_data_store.h"
-#include "chrome/browser/profiles/profile.h"
-#include "content/public/browser/media_player_id.h"
-#include "content/public/browser/navigation_controller.h"
-#include "content/public/browser/visibility.h"
-#include "content/public/browser/web_contents.h"
-#include "content/public/browser/web_contents_observer.h"
-#include "content/public/common/content_features.h"
-#include "content/public/test/browser_test.h"
-#include "content/public/test/browser_test_utils.h"
-#include "net/dns/mock_host_resolver.h"
-#include "net/test/embedded_test_server/http_request.h"
-#include "net/test/embedded_test_server/http_response.h"
-#include "services/metrics/public/cpp/ukm_source_id.h"
-#include "testing/gmock/include/gmock/gmock.h"
-#include "testing/gtest/include/gtest/gtest.h"
-#include "url/gurl.h"
-#include "url/origin.h"
-
-#if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/android/tab_android.h"
-#include "chrome/browser/ui/android/tab_model/tab_model.h"
-#include "chrome/browser/ui/android/tab_model/tab_model_list.h"
-#include "chrome/browser/ui/android/tab_model/tab_model_test_helper.h"
-#include "chrome/test/base/android/android_browser_test.h"
-#else
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit_external.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit_source.h"
 #include "chrome/browser/ui/browser.h"
@@ -51,7 +26,20 @@
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#endif
+#include "content/public/browser/media_player_id.h"
+#include "content/public/browser/visibility.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_observer.h"
+#include "content/public/common/content_features.h"
+#include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
+#include "content/public/test/content_browser_test_utils.h"
+#include "net/dns/mock_host_resolver.h"
+#include "net/test/embedded_test_server/http_request.h"
+#include "net/test/embedded_test_server/http_response.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace metrics {
 
@@ -59,15 +47,11 @@ namespace {
 
 constexpr base::TimeDelta kInterval = base::Minutes(2);
 
-#if !BUILDFLAG(IS_ANDROID)
-// TODO(crbug.com/412634171): Enable this when discarding is supported on
-// Android.
 void DiscardTab(content::WebContents* contents) {
   resource_coordinator::TabLifecycleUnitSource::GetTabLifecycleUnitExternal(
       contents)
       ->DiscardTab(mojom::LifecycleUnitDiscardReason::URGENT);
 }
-#endif
 
 // A WebContentsObserver that allows waiting for some media to start or stop
 // playing fullscreen.
@@ -153,17 +137,9 @@ class MediaWaiter : public content::WebContentsObserver {
   base::RunLoop audio_stopped_playing_loop_;
 };
 
-using TabStripInterface = TabStatsTracker::TabStripInterface;
-
-#if BUILDFLAG(IS_ANDROID)
-using PlatformBrowserTest = AndroidBrowserTest;
-#else
-using PlatformBrowserTest = InProcessBrowserTest;
-#endif
-
 }  // namespace
 
-class TabUsageScenarioTrackerBrowserTest : public PlatformBrowserTest {
+class TabUsageScenarioTrackerBrowserTest : public InProcessBrowserTest {
  public:
   TabUsageScenarioTrackerBrowserTest() : data_store_(&tick_clock_) {
     // Ensure that |tick_clock_.NowTicks()| doesn't return 0 the first time it
@@ -180,35 +156,13 @@ class TabUsageScenarioTrackerBrowserTest : public PlatformBrowserTest {
     // This is required for the fullscreen video tests.
     embedded_test_server()->ServeFilesFromSourceDirectory(
         base::FilePath(FILE_PATH_LITERAL("content/test/data")));
-    PlatformBrowserTest::SetUp();
+    InProcessBrowserTest::SetUp();
   }
 
   void SetUpOnMainThread() override {
-    PlatformBrowserTest::SetUpOnMainThread();
+    InProcessBrowserTest::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
-
-#if BUILDFLAG(IS_ANDROID)
-    ASSERT_FALSE(TabModelList::models().empty());
-    tab_strip_ = std::make_unique<TabStripInterface>(
-        TabModelList::models().front().get());
-
-    // The initial tab of the main TabModel will be in an inconsistent state,
-    // since its WebContents is created and navigates to an initial URL
-    // asynchronously. Wait for it to finish loading before observing it with
-    // TabUsageScenarioTracker.
-    ASSERT_EQ(tab_strip_->tab_model()->GetTabCount(), 1);
-    TabAndroid* initial_tab = tab_strip_->tab_model()->GetTabAt(0);
-    TabAndroidLoadedWaiter waiter(initial_tab);
-    ASSERT_TRUE(waiter.Wait());
-
-    // Make sure the tab isn't still playing audio from a previous test.
-    ASSERT_FALSE(initial_tab->web_contents()->IsCurrentlyAudible());
-#else
-    ASSERT_TRUE(browser());
-    tab_strip_ = std::make_unique<TabStripInterface>(browser());
-#endif
-
     tab_stats_tracker_ = TabStatsTracker::GetInstance();
     ASSERT_TRUE(tab_stats_tracker_);
     tab_usage_scenario_tracker_ =
@@ -218,81 +172,22 @@ class TabUsageScenarioTrackerBrowserTest : public PlatformBrowserTest {
   }
 
   void TearDownOnMainThread() override {
-    tab_strip_.reset();
     tab_stats_tracker_->RemoveObserver(tab_usage_scenario_tracker_.get());
     tab_usage_scenario_tracker_.reset();
     tab_stats_tracker_ = nullptr;
-    PlatformBrowserTest::TearDownOnMainThread();
+    InProcessBrowserTest::TearDownOnMainThread();
   }
-
-  TabStripInterface& tab_strip() { return *tab_strip_; }
 
  protected:
-  // Methods to manipulate Browser + TabStripModel (on desktop) or TabModel (on
-  // Android).
-
-#if BUILDFLAG(IS_ANDROID)
-
-  void NavigateNewTabToUrl(content::WebContents* contents,
-                           const GURL& url,
-                           bool wait_until_complete = true) {
-    // Navigate to `url` as a render-initiated navigation, so that it isn't
-    // considered a user interaction.
-    content::NavigationController::LoadURLParams load_params(url);
-    load_params.initiator_origin = url::Origin();
-    load_params.is_renderer_initiated = true;
-    if (wait_until_complete) {
-      content::NavigateToURLBlockUntilNavigationsComplete(contents, load_params,
-                                                          1);
-    } else {
-      contents->GetController().LoadURLWithParams(load_params);
-    }
-  }
-
-  bool AddTabToTabStrip(TabStripInterface& tab_strip,
-                        const GURL& url = GURL("about:blank")) {
-    content::WebContents* active_contents = tab_strip.GetActiveWebContents();
-    if (!active_contents) {
-      ADD_FAILURE() << "No active WebContents";
-      return false;
-    }
-
-    // Create the WebContents hidden so that there's no visibility notification
-    // until it's added to the tab strip.
-    content::WebContents::CreateParams create_params(tab_strip.GetProfile());
-    create_params.initially_hidden = true;
-    content::WebContents* new_contents =
-        content::WebContents::Create(create_params).release();
-
-    // CreateTab works with both OwningTestTabModel and the initial tab strip,
-    // which is a production TabModel.
-    tab_strip.tab_model()->CreateTab(
-        TabAndroid::FromWebContents(active_contents), new_contents,
-        /*select=*/true);
-
-    NavigateNewTabToUrl(new_contents, url);
-    return true;
-  }
-
-#else  // !BUILDFLAG(IS_ANDROID)
-
-  bool AddTabToTabStrip(TabStripInterface& tab_strip, const GURL& url) {
-    return AddTabAtIndexToBrowser(tab_strip.browser(), 1, url,
-                                  ui::PAGE_TRANSITION_TYPED);
-  }
-
-#endif  // !BUILDFLAG(IS_ANDROID)
-
   base::SimpleTestTickClock tick_clock_;
   raw_ptr<TabStatsTracker> tab_stats_tracker_{nullptr};
   UsageScenarioDataStoreImpl data_store_;
   std::unique_ptr<TabUsageScenarioTracker> tab_usage_scenario_tracker_;
-  std::unique_ptr<TabStripInterface> tab_strip_;
 };
 
 IN_PROC_BROWSER_TEST_F(TabUsageScenarioTrackerBrowserTest, BasicNavigations) {
   // Test with only one visible tab and one top level navigation.
-  auto* content0 = tab_strip().GetWebContentsAt(0);
+  auto* content0 = browser()->tab_strip_model()->GetWebContentsAt(0);
   EXPECT_TRUE(content::NavigateToURL(
       content0, embedded_test_server()->GetURL("/title1.html")));
   tick_clock_.Advance(kInterval);
@@ -307,8 +202,9 @@ IN_PROC_BROWSER_TEST_F(TabUsageScenarioTrackerBrowserTest, BasicNavigations) {
       interval_data.time_playing_video_full_screen_single_monitor.is_zero());
   EXPECT_TRUE(interval_data.time_with_open_webrtc_connection.is_zero());
   EXPECT_TRUE(interval_data.time_playing_video_in_visible_tab.is_zero());
-  EXPECT_EQ(tab_strip()
-                .GetActiveWebContents()
+  EXPECT_EQ(browser()
+                ->tab_strip_model()
+                ->GetActiveWebContents()
                 ->GetPrimaryMainFrame()
                 ->GetPageUkmSourceId(),
             interval_data.source_id_for_longest_visible_origin);
@@ -317,13 +213,14 @@ IN_PROC_BROWSER_TEST_F(TabUsageScenarioTrackerBrowserTest, BasicNavigations) {
 
   // Add a second tab that will become the visible one.
   tick_clock_.Advance(kInterval);
-  ASSERT_TRUE(AddTabToTabStrip(tab_strip(),
-                               embedded_test_server()->GetURL("/title2.html")));
-  auto* contents1 = tab_strip().GetActiveWebContents();
-  EXPECT_EQ(content::Visibility::VISIBLE,
-            tab_strip().GetActiveWebContents()->GetVisibility());
+  ASSERT_TRUE(AddTabAtIndex(1, embedded_test_server()->GetURL("/title2.html"),
+                            ui::PAGE_TRANSITION_LINK));
+  auto* contents1 = browser()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_EQ(
+      content::Visibility::VISIBLE,
+      browser()->tab_strip_model()->GetActiveWebContents()->GetVisibility());
   EXPECT_EQ(content::Visibility::HIDDEN,
-            tab_strip().GetWebContentsAt(0)->GetVisibility());
+            browser()->tab_strip_model()->GetWebContentsAt(0)->GetVisibility());
   tick_clock_.Advance(kInterval * 2);
   interval_data = data_store_.ResetIntervalData();
   EXPECT_EQ(2U, interval_data.max_tab_count);
@@ -341,15 +238,17 @@ IN_PROC_BROWSER_TEST_F(TabUsageScenarioTrackerBrowserTest, BasicNavigations) {
             interval_data.source_id_for_longest_visible_origin_duration);
 
   // Activate the first tab and close it.
-  tab_strip().ActivateTabAtForTesting(0);
+  browser()->tab_strip_model()->ActivateTabAt(0);
   tick_clock_.Advance(kInterval * 2);
-  auto expected_source_id = tab_strip()
-                                .GetActiveWebContents()
+  auto expected_source_id = browser()
+                                ->tab_strip_model()
+                                ->GetActiveWebContents()
                                 ->GetPrimaryMainFrame()
                                 ->GetPageUkmSourceId();
-  size_t previous_tab_count = tab_strip().GetTabCount();
-  tab_strip().CloseTabAtForTesting(0);
-  EXPECT_EQ(previous_tab_count - 1, tab_strip().GetTabCount());
+  int previous_tab_count = browser()->tab_strip_model()->count();
+  browser()->tab_strip_model()->CloseWebContentsAt(
+      0, TabCloseTypes::CLOSE_USER_GESTURE);
+  EXPECT_EQ(previous_tab_count - 1, browser()->tab_strip_model()->count());
   tick_clock_.Advance(kInterval);
   interval_data = data_store_.ResetIntervalData();
   EXPECT_EQ(2U, interval_data.max_tab_count);
@@ -387,13 +286,14 @@ IN_PROC_BROWSER_TEST_F(TabUsageScenarioTrackerBrowserTest, BasicNavigations) {
 }
 
 IN_PROC_BROWSER_TEST_F(TabUsageScenarioTrackerBrowserTest, TabCrash) {
-  ASSERT_TRUE(AddTabToTabStrip(tab_strip(),
-                               embedded_test_server()->GetURL("/title2.html")));
+  ASSERT_TRUE(AddTabAtIndex(1, embedded_test_server()->GetURL("/title2.html"),
+                            ui::PAGE_TRANSITION_LINK));
   EXPECT_EQ(content::Visibility::VISIBLE,
-            tab_strip().GetWebContentsAt(1)->GetVisibility());
+            browser()->tab_strip_model()->GetWebContentsAt(1)->GetVisibility());
   tick_clock_.Advance(kInterval);
-  auto expected_source_id = tab_strip()
-                                .GetActiveWebContents()
+  auto expected_source_id = browser()
+                                ->tab_strip_model()
+                                ->GetActiveWebContents()
                                 ->GetPrimaryMainFrame()
                                 ->GetPageUkmSourceId();
 
@@ -413,16 +313,8 @@ IN_PROC_BROWSER_TEST_F(TabUsageScenarioTrackerBrowserTest, TabCrash) {
 
   // Induce a crash in the active tab.
   tick_clock_.Advance(kInterval);
-  content::CrashTab(tab_strip().GetWebContentsAt(1));
-  EXPECT_TRUE(tab_strip().GetWebContentsAt(1)->IsCrashed());
-#if BUILDFLAG(IS_ANDROID)
-  // On Android, the Sad Tab overlay is handled in the Java layer and doesn't
-  // trigger in this test. Fake it by hiding the active tab. The test is still
-  // useful to validate that a tab being hidden during an interval updates
-  // `source_id_for_longest_visible_origin_duration` correctly, although it
-  // can't validate that a crashed tab actually becomes hidden on Android.
-  tab_strip().GetWebContentsAt(1)->WasHidden();
-#endif
+  content::CrashTab(browser()->tab_strip_model()->GetWebContentsAt(1));
+  EXPECT_TRUE(browser()->tab_strip_model()->GetWebContentsAt(1)->IsCrashed());
   tick_clock_.Advance(kInterval);
   interval_data = data_store_.ResetIntervalData();
   EXPECT_EQ(2U, interval_data.max_tab_count);
@@ -439,10 +331,6 @@ IN_PROC_BROWSER_TEST_F(TabUsageScenarioTrackerBrowserTest, TabCrash) {
             interval_data.source_id_for_longest_visible_origin_duration);
 }
 
-#if !BUILDFLAG(IS_ANDROID)
-
-// TODO(crbug.com/412634171): Enable this when discarding is supported on
-// Android.
 class TabUsageScenarioTrackerDiscardBrowserTest
     : public TabUsageScenarioTrackerBrowserTest,
       public ::testing::WithParamInterface<bool> {
@@ -456,25 +344,17 @@ class TabUsageScenarioTrackerDiscardBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    TabUsageScenarioTrackerDiscardBrowserTest,
-    ::testing::Values(false, true),
-    [](const ::testing::TestParamInfo<
-        TabUsageScenarioTrackerDiscardBrowserTest::ParamType>& info) {
-      return info.param ? "RetainedWebContents" : "UnretainedWebContents";
-    });
-
 IN_PROC_BROWSER_TEST_P(TabUsageScenarioTrackerDiscardBrowserTest, TabDiscard) {
-  ASSERT_TRUE(AddTabToTabStrip(tab_strip(),
-                               embedded_test_server()->GetURL("/title2.html")));
+  ASSERT_TRUE(AddTabAtIndex(1, embedded_test_server()->GetURL("/title2.html"),
+                            ui::PAGE_TRANSITION_LINK));
   EXPECT_EQ(content::Visibility::VISIBLE,
-            tab_strip().GetWebContentsAt(1)->GetVisibility());
+            browser()->tab_strip_model()->GetWebContentsAt(1)->GetVisibility());
   tick_clock_.Advance(kInterval);
 
   auto interval_data = data_store_.ResetIntervalData();
-  auto expected_source_id = tab_strip()
-                                .GetActiveWebContents()
+  auto expected_source_id = browser()
+                                ->tab_strip_model()
+                                ->GetActiveWebContents()
                                 ->GetPrimaryMainFrame()
                                 ->GetPageUkmSourceId();
   EXPECT_EQ(2U, interval_data.max_tab_count);
@@ -492,7 +372,7 @@ IN_PROC_BROWSER_TEST_P(TabUsageScenarioTrackerDiscardBrowserTest, TabDiscard) {
 
   // Induce a discard of the active tab.
   tick_clock_.Advance(kInterval * 2);
-  DiscardTab(tab_strip().GetWebContentsAt(1));
+  DiscardTab(browser()->tab_strip_model()->GetWebContentsAt(1));
   tick_clock_.Advance(kInterval);
   interval_data = data_store_.ResetIntervalData();
   EXPECT_EQ(2U, interval_data.max_tab_count);
@@ -510,10 +390,11 @@ IN_PROC_BROWSER_TEST_P(TabUsageScenarioTrackerDiscardBrowserTest, TabDiscard) {
 
   // Do a navigation on the discarded tab.
   EXPECT_TRUE(
-      content::NavigateToURL(tab_strip().GetWebContentsAt(1),
+      content::NavigateToURL(browser()->tab_strip_model()->GetWebContentsAt(1),
                              embedded_test_server()->GetURL("/title2.html")));
-  expected_source_id = tab_strip()
-                           .GetWebContentsAt(1)
+  expected_source_id = browser()
+                           ->tab_strip_model()
+                           ->GetWebContentsAt(1)
                            ->GetPrimaryMainFrame()
                            ->GetPageUkmSourceId();
   tick_clock_.Advance(kInterval);
@@ -532,14 +413,15 @@ IN_PROC_BROWSER_TEST_P(TabUsageScenarioTrackerDiscardBrowserTest, TabDiscard) {
             interval_data.source_id_for_longest_visible_origin_duration);
 
   // Same tests but with this time the discarded tab is hidden.
-  tab_strip().ActivateTabAtForTesting(0);
+  browser()->tab_strip_model()->ActivateTabAt(0);
   EXPECT_EQ(content::Visibility::VISIBLE,
-            tab_strip().GetWebContentsAt(0)->GetVisibility());
+            browser()->tab_strip_model()->GetWebContentsAt(0)->GetVisibility());
   tick_clock_.Advance(kInterval * 2);
-  DiscardTab(tab_strip().GetWebContentsAt(1));
+  DiscardTab(browser()->tab_strip_model()->GetWebContentsAt(1));
   tick_clock_.Advance(kInterval);
-  expected_source_id = tab_strip()
-                           .GetWebContentsAt(0)
+  expected_source_id = browser()
+                           ->tab_strip_model()
+                           ->GetWebContentsAt(0)
                            ->GetPrimaryMainFrame()
                            ->GetPageUkmSourceId();
   interval_data = data_store_.ResetIntervalData();
@@ -558,7 +440,7 @@ IN_PROC_BROWSER_TEST_P(TabUsageScenarioTrackerDiscardBrowserTest, TabDiscard) {
 
   // Do a navigation on the discarded tab.
   EXPECT_TRUE(
-      content::NavigateToURL(tab_strip().GetWebContentsAt(1),
+      content::NavigateToURL(browser()->tab_strip_model()->GetWebContentsAt(1),
                              embedded_test_server()->GetURL("/title2.html")));
   tick_clock_.Advance(kInterval);
   interval_data = data_store_.ResetIntervalData();
@@ -581,16 +463,16 @@ IN_PROC_BROWSER_TEST_P(TabUsageScenarioTrackerDiscardBrowserTest,
   // Start a video in a tab and discard it while it's playing, ensure that
   // things are tracked properly.
   EXPECT_TRUE(
-      content::NavigateToURL(tab_strip().GetWebContentsAt(0),
+      content::NavigateToURL(browser()->tab_strip_model()->GetWebContentsAt(0),
                              embedded_test_server()->GetURL("/title2.html")));
   tick_clock_.Advance(kInterval);
-  ASSERT_TRUE(AddTabToTabStrip(
-      tab_strip(),
-      embedded_test_server()->GetURL("/media/session/media-session.html")));
+  ASSERT_TRUE(AddTabAtIndex(
+      1, embedded_test_server()->GetURL("/media/session/media-session.html"),
+      ui::PAGE_TRANSITION_LINK));
   EXPECT_EQ(content::Visibility::VISIBLE,
-            tab_strip().GetWebContentsAt(1)->GetVisibility());
+            browser()->tab_strip_model()->GetWebContentsAt(1)->GetVisibility());
 
-  auto* media_contents = tab_strip().GetWebContentsAt(1);
+  auto* media_contents = browser()->tab_strip_model()->GetWebContentsAt(1);
   MediaWaiter media_waiter(media_contents);
   EXPECT_TRUE(content::ExecJs(
       media_contents, "document.getElementById('long-video-loop').play();"));
@@ -603,7 +485,7 @@ IN_PROC_BROWSER_TEST_P(TabUsageScenarioTrackerDiscardBrowserTest,
   // Discard the tab, the data store's visible tab video timer should be reset
   // by the tracker.
   tick_clock_.Advance(kInterval * 2);
-  DiscardTab(tab_strip().GetWebContentsAt(1));
+  DiscardTab(browser()->tab_strip_model()->GetWebContentsAt(1));
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return !data_store_.TrackingPlayingVideoInActiveTabForTesting();
   }));
@@ -635,15 +517,16 @@ IN_PROC_BROWSER_TEST_P(TabUsageScenarioTrackerDiscardBrowserTest,
   // Play full screen video in a tab and discard it while it's playing, ensure
   // that things are tracked properly.
   EXPECT_TRUE(
-      content::NavigateToURL(tab_strip().GetWebContentsAt(0),
+      content::NavigateToURL(browser()->tab_strip_model()->GetWebContentsAt(0),
                              embedded_test_server()->GetURL("/title2.html")));
   tick_clock_.Advance(kInterval);
-  ASSERT_TRUE(AddTabToTabStrip(
-      tab_strip(), embedded_test_server()->GetURL("/media/fullscreen.html")));
+  ASSERT_TRUE(
+      AddTabAtIndex(1, embedded_test_server()->GetURL("/media/fullscreen.html"),
+                    ui::PAGE_TRANSITION_LINK));
   EXPECT_EQ(content::Visibility::VISIBLE,
-            tab_strip().GetWebContentsAt(1)->GetVisibility());
+            browser()->tab_strip_model()->GetWebContentsAt(1)->GetVisibility());
 
-  auto* fullscreen_contents = tab_strip().GetWebContentsAt(1);
+  auto* fullscreen_contents = browser()->tab_strip_model()->GetWebContentsAt(1);
   FullscreenEventsWaiter fullscreen_waiter(fullscreen_contents);
   EXPECT_TRUE(
       content::ExecJs(fullscreen_contents, "makeFullscreen('small_video')"));
@@ -657,7 +540,7 @@ IN_PROC_BROWSER_TEST_P(TabUsageScenarioTrackerDiscardBrowserTest,
   // Discard the tab, the data store's full screen video timer should be reset
   // by the tracker.
   tick_clock_.Advance(kInterval * 2);
-  DiscardTab(tab_strip().GetWebContentsAt(1));
+  DiscardTab(browser()->tab_strip_model()->GetWebContentsAt(1));
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return !data_store_.TrackingPlayingFullScreenVideoSingleMonitorForTesting();
   }));
@@ -677,11 +560,9 @@ IN_PROC_BROWSER_TEST_P(TabUsageScenarioTrackerDiscardBrowserTest,
             interval_data.source_id_for_longest_visible_origin_duration);
 }
 
-#endif  // !BUILDFLAG(IS_ANDROID)
-
 IN_PROC_BROWSER_TEST_F(TabUsageScenarioTrackerBrowserTest, FullScreenVideo) {
   // Play fullscreen video in a tab, ensure that things are tracked properly.
-  auto* contents = tab_strip().GetWebContentsAt(0);
+  auto* contents = browser()->tab_strip_model()->GetWebContentsAt(0);
   FullscreenEventsWaiter waiter(contents);
   EXPECT_TRUE(content::NavigateToURL(
       contents, embedded_test_server()->GetURL("/media/fullscreen.html")));
@@ -712,7 +593,7 @@ IN_PROC_BROWSER_TEST_F(TabUsageScenarioTrackerBrowserTest, FullScreenVideo) {
 
 IN_PROC_BROWSER_TEST_F(TabUsageScenarioTrackerBrowserTest, VisibleTabVideo) {
   // Play video in a tab, ensure that things are tracked properly.
-  auto* contents = tab_strip().GetWebContentsAt(0);
+  auto* contents = browser()->tab_strip_model()->GetWebContentsAt(0);
   MediaWaiter waiter(contents);
   EXPECT_TRUE(content::NavigateToURL(
       contents,
@@ -736,14 +617,7 @@ IN_PROC_BROWSER_TEST_F(TabUsageScenarioTrackerBrowserTest, VisibleTabVideo) {
       interval_data.time_playing_video_full_screen_single_monitor.is_zero());
   EXPECT_TRUE(interval_data.time_with_open_webrtc_connection.is_zero());
   EXPECT_EQ(kInterval, interval_data.time_playing_video_in_visible_tab);
-
-  // TODO(crbug.com/412634171): Android (especially desktop Android) sometimes
-  // plays audio immediately on loading media-session.html. Find out why and
-  // reenable this expectation.
-#if !BUILDFLAG(IS_ANDROID)
   EXPECT_TRUE(interval_data.time_playing_audio.is_zero());
-#endif
-
   EXPECT_EQ(expected_source_id,
             interval_data.source_id_for_longest_visible_origin);
   EXPECT_EQ(kInterval,
@@ -752,7 +626,7 @@ IN_PROC_BROWSER_TEST_F(TabUsageScenarioTrackerBrowserTest, VisibleTabVideo) {
 
 IN_PROC_BROWSER_TEST_F(TabUsageScenarioTrackerBrowserTest, TabAudio) {
   // Play audio in a tab, ensure that things are tracked properly.
-  auto* contents = tab_strip().GetWebContentsAt(0);
+  auto* contents = browser()->tab_strip_model()->GetWebContentsAt(0);
   MediaWaiter waiter(contents);
   EXPECT_TRUE(content::NavigateToURL(
       contents,
@@ -794,21 +668,23 @@ IN_PROC_BROWSER_TEST_F(TabUsageScenarioTrackerBrowserTest,
   // Play fullscreen video in a tab and close it while it's playing, ensure that
   // things are tracked properly.
   EXPECT_TRUE(
-      content::NavigateToURL(tab_strip().GetWebContentsAt(0),
+      content::NavigateToURL(browser()->tab_strip_model()->GetWebContentsAt(0),
                              embedded_test_server()->GetURL("/title2.html")));
   tick_clock_.Advance(kInterval);
-  ASSERT_TRUE(AddTabToTabStrip(
-      tab_strip(), embedded_test_server()->GetURL("/media/fullscreen.html")));
-  auto* contents = tab_strip().GetWebContentsAt(1);
+  ASSERT_TRUE(
+      AddTabAtIndex(1, embedded_test_server()->GetURL("/media/fullscreen.html"),
+                    ui::PAGE_TRANSITION_LINK));
+  auto* contents = browser()->tab_strip_model()->GetWebContentsAt(1);
   FullscreenEventsWaiter waiter(contents);
   EXPECT_TRUE(content::ExecJs(contents, "makeFullscreen('small_video')"));
   waiter.Wait(true);
   tick_clock_.Advance(kInterval * 2);
   auto expected_source_id =
       contents->GetPrimaryMainFrame()->GetPageUkmSourceId();
-  size_t previous_tab_count = tab_strip().GetTabCount();
-  tab_strip().CloseTabAtForTesting(1);
-  EXPECT_EQ(previous_tab_count - 1, tab_strip().GetTabCount());
+  int previous_tab_count = browser()->tab_strip_model()->count();
+  browser()->tab_strip_model()->CloseWebContentsAt(
+      1, TabCloseTypes::CLOSE_USER_GESTURE);
+  EXPECT_EQ(previous_tab_count - 1, browser()->tab_strip_model()->count());
 
   auto interval_data = data_store_.ResetIntervalData();
   EXPECT_EQ(2U, interval_data.max_tab_count);
@@ -826,8 +702,9 @@ IN_PROC_BROWSER_TEST_F(TabUsageScenarioTrackerBrowserTest,
 
   tick_clock_.Advance(kInterval);
   interval_data = data_store_.ResetIntervalData();
-  expected_source_id = tab_strip()
-                           .GetActiveWebContents()
+  expected_source_id = browser()
+                           ->tab_strip_model()
+                           ->GetActiveWebContents()
                            ->GetPrimaryMainFrame()
                            ->GetPageUkmSourceId();
   EXPECT_EQ(1U, interval_data.max_tab_count);
@@ -854,7 +731,7 @@ IN_PROC_BROWSER_TEST_F(TabUsageScenarioTrackerBrowserTest,
                        MAYBE_FullScreenVideoCrash) {
   // Play fullscreen video in a tab and make the tab crash, ensure that things
   // are tracked properly.
-  auto* contents = tab_strip().GetWebContentsAt(0);
+  auto* contents = browser()->tab_strip_model()->GetWebContentsAt(0);
   EXPECT_TRUE(content::NavigateToURL(
       contents, embedded_test_server()->GetURL("/media/fullscreen.html")));
   FullscreenEventsWaiter waiter(contents);
@@ -902,29 +779,19 @@ IN_PROC_BROWSER_TEST_F(TabUsageScenarioTrackerBrowserTest,
                        InitialVisibleNotification) {
   // This test causes a WebContents::OnVisibilityChanged(VISIBLE) signal to be
   // emitted for a tab that was already visible when adding it.
-#if BUILDFLAG(IS_ANDROID)
-  OwningTestTabModel tab_model2(tab_strip().GetProfile());
-  TabAndroid* new_tab = tab_model2.AddEmptyTab(0);
-
-  // Don't wait for the navigation, to mimic BROWSER_TEST_WAIT_FOR_BROWSER.
-  NavigateNewTabToUrl(new_tab->web_contents(),
-                      embedded_test_server()->GetURL("/title2.html"),
-                      /*wait_until_complete=*/false);
-
-  TabStripInterface tab_strip2(&tab_model2);
-#else
   ui_test_utils::NavigateToURLWithDisposition(
-      tab_strip().browser(), embedded_test_server()->GetURL("/title2.html"),
+      browser(), embedded_test_server()->GetURL("/title2.html"),
       WindowOpenDisposition::NEW_WINDOW,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_BROWSER);
-  TabStripInterface tab_strip2(BrowserList::GetInstance()->get(1));
-#endif
+  Browser* browser2 = BrowserList::GetInstance()->get(1);
 
-  size_t previous_browser1_tab_count = tab_strip().GetTabCount();
-  size_t previous_browser2_tab_count = tab_strip2.GetTabCount();
-  tab_strip2.CloseTabAtForTesting(0);
-  EXPECT_EQ(previous_browser1_tab_count, tab_strip().GetTabCount());
-  EXPECT_EQ(previous_browser2_tab_count - 1, tab_strip2.GetTabCount());
+  int previous_browser1_tab_count = browser()->tab_strip_model()->count();
+  int previous_browser2_tab_count = browser2->tab_strip_model()->count();
+  browser2->tab_strip_model()->CloseWebContentsAt(
+      0, TabCloseTypes::CLOSE_USER_GESTURE);
+  EXPECT_EQ(previous_browser1_tab_count, browser()->tab_strip_model()->count());
+  EXPECT_EQ(previous_browser2_tab_count - 1,
+            browser2->tab_strip_model()->count());
 
   tick_clock_.Advance(kInterval);
   auto interval_data = data_store_.ResetIntervalData();
@@ -937,13 +804,23 @@ IN_PROC_BROWSER_TEST_F(TabUsageScenarioTrackerBrowserTest,
       interval_data.time_playing_video_full_screen_single_monitor.is_zero());
   EXPECT_TRUE(interval_data.time_with_open_webrtc_connection.is_zero());
   EXPECT_TRUE(interval_data.time_playing_video_in_visible_tab.is_zero());
-  EXPECT_EQ(tab_strip()
-                .GetActiveWebContents()
+  EXPECT_EQ(browser()
+                ->tab_strip_model()
+                ->GetActiveWebContents()
                 ->GetPrimaryMainFrame()
                 ->GetPageUkmSourceId(),
             interval_data.source_id_for_longest_visible_origin);
   EXPECT_EQ(kInterval,
             interval_data.source_id_for_longest_visible_origin_duration);
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    TabUsageScenarioTrackerDiscardBrowserTest,
+    ::testing::Values(false, true),
+    [](const ::testing::TestParamInfo<
+        TabUsageScenarioTrackerDiscardBrowserTest::ParamType>& info) {
+      return info.param ? "RetainedWebContents" : "UnretainedWebContents";
+    });
 
 }  // namespace metrics
