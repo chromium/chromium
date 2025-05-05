@@ -21,7 +21,7 @@ namespace blink {
 
 BASE_FEATURE(kPropagateEnabledEventForWebRtcAudioTrack,
              "PropagateEnabledEventForWebRtcAudioTrack",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {
 // Used as an identifier for the down-casters.
