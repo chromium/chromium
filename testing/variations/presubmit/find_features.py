@@ -13,6 +13,8 @@ import multiprocessing
 import pathlib
 import re
 
+from typing import List, Set
+
 BASE_FEATURE_PATTERN = br'BASE_FEATURE\((.*?),(.*?),(.*?)\);'
 BASE_FEATURE_RE = re.compile(BASE_FEATURE_PATTERN,
                              flags=re.MULTILINE + re.DOTALL)
@@ -69,7 +71,7 @@ DIRECTORIES_TO_SEARCH = [
 ]
 
 
-def _FindFeaturesInFile(filepath):
+def _FindFeaturesInFile(filepath: str) -> List[str]:
   # Work on bytes to avoid utf-8 decode errors outside feature declarations
   file_contents = pathlib.Path(filepath).read_bytes()
   matches = BASE_FEATURE_RE.finditer(file_contents)
@@ -78,20 +80,10 @@ def _FindFeaturesInFile(filepath):
   return [m.group(2).strip().strip(b'"').decode('utf-8') for m in matches]
 
 
-def FindDeclaredFeatures(input_api):
-  """Finds all declared feature names in the source code.
-
-  This function will scan all *.cc and *.mm files and look for features
-  defined with the BASE_FEATURE macro. It will extract the feature names.
-
-  Args:
-    input_api: InputApi instance for opening files
-  Returns:
-    Set of defined feature names in the source tree.
-  """
+def _FindDeclaredFeaturesImpl(repository_root: pathlib.Path) -> Set[str]:
   # Features are supposed to be defined in .cc files.
   # Iterate over the search folders in the root.
-  root = pathlib.Path(input_api.change.RepositoryRoot())
+  root = pathlib.Path(repository_root)
   glob_patterns = [
       str(p / pathlib.Path('**/*.cc')) for p in root.iterdir()
       if p.is_dir() and p.name in DIRECTORIES_TO_SEARCH
@@ -124,3 +116,21 @@ def FindDeclaredFeatures(input_api):
   for feature_list in found_features:
     feature_names.update(feature_list)
   return feature_names
+
+
+def FindDeclaredFeatures(input_api) -> Set[str]:
+  """Finds all declared feature names in the source code.
+
+  This function will scan all *.cc and *.mm files and look for features
+  defined with the BASE_FEATURE macro. It will extract the feature names.
+
+  Args:
+    input_api: InputApi instance for opening files
+  Returns:
+    Set of defined feature names in the source tree.
+  """
+  return _FindDeclaredFeaturesImpl(input_api.change.RepositoryRoot())
+
+
+if __name__ == '__main__':
+  print(_FindDeclaredFeaturesImpl(pathlib.Path('.')))
