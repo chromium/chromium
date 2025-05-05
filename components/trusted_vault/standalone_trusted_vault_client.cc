@@ -71,6 +71,8 @@ class IdentityManagerObserver : public signin::IdentityManager::Observer {
       signin_metrics::SourceForRefreshTokenOperation token_operation_source)
       override;
   void OnRefreshTokensLoaded() override;
+  void OnIdentityManagerShutdown(
+      signin::IdentityManager* identity_manager) override;
 
  private:
   void UpdatePrimaryAccountIfNeeded();
@@ -83,6 +85,9 @@ class IdentityManagerObserver : public signin::IdentityManager::Observer {
   const scoped_refptr<StandaloneTrustedVaultBackend> backend_;
   const base::RepeatingClosure notify_keys_changed_callback_;
   const raw_ptr<signin::IdentityManager> identity_manager_;
+  base::ScopedObservation<signin::IdentityManager,
+                          signin::IdentityManager::Observer>
+      identity_manager_observation_{this};
   CoreAccountInfo primary_account_;
 };
 
@@ -99,16 +104,14 @@ IdentityManagerObserver::IdentityManagerObserver(
   DCHECK(backend_);
   DCHECK(identity_manager_);
 
-  identity_manager_->AddObserver(this);
+  identity_manager_observation_.Observe(identity_manager_);
   UpdatePrimaryAccountIfNeeded();
   if (identity_manager_->AreRefreshTokensLoaded()) {
     OnRefreshTokensLoaded();
   }
 }
 
-IdentityManagerObserver::~IdentityManagerObserver() {
-  identity_manager_->RemoveObserver(this);
-}
+IdentityManagerObserver::~IdentityManagerObserver() = default;
 
 void IdentityManagerObserver::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event) {
@@ -164,6 +167,12 @@ void IdentityManagerObserver::OnRefreshTokensLoaded() {
   }
   UpdateAccountsInCookieJarInfoIfNeeded(
       identity_manager_->GetAccountsInCookieJar());
+}
+
+void IdentityManagerObserver::OnIdentityManagerShutdown(
+    signin::IdentityManager* identity_manager) {
+  CHECK_EQ(identity_manager, identity_manager_, base::NotFatalUntil::M142);
+  identity_manager_observation_.Reset();
 }
 
 void IdentityManagerObserver::UpdatePrimaryAccountIfNeeded() {
