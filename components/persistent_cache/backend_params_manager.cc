@@ -67,6 +67,11 @@ BackendParams BackendParamsManager::CreateParamsSync(
     flags |= base::File::FLAG_WRITE;
   }
 
+  // PersistentCache backing files are not executables.
+#if BUILDFLAG(IS_WIN)
+  flags |= base::File::FLAG_WIN_NO_EXECUTE;
+#endif
+
   params.db_file = base::File(
       directory.AppendASCII(base::StrCat({key, kPathSeparator, kDbFile})),
       flags);
