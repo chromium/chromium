@@ -80,6 +80,10 @@ BASE_FEATURE(ContextualSearch::kOmniboxContextualSearchSingleLensAction,
              "OmniboxContextualSearchSingleLensAction",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(ContextualSearch::kContextualSearchUseVerticalBar,
+             "ContextualSearchUseVerticalBar",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 ContextualSearch::ContextualSearch() {
   // Meta-feature turns on/off other features, but only if it's overridden by
   // the user. If not then each feature is controlled separately.
@@ -108,7 +112,14 @@ ContextualSearch::ContextualSearch() {
       base::FeatureList::IsEnabled(kOmniboxContextualSearchActionsAtTop);
   single_lens_action =
       base::FeatureList::IsEnabled(kOmniboxContextualSearchSingleLensAction);
+  use_vertical_bar =
+      base::FeatureList::IsEnabled(kContextualSearchUseVerticalBar);
 }
+
+ContextualSearch::ContextualSearch(const ContextualSearch&) = default;
+ContextualSearch& ContextualSearch::operator=(const ContextualSearch&) =
+    default;
+ContextualSearch::~ContextualSearch() = default;
 
 DocumentProvider::DocumentProvider() {
   enabled = base::FeatureList::IsEnabled(omnibox::kDocumentProvider);

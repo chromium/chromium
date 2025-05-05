@@ -555,7 +555,10 @@ const gfx::VectorIcon& AutocompleteMatch::GetVectorIcon(
              : (IsContextualSearchSuggestion() &&
                 omnibox_feature_configs::ContextualSearch::Get()
                     .contextual_zero_suggest_lens_fulfillment)
-                 ? omnibox::kPageSparkIcon
+                 ? (omnibox_feature_configs::ContextualSearch::Get()
+                            .use_vertical_bar
+                        ? omnibox::kVerticalBarIcon
+                        : omnibox::kArrowUpChromeRefreshIcon)
                  : vector_icons::kSearchChromeRefreshIcon;
 
     case Type::PEDAL:

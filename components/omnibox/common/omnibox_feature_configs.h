@@ -121,6 +121,9 @@ struct CalcProvider : Config<CalcProvider> {
 // A config struct for features related to contextual search in omnibox.
 struct ContextualSearch : Config<ContextualSearch> {
   ContextualSearch();
+  ContextualSearch(const ContextualSearch&);
+  ContextualSearch& operator=(const ContextualSearch&);
+  ~ContextualSearch();
 
   DECLARE_FEATURE(kOmniboxContextualSuggestions);
   DECLARE_FEATURE(kStarterPackPage);
@@ -130,6 +133,7 @@ struct ContextualSearch : Config<ContextualSearch> {
   DECLARE_FEATURE(kOmniboxContextualSearchOnFocusSuggestions);
   DECLARE_FEATURE(kOmniboxContextualSearchActionsAtTop);
   DECLARE_FEATURE(kOmniboxContextualSearchSingleLensAction);
+  DECLARE_FEATURE(kContextualSearchUseVerticalBar);
 
   // Whether the starter pack page scope is enabled.
   bool starter_pack_page;
@@ -153,6 +157,10 @@ struct ContextualSearch : Config<ContextualSearch> {
 
   // Whether to use the unified single action to open lens UI.
   bool single_lens_action;
+
+  // Whether to use vertical bar instead of regular icon on contextual search
+  // matches.
+  bool use_vertical_bar;
 };
 
 // If enabled, allow document provider requests when all other conditions are
