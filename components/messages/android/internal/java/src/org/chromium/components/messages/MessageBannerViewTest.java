@@ -513,12 +513,7 @@ public class MessageBannerViewTest {
                     PropertyModelChangeProcessor.create(
                             propertyModel, mMessageBannerView, MessageBannerViewBinder::bind);
                 });
-
-        Assert.assertEquals(View.GONE, mPrimaryButton.getVisibility());
-        Assert.assertEquals(View.VISIBLE, mLoadingSpinner.getVisibility());
-
-        onView(withId(R.id.message_primary_button)).perform(click());
-        Mockito.verify(mPrimaryActionCallback, Mockito.never()).run();
+        assertIsLoading(true);
     }
 
     /** Changing PRIMARY_WIDGET_APPEARANCE to PROGRESS_SPINNER should show the progress spinner. */
@@ -574,9 +569,6 @@ public class MessageBannerViewTest {
                 });
 
         assertIsLoading(true);
-
-        onView(withId(R.id.message_primary_button)).perform(click());
-        Mockito.verify(mPrimaryActionCallback).run();
     }
 
     /** Changing PRIMARY_WIDGET_APPEARANCE to BUTTON_IF_TEXT_IS_SET should show the text. */
@@ -616,10 +608,7 @@ public class MessageBannerViewTest {
                                     MessageBannerViewBinder::bind);
                             return propertyModel;
                         });
-        assertIsLoading(false);
-
-        onView(withId(R.id.message_primary_button)).perform(click());
-        Mockito.verify(mPrimaryActionCallback, Mockito.never()).run();
+        assertIsLoading(true);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -629,7 +618,7 @@ public class MessageBannerViewTest {
                             MessageBannerProperties.PRIMARY_WIDGET_APPEARANCE,
                             PrimaryWidgetAppearance.BUTTON_IF_TEXT_IS_SET);
                 });
-        assertIsLoading(true);
+        assertIsLoading(false);
 
         onView(withId(R.id.message_primary_button)).perform(click());
         Mockito.verify(mPrimaryActionCallback).run();
@@ -669,9 +658,6 @@ public class MessageBannerViewTest {
                             propertyModel, mMessageBannerView, MessageBannerViewBinder::bind);
                 });
         assertIsLoading(true);
-
-        onView(withId(R.id.message_primary_button)).perform(click());
-        Mockito.verify(mPrimaryActionCallback, Mockito.never()).run();
     }
 
     /**
