@@ -800,6 +800,17 @@ void ReadAnythingAppController::OnAXTreeDistilled(
 }
 
 bool ReadAnythingAppController::PostProcessSelection() {
+  // It's possible for the active tree to be destroyed in-between when
+  // OnAXTreeDistilled returns early if the model doesn't contain the active
+  // tree and when PostProcessSelection is called after
+  // ComputeDisplayNodeIdsForDistilledTree is called. This seems to happen
+  // when it takes a long time to compute the display nodes. If this happens,
+  // return false rather than trying to continue to process information on a
+  // destroyed tree.
+  DUMP_WILL_BE_CHECK(model_.ContainsTree(model_.active_tree_id()));
+  if (!model_.ContainsTree(model_.active_tree_id())) {
+    return false;
+  }
   bool did_draw = false;
   // Note post `model_.PostProcessSelection` returns true if a draw is required.
   if (model_.PostProcessSelection()) {
