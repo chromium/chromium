@@ -236,13 +236,14 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_characterExtents(
     LONG* out_height) {
   WIN_ACCESSIBILITY_API_TRACE_EVENT("get_characterExtents");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_CHARACTER_EXTENTS);
-  OnInlineTextBoxesUsed();
   if (IsDestroyed()) {
     return E_FAIL;
   }
-
-  if (!out_x || !out_y || !out_width || !out_height)
+  if (!out_x || !out_y || !out_width || !out_height) {
     return E_INVALIDARG;
+  }
+
+  OnInlineTextBoxesUsed();
 
   const std::u16string& text_str = GetHypertext();
   HandleSpecialTextOffset(&offset);
@@ -289,13 +290,14 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_text(LONG start_offset,
                                                     BSTR* text) {
   WIN_ACCESSIBILITY_API_TRACE_EVENT("get_text");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_TEXT);
-  OnExtendedPropertiesUsed();
   if (IsDestroyed()) {
     return E_FAIL;
   }
-
-  if (!text)
+  if (!text) {
     return E_INVALIDARG;
+  }
+
+  OnExtendedPropertiesUsed();
 
   const std::u16string& text_str = GetHypertext();
   HandleSpecialTextOffset(&start_offset);
@@ -325,17 +327,17 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_newText(
     IA2TextSegment* new_text) {
   WIN_ACCESSIBILITY_API_TRACE_EVENT("get_newText");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_NEW_TEXT);
-  OnExtendedPropertiesUsed();
   if (IsDestroyed()) {
     return E_FAIL;
   }
-
   if (!new_text)
     return E_INVALIDARG;
 
   if (!update_state_) {
     return E_FAIL;
   }
+
+  OnExtendedPropertiesUsed();
 
   size_t start, old_len, new_len;
   ComputeHypertextRemovedAndInserted(update_state_->old_hypertext, &start,
@@ -354,17 +356,16 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_oldText(
     IA2TextSegment* old_text) {
   WIN_ACCESSIBILITY_API_TRACE_EVENT("get_oldText");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_OLD_TEXT);
-  OnExtendedPropertiesUsed();
   if (IsDestroyed()) {
     return E_FAIL;
   }
-
   if (!old_text)
     return E_INVALIDARG;
-
   if (!update_state_) {
     return E_FAIL;
   }
+
+  OnExtendedPropertiesUsed();
 
   size_t start, old_len, new_len;
   ComputeHypertextRemovedAndInserted(update_state_->old_hypertext, &start,
@@ -402,12 +403,12 @@ IFACEMETHODIMP BrowserAccessibilityComWin::scrollSubstringToPoint(
     LONG y) {
   WIN_ACCESSIBILITY_API_TRACE_EVENT("scrollSubstringToPoint");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_SCROLL_SUBSTRING_TO_POINT);
-  // This is a sign that a screen reader is active, so treat it like inline
-  // text box usage.
-  OnInlineTextBoxesUsed();
   if (IsDestroyed()) {
     return E_FAIL;
   }
+  // This is a sign that a screen reader is active, so treat it like inline
+  // text box usage.
+  OnInlineTextBoxesUsed();
 
   if (start_index > end_index)
     std::swap(start_index, end_index);
@@ -427,10 +428,10 @@ IFACEMETHODIMP BrowserAccessibilityComWin::scrollSubstringToPoint(
 IFACEMETHODIMP BrowserAccessibilityComWin::setCaretOffset(LONG offset) {
   WIN_ACCESSIBILITY_API_TRACE_EVENT("setCaretOffset");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_SET_CARET_OFFSET);
-  OnExtendedPropertiesUsed();
   if (IsDestroyed()) {
     return E_FAIL;
   }
+  OnExtendedPropertiesUsed();
   SetIA2HypertextSelection(offset, offset);
   return S_OK;
 }
@@ -440,12 +441,12 @@ IFACEMETHODIMP BrowserAccessibilityComWin::setSelection(LONG selection_index,
                                                         LONG end_offset) {
   WIN_ACCESSIBILITY_API_TRACE_EVENT("setSelection");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_SET_SELECTION);
-  OnExtendedPropertiesUsed();
   if (IsDestroyed()) {
     return E_FAIL;
   }
   if (selection_index != 0)
     return E_INVALIDARG;
+  OnExtendedPropertiesUsed();
   SetIA2HypertextSelection(start_offset, end_offset);
   return S_OK;
 }
@@ -459,15 +460,15 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_attributes(
     BSTR* text_attributes) {
   WIN_ACCESSIBILITY_API_TRACE_EVENT("get_attributes");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_IATEXT_GET_ATTRIBUTES);
-  OnExtendedPropertiesUsed();
-  if (!start_offset || !end_offset || !text_attributes)
-    return E_INVALIDARG;
-
-  *start_offset = *end_offset = 0;
-  *text_attributes = nullptr;
   if (IsDestroyed()) {
     return E_FAIL;
   }
+  if (!start_offset || !end_offset || !text_attributes)
+    return E_INVALIDARG;
+
+  OnExtendedPropertiesUsed();
+  *start_offset = *end_offset = 0;
+  *text_attributes = nullptr;
 
   const std::u16string text = GetHypertext();
   HandleSpecialTextOffset(&offset);
@@ -511,13 +512,13 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_nHyperlinks(
     LONG* hyperlink_count) {
   WIN_ACCESSIBILITY_API_TRACE_EVENT("get_nHyperlinks");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_N_HYPERLINKS);
-  OnExtendedPropertiesUsed();
   if (IsDestroyed()) {
     return E_FAIL;
   }
-
   if (!hyperlink_count)
     return E_INVALIDARG;
+
+  OnExtendedPropertiesUsed();
 
   *hyperlink_count = hypertext_.hyperlink_offset_to_index.size();
 
@@ -532,17 +533,16 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_hyperlink(
     LONG index,
     IAccessibleHyperlink** hyperlink) {
   WIN_ACCESSIBILITY_API_TRACE_EVENT("get_hyperlink");
-  *hyperlink = nullptr;
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_HYPERLINK);
-  OnExtendedPropertiesUsed();
   if (IsDestroyed()) {
     return E_FAIL;
   }
-
   if (!hyperlink || index < 0 ||
       index >= static_cast<LONG>(hypertext_.hyperlinks.size())) {
     return E_INVALIDARG;
   }
+  OnExtendedPropertiesUsed();
+  *hyperlink = nullptr;
 
   DCHECK(!IsIframe(GetOwner()->GetRole()) || index == 0)
       << "An iframe cannot have more than 1 hyperlink";
@@ -578,18 +578,17 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_hyperlinkIndex(
     LONG* hyperlink_index) {
   WIN_ACCESSIBILITY_API_TRACE_EVENT("get_hyperlinkIndex");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_HYPERLINK_INDEX);
-  OnExtendedPropertiesUsed();
   if (IsDestroyed()) {
     return E_FAIL;
   }
-
   if (!hyperlink_index)
     return E_INVALIDARG;
-
   if (char_index < 0 ||
       char_index >= static_cast<LONG>(GetHypertext().size())) {
     return E_INVALIDARG;
   }
+
+  OnExtendedPropertiesUsed();
 
   std::map<int32_t, int32_t>::iterator it =
       hypertext_.hyperlink_offset_to_index.find(char_index);
@@ -611,7 +610,6 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_anchor(LONG index,
                                                       VARIANT* anchor) {
   WIN_ACCESSIBILITY_API_TRACE_EVENT("get_anchor");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_ANCHOR);
-  OnExtendedPropertiesUsed();
   if (IsDestroyed() || !IsHyperlink()) {
     return E_FAIL;
   }
@@ -619,6 +617,8 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_anchor(LONG index,
   // IA2 text links can have only one anchor, that is the text inside them.
   if (index != 0 || !anchor)
     return E_INVALIDARG;
+
+  OnExtendedPropertiesUsed();
 
   BSTR ia2_hypertext = SysAllocString(base::as_wcstr(GetHypertext()));
   DCHECK(ia2_hypertext);
@@ -639,7 +639,6 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_anchorTarget(
     VARIANT* anchor_target) {
   WIN_ACCESSIBILITY_API_TRACE_EVENT("get_anchorTarget");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_ANCHOR_TARGET);
-  OnExtendedPropertiesUsed();
   if (IsDestroyed() || !IsHyperlink()) {
     return E_FAIL;
   }
@@ -648,6 +647,8 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_anchorTarget(
   // HTML hyperlink, i.e. an <a> element with a "href" attribute.
   if (index != 0 || !anchor_target)
     return E_INVALIDARG;
+
+  OnExtendedPropertiesUsed();
 
   BSTR target;
   if (!(MSAAState() & STATE_SYSTEM_LINKED) ||
@@ -670,13 +671,13 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_anchorTarget(
 IFACEMETHODIMP BrowserAccessibilityComWin::get_startIndex(LONG* index) {
   WIN_ACCESSIBILITY_API_TRACE_EVENT("get_startIndex");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_START_INDEX);
-  OnExtendedPropertiesUsed();
   if (IsDestroyed() || !IsHyperlink()) {
     return E_FAIL;
   }
-
   if (!index)
     return E_INVALIDARG;
+
+  OnExtendedPropertiesUsed();
 
   int32_t hypertext_offset = 0;
   auto* parent = GetOwner()->PlatformGetParent();
@@ -714,13 +715,13 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_valid(boolean* valid) {
 IFACEMETHODIMP BrowserAccessibilityComWin::nActions(LONG* n_actions) {
   WIN_ACCESSIBILITY_API_TRACE_EVENT("nActions");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_N_ACTIONS);
-  OnExtendedPropertiesUsed();
   if (IsDestroyed()) {
     return E_FAIL;
   }
-
   if (!n_actions)
     return E_INVALIDARG;
+
+  OnExtendedPropertiesUsed();
 
   BrowserAccessibilityWin* const owner = GetOwner();
   *n_actions = static_cast<LONG>(
@@ -733,10 +734,11 @@ IFACEMETHODIMP BrowserAccessibilityComWin::nActions(LONG* n_actions) {
 IFACEMETHODIMP BrowserAccessibilityComWin::doAction(LONG action_index) {
   WIN_ACCESSIBILITY_API_TRACE_EVENT("doAction");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_DO_ACTION);
-  OnExtendedPropertiesUsed();
   if (IsDestroyed()) {
     return E_FAIL;
   }
+
+  OnExtendedPropertiesUsed();
 
   BrowserAccessibilityWin* const owner = GetOwner();
   const std::vector<ax::mojom::Action> actions = owner->GetSupportedActions();
@@ -783,7 +785,6 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_keyBinding(LONG action_index,
                                                           LONG* n_bindings) {
   WIN_ACCESSIBILITY_API_TRACE_EVENT("get_keyBinding");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_KEY_BINDING);
-  OnExtendedPropertiesUsed();
   if (IsDestroyed()) {
     return E_FAIL;
   }
@@ -791,6 +792,8 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_keyBinding(LONG action_index,
   if (!key_bindings || !n_bindings) {
     return E_INVALIDARG;
   }
+
+  OnExtendedPropertiesUsed();
 
   *key_bindings = nullptr;
   *n_bindings = 0;
@@ -820,7 +823,6 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_name(LONG action_index,
                                                     BSTR* name) {
   WIN_ACCESSIBILITY_API_TRACE_EVENT("get_name");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_NAME);
-  OnExtendedPropertiesUsed();
   if (IsDestroyed()) {
     return E_FAIL;
   }
@@ -828,6 +830,8 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_name(LONG action_index,
   if (!name) {
     return E_INVALIDARG;
   }
+
+  OnExtendedPropertiesUsed();
 
   BrowserAccessibilityWin* const owner = GetOwner();
   const std::vector<ax::mojom::Action> actions = owner->GetSupportedActions();
@@ -877,7 +881,6 @@ BrowserAccessibilityComWin::get_localizedName(LONG action_index,
                                               BSTR* localized_name) {
   WIN_ACCESSIBILITY_API_TRACE_EVENT("get_localizedName");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_LOCALIZED_NAME);
-  OnExtendedPropertiesUsed();
   if (IsDestroyed()) {
     return E_FAIL;
   }
@@ -885,6 +888,8 @@ BrowserAccessibilityComWin::get_localizedName(LONG action_index,
   if (!localized_name) {
     return E_INVALIDARG;
   }
+
+  OnExtendedPropertiesUsed();
 
   BrowserAccessibilityWin* const owner = GetOwner();
   const std::vector<ax::mojom::Action> actions = owner->GetSupportedActions();
@@ -940,7 +945,6 @@ BrowserAccessibilityComWin::get_localizedName(LONG action_index,
 IFACEMETHODIMP BrowserAccessibilityComWin::get_URL(BSTR* url) {
   WIN_ACCESSIBILITY_API_TRACE_EVENT("get_URL");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_URL);
-  OnExtendedPropertiesUsed();
   if (IsDestroyed()) {
     return E_FAIL;
   }
@@ -956,6 +960,8 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_URL(BSTR* url) {
     return E_FAIL;
   }
 
+  OnExtendedPropertiesUsed();
+
   std::string str = manager->GetTreeData().url;
   if (str.empty())
     return S_FALSE;
@@ -969,7 +975,6 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_URL(BSTR* url) {
 IFACEMETHODIMP BrowserAccessibilityComWin::get_title(BSTR* title) {
   WIN_ACCESSIBILITY_API_TRACE_EVENT("get_title");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_TITLE);
-  OnExtendedPropertiesUsed();
   if (IsDestroyed()) {
     return E_FAIL;
   }
@@ -980,6 +985,8 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_title(BSTR* title) {
 
   if (!title)
     return E_INVALIDARG;
+
+  OnExtendedPropertiesUsed();
 
   std::string str = manager->GetTreeData().title;
   if (str.empty())
@@ -994,7 +1001,6 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_title(BSTR* title) {
 IFACEMETHODIMP BrowserAccessibilityComWin::get_mimeType(BSTR* mime_type) {
   WIN_ACCESSIBILITY_API_TRACE_EVENT("get_mimeType");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_MIME_TYPE);
-  OnExtendedPropertiesUsed();
   if (IsDestroyed()) {
     return E_FAIL;
   }
@@ -1005,6 +1011,8 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_mimeType(BSTR* mime_type) {
 
   if (!mime_type)
     return E_INVALIDARG;
+
+  OnExtendedPropertiesUsed();
 
   std::string str = manager->GetTreeData().mimetype;
   if (str.empty())
@@ -1019,7 +1027,6 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_mimeType(BSTR* mime_type) {
 IFACEMETHODIMP BrowserAccessibilityComWin::get_docType(BSTR* doc_type) {
   WIN_ACCESSIBILITY_API_TRACE_EVENT("get_docType");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_DOC_TYPE);
-  OnExtendedPropertiesUsed();
   if (IsDestroyed()) {
     return E_FAIL;
   }
@@ -1030,6 +1037,8 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_docType(BSTR* doc_type) {
 
   if (!doc_type)
     return E_INVALIDARG;
+
+  OnExtendedPropertiesUsed();
 
   std::string str = manager->GetTreeData().doctype;
   if (str.empty())
@@ -1072,7 +1081,6 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_nodeInfo(
     USHORT* node_type) {
   WIN_ACCESSIBILITY_API_TRACE_EVENT("get_nodeInfo");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_NODE_INFO);
-  OnExtendedPropertiesUsed();
   if (IsDestroyed()) {
     return E_FAIL;
   }
@@ -1081,6 +1089,8 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_nodeInfo(
       !unique_id || !node_type) {
     return E_INVALIDARG;
   }
+
+  OnExtendedPropertiesUsed();
 
   BrowserAccessibilityWin* const owner = GetOwner();
   std::u16string tag;
@@ -1116,17 +1126,17 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_attributes(USHORT max_attribs,
                                                           USHORT* num_attribs) {
   WIN_ACCESSIBILITY_API_TRACE_EVENT("get_attributes");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_ISIMPLEDOMNODE_GET_ATTRIBUTES);
-  if (!GetDelegate()->IsWebContent()) {
-    return E_FAIL;
-  }
-  GetWinAccessibilityAPIUsageObserverList().Notify(
-      &WinAccessibilityAPIUsageObserver::OnHTMLAttributesUsed);
   if (IsDestroyed()) {
     return E_FAIL;
   }
-
+  if (!GetDelegate()->IsWebContent()) {
+    return E_FAIL;
+  }
   if (!attrib_names || !name_space_id || !attrib_values || !num_attribs)
     return E_INVALIDARG;
+
+  GetWinAccessibilityAPIUsageObserverList().Notify(
+      &WinAccessibilityAPIUsageObserver::OnHTMLAttributesUsed);
 
 #define ADD_ATTRIBUTE(name, value)                                          \
   if (index < max_attribs) {                                                \
@@ -1381,15 +1391,15 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_childAt(unsigned int child_index,
 IFACEMETHODIMP BrowserAccessibilityComWin::get_innerHTML(BSTR* innerHTML) {
   WIN_ACCESSIBILITY_API_TRACE_EVENT("get_innerHTML");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_INNER_HTML);
+  if (IsDestroyed()) {
+    return E_FAIL;
+  }
   if (!GetDelegate()->IsWebContent()) {
     return E_FAIL;
   }
   // Inner HTML is exposed only for math, only when kExtendedProperties is on.
   GetWinAccessibilityAPIUsageObserverList().Notify(
       &WinAccessibilityAPIUsageObserver::OnExtendedPropertiesUsed);
-  if (IsDestroyed()) {
-    return E_FAIL;
-  }
   BrowserAccessibilityWin* const owner = GetOwner();
   if (owner->GetRole() != ax::mojom::Role::kMath &&
       owner->GetRole() != ax::mojom::Role::kMathMLMath) {
@@ -1414,14 +1424,15 @@ BrowserAccessibilityComWin::get_localInterface(void** local_interface) {
 IFACEMETHODIMP BrowserAccessibilityComWin::get_language(BSTR* language) {
   WIN_ACCESSIBILITY_API_TRACE_EVENT("get_language");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_LANGUAGE);
-  OnExtendedPropertiesUsed();
-  if (!language)
-    return E_INVALIDARG;
-  *language = nullptr;
-
   if (IsDestroyed()) {
     return E_FAIL;
   }
+  if (!language) {
+    return E_INVALIDARG;
+  }
+
+  OnExtendedPropertiesUsed();
+  *language = nullptr;
 
   std::wstring lang = base::UTF8ToWide(GetOwner()->node()->GetLanguage());
   if (lang.empty())
@@ -1474,13 +1485,14 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_unclippedSubstringBounds(
     int* out_height) {
   WIN_ACCESSIBILITY_API_TRACE_EVENT("get_unclippedSubstringBounds");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_UNCLIPPED_SUBSTRING_BOUNDS);
-  OnInlineTextBoxesUsed();
   if (IsDestroyed()) {
     return E_FAIL;
   }
 
   if (!out_x || !out_y || !out_width || !out_height)
     return E_INVALIDARG;
+
+  OnInlineTextBoxesUsed();
 
   unsigned int text_length = static_cast<unsigned int>(GetHypertext().size());
   if (start_index > text_length || end_index > text_length ||
@@ -1502,7 +1514,6 @@ IFACEMETHODIMP BrowserAccessibilityComWin::scrollToSubstring(
     unsigned int end_index) {
   WIN_ACCESSIBILITY_API_TRACE_EVENT("scrollToSubstring");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_SCROLL_TO_SUBSTRING);
-  OnInlineTextBoxesUsed();
   if (IsDestroyed()) {
     return E_FAIL;
   }
@@ -1510,6 +1521,8 @@ IFACEMETHODIMP BrowserAccessibilityComWin::scrollToSubstring(
   auto* manager = Manager();
   if (!manager)
     return E_FAIL;
+
+  OnInlineTextBoxesUsed();
 
   unsigned int text_length = static_cast<unsigned int>(GetHypertext().size());
   if (start_index > text_length || end_index > text_length ||
@@ -1529,15 +1542,16 @@ IFACEMETHODIMP BrowserAccessibilityComWin::scrollToSubstring(
 IFACEMETHODIMP BrowserAccessibilityComWin::get_fontFamily(BSTR* font_family) {
   WIN_ACCESSIBILITY_API_TRACE_EVENT("get_fontFamily");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_FONT_FAMILY);
-  OnExtendedPropertiesUsed();
-  if (!font_family)
-    return E_INVALIDARG;
-  *font_family = nullptr;
-
   if (IsDestroyed()) {
     return E_FAIL;
   }
+  if (!font_family) {
+    return E_INVALIDARG;
+  }
 
+  OnExtendedPropertiesUsed();
+
+  *font_family = nullptr;
   std::u16string family = GetOwner()->GetInheritedString16Attribute(
       ax::mojom::StringAttribute::kFontFamily);
   if (family.empty())
