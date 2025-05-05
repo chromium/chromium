@@ -199,9 +199,9 @@ namespace cppgc {
 // The space trait rewires allocations for HeapVector with `kCanMoveWithMemcpy`
 // into a space supporting compaction.
 template <typename T>
-struct SpaceTrait<blink::HeapVectorBacking<T>,
-                  std::enable_if_t<blink::internal::CompactionTraits<
-                      blink::HeapVectorBacking<T>>::SupportsCompaction()>> {
+  requires(blink::internal::CompactionTraits<
+           blink::HeapVectorBacking<T>>::SupportsCompaction())
+struct SpaceTrait<blink::HeapVectorBacking<T>> {
   using Space = blink::CompactableHeapVectorBackingSpace;
 };
 

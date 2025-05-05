@@ -422,25 +422,23 @@ struct HashTraits<String>;
 
 namespace internal {
 
-template <typename Traits, typename Enabled = void>
+template <typename Traits>
 struct HashTraitsEmptyValueChecker {
   static bool IsEmptyValue(const typename Traits::TraitType& value) {
     return value == Traits::EmptyValue();
   }
 };
 template <typename Traits>
-struct HashTraitsEmptyValueChecker<
-    Traits,
-    std::enable_if_t<
-        std::is_same_v<decltype(Traits::IsEmptyValue(
-                           std::declval<typename Traits::TraitType>())),
-                       bool>>> {
+  requires requires(const typename Traits::TraitType& t) {
+    { Traits::IsEmptyValue(t) } -> std::same_as<bool>;
+  }
+struct HashTraitsEmptyValueChecker<Traits> {
   static bool IsEmptyValue(const typename Traits::TraitType& value) {
     return Traits::IsEmptyValue(value);
   }
 };
 
-template <typename Traits, typename Enabled = void>
+template <typename Traits>
 struct HashTraitsDeletedValueHelper {
   static bool IsDeletedValue(const typename Traits::TraitType& value) {
     return value == Traits::DeletedValue();
@@ -451,12 +449,10 @@ struct HashTraitsDeletedValueHelper {
   }
 };
 template <typename Traits>
-struct HashTraitsDeletedValueHelper<
-    Traits,
-    std::enable_if_t<
-        std::is_same_v<decltype(Traits::IsDeletedValue(
-                           std::declval<typename Traits::TraitType>())),
-                       bool>>> {
+  requires requires(const typename Traits::TraitType& t) {
+    { Traits::IsDeletedValue(t) } -> std::same_as<bool>;
+  }
+struct HashTraitsDeletedValueHelper<Traits> {
   static bool IsDeletedValue(const typename Traits::TraitType& value) {
     return Traits::IsDeletedValue(value);
   }

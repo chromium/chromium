@@ -292,10 +292,9 @@ struct IsTraceable<internal::ConcurrentBucket<T>> : IsTraceable<T> {};
 namespace cppgc {
 
 template <typename Table>
-struct SpaceTrait<
-    blink::HeapHashTableBacking<Table>,
-    std::enable_if_t<blink::internal::CompactionTraits<
-        blink::HeapHashTableBacking<Table>>::SupportsCompaction()>> {
+  requires(blink::internal::CompactionTraits<
+           blink::HeapHashTableBacking<Table>>::SupportsCompaction())
+struct SpaceTrait<blink::HeapHashTableBacking<Table>> {
   using Space = blink::CompactableHeapHashTableBackingSpace;
 };
 
