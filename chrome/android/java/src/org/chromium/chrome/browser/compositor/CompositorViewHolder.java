@@ -99,6 +99,7 @@ import org.chromium.ui.mojom.VirtualKeyboardMode;
 import org.chromium.ui.resources.AndroidResourceType;
 import org.chromium.ui.resources.ResourceManager;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
+import org.chromium.ui.util.MotionEventUtils;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -1718,7 +1719,10 @@ public class CompositorViewHolder extends FrameLayout
         if (isButtonActivate(event)
                 && 0 < mKeyboardFocusIndex
                 && mKeyboardFocusIndex < keyboardFocusableViews.size()) {
-            keyboardFocusableViews.get(mKeyboardFocusIndex).handleClick(LayoutManagerImpl.time());
+            keyboardFocusableViews
+                    .get(mKeyboardFocusIndex)
+                    .handleClick(
+                            LayoutManagerImpl.time(), MotionEventUtils.MOTION_EVENT_BUTTON_NONE);
             return true;
         }
         return super.dispatchKeyEvent(event);
@@ -1827,7 +1831,11 @@ public class CompositorViewHolder extends FrameLayout
                 int virtualViewId, int action, Bundle arguments) {
             switch (action) {
                 case AccessibilityNodeInfoCompat.ACTION_CLICK:
-                    mVirtualViews.get(virtualViewId).handleClick(LayoutManagerImpl.time());
+                    mVirtualViews
+                            .get(virtualViewId)
+                            .handleClick(
+                                    LayoutManagerImpl.time(),
+                                    MotionEventUtils.MOTION_EVENT_BUTTON_NONE);
                     return true;
             }
 

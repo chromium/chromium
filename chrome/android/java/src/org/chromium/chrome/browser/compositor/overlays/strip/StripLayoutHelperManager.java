@@ -302,7 +302,7 @@ public class StripLayoutHelperManager
             }
             long time = time();
             if (mModelSelectorButton != null && mModelSelectorButton.click(x, y, buttons)) {
-                mModelSelectorButton.handleClick(time);
+                mModelSelectorButton.handleClick(time, buttons);
                 return;
             }
             getActiveStripLayoutHelper().click(time(), x, y, buttons);
@@ -487,7 +487,7 @@ public class StripLayoutHelperManager
 
         if (!ChromeFeatureList.sTabStripIncognitoMigration.isEnabled()) {
             StripLayoutViewOnClickHandler selectorClickHandler =
-                    (time, view) -> handleModelSelectorButtonClick();
+                    (time, view, motionEventButtonState) -> handleModelSelectorButtonClick();
             StripLayoutViewOnKeyboardFocusHandler selectorKeyboardFocusHandler =
                     (isFocused, view) -> {
                         getActiveStripLayoutHelper().onKeyboardFocus(isFocused, view);

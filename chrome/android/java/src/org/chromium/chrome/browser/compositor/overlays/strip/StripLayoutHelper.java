@@ -2760,7 +2760,7 @@ public class StripLayoutHelper
         if (MotionEventUtils.isSecondaryClick(buttons)) {
             showContextMenu(clickedView);
         } else {
-            clickedView.handleClick(time);
+            clickedView.handleClick(time, buttons);
         }
     }
 
@@ -2787,7 +2787,7 @@ public class StripLayoutHelper
 
     /** Handle view click */
     @Override
-    public void onClick(long time, StripLayoutView view) {
+    public void onClick(long time, StripLayoutView view, int motionEventButtonState) {
         if (view instanceof StripLayoutTab tab) {
             handleTabClick(tab);
         } else if (view instanceof StripLayoutGroupTitle groupTitle) {

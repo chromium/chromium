@@ -8,6 +8,7 @@ import android.content.Context;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.util.FloatProperty;
+import android.view.MotionEvent;
 
 import androidx.annotation.ColorInt;
 
@@ -31,8 +32,11 @@ public abstract class StripLayoutView implements VirtualView {
          *
          * @param time The time of the click action.
          * @param view View that received the click.
+         * @param motionEventButtonState {@link MotionEvent#getButtonState()} at the moment of the
+         *     click if the click is detected via motion events; otherwise, this parameter is {@link
+         *     org.chromium.ui.util.MotionEventUtils#MOTION_EVENT_BUTTON_NONE}.
          */
-        void onClick(long time, StripLayoutView view);
+        void onClick(long time, StripLayoutView view, int motionEventButtonState);
     }
 
     /** Handler for keyboard focus on VirtualViews. */
@@ -392,8 +396,8 @@ public abstract class StripLayoutView implements VirtualView {
     }
 
     @Override
-    public void handleClick(long time) {
-        mOnClickHandler.onClick(time, this);
+    public void handleClick(long time, int motionEventButtonState) {
+        mOnClickHandler.onClick(time, this, motionEventButtonState);
     }
 
     /** Returns cached touch target bounds. */
