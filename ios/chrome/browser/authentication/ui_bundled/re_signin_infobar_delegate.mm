@@ -139,3 +139,8 @@ void ReSignInInfoBarDelegate::OnPrimaryAccountChanged(
       break;
   }
 }
+
+void ReSignInInfoBarDelegate::OnIdentityManagerShutdown(
+    signin::IdentityManager* identity_manager) {
+  identity_manager_observer_.Reset();
+}
