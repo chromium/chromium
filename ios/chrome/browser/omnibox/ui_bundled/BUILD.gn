@@ -65,8 +65,6 @@ source_set("omnibox_internal") {
     "omnibox_view_controller.h",
     "omnibox_view_controller.mm",
     "text_field_view_containing.h",
-    "zero_suggest_prefetch_helper.h",
-    "zero_suggest_prefetch_helper.mm",
   ]
   deps = [
     ":omnibox_popup_shared",
@@ -112,10 +110,7 @@ source_set("omnibox_internal") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "omnibox_text_field_ios_unittest.mm",
-    "zero_suggest_prefetch_helper_unittest.mm",
-  ]
+  sources = [ "omnibox_text_field_ios_unittest.mm" ]
   deps = [
     ":omnibox_internal",
     ":resources_unit_tests",

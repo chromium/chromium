@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/omnibox/ui_bundled/zero_suggest_prefetch_helper.h"
+#import "ios/chrome/browser/omnibox/coordinator/zero_suggest_prefetch_helper.h"
 
 #import "base/test/task_environment.h"
 #import "components/omnibox/browser/autocomplete_controller.h"
