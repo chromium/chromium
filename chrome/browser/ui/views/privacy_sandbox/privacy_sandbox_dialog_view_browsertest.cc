@@ -356,8 +356,9 @@ class PrivacySandboxDialogViewPrivacyPolicyBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+// TODO(https://crbug.com/415305952): High failure rate.
 IN_PROC_BROWSER_TEST_F(PrivacySandboxDialogViewPrivacyPolicyBrowserTest,
-                       InvokeUi_PrivacyPolicy) {
+                       DISABLED_InvokeUi_PrivacyPolicy) {
   ShowAndVerifyUi();
 }
 
@@ -380,9 +381,10 @@ class PrivacySandboxDialogViewAdsApiUxEnhancementPrivacyPolicyBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+// TODO(https://crbug.com/415305952): High failure rate.
 IN_PROC_BROWSER_TEST_F(
     PrivacySandboxDialogViewAdsApiUxEnhancementPrivacyPolicyBrowserTest,
-    InvokeUi_PrivacyPolicy) {
+    DISABLED_InvokeUi_PrivacyPolicy) {
   ShowAndVerifyUi();
 }
 
