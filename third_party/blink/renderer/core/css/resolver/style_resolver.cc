@@ -1952,7 +1952,8 @@ void StyleResolver::ApplyBaseStyle(
       CanApplyInlineStyleIncrementally(element, state, style_request)) {
     // We are in a situation where we can reuse the old style
     // and just apply the element's inline style on top of it
-    // (see the function comment).
+    // (see the function comment). This is also known as
+    // MISU (More Incremental Style Updates).
     state.SetStyle(*element->GetComputedStyle());
 
     // This is always false when creating a new style, but is not reset
@@ -1961,14 +1962,28 @@ void StyleResolver::ApplyBaseStyle(
     // which sets it to true if applicable.
     state.StyleBuilder().ResetSkipsContents();
 
+    CSSProperty::Flags author_flags = 0;
+
     const CSSPropertyValueSet* inline_style = element->InlineStyle();
     if (inline_style) {
       for (const CSSPropertyValue& property : inline_style->Properties()) {
         StyleBuilder::ApplyProperty(
             property.Name(), state,
             property.Value().EnsureScopedValue(&GetDocument()));
+        author_flags |= CSSProperty::Get(property.PropertyID()).GetFlags();
       }
     }
+
+    // If certain properties went from an unset special value
+    // (such as “revert”) to a value, then the author flags could
+    // have changed and we need to make sure we set the ComputedStyle
+    // flags (HasAuthorBackground etc.) here.
+    //
+    // We can never go the other way (from a set value to unset value)
+    // because we disable this path if the new value is “revert” or similar.
+    // Thus, we do not need to reset the author flags; they can only go
+    // from unset to set or from set to set.
+    state.SetComputedStyleFlagsFromAuthorFlags(author_flags);
 
     // Sets flags related to length unit conversions which may have taken
     // place during StyleBuilder::ApplyProperty.

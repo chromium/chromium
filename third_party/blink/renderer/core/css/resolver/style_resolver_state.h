@@ -278,6 +278,8 @@ class CORE_EXPORT StyleResolverState {
   // See StyleRequest.pseudo_id.
   PseudoId GetPseudoId() const { return pseudo_id_; }
 
+  void SetComputedStyleFlagsFromAuthorFlags(CSSProperty::Flags author_flags);
+
  private:
   CSSToLengthConversionData UnzoomedLengthConversionData(const FontSizeStyle&);
   // When resolving cq* units, this element is used to start the search

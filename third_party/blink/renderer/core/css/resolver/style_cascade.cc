@@ -279,27 +279,7 @@ void StyleCascade::Apply(CascadeFilter filter) {
   ApplyMatchResult(resolver);
   ApplyInterpolations(resolver);
 
-  // These three flags are only used if HasAppearance() is set
-  // (they are used for knowing whether appearance: auto is to be overridden),
-  // but we compute them nevertheless, to avoid suddenly having to compute them
-  // after-the-fact if inline style is updated incrementally.
-  if (resolver.AuthorFlags() & CSSProperty::kBackground) {
-    state_.StyleBuilder().SetHasAuthorBackground();
-  }
-  if (resolver.AuthorFlags() & CSSProperty::kBorder) {
-    state_.StyleBuilder().SetHasAuthorBorder();
-  }
-  if (resolver.AuthorFlags() & CSSProperty::kBorderRadius) {
-    state_.StyleBuilder().SetHasAuthorBorderRadius();
-  }
-
-  if ((state_.InsideLink() != EInsideLink::kInsideVisitedLink &&
-       (resolver.AuthorFlags() & CSSProperty::kHighlightColors)) ||
-      (state_.InsideLink() == EInsideLink::kInsideVisitedLink &&
-       (resolver.AuthorFlags() & CSSProperty::kVisitedHighlightColors))) {
-    state_.StyleBuilder().SetHasAuthorHighlightColors();
-  }
-
+  state_.SetComputedStyleFlagsFromAuthorFlags(resolver.AuthorFlags());
   if (resolver.Flags() & CSSProperty::kAnimation) {
     state_.StyleBuilder().SetCanAffectAnimations();
   }
@@ -1111,11 +1091,10 @@ const CSSValue* StyleCascade::Resolve(const CSSProperty& property,
     return ResolveFlipRevert(property, *v, tree_scope, priority, origin,
                              resolver);
   }
+  resolver.CollectFlags(property, origin);
   if (const auto* v = DynamicTo<CSSMathFunctionValue>(result)) {
     return ResolveMathFunction(property, *v, tree_scope);
   }
-
-  resolver.CollectFlags(property, origin);
 
   return result;
 }
