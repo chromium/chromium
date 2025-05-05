@@ -2642,7 +2642,6 @@ crbug.com/413411328 external/wpt/css/css-values/urls/referrer-policy/unsafe-url/
 
 # ====== New tests from wpt-importer added here ======
 crbug.com/415525027 [ Win10.20h2 ] external/wpt/fedcm/fedcm-button-and-other-account/fedcm-use-other-account-button-flow.tentative.https.html [ Timeout ]
-[ Mac12 ] wpt_internal/fedcm/fedcm-cache-manifest.https.html [ Crash Pass ]
 crbug.com/415382672 [ Mac15 ] external/wpt/css/css-overflow/scroll-marker-contain-005.tentative.html [ Failure ]
 crbug.com/415407103 [ Mac12 ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/view-transition-types-mutable-no-document-element-crashtest.html [ Crash ]
 external/wpt/digital-credentials/allow-attribute-with-create.https.html [ Failure Pass Timeout ]
@@ -9209,3 +9208,6 @@ crbug.com/324536287 external/wpt/soft-navigation-heuristics/interaction-with-pai
 
 # Gardener 2025-05-01
 crbug.com/411161567 [ Linux ] accessibility/interest-target.html [ Failure Pass ]
+
+# Gardener 2025-05-05
+crbug.com/413289778 [ Mac12 ] wpt_internal/fedcm/fedcm-cache-manifest.https.html [ Failure ]
