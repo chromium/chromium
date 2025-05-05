@@ -102,7 +102,6 @@ class FilesPolicyDialog : public PolicyDialogBase {
     Info& operator=(Info&& other);
 
     bool operator==(const Info& other) const;
-    bool operator!=(const Info& other) const;
 
     const std::vector<DlpConfidentialFile>& GetFiles() const;
 

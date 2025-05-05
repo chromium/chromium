@@ -58,15 +58,8 @@ class DlpFilesControllerAsh : public DlpFilesController,
                     bool is_dlp_restricted,
                     bool is_restricted_for_destination);
 
-    friend bool operator==(const DlpFileMetadata& a, const DlpFileMetadata& b) {
-      return a.is_dlp_restricted == b.is_dlp_restricted &&
-             a.is_restricted_for_destination ==
-                 b.is_restricted_for_destination &&
-             a.source_url == b.source_url && a.referrer_url == b.referrer_url;
-    }
-    friend bool operator!=(const DlpFileMetadata& a, const DlpFileMetadata& b) {
-      return !(a == b);
-    }
+    friend bool operator==(const DlpFileMetadata&,
+                           const DlpFileMetadata&) = default;
 
     // Source URL from which the file was downloaded.
     std::string source_url;

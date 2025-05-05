@@ -152,10 +152,6 @@ bool FilesPolicyDialog::Info::operator==(const Info& other) const {
              other.accessible_learn_more_link_name_;
 }
 
-bool FilesPolicyDialog::Info::operator!=(const Info& other) const {
-  return !(*this == other);
-}
-
 const std::vector<DlpConfidentialFile>& FilesPolicyDialog::Info::GetFiles()
     const {
   return files_;

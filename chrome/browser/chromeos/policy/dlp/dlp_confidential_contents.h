@@ -47,7 +47,6 @@ struct DlpConfidentialContent {
   // Contents with the same url are considered equal, ignoring the ref (part
   // after #).
   bool operator==(const DlpConfidentialContent& other) const;
-  bool operator!=(const DlpConfidentialContent& other) const;
   bool operator<(const DlpConfidentialContent& other) const;
   bool operator<=(const DlpConfidentialContent& other) const;
   bool operator>(const DlpConfidentialContent& other) const;

@@ -26,8 +26,9 @@ class DlpFileDestination {
   DlpFileDestination(DlpFileDestination&&);
   DlpFileDestination& operator=(DlpFileDestination&&);
 
-  bool operator==(const DlpFileDestination&) const;
-  bool operator!=(const DlpFileDestination&) const;
+  friend bool operator==(const DlpFileDestination&,
+                         const DlpFileDestination&) = default;
+
   bool operator<(const DlpFileDestination& other) const;
   bool operator<=(const DlpFileDestination& other) const;
   bool operator>(const DlpFileDestination& other) const;

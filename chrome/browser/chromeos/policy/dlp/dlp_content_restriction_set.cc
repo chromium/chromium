@@ -38,16 +38,6 @@ DlpContentRestrictionSet& DlpContentRestrictionSet::operator=(
 
 DlpContentRestrictionSet::~DlpContentRestrictionSet() = default;
 
-bool DlpContentRestrictionSet::operator==(
-    const DlpContentRestrictionSet& other) const {
-  return restrictions_ == other.restrictions_;
-}
-
-bool DlpContentRestrictionSet::operator!=(
-    const DlpContentRestrictionSet& other) const {
-  return !(*this == other);
-}
-
 void DlpContentRestrictionSet::SetRestriction(DlpContentRestriction restriction,
                                               DlpRulesManager::Level level,
                                               const GURL& url) {

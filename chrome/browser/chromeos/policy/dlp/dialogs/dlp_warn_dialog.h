@@ -48,10 +48,6 @@ class DlpWarnDialog : public PolicyDialogBase {
              a.application_title == b.application_title &&
              EqualWithTitles(a.confidential_contents, b.confidential_contents);
     }
-    friend bool operator!=(const DlpWarnDialogOptions& a,
-                           const DlpWarnDialogOptions& b) {
-      return !(a == b);
-    }
 
     Restriction restriction;
     std::optional<std::u16string> application_title;
