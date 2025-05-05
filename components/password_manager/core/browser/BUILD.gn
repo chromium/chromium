@@ -73,6 +73,8 @@ static_library("browser") {
     "move_password_to_account_store_helper.h",
     "old_google_credentials_cleaner.cc",
     "old_google_credentials_cleaner.h",
+    "one_time_passwords/otp_manager.cc",
+    "one_time_passwords/otp_manager.h",
     "origin_credential_store.cc",
     "origin_credential_store.h",
     "password_autofill_manager.cc",

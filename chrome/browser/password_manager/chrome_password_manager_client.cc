@@ -80,6 +80,7 @@
 #include "components/password_manager/core/browser/http_auth_manager.h"
 #include "components/password_manager/core/browser/http_auth_manager_impl.h"
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
+#include "components/password_manager/core/browser/one_time_passwords/otp_manager.h"
 #include "components/password_manager/core/browser/passkey_credential.h"
 #include "components/password_manager/core/browser/password_bubble_experiment.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -248,25 +249,13 @@ void MaybeShowPostMigrationSheetWrapper(
 
 #endif
 
-void InformPasswordChangeServiceIfOtpPresent(
-    content::WebContents* web_contents,
+bool PredictionsContainOtpFields(
     const base::flat_map<autofill::FieldGlobalId, autofill::FieldType>&
         predictions) {
-  bool has_otp_field = std::any_of(
-      predictions.begin(), predictions.end(), [](const auto& field) {
-        return field.second == autofill::ONE_TIME_CODE;
-      });
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  if (has_otp_field) {
-    ChromePasswordChangeService* password_change_service =
-        PasswordChangeServiceFactory::GetForProfile(profile);
-    if (password_change_service &&
-        password_change_service->GetPasswordChangeDelegate(web_contents)) {
-      password_change_service->GetPasswordChangeDelegate(web_contents)
-          ->OnOtpFieldDetected(web_contents);
-    }
-  }
+  return std::any_of(predictions.begin(), predictions.end(),
+                     [](const auto& field) {
+                       return field.second == autofill::ONE_TIME_CODE;
+                     });
 }
 
 }  // namespace
@@ -1319,6 +1308,16 @@ void ChromePasswordManagerClient::NavigateToManagePasswordsPage(
 #endif
 }
 
+void ChromePasswordManagerClient::InformPasswordChangeServiceOfOtpPresent() {
+  ChromePasswordChangeService* password_change_service =
+      PasswordChangeServiceFactory::GetForProfile(profile_);
+  if (password_change_service &&
+      password_change_service->GetPasswordChangeDelegate(web_contents())) {
+    password_change_service->GetPasswordChangeDelegate(web_contents())
+        ->OnOtpFieldDetected(web_contents());
+  }
+}
+
 #if BUILDFLAG(IS_ANDROID)
 void ChromePasswordManagerClient::NavigateToManagePasskeysPage(
     password_manager::ManagePasswordsReferrer referrer) {
@@ -1821,6 +1820,7 @@ ChromePasswordManagerClient::ChromePasswordManagerClient(
                                 g_browser_process->local_state(),
                                 SyncServiceFactory::GetForProfile(profile_)),
       httpauth_manager_(this),
+      otp_manager_(this),
       content_credential_manager_(
           password_manager::BrowserCredentialManagerFactory(this)
               .CreateCredentialManager()),
@@ -1966,7 +1966,10 @@ void ChromePasswordManagerClient::OnFieldTypesDetermined(
             field_ids);
         password_manager_.ProcessClassificationModelPredictions(driver, form,
                                                                 predictions);
-        InformPasswordChangeServiceIfOtpPresent(web_contents(), predictions);
+
+        if (PredictionsContainOtpFields(predictions)) {
+          otp_manager_.ProcessClassificationModelPredictions(form, predictions);
+        }
         break;
       }
     }
