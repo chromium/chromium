@@ -1760,7 +1760,7 @@ bool ContentBrowserClient::CanBackForwardCachedPageReceiveCookieChanges(
     content::BrowserContext& browser_context,
     const GURL& url,
     const net::SiteForCookies& site_for_cookies,
-    const std::optional<url::Origin>& top_frame_origin,
+    const url::Origin& top_frame_origin,
     const net::CookieSettingOverrides overrides) {
   return true;
 }
