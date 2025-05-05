@@ -105,6 +105,8 @@ class MODULES_EXPORT AIPageContentAgent final
         const LocalFrame& frame,
         mojom::blink::AIPageContentFrameInteractionInfo&
             frame_interaction_info);
+    void AddAriaRole(const LayoutObject& object,
+                     mojom::blink::AIPageContentAttributes& attributes);
     void AddNodeInteractionInfo(
         const LayoutObject& object,
         mojom::blink::AIPageContentAttributes& attributes,

@@ -49,6 +49,7 @@
 #include "third_party/blink/renderer/modules/accessibility/ax_object.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
+#include "ui/accessibility/ax_role_properties.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 
@@ -947,6 +948,8 @@ AIPageContentAgent::ContentBuilder::MaybeGenerateContentNode(
   // Compute state that is used to decide whether this node generates a
   // ContentNode before making the decision below.
   AddAnnotatedRoles(object, attributes.annotated_roles);
+  // Interaction info depends on aria role.
+  AddAriaRole(object, attributes);
   AddNodeInteractionInfo(object, attributes, recursion_data.is_aria_disabled);
 
   // Set the attribute type and add any special attributes if the attribute type
@@ -1316,6 +1319,28 @@ void AIPageContentAgent::ContentBuilder::AddInteractionInfoForHitTesting(
   }
 }
 
+void AIPageContentAgent::ContentBuilder::AddAriaRole(
+    const LayoutObject& object,
+    mojom::blink::AIPageContentAttributes& attributes) {
+  if (!options_->enable_experimental_actionable_data) {
+    return;
+  }
+
+  auto* element = DynamicTo<Element>(object.GetNode());
+  if (!element) {
+    attributes.aria_role = ax::mojom::blink::Role::kUnknown;
+    return;
+  }
+
+  auto aria_role = AXObject::AriaAttribute(*element, html_names::kRoleAttr);
+  if (aria_role.empty()) {
+    attributes.aria_role = ax::mojom::blink::Role::kUnknown;
+    return;
+  }
+
+  attributes.aria_role = AXObject::FirstValidRoleInRoleString(aria_role);
+}
+
 void AIPageContentAgent::ContentBuilder::AddNodeInteractionInfo(
     const LayoutObject& object,
     mojom::blink::AIPageContentAttributes& attributes,
@@ -1377,7 +1402,8 @@ void AIPageContentAgent::ContentBuilder::AddNodeInteractionInfo(
 
   if (auto* element = DynamicTo<Element>(object.GetNode())) {
     node_interaction_info->is_focusable = element->IsFocusable();
-    node_interaction_info->is_clickable = element->IsMaybeClickable();
+    node_interaction_info->is_clickable =
+        element->IsMaybeClickable() || ui::IsClickable(*attributes.aria_role);
 
     if (auto* html_element = DynamicTo<HTMLElement>(element)) {
       node_interaction_info->is_draggable = html_element->draggable();

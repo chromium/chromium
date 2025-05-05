@@ -3639,5 +3639,26 @@ TEST_F(AIPageContentAgentTest, DisabledOption) {
   EXPECT_TRUE(cherry.disabled);
 }
 
+TEST_F(AIPageContentAgentTest, AriaRole) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      R"HTML(
+      <body>
+        <div role="button"></div>
+      </body>
+      )HTML",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  GetAIPageContentWithActionableElements();
+  const auto& root = ContentRootNode();
+  ASSERT_EQ(root.children_nodes.size(), 1u);
+
+  const auto& button = *root.children_nodes.at(0);
+  ASSERT_TRUE(button.content_attributes->node_interaction_info);
+  EXPECT_TRUE(button.content_attributes->node_interaction_info->is_clickable);
+  EXPECT_EQ(button.content_attributes->aria_role,
+            ax::mojom::blink::Role::kButton);
+}
+
 }  // namespace
 }  // namespace blink

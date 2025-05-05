@@ -4,6 +4,7 @@
 
 module blink.mojom;
 
+import "ui/accessibility/ax_enums.mojom";
 import "third_party/blink/public/mojom/forms/form_control_type.mojom";
 import "third_party/blink/public/mojom/tokens/tokens.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
@@ -384,6 +385,10 @@ struct AIPageContentAttributes {
   // A text description of the node. Only populated when actionable elements are
   // enabled.
   string? label;
+
+  // The role derived from `aria_role`. Only populated when actionable elements
+  // are enabled.
+  ax.mojom.Role? aria_role;
 };
 
 // A semantic chunk of information on a page. It can represent text, structured

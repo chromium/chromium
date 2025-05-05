@@ -335,6 +335,21 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTestActionableElements,
 }
 
 IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTestActionableElements,
+                       AriaRole) {
+  LoadPage(https_server()->GetURL("/aria_role.html"));
+  EXPECT_EQ(page_content().version(),
+            optimization_guide::proto::
+                ANNOTATED_PAGE_CONTENT_VERSION_ONLY_ACTIONABLE_ELEMENTS_1_0);
+
+  EXPECT_EQ(ContentRootNode().children_nodes().size(), 1);
+  const auto& button = ContentRootNode().children_nodes()[0];
+  ASSERT_TRUE(button.content_attributes().has_interaction_info());
+  EXPECT_TRUE(button.content_attributes().interaction_info().is_clickable());
+  EXPECT_EQ(button.content_attributes().aria_role(),
+            optimization_guide::proto::AXRole::AX_ROLE_BUTTON);
+}
+
+IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTestActionableElements,
                        ZOrder) {
   LoadPage(https_server()->GetURL("/simple.html"));
 
