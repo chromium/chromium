@@ -44,30 +44,39 @@ constexpr size_t kPaddingSize = 3;
 base::expected<std::unique_ptr<ProbabilisticRevealTokenTestIssuer>,
                absl::Status>
 ProbabilisticRevealTokenTestIssuer::Create(uint64_t private_key) {
-  absl::StatusOr<std::unique_ptr<ProbabilisticRevealTokenTestIssuer>>
-      maybe_issuer = CreateInternal(private_key);
-  if (!maybe_issuer.ok()) {
-    return base::unexpected(maybe_issuer.status());
-  }
-  return base::ok(std::move(maybe_issuer.value()));
-}
-
-absl::StatusOr<std::unique_ptr<ProbabilisticRevealTokenTestIssuer>>
-ProbabilisticRevealTokenTestIssuer::CreateInternal(uint64_t private_key) {
   auto context = std::make_unique<Context>();
   std::unique_ptr<ECGroup> group;
   {
-    PJC_ASSIGN_OR_RETURN(ECGroup local_group,
-                         ECGroup::Create(NID_X9_62_prime256v1, context.get()));
-    group = std::make_unique<ECGroup>(std::move(local_group));
+    absl::StatusOr<ECGroup> maybe_group =
+        ECGroup::Create(NID_X9_62_prime256v1, context.get());
+    if (!maybe_group.ok()) {
+      return base::unexpected(maybe_group.status());
+    }
+    group = std::make_unique<ECGroup>(std::move(maybe_group).value());
   }
 
   std::unique_ptr<ElGamalEncrypter> encrypter;
   std::string serialized_public_key;
   {
-    PJC_ASSIGN_OR_RETURN(ECPoint g, group->GetFixedGenerator());
-    PJC_ASSIGN_OR_RETURN(ECPoint y, g.Mul(context->CreateBigNum(private_key)));
-    PJC_ASSIGN_OR_RETURN(serialized_public_key, y.ToBytesCompressed());
+    absl::StatusOr<ECPoint> maybe_g = group->GetFixedGenerator();
+    if (!maybe_g.ok()) {
+      return base::unexpected(maybe_g.status());
+    }
+    ECPoint g = std::move(maybe_g).value();
+
+    absl::StatusOr<ECPoint> maybe_y = g.Mul(context->CreateBigNum(private_key));
+    if (!maybe_y.ok()) {
+      return base::unexpected(maybe_y.status());
+    }
+    ECPoint y = std::move(maybe_y).value();
+
+    absl::StatusOr<std::string> maybe_serialized_public_key =
+        y.ToBytesCompressed();
+    if (!maybe_serialized_public_key.ok()) {
+      return base::unexpected(maybe_serialized_public_key.status());
+    }
+
+    serialized_public_key = std::move(maybe_serialized_public_key).value();
     encrypter = std::make_unique<ElGamalEncrypter>(
         group.get(), std::make_unique<PublicKey>(std::move(g), std::move(y)));
   }
@@ -91,9 +100,10 @@ ProbabilisticRevealTokenTestIssuer::Issue(std::vector<std::string> plaintexts,
   for (const auto& pi : plaintexts) {
     GetProbabilisticRevealTokenResponse_ProbabilisticRevealToken* token =
         response_proto.add_tokens();
-    absl::StatusOr<ProbabilisticRevealToken> maybe_token = IssueInternal(pi);
-    if (!maybe_token.ok()) {
-      return base::unexpected(maybe_token.status());
+    base::expected<ProbabilisticRevealToken, absl::Status> maybe_token =
+        IssueInternal(pi);
+    if (!maybe_token.has_value()) {
+      return base::unexpected(maybe_token.error());
     }
     tokens_.push_back(maybe_token.value());
     token->set_version(maybe_token.value().version);
@@ -113,91 +123,102 @@ ProbabilisticRevealTokenTestIssuer::Issue(std::vector<std::string> plaintexts,
 base::expected<std::string, absl::Status>
 ProbabilisticRevealTokenTestIssuer::RevealToken(
     const ProbabilisticRevealToken& token) const {
-  absl::StatusOr<std::string> maybe_plaintext = RevealTokenInternal(token);
-  if (!maybe_plaintext.ok()) {
-    return base::unexpected(maybe_plaintext.status());
+  base::expected<ECPoint, absl::Status> maybe_point = Decrypt(token);
+  if (!maybe_point.has_value()) {
+    return base::unexpected(maybe_point.error());
   }
-  return base::ok(std::move(maybe_plaintext.value()));
+
+  absl::StatusOr<BigNum> big_num = group_->RecoverXFromPaddedPoint(
+      maybe_point.value(), kPaddingSize * kBitsPerByte);
+  if (!big_num.ok()) {
+    return base::unexpected(big_num.status());
+  }
+  return std::move(big_num)->ToBytes();
 }
 
-absl::StatusOr<std::string>
-ProbabilisticRevealTokenTestIssuer::RevealTokenInternal(
-    const ProbabilisticRevealToken& token) const {
-  PJC_ASSIGN_OR_RETURN(ECPoint point, Decrypt(token));
-  PJC_ASSIGN_OR_RETURN(BigNum big_num, group_->RecoverXFromPaddedPoint(
-                                           point, kPaddingSize * kBitsPerByte));
-  return big_num.ToBytes();
-}
-
-absl::StatusOr<ProbabilisticRevealToken>
+base::expected<ProbabilisticRevealToken, absl::Status>
 ProbabilisticRevealTokenTestIssuer::IssueInternal(
     const std::string& plaintext) const {
   if (plaintext.size() != kPlaintextSize) {
-    return absl::InvalidArgumentError("plaintext size must be kPlaintextSize");
+    return base::unexpected(
+        absl::InvalidArgumentError("plaintext size must be kPlaintextSize"));
   }
-  PJC_ASSIGN_OR_RETURN(ECPoint plaintext_point,
-                       group_->GetPointByPaddingX(
-                           context_->CreateBigNum(plaintext),
-                           /*padding_bit_count=*/kPaddingSize * kBitsPerByte));
-  PJC_ASSIGN_OR_RETURN(std::string serialized_plaintext_point,
-                       plaintext_point.ToBytesCompressed());
-  PJC_ASSIGN_OR_RETURN(Ciphertext ciphertext,
-                       encrypter_->Encrypt(plaintext_point));
-  PJC_ASSIGN_OR_RETURN(std::string u_compressed,
-                       ciphertext.u.ToBytesCompressed());
-  PJC_ASSIGN_OR_RETURN(std::string e_compressed,
-                       ciphertext.e.ToBytesCompressed());
-  return ProbabilisticRevealToken(1, std::move(u_compressed),
-                                  std::move(e_compressed));
+  absl::StatusOr<ECPoint> maybe_plaintext_point = group_->GetPointByPaddingX(
+      context_->CreateBigNum(plaintext),
+      /*padding_bit_count=*/kPaddingSize * kBitsPerByte);
+  if (!maybe_plaintext_point.ok()) {
+    return base::unexpected(maybe_plaintext_point.status());
+  }
+  absl::StatusOr<Ciphertext> maybe_ciphertext =
+      encrypter_->Encrypt(maybe_plaintext_point.value());
+  if (!maybe_ciphertext.ok()) {
+    return base::unexpected(maybe_plaintext_point.status());
+  }
+  const auto& ciphertext = maybe_ciphertext.value();
+
+  absl::StatusOr<std::string> maybe_u_compressed =
+      ciphertext.u.ToBytesCompressed();
+  if (!maybe_u_compressed.ok()) {
+    return base::unexpected(maybe_u_compressed.status());
+  }
+
+  absl::StatusOr<std::string> maybe_e_compressed =
+      ciphertext.e.ToBytesCompressed();
+  if (!maybe_e_compressed.ok()) {
+    return base::unexpected(maybe_e_compressed.status());
+  }
+
+  return ProbabilisticRevealToken(1, std::move(maybe_u_compressed).value(),
+                                  std::move(maybe_e_compressed).value());
 }
 
 base::expected<std::string, absl::Status>
 ProbabilisticRevealTokenTestIssuer::DecryptSerializeEncode(
     const ProbabilisticRevealToken& token) {
+  base::expected<ECPoint, absl::Status> maybe_point = Decrypt(token);
+  if (!maybe_point.has_value()) {
+    return base::unexpected(maybe_point.error());
+  }
   absl::StatusOr<std::string> maybe_serialized_point =
-      DecryptSerializeEncodeInternal(token);
+      maybe_point.value().ToBytesCompressed();
   if (!maybe_serialized_point.ok()) {
     return base::unexpected(maybe_serialized_point.status());
   }
-  return base::ok(std::move(maybe_serialized_point.value()));
+  return base::Base64Encode(maybe_serialized_point.value());
 }
 
 base::expected<std::vector<std::string>, absl::Status>
 ProbabilisticRevealTokenTestIssuer::DecryptSerializeEncode(
     const std::vector<ProbabilisticRevealToken>& tokens) {
-  absl::StatusOr<std::vector<std::string>> maybe_serialized_points =
-      DecryptSerializeEncodeInternal(tokens);
-  if (!maybe_serialized_points.ok()) {
-    return base::unexpected(maybe_serialized_points.status());
-  }
-  return base::ok(std::move(maybe_serialized_points.value()));
-}
-
-absl::StatusOr<std::string>
-ProbabilisticRevealTokenTestIssuer::DecryptSerializeEncodeInternal(
-    const ProbabilisticRevealToken& token) {
-  PJC_ASSIGN_OR_RETURN(ECPoint point, Decrypt(token));
-  PJC_ASSIGN_OR_RETURN(std::string serialized_point, point.ToBytesCompressed());
-  return base::Base64Encode(serialized_point);
-}
-
-absl::StatusOr<std::vector<std::string>>
-ProbabilisticRevealTokenTestIssuer::DecryptSerializeEncodeInternal(
-    const std::vector<ProbabilisticRevealToken>& tokens) {
   std::vector<std::string> encoded;
   for (const auto& t : tokens) {
-    PJC_ASSIGN_OR_RETURN(std::string sp, DecryptSerializeEncodeInternal(t));
-    encoded.push_back(std::move(sp));
+    base::expected<std::string, absl::Status> maybe_sp =
+        DecryptSerializeEncode(t);
+    if (!maybe_sp.has_value()) {
+      return base::unexpected(maybe_sp.error());
+    }
+    encoded.push_back(std::move(maybe_sp).value());
   }
   return encoded;
 }
 
-absl::StatusOr<ECPoint> ProbabilisticRevealTokenTestIssuer::Decrypt(
+base::expected<ECPoint, absl::Status>
+ProbabilisticRevealTokenTestIssuer::Decrypt(
     const ProbabilisticRevealToken& token) const {
-  PJC_ASSIGN_OR_RETURN(ECPoint u, group_->CreateECPoint(token.u));
-  PJC_ASSIGN_OR_RETURN(ECPoint e, group_->CreateECPoint(token.e));
-  Ciphertext ciphertext{std::move(u), std::move(e)};
-  return decrypter_->Decrypt(ciphertext);
+  absl::StatusOr<ECPoint> maybe_u = group_->CreateECPoint(token.u);
+  if (!maybe_u.ok()) {
+    return base::unexpected(maybe_u.status());
+  }
+  absl::StatusOr<ECPoint> maybe_e = group_->CreateECPoint(token.e);
+  if (!maybe_e.ok()) {
+    return base::unexpected(maybe_e.status());
+  }
+  Ciphertext ciphertext{std::move(maybe_u).value(), std::move(maybe_e).value()};
+  absl::StatusOr<ECPoint> decrypted_point = decrypter_->Decrypt(ciphertext);
+  if (!decrypted_point.ok()) {
+    return base::unexpected(decrypted_point.status());
+  }
+  return std::move(decrypted_point).value();
 }
 
 ProbabilisticRevealTokenTestIssuer::ProbabilisticRevealTokenTestIssuer(
