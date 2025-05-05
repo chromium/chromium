@@ -2158,7 +2158,8 @@ struct hentry* AffixMgr::compound_check(const std::string& word,
             wordnum = oldwordnum2;
 
             // perhaps second word is a compound word (recursive call)
-            if (wordnum + 2 < maxwordnum) {
+            // (only if SPELL_COMPOUND_2 is not set and maxwordnum is not exceeded)
+            if ((!info || !(*info & SPELL_COMPOUND_2)) && wordnum + 2 < maxwordnum) {
               rv = compound_check(st.substr(i), wordnum + 1,
                                   numsyllable, maxwordnum, wnum + 1, words, rwords, 0,
                                   is_sug, info);
