@@ -80,7 +80,7 @@ class SendTabToSelfToolbarBubbleController;
 }  // namespace send_tab_to_self
 
 namespace tabs_api::mojom {
-class TabStripController;
+class TabStripService;
 }
 
 // This class owns the core controllers for features that are scoped to a given
@@ -317,7 +317,7 @@ class BrowserWindowFeatures {
       cookie_controls_bubble_coordinator_;
 
   // This is an experimental API that interacts with the TabStripModel.
-  std::unique_ptr<tabs_api::mojom::TabStripController> tab_strip_controller_;
+  std::unique_ptr<tabs_api::mojom::TabStripService> tab_strip_service_;
 };
 
 #endif  // CHROME_BROWSER_UI_BROWSER_WINDOW_PUBLIC_BROWSER_WINDOW_FEATURES_H_

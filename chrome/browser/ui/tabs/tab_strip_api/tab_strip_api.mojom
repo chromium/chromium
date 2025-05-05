@@ -5,6 +5,7 @@
 module tabs_api.mojom;
 
 import "mojo/public/mojom/base/error.mojom";
+import "url/mojom/url.mojom";
 
 // References a tab object. The id can refer to different types of underlying
 // resource. The |type| field can be used to differentiate between the type
@@ -30,16 +31,38 @@ struct TabId {
   Type type;
 };
 
-// The TabStripController is an object that lives alongside the
-// TabStripViewModel. It acts as the bridge between the model and any UI Dialog
-// or client.
-interface TabStripController {
+// Position is an ephemeral object that should not be saved nor act as an
+// identifier. It is purely used in this API to determine the position within
+// the TabstripModel.
+struct Position {
+  // TODO (crbug.com/412935316). Create a generic id that represents the parent
+  // collection id.
+  uint32 index;
+};
 
+// The TabStripService is an object that lives alongside the
+// TabstripModel. It acts as the bridge between the model and any UI Dialog
+// or client.
+interface TabStripService {
   // Creates a new tab.
+  // Position specifies the location of the Tab after creation. If position is
+  // empty, the new tab will be appended to the end of the Tabstrip.
+  // Url specifies what is loaded in the Tab. If url is empty, then the new
+  // tab-page is loaded instead.
+  //
   // TODO (crbug.com/409821664). Returns a result type of bool for success or
   // Error for errors. The success type is temporary and will be changed once
   // it is defined.
   [Sync]
-  CreateNewTab() => result<bool, mojo_base.mojom.Error>;
+  CreateTabAt(Position? pos, url.mojom.Url? url)
+      => result<bool, mojo_base.mojom.Error>;
 };
 
+// TODO (crbug.com/412955607)
+// TabsObserver is not a CheckedObserver. There is a potential UaF if the
+// observer list attempts to call a destroyed TabsObserver that hasn't removed
+// itself from the list.
+interface TabsObserver {
+  // TODO (crbug.com/411134070). Add in missing TabData.
+  OnTabsCreated(array<Position> pos);
+};

@@ -39,7 +39,6 @@ source_set("impl") {
     "//chrome/browser/ui/commerce",
     "//chrome/browser/ui/lens",
     "//chrome/browser/ui/tabs/tab_strip_api",
-    "//chrome/browser/ui/tabs/tab_strip_api:impl",
     "//chrome/browser/ui/toasts",
     "//chrome/browser/ui/views/download",
     "//chrome/browser/ui/views/side_panel",
