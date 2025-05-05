@@ -37,6 +37,10 @@ class InstallerDownloaderModel {
   virtual void StartDownload(const GURL& url,
                              const base::FilePath& destination,
                              CompletionCallback completion_callback) = 0;
+
+  // Returns true if the infobar has been displayed the maximum number of times,
+  // false otherwise.
+  virtual bool IsMaxShowCountReached() const = 0;
 };
 
 }  // namespace installer_downloader

@@ -11,6 +11,7 @@
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/win/installer_downloader/installer_downloader_feature.h"
 #include "chrome/browser/win/installer_downloader/installer_downloader_model.h"
@@ -19,7 +20,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
+using base::test::RunOnceCallback;
 using ::testing::_;
+using ::testing::Invoke;
+using ::testing::Return;
 using ::testing::StrictMock;
 
 namespace installer_downloader {
@@ -35,6 +39,7 @@ class MockInstallerDownloaderModel : public InstallerDownloaderModel {
               CheckEligibility,
               (base::OnceCallback<void(const std::optional<base::FilePath>&)>),
               (override));
+  MOCK_METHOD(bool, IsMaxShowCountReached, (), (const, override));
 };
 
 class InstallerDownloaderControllerTest : public testing::Test {
@@ -55,9 +60,19 @@ class InstallerDownloaderControllerTest : public testing::Test {
   raw_ptr<StrictMock<MockInstallerDownloaderModel>> mock_model_;
 };
 
-TEST_F(InstallerDownloaderControllerTest, NoCallOrCrashExpected) {
+TEST_F(InstallerDownloaderControllerTest, BailsWhenShowCountExceeded) {
+  EXPECT_CALL(*mock_model_, IsMaxShowCountReached()).WillOnce(Return(true));
+
   controller_->MaybeShowInfoBar();
-  controller_->OnDownloadRequestAccepted(/*web_contents=*/nullptr);
+}
+
+TEST_F(InstallerDownloaderControllerTest,
+       CallsEligibilityWhenShowCountNotExceeded) {
+  EXPECT_CALL(*mock_model_, IsMaxShowCountReached()).WillOnce(Return(false));
+  EXPECT_CALL(*mock_model_, CheckEligibility(_))
+      .WillOnce(RunOnceCallback<0>(std::nullopt));
+
+  controller_->MaybeShowInfoBar();
 }
 
 }  // namespace

@@ -11,6 +11,8 @@
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "chrome/browser/win/installer_downloader/installer_downloader_feature.h"
 #include "chrome/browser/win/installer_downloader/installer_downloader_model.h"
 #include "chrome/browser/win/installer_downloader/installer_downloader_model_impl.h"
@@ -30,6 +32,16 @@ void InstallerDownloaderController::MaybeShowInfoBar() {
   // At this point, the decision to show the infobar should be taken.
   // 1. Check local state whether shown limit has been reached or not.
   // 2. Check eligibility.
+
+  // The max show count of the infobar have been reached. Eligibility check is
+  // no longer needed.
+  if (model_->IsMaxShowCountReached()) {
+    return;
+  }
+
+  model_->CheckEligibility(
+      base::BindOnce(&InstallerDownloaderController::OnEligibilityReady,
+                     base::Unretained(this)));
 }
 
 void InstallerDownloaderController::OnEligibilityReady(

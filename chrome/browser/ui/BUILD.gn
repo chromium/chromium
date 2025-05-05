@@ -3548,6 +3548,7 @@ static_library("ui") {
       "//chrome/browser:titlebar_config",
       "//chrome/browser/win:mica_titlebar",
       "//chrome/browser/win/conflicts:module_info",
+      "//chrome/browser/win/installer_downloader:prefs",
       "//chrome/credential_provider/common:common_constants",
       "//chrome/services/util_win/public/mojom:mojom",
       "//components/lens",

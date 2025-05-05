@@ -28,8 +28,12 @@ namespace installer_downloader {
 //
 // All expensive work executes on the ThreadPool; the class itself is
 // constructed and destroyed on the UI thread.
-class InstallerDownloaderModelImpl : public InstallerDownloaderModel {
+class InstallerDownloaderModelImpl final : public InstallerDownloaderModel {
  public:
+  // This represents the maximum number of times that the info bar will be
+  // shown.
+  static constexpr int kMaxShowCount = 3;
+
   InstallerDownloaderModelImpl();
   InstallerDownloaderModelImpl(const InstallerDownloaderModelImpl&) = delete;
   InstallerDownloaderModelImpl& operator=(const InstallerDownloaderModelImpl&) =
@@ -40,10 +44,11 @@ class InstallerDownloaderModelImpl : public InstallerDownloaderModel {
   // InstallerDownloaderModelInterface:
   void CheckEligibility(
       base::OnceCallback<void(const std::optional<base::FilePath>&)> callback)
-      final;
+      override;
   void StartDownload(const GURL& url,
                      const base::FilePath& destination,
-                     CompletionCallback completion_callback) final;
+                     CompletionCallback completion_callback) override;
+  bool IsMaxShowCountReached() const override;
 };
 
 }  // namespace installer_downloader

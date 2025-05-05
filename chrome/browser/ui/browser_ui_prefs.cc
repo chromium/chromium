@@ -24,6 +24,10 @@
 #include "media/media_buildflags.h"
 #include "third_party/blink/public/common/peerconnection/webrtc_ip_handling_policy.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "chrome/browser/win/installer_downloader/installer_downloader_pref_names.h"
+#endif  // BUILDFLAG(IS_WIN)
+
 #if !BUILDFLAG(IS_CHROMEOS)
 #include "ui/accessibility/accessibility_features.h"
 #endif
@@ -41,6 +45,11 @@ void RegisterBrowserPrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(prefs::kRelaunchWindow);
   registry->RegisterIntegerPref(prefs::kRelaunchFastIfOutdated, 0);
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_WIN)
+  registry->RegisterIntegerPref(
+      installer_downloader::prefs::kInstallerDownloaderInfobarShowCount, 0);
+#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_MAC)
   registry->RegisterIntegerPref(

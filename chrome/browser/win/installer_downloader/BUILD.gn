@@ -4,6 +4,10 @@
 
 assert(is_win, "The installer downloader is for windows only")
 
+source_set("prefs") {
+  public = [ "installer_downloader_pref_names.h" ]
+}
+
 source_set("installer_downloader") {
   friend = [ ":unit_tests" ]
 
@@ -22,18 +26,28 @@ source_set("installer_downloader") {
 
   public_deps = [ "//base" ]
 
-  deps = [ "//url:url" ]
+  deps = [
+    ":prefs",
+    "//chrome/browser:browser_process",
+    "//components/prefs",
+    "//url:url",
+  ]
 }
 
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "installer_downloader_controller_unittest.cc" ]
+  sources = [
+    "installer_downloader_controller_unittest.cc",
+    "installer_downloader_model_impl_unittest.cc",
+  ]
 
   deps = [
     ":installer_downloader",
+    ":prefs",
     "//base",
     "//base/test:test_support",
+    "//chrome/test:test_support",
     "//components/prefs",
     "//components/prefs:test_support",
     "//content/test:test_support",

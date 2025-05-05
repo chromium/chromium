@@ -1,0 +1,17 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_WIN_INSTALLER_DOWNLOADER_INSTALLER_DOWNLOADER_PREF_NAMES_H_
+#define CHROME_BROWSER_WIN_INSTALLER_DOWNLOADER_INSTALLER_DOWNLOADER_PREF_NAMES_H_
+
+namespace installer_downloader::prefs {
+
+// Int browser local state that stores how many times the installer downloader
+// inforbar has been shown.
+inline constexpr char kInstallerDownloaderInfobarShowCount[] =
+    "installer_downloader_infobar_show_count";
+
+}  // namespace installer_downloader::prefs
+
+#endif  // CHROME_BROWSER_WIN_INSTALLER_DOWNLOADER_INSTALLER_DOWNLOADER_PREF_NAMES_H_
