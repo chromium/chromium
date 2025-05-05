@@ -2594,8 +2594,15 @@ AuthenticatorRequestDialogController::GetRenderFrameHost() const {
 }
 
 void AuthenticatorRequestDialogController::StartPasskeyUpgradeRequest() {
-  CHECK(enclave_request_callback_);
   SetCurrentStep(Step::kPasskeyUpgrade);
+
+  if (!enclave_request_callback_) {
+    FIDO_LOG(ERROR)
+        << "Passkey upgrade request failed because GPM is disabled by policy.";
+    PasskeyUpgradeFailed();
+    return;
+  }
+
   passkey_upgrade_request_controller_ =
       std::make_unique<PasskeyUpgradeRequestController>(
           GetRenderFrameHost(), std::move(enclave_request_callback_));
