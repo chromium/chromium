@@ -17,4 +17,14 @@ found in the LICENSE file.
     <style name="KeyboardAccessoryLargeChip" parent="KeyboardAccessoryChip">
         <item name="verticalInset">2dp</item>
     </style>
+    <style name="KeyboardAccessoryLoyaltyCardChip" parent="KeyboardAccessoryChip">
+        <item name="iconWidth">@dimen/keyboard_accessory_suggestion_icon_size</item>
+        <item name="iconHeight">@dimen/keyboard_accessory_suggestion_icon_size</item>
+        <item name="useRoundedIcon">true</item>
+    </style>
+    <style name="KeyboardAccessoryLoyaltyCardLargeChip" parent="KeyboardAccessoryLargeChip">
+        <item name="iconWidth">@dimen/keyboard_accessory_suggestion_icon_size</item>
+        <item name="iconHeight">@dimen/keyboard_accessory_suggestion_icon_size</item>
+        <item name="useRoundedIcon">true</item>
+    </style>
 </resources>

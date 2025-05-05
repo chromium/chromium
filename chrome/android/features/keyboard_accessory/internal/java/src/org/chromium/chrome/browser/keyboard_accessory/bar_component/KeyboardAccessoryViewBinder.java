@@ -62,8 +62,12 @@ class KeyboardAccessoryViewBinder {
             @BarItem.Type int viewType) {
         switch (viewType) {
             case BarItem.Type.SUGGESTION:
+            case BarItem.Type.LOYALTY_CARD_SUGGESTION:
                 return new BarItemChipViewHolder(
-                        parent, keyboarAccessory, uiConfiguration.suggestionDrawableFunction);
+                        parent,
+                        keyboarAccessory,
+                        uiConfiguration.suggestionDrawableFunction,
+                        viewType);
             case BarItem.Type.TAB_LAYOUT:
                 return new SheetOpenerViewHolder(parent);
             case BarItem.Type.ACTION_BUTTON:
@@ -120,13 +124,14 @@ class KeyboardAccessoryViewBinder {
         BarItemChipViewHolder(
                 ViewGroup parent,
                 KeyboardAccessoryView keyboardAccessory,
-                Function<AutofillSuggestion, Drawable> suggestionDrawableFunction) {
+                Function<AutofillSuggestion, Drawable> suggestionDrawableFunction,
+                @BarItem.Type int barItemType) {
             super(
                     new ChipView(
                             parent.getContext(),
                             null,
                             0,
-                            selectStyleForSuggestion(parent.getContext())));
+                            selectStyleForSuggestion(parent.getContext(), barItemType)));
             mRootViewForIPH = parent.getRootView();
             mKeyboardAccessory = keyboardAccessory;
             mSuggestionDrawableFunction = suggestionDrawableFunction;
@@ -255,13 +260,29 @@ class KeyboardAccessoryViewBinder {
         }
 
         @StyleRes
-        private static int selectStyleForSuggestion(Context context) {
-            if (!ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_ELEGANT_TEXT_HEIGHT)) {
-                return R.style.KeyboardAccessoryChip;
+        private static int selectStyleForSuggestion(
+                Context context, @BarItem.Type int barItemType) {
+            final boolean useLargeChips =
+                    ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_ELEGANT_TEXT_HEIGHT)
+                            && context.getResources().getConfiguration().fontScale
+                                    >= LARGE_FONT_THRESHOLD;
+            switch (barItemType) {
+                case BarItem.Type.LOYALTY_CARD_SUGGESTION:
+                    // Loyalty cards suggestions have round icons.
+                    return useLargeChips
+                            ? R.style.KeyboardAccessoryLoyaltyCardLargeChip
+                            : R.style.KeyboardAccessoryLoyaltyCardChip;
+                case BarItem.Type.SUGGESTION:
+                    return useLargeChips
+                            ? R.style.KeyboardAccessoryLargeChip
+                            : R.style.KeyboardAccessoryChip;
+                case BarItem.Type.ACTION_CHIP:
+                case BarItem.Type.TAB_LAYOUT:
+                case BarItem.Type.ACTION_BUTTON:
+                default:
+                    assert false : "Only suggestion chips have custom styles";
+                    return 0;
             }
-            return context.getResources().getConfiguration().fontScale >= LARGE_FONT_THRESHOLD
-                    ? R.style.KeyboardAccessoryLargeChip
-                    : R.style.KeyboardAccessoryChip;
         }
     }
 
