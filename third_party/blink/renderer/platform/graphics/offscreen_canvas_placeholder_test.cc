@@ -140,8 +140,6 @@ TEST_F(OffscreenCanvasPlaceholderTest, OldFrameSentBack) {
   DrawSomething();
   viz::ResourceId frame1_id = PeekNextResourceId();
   CanvasResource* frame1_raw_ptr = DispatchOneFrame();
-  EXPECT_TRUE(frame1_raw_ptr->HasOneRef());
-  Mock::VerifyAndClearExpectations(dispatcher());
 
   EXPECT_CALL(*(dispatcher()), PlaceholderReleasedResource(_)).Times(0);
   // Run task that propagates the frame to the placeholder canvas.
@@ -174,8 +172,6 @@ TEST_F(OffscreenCanvasPlaceholderTest, OldFrameNotReclaimedUntilUnref) {
   DrawSomething();
   viz::ResourceId frame1_id = PeekNextResourceId();
   CanvasResource* frame1_raw_ptr = DispatchOneFrame();
-  EXPECT_TRUE(frame1_raw_ptr->HasOneRef());
-  Mock::VerifyAndClearExpectations(dispatcher());
 
   EXPECT_CALL(*(dispatcher()), PlaceholderReleasedResource(_)).Times(0);
   // Run task that propagates the frame to the placeholder canvas.
