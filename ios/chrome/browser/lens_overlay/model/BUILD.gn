@@ -40,6 +40,7 @@ source_set("model") {
     ":detents_manager",
     ":metrics_recorder",
     ":overflow_menu_factory",
+    ":presentation_type",
     ":utils",
     "//base",
     "//ios/chrome/browser/lens_overlay/coordinator:lens_overlay_availability",
@@ -80,6 +81,18 @@ source_set("overflow_menu_factory") {
     "//url",
   ]
   public_deps = [ ":detent_state_header" ]
+}
+
+source_set("presentation_type") {
+  sources = [
+    "lens_overlay_presentation_type.h",
+    "lens_overlay_presentation_type.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/common/ui/util",
+    "//ui/base",
+  ]
 }
 
 source_set("configuration_factory") {
