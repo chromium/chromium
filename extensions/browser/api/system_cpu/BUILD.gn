@@ -18,11 +18,16 @@ source_set("system_cpu") {
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
-  deps = [
-    "//build:chromeos_buildflags",
+  public_deps = [
+    "//base",
+    "//extensions/browser:browser_sources",
     "//extensions/browser/api/system_info",
     "//extensions/common/api",
   ]
+
+  if (is_chromeos) {
+    deps = [ "//chromeos/system" ]
+  }
 
   if (is_fuchsia) {
     sources += [ "cpu_info_provider_fuchsia.cc" ]
@@ -39,10 +44,4 @@ source_set("system_cpu") {
   if (is_win) {
     sources += [ "cpu_info_provider_win.cc" ]
   }
-
-  if (is_chromeos) {
-    deps += [ "//chromeos/system" ]
-  }
-
-  public_deps = [ "//extensions/browser:browser_sources" ]
 }
