@@ -82,33 +82,38 @@ bool CSSUrlData::ReResolveUrl(const Document& document) const {
   return true;
 }
 
-CSSUrlData CSSUrlData::MakeAbsolute() const {
+const CSSUrlData* CSSUrlData::MakeAbsolute() const {
   if (relative_url_.empty()) {
-    return *this;
+    return this;
   }
-  return CSSUrlData(absolute_url_, KURL(absolute_url_), Referrer(),
-                    GetOriginClean(), is_ad_related_);
+  return MakeGarbageCollected<CSSUrlData>(absolute_url_, KURL(absolute_url_),
+                                          Referrer(), GetOriginClean(),
+                                          is_ad_related_);
 }
 
-CSSUrlData CSSUrlData::MakeResolved(const KURL& base_url,
-                                    const WTF::TextEncoding& charset) const {
+const CSSUrlData* CSSUrlData::MakeResolved(
+    const KURL& base_url,
+    const WTF::TextEncoding& charset) const {
   if (relative_url_.empty()) {
-    return *this;
+    return this;
   }
   const KURL resolved_url = charset.IsValid()
                                 ? KURL(base_url, relative_url_, charset)
                                 : KURL(base_url, relative_url_);
   if (is_local_) {
-    return CSSUrlData(relative_url_, resolved_url, Referrer(), GetOriginClean(),
-                      is_ad_related_);
+    return MakeGarbageCollected<CSSUrlData>(relative_url_, resolved_url,
+                                            Referrer(), GetOriginClean(),
+                                            is_ad_related_);
   }
-  return CSSUrlData(AtomicString(resolved_url.GetString()), resolved_url,
-                    Referrer(), GetOriginClean(), is_ad_related_);
+  return MakeGarbageCollected<CSSUrlData>(
+      AtomicString(resolved_url.GetString()), resolved_url, Referrer(),
+      GetOriginClean(), is_ad_related_);
 }
 
-CSSUrlData CSSUrlData::MakeWithoutReferrer() const {
-  return CSSUrlData(relative_url_, KURL(absolute_url_), Referrer(),
-                    GetOriginClean(), is_ad_related_);
+const CSSUrlData* CSSUrlData::MakeWithoutReferrer() const {
+  return MakeGarbageCollected<CSSUrlData>(relative_url_, KURL(absolute_url_),
+                                          Referrer(), GetOriginClean(),
+                                          is_ad_related_);
 }
 
 bool CSSUrlData::IsLocal(const Document& document) const {

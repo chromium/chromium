@@ -23,6 +23,7 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_origin_clean.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/weborigin/referrer.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
@@ -36,7 +37,7 @@ class Document;
 class KURL;
 
 // Stores data for a <url> value (url(), src()).
-class CORE_EXPORT CSSUrlData {
+class CORE_EXPORT CSSUrlData : public GarbageCollected<CSSUrlData> {
  public:
   CSSUrlData(const AtomicString& unresolved_url,
              const KURL& resolved_url,
@@ -57,15 +58,15 @@ class CORE_EXPORT CSSUrlData {
   bool ReResolveUrl(const Document&) const;
 
   // Returns an absolutized copy of this URL data (suitable for computed value).
-  CSSUrlData MakeAbsolute() const;
+  const CSSUrlData* MakeAbsolute() const;
 
   // Returns a copy where the unresolved URL has been resolved against
   // `base_url` (using `charset` encoding if valid).
-  CSSUrlData MakeResolved(const KURL& base_url,
-                          const WTF::TextEncoding& charset) const;
+  const CSSUrlData* MakeResolved(const KURL& base_url,
+                                 const WTF::TextEncoding& charset) const;
 
   // Returns a copy where the referrer has been reset.
-  CSSUrlData MakeWithoutReferrer() const;
+  const CSSUrlData* MakeWithoutReferrer() const;
 
   const AtomicString& ValueForSerialization() const {
     return is_local_ || absolute_url_.empty() ? relative_url_ : absolute_url_;
@@ -90,6 +91,8 @@ class CORE_EXPORT CSSUrlData {
   bool IsLocal(const Document&) const;
 
   String CssText() const;
+
+  void Trace(Visitor*) const {}
 
   bool operator==(const CSSUrlData& other) const;
 
