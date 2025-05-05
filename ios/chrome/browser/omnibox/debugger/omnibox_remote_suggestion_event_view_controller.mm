@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/omnibox/ui_bundled/popup/debugger/omnibox_remote_suggestion_event_view_controller.h"
+#import "ios/chrome/browser/omnibox/debugger/omnibox_remote_suggestion_event_view_controller.h"
 
-#import "ios/chrome/browser/omnibox/ui_bundled/popup/debugger/omnibox_remote_suggestion_event.h"
+#import "ios/chrome/browser/omnibox/debugger/omnibox_remote_suggestion_event.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 

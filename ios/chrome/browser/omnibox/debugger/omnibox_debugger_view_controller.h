@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_OMNIBOX_UI_BUNDLED_POPUP_DEBUGGER_OMNIBOX_DEBUGGER_VIEW_CONTROLLER_H_
-#define IOS_CHROME_BROWSER_OMNIBOX_UI_BUNDLED_POPUP_DEBUGGER_OMNIBOX_DEBUGGER_VIEW_CONTROLLER_H_
+#ifndef IOS_CHROME_BROWSER_OMNIBOX_DEBUGGER_OMNIBOX_DEBUGGER_VIEW_CONTROLLER_H_
+#define IOS_CHROME_BROWSER_OMNIBOX_DEBUGGER_OMNIBOX_DEBUGGER_VIEW_CONTROLLER_H_
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/omnibox/ui_bundled/popup/debugger/omnibox_debugger_consumer.h"
+#import "ios/chrome/browser/omnibox/debugger/omnibox_debugger_consumer.h"
 
 /// View controller used to display omnibox and popup related debug info.
 @interface PopupDebugInfoViewController
@@ -21,4 +21,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_OMNIBOX_UI_BUNDLED_POPUP_DEBUGGER_OMNIBOX_DEBUGGER_VIEW_CONTROLLER_H_
+#endif  // IOS_CHROME_BROWSER_OMNIBOX_DEBUGGER_OMNIBOX_DEBUGGER_VIEW_CONTROLLER_H_

@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/omnibox/ui_bundled/popup/debugger/omnibox_autocomplete_event.h"
+#import "ios/chrome/browser/omnibox/debugger/omnibox_autocomplete_event.h"
 
 #import "components/omnibox/browser/autocomplete_controller.h"
 #import "components/omnibox/browser/autocomplete_match.h"
 #import "components/omnibox/browser/autocomplete_provider.h"
+#import "ios/chrome/browser/omnibox/debugger/omnibox_event.h"
 #import "ios/chrome/browser/omnibox/model/autocomplete_match_formatter.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/popup/debugger/omnibox_event.h"
 
 namespace {
 

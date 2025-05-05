@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_OMNIBOX_UI_BUNDLED_POPUP_DEBUGGER_OMNIBOX_EVENT_H_
-#define IOS_CHROME_BROWSER_OMNIBOX_UI_BUNDLED_POPUP_DEBUGGER_OMNIBOX_EVENT_H_
+#ifndef IOS_CHROME_BROWSER_OMNIBOX_DEBUGGER_OMNIBOX_EVENT_H_
+#define IOS_CHROME_BROWSER_OMNIBOX_DEBUGGER_OMNIBOX_EVENT_H_
 
 #import <Foundation/Foundation.h>
 
@@ -21,4 +21,4 @@ enum EventType { kAutocompleteUpdate = 0, kRemoteSuggestionUpdate = 1 };
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_OMNIBOX_UI_BUNDLED_POPUP_DEBUGGER_OMNIBOX_EVENT_H_
+#endif  // IOS_CHROME_BROWSER_OMNIBOX_DEBUGGER_OMNIBOX_EVENT_H_

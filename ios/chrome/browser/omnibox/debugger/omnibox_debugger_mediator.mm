@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/omnibox/ui_bundled/popup/debugger/omnibox_debugger_mediator.h"
+#import "ios/chrome/browser/omnibox/debugger/omnibox_debugger_mediator.h"
 
 #import "components/omnibox/browser/autocomplete_controller.h"
 #import "components/omnibox/browser/remote_suggestions_service.h"
 #import "components/variations/variations_ids_provider.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/popup/debugger/autocomplete_controller_observer_bridge.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/popup/debugger/omnibox_autocomplete_event.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/popup/debugger/omnibox_debugger_consumer.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/popup/debugger/omnibox_remote_suggestion_event.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/popup/debugger/remote_suggestions_service_observer_bridge.h"
+#import "ios/chrome/browser/omnibox/debugger/autocomplete_controller_observer_bridge.h"
+#import "ios/chrome/browser/omnibox/debugger/omnibox_autocomplete_event.h"
+#import "ios/chrome/browser/omnibox/debugger/omnibox_debugger_consumer.h"
+#import "ios/chrome/browser/omnibox/debugger/omnibox_remote_suggestion_event.h"
+#import "ios/chrome/browser/omnibox/debugger/remote_suggestions_service_observer_bridge.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/common/NSString+Chromium.h"
 #import "services/network/public/cpp/resource_request.h"

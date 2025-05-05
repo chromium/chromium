@@ -2,19 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/omnibox/ui_bundled/popup/debugger/omnibox_debugger_view_controller.h"
+#import "ios/chrome/browser/omnibox/debugger/omnibox_debugger_view_controller.h"
 
 #import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/omnibox/browser/autocomplete_match_type.h"
 #import "components/omnibox/browser/autocomplete_provider.h"
 #import "components/variations/variations_switches.h"
+#import "ios/chrome/browser/omnibox/debugger/omnibox_autocomplete_event.h"
+#import "ios/chrome/browser/omnibox/debugger/omnibox_autocomplete_event_view_controller.h"
+#import "ios/chrome/browser/omnibox/debugger/omnibox_event.h"
+#import "ios/chrome/browser/omnibox/debugger/omnibox_remote_suggestion_event.h"
+#import "ios/chrome/browser/omnibox/debugger/omnibox_remote_suggestion_event_view_controller.h"
 #import "ios/chrome/browser/omnibox/model/autocomplete_match_formatter.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/popup/debugger/omnibox_autocomplete_event.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/popup/debugger/omnibox_autocomplete_event_view_controller.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/popup/debugger/omnibox_event.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/popup/debugger/omnibox_remote_suggestion_event.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/popup/debugger/omnibox_remote_suggestion_event_view_controller.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "services/network/public/cpp/resource_request.h"

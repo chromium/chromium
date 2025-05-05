@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_OMNIBOX_UI_BUNDLED_POPUP_DEBUGGER_OMNIBOX_AUTOCOMPLETE_EVENT_H_
-#define IOS_CHROME_BROWSER_OMNIBOX_UI_BUNDLED_POPUP_DEBUGGER_OMNIBOX_AUTOCOMPLETE_EVENT_H_
+#ifndef IOS_CHROME_BROWSER_OMNIBOX_DEBUGGER_OMNIBOX_AUTOCOMPLETE_EVENT_H_
+#define IOS_CHROME_BROWSER_OMNIBOX_DEBUGGER_OMNIBOX_AUTOCOMPLETE_EVENT_H_
 
-#import "ios/chrome/browser/omnibox/ui_bundled/popup/debugger/autocomplete_match_group.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/popup/debugger/omnibox_event.h"
+#import "ios/chrome/browser/omnibox/debugger/autocomplete_match_group.h"
+#import "ios/chrome/browser/omnibox/debugger/omnibox_event.h"
 
 class AutocompleteController;
 @class AutocompleteMatchFormatter;
@@ -24,4 +24,4 @@ class AutocompleteController;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_OMNIBOX_UI_BUNDLED_POPUP_DEBUGGER_OMNIBOX_AUTOCOMPLETE_EVENT_H_
+#endif  // IOS_CHROME_BROWSER_OMNIBOX_DEBUGGER_OMNIBOX_AUTOCOMPLETE_EVENT_H_

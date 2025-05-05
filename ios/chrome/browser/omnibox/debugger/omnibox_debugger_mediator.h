@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_OMNIBOX_UI_BUNDLED_POPUP_DEBUGGER_OMNIBOX_DEBUGGER_MEDIATOR_H_
-#define IOS_CHROME_BROWSER_OMNIBOX_UI_BUNDLED_POPUP_DEBUGGER_OMNIBOX_DEBUGGER_MEDIATOR_H_
+#ifndef IOS_CHROME_BROWSER_OMNIBOX_DEBUGGER_OMNIBOX_DEBUGGER_MEDIATOR_H_
+#define IOS_CHROME_BROWSER_OMNIBOX_DEBUGGER_OMNIBOX_DEBUGGER_MEDIATOR_H_
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/omnibox/debugger/autocomplete_controller_observer_bridge.h"
+#import "ios/chrome/browser/omnibox/debugger/remote_suggestions_service_observer_bridge.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_autocomplete_controller_debugger_delegate.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/popup/debugger/autocomplete_controller_observer_bridge.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/popup/debugger/remote_suggestions_service_observer_bridge.h"
 
 @protocol OmniboxDebuggerConsumer;
 @protocol RemoteSuggestionsServiceObserver;
@@ -36,4 +36,4 @@ class RemoteSuggestionsService;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_OMNIBOX_UI_BUNDLED_POPUP_DEBUGGER_OMNIBOX_DEBUGGER_MEDIATOR_H_
+#endif  // IOS_CHROME_BROWSER_OMNIBOX_DEBUGGER_OMNIBOX_DEBUGGER_MEDIATOR_H_

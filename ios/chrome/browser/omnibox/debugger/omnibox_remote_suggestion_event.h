@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_OMNIBOX_UI_BUNDLED_POPUP_DEBUGGER_OMNIBOX_REMOTE_SUGGESTION_EVENT_H_
-#define IOS_CHROME_BROWSER_OMNIBOX_UI_BUNDLED_POPUP_DEBUGGER_OMNIBOX_REMOTE_SUGGESTION_EVENT_H_
+#ifndef IOS_CHROME_BROWSER_OMNIBOX_DEBUGGER_OMNIBOX_REMOTE_SUGGESTION_EVENT_H_
+#define IOS_CHROME_BROWSER_OMNIBOX_DEBUGGER_OMNIBOX_REMOTE_SUGGESTION_EVENT_H_
 
 #import "base/unguessable_token.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/popup/debugger/omnibox_event.h"
+#import "ios/chrome/browser/omnibox/debugger/omnibox_event.h"
 
 // A class that captures the state of a RemoteSuggestionsService event
 @interface OmniboxRemoteSuggestionEvent : NSObject <OmniboxEvent>
@@ -28,4 +28,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_OMNIBOX_UI_BUNDLED_POPUP_DEBUGGER_OMNIBOX_REMOTE_SUGGESTION_EVENT_H_
+#endif  // IOS_CHROME_BROWSER_OMNIBOX_DEBUGGER_OMNIBOX_REMOTE_SUGGESTION_EVENT_H_

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/omnibox/ui_bundled/popup/debugger/autocomplete_controller_observer_bridge.h"
+#import "ios/chrome/browser/omnibox/debugger/autocomplete_controller_observer_bridge.h"
 
 AutocompleteControllerObserverBridge::AutocompleteControllerObserverBridge(
     id<AutocompleteControllerObserver> observer)
