@@ -875,7 +875,7 @@ try_.gpu.optional_tests_builder(
     ),
     pool = "luci.chromium.gpu.try",
     builderless = True,
-    cpu = cpu.ARM64,
+    cpu = None,
     ssd = None,
     free_space = None,
     contact_team_email = "chrome-gpu-infra@google.com",
