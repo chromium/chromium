@@ -9,7 +9,6 @@
 #include "base/base64url.h"
 #include "base/notreached.h"
 #include "base/strings/escape.h"
-#include "base/strings/stringprintf.h"
 #include "chrome/browser/browser_process.h"
 #include "components/language/core/common/language_util.h"
 #include "components/lens/lens_features.h"
@@ -527,21 +526,6 @@ bool URLsMatchWithoutTextFragment(const GURL& first_url,
          first_url.query() == second_url.query() &&
          GetURLRefWithoutTextFragment(first_url) ==
              GetURLRefWithoutTextFragment(second_url);
-}
-
-GURL AddPDFScrollToParametersToUrl(
-    const GURL& url,
-    const std::vector<std::string>& text_fragments,
-    int pdf_page_number) {
-  std::string ref = base::StringPrintf("page=%d", pdf_page_number);
-  if (!text_fragments.empty()) {
-    base::StringAppendF(&ref, ":~:text=%s", text_fragments[0]);
-    for (size_t i = 1; i < text_fragments.size(); i++) {
-      base::StringAppendF(&ref, "&text=%s", text_fragments[i]);
-    }
-  }
-
-  return net::AppendOrReplaceRef(url, ref);
 }
 
 }  // namespace lens

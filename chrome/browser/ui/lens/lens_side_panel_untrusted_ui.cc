@@ -99,11 +99,6 @@ LensSidePanelUntrustedUI::LensSidePanelUntrustedUI(content::WebUI* web_ui)
   html_source->AddBoolean(
       "newFeedbackEnabled",
       lens::features::IsLensSearchSidePanelNewFeedbackEnabled());
-  html_source->AddBoolean(
-      "scrollToEnabled",
-      lens::features::IsLensSearchSidePanelScrollToAPIEnabled());
-  html_source->AddString("resultsSearchURL",
-                         lens::features::GetLensOverlayResultsSearchURL());
 
   // Allow FrameSrc from all Google subdomains as redirects can occur.
   GURL results_side_panel_url =

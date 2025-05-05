@@ -151,8 +151,6 @@ class LensOverlaySidePanelCoordinator
   void PopAndLoadQueryFromHistory() override;
   void GetIsContextualSearchbox(
       GetIsContextualSearchboxCallback callback) override;
-  void OnScrollToMessage(const std::vector<std::string>& text_fragments,
-                         uint32_t pdf_page_number) override;
 
   // This method is used to set up communication between this instance and the
   // side panel WebUI. This is called by the WebUIController when the WebUI is
@@ -176,12 +174,6 @@ class LensOverlaySidePanelCoordinator
 
   // Whether the side panel is currently showing the protected error page.
   bool IsShowingProtectedErrorPage();
-
-  // Sets the latest page URL that was sent from the browser to the server. This
-  // is currently only set when the latest page URL is a local file scheme URL
-  // (`file://`). This is used to determine whether to scroll in the main tab or
-  // open a new tab.
-  void SetLatestPageUrlWithResponse(const GURL& url);
 
   // Internal state machine. States are mutually exclusive. Exposed for testing.
   enum class State {
@@ -378,11 +370,6 @@ class LensOverlaySidePanelCoordinator
 
   // URL to load when command to open side panel in a new tab is executed.
   GURL side_panel_new_tab_url_;
-
-  // The latest page URL that was sent from the browser to the server. This is
-  // currently only set when the latest page URL is a local file scheme URL
-  // (`file://`).
-  GURL latest_page_url_with_response_;
 
   // The status of the side panel, or whether it is currently showing an error
   // page.

@@ -877,35 +877,4 @@ TEST_F(LensOverlayUrlBuilderTest, URLsMatchWithoutTextFragment) {
       GURL("http://www.google.com/path?q=text#ref")));
 }
 
-TEST_F(LensOverlayUrlBuilderTest, AddPDFScrollToParametersToUrl) {
-  const GURL base_url = GURL(
-      "https://www.example.com/"
-      "example.pdf?query=example#anycurrenthash:~:text=example");
-
-  const int expected_pdf_page_number = 19;
-  const std::vector<std::string> expected_text_fragments = {"apples", "oranges",
-                                                            "pineapples"};
-  const GURL actual_url = AddPDFScrollToParametersToUrl(
-      base_url, expected_text_fragments, expected_pdf_page_number);
-  EXPECT_TRUE(base_url.EqualsIgnoringRef(actual_url));
-  EXPECT_EQ(actual_url.ref(),
-            base::StringPrintf("page=%d:~:text=%s&text=%s&text=%s",
-                               expected_pdf_page_number, "apples", "oranges",
-                               "pineapples"));
-
-  const std::vector<std::string> expected_one_fragment = {"apples"};
-  const GURL actual_url_one_fragment = AddPDFScrollToParametersToUrl(
-      base_url, expected_one_fragment, expected_pdf_page_number);
-  EXPECT_TRUE(base_url.EqualsIgnoringRef(actual_url_one_fragment));
-  EXPECT_EQ(actual_url_one_fragment.ref(),
-            base::StringPrintf("page=%d:~:text=%s", expected_pdf_page_number,
-                               "apples"));
-
-  const GURL actual_url_no_fragments =
-      AddPDFScrollToParametersToUrl(base_url, {}, expected_pdf_page_number);
-  EXPECT_TRUE(base_url.EqualsIgnoringRef(actual_url_no_fragments));
-  EXPECT_EQ(actual_url_no_fragments.ref(),
-            base::StringPrintf("page=%d", expected_pdf_page_number));
-}
-
 }  // namespace lens

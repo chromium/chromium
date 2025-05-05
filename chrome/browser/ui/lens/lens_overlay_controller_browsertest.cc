@@ -14,6 +14,8 @@
 // web browser, but allow for inspection and modification of internal state of
 // LensOverlayController and other business-logic classes.
 
+#include "chrome/browser/ui/lens/lens_overlay_controller.h"
+
 #include <memory>
 
 #include "base/base64url.h"
@@ -61,7 +63,6 @@
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/mock_hats_service.h"
 #include "chrome/browser/ui/lens/lens_overlay_colors.h"
-#include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_entry_point_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_gen204_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_query_controller.h"
@@ -5130,39 +5131,6 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
             search_url_vsrid);
 }
 
-IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
-                       OnScrollToMessage_NonPDF) {
-  WaitForPaint();
-
-  // State should start in off.
-  auto* controller = GetLensOverlayController();
-  ASSERT_EQ(controller->state(), State::kOff);
-
-  // Open the overlay.
-  OpenLensOverlay(LensOverlayInvocationSource::kAppMenu);
-  ASSERT_EQ(controller->state(), State::kScreenshot);
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return controller->state() == State::kOverlay; }));
-
-  // Set up the test extension event observer to monitor is the extension event
-  // is sent correctly.
-  extensions::TestEventRouterObserver observer(
-      extensions::EventRouter::Get(browser()->profile()));
-
-  // Call OnScrollToMessage.
-  std::vector<std::string> text_fragments = {"text1", "text2"};
-  uint32_t page_number = 3;
-  int tabs = browser()->tab_strip_model()->count();
-  controller->results_side_panel_coordinator()->SetLatestPageUrlWithResponse(
-      GURL("file:///test.pdf"));
-  controller->results_side_panel_coordinator()->OnScrollToMessage(
-      text_fragments, page_number);
-
-  // Expect a new tab to be opened.
-  EXPECT_EQ(tabs + 1, browser()->tab_strip_model()->count());
-  EXPECT_EQ(0u, observer.dispatched_events().size());
-}
-
 class LensOverlayControllerBrowserStartQueryFlowOptimization
     : public LensOverlayControllerBrowserTest {
  protected:
@@ -5480,37 +5448,6 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFTest,
       ukm::builders::Lens_Overlay_ContextualSuggest_ZPS_ShownInSession::
           kEntryName);
   EXPECT_EQ(0u, entries.size());
-}
-
-IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFTest,
-                       OnScrollToMessage_PDFNotOnMainTab) {
-  // State should start in off.
-  auto* controller = GetLensOverlayController();
-  ASSERT_EQ(controller->state(), State::kOff);
-
-  // Open the overlay.
-  OpenLensOverlay(LensOverlayInvocationSource::kAppMenu);
-  ASSERT_EQ(controller->state(), State::kScreenshot);
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return controller->state() == State::kOverlay; }));
-
-  // Set up the test extension event observer to monitor is the extension event
-  // is sent correctly.
-  extensions::TestEventRouterObserver observer(
-      extensions::EventRouter::Get(browser()->profile()));
-
-  // Call OnScrollToMessage.
-  std::vector<std::string> text_fragments = {"text1", "text2"};
-  uint32_t page_number = 3;
-  int tabs = browser()->tab_strip_model()->count();
-  controller->results_side_panel_coordinator()->SetLatestPageUrlWithResponse(
-      GURL("file:///test.pdf"));
-  controller->results_side_panel_coordinator()->OnScrollToMessage(
-      text_fragments, page_number);
-
-  // Expect a new tab to be opened.
-  EXPECT_EQ(tabs + 1, browser()->tab_strip_model()->count());
-  EXPECT_EQ(0u, observer.dispatched_events().size());
 }
 
 // This test is wrapped in this BUILDFLAG block because the fallback region

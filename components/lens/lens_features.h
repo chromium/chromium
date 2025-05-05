@@ -77,10 +77,6 @@ BASE_DECLARE_FEATURE(kLensSearchSidePanelNewFeedback);
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kLensOverlayRecontextualizeOnQuery);
 
-// Enables a limited scroll to functionality to the side panel.
-COMPONENT_EXPORT(LENS_FEATURES)
-BASE_DECLARE_FEATURE(kLensSearchSidePanelScrollToAPI);
-
 // Enables the Lens overlay simplified selection flow.
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kLensOverlayCornerSliders);
@@ -824,10 +820,6 @@ extern int GetLensOverlaySliderChangedTimeout();
 // Whether the protected page for the side panel is enabled.
 COMPONENT_EXPORT(LENS_FEATURES)
 bool IsLensSearchProtectedPageEnabled();
-
-// Whether to enable the limited scroll-to API functionality in the side panel.
-COMPONENT_EXPORT(LENS_FEATURES)
-bool IsLensSearchSidePanelScrollToAPIEnabled();
 
 }  // namespace lens::features
 #endif  // COMPONENTS_LENS_LENS_FEATURES_H_

@@ -854,7 +854,6 @@ void LensOverlayQueryController::SendTextOnlyQuery(
           query_text, page_url_, page_title_, additional_search_query_params,
           invocation_source_, lens_selection_type, use_dark_mode_)
           .spec());
-  lens_overlay_url_response.set_page_url(page_url_.spec());
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(url_callback_, lens_overlay_url_response));
 }
@@ -2027,7 +2026,6 @@ void LensOverlayQueryController::CreateSearchUrlAndSendToCallback(
                                additional_search_query_params,
                                invocation_source_, use_dark_mode_)
           .spec());
-  lens_overlay_url_response.set_page_url(page_url_.spec());
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(url_callback_, lens_overlay_url_response));
 }
