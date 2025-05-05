@@ -239,6 +239,10 @@ export class PrintPreviewScalingSettingsElement extends
   protected onInputValidChanged_(e: CustomEvent<{value: boolean}>) {
     this.inputValid_ = e.detail.value;
   }
+
+  protected isSelected_(value: ScalingType): boolean {
+    return this.selectedValue === value.toString();
+  }
 }
 
 export type ScalingSettingsElement = PrintPreviewScalingSettingsElement;

@@ -27,33 +27,41 @@ suite('ScalingSettingsTest', function() {
     document.body.appendChild(scalingSection);
   });
 
-  test(
-      'ShowCorrectDropdownOptions', function() {
-        // Not a PDF document -> No fit to page or fit to paper options.
-        const fitToPageOption =
-            scalingSection.shadowRoot.querySelector<HTMLOptionElement>(
-                `[value="${ScalingType.FIT_TO_PAGE}"]`)!;
-        const fitToPaperOption =
-            scalingSection.shadowRoot.querySelector<HTMLOptionElement>(
-                `[value="${ScalingType.FIT_TO_PAPER}"]`)!;
-        const defaultOption =
-            scalingSection.shadowRoot.querySelector<HTMLOptionElement>(
-                `[value="${ScalingType.DEFAULT}"]`)!;
-        const customOption =
-            scalingSection.shadowRoot.querySelector<HTMLOptionElement>(
-                `[value="${ScalingType.CUSTOM}"]`)!;
-        assertTrue(fitToPageOption.hidden && fitToPageOption.disabled);
-        assertTrue(fitToPaperOption.hidden && fitToPaperOption.disabled);
-        assertFalse(defaultOption.hidden && !defaultOption.disabled);
-        assertFalse(customOption.hidden && !customOption.disabled);
+  test('ShowCorrectDropdownOptions', function() {
+    const select = scalingSection.shadowRoot.querySelector('select');
+    assertTrue(!!select);
 
-        // Fit to page and paper available -> All 4 options.
-        setDocumentPdf(true);
-        assertFalse(fitToPageOption.hidden && !fitToPageOption.disabled);
-        assertFalse(fitToPaperOption.hidden && !fitToPaperOption.disabled);
-        assertFalse(defaultOption.hidden && !defaultOption.disabled);
-        assertFalse(customOption.hidden && !customOption.disabled);
-      });
+    // Not a PDF document -> No fit to page or fit to paper options.
+    const fitToPageOption = select.querySelector<HTMLOptionElement>(
+        `[value="${ScalingType.FIT_TO_PAGE}"]`)!;
+    const fitToPaperOption = select.querySelector<HTMLOptionElement>(
+        `[value="${ScalingType.FIT_TO_PAPER}"]`)!;
+    const defaultOption = select.querySelector<HTMLOptionElement>(
+        `[value="${ScalingType.DEFAULT}"]`)!;
+    const customOption = select.querySelector<HTMLOptionElement>(
+        `[value="${ScalingType.CUSTOM}"]`)!;
+    assertTrue(fitToPageOption.hidden && fitToPageOption.disabled);
+    assertTrue(fitToPaperOption.hidden && fitToPaperOption.disabled);
+    assertFalse(defaultOption.hidden && !defaultOption.disabled);
+    assertFalse(customOption.hidden && !customOption.disabled);
+
+    // Check selected option.
+    assertEquals(ScalingType.DEFAULT, model.getSettingValue('scalingType'));
+    assertEquals(ScalingType.DEFAULT.toString(), select.value);
+    assertTrue(defaultOption.selected);
+
+    // Fit to page and paper available -> All 4 options.
+    setDocumentPdf(true);
+    assertFalse(fitToPageOption.hidden && !fitToPageOption.disabled);
+    assertFalse(fitToPaperOption.hidden && !fitToPaperOption.disabled);
+    assertFalse(defaultOption.hidden && !defaultOption.disabled);
+    assertFalse(customOption.hidden && !customOption.disabled);
+
+    // Check selected option.
+    assertEquals(ScalingType.DEFAULT, model.getSettingValue('scalingTypePdf'));
+    assertEquals(ScalingType.DEFAULT.toString(), select.value);
+    assertTrue(defaultOption.selected);
+  });
 
   /**
    * @param expectedScaling The expected scaling value.
