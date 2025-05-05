@@ -35,6 +35,19 @@
       <ExpandedItem Condition="!full_matrix_">axis_2d_</ExpandedItem>
     </Expand>
   </Type>
+  <Type Name="gpu::Mailbox">
+    <!-- Special case when `IsZero` -->
+    <DisplayString Condition="name[0] == 0 &amp;&amp;  name[1] == 0 &amp;&amp;  name[2] == 0 &amp;&amp;  name[3] == 0
+                  &amp;&amp;  name[4] == 0 &amp;&amp;  name[5] == 0 &amp;&amp;  name[6] == 0 &amp;&amp;  name[7] == 0
+                  &amp;&amp;  name[8] == 0 &amp;&amp;  name[9] == 0 &amp;&amp; name[10] == 0 &amp;&amp; name[11] == 0
+                  &amp;&amp; name[12] == 0 &amp;&amp; name[13] == 0 &amp;&amp; name[14] == 0 &amp;&amp; name[15] == 0">{{ name=[zero] }}</DisplayString>
+    <!-- Displays the `ToDebugString` output, which is the name, as hex, with the bytes separated with a colon ":". -->
+    <DisplayString>{{ name={name[0],nvoXb}:{name[1],nvoXb}:{name[2],nvoXb}:{name[3],nvoXb}:{name[4],nvoXb}:{name[5],nvoXb}:{name[6],nvoXb}:{name[7],nvoXb}:{name[8],nvoXb}:{name[9],nvoXb}:{name[10],nvoXb}:{name[11],nvoXb}:{name[12],nvoXb}:{name[13],nvoXb}:{name[14],nvoXb}:{name[15],nvoXb} }}</DisplayString>
+  </Type>
+  <Type Name="viz::SharedImageFormat">
+    <DisplayString Condition="plane_type_ == kSinglePlane">{format_.singleplanar_format}</DisplayString>
+    <DisplayString Condition="plane_type_ == kMultiPlane">{format_.multiplanar_format}</DisplayString>
+  </Type>
   <Type Name="scoped_refptr&lt;*&gt;">
     <SmartPointer Usage="Minimal">ptr_</SmartPointer>
     <DisplayString Condition="ptr_ == 0">null</DisplayString>
@@ -122,25 +135,29 @@
       <Item Name="Payload">(void*)((char*)header_ + header_size_)</Item>
     </Expand>
   </Type>
+  <!-- Handles most classes inside base/time/time.h -->
+  <Type Name="base::time_internal::TimeBase&lt;*&gt;">
+    <DisplayString>{us_.value_} us</DisplayString>
+  </Type>
   <Type Name="base::TimeDelta">
-    <DisplayString>{delta_}</DisplayString>
+    <DisplayString>{delta_.value_} us</DisplayString>
     <Expand>
       <Synthetic Name="Days">
-        <DisplayString>{(int)(delta_ / {,,base.dll}base::Time::kMicrosecondsPerDay)}</DisplayString>
+        <DisplayString>{(int)(delta_.value_ / {,,base.dll}base::Time::kMicrosecondsPerDay)}</DisplayString>
       </Synthetic>
       <Synthetic Name="Hours">
-        <DisplayString>{(int)(delta_ / {,,base.dll}base::Time::kMicrosecondsPerHour)}</DisplayString>
+        <DisplayString>{(int)(delta_.value_ / {,,base.dll}base::Time::kMicrosecondsPerHour)}</DisplayString>
       </Synthetic>
       <Synthetic Name="Minutes">
-        <DisplayString>{(int)(delta_ / {,,base.dll}base::Time::kMicrosecondsPerMinute)}</DisplayString>
+        <DisplayString>{(int)(delta_.value_ / {,,base.dll}base::Time::kMicrosecondsPerMinute)}</DisplayString>
       </Synthetic>
       <Synthetic Name="Seconds">
-        <DisplayString>{(int)(delta_ / {,,base.dll}base::Time::kMicrosecondsPerSecond)}</DisplayString>
+        <DisplayString>{(int)(delta_.value_ / {,,base.dll}base::Time::kMicrosecondsPerSecond)}</DisplayString>
       </Synthetic>
       <Synthetic Name="Milliseconds">
-        <DisplayString>{(int)(delta_ / {,,base.dll}base::Time::kMicrosecondsPerMillisecond)}</DisplayString>
+        <DisplayString>{(int)(delta_.value_ / {,,base.dll}base::Time::kMicrosecondsPerMillisecond)}</DisplayString>
       </Synthetic>
-      <Item Name="Microseconds">delta_</Item>
+      <Item Name="Microseconds">delta_.value_</Item>
     </Expand>
   </Type>
   <Type Name="GURL">
@@ -155,92 +172,39 @@
     </Expand>
   </Type>
   <Type Name="base::internal::flat_tree&lt;*&gt;">
-    <AlternativeType Name="base::flat_set&lt;*&gt;"/>
-    <DisplayString>{impl_.body_}</DisplayString>
+    <DisplayString>{body_}</DisplayString>
     <Expand>
-      <ExpandedItem>impl_.body_</ExpandedItem>
+      <ExpandedItem>body_</ExpandedItem>
     </Expand>
   </Type>
-  <Type Name="base::flat_map&lt;*&gt;">
-    <DisplayString>{impl_.body_}</DisplayString>
-    <Expand>
-      <ExpandedItem>impl_.body_</ExpandedItem>
-    </Expand>
-  </Type>
-  <Type Name="base::Value" >
-    <DisplayString Condition="data_.index_ == base::Value::Type::NONE" Optional="true">None</DisplayString>
-    <DisplayString Condition="data_.index_ == base::Value::Type::BOOLEAN" Optional="true">Boolean {data_.state_.tail.head}</DisplayString>
-    <DisplayString Condition="data_.index_ == base::Value::Type::INTEGER" Optional="true">Integer {data_.state_.tail.tail.head}</DisplayString>
-    <DisplayString Condition="data_.index_ == base::Value::Type::DOUBLE" Optional="true">Double {*(double*)data_.state_.tail.tail.tail.head.v_}</DisplayString>
-    <DisplayString Condition="data_.index_ == base::Value::Type::STRING" Optional="true">String {data_.state_.tail.tail.tail.tail.head,na}</DisplayString>
-    <DisplayString Condition="data_.index_ == base::Value::Type::BINARY" Optional="true">Binary {data_.state_.tail.tail.tail.tail.tail.head}</DisplayString>
-    <DisplayString Condition="data_.index_ == base::Value::Type::DICT" Optional="true">Dictionary {data_.state_.tail.tail.tail.tail.tail.tail.head.storage_.body_}</DisplayString>
-    <DisplayString Condition="data_.index_ == base::Value::Type::LIST" Optional="true">List {data_.state_.tail.tail.tail.tail.tail.tail.tail.head.storage_}</DisplayString>
+  <Type Name="base::Value">
+    <Intrinsic Name="index" Expression="(int)data_.__impl_.__index"/>
+    <DisplayString Condition="index() == base::Value::Type::NONE" Optional="true">None</DisplayString>
+    <DisplayString Condition="index() == base::Value::Type::BOOLEAN" Optional="true">Boolean {data_.__impl_.__data.__tail.__head.__value}</DisplayString>
+    <DisplayString Condition="index() == base::Value::Type::INTEGER" Optional="true">Integer {data_.__impl_.__data.__tail.__tail.__head.__value}</DisplayString>
+    <DisplayString Condition="index() == base::Value::Type::DOUBLE" Optional="true">Double {*(double*)&amp;data_.__impl_.__data.__tail.__tail.__tail.__head.__value.v_}</DisplayString>
+    <DisplayString Condition="index() == base::Value::Type::STRING" Optional="true">String {data_.__impl_.__data.__tail.__tail.__tail.__tail.__head.__value,na}</DisplayString>
+    <DisplayString Condition="index() == base::Value::Type::BINARY" Optional="true">Binary {data_.__impl_.__data.__tail.__tail.__tail.__tail.__tail.__head.__value}</DisplayString>
+    <DisplayString Condition="index() == base::Value::Type::DICT" Optional="true">Dict {data_.__impl_.__data.__tail.__tail.__tail.__tail.__tail.__tail.__head.__value}</DisplayString>
+    <DisplayString Condition="index() == base::Value::Type::LIST" Optional="true">List {data_.__impl_.__data.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__head.__value}</DisplayString>
     <DisplayString>Unknown type</DisplayString>
-    <Expand >
-      <Item Condition="data_.index_ == base::Value::Type::BOOLEAN" Name="[value]" Optional="true">
-        data_.state_.tail.head
-      </Item>
-      <Item Condition="data_.index_ == base::Value::Type::INTEGER" Name="[value]" Optional="true">
-        data_.state_.tail.tail.head
-      </Item>
-      <Item Condition="data_.index_ == base::Value::Type::DOUBLE" Name="[value]" Optional="true">
-        *(double*)data_.state_.tail.tail.tail.head.v_
-      </Item>
-      <Item Condition="data_.index_ == base::Value::Type::STRING" Name="[value]" Optional="true">
-        data_.state_.tail.tail.tail.tail.head,na
-      </Item>
-      <Item Condition="data_.index_ == base::Value::Type::BINARY" Name="[value]" Optional="true">
-        data_.state_.tail.tail.tail.tail.tail.head
-      </Item>
-      <!-- Dictionary -->
-      <Item Condition="data_.index_ == base::Value::Type::DICT" Name="[size]" Optional="true">
-        data_.state_.tail.tail.tail.tail.tail.tail.head.storage_.body_.__end_ -
-        data_.state_.tail.tail.tail.tail.tail.tail.head.storage_.body_.__begin_
-      </Item>
-      <ArrayItems Condition="data_.index_ == base::Value::Type::DICT" Optional="true">
-        <Size>
-          data_.state_.tail.tail.tail.tail.tail.tail.head.storage_.body_.__end_ -
-          data_.state_.tail.tail.tail.tail.tail.tail.head.storage_.body_.__begin_
-        </Size>
-        <ValuePointer>
-          data_.state_.tail.tail.tail.tail.tail.tail.head.storage_.body_.__begin_
-        </ValuePointer>
-      </ArrayItems>
-      <!-- List -->
-      <Item Condition="data_.index_ == base::Value::Type::LIST" Name="[size]" Optional="true">
-        data_.state_.tail.tail.tail.tail.tail.tail.tail.head.storage_.__end_ -
-        data_.state_.tail.tail.tail.tail.tail.tail.tail.head.storage_.__begin_
-      </Item>
-      <ArrayItems Condition="data_.index_ == base::Value::Type::LIST" Optional="true">
-        <Size>
-          data_.state_.tail.tail.tail.tail.tail.tail.tail.head.storage_.__end_ -
-          data_.state_.tail.tail.tail.tail.tail.tail.tail.head.storage_.__begin_
-        </Size>
-        <ValuePointer>
-          data_.state_.tail.tail.tail.tail.tail.tail.tail.head.storage_.__begin_
-        </ValuePointer>
-      </ArrayItems>
+    <Expand>
+      <ExpandedItem Condition="index() == base::Value::Type::STRING" Optional="true">data_.__impl_.__data.__tail.__tail.__tail.__tail.__head.__value,na</ExpandedItem>
+      <ExpandedItem Condition="index() == base::Value::Type::BINARY" Optional="true">data_.__impl_.__data.__tail.__tail.__tail.__tail.__tail.__head.__value</ExpandedItem>
+      <ExpandedItem Condition="index() == base::Value::Type::DICT" Optional="true">data_.__impl_.__data.__tail.__tail.__tail.__tail.__tail.__tail.__head.__value</ExpandedItem>
+      <ExpandedItem Condition="index() == base::Value::Type::LIST" Optional="true">data_.__impl_.__data.__tail.__tail.__tail.__tail.__tail.__tail.__tail.__head.__value</ExpandedItem>
     </Expand>
   </Type>
-  <Type Name="base::Value::Dict" >
-    <DisplayString>Dictionary {storage_.body_}</DisplayString>
-    <Expand >
-      <Item Name="[size]">storage_.body_.__end_ - storage_.body_.__begin_</Item>
-        <ArrayItems>
-          <Size>storage_.body_.__end_ - storage_.body_.__begin_</Size>
-          <ValuePointer>storage_.body_.__begin_</ValuePointer>
-        </ArrayItems>
+  <Type Name="base::DictValue" >
+    <DisplayString>{storage_}</DisplayString>
+    <Expand>
+      <ExpandedItem>storage_</ExpandedItem>
     </Expand>
   </Type>
-  <Type Name="base::Value::List" >
-    <DisplayString>List {storage_}</DisplayString>
-    <Expand >
-      <Item Name="[size]">storage_.__end_ - storage_.__begin_</Item>
-        <ArrayItems>
-          <Size>storage_.__end_ - storage_.__begin_</Size>
-          <ValuePointer>storage_.__begin_</ValuePointer>
-        </ArrayItems>
+  <Type Name="base::ListValue" >
+    <DisplayString>{storage_}</DisplayString>
+    <Expand>
+      <ExpandedItem>storage_</ExpandedItem>
     </Expand>
   </Type>
   <Type Name="base::StrongAlias&lt;*,*&gt;">
