@@ -537,7 +537,7 @@ void ReadAnythingAppController::AccessibilityEventReceived(
 
 void ReadAnythingAppController::SendEventUpdates() {
   if (model_.requires_distillation()) {
-    Distill(/*for_training_data=*/false);
+    Distill();
   }
 
   if (model_.redraw_required()) {
@@ -639,7 +639,7 @@ void ReadAnythingAppController::OnActiveAXTreeIDChanged(
   // case, do not distill.
   if (model_.active_tree_id() != ui::AXTreeIDUnknown() &&
       model_.ContainsTree(model_.active_tree_id())) {
-    Distill(/*for_training_data=*/false);
+    Distill();
   }
 }
 
@@ -795,7 +795,7 @@ void ReadAnythingAppController::OnAXTreeDistilled(
   // `requires_distillation()` state below).
   model_.UnserializePendingUpdates(tree_id);
   if (model_.requires_distillation()) {
-    Distill(/*for_training_data=*/false);
+    Distill();
   }
 }
 
@@ -1577,7 +1577,7 @@ void ReadAnythingAppController::OnCopy() const {
 }
 
 void ReadAnythingAppController::OnNoTextContent() {
-  Distill(/*for_training_data=*/false);
+  Distill();
 }
 
 void ReadAnythingAppController::OnFontSizeChanged(bool increase) {

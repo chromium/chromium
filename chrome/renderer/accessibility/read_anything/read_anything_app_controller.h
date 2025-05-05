@@ -344,7 +344,7 @@ class ReadAnythingAppController
   // However, this may be the same value as GetLanguageCodeForSpeech.
   const std::string& GetDefaultLanguageCodeForSpeech() const;
 
-  void Distill(bool for_training_data);
+  void Distill(bool for_training_data = false);
   void DrawSelection();
   void DrawEmptyState();
 
