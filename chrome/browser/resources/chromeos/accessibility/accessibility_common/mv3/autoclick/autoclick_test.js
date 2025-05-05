@@ -13,7 +13,7 @@ AutoclickE2ETest = class extends E2ETestBase {
     this.mockAccessibilityPrivate = new MockAccessibilityPrivate();
     chrome.accessibilityPrivate = this.mockAccessibilityPrivate;
 
-    window.RoleType = chrome.automation.RoleType;
+    globalThis.RoleType = chrome.automation.RoleType;
 
     // Re-initialize AccessibilityCommon with mock AccessibilityPrivate API.
     accessibilityCommon = new AccessibilityCommon();
