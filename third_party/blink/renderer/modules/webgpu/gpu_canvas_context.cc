@@ -234,6 +234,9 @@ bool GPUCanvasContext::PaintRenderingResultsToCanvas(
     texture = front_buffer_texture->GetTexture();
 #endif
   } else {
+    if (!texture_) {
+      return false;
+    }
     texture = texture_->GetHandle();
   }
 
