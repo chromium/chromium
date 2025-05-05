@@ -473,6 +473,9 @@ class GlicWindowController : public views::WidgetObserver,
   // The announcement should happen the first time focus is lost after the FRE.
   bool do_focus_loss_announcement_ = false;
 
+  // Whether the user is currently drag-resizing the widget.
+  bool user_resizing_ = false;
+
   // The invocation source requesting the opening of the web client. Note that
   // this value is retained until it is consumed by the web client. Because
   // opening the glic window may not actually load the client, there's no

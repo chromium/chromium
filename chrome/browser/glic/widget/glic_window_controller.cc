@@ -372,6 +372,7 @@ void GlicWindowController::OnWidgetBoundsChanged(views::Widget* widget,
 }
 
 void GlicWindowController::OnWidgetUserResizeStarted() {
+  user_resizing_ = true;
   glic_service_->metrics()->OnWidgetUserResizeStarted();
   if (GlicWebClientAccess* client = host().GetPrimaryWebClient()) {
     client->ManualResizeChanged(true);
@@ -393,6 +394,7 @@ void GlicWindowController::OnWidgetUserResizeEnded() {
   }
 
   glic_window_animator_->ResetLastTargetSize();
+  user_resizing_ = false;
 }
 
 void GlicWindowController::ShowAfterSignIn(base::WeakPtr<Browser> browser) {
@@ -940,14 +942,17 @@ void GlicWindowController::Resize(const gfx::Size& size,
   glic_size_ = size;
   glic_service_->metrics()->OnGlicWindowResize();
 
+  const bool in_resizable_state = state_ == State::kOpen ||
+                                  state_ == State::kWaitingForGlicToLoad ||
+                                  state_ == State::kDetaching;
+
   // TODO(https://crbug.com/379164689): Drive resize animations for error states
   // from the browser. For now, we allow animations during the waiting state.
   // TODO(https://crbug.com/392668958): If the widget is ready and asks for a
   // resize before the opening animation is finished, we will stop the current
   // animation and resize to the final size. Investigate a smoother way to
   // animate this transition.
-  if (state_ == State::kOpen || state_ == State::kWaitingForGlicToLoad ||
-      state_ == State::kDetaching) {
+  if (in_resizable_state && !user_resizing_) {
     glic_window_animator_->AnimateSize(GetLastRequestedSizeClamped(), duration,
                                        std::move(callback));
   } else {
@@ -1058,6 +1063,7 @@ void GlicWindowController::CloseFinish(
   glic_widget_observation_.Reset();
   glic_widget_.reset();
   scoped_glic_button_indicator_.reset();
+  user_resizing_ = false;
   NotifyIfPanelStateChanged();
 
   host().PanelWasClosed();
