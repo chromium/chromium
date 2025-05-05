@@ -32,13 +32,9 @@
 
 # These tests fail with perceptible pixel differences
 -FromColorSpace/ColorTransformPixelTest.Basic/SkiaGraphiteMetal_Hdr10_XyzD50Linear_premul
--FromColorSpace/ColorTransformPixelTest.Basic/SkiaGraphiteMetal_Hdr10_XyzD50Linear_premul_ColorConversionInRenderer
 -FromColorSpace/ColorTransformPixelTest.Basic/SkiaGraphiteMetal_Hdr10_XyzD50Linear_unpremul
--FromColorSpace/ColorTransformPixelTest.Basic/SkiaGraphiteMetal_Hdr10_XyzD50Linear_unpremul_ColorConversionInRenderer
 -FromColorSpace/ColorTransformPixelTest.Basic/SkiaGraphiteMetal_Hdr10_XyzD50SrgbHdr_premul
--FromColorSpace/ColorTransformPixelTest.Basic/SkiaGraphiteMetal_Hdr10_XyzD50SrgbHdr_premul_ColorConversionInRenderer
 -FromColorSpace/ColorTransformPixelTest.Basic/SkiaGraphiteMetal_Hdr10_XyzD50SrgbHdr_unpremul
--FromColorSpace/ColorTransformPixelTest.Basic/SkiaGraphiteMetal_Hdr10_XyzD50SrgbHdr_unpremul_ColorConversionInRenderer
 
 # Spot checking seems to show that the following fail with errors similar to:
 # dawn_context_provider.cc(448) First instance (1) must be zero.
@@ -85,13 +81,9 @@
 # TODO(crbug.com/337673256): These tests has been failing with happening in a
 # "suitable for blending" color space since https://crrev.com/c/5478271.
 -HdrVideoCases/ColorTransformPixelTest.Basic/SkiaGraphiteMetal_Hdr10_ScrgbLinear80Nits_premul
--HdrVideoCases/ColorTransformPixelTest.Basic/SkiaGraphiteMetal_Hdr10_ScrgbLinear80Nits_premul_ColorConversionInRenderer
 -HdrVideoCases/ColorTransformPixelTest.Basic/SkiaGraphiteMetal_Hdr10_ScrgbLinear80Nits_unpremul
--HdrVideoCases/ColorTransformPixelTest.Basic/SkiaGraphiteMetal_Hdr10_ScrgbLinear80Nits_unpremul_ColorConversionInRenderer
 -HdrVideoCases/ColorTransformPixelTest.Basic/SkiaGraphiteMetal_Hdr10_Bt709SrgbHdr_premul
--HdrVideoCases/ColorTransformPixelTest.Basic/SkiaGraphiteMetal_Hdr10_Bt709SrgbHdr_premul_ColorConversionInRenderer
 -HdrVideoCases/ColorTransformPixelTest.Basic/SkiaGraphiteMetal_Hdr10_Bt709SrgbHdr_unpremul
--HdrVideoCases/ColorTransformPixelTest.Basic/SkiaGraphiteMetal_Hdr10_Bt709SrgbHdr_unpremul_ColorConversionInRenderer
 
 # TODO(crbug.com/358957649): These tests have been failing since
 # https://crrev.com/c/5683265.

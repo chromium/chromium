@@ -6011,11 +6011,9 @@ INSTANTIATE_TEST_SUITE_P(,
 GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(
     RendererPixelTestWithOverdrawFeedback);
 
-class RendererPixelTestColorConversion
-    : public VizPixelTest,
-      public testing::WithParamInterface<std::tuple<RendererType, bool>> {
+class RendererPixelTestColorConversion : public VizPixelTestWithParam {
  public:
-  RendererPixelTestColorConversion() : VizPixelTest(std::get<0>(GetParam())) {
+  RendererPixelTestColorConversion() {
     // Set a color space that is not suitable for blending to ensure we go
     // through the color conversion code paths.
     this->display_color_spaces_ =
@@ -6023,16 +6021,7 @@ class RendererPixelTestColorConversion
     this->display_color_spaces_.SetSDRMaxLuminanceNits(80.f);
     this->display_color_spaces_.SetOutputBufferFormats(
         gfx::BufferFormat::RGBA_F16, gfx::BufferFormat::RGBA_F16);
-
-    if (std::get<1>(GetParam())) {
-      features_.InitAndEnableFeature(features::kColorConversionInRenderer);
-    } else {
-      features_.InitAndDisableFeature(features::kColorConversionInRenderer);
-    }
   }
-
- private:
-  base::test::ScopedFeatureList features_;
 };
 
 // Check that render pass updates do not blend with previous frames.
@@ -6070,11 +6059,10 @@ TEST_P(RendererPixelTestColorConversion,
   }
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    RendererPixelTestColorConversion,
-    testing::Combine(testing::ValuesIn(GetGpuRendererTypes()),
-                     testing::Bool()));
+INSTANTIATE_TEST_SUITE_P(,
+                         RendererPixelTestColorConversion,
+                         testing::ValuesIn(GetGpuRendererTypes()),
+                         testing::PrintToStringParamName());
 
 // GetGpuRendererTypes() can return an empty list, e.g. on Fuchsia ARM64.
 GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(RendererPixelTestColorConversion);
@@ -6082,10 +6070,10 @@ GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(RendererPixelTestColorConversion);
 #if BUILDFLAG(IS_WIN)
 class VideoPixelRendererPixelTestColorConversion
     : public VideoRendererPixelTestBase,
-      public testing::WithParamInterface<std::tuple<RendererType, bool>> {
+      public testing::WithParamInterface<RendererType> {
  public:
   VideoPixelRendererPixelTestColorConversion()
-      : VideoRendererPixelTestBase(std::get<0>(GetParam())) {}
+      : VideoRendererPixelTestBase(GetParam()) {}
 
   void SetUp() override {
     // Set a color space that is not suitable for blending to ensure we go
@@ -6100,14 +6088,7 @@ class VideoPixelRendererPixelTestColorConversion
     // color space by being scanout.
     renderer_settings_.force_non_scanout_backing_for_pixel_tests = true;
 
-    if (std::get<1>(GetParam())) {
-      features_.InitWithFeatures({features::kDelegatedCompositing,
-                                  features::kColorConversionInRenderer},
-                                 {});
-    } else {
-      features_.InitWithFeatures({features::kDelegatedCompositing},
-                                 {features::kColorConversionInRenderer});
-    }
+    features_.InitAndEnableFeature(features::kDelegatedCompositing);
 
     VideoRendererPixelTestBase::SetUp();
   }
@@ -6166,11 +6147,8 @@ TEST_P(VideoPixelRendererPixelTestColorConversion,
         child_pass_copy->will_backing_be_read_by_viz = false;
       }
 
-      // When `ColorConversionInRenderer` is enabled, make the HDR child render
-      // pass not use the color conversion layer since it won't contain quads
-      // that require blending.
-      // When `ColorConversionInRenderer` is disabled, color conversion will
-      // happen unconditionally as a render pass.
+      // Make the HDR child render pass not use the color conversion layer if
+      // it doesn't contain quads that require blending.
       for (auto* quad : child_pass_copy->quad_list) {
         quad->needs_blending = child_pass_needs_blending;
       }
@@ -6208,11 +6186,10 @@ TEST_P(VideoPixelRendererPixelTestColorConversion,
                                  cc::AlphaDiscardingExactPixelComparator()));
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    VideoPixelRendererPixelTestColorConversion,
-    testing::Combine(testing::ValuesIn(GetGpuRendererTypes()),
-                     testing::Bool()));
+INSTANTIATE_TEST_SUITE_P(,
+                         VideoPixelRendererPixelTestColorConversion,
+                         testing::ValuesIn(GetGpuRendererTypes()),
+                         testing::PrintToStringParamName());
 #endif
 
 using PrimaryID = gfx::ColorSpace::PrimaryID;
@@ -6293,19 +6270,15 @@ gfx::ColorSpace GetColorSpace(NamedColorSpace named_color_space) {
 
 class ColorTransformPixelTest
     : public VizPixelTest,
-      public testing::WithParamInterface<std::tuple<RendererType,
-                                                    NamedColorSpace,
-                                                    NamedColorSpace,
-                                                    bool,
-                                                    bool>> {
+      public testing::WithParamInterface<
+          std::tuple<RendererType, NamedColorSpace, NamedColorSpace, bool>> {
  public:
   static std::string GetParamName(
       const testing::TestParamInfo<ParamType>& info) {
     return base::StringPrintf(
-        "%s_%s_%s_%s%s", testing::PrintToString(std::get<0>(info.param)),
+        "%s_%s_%s_%s", testing::PrintToString(std::get<0>(info.param)),
         ToString(std::get<1>(info.param)), ToString(std::get<2>(info.param)),
-        std::get<3>(info.param) ? "premul" : "unpremul",
-        std::get<4>(info.param) ? "_ColorConversionInRenderer" : "");
+        std::get<3>(info.param) ? "premul" : "unpremul");
   }
 
   ColorTransformPixelTest() : VizPixelTest(std::get<0>(GetParam())) {
@@ -6322,69 +6295,6 @@ class ColorTransformPixelTest
           gfx::BufferFormat::RGBA_F16, gfx::BufferFormat::RGBA_F16);
     }
     this->premultiplied_alpha_ = std::get<3>(GetParam());
-    if (std::get<4>(GetParam())) {
-      features_.InitAndEnableFeature(features::kColorConversionInRenderer);
-    } else {
-      features_.InitAndDisableFeature(features::kColorConversionInRenderer);
-    }
-  }
-
-  // Add a new root pass to handle the color conversion to ensure the previous
-  // root pass can blend in a color space suitable for blending. This mimics
-  // what |SurfaceAggregator::AddColorConversionPass|.
-  void AddColorConversionPass(AggregatedRenderPassList& pass_list) {
-    AggregatedRenderPassId color_conversion_pass_id{2};
-
-    // Ensure that the color conversion pass id doesn't conflict with an
-    // existing render pass.
-    ASSERT_THAT(pass_list,
-                testing::Each(testing::Property(
-                    "get", &AggregatedRenderPassList::value_type::get,
-                    testing::Field(
-                        "id", &AggregatedRenderPass::id,
-                        testing::Not(testing::Eq(color_conversion_pass_id))))));
-
-    const gfx::Rect current_output_rect = pass_list.back()->output_rect;
-
-    auto color_conversion_pass = std::make_unique<AggregatedRenderPass>(1, 1);
-    color_conversion_pass->SetAll(
-        color_conversion_pass_id, current_output_rect,
-        pass_list.back()->damage_rect, gfx::Transform(),
-        /*filters=*/cc::FilterOperations(),
-        /*backdrop_filters=*/cc::FilterOperations(),
-        /*backdrop_filter_bounds=*/SkPath(),
-        dst_color_space_.GetContentColorUsage(),
-        pass_list.back()->has_transparent_background,
-        /*cache_render_pass=*/false,
-        /*has_damage_from_contributing_content=*/false,
-        /*generate_mipmap=*/false);
-    color_conversion_pass->is_color_conversion_pass = true;
-
-    auto* shared_quad_state =
-        color_conversion_pass->CreateAndAppendSharedQuadState();
-    shared_quad_state->SetAll(
-        /*transform=*/gfx::Transform(),
-        /*layer_rect=*/current_output_rect,
-        /*visible_layer_rect=*/current_output_rect, gfx::MaskFilterInfo(),
-        /*clip=*/std::nullopt, /*contents_opaque=*/false,
-        /*opacity_f=*/1.f, SkBlendMode::kSrc, /*sorting_context=*/0,
-        /*layer_id=*/0u,
-        /*fast_rounded_corner=*/false);
-
-    auto* quad = color_conversion_pass
-                     ->CreateAndAppendDrawQuad<AggregatedRenderPassDrawQuad>();
-    quad->SetNew(shared_quad_state, /*rect=*/current_output_rect,
-                 /*visible_rect=*/current_output_rect, pass_list.back()->id,
-                 /*mask_resource_id=*/kInvalidResourceId,
-                 /*mask_uv_rect=*/gfx::RectF(),
-                 /*mask_texture_size=*/gfx::Size(),
-                 /*filters_scale=*/gfx::Vector2dF(1.0f, 1.0f),
-                 /*filters_origin=*/gfx::PointF(),
-                 /*tex_coord_rect=*/gfx::RectF(current_output_rect),
-                 /*force_anti_aliasing_off=*/false,
-                 /*backdrop_filter_quality=*/1.0f);
-
-    pass_list.push_back(std::move(color_conversion_pass));
   }
 
   void Basic() {
@@ -6502,11 +6412,6 @@ class ColorTransformPixelTest
     AggregatedRenderPassList pass_list;
     pass_list.push_back(std::move(pass));
 
-    if (!this->dst_color_space_.IsSuitableForBlending() &&
-        !base::FeatureList::IsEnabled(features::kColorConversionInRenderer)) {
-      AddColorConversionPass(pass_list);
-    }
-
     // Allow a difference of 2 bytes in comparison for most cases.
     float avg_abs_error_limit = 2.0f;
     int max_abs_error_limit = 2;
@@ -6574,7 +6479,6 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Combine(testing::ValuesIn(GetGpuRendererTypes()),
                      testing::ValuesIn(src_color_spaces),
                      testing::ValuesIn(intermediate_color_spaces),
-                     testing::Bool(),
                      testing::Bool()),
     &ColorTransformPixelTest::GetParamName);
 
@@ -6584,7 +6488,6 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Combine(testing::ValuesIn(GetGpuRendererTypes()),
                      testing::ValuesIn(intermediate_color_spaces),
                      testing::ValuesIn(dst_color_spaces),
-                     testing::Bool(),
                      testing::Bool()),
     &ColorTransformPixelTest::GetParamName);
 
@@ -6604,7 +6507,6 @@ INSTANTIATE_TEST_SUITE_P(
                          NamedColorSpace::kBt709SrgbHdr,
                          NamedColorSpace::kScrgbLinear80Nits,
                      }),
-                     testing::Bool(),
                      testing::Bool()),
     &ColorTransformPixelTest::GetParamName);
 

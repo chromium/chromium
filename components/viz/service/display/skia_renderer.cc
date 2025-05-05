@@ -1399,12 +1399,6 @@ void SkiaRenderer::ClearFramebuffer() {
 
 bool SkiaRenderer::NeedsLayerForColorConversion(
     const AggregatedRenderPass* render_pass) {
-  if (!base::FeatureList::IsEnabled(features::kColorConversionInRenderer)) {
-    // Color conversion is already handled by a dedicated render pass if it was
-    // needed.
-    return false;
-  }
-
   if (!render_pass->ShouldDrawWithBlending()) {
     // We don't need to be in a color space suitable for blending if we're not
     // doing any blending.
