@@ -49,6 +49,11 @@ public class PriceInsightsDelegateImpl implements PriceInsightsDelegate {
                         : BookmarkUtils.addBookmarkWithoutShowingSaveFlow(
                                 mContext, tab, bookmarkModel);
 
+        if (bookmarkId == null) {
+            callback.onResult(false);
+            return;
+        }
+
         Callback<Boolean> wrapperCallback =
                 (success) -> {
                     callback.onResult(success);
