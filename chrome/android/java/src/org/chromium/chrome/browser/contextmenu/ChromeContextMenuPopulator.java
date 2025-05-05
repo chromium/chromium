@@ -614,14 +614,24 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             mItemDelegate.onOpenImageUrl(mParams.getSrcUrl(), mParams.getReferrer());
         } else if (itemId == R.id.contextmenu_open_image_in_new_tab) {
             recordContextMenuSelection(ContextMenuUma.Action.OPEN_IMAGE_IN_NEW_TAB);
-            mItemDelegate.onOpenImageInNewTab(mParams.getSrcUrl(), mParams.getReferrer());
+            verifyCopyImageIsAllowedByPolicy(
+                    mParams.getSrcUrl().getSpec(),
+                    () ->
+                            mItemDelegate.onOpenImageInNewTab(
+                                    mParams.getSrcUrl(), mParams.getReferrer()));
         } else if (itemId == R.id.contextmenu_open_image_in_ephemeral_tab) {
             recordContextMenuSelection(ContextMenuUma.Action.OPEN_IMAGE_IN_EPHEMERAL_TAB);
-            String title = mParams.getTitleText();
-            if (TextUtils.isEmpty(title)) {
-                title = URLUtil.guessFileName(mParams.getSrcUrl().getSpec(), null, null);
-            }
-            mItemDelegate.onOpenInEphemeralTab(mParams.getSrcUrl(), title);
+            verifyCopyImageIsAllowedByPolicy(
+                    mParams.getSrcUrl().getSpec(),
+                    () -> {
+                        String title = mParams.getTitleText();
+                        if (TextUtils.isEmpty(title)) {
+                            title =
+                                    URLUtil.guessFileName(
+                                            mParams.getSrcUrl().getSpec(), null, null);
+                        }
+                        mItemDelegate.onOpenInEphemeralTab(mParams.getSrcUrl(), title);
+                    });
         } else if (itemId == R.id.contextmenu_copy_image) {
             recordContextMenuSelection(ContextMenuUma.Action.COPY_IMAGE);
             copyImageToClipboard();
@@ -892,10 +902,19 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                                 }));
     }
 
+    private void verifyCopyImageIsAllowedByPolicy(String imageUri, Runnable continueIfCopyAllowed) {
+        DataProtectionBridge.verifyCopyImageIsAllowedByPolicy(
+                imageUri,
+                mItemDelegate.getWebContents().getMainFrame(),
+                (isAllowed) -> {
+                    if (isAllowed) continueIfCopyAllowed.run();
+                });
+    }
+
     /**
-     * Share the image that triggered the current context menu.
-     * Package-private, allowing access only from the context menu item to ensure that
-     * it will use the right activity set when the menu was displayed.
+     * Share the image that triggered the current context menu. Package-private, allowing access
+     * only from the context menu item to ensure that it will use the right activity set when the
+     * menu was displayed.
      */
     private void shareImage() {
         mNativeDelegate.retrieveImageForShare(
