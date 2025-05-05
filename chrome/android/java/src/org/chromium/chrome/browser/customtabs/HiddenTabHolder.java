@@ -44,6 +44,7 @@ import org.chromium.url.Origin;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.Objects;
 
 /**
  * Holds a hidden tab which may be used to preload pages before a CustomTabActivity is launched.
@@ -267,18 +268,11 @@ public class HiddenTabHolder {
         try (TraceEvent e = TraceEvent.scoped("CustomTabsConnection.takeHiddenTab")) {
             if (intent.getBooleanExtra(IntentHandler.EXTRA_CCT_EARLY_NAV, false)) {
                 recordEarlyNavDebugMetric(session, ignoreFragments, url, intent);
-
-                // Work around Early Nav failures by always continuing with the early nav if it
-                // hasn't been cleaned up.
-                if (mSpeculation != null && mSpeculation.isEarlyNav) {
-                    HiddenTab hiddenTab = mSpeculation.hiddenTab;
-                    mSpeculation = null;
-                    return hiddenTab;
-                }
             }
 
-            if (mSpeculation == null || session == null) return null;
-            if (!session.equals(mSpeculation.session)) return null;
+            if (mSpeculation == null) return null;
+            // ~10% of CCT startups have no session, allow them to use Early Nav.
+            if (!Objects.equals(session, mSpeculation.session)) return null;
 
             HiddenTab hiddenTab = mSpeculation.hiddenTab;
             String speculatedUrl = hiddenTab.url;
@@ -313,7 +307,9 @@ public class HiddenTabHolder {
         @EarlyNavFailureReason int failureReason = EarlyNavFailureReason.SUCCESS;
         if (mSpeculation == null) {
             failureReason = EarlyNavFailureReason.NO_SPECULATION;
-        } else if (session == null) {
+        } else if (!Objects.equals(session, mSpeculation.session)) {
+            // NO_SESSION redefined to be wrong session. This is just for short term debugging so
+            // it's fine.
             failureReason = EarlyNavFailureReason.NO_SESSION;
         } else {
             boolean isSessionValid = CustomTabsConnection.getInstance().isSessionValid(session);
