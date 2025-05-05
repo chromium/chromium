@@ -1278,11 +1278,6 @@ const char kImageDescriptionsAlternateRoutingDescription[] =
     "When adding automatic captions to images, use a different route to "
     "acquire descriptions.";
 
-const char kImprovedSettingsUIOnDesktopName[] = "Improved settings UI";
-const char kImprovedSettingsUIOnDesktopDescription[] =
-    "Enables redesign of signin settings and better signin errors in "
-    "chrome://settings.";
-
 const char kEnableAutofillAddressSavePromptName[] =
     "Autofill Address Save Prompts";
 const char kEnableAutofillAddressSavePromptDescription[] =
