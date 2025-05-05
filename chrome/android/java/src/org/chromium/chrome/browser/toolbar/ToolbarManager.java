@@ -361,6 +361,7 @@ public class ToolbarManager
     private @Nullable MiniOriginBarController mMiniOriginBarController;
     private @Nullable UndoBarThrottle mUndoBarThrottle;
 
+    private CustomTabCount mCustomTabCount;
     private float mNtpSearchBoxScrollPercentage;
     private OverscrollGlowCoordinator mOverscrollGlowCoordinator;
 
@@ -783,6 +784,9 @@ public class ToolbarManager
         mOverrideUrlLoadingDelegate = new OverrideUrlLoadingDelegateImpl();
         mMultiInstanceManager = multiInstanceManager;
         mTabBookmarkerSupplier = tabBookmarkerSupplier;
+        mCustomTabCount =
+                new CustomTabCount(
+                        tabModelSelectorSupplier.get().getCurrentModelTabCountSupplier());
 
         ToolbarLayout toolbarLayout = mActivity.findViewById(R.id.toolbar);
         NewTabPageDelegate ntpDelegate = createNewTabPageDelegate(toolbarLayout);
@@ -1696,7 +1700,7 @@ public class ToolbarManager
                         mMenuButtonCoordinator,
                         mMenuButtonCoordinator.getMenuButtonHelperSupplier(),
                         mTabSwitcherButtonCoordinator,
-                        mTabModelSelectorSupplier,
+                        mCustomTabCount,
                         mHomepageEnabledSupplier,
                         mCompositorViewHolder::getResourceManager,
                         historyDelegate,
@@ -1740,6 +1744,11 @@ public class ToolbarManager
     /** Returns the NTP toolbar transition percentage for the search box to cover the toolbar. */
     public float getNtpTransitionPercentage() {
         return mNtpSearchBoxScrollPercentage;
+    }
+
+    /** Returns the {@link CustomTabCount} object to overwrite the tab count in the toolbar. */
+    public CustomTabCount getCustomTabCount() {
+        return mCustomTabCount;
     }
 
     // Base abstract implementation of NewTabPageDelegate for phone/table toolbar layout.
@@ -2008,7 +2017,7 @@ public class ToolbarManager
             mTabSwitcherButtonCoordinator.initializeWithNative(
                     v -> openGridTabSwitcherHandler.run(),
                     tabSwitcherLongClickListener,
-                    mTabModelSelectorSupplier.get().getCurrentModelTabCountSupplier(),
+                    mCustomTabCount,
                     archivedTabCountSupplier,
                     tabModelNotificationDotSupplier,
                     () -> TabArchiveSettings.setIphShownThisSession(true),
@@ -2302,6 +2311,11 @@ public class ToolbarManager
         if (mMiniOriginBarController != null) {
             mMiniOriginBarController.destroy();
             mMiniOriginBarController = null;
+        }
+
+        if (mCustomTabCount != null) {
+            mCustomTabCount.destroy();
+            mCustomTabCount = null;
         }
 
         mTabObscuringHandler.removeObserver(this);
