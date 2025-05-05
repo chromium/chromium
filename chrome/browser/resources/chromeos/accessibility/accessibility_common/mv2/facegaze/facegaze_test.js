@@ -3018,8 +3018,7 @@ AX_TEST_F('FaceGazeMV2Test', 'InvalidResult', async function() {
   let result = new MockFaceLandmarkerResult().invalidate();
   this.processFaceLandmarkerResult(result, false);
   assertEquals(
-      `Can't use the camera, please ensure your camera is enabled ` +
-          `and unobstructed`,
+      `Can’t access camera. Turn on camera and make sure it isn’t blocked.`,
       this.getBubbleText());
 
   // Send a valid result.
@@ -3039,8 +3038,7 @@ AX_TEST_F('FaceGazeMV2Test', 'CameraMutedAndUnmuted', async function() {
   // Mute the camera.
   this.getFaceGaze().webCamFaceLandmarker_.onTrackMutedHandler_();
   assertEquals(
-      `Camera temporarily unavailable, please ensure you're signed ` +
-          `in and that your camera is enabled`,
+      `Camera unavailable. Make sure you are signed in and camera is on.`,
       this.getBubbleText());
 
   // Unmute the camera.
@@ -3065,8 +3063,7 @@ AX_TEST_F('FaceGazeMV2Test', 'NoCamera', async function() {
   // in the UI and queue up another attempt.
   webCamFaceLandmarker.connectToWebCam_();
   assertEquals(
-      'Attempting to connect to camera, Face control will turn off in 10 ' +
-          'seconds otherwise',
+      'Trying to connect to camera. Face control will turn off in 10 seconds.',
       this.getBubbleText());
   assertEquals(9, webCamFaceLandmarker.connectToWebCamRetriesRemaining_);
 
@@ -3074,8 +3071,7 @@ AX_TEST_F('FaceGazeMV2Test', 'NoCamera', async function() {
   // webcam.
   this.runLatestTimeout();
   assertEquals(
-      'Attempting to connect to camera, Face control will turn off in 9 ' +
-          'seconds otherwise',
+      'Trying to connect to camera. Face control will turn off in 9 seconds.',
       this.getBubbleText());
   assertEquals(8, webCamFaceLandmarker.connectToWebCamRetriesRemaining_);
 
