@@ -67,6 +67,7 @@
 %define HAVE_ARM_CRC32 0
 %define HAVE_AVX 1
 %define HAVE_AVX2 1
+%define HAVE_AVX512 1
 %define HAVE_FEXCEPT 1
 %define HAVE_MMX 1
 %define HAVE_NEON 0
