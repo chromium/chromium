@@ -105,6 +105,9 @@ source_set("connections_implementation_types") {
 }
 
 source_set("connections_implementation_ble_advertisement") {
+  # TODO(crbug.com/415053888): Remove once usage of the deprecated version of
+  # BluetoothUtils::ToString and BluetoothUtils::FromString have been removed.
+  cflags = [ "-Wno-deprecated-declarations" ]
   public_configs = [
     ":nearby_include_config",
     ":nearby_defines",
@@ -123,6 +126,9 @@ source_set("connections_implementation_ble_advertisement") {
 }
 
 source_set("connections_implementation") {
+  # TODO(crbug.com/415053888): Remove once usage of the deprecated version of
+  # BluetoothUtils::ToString and BluetoothUtils::FromString have been removed.
+  cflags = [ "-Wno-deprecated-declarations" ]
   public_configs = [
     ":nearby_include_config",
     ":nearby_defines",
@@ -767,6 +773,7 @@ source_set("platform_base") {
     "src/internal/platform/base64_utils.cc",
     "src/internal/platform/bluetooth_utils.cc",
     "src/internal/platform/input_stream.cc",
+    "src/internal/platform/mac_address.cc",
     "src/internal/platform/prng.cc",
   ]
   public = [
@@ -778,6 +785,7 @@ source_set("platform_base") {
     "src/internal/platform/feature_flags.h",
     "src/internal/platform/input_stream.h",
     "src/internal/platform/listeners.h",
+    "src/internal/platform/mac_address.h",
     "src/internal/platform/nsd_service_info.h",
     "src/internal/platform/os_name.h",
     "src/internal/platform/output_stream.h",
