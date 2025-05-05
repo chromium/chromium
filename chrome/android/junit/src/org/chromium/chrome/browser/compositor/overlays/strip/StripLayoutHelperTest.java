@@ -44,6 +44,7 @@ import android.graphics.PointF;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.os.Build;
+import android.util.DisplayMetrics;
 import android.view.ContextThemeWrapper;
 import android.view.HapticFeedbackConstants;
 import android.view.MotionEvent;
@@ -2130,6 +2131,47 @@ public class StripLayoutHelperTest {
         view.getAnchorRect(expectedRect);
         Rect actualRect = rectProviderArgumentCaptor.getValue().getRect();
         assertEquals("Anchor view for menu is positioned incorrectly", expectedRect, actualRect);
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.TAB_STRIP_CONTEXT_MENU})
+    @Feature("Tab Context Menu")
+    public void testOnLongPress_OnTab_WithTopPadding_AndScreenDensity() {
+        DisplayMetrics displayMetrics = mContext.getResources().getDisplayMetrics();
+        float densityBeforeTest = displayMetrics.density;
+        float densityForTest = 2.0f;
+        displayMetrics.density = densityForTest;
+
+        var tabs = initializeTest_ForTab();
+        setupForIndividualTabContextMenu();
+        mStripLayoutHelper.onSizeChanged(
+                SCREEN_WIDTH,
+                SCREEN_HEIGHT,
+                false,
+                TIMESTAMP,
+                PADDING_LEFT,
+                PADDING_RIGHT,
+                PADDING_TOP);
+        // Long press on tab.
+        onLongPress_OnTab(tabs);
+        // Set this up to capture rectProvider.
+        ArgumentCaptor<RectProvider> rectProviderArgumentCaptor =
+                ArgumentCaptor.forClass(RectProvider.class);
+        // Verify tab context menu is showing.
+        verify(mTabContextMenuCoordinator).showMenu(rectProviderArgumentCaptor.capture(), anyInt());
+        // Verify anchorView coordinates.
+        StripLayoutView view = mStripLayoutHelper.getViewAtPositionX(10f, true);
+        assertThat(view, instanceOf(StripLayoutTab.class));
+        Rect expectedRect = new Rect();
+        view.getAnchorRect(expectedRect);
+        expectedRect.offset(0, Math.round(densityForTest * PADDING_TOP));
+        Rect actualRect = rectProviderArgumentCaptor.getValue().getRect();
+        assertEquals(
+                "Anchor view for menu should take into account top padding and screen density",
+                expectedRect,
+                actualRect);
+
+        displayMetrics.density = densityBeforeTest; // Clean up.
     }
 
     @Test
