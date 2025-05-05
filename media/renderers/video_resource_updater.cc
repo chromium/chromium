@@ -863,9 +863,6 @@ viz::SharedImageFormat VideoResourceUpdater::YuvSharedImageFormat(
   const auto& caps = context_provider_->ContextCapabilities();
   const auto& shared_image_caps =
       context_provider_->SharedImageInterface()->GetCapabilities();
-  if (caps.disable_one_component_textures) {
-    return PaintCanvasVideoRenderer::GetRGBPixelsOutputFormat();
-  }
   if (bits_per_channel <= 8) {
     DCHECK(shared_image_caps.supports_luminance_shared_images ||
            caps.texture_rg);
@@ -889,27 +886,27 @@ viz::SharedImageFormat VideoResourceUpdater::GetSoftwareOutputFormat(
     int bits_per_channel,
     const gfx::ColorSpace& input_frame_color_space,
     bool& texture_needs_rgb_conversion_out) {
-  viz::SharedImageFormat output_si_format;
   // TODO(crbug.com/332564976, hitawala): Simplify this format conversion
   // process.
+  if (software_compositor()) {
+    return viz::SinglePlaneFormat::kBGRA_8888;
+  }
+
+  viz::SharedImageFormat output_si_format;
   if (IsFrameFormat32BitRGB(input_frame_format)) {
     texture_needs_rgb_conversion_out = false;
     output_si_format = GetRGBSharedImageFormat(input_frame_format);
   } else if (input_frame_format == PIXEL_FORMAT_Y16) {
     // Unable to display directly as yuv planes so convert it to RGB.
     texture_needs_rgb_conversion_out = true;
-  } else if (!software_compositor()) {
+  } else if (context_provider_->ContextCapabilities()
+                 .disable_one_component_textures) {
+    // If GPU compositing is enabled, we need to convert texture to RGB if one
+    // component textures are disabled.
+    texture_needs_rgb_conversion_out = true;
+  } else {
     // Can be composited directly from yuv planes.
     output_si_format = YuvSharedImageFormat(bits_per_channel);
-
-    // If GPU compositing is enabled, but the output resource format returned by
-    // the resource provider is viz::SinglePlaneFormat::kRGBA_8888, then a GPU
-    // driver bug workaround requires that YUV frames must be converted to RGB
-    // before texture upload.
-    if (output_si_format == viz::SinglePlaneFormat::kRGBA_8888 ||
-        output_si_format == viz::SinglePlaneFormat::kBGRA_8888) {
-      texture_needs_rgb_conversion_out = true;
-    }
 
     // Some YUV resources have different sized planes. If we lack the proper
     // SharedImageFormat just convert to RGB. We could do something better like
@@ -943,11 +940,8 @@ viz::SharedImageFormat VideoResourceUpdater::GetSoftwareOutputFormat(
     }
   }
 
-  if (software_compositor() || texture_needs_rgb_conversion_out) {
-    output_si_format =
-        software_compositor()
-            ? viz::SinglePlaneFormat::kBGRA_8888
-            : PaintCanvasVideoRenderer::GetRGBPixelsOutputFormat();
+  if (texture_needs_rgb_conversion_out) {
+    output_si_format = PaintCanvasVideoRenderer::GetRGBPixelsOutputFormat();
   }
 
   return output_si_format;
