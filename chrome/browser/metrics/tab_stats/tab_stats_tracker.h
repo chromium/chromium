@@ -19,14 +19,22 @@
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "chrome/browser/metrics/tab_stats/tab_stats_data_store.h"
-#include "chrome/browser/resource_coordinator/lifecycle_unit_observer.h"
 #include "components/metrics/daily_event.h"
 #include "content/public/browser/web_contents_observer.h"
 
-class Browser;
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/resource_coordinator/lifecycle_unit_observer.h"
+#endif
+
 class PrefRegistrySimple;
 class PrefService;
 class Profile;
+
+#if BUILDFLAG(IS_ANDROID)
+class TabModel;
+#else
+class Browser;
+#endif
 
 namespace content {
 class WebContents;
@@ -42,8 +50,11 @@ FORWARD_DECLARE_TEST(TabStatsTrackerBrowserTest,
 // method, e.g.:
 //     TabStatsTracker::SetInstance(
 //         std::make_unique<TabStatsTracker>(g_browser_process->local_state()));
-class TabStatsTracker : public base::PowerSuspendObserver,
-                        public resource_coordinator::LifecycleUnitObserver {
+class TabStatsTracker :
+#if !BUILDFLAG(IS_ANDROID)
+    public resource_coordinator::LifecycleUnitObserver,
+#endif
+    public base::PowerSuspendObserver {
  public:
   // Abstraction of a Browser + TabStripModel (on desktop) or a TabModel (on
   // Android).
@@ -157,11 +168,13 @@ class TabStatsTracker : public base::PowerSuspendObserver,
   // base::PowerSuspendObserver:
   void OnResume() override;
 
+#if !BUILDFLAG(IS_ANDROID)
   // resource_coordinator::LifecycleUnitObserver:
   void OnLifecycleUnitStateChanged(
       resource_coordinator::LifecycleUnit* lifecycle_unit,
       ::mojom::LifecycleUnitState previous_state,
       ::mojom::LifecycleUnitStateChangeReason reason) override;
+#endif
 
   // Functions to call when a tab strip (or the Android equivalent) is added,
   // removed or modified.
@@ -225,13 +238,19 @@ class TabStatsTracker : public base::PowerSuspendObserver,
 
 // A Browser + TabStripModel (on desktop) or a TabModel (on Android).
 // The TabStripInterface must not outlive the underlying model.
-// TODO(crbug.com/412634171): Implement for Android.
 class TabStatsTracker::TabStripInterface {
  public:
+#if BUILDFLAG(IS_ANDROID)
+  using PlatformModel = TabModel;
+
+  const TabModel* tab_model() const { return model_.get(); }
+  TabModel* tab_model() { return model_.get(); }
+#else
   using PlatformModel = Browser;
 
   const Browser* browser() const { return model_.get(); }
   Browser* browser() { return model_.get(); }
+#endif
 
   explicit TabStripInterface(PlatformModel* model);
   ~TabStripInterface();

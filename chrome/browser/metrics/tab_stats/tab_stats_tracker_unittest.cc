@@ -13,18 +13,15 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/metrics/histogram_samples.h"
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/power_monitor_test.h"
 #include "base/time/time.h"
-#include "chrome/browser/resource_coordinator/test_lifecycle_unit.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/tabs/tab_enums.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "build/build_config.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
-#include "chrome/test/base/test_browser_window.h"
 #include "components/metrics/daily_event.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
@@ -35,6 +32,19 @@
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/android/tab_android.h"
+#include "chrome/browser/ui/android/tab_model/tab_model_list.h"
+#include "chrome/browser/ui/android/tab_model/tab_model_observer.h"
+#include "chrome/browser/ui/android/tab_model/tab_model_test_helper.h"
+#else
+#include "chrome/browser/resource_coordinator/test_lifecycle_unit.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/test/base/test_browser_window.h"
+#endif
 
 namespace metrics {
 
@@ -110,7 +120,36 @@ class TestTabStatsObserver : public TabStatsObserver {
 };
 
 // Modifies the TabStripModel (on Desktop) or TabModel (on Android).
-// TODO(crbug.com/412634171): Implement for Android.
+
+#if BUILDFLAG(IS_ANDROID)
+
+class TabStripModifier {
+ public:
+  TabStripModifier(const TabStripInterface* tab_strip,
+                   OwningTestTabModel* test_tab_model)
+      : tab_strip_(tab_strip), test_tab_model_(test_tab_model) {}
+
+  ~TabStripModifier() = default;
+
+  TabStripModifier(const TabStripModifier&) = delete;
+  TabStripModifier& operator=(const TabStripModifier&) = delete;
+
+  const TabStripInterface& tab_strip() const { return *tab_strip_; }
+
+  void InsertWebContentsAt(size_t index,
+                           std::unique_ptr<content::WebContents> web_contents) {
+    test_tab_model_->AddTabFromWebContents(std::move(web_contents), index,
+                                           /*select=*/true);
+  }
+
+  void CloseWebContentsAt(size_t index) { test_tab_model_->CloseTabAt(index); }
+
+ private:
+  raw_ptr<const TabStripInterface> tab_strip_;
+  raw_ptr<OwningTestTabModel> test_tab_model_;
+};
+
+#else  // !BUILDFLAG(IS_ANDROID)
 
 class TabStripModifier {
  public:
@@ -134,6 +173,8 @@ class TabStripModifier {
   raw_ptr<const TabStripInterface> tab_strip_;
   raw_ptr<Browser> browser_;
 };
+
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 class TestTabStatsTracker : public TabStatsTracker {
  public:
@@ -188,6 +229,9 @@ class TestTabStatsTracker : public TabStatsTracker {
     return tab_stats_data_store()->tab_stats().window_count;
   }
 
+#if !BUILDFLAG(IS_ANDROID)
+  // TODO(crbug.com/412634171): Enable this when discarding is supported on
+  // Android.
   void DiscardedStateChange(ChromeRenderViewHostTestHarness* test_harness,
                             ::mojom::LifecycleUnitDiscardReason reason,
                             bool is_discarded) {
@@ -206,6 +250,7 @@ class TestTabStatsTracker : public TabStatsTracker {
     OnLifecycleUnitStateChanged(&lifecycle_unit, previous_state,
                                 kStateChangeReason);
   }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   void CheckDailyEventInterval() { daily_event_for_testing()->CheckInterval(); }
 
@@ -269,11 +314,20 @@ class TabStatsTrackerTest : public ChromeRenderViewHostTestHarness {
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
+#if BUILDFLAG(IS_ANDROID)
+    test_tab_model_ = std::make_unique<OwningTestTabModel>(profile());
+    test_tab_model_->AddEmptyTab(0);
+    tab_strip_interface_ =
+        std::make_unique<TabStripInterface>(test_tab_model_.get());
+    tab_strip_modifier_ = std::make_unique<TabStripModifier>(
+        tab_strip_interface_.get(), test_tab_model_.get());
+#else
     browser_ = CreateBrowserWithTestWindowForParams(
         Browser::CreateParams(profile(), true));
     tab_strip_interface_ = std::make_unique<TabStripInterface>(browser_.get());
     tab_strip_modifier_ = std::make_unique<TabStripModifier>(
         tab_strip_interface_.get(), browser_.get());
+#endif
   }
 
   void TearDown() override {
@@ -285,7 +339,11 @@ class TabStatsTrackerTest : public ChromeRenderViewHostTestHarness {
     // in TearDown.
     tab_strip_modifier_.reset();
     tab_strip_interface_.reset();
+#if BUILDFLAG(IS_ANDROID)
+    test_tab_model_.reset();
+#else
     browser_.reset();
+#endif
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
@@ -357,7 +415,11 @@ class TabStatsTrackerTest : public ChromeRenderViewHostTestHarness {
 
   TestingPrefServiceSimple pref_service_;
 
+#if BUILDFLAG(IS_ANDROID)
+  std::unique_ptr<OwningTestTabModel> test_tab_model_;
+#else
   std::unique_ptr<Browser> browser_;
+#endif
 
   // Wrappers for the TabStripModel on desktop or TabModel on Android.
   std::unique_ptr<TabStripInterface> tab_strip_interface_;
@@ -546,6 +608,9 @@ TEST_F(TabStatsTrackerTest, StatsGetReportedDaily) {
       stats.window_count_max, 1);
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+// TODO(crbug.com/412634171): Enable this when discarding is supported on
+// Android.
 TEST_F(TabStatsTrackerTest, DailyDiscards) {
   // This test checks that the discard/reload counts are reported when the
   // daily event triggers.
@@ -732,6 +797,7 @@ TEST_F(TabStatsTrackerTest, DailyDiscards) {
                            kDailyReloadsFrozenWithGrowingMemoryHistogramName,
                        kExpectedReloadsFrozenWithGrowingMemory2, 1);
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(TabStatsTrackerTest, HeartbeatMetrics) {
   size_t expected_tab_count =

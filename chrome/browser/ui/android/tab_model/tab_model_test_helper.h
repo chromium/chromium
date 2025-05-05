@@ -10,10 +10,12 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
+#include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/flags/android/chrome_session_state.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
+#include "content/public/test/browser_test_utils.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -160,6 +162,27 @@ class OwningTestTabModel : public TabModel {
   bool is_active_model_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
 
   int next_tab_id_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;
+};
+
+// Waits until a TabAndroid has a WebContents assigned that's finished loading.
+class TabAndroidLoadedWaiter final : public TabAndroid::Observer {
+ public:
+  explicit TabAndroidLoadedWaiter(TabAndroid* tab);
+  ~TabAndroidLoadedWaiter() final;
+
+  TabAndroidLoadedWaiter(const TabAndroidLoadedWaiter&) = delete;
+  TabAndroidLoadedWaiter& operator=(const TabAndroidLoadedWaiter&) = delete;
+
+  bool Wait();
+
+  // TabAndroid::Observer:
+  void OnInitWebContents(TabAndroid* tab) final;
+
+ private:
+  content::WaiterHelper waiter_helper_;
+  bool load_succeeded_ = false;
+  base::ScopedObservation<TabAndroid, TabAndroid::Observer> tab_observation_{
+      this};
 };
 
 #endif  // CHROME_BROWSER_UI_ANDROID_TAB_MODEL_TAB_MODEL_TEST_HELPER_H_

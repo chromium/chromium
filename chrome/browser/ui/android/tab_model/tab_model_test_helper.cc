@@ -317,3 +317,23 @@ void OwningTestTabModel::SelectTab(TabAndroid* tab,
   observer_list_.Notify(&TabModelObserver::DidSelectTab, active_tab_.get(),
                         selection_type);
 }
+
+TabAndroidLoadedWaiter::TabAndroidLoadedWaiter(TabAndroid* tab) {
+  if (tab->web_contents()) {
+    OnInitWebContents(tab);
+  } else {
+    tab_observation_.Observe(tab);
+  }
+}
+
+TabAndroidLoadedWaiter::~TabAndroidLoadedWaiter() = default;
+
+bool TabAndroidLoadedWaiter::Wait() {
+  return waiter_helper_.Wait() && load_succeeded_;
+}
+
+void TabAndroidLoadedWaiter::OnInitWebContents(TabAndroid* tab) {
+  CHECK(tab->web_contents());
+  load_succeeded_ = content::WaitForLoadStop(tab->web_contents());
+  waiter_helper_.OnEvent();
+}

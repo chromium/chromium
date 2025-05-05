@@ -43,6 +43,7 @@
 #include "chrome/browser/google/google_brand.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/metrics/process_memory_metrics_emitter.h"
+#include "chrome/browser/metrics/tab_stats/tab_stats_tracker.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/shell_integration.h"
 #include "chrome/browser/ui/performance_controls/performance_controls_metrics.h"
@@ -74,7 +75,6 @@
 #include "chrome/browser/metrics/power/battery_discharge_reporter.h"
 #include "chrome/browser/metrics/power/power_metrics_reporter.h"
 #include "chrome/browser/metrics/power/process_monitor.h"
-#include "chrome/browser/metrics/tab_stats/tab_stats_tracker.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
@@ -969,7 +969,6 @@ ChromeBrowserMainExtraPartsMetrics::~ChromeBrowserMainExtraPartsMetrics() =
     default;
 
 void ChromeBrowserMainExtraPartsMetrics::PreCreateThreads() {
-#if !BUILDFLAG(IS_ANDROID)
   // Initialize the TabStatsTracker singleton instance. Must be initialized
   // before `responsiveness::Watcher`, which happens in
   // BrowserMainLoop::PreMainMessageLoopRun(), thus the decision to use
@@ -982,7 +981,6 @@ void ChromeBrowserMainExtraPartsMetrics::PreCreateThreads() {
         std::make_unique<metrics::TabStatsTracker>(
             g_browser_process->local_state()));
   }
-#endif
 }
 
 void ChromeBrowserMainExtraPartsMetrics::PostCreateMainMessageLoop() {
@@ -1239,7 +1237,6 @@ void ChromeBrowserMainExtraPartsMetrics::PreMainMessageLoopRun() {
 }
 
 void ChromeBrowserMainExtraPartsMetrics::PostDestroyThreads() {
-#if !BUILDFLAG(IS_ANDROID)
   if (metrics::TabStatsTracker::HasInstance()) {
     // responsiveness::Watcher currently outlives TabStatsTracker and
     // RemoveObserver is never called (see UsageScenarioTracker). This should be
@@ -1249,6 +1246,7 @@ void ChromeBrowserMainExtraPartsMetrics::PostDestroyThreads() {
     metrics::TabStatsTracker::ClearInstance();
   }
 
+#if !BUILDFLAG(IS_ANDROID)
   // Reset the pointer to `performance_intervention_metrics_reporter_` to ensure
   // that PrefService outlives the metrics reporter to prevent the reporter from
   // holding a dangling pointer.

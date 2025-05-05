@@ -42,6 +42,7 @@
 #include "chrome/browser/media/webrtc/permission_bubble_media_access_handler.h"
 #include "chrome/browser/memory/enterprise_memory_limit_pref_observer.h"
 #include "chrome/browser/metrics/chrome_metrics_service_client.h"
+#include "chrome/browser/metrics/tab_stats/tab_stats_tracker.h"
 #include "chrome/browser/net/net_error_tab_helper.h"
 #include "chrome/browser/net/profile_network_context_service.h"
 #include "chrome/browser/net/secure_dns_util.h"
@@ -279,7 +280,6 @@
 #include "chrome/browser/hid/hid_policy_allowed_devices.h"
 #include "chrome/browser/intranet_redirect_detector.h"
 #include "chrome/browser/media/unified_autoplay_config.h"
-#include "chrome/browser/metrics/tab_stats/tab_stats_tracker.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
 #include "chrome/browser/new_tab_page/modules/file_suggestion/drive_service.h"
 #include "chrome/browser/new_tab_page/modules/file_suggestion/microsoft_files_page_handler.h"
@@ -1605,6 +1605,7 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   language::UlpLanguageCodeLocator::RegisterLocalStatePrefs(registry);
   memory::EnterpriseMemoryLimitPrefObserver::RegisterPrefs(registry);
   metrics::RegisterDemographicsLocalStatePrefs(registry);
+  metrics::TabStatsTracker::RegisterPrefs(registry);
   network_time::NetworkTimeTracker::RegisterPrefs(registry);
   optimization_guide::prefs::RegisterLocalStatePrefs(registry);
   optimization_guide::model_execution::prefs::RegisterLocalStatePrefs(registry);
@@ -1680,7 +1681,6 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   headless::RegisterPrefs(registry);
   IntranetRedirectDetector::RegisterPrefs(registry);
   media_router::RegisterLocalStatePrefs(registry);
-  metrics::TabStatsTracker::RegisterPrefs(registry);
   performance_manager::user_tuning::prefs::RegisterLocalStatePrefs(registry);
   PerformanceInterventionMetricsReporter::RegisterLocalStatePrefs(registry);
   RegisterBrowserPrefs(registry);
