@@ -14,7 +14,6 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.CallbackController;
 import org.chromium.base.Log;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
@@ -245,11 +244,6 @@ public class BrandingController {
                 TaskTraits.BEST_EFFORT,
                 mCallbackController.makeCancelable(
                         () -> {
-                            int numberOfPackages =
-                                    SharedPreferencesBrandingTimeStorage.getInstance().getSize();
-                            RecordHistogram.recordCount100Histogram(
-                                    "CustomTabs.Branding.NumberOfClients", numberOfPackages);
-
                             // Release the in-memory share pref from the current session if branding
                             // checker didn't timeout.
                             if (!mBrandingChecker.isCancelled()) {
