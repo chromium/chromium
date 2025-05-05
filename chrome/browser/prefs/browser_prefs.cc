@@ -1102,6 +1102,10 @@ constexpr char kObsoleteLocalPasswordMigrationWarningPrefsVersion[] =
     "local_passwords_migration_warning_reset_count";
 #endif
 
+// Deprecated 05/2025
+inline constexpr char kManagedPrivateNetworkAccessRestrictionsEnabled[] =
+    "managed_private_network_access_restrictions_enabled";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1550,6 +1554,10 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterIntegerPref(
       kObsoleteLocalPasswordMigrationWarningPrefsVersion, 0);
 #endif
+
+  // Deprecated 05/2025
+  registry->RegisterBooleanPref(kManagedPrivateNetworkAccessRestrictionsEnabled,
+                                false);
 }
 
 }  // namespace
@@ -2280,9 +2288,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
                                 false);
 #endif
 
-  registry->RegisterBooleanPref(
-      prefs::kManagedPrivateNetworkAccessRestrictionsEnabled, false);
-
 #if BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
   data_controls::RegisterProfilePrefs(registry);
 #endif  // BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
@@ -2843,6 +2848,9 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   // Added 04/2025.
   profile_prefs->ClearPref(kObsoleteLocalPasswordMigrationWarningPrefsVersion);
 #endif
+
+  // Added 05/2025
+  profile_prefs->ClearPref(kManagedPrivateNetworkAccessRestrictionsEnabled);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

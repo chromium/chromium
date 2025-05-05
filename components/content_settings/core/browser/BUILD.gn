@@ -70,13 +70,6 @@ static_library("browser") {
     "//url",
   ]
 
-  if (!is_ios) {
-    sources += [
-      "insecure_private_network_policy_handler.cc",
-      "insecure_private_network_policy_handler.h",
-    ]
-  }
-
   if (use_blink) {
     deps += [
       "//components/policy:generated",

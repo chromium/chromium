@@ -391,57 +391,6 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
                1);
 }
 
-IN_PROC_BROWSER_TEST_F(
-    ChromeWebPlatformSecurityMetricsBrowserTest,
-    PrivateNetworkAccessPolicyEnabledFetchWithPreflightRepliedWithoutPNAHeaders) {
-  policy::PolicyMap policies;
-  SetPolicy(&policies, policy::key::kPrivateNetworkAccessRestrictionsEnabled,
-            base::Value(true));
-  UpdateProviderPolicy(policies);
-
-  ASSERT_EQ(true, content::NavigateToURL(
-                      web_contents(),
-                      https_server().GetURL(
-                          "a.com",
-                          "/private_network_access/"
-                          "no-favicon-treat-as-public-address.html")));
-
-  // The server does not reply with valid CORS headers, so the preflight fails.
-  // The enforcement feature is not enabled however, so the error is suppressed.
-  // Instead, a warning is shown in DevTools and a WebFeature use-counted.
-  ASSERT_EQ(false,
-            content::EvalJs(
-                web_contents(),
-                content::JsReplace(
-                    "fetch($1).then(response => response.ok, error => false)",
-                    https_server().GetURL("b.com", "/cors-ok.txt"))));
-}
-
-IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
-                       PrivateNetworkAccessPolicyEnabledFetchWithPreflight) {
-  policy::PolicyMap policies;
-  SetPolicy(&policies, policy::key::kPrivateNetworkAccessRestrictionsEnabled,
-            base::Value(true));
-  UpdateProviderPolicy(policies);
-
-  ASSERT_EQ(true, content::NavigateToURL(
-                      web_contents(),
-                      https_server().GetURL(
-                          "a.com",
-                          "/private_network_access/"
-                          "no-favicon-treat-as-public-address.html")));
-
-  // The server does not reply with valid CORS headers, so the preflight fails.
-  // The enforcement feature is not enabled however, so the error is suppressed.
-  // Instead, a warning is shown in DevTools and a WebFeature use-counted.
-  ASSERT_EQ(true,
-            content::EvalJs(
-                web_contents(),
-                content::JsReplace(
-                    "fetch($1).then(response => response.ok, error => false)",
-                    https_server().GetURL("b.com", kPnaPath))));
-}
-
 IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
                        PrivateNetworkAccessFetchInWorker) {
   ASSERT_EQ(true,

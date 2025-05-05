@@ -1,5 +1,6 @@
 caption: Allow the listed sites to make requests to more-private network endpoints
   in an insecure manner.
+deprecated: true
 desc: |-
   List of URL patterns. Requests initiated from websites served by matching origins are not subject to <ph name="PRIVATE_NETWORK_ACCESS">Private Network Access</ph> checks.
 
@@ -26,10 +27,10 @@ schema:
     type: string
   type: array
 supported_on:
-- chrome.*:92-
-- chrome_os:92-
-- android:92-
-- webview_android:92-
+- chrome.*:92-137
+- chrome_os:92-137
+- android:92-137
+- webview_android:92-137
 tags:
 - system-security
 type: list

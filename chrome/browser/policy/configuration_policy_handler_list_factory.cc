@@ -69,7 +69,6 @@
 #include "components/commerce/core/pref_names.h"
 #include "components/component_updater/pref_names.h"
 #include "components/content_settings/core/browser/cookie_settings_policy_handler.h"
-#include "components/content_settings/core/browser/insecure_private_network_policy_handler.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/custom_handlers/pref_names.h"
 #include "components/domain_reliability/domain_reliability_prefs.h"
@@ -952,9 +951,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     base::Value::Type::LIST },
   { key::kJavaScriptOptimizerBlockedForSites,
     prefs::kManagedJavaScriptOptimizerBlockedForSites,
-    base::Value::Type::LIST },
-  { key::kInsecurePrivateNetworkRequestsAllowedForUrls,
-    prefs::kManagedInsecurePrivateNetworkAllowedForUrls,
     base::Value::Type::LIST },
   { key::kDefaultGeolocationSetting,
     prefs::kManagedDefaultGeolocationSetting,
@@ -2291,9 +2287,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kIPv6ReachabilityOverrideEnabled,
     prefs::kIPv6ReachabilityOverrideEnabled,
     base::Value::Type::BOOLEAN },
-  { key::kPrivateNetworkAccessRestrictionsEnabled,
-    prefs::kManagedPrivateNetworkAccessRestrictionsEnabled,
-    base::Value::Type::BOOLEAN },
 #if !BUILDFLAG(IS_ANDROID)
   { key::kDevToolsGenAiSettings,
     prefs::kDevToolsGenAiSettings,
@@ -2759,9 +2752,6 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
 
   handlers->AddHandler(
       std::make_unique<content_settings::CookieSettingsPolicyHandler>());
-  handlers->AddHandler(
-      std::make_unique<
-          content_settings::InsecurePrivateNetworkPolicyHandler>());
   handlers->AddHandler(
       std::make_unique<
           enterprise_reporting::CloudProfileReportingPolicyHandler>());

@@ -221,6 +221,8 @@ enum ContentSettingsType {
   // Stores whether to allow insecure websites to make private network requests.
   // See also: https://wicg.github.io/cors-rfc1918
   // Set through enterprise policies only.
+  //
+  // TODO(crbug.com/394636065): remove this
   INSECURE_PRIVATE_NETWORK,
 
   // Content setting which stores whether or not a site can access low-level

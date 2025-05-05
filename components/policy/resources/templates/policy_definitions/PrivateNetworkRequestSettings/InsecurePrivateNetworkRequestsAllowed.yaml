@@ -1,5 +1,6 @@
 caption: Specifies whether to allow websites to make requests to more-private network
   endpoints in an insecure manner
+deprecated: true
 desc: |-
   Controls whether websites are allowed to make requests to more-private network endpoints in an insecure manner.
 
@@ -35,10 +36,10 @@ owners:
 schema:
   type: boolean
 supported_on:
-- chrome.*:92-
-- chrome_os:92-
-- android:92-
-- webview_android:92-
+- chrome.*:92-137
+- chrome_os:92-137
+- android:92-137
+- webview_android:92-137
 tags:
 - system-security
 type: main

@@ -1955,9 +1955,6 @@ inline constexpr char kGoogleSearchSidePanelEnabled[] =
 inline constexpr char kTabSearchRightAligned[] = "tab_search.is_right_aligned";
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-inline constexpr char kManagedPrivateNetworkAccessRestrictionsEnabled[] =
-    "managed_private_network_access_restrictions_enabled";
-
 #if BUILDFLAG(ENABLE_COMPOSE)
 // Boolean indicating whether or not the Compose FRE has been completed.
 inline constexpr char kPrefHasCompletedComposeFRE[] =

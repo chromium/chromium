@@ -8014,30 +8014,12 @@ content::ContentBrowserClient::PrivateNetworkRequestPolicyOverride
 ChromeContentBrowserClient::ShouldOverridePrivateNetworkRequestPolicy(
     content::BrowserContext* browser_context,
     const url::Origin& origin) {
-  // The host content settings map might no be null for some irregular profiles,
-  // e.g. the System Profile.
-  if (HostContentSettingsMap* service =
-          HostContentSettingsMapFactory::GetForProfile(browser_context)) {
-    if (content_settings::ShouldAllowInsecurePrivateNetworkRequests(service,
-                                                                    origin)) {
-      return content::ContentBrowserClient::
-          PrivateNetworkRequestPolicyOverride::kForceAllow;
-    }
-  }
-
 #if BUILDFLAG(IS_ANDROID)
   if (base::android::BuildInfo::GetInstance()->is_automotive()) {
     return content::ContentBrowserClient::PrivateNetworkRequestPolicyOverride::
         kBlockInsteadOfWarn;
   }
 #endif
-
-  Profile* profile = Profile::FromBrowserContext(browser_context);
-  if (profile->GetPrefs()->GetBoolean(
-          prefs::kManagedPrivateNetworkAccessRestrictionsEnabled)) {
-    return content::ContentBrowserClient::PrivateNetworkRequestPolicyOverride::
-        kBlockInsteadOfWarn;
-  }
 
   return content::ContentBrowserClient::PrivateNetworkRequestPolicyOverride::
       kDefault;

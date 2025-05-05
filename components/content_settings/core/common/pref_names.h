@@ -56,8 +56,6 @@ inline constexpr char kManagedDefaultFileSystemWriteGuardSetting[] =
     "profile.managed_default_content_settings.file_system_write_guard";
 inline constexpr char kManagedDefaultSerialGuardSetting[] =
     "profile.managed_default_content_settings.serial_guard";
-inline constexpr char kManagedDefaultInsecurePrivateNetworkSetting[] =
-    "profile.managed_default_content_settings.insecure_private_network";
 inline constexpr char kManagedDefaultJavaScriptJitSetting[] =
     "profile.managed_default_content_settings.javascript_jit";
 inline constexpr char kManagedDefaultJavaScriptOptimizerSetting[] =
