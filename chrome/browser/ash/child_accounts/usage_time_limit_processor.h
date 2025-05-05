@@ -18,8 +18,7 @@
 #include "base/values.h"
 #include "chromeos/ash/components/settings/timezone_settings.h"
 
-namespace ash {
-namespace usage_time_limit {
+namespace ash::usage_time_limit {
 namespace internal {
 
 enum class Weekday {
@@ -40,10 +39,8 @@ struct TimeWindowLimitBoundaries {
 
 struct TimeWindowLimitEntry {
   TimeWindowLimitEntry();
-  bool operator==(const TimeWindowLimitEntry&) const;
-  bool operator!=(const TimeWindowLimitEntry& rhs) const {
-    return !(*this == rhs);
-  }
+  friend bool operator==(const TimeWindowLimitEntry&,
+                         const TimeWindowLimitEntry&) = default;
 
   // Whether the time window limit entry ends on the following day from its
   // start.
@@ -71,18 +68,18 @@ class TimeWindowLimit {
   ~TimeWindowLimit();
   TimeWindowLimit(TimeWindowLimit&&);
   TimeWindowLimit& operator=(TimeWindowLimit&&);
-  bool operator==(const TimeWindowLimit&) const;
-  bool operator!=(const TimeWindowLimit& rhs) const { return !(*this == rhs); }
+
+  friend bool operator==(const TimeWindowLimit&,
+                         const TimeWindowLimit&) = default;
 
   std::unordered_map<Weekday, std::optional<TimeWindowLimitEntry>> entries;
 };
 
 struct TimeUsageLimitEntry {
   TimeUsageLimitEntry();
-  bool operator==(const TimeUsageLimitEntry&) const;
-  bool operator!=(const TimeUsageLimitEntry& rhs) const {
-    return !(*this == rhs);
-  }
+
+  friend bool operator==(const TimeUsageLimitEntry&,
+                         const TimeUsageLimitEntry&) = default;
 
   base::TimeDelta usage_quota;
   base::Time last_updated;
@@ -98,8 +95,9 @@ class TimeUsageLimit {
   ~TimeUsageLimit();
   TimeUsageLimit(TimeUsageLimit&&);
   TimeUsageLimit& operator=(TimeUsageLimit&&);
-  bool operator==(const TimeUsageLimit&) const;
-  bool operator!=(const TimeUsageLimit& rhs) const { return !(*this == rhs); }
+
+  friend bool operator==(const TimeUsageLimit&,
+                         const TimeUsageLimit&) = default;
 
   std::unordered_map<Weekday, std::optional<TimeUsageLimitEntry>> entries;
   base::TimeDelta resets_at;
@@ -205,7 +203,6 @@ std::set<PolicyType> UpdatedPolicyTypes(const base::Value::Dict& old_policy,
 std::set<PolicyType> GetEnabledTimeLimitPolicies(
     const base::Value::Dict& time_limit_prefs);
 
-}  // namespace usage_time_limit
-}  // namespace ash
+}  // namespace ash::usage_time_limit
 
 #endif  // CHROME_BROWSER_ASH_CHILD_ACCOUNTS_USAGE_TIME_LIMIT_PROCESSOR_H_

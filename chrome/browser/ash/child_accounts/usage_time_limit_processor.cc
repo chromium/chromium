@@ -1093,11 +1093,6 @@ Weekday GetWeekday(std::string weekday) {
 
 TimeWindowLimitEntry::TimeWindowLimitEntry() = default;
 
-bool TimeWindowLimitEntry::operator==(const TimeWindowLimitEntry& rhs) const {
-  return starts_at == rhs.starts_at && ends_at == rhs.ends_at &&
-         last_updated == rhs.last_updated;
-}
-
 bool TimeWindowLimitEntry::IsOvernight() const {
   return ends_at < starts_at;
 }
@@ -1161,15 +1156,7 @@ TimeWindowLimit::TimeWindowLimit(TimeWindowLimit&&) = default;
 
 TimeWindowLimit& TimeWindowLimit::operator=(TimeWindowLimit&&) = default;
 
-bool TimeWindowLimit::operator==(const TimeWindowLimit& rhs) const {
-  return entries == rhs.entries;
-}
-
 TimeUsageLimitEntry::TimeUsageLimitEntry() = default;
-
-bool TimeUsageLimitEntry::operator==(const TimeUsageLimitEntry& rhs) const {
-  return usage_quota == rhs.usage_quota && last_updated == rhs.last_updated;
-}
 
 TimeUsageLimit::TimeUsageLimit(const base::Value::Dict& usage_limit_dict)
     // Default reset time is midnight.
@@ -1208,10 +1195,6 @@ TimeUsageLimit::TimeUsageLimit(const base::Value::Dict& usage_limit_dict)
 }
 
 TimeUsageLimit::~TimeUsageLimit() = default;
-
-bool TimeUsageLimit::operator==(const TimeUsageLimit& rhs) const {
-  return entries == rhs.entries && resets_at == rhs.resets_at;
-}
 
 TimeUsageLimit::TimeUsageLimit(TimeUsageLimit&&) = default;
 

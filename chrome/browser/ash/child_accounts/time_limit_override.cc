@@ -122,11 +122,6 @@ TimeLimitOverride::TimeLimitOverride(TimeLimitOverride&&) = default;
 
 TimeLimitOverride& TimeLimitOverride::operator=(TimeLimitOverride&&) = default;
 
-bool TimeLimitOverride::operator==(const TimeLimitOverride& rhs) const {
-  return action_ == rhs.action() && created_at_ == rhs.created_at() &&
-         duration_ == rhs.duration();
-}
-
 bool TimeLimitOverride::IsLock() const {
   return action_ == Action::kLock;
 }

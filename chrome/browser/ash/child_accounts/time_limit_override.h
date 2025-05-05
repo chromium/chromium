@@ -51,10 +51,9 @@ class TimeLimitOverride {
   ~TimeLimitOverride();
   TimeLimitOverride(TimeLimitOverride&&);
   TimeLimitOverride& operator=(TimeLimitOverride&&);
-  bool operator==(const TimeLimitOverride&) const;
-  bool operator!=(const TimeLimitOverride& rhs) const {
-    return !(*this == rhs);
-  }
+
+  friend bool operator==(const TimeLimitOverride&,
+                         const TimeLimitOverride&) = default;
 
   // Returns override duration if specified.
   Action action() const { return action_; }
