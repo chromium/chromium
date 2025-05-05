@@ -11,11 +11,15 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
-#include "extensions/browser/script_injection_tracker.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "ui/display/screen.h"
 #include "url/origin.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "extensions/browser/script_injection_tracker.h"
+#endif
 
 namespace metrics {
 
@@ -33,6 +37,9 @@ std::pair<ukm::SourceId, url::Origin> GetNavigationInfoForContents(
 
 extensions::ExtensionIdSet GetExtensionsThatRanContentScriptsInWebContents(
     content::WebContents* contents) {
+#if !BUILDFLAG(ENABLE_EXTENSIONS)
+  return {};
+#else
   content::RenderFrameHost* main_frame = contents->GetPrimaryMainFrame();
   if (!main_frame) {
     // WebContents is being destroyed.
@@ -78,6 +85,7 @@ extensions::ExtensionIdSet GetExtensionsThatRanContentScriptsInWebContents(
                          GetExtensionsThatRanContentScriptsInProcess(*process));
   }
   return extensions;
+#endif
 }
 
 }  // namespace
@@ -343,8 +351,9 @@ void TabUsageScenarioTracker::OnWebContentsRemoved(
             web_contents->GetVisibility() == content::Visibility::VISIBLE);
   // If |web_contents| is tracked in the list of visible WebContents then a
   // synthetic visibility change event should be emitted.
-  if (iter != visible_tabs_.end())
+  if (iter != visible_tabs_.end()) {
     OnTabBecameHidden(&iter);
+  }
 
   // Remove |web_contents| from the list of contents playing video. If
   // necessary, the data store was already informed that a video stopped playing
