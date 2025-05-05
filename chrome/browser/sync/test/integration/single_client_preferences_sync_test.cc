@@ -27,6 +27,10 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/ntp_tiles/pref_names.h"
+#include "components/policy/core/browser/browser_policy_connector.h"
+#include "components/policy/core/common/mock_configuration_policy_provider.h"
+#include "components/policy/core/common/policy_map.h"
+#include "components/policy/policy_constants.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/json_pref_store.h"
 #include "components/prefs/mock_pref_change_callback.h"
@@ -2063,5 +2067,40 @@ IN_PROC_BROWSER_TEST_F(SingleClientDecouplePriorityPreferencesSyncTest,
                   ConvertPrefValueToValueInSpecifics(base::Value("value2")))
                   .Wait());
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+// Regression test for crbug.com/415305009.
+class SingleClientFeatureListEarlyAccessTest
+    : public SingleClientDecouplePriorityPreferencesSyncTest {
+ public:
+  void SetUpInProcessBrowserTestFixture() override {
+    SingleClientDecouplePriorityPreferencesSyncTest::
+        SetUpInProcessBrowserTestFixture();
+    policy_provider_.SetDefaultReturns(
+        /*is_initialization_complete_return=*/true,
+        /*is_first_policy_load_complete_return=*/true);
+    policy::BrowserPolicyConnector::SetPolicyProviderForTesting(
+        &policy_provider_);
+
+    policy::PolicyMap policies;
+    base::Value::List clear_browsing_data_list =
+        base::Value::List().Append("site_settings");
+    policies.Set(policy::key::kClearBrowsingDataOnExitList,
+                 policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+                 policy::POLICY_SOURCE_CLOUD,
+                 base::Value(std::move(clear_browsing_data_list)), nullptr);
+
+    policy_provider_.UpdateChromePolicy(policies);
+  }
+
+ protected:
+  testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
+};
+
+IN_PROC_BROWSER_TEST_F(SingleClientFeatureListEarlyAccessTest,
+                       ShouldNotCrashUponEarlyFeatureAccess) {
+  ASSERT_TRUE(SetupClients());
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace
