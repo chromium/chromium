@@ -75,6 +75,7 @@ chromium/try/fuchsia-netstack2-x64-cast-receiver-rel
 chromium/try/fuchsia-x64-cast-receiver-dbg
 chromium/try/fuchsia-x64-cast-receiver-dbg-compile
 chromium/try/fuchsia-x64-cast-receiver-rel
+chromium/try/fuchsia-x64-perf-cast-receiver-rel
 chromium/try/ios-asan
 chromium/try/ios-catalyst
 chromium/try/ios-device

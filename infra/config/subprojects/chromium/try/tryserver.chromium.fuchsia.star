@@ -218,6 +218,13 @@ try_.builder(
     contact_team_email = "chrome-fuchsia-engprod@google.com",
 )
 
+try_.builder(
+    name = "fuchsia-x64-perf-cast-receiver-rel",
+    mirrors = ["ci/fuchsia-x64-perf-cast-receiver-rel"],
+    gn_args = "ci/fuchsia-x64-perf-cast-receiver-rel",
+    contact_team_email = "chrome-fuchsia-engprod@google.com",
+)
+
 try_.compilator_builder(
     name = "fuchsia-x64-cast-receiver-rel-compilator",
     branch_selector = branches.selector.FUCHSIA_BRANCHES,

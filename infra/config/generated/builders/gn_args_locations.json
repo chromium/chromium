@@ -257,7 +257,8 @@
     "fuchsia-fyi-arm64-dbg": "ci/fuchsia-fyi-arm64-dbg/gn-args.json",
     "fuchsia-fyi-x64-asan": "ci/fuchsia-fyi-x64-asan/gn-args.json",
     "fuchsia-fyi-x64-dbg-persistent-emulator": "ci/fuchsia-fyi-x64-dbg-persistent-emulator/gn-args.json",
-    "fuchsia-netstack2-x64-cast-receiver-rel": "ci/fuchsia-netstack2-x64-cast-receiver-rel/gn-args.json"
+    "fuchsia-netstack2-x64-cast-receiver-rel": "ci/fuchsia-netstack2-x64-cast-receiver-rel/gn-args.json",
+    "fuchsia-x64-perf-cast-receiver-rel": "ci/fuchsia-x64-perf-cast-receiver-rel/gn-args.json"
   },
   "chromium.fuzz": {
     "ASAN Debug": "ci/ASAN Debug/gn-args.json",
@@ -768,7 +769,8 @@
     "fuchsia-netstack2-x64-cast-receiver-rel": "try/fuchsia-netstack2-x64-cast-receiver-rel/gn-args.json",
     "fuchsia-x64-cast-receiver-dbg": "try/fuchsia-x64-cast-receiver-dbg/gn-args.json",
     "fuchsia-x64-cast-receiver-dbg-compile": "try/fuchsia-x64-cast-receiver-dbg-compile/gn-args.json",
-    "fuchsia-x64-cast-receiver-rel": "try/fuchsia-x64-cast-receiver-rel/gn-args.json"
+    "fuchsia-x64-cast-receiver-rel": "try/fuchsia-x64-cast-receiver-rel/gn-args.json",
+    "fuchsia-x64-perf-cast-receiver-rel": "try/fuchsia-x64-perf-cast-receiver-rel/gn-args.json"
   },
   "tryserver.chromium.fuzz": {
     "linux-asan-dbg": "try/linux-asan-dbg/gn-args.json",
