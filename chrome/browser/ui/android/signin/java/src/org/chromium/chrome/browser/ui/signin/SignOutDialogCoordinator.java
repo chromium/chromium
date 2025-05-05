@@ -24,6 +24,7 @@ import androidx.fragment.app.FragmentManager;
 import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -164,7 +165,9 @@ final class SignOutDialogCoordinator {
             return context.getString(R.string.signout_managed_account_message, managedDomain);
         }
         return context.getString(
-                PasswordManagerUtilBridge.usesSplitStoresAndUPMForLocal(UserPrefs.get(profile))
+                ChromeFeatureList.isEnabled(ChromeFeatureList.LOGIN_DB_DEPRECATION_ANDROID)
+                                || PasswordManagerUtilBridge.usesSplitStoresAndUPMForLocal(
+                                        UserPrefs.get(profile))
                         ? R.string.turn_off_sync_and_signout_message_without_passwords
                         : R.string.turn_off_sync_and_signout_message);
     }

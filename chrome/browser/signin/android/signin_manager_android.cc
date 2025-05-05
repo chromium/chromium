@@ -19,6 +19,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
+#include "chrome/browser/password_manager/android/password_manager_android_util.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service_factory.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service_mobile.h"
 #include "chrome/browser/profiles/profile.h"
@@ -27,6 +28,7 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/common/pref_names.h"
 #include "components/google/core/common/google_util.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/split_stores_and_local_upm.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #include "components/policy/core/common/policy_switches.h"
@@ -73,7 +75,9 @@ class ProfileDataRemover : public content::BrowsingDataRemover::Observer {
     if (all_data) {
       chrome_browsing_data_remover::DataType removed_types =
           chrome_browsing_data_remover::ALL_DATA_TYPES;
-      if (password_manager::UsesSplitStoresAndUPMForLocal(
+      if (base::FeatureList::IsEnabled(
+              password_manager::features::kLoginDbDeprecationAndroid) ||
+          password_manager::UsesSplitStoresAndUPMForLocal(
               profile_->GetPrefs())) {
         // If usesSplitStoresAndUPMForLocal() is true, browser sign-in won't
         // upload existing passwords, so there's no reason to wipe them
@@ -81,6 +85,9 @@ class ProfileDataRemover : public content::BrowsingDataRemover::Observer {
         // should survive (outside of the browser) to be used by other apps,
         // until system-level sign-out. In other words, the browser has no
         // business deleting any passwords here.
+        // After the login db deprecation, all users have split stores which
+        // either store passwords outside the browser or don't store any
+        // passwords.
         removed_types &= ~chrome_browsing_data_remover::DATA_TYPE_PASSWORDS;
       }
       remover_->RemoveAndReply(base::Time(), base::Time::Max(), removed_types,
