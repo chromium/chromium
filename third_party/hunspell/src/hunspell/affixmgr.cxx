@@ -208,6 +208,14 @@ AffixMgr::AffixMgr(const char* affpath,
     parsedbreaktable = true;
   }
 
+#if defined(FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION)
+  // not entirely sure this is invalid, so only for fuzzing for now
+  if (iconvtable && !iconvtable->check_against_breaktable(breaktable)) {
+      delete iconvtable;
+      iconvtable = nullptr;
+  }
+#endif
+
   if (cpdmin == -1)
     cpdmin = MINCPDLEN;
 }
@@ -1332,20 +1340,20 @@ std::string AffixMgr::prefix_check_twosfx_morph(const std::string& word,
 }
 
 // Is word a non-compound with a REP substitution (see checkcompoundrep)?
-int AffixMgr::cpdrep_check(const char* word, int wl) {
+int AffixMgr::cpdrep_check(const std::string& word, int wl) {
 
 #ifdef HUNSPELL_CHROME_CLIENT
   const char *pattern, *pattern2;
   hunspell::ReplacementIterator iterator = bdict_reader->GetReplacementIterator();
   while (iterator.GetNext(&pattern, &pattern2)) {
-    const char* r = word;
+    const char* r = word.c_str();
     const size_t lenr = strlen(pattern2);
     const size_t lenp = strlen(pattern);
 
     // search every occurence of the pattern in the word
     while ((r=strstr(r, pattern)) != NULL) {
       std::string candidate(word);
-      candidate.replace(r-word, lenp, pattern2);
+      candidate.replace(r - word.c_str(), lenp, pattern2);
       if (candidate_check(candidate)) return 1;
       r++; // search for the next letter
     }
@@ -1358,12 +1366,12 @@ int AffixMgr::cpdrep_check(const char* word, int wl) {
   for (size_t i = 0; i < get_reptable().size(); ++i) {
     // use only available mid patterns
     if (!get_reptable()[i].outstrings[0].empty()) {
-      const char* r = word;
+      const char* r = word.c_str();
       const size_t lenp = get_reptable()[i].pattern.size();
       // search every occurence of the pattern in the word
       while ((r = strstr(r, get_reptable()[i].pattern.c_str())) != NULL) {
-        std::string candidate(word);
-        candidate.replace(r - word, lenp, get_reptable()[i].outstrings[0]);
+        std::string candidate(word.c_str());
+        candidate.replace(r - word.c_str(), lenp, get_reptable()[i].outstrings[0]);
         if (candidate_check(candidate))
           return 1;
         ++r;  // search for the next letter
@@ -1749,6 +1757,9 @@ struct hentry* AffixMgr::compound_check(const std::string& word,
           cmax = len - cpdmin + 1;
         }
 
+	if (i > st.size())
+	    return NULL;
+
         ch = st[i];
         st[i] = '\0';
 
@@ -2030,7 +2041,7 @@ struct hentry* AffixMgr::compound_check(const std::string& word,
                  TESTAFF(rv->astr, checkcpdtable[scpd - 1].cond2, rv->alen))) {
               // forbid compound word, if it is a non-compound word with typical
               // fault
-              if ((checkcompoundrep && cpdrep_check(word.c_str(), len)) ||
+              if ((checkcompoundrep && cpdrep_check(word, len)) ||
                       cpdwordpair_check(word.c_str(), len))
                 return NULL;
               return rv_first;
@@ -2157,7 +2168,7 @@ struct hentry* AffixMgr::compound_check(const std::string& word,
                 ((!checkcompounddup || (rv != rv_first)))) {
               // forbid compound word, if it is a non-compound word with typical
               // fault
-              if ((checkcompoundrep && cpdrep_check(word.c_str(), len)) ||
+              if ((checkcompoundrep && cpdrep_check(word, len)) ||
                       cpdwordpair_check(word.c_str(), len))
                 return NULL;
               return rv_first;
@@ -2190,15 +2201,15 @@ struct hentry* AffixMgr::compound_check(const std::string& word,
 
               if (checkcompoundrep || forbiddenword) {
 
-                if (checkcompoundrep && cpdrep_check(word.c_str(), len))
+                if (checkcompoundrep && cpdrep_check(word, len))
                   return NULL;
 
                 // check first part
-                if (strncmp(rv->word, word.c_str() + i, rv->blen) == 0) {
+                if (word.compare(i, rv->blen, rv->word, rv->blen) == 0) {
                   char r = st[i + rv->blen];
                   st[i + rv->blen] = '\0';
 
-                  if ((checkcompoundrep && cpdrep_check(st.c_str(), i + rv->blen)) ||
+                  if ((checkcompoundrep && cpdrep_check(st, i + rv->blen)) ||
                       cpdwordpair_check(st.c_str(), i + rv->blen)) {
                     st[ + i + rv->blen] = r;
                     continue;
@@ -3951,6 +3962,7 @@ bool AffixMgr::parse_convtable(const std::string& line,
                        af->getlinenum());
       return false;
     }
+
     (*rl)->add(pattern, pattern2);
   }
   return true;

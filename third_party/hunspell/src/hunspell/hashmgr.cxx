@@ -843,8 +843,17 @@ int HashMgr::decode_flags(unsigned short** result, const std::string& flags, Fil
       len /= 2;
       *result = new unsigned short[len];
       for (int i = 0; i < len; i++) {
-        (*result)[i] = ((unsigned short)((unsigned char)flags[i * 2]) << 8) +
-                       (unsigned char)flags[i * 2 + 1];
+        unsigned short flag = ((unsigned short)((unsigned char)flags[i * 2]) << 8) +
+                              (unsigned char)flags[i * 2 + 1];
+
+        if (flag >= DEFAULTFLAGS) {
+          HUNSPELL_WARNING(stderr,
+                           "error: line %d: flag id %d is too large (max: %d)\n",
+                           af->getlinenum(), flag, DEFAULTFLAGS - 1);
+          flag = 0;
+        }
+
+        (*result)[i] = flag;
       }
       break;
     }
@@ -862,10 +871,12 @@ int HashMgr::decode_flags(unsigned short** result, const std::string& flags, Fil
       for (size_t p = 0; p < flags.size(); ++p) {
         if (flags[p] == ',') {
           int i = atoi(src);
-          if (i >= DEFAULTFLAGS)
+          if (i >= DEFAULTFLAGS) {
             HUNSPELL_WARNING(
                 stderr, "error: line %d: flag id %d is too large (max: %d)\n",
                 af->getlinenum(), i, DEFAULTFLAGS - 1);
+             i = 0;
+	  }
           *dest = (unsigned short)i;
           if (*dest == 0)
             HUNSPELL_WARNING(stderr, "error: line %d: 0 is wrong flag id\n",
@@ -875,10 +886,12 @@ int HashMgr::decode_flags(unsigned short** result, const std::string& flags, Fil
         }
       }
       int i = atoi(src);
-      if (i >= DEFAULTFLAGS)
+      if (i >= DEFAULTFLAGS) {
         HUNSPELL_WARNING(stderr,
                          "error: line %d: flag id %d is too large (max: %d)\n",
                          af->getlinenum(), i, DEFAULTFLAGS - 1);
+        i = 0;
+      }
       *dest = (unsigned short)i;
       if (*dest == 0)
         HUNSPELL_WARNING(stderr, "error: line %d: 0 is wrong flag id\n",
@@ -931,10 +944,12 @@ bool HashMgr::decode_flags(std::vector<unsigned short>& result, const std::strin
       for (const char* p = src; *p; p++) {
         if (*p == ',') {
           int i = atoi(src);
-          if (i >= DEFAULTFLAGS)
+          if (i >= DEFAULTFLAGS) {
             HUNSPELL_WARNING(
                 stderr, "error: line %d: flag id %d is too large (max: %d)\n",
                 af->getlinenum(), i, DEFAULTFLAGS - 1);
+            i = 0;
+	  }
           result.push_back((unsigned short)i);
           if (result.back() == 0)
             HUNSPELL_WARNING(stderr, "error: line %d: 0 is wrong flag id\n",
@@ -943,10 +958,12 @@ bool HashMgr::decode_flags(std::vector<unsigned short>& result, const std::strin
         }
       }
       int i = atoi(src);
-      if (i >= DEFAULTFLAGS)
+      if (i >= DEFAULTFLAGS) {
         HUNSPELL_WARNING(stderr,
                          "error: line %d: flag id %d is too large (max: %d)\n",
                          af->getlinenum(), i, DEFAULTFLAGS - 1);
+        i = 0;
+      }
       result.push_back((unsigned short)i);
       if (result.back() == 0)
         HUNSPELL_WARNING(stderr, "error: line %d: 0 is wrong flag id\n",
@@ -981,9 +998,11 @@ unsigned short HashMgr::decode_flag(const std::string& f) const {
       break;
     case FLAG_NUM:
       i = atoi(f.c_str());
-      if (i >= DEFAULTFLAGS)
+      if (i >= DEFAULTFLAGS) {
         HUNSPELL_WARNING(stderr, "error: flag id %d is too large (max: %d)\n",
                          i, DEFAULTFLAGS - 1);
+        i = 0;
+      }
       s = (unsigned short)i;
       break;
     case FLAG_UNI: {

@@ -122,12 +122,12 @@ class PfxEntry : public AffEntry {
   const char* getKey() { return appnd.c_str(); }
   std::string add(const char* word, size_t len);
 
-  inline short getKeyLen() { return appnd.size(); }
+  inline int getKeyLen() { return appnd.size(); }
 
   inline const char* getMorph() { return morphcode; }
 
   inline const unsigned short* getCont() { return contclass; }
-  inline short getContLen() { return contclasslen; }
+  inline unsigned short getContLen() { return contclasslen; }
 
   inline PfxEntry* getNext() { return next; }
   inline PfxEntry* getNextNE() { return nextne; }
@@ -203,10 +203,10 @@ class SfxEntry : public AffEntry {
   inline const char* getMorph() { return morphcode; }
 
   inline const unsigned short* getCont() { return contclass; }
-  inline short getContLen() { return contclasslen; }
+  inline unsigned short getContLen() { return contclasslen; }
   inline const char* getAffix() { return appnd.c_str(); }
 
-  inline short getKeyLen() { return appnd.size(); }
+  inline int getKeyLen() { return appnd.size(); }
 
   inline SfxEntry* getNext() { return next; }
   inline SfxEntry* getNextNE() { return nextne; }

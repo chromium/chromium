@@ -1087,6 +1087,11 @@ std::vector<std::string> HunspellImpl::suggest_internal(const std::string& word,
 
     if (wl == 0)
       return slst;
+
+#if defined(FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION)
+    if (wl > 32768)
+      return slst;
+#endif
   }
 
   bool good = false;

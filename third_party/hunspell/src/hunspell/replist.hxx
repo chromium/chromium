@@ -94,6 +94,8 @@ class RepList {
   explicit RepList(int n);
   ~RepList();
 
+  bool check_against_breaktable(const std::vector<std::string>& breaktable) const;
+
   int add(const std::string& pat1, const std::string& pat2);
   int find(const char* word);
   std::string replace(const size_t wordlen, int n, bool atstart);
