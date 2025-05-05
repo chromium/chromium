@@ -11,9 +11,13 @@ import android.hardware.display.DisplayManager.DisplayListener;
 import android.os.Build;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.SparseArray;
 import android.view.Display;
 import android.view.WindowManager;
+
+import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
@@ -21,8 +25,12 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.ui.base.UiAndroidFeatureList;
+
+import java.util.HashSet;
 
 /** DisplayAndroidManager is a class that informs its observers Display changes. */
 @JNINamespace("ui")
@@ -32,7 +40,17 @@ public class DisplayAndroidManager {
      * DisplayListenerBackend is used to handle the actual listening of display changes. It handles
      * it via the Android DisplayListener API.
      */
-    private class DisplayListenerBackend implements DisplayListener {
+    @VisibleForTesting
+    class DisplayListenerBackend implements DisplayListener {
+        private static final long IS_NULL_DISPLAY_REMOVED_DELAY_MS = 1000;
+
+        @VisibleForTesting
+        static final String IS_NULL_DISPLAY_REMOVED_HISTOGRAM_NAME =
+                "Android.Display.IsNullDisplayRemoved";
+
+        private final Handler mHandler = new Handler(Looper.getMainLooper());
+        private final HashSet<Integer> mNullDisplayIds = new HashSet<Integer>();
+
         public void startListening() {
             getDisplayManager().registerDisplayListener(this, null);
         }
@@ -41,12 +59,41 @@ public class DisplayAndroidManager {
 
         @Override
         public void onDisplayAdded(int sdkDisplayId) {
-            // DisplayAndroid is added lazily on first use. This is to workaround corner case
-            // bug where DisplayManager.getDisplay(sdkDisplayId) returning null here.
+            if (!UiAndroidFeatureList.sAndroidWindowManagementWebApi.isEnabled()) {
+                return;
+            }
+
+            Display display = getDisplayManager().getDisplay(sdkDisplayId);
+            if (display != null) {
+                addDisplay(display);
+                return;
+            }
+
+            mNullDisplayIds.add(sdkDisplayId);
+            mHandler.postDelayed(
+                    () -> {
+                        // Record whether sdkDisplayId was still in mNullDisplayIds at
+                        // this point. This indicates if an onDisplayRemoved call for
+                        // sdkDisplayId did not occur within
+                        // IS_NULL_DISPLAY_REMOVED_DELAY_MS
+                        // after its corresponding onDisplayAdded.
+                        // - true: sdkDisplayId was already removed; onDisplayRemoved
+                        // occurred and processed it.
+                        // - false: sdkDisplayId was present and removed now;
+                        // onDisplayRemoved was missed or late.
+                        RecordHistogram.recordBooleanHistogram(
+                                IS_NULL_DISPLAY_REMOVED_HISTOGRAM_NAME,
+                                !mNullDisplayIds.remove(sdkDisplayId));
+                    },
+                    IS_NULL_DISPLAY_REMOVED_DELAY_MS);
         }
 
         @Override
         public void onDisplayRemoved(int sdkDisplayId) {
+            if (UiAndroidFeatureList.sAndroidWindowManagementWebApi.isEnabled()) {
+                mNullDisplayIds.remove(sdkDisplayId);
+            }
+
             // Never remove the primary display.
             if (sdkDisplayId == mMainSdkDisplayId) return;
 
@@ -81,8 +128,8 @@ public class DisplayAndroidManager {
 
     private long mNativePointer;
     private int mMainSdkDisplayId;
-    private final SparseArray<DisplayAndroid> mIdMap = new SparseArray<>();
-    private DisplayListenerBackend mBackend = new DisplayListenerBackend();
+    @VisibleForTesting final SparseArray<DisplayAndroid> mIdMap = new SparseArray<>();
+    @VisibleForTesting final DisplayListenerBackend mBackend = new DisplayListenerBackend();
 
     /* package */ static DisplayAndroidManager getInstance() {
         ThreadUtils.assertOnUiThread();
@@ -149,15 +196,24 @@ public class DisplayAndroidManager {
     private void initialize() {
         // Make sure the display map contains the built-in primary display.
         // The primary display is never removed.
-        Display display = getGlobalDefaultDisplay();
+        Display defaultDisplay = getGlobalDefaultDisplay();
 
         // Android documentation on Display.DEFAULT_DISPLAY suggests that the above
         // method might return null. In that case we retrieve the default display
         // from the application context and take it as the primary display.
-        if (display == null) display = getDisplayForContextNoChecks(getContext());
+        if (defaultDisplay == null) {
+            defaultDisplay = getDisplayForContextNoChecks(getContext());
+        }
 
-        mMainSdkDisplayId = display.getDisplayId();
-        addDisplay(display); // Note this display is never removed.
+        mMainSdkDisplayId = defaultDisplay.getDisplayId(); // Note this display is never removed.
+
+        if (UiAndroidFeatureList.sAndroidWindowManagementWebApi.isEnabled()) {
+            for (Display display : getDisplayManager().getDisplays()) {
+                addDisplay(display);
+            }
+        } else {
+            addDisplay(defaultDisplay);
+        }
 
         mBackend.startListening();
     }

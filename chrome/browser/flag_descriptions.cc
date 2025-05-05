@@ -5928,19 +5928,22 @@ const char kUseAngleGL[] = "OpenGL";
 
 #if BUILDFLAG(IS_ANDROID)
 
-const char kUseAngleDescriptionAndroid[] =
-    "Choose the graphics backend for ANGLE. The Vulkan backend is still "
-    "experimental, and may contain bugs that "
-    "are still being worked on.";
-
-const char kUseAngleGLES[] = "OpenGL ES";
-const char kUseAngleVulkan[] = "Vulkan";
-
 const char kAndroidMinimalUiLargeScreenName[] =
     "Enable new minimal ui in desktop windowing";
 const char kAndroidMinimalUiLargeScreenDescription[] =
     "Display new minimal ui for PWAs on devices that support "
     "desktop windowing.";
+
+const char kAndroidWindowManagementWebApiName[] = "Window Management Web API";
+const char kAndroidWindowManagementWebApiDescription[] =
+    "Enable Window Management Web API. Websites can obtain information about "
+    "displays and display topology.";
+
+const char kAndroidWindowOcclusionName[] =
+    "Enable occlusion tracking on Android.";
+const char kAndroidWindowOcclusionDescription[] =
+    "Enables occlusion tracking on Android, which can save CPU and memory in "
+    "multi-window environments.";
 
 const char kAndroidWindowPopupLargeScreenName[] =
     "Enable desktop-like behavior of window popup web API in desktop windowing "
@@ -5950,11 +5953,13 @@ const char kAndroidWindowPopupLargeScreenDescription[] =
     "call and make moving windows with window.{move|resize}{By|To}() "
     "possible.";
 
-const char kAndroidWindowOcclusionName[] =
-    "Enable occlusion tracking on Android.";
-const char kAndroidWindowOcclusionDescription[] =
-    "Enables occlusion tracking on Android, which can save CPU and memory in "
-    "multi-window environments.";
+const char kUseAngleDescriptionAndroid[] =
+    "Choose the graphics backend for ANGLE. The Vulkan backend is still "
+    "experimental, and may contain bugs that "
+    "are still being worked on.";
+
+const char kUseAngleGLES[] = "OpenGL ES";
+const char kUseAngleVulkan[] = "Vulkan";
 
 #endif  // BUILDFLAG(IS_ANDROID)
 

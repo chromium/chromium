@@ -12301,6 +12301,7 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAll,
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillEnableFlatRateCardBenefitsFromCurinos)},
+
 #if BUILDFLAG(IS_ANDROID)
     {"grid-tab-switcher-surface-color-update",
      flag_descriptions::kGridTabSwitcherSurfaceColorUpdateName,
@@ -12382,6 +12383,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSecurePaymentConfirmationFallbackDescription, kOsAll,
      FEATURE_VALUE_TYPE(
          payments::features::kSecurePaymentConfirmationFallback)},
+
+#if BUILDFLAG(IS_ANDROID)
+    {"android-window-management-web-api",
+     flag_descriptions::kAndroidWindowManagementWebApiName,
+     flag_descriptions::kAndroidWindowManagementWebApiDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(ui::kAndroidWindowManagementWebApi)},
+#endif  // BUILDFLAG(IS_ANDROID)
 
     // Add new entries above this line.
 

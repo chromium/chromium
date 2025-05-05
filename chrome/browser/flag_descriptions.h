@@ -3476,25 +3476,28 @@ extern const char kUseAngleGL[];
 
 #if BUILDFLAG(IS_ANDROID)
 
-extern const char kUseAngleDescriptionAndroid[];
-
-extern const char kUseAngleGLES[];
-extern const char kUseAngleVulkan[];
-
 extern const char kAndroidMinimalUiLargeScreenName[];
 extern const char kAndroidMinimalUiLargeScreenDescription[];
 
-extern const char kAndroidWindowPopupLargeScreenName[];
-extern const char kAndroidWindowPopupLargeScreenDescription[];
+extern const char kAndroidWindowManagementWebApiName[];
+extern const char kAndroidWindowManagementWebApiDescription[];
 
 extern const char kAndroidWindowOcclusionName[];
 extern const char kAndroidWindowOcclusionDescription[];
+
+extern const char kAndroidWindowPopupLargeScreenName[];
+extern const char kAndroidWindowPopupLargeScreenDescription[];
 
 extern const char kBackgroundCompactMessageName[];
 extern const char kBackgroundCompactDescription[];
 
 extern const char kRunningCompactMessageName[];
 extern const char kRunningCompactDescription[];
+
+extern const char kUseAngleDescriptionAndroid[];
+
+extern const char kUseAngleGLES[];
+extern const char kUseAngleVulkan[];
 
 #endif  // BUILDFLAG(IS_ANDROID)
 

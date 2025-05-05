@@ -338,6 +338,14 @@
     "expiry_milestone": 142
   },
   {
+    "name": "android-window-management-web-api",
+    "owners": [
+      "renkens@google.com",
+      "cros-web-apps-team@google.com"
+    ],
+    "expiry_milestone": 145
+  },
+  {
     "name": "animate-suggestions-list-appearance",
     "owners": [ "pnoland@chromium.org", "chrome-mobile-search@google.com" ],
     "expiry_milestone": 145

@@ -12473,6 +12473,7 @@ from previous Chrome versions.
   <int value="-727860269" label="WebAuthenticationBle:disabled"/>
   <int value="-727539088" label="AndroidExtendedKeyboardShortcuts:disabled"/>
   <int value="-727364947" label="NtpRealboxCr23ExpandedStateLayout:enabled"/>
+  <int value="-726917295" label="AndroidWindowManagementWebApi:disabled"/>
   <int value="-726892130" label="AndroidMessagesIntegration:disabled"/>
   <int value="-726844226"
       label="AutofillSuggestVirtualCardsOnIncompleteForm:enabled"/>
@@ -15938,6 +15939,7 @@ from previous Chrome versions.
   <int value="609568740" label="ImprovedSemanticsActivityIndicators:disabled"/>
   <int value="609580715" label="ArcCupsApi:disabled"/>
   <int value="610545308" label="enable-potentially-annoying-security-features"/>
+  <int value="612509325" label="AndroidWindowManagementWebApi:enabled"/>
   <int value="613578742" label="CdmStorageDatabaseMigration:enabled"/>
   <int value="613629912" label="LookalikeUrlNavigationSuggestions:enabled"/>
   <int value="614174812" label="GlobalMediaControlsOverlayControls:disabled"/>

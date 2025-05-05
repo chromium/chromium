@@ -1500,6 +1500,25 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.Display.IsNullDisplayRemoved" enum="Boolean"
+    expires_after="2025-12-01">
+  <owner>renkens@google.com</owner>
+  <owner>boliu@chromium.org</owner>
+  <summary>
+    Emitted when DisplayListenerBackend.onDisplayAdded() reports a new
+    sdkDisplayId whose Display descriptor is unexpectedly null. The value
+    records whether that same sdkDisplayId is removed within the next 1 second:
+
+    * true - DisplayListenerBackend.onDisplayRemoved() was invoked for the
+    invalid sdkDisplayId within 1 s.
+
+    * false — No removal occurred, or it happened after 1 s.
+
+    Logged once for every onDisplayAdded() call in which the Display descriptor
+    associated with the sdkDisplayId is null.
+  </summary>
+</histogram>
+
 <histogram name="Android.DownloadManager.ForegroundServiceLifecycle"
     enum="DownloadNotificationForegroundLifecycle" expires_after="never">
 <!-- expires-never: Download foreground notification stability metric. -->

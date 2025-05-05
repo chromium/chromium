@@ -17,6 +17,10 @@ namespace ui {
 // ships.
 UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kAndroidHDR);
 
+// TODO(crbug.com/401215712): Clean up the flag after making sure tha the Window
+// Management Web API works well.
+UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kAndroidWindowManagementWebApi);
+
 // Enables converting trackpad click gestures to mouse events in
 // order for them to be interpreted similar to a desktop
 // experience (i.e. double-click to select word.)
