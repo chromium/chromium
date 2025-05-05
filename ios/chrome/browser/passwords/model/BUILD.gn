@@ -345,6 +345,7 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/autofill/ui_bundled:eg_test_support+eg2",
     "//ios/chrome/browser/infobars/ui_bundled/banners:public",
     "//ios/chrome/browser/metrics/model:eg_test_support+eg2",
+    "//ios/chrome/browser/passwords/ui_bundled:constants",
     "//ios/chrome/browser/passwords/ui_bundled/bottom_sheet:eg_test_support+eg2",
     "//ios/chrome/browser/settings/ui_bundled/google_services:constants",
     "//ios/chrome/browser/signin/model:fake_system_identity",

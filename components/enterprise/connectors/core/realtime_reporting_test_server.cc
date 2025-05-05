@@ -21,6 +21,7 @@ using ::chrome::cros::reporting::proto::Event;
 using ::chrome::cros::reporting::proto::EventResult;
 using ::chrome::cros::reporting::proto::EventResult_Parse;
 using ::chrome::cros::reporting::proto::LoginEvent;
+using ::chrome::cros::reporting::proto::PasswordBreachEvent;
 using ::chrome::cros::reporting::proto::SafeBrowsingInterstitialEvent;
 using ::chrome::cros::reporting::proto::UploadEventsRequest;
 
@@ -34,6 +35,37 @@ void ParseLoginEvent(const base::Value::Dict* event_details_json,
   if (const std::string* login_user_name =
           event_details_json->FindString("loginUserName")) {
     event->set_login_user_name(*login_user_name);
+  }
+}
+
+void ParsePasswordBreachEvent(const base::Value::Dict* event_details_json,
+                              PasswordBreachEvent* event) {
+  const base::Value::List* identities_json =
+      event_details_json->FindList("identities");
+  if (!identities_json) {
+    return;
+  }
+  if (const std::string* trigger_type_name =
+          event_details_json->FindString("trigger")) {
+    PasswordBreachEvent::TriggerType trigger_type;
+    if (PasswordBreachEvent::TriggerType_Parse(*trigger_type_name,
+                                               &trigger_type)) {
+      event->set_trigger(std::move(trigger_type));
+    }
+  }
+  for (const base::Value& identity_json : *identities_json) {
+    const base::Value::Dict* identity_json_dict = identity_json.GetIfDict();
+    if (!identity_json_dict) {
+      continue;
+    }
+    PasswordBreachEvent::Identity* identity = event->add_identities();
+    if (const std::string* url = identity_json_dict->FindString("url")) {
+      identity->set_url(*url);
+    }
+    if (const std::string* username =
+            identity_json_dict->FindString("username")) {
+      identity->set_username(*username);
+    }
   }
 }
 
@@ -70,6 +102,10 @@ std::optional<Event> ParseEvent(const base::Value::Dict* event_json) {
   // TODO(crbug.com/412683254): Add branches for other event types.
   if ((event_details_json = event_json->FindDict("loginEvent"))) {
     ParseLoginEvent(event_details_json, event.mutable_login_event());
+  } else if ((event_details_json =
+                  event_json->FindDict("passwordBreachEvent"))) {
+    ParsePasswordBreachEvent(event_details_json,
+                             event.mutable_password_breach_event());
   } else if ((event_details_json = event_json->FindDict("interstitialEvent"))) {
     ParseInterstitialEvent(event_details_json,
                            event.mutable_interstitial_event());

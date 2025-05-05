@@ -6,6 +6,7 @@
 #import <XCTest/XCTest.h>
 
 #import <memory>
+#import <optional>
 
 #import "base/check.h"
 #import "base/strings/strcat.h"
@@ -31,6 +32,7 @@
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/passwords/model/password_manager_app_interface.h"
 #import "ios/chrome/browser/passwords/ui_bundled/bottom_sheet/password_suggestion_bottom_sheet_app_interface.h"
+#import "ios/chrome/browser/passwords/ui_bundled/password_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/google_services/manage_sync_settings_constants.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -58,7 +60,10 @@ constexpr char kEnrollmentTokenPolicyName[] = "CloudManagementEnrollmentToken";
 using base::test::ios::kWaitForUIElementTimeout;
 using base::test::ios::WaitUntilConditionOrTimeout;
 using ::chrome::cros::reporting::proto::Event;
+using ::chrome::cros::reporting::proto::PasswordBreachEvent;
 using ::chrome::cros::reporting::proto::UploadEventsRequest;
+using Identity =
+    ::chrome::cros::reporting::proto::PasswordBreachEvent::Identity;
 using chrome_test_util::GREYAssertErrorNil;
 using chrome_test_util::SettingsAccountButton;
 using chrome_test_util::SettingsDoneButton;
@@ -83,6 +88,10 @@ id<GREYMatcher> SuggestPasswordChip() {
   return grey_allOf(
       grey_accessibilityLabel(l10n_util::GetNSString(IDS_IOS_SUGGEST_PASSWORD)),
       nil);
+}
+
+id<GREYMatcher> PasswordBreachMatcher() {
+  return grey_accessibilityID(kPasswordBreachViewAccessibilityIdentifier);
 }
 
 // Simulates a keyboard event where a character is typed.
@@ -168,13 +177,16 @@ void LoginOnUff() {
 }
 
 - (void)setUp {
-  if ([self isRunningTest:@selector(testLoginEventReported)]) {
+  std::optional<std::string_view> maybe_event =
+      [self enterpriseReportingEventForTest];
+  if (maybe_event) {
     // Start the servers before calling the superclass's `-setUp` so that their
     // addresses can be added to the app launch config. `GREYAssertTrue` can
     // only be used after calling the superclass's `-setUp`, so use `CHECK()`
     // instead.
     _reportingEnvironment = RealtimeReportingTestEnvironment::Create(
-        {"loginEvent"}, {{"loginEvent", {"*"}}});
+        /*enabled_event_names=*/{std::string(*maybe_event)},
+        /*enabled_opt_in_events=*/{{std::string(*maybe_event), {"*"}}});
     CHECK(_reportingEnvironment);
     CHECK(_reportingEnvironment->Start());
   }
@@ -220,7 +232,7 @@ void LoginOnUff() {
 
   // Set Enterprise features for testing password-related event reporting. The
   // policy and reporting servers must be started by this point.
-  if ([self isRunningTest:@selector(testLoginEventReported)]) {
+  if ([self enterpriseReportingEventForTest]) {
     CHECK(_reportingEnvironment);
     std::vector<std::string> reporting_args =
         _reportingEnvironment->GetArguments();
@@ -232,6 +244,11 @@ void LoginOnUff() {
         base::StrCat({"<dict><key>", kEnrollmentTokenPolicyName,
                       "</key><string>", kEnrollmentToken, "</string></dict>"}));
     config.relaunch_policy = ForceRelaunchByKilling;
+  }
+
+  if ([self isRunningTest:@selector(testPasswordBreachEventReported)]) {
+    config.features_enabled.push_back(
+        password_manager::features::kMarkAllCredentialsAsLeaked);
   }
 
   // The proactive password suggestion bottom sheet isn't tested here, it
@@ -258,6 +275,37 @@ void LoginOnUff() {
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/uff_login_forms.html")];
   [ChromeEarlGrey
       waitForWebStateContainingText:"Step 1, Single username form."];
+}
+
+- (std::optional<std::string_view>)enterpriseReportingEventForTest {
+  if ([self isRunningTest:@selector(testLoginEventReported)]) {
+    return "loginEvent";
+  } else if ([self isRunningTest:@selector(testPasswordBreachEventReported)]) {
+    return "passwordBreachEvent";
+  }
+  return std::nullopt;
+}
+
+- (void)waitForEnterpriseReports:(int)count {
+  // Use metrics to detect that the report upload completed. This is the best
+  // known way to wait because a task environment isn't available here, so
+  // there's nothing for the reporting server to post to when the request
+  // arrives. This also precludes helpers like `base::RunLoop` or
+  // `net::test_server::ControllableHttpResponse` that require such an
+  // environment.
+  GREYAssertTrue(
+      base::test::ios::WaitUntilConditionOrTimeout(
+          kReportUploadTimeout,
+          ^{
+            NSError* error = [MetricsAppInterface
+                expectTotalCount:count
+                    forHistogram:@"Enterprise.ReportingEventUploadSuccess"];
+            return error == nil;
+          }),
+      @"Timed out uploading security event.");
+  GREYAssertErrorNil([MetricsAppInterface
+      expectTotalCount:0
+          forHistogram:@"Enterprise.ReportingEventUploadFailure"]);
 }
 
 #pragma mark - Tests
@@ -740,7 +788,7 @@ void LoginOnUff() {
                                 password:passwordValue];
 }
 
-// Tests that log in events are reported to an enterprise connector.
+// Tests that a login event is reported to an enterprise connector.
 - (void)testLoginEventReported {
   [self loadLoginPage];
 
@@ -750,25 +798,8 @@ void LoginOnUff() {
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:chrome_test_util::TapWebElementWithId("submit_button")];
 
-  // Use metrics to detect that the report upload completed. This is the best
-  // known way to wait because a task environment isn't available here, so
-  // there's nothing for the reporting server to post to when the request
-  // arrives. This also precludes helpers like `base::RunLoop` or
-  // `net::test_server::ControllableHttpResponse` that require such an
-  // environment.
-  GREYAssertTrue(
-      WaitUntilConditionOrTimeout(
-          kReportUploadTimeout,
-          ^{
-            NSError* error = [MetricsAppInterface
-                expectTotalCount:1
-                    forHistogram:@"Enterprise.ReportingEventUploadSuccess"];
-            return error == nil;
-          }),
-      @"Timed out uploading security event.");
-  GREYAssertErrorNil([MetricsAppInterface
-      expectTotalCount:0
-          forHistogram:@"Enterprise.ReportingEventUploadFailure"]);
+  // Wait for report to upload.
+  [self waitForEnterpriseReports:1];
 
   std::vector<UploadEventsRequest> requests =
       _reportingEnvironment->reporting_server()->GetUploadedReports();
@@ -786,6 +817,48 @@ void LoginOnUff() {
   GREYAssertTrue(
       event.login_event().login_user_name().ends_with("@test-domain.com"),
       @"Wrong domain in login user name.");
+}
+
+// Tests that a password breach event is reported to an enterprise connector.
+- (void)testPasswordBreachEventReported {
+  [self loadLoginPage];
+
+  // Simulate login.
+  TypeTextOnField(@"test-username@test-domain.com", kFormUsername);
+  TypeTextOnField(@"test-password", kFormPassword);
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElementWithId("submit_button")];
+
+  // Wait for report to upload and UI to update.
+  [self waitForEnterpriseReports:1];
+  [[EarlGrey selectElementWithMatcher:PasswordBreachMatcher()]
+      assertWithMatcher:grey_notNil()];
+
+  // Retrieve and check the password breach event. There's no login event
+  // expected because during `-setUp`, the browser fetches a policy from
+  // `_reportingEnvironment` that only enables password breach event reporting.
+  std::vector<UploadEventsRequest> requests =
+      _reportingEnvironment->reporting_server()->GetUploadedReports();
+  GREYAssertEqual(1U, requests.size(), @"Wrong number of reports.");
+  GREYAssertEqual(std::string("iOS"), requests[0].device().os_platform(),
+                  @"Wrong OS platform in report.");
+  GREYAssertEqual(1, requests[0].events_size(), @"Wrong number of events.");
+
+  const Event& event = requests[0].events(0);
+  GREYAssertTrue(event.has_password_breach_event(), @"Wrong event type.");
+  GREYAssertEqual(PasswordBreachEvent::PASSWORD_ENTRY,
+                  event.password_breach_event().trigger(),
+                  @"Wrong trigger type.");
+  GREYAssertEqual(1, event.password_breach_event().identities_size(),
+                  @"Wrong number of leaked identities.");
+
+  const Identity& identity = event.password_breach_event().identities(0);
+  GREYAssertEqual(self.testServer->GetURL("/"), identity.url(),
+                  @"Wrong URL reported for leaked identity.");
+  // The `test-username` portion of the email will be masked, but the domain
+  // part shouldn't be.
+  GREYAssertTrue(identity.username().ends_with("@test-domain.com"),
+                 @"Wrong domain in leaked username.");
 }
 
 @end
