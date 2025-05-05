@@ -22,6 +22,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "base/test/values_test_util.h"
 #include "base/version.h"
 #include "content/browser/first_party_sets/first_party_set_parser.h"
 #include "content/public/browser/first_party_sets_handler.h"
@@ -40,6 +41,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
+using ::base::test::HasValue;
 using ::testing::_;
 using ::testing::Eq;
 using ::testing::IsEmpty;
@@ -73,7 +75,7 @@ constexpr char kMostDelayedQueryDeltaHistogram[] =
 }  // namespace
 
 TEST(FirstPartySetsHandlerImplInstance, ValidateEnterprisePolicy_ValidPolicy) {
-  base::Value input = base::JSONReader::Read(R"(
+  base::Value::Dict input = base::test::ParseJsonDict(R"(
              {
                 "replacements": [
                   {
@@ -88,19 +90,16 @@ TEST(FirstPartySetsHandlerImplInstance, ValidateEnterprisePolicy_ValidPolicy) {
                   }
                 ]
               }
-            )")
-                          .value();
+            )");
   // Validation doesn't fail with an error and there are no warnings to output.
-  auto [success, warnings] =
-      FirstPartySetsHandler::ValidateEnterprisePolicy(input.GetDict());
-  EXPECT_TRUE(success.has_value());
-  EXPECT_THAT(warnings, IsEmpty());
+  EXPECT_THAT(FirstPartySetsHandler::ValidateEnterprisePolicy(input),
+              Pair(HasValue(), IsEmpty()));
 }
 
 TEST(FirstPartySetsHandlerImplInstance,
      ValidateEnterprisePolicy_ValidPolicyWithWarnings) {
   // Some input that matches our policies schema but returns non-fatal warnings.
-  base::Value input = base::JSONReader::Read(R"(
+  base::Value::Dict input = base::test::ParseJsonDict(R"(
               {
                 "replacements": [],
                 "additions": [
@@ -113,25 +112,22 @@ TEST(FirstPartySetsHandlerImplInstance,
                   }
                 ]
               }
-            )")
-                          .value();
-  // Validation succeeds without errors.
-  auto [success, warnings] =
-      FirstPartySetsHandler::ValidateEnterprisePolicy(input.GetDict());
-  EXPECT_TRUE(success.has_value());
-  // Outputs metadata that can be used to surface a descriptive warning.
+            )");
+  // Validation succeeds without errors. Outputs metadata that can be used to
+  // surface a descriptive warning.
   EXPECT_THAT(
-      warnings,
-      UnorderedElementsAre(FirstPartySetsHandler::ParseWarning(
-          ParseWarningType::kCctldKeyNotCanonical,
-          {kAdditionsField, 0, kCctldsField, "https://non-canonical.test"})));
+      FirstPartySetsHandler::ValidateEnterprisePolicy(input),
+      Pair(HasValue(), UnorderedElementsAre(FirstPartySetsHandler::ParseWarning(
+                           ParseWarningType::kCctldKeyNotCanonical,
+                           {kAdditionsField, 0, kCctldsField,
+                            "https://non-canonical.test"}))));
 }
 
 TEST(FirstPartySetsHandlerImplInstance,
      ValidateEnterprisePolicy_InvalidPolicy) {
   // Some input that matches our policies schema but breaks FPS invariants.
   // For more test coverage, see the ParseSetsFromEnterprisePolicy unit tests.
-  base::Value input = base::JSONReader::Read(R"(
+  base::Value::Dict input = base::test::ParseJsonDict(R"(
               {
                 "replacements": [
                   {
@@ -146,14 +142,12 @@ TEST(FirstPartySetsHandlerImplInstance,
                   }
                 ]
               }
-            )")
-                          .value();
+            )");
   // Validation fails with an error and an appropriate ParseError is returned.
-  EXPECT_THAT(
-      FirstPartySetsHandler::ValidateEnterprisePolicy(input.GetDict()).first,
-      base::test::ErrorIs(FirstPartySetsHandler::ParseError(
-          ParseErrorType::kNonDisjointSets,
-          {kAdditionsField, 0, kPrimaryField})));
+  EXPECT_THAT(FirstPartySetsHandler::ValidateEnterprisePolicy(input).first,
+              base::test::ErrorIs(FirstPartySetsHandler::ParseError(
+                  ParseErrorType::kNonDisjointSets,
+                  {kAdditionsField, 0, kPrimaryField})));
 }
 
 class FirstPartySetsHandlerImplTest : public ::testing::Test {
@@ -278,7 +272,7 @@ TEST_F(FirstPartySetsHandlerImplDisabledTest, InitImmediately) {
   EXPECT_EQ(GetContextConfigForPolicy(nullptr),
             net::FirstPartySetsContextConfig());
 
-  base::Value policy = base::JSONReader::Read(R"(
+  base::Value::Dict policy = base::test::ParseJsonDict(R"(
                 {
                 "replacements": [
                   {
@@ -287,9 +281,8 @@ TEST_F(FirstPartySetsHandlerImplDisabledTest, InitImmediately) {
                   }
                 ]
               }
-            )")
-                           .value();
-  EXPECT_EQ(GetContextConfigForPolicy(&policy.GetDict()),
+            )");
+  EXPECT_EQ(GetContextConfigForPolicy(&policy),
             net::FirstPartySetsContextConfig());
 
   // The local set declaration should be ignored, since the handler is disabled.
@@ -376,7 +369,7 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
   std::optional<
       std::pair<net::GlobalFirstPartySets, net::FirstPartySetsContextConfig>>
       persisted = GetPersistedSetsAndWait(handler, browser_context_id);
-  EXPECT_TRUE(persisted.has_value());
+  ASSERT_TRUE(persisted.has_value());
   EXPECT_THAT(
       persisted->first.FindEntries({foo, associated}, persisted->second),
       UnorderedElementsAre(
@@ -424,7 +417,7 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
     std::optional<
         std::pair<net::GlobalFirstPartySets, net::FirstPartySetsContextConfig>>
         persisted = GetPersistedSetsAndWait(handler, browser_context_id);
-    EXPECT_TRUE(persisted.has_value());
+    ASSERT_TRUE(persisted.has_value());
     EXPECT_THAT(
         persisted->first.FindEntries({foo, associated}, persisted->second),
         UnorderedElementsAre(
@@ -468,7 +461,7 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
     std::optional<
         std::pair<net::GlobalFirstPartySets, net::FirstPartySetsContextConfig>>
         persisted = GetPersistedSetsAndWait(handler, browser_context_id);
-    EXPECT_TRUE(persisted.has_value());
+    ASSERT_TRUE(persisted.has_value());
     EXPECT_THAT(
         persisted->first.FindEntries({foo, associated2}, persisted->second),
         UnorderedElementsAre(
@@ -549,7 +542,7 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
   std::optional<
       std::pair<net::GlobalFirstPartySets, net::FirstPartySetsContextConfig>>
       persisted = GetPersistedSetsAndWait(browser_context_id);
-  EXPECT_TRUE(persisted.has_value());
+  ASSERT_TRUE(persisted.has_value());
   EXPECT_THAT(
       persisted->first.FindEntries({foo, associated}, persisted->second),
       UnorderedElementsAre(
@@ -805,9 +798,9 @@ class FirstPartySetsHandlerGetContextConfigForPolicyTest
 
 TEST_F(FirstPartySetsHandlerGetContextConfigForPolicyTest,
        DefaultOverridesPolicy_DefaultContextConfigs) {
-  base::Value policy = base::JSONReader::Read(R"({})").value();
+  base::Value::Dict policy;
   base::test::TestFuture<net::FirstPartySetsContextConfig> future;
-  handler().GetContextConfigForPolicy(&policy.GetDict(), future.GetCallback());
+  handler().GetContextConfigForPolicy(&policy, future.GetCallback());
 
   InitPublicFirstPartySets();
   EXPECT_EQ(future.Take(), net::FirstPartySetsContextConfig());
@@ -815,13 +808,12 @@ TEST_F(FirstPartySetsHandlerGetContextConfigForPolicyTest,
 
 TEST_F(FirstPartySetsHandlerGetContextConfigForPolicyTest,
        MalformedOverridesPolicy_DefaultContextConfigs) {
-  base::Value policy = base::JSONReader::Read(R"({
+  base::Value::Dict policy = base::test::ParseJsonDict(R"({
     "replacements": 123,
     "additions": true
-  })")
-                           .value();
+  })");
   base::test::TestFuture<net::FirstPartySetsContextConfig> future;
-  handler().GetContextConfigForPolicy(&policy.GetDict(), future.GetCallback());
+  handler().GetContextConfigForPolicy(&policy, future.GetCallback());
 
   InitPublicFirstPartySets();
   EXPECT_EQ(future.Take(), net::FirstPartySetsContextConfig());
@@ -829,7 +821,7 @@ TEST_F(FirstPartySetsHandlerGetContextConfigForPolicyTest,
 
 TEST_F(FirstPartySetsHandlerGetContextConfigForPolicyTest,
        NonDefaultOverridesPolicy_NonDefaultContextConfigs) {
-  base::Value policy = base::JSONReader::Read(R"(
+  base::Value::Dict policy = base::test::ParseJsonDict(R"(
                 {
                 "replacements": [
                   {
@@ -844,10 +836,9 @@ TEST_F(FirstPartySetsHandlerGetContextConfigForPolicyTest,
                   }
                 ]
               }
-            )")
-                           .value();
+            )");
   base::test::TestFuture<net::FirstPartySetsContextConfig> future;
-  handler().GetContextConfigForPolicy(&policy.GetDict(), future.GetCallback());
+  handler().GetContextConfigForPolicy(&policy, future.GetCallback());
 
   InitPublicFirstPartySets();
   // We don't care what the customizations are, here; we only care that they're

@@ -4,7 +4,7 @@
 
 #include "chrome/browser/first_party_sets/first_party_sets_policy_service_factory.h"
 
-#include "base/json/json_reader.h"
+#include "base/test/values_test_util.h"
 #include "chrome/browser/first_party_sets/first_party_sets_policy_service.h"
 #include "chrome/browser/first_party_sets/first_party_sets_pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -41,24 +41,20 @@ TEST_F(FirstPartySetsPolicyServiceFactoryTest,
   TestingProfile* enabled_profile =
       profile_manager().CreateTestingProfile("enabled");
 
-  base::Value empty_lists = base::JSONReader::Read(R"(
+  base::Value::Dict empty_lists = base::test::ParseJsonDict(R"(
              {
                 "replacements": [],
                 "additions": []
               }
-            )")
-                                .value();
-  base::Value expected_policy = empty_lists.Clone();
+            )");
   disabled_profile->GetPrefs()->SetBoolean(
       prefs::kPrivacySandboxRelatedWebsiteSetsEnabled, false);
   disabled_profile->GetPrefs()->SetDict(
-      first_party_sets::kRelatedWebsiteSetsOverrides,
-      std::move(empty_lists.Clone().GetDict()));
+      first_party_sets::kRelatedWebsiteSetsOverrides, empty_lists.Clone());
   enabled_profile->GetPrefs()->SetBoolean(
       prefs::kPrivacySandboxRelatedWebsiteSetsEnabled, true);
   enabled_profile->GetPrefs()->SetDict(
-      first_party_sets::kRelatedWebsiteSetsOverrides,
-      std::move(empty_lists.GetDict()));
+      first_party_sets::kRelatedWebsiteSetsOverrides, std::move(empty_lists));
 
   // Ensure that the Service creation isn't reliant on the enabled pref.
   EXPECT_NE(FirstPartySetsPolicyServiceFactory::GetForBrowserContext(
