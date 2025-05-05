@@ -81,7 +81,6 @@
 #include "components/exo/wayland/zcr_remote_shell_v2.h"
 #include "components/exo/wayland/zcr_stylus.h"
 #include "components/exo/wayland/zcr_stylus_tools.h"
-#include "components/exo/wayland/zcr_test_controller.h"
 #include "components/exo/wayland/zcr_touchpad_haptics.h"
 #include "components/exo/wayland/zcr_ui_controls.h"
 #include "components/exo/wayland/zcr_vsync_feedback.h"
@@ -350,7 +349,6 @@ void Server::Initialize() {
                    /*version=*/1, display_, bind_zwp_idle_inhibit_manager);
 
   ui_controls_holder_ = std::make_unique<UiControls>(this);
-  test_controller_ = std::make_unique<TestController>(this);
 
   zcr_keyboard_extension_data_ =
       std::make_unique<WaylandKeyboardExtension>(serial_tracker_.get());

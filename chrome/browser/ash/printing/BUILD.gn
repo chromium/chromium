@@ -258,7 +258,6 @@ fuzzer_test("zeroconf_printer_detector_fuzzer") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser",
-    "//components/exo/wayland:test_controller_stub",
     "//components/exo/wayland:ui_controls_protocol_stub",
   ]
 }

@@ -11607,7 +11607,6 @@ if (!is_android && !is_chromeos_device) {
         "//chromeos/ui/frame",
         "//chromeos/ui/frame:test_support",
         "//chromeos/ui/frame:test_support",
-        "//components/exo/wayland:test_controller_stub",
         "//components/exo/wayland:ui_controls_protocol_stub",
         "//components/file_access:test_support",
         "//components/reporting/client:report_queue",

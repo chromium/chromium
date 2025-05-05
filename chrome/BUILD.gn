@@ -182,10 +182,7 @@ if (!is_android && !is_mac) {
       if (build_mojo_proxy) {
         data_deps += [ "//mojo/proxy:mojo_proxy" ]
       }
-      deps += [
-        "//components/exo/wayland:test_controller_stub",
-        "//components/exo/wayland:ui_controls_protocol_stub",
-      ]
+      deps += [ "//components/exo/wayland:ui_controls_protocol_stub" ]
     }
 
     if (is_win) {
