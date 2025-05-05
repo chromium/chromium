@@ -83,7 +83,7 @@ testSuite({
 
     anim.play();
 
-    const lastPlay = goog.now();
+    const lastPlay = Date.now();
 
     assertEquals(700, anim.coords[0]);
     assertRoughlyEquals(0.7, anim.progress, 1e-4);
@@ -131,7 +131,7 @@ testSuite({
       assertRoughlyEquals(0.5, e.progress, 1e-4);
       nFrames++;
     });
-    anim.cycle(goog.now());
+    anim.cycle(Date.now());
     anim.stop();
     assertEquals(1, nFrames);
   },

@@ -36,9 +36,21 @@ goog.crypt.hash32.CONSTANT32 = -1640531527;
  * @param {string} str String to hash.
  * @return {number} 32-bit hash.
  */
-goog.crypt.hash32.encodeString = function(str) {
+goog.crypt.hash32.encodeBinaryString = function(str) {
+  return goog.crypt.hash32.encodeString(str, true);
+};
+
+
+/**
+ * Hashes a string to a 32-bit value.
+ * @param {string} str String to hash.
+ * @param {boolean=} throwSync Whether to throw synchronously on unicode input.
+ * @return {number} 32-bit hash.
+ */
+goog.crypt.hash32.encodeString = function(str, throwSync) {
   'use strict';
-  return goog.crypt.hash32.encodeByteArray(goog.crypt.stringToByteArray(str));
+  return goog.crypt.hash32.encodeByteArray(
+      goog.crypt.stringToByteArray(str, throwSync));
 };
 
 
@@ -49,6 +61,17 @@ goog.crypt.hash32.encodeString = function(str) {
  * @return {number} 32-bit hash.
  */
 goog.crypt.hash32.encodeStringUtf8 = function(str) {
+  return goog.crypt.hash32.encodeText(str);
+};
+
+
+/**
+ * Hashes a string to a 32-bit value, converting the string to UTF-8 before
+ * doing the encoding.
+ * @param {string} str String to hash.
+ * @return {number} 32-bit hash.
+ */
+goog.crypt.hash32.encodeText = function(str) {
   'use strict';
   return goog.crypt.hash32.encodeByteArray(
       goog.crypt.stringToUtf8ByteArray(str));

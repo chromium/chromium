@@ -140,7 +140,10 @@ goog.editor.plugins.TagOnEnterHandler.prototype.handleDeleteGecko = function(
 };
 
 
-/** @override */
+/**
+ * @override
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
+ */
 goog.editor.plugins.TagOnEnterHandler.prototype.handleKeyUpInternal = function(
     e) {
   'use strict';
@@ -318,6 +321,7 @@ goog.editor.plugins.TagOnEnterHandler.prototype.breakOutOfEmptyListItemGecko_ =
 
   var listNode = li.parentNode;
   var grandparent = listNode.parentNode;
+  /** @suppress {strictMissingProperties} Added to tighten compiler checks */
   var inSubList = grandparent.tagName == goog.dom.TagName.OL ||
       grandparent.tagName == goog.dom.TagName.UL;
 
@@ -361,12 +365,14 @@ goog.editor.plugins.TagOnEnterHandler.prototype.breakOutOfEmptyListItemGecko_ =
 goog.editor.plugins.TagOnEnterHandler.wrapInContainerW3c_ = function(
     nodeName, position, container) {
   'use strict';
+  /** @suppress {strictMissingProperties} Added to tighten compiler checks */
   var start = position.node;
   while (start.previousSibling &&
          !goog.editor.style.isContainer(start.previousSibling)) {
     start = start.previousSibling;
   }
 
+  /** @suppress {strictMissingProperties} Added to tighten compiler checks */
   var end = position.node;
   while (end.nextSibling && !goog.editor.style.isContainer(end.nextSibling)) {
     end = end.nextSibling;
@@ -395,6 +401,7 @@ goog.editor.plugins.TagOnEnterHandler.wrapInContainerW3c_ = function(
  * @param {goog.dom.AbstractRange} range The closure range object.
  * @param {boolean} isBackspace Whether this is handling the backspace key.
  * @private
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.editor.plugins.TagOnEnterHandler.prototype.markBrToNotBeRemoved_ =
     function(range, isBackspace) {
@@ -406,6 +413,9 @@ goog.editor.plugins.TagOnEnterHandler.prototype.markBrToNotBeRemoved_ =
   if (goog.editor.node.getLength(focusNode) == newEndOffset) {
     var sibling = focusNode.nextSibling;
     if (sibling && sibling.tagName == goog.dom.TagName.BR) {
+      /**
+       * @suppress {strictMissingProperties} Added to tighten compiler checks
+       */
       this.brToKeep_ = sibling;
     }
   }
@@ -419,6 +429,7 @@ goog.editor.plugins.TagOnEnterHandler.prototype.markBrToNotBeRemoved_ =
  * we don't accidentally remove a user-inserted BR.
  * @param {boolean} isBackSpace Whether this is handling the backspace key.
  * @private
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.editor.plugins.TagOnEnterHandler.prototype.removeBrIfNecessary_ = function(
     isBackSpace) {
@@ -483,6 +494,7 @@ goog.editor.plugins.TagOnEnterHandler.trimTabsAndLineBreaks_ = function(
  * splitting elements.
  * @return {!Element} The node that the cursor should be before.
  * @private
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.editor.plugins.TagOnEnterHandler.prototype.handleRegularEnterGecko_ =
     function() {
@@ -577,6 +589,7 @@ goog.editor.plugins.TagOnEnterHandler.prototype.scrollCursorIntoViewGecko_ =
         goog.editor.node.isStandardsMode(field)) {
       field = field.parentNode;
     }
+    /** @suppress {strictMissingProperties} Added to tighten compiler checks */
     field.scrollTop = bottomOfNode - viewportHeight;
   }
 };
@@ -615,6 +628,9 @@ goog.editor.plugins.TagOnEnterHandler.splitDom_ = function(
           goog.dom.getDomHelper(positionNode).createTextNode('');
       goog.dom.insertSiblingAfter(secondHalfOfSplitNode, positionNode);
     } else {
+      /**
+       * @suppress {strictMissingProperties} Added to tighten compiler checks
+       */
       secondHalfOfSplitNode = positionNode.splitText(positionOffset);
     }
   } else {
@@ -747,6 +763,7 @@ goog.editor.plugins.TagOnEnterHandler.replaceWhiteSpaceWithNbsp_ = function(
  * @return {Node} The first anchor node found in the search, or null if none
  *     was found.
  * @private
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.editor.plugins.TagOnEnterHandler.findAnchorInTraversal_ = function(
     node, opt_useFirstChild) {

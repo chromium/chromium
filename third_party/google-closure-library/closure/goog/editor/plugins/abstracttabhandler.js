@@ -14,7 +14,7 @@ goog.provide('goog.editor.plugins.AbstractTabHandler');
 goog.require('goog.editor.Plugin');
 goog.require('goog.events.KeyCodes');
 goog.require('goog.userAgent');
-goog.requireType('goog.events.Event');
+goog.requireType('goog.events.BrowserEvent');
 
 
 
@@ -63,7 +63,7 @@ goog.editor.plugins.AbstractTabHandler.prototype.handleKeyboardShortcut =
 
 /**
  * Handle a tab key press.
- * @param {goog.events.Event} e The key event.
+ * @param {!goog.events.BrowserEvent} e The key event.
  * @return {boolean} Whether this event was handled by this plugin.
  * @protected
  */

@@ -116,6 +116,7 @@ goog.locale.getTimeZoneNameList_ = function(nameType, opt_resource) {
 
   var names = goog.locale.getResource(nameType, locale);
   var ids = goog.locale.getResource('TimeZoneSelectedIds', opt_resource);
+  /** @suppress {strictMissingProperties} Added to tighten compiler checks */
   var len = ids.length;
   var result = [];
 

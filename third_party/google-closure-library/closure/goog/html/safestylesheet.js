@@ -73,20 +73,38 @@ class SafeStyleSheet {
    * @param {!Object} token package-internal implementation detail.
    */
   constructor(value, token) {
+    if (goog.DEBUG && token !== CONSTRUCTOR_TOKEN_PRIVATE) {
+      throw Error('SafeStyleSheet is not meant to be built directly');
+    }
+
     /**
      * The contained value of this SafeStyleSheet.  The field has a purposely
      * ugly name to make (non-compiled) code that attempts to directly access
      * this field stand out.
+     * @const
      * @private {string}
      */
-    this.privateDoNotAccessOrElseSafeStyleSheetWrappedValue_ =
-        (token === CONSTRUCTOR_TOKEN_PRIVATE) ? value : '';
+    this.privateDoNotAccessOrElseSafeStyleSheetWrappedValue_ = value;
 
     /**
      * @override
      * @const
      */
     this.implementsGoogStringTypedString = true;
+  }
+
+  /**
+   * Returns a string-representation of this value.
+   *
+   * To obtain the actual string value wrapped in a SafeStyleSheet, use
+   * `SafeStyleSheet.unwrap`.
+   *
+   * @return {string}
+   * @see SafeStyleSheet#unwrap
+   * @override
+   */
+  toString() {
+    return this.privateDoNotAccessOrElseSafeStyleSheetWrappedValue_.toString();
   }
 
   /**
@@ -110,9 +128,9 @@ class SafeStyleSheet {
         selector.replace(/('|")((?!\1)[^\r\n\f\\]|\\[\s\S])*\1/g, '');
 
     // Check characters allowed in CSS3 selectors.
-    if (!/^[-_a-zA-Z0-9#.:* ,>+~[\]()=^$|]+$/.test(selectorToCheck)) {
+    if (!/^[-_a-zA-Z0-9#.:* ,>+~[\]()=\\^$|]+$/.test(selectorToCheck)) {
       throw new Error(
-          'Selector allows only [-_a-zA-Z0-9#.:* ,>+~[\\]()=^$|] and ' +
+          'Selector allows only [-_a-zA-Z0-9#.:* ,>+~[\\]()=\\^$|] and ' +
           'strings, got: ' + selector);
     }
 
@@ -270,21 +288,6 @@ class SafeStyleSheet {
     return new SafeStyleSheet(styleSheet, CONSTRUCTOR_TOKEN_PRIVATE);
   }
 }
-
-/**
- * Returns a string-representation of this value.
- *
- * To obtain the actual string value wrapped in a SafeStyleSheet, use
- * `SafeStyleSheet.unwrap`.
- *
- * @return {string}
- * @see SafeStyleSheet#unwrap
- * @override
- */
-SafeStyleSheet.prototype.toString = function() {
-  return this.privateDoNotAccessOrElseSafeStyleSheetWrappedValue_.toString();
-};
-
 
 /**
  * A SafeStyleSheet instance corresponding to the empty string.

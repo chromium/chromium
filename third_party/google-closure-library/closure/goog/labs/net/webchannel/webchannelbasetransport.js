@@ -16,6 +16,7 @@
 goog.provide('goog.labs.net.webChannel.WebChannelBaseTransport');
 
 goog.require('goog.asserts');
+goog.require('goog.collections.maps');
 goog.require('goog.events.EventTarget');
 goog.require('goog.json');
 goog.require('goog.labs.net.webChannel.ChannelRequest');
@@ -177,9 +178,10 @@ WebChannelBaseTransport.Channel = function(url, opt_options) {
     this.channel_.setHttpSessionIdParam(httpSessionIdParam);
     if (goog.object.containsKey(this.messageUrlParams_, httpSessionIdParam)) {
       goog.object.remove(this.messageUrlParams_, httpSessionIdParam);
-      goog.log.warning(this.logger_,
-          'Ignore httpSessionIdParam also specified with messageUrlParams: '
-          + httpSessionIdParam);
+      goog.log.warning(
+          this.logger_,
+          'Ignore httpSessionIdParam also specified with messageUrlParams: ' +
+              httpSessionIdParam);
     }
   }
 
@@ -234,6 +236,19 @@ WebChannelBaseTransport.Channel.prototype.halfClose = function() {
  */
 WebChannelBaseTransport.Channel.prototype.send = function(message) {
   'use strict';
+  this.channel_.sendMap(this.messageToMapObject_(message));
+};
+
+
+/**
+ * Converts a message to the map used by the underlying channel.
+ *
+ * @param {!goog.net.WebChannel.MessageData} message
+ * @return {!Object|!goog.collections.maps.MapLike}
+ */
+WebChannelBaseTransport.Channel.prototype.messageToMapObject_ = function(
+    message) {
+  'use strict';
   goog.asserts.assert(
       goog.isObject(message) || typeof message === 'string',
       'only object type or raw string is supported');
@@ -241,14 +256,43 @@ WebChannelBaseTransport.Channel.prototype.send = function(message) {
   if (typeof message === 'string') {
     const rawJson = {};
     rawJson[Wire.RAW_DATA_KEY] = message;
-    this.channel_.sendMap(rawJson);
-  } else if (this.sendRawJson_) {
+    return rawJson;
+  }
+
+  if (this.sendRawJson_) {
     const rawJson = {};
     rawJson[Wire.RAW_DATA_KEY] = goog.json.serialize(message);
-    this.channel_.sendMap(rawJson);
-  } else {
-    this.channel_.sendMap(message);
+    return rawJson;
   }
+
+  return message;
+};
+
+
+/**
+ * Converts the map used by the underlying channel to a message.
+ *
+ * NOTE: In the case of the message being JS Object or string, the exact same
+ * object passed during `messageToMapObject_()` is returned. In the case of raw
+ * JSON, an equal (but not the same) object is returned (due to serialization).
+ *
+ * @param {!Object|!goog.collections.maps.MapLike} map
+ * @return {!goog.net.WebChannel.MessageData}
+ */
+WebChannelBaseTransport.Channel.prototype.mapObjectToMessage_ = function(map) {
+  'use strict';
+  if (Wire.RAW_DATA_KEY in map) {
+    const rawMessage = map[Wire.RAW_DATA_KEY];
+
+    if (this.sendRawJson_) {
+      return /** @type {!goog.net.WebChannel.MessageData} */ (
+          goog.json.parse(rawMessage));
+    } else {  // string message
+      return rawMessage;
+    }
+  }
+
+  return map;
 };
 
 
@@ -278,6 +322,14 @@ WebChannelBaseTransport.Channel.prototype.disposeInternal = function() {
 WebChannelBaseTransport.Channel.MessageEvent = function(array) {
   'use strict';
   WebChannelBaseTransport.Channel.MessageEvent.base(this, 'constructor');
+
+  // Metadata as HTTP headers and status code (always come in a pair).
+  if (array['__headers__']) {
+    this.headers = array['__headers__'];
+    this.statusCode = array['__status__'];
+    delete array['__headers__'];
+    delete array['__status__'];
+  }
 
   // single-metadata only
   const metadata = array['__sm__'];
@@ -403,7 +455,7 @@ WebChannelBaseTransport.Channel.Handler_.prototype.channelClosed = function(
  */
 WebChannelBaseTransport.Channel.prototype.getRuntimeProperties = function() {
   'use strict';
-  return new WebChannelBaseTransport.ChannelProperties(this.channel_);
+  return new WebChannelBaseTransport.ChannelProperties(this, this.channel_);
 };
 
 
@@ -411,18 +463,28 @@ WebChannelBaseTransport.Channel.prototype.getRuntimeProperties = function() {
 /**
  * Implementation of the {@link goog.net.WebChannel.RuntimeProperties}.
  *
+ * @param {!WebChannelBaseTransport.Channel} transportChannel The transport
+ *     channel object.
  * @param {!WebChannelBase} channel The underlying channel object.
  *
  * @constructor
  * @implements {goog.net.WebChannel.RuntimeProperties}
  * @final
  */
-WebChannelBaseTransport.ChannelProperties = function(channel) {
+WebChannelBaseTransport.ChannelProperties = function(
+    transportChannel, channel) {
   'use strict';
+  /**
+   * The transport channel object.
+   *
+   * @private @const {!WebChannelBaseTransport.Channel}
+   */
+  this.transportChannel_ = transportChannel;
+
   /**
    * The underlying channel object.
    *
-   * @private {!WebChannelBase}
+   * @private @const {!WebChannelBase}
    */
   this.channel_ = channel;
 };
@@ -459,6 +521,18 @@ WebChannelBaseTransport.ChannelProperties.prototype.getPendingRequestCount =
 
 /**
  * @override
+ * @return {!Array<!goog.net.WebChannel.MessageData>}
+ */
+WebChannelBaseTransport.ChannelProperties.prototype.getNonAckedMessages =
+    function() {
+  'use strict';
+  return this.channel_.getNonAckedMaps().map(
+      queued_map => this.transportChannel_.mapObjectToMessage_(queued_map.map));
+};
+
+
+/**
+ * @override
  */
 WebChannelBaseTransport.ChannelProperties.prototype.getHttpSessionId =
     function() {
@@ -475,13 +549,6 @@ WebChannelBaseTransport.ChannelProperties.prototype.commit = function(
   'use strict';
   this.channel_.setForwardChannelFlushCallback(callback);
 };
-
-
-/**
- * @override
- */
-WebChannelBaseTransport.ChannelProperties.prototype.getNonAckedMessageCount =
-    goog.abstractMethod;
 
 
 /**
@@ -504,6 +571,16 @@ WebChannelBaseTransport.ChannelProperties.prototype.onCommit =
 WebChannelBaseTransport.ChannelProperties.prototype.ackCommit =
     goog.abstractMethod;
 
+
+/**
+ * @override
+ * @return {!Object<string, string>|undefined}
+ */
+WebChannelBaseTransport.ChannelProperties.prototype.getLastResponseHeaders =
+    function() {
+  'use strict';
+  return this.channel_.getLastResponseHeaders();
+};
 
 /** @override */
 WebChannelBaseTransport.ChannelProperties.prototype.getLastStatusCode =

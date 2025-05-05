@@ -1058,13 +1058,8 @@ testSuite({
     /** @suppress {visibility} suppression added to enable type checking */
     const offset = style.getPageOffset(oneThumbSliderRtl.valueThumb);
     let offsetXAtZero = offset.x;
-    // Extra half of the thumb width in IE8 due to a browser bug where the
-    // thumb offsetWidth is incorrectly calculated as 0 in test files.
     /** @suppress {visibility} suppression added to enable type checking */
     const thumbSize = style.getSize(oneThumbSliderRtl.valueThumb);
-    if (userAgent.IE && !userAgent.isVersionOrHigher('9')) {
-      offsetXAtZero += thumbSize.width / 2;
-    }
 
     const sliderElement = oneThumbSliderRtl.getElementStrict();
     const width = sliderElement.clientWidth - thumbSize.width;

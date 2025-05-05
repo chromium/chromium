@@ -9,7 +9,6 @@ goog.setTestOnly();
 
 const TagName = goog.require('goog.dom.TagName');
 const dom = goog.require('goog.dom');
-const isVersion = goog.require('goog.userAgent.product.isVersion');
 const style = goog.require('goog.style');
 const testSuite = goog.require('goog.testing.testSuite');
 const transform = goog.require('goog.style.transform');
@@ -39,14 +38,10 @@ const setAndAssertTranslation = (x, y) => {
     return;
   }
   const success = transform.setTranslation(element, x, y);
-  if (!transform.isSupported()) {
-    assertFalse(success);
-  } else {
-    assertTrue(success);
-    const translation = transform.getTranslation(element);
-    assertEquals(x, translation.x);
-    assertEquals(y, translation.y);
-  }
+  assertTrue(success);
+  const translation = transform.getTranslation(element);
+  assertEquals(x, translation.x);
+  assertEquals(y, translation.y);
 };
 
 /**
@@ -62,17 +57,11 @@ const setAndAssertScale = (x, y, z) => {
     return;
   }
   const success = transform.setScale(element, x, y, z);
-  if (!transform.isSupported()) {
-    assertFalse(success);
-  } else {
-    assertTrue(success);
-    const scale = transform.getScale(element);
-    assertEquals(x, scale.x);
-    assertEquals(y, scale.y);
-    if (transform.is3dSupported()) {
-      assertEquals(z, scale.z);
-    }
-  }
+  assertTrue(success);
+  const scale = transform.getScale(element);
+  assertEquals(x, scale.x);
+  assertEquals(y, scale.y);
+  assertEquals(z, scale.z);
 };
 
 /**
@@ -93,12 +82,7 @@ const setAndAssertRotation = (expectedDegrees, opt_transform) => {
     style.setStyle(element, transform.getTransformProperty_(), opt_transform);
   } else {
     const success = transform.setRotation(element, Number(expectedDegrees));
-    if (!transform.isSupported()) {
-      assertFalse(success);
-      return;
-    } else {
-      assertTrue(success);
-    }
+    assertTrue(success);
   }
   const rotation = transform.getRotation(element);
   if (expectedDegrees instanceof Function) {
@@ -116,22 +100,6 @@ testSuite({
 
   tearDown() {
     dom.removeNode(element);
-  },
-
-  testIsSupported() {
-    if (userAgent.IE && !isVersion(9)) {
-      assertFalse(transform.isSupported());
-    } else {
-      assertTrue(transform.isSupported());
-    }
-  },
-
-  testIs3dSupported() {
-    if (userAgent.GECKO && !isVersion(10) || (userAgent.IE && !isVersion(10))) {
-      assertFalse(transform.is3dSupported());
-    } else {
-      assertTrue(transform.is3dSupported());
-    }
   },
 
   testTranslateX() {

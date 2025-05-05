@@ -11,12 +11,10 @@
 
 goog.provide('goog.loader.AbstractModuleManager');
 goog.provide('goog.loader.AbstractModuleManager.CallbackType');
-goog.provide('goog.loader.AbstractModuleManager.FailureType');
 
 goog.require('goog.module.AbstractModuleLoader');
 goog.require('goog.module.ModuleInfo');
 goog.require('goog.module.ModuleLoadCallback');
-goog.require('goog.module.ModuleLoadFailureType');
 goog.requireType('goog.html.TrustedResourceUrl');
 goog.requireType('goog.module.BaseModule');
 
@@ -78,14 +76,6 @@ goog.loader.AbstractModuleManager.CallbackType = {
    */
   USER_ACTIVE: 'userActive'
 };
-
-
-/**
- * The possible reasons for a module load failure callback being fired.
- * @enum {number}
- */
-goog.loader.AbstractModuleManager.FailureType =
-    goog.module.ModuleLoadFailureType;
 
 
 /**

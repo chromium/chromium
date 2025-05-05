@@ -22,7 +22,7 @@ const ERROR_HANDLER_TEST_ERROR = 'ERROR_HANDLER_TEST_ERROR';
 let errorHandler;
 let mockControl;
 
-let state = {};
+let /** ? */ state = {};
 
 const JSUnitOnError = window.onerror;
 // Here we set up an `onerror` handler to be able to catch the re-thrown errors
@@ -158,6 +158,22 @@ testSuite({
     delete window.errorThrower;
 
     assertMethodCalledHelper('setTimeout');
+  },
+
+  async testSetTimeoutWithNull() {
+    let numErrors = 0;
+    const errorHandler = new ErrorHandler((ex) => {
+      numErrors++;
+    });
+    errorHandler.protectWindowSetTimeout();
+    // This shouldn't cause an error to be thrown (which would be caught by the
+    // ErrorHandler above).
+    window.setTimeout(null, 2);
+    await new Promise((resolve) => {
+      window.setTimeout(resolve, 3);
+    });
+
+    assertEquals('Error handler should not have been executed.', 0, numErrors);
   },
 
   async testWrapSetInterval() {

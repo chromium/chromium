@@ -329,7 +329,7 @@ testSuite({
 
     assertTrue(Link.isMailto('mailto:'));
     assertTrue(Link.isMailto('mailto://'));
-    assertTrue(Link.isMailto('mailto://ptucker@gmail.com'));
+    assertTrue(Link.isMailto('mailto://foo@gmail.com'));
   },
 
   testGetValidLinkFromText() {

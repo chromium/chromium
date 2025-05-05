@@ -111,13 +111,13 @@ Decoder.prototype.decode = function(input) {
   let result;
   try {
     result = goog.crypt.base64.decodeStringToByteArray(
-        this.leftoverInput_.substr(0, groups * 4));
+        this.leftoverInput_.slice(0, groups * 4));
   } catch (e) {
     this.error_(this.leftoverInput_, e.message);
   }
 
   this.streamPos_ += groups * 4;
-  this.leftoverInput_ = this.leftoverInput_.substr(groups * 4);
+  this.leftoverInput_ = this.leftoverInput_.slice(groups * 4);
   return result;
 };
 });  // goog.scope

@@ -1009,7 +1009,7 @@ testSuite({
     let fragment = new Uri().setFragment(testString).toString();
 
     // Remove first '#' character.
-    fragment = fragment.substr(1);
+    fragment = fragment.slice(1);
 
     // Strip all percent encoded characters, as they're ok.
     fragment = fragment.replace(/%[0-9A-F][0-9A-F]/g, '');

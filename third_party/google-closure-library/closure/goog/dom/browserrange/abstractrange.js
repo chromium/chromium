@@ -257,7 +257,13 @@ goog.dom.browserrange.AbstractRange.prototype.getHtmlFragment = function() {
           output.append(html);
         } else {
           var index = html.lastIndexOf('<');
-          output.append(index ? html.substr(0, index) : html);
+          // if index is -1, then this appends nothing.
+          // if index is 0, then the entire HTML content should be added.
+          // if the index is > 0, then only the portion of the html before the
+          // last open tag is appended.
+          if (index !== -1) {
+            output.append(index > 0 ? html.slice(0, index) : html);
+          }
         }
       }
     }

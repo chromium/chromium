@@ -13,8 +13,8 @@ goog.provide('goog.dom.TagWalkType');
 
 goog.require('goog.dom');
 goog.require('goog.dom.NodeType');
+goog.require('goog.iter');
 goog.require('goog.iter.Iterator');
-goog.require('goog.iter.StopIteration');
 
 
 /**
@@ -231,17 +231,16 @@ goog.dom.TagIterator.prototype.restartTag = function() {
 
 /**
  * Move to the next position in the DOM tree.
- * @return {Node} Returns the next node, or throws a goog.iter.StopIteration
- *     exception if the end of the iterator's range has been reached.
+ * @return {!IIterableResult<!Node>}
  * @override
  */
-goog.dom.TagIterator.prototype.nextValueOrThrow = function() {
+goog.dom.TagIterator.prototype.next = function() {
   'use strict';
   var node;
 
   if (this.started_) {
     if (!this.node || this.constrained && this.depth == 0) {
-      throw goog.iter.StopIteration;
+      return goog.iter.ES6_ITERATOR_DONE;
     }
     node = this.node;
 
@@ -279,10 +278,10 @@ goog.dom.TagIterator.prototype.nextValueOrThrow = function() {
 
   // Check the new position for being last, and return it if it's not.
   node = this.node;
-  if (!this.node) {
-    throw goog.iter.StopIteration;
+  if (!node) {
+    return goog.iter.ES6_ITERATOR_DONE;
   }
-  return node;
+  return goog.iter.createEs6IteratorYield(node);
 };
 
 
@@ -353,7 +352,7 @@ goog.dom.TagIterator.prototype.splice = function(var_args) {
   var node = this.node;
   this.restartTag();
   this.reversed = !this.reversed;
-  goog.dom.TagIterator.prototype.nextValueOrThrow.call(this);
+  goog.dom.TagIterator.prototype.next.call(this);
   this.reversed = !this.reversed;
 
   // Replace the node with the arguments.

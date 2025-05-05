@@ -32,7 +32,6 @@ class XhrNodeReadableStream {
    *     the events of the underlying Xhr.
    */
   constructor(xhrReader) {
-    'use strict';
     /**
      * @const
      * @private {?googLog.Logger} the logger.
@@ -73,7 +72,6 @@ class XhrNodeReadableStream {
    * @return {!NodeReadableStream}
    */
   on(eventType, callback) {
-    'use strict';
     let callbacks = this.callbackMap_[eventType];
     if (!callbacks) {
       callbacks = [];
@@ -92,7 +90,6 @@ class XhrNodeReadableStream {
    * @return {!NodeReadableStream}
    */
   addListener(eventType, callback) {
-    'use strict';
     this.on(eventType, callback);
     return this;
   }
@@ -105,7 +102,6 @@ class XhrNodeReadableStream {
    * @return {!NodeReadableStream}
    */
   removeListener(eventType, callback) {
-    'use strict';
     const callbacks = this.callbackMap_[eventType];
     if (callbacks) {
       googArray.remove(callbacks, callback);  // keep the empty array
@@ -127,7 +123,6 @@ class XhrNodeReadableStream {
    * @return {!NodeReadableStream}
    */
   once(eventType, callback) {
-    'use strict';
     let callbacks = this.callbackOnceMap_[eventType];
     if (!callbacks) {
       callbacks = [];
@@ -147,7 +142,6 @@ class XhrNodeReadableStream {
    * @private
    */
   onData_(messages) {
-    'use strict';
     const callbacks = this.callbackMap_[NodeReadableStream.EventType.DATA];
     if (callbacks) {
       this.doMessages_(messages, callbacks);
@@ -172,13 +166,11 @@ class XhrNodeReadableStream {
    * @private
    */
   doMessages_(messages, callbacks) {
-    'use strict';
     const self = this;
     for (let i = 0; i < messages.length; i++) {
       const message = messages[i];
 
       callbacks.forEach(function(callback) {
-        'use strict';
         try {
           callback(message);
         } catch (ex) {
@@ -195,7 +187,6 @@ class XhrNodeReadableStream {
    * @private
    */
   onStatusChange_() {
-    'use strict';
     const currentStatus = this.xhrReader_.getStatus();
     const EventType = NodeReadableStream.EventType;
 
@@ -230,12 +221,10 @@ class XhrNodeReadableStream {
    * @private
    */
   doStatus_(eventType) {
-    'use strict';
     const callbacks = this.callbackMap_[eventType];
     const self = this;
     if (callbacks) {
       callbacks.forEach(function(callback) {
-        'use strict';
         try {
           callback();
         } catch (ex) {
@@ -247,7 +236,6 @@ class XhrNodeReadableStream {
     const onceCallbacks = this.callbackOnceMap_[eventType];
     if (onceCallbacks) {
       onceCallbacks.forEach(function(callback) {
-        'use strict';
         callback();
       });
     }
@@ -263,7 +251,6 @@ class XhrNodeReadableStream {
    * @private
    */
   handleError_(message) {
-    'use strict';
     googLog.error(this.logger_, message);
   }
 }

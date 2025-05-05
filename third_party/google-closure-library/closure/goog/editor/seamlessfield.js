@@ -86,6 +86,7 @@ goog.editor.SeamlessField.prototype.listenForIframeLoadEventKey_;
  * update the field if necessary based on the new min height.
  * @param {number} height The min height specified as a number of pixels,
  *    e.g., 75.
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.editor.SeamlessField.prototype.setMinHeight = function(height) {
   'use strict';
@@ -93,6 +94,7 @@ goog.editor.SeamlessField.prototype.setMinHeight = function(height) {
     // Do nothing if the min height isn't changing.
     return;
   }
+  /** @suppress {strictMissingProperties} Added to tighten compiler checks */
   this.minHeight_ = height;
   if (this.usesIframe()) {
     this.doFieldSizingGecko();
@@ -171,6 +173,7 @@ goog.editor.SeamlessField.prototype.handleOuterDocChange_ = function() {
 /**
  * Sizes the iframe to its body's height.
  * @private
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.editor.SeamlessField.prototype.sizeIframeToBodyHeightGecko_ = function() {
   'use strict';
@@ -330,6 +333,7 @@ goog.editor.SeamlessField.prototype.doFieldSizingGecko = function() {
  * infinite loops.
  * @return {boolean} False if the lock is already acquired.
  * @private
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.editor.SeamlessField.prototype.acquireSizeIframeLockGecko_ = function() {
   'use strict';
@@ -348,6 +352,7 @@ goog.editor.SeamlessField.prototype.acquireSizeIframeLockGecko_ = function() {
  */
 goog.editor.SeamlessField.prototype.releaseSizeIframeLockGecko_ = function() {
   'use strict';
+  /** @suppress {strictMissingProperties} Added to tighten compiler checks */
   this.sizeIframeLock_ = false;
 };
 
@@ -655,6 +660,7 @@ goog.editor.SeamlessField.prototype.attachIframe = function(iframe) {
   // if a field when it has an iframe child, to fill up the remaining line
   // height. So make the line height = 0.
   if (goog.editor.node.isStandardsMode(field)) {
+    /** @suppress {strictMissingProperties} Added to tighten compiler checks */
     this.originalFieldLineHeight_ = field.style.lineHeight;
     goog.style.setStyle(field, 'lineHeight', '0');
   }

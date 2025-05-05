@@ -27,7 +27,6 @@ const log = goog.require('goog.log');
  *    type or transfer encoding is unsupported.
  */
 function getStreamParser(io) {
-  'use strict';
   const logger = log.getLogger('goog.net.streams.streamParsers');
 
   let contentType = io.getStreamingResponseHeader(XhrIo.CONTENT_TYPE_HEADER);

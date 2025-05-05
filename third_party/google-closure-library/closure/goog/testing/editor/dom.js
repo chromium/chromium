@@ -122,19 +122,14 @@ goog.testing.editor.dom.getPreviousNextNonEmptyTextNodeHelper_ = function(
   iter.setPosition(node, walkType, depth);
 
   // Advance the iterator so it skips the start node.
-  try {
-    iter.nextValueOrThrow();
-  } catch (e) {
-    return null;  // It could have been a leaf node.
-  }
+  let it = iter.next();
+  if (it.done) return null;
   // Now just get the first non-empty text node the iterator finds.
   const filter =
       goog.iter.filter(iter, goog.testing.editor.dom.isNonEmptyTextNode_);
-  try {
-    return /** @type {Text} */ (filter.nextValueOrThrow());
-  } catch (e) {  // No next item is available so return null.
-    return null;
-  }
+
+  it = filter.next();
+  return it.done ? null : /** @type {!Text} */ (it.value);
 };
 
 
@@ -264,8 +259,8 @@ goog.testing.editor.dom.getTextFollowingRange_ = function(
     if (isBefore ? endpointOffset > 0 : endpointOffset < endText.length) {
       // There is text in this node following the endpoint so return the portion
       // that follows the endpoint.
-      return isBefore ? endText.substr(0, endpointOffset) :
-                        endText.substr(endpointOffset);
+      return isBefore ? endText.slice(0, endpointOffset) :
+                        endText.slice(endpointOffset);
     } else {
       // There is no text following the endpoint so look for the follwing text
       // node.

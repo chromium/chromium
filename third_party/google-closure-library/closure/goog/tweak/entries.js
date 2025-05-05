@@ -987,7 +987,7 @@ goog.tweak.BooleanGroup.prototype.initialize = function(value) {
       var token = tokens[i].toLowerCase();
       var negative = token.charAt(0) == '-';
       if (negative) {
-        token = token.substr(1);
+        token = token.slice(1);
       }
       queryParamValues[token] = !negative;
     }
@@ -998,6 +998,7 @@ goog.tweak.BooleanGroup.prototype.initialize = function(value) {
 
 /**
  * @override
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.tweak.BooleanGroup.prototype.getNewValueEncoded = function() {
   'use strict';

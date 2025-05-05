@@ -161,7 +161,7 @@ goog.color.normalizeHex = function(hexColor) {
 goog.color.hexToRgb = function(hexColor) {
   'use strict';
   hexColor = goog.color.normalizeHex(hexColor);
-  const rgb = parseInt(hexColor.substr(1), 16);
+  const rgb = parseInt(hexColor.slice(1), 16);
   const r = rgb >> 16;
   const g = (rgb >> 8) & 255;
   const b = rgb & 255;
@@ -187,7 +187,7 @@ goog.color.rgbToHex = function(r, g, b) {
   }
   const rgb = (r << 16) | (g << 8) | b;
   if (r < 0x10) {
-    return '#' + (0x1000000 | rgb).toString(16).substr(1);
+    return '#' + (0x1000000 | rgb).toString(16).slice(1);
   }
   return '#' + rgb.toString(16);
 };

@@ -17,6 +17,7 @@ const testSuite = goog.require('goog.testing.testSuite');
 const testingEvents = goog.require('goog.testing.events');
 
 let a;
+let buttonEl;
 let eh;
 let events;
 
@@ -39,6 +40,7 @@ function assertListenersExist(el, listenerCount, capt) {
 testSuite({
   setUpPage() {
     a = document.getElementById('a');
+    buttonEl = document.getElementById('button');
   },
 
   /** @suppress {checkTypes} suppression added to enable type checking */
@@ -261,5 +263,50 @@ testSuite({
 
     eh2.dispose();
     assertListenersExist(a, 0, false);
+  },
+
+  testBlockBrowserScrollInteractableRole() {
+    const listener = (e) => {
+      events.push(e);
+    };
+    eh.listenWithWrapper(buttonEl, actionEventWrapper, e => {});
+    eh.listen(
+        buttonEl,
+        [
+          googEvents.EventType.KEYDOWN,
+          googEvents.EventType.KEYUP,
+        ],
+        listener);
+
+    testingEvents.fireKeySequence(buttonEl, KeyCodes.SPACE);
+
+    assertEquals(
+        'KEYUP and KEYDOWN events should have been fired.', 2, events.length);
+    assertTrue(
+        'SPACE key events should have been default prevented.',
+        events.every(e => e.defaultPrevented));
+  },
+
+  testDontPreventDefaultUnknownRole() {
+    const listener = (e) => {
+      events.push(e);
+    };
+    eh.listenWithWrapper(a, actionEventWrapper, e => {});
+    eh.listen(
+        a,
+        [
+          googEvents.EventType.KEYDOWN,
+          googEvents.EventType.KEYUP,
+        ],
+        listener);
+
+    testingEvents.fireKeySequence(a, KeyCodes.SPACE);
+
+    assertEquals(
+        'KEYUP and KEYDOWN events should have been fired.', 2, events.length);
+    assertTrue(
+        'SPACE key events should not have been default prevented on ' +
+            'non-interactable elements.',
+        events.every(e => !e.defaultPrevented));
   },
 });

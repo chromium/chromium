@@ -26,6 +26,7 @@ goog.require('goog.events.EventHandler');
 goog.require('goog.events.EventType');
 goog.require('goog.events.KeyCodes');
 goog.require('goog.events.KeyHandler');
+goog.require('goog.functions');
 goog.require('goog.string');
 goog.require('goog.ui.Component');
 goog.require('goog.ui.ComponentUtil');
@@ -612,23 +613,14 @@ goog.ui.Control.prototype.enableMouseEventHandling_ = function(enable) {
           element, goog.events.EventType.GOTPOINTERCAPTURE,
           this.preventPointerCapture_);
     }
-    if (this.handleContextMenu != goog.nullFunction) {
+    if (this.handleContextMenu != goog.functions.UNDEFINED) {
       handler.listen(
           element, goog.events.EventType.CONTEXTMENU, this.handleContextMenu);
     }
-    if (goog.userAgent.IE) {
-      // Versions of IE before 9 send only one click event followed by a
-      // dblclick, so we must explicitly listen for these. In later versions,
-      // two click events are fired  and so a dblclick listener is unnecessary.
-      if (!goog.userAgent.isVersionOrHigher(9)) {
-        handler.listen(
-            element, goog.events.EventType.DBLCLICK, this.handleDblClick);
-      }
-      if (!this.ieMouseEventSequenceSimulator_) {
-        this.ieMouseEventSequenceSimulator_ =
-            new goog.ui.Control.IeMouseEventSequenceSimulator_(this);
-        this.registerDisposable(this.ieMouseEventSequenceSimulator_);
-      }
+    if (goog.userAgent.IE && !this.ieMouseEventSequenceSimulator_) {
+      this.ieMouseEventSequenceSimulator_ =
+          new goog.ui.Control.IeMouseEventSequenceSimulator_(this);
+      this.registerDisposable(this.ieMouseEventSequenceSimulator_);
     }
   } else {
     handler.unlisten(element, MouseEventType.MOUSEDOWN, this.handleMouseDown)
@@ -643,15 +635,11 @@ goog.ui.Control.prototype.enableMouseEventHandling_ = function(enable) {
           element, goog.events.EventType.GOTPOINTERCAPTURE,
           this.preventPointerCapture_);
     }
-    if (this.handleContextMenu != goog.nullFunction) {
+    if (this.handleContextMenu != goog.functions.UNDEFINED) {
       handler.unlisten(
           element, goog.events.EventType.CONTEXTMENU, this.handleContextMenu);
     }
     if (goog.userAgent.IE) {
-      if (!goog.userAgent.isVersionOrHigher(9)) {
-        handler.unlisten(
-            element, goog.events.EventType.DBLCLICK, this.handleDblClick);
-      }
       goog.dispose(this.ieMouseEventSequenceSimulator_);
       this.ieMouseEventSequenceSimulator_ = null;
     }
@@ -1309,7 +1297,7 @@ goog.ui.Control.prototype.preventPointerCapture_ = function(e) {
  * Handles contextmenu events.
  * @param {goog.events.BrowserEvent} e Event to handle.
  */
-goog.ui.Control.prototype.handleContextMenu = goog.nullFunction;
+goog.ui.Control.prototype.handleContextMenu = goog.functions.UNDEFINED;
 
 
 /**
@@ -1336,6 +1324,7 @@ goog.ui.Control.isMouseEventWithinElement_ = function(e, elem) {
  * prevents it from receiving keyboard focus.  Considered protected; should
  * only be used within this package and by subclasses.
  * @param {goog.events.Event} e Mouse event to handle.
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.ui.Control.prototype.handleMouseDown = function(e) {
   'use strict';
@@ -1430,10 +1419,15 @@ goog.ui.Control.prototype.performActionInternal = function(e) {
   var actionEvent =
       new goog.events.Event(goog.ui.Component.EventType.ACTION, this);
   if (e) {
+    /** @suppress {strictMissingProperties} Added to tighten compiler checks */
     actionEvent.altKey = e.altKey;
+    /** @suppress {strictMissingProperties} Added to tighten compiler checks */
     actionEvent.ctrlKey = e.ctrlKey;
+    /** @suppress {strictMissingProperties} Added to tighten compiler checks */
     actionEvent.metaKey = e.metaKey;
+    /** @suppress {strictMissingProperties} Added to tighten compiler checks */
     actionEvent.shiftKey = e.shiftKey;
+    /** @suppress {strictMissingProperties} Added to tighten compiler checks */
     actionEvent.platformModifierKey = e.platformModifierKey;
   }
   return this.dispatchEvent(actionEvent);

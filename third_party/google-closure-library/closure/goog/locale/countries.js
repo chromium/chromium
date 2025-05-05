@@ -8,7 +8,7 @@
  * CLDR data using ICU. The algorithm is to list only country codes (not
  * containments representing a groups of countries).
  *
- * File generated from CLDR ver. 39
+ * File generated from CLDR ver. 43
  */
 
 // clang-format off
@@ -74,6 +74,7 @@ goog.locale.countries = [
   'CN', // China
   'CO', // Colombia
   'CP', // Clipperton Island
+  'CQ', // Sark
   'CR', // Costa Rica
   'CU', // Cuba
   'CV', // Cape Verde
@@ -253,7 +254,7 @@ goog.locale.countries = [
   'TM', // Turkmenistan
   'TN', // Tunisia
   'TO', // Tonga
-  'TR', // Turkey
+  'TR', // Türkiye
   'TT', // Trinidad & Tobago
   'TV', // Tuvalu
   'TW', // Taiwan

@@ -8,7 +8,6 @@ goog.module('goog.events.BrowserEventTest');
 goog.setTestOnly();
 
 const BrowserEvent = goog.require('goog.events.BrowserEvent');
-const BrowserFeature = goog.require('goog.events.BrowserFeature');
 const Coordinate = goog.require('goog.math.Coordinate');
 const PropertyReplacer = goog.require('goog.testing.PropertyReplacer');
 const recordFunction = goog.require('goog.testing.recordFunction');
@@ -130,7 +129,6 @@ testSuite({
   },
 
   testIsButtonWebkitMac() {
-    stubs.set(BrowserFeature, 'HAS_W3C_BUTTON', true);
     stubs.set(userAgent, 'WEBKIT', true);
     stubs.set(userAgent, 'MAC', true);
     assertIsButton(createMouseEvent('mousedown', 0), Button.LEFT, true);
@@ -143,7 +141,6 @@ testSuite({
   },
 
   testIsButtonGecko() {
-    stubs.set(BrowserFeature, 'HAS_W3C_BUTTON', true);
     stubs.set(userAgent, 'GECKO', true);
     stubs.set(userAgent, 'MAC', true);
     assertIsButton(createMouseEvent('mousedown', 0), Button.LEFT, true);

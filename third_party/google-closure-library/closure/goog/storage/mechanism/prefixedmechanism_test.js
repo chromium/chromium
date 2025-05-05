@@ -9,54 +9,80 @@ goog.setTestOnly();
 
 const HTML5LocalStorage = goog.require('goog.storage.mechanism.HTML5LocalStorage');
 const PrefixedMechanism = goog.require('goog.storage.mechanism.PrefixedMechanism');
-/** @suppress {extraRequire} */
-const mechanismSeparationTester = goog.require('goog.storage.mechanism.mechanismSeparationTester');
-/** @suppress {extraRequire} */
-const mechanismSharingTester = goog.require('goog.storage.mechanism.mechanismSharingTester');
+const iterableMechanismTests = goog.require('goog.storage.mechanism.iterableMechanismTests');
+const mechanismSeparationTests = goog.require('goog.storage.mechanism.mechanismSeparationTests');
+const mechanismSharingTests = goog.require('goog.storage.mechanism.mechanismSharingTests');
+const mechanismTests = goog.require('goog.storage.mechanism.mechanismTests');
 const testSuite = goog.require('goog.testing.testSuite');
 
 let submechanism = null;
+let mechanism;
+let mechanismShared;
+let mechanismSeparate;
 
 testSuite({
   setUp() {
     submechanism = new HTML5LocalStorage();
     if (submechanism.isAvailable()) {
-      /** @suppress {const} suppression added to enable type checking */
       mechanism = new PrefixedMechanism(submechanism, 'test');
-      /** @suppress {const} suppression added to enable type checking */
-      mechanism_shared = new PrefixedMechanism(submechanism, 'test');
-      /** @suppress {const} suppression added to enable type checking */
-      mechanism_separate = new PrefixedMechanism(submechanism, 'test2');
+      mechanismShared = new PrefixedMechanism(submechanism, 'test');
+      mechanismSeparate = new PrefixedMechanism(submechanism, 'test2');
     }
   },
 
-  /**
-     @suppress {strictMissingProperties} suppression added to enable type
-     checking
-   */
   tearDown() {
     if (!!mechanism) {
       mechanism.clear();
-      /** @suppress {const} suppression added to enable type checking */
       mechanism = null;
     }
-    if (!!mechanism_shared) {
-      mechanism_shared.clear();
-      /** @suppress {const} suppression added to enable type checking */
-      mechanism_shared = null;
+    if (!!mechanismShared) {
+      mechanismShared.clear();
+      mechanismShared = null;
     }
-    if (!!mechanism_separate) {
-      mechanism_separate.clear();
-      /** @suppress {const} suppression added to enable type checking */
-      mechanism_separate = null;
+    if (!!mechanismSeparate) {
+      mechanismSeparate.clear();
+      mechanismSeparate = null;
     }
   },
 
   testAvailability() {
     if (submechanism.isAvailable()) {
       assertNotNull(mechanism);
-      assertNotNull(mechanism_shared);
-      assertNotNull(mechanism_separate);
+      assertNotNull(mechanismShared);
+      assertNotNull(mechanismSeparate);
     }
   },
+
+  ...mechanismTests.register({
+    getMechanism: function() {
+      return mechanism;
+    },
+    getMinimumQuota: function() {
+      return 0;
+    },
+  }),
+
+  ...iterableMechanismTests.register({
+    getMechanism: function() {
+      return mechanism;
+    },
+  }),
+
+  ...mechanismSharingTests.register({
+    getMechanism: function() {
+      return mechanism;
+    },
+    getMechanismShared: function() {
+      return mechanismShared;
+    },
+  }),
+
+  ...mechanismSeparationTests.register({
+    getMechanism: function() {
+      return mechanism;
+    },
+    getMechanismSeparate: function() {
+      return mechanismSeparate;
+    },
+  }),
 });

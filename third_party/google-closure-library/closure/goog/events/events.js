@@ -159,6 +159,7 @@ goog.events.listenerCountEstimate_ = 0;
  * @param {T=} opt_handler Element in whose scope to call the listener.
  * @return {goog.events.Key} Unique key for the listener.
  * @template T,EVENTOBJ
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.events.listen = function(src, type, listener, opt_options, opt_handler) {
   'use strict';
@@ -207,6 +208,7 @@ goog.events.listen = function(src, type, listener, opt_options, opt_handler) {
  * @return {goog.events.ListenableKey} Unique key for the listener.
  * @template EVENTOBJ
  * @private
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.events.listen_ = function(
     src, type, listener, callOnce, opt_options, opt_handler) {
@@ -236,7 +238,9 @@ goog.events.listen_ = function(
   var proxy = goog.events.getProxy();
   listenerObj.proxy = proxy;
 
+  /** @suppress {strictMissingProperties} Added to tighten compiler checks */
   proxy.src = src;
+  /** @suppress {strictMissingProperties} Added to tighten compiler checks */
   proxy.listener = listenerObj;
 
   // Attach the proxy through the browser's API
@@ -278,6 +282,7 @@ goog.events.listen_ = function(
 goog.events.getProxy = function() {
   'use strict';
   const proxyCallbackFunction = goog.events.handleBrowserEvent_;
+  /** @suppress {strictMissingProperties} Added to tighten compiler checks */
   const f = function(eventObject) {
     return proxyCallbackFunction.call(f.src, f.listener, eventObject);
   };
@@ -309,6 +314,7 @@ goog.events.getProxy = function() {
  * @param {T=} opt_handler Element in whose scope to call the listener.
  * @return {goog.events.Key} Unique key for the listener.
  * @template T,EVENTOBJ
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.events.listenOnce = function(
     src, type, listener, opt_options, opt_handler) {
@@ -373,6 +379,7 @@ goog.events.listenWithWrapper = function(
  * @param {Object=} opt_handler Element in whose scope to call the listener.
  * @return {?boolean} indicating whether the listener was there to remove.
  * @template EVENTOBJ
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.events.unlisten = function(src, type, listener, opt_options, opt_handler) {
   'use strict';
@@ -420,6 +427,7 @@ goog.events.unlisten = function(src, type, listener, opt_options, opt_handler) {
  * @param {goog.events.Key} key The key returned by listen() for this
  *     event listener.
  * @return {boolean} indicating whether the listener was there to remove.
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.events.unlistenByKey = function(key) {
   'use strict';
@@ -440,6 +448,7 @@ goog.events.unlistenByKey = function(key) {
   }
 
   var type = listener.type;
+  /** @suppress {strictMissingProperties} Added to tighten compiler checks */
   var proxy = listener.proxy;
   if (src.removeEventListener) {
     src.removeEventListener(type, proxy, listener.capture);
@@ -581,6 +590,7 @@ goog.events.getListeners = function(obj, type, capture) {
  * @param {Object=} opt_handler Element in whose scope to call the listener.
  * @return {goog.events.ListenableKey} the found listener or null if not found.
  * @template EVENTOBJ
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.events.getListener = function(src, type, listener, opt_capt, opt_handler) {
   'use strict';
@@ -619,6 +629,7 @@ goog.events.getListener = function(src, type, listener, opt_capt, opt_handler) {
  *     listeners.
  * @return {boolean} Whether an event target has one or more listeners matching
  *     the requested type and/or capture phase.
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.events.hasListener = function(obj, opt_type, opt_capture) {
   'use strict';
@@ -732,6 +743,7 @@ goog.events.fireListeners_ = function(obj, type, capture, eventObject) {
  * @param {goog.events.Listener} listener The listener object to call.
  * @param {Object} eventObject The event object to pass to the listener.
  * @return {*} Result of listener.
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.events.fireListener = function(listener, eventObject) {
   'use strict';
@@ -925,6 +937,7 @@ goog.events.LISTENER_WRAPPER_PROP_ =
  *     calls obj.handleEvent. If the same listener is passed to this
  *     function more than once, the same function is guaranteed to be
  *     returned.
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.events.wrapListener = function(listener) {
   'use strict';

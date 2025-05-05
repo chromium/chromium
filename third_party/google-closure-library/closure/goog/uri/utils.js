@@ -326,7 +326,7 @@ goog.uri.utils.getEffectiveScheme = function(uri) {
   var scheme = goog.uri.utils.getScheme(uri);
   if (!scheme && goog.global.self && goog.global.self.location) {
     var protocol = goog.global.self.location.protocol;
-    scheme = protocol.substr(0, protocol.length - 1);
+    scheme = protocol.slice(0, -1);
   }
   // NOTE: When called from a web worker in Firefox 3.5, location may be null.
   // All other browsers with web workers support self.location from the worker.
@@ -440,7 +440,7 @@ goog.uri.utils.getFragmentEncoded = function(uri) {
   'use strict';
   // The hash mark may not appear in any other part of the URL.
   var hashIndex = uri.indexOf('#');
-  return hashIndex < 0 ? null : uri.substr(hashIndex + 1);
+  return hashIndex < 0 ? null : uri.slice(hashIndex + 1);
 };
 
 
@@ -524,7 +524,7 @@ goog.uri.utils.removeFragment = function(uri) {
   'use strict';
   // The hash mark may not appear in any other part of the URL.
   var hashIndex = uri.indexOf('#');
-  return hashIndex < 0 ? uri : uri.substr(0, hashIndex);
+  return hashIndex < 0 ? uri : uri.slice(0, hashIndex);
 };
 
 
@@ -664,7 +664,7 @@ goog.uri.utils.splitQueryData_ = function(uri) {
   } else {
     queryData = uri.substring(questionIndex + 1, hashIndex);
   }
-  return [uri.substr(0, questionIndex), queryData, uri.substr(hashIndex)];
+  return [uri.slice(0, questionIndex), queryData, uri.slice(hashIndex)];
 };
 
 
@@ -955,10 +955,8 @@ goog.uri.utils.getParamValue = function(uri, keyEncoded) {
     }
     // Progress forth to the end of the "key=" or "key&" substring.
     foundIndex += keyEncoded.length + 1;
-    // Use substr, because it (unlike substring) will return empty string
-    // if foundIndex > endPosition.
     return goog.string.urlDecode(
-        uri.substr(foundIndex, endPosition - foundIndex));
+        uri.slice(foundIndex, endPosition !== -1 ? endPosition : 0));
   }
 };
 
@@ -988,10 +986,8 @@ goog.uri.utils.getParamValues = function(uri, keyEncoded) {
 
     // Progress forth to the end of the "key=" or "key&" substring.
     foundIndex += keyEncoded.length + 1;
-    // Use substr, because it (unlike substring) will return empty string
-    // if foundIndex > position.
     result.push(
-        goog.string.urlDecode(uri.substr(foundIndex, position - foundIndex)));
+        goog.string.urlDecode(uri.slice(foundIndex, Math.max(position, 0))));
   }
 
   return result;
@@ -1032,7 +1028,7 @@ goog.uri.utils.removeParam = function(uri, keyEncoded) {
   }
 
   // Append everything that is remaining.
-  buffer.push(uri.substr(position));
+  buffer.push(uri.slice(position));
 
   // Join the buffer, and remove trailing punctuation that remains.
   return buffer.join('').replace(
@@ -1082,7 +1078,7 @@ goog.uri.utils.setParamsFromMap = function(uri, params) {
     queryData.split('&').forEach(function(pair) {
       'use strict';
       var indexOfEquals = pair.indexOf('=');
-      var name = indexOfEquals >= 0 ? pair.substr(0, indexOfEquals) : pair;
+      var name = indexOfEquals >= 0 ? pair.slice(0, indexOfEquals) : pair;
       if (!params.hasOwnProperty(name)) {
         buffer.push(pair);
       }
@@ -1110,11 +1106,11 @@ goog.uri.utils.appendPath = function(baseUri, path) {
 
   // Remove any trailing '/'
   if (goog.string.endsWith(baseUri, '/')) {
-    baseUri = baseUri.substr(0, baseUri.length - 1);
+    baseUri = baseUri.slice(0, -1);
   }
   // Remove any leading '/'
   if (goog.string.startsWith(path, '/')) {
-    path = path.substr(1);
+    path = path.slice(1);
   }
   return '' + baseUri + '/' + path;
 };

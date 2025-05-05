@@ -98,7 +98,7 @@ goog.debug.ErrorHandler.prototype.getFunctionIndex_ = function(wrapper) {
  * Installs exception protection for an entry point function. When an exception
  * is thrown from a protected function, a handler will be invoked to handle it.
  *
- * @param {Function} fn An entry point function to be protected.
+ * @param {!Function} fn An entry point function to be protected.
  * @return {!Function} A protected wrapper function that calls the entry point
  *     function.
  */
@@ -217,7 +217,7 @@ goog.debug.ErrorHandler.prototype.protectWindowSetInterval = function() {
  */
 goog.debug.ErrorHandler.prototype.catchUnhandledRejections = function(win) {
   'use strict';
-  win = win || goog.global['window'];
+  win = win || goog.global['window'] || goog.global['globalThis'];
   if ('onunhandledrejection' in win) {
     win.onunhandledrejection = (event) => {
       // event.reason contains the rejection reason. When an Error is
@@ -238,7 +238,7 @@ goog.debug.ErrorHandler.prototype.catchUnhandledRejections = function(win) {
 goog.debug.ErrorHandler.prototype.protectWindowRequestAnimationFrame =
     function() {
   'use strict';
-  var win = goog.global['window'];
+  const win = goog.global['window'] || goog.global['globalThis'];
   var fnNames = [
     'requestAnimationFrame', 'mozRequestAnimationFrame', 'webkitAnimationFrame',
     'msRequestAnimationFrame'
@@ -261,17 +261,23 @@ goog.debug.ErrorHandler.prototype.protectWindowRequestAnimationFrame =
 goog.debug.ErrorHandler.prototype.protectWindowFunctionsHelper_ = function(
     fnName) {
   'use strict';
-  var win = goog.global['window'];
+  const win = goog.global['window'] || goog.global['globalThis'];
   var originalFn = win[fnName];
+  if (!originalFn) throw new Error(fnName + ' not on global?');
   var that = this;
   win[fnName] = function(fn, time) {
     'use strict';
-    // Don't try to protect strings. In theory, we could try to globalEval
-    // the string, but this seems to lead to permission errors on IE6.
     if (typeof fn === 'string') {
       fn = goog.partial(goog.globalEval, fn);
     }
-    arguments[0] = fn = that.protectEntryPoint(fn);
+    // The first arg (function to call) might be undefined or null, and
+    // protectEntryPoint doesn't like this.
+    // If the fn was a string, the call to goog.partial above always returns a
+    // function, so they will always be called protected.
+    // (e.g. setTimeout(undefined, 1000))
+    if (fn) {
+      arguments[0] = fn = that.protectEntryPoint(fn);
+    }
 
     // IE doesn't support .call for setInterval/setTimeout, but it
     // also doesn't care what "this" is, so we can just call the
@@ -322,7 +328,7 @@ goog.debug.ErrorHandler.prototype.setPrefixErrorMessages = function(
 goog.debug.ErrorHandler.prototype.disposeInternal = function() {
   'use strict';
   // Try to unwrap window.setTimeout and window.setInterval.
-  var win = goog.global['window'];
+  const win = goog.global['window'] || goog.global['globalThis'];
   win.setTimeout = this.unwrap(win.setTimeout);
   win.setInterval = this.unwrap(win.setInterval);
 

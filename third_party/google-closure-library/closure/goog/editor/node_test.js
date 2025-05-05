@@ -107,9 +107,6 @@ testSuite({
     // but this test shows different behavior for IE10 and 11. If we discover
     // that we care about quirks mode documents we should investigate
     // this failure.
-    expectedFailures.expectFailureFor(
-        (userAgent.IE && userAgent.isVersionOrHigher('10') &&
-         !userAgent.isVersionOrHigher('11')));
     expectedFailures.run(() => {
       assertFalse(
           'Empty sourceless iframe is quirks mode, not standards mode',

@@ -8,7 +8,7 @@
  * @fileoverview Ordinal rules.
  *
  *
- * File generated from CLDR ver. 39
+ * File generated from CLDR ver. 43
  */
 
 // clang-format off
@@ -53,7 +53,6 @@ goog.i18n.ordinalRules.defaultSelect_ = function(n, precision) {
   "use strict";
   return goog.i18n.ordinalRules.Keyword.OTHER;
 };
-
 
 /**
  * Ordinal select rules for cy locale
@@ -438,7 +437,7 @@ goog.i18n.ordinalRules.bnSelect_ = function(n, precision) {
 };
 
 /**
- * Creates a selection function for the Closure locale to implement
+ * Creates a selection function for the Closure locale to implement an
  * Intl PluralRules object using optional minimumFractionDigits.
  * Caches multiple PluralRules objects by precision value for a given locale.
  * @return {function(number,number=) : !goog.i18n.ordinalRules.Keyword} Select function
@@ -446,23 +445,24 @@ goog.i18n.ordinalRules.bnSelect_ = function(n, precision) {
  */
 goog.i18n.ordinalRules.mapToNativeSelect_ = function() {
   const pluralLookup = {
-    'zero': goog.i18n.ordinalRules.Keyword.ZERO,
-    'one': goog.i18n.ordinalRules.Keyword.ONE,
-    'two': goog.i18n.ordinalRules.Keyword.TWO,
-    'few': goog.i18n.ordinalRules.Keyword.FEW,
-    'many': goog.i18n.ordinalRules.Keyword.MANY,
+    'zero':  goog.i18n.ordinalRules.Keyword.ZERO,
+    'one':   goog.i18n.ordinalRules.Keyword.ONE,
+    'two':   goog.i18n.ordinalRules.Keyword.TWO,
+    'few':   goog.i18n.ordinalRules.Keyword.FEW,
+    'many':  goog.i18n.ordinalRules.Keyword.MANY,
     'other': goog.i18n.ordinalRules.Keyword.OTHER
   };
 
   let pluralRulesObj = null;
   let pluralPrecisionCache = null;  // Indexed by precision value
-  /**
-   * Plural Rules select function containing ECMAScript object
-   * @param {number} item_count  The count of items.
-   * @param {number=} precision for number formatting, if not default.
-   * @return {!goog.i18n.ordinalRules.Keyword} Locale-specific pluralvalue.
-   */
-  const selectFn = function(item_count, precision) {
+
+/**
+ * Plural Rules select function containing ECMAScript object
+ * @param {number} itemCount  The count of items.
+ * @param {number=} precision for number formatting, if not default.
+ * @return {!goog.i18n.ordinalRules.Keyword} Locale-specific pluralvalue.
+ */
+  const selectFn = function(itemCount, precision) {
     // Key used in cache. -1 indicates no precision specified
     const key = (precision === undefined) ? -1 : precision;
 
@@ -475,7 +475,7 @@ goog.i18n.ordinalRules.mapToNativeSelect_ = function() {
     if (!pluralRulesObj) {
       // No existing plurals object. Make a new object and add to cache.
       // Intl locales use '-', not '_'
-      let locale = '';
+      let locale = '';  //goog.LOCALE may be undefined.
       if (goog.LOCALE) {
         locale = goog.LOCALE.replace('_', '-');
       }
@@ -485,14 +485,13 @@ goog.i18n.ordinalRules.mapToNativeSelect_ = function() {
       } else {
         // Create object with desired precision
         pluralRulesObj =
-            new Intl.PluralRules(
-                locale,
-                {type: 'ordinal', minimumFractionDigits: precision});
+          new Intl.PluralRules(
+              locale, {type: 'ordinal', minimumFractionDigits: precision});
       }
-      // Add to set of plural objects by precision.
+      // Add to set of plural objects cached by precision.
       pluralPrecisionCache.set(key, pluralRulesObj);
     }
-    const resultString = pluralRulesObj.select(item_count);
+    const resultString = pluralRulesObj.select(itemCount);
     return pluralLookup[resultString];
   };
 
@@ -502,10 +501,10 @@ goog.i18n.ordinalRules.mapToNativeSelect_ = function() {
 /**
  * Selected Ordinal rules by locale.
  */
-// Select ECMAScript native.
 goog.i18n.ordinalRules.select = goog.i18n.ordinalRules.enSelect_;
 if (goog.i18n.LocaleFeature.USE_ECMASCRIPT_I18N_PLURALRULES) {
-  goog.i18n.ordinalRules.select = goog.i18n.ordinalRules.mapToNativeSelect_();
+  // Native mode selected
+   goog.i18n.ordinalRules.select = goog.i18n.ordinalRules.mapToNativeSelect_();
 } else {
   if (goog.LOCALE === 'af') {
     goog.i18n.ordinalRules.select = goog.i18n.ordinalRules.defaultSelect_;
@@ -840,4 +839,4 @@ if (goog.i18n.LocaleFeature.USE_ECMASCRIPT_I18N_PLURALRULES) {
   if (goog.LOCALE === 'zu') {
     goog.i18n.ordinalRules.select = goog.i18n.ordinalRules.defaultSelect_;
   }
-} // End of polyfill selections.
+}  // End of polyfill selections.

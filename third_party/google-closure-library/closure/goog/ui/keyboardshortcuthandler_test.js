@@ -118,7 +118,7 @@ testSuite({
     // Create a mock event listener in order to set expectations on what
     // events are fired.  We create a fake class whose only method is
     // shortcutFired(shortcut identifier).
-    listener = new StrictMock({shortcutFired: goog.nullFunction});
+    listener = new StrictMock({shortcutFired: () => {}});
     events.listen(
         handler, KeyboardShortcutHandler.EventType.SHORTCUT_TRIGGERED,
         /**
@@ -928,8 +928,8 @@ testSuite({
     emptyEvent.target = rootDiv;
     emptyEvent.key = 'g';
     emptyEvent.keyCode = KeyCodes.G;
-    emptyEvent.preventDefault = goog.nullFunction;
-    emptyEvent.stopPropagation = goog.nullFunction;
+    emptyEvent.preventDefault = () => {};
+    emptyEvent.stopPropagation = () => {};
 
     handler.registerShortcut('lettergee', 'g');
 

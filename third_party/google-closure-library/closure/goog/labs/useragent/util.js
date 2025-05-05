@@ -13,13 +13,13 @@
 goog.module('goog.labs.userAgent.util');
 goog.module.declareLegacyNamespace();
 
-const {USE_CLIENT_HINTS} = goog.require('goog.labs.userAgent');
 const {caseInsensitiveContains, contains} = goog.require('goog.string.internal');
+const {useClientHints} = goog.require('goog.labs.userAgent');
 
 /**
  * @const {boolean} If true, use navigator.userAgentData without check.
- * TODO(user) FEATURESET_YEAR >= 2022 if it supports mobile and all the
- * brands we need.
+ * TODO(user): FEATURESET_YEAR >= 2024 if it supports mobile and all the
+ * brands we need.  See https://caniuse.com/mdn-api_navigator_useragentdata.
  */
 const ASSUME_CLIENT_HINTS_SUPPORT = false;
 
@@ -42,14 +42,10 @@ function getNativeUserAgentString() {
 
 /**
  * Gets the native userAgentData object from navigator if it exists.
- * If navigator.userAgentData object is missing or USE_CLIENT_HINTS is set to
- * false, returns null.
+ * If navigator.userAgentData object is missing returns null.
  * @return {?NavigatorUAData}
  */
 function getNativeUserAgentData() {
-  if (!USE_CLIENT_HINTS) {
-    return null;
-  }
   const navigator = getNavigator();
   // TODO(user): Use navigator?.userAgent ?? null once it's supported.
   if (navigator) {
@@ -69,9 +65,9 @@ function getNavigator() {
 /**
  * A possible override for applications which wish to not check
  * navigator.userAgent but use a specified value for detection instead.
- * @type {string}
+ * @type {?string}
  */
-let userAgentInternal = getNativeUserAgentString();
+let userAgentInternal = null;
 
 /**
  * A possible override for applications which wish to not check
@@ -95,7 +91,8 @@ function setUserAgent(userAgent = undefined) {
 
 /** @return {string} The user agent string. */
 function getUserAgent() {
-  return userAgentInternal;
+  return userAgentInternal == null ? getNativeUserAgentString() :
+                                     userAgentInternal;
 }
 
 /**
@@ -131,6 +128,7 @@ function getUserAgentData() {
  *     given string.
  */
 function matchUserAgentDataBrand(str) {
+  if (!useClientHints()) return false;
   const data = getUserAgentData();
   if (!data) return false;
   return data.brands.some(({brand}) => brand && contains(brand, str));
@@ -171,7 +169,7 @@ function extractVersionTuples(userAgent) {
   const versionRegExp = new RegExp(
       // Key. Note that a key may have a space.
       // (i.e. 'Mobile Safari' in 'Mobile Safari/5.0')
-      '(\\w[\\w ]+)' +
+      '([A-Z][\\w ]+)' +
 
           '/' +                // slash
           '([^\\s]+)' +        // version (i.e. '5.0b')

@@ -86,9 +86,16 @@ goog.inherits(goog.ui.AnimatedZippy, goog.ui.Zippy);
  * @const
  */
 goog.ui.AnimatedZippy.Events = {
-  // The beginning of the animation when the zippy state toggles.
+  /**
+   * The beginning of the animation when the zippy state toggles.
+   * @const {string}
+   */
   TOGGLE_ANIMATION_BEGIN: goog.events.getUniqueId('toggleanimationbegin'),
-  // The end of the animation when the zippy state toggles.
+
+  /**
+   * The end of the animation when the zippy state toggles.
+   * @const {string}
+   */
   TOGGLE_ANIMATION_END: goog.events.getUniqueId('toggleanimationend')
 };
 
@@ -185,6 +192,7 @@ goog.ui.AnimatedZippy.prototype.onAnimate_ = function(e) {
   'use strict';
   var contentElement = this.getContentElement();
   var h = contentElement.offsetHeight;
+  /** @suppress {strictMissingProperties} Added to tighten compiler checks */
   contentElement.style.marginTop = (e.y - h) + 'px';
 };
 

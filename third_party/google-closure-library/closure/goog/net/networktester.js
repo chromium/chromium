@@ -11,7 +11,6 @@
 goog.provide('goog.net.NetworkTester');
 goog.require('goog.Timer');
 goog.require('goog.Uri');
-goog.require('goog.dom.safe');
 goog.require('goog.log');
 
 
@@ -290,7 +289,7 @@ goog.net.NetworkTester.prototype.startNextAttempt_ = function() {
 
     this.timeoutTimer_ =
         goog.Timer.callOnce(this.onImageTimeout_, this.timeoutMs_, this);
-    goog.dom.safe.setImageSrc(this.image_, String(this.uri_));
+    this.image_.src = String(this.uri_);
   }
 };
 

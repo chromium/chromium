@@ -33,7 +33,7 @@ goog.provide('goog.vec.Float32Array');
 goog.vec.Float32Array = function(p0) {
   'use strict';
   /** @type {number} */
-  this.length = /** @type {number} */ (p0.length || p0);
+  this.length = /** @type {number} */ (/** @type {?} */ (p0).length || p0);
   for (let i = 0; i < this.length; i++) {
     this[i] = p0[i] || 0;
   }

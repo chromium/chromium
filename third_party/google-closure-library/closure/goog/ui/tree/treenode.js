@@ -14,10 +14,11 @@
 
 goog.provide('goog.ui.tree.TreeNode');
 
-goog.forwardDeclare('goog.ui.tree.TreeControl');
+goog.require('goog.asserts');
 goog.require('goog.ui.tree.BaseNode');
 goog.requireType('goog.dom.DomHelper');
 goog.requireType('goog.html.SafeHtml');  // circular
+goog.requireType('goog.ui.tree.TreeControl');
 
 
 
@@ -51,6 +52,7 @@ goog.ui.tree.TreeNode.prototype.getTree = function() {
   }
   const parent = this.getParent();
   if (parent) {
+    goog.asserts.assertInstanceof(parent, goog.ui.tree.TreeNode);
     const tree = parent.getTree();
     if (tree) {
       this.setTreeInternal(tree);
@@ -65,6 +67,7 @@ goog.ui.tree.TreeNode.prototype.getTree = function() {
  * Returns the source for the icon.
  * @return {string} Src for the icon.
  * @override
+ * @suppress {strictMissingProperties}
  */
 goog.ui.tree.TreeNode.prototype.getCalculatedIconClass = function() {
   'use strict';

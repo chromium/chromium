@@ -96,6 +96,7 @@ goog.ui.RoundedTabRenderer.prototype.createDom = function(tab) {
  * @param {Element} element Element to decorate.
  * @return {Element} Decorated element.
  * @override
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.ui.RoundedTabRenderer.prototype.decorate = function(tab, element) {
   'use strict';

@@ -73,6 +73,7 @@ goog.ui.Tab.prototype.getTooltip = function() {
  * Sets the tab tooltip text.  If the tab has already been rendered, updates
  * its tooltip.
  * @param {string} tooltip New tooltip text.
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.ui.Tab.prototype.setTooltip = function(tooltip) {
   'use strict';

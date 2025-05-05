@@ -13,11 +13,6 @@ const testSuite = goog.require('goog.testing.testSuite');
 const testingDom = goog.require('goog.testing.dom');
 const userAgent = goog.require('goog.userAgent');
 
-function shouldRunTests() {
-  // This test has not yet been updated to run on IE8. See b/2997682.
-  return !userAgent.IE || userAgent.isVersionOrHigher(9);
-}
-
 let root;
 
 /**

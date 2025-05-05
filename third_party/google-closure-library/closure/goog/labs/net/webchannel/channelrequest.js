@@ -201,6 +201,13 @@ goog.labs.net.webChannel.ChannelRequest = function(
   this.lastError_ = null;
 
   /**
+   * The response headers received along with the non-200 status.
+   *
+   * @private {!Object<string, string>|undefined}
+   */
+  this.errorResponseHeaders_ = undefined;
+
+  /**
    * The last status code received.
    * @private {number}
    */
@@ -696,6 +703,7 @@ ChannelRequest.prototype.onXmlHttpReadyStateChanged_ = function() {
       this.retryId_, readyState, status);
 
   if (!this.successful_) {
+    this.errorResponseHeaders_ = this.xmlHttp_.getResponseHeaders();
     if (status == 400 && responseText.indexOf('Unknown SID') > 0) {
       // the server error string will include 'Unknown SID' which indicates the
       // server doesn't know about the session (maybe it got restarted, maybe
@@ -1051,7 +1059,7 @@ ChannelRequest.prototype.getNextChunk_ = function(responseText) {
     return ChannelRequest.INCOMPLETE_CHUNK_;
   }
 
-  const chunkText = responseText.substr(chunkStartIndex, size);
+  const chunkText = responseText.slice(chunkStartIndex, chunkStartIndex + size);
   this.xmlHttpChunkStart_ = chunkStartIndex + size;
   return chunkText;
 };
@@ -1084,9 +1092,14 @@ ChannelRequest.prototype.sendCloseRequest = function(uri) {
   let requestSent = false;
 
   if (goog.global.navigator && goog.global.navigator.sendBeacon) {
-    // empty string body to avoid 413 error on chrome < 41
-    requestSent =
-        goog.global.navigator.sendBeacon(this.baseUri_.toString(), '');
+    try {
+      // empty string body to avoid 413 error on chrome < 41
+      requestSent =
+          goog.global.navigator.sendBeacon(this.baseUri_.toString(), '');
+    } catch {
+      // Intentionally left empty; sendBeacon might throw TypeError in certain
+      // unexpected cases.
+    }
   }
 
   if (!requestSent && goog.global.Image) {
@@ -1302,7 +1315,18 @@ ChannelRequest.prototype.getLastError = function() {
 
 
 /**
+ * @return {!Object<string, string>|undefined} Response headers received
+ *     along with the non-200 status, as a key-value map.
+ */
+ChannelRequest.prototype.getErrorResponseHeaders = function() {
+  'use strict';
+  return this.errorResponseHeaders_;
+};
+
+
+/**
  * Returns the status code of the last request.
+ *
  * @return {number} The status code of the last request.
  */
 ChannelRequest.prototype.getLastStatusCode = function() {

@@ -89,6 +89,63 @@ testSuite({
   },
 
   /** @suppress {visibility} suppression added to enable type checking */
+  testBodyScrollDragZeroMarginDivVContainer() {
+    const dsc = new DragScrollSupport(vContainerDiv);
+
+    document.body.setAttribute('style', 'height: 1500px;');
+    if (document.scrollingElement) {
+      document.scrollingElement.scrollTop = 20;
+    } else {
+      // IE doesn't have scrollingElement API.
+      window.scrollTo(0, 20);
+    }
+
+    // Set initial scroll state.
+    let scrollTop = 50;
+    vContainerDiv.scrollTop = scrollTop;
+
+    // Mouse move events are relative to the viewport, so this is (mostly) the
+    // same as the testDragZeroMarginDivVContainer test width adjust coordinates
+    events.fireMouseMoveEvent(vContainerDiv, new Coordinate(50, 50));
+    clock.tick(DragScrollSupport.TIMER_STEP_ + 1);
+    assertEquals(
+        'Mousing inside the vContainer should not trigger scrolling.',
+        scrollTop, vContainerDiv.scrollTop);
+    assertEquals(
+        'Scroll timer should not tick yet', 0, clock.getTimeoutsMade());
+
+    scrollTop = vContainerDiv.scrollTop;
+    events.fireMouseMoveEvent(vContainerDiv, new Coordinate(50, 110));
+    clock.tick(DragScrollSupport.TIMER_STEP_ + 1);
+    assertTrue(
+        'Mousing below the vContainer should trigger scrolling down.',
+        scrollTop < vContainerDiv.scrollTop);
+    scrollTop = vContainerDiv.scrollTop;
+    clock.tick(DragScrollSupport.TIMER_STEP_ + 1);
+    assertTrue(
+        'Mousing below the vContainer should trigger scrolling down.',
+        scrollTop < vContainerDiv.scrollTop);
+
+    scrollTop = vContainerDiv.scrollTop;
+    events.fireMouseMoveEvent(vContainerDiv, new Coordinate(50, 50));
+    clock.tick(DragScrollSupport.TIMER_STEP_ + 1);
+    assertEquals(
+        'Mousing inside the vContainer should stop scrolling.', scrollTop,
+        vContainerDiv.scrollTop);
+
+    clock.tick(DragScrollSupport.TIMER_STEP_ + 1);
+
+    dsc.dispose();
+    if (document.scrollingElement) {
+      document.scrollingElement.scrollTop = 0;
+    } else {
+      // IE doesn't have scrollingElement API.
+      window.scrollTo(0, 0);
+    }
+    document.body.removeAttribute('style');
+  },
+
+  /** @suppress {visibility} suppression added to enable type checking */
   testDragZeroMarginDivHContainer() {
     const dsc = new DragScrollSupport(hContainerDiv);
 

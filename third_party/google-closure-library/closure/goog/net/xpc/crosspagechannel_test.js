@@ -254,8 +254,7 @@ testSuite({
 
   testLifeCycle_v2_v2() {
     // Test flakes on IE 10+ and Chrome: see b/22873770 and b/18595666.
-    if ((browser.isIE() && browser.isVersionOrHigher(10)) ||
-        browser.isChrome()) {
+    if (browser.isIE() || browser.isChrome()) {
       return;
     }
 
@@ -1052,7 +1051,6 @@ const Driver = class extends Disposable {
     const transportType = this.channel_.determineTransportType_();
     switch (transportType) {
       case TransportTypes.NATIVE_MESSAGING:
-      case TransportTypes.DIRECT:
         testable = true;
         break;
     }

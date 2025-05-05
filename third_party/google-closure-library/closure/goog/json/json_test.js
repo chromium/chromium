@@ -464,8 +464,6 @@ testSuite({
   },
 
   testTryNativeJson() {
-    // bypass the compiler @define check
-    googJson['TRY_NATIVE_JSON'] = true;
     let error;
     googJson.setErrorLogger((message, ex) => {
       error = message;
@@ -475,8 +473,6 @@ testSuite({
     googJson.parse('{"a":[,1]}');
     assertEquals('Invalid JSON: {"a":[,1]}', error);
 
-    // bypass the compiler @define check
-    googJson['TRY_NATIVE_JSON'] = false;
-    googJson.setErrorLogger(goog.nullFunction);
+    googJson.setErrorLogger(() => {});
   },
 });

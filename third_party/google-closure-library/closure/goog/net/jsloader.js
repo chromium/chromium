@@ -153,7 +153,7 @@ goog.net.jsloader.safeLoadMany = function(trustedUris, opt_options) {
  */
 goog.net.jsloader.safeLoad = function(trustedUri, opt_options) {
   'use strict';
-  const options = opt_options || {};
+  const options = opt_options || /** @type {!goog.net.jsloader.Options} */ ({});
   const doc = options.document || document;
   const uri = goog.html.TrustedResourceUrl.unwrap(trustedUri);
 
@@ -348,9 +348,9 @@ goog.net.jsloader.cleanup_ = function(
     goog.global.clearTimeout(opt_timeout);
   }
 
-  scriptNode.onload = goog.nullFunction;
-  scriptNode.onerror = goog.nullFunction;
-  scriptNode.onreadystatechange = goog.nullFunction;
+  scriptNode.onload = () => {};
+  scriptNode.onerror = () => {};
+  scriptNode.onreadystatechange = () => {};
 
   // Do this after a delay (removing the script node of a running script can
   // confuse older IEs).

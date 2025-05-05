@@ -46,15 +46,6 @@ goog.require('goog.reflect');
 goog.require('goog.userAgent');
 
 /**
- * @define {boolean} If true, use the layerX and layerY properties of a native
- * browser event over the offsetX and offsetY properties, which cause expensive
- * reflow. If layerX or layerY is not defined, offsetX and offsetY will be used
- * as usual.
- */
-goog.events.USE_LAYER_XY_AS_OFFSET_XY =
-    goog.define('goog.events.USE_LAYER_XY_AS_OFFSET_XY', false);
-
-/**
  * Accepts a browser event object and creates a patched, cross browser event
  * object.
  * The content of this object will not be initialized if no event object is
@@ -208,6 +199,15 @@ goog.events.BrowserEvent = function(opt_e, opt_currentTarget) {
 };
 goog.inherits(goog.events.BrowserEvent, goog.events.Event);
 
+/**
+ * @define {boolean} If true, use the layerX and layerY properties of a native
+ * browser event over the offsetX and offsetY properties, which cause expensive
+ * reflow. If layerX or layerY is not defined, offsetX and offsetY will be used
+ * as usual.
+ */
+goog.events.BrowserEvent.USE_LAYER_XY_AS_OFFSET_XY =
+    goog.define('goog.events.BrowserEvent.USE_LAYER_XY_AS_OFFSET_XY', false);
+
 
 /**
  * Normalized button constants for the mouse.
@@ -216,7 +216,9 @@ goog.inherits(goog.events.BrowserEvent, goog.events.Event);
 goog.events.BrowserEvent.MouseButton = {
   LEFT: 0,
   MIDDLE: 1,
-  RIGHT: 2
+  RIGHT: 2,
+  BACK: 3,
+  FORWARD: 4,
 };
 
 
@@ -274,6 +276,7 @@ goog.events.BrowserEvent.prototype.init = function(e, opt_currentTarget) {
   /**
    * On touch devices use the first "changed touch" as the relevant touch.
    * @type {?Touch}
+   * @suppress {strictMissingProperties} Added to tighten compiler checks
    */
   var relevantTouch =
       e.changedTouches && e.changedTouches.length ? e.changedTouches[0] : null;
@@ -311,7 +314,7 @@ goog.events.BrowserEvent.prototype.init = function(e, opt_currentTarget) {
     this.screenX = relevantTouch.screenX || 0;
     this.screenY = relevantTouch.screenY || 0;
   } else {
-    if (goog.events.USE_LAYER_XY_AS_OFFSET_XY) {
+    if (goog.events.BrowserEvent.USE_LAYER_XY_AS_OFFSET_XY) {
       this.offsetX = (e.layerX !== undefined) ? e.layerX : e.offsetX;
       this.offsetY = (e.layerY !== undefined) ? e.layerY : e.offsetY;
     } else {
@@ -333,6 +336,7 @@ goog.events.BrowserEvent.prototype.init = function(e, opt_currentTarget) {
   this.button = e.button;
 
   this.keyCode = e.keyCode || 0;
+  /** @suppress {strictMissingProperties} Added to tighten compiler checks */
   this.key = e.key || '';
   this.charCode = e.charCode || (type == 'keypress' ? e.keyCode : 0);
   this.ctrlKey = e.ctrlKey;
@@ -340,8 +344,10 @@ goog.events.BrowserEvent.prototype.init = function(e, opt_currentTarget) {
   this.shiftKey = e.shiftKey;
   this.metaKey = e.metaKey;
   this.platformModifierKey = goog.userAgent.MAC ? e.metaKey : e.ctrlKey;
+  /** @suppress {strictMissingProperties} Added to tighten compiler checks */
   this.pointerId = e.pointerId || 0;
   this.pointerType = goog.events.BrowserEvent.getPointerType_(e);
+  /** @suppress {strictMissingProperties} Added to tighten compiler checks */
   this.state = e.state;
   this.event_ = e;
   if (e.defaultPrevented) {

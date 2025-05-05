@@ -7,6 +7,7 @@ licenses(["notice"])
 closure_js_library(
     name = "abstractdialog",
     srcs = ["abstractdialog.js"],
+    lenient = True,
     deps = [
         "//closure/goog/asserts",
         "//closure/goog/dom",
@@ -22,6 +23,7 @@ closure_js_library(
 closure_js_library(
     name = "bubble",
     srcs = ["bubble.js"],
+    lenient = True,
     deps = [
         "//closure/goog/asserts",
         "//closure/goog/dom",
@@ -50,6 +52,7 @@ closure_js_library(
 closure_js_library(
     name = "defaulttoolbar",
     srcs = ["defaulttoolbar.js"],
+    lenient = True,
     deps = [
         ":messages",
         ":toolbarfactory",
@@ -76,6 +79,7 @@ closure_js_library(
 closure_js_library(
     name = "linkdialog",
     srcs = ["linkdialog.js"],
+    lenient = True,
     deps = [
         ":abstractdialog",
         ":messages",
@@ -101,7 +105,6 @@ closure_js_library(
         "//closure/goog/ui:component",
         "//closure/goog/ui:linkbuttonrenderer",
         "//closure/goog/ui:tab",
-        "//closure/goog/useragent",
         "//closure/goog/window",
     ],
 )
@@ -109,6 +112,7 @@ closure_js_library(
 closure_js_library(
     name = "messages",
     srcs = ["messages.js"],
+    lenient = True,
     deps = [
         "//closure/goog/html:safehtml",
         "//closure/goog/html:safehtmlformatter",
@@ -118,6 +122,7 @@ closure_js_library(
 closure_js_library(
     name = "tabpane",
     srcs = ["tabpane.js"],
+    lenient = True,
     deps = [
         "//closure/goog/asserts",
         "//closure/goog/dom",
@@ -138,18 +143,21 @@ closure_js_library(
 closure_js_library(
     name = "toolbarcontroller",
     srcs = ["toolbarcontroller.js"],
+    lenient = True,
     deps = [
         "//closure/goog/editor:field",
         "//closure/goog/events:event",
         "//closure/goog/events:eventhandler",
         "//closure/goog/events:eventtarget",
         "//closure/goog/ui:component",
+        "//closure/goog/ui:toolbar",
     ],
 )
 
 closure_js_library(
     name = "toolbarfactory",
     srcs = ["toolbarfactory.js"],
+    lenient = True,
     deps = [
         "//closure/goog/array",
         "//closure/goog/dom",

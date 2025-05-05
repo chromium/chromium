@@ -455,8 +455,10 @@ testSuite({
     const mockControl = new MockControl();
     const strictMock = mockControl.createStrictMock(WithCustomToString);
     Mock.record(strictMock).doSomething();
+    Mock.record(strictMock.doSomething)();
 
     mockControl.$replayAll();
+    strictMock.doSomething();
     strictMock.doSomething();
 
     mockControl.$verifyAll();

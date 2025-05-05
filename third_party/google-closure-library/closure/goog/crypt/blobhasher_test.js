@@ -36,7 +36,7 @@ class BlobMock {
   }
 
   slice(start, end) {
-    return new BlobMock(this.data.substr(start, end - start));
+    return new BlobMock(this.data.slice(start, end));
   }
 }
 

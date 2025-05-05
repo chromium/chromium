@@ -235,11 +235,13 @@ goog.testing.Mock.STRICT = 0;
  */
 goog.testing.Mock.record = function(obj) {
   'use strict';
+  // If the user passes a method of a mock object, grab the object.
+  const mockObj = obj.$$mockObj ? obj.$$mockObj : obj;
   goog.asserts.assert(
-      obj.$recording_ !== undefined,
+      mockObj.$recording_ !== undefined,
       '%s is not a mock.  Did you pass a real object to record()?', obj);
   goog.asserts.assert(
-      obj.$recording_,
+      mockObj.$recording_,
       'Your mock is in replay mode.  You can only call record(mock) before mock.$replay()');
   return obj;
 };
@@ -353,6 +355,7 @@ goog.testing.Mock.prototype.$initializeFunctions_ = function(objectToMock) {
     var prop = enumerableProperties[i];
     if (typeof objectToMock[prop] == 'function') {
       this[prop] = goog.bind(this.$mockMethod, this, prop);
+      this[prop].$$mockObj = this;  // Save a reference for record().
       if (this.$proxy) {
         this.$proxy[prop] = goog.bind(this.$mockMethod, this, prop);
       }

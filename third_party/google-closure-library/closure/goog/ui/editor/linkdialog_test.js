@@ -10,6 +10,7 @@ goog.setTestOnly();
 const AbstractDialog = goog.require('goog.ui.editor.AbstractDialog');
 const ArgumentMatcher = goog.require('goog.testing.mockmatchers.ArgumentMatcher');
 const BrowserFeature = goog.require('goog.editor.BrowserFeature');
+const Const = goog.require('goog.string.Const');
 const DomHelper = goog.require('goog.dom.DomHelper');
 const EventHandler = goog.require('goog.events.EventHandler');
 const EventType = goog.require('goog.events.EventType');
@@ -20,12 +21,14 @@ const LinkDialog = goog.require('goog.ui.editor.LinkDialog');
 const MockControl = goog.require('goog.testing.MockControl');
 const PropertyReplacer = goog.require('goog.testing.PropertyReplacer');
 const TagName = goog.require('goog.dom.TagName');
+const TrustedResourceUrl = goog.require('goog.html.TrustedResourceUrl');
 const asserts = goog.require('goog.testing.asserts');
 const dom = goog.require('goog.dom');
 const events = goog.require('goog.events');
 const googWindow = goog.require('goog.window');
 const messages = goog.require('goog.ui.editor.messages');
 const mockmatchers = goog.require('goog.testing.mockmatchers');
+const safe = goog.require('goog.dom.safe');
 const style = goog.require('goog.style');
 const testSuite = goog.require('goog.testing.testSuite');
 const testingDom = goog.require('goog.testing.dom');
@@ -297,7 +300,15 @@ testSuite({
    * checking
    */
   testShowForNewLinkWithDiffAppWindow() {
-    this.testShowForNewLink(dom.getElement('appWindowIframe').contentDocument);
+    const frame = dom.createDom(TagName.IFRAME);
+    safe.setIframeSrc(
+        frame, TrustedResourceUrl.fromConstant(Const.from('about:blank')));
+    try {
+      document.body.appendChild(frame);
+      this.testShowForNewLink(frame.contentDocument);
+    } finally {
+      dom.removeNode(frame);
+    }
   },
 
   /**

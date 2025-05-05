@@ -43,6 +43,7 @@ goog.require('goog.functions');
 goog.require('goog.html.SafeHtml');
 goog.require('goog.html.SafeStyleSheet');
 goog.require('goog.html.legacyconversions');
+goog.require('goog.labs.userAgent.platform');
 goog.require('goog.log');
 goog.require('goog.log.Level');
 goog.require('goog.string');
@@ -577,6 +578,7 @@ goog.editor.Field.prototype.unregisterPlugin = function(plugin) {
  */
 goog.editor.Field.prototype.setInitialStyle = function(cssText) {
   'use strict';
+  /** @suppress {strictMissingProperties} Added to tighten compiler checks */
   this.cssText = cssText;
 };
 
@@ -598,8 +600,10 @@ goog.editor.Field.prototype.resetOriginalElemProperties = function() {
     field.id = this.id;
   }
 
+  /** @suppress {strictMissingProperties} Added to tighten compiler checks */
   field.className = this.savedClassName_ || '';
 
+  /** @suppress {strictMissingProperties} Added to tighten compiler checks */
   var cssText = this.cssText;
   if (!cssText) {
     field.removeAttribute('style');
@@ -609,6 +613,7 @@ goog.editor.Field.prototype.resetOriginalElemProperties = function() {
 
   if (typeof (this.originalFieldLineHeight_) === 'string') {
     goog.style.setStyle(field, 'lineHeight', this.originalFieldLineHeight_);
+    /** @suppress {strictMissingProperties} Added to tighten compiler checks */
     this.originalFieldLineHeight_ = null;
   }
 };
@@ -686,12 +691,18 @@ goog.editor.Field.CTRL_KEYS_CAUSING_CHANGES_ = {
   88: true   // X
 };
 
-if (goog.userAgent.WINDOWS && !goog.userAgent.GECKO) {
+if ((goog.userAgent.WINDOWS || goog.labs.userAgent.platform.isAndroid()) &&
+    !goog.userAgent.GECKO) {
   // In IE and Webkit, input from IME (Input Method Editor) does not generate a
   // keypress event so we have to rely on the keydown event. This way we have
   // false positives while the user is using keyboard to select the
   // character to input, but it is still better than the false negatives
   // that ignores user's final input at all.
+  // The same phenomina happen on android devices - no KeyPress events are
+  // emitted, and all KeyDown events have no useful charCode or other
+  // identifying information (see
+  // https://bugs.chromium.org/p/chromium/issues/detail?id=118639 for
+  // background, but it's considered WAI by various Input Method experts).
   goog.editor.Field.KEYS_CAUSING_CHANGES_[229] = true;  // from IME;
 }
 
@@ -766,6 +777,7 @@ goog.editor.Field.prototype.getAppWindow = function() {
  */
 goog.editor.Field.prototype.setBaseZindex = function(zindex) {
   'use strict';
+  /** @suppress {strictMissingProperties} Added to tighten compiler checks */
   this.baseZindex_ = zindex;
 };
 
@@ -774,6 +786,7 @@ goog.editor.Field.prototype.setBaseZindex = function(zindex) {
  * Returns the zindex of the base level of the field.
  *
  * @return {number} The base zindex of the editor.
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.editor.Field.prototype.getBaseZindex = function() {
   'use strict';
@@ -893,6 +906,10 @@ goog.editor.Field.prototype.setupChangeListeners_ = function() {
   this.addListener(goog.events.EventType.KEYDOWN, this.handleKeyDown_);
   this.addListener(goog.events.EventType.KEYPRESS, this.handleKeyPress_);
   this.addListener(goog.events.EventType.KEYUP, this.handleKeyUp_);
+
+  // Handles changes from non-keyboard forms of input. Such as choosing a
+  // spellcheck suggestion.
+  this.addListener(goog.events.EventType.INPUT, this.handleChange);
 
   this.selectionChangeTimer_ = new goog.async.Delay(
       this.handleSelectionChangeTimer_,
@@ -1092,7 +1109,8 @@ goog.editor.Field.prototype.handleBeforeChangeKeyEvent_ = function(e) {
 
     // TODO(arv): Del at end of field or backspace at beginning should be
     // ignored.
-    this.gotGeneratingKey_ = e.charCode ||
+    /** @suppress {strictMissingProperties} Added to tighten compiler checks */
+    this.gotGeneratingKey_ = !!e.charCode ||
         goog.editor.Field.isGeneratingKey_(e, goog.userAgent.GECKO);
     if (this.gotGeneratingKey_) {
       this.dispatchBeforeChange();
@@ -1310,6 +1328,7 @@ goog.editor.Field.prototype.handleKeyPress_ = function(e) {
   } else {
     // In IE only keys that generate output trigger keypress
     // In Mozilla charCode is set for keys generating content.
+    /** @suppress {strictMissingProperties} Added to tighten compiler checks */
     this.gotGeneratingKey_ = true;
     this.dispatchBeforeChange();
   }
@@ -1325,6 +1344,7 @@ goog.editor.Field.prototype.handleKeyPress_ = function(e) {
  * Handles keyup on the field.
  * @param {!goog.events.BrowserEvent} e The browser event.
  * @private
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.editor.Field.prototype.handleKeyUp_ = function(e) {
   'use strict';
@@ -1371,6 +1391,7 @@ goog.editor.Field.prototype.maybeStartSelectionChangeTimer_ = function(e) {
  * event system every time.
  * @param {goog.events.BrowserEvent} e The browser event.
  * @private
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.editor.Field.prototype.handleKeyboardShortcut_ = function(e) {
   'use strict';
@@ -1499,6 +1520,7 @@ goog.editor.Field.prototype.queryCommandValueInternal_ = function(
  *     browser event.
  * @param {goog.events.BrowserEvent} browserEvent The browser event.
  * @protected
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.editor.Field.prototype.handleDomAttrChange = function(
     handler, browserEvent) {
@@ -1534,6 +1556,7 @@ goog.editor.Field.prototype.handleDomAttrChange = function(
  * Handle a mutation event.
  * @param {goog.events.BrowserEvent|Event} e The browser event.
  * @private
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.editor.Field.prototype.handleMutationEventGecko_ = function(e) {
   'use strict';
@@ -1541,6 +1564,7 @@ goog.editor.Field.prototype.handleMutationEventGecko_ = function(e) {
     return;
   }
 
+  /** @suppress {strictMissingProperties} Added to tighten compiler checks */
   e = e.getBrowserEvent ? e.getBrowserEvent() : e;
   // For people with firebug, firebug sets this property on elements it is
   // inserting into the dom.
@@ -1697,9 +1721,11 @@ goog.editor.Field.prototype.dispatchBeforeTab_ = function(e) {
  * @param {boolean=} opt_stopChange Whether to ignore base change events.
  * @param {boolean=} opt_stopDelayedChange Whether to ignore delayed change
  *     events.
+ * @param {boolean=} opt_cancelPendingDelayedChange Whether to prevent any
+ *     pending delayed change events from firing when we disable the event.
  */
 goog.editor.Field.prototype.stopChangeEvents = function(
-    opt_stopChange, opt_stopDelayedChange) {
+    opt_stopChange, opt_stopDelayedChange, opt_cancelPendingDelayedChange) {
   'use strict';
   if (opt_stopChange) {
     if (this.changeTimerGecko_) {
@@ -1709,7 +1735,13 @@ goog.editor.Field.prototype.stopChangeEvents = function(
     this.stopEvent(goog.editor.Field.EventType.CHANGE);
   }
   if (opt_stopDelayedChange) {
-    this.clearDelayedChange();
+    if (opt_cancelPendingDelayedChange) {
+      // Stop the delayed change timer without emitting pending events.
+      this.stopDelayedChange_();
+    } else {
+      // Immediately emit pending delayed change events, which stops the timer.
+      this.clearDelayedChange();
+    }
     this.stopEvent(goog.editor.Field.EventType.DELAYEDCHANGE);
   }
 };
@@ -1936,6 +1968,20 @@ goog.editor.Field.prototype.clearDelayedChange = function() {
   this.delayedChangeTimer_.fireIfActive();
 };
 
+/**
+ * Stop the timer, effectively canceling any pending delayed changes.
+ *
+ * @private
+ */
+goog.editor.Field.prototype.stopDelayedChange_ = function() {
+  'use strict';
+  // The changeTimerGecko_ will queue up a delayed change so to fully stop
+  // delayed change we must also stop this timer.
+  if (this.changeTimerGecko_) {
+    this.changeTimerGecko_.stop();
+  }
+  this.delayedChangeTimer_.stop();
+};
 
 /**
  * Dispatch beforefocus and focus for FF. Note that both of these actually
@@ -2058,6 +2104,7 @@ goog.editor.Field.cancelLinkClick_ = function(e) {
  * Handle mouse down inside the editable field.
  * @param {goog.events.BrowserEvent} e The event.
  * @private
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.editor.Field.prototype.handleMouseDown_ = function(e) {
   'use strict';
@@ -2125,7 +2172,7 @@ goog.editor.Field.prototype.handleMouseUp_ = function(e) {
  *
  * Do NOT just get the innerHTML of a field directly--there's a lot of
  * processing that needs to happen.
-  * @return {string} The scrubbed contents of the field.
+ * @return {string} The scrubbed contents of the field.
  */
 goog.editor.Field.prototype.getCleanContents = function() {
   'use strict';
@@ -2139,7 +2186,7 @@ goog.editor.Field.prototype.getCleanContents = function() {
     if (!elem) {
       goog.log.log(
           this.logger, goog.log.Level.SHOUT,
-          "Couldn't get the field element to read the contents");
+          'Couldn\'t get the field element to read the contents');
     }
     return elem.innerHTML;
   }
@@ -2192,7 +2239,7 @@ goog.editor.Field.prototype.setSafeHtml = function(
     addParas, html, opt_dontFireDelayedChange, opt_applyLorem) {
   'use strict';
   if (this.isLoading()) {
-    goog.log.error(this.logger, "Can't set html while loading Trogedit");
+    goog.log.error(this.logger, 'Can\'t set html while loading Trogedit');
     return;
   }
 
@@ -2208,7 +2255,7 @@ goog.editor.Field.prototype.setSafeHtml = function(
   // If we don't want change events to fire, we have to turn off change events
   // before setting the field contents, since that causes mutation events.
   if (opt_dontFireDelayedChange) {
-    this.stopChangeEvents(false, true);
+    this.stopChangeEvents(false, true, true);
   }
 
   this.setInnerHtml_(html);
@@ -2457,7 +2504,9 @@ goog.editor.Field.prototype.makeEditable = function(opt_iframeSrc) {
   // TODO: In the fieldObj, save the field's id, className, cssText
   // in order to reset it on closeField. That way, we can muck with the field's
   // css, id, class and restore to how it was at the end.
+  /** @suppress {strictMissingProperties} Added to tighten compiler checks */
   this.nodeName = field.nodeName;
+  /** @suppress {strictMissingProperties} Added to tighten compiler checks */
   this.savedClassName_ = field.className;
   this.setInitialStyle(field.style.cssText);
 
@@ -2602,10 +2651,12 @@ goog.editor.Field.prototype.restoreDom = function() {
  * Returns true if the field needs to be loaded asynchrnously.
  * @return {boolean} True if loads are async.
  * @protected
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.editor.Field.prototype.shouldLoadAsynchronously = function() {
   'use strict';
   if (this.isHttps_ === undefined) {
+    /** @suppress {strictMissingProperties} Added to tighten compiler checks */
     this.isHttps_ = false;
 
     if (goog.userAgent.IE && this.usesIframe()) {
@@ -2626,6 +2677,9 @@ goog.editor.Field.prototype.shouldLoadAsynchronously = function() {
         }
       }
       var loc = win.location;
+      /**
+       * @suppress {strictMissingProperties} Added to tighten compiler checks
+       */
       this.isHttps_ =
           loc.protocol == 'https:' && loc.search.indexOf('nocheckhttps') == -1;
     }
@@ -2674,6 +2728,9 @@ goog.editor.Field.prototype.makeIframeField_ = function(opt_iframeSrc) {
       var onLoad =
           goog.bind(this.iframeFieldLoadHandler, this, iframe, html, styles);
 
+      /**
+       * @suppress {strictMissingProperties} Added to tighten compiler checks
+       */
       this.fieldLoadListenerKey_ =
           goog.events.listen(iframe, goog.events.EventType.LOAD, onLoad, true);
 
@@ -2786,11 +2843,13 @@ goog.editor.Field.prototype.iframeFieldLoadHandler = function(
  * Clears fieldLoadListener for a field. Must be called even (especially?) if
  * the field is not yet loaded and therefore not in this.fieldMap_
  * @private
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.editor.Field.prototype.clearFieldLoadListener_ = function() {
   'use strict';
   if (this.fieldLoadListenerKey_) {
     goog.events.unlistenByKey(this.fieldLoadListenerKey_);
+    /** @suppress {strictMissingProperties} Added to tighten compiler checks */
     this.fieldLoadListenerKey_ = null;
   }
 };

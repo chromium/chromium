@@ -171,10 +171,8 @@ goog.tweak.TweakUi.createCollapsible = function(opt_domHelper) {
 
     // The following strings are for internal debugging only.  No translation
     // necessary.  Do NOT wrap goog.getMsg() around these strings.
-    var showLink =
-        dh.createDom(goog.dom.TagName.A, {href: 'javascript:;'}, 'Show Tweaks');
-    var hideLink =
-        dh.createDom(goog.dom.TagName.A, {href: 'javascript:;'}, 'Hide Tweaks');
+    var showLink = dh.createDom(goog.dom.TagName.A, {href: '#'}, 'Show Tweaks');
+    var hideLink = dh.createDom(goog.dom.TagName.A, {href: '#'}, 'Hide Tweaks');
     var ret = dh.createDom(goog.dom.TagName.DIV, null, showLink);
 
     var lazyCreate = function() {
@@ -271,7 +269,7 @@ goog.tweak.TweakUi.getNamespacedLabel_ = function(entry) {
   'use strict';
   var label = entry.label;
   if (label == entry.getId()) {
-    label = label.substr(label.lastIndexOf('.') + 1);
+    label = label.slice(label.lastIndexOf('.') + 1);
   }
   return label;
 };
@@ -494,10 +492,8 @@ goog.tweak.EntriesPanel.prototype.render = function(opt_endElement) {
   var ret = dh.createDom(goog.dom.TagName.DIV);
 
   var showAllDescriptionsLink = dh.createDom(
-      goog.dom.TagName.A, {
-        href: 'javascript:;',
-        onclick: goog.bind(this.toggleAllDescriptions, this)
-      },
+      goog.dom.TagName.A,
+      {href: '#', onclick: goog.bind(this.toggleAllDescriptions, this)},
       'Toggle all Descriptions');
   ret.appendChild(showAllDescriptionsLink);
 
@@ -572,6 +568,7 @@ goog.tweak.EntriesPanel.prototype.createEntryElem_ = function(entry) {
  * Click handler for the help link.
  * @param {Node} entryDiv The div that contains the tweak.
  * @private
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.tweak.EntriesPanel.prototype.onHelpClick_ = function(entryDiv) {
   'use strict';
@@ -589,6 +586,7 @@ goog.tweak.EntriesPanel.prototype.showDescription_ = function(entryDiv, show) {
   'use strict';
   var descriptionElem = entryDiv.lastChild.lastChild;
   goog.style.setElementShown(/** @type {Element} */ (descriptionElem), show);
+  /** @suppress {strictMissingProperties} Added to tighten compiler checks */
   entryDiv.style.display = show ? 'block' : '';
 };
 
@@ -734,9 +732,9 @@ goog.tweak.EntriesPanel.prototype.createSubPanelDom_ = function(
   'use strict';
   var dh = this.domHelper_;
   var toggleLink =
-      dh.createDom(goog.dom.TagName.A, {href: 'javascript:;'}, label + ' \xBB');
+      dh.createDom(goog.dom.TagName.A, {href: '#'}, label + ' \xBB');
   var toggleLink2 =
-      dh.createDom(goog.dom.TagName.A, {href: 'javascript:;'}, '\xAB ' + label);
+      dh.createDom(goog.dom.TagName.A, {href: '#'}, '\xAB ' + label);
   toggleLink2.style.marginRight = '10px';
 
   var innerUi = new goog.tweak.EntriesPanel(childEntries, dh);
@@ -822,7 +820,10 @@ goog.tweak.EntriesPanel.prototype.createTweakEntryDom_ = function(entry) {
     var childEntries = goog.tweak.TweakUi.extractBooleanGroupEntries_(entry);
     return this.createSubPanelDom_(entry, label, childEntries);
   } else if (entry instanceof goog.tweak.StringSetting) {
-    /** @this {Element} */
+    /**
+     * @this {Element}
+     * @suppress {strictMissingProperties} Added to tighten compiler checks
+     */
     var setValueFunc = function() {
       'use strict';
       entry.setValue(this.value);
@@ -831,11 +832,17 @@ goog.tweak.EntriesPanel.prototype.createTweakEntryDom_ = function(entry) {
         this.createComboBoxDom_(entry, label, setValueFunc) :
         this.createTextBoxDom_(entry, label, setValueFunc);
   } else if (entry instanceof goog.tweak.NumericSetting) {
-    /** @this {Element} */
+    /**
+     * @this {Element}
+     * @suppress {strictMissingProperties} Added to tighten compiler checks
+     */
     setValueFunc = function() {
       'use strict';
       // Reset the value if it's not a number.
       if (isNaN(this.value)) {
+        /**
+         * @suppress {strictMissingProperties} Added to tighten compiler checks
+         */
         this.value = entry.getNewValue();
       } else {
         entry.setValue(+this.value);

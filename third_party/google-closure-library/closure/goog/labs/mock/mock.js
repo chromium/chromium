@@ -297,6 +297,48 @@ goog.labs.mock.formatValue_ = function(obj, opt_id) {
 };
 
 
+/**
+ * Like getOwnPropertyDescriptor but walks prototype chain.
+ * @private
+ * @param {!Object} obj a prototype
+ * @param {string} name property name
+ * @return {!Object|undefined} a PropertyDescriptor or undefined if property was
+ *     not found.
+ */
+goog.labs.mock.getPropertyDescriptor_ = function(obj, name) {
+  let proto = obj;
+  while (proto) {
+    const descriptor = Object.getOwnPropertyDescriptor(proto, name);
+    if (descriptor) {
+      return descriptor;
+    }
+    proto = Object.getPrototypeOf(proto);
+  }
+  return undefined;
+};
+
+
+/**
+ * Sets expectations on mocked accessor descriptor (trivial `get` and `set`) so
+ * that it behaves like an ordinary data descriptor.
+ *
+ * ```
+ * var mockObj = goog.labs.mock.mock(objectBeingMocked);
+ * goog.labs.mock.when(mockObj).descriptorProperty.asDataProperty(initialValue);
+ * ```
+ *
+ * @param {?} property The expectations setter, obtained via
+ *     `when(mockObj).property`.
+ * @param {?=} initialValue Optional initial value for the property.
+ * @private
+ */
+goog.labs.mock.mockDescriptorAsDataProperty_ = function(
+    property, initialValue = undefined) {
+  let value = initialValue;
+  property.get().then(() => value);
+  property.set({matches: () => true}).then((v) => value = v);
+};
+
 
 /**
  * Error thrown when verification failed.
@@ -652,7 +694,7 @@ goog.labs.mock.MockManager_.prototype.executeStub = function(
 goog.labs.mock.MockManager_.prototype.recordCall_ = function(methodName, args) {
   'use strict';
   const callRecord =
-      new goog.labs.mock.MethodBinding_(methodName, args, goog.nullFunction);
+      new goog.labs.mock.MethodBinding_(methodName, args, () => {});
 
   this.callRecords_.push(callRecord);
   return callRecord;
@@ -826,7 +868,32 @@ goog.labs.mock.MockObjectManager_ = function(objOrClass) {
   // the instance.
   for (let i = 0; i < enumerableProperties.length; i++) {
     const prop = enumerableProperties[i];
-    if (typeof propObj[prop] === 'function') {
+    const descriptor =
+        goog.labs.mock.getPropertyDescriptor_(propObj, prop) || {};
+    if (descriptor.get || descriptor.set) {
+      // A separate stub binder and verifier are needed for get/set functions.
+      const stubDescriptor = {};
+      /** @type {!goog.labs.mock.DescriptorStubBinder} */
+      const stubBinder = this.objectStubBinder_[prop] = {
+        asDataProperty(v = undefined) {
+          goog.labs.mock.mockDescriptorAsDataProperty_(stubBinder, v);
+        },
+      };
+      const callVerifier = this.objectCallVerifier_[prop] = {};
+      const callWaiter = this.objectCallWaiter_[prop] = {};
+      for (const type of ['get', 'set']) {
+        if (!descriptor[type]) {
+          continue;
+        }
+        const specialProp = `${prop}.${type}`;
+        stubDescriptor[type] = goog.bind(this.executeStub, this, specialProp);
+        stubBinder[type] = goog.bind(this.handleMockCall_, this, specialProp);
+        callVerifier[type] =
+            goog.bind(this.verifyInvocation, this, specialProp);
+        callWaiter[type] = goog.bind(this.waitForCall, this, specialProp);
+      }
+      Object.defineProperty(this.mockedItem, prop, stubDescriptor);
+    } else if (typeof propObj[prop] === 'function') {
       this.mockedItem[prop] = goog.bind(this.executeStub, this, prop);
       // The stub binder used to create bindings.
       this.objectStubBinder_[prop] =
@@ -1076,6 +1143,18 @@ goog.labs.mock.StubBinderImpl_.prototype.thenReturn = function(value) {
   'use strict';
   return this.then(goog.functions.constant(value));
 };
+
+
+/**
+ * A type for a mocked accessor descriptor.
+ *
+ * @typedef {{
+ *   get: (!Function|undefined),
+ *   set: (!Function|undefined),
+ *   asDataProperty: function(?=):void,
+ * }}
+ */
+goog.labs.mock.DescriptorStubBinder;
 
 
 /**

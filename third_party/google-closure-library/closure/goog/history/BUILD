@@ -7,6 +7,7 @@ licenses(["notice"])
 closure_js_library(
     name = "event",
     srcs = ["event.js"],
+    lenient = True,
     deps = [
         ":eventtype",
         "//closure/goog/events:event",
@@ -16,11 +17,13 @@ closure_js_library(
 closure_js_library(
     name = "eventtype",
     srcs = ["eventtype.js"],
+    lenient = True,
 )
 
 closure_js_library(
     name = "history",
     srcs = ["history.js"],
+    lenient = True,
     deps = [
         ":event",
         ":eventtype",
@@ -48,6 +51,7 @@ closure_js_library(
 closure_js_library(
     name = "html5history",
     srcs = ["html5history.js"],
+    lenient = True,
     deps = [
         ":event",
         "//closure/goog/asserts",

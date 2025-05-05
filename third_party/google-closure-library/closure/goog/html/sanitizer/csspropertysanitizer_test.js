@@ -91,12 +91,8 @@ testSuite({
   testBrowserBehavior_escapedQuotes() {
     // Verify how browsers deal with escaped quotes inside strings.
     let expectedValue;
-    if (product.CHROME || product.FIREFOX) {
+    if (product.CHROME || product.FIREFOX || product.SAFARI) {
       expectedValue = 'url("http://foo.com/a\\")")';
-    } else if (product.SAFARI) {
-      // It interprets \" as ", urlescapes it and closes the url() call for us
-      // at the end of input.
-      expectedValue = 'url("http://foo.com/a%22)")';
     } else if (product.IE || product.EDGE) {
       // Same for IE, except that no urlescaping happens, so even the output
       // value is malformed.
@@ -106,10 +102,8 @@ testSuite({
         expectedValue,
         getProcessedPropertyValue(
             'background-image', 'url("http://foo.com/a\\")'));
-    if (product.CHROME || product.FIREFOX) {
+    if (product.CHROME || product.FIREFOX || product.SAFARI) {
       expectedValue = 'url("http://foo.com/a\\"b)")';
-    } else if (product.SAFARI) {
-      expectedValue = 'url("http://foo.com/a%22b)")';
     } else if (product.IE || product.EDGE) {
       expectedValue = 'url("http://foo.com/a"b)")';
     }
@@ -123,12 +117,8 @@ testSuite({
     // Same as above, but check what happens if there are other values after the
     // string-based one.
     let expectedValue;
-    if (product.CHROME || product.FIREFOX) {
+    if (product.CHROME || product.FIREFOX || product.SAFARI) {
       expectedValue = 'url("http://foo.com/a\\"), rgba(1,1,1,0)")';
-    } else if (product.SAFARI) {
-      // Safari and IE/EDGE do the same thing as above, it's more obvious from
-      // this input.
-      expectedValue = 'url("http://foo.com/a%22),%20rgba(1,1,1,0)")';
     } else if (product.IE || product.EDGE) {
       expectedValue = 'url("http://foo.com/a"), rgba(1,1,1,0)")';
     }
@@ -160,9 +150,9 @@ testSuite({
     // Safari is the only browser that resolves relative URLs.
     assertTrue(
         getProcessedPropertyValue('background-image', 'url(/foo.com/a.jpg)')
-            .startsWith(product.SAFARI ? 'url("http://' : 'url("/foo.com'));
+            .startsWith('url("/foo.com'));
     assertTrue(getProcessedPropertyValue('background-image', 'url(a.jpg)')
-                   .startsWith(product.SAFARI ? 'url("http://' : 'url("a.jpg'));
+                   .startsWith('url("a.jpg'));
   },
 
   testSanitizeProperty_basic() {

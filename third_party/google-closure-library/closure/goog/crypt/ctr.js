@@ -12,6 +12,7 @@ goog.provide('goog.crypt.Ctr');
 goog.require('goog.array');
 goog.require('goog.asserts');
 goog.require('goog.crypt');
+goog.requireType('goog.crypt.BlockCipher');
 
 /**
  * Implementation of Ctr mode for block ciphers.  See

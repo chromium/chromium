@@ -23,8 +23,8 @@
 goog.provide('goog.storage.mechanism.IEUserData');
 
 goog.require('goog.asserts');
+goog.require('goog.iter');
 goog.require('goog.iter.Iterator');
-goog.require('goog.iter.StopIteration');
 goog.require('goog.storage.mechanism.ErrorCode');
 goog.require('goog.storage.mechanism.IterableMechanism');
 goog.require('goog.structs.Map');
@@ -156,7 +156,7 @@ goog.storage.mechanism.IEUserData.encodeKey_ = function(key) {
  */
 goog.storage.mechanism.IEUserData.decodeKey_ = function(key) {
   'use strict';
-  return decodeURIComponent(key.replace(/\./g, '%')).substr(1);
+  return decodeURIComponent(key.replace(/\./g, '%')).slice(1);
 };
 
 
@@ -219,21 +219,26 @@ goog.storage.mechanism.IEUserData.prototype.__iterator__ = function(opt_keys) {
   var i = 0;
   var attributes = this.getNode_().attributes;
   var newIter = new goog.iter.Iterator();
-  newIter.nextValueOrThrow = function() {
+  /**
+   * @return {!IIterableResult<string>}
+   * @override
+   */
+  newIter.next = function() {
     'use strict';
     if (i >= attributes.length) {
-      throw goog.iter.StopIteration;
+      return goog.iter.ES6_ITERATOR_DONE;
     }
     var item = goog.asserts.assert(attributes[i++]);
     if (opt_keys) {
-      return goog.storage.mechanism.IEUserData.decodeKey_(item.nodeName);
+      return goog.iter.createEs6IteratorYield(
+          goog.storage.mechanism.IEUserData.decodeKey_(item.nodeName));
     }
     var value = item.nodeValue;
     // The value must exist and be a string, otherwise it is a storage error.
     if (typeof value !== 'string') {
       throw goog.storage.mechanism.ErrorCode.INVALID_VALUE;
     }
-    return value;
+    return goog.iter.createEs6IteratorYield(value);
   };
 
   return newIter;

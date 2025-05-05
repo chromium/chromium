@@ -6,7 +6,18 @@ licenses(["notice"])
 
 closure_js_library(
     name = "asserts",
-    testonly = 1,
+    testonly = True,
     srcs = ["asserts.js"],
-    deps = ["//closure/goog/testing:jsunit"],
+    lenient = True,
+    deps = [
+        ":whitespace",
+        "//closure/goog/testing:asserts",
+    ],
+)
+
+closure_js_library(
+    name = "whitespace",
+    testonly = True,
+    srcs = ["whitespace.js"],
+    lenient = True,
 )

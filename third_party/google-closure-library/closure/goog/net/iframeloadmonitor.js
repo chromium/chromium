@@ -14,7 +14,6 @@ goog.require('goog.dom');
 goog.require('goog.events');
 goog.require('goog.events.EventTarget');
 goog.require('goog.events.EventType');
-goog.require('goog.userAgent');
 
 
 
@@ -155,21 +154,14 @@ goog.net.IframeLoadMonitor.prototype.isLoadedHelper_ = function() {
   let isLoaded = false;
 
   try {
-    if (!this.hasContent_ && goog.userAgent.IE &&
-        !goog.userAgent.isVersionOrHigher('11')) {
-      // IE versions before IE11 will reliably have readyState set to complete
-      // if the iframe is loaded.
-      isLoaded = this.iframe_.readyState == 'complete';
-    } else {
-      // For other browsers, check whether the document body exists to determine
-      // whether the iframe has loaded. Older versions of Firefox may fire the
-      // LOAD event early for an empty frame and then, a few hundred
-      // milliseconds later, replace the contentDocument. If the hasContent
-      // check is requested, the iframe is considered loaded only once there is
-      // content in the body.
-      const body = goog.dom.getFrameContentDocument(this.iframe_).body;
-      isLoaded = this.hasContent_ ? !!body && !!body.firstChild : !!body;
-    }
+    // For other browsers, check whether the document body exists to determine
+    // whether the iframe has loaded. Older versions of Firefox may fire the
+    // LOAD event early for an empty frame and then, a few hundred
+    // milliseconds later, replace the contentDocument. If the hasContent
+    // check is requested, the iframe is considered loaded only once there is
+    // content in the body.
+    const body = goog.dom.getFrameContentDocument(this.iframe_).body;
+    isLoaded = this.hasContent_ ? !!body && !!body.firstChild : !!body;
   } catch (e) {
     // Ignore these errors. This just means that the iframe is not loaded
     // IE will throw error reading readyState if the iframe is not appended

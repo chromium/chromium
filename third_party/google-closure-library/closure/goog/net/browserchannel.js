@@ -803,6 +803,7 @@ goog.net.BrowserChannel.prototype.connect = function(
 
 /**
  * Disconnects and closes the channel.
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.net.BrowserChannel.prototype.disconnect = function() {
   'use strict';
@@ -820,6 +821,7 @@ goog.net.BrowserChannel.prototype.disconnect = function() {
     // Add the reconnect parameters.
     this.addAdditionalParams_(uri);
 
+    /** @suppress {strictMissingProperties} Added to tighten compiler checks */
     const request = goog.net.ChannelRequest.createChannelRequest(
         this, this.channelDebug_, this.sid_, rid);
     request.sendUsingImgTag(uri);
@@ -833,6 +835,7 @@ goog.net.BrowserChannel.prototype.disconnect = function() {
  * Returns the session id of the channel. Only available after the
  * channel has been opened.
  * @return {string} Session ID.
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.net.BrowserChannel.prototype.getSessionId = function() {
   'use strict';
@@ -1025,6 +1028,24 @@ goog.net.BrowserChannel.prototype.isBuffered = function() {
 
 
 /**
+ * Sets whether the channel is buffered or not. This state is usually updated in
+ * goog.net.BrowserChannel.testConnectionFinished, but can be set manually here.
+ * This updated status will be reflected in subsequent connections and requests
+ * to the channel.
+ * NOTE: This should ONLY be used by clients that are certain of their
+ * connection status, i.e. that have performed additional test channels. Setting
+ * the wrong buffered status on a client can result in undeliverable responses
+ * from the server.
+ * @param {boolean} isBuffered Whether the channel is buffered.
+ */
+goog.net.BrowserChannel.prototype.setIsBuffered = function(isBuffered) {
+  'use strict';
+  this.useChunked_ = !isBuffered;
+  this.secondTestResults_ = isBuffered;
+};
+
+
+/**
  * Returns whether chunked mode is allowed. In certain debugging situations,
  * it's useful for the application to have a way to disable chunked mode for a
  * user.
@@ -1056,6 +1077,7 @@ goog.net.BrowserChannel.prototype.setAllowChunkedMode = function(
  * the server can process.
  * @param {Object} map  The map to send.
  * @param {?Object=} opt_context The context associated with the map.
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.net.BrowserChannel.prototype.sendMap = function(map, opt_context) {
   'use strict';
@@ -1381,6 +1403,7 @@ goog.net.BrowserChannel.prototype.open_ = function() {
  * Makes a forward channel request using XMLHTTP.
  * @param {goog.net.ChannelRequest=} opt_retryRequest A failed request to retry.
  * @private
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.net.BrowserChannel.prototype.makeForwardChannelRequest_ = function(
     opt_retryRequest) {
@@ -1411,6 +1434,7 @@ goog.net.BrowserChannel.prototype.makeForwardChannelRequest_ = function(
   // Add the additional reconnect parameters.
   this.addAdditionalParams_(uri);
 
+  /** @suppress {strictMissingProperties} Added to tighten compiler checks */
   const request = goog.net.ChannelRequest.createChannelRequest(
       this, this.channelDebug_, this.sid_, rid,
       this.forwardChannelRetryCount_ + 1);
@@ -1575,6 +1599,7 @@ goog.net.BrowserChannel.prototype.onStartBackChannelTimer_ = function() {
 /**
  * Begins a new back channel operation to the server.
  * @private
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.net.BrowserChannel.prototype.startBackChannel_ = function() {
   'use strict';
@@ -1584,6 +1609,7 @@ goog.net.BrowserChannel.prototype.startBackChannel_ = function() {
   }
 
   this.channelDebug_.debug('Creating new HttpRequest');
+  /** @suppress {strictMissingProperties} Added to tighten compiler checks */
   this.backChannelRequest_ = goog.net.ChannelRequest.createChannelRequest(
       this, this.channelDebug_, this.sid_, 'rpc', this.backChannelAttemptId_);
   this.backChannelRequest_.setExtraHeaders(this.extraHeaders_);
@@ -1644,7 +1670,14 @@ goog.net.BrowserChannel.prototype.testConnectionFinished = function(
   'use strict';
   this.channelDebug_.debug('Test Connection Finished');
 
-  this.useChunked_ = this.allowChunkedMode_ && useChunked;
+  // Use the results of the second phase of the test channel if user decided to
+  // override the test results while the test was ongoing.
+  if (this.secondTestResults_ == null) {
+    this.useChunked_ = this.allowChunkedMode_ && useChunked;
+  } else {
+    this.useChunked_ = !this.secondTestResults_;
+  }
+
   this.lastStatusCode_ = testChannel.getLastStatusCode();
   // When using asynchronous test, the channel is already open by connect().
   if (!this.asyncTest_) {
@@ -1770,6 +1803,7 @@ goog.net.BrowserChannel.prototype.handlePostResponse_ = function(
  * Handles a POST response from the server telling us that it has detected that
  * we have no hanging GET connection.
  * @private
+ * @suppress {strictPrimitiveOperators}
  */
 goog.net.BrowserChannel.prototype.handleBackchannelMissing_ = function() {
   'use strict';
@@ -1890,6 +1924,7 @@ goog.net.BrowserChannel.isFatalError_ = function(error, statusCode) {
 /**
  * Callback from ChannelRequest that indicates a request has completed.
  * @param {goog.net.ChannelRequest} request  The request object.
+ * @suppress {strictPrimitiveOperators}
  */
 goog.net.BrowserChannel.prototype.onRequestComplete = function(request) {
   'use strict';
@@ -2027,6 +2062,9 @@ goog.net.BrowserChannel.prototype.onInput_ = function(respArray) {
     nextArray = nextArray[1];
     if (this.state_ == goog.net.BrowserChannel.State.OPENING) {
       if (nextArray[0] == 'c') {
+        /**
+         * @suppress {strictMissingProperties} Added to tighten compiler checks
+         */
         this.sid_ = nextArray[1];
         this.hostPrefix_ = this.correctHostPrefix(nextArray[2]);
         const negotiatedVersion = nextArray[3];

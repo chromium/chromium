@@ -10,6 +10,11 @@
  * The goal is that this should be a replacement for goog.iter which uses
  * a now non-standard approach to iterables.
  *
+ * This module's API should track the TC39 proposal as closely as possible to
+ * allow for eventual deprecation and migrations.
+ * https://github.com/tc39/proposal-iterator-helpers
+ *
+ * @see go/closure-iters-labs
  * @see https://goo.gl/Rok5YQ
  */
 
@@ -34,16 +39,17 @@ exports.getIterator = getIterator;
  * Warning: this function will never halt if given an iterable that
  * is never exhausted.
  *
- * @param {!Iterable<VALUE>} iterable
+ * @param {!Iterator<VALUE>} iterator
  * @param {function(VALUE) : *} f
  * @template VALUE
  */
-exports.forEach = function(iterable, f) {
-  for (const elem of iterable) {
-    f(elem);
+function forEach(iterator, f) {
+  let result;
+  while (!(result = iterator.next()).done) {
+    f(result.value);
   }
-};
-
+}
+exports.forEach = forEach;
 
 /**
  * An Iterable that wraps a child iterable, and maps every element of the child
@@ -55,17 +61,14 @@ exports.forEach = function(iterable, f) {
 class MapIterator {
   /**
    * @param {!Iterable<FROM>} childIter
-   * @param {function(FROM, number): TO} mapFn
+   * @param {function(FROM): TO} mapFn
    */
   constructor(childIter, mapFn) {
     /** @private @const {!Iterator<FROM>} */
     this.childIterator_ = getIterator(childIter);
 
-    /** @private @const {function(FROM, number): TO} */
+    /** @private @const {function(FROM): TO} */
     this.mapFn_ = mapFn;
-
-    /** @private {number} */
-    this.nextIndex_ = 0;
   }
 
   [Symbol.iterator]() {
@@ -79,9 +82,8 @@ class MapIterator {
     // so that we don't accidentally preserve generator return values, which
     // are unlikely to be meaningful in the context of this MapIterator.
     return {
-      value: childResult.done ?
-          undefined :
-          this.mapFn_.call(undefined, childResult.value, this.nextIndex_++),
+      value: childResult.done ? undefined :
+                                this.mapFn_.call(undefined, childResult.value),
       done: childResult.done,
     };
   }
@@ -96,7 +98,7 @@ class MapIterator {
  * `iterable` until the given iterable is exhausted.
  *
  * @param {!Iterable<VALUE>} iterable
- * @param {function(VALUE, number): RESULT} f
+ * @param {function(VALUE): RESULT} f
  * @return {!IteratorIterable<RESULT>} The created iterable that gives the
  *     mapped values.
  * @template VALUE, RESULT
@@ -116,17 +118,14 @@ exports.map = function(iterable, f) {
 class FilterIterator {
   /**
    * @param {!Iterable<T>} childIter
-   * @param {function(T, number): boolean} filterFn
+   * @param {function(T): boolean} filterFn
    */
   constructor(childIter, filterFn) {
     /** @private @const {!Iterator<T>} */
     this.childIter_ = getIterator(childIter);
 
-    /** @private @const {function(T, number): boolean} */
+    /** @private @const {function(T): boolean} */
     this.filterFn_ = filterFn;
-
-    /** @private {number} */
-    this.nextIndex_ = 0;
   }
 
   [Symbol.iterator]() {
@@ -142,8 +141,7 @@ class FilterIterator {
         // generator return values, and we want to ignore them.
         return {done: true, value: undefined};
       }
-      const passesFilter =
-          this.filterFn_.call(undefined, childResult.value, this.nextIndex_++);
+      const passesFilter = this.filterFn_.call(undefined, childResult.value);
       if (passesFilter) {
         return childResult;
       }
@@ -160,7 +158,7 @@ class FilterIterator {
  * is returned or the given iterator is exhausted.
  *
  * @param {!Iterable<VALUE>} iterable
- * @param {function(VALUE, number): boolean} f
+ * @param {function(VALUE): boolean} f
  * @return {!IteratorIterable<VALUE>} The created iterable that gives the mapped
  *     values.
  * @template VALUE
@@ -219,4 +217,16 @@ class ConcatIterator {
  */
 exports.concat = function(...iterables) {
   return new ConcatIterator(iterables.map(getIterator));
+};
+
+/**
+ * Creates an array containing the values from the given iterator.
+ * @param {!Iterator<VALUE>} iterator
+ * @return {!Array<VALUE>}
+ * @template VALUE
+ */
+exports.toArray = function(iterator) {
+  const arr = [];
+  forEach(iterator, e => arr.push(e));
+  return arr;
 };

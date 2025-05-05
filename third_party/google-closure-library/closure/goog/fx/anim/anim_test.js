@@ -77,7 +77,7 @@ function registerAndUnregisterAnimationWithMocks(delayType) {
 
   // Make sure we don't trigger setTimeout or setInterval.
   clock.tick(1000);
-  fxAnim.cycleAnimations_(goog.now());
+  fxAnim.cycleAnimations_(Date.now());
 
   assertEquals('There should be no remaining timers', 0, timerCount);
 

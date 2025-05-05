@@ -78,6 +78,7 @@ goog.tweak.ConfigParams;
  * @param {!goog.tweak.ConfigParams} configParams Extra configuration
  *     parameters.
  * @private
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.tweak.applyConfigParams_ = function(entry, configParams) {
   'use strict';
@@ -138,6 +139,7 @@ goog.tweak.applyConfigParams_ = function(entry, configParams) {
  * @param {goog.tweak.ConfigParams=} opt_configParams Extra
  *     configuration parameters.
  * @private
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.tweak.doRegister_ = function(entry, opt_defaultValue, opt_configParams) {
   'use strict';

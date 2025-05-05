@@ -43,11 +43,9 @@ class ListContainer extends Container {
 
   /**
    * @override
-   * @suppress {strictMissingProperties} suppression added to enable type
-   * checking
    */
   createDom() {
-    ListContainer.superClass_.createDom.call(this);
+    super.createDom();
     const ul = this.getDomHelper().createDom(TagName.UL);
     this.forEachChild(function(child) {
       child.createDom();

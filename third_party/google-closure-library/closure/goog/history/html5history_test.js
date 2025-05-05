@@ -55,6 +55,26 @@ testSuite({
     mockControl.$tearDown();
   },
 
+  testGetUseFragment_false() {
+    /** @suppress {checkTypes} suppression added to enable type checking */
+    html5History = new Html5History(mockWindow);
+    html5History.setUseFragment(false);
+
+    const useFragment = html5History.getUseFragment();
+
+    assertFalse(useFragment);
+  },
+
+  testGetUseFragment_true() {
+    /** @suppress {checkTypes} suppression added to enable type checking */
+    html5History = new Html5History(mockWindow);
+    html5History.setUseFragment(true);
+
+    const useFragment = html5History.getUseFragment();
+
+    assertTrue(useFragment);
+  },
+
   testGetTokenWithoutUsingFragment() {
     mockWindow.location.pathname = '/test/something';
 

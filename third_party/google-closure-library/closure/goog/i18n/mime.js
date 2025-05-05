@@ -11,7 +11,6 @@
 goog.provide('goog.i18n.mime');
 goog.provide('goog.i18n.mime.encode');
 
-goog.require('goog.array');
 goog.require('goog.i18n.uChar');
 
 
@@ -61,7 +60,7 @@ goog.i18n.mime.encode = function(str, opt_noquote) {
                 // Special case for space, which can be encoded as _ not =20
                 return '_';
               }
-              var a = goog.array.concat('', goog.i18n.mime.getHexCharArray(c));
+              var a = [].concat('', goog.i18n.mime.getHexCharArray(c));
               return a.join('=');
             }) +
         '?=';

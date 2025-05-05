@@ -7,38 +7,36 @@
 /**
  * @fileoverview Additional asserts for testing ControlRenderers.
  */
+goog.module('goog.testing.ui.rendererasserts');
+goog.module.declareLegacyNamespace();
+goog.setTestOnly();
 
-goog.setTestOnly('goog.testing.ui.rendererasserts');
-goog.provide('goog.testing.ui.rendererasserts');
-
-goog.require('goog.testing.asserts');
-goog.require('goog.ui.ControlRenderer');
-
+const ControlRenderer = goog.require('goog.ui.ControlRenderer');
+const asserts = goog.require('goog.testing.asserts');
 
 /**
  * Assert that a control renderer constructor doesn't call getCssClass.
- *
- * @param {function(new:goog.ui.ControlRenderer)} rendererClassUnderTest The
- *     renderer constructor to test.
+ * @param {function(new:ControlRenderer)} rendererClassUnderTest The renderer
+ *     constructor to test.
  */
-goog.testing.ui.rendererasserts.assertNoGetCssClassCallsInConstructor =
-    function(rendererClassUnderTest) {
-  'use strict';
+function assertNoGetCssClassCallsInConstructor(rendererClassUnderTest) {
   let getCssClassCalls = 0;
 
   /**
-   * @constructor
-   * @extends {goog.ui.ControlRenderer}
-   * @final
+   * @extends {ControlRenderer}
+   * @constructor @struct @final
    */
   function TestControlRenderer() {
+    TestControlRenderer.base(this, 'constructor');
     rendererClassUnderTest.call(this);
   }
   goog.inherits(TestControlRenderer, rendererClassUnderTest);
 
-  /** @override */
+  /**
+   * @override
+   * @return {string}
+   */
   TestControlRenderer.prototype.getCssClass = function() {
-    'use strict';
     getCssClassCalls++;
     return TestControlRenderer.superClass_.getCssClass.call(this);
   };
@@ -46,8 +44,12 @@ goog.testing.ui.rendererasserts.assertNoGetCssClassCallsInConstructor =
   // Looking for the side-effects caused by the construction here:
   new TestControlRenderer();
 
-  assertEquals(
+  asserts.assertEquals(
       'Constructors should not call getCssClass, ' +
           'getCustomRenderer must be able to override it post construction.',
       0, getCssClassCalls);
+}
+
+exports = {
+  assertNoGetCssClassCallsInConstructor,
 };

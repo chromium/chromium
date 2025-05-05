@@ -8,50 +8,47 @@ goog.module('goog.storage.mechanism.IEUserDataTest');
 goog.setTestOnly();
 
 const IEUserData = goog.require('goog.storage.mechanism.IEUserData');
-/** @suppress {extraRequire} */
-const mechanismSeparationTester = goog.require('goog.storage.mechanism.mechanismSeparationTester');
-/** @suppress {extraRequire} */
-const mechanismSharingTester = goog.require('goog.storage.mechanism.mechanismSharingTester');
-/** @suppress {extraRequire} */
-const mechanismTestDefinition = goog.require('goog.storage.mechanism.mechanismTestDefinition');
+const iterableMechanismTests = goog.require('goog.storage.mechanism.iterableMechanismTests');
+const mechanismSeparationTests = goog.require('goog.storage.mechanism.mechanismSeparationTests');
+const mechanismSharingTests = goog.require('goog.storage.mechanism.mechanismSharingTests');
+const mechanismTests = goog.require('goog.storage.mechanism.mechanismTests');
 const testSuite = goog.require('goog.testing.testSuite');
 const userAgent = goog.require('goog.userAgent');
 
+let mechanism;
+let minimumQuota;
+let mechanismShared;
+let mechanismSeparate;
+
 testSuite({
+
+  shouldRunTests() {
+    return userAgent.IE && !userAgent.isDocumentModeOrHigher(9);
+  },
+
   setUp() {
     const ieUserData = new IEUserData('test');
     if (ieUserData.isAvailable()) {
-      /** @suppress {const} suppression added to enable type checking */
       mechanism = ieUserData;
       // There should be at least 32 KiB.
-      /** @suppress {const} suppression added to enable type checking */
       minimumQuota = 32 * 1024;
-      /** @suppress {const} suppression added to enable type checking */
-      mechanism_shared = new IEUserData('test');
-      /** @suppress {const} suppression added to enable type checking */
-      mechanism_separate = new IEUserData('test2');
+      mechanismShared = new IEUserData('test');
+      mechanismSeparate = new IEUserData('test2');
     }
   },
 
-  /**
-     @suppress {strictMissingProperties} suppression added to enable type
-     checking
-   */
   tearDown() {
     if (!!mechanism) {
       mechanism.clear();
-      /** @suppress {const} suppression added to enable type checking */
       mechanism = null;
     }
-    if (!!mechanism_shared) {
-      mechanism_shared.clear();
-      /** @suppress {const} suppression added to enable type checking */
-      mechanism_shared = null;
+    if (!!mechanismShared) {
+      mechanismShared.clear();
+      mechanismShared = null;
     }
-    if (!!mechanism_separate) {
-      mechanism_separate.clear();
-      /** @suppress {const} suppression added to enable type checking */
-      mechanism_separate = null;
+    if (!!mechanismSeparate) {
+      mechanismSeparate.clear();
+      mechanismSeparate = null;
     }
   },
 
@@ -60,14 +57,12 @@ testSuite({
      checking
    */
   testAvailability() {
-    if (userAgent.IE && !userAgent.isDocumentModeOrHigher(9)) {
-      assertNotNull(mechanism);
-      assertTrue(mechanism.isAvailable());
-      assertNotNull(mechanism_shared);
-      assertTrue(mechanism_shared.isAvailable());
-      assertNotNull(mechanism_separate);
-      assertTrue(mechanism_separate.isAvailable());
-    }
+    assertNotNull(mechanism);
+    assertTrue(mechanism.isAvailable());
+    assertNotNull(mechanismShared);
+    assertTrue(mechanismShared.isAvailable());
+    assertNotNull(mechanismSeparate);
+    assertTrue(mechanismSeparate.isAvailable());
   },
 
   testEncoding() {
@@ -80,4 +75,38 @@ testSuite({
     assertEncodingPair(
         'aa.bb%cc!\0$\u4e00.', '_aa.2Ebb.25cc.21.00.24.E4.B8.80.2E');
   },
+
+
+  ...mechanismTests.register({
+    getMechanism: function() {
+      return mechanism;
+    },
+    getMinimumQuota: function() {
+      return minimumQuota;
+    },
+  }),
+
+  ...iterableMechanismTests.register({
+    getMechanism: function() {
+      return mechanism;
+    },
+  }),
+
+  ...mechanismSharingTests.register({
+    getMechanism: function() {
+      return mechanism;
+    },
+    getMechanismShared: function() {
+      return mechanismShared;
+    },
+  }),
+
+  ...mechanismSeparationTests.register({
+    getMechanism: function() {
+      return mechanism;
+    },
+    getMechanismSeparate: function() {
+      return mechanismSeparate;
+    },
+  }),
 });

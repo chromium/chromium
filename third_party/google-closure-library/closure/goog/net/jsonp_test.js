@@ -11,6 +11,7 @@ const Const = goog.require('goog.string.Const');
 const Jsonp = goog.require('goog.net.Jsonp');
 const PropertyReplacer = goog.require('goog.testing.PropertyReplacer');
 const TrustedResourceUrl = goog.require('goog.html.TrustedResourceUrl');
+const googFunctions = goog.require('goog.functions');
 const recordFunction = goog.require('goog.testing.recordFunction');
 const safe = goog.require('goog.dom.safe');
 const testSuite = goog.require('goog.testing.testSuite');
@@ -67,7 +68,8 @@ function newCleanupGuard() {
                              */
                             const callbackId = Jsonp.getCallbackId_(key);
                             if (globalThis[callbackId] &&
-                                globalThis[callbackId] != goog.nullFunction) {
+                                globalThis[callbackId] !=
+                                    googFunctions.UNDEFINED) {
                               propCounter++;
                             }
                           }
@@ -361,9 +363,9 @@ testSuite({
         'Parameters should not have been added to url.', fakeUrl, script.src);
 
     // Clear the script hooks because we triggered the error manually.
-    script.onload = goog.nullFunction;
-    script.onerror = goog.nullFunction;
-    script.onreadystatechange = goog.nullFunction;
+    script.onload = () => {};
+    script.onerror = () => {};
+    script.onreadystatechange = () => {};
 
     const errorCallbackArguments = errorCallback.getLastCall().getArguments();
     assertEquals(1, errorCallbackArguments.length);

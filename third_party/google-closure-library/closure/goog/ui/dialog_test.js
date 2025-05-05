@@ -7,6 +7,8 @@
 goog.module('goog.ui.DialogTest');
 goog.setTestOnly();
 
+const Const = goog.require('goog.string.Const');
+const Coordinate = goog.require('goog.math.Coordinate');
 const Dialog = goog.require('goog.ui.Dialog');
 const EventType = goog.require('goog.events.EventType');
 const KeyCodes = goog.require('goog.events.KeyCodes');
@@ -15,12 +17,14 @@ const Role = goog.require('goog.a11y.aria.Role');
 const SafeHtml = goog.require('goog.html.SafeHtml');
 const State = goog.require('goog.a11y.aria.State');
 const TagName = goog.require('goog.dom.TagName');
+const TrustedResourceUrl = goog.require('goog.html.TrustedResourceUrl');
 const aria = goog.require('goog.a11y.aria');
 const classlist = goog.require('goog.dom.classlist');
 const css3 = goog.require('goog.fx.css3');
 const dom = goog.require('goog.dom');
 const events = goog.require('goog.events');
 const recordFunction = goog.require('goog.testing.recordFunction');
+const safe = goog.require('goog.dom.safe');
 const style = goog.require('goog.style');
 const testSuite = goog.require('goog.testing.testSuite');
 const testing = goog.require('goog.html.testing');
@@ -123,25 +127,36 @@ testSuite({
       return;
     }
     dialog.setVisible(false);
-    /**
-     * @suppress {strictMissingProperties} suppression added to enable type
-     * checking
-     */
-    const iframeWindow = dom.getElement('f').contentWindow;
-    const iframeInput =
-        dom.getElementsByTagName(TagName.INPUT, iframeWindow.document)[0];
-    dialog.setButtonSet(Dialog.ButtonSet.OK);
-    const dialogElement = dialog.getElement();
-    let focusCounter = 0;
-    events.listen(dialogElement, 'focus', () => {
-      focusCounter++;
-    });
-    iframeInput.focus();
-    dialog.setVisible(true);
-    dialog.setVisible(false);
-    iframeInput.focus();
-    dialog.setVisible(true);
-    assertEquals(2, focusCounter);
+
+    const frame = dom.createDom(TagName.IFRAME);
+    safe.setIframeSrc(
+        frame, TrustedResourceUrl.fromConstant(Const.from('about:blank')));
+    try {
+      document.body.appendChild(frame);
+      /**
+       * @suppress {strictMissingProperties} suppression added to enable type
+       * checking
+       */
+      const iframeWindow = frame.contentWindow;
+      iframeWindow.document.body.appendChild(
+          iframeWindow.document.createElement('input'));
+      const iframeInput =
+          dom.getElementsByTagName(TagName.INPUT, iframeWindow.document)[0];
+      dialog.setButtonSet(Dialog.ButtonSet.OK);
+      const dialogElement = dialog.getElement();
+      let focusCounter = 0;
+      events.listen(dialogElement, 'focus', () => {
+        focusCounter++;
+      });
+      iframeInput.focus();
+      dialog.setVisible(true);
+      dialog.setVisible(false);
+      iframeInput.focus();
+      dialog.setVisible(true);
+      assertEquals(2, focusCounter);
+    } finally {
+      dom.removeNode(frame);
+    }
   },
 
   testNoDisabledButtonFocus() {
@@ -846,6 +861,51 @@ testSuite({
 
     dialog.exitDocument();
     assertNull('dragger is cleaned up in exitDocument', dialog.dragger_);
+  },
+
+  testGetSurroundingSpace_toggling() {
+    dialog.dispose();
+
+    dialog = new Dialog();
+    dialog.createDom();
+    dialog.setVisible(true);
+    const element = dialog.getElement();
+    element.style.position = 'absolute';
+
+    assertNull(dialog.getSurroundingSpace());
+
+    dialog.setTrackSurroundingSpace(true);
+    assertNotNull(dialog.getSurroundingSpace());
+
+    dialog.setTrackSurroundingSpace(false);
+    assertNull(dialog.getSurroundingSpace());
+  },
+
+  /**
+     @suppress {visibility,missingProperties} suppression added to enable type
+     checking
+   */
+  testGetSurroundingSpace_dragging() {
+    dialog.dispose();
+
+    dialog = new Dialog();
+    dialog.createDom();
+    dialog.setVisible(true);
+    const element = dialog.getElement();
+    element.style.position = 'absolute';
+
+    dialog.setTrackSurroundingSpace(true);
+    const initialSurroudingSpace = dialog.getSurroundingSpace();
+    testingEvents.fireMouseDownEvent(
+        dialog.titleEl_, /* opt_button= */ undefined, new Coordinate(40, 70));
+    testingEvents.fireMouseMoveEvent(dialog.titleEl_, new Coordinate(50, 90));
+    const finalSurroudingSpace = dialog.getSurroundingSpace();
+
+    assertEquals(initialSurroudingSpace.left + 10, finalSurroudingSpace.left);
+    assertEquals(initialSurroudingSpace.right - 10, finalSurroudingSpace.right);
+    assertEquals(initialSurroudingSpace.top + 20, finalSurroudingSpace.top);
+    assertEquals(
+        initialSurroudingSpace.bottom - 20, finalSurroudingSpace.bottom);
   },
 
   testDisposingVisibleDialogWithTransitionsDoesNotThrowException() {

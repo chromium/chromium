@@ -41,6 +41,7 @@ goog.inherits(
 /**
  * Sets the fill for this element.
  * @param {goog.graphics.Fill?} fill The fill object.
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.graphics.ext.StrokeAndFillElement.prototype.setFill = function(fill) {
   'use strict';
@@ -51,6 +52,7 @@ goog.graphics.ext.StrokeAndFillElement.prototype.setFill = function(fill) {
 /**
  * Sets the stroke for this element.
  * @param {goog.graphics.Stroke?} stroke The stroke object.
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.graphics.ext.StrokeAndFillElement.prototype.setStroke = function(stroke) {
   'use strict';
@@ -62,6 +64,7 @@ goog.graphics.ext.StrokeAndFillElement.prototype.setStroke = function(stroke) {
  * Redraw the rectangle.  Called when the coordinate system is changed.
  * @protected
  * @override
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.graphics.ext.StrokeAndFillElement.prototype.redraw = function() {
   'use strict';

@@ -23,7 +23,7 @@ testSuite({
 
   testStart: function() {
     let resolver = Promise.withResolver();
-    const start = goog.now();
+    const start = Date.now();
     const delay = new AnimationDelay(function(end) {
       assertNotNull(resolver);  // fail if called multiple times
       resolver.resolve();
@@ -37,7 +37,7 @@ testSuite({
 
   testStop: function() {
     const resolver = Promise.withResolver();
-    const start = goog.now();
+    const start = Date.now();
     const delay = new AnimationDelay(function(end) {
       resolver.reject();
     });
@@ -54,7 +54,7 @@ testSuite({
   testAlwaysUseGoogNowForHandlerTimestamp: function() {
     const resolver = Promise.withResolver();
     const expectedValue = 12345.1;
-    stubs.set(goog, 'now', function() { return expectedValue; });
+    stubs.set(Date, 'now', function() { return expectedValue; });
 
     const delay = new AnimationDelay(function(timestamp) {
       assertEquals(expectedValue, timestamp);
@@ -67,7 +67,7 @@ testSuite({
   },
 
   testStartIfActive: function() {
-    const delay = new AnimationDelay(goog.nullFunction);
+    const delay = new AnimationDelay(() => {});
     delay.start();
 
     let startWasCalled = false;

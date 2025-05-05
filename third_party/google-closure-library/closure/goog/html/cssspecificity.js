@@ -9,9 +9,6 @@
 goog.module('goog.html.CssSpecificity');
 goog.module.declareLegacyNamespace();
 
-var userAgent = goog.require('goog.userAgent');
-var userAgentProduct = goog.require('goog.userAgent.product');
-
 
 /**
  * Cached mapping from selectors to specificities.
@@ -29,10 +26,6 @@ var specificityCache = {};
  * @supported IE9+, other browsers.
  */
 function getSpecificity(selector) {
-  if (userAgentProduct.IE && !userAgent.isVersionOrHigher(9)) {
-    // IE8 has buggy regex support.
-    return [0, 0, 0, 0];
-  }
   var specificity = specificityCache.hasOwnProperty(selector) ?
       specificityCache[selector] :
       null;

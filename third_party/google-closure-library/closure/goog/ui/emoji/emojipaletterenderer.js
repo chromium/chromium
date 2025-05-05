@@ -200,6 +200,7 @@ goog.ui.emoji.EmojiPaletteRenderer.prototype.createCell = function(node, dom) {
  * @param {Node} node Node to look for.
  * @return {Node} The corresponding palette item (null if not found).
  * @override
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.ui.emoji.EmojiPaletteRenderer.prototype.getContainingItem = function(
     palette, node) {

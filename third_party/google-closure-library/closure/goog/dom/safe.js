@@ -33,6 +33,7 @@ goog.provide('goog.dom.safe');
 goog.provide('goog.dom.safe.InsertAdjacentHtmlPosition');
 
 goog.require('goog.asserts');
+goog.require('goog.asserts.dom');
 goog.require('goog.dom.asserts');
 goog.require('goog.functions');
 goog.require('goog.html.SafeHtml');
@@ -152,12 +153,12 @@ goog.dom.safe.unsafeSetInnerHtmlDoNotUseOrElse = function(elem, html) {
  */
 goog.dom.safe.setInnerHtml = function(elem, html) {
   'use strict';
-  if (goog.asserts.ENABLE_ASSERTS && elem.tagName) {
-    var tagName = elem.tagName.toUpperCase();
+  if (goog.asserts.ENABLE_ASSERTS && /** @type {?} */ (elem).tagName) {
+    var tagName = /** @type {!Element} */ (elem).tagName.toUpperCase();
     if (goog.dom.safe.SET_INNER_HTML_DISALLOWED_TAGS_[tagName]) {
       throw new Error(
           'goog.dom.safe.setInnerHtml cannot be used to set content of ' +
-          elem.tagName + '.');
+          /** @type {!Element} */ (elem).tagName + '.');
     }
   }
 
@@ -221,9 +222,9 @@ goog.dom.safe.setFormElementAction = function(form, url) {
   if (url instanceof goog.html.SafeUrl) {
     safeUrl = url;
   } else {
-    safeUrl = goog.html.SafeUrl.sanitizeAssertUnchanged(url);
+    safeUrl = goog.html.SafeUrl.sanitizeJavascriptUrlAssertUnchanged(url);
   }
-  goog.dom.asserts.assertIsHTMLFormElement(form).action =
+  goog.asserts.dom.assertIsHtmlFormElement(form).action =
       goog.html.SafeUrl.unwrap(safeUrl);
 };
 
@@ -254,9 +255,9 @@ goog.dom.safe.setButtonFormAction = function(button, url) {
   if (url instanceof goog.html.SafeUrl) {
     safeUrl = url;
   } else {
-    safeUrl = goog.html.SafeUrl.sanitizeAssertUnchanged(url);
+    safeUrl = goog.html.SafeUrl.sanitizeJavascriptUrlAssertUnchanged(url);
   }
-  goog.dom.asserts.assertIsHTMLButtonElement(button).formAction =
+  goog.asserts.dom.assertIsHtmlButtonElement(button).formAction =
       goog.html.SafeUrl.unwrap(safeUrl);
 };
 /**
@@ -286,9 +287,9 @@ goog.dom.safe.setInputFormAction = function(input, url) {
   if (url instanceof goog.html.SafeUrl) {
     safeUrl = url;
   } else {
-    safeUrl = goog.html.SafeUrl.sanitizeAssertUnchanged(url);
+    safeUrl = goog.html.SafeUrl.sanitizeJavascriptUrlAssertUnchanged(url);
   }
-  goog.dom.asserts.assertIsHTMLInputElement(input).formAction =
+  goog.asserts.dom.assertIsHtmlInputElement(input).formAction =
       goog.html.SafeUrl.unwrap(safeUrl);
 };
 
@@ -339,44 +340,17 @@ goog.dom.safe.documentWrite = function(doc, html) {
  */
 goog.dom.safe.setAnchorHref = function(anchor, url) {
   'use strict';
-  goog.dom.asserts.assertIsHTMLAnchorElement(anchor);
+  goog.asserts.dom.assertIsHtmlAnchorElement(anchor);
   /** @type {!goog.html.SafeUrl} */
   var safeUrl;
   if (url instanceof goog.html.SafeUrl) {
     safeUrl = url;
   } else {
-    safeUrl = goog.html.SafeUrl.sanitizeAssertUnchanged(url);
+    safeUrl = goog.html.SafeUrl.sanitizeJavascriptUrlAssertUnchanged(url);
   }
   anchor.href = goog.html.SafeUrl.unwrap(safeUrl);
 };
 
-
-/**
- * Safely assigns a URL to an image element's src property.
- *
- * If url is of type goog.html.SafeUrl, its value is unwrapped and assigned to
- * image's src property.  If url is of type string however, it is first
- * sanitized using goog.html.SafeUrl.sanitize.
- *
- * @param {!HTMLImageElement} imageElement The image element whose src property
- *     is to be assigned to.
- * @param {string|!goog.html.SafeUrl} url The URL to assign.
- * @return {void}
- * @see goog.html.SafeUrl#sanitize
- */
-goog.dom.safe.setImageSrc = function(imageElement, url) {
-  'use strict';
-  goog.dom.asserts.assertIsHTMLImageElement(imageElement);
-  /** @type {!goog.html.SafeUrl} */
-  var safeUrl;
-  if (url instanceof goog.html.SafeUrl) {
-    safeUrl = url;
-  } else {
-    var allowDataUrl = /^data:image\//i.test(url);
-    safeUrl = goog.html.SafeUrl.sanitizeAssertUnchanged(url, allowDataUrl);
-  }
-  imageElement.src = goog.html.SafeUrl.unwrap(safeUrl);
-};
 
 /**
  * Safely assigns a URL to a audio element's src property.
@@ -393,14 +367,13 @@ goog.dom.safe.setImageSrc = function(imageElement, url) {
  */
 goog.dom.safe.setAudioSrc = function(audioElement, url) {
   'use strict';
-  goog.dom.asserts.assertIsHTMLAudioElement(audioElement);
+  goog.asserts.dom.assertIsHtmlAudioElement(audioElement);
   /** @type {!goog.html.SafeUrl} */
   var safeUrl;
   if (url instanceof goog.html.SafeUrl) {
     safeUrl = url;
   } else {
-    var allowDataUrl = /^data:audio\//i.test(url);
-    safeUrl = goog.html.SafeUrl.sanitizeAssertUnchanged(url, allowDataUrl);
+    safeUrl = goog.html.SafeUrl.sanitizeJavascriptUrlAssertUnchanged(url);
   }
   audioElement.src = goog.html.SafeUrl.unwrap(safeUrl);
 };
@@ -420,14 +393,13 @@ goog.dom.safe.setAudioSrc = function(audioElement, url) {
  */
 goog.dom.safe.setVideoSrc = function(videoElement, url) {
   'use strict';
-  goog.dom.asserts.assertIsHTMLVideoElement(videoElement);
+  goog.asserts.dom.assertIsHtmlVideoElement(videoElement);
   /** @type {!goog.html.SafeUrl} */
   var safeUrl;
   if (url instanceof goog.html.SafeUrl) {
     safeUrl = url;
   } else {
-    var allowDataUrl = /^data:video\//i.test(url);
-    safeUrl = goog.html.SafeUrl.sanitizeAssertUnchanged(url, allowDataUrl);
+    safeUrl = goog.html.SafeUrl.sanitizeJavascriptUrlAssertUnchanged(url);
   }
   videoElement.src = goog.html.SafeUrl.unwrap(safeUrl);
 };
@@ -448,7 +420,7 @@ goog.dom.safe.setVideoSrc = function(videoElement, url) {
  */
 goog.dom.safe.setEmbedSrc = function(embed, url) {
   'use strict';
-  goog.dom.asserts.assertIsHTMLEmbedElement(embed);
+  goog.asserts.dom.assertIsHtmlEmbedElement(embed);
   embed.src = goog.html.TrustedResourceUrl.unwrapTrustedScriptURL(url);
 };
 
@@ -462,7 +434,7 @@ goog.dom.safe.setEmbedSrc = function(embed, url) {
  *   frameEl.src = url;
  * The latter can result in loading untrusted code unless it is ensured that
  * the URL refers to a trustworthy resource.
- *
+ * @deprecated Use safevalues.dom.safeIframeEl.setSrc instead.
  * @param {!HTMLFrameElement} frame The frame element whose src property
  *     is to be assigned to.
  * @param {!goog.html.TrustedResourceUrl} url The URL to assign.
@@ -470,7 +442,7 @@ goog.dom.safe.setEmbedSrc = function(embed, url) {
  */
 goog.dom.safe.setFrameSrc = function(frame, url) {
   'use strict';
-  goog.dom.asserts.assertIsHTMLFrameElement(frame);
+  goog.asserts.dom.assertIsHtmlFrameElement(frame);
   frame.src = goog.html.TrustedResourceUrl.unwrap(url);
 };
 
@@ -492,7 +464,7 @@ goog.dom.safe.setFrameSrc = function(frame, url) {
  */
 goog.dom.safe.setIframeSrc = function(iframe, url) {
   'use strict';
-  goog.dom.asserts.assertIsHTMLIFrameElement(iframe);
+  goog.asserts.dom.assertIsHtmlIFrameElement(iframe);
   iframe.src = goog.html.TrustedResourceUrl.unwrap(url);
 };
 
@@ -513,7 +485,7 @@ goog.dom.safe.setIframeSrc = function(iframe, url) {
  */
 goog.dom.safe.setIframeSrcdoc = function(iframe, html) {
   'use strict';
-  goog.dom.asserts.assertIsHTMLIFrameElement(iframe);
+  goog.asserts.dom.assertIsHtmlIFrameElement(iframe);
   iframe.srcdoc = goog.html.SafeHtml.unwrapTrustedHTML(html);
 };
 
@@ -546,7 +518,7 @@ goog.dom.safe.setIframeSrcdoc = function(iframe, html) {
  */
 goog.dom.safe.setLinkHrefAndRel = function(link, url, rel) {
   'use strict';
-  goog.dom.asserts.assertIsHTMLLinkElement(link);
+  goog.asserts.dom.assertIsHtmlLinkElement(link);
   link.rel = rel;
   if (goog.string.internal.caseInsensitiveContains(rel, 'stylesheet')) {
     goog.asserts.assert(
@@ -565,7 +537,7 @@ goog.dom.safe.setLinkHrefAndRel = function(link, url, rel) {
   } else {  // string
     // SafeUrl.sanitize must return legitimate SafeUrl when passed a string.
     link.href = goog.html.SafeUrl.unwrap(
-        goog.html.SafeUrl.sanitizeAssertUnchanged(url));
+        goog.html.SafeUrl.sanitizeJavascriptUrlAssertUnchanged(url));
   }
 };
 
@@ -579,6 +551,7 @@ goog.dom.safe.setLinkHrefAndRel = function(link, url, rel) {
  *   objectEl.data = url;
  * The latter can result in loading untrusted code unless setit is ensured that
  * the URL refers to a trustworthy resource.
+ * @deprecated
  *
  * @param {!HTMLObjectElement} object The object element whose data property
  *     is to be assigned to.
@@ -587,7 +560,7 @@ goog.dom.safe.setLinkHrefAndRel = function(link, url, rel) {
  */
 goog.dom.safe.setObjectData = function(object, url) {
   'use strict';
-  goog.dom.asserts.assertIsHTMLObjectElement(object);
+  goog.asserts.dom.assertIsHtmlObjectElement(object);
   object.data = goog.html.TrustedResourceUrl.unwrapTrustedScriptURL(url);
 };
 
@@ -609,9 +582,9 @@ goog.dom.safe.setObjectData = function(object, url) {
  */
 goog.dom.safe.setScriptSrc = function(script, url) {
   'use strict';
-  goog.dom.asserts.assertIsHTMLScriptElement(script);
-  script.src = goog.html.TrustedResourceUrl.unwrapTrustedScriptURL(url);
+  goog.asserts.dom.assertIsHtmlScriptElement(script);
   goog.dom.safe.setNonceForScriptElement_(script);
+  script.src = goog.html.TrustedResourceUrl.unwrapTrustedScriptURL(url);
 };
 
 
@@ -632,9 +605,9 @@ goog.dom.safe.setScriptSrc = function(script, url) {
  */
 goog.dom.safe.setScriptContent = function(script, content) {
   'use strict';
-  goog.dom.asserts.assertIsHTMLScriptElement(script);
-  script.textContent = goog.html.SafeScript.unwrapTrustedScript(content);
+  goog.asserts.dom.assertIsHtmlScriptElement(script);
   goog.dom.safe.setNonceForScriptElement_(script);
+  script.textContent = goog.html.SafeScript.unwrapTrustedScript(content);
 };
 
 
@@ -683,7 +656,7 @@ goog.dom.safe.setLocationHref = function(loc, url) {
   if (url instanceof goog.html.SafeUrl) {
     safeUrl = url;
   } else {
-    safeUrl = goog.html.SafeUrl.sanitizeAssertUnchanged(url);
+    safeUrl = goog.html.SafeUrl.sanitizeJavascriptUrlAssertUnchanged(url);
   }
   loc.href = goog.html.SafeUrl.unwrap(safeUrl);
 };
@@ -718,7 +691,7 @@ goog.dom.safe.assignLocation = function(loc, url) {
   if (url instanceof goog.html.SafeUrl) {
     safeUrl = url;
   } else {
-    safeUrl = goog.html.SafeUrl.sanitizeAssertUnchanged(url);
+    safeUrl = goog.html.SafeUrl.sanitizeJavascriptUrlAssertUnchanged(url);
   }
   loc.assign(goog.html.SafeUrl.unwrap(safeUrl));
 };
@@ -750,7 +723,7 @@ goog.dom.safe.replaceLocation = function(loc, url) {
   if (url instanceof goog.html.SafeUrl) {
     safeUrl = url;
   } else {
-    safeUrl = goog.html.SafeUrl.sanitizeAssertUnchanged(url);
+    safeUrl = goog.html.SafeUrl.sanitizeJavascriptUrlAssertUnchanged(url);
   }
   loc.replace(goog.html.SafeUrl.unwrap(safeUrl));
 };
@@ -790,7 +763,7 @@ goog.dom.safe.openInWindow = function(url, opt_openerWin, opt_name, opt_specs) {
   if (url instanceof goog.html.SafeUrl) {
     safeUrl = url;
   } else {
-    safeUrl = goog.html.SafeUrl.sanitizeAssertUnchanged(url);
+    safeUrl = goog.html.SafeUrl.sanitizeJavascriptUrlAssertUnchanged(url);
   }
   var win = opt_openerWin || goog.global;
   // If opt_name is undefined, simply passing that in to open() causes IE to
@@ -864,11 +837,7 @@ goog.dom.safe.createImageFromBlob = function(blob) {
     'use strict';
     goog.global.URL.revokeObjectURL(objectUrl);
   };
-  goog.dom.safe.setImageSrc(
-      image,
-      goog.html.uncheckedconversions
-          .safeUrlFromStringKnownToSatisfyTypeContract(
-              goog.string.Const.from('Image blob URL.'), objectUrl));
+  image.src = objectUrl;
   return image;
 };
 

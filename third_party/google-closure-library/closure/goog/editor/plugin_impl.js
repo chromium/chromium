@@ -138,7 +138,8 @@ goog.editor.PluginImpl.prototype.enable = function(fieldObject) {
     this.enabled_ = true;
   } else {
     goog.log.error(
-        this.logger, 'Trying to enable an unregistered field with ' +
+        this.logger,
+        'Trying to enable an unregistered field with ' +
             'this plugin.');
   }
 };
@@ -154,7 +155,8 @@ goog.editor.PluginImpl.prototype.disable = function(fieldObject) {
     this.enabled_ = false;
   } else {
     goog.log.error(
-        this.logger, 'Trying to disable an unregistered field ' +
+        this.logger,
+        'Trying to disable an unregistered field ' +
             'with this plugin.');
   }
 };
@@ -357,7 +359,10 @@ goog.editor.PluginImpl.prototype.execCommand = function(command, var_args) {
   // TODO(user): Replace all uses of isSilentCommand with plugins that just
   // override this base execCommand method.
   var silent = this.isSilentCommand(command);
-  if (!silent) {
+  if (silent) {
+    this.getFieldObject().stopChangeEvents(
+        /* opt_stopChange= */ true, /* opt_stopDelayedChange= */ true);
+  } else {
     // Stop listening to mutation events in Firefox while text formatting
     // is happening.  This prevents us from trying to size the field in the
     // middle of an execCommand, catching the field in a strange intermediary
@@ -379,7 +384,10 @@ goog.editor.PluginImpl.prototype.execCommand = function(command, var_args) {
     // NOTE: If if you add to or change the methods called in this finally
     // block, please add them as expected calls to the unit test function
     // testExecCommandException().
-    if (!silent) {
+    if (silent) {
+      this.getFieldObject().startChangeEvents(
+          /* opt_fireChange= */ false, /* opt_fireDelayedChange= */ false);
+    } else {
       // dispatchChange includes a call to startChangeEvents, which unwinds the
       // call to stopChangeEvents made before the try block.
       this.getFieldObject().dispatchChange();

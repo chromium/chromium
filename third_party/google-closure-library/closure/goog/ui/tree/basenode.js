@@ -16,7 +16,6 @@
 goog.provide('goog.ui.tree.BaseNode');
 goog.provide('goog.ui.tree.BaseNode.EventType');
 
-goog.forwardDeclare('goog.ui.tree.TreeControl');
 goog.require('goog.Timer');
 goog.require('goog.a11y.aria');
 goog.require('goog.a11y.aria.State');
@@ -32,6 +31,7 @@ goog.require('goog.style');
 goog.require('goog.ui.Component');
 goog.requireType('goog.dom.DomHelper');
 goog.requireType('goog.events.BrowserEvent');  // circular
+goog.requireType('goog.ui.tree.TreeControl');
 
 
 
@@ -461,6 +461,7 @@ goog.ui.tree.BaseNode.prototype.computeDepth_ = function() {
   'use strict';
   const parent = this.getParent();
   if (parent) {
+    goog.asserts.assertInstanceof(parent, goog.ui.tree.BaseNode);
     return parent.getDepth() + 1;
   } else {
     return 0;
@@ -613,7 +614,7 @@ goog.ui.tree.BaseNode.prototype.select = function() {
  * Originally it was intended to deselect the node but never worked.
  * @deprecated Use `tree.setSelectedItem(null)`.
  */
-goog.ui.tree.BaseNode.prototype.deselect = goog.nullFunction;
+goog.ui.tree.BaseNode.prototype.deselect = function() {};
 
 
 /**
@@ -804,6 +805,7 @@ goog.ui.tree.BaseNode.prototype.reveal = function() {
   'use strict';
   const parent = this.getParent();
   if (parent) {
+    goog.asserts.assertInstanceof(parent, goog.ui.tree.BaseNode);
     parent.setExpanded(true);
     parent.reveal();
   }
@@ -839,6 +841,7 @@ goog.ui.tree.BaseNode.prototype.isUserCollapsible = function() {
  * Creates HTML for the node.
  * @return {!goog.html.SafeHtml}
  * @protected
+ * @suppress {strictMissingProperties}
  */
 goog.ui.tree.BaseNode.prototype.toSafeHtml = function() {
   'use strict';
@@ -873,6 +876,7 @@ goog.ui.tree.BaseNode.prototype.toSafeHtml = function() {
 /**
  * @return {number} The pixel indent of the row.
  * @private
+ * @suppress {strictMissingProperties}
  */
 goog.ui.tree.BaseNode.prototype.getPixelIndent_ = function() {
   'use strict';
@@ -901,6 +905,7 @@ goog.ui.tree.BaseNode.prototype.getRowSafeHtml = function() {
 /**
  * @return {string} The class name for the row.
  * @protected
+ * @suppress {strictMissingProperties}
  */
 goog.ui.tree.BaseNode.prototype.getRowClassName = function() {
   'use strict';
@@ -917,6 +922,7 @@ goog.ui.tree.BaseNode.prototype.getRowClassName = function() {
 /**
  * @return {!goog.html.SafeHtml} The html for the label.
  * @protected
+ * @suppress {strictMissingProperties}
  */
 goog.ui.tree.BaseNode.prototype.getLabelSafeHtml = function() {
   'use strict';
@@ -1005,6 +1011,7 @@ goog.ui.tree.BaseNode.prototype.getExpandIconSafeHtml = function() {
 /**
  * @return {string} The class names of the icon used for expanding the node.
  * @protected
+ * @suppress {strictMissingProperties}
  */
 goog.ui.tree.BaseNode.prototype.getExpandIconClass = function() {
   'use strict';
@@ -1098,6 +1105,7 @@ goog.ui.tree.BaseNode.prototype.getLineStyle = function() {
 
 /**
  * @return {string} The background position style value.
+ * @suppress {strictMissingProperties}
  */
 goog.ui.tree.BaseNode.prototype.getBackgroundPosition = function() {
   'use strict';
@@ -1301,6 +1309,7 @@ goog.ui.tree.BaseNode.prototype.getSafeHtml = function() {
 /**
  * Sets the text of the tooltip.
  * @param {string} s The tooltip text to set.
+ * @suppress {strictMissingProperties}
  */
 goog.ui.tree.BaseNode.prototype.setToolTip = function(s) {
   'use strict';
@@ -1364,6 +1373,7 @@ goog.ui.tree.BaseNode.prototype.updateIcon_ = function() {
  * Handles mouse down event.
  * @param {!goog.events.BrowserEvent} e The browser event.
  * @protected
+ * @suppress {strictMissingProperties}
  */
 goog.ui.tree.BaseNode.prototype.onMouseDown = function(e) {
   'use strict';
@@ -1395,7 +1405,7 @@ goog.ui.tree.BaseNode.prototype.onClick_ = goog.events.Event.preventDefault;
  * Handles a double click event.
  * @param {!goog.events.BrowserEvent} e The browser event.
  * @protected
- * @suppress {underscore|visibility}
+ * @suppress {underscore|visibility|strictMissingProperties}
  */
 goog.ui.tree.BaseNode.prototype.onDoubleClick_ = function(e) {
   'use strict';
@@ -1446,6 +1456,7 @@ goog.ui.tree.BaseNode.prototype.onKeyDown = function(e) {
         const tree = this.getTree();
         // don't go to root if hidden
         if (parent && (tree.getShowRootNode() || parent != tree)) {
+          goog.asserts.assertInstanceof(parent, goog.ui.tree.BaseNode);
           parent.select();
         }
       }
@@ -1508,6 +1519,7 @@ goog.ui.tree.BaseNode.prototype.getNextShownNode = function() {
     let parent = this;
     let next;
     while (parent != this.getTree()) {
+      goog.asserts.assertInstanceof(parent, goog.ui.tree.BaseNode);
       next = parent.getNextSibling();
       if (next != null) {
         return next;

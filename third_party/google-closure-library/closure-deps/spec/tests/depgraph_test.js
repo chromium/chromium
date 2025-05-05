@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+const path = require('path');
 const depGraph = require('../../lib/depgraph');
 
 /**
@@ -228,7 +229,7 @@ describe('depgraph', function() {
       it('custom id', function() {
         const resolver = new (class extends depGraph.ModuleResolver {
           resolve(from, to) {
-            expect(from).toEqual('/example.js');
+            expect(from).toEqual(path.resolve('/example.js'));
             expect(to).toEqual('@wacky+id');
             return '/required.js';
           }

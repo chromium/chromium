@@ -122,6 +122,7 @@ goog.cssom.iframe.style.CssRuleSet_ = function() {
  * @param {CSSRule} cssRule The `CSSRule` to initialize from.
  * @return {boolean} True if initialization succeeded. We only support
  *     `CSSStyleRule` and `CSSFontFaceRule` objects.
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.cssom.iframe.style.CssRuleSet_.prototype.initializeFromCssRule = function(
     cssRule) {
@@ -446,10 +447,12 @@ goog.cssom.iframe.style.CssSelectorPart_.instances_ = {};
  * Test whether an element matches this selector part, considered in isolation.
  * @param {Object} elementInfo Element properties to test.
  * @return {boolean} Whether the element matched.
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.cssom.iframe.style.CssSelectorPart_.prototype.testElement = function(
     elementInfo) {
   'use strict';
+  /** @suppress {strictMissingProperties} Added to tighten compiler checks */
   var elementUid = elementInfo.uid;
   var cachedMatch = this.testedElements_[elementUid];
   if (typeof cachedMatch != 'undefined') {
@@ -497,8 +500,10 @@ goog.cssom.iframe.style.NodeAncestry_ = function(el) {
 
   var nodes = [];
   do {
+    /** @suppress {strictMissingProperties} Added to tighten compiler checks */
     var nodeInfo = {id: node.id, nodeName: node.nodeName};
     nodeInfo.uid = goog.getUid(nodeInfo);
+    /** @suppress {strictMissingProperties} Added to tighten compiler checks */
     var className = node.className;
     var classNamesLookup = {};
     if (className) {
@@ -685,6 +690,7 @@ goog.cssom.iframe.style.textProperties_ = [
  * @return {string} String containing all CSS rules present in the original
  *     document, with modified selectors.
  * @see goog.cssom.iframe.style.getBackgroundContext.
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.cssom.iframe.style.getElementContext = function(
     element, opt_forceRuleSetCacheUpdate, opt_copyBackgroundContext) {
@@ -711,6 +717,9 @@ goog.cssom.iframe.style.getElementContext = function(
       // this element or one of its ancestors
       var match = selector.matchElementAncestry(elementAncestry);
       if (match) {
+        /**
+         * @suppress {strictMissingProperties} Added to tighten compiler checks
+         */
         var ruleIndex = match.selectorPartIndex;
         var selectorParts = selector.parts;
         var lastSelectorPartIndex = selectorParts.length - 1;

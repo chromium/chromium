@@ -40,7 +40,10 @@ goog.editor.plugins.ListTabHandler.prototype.getTrogClassId = function() {
 };
 
 
-/** @override */
+/**
+ * @override
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
+ */
 goog.editor.plugins.ListTabHandler.prototype.handleTabKey = function(e) {
   'use strict';
   var range = this.getFieldObject().getRange();

@@ -36,7 +36,7 @@ goog.require('goog.functions');
  * animations, see:
  * @see http://paulirish.com/2011/requestanimationframe-for-smart-animating/
  *
- * @param {function(this:THIS, number)} listener Function to call
+ * @param {function(this: THIS, number): void} listener Function to call
  *     when the delay completes. Will be passed the timestamp when it's called,
  *     in unix ms.
  * @param {Window=} opt_window The window object to execute the delay in.
@@ -68,7 +68,7 @@ goog.async.AnimationDelay = function(listener, opt_window, opt_handler) {
   /**
    * The function that will be invoked after a delay.
    * @const
-   * @private
+   * @private {function(this: THIS, number): void}
    */
   this.listener_ = listener;
 

@@ -18,6 +18,7 @@
 
 /**
  * @fileoverview Native browser textarea renderer for {@link goog.ui.Textarea}s.
+ * @suppress {strictMissingProperties} legacy accesses off type 'Element'
  */
 
 goog.provide('goog.ui.TextareaRenderer');
@@ -25,6 +26,7 @@ goog.provide('goog.ui.TextareaRenderer');
 goog.require('goog.dom.TagName');
 goog.require('goog.ui.Component');
 goog.require('goog.ui.ControlRenderer');
+goog.requireType('goog.ui.Control');
 
 
 
@@ -108,7 +110,7 @@ goog.ui.TextareaRenderer.prototype.canDecorate = function(element) {
  * Textareas natively support right-to-left rendering.
  * @override
  */
-goog.ui.TextareaRenderer.prototype.setRightToLeft = goog.nullFunction;
+goog.ui.TextareaRenderer.prototype.setRightToLeft = function() {};
 
 
 /**
@@ -125,7 +127,7 @@ goog.ui.TextareaRenderer.prototype.isFocusable = function(textarea) {
  * Textareas natively support keyboard focus.
  * @override
  */
-goog.ui.TextareaRenderer.prototype.setFocusable = goog.nullFunction;
+goog.ui.TextareaRenderer.prototype.setFocusable = function() {};
 
 
 /**
@@ -150,7 +152,7 @@ goog.ui.TextareaRenderer.prototype.setState = function(
  * a no-op.
  * @override
  */
-goog.ui.TextareaRenderer.prototype.updateAriaState = goog.nullFunction;
+goog.ui.TextareaRenderer.prototype.updateAriaState = function() {};
 
 
 /**

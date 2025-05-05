@@ -71,7 +71,7 @@ img.src = src;
 const img = goog.dom.getElement('avatar');
 img.src = src;
 // Clean.
-const img = goog.dom.asserts.assertIsHtmlImageElement(goog.dom.getElement('avatar'));
+const img = goog.asserts.dom.assertIsHtmlImageElement(goog.dom.getElement('avatar'));
 img.src = src;
 // No violation but unsafe - see below.
 const img = /** @type {!HTMLImageElement} */ (goog.dom.getElement('avatar'));
@@ -89,19 +89,6 @@ Summing it up:
 
 ## Explanation of conformance rules
 
-{: #logger}
-### goog.debug.Logger 
-
-`goog.debug.Logger` should not be used directly. Use the `goog.log` static
-wrappers instead, as `goog.log` is safely strippable from production code. On
-the other hand, `goog.debug.Logger` is only stripped from code if the `logger_`
-suffix is used in the name.
-
-
-Note:  You may see "possible violations" for code that is not a logger if the
-code is badly typed. Verify that you have a dependency on the type you are
-expecting.
-
 ### eval
 
 `eval` is a security risk and is not allowed to be used. Since values passed to
@@ -115,11 +102,29 @@ IE's `execScript` is also banned.
 argument are also banned.
 
 {: #throwOfNonErrorTypes}
-### throw 'message' 
+### throwing non-error objects 
 
-`throw` with a string literal can not have a stack trace attached to it, making
-debugging significantly more difficult.  Use `throw new Error('message')`
-instead.
+Thrown objects that don't extend `Error` cannot have a stack trace attached to
+them, making debugging significantly more difficult.
+
+```javascript {.bad}
+throw 'message';
+```
+
+```javascript {.bad}
+throw myObject;
+```
+
+Ensure that all thrown objects either extend `Error` or are passed to the
+`Error` constructor:
+
+```javascript {.good}
+throw new Error('message');
+```
+
+```javascript {.good}
+throw new Error(myObject);
+```
 
 {: #callee}
 ### Arguments.prototype.callee 
@@ -276,6 +281,9 @@ and therefore disallowed.
 Raw `postMessage()` does not restrict target and sender origins by default. This
 can cause security vulnerabilities.
 
+
+For Search PA developers, see http://go/gws-js-conformance#postMessage for
+exemption instructions. <!-- MOE:end_strip -->
 
 {: #globalVars}
 ### Global declarations 

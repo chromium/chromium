@@ -392,7 +392,7 @@ goog.format.insertWordBreaksGeneric_ = function(
   }
 
   // Take care of anything we haven't flushed so far.
-  rv.push(str.substr(lastDumpPosition));
+  rv.push(str.slice(lastDumpPosition));
 
   return rv.join('');
 };

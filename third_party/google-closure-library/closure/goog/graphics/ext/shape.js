@@ -113,9 +113,11 @@ goog.graphics.ext.Shape.prototype.setPath = function(path) {
 /**
  * Scale the internal path to fit.
  * @private
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.graphics.ext.Shape.prototype.scaleAndSetPath_ = function() {
   'use strict';
+  /** @suppress {strictMissingProperties} Added to tighten compiler checks */
   this.scaledPath_ = this.boundingBox_ ?
       this.path_.clone().modifyBounds(
           -this.boundingBox_.left, -this.boundingBox_.top,

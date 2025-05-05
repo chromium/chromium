@@ -9,13 +9,8 @@ goog.setTestOnly();
 
 const testSuite = goog.require('goog.testing.testSuite');
 const textAssert = goog.require('goog.dom.textAssert');
-const userAgent = goog.require('goog.userAgent');
 
 testSuite({
-  shouldRunTests() {
-    return !userAgent.IE || userAgent.isVersionOrHigher(9);
-  },
-
   testAssertIsTextThrowsWithHtmlTags: function() {
     const e = assertThrows(() => textAssert.assertHtmlFree('<b>a<\\b>'));
     assertEquals(

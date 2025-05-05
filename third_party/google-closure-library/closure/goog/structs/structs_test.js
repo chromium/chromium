@@ -360,6 +360,7 @@ testSuite({
     assertArrayEquals([0, 1, 4], structs.map(col, f, THIS_OBJ));
   },
 
+  /** @suppress {missingProperties} vague return type from 'map' */
   testMapNodeList() {
     const col = getAll();
     function f(v, i, col2) {
@@ -370,6 +371,7 @@ testSuite({
     assertEquals('HRPPPPPPPPH1', structs.map(col, f).join(''));
   },
 
+  /** @suppress {missingProperties} vague return type from 'map' */
   testMapNodeList2() {
     const THIS_OBJ = {};
     const col = getAll();

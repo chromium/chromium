@@ -82,6 +82,10 @@ function setUpListAndBlockquoteTests() {
   FIELDMOCK.getElement();
   FIELDMOCK.$anyTimes();
   FIELDMOCK.$returns(htmlDiv);
+
+  FIELDMOCK.getPluginByClassId('Bidi');
+  FIELDMOCK.$anyTimes();
+  FIELDMOCK.$returns(null);
 }
 
 function tearDownHelper() {
@@ -536,6 +540,42 @@ testSuite({
     }
   },
 
+  /**
+   * @suppress {missingProperties, visibility} suppression added to enable type
+   * checking
+   */
+  testCursorPreservedOnListCreation() {
+    setUpListAndBlockquoteTests();
+    FIELDMOCK.getPluginByClassId('Bidi').$anyTimes().$returns(null);
+    FIELDMOCK.queryCommandValue(Command.DEFAULT_TAG)
+        .$anyTimes()
+        .$returns(TagName.P);
+
+    FIELDMOCK.$replay();
+    let cursorPlaceholder = dom.getElement('cursorRoot');
+    Range.createCaret(cursorPlaceholder.firstChild, 3).select();
+
+    FORMATTER.execCommandInternal(BasicTextFormatter.COMMAND.UNORDERED_LIST);
+    const selection = window.getSelection();
+    assertTrue(selection.isCollapsed);
+    assertEquals(selection.rangeCount, 1);
+
+    const li = dom.getElementByTagNameAndClass(
+        TagName.LI, null, dom.getElement('cursorTest'));
+    if (userAgent.WEBKIT) {
+      assertEquals(selection.anchorNode, li.firstChild);
+      assertEquals(selection.anchorOffset, 3);
+    } else {
+      // IE adds extra div inside LI and uses it as the anchorNode
+      assertEquals(selection.anchorNode, userAgent.GECKO ? li : li.firstChild);
+      assertEquals(selection.anchorNode.innerText, 'abc123');
+      assertEquals(selection.anchorNode.childNodes.length, 2);
+      assertEquals(selection.anchorOffset, 1);
+    }
+
+    tearDownListAndBlockquoteTests();
+  },
+
   /** @suppress {visibility} suppression added to enable type checking */
   testSwitchListType() {
     if (!userAgent.WEBKIT) {
@@ -562,7 +602,62 @@ testSuite({
     assertEquals(String(TagName.OL), list.tagName);
     assertEquals(
         3, dom.getElementsByTagNameAndClass(TagName.LI, null, list).length);
+    tearDownListAndBlockquoteTests();
+  },
 
+  /** @suppress {visibility} suppression added to enable type checking */
+  testAddAndRemoveList_placeholderRemoved() {
+    if (!userAgent.WEBKIT) {
+      return;
+    }
+    // Test that we're not seeing https://bugs.webkit.org/show_bug.cgi?id=19539,
+    // the type of multi-item lists.
+    setUpListAndBlockquoteTests();
+
+    FIELDMOCK.$replay();
+    let parent = dom.getElement('addAndRemoveList');
+
+    Range.createFromNodeContents(parent).select();
+    // Add the ordered list
+    FORMATTER.execCommandInternal(BasicTextFormatter.COMMAND.ORDERED_LIST);
+    assertEquals(
+        3, dom.getElementsByTagNameAndClass(TagName.LI, null, parent).length);
+    FORMATTER.execCommandInternal(BasicTextFormatter.COMMAND.ORDERED_LIST);
+    assertEquals(
+        0, dom.getElementsByTagNameAndClass(TagName.LI, null, parent).length);
+    // Assert that no placeholder is left behind
+    assertFalse(parent.textContent.includes('goog'));
+    tearDownListAndBlockquoteTests();
+  },
+
+  /** @suppress {visibility} suppression added to enable type checking */
+  testSwitchListType_withFormatting() {
+    if (!userAgent.WEBKIT) {
+      return;
+    }
+    setUpListAndBlockquoteTests();
+
+    FIELDMOCK.$replay();
+    const selectionStart =
+        dom.getElement('switchListSelectionStart').firstChild.firstChild;
+    const selectionEnd = dom.getElement('switchListSelectionEnd').firstChild;
+
+    window.getSelection().removeAllRanges();
+    Range.createFromNodes(selectionStart, 0, selectionEnd, 3).select();
+
+    FORMATTER.execCommandInternal(BasicTextFormatter.COMMAND.ORDERED_LIST);
+    const root =
+        /** @type {!Element} */ (dom.getElement('switchFormattedList'));
+    assert(root !== null);
+
+    const orderedList = dom.getElementByTagNameAndClass(TagName.OL, null, root);
+    assertEquals(
+        2,
+        dom.getElementsByTagNameAndClass(TagName.LI, null, orderedList).length);
+
+    const bold = dom.getElementsByTagNameAndClass(TagName.B, null, root);
+    assertEquals(1, bold.length);
+    assertEquals('l', bold[0].textContent);
     tearDownListAndBlockquoteTests();
   },
 
@@ -729,6 +824,7 @@ testSuite({
         dom.getDomHelper(window.document));
     setUpLinkTests('12345', undefined, false);
     FIELDMOCK.getRange().$anyTimes().$returns(null);
+    FIELDMOCK.dispatchSelectionChangeEvent().$anyTimes().$returns(null);
     FIELDMOCK.$replay();
 
     FORMATTER.execCommandInternal(Command.LINK);
@@ -758,6 +854,34 @@ testSuite({
     FORMATTER.execCommandInternal(
         BasicTextFormatter.COMMAND.CREATE_LINK, FIELDMOCK.getRange(), url);
     HELPER.assertHtmlMatches(`<a href="${url}">${text}</a>`);
+
+    FIELDMOCK.$verify();
+    tearDownLinkTests();
+  },
+
+  /**
+     @suppress {missingProperties, visibility} suppression added to enable type
+     checking
+   */
+  testRemoveLink() {
+    setUpLinkTests('12345', 'http://www.x.com/', true);
+
+    FIELDMOCK.dispatchChange().$atLeastOnce();
+    FIELDMOCK.dispatchSelectionChangeEvent().$anyTimes();
+
+    FIELDMOCK.$replay();
+    HELPER.select('12345', 1, '12345', 4);
+    // To create the link.
+    FORMATTER.execCommandInternal(Command.LINK);
+    HELPER.assertHtmlMatches(
+        BrowserFeature.GETS_STUCK_IN_LINKS ?
+            '1<a href="http://www.x.com/">234</a>&nbsp;5' :
+            '1<a href="http://www.x.com/">234</a>5');
+
+    // To remove the link.
+    HELPER.select('234', 2);
+    FORMATTER.execCommandInternal(Command.LINK);
+    HELPER.assertHtmlMatches('12345');
 
     FIELDMOCK.$verify();
     tearDownLinkTests();

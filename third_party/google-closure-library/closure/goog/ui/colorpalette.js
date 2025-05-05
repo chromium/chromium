@@ -82,6 +82,16 @@ goog.ui.ColorPalette.prototype.getColors = function() {
   return this.colors_;
 };
 
+/**
+ * Returns the array of tooltip labels for the colors in the color palette.
+ * @return {?Array<string>} Array of labels.
+ * @protected
+ * @final
+ */
+goog.ui.ColorPalette.prototype.getLabels = function() {
+  'use strict';
+  return this.labels_;
+};
 
 /**
  * Sets the colors that are contained in the palette.

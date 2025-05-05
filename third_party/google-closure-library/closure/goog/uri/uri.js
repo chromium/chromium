@@ -291,7 +291,7 @@ goog.Uri.prototype.resolve = function(relativeUri) {
           // RFC 3986, section 5.2.3, case 2
           var lastSlashIndex = absoluteUri.getPath().lastIndexOf('/');
           if (lastSlashIndex != -1) {
-            path = absoluteUri.getPath().substr(0, lastSlashIndex + 1) + path;
+            path = absoluteUri.getPath().slice(0, lastSlashIndex + 1) + path;
           }
         }
       }

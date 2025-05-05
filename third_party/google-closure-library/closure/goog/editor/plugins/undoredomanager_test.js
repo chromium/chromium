@@ -241,7 +241,7 @@ testSuite({
     stubState.undo = () => {
       undoCalled = true;
     };
-    stubState.redo = goog.nullFunction;
+    stubState.redo = () => {};
     stubState.equals = () => false;
 
     manager.addState(mockState2);
@@ -348,7 +348,7 @@ testSuite({
     stubState.redo = () => {
       redoCalled = true;
     };
-    stubState.undo = goog.nullFunction;
+    stubState.undo = () => {};
     stubState.equals = () => false;
 
     manager.addState(stubState);

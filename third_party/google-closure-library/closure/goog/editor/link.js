@@ -81,6 +81,7 @@ goog.editor.Link.prototype.getExtraAnchors = function() {
 
 /**
  * @return {string} The inner text for the anchor.
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.editor.Link.prototype.getCurrentText = function() {
   'use strict';
@@ -89,8 +90,14 @@ goog.editor.Link.prototype.getCurrentText = function() {
 
     var leaf = goog.editor.node.getLeftMostLeaf(anchor);
     if (leaf.tagName && leaf.tagName == goog.dom.TagName.IMG) {
+      /**
+       * @suppress {strictMissingProperties} Added to tighten compiler checks
+       */
       this.currentText_ = leaf.getAttribute('alt') || '';
     } else {
+      /**
+       * @suppress {strictMissingProperties} Added to tighten compiler checks
+       */
       this.currentText_ = goog.dom.getRawTextContent(this.getAnchor());
     }
   }
@@ -138,6 +145,7 @@ goog.editor.Link.prototype.removeLink = function() {
  *     one node. Otherwise, we'll change the innerHTML of the whole
  *     link to newText.
  * @param {string} newUrl A new URL.
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.editor.Link.prototype.setTextAndUrl = function(newText, newUrl) {
   'use strict';
@@ -166,6 +174,7 @@ goog.editor.Link.prototype.setTextAndUrl = function(newText, newUrl) {
     }
 
     // The text changed, so force getCurrentText to recompute.
+    /** @suppress {strictMissingProperties} Added to tighten compiler checks */
     this.currentText_ = null;
   }
 
@@ -179,6 +188,7 @@ goog.editor.Link.prototype.setTextAndUrl = function(newText, newUrl) {
  * in that it specifically handles the placement of a cursor in browsers
  * that trap you in links, by adding a space when necessary and placing the
  * cursor after that space.
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.editor.Link.prototype.placeCursorRightOf = function() {
   'use strict';

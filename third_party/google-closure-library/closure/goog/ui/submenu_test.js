@@ -421,7 +421,7 @@ testSuite({
       this.type = opt_eventType || KeyHandler.EventType.KEY;
       this.keyCode = keyCode;
       this.propagationStopped = false;
-      this.preventDefault = goog.nullFunction;
+      this.preventDefault = () => {};
       this.stopPropagation = function() {
         this.propagationStopped = true;
       };

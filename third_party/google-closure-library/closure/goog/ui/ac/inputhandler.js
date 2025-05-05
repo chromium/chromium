@@ -99,6 +99,7 @@ goog.require('goog.userAgent');
 goog.requireType('goog.events.BrowserEvent');
 goog.requireType('goog.events.Event');
 goog.requireType('goog.events.EventTarget');
+goog.requireType('goog.ui.ac.AutoComplete');
 
 
 
@@ -402,6 +403,7 @@ goog.ui.ac.InputHandler.prototype.getActiveElement = function() {
 /**
  * Returns the value of the current active element.
  * @return {string} The value of the current active element.
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.ui.ac.InputHandler.prototype.getValue = function() {
   'use strict';
@@ -415,6 +417,7 @@ goog.ui.ac.InputHandler.prototype.getValue = function() {
  */
 goog.ui.ac.InputHandler.prototype.setValue = function(value) {
   'use strict';
+  /** @suppress {strictMissingProperties} Added to tighten compiler checks */
   this.activeElement_.value = value;
 };
 
@@ -601,6 +604,9 @@ goog.ui.ac.InputHandler.prototype.setTokenText = function(
         el.blur();
       }
       // Join the array and replace the contents of the input.
+      /**
+       * @suppress {strictMissingProperties} Added to tighten compiler checks
+       */
       el.value = entries.join('');
 
       // Calculate which position to put the cursor at.

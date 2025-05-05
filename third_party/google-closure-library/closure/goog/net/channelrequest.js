@@ -501,6 +501,7 @@ goog.net.ChannelRequest.prototype.xmlHttpPost = function(
   this.type_ = goog.net.ChannelRequest.Type_.XML_HTTP;
   this.baseUri_ = uri.clone().makeUnique();
   this.postData_ = postData;
+  /** @suppress {strictMissingProperties} Added to tighten compiler checks */
   this.decodeChunks_ = decodeChunks;
   this.sendXmlHttp_(null /* hostPrefix */);
 };
@@ -524,6 +525,7 @@ goog.net.ChannelRequest.prototype.xmlHttpGet = function(
   this.type_ = goog.net.ChannelRequest.Type_.XML_HTTP;
   this.baseUri_ = uri.clone().makeUnique();
   this.postData_ = null;
+  /** @suppress {strictMissingProperties} Added to tighten compiler checks */
   this.decodeChunks_ = decodeChunks;
   if (opt_noClose) {
     this.sendClose_ = false;
@@ -649,6 +651,7 @@ goog.net.ChannelRequest.prototype.xmlHttpHandler_ = function(xmlhttp) {
  * Called by the readystate handler for XMLHTTP requests.
  *
  * @private
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.net.ChannelRequest.prototype.onXmlHttpReadyStateChanged_ = function() {
   'use strict';
@@ -886,7 +889,7 @@ goog.net.ChannelRequest.prototype.getNextChunk_ = function(responseText) {
     return goog.net.ChannelRequest.INCOMPLETE_CHUNK_;
   }
 
-  const chunkText = responseText.substr(chunkStartIndex, size);
+  const chunkText = responseText.slice(chunkStartIndex, chunkStartIndex + size);
   this.xmlHttpChunkStart_ = chunkStartIndex + size;
   return chunkText;
 };
@@ -912,6 +915,7 @@ goog.net.ChannelRequest.prototype.tridentGet = function(
  * Starts the Trident request.
  * @param {boolean} usingSecondaryDomain Whether to use a secondary domain.
  * @private
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.net.ChannelRequest.prototype.tridentGet_ = function(usingSecondaryDomain) {
   'use strict';
@@ -961,11 +965,15 @@ goog.net.ChannelRequest.prototype.tridentGet_ = function(usingSecondaryDomain) {
       /** @type {!Document} */ (this.trident_), bodyHtml);
   this.trident_.close();
 
+  /** @suppress {strictMissingProperties} Added to tighten compiler checks */
   this.trident_.parentWindow['m'] = goog.bind(this.onTridentRpcMessage_, this);
+  /** @suppress {strictMissingProperties} Added to tighten compiler checks */
   this.trident_.parentWindow['d'] = goog.bind(this.onTridentDone_, this, true);
+  /** @suppress {strictMissingProperties} Added to tighten compiler checks */
   this.trident_.parentWindow['rpcClose'] =
       goog.bind(this.onTridentDone_, this, false);
 
+  /** @suppress {strictMissingProperties} Added to tighten compiler checks */
   const div = this.trident_.createElement(String(goog.dom.TagName.DIV));
   this.trident_.parentWindow.document.body.appendChild(div);
 
@@ -1103,7 +1111,7 @@ goog.net.ChannelRequest.prototype.sendUsingImgTag = function(uri) {
  */
 goog.net.ChannelRequest.prototype.imgTagGet_ = function() {
   'use strict';
-  goog.dom.safe.setImageSrc(new Image(), this.baseUri_.toString());
+  new Image().src = this.baseUri_.toString();
   this.requestStartTime_ = Date.now();
   this.ensureWatchDogTimer_();
 };
@@ -1169,6 +1177,7 @@ goog.net.ChannelRequest.prototype.cancelWatchDogTimer_ = function() {
  * (not sure why)
  *
  * @private
+ * @suppress {strictPrimitiveOperators}
  */
 goog.net.ChannelRequest.prototype.onWatchDogTimeout_ = function() {
   'use strict';

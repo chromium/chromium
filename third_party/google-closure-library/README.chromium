@@ -1,9 +1,9 @@
 Name: Google Closure Library
 Short Name: closure-library
 URL: https://github.com/google/closure-library
-Version: 20210907.0.0
-Date: 2021-09-28
-Revision: 54209b6f5453f16037658807b13b8088352d1af6
+Version: 20230802.0.0
+Date: 2025-05-02
+Revision: ccf3f1dcd7258ff413406daa45bad79277d40afd
 License: Apache-2.0
 License File: LICENSE
 Security Critical: No

@@ -66,6 +66,7 @@ function createListener(opt_listenerFn) {
  * @param {!Function} listener The listener to check.
  * @param {number} numCount The number of times. See also the times()
  *     function below.
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 function assertListenerIsCalled(listener, numCount) {
   assertEquals(

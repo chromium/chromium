@@ -106,7 +106,6 @@ class WorkItem {
    * @param {Object|null|undefined} scope
    */
   set(fn, scope) {
-    'use strict';
     this.fn = fn;
     this.scope = scope;
     this.next = null;

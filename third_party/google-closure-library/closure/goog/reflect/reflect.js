@@ -71,7 +71,7 @@ goog.reflect.sinkValue = function(x) {
  * The compiler should optimize this function away iff no one ever uses
  * goog.reflect.sinkValue.
  */
-goog.reflect.sinkValue[' '] = goog.nullFunction;
+goog.reflect.sinkValue[' '] = function() {};
 
 
 /**

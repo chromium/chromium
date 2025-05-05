@@ -89,6 +89,7 @@ goog.demos.SampleComponent = class extends goog.ui.Component {
    * @param {Element} element The DIV element to decorate. The element's
    *    text, if any will be used as the component's label.
    * @override
+   * @suppress {strictMissingProperties} missing tabIndex prop
    */
   decorateInternal(element) {
     super.decorateInternal(element);
@@ -151,6 +152,7 @@ goog.demos.SampleComponent = class extends goog.ui.Component {
    * space or enter, the color will be changed.
    * @param {goog.events.Event} event The key event.
    * @private
+   * @suppress {strictMissingProperties} missing 'keyCode' prop
    */
   onKey_(event) {
     const keyCodes = goog.events.KeyCodes;

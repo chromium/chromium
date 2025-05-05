@@ -24,7 +24,11 @@ function mockWindowOpen(mockForm) {
     document: {
       createElement: function(name) {
         if (name == 'form') {
-          return mockForm;
+          return Object.assign(mockForm, {
+            tagName: 'FORM',
+            namespaceURI: 'http://www.w3.org/1999/xhtml',
+            nodeType: Node.ELEMENT_NODE,
+          });
         }
         return {};
       },
@@ -638,14 +642,5 @@ testSuite({
     const el = dom.getElement('reset');
     const result = forms.getValue(el);
     assertEquals('reset', result);
-  },
-
-  /**
-     @suppress {visibility,checkTypes} suppression added to enable type
-     checking
-   */
-  testGetFormDataHelperAndNonInputElements() {
-    const el = dom.getElement('testform4');
-    forms.getFormDataHelper_(el, {}, goog.nullFunction);
   },
 });

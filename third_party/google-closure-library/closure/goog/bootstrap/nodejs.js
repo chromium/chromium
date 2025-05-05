@@ -48,6 +48,9 @@ var vm = require('vm');
  */
 global.goog = {};
 
+/** The runtime nodejs bootstrap relies on the Debug Loader being enabled. */
+global.CLOSURE_UNCOMPILED_DEFINES = global.CLOSURE_UNCOMPILED_DEFINES || {};
+global.CLOSURE_UNCOMPILED_DEFINES['goog.ENABLE_DEBUG_LOADER'] = true;
 
 /**
  * Imports a script using Node's require() API.

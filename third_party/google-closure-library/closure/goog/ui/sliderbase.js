@@ -442,7 +442,7 @@ goog.ui.SliderBase.prototype.enterDocument = function() {
 
   // The slider is handling the positioning so make the defaultActions empty.
   this.valueDragger_.defaultAction = this.extentDragger_.defaultAction =
-      goog.nullFunction;
+      () => {};
   this.keyHandler_ = new goog.events.KeyHandler(this.getElement());
   this.enableEventHandlers_(true);
 

@@ -399,6 +399,7 @@ goog.net.WebSocket.prototype.onOpen_ = function() {
  *
  * @param {!Event} event The close event.
  * @private
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.net.WebSocket.prototype.onClose_ = function(event) {
   'use strict';
@@ -465,6 +466,7 @@ goog.net.WebSocket.prototype.onMessage_ = function(event) {
  */
 goog.net.WebSocket.prototype.onError_ = function(event) {
   'use strict';
+  /** @suppress {strictMissingProperties} Added to tighten compiler checks */
   const data = /** @type {string} */ (event.data);
   goog.log.error(this.logger_, 'An error occurred: ' + data);
   this.dispatchEvent(new goog.net.WebSocket.ErrorEvent(data));

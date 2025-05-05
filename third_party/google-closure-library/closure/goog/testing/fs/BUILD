@@ -6,7 +6,9 @@ licenses(["notice"])
 
 closure_js_library(
     name = "blob",
+    testonly = True,
     srcs = ["blob.js"],
+    lenient = True,
     deps = [
         "//closure/goog/crypt",
         "//closure/goog/crypt:base64",
@@ -15,11 +17,13 @@ closure_js_library(
 
 closure_js_library(
     name = "filesystem",
+    testonly = True,
     srcs = [
         "entry.js",
         "filesystem.js",
         "filewriter.js",
     ],
+    lenient = True,
     deps = [
         ":blob",
         ":file",
@@ -41,13 +45,17 @@ closure_js_library(
 
 closure_js_library(
     name = "file",
+    testonly = True,
     srcs = ["file.js"],
+    lenient = True,
     deps = [":blob"],
 )
 
 closure_js_library(
     name = "filereader",
+    testonly = True,
     srcs = ["filereader.js"],
+    lenient = True,
     deps = [
         ":blob",
         ":progressevent",
@@ -70,7 +78,9 @@ alias(
 
 closure_js_library(
     name = "fs",
+    testonly = True,
     srcs = ["fs.js"],
+    lenient = True,
     deps = [
         ":blob",
         ":filesystem",
@@ -85,7 +95,9 @@ closure_js_library(
 
 closure_js_library(
     name = "progressevent",
+    testonly = True,
     srcs = ["progressevent.js"],
+    lenient = True,
     deps = [
         "//closure/goog/events:event",
         "//closure/goog/fs:filereader",

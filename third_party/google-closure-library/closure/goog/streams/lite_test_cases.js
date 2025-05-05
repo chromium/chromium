@@ -26,7 +26,8 @@ class TestCases {
    * @return {{stream: !ReadableStream<string>, controller:
    *     !ReadableStreamDefaultController<string>}}
    */
-  newReadableStreamWithController(underlyingSource = {}) {
+  newReadableStreamWithController(
+      underlyingSource = /** @type {!ReadableStreamUnderlyingSource} */ ({})) {
     let controller;
     const start = underlyingSource.start;
     underlyingSource = Object.assign({}, underlyingSource, {
@@ -267,13 +268,25 @@ class TestCases {
     });
   }
 
-  testReleaseLock_WhileOutstandingReads() {
+  async testReleaseLock_WhileOutstandingReads() {
     const {stream} = this.newReadableStreamWithController();
     const reader = stream.getReader();
-    reader.read();
-    assertThrows(() => {
+    const readResult = reader.read();
+    // NOTE: Older browsers (i.e. Chrome < 106, Safari, Firefox) used to have
+    // releaseLock() immediately throw if a read is outstanding, but this is
+    // contrary to the spec.  The spec requires that instead the releaseLock()
+    // call should succeed, but the promise returned from read() should
+    // immediately reject.  The following structure checks for either behavior.
+    await assertRejects((async () => {
+      // Await a meaningless value to wait for a new microtask (ensuring
+      // synchronous throws are converted to a rejected promise instead).
+      await 0;
+      // In older browsers, this will throw synchronously.  Chrome >= 106 does
+      // not throw here, but instead causes readResult to immediately reject.
       reader.releaseLock();
-    });
+      // This will only reject if readResult is already rejected.
+      await Promise.race([readResult, Promise.resolve()]);
+    })());
   }
 
   testReleaseLock_Released() {

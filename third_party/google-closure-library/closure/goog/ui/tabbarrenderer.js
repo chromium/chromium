@@ -69,6 +69,7 @@ goog.ui.TabBarRenderer.prototype.getCssClass = function() {
  *     class names (typically the renderer's own class name).
  * @protected
  * @override
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.ui.TabBarRenderer.prototype.setStateFromClassName = function(
     tabBar, className, baseClass) {
@@ -98,6 +99,7 @@ goog.ui.TabBarRenderer.prototype.setStateFromClassName = function(
  *     returned.
  * @return {!Array<string>} Array of CSS class names applicable to the tab bar.
  * @override
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.ui.TabBarRenderer.prototype.getClassNames = function(tabBar) {
   'use strict';

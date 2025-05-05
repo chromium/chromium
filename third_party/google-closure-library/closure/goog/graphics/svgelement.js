@@ -68,6 +68,7 @@ goog.graphics.SvgGroupElement.prototype.clear = function() {
  * @param {number|string} width The width of the group element.
  * @param {number|string} height The height of the group element.
  * @override
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.graphics.SvgGroupElement.prototype.setSize = function(width, height) {
   'use strict';
@@ -103,6 +104,7 @@ goog.inherits(goog.graphics.SvgEllipseElement, goog.graphics.EllipseElement);
  * @param {number} cx Center X coordinate.
  * @param {number} cy Center Y coordinate.
  * @override
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.graphics.SvgEllipseElement.prototype.setCenter = function(cx, cy) {
   'use strict';
@@ -116,6 +118,7 @@ goog.graphics.SvgEllipseElement.prototype.setCenter = function(cx, cy) {
  * @param {number} rx Radius length for the x-axis.
  * @param {number} ry Radius length for the y-axis.
  * @override
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.graphics.SvgEllipseElement.prototype.setRadius = function(rx, ry) {
   'use strict';
@@ -151,6 +154,7 @@ goog.inherits(goog.graphics.SvgRectElement, goog.graphics.RectElement);
  * @param {number} x X coordinate (left).
  * @param {number} y Y coordinate (top).
  * @override
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.graphics.SvgRectElement.prototype.setPosition = function(x, y) {
   'use strict';
@@ -163,6 +167,7 @@ goog.graphics.SvgRectElement.prototype.setPosition = function(x, y) {
  * @param {number} width Width of rectangle.
  * @param {number} height Height of rectangle.
  * @override
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.graphics.SvgRectElement.prototype.setSize = function(width, height) {
   'use strict';
@@ -197,6 +202,7 @@ goog.inherits(goog.graphics.SvgPathElement, goog.graphics.PathElement);
  * Update the underlying path.
  * @param {!goog.graphics.Path} path The path object to draw.
  * @override
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  * @suppress {missingRequire} goog.graphics.SvgGraphics
  */
 goog.graphics.SvgPathElement.prototype.setPath = function(path) {
@@ -265,6 +271,7 @@ goog.inherits(goog.graphics.SvgImageElement, goog.graphics.ImageElement);
  * @param {number} x X coordinate (left).
  * @param {number} y Y coordinate (top).
  * @override
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.graphics.SvgImageElement.prototype.setPosition = function(x, y) {
   'use strict';
@@ -277,6 +284,7 @@ goog.graphics.SvgImageElement.prototype.setPosition = function(x, y) {
  * @param {number} width Width of image.
  * @param {number} height Height of image.
  * @override
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.graphics.SvgImageElement.prototype.setSize = function(width, height) {
   'use strict';
@@ -289,6 +297,7 @@ goog.graphics.SvgImageElement.prototype.setSize = function(width, height) {
  * Update the source of the image.
  * @param {string} src Source of the image.
  * @override
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.graphics.SvgImageElement.prototype.setSource = function(src) {
   'use strict';

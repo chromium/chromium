@@ -43,7 +43,6 @@ goog.inherits(FakeMechanism, IterableMechanism);
  * @override
  */
 FakeMechanism.prototype.set = function(key, value) {
-  'use strict';
   this.storage_.set(key, value);
 };
 
@@ -56,7 +55,6 @@ FakeMechanism.prototype.set = function(key, value) {
  * @override
  */
 FakeMechanism.prototype.get = function(key) {
-  'use strict';
   if (this.storage_.has(key)) {
     return this.storage_.get(key);
   }
@@ -71,7 +69,6 @@ FakeMechanism.prototype.get = function(key) {
  * @override
  */
 FakeMechanism.prototype.remove = function(key) {
-  'use strict';
   this.storage_.delete(key);
 };
 
@@ -86,7 +83,6 @@ FakeMechanism.prototype.remove = function(key) {
  * @override
  */
 FakeMechanism.prototype.__iterator__ = function(opt_keys) {
-  'use strict';
   return opt_keys ? ShimIterable.of(this.storage_.keys()).toGoog() :
                     ShimIterable.of(this.storage_.values()).toGoog();
 };

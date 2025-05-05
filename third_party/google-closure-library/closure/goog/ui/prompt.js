@@ -92,7 +92,7 @@ goog.inherits(goog.ui.Prompt, goog.ui.Dialog);
  * @type {Function}
  * @private
  */
-goog.ui.Prompt.prototype.callback_ = goog.nullFunction;
+goog.ui.Prompt.prototype.callback_ = goog.functions.UNDEFINED;
 
 
 /**
@@ -228,7 +228,7 @@ goog.ui.Prompt.prototype.setRows = function(rows) {
       if (rows <= 1) {
         throw new Error(goog.ui.Component.Error.ALREADY_RENDERED);
       }
-      this.userInputEl_.rows = rows;
+      /** @type {!HTMLTextAreaElement} */ (this.userInputEl_).rows = rows;
     }
   }
   this.rows_ = rows;
@@ -253,9 +253,9 @@ goog.ui.Prompt.prototype.setCols = function(cols) {
   this.cols_ = cols;
   if (this.userInputEl_) {
     if (this.userInputEl_.tagName == goog.dom.TagName.INPUT) {
-      this.userInputEl_.size = cols;
+      /** @type {!HTMLInputElement} */ (this.userInputEl_).size = cols;
     } else {
-      this.userInputEl_.cols = cols;
+      /** @type {!HTMLTextAreaElement} */ (this.userInputEl_).cols = cols;
     }
   }
 };

@@ -33,10 +33,9 @@ goog.provide('goog.ui.ServerChart.UriTooLongEvent');
 
 goog.require('goog.Uri');
 goog.require('goog.asserts');
+goog.require('goog.asserts.dom');
 goog.require('goog.dom.TagName');
-goog.require('goog.dom.safe');
 goog.require('goog.events.Event');
-goog.require('goog.string');
 goog.require('goog.ui.Component');
 goog.requireType('goog.dom.DomHelper');
 
@@ -331,8 +330,7 @@ goog.ui.ServerChart.prototype.createDom = function() {
  */
 goog.ui.ServerChart.prototype.decorateInternal = function(img) {
   'use strict';
-  goog.dom.safe.setImageSrc(
-      /** @type {!HTMLImageElement} */ (img), this.getUri().toString());
+  goog.asserts.dom.assertIsHtmlImageElement(img).src = this.getUri().toString();
   this.setElementInternal(img);
 };
 
@@ -343,9 +341,8 @@ goog.ui.ServerChart.prototype.decorateInternal = function(img) {
 goog.ui.ServerChart.prototype.updateChart = function() {
   'use strict';
   if (this.getElement()) {
-    goog.dom.safe.setImageSrc(
-        /** @type {!HTMLImageElement} */ (this.getElement()),
-        this.getUri().toString());
+    goog.asserts.dom.assertIsHtmlImageElement(this.getElement()).src =
+        this.getUri().toString();
   }
 };
 
@@ -635,13 +632,16 @@ goog.ui.ServerChart.UriParam = {
  *     {string} color (required) The color of the background fill.
  *     // TODO(user): Add support for gradient/stripes, which requires
  *     // a different object structure.
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.ui.ServerChart.prototype.setBackgroundFill = function(fill) {
   'use strict';
   var value = [];
   fill.forEach(function(spec) {
     'use strict';
+    /** @suppress {strictMissingProperties} Added to tighten compiler checks */
     spec.area = spec.area || 'bg';
+    /** @suppress {strictMissingProperties} Added to tighten compiler checks */
     spec.effect = spec.effect || 's';
     value.push([spec.area, spec.effect, spec.color].join(','));
   });
@@ -1666,10 +1666,9 @@ goog.ui.ServerChart.prototype.computeDataStringForEncoding_ = function(
   dataStrings = dataStrings.join(delimiter);
   var data;
   if (this.numVisibleDataSets_ == null) {
-    data = goog.string.buildString(encoding, ':', dataStrings);
+    data = encoding + ':' + dataStrings;
   } else {
-    data = goog.string.buildString(
-        encoding, this.numVisibleDataSets_, ':', dataStrings);
+    data = encoding + this.numVisibleDataSets_ + ':' + dataStrings;
   }
   this.uri_.setParameterValue(goog.ui.ServerChart.UriParam.DATA, data);
   return this.uri_.toString().length < this.uriLengthLimit_;

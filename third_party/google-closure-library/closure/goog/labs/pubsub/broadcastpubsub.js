@@ -114,6 +114,7 @@ goog.labs.pubsub.BroadcastPubSub.STORAGE_KEY_ = '_closure_bps';
  * Handle the storage event and possibly dispatch topics.
  * @param {!goog.events.BrowserEvent} e Event object.
  * @private
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.labs.pubsub.BroadcastPubSub.prototype.handleStorageEvent_ = function(e) {
   'use strict';
@@ -129,6 +130,7 @@ goog.labs.pubsub.BroadcastPubSub.prototype.handleStorageEvent_ = function(e) {
     return;
   }
 
+  /** @suppress {strictMissingProperties} Added to tighten compiler checks */
   const data = JSON.parse(browserEvent.newValue);
   const args = goog.isObject(data) && data['args'];
   if (Array.isArray(args) &&

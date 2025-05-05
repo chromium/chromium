@@ -15,8 +15,14 @@ See the COPYING file for details.
 -->
 <title>crossdomainrpc test response</title>
 <body>
-
-<!-- MOE:insert <script type="text/javascript" src="../base.js"></script> -->
+<script>
+  var CLOSURE_DEFINES = CLOSURE_DEFINES || {};
+  CLOSURE_DEFINES["goog.ENABLE_DEBUG_LOADER"]=true;
+</script>
+<!-- MOE:begin_strip -->
+<script src="../../../../javascript/closure/base.js"></script>
+<!-- MOE:end_strip_and_replace
+<script type="text/javascript" src="../base.js"></script> -->
 <script type="text/javascript">
 goog.require('goog.Uri.QueryData');
 goog.require('goog.dom');

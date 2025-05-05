@@ -11,6 +11,8 @@
 goog.provide('goog.editor.plugins.LinkBubble');
 goog.provide('goog.editor.plugins.LinkBubble.Action');
 
+goog.require('goog.a11y.aria.Announcer');
+goog.require('goog.a11y.aria.LivePriority');
 goog.require('goog.array');
 goog.require('goog.dom');
 goog.require('goog.dom.Range');
@@ -59,6 +61,10 @@ goog.editor.plugins.LinkBubble = function(var_args) {
    * @private
    */
   this.safeToOpenSchemes_ = ['http', 'https', 'ftp'];
+
+  /** @private @const {!goog.a11y.aria.Announcer} */
+  this.announcer_ = new goog.a11y.aria.Announcer();
+  this.registerDisposable(this.announcer_);
 };
 goog.inherits(
     goog.editor.plugins.LinkBubble, goog.editor.plugins.AbstractBubblePlugin);
@@ -157,6 +163,11 @@ goog.editor.plugins.LinkBubble.MSG_LINK_BUBBLE_REMOVE = goog.getMsg('Remove');
  */
 goog.editor.plugins.LinkBubble.MSG_INVALID_URL_LINK_BUBBLE =
     goog.getMsg('invalid url');
+
+
+/** @desc Screen reader announcement that a link has been removed. */
+goog.editor.plugins.LinkBubble.MSG_LINK_BUBBLE_REMOVE_ANNOUNCEMENT =
+    goog.getMsg('Removed link.');
 
 
 /**
@@ -276,7 +287,10 @@ goog.editor.plugins.LinkBubble.prototype.updateLink_ = function() {
 };
 
 
-/** @override */
+/**
+ * @override
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
+ */
 goog.editor.plugins.LinkBubble.prototype.getBubbleTargetFromSelection =
     function(selectedElement) {
   'use strict';
@@ -312,6 +326,7 @@ goog.editor.plugins.LinkBubble.prototype.getBubbleTargetFromSelection =
  */
 goog.editor.plugins.LinkBubble.prototype.setTestLinkUrlFn = function(func) {
   'use strict';
+  /** @suppress {strictMissingProperties} Added to tighten compiler checks */
   this.testLinkUrlFn_ = func;
 };
 
@@ -553,6 +568,10 @@ goog.editor.plugins.LinkBubble.prototype.deleteLink_ = function(e) {
   this.getFieldObject().dispatchChange();
   this.getFieldObject().focus();
   restoreScrollPosition();
+
+  this.announcer_.say(
+      goog.editor.plugins.LinkBubble.MSG_LINK_BUBBLE_REMOVE_ANNOUNCEMENT,
+      goog.a11y.aria.LivePriority.ASSERTIVE);
 };
 
 
@@ -591,6 +610,7 @@ goog.editor.plugins.LinkBubble.prototype.onShow = function() {
  * bubble the user can click on to make sure the link they entered is correct.
  * @return {string} The url for the bubble link href.
  * @private
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.editor.plugins.LinkBubble.prototype.getTestLinkAction_ = function() {
   'use strict';

@@ -369,4 +369,4 @@ goog.ui.AdvancedTooltip.prototype.getHideDelayMs = function() {
  * @deprecated Not ever necessary to call this function. Hot spot is calculated
  *     as necessary.
  */
-goog.ui.AdvancedTooltip.prototype.resetHotSpot = goog.nullFunction;
+goog.ui.AdvancedTooltip.prototype.resetHotSpot = function() {};

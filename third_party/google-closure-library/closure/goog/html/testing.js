@@ -26,7 +26,6 @@ goog.require('goog.html.SafeStyleSheet');
 goog.require('goog.html.SafeUrl');
 goog.require('goog.html.TrustedResourceUrl');
 goog.require('goog.testing.mockmatchers.ArgumentMatcher');
-goog.requireType('goog.i18n.bidi.Dir');
 
 
 /**
@@ -36,15 +35,12 @@ goog.requireType('goog.i18n.bidi.Dir');
  * code.
  *
  * @param {string} html The string to wrap into a SafeHtml.
- * @param {?goog.i18n.bidi.Dir=} opt_dir The optional directionality of the
- *     SafeHtml to be constructed. A null or undefined value signifies an
- *     unknown directionality.
  * @return {!goog.html.SafeHtml}
  */
-goog.html.testing.newSafeHtmlForTest = function(html, opt_dir) {
+goog.html.testing.newSafeHtmlForTest = function(html) {
   'use strict';
   return goog.html.SafeHtml.createSafeHtmlSecurityPrivateDoNotAccessOrElse(
-      html, (opt_dir == undefined ? null : opt_dir));
+      html);
 };
 
 
@@ -251,6 +247,7 @@ goog.html.testing.matchTrustedResourceUrl = function(expected) {
  * @param {*} expected Handles goog.string.TypedString or string.
  * @return {boolean|undefined} Undefined if not called with
  *     goog.string.TypedString, true if typed strings equal, false if not.
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.html.testing.checkTypedStringEquality = function(actual, expected) {
   'use strict';
@@ -259,6 +256,9 @@ goog.html.testing.checkTypedStringEquality = function(actual, expected) {
       if (!(actual instanceof expected.constructor)) {
         return false;
       }
+      /**
+       * @suppress {strictMissingProperties} Added to tighten compiler checks
+       */
       expected = expected.getTypedStringValue();
     }
     return actual.getTypedStringValue() == expected;

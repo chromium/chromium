@@ -406,7 +406,7 @@ goog.editor.plugins.Blockquote.prototype.splitQuotedBlockIE_ = function(
 
   // Moving the range 1 char isn't enough when you have markup.
   // This moves the range to the end of the nbsp.
-  var range = dh.getDocument().selection.createRange();
+  var range = /** @type {?} */ (dh.getDocument().selection.createRange());
   range.moveToElementText(splitNode);
   range.move('character', 2);
   range.select();

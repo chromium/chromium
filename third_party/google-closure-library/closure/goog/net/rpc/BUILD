@@ -7,6 +7,7 @@ licenses(["notice"])
 closure_js_library(
     name = "httpcors",
     srcs = ["httpcors.js"],
+    lenient = True,
     deps = [
         "//closure/goog/object",
         "//closure/goog/string",

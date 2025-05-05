@@ -12,7 +12,6 @@
 
 goog.provide('goog.ui.MenuItem');
 
-goog.forwardDeclare('goog.ui.Menu');
 goog.require('goog.a11y.aria.Role');
 goog.require('goog.array');
 goog.require('goog.dom');
@@ -25,6 +24,7 @@ goog.require('goog.ui.MenuItemRenderer');
 goog.require('goog.ui.registry');
 goog.requireType('goog.events.KeyCodes');
 goog.requireType('goog.ui.ControlContent');  // circular
+goog.requireType('goog.ui.Menu');
 
 
 
@@ -140,6 +140,7 @@ goog.ui.MenuItem.prototype.setSelectable = function(selectable) {
  * Sets the menu item to be selectable or not.
  * @param {boolean} selectable  Whether the menu item is selectable.
  * @private
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.ui.MenuItem.prototype.setSelectableInternal_ = function(selectable) {
   'use strict';
@@ -169,6 +170,7 @@ goog.ui.MenuItem.prototype.setCheckable = function(checkable) {
  * Sets the menu item to be checkable or not.
  * @param {boolean} checkable Whether the menu item is checkable.
  * @private
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.ui.MenuItem.prototype.setCheckableInternal_ = function(checkable) {
   'use strict';
@@ -246,6 +248,9 @@ goog.ui.MenuItem.prototype.handleMouseUp = function(e) {
     parentMenu.openingCoords = null;
 
     if (oldCoords && typeof e.clientX === 'number') {
+      /**
+       * @suppress {strictMissingProperties} Added to tighten compiler checks
+       */
       var newCoords = new goog.math.Coordinate(e.clientX, e.clientY);
       if (goog.math.Coordinate.equals(oldCoords, newCoords)) {
         // This menu was opened by a mousedown and we're handling the consequent

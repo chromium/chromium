@@ -119,7 +119,7 @@ goog.crypt.Sha2_64bit.BLOCK_SIZE_ = 1024 / 8;
  * Contains data needed to pad messages less than `blocksize` bytes.
  * @private {!Array<number>}
  */
-goog.crypt.Sha2_64bit.PADDING_ = goog.array.concat(
+goog.crypt.Sha2_64bit.PADDING_ = [].concat(
     [0x80], goog.array.repeat(0, goog.crypt.Sha2_64bit.BLOCK_SIZE_ - 1));
 
 

@@ -30,7 +30,7 @@ const testSuite = goog.require('goog.testing.testSuite');
 
 testSuite({
   setUp() {
-    goog.provide = goog.nullFunction;
+    goog.provide = () => {};
   },
 
   tearDown() {

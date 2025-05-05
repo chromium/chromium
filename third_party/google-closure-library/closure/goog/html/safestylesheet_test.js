@@ -26,6 +26,12 @@ function assertCreateRuleEquals(expected, selector, style) {
 }
 
 testSuite({
+  testConstructor_throwsOnBadToken() {
+    assertThrows(() => new (/** @type {?} */ (SafeStyleSheet))(''));
+    assertThrows(
+        () => new (/** @type {?} */ (SafeStyleSheet.EMPTY)).constructor(''));
+  },
+
   testSafeStyleSheet() {
     const styleSheet = 'P.special { color:red ; }';
     const safeStyleSheet = SafeStyleSheet.fromConstant(Const.from(styleSheet));
@@ -57,6 +63,9 @@ testSuite({
   testCreateRule() {
     assertCreateRuleEquals(
         '#id{top:0;left:0;}', '#id', {'top': '0', 'left': '0'});
+    assertCreateRuleEquals(
+        '#id\\.with\\.punctuation{top:0;left:0;}', '#id\\.with\\.punctuation',
+        {'top': '0', 'left': '0'});
     assertCreateRuleEquals(
         '.class{margin-left:5px;}', '.class',
         SafeStyle.create({'margin-left': '5px'}));

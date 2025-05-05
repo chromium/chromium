@@ -10,8 +10,39 @@
 
 goog.provide('goog.string.linkify');
 
+goog.require('goog.asserts');
 goog.require('goog.html.SafeHtml');
+goog.require('goog.html.uncheckedconversions');
 goog.require('goog.string');
+goog.require('goog.string.Const');
+
+
+/**
+ * Options bag for linkifyPlainTextAsHtml's second parameter.
+ * @record
+ */
+goog.string.linkify.LinkifyOptions = class {
+  constructor() {
+    /**
+     * HTML attributes to add to all links created.  Default are `rel=nofollow`
+     * and `target=_blank`. To clear these defaults attributes, set them
+     * explicitly to '', i.e. `{rel: '', target: ''}`.
+     * @const {!Object<string, ?goog.html.SafeHtml.AttributeValue>|undefined}
+     */
+    this.attributes;
+    /**
+     * Whether to preserve newlines with &lt;br&gt;.
+     * @const {boolean|undefined}
+     */
+    this.preserveNewlines;
+    /**
+     * Whether to preserve spaces with non-breaking spaces and tabs with
+     * &lt;span style="white-space:pre"&gt;
+     * @const {boolean|undefined}
+     */
+    this.preserveSpacesAndTabs;
+  }
+};
 
 
 /**
@@ -20,36 +51,69 @@ goog.require('goog.string');
  * _blank and it will have a rel=nofollow attribute applied to it so that links
  * created by linkify will not be of interest to search engines.
  * @param {string} text Plain text.
- * @param {!Object<string, ?goog.html.SafeHtml.AttributeValue>=} opt_attributes
- *     Attributes to add to all links created. Default are rel=nofollow and
- *     target=_blank. To clear those default attributes set rel='' and
- *     target=''.
- * @param {boolean=} opt_preserveNewlines Whether to preserve newlines with
- *     &lt;br&gt;.
+ * @param {!goog.string.linkify.LinkifyOptions=} opt_options Options bag.
  * @return {!goog.html.SafeHtml} Linkified HTML. Any text that is not part of a
  *      link will be HTML-escaped.
+ * @suppress {strictMissingProperties} opt_attributes type is a union
  */
-goog.string.linkify.linkifyPlainTextAsHtml = function(
-    text, opt_attributes, opt_preserveNewlines) {
+goog.string.linkify.linkifyPlainTextAsHtml = function(text, opt_options) {
   'use strict';
+  const {attributes = {}, preserveNewlines, preserveSpacesAndTabs, ...rest} =
+      opt_options || {};
+  if (goog.DEBUG) {
+    for (const key in rest) {
+      if (rest.hasOwnProperty(key)) {
+        goog.asserts.fail(`Unexpected option: ${key}`);
+      }
+    }
+  }
+
+  /**
+   * @param {string} plainText
+   * @return {!goog.html.SafeHtml} html
+   */
+  const htmlEscape = function(plainText) {
+    if (preserveSpacesAndTabs) {
+      const html = goog.html.SafeHtml.htmlEscape(plainText);
+      let modifiedHtml =
+          goog.html.SafeHtml
+              .unwrap(html)
+              // Leading space is converted into a non-breaking space, and
+              // spaces following whitespace are converted into non-breaking
+              // spaces. This must happen first, to ensure we preserve spaces
+              // after newlines.
+              .replace(/(^|[\n\r\t\ ])\ /g, '$1&#160;')
+              // Preserve tabs by using style="white-space:pre"
+              .replace(/(\t+)/g, '<span style="white-space:pre">$1</span>');
+      if (preserveNewlines) {
+        modifiedHtml = goog.string.newLineToBr(modifiedHtml);
+      }
+      return goog.html.uncheckedconversions
+          .safeHtmlFromStringKnownToSatisfyTypeContract(
+              goog.string.Const.from('Escaped plain text'), modifiedHtml);
+    } else if (preserveNewlines) {
+      return goog.html.SafeHtml.htmlEscapePreservingNewlines(plainText);
+    } else {
+      return goog.html.SafeHtml.htmlEscape(plainText);
+    }
+  };
+
   // This shortcut makes linkifyPlainText ~10x faster if text doesn't contain
   // URLs or email addresses and adds insignificant performance penalty if it
   // does.
   if (text.indexOf('@') == -1 && text.indexOf('://') == -1 &&
       text.indexOf('www.') == -1 && text.indexOf('Www.') == -1 &&
       text.indexOf('WWW.') == -1) {
-    return opt_preserveNewlines ?
-        goog.html.SafeHtml.htmlEscapePreservingNewlines(text) :
-        goog.html.SafeHtml.htmlEscape(text);
+    return htmlEscape(text);
   }
 
   const attributesMap = {};
-  for (let key in opt_attributes) {
-    if (!opt_attributes[key]) {
+  for (let key in attributes) {
+    if (!attributes[key]) {
       // Our API allows '' to omit the attribute, SafeHtml requires null.
       attributesMap[key] = null;
     } else {
-      attributesMap[key] = opt_attributes[key];
+      attributesMap[key] = attributes[key];
     }
   }
   // Set default options if they haven't been explicitly set.
@@ -66,10 +130,7 @@ goog.string.linkify.linkifyPlainTextAsHtml = function(
       goog.string.linkify.FIND_LINKS_RE_,
       function(part, before, original, email, protocol) {
         'use strict';
-        output.push(
-            opt_preserveNewlines ?
-                goog.html.SafeHtml.htmlEscapePreservingNewlines(before) :
-                before);
+        output.push(htmlEscape(before));
         if (!original) {
           return '';
         }
@@ -123,10 +184,7 @@ goog.string.linkify.linkifyPlainTextAsHtml = function(
         }
         attributesMap['href'] = href + linkText;
         output.push(goog.html.SafeHtml.create('a', attributesMap, linkText));
-        output.push(
-            opt_preserveNewlines ?
-                goog.html.SafeHtml.htmlEscapePreservingNewlines(afterLink) :
-                afterLink);
+        output.push(htmlEscape(afterLink));
         return '';
       });
   return goog.html.SafeHtml.concat(output);
@@ -225,9 +283,10 @@ goog.string.linkify.WWW_START_ = 'www\\.';
  * @const
  * @private
  */
-goog.string.linkify.URL_RE_STRING_ = '(?:' +
-    goog.string.linkify.PROTOCOL_START_ + '|' + goog.string.linkify.WWW_START_ +
-    ')[' + goog.string.linkify.ACCEPTABLE_URL_CHARS_ + ']+';
+goog.string.linkify.URL_RE_STRING_ =
+    '(?:' + goog.string.linkify.PROTOCOL_START_ + '|' +
+    goog.string.linkify.WWW_START_ + ')[' +
+    goog.string.linkify.ACCEPTABLE_URL_CHARS_ + ']+';
 
 
 /**

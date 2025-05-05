@@ -35,6 +35,14 @@ ChildClass.prototype.y = 2;
 class ParentClassEs6 {
   /** Parent method */
   parent() {}
+  /** Parent accessor descriptor method */
+  get parentName() {
+    fail('Descriptor get method should not be called.');
+  }
+  /** Parent accessor descriptor method */
+  set parentName(value) {
+    fail('Descriptor set method should not be called.');
+  }
 }
 
 class ChildClassEs6 extends ParentClassEs6 {
@@ -65,6 +73,13 @@ function assertContainsInOrder(str, var_args) {
   }
 }
 
+/**
+ * @param {!Object} obj
+ * @param {string} propertyName
+ */
+function assertHasOwnProperty(obj, propertyName) {
+  assertTrue(Object.prototype.hasOwnProperty.call(obj, propertyName));
+}
 
 testSuite({
   /**
@@ -91,8 +106,10 @@ testSuite({
   testParentClassEs6() {
     const parentMock = mock.mock(ParentClassEs6);
 
-    assertNotUndefined(parentMock.parent);
+    assertHasOwnProperty(parentMock, 'parent');
     assertUndefined(parentMock.parent());
+    assertHasOwnProperty(parentMock, 'parentName');
+    assertUndefined(parentMock.parentName);
     assertTrue(
         'Mock should be an instance of the mocked class.',
         parentMock instanceof ParentClassEs6);
@@ -123,10 +140,12 @@ testSuite({
   testChildClassEs6() {
     const childMock = mock.mock(ChildClassEs6);
 
-    assertNotUndefined(childMock.parent);
+    assertHasOwnProperty(childMock, 'parent');
     assertUndefined(childMock.parent());
-    assertNotUndefined(childMock.child);
+    assertHasOwnProperty(childMock, 'child');
     assertUndefined(childMock.child());
+    assertHasOwnProperty(childMock, 'parentName');
+    assertUndefined(childMock.parentName);
     assertTrue(
         'Mock should be an instance of the mocked class.',
         childMock instanceof ChildClassEs6);
@@ -246,6 +265,87 @@ testSuite({
     assertEquals(10, mockObj.method3(4));
     mock.verify(mockObj).method3(4);
     assertUndefined(mockObj.method3(5));
+  },
+
+  /**
+     @suppress {strictMissingProperties} suppression added to enable type
+     checking
+   */
+  testAccessorGetStubbing() {
+    const obj = {
+      get property() {
+        fail('Original implementation should never be called.');
+      },
+    };
+
+    const mockObj = mock.mock(obj);
+    mock.when(mockObj).property.get().thenReturn('test');
+
+    mock.verify(mockObj, mock.verification.times(0)).property.get();
+    assertEquals('test', mockObj.property);
+    mock.verify(mockObj, mock.verification.times(1)).property.get();
+    // Set is not defined.
+    assertThrows(() => {
+      mockObj.property = 42;
+    });
+    assertThrows(() => {
+      mock.when(mockObj).property.set().thenReturn('test');
+    });
+    assertThrows(() => {
+      mock.verify(mockObj, mock.verification.times(0)).property.set();
+    });
+  },
+
+  /**
+     @suppress {strictMissingProperties} suppression added to enable type
+     checking
+   */
+  testAccessorSetStubbing() {
+    const obj = {
+      set property(value) {
+        fail('Original implementation should never be called.');
+      },
+    };
+
+    const mockObj = mock.mock(obj);
+
+    mock.verify(mockObj, mock.verification.times(0)).property.set(42);
+    mockObj.property = 42;
+    mock.verify(mockObj, mock.verification.times(1)).property.set(42);
+    mock.verify(mockObj, mock.verification.times(0)).property.set(1);
+    // Get is not defined.
+    assertUndefined(mockObj.property);
+    assertThrows(() => {
+      mock.when(mockObj).property.get().thenReturn('test');
+    });
+    assertThrows(() => {
+      mock.verify(mockObj, mock.verification.times(0)).property.get();
+    });
+  },
+
+  /**
+     @suppress {strictMissingProperties} suppression added to enable type
+     checking
+   */
+  testAccessorGetAndSetStubbing() {
+    const obj = {
+      get property() {
+        fail('Original implementation should never be called.');
+      },
+      set property(value) {
+        fail('Original implementation should never be called.');
+      },
+    };
+
+    const mockObj = mock.mock(obj);
+    mock.when(mockObj).property.asDataProperty(/* initialValue= */ 1);
+
+    assertEquals(1, mockObj.property);
+    mockObj.property = 42;
+    assertEquals(42, mockObj.property);
+
+    mock.verify(mockObj, mock.verification.times(2)).property.get();
+    mock.verify(mockObj, mock.verification.times(1)).property.set(42);
   },
 
   testMockFunctions() {

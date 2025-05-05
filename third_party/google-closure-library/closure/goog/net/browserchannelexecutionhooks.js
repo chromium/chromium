@@ -79,12 +79,10 @@ exports.onEndExecution = onEndExecution;
  * @return {number} The ID of the timer.
  */
 function setTimeout(fn, ms) {
-  'use strict';
   if (typeof fn !== 'function') {
     throw new Error('Fn must not be null and must be a function');
   }
   return goog.global.setTimeout(function() {
-    'use strict';
     onStartExecution();
     try {
       fn();

@@ -85,6 +85,17 @@ goog.labs.testing.stringmatcher.ContainsStringMatcher.prototype.describe =
 };
 
 
+/**
+ * @return {string}
+ * @override
+ */
+goog.labs.testing.stringmatcher.ContainsStringMatcher.prototype.toString =
+    function() {
+  'use strict';
+  return 'ContainsStringMatcher[' + this.value_ + ']';
+};
+
+
 
 /**
  * The EndsWith matcher.
@@ -129,9 +140,21 @@ goog.labs.testing.stringmatcher.EndsWithMatcher.prototype.describe = function(
 };
 
 
+/**
+ * @return {string}
+ * @override
+ */
+goog.labs.testing.stringmatcher.EndsWithMatcher.prototype.toString =
+    function() {
+  'use strict';
+  return 'EndsWithMatcher[' + this.value_ + ']';
+};
+
+
 
 /**
- * The EqualToIgnoringWhitespace matcher.
+ * The EqualToIgnoringWhitespace matcher.  Collapses all whitespace down to a
+ * single space before comparing the strings.  It is also case-insensitive.
  *
  * @param {string} value The expected string.
  *
@@ -152,27 +175,50 @@ goog.labs.testing.stringmatcher.EqualToIgnoringWhitespaceMatcher = function(
 
 
 /**
- * Determines if input string contains the expected string.
+ * Determines if input string is the expected string when all whitespace in both
+ * has been collapsed down into a single space.  Does a case-insensitive match.
  *
  * @override
+ * @param {*} actualValue
+ * @return {boolean}
  */
 goog.labs.testing.stringmatcher.EqualToIgnoringWhitespaceMatcher.prototype
     .matches = function(actualValue) {
   'use strict';
   goog.asserts.assertString(actualValue);
-  var string1 = goog.string.collapseWhitespace(actualValue);
+  const collapsedActualValue = goog.string.collapseWhitespace(actualValue);
+  const collapsedExpectedValue = goog.string.collapseWhitespace(this.value_);
 
-  return goog.string.caseInsensitiveCompare(this.value_, string1) === 0;
+  return goog.string.caseInsensitiveCompare(
+             collapsedActualValue, collapsedExpectedValue) === 0;
 };
 
 
 /**
  * @override
+ * @param {*} actualValue
+ * @return {string}
  */
 goog.labs.testing.stringmatcher.EqualToIgnoringWhitespaceMatcher.prototype
     .describe = function(actualValue) {
   'use strict';
-  return actualValue + ' is not equal(ignoring whitespace) to ' + this.value_;
+  goog.asserts.assertString(actualValue);
+  const collapsedSuppliedValue = goog.string.collapseWhitespace(actualValue);
+  const collapsedExpectedString = goog.string.collapseWhitespace(this.value_);
+  return `"${actualValue}" collapses to "${
+      collapsedSuppliedValue}" which is not equal(ignoring whitespace and case) to "${
+      this.value_}" which collapses to "${collapsedExpectedString}"`;
+};
+
+
+/**
+ * @return {string}
+ * @override
+ */
+goog.labs.testing.stringmatcher.EqualToIgnoringWhitespaceMatcher.prototype
+    .toString = function() {
+  'use strict';
+  return 'EqualToIgnoringWhitespaceMatcher[' + this.value_ + ']';
 };
 
 
@@ -220,6 +266,16 @@ goog.labs.testing.stringmatcher.EqualsMatcher.prototype.describe = function(
 };
 
 
+/**
+ * @return {string}
+ * @override
+ */
+goog.labs.testing.stringmatcher.EqualsMatcher.prototype.toString = function() {
+  'use strict';
+  return 'EqualsMatcher[' + this.value_ + ']';
+};
+
+
 
 /**
  * The MatchesRegex matcher.
@@ -264,6 +320,16 @@ goog.labs.testing.stringmatcher.RegexMatcher.prototype.describe = function(
 };
 
 
+/**
+ * @return {string}
+ * @override
+ */
+goog.labs.testing.stringmatcher.RegexMatcher.prototype.toString = function() {
+  'use strict';
+  return 'RegexMatcher[' + this.regex_ + ']';
+};
+
+
 
 /**
  * The StartsWith matcher.
@@ -305,6 +371,17 @@ goog.labs.testing.stringmatcher.StartsWithMatcher.prototype.describe = function(
     actualValue) {
   'use strict';
   return actualValue + ' does not start with ' + this.value_;
+};
+
+
+/**
+ * @return {string}
+ * @override
+ */
+goog.labs.testing.stringmatcher.StartsWithMatcher.prototype.toString =
+    function() {
+  'use strict';
+  return 'StartsWithMatcher[' + this.value_ + ']';
 };
 
 
@@ -359,6 +436,18 @@ goog.labs.testing.stringmatcher.StringContainsInOrderMatcher.prototype
   'use strict';
   return actualValue + ' does not contain the expected values in order.';
 };
+
+
+/**
+ * @return {string}
+ * @override
+ */
+goog.labs.testing.stringmatcher.StringContainsInOrderMatcher.prototype
+    .toString = function() {
+  'use strict';
+  return 'StringContainsInOrderMatcher[' + this.values_ + ']';
+};
+
 
 
 /** @return {!goog.labs.testing.stringmatcher.AnyStringMatcher} */

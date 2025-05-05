@@ -40,6 +40,8 @@ const RETRY_TIME = 1000;
 /** A really long time - used to make sure no more timeouts will fire. */
 const ALL_DAY_MS = 1000 * 60 * 60 * 24;
 
+const DEFAULT_ERROR_HTTP_STATUS_CODE = 503;
+
 const stubs = new PropertyReplacer();
 
 let channel;
@@ -105,6 +107,7 @@ class MockChannelRequest {
     this.successful_ = true;
     this.lastError_ = null;
     this.lastStatusCode_ = 200;
+    this.errorResponseHeaders_ = undefined;
 
     // For debugging, keep track of whether this is a back or forward channel.
     this.isBack = !!(requestId == 'rpc');
@@ -174,6 +177,11 @@ class MockChannelRequest {
     return this.lastError_;
   }
 
+  /** @return {!Object<string, string>|undefined} Error response headers. */
+  getErrorResponseHeaders() {
+    return this.errorResponseHeaders_;
+  }
+
   /** @return {number} The status code of the last request. */
   getLastStatusCode() {
     return this.lastStatusCode_;
@@ -214,7 +222,9 @@ class MockChannelRequest {
     this.pendingMessages_ = messages;
   }
 
-  /** @return {!Array<?Wire.QueuedMap>} The pending messages for this request. */
+  /**
+   * @return {!Array<?Wire.QueuedMap>} The pending messages for this request.
+   */
   getPendingMessages() {
     return this.pendingMessages_;
   }
@@ -229,7 +239,7 @@ class MockChannelRequest {
 }
 
 function getSingleForwardRequest() {
-  /** @suppress {visibility} suppression added to enable type checking */
+  /** @suppress {visibility} Accessing private properties. */
   const pool = channel.forwardChannelRequestPool_;
   if (!pool.hasPendingRequest()) {
     return null;
@@ -314,7 +324,7 @@ function completeForwardChannel(
   mockClock.tick(0);
 }
 
-/** @suppress {visibility} suppression added to enable type checking */
+/** @suppress {visibility} Accessing private properties. */
 function completeBackChannel() {
   channel.onRequestData(channel.backChannelRequest_, '[[1,["foo"]]]');
   channel.onRequestComplete(channel.backChannelRequest_);
@@ -348,7 +358,7 @@ function response(lastArrayIdSentFromServer, outstandingDataSize) {
   mockClock.tick(0);
 }
 
-/** @suppress {visibility} suppression added to enable type checking */
+/** @suppress {visibility} Accessing private properties. */
 function receive(data) {
   channel.onRequestData(channel.backChannelRequest_, `[[1,${data}]]`);
   channel.onRequestComplete(channel.backChannelRequest_);
@@ -362,10 +372,10 @@ function responseTimeout() {
   mockClock.tick(0);
 }
 
-/** @param {number=} statusCode */
-function responseRequestFailed(statusCode = undefined) {
+/** Fails the first forward request. */
+function responseRequestFailed() {
   getSingleForwardRequest().lastError_ = ChannelRequest.Error.STATUS;
-  getSingleForwardRequest().lastStatusCode_ = statusCode || 503;
+  getSingleForwardRequest().lastStatusCode_ = DEFAULT_ERROR_HTTP_STATUS_CODE;
   getSingleForwardRequest().successful_ = false;
   channel.onRequestComplete(getSingleForwardRequest());
   mockClock.tick(0);
@@ -419,12 +429,12 @@ function hasForwardChannel() {
   return !!getSingleForwardRequest();
 }
 
-/** @suppress {visibility} suppression added to enable type checking */
+/** @suppress {visibility} Accessing private properties. */
 function hasBackChannel() {
   return !!channel.backChannelRequest_;
 }
 
-/** @suppress {visibility} suppression added to enable type checking */
+/** @suppress {visibility} Accessing private properties. */
 function hasDeadBackChannelTimer() {
   return channel.deadBackChannelTimerId_ != null;
 }
@@ -457,7 +467,7 @@ function sendMapTwice() {
   assertEquals('foo2:bar2', formatArrayOfMaps(deliveredMaps));
 }
 
-/** @suppress {visibility} suppression added to enable type checking */
+/** @suppress {visibility} Accessing private properties. */
 function setFailFastWhileWaitingForRetry() {
   assertEquals(1, numTimingEvents);
 
@@ -501,7 +511,7 @@ function setFailFastWhileWaitingForRetry() {
   assertEquals(1, numTimingEvents);
 }
 
-/** @suppress {visibility} suppression added to enable type checking */
+/** @suppress {visibility} Accessing private properties. */
 function setFailFastWhileRetryXhrIsInFlight() {
   assertEquals(1, numTimingEvents);
 
@@ -573,9 +583,10 @@ function requestFailedClosesChannel() {
       'Should remain closed after the ping timeout.',
       WebChannelBase.State.CLOSED, channel.getState());
   assertEquals(1, numTimingEvents);
+  assertEquals(DEFAULT_ERROR_HTTP_STATUS_CODE, channel.getLastStatusCode());
 }
 
-/** @suppress {visibility} suppression added to enable type checking */
+/** @suppress {visibility} Accessing private properties. */
 function outgoingMapsAwaitsResponse() {
   assertEquals(0, channel.outgoingMaps_.length);
 
@@ -667,7 +678,7 @@ testSuite({
     channel.setHandler(handler);
 
     // Provide a predictable retry time for testing.
-    /** @suppress {visibility} suppression added to enable type checking */
+    /** @suppress {visibility} Accessing private properties. */
     channel.getRetryTime_ = (retryCount) => RETRY_TIME;
 
     const channelDebug = new WebChannelDebug();
@@ -718,7 +729,7 @@ testSuite({
     assertEquals('k1:v1:c1, k2:v2:c1', formatArrayOfMaps(c));
   },
 
-  /** @suppress {visibility} suppression added to enable type checking */
+  /** @suppress {visibility} Accessing private properties. */
   testConnect() {
     connect();
     assertEquals(WebChannelBase.State.OPENED, channel.getState());
@@ -732,27 +743,27 @@ testSuite({
     assertHasBackChannel();
   },
 
-  /** @suppress {visibility} suppression added to enable type checking */
+  /** @suppress {visibility} Accessing private properties. */
   testConnect_withServerHostPrefix() {
     connect(undefined, 'serverHostPrefix');
     assertEquals('serverHostPrefix', channel.hostPrefix_);
   },
 
-  /** @suppress {visibility} suppression added to enable type checking */
+  /** @suppress {visibility} Accessing private properties. */
   testConnect_withClientHostPrefix() {
     handler.correctHostPrefix = (hostPrefix) => 'clientHostPrefix';
     connect();
     assertEquals('clientHostPrefix', channel.hostPrefix_);
   },
 
-  /** @suppress {visibility} suppression added to enable type checking */
+  /** @suppress {visibility} Accessing private properties. */
   testConnect_overrideServerHostPrefix() {
     handler.correctHostPrefix = (hostPrefix) => 'clientHostPrefix';
     connect(undefined, 'serverHostPrefix');
     assertEquals('clientHostPrefix', channel.hostPrefix_);
   },
 
-  /** @suppress {visibility} suppression added to enable type checking */
+  /** @suppress {visibility} Accessing private properties. */
   testConnect_withServerVersion() {
     connect(8);
     assertEquals(8, channel.channelVersion_);
@@ -918,7 +929,7 @@ testSuite({
   /**
    * Makes sure that setting fail fast while not retrying doesn't cause a
    *      failure.
-   * @suppress {visibility} suppression added to enable type checking
+   * @suppress {visibility} Accessing private properties.
    */
   testSetFailFastAtRetryCount() {
     stubNetUtils();
@@ -1013,7 +1024,7 @@ testSuite({
     assertEquals(Stat.ERROR_NETWORK, lastStatEvent);
   },
 
-  /** @suppress {visibility} suppression added to enable type checking */
+  /** @suppress {visibility} Accessing private properties. */
   testStatEventReportedOnlyOnce_onNetworkDown() {
     stubNetUtils();
 
@@ -1081,7 +1092,10 @@ testSuite({
     disconnect();
   },
 
-  /** @suppress {visibility} suppression added to enable type checking */
+  // NOTE: The current setup for ALL existing testUndeliveredMaps_* tests rely
+  // heavily on the non-HTTP2-or-SPDY behavior (i.e. one message can be sent at
+  // any given time).
+  /** @suppress {visibility} Accessing private properties. */
   testUndeliveredMaps_clearsPendingMapsAfterNotifying() {
     connect();
     sendMap('foo1', 'bar1');
@@ -1165,7 +1179,57 @@ testSuite({
     assertEquals('', handler.undeliveredMapsString);
   },
 
-  /** @suppress {visibility} suppression added to enable type checking */
+  /** @suppress {visibility} Accessing private properties. */
+  testGetNonAckedMapsBeforeChannelClose_returnsUnionOfPendingAndUnsentMaps() {
+    connect();
+
+    // First send one message and respond with server ack.
+    sendMap('foo1', 'bar1');
+    responseDone();
+
+    // Send 3 more messages which are non-acked.
+    sendMap('foo2', 'bar2');
+    sendMap('foo3', 'bar3');
+    sendMap('foo4', 'bar4');
+
+    // Verifies that we're indeed covering the case where 1 message is pending
+    // server ack and 2 message has not been sent to the network.
+    assertEquals(
+        1, channel.forwardChannelRequestPool_.getPendingMessages().length);
+    assertEquals(2, channel.outgoingMaps_.length);
+
+    assertObjectEquals(
+        [{foo2: 'bar2'}, {foo3: 'bar3'}, {foo4: 'bar4'}],
+        channel.getNonAckedMaps().map(queuedMap => queuedMap.map));
+  },
+
+  /** @suppress {visibility} Accessing private properties. */
+  testGetNonAckedMapsAfterChannelClose_returnsUnionOfPendingAndUnsentMaps() {
+    connect();
+
+    // First send one message and respond with server ack.
+    sendMap('foo1', 'bar1');
+    responseDone();
+
+    // Send 3 more messages which are non-acked.
+    sendMap('foo2', 'bar2');
+    sendMap('foo3', 'bar3');
+    sendMap('foo4', 'bar4');
+
+    // Verifies that we're indeed covering the case where 1 message is pending
+    // server ack and 2 message has not been sent to the network.
+    assertEquals(
+        1, channel.forwardChannelRequestPool_.getPendingMessages().length);
+    assertEquals(2, channel.outgoingMaps_.length);
+
+    disconnect();
+
+    assertObjectEquals(
+        [{foo2: 'bar2'}, {foo3: 'bar3'}, {foo4: 'bar4'}],
+        channel.getNonAckedMaps().map(queuedMap => queuedMap.map));
+  },
+
+  /** @suppress {visibility} Accessing private properties. */
   testResponseNoBackchannelPostNotBeforeBackchannel() {
     connect(8);
     sendMap('foo1', 'bar1');
@@ -1178,7 +1242,7 @@ testSuite({
     assertNotEquals(Stat.BACKCHANNEL_MISSING, lastStatEvent);
   },
 
-  /** @suppress {visibility} suppression added to enable type checking */
+  /** @suppress {visibility} Accessing private properties. */
   testResponseNoBackchannel() {
     connect(8);
     sendMap('foo1', 'bar1');
@@ -1193,33 +1257,33 @@ testSuite({
     assertEquals(Stat.BACKCHANNEL_MISSING, lastStatEvent);
   },
 
-  /** @suppress {visibility} suppression added to enable type checking */
+  /** @suppress {visibility} Accessing private properties. */
   testResponseNoBackchannelWithNoBackchannel() {
     connect(8);
     sendMap('foo1', 'bar1');
     assertNull(channel.backChannelTimerId_);
     channel.backChannelRequest_.cancel();
-    /** @suppress {visibility} suppression added to enable type checking */
+    /** @suppress {visibility} Accessing private properties. */
     channel.backChannelRequest_ = null;
     responseNoBackchannel();
     assertEquals(Stat.BACKCHANNEL_MISSING, lastStatEvent);
   },
 
-  /** @suppress {visibility} suppression added to enable type checking */
+  /** @suppress {visibility} Accessing private properties. */
   testResponseNoBackchannelWithStartTimer() {
     connect(8);
     sendMap('foo1', 'bar1');
 
     channel.backChannelRequest_.cancel();
-    /** @suppress {visibility} suppression added to enable type checking */
+    /** @suppress {visibility} Accessing private properties. */
     channel.backChannelRequest_ = null;
-    /** @suppress {visibility} suppression added to enable type checking */
+    /** @suppress {visibility} Accessing private properties. */
     channel.backChannelTimerId_ = 123;
     responseNoBackchannel();
     assertNotEquals(Stat.BACKCHANNEL_MISSING, lastStatEvent);
   },
 
-  /** @suppress {visibility} suppression added to enable type checking */
+  /** @suppress {visibility} Accessing private properties. */
   testResponseWithNoArraySent() {
     connect(8);
     sendMap('foo1', 'bar1');
@@ -1232,7 +1296,7 @@ testSuite({
     assertEquals(-1, channel.lastPostResponseArrayId_);
   },
 
-  /** @suppress {visibility} suppression added to enable type checking */
+  /** @suppress {visibility} Accessing private properties. */
   testResponseWithArraysMissing() {
     connect(8);
     sendMap('foo1', 'bar1');
@@ -1247,7 +1311,7 @@ testSuite({
     assertEquals(Stat.BACKCHANNEL_DEAD, lastStatEvent);
   },
 
-  /** @suppress {visibility} suppression added to enable type checking */
+  /** @suppress {visibility} Accessing private properties. */
   testMultipleResponsesWithArraysMissing() {
     connect(8);
     sendMap('foo1', 'bar1');
@@ -1266,7 +1330,7 @@ testSuite({
     assertEquals(Stat.BACKCHANNEL_DEAD, lastStatEvent);
   },
 
-  /** @suppress {visibility} suppression added to enable type checking */
+  /** @suppress {visibility} Accessing private properties. */
   testOnlyRetryOnceBasedOnResponse() {
     connect(8);
     sendMap('foo1', 'bar1');
@@ -1288,7 +1352,7 @@ testSuite({
     assertFalse(hasDeadBackChannelTimer());
   },
 
-  /** @suppress {visibility} suppression added to enable type checking */
+  /** @suppress {visibility} Accessing private properties. */
   testResponseWithArraysMissingAndLiveChannel() {
     connect(8);
     sendMap('foo1', 'bar1');
@@ -1307,7 +1371,7 @@ testSuite({
     assertNotEquals(Stat.BACKCHANNEL_DEAD, lastStatEvent);
   },
 
-  /** @suppress {visibility} suppression added to enable type checking */
+  /** @suppress {visibility} Accessing private properties. */
   testResponseWithBigOutstandingData() {
     connect(8);
     sendMap('foo1', 'bar1');
@@ -1323,10 +1387,10 @@ testSuite({
     assertNotEquals(Stat.BACKCHANNEL_DEAD, lastStatEvent);
   },
 
-  /** @suppress {visibility} suppression added to enable type checking */
+  /** @suppress {visibility} Accessing private properties. */
   testResponseInBufferedMode() {
     connect(8);
-    /** @suppress {visibility} suppression added to enable type checking */
+    /** @suppress {visibility} Accessing private properties. */
     channel.enableStreaming_ = false;
     sendMap('foo1', 'bar1');
     assertEquals(-1, channel.lastPostResponseArrayId_);
@@ -1363,7 +1427,7 @@ testSuite({
     assertEquals(WebChannelBase.State.CLOSED, channel.getState());
   },
 
-  /** @suppress {visibility} suppression added to enable type checking */
+  /** @suppress {visibility} Accessing private properties. */
   testPathAbsolute() {
     connect(8, undefined, '/talkgadget');
     assertEquals(channel.backChannelUri_.getDomain(), window.location.hostname);
@@ -1371,7 +1435,7 @@ testSuite({
         channel.forwardChannelUri_.getDomain(), window.location.hostname);
   },
 
-  /** @suppress {visibility} suppression added to enable type checking */
+  /** @suppress {visibility} Accessing private properties. */
   testPathRelative() {
     connect(8, undefined, 'talkgadget');
     assertEquals(channel.backChannelUri_.getDomain(), window.location.hostname);
@@ -1379,7 +1443,7 @@ testSuite({
         channel.forwardChannelUri_.getDomain(), window.location.hostname);
   },
 
-  /** @suppress {visibility} suppression added to enable type checking */
+  /** @suppress {visibility} Accessing private properties. */
   testPathWithHost() {
     connect(8, undefined, 'https://example.com');
     assertEquals(channel.backChannelUri_.getScheme(), 'https');

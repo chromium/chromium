@@ -23,7 +23,9 @@ goog.module.declareLegacyNamespace();
  */
 const TableCell = function(td, startRow, startCol) {
   this.element = td;
+  /** @suppress {strictMissingProperties} Added to tighten compiler checks */
   this.colSpan = parseInt(td.colSpan, 10) || 1;
+  /** @suppress {strictMissingProperties} Added to tighten compiler checks */
   this.rowSpan = parseInt(td.rowSpan, 10) || 1;
   this.startRow = startRow;
   this.startCol = startCol;
@@ -35,7 +37,9 @@ const TableCell = function(td, startRow, startCol) {
  * @private
  */
 TableCell.prototype.updateCoordinates_ = function() {
+  /** @suppress {strictMissingProperties} Added to tighten compiler checks */
   this.endCol = this.startCol + this.colSpan - 1;
+  /** @suppress {strictMissingProperties} Added to tighten compiler checks */
   this.endRow = this.startRow + this.rowSpan - 1;
 };
 
@@ -44,10 +48,14 @@ TableCell.prototype.updateCoordinates_ = function() {
  * Set this cell's colSpan, updating both its colSpan property and the
  * underlying element's colSpan attribute.
  * @param {number} colSpan The new colSpan.
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 TableCell.prototype.setColSpan = function(colSpan) {
   if (colSpan != this.colSpan) {
     if (colSpan > 1) {
+      /**
+       * @suppress {strictMissingProperties} Added to tighten compiler checks
+       */
       this.element.colSpan = colSpan;
     } else {
       this.element.colSpan = 1, this.element.removeAttribute('colSpan');
@@ -66,8 +74,14 @@ TableCell.prototype.setColSpan = function(colSpan) {
 TableCell.prototype.setRowSpan = function(rowSpan) {
   if (rowSpan != this.rowSpan) {
     if (rowSpan > 1) {
+      /**
+       * @suppress {strictMissingProperties} Added to tighten compiler checks
+       */
       this.element.rowSpan = rowSpan.toString();
     } else {
+      /**
+       * @suppress {strictMissingProperties} Added to tighten compiler checks
+       */
       this.element.rowSpan = '1';
       this.element.removeAttribute('rowSpan');
     }

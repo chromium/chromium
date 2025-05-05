@@ -41,8 +41,11 @@ goog.events.OnlineHandler = function() {
    */
   this.eventHandler_ = new goog.events.EventHandler(this);
 
+  // Note: On workers, these events are not supported on all browsers. See
+  // https://developer.mozilla.org/en-US/docs/Web/API/WorkerGlobalScope/online_event#browser_compatibility
   this.eventHandler_.listen(
-      window, [goog.events.EventType.ONLINE, goog.events.EventType.OFFLINE],
+      goog.global,
+      [goog.events.EventType.ONLINE, goog.events.EventType.OFFLINE],
       this.handleChange_);
 };
 goog.inherits(goog.events.OnlineHandler, goog.events.EventTarget);

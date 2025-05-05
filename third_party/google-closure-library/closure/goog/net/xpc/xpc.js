@@ -41,7 +41,6 @@ goog.require('goog.log');
 goog.net.xpc.TransportTypes = {
   UNDEFINED: 0,
   NATIVE_MESSAGING: 1,
-  DIRECT: 2,
 };
 
 
@@ -52,7 +51,6 @@ goog.net.xpc.TransportTypes = {
  */
 goog.net.xpc.TransportNames = {
   '1': 'NativeMessagingTransport',
-  '2': 'DirectTransport',
 };
 
 
@@ -69,25 +67,30 @@ goog.net.xpc.CfgFields = {
    * Both peers have to be initialized with
    * the same channel name.  If not present, a channel name is
    * generated (which then has to transferred to the peer somehow).
+   * @const
    */
   CHANNEL_NAME: 'cn',
   /**
    * Authorization token. If set, NIX will use this authorization token
    * to validate the setup.
+   * @const
    */
   AUTH_TOKEN: 'at',
   /**
    * Remote party's authorization token. If set, NIX will validate this
    * authorization token against that sent by the other party.
+   * @const
    */
   REMOTE_AUTH_TOKEN: 'rat',
   /**
    * The URI of the peer page.
+   * @const
    */
   PEER_URI: 'pu',
   /**
    * Ifame-ID identifier.
    * The id of the iframe element the peer-document lives in.
+   * @const
    */
   IFRAME_ID: 'ifrid',
   /**
@@ -96,36 +99,42 @@ goog.net.xpc.CfgFields = {
    * goog.net.xpc.TransportTypes or a Transport constructor fuction. If not
    * present, the transport is determined automatically based on the useragent's
    * capabilities.
+   * @const
    */
   TRANSPORT: 'tp',
   /**
    * Local relay URI identifier (IframeRelayTransport-specific).
    * The URI (can't contain a fragment identifier) used by the peer to
    * relay data through.
+   * @const
    */
   LOCAL_RELAY_URI: 'lru',
   /**
    * Peer relay URI identifier (IframeRelayTransport-specific).
    * The URI (can't contain a fragment identifier) used to relay data
    * to the peer.
+   * @const
    */
   PEER_RELAY_URI: 'pru',
   /**
    * Local poll URI identifier (IframePollingTransport-specific).
    * The URI  (can't contain a fragment identifier)which is polled
    * to receive data from the peer.
+   * @const
    */
   LOCAL_POLL_URI: 'lpu',
   /**
    * Local poll URI identifier (IframePollingTransport-specific).
    * The URI (can't contain a fragment identifier) used to send data
    * to the peer.
+   * @const
    */
   PEER_POLL_URI: 'ppu',
   /**
    * The hostname of the peer window, including protocol, domain, and port
    * (if specified). Used for security sensitive applications that make
    * use of NativeMessagingTransport (i.e. most applications).
+   * @const
    */
   PEER_HOSTNAME: 'ph',
   /**
@@ -146,6 +155,7 @@ goog.net.xpc.CfgFields = {
    * already communicating with a previous channel object of the same name.  If
    * that behavior is needed, this mode should not be used.  Reconnection by
    * inner frames is supported in this mode however.
+   * @const
    */
   ONE_SIDED_HANDSHAKE: 'osh',
   /**
@@ -153,6 +163,7 @@ goog.net.xpc.CfgFields = {
    * each peer whenever the role cannot be reliably determined (e.g. the two
    * peer windows are not parent/child frames). If unspecified, the role will
    * be dynamically determined, assuming a parent/child frame setup.
+   * @const
    */
   ROLE: 'role',
   /**
@@ -164,15 +175,9 @@ goog.net.xpc.CfgFields = {
    * unsupported case of cross-protocol interoperation is where a connection
    * starts out with V2 at both ends, and one of the ends reconnects as a V1.
    * All other initial startup and reconnection scenarios are supported.
+   * @const
    */
   NATIVE_TRANSPORT_PROTOCOL_VERSION: 'nativeProtocolVersion',
-  /**
-   * Whether the direct transport runs in synchronous mode. The default is to
-   * emulate the other transports and run asyncronously but there are some
-   * circumstances where syncronous calls are required. If this property is
-   * set to true, the transport will send the messages synchronously.
-   */
-  DIRECT_TRANSPORT_SYNC_MODE: 'directSyncMode',
 };
 
 

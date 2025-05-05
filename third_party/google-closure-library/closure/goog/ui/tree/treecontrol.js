@@ -242,7 +242,10 @@ goog.ui.tree.TreeControl.prototype.updateExpandIcon = function() {
 };
 
 
-/** @override */
+/**
+ * @override
+ * @suppress {strictMissingProperties}
+ */
 goog.ui.tree.TreeControl.prototype.getRowClassName = function() {
   'use strict';
   return goog.ui.tree.TreeControl.superClass_.getRowClassName.call(this) +
@@ -254,6 +257,7 @@ goog.ui.tree.TreeControl.prototype.getRowClassName = function() {
  * Returns the source for the icon.
  * @return {string} Src for the icon.
  * @override
+ * @suppress {strictMissingProperties}
  */
 goog.ui.tree.TreeControl.prototype.getCalculatedIconClass = function() {
   'use strict';
@@ -361,6 +365,7 @@ goog.ui.tree.TreeControl.prototype.updateLinesAndExpandIcons_ = function() {
     if (childrenEl) {
       const hideLines =
           !showLines || tree == node.getParent() && !showRootLines;
+      /** @suppress {strictMissingProperties} */
       const childClass = hideLines ? node.getConfig().cssChildrenNoLines :
                                      node.getConfig().cssChildren;
       childrenEl.className = childClass;
@@ -476,6 +481,7 @@ goog.ui.tree.TreeControl.prototype.enterDocument = function() {
   'use strict';
   goog.ui.tree.TreeControl.superClass_.enterDocument.call(this);
   const el = this.getElement();
+  /** @suppress {strictMissingProperties} */
   el.className = this.getConfig().cssRoot;
   el.setAttribute('hideFocus', 'true');
   this.attachEvents_();
@@ -494,6 +500,7 @@ goog.ui.tree.TreeControl.prototype.exitDocument = function() {
 /**
  * Adds the event listeners to the tree.
  * @private
+ * @suppress {strictMissingProperties}
  */
 goog.ui.tree.TreeControl.prototype.attachEvents_ = function() {
   'use strict';
@@ -579,6 +586,7 @@ goog.ui.tree.TreeControl.prototype.handleKeyEvent = function(e) {
  * @return {goog.ui.tree.BaseNode} The containing node or null if no node is
  *     found.
  * @private
+ * @suppress {strictMissingProperties}
  */
 goog.ui.tree.TreeControl.prototype.getNodeFromEvent_ = function(e) {
   'use strict';

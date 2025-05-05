@@ -32,7 +32,6 @@ goog.require('goog.dom.TagName');
 goog.require('goog.object');
 goog.require('goog.testing.CspViolationObserver');
 goog.require('goog.testing.JsUnitException');
-goog.require('goog.testing.asserts');
 goog.require('goog.url');
 
 
@@ -175,7 +174,7 @@ goog.testing.TestCase = function(opt_name) {
   this.order = goog.testing.TestCase.Order.SORTED;
 
   /** @private {function(!goog.testing.TestCase.Result)} */
-  this.runNextTestCallback_ = goog.nullFunction;
+  this.runNextTestCallback_ = () => {};
 
   /**
    * The currently executing test case or null.
@@ -371,6 +370,14 @@ goog.testing.TestCase.prototype.batchTime_ = 0;
  * @private
  */
 goog.testing.TestCase.prototype.currentTestPointer_ = 0;
+
+
+/**
+ * Whether to use Native Promises or goog.Promise.
+ * @type {boolean}
+ * @private
+ */
+goog.testing.TestCase.prototype.useNativePromise_ = false;
 
 
 /**
@@ -800,7 +807,23 @@ goog.testing.TestCase.prototype.getTestResults = function() {
  */
 goog.testing.TestCase.prototype.runTests = function() {
   'use strict';
-  goog.testing.Continuation_.run(this.runSetUpPage_(this.execute));
+  goog.testing.TestCase.Continuation_.run(this.runSetUpPage_(this.execute));
+};
+
+/**
+ * Configures the TestCase to use native Promises when waiting for methods that
+ * return Thenables.
+ */
+goog.testing.TestCase.prototype.useNativePromise = function() {
+  this.useNativePromise_ = true;
+};
+
+/**
+ * Configures the TestCase to use goog.Promise when waiting for methods that
+ * return Thenables.
+ */
+goog.testing.TestCase.prototype.useGoogPromise = function() {
+  this.useNativePromise_ = false;
 };
 
 
@@ -813,9 +836,12 @@ goog.testing.TestCase.prototype.runTests = function() {
  */
 goog.testing.TestCase.prototype.runTestsReturningPromise = function() {
   'use strict';
-  return new goog.Promise(function(resolve) {
+  /**
+   * @param {function(!goog.testing.TestCase.Result)} resolve
+   */
+  const resolver = (resolve) => {
     'use strict';
-    goog.testing.Continuation_.run(this.runSetUpPage_(function() {
+    goog.testing.TestCase.Continuation_.run(this.runSetUpPage_(() => {
       'use strict';
       if (!this.prepareForRun_()) {
         resolve(this.result_);
@@ -826,9 +852,13 @@ goog.testing.TestCase.prototype.runTestsReturningPromise = function() {
       this.saveMessage('Start');
       this.batchTime_ = this.now();
       this.runNextTestCallback_ = resolve;
-      goog.testing.Continuation_.run(this.runNextTest_());
+      goog.testing.TestCase.Continuation_.run(this.runNextTest_());
     }));
-  }, this);
+  };
+  if (this.useNativePromise_) {
+    return new Promise(resolver);
+  }
+  return new goog.Promise(resolver);
 };
 
 
@@ -836,7 +866,7 @@ goog.testing.TestCase.prototype.runTestsReturningPromise = function() {
  * Runs the setUpPage methods.
  * @param {function(this:goog.testing.TestCase)} runTestsFn Callback to invoke
  *     after setUpPage has completed.
- * @return {?goog.testing.Continuation_}
+ * @return {?goog.testing.TestCase.Continuation_}
  * @private
  */
 goog.testing.TestCase.prototype.runSetUpPage_ = function(runTestsFn) {
@@ -875,7 +905,7 @@ goog.testing.TestCase.prototype.runSetUpPage_ = function(runTestsFn) {
  * executes synchronously until the first promise is returned from a
  * test method (or until a resource limit is reached; see
  * {@link finishTestInvocation_}).
- * @return {?goog.testing.Continuation_}
+ * @return {?goog.testing.TestCase.Continuation_}
  * @private
  */
 goog.testing.TestCase.prototype.runNextTest_ = function() {
@@ -883,7 +913,7 @@ goog.testing.TestCase.prototype.runNextTest_ = function() {
   this.curTest_ = this.next();
   if (!this.curTest_ || !this.running) {
     this.finalize();
-    return new goog.testing.Continuation_(
+    return new goog.testing.TestCase.Continuation_(
         goog.bind(this.runNextTestCallback_, this, this.result_));
   }
 
@@ -892,12 +922,12 @@ goog.testing.TestCase.prototype.runNextTest_ = function() {
     shouldRunTest = this.shouldRunTestsHelper_();
   } catch (error) {
     this.curTest_.name = 'shouldRunTests for ' + this.curTest_.name;
-    return new goog.testing.Continuation_(
+    return new goog.testing.TestCase.Continuation_(
         goog.bind(this.finishTestInvocation_, this, error));
   }
 
   if (!shouldRunTest) {
-    return new goog.testing.Continuation_(
+    return new goog.testing.TestCase.Continuation_(
         goog.bind(this.finishTestInvocation_, this));
   }
 
@@ -906,7 +936,7 @@ goog.testing.TestCase.prototype.runNextTest_ = function() {
   this.result_.runCount++;
   this.log('Running test: ' + this.curTest_.name);
   if (this.maybeFailTestEarly(this.curTest_)) {
-    return new goog.testing.Continuation_(
+    return new goog.testing.TestCase.Continuation_(
         goog.bind(this.finishTestInvocation_, this));
   }
   goog.testing.TestCase.currentTestName = this.curTest_.name;
@@ -972,7 +1002,7 @@ goog.testing.TestCase.prototype.shouldRunTestsHelper_ = function() {
 
 /**
  * Runs all the setups associated with a test.
- * @return {?goog.testing.Continuation_}
+ * @return {?goog.testing.TestCase.Continuation_}
  * @private
  */
 goog.testing.TestCase.prototype.safeSetUp_ = function() {
@@ -985,7 +1015,7 @@ goog.testing.TestCase.prototype.safeSetUp_ = function() {
 /**
  * Recursively invokes setUp functions.
  * @param {!Array<function()>} setUps
- * @return {function(): ?goog.testing.Continuation_}
+ * @return {function(): ?goog.testing.TestCase.Continuation_}
  * @private
  */
 goog.testing.TestCase.prototype.safeSetUpHelper_ = function(setUps) {
@@ -1000,7 +1030,7 @@ goog.testing.TestCase.prototype.safeSetUpHelper_ = function(setUps) {
 
 /**
  * Calls the given test function, handling errors appropriately.
- * @return {?goog.testing.Continuation_}
+ * @return {?goog.testing.TestCase.Continuation_}
  * @private
  */
 goog.testing.TestCase.prototype.safeRunTest_ = function() {
@@ -1014,7 +1044,7 @@ goog.testing.TestCase.prototype.safeRunTest_ = function() {
 /**
  * Calls {@link tearDown}, handling errors appropriately.
  * @param {*=} opt_error Error associated with the test, if any.
- * @return {?goog.testing.Continuation_}
+ * @return {?goog.testing.TestCase.Continuation_}
  * @private
  */
 goog.testing.TestCase.prototype.safeTearDown_ = function(opt_error) {
@@ -1032,7 +1062,7 @@ goog.testing.TestCase.prototype.safeTearDown_ = function(opt_error) {
 /**
  * Recursively invokes tearDown functions.
  * @param {!Array<function()>} tearDowns
- * @return {function(): ?goog.testing.Continuation_}
+ * @return {function(): ?goog.testing.TestCase.Continuation_}
  * @private
  */
 goog.testing.TestCase.prototype.safeTearDownHelper_ = function(tearDowns) {
@@ -1067,11 +1097,11 @@ goog.testing.TestCase.prototype.safeTearDownHelper_ = function(tearDowns) {
  *
  * @param {function()} fn The function to call.
  * @param {function(this:goog.testing.TestCase):
- *     (?goog.testing.Continuation_|undefined)} onSuccess
+ *     (?goog.testing.TestCase.Continuation_|undefined)} onSuccess
  * @param {function(this:goog.testing.TestCase, *):
- *     (?goog.testing.Continuation_|undefined)} onFailure
+ *     (?goog.testing.TestCase.Continuation_|undefined)} onFailure
  * @param {string} fnName Name of the function being invoked e.g. 'setUp'.
- * @return {?goog.testing.Continuation_}
+ * @return {?goog.testing.TestCase.Continuation_}
  * @private
  */
 goog.testing.TestCase.prototype.invokeFunction_ = function(
@@ -1086,7 +1116,12 @@ goog.testing.TestCase.prototype.invokeFunction_ = function(
         (retval && typeof retval['then'] === 'function')) {
       // Resolve Thenable into a proper Promise to avoid hard to debug
       // problems.
-      var promise = goog.Promise.resolve(retval);
+      let promise;
+      if (this.useNativePromise_) {
+        promise = Promise.resolve(retval);
+      } else {
+        promise = goog.Promise.resolve(retval);
+      }
       promise = this.rejectIfPromiseTimesOut_(
           promise, self.promiseTimeout,
           'Timed out while waiting for a promise returned from ' + fnName +
@@ -1098,9 +1133,9 @@ goog.testing.TestCase.prototype.invokeFunction_ = function(
             self.resetBatchTimeAfterPromise_();
             self.checkCspViolations_(fnName);
             if (self.thrownAssertionExceptions_.length == 0) {
-              goog.testing.Continuation_.run(onSuccess.call(self));
+              goog.testing.TestCase.Continuation_.run(onSuccess.call(self));
             } else {
-              goog.testing.Continuation_.run(onFailure.call(
+              goog.testing.TestCase.Continuation_.run(onFailure.call(
                   self, self.reportUnpropagatedAssertionExceptions_(fnName)));
             }
           },
@@ -1109,15 +1144,16 @@ goog.testing.TestCase.prototype.invokeFunction_ = function(
             self.reportUnpropagatedAssertionExceptions_(fnName, e);
             self.resetBatchTimeAfterPromise_();
             self.checkCspViolations_(fnName);
-            goog.testing.Continuation_.run(onFailure.call(self, e));
+            goog.testing.TestCase.Continuation_.run(onFailure.call(self, e));
           });
       return null;
     } else {
       this.checkCspViolations_(fnName);
       if (this.thrownAssertionExceptions_.length == 0) {
-        return new goog.testing.Continuation_(goog.bind(onSuccess, this));
+        return new goog.testing.TestCase.Continuation_(
+            goog.bind(onSuccess, this));
       } else {
-        return new goog.testing.Continuation_(goog.bind(
+        return new goog.testing.TestCase.Continuation_(goog.bind(
             onFailure, this,
             this.reportUnpropagatedAssertionExceptions_(fnName)));
       }
@@ -1125,7 +1161,8 @@ goog.testing.TestCase.prototype.invokeFunction_ = function(
   } catch (e) {
     this.checkCspViolations_(fnName);
     this.reportUnpropagatedAssertionExceptions_(fnName, e);
-    return new goog.testing.Continuation_(goog.bind(onFailure, this, e));
+    return new goog.testing.TestCase.Continuation_(
+        goog.bind(onFailure, this, e));
   }
 };
 
@@ -1188,7 +1225,7 @@ goog.testing.TestCase.prototype.resetBatchTimeAfterPromise_ = function() {
  * Finishes up bookkeeping for the current test function, and schedules
  * the next test function to run, either immediately or asychronously.
  * @param {*=} opt_error Optional error resulting from the test invocation.
- * @return {?goog.testing.Continuation_}
+ * @return {?goog.testing.TestCase.Continuation_}
  * @private
  */
 goog.testing.TestCase.prototype.finishTestInvocation_ = function(opt_error) {
@@ -1218,7 +1255,8 @@ goog.testing.TestCase.prototype.finishTestInvocation_ = function(opt_error) {
     this.timeout(goog.bind(this.startNextBatch_, this), 0);
     return null;
   } else {
-    return new goog.testing.Continuation_(goog.bind(this.runNextTest_, this));
+    return new goog.testing.TestCase.Continuation_(
+        goog.bind(this.runNextTest_, this));
   }
 };
 
@@ -1256,7 +1294,7 @@ goog.testing.TestCase.prototype.checkCspViolations_ = function(name) {
 goog.testing.TestCase.prototype.startNextBatch_ = function() {
   'use strict';
   this.batchTime_ = this.now();
-  goog.testing.Continuation_.run(this.runNextTest_());
+  goog.testing.TestCase.Continuation_.run(this.runNextTest_());
 };
 
 
@@ -1508,7 +1546,7 @@ goog.testing.TestCase.prototype.setTestObj = function(obj) {
   // Check any previously added (likely auto-discovered) tests, only one source
   // of discovered test and life-cycle methods is allowed.
   if (this.tests_.length > 0) {
-    fail(
+    throw new Error(
         'Test methods have already been configured.\n' +
         'Tests previously found:\n' +
         this.tests_
@@ -1631,10 +1669,10 @@ goog.testing.TestCase.prototype.cycleTests = function() {
   this.saveMessage('Start');
   this.batchTime_ = this.now();
   if (this.running) {
-    this.runNextTestCallback_ = goog.nullFunction;
+    this.runNextTestCallback_ = () => {};
     // Kick off the tests. runNextTest_ will schedule all of the tests,
     // using a mixture of synchronous and asynchronous strategies.
-    goog.testing.Continuation_.run(this.runNextTest_());
+    goog.testing.TestCase.Continuation_.run(this.runNextTest_());
   }
 };
 
@@ -1728,7 +1766,7 @@ goog.testing.TestCase.prototype.getTimeStamp_ = function() {
 
   // Ensure millis are always 3-digits
   var millis = '00' + d.getMilliseconds();
-  millis = millis.substr(millis.length - 3);
+  millis = millis.slice(-3);
 
   return this.pad_(d.getHours()) + ':' + this.pad_(d.getMinutes()) + ':' +
       this.pad_(d.getSeconds()) + '.' + millis;
@@ -2068,12 +2106,15 @@ goog.testing.TestCase.Test.prototype.stopped = function() {
 };
 
 /**
- * Returns the runtime for this test function
- * @return {number} milliseconds takenn by the test.
+ * Returns the runtime for this test function in milliseconds.
+ * @return {number}
  */
 goog.testing.TestCase.Test.prototype.getElapsedTime = function() {
   'use strict';
-  return this.stoppedTime_ - this.startTime_;
+  // Round the elapsed time to the closest multiple of 0.1ms (the resolution of
+  // performance.now()) to avoid noise due to floating point rounding errors
+  // when it's printed.
+  return Math.round((this.stoppedTime_ - this.startTime_) * 10) / 10;
 };
 
 /**
@@ -2293,7 +2334,7 @@ goog.testing.TestCase.parseRunTests_ = function(href) {
     return null;
   }
 
-  const nonOriginParts = href.substr(queryParamIndex);
+  const nonOriginParts = href.slice(queryParamIndex);
 
   // Use a "fake" origin because tests may load using protocols that goog.url
   // doesn't support
@@ -2329,11 +2370,11 @@ goog.testing.TestCase.parseRunTests_ = function(href) {
 /**
  * Wraps provided promise and returns a new promise which will be rejected
  * if the original promise does not settle within the given timeout.
- * @param {!goog.Promise<T>} promise
+ * @param {!IThenable<T>} promise
  * @param {number} timeoutInMs Number of milliseconds to wait for the promise to
  *     settle before failing it with a timeout error.
  * @param {string} errorMsg Error message to use if the promise times out.
- * @return {!goog.Promise<T>} A promise that will settle with the original
+ * @return {!IThenable<T>} A promise that will settle with the original
        promise unless the timeout is exceeded.
  *     error.
  * @template T
@@ -2342,19 +2383,28 @@ goog.testing.TestCase.parseRunTests_ = function(href) {
 goog.testing.TestCase.prototype.rejectIfPromiseTimesOut_ = function(
     promise, timeoutInMs, errorMsg) {
   'use strict';
-  var self = this;
-  var start = this.now();
-  return new goog.Promise(function(resolve, reject) {
+  const start = this.now();
+  /**
+   * @param {function(?)} resolve
+   * @param {function(*)} reject
+   */
+  const resolver = (resolve, reject) => {
     'use strict';
-    var timeoutId = self.timeout(function() {
+    const timeoutId = this.timeout(() => {
       'use strict';
-      var elapsed = self.now() - start;
-      reject(new Error(errorMsg + '\nElapsed time: ' + elapsed + ' ms.'));
+      const elapsed = this.now() - start;
+      reject(new Error(`${errorMsg}\nElapsed time: ${elapsed} ms.`));
     }, timeoutInMs);
-    promise.then(resolve, reject);
-    var clearTimeout = goog.bind(self.clearTimeout, self, timeoutId);
+    const clearTimeout = () => {
+      this.clearTimeout(timeoutId);
+    };
     promise.then(clearTimeout, clearTimeout);
-  });
+    promise.then(resolve, reject);
+  };
+  if (this.useNativePromise_) {
+    return new Promise(resolver);
+  }
+  return new goog.Promise(resolver);
 };
 
 
@@ -2456,18 +2506,18 @@ goog.testing.TestCase.Error.prototype.toObject_ = function() {
 
 /**
  * @constructor
- * @param {function(): (?goog.testing.Continuation_|undefined)} fn
+ * @param {function(): (?goog.testing.TestCase.Continuation_|undefined)} fn
  * @private
  */
-goog.testing.Continuation_ = function(fn) {
+goog.testing.TestCase.Continuation_ = function(fn) {
   'use strict';
   /** @private @const */
   this.fn_ = fn;
 };
 
 
-/** @param {?goog.testing.Continuation_|undefined} continuation */
-goog.testing.Continuation_.run = function(continuation) {
+/** @param {?goog.testing.TestCase.Continuation_|undefined} continuation */
+goog.testing.TestCase.Continuation_.run = function(continuation) {
   'use strict';
   var fn = continuation && continuation.fn_;
   while (fn) {

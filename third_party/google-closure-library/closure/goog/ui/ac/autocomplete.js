@@ -495,6 +495,7 @@ goog.ui.ac.AutoComplete.prototype.setTriggerSuggestionsOnUpdate = function(
  * @param {string} token The string for which to search in the Matcher.
  * @param {string=} opt_fullString Optionally, the full string in the input
  *     field.
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.ui.ac.AutoComplete.prototype.setToken = function(token, opt_fullString) {
   'use strict';
@@ -625,11 +626,13 @@ goog.ui.ac.AutoComplete.prototype.hilitePrev = function() {
  * @param {number} id A row id (not index).
  * @return {boolean} Whether the id was hilited. Returns false if the row is
  *     disabled.
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.ui.ac.AutoComplete.prototype.hiliteId = function(id) {
   'use strict';
   var index = this.getIndexOfId(id);
   var row = this.rows_[index];
+  /** @suppress {strictMissingProperties} Added to tighten compiler checks */
   var rowDisabled =
       !!row && this.matcher_.isRowDisabled && this.matcher_.isRowDisabled(row);
   if (!rowDisabled) {
@@ -657,6 +660,7 @@ goog.ui.ac.AutoComplete.prototype.hiliteIndex = function(index) {
  * If there are any current matches, this passes the hilited row data to
  * <code>selectionHandler.selectRow()</code>
  * @return {boolean} Whether there are any current matches.
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.ui.ac.AutoComplete.prototype.selectHilited = function() {
   'use strict';
@@ -708,6 +712,7 @@ goog.ui.ac.AutoComplete.prototype.hasHighlight = function() {
 /**
  * Clears out the token, rows, and hilite, and calls
  * <code>renderer.dismiss()</code>
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.ui.ac.AutoComplete.prototype.dismiss = function() {
   'use strict';
@@ -769,7 +774,10 @@ goog.ui.ac.AutoComplete.prototype.cancelDelayedDismiss = function() {
 };
 
 
-/** @override */
+/**
+ * @override
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
+ */
 goog.ui.ac.AutoComplete.prototype.disposeInternal = function() {
   'use strict';
   goog.ui.ac.AutoComplete.superClass_.disposeInternal.call(this);

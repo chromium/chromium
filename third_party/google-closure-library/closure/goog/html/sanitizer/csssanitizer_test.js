@@ -14,7 +14,6 @@ const SafeStyle = goog.require('goog.html.SafeStyle');
 const SafeStyleSheet = goog.require('goog.html.SafeStyleSheet');
 const SafeUrl = goog.require('goog.html.SafeUrl');
 const dom = goog.require('goog.testing.dom');
-const googArray = goog.require('goog.array');
 const googString = goog.require('goog.string');
 const isVersion = goog.require('goog.userAgent.product.isVersion');
 const product = goog.require('goog.userAgent.product');
@@ -22,11 +21,7 @@ const testSuite = goog.require('goog.testing.testSuite');
 const testing = goog.require('goog.html.testing');
 const userAgent = goog.require('goog.userAgent');
 
-const isIE8 = userAgent.IE && !userAgent.isVersionOrHigher(9);
-
 const isSafari9OrOlder = product.SAFARI && !isVersion(10);
-
-const supportsDomParser = !userAgent.IE || userAgent.isVersionOrHigher(10);
 
 /**
  * @param {string} cssText CSS text usually associated with an inline style.
@@ -44,20 +39,6 @@ function getStyleFromCssText(cssText) {
  * @param {string} actualCssText Actual CSS text.
  */
 function assertCSSTextEquals(expectedCssText, actualCssText) {
-  if (isIE8) {
-    // We get a bunch of default values set in IE8 because of the way we iterate
-    // over the CSSStyleDecleration keys.
-    // TODO(danesh): Fix IE8 or remove this hack. It will be problematic for
-    // tests which have an extra semi-colon in the value (even if quoted).
-    const actualCssArray = actualCssText.split(/\s*;\s*/);
-    const ie8StyleString = 'WIDTH: 0px; BOTTOM: 0px; HEIGHT: 0px; TOP: 0px; ' +
-        'RIGHT: 0px; TEXT-DECORATION: none underline overline line-through; ' +
-        'LEFT: 0px; TEXT-DECORATION: underline line-through;';
-    ie8StyleString.split(/\s*;\s*/).forEach(ie8Css => {
-      googArray.remove(actualCssArray, ie8Css);
-    });
-    actualCssText = actualCssArray.join('; ');
-  }
   assertEquals(
       getStyleFromCssText(expectedCssText).cssText,
       getStyleFromCssText(actualCssText).cssText);
@@ -78,10 +59,7 @@ function getSanitizedInlineStyle(sourceCss, urlRewrite = undefined) {
   } catch (err) {
     // IE8 doesn't like setting invalid properties. It throws an "Invalid
     // Argument" exception.
-    if (!isIE8) {
-      throw err;
-    }
-    return '';
+    throw err;
   }
 }
 
@@ -109,8 +87,7 @@ function assertSanitizedCssEquals(
  *     chrome: string,
  *     firefox: (string|undefined),
  *     safari: (string|undefined),
- *     newIE: (string|undefined),
- *     ie10: (string|undefined)}} expectedCssTextByBrowser An object that maps
+ *     newIE: (string|undefined)}} expectedCssTextByBrowser An object that maps
  * each browser to a different expected value. All browsers but chrome are
  * optional. If a browser is missing, the chrome expected value is used instead.
  * @param {string} inputCssText
@@ -127,12 +104,6 @@ function assertBrowserSanitizedCssEquals(
     expectedCssText = expectedCssTextByBrowser.firefox;
   } else if (product.SAFARI) {
     expectedCssText = expectedCssTextByBrowser.safari;
-  } else if (product.IE && document.documentMode == 10) {
-    expectedCssText = expectedCssTextByBrowser.ie10;
-    console.log('ie10');
-  } else if (product.IE && !userAgent.isVersionOrHigher(10)) {
-    // Don't even try with chrome as default for IE8 and IE9.
-    expectedCssText = '';
   } else if (product.IE || product.EDGE) {
     expectedCssText = expectedCssTextByBrowser.newIE;
   } else {
@@ -172,10 +143,6 @@ function inlineStyleRulesString(html) {
  */
 function assertInlinedStyles(expectedHtml, originalHtml) {
   const inlinedHtml = inlineStyleRulesString(originalHtml);
-  if (!supportsDomParser) {
-    assertEquals('', inlinedHtml);
-    return;
-  }
   dom.assertHtmlMatches(
       expectedHtml, inlinedHtml, true /* opt_strictAttributes */);
 }
@@ -212,12 +179,6 @@ testSuite({
     // Negative margins are allowed.
     actualCSS = 'margin:    -7px -.5px -23px -1.25px';
     expectedCSS = 'margin: -7px -0.5px -23px -1.25px';
-    if (isIE8) {
-      // IE8 doesn't like sub-pixels
-      // https://blogs.msdn.microsoft.com/ie/2010/11/03/sub-pixel-fonts-in-ie9/
-      expectedCSS = expectedCSS.replace('-0.5px', '0px');
-      expectedCSS = expectedCSS.replace('-1.25px', '-1px');
-    }
     assertCSSTextEquals(expectedCSS, getSanitizedInlineStyle(actualCSS));
 
     actualCSS = 'quotes: "{" "}" "<" ">"';
@@ -347,11 +308,6 @@ testSuite({
   },
 
   testExpressionsPreserved() {
-    if (isIE8) {
-      // Disable this test as IE8 doesn't support expressions.
-      // https://msdn.microsoft.com/en-us/library/ms537634(v=VS.85).aspx
-      return;
-    }
 
     let actualCSS;
     let expectedCSS;
@@ -528,11 +484,9 @@ testSuite({
 
     let input = 'a {background-image: url("http://bar.com")}';
     const quoted = '#foo a{background-image: url("http://bar.com");}';
-    // Safari will add a slash.
-    const slash = '#foo a{background-image: url("http://bar.com/");}';
     assertBrowserSanitizedCssEquals(
-        {safari: slash, chrome: quoted}, input, undefined /* opt_containerId */,
-        urlRewriter);
+        {safari: quoted, chrome: quoted}, input,
+        undefined /* opt_containerId */, urlRewriter);
 
     input = 'a {background-image: url("http://nope.com")}';
     let expected = '#foo a{}';
@@ -580,20 +534,20 @@ testSuite({
     let doubleQuoted = '#foo a[data-foo="foo,bar"],#foo b{color: red;}';
     let singleQuoted = '#foo a[data-foo=\'foo,bar\'],#foo b{color: red;}';
     assertBrowserSanitizedCssEquals(
-        {chrome: doubleQuoted, newIE: singleQuoted, ie10: singleQuoted}, input);
+        {chrome: doubleQuoted, newIE: singleQuoted}, input);
 
     input = 'a[data-foo=\'foo,bar\'], b { color: red }';
     // Chrome converts the string to double quotes.
     doubleQuoted = '#foo a[data-foo="foo,bar"],#foo b{color: red;}';
     singleQuoted = '#foo a[data-foo=\'foo,bar\'],#foo b{color: red;}';
     assertBrowserSanitizedCssEquals(
-        {chrome: doubleQuoted, newIE: singleQuoted, ie10: singleQuoted}, input);
+        {chrome: doubleQuoted, newIE: singleQuoted}, input);
 
     input = 'a[foo="foo,bar"][bar="baz"], b { color: blue }';
     doubleQuoted = '#foo a[foo="foo,bar"][bar="baz"],#foo b{color: blue;}';
     singleQuoted = '#foo a[foo=\'foo,bar\'][bar=\'baz\'],#foo b{color: blue;}';
     assertBrowserSanitizedCssEquals(
-        {chrome: doubleQuoted, newIE: singleQuoted, ie10: singleQuoted}, input);
+        {chrome: doubleQuoted, newIE: singleQuoted}, input);
 
     input = 'a[foo="foo,bar"], b, c[foo="f,b"][bar="f,b"] { color: red }';
     doubleQuoted = '#foo a[foo="foo,bar"],#foo b,#foo c[foo="f,b"][bar="f,b"]' +
@@ -602,7 +556,7 @@ testSuite({
         '#foo a[foo=\'foo,bar\'],#foo b,#foo c[bar=\'f,b\'][foo=\'f,b\']' +
         '{color: red;}';
     assertBrowserSanitizedCssEquals(
-        {chrome: doubleQuoted, newIE: singleQuoted, ie10: singleQuoted}, input);
+        {chrome: doubleQuoted, newIE: singleQuoted}, input);
   },
 
   testSanitizeStyleSheetString_stringWithEscapedQuotesInSelector() {
@@ -612,7 +566,7 @@ testSuite({
     let doubleQuoted = '#foo a[a="a\\"b"]{color: black;}';
     let singleQuoted = '#foo a[a=\'a"b\']{color: black;}';
     assertBrowserSanitizedCssEquals(
-        {chrome: doubleQuoted, ie10: singleQuoted, newIE: singleQuoted}, input);
+        {chrome: doubleQuoted, newIE: singleQuoted}, input);
 
     input = 'a[a="a\\\'b"] { color: grey; }';
     doubleQuoted = '#foo a[a="a\'b"]{color: grey;}';
@@ -621,7 +575,6 @@ testSuite({
         {
           chrome: doubleQuoted,
           firefox: doubleQuoted,
-          ie10: '',
           newIE: singleQuoted,
         },
         input);
@@ -634,7 +587,6 @@ testSuite({
           chrome: doubleQuoted,
           firefox: doubleQuoted,
           newIE: singleQuoted,
-          ie10: '',
         },
         input);
 
@@ -646,7 +598,6 @@ testSuite({
           chrome: doubleQuoted,
           firefox: doubleQuoted,
           newIE: singleQuoted,
-          ie10: '',
         },
         input);
 
@@ -654,16 +605,14 @@ testSuite({
     doubleQuoted = '#foo a[a="a\\"b"]{color: black;}';
     singleQuoted = '#foo a[a=\'a"b\']{color: black;}';
     assertBrowserSanitizedCssEquals(
-        {chrome: doubleQuoted, ie10: singleQuoted, newIE: singleQuoted}, input);
+        {chrome: doubleQuoted, newIE: singleQuoted}, input);
   },
 
   testSanitizeInlineStyleString_invalidSelector() {
     const input = 'a{}';
-    if (supportsDomParser) {
-      assertThrows(() => {
-        CssSanitizer.sanitizeStyleSheetString(input, '</style>');
-      });
-    }
+    assertThrows(() => {
+      CssSanitizer.sanitizeStyleSheetString(input, '</style>');
+    });
   },
 
   testInlineStyleRules_empty() {
@@ -692,10 +641,32 @@ testSuite({
   },
 
   testInlineStyleRules_specificity() {
+    // Assert that the #foo style is applied over the <a> style (ID selectors
+    // have a higher specificity).
     const input = '<style>a{color: red; border: 1px}' +
         '#foo{color: white; border: 2px}</style>' +
         '<a id="foo" style="color: black">foo</a>';
     const expected = '<a id="foo" style="color: black; border: 2px">foo</a>';
+    assertInlinedStyles(expected, input);
+  },
+
+  testInlineStyleRules_specificity_reverse() {
+    // Assert that the style rule with greater specificity (#foo) wins
+    // regardless of the order of appearance.
+    const input = '<style>#foo{color: white; border: 2px}' +
+        'a{color: red; border: 1px}</style>' +
+        '<a id="foo" style="color: black">foo</a>';
+    const expected = '<a id="foo" style="color: black; border: 2px">foo</a>';
+    assertInlinedStyles(expected, input);
+  },
+
+  testInlineStyleRules_specificityTie_lastRuleWins() {
+    // In case of a specificity tie, assert that the last style rule defined
+    // wins.
+    const input =
+        '<style>.zoo{color: blue} .foo.bar{color: red} .bar.zoo{color: white}' +
+        '</style><a class="foo bar zoo">foo</a>';
+    const expected = '<a class="foo bar zoo" style="color: white">foo</a>';
     assertInlinedStyles(expected, input);
   },
 

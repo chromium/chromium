@@ -19,7 +19,6 @@ goog.require('goog.events.EventTarget');
 goog.require('goog.events.EventType');
 goog.require('goog.net.EventType');
 goog.require('goog.object');
-goog.require('goog.userAgent');
 goog.requireType('goog.events.Event');
 
 
@@ -147,9 +146,7 @@ goog.net.ImageLoader.ImageRequest_;
  * @private
  */
 goog.net.ImageLoader.IMAGE_LOAD_EVENTS_ = [
-  goog.userAgent.IE && !goog.userAgent.isVersionOrHigher('11') ?
-      goog.net.EventType.READY_STATE_CHANGE :
-      goog.events.EventType.LOAD,
+  goog.events.EventType.LOAD,
   goog.net.EventType.ABORT,
   goog.net.EventType.ERROR,
 ];

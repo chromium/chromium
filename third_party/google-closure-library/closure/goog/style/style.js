@@ -477,6 +477,7 @@ goog.style.getBoundingClientRect_ = function(el) {
  * Returns the first parent that could affect the position of a given element.
  * @param {Element} element The element to get the offset parent for.
  * @return {Element} The first offset parent or null if one cannot be found.
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.style.getOffsetParent = function(element) {
   'use strict';
@@ -712,7 +713,9 @@ goog.style.getPageOffset = function(el) {
   // of element since getBoundingClientRect returns relative coordinates to
   // the viewport.
   var scrollCoord = goog.dom.getDomHelper(doc).getDocumentScroll();
+  /** @suppress {strictMissingProperties} Added to tighten compiler checks */
   pos.x = box.left + scrollCoord.x;
+  /** @suppress {strictMissingProperties} Added to tighten compiler checks */
   pos.y = box.top + scrollCoord.y;
 
   return pos;
@@ -841,6 +844,7 @@ goog.style.getRelativePosition = function(a, b) {
  * @param {!Element} el Element whose position to get.
  * @return {!goog.math.Coordinate} The position.
  * @private
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.style.getClientPositionForElement_ = function(el) {
   'use strict';
@@ -855,6 +859,7 @@ goog.style.getClientPositionForElement_ = function(el) {
  * event, then the position of the first changedTouches will be returned.
  * @param {Element|Event|goog.events.Event} el Element or a mouse / touch event.
  * @return {!goog.math.Coordinate} The position.
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.style.getClientPosition = function(el) {
   'use strict';
@@ -863,6 +868,7 @@ goog.style.getClientPosition = function(el) {
     return goog.style.getClientPositionForElement_(
         /** @type {!Element} */ (el));
   } else {
+    /** @suppress {strictMissingProperties} Added to tighten compiler checks */
     var targetEvent = el.changedTouches ? el.changedTouches[0] : el;
     return new goog.math.Coordinate(targetEvent.clientX, targetEvent.clientY);
   }
@@ -1039,6 +1045,7 @@ goog.style.evaluateWithTemporaryDisplay_ = function(fn, element) {
  * @param {Element} element Element to get size of.
  * @return {!goog.math.Size} Object with width/height properties.
  * @private
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.style.getSizeWithDisplay_ = function(element) {
   'use strict';
@@ -1075,6 +1082,7 @@ goog.style.getSizeWithDisplay_ = function(element) {
  * </ol>
  * @param {!Element} element Element to get size of.
  * @return {goog.math.Size} Object with width/height properties.
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.style.getTransformedSize = function(element) {
   'use strict';
@@ -1171,8 +1179,14 @@ goog.style.setOpacity = function(el, alpha) {
   } else if ('filter' in style) {
     // TODO(arv): Overwriting the filter might have undesired side effects.
     if (alpha === '') {
+      /**
+       * @suppress {strictMissingProperties} Added to tighten compiler checks
+       */
       style.filter = '';
     } else {
+      /**
+       * @suppress {strictMissingProperties} Added to tighten compiler checks
+       */
       style.filter = 'alpha(opacity=' + (Number(alpha) * 100) + ')';
     }
   }
@@ -1216,6 +1230,7 @@ goog.style.clearTransparentBackgroundImage = function(el) {
   var style = el.style;
   if ('filter' in style) {
     // See TODO in setOpacity.
+    /** @suppress {strictMissingProperties} Added to tighten compiler checks */
     style.filter = '';
   } else {
     // Set style properties individually instead of using background shorthand
@@ -1357,6 +1372,7 @@ goog.style.installSafeStyleSheet = function(safeStyleSheet, opt_node) {
  */
 goog.style.uninstallStyles = function(styleSheet) {
   'use strict';
+  /** @suppress {strictMissingProperties} Added to tighten compiler checks */
   var node = styleSheet.ownerNode || styleSheet.owningElement ||
       /** @type {Element} */ (styleSheet);
   goog.dom.removeNode(node);
@@ -1372,6 +1388,7 @@ goog.style.uninstallStyles = function(styleSheet) {
  * @param {!goog.html.SafeStyleSheet} safeStyleSheet The new content of the
  *     stylesheet.
  * @return {void}
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.style.setSafeStyleSheet = function(element, safeStyleSheet) {
   'use strict';
@@ -1382,11 +1399,13 @@ goog.style.setSafeStyleSheet = function(element, safeStyleSheet) {
     // the style node works fine and ignores CSS that IE doesn't understand.
     // However IE >= 11 doesn't support cssText any more, so we make sure that
     // cssText is a defined property and otherwise fall back to innerHTML.
+    /** @suppress {strictMissingProperties} Added to tighten compiler checks */
     element.cssText = stylesString;
   } else if (goog.global.trustedTypes) {
     goog.dom.setTextContent(/** @type {!Element} */ (element), stylesString);
   } else {
     // Setting textContent doesn't work in Safari, see b/29340337.
+    /** @suppress {strictMissingProperties} Added to tighten compiler checks */
     element.innerHTML = stylesString;
   }
 };
@@ -1540,26 +1559,7 @@ goog.style.getBorderBoxSize = function(element) {
  */
 goog.style.setBorderBoxSize = function(element, size) {
   'use strict';
-  var doc = goog.dom.getOwnerDocument(element);
-  var isCss1CompatMode = goog.dom.getDomHelper(doc).isCss1CompatMode();
-
-  if (goog.userAgent.IE && !goog.userAgent.isVersionOrHigher('10') &&
-      !isCss1CompatMode) {
-    var style = element.style;
-    if (isCss1CompatMode) {
-      var paddingBox = goog.style.getPaddingBox(element);
-      var borderBox = goog.style.getBorderBox(element);
-      style.pixelWidth = size.width - borderBox.left - paddingBox.left -
-          paddingBox.right - borderBox.right;
-      style.pixelHeight = size.height - borderBox.top - paddingBox.top -
-          paddingBox.bottom - borderBox.bottom;
-    } else {
-      style.pixelWidth = size.width;
-      style.pixelHeight = size.height;
-    }
-  } else {
-    goog.style.setBoxSizingSize_(element, size, 'border-box');
-  }
+  goog.style.setBoxSizingSize_(element, size, 'border-box');
 };
 
 
@@ -1568,6 +1568,7 @@ goog.style.setBorderBoxSize = function(element, size) {
  * all browsers.
  * @param {Element} element  The element to get the size for.
  * @return {!goog.math.Size} The content box size.
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.style.getContentBoxSize = function(element) {
   'use strict';
@@ -1578,9 +1579,11 @@ goog.style.getContentBoxSize = function(element) {
       !ieCurrentStyle.boxSizing) {
     // If IE in CSS1Compat mode than just use the width and height.
     // If we have a boxSizing then fall back on measuring the borders etc.
+    /** @suppress {strictMissingProperties} Added to tighten compiler checks */
     var width = goog.style.getIePixelValue_(
         element, /** @type {string} */ (ieCurrentStyle.width), 'width',
         'pixelWidth');
+    /** @suppress {strictMissingProperties} Added to tighten compiler checks */
     var height = goog.style.getIePixelValue_(
         element, /** @type {string} */ (ieCurrentStyle.height), 'height',
         'pixelHeight');
@@ -1606,25 +1609,7 @@ goog.style.getContentBoxSize = function(element) {
  */
 goog.style.setContentBoxSize = function(element, size) {
   'use strict';
-  var doc = goog.dom.getOwnerDocument(element);
-  var isCss1CompatMode = goog.dom.getDomHelper(doc).isCss1CompatMode();
-  if (goog.userAgent.IE && !goog.userAgent.isVersionOrHigher('10') &&
-      !isCss1CompatMode) {
-    var style = element.style;
-    if (isCss1CompatMode) {
-      style.pixelWidth = size.width;
-      style.pixelHeight = size.height;
-    } else {
-      var paddingBox = goog.style.getPaddingBox(element);
-      var borderBox = goog.style.getBorderBox(element);
-      style.pixelWidth = size.width + borderBox.left + paddingBox.left +
-          paddingBox.right + borderBox.right;
-      style.pixelHeight = size.height + borderBox.top + paddingBox.top +
-          paddingBox.bottom + borderBox.bottom;
-    }
-  } else {
-    goog.style.setBoxSizingSize_(element, size, 'content-box');
-  }
+  goog.style.setBoxSizingSize_(element, size, 'content-box');
 };
 
 

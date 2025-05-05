@@ -351,6 +351,7 @@ goog.events.KeyHandler.prototype.handleKeyup_ = function(e) {
  * Handles the events on the element.
  * @param {goog.events.BrowserEvent} e  The keyboard event sent from the
  *     browser.
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.events.KeyHandler.prototype.handleEvent = function(e) {
   'use strict';

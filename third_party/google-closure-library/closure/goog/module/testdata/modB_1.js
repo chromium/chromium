@@ -6,6 +6,7 @@
 
 /**
  * @fileoverview File #1 of module B.
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 
 goog.provide('goog.module.testdata.modB_1');

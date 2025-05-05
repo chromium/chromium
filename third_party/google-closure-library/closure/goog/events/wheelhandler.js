@@ -38,7 +38,6 @@ goog.require('goog.events.WheelEvent');
 goog.require('goog.style');
 goog.require('goog.userAgent');
 goog.require('goog.userAgent.product');
-goog.require('goog.userAgent.product.isVersion');
 goog.requireType('goog.events.BrowserEvent');
 
 
@@ -90,9 +89,8 @@ goog.inherits(goog.events.WheelHandler, goog.events.EventTarget);
 goog.events.WheelHandler.getDomEventType = function() {
   'use strict';
   // Prefer to use wheel events whenever supported.
-  if (goog.userAgent.GECKO && goog.userAgent.isVersionOrHigher(17) ||
-      goog.userAgent.IE && goog.userAgent.isVersionOrHigher(9) ||
-      goog.userAgent.product.CHROME && goog.userAgent.product.isVersion(31)) {
+  if (goog.userAgent.GECKO || goog.userAgent.IE ||
+      goog.userAgent.product.CHROME) {
     return 'wheel';
   }
 

@@ -55,11 +55,10 @@ goog.async.nextTick = function(callback, opt_context, opt_useSetImmediate) {
   }
 
   // Look for and cache the custom fallback version of setImmediate.
-  if (!goog.async.nextTick.setImmediate_) {
-    goog.async.nextTick.setImmediate_ =
-        goog.async.nextTick.getSetImmediateEmulator_();
+  if (!goog.async.nextTick.nextTickImpl) {
+    goog.async.nextTick.nextTickImpl = goog.async.nextTick.getNextTickImpl_();
   }
-  goog.async.nextTick.setImmediate_(cb);
+  goog.async.nextTick.nextTickImpl(cb);
 };
 
 
@@ -108,11 +107,11 @@ goog.async.nextTick.useSetImmediate_ = function() {
 
 
 /**
- * Cache for the setImmediate implementation.
+ * Cache for the nextTick implementation. Exposed so tests can replace it,
+ * if needed.
  * @type {function(function())}
- * @private
  */
-goog.async.nextTick.setImmediate_;
+goog.async.nextTick.nextTickImpl;
 
 
 /**
@@ -121,7 +120,7 @@ goog.async.nextTick.setImmediate_;
  * @return {function(function())} The "setImmediate" implementation.
  * @private
  */
-goog.async.nextTick.getSetImmediateEmulator_ = function() {
+goog.async.nextTick.getNextTickImpl_ = function() {
   'use strict';
   // Create a private message channel and use it to postMessage empty messages
   // to ourselves.

@@ -8,24 +8,15 @@ goog.module('goog.ui.CookieEditorTest');
 goog.setTestOnly();
 
 const CookieEditor = goog.require('goog.ui.CookieEditor');
+const Cookies = goog.require('goog.net.Cookies');
 const EventType = goog.require('goog.events.EventType');
 const GoogEvent = goog.require('goog.events.Event');
-const cookies = goog.require('goog.net.cookies');
 const dom = goog.require('goog.dom');
 const events = goog.require('goog.testing.events');
 const testSuite = goog.require('goog.testing.testSuite');
 
 const COOKIE_KEY = 'my_fabulous_cookie';
-let COOKIE_VALUES;
-
-cookies.get = (key) => COOKIE_VALUES[key];
-
-cookies.set = (key, value) => COOKIE_VALUES[key] = value;
-
-/** @suppress {missingReturn} suppression added to enable type checking */
-cookies.remove = (key, value) => {
-  delete COOKIE_VALUES[key];
-};
+const cookies = Cookies.getInstance();
 
 /** @suppress {visibility} suppression added to enable type checking */
 function newCookieEditor(cookieValue = undefined) {
@@ -48,7 +39,7 @@ function newCookieEditor(cookieValue = undefined) {
 testSuite({
   setUp() {
     dom.removeChildren(dom.getElement('test_container'));
-    COOKIE_VALUES = {};
+    cookies.remove(COOKIE_KEY);
   },
 
   testRender() {

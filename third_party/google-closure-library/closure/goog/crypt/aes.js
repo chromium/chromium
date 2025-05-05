@@ -247,7 +247,7 @@ goog.crypt.Aes.assertKeyArray_ = function(arr) {
  * @param {!Array<Array<number>>} Current state.
  * @private
  */
-goog.crypt.Aes.prototype.testStartRound_ = goog.nullFunction;
+goog.crypt.Aes.prototype.testStartRound_ = function(roundNum, Current) {};
 
 
 /**
@@ -258,7 +258,7 @@ goog.crypt.Aes.prototype.testStartRound_ = goog.nullFunction;
  * @param {!Array<Array<number>>} Current state.
  * @private
  */
-goog.crypt.Aes.prototype.testAfterSubBytes_ = goog.nullFunction;
+goog.crypt.Aes.prototype.testAfterSubBytes_ = function(roundNum, Current) {};
 
 
 /**
@@ -269,7 +269,7 @@ goog.crypt.Aes.prototype.testAfterSubBytes_ = goog.nullFunction;
  * @param {!Array<Array<number>>} Current state.
  * @private
  */
-goog.crypt.Aes.prototype.testAfterShiftRows_ = goog.nullFunction;
+goog.crypt.Aes.prototype.testAfterShiftRows_ = function(roundNum, Current) {};
 
 
 /**
@@ -280,7 +280,7 @@ goog.crypt.Aes.prototype.testAfterShiftRows_ = goog.nullFunction;
  * @param {!Array<Array<number>>} Current state.
  * @private
  */
-goog.crypt.Aes.prototype.testAfterMixColumns_ = goog.nullFunction;
+goog.crypt.Aes.prototype.testAfterMixColumns_ = function(roundNum, Current) {};
 
 
 /**
@@ -290,7 +290,7 @@ goog.crypt.Aes.prototype.testAfterMixColumns_ = goog.nullFunction;
  * @param {!Array<Array<number>>} Current state.
  * @private
  */
-goog.crypt.Aes.prototype.testAfterAddRoundKey_ = goog.nullFunction;
+goog.crypt.Aes.prototype.testAfterAddRoundKey_ = function(roundNum, Current) {};
 
 
 /**
@@ -304,7 +304,8 @@ goog.crypt.Aes.prototype.testAfterAddRoundKey_ = goog.nullFunction;
  *     in the case of decryption.
  * @private
  */
-goog.crypt.Aes.prototype.testKeySchedule_ = goog.nullFunction;
+goog.crypt.Aes.prototype.testKeySchedule_ = function(
+    roundNum, Computed, index) {};
 
 
 /**

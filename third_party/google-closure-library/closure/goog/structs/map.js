@@ -19,8 +19,8 @@
 goog.provide('goog.structs.Map');
 
 goog.require('goog.collections.iters');
+goog.require('goog.iter');
 goog.require('goog.iter.Iterator');
-goog.require('goog.iter.StopIteration');
 goog.require('goog.iter.es6');
 
 
@@ -31,6 +31,7 @@ goog.require('goog.iter.es6');
  * @param {...*} var_args If 2 or more arguments are present then they
  *     will be used as key-value pairs.
  * @constructor
+ * @final
  * @template K, V
  * @deprecated This type is misleading: use ES6 Map instead.
  */
@@ -518,16 +519,20 @@ goog.structs.Map.prototype.__iterator__ = function(opt_keys) {
   var selfObj = this;
 
   var newIter = new goog.iter.Iterator;
-  newIter.nextValueOrThrow = function() {
+  /**
+   * @return {!IIterableResult<K|V>}
+   * @override
+   */
+  newIter.next = function() {
     'use strict';
     if (version != selfObj.version_) {
       throw new Error('The map has changed since the iterator was created');
     }
     if (i >= selfObj.keys_.length) {
-      throw goog.iter.StopIteration;
+      return goog.iter.ES6_ITERATOR_DONE;
     }
     var key = selfObj.keys_[i++];
-    return opt_keys ? key : selfObj.map_[key];
+    return goog.iter.createEs6IteratorYield(opt_keys ? key : selfObj.map_[key]);
   };
 
   return newIter;

@@ -76,7 +76,7 @@ goog.tweak.Registry.prototype.logger_ =
 goog.tweak.Registry.parseQueryParams = function(queryParams) {
   'use strict';
   // Strip off the leading ? and split on &.
-  var parts = queryParams.substr(1).split('&');
+  var parts = queryParams.slice(1).split('&');
   var ret = {};
 
   for (var i = 0, il = parts.length; i < il; ++i) {
