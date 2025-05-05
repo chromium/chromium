@@ -48,6 +48,7 @@ steps.
 7) Copy the patched source to Chromium:
    $ cp -r src/ README.md COPYING* license* $CHROMIUM_HUNSPELL
    $ rm -r $CHROMIUM_HUNSPELL/src/Makefile.am \
+       $CHROMIUM_HUNSPELL/src/hunspell/utf_info.hxx \
        $CHROMIUM_HUNSPELL/src/hunspell/Makefile.am \
        $CHROMIUM_HUNSPELL/src/parsers/.gitignore \
        $CHROMIUM_HUNSPELL/src/parsers/Makefile.am \
