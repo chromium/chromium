@@ -193,7 +193,7 @@ void PictureLayerImpl::PushPropertiesTo(LayerImpl* base_layer) {
     layer_impl->lcd_text_disallowed_reason_ = lcd_text_disallowed_reason_;
   }
 
-  if (layer_tree_impl()->settings().UseLayerContextForDisplay()) {
+  if (layer_tree_impl()->settings().TreesInVizInClientProcess()) {
     // Move tile updates over to the active layer so they get pushed to the
     // display tree. Note that active layers never accumulate their own tile
     // updates, so replacement is safe.
@@ -959,7 +959,7 @@ void PictureLayerImpl::NotifyTileStateChanged(const Tile* tile,
     }
   }
 
-  if (layer_tree_impl()->settings().UseLayerContextForDisplay() &&
+  if (layer_tree_impl()->settings().TreesInVizInClientProcess() &&
       (!IsActive() || layer_tree_impl()->settings().commit_to_active_tree)) {
     // Tiles for the tree currently being committed to (Pending or Active)
     // are pushed to the display during UpdateDisplayTree. Accumulate those

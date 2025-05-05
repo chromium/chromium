@@ -51,7 +51,7 @@ int GenerateNextDisplayTreeId() {
 cc::LayerTreeSettings GetDisplayTreeSettings(bool draw_mode_is_gpu) {
   cc::LayerTreeSettings settings;
   settings.use_layer_lists = true;
-  settings.is_display_tree = true;
+  settings.trees_in_viz_in_viz_process = true;
   settings.display_tree_draw_mode_is_gpu = draw_mode_is_gpu;
   return settings;
 }

@@ -1052,7 +1052,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   std::unique_ptr<InputDelegateForCompositor> input_delegate_;
 
   const LayerTreeSettings settings_;
-  const bool use_layer_context_for_display_;
+  const bool trees_in_viz_in_client_process_;
   const bool use_layer_context_for_animations_;
 
   // This is set to true only if:
@@ -1082,7 +1082,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   raw_ptr<LayerTreeFrameSink> layer_tree_frame_sink_ = nullptr;
 
   // Valid when we have a LayerTreeFrameSink and
-  // `use_layer_context_for_display_` is true. This object pushes updates to a
+  // `trees_in_viz_in_client_process_` is true. This object pushes updates to a
   // remote display tree.
   std::unique_ptr<LayerContext> layer_context_;
 

@@ -33,17 +33,17 @@ class CC_EXPORT LayerTreeSettings {
   // If true, this tree doesn't draw itself. Instead upon activation it pushes
   // differential updates to a remote (GPU-side) display tree which is drawn
   // using tile resources prepared by this tree.
-  bool UseLayerContextForDisplay() const;
+  bool TreesInVizInClientProcess() const;
 
   // If true, the remote display tree handles its own composited animations.
-  // This can only be true when UseLayerContextForDisplay() is also true.
+  // This can only be true when TreesInVizInClientProcess() is also true.
   bool UseLayerContextForAnimations() const;
 
   // If true, this is a GPU-side display tree receiving updates from a remote
   // client via the LayerContext API. Such trees do no raster work of their own
   // and submit compositor frames directly within Viz using tiles rastered by
   // the remote client.
-  bool is_display_tree = false;
+  bool trees_in_viz_in_viz_process = false;
 
   // If true, the client requested display tree draw mode to be GPU.
   bool display_tree_draw_mode_is_gpu = false;

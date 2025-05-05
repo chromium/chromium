@@ -1301,7 +1301,7 @@ void LayerTreeImpl::SetPageScaleFactorAndLimitsForDisplayTree(
     float page_scale_factor,
     float min_page_scale_factor,
     float max_page_scale_factor) {
-  DCHECK(settings().is_display_tree);
+  DCHECK(settings().trees_in_viz_in_viz_process);
   bool changed_page_scale = page_scale_factor_->SetCurrent(page_scale_factor);
   changed_page_scale |=
       SetPageScaleFactorLimits(min_page_scale_factor, max_page_scale_factor);
@@ -1853,7 +1853,7 @@ void LayerTreeImpl::AddLayerShouldPushProperties(LayerImpl* layer) {
   // into this set when always_push_properties_on_picture_layers() is disabled.
   DCHECK(!always_push_properties_on_picture_layers() ||
          !base::Contains(picture_layers_, layer) ||
-         (IsActiveTree() && settings().UseLayerContextForDisplay()));
+         (IsActiveTree() && settings().TreesInVizInClientProcess()));
   layers_that_should_push_properties_.insert(layer);
 }
 
