@@ -1150,6 +1150,27 @@ gfx::RectF LayoutBox::LocalBoundingBoxRectForAccessibility() const {
 
 void LayoutBox::UpdateAfterLayout() {
   NOT_DESTROYED();
+
+  SetNeedsOverflowRecalc(OverflowRecalcType::kOnlyVisualOverflowRecalc);
+  SetScrollableOverflowFromLayoutResults();
+
+  if (IsLayoutView() && !GetDocument().Printing()) {
+    // Unlike every other layer, the root PaintLayer takes its size from the
+    // layout viewport size. The call to AdjustViewSize() will update the
+    // frame's contents size, which will also update the page's minimum scale
+    // factor. The call to ResizeAfterLayout() will calculate the layout
+    // viewport size based on the page minimum scale factor, and then update the
+    // LocalFrameView with the new size.
+    LocalFrame& frame = GetFrameView()->GetFrame();
+    GetFrameView()->AdjustViewSize();
+    if (frame.IsMainFrame()) {
+      frame.GetChromeClient().ResizeAfterLayout();
+    }
+    if (IsScrollContainer()) {
+      GetScrollableArea()->ClampScrollOffsetAfterOverflowChange();
+    }
+  }
+
   // Transform-origin depends on box size, so we need to update the layer
   // transform after layout.
   if (HasLayer()) {
@@ -1160,6 +1181,21 @@ void LayoutBox::UpdateAfterLayout() {
   GetFrame()->GetInputMethodController().DidUpdateLayout(*this);
   if (IsPositioned())
     GetFrame()->GetInputMethodController().DidLayoutSubtree(*this);
+
+  if (StyleRef().HasColumnRule() && IsFragmentationContextRoot()) {
+    // Issue full invalidation, in case the number of column rules have changed.
+    ClearNeedsLayoutWithFullPaintInvalidation();
+  } else {
+    ClearNeedsLayout();
+  }
+
+  // We should notify the display lock that we've done layout on self, and if
+  // it's not blocked, on children.
+  if (auto* context = GetDisplayLockContext()) {
+    if (!ChildLayoutBlockedByDisplayLock()) {
+      context->DidLayoutChildren();
+    }
+  }
 }
 
 LayoutUnit LayoutBox::OverrideIntrinsicContentInlineSize() const {

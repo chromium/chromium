@@ -143,8 +143,6 @@ class CORE_EXPORT LayoutView : public LayoutBlockFlow {
   }
   const LayoutBox& RootBox() const;
 
-  void UpdateAfterLayout() override;
-
   // See comments for the equivalent method on LayoutObject.
   // |ancestor| can be nullptr, which will map the rect to the main frame's
   // space, even if the main frame is remote (or has intermediate remote

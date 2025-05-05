@@ -823,27 +823,6 @@ void LayoutView::LayoutRoot() {
   initial_containing_block_resize_handled_list_ = nullptr;
 }
 
-void LayoutView::UpdateAfterLayout() {
-  NOT_DESTROYED();
-  if (!GetDocument().Printing()) {
-    // Unlike every other layer, the root PaintLayer takes its size from the
-    // layout viewport size. The call to AdjustViewSize() will update the
-    // frame's contents size, which will also update the page's minimum scale
-    // factor. The call to ResizeAfterLayout() will calculate the layout
-    // viewport size based on the page minimum scale factor, and then update the
-    // LocalFrameView with the new size.
-    LocalFrame& frame = GetFrameView()->GetFrame();
-    GetFrameView()->AdjustViewSize();
-    if (frame.IsMainFrame()) {
-      frame.GetChromeClient().ResizeAfterLayout();
-    }
-    if (IsScrollContainer()) {
-      GetScrollableArea()->ClampScrollOffsetAfterOverflowChange();
-    }
-  }
-  LayoutBlockFlow::UpdateAfterLayout();
-}
-
 void LayoutView::UpdateHitTestResult(HitTestResult& result,
                                      const PhysicalOffset& point) const {
   NOT_DESTROYED();

@@ -1273,24 +1273,7 @@ void BlockNode::CopyFragmentDataToLayoutBox(
     return;
   }
 
-  box_->SetNeedsOverflowRecalc(
-      LayoutObject::OverflowRecalcType::kOnlyVisualOverflowRecalc);
-  box_->SetScrollableOverflowFromLayoutResults();
   box_->UpdateAfterLayout();
-
-  if (flow_thread && Style().HasColumnRule()) [[unlikely]] {
-    // Issue full invalidation, in case the number of column rules have changed.
-    box_->ClearNeedsLayoutWithFullPaintInvalidation();
-  } else {
-    box_->ClearNeedsLayout();
-  }
-
-  // We should notify the display lock that we've done layout on self, and if
-  // it's not blocked, on children.
-  if (auto* context = box_->GetDisplayLockContext()) {
-    if (!ChildLayoutBlockedByDisplayLock())
-      context->DidLayoutChildren();
-  }
 }
 
 void BlockNode::PlaceChildrenInLayoutBox(
