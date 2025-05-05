@@ -25,6 +25,7 @@ class ScrollButtonPseudoElement : public PseudoElement,
 
   bool IsEnabled() const { return enabled_; }
   bool IsDisabledFormControl() const final { return !IsEnabled(); }
+  FocusableState SupportsFocus(UpdateBehavior update_behavior) const final;
 
   // ScrollSnapshotClient:
   void UpdateSnapshot() override;

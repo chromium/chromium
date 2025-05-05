@@ -130,6 +130,14 @@ void ScrollButtonPseudoElement::DefaultEventHandler(Event& event) {
   PseudoElement::DefaultEventHandler(event);
 }
 
+FocusableState ScrollButtonPseudoElement::SupportsFocus(
+    UpdateBehavior update_behavior) const {
+  if (IsDisabledFormControl()) {
+    return FocusableState::kNotFocusable;
+  }
+  return PseudoElement::SupportsFocus(update_behavior);
+}
+
 bool ScrollButtonPseudoElement::UpdateSnapshotInternal() {
   // Note: we can hit it here, since we don't unsubscribe from
   // scroll snapshot client (maybe we should).
