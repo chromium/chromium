@@ -272,9 +272,9 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 
   self.webContentAreaOverlayPresenter = nullptr;
 
-  if (_engagementTracker) {
+  if (self.engagementTracker) {
     if (self.readingListDestination.badge != BadgeTypeNone) {
-      _engagementTracker->Dismissed(
+      self.engagementTracker->Dismissed(
           feature_engagement::kIPHBadgedReadingListFeature);
     }
 
@@ -282,21 +282,21 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
       // Check if this is the last active menu with WhatsNew badge and dismiss
       // the FET if so.
       WhatsNewActiveMenusData* data = static_cast<WhatsNewActiveMenusData*>(
-          _engagementTracker->GetUserData(WhatsNewActiveMenusData::key));
+          self.engagementTracker->GetUserData(WhatsNewActiveMenusData::key));
       if (data) {
         data->activeMenus--;
         if (data->activeMenus <= 0) {
-          _engagementTracker->Dismissed(
+          self.engagementTracker->Dismissed(
               feature_engagement::kIPHWhatsNewUpdatedFeature);
-          _engagementTracker->RemoveUserData(WhatsNewActiveMenusData::key);
+          self.engagementTracker->RemoveUserData(WhatsNewActiveMenusData::key);
         }
       } else {
-        _engagementTracker->Dismissed(
+        self.engagementTracker->Dismissed(
             feature_engagement::kIPHWhatsNewUpdatedFeature);
       }
     }
 
-    _engagementTracker = nullptr;
+    self.engagementTracker = nullptr;
   }
 
   self.followBrowserAgent = nullptr;
@@ -864,13 +864,13 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
                                    [weakSelf notifySetTabReminderActionTapped];
                                  }];
 
-  if (_engagementTracker &&
-      _engagementTracker->ShouldTriggerHelpUI(
+  if (self.engagementTracker &&
+      self.engagementTracker->ShouldTriggerHelpUI(
           feature_engagement::
               kIPHiOSReminderNotificationsOverflowMenuNewBadgeFeature)) {
     action.displayNewLabelIcon = YES;
 
-    _engagementTracker->Dismissed(
+    self.engagementTracker->Dismissed(
         feature_engagement::
             kIPHiOSReminderNotificationsOverflowMenuNewBadgeFeature);
   }
@@ -883,8 +883,8 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
   CHECK(
       send_tab_to_self::IsSendTabIOSPushNotificationsEnabledWithTabReminders());
 
-  if (_engagementTracker) {
-    _engagementTracker->NotifyEvent(
+  if (self.engagementTracker) {
+    self.engagementTracker->NotifyEvent(
         feature_engagement::events::kIOSOverflowMenuSetTabReminderTapped);
   }
 
@@ -2384,8 +2384,8 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 - (void)openHistory {
   if (base::FeatureList::IsEnabled(
           feature_engagement::kIPHiOSHistoryOnOverflowMenuFeature) &&
-      _engagementTracker) {
-    _engagementTracker->NotifyEvent(
+      self.engagementTracker) {
+    self.engagementTracker->NotifyEvent(
         feature_engagement::events::kHistoryOnOverflowMenuUsed);
   }
   [IntentDonationHelper donateIntent:IntentType::kViewHistory];
@@ -2412,8 +2412,10 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 // Dismisses the menu and opens price notifications list.
 - (void)openPriceNotifications {
   RecordAction(UserMetricsAction("MobileMenuPriceNotifications"));
-  _engagementTracker->NotifyEvent(
-      feature_engagement::events::kPriceNotificationsUsed);
+  if (self.engagementTracker) {
+    self.engagementTracker->NotifyEvent(
+        feature_engagement::events::kPriceNotificationsUsed);
+  }
   [self dismissMenu];
   [self.priceNotificationHandler showPriceTrackedItemsWithCurrentPage];
 }
@@ -2449,14 +2451,13 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 
 // Dismisses the menu and opens settings.
 - (void)openSettings {
-  if (!IsBlueDotOnToolsMenuButtoneEnabled() &&
-      self.settingsDestination.badge == BadgeTypePromo &&
-      self.engagementTracker) {
-    self.engagementTracker->NotifyEvent(
-        feature_engagement::events::kBlueDotPromoOverflowMenuDismissed);
-    [self.popupMenuHandler updateToolsMenuBlueDotVisibility];
-  }
   if (self.engagementTracker) {
+    if (!IsBlueDotOnToolsMenuButtoneEnabled() &&
+        self.settingsDestination.badge == BadgeTypePromo) {
+      self.engagementTracker->NotifyEvent(
+          feature_engagement::events::kBlueDotPromoOverflowMenuDismissed);
+      [self.popupMenuHandler updateToolsMenuBlueDotVisibility];
+    }
     self.engagementTracker->NotifyEvent(
         feature_engagement::events::kSettingsOnOverflowMenuUsed);
   }
