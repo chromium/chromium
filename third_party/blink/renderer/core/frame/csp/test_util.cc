@@ -29,6 +29,7 @@ WebCSPSourceList ConvertSourceList(
   return {base::ToVector(source_list->sources, ConvertSource),
           base::ToVector(source_list->nonces, ToWebString),
           base::ToVector(source_list->hashes, ConvertHashSource),
+          base::ToVector(source_list->url_hashes, ConvertHashSource),
           source_list->allow_self,
           source_list->allow_star,
           source_list->allow_inline,

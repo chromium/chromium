@@ -36,6 +36,7 @@ network::mojom::CSPSourceListPtr BuildCSPSourceList(
       base::ToVector(source_list.sources, BuildCSPSource),
       BuildVectorOfStrings(source_list.nonces),
       base::ToVector(source_list.hashes, BuildCSPHashSource),
+      base::ToVector(source_list.url_hashes, BuildCSPHashSource),
       source_list.allow_self, source_list.allow_star, source_list.allow_inline,
       source_list.allow_inline_speculation_rules, source_list.allow_eval,
       source_list.allow_wasm_eval, source_list.allow_wasm_unsafe_eval,
@@ -66,20 +67,22 @@ blink::WebCSPHashSource ToWebCSPHashSource(
 
 blink::WebCSPSourceList ToWebCSPSourceList(
     network::mojom::CSPSourceListPtr source_list) {
-  return {base::ToVector(std::move(source_list->sources), ToWebCSPSource),
-          ToVectorOfWebStrings(std::move(source_list->nonces)),
-          base::ToVector(std::move(source_list->hashes), ToWebCSPHashSource),
-          source_list->allow_self,
-          source_list->allow_star,
-          source_list->allow_inline,
-          source_list->allow_inline_speculation_rules,
-          source_list->allow_eval,
-          source_list->allow_wasm_eval,
-          source_list->allow_wasm_unsafe_eval,
-          source_list->allow_dynamic,
-          source_list->allow_unsafe_hashes,
-          source_list->report_sample,
-          source_list->report_hash_algorithm};
+  return {
+      base::ToVector(std::move(source_list->sources), ToWebCSPSource),
+      ToVectorOfWebStrings(std::move(source_list->nonces)),
+      base::ToVector(std::move(source_list->hashes), ToWebCSPHashSource),
+      base::ToVector(std::move(source_list->url_hashes), ToWebCSPHashSource),
+      source_list->allow_self,
+      source_list->allow_star,
+      source_list->allow_inline,
+      source_list->allow_inline_speculation_rules,
+      source_list->allow_eval,
+      source_list->allow_wasm_eval,
+      source_list->allow_wasm_unsafe_eval,
+      source_list->allow_dynamic,
+      source_list->allow_unsafe_hashes,
+      source_list->report_sample,
+      source_list->report_hash_algorithm};
 }
 
 std::optional<blink::WebCSPTrustedTypes> ToOptionalWebCSPTrustedTypes(

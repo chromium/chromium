@@ -139,6 +139,16 @@ TEST(ContentSecurityPolicyConversionUtilTest,
                 network::mojom::blink::IntegrityAlgorithm::kSha384,
                 Vector<uint8_t>({'c', 'd', 'e'})));
       },
+      [](CSPSourceList& source_list) {
+        source_list.hashes.emplace_back(
+            network::mojom::blink::CSPHashSource::New(
+                network::mojom::blink::IntegrityAlgorithm::kSha256,
+                Vector<uint8_t>({'a', 'd'})));
+        source_list.url_hashes.emplace_back(
+            network::mojom::blink::CSPHashSource::New(
+                network::mojom::blink::IntegrityAlgorithm::kSha384,
+                Vector<uint8_t>({'c', 'd', 'e'})));
+      },
       [](CSPSourceList& source_list) { source_list.allow_self = true; },
       [](CSPSourceList& source_list) { source_list.allow_star = true; },
       [](CSPSourceList& source_list) { source_list.allow_inline = true; },

@@ -58,6 +58,7 @@ struct WebCSPSourceList {
   std::vector<WebCSPSource> sources;
   std::vector<WebString> nonces;
   std::vector<WebCSPHashSource> hashes;
+  std::vector<WebCSPHashSource> url_hashes;
   bool allow_self;
   bool allow_star;
   bool allow_inline;

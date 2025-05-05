@@ -136,6 +136,14 @@ TEST(ContentSecurityPolicyUtilTest, BackAndForthConversionForCSPSourceList) {
             network::mojom::IntegrityAlgorithm::kSha384,
             std::vector<uint8_t>({'c', 'd', 'e'})));
       },
+      [](CSPSourceList& source_list) {
+        source_list.hashes.emplace_back(network::mojom::CSPHashSource::New(
+            network::mojom::IntegrityAlgorithm::kSha256,
+            std::vector<uint8_t>({'a', 'd'})));
+        source_list.url_hashes.emplace_back(network::mojom::CSPHashSource::New(
+            network::mojom::IntegrityAlgorithm::kSha384,
+            std::vector<uint8_t>({'c', 'd', 'e'})));
+      },
       [](CSPSourceList& source_list) { source_list.allow_self = true; },
       [](CSPSourceList& source_list) { source_list.allow_star = true; },
       [](CSPSourceList& source_list) { source_list.allow_inline = true; },

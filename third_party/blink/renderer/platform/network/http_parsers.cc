@@ -178,10 +178,12 @@ blink::CSPSourceListPtr ConvertToBlink(const CSPSourceListPtr& source_list) {
   Vector<blink::CSPSourcePtr> sources = ConvertToBlink(source_list->sources);
   Vector<String> nonces = ConvertToBlink(source_list->nonces);
   Vector<blink::CSPHashSourcePtr> hashes = ConvertToBlink(source_list->hashes);
+  Vector<blink::CSPHashSourcePtr> url_hashes =
+      ConvertToBlink(source_list->url_hashes);
 
   return blink::CSPSourceList::New(
       std::move(sources), std::move(nonces), std::move(hashes),
-      source_list->allow_self, source_list->allow_star,
+      std::move(url_hashes), source_list->allow_self, source_list->allow_star,
       source_list->allow_inline, source_list->allow_inline_speculation_rules,
       source_list->allow_eval, source_list->allow_wasm_eval,
       source_list->allow_wasm_unsafe_eval, source_list->allow_dynamic,
