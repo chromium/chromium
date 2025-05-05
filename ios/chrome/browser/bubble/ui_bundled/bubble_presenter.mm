@@ -522,9 +522,6 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
 
   BubbleArrowDirection arrowDirection = BubbleArrowDirectionUp;
 
-  // TODO(crbug.com/405076601): Add final (translatable) string once available.
-  NSString* text = @"You can now switch accounts in Chrome";
-
   CGPoint identityDiscAnchor =
       [self anchorPointToGuide:kNTPIdentityDiscButtonGuide
                      direction:arrowDirection];
@@ -539,8 +536,11 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
               kIPHiOSSwitchAccountsWithNTPAccountParticleDiscFeature
                     direction:arrowDirection
                     alignment:BubbleAlignmentBottomOrTrailing
-                         text:text
-        voiceOverAnnouncement:text
+                         text:l10n_util::GetNSString(
+                                  IDS_IOS_SWITCH_ACCOUNTS_IPH_MESSAGE)
+        voiceOverAnnouncement:
+            l10n_util::GetNSString(
+                IDS_IOS_SWITCH_ACCOUNTS_IPH_ACCESSIBILITY_LABEL)
                   anchorPoint:CGPoint(identityDiscAnchor.x,
                                       identityDiscAnchor.y + anchorYOffset)];
   if (presenter) {

@@ -6325,6 +6325,12 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_SWIPE_RIGHT_TO_INCOGNITO_IPH_VOICEOVER" desc="The voice over announcement for the full screen in-product help for swipe right to see incognito tabs on regular tabs grid.">
         You can scroll left to browse in Incognito.
       </message>
+      <message name="IDS_IOS_SWITCH_ACCOUNTS_IPH_ACCESSIBILITY_LABEL" desc="Screen reader of the IPH message to inform the user that they can switch accounts via the account menu. [iOS only]">
+        To switch between accounts, tap your account icon
+      </message>
+      <message name="IDS_IOS_SWITCH_ACCOUNTS_IPH_MESSAGE" desc="The IPH message to inform the user that they can switch accounts via the account menu. [iOS only]">
+        You can easily switch between accounts
+      </message>
       <message name="IDS_IOS_SWITCH_CLEARS_DATA_DIALOG_TITLE_WITH_MANAGED_ACCOUNT" desc="The switch dialog title. This is the new dialog that is used when the user have a managed account (other than gmail account) [iOS only].">
         Switch accounts? Unsaved account data will be deleted.
       </message>
