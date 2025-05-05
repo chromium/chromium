@@ -408,10 +408,6 @@ inline std::ostream& operator<<(
 
 bool operator==(const UpdateService::UpdateState& lhs,
                 const UpdateService::UpdateState& rhs);
-inline bool operator!=(const UpdateService::UpdateState& lhs,
-                       const UpdateService::UpdateState& rhs) {
-  return !(lhs == rhs);
-}
 
 }  // namespace updater
 

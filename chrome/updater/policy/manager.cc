@@ -15,18 +15,6 @@
 
 namespace updater {
 
-bool UpdatesSuppressedTimes::operator==(
-    const UpdatesSuppressedTimes& other) const {
-  return start_hour_ == other.start_hour_ &&
-         start_minute_ == other.start_minute_ &&
-         duration_minute_ == other.duration_minute_;
-}
-
-bool UpdatesSuppressedTimes::operator!=(
-    const UpdatesSuppressedTimes& other) const {
-  return !(*this == other);
-}
-
 bool UpdatesSuppressedTimes::valid() const {
   return start_hour_ != kPolicyNotSet && start_minute_ != kPolicyNotSet &&
          duration_minute_ != kPolicyNotSet;
