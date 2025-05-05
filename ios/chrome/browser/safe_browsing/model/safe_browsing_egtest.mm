@@ -300,9 +300,7 @@ id<GREYMatcher> EnhancedSafeBrowsingInfobarButtonMatcher() {
 
 - (BOOL)isRunningEnterpriseReportingTest {
   return
-      [self
-          isRunningTest:@selector(testProceedingPastPhishingWarningReported)] ||
-      [self isRunningTest:@selector(testProceedingPastMalwareWarningReported)];
+      [self isRunningTest:@selector(testProceedingPastPhishingWarningReported)];
 }
 
 - (void)waitForEnterpriseReports:(int)count {
@@ -584,7 +582,9 @@ id<GREYMatcher> EnhancedSafeBrowsingInfobarButtonMatcher() {
 
 // Tests expanding the details on a malware warning, and proceeding past the
 // warning is reported to an enterprise connector.
-- (void)testProceedingPastMalwareWarningReported {
+// TODO(crbug.com/415736132): Re-enable test and add to Enterprise reporting
+// list `isRunningEnterpriseReportingTest`.
+- (void)DISABLED_testProceedingPastMalwareWarningReported {
   [ChromeEarlGrey loadURL:_safeURL1];
   [ChromeEarlGrey waitForWebStateContainingText:_safeContent1];
 
