@@ -314,10 +314,6 @@ class OpenXrRenderLoop : public XRThread,
   mojom::VRStageParametersPtr current_stage_parameters_;
   uint32_t stage_parameters_id_;
 
-  // Only used if depth sensing feature is enabled. Tracks whether we can pause
-  // depth sensing or not.
-  bool depth_active_ = true;
-
   // Lifetime of the platform helper is guaranteed by the OpenXrDevice.
   raw_ptr<OpenXrPlatformHelper> platform_helper_;
   std::unique_ptr<OpenXrGraphicsBinding> graphics_binding_;

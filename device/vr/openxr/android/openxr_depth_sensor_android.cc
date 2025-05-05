@@ -337,15 +337,96 @@ OpenXrDepthSensorAndroid::OpenXrDepthSensorAndroid(
 
 OpenXrDepthSensorAndroid::~OpenXrDepthSensorAndroid() {
   DVLOG(1) << __func__;
-  if (swapchain_ != XR_NULL_HANDLE) {
+  if (HasSwapchain()) {
     // In the (likely) event that the session has been destroyed before us, this
     // will fail. So just ignore the result returned here.
-    extension_helper_->ExtensionMethods().xrDestroyDepthSwapchainANDROID(
-        swapchain_);
+    DestroySwapchain();
+  }
+}
 
-    swapchain_ = XR_NULL_HANDLE;
+bool OpenXrDepthSensorAndroid::HasSwapchain() const {
+  return swapchain_ != XR_NULL_HANDLE;
+}
+
+void OpenXrDepthSensorAndroid::SetDepthActive(bool depth_active) {
+  DVLOG(1) << __func__ << "depth_should_be_active_=" << depth_should_be_active_
+           << " depth_active=" << depth_active
+           << " HasSwapchain()=" << HasSwapchain();
+  depth_should_be_active_ = depth_active;
+
+  // Whether or not we have a swapchain is the actual measure of if we are
+  // active or not.
+  if (depth_should_be_active_ == HasSwapchain()) {
+    return;
   }
 
+  if (depth_should_be_active_) {
+    CreateSwapchain();
+  } else {
+    DestroySwapchain();
+  }
+
+  if (depth_should_be_active_ != HasSwapchain()) {
+    DLOG(WARNING) << __func__ << " failed.";
+  }
+}
+
+XrResult OpenXrDepthSensorAndroid::CreateSwapchain() {
+  DVLOG(1) << __func__;
+  CHECK(!HasSwapchain());
+  TRACE_EVENT0("xr", "CreateSwapchain");
+
+  if (!initialized_) {
+    return XR_ERROR_FEATURE_UNSUPPORTED;
+  }
+
+  XrDepthSwapchainCreateInfoANDROID swapchain_create_info{
+      XR_TYPE_DEPTH_SWAPCHAIN_CREATE_INFO_ANDROID};
+  swapchain_create_info.resolution = depth_camera_resolution_;
+  if (depth_config_->depth_type == mojom::XRDepthType::kSmooth) {
+    swapchain_create_info.createFlags =
+        XR_DEPTH_SWAPCHAIN_CREATE_SMOOTH_DEPTH_IMAGE_BIT_ANDROID;
+  } else {
+    swapchain_create_info.createFlags =
+        XR_DEPTH_SWAPCHAIN_CREATE_RAW_DEPTH_IMAGE_BIT_ANDROID;
+  }
+  RETURN_IF_XR_FAILED(
+      extension_helper_->ExtensionMethods().xrCreateDepthSwapchainANDROID(
+          session_, &swapchain_create_info, &swapchain_));
+
+  uint32_t image_count_output = 0;
+  RETURN_IF_XR_FAILED(extension_helper_->ExtensionMethods()
+                          .xrEnumerateDepthSwapchainImagesANDROID(
+                              swapchain_, 0, &image_count_output, nullptr));
+
+  depth_images_.resize(image_count_output);
+  for (auto& image : depth_images_) {
+    image.type = XR_TYPE_DEPTH_SWAPCHAIN_IMAGE_ANDROID;
+  }
+
+  RETURN_IF_XR_FAILED(extension_helper_->ExtensionMethods()
+                          .xrEnumerateDepthSwapchainImagesANDROID(
+                              swapchain_, depth_images_.size(),
+                              &image_count_output, depth_images_.data()));
+
+  // Realistically this should never happen, but since it theoretically can,
+  // it shouldn't be a CHECK.
+  if (image_count_output != depth_images_.size()) {
+    LOG(ERROR) << __func__ << " Swapchain size changed during creation";
+    return XR_ERROR_INITIALIZATION_FAILED;
+  }
+
+  return XR_SUCCESS;
+}
+
+void OpenXrDepthSensorAndroid::DestroySwapchain() {
+  DVLOG(1) << __func__;
+  CHECK(HasSwapchain());
+  TRACE_EVENT0("xr", "DestroySwapchain");
+  extension_helper_->ExtensionMethods().xrDestroyDepthSwapchainANDROID(
+      swapchain_);
+
+  swapchain_ = XR_NULL_HANDLE;
   depth_images_.clear();
 }
 
@@ -393,44 +474,11 @@ XrResult OpenXrDepthSensorAndroid::Initialize() {
 
   depth_camera_resolution_ = *it;
 
-  XrDepthSwapchainCreateInfoANDROID swapchain_create_info{
-      XR_TYPE_DEPTH_SWAPCHAIN_CREATE_INFO_ANDROID};
-  swapchain_create_info.resolution = depth_camera_resolution_;
-  if (depth_config_->depth_type == mojom::XRDepthType::kSmooth) {
-    swapchain_create_info.createFlags =
-        XR_DEPTH_SWAPCHAIN_CREATE_SMOOTH_DEPTH_IMAGE_BIT_ANDROID;
-  } else {
-    swapchain_create_info.createFlags =
-        XR_DEPTH_SWAPCHAIN_CREATE_RAW_DEPTH_IMAGE_BIT_ANDROID;
-  }
-  RETURN_IF_XR_FAILED(
-      extension_helper_->ExtensionMethods().xrCreateDepthSwapchainANDROID(
-          session_, &swapchain_create_info, &swapchain_));
-
-  uint32_t image_count_output = 0;
-  RETURN_IF_XR_FAILED(extension_helper_->ExtensionMethods()
-                          .xrEnumerateDepthSwapchainImagesANDROID(
-                              swapchain_, 0, &image_count_output, nullptr));
-
-  depth_images_.resize(image_count_output);
-  for (auto& image : depth_images_) {
-    image.type = XR_TYPE_DEPTH_SWAPCHAIN_IMAGE_ANDROID;
-  }
-
-  RETURN_IF_XR_FAILED(extension_helper_->ExtensionMethods()
-                          .xrEnumerateDepthSwapchainImagesANDROID(
-                              swapchain_, depth_images_.size(),
-                              &image_count_output, depth_images_.data()));
-
-  // Realistically this should never happen, but since it theoretically can,
-  // it shouldn't be a CHECK.
-  if (image_count_output != depth_images_.size()) {
-    LOG(ERROR) << __func__ << " Swapchain size changed during creation";
-    return XR_ERROR_INITIALIZATION_FAILED;
-  }
-
+  // We will try to create the swapchain as needed when querying depth data,
+  // so call ourselves initialized regardless of the success or failure of
+  // creating it.
   initialized_ = true;
-  return XR_SUCCESS;
+  return CreateSwapchain();
 }
 
 mojom::XRDepthConfigPtr OpenXrDepthSensorAndroid::GetDepthConfig() {
@@ -443,9 +491,28 @@ void OpenXrDepthSensorAndroid::PopulateDepthData(
   DVLOG(3) << __func__;
   // We could fail to be initialized if depth isn't actually supported.
   if (!initialized_) {
-    DVLOG(3) << __func__ << " Not initialized";
+    DVLOG(3) << __func__ << " Not initialized.";
     return;
   }
+
+  if (!HasSwapchain()) {
+    // If we don't have a swapchain, and we shouldn't, then just no-op. We're
+    // inactive.
+    if (!depth_should_be_active_) {
+      return;
+    }
+
+    // We should be active, but for some reason aren't. Maybe creating the
+    // swapchain failed, try to create it again. This should be rare.
+    DLOG(WARNING) << __func__ << " did not have swapchain, when expected to.";
+    if (XR_FAILED(CreateSwapchain())) {
+      DLOG(WARNING) << __func__ << " failed to create swapchain";
+      return;
+    }
+  }
+
+  // By this time, we should've already exited if we don't have a swapchain.
+  CHECK(HasSwapchain());
 
   if (views.size() < kNumPrimaryViews ||
       views[kLeftView]->eye != mojom::XREye::kLeft ||

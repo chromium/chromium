@@ -25,11 +25,15 @@ class OpenXrDepthSensorAndroid : public OpenXrDepthSensor {
   mojom::XRDepthConfigPtr GetDepthConfig() override;
   void PopulateDepthData(XrTime frame_time,
                          const std::vector<mojom::XRViewPtr>& views) override;
+  void SetDepthActive(bool depth_active) override;
 
  private:
   mojom::XRDepthDataPtr GetDepthDataForEye(
       const XrDepthAcquireResultANDROID& acquire_result,
       const mojom::XRViewPtr& view);
+  bool HasSwapchain() const;
+  void DestroySwapchain();
+  XrResult CreateSwapchain();
 
   const raw_ref<const OpenXrExtensionHelper> extension_helper_;
   XrSession session_;
@@ -43,6 +47,7 @@ class OpenXrDepthSensorAndroid : public OpenXrDepthSensor {
   mojom::XRDepthConfigPtr depth_config_ = nullptr;
   bool match_depth_view_ = true;
   bool initialized_ = false;
+  bool depth_should_be_active_ = true;
 };
 
 class OpenXrDepthSensorAndroidFactory : public OpenXrExtensionHandlerFactory {
