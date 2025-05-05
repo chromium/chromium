@@ -2906,10 +2906,7 @@ public class AwAutofillTest extends AwParameterizedTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    @CommandLineFlags.Add({
-        "enable-features=AutofillFixValueSemantics",
-        "disable-features=AutofillServerCommunication"
-    })
+    @CommandLineFlags.Add({"disable-features=AutofillServerCommunication"})
     public void testServerPredictionArrivesAfterAutofillStart() throws Throwable {
         loadHTML(
                 """
@@ -3003,10 +3000,7 @@ public class AwAutofillTest extends AwParameterizedTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    @CommandLineFlags.Add({
-        "enable-features=AutofillFixValueSemantics",
-        "disable-features=AutofillServerCommunication"
-    })
+    @CommandLineFlags.Add({"disable-features=AutofillServerCommunication"})
     public void testServerPredictionPrimaryTypeArrivesAfterAutofillStart() throws Throwable {
         loadHTML(
                 """
@@ -3095,10 +3089,7 @@ public class AwAutofillTest extends AwParameterizedTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    @CommandLineFlags.Add({
-        "enable-features=AutofillFixValueSemantics",
-        "disable-features=AutofillServerCommunication"
-    })
+    @CommandLineFlags.Add({"disable-features=AutofillServerCommunication"})
     public void testServerPredictionArrivesBeforeCallbackRegistered() throws Throwable {
         loadHTML(
                 """
