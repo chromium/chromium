@@ -45,6 +45,7 @@ import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
+import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
@@ -484,7 +485,7 @@ public class MultiInstanceManagerImpl extends MultiInstanceManager
 
     @Override
     public int getCurrentInstanceId() {
-        return MultiWindowUtils.INVALID_INSTANCE_ID;
+        return TabWindowManager.INVALID_WINDOW_ID;
     }
 
     @Override

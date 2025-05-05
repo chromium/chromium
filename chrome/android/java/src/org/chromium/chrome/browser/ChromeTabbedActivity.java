@@ -2373,9 +2373,7 @@ public class ChromeTabbedActivity extends ChromeActivity {
         // |draggedTabId| is retrieved from the activity the tab is being dragged from.
         int windowId =
                 IntentUtils.safeGetIntExtra(
-                        intent,
-                        IntentHandler.EXTRA_DRAGDROP_TAB_WINDOW_ID,
-                        MultiWindowUtils.INVALID_INSTANCE_ID);
+                        intent, IntentHandler.EXTRA_DRAGDROP_TAB_WINDOW_ID, INVALID_WINDOW_ID);
         Tab tab = TabWindowManagerSingleton.getInstance().getTabById(draggedTabId, windowId);
         if (tab == null) {
             RecordHistogram.recordBooleanHistogram(HISTOGRAM_DRAGGED_TAB_OPENED_NEW_WINDOW, false);

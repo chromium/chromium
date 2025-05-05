@@ -54,6 +54,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.hub.HubLayout;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.omnibox.OmniboxFocusReason;
+import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
@@ -323,7 +324,7 @@ public class AppHeaderCoordinatorBrowserTest {
         Intent intent =
                 MultiWindowUtils.createNewWindowIntent(
                         firstActivity.getApplicationContext(),
-                        MultiWindowUtils.INVALID_INSTANCE_ID,
+                        TabWindowManager.INVALID_WINDOW_ID,
                         true,
                         false,
                         true);

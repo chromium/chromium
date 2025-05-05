@@ -28,12 +28,12 @@ import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.multiwindow.MultiWindowTestUtils;
-import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupMetadata;
+import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.ui.dragdrop.DragDropMetricUtils.UrlIntentSource;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -65,7 +65,7 @@ public class DragAndDropLauncherActivityUnitTest {
                 DragAndDropLauncherActivity.getLinkLauncherIntent(
                         mContext,
                         mLinkUrl,
-                        MultiWindowUtils.INVALID_INSTANCE_ID,
+                        TabWindowManager.INVALID_WINDOW_ID,
                         UrlIntentSource.LINK);
         assertEquals(
                 "The intent action should be DragAndDropLauncherActivity.ACTION_DRAG_DROP_VIEW.",
@@ -112,7 +112,7 @@ public class DragAndDropLauncherActivityUnitTest {
     @Test
     public void testGetTabIntent_defaultWindowId() {
         testGetTabOrGroupIntent(
-                /* isGroupDrag= */ false, /* destWindowId= */ MultiWindowUtils.INVALID_INSTANCE_ID);
+                /* isGroupDrag= */ false, /* destWindowId= */ TabWindowManager.INVALID_WINDOW_ID);
     }
 
     @Test
@@ -123,7 +123,7 @@ public class DragAndDropLauncherActivityUnitTest {
     @Test
     public void testGetTabGroupIntent_defaultWindowId() {
         testGetTabOrGroupIntent(
-                /* isGroupDrag= */ true, /* destWindowId= */ MultiWindowUtils.INVALID_INSTANCE_ID);
+                /* isGroupDrag= */ true, /* destWindowId= */ TabWindowManager.INVALID_WINDOW_ID);
     }
 
     @Test
@@ -132,7 +132,7 @@ public class DragAndDropLauncherActivityUnitTest {
                 DragAndDropLauncherActivity.getLinkLauncherIntent(
                         mContext,
                         mLinkUrl,
-                        MultiWindowUtils.INVALID_INSTANCE_ID,
+                        TabWindowManager.INVALID_WINDOW_ID,
                         UrlIntentSource.LINK);
         intent.setAction(Intent.ACTION_VIEW);
         exception.expect(AssertionError.class);
@@ -147,7 +147,7 @@ public class DragAndDropLauncherActivityUnitTest {
                 DragAndDropLauncherActivity.getLinkLauncherIntent(
                         mContext,
                         mLinkUrl,
-                        MultiWindowUtils.INVALID_INSTANCE_ID,
+                        TabWindowManager.INVALID_WINDOW_ID,
                         UrlIntentSource.LINK);
         DragAndDropLauncherActivity.setIntentCreationTimestampMs(null);
         assertFalse(
@@ -183,7 +183,7 @@ public class DragAndDropLauncherActivityUnitTest {
                 "The EXTRA_DRAGDROP_TAB_WINDOW_ID intent extra value should match.",
                 sourceWindowId,
                 intent.getIntExtra(IntentHandler.EXTRA_DRAGDROP_TAB_WINDOW_ID, -1));
-        if (destWindowId == MultiWindowUtils.INVALID_INSTANCE_ID) {
+        if (destWindowId == TabWindowManager.INVALID_WINDOW_ID) {
             assertFalse(
                     "Intent should not contain the EXTRA_WINDOW_ID.",
                     intent.hasExtra(IntentHandler.EXTRA_WINDOW_ID));
@@ -249,7 +249,7 @@ public class DragAndDropLauncherActivityUnitTest {
                 new TabGroupMetadata(
                         rootId,
                         /* selectedTabId= */ rootId,
-                        /* sourceWindowId= */ MultiWindowUtils.INVALID_INSTANCE_ID,
+                        /* sourceWindowId= */ TabWindowManager.INVALID_WINDOW_ID,
                         tabGroupId,
                         tabIdsToUrls,
                         /* tabGroupColor= */ 0,

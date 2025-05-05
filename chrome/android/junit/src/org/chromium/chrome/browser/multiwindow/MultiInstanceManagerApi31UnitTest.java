@@ -21,6 +21,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.chrome.browser.tabwindow.TabWindowManager.INVALID_WINDOW_ID;
+
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityManager.AppTask;
@@ -107,12 +109,11 @@ import java.util.Set;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class MultiInstanceManagerApi31UnitTest {
-    private static final int INVALID_INSTANCE_ID = MultiInstanceManagerApi31.INVALID_INSTANCE_ID;
     private static final int INSTANCE_ID_1 = 1;
     private static final int INSTANCE_ID_2 = 2;
     private static final int NON_EXISTENT_INSTANCE_ID = 4;
     private static final int PASSED_ID_2 = 2;
-    private static final int PASSED_ID_INVALID = INVALID_INSTANCE_ID;
+    private static final int PASSED_ID_INVALID = INVALID_WINDOW_ID;
     private static final int TASK_ID_56 = 56;
     private static final int TASK_ID_57 = 57;
     private static final int TASK_ID_58 = 58;
@@ -253,7 +254,7 @@ public class MultiInstanceManagerApi31UnitTest {
         }
 
         private void updateTasksWithoutDestroyingActivity(int instanceId, Activity activity) {
-            if (instanceId == INVALID_INSTANCE_ID) {
+            if (instanceId == INVALID_WINDOW_ID) {
                 mAppTaskIds.remove(activity.getTaskId());
             } else {
                 mAppTaskIds.add(activity.getTaskId());
@@ -431,7 +432,7 @@ public class MultiInstanceManagerApi31UnitTest {
             assertEquals(index, allocInstanceIndex(PASSED_ID_INVALID, mActivityPool[index]));
         }
         assertEquals(
-                INVALID_INSTANCE_ID, allocInstanceIndex(PASSED_ID_INVALID, mActivityPool[index]));
+                INVALID_WINDOW_ID, allocInstanceIndex(PASSED_ID_INVALID, mActivityPool[index]));
 
         // Activity ID 1 gets removed from memory.
         closeInstanceOnly(mActivityPool[1], 1);
@@ -1024,7 +1025,7 @@ public class MultiInstanceManagerApi31UnitTest {
                                 null,
                                 mMismatchedIndicesHandler,
                                 index);
-        if (pair == null) return INVALID_INSTANCE_ID;
+        if (pair == null) return INVALID_WINDOW_ID;
 
         int instanceId = pair.first;
         mMultiInstanceManager.createInstance(instanceId, activity);
@@ -1048,13 +1049,13 @@ public class MultiInstanceManagerApi31UnitTest {
     // get destroyed. Task map gets updated. The persistent state file remains intact.
     private void removeTaskOnRecentsScreen(Activity activityForTask) {
         mMultiInstanceManager.updateTasksWithoutDestroyingActivity(
-                INVALID_INSTANCE_ID, activityForTask);
+                INVALID_WINDOW_ID, activityForTask);
         destroyActivity(activityForTask);
     }
 
     private void removeTaskWithoutDestroyingActivity(Activity activityForTask) {
         mMultiInstanceManager.updateTasksWithoutDestroyingActivity(
-                INVALID_INSTANCE_ID, activityForTask);
+                INVALID_WINDOW_ID, activityForTask);
     }
 
     // Simulate only an activity gets destroyed, leaving everything intact.
@@ -1078,7 +1079,7 @@ public class MultiInstanceManagerApi31UnitTest {
         doNothing()
                 .when(mMultiInstanceManager)
                 .moveAndReparentTabToNewWindow(
-                        eq(mTab1), eq(INVALID_INSTANCE_ID), eq(true), eq(false), eq(true));
+                        eq(mTab1), eq(INVALID_WINDOW_ID), eq(true), eq(false), eq(true));
 
         // Action
         mMultiInstanceManager.moveTabToNewWindow(mTab1);
@@ -1088,7 +1089,7 @@ public class MultiInstanceManagerApi31UnitTest {
         // https://source.chromium.org/chromium/chromium/src/+/main:chrome/android/javatests/src/org/chromium/chrome/browser/multiwindow/MultiWindowIntegrationTest.java
         verify(mMultiInstanceManager, times(1))
                 .moveAndReparentTabToNewWindow(
-                        any(), eq(INVALID_INSTANCE_ID), eq(true), eq(false), eq(true));
+                        any(), eq(INVALID_WINDOW_ID), eq(true), eq(false), eq(true));
         XrUtils.resetXrDeviceForTesting();
     }
 
@@ -1117,7 +1118,7 @@ public class MultiInstanceManagerApi31UnitTest {
         // Verify only openNewWindow is called and moveAndReparentTabToNewWindow is not called.
         verify(mMultiInstanceManager, times(0))
                 .moveAndReparentTabToNewWindow(
-                        any(), eq(INVALID_INSTANCE_ID), eq(true), eq(false), eq(true));
+                        any(), eq(INVALID_WINDOW_ID), eq(true), eq(false), eq(true));
         verify(mMultiInstanceManager, times(1)).openNewWindow(any());
         XrUtils.resetXrDeviceForTesting();
     }
@@ -1190,7 +1191,7 @@ public class MultiInstanceManagerApi31UnitTest {
                 .reparentTabToRunningActivity(any(), eq(mTab1), eq(0));
         verify(mMultiInstanceManager, times(0))
                 .moveAndReparentTabToNewWindow(
-                        eq(mTab1), eq(INVALID_INSTANCE_ID), eq(false), eq(true), eq(true));
+                        eq(mTab1), eq(INVALID_WINDOW_ID), eq(false), eq(true), eq(true));
         XrUtils.resetXrDeviceForTesting();
     }
 
@@ -1470,7 +1471,7 @@ public class MultiInstanceManagerApi31UnitTest {
         verify(mTabbedActivityTask62).startActivity(intent, null);
         assertEquals(
                 INSTANCE_ID_2,
-                intent.getIntExtra(IntentHandler.EXTRA_WINDOW_ID, INVALID_INSTANCE_ID));
+                intent.getIntExtra(IntentHandler.EXTRA_WINDOW_ID, INVALID_WINDOW_ID));
     }
 
     @Test

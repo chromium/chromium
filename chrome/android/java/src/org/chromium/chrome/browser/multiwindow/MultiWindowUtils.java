@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.multiwindow;
 
+import static org.chromium.chrome.browser.tabwindow.TabWindowManager.INVALID_WINDOW_ID;
+
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityManager.AppTask;
@@ -66,7 +68,6 @@ import java.util.Locale;
  * <p>Thread-safe: This class may be accessed from any thread.
  */
 public class MultiWindowUtils implements ActivityStateListener {
-    public static final int INVALID_INSTANCE_ID = TabWindowManager.INVALID_WINDOW_ID;
     public static final int INVALID_TASK_ID = -1; // Defined in android.app.ActivityTaskManager.
     private static final int DEFAULT_TAB_COUNT_FOR_RELAUNCH = 0;
 
@@ -384,7 +385,7 @@ public class MultiWindowUtils implements ActivityStateListener {
         Intent intent = new Intent(context, ChromeTabbedActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
-        if (instanceId != INVALID_INSTANCE_ID) {
+        if (instanceId != INVALID_WINDOW_ID) {
             intent.putExtra(IntentHandler.EXTRA_WINDOW_ID, instanceId);
         }
         if (preferNew) intent.putExtra(IntentHandler.EXTRA_PREFER_NEW, true);
@@ -801,7 +802,7 @@ public class MultiWindowUtils implements ActivityStateListener {
      *     to the new instance launched by the intent.
      */
     public static int getInstanceIdForViewIntent(boolean preferNew) {
-        int windowId = MultiWindowUtils.INVALID_INSTANCE_ID;
+        int windowId = INVALID_WINDOW_ID;
         int maxInstances = MultiWindowUtils.getMaxInstances();
         if (preferNew && MultiWindowUtils.getInstanceCount() < maxInstances) return windowId;
 
@@ -845,15 +846,15 @@ public class MultiWindowUtils implements ActivityStateListener {
     /**
      * @param activity The {@link Activity} associated with the current context.
      * @return The instance ID of the Chrome window where the link intent will be launched.
-     *     INVALID_INSTANCE_ID will be returned if fewer than the maximum number of instances are
+     *     INVALID_WINDOW_ID will be returned if fewer than the maximum number of instances are
      *     open. The instance ID associated with the specified, valid activity will be returned if
      *     the maximum number of instances is open.
      */
     public static int getInstanceIdForLinkIntent(Activity activity) {
-        // INVALID_INSTANCE_ID indicates that a new instance will be used to launch the link intent.
-        if (getInstanceCount() < getMaxInstances()) return INVALID_INSTANCE_ID;
+        // INVALID_WINDOW_ID indicates that a new instance will be used to launch the link intent.
+        if (getInstanceCount() < getMaxInstances()) return INVALID_WINDOW_ID;
         int windowId = TabWindowManagerSingleton.getInstance().getIdForWindow(activity);
-        assert windowId != INVALID_INSTANCE_ID
+        assert windowId != INVALID_WINDOW_ID
                 : "A valid instance ID was not found for the specified activity.";
         return windowId;
     }

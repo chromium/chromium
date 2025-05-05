@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.multiwindow;
 
+import static org.chromium.chrome.browser.tabwindow.TabWindowManager.INVALID_WINDOW_ID;
+
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityManager.AppTask;
@@ -84,8 +86,6 @@ import java.util.Set;
 class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements ActivityStateListener {
     private static final String TAG = "MIMApi31";
     private static final String TAG_MULTI_INSTANCE = "MultiInstance";
-
-    public static final int INVALID_INSTANCE_ID = MultiWindowUtils.INVALID_INSTANCE_ID;
     public static final int INVALID_TASK_ID = MultiWindowUtils.INVALID_TASK_ID;
 
     private static final String EMPTY_DATA = "";
@@ -96,7 +96,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
     private ObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
 
     // Instance ID for the activity associated with this manager.
-    private int mInstanceId = INVALID_INSTANCE_ID;
+    private int mInstanceId = INVALID_WINDOW_ID;
 
     private Tab mActiveTab;
     private TabObserver mActiveTabObserver =
@@ -355,7 +355,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
     @Override
     public int getCurrentInstanceId() {
         List<InstanceInfo> allInstances = getInstanceInfo();
-        if (allInstances == null || allInstances.isEmpty()) return INVALID_INSTANCE_ID;
+        if (allInstances == null || allInstances.isEmpty()) return INVALID_WINDOW_ID;
         // Current instance is at top of list.
         return allInstances.get(0).instanceId;
     }
@@ -376,7 +376,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
         // Explicitly specified window ID should be preferred. This comes from user selecting
         // a certain instance on UI when no task is present for it.
         // When out of range, ignore the ID and apply the normal allocation logic below.
-        if (windowId >= 0 && windowId < mMaxInstances && instanceId == INVALID_INSTANCE_ID) {
+        if (windowId >= 0 && windowId < mMaxInstances && instanceId == INVALID_WINDOW_ID) {
             Log.i(TAG_MULTI_INSTANCE, "Existing Instance - selected Id allocated: " + windowId);
             return Pair.create(windowId, InstanceAllocationType.EXISTING_INSTANCE_UNMAPPED_TASK);
         }
@@ -384,7 +384,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
         // First, see if we have instance-task ID mapping. If we do, use the instance id. This
         // takes care of a task that had its activity destroyed and comes back to create a
         // new one. We pair them again.
-        if (instanceId != INVALID_INSTANCE_ID) {
+        if (instanceId != INVALID_WINDOW_ID) {
             Log.i(TAG_MULTI_INSTANCE, "Existing Instance - mapped Id allocated: " + instanceId);
             return Pair.create(instanceId, InstanceAllocationType.EXISTING_INSTANCE_MAPPED_TASK);
         }
@@ -398,7 +398,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
                 }
             }
             return Pair.create(
-                    INVALID_INSTANCE_ID, InstanceAllocationType.PREFER_NEW_INVALID_INSTANCE);
+                    INVALID_WINDOW_ID, InstanceAllocationType.PREFER_NEW_INVALID_INSTANCE);
         }
 
         // Search for an unassigned ID. The index is available for the assignment if:
@@ -406,7 +406,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
         // b) the corresponding persistent state does not exist.
         // Prefer a over b. Pick the MRU instance if there is more than one. Type b returns 0
         // for |readLastAccessedTime|, so can be regarded as the least favored.
-        int id = INVALID_INSTANCE_ID;
+        int id = INVALID_WINDOW_ID;
         boolean newInstanceIdAllocated = false;
         @InstanceAllocationType int allocationType = InstanceAllocationType.INVALID_INSTANCE;
         for (int i = 0; i < mMaxInstances; ++i) {
@@ -414,7 +414,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
             if (taskIdFromMap != INVALID_TASK_ID) {
                 continue;
             }
-            if (id == INVALID_INSTANCE_ID || readLastAccessedTime(i) > readLastAccessedTime(id)) {
+            if (id == INVALID_WINDOW_ID || readLastAccessedTime(i) > readLastAccessedTime(id)) {
                 id = i;
                 newInstanceIdAllocated = !instanceEntryExists(i);
                 allocationType =
@@ -426,7 +426,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
 
         if (newInstanceIdAllocated) {
             logNewInstanceId(id);
-        } else if (id != INVALID_INSTANCE_ID) {
+        } else if (id != INVALID_WINDOW_ID) {
             Log.i(
                     TAG_MULTI_INSTANCE,
                     "Existing Instance - persisted and unmapped Id allocated: " + id);
@@ -667,7 +667,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
         for (int i = 0; i < mMaxInstances; ++i) {
             if (taskId == getTaskFromMap(i)) return i;
         }
-        return INVALID_INSTANCE_ID;
+        return INVALID_WINDOW_ID;
     }
 
     @Override
@@ -978,7 +978,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
         // This handles a case where an instance is deleted within Chrome but not through
         // Window manager UI, and the task is removed by system. See https://crbug.com/1241719.
         removeInvalidInstanceData(/* cleanupApplicationStatus= */ false);
-        if (mInstanceId != INVALID_INSTANCE_ID) {
+        if (mInstanceId != INVALID_WINDOW_ID) {
             ApplicationStatus.unregisterActivityStateListener(this);
         }
         if (sState != null) {
@@ -1065,7 +1065,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
         if (MultiWindowUtils.getInstanceCount() < mMaxInstances) {
             moveAndReparentTabToNewWindow(
                     tab,
-                    INVALID_INSTANCE_ID,
+                    INVALID_WINDOW_ID,
                     /* preferNew= */ true,
                     /* openAdjacently= */ false,
                     /* addTrustedIntentExtras= */ true);
@@ -1137,7 +1137,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
     private boolean canCloseChromeWindow(int instanceId) {
         // Close the source instance window after tab reparenting if permitted by the feature flag
         // or if the app is in a desktop window, and the source instance is known.
-        if (instanceId == INVALID_INSTANCE_ID) return false;
+        if (instanceId == INVALID_WINDOW_ID) return false;
 
         return TabUiFeatureUtilities.isTabDragAsWindowEnabled()
                 || AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowStateManagerSupplier.get());

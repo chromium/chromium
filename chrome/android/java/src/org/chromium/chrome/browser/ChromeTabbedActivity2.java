@@ -8,14 +8,15 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
+import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 
 /**
  * A subclass of ChromeTabbedActivity, used in Android N multi-window mode.
  *
- * This activity can appear side-by-side with ChromeTabbedActivity in multi-window mode. It has a
+ * <p>This activity can appear side-by-side with ChromeTabbedActivity in multi-window mode. It has a
  * separate set of tabs, as determined by logic in TabWindowManager.
  *
- * Since ChromeTabbedActivity has launchMode="singleTask" in the manifest, there can't be two
+ * <p>Since ChromeTabbedActivity has launchMode="singleTask" in the manifest, there can't be two
  * instances of ChromeTabbedActivity; hence this activity is needed. Moreover, having separately-
  * named activities makes it possible to bring either existing activity to the foreground on the
  * desired side of the screen when firing an intent.
@@ -33,7 +34,7 @@ public class ChromeTabbedActivity2 extends ChromeTabbedActivity {
             // ChromeTabbedActivity2 can be launched in multi-instance configuration if a CTA2-task
             // survives Chrome upgrade and gets to the foreground to have the activity re-created.
             // Bounce to ChromeTabbedActivity and kill the CTA2-task.
-            int windowId = MultiWindowUtils.INVALID_INSTANCE_ID;
+            int windowId = TabWindowManager.INVALID_WINDOW_ID;
             if (savedInstanceState != null) {
                 windowId = savedInstanceState.getInt(WINDOW_INDEX, windowId);
             }
