@@ -1,5 +1,5 @@
 diff --git a/src/hunspell/affixmgr.cxx b/src/hunspell/affixmgr.cxx
-index b85aca3..25dd642 100644
+index 53cf97f..2afcf0c 100644
 --- a/src/hunspell/affixmgr.cxx
 +++ b/src/hunspell/affixmgr.cxx
 @@ -87,11 +87,19 @@
@@ -128,9 +128,15 @@ index b85aca3..25dd642 100644
    }
  
    finishFileMgr(afflst);
-@@ -1285,6 +1342,24 @@ std::string AffixMgr::prefix_check_twosfx_morph(const std::string& word,
+@@ -1284,12 +1341,29 @@ std::string AffixMgr::prefix_check_twosfx_morph(const std::string& word,
+ 
  // Is word a non-compound with a REP substitution (see checkcompoundrep)?
- int AffixMgr::cpdrep_check(const std::string& word, int wl) {
+ int AffixMgr::cpdrep_check(const std::string& in_word, int wl) {
+-
+   if ((wl < 2) || get_reptable().empty())
+     return 0;
+ 
+   std::string word(in_word, 0, wl);
  
 +#ifdef HUNSPELL_CHROME_CLIENT
 +  const char *pattern, *pattern2;
@@ -150,10 +156,10 @@ index b85aca3..25dd642 100644
 +  }
 +
 +#else
-   if ((wl < 2) || get_reptable().empty())
-     return 0;
- 
-@@ -1303,6 +1378,7 @@ int AffixMgr::cpdrep_check(const std::string& word, int wl) {
+   for (size_t i = 0; i < get_reptable().size(); ++i) {
+     // use only available mid patterns
+     if (!get_reptable()[i].outstrings[0].empty()) {
+@@ -1305,6 +1379,7 @@ int AffixMgr::cpdrep_check(const std::string& in_word, int wl) {
        }
      }
    }
@@ -161,7 +167,7 @@ index b85aca3..25dd642 100644
  
   return 0;
  }
-@@ -4499,6 +4575,7 @@ bool AffixMgr::parse_affix(const std::string& line,
+@@ -4501,6 +4576,7 @@ bool AffixMgr::parse_affix(const std::string& line,
        case 1: {
          np++;
          aflag = pHMgr->decode_flag(std::string(start_piece, iter));
@@ -169,7 +175,7 @@ index b85aca3..25dd642 100644
          if (((at == 'S') && (dupflags[aflag] & dupSFX)) ||
              ((at == 'P') && (dupflags[aflag] & dupPFX))) {
            HUNSPELL_WARNING(
-@@ -4507,6 +4584,7 @@ bool AffixMgr::parse_affix(const std::string& line,
+@@ -4509,6 +4585,7 @@ bool AffixMgr::parse_affix(const std::string& line,
                af->getlinenum());
          }
          dupflags[aflag] += (char)((at == 'S') ? dupSFX : dupPFX);

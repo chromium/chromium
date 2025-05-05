@@ -1340,7 +1340,11 @@ std::string AffixMgr::prefix_check_twosfx_morph(const std::string& word,
 }
 
 // Is word a non-compound with a REP substitution (see checkcompoundrep)?
-int AffixMgr::cpdrep_check(const std::string& word, int wl) {
+int AffixMgr::cpdrep_check(const std::string& in_word, int wl) {
+  if ((wl < 2) || get_reptable().empty())
+    return 0;
+
+  std::string word(in_word, 0, wl);
 
 #ifdef HUNSPELL_CHROME_CLIENT
   const char *pattern, *pattern2;
@@ -1360,18 +1364,15 @@ int AffixMgr::cpdrep_check(const std::string& word, int wl) {
   }
 
 #else
-  if ((wl < 2) || get_reptable().empty())
-    return 0;
-
   for (size_t i = 0; i < get_reptable().size(); ++i) {
     // use only available mid patterns
     if (!get_reptable()[i].outstrings[0].empty()) {
-      const char* r = word.c_str();
+      size_t r = 0;
       const size_t lenp = get_reptable()[i].pattern.size();
       // search every occurence of the pattern in the word
-      while ((r = strstr(r, get_reptable()[i].pattern.c_str())) != NULL) {
-        std::string candidate(word.c_str());
-        candidate.replace(r - word.c_str(), lenp, get_reptable()[i].outstrings[0]);
+      while (word.find(get_reptable()[i].pattern, r) != std::string::npos) {
+        std::string candidate(word);
+        candidate.replace(r, lenp, get_reptable()[i].outstrings[0]);
         if (candidate_check(candidate))
           return 1;
         ++r;  // search for the next letter
