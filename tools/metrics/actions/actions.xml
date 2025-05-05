@@ -48784,6 +48784,8 @@ should be able to be added at any place in this file.
   <suffix name="ReadAloudAppMenuFeature" label="For ReadAloudAppMenu feature."/>
   <suffix name="ReadAloudExpandedPlayerFeature"
       label="For ReadAloud expanded player feature."/>
+  <suffix name="ReadAloudPlaybackModeFeature"
+      label="For ReadAloud playback mode feature."/>
   <suffix name="ReadingListDiscovery"
       label="For ReadingListDiscoveryFeature feature."/>
   <suffix name="ReadingListEntryPoint"

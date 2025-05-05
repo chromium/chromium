@@ -467,6 +467,8 @@ chromium-metrics-reviews@google.com.
       summary="the Read Aloud button in the overflow menu"/>
   <variant name="IPH_ReadAloudExpandedPlayerFeature"
       summary="promotes expanded player for Read Aloud"/>
+  <variant name="IPH_ReadAloudPlaybackModeFeature"
+      summary="promotes playback mode selector for Read Aloud"/>
   <variant name="IPH_ReadingListDiscovery"
       summary="first time a tab is added to reading list"/>
   <variant name="IPH_ReadingListEntryPoint"

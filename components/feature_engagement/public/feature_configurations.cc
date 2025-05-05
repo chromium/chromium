@@ -1747,6 +1747,23 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
 
+  if (kIPHReadAloudPlaybackModeFeature.name == feature->name) {
+    // Show tooltip at most 3 times, once a day, but stop if user hit
+    // playback mode.
+    FeatureConfig config;
+    config.valid = true;
+    config.availability = Comparator(ANY, 0);
+    config.session_rate = Comparator(EQUAL, 0);
+    config.used = EventConfig("read_aloud_playback_mode_clicked",
+                              Comparator(EQUAL, 0), 360, 360);
+    config.trigger = EventConfig("read_aloud_playback_mode_iph_trigger",
+                                 Comparator(EQUAL, 0), 1, 1);
+    config.event_configs.insert(
+        EventConfig("read_aloud_playback_mode_iph_trigger",
+                    Comparator(LESS_THAN, 3), 360, 360));
+    return config;
+  }
+
   if (kIPHAutofillDisabledVirtualCardSuggestionFeature.name == feature->name) {
     // A config that allows the virtual card disabled suggestion IPH to be shown
     // when it has been shown less than three times in last 90 days.
