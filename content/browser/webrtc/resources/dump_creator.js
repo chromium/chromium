@@ -116,10 +116,13 @@ export class DumpCreator {
    */
   async onDownloadData_(event) {
     const useCompression = this.dumpRoot_.getElementsByTagName('input')[0].checked;
+    const uaData = await navigator.userAgentData
+        .getHighEntropyValues(['fullVersionList']);
     const dumpObject = {
       'getUserMedia': userMediaRequests,
       'PeerConnections': peerConnectionDataStore,
       'UserAgent': navigator.userAgent,
+      'UserAgentData': uaData.fullVersionList,
     };
     const textBlob =
       new Blob([JSON.stringify(dumpObject, null, 1)], {type: 'octet/stream'});
