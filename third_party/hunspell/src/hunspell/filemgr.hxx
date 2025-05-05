@@ -73,7 +73,7 @@
 #define FILEMGR_HXX_
 
 #include "hunzip.hxx"
-#include <stdio.h>
+#include <cstdio>
 #include <string>
 #include <fstream>
 
@@ -101,10 +101,6 @@ class FileMgr {
 };
 #else
 class FileMgr {
- private:
-  FileMgr(const FileMgr&);
-  FileMgr& operator=(const FileMgr&);
-
  protected:
   std::ifstream fin;
   Hunzip* hin;
@@ -114,6 +110,8 @@ class FileMgr {
 
  public:
   FileMgr(const char* filename, const char* key = NULL);
+  FileMgr(const FileMgr&) = delete;
+  FileMgr& operator=(const FileMgr&) = delete;
   ~FileMgr();
   bool getline(std::string&);
   int getlinenum();

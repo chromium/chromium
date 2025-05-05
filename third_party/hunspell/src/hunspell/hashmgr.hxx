@@ -71,7 +71,7 @@
 #ifndef HASHMGR_HXX_
 #define HASHMGR_HXX_
 
-#include <stdio.h>
+#include <cstdio>
 #include <string>
 #include <vector>
 

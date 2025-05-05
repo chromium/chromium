@@ -84,7 +84,7 @@ int TextParser::is_wordchar(const char* w) {
       return wordcharacters[cache_index];
     if (u8_u16(wc, w, true) < 1)
         return 0;
-    unsigned short idx = (wc[0].h << 8) + wc[0].l;
+    unsigned short idx = (unsigned short)wc[0];
     return unicodeisalpha(idx) ||
            (wordchars_utf16 &&
             std::binary_search(wordchars_utf16, wordchars_utf16 + wclen, wc[0]));

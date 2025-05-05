@@ -92,10 +92,6 @@ enum { LCS_UP, LCS_LEFT, LCS_UPLEFT };
 
 class SuggestMgr {
  private:
-  SuggestMgr(const SuggestMgr&);
-  SuggestMgr& operator=(const SuggestMgr&);
-
- private:
   std::string ckey;
   size_t ckeyl;
   std::vector<w_char> ckey_utf;
@@ -121,6 +117,8 @@ class SuggestMgr {
 #else
   SuggestMgr(const std::string& tryme, unsigned int maxn, AffixMgr* aptr);
 #endif
+  SuggestMgr(const SuggestMgr&) = delete;
+  SuggestMgr& operator=(const SuggestMgr&) = delete;
   ~SuggestMgr();
 
   bool suggest(std::vector<std::string>& slst, const std::string& word, int* onlycmpdsug);

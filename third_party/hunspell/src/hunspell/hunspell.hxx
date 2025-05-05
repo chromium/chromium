@@ -105,10 +105,6 @@ class HunspellImpl;
 
 class LIBHUNSPELL_DLL_EXPORTED Hunspell {
  private:
-  Hunspell(const Hunspell&);
-  Hunspell& operator=(const Hunspell&);
-
- private:
   HunspellImpl* m_Impl;
 
  public:
@@ -125,6 +121,8 @@ class LIBHUNSPELL_DLL_EXPORTED Hunspell {
 #else
   Hunspell(const char* affpath, const char* dpath, const char* key = NULL);
 #endif
+  Hunspell(const Hunspell&) = delete;
+  Hunspell& operator=(const Hunspell&) = delete;
   ~Hunspell();
 
 #ifndef HUNSPELL_CHROME_CLIENT

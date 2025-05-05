@@ -85,13 +85,11 @@
 
 class RepList {
  private:
-  RepList(const RepList&);
-  RepList& operator=(const RepList&);
-
   std::vector<replentry*> dat;
-
  public:
   explicit RepList(int n);
+  RepList(const RepList&) = delete;
+  RepList& operator=(const RepList&) = delete;
   ~RepList();
 
   bool check_against_breaktable(const std::vector<std::string>& breaktable) const;

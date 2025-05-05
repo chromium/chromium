@@ -79,10 +79,6 @@
 
 class PfxEntry : public AffEntry {
  private:
-  PfxEntry(const PfxEntry&);
-  PfxEntry& operator=(const PfxEntry&);
-
- private:
   AffixMgr* pmyMgr;
 
   PfxEntry* next;
@@ -92,6 +88,8 @@ class PfxEntry : public AffEntry {
 
  public:
   explicit PfxEntry(AffixMgr* pmgr);
+  PfxEntry(const PfxEntry&) = delete;
+  PfxEntry& operator=(const PfxEntry&) = delete;
 
   bool allowCross() const { return ((opts & aeXPRODUCT) != 0); }
   struct hentry* checkword(const std::string& word,

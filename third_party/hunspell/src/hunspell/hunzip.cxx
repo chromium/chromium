@@ -35,9 +35,9 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
+#include <cstdlib>
+#include <cstring>
+#include <cstdio>
 
 #include "hunzip.hxx"
 #include "csutil.hxx"
@@ -67,8 +67,7 @@ Hunzip::Hunzip(const char* file, const char* key)
 
 int Hunzip::getcode(const char* key) {
   unsigned char c[2];
-  int i, j, n;
-  int allocatedbit = BASEBITREC;
+  int i, j, n, allocatedbit = BASEBITREC;
   const char* enc = key;
 
   if (filename.empty())
@@ -136,17 +135,17 @@ int Hunzip::getcode(const char* key) {
         enc = key;
       l ^= *enc;
     }
-    if (!fin.read(in, l / 8 + 1))
+    if (!fin.read(in, (l >> 3) + 1))
       return fail(MSG_FORMAT, filename);
     if (key)
-      for (j = 0; j <= l / 8; j++) {
+      for (j = 0; j <= (l >> 3); j++) {
         if (*(++enc) == '\0')
           enc = key;
         in[j] ^= *enc;
       }
     int p = 0;
     for (j = 0; j < l; j++) {
-      int b = (in[j / 8] & (1 << (7 - (j % 8)))) ? 1 : 0;
+      int b = (in[(j >> 3)] & (1 << (7 - (j & 7)))) ? 1 : 0;
       int oldp = p;
       p = dec[p].v[b];
       if (p == 0) {
@@ -176,10 +175,10 @@ int Hunzip::getbuf() {
   do {
     if (inc == 0) {
       fin.read(in, BUFSIZE);
-      inbits = int(fin.gcount() * 8);
+      inbits = int(fin.gcount() << 3);
     }
     for (; inc < inbits; inc++) {
-      int b = (in[inc / 8] & (1 << (7 - (inc % 8)))) ? 1 : 0;
+      int b = (in[inc >> 3] & (1 << (7 - (inc & 7)))) ? 1 : 0;
       int oldp = p;
       p = dec[p].v[b];
       if (p == 0) {

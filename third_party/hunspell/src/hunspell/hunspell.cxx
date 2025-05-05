@@ -68,10 +68,10 @@
  * SUCH DAMAGE.
  */
 
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
-#include <time.h>
+#include <cstdlib>
+#include <cstring>
+#include <cstdio>
+#include <ctime>
 
 #include "affixmgr.hxx"
 #include "hunspell.hxx"
@@ -95,6 +95,8 @@ public:
 #else
   HunspellImpl(const char* affpath, const char* dpath, const char* key = NULL);
 #endif
+  HunspellImpl(const HunspellImpl&) = delete;
+  HunspellImpl& operator=(const HunspellImpl&) = delete;
   ~HunspellImpl();
 #ifndef HUNSPELL_CHROME_CLIENT
   int add_dic(const char* dpath, const char* key = NULL);
@@ -185,9 +187,6 @@ private:
   std::string::size_type get_xml_pos(const std::string& s, std::string::size_type pos, const char* attr);
   std::vector<std::string> get_xml_list(const std::string& list, std::string::size_type pos, const char* tag);
   int check_xml_par(const std::string& q, std::string::size_type pos, const char* attr, const char* value);
-private:
-  HunspellImpl(const HunspellImpl&);
-  HunspellImpl& operator=(const HunspellImpl&);
 };
 
 #ifdef HUNSPELL_CHROME_CLIENT
@@ -239,8 +238,8 @@ HunspellImpl::HunspellImpl(const char* affpath, const char* dpath, const char* k
 HunspellImpl::~HunspellImpl() {
   delete pSMgr;
   delete pAMgr;
-  for (size_t i = 0; i < m_HMgrs.size(); ++i)
-    delete m_HMgrs[i];
+  for (auto& m_HMgr : m_HMgrs)
+    delete m_HMgr;
   pSMgr = NULL;
   pAMgr = NULL;
 #ifdef MOZILLA_CLIENT
@@ -301,14 +300,17 @@ size_t HunspellImpl::cleanword2(std::string& dest,
   clean_ignore(w2, src);
 
   const char* q = w2.c_str();
+  int nl = (int)w2.size();
 
   // first skip over any leading blanks
-  while (*q == ' ')
+  while (*q == ' ') {
     ++q;
-
+    nl--;
+  }
+	
   // now strip off any trailing periods (recording their presence)
   *pabbrev = 0;
-  int nl = strlen(q);
+  
   while ((nl > 0) && (*(q + nl - 1) == '.')) {
     nl--;
     (*pabbrev)++;
@@ -337,15 +339,17 @@ void HunspellImpl::cleanword(std::string& dest,
                         int* pabbrev) {
   dest.clear();
   const unsigned char* q = (const unsigned char*)src.c_str();
-  int firstcap = 0;
+  int firstcap = 0, nl = (int)src.size();
 
   // first skip over any leading blanks
-  while (*q == ' ')
+  while (*q == ' ') {
     ++q;
-
+    nl--;
+  }
+  
   // now strip off any trailing periods (recording their presence)
   *pabbrev = 0;
-  int nl = strlen((const char*)q);
+  
   while ((nl > 0) && (*(q + nl - 1) == '.')) {
     nl--;
     (*pabbrev)++;
@@ -377,9 +381,9 @@ void HunspellImpl::cleanword(std::string& dest,
   } else {
     std::vector<w_char> t;
     u8_u16(t, src);
-    for (size_t i = 0; i < t.size(); ++i) {
-      unsigned short idx = (t[i].h << 8) + t[i].l;
-      unsigned short low = unicodetolower(idx, langnum);
+    for (auto& wc : t) {
+      const auto idx = (unsigned short)wc;
+      const auto low = unicodetolower(idx, langnum);
       if (idx != low)
         ncap++;
       if (unicodetoupper(idx, langnum) == low)
@@ -387,7 +391,7 @@ void HunspellImpl::cleanword(std::string& dest,
     }
     u16_u8(dest, t);
     if (ncap) {
-      unsigned short idx = (t[0].h << 8) + t[0].l;
+      const auto idx = (unsigned short)t[0];
       firstcap = (idx != unicodetolower(idx, langnum));
     }
   }
@@ -601,8 +605,7 @@ bool HunspellImpl::spell_internal(const std::string& word, std::vector<std::stri
         //conversion may result in string with different len to pre-mkallsmall2
         //so re-scan
         if (apos != std::string::npos && apos < scw.size() - 1) {
-          std::string part1 = scw.substr(0, apos+1);
-          std::string part2 = scw.substr(apos+1);
+          std::string part1 = scw.substr(0, apos + 1), part2 = scw.substr(apos + 1);
           if (utf8) {
             std::vector<w_char> part1u, part2u;
             u8_u16(part1u, part1);
@@ -728,28 +731,28 @@ bool HunspellImpl::spell_internal(const std::string& word, std::vector<std::stri
     wl = scw.size();
 
     // calculate break points for recursion limit
-    for (size_t j = 0; j < wordbreak.size(); ++j) {
+    for (auto& j : wordbreak) {
       size_t pos = 0;
-      while ((pos = scw.find(wordbreak[j], pos)) != std::string::npos) {
+      while ((pos = scw.find(j, pos)) != std::string::npos) {
         ++nbr;
-        pos += wordbreak[j].size();
+        pos += j.size();
       }
     }
     if (nbr >= 10)
       return false;
 
     // check boundary patterns (^begin and end$)
-    for (size_t j = 0; j < wordbreak.size(); ++j) {
-      size_t plen = wordbreak[j].size();
+    for (auto& j : wordbreak) {
+      size_t plen = j.size();
       if (plen == 1 || plen > wl)
         continue;
 
-      if (wordbreak[j][0] == '^' &&
-          scw.compare(0, plen - 1, wordbreak[j], 1, plen -1) == 0 && spell(scw.substr(plen - 1), candidate_stack))
+      if (j[0] == '^' &&
+          scw.compare(0, plen - 1, j, 1, plen -1) == 0 && spell(scw.substr(plen - 1), candidate_stack))
         return true;
 
-      if (wordbreak[j][plen - 1] == '$' &&
-          scw.compare(wl - plen + 1, plen - 1, wordbreak[j], 0, plen - 1) == 0) {
+      if (j[plen - 1] == '$' &&
+          scw.compare(wl - plen + 1, plen - 1, j, 0, plen - 1) == 0) {
         std::string suffix(scw.substr(wl - plen + 1));
         scw.resize(wl - plen + 1);
         if (spell(scw, candidate_stack))
@@ -759,11 +762,11 @@ bool HunspellImpl::spell_internal(const std::string& word, std::vector<std::stri
     }
 
     // other patterns
-    for (size_t j = 0; j < wordbreak.size(); ++j) {
-      size_t plen = wordbreak[j].size();
-      size_t found = scw.find(wordbreak[j]);
+    for (auto& j : wordbreak) {
+      size_t plen = j.size();
+      size_t found = scw.find(j);
       if ((found > 0) && (found < wl - plen)) {
-        size_t found2 = scw.find(wordbreak[j], found + 1);
+        size_t found2 = scw.find(j, found + 1);
         // try to break at the second occurance
         // to recognize dictionary words with wordbreak
         if (found2 > 0 && (found2 < wl - plen))
@@ -779,7 +782,7 @@ bool HunspellImpl::spell_internal(const std::string& word, std::vector<std::stri
         scw.append(suffix);
 
         // LANG_hu: spec. dash rule
-        if (langnum == LANG_hu && wordbreak[j] == "-") {
+        if (langnum == LANG_hu && j == "-") {
           suffix = scw.substr(found + 1);
           scw.resize(found + 1);
           if (spell(scw, candidate_stack))
@@ -791,9 +794,8 @@ bool HunspellImpl::spell_internal(const std::string& word, std::vector<std::stri
     }
 
     // other patterns (break at first break point)
-    for (size_t j = 0; j < wordbreak.size(); ++j) {
-      size_t plen = wordbreak[j].size();
-      size_t found = scw.find(wordbreak[j]);
+    for (auto& j : wordbreak) {
+      size_t plen = j.size(), found = scw.find(j);
       if ((found > 0) && (found < wl - plen)) {
         if (!spell(scw.substr(found + plen), candidate_stack))
           continue;
@@ -805,7 +807,7 @@ bool HunspellImpl::spell_internal(const std::string& word, std::vector<std::stri
         scw.append(suffix);
 
         // LANG_hu: spec. dash rule
-        if (langnum == LANG_hu && wordbreak[j] == "-") {
+        if (langnum == LANG_hu && j == "-") {
           suffix = scw.substr(found + 1);
           scw.resize(found + 1);
           if (spell(scw, candidate_stack))
@@ -910,7 +912,7 @@ struct hentry* HunspellImpl::checkword(const std::string& w, int* info, std::str
       }
       // try check compound word
     } else if (pAMgr->get_compound()) {
-      struct hentry* rwords[100];  // buffer for COMPOUND pattern checking
+      struct hentry* rwords[100] = {};  // buffer for COMPOUND pattern checking
       he = pAMgr->compound_check(word, 0, 0, 100, 0, NULL, (hentry**)&rwords, 0, 0, info);
       // LANG_hu section: `moving rule' with last dash
       if ((!he) && (langnum == LANG_hu) && (word[len - 1] == '-')) {
@@ -938,9 +940,12 @@ struct hentry* HunspellImpl::checkword(const std::string& w, int* info, std::str
 }
 
 std::vector<std::string> HunspellImpl::suggest(const std::string& word, std::vector<std::string>& suggest_candidate_stack) {
-  // something very broken if suggest ends up calling itself with the same word
-  if (std::find(suggest_candidate_stack.begin(), suggest_candidate_stack.end(), word) != suggest_candidate_stack.end())
-    return std::vector<std::string>();
+
+  if (suggest_candidate_stack.size() > 2048 || // apply a fairly arbitrary depth limit
+      // something very broken if suggest ends up calling itself with the same word
+      std::find(suggest_candidate_stack.begin(), suggest_candidate_stack.end(), word) != suggest_candidate_stack.end()) {
+    return { };
+  }
 
   bool capwords;
   size_t abbv;
@@ -952,24 +957,24 @@ std::vector<std::string> HunspellImpl::suggest(const std::string& word, std::vec
   suggest_candidate_stack.pop_back();
   // word reversing wrapper for complex prefixes
   if (complexprefixes) {
-    for (size_t j = 0; j < slst.size(); ++j) {
+    for (auto& j : slst) {
       if (utf8)
-        reverseword_utf(slst[j]);
+        reverseword_utf(j);
       else
-        reverseword(slst[j]);
+        reverseword(j);
     }
   }
 
   // capitalize
   if (capwords)
-    for (size_t j = 0; j < slst.size(); ++j) {
-      mkinitcap(slst[j]);
+    for (auto& j : slst) {
+      mkinitcap(j);
     }
 
   // expand suggestions with dot(s)
   if (abbv && pAMgr && pAMgr->get_sugswithdots()) {
-    for (size_t j = 0; j < slst.size(); ++j) {
-      slst[j].append(word.substr(word.size() - abbv));
+    for (auto& j : slst) {
+	    j.append(word.substr(word.size() - abbv));
     }
   }
 
@@ -1113,13 +1118,13 @@ std::vector<std::string> HunspellImpl::suggest_internal(const std::string& word,
 
   switch (captype) {
     case NOCAP: {
-      good |= pSMgr->suggest(slst, scw.c_str(), &onlycmpdsug);
+      good |= pSMgr->suggest(slst, scw, &onlycmpdsug);
       if (clock() > timelimit + TIMELIMIT_GLOBAL)
           return slst;
       if (abbv) {
         std::string wspace(scw);
         wspace.push_back('.');
-        good |= pSMgr->suggest(slst, wspace.c_str(), &onlycmpdsug);
+        good |= pSMgr->suggest(slst, wspace, &onlycmpdsug);
         if (clock() > timelimit + TIMELIMIT_GLOBAL)
             return slst;
       }
@@ -1128,12 +1133,12 @@ std::vector<std::string> HunspellImpl::suggest_internal(const std::string& word,
 
     case INITCAP: {
       capwords = true;
-      good |= pSMgr->suggest(slst, scw.c_str(), &onlycmpdsug);
+      good |= pSMgr->suggest(slst, scw, &onlycmpdsug);
       if (clock() > timelimit + TIMELIMIT_GLOBAL)
           return slst;
       std::string wspace(scw);
       mkallsmall2(wspace, sunicw);
-      good |= pSMgr->suggest(slst, wspace.c_str(), &onlycmpdsug);
+      good |= pSMgr->suggest(slst, wspace, &onlycmpdsug);
       if (clock() > timelimit + TIMELIMIT_GLOBAL)
           return slst;
       break;
@@ -1142,7 +1147,7 @@ std::vector<std::string> HunspellImpl::suggest_internal(const std::string& word,
       capwords = true;
       /* FALLTHROUGH */
     case HUHCAP: {
-      good |= pSMgr->suggest(slst, scw.c_str(), &onlycmpdsug);
+      good |= pSMgr->suggest(slst, scw, &onlycmpdsug);
       if (clock() > timelimit + TIMELIMIT_GLOBAL)
           return slst;
       // something.The -> something. The
@@ -1170,23 +1175,23 @@ std::vector<std::string> HunspellImpl::suggest_internal(const std::string& word,
         // TheOpenOffice.org -> The OpenOffice.org
         wspace = scw;
         mkinitsmall2(wspace, sunicw);
-        good |= pSMgr->suggest(slst, wspace.c_str(), &onlycmpdsug);
+        good |= pSMgr->suggest(slst, wspace, &onlycmpdsug);
         if (clock() > timelimit + TIMELIMIT_GLOBAL)
             return slst;
       }
       wspace = scw;
       mkallsmall2(wspace, sunicw);
-      if (spell(wspace.c_str(), spell_candidate_stack))
+      if (spell(wspace, spell_candidate_stack))
         insert_sug(slst, wspace);
       size_t prevns = slst.size();
-      good |= pSMgr->suggest(slst, wspace.c_str(), &onlycmpdsug);
+      good |= pSMgr->suggest(slst, wspace, &onlycmpdsug);
       if (clock() > timelimit + TIMELIMIT_GLOBAL)
           return slst;
       if (captype == HUHINITCAP) {
         mkinitcap2(wspace, sunicw);
-        if (spell(wspace.c_str(), spell_candidate_stack))
+        if (spell(wspace, spell_candidate_stack))
           insert_sug(slst, wspace);
-        good |= pSMgr->suggest(slst, wspace.c_str(), &onlycmpdsug);
+        good |= pSMgr->suggest(slst, wspace, &onlycmpdsug);
         if (clock() > timelimit + TIMELIMIT_GLOBAL)
             return slst;
       }
@@ -1215,22 +1220,22 @@ std::vector<std::string> HunspellImpl::suggest_internal(const std::string& word,
     case ALLCAP: {
       std::string wspace(scw);
       mkallsmall2(wspace, sunicw);
-      good |= pSMgr->suggest(slst, wspace.c_str(), &onlycmpdsug);
+      good |= pSMgr->suggest(slst, wspace, &onlycmpdsug);
       if (clock() > timelimit + TIMELIMIT_GLOBAL)
           return slst;
-      if (pAMgr && pAMgr->get_keepcase() && spell(wspace.c_str(), spell_candidate_stack))
+      if (pAMgr && pAMgr->get_keepcase() && spell(wspace, spell_candidate_stack))
         insert_sug(slst, wspace);
       mkinitcap2(wspace, sunicw);
-      good |= pSMgr->suggest(slst, wspace.c_str(), &onlycmpdsug);
+      good |= pSMgr->suggest(slst, wspace, &onlycmpdsug);
       if (clock() > timelimit + TIMELIMIT_GLOBAL)
           return slst;
-      for (size_t j = 0; j < slst.size(); ++j) {
-        mkallcap(slst[j]);
+      for (auto& j : slst) {
+        mkallcap(j);
         if (pAMgr && pAMgr->get_checksharps()) {
           if (utf8) {
-            mystrrep(slst[j], "\xC3\x9F", "SS");
+            mystrrep(j, "\xC3\x9F", "SS");
           } else {
-            mystrrep(slst[j], "\xDF", "SS");
+            mystrrep(j, "\xDF", "SS");
           }
         }
       }
@@ -1240,17 +1245,17 @@ std::vector<std::string> HunspellImpl::suggest_internal(const std::string& word,
 
   // LANG_hu section: replace '-' with ' ' in Hungarian
   if (langnum == LANG_hu) {
-    for (size_t j = 0; j < slst.size(); ++j) {
-      size_t pos = slst[j].find('-');
+    for (auto& j : slst) {
+      size_t pos = j.find('-');
       if (pos != std::string::npos) {
         int info;
-        std::string w(slst[j].substr(0, pos));
-        w.append(slst[j].substr(pos + 1));
+        std::string w(j.substr(0, pos));
+        w.append(j.substr(pos + 1));
         (void)spell(w, spell_candidate_stack, &info, NULL);
         if ((info & SPELL_COMPOUND) && (info & SPELL_FORBIDDEN)) {
-          slst[j][pos] = ' ';
+	        j[pos] = ' ';
         } else
-          slst[j][pos] = '-';
+	        j[pos] = '-';
       }
     }
   }
@@ -1325,7 +1330,7 @@ std::vector<std::string> HunspellImpl::suggest_internal(const std::string& word,
         std::vector<std::string> nlst = suggest(chunk, suggest_candidate_stack);
         if (clock() > timelimit + TIMELIMIT_GLOBAL)
             return slst;
-        for (std::vector<std::string>::reverse_iterator j = nlst.rbegin(); j != nlst.rend(); ++j) {
+        for (auto j = nlst.rbegin(); j != nlst.rend(); ++j) {
           std::string wspace = scw.substr(0, prev_pos);
           wspace.append(*j);
           if (!last) {
@@ -1361,12 +1366,11 @@ std::vector<std::string> HunspellImpl::stem(const std::vector<std::string>& desc
   std::string result2;
   if (desc.empty())
     return slst;
-  for (size_t i = 0; i < desc.size(); ++i) {
-
+  for (const auto& i : desc) {
     std::string result;
 
     // add compound word parts (except the last one)
-    const char* s = desc[i].c_str();
+    const char* s = i.c_str();
     const char* part = strstr(s, MORPH_PART);
     if (part) {
       const char* nextpart = strstr(part + 1, MORPH_PART);
@@ -1386,34 +1390,34 @@ std::vector<std::string> HunspellImpl::stem(const std::vector<std::string>& desc
       tok[alt + 1] = MSEP_ALT;
     }
     std::vector<std::string> pl = line_tok(tok, MSEP_ALT);
-    for (size_t k = 0; k < pl.size(); ++k) {
+    for (auto& k : pl) {
       // add derivational suffixes
-      if (pl[k].find(MORPH_DERI_SFX) != std::string::npos) {
+      if (k.find(MORPH_DERI_SFX) != std::string::npos) {
         // remove inflectional suffixes
-        const size_t is = pl[k].find(MORPH_INFL_SFX);
+        const size_t is = k.find(MORPH_INFL_SFX);
         if (is != std::string::npos)
-          pl[k].resize(is);
+	        k.resize(is);
         std::vector<std::string> singlepl;
-        singlepl.push_back(pl[k]);
-        std::string sg = pSMgr->suggest_gen(singlepl, pl[k]);
+        singlepl.push_back(k);
+        std::string sg = pSMgr->suggest_gen(singlepl, k);
         if (!sg.empty()) {
           std::vector<std::string> gen = line_tok(sg, MSEP_REC);
-          for (size_t j = 0; j < gen.size(); ++j) {
+          for (auto& j : gen) {
             result2.push_back(MSEP_REC);
             result2.append(result);
-            result2.append(gen[j]);
+            result2.append(j);
           }
         }
       } else {
         result2.push_back(MSEP_REC);
         result2.append(result);
-        if (pl[k].find(MORPH_SURF_PFX) != std::string::npos) {
+        if (k.find(MORPH_SURF_PFX) != std::string::npos) {
           std::string field;
-          copy_field(field, pl[k], MORPH_SURF_PFX);
+          copy_field(field, k, MORPH_SURF_PFX);
           result2.append(field);
         }
         std::string field;
-        copy_field(field, pl[k], MORPH_STEM);
+        copy_field(field, k, MORPH_STEM);
         result2.append(field);
       }
     }
@@ -1516,8 +1520,7 @@ std::vector<std::string> HunspellImpl::analyze(const std::string& word) {
 }
 
 std::vector<std::string> HunspellImpl::analyze_internal(const std::string& word) {
-  std::vector<std::string> candidate_stack;
-  std::vector<std::string> slst;
+  std::vector<std::string> candidate_stack, slst;
   if (!pSMgr || m_HMgrs.empty())
     return slst;
   if (utf8) {
@@ -1669,8 +1672,7 @@ std::vector<std::string> HunspellImpl::analyze_internal(const std::string& word)
   if (dash_pos != std::string::npos) {
     int nresult = 0;
 
-    std::string part1 = scw.substr(0, dash_pos);
-    std::string part2 = scw.substr(dash_pos+1);
+    std::string part1 = scw.substr(0, dash_pos), part2 = scw.substr(dash_pos + 1);
 
     // examine 2 sides of the dash
     if (part2.empty()) {  // base word ending with dash
@@ -1754,14 +1756,13 @@ std::vector<std::string> HunspellImpl::generate(const std::string& word, const s
   if (!pSMgr || pl.empty())
     return slst;
   std::vector<std::string> pl2 = analyze(word);
-  int captype = NOCAP;
-  int abbv = 0;
+  int captype = NOCAP, abbv = 0;
   std::string cw;
   cleanword(cw, word, &captype, &abbv);
   std::string result;
 
-  for (size_t i = 0; i < pl.size(); ++i) {
-    cat_result(result, pSMgr->suggest_gen(pl2, pl[i]));
+  for (const auto& i : pl) {
+    cat_result(result, pSMgr->suggest_gen(pl2, i));
   }
 
   if (!result.empty()) {
@@ -1774,14 +1775,14 @@ std::vector<std::string> HunspellImpl::generate(const std::string& word, const s
 
     // capitalize
     if (captype == INITCAP || captype == HUHINITCAP) {
-      for (size_t j = 0; j < slst.size(); ++j) {
-        mkinitcap(slst[j]);
+      for (auto& str : slst) {
+        mkinitcap(str);
       }
     }
 
     // temporary filtering of prefix related errors (eg.
     // generate("undrinkable", "eats") --> "undrinkables" and "*undrinks")
-    std::vector<std::string>::iterator it = slst.begin();
+    auto it = slst.begin();
     while (it != slst.end()) {
       std::vector<std::string> candidate_stack;
       if (!spell(*it, candidate_stack)) {
@@ -1855,10 +1856,8 @@ std::string::size_type HunspellImpl::get_xml_pos(const std::string& s, std::stri
 int HunspellImpl::check_xml_par(const std::string& q, std::string::size_type pos,
                                 const char* attr,
                                 const char* value) {
-  std::string cw = get_xml_par(q, get_xml_pos(q, pos, attr));
-  if (cw == value)
-    return 1;
-  return 0;
+  const std::string cw = get_xml_par(q, get_xml_pos(q, pos, attr));
+  return cw == value ? 1 : 0;
 }
 
 std::vector<std::string> HunspellImpl::get_xml_list(const std::string& list, std::string::size_type pos, const char* tag) {
@@ -1903,10 +1902,9 @@ std::vector<std::string> HunspellImpl::spellml(const std::string& in_word) {
     // convert the result to <code><a>ana1</a><a>ana2</a></code> format
     std::string r;
     r.append("<code>");
-    for (size_t i = 0; i < slst.size(); ++i) {
+    for (auto entry : slst) {
       r.append("<a>");
 
-      std::string entry(slst[i]);
       mystrrep(entry, "\t", " ");
       mystrrep(entry, "&", "&amp;");
       mystrrep(entry, "<", "&lt;");
@@ -1979,10 +1977,11 @@ std::vector<std::string> HunspellImpl::suffix_suggest(const std::string& root_wo
       remove_ignored_chars(w2, ignoredchars);
     }
     word = w2.c_str();
-  } else
+    len = (int)w2.size();
+  } else {
     word = root_word.c_str();
-
-  len = strlen(word);
+    len = (int)root_word.size();
+  }
 
   if (!len)
     return slst;
@@ -2070,8 +2069,7 @@ int HunspellImpl::stem(char*** slst, const char* word) {
 int HunspellImpl::stem(char*** slst, char** desc, int n) {
   std::vector<std::string> morph;
   morph.reserve(n);
-  for (int i = 0; i < n; ++i)
-    morph.push_back(desc[i]);
+  for (int i = 0; i < n; ++i) morph.emplace_back(desc[i]);
 
   std::vector<std::string> stems = stem(morph);
   return munge_vector(slst, stems);
@@ -2085,8 +2083,7 @@ int HunspellImpl::generate(char*** slst, const char* word, const char* pattern) 
 int HunspellImpl::generate(char*** slst, const char* word, char** pl, int pln) {
   std::vector<std::string> morph;
   morph.reserve(pln);
-  for (int i = 0; i < pln; ++i)
-    morph.push_back(pl[i]);
+  for (int i = 0; i < pln; ++i) morph.emplace_back(pl[i]);
 
   std::vector<std::string> stems = generate(word, morph);
   return munge_vector(slst, stems);
@@ -2293,6 +2290,10 @@ char* Hunspell_get_dic_encoding(Hunhandle* pHunspell) {
 
 int Hunspell_suggest(Hunhandle* pHunspell, char*** slst, const char* word) {
   return reinterpret_cast<HunspellImpl*>(pHunspell)->suggest(slst, word);
+}
+
+int Hunspell_suffix_suggest(Hunhandle* pHunspell, char*** slst, const char* root_word) {
+  return reinterpret_cast<HunspellImpl*>(pHunspell)->suffix_suggest(slst, root_word);
 }
 
 int Hunspell_analyze(Hunhandle* pHunspell, char*** slst, const char* word) {

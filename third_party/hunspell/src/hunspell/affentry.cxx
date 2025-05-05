@@ -68,10 +68,10 @@
  * SUCH DAMAGE.
  */
 
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
-#include <ctype.h>
+#include <cstdlib>
+#include <cstring>
+#include <cstdio>
+#include <cctype>
 
 #include "affentry.hxx"
 #include "csutil.hxx"
@@ -99,7 +99,7 @@ std::string PfxEntry::add(const char* word, size_t len) {
   std::string result;
   if ((len > strip.size() || (len == 0 && pmyMgr->get_fullstrip())) &&
       (len >= numconds) && test_condition(word) &&
-      (!strip.size() ||
+      (strip.empty() ||
       (len >= strip.size() && strncmp(word, strip.c_str(), strip.size()) == 0))) {
     /* we have a match so add prefix */
     result.assign(appnd);
@@ -469,7 +469,7 @@ std::string SfxEntry::add(const char* word, size_t len) {
   /* make sure all conditions match */
   if ((len > strip.size() || (len == 0 && pmyMgr->get_fullstrip())) &&
       (len >= numconds) && test_condition(word + len, word) &&
-      (!strip.size() ||
+      (strip.empty() ||
        (len >= strip.size() && strcmp(word + len - strip.size(), strip.c_str()) == 0))) {
     result.assign(word, len);
     /* we have a match so add suffix */
@@ -649,7 +649,7 @@ struct hentry* SfxEntry::checkword(const std::string& word,
     // or null terminating the shorter string
 
     std::string tmpstring(word, start, tmpl);
-    if (strip.size()) {
+    if (!strip.empty()) {
       tmpstring.append(strip);
     }
 

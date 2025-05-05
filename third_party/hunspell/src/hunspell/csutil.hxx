@@ -78,8 +78,9 @@
 #include <fstream>
 #include <string>
 #include <vector>
-#include <assert.h>
-#include <string.h>
+#include <cassert>
+#include <cstring>
+#include <algorithm>
 #include "w_char.hxx"
 #include "htypes.hxx"
 
@@ -273,10 +274,8 @@ LIBHUNSPELL_DLL_EXPORTED char* get_stored_pointer(const char* s);
 // "likely false", if ignored_chars characters are not ASCII)
 inline bool has_no_ignored_chars(const std::string& word,
                             const std::string& ignored_chars) {
-  for (std::string::const_iterator it = ignored_chars.begin(), end = ignored_chars.end(); it != end; ++it)
-    if (word.find(*it) != std::string::npos)
-      return false;
-  return true;
+  return std::all_of(ignored_chars.begin(), ignored_chars.end(), 
+    [&word](char ic) { return word.find(ic) == std::string::npos; });
 }
 
 // hash entry macros
@@ -316,8 +315,7 @@ inline const char* HENTRY_DATA2(
   return ret;
 }
 
-inline char* HENTRY_FIND(struct hentry* h,
-                                                  const char* p) {
+inline char* HENTRY_FIND(struct hentry* h, const char* p) {
   char* data = HENTRY_DATA(h);
   return data ? strstr(data, p) : NULL;
 }

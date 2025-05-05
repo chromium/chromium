@@ -27,18 +27,16 @@
                 Porting from Aspell to Hunspell using C-like structs
 */
 
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
-#include <ctype.h>
+#include <cstdlib>
+#include <cstring>
+#include <cstdio>
+#include <cctype>
 
 #include "csutil.hxx"
 #include "phonet.hxx"
 
 void init_phonet_hash(phonetable& parms) {
-  for (int i = 0; i < HASHSIZE; i++) {
-    parms.hash[i] = -1;
-  }
+  memset(parms.hash, 0xff, HASHSIZE * sizeof(int));
 
   for (int i = 0; parms.rules[i][0] != '\0'; i += 2) {
     /**  set hash value  **/
@@ -70,14 +68,13 @@ static int myisalpha(char ch) {
 /*  convert string to uppercase before this call       */
 std::string phonet(const std::string& inword, phonetable& parms) {
 
-  int i, k = 0, p, z;
-  int k0, n0, p0 = -333;
+  int i, k = 0, p, z, k0, n0, p0 = -333;
   char c;
   typedef unsigned char uchar;
 
   size_t len = inword.size();
   if (len > MAXPHONETUTF8LEN)
-    return std::string();
+    return {};
   char word[MAXPHONETUTF8LEN + 1];
   strncpy(word, inword.c_str(), MAXPHONETUTF8LEN);
   word[MAXPHONETUTF8LEN] = '\0';

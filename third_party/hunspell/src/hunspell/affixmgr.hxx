@@ -71,7 +71,7 @@
 #ifndef AFFIXMGR_HXX_
 #define AFFIXMGR_HXX_
 
-#include <stdio.h>
+#include <cstdio>
 
 #include <string>
 #include <vector>

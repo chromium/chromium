@@ -43,7 +43,7 @@
 
 #include "hunvisapi.h"
 
-#include <stdio.h>
+#include <cstdio>
 #include <fstream>
 #include <vector>
 
@@ -61,10 +61,6 @@ struct bit {
 };
 
 class LIBHUNSPELL_DLL_EXPORTED Hunzip {
- private:
-  Hunzip(const Hunzip&);
-  Hunzip& operator=(const Hunzip&);
-
  protected:
   std::string filename;
   std::ifstream fin;
@@ -79,6 +75,8 @@ class LIBHUNSPELL_DLL_EXPORTED Hunzip {
 
  public:
   Hunzip(const char* filename, const char* key = NULL);
+  Hunzip(const Hunzip&) = delete;
+  Hunzip& operator=(const Hunzip&) = delete;
   ~Hunzip();
   bool is_open() { return fin.is_open(); }
   bool getline(std::string& dest);

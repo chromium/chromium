@@ -36,6 +36,7 @@ steps.
    $ cd hunspell
    $ git checkout f3f90ae
 3) Apply Hunspell patches and make a throwaway commit:
+   $ patch -p1 --no-backup-if-mismatch -i $CHROMIUM_HUNSPELL/fix-recently-regressed-uninit-variable.patch
    $ patch -p1 --no-backup-if-mismatch -i $CHROMIUM_HUNSPELL/correction-of-a-knowingly-false-condition.patch
    $ patch -p1 --no-backup-if-mismatch -i $CHROMIUM_HUNSPELL/speed-up-hunspell-inner-loop.patch
    $ patch -p1 --no-backup-if-mismatch -i $CHROMIUM_HUNSPELL/WaE-overflow-in-expression.patch

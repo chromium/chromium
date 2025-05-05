@@ -40,6 +40,12 @@
 
 #include <string>
 
+#if __cplusplus >= 202002L
+#include <bit>
+#else
+#include <cstring>
+#endif
+
 #ifndef GCC
 struct w_char {
 #else
@@ -48,18 +54,33 @@ struct __attribute__((packed)) w_char {
   unsigned char l;
   unsigned char h;
 
+  operator unsigned short() const
+  {
+#if defined(__i386__) || defined(_M_IX86) || defined(_M_X64)
+    //use little-endian optimized version
+#if __cplusplus >= 202002L
+    return std::bit_cast<unsigned short>(*this);
+#else
+    unsigned short u;
+    memcpy(&u, this, sizeof(unsigned short));
+    return u;
+#endif
+
+#else
+    return ((unsigned short)h << 8) | (unsigned short)l;
+#endif
+  }
+
   friend bool operator<(const w_char a, const w_char b) {
-    unsigned short a_idx = (a.h << 8) + a.l;
-    unsigned short b_idx = (b.h << 8) + b.l;
-    return a_idx < b_idx;
+    return (unsigned short)a < (unsigned short)b;
   }
 
   friend bool operator==(const w_char a, const w_char b) {
-    return (((a).l == (b).l) && ((a).h == (b).h));
+    return (unsigned short)a == (unsigned short)b;
   }
 
   friend bool operator!=(const w_char a, const w_char b) {
-    return !(a == b);;
+    return !(a == b);
   }
 };
 

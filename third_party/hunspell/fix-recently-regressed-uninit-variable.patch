@@ -1,0 +1,25 @@
+From 73d84b602bd35f74be6d01e712c0617fd99b6e47 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Caol=C3=A1n=20McNamara?= <caolanm@redhat.com>
+Date: Thu, 13 Oct 2022 16:12:55 +0100
+Subject: [PATCH] fix recently regressed uninit variable
+
+---
+ src/hunspell/affixmgr.cxx | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/hunspell/affixmgr.cxx b/src/hunspell/affixmgr.cxx
+index 3be0997..c9bf469 100644
+--- a/src/hunspell/affixmgr.cxx
++++ b/src/hunspell/affixmgr.cxx
+@@ -1581,7 +1581,7 @@ struct hentry* AffixMgr::compound_check(const std::string& word,
+   char ch = '\0', affixed;
+   int cmin, cmax, striple = 0, soldi = 0, oldcmin = 0, oldcmax = 0, oldlen = 0, checkedstriple = 0;
+   hentry** oldwords = words;
+-  size_t scpd, len = word.size();
++  size_t scpd = 0, len = word.size();
+ 
+   int checked_prefix;
+ 
+-- 
+2.49.0.906.g1f30a19c02-goog
+
