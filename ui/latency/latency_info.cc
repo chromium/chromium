@@ -70,6 +70,23 @@ struct LatencyInfoEnabledInitializer {
 static base::LazyInstance<LatencyInfoEnabledInitializer>::Leaky
   g_latency_info_enabled = LAZY_INSTANCE_INITIALIZER;
 
+const perfetto::NamedTrack CreateInputLatencyParentTrack() {
+  perfetto::NamedTrack track("InputLatency", 0, perfetto::Track::Global(0));
+  if (perfetto::Tracing::IsInitialized()) {
+    // Because the track doesn't get any events of its own it must manually
+    // emit the track descriptor. SetTrackDescriptor may crash in unit tests
+    // where tracing isn't initialized.
+    base::TrackEvent::SetTrackDescriptor(track, track.Serialize());
+  }
+  return track;
+}
+
+perfetto::Track GetInputLatencyTrack(int64_t trace_id) {
+  static const perfetto::NamedTrack parent_track =
+      CreateInputLatencyParentTrack();
+  return perfetto::Track(trace_id, parent_track);
+}
+
 }  // namespace
 
 namespace ui {
@@ -188,10 +205,9 @@ void LatencyInfo::AddLatencyNumberWithTimestampImpl(
       } else {
         ts = base::TimeTicks::Now();
       }
-
       TRACE_EVENT_BEGIN(kTraceCategoriesForAsyncEvents,
                         perfetto::StaticString{trace_name_str},
-                        perfetto::Track::Global(trace_id_), ts);
+                        GetInputLatencyTrack(trace_id_), ts);
     }
   }
 
@@ -218,8 +234,9 @@ void LatencyInfo::Terminate() {
       gpu_swap_end_timestamp = base::TimeTicks::Now();
     }
     TRACE_EVENT_END(
-        kTraceCategoriesForAsyncEvents, perfetto::Track::Global(trace_id_),
+        kTraceCategoriesForAsyncEvents, GetInputLatencyTrack(trace_id_),
         gpu_swap_end_timestamp, [this](perfetto::EventContext ctx) {
+          perfetto::Flow::Global(trace_id_)(ctx);
           auto* info = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>()
                            ->set_chrome_latency_info();
           for (const auto& lc : latency_components_) {
