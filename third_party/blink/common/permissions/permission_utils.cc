@@ -342,8 +342,8 @@ std::optional<PermissionType> PermissionDescriptorInfoToPermissionType(
       return PermissionType::HAND_TRACKING;
     case PermissionName::WEB_PRINTING:
       return PermissionType::WEB_PRINTING;
-    default:
-      NOTREACHED();
+    case PermissionName::SMART_CARD:
+      return PermissionType::SMART_CARD;
   }
 }
 
