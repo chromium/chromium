@@ -143,14 +143,8 @@ component("variations") {
     sources += [
       "android/variations_seed_bridge.cc",
       "android/variations_seed_bridge.h",
-      "variations_crash_keys_android.cc",
-      "variations_crash_keys_android.h",
     ]
-    deps += [
-      "//components/crash/android:anr_collector_jni_headers",
-      "//components/crash/android:crash_android",
-      "//components/variations/android:variations_seed_jni",
-    ]
+    deps += [ "//components/variations/android:variations_seed_jni" ]
   }
 
   if (is_chromeos) {

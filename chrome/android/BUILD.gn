@@ -597,6 +597,7 @@ if (_is_default_toolchain) {
       "//components/content_relationship_verification/android:java",
       "//components/content_settings/android:content_settings_enums_java",
       "//components/content_settings/android:java",
+      "//components/crash/android:anr_collector_java",
       "//components/crash/android:java",
       "//components/data_sharing/public:public_java",
       "//components/device_reauth:device_reauth_java_enums",
