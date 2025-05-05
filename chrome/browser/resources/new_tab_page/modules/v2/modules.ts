@@ -500,6 +500,10 @@ export class ModulesV2Element extends AppElementBase {
         const bId = (b as unknown as ItemTemplateInstance).item.descriptor.id;
         const aHasOrder = orderedIds.includes(aId);
         const bHasOrder = orderedIds.includes(bId);
+        if (aHasOrder && bHasOrder) {
+          // Apply order.
+          return orderedIds.indexOf(aId) - orderedIds.indexOf(bId);
+        }
         return +bHasOrder - +aHasOrder;
       });
     }
