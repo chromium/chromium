@@ -118,7 +118,8 @@ class StreamCreator : public GarbageCollected<StreamCreator> {
 
     auto* script_state = scope.GetScriptState();
     stream_wrapper_ = MakeGarbageCollected<UDPReadableStreamWrapper>(
-        script_state, base::DoNothing(), udp_socket, std::move(receiver));
+        script_state, base::DoNothing(), udp_socket, std::move(receiver),
+        /*inspector_id=*/0);
 
     // Ensure that udp_socket->ReceiveMore(...) call from
     // UDPReadableStreamWrapper constructor completes.

@@ -13,7 +13,7 @@ header("Origin-Agent-Cluster: ?0");
   </head>
   <body>
     <script>
-      async function openTCP() {
+      async function openSocket() {
         const kPacket = "I'm a netcat. Meow-meow!"
 
         const serverSocket = new TCPServerSocket("127.0.0.1");

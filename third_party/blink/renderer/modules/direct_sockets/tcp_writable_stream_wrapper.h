@@ -75,9 +75,6 @@ class MODULES_EXPORT TCPWritableStreamWrapper
   // Prepares the object for destruction.
   void Dispose();
 
-  // Reports write error to Devtools Protocol.
-  void ReportWriteError(const WTF::String& message);
-
   CloseOnceCallback on_close_;
 
   mojo::ScopedDataPipeProducerHandle data_pipe_;

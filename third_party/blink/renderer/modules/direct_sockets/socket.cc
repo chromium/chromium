@@ -145,4 +145,15 @@ void Socket::ResetServiceAndFeatureHandle() {
   service_.reset();
 }
 
+// static
+protocol::Network::DirectSocketDnsQueryType Socket::MapProbeDnsQueryType(
+    V8SocketDnsQueryType dns_query_type) {
+  switch (dns_query_type.AsEnum()) {
+    case V8SocketDnsQueryType::Enum::kIpv4:
+      return protocol::Network::DirectSocketDnsQueryTypeEnum::Ipv4;
+    case V8SocketDnsQueryType::Enum::kIpv6:
+      return protocol::Network::DirectSocketDnsQueryTypeEnum::Ipv6;
+  }
+}
+
 }  // namespace blink

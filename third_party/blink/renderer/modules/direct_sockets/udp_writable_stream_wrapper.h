@@ -29,7 +29,8 @@ class MODULES_EXPORT UDPWritableStreamWrapper final
   UDPWritableStreamWrapper(ScriptState*,
                            CloseOnceCallback,
                            const Member<UDPSocketMojoRemote>,
-                           network::mojom::blink::RestrictedUDPSocketMode);
+                           network::mojom::blink::RestrictedUDPSocketMode,
+                           uint64_t inspector_id);
 
   // WritableStreamWrapper:
   void CloseStream() override;
@@ -50,6 +51,9 @@ class MODULES_EXPORT UDPWritableStreamWrapper final
   const network::mojom::blink::RestrictedUDPSocketMode mode_;
 
   Member<ScriptPromiseResolver<IDLUndefined>> write_promise_resolver_;
+
+  // Unique id for devtools inspector_network_agent.
+  const uint64_t inspector_id_;
 };
 
 }  // namespace blink

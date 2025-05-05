@@ -1,15 +1,14 @@
 (async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const {session, dp} = await testRunner.startURL(
-      `https://devtools.oopif.test:8443/inspector-protocol/network/direct-sockets/resources/tcp-socket-success.php`,
-      `TCP DirectSockets success`);
+      `https://devtools.oopif.test:8443/inspector-protocol/network/direct-sockets/resources/udp-socket-success.php`,
+      `UDP DirectSockets success`);
 
   await dp.Network.enable({reportDirectSocketTraffic: true});
   session.evaluate('openSocket()');
 
-  const createdEvent = await dp.Network.onceDirectTCPSocketCreated();
+  const createdEvent = await dp.Network.onceDirectUDPSocketCreated();
   testRunner.log('socket created');
-  testRunner.log('   remoteAddr: ' + createdEvent.params.remoteAddr);
-  testRunner.log(createdEvent.params.options, '   options:');
+  testRunner.log(createdEvent.params.options, '   options: ')
   const initiator = createdEvent.params.initiator;
   testRunner.log('');
   testRunner.log('   Initiator Type: ' + initiator.type);
@@ -25,21 +24,28 @@
     }
   }
 
-  const openedEvent = await dp.Network.onceDirectTCPSocketOpened();
+  const openedEvent = await dp.Network.onceDirectUDPSocketOpened();
   testRunner.log('socket opened');
-  testRunner.log('   remoteAddr: ' + openedEvent.params.remoteAddr);
   testRunner.log('   localAddr: ' + openedEvent.params.localAddr);
+  testRunner.log('   remoteAddr: ' + openedEvent.params.remoteAddr);
 
-  const chunkSentEvent = await dp.Network.onceDirectTCPSocketChunkSent();
+  const chunkSentEvent = await dp.Network.onceDirectUDPSocketChunkSent();
   testRunner.log('socket chunk sent');
-  testRunner.log('   data: ' + base64ToUtf8(chunkSentEvent.params.data));
+  testRunner.log(
+      '   message.data: ' + base64ToUtf8(chunkSentEvent.params.message.data));
+  testRunner.log(
+      '   message.remoteAddr: ' + chunkSentEvent.params.message.remoteAddr);
 
   const chunkReceivedEvent =
-      await dp.Network.onceDirectTCPSocketChunkReceived();
+      await dp.Network.onceDirectUDPSocketChunkReceived();
   testRunner.log('socket chunk received');
-  testRunner.log('   data: ' + base64ToUtf8(chunkReceivedEvent.params.data));
+  testRunner.log(
+      '   message.data: ' +
+      base64ToUtf8(chunkReceivedEvent.params.message.data));
+  testRunner.log(
+      '   message.remoteAddr: ' + chunkReceivedEvent.params.message.remoteAddr);
 
-  await dp.Network.onceDirectTCPSocketClosed();
+  await dp.Network.onceDirectUDPSocketClosed();
   testRunner.log('socket closed');
 
   testRunner.completeTest();
