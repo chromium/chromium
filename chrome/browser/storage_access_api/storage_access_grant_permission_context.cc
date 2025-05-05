@@ -704,10 +704,6 @@ void StorageAccessGrantPermissionContext::UpdateContentSetting(
   NOTREACHED();
 }
 
-void StorageAccessGrantPermissionContext::OnPermissionRequested(
-    const permissions::PermissionRequestID& id,
-    ContentSetting content_setting) {}
-
 GURL StorageAccessGrantPermissionContext::GetEffectiveEmbedderOrigin(
     content::RenderFrameHost* rfh) const {
   if (!rfh->ShouldPartitionAsPopin()) {

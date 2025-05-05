@@ -94,10 +94,6 @@ class StorageAccessGrantPermissionContext
       content::RenderFrameHost* render_frame_host,
       const GURL& requesting_origin,
       const GURL& embedding_origin) const override;
-
-  void OnPermissionRequested(const permissions::PermissionRequestID& id,
-                             ContentSetting content_setting) override;
-
   void NotifyPermissionSet(
       const std::unique_ptr<permissions::PermissionRequestData>& request_data,
       permissions::BrowserPermissionCallback callback,

@@ -103,9 +103,6 @@ class PermissionContextBase : public content_settings::Observer {
 
   // |callback| is called upon resolution of the request, but not if a prompt
   // is shown and ignored.
-  // Note: The default implementation of `RequestPermission` calls
-  // `OnPermissionRequested` exactly when `callback` is invoked.
-  // `OnPermissionRequested` might not be called if this method is overridden.
   virtual void RequestPermission(
       std::unique_ptr<PermissionRequestData> request_data,
       BrowserPermissionCallback callback);
@@ -226,16 +223,6 @@ class PermissionContextBase : public content_settings::Observer {
                                           const GURL& requesting_origin,
                                           const GURL& embedding_origin,
                                           ContentSetting content_setting);
-
-  // Implementors can override this method to run some action each time
-  // permission is requested, even if the grant/deny decision has already been
-  // made. (I.e., even if `DecidePermission` is not called.)
-  //
-  // `OnPermissionRequested` is called only in the default implementation of
-  // `RequestPermission`. If a subclass overrides `RequestPermission` and needs
-  // `OnPermissionRequested` to be called, the subclass must call it itself.
-  virtual void OnPermissionRequested(const PermissionRequestID& id,
-                                     ContentSetting content_setting);
 
   // content_settings::Observer:
   void OnContentSettingChanged(

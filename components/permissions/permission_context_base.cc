@@ -15,7 +15,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
-#include "base/memory/weak_ptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/not_fatal_until.h"
 #include "base/observer_list.h"
@@ -100,18 +99,6 @@ void PermissionContextBase::RequestPermission(
     std::unique_ptr<PermissionRequestData> request_data,
     BrowserPermissionCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  callback =
-      base::BindOnce(
-          [](base::WeakPtr<PermissionContextBase> context,
-             const PermissionRequestID& id, ContentSetting content_setting) {
-            if (context) {
-              context->OnPermissionRequested(id, content_setting);
-            }
-            return content_setting;
-          },
-          weak_factory_.GetWeakPtr(), request_data->id)
-          .Then(std::move(callback));
 
   content::RenderFrameHost* const rfh = content::RenderFrameHost::FromID(
       request_data->id.global_render_frame_host_id());
@@ -253,9 +240,6 @@ void PermissionContextBase::UserMadePermissionDecision(
     const GURL& requesting_origin,
     const GURL& embedding_origin,
     ContentSetting content_setting) {}
-
-void PermissionContextBase::OnPermissionRequested(const PermissionRequestID& id,
-                                                  ContentSetting setting) {}
 
 std::unique_ptr<PermissionRequest>
 PermissionContextBase::CreatePermissionRequest(
