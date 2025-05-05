@@ -161,8 +161,7 @@ class DecisionDetails {
 
     const char* ToString() const;
 
-    bool operator==(const Reason& rhs) const;
-    bool operator!=(const Reason& rhs) const;
+    friend constexpr bool operator==(const Reason&, const Reason&) = default;
 
    private:
     DecisionSuccessReason success_reason_;
