@@ -1,0 +1,13 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+if (current_toolchain == host_toolchain) {
+  executable("to_value_plugin") {
+    sources = [ "to_value_plugin.cc" ]
+    deps = [
+      "//base",
+      "//third_party/protobuf:protoc_lib",
+    ]
+  }
+}

@@ -1,0 +1,28 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Generate serializers that turn a protobuf into a base::Value. This
+# does not directly generate the protobuf bindings for any language.
+#
+# Example:
+#   proto_to_value("mylib_to_value") {
+#     sources = [
+#       "mylib.proto",
+#     ]
+#   }
+
+import("//third_party/protobuf/proto_library.gni")
+
+template("proto_to_value") {
+  proto_library("${target_name}") {
+    proto_in_dir = "//"
+    sources = invoker.sources
+    generator_plugin_label =
+        "//components/safe_browsing/core/common/proto_to_value:to_value_plugin"
+    generator_plugin_suffix = ".to_value"
+    generate_cc = false
+    generate_python = false
+    link_deps = [ "//base" ]
+  }
+}

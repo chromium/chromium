@@ -3,6 +3,8 @@
 # found in the LICENSE file.
 
 import("//components/safe_browsing/buildflags.gni")
+import(
+    "//components/safe_browsing/core/common/proto_to_value/proto_to_value.gni")
 import("//third_party/libprotobuf-mutator/fuzzable_proto_library.gni")
 import("//third_party/protobuf/proto_library.gni")
 
@@ -17,6 +19,10 @@ import("//third_party/protobuf/proto_library.gni")
 
 fuzzable_proto_library("csd_proto") {
   proto_in_dir = "//"
+  sources = [ "csd.proto" ]
+}
+
+proto_to_value("csd_proto_to_value") {
   sources = [ "csd.proto" ]
 }
 

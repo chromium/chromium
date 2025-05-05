@@ -37,6 +37,7 @@
 #include "components/safe_browsing/core/browser/referrer_chain_provider.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
+#include "components/safe_browsing/core/common/proto/csd.to_value.h"
 #include "components/safe_browsing/core/common/proto/safebrowsingv5.pb.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/safe_browsing/core/common/web_ui_constants.h"
@@ -807,29 +808,6 @@ std::string AddFullHashCacheInfo(
 
 #endif
 
-base::Value::Dict SerializeImageFeatureEmbedding(
-    const ImageFeatureEmbedding& image_feature_embedding) {
-  base::Value::Dict dict;
-  base::Value::List embedding_values;
-  for (const auto& value : image_feature_embedding.embedding_value()) {
-    embedding_values.Append(value);
-  }
-  dict.Set("embedding_model_version",
-           image_feature_embedding.embedding_model_version());
-  dict.Set("embedding_value", std::move(embedding_values));
-  return dict;
-}
-
-base::Value::Dict SerializeIntelligentScanInfo(
-    const IntelligentScanInfo& intelligent_scan_info) {
-  base::Value::Dict dict;
-  dict.Set("brand", intelligent_scan_info.brand());
-  dict.Set("intent", intelligent_scan_info.intent());
-  dict.Set("no_info_reason", IntelligentScanInfo_NoInfoReason_Name(
-                                 intelligent_scan_info.no_info_reason()));
-  return dict;
-}
-
 base::Value::Dict SerializeClientReportingMetadata(
     const enterprise_connectors::ClientMetadata& client_metadata) {
   base::Value::Dict client_metadata_dict;
@@ -868,615 +846,27 @@ base::Value::Dict SerializeClientReportingMetadata(
   return client_metadata_dict;
 }
 
-base::Value::Dict SerializeChromeUserPopulation(
-    const ChromeUserPopulation& population) {
-  base::Value::Dict population_dict;
-
-  population_dict.Set(
-      "user_population",
-      ChromeUserPopulation_UserPopulation_Name(population.user_population()));
-
-  if (population.has_is_history_sync_enabled()) {
-    population_dict.Set("is_history_sync_enabled",
-                        population.is_history_sync_enabled());
-  }
-
-  if (!population.finch_active_groups().empty()) {
-    base::Value::List finch_list;
-    for (const std::string& finch_group : population.finch_active_groups()) {
-      finch_list.Append(finch_group);
-    }
-    population_dict.Set("finch_active_groups", std::move(finch_list));
-  }
-
-  if (population.has_profile_management_status()) {
-    population_dict.Set("profile_management_status",
-                        ChromeUserPopulation_ProfileManagementStatus_Name(
-                            population.profile_management_status()));
-  }
-  if (population.has_is_under_advanced_protection()) {
-    population_dict.Set("is_under_advanced_protection",
-                        population.is_under_advanced_protection());
-  }
-
-  if (population.has_is_incognito()) {
-    population_dict.Set("is_incognito", population.is_incognito());
-  }
-
-  if (population.has_is_mbb_enabled()) {
-    population_dict.Set("is_mbb_enabled", population.is_mbb_enabled());
-  }
-
-  if (population.has_user_agent()) {
-    population_dict.Set("user_agent", population.user_agent());
-  }
-
-  if (population.has_number_of_profiles()) {
-    population_dict.Set("number_of_profiles", population.number_of_profiles());
-  }
-
-  if (population.has_number_of_loaded_profiles()) {
-    population_dict.Set("number_of_loaded_profiles",
-                        population.number_of_loaded_profiles());
-  }
-
-  base::Value::List page_load_tokens;
-  for (const ChromeUserPopulation::PageLoadToken& token :
-       population.page_load_tokens()) {
-    base::Value::Dict token_dict;
-    token_dict.Set("token_source",
-                   ChromeUserPopulation_PageLoadToken_TokenSource_Name(
-                       token.token_source()));
-    token_dict.Set("token_time_msec",
-                   static_cast<double>(token.token_time_msec()));
-
-    std::string token_base64 = base::Base64Encode(token.token_value());
-    token_dict.Set("token_value", std::move(token_base64));
-
-    page_load_tokens.Append(std::move(token_dict));
-  }
-  population_dict.Set("page_load_tokens", std::move(page_load_tokens));
-
-  if (population.has_is_signed_in()) {
-    population_dict.Set("is_signed_in", population.is_signed_in());
-  }
-
-  return population_dict;
-}
-
-base::Value::Dict SerializeReferrer(const ReferrerChainEntry& referrer) {
-  base::Value::Dict referrer_dict;
-  referrer_dict.Set("url", referrer.url());
-  referrer_dict.Set("main_frame_url", referrer.main_frame_url());
-  referrer_dict.Set("type", ReferrerChainEntry_URLType_Name(referrer.type()));
-
-  base::Value::List ip_addresses;
-  for (const std::string& ip_address : referrer.ip_addresses()) {
-    ip_addresses.Append(ip_address);
-  }
-  referrer_dict.Set("ip_addresses", std::move(ip_addresses));
-
-  referrer_dict.Set("referrer_url", referrer.referrer_url());
-
-  referrer_dict.Set("referrer_main_frame_url",
-                    referrer.referrer_main_frame_url());
-
-  if (referrer.has_is_retargeting()) {
-    referrer_dict.Set("is_retargeting", referrer.is_retargeting());
-  }
-
-  referrer_dict.Set("navigation_time_msec", referrer.navigation_time_msec());
-
-  base::Value::List server_redirects;
-  for (const ReferrerChainEntry::ServerRedirect& server_redirect :
-       referrer.server_redirect_chain()) {
-    server_redirects.Append(server_redirect.url());
-  }
-  referrer_dict.Set("server_redirect_chain", std::move(server_redirects));
-
-  referrer_dict.Set("navigation_initiation",
-                    ReferrerChainEntry_NavigationInitiation_Name(
-                        referrer.navigation_initiation()));
-
-  if (referrer.has_maybe_launched_by_external_application()) {
-    referrer_dict.Set("maybe_launched_by_external_application",
-                      referrer.maybe_launched_by_external_application());
-  }
-
-  if (referrer.has_is_subframe_url_removed()) {
-    referrer_dict.Set("is_subframe_url_removed",
-                      referrer.is_subframe_url_removed());
-  }
-
-  if (referrer.has_is_subframe_referrer_url_removed()) {
-    referrer_dict.Set("is_subframe_referrer_url_removed",
-                      referrer.is_subframe_referrer_url_removed());
-  }
-
-  if (referrer.has_is_url_removed_by_policy()) {
-    referrer_dict.Set("is_url_removed_by_policy",
-                      referrer.is_url_removed_by_policy());
-  }
-
-  return referrer_dict;
-}
-
-base::Value::Dict SerializeSafeBrowsingWebAppKey(
-    const SafeBrowsingWebAppKey& key) {
-  base::Value::Dict dict;
-  dict.Set("start_url_origin", key.start_url_origin());
-  dict.Set("id_or_start_path", key.id_or_start_path());
-  return dict;
-}
-
-// This serializes the protobuf message ReferringAppInfo.
-base::Value::Dict SerializeReferringAppInfo(const ReferringAppInfo& info) {
-  base::Value::Dict dict;
-  dict.Set("referring_app_source", ReferringAppInfo_ReferringAppSource_Name(
-                                       info.referring_app_source()));
-  dict.Set("referring_app_name", info.referring_app_name());
-  if (info.has_referring_webapk()) {
-    dict.Set("referring_webapk",
-             SerializeSafeBrowsingWebAppKey(info.referring_webapk()));
-  }
-  return dict;
-}
-
 std::string SerializeClientDownloadRequest(const ClientDownloadRequest& cdr) {
-  base::Value::Dict dict;
-  if (cdr.has_url()) {
-    dict.Set("url", cdr.url());
-  }
-  if (cdr.digests().has_sha256()) {
-    const std::string& sha256 = cdr.digests().sha256();
-    dict.Set("digests.sha256", base::HexEncode(sha256));
-  }
-  if (cdr.has_download_type()) {
-    dict.Set("download_type", cdr.download_type());
-  }
-  if (cdr.has_length()) {
-    dict.Set("length", static_cast<int>(cdr.length()));
-  }
-  if (cdr.has_file_basename()) {
-    dict.Set("file_basename", cdr.file_basename());
-  }
-
-  if (!cdr.archived_binary().empty()) {
-    base::Value::List archived_binaries;
-    for (const auto& archived_binary : cdr.archived_binary()) {
-      base::Value::Dict dict_archived_binary;
-      if (archived_binary.has_file_path()) {
-        dict_archived_binary.Set("file_path", archived_binary.file_path());
-      }
-      if (archived_binary.has_download_type()) {
-        dict_archived_binary.Set("download_type",
-                                 archived_binary.download_type());
-      }
-      if (archived_binary.has_length()) {
-        dict_archived_binary.Set("length",
-                                 static_cast<int>(archived_binary.length()));
-      }
-      if (archived_binary.is_encrypted()) {
-        dict_archived_binary.Set("is_encrypted", true);
-      }
-      if (archived_binary.digests().has_sha256()) {
-        const std::string& sha256 = archived_binary.digests().sha256();
-        dict_archived_binary.Set("digests.sha256", base::HexEncode(sha256));
-      }
-      archived_binaries.Append(std::move(dict_archived_binary));
-    }
-    dict.Set("archived_binary", std::move(archived_binaries));
-  }
-
-  dict.Set("population", SerializeChromeUserPopulation(cdr.population()));
-
-  base::Value::List referrer_chain;
-  for (const auto& referrer_chain_entry : cdr.referrer_chain()) {
-    referrer_chain.Append(SerializeReferrer(referrer_chain_entry));
-  }
-  dict.Set("referrer_chain", std::move(referrer_chain));
-
-  if (cdr.has_request_ap_verdicts()) {
-    dict.Set("request_ap_verdicts", cdr.request_ap_verdicts());
-  }
-
-  if (!cdr.access_token().empty()) {
-    dict.Set("access_token", cdr.access_token());
-  }
-
-  if (cdr.has_archive_summary()) {
-    base::Value::Dict dict_archive_summary;
-    auto archive_summary = cdr.archive_summary();
-    dict_archive_summary.Set("parser_status", archive_summary.parser_status());
-    dict_archive_summary.Set("file_count", archive_summary.file_count());
-    dict_archive_summary.Set("directory_count",
-                             archive_summary.directory_count());
-    dict_archive_summary.Set("is_encrypted", archive_summary.is_encrypted());
-    dict.Set("archive_summary", std::move(dict_archive_summary));
-  }
-
-  if (cdr.has_tailored_info()) {
-    base::Value::Dict dict_tailored_info;
-    auto tailored_info = cdr.tailored_info();
-    dict_tailored_info.Set("version", tailored_info.version());
-    dict.Set("tailored_info", std::move(dict_tailored_info));
-  }
-
-  if (cdr.has_previous_token()) {
-    dict.Set("previous_token", cdr.previous_token());
-  }
-
-  if (cdr.has_referring_app_info()) {
-    dict.Set("referring_app_info",
-             SerializeReferringAppInfo(cdr.referring_app_info()));
-  }
-
-  return SerializeJson(dict);
-}
-
-base::Value::Dict SerializeTailoredVerdict(
-    const ClientDownloadResponse::TailoredVerdict& tv) {
-  base::Value::Dict dict_tailored_verdict;
-  dict_tailored_verdict.Set(
-      "tailored_verdict_type",
-      ClientDownloadResponse_TailoredVerdict_TailoredVerdictType_Name(
-          tv.tailored_verdict_type()));
-  return dict_tailored_verdict;
+  return SerializeJson(proto_to_value::Serialize(cdr));
 }
 
 std::string SerializeClientDownloadResponse(const ClientDownloadResponse& cdr) {
-  base::Value::Dict dict;
-
-  if (cdr.has_verdict()) {
-    dict.Set("verdict", ClientDownloadResponse_Verdict_Name(cdr.verdict()));
-  }
-
-  if (cdr.has_more_info()) {
-    dict.SetByDottedPath("more_info.description",
-                         cdr.more_info().description());
-    dict.SetByDottedPath("more_info.url", cdr.more_info().url());
-  }
-
-  if (cdr.has_token()) {
-    dict.Set("token", cdr.token());
-  }
-
-  if (cdr.has_upload()) {
-    dict.Set("upload", cdr.upload());
-  }
-
-  if (cdr.has_request_deep_scan()) {
-    dict.Set("request_deep_scan", cdr.request_deep_scan());
-  }
-
-  if (cdr.has_tailored_verdict()) {
-    const auto& tailored_verdict = cdr.tailored_verdict();
-    dict.Set("tailored_verdict", SerializeTailoredVerdict(tailored_verdict));
-  }
-
-  return SerializeJson(dict);
-}
-
-base::Value::Dict SerializeVisualFeatures(
-    const VisualFeatures& visual_features) {
-  base::Value::Dict image_dict;
-  const VisualFeatures::BlurredImage& image = visual_features.image();
-  image_dict.Set("width", image.width());
-  image_dict.Set("height", image.height());
-  image_dict.Set("data", base::Base64Encode(base::as_byte_span(image.data())));
-
-  base::Value::Dict visual_dict;
-  visual_dict.Set("blurred_image", std::move(image_dict));
-  return visual_dict;
+  return SerializeJson(proto_to_value::Serialize(cdr));
 }
 
 std::string SerializeClientPhishingRequest(
     const ClientPhishingRequestAndToken& cprat) {
-  const ClientPhishingRequest& cpr = cprat.request;
-  base::Value::Dict dict;
-  if (cpr.has_url()) {
-    dict.Set("url", cpr.url());
-  }
-  if (cpr.has_client_score()) {
-    dict.Set("client_score", cpr.client_score());
-  }
-  if (cpr.has_is_phishing()) {
-    dict.Set("is_phishing", cpr.is_phishing());
-  }
-  if (cpr.has_model_version()) {
-    dict.Set("model_version", cpr.model_version());
-  }
-  if (cpr.has_dom_model_version()) {
-    dict.Set("dom_model_version", cpr.dom_model_version());
-  }
-  if (cpr.has_client_side_detection_type()) {
-    dict.Set("client_side_detection_type",
-             ClientSideDetectionType_Name(cpr.client_side_detection_type()));
-  }
-  if (cpr.has_report_type()) {
-    dict.Set("report_type",
-             ClientPhishingRequest_ReportType_Name(cpr.report_type()));
-  }
-
-  if (cpr.has_image_feature_embedding()) {
-    dict.Set("image_feature_embedding",
-             SerializeImageFeatureEmbedding(cpr.image_feature_embedding()));
-  }
-
-  base::Value::List features;
-  for (const auto& feature : cpr.feature_map()) {
-    base::Value::Dict dict_features;
-    dict_features.Set("name", feature.name());
-    dict_features.Set("value", feature.value());
-    features.Append(std::move(dict_features));
-  }
-  dict.Set("feature_map", std::move(features));
-
-  base::Value::List non_model_features;
-  for (const auto& feature : cpr.non_model_feature_map()) {
-    base::Value::Dict dict_features;
-    dict_features.Set("name", feature.name());
-    dict_features.Set("value", feature.value());
-    non_model_features.Append(std::move(dict_features));
-  }
-  dict.Set("non_model_feature_map", std::move(non_model_features));
-
-  base::Value::List shingle_hashes;
-  for (const auto& hash : cpr.shingle_hashes()) {
-    shingle_hashes.Append(static_cast<int>(hash));
-  }
-  dict.Set("shingle_hashes", std::move(shingle_hashes));
-
-  dict.Set("population", SerializeChromeUserPopulation(cpr.population()));
-  dict.Set("is_dom_match", cpr.is_dom_match());
-  dict.Set("scoped_oauth_token", cprat.token);
-
-  if (cpr.has_tflite_model_version()) {
-    dict.Set("tflite_model_version", cpr.tflite_model_version());
-  }
-  dict.Set("is_tflite_match", cpr.is_tflite_match());
-
-  base::Value::List tflite_scores;
-  for (const auto& score : cpr.tflite_model_scores()) {
-    base::Value::Dict score_value;
-    score_value.Set("label", score.label());
-    score_value.Set("lvalue", score.value());
-    tflite_scores.Append(std::move(score_value));
-  }
-  dict.Set("tflite_model_scores", std::move(tflite_scores));
-
-  if (cpr.has_visual_features()) {
-    dict.Set("visual_features", SerializeVisualFeatures(cpr.visual_features()));
-  }
-
-  if (cpr.has_intelligent_scan_info()) {
-    dict.Set("intelligent_scan_info",
-             SerializeIntelligentScanInfo(cpr.intelligent_scan_info()));
-  }
-
-  return SerializeJson(dict);
+  base::Value::Dict value = proto_to_value::Serialize(cprat.request);
+  value.Set("scoped_oauthtoken", cprat.token);
+  return SerializeJson(std::move(value));
 }
 
 std::string SerializeClientPhishingResponse(const ClientPhishingResponse& cpr) {
-  base::Value::Dict dict;
-  dict.Set("phishy", cpr.phishy());
-
-  if (cpr.has_intelligent_scan_verdict()) {
-    dict.Set("intelligent_scan_verdict",
-             IntelligentScanVerdict_Name(cpr.intelligent_scan_verdict()));
-  }
-
-  return SerializeJson(dict);
-}
-
-base::Value::Dict SerializeHTTPHeader(
-    const ClientSafeBrowsingReportRequest::HTTPHeader& header) {
-  base::Value::Dict header_dict;
-  header_dict.Set("name", header.name());
-  header_dict.Set("value", header.value());
-  return header_dict;
-}
-
-base::Value::Dict SerializeResource(
-    const ClientSafeBrowsingReportRequest::Resource& resource) {
-  base::Value::Dict resource_dict;
-  resource_dict.Set("id", resource.id());
-  resource_dict.Set("url", resource.url());
-  // HTTPRequest
-  if (resource.has_request()) {
-    base::Value::Dict request;
-    if (resource.request().has_firstline()) {
-      base::Value::Dict firstline;
-      firstline.Set("verb", resource.request().firstline().verb());
-      firstline.Set("uri", resource.request().firstline().uri());
-      firstline.Set("version", resource.request().firstline().version());
-      request.Set("firstline", std::move(firstline));
-    }
-    base::Value::List headers;
-    for (const ClientSafeBrowsingReportRequest::HTTPHeader& header :
-         resource.request().headers()) {
-      headers.Append(SerializeHTTPHeader(header));
-    }
-    request.Set("headers", std::move(headers));
-    resource_dict.Set("request", std::move(request));
-  }
-  // HTTPResponse
-  if (resource.has_response()) {
-    base::Value::Dict response;
-    if (resource.response().has_firstline()) {
-      base::Value::Dict firstline;
-      firstline.Set("code", resource.response().firstline().code());
-      firstline.Set("message", resource.response().firstline().message());
-      firstline.Set("version", resource.response().firstline().version());
-      response.Set("firstline", std::move(firstline));
-    }
-    base::Value::List headers;
-    for (const ClientSafeBrowsingReportRequest::HTTPHeader& header :
-         resource.response().headers()) {
-      headers.Append(SerializeHTTPHeader(header));
-    }
-    response.Set("headers", std::move(headers));
-    response.Set("body", resource.response().body());
-    response.Set("remote_ip", resource.response().remote_ip());
-    resource_dict.Set("response", std::move(response));
-  }
-  resource_dict.Set("parent_id", resource.parent_id());
-  base::Value::List child_id_list;
-  for (const int& child_id : resource.child_ids()) {
-    child_id_list.Append(child_id);
-  }
-  resource_dict.Set("child_ids", std::move(child_id_list));
-  resource_dict.Set("tag_name", resource.tag_name());
-  return resource_dict;
-}
-
-base::Value::Dict SerializeHTMLElement(const HTMLElement& element) {
-  base::Value::Dict element_dict;
-  element_dict.Set("id", element.id());
-  element_dict.Set("tag", element.tag());
-  base::Value::List child_id_lists;
-  for (const int& child_id : element.child_ids()) {
-    child_id_lists.Append(child_id);
-  }
-  element_dict.Set("child_ids", std::move(child_id_lists));
-  element_dict.Set("resource_id", element.resource_id());
-  base::Value::List attribute_list;
-  for (const HTMLElement::Attribute& attribute : element.attribute()) {
-    base::Value::Dict attribute_dict;
-    attribute_dict.Set("name", attribute.name());
-    attribute_dict.Set("value", attribute.value());
-    attribute_list.Append(std::move(attribute_dict));
-  }
-  element_dict.Set("attribute", std::move(attribute_list));
-  element_dict.Set("inner_html", element.inner_html());
-  return element_dict;
-}
-
-base::Value::Dict SerializeSafeBrowsingClientProperties(
-    const ClientSafeBrowsingReportRequest::SafeBrowsingClientProperties&
-        client_properties) {
-  base::Value::Dict client_properties_dict;
-  client_properties_dict.Set("client_version",
-                             client_properties.client_version());
-  client_properties_dict.Set(
-      "google_play_services_version",
-      static_cast<int>(client_properties.google_play_services_version()));
-  client_properties_dict.Set("is_instant_apps",
-                             client_properties.is_instant_apps());
-  client_properties_dict.Set(
-      "url_api_type",
-      ClientSafeBrowsingReportRequest_SafeBrowsingUrlApiType_Name(
-          client_properties.url_api_type()));
-  client_properties_dict.Set("is_async_check",
-                             client_properties.is_async_check());
-  if (client_properties.has_app_verification_enabled()) {
-    client_properties_dict.Set("app_verification_enabled",
-                               client_properties.app_verification_enabled());
-  }
-  return client_properties_dict;
-}
-
-base::Value::Dict SerializeDownloadWarningAction(
-    const ClientSafeBrowsingReportRequest::DownloadWarningAction&
-        download_warning_action) {
-  base::Value::Dict action_dict;
-  action_dict.Set(
-      "surface",
-      ClientSafeBrowsingReportRequest_DownloadWarningAction_Surface_Name(
-          download_warning_action.surface()));
-  action_dict.Set(
-      "action",
-      ClientSafeBrowsingReportRequest_DownloadWarningAction_Action_Name(
-          download_warning_action.action()));
-  action_dict.Set("is_terminal_action",
-                  download_warning_action.is_terminal_action());
-  action_dict.Set("interval_msec",
-                  static_cast<double>(download_warning_action.interval_msec()));
-  return action_dict;
+  return SerializeJson(proto_to_value::Serialize(cpr));
 }
 
 std::string SerializeCSBRR(const ClientSafeBrowsingReportRequest& report) {
-  base::Value::Dict report_request;
-  if (report.has_type()) {
-    report_request.Set(
-        "type", ClientSafeBrowsingReportRequest_ReportType_Name(report.type()));
-  }
-  if (report.has_page_url()) {
-    report_request.Set("page_url", report.page_url());
-  }
-  if (report.has_referrer_url()) {
-    report_request.Set("referrer_url", report.referrer_url());
-  }
-  if (report.has_client_country()) {
-    report_request.Set("client_country", report.client_country());
-  }
-  if (report.has_repeat_visit()) {
-    report_request.Set("repeat_visit", report.repeat_visit());
-  }
-  if (report.has_did_proceed()) {
-    report_request.Set("did_proceed", report.did_proceed());
-  }
-  if (report.has_download_verdict()) {
-    report_request.Set("download_verdict", ClientDownloadResponse_Verdict_Name(
-                                               report.download_verdict()));
-  }
-  if (report.has_url()) {
-    report_request.Set("url", report.url());
-  }
-  if (report.has_token()) {
-    report_request.Set("token", report.token());
-  }
-  if (report.has_show_download_in_folder()) {
-    report_request.Set("show_download_in_folder",
-                       report.show_download_in_folder());
-  }
-  if (report.has_population()) {
-    report_request.Set("population",
-                       SerializeChromeUserPopulation(report.population()));
-  }
-  base::Value::List resource_list;
-  for (const ClientSafeBrowsingReportRequest::Resource& resource :
-       report.resources()) {
-    resource_list.Append(SerializeResource(resource));
-  }
-  report_request.Set("resources", std::move(resource_list));
-  base::Value::List dom_list;
-  for (const HTMLElement& element : report.dom()) {
-    dom_list.Append(SerializeHTMLElement(element));
-  }
-  report_request.Set("dom", std::move(dom_list));
-  if (report.has_complete()) {
-    report_request.Set("complete", report.complete());
-  }
-  if (report.has_client_properties()) {
-    report_request.Set(
-        "client_properties",
-        SerializeSafeBrowsingClientProperties(report.client_properties()));
-  }
-  base::Value::List download_warning_action_list;
-  for (const auto& download_warning_action :
-       report.download_warning_actions()) {
-    download_warning_action_list.Append(
-        SerializeDownloadWarningAction(download_warning_action));
-  }
-  report_request.Set("download_warning_actions",
-                     std::move(download_warning_action_list));
-  if (report.has_url_request_destination()) {
-    report_request.Set(
-        "url_request_destination",
-        ClientSafeBrowsingReportRequest_UrlRequestDestination_Name(
-            report.url_request_destination()));
-  }
-  if (report.has_warning_shown_timestamp_msec()) {
-    report_request.Set(
-        "warning_shown_timestamp_msec",
-        static_cast<double>(report.warning_shown_timestamp_msec()));
-  }
-  if (std::string serialized; report.SerializeToString(&serialized)) {
-    std::string base64_encoded = base::Base64Encode(serialized);
-    report_request.Set("csbrr(base64)", std::move(base64_encoded));
-  }
-  return SerializeJson(report_request);
+  return SerializeJson(proto_to_value::Serialize(report));
 }
 
 std::string SerializeHitReport(const HitReport& hit_report) {
@@ -1631,63 +1021,6 @@ base::Value::Dict SerializeSecurityEvent(
   return result;
 }
 
-base::Value::Dict SerializeFrame(
-    const LoginReputationClientRequest::Frame& frame) {
-  base::Value::Dict frame_dict;
-  frame_dict.Set("frame_index", frame.frame_index());
-  frame_dict.Set("parent_frame_index", frame.parent_frame_index());
-  frame_dict.Set("url", frame.url());
-  frame_dict.Set("has_password_field", frame.has_password_field());
-
-  base::Value::List referrer_list;
-  for (const ReferrerChainEntry& referrer : frame.referrer_chain()) {
-    referrer_list.Append(SerializeReferrer(referrer));
-  }
-  frame_dict.Set("referrer_chain", std::move(referrer_list));
-
-  frame_dict.SetByDottedPath(
-      "referrer_chain_options.recent_navigations_to_collect",
-      frame.referrer_chain_options().recent_navigations_to_collect());
-
-  base::Value::List form_list;
-  for (const LoginReputationClientRequest::Frame::Form& form : frame.forms()) {
-    base::Value::Dict form_dict;
-    form_dict.Set("action_url", form.action_url());
-    form_dict.Set("has_password_field", form.has_password_field());
-    form_list.Append(std::move(form_dict));
-  }
-  frame_dict.Set("forms", std::move(form_list));
-
-  return frame_dict;
-}
-
-base::Value::Dict SerializePasswordReuseEvent(
-    const LoginReputationClientRequest::PasswordReuseEvent& event) {
-  base::Value::Dict event_dict;
-
-  base::Value::List domains_list;
-  for (const std::string& domain : event.domains_matching_password()) {
-    domains_list.Append(domain);
-  }
-  event_dict.Set("domains_matching_password", std::move(domains_list));
-
-  event_dict.Set("frame_id", event.frame_id());
-
-  event_dict.Set(
-      "reused_password_type",
-      LoginReputationClientRequest_PasswordReuseEvent_ReusedPasswordType_Name(
-          event.reused_password_type()));
-
-  event_dict.Set(
-      "reused_password_account_type",
-      LoginReputationClientRequest_PasswordReuseEvent_ReusedPasswordAccountType_AccountType_Name(
-          event.reused_password_account_type().account_type()));
-  event_dict.Set("is_account_syncing",
-                 event.reused_password_account_type().is_account_syncing());
-
-  return event_dict;
-}
-
 base::Value::Dict SerializeRTThreatInfo(
     const RTLookupResponse::ThreatInfo& threat_info) {
   base::Value::Dict threat_info_dict;
@@ -1743,41 +1076,6 @@ base::Value::Dict SerializeRTThreatInfo(
   return threat_info_dict;
 }
 
-base::Value::Dict SerializeDomFeatures(const DomFeatures& dom_features) {
-  base::Value::Dict dom_features_dict;
-  base::Value::List feature_map;
-  for (const auto& feature : dom_features.feature_map()) {
-    base::Value::Dict feature_dict;
-    feature_dict.Set("name", feature.name());
-    feature_dict.Set("value", feature.value());
-    feature_map.Append(std::move(feature_dict));
-  }
-  dom_features_dict.Set("feature_map", std::move(feature_map));
-
-  base::Value::List shingle_hashes;
-  for (const auto& hash : dom_features.shingle_hashes()) {
-    shingle_hashes.Append(static_cast<int>(hash));
-  }
-  dom_features_dict.Set("shingle_hashes", std::move(shingle_hashes));
-
-  dom_features_dict.Set("model_version", dom_features.model_version());
-
-  return dom_features_dict;
-}
-
-base::Value::Dict SerializeUrlDisplayExperiment(
-    const LoginReputationClientRequest::UrlDisplayExperiment& experiment) {
-  base::Value::Dict d;
-  d.Set("delayed_warnings_enabled", experiment.delayed_warnings_enabled());
-  d.Set("delayed_warnings_mouse_clicks_enabled",
-        experiment.delayed_warnings_mouse_clicks_enabled());
-  d.Set("reveal_on_hover", experiment.reveal_on_hover());
-  d.Set("hide_on_interaction", experiment.hide_on_interaction());
-  d.Set("elide_to_registrable_domain",
-        experiment.elide_to_registrable_domain());
-  return d;
-}
-
 #if BUILDFLAG(IS_ANDROID)
 // This serializes the internal::ReferringAppInfo struct (not to be confused
 // with the protobuf message ReferringAppInfo), which contains intermediate
@@ -1796,120 +1094,16 @@ base::Value::Dict SerializeReferringAppInfo(
 }
 #endif
 
-base::Value::Dict SerializeCsdDebuggingMetadata(
-    const LoginReputationClientRequest::DebuggingMetadata& debugging_metadata) {
-  base::Value::Dict dict;
-
-  if (debugging_metadata.has_csd_model_version()) {
-    dict.Set("csd_model_version", debugging_metadata.csd_model_version());
-  }
-
-  if (debugging_metadata.has_preclassification_check_result()) {
-    dict.Set("preclassification_check_result",
-             PreClassificationCheckResult_Name(
-                 debugging_metadata.preclassification_check_result()));
-  }
-
-  if (debugging_metadata.has_phishing_detector_result()) {
-    dict.Set("phishing_detector_result",
-             PhishingDetectorResult_Name(
-                 debugging_metadata.phishing_detector_result()));
-  }
-
-  if (debugging_metadata.has_local_model_detects_phishing()) {
-    dict.Set("local_model_detects_phishing",
-             debugging_metadata.local_model_detects_phishing());
-  }
-
-  if (debugging_metadata.has_forced_request()) {
-    dict.Set("forced_request", debugging_metadata.forced_request());
-  }
-
-  if (debugging_metadata.has_network_result()) {
-    dict.Set("network_result", debugging_metadata.network_result());
-  }
-
-  return dict;
-}
-
 std::string SerializePGPing(
     const LoginReputationClientRequestAndToken& request_and_token) {
-  base::Value::Dict request_dict;
-
-  const LoginReputationClientRequest& request = request_and_token.request;
-
-  request_dict.Set("page_url", request.page_url());
-
-  request_dict.Set(
-      "trigger_type",
-      LoginReputationClientRequest_TriggerType_Name(request.trigger_type()));
-
-  base::Value::List frames_list;
-  for (const LoginReputationClientRequest::Frame& frame : request.frames()) {
-    frames_list.Append(SerializeFrame(frame));
-  }
-  request_dict.Set("frames", std::move(frames_list));
-
-  request_dict.Set("password_reuse_event",
-                   SerializePasswordReuseEvent(request.password_reuse_event()));
-  request_dict.Set("stored_verdict_cnt", request.stored_verdict_cnt());
-  request_dict.Set("population",
-                   SerializeChromeUserPopulation(request.population()));
-  request_dict.Set("clicked_through_interstitial",
-                   request.clicked_through_interstitial());
-  request_dict.Set("content_type", request.content_type());
-
-  if (request.has_content_area_height()) {
-    request_dict.Set("content_area_height", request.content_area_height());
-  }
-  if (request.has_content_area_width()) {
-    request_dict.Set("content_area_width", request.content_area_width());
-  }
-
-  if (request.has_dom_features()) {
-    request_dict.Set("dom_features",
-                     SerializeDomFeatures(request.dom_features()));
-  }
-
-  if (request.has_url_display_experiment()) {
-    request_dict.Set(
-        "url_display_experiment",
-        SerializeUrlDisplayExperiment(request.url_display_experiment()));
-  }
-
-  if (request.has_referring_app_info()) {
-    request_dict.Set("referring_app_info",
-                     SerializeReferringAppInfo(request.referring_app_info()));
-  }
-
-  if (request.has_visual_features()) {
-    request_dict.Set("visual_features",
-                     SerializeVisualFeatures(request.visual_features()));
-  }
-
-  if (request.has_csd_debugging_metadata()) {
-    request_dict.Set(
-        "csd_debugging_metadata",
-        SerializeCsdDebuggingMetadata(request.csd_debugging_metadata()));
-  }
-
+  base::Value::Dict request_dict =
+      proto_to_value::Serialize(request_and_token.request);
   request_dict.Set("scoped_oauth_token", request_and_token.token);
-
   return SerializeJson(request_dict);
 }
 
 std::string SerializePGResponse(const LoginReputationClientResponse& response) {
-  base::Value::Dict response_dict;
-
-  response_dict.Set(
-      "verdict_type",
-      LoginReputationClientResponse_VerdictType_Name(response.verdict_type()));
-  response_dict.Set("cache_duration_sec",
-                    static_cast<int>(response.cache_duration_sec()));
-  response_dict.Set("cache_expression", response.cache_expression());
-  response_dict.Set("verdict_token", response.verdict_token());
-
-  return SerializeJson(response_dict);
+  return SerializeJson(proto_to_value::Serialize(response));
 }
 
 std::string SerializeURTLookupPing(const URTLookupRequest& ping) {
@@ -1918,7 +1112,7 @@ std::string SerializeURTLookupPing(const URTLookupRequest& ping) {
 
   request_dict.Set("url", request.url());
   request_dict.Set("population",
-                   SerializeChromeUserPopulation(request.population()));
+                   proto_to_value::Serialize(request.population()));
   request_dict.Set("scoped_oauth_token", ping.token);
   request_dict.Set("dm_token", request.dm_token());
   request_dict.Set("profile_dm_token", request.profile_dm_token());
@@ -1945,13 +1139,13 @@ std::string SerializeURTLookupPing(const URTLookupRequest& ping) {
 
   base::Value::List referrer_chain;
   for (const auto& referrer_chain_entry : request.referrer_chain()) {
-    referrer_chain.Append(SerializeReferrer(referrer_chain_entry));
+    referrer_chain.Append(proto_to_value::Serialize(referrer_chain_entry));
   }
   request_dict.Set("referrer_chain", std::move(referrer_chain));
 #if BUILDFLAG(IS_ANDROID)
   if (request.has_referring_app_info()) {
     request_dict.Set("referring_app_info",
-                     SerializeReferringAppInfo(request.referring_app_info()));
+                     proto_to_value::Serialize(request.referring_app_info()));
   }
 #endif
 
@@ -2107,7 +1301,7 @@ std::string SerializeContentAnalysisRequest(
       base::Value::List referrers;
       for (const auto& referrer_chain_entry :
            request.request_data().referrer_chain()) {
-        referrers.Append(SerializeReferrer(referrer_chain_entry));
+        referrers.Append(proto_to_value::Serialize(referrer_chain_entry));
       }
       request_data.Set("referrers", std::move(referrers));
     }
@@ -2756,7 +1950,7 @@ void SafeBrowsingUIHandler::GetReferrerChain(const base::Value::List& args) {
 
   base::Value::List referrer_list;
   for (const ReferrerChainEntry& entry : referrer_chain) {
-    referrer_list.Append(SerializeReferrer(entry));
+    referrer_list.Append(proto_to_value::Serialize(entry));
   }
 
   std::string referrer_chain_serialized = SerializeJson(referrer_list);
@@ -2845,7 +2039,7 @@ base::Value::Dict SafeBrowsingUIHandler::GetFormattedTailoredVerdictOverride() {
                         base::Value("Override set from another tab."));
     }
     override_dict.Set(kOverrideValueKey,
-                      SerializeTailoredVerdict(*override_data.override_value));
+                      proto_to_value::Serialize(*override_data.override_value));
   }
 #endif  // BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION) &&
         // !BUILDFLAG(IS_ANDROID)
