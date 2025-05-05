@@ -186,8 +186,8 @@ found in the LICENSE file.
       <message name="IDS_SETTINGS_GLIC_PREFERENCES_SECTION" translateable="false" desc="Name of the Glic settings section for general preferences.">
         Preferences
       </message>
-      <message name="IDS_SETTINGS_GLIC_DATA_SECTION" translateable="false" desc="Name of the Glic settings section related to user data.">
-        Data
+      <message name="IDS_SETTINGS_GLIC_PERMISSIONS_SECTION" translateable="false" desc="Name of the Glic settings section related to permissions.">
+        Permissions
       </message>
       <if expr="is_macosx">
         <message name="IDS_SETTINGS_GLIC_OS_WIDGET_TOGGLE" translateable="false" desc="Name of the Glic setting for the toggle enabling feature in the menu (on Mac only).">
@@ -223,44 +223,44 @@ found in the LICENSE file.
       <message name="IDS_SETTINGS_GLIC_CLOSED_CAPTIONING_SUBLABEL" translateable="false" desc="Sublabel describing that this setting will enable closed captions for Glic.">
         Show closed captions when using Glic
       </message>
-      <message name="IDS_SETTINGS_GLIC_DATA_LOCATION_TOGGLE" translateable="false" desc="Name of the 'enable location sharing' setting.">
+      <message name="IDS_SETTINGS_GLIC_PERMISSIONS_LOCATION_TOGGLE" translateable="false" desc="Name of the 'enable location sharing' setting.">
         Location
       </message>
-      <message name="IDS_SETTINGS_GLIC_DATA_LOCATION_TOGGLE_SUBLABEL" translateable="false" desc="Sublabel describing the 'enable location sharing' setting.">
+      <message name="IDS_SETTINGS_GLIC_PERMISSIONS_LOCATION_TOGGLE_SUBLABEL" translateable="false" desc="Sublabel describing the 'enable location sharing' setting.">
         Use your location to allow enhanced accuracy
       </message>
-      <message name="IDS_SETTINGS_GLIC_DATA_MICROPHONE_TOGGLE" translateable="false" desc="Name of the 'enable microphone' setting.">
+      <message name="IDS_SETTINGS_GLIC_PERMISSIONS_MICROPHONE_TOGGLE" translateable="false" desc="Name of the 'enable microphone' setting.">
         Microphone
       </message>
-      <message name="IDS_SETTINGS_GLIC_DATA_MICROPHONE_TOGGLE_SUBLABEL" translateable="false" desc="Sublabel describing the 'enable microphone' setting.">
+      <message name="IDS_SETTINGS_GLIC_PERMISSIONS_MICROPHONE_TOGGLE_SUBLABEL" translateable="false" desc="Sublabel describing the 'enable microphone' setting.">
         Enable use of your microphone
       </message>
-      <message name="IDS_SETTINGS_GLIC_DATA_TAB_ACCESS_TOGGLE" translateable="false" desc="Name of the 'enable tab access' setting.">
+      <message name="IDS_SETTINGS_GLIC_PERMISSIONS_TAB_ACCESS_TOGGLE" translateable="false" desc="Name of the 'enable tab access' setting.">
         Current tab access
       </message>
-      <message name="IDS_SETTINGS_GLIC_DATA_TAB_ACCESS_TOGGLE_SUBLABEL" translateable="false" desc="Sublabel describing the 'tab access' setting.">
+      <message name="IDS_SETTINGS_GLIC_PERMISSIONS_TAB_ACCESS_TOGGLE_SUBLABEL" translateable="false" desc="Sublabel describing the 'tab access' setting.">
         Allow feature
       </message>
-      <message name="IDS_SETTINGS_GLIC_DATA_ACTIVITY_BUTTON" translateable="false" desc="Name of the 'activity' button.">
+      <message name="IDS_SETTINGS_GLIC_PERMISSIONS_ACTIVITY_BUTTON" translateable="false" desc="Name of the 'activity' button.">
         Activity
       </message>
-      <message name="IDS_SETTINGS_GLIC_DATA_ACTIVITY_BUTTON_SUBLABEL" translateable="false" desc="Sublabel describing the 'activity' button.">
+      <message name="IDS_SETTINGS_GLIC_PERMISSIONS_ACTIVITY_BUTTON_SUBLABEL" translateable="false" desc="Sublabel describing the 'activity' button.">
         View and manage your activity
       </message>
-      <message name="IDS_SETTINGS_GLIC_DATA_ACTIVITY_BUTTON_URL" translateable="false" desc="URL to navigate when clicking the 'manage your activity' button.">
+      <message name="IDS_SETTINGS_GLIC_PERMISSIONS_ACTIVITY_BUTTON_URL" translateable="false" desc="URL to navigate when clicking the 'manage your activity' button.">
         https://example.com
       </message>
-      <message name="IDS_SETTINGS_GLIC_DATA_TAB_ACCESS_WHEN_ON_1" translateable="false" desc="First point in the 'when on' column of the 'tab access' collapsible section.">
+      <message name="IDS_SETTINGS_GLIC_PERMISSIONS_TAB_ACCESS_WHEN_ON_1" translateable="false" desc="First point in the 'when on' column of the 'tab access' collapsible section.">
         [Placeholder String 1]
       </message>
-      <message name="IDS_SETTINGS_GLIC_DATA_TAB_ACCESS_WHEN_ON_2" translateable="false" desc="Second point in the 'when on' column of the 'tab access' collapsible section.">
+      <message name="IDS_SETTINGS_GLIC_PERMISSIONS_TAB_ACCESS_WHEN_ON_2" translateable="false" desc="Second point in the 'when on' column of the 'tab access' collapsible section.">
         [Placeholder String 2]
       </message>
-      <message name="IDS_SETTINGS_GLIC_DATA_TAB_ACCESS_CONSIDER_1" translateable="false" desc="First point in the 'things to consider' column of the 'tab access' collapsible section.">
+      <message name="IDS_SETTINGS_GLIC_PERMISSIONS_TAB_ACCESS_CONSIDER_1" translateable="false" desc="First point in the 'things to consider' column of the 'tab access' collapsible section.">
         [Placeholder String 3]
       </message>
-      <message name="IDS_SETTINGS_GLIC_DATA_TAB_ACCESS_CONSIDER_2" translateable="false" desc="Second point in the 'things to consider' column of the 'tab access' collapsible section.">
-        [Placeholder String 4]
+      <message name="IDS_SETTINGS_GLIC_PERMISSIONS_TAB_ACCESS_CONSIDER_1_LEARN_MORE_LABEL" translateable="false" desc="Label for the 'Learn more' link in the 'things to consider' section.">
+        Learn more
       </message>
 
       <!-- Profile Picker Glic version-->
