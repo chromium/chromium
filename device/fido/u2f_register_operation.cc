@@ -12,12 +12,12 @@
 #include "base/task/sequenced_task_runner.h"
 #include "components/apdu/apdu_response.h"
 #include "components/device_event_log/device_event_log.h"
+#include "crypto/hash.h"
 #include "device/fido/authenticator_make_credential_response.h"
 #include "device/fido/ctap_make_credential_request.h"
 #include "device/fido/device_response_converter.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_device.h"
-#include "device/fido/fido_parsing_utils.h"
 #include "device/fido/u2f_command_constructor.h"
 
 namespace device {
@@ -175,8 +175,7 @@ void U2fRegisterOperation::OnRegisterResponseReceived(
       auto response =
           AuthenticatorMakeCredentialResponse::CreateFromU2fRegisterResponse(
               device()->DeviceTransport(),
-              fido_parsing_utils::CreateSHA256Hash(request().rp.id),
-              apdu_response->data());
+              crypto::hash::Sha256(request().rp.id), apdu_response->data());
       std::move(callback())
           .Run(CtapDeviceResponseCode::kSuccess, std::move(response));
       break;

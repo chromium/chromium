@@ -270,10 +270,5 @@ TEST(U2fParsingUtils, SplitSpan) {
       ::testing::ElementsAre(::testing::ElementsAreArray(kOneTwoThree)));
 }
 
-TEST(U2fParsingUtils, CreateSHA256Hash) {
-  EXPECT_THAT(CreateSHA256Hash("acme.com"),
-              ::testing::ElementsAreArray(test_data::kApplicationParameter));
-}
-
 }  // namespace fido_parsing_utils
 }  // namespace device

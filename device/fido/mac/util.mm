@@ -25,8 +25,8 @@
 #include "build/branding_buildflags.h"
 #include "components/cbor/writer.h"
 #include "crypto/apple_keychain_v2.h"
+#include "crypto/hash.h"
 #include "device/fido/fido_constants.h"
-#include "device/fido/fido_parsing_utils.h"
 #include "device/fido/p256_public_key.h"
 #include "device/fido/public_key.h"
 
@@ -109,7 +109,7 @@ AuthenticatorData MakeAuthenticatorData(
   if (attested_credential_data) {
     flags |= static_cast<uint8_t>(AuthenticatorData::Flag::kAttestation);
   }
-  return AuthenticatorData(fido_parsing_utils::CreateSHA256Hash(rp_id), flags,
+  return AuthenticatorData(crypto::hash::Sha256(rp_id), flags,
                            MakeSignatureCounter(counter_type),
                            std::move(attested_credential_data));
 }

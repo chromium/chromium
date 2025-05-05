@@ -22,6 +22,7 @@
 #include "build/build_config.h"
 #include "components/cbor/diagnostic_writer.h"
 #include "components/device_event_log/device_event_log.h"
+#include "crypto/hash.h"
 #include "device/fido/authenticator_get_assertion_response.h"
 #include "device/fido/ctap_get_assertion_request.h"
 #include "device/fido/discoverable_credential_metadata.h"
@@ -29,7 +30,6 @@
 #include "device/fido/fido_authenticator.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_discovery_factory.h"
-#include "device/fido/fido_parsing_utils.h"
 #include "device/fido/fido_transport_protocol.h"
 #include "device/fido/fido_types.h"
 #include "device/fido/filter.h"
@@ -119,7 +119,7 @@ bool ResponseValid(
 
     const std::array<uint8_t, kRpIdHashLength>& rp_id_hash =
         response.authenticator_data.application_parameter();
-    if (rp_id_hash != fido_parsing_utils::CreateSHA256Hash(request.rp_id) &&
+    if (rp_id_hash != crypto::hash::Sha256(request.rp_id) &&
         (!request.app_id ||
          rp_id_hash != request.alternative_application_parameter)) {
       return false;

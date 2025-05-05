@@ -11,6 +11,7 @@
 
 #include "base/numerics/safe_conversions.h"
 #include "components/cbor/values.h"
+#include "crypto/hash.h"
 #include "device/fido/device_response_converter.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_parsing_utils.h"
@@ -278,7 +279,7 @@ CtapMakeCredentialRequest::CtapMakeCredentialRequest(
     PublicKeyCredentialUserEntity in_user,
     PublicKeyCredentialParams in_public_key_credential_params)
     : client_data_json(std::move(in_client_data_json)),
-      client_data_hash(fido_parsing_utils::CreateSHA256Hash(client_data_json)),
+      client_data_hash(crypto::hash::Sha256(client_data_json)),
       rp(std::move(in_rp)),
       user(std::move(in_user)),
       public_key_credential_params(std::move(in_public_key_credential_params)) {

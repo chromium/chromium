@@ -14,12 +14,12 @@
 #include "base/task/sequenced_task_runner.h"
 #include "components/apdu/apdu_response.h"
 #include "components/device_event_log/device_event_log.h"
+#include "crypto/hash.h"
 #include "device/fido/authenticator_get_assertion_response.h"
 #include "device/fido/ctap_get_assertion_request.h"
 #include "device/fido/device_response_converter.h"
 #include "device/fido/features.h"
 #include "device/fido/fido_device.h"
-#include "device/fido/fido_parsing_utils.h"
 #include "device/fido/u2f_command_constructor.h"
 
 namespace device {
@@ -113,7 +113,7 @@ void U2fSignOperation::OnSignResponseReceived(
     case apdu::ApduResponse::Status::SW_NO_ERROR: {
       auto application_parameter =
           app_param_type_ == ApplicationParameterType::kPrimary
-              ? fido_parsing_utils::CreateSHA256Hash(request().rp_id)
+              ? crypto::hash::Sha256(request().rp_id)
               : request().alternative_application_parameter.value_or(
                     std::array<uint8_t, kRpIdHashLength>());
       auto sign_response =

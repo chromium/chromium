@@ -27,6 +27,7 @@
 #include "components/cbor/writer.h"
 #include "components/device_event_log/device_event_log.h"
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"
+#include "crypto/hash.h"
 #include "crypto/random.h"
 #include "device/fido/attestation_statement.h"
 #include "device/fido/authenticator_data.h"
@@ -438,7 +439,7 @@ ParseMakeCredentialResponse(cbor::Value response_value,
       break;
   }
   AuthenticatorData authenticator_data(
-      fido_parsing_utils::CreateSHA256Hash(request.rp.id), flags,
+      crypto::hash::Sha256(request.rp.id), flags,
       std::array<uint8_t, 4>({0, 0, 0, 0}), std::move(credential_data));
   AttestationObject attestation_object(
       std::move(authenticator_data),

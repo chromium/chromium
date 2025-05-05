@@ -20,6 +20,7 @@
 #include "components/cbor/writer.h"
 #include "crypto/ec_private_key.h"
 #include "crypto/ec_signature_creator.h"
+#include "crypto/hash.h"
 #include "crypto/openssl_util.h"
 #include "device/fido/fido_parsing_utils.h"
 #include "device/fido/large_blob.h"
@@ -345,7 +346,7 @@ VirtualFidoDevice::PrivateKey::FreshInvalidForTestingKey() {
 
 VirtualFidoDevice::RegistrationData::RegistrationData() = default;
 VirtualFidoDevice::RegistrationData::RegistrationData(const std::string& rp_id)
-    : application_parameter(fido_parsing_utils::CreateSHA256Hash(rp_id)) {}
+    : application_parameter(crypto::hash::Sha256(rp_id)) {}
 VirtualFidoDevice::RegistrationData::RegistrationData(
     std::unique_ptr<PrivateKey> private_key,
     base::span<const uint8_t, kRpIdHashLength> application_parameter,
@@ -431,7 +432,7 @@ bool VirtualFidoDevice::State::InjectResidentKey(
     device::PublicKeyCredentialUserEntity user,
     int32_t signature_counter,
     std::unique_ptr<PrivateKey> private_key) {
-  auto application_parameter = fido_parsing_utils::CreateSHA256Hash(rp.id);
+  auto application_parameter = crypto::hash::Sha256(rp.id);
 
   // Cannot create a duplicate credential for the same (RP ID, user ID) pair.
   for (const auto& registration : registrations) {
@@ -653,7 +654,7 @@ void VirtualFidoDevice::StoreNewKey(
   // virtual authenticator API.
   if (registration_data.application_parameter == device::kBogusAppParam ||
       registration_data.application_parameter ==
-          fido_parsing_utils::CreateSHA256Hash(kDummyRpID)) {
+          crypto::hash::Sha256(kDummyRpID)) {
     return;
   }
 
