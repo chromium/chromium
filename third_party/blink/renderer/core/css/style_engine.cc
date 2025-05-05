@@ -2936,6 +2936,16 @@ void StyleEngine::ApplyUserRuleSetChanges(
     MarkPositionTryStylesDirty(changed_rule_sets);
   }
 
+  if (changed_rule_flags & kFunctionRules) {
+    resolver_->InvalidateMatchedPropertiesCache();
+    user_function_rule_map_.clear();
+    for (const auto& [_, rule_set] : new_style_sheets) {
+      AddNameDefiningRules<StyleRuleFunction>(rule_set->FunctionRules(),
+                                              user_cascade_layer_map_,
+                                              /*out=*/user_function_rule_map_);
+    }
+  }
+
   for (RuleSet* rule_set : changed_rule_sets) {
     rule_set->CompactRulesIfNeeded();
   }
@@ -4508,7 +4518,11 @@ StyleEngine::FindFunctionAcrossScopes(const AtomicString& name,
       }
     }
   }
-  // TODO(crbug.com/398554840): User origin.
+  // User origin.
+  auto iter = user_function_rule_map_.find(AtomicString(name));
+  if (iter != user_function_rule_map_.end()) {
+    return {iter->value.Get(), nullptr};
+  }
   return {nullptr, nullptr};
 }
 
@@ -4521,6 +4535,7 @@ void StyleEngine::Trace(Visitor* visitor) const {
   visitor->Trace(font_palette_values_rule_map_);
   visitor->Trace(user_counter_style_map_);
   visitor->Trace(user_cascade_layer_map_);
+  visitor->Trace(user_function_rule_map_);
   visitor->Trace(environment_variables_);
   visitor->Trace(initial_data_);
   visitor->Trace(inspector_style_sheet_list_);

@@ -49,6 +49,7 @@
 #include "third_party/blink/renderer/core/css/layout_tree_rebuild_root.h"
 #include "third_party/blink/renderer/core/css/pending_sheet_type.h"
 #include "third_party/blink/renderer/core/css/resolver/match_request.h"
+#include "third_party/blink/renderer/core/css/resolver/style_resolver_utils.h"
 #include "third_party/blink/renderer/core/css/rule_feature_set.h"
 #include "third_party/blink/renderer/core/css/style_image_cache.h"
 #include "third_party/blink/renderer/core/css/style_invalidation_root.h"
@@ -1121,6 +1122,9 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   Member<CounterStyleMap> user_counter_style_map_;
 
   Member<CascadeLayerMap> user_cascade_layer_map_;
+
+  // @function rules in the user origin.
+  FunctionRuleMap user_function_rule_map_;
 
   Member<DocumentStyleEnvironmentVariables> environment_variables_;
 

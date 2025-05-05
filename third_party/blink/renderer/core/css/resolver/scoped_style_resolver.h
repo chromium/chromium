@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/core/css/active_style_sheets.h"
 #include "third_party/blink/renderer/core/css/cascade_layer.h"
 #include "third_party/blink/renderer/core/css/element_rule_collector.h"
+#include "third_party/blink/renderer/core/css/resolver/style_resolver_utils.h"
 #include "third_party/blink/renderer/core/css/rule_set.h"
 #include "third_party/blink/renderer/core/dom/tree_scope.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
@@ -158,7 +159,6 @@ class CORE_EXPORT ScopedStyleResolver final
       HeapHashMap<AtomicString, Member<StyleRulePositionTry>>;
   PositionTryRuleMap position_try_rule_map_;
 
-  using FunctionRuleMap = HeapHashMap<AtomicString, Member<StyleRuleFunction>>;
   FunctionRuleMap function_rule_map_;
 
   // Multiple entries are created pointing to the same

@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_RESOLVER_STYLE_RESOLVER_UTILS_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/css/cascade_layer_map.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -13,6 +14,8 @@
 namespace blink {
 
 class CascadeLayerMap;
+
+using FunctionRuleMap = HeapHashMap<AtomicString, Member<StyleRuleFunction>>;
 
 // Certain at-rules define names that can be referenced later by their
 // corresponding properties, for example @keyframes/animation-name. When

@@ -3675,6 +3675,60 @@ TEST_F(StyleEngineTest, FunctionalMediaInvalidationDataClearedOnFullRecalc) {
   EXPECT_EQ(0u, FunctionalMediaQueryResultsSize());
 }
 
+TEST_F(StyleEngineTest, CustomFunctionInUserOrigin) {
+  // @function in the user origin:
+  InjectSheet("user1", WebCssOrigin::kUser, R"CSS(
+    @function --f() {
+      result: 10px;
+    }
+    body {
+      width: --f();
+    }
+  )CSS");
+  UpdateAllLifecyclePhases();
+  ASSERT_TRUE(ComputedValue(GetDocument().body(), "width"));
+  EXPECT_EQ("10px", ComputedValue(GetDocument().body(), "width")->CssText());
+
+  // @function in the author origin (should win over user origin):
+  InjectSheet("author1", WebCssOrigin::kAuthor, R"CSS(
+    @function --f() {
+      result: 20px;
+    }
+    body {
+      width: --f();
+    }
+  )CSS");
+  UpdateAllLifecyclePhases();
+  ASSERT_TRUE(ComputedValue(GetDocument().body(), "width"));
+  EXPECT_EQ("20px", ComputedValue(GetDocument().body(), "width")->CssText());
+
+  // Add a second user origin sheet:
+  InjectSheet("user2", WebCssOrigin::kUser, R"CSS(
+    @function --f() {
+      result: 30px;
+    }
+    body {
+      width: --f();
+    }
+  )CSS");
+  UpdateAllLifecyclePhases();
+  ASSERT_TRUE(ComputedValue(GetDocument().body(), "width"));
+  // Author sheet still wins:
+  EXPECT_EQ("20px", ComputedValue(GetDocument().body(), "width")->CssText());
+
+  GetStyleEngine().RemoveInjectedSheet(AtomicString("author1"),
+                                       WebCssOrigin::kAuthor);
+  UpdateAllLifecyclePhases();
+  ASSERT_TRUE(ComputedValue(GetDocument().body(), "width"));
+  EXPECT_EQ("30px", ComputedValue(GetDocument().body(), "width")->CssText());
+
+  GetStyleEngine().RemoveInjectedSheet(AtomicString("user2"),
+                                       WebCssOrigin::kUser);
+  UpdateAllLifecyclePhases();
+  ASSERT_TRUE(ComputedValue(GetDocument().body(), "width"));
+  EXPECT_EQ("10px", ComputedValue(GetDocument().body(), "width")->CssText());
+}
+
 TEST_F(StyleEngineTest, RevertUseCount) {
   GetDocument().body()->setInnerHTML(
       "<style>div { display: unset; }</style><div></div>");
