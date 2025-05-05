@@ -10024,6 +10024,11 @@
     "expiry_milestone": 122
   },
   {
+    "name": "widgets-for-multiprofile",
+    "owners": [ "fedegermi@google.com", "olivierrobin@chromium.org" ],
+    "expiry_milestone": 143
+  },
+  {
     "name": "wifi-concurrency",
     "owners": [ "jiajunz@google.com", "cros-device-enablement@google.com" ],
     "expiry_milestone": 137

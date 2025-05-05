@@ -830,6 +830,10 @@ BASE_DECLARE_FEATURE(kSeparateProfilesForManagedAccounts);
 // DO NOT CHECK DIRECTLY, use AreSeparateProfilesForManagedAccountsEnabled()!
 BASE_DECLARE_FEATURE(kSeparateProfilesForManagedAccountsKillSwitch);
 
+// Feature flag to have widgets per account.
+// DO NOT CHECK DIRECTLY, use IsWidgetsForMultiprofileEnabled().
+BASE_DECLARE_FEATURE(kWidgetsForMultiprofile);
+
 // Feature to control resyncing the omaha ping timer on foregrounding.
 BASE_DECLARE_FEATURE(kOmahaResyncTimerOnForeground);
 
