@@ -24,8 +24,12 @@
 #include "media/capture/video/video_frame_receiver.h"
 #include "media/capture/video_capture_types.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "services/video_effects/public/mojom/video_effects_processor.mojom-forward.h"
+#include "services/video_effects/public/cpp/buildflags.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
+
+#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
+#include "services/video_effects/public/mojom/video_effects_processor.mojom-forward.h"
+#endif
 
 namespace content {
 
@@ -138,8 +142,10 @@ class CONTENT_EXPORT VideoCaptureController
       const media::VideoCaptureParams& params,
       VideoCaptureDeviceLaunchObserver* callbacks,
       base::OnceClosure done_cb,
+#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
       mojo::PendingRemote<video_effects::mojom::VideoEffectsProcessor>
           video_effects_processor,
+#endif
       mojo::PendingRemote<media::mojom::ReadonlyVideoEffectsManager>
           readonly_video_effects_manager);
   void ReleaseDeviceAsync(base::OnceClosure done_cb);

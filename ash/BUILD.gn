@@ -5442,6 +5442,7 @@ static_library("test_support") {
     "//dbus",
     "//google_apis/calendar",
     "//net:test_support",
+    "//services/video_effects/buildflags:buildflags",
     "//testing/gtest",
     "//third_party/blink/public:blink_headers",
     "//ui/base/mojom:ui_base_types",

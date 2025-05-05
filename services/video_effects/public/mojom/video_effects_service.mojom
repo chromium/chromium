@@ -22,7 +22,7 @@ const sandbox.mojom.Sandbox kVideoEffectsSandbox =
 // This interface is intended to be hosted in the Video Effects utility
 // process. The Browser process uses this to create video effect processors
 // and broker the created processors to the Video Capture Service.
-[ServiceSandbox=kVideoEffectsSandbox]
+[EnableIf=enable_video_effects, ServiceSandbox=kVideoEffectsSandbox]
 interface VideoEffectsService {
   // Creates a Video Effects Processor whose effects configuration will be
   // managed by the passed in `manager`. Note that the created processor will

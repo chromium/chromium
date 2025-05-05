@@ -33,10 +33,13 @@
 #include "media/capture/video/video_frame_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/video_effects/public/cpp/buildflags.h"
-#include "services/video_effects/public/mojom/video_effects_processor.mojom.h"
-#include "services/video_effects/test/fake_video_effects_processor.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
+#include "services/video_effects/public/mojom/video_effects_processor.mojom.h"
+#include "services/video_effects/test/fake_video_effects_processor.h"
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "media/capture/video/chromeos/video_capture_jpeg_decoder.h"
@@ -171,9 +174,11 @@ class VideoCaptureDeviceClientTest : public ::testing::Test {
  protected:
   base::test::TaskEnvironment task_environment_;
   scoped_refptr<gpu::TestSharedImageInterface> test_sii_;
+#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
   // Will be nullopt until `Init()` has been called:
   std::optional<video_effects::FakeVideoEffectsProcessor>
       fake_video_effects_processor_;
+#endif
   FakeVideoEffectsManagerImpl fake_video_effects_manager_;
 
   mojo::Receiver<media::mojom::ReadonlyVideoEffectsManager>
@@ -198,6 +203,7 @@ class VideoCaptureDeviceClientTest : public ::testing::Test {
         base::BindRepeating(&ReturnNullPtrAsJpecDecoder));
 #else
 
+#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
     mojo::PendingReceiver<video_effects::mojom::VideoEffectsProcessor>
         processor_receiver;
     mojo::PendingRemote<video_effects::mojom::VideoEffectsProcessor>
@@ -208,6 +214,7 @@ class VideoCaptureDeviceClientTest : public ::testing::Test {
 
     fake_video_effects_processor_.emplace(std::move(processor_receiver),
                                           std::move(manager_remote));
+#endif
 
     mojo::PendingRemote<media::mojom::ReadonlyVideoEffectsManager>
         readonly_effects_manager_remote =
@@ -215,8 +222,12 @@ class VideoCaptureDeviceClientTest : public ::testing::Test {
 
     device_client_ = std::make_unique<VideoCaptureDeviceClient>(
         std::move(controller), buffer_pool,
-        media::VideoEffectsContext(std::move(processor_remote),
-                                   std::move(readonly_effects_manager_remote)));
+        media::VideoEffectsContext(
+#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
+            std::move(processor_remote),
+            std::move(readonly_effects_manager_remote)
+#endif
+                ));
 #endif  // BUILDFLAG(IS_CHROMEOS)
   }
 };

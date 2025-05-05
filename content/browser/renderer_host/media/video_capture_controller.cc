@@ -34,7 +34,11 @@
 #include "media/capture/video/video_capture_buffer_tracker_factory_impl.h"
 #include "media/capture/video/video_capture_device_client.h"
 #include "media/capture/video/video_capture_metrics.h"
+#include "services/video_effects/public/cpp/buildflags.h"
+
+#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
 #include "services/video_effects/public/mojom/video_effects_processor.mojom.h"
+#endif
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "content/browser/compositor/image_transport_factory.h"
@@ -665,8 +669,10 @@ void VideoCaptureController::CreateAndStartDeviceAsync(
     const media::VideoCaptureParams& params,
     VideoCaptureDeviceLaunchObserver* observer,
     base::OnceClosure done_cb,
+#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
     mojo::PendingRemote<video_effects::mojom::VideoEffectsProcessor>
         video_effects_processor,
+#endif
     mojo::PendingRemote<media::mojom::ReadonlyVideoEffectsManager>
         readonly_video_effects_manager) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
@@ -683,7 +689,10 @@ void VideoCaptureController::CreateAndStartDeviceAsync(
       device_id_, stream_type_, params, GetWeakPtrForIOThread(),
       base::BindOnce(&VideoCaptureController::OnDeviceConnectionLost,
                      GetWeakPtrForIOThread()),
-      this, std::move(done_cb), std::move(video_effects_processor),
+      this, std::move(done_cb),
+#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
+      std::move(video_effects_processor),
+#endif
       std::move(readonly_video_effects_manager));
 }
 

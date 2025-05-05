@@ -10,6 +10,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
+#include "media/base/video_types.h"
 #include "media/capture/mojom/video_capture_buffer.mojom-forward.h"
 #include "services/video_effects/calculators/video_effects_graph_config.h"
 #include "services/video_effects/calculators/video_effects_graph_webgpu.h"
@@ -20,6 +21,10 @@
 
 namespace viz {
 class ContextProviderCommandBuffer;
+}
+
+namespace gpu {
+class ClientSharedImageInterface;
 }
 
 namespace video_effects {

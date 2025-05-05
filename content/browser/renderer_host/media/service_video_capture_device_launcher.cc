@@ -20,7 +20,10 @@
 #include "services/video_capture/public/cpp/receiver_media_to_mojo_adapter.h"
 #include "services/video_capture/public/mojom/video_frame_handler.mojom.h"
 #include "services/video_effects/public/cpp/buildflags.h"
+
+#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
 #include "services/video_effects/public/mojom/video_effects_processor.mojom-forward.h"
+#endif
 
 #if BUILDFLAG(IS_WIN)
 #include "media/base/media_switches.h"
@@ -88,8 +91,10 @@ void ServiceVideoCaptureDeviceLauncher::LaunchDeviceAsync(
     base::OnceClosure connection_lost_cb,
     Callbacks* callbacks,
     base::OnceClosure done_cb,
+#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
     mojo::PendingRemote<video_effects::mojom::VideoEffectsProcessor>
         video_effects_processor,
+#endif
     mojo::PendingRemote<media::mojom::ReadonlyVideoEffectsManager>
         readonly_video_effects_manager) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

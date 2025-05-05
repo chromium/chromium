@@ -28,6 +28,7 @@
 #include "services/video_capture/public/mojom/producer.mojom.h"
 #include "services/video_capture/public/mojom/video_capture_service.mojom.h"
 #include "services/video_capture/public/mojom/video_frame_handler.mojom.h"
+#include "services/video_effects/public/cpp/buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -257,7 +258,11 @@ TEST_F(ServiceVideoCaptureProviderTest,
   device_launcher_1->LaunchDeviceAsync(
       kStubDeviceId, blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,
       kArbitraryParams, kNullReceiver, base::DoNothing(), &mock_callbacks,
-      wait_for_launch_1.QuitClosure(), {}, {});
+      wait_for_launch_1.QuitClosure(),
+#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
+      /*video_effects_processor=*/{},
+#endif
+      /*readonly_video_effects_manager=*/{});
   wait_for_connection_to_service_.Run();
   wait_for_launch_1.Run();
 
@@ -303,7 +308,11 @@ TEST_F(ServiceVideoCaptureProviderTest,
   device_launcher_2->LaunchDeviceAsync(
       kStubDeviceId, blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,
       kArbitraryParams, kNullReceiver, base::DoNothing(), &mock_callbacks,
-      wait_for_launch_2.QuitClosure(), {}, {});
+      wait_for_launch_2.QuitClosure(),
+#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
+      /*video_effects_processor=*/{},
+#endif
+      /*readonly_video_effects_manager=*/{});
   wait_for_launch_2.Run();
   device_launcher_2.reset();
   {

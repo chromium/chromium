@@ -21,6 +21,7 @@
 #include "services/video_capture/public/cpp/mock_video_source.h"
 #include "services/video_capture/public/cpp/mock_video_source_provider.h"
 #include "services/video_capture/public/mojom/video_frame_handler.mojom.h"
+#include "services/video_effects/public/cpp/buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -171,7 +172,11 @@ TEST_F(ServiceVideoCaptureDeviceLauncherTest, LaunchingDeviceSucceeds) {
   launcher_->LaunchDeviceAsync(
       kStubDeviceId, blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,
       kArbitraryParams, kNullReceiver, connection_lost_cb_.Get(),
-      &mock_callbacks_, done_cb_.Get(), {}, {});
+      &mock_callbacks_, done_cb_.Get(),
+#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
+      /*video_effects_processor=*/{},
+#endif
+      /*readonly_video_effects_manager=*/{});
   wait_for_done_cb.Run();
 
   launcher_.reset();
@@ -253,7 +258,11 @@ void ServiceVideoCaptureDeviceLauncherTest::RunLaunchingDeviceIsAbortedTest(
   launcher_->LaunchDeviceAsync(
       kStubDeviceId, blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,
       kArbitraryParams, kNullReceiver, connection_lost_cb_.Get(),
-      &mock_callbacks_, done_cb_.Get(), {}, {});
+      &mock_callbacks_, done_cb_.Get(),
+#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
+      /*video_effects_processor=*/{},
+#endif
+      /*readonly_video_effects_manager=*/{});
   step_1_run_loop.Run();
   launcher_->AbortLaunch();
 
@@ -319,7 +328,11 @@ TEST_F(ServiceVideoCaptureDeviceLauncherTest,
   launcher_->LaunchDeviceAsync(
       kStubDeviceId, blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,
       kArbitraryParams, kNullReceiver, connection_lost_cb_.Get(),
-      &mock_callbacks_, done_cb_.Get(), {}, {});
+      &mock_callbacks_, done_cb_.Get(),
+#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
+      /*video_effects_processor=*/{},
+#endif
+      /*readonly_video_effects_manager=*/{});
   run_loop.Run();
 }
 
@@ -341,7 +354,11 @@ TEST_F(ServiceVideoCaptureDeviceLauncherTest,
   launcher_->LaunchDeviceAsync(
       kStubDeviceId, blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,
       kArbitraryParams, kNullReceiver, connection_lost_cb_.Get(),
-      &mock_callbacks_, done_cb_.Get(), {}, {});
+      &mock_callbacks_, done_cb_.Get(),
+#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
+      /*video_effects_processor=*/{},
+#endif
+      /*readonly_video_effects_manager=*/{});
 
   run_loop.Run();
 }
@@ -383,7 +400,11 @@ TEST_F(ServiceVideoCaptureDeviceLauncherTest,
   launcher_->LaunchDeviceAsync(
       kStubDeviceId, blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,
       kArbitraryParams, kNullReceiver, connection_lost_cb_.Get(),
-      &mock_callbacks_, done_cb_.Get(), {}, {});
+      &mock_callbacks_, done_cb_.Get(),
+#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
+      /*video_effects_processor=*/{},
+#endif
+      /*readonly_video_effects_manager=*/{});
 
   run_loop.Run();
 
@@ -434,7 +455,11 @@ void ServiceVideoCaptureDeviceLauncherTest::
   launcher_->LaunchDeviceAsync(
       kStubDeviceId, blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,
       kArbitraryParams, kNullReceiver, connection_lost_cb_.Get(),
-      &mock_callbacks_, done_cb_.Get(), {}, {});
+      &mock_callbacks_, done_cb_.Get(),
+#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
+      /*video_effects_processor=*/{},
+#endif
+      /*readonly_video_effects_manager=*/{});
   step_1_run_loop.Run();
 
   base::RunLoop step_2_run_loop;

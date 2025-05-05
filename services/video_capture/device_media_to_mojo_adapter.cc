@@ -19,6 +19,7 @@
 #include "media/capture/video/video_frame_receiver_on_task_runner.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "services/video_capture/public/cpp/receiver_mojo_to_media_adapter.h"
+#include "services/video_effects/public/cpp/buildflags.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "media/capture/video/chromeos/scoped_video_capture_jpeg_decoder.h"
@@ -96,7 +97,11 @@ void DeviceMediaToMojoAdapter::Start(
   StartInternal(std::move(requested_settings),
                 std::move(video_frame_handler_pending_remote),
                 /*frame_handler=*/nullptr, /*start_in_process=*/false,
-                media::VideoEffectsContext({}, {}));
+                media::VideoEffectsContext(
+#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
+                    /*video_effects_processor=*/{},
+#endif
+                    /*readonly_manager_remote=*/{}));
 }
 
 void DeviceMediaToMojoAdapter::StartInProcess(
