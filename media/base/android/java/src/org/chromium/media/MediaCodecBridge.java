@@ -26,7 +26,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
 import java.nio.ByteBuffer;
-import java.util.LinkedList;
+import java.util.ArrayDeque;
 import java.util.Queue;
 
 /** A MediaCodec wrapper for adapting the API and catching exceptions. */
@@ -426,9 +426,9 @@ class MediaCodecBridge {
 
     private void enableAsyncApi() {
         mPendingError = false;
-        mPendingFormat = new LinkedList<MediaFormatWrapper>();
-        mPendingInputBuffers = new LinkedList<DequeueInputResult>();
-        mPendingOutputBuffers = new LinkedList<DequeueOutputResult>();
+        mPendingFormat = new ArrayDeque<MediaFormatWrapper>();
+        mPendingInputBuffers = new ArrayDeque<DequeueInputResult>();
+        mPendingOutputBuffers = new ArrayDeque<DequeueOutputResult>();
         mMediaCodec.setCallback(new MediaCodecCallback(this), sCallbackHandler);
     }
 
