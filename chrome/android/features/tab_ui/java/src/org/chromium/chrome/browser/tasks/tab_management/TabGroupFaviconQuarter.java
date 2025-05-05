@@ -21,7 +21,6 @@ import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import org.chromium.chrome.tab_ui.R;
-import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 
 import java.util.Arrays;
 
@@ -64,7 +63,7 @@ public class TabGroupFaviconQuarter extends FrameLayout {
         mImageView.setVisibility(View.VISIBLE);
         mImageView.setImageDrawable(image);
         hideText();
-        mBackground.setColor(SemanticColorUtils.getColorSurface(getContext()));
+        updateBackgroundColor(/* hasImage= */ true);
     }
 
     /** The displayed plus count is exclusive with the image. */
@@ -73,13 +72,13 @@ public class TabGroupFaviconQuarter extends FrameLayout {
         mTextView.setVisibility(View.VISIBLE);
         String text = getResources().getString(R.string.plus_hidden_tab_count, plusCount);
         mTextView.setText(text);
-        updateBackgroundColor(SemanticColorUtils.getColorSurfaceContainerLow(getContext()));
+        updateBackgroundColor(/* hasImage= */ false);
     }
 
     void clear() {
         hideImage();
         hideText();
-        updateBackgroundColor(SemanticColorUtils.getColorSurfaceContainerLow(getContext()));
+        updateBackgroundColor(/* hasImage= */ false);
     }
 
     private void hideImage() {
@@ -132,7 +131,9 @@ public class TabGroupFaviconQuarter extends FrameLayout {
         return radii;
     }
 
-    private void updateBackgroundColor(@ColorInt int color) {
+    private void updateBackgroundColor(boolean hasImage) {
+        @ColorInt
+        int color = TabUiThemeProvider.getTabGroupFaviconQuarterFillColor(getContext(), hasImage);
         mBackground.setColor(color);
     }
 }

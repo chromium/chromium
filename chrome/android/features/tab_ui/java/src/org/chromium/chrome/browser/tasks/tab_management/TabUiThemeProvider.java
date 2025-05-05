@@ -559,4 +559,18 @@ public class TabUiThemeProvider {
     public static @ColorInt int getTabBubbleFillColor(Context context) {
         return MaterialColors.getColor(context, R.attr.colorPrimary, TAG);
     }
+
+    /**
+     * Get the background fill color used for the tab group cluster quarter.
+     *
+     * @param context {@link Context} used to retrieve color.
+     * @param showFavicon Whether the quarter is showing a favicon.
+     * @return The color for the tab group favicon quarter.
+     */
+    public static @ColorInt int getTabGroupFaviconQuarterFillColor(
+            Context context, boolean showFavicon) {
+        return showFavicon
+                ? SemanticColorUtils.getColorSurfaceBright(context)
+                : SemanticColorUtils.getColorSurfaceContainerLow(context);
+    }
 }
