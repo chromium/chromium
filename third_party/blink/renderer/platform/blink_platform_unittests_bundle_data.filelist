@@ -41,6 +41,7 @@
 ../../web_tests/external/wpt/fonts/fail.woff
 ../../web_tests/external/wpt/fonts/hasubi-mono/HasubiMono-Regular.woff2
 ../../web_tests/external/wpt/fonts/math/axisheight5000-verticalarrow14000.woff
+../../web_tests/external/wpt/fonts/math/css-units.woff
 ../../web_tests/external/wpt/fonts/math/fraction-axisheight7000-rulethickness1000.woff
 ../../web_tests/external/wpt/fonts/math/fraction-denominatordisplaystylegapmin5000-rulethickness1000.woff
 ../../web_tests/external/wpt/fonts/math/fraction-denominatordisplaystyleshiftdown6000-axisheight1000-rulethickness1000.woff
