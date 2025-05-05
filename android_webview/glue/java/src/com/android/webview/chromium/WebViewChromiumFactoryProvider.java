@@ -124,6 +124,11 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
 
     private static final String CHROMIUM_PREFS_NAME = "WebViewChromiumPrefs";
     private static final String VERSION_CODE_PREF = "lastVersionCodeUsed";
+    private static final String WEBVIEW_CONTEXT_EXPERIMENT_PREF = "useWebViewResourceContext";
+    private static final String WEBVIEW_PARTITIONED_COOKIES_DEFAULT_STATE_PREF =
+            "defaultWebViewPartitionedCookiesState";
+    private static final String WEBVIEW_USE_STARTUP_TASKS_LOGIC_PREF =
+            "webViewUseStartupTasksLogic";
 
     private static final String SUPPORT_LIB_GLUE_AND_BOUNDARY_INTERFACE_PREFIX =
             "org.chromium.support_lib_";
@@ -134,6 +139,20 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
     // This is an ID hardcoded by WebLayer for resources stored in locale splits. See
     // WebLayerImpl.java for more info.
     private static final int SHARED_LIBRARY_MAX_ID = 36;
+
+    // Stores the value of the cached SharedPref denoting whether we should use WebView's own
+    // Context for querying resources.
+    private static boolean sUseWebViewContext;
+
+    // Stores the value of the cached SharedPref denoting what the default enablement state of
+    // partitioned cookies is.
+    private static boolean sPartitionedCookiesDefaultState;
+
+    // Stores the value of the cached SharedPref denoting whether we should run chromium startup
+    // using the startup tasks logic which runs the startup tasks asynchronously if startup is
+    // triggered from a background thread. Otherwise runs startup synchronously. Also caches any
+    // chromium startup exception and rethrows it if startup is retried without a restart.
+    private static boolean sWebViewUseStartupTasksLogic;
 
     /**
      * This holds objects of classes that are defined in P and above to ensure that run-time class
@@ -299,16 +318,43 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
         mWebViewDelegate.addWebViewAssetPath(ctx);
     }
 
+    void setWebViewContextExperimentValue(boolean enabled) {
+        if (enabled == sUseWebViewContext
+                || Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) return;
+        if (enabled) {
+            mWebViewPrefs.edit().putBoolean(WEBVIEW_CONTEXT_EXPERIMENT_PREF, true).apply();
+        } else {
+            mWebViewPrefs.edit().remove(WEBVIEW_CONTEXT_EXPERIMENT_PREF).apply();
+        }
+    }
+
+    void setWebViewDisableCHIPSExperimentValue(boolean isDisabled) {
+        if (isDisabled) {
+            mWebViewPrefs
+                    .edit()
+                    .putBoolean(WEBVIEW_PARTITIONED_COOKIES_DEFAULT_STATE_PREF, false)
+                    .apply();
+        } else {
+            mWebViewPrefs.edit().remove(WEBVIEW_PARTITIONED_COOKIES_DEFAULT_STATE_PREF).apply();
+        }
+    }
+
+    void setWebViewUseStartupTasksExperimentValue(boolean enabled) {
+        if (enabled) {
+            mWebViewPrefs.edit().putBoolean(WEBVIEW_USE_STARTUP_TASKS_LOGIC_PREF, true).apply();
+        } else {
+            mWebViewPrefs.edit().remove(WEBVIEW_USE_STARTUP_TASKS_LOGIC_PREF).apply();
+        }
+    }
+
     private boolean shouldEnableStartupTasksExperiment() {
         if (CommandLine.getInstance().hasSwitch(AwSwitches.WEBVIEW_USE_STARTUP_TASKS_LOGIC)) {
             return true;
         }
-        // TODO: Remove this once WebViewCachedFlags has landed (and seems safe).
         if (DisableStartupTasksSafeModeAction.isStartupTasksExperimentDisabled()) {
             return false;
         }
-        return WebViewCachedFlags.get()
-                .isCachedFeatureEnabled(AwFeatures.WEBVIEW_USE_STARTUP_TASKS_LOGIC);
+        return sWebViewUseStartupTasksLogic;
     }
 
     @SuppressWarnings({"NoContextGetApplicationContext", "DiscouragedApi"})
@@ -360,7 +406,15 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
                 // Since N, getSharedPreferences creates the preference dir if it doesn't exist,
                 // causing a disk write.
                 mWebViewPrefs = ctx.getSharedPreferences(CHROMIUM_PREFS_NAME, Context.MODE_PRIVATE);
-                WebViewCachedFlags.init(mWebViewPrefs);
+                // Read the experiment value and use it to determine which Context to use.
+                sUseWebViewContext =
+                        mWebViewPrefs.getBoolean(WEBVIEW_CONTEXT_EXPERIMENT_PREF, false);
+                // The same is done for partitioned cookies.
+                sPartitionedCookiesDefaultState =
+                        mWebViewPrefs.getBoolean(
+                                WEBVIEW_PARTITIONED_COOKIES_DEFAULT_STATE_PREF, true);
+                sWebViewUseStartupTasksLogic =
+                        mWebViewPrefs.getBoolean(WEBVIEW_USE_STARTUP_TASKS_LOGIC_PREF, false);
             }
 
             if (shouldEnableContextExperiment(ctx)) {
@@ -524,8 +578,7 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
 
             boolean partitionedCookies =
                     androidXConfig.getPartitionedCookiesEnabled() == null
-                            ? !WebViewCachedFlags.get()
-                                    .isCachedFeatureEnabled(AwFeatures.WEBVIEW_DISABLE_CHIPS)
+                            ? sPartitionedCookiesDefaultState
                             : androidXConfig.getPartitionedCookiesEnabled();
             // We use this to report the state of our partitioned override experiment if set.
             // Applying this after the override of the Android X API has potentially been set
@@ -984,8 +1037,7 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
             return true;
         }
 
-        return WebViewCachedFlags.get()
-                .isCachedFeatureEnabled(AwFeatures.WEBVIEW_SEPARATE_RESOURCE_CONTEXT);
+        return sUseWebViewContext;
     }
 
     // These values are persisted to logs. Entries should not be renumbered and
