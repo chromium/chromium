@@ -22,6 +22,7 @@ import android.content.res.Resources;
 
 import androidx.test.filters.SmallTest;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -54,6 +55,7 @@ import org.chromium.components.background_task_scheduler.TaskInfo;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
+import java.io.File;
 import java.util.HashSet;
 import java.util.List;
 
@@ -94,6 +96,15 @@ public class AuxiliarySearchProviderUnitTest {
         doReturn(mMockNormalTabModel).when(mTabModelSelector).getModel(false);
 
         BackgroundTaskSchedulerFactory.setSchedulerForTesting(mBackgroundTaskScheduler);
+    }
+
+    @After
+    public void tearDown() {
+        File tabDonateFile = AuxiliarySearchUtils.getTabDonateFile(mContext);
+        if (tabDonateFile.exists()) {
+            boolean deleteResult = tabDonateFile.delete();
+            assertTrue(deleteResult);
+        }
     }
 
     private Tab createTab(int index, long timestamp) {
