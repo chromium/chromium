@@ -1044,10 +1044,6 @@ bool MenuItem::ExtensionKey::operator<(const ExtensionKey& other) const {
   return extension_id < other.extension_id;
 }
 
-bool MenuItem::ExtensionKey::operator!=(const ExtensionKey& other) const {
-  return !(*this == other);
-}
-
 bool MenuItem::ExtensionKey::empty() const {
   return extension_id.empty() &&
       webview_embedder_process_id == ChildProcessHost::kInvalidUniqueID &&
@@ -1060,16 +1056,6 @@ MenuItem::Id::Id(bool incognito, const MenuItem::ExtensionKey& extension_key)
     : incognito(incognito), extension_key(extension_key), uid(0) {}
 
 MenuItem::Id::~Id() = default;
-
-bool MenuItem::Id::operator==(const Id& other) const {
-  return (incognito == other.incognito &&
-          extension_key == other.extension_key && uid == other.uid &&
-          string_uid == other.string_uid);
-}
-
-bool MenuItem::Id::operator!=(const Id& other) const {
-  return !(*this == other);
-}
 
 bool MenuItem::Id::operator<(const Id& other) const {
   return std::tie(incognito, extension_key, uid, string_uid) <

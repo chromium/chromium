@@ -74,7 +74,6 @@ class MenuItem {
                  int webview_instance_id);
 
     bool operator==(const ExtensionKey& other) const;
-    bool operator!=(const ExtensionKey& other) const;
     bool operator<(const ExtensionKey& other) const;
 
     bool empty() const;
@@ -89,8 +88,7 @@ class MenuItem {
     Id(bool incognito, const ExtensionKey& extension_key);
     ~Id();
 
-    bool operator==(const Id& other) const;
-    bool operator!=(const Id& other) const;
+    friend bool operator==(const Id&, const Id&) = default;
     bool operator<(const Id& other) const;
 
     bool incognito;
@@ -128,21 +126,14 @@ class MenuItem {
   // A list of Contexts for an item.
   class ContextList {
    public:
-    ContextList() : value_(0) {}
+    ContextList() = default;
     explicit ContextList(Context context) : value_(context) {}
-    ContextList(const ContextList& other) : value_(other.value_) {}
+    ContextList(const ContextList& other) = default;
 
-    void operator=(const ContextList& other) {
-      value_ = other.value_;
-    }
+    ContextList& operator=(const ContextList& other) = default;
 
-    bool operator==(const ContextList& other) const {
-      return value_ == other.value_;
-    }
-
-    bool operator!=(const ContextList& other) const {
-      return !(*this == other);
-    }
+    friend constexpr bool operator==(const ContextList&,
+                                     const ContextList&) = default;
 
     bool Contains(Context context) const {
       return (value_ & context) > 0;
@@ -164,7 +155,7 @@ class MenuItem {
     }
 
    private:
-    uint32_t value_;  // A bitmask of Context values.
+    uint32_t value_ = 0;  // A bitmask of Context values.
   };
 
   MenuItem(const Id& id,
