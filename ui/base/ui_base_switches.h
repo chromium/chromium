@@ -48,9 +48,6 @@ COMPONENT_EXPORT(UI_BASE) extern const char kTopChromeTouchUiEnabled[];
 COMPONENT_EXPORT(UI_BASE) extern const char kUIDisablePartialSwap[];
 COMPONENT_EXPORT(UI_BASE) extern const char kUseSystemClipboard[];
 
-// Headless related.
-COMPONENT_EXPORT(UI_BASE) extern const char kScreenInfo[];
-
 // Test related.
 COMPONENT_EXPORT(UI_BASE) extern const char kDisallowNonExactResourceReuse[];
 COMPONENT_EXPORT(UI_BASE) extern const char kMangleLocalizedStrings[];

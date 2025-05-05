@@ -15,7 +15,7 @@
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
-#include "ui/base/ui_base_switches.h"
+#include "ui/gfx/switches.h"
 #include "ui/views/widget/desktop_aura/desktop_screen.h"
 #include "ui/views/widget/desktop_aura/desktop_window_tree_host_win.h"
 #include "ui/views/win/hwnd_util.h"
