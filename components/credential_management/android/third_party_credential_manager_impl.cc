@@ -50,9 +50,9 @@ void ThirdPartyCredentialManagerImpl::Get(
                std::move(callback));
 }
 
-void ThirdPartyCredentialManagerImpl::ResetPendingRequest() {
-  // TODO(crbug.com/374710839): Implement.
-  NOTIMPLEMENTED();
+void ThirdPartyCredentialManagerImpl::ResetAfterDisconnecting() {
+  // There is currently nothing to do upon disconnecting for this implementation
+  // of CredentialManagerInterface.
 }
 
 }  // namespace credential_management

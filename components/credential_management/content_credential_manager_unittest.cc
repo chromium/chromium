@@ -31,7 +31,7 @@ class MockCredentialManagerImpl
                const std::vector<GURL>& federations,
                GetCallback callback),
               (override));
-  MOCK_METHOD(void, ResetPendingRequest, (), (override));
+  MOCK_METHOD(void, ResetAfterDisconnecting, (), (override));
 };
 
 // Tests ContentCredentialManager functionality.

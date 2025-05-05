@@ -153,7 +153,7 @@ void CredentialManagerImpl::Get(CredentialMediationRequirement mediation,
       include_passwords, federations, GetSynthesizedFormForOrigin());
 }
 
-void CredentialManagerImpl::ResetPendingRequest() {
+void CredentialManagerImpl::ResetAfterDisconnecting() {
   pending_request_.reset();
 }
 

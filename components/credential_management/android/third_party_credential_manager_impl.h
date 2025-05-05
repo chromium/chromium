@@ -33,6 +33,7 @@ class ThirdPartyCredentialManagerImpl
       const ThirdPartyCredentialManagerImpl&) = delete;
   ~ThirdPartyCredentialManagerImpl() override;
 
+  // CredentialManagerInterface:
   void Store(const password_manager::CredentialInfo& credential,
              StoreCallback callback) override;
   void PreventSilentAccess(PreventSilentAccessCallback callback) override;
@@ -40,8 +41,7 @@ class ThirdPartyCredentialManagerImpl
            bool include_passwords,
            const std::vector<GURL>& federations,
            GetCallback callback) override;
-
-  void ResetPendingRequest() override;
+  void ResetAfterDisconnecting() override;
 
  private:
   std::unique_ptr<CredentialManagerBridge> bridge_;

@@ -44,7 +44,7 @@ bool ContentCredentialManager::HasBinding() const {
 
 void ContentCredentialManager::DisconnectBinding() {
   receiver_.reset();
-  credential_manager_->ResetPendingRequest();
+  credential_manager_->ResetAfterDisconnecting();
 }
 
 void ContentCredentialManager::Store(

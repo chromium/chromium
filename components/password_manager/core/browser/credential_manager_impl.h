@@ -43,14 +43,14 @@ class CredentialManagerImpl
   CredentialManagerImpl& operator=(const CredentialManagerImpl&) = delete;
   ~CredentialManagerImpl() override;
 
+  // credential_management::CredentialManagerInterface:
   void Store(const CredentialInfo& credential, StoreCallback callback) override;
   void PreventSilentAccess(PreventSilentAccessCallback callback) override;
   void Get(CredentialMediationRequirement mediation,
            bool include_passwords,
            const std::vector<GURL>& federations,
            GetCallback callback) override;
-
-  void ResetPendingRequest() override;
+  void ResetAfterDisconnecting() override;
 
   // CredentialManagerPendingRequestTaskDelegate:
   // Exposed publicly for testing.
