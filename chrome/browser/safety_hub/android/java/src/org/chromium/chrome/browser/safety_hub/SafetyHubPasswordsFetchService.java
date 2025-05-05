@@ -91,7 +91,7 @@ public class SafetyHubPasswordsFetchService {
      * also triggers several calls to GMSCore to fetch the compromised, weak and reuse password
      * counts.
      *
-     * <p>The password checkup has a holdback period of one hour. In other words, if the client has
+     * <p>The password checkup has a cool down period of one hour. In other words, if the client has
      * made a password checkup call to GMSCore for this account in the last hour, then it assumes
      * the results are still fresh and they can be reused.
      *
@@ -101,7 +101,7 @@ public class SafetyHubPasswordsFetchService {
      * counts.
      *
      * @return {@code true} if the checkup will be performed by GMSCore. Otherwise, returns {@code
-     *     false}, e.g. when the last checkup results are within the holdback period.
+     *     false}, e.g. when the last checkup results are within the cool down period.
      */
     public boolean runPasswordCheckup(Callback<Boolean> onFinishedCallback) {
         if (!canPerformFetch()) {
@@ -110,9 +110,9 @@ public class SafetyHubPasswordsFetchService {
             return false;
         }
 
-        boolean inHoldbackPeriod = getTimeSinceLastCheckupInMs() <= CHECKUP_COOL_DOWN_PERIOD_IN_MS;
+        boolean inCoolDownPeriod = getTimeSinceLastCheckupInMs() <= CHECKUP_COOL_DOWN_PERIOD_IN_MS;
 
-        if (inHoldbackPeriod) {
+        if (inCoolDownPeriod) {
             onFinishedCallback.onResult(/* errorOccurred */ false);
             return false;
         }

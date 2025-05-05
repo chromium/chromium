@@ -90,7 +90,7 @@ public class SafetyHubLocalPasswordsDataSource
      * Attempts to trigger a password check in the background.
      *
      * @return {@code true} if the checkup will be performed. Otherwise, returns {@code false}, e.g.
-     *     when the last checkup results are within the holdback period.
+     *     when the last checkup results are within the cool down period.
      */
     public boolean maybeTriggerPasswordCheckup() {
         // After triggering the checkup, this data source will be notified of

@@ -236,7 +236,7 @@ public class SafetyHubFetchService implements SigninManager.SignInStateObserver,
      * returned.
      *
      * @return {@code true} if the checkup will be performed by GMSCore. Otherwise, returns {@code
-     *     false}, e.g. when the last checkup results are within the holdback period.
+     *     false}, e.g. when the last checkup results are within the cool down period.
      */
     public boolean runLocalPasswordCheckup() {
         if (!ChromeFeatureList.isEnabled(ChromeFeatureList.SAFETY_HUB_LOCAL_PASSWORDS_MODULE)) {
