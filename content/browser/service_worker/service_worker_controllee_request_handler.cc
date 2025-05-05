@@ -269,7 +269,8 @@ void ServiceWorkerControlleeRequestHandler::ContinueWithRegistration(
           registration->scope(),
           service_worker_security_utils::site_for_cookies(
               service_worker_client_->key()),
-          service_worker_client_->top_frame_origin(), /*script_url=*/GURL(),
+          service_worker_client_->top_frame_origin(),
+          service_worker_client_->key(), /*script_url=*/GURL(),
           context_->wrapper()->browser_context());
 
   service_worker_accessed_callback_.Run(registration->scope(),

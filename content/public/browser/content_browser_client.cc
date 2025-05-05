@@ -452,6 +452,7 @@ AllowServiceWorkerResult ContentBrowserClient::AllowServiceWorker(
     const GURL& scope,
     const net::SiteForCookies& site_for_cookies,
     const std::optional<url::Origin>& top_frame_origin,
+    const blink::StorageKey& storage_key,
     const GURL& script_url,
     BrowserContext* context) {
   return AllowServiceWorkerResult::Yes();
@@ -543,6 +544,7 @@ void ContentBrowserClient::AllowWorkerFileSystem(
     const GURL& url,
     BrowserContext* browser_context,
     const std::vector<GlobalRenderFrameHostId>& render_frames,
+    const blink::StorageKey& storage_key,
     base::OnceCallback<void(bool)> callback) {
   std::move(callback).Run(true);
 }
@@ -550,21 +552,24 @@ void ContentBrowserClient::AllowWorkerFileSystem(
 bool ContentBrowserClient::AllowWorkerIndexedDB(
     const GURL& url,
     BrowserContext* browser_context,
-    const std::vector<GlobalRenderFrameHostId>& render_frames) {
+    const std::vector<GlobalRenderFrameHostId>& render_frames,
+    const blink::StorageKey& storage_key) {
   return true;
 }
 
 bool ContentBrowserClient::AllowWorkerCacheStorage(
     const GURL& url,
     BrowserContext* browser_context,
-    const std::vector<GlobalRenderFrameHostId>& render_frames) {
+    const std::vector<GlobalRenderFrameHostId>& render_frames,
+    const blink::StorageKey& storage_key) {
   return true;
 }
 
 bool ContentBrowserClient::AllowWorkerWebLocks(
     const GURL& url,
     BrowserContext* browser_context,
-    const std::vector<GlobalRenderFrameHostId>& render_frames) {
+    const std::vector<GlobalRenderFrameHostId>& render_frames,
+    const blink::StorageKey& storage_key) {
   return true;
 }
 

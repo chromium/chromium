@@ -2947,7 +2947,7 @@ bool ServiceWorkerVersion::IsStartWorkerAllowed() const {
   // tab, pass a null callback as WebContents getter.
   if (!GetContentClient()->browser()->AllowServiceWorker(
           scope_, net::SiteForCookies::FromUrl(scope_),
-          url::Origin::Create(scope_), script_url_, browser_context)) {
+          url::Origin::Create(scope_), key_, script_url_, browser_context)) {
     return false;
   }
 
