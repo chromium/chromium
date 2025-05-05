@@ -688,11 +688,14 @@ int HashMgr::load_tables(const char* tpath, const char* key) {
 
   int tablesize = atoi(ts.c_str());
 
-  int nExtra = 5 + USERWORD;
+  const int nExtra = 5 + USERWORD;
+#if !defined(FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION)
+  const int max_allowed = (std::numeric_limits<int>::max() - 1 - nExtra) / int(sizeof(struct hentry*));
+#else
+  const int max_allowed = (268435456 - 1 - nExtra) / int(sizeof(struct hentry*));
+#endif
 
-  if (tablesize <= 0 ||
-      (tablesize >= (std::numeric_limits<int>::max() - 1 - nExtra) /
-                        int(sizeof(struct hentry*)))) {
+  if (tablesize <= 0 || tablesize >= max_allowed) {
     HUNSPELL_WARNING(
         stderr, "error: line 1: missing or bad word count in the dic file\n");
     delete dict;
@@ -1169,8 +1172,8 @@ bool HashMgr::parse_aliasf(const std::string& line, FileMgr* af) {
                            af->getlinenum());
           return false;
         }
-        aliasf.reserve(numaliasf);
-        aliasflen.reserve(numaliasf);
+        aliasf.reserve(std::min(numaliasf, 16384));
+        aliasflen.reserve(std::min(numaliasf, 16384));
         np++;
         break;
       }
@@ -1405,7 +1408,7 @@ bool HashMgr::parse_aliasm(const std::string& line, FileMgr* af) {
                            af->getlinenum());
           return false;
         }
-        aliasm.reserve(numaliasm);
+        aliasm.reserve(std::min(numaliasm, 16384));
         np++;
         break;
       }
@@ -1513,7 +1516,7 @@ bool HashMgr::parse_reptable(const std::string& line, FileMgr* af) {
                            af->getlinenum());
           return false;
         }
-        reptable.reserve(numrep);
+        reptable.reserve(std::min(numrep, 16384));
         np++;
         break;
       }

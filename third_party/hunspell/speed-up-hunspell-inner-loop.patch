@@ -1,5 +1,5 @@
 diff --git a/src/hunspell/affixmgr.cxx b/src/hunspell/affixmgr.cxx
-index 32cfb51..faa73a6 100644
+index 794cf5a..16581a1 100644
 --- a/src/hunspell/affixmgr.cxx
 +++ b/src/hunspell/affixmgr.cxx
 @@ -75,6 +75,7 @@
@@ -7,10 +7,10 @@ index 32cfb51..faa73a6 100644
  
  #include <algorithm>
 +#include <chrono>
+ #include <memory>
  #include <limits>
  #include <string>
- #include <vector>
-@@ -1598,17 +1599,20 @@ struct hentry* AffixMgr::compound_check(const std::string& word,
+@@ -1603,17 +1604,20 @@ struct hentry* AffixMgr::compound_check(const std::string& word,
    // add a time limit to handle possible
    // combinatorical explosion of the overlapping words
  
@@ -39,7 +39,7 @@ index 32cfb51..faa73a6 100644
  
    setcminmax(&cmin, &cmax, word.c_str(), len);
  
-@@ -1634,7 +1638,7 @@ struct hentry* AffixMgr::compound_check(const std::string& word,
+@@ -1639,7 +1643,7 @@ struct hentry* AffixMgr::compound_check(const std::string& word,
  
        do {  // simplified checkcompoundpattern loop
  
@@ -48,7 +48,7 @@ index 32cfb51..faa73a6 100644
            return 0;
  
          if (scpd > 0) {
-@@ -2208,17 +2212,20 @@ int AffixMgr::compound_check_morph(const char* word,
+@@ -2213,17 +2217,20 @@ int AffixMgr::compound_check_morph(const std::string& word,
    // add a time limit to handle possible
    // combinatorical explosion of the overlapping words
  
@@ -75,9 +75,9 @@ index 32cfb51..faa73a6 100644
 +            > TIMELIMIT * CLOCKS_PER_SEC * 1000)
 +      timelimit_exceeded = true;
  
-   setcminmax(&cmin, &cmax, word, len);
+   setcminmax(&cmin, &cmax, word.c_str(), len);
  
-@@ -2238,7 +2245,7 @@ int AffixMgr::compound_check_morph(const char* word,
+@@ -2243,7 +2250,7 @@ int AffixMgr::compound_check_morph(const std::string& word,
  
      do {  // onlycpdrule loop
  

@@ -224,7 +224,10 @@ SuggestMgr::SuggestMgr(const std::string& tryme, unsigned int maxn, AffixMgr* ap
 
   if (!ckey.empty()) {
     if (utf8) {
-      ckeyl = u8_u16(ckey_utf, ckey);
+      int len = u8_u16(ckey_utf, ckey);
+      if (len != -1) {
+        ckeyl = len;
+      }
     } else {
       ckeyl = ckey.size();
     }
@@ -233,7 +236,10 @@ SuggestMgr::SuggestMgr(const std::string& tryme, unsigned int maxn, AffixMgr* ap
   ctry = tryme;
   if (!ctry.empty()) {
     if (utf8) {
-      ctryl = u8_u16(ctry_utf, ctry);
+      int len = u8_u16(ctry_utf, ctry);
+      if (len != -1) {
+        ctryl = len;
+      }
     } else {
       ctryl = ctry.size();
     }
