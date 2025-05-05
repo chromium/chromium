@@ -114,7 +114,6 @@ class PLATFORM_EXPORT StaticBitmapImage : public Image {
 
   virtual gfx::Size GetSize() const = 0;
   virtual SkAlphaType GetAlphaType() const = 0;
-  virtual sk_sp<SkColorSpace> GetSkColorSpace() const = 0;
   virtual gfx::ColorSpace GetColorSpace() const = 0;
   virtual viz::SharedImageFormat GetSharedImageFormat() const = 0;
 
