@@ -1513,7 +1513,7 @@ bool GpuServiceImpl::IsGMBNV12Supported() {
       client_id, gpu::kNullSurfaceHandle);
 
   // Destroy the gmb_handle since it will be no longer needed.
-  gpu_channel_manager_->DestroyGpuMemoryBuffer(gmb_id, client_id);
+  gpu_memory_buffer_factory_->DestroyGpuMemoryBuffer(gmb_id, client_id);
   return !gmb_handle.is_null();
 }
 #endif
