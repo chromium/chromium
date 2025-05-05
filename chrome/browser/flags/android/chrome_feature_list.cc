@@ -217,6 +217,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kAsyncNotificationManagerForDownload,
     &kAuxiliarySearchDonation,
     &kBackgroundThreadPool,
+    &kBatchTabRestore,
     &kBlockIntentsWhileLocked,
     &kBookmarkPaneAndroid,
     &kBottomBrowserControlsRefactor,
@@ -628,6 +629,10 @@ BASE_FEATURE(kTinkerTankBottomSheet,
 
 BASE_FEATURE(kBackgroundThreadPool,
              "BackgroundThreadPool",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kBatchTabRestore,
+             "BatchTabRestore",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kBlockIntentsWhileLocked,

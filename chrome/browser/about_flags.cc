@@ -10808,6 +10808,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kBookmarkPaneAndroidDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kBookmarkPaneAndroid)},
 
+    {"batch-tab-restore", flag_descriptions::kBatchTabRestoreName,
+     flag_descriptions::kBatchTabRestoreDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kBatchTabRestore)},
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
     {"data-sharing-debug-logs", flag_descriptions::kDataSharingDebugLogsName,

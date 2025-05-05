@@ -341,7 +341,7 @@ public class TabPersistentStore {
     private final Deque<TabRestoreDetails> mTabsToRestore;
     private final Set<Integer> mTabIdsToRestore;
 
-    private TabLoader mTabLoader;
+    private TabBatchLoader mTabBatchLoader;
     private SaveTabTask mSaveTabTask;
     private MigrateTabTask mMigrateTabTask;
 
@@ -693,7 +693,7 @@ public class TabPersistentStore {
         }
 
         // Restore the tabs from the second activity asynchronously.
-        loadNextTab();
+        loadNextTabs();
     }
 
     /**
@@ -718,7 +718,7 @@ public class TabPersistentStore {
                 }
             }
         }
-        loadNextTab();
+        loadNextTabs();
     }
 
     /**
@@ -737,15 +737,14 @@ public class TabPersistentStore {
         restoreTabStateInternal(null, id);
     }
 
-    private void restoreTabStateInternal(String url, int id) {
+    private void restoreTabStateInternal(@Nullable String url, int id) {
         TabRestoreDetails tabToRestore = null;
-        if (mTabLoader != null) {
-            if ((url == null && mTabLoader.mTabToRestore.id == id)
-                    || (url != null && TextUtils.equals(mTabLoader.mTabToRestore.url, url))) {
-                // Steal the task of restoring the tab from the active load tab task.
-                mTabLoader.cancel(false);
-                tabToRestore = mTabLoader.mTabToRestore;
-                loadNextTab(); // Queue up async task to load next tab after we're done here.
+        if (mTabBatchLoader != null) {
+            // Steal the task of restoring the tab from the active load tab task.
+            tabToRestore = mTabBatchLoader.getTabByUrlOrId(url, id);
+            if (tabToRestore != null) {
+                // Exclude restoring `tabToRestore` since it will get restored now.
+                restartBatch(tabToRestore.id);
             }
         }
 
@@ -1060,10 +1059,13 @@ public class TabPersistentStore {
         mTabsToRestore.remove(getTabToRestoreById(tab.getId()));
         mTabsToMigrate.remove(tab);
 
-        if (mTabLoader != null && mTabLoader.mTabToRestore.id == tab.getId()) {
-            mTabLoader.cancel(false);
-            mTabLoader = null;
-            loadNextTab();
+        if (mTabBatchLoader != null) {
+            // If the tab is in the restoring batch drop it from the batch and restart the batch.
+            TabRestoreDetails tabRestoreDetailsToDrop =
+                    mTabBatchLoader.getTabByUrlOrId(null, tab.getId());
+            if (tabRestoreDetailsToDrop != null) {
+                restartBatch(tabRestoreDetailsToDrop.id);
+            }
         }
 
         if (mSaveTabTask != null && mSaveTabTask.mId == tab.getId()) {
@@ -1114,7 +1116,10 @@ public class TabPersistentStore {
             mTabRegistrationObserver.destroy();
         }
         mPersistencePolicy.destroy();
-        if (mTabLoader != null) mTabLoader.cancel(true);
+        if (mTabBatchLoader != null) {
+            mTabBatchLoader.cancel(true);
+            mTabBatchLoader = null;
+        }
         mTabsToSave.clear();
         mTabsToRestore.clear();
         if (mSaveTabTask != null) mSaveTabTask.cancel(false);
@@ -1132,7 +1137,7 @@ public class TabPersistentStore {
 
         // The metadata file may be being written out before all of the Tabs have been restored.
         // Save that information out, as well.
-        if (mTabLoader != null) tabsToRestore.add(mTabLoader.mTabToRestore);
+        if (mTabBatchLoader != null) tabsToRestore.addAll(mTabBatchLoader.getTabsInBatch());
         for (TabRestoreDetails details : mTabsToRestore) {
             tabsToRestore.add(details);
         }
@@ -1807,7 +1812,7 @@ public class TabPersistentStore {
         }
     }
 
-    private void loadNextTab() {
+    private void loadNextTabs() {
         if (mDestroyed) return;
 
         if (mTabsToRestore.isEmpty()) {
@@ -1842,7 +1847,7 @@ public class TabPersistentStore {
             recordUniqueTabUrlMetrics();
             cleanUpPersistentData();
             onStateLoaded();
-            mTabLoader = null;
+            mTabBatchLoader = null;
             Log.d(
                     TAG,
                     "Loaded tab lists; counts: "
@@ -1857,9 +1862,17 @@ public class TabPersistentStore {
                 saveState();
             }
         } else {
-            TabRestoreDetails tabToRestore = mTabsToRestore.removeFirst();
-            mTabLoader = new TabLoader(tabToRestore);
-            mTabLoader.load();
+            LinkedList<TabRestoreDetails> details = new LinkedList<>();
+            if (ChromeFeatureList.sBatchTabRestore.isEnabled()) {
+                int batchSize = ChromeFeatureList.sBatchTabRestoreBatchSize.getValue();
+                for (int i = 0; i < batchSize && !mTabsToRestore.isEmpty(); i++) {
+                    details.add(mTabsToRestore.removeFirst());
+                }
+            } else {
+                details.add(mTabsToRestore.removeFirst());
+            }
+            mTabBatchLoader = new TabBatchLoader(details);
+            mTabBatchLoader.load();
         }
     }
 
@@ -1911,28 +1924,73 @@ public class TabPersistentStore {
      * Manages loading of {@link TabState}. Also used to track if a load is in progress and the tab
      * details of that load. TODO(b/298058408) deprecate TabLoader
      */
-    private class TabLoader {
-        public final TabRestoreDetails mTabToRestore;
-        private LoadTabTask mLoadTabTask;
+    private class TabBatchLoader {
+        private final LinkedList<TabRestoreDetails> mBatchedTabsToRestore;
+        private LoadTabsTask mLoadTabsTask;
 
         /**
-         * @param tabToRestore details of {@link Tab} which will be read from storage
+         * @param tabsToRestore details of {@link Tab}s which will be read from storage
          */
-        TabLoader(TabRestoreDetails tabToRestore) {
-            mTabToRestore = tabToRestore;
+        TabBatchLoader(LinkedList<TabRestoreDetails> tabsToRestore) {
+            mBatchedTabsToRestore = tabsToRestore;
         }
 
-        /** Load {@link TabState} */
+        /** Returns the list of tab to be processed in this batch. */
+        public List<TabRestoreDetails> getTabsInBatch() {
+            return mBatchedTabsToRestore;
+        }
+
+        /** Loads {@link TabState} for the batch. */
         public void load() {
-            mLoadTabTask = new LoadTabTask(mTabToRestore);
-            mLoadTabTask.executeOnTaskRunner(mSequencedTaskRunner);
+            mLoadTabsTask = new LoadTabsTask(mBatchedTabsToRestore);
+            mLoadTabsTask.executeOnTaskRunner(mSequencedTaskRunner);
         }
 
+        /** Cancels restoring the batch of tabs. */
         public void cancel(boolean mayInterruptIfRunning) {
-            if (mLoadTabTask != null) {
-                mLoadTabTask.cancel(mayInterruptIfRunning);
+            if (mLoadTabsTask != null) {
+                mLoadTabsTask.cancel(mayInterruptIfRunning);
             }
         }
+
+        /**
+         * Gets the first tab that matches the id or url from the batch.
+         *
+         * @param url The URL of the tab to try to remove, may be null.
+         * @param id The id of the tab to try and remove.
+         * @return The matching tab's {@link TabRestoreDetails} or null if not found.
+         */
+        public @Nullable TabRestoreDetails getTabByUrlOrId(@Nullable String url, int id) {
+            for (int i = 0; i < mBatchedTabsToRestore.size(); i++) {
+                TabRestoreDetails details = mBatchedTabsToRestore.get(i);
+                if ((url == null && details.id == id)
+                        || (url != null && TextUtils.equals(details.url, url))) {
+                    return details;
+                }
+            }
+            return null;
+        }
+
+        /**
+         * Restore the remaining tabs in the batch to the front of the queue to be processed again.
+         *
+         * @param excludedId The id of a tab to not restore. Use {@link Tab.INVALID_TAB_ID} if not
+         *     applicable.
+         */
+        public void restoreTabsToQueue(int excludedId) {
+            for (int i = mBatchedTabsToRestore.size() - 1; i >= 0; i--) {
+                TabRestoreDetails details = mBatchedTabsToRestore.get(i);
+                if (details.id == excludedId) continue;
+                mTabsToRestore.addFirst(details);
+            }
+        }
+    }
+
+    private void restartBatch(int excludedId) {
+        mTabBatchLoader.cancel(false);
+        mTabBatchLoader.restoreTabsToQueue(excludedId);
+        mTabBatchLoader = null;
+        loadNextTabs(); // Queue up async task to load next tabs after we're done here.
     }
 
     /** Asynchronously triggers a cleanup of any unused persistent data. */
@@ -2047,22 +2105,33 @@ public class TabPersistentStore {
         }
     }
 
-    private class LoadTabTask extends AsyncTask<TabState> {
-        private final TabRestoreDetails mTabToRestore;
-        private TabState mTabState;
+    private class LoadTabsTask extends AsyncTask<List<TabState>> {
+        private final List<TabRestoreDetails> mBatchedTabsToRestore;
+        private final int mId;
+        private List<TabState> mTabStates;
 
-        public LoadTabTask(TabRestoreDetails tabToRestore) {
-            mTabToRestore = tabToRestore;
-            TraceEvent.startAsync("LoadTabTask", mTabToRestore.id);
-            TraceEvent.startAsync("LoadTabState", mTabToRestore.id);
+        public LoadTabsTask(List<TabRestoreDetails> tabsToRestore) {
+            mBatchedTabsToRestore = tabsToRestore;
+            mId = tabsToRestore.get(0).id;
+            TraceEvent.startAsync("LoadTabTask", mId);
+            TraceEvent.startAsync("LoadTabState", mId);
         }
 
         @Override
-        protected TabState doInBackground() {
+        protected List<TabState> doInBackground() {
             if (mDestroyed || isCancelled()) return null;
+
+            List<TabState> tabStates = new ArrayList<>(mBatchedTabsToRestore.size());
+            for (TabRestoreDetails details : mBatchedTabsToRestore) {
+                tabStates.add(restoreTabState(details));
+            }
+            return tabStates;
+        }
+
+        private @Nullable TabState restoreTabState(TabRestoreDetails details) {
             try {
                 return TabStateFileManager.restoreTabState(
-                        getStateDirectory(), mTabToRestore.id, mCipherFactory);
+                        getStateDirectory(), details.id, mCipherFactory);
             } catch (Exception e) {
                 Log.w(TAG, "Unable to read state: " + e);
                 return null;
@@ -2070,29 +2139,35 @@ public class TabPersistentStore {
         }
 
         @Override
-        protected void onPostExecute(TabState tabState) {
-            TraceEvent.finishAsync("LoadTabState", mTabToRestore.id);
-            mTabState = tabState;
+        protected void onPostExecute(List<TabState> tabStates) {
+            TraceEvent.finishAsync("LoadTabState", mId);
+            mTabStates = tabStates;
 
-            TraceEvent.finishAsync("LoadTabTask", mTabToRestore.id);
+            TraceEvent.finishAsync("LoadTabTask", mId);
             if (mDestroyed || isCancelled()) {
                 return;
             }
 
-            completeLoad(mTabToRestore, mTabState);
+            completeLoad(mBatchedTabsToRestore, mTabStates);
         }
     }
 
-    private void completeLoad(TabRestoreDetails tabToRestore, TabState tabState) {
-        boolean isIncognito = isIncognitoTabBeingRestored(tabToRestore, tabState);
-        boolean isLoadCancelled =
-                (isIncognito && mCancelIncognitoTabLoads)
-                        || (!isIncognito && mCancelNormalTabLoads);
-        if (!isLoadCancelled) {
-            restoreTab(tabToRestore, tabState, false);
+    private void completeLoad(List<TabRestoreDetails> tabsToRestore, List<TabState> tabStates) {
+        assert tabsToRestore.size() == tabStates.size();
+        for (int i = 0; i < tabsToRestore.size(); i++) {
+            TabRestoreDetails tabToRestore = tabsToRestore.get(i);
+            TabState tabState = tabStates.get(i);
+
+            boolean isIncognito = isIncognitoTabBeingRestored(tabToRestore, tabState);
+            boolean isLoadCancelled =
+                    (isIncognito && mCancelIncognitoTabLoads)
+                            || (!isIncognito && mCancelNormalTabLoads);
+            if (!isLoadCancelled) {
+                restoreTab(tabToRestore, tabState, false);
+            }
         }
 
-        loadNextTab();
+        loadNextTabs();
     }
 
     /** Provides additional meta data to restore an individual tab. */

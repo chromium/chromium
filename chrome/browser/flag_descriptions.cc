@@ -4550,6 +4550,10 @@ const char kBackgroundNotPerceptibleBindingDescription[] =
     "If enabled, not perceptible binding put processes to the background cpu "
     "cgroup";
 
+const char kBatchTabRestoreName[] = "Batch tab restore";
+const char kBatchTabRestoreDescription[] =
+    "Batch tab restore to improve startup performance.";
+
 const char kBoardingPassDetectorName[] = "Boarding Pass Detector";
 const char kBoardingPassDetectorDescription[] = "Enable Boarding Pass Detector";
 

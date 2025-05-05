@@ -970,6 +970,11 @@
     "expiry_milestone": 132
   },
   {
+    "name": "batch-tab-restore",
+    "owners": [ "ckitagawa@google.com", "clank-tab-dev@google.com" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "batch-upload-desktop",
     "owners": ["rsult@google.com", "chrome-signin-team@google.com"],
     "expiry_milestone": 134

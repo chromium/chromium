@@ -3088,6 +3088,21 @@
             ]
         }
     ],
+    "BatchTabRestore": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "BatchTabRestore"
+                    ]
+                }
+            ]
+        }
+    ],
     "BatteryBadgeIconEnabled": [
         {
             "platforms": [

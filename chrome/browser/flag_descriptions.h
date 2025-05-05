@@ -2655,6 +2655,9 @@ extern const char kAppSpecificHistoryDescription[];
 extern const char kBackgroundNotPerceptibleBindingName[];
 extern const char kBackgroundNotPerceptibleBindingDescription[];
 
+extern const char kBatchTabRestoreName[];
+extern const char kBatchTabRestoreDescription[];
+
 extern const char kBoardingPassDetectorName[];
 extern const char kBoardingPassDetectorDescription[];
 

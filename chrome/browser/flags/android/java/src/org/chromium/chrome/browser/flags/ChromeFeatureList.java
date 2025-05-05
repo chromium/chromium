@@ -249,6 +249,7 @@ public abstract class ChromeFeatureList {
     public static final String BACKGROUND_THREAD_POOL = "BackgroundThreadPool";
     public static final String BACK_FORWARD_CACHE = "BackForwardCache";
     public static final String BACK_FORWARD_TRANSITIONS = "BackForwardTransitions";
+    public static final String BATCH_TAB_RESTORE = "BatchTabRestore";
     public static final String BCIV_BOTTOM_CONTROLS = "AndroidBcivBottomControls";
     public static final String BIOMETRIC_AUTH_IDENTITY_CHECK = "BiometricAuthIdentityCheck";
     public static final String BLOCK_INTENTS_WHILE_LOCKED = "BlockIntentsWhileLocked";
@@ -649,6 +650,9 @@ public abstract class ChromeFeatureList {
             newCachedFlag(ASYNC_NOTIFICATION_MANAGER, false, true);
     public static final CachedFlag sAsyncNotificationManagerForDownload =
             newCachedFlag(ASYNC_NOTIFICATION_MANAGER_FOR_DOWNLOAD, false, true);
+    public static final CachedFlag sBatchTabRestore =
+            newCachedFlag(
+                    BATCH_TAB_RESTORE, /* defaultValue= */ false, /* defaultValueInTests= */ true);
     public static final CachedFlag sBlockIntentsWhileLocked =
             newCachedFlag(BLOCK_INTENTS_WHILE_LOCKED, false);
     public static final CachedFlag sBookmarkPaneAndroid =
@@ -873,6 +877,7 @@ public abstract class ChromeFeatureList {
                     sAndroidWindowPopupLargeScreen,
                     sAppSpecificHistory,
                     sAsyncNotificationManager,
+                    sBatchTabRestore,
                     sBlockIntentsWhileLocked,
                     sBookmarkPaneAndroid,
                     sCacheIsMultiInstanceApi31Enabled,
@@ -1114,6 +1119,9 @@ public abstract class ChromeFeatureList {
 
     public static final BooleanCachedFeatureParam sAndroidBottomToolbarDefaultToTop =
             newBooleanCachedFeatureParam(ANDROID_BOTTOM_TOOLBAR, "default_to_top", true);
+
+    public static final IntCachedFeatureParam sBatchTabRestoreBatchSize =
+            newIntCachedFeatureParam(BATCH_TAB_RESTORE, "batch_tab_restore_batch_size", 5);
 
     public static final IntCachedFeatureParam sCctAuthTabEnableHttpsRedirectsVerificationTimeoutMs =
             newIntCachedFeatureParam(
@@ -1408,6 +1416,7 @@ public abstract class ChromeFeatureList {
                     sAndroidAppIntegrationWithFaviconZeroStateFaviconNumber,
                     sAndroidBottomToolbarDefaultToTop,
                     sAndroidThemeModuleForceDependencies,
+                    sBatchTabRestoreBatchSize,
                     sCctAdaptiveButtonEnableOpenInBrowser,
                     sCctAdaptiveButtonEnableVoice,
                     sCctAuthTabEnableHttpsRedirectsVerificationTimeoutMs,
