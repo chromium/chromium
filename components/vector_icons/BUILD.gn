@@ -200,6 +200,8 @@ if (current_toolchain == default_toolchain) {
       "reload_chrome_refresh.icon",
       "replay.icon",
       "replay_10.icon",
+      "router.icon",
+      "router_off.icon",
       "save_cloud.icon",
       "science.icon",
       "screen_share.icon",

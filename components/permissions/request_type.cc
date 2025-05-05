@@ -99,8 +99,7 @@ const gfx::VectorIcon& GetIconIdDesktop(RequestType type) {
     case RequestType::kLocalFonts:
       return vector_icons::kFontDownloadChromeRefreshIcon;
     case RequestType::kLocalNetworkAccess:
-      // TODO(crbug.com/400455013): Replace with final icon.
-      return vector_icons::kDevicesIcon;
+      return vector_icons::kRouterIcon;
     case RequestType::kMicStream:
       return vector_icons::kMicChromeRefreshIcon;
     case RequestType::kMidiSysex:
@@ -162,8 +161,7 @@ const gfx::VectorIcon& GetBlockedIconIdDesktop(RequestType type) {
     case RequestType::kIdleDetection:
       return vector_icons::kDevicesOffIcon;
     case RequestType::kLocalNetworkAccess:
-      // TODO(crbug.com/400455013): Replace with final icon.
-      return vector_icons::kDevicesOffIcon;
+      return vector_icons::kRouterOffIcon;
     case RequestType::kMicStream:
       return vector_icons::kMicOffChromeRefreshIcon;
     case RequestType::kMidiSysex:

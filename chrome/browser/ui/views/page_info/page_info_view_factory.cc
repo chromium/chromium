@@ -445,8 +445,8 @@ const ui::ImageModel PageInfoViewFactory::GetPermissionIcon(
       break;
     case ContentSettingsType::LOCAL_NETWORK_ACCESS:
       // TODO(crbug.com/400455013): Replace with final icons.
-      icon = show_blocked_badge ? &vector_icons::kDevicesOffIcon
-                                : &vector_icons::kDevicesIcon;
+      icon = show_blocked_badge ? &vector_icons::kRouterOffIcon
+                                : &vector_icons::kRouterIcon;
       break;
     default:
       break;
