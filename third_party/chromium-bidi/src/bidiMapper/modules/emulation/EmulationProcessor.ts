@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-import {InvalidArgumentException} from '../../../protocol/ErrorResponse';
+import {InvalidArgumentException} from '../../../protocol/ErrorResponse.js';
 import type {
   EmptyResult,
   Emulation,
-} from '../../../protocol/generated/webdriver-bidi';
-import type {UserContextStorage} from '../browser/UserContextStorage';
-import type {BrowsingContextImpl} from '../context/BrowsingContextImpl';
-import type {BrowsingContextStorage} from '../context/BrowsingContextStorage';
+} from '../../../protocol/generated/webdriver-bidi.js';
+import type {UserContextStorage} from '../browser/UserContextStorage.js';
+import type {BrowsingContextImpl} from '../context/BrowsingContextImpl.js';
+import type {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
 
 export class EmulationProcessor {
   #userContextStorage: UserContextStorage;

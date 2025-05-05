@@ -37,7 +37,7 @@ import type {UserContextStorage} from './modules/browser/UserContextStorage.js';
 import {CdpProcessor} from './modules/cdp/CdpProcessor.js';
 import {BrowsingContextProcessor} from './modules/context/BrowsingContextProcessor.js';
 import type {BrowsingContextStorage} from './modules/context/BrowsingContextStorage.js';
-import {EmulationProcessor} from './modules/emulation/EmulationProcessor';
+import {EmulationProcessor} from './modules/emulation/EmulationProcessor.js';
 import {InputProcessor} from './modules/input/InputProcessor.js';
 import {NetworkProcessor} from './modules/network/NetworkProcessor.js';
 import type {NetworkStorage} from './modules/network/NetworkStorage.js';
