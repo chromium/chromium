@@ -237,6 +237,71 @@ void TabModelJniBridge::CloseTabsNavigatedInTimeWindow(
       env, java_object_.get(env), begin_time_ms, end_time_ms);
 }
 
+void TabModelJniBridge::OpenTab(const GURL& url, int index) {
+  // TODO(crbug.com/415351293): Implement.
+  NOTIMPLEMENTED();
+}
+
+void TabModelJniBridge::DiscardTab(int index) {
+  // TODO(crbug.com/415351293): Implement.
+  NOTIMPLEMENTED();
+}
+
+void TabModelJniBridge::DuplicateTab(int index) {
+  // TODO(crbug.com/415351293): Implement.
+  NOTIMPLEMENTED();
+}
+
+tabs::TabInterface* TabModelJniBridge::GetTab(int index) {
+  // TODO(crbug.com/415351293): Implement.
+  NOTIMPLEMENTED();
+  return nullptr;
+}
+
+void TabModelJniBridge::HighlightTabs(std::set<int> indicies) {
+  // TODO(crbug.com/415351293): Implement.
+  NOTIMPLEMENTED();
+}
+
+void TabModelJniBridge::MoveTab(int from_index, int to_index) {
+  // TODO(crbug.com/415351293): Implement.
+  NOTIMPLEMENTED();
+}
+
+void TabModelJniBridge::CloseTab(int index) {
+  // TODO(crbug.com/415351293): Implement.
+  NOTIMPLEMENTED();
+}
+
+std::vector<tabs::TabInterface*> TabModelJniBridge::GetAllTabs() {
+  // TODO(crbug.com/415351293): Implement.
+  NOTIMPLEMENTED();
+  return {};
+}
+
+void TabModelJniBridge::PinTab(int index) {
+  // TODO(crbug.com/415351293): Implement.
+  NOTIMPLEMENTED();
+}
+
+void TabModelJniBridge::UnpinTab(int index) {
+  // TODO(crbug.com/415351293): Implement.
+  NOTIMPLEMENTED();
+}
+
+std::optional<tab_groups::TabGroupId> TabModelJniBridge::CreateGroup(
+    std::set<int> indicies) {
+  // TODO(crbug.com/415351293): Implement.
+  NOTIMPLEMENTED();
+  return std::nullopt;
+}
+
+void TabModelJniBridge::MoveGroupTo(tab_groups::TabGroupId group_id,
+                                    int index) {
+  // TODO(crbug.com/415351293): Implement.
+  NOTIMPLEMENTED();
+}
+
 // static
 jclass TabModelJniBridge::GetClazz(JNIEnv* env) {
   return org_chromium_chrome_browser_tabmodel_TabModelJniBridge_clazz(env);

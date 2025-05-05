@@ -888,6 +888,7 @@ static_library("ui") {
       "android/tab_model/android_live_tab_context.h",
       "android/tab_model/android_live_tab_context_wrapper.cc",
       "android/tab_model/android_live_tab_context_wrapper.h",
+      "android/tab_model/tab_list_interface.h",
       "android/tab_model/tab_model.cc",
       "android/tab_model/tab_model.h",
       "android/tab_model/tab_model_jni_bridge.cc",

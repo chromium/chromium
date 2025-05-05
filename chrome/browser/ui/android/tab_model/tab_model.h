@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/flags/android/chrome_session_state.h"
 #include "chrome/browser/ui/android/tab_model/android_live_tab_context.h"
+#include "chrome/browser/ui/android/tab_model/tab_list_interface.h"
 #include "components/omnibox/browser/location_bar_model.h"
 #include "components/omnibox/browser/location_bar_model_delegate.h"
 #include "components/sessions/core/session_id.h"
@@ -37,7 +38,7 @@ class TabModelObserver;
 // Abstract representation of a Tab Model for Android.  Since Android does
 // not use Browser/BrowserList, this is required to allow Chrome to interact
 // with Android's Tabs and Tab Model.
-class TabModel {
+class TabModel : public TabListInterface {
  public:
   // LINT.IfChange(TabLaunchType)
   // Various ways tabs can be launched.
@@ -153,13 +154,10 @@ class TabModel {
   // Long term, this would ideally be refactored to a traits system such that
   // the different types of side-effects are canonically defined, and listed
   // explicitly for each TabLaunchType in a single location.
+  //
+  // Multiple lines are not supported by IFTTT.
   // clang-format off
-  // LINT.ThenChange(
-  //   //tools/metrics/histograms/metadata/new_tab_page/enums.xml:TabLaunchType,
-  //   //chrome/android/java/src/org/chromium/chrome/browser/tabmodel/ChromeTabCreator.java,
-  //   //chrome/browser/tabpersistence/android/java/src/org/chromium/chrome/browser/tabpersistence/flatbuffer/tab_state_common.fbs,
-  //   //chrome/browser/tabpersistence/android/java/src/org/chromium/chrome/browser/tabpersistence/FlatBufferTabStateSerializer.java
-  // )
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/new_tab_page/enums.xml:TabLaunchType,//chrome/android/java/src/org/chromium/chrome/browser/tabmodel/ChromeTabCreator.java,//chrome/browser/tabpersistence/android/java/src/org/chromium/chrome/browser/tabpersistence/flatbuffer/tab_state_common.fbs,//chrome/browser/tabpersistence/android/java/src/org/chromium/chrome/browser/tabpersistence/FlatBufferTabStateSerializer.java)
   // clang-format on
 
   // Various ways tabs can be selected.
@@ -263,7 +261,7 @@ class TabModel {
 
  protected:
   TabModel(Profile* profile, chrome::android::ActivityType activity_type);
-  virtual ~TabModel();
+  ~TabModel() override;
 
   // Instructs the TabModel to broadcast a notification that all tabs are now
   // loaded from storage.

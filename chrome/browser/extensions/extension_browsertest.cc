@@ -205,6 +205,24 @@ class ExtensionBrowserTest::TestTabModel : public TabModel {
   void CloseTabsNavigatedInTimeWindow(const base::Time& begin_time,
                                       const base::Time& end_time) override {}
 
+  // TODO(crbug.com/415351293): Implement these.
+  // TabListInterface implementation.
+  void OpenTab(const GURL& url, int index) override {}
+  void DiscardTab(int index) override {}
+  void DuplicateTab(int index) override {}
+  tabs::TabInterface* GetTab(int index) override { return nullptr; }
+  void HighlightTabs(std::set<int> indicies) override {}
+  void MoveTab(int from_index, int to_index) override {}
+  void CloseTab(int index) override {}
+  std::vector<tabs::TabInterface*> GetAllTabs() override { return {}; }
+  void PinTab(int index) override {}
+  void UnpinTab(int index) override {}
+  std::optional<tab_groups::TabGroupId> CreateGroup(
+      std::set<int> indicies) override {
+    return std::nullopt;
+  }
+  void MoveGroupTo(tab_groups::TabGroupId group_id, int index) override {}
+
  private:
   // The WebContents associated with this tab's profile.
   std::unique_ptr<content::WebContents> web_contents_;

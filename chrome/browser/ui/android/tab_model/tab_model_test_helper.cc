@@ -120,6 +120,58 @@ int TestTabModel::GetTabCountNavigatedInTimeWindow(
 void TestTabModel::CloseTabsNavigatedInTimeWindow(const base::Time& begin_time,
                                                   const base::Time& end_time) {}
 
+void TestTabModel::OpenTab(const GURL& url, int index) {
+  NOTIMPLEMENTED();
+}
+
+void TestTabModel::DiscardTab(int index) {
+  NOTIMPLEMENTED();
+}
+
+void TestTabModel::DuplicateTab(int index) {
+  NOTIMPLEMENTED();
+}
+
+tabs::TabInterface* TestTabModel::GetTab(int index) {
+  NOTIMPLEMENTED();
+  return nullptr;
+}
+
+void TestTabModel::HighlightTabs(std::set<int> indicies) {
+  NOTIMPLEMENTED();
+}
+
+void TestTabModel::MoveTab(int from_index, int to_index) {
+  NOTIMPLEMENTED();
+}
+
+void TestTabModel::CloseTab(int index) {
+  NOTIMPLEMENTED();
+}
+
+std::vector<tabs::TabInterface*> TestTabModel::GetAllTabs() {
+  NOTIMPLEMENTED();
+  return {};
+}
+
+void TestTabModel::PinTab(int index) {
+  NOTIMPLEMENTED();
+}
+
+void TestTabModel::UnpinTab(int index) {
+  NOTIMPLEMENTED();
+}
+
+std::optional<tab_groups::TabGroupId> TestTabModel::CreateGroup(
+    std::set<int> indicies) {
+  NOTIMPLEMENTED();
+  return std::nullopt;
+}
+
+void TestTabModel::MoveGroupTo(tab_groups::TabGroupId group_id, int index) {
+  NOTIMPLEMENTED();
+}
+
 OwningTestTabModel::OwningTestTabModel(
     Profile* profile,
     chrome::android::ActivityType activity_type)
@@ -259,6 +311,59 @@ int OwningTestTabModel::GetTabCountNavigatedInTimeWindow(
 void OwningTestTabModel::CloseTabsNavigatedInTimeWindow(
     const base::Time& begin_time,
     const base::Time& end_time) {
+  NOTIMPLEMENTED();
+}
+
+void OwningTestTabModel::OpenTab(const GURL& url, int index) {
+  NOTIMPLEMENTED();
+}
+
+void OwningTestTabModel::DiscardTab(int index) {
+  NOTIMPLEMENTED();
+}
+
+void OwningTestTabModel::DuplicateTab(int index) {
+  NOTIMPLEMENTED();
+}
+
+tabs::TabInterface* OwningTestTabModel::GetTab(int index) {
+  NOTIMPLEMENTED();
+  return nullptr;
+}
+
+void OwningTestTabModel::HighlightTabs(std::set<int> indicies) {
+  NOTIMPLEMENTED();
+}
+
+void OwningTestTabModel::MoveTab(int from_index, int to_index) {
+  NOTIMPLEMENTED();
+}
+
+void OwningTestTabModel::CloseTab(int index) {
+  NOTIMPLEMENTED();
+}
+
+std::vector<tabs::TabInterface*> OwningTestTabModel::GetAllTabs() {
+  NOTIMPLEMENTED();
+  return {};
+}
+
+void OwningTestTabModel::PinTab(int index) {
+  NOTIMPLEMENTED();
+}
+
+void OwningTestTabModel::UnpinTab(int index) {
+  NOTIMPLEMENTED();
+}
+
+std::optional<tab_groups::TabGroupId> OwningTestTabModel::CreateGroup(
+    std::set<int> indicies) {
+  NOTIMPLEMENTED();
+  return std::nullopt;
+}
+
+void OwningTestTabModel::MoveGroupTo(tab_groups::TabGroupId group_id,
+                                     int index) {
   NOTIMPLEMENTED();
 }
 
