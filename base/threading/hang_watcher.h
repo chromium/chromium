@@ -121,7 +121,8 @@ class BASE_EXPORT HangWatcher : public DelegateSimpleThread::Delegate {
     kIOThread = 0,
     kMainThread = 1,
     kThreadPoolThread = 2,
-    kMax = kThreadPoolThread
+    kCompositorThread = 3,
+    kMax = kCompositorThread
   };
 
   // Notes on lifetime:
@@ -161,6 +162,7 @@ class BASE_EXPORT HangWatcher : public DelegateSimpleThread::Delegate {
   static bool IsEnabled();
   static bool IsThreadPoolHangWatchingEnabled();
   static bool IsIOThreadHangWatchingEnabled();
+  static bool IsCompositorThreadHangWatchingEnabled();
 
   // Returns true if crash dump reporting is configured for any thread type.
   static bool IsCrashReportingEnabled();

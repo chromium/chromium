@@ -51,6 +51,7 @@ std::atomic<HangWatcher::ProcessType> g_hang_watcher_process_type{
 std::atomic<LoggingLevel> g_threadpool_log_level{LoggingLevel::kNone};
 std::atomic<LoggingLevel> g_io_thread_log_level{LoggingLevel::kNone};
 std::atomic<LoggingLevel> g_main_thread_log_level{LoggingLevel::kNone};
+std::atomic<LoggingLevel> g_compositor_thread_log_level{LoggingLevel::kNone};
 
 // Indicates whether HangWatcher::Run() should return after the next monitoring.
 std::atomic<bool> g_keep_monitoring{true};
@@ -106,6 +107,16 @@ void LogStatusHistogram(HangWatcher::ThreadType thread_type,
                 any_thread_hung);
           }
           break;
+        case HangWatcher::ThreadType::kCompositorThread:
+          // The browser process does not have a thread that matches
+          // `HangWatcher::ThreadType::kCompositorThread`. Its main compositor
+          // logic runs on the main (UI) thread (due to single-threaded mode,
+          // see //cc/README.md). While separate "CompositorTileWorker" threads
+          // exist, they are distinct from this `kCompositorThread` type, which
+          // is for a dedicated main compositor thread (like in renderers).
+          // Therefore, this should not be logged for BrowserProcess.
+          CHECK(false) << "kCompositorThread type should not be logged for "
+                          "BrowserProcess";
         case HangWatcher::ThreadType::kThreadPoolThread:
           // Not recorded for now.
           break;
@@ -132,6 +143,12 @@ void LogStatusHistogram(HangWatcher::ThreadType thread_type,
               "HangWatcher.IsThreadHung.RendererProcess.MainThread",
               any_thread_hung);
           break;
+        case HangWatcher::ThreadType::kCompositorThread:
+          UMA_HISTOGRAM_SPLIT_BY_PROCESS_PRIORITY(
+              UMA_HISTOGRAM_BOOLEAN, sample_ticks, monitoring_period,
+              "HangWatcher.IsThreadHung.RendererProcess.CompositorThread",
+              any_thread_hung);
+          break;
         case HangWatcher::ThreadType::kThreadPoolThread:
           // Not recorded for now.
           break;
@@ -151,6 +168,11 @@ void LogStatusHistogram(HangWatcher::ThreadType thread_type,
               "HangWatcher.IsThreadHung.UtilityProcess.MainThread",
               any_thread_hung);
           break;
+        case HangWatcher::ThreadType::kCompositorThread:
+          // Not recorded because the compositor doesn't run in utility
+          // processes, as of May 2025.
+          CHECK(false) << "kCompositorThread type should not be logged for "
+                          "UtilityProcess";
         case HangWatcher::ThreadType::kThreadPoolThread:
           // Not recorded for now.
           break;
@@ -172,6 +194,9 @@ bool ThreadTypeLoggingLevelGreaterOrEqual(HangWatcher::ThreadType thread_type,
              logging_level;
     case HangWatcher::ThreadType::kThreadPoolThread:
       return g_threadpool_log_level.load(std::memory_order_relaxed) >=
+             logging_level;
+    case HangWatcher::ThreadType::kCompositorThread:
+      return g_compositor_thread_log_level.load(std::memory_order_relaxed) >=
              logging_level;
   }
 }
@@ -225,6 +250,9 @@ constexpr base::FeatureParam<int> kRendererProcessMainThreadLogLevel{
     static_cast<int>(LoggingLevel::kUmaOnly)};
 constexpr base::FeatureParam<int> kRendererProcessThreadPoolLogLevel{
     &kEnableHangWatcher, "renderer_process_threadpool_log_level",
+    static_cast<int>(LoggingLevel::kUmaOnly)};
+constexpr base::FeatureParam<int> kRendererProcessCompositorThreadLogLevel{
+    &kEnableHangWatcher, "renderer_process_compositor_thread_log_level",
     static_cast<int>(LoggingLevel::kUmaOnly)};
 
 // Utility process.
@@ -418,6 +446,10 @@ void HangWatcher::InitializeOnMainThread(ProcessType process_type,
     g_main_thread_log_level.store(
         static_cast<LoggingLevel>(kRendererProcessMainThreadLogLevel.Get()),
         std::memory_order_relaxed);
+    g_compositor_thread_log_level.store(
+        static_cast<LoggingLevel>(
+            kRendererProcessCompositorThreadLogLevel.Get()),
+        std::memory_order_relaxed);
   } else if (process_type == HangWatcher::ProcessType::kUtilityProcess) {
     g_threadpool_log_level.store(
         static_cast<LoggingLevel>(kUtilityProcessThreadPoolLogLevel.Get()),
@@ -436,6 +468,8 @@ void HangWatcher::UnitializeOnMainThreadForTesting() {
   g_threadpool_log_level.store(LoggingLevel::kNone, std::memory_order_relaxed);
   g_io_thread_log_level.store(LoggingLevel::kNone, std::memory_order_relaxed);
   g_main_thread_log_level.store(LoggingLevel::kNone, std::memory_order_relaxed);
+  g_compositor_thread_log_level.store(LoggingLevel::kNone,
+                                      std::memory_order_relaxed);
   g_shutting_down.store(false, std::memory_order_relaxed);
 }
 
@@ -453,6 +487,12 @@ bool HangWatcher::IsThreadPoolHangWatchingEnabled() {
 // static
 bool HangWatcher::IsIOThreadHangWatchingEnabled() {
   return g_io_thread_log_level.load(std::memory_order_relaxed) !=
+         LoggingLevel::kNone;
+}
+
+// static
+bool HangWatcher::IsCompositorThreadHangWatchingEnabled() {
+  return g_compositor_thread_log_level.load(std::memory_order_relaxed) !=
          LoggingLevel::kNone;
 }
 

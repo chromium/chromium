@@ -5,6 +5,9 @@
 #include "third_party/blink/renderer/platform/scheduler/worker/compositor_thread.h"
 
 #include "base/task/sequence_manager/sequence_manager.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/threading/hang_watcher.h"
+#include "mojo/public/cpp/bindings/interface_endpoint_client.h"
 #include "third_party/blink/renderer/platform/scheduler/worker/compositor_thread_scheduler_impl.h"
 
 namespace blink {
@@ -13,7 +16,20 @@ namespace scheduler {
 CompositorThread::CompositorThread(const ThreadCreationParams& params)
     : NonMainThreadImpl(params) {}
 
-CompositorThread::~CompositorThread() = default;
+CompositorThread::~CompositorThread() {
+  DCHECK(GetTaskRunner()->RunsTasksInCurrentSequence());
+}
+
+void CompositorThread::InitializeHangWatcherAndThreadName() {
+  DCHECK(GetTaskRunner()->RunsTasksInCurrentSequence());
+
+  if (base::HangWatcher::IsCompositorThreadHangWatchingEnabled()) {
+    hang_watcher_registration_ = base::HangWatcher::RegisterThread(
+        base::HangWatcher::ThreadType::kCompositorThread);
+  }
+
+  mojo::InterfaceEndpointClient::SetThreadNameSuffixForMetrics("Compositor");
+}
 
 std::unique_ptr<NonMainThreadSchedulerBase>
 CompositorThread::CreateNonMainThreadScheduler(
