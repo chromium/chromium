@@ -660,7 +660,7 @@ class CORE_EXPORT StyleRuleFunction : public StyleRuleGroup {
                     CSSSyntaxDefinition return_type);
   StyleRuleFunction(const StyleRuleFunction&) = delete;
 
-  const AtomicString& GetName() const { return name_; }
+  const AtomicString& Name() const { return name_; }
   const HeapVector<Parameter>& GetParameters() const { return parameters_; }
   const CSSSyntaxDefinition& GetReturnType() const { return return_type_; }
 

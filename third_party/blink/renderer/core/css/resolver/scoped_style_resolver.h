@@ -135,8 +135,6 @@ class CORE_EXPORT ScopedStyleResolver final
   bool KeyframeStyleShouldOverride(
       const StyleRuleKeyframes* new_rule,
       const StyleRuleKeyframes* existing_rule) const;
-  void AddPositionTryRules(const RuleSet&);
-  void AddFunctionRules(const RuleSet&);
 
   CounterStyleMap& EnsureCounterStyleMap();
 
@@ -160,7 +158,7 @@ class CORE_EXPORT ScopedStyleResolver final
       HeapHashMap<AtomicString, Member<StyleRulePositionTry>>;
   PositionTryRuleMap position_try_rule_map_;
 
-  using FunctionRuleMap = HeapHashMap<String, Member<StyleRuleFunction>>;
+  using FunctionRuleMap = HeapHashMap<AtomicString, Member<StyleRuleFunction>>;
   FunctionRuleMap function_rule_map_;
 
   // Multiple entries are created pointing to the same

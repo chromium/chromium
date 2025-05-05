@@ -15,7 +15,7 @@ CSSFunctionRule::CSSFunctionRule(StyleRuleFunction* function_rule,
     : CSSGroupingRule(function_rule, parent) {}
 
 String CSSFunctionRule::name() const {
-  return To<StyleRuleFunction>(*group_rule_).GetName();
+  return To<StyleRuleFunction>(*group_rule_).Name();
 }
 
 HeapVector<Member<FunctionParameter>> CSSFunctionRule::getParameters() const {
@@ -62,7 +62,7 @@ String CSSFunctionRule::cssText() const {
 
   StringBuilder builder;
   builder.Append("@function ");
-  SerializeIdentifier(rule.GetName(), builder);
+  SerializeIdentifier(rule.Name(), builder);
   builder.Append("(");
 
   bool first_param = true;
