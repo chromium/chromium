@@ -177,8 +177,7 @@ void AutofillManager::Reset() {
 
 void AutofillManager::OnLanguageDetermined(
     const translate::LanguageDetectionDetails& details) {
-  if (!base::FeatureList::IsEnabled(features::kAutofillPageLanguageDetection) ||
-      !base::FeatureList::IsEnabled(features::kAutofillFixValueSemantics)) {
+  if (!base::FeatureList::IsEnabled(features::kAutofillPageLanguageDetection)) {
     return;
   }
   if (details.adopted_language == language_detection::kUnknownLanguageCode ||
@@ -647,15 +646,13 @@ void AutofillManager::ParseFormAsync(
   if (FormStructure* cached_form_structure =
           FindCachedFormById(form_data.global_id())) {
     if (!CachedFormNeedsUpdate(form_data, *cached_form_structure)) {
-      if (base::FeatureList::IsEnabled(features::kAutofillFixValueSemantics)) {
-        // Update the cache to the latest data from the renderer in the form
-        // cache (in particular, the current field values) while preserving all
-        // other information (in particular, the field types).
-        form_structure->RetrieveFromCache(
-            *cached_form_structure, FormStructure::RetrieveFromCacheReason::
-                                        kFormCacheUpdateWithoutParsing);
-        form_structures_[form_data.global_id()] = std::move(form_structure);
-      }
+      // Update the cache to the latest data from the renderer in the form
+      // cache (in particular, the current field values) while preserving all
+      // other information (in particular, the field types).
+      form_structure->RetrieveFromCache(*cached_form_structure,
+                                        FormStructure::RetrieveFromCacheReason::
+                                            kFormCacheUpdateWithoutParsing);
+      form_structures_[form_data.global_id()] = std::move(form_structure);
       std::move(callback).Run(*this, form_data);
       return;
     }

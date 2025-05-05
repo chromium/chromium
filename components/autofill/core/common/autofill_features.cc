@@ -308,33 +308,6 @@ BASE_FEATURE(kAutofillOptimizeFormExtraction,
              "AutofillOptimizeFormExtraction",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Fixes the overloaded meaning of FormFieldData::value (current value of a
-// field and initial value of a field): if enabled, AutofillField::value() takes
-// into accounts its ValueSemantics parameter.
-// TODO: crbug.com/40227496 - Clean up when launched.
-BASE_FEATURE(kAutofillFixValueSemantics,
-             "AutofillFixValueSemantics",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// If enabled, AutofillField::value(kInitial) for <select> fields returns the
-// initial values. Otherwise, it is identical to AutofillField::value(kCurrent).
-// Should only be enabled if kAutofillFixValueSemantics is enabled.
-// TODO: crbug.com/40227496 - Clean up when launched.
-BASE_FEATURE(kAutofillFixInitialValueOfSelect,
-             "AutofillFixInitialValueOfSelect",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// If enabled, AutofillField::value(kCurrent) is not reset for form import.
-// Otherwise, AutofillField::value(kCurrent) is reset to the empty string for
-// fields that are non-<select>, non-state, non-country and haven't changed
-// their value.
-// Should only be enabled if kAutofillFixValueSemantics and
-// kAutofillFixInitialValueOfSelect is enabled.
-// TODO: crbug.com/40227496 - Clean up when launched.
-BASE_FEATURE(kAutofillFixCurrentValueInImport,
-             "AutofillFixCurrentValueInImport",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If enabled, credit cards that are split into different fields are imported.
 // TODO: crbug.com/392179445 - Clean up when launched.
 BASE_FEATURE(kAutofillFixSplitCreditCardImport,

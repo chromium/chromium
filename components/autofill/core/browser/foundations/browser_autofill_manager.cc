@@ -2624,18 +2624,6 @@ void BrowserAutofillManager::MaybeShowPlusAddressEmailOverrideNotification(
     return;
   }
 
-  // TODO: crbug.com/40227496 - Remove `email_field` when
-  // `kAutofillFixValueSemantics` is launched.
-  const FormFieldData* email_field = nullptr;
-  if (auto it = std::ranges::find(safe_filled_fields,
-                                  email_autofill_field->global_id(),
-                                  &FormFieldData::global_id);
-      it != safe_filled_fields.end()) {
-    email_field = *it;
-  } else {
-    return;
-  }
-
   const std::u16string original_email =
       original_profile->GetRawInfo(EMAIL_ADDRESS);
   // Note that the filled `profile` could have been updated with a plus
@@ -2658,15 +2646,14 @@ void BrowserAutofillManager::MaybeShowPlusAddressEmailOverrideNotification(
         base::BindOnce(&BrowserAutofillManager::OnEmailOverrideUndone,
                        weak_ptr_factory_.GetWeakPtr(), original_email,
                        form_structure.global_id(),
-                       email_autofill_field->global_id(), *email_field));
+                       email_autofill_field->global_id()));
   }
 }
 
 void BrowserAutofillManager::OnEmailOverrideUndone(
     const std::u16string& original_email,
     const FormGlobalId& form_id,
-    const FieldGlobalId& field_id,
-    const FormFieldData& field_after_last_autofill) {
+    const FieldGlobalId& field_id) {
   base::RecordAction(
       base::UserMetricsAction("PlusAddresses.FillAddressSuggestionUndone"));
   FormStructure* form_structure = nullptr;
@@ -2680,21 +2667,11 @@ void BrowserAutofillManager::OnEmailOverrideUndone(
     return;
   }
 
-  const FormFieldData* field_with_latest_known_filled_value = autofill_field;
-  if (!base::FeatureList::IsEnabled(features::kAutofillFixValueSemantics)) {
-    // The cached field's value is the field's initial value, but we want the
-    // value the field currently has in the DOM. The `field_after_last_autofill`
-    // is the best approximation of that we have at hand.
-    // TODO: crbug.com/40227496 - Remove when `kAutofillFixValueSemantics` is
-    // launched, because then `AutofillField` has the current value.
-    field_with_latest_known_filled_value = &field_after_last_autofill;
-  }
-
   // Fill the address profile's original email.
   form_filler_->FillOrPreviewField(
       mojom::ActionPersistence::kFill, mojom::FieldActionType::kReplaceAll,
-      *field_with_latest_known_filled_value, autofill_field, original_email,
-      FillingProduct::kAddress, EMAIL_ADDRESS);
+      *autofill_field, autofill_field, original_email, FillingProduct::kAddress,
+      EMAIL_ADDRESS);
 }
 
 std::unique_ptr<FormStructure> BrowserAutofillManager::ValidateSubmittedForm(

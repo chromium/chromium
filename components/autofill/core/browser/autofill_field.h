@@ -222,16 +222,10 @@ class AutofillField : public FormFieldData {
   bool ShouldSuppressSuggestionsAndFillingByDefault() const;
 
   // Returns the requested current or initial value depending on the
-  // `ValueSemantics`, if `features::kAutofillFixValueSemantics` is enabled.
-  // Otherwise just forwards to `FormFieldData::value().
+  // `ValueSemantics`.
   //
   // In the context of form submission and import, consider calling
   // `value_for_import()`.
-  //
-  // Currently, `value(ValueSemantics::kInitial)` is the empty string for fields
-  // of FormControlType::kSelect*.
-  // TODO: crbug.com/40227496 - Let `value(kInitial)` for select elements behave
-  // the same as for non-select elements.
   //
   // TODO: crbug.com/40227496 - When kAutofillFixValueSemantics is cleaned up,
   // replace
@@ -255,17 +249,9 @@ class AutofillField : public FormFieldData {
   // usually better suited for import than the its value. See the documentation
   // of FormFieldData::value() and FormFieldData::selected_text() for further
   // details.
-  //
-  // This function only behaves reasonably if kAutofillFixValueSemantics and
-  // kAutofillFixCurrentValueInImport are enabled. If the latter is not enabled,
-  // FormStructure::RetrieveFromCache() resets the field's current value, with
-  // the intention of avoiding form import.
-  // TODO: crbug.com/40227496 - Remove the previous paragraph when the feature
-  // is launched.
   const std::u16string& value_for_import() const;
 
-  // Sets the field's current value, if `features::kAutofillFixValueSemantics`
-  // is enabled. Otherwise just forwards to FormFieldData::set_value().
+  // Sets the field's current value.
   void set_initial_value(std::u16string initial_value,
                          base::PassKey<FormStructure> pass_key);
 
@@ -491,8 +477,6 @@ class AutofillField : public FormFieldData {
   // it was changed between page load and form submission. Set to `false` if the
   // pre-filled value wasn't changed. Not set if the field didn't have a
   // pre-filled value.
-  // Set for <select> fields only if kAutofillFixInitialValueOfSelect is
-  // enabled. Always set for <textarea> and <input>.
   std::optional<bool> initial_value_changed_;
 
   // Used to hold the position of the first digit to be copied as a substring

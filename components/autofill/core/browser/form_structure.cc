@@ -553,39 +553,17 @@ void FormStructure::RetrieveFromCache(const FormStructure& cached_form,
 
     // TODO: crbug.com/40227496 - Simplify the `switch` statement once
     // kAutofillFixValueSemantics is launched.
-    // TODO: crbug.com/40227496 - Remove the IsSelectElement()
-    // checks once kAutofillFixValueSemantics is launched.
     // TODO: crbug.com/40227496 - Update the comments when the experiments are
     // launched.
     switch (reason) {
       case RetrieveFromCacheReason::kFormCacheUpdateAfterParsing:
       case RetrieveFromCacheReason::kFormCacheUpdateWithoutParsing:
-        // If kAutofillFixValueSemantics is disabled: During form parsing (as in
-        // "assigning field types to fields") the `value` represents the initial
-        // value found at page load and needs to be preserved.
-        if (!field->IsSelectElement() ||
-            base::FeatureList::IsEnabled(
-                features::kAutofillFixInitialValueOfSelect)) {
-          field->set_initial_value(
-              cached_field->value(ValueSemantics::kInitial), /*pass_key=*/{});
-        }
+        field->set_initial_value(cached_field->value(ValueSemantics::kInitial),
+                                 /*pass_key=*/{});
         break;
       case RetrieveFromCacheReason::kFormImport:
-        // TODO: crbug.com/40227496 - Group IsSelectElement() checks.
-        if ((!field->IsSelectElement() ||
-             base::FeatureList::IsEnabled(
-                 features::kAutofillFixInitialValueOfSelect)) &&
-            base::FeatureList::IsEnabled(
-                features::kAutofillFixValueSemantics)) {
-          field->set_initial_value(
-              cached_field->value(ValueSemantics::kInitial), /*pass_key=*/{});
-        }
-        // From the perspective of learning user data, text fields containing
-        // default values are equivalent to empty fields. So if the value of
-        // a submitted form corresponds to the initial value of the field, we
-        // clear that value.
-        // Since a website can prefill country and state values based on
-        // GeoIP, we want to hold on to these values.
+        field->set_initial_value(cached_field->value(ValueSemantics::kInitial),
+                                 /*pass_key=*/{});
         const bool same_value_as_on_page_load =
             field->value(ValueSemantics::kCurrent) ==
             cached_field->value(ValueSemantics::kInitial);
@@ -593,25 +571,8 @@ void FormStructure::RetrieveFromCache(const FormStructure& cached_form,
             cached_field->Type().GetStorableType() > FieldType::UNKNOWN_TYPE ||
             !cached_field->possible_types().empty();
         if (!cached_field->value(ValueSemantics::kInitial).empty() &&
-            (!field->IsSelectElement() ||
-             base::FeatureList::IsEnabled(
-                 features::kAutofillFixInitialValueOfSelect)) &&
             had_type) {
           field->set_initial_value_changed(!same_value_as_on_page_load);
-        }
-        // TODO: crbug.com/40137859 - The server type hasn't been set yet (it is
-        // set a few lines further down below), so this is trivially true. Once
-        // kAutofillFixCurrentValueInImport is launched, consider adding this
-        // to AutofillField::value_for_import() and running an experiment for
-        // this.
-        const bool field_is_neither_state_nor_country =
-            field->server_type() != ADDRESS_HOME_COUNTRY &&
-            field->server_type() != ADDRESS_HOME_STATE;
-        if ((!field->IsSelectElement() &&
-             !base::FeatureList::IsEnabled(
-                 features::kAutofillFixCurrentValueInImport)) &&
-            same_value_as_on_page_load && field_is_neither_state_nor_country) {
-          field->set_value(std::u16string());
         }
         break;
     }

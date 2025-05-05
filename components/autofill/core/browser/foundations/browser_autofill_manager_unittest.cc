@@ -6331,8 +6331,7 @@ class BrowserAutofillManagerTestPageLanguageDetection
  public:
   BrowserAutofillManagerTestPageLanguageDetection() {
     scoped_features_.InitWithFeatures(
-        /*enabled_features=*/{features::kAutofillPageLanguageDetection,
-                              features::kAutofillFixValueSemantics},
+        /*enabled_features=*/{features::kAutofillPageLanguageDetection},
         /*disabled_features=*/{});
   }
 

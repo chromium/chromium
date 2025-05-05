@@ -529,18 +529,9 @@ AutofillField::PredictionResult AutofillField::GetComputedPredictionResult()
 }
 
 const std::u16string& AutofillField::value_for_import() const {
-  bool should_consider_value_for_import =
+  const bool should_consider_value_for_import =
       IsSelectElement() ||
       value(ValueSemantics::kInitial) != value(ValueSemantics::kCurrent);
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillFixCurrentValueInImport)) {
-    // If the feature is not enabled, legacy behavior applies:
-    // FormStructure::RetrieveFromCache() has already set the current value to
-    // the empty string for <input> elements whose value did not change. This
-    // special case only exists to ensure that kAutofillFixCurrentValueInImport
-    // is a refactoring w/o side effects.
-    should_consider_value_for_import = true;
-  }
   if (!should_consider_value_for_import) {
     return base::EmptyString16();
   }
@@ -551,23 +542,17 @@ const std::u16string& AutofillField::value_for_import() const {
 }
 
 const std::u16string& AutofillField::value(ValueSemantics s) const {
-  if (!base::FeatureList::IsEnabled(features::kAutofillFixValueSemantics)) {
-    return FormFieldData::value();
-  }
   switch (s) {
     case ValueSemantics::kCurrent:
       return FormFieldData::value();
     case ValueSemantics::kInitial:
       return initial_value_;
   }
+  NOTREACHED();
 }
 
 void AutofillField::set_initial_value(std::u16string initial_value,
                                       base::PassKey<FormStructure> pass_key) {
-  if (!base::FeatureList::IsEnabled(features::kAutofillFixValueSemantics)) {
-    FormFieldData::set_value(std::move(initial_value));
-    return;
-  }
   initial_value_ = std::move(initial_value);
 }
 

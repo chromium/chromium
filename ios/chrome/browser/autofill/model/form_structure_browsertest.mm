@@ -203,7 +203,6 @@ FormStructureBrowserTest::FormStructureBrowserTest()
       {
           // TODO(crbug.com/40741721): Remove once shared labels are launched.
           features::kAutofillEnableSupportForParsingWithSharedLabels,
-          features::kAutofillFixValueSemantics,
           // TODO(crbug.com/40266396): Remove once launched.
           features::kAutofillEnableExpirationDateImprovements,
           features::kAutofillUnifyRationalizationAndSectioningOrder,

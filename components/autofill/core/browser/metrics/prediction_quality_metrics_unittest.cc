@@ -59,9 +59,6 @@ TEST_F(PredictionQualityMetricsTest, SaneMetricsWithCacheMismatch) {
   model_predictions_feature_params["model_active"] = "false";
   scoped_feature_list.InitWithFeaturesAndParameters(
       {
-          {features::kAutofillFixValueSemantics, {}},
-          {features::kAutofillFixInitialValueOfSelect, {}},
-          {features::kAutofillFixCurrentValueInImport, {}},
           // Enable the model, but not as the active heuristic source.
           {features::kAutofillModelPredictions,
            {model_predictions_feature_params}},
