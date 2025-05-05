@@ -5,12 +5,10 @@
 assert(!is_ios)
 
 source_set("headers") {
-  sources = [
-    "privacy_sandbox_countries.h",
-    "privacy_sandbox_service.h",
-  ]
+  sources = [ "privacy_sandbox_service.h" ]
 
   public_deps = [
+    ":countries",
     "//base",
     "//chrome/browser/first_party_sets",
     "//components/content_settings/core/browser",
@@ -318,6 +316,7 @@ source_set("test_support") {
     ]
 
     public_deps = [
+      ":countries",
       ":headers",
       "//chrome/test:test_support",
       "//testing/gmock",
