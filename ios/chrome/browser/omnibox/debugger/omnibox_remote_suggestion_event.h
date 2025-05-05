@@ -12,11 +12,11 @@
 @interface OmniboxRemoteSuggestionEvent : NSObject <OmniboxEvent>
 
 // Contains the request URL as a string.
-@property(nonatomic, strong) NSString* requestURL;
+@property(nonatomic, copy) NSString* requestURL;
 // Contains the request body of the remote suggestion service.
-@property(nonatomic, strong) NSString* requestBody;
+@property(nonatomic, copy) NSString* requestBody;
 // Contains the response body of the remote suggestion service.
-@property(nonatomic, strong) NSString* responseBody;
+@property(nonatomic, copy) NSString* responseBody;
 // Contains the response code of the remote suggestion service.
 @property(nonatomic, assign) NSInteger responseCode;
 

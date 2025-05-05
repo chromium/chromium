@@ -12,7 +12,7 @@
 /// A class that store a list of autocomplete matches with a title.
 @interface AutocompleteMatchGroup : NSObject
 
-@property(nonatomic, strong) NSString* title;
+@property(nonatomic, copy) NSString* title;
 @property(nonatomic, strong) NSArray<AutocompleteMatchFormatter*>* matches;
 
 + (AutocompleteMatchGroup*)

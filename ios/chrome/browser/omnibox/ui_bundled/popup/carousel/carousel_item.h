@@ -23,7 +23,7 @@
 @interface CarouselItem : NSObject
 
 /// Title of the suggestion.
-@property(nonatomic, strong) NSString* title;
+@property(nonatomic, copy) NSString* title;
 /// URL of the suggestion.
 @property(nonatomic, strong) CrURL* URL;
 /// Attributes used to display a `FaviconView` in the item.
