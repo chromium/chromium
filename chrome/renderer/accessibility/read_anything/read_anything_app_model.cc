@@ -550,11 +550,10 @@ void ReadAnythingAppModel::AccessibilityEventReceived(
         timer_since_tree_changed_for_data_collection_.Reset();
       }
       return;
-    } else {
-      // We need to unserialize old updates before we can unserialize the new
-      // ones.
-      UnserializePendingUpdates(tree_id);
     }
+    // We need to unserialize old updates before we can unserialize the new
+    // ones.
+    UnserializePendingUpdates(tree_id);
     UnserializeUpdates(updates, tree_id);
     ProcessNonGeneratedEvents(events);
   } else {
