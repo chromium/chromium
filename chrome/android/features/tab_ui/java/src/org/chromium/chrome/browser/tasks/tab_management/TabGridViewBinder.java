@@ -255,12 +255,19 @@ class TabGridViewBinder {
 
     private static void bindSelectableTabProperties(
             PropertyModel model, ViewLookupCachingFrameLayout view, PropertyKey propertyKey) {
-        final int tabId = model.get(TabProperties.TAB_ID);
-
         if (TabProperties.TAB_SELECTION_DELEGATE == propertyKey) {
+            TabListEditorItemSelectionId itemId;
+            if (model.containsKey(TabProperties.TAB_GROUP_SYNC_ID)) {
+                String syncId = model.get(TabProperties.TAB_GROUP_SYNC_ID);
+                itemId = TabListEditorItemSelectionId.createTabGroupSyncId(syncId);
+            } else {
+                int tabId = model.get(TabProperties.TAB_ID);
+                itemId = TabListEditorItemSelectionId.createTabId(tabId);
+            }
+
             ((TabGridView) view)
                     .setSelectionDelegate(model.get(TabProperties.TAB_SELECTION_DELEGATE));
-            ((TabGridView) view).setItem(TabListEditorItemSelectionId.createTabId(tabId));
+            ((TabGridView) view).setItem(itemId);
         } else if (TabProperties.IS_SELECTED == propertyKey
                 || TabProperties.TAB_ACTION_BUTTON_DATA == propertyKey) {
             updateColorForSelectionToggleButton(
@@ -300,7 +307,11 @@ class TabGridViewBinder {
         } else {
             view.setOnLongClickListener(
                     v -> {
-                        listener.run(v, propertyModel.get(TabProperties.TAB_ID));
+                        if (propertyModel.containsKey(TabProperties.TAB_GROUP_SYNC_ID)) {
+                            listener.run(v, propertyModel.get(TabProperties.TAB_GROUP_SYNC_ID));
+                        } else {
+                            listener.run(v, propertyModel.get(TabProperties.TAB_ID));
+                        }
                         return true;
                     });
         }

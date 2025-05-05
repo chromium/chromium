@@ -20,11 +20,14 @@ import org.chromium.base.Token;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabListEditorExitMetricGroups;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
+import org.chromium.components.tab_group_sync.SavedTabGroup;
+import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.lang.annotation.Retention;
@@ -365,8 +368,6 @@ public abstract class TabListEditorAction {
             TabGroupModelFilter tabGroupModelFilter, List<TabListEditorItemSelectionId> itemIds) {
         int tabCount = 0;
         for (TabListEditorItemSelectionId itemId : itemIds) {
-            // Only items of type tabId representing a tab are considered. Synced tab groups
-            // represented by a syncId will be ignored.
             if (itemId.isTabId()) {
                 Tab tab = tabGroupModelFilter.getTabModel().getTabById(itemId.getTabId());
                 // TODO(crbug.com/41495189): Find out how we can have a tab ID that is no longer
@@ -379,6 +380,17 @@ public abstract class TabListEditorAction {
                 } else {
                     tabCount++;
                 }
+            } else if (itemId.isTabGroupSyncId()) {
+                TabGroupSyncService tabGroupSyncService =
+                        TabGroupSyncServiceFactory.getForProfile(
+                                tabGroupModelFilter.getTabModel().getProfile());
+                SavedTabGroup savedTabGroup =
+                        tabGroupSyncService.getGroup(itemId.getTabGroupSyncId());
+                if (savedTabGroup != null) {
+                    tabCount += savedTabGroup.savedTabs.size();
+                }
+            } else {
+                assert false : "Unexpected itemId type.";
             }
         }
         return tabCount;

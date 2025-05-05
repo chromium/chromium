@@ -491,7 +491,17 @@ class TabListMediator implements TabListNotificationHandler {
 
                 @Override
                 public void run(View view, String syncId) {
-                    // Intentional no-op.
+                    SelectionDelegate<TabListEditorItemSelectionId> selectionDelegate =
+                            getTabSelectionDelegate();
+                    assert selectionDelegate != null;
+                    selectionDelegate.toggleSelectionForItem(
+                            TabListEditorItemSelectionId.createTabGroupSyncId(syncId));
+
+                    @Nullable PropertyModel model = mModelList.getModelFromSyncId(syncId);
+                    if (model == null) return;
+
+                    boolean selected = model.get(TabProperties.IS_SELECTED);
+                    model.set(TabProperties.IS_SELECTED, !selected);
                 }
             };
 
@@ -1805,14 +1815,24 @@ class TabListMediator implements TabListNotificationHandler {
 
         for (int i = 0; i < mModelList.size(); i++) {
             ListItem item = mModelList.get(i);
-            if (item.type != UiType.TAB) continue;
-            Tab tab = getTabForIndex(i);
+            if (item.type != UiType.TAB && item.type != UiType.TAB_GROUP) continue;
             // Unbind the current TabActionState properties.
             PropertyModel model = item.model;
             unbindTabActionStateProperties(model);
 
             model.set(TabProperties.TAB_ACTION_STATE, mTabActionState);
-            bindTabActionStateProperties(tabActionState, tab, model);
+            if (item.type == UiType.TAB) {
+                Tab tab = getTabForIndex(i);
+                bindTabActionStateProperties(tabActionState, tab, model);
+            } else if (item.type == UiType.TAB_GROUP) {
+                SavedTabGroup savedTabGroup =
+                        mTabGroupSyncService.getGroup(model.get(TabProperties.TAB_GROUP_SYNC_ID));
+                if (savedTabGroup != null) {
+                    bindTabGroupActionStateProperties(savedTabGroup, model);
+                }
+            } else {
+                assert false : "Unexpected itemId type.";
+            }
         }
     }
 
@@ -1909,13 +1929,25 @@ class TabListMediator implements TabListNotificationHandler {
 
     private void bindTabGroupActionStateProperties(
             SavedTabGroup savedTabGroup, PropertyModel model) {
+        boolean isSelectableState = mTabActionState == TabActionState.SELECTABLE;
+
         TabActionButtonData tabActionButtonData =
-                new TabActionButtonData(
-                        TabActionButtonData.TabActionButtonType.CLOSE, mTabClosedListener);
+                isSelectableState
+                        ? new TabActionButtonData(
+                                TabActionButtonData.TabActionButtonType.SELECT,
+                                mSelectableTabOnClickListener)
+                        : new TabActionButtonData(
+                                TabActionButtonData.TabActionButtonType.CLOSE, mTabClosedListener);
+        TabActionListener tabClickListener =
+                isSelectableState
+                        ? mSelectableTabOnClickListener
+                        : mGridCardOnClickListenerProvider.openTabGridDialog(savedTabGroup.syncId);
+        TabActionListener tabLongClickListener =
+                isSelectableState ? mSelectableTabOnClickListener : null;
+
         model.set(TabProperties.TAB_ACTION_BUTTON_DATA, tabActionButtonData);
-        model.set(
-                TabProperties.TAB_CLICK_LISTENER,
-                mGridCardOnClickListenerProvider.openTabGridDialog(savedTabGroup.syncId));
+        model.set(TabProperties.TAB_CLICK_LISTENER, tabClickListener);
+        model.set(TabProperties.TAB_LONG_CLICK_LISTENER, tabLongClickListener);
     }
 
     private TabActionListener getTabActionListener(Tab tab, boolean isInTabGroup) {

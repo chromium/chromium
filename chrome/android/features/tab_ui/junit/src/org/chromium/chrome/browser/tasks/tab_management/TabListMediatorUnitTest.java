@@ -3963,9 +3963,7 @@ public class TabListMediatorUnitTest {
                         getTabThumbnailCallback(),
                         mTabListFaviconProvider,
                         true,
-                        () -> {
-                            return mSelectionDelegate;
-                        },
+                        () -> mSelectionDelegate,
                         null,
                         null,
                         null,
@@ -4008,9 +4006,7 @@ public class TabListMediatorUnitTest {
                         getTabThumbnailCallback(),
                         mTabListFaviconProvider,
                         true,
-                        () -> {
-                            return mSelectionDelegate;
-                        },
+                        () -> mSelectionDelegate,
                         null,
                         null,
                         null,
@@ -4053,9 +4049,7 @@ public class TabListMediatorUnitTest {
                         getTabThumbnailCallback(),
                         mTabListFaviconProvider,
                         true,
-                        () -> {
-                            return mSelectionDelegate;
-                        },
+                        () -> mSelectionDelegate,
                         null,
                         null,
                         null,
@@ -4476,9 +4470,7 @@ public class TabListMediatorUnitTest {
                         getTabThumbnailCallback(),
                         mTabListFaviconProvider,
                         true,
-                        () -> {
-                            return mSelectionDelegate;
-                        },
+                        () -> mSelectionDelegate,
                         null,
                         null,
                         null,
@@ -4830,6 +4822,56 @@ public class TabListMediatorUnitTest {
                 .run(mItemView1, mModelList.get(0).model.get(TabProperties.TAB_GROUP_SYNC_ID));
 
         verify(mOpenGroupActionListener).run(mItemView1, SYNC_GROUP_ID1);
+    }
+
+    @Test
+    public void setTabActionState_bindsTabGroupTypePropertiesCorrectly() {
+        // Start off with a closable type but an actionable selection delegate.
+        mMediator =
+                new TabListMediator(
+                        mActivity,
+                        mModelList,
+                        TabListMode.GRID,
+                        mModalDialogManager,
+                        mCurrentTabGroupModelFilterSupplier,
+                        getTabThumbnailCallback(),
+                        mTabListFaviconProvider,
+                        true,
+                        () -> mSelectionDelegate,
+                        mGridCardOnClickListenerProvider,
+                        null,
+                        null,
+                        getClass().getSimpleName(),
+                        TabProperties.TabActionState.CLOSABLE,
+                        mActionConfirmationManager,
+                        mDataSharingTabManager,
+                        /* onTabGroupCreation= */ null);
+        mMediator.registerOrientationListener(mGridLayoutManager);
+        mMediator.initWithNative(mProfile);
+        initAndAssertAllProperties();
+
+        List<Tab> tabs = List.of(mTab1);
+        List<String> syncIds = List.of(SYNC_GROUP_ID1);
+        mMediator.setDefaultGridCardSize(new Size(100, 200));
+
+        // Assert that a tab group type is the first item in the list.
+        mMediator.resetWithListOfTabs(tabs, syncIds, false);
+        assertEquals(SYNC_GROUP_ID1, mModelList.get(0).model.get(TabProperties.TAB_GROUP_SYNC_ID));
+
+        // Toggle the action state to selectable.
+        mMediator.setTabActionState(TabActionState.SELECTABLE);
+        assertNotNull(mModelList.get(0).model.get(TabProperties.TAB_ACTION_BUTTON_DATA));
+        assertNotNull(mModelList.get(0).model.get(TabProperties.TAB_CLICK_LISTENER));
+        assertNotNull(mModelList.get(0).model.get(TabProperties.TAB_LONG_CLICK_LISTENER));
+
+        // Verify the selection properties and click listener logic.
+        assertThat(mModelList.get(0).model.get(TabProperties.IS_SELECTED), equalTo(false));
+        mModelList
+                .get(0)
+                .model
+                .get(TabProperties.TAB_CLICK_LISTENER)
+                .run(mItemView1, mModelList.get(0).model.get(TabProperties.TAB_GROUP_SYNC_ID));
+        assertThat(mModelList.get(0).model.get(TabProperties.IS_SELECTED), equalTo(true));
     }
 
     private void setUpTabGroupCardDescriptionString() {
