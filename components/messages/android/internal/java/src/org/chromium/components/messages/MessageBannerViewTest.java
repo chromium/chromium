@@ -489,7 +489,6 @@ public class MessageBannerViewTest {
     /** Setting PRIMARY_WIDGET_APPEARANCE to PROGRESS_SPINNER should show the progress spinner. */
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/349396848")
     public void testPrimaryWidgetAppearanceProgressSpinner() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -519,7 +518,6 @@ public class MessageBannerViewTest {
     /** Changing PRIMARY_WIDGET_APPEARANCE to PROGRESS_SPINNER should show the progress spinner. */
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/349396848")
     public void testPrimaryWidgetAppearanceChangeFromButtonToProgressSpinner()
             throws ExecutionException {
         var model =
@@ -574,7 +572,6 @@ public class MessageBannerViewTest {
     /** Changing PRIMARY_WIDGET_APPEARANCE to BUTTON_IF_TEXT_IS_SET should show the text. */
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/349396848")
     public void testPrimaryWidgetAppearanceChangeFromProgressSpinnerToButton()
             throws ExecutionException {
         var model =
@@ -630,7 +627,6 @@ public class MessageBannerViewTest {
      */
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/349396848")
     public void testPrimaryWidgetAppearanceProgressSpinnerWithNonEmptyButtonText() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
