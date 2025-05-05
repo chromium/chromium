@@ -762,6 +762,9 @@ void Dispatcher::DidStartServiceWorkerContextOnWorkerThread(
   const int thread_id = content::WorkerThread::GetCurrentId();
   CHECK_NE(thread_id, kMainThreadId);
   auto* service_worker_data = WorkerThreadDispatcher::GetServiceWorkerData();
+  const ExtensionId& extension_id =
+      service_worker_data->context()->GetExtensionID();
+  CHECK(!extension_id.empty());
   if (base::FeatureList::IsEnabled(
           kSpeculativeFixForServiceWorkerDataInDidStartServiceWorkerContext)) {
     // `service_worker_data` can be nullptr if the extension is already unloaded
@@ -772,16 +775,14 @@ void Dispatcher::DidStartServiceWorkerContextOnWorkerThread(
     // termination when `service_worker_data` is false here.
     if (service_worker_data) {
       service_worker_data->GetServiceWorkerHost()->DidStartServiceWorkerContext(
-          service_worker_data->context()->GetExtensionID(),
-          *service_worker_data->activation_sequence(), service_worker_scope,
-          service_worker_version_id, thread_id);
+          extension_id, *service_worker_data->activation_sequence(),
+          service_worker_scope, service_worker_version_id, thread_id);
     }
   } else {
     CHECK(service_worker_data);
     service_worker_data->GetServiceWorkerHost()->DidStartServiceWorkerContext(
-        service_worker_data->context()->GetExtensionID(),
-        *service_worker_data->activation_sequence(), service_worker_scope,
-        service_worker_version_id, thread_id);
+        extension_id, *service_worker_data->activation_sequence(),
+        service_worker_scope, service_worker_version_id, thread_id);
   }
 }
 
@@ -802,14 +803,16 @@ void Dispatcher::WillDestroyServiceWorkerContextOnWorkerThread(
     // TODO(lazyboy/devlin): Should this cleanup happen in a worker class, like
     // WorkerThreadDispatcher? If so, we should move the initialization as well.
     ScriptContext* script_context = service_worker_data->context();
+    const ExtensionId& extension_id =
+        service_worker_data->context()->GetExtensionID();
+    CHECK(!extension_id.empty());
     NativeExtensionBindingsSystem* worker_bindings_system =
         service_worker_data->bindings_system();
     if (worker_bindings_system) {
       worker_bindings_system->WillReleaseScriptContext(script_context);
       service_worker_data->GetServiceWorkerHost()->DidStopServiceWorkerContext(
-          script_context->GetExtensionID(),
-          *service_worker_data->activation_sequence(), service_worker_scope,
-          service_worker_version_id, thread_id);
+          extension_id, *service_worker_data->activation_sequence(),
+          service_worker_scope, service_worker_version_id, thread_id);
     }
     // Note: we have to remove the context (and thus perform invalidation on
     // the native handlers) prior to removing the worker data, which destroys

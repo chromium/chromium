@@ -115,8 +115,10 @@ void ServiceWorkerData::Init() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   CHECK(bindings_system_);
   const int thread_id = content::WorkerThread::GetCurrentId();
+  const ExtensionId& extension_id = context_->GetExtensionID();
+  CHECK(!extension_id.empty());
   GetServiceWorkerHost()->DidInitializeServiceWorkerContext(
-      context_->GetExtensionID(), service_worker_version_id_, thread_id,
+      extension_id, service_worker_version_id_, thread_id,
       service_worker_token_,
       event_dispatcher_receiver_.BindNewEndpointAndPassRemote());
 }
