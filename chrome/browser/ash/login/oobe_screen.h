@@ -40,7 +40,6 @@ struct OobeScreenId {
   std::string external_api_prefix;
 
   bool operator==(const OobeScreenId& rhs) const;
-  bool operator!=(const OobeScreenId& rhs) const;
   bool operator<(const OobeScreenId& rhs) const;
   friend std::ostream& operator<<(std::ostream& stream, const OobeScreenId& id);
 };
