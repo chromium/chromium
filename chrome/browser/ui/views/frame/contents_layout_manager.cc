@@ -7,20 +7,24 @@
 #include "base/check.h"
 #include "ui/views/view.h"
 
+constexpr int kNewTabFooterHeight = 56;
+
 ContentsLayoutManager::ContentsLayoutManager(views::View* devtools_view,
                                              views::View* devtools_scrim_view,
                                              views::View* contents_view,
                                              views::View* lens_overlay_view,
                                              views::View* scrim_view,
                                              views::View* border_view,
-                                             views::View* watermark_view)
+                                             views::View* watermark_view,
+                                             views::View* new_tab_footer_view)
     : devtools_view_(devtools_view),
       devtools_scrim_view_(devtools_scrim_view),
       contents_view_(contents_view),
       lens_overlay_view_(lens_overlay_view),
       scrim_view_(scrim_view),
       border_view_(border_view),
-      watermark_view_(watermark_view) {}
+      watermark_view_(watermark_view),
+      new_tab_footer_view_(new_tab_footer_view) {}
 
 ContentsLayoutManager::~ContentsLayoutManager() = default;
 
@@ -94,6 +98,14 @@ views::ProposedLayout ContentsLayoutManager::CalculateProposedLayout(
     layouts.child_layouts.emplace_back(
         watermark_view_.get(), watermark_view_->GetVisible(),
         gfx::Rect(0, 0, width, height), views::SizeBounds(container_size));
+  }
+
+  // New Tab Footer view is displayed at the bottom of the contents view.
+  if (new_tab_footer_view_) {
+    layouts.child_layouts.emplace_back(
+        new_tab_footer_view_.get(), new_tab_footer_view_->GetVisible(),
+        gfx::Rect(0, height - kNewTabFooterHeight, width, kNewTabFooterHeight),
+        views::SizeBounds(container_size));
   }
 
   layouts.host_size = gfx::Size(width, height);

@@ -141,6 +141,7 @@
 #include "chrome/browser/ui/views/location_bar/intent_picker_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/location_bar/star_view.h"
+#include "chrome/browser/ui/views/new_tab_footer/footer_web_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
@@ -214,6 +215,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/reading_list/core/reading_list_pref_names.h"
 #include "components/safe_browsing/core/browser/password_protection/metrics_util.h"
+#include "components/search/ntp_features.h"
 #include "components/sessions/core/tab_restore_service.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
 #include "components/sync/service/sync_service.h"
@@ -1018,6 +1020,17 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
   devtools_web_view->SetID(VIEW_ID_DEV_TOOLS_DOCKED);
   devtools_web_view->SetVisible(false);
 
+  std::unique_ptr<new_tab_footer::NewTabFooterWebView> new_tab_footer_web_view;
+  if (base::FeatureList::IsEnabled(ntp_features::kNtpFooter) &&
+      !base::FeatureList::IsEnabled(features::kSideBySide)) {
+    new_tab_footer_web_view =
+        std::make_unique<new_tab_footer::NewTabFooterWebView>(
+            browser_->profile());
+    // TODO(crbug.com/409056427): Set this elsewhere so the footer is only
+    // visible when the new tab page is shown.
+    new_tab_footer_web_view->SetVisible(true);
+  }
+
   auto contents_container = std::make_unique<views::View>();
   devtools_web_view_ =
       contents_container->AddChildView(std::move(devtools_web_view));
@@ -1045,6 +1058,12 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
     contents_web_view_->SetID(VIEW_ID_TAB_CONTAINER);
     contents_web_view_->set_is_primary_web_contents_for_window(true);
     contents_view = contents_web_view_;
+  }
+
+  if (base::FeatureList::IsEnabled(ntp_features::kNtpFooter) &&
+      !base::FeatureList::IsEnabled(features::kSideBySide)) {
+    new_tab_footer_web_view_ =
+        contents_container->AddChildView(std::move(new_tab_footer_web_view));
   }
 
   // Create the view that will house the Lens overlay. This view is visible but
@@ -1084,11 +1103,13 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
 #if BUILDFLAG(ENABLE_GLIC)
   contents_container->SetLayoutManager(std::make_unique<ContentsLayoutManager>(
       devtools_web_view_, devtools_scrim_view_, contents_view,
-      lens_overlay_view_, contents_scrim_view_, glic_border_, watermark_view_));
+      lens_overlay_view_, contents_scrim_view_, glic_border_, watermark_view_,
+      new_tab_footer_web_view_));
 #else
   contents_container->SetLayoutManager(std::make_unique<ContentsLayoutManager>(
       devtools_web_view_, devtools_scrim_view_, contents_view,
-      lens_overlay_view_, contents_scrim_view_, nullptr, watermark_view_));
+      lens_overlay_view_, contents_scrim_view_, nullptr, watermark_view_,
+      new_tab_footer_web_view_));
 #endif
 
   toolbar_ = top_container_->AddChildView(
@@ -1224,6 +1245,7 @@ BrowserView::~BrowserView() {
   window_scrim_view_ = nullptr;
   watermark_view_ = nullptr;
   glic_border_ = nullptr;
+  new_tab_footer_web_view_ = nullptr;
   contents_container_ = nullptr;
   unified_side_panel_ = nullptr;
   right_aligned_side_panel_separator_ = nullptr;

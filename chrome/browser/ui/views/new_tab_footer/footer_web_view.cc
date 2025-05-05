@@ -11,16 +11,11 @@
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 
-namespace {
-constexpr int kFooterHeight = 56;
-}
-
 namespace new_tab_footer {
 
 NewTabFooterWebView::NewTabFooterWebView(
-    content::BrowserContext* browser_context,
-    views::View* base_view)
-    : views::WebView(browser_context), base_view_(base_view) {
+    content::BrowserContext* browser_context)
+    : views::WebView(browser_context) {
   contents_wrapper_ = std::make_unique<WebUIContentsWrapperT<NewTabFooterUI>>(
       GURL(chrome::kChromeUINewTabFooterURL),
       Profile::FromBrowserContext(browser_context), IDS_NEW_TAB_FOOTER_NAME,
@@ -38,14 +33,7 @@ NewTabFooterWebView::~NewTabFooterWebView() {
   contents_wrapper_ = nullptr;
 }
 
-void NewTabFooterWebView::Reposition() {
-  gfx::Rect available_rect = base_view_->GetContentsBounds();
-  SetBounds(available_rect.x(), available_rect.height() - kFooterHeight,
-            available_rect.width(), kFooterHeight);
-}
-
 void NewTabFooterWebView::ShowUI() {
-  Reposition();
   SetVisible(true);
   contents_wrapper_->web_contents()->WasShown();
 }
