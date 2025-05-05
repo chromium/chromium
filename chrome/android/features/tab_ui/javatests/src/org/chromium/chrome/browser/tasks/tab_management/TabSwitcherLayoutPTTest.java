@@ -205,6 +205,7 @@ public class TabSwitcherLayoutPTTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @DisabledTest(message = "Flaky due to NTP thumbnails not being consistently loaded")
     public void testRenderGrid_3NativeTabs() throws IOException {
         ChromeTabbedActivity cta = mCtaTestRule.getActivity();
         RegularNewTabPageStation pageStation =
