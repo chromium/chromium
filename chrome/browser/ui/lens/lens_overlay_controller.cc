@@ -3772,6 +3772,13 @@ void LensOverlayController::InitializeTutorialIPHUrlMatcher() {
 }
 
 void LensOverlayController::MaybeShowDelayedTutorialIPH(const GURL& url) {
+  auto* entry_point_controller = tab_->GetBrowserWindowInterface()
+                                     ->GetFeatures()
+                                     .lens_overlay_entry_point_controller();
+  if (!entry_point_controller || !entry_point_controller->IsEnabled()) {
+    return;
+  }
+
   // If a tutorial IPH was already queued, cancel it.
   tutorial_iph_timer_.Stop();
 
