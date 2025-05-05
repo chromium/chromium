@@ -40,6 +40,7 @@ found in the LICENSE file.
     <item type="id" name="switch_keyboard_focus_row" />
     <item type="id" name="focus_bookmarks" />
     <item type="id" name="dev_tools" />
+    <item type="id" name="esc_key" />
 
     <!-- Editor dialog -->
     <item type="id" name="editor_dialog_done_button" />

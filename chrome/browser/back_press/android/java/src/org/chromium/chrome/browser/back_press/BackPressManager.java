@@ -79,6 +79,37 @@ public class BackPressManager implements Destroyable {
         sMetricsMap = map;
     }
 
+    public @Nullable Boolean processEscapeKeyEvent() {
+        boolean failed = false;
+        for (BackPressHandler handler : mHandlers) {
+            if (handler == null) continue;
+            Boolean enabled = handler.getHandleBackPressChangedSupplier().get();
+            if (enabled == null || !enabled) continue;
+            if (handler.invokeBackActionOnEscape()) {
+                @BackPressResult int backPressResult = handler.handleBackPress();
+                switch (backPressResult) {
+                    case BackPressResult.FAILURE:
+                        failed = true;
+                        continue;
+                    case BackPressResult.SUCCESS:
+                        return Boolean.TRUE;
+                    case BackPressResult.UNKNOWN:
+                    case BackPressResult.IGNORED:
+                        return null;
+                }
+            } else {
+                Boolean escapePressResult = handler.handleEscPress();
+                if (escapePressResult != null && escapePressResult) {
+                    return Boolean.TRUE;
+                }
+            }
+        }
+
+        if (mFallbackOnBackPressed != null) mFallbackOnBackPressed.run();
+        assert !failed : "Callback is enabled but didn't consume the esc.";
+        return null;
+    }
+
     private class OnBackPressedCallbackImpl extends OnBackPressedCallback {
         private @Nullable BackPressHandler mActiveHandler;
         private @Nullable BackEventCompat mLastBackEvent;

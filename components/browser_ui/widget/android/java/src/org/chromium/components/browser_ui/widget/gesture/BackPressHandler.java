@@ -6,6 +6,7 @@ package org.chromium.components.browser_ui.widget.gesture;
 
 import androidx.activity.BackEventCompat;
 import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -117,19 +118,46 @@ public interface BackPressHandler {
     }
 
     /**
+     * When the escape key is pressed, if a View has indicated that it has implemented a non-default
+     * behavior via {@link invokeBackActionOnEscape}, then this method will be called. Clients can
+     * override this method to perform their custom logic for Escape key presses. If the View does
+     * not successfully complete the action, it can return Boolean.False, and the Escape key press
+     * will be dispatched to the next handler.
+     *
+     * @return Whether the Escape key press has been correctly handled.
+     */
+    default @Nullable Boolean handleEscPress() {
+        return null;
+    }
+
+    /**
      * A {@link ObservableSupplier<Boolean>} which notifies of whether the implementer wants to
      * intercept the back gesture.
+     *
      * @return An {@link ObservableSupplier<Boolean>} which yields true if the implementer wants to
-     *         intercept the back gesture; otherwise, it should yield false to prevent {@link
-     *         #handleBackPress()} from being called.
+     *     intercept the back gesture; otherwise, it should yield false to prevent {@link
+     *     #handleBackPress()} from being called.
      */
     default ObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
         return new ObservableSupplierImpl<>();
     }
 
     /**
-     * API 34+ only. Triggered when a back press press is cancelled. In this case,
-     * {@link #handleBackPress()} must not be triggered any more.
+     * When the Escape key is pressed, it will behave the same as the back button by default. If a
+     * View wants the Escape key to perform some other action, then the View should override this
+     * method and the associated {@link handleEscPress} to manually control the behavior of Escape.
+     * If this method is not overridden, then Escape key presses will result in {@link
+     * handleBackPress} being called.
+     *
+     * @return Whether the Escape key should behave the same as the Back button.
+     */
+    default boolean invokeBackActionOnEscape() {
+        return true;
+    }
+
+    /**
+     * API 34+ only. Triggered when a back press press is cancelled. In this case, {@link
+     * #handleBackPress()} must not be triggered any more.
      */
     default void handleOnBackCancelled() {}
 

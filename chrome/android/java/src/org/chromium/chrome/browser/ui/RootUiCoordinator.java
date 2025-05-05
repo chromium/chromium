@@ -1269,6 +1269,19 @@ public class RootUiCoordinator
                         .show();
             }
             return true;
+        } else if (id == R.id.esc_key) {
+            // Unlike Back presses, which are plumbed through an OnBackPressedCallback provided
+            // by View.java, Escape key presses do not have an equivalent callback and must be
+            // handled manually. However, in most cases we want Escape key presses to behave the
+            // same as Back presses, so we intercept them here and send them to the
+            // BackPressManager, but Views can override this for custom behavior. Escape key
+            // presses that include modifier keys (e.g. Ctrl), are not sent to BackPressManager.
+            if (ChromeFeatureList.sKeyboardEscBackNavigation.isEnabled()) {
+                if (mBackPressManager != null) {
+                    Boolean result = mBackPressManager.processEscapeKeyEvent();
+                    return result != null && result;
+                }
+            }
         }
 
         return false;

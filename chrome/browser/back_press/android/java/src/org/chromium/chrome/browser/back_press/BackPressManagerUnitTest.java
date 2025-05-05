@@ -9,6 +9,7 @@ import android.window.OnBackInvokedCallback;
 
 import androidx.activity.BackEventCompat;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 
 import org.junit.Assert;
@@ -33,7 +34,7 @@ public class BackPressManagerUnitTest {
 
     private static class EmptyBackPressHandler implements BackPressHandler {
         private ObservableSupplierImpl<Boolean> mSupplier = new ObservableSupplierImpl<>();
-        private CallbackHelper mCallbackHelper = new CallbackHelper();
+        protected CallbackHelper mCallbackHelper = new CallbackHelper();
 
         @Override
         public @BackPressResult int handleBackPress() {
@@ -58,6 +59,37 @@ public class BackPressManagerUnitTest {
 
         @Override
         public void handleOnBackStarted(@NonNull BackEventCompat backEvent) {}
+    }
+
+    private static class EmptyBackPressHandlerFailure extends EmptyBackPressHandler {
+        @Override
+        public @BackPressResult int handleBackPress() {
+            mCallbackHelper.notifyCalled();
+            return BackPressResult.FAILURE;
+        }
+    }
+
+    private static class EscapeBackPressHandler extends EmptyBackPressHandler {
+        @Nullable
+        @Override
+        public Boolean handleEscPress() {
+            mCallbackHelper.notifyCalled();
+            return Boolean.TRUE;
+        }
+
+        @Override
+        public boolean invokeBackActionOnEscape() {
+            return false;
+        }
+    }
+
+    private static class EscapeBackPressHandlerFailure extends EscapeBackPressHandler {
+        @Nullable
+        @Override
+        public Boolean handleEscPress() {
+            mCallbackHelper.notifyCalled();
+            return Boolean.FALSE;
+        }
     }
 
     @Test
@@ -490,6 +522,77 @@ public class BackPressManagerUnitTest {
 
         callback.onBackInvoked();
         Assert.assertEquals("All observers should be called", 2, callbackHelper.getCallCount());
+    }
+
+    @Test
+    public void testEscapeUsageTrue() {
+        BackPressManager manager = new BackPressManager();
+        EscapeBackPressHandler h1 = new EscapeBackPressHandler();
+        manager.addHandler(h1, 1);
+        h1.getHandleBackPressChangedSupplier().set(true);
+
+        Assert.assertEquals(
+                "Handler should have invoked escape and consumed event.",
+                Boolean.TRUE,
+                manager.processEscapeKeyEvent());
+        Assert.assertEquals(
+                "Handler did not execute custom esc key code.",
+                1,
+                h1.getCallbackHelper().getCallCount());
+    }
+
+    @Test
+    public void testEscapeUsageFalse() {
+        BackPressManager manager = new BackPressManager();
+        EscapeBackPressHandlerFailure h1 = new EscapeBackPressHandlerFailure();
+        manager.addHandler(h1, 2);
+        h1.getHandleBackPressChangedSupplier().set(true);
+
+        Assert.assertNull(
+                "Handler should not have consumed any event.", manager.processEscapeKeyEvent());
+        Assert.assertEquals(
+                "Handler did not execute custom esc key code.",
+                1,
+                h1.getCallbackHelper().getCallCount());
+    }
+
+    @Test
+    public void testEscapeUsageFallthrough() {
+        BackPressManager manager = new BackPressManager();
+        EscapeBackPressHandlerFailure h1 = new EscapeBackPressHandlerFailure();
+        EmptyBackPressHandlerFailure h2 = new EmptyBackPressHandlerFailure();
+        EmptyBackPressHandlerFailure h3 = new EmptyBackPressHandlerFailure();
+        EscapeBackPressHandler h4 = new EscapeBackPressHandler();
+
+        manager.addHandler(h1, 3);
+        manager.addHandler(h2, 6);
+        manager.addHandler(h3, 8);
+        manager.addHandler(h4, 10);
+        h1.getHandleBackPressChangedSupplier().set(true);
+        h2.getHandleBackPressChangedSupplier().set(true);
+        h3.getHandleBackPressChangedSupplier().set(false);
+        h4.getHandleBackPressChangedSupplier().set(true);
+
+        Assert.assertEquals(
+                "Handler should have fallen through failures to success and consumed event.",
+                Boolean.TRUE,
+                manager.processEscapeKeyEvent());
+        Assert.assertEquals(
+                "Handler did not execute custom esc key code even though it will fail.",
+                1,
+                h1.getCallbackHelper().getCallCount());
+        Assert.assertEquals(
+                "Handler did not execute back press code even though it will fall through.",
+                1,
+                h2.getCallbackHelper().getCallCount());
+        Assert.assertEquals(
+                "Handler should not have executed back press code.",
+                0,
+                h3.getCallbackHelper().getCallCount());
+        Assert.assertEquals(
+                "Handler did not execute custom esc key code.",
+                1,
+                h4.getCallbackHelper().getCallCount());
     }
 
     private int getHandlerCount(BackPressManager manager) {
