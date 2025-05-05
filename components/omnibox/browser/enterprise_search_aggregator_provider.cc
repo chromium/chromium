@@ -477,7 +477,7 @@ void EnterpriseSearchAggregatorProvider::Start(const AutocompleteInput& input,
 
   // Unretained is safe because `this` owns `debouncer_`.
   debouncer_->RequestRun(base::BindOnce(
-      &EnterpriseSearchAggregatorProvider::Run, base::Unretained(this)));
+      &EnterpriseSearchAggregatorProvider::Run, base::Unretained(this), input));
 }
 
 void EnterpriseSearchAggregatorProvider::Stop(bool clear_cached_results,
@@ -536,12 +536,13 @@ bool EnterpriseSearchAggregatorProvider::IsProviderAllowed(
   return true;
 }
 
-void EnterpriseSearchAggregatorProvider::Run() {
+void EnterpriseSearchAggregatorProvider::Run(const AutocompleteInput& input) {
   // Don't clear `matches_` until a new successful response is ready to replace
   // them.
   client_->GetRemoteSuggestionsService(/*create_if_necessary=*/true)
       ->CreateEnterpriseSearchAggregatorSuggestionsRequest(
           adjusted_input_.text(), GURL(template_url_->suggestions_url()),
+          input.current_page_classification(),
           base::BindOnce(&EnterpriseSearchAggregatorProvider::RequestStarted,
                          weak_ptr_factory_.GetWeakPtr()),
           base::BindOnce(

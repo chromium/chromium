@@ -62,7 +62,7 @@ class EnterpriseSearchAggregatorProvider : public AutocompleteProvider {
   bool IsProviderAllowed(const AutocompleteInput& input);
 
   // Called by `debouncer_`, queued when `Start()` is called.
-  void Run();
+  void Run(const AutocompleteInput& input);
 
   // Callback for when the loader is available with a valid token. Takes
   // ownership of the loader.

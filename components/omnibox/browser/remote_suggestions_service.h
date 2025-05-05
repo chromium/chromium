@@ -206,10 +206,12 @@ class RemoteSuggestionsService : public KeyedService {
 
   // Creates and starts a document suggestion request for `query` asynchronously
   // after obtaining an OAuth2 token for the signed-in users.
-  void CreateDocumentSuggestionsRequest(const std::u16string& query,
-                                        bool is_off_the_record,
-                                        StartCallback start_callback,
-                                        CompletionCallback completion_callback);
+  void CreateDocumentSuggestionsRequest(
+      const std::u16string& query,
+      bool is_off_the_record,
+      metrics::OmniboxEventProto::PageClassification page_classification,
+      StartCallback start_callback,
+      CompletionCallback completion_callback);
 
   // Advises the service to stop any process that creates a document suggestion
   // request.
@@ -221,6 +223,7 @@ class RemoteSuggestionsService : public KeyedService {
   void CreateEnterpriseSearchAggregatorSuggestionsRequest(
       const std::u16string& query,
       const GURL& suggest_url,
+      metrics::OmniboxEventProto::PageClassification page_classification,
       StartCallback start_callback,
       CompletionCallback completion_callback,
       bool in_keyword_mode);
@@ -249,18 +252,22 @@ class RemoteSuggestionsService : public KeyedService {
   void OnRequestCreated(const base::UnguessableToken& request_id,
                         network::ResourceRequest* request);
   // Called when the transfer has started. Notifies `observers_`.
-  void OnRequestStarted(const base::UnguessableToken& request_id,
-                        RemoteRequestType request_type,
-                        network::SimpleURLLoader* loader,
-                        const std::string& request_body);
+  void OnRequestStarted(
+      const base::UnguessableToken& request_id,
+      RemoteRequestType request_type,
+      metrics::OmniboxEventProto::PageClassification page_classification,
+      network::SimpleURLLoader* loader,
+      const std::string& request_body);
   // Called when the transfer has started asynchronously, e.g., after obtaining
   // an OAuth token. Notifies `observers_` and calls `start_callback` to
   // transfer the ownership of `loader` to the caller.
-  void OnRequestStartedAsync(const base::UnguessableToken& request_id,
-                             RemoteRequestType request_type,
-                             StartCallback start_callback,
-                             std::unique_ptr<network::SimpleURLLoader> loader,
-                             const std::string& request_body);
+  void OnRequestStartedAsync(
+      const base::UnguessableToken& request_id,
+      RemoteRequestType request_type,
+      metrics::OmniboxEventProto::PageClassification page_classification,
+      StartCallback start_callback,
+      std::unique_ptr<network::SimpleURLLoader> loader,
+      const std::string& request_body);
   // Called when the transfer is done. Notifies `observers_` and calls
   // `completion_callback` passing the response to the caller.
   void OnRequestCompleted(

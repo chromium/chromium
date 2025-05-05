@@ -93,7 +93,7 @@ class DocumentProvider : public AutocompleteProvider {
   static bool IsInputLikelyURL(const AutocompleteInput& input);
 
   // Called by |debouncer_|, queued when |start| is called.
-  void Run();
+  void Run(const AutocompleteInput& input);
 
   // Called when the network request for suggestions has completed.
   void OnURLLoadComplete(const network::SimpleURLLoader* source,
