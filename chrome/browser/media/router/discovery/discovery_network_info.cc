@@ -20,12 +20,4 @@ DiscoveryNetworkInfo::DiscoveryNetworkInfo(const DiscoveryNetworkInfo&) =
 DiscoveryNetworkInfo& DiscoveryNetworkInfo::operator=(
     const DiscoveryNetworkInfo&) = default;
 
-bool DiscoveryNetworkInfo::operator==(const DiscoveryNetworkInfo& other) const {
-  return name == other.name && network_id == other.network_id;
-}
-
-bool DiscoveryNetworkInfo::operator!=(const DiscoveryNetworkInfo& o) const {
-  return !(*this == o);
-}
-
 }  // namespace media_router
