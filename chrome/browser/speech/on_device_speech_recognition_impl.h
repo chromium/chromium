@@ -73,19 +73,27 @@ class OnDeviceSpeechRecognitionImpl
   // explicit user consent.
   bool CanInstallWithoutUserConsent(const std::string& language);
 
+  // Returns whether the render frame host can use on-device speech recognition.
+  // HTTP(s) origins not scoped to the default storage partition may not use
+  // on-device speech recognition.
+  bool CanRenderFrameHostUseOnDeviceSpeechRecognition();
+
 #if !BUILDFLAG(IS_ANDROID)
   void RunAndRemoveInstallationCallbacks(const std::string& language,
                                          bool installation_success);
-#endif  // !BUILDFLAG(IS_ANDROID)
+  base::Value GetOnDeviceLanguagesDownloadedValue();
+  void SetOnDeviceLanguagesDownloadedContentSetting(
+      base::Value on_device_languages_downloaded);
+  bool HasOnDeviceLanguageDownloaded(const std::string& language);
+  void SetOnDeviceLanguageDownloaded(const std::string&);
 
-  raw_ptr<PrefService> pref_service_;
-  std::unique_ptr<language::LanguagePrefs> language_prefs_;
-
-#if !BUILDFLAG(IS_ANDROID)
   base::flat_map<std::string,
                  std::list<InstallOnDeviceSpeechRecognitionCallback>>
       language_installation_callbacks_;
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+  raw_ptr<PrefService> pref_service_;
+  std::unique_ptr<language::LanguagePrefs> language_prefs_;
 
   mojo::Receiver<media::mojom::OnDeviceSpeechRecognition> receiver_{this};
 
