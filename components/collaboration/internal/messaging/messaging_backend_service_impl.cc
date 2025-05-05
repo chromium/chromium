@@ -710,9 +710,16 @@ void MessagingBackendServiceImpl::OnTabGroupRemoved(
     return;
   }
 
-  // Remove all messages from the DB related to this tab group. The only message
-  // that will stay will be the group removal message which will be added in the
-  // next section.
+  // Clear any the dirty persistent messages related to the group that are
+  // already showing in UI. This is important in unshare flow since the tab
+  // group continues to exist in the UI. This will also clear the dirty bits in
+  // the DB and notify all the observers to update the UI.
+  ClearDirtyTabMessagesForGroup(*collaboration_group_id, removed_group);
+
+  // Remove all messages from the DB related to this tab group (including the
+  // ones that were just cleared from dirty state). The only message that will
+  // stay will be the group removal message which will be added in the next
+  // section.
   std::vector<collaboration_pb::Message> messages =
       store_->GetRecentMessagesForGroup(*collaboration_group_id);
   std::set<std::string> message_uuids;

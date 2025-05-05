@@ -1388,6 +1388,8 @@ void TabGroupSyncServiceImpl::NotifyTabGroupMigrated(
 void TabGroupSyncServiceImpl::HandleTabGroupRemoved(
     const SavedTabGroup& removed_group,
     TriggerSource source) {
+  LogTabGroupEvent(logger_, "HandleTabGroupRemoved", &removed_group);
+
   // When a group is deleted, there's no more need to keep any "was locally
   // closed" pref entry around.
   // TODO(crbug.com/363927991): This also gets called during signout, when all
