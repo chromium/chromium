@@ -38,8 +38,7 @@ class DownloadDisplay {
     // Whether we know the final size of all downloads.
     bool progress_certain = true;
 
-    bool operator==(const ProgressInfo& other) const;
-    bool operator!=(const ProgressInfo& other) const;
+    friend bool operator==(const ProgressInfo&, const ProgressInfo&) = default;
 
     // Compares all fields except the percentage.
     bool FieldsEqualExceptPercentage(const ProgressInfo& other) const;
