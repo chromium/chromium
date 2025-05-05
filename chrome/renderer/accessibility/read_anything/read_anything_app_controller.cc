@@ -1902,6 +1902,11 @@ void ReadAnythingAppController::ShouldShowUI() {
 
 void ReadAnythingAppController::OnSpeechPlayingStateChanged(
     bool is_speech_active) {
+  // Don't send event updates if the speech playing state hasn't actually
+  // changed. This can get triggered incorrectly when changing pages.
+  if (read_aloud_model_.speech_playing() == is_speech_active) {
+    return;
+  }
   read_aloud_model_.set_speech_playing(is_speech_active);
   if (!is_speech_active) {
     SendEventUpdates();
