@@ -12,10 +12,12 @@ IdentityManagerObserverBridge::IdentityManagerObserverBridge(
     IdentityManager* identity_manager,
     id<IdentityManagerObserverBridgeDelegate> delegate)
     : identity_manager_(identity_manager), delegate_(delegate) {
-  identity_manager_observation_.Observe(identity_manager_);
+  identity_manager_->AddObserver(this);
 }
 
-IdentityManagerObserverBridge::~IdentityManagerObserverBridge() = default;
+IdentityManagerObserverBridge::~IdentityManagerObserverBridge() {
+  identity_manager_->RemoveObserver(this);
+}
 
 void IdentityManagerObserverBridge::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event) {
@@ -85,11 +87,9 @@ void IdentityManagerObserverBridge::OnEndBatchOfPrimaryAccountChanges() {
 
 void IdentityManagerObserverBridge::OnIdentityManagerShutdown(
     IdentityManager* identity_manager) {
-  identity_manager_observation_.Reset();
   if ([delegate_ respondsToSelector:@selector(onIdentityManagerShutdown:)]) {
     [delegate_ onIdentityManagerShutdown:identity_manager];
   }
-  identity_manager_ = nullptr;
 }
 
 }  // namespace signin
