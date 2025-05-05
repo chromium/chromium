@@ -7356,6 +7356,13 @@ class LayerTreeHostTestCrispUpAfterPinchEnds : public LayerTreeHostTest {
   void NotifyTileStateChangedOnThread(LayerTreeHostImpl* host_impl,
                                       const Tile* tile,
                                       bool update_damage) override {
+    // NotifyTileStateChangedOnThread() is also triggered when a Tile is being
+    // destroyed. We do not want to trigger any test expectation for those
+    // cases. Since |update_damage| is false when a Tile is destroyed, we can
+    // skip the test here based on that.
+    if (!update_damage) {
+      return;
+    }
     if (frame_ == 3) {
       // On frame 3, we will have a lower res tile complete for the pinch-out
       // gesture even though it's not displayed. We wait for it here to prevent
@@ -7585,6 +7592,13 @@ class LayerTreeHostTestContinuousDrawWhenCreatingVisibleTiles
   void NotifyTileStateChangedOnThread(LayerTreeHostImpl* host_impl,
                                       const Tile* tile,
                                       bool update_damage) override {
+    // NotifyTileStateChangedOnThread() is also triggered when a Tile is being
+    // destroyed. We do not want to trigger any test expectation for those
+    // cases. Since |update_damage| is false when a Tile is destroyed, we can
+    // skip the test here based on that.
+    if (!update_damage) {
+      return;
+    }
     // On step_ == 2, we are preventing texture uploads from completing,
     // so this verifies they are not completing before step_ == 3.
     // Flaky failures here indicate we're failing to prevent uploads from
