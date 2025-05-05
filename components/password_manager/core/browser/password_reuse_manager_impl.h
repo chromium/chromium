@@ -10,6 +10,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_reuse_manager.h"
@@ -125,10 +126,19 @@ class PasswordReuseManagerImpl : public PasswordReuseManager,
   raw_ptr<PrefService> prefs_ = nullptr;
 
   scoped_refptr<PasswordStoreInterface> profile_store_;
+  base::ScopedObservation<PasswordStoreInterface,
+                          PasswordStoreInterface::Observer>
+      profile_store_observation_{this};
 
   scoped_refptr<PasswordStoreInterface> account_store_;
+  base::ScopedObservation<PasswordStoreInterface,
+                          PasswordStoreInterface::Observer>
+      account_store_observation_{this};
 
   raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;
+  base::ScopedObservation<signin::IdentityManager,
+                          signin::IdentityManager::Observer>
+      identity_manager_observation_{this};
 
   std::unique_ptr<SharedPreferencesDelegate> shared_pref_delegate_;
 
