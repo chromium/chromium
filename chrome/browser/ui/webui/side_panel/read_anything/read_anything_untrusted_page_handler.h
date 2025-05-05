@@ -222,6 +222,18 @@ class ReadAnythingUntrustedPageHandler :
   bool AreInnerContentsPdfContent(
       std::vector<content::WebContents*> inner_contents);
 
+  void OnScreenAIServiceInitialized(bool successful);
+
+  // Called to notify this instance that the dependency parser loader
+  // is available for model requests or is invalidating existing requests
+  // specified by "is_available". The "callback" will be either forwarded to a
+  // request to get the actual model file or will be run with an empty file if
+  // the dependency parser loader is rejecting requests because the pending
+  // model request queue is already full (100 requests maximum).
+  void OnDependencyParserModelFileAvailabilityChanged(
+      GetDependencyParserModelCallback callback,
+      bool is_available);
+
   raw_ptr<ReadAnythingSidePanelController> side_panel_controller_;
   const raw_ptr<Profile> profile_;
   const raw_ptr<content::WebUI> web_ui_;
@@ -263,23 +275,11 @@ class ReadAnythingUntrustedPageHandler :
   // recognized as a pdf after it finishes loading.
   bool is_pdf_ = false;
 
-  void OnScreenAIServiceInitialized(bool successful);
-
   // Observes LanguageDetectionObserver, which notifies us when the language of
   // the contents of the current page has been determined.
   base::ScopedObservation<translate::TranslateDriver,
                           translate::TranslateDriver::LanguageDetectionObserver>
       translate_observation_{this};
-
-  // Called to notify this instance that the dependency parser loader
-  // is available for model requests or is invalidating existing requests
-  // specified by "is_available". The "callback" will be either forwarded to a
-  // request to get the actual model file or will be run with an empty file if
-  // the dependency parser loader is rejecting requests because the pending
-  // model request queue is already full (100 requests maximum).
-  void OnDependencyParserModelFileAvailabilityChanged(
-      GetDependencyParserModelCallback callback,
-      bool is_available);
 
   base::WeakPtrFactory<ReadAnythingUntrustedPageHandler> weak_factory_{this};
 };
