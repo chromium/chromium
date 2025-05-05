@@ -57,61 +57,79 @@ using PermanentFolderType = BookmarkParentFolder::PermanentFolderType;
 
 namespace {
 
-constexpr UserMetricsAction kBookmarkBarNewBackgroundTab(
+constexpr UserMetricsAction kBookmarkBarOpenAll(
     "BookmarkBar_ContextMenu_OpenAll");
 constexpr UserMetricsAction kBookmarkBarNewWindow(
     "BookmarkBar_ContextMenu_OpenAllInNewWindow");
 constexpr UserMetricsAction kBookmarkBarIncognito(
     "BookmarkBar_ContextMenu_OpenAllIncognito");
-constexpr UserMetricsAction kAppMenuBookmarksNewBackgroundTab(
+constexpr UserMetricsAction kBookmarkBarOpenAllInNewTabGroup(
+    "BookmarkBar_ContextMenu_OpenAllInNewTabGroup");
+constexpr UserMetricsAction kBookmarkBarOpenSplitView(
+    "BookmarkBar_ContextMenu_OpenSplitView");
+constexpr UserMetricsAction kAppMenuBookmarksOpenAll(
     "WrenchMenu_Bookmarks_ContextMenu_OpenAll");
 constexpr UserMetricsAction kAppMenuBookmarksNewWindow(
     "WrenchMenu_Bookmarks_ContextMenu_OpenAllInNewWindow");
 constexpr UserMetricsAction kAppMenuBookmarksIncognito(
     "WrenchMenu_Bookmarks_ContextMenu_OpenAllIncognito");
-constexpr UserMetricsAction kSidePanelBookmarksNewBackgroundTab(
+constexpr UserMetricsAction kAppMenuBookmarksOpenAllInNewTabGroup(
+    "WrenchMenu_Bookmarks_ContextMenu_OpenAllInNewTabGroup");
+constexpr UserMetricsAction kAppMenuBookmarksOpenSplitView(
+    "WrenchMenu_Bookmarks_ContextMenu_OpenSplitView");
+constexpr UserMetricsAction kSidePanelBookmarksOpenAll(
     "SidePanel_Bookmarks_ContextMenu_OpenAll");
 constexpr UserMetricsAction kSidePanelBookmarksNewWindow(
     "SidePanel_Bookmarks_ContextMenu_OpenAllInNewWindow");
 constexpr UserMetricsAction kSidePanelBookmarksIncognito(
     "SidePanel_Bookmarks_ContextMenu_OpenAllIncognito");
+constexpr UserMetricsAction kSidePanelBookmarksOpenAllInNewTabGroup(
+    "SidePanel_Bookmarks_ContextMenu_OpenAllInNewTabGroup");
+constexpr UserMetricsAction kSidePanelBookmarksOpenSplitView(
+    "SidePanel_Bookmarks_ContextMenu_OpenSplitView");
 
 const UserMetricsAction* GetActionForLocationAndDisposition(
-    BookmarkLaunchLocation location,
-    WindowOpenDisposition disposition) {
+    int command_id,
+    BookmarkLaunchLocation location) {
   switch (location) {
     case BookmarkLaunchLocation::kAttachedBar:
-      switch (disposition) {
-        case WindowOpenDisposition::NEW_BACKGROUND_TAB:
-          return &kBookmarkBarNewBackgroundTab;
-        case WindowOpenDisposition::NEW_WINDOW:
-          return &kBookmarkBarNewWindow;
-        case WindowOpenDisposition::OFF_THE_RECORD:
+      switch (command_id) {
+        case IDC_BOOKMARK_BAR_OPEN_ALL:
+          return &kBookmarkBarOpenAll;
+        case IDC_BOOKMARK_BAR_OPEN_ALL_INCOGNITO:
           return &kBookmarkBarIncognito;
-        default:
-          return nullptr;
+        case IDC_BOOKMARK_BAR_OPEN_ALL_NEW_TAB_GROUP:
+          return &kBookmarkBarOpenAllInNewTabGroup;
+        case IDC_BOOKMARK_BAR_OPEN_ALL_NEW_WINDOW:
+          return &kBookmarkBarNewWindow;
+        case IDC_BOOKMARK_BAR_OPEN_SPLIT_VIEW:
+          return &kBookmarkBarOpenSplitView;
       }
     case BookmarkLaunchLocation::kAppMenu:
-      switch (disposition) {
-        case WindowOpenDisposition::NEW_BACKGROUND_TAB:
-          return &kAppMenuBookmarksNewBackgroundTab;
-        case WindowOpenDisposition::NEW_WINDOW:
-          return &kAppMenuBookmarksNewWindow;
-        case WindowOpenDisposition::OFF_THE_RECORD:
+      switch (command_id) {
+        case IDC_BOOKMARK_BAR_OPEN_ALL:
+          return &kAppMenuBookmarksOpenAll;
+        case IDC_BOOKMARK_BAR_OPEN_ALL_INCOGNITO:
           return &kAppMenuBookmarksIncognito;
-        default:
-          return nullptr;
+        case IDC_BOOKMARK_BAR_OPEN_ALL_NEW_TAB_GROUP:
+          return &kAppMenuBookmarksOpenAllInNewTabGroup;
+        case IDC_BOOKMARK_BAR_OPEN_ALL_NEW_WINDOW:
+          return &kAppMenuBookmarksNewWindow;
+        case IDC_BOOKMARK_BAR_OPEN_SPLIT_VIEW:
+          return &kAppMenuBookmarksOpenSplitView;
       }
     case BookmarkLaunchLocation::kSidePanelContextMenu:
-      switch (disposition) {
-        case WindowOpenDisposition::NEW_BACKGROUND_TAB:
-          return &kSidePanelBookmarksNewBackgroundTab;
-        case WindowOpenDisposition::NEW_WINDOW:
-          return &kSidePanelBookmarksNewWindow;
-        case WindowOpenDisposition::OFF_THE_RECORD:
+      switch (command_id) {
+        case IDC_BOOKMARK_BAR_OPEN_ALL:
+          return &kSidePanelBookmarksOpenAll;
+        case IDC_BOOKMARK_BAR_OPEN_ALL_INCOGNITO:
           return &kSidePanelBookmarksIncognito;
-        default:
-          return nullptr;
+        case IDC_BOOKMARK_BAR_OPEN_ALL_NEW_TAB_GROUP:
+          return &kSidePanelBookmarksOpenAllInNewTabGroup;
+        case IDC_BOOKMARK_BAR_OPEN_ALL_NEW_WINDOW:
+          return &kSidePanelBookmarksNewWindow;
+        case IDC_BOOKMARK_BAR_OPEN_SPLIT_VIEW:
+          return &kSidePanelBookmarksOpenSplitView;
       }
     default:
       return nullptr;
@@ -334,7 +352,7 @@ void BookmarkContextMenuController::ExecuteCommand(int id, int event_flags) {
         initial_disposition = WindowOpenDisposition::OFF_THE_RECORD;
       }
       const UserMetricsAction* const action =
-          GetActionForLocationAndDisposition(opened_from_, initial_disposition);
+          GetActionForLocationAndDisposition(id, opened_from_);
       if (action) {
         base::RecordAction(*action);
       }

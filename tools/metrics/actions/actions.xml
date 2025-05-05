@@ -38531,6 +38531,46 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="SidePanel_Bookmarks_ContextMenu_OpenAll">
+  <owner>dpenning@chromium.org</owner>
+  <description>
+    Recorded when the bookmarks context menu is used in the SidePanel for
+    &quot;open all&quot;
+  </description>
+</action>
+
+<action name="SidePanel_Bookmarks_ContextMenu_OpenAllIncognito">
+  <owner>dpenning@chromium.org</owner>
+  <description>
+    Recorded when the bookmarks context menu is used in the SidePanel for
+    &quot;open all incognito&quot;
+  </description>
+</action>
+
+<action name="SidePanel_Bookmarks_ContextMenu_OpenAllInNewTabGroup">
+  <owner>dpenning@chromium.org</owner>
+  <description>
+    Recorded when the bookmarks context menu is used in the SidePanel for
+    &quot;open all in new tab group&quot;
+  </description>
+</action>
+
+<action name="SidePanel_Bookmarks_ContextMenu_OpenAllInNewWindow">
+  <owner>dpenning@chromium.org</owner>
+  <description>
+    Recorded when the bookmarks context menu is used in the SidePanel for
+    &quot;open all in new window&quot;
+  </description>
+</action>
+
+<action name="SidePanel_Bookmarks_ContextMenu_OpenSplitView">
+  <owner>dpenning@chromium.org</owner>
+  <description>
+    Recorded when the bookmarks context menu is used in the SidePanel for
+    &quot;open split view&quot;
+  </description>
+</action>
+
 <action name="Signin_Abort_Signin">
   <owner>mahmadi@chromium.org</owner>
   <description>
@@ -48208,6 +48248,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="WrenchMenu_Bookmarks_ContextMenu_OpenAllInNewTabGroup">
+  <owner>dpenning@chromium.org</owner>
+  <description>
+    Recorded when the bookmarks context menu is used in the Wrench menu for
+    &quot;open split view&quot;
+  </description>
+</action>
+
 <action name="WrenchMenu_Bookmarks_ContextMenu_OpenAllInNewWindow">
   <owner>dfried@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
@@ -48218,6 +48266,14 @@ should be able to be added at any place in this file.
 
     This user action is of special interest to the chrome-analysis-team@. Do not
     change its semantics or retire it without talking to them first.
+  </description>
+</action>
+
+<action name="WrenchMenu_Bookmarks_ContextMenu_OpenSplitView">
+  <owner>dpenning@chromium.org</owner>
+  <description>
+    Recorded when the bookmarks context menu is used in the Wrench menu for
+    &quot;open split view&quot;
   </description>
 </action>
 
