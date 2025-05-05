@@ -13,6 +13,7 @@
 #include "chrome/browser/extensions/extension_web_ui.h"
 #include "chrome/browser/ui/webui/new_tab_footer/new_tab_footer.mojom.h"
 #include "chrome/common/webui_url_constants.h"
+#include "content/public/test/test_web_ui.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/test/test_extension_dir.h"
 #include "net/base/url_util.h"
@@ -26,15 +27,18 @@ class NewTabFooterHandlerExtensionTest
     ExtensionServiceTestBase::SetUp();
 
     InitializeEmptyExtensionService();
-
+    web_contents_ = content::WebContents::Create(
+        content::WebContents::CreateParams(profile()));
     handler_ = std::make_unique<NewTabFooterHandler>(
         mojo::PendingReceiver<new_tab_footer::mojom::NewTabFooterHandler>(),
-        profile());
+        mojo::PendingRemote<new_tab_footer::mojom::NewTabFooterDocument>(),
+        web_contents_.get());
   }
 
   NewTabFooterHandler& handler() { return *handler_; }
 
  private:
+  std::unique_ptr<content::WebContents> web_contents_;
   std::unique_ptr<NewTabFooterHandler> handler_;
 };
 

@@ -6,7 +6,7 @@ import 'chrome://newtab-footer/app.js';
 
 import type {NewTabFooterAppElement} from 'chrome://newtab-footer/app.js';
 import {NewTabFooterDocumentProxy} from 'chrome://newtab-footer/browser_proxy.js';
-import {NewTabFooterHandlerRemote} from 'chrome://newtab-footer/new_tab_footer.mojom-webui.js';
+import {NewTabFooterDocumentCallbackRouter, NewTabFooterHandlerRemote} from 'chrome://newtab-footer/new_tab_footer.mojom-webui.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -18,7 +18,8 @@ suite('NewTabFooterAppTest', () => {
   setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     handler = TestMock.fromClass(NewTabFooterHandlerRemote);
-    NewTabFooterDocumentProxy.setInstance(handler);
+    NewTabFooterDocumentProxy.setInstance(
+        handler, new NewTabFooterDocumentCallbackRouter());
   });
 
   async function initializeElement() {

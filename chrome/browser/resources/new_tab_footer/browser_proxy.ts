@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {NewTabFooterHandlerFactory, NewTabFooterHandlerRemote} from './new_tab_footer.mojom-webui.js';
+import {NewTabFooterDocumentCallbackRouter, NewTabFooterHandlerFactory, NewTabFooterHandlerRemote} from './new_tab_footer.mojom-webui.js';
 
 let instance: NewTabFooterDocumentProxy|null = null;
 
@@ -10,20 +10,29 @@ export class NewTabFooterDocumentProxy {
   static getInstance(): NewTabFooterDocumentProxy {
     if (!instance) {
       const handler = new NewTabFooterHandlerRemote();
+      const callbackRouter = new NewTabFooterDocumentCallbackRouter();
       const factoryRemote = NewTabFooterHandlerFactory.getRemote();
-      factoryRemote.createPageHandler(handler.$.bindNewPipeAndPassReceiver());
-      instance = new NewTabFooterDocumentProxy(handler);
+      factoryRemote.createNewTabFooterHandler(
+          callbackRouter.$.bindNewPipeAndPassRemote(),
+          handler.$.bindNewPipeAndPassReceiver());
+      instance = new NewTabFooterDocumentProxy(handler, callbackRouter);
     }
     return instance;
   }
 
-  static setInstance(handler: NewTabFooterHandlerRemote) {
-    instance = new NewTabFooterDocumentProxy(handler);
+  static setInstance(
+      handler: NewTabFooterHandlerRemote,
+      callbackRouter: NewTabFooterDocumentCallbackRouter) {
+    instance = new NewTabFooterDocumentProxy(handler, callbackRouter);
   }
 
   handler: NewTabFooterHandlerRemote;
+  callbackRouter: NewTabFooterDocumentCallbackRouter;
 
-  private constructor(handler: NewTabFooterHandlerRemote) {
+  private constructor(
+      handler: NewTabFooterHandlerRemote,
+      callbackRouter: NewTabFooterDocumentCallbackRouter) {
     this.handler = handler;
+    this.callbackRouter = callbackRouter;
   }
 }

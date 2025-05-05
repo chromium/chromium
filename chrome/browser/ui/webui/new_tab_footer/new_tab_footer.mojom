@@ -16,9 +16,10 @@ struct ExtensionAttribution {
 
 // Used by the WebUI document to bootstrap bidirectional communication.
 interface NewTabFooterHandlerFactory {
-  // The WebUI page's |BrowserProxy| singleton calls this method when the page
-  // is first initialized.
-  CreatePageHandler(pending_receiver<NewTabFooterHandler> handler);
+  // The WebUI page's |BrowserProxy| singleton calls this method when the
+  // document is first initialized.
+  CreateNewTabFooterHandler(pending_remote<NewTabFooterDocument> document,
+                    pending_receiver<NewTabFooterHandler> handler);
 };
 
 // Browser-side handler for requests from WebUI document.
@@ -27,3 +28,6 @@ interface NewTabFooterHandler {
   // page, if there is one.
   GetNtpExtensionAttribution() => (ExtensionAttribution? attribution);
 };
+
+// WebUI-side handler for requests from the browser.
+interface NewTabFooterDocument {};

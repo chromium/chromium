@@ -15,8 +15,13 @@
 NewTabFooterHandler::NewTabFooterHandler(
     mojo::PendingReceiver<new_tab_footer::mojom::NewTabFooterHandler>
         pending_handler,
-    Profile* profile)
-    : profile_(profile), handler_{this, std::move(pending_handler)} {}
+    mojo::PendingRemote<new_tab_footer::mojom::NewTabFooterDocument>
+        pending_document,
+    content::WebContents* web_contents)
+    : profile_(Profile::FromBrowserContext(web_contents->GetBrowserContext())),
+      web_contents_(web_contents),
+      document_(std::move(pending_document)),
+      handler_{this, std::move(pending_handler)} {}
 
 NewTabFooterHandler::~NewTabFooterHandler() = default;
 

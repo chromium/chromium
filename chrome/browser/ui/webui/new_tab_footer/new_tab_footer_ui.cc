@@ -67,11 +67,14 @@ void NewTabFooterUI::BindInterface(
   document_factory_receiver_.Bind(std::move(pending_receiver));
 }
 
-void NewTabFooterUI::CreatePageHandler(
+void NewTabFooterUI::CreateNewTabFooterHandler(
+    mojo::PendingRemote<new_tab_footer::mojom::NewTabFooterDocument>
+        pending_document,
     mojo::PendingReceiver<new_tab_footer::mojom::NewTabFooterHandler>
         pending_handler) {
   handler_ = std::make_unique<NewTabFooterHandler>(std::move(pending_handler),
-                                                   profile_);
+                                                   std::move(pending_document),
+                                                   web_ui()->GetWebContents());
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(NewTabFooterUI)

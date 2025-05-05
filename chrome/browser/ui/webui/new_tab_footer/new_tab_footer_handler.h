@@ -7,8 +7,10 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/webui/new_tab_footer/new_tab_footer.mojom.h"
+#include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 class Profile;
 
@@ -17,7 +19,9 @@ class NewTabFooterHandler : public new_tab_footer::mojom::NewTabFooterHandler {
   NewTabFooterHandler(
       mojo::PendingReceiver<new_tab_footer::mojom::NewTabFooterHandler>
           pending_handler,
-      Profile* profile);
+      mojo::PendingRemote<new_tab_footer::mojom::NewTabFooterDocument>
+          pending_document,
+      content::WebContents* web_contents);
 
   NewTabFooterHandler(const NewTabFooterHandler&) = delete;
   NewTabFooterHandler& operator=(const NewTabFooterHandler&) = delete;
@@ -30,6 +34,8 @@ class NewTabFooterHandler : public new_tab_footer::mojom::NewTabFooterHandler {
 
  private:
   const raw_ptr<Profile> profile_;
+  raw_ptr<content::WebContents> web_contents_;
+  mojo::Remote<new_tab_footer::mojom::NewTabFooterDocument> document_;
   mojo::Receiver<new_tab_footer::mojom::NewTabFooterHandler> handler_;
 };
 
