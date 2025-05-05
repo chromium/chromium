@@ -193,7 +193,9 @@ bool RepList::conv(const std::string& in_word, std::string& dest) {
     }
 
     dest.append(l);
-    i += dat[n]->pattern.size() - 1;
+    if (!dat[n]->pattern.empty()) {
+      i += dat[n]->pattern.size() - 1;
+    }
     change = true;
   }
 

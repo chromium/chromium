@@ -1251,8 +1251,11 @@ void SuggestMgr::ngsuggest(std::vector<std::string>& wlst,
 
   // set character based ngram suggestion for words with non-BMP Unicode
   // characters
+  struct cs_info* origconv = csconv;
   if (n == -1) {
     utf8 = 0;  // XXX not state-free
+    if (!csconv)
+      csconv = get_current_cs("iso88591"); // XXX not state-free
     n = nc;
     nonbmp = 1;
     low = 0;
@@ -1739,8 +1742,10 @@ void SuggestMgr::ngsuggest(std::vector<std::string>& wlst,
       }
     }
 
-  if (nonbmp)
+  if (nonbmp) {
+    csconv = origconv;
     utf8 = 1;
+  }
 }
 
 // see if a candidate suggestion is spelled correctly

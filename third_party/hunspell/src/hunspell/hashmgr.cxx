@@ -224,6 +224,13 @@ int HashMgr::add_word(const std::string& in_word,
                       const std::string* in_desc,
                       bool onlyupcase,
                       int captype) {
+
+  if (al > std::numeric_limits<short>::max()) {
+    HUNSPELL_WARNING(stderr, "error: affix len %d is over max limit\n", al);
+    free_flag(aff, al);
+    return 1;
+  }
+
 // TODO: The following 40 lines or so are actually new. Should they be included?
 #ifndef HUNSPELL_CHROME_CLIENT
   const std::string* word = &in_word;
@@ -286,7 +293,8 @@ int HashMgr::add_word(const std::string& in_word,
   }
 
   char* hpw = hp->word;
-  strcpy(hpw, word->c_str());
+  memcpy(hpw, word->data(), word->size());
+  hpw[word->size()] = 0;
 
   int i = hash(hpw);
 
@@ -354,7 +362,7 @@ int HashMgr::add_word(const std::string& in_word,
               ++stripword;
               if ((ph.size() > strippatt) && (wordpart.size() > stripword)) {
                 ph.erase(ph.size()-strippatt, strippatt);
-                wordpart.erase(in_word.size()-stripword, stripword);
+                wordpart.erase(wordpart.size()-stripword, stripword);
               }
             }
             // capitalize lowercase pattern for capitalized words to support
@@ -848,8 +856,8 @@ int HashMgr::decode_flags(unsigned short** result, const std::string& flags, Fil
       *result = new unsigned short[len];
       dest = *result;
       const char* src = flags.c_str();
-      for (const char* p = src; *p; p++) {
-        if (*p == ',') {
+      for (size_t p = 0; p < flags.size(); ++p) {
+        if (flags[p] == ',') {
           int i = atoi(src);
           if (i >= DEFAULTFLAGS)
             HUNSPELL_WARNING(
@@ -859,7 +867,7 @@ int HashMgr::decode_flags(unsigned short** result, const std::string& flags, Fil
           if (*dest == 0)
             HUNSPELL_WARNING(stderr, "error: line %d: 0 is wrong flag id\n",
                              af->getlinenum());
-          src = p + 1;
+          src = flags.c_str() + p + 1;
           dest++;
         }
       }
