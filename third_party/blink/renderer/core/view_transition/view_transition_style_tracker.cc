@@ -696,7 +696,9 @@ void ViewTransitionStyleTracker::AddTransitionElementsFromCSS() {
   if (RuntimeEnabledFeatures::ScopedViewTransitionsEnabled()) {
     if (element_ && element_->parentElement()) {
       // Element is not detached and not the root document element.
-      paint_layer = element_->GetLayoutObject()->EnclosingLayer();
+      if (auto* layout_object = element_->GetLayoutObject()) {
+        paint_layer = layout_object->EnclosingLayer();
+      }
     } else if (!element_ || element_ == document_->documentElement()) {
       paint_layer = document_->GetLayoutView()->PaintingLayer();
     }
