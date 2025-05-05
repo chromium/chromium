@@ -144,5 +144,9 @@ TEST(ProtoEnumConversionsTest, GetCardInfoRetrievalEnrollmentStateString) {
       sync_pb::WalletMaskedCreditCard::CardInfoRetrievalEnrollmentState);
 }
 
+TEST(ProtoEnumConversionsTest, GetCardBenefitSourceString) {
+  TestEnumStringsNonEmpty(sync_pb::WalletMaskedCreditCard::CardBenefitSource);
+}
+
 }  // namespace
 }  // namespace syncer
