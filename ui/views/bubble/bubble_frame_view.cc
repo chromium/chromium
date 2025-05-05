@@ -843,7 +843,8 @@ void BubbleFrameView::UpdateClientViewBackground() {
     // artifacts. Make sure this isn't the case.
     const SkColor color =
         background_color().ResolveToSkColor(GetWidget()->GetColorProvider());
-    CHECK(SkColor4f::FromColor(color).isOpaque());
+    // TODO(b:414655934): Remove this assertion.
+    DCHECK(SkColor4f::FromColor(color).isOpaque());
     client_view->SetBackground(CreateSolidBackground(color));
     client_view->SchedulePaint();
   }
