@@ -125,6 +125,7 @@
 #include "chrome/browser/ui/views/frame/contents_layout_manager.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "chrome/browser/ui/views/frame/multi_contents_view.h"
+#include "chrome/browser/ui/views/frame/multi_contents_view_drag_entrypoint_controller.h"
 #include "chrome/browser/ui/views/frame/native_browser_frame.h"
 #include "chrome/browser/ui/views/frame/scrim_view.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
@@ -3579,11 +3580,11 @@ views::View* BrowserView::GetLensOverlayView() {
 }
 
 DownloadBubbleUIController* BrowserView::GetDownloadBubbleUIController() {
-    if (auto* download_controller =
-            browser_->GetFeatures().download_toolbar_ui_controller()) {
-      return download_controller->bubble_controller();
-    }
-    return nullptr;
+  if (auto* download_controller =
+          browser_->GetFeatures().download_toolbar_ui_controller()) {
+    return download_controller->bubble_controller();
+  }
+  return nullptr;
 }
 
 void BrowserView::ConfirmBrowserCloseWithPendingDownloads(
@@ -3630,6 +3631,14 @@ bool BrowserView::PreHandleMouseEvent(const blink::WebMouseEvent& event) {
     return multi_contents_view_->PreHandleMouseEvent(event);
   }
   return false;
+}
+
+void BrowserView::PreHandleDragUpdate(const content::DropData& drop_data,
+                                      const gfx::PointF& point) {
+  if (multi_contents_view_) {
+    multi_contents_view_->drag_entrypoint_controller().OnWebContentsDragUpdate(
+        drop_data, point);
+  }
 }
 
 content::KeyboardEventProcessingResult BrowserView::PreHandleKeyboardEvent(

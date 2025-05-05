@@ -529,7 +529,11 @@ class BrowserWindow : public ui::BaseWindow,
   // Allows the BrowserWindow object to handle the specified mouse event
   // before sending it to the renderer.
   virtual bool PreHandleMouseEvent(const blink::WebMouseEvent& event) = 0;
-
+  // Allows the BrowserWindow object to handle a mouse drag update
+  // before sending it to the renderer.
+  // `point` is relative to the content view.
+  virtual void PreHandleDragUpdate(const content::DropData& drop_data,
+                                   const gfx::PointF& point) = 0;
   // Allows the BrowserWindow object to handle the specified keyboard event
   // before sending it to the renderer.
   virtual content::KeyboardEventProcessingResult PreHandleKeyboardEvent(
