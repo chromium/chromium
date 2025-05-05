@@ -1,0 +1,117 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+export enum PauseActionSource {
+  DEFAULT,
+  BUTTON_CLICK,
+  VOICE_PREVIEW,
+  VOICE_SETTINGS_CHANGE,
+  ENGINE_INTERRUPT,
+}
+
+export interface SpeechPlayingState {
+  // If the speech tree for the current page has been initialized. This
+  // happens in updateContent before speech has been initiated by users but it
+  // can also be set to true via a play from selection.
+  isSpeechTreeInitialized: boolean;
+  // True when the user presses play, regardless of if audio has actually
+  // started yet. This will be false when speech is paused.
+  isSpeechActive: boolean;
+  // When `isSpeechActive` is false, this indicates how it became false. e.g.
+  // via pause button click or because other speech settings were changed.
+  pauseSource: PauseActionSource;
+  // Indicates that audio is currently playing.
+  // When a user presses the play button, isSpeechActive becomes true, but
+  // `isAudioCurrentlyPlaying` will tell us whether audio actually started
+  // playing yet. This is a separate state because audio starting has a delay.
+  isAudioCurrentlyPlaying: boolean;
+  // Indicates if speech has been triggered on the current page by a play
+  // button press. This will be true throughout the lifetime of reading
+  // the content on the page. It will only be reset when speech has completely
+  // stopped from reaching the end of content or changing pages. Pauses will
+  // not update it.
+  hasSpeechBeenTriggered: boolean;
+  // If we're in the middle of repositioning speech, as this could cause a
+  // this.speech_.cancel() that shouldn't update the UI for the speech playing
+  // state.
+  isSpeechBeingRepositioned: boolean;
+}
+
+export class SpeechModel {
+  private speechPlayingState_: SpeechPlayingState = {
+    isSpeechTreeInitialized: false,
+    isSpeechActive: false,
+    pauseSource: PauseActionSource.DEFAULT,
+    isAudioCurrentlyPlaying: false,
+    hasSpeechBeenTriggered: false,
+    isSpeechBeingRepositioned: false,
+  };
+
+  reset(): void {
+    this.speechPlayingState_ = {
+      isSpeechTreeInitialized: false,
+      isSpeechActive: false,
+      pauseSource: PauseActionSource.DEFAULT,
+      isAudioCurrentlyPlaying: false,
+      hasSpeechBeenTriggered: false,
+      isSpeechBeingRepositioned: false,
+    };
+  }
+
+  getState(): SpeechPlayingState {
+    return this.speechPlayingState_;
+  }
+
+  setState(state: SpeechPlayingState): void {
+    this.speechPlayingState_ = {...state};
+  }
+
+  isSpeechTreeInitialized(): boolean {
+    return this.speechPlayingState_.isSpeechTreeInitialized;
+  }
+
+  setIsSpeechTreeInitialized(value: boolean): void {
+    this.speechPlayingState_.isSpeechTreeInitialized = value;
+  }
+
+  isSpeechActive(): boolean {
+    return this.speechPlayingState_.isSpeechActive;
+  }
+
+  setIsSpeechActive(value: boolean): void {
+    this.speechPlayingState_.isSpeechActive = value;
+  }
+
+  getPauseSource(): PauseActionSource {
+    return this.speechPlayingState_.pauseSource;
+  }
+
+  setPauseSource(value: PauseActionSource): void {
+    this.speechPlayingState_.pauseSource = value;
+  }
+
+  isAudioCurrentlyPlaying(): boolean {
+    return this.speechPlayingState_.isAudioCurrentlyPlaying;
+  }
+
+  setIsAudioCurrentlyPlaying(value: boolean): void {
+    this.speechPlayingState_.isAudioCurrentlyPlaying = value;
+  }
+
+  hasSpeechBeenTriggered(): boolean {
+    return this.speechPlayingState_.hasSpeechBeenTriggered;
+  }
+
+  setHasSpeechBeenTriggered(value: boolean): void {
+    this.speechPlayingState_.hasSpeechBeenTriggered = value;
+  }
+
+  isSpeechBeingRepositioned(): boolean {
+    return this.speechPlayingState_.isSpeechBeingRepositioned;
+  }
+
+  setIsSpeechBeingRepositioned(value: boolean): void {
+    this.speechPlayingState_.isSpeechBeingRepositioned = value;
+  }
+}

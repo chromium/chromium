@@ -4,7 +4,7 @@
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {MAX_SPEECH_LENGTH, PauseActionSource, playFromSelectionTimeout, SpeechBrowserProxyImpl, ToolbarEvent, VoicePackController, WordBoundaries} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {MAX_SPEECH_LENGTH, PauseActionSource, playFromSelectionTimeout, SpeechBrowserProxyImpl, SpeechController, ToolbarEvent, VoicePackController, WordBoundaries} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertGT, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {MockTimer} from 'chrome-untrusted://webui-test/mock_timer.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
@@ -17,6 +17,7 @@ suite('Speech', () => {
   let app: AppElement;
   let speech: TestSpeechBrowserProxy;
   let metrics: TestMetricsBrowserProxy;
+  let speechController: SpeechController;
 
   const paragraph1: string[] = [
     'Something has changed within me, something is not the same.',
@@ -87,6 +88,8 @@ suite('Speech', () => {
     chrome.readingMode.onTtsEngineInstalled = () => {};
     metrics = mockMetrics();
     VoicePackController.setInstance(new VoicePackController());
+    speechController = new SpeechController();
+    SpeechController.setInstance(speechController);
 
     app = document.createElement('read-anything-app');
     document.body.appendChild(app);
@@ -167,7 +170,7 @@ suite('Speech', () => {
     });
 
     test('speechPlayingState initialized correctly', () => {
-      assertFalse(app.speechPlayingState.isSpeechBeingRepositioned);
+      assertFalse(speechController.isSpeechBeingRepositioned());
     });
   });
 
@@ -251,8 +254,8 @@ suite('Speech', () => {
 
     test('after speech started, cancels and plays from selection', () => {
       select(axTree, 5, 0, 5, 10);
-      app.speechPlayingState.isSpeechTreeInitialized = true;
-      app.speechPlayingState.hasSpeechBeenTriggered = true;
+      speechController.initializeSpeechTree(1);
+      speechController.setHasSpeechBeenTriggered(true);
       speech.reset();
 
       playFromSelection();
@@ -312,32 +315,25 @@ suite('Speech', () => {
 
   suite('on pause via pause button', () => {
     setup(() => {
-      app.speechPlayingState.isSpeechTreeInitialized = true;
-      app.speechPlayingState.hasSpeechBeenTriggered = true;
-      app.stopSpeech(PauseActionSource.BUTTON_CLICK);
+      speechController.initializeSpeechTree(1);
+      speechController.setHasSpeechBeenTriggered(true);
+      speechController.stopSpeech(PauseActionSource.BUTTON_CLICK);
     });
 
-    test('pauses speech', () => {
-      assertEquals(1, speech.getCallCount('pause'));
+    test('then play with no word boundaries resumes speech', () => {
+      app.playSpeech();
+
+      assertEquals(1, speech.getCallCount('resume'));
       assertEquals(0, speech.getCallCount('cancel'));
     });
 
-    suite('then play', () => {
-      test('with no word boundaries resumes speech', () => {
-        app.playSpeech();
+    test('then play with word boundaries cancels and re-speaks', () => {
+      WordBoundaries.getInstance().updateBoundary(10);
 
-        assertEquals(1, speech.getCallCount('resume'));
-        assertEquals(0, speech.getCallCount('cancel'));
-      });
+      app.playSpeech();
 
-      test('with word boundaries cancels and re-speaks', () => {
-        WordBoundaries.getInstance().updateBoundary(10);
-
-        app.playSpeech();
-
-        assertGT(speech.getCallCount('speak'), 0);
-        assertEquals(1, speech.getCallCount('cancel'));
-      });
+      assertGT(speech.getCallCount('speak'), 0);
+      assertEquals(1, speech.getCallCount('cancel'));
     });
 
     test('lock screen stays paused', () => {
@@ -371,9 +367,9 @@ suite('Speech', () => {
 
         emitEvent(app, ToolbarEvent.PREVIOUS_GRANULARITY);
 
-        assertTrue(app.speechPlayingState.isSpeechBeingRepositioned);
+        assertTrue(speechController.isSpeechBeingRepositioned());
         app.playSpeech();
-        assertFalse(app.speechPlayingState.isSpeechBeingRepositioned);
+        assertFalse(speechController.isSpeechBeingRepositioned());
       });
 
   test('after next granularity, onstart stops repositioning for speech', () => {
@@ -381,68 +377,9 @@ suite('Speech', () => {
 
     emitEvent(app, ToolbarEvent.NEXT_GRANULARITY);
 
-    assertTrue(app.speechPlayingState.isSpeechBeingRepositioned);
+    assertTrue(speechController.isSpeechBeingRepositioned());
     app.playSpeech();
-    assertFalse(app.speechPlayingState.isSpeechBeingRepositioned);
-  });
-
-  test('interrupt error after next granularity keeps playing speech', () => {
-    app.playSpeech();
-    speech.reset();
-
-    app.speechPlayingState.isSpeechTreeInitialized = true;
-    app.speechPlayingState.isAudioCurrentlyPlaying = true;
-
-    emitEvent(app, ToolbarEvent.NEXT_GRANULARITY);
-    assertEquals(1, speech.getCallCount('speak'));
-    const utterance = speech.getArgs('speak')[0];
-    utterance.onerror(createSpeechErrorEvent(utterance, 'interrupted'));
-
-    assertTrue(app.speechPlayingState.isAudioCurrentlyPlaying);
-    assertTrue(app.speechPlayingState.isSpeechActive);
-
-    // Because we triggered onerror in fake_speech_synthesis, onstart was
-    // never triggered on the current utterance, so this should still be
-    // true after the next button press.
-    assertTrue(app.speechPlayingState.isSpeechBeingRepositioned);
-  });
-
-  test(
-      'interrupt error after previous granularity keeps playing speech', () => {
-        chrome.readingMode.initAxPositionWithNode(2);
-        app.playSpeech();
-        app.speechPlayingState.isSpeechTreeInitialized = true;
-        app.speechPlayingState.isAudioCurrentlyPlaying = true;
-        speech.reset();
-
-        emitEvent(app, ToolbarEvent.PREVIOUS_GRANULARITY);
-        assertEquals(1, speech.getCallCount('speak'));
-        const utterance = speech.getArgs('speak')[0];
-        utterance.onerror(createSpeechErrorEvent(utterance, 'interrupted'));
-
-        assertTrue(app.speechPlayingState.isAudioCurrentlyPlaying);
-        assertTrue(app.speechPlayingState.isSpeechActive);
-        // Because we triggered onerror in fake_speech_synthesis, onstart was
-        // never triggered on the current utterance, so this should still be
-        // true after the previous button press.
-        assertTrue(app.speechPlayingState.isSpeechBeingRepositioned);
-      });
-
-  test('interrupt error stops speech', async () => {
-    app.speechPlayingState.isSpeechTreeInitialized = true;
-    app.speechPlayingState.isAudioCurrentlyPlaying = true;
-    app.playSpeech();
-
-    assertEquals(1, speech.getCallCount('speak'));
-    const utterance = speech.getArgs('speak')[0];
-    utterance.onerror(createSpeechErrorEvent(utterance, 'interrupted'));
-
-    assertFalse(app.speechPlayingState.isAudioCurrentlyPlaying);
-    assertFalse(app.speechPlayingState.isSpeechActive);
-    assertFalse(app.speechPlayingState.isSpeechBeingRepositioned);
-    assertEquals(
-        chrome.readingMode.engineInterruptStopSource,
-        await metrics.whenCalled('recordSpeechStopSource'));
+    assertFalse(speechController.isSpeechBeingRepositioned());
   });
 
   suite('very long text', () => {
@@ -514,9 +451,9 @@ suite('Speech', () => {
 
   suite('while playing', () => {
     setup(() => {
-      app.speechPlayingState.isSpeechTreeInitialized = true;
-      app.speechPlayingState.hasSpeechBeenTriggered = true;
-      app.speechPlayingState.isSpeechActive = true;
+      speechController.initializeSpeechTree(1);
+      speechController.setHasSpeechBeenTriggered(true);
+      speechController.setIsSpeechActive(true);
     });
 
 

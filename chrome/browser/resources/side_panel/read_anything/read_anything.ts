@@ -9,7 +9,7 @@ export {BrowserProxy} from '//resources/cr_components/color_change_listener/brow
 export {PageCallbackRouter} from '//resources/cr_components/color_change_listener/color_change_listener.mojom-webui.js';
 export type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 export type {AppElement} from './app.js';
-export {MAX_SPEECH_LENGTH, PauseActionSource} from './app.js';
+export {MAX_SPEECH_LENGTH} from './app.js';
 export {AppStyleUpdater} from './app_style_updater.js';
 export {getCurrentSpeechRate, playFromSelectionTimeout, spinnerDebounceTimeout, ToolbarEvent} from './common.js';
 export {getNewIndex, isArrow, isForwardArrow, isHorizontalArrow} from './keyboard_util.js';
@@ -24,6 +24,8 @@ export type {SimpleActionMenuElement} from './menus/simple_action_menu.js';
 export {MetricsBrowserProxy, MetricsBrowserProxyImpl, ReadAloudHighlightState, ReadAloudSettingsChange, ReadAnythingNewPage, ReadAnythingSettingsChange, ReadAnythingSpeechError, ReadAnythingVoiceType} from './metrics_browser_proxy.js';
 export {NodeStore} from './node_store.js';
 export {currentReadHighlightClass, previousReadHighlightClass, ReadAloudHighlighter} from './read_aloud/highlighter.js';
+export {SpeechController, SpeechListener} from './read_aloud/speech_controller.js';
+export {PauseActionSource, SpeechModel} from './read_aloud/speech_model.js';
 export {VoicePackController} from './read_aloud/voice_pack_controller.js';
 export {VoicePackModel} from './read_aloud/voice_pack_model.js';
 export type {WordBoundaryState} from './read_aloud/word_boundaries.js';

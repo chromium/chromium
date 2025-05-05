@@ -37,6 +37,8 @@ build_webui("build") {
     "menus/simple_action_menu.ts",
     "node_store.ts",
     "read_aloud/highlighter.ts",
+    "read_aloud/speech_controller.ts",
+    "read_aloud/speech_model.ts",
     "read_aloud/word_boundaries.ts",
     "read_aloud/voice_pack_controller.ts",
     "read_aloud/voice_pack_model.ts",

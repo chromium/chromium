@@ -4,7 +4,7 @@
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {PauseActionSource, playFromSelectionTimeout, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {PauseActionSource, playFromSelectionTimeout, SpeechController, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {MockTimer} from 'chrome-untrusted://webui-test/mock_timer.js';
 
@@ -12,6 +12,7 @@ import {createApp, emitEvent} from './common.js';
 
 suite('ReadAloudHighlight', () => {
   let app: AppElement;
+  let speechController: SpeechController;
   const sentence1 = 'Only need the light when it\'s burning low.\n';
   const sentence2 = 'Only miss the sun when it starts to snow.\n';
   const sentenceSegment1 = 'Only know you love her when you let her go';
@@ -64,6 +65,8 @@ suite('ReadAloudHighlight', () => {
     // ReadAnythingAppController, onConnected creates mojo pipes to connect to
     // the rest of the Read Anything feature, which we are not testing here.
     chrome.readingMode.onConnected = () => {};
+    speechController = new SpeechController();
+    SpeechController.setInstance(speechController);
 
     app = await createApp();
     chrome.readingMode.setContentForTesting(axTree, leafIds);
@@ -134,7 +137,7 @@ suite('ReadAloudHighlight', () => {
   test('on update content after pause, keeps reading position', () => {
     app.playSpeech();
     emitNextGranularity();
-    app.stopSpeech(PauseActionSource.BUTTON_CLICK);
+    speechController.stopSpeech(PauseActionSource.BUTTON_CLICK);
 
     app.updateContent();
     const currentHighlight =
@@ -165,7 +168,7 @@ suite('ReadAloudHighlight', () => {
     };
     app.playSpeech();
     emitNextGranularity();
-    app.stopSpeech(PauseActionSource.BUTTON_CLICK);
+    speechController.stopSpeech(PauseActionSource.BUTTON_CLICK);
 
     chrome.readingMode.setContentForTesting(newTree, [2]);
     const currentHighlight =
@@ -236,31 +239,30 @@ suite('ReadAloudHighlight', () => {
       assertEquals(sentence1, currentHighlight!.textContent);
     });
 
-    test(
-        'going forward after going back shows correct highlights', () => {
-          emitNextGranularity();
-          currentHighlight =
-              app.$.container.querySelector('.current-read-highlight');
-          previousHighlights =
-              app.$.container.querySelectorAll('.previous-read-highlight');
+    test('going forward after going back shows correct highlights', () => {
+      emitNextGranularity();
+      currentHighlight =
+          app.$.container.querySelector('.current-read-highlight');
+      previousHighlights =
+          app.$.container.querySelectorAll('.previous-read-highlight');
 
-          assertEquals(sentence2, currentHighlight!.textContent);
-          assertEquals(1, previousHighlights.length);
-          assertEquals(sentence1, previousHighlights[0]!.textContent);
+      assertEquals(sentence2, currentHighlight!.textContent);
+      assertEquals(1, previousHighlights.length);
+      assertEquals(sentence1, previousHighlights[0]!.textContent);
 
-          emitNextGranularity();
-          const currentHighlights =
-              app.$.container.querySelectorAll('.current-read-highlight');
-          previousHighlights =
-              app.$.container.querySelectorAll('.previous-read-highlight');
+      emitNextGranularity();
+      const currentHighlights =
+          app.$.container.querySelectorAll('.current-read-highlight');
+      previousHighlights =
+          app.$.container.querySelectorAll('.previous-read-highlight');
 
-          assertEquals(2, currentHighlights.length);
-          assertEquals(sentenceSegment1, currentHighlights[0]!.textContent);
-          assertEquals(sentenceSegment2, currentHighlights[1]!.textContent);
-          assertEquals(2, previousHighlights.length);
-          assertEquals(sentence1, previousHighlights[0]!.textContent);
-          assertEquals(sentence2, previousHighlights[1]!.textContent);
-        });
+      assertEquals(2, currentHighlights.length);
+      assertEquals(sentenceSegment1, currentHighlights[0]!.textContent);
+      assertEquals(sentenceSegment2, currentHighlights[1]!.textContent);
+      assertEquals(2, previousHighlights.length);
+      assertEquals(sentence1, previousHighlights[0]!.textContent);
+      assertEquals(sentence2, previousHighlights[1]!.textContent);
+    });
   });
 
   suite('on speaking from selection', () => {

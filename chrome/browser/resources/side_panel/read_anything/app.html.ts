@@ -12,8 +12,8 @@ export function getHtml(this: AppElement) {
 <div id="appFlexParent" @keydown="${this.onKeyDown_}">
   <div id="toolbar-container">
     <read-anything-toolbar
-        .isSpeechActive="${this.speechPlayingState.isSpeechActive}"
-        .isAudioCurrentlyPlaying="${this.speechPlayingState.isAudioCurrentlyPlaying}"
+        .isSpeechActive="${this.isSpeechActive_}"
+        .isAudioCurrentlyPlaying="${this.isAudioCurrentlyPlaying_}"
         .isReadAloudPlayable="${this.computeIsReadAloudPlayable()}"
         .selectedVoice="${this.selectedVoice_}"
         .settingsPrefs="${this.settingsPrefs_}"
@@ -47,7 +47,7 @@ export function getHtml(this: AppElement) {
   <div id="containerParent" class="sp-card sp-scroller"
       ?hidden="${!this.hasContent_}">
     <div id="container"
-        class="user-select-disabled-when-speech-active-${this.speechPlayingState.isSpeechActive}">
+        class="user-select-disabled-when-speech-active-${this.isSpeechActive_}">
     </div>
     <cr-button id="docs-load-more-button" tabindex="0"
         @click="${this.onDocsLoadMoreButtonClick_}"

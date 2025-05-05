@@ -296,6 +296,16 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, VoicePackModel) {
                    "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, SpeechController) {
+  RunSidePanelTest("side_panel/read_anything/speech_controller_test.js",
+                   "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, SpeechModel) {
+  RunSidePanelTest("side_panel/read_anything/speech_model_test.js",
+                   "mocha.run()");
+}
+
 class ReadAnythingReadAloudPhraseHighlightingMochaTest
     : public ReadAnythingMochaBrowserTest {
  protected:

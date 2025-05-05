@@ -5,7 +5,7 @@
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {BrowserProxy, SpeechBrowserProxyImpl, ToolbarEvent, VoiceClientSideStatusCode, VoicePackController, WordBoundaries} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {BrowserProxy, SpeechBrowserProxyImpl, SpeechController, ToolbarEvent, VoiceClientSideStatusCode, VoicePackController, WordBoundaries} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertArrayEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {hasStyle, microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
@@ -20,6 +20,7 @@ suite('AppReceivesToolbarChanges', () => {
   let speech: TestSpeechBrowserProxy;
   let metrics: TestMetricsBrowserProxy;
   let voicePackController: VoicePackController;
+  let speechController: SpeechController;
 
   function containerLetterSpacing(): number {
     return +window.getComputedStyle(app.$.container)
@@ -85,6 +86,8 @@ suite('AppReceivesToolbarChanges', () => {
     metrics = mockMetrics();
     voicePackController = new VoicePackController();
     VoicePackController.setInstance(voicePackController);
+    speechController = new SpeechController();
+    SpeechController.setInstance(speechController);
     app = await createApp();
   });
 
@@ -283,20 +286,20 @@ suite('AppReceivesToolbarChanges', () => {
     }
 
     test('by default is paused', () => {
-      assertFalse(app.speechPlayingState.isSpeechActive);
-      assertFalse(propagatedActiveState);
-      assertFalse(app.speechPlayingState.hasSpeechBeenTriggered);
+      assertFalse(speechController.isSpeechActive());
+      assertFalse(!!propagatedActiveState);
+      assertFalse(speechController.hasSpeechBeenTriggered());
 
       // isSpeechTreeInitialized is set in updateContent
-      assertTrue(app.speechPlayingState.isSpeechTreeInitialized);
+      assertTrue(speechController.isSpeechTreeInitialized());
     });
 
 
     test('on first click starts speech', async () => {
       await emitPlayPause();
-      assertTrue(app.speechPlayingState.isSpeechActive);
-      assertTrue(app.speechPlayingState.isSpeechTreeInitialized);
-      assertTrue(app.speechPlayingState.hasSpeechBeenTriggered);
+      assertTrue(speechController.isSpeechActive());
+      assertTrue(speechController.isSpeechTreeInitialized());
+      assertTrue(speechController.hasSpeechBeenTriggered());
       assertTrue(propagatedActiveState);
     });
 
@@ -304,9 +307,9 @@ suite('AppReceivesToolbarChanges', () => {
       await emitPlayPause();
       await emitPlayPause();
 
-      assertFalse(app.speechPlayingState.isSpeechActive);
-      assertTrue(app.speechPlayingState.isSpeechTreeInitialized);
-      assertTrue(app.speechPlayingState.hasSpeechBeenTriggered);
+      assertFalse(speechController.isSpeechActive());
+      assertTrue(speechController.isSpeechTreeInitialized());
+      assertTrue(speechController.hasSpeechBeenTriggered());
       assertFalse(propagatedActiveState);
     });
 
@@ -321,7 +324,7 @@ suite('AppReceivesToolbarChanges', () => {
         app.$.appFlexParent.dispatchEvent(kPress);
         await microtasksFinished();
 
-        assertTrue(app.speechPlayingState.isSpeechActive);
+        assertTrue(speechController.isSpeechActive());
         assertTrue(propagatedActiveState);
         assertEquals(0, metrics.getCallCount('recordSpeechStopSource'));
       });
@@ -331,7 +334,7 @@ suite('AppReceivesToolbarChanges', () => {
         app.$.appFlexParent.dispatchEvent(kPress);
         await microtasksFinished();
 
-        assertFalse(app.speechPlayingState.isSpeechActive);
+        assertFalse(speechController.isSpeechActive());
         assertFalse(propagatedActiveState);
         assertEquals(
             chrome.readingMode.keyboardShortcutStopSource,

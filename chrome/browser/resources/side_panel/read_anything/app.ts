@@ -13,7 +13,6 @@ import {ColorChangeUpdater} from '//resources/cr_components/color_change_listene
 import {WebUiListenerMixinLit} from '//resources/cr_elements/web_ui_listener_mixin_lit.js';
 import {assert} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
-import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './app.css.js';
@@ -24,6 +23,10 @@ import {getCurrentSpeechRate, minOverflowLengthToScroll, playFromSelectionTimeou
 import type {LanguageToastElement} from './language_toast.js';
 import {NodeStore} from './node_store.js';
 import {ReadAloudHighlighter} from './read_aloud/highlighter.js';
+import {SpeechController} from './read_aloud/speech_controller.js';
+import type {SpeechListener} from './read_aloud/speech_controller.js';
+import {PauseActionSource} from './read_aloud/speech_model.js';
+import type {SpeechPlayingState} from './read_aloud/speech_model.js';
 import {VoicePackController} from './read_aloud/voice_pack_controller.js';
 import {WordBoundaries} from './read_aloud/word_boundaries.js';
 import type {WordBoundaryState} from './read_aloud/word_boundaries.js';
@@ -50,42 +53,6 @@ const linkDataAttribute = 'link';
 // due to a TTS engine bug with voices timing out on too-long text.
 export const MAX_SPEECH_LENGTH: number = 175;
 
-export enum PauseActionSource {
-  DEFAULT,
-  BUTTON_CLICK,
-  VOICE_PREVIEW,
-  VOICE_SETTINGS_CHANGE,
-  ENGINE_INTERRUPT,
-}
-
-export interface SpeechPlayingState {
-  // If the speech tree for the current page has been initialized. This happens
-  // in updateContent before speech has been initiated by users but it can
-  // also be set to true via a play from selection.
-  isSpeechTreeInitialized: boolean;
-  // True when the user presses play, regardless of if audio has actually
-  // started yet. This will be false when speech is paused.
-  isSpeechActive: boolean;
-  // When `isSpeechActive` is false, this indicates how it became false. e.g.
-  // via pause button click or because other speech settings were changed.
-  pauseSource?: PauseActionSource;
-  // Indicates that audio is currently playing.
-  // When a user presses the play button, isSpeechActive becomes true, but
-  // `isAudioCurrentlyPlaying` will tell us whether audio actually started
-  // playing yet. This is a separate state because audio starting has a delay.
-  isAudioCurrentlyPlaying: boolean;
-  // Indicates if speech has been triggered on the current page by a play
-  // button press. This will be true throughout the lifetime of reading
-  // the content on the page. It will only be reset when speech has completely
-  // stopped from reaching the end of content or changing pages. Pauses will
-  // not update it.
-  hasSpeechBeenTriggered: boolean;
-  // If we're in the middle of repositioning speech, as this could cause a
-  // this.speech_.cancel() that shouldn't update the UI for the speech playing
-  // state.
-  isSpeechBeingRepositioned: boolean;
-}
-
 export interface AppElement {
   $: {
     toolbar: ReadAnythingToolbarElement,
@@ -96,7 +63,7 @@ export interface AppElement {
   };
 }
 
-export class AppElement extends AppElementBase {
+export class AppElement extends AppElementBase implements SpeechListener {
   static get is() {
     return 'read-anything-app';
   }
@@ -111,7 +78,8 @@ export class AppElement extends AppElementBase {
 
   static override get properties() {
     return {
-      speechPlayingState: {type: Object},
+      isSpeechActive_: {type: Boolean},
+      isAudioCurrentlyPlaying_: {type: Boolean},
       imagesEnabled: {type: Boolean, reflect: true},
       enabledLangs_: {type: Array},
       settingsPrefs_: {type: Object},
@@ -194,6 +162,7 @@ export class AppElement extends AppElementBase {
   private nodeStore_: NodeStore = NodeStore.getInstance();
   private voicePackController_: VoicePackController =
       VoicePackController.getInstance();
+  private speechController_: SpeechController = SpeechController.getInstance();
   protected accessor settingsPrefs_: SettingsPrefs = {
     letterSpacing: 0,
     lineSpacing: 0,
@@ -203,17 +172,8 @@ export class AppElement extends AppElementBase {
     highlightGranularity: 0,
   };
 
-  // State for speech synthesis paused/play state needs to be tracked explicitly
-  // because there are bugs with window.speechSynthesis.paused and
-  // window.speechSynthesis.speaking on some platforms.
-  accessor speechPlayingState: SpeechPlayingState = {
-    isSpeechTreeInitialized: false,
-    isSpeechActive: false,
-    pauseSource: PauseActionSource.DEFAULT,
-    isAudioCurrentlyPlaying: false,
-    hasSpeechBeenTriggered: false,
-    isSpeechBeingRepositioned: false,
-  };
+  protected accessor isSpeechActive_: boolean = false;
+  protected accessor isAudioCurrentlyPlaying_: boolean = false;
 
   private accessor imagesEnabled: boolean = false;
 
@@ -228,15 +188,6 @@ export class AppElement extends AppElementBase {
   // last position so we can check if it's still in the new page.
   private lastReadingId_: number|null = null;
   private lastReadingOffset_: number|null = null;
-
-  override willUpdate(changedProperties: PropertyValues<this>) {
-    super.willUpdate(changedProperties);
-
-    if (changedProperties.has('speechPlayingState')) {
-      chrome.readingMode.onSpeechPlayingStateChanged(
-          this.speechPlayingState.isSpeechActive);
-    }
-  }
 
   constructor() {
     super();
@@ -274,6 +225,7 @@ export class AppElement extends AppElementBase {
     this.showLoading();
 
     if (this.isReadAloudEnabled_) {
+      this.speechController_.addListener(this);
       this.notificationManager_.addListener(this.$.languageToast);
 
       // Clear state. We don't do this in disconnectedCallback because that's
@@ -301,7 +253,7 @@ export class AppElement extends AppElementBase {
       // When Read Aloud is playing, user-selection is disabled on the Read
       // Anything panel, so don't attempt to update selection, as this can
       // end up clearing selection in the main part of the browser.
-      if (!this.hasContent_ || this.speechPlayingState.isSpeechActive) {
+      if (!this.hasContent_ || this.speechController_.isSpeechActive()) {
         return;
       }
       const selection: Selection = this.getSelection();
@@ -349,7 +301,7 @@ export class AppElement extends AppElementBase {
       // we should disable autoscroll if the highlights are no longer visible,
       // and we should re-enable autoscroll if the highlights are now
       // visible.
-      if (this.speechPlayingState.isSpeechActive) {
+      if (this.speechController_.isSpeechActive()) {
         this.highlighter_.updateAutoScroll();
       }
     };
@@ -504,7 +456,7 @@ export class AppElement extends AppElementBase {
   private shouldShowLinks(): boolean {
     // Links should only show when Read Aloud is paused.
     return chrome.readingMode.linksEnabled &&
-        !this.speechPlayingState.isSpeechActive;
+        !this.speechController_.isSpeechActive();
   }
 
   private appendChildSubtrees_(node: Node, nodeId: number) {
@@ -521,7 +473,7 @@ export class AppElement extends AppElementBase {
     // which can be computationally expensive.
     if (!this.firstTextNodeSetForReadAloud) {
       this.firstTextNodeSetForReadAloud = nodeId;
-      this.initializeSpeechTree();
+      this.speechController_.initializeSpeechTree(nodeId);
     }
 
     const textContent = chrome.readingMode.getTextContent(nodeId);
@@ -578,14 +530,14 @@ export class AppElement extends AppElementBase {
 
     // This shouldn't happen. If it does, there is likely a bug, so log it so
     // we can monitor it.
-    if (this.speechPlayingState.isSpeechActive) {
+    if (this.speechController_.isSpeechActive()) {
       console.error(
           'updateContent called while speech is active. ',
           'There may be a bug.');
       this.logger_.logSpeechStopSource(
           chrome.readingMode.unexpectedUpdateContentStopSource);
     }
-    const previousSpeechPlayingState = {...this.speechPlayingState};
+    const previousSpeechPlayingState = {...this.speechController_.getState()};
     const previousWordBoundaryState = {...this.wordBoundaries_.state};
 
     this.speech_.cancel();
@@ -659,7 +611,7 @@ export class AppElement extends AppElementBase {
 
     if (this.nodeStore_.getDomNode(this.lastReadingId_)) {
       this.movePlaybackToNode_(this.lastReadingId_, this.lastReadingOffset_);
-      this.speechPlayingState = {...previousSpeechPlayingState};
+      this.speechController_.setState(previousSpeechPlayingState);
       this.wordBoundaries_.state = {...previousWordBoundaryState};
       // Since we're setting the reading position after a content update when
       // we're paused, redraw the highlight after moving the traversal state to
@@ -1135,7 +1087,7 @@ export class AppElement extends AppElementBase {
     event.preventDefault();
     event.stopPropagation();
 
-    this.stopSpeech(PauseActionSource.VOICE_PREVIEW);
+    this.speechController_.stopSpeech(PauseActionSource.VOICE_PREVIEW);
 
     // If there's no previewVoice, return after stopping the current preview
     if (!event.detail) {
@@ -1179,52 +1131,37 @@ export class AppElement extends AppElementBase {
 
     // TODO: crbug.com/323912186 - Handle when menu is closed mid-preview and
     // the user presses play/pause button.
-    if (!this.speechPlayingState.isSpeechActive &&
+    if (!this.speechController_.isSpeechActive() &&
         event.detail.voicePlayingWhenMenuOpened) {
       this.playSpeech();
     }
   }
 
   protected onPlayPauseClick_() {
-    if (this.speechPlayingState.isSpeechActive) {
+    if (this.speechController_.isSpeechActive()) {
       this.logSpeechPlaySession_();
-      this.stopSpeech(PauseActionSource.BUTTON_CLICK);
+      this.speechController_.stopSpeech(PauseActionSource.BUTTON_CLICK);
     } else {
       this.playSessionStartTime = Date.now();
       this.playSpeech();
     }
   }
 
-  stopSpeech(pauseSource: PauseActionSource) {
-    this.speechPlayingState = {
-      ...this.speechPlayingState,
-      isSpeechActive: false,
-      isAudioCurrentlyPlaying: false,
-      pauseSource,
-    };
+  onIsSpeechActiveChange(): void {
+    this.isSpeechActive_ = this.speechController_.isSpeechActive();
+  }
 
-    const pausedFromButton = pauseSource === PauseActionSource.BUTTON_CLICK;
+  onIsAudioCurrentlyPlayingChange(): void {
+    this.isAudioCurrentlyPlaying_ =
+        this.speechController_.isAudioCurrentlyPlaying();
+  }
 
-    // Voice and speed changes take effect on the next call of synth.play(),
-    // but not on .resume(). In order to be responsive to the user's settings
-    // changes, we call synth.cancel() and synth.play(). However, we don't do
-    // synth.cancel() and synth.play() when user clicks play/pause button,
-    // because synth.cancel() and synth.play() plays from the beginning of the
-    // current utterance, even if parts of it had been spoken already.
-    // Therefore, when a user toggles the play/pause button, we call
-    // synth.pause() and synth.resume() for speech to resume from where it left
-    // off.
-    if (pausedFromButton) {
-      this.speech_.pause();
-    } else {
-      // Canceling clears all the Utterances that are queued up via synth.play()
-      this.speech_.cancel();
-    }
-
+  onPause() {
     // Restore links if they're enabled when speech pauses. Don't restore links
     // if it's paused from a non-pause button (e.g. voice previews) so the links
     // don't flash off and on.
-    if (chrome.readingMode.linksEnabled && pausedFromButton) {
+    if (chrome.readingMode.linksEnabled &&
+        this.speechController_.isPausedFromButton()) {
       this.updateLinks_();
     }
   }
@@ -1240,10 +1177,7 @@ export class AppElement extends AppElementBase {
   }
 
   protected playNextGranularity_() {
-    this.speechPlayingState = {
-      ...this.speechPlayingState,
-      isSpeechBeingRepositioned: true,
-    };
+    this.speechController_.setIsSpeechBeingRepositioned(true);
 
     this.speech_.cancel();
     this.highlighter_.resetPreviousHighlight();
@@ -1257,10 +1191,7 @@ export class AppElement extends AppElementBase {
   }
 
   protected playPreviousGranularity_() {
-    this.speechPlayingState = {
-      ...this.speechPlayingState,
-      isSpeechBeingRepositioned: true,
-    };
+    this.speechController_.setIsSpeechBeingRepositioned(true);
     this.speech_.cancel();
     // This must be called BEFORE calling
     // chrome.readingMode.movePositionToPreviousGranularity so we can accurately
@@ -1283,10 +1214,9 @@ export class AppElement extends AppElementBase {
         this.getSelection();
     const hasSelection =
         anchorNode !== focusNode || anchorOffset !== focusOffset;
-    if (this.speechPlayingState.hasSpeechBeenTriggered &&
-        !this.speechPlayingState.isSpeechActive) {
-      const pausedFromButton = this.speechPlayingState.pauseSource ===
-          PauseActionSource.BUTTON_CLICK;
+    if (this.speechController_.hasSpeechBeenTriggered() &&
+        !this.speechController_.isSpeechActive()) {
+      const pausedFromButton = this.speechController_.isPausedFromButton();
 
       let playedFromSelection = false;
       if (hasSelection) {
@@ -1311,15 +1241,8 @@ export class AppElement extends AppElementBase {
         }
       }
 
-      this.speechPlayingState = {
-        isSpeechTreeInitialized:
-            this.speechPlayingState.isSpeechTreeInitialized,
-        isSpeechActive: true,
-        isAudioCurrentlyPlaying:
-            this.speechPlayingState.isAudioCurrentlyPlaying,
-        hasSpeechBeenTriggered: this.speechPlayingState.hasSpeechBeenTriggered,
-        isSpeechBeingRepositioned: false,
-      };
+      this.speechController_.setIsSpeechActive(true);
+      this.speechController_.setIsSpeechBeingRepositioned(false);
 
       // Hide links when speech resumes. We only hide links when the page was
       // paused from the play/pause button.
@@ -1344,15 +1267,10 @@ export class AppElement extends AppElementBase {
       // speech played and without speech played. Counting resumes would
       // inflate the speech played number.
       this.logger_.logNewPage(/*speechPlayed=*/ true);
-      this.speechPlayingState = {
-        isSpeechTreeInitialized:
-            this.speechPlayingState.isSpeechTreeInitialized,
-        isSpeechActive: true,
-        isAudioCurrentlyPlaying:
-            this.speechPlayingState.isAudioCurrentlyPlaying,
-        hasSpeechBeenTriggered: true,
-        isSpeechBeingRepositioned: false,
-      };
+      this.speechController_.setIsSpeechActive(true);
+      this.speechController_.setHasSpeechBeenTriggered(true);
+      this.speechController_.setIsSpeechBeingRepositioned(false);
+
       // Hide links when speech begins playing.
       if (chrome.readingMode.linksEnabled) {
         this.updateLinks_();
@@ -1360,39 +1278,14 @@ export class AppElement extends AppElementBase {
 
       const playedFromSelection = hasSelection && this.playFromSelection();
       if (!playedFromSelection && this.firstTextNodeSetForReadAloud) {
-        if (!this.speechPlayingState.isSpeechTreeInitialized) {
-          this.initializeSpeechTree();
-        }
+        this.speechController_.initializeSpeechTree(
+            this.firstTextNodeSetForReadAloud);
         if (!this.highlightAndPlayMessage()) {
           // Ensure we're updating Read Aloud state if there's no text to speak.
           this.onSpeechFinished();
         }
       }
     }
-  }
-
-  initializeSpeechTree() {
-    if (this.firstTextNodeSetForReadAloud) {
-      // TODO: crbug.com/40927698 - There should be a way to use AXPosition so
-      // that this step can be skipped.
-      chrome.readingMode.initAxPositionWithNode(
-          this.firstTextNodeSetForReadAloud);
-      this.speechPlayingState = {
-        isAudioCurrentlyPlaying:
-            this.speechPlayingState.isAudioCurrentlyPlaying,
-        isSpeechActive: this.speechPlayingState.isSpeechActive,
-        isSpeechTreeInitialized: true,
-        hasSpeechBeenTriggered: this.speechPlayingState.hasSpeechBeenTriggered,
-        isSpeechBeingRepositioned:
-            this.speechPlayingState.isSpeechBeingRepositioned,
-      };
-
-      this.preprocessTextForSpeech();
-    }
-  }
-
-  preprocessTextForSpeech() {
-    chrome.readingMode.preprocessTextForSpeech();
   }
 
   private getSelectedIds(): {
@@ -1659,19 +1552,8 @@ export class AppElement extends AppElementBase {
 
       // Reset the isSpeechBeingRepositioned property after speech starts
       // after a next / previous button.
-      if (this.speechPlayingState.isSpeechBeingRepositioned) {
-        this.speechPlayingState = {
-          ...this.speechPlayingState,
-          isSpeechBeingRepositioned: false,
-        };
-      }
-
-      if (!this.speechPlayingState.isAudioCurrentlyPlaying) {
-        this.speechPlayingState = {
-          ...this.speechPlayingState,
-          isAudioCurrentlyPlaying: true,
-        };
-      }
+      this.speechController_.setIsSpeechBeingRepositioned(false);
+      this.speechController_.setIsAudioCurrentlyPlaying(true);
     };
 
     message.onend = () => {
@@ -1732,23 +1614,7 @@ export class AppElement extends AppElementBase {
     this.speechEngineLoaded_ = true;
 
     if (error.error === 'interrupted') {
-      // SpeechSynthesis.cancel() was called, which could have originated
-      // either within or outside of reading mode. If it originated from
-      // within reading mode, we should do nothing. If it came from outside
-      // of reading mode, we should stop speech to ensure that state
-      // accuratively reflects the interrupted state.
-      if (this.speechPlayingState.isAudioCurrentlyPlaying &&
-          !this.speechPlayingState.isSpeechBeingRepositioned) {
-        // If we're currently playing speech,  we're not currently in the
-        // middle of a next / previous granularity update via button press,
-        // and we receive an 'interrupted' error, it came from outside (e.g.
-        // from opening another instance of reading mode), so we should
-        // ensure speech state, including the play / pause button, is
-        // updated.
-        this.logger_.logSpeechStopSource(
-            chrome.readingMode.engineInterruptStopSource);
-        this.stopSpeech(PauseActionSource.ENGINE_INTERRUPT);
-      }
+      this.speechController_.onSpeechInterrupted();
       return;
     }
 
@@ -1805,7 +1671,7 @@ export class AppElement extends AppElementBase {
     // something went wrong.
     // TODO: crbug.com/40927698 - Consider showing an error message.
     this.logger_.logSpeechStopSource(chrome.readingMode.engineErrorStopSource);
-    this.stopSpeech(PauseActionSource.DEFAULT);
+    this.speechController_.stopSpeech(PauseActionSource.DEFAULT);
   }
 
   private extractTextOf(axNodeIds: number[]): string {
@@ -1853,15 +1719,7 @@ export class AppElement extends AppElementBase {
   }
 
   private clearReadAloudState() {
-    this.speechPlayingState = {
-      isSpeechActive: false,
-      pauseSource: PauseActionSource.DEFAULT,
-      isSpeechTreeInitialized: false,
-      isAudioCurrentlyPlaying: false,
-      hasSpeechBeenTriggered: false,
-      isSpeechBeingRepositioned: false,
-    };
-
+    this.speechController_.reset();
     this.highlighter_.clearHighlightFormatting();
     this.wordBoundaries_.resetToDefaultState();
   }
@@ -1927,15 +1785,15 @@ export class AppElement extends AppElementBase {
   protected resetSpeechPostSettingChange_() {
     // Don't call stopSpeech() if the speech tree hasn't been initialized or
     // if speech hasn't been triggered yet.
-    if (!this.speechPlayingState.isSpeechTreeInitialized ||
-        !this.speechPlayingState.hasSpeechBeenTriggered) {
+    if (!this.speechController_.isSpeechTreeInitialized() ||
+        !this.speechController_.hasSpeechBeenTriggered()) {
       return;
     }
 
-    const playSpeechOnChange = this.speechPlayingState.isSpeechActive;
+    const playSpeechOnChange = this.speechController_.isSpeechActive();
 
     // Cancel the queued up Utterance using the old speech settings
-    this.stopSpeech(PauseActionSource.VOICE_SETTINGS_CHANGE);
+    this.speechController_.stopSpeech(PauseActionSource.VOICE_SETTINGS_CHANGE);
 
     // If speech was playing when a setting was changed, continue playing
     // speech
@@ -2001,7 +1859,7 @@ export class AppElement extends AppElementBase {
     // This shouldn't happen often, so just skip selecting a new voice for now.
     // Another option would be to update the voice and the call
     // resetSpeechPostSettingsChange(), but that could be jarring.
-    if (this.speechPlayingState.hasSpeechBeenTriggered) {
+    if (this.speechController_.hasSpeechBeenTriggered()) {
       return;
     }
 
@@ -2072,8 +1930,8 @@ export class AppElement extends AppElementBase {
 
   // If the screen is locked during speech, we should stop speaking.
   onLockScreen() {
-    if (this.speechPlayingState.isSpeechActive) {
-      this.stopSpeech(PauseActionSource.DEFAULT);
+    if (this.speechController_.isSpeechActive()) {
+      this.speechController_.stopSpeech(PauseActionSource.DEFAULT);
     }
   }
 
@@ -2186,7 +2044,7 @@ export class AppElement extends AppElementBase {
   protected onKeyDown_(e: KeyboardEvent) {
     if (e.key === 'k') {
       e.stopPropagation();
-      if (this.speechPlayingState.isSpeechActive) {
+      if (this.speechController_.isSpeechActive()) {
         this.logger_.logSpeechStopSource(
             chrome.readingMode.keyboardShortcutStopSource);
       }

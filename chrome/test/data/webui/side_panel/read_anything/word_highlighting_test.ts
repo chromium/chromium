@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {PauseActionSource, SpeechBrowserProxyImpl, ToolbarEvent, WordBoundaries} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {PauseActionSource, SpeechBrowserProxyImpl, SpeechController, ToolbarEvent, WordBoundaries} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 import {createApp, createSpeechSynthesisVoice, emitEvent, playFromSelectionWithMockTimer, setSimpleAxTreeWithText} from './common.js';
@@ -13,6 +13,7 @@ suite('WordHighlighting', () => {
   let app: AppElement;
   let speech: TestSpeechBrowserProxy;
   let wordBoundaries: WordBoundaries;
+  let speechController: SpeechController;
 
   // root htmlTag='#document' id=1
   // ++link htmlTag='a' url='http://www.google.com' id=2
@@ -64,6 +65,8 @@ suite('WordHighlighting', () => {
     chrome.readingMode.onConnected = () => {};
     speech = new TestSpeechBrowserProxy();
     SpeechBrowserProxyImpl.setInstance(speech);
+    speechController = new SpeechController();
+    SpeechController.setInstance(speechController);
 
     app = await createApp();
     wordBoundaries = WordBoundaries.getInstance();
@@ -271,7 +274,7 @@ suite('WordHighlighting', () => {
     const focusOffset = 1;
     app.playSpeech();
     wordBoundaries.updateBoundary(2);
-    app.stopSpeech(PauseActionSource.BUTTON_CLICK);
+    speechController.stopSpeech(PauseActionSource.BUTTON_CLICK);
 
     // Update the selection directly on the document.
     const spans = app.$.container.querySelectorAll('span');
