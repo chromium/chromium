@@ -18,7 +18,6 @@
 class BrowserView;
 class ContentsWebView;
 class MultiContentsResizeArea;
-class MultiContentsViewDragEntrypointController;
 
 namespace blink {
 class WebMouseEvent;
@@ -35,10 +34,6 @@ class Canvas;
 namespace views {
 class WebView;
 }  // namespace views
-
-// TODO(crbug.com/394369035): The drop target view will eventually have its
-// own class. Move this declaration into the class once ready.
-DECLARE_ELEMENT_IDENTIFIER_VALUE(kMultiContentsViewDropTargetElementId);
 
 // MultiContentsView shows up to two contents web views side by side, and
 // manages their layout relative to each other.
@@ -110,10 +105,6 @@ class MultiContentsView : public views::View, public views::ResizeAreaDelegate {
   void OnPaint(gfx::Canvas* canvas) override;
   void OnThemeChanged() override;
 
-  MultiContentsViewDragEntrypointController& drag_entrypoint_controller() {
-    return *drag_entrypoint_controller_;
-  }
-
   void SetMinWidthForTesting(int width) {
     min_contents_width_for_testing_ = std::make_optional(width);
   }
@@ -183,11 +174,6 @@ class MultiContentsView : public views::View, public views::ResizeAreaDelegate {
   // The handle responsible for resizing the two contents views as relative to
   // each other.
   raw_ptr<MultiContentsResizeArea> resize_area_ = nullptr;
-
-  // Handles incoming drag events to facilicitate entering split view through
-  // drag-and-drop.
-  std::unique_ptr<MultiContentsViewDragEntrypointController>
-      drag_entrypoint_controller_;
 
   // The index in contents_views_ of the active contents view.
   int active_index_ = 0;

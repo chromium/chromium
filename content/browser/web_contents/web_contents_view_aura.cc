@@ -1447,11 +1447,6 @@ void WebContentsViewAura::DragUpdatedCallback(
   if (!target) {
     return;
   }
-
-  if (transformed_pt.has_value()) {
-    web_contents_->PreHandleDragUpdate(*drop_data, transformed_pt.value());
-  }
-
   RenderWidgetHostImpl* target_rwh =
       RenderWidgetHostImpl::From(target->GetRenderWidgetHost());
   if (!drag_security_info_.IsValidDragTarget(target_rwh)) {
