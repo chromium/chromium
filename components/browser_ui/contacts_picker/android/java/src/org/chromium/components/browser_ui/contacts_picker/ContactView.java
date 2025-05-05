@@ -24,8 +24,10 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableItemView;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
+import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
+import org.chromium.ui.modaldialog.ModalDialogProperties.ButtonType;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.List;
@@ -116,9 +118,9 @@ public class ContactView extends SelectableItemView<ContactDetails> {
         ModalDialogProperties.Controller controller =
                 new ModalDialogProperties.Controller() {
                     @Override
-                    public void onClick(PropertyModel model, int buttonType) {
+                    public void onClick(PropertyModel model, @ButtonType int buttonType) {
                         assumeNonNull(mManager);
-                        mManager.dismissDialog(model, buttonType);
+                        mManager.dismissDialog(model, DialogDismissalCause.ACTION_ON_CONTENT);
                         mModel = null;
                         mManager = null;
                     }
