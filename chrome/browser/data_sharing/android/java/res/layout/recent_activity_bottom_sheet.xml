@@ -56,6 +56,7 @@ found in the LICENSE file.
             android:gravity="center"
             android:text="@string/data_sharing_recent_activity_empty"
             android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+            android:textIsSelectable="true"
             android:visibility="gone" />
 
         <androidx.recyclerview.widget.RecyclerView
