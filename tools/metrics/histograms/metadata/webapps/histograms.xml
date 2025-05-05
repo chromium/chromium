@@ -1674,6 +1674,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Webapp.NavigationCapturing.FinalDisplay.Result"
+    enum="NavigationCapturingDisplayMode" expires_after="2026-05-02">
+  <owner>dibyapal@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <summary>
+    Records the final container of navigation capturing compared to the PWA's
+    display mode once capturing has happened. Recorded once per navigation (post
+    redirections) iff the navigation is handled by the web app system.
+  </summary>
+</histogram>
+
 <histogram name="Webapp.NavigationCapturing.LaunchParamsConsumedTime"
     units="ms" expires_after="2026-05-01">
   <owner>dibyapal@chromium.org</owner>

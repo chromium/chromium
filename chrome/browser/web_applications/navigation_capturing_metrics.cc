@@ -6,6 +6,13 @@
 
 #include <ostream>
 
+#include "base/metrics/histogram_functions.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
+#include "content/public/browser/web_contents.h"
+
 namespace web_app {
 
 std::ostream& operator<<(
@@ -74,6 +81,53 @@ std::ostream& operator<<(
     case NavigationCapturingRedirectionResult::kNotHandled:
       return out << "NotHandled";
   }
+}
+
+std::ostream& operator<<(
+    std::ostream& out,
+    NavigationCapturingDisplayModeResult display_mode_result) {
+  switch (display_mode_result) {
+    case NavigationCapturingDisplayModeResult::kAppStandaloneFinalStandalone:
+      return out << "AppStandaloneFinalStandalone";
+    case NavigationCapturingDisplayModeResult::kAppBrowserTabFinalBrowserTab:
+      return out << "AppBrowserTabFinalBrowserTab";
+    case NavigationCapturingDisplayModeResult::kAppBrowserTabFinalStandalone:
+      return out << "AppBrowserTabFinalStandalone";
+    case NavigationCapturingDisplayModeResult::kAppStandaloneFinalBrowserTab:
+      return out << "AppStandaloneFinalBrowserTab";
+  }
+}
+
+void RecordNavigationCapturingDisplayModeMetrics(
+    const webapps::AppId& app_id,
+    content::WebContents* web_contents,
+    bool is_launch_container_tab) {
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  WebAppProvider* web_app_provider = WebAppProvider::GetForWebApps(profile);
+  DisplayMode display_mode =
+      web_app_provider->registrar_unsafe().GetAppEffectiveDisplayMode(app_id);
+  CHECK_NE(display_mode, DisplayMode::kUndefined);
+  bool is_display_mode_browser = display_mode == DisplayMode::kBrowser;
+
+  NavigationCapturingDisplayModeResult display_mode_result;
+  if (is_launch_container_tab && is_display_mode_browser) {
+    display_mode_result =
+        NavigationCapturingDisplayModeResult::kAppBrowserTabFinalBrowserTab;
+  } else if (is_launch_container_tab && !is_display_mode_browser) {
+    display_mode_result =
+        NavigationCapturingDisplayModeResult::kAppStandaloneFinalBrowserTab;
+  } else if (!is_launch_container_tab && is_display_mode_browser) {
+    display_mode_result =
+        NavigationCapturingDisplayModeResult::kAppBrowserTabFinalStandalone;
+  } else {
+    CHECK(!is_launch_container_tab && !is_display_mode_browser);
+    display_mode_result =
+        NavigationCapturingDisplayModeResult::kAppStandaloneFinalStandalone;
+  }
+
+  base::UmaHistogramEnumeration(
+      "Webapp.NavigationCapturing.FinalDisplay.Result", display_mode_result);
 }
 
 }  // namespace web_app

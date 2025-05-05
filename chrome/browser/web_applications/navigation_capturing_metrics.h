@@ -7,6 +7,12 @@
 
 #include <ostream>
 
+#include "components/webapps/common/web_app_id.h"
+
+namespace content {
+class WebContents;
+}  // namespace content
+
 namespace web_app {
 
 // Used to record histograms for the result of navigation capturing before a
@@ -92,6 +98,32 @@ enum class NavigationCapturingRedirectionResult {
 std::ostream& operator<<(
     std::ostream& out,
     NavigationCapturingRedirectionResult redirection_result);
+
+// Records the final container of navigation capturing with respect to the
+// effective display mode of the PWA it opened in. Measured once per navigation
+// at the end of navigation capturing. Please keep in sync with
+// tools/metrics/histograms/metadata/webapps/enums.xml and do not reuse existing
+// entries.
+enum class NavigationCapturingDisplayModeResult {
+  kAppStandaloneFinalStandalone = 0,
+  kAppBrowserTabFinalBrowserTab = 1,
+  kAppBrowserTabFinalStandalone = 2,
+  kAppStandaloneFinalBrowserTab = 3,
+  kMaxValue = kAppStandaloneFinalBrowserTab
+};
+
+std::ostream& operator<<(
+    std::ostream& out,
+    NavigationCapturingDisplayModeResult display_mode_result);
+
+// Records the NavigationCapturingDisplayModeResult into histograms once per
+// navigation (including redirects) based on a comparison between the final
+// "container" of the web app the navigation ended up with and the effective
+// display mode.
+void RecordNavigationCapturingDisplayModeMetrics(
+    const webapps::AppId& app_id,
+    content::WebContents* web_contents,
+    bool is_launch_container_tab);
 
 }  // namespace web_app
 

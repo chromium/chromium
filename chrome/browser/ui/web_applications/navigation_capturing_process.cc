@@ -642,6 +642,9 @@ NavigationCapturingProcess::GetInitialBrowserAndTabOverrideForNavigation(
                       *client_mode_and_browser->tab_index);
 
     CHECK(!time_navigation_started_.is_null());
+    bool is_current_container_window =
+        WebAppBrowserController::IsWebApp(client_mode_and_browser->browser);
+
     // Abort the navigation by returning a `nullptr`. Because this means
     // `OnWebAppNavigationAfterWebContentsCreation` won't be called, enqueue
     // the launch params instantly and record the debug data.
@@ -658,8 +661,11 @@ NavigationCapturingProcess::GetInitialBrowserAndTabOverrideForNavigation(
                         apps::LaunchSource::kFromNavigationCapturing,
                         params.url, contents);
 
+    RecordNavigationCapturingDisplayModeMetrics(app_id, contents,
+                                                !is_current_container_window);
+
     initial_nav_handling_result_ =
-        WebAppBrowserController::IsWebApp(client_mode_and_browser->browser)
+        is_current_container_window
             ? NavigationCapturingInitialResult::kFocusExistingAppWindow
             : NavigationCapturingInitialResult::kFocusExistingAppBrowserTab;
     return CancelInitialNavigation();
@@ -1050,6 +1056,8 @@ NavigationCapturingProcess::HandleRedirect() {
                           apps::LaunchContainer::kLaunchContainerWindow,
                           apps::LaunchSource::kFromNavigationCapturing,
                           final_url, pre_existing_contents);
+      RecordNavigationCapturingDisplayModeMetrics(
+          *target_app_id, pre_existing_contents, !is_web_app_browser);
       debug_data_.Set("!redirection_result", "cancel, focus-existing");
       redirection_result_ =
           is_web_app_browser

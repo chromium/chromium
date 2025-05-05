@@ -260,6 +260,17 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Image download successful"/>
 </enum>
 
+<enum name="NavigationCapturingDisplayMode">
+  <int value="0"
+      label="Opened in standalone window when display mode was standalone"/>
+  <int value="1"
+      label="Opened in browser tab when display mode was browser tab"/>
+  <int value="2"
+      label="Opened in standalone window when display mode was browser tab"/>
+  <int value="3"
+      label="Opened in browser tab when display mode was standalone"/>
+</enum>
+
 <enum name="NavigationCapturingRedirectionResult">
   <int value="0" label="Browser tab reparented into tab"/>
   <int value="1" label="Browser tab reparented into app window"/>
