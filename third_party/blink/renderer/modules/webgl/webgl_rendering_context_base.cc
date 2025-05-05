@@ -871,11 +871,14 @@ scoped_refptr<StaticBitmapImage> WebGLRenderingContextBase::GetImage(
   // since there are uncommon paths which may use this snapshot for compositing.
   constexpr auto kShouldInitialize =
       CanvasResourceProvider::ShouldInitialize::kNo;
-  std::unique_ptr<CanvasResourceProvider> resource_provider =
-      CanvasResourceProvider::CreateSharedImageProvider(
-          size, GetSharedImageFormat(), GetAlphaType(), GetColorSpace(),
-          kShouldInitialize, SharedGpuContext::ContextProviderWrapper(),
-          RasterMode::kGPU, gpu::SHARED_IMAGE_USAGE_DISPLAY_READ);
+
+  std::unique_ptr<CanvasResourceProvider> resource_provider;
+  if (SharedGpuContext::IsGpuCompositingEnabled()) {
+    resource_provider = CanvasResourceProvider::CreateSharedImageProvider(
+        size, GetSharedImageFormat(), GetAlphaType(), GetColorSpace(),
+        kShouldInitialize, SharedGpuContext::ContextProviderWrapper(),
+        RasterMode::kGPU, gpu::SHARED_IMAGE_USAGE_DISPLAY_READ);
+  }
   if (!resource_provider || !resource_provider->IsValid()) {
     resource_provider = CanvasResourceProvider::CreateBitmapProvider(
         size, GetSharedImageFormat(), GetAlphaType(), GetColorSpace(),
