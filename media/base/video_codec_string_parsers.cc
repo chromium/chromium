@@ -767,10 +767,16 @@ std::optional<VideoType> ParseHEVCCodecId(std::string_view codec_id) {
   // it is only for range extension that we further check platform support on
   // specific bit depth and chroma subsampling formats for decode/encode; and we
   // don't support general_profile_idc > 4 with hardware encoders/decoders.
+  // TODO(crbug.com/413659852) HEVC has color space information that should be
+  // parsed. It's specified in the ISO 14496-15:2024 spec.
   VideoType result = {
       .codec = VideoCodec::kHEVC,
       .profile = out_profile,
       .level = general_level_idc,
+      .color_space = VideoColorSpace(VideoColorSpace::PrimaryID::UNSPECIFIED,
+                                     VideoColorSpace::TransferID::UNSPECIFIED,
+                                     VideoColorSpace::MatrixID::UNSPECIFIED,
+                                     gfx::ColorSpace::RangeID::DERIVED),
       .subsampling = subsampling,
       .bit_depth = bit_depth,
   };
