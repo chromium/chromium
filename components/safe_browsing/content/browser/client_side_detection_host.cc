@@ -1262,6 +1262,10 @@ void ClientSideDetectionHost::MaybeInquireOnDeviceForScamDetection(
     base::UmaHistogramBoolean(
         "SBClientPhishing.IsOnDeviceModelAvailableAtInquiryTime",
         on_device_model_available);
+    base::UmaHistogramBoolean(
+        "SBClientPhishing.IsOnDeviceModelAvailableAtInquiryTime." +
+            GetRequestTypeName(verdict->client_side_detection_type()),
+        on_device_model_available);
 
     if (!on_device_model_available) {
       // When the model is not available at the time of inquiry, we want to log
@@ -1294,6 +1298,10 @@ void ClientSideDetectionHost::OnInnerTextComplete(
     std::string inner_text) {
   base::UmaHistogramCounts100000("SBClientPhishing.OnDeviceModelInnerTextSize",
                                  inner_text.size());
+  base::UmaHistogramCounts100000(
+      "SBClientPhishing.OnDeviceModelInnerTextSize." +
+          GetRequestTypeName(verdict->client_side_detection_type()),
+      inner_text.size());
   if (inner_text.empty()) {
     IntelligentScanInfo intelligent_scan_info;
     intelligent_scan_info.set_no_info_reason(IntelligentScanInfo::EMPTY_TEXT);
@@ -1318,7 +1326,10 @@ void ClientSideDetectionHost::OnInquireOnDeviceModelDone(
   base::UmaHistogramBoolean(
       "SBClientPhishing.OnDeviceModelHasSuccessfulResponse",
       response.has_value());
-
+  base::UmaHistogramBoolean(
+      "SBClientPhishing.OnDeviceModelHasSuccessfulResponse." +
+          GetRequestTypeName(verdict->client_side_detection_type()),
+      response.has_value());
   if (response.has_value()) {
     IntelligentScanInfo intelligent_scan_info;
     intelligent_scan_info.set_brand(response->brand());

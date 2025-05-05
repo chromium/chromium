@@ -22,6 +22,12 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="ClientSideDetectionOnDeviceModelRequestType">
+  <variant name="" summary="all request types"/>
+  <variant name=".ForceRequest" summary="Force request"/>
+  <variant name=".KeyboardLockRequested" summary="Keyboard lock requested"/>
+</variants>
+
 <variants name="ClientSideDetectionRequestType">
   <variant name="" summary="all request types"/>
   <variant name=".ForceRequest" summary="Force request"/>
@@ -639,15 +645,18 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
-<histogram name="SBClientPhishing.IsOnDeviceModelAvailableAtInquiryTime"
+<histogram
+    name="SBClientPhishing.IsOnDeviceModelAvailableAtInquiryTime{OnDeviceModelRequestType}"
     enum="BooleanSuccess" expires_after="2025-12-30">
   <owner>andysjlim@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records whether the on device model is available at the time of inquiry.
     This is logged in the service class at the start of the inquiry function
-    call.
+    call requested by {OnDeviceModelRequestType}.
   </summary>
+  <token key="OnDeviceModelRequestType"
+      variants="ClientSideDetectionOnDeviceModelRequestType"/>
 </histogram>
 
 <histogram name="SBClientPhishing.LocalModelDetectsPhishing{RequestType}"
@@ -788,18 +797,23 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
-<histogram name="SBClientPhishing.OnDeviceModelHasSuccessfulResponse"
+<histogram
+    name="SBClientPhishing.OnDeviceModelHasSuccessfulResponse{OnDeviceModelRequestType}"
     enum="BooleanSuccess" expires_after="2025-12-30">
   <owner>andysjlim@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records whether the on device model inquiry has a successful response. This
-    is logged in the callback after the inquiry call in the host class.
+    is logged in the callback after the inquiry call in the host class that was
+    requested by {OnDeviceModelRequestType}.
   </summary>
+  <token key="OnDeviceModelRequestType"
+      variants="ClientSideDetectionOnDeviceModelRequestType"/>
 </histogram>
 
-<histogram name="SBClientPhishing.OnDeviceModelInnerTextSize" units="bytes"
-    expires_after="2026-01-09">
+<histogram
+    name="SBClientPhishing.OnDeviceModelInnerTextSize{OnDeviceModelRequestType}"
+    units="bytes" expires_after="2026-01-09">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -807,8 +821,11 @@ useful for Chirp alerts (go/crca-alerts). -->
     on device model is inquired. We can use this histogram to inform the size of
     the context window we need. Note that to convert bytes to tokens, we need to
     estimate the number of letters in a word and the number of tokens in a word.
-    This is logged when the model is inquired.
+    This is logged when the model is inquired and requested by
+    {OnDeviceModelRequestType}.
   </summary>
+  <token key="OnDeviceModelRequestType"
+      variants="ClientSideDetectionOnDeviceModelRequestType"/>
 </histogram>
 
 <histogram name="SBClientPhishing.OnDeviceModelResponseParseSuccess"

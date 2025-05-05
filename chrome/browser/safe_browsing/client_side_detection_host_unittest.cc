@@ -490,6 +490,30 @@ class ClientSideDetectionHostTestBase : public ChromeRenderViewHostTestHarness {
     feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
+  std::string GetRequestTypeName(
+      ClientSideDetectionType client_side_detection_type) {
+    switch (client_side_detection_type) {
+      case safe_browsing::ClientSideDetectionType::
+          CLIENT_SIDE_DETECTION_TYPE_UNSPECIFIED:
+        return "Unknown";
+      case safe_browsing::ClientSideDetectionType::FORCE_REQUEST:
+        return "ForceRequest";
+      case safe_browsing::ClientSideDetectionType::
+          NOTIFICATION_PERMISSION_PROMPT:
+        return "NotificationPermissionPrompt";
+      case safe_browsing::ClientSideDetectionType::TRIGGER_MODELS:
+        return "TriggerModel";
+      case safe_browsing::ClientSideDetectionType::KEYBOARD_LOCK_REQUESTED:
+        return "KeyboardLockRequested";
+      case safe_browsing::ClientSideDetectionType::POINTER_LOCK_REQUESTED:
+        return "PointerLockRequested";
+      case safe_browsing::ClientSideDetectionType::VIBRATION_API:
+        return "VibrationApi";
+      case safe_browsing::ClientSideDetectionType::FULLSCREEN_API:
+        return "FullscreenApi";
+    }
+  }
+
  protected:
   std::unique_ptr<ClientSideDetectionHost> csd_host_;
   std::unique_ptr<NiceMock<MockClientSideDetectionService>> csd_service_;
@@ -2485,17 +2509,33 @@ class ClientSideDetectionHostScamDetectionTest
       histogram_tester_.ExpectUniqueSample(
           "SBClientPhishing.IsOnDeviceModelAvailableAtInquiryTime",
           is_on_device_model_available.value(), 1);
+      histogram_tester_.ExpectUniqueSample(
+          "SBClientPhishing.IsOnDeviceModelAvailableAtInquiryTime." +
+              GetRequestTypeName(expected_request_type),
+          is_on_device_model_available.value(), 1);
     } else {
       histogram_tester_.ExpectTotalCount(
           "SBClientPhishing.IsOnDeviceModelAvailableAtInquiryTime", 0);
+      histogram_tester_.ExpectTotalCount(
+          "SBClientPhishing.IsOnDeviceModelAvailableAtInquiryTime." +
+              GetRequestTypeName(expected_request_type),
+          0);
     }
     if (model_has_successful_response.has_value()) {
       histogram_tester_.ExpectUniqueSample(
           "SBClientPhishing.OnDeviceModelHasSuccessfulResponse",
           model_has_successful_response.value(), 1);
+      histogram_tester_.ExpectUniqueSample(
+          "SBClientPhishing.OnDeviceModelHasSuccessfulResponse." +
+              GetRequestTypeName(expected_request_type),
+          model_has_successful_response.value(), 1);
     } else {
       histogram_tester_.ExpectTotalCount(
           "SBClientPhishing.OnDeviceModelHasSuccessfulResponse", 0);
+      histogram_tester_.ExpectTotalCount(
+          "SBClientPhishing.OnDeviceModelHasSuccessfulResponse." +
+              GetRequestTypeName(expected_request_type),
+          0);
     }
     if (intelligent_scan_verdict.has_value()) {
       histogram_tester_.ExpectUniqueSample(
