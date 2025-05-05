@@ -230,6 +230,11 @@ LogicalStaticPosition::InlineEdge InlineStaticPositionEdge(
     WritingDirectionMode parent_writing_direction,
     bool should_swap_inline_axis) {
   CHECK(oof_node.IsOutOfFlowPositioned());
+  if (!RuntimeEnabledFeatures::CSSAlignBlockAndInlineOutOfFlowsEnabled()) {
+    return should_swap_inline_axis ? LogicalStaticPosition::kInlineEnd
+                                   : LogicalStaticPosition::kInlineStart;
+  }
+
   StyleSelfAlignmentData normal_value_behavior = {ItemPosition::kStart,
                                                   OverflowAlignment::kDefault};
   const ItemPosition align_self =
@@ -279,6 +284,10 @@ LogicalStaticPosition::BlockEdge BlockStaticPositionEdge(
     const ComputedStyle* align_items_style,
     WritingDirectionMode parent_writing_direction) {
   CHECK(oof_node.IsOutOfFlowPositioned());
+  if (!RuntimeEnabledFeatures::CSSAlignBlockAndInlineOutOfFlowsEnabled()) {
+    return LogicalStaticPosition::kBlockStart;
+  }
+
   StyleSelfAlignmentData normal_value_behavior = {ItemPosition::kStart,
                                                   OverflowAlignment::kDefault};
   const ItemPosition align_self =
