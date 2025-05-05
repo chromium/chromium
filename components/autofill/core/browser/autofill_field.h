@@ -255,11 +255,6 @@ class AutofillField : public FormFieldData {
   void set_initial_value(std::u16string initial_value,
                          base::PassKey<FormStructure> pass_key);
 
-  void set_initial_value_hash(uint32_t value) { initial_value_hash_ = value; }
-  std::optional<uint32_t> initial_value_hash() const {
-    return initial_value_hash_;
-  }
-
   void set_credit_card_number_offset(size_t position) {
     credit_card_number_offset_ = position;
   }
@@ -459,10 +454,6 @@ class AutofillField : public FormFieldData {
   // The field's initial value. By default, it's the same as the field's
   // `value()`, but FormStructure::RetrieveFromCache() may override it.
   std::u16string initial_value_ = value(ValueSemantics::kCurrent);
-
-  // A low-entropy hash of the field's initial value before user-interactions or
-  // automatic fillings. This field is used to detect static placeholders.
-  std::optional<uint32_t> initial_value_hash_;
 
   // Used to hold the position of the first digit to be copied as a substring
   // from credit card number.

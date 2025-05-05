@@ -354,15 +354,16 @@ std::string BrowserSavePasswordProgressLogger::FormStructureToFieldsLogString(
       field_info += ", vote_type=" + VoteTypeToString(field->vote_type());
     }
 
-    if (field->initial_value_hash().has_value()) {
-      field_info += ", initial value hash=";
-      field_info += NumberToString(field->initial_value_hash().value());
-    }
-
     if (auto it = vote_metadata.fields.find(field->global_id());
         it != vote_metadata.fields.end()) {
       const autofill::EncodeUploadRequestOptions::Field& field_metadata =
           it->second;
+
+      if (field_metadata.initial_value_hash.has_value()) {
+        field_info += ", initial value hash=";
+        field_info += NumberToString(field_metadata.initial_value_hash.value());
+      }
+
       std::string generation =
           GenerationTypeToString(field_metadata.generation_type);
       if (!generation.empty()) {

@@ -390,8 +390,9 @@ void EncodeFormFieldsForUpload(
       added_field->set_vote_type(field->vote_type());
     }
 
-    if (field->initial_value_hash()) {
-      added_field->set_initial_value_hash(field->initial_value_hash().value());
+    if (field_options && field_options->initial_value_hash) {
+      added_field->set_initial_value_hash(
+          field_options->initial_value_hash.value());
     }
 
     // TODO(crbug.com/40286837): Understand and document why the type is

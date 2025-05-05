@@ -195,7 +195,8 @@ class VotesUploader {
   // field in |form_structure|.
   void SetInitialHashValueOfUsernameField(
       autofill::FieldRendererId username_element_renderer_id,
-      autofill::FormStructure* form_structure);
+      const autofill::FormStructure& form_structure,
+      autofill::EncodeUploadRequestOptions& options);
 
   // Sends single username vote if |single_username_vote_data_| or
   // |forgot_password_vote_data_| is set.

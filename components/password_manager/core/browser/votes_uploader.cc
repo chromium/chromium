@@ -591,7 +591,7 @@ void VotesUploader::UploadFirstLoginVotes(
   form_structure.set_current_page_language(client_->GetPageLanguage());
 
   SetInitialHashValueOfUsernameField(
-      form_to_upload.username_element_renderer_id, &form_structure);
+      form_to_upload.username_element_renderer_id, form_structure, options);
 
   if (password_manager_util::IsLoggingActive(client_)) {
     BrowserSavePasswordProgressLogger logger(client_->GetCurrentLogManager());
@@ -606,19 +606,21 @@ void VotesUploader::UploadFirstLoginVotes(
 
 void VotesUploader::SetInitialHashValueOfUsernameField(
     FieldRendererId username_element_renderer_id,
-    FormStructure* form_structure) {
+    const FormStructure& form_structure,
+    autofill::EncodeUploadRequestOptions& options) {
   auto it = initial_values_.find(username_element_renderer_id);
 
   if (it == initial_values_.end() || it->second.empty()) {
     return;
   }
 
-  for (const auto& field : *form_structure) {
+  for (const auto& field : form_structure.fields()) {
     if (field && field->renderer_id() == username_element_renderer_id) {
       const std::u16string form_signature =
-          base::UTF8ToUTF16(form_structure->FormSignatureAsStr());
+          base::UTF8ToUTF16(form_structure.FormSignatureAsStr());
       const std::u16string seeded_input = it->second.append(form_signature);
-      field->set_initial_value_hash(GetLowEntropyHashValue(seeded_input));
+      options.fields[field->global_id()].initial_value_hash =
+          GetLowEntropyHashValue(seeded_input);
       break;
     }
   }

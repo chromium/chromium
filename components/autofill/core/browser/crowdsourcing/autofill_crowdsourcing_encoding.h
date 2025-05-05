@@ -63,6 +63,11 @@ struct EncodeUploadRequestOptions {
 
     // Whether the generated password was changed by user.
     bool generated_password_changed = false;
+
+    // For username fields, a low-entropy hash of the field's initial value
+    // before user-interactions or automatic fillings. This field is used to
+    // detect static placeholders. On non-username fields, it is not set.
+    std::optional<uint32_t> initial_value_hash;
   };
 
   EncodeUploadRequestOptions();

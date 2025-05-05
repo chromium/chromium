@@ -417,8 +417,10 @@ TEST_F(VotesUploaderTest, InitialValueDetection) {
   PasswordForm password_form;
   password_form.username_element_renderer_id = username_field_renderer_id;
 
+  autofill::EncodeUploadRequestOptions options;
+
   votes_uploader.SetInitialHashValueOfUsernameField(username_field_renderer_id,
-                                                    &form_structure);
+                                                    form_structure, options);
 
   const uint32_t expected_hash = 1377800651 % kNumberOfHashValues;
 
@@ -426,8 +428,8 @@ TEST_F(VotesUploaderTest, InitialValueDetection) {
   for (auto& f : form_structure) {
     if (f->renderer_id() == username_field_renderer_id) {
       found_fields++;
-      ASSERT_TRUE(f->initial_value_hash());
-      EXPECT_EQ(f->initial_value_hash().value(), expected_hash);
+      EXPECT_EQ(options.fields[f->global_id()].initial_value_hash,
+                expected_hash);
     }
   }
   EXPECT_EQ(found_fields, 1);
