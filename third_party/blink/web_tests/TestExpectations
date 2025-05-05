@@ -9197,12 +9197,6 @@ crbug.com/412431600 [ Win10.20h2 ] virtual/webnn-service-on-cpu/external/wpt/web
 # Gardener 2025-04-28
 crbug.com/414234413 [ Mac13-arm64 ] http/tests/devtools/elements/styles-1/edit-value-with-trimmed-url.js [ Failure Pass ]
 
-# Gardener 2025-04-28. Fails on Linux ASAN
-crbug.com/414243950 [ Linux ] virtual/webnn-service-on-cpu/external/wpt/webnn/conformance_tests/qdq_subgraph.https.any.html?cpu [ Crash ]
-crbug.com/414243950 [ Linux ] virtual/webnn-service-on-cpu/external/wpt/webnn/conformance_tests/qdq_subgraph.https.any.serviceworker.html?cpu [ Crash ]
-crbug.com/414243950 [ Linux ] virtual/webnn-service-on-cpu/external/wpt/webnn/conformance_tests/qdq_subgraph.https.any.sharedworker.html?cpu [ Crash ]
-crbug.com/414243950 [ Linux ] virtual/webnn-service-on-cpu/external/wpt/webnn/conformance_tests/qdq_subgraph.https.any.worker.html?cpu [ Crash ]
-
 # Gardener 2025-04-30
 crbug.com/324536287 external/wpt/soft-navigation-heuristics/interaction-with-paint-before-back.tentative.html [ Failure Pass ]
 
