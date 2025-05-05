@@ -760,20 +760,6 @@ PhysicalOffset LayoutBoxModelObject::AdjustedPositionRelativeTo(
   return reference_point;
 }
 
-LayoutUnit LayoutBoxModelObject::OffsetLeft(const Element* parent) const {
-  NOT_DESTROYED();
-  // Note that LayoutInline and LayoutBox override this to pass a different
-  // startPoint to adjustedPositionRelativeTo.
-  return AdjustedPositionRelativeTo(PhysicalOffset(), parent).left;
-}
-
-LayoutUnit LayoutBoxModelObject::OffsetTop(const Element* parent) const {
-  NOT_DESTROYED();
-  // Note that LayoutInline and LayoutBox override this to pass a different
-  // startPoint to adjustedPositionRelativeTo.
-  return AdjustedPositionRelativeTo(PhysicalOffset(), parent).top;
-}
-
 LayoutUnit LayoutBoxModelObject::ComputedCSSPadding(
     const Length& padding) const {
   NOT_DESTROYED();

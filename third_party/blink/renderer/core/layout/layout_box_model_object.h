@@ -138,8 +138,8 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
   // IE extensions. Used to calculate offsetWidth/Height. Overridden by inlines
   // (LayoutInline) to return the remaining width on a given line (and the
   // height of a single line).
-  virtual LayoutUnit OffsetLeft(const Element*) const;
-  virtual LayoutUnit OffsetTop(const Element*) const;
+  virtual LayoutUnit OffsetLeft(const Element*) const = 0;
+  virtual LayoutUnit OffsetTop(const Element*) const = 0;
   virtual LayoutUnit OffsetWidth() const = 0;
   virtual LayoutUnit OffsetHeight() const = 0;
 
