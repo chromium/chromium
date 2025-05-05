@@ -266,9 +266,6 @@ ScreenAIService::ScreenAIService(
       base::BindRepeating(&ScreenAIService::OcrReceiverDisconnected,
                           weak_ptr_factory_.GetWeakPtr()));
   model_data_holder_ = std::make_unique<ModelDataHolder>();
-  idle_checking_timer_ = std::make_unique<base::RepeatingTimer>();
-  idle_checking_timer_->Start(FROM_HERE, kIdleCheckingDelay, this,
-                              &ScreenAIService::ShutDownOnIdle);
 
   background_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
       {base::TaskPriority::BEST_EFFORT,
@@ -350,6 +347,7 @@ void ScreenAIService::InitializeMainContentExtraction(
 
   std::move(callback).Run(true);
   mce_last_used_ = base::TimeTicks::Now();
+  StartShutDownOnIdleTimer();
 }
 
 void ScreenAIService::InitializeOCR(
@@ -387,6 +385,7 @@ void ScreenAIService::InitializeOCR(
 
   std::move(callback).Run(true);
   ocr_last_used_ = base::TimeTicks::Now();
+  StartShutDownOnIdleTimer();
 }
 
 void ScreenAIService::BindShutdownHandler(
@@ -671,6 +670,14 @@ ui::AXNodeID ScreenAIService::ComputeMainNodeForTesting(
     const ui::AXTree* tree,
     const std::vector<ui::AXNodeID>& content_node_ids) {
   return ComputeMainNode(tree, content_node_ids);
+}
+
+void ScreenAIService::StartShutDownOnIdleTimer() {
+  if (!idle_checking_timer_) {
+    idle_checking_timer_ = std::make_unique<base::RepeatingTimer>();
+    idle_checking_timer_->Start(FROM_HERE, kIdleCheckingDelay, this,
+                                &ScreenAIService::ShutDownOnIdle);
+  }
 }
 
 void ScreenAIService::ShutDownOnIdle() {

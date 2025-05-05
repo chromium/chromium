@@ -118,6 +118,10 @@ class ScreenAIService : public mojom::ScreenAIServiceFactory,
   void OcrReceiverDisconnected();
   void MceReceiverDisconnected();
 
+  // Starts a timer to frequently check if the service is idle. This is only
+  // triggered after the library is initialized for either of the
+  // functionalities.
+  void StartShutDownOnIdleTimer();
   void ShutDownOnIdle();
 
   // Last time the feature is used. A null value means never, it is set when the
