@@ -246,6 +246,8 @@ class OptimizationGuideKeyedServiceBrowserTest
         SetUpBrowserContextKeyedServices(context);
     IdentityTestEnvironmentProfileAdaptor::
         SetIdentityTestEnvironmentFactoriesOnBrowserContext(context);
+    // Note: Behavior for unofficial builds is tested by unit tests.
+    SetIsOfficialBuildForTesting(true);
   }
 
   void SetUpOnMainThread() override {
@@ -419,6 +421,11 @@ class OptimizationGuideKeyedServiceBrowserTest
   void SetIsDogfoodClient(bool is_dogfood_client) {
     g_browser_process->variations_service()->SetIsLikelyDogfoodClientForTesting(
         is_dogfood_client);
+  }
+
+  void SetIsOfficialBuildForTesting(bool is_official_build) {
+    OptimizationGuideKeyedService::SetIsOfficialBuildForTesting(
+        is_official_build);
   }
 
  protected:

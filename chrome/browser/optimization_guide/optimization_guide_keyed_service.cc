@@ -75,6 +75,7 @@
 #include "components/user_prefs/user_prefs.h"
 #include "components/variations/service/variations_service.h"
 #include "components/variations/synthetic_trials.h"
+#include "components/version_info/version_info.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/network_service_instance.h"
@@ -95,6 +96,9 @@ using ::optimization_guide::ModelExecutionFeaturesController;
 using ::optimization_guide::OnDeviceModelComponentStateManager;
 using ::optimization_guide::OnDeviceModelPerformanceClass;
 using ::optimization_guide::OnDeviceModelServiceController;
+
+// Used to override the value of `version_info::IsOfficialBuild()` for tests.
+std::optional<bool> g_is_official_build_for_testing;
 
 // Returns the profile to use for when setting up the keyed service when the
 // profile is Off-The-Record. For guest profiles, returns a loaded profile if
@@ -206,6 +210,12 @@ void OptimizationGuideKeyedService::RegisterPerformanceClassSyntheticTrial(
         SyntheticTrialGroupForPerformanceClass(perf_class),
         variations::SyntheticTrialAnnotationMode::kCurrentLog);
   }
+}
+
+// static
+void OptimizationGuideKeyedService::SetIsOfficialBuildForTesting(
+    bool is_official_build) {
+  g_is_official_build_for_testing = is_official_build;
 }
 
 OptimizationGuideKeyedService::OptimizationGuideKeyedService(
@@ -408,10 +418,13 @@ void OptimizationGuideKeyedService::InitializeModelExecution(Profile* profile) {
         variations_service && variations_service->IsLikelyDogfoodClient()
             ? ModelExecutionFeaturesController::DogfoodStatus::DOGFOOD
             : ModelExecutionFeaturesController::DogfoodStatus::NON_DOGFOOD;
+    bool is_official_build = g_is_official_build_for_testing.value_or(
+        version_info::IsOfficialBuild());
     model_execution_features_controller_ =
         std::make_unique<optimization_guide::ModelExecutionFeaturesController>(
             profile->GetPrefs(), IdentityManagerFactory::GetForProfile(profile),
-            g_browser_process->local_state(), dogfood_status);
+            g_browser_process->local_state(), dogfood_status,
+            is_official_build);
 
     // Don't create logs uploader service when feature is disabled. All the
     // logs upload get route through this service which exists one per

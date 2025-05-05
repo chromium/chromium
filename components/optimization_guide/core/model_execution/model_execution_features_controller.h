@@ -64,7 +64,8 @@ class ModelExecutionFeaturesController
   ModelExecutionFeaturesController(PrefService* browser_context_profile_service,
                                    signin::IdentityManager* identity_manager,
                                    PrefService* local_state,
-                                   DogfoodStatus dogfood_status);
+                                   DogfoodStatus dogfood_status,
+                                   bool is_official_build);
 
   ~ModelExecutionFeaturesController() override;
 
@@ -188,6 +189,9 @@ class ModelExecutionFeaturesController
 
   // Whether this client is a (likely) dogfood client.
   const DogfoodStatus dogfood_status_;
+
+  // Whether this client is an official build.
+  const bool is_official_build_;
 
   THREAD_CHECKER(thread_checker_);
 

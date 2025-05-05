@@ -51,10 +51,11 @@ class ModelExecutionFeaturesControllerTest : public testing::Test {
 
   void CreateController(
       ModelExecutionFeaturesController::DogfoodStatus dogfood_status =
-          ModelExecutionFeaturesController::DogfoodStatus::NON_DOGFOOD) {
+          ModelExecutionFeaturesController::DogfoodStatus::NON_DOGFOOD,
+      bool is_official_build = true) {
     controller_ = std::make_unique<ModelExecutionFeaturesController>(
         pref_service_.get(), identity_test_env_.identity_manager(),
-        local_state_.get(), dogfood_status);
+        local_state_.get(), dogfood_status, is_official_build);
   }
 
   void EnableSignIn() {
@@ -327,6 +328,27 @@ TEST_F(ModelExecutionFeaturesControllerTest,
 }
 
 TEST_F(ModelExecutionFeaturesControllerTest,
+       Logging_DisabledByEnterprisePolicy_NotOverriddenByDeveloperBuildAlone) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {features::internal::kComposeSettingsVisibility},
+      {features::internal::kComposeGraduated});
+  CreateController(ModelExecutionFeaturesController::DogfoodStatus::NON_DOGFOOD,
+                   /*is_official_build=*/false);
+
+  auto feature = UserVisibleFeatureKey::kCompose;
+  EnableSignIn();
+  SetEnterprisePolicy(
+      feature, ModelExecutionEnterprisePolicyValue::kAllowWithoutLogging);
+
+  const MqlsFeatureMetadata* metadata =
+      MqlsFeatureRegistry::GetInstance().GetFeature(
+          proto::LogAiDataRequest::FeatureCase::kCompose);
+  EXPECT_FALSE(
+      controller()->ShouldFeatureBeCurrentlyAllowedForLogging(metadata));
+}
+
+TEST_F(ModelExecutionFeaturesControllerTest,
        Logging_DisabledByEnterprisePolicy_NotOverriddenBySwitchAlone) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
@@ -355,6 +377,30 @@ TEST_F(ModelExecutionFeaturesControllerTest,
       {features::internal::kComposeSettingsVisibility},
       {features::internal::kComposeGraduated});
   CreateController(ModelExecutionFeaturesController::DogfoodStatus::DOGFOOD);
+
+  auto feature = UserVisibleFeatureKey::kCompose;
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kEnableModelQualityDogfoodLogging);
+  EnableSignIn();
+  SetEnterprisePolicy(
+      feature, ModelExecutionEnterprisePolicyValue::kAllowWithoutLogging);
+
+  const MqlsFeatureMetadata* metadata =
+      MqlsFeatureRegistry::GetInstance().GetFeature(
+          proto::LogAiDataRequest::FeatureCase::kCompose);
+  EXPECT_TRUE(
+      controller()->ShouldFeatureBeCurrentlyAllowedForLogging(metadata));
+}
+
+TEST_F(
+    ModelExecutionFeaturesControllerTest,
+    Logging_DisabledByEnterprisePolicy_OverriddenBySwitchWhenDeveloperBuild) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {features::internal::kComposeSettingsVisibility},
+      {features::internal::kComposeGraduated});
+  CreateController(ModelExecutionFeaturesController::DogfoodStatus::NON_DOGFOOD,
+                   /*is_official_build=*/false);
 
   auto feature = UserVisibleFeatureKey::kCompose;
   base::CommandLine::ForCurrentProcess()->AppendSwitch(

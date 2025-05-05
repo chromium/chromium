@@ -280,6 +280,9 @@ class OptimizationGuideKeyedService
   static void RegisterPerformanceClassSyntheticTrial(
       optimization_guide::OnDeviceModelPerformanceClass perf_class);
 
+  // Allows tests to override the value of `version_info::IsOfficialBuild()`.
+  static void SetIsOfficialBuildForTesting(bool is_official_build);
+
   // Initializes |this|.
   void Initialize();
 
