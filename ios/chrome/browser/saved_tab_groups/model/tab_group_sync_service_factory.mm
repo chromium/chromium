@@ -8,6 +8,7 @@
 #import <memory>
 #import <string_view>
 
+#import "base/functional/bind.h"
 #import "base/functional/callback.h"
 #import "components/collaboration/internal/collaboration_finder_impl.h"
 #import "components/data_sharing/public/features.h"
@@ -99,8 +100,19 @@ TabGroupSyncServiceFactory* TabGroupSyncServiceFactory::GetInstance() {
   return instance.get();
 }
 
+// static
+BrowserStateKeyedServiceFactory::TestingFactory
+TabGroupSyncServiceFactory::GetDefaultFactory() {
+  // KeyedService factories are never destroyed, to base::Unretained(...)
+  // is safe. See the implementation of GetInstance() for details.
+  return base::BindOnce(
+      &TabGroupSyncServiceFactory::BuildServiceInstanceFor,
+      base::Unretained(TabGroupSyncServiceFactory::GetInstance()));
+}
+
 TabGroupSyncServiceFactory::TabGroupSyncServiceFactory()
     : ProfileKeyedServiceFactoryIOS("TabGroupSyncServiceFactory",
+                                    TestingCreation::kNoServiceForTests,
                                     ServiceCreation::kCreateWithProfile),
       synthetic_field_trial_helper_(std::make_unique<SyntheticFieldTrialHelper>(
           base::BindRepeating(&TabGroupSyncServiceFactory::OnHadSyncedTabGroup),

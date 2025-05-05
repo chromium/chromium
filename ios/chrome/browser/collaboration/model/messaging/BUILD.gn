@@ -47,6 +47,7 @@ source_set("unit_tests") {
     "//components/collaboration/public:features",
     "//components/data_sharing/public",
     "//ios/chrome/browser/infobars/model",
+    "//ios/chrome/browser/saved_tab_groups/model",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/profile/test",

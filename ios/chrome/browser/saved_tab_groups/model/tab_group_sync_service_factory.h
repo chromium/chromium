@@ -20,6 +20,9 @@ class TabGroupSyncServiceFactory : public ProfileKeyedServiceFactoryIOS {
   static TabGroupSyncService* GetForProfile(ProfileIOS* profile);
   static TabGroupSyncServiceFactory* GetInstance();
 
+  // Return the default factory.
+  static TestingFactory GetDefaultFactory();
+
  private:
   friend class base::NoDestructor<TabGroupSyncServiceFactory>;
 

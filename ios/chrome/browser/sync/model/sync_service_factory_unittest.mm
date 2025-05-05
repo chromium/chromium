@@ -16,6 +16,7 @@
 #import "components/sync/service/sync_service_impl.h"
 #import "ios/chrome/browser/favicon/model/favicon_service_factory.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
+#import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/webdata_services/model/web_data_service_factory.h"
@@ -40,6 +41,9 @@ class SyncServiceFactoryTest : public PlatformTest {
     profile_builder.AddTestingFactory(
         ios::WebDataServiceFactory::GetInstance(),
         ios::WebDataServiceFactory::GetDefaultFactory());
+    profile_builder.AddTestingFactory(
+        tab_groups::TabGroupSyncServiceFactory::GetInstance(),
+        tab_groups::TabGroupSyncServiceFactory::GetDefaultFactory());
     profile_ = std::move(profile_builder).Build();
   }
 
