@@ -264,8 +264,4 @@ bool Position::operator==(const Position& other) const {
   return true;
 }
 
-bool Position::operator!=(const Position& other) const {
-  return !(*this == other);
-}
-
 }  // namespace arc::input_overlay

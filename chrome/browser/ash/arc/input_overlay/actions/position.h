@@ -42,7 +42,6 @@ class Position {
   std::unique_ptr<PositionProto> ConvertToProto() const;
 
   bool operator==(const Position& other) const;
-  bool operator!=(const Position& other) const;
 
   PositionType position_type() const { return position_type_; }
   const gfx::PointF& anchor() const { return anchor_; }

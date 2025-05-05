@@ -194,10 +194,6 @@ bool InputElement::operator==(const InputElement& other) const {
   return equal;
 }
 
-bool InputElement::operator!=(const InputElement& other) const {
-  return !(*this == other);
-}
-
 bool InputElement::IsInputSourceSet(InputSource input_source) const {
   return (input_sources_ & input_source) == input_source;
 }
