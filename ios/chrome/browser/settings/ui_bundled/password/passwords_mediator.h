@@ -47,6 +47,9 @@ class Tracker;
 // promo can be shown.
 - (void)askFETToShowPasswordManagerWidgetPromo;
 
+// Ask to display or to hide the Trusted Vault widget promo if needed.
+- (void)displayOrHideTrustedVaultPasswordManagerWidgetPromo;
+
 @property(nonatomic, weak) id<PasswordsConsumer> consumer;
 
 // Feature Engagement Tracker used to handle promo events.

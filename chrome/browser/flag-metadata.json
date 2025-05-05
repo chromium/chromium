@@ -3889,6 +3889,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "enable-password-manager-trusted-vault-widget",
+    "owners": [ "ylahodiuk@google.com", "rgod@google.com" ],
+    "expiry_milestone": 142
+  },
+  {
     "name": "enable-pending-mode-passwords-promo",
     "owners": [
       "uno-desktop@google.com",

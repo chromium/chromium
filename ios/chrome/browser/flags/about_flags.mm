@@ -2694,7 +2694,15 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(kImportPasswordsFromSafari)},
     {"widgets-for-multiprofile", flag_descriptions::kWidgetsForMultiprofileName,
      flag_descriptions::kWidgetsForMultiprofileDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kWidgetsForMultiprofile)}};
+     FEATURE_VALUE_TYPE(kWidgetsForMultiprofile)},
+    {"enable-password-manager-trusted-vault-widget",
+     flag_descriptions::kIOSEnablePasswordManagerTrustedVaultWidgetName,
+     flag_descriptions::kIOSEnablePasswordManagerTrustedVaultWidgetDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(password_manager::features::
+                            kIOSEnablePasswordManagerTrustedVaultWidget)},
+
+};
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
   return false;

@@ -10,6 +10,10 @@
 #import "components/feature_engagement/public/tracker.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
+#import "components/sync/service/sync_service_utils.h"
+#import "components/trusted_vault/trusted_vault_server_constants.h"
+#import "ios/chrome/browser/authentication/ui_bundled/trusted_vault_reauthentication/trusted_vault_reauthentication_coordinator.h"
+#import "ios/chrome/browser/authentication/ui_bundled/trusted_vault_reauthentication/trusted_vault_reauthentication_coordinator_delegate.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
@@ -55,6 +59,7 @@
     PasswordsSettingsCommands,
     PasswordManagerViewControllerPresentationDelegate,
     ReauthenticationCoordinatorDelegate,
+    TrustedVaultReauthenticationCoordinatorDelegate,
     WidgetPromoInstructionsCoordinatorDelegate>
 
 // Main view controller for this coordinator.
@@ -102,6 +107,10 @@
   // Whether local authentication failed for a child coordinator and thus the
   // whole Password Manager UI is being dismissed.
   BOOL _authDidFailForChildCoordinator;
+
+  // Displays the Trusted Vault reauthentication dialog.
+  TrustedVaultReauthenticationCoordinator*
+      _trustedVaultReauthenticationCoordinator;
 }
 
 @synthesize baseNavigationController = _baseNavigationController;
@@ -376,6 +385,27 @@
   [self.widgetPromoInstructionsCoordinator start];
 }
 
+// TODO(crbug.com/407605858): Adjust this code to handle interaction with
+// `reauthenticationCoordinator` properly.
+- (void)performReauthenticationForRetrievingTrustedVaultKey {
+  trusted_vault::SecurityDomainId securityDomainID =
+      trusted_vault::SecurityDomainId::kChromeSync;
+  // TODO(crbug.com/407605858): Add to `TrustedVaultUserActionTriggerForUMA` a
+  // separate enum entry for representing the GPM management UI.
+  syncer::TrustedVaultUserActionTriggerForUMA trigger =
+      syncer::TrustedVaultUserActionTriggerForUMA::kSettings;
+  CHECK(!_trustedVaultReauthenticationCoordinator, base::NotFatalUntil::M145);
+  _trustedVaultReauthenticationCoordinator =
+      [[TrustedVaultReauthenticationCoordinator alloc]
+          initWithBaseViewController:self.passwordsViewController
+                             browser:self.browser
+                              intent:SigninTrustedVaultDialogIntentFetchKeys
+                    securityDomainID:securityDomainID
+                             trigger:trigger];
+  _trustedVaultReauthenticationCoordinator.delegate = self;
+  [_trustedVaultReauthenticationCoordinator start];
+}
+
 #pragma mark - PasswordCheckupCoordinatorDelegate
 
 - (void)passwordCheckupCoordinatorDidRemove:
@@ -486,6 +516,17 @@
   self.widgetPromoInstructionsCoordinator.delegate = nil;
   self.widgetPromoInstructionsCoordinator = nil;
   [self restartReauthCoordinator];
+}
+
+#pragma mark - TrustedVaultReauthenticationCoordinatorDelegate
+
+- (void)trustedVaultReauthenticationCoordinatorWantsToBeStopped:
+    (TrustedVaultReauthenticationCoordinator*)coordinator {
+  CHECK_EQ(coordinator, _trustedVaultReauthenticationCoordinator);
+  [self.mediator displayOrHideTrustedVaultPasswordManagerWidgetPromo];
+  [_trustedVaultReauthenticationCoordinator stop];
+  _trustedVaultReauthenticationCoordinator.delegate = nil;
+  _trustedVaultReauthenticationCoordinator = nil;
 }
 
 #pragma mark - Private

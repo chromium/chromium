@@ -582,6 +582,12 @@ extern const char kIOSEnableDeleteAllSavedCredentialsName[] =
 extern const char kIOSEnableDeleteAllSavedCredentialsDescription[] =
     "When enabled, the delete all data button in PWM will be presented.";
 
+const char kIOSEnablePasswordManagerTrustedVaultWidgetName[] =
+    "Enable password settings encryption error widget";
+const char kIOSEnablePasswordManagerTrustedVaultWidgetDescription[] =
+    "Display a widget in the password management settings page in case of a "
+    "password encryption error.";
+
 extern const char kIOSEnableRealtimeEventReportingName[] =
     "Enable realtime event reporting on iOS";
 extern const char kIOSEnableRealtimeEventReportingDescription[] =

@@ -78,6 +78,7 @@ std::unique_ptr<KeyedService> BuildFeatureEngagementMockTracker(
 @property(nonatomic, copy) NSString* detailedText;
 
 @property(nonatomic, assign) BOOL shouldShowPasswordManagerWidgetPromoCalled;
+@property(nonatomic, assign) BOOL shouldShowTrustedVaultWidgetPromoCalled;
 
 @end
 
@@ -115,6 +116,11 @@ std::unique_ptr<KeyedService> BuildFeatureEngagementMockTracker(
 - (void)setShouldShowPasswordManagerWidgetPromo:
     (BOOL)shouldShowPasswordManagerWidgetPromo {
   _shouldShowPasswordManagerWidgetPromoCalled = YES;
+}
+
+- (void)setShouldShowTrustedVaultWidgetPromo:
+    (BOOL)shouldShowTrustedVaultWidgetPromo {
+  _shouldShowTrustedVaultWidgetPromoCalled = YES;
 }
 
 @end

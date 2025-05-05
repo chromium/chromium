@@ -22,6 +22,10 @@
 // with that promo.
 - (void)showPasswordManagerWidgetPromoInstructions;
 
+// Called when the user has accepted the Trusted Vault Password Manager widget
+// promo. This method presents the Trusted Vault Reauthentication UI.
+- (void)performReauthenticationForRetrievingTrustedVaultKey;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_PASSWORD_PASSWORD_MANAGER_VIEW_CONTROLLER_PRESENTATION_DELEGATE_H_
