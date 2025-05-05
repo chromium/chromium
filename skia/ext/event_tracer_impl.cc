@@ -14,14 +14,6 @@
 #include "skia/ext/event_tracer_impl.h"
 #include "third_party/skia/include/utils/SkEventTracer.h"
 
-namespace {
-// Experiment with not deleting the Skia event tracer at process exit
-// to measure the improvement in performance. See crbug.com/1329594
-BASE_FEATURE(kLeakSkiaEventTracerAtExit,
-             "LeakSkiaEventTracerAtExit",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-}  // namespace
-
 namespace skia {
 
 class SkChromiumEventTracer: public SkEventTracer {
@@ -88,7 +80,5 @@ void
 void InitSkiaEventTracer() {
   // Initialize the binding to Skia's tracing events. Skia will
   // take ownership of and clean up the memory allocated here.
-  SkEventTracer::SetInstance(
-      new skia::SkChromiumEventTracer(),
-      base::FeatureList::IsEnabled(kLeakSkiaEventTracerAtExit));
+  SkEventTracer::SetInstance(new skia::SkChromiumEventTracer());
 }
