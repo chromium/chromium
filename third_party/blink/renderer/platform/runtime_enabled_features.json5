@@ -3839,7 +3839,7 @@
       // composited pixel alignment issues. See
       // https://crbug.com/40084005
       name: "RenderSurfaceFor2DScaleTransform",
-      status: "stable",
+      status: "experimental",
     },
     {
       name: "ReportEventTimingAtVisibilityChange",
