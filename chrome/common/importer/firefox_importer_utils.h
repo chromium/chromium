@@ -31,6 +31,8 @@ base::FilePath GetFirefoxInstallPathFromRegistry();
 #endif  // BUILDFLAG(IS_WIN)
 
 struct FirefoxDetail {
+  friend bool operator==(const FirefoxDetail&, const FirefoxDetail&) = default;
+
   // |path| represents the Path field in Profiles.ini.
   // This path is the directory name where all the profile information
   // in stored.
@@ -38,14 +40,6 @@ struct FirefoxDetail {
   // The user specified name of the profile.
   std::u16string name;
 };
-
-inline bool operator==(const FirefoxDetail& a1, const FirefoxDetail& a2) {
-  return a1.name == a2.name && a1.path == a2.path;
-}
-
-inline bool operator!=(const FirefoxDetail& a1, const FirefoxDetail& a2) {
-  return !(a1 == a2);
-}
 
 // Returns a vector of FirefoxDetail for available profiles.
 std::vector<FirefoxDetail> GetFirefoxDetails(
