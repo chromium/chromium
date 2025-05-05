@@ -1395,14 +1395,14 @@ int AffixMgr::cpdwordpair_check(const std::string& word, int wl) {
 }
 
 // forbid compoundings when there are special patterns at word bound
-int AffixMgr::cpdpat_check(const char* word,
+int AffixMgr::cpdpat_check(const std::string& word,
                            int pos,
                            hentry* r1,
                            hentry* r2,
                            const char /*affixed*/) {
   for (auto& i : checkcpdtable) {
     size_t len;
-    if (isSubset(i.pattern2.c_str(), word + pos) &&
+    if (isSubset(i.pattern2.c_str(), word.c_str() + pos) &&
         (!r1 || !i.cond ||
          (r1->astr && TESTAFF(r1->astr, i.cond, r1->alen))) &&
         (!r2 || !i.cond2 ||
@@ -1411,10 +1411,10 @@ int AffixMgr::cpdpat_check(const char* word,
         // zero pattern (0/flag) => unmodified stem (zero affixes allowed)
         (i.pattern.empty() ||
          ((i.pattern[0] == '0' && r1->blen <= pos &&
-           strncmp(word + pos - r1->blen, r1->word, r1->blen) == 0) ||
+           strncmp(word.c_str() + pos - r1->blen, r1->word, r1->blen) == 0) ||
           (i.pattern[0] != '0' &&
            ((len = i.pattern.size()) != 0) && len <= pos &&
-           strncmp(word + pos - len, i.pattern.c_str(), len) == 0)))) {
+           strncmp(word.c_str() + pos - len, i.pattern.c_str(), len) == 0)))) {
       return 1;
     }
   }
@@ -1423,10 +1423,11 @@ int AffixMgr::cpdpat_check(const char* word,
 
 // forbid compounding with neighbouring upper and lower case characters at word
 // bounds
-int AffixMgr::cpdcase_check(const char* word, int pos) {
+int AffixMgr::cpdcase_check(const std::string& word, int pos) {
   if (utf8) {
     const char* p;
-    for (p = word + pos - 1; p > word && (*p & 0xc0) == 0x80; p--)
+    const char* wordp = word.c_str();
+    for (p = wordp + pos - 1; p > wordp && (*p & 0xc0) == 0x80; p--)
       ;
     std::string pair(p);
     std::vector<w_char> pair_u;
@@ -1438,7 +1439,7 @@ int AffixMgr::cpdcase_check(const char* word, int pos) {
         (a != '-') && (b != '-'))
       return 1;
   } else {
-    const unsigned char a = *(word + pos - 1), b = *(word + pos);
+    const unsigned char a = word[pos - 1], b = word[pos];
     if ((csconv[a].ccase || csconv[b].ccase) && (a != '-') && (b != '-'))
       return 1;
   }
@@ -1905,7 +1906,7 @@ struct hentry* AffixMgr::compound_check(const std::string& word,
                  ((word[i - 1] == word[i + 1]))  // may be word[i+1] == '\0'
                  )) ||
                (checkcompoundcase && scpd == 0 && !words &&
-                cpdcase_check(word.c_str(), i))))
+                cpdcase_check(word, i))))
             // LANG_hu section: spec. Hungarian rule
             || ((!rv) && (langnum == LANG_hu) && hu_mov_rule &&
                 (rv = affix_check(st, 0, i)) &&
@@ -2010,7 +2011,7 @@ struct hentry* AffixMgr::compound_check(const std::string& word,
                 (
                     // test CHECKCOMPOUNDPATTERN
                     checkcpdtable.empty() || scpd != 0 ||
-                    !cpdpat_check(word.c_str(), i, rv_first, rv, 0)) &&
+                    (i < word.size() && !cpdpat_check(word, i, rv_first, rv, 0))) &&
                 ((!checkcompounddup || (rv != rv_first)))
                 // test CHECKCOMPOUNDPATTERN conditions
                 &&
@@ -2057,7 +2058,7 @@ struct hentry* AffixMgr::compound_check(const std::string& word,
 
             // test CHECKCOMPOUNDPATTERN conditions (forbidden compounds)
             if (rv && !checkcpdtable.empty() && scpd == 0 &&
-                cpdpat_check(word.c_str(), i, rv_first, rv, affixed))
+                cpdpat_check(word, i, rv_first, rv, affixed))
               rv = NULL;
 
             // check non_compound flag in suffix and prefix
@@ -2164,9 +2165,9 @@ struct hentry* AffixMgr::compound_check(const std::string& word,
 
               if (rv && !checkcpdtable.empty() &&
                   ((scpd == 0 &&
-                    cpdpat_check(word.c_str(), i, rv_first, rv, affixed)) ||
+                    cpdpat_check(word, i, rv_first, rv, affixed)) ||
                    (scpd != 0 &&
-                    !cpdpat_check(word.c_str(), i, rv_first, rv, affixed))))
+                    !cpdpat_check(word, i, rv_first, rv, affixed))))
                 rv = NULL;
             } else {
               rv = NULL;
@@ -2196,7 +2197,7 @@ struct hentry* AffixMgr::compound_check(const std::string& word,
 
                   if (forbiddenword) {
                     struct hentry* rv2 = lookup(word.c_str(), word.size());
-                    if (!rv2)
+                    if (!rv2 && len <= word.size())
                       rv2 = affix_check(word, 0, len);
                     if (rv2 && rv2->astr &&
                         TESTAFF(rv2->astr, forbiddenword, rv2->alen) &&
@@ -2239,6 +2240,9 @@ struct hentry* AffixMgr::compound_check(const std::string& word,
         i = soldi;
         st.assign(word);  // XXX add more optim.
         soldi = 0;
+        len = oldlen;
+        cmin = oldcmin;
+        cmax = oldcmax;
       } else
         st[i] = ch;
 
@@ -2500,8 +2504,8 @@ int AffixMgr::compound_check_morph(const std::string& word,
              (
                  // test CHECKCOMPOUNDPATTERN
                  !checkcpdtable.empty() && !words &&
-                 cpdpat_check(word.c_str(), i, rv, NULL, affixed)) ||
-             (checkcompoundcase && !words && cpdcase_check(word.c_str(), i))))
+                 cpdpat_check(word, i, rv, NULL, affixed)) ||
+             (checkcompoundcase && !words && cpdcase_check(word, i))))
           // LANG_hu section: spec. Hungarian rule
           ||
           ((!rv) && (langnum == LANG_hu) && hu_mov_rule &&
@@ -4609,7 +4613,7 @@ bool AffixMgr::parse_affix(const std::string& line,
         case 0: {
           np++;
           if (ent != 0)
-            entry = affentries.add_entry((char)(aeXPRODUCT + aeUTF8 + aeALIASF + aeALIASM));
+            entry = affentries.add_entry((char)(aeXPRODUCT | aeUTF8 | aeALIASF | aeALIASM));
           break;
         }
 

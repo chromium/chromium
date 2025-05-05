@@ -890,11 +890,19 @@ int HashMgr::decode_flags(unsigned short** result, const std::string& flags, Fil
       u8_u16(w, flags);
       len = w.size();
       *result = new unsigned short[len];
-      memcpy(*result, w.data(), len * sizeof(short));
+#if defined(__i386__) || defined(_M_IX86) || defined(_M_X64)
+      memcpy(*result, w.data(), len * sizeof(unsigned short));
+#else
+      unsigned short* dest = *result;
+      for (const w_char wc : w) {
+        *dest = (unsigned short)wc;
+        dest++;
+      }
+#endif
       break;
     }
     default: {  // Ispell's one-character flags (erfg -> e r f g)
-	  len = flags.size();
+      len = flags.size();
       *result = new unsigned short[len];
       unsigned short* dest = *result;
       for (const char flag : flags) {
@@ -960,8 +968,13 @@ bool HashMgr::decode_flags(std::vector<unsigned short>& result, const std::strin
       std::vector<w_char> w;
       u8_u16(w, flags);
       size_t len = w.size(), origsize = result.size();
+#if defined(__i386__) || defined(_M_IX86) || defined(_M_X64)
       result.resize(origsize + len);
       memcpy(result.data() + origsize, w.data(), len * sizeof(short));
+#else
+      result.reserve(origsize + len);	
+      for (const w_char wc : w) result.push_back((unsigned short)wc);
+#endif
       break;
     }
     default: {  // Ispell's one-character flags (erfg -> e r f g)
@@ -994,7 +1007,7 @@ unsigned short HashMgr::decode_flag(const std::string& f) const {
       std::vector<w_char> w;
       u8_u16(w, f);
       if (!w.empty())
-          memcpy(&s, w.data(), 1 * sizeof(short));
+        s = (unsigned short)w[0];
       break;
     }
     default:
@@ -1013,9 +1026,7 @@ std::string HashMgr::encode_flag(unsigned short f) const {
     ch.push_back((unsigned char)(f >> 8));
     ch.push_back((unsigned char)(f - ((f >> 8) << 8)));
   } else if (flag_mode == FLAG_NUM) {
-    std::ostringstream stream;
-    stream << f;
-    ch = stream.str();
+    ch = std::to_string(f); 
   } else if (flag_mode == FLAG_UNI) {
 
 #if defined(__i386__) || defined(_M_IX86) || defined(_M_X64)
@@ -1032,7 +1043,6 @@ std::string HashMgr::encode_flag(unsigned short f) const {
     wc.h = (unsigned char)(f >> 8);
     wc.l = (unsigned char)(f & 0xff);
 #endif
-    //const w_char* w_c = (const w_char*)&f; <- this will not work properly on big endian architecture 
     const std::vector<w_char> w = { wc };
     u16_u8(ch, w);
   } else {

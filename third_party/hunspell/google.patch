@@ -1,5 +1,5 @@
 diff --git a/src/hunspell/affixmgr.cxx b/src/hunspell/affixmgr.cxx
-index 0d96260..a9a61a2 100644
+index abddf93..cd2c4d6 100644
 --- a/src/hunspell/affixmgr.cxx
 +++ b/src/hunspell/affixmgr.cxx
 @@ -87,11 +87,19 @@
@@ -165,7 +165,7 @@ index 0d96260..a9a61a2 100644
  
   return 0;
  }
-@@ -4458,6 +4533,7 @@ bool AffixMgr::parse_affix(const std::string& line,
+@@ -4462,6 +4537,7 @@ bool AffixMgr::parse_affix(const std::string& line,
        case 1: {
          np++;
          aflag = pHMgr->decode_flag(std::string(start_piece, iter));
@@ -173,7 +173,7 @@ index 0d96260..a9a61a2 100644
          if (((at == 'S') && (dupflags[aflag] & dupSFX)) ||
              ((at == 'P') && (dupflags[aflag] & dupPFX))) {
            HUNSPELL_WARNING(
-@@ -4466,6 +4542,7 @@ bool AffixMgr::parse_affix(const std::string& line,
+@@ -4470,6 +4546,7 @@ bool AffixMgr::parse_affix(const std::string& line,
                af->getlinenum());
          }
          dupflags[aflag] += (char)((at == 'S') ? dupSFX : dupPFX);
@@ -181,7 +181,7 @@ index 0d96260..a9a61a2 100644
          break;
        }
        // piece 3 - is cross product indicator
-@@ -4720,9 +4797,9 @@ bool AffixMgr::parse_affix(const std::string& line,
+@@ -4724,9 +4801,9 @@ bool AffixMgr::parse_affix(const std::string& line,
    auto start = affentries.begin(), end = affentries.end();
    for (auto affentry = start; affentry != end; ++affentry) {
      if (at == 'P') {
@@ -194,7 +194,7 @@ index 0d96260..a9a61a2 100644
    }
  
 diff --git a/src/hunspell/affixmgr.hxx b/src/hunspell/affixmgr.hxx
-index 174ce33..00cc30a 100644
+index 2fbc337..123335f 100644
 --- a/src/hunspell/affixmgr.hxx
 +++ b/src/hunspell/affixmgr.hxx
 @@ -89,6 +89,40 @@
@@ -351,7 +351,7 @@ index b933f95..6d20ad6 100644
  #endif
 +#endif
 diff --git a/src/hunspell/hashmgr.cxx b/src/hunspell/hashmgr.cxx
-index cde8952..3647ae7 100644
+index 20c4696..6588484 100644
 --- a/src/hunspell/hashmgr.cxx
 +++ b/src/hunspell/hashmgr.cxx
 @@ -85,18 +85,30 @@
@@ -583,7 +583,7 @@ index cde8952..3647ae7 100644
  }
  
  int HashMgr::decode_flags(unsigned short** result, const std::string& flags, FileMgr* af) const {
-@@ -925,7 +1046,12 @@ int HashMgr::load_config(const char* affpath, const char* key) {
+@@ -935,7 +1056,12 @@ int HashMgr::load_config(const char* affpath, const char* key) {
    int firstline = 1;
  
    // open the affix file
@@ -596,7 +596,7 @@ index cde8952..3647ae7 100644
    if (!afflst) {
      HUNSPELL_WARNING(
          stderr, "Error - could not open affix description file %s\n", affpath);
-@@ -1138,6 +1264,132 @@ bool HashMgr::parse_aliasf(const std::string& line, FileMgr* af) {
+@@ -1148,6 +1274,132 @@ bool HashMgr::parse_aliasf(const std::string& line, FileMgr* af) {
    return true;
  }
  
@@ -1144,7 +1144,7 @@ index e3462b9..cd66ee3 100644
  
  #include <string>
 diff --git a/src/hunspell/suggestmgr.cxx b/src/hunspell/suggestmgr.cxx
-index b1d1568..c1e6e3f 100644
+index 3673ef3..29a4962 100644
 --- a/src/hunspell/suggestmgr.cxx
 +++ b/src/hunspell/suggestmgr.cxx
 @@ -82,7 +82,112 @@ const w_char W_VLINE = {'\0', '|'};
@@ -1290,7 +1290,7 @@ index b1d1568..c1e6e3f 100644
        testsug(wlst, candidate, cpdsuggest, NULL, NULL);
        // check REP suggestions with space
        size_t sp = candidate.find(' ');
-@@ -1119,6 +1240,9 @@ void SuggestMgr::ngsuggest(std::vector<std::string>& wlst,
+@@ -1122,6 +1243,9 @@ void SuggestMgr::ngsuggest(std::vector<std::string>& wlst,
  
    struct hentry* hp = NULL;
    int col = -1;
@@ -1300,7 +1300,7 @@ index b1d1568..c1e6e3f 100644
    phonetable* ph = (pAMgr) ? pAMgr->get_phonetable() : NULL;
    std::string target;
    std::string candidate;
-@@ -1245,7 +1369,11 @@ void SuggestMgr::ngsuggest(std::vector<std::string>& wlst,
+@@ -1248,7 +1372,11 @@ void SuggestMgr::ngsuggest(std::vector<std::string>& wlst,
  
        if (sc > scores[lp]) {
          scores[lp] = sc;
@@ -1312,7 +1312,7 @@ index b1d1568..c1e6e3f 100644
          lval = sc;
          for (int j = 0; j < MAX_ROOTS; j++)
            if (scores[j] < lval) {
-@@ -2151,12 +2279,8 @@ char* SuggestMgr::lcs(const char* s,
+@@ -2154,12 +2282,8 @@ char* SuggestMgr::lcs(const char* s,
      m = strlen(s);
      n = strlen(s2);
    }

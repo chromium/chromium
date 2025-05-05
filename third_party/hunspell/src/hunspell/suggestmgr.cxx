@@ -1212,6 +1212,7 @@ void SuggestMgr::ngsuggest(std::vector<std::string>& wlst,
   std::string w2;
   const char* word = w;
 
+  int nc;
   // word reversing wrapper for complex prefixes
   if (complexprefixes) {
     w2.assign(w);
@@ -1220,10 +1221,12 @@ void SuggestMgr::ngsuggest(std::vector<std::string>& wlst,
     else
       reverseword(w2);
     word = w2.c_str();
+    nc = (int)w2.size();
+  } else {
+    nc = (int)strlen(word);
   }
 
   std::vector<w_char> u8;
-  int nc = strlen(word);
   int n = (utf8) ? u8_u16(u8, word) : nc;
 
   // set character based ngram suggestion for words with non-BMP Unicode
