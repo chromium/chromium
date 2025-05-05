@@ -2392,6 +2392,7 @@ class ClientSideDetectionHostScamDetectionTest
           llama_forced_trigger_info.add_llama_trigger_rule_infos();
       llama_trigger_rule_info->set_llama_trigger_rule_id(28);
       llama_trigger_rule_info->set_intelligent_scan(intelligent_scan);
+      llama_forced_trigger_info.set_trigger_url(cache_expression);
       llama_forced_trigger_info.set_intelligent_scan(intelligent_scan);
       response.mutable_llama_forced_trigger_info()->Swap(
           &llama_forced_trigger_info);
@@ -2895,7 +2896,8 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
   SetSendClientReportPhishingRequestCallback(
       /*has_expected_brand_and_intent=*/true,
       /*expected_no_info_reason=*/std::nullopt,
-      /*expected_llama_forced_trigger_info_trigger_url=*/example_url_.spec(),
+      /*expected_llama_forced_trigger_info_trigger_url=*/
+      example_url_.GetContent(),
       /*returned_is_phishing=*/false,
       /*returned_intelligent_scan_verdict=*/
       IntelligentScanVerdict::INTELLIGENT_SCAN_VERDICT_SAFE);
@@ -2941,7 +2943,8 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
   SetSendClientReportPhishingRequestCallback(
       /*has_expected_brand_and_intent=*/false,
       /*expected_no_info_reason=*/std::nullopt,
-      /*expected_llama_forced_trigger_info_trigger_url=*/example_url_.spec(),
+      /*expected_llama_forced_trigger_info_trigger_url=*/
+      example_url_.GetContent(),
       /*returned_is_phishing=*/false,
       /*returned_intelligent_scan_verdict=*/
       IntelligentScanVerdict::INTELLIGENT_SCAN_VERDICT_SAFE);
@@ -3062,7 +3065,7 @@ TEST_F(
       /*has_expected_brand_and_intent=*/true,
       /*expected_no_info_reason=*/std::nullopt,
       /*expected_llama_forced_trigger_info_trigger_url=*/
-      first_url_redirect.spec(),
+      first_url_redirect.GetContent(),
       /*returned_is_phishing=*/false,
       /*returned_intelligent_scan_verdict=*/
       IntelligentScanVerdict::INTELLIGENT_SCAN_VERDICT_SAFE);
@@ -3357,7 +3360,8 @@ TEST_F(
   SetSendClientReportPhishingRequestCallback(
       /*has_expected_brand_and_intent=*/true,
       /*expected_no_info_reason=*/std::nullopt,
-      /*expected_llama_forced_trigger_info_trigger_url=*/example_url_.spec(),
+      /*expected_llama_forced_trigger_info_trigger_url=*/
+      example_url_.GetContent(),
       /*returned_is_phishing=*/false,
       /*returned_intelligent_scan_verdict=*/
       IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_2);
@@ -3411,7 +3415,8 @@ TEST_F(
   SetSendClientReportPhishingRequestCallback(
       /*has_expected_brand_and_intent=*/true,
       /*expected_no_info_reason=*/std::nullopt,
-      /*expected_llama_forced_trigger_info_trigger_url=*/example_url_.spec(),
+      /*expected_llama_forced_trigger_info_trigger_url=*/
+      example_url_.GetContent(),
       /*returned_is_phishing=*/false,
       /*returned_intelligent_scan_verdict=*/
       IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_2);
