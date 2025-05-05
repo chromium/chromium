@@ -3147,7 +3147,9 @@ BoxStrut BlockLayoutAlgorithm::CalculateMargins(
                   &Style())
               .GetPosition();
 
-      if (justify_self == ItemPosition::kStretch && !has_auto_margins) {
+      if (child.IsAnonymousBlock()) {
+        builder.SetInlineAutoBehavior(AutoSizeBehavior::kStretchImplicit);
+      } else if (justify_self == ItemPosition::kStretch && !has_auto_margins) {
         builder.SetInlineAutoBehavior(AutoSizeBehavior::kStretchExplicit);
       } else if (justify_self != ItemPosition::kNormal && !has_auto_margins) {
         builder.SetInlineAutoBehavior(AutoSizeBehavior::kFitContent);
@@ -3229,7 +3231,9 @@ ConstraintSpace BlockLayoutAlgorithm::CreateConstraintSpaceForChild(
                 {ItemPosition::kNormal, OverflowAlignment::kDefault}, &Style())
             .GetPosition();
 
-    if (justify_self == ItemPosition::kStretch && !has_auto_margins) {
+    if (child.IsAnonymousBlock()) {
+      builder.SetInlineAutoBehavior(AutoSizeBehavior::kStretchImplicit);
+    } else if (justify_self == ItemPosition::kStretch && !has_auto_margins) {
       builder.SetInlineAutoBehavior(AutoSizeBehavior::kStretchExplicit);
     } else if (justify_self != ItemPosition::kNormal && !has_auto_margins) {
       builder.SetInlineAutoBehavior(AutoSizeBehavior::kFitContent);
