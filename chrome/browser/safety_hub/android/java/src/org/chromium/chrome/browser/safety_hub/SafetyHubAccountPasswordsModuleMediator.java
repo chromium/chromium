@@ -99,10 +99,12 @@ public class SafetyHubAccountPasswordsModuleMediator
                         /* localWeakPasswordsCount= */ 0,
                         /* unifiedModule= */ false);
             case ModuleType.HAS_REUSED_PASSWORDS:
-                return new SafetyHubAccountPasswordsHasReusedPasswordsModuleHelper(
+                return new SafetyHubReusedPasswordsModuleHelper(
                         context,
                         mModuleDelegate,
-                        mAccountPasswordsDataSource.getReusedPasswordCount());
+                        mAccountPasswordsDataSource.getReusedPasswordCount(),
+                        /* localReusedPasswordsCount= */ 0,
+                        /* unifiedModule= */ false);
             case ModuleType.UNAVAILABLE_COMPROMISED_NO_WEAK_REUSED_PASSWORDS:
                 return new SafetyHubAccountPasswordsUnavailableCompromisedPasswordsModuleHelper(
                         context, mModuleDelegate);

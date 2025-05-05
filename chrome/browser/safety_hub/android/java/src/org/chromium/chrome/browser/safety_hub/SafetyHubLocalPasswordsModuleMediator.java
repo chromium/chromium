@@ -195,10 +195,12 @@ public class SafetyHubLocalPasswordsModuleMediator
                         mLocalPasswordsDataSource.getWeakPasswordCount(),
                         /* unifiedModule= */ false);
             case ModuleType.HAS_REUSED_PASSWORDS:
-                return new SafetyHubLocalPasswordsHasReusedPasswordsModuleHelper(
+                return new SafetyHubReusedPasswordsModuleHelper(
                         context,
                         mModuleDelegate,
-                        mLocalPasswordsDataSource.getReusedPasswordCount());
+                        /* accountReusedPasswordsCount= */ 0,
+                        mLocalPasswordsDataSource.getReusedPasswordCount(),
+                        /* unifiedModule= */ false);
             default:
                 throw new IllegalArgumentException();
         }

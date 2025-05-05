@@ -100,6 +100,17 @@ public class SafetyHubPasswordsModuleMediator
                     /* unifiedModule= */ true);
         }
 
+        if (accountModuleType == SafetyHubAccountPasswordsDataSource.ModuleType.HAS_REUSED_PASSWORDS
+                || localModuleType
+                        == SafetyHubLocalPasswordsDataSource.ModuleType.HAS_REUSED_PASSWORDS) {
+            return new SafetyHubReusedPasswordsModuleHelper(
+                    context,
+                    mModuleDelegate,
+                    mAccountPasswordsDataSource.getReusedPasswordCount(),
+                    mLocalPasswordsDataSource.getReusedPasswordCount(),
+                    /* unifiedModule= */ true);
+        }
+
         if (accountModuleType == SafetyHubAccountPasswordsDataSource.ModuleType.HAS_WEAK_PASSWORDS
                 || localModuleType
                         == SafetyHubLocalPasswordsDataSource.ModuleType.HAS_WEAK_PASSWORDS) {
