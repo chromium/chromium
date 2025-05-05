@@ -24,15 +24,22 @@ public class NotificationChannelPreserver {
 
     /** Deletes the SiteChannel if called on a version of Android that requires it. */
     static void deleteChannelIfNeeded(Origin origin) {
-        SiteChannelsManager siteChannelsManager = SiteChannelsManager.getInstance();
+        SiteChannelsManager.getInstance()
+                .getChannelIdForOriginAsync(
+                        origin.toString(),
+                        (channelId) -> {
+                            deleteSiteChannel(origin, channelId);
+                        });
+    }
 
-        String channelId = siteChannelsManager.getChannelIdForOrigin(origin.toString());
+    private static void deleteSiteChannel(Origin origin, String channelId) {
         if (ChromeChannelDefinitions.ChannelId.SITES.equals(channelId)) {
             // If we were given the generic "sites" channel that meant no origin-specific channel
             // existed. We don't need to do anything.
             return;
         }
 
+        SiteChannelsManager siteChannelsManager = SiteChannelsManager.getInstance();
         @NotificationChannelStatus int status = siteChannelsManager.getChannelStatus(channelId);
         if (status == NotificationChannelStatus.UNAVAILABLE) {
             // This shouldn't happen if we passed the above conditional return - but it just means

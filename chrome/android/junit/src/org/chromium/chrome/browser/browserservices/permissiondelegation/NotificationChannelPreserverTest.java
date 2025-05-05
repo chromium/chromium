@@ -9,6 +9,8 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -24,6 +26,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.notifications.NotificationChannelStatus;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
@@ -50,10 +53,24 @@ public class NotificationChannelPreserverTest {
         SiteChannelsManager.setInstanceForTesting(mSiteChannelsManager);
         WebappRegistry.getInstance().setPermissionStoreForTesting(mStore);
 
-        when(mSiteChannelsManager.getChannelIdForOrigin(eq(ORIGIN_WITH_CHANNEL.toString())))
-                .thenReturn(CHANNEL_ID);
-        when(mSiteChannelsManager.getChannelIdForOrigin(eq(ORIGIN_WITHOUT_CHANNEL.toString())))
-                .thenReturn(ChromeChannelDefinitions.ChannelId.SITES);
+        doAnswer(
+                        (invocation) -> {
+                            Callback<String> callback = invocation.getArgument(1);
+                            callback.onResult(CHANNEL_ID);
+                            return null;
+                        })
+                .when(mSiteChannelsManager)
+                .getChannelIdForOriginAsync(
+                        eq(ORIGIN_WITH_CHANNEL.toString()), any(Callback.class));
+        doAnswer(
+                        (invocation) -> {
+                            Callback<String> callback = invocation.getArgument(1);
+                            callback.onResult(ChromeChannelDefinitions.ChannelId.SITES);
+                            return null;
+                        })
+                .when(mSiteChannelsManager)
+                .getChannelIdForOriginAsync(
+                        eq(ORIGIN_WITHOUT_CHANNEL.toString()), any(Callback.class));
     }
 
     @Test

@@ -82,12 +82,15 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Criteria;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.base.test.util.PayloadCallbackHelper;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.FederatedIdentityTestUtils;
@@ -2848,16 +2851,17 @@ public class SiteSettingsTest {
                     Assert.assertEquals(
                             context.getString(R.string.automatically_blocked),
                             notificationPreference.getSummary());
-
                     websitePreferences.launchOsChannelSettingsFromPreference(
                             notificationPreference);
-
-                    // Ensure that a proper separate channel has indeed been created to allow the
-                    // user to alter the setting.
-                    Assert.assertNotEquals(
-                            ChromeChannelDefinitions.ChannelId.SITES,
-                            SiteChannelsManager.getInstance()
-                                    .getChannelIdForOrigin(Origin.createOrThrow(url).toString()));
+                });
+        // There are lots of native posted tasks since start up. So we need to wait for
+        // all tasks to settle.
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    Criteria.checkThat(
+                            "Channel was not found",
+                            getChannelId(url),
+                            not(ChromeChannelDefinitions.ChannelId.SITES));
                 });
         // Close the OS notification settings UI.
         UiAutomatorUtils.getInstance().pressBack();
@@ -3760,5 +3764,13 @@ public class SiteSettingsTest {
                         summary);
             }
         }
+    }
+
+    private static String getChannelId(String url) {
+        PayloadCallbackHelper<String> helper = new PayloadCallbackHelper();
+        SiteChannelsManager.getInstance()
+                .getChannelIdForOriginAsync(
+                        Origin.createOrThrow(url).toString(), helper::notifyCalled);
+        return helper.getOnlyPayloadBlocking();
     }
 }

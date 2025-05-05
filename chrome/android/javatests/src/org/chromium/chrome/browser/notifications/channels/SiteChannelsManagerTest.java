@@ -9,6 +9,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import android.app.NotificationChannel;
 
@@ -26,8 +27,10 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.browser.notifications.NotificationChannelStatus;
 import org.chromium.chrome.browser.notifications.NotificationSettingsBridge;
+import org.chromium.chrome.browser.notifications.NotificationSettingsBridge.SiteChannel;
 import org.chromium.chrome.browser.profiles.OtrProfileId;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -41,8 +44,9 @@ import org.chromium.components.content_settings.SessionModel;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.TimeoutException;
 
 /**
  * Instrumentation unit tests for SiteChannelsManager.
@@ -78,12 +82,30 @@ public class SiteChannelsManagerTest {
         }
     }
 
+    private List<SiteChannel> getSiteChannels() {
+        final List<SiteChannel> result = new ArrayList<>();
+        CallbackHelper callbackHelper = new CallbackHelper();
+        mSiteChannelsManager.getSiteChannelsAsync(
+                (siteChannels) -> {
+                    Collections.addAll(result, siteChannels);
+                    callbackHelper.notifyCalled();
+                });
+
+        try {
+            callbackHelper.waitForCallback(0);
+        } catch (TimeoutException e) {
+            fail("Callback timed out: " + e.getMessage());
+        }
+        return result;
+    }
+
     @Test
     @SmallTest
     public void testCreateSiteChannel_enabled() {
         mSiteChannelsManager.createSiteChannel("https://example-enabled.org", 62102180000L, true);
-        assertThat(Arrays.asList(mSiteChannelsManager.getSiteChannels()), hasSize(1));
-        NotificationSettingsBridge.SiteChannel channel = mSiteChannelsManager.getSiteChannels()[0];
+        List<SiteChannel> siteChannels = getSiteChannels();
+        assertThat(siteChannels, hasSize(1));
+        NotificationSettingsBridge.SiteChannel channel = siteChannels.get(0);
         assertThat(channel.getOrigin(), is("https://example-enabled.org"));
         assertThat(channel.getStatus(), matchesChannelStatus(NotificationChannelStatus.ENABLED));
         assertThat(channel.getTimestamp(), is(62102180000L));
@@ -96,8 +118,8 @@ public class SiteChannelsManagerTest {
         mSiteChannelsManager.createSiteChannel("https://example.com", 0L, true);
         mSiteChannelsManager.createSiteChannel("ftp://127.0.0.1", 0L, true);
         List<String> channelNames = new ArrayList<>();
-        for (NotificationSettingsBridge.SiteChannel siteChannel :
-                mSiteChannelsManager.getSiteChannels()) {
+        List<SiteChannel> siteChannels = getSiteChannels();
+        for (NotificationSettingsBridge.SiteChannel siteChannel : siteChannels) {
             channelNames.add(siteChannel.toChannel().getName().toString());
         }
         assertThat(channelNames, containsInAnyOrder("ftp://127.0.0.1", "example.com", "127.0.0.1"));
@@ -107,8 +129,9 @@ public class SiteChannelsManagerTest {
     @SmallTest
     public void testCreateSiteChannel_disabled() {
         mSiteChannelsManager.createSiteChannel("https://example-blocked.org", 0L, false);
-        assertThat(Arrays.asList(mSiteChannelsManager.getSiteChannels()), hasSize(1));
-        NotificationSettingsBridge.SiteChannel channel = mSiteChannelsManager.getSiteChannels()[0];
+        List<SiteChannel> siteChannels = getSiteChannels();
+        assertThat(siteChannels, hasSize(1));
+        NotificationSettingsBridge.SiteChannel channel = siteChannels.get(0);
         assertThat(channel.getOrigin(), is("https://example-blocked.org"));
         assertThat(channel.getStatus(), matchesChannelStatus(NotificationChannelStatus.BLOCKED));
     }
@@ -119,7 +142,8 @@ public class SiteChannelsManagerTest {
         NotificationSettingsBridge.SiteChannel channel =
                 mSiteChannelsManager.createSiteChannel("https://chromium.org", 0L, true);
         mSiteChannelsManager.deleteSiteChannel(channel.getId());
-        assertThat(Arrays.asList(mSiteChannelsManager.getSiteChannels()), hasSize(0));
+        List<SiteChannel> siteChannels = getSiteChannels();
+        assertThat(siteChannels, hasSize(0));
     }
 
     @Test
@@ -128,7 +152,8 @@ public class SiteChannelsManagerTest {
         mSiteChannelsManager.createSiteChannel("https://chromium.org", 0L, true);
         mSiteChannelsManager.createSiteChannel("https://tests.peter.sh", 0L, true);
         mSiteChannelsManager.deleteAllSiteChannels();
-        assertThat(Arrays.asList(mSiteChannelsManager.getSiteChannels()), hasSize(0));
+        List<SiteChannel> siteChannels = getSiteChannels();
+        assertThat(siteChannels, hasSize(0));
     }
 
     @Test
@@ -136,7 +161,8 @@ public class SiteChannelsManagerTest {
     public void testDeleteSiteChannel_channelDoesNotExist() {
         mSiteChannelsManager.createSiteChannel("https://chromium.org", 0L, true);
         mSiteChannelsManager.deleteSiteChannel("https://some-other-origin.org");
-        assertThat(Arrays.asList(mSiteChannelsManager.getSiteChannels()), hasSize(1));
+        List<SiteChannel> siteChannels = getSiteChannels();
+        assertThat(siteChannels, hasSize(1));
     }
 
     @Test
@@ -198,7 +224,8 @@ public class SiteChannelsManagerTest {
                                     .getPrimaryOtrProfile(/* createIfNeeded= */ true),
                             ContentSettingValues.BLOCK);
                 });
-        assertThat(Arrays.asList(mSiteChannelsManager.getSiteChannels()), hasSize(0));
+        List<SiteChannel> siteChannels = getSiteChannels();
+        assertThat(siteChannels, hasSize(0));
     }
 
     @Test
@@ -222,7 +249,8 @@ public class SiteChannelsManagerTest {
                     assertTrue(nonPrimaryOtrProfile.isOffTheRecord());
                     info.setContentSetting(nonPrimaryOtrProfile, ContentSettingValues.BLOCK);
                 });
-        assertThat(Arrays.asList(mSiteChannelsManager.getSiteChannels()), hasSize(0));
+        List<SiteChannel> siteChannels = getSiteChannels();
+        assertThat(siteChannels, hasSize(0));
     }
 
     private static Matcher<Integer> matchesChannelStatus(
@@ -261,9 +289,19 @@ public class SiteChannelsManagerTest {
     @Test
     @MediumTest
     public void testGetChannelIdForOrigin_unknownOrigin() {
-        String channelId = mSiteChannelsManager.getChannelIdForOrigin("https://unknown.com");
+        CallbackHelper callbackHelper = new CallbackHelper();
+        mSiteChannelsManager.getChannelIdForOriginAsync(
+                "https://unknown.com",
+                (channelId) -> {
+                    assertThat(channelId, is(ChromeChannelDefinitions.ChannelId.SITES));
+                    callbackHelper.notifyCalled();
+                });
 
-        assertThat(channelId, is(ChromeChannelDefinitions.ChannelId.SITES));
+        try {
+            callbackHelper.waitForCallback(0);
+        } catch (TimeoutException e) {
+            fail("Callback timed out: " + e.getMessage());
+        }
 
         assertThat(
                 RecordHistogram.getHistogramTotalCountForTesting(

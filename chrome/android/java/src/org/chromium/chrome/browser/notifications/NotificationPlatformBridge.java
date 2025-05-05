@@ -35,7 +35,6 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
-import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.Promise;
@@ -82,6 +81,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * Provides the ability for the NotificationPlatformBridgeAndroid to talk to the Android platform
@@ -780,49 +780,86 @@ public class NotificationPlatformBridge {
                 UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
                         .getBoolean(NOTIFICATIONS_VIBRATE_ENABLED);
         final boolean incognito = profile.isOffTheRecord();
-        final String channelId = SiteChannelsManager.getInstance().getChannelIdForOrigin(origin);
         // TODO(peter): by-pass this check for non-Web Notification types.
-        getWebApkPackage(scopeUrl)
-                .then(
-                        (Callback<String>)
-                                (webApkPackage) ->
-                                        displayNotificationInternal(
-                                                new NotificationIdentifyingAttributes(
-                                                        notificationId,
-                                                        notificationType,
-                                                        origin,
-                                                        scopeUrl,
-                                                        profileId,
-                                                        incognito,
-                                                        webApkPackage,
-                                                        channelId),
-                                                profile,
-                                                vibrateEnabled,
-                                                title,
-                                                body,
-                                                image,
-                                                icon,
-                                                badge,
-                                                vibrationPattern,
-                                                timestamp,
-                                                renotify,
-                                                silent,
-                                                actions,
-                                                isSuspicious,
-                                                skipUAButtons));
+
+        CompletableFuture<String> webApkPackage = getWebApkPackage(scopeUrl);
+        CompletableFuture<String> channelId = getChannelIdForOrigin(origin);
+
+        CompletableFuture.allOf(webApkPackage, channelId)
+                .thenRun(
+                        () -> {
+                            try {
+                                displayNotificationInternal(
+                                        new NotificationIdentifyingAttributes(
+                                                notificationId,
+                                                notificationType,
+                                                origin,
+                                                scopeUrl,
+                                                profileId,
+                                                incognito,
+                                                webApkPackage.get(),
+                                                channelId.get()),
+                                        profile,
+                                        vibrateEnabled,
+                                        title,
+                                        body,
+                                        image,
+                                        icon,
+                                        badge,
+                                        vibrationPattern,
+                                        timestamp,
+                                        renotify,
+                                        silent,
+                                        actions,
+                                        isSuspicious,
+                                        skipUAButtons);
+                            } catch (Exception e) {
+                                Log.e(TAG, "Failed to display notification.", e);
+                            }
+                        })
+                .exceptionally(
+                        error -> {
+                            Log.e(TAG, "Error occured when displaying notification.", error);
+                            return null;
+                        });
     }
 
-    private Promise<String> getWebApkPackage(String scopeUrl) {
+    private CompletableFuture<String> getWebApkPackage(String scopeUrl) {
         String webApkPackage =
                 WebApkValidator.queryFirstWebApkPackage(
                         ContextUtils.getApplicationContext(), scopeUrl);
-        if (webApkPackage == null) return Promise.fulfilled("");
-        Promise<String> promise = new Promise<>();
+
+        if (webApkPackage == null) {
+            return CompletableFuture.completedFuture("");
+        }
+
+        CompletableFuture<String> future = new CompletableFuture<>();
+
         ChromeWebApkHost.checkChromeBacksWebApkAsync(
                 webApkPackage,
-                (doesBrowserBackWebApk, browserPackageName) ->
-                        promise.fulfill(doesBrowserBackWebApk ? webApkPackage : ""));
-        return promise;
+                (doesBrowserBackWebApk, browserPackageName) -> {
+                    try {
+                        future.complete(doesBrowserBackWebApk ? webApkPackage : "");
+                    } catch (Throwable t) {
+                        future.completeExceptionally(t);
+                    }
+                });
+        return future;
+    }
+
+    private CompletableFuture<String> getChannelIdForOrigin(String origin) {
+        CompletableFuture<String> future = new CompletableFuture<>();
+        SiteChannelsManager.getInstance()
+                .getChannelIdForOriginAsync(
+                        origin,
+                        (channelId) -> {
+                            try {
+                                future.complete(channelId);
+                            } catch (Throwable t) {
+                                future.completeExceptionally(t);
+                            }
+                        });
+        return future;
     }
 
     /** Called after querying whether the browser backs the given WebAPK. */
