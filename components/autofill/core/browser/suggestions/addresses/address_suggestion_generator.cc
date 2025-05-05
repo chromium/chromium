@@ -411,32 +411,30 @@ ProfilesToSuggestOptions GetProfilesToSuggestOptions(
     const std::u16string& trigger_field_contents,
     bool trigger_field_is_autofilled,
     SuggestionType suggestion_type) {
-  // By default, disused profiles are excluded only if the normalized field
-  // value is empty.
-  bool should_excluded_disused_addresses =
-      NormalizeForComparisonForType(trigger_field_contents, trigger_field_type)
-          .empty();
-  // By default, suggestions should be matched with the field content. However,
-  // for field by field filling suggestions, prefix matching is disabled
-  // because we want to offer the user suggestions to swap the current value of
-  // the field with something else, making the prefix matching not useful.
-  bool should_prefix_match_suggestions = !trigger_field_is_autofilled;
-  // By default, prefix matching and deduplication are enough filtering
-  // mechanisms for suggestions. However, for field by field filling suggestions
-  // we also wanna remove suggestions that have the same value as the trigger
-  // field, as those suggestions would be useless and thus add visual noise in
-  // the suggestion UI.
-  bool should_remove_profiles_with_equal_value_on_trigger_field =
-      (suggestion_type == SuggestionType::kAddressFieldByFieldFilling &&
-       base::FeatureList::IsEnabled(
-           features::kAutofillImproveAddressFieldSwapping));
   // TODO(crbug.com/378835293): Cleanup trivial options.
   return ProfilesToSuggestOptions{
-      .exclude_disused_addresses = should_excluded_disused_addresses,
+      // By default, disused profiles are excluded only if the normalized field
+      // value is empty.
+      .exclude_disused_addresses =
+          NormalizeForComparisonForType(trigger_field_contents,
+                                        trigger_field_type)
+              .empty(),
       .require_non_empty_value_on_trigger_field = true,
-      .prefix_match_suggestions = should_prefix_match_suggestions,
+      // By default, suggestions should be matched with the field content.
+      // However, for field by field filling suggestions, prefix matching is
+      // disabled because we want to offer the user suggestions to swap the
+      // current value of the field with something else, making the prefix
+      // matching not useful.
+      .prefix_match_suggestions = !trigger_field_is_autofilled,
+      // By default, prefix matching and deduplication are enough filtering
+      // mechanisms for suggestions. However, for field by field filling
+      // suggestions we also wanna remove suggestions that have the same value
+      // as the trigger field, as those suggestions would be useless and thus
+      // add visual noise in the suggestion UI.
       .remove_profiles_with_equal_value_on_trigger_field =
-          should_remove_profiles_with_equal_value_on_trigger_field,
+          (suggestion_type == SuggestionType::kAddressFieldByFieldFilling &&
+           base::FeatureList::IsEnabled(
+               features::kAutofillImproveAddressFieldSwapping)),
       .deduplicate_suggestions = true};
 }
 
