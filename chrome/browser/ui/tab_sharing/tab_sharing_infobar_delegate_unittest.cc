@@ -22,8 +22,8 @@
 
 namespace {
 
-using FocusTarget = ::TabSharingInfoBarDelegate::FocusTarget;
 using TabRole = ::TabSharingInfoBarDelegate::TabRole;
+using ::content::GlobalRenderFrameHostId;
 
 const std::u16string kSharedTabName = u"example.com";
 const std::u16string kAppName = u"sharing.com";
@@ -56,14 +56,14 @@ class TabSharingInfoBarDelegateTest
       public ::testing::WithParamInterface<bool> {
  public:
   struct Preferences {
-    content::GlobalRenderFrameHostId shared_tab_id;
-    content::GlobalRenderFrameHostId capturer_id;
+    GlobalRenderFrameHostId shared_tab_id;
+    GlobalRenderFrameHostId capturer_id;
     std::u16string shared_tab_name;
     std::u16string capturer_name;
     TabRole role;
     bool can_share_instead;
     int tab_index = 0;
-    std::optional<FocusTarget> focus_target;
+    GlobalRenderFrameHostId focus_target;
     TabSharingInfoBarDelegate::TabShareType capture_type =
         TabSharingInfoBarDelegate::TabShareType::CAPTURE;
   };
@@ -94,10 +94,9 @@ class TabSharingInfoBarDelegateTest
     return browser()->tab_strip_model()->GetWebContentsAt(tab);
   }
 
-  content::GlobalRenderFrameHostId GetGlobalId(int tab) {
+  GlobalRenderFrameHostId GetGlobalId(int tab) {
     auto* const main_frame = GetWebContents(tab)->GetPrimaryMainFrame();
-    return main_frame ? main_frame->GetGlobalId()
-                      : content::GlobalRenderFrameHostId();
+    return main_frame ? main_frame->GetGlobalId() : GlobalRenderFrameHostId();
   }
 
   std::u16string GetExpectedSwitchToMessageForTargetTab(int tab) {
@@ -161,7 +160,7 @@ TEST_P(TabSharingInfoBarDelegateTest, InfobarOnCapturingTab) {
                       .role = TabRole::kCapturingTab,
                       .can_share_instead = false,
                       .tab_index = 1,
-                      .focus_target = FocusTarget{GetGlobalId(0)}});
+                      .focus_target = GlobalRenderFrameHostId{GetGlobalId(0)}});
 
   EXPECT_STREQ(delegate->GetVectorIcon().name,
                vector_icons::kScreenShareOldIcon.name);
@@ -199,7 +198,7 @@ TEST_P(TabSharingInfoBarDelegateTest, InfobarOnCapturedTab) {
                       .role = TabRole::kCapturedTab,
                       .can_share_instead = false,
                       .tab_index = 0,
-                      .focus_target = FocusTarget{GetGlobalId(1)}});
+                      .focus_target = GlobalRenderFrameHostId{GetGlobalId(1)}});
 
   EXPECT_STREQ(delegate->GetVectorIcon().name,
                vector_icons::kScreenShareOldIcon.name);
@@ -277,7 +276,7 @@ TEST_P(TabSharingInfoBarDelegateTest,
                       .role = TabRole::kCapturedTab,
                       .can_share_instead = true,
                       .tab_index = 0,
-                      .focus_target = FocusTarget{GetGlobalId(1)}});
+                      .focus_target = GlobalRenderFrameHostId{GetGlobalId(1)}});
 
   EXPECT_STREQ(delegate->GetVectorIcon().name,
                vector_icons::kScreenShareOldIcon.name);

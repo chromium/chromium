@@ -137,7 +137,7 @@ class TabSharingInfoBarDelegate::ShareTabInsteadButton
 class TabSharingInfoBarDelegate::SwitchToTabButton
     : public TabSharingInfoBarDelegateButton {
  public:
-  SwitchToTabButton(const TabSharingInfoBarDelegate::FocusTarget& focus_target,
+  SwitchToTabButton(content::GlobalRenderFrameHostId focus_target,
                     bool focus_target_is_capturer)
       : focus_target_(focus_target),
         focus_target_is_capturer_(focus_target_is_capturer) {}
@@ -145,7 +145,7 @@ class TabSharingInfoBarDelegate::SwitchToTabButton
 
   void Click(infobars::InfoBar* infobar) override {
     content::RenderFrameHost* const rfh =
-        content::RenderFrameHost::FromID(focus_target_.id);
+        content::RenderFrameHost::FromID(focus_target_);
     if (!rfh) {
       return;
     }
@@ -169,7 +169,7 @@ class TabSharingInfoBarDelegate::SwitchToTabButton
   std::u16string GetLabel() const override {
     // TODO(crbug.com/40188004): Hard-code this text into the button.
     content::RenderFrameHost* const rfh =
-        content::RenderFrameHost::FromID(focus_target_.id);
+        content::RenderFrameHost::FromID(focus_target_);
     if (!rfh) {
       return GetDefaultLabel();
     }
@@ -188,7 +188,7 @@ class TabSharingInfoBarDelegate::SwitchToTabButton
             : IDS_TAB_SHARING_INFOBAR_SWITCH_TO_CAPTURED_BUTTON);
   }
 
-  const TabSharingInfoBarDelegate::FocusTarget focus_target_;
+  const content::GlobalRenderFrameHostId focus_target_;
   const bool focus_target_is_capturer_;
 };
 
@@ -260,7 +260,7 @@ infobars::InfoBar* TabSharingInfoBarDelegate::Create(
     content::WebContents* web_contents,
     TabRole role,
     ButtonState share_this_tab_instead_button_state,
-    std::optional<FocusTarget> focus_target,
+    content::GlobalRenderFrameHostId focus_target,
     bool captured_surface_control_active,
     TabSharingUI* ui,
     TabShareType capture_type) {
@@ -280,7 +280,7 @@ TabSharingInfoBarDelegate::TabSharingInfoBarDelegate(
     content::WebContents* web_contents,
     TabRole role,
     ButtonState share_this_tab_instead_button_state,
-    std::optional<FocusTarget> focus_target,
+    content::GlobalRenderFrameHostId focus_target,
     bool captured_surface_control_active,
     TabSharingUI* ui,
     TabShareType capture_type)
@@ -292,9 +292,9 @@ TabSharingInfoBarDelegate::TabSharingInfoBarDelegate(
         ui_, share_this_tab_instead_button_state, capture_type);
   }
 
-  if (focus_target.has_value()) {
+  if (focus_target) {
     quick_nav_button_ =
-        std::make_unique<SwitchToTabButton>(*focus_target, IsCapturedTab(role));
+        std::make_unique<SwitchToTabButton>(focus_target, IsCapturedTab(role));
   }
 
   // Note that kSelfCapturingTab is intentionally disregarded,

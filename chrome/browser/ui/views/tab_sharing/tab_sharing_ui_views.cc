@@ -483,16 +483,16 @@ void TabSharingUIViews::CreateInfobarForWebContents(WebContents* contents) {
                             base::Unretained(this)));
   }
 
-  std::optional<TabSharingInfoBarDelegate::FocusTarget> focus_target;
+  content::GlobalRenderFrameHostId focus_target;
   if (can_focus_capturer_) {
     // Self-capture -> no switch-to button.
     // Capturer -> switch-to-captured.
     // Captured -> switch-to-capturer.
     // Otherwise -> no switch-to button.
     if (is_capturing_tab && !is_captured_tab) {
-      focus_target = {GetGlobalId(shared_tab_)};
+      focus_target = GetGlobalId(shared_tab_);
     } else if (!is_capturing_tab && is_captured_tab) {
-      focus_target = {capturer_};
+      focus_target = capturer_;
     }
   }
 
