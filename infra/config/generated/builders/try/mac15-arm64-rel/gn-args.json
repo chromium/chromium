@@ -9,6 +9,7 @@
     "target_cpu": "arm64",
     "target_os": "mac",
     "use_reclient": true,
+    "use_remoteexec": true,
     "use_siso": true
   }
 }
