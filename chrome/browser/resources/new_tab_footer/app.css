@@ -7,8 +7,46 @@
  * #scheme=relative
  * #css_wrapper_metadata_end */
 
-/* TODO(crbug.com/409056431): Remove #example-div styling once actual
- * elements added. This is used as a placeholder. */
-#example-div {
-  color: blue;
+:host {
+  background-color: var(--color-new-tab-footer-background);
+  display: block;
+  height: 56px;
+  overflow-y: hidden;
+  width: 100%;
+}
+
+#centerContainer {
+  display: flex;
+  justify-content: center;
+  margin: 12px 0;
+}
+
+#centerContainer > div {
+  padding: 0 16px;
+  position: relative;
+}
+
+#centerContainer > div > p,
+#centerContainer > div > a {
+  color: var(--color-new-tab-footer-text);
+  display: inline-block;
+  font-size: 13px;
+  line-height: 20px;
+  margin: 0;
+  padding: 6px 0;
+}
+
+/*
+Add a vertical divider after each centerContainer item in the footer
+except the last one.
+*/
+#centerContainer > div:not(:last-child):after {
+  background-color: var(--color-new-tab-footer-text);
+  content: "";
+  display: inline-block;
+  height: 13px;
+  position: absolute;
+  right: 0;
+  top: calc(50% - 6px);
+  width: 1px;
 }
