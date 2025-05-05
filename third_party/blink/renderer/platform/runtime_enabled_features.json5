@@ -2742,10 +2742,6 @@
       name: "LayoutIgnoreMarginsForSticky",
     },
     {
-      name: "LayoutJustifySelfForBlocks",
-      status: "stable",
-    },
-    {
       name: "LayoutMinSizeIndefinite",
       status: "stable",
     },

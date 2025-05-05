@@ -249,8 +249,7 @@ LayoutUnit WebkitTextAlignAndJustifySelfOffset(
       {ItemPosition::kNormal, OverflowAlignment::kDefault}, &style);
   ItemPosition justify_self = alignment_data.GetPosition();
   OverflowAlignment safe = OverflowAlignment::kSafe;
-  if (RuntimeEnabledFeatures::LayoutJustifySelfForBlocksEnabled() &&
-      justify_self != ItemPosition::kNormal) {
+  if (justify_self != ItemPosition::kNormal) {
     safe = alignment_data.Overflow();
   } else {
     justify_self = WebkitTextToItemPosition(style.GetTextAlign());
@@ -3141,10 +3140,6 @@ BoxStrut BlockLayoutAlgorithm::CalculateMargins(
           child_style.MarginInlineStartUsing(Style()).IsAuto() ||
           child_style.MarginInlineEndUsing(Style()).IsAuto();
 
-      const bool justify_self_affects_sizing =
-          RuntimeEnabledFeatures::LayoutJustifySelfForBlocksEnabled() &&
-          !has_auto_margins;
-
       const ItemPosition justify_self =
           child_style
               .ResolvedJustifySelf(
@@ -3152,11 +3147,9 @@ BoxStrut BlockLayoutAlgorithm::CalculateMargins(
                   &Style())
               .GetPosition();
 
-      if (justify_self_affects_sizing &&
-          justify_self == ItemPosition::kStretch) {
+      if (justify_self == ItemPosition::kStretch && !has_auto_margins) {
         builder.SetInlineAutoBehavior(AutoSizeBehavior::kStretchExplicit);
-      } else if (justify_self_affects_sizing &&
-                 justify_self != ItemPosition::kNormal) {
+      } else if (justify_self != ItemPosition::kNormal && !has_auto_margins) {
         builder.SetInlineAutoBehavior(AutoSizeBehavior::kFitContent);
       } else {
         builder.SetInlineAutoBehavior(AutoSizeBehavior::kStretchImplicit);
@@ -3230,20 +3223,15 @@ ConstraintSpace BlockLayoutAlgorithm::CreateConstraintSpaceForChild(
         child_style.MarginInlineStartUsing(Style()).IsAuto() ||
         child_style.MarginInlineEndUsing(Style()).IsAuto();
 
-    const bool justify_self_affects_sizing =
-        RuntimeEnabledFeatures::LayoutJustifySelfForBlocksEnabled() &&
-        !has_auto_margins;
-
     const ItemPosition justify_self =
         child_style
             .ResolvedJustifySelf(
                 {ItemPosition::kNormal, OverflowAlignment::kDefault}, &Style())
             .GetPosition();
 
-    if (justify_self_affects_sizing && justify_self == ItemPosition::kStretch) {
+    if (justify_self == ItemPosition::kStretch && !has_auto_margins) {
       builder.SetInlineAutoBehavior(AutoSizeBehavior::kStretchExplicit);
-    } else if (justify_self_affects_sizing &&
-               justify_self != ItemPosition::kNormal) {
+    } else if (justify_self != ItemPosition::kNormal && !has_auto_margins) {
       builder.SetInlineAutoBehavior(AutoSizeBehavior::kFitContent);
     } else if (is_in_parallel_flow &&
                ShouldBlockContainerChildStretchAutoInlineSize(
