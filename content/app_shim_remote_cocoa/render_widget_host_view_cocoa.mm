@@ -650,18 +650,12 @@ void ExtractUnderlines(NSAttributedString* string,
 - (void)setTextSelectionText:(std::u16string)text
                       offset:(size_t)offset
                        range:(gfx::Range)range {
-  _substitutionWasApplied = NO;
-  [NSSpellChecker.sharedSpellChecker dismissCorrectionIndicatorForView:self];
-  // If a text substitution was applied, don't proceed with the text update
-  // (a new one will come along shortly).
-  if (_substitutionWasApplied) {
-    return;
-  }
-
   _availableText = text;
   _availableTextOffset = offset;
   _availableTextChangeNumber++;
   _textSelectionRange = range;
+  _substitutionWasApplied = NO;
+  [NSSpellChecker.sharedSpellChecker dismissCorrectionIndicatorForView:self];
   if (_shouldRequestTextSubstitutions && !_substitutionWasApplied &&
       _textSelectionRange.is_empty()) {
     _shouldRequestTextSubstitutions = NO;
