@@ -1219,6 +1219,10 @@ public final class SafetyHubTest {
         addCredentialToAccountStore();
         addCredentialToProfileStore();
 
+        // Compromised passwords take precedent over weak.
+        setAccountWeakPasswordsCount(1);
+        setLocalWeakPasswordsCount(1);
+
         mSafetyHubFragmentTestRule.startSettingsActivity();
         SafetyHubFragment safetyHubFragment = mSafetyHubFragmentTestRule.getFragment();
 
@@ -1263,6 +1267,10 @@ public final class SafetyHubTest {
         addCredentialToAccountStore();
         addCredentialToProfileStore();
 
+        // Compromised passwords take precedent over weak.
+        setAccountWeakPasswordsCount(1);
+        setLocalWeakPasswordsCount(1);
+
         mSafetyHubFragmentTestRule.startSettingsActivity();
         SafetyHubFragment safetyHubFragment = mSafetyHubFragmentTestRule.getFragment();
 
@@ -1305,6 +1313,10 @@ public final class SafetyHubTest {
         addCredentialToAccountStore();
         addCredentialToProfileStore();
 
+        // Compromised passwords take precedent over weak.
+        setAccountWeakPasswordsCount(1);
+        setLocalWeakPasswordsCount(1);
+
         mSafetyHubFragmentTestRule.startSettingsActivity();
         SafetyHubFragment safetyHubFragment = mSafetyHubFragmentTestRule.getFragment();
 
@@ -1339,9 +1351,126 @@ public final class SafetyHubTest {
         ChromeFeatureList.SAFETY_HUB_LOCAL_PASSWORDS_MODULE,
         ChromeFeatureList.SAFETY_HUB_UNIFIED_PASSWORDS_MODULE
     })
+    public void testUnifiedPasswordsModule_AccountAndLocalWeakPasswords() {
+        setLocalCompromisedPasswordsCount(0);
+        setAccountCompromisedPasswordsCount(0);
+        setAccountWeakPasswordsCount(2);
+        setLocalWeakPasswordsCount(3);
+        setLocalPasswordCheckTimestamp(TimeUtils.currentTimeMillis());
+        addCredentialToAccountStore();
+        addCredentialToProfileStore();
+
+        mSafetyHubFragmentTestRule.startSettingsActivity();
+        SafetyHubFragment safetyHubFragment = mSafetyHubFragmentTestRule.getFragment();
+
+        // Verify that unified passwords module which is in the info state is expanded by
+        // default.
+        String weakPasswordsTitle =
+                safetyHubFragment.getString(R.string.safety_hub_reused_weak_passwords_title);
+        scrollToExpandedPreference(weakPasswordsTitle);
+        verifyButtonsNextToTextVisibility(weakPasswordsTitle, true);
+
+        // Verify the information module is expanded.
+        String safeBrowsingTitle =
+                safetyHubFragment.getString(R.string.prefs_safe_browsing_no_protection_summary);
+        scrollToPreference(withText(safeBrowsingTitle));
+        verifyButtonsNextToTextVisibility(safeBrowsingTitle, true);
+
+        clearLocalCompromisedPasswordsCount();
+        setLocalPasswordCheckTimestamp(0);
+    }
+
+    @Test
+    @MediumTest
+    @Policies.Add({@Policies.Item(key = "SafeBrowsingEnabled", string = "false")})
+    @Restriction(GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_24W15)
+    @Features.EnableFeatures({
+        ChromeFeatureList.SAFETY_HUB_WEAK_AND_REUSED_PASSWORDS,
+        ChromeFeatureList.SAFETY_HUB_LOCAL_PASSWORDS_MODULE,
+        ChromeFeatureList.SAFETY_HUB_UNIFIED_PASSWORDS_MODULE
+    })
+    public void testUnifiedPasswordsModule_AccountWeakPasswords() {
+        setLocalCompromisedPasswordsCount(0);
+        setAccountCompromisedPasswordsCount(0);
+        setAccountWeakPasswordsCount(2);
+        setLocalWeakPasswordsCount(0);
+        setLocalPasswordCheckTimestamp(TimeUtils.currentTimeMillis());
+        addCredentialToAccountStore();
+        addCredentialToProfileStore();
+
+        mSafetyHubFragmentTestRule.startSettingsActivity();
+        SafetyHubFragment safetyHubFragment = mSafetyHubFragmentTestRule.getFragment();
+
+        // Verify that unified passwords module which is in the info state is expanded by
+        // default.
+        String weakPasswordsTitle =
+                safetyHubFragment.getString(
+                        R.string.safety_hub_reused_weak_account_passwords_title);
+        scrollToExpandedPreference(weakPasswordsTitle);
+        verifyButtonsNextToTextVisibility(weakPasswordsTitle, true);
+
+        // Verify the information module is expanded.
+        String safeBrowsingTitle =
+                safetyHubFragment.getString(R.string.prefs_safe_browsing_no_protection_summary);
+        scrollToPreference(withText(safeBrowsingTitle));
+        verifyButtonsNextToTextVisibility(safeBrowsingTitle, true);
+
+        clearLocalCompromisedPasswordsCount();
+        setLocalPasswordCheckTimestamp(0);
+    }
+
+    @Test
+    @MediumTest
+    @Policies.Add({@Policies.Item(key = "SafeBrowsingEnabled", string = "false")})
+    @Restriction(GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_24W15)
+    @Features.EnableFeatures({
+        ChromeFeatureList.SAFETY_HUB_WEAK_AND_REUSED_PASSWORDS,
+        ChromeFeatureList.SAFETY_HUB_LOCAL_PASSWORDS_MODULE,
+        ChromeFeatureList.SAFETY_HUB_UNIFIED_PASSWORDS_MODULE
+    })
+    public void testUnifiedPasswordsModule_LocalWeakPasswords() {
+        setLocalCompromisedPasswordsCount(0);
+        setAccountCompromisedPasswordsCount(0);
+        setAccountWeakPasswordsCount(0);
+        setLocalWeakPasswordsCount(3);
+        setLocalPasswordCheckTimestamp(TimeUtils.currentTimeMillis());
+        addCredentialToAccountStore();
+        addCredentialToProfileStore();
+
+        mSafetyHubFragmentTestRule.startSettingsActivity();
+        SafetyHubFragment safetyHubFragment = mSafetyHubFragmentTestRule.getFragment();
+
+        // Verify that unified passwords module which is in the warning state is expanded by
+        // default.
+        String weakPasswordsTitle =
+                safetyHubFragment.getString(R.string.safety_hub_reused_weak_local_passwords_title);
+        scrollToExpandedPreference(weakPasswordsTitle);
+        verifyButtonsNextToTextVisibility(weakPasswordsTitle, true);
+
+        // Verify the information module is not expanded.
+        String safeBrowsingTitle =
+                safetyHubFragment.getString(R.string.prefs_safe_browsing_no_protection_summary);
+        scrollToPreference(withText(safeBrowsingTitle));
+        verifyButtonsNextToTextVisibility(safeBrowsingTitle, true);
+
+        clearLocalCompromisedPasswordsCount();
+        setLocalPasswordCheckTimestamp(0);
+    }
+
+    @Test
+    @MediumTest
+    @Policies.Add({@Policies.Item(key = "SafeBrowsingEnabled", string = "false")})
+    @Restriction(GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_24W15)
+    @Features.EnableFeatures({
+        ChromeFeatureList.SAFETY_HUB_WEAK_AND_REUSED_PASSWORDS,
+        ChromeFeatureList.SAFETY_HUB_LOCAL_PASSWORDS_MODULE,
+        ChromeFeatureList.SAFETY_HUB_UNIFIED_PASSWORDS_MODULE
+    })
     public void testUnifiedPasswordsModule_NoCompromisedPasswords() {
         setAccountCompromisedPasswordsCount(0);
         setLocalCompromisedPasswordsCount(0);
+        setAccountWeakPasswordsCount(0);
+        setLocalWeakPasswordsCount(0);
         setLocalPasswordCheckTimestamp(TimeUtils.currentTimeMillis());
         addCredentialToAccountStore();
         addCredentialToProfileStore();

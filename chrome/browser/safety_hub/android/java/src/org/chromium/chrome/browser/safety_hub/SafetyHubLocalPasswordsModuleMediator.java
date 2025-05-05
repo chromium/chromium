@@ -188,8 +188,12 @@ public class SafetyHubLocalPasswordsModuleMediator
                 return new SafetyHubNoCompromisedPasswordsModuleHelper(
                         context, mModuleDelegate, /* account= */ null, /* unifiedModule= */ false);
             case ModuleType.HAS_WEAK_PASSWORDS:
-                return new SafetyHubLocalPasswordsHasWeakPasswordsModuleHelper(
-                        context, mModuleDelegate, mLocalPasswordsDataSource.getWeakPasswordCount());
+                return new SafetyHubWeakPasswordsModuleHelper(
+                        context,
+                        mModuleDelegate,
+                        /* accountWeakPasswordsCount= */ 0,
+                        mLocalPasswordsDataSource.getWeakPasswordCount(),
+                        /* unifiedModule= */ false);
             case ModuleType.HAS_REUSED_PASSWORDS:
                 return new SafetyHubLocalPasswordsHasReusedPasswordsModuleHelper(
                         context,

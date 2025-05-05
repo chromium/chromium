@@ -1933,6 +1933,9 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_SAFETY_HUB_REUSED_WEAK_LOCAL_PASSWORDS_TITLE" desc="Title for the local password check row in the Safety Check page indicating that the checkup found reused or/and weak local passwords.">
         Strengthen your passwords on this device
       </message>
+      <message name="IDS_SAFETY_HUB_REUSED_WEAK_PASSWORDS_TITLE" desc="Title for the password check row in the Safety Check page indicating that the checkup found reused or/and weak account and local passwords.">
+        Strengthen your passwords
+      </message>
       <message name="IDS_SAFETY_HUB_WEAK_PASSWORDS_SUMMARY" desc="Summary for the password hub row in the Safety Check page indicating that the checkup found weak passwords and that the user should improve them.">
         {NUM_PASSWORDS, plural,
         =1 {Chrome found a weak password that you could improve}

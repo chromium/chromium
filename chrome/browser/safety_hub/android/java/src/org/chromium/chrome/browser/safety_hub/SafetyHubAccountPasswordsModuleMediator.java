@@ -92,10 +92,12 @@ public class SafetyHubAccountPasswordsModuleMediator
                         mAccountPasswordsDataSource.getAccountEmail(),
                         /* unifiedModule= */ false);
             case ModuleType.HAS_WEAK_PASSWORDS:
-                return new SafetyHubAccountPasswordsHasWeakPasswordsModuleHelper(
+                return new SafetyHubWeakPasswordsModuleHelper(
                         context,
                         mModuleDelegate,
-                        mAccountPasswordsDataSource.getWeakPasswordCount());
+                        mAccountPasswordsDataSource.getWeakPasswordCount(),
+                        /* localWeakPasswordsCount= */ 0,
+                        /* unifiedModule= */ false);
             case ModuleType.HAS_REUSED_PASSWORDS:
                 return new SafetyHubAccountPasswordsHasReusedPasswordsModuleHelper(
                         context,

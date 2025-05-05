@@ -100,6 +100,17 @@ public class SafetyHubPasswordsModuleMediator
                     /* unifiedModule= */ true);
         }
 
+        if (accountModuleType == SafetyHubAccountPasswordsDataSource.ModuleType.HAS_WEAK_PASSWORDS
+                || localModuleType
+                        == SafetyHubLocalPasswordsDataSource.ModuleType.HAS_WEAK_PASSWORDS) {
+            return new SafetyHubWeakPasswordsModuleHelper(
+                    context,
+                    mModuleDelegate,
+                    mAccountPasswordsDataSource.getWeakPasswordCount(),
+                    mLocalPasswordsDataSource.getWeakPasswordCount(),
+                    /* unifiedModule= */ true);
+        }
+
         if (accountModuleType
                         == SafetyHubAccountPasswordsDataSource.ModuleType.NO_COMPROMISED_PASSWORDS
                 && localModuleType
