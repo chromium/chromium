@@ -32,4 +32,10 @@ void Md5::Finish(base::span<uint8_t, Md5::kSize> result) {
   CHECK(EVP_DigestFinal(ctx_.get(), result.data(), nullptr));
 }
 
+std::array<uint8_t, Md5::kSize> Md5::Finish() {
+  std::array<uint8_t, Md5::kSize> result;
+  Finish(result);
+  return result;
+}
+
 }  // namespace crypto::obsolete
