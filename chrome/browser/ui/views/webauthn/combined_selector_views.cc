@@ -79,6 +79,7 @@ void CombinedSelectorRadioButton::SetChecked(bool checked) {
       }
     }
     delegate_->OnRadioButtonChecked(index_);
+    RequestFocus();
   }
   Checkbox::SetChecked(checked);
 }
@@ -192,7 +193,6 @@ bool CombinedSelectorRowView::OnMousePressed(const ui::MouseEvent& event) {
         ui::EventType::kMousePressed, center, center, event.time_stamp(),
         event.flags(), event.changed_button_flags());
     radio_button_->OnMousePressed(synthetic_press_event);
-    radio_button_->RequestFocus();
     return true;
   }
   return views::TableLayoutView::OnMousePressed(event);
@@ -205,6 +205,7 @@ void CombinedSelectorRowView::OnMouseReleased(const ui::MouseEvent& event) {
         ui::EventType::kMouseReleased, center, center, event.time_stamp(),
         event.flags(), event.changed_button_flags());
     radio_button_->OnMouseReleased(synthetic_release_event);
+    RequestFocus();
     return;
   }
   views::TableLayoutView::OnMouseReleased(event);  // Default handling.
