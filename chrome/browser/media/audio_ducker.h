@@ -12,7 +12,9 @@
 #include "services/media_session/public/mojom/audio_focus.mojom.h"
 
 #if BUILDFLAG(IS_WIN)
+namespace media {
 class AudioDuckerWin;
+}  // namespace media
 #endif  // BUILDFLAG(IS_WIN)
 
 // The AudioDucker ducks other audio in Chrome besides what is playing through
@@ -67,7 +69,7 @@ class AudioDucker : public content::PageUserData<AudioDucker>,
   bool ShouldDuckProcess(base::ProcessId process_id) const;
 
   // Responsible for ducking other applications on Windows.
-  std::unique_ptr<AudioDuckerWin> windows_ducker_;
+  std::unique_ptr<media::AudioDuckerWin> windows_ducker_;
 #endif  // BUILDFLAG(IS_WIN)
 
   AudioDuckingState ducking_state_ = AudioDuckingState::kNoDucking;
