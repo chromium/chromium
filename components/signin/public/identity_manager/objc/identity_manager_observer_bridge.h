@@ -8,6 +8,7 @@
 #import <Foundation/Foundation.h>
 
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 
@@ -74,6 +75,9 @@ class IdentityManagerObserverBridge : public IdentityManager::Observer {
  private:
   // Identity manager to observe.
   raw_ptr<IdentityManager> identity_manager_;
+  base::ScopedObservation<signin::IdentityManager,
+                          signin::IdentityManager::Observer>
+      identity_manager_observation_{this};
   // Delegate to call.
   __weak id<IdentityManagerObserverBridgeDelegate> delegate_;
 };
