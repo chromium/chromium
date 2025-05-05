@@ -7,6 +7,7 @@
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_promo/coordinator/non_modal_signin_promo_metrics_util.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_promo/signin_promo_types.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
@@ -147,8 +148,12 @@ constexpr base::TimeDelta kPromoTimeout = base::Seconds(8);
 // Called when the timeout timer fires.
 - (void)timeoutTimerFired {
   [self stopTimeOutTimers];
+
   // Inform coordinator to dismiss UI.
   [self.delegate nonModalSignInPromoMediatorShouldDismiss:self];
+
+  // Log the timeout event to metrics.
+  LogNonModalSignInPromoAction(NonModalSignInPromoAction::kTimeout, _promoType);
 }
 
 #pragma mark - IdentityManagerObserverBridgeDelegate
@@ -159,6 +164,7 @@ constexpr base::TimeDelta kPromoTimeout = base::Seconds(8);
   if (_authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
     _displayTimer = nullptr;
     [self stopTimeOutTimers];
+
     // Inform coordinator to dismiss UI.
     [self.delegate nonModalSignInPromoMediatorShouldDismiss:self];
   }

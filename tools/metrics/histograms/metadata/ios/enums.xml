@@ -1315,6 +1315,17 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="Exceeded allocated time for background task"/>
 </enum>
 
+<!-- LINT.IfChange(NonModalSignInPromoAction) -->
+
+<enum name="NonModalSignInPromoAction">
+  <int value="0" label="Accept"/>
+  <int value="1" label="Appear"/>
+  <int value="2" label="Dismiss"/>
+  <int value="3" label="Timeout"/>
+</enum>
+
+<!-- LINT.ThenChange(/ios/chrome/browser/authentication/ui_bundled/signin_promo/coordinator/non_modal_signin_promo_metrics_util.h:NonModalSignInPromoAction) -->
+
 <!-- LINT.IfChange(NotificationType) -->
 
 <enum name="NotificationType">
