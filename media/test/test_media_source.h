@@ -115,8 +115,8 @@ class TestMediaSource {
   size_t initial_append_size_;
   bool initial_sequence_mode_;
   std::string mimetype_;
+  std::unique_ptr<ChunkDemuxer> owned_chunk_demuxer_;
   raw_ptr<ChunkDemuxer> chunk_demuxer_;
-  std::unique_ptr<Demuxer> owned_chunk_demuxer_;
   PipelineStatusCB demuxer_failure_cb_;
   Demuxer::EncryptedMediaInitDataCB encrypted_media_init_data_cb_;
   base::TimeDelta last_timestamp_offset_;
