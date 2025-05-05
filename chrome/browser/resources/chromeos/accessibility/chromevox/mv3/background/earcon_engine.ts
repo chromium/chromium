@@ -9,6 +9,7 @@
  */
 
 import {EarconId} from '../common/earcon_id.js';
+import {OffscreenCommandType} from '../common/offscreen_command_type.js';
 
 interface PlayProperties {
   pitch?: number;
@@ -34,6 +35,7 @@ interface GenerateSinusoidalProperties {gain: number;
 
 /** EarconEngine generates ChromeVox's earcons using the web audio API. */
 export class EarconEngine {
+  static instance?: EarconEngine;
 
   // Public control parameters. All of these are meant to be adjustable.
 
@@ -151,7 +153,42 @@ export class EarconEngine {
       .forEach(sound => this.loadSound(sound, `${BASE_URL}${sound}.wav`));
     Object.values(OggSoundFile)
       .forEach(sound => this.loadSound(sound, `${BASE_URL}${sound}.ogg`));
+
+    chrome.runtime.onMessage.addListener(
+        (message: any|undefined, _sender: chrome.runtime.MessageSender,
+         _sendResponse: (value: any) => void) =>
+            this.handleMessageFromOffscreen_(message));
   }
+
+
+  static init(): void {
+    if (EarconEngine.instance) {
+      throw 'Error: trying to create two instances of singleton EarconEngine.';
+    }
+    EarconEngine.instance = new EarconEngine();
+  }
+
+  private handleMessageFromOffscreen_(message: any|undefined): boolean {
+    switch (message['command']) {
+      case OffscreenCommandType.PLAY_EARCON:
+        this.playEarcon(message['earconid']);
+        break;
+      case OffscreenCommandType.EARCON_CANCEL_PROGRESS:
+        this.cancelProgress();
+        break;
+      case OffscreenCommandType.EARCON_RESET_PAN:
+        this.resetPan();
+        break;
+      case OffscreenCommandType.EARCON_SET_POSITION_FOR_RECT:
+        this.setPositionForRect(message['rect'], message['container']);
+        break;
+    }
+    // Returns false as the response is not asynchronous and the callback does
+    // not need to be kept alive.
+    return false;
+  }
+
+
 
   /**
    * A high-level way to ask the engine to play a specific earcon.

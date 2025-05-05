@@ -9,9 +9,13 @@
  * ChromeVox service worker.
  */
 export enum OffscreenCommandType {
+  EARCON_CANCEL_PROGRESS = 'EarconCancelProgress',
+  EARCON_RESET_PAN = 'EarconSesetPan',
+  EARCON_SET_POSITION_FOR_RECT = 'EarconSetPositionForRect',
+  ON_CLIPBOARD_DATA_CHANGED = 'onClipboardDataChanged',
   ON_KEY_DOWN = 'onKeyDown',
   ON_KEY_UP = 'onKeyUp',
-  ON_CLIPBOARD_DATA_CHANGED = 'onClipboardDataChanged',
   ON_VOICES_CHANGED = 'onvoiceschanged',
+  PLAY_EARCON = 'playEarcon',
   SHOULD_SET_DEFAULT_VOICE = 'shouldSetDefaultVoice',
 }

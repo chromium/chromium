@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {EarconEngine} from '../background/earcon_engine.js';
 import {InternalKeyEvent} from '../common/internal_key_event.js';
 import {OffscreenCommandType} from '../common/offscreen_command_type.js';
 
@@ -193,3 +194,4 @@ class OffscreenSpeechSynthesis {
 OffscreenBackgroundKeyboardHandler.init();
 OffscreenClipboardHandler.init();
 OffscreenSpeechSynthesis.init();
+EarconEngine.init();
