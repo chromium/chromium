@@ -39,6 +39,7 @@
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/proto/csd.to_value.h"
 #include "components/safe_browsing/core/common/proto/safebrowsingv5.pb.h"
+#include "components/safe_browsing/core/common/proto/safebrowsingv5.to_value.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/safe_browsing/core/common/web_ui_constants.h"
 #include "components/strings/grit/components_strings.h"
@@ -1203,50 +1204,7 @@ std::string SerializeHPRTLookupPing(const HPRTLookupRequest& ping) {
 
 std::string SerializeHPRTLookupResponse(
     const V5::SearchHashesResponse& response) {
-  base::Value::Dict response_dict;
-
-  // full_hashes
-  base::Value::List full_hashes_list;
-  for (const auto& full_hash : response.full_hashes()) {
-    base::Value::Dict full_hash_dict;
-    // full_hash
-    std::string encoded_full_hash;
-    base::Base64UrlEncode(full_hash.full_hash(),
-                          base::Base64UrlEncodePolicy::INCLUDE_PADDING,
-                          &encoded_full_hash);
-    full_hash_dict.Set("full_hash (base64)", std::move(encoded_full_hash));
-    // full_hash_details
-    base::Value::List full_hash_details_list;
-    for (const auto& full_hash_detail : full_hash.full_hash_details()) {
-      base::Value::Dict full_hash_detail_dict;
-      // threat_type
-      full_hash_detail_dict.Set(
-          "threat_type", ThreatType_Name(full_hash_detail.threat_type()));
-      // attributes
-      base::Value::List attributes_list;
-      for (auto i = 0; i < full_hash_detail.attributes_size(); ++i) {
-        attributes_list.Append(
-            ThreatAttribute_Name(full_hash_detail.attributes(i)));
-      }
-      full_hash_detail_dict.Set("attributes", std::move(attributes_list));
-
-      full_hash_details_list.Append(std::move(full_hash_detail_dict));
-    }
-    full_hash_dict.Set("full_hash_details", std::move(full_hash_details_list));
-
-    full_hashes_list.Append(std::move(full_hash_dict));
-  }
-  response_dict.Set("full_hashes", std::move(full_hashes_list));
-
-  // cache_duration
-  base::Value::Dict cache_duration_dict;
-  cache_duration_dict.Set(
-      "seconds", static_cast<double>(response.cache_duration().seconds()));
-  cache_duration_dict.Set(
-      "nanos", static_cast<double>(response.cache_duration().nanos()));
-  response_dict.Set("cache_duration", std::move(cache_duration_dict));
-
-  return SerializeJson(response_dict);
+  return SerializeJson(proto_to_value::Serialize(response));
 }
 
 base::Value::Dict SerializeLogMessage(base::Time timestamp,

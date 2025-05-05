@@ -48,3 +48,7 @@ fuzzable_proto_library("client_model_proto") {
 proto_library("safebrowsingv5_proto") {
   sources = [ "safebrowsingv5.proto" ]
 }
+
+proto_to_value("safebrowsingv5_proto_to_value") {
+  sources = [ "safebrowsingv5.proto" ]
+}

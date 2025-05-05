@@ -137,20 +137,18 @@ TEST_F(SafeBrowsingUITest, TestHPRTLookups) {
   EXPECT_EQ(base::test::ParseJson(response_data[1].GetString()),
             base::test::ParseJson(R"!({
    "cache_duration": {
-      "nanos": 30.0,
-      "seconds": 123.0
+      "nanos": 30,
+      "seconds": 123
    },
    "full_hashes": [ {
-      "full_hash (base64)": "ZnVsbF9oYXNoXzE=",
+      "full_hash": "ZnVsbF9oYXNoXzE=",
       "full_hash_details": [ {
-         "attributes": [  ],
          "threat_type": "SOCIAL_ENGINEERING"
       }, {
-         "attributes": [  ],
          "threat_type": "MALWARE"
       } ]
    }, {
-      "full_hash (base64)": "ZnVsbF9oYXNoXzI=",
+      "full_hash": "ZnVsbF9oYXNoXzI=",
       "full_hash_details": [ {
          "attributes": [ "CANARY", "FRAME_ONLY" ],
          "threat_type": "MALWARE"

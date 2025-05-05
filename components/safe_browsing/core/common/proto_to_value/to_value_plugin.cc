@@ -76,6 +76,7 @@ class ToValueGenerator : public google::protobuf::compiler::CodeGenerator {
     h_printer.Print("\n#endif  // $g$\n", "g", include_guard);
 
     cc_printer.Print(kHeader);
+    cc_printer.Print("#include \"base/base64.h\"\n");
     cc_printer.Print("#include \"$p$\"\n\n", "p", h_file_path.AsUTF8Unsafe());
 
     cc_printer.Print("namespace proto_to_value {\n\n");
@@ -141,7 +142,7 @@ class ToValueGenerator : public google::protobuf::compiler::CodeGenerator {
                        field_name);
         printer->Outdent();
         printer->Print("}\n");
-      } else {
+      } else if (field->has_presence()) {
         printer->Print("if (message.has_$f$()) {\n", "f", field_name);
         printer->Indent();
         printer->Print("dict.Set(\"$f$\", ", "f", field_name);
@@ -149,6 +150,10 @@ class ToValueGenerator : public google::protobuf::compiler::CodeGenerator {
         printer->Print("(message.$f$()));\n", "f", field_name);
         printer->Outdent();
         printer->Print("}\n");
+      } else {
+        printer->Print("dict.Set(\"$f$\", ", "f", field_name);
+        PrintFieldToValue(*field, printer);
+        printer->Print("(message.$f$()));\n", "f", field_name);
       }
     }
     printer->Print("return dict;\n");
@@ -165,29 +170,39 @@ class ToValueGenerator : public google::protobuf::compiler::CodeGenerator {
   }
 
   void PrintFieldToValue(const FieldDescriptor& field, Printer* printer) const {
-    using enum FieldDescriptor::CppType;
-    switch (field.cpp_type()) {
-      case CPPTYPE_INT32:
-      case CPPTYPE_INT64:
-      case CPPTYPE_UINT32:
-      case CPPTYPE_UINT64:
-        printer->Print("static_cast<int>");
-        break;
-      case CPPTYPE_DOUBLE:
-      case CPPTYPE_FLOAT:
+    using enum FieldDescriptor::Type;
+    switch (field.type()) {
+      case TYPE_DOUBLE:
+      case TYPE_FLOAT:
         printer->Print("static_cast<double>");
         break;
-      case CPPTYPE_BOOL:
+      case TYPE_INT64:
+      case TYPE_INT32:
+      case TYPE_UINT64:
+      case TYPE_UINT32:
+      case TYPE_FIXED64:
+      case TYPE_FIXED32:
+      case TYPE_SFIXED64:
+      case TYPE_SFIXED32:
+      case TYPE_SINT64:
+      case TYPE_SINT32:
+        printer->Print("static_cast<int>");
+        break;
+      case TYPE_BOOL:
         printer->Print("static_cast<bool>");
         break;
-      case CPPTYPE_ENUM:
+      case TYPE_STRING:
+        printer->Print("static_cast<std::string>");
+        break;
+      case TYPE_BYTES:
+        printer->Print("base::Base64Encode");
+        break;
+      case TYPE_ENUM:
         printer->Print("$t$_Name", "t",
                        CppFullName(field.enum_type()->full_name()));
         break;
-      case CPPTYPE_STRING:
-        printer->Print("static_cast<std::string>");
-        break;
-      case CPPTYPE_MESSAGE:
+      case TYPE_MESSAGE:
+      case TYPE_GROUP:
         printer->Print("Serialize");
         break;
     }
