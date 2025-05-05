@@ -118,10 +118,8 @@ NetworkHandler::NetworkHandler(std::unique_ptr<NetworkStateHandler> handler)
       new NetworkLoginScreenProtocolHandlerObserver());
 
   // Only watch ephemeral network policies enablement if ephemeral network
-  // policies should be enabled by the feature or if the device policy to enable
-  // ephemeral network policies should be respected.
-  if (features::AreEphemeralNetworkPoliciesEnabled() ||
-      features::CanEphemeralNetworkPoliciesBeEnabledByPolicy()) {
+  // policies should be enabled by the feature.
+  if (features::AreEphemeralNetworkPoliciesEnabled()) {
     // base::Unretained is safe because
     // `ephemeral_network_policies_enablement_handler_` is a member of
     // NetworkHandler so it will be destroyed before `this`.

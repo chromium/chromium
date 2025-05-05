@@ -836,14 +836,6 @@ BASE_FEATURE(kEphemeralNetworkPolicies,
              "kEphemeralNetworkPolicies",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Controls whether the DeviceEphemeralNetworkPoliciesEnabled policy is
-// respected.
-// This is on-by-default, only intended to be used as a kill switch in case we
-// find some issue with the policy processing.
-BASE_FEATURE(kEphemeralNetworkPoliciesEnabledPolicy,
-             "EphemeralNetworkPoliciesEnabledPolicy",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables Device End Of Lifetime incentive notifications.
 BASE_FEATURE(kEolIncentive, "EolIncentive", base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -4171,10 +4163,6 @@ bool IsEcheShorterScanningDutyCycleEnabled() {
 
 bool AreEphemeralNetworkPoliciesEnabled() {
   return base::FeatureList::IsEnabled(kEphemeralNetworkPolicies);
-}
-
-bool CanEphemeralNetworkPoliciesBeEnabledByPolicy() {
-  return base::FeatureList::IsEnabled(kEphemeralNetworkPoliciesEnabledPolicy);
 }
 
 bool IsNearbyPresenceEnabled() {

@@ -322,7 +322,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kEnterpriseReportingUI);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kEphemeralNetworkPolicies);
 COMPONENT_EXPORT(ASH_CONSTANTS)
-BASE_DECLARE_FEATURE(kEphemeralNetworkPoliciesEnabledPolicy);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kFastPairSavedDevices);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kFastPairSavedDevicesStrictOptIn);
@@ -1192,7 +1191,6 @@ bool IsEcheShorterScanningDutyCycleEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool AreEphemeralNetworkPoliciesEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
-bool CanEphemeralNetworkPoliciesBeEnabledByPolicy();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFlexFirmwareUpdateEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool ShouldIgnoreDeviceFlexArcEnabledPolicy();
