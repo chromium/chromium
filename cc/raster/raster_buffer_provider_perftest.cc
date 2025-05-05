@@ -377,6 +377,7 @@ class RasterBufferProviderPerfTest
       case RASTER_BUFFER_PROVIDER_TYPE_ONE_COPY:
         Create3dResourceProvider();
         raster_buffer_provider_ = std::make_unique<OneCopyRasterBufferProvider>(
+            worker_context_provider_->SharedImageInterface(),
             task_runner_.get(), compositor_context_provider_.get(),
             worker_context_provider_.get(), std::numeric_limits<int>::max(),
             false, std::numeric_limits<int>::max(),

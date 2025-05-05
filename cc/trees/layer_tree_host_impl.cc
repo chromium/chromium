@@ -4288,7 +4288,8 @@ LayerTreeHostImpl::CreateRasterBufferProvider() {
   const int max_copy_texture_chromium_size =
       caps.max_copy_texture_chromium_size;
   return std::make_unique<OneCopyRasterBufferProvider>(
-      GetTaskRunner(), compositor_context_provider, worker_context_provider,
+      worker_context_provider->SharedImageInterface(), GetTaskRunner(),
+      compositor_context_provider, worker_context_provider,
       max_copy_texture_chromium_size, settings_.use_partial_raster,
       settings_.max_staging_buffer_usage_in_bytes,
       raster_caps_.tile_overlay_candidate);
