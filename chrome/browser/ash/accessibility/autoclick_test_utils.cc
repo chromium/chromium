@@ -180,7 +180,7 @@ void AutoclickTestUtils::WaitForAutoclickReady() {
   base::ScopedAllowBlockingForTesting allow_blocking;
   std::string script = base::StringPrintf(R"JS(
     (async function() {
-      window.accessibilityCommon.setFeatureLoadCallbackForTest('autoclick',
+      globalThis.accessibilityCommon.setFeatureLoadCallbackForTest('autoclick',
           () => {
             chrome.test.sendScriptResult('ready');
           });

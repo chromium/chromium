@@ -389,7 +389,7 @@ void FaceGazeTestUtils::SetUpMediapipeDir(const char* mediapipe_dir) {
 void FaceGazeTestUtils::WaitForJSReady() {
   std::string script = base::StringPrintf(R"JS(
     (async function() {
-      window.accessibilityCommon.setFeatureLoadCallbackForTest('facegaze',
+      globalThis.accessibilityCommon.setFeatureLoadCallbackForTest('facegaze',
           () => {
             chrome.test.sendScriptResult('ready');
           });

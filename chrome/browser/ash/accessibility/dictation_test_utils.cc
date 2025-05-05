@@ -368,7 +368,7 @@ void DictationTestUtils::SetUpTestSupport(const char* test_support_dir) {
 void DictationTestUtils::WaitForDictationJSReady() {
   std::string script = base::StringPrintf(R"JS(
     (async function() {
-      window.accessibilityCommon.setFeatureLoadCallbackForTest('dictation',
+      globalThis.accessibilityCommon.setFeatureLoadCallbackForTest('dictation',
           () => {
             chrome.test.sendScriptResult('ready');
           });
