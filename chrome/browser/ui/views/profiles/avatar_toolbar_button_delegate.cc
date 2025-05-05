@@ -1643,10 +1643,10 @@ AvatarToolbarButtonDelegate::GetTextAndColor(
     }
     case ButtonState::kManagement: {
       text = enterprise_util::GetEnterpriseLabel(profile_, /*truncated=*/true);
+      color = color_provider->GetColor(kColorAvatarButtonHighlightNormal);
       break;
     }
     case ButtonState::kNormal:
-      color = color_provider->GetColor(kColorAvatarButtonHighlightNormal);
       break;
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
     case ButtonState::kHistorySyncOptin: {
@@ -1733,17 +1733,17 @@ SkColor AvatarToolbarButtonDelegate::GetHighlightTextColor(
     case ButtonState::kUpgradeClientError:
     case ButtonState::kPassphraseError:
     case ButtonState::kSyncPaused:
+      return color_provider->GetColor(
+          kColorAvatarButtonHighlightNormalForeground);
     case ButtonState::kExplicitTextShowing:
     case ButtonState::kGuestSession:
     case ButtonState::kShowIdentityName:
+    case ButtonState::kNormal:
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
     case ButtonState::kHistorySyncOptin:
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
       return color_provider->GetColor(
           kColorAvatarButtonHighlightDefaultForeground);
-    case ButtonState::kNormal:
-      return color_provider->GetColor(
-          kColorAvatarButtonHighlightNormalForeground);
   }
 }
 
@@ -1878,6 +1878,7 @@ bool AvatarToolbarButtonDelegate::ShouldPaintBorder() const {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
     case ButtonState::kHistorySyncOptin:
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+      return true;
     case ButtonState::kIncognitoProfile:
     case ButtonState::kExplicitTextShowing:
     case ButtonState::kManagement:
