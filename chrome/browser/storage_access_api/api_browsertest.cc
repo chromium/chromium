@@ -1937,9 +1937,7 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
   ASSERT_TRUE(storage::test::RequestAndCheckStorageAccessForFrame(GetFrame()));
   ASSERT_TRUE(content::NavigateToURLFromRenderer(
       GetFrame(),
-      https_server().GetURL(
-          kHostB,
-          "/workers/fetch_from_worker.html?script=fetch_from_worker.js")));
+      https_server().GetURL(kHostB, "/workers/fetch_from_worker.html")));
   ASSERT_TRUE(storage::test::HasStorageAccessForFrame(GetFrame()));
 
   // When the worker's parent document has storage access at the time the worker

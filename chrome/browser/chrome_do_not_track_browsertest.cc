@@ -68,8 +68,7 @@ IN_PROC_BROWSER_TEST_F(ChromeDoNotTrackTest, FetchFromWorker) {
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
-      embedded_test_server()->GetURL(
-          "/workers/fetch_from_worker.html?script=fetch_from_worker.js")));
+      embedded_test_server()->GetURL("/workers/fetch_from_worker.html")));
   EXPECT_EQ("1",
             EvalJs(GetWebContents(), "fetch_from_worker('/echoheader?DNT');"));
 
