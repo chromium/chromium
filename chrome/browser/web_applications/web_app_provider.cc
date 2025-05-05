@@ -300,6 +300,14 @@ NavigationCapturingLog& WebAppProvider::navigation_capturing_log() {
 
 void WebAppProvider::Shutdown() {
   command_scheduler_->Shutdown();
+  // The `command_manager_` has already shut down at this point if the profile
+  // was managed by a ProfileManager that was being destroyed, but this still
+  // happens here because:
+  // 1. One shutdown is enough, duplicate shut downs do not affect the working
+  // of the `command_manager_`.
+  // 2. Sometimes a profile is used without a `ProfileManager` (like in some
+  // tests). In those cases, the `command_manager_` needs to be explicitly
+  // shutdown.
   command_manager_->Shutdown();
   ui_manager_->Shutdown();
   externally_managed_app_manager_->Shutdown();

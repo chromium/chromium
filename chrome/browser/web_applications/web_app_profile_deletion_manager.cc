@@ -47,6 +47,11 @@ void WebAppProfileDeletionManager::OnProfileMarkedForPermanentDeletion(
 }
 
 void WebAppProfileDeletionManager::OnProfileManagerDestroying() {
+  // Shut down the command system, aborting all running commands synchronously.
+  // This helps destroy the `WebContents` instance that might be created by the
+  // `command_manager()` before profile destruction has started.
+  // This serves as a crash fix for crbug.com/415776884.
+  provider_->command_manager().Shutdown();
   profile_manager_observation_.Reset();
 }
 
