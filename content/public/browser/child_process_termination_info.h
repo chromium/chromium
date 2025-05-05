@@ -71,10 +71,8 @@ struct CONTENT_EXPORT ChildProcessTerminationInfo {
   DWORD last_error;
 #endif
 
-#if !BUILDFLAG(IS_ANDROID)
   // The cumulative CPU usage of this process, if available.
   std::optional<base::TimeDelta> cpu_usage;
-#endif
 };
 
 }  // namespace content

@@ -58,8 +58,15 @@ std::unique_ptr<base::ProcessMetrics> CreateProcessMetrics(
 }
 
 // Samples the process metrics the ProcessMonitor cares about.
-ProcessMonitor::Metrics SampleMetrics(base::ProcessMetrics& process_metrics) {
+ProcessMonitor::Metrics SampleMetrics(MonitoredProcessType process_type,
+                                      base::ProcessMetrics& process_metrics) {
   ProcessMonitor::Metrics metrics;
+#if BUILDFLAG(IS_ANDROID)
+  if (process_type != MonitoredProcessType::kBrowser) {
+    // Sandbox restrictions prevent reading /proc for other processes.
+    return metrics;
+  }
+#endif
 
   metrics.cpu_usage = base::OptionalFromExpected(
       process_metrics.GetPlatformIndependentCPUUsage());
@@ -183,7 +190,7 @@ ProcessInfo::ProcessInfo(MonitoredProcessType type,
       first_sample_time(base::TimeTicks::Now()) {
   // Do an initial call to SampleMetrics() so that the next one returns
   // meaningful data.
-  SampleMetrics(*this->process_metrics);
+  SampleMetrics(type, *this->process_metrics);
 
 #if BUILDFLAG(IS_WIN) && !defined(ARCH_CPU_ARM64)
   // Record the value of HasConstantRateTSC to get a feel of the proportion of
@@ -236,7 +243,8 @@ void ProcessMonitor::SampleAllProcesses(Observer* observer) {
   Metrics aggregated_metrics;
   std::array<Metrics, MonitoredProcessType::kCount> per_type_metrics;
   for (auto* process_info : process_infos) {
-    Metrics metrics = SampleMetrics(*process_info->process_metrics);
+    Metrics metrics =
+        SampleMetrics(process_info->type, *process_info->process_metrics);
 
     // If this is the first interval calculated for this process, then the
     // metrics values must be scaled down over the

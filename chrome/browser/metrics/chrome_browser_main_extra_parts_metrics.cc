@@ -42,6 +42,8 @@
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/google/google_brand.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
+#include "chrome/browser/metrics/power/power_metrics_reporter.h"
+#include "chrome/browser/metrics/power/process_monitor.h"
 #include "chrome/browser/metrics/process_memory_metrics_emitter.h"
 #include "chrome/browser/metrics/tab_stats/tab_stats_tracker.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -73,8 +75,6 @@
 #include "base/power_monitor/battery_state_sampler.h"
 #include "chrome/browser/metrics/first_web_contents_profiler.h"
 #include "chrome/browser/metrics/power/battery_discharge_reporter.h"
-#include "chrome/browser/metrics/power/power_metrics_reporter.h"
-#include "chrome/browser/metrics/power/process_monitor.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
@@ -984,10 +984,8 @@ void ChromeBrowserMainExtraPartsMetrics::PreCreateThreads() {
 }
 
 void ChromeBrowserMainExtraPartsMetrics::PostCreateMainMessageLoop() {
-#if !BUILDFLAG(IS_ANDROID)
   // Must be initialized before any child processes are spawned.
   process_monitor_ = std::make_unique<ProcessMonitor>();
-#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 void ChromeBrowserMainExtraPartsMetrics::PreProfileInit() {
@@ -1167,7 +1165,6 @@ void ChromeBrowserMainExtraPartsMetrics::PostBrowserStart() {
 
   display_observer_.emplace(this);
 
-#if !BUILDFLAG(IS_ANDROID)
 // In ChromeOS, the chrome application typically starts at the login screen and
 // waits for the user to log in before opening a browser window, so calling
 // `BeginFirstWebContentsProfiling()` is inappropriate because the
@@ -1175,12 +1172,21 @@ void ChromeBrowserMainExtraPartsMetrics::PostBrowserStart() {
 // crash (which has no login screen) requires the user to click a notification
 // prompt before browser windows are restored, so the `BrowserList` is also
 // empty in this case.
-#if !BUILDFLAG(IS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
   metrics::BeginFirstWebContentsProfiling();
-#endif  // !BUILDFLAG(IS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
 
   // Instantiate the power-related metrics reporters.
 
+  // PowerMetricsReporter focus solely on Chrome-specific metrics that affect
+  // power (CPU time, wake ups, etc.). Only instantiate it if |process_monitor_|
+  // exists. This is always the case for Chrome but not for the unit tests.
+  if (process_monitor_) {
+    power_metrics_reporter_ =
+        std::make_unique<PowerMetricsReporter>(process_monitor_.get());
+  }
+
+#if !BUILDFLAG(IS_ANDROID)
   // BatteryDischargeRateReporter reports the system-wide battery discharge
   // rate. It depends on the TabStatsTracker to determine the usage scenario,
   // and the BatteryStateSampler to determine the battery level.
@@ -1191,14 +1197,6 @@ void ChromeBrowserMainExtraPartsMetrics::PostBrowserStart() {
       base::BatteryStateSampler::Get()) {
     battery_discharge_reporter_ = std::make_unique<BatteryDischargeReporter>(
         base::BatteryStateSampler::Get());
-  }
-
-  // PowerMetricsReporter focus solely on Chrome-specific metrics that affect
-  // power (CPU time, wake ups, etc.). Only instantiate it if |process_monitor_|
-  // exists. This is always the case for Chrome but not for the unit tests.
-  if (process_monitor_) {
-    power_metrics_reporter_ =
-        std::make_unique<PowerMetricsReporter>(process_monitor_.get());
   }
 
   performance_intervention_metrics_reporter_ =

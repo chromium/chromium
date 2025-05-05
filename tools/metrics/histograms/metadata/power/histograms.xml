@@ -260,6 +260,10 @@ chromium-metrics-reviews@google.com.
   <summary>
     See definition of PerformanceClass.AverageCPU8.ProcessName. This is recorded
     every 2 minutes for {UsageScenario} (see go/chrome_power_use_per_scenario).
+
+    Note: on Android, only the browser process can be measured, so the
+    &quot;Total&quot; only includes samples from
+    PerformanceMonitor.AverageCPU8.BrowserProcess.
   </summary>
   <token key="UsageScenario" variants="UsageScenario"/>
 </histogram>
@@ -278,10 +282,9 @@ chromium-metrics-reviews@google.com.
     type {ProcessName} existed during the interval, a sample of zero is still
     emitted.
 
-    Not recorded on Android.
-
     NOTE: On Windows, this is not recorded on CPUs that do not support constant
-    rate TSC.
+    rate TSC. On Android, only the browser process can be measured, so all
+    samples except PerformanceMonitor.AverageCPU8.BrowserProcess will be zero.
   </summary>
   <token key="ProcessName" variants="ProcessName"/>
 </histogram>
