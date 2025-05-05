@@ -2,11 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <concepts>
+
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
+#include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_view.h"
 
 namespace blink {
 
@@ -237,7 +240,7 @@ struct ABVTrait<DOMDataView>
 
 // RecipeTrait implementation for the recipe functions
 
-template <typename T, typename unused = void>
+template <typename T>
 struct RecipeTrait {
   static bool IsNonNull(const T* buffer_view) { return buffer_view; }
   static T* NullValue() { return nullptr; }
@@ -251,8 +254,8 @@ struct RecipeTrait {
 };
 
 template <typename T>
-struct RecipeTrait<T,
-                   std::enable_if_t<std::is_base_of_v<DOMArrayBufferBase, T>>> {
+  requires(std::derived_from<T, DOMArrayBufferBase>)
+struct RecipeTrait<T> {
   static bool IsNonNull(const T* buffer) { return buffer; }
   static T* NullValue() { return nullptr; }
   static T* ToReturnType(T* buffer) { return buffer; }
@@ -263,13 +266,13 @@ struct RecipeTrait<T,
 };
 
 template <typename T>
-struct RecipeTrait<NotShared<T>, void> : public RecipeTrait<T> {
+struct RecipeTrait<NotShared<T>> : public RecipeTrait<T> {
   static NotShared<T> NullValue() { return NotShared<T>(); }
   static NotShared<T> ToReturnType(T* buffer) { return NotShared<T>(buffer); }
 };
 
 template <typename T>
-struct RecipeTrait<MaybeShared<T>, void> : public RecipeTrait<T> {
+struct RecipeTrait<MaybeShared<T>> : public RecipeTrait<T> {
   static MaybeShared<T> NullValue() { return MaybeShared<T>(); }
   static MaybeShared<T> ToReturnType(T* buffer) {
     return MaybeShared<T>(buffer);
