@@ -36,6 +36,8 @@ static_library("signin") {
     "signin_error_notifier_factory.h",
     "token_handle_checker.cc",
     "token_handle_checker.h",
+    "token_handle_fetcher.cc",
+    "token_handle_fetcher.h",
     "token_handle_store_factory.cc",
     "token_handle_store_factory.h",
     "token_handle_store_impl.cc",
@@ -159,6 +161,7 @@ source_set("unit_tests") {
     "offline_signin_limiter_unittest.cc",
     "signin_error_notifier_unittest.cc",
     "token_handle_checker_unittest.cc",
+    "token_handle_fetcher_unittest.cc",
     "token_handle_store_unittest.cc",
   ]
 
