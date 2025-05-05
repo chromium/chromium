@@ -223,6 +223,12 @@ void ContextualCueingService::OnNudgeActivity(
       break;
     case tabs::GlicNudgeActivity::kNudgeIgnoredActiveTabChanged:
       interaction = NudgeInteraction::kIgnoredTabChange;
+      // The ActiveTabChanged activity is called very aggresivly and there may
+      // not be an actively shown nudge. We should only log this as an action if
+      // there is a shown nudge is dismissed
+      if (!nudge_time) {
+        return;
+      }
       log_ukm = true;
       break;
     case tabs::GlicNudgeActivity::kNudgeIgnoredNavigation:
