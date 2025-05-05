@@ -238,6 +238,7 @@ chromium-metrics-reviews@google.com.
 <!-- Values from various error header files to cover errors reported from the
 field, as of the macOS 15.4 SDK:
 - <CarbonCore.framework/MacErrors.h>
+- <Security.framework/Authorization.h>
 - <Security.framework/CSCommon.h>
 - <Security.framework/SecBase.h>
 -->
@@ -645,6 +646,20 @@ field, as of the macOS 15.4 SDK:
   <int value="-66992" label="errSecCSRevokedNotarization"/>
   <int value="-66991" label="errSecCSCMSConstructionFailed"/>
   <int value="-66990" label="errSecCSRemoteSignerFailed"/>
+  <int value="-60033" label="errAuthorizationBadAddress"/>
+  <int value="-60032" label="errAuthorizationToolEnvironmentError"/>
+  <int value="-60031" label="errAuthorizationToolExecuteFailure"/>
+  <int value="-60011" label="errAuthorizationInvalidFlags"/>
+  <int value="-60010" label="errAuthorizationInternalizeNotAllowed"/>
+  <int value="-60009" label="errAuthorizationExternalizeNotAllowed"/>
+  <int value="-60008" label="errAuthorizationInternal"/>
+  <int value="-60007" label="errAuthorizationInteractionNotAllowed"/>
+  <int value="-60006" label="errAuthorizationCanceled"/>
+  <int value="-60005" label="errAuthorizationDenied"/>
+  <int value="-60004" label="errAuthorizationInvalidPointer"/>
+  <int value="-60003" label="errAuthorizationInvalidTag"/>
+  <int value="-60002" label="errAuthorizationInvalidRef"/>
+  <int value="-60001" label="errAuthorizationInvalidSet"/>
   <int value="-34020" label="errSecRestrictedAPI"/>
   <int value="-34018" label="errSecMissingEntitlement"/>
   <int value="-26275" label="errSecDecode"/>
