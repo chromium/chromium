@@ -45,7 +45,7 @@ struct PageContextEligibilityAPI {
   bool (*IsPageContextEligible)(
       const std::string& host,
       const std::string& path,
-      std::vector<optimization_guide::FrameMetadata> frame_metadata);
+      const std::vector<optimization_guide::FrameMetadata>& frame_metadata);
 };
 
 // Signature of the GetPageContextEligibilityAPI() function which the shared

@@ -662,10 +662,10 @@ class LensSearchControllerFake : public lens::TestLensSearchController {
     page_context_eligibility_api_->IsPageContextEligible =
         is_context_eligible_
             ? [](const std::string& host, const std::string& path,
-                 std::vector<
-                     optimization_guide::FrameMetadata>) { return true; }
+                 const std::vector<
+                     optimization_guide::FrameMetadata>&) { return true; }
             : [](const std::string& host, const std::string& path,
-                 std::vector<optimization_guide::FrameMetadata>) {
+                 const std::vector<optimization_guide::FrameMetadata>&) {
                 return false;
               };
 
