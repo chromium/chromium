@@ -808,9 +808,8 @@ bool SyncPrefs::IsTypeSupportedInTransportMode(UserSelectableType type) {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
       return false;
 #else
-      return base::FeatureList::IsEnabled(syncer::kMoveThemePrefsToSpecifics) &&
-             base::FeatureList::IsEnabled(
-                 syncer::kSeparateLocalAndAccountThemes);
+      return base::FeatureList::IsEnabled(
+          syncer::kSeparateLocalAndAccountThemes);
 #endif
     case UserSelectableType::kApps:
     case UserSelectableType::kCookies:

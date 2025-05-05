@@ -894,24 +894,6 @@ TEST_F(ThemeSyncableServiceTest, SystemThemeSameAsDefaultTheme) {
   EXPECT_TRUE(change_specifics.use_system_theme_by_default());
 }
 
-TEST_F(ThemeSyncableServiceTest, GetThemePrefNameInMigrationIfFlagDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(syncer::kMoveThemePrefsToSpecifics);
-
-  // The syncing pref name is returned.
-  EXPECT_EQ(GetThemePrefNameInMigration(ThemePrefInMigration::kUserColor),
-            prefs::kUserColorDoNotUse);
-}
-
-TEST_F(ThemeSyncableServiceTest, GetThemePrefNameInMigrationIfFlagEnabled) {
-  base::test::ScopedFeatureList feature_list(
-      syncer::kMoveThemePrefsToSpecifics);
-
-  // The new non-syncing pref is returned.
-  EXPECT_EQ(GetThemePrefNameInMigration(ThemePrefInMigration::kUserColor),
-            prefs::kNonSyncingUserColorDoNotUse);
-}
-
 // PolicyInstalledThemeTest ----------------------------------------------------
 
 class PolicyInstalledThemeTest : public ThemeSyncableServiceTest {
@@ -1052,240 +1034,7 @@ TEST_F(RealThemeSyncableServiceTest, ProcessSyncThemeChange_DisabledExtension) {
   EXPECT_TRUE(registrar()->IsExtensionEnabled(theme_extension()->id()));
 }
 
-class ThemeSyncableServiceWithMigrationFlagDisabledTest
-    : public RealThemeSyncableServiceTest {
- public:
-  ThemeSyncableServiceWithMigrationFlagDisabledTest() {
-    feature_list_.InitAndDisableFeature(syncer::kMoveThemePrefsToSpecifics);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-TEST_F(ThemeSyncableServiceWithMigrationFlagDisabledTest,
-       ShouldNotDownloadUserColorTheme) {
-  sync_pb::ThemeSpecifics theme_specifics;
-  sync_pb::ThemeSpecifics::UserColorTheme* user_color_theme =
-      theme_specifics.mutable_user_color_theme();
-  user_color_theme->set_color(SK_ColorRED);
-  user_color_theme->set_browser_color_variant(BrowserColorVariantToProtoEnum(
-      ui::mojom::BrowserColorVariant::kTonalSpot));
-
-  // Start syncing.
-  std::optional<syncer::ModelError> error =
-      theme_sync_service()->MergeDataAndStartSyncing(
-          syncer::THEMES, MakeThemeDataList(theme_specifics),
-          std::make_unique<syncer::SyncChangeProcessorWrapperForTest>(
-              fake_change_processor()));
-  ASSERT_FALSE(error.has_value()) << error.value().message();
-
-  EXPECT_EQ(theme_service()->GetUserColor(), std::nullopt);
-  EXPECT_NE(theme_service()->GetBrowserColorVariant(),
-            ui::mojom::BrowserColorVariant::kTonalSpot);
-}
-
-TEST_F(ThemeSyncableServiceWithMigrationFlagDisabledTest,
-       ShouldNotUploadUserColorTheme) {
-  // Start syncing.
-  std::optional<syncer::ModelError> error =
-      theme_sync_service()->MergeDataAndStartSyncing(
-          syncer::THEMES, syncer::SyncDataList(),
-          std::make_unique<syncer::SyncChangeProcessorWrapperForTest>(
-              fake_change_processor()));
-  ASSERT_FALSE(error.has_value()) << error.value().message();
-
-  theme_service()->SetUserColorAndBrowserColorVariant(
-      SK_ColorRED, ui::mojom::BrowserColorVariant::kTonalSpot);
-
-  const syncer::SyncChangeList& changes = fake_change_processor()->changes();
-  ASSERT_GE(changes.size(), 0u);
-  EXPECT_FALSE(
-      changes.back().sync_data().GetSpecifics().theme().has_user_color_theme());
-}
-
-TEST_F(ThemeSyncableServiceWithMigrationFlagDisabledTest,
-       ShouldNotDownloadGrayscale) {
-  sync_pb::ThemeSpecifics theme_specifics;
-  theme_specifics.mutable_grayscale_theme_enabled();
-
-  // Start syncing.
-  std::optional<syncer::ModelError> error =
-      theme_sync_service()->MergeDataAndStartSyncing(
-          syncer::THEMES, MakeThemeDataList(theme_specifics),
-          std::make_unique<syncer::SyncChangeProcessorWrapperForTest>(
-              fake_change_processor()));
-  ASSERT_FALSE(error.has_value()) << error.value().message();
-
-  EXPECT_FALSE(theme_service()->GetIsGrayscale());
-}
-
-TEST_F(ThemeSyncableServiceWithMigrationFlagDisabledTest,
-       ShouldNotUploadGrayscale) {
-  // Start syncing.
-  std::optional<syncer::ModelError> error =
-      theme_sync_service()->MergeDataAndStartSyncing(
-          syncer::THEMES, syncer::SyncDataList(),
-          std::make_unique<syncer::SyncChangeProcessorWrapperForTest>(
-              fake_change_processor()));
-  ASSERT_FALSE(error.has_value()) << error.value().message();
-
-  theme_service()->SetIsGrayscale(true);
-
-  const syncer::SyncChangeList& changes = fake_change_processor()->changes();
-  ASSERT_GE(changes.size(), 0u);
-  EXPECT_FALSE(changes.back()
-                   .sync_data()
-                   .GetSpecifics()
-                   .theme()
-                   .has_grayscale_theme_enabled());
-}
-
-TEST_F(ThemeSyncableServiceWithMigrationFlagDisabledTest,
-       ShouldNotDownloadBrowserColorScheme) {
-  sync_pb::ThemeSpecifics theme_specifics;
-  theme_specifics.set_browser_color_scheme(
-      BrowserColorSchemeToProtoEnum(ThemeService::BrowserColorScheme::kLight));
-
-  ASSERT_EQ(theme_service()->GetBrowserColorScheme(),
-            ThemeService::BrowserColorScheme::kSystem);
-
-  // Start syncing.
-  std::optional<syncer::ModelError> error =
-      theme_sync_service()->MergeDataAndStartSyncing(
-          syncer::THEMES, MakeThemeDataList(theme_specifics),
-          std::make_unique<syncer::SyncChangeProcessorWrapperForTest>(
-              fake_change_processor()));
-  ASSERT_FALSE(error.has_value()) << error.value().message();
-
-  EXPECT_EQ(theme_service()->GetBrowserColorScheme(),
-            ThemeService::BrowserColorScheme::kSystem);
-}
-
-TEST_F(ThemeSyncableServiceWithMigrationFlagDisabledTest,
-       ShouldNotUploadBrowserColorScheme) {
-  // Start syncing.
-  std::optional<syncer::ModelError> error =
-      theme_sync_service()->MergeDataAndStartSyncing(
-          syncer::THEMES, syncer::SyncDataList(),
-          std::make_unique<syncer::SyncChangeProcessorWrapperForTest>(
-              fake_change_processor()));
-  ASSERT_FALSE(error.has_value()) << error.value().message();
-
-  theme_service()->SetBrowserColorScheme(
-      ThemeService::BrowserColorScheme::kLight);
-
-  const syncer::SyncChangeList& changes = fake_change_processor()->changes();
-  ASSERT_GE(changes.size(), 0u);
-  EXPECT_FALSE(changes.back()
-                   .sync_data()
-                   .GetSpecifics()
-                   .theme()
-                   .has_browser_color_scheme());
-}
-
-TEST_F(ThemeSyncableServiceWithMigrationFlagDisabledTest,
-       ShouldNotDownloadNtpBackground) {
-  sync_pb::ThemeSpecifics theme_specifics;
-  theme_specifics.mutable_ntp_background()->set_url(kTestUrl);
-
-  ASSERT_EQ(theme_service()->GetBrowserColorScheme(),
-            ThemeService::BrowserColorScheme::kSystem);
-
-  // Start syncing.
-  std::optional<syncer::ModelError> error =
-      theme_sync_service()->MergeDataAndStartSyncing(
-          syncer::THEMES, MakeThemeDataList(theme_specifics),
-          std::make_unique<syncer::SyncChangeProcessorWrapperForTest>(
-              fake_change_processor()));
-  ASSERT_FALSE(error.has_value()) << error.value().message();
-
-  // TODO(crbug.com/356148174): Query NtpCustomBackgroundService for the
-  // background state instead of reading the pref directly.
-  EXPECT_FALSE(profile()->GetPrefs()->GetUserPrefValue(
-      prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse));
-}
-
-TEST_F(ThemeSyncableServiceWithMigrationFlagDisabledTest,
-       ShouldNotUploadNtpBackground) {
-  // Start syncing.
-  std::optional<syncer::ModelError> error =
-      theme_sync_service()->MergeDataAndStartSyncing(
-          syncer::THEMES, syncer::SyncDataList(),
-          std::make_unique<syncer::SyncChangeProcessorWrapperForTest>(
-              fake_change_processor()));
-  ASSERT_FALSE(error.has_value()) << error.value().message();
-  {
-    ScopedDictPrefUpdate dict(
-        profile()->GetPrefs(),
-        prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse);
-    dict->Set(kNtpCustomBackgroundURL, kTestUrl);
-  }
-
-  const syncer::SyncChangeList& changes = fake_change_processor()->changes();
-  ASSERT_GE(changes.size(), 0u);
-  EXPECT_FALSE(
-      changes.back().sync_data().GetSpecifics().theme().has_ntp_background());
-}
-
-TEST_F(ThemeSyncableServiceWithMigrationFlagDisabledTest,
-       ShouldApplyDefaultThemeFromOldSpecificsUponProcessSyncChanges) {
-  // Start syncing.
-  std::optional<syncer::ModelError> error =
-      theme_sync_service()->MergeDataAndStartSyncing(
-          syncer::THEMES, syncer::SyncDataList(),
-          std::make_unique<syncer::SyncChangeProcessorWrapperForTest>(
-              fake_change_processor()));
-  ASSERT_FALSE(error.has_value()) << error.value().message();
-
-  theme_service()->BuildAutogeneratedThemeFromColor(SK_ColorRED);
-
-  ASSERT_FALSE(theme_sync_service()->ProcessSyncChanges(
-      FROM_HERE, MakeThemeChangeList(sync_pb::ThemeSpecifics())));
-
-  EXPECT_TRUE(theme_service()->UsingDefaultTheme());
-  EXPECT_FALSE(theme_service()->UsingAutogeneratedTheme());
-}
-
-TEST_F(ThemeSyncableServiceWithMigrationFlagDisabledTest,
-       ShouldNotCopyFromNonSyncingPrefsUponThemeChanged) {
-  // Start syncing.
-  std::optional<syncer::ModelError> error =
-      theme_sync_service()->MergeDataAndStartSyncing(
-          syncer::THEMES, syncer::SyncDataList(),
-          std::make_unique<syncer::SyncChangeProcessorWrapperForTest>(
-              fake_change_processor()));
-  ASSERT_FALSE(error.has_value()) << error.value().message();
-
-  theme_service()->SetUserColorAndBrowserColorVariant(
-      SK_ColorRED, ui::mojom::BrowserColorVariant::kTonalSpot);
-
-  // Verify that the syncing prefs are used.
-  EXPECT_EQ(profile()->GetPrefs()->GetInteger(prefs::kUserColorDoNotUse),
-            static_cast<int>(SK_ColorRED));
-  EXPECT_EQ(
-      profile()->GetPrefs()->GetInteger(prefs::kBrowserColorVariantDoNotUse),
-      static_cast<int>(ui::mojom::BrowserColorVariant::kTonalSpot));
-
-  // Verify that the new non-syncing prefs are empty.
-  EXPECT_FALSE(profile()->GetPrefs()->GetUserPrefValue(
-      prefs::kNonSyncingUserColorDoNotUse));
-  EXPECT_FALSE(profile()->GetPrefs()->GetUserPrefValue(
-      prefs::kNonSyncingBrowserColorVariantDoNotUse));
-}
-
-class ThemeSyncableServiceWithMigrationFlagEnabledTest
-    : public RealThemeSyncableServiceTest {
- public:
-  ThemeSyncableServiceWithMigrationFlagEnabledTest()
-      : feature_list_(syncer::kMoveThemePrefsToSpecifics) {}
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
-       ShouldDownloadUserColorTheme) {
+TEST_F(RealThemeSyncableServiceTest, ShouldDownloadUserColorTheme) {
   sync_pb::ThemeSpecifics theme_specifics;
   sync_pb::ThemeSpecifics::UserColorTheme* user_color_theme =
       theme_specifics.mutable_user_color_theme();
@@ -1320,8 +1069,7 @@ TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
             static_cast<int>(ui::mojom::BrowserColorVariant::kTonalSpot));
 }
 
-TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
-       ShouldUploadUserColorTheme) {
+TEST_F(RealThemeSyncableServiceTest, ShouldUploadUserColorTheme) {
   // Start syncing.
   std::optional<syncer::ModelError> error =
       theme_sync_service()->MergeDataAndStartSyncing(
@@ -1356,8 +1104,7 @@ TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
       static_cast<int>(ui::mojom::BrowserColorVariant::kTonalSpot));
 }
 
-TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
-       ShouldDownloadGrayscale) {
+TEST_F(RealThemeSyncableServiceTest, ShouldDownloadGrayscale) {
   sync_pb::ThemeSpecifics theme_specifics;
   theme_specifics.mutable_grayscale_theme_enabled();
 
@@ -1384,8 +1131,7 @@ TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
       prefs::kNonSyncingGrayscaleThemeEnabledDoNotUse));
 }
 
-TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
-       ShouldUploadGrayscale) {
+TEST_F(RealThemeSyncableServiceTest, ShouldUploadGrayscale) {
   // Start syncing.
   std::optional<syncer::ModelError> error =
       theme_sync_service()->MergeDataAndStartSyncing(
@@ -1411,8 +1157,7 @@ TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
       profile()->GetPrefs()->GetBoolean(prefs::kGrayscaleThemeEnabledDoNotUse));
 }
 
-TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
-       ShouldDownloadBrowserColorScheme) {
+TEST_F(RealThemeSyncableServiceTest, ShouldDownloadBrowserColorScheme) {
   sync_pb::ThemeSpecifics theme_specifics;
   theme_specifics.set_browser_color_scheme(
       BrowserColorSchemeToProtoEnum(ThemeService::BrowserColorScheme::kLight));
@@ -1445,8 +1190,7 @@ TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
             static_cast<int>(ThemeService::BrowserColorScheme::kLight));
 }
 
-TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
-       ShouldUploadBrowserColorScheme) {
+TEST_F(RealThemeSyncableServiceTest, ShouldUploadBrowserColorScheme) {
   // Start syncing.
   std::optional<syncer::ModelError> error =
       theme_sync_service()->MergeDataAndStartSyncing(
@@ -1477,8 +1221,7 @@ TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
       static_cast<int>(ThemeService::BrowserColorScheme::kLight));
 }
 
-TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
-       ShouldDownloadNtpBackground) {
+TEST_F(RealThemeSyncableServiceTest, ShouldDownloadNtpBackground) {
   sync_pb::ThemeSpecifics theme_specifics;
   sync_pb::ThemeSpecifics::NtpCustomBackground* ntp_background =
       theme_specifics.mutable_ntp_background();
@@ -1517,8 +1260,7 @@ TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
   EXPECT_EQ(*value, expected_value);
 }
 
-TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
-       ShouldUploadNtpBackground) {
+TEST_F(RealThemeSyncableServiceTest, ShouldUploadNtpBackground) {
   // Start syncing.
   std::optional<syncer::ModelError> error =
       theme_sync_service()->MergeDataAndStartSyncing(
@@ -1562,7 +1304,7 @@ TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
               DictionaryValuePtrHas(kNtpCustomBackgroundURL, kTestUrl));
 }
 
-TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
+TEST_F(RealThemeSyncableServiceTest,
        ShouldNotUploadNtpBackgroundIfSetFromLocalResource) {
   base::Value::Dict new_value =
       base::Value::Dict()
@@ -1604,8 +1346,7 @@ TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
       prefs::kNtpCustomBackgroundDictDoNotUse));
 }
 
-TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
-       ShouldApplyRemoteNtpBackgroundChange) {
+TEST_F(RealThemeSyncableServiceTest, ShouldApplyRemoteNtpBackgroundChange) {
   // Start syncing.
   std::optional<syncer::ModelError> error =
       theme_sync_service()->MergeDataAndStartSyncing(
@@ -1631,7 +1372,7 @@ TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
               DictionaryValuePtrHas(kNtpCustomBackgroundURL, kTestUrl));
 }
 
-TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
+TEST_F(RealThemeSyncableServiceTest,
        ShouldNotApplyEmptyRemoteNtpBackgroundChange) {
   {
     ScopedDictPrefUpdate dict(
@@ -1665,7 +1406,7 @@ TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
       prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse));
 }
 
-TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
+TEST_F(RealThemeSyncableServiceTest,
        ShouldNotApplyMissingRemoteNtpBackgroundChange) {
   {
     ScopedDictPrefUpdate dict(
@@ -1700,7 +1441,7 @@ TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
       prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse));
 }
 
-TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
+TEST_F(RealThemeSyncableServiceTest,
        ShouldApplyRemoteBrowserColorSchemeChanges) {
   // Start syncing.
   std::optional<syncer::ModelError> error =
@@ -1754,7 +1495,7 @@ TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
             ThemeService::BrowserColorScheme::kSystem);
 }
 
-TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
+TEST_F(RealThemeSyncableServiceTest,
        ShouldPriortizeExtensionThemeOverUserColor) {
   sync_pb::ThemeSpecifics theme_specifics;
   // Set all fields (all the different theme types).
@@ -1794,7 +1535,7 @@ TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
             ThemeService::BrowserColorScheme::kLight);
 }
 
-TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
+TEST_F(RealThemeSyncableServiceTest,
        ShouldPriortizeExtensionThemeOverAutogeneratedTheme) {
   sync_pb::ThemeSpecifics theme_specifics;
   // Set all fields (all the different theme types).
@@ -1826,7 +1567,7 @@ TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
             ThemeService::BrowserColorScheme::kLight);
 }
 
-TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
+TEST_F(RealThemeSyncableServiceTest,
        ShouldPriortizeExtensionThemeOverGrayscale) {
   sync_pb::ThemeSpecifics theme_specifics;
   // Set all fields (all the different theme types).
@@ -1859,7 +1600,7 @@ TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
             ThemeService::BrowserColorScheme::kLight);
 }
 
-TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
+TEST_F(RealThemeSyncableServiceTest,
        ShouldPrioritizeExtensionThemeInAreThemeSpecificsEquivalent) {
   sync_pb::ThemeSpecifics a, b;
   a.set_use_custom_theme(true);
@@ -1877,7 +1618,7 @@ TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
   EXPECT_TRUE(ThemeSyncableService::AreThemeSpecificsEquivalent(a, b, true));
 }
 
-TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
+TEST_F(RealThemeSyncableServiceTest,
        ShouldConsiderBrowserColorSchemeInAreThemeSpecificsEquivalent) {
   sync_pb::ThemeSpecifics a, b;
   a.set_use_custom_theme(false);
@@ -1898,7 +1639,7 @@ TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
   EXPECT_FALSE(ThemeSyncableService::AreThemeSpecificsEquivalent(a, b, false));
 }
 
-TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
+TEST_F(RealThemeSyncableServiceTest,
        ShouldConsiderNtpBackgroundInAreThemeSpecificsEquivalent) {
   sync_pb::ThemeSpecifics a, b;
   a.set_use_custom_theme(false);
@@ -1959,7 +1700,7 @@ TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
   EXPECT_FALSE(ThemeSyncableService::AreThemeSpecificsEquivalent(a, b, false));
 }
 
-TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
+TEST_F(RealThemeSyncableServiceTest,
        ShouldApplyBrowserColorSchemeWithUserColorTheme) {
   sync_pb::ThemeSpecifics theme_specifics;
   theme_specifics.set_use_custom_theme(false);
@@ -1991,7 +1732,7 @@ TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
             ThemeService::BrowserColorScheme::kLight);
 }
 
-TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
+TEST_F(RealThemeSyncableServiceTest,
        ShouldApplyBrowserColorSchemeWithGrayscale) {
   sync_pb::ThemeSpecifics theme_specifics;
   theme_specifics.set_use_custom_theme(false);
@@ -2020,7 +1761,7 @@ TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
             ThemeService::BrowserColorScheme::kLight);
 }
 
-TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
+TEST_F(RealThemeSyncableServiceTest,
        ShouldApplyBrowserColorSchemeWithAutogeneratedTheme) {
   sync_pb::ThemeSpecifics theme_specifics;
   theme_specifics.set_use_custom_theme(false);
@@ -2049,7 +1790,7 @@ TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
             ThemeService::BrowserColorScheme::kLight);
 }
 
-TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
+TEST_F(RealThemeSyncableServiceTest,
        ShouldApplyNtpBackgroundWithUserColorTheme) {
   sync_pb::ThemeSpecifics theme_specifics;
   theme_specifics.set_use_custom_theme(false);
@@ -2081,8 +1822,7 @@ TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
               DictionaryValuePtrHas(kNtpCustomBackgroundURL, kTestUrl));
 }
 
-TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
-       ShouldApplyNtpBackgroundWithGrayscale) {
+TEST_F(RealThemeSyncableServiceTest, ShouldApplyNtpBackgroundWithGrayscale) {
   sync_pb::ThemeSpecifics theme_specifics;
   theme_specifics.set_use_custom_theme(false);
   theme_specifics.mutable_grayscale_theme_enabled();
@@ -2109,7 +1849,7 @@ TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
               DictionaryValuePtrHas(kNtpCustomBackgroundURL, kTestUrl));
 }
 
-TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
+TEST_F(RealThemeSyncableServiceTest,
        ShouldApplyNtpBackgroundWithAutogeneratedTheme) {
   sync_pb::ThemeSpecifics theme_specifics;
   theme_specifics.set_use_custom_theme(false);
@@ -2138,7 +1878,7 @@ TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
               DictionaryValuePtrHas(kNtpCustomBackgroundURL, kTestUrl));
 }
 
-TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
+TEST_F(RealThemeSyncableServiceTest,
        ShouldNotApplyDefaultThemeFromOldSpecificsUponMergeDataAndStartSyncing) {
   theme_service()->SetUserColorAndBrowserColorVariant(
       SK_ColorRED, ui::mojom::BrowserColorVariant::kTonalSpot);
@@ -2157,7 +1897,7 @@ TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
   EXPECT_EQ(theme_service()->GetUserColor(), SK_ColorRED);
 }
 
-TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
+TEST_F(RealThemeSyncableServiceTest,
        ShouldNotApplyDefaultThemeFromOldSpecificsUponProcessSyncChanges) {
   // Start syncing.
   std::optional<syncer::ModelError> error =
@@ -2179,7 +1919,7 @@ TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
   EXPECT_EQ(theme_service()->GetUserColor(), SK_ColorRED);
 }
 
-TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
+TEST_F(RealThemeSyncableServiceTest,
        ShouldApplyDefaultThemeFromNewSpecificsUponProcessSyncChanges) {
   // Start syncing.
   std::optional<syncer::ModelError> error =
@@ -2205,7 +1945,7 @@ TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
   EXPECT_EQ(theme_service()->GetUserColor(), std::nullopt);
 }
 
-TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
+TEST_F(RealThemeSyncableServiceTest,
        ShouldApplyNonDefaultThemeFromOldSpecificsUponProcessSyncChanges) {
   // Start syncing.
   std::optional<syncer::ModelError> error =
@@ -2230,8 +1970,7 @@ TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
   EXPECT_EQ(theme_service()->GetUserColor(), std::nullopt);
 }
 
-TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
-       ShouldUpdateOldSyncingThemePrefs) {
+TEST_F(RealThemeSyncableServiceTest, ShouldUpdateOldSyncingThemePrefs) {
   // Start syncing.
   ASSERT_FALSE(theme_sync_service()->MergeDataAndStartSyncing(
       syncer::THEMES, syncer::SyncDataList(),
@@ -2317,8 +2056,7 @@ TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
 }
 
 // Regression test for crbug.com/389026436.
-TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
-       ClearLocalNtpBackgroundIfRemoteEmpty) {
+TEST_F(RealThemeSyncableServiceTest, ClearLocalNtpBackgroundIfRemoteEmpty) {
   // Set local ntp background.
   base::Value::Dict new_value =
       base::Value::Dict()
@@ -2360,7 +2098,7 @@ TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
 }
 
 // Regression test for crbug.com/391114025.
-TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
+TEST_F(RealThemeSyncableServiceTest,
        KeepLocalNtpBackgroundUponNonDefaultOldThemeSpecifics) {
   // Set local ntp background.
   base::Value::Dict new_value =
@@ -2415,7 +2153,7 @@ TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
 }
 
 // Regression test for crbug.com/389026436.
-TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
+TEST_F(RealThemeSyncableServiceTest,
        KeepLocalNtpBackgroundUponDefaultOldThemeSpecifics) {
   // Set local ntp background.
   base::Value::Dict new_value =
@@ -2464,7 +2202,7 @@ TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
 }
 
 // Regression test for crbug.com/389026436.
-TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
+TEST_F(RealThemeSyncableServiceTest,
        ClearLocalNtpBackgroundUponNonDefaultNewThemeSpecifics) {
   // Set local ntp background.
   base::Value::Dict new_value =
@@ -2507,7 +2245,7 @@ TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
   ASSERT_EQ(fake_change_processor()->changes().size(), 0u);
 }
 
-TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
+TEST_F(RealThemeSyncableServiceTest,
        KeepLocalNtpBackgroundUponDefaultNewThemeSpecifics) {
   // Set local ntp background.
   base::Value::Dict new_value =
@@ -2557,7 +2295,7 @@ TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
   EXPECT_EQ(change_specifics.ntp_background().url(), kTestUrl);
 }
 
-TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
+TEST_F(RealThemeSyncableServiceTest,
        ClearLocalUserColorUponNonDefaultOldThemeSpecifics) {
   // Set local user color.
   theme_service()->SetUserColorAndBrowserColorVariant(
@@ -2588,7 +2326,7 @@ TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
   ASSERT_EQ(fake_change_processor()->changes().size(), 0u);
 }
 
-TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
+TEST_F(RealThemeSyncableServiceTest,
        KeepLocalUserColorUponDefaultOldThemeSpecifics) {
   // Set local user color.
   theme_service()->SetUserColorAndBrowserColorVariant(
@@ -2625,7 +2363,7 @@ TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
             sync_pb::ThemeSpecifics_UserColorTheme_BrowserColorVariant_NEUTRAL);
 }
 
-TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
+TEST_F(RealThemeSyncableServiceTest,
        ClearLocalUserColorUponNonDefaultNewThemeSpecifics) {
   // Set local user color.
   theme_service()->SetUserColorAndBrowserColorVariant(
@@ -2661,7 +2399,7 @@ TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
   ASSERT_EQ(fake_change_processor()->changes().size(), 0u);
 }
 
-TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
+TEST_F(RealThemeSyncableServiceTest,
        KeepLocalUserColorUponDefaultNewThemeSpecifics) {
   // Set local user color.
   theme_service()->SetUserColorAndBrowserColorVariant(
@@ -2700,7 +2438,7 @@ TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
             sync_pb::ThemeSpecifics_UserColorTheme_BrowserColorVariant_NEUTRAL);
 }
 
-TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
+TEST_F(RealThemeSyncableServiceTest,
        ShouldNotCommitIfLocalAndRemoteThemeAreSame) {
   // Set local user color.
   theme_service()->SetUserColorAndBrowserColorVariant(
@@ -2733,7 +2471,7 @@ TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
   ASSERT_EQ(fake_change_processor()->changes().size(), 0u);
 }
 
-TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
+TEST_F(RealThemeSyncableServiceTest,
        ShouldNotCommitAnythingElseWithExtensionTheme) {
   // Local extension theme.
   {
@@ -2784,7 +2522,7 @@ TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
       base::test::EqualsProto(expected_theme_specifics));
 }
 
-TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
+TEST_F(RealThemeSyncableServiceTest,
        ShouldApplyBrowserColorSchemeAlongsideExtensionTheme) {
   theme_service()->SetBrowserColorScheme(
       ThemeService::BrowserColorScheme::kLight);
@@ -2811,7 +2549,7 @@ TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
             ThemeService::BrowserColorScheme::kDark);
 }
 
-TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
+TEST_F(RealThemeSyncableServiceTest,
        ShouldCommitExtensionThemeAndBrowserColorSchemeOnInitialSync) {
   // Local extension theme with browser color scheme.
   theme_service()->SetTheme(theme_extension());
@@ -2846,7 +2584,7 @@ TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
           theme_sync_service()->GetThemeSpecificsFromCurrentThemeForTesting()));
 }
 
-TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
+TEST_F(RealThemeSyncableServiceTest,
        ShouldCommitBrowserColorSchemeAlongsideNewExtensionTheme) {
   // Local browser color scheme.
   theme_service()->SetBrowserColorScheme(
@@ -2883,7 +2621,7 @@ TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
                             sync_pb::ThemeSpecifics::LIGHT)));
 }
 
-TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
+TEST_F(RealThemeSyncableServiceTest,
        ShouldCommitBrowserColorSchemeIfPreexistingExtensionTheme) {
   // Local extension theme.
   theme_service()->SetTheme(theme_extension());
@@ -2919,7 +2657,7 @@ TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
 }
 
 class ThemeSyncableServiceVerifyFinalStateTest
-    : public ThemeSyncableServiceWithMigrationFlagEnabledTest,
+    : public RealThemeSyncableServiceTest,
       public testing::WithParamInterface<sync_pb::ThemeSpecifics> {
  protected:
   void MergeRemoteUpdateAndVerify() {
@@ -3026,7 +2764,7 @@ INSTANTIATE_TEST_SUITE_P(
             kTestUrl)));
 
 class ThemeSyncableServiceTestWithoutAccountThemesSeparation
-    : public ThemeSyncableServiceWithMigrationFlagEnabledTest {
+    : public RealThemeSyncableServiceTest {
  public:
   ThemeSyncableServiceTestWithoutAccountThemesSeparation() {
     feature_list_.InitAndDisableFeature(syncer::kSeparateLocalAndAccountThemes);
@@ -3055,7 +2793,7 @@ TEST_F(ThemeSyncableServiceTestWithoutAccountThemesSeparation,
 }
 
 class ThemeSyncableServiceTestWithAccountThemesSeparation
-    : public ThemeSyncableServiceWithMigrationFlagEnabledTest {
+    : public RealThemeSyncableServiceTest {
  public:
   ThemeSyncableServiceTestWithAccountThemesSeparation()
       : feature_list_(syncer::kSeparateLocalAndAccountThemes) {}
@@ -3888,9 +3626,6 @@ class ThemePrefsMigrationTest : public ::testing::Test {
 };
 
 TEST_F(ThemePrefsMigrationTest, MigrateSyncingThemePrefsToNonSyncing) {
-  base::test::ScopedFeatureList feature_list(
-      syncer::kMoveThemePrefsToSpecifics);
-
   ASSERT_FALSE(
       pref_service_.GetBoolean(prefs::kSyncingThemePrefsMigratedToNonSyncing));
 
@@ -3910,9 +3645,6 @@ TEST_F(ThemePrefsMigrationTest, MigrateSyncingThemePrefsToNonSyncing) {
 }
 
 TEST_F(ThemePrefsMigrationTest, MigrateSyncingNtpPrefToNonSyncing) {
-  base::test::ScopedFeatureList feature_list(
-      syncer::kMoveThemePrefsToSpecifics);
-
   ASSERT_FALSE(
       pref_service_.GetBoolean(prefs::kSyncingThemePrefsMigratedToNonSyncing));
 
@@ -3949,28 +3681,7 @@ TEST_F(ThemePrefsMigrationTest, MigrateSyncingNtpPrefToNonSyncing) {
 }
 
 TEST_F(ThemePrefsMigrationTest,
-       DoNotMigrateSyncingThemePrefsToNonSyncingIfFlagDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(syncer::kMoveThemePrefsToSpecifics);
-
-  ASSERT_FALSE(
-      pref_service_.GetBoolean(prefs::kSyncingThemePrefsMigratedToNonSyncing));
-
-  base::HistogramTester histogram_tester;
-  MigrateSyncingThemePrefsToNonSyncingIfNeeded(&pref_service_);
-  EXPECT_FALSE(
-      pref_service_.GetBoolean(prefs::kSyncingThemePrefsMigratedToNonSyncing));
-  histogram_tester.ExpectTotalCount(kThemePrefMigrationAlreadyMigratedHistogram,
-                                    0);
-  histogram_tester.ExpectTotalCount(kThemePrefMigrationMigratedPrefHistogram,
-                                    0);
-}
-
-TEST_F(ThemePrefsMigrationTest,
        DoNotMigrateSyncingThemePrefsToNonSyncingIfAlreadyDone) {
-  base::test::ScopedFeatureList feature_list(
-      syncer::kMoveThemePrefsToSpecifics);
-
   pref_service_.SetBoolean(prefs::kSyncingThemePrefsMigratedToNonSyncing, true);
   pref_service_.SetInteger(prefs::kUserColorDoNotUse, SK_ColorBLUE);
 
@@ -3983,28 +3694,9 @@ TEST_F(ThemePrefsMigrationTest,
                                     0);
 }
 
-TEST_F(ThemePrefsMigrationTest,
-       ClearFlagUponMigrateSyncingThemePrefsToNonSyncingIfFlagDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(syncer::kMoveThemePrefsToSpecifics);
-
-  // Migration has run before.
-  pref_service_.SetBoolean(prefs::kSyncingThemePrefsMigratedToNonSyncing, true);
-
-  MigrateSyncingThemePrefsToNonSyncingIfNeeded(&pref_service_);
-  // Flag gets cleared to allow re-migration.
-  EXPECT_FALSE(
-      pref_service_.GetBoolean(prefs::kSyncingThemePrefsMigratedToNonSyncing));
-}
-
-class ThemePrefsMigrationShouldReadPrefsTestBase : public ::testing::Test {
+class ThemePrefsMigrationShouldReadPrefsTest : public ::testing::Test {
  public:
-  explicit ThemePrefsMigrationShouldReadPrefsTestBase(bool is_flag_enabled) {
-    if (is_flag_enabled) {
-      feature_list_.InitAndEnableFeature(syncer::kMoveThemePrefsToSpecifics);
-    } else {
-      feature_list_.InitAndDisableFeature(syncer::kMoveThemePrefsToSpecifics);
-    }
+  ThemePrefsMigrationShouldReadPrefsTest() {
     profile_ = std::make_unique<TestingProfile>();
     // TestingProfile init automatically leads to creation of
     // ThemeSyncableService. To allow for more control for tests, reset the
@@ -4060,37 +3752,9 @@ class ThemePrefsMigrationShouldReadPrefsTestBase : public ::testing::Test {
   std::unique_ptr<TestingProfile> profile_;
 };
 
-class ThemePrefsMigrationShouldReadPrefsTestWithFlagDisabled
-    : public ThemePrefsMigrationShouldReadPrefsTestBase {
- public:
-  ThemePrefsMigrationShouldReadPrefsTestWithFlagDisabled()
-      : ThemePrefsMigrationShouldReadPrefsTestBase(false) {}
-};
-
-// Verifies that if kMoveThemePrefsToSpecifics feature flag is not set, the
-// migration flag is marked unset to allow migration again once the feature flag
-// is enabled again.
-TEST_F(ThemePrefsMigrationShouldReadPrefsTestWithFlagDisabled,
-       ClearShouldReadPrefFlagIfFeatureDisabled) {
-  // Migration has run before.
-  prefs()->SetBoolean(prefs::kShouldReadIncomingSyncingThemePrefs, false);
-
-  ThemeSyncableService theme_syncable_service(profile_.get(), theme_service());
-
-  // Flag gets cleared to allow re-migration.
-  EXPECT_TRUE(prefs()->GetBoolean(prefs::kShouldReadIncomingSyncingThemePrefs));
-}
-
-class ThemePrefsMigrationShouldReadPrefsTestWithFlagEnabled
-    : public ThemePrefsMigrationShouldReadPrefsTestBase {
- public:
-  ThemePrefsMigrationShouldReadPrefsTestWithFlagEnabled()
-      : ThemePrefsMigrationShouldReadPrefsTestBase(true) {}
-};
-
 // Verifies that syncing prefs are read upon construction of
 // ThemeSyncableService if prefs sync has already started.
-TEST_F(ThemePrefsMigrationShouldReadPrefsTestWithFlagEnabled,
+TEST_F(ThemePrefsMigrationShouldReadPrefsTest,
        ShouldReadThemePrefsOnContructionIfPrefsAlreadySyncing) {
   ASSERT_TRUE(prefs()->GetBoolean(prefs::kShouldReadIncomingSyncingThemePrefs));
 
@@ -4131,7 +3795,7 @@ TEST_F(ThemePrefsMigrationShouldReadPrefsTestWithFlagEnabled,
 }
 
 // Verifies that syncing theme prefs are read when prefs sync starts.
-TEST_F(ThemePrefsMigrationShouldReadPrefsTestWithFlagEnabled,
+TEST_F(ThemePrefsMigrationShouldReadPrefsTest,
        ShouldReadThemePrefsWhenPrefsStartSyncing) {
   ASSERT_TRUE(prefs()->GetBoolean(prefs::kShouldReadIncomingSyncingThemePrefs));
 
@@ -4176,7 +3840,7 @@ TEST_F(ThemePrefsMigrationShouldReadPrefsTestWithFlagEnabled,
 
 // Verifies that syncing theme prefs are not read if they have already been read
 // before or if the migration flag has already been set.
-TEST_F(ThemePrefsMigrationShouldReadPrefsTestWithFlagEnabled,
+TEST_F(ThemePrefsMigrationShouldReadPrefsTest,
        ShouldNotReadThemePrefsIfAlreadyRead) {
   // Mark as already read.
   prefs()->SetBoolean(prefs::kShouldReadIncomingSyncingThemePrefs, false);
@@ -4209,7 +3873,7 @@ TEST_F(ThemePrefsMigrationShouldReadPrefsTestWithFlagEnabled,
 
 // Verifies that the migration flag is set and (thus) syncing prefs are not read
 // if the incoming ThemeSpecifics contains the new fields.
-TEST_F(ThemePrefsMigrationShouldReadPrefsTestWithFlagEnabled,
+TEST_F(ThemePrefsMigrationShouldReadPrefsTest,
        ShouldNotReadThemePrefsIfReadViaThemeSpecifics) {
   ASSERT_TRUE(prefs()->GetBoolean(prefs::kShouldReadIncomingSyncingThemePrefs));
 
@@ -4255,7 +3919,7 @@ TEST_F(ThemePrefsMigrationShouldReadPrefsTestWithFlagEnabled,
 
 // Verifies that syncing theme prefs are read if the incoming ThemeSpecifics
 // didn't have the new fields.
-TEST_F(ThemePrefsMigrationShouldReadPrefsTestWithFlagEnabled,
+TEST_F(ThemePrefsMigrationShouldReadPrefsTest,
        ShouldReadThemePrefsIfThemeSpecificsDoesNotHaveNewFields) {
   ASSERT_TRUE(prefs()->GetBoolean(prefs::kShouldReadIncomingSyncingThemePrefs));
 
@@ -4294,8 +3958,7 @@ TEST_F(ThemePrefsMigrationShouldReadPrefsTestWithFlagEnabled,
 
 // Verifies that the incoming ThemeSpecifics overwrites the value copied from
 // the syncing theme prefs.
-TEST_F(ThemePrefsMigrationShouldReadPrefsTestWithFlagEnabled,
-       ShouldPrioritizeThemeSpecifics) {
+TEST_F(ThemePrefsMigrationShouldReadPrefsTest, ShouldPrioritizeThemeSpecifics) {
   ASSERT_TRUE(prefs()->GetBoolean(prefs::kShouldReadIncomingSyncingThemePrefs));
 
   ASSERT_FALSE(prefs()->IsSyncing());
@@ -4332,7 +3995,7 @@ TEST_F(ThemePrefsMigrationShouldReadPrefsTestWithFlagEnabled,
 }
 
 // Regression test for crbug.com/375553464.
-TEST_F(ThemePrefsMigrationShouldReadPrefsTestWithFlagEnabled,
+TEST_F(ThemePrefsMigrationShouldReadPrefsTest,
        ShouldOnlyNotifyOnceUponReadingThemePrefs) {
   ASSERT_FALSE(prefs()->IsSyncing());
   ThemeSyncableService theme_syncable_service(profile_.get(), theme_service());

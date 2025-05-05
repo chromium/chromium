@@ -126,10 +126,6 @@ inline constexpr base::FeatureParam<double>
         &kSyncIncreaseNudgeDelayForSingleClient,
         "SyncIncreaseNudgeDelayForSingleClientFactor", 2.0};
 
-// If enabled, uses new fields ThemeSpecifics to replace theme prefs, thus
-// avoiding use of preferences to sync themes.
-BASE_DECLARE_FEATURE(kMoveThemePrefsToSpecifics);
-
 #if BUILDFLAG(IS_ANDROID)
 // If enabled, WebAPK data will be synced for Backup&Restore purposes.
 BASE_DECLARE_FEATURE(kWebApkBackupAndRestoreBackend);

@@ -499,7 +499,6 @@ TEST_F(SyncPrefsTest,
                             kReadingListEnableSyncTransportModeUponSignIn,
                             kSeparateLocalAndAccountSearchEngines,
                             syncer::kSeparateLocalAndAccountThemes,
-                            syncer::kMoveThemePrefsToSpecifics,
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
                             switches::kEnablePreferencesAccountStorage,
                             switches::kEnableExtensionsExplicitBrowserSignin},
@@ -543,8 +542,7 @@ class SyncPrefsExplicitBrowserSigninTest : public SyncPrefsTest {
                               switches::kSyncEnableBookmarksInTransportMode,
                               kSeparateLocalAndAccountSearchEngines,
                               switches::kEnablePreferencesAccountStorage,
-                              syncer::kSeparateLocalAndAccountThemes,
-                              syncer::kMoveThemePrefsToSpecifics},
+                              syncer::kSeparateLocalAndAccountThemes},
         /*disabled_features=*/{});
   }
 

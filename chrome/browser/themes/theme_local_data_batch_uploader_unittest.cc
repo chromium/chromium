@@ -178,8 +178,7 @@ class ThemeLocalDataBatchUploaderTestWithFlagDisabled
  public:
   ThemeLocalDataBatchUploaderTestWithFlagDisabled() {
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/{syncer::kMoveThemePrefsToSpecifics,
-                              syncer::kSeparateLocalAndAccountThemes},
+        /*enabled_features=*/{syncer::kSeparateLocalAndAccountThemes},
         /*disabled_features=*/{syncer::kThemesBatchUpload});
   }
 
@@ -229,8 +228,7 @@ class ThemeLocalDataBatchUploaderTest
  public:
   ThemeLocalDataBatchUploaderTest() {
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/{syncer::kMoveThemePrefsToSpecifics,
-                              syncer::kSeparateLocalAndAccountThemes,
+        /*enabled_features=*/{syncer::kSeparateLocalAndAccountThemes,
                               syncer::kThemesBatchUpload},
         /*disabled_features=*/{});
   }

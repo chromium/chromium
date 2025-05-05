@@ -242,22 +242,12 @@ IN_PROC_BROWSER_TEST_F(SingleClientThemesSyncTest, DownloadsDefaultTheme) {
   EXPECT_TRUE(DefaultThemeChecker(GetProfile(0)).Wait());
 }
 
-class SingleClientThemesWithMoveThemePrefsToSpecficsiEnabledSyncTest
-    : public SingleClientThemesSyncTest {
- private:
-  bool TestUsesSelfNotifications() override { return true; }
-
-  base::test::ScopedFeatureList feature_list_{
-      syncer::kMoveThemePrefsToSpecifics};
-};
-
 // Verifies that theme from syncing theme prefs get applied if the migration is
 // unset. After this, the migration flag should get set to disallow future reads
 // from the syncing theme prefs. The incoming theme is committed to the server
 // with the new fields in the ThemeSpecifics.
-IN_PROC_BROWSER_TEST_F(
-    SingleClientThemesWithMoveThemePrefsToSpecficsiEnabledSyncTest,
-    ShouldApplyThemeFromSyncingPrefsIfFlagUnmarked) {
+IN_PROC_BROWSER_TEST_F(SingleClientThemesSyncTest,
+                       ShouldApplyThemeFromSyncingPrefsIfFlagUnmarked) {
   ASSERT_TRUE(SetupClients());
   // Migration flag is unset.
   ASSERT_TRUE(preferences_helper::GetPrefs(/*index=*/0)
@@ -316,9 +306,8 @@ IN_PROC_BROWSER_TEST_F(
 
 // Simulate pref migration being run in the previous browser session by setting
 // the migration flag.
-IN_PROC_BROWSER_TEST_F(
-    SingleClientThemesWithMoveThemePrefsToSpecficsiEnabledSyncTest,
-    PRE_ShouldNotApplyThemeFromSyncingPrefsIfFlagMarked) {
+IN_PROC_BROWSER_TEST_F(SingleClientThemesSyncTest,
+                       PRE_ShouldNotApplyThemeFromSyncingPrefsIfFlagMarked) {
   ASSERT_TRUE(SetupClients());
 
   // Set the flag to not read incoming prefs.
@@ -333,9 +322,8 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // Verifies that the syncing theme prefs are not read if the migration is set.
-IN_PROC_BROWSER_TEST_F(
-    SingleClientThemesWithMoveThemePrefsToSpecficsiEnabledSyncTest,
-    ShouldNotApplyThemeFromSyncingPrefsIfFlagMarked) {
+IN_PROC_BROWSER_TEST_F(SingleClientThemesSyncTest,
+                       ShouldNotApplyThemeFromSyncingPrefsIfFlagMarked) {
   ASSERT_TRUE(SetupClients());
 
   // Migration flag is already set.
@@ -386,9 +374,8 @@ IN_PROC_BROWSER_TEST_F(
 // Verifies that syncing theme prefs are not read with the incremental updates.
 // They can only be applied when the prefs sync starts (which will set the
 // migration flag to disallow future reads).
-IN_PROC_BROWSER_TEST_F(
-    SingleClientThemesWithMoveThemePrefsToSpecficsiEnabledSyncTest,
-    ShouldNotApplyThemeFromSyncingPrefsAfterSyncHasStarted) {
+IN_PROC_BROWSER_TEST_F(SingleClientThemesSyncTest,
+                       ShouldNotApplyThemeFromSyncingPrefsAfterSyncHasStarted) {
   ASSERT_TRUE(SetupClients());
   ASSERT_TRUE(preferences_helper::GetPrefs(/*index=*/0)
                   ->GetBoolean(prefs::kShouldReadIncomingSyncingThemePrefs));
@@ -435,7 +422,7 @@ IN_PROC_BROWSER_TEST_F(
 // ThemeSpecifics has the new fields, which implies another client has already
 // updated the ThemeSpecifics using the prefs.
 IN_PROC_BROWSER_TEST_F(
-    SingleClientThemesWithMoveThemePrefsToSpecficsiEnabledSyncTest,
+    SingleClientThemesSyncTest,
     ShouldNotApplyThemeFromSyncingPrefsIfReceivedViaSpecifics) {
   ASSERT_TRUE(SetupClients());
   ASSERT_TRUE(preferences_helper::GetPrefs(/*index=*/0)
@@ -497,7 +484,7 @@ IN_PROC_BROWSER_TEST_F(
 // Verifies that the syncing theme prefs are applied if the incoming
 // ThemeSpecifics does not have the new fields.
 IN_PROC_BROWSER_TEST_F(
-    SingleClientThemesWithMoveThemePrefsToSpecficsiEnabledSyncTest,
+    SingleClientThemesSyncTest,
     ShouldApplyThemeFromSyncingPrefsIfNotReceivedViaSpecifics) {
   ASSERT_TRUE(SetupClients());
   ASSERT_TRUE(preferences_helper::GetPrefs(/*index=*/0)
@@ -550,7 +537,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 class SingleClientThemesSyncTestWithoutAccountThemesSeparation
-    : public SingleClientThemesWithMoveThemePrefsToSpecficsiEnabledSyncTest {
+    : public SingleClientThemesSyncTest {
  public:
   SingleClientThemesSyncTestWithoutAccountThemesSeparation() {
     feature_list_.InitAndDisableFeature(syncer::kSeparateLocalAndAccountThemes);
@@ -573,7 +560,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientThemesSyncTestWithoutAccountThemesSeparation,
 }
 
 class SingleClientThemesSyncTestWithAccountThemesSeparation
-    : public SingleClientThemesWithMoveThemePrefsToSpecficsiEnabledSyncTest {
+    : public SingleClientThemesSyncTest {
  public:
   SingleClientThemesSyncTestWithAccountThemesSeparation()
       : feature_list_(syncer::kSeparateLocalAndAccountThemes) {}

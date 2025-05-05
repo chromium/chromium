@@ -3167,9 +3167,6 @@ extern const char kLinkPreviewDescription[];
 extern const char kMarkAllCredentialsAsLeakedName[];
 extern const char kMarkAllCredentialsAsLeakedDescription[];
 
-extern const char kMoveThemePrefsToSpecificsName[];
-extern const char kMoveThemePrefsToSpecificsDescription[];
-
 extern const char kMuteNotificationSnoozeActionName[];
 extern const char kMuteNotificationSnoozeActionDescription[];
 

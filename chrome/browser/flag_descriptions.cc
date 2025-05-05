@@ -5420,13 +5420,6 @@ const char kMarkAllCredentialsAsLeakedDescription[] =
     "in combination with #improved-password-change-service to better test the "
     "improved password change service";
 
-const char kMoveThemePrefsToSpecificsName[] =
-    "Move theme prefs to ThemeSpecifics";
-const char kMoveThemePrefsToSpecificsDescription[] =
-    "Uses new fields in ThemeSpecifics for theme attributes which were "
-    "previously synced using preferences, thereby putting syncing of all the "
-    "theme attributes behind the Themes sync toggle.";
-
 const char kMuteNotificationSnoozeActionName[] =
     "Snooze action for mute notifications";
 const char kMuteNotificationSnoozeActionDescription[] =
