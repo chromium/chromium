@@ -189,14 +189,13 @@ bool ShouldSkipFieldBecauseOfMeaningfulInitialValue(const AutofillField& field,
   }
   // By default, empty initial values are not considered to be meaningful. A
   // value only consisting of whitespace is considered empty.
-  if (base::TrimWhitespace(field.value(ValueSemantics::kInitial),
-                           base::TrimPositions::TRIM_ALL)
+  if (base::TrimWhitespace(field.initial_value(), base::TrimPositions::TRIM_ALL)
           .empty()) {
     return false;
   }
   // If the field's initial value coincides with the value of its placeholder
   // attribute, don't consider the initial value to be meaningful.
-  if (field.value(ValueSemantics::kInitial) == field.placeholder()) {
+  if (field.initial_value() == field.placeholder()) {
     return false;
   }
 
@@ -343,11 +342,11 @@ DenseSet<FieldFillingSkipReason> FormFiller::GetFillingSkipReasonsForField(
   // is empty and its initial value (= cached value) was empty as well. A
   // similar check is done in ForEachMatchingFormFieldCommon(), which
   // frequently has false negatives.
-  add_if((field.properties_mask() & kUserTyped) &&
-             !(field.value().empty() &&
-               autofill_field.value(ValueSemantics::kInitial).empty()) &&
-             !is_trigger_field,
-         FieldFillingSkipReason::kUserFilledFields);
+  add_if(
+      (field.properties_mask() & kUserTyped) &&
+          !(field.value().empty() && autofill_field.initial_value().empty()) &&
+          !is_trigger_field,
+      FieldFillingSkipReason::kUserFilledFields);
 
   // Don't fill previously autofilled fields except the initiating field or
   // when it's a refill or for credit card fields, when

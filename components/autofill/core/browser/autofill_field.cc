@@ -530,30 +530,14 @@ AutofillField::PredictionResult AutofillField::GetComputedPredictionResult()
 
 const std::u16string& AutofillField::value_for_import() const {
   const bool should_consider_value_for_import =
-      IsSelectElement() ||
-      value(ValueSemantics::kInitial) != value(ValueSemantics::kCurrent);
+      IsSelectElement() || initial_value() != value();
   if (!should_consider_value_for_import) {
     return base::EmptyString16();
   }
   if (base::optional_ref<const SelectOption> o = selected_option()) {
     return o->text;
   }
-  return value(ValueSemantics::kCurrent);
-}
-
-const std::u16string& AutofillField::value(ValueSemantics s) const {
-  switch (s) {
-    case ValueSemantics::kCurrent:
-      return FormFieldData::value();
-    case ValueSemantics::kInitial:
-      return initial_value_;
-  }
-  NOTREACHED();
-}
-
-void AutofillField::set_initial_value(std::u16string initial_value,
-                                      base::PassKey<FormStructure> pass_key) {
-  initial_value_ = std::move(initial_value);
+  return value();
 }
 
 FieldSignature AutofillField::GetFieldSignature() const {

@@ -298,8 +298,7 @@ DeterminePossibleFormatStringsForUpload(
   auto may_be_interesting = [](const std::unique_ptr<AutofillField>& field) {
     return field->form_control_type() == FormControlType::kInputText &&
            (field->is_user_edited() || field->is_autofilled() ||
-            field->value(ValueSemantics::kInitial) !=
-                field->value(ValueSemantics::kCurrent));
+            field->initial_value() != field->value());
   };
 
   // Cheap check if the field's value might contain a year, month, and day.
@@ -308,7 +307,7 @@ DeterminePossibleFormatStringsForUpload(
         std::u16string_view(u"1.1.25").size();
     static constexpr size_t kMaxDateLength =
         std::u16string_view(u"2025 / 12 / 31").size();
-    const std::u16string& value = field->value(ValueSemantics::kCurrent);
+    const std::u16string& value = field->value();
     return kMinDateLength <= value.size() && value.size() <= kMaxDateLength &&
            std::ranges::all_of(value, [&](char16_t c) {
              return base::IsAsciiDigit(c) || data_util::IsDateSeparatorChar(c);
@@ -317,7 +316,7 @@ DeterminePossibleFormatStringsForUpload(
 
   // Cheap check if the field's value might contain a year, month, or day.
   auto may_be_part_of_date = [](const std::unique_ptr<AutofillField>& field) {
-    const std::u16string& value = field->value(ValueSemantics::kCurrent);
+    const std::u16string& value = field->value();
     return 1 <= value.size() && value.size() <= 4 &&
            std::ranges::all_of(value, base::IsAsciiDigit<char16_t>);
   };
@@ -345,8 +344,7 @@ DeterminePossibleFormatStringsForUpload(
         continue;
       }
       const std::vector<std::u16string> formats =
-          GetMatchingCompleteDateFormats(
-              field->value(ValueSemantics::kCurrent));
+          GetMatchingCompleteDateFormats(field->value());
       if (!formats.empty()) {
         formats_by_field.emplace(field->global_id(), std::move(formats));
       }
@@ -366,11 +364,9 @@ DeterminePossibleFormatStringsForUpload(
       static constexpr std::u16string_view kSeparator = u"-";
       static_assert(
           std::ranges::all_of(kSeparator, data_util::IsDateSeparatorChar));
-      const std::u16string date =
-          base::JoinString({group[0]->value(ValueSemantics::kCurrent),
-                            group[1]->value(ValueSemantics::kCurrent),
-                            group[2]->value(ValueSemantics::kCurrent)},
-                           kSeparator);
+      const std::u16string date = base::JoinString(
+          {group[0]->value(), group[1]->value(), group[2]->value()},
+          kSeparator);
       for (const std::u16string& format :
            GetMatchingCompleteDateFormats(date)) {
         const std::vector<std::u16string> partial_formats = base::SplitString(

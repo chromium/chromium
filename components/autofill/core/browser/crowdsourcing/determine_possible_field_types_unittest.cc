@@ -710,8 +710,8 @@ TEST_F(PreProcessStateMatchingTypesTest, PreProcessStateMatchingTypes) {
     ASSERT_EQ(form_structure.field_count(), 2U);
     form_structure.fields()[0]->set_value(u"Test");
     form_structure.fields()[1]->set_value(base::UTF8ToUTF16(valid_match));
-    ASSERT_EQ(form_structure.fields()[0]->value(ValueSemantics::kInitial), u"");
-    ASSERT_EQ(form_structure.fields()[1]->value(ValueSemantics::kInitial), u"");
+    ASSERT_EQ(form_structure.fields()[0]->initial_value(), u"");
+    ASSERT_EQ(form_structure.fields()[1]->initial_value(), u"");
 
     EXPECT_THAT(PreProcessStateMatchingTypes({profile()}, form_structure,
                                              client().GetAppLocale()),
@@ -755,8 +755,8 @@ TEST_F(PreProcessStateMatchingTypesTest, PreProcessStateMatchingTypes) {
   ASSERT_EQ(form_structure.field_count(), 2U);
   form_structure.fields()[0]->set_value(u"Test");
   form_structure.fields()[1]->set_value(u"CA");
-  ASSERT_EQ(form_structure.fields()[0]->value(ValueSemantics::kInitial), u"");
-  ASSERT_EQ(form_structure.fields()[1]->value(ValueSemantics::kInitial), u"");
+  ASSERT_EQ(form_structure.fields()[0]->initial_value(), u"");
+  ASSERT_EQ(form_structure.fields()[1]->initial_value(), u"");
 
   EXPECT_THAT(PreProcessStateMatchingTypes({profile()}, form_structure,
                                            client().GetAppLocale()),

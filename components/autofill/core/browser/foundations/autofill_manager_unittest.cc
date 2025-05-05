@@ -242,7 +242,7 @@ TEST_F(AutofillManagerTest, UpdateAndRemoveSameForms) {
 // so many properties of forms that may change, the test only covers a small
 // fraction:
 // - Events: OnFormsSeen(), OnTextFieldValueChanged(), OnFocusOnFormField()
-// - Properties: AutofillField::value(ValueSemantics::kCurrent)
+// - Properties: AutofillField::value()
 TEST_F(AutofillManagerTest, FormCacheUpdatesValue) {
   EXPECT_CALL(manager(), ShouldParseForms)
       .Times(AtLeast(0))
@@ -257,7 +257,7 @@ TEST_F(AutofillManagerTest, FormCacheUpdatesValue) {
     if (!cached_form || cached_form->fields().empty()) {
       return std::nullopt;
     }
-    return cached_form->fields()[0]->value(ValueSemantics::kCurrent);
+    return cached_form->fields()[0]->value();
   };
 
   EXPECT_EQ(current_cached_value(), std::nullopt);

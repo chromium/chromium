@@ -322,7 +322,7 @@ std::vector<Suggestion> CreateFillingSuggestions(
                   autofill_field->format_string()));
       const std::u16string normalized_field_content =
           autofill::AutofillProfileComparator::NormalizeForComparison(
-              autofill_field->value(autofill::ValueSemantics::kCurrent));
+              autofill_field->value());
       if (!normalized_attribute.starts_with(normalized_field_content)) {
         continue;
       }

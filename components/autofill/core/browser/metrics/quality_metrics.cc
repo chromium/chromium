@@ -150,11 +150,10 @@ void LogSubmittedAlternativeNameCharacterSetValues(const FormStructure& form) {
   }
   for (const std::unique_ptr<AutofillField>& field : form) {
     if (IsAlternativeNameType(field->Type().GetStorableType()) &&
-        !field->value(ValueSemantics::kCurrent).empty()) {
+        !field->value().empty()) {
       base::UmaHistogramEnumeration(
           "Autofill.SubmittedAlternativeNameFieldValueCharacterSet",
-          GetAlternativeNameFieldValueCharacterSet(
-              field->value(ValueSemantics::kCurrent)));
+          GetAlternativeNameFieldValueCharacterSet(field->value()));
     }
   }
 }

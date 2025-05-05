@@ -31,16 +31,6 @@
 
 namespace autofill {
 
-// Specifies which type of field value is desired from AutofillField::value().
-// TODO: crbug.com/40227496 - Remove together with `value(ValueSemantics)`.
-enum class ValueSemantics {
-  // The field's last known value or the field's value to be filled:
-  // FormFieldData::value().
-  kCurrent,
-  // The field's first known value.
-  kInitial,
-};
-
 // Enum representing prediction sources that are recognized.
 enum class AutofillPredictionSource {
   kServerCrowdsourcing = 0,
@@ -221,18 +211,6 @@ class AutofillField : public FormFieldData {
   // should be suppressed for this field (independently of the predicted type).
   bool ShouldSuppressSuggestionsAndFillingByDefault() const;
 
-  // Returns the requested current or initial value depending on the
-  // `ValueSemantics`.
-  //
-  // In the context of form submission and import, consider calling
-  // `value_for_import()`.
-  //
-  // TODO: crbug.com/40227496 - When kAutofillFixValueSemantics is cleaned up,
-  // replace
-  // - `value(ValueSemantics::kCurrent)` with `FormFieldData::value()`
-  // - `value(ValueSemantics::kInitial)` with `AutofillField::initial_value()`
-  const std::u16string& value(ValueSemantics s) const;
-
   // Returns the current value, formatted as desired for import:
   // (1) If the user left a field unchanged, returns the empty string.
   // (2) If the field has FormControlType::kSelect* and has a selected text,
@@ -251,9 +229,21 @@ class AutofillField : public FormFieldData {
   // details.
   const std::u16string& value_for_import() const;
 
+  // Returns the value the field had when it was first seen by the
+  // AutofillManager. For fields that exist on page load, this is typically the
+  // value on page load.
+  //
+  // There are some special cases where the above does not apply, such as:
+  // - When the field has moved to another form.
+  // - When the form has been extracted without the field. For example, this
+  //   could happen because the field was temporarily removed from the DOM.
+  const std::u16string& initial_value() const { return initial_value_; }
+
   // Sets the field's current value.
   void set_initial_value(std::u16string initial_value,
-                         base::PassKey<FormStructure> pass_key);
+                         base::PassKey<FormStructure> pass_key) {
+    initial_value_ = std::move(initial_value);
+  }
 
   void set_credit_card_number_offset(size_t position) {
     credit_card_number_offset_ = position;
@@ -453,7 +443,7 @@ class AutofillField : public FormFieldData {
 
   // The field's initial value. By default, it's the same as the field's
   // `value()`, but FormStructure::RetrieveFromCache() may override it.
-  std::u16string initial_value_ = value(ValueSemantics::kCurrent);
+  std::u16string initial_value_ = value();
 
   // Used to hold the position of the first digit to be copied as a substring
   // from credit card number.

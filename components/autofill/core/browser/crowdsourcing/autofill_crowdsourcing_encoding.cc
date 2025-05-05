@@ -397,13 +397,12 @@ void EncodeFormFieldsForUpload(
 
     // TODO(crbug.com/40286837): Understand and document why the type is
     // relevant.
-    if (!field->value(ValueSemantics::kInitial).empty() &&
+    if (!field->initial_value().empty() &&
         ((field->Type().GetStorableType() != NO_SERVER_DATA &&
           field->Type().GetStorableType() != UNKNOWN_TYPE) ||
          !field->possible_types().empty())) {
-      added_field->set_initial_value_changed(
-          field->value(ValueSemantics::kInitial) !=
-          field->value(ValueSemantics::kCurrent));
+      added_field->set_initial_value_changed(field->initial_value() !=
+                                             field->value());
     }
 
     if (field_options) {

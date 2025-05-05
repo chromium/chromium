@@ -551,7 +551,7 @@ void FormStructure::RetrieveFromCache(const FormStructure& cached_form,
       continue;
     }
 
-    field->set_initial_value(cached_field->value(ValueSemantics::kInitial),
+    field->set_initial_value(cached_field->initial_value(),
                              /*pass_key=*/{});
     field->set_server_predictions(cached_field->server_predictions());
     if (reason == RetrieveFromCacheReason::kFormCacheUpdateWithoutParsing ||
@@ -945,8 +945,7 @@ std::ostream& operator<<(std::ostream& buffer, const FormStructure& form) {
         0, std::min(field->label().length(), kMaxLabelSize));
     buffer << "\n  Label: " << truncated_label;
 
-    buffer << "\n  Is empty: "
-           << ToYesOrNo(field->value(ValueSemantics::kCurrent).empty());
+    buffer << "\n  Is empty: " << ToYesOrNo(field->value().empty());
   }
   return buffer;
 }
@@ -1077,8 +1076,7 @@ LogBuffer& operator<<(LogBuffer& buffer, const FormStructure& form) {
         label.substr(0, std::min(label.length(), kMaxLabelSize));
     buffer << Tr{} << "Label:" << truncated_label;
 
-    buffer << Tr{} << "Is empty:"
-           << ToYesOrNo(field->value(ValueSemantics::kCurrent).empty());
+    buffer << Tr{} << "Is empty:" << ToYesOrNo(field->value().empty());
     buffer << Tr{} << "Is focusable:"
            << (field->IsFocusable() ? "Yes (focusable)" : "No (unfocusable)");
     buffer << Tr{} << "Is visible:"

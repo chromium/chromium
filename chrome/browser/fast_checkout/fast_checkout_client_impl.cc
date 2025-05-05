@@ -60,8 +60,7 @@ const autofill::AutofillField* GetFieldToFill(
     const std::vector<std::unique_ptr<autofill::AutofillField>>& fields,
     bool is_credit_card_form) {
   for (const std::unique_ptr<autofill::AutofillField>& field : fields) {
-    if (IsVisibleTextField(*field) &&
-        field->value(autofill::ValueSemantics::kCurrent).empty() &&
+    if (IsVisibleTextField(*field) && field->value().empty() &&
         ((!is_credit_card_form &&
           kAddressFieldTypes.contains(field->Type().group())) ||
          (is_credit_card_form &&

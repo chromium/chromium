@@ -61,7 +61,7 @@ ValueAndFormatString GetValueAndFormatString(const AutofillField& field) {
   }
 
   if (!IsDateFieldType(*field_type) || !field.IsSelectElement()) {
-    std::u16string value = field.value(autofill::ValueSemantics::kCurrent);
+    std::u16string value = field.value();
     base::TrimWhitespace(value, base::TRIM_ALL, &value);
     return {
         .value = std::move(value),
@@ -69,8 +69,7 @@ ValueAndFormatString GetValueAndFormatString(const AutofillField& field) {
   }
 
   auto get_value = [&](DatePartRange range) {
-    const std::u16string& value =
-        field.value(autofill::ValueSemantics::kCurrent);
+    const std::u16string& value = field.value();
     uint32_t index = 0;
     while (index < range.options.size() &&
            value != range.options[index].value) {

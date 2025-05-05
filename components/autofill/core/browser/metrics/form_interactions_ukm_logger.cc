@@ -141,7 +141,7 @@ void FormInteractionsUkmLogger::LogTextFieldValueChanged(
       .SetHtmlFieldType(static_cast<int>(field.html_type()))
       .SetHtmlFieldMode(static_cast<int>(field.html_mode()))
       .SetIsAutofilled(field.is_autofilled())
-      .SetIsEmpty(field.value(ValueSemantics::kCurrent).empty())
+      .SetIsEmpty(field.value().empty())
       .SetMillisecondsSinceFormParsed(
           MillisecondsSinceFormParsed(form.form_parsed_timestamp()))
       .Record(autofill_client_->GetUkmRecorder());

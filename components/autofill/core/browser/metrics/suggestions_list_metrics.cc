@@ -133,7 +133,7 @@ void LogAddressAutofillOnTypingSuggestionAccepted(
   if (autofill_trigger_field) {
     base::UmaHistogramCounts100(
         "Autofill.AddressSuggestionOnTypingAcceptance.NumberOfCharactersTyped",
-        autofill_trigger_field->value(ValueSemantics::kCurrent).length());
+        autofill_trigger_field->value().length());
   }
 }
 
