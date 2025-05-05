@@ -276,11 +276,11 @@ void TabSharingStatusMessageView::AddButton(const EndpointInfo& endpoint_info) {
   button->SetStyle(ui::ButtonStyle::kTonal);
   button->SetCustomPadding(kButtonInsets);
   button->SetTextColor(views::Button::ButtonState::STATE_NORMAL,
-                       ui::kColorSysPrimary);
+                       ui::kColorLinkForeground);
   button->SetTextColor(views::Button::ButtonState::STATE_HOVERED,
-                       ui::kColorSysPrimary);
+                       ui::kColorLinkForeground);
   button->SetTextColor(views::Button::ButtonState::STATE_PRESSED,
-                       ui::kColorSysPrimary);
+                       ui::kColorLinkForeground);
   button->SetBgColorIdOverride(ui::kColorSysNeutralContainer);
   button->SetLabelStyle(views::style::STYLE_BODY_5_MEDIUM);
 }
