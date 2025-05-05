@@ -12382,6 +12382,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(ui::kAndroidWindowManagementWebApi)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_CHROMEOS)
+    {"fwupd-developer-mode", flag_descriptions::kFwupdDeveloperModeName,
+     flag_descriptions::kFwupdDeveloperModeDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kFwupdDeveloperMode)},
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
     // Add new entries above this line.
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum

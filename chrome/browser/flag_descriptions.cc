@@ -461,6 +461,11 @@ const char kFontationsFontBackendDescription[] =
     "If enabled, the Fontations font backend will be used for web fonts where "
     "otherwise FreeType would have been used.";
 
+const char kFwupdDeveloperModeName[] = "Enable fwupd developer mode";
+const char kFwupdDeveloperModeDescription[] =
+    "Allows display and installation in UI of unauthenticated firmware by "
+    "disabling all checks.";
+
 const char kAvifGainmapHdrImagesName[] = "AVIF gainmap HDR image rendering";
 const char kAvifGainmapHdrImagesDescription[] =
     "If enabled, Chrome uses the gainmap (if present) in AVIF images to render "

@@ -325,6 +325,9 @@ extern const char kFontationsFontBackendDescription[];
 extern const char kForceStartupSigninPromoName[];
 extern const char kForceStartupSigninPromoDescription[];
 
+extern const char kFwupdDeveloperModeName[];
+extern const char kFwupdDeveloperModeDescription[];
+
 extern const char kAvifGainmapHdrImagesName[];
 extern const char kAvifGainmapHdrImagesDescription[];
 

@@ -5145,6 +5145,11 @@
     "expiry_milestone": 138
   },
   {
+    "name": "fwupd-developer-mode",
+    "owners": [ "rishabhagr@chromium.org" ],
+    "expiry_milestone": 145
+  },
+  {
     "name": "game-dashboard-game-pwas",
     "owners": [
       "gdomergue@google.com",
