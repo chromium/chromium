@@ -815,4 +815,59 @@ suite('GooglePhotosPhotosElementTest', function() {
         personalizationStore.data.wallpaper.loading.selected.image, false);
     assertEquals(personalizationStore.data.wallpaper.pendingSelected, null);
   });
+
+  test('sets row id and aria-describedby', async () => {
+    const photos: GooglePhotosPhoto[] = [
+      // Section of photos with different locations.
+      {
+        id: 'id0',
+        dedupKey: 'ef8795ae-e6c8-4580-8184-0bcad20fd013',
+        name: 'bare',
+        date: stringToMojoString16('Friday, July 16, 2021'),
+        url: {url: createSvgDataUrl('svg-3')},
+        location: 'home2',
+      },
+      {
+        id: 'id1',
+        dedupKey: 'c8817402-822f-4ee8-9716-1f4b36c3263f',
+        name: 'baze',
+        date: stringToMojoString16('Friday, July 16, 2021'),
+        url: {url: createSvgDataUrl('svg-4')},
+        location: 'home3',
+      },
+    ];
+
+    // Set values returned by |wallpaperProvider|.
+    wallpaperProvider.setGooglePhotosPhotos(photos);
+
+    // Initialize Google Photos data in the |personalizationStore|.
+    await fetchGooglePhotosEnabled(wallpaperProvider, personalizationStore);
+    await fetchGooglePhotosPhotos(wallpaperProvider, personalizationStore);
+
+    googlePhotosPhotosElement =
+        initElement(GooglePhotosPhotosElement, {hidden: false});
+    await waitAfterNextRender(googlePhotosPhotosElement);
+
+    const photoElements = querySelectorAll(
+        `wallpaper-grid-item:not([hidden]).photo:not([placeholder])`);
+
+    assertDeepEquals(
+        ['bare', 'baze'], photoElements?.map(item => item.ariaLabel),
+        'expected aria labels not found');
+
+    const expectedAriaDescriptionIds =
+        ['photo-id0-description', 'photo-id1-description'];
+
+    assertDeepEquals(
+        expectedAriaDescriptionIds,
+        photoElements?.map(item => item.getAttribute('aria-describedby')),
+        'expected aria-describedby ids not found');
+
+    assertDeepEquals(
+        ['Friday, July 16, 2021home2', 'Friday, July 16, 2021home3'],
+        expectedAriaDescriptionIds.map(
+            id => googlePhotosPhotosElement?.shadowRoot?.getElementById(id)
+                      ?.innerText),
+        'expected aria descriptions not found');
+  });
 });
