@@ -104,6 +104,9 @@ class ZeroStateSuggestionsPageData
   // Tracks the status of inner text and annotated page content fetches, which
   // are needed in `RequestSuggestionsIfComplete()`.
   bool content_extraction_initiated_ = false;
+  base::TimeTicks page_context_begin_time_;
+  // Tracks if `this` has logged to page context extraction duration histogram.
+  bool page_context_duration_logged_ = false;
   bool inner_text_done_ = false;
   std::unique_ptr<content_extraction::InnerTextResult> inner_text_result_;
   bool annotated_page_content_done_ = false;

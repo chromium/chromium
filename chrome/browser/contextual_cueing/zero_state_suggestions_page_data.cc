@@ -4,6 +4,7 @@
 
 #include "chrome/browser/contextual_cueing/zero_state_suggestions_page_data.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros_local.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/content_extraction/inner_text.h"
@@ -87,6 +88,7 @@ void ZeroStateSuggestionsPageData::InitiatePageContentExtraction(
     return;
   }
   content_extraction_initiated_ = true;
+  page_context_begin_time_ = base::TimeTicks::Now();
 
   OPTIMIZATION_GUIDE_LOG(
       optimization_guide_common::mojom::LogSource::MODEL_EXECUTION,
@@ -156,6 +158,12 @@ void ZeroStateSuggestionsPageData::OnReceivedAnnotatedPageContent(
     std::optional<optimization_guide::AIPageContentResult> content) {
   annotated_page_content_ = std::move(content);
   annotated_page_content_done_ = true;
+  if (annotated_page_content_) {
+    base::UmaHistogramTimes(
+        "ContextualCueing.GlicSuggestions.PageContextFetchlatency."
+        "AnnotatedPageContent",
+        base::TimeTicks::Now() - page_context_begin_time_);
+  }
   RequestSuggestionsIfComplete();
 }
 
@@ -163,6 +171,11 @@ void ZeroStateSuggestionsPageData::OnReceivedInnerText(
     std::unique_ptr<content_extraction::InnerTextResult> result) {
   inner_text_result_ = std::move(result);
   inner_text_done_ = true;
+  if (inner_text_result_) {
+    base::UmaHistogramTimes(
+        "ContextualCueing.GlicSuggestions.PageContextFetchlatency.InnerText",
+        base::TimeTicks::Now() - page_context_begin_time_);
+  }
   RequestSuggestionsIfComplete();
 }
 
@@ -225,6 +238,13 @@ void ZeroStateSuggestionsPageData::RequestSuggestionsIfComplete() {
   bool has_page_context = inner_text_result_ || annotated_page_content_;
   if (!work_done) {
     return;
+  }
+
+  if (has_page_context && !page_context_duration_logged_) {
+    page_context_duration_logged_ = true;
+    base::UmaHistogramTimes(
+        "ContextualCueing.GlicSuggestions.PageContextFetchlatency.Total",
+        base::TimeTicks::Now() - page_context_begin_time_);
   }
 
   LOCAL_HISTOGRAM_BOOLEAN(
