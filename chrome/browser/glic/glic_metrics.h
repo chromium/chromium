@@ -230,10 +230,10 @@ class GlicMetrics {
   base::RepeatingTimer glic_window_size_timer_;
 
   // A context-free source id used when no web contents is targeted.
-  ukm::SourceId no_url_source_id_;
+  ukm::SourceId no_url_source_id_ = ukm::NoURLSourceId();
   // The source id at the time context is requested. If context was not
   // requested then this is `no_url_source_id_`.
-  ukm::SourceId source_id_;
+  ukm::SourceId source_id_ = ukm::NoURLSourceId();
 
   // The owner of this class is responsible for maintaining appropriate lifetime
   // for controller_.
@@ -261,7 +261,7 @@ class GlicMetrics {
   // The timestamp when the glic window starts to be shown.
   base::TimeTicks show_start_time_;
   // Web client's operation modes.
-  mojom::WebClientMode starting_mode_;
+  mojom::WebClientMode starting_mode_ = mojom::WebClientMode::kUnknown;
 };
 
 }  // namespace glic

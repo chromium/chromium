@@ -91,6 +91,10 @@ void Host::WebUIPageHandlerAdded(GlicPageHandler* page_handler) {
   PageHandlerInfo info;
   info.page_handler = page_handler;
   page_handlers_.push_back(std::move(info));
+
+  if (!primary_page_handler_) {
+    primary_page_handler_ = page_handler;
+  }
 }
 
 void Host::WebUIPageHandlerRemoved(GlicPageHandler* page_handler) {
@@ -98,6 +102,10 @@ void Host::WebUIPageHandlerRemoved(GlicPageHandler* page_handler) {
   if (info) {
     int index = info - &page_handlers_[0];
     page_handlers_.erase(page_handlers_.begin() + index);
+  }
+  if (primary_page_handler_ == page_handler) {
+    WebUiStateChanged(page_handler, mojom::WebUiState::kUninitialized);
+    primary_page_handler_ = nullptr;
   }
 }
 
@@ -177,12 +185,6 @@ void Host::SetWebClient(GlicPageHandler* page_handler,
   PageHandlerInfo* info = FindInfo(page_handler);
   CHECK(info);
   info->web_client = web_client;
-  if (web_client && !primary_page_handler_) {
-    primary_page_handler_ = page_handler;
-  }
-  if (!web_client && primary_page_handler_ == page_handler) {
-    primary_page_handler_ = nullptr;
-  }
 
   if (invocation_source_ && web_client) {
     web_client->PanelWillOpen(
@@ -261,6 +263,19 @@ bool Host::IsReady() const {
     }
   }
   return false;
+}
+
+void Host::WebUiStateChanged(GlicPageHandler* page_handler,
+                             mojom::WebUiState new_state) {
+  if (page_handler != primary_page_handler_) {
+    return;
+  }
+  base::UmaHistogramEnumeration("Glic.PanelWebUiState", new_state);
+  if (primary_webui_state_ != new_state) {
+    // UI State has changed
+    primary_webui_state_ = new_state;
+    observers_.Notify(&Observer::WebUiStateChanged, primary_webui_state_);
+  }
 }
 
 }  // namespace glic

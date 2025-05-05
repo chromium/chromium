@@ -96,8 +96,6 @@ GlicMetrics::GlicMetrics(Profile* profile, GlicEnabling* enabling)
       FROM_HERE, base::Minutes(15),
       base::BindRepeating(&GlicMetrics::OnImpressionTimerFired,
                           base::Unretained(this)));
-  no_url_source_id_ = ukm::NoURLSourceId();
-  source_id_ = no_url_source_id_;
 
   subscriptions_.push_back(
       enabling_->RegisterAllowedChanged(base::BindRepeating(

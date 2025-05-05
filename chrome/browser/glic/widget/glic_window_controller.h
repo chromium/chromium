@@ -74,12 +74,6 @@ class GlicWindowController : public views::WidgetObserver,
                                    Browser* attached_browser) = 0;
   };
 
-  // Observes the state of the WebUI hosted in the glic window.
-  class WebUiStateObserver : public base::CheckedObserver {
-   public:
-    virtual void WebUiStateChanged(mojom::WebUiState state) = 0;
-  };
-
   GlicWindowController(const GlicWindowController&) = delete;
   GlicWindowController& operator=(const GlicWindowController&) = delete;
 
@@ -170,10 +164,6 @@ class GlicWindowController : public views::WidgetObserver,
   void AddStateObserver(StateObserver* observer);
   void RemoveStateObserver(StateObserver* observer);
 
-  const mojom::WebUiState& GetWebUiState() const { return webui_state_; }
-  void AddWebUiStateObserver(WebUiStateObserver* observer);
-  void RemoveWebUiStateObserver(WebUiStateObserver* observer);
-
   // Returns whether the views::Widget associated with the glic window is active
   // (e.g. will receive keyboard events).
   bool IsActive();
@@ -262,8 +252,6 @@ class GlicWindowController : public views::WidgetObserver,
   State state() const { return state_; }
 
   void ShowDetachedForTesting();
-
-  void WebUiStateChanged(mojom::WebUiState new_state);
 
   GlicFreController* fre_controller() { return fre_controller_.get(); }
 
@@ -466,9 +454,6 @@ class GlicWindowController : public views::WidgetObserver,
   raw_ptr<Browser> attached_browser_ = nullptr;
 
   base::ObserverList<StateObserver> state_observers_;
-
-  mojom::WebUiState webui_state_ = mojom::WebUiState::kUninitialized;
-  base::ObserverList<WebUiStateObserver> webui_state_observers_;
 
   // The announcement should happen the first time focus is lost after the FRE.
   bool do_focus_loss_announcement_ = false;

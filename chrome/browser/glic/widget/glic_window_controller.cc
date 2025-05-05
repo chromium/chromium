@@ -578,20 +578,6 @@ void GlicWindowController::ShowDetachedForTesting() {
   Show(nullptr, mojom::InvocationSource::kOsHotkey);
 }
 
-void GlicWindowController::WebUiStateChanged(mojom::WebUiState new_state) {
-  base::UmaHistogramEnumeration("Glic.PanelWebUiState", new_state);
-  if (webui_state_ != new_state) {
-    // UI State has changed
-    webui_state_ = new_state;
-    webui_state_observers_.Notify(&WebUiStateObserver::WebUiStateChanged,
-                                  webui_state_);
-
-    if (IsWindowOpenAndReady()) {
-      glic_service_->metrics()->OnGlicWindowOpenAndReady();
-    }
-  }
-}
-
 Host& GlicWindowController::host() const {
   return glic_service_->host();
 }
@@ -794,6 +780,7 @@ void GlicWindowController::ClientReadyToShow(
     const mojom::OpenPanelInfo& open_info) {
   DVLOG(1) << "Glic client ready to show " << open_info.web_client_mode;
   glic_service_->metrics()->set_starting_mode(open_info.web_client_mode);
+  glic_service_->metrics()->OnGlicWindowOpenAndReady();
   if (open_info.panelSize.has_value()) {
     Resize(*open_info.panelSize, open_info.resizeDuration, base::DoNothing());
   }
@@ -1053,7 +1040,7 @@ void GlicWindowController::CloseFinish(
   glic_window_animator_.reset();
   glic_service_->metrics()->OnGlicWindowClose();
   base::UmaHistogramEnumeration("Glic.PanelWebUiState.FinishState2",
-                                webui_state_);
+                                host().GetPrimaryWebUiState());
 
   SetWindowState(State::kClosed);
   attached_browser_ = nullptr;
@@ -1309,15 +1296,6 @@ void GlicWindowController::AddStateObserver(StateObserver* observer) {
 
 void GlicWindowController::RemoveStateObserver(StateObserver* observer) {
   state_observers_.RemoveObserver(observer);
-}
-
-void GlicWindowController::AddWebUiStateObserver(WebUiStateObserver* observer) {
-  webui_state_observers_.AddObserver(observer);
-}
-
-void GlicWindowController::RemoveWebUiStateObserver(
-    WebUiStateObserver* observer) {
-  webui_state_observers_.RemoveObserver(observer);
 }
 
 void GlicWindowController::NotifyIfPanelStateChanged() {
