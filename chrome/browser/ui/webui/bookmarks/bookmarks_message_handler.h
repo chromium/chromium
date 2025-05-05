@@ -18,6 +18,8 @@ class BookmarksMessageHandler : public content::WebUIMessageHandler {
   ~BookmarksMessageHandler() override;
 
  private:
+  friend class BookmarkMessageHandlerTest;
+
   int GetIncognitoAvailability();
   void HandleGetIncognitoAvailability(const base::Value::List& args);
   void UpdateIncognitoAvailability();
