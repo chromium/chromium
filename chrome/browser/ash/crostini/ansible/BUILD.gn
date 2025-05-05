@@ -75,7 +75,6 @@ source_set("unit_tests") {
     "//chrome/browser/ash/crostini",
     "//chrome/browser/ash/crostini:test_support",
     "//chrome/browser/ash/crostini/ansible:test_support",
-    "//chrome/browser/ui",
     "//chrome/browser/ui/views/crostini",
     "//chrome/test:test_support",
     "//chromeos/ash/components/dbus/chunneld",
