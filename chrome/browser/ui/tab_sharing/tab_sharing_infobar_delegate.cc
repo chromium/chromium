@@ -180,8 +180,6 @@ class TabSharingInfoBarDelegate::SwitchToTabButton
             url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS));
   }
 
-  ui::ImageModel GetImage() const override { return focus_target_.icon; }
-
  private:
   std::u16string GetDefaultLabel() const {
     return l10n_util::GetStringUTF16(
@@ -265,14 +263,12 @@ infobars::InfoBar* TabSharingInfoBarDelegate::Create(
     std::optional<FocusTarget> focus_target,
     bool captured_surface_control_active,
     TabSharingUI* ui,
-    TabShareType capture_type,
-    bool favicons_used_for_switch_to_tab_button) {
+    TabShareType capture_type) {
   DCHECK(infobar_manager);
   std::unique_ptr<infobars::InfoBar> new_infobar = CreateTabSharingInfoBar(
       base::WrapUnique(new TabSharingInfoBarDelegate(
           web_contents, role, share_this_tab_instead_button_state, focus_target,
-          captured_surface_control_active, ui, capture_type,
-          favicons_used_for_switch_to_tab_button)),
+          captured_surface_control_active, ui, capture_type)),
       shared_tab_id, capturer_id, shared_tab_name, capturer_name, role,
       capture_type);
   return old_infobar ? infobar_manager->ReplaceInfoBar(old_infobar,
@@ -287,8 +283,7 @@ TabSharingInfoBarDelegate::TabSharingInfoBarDelegate(
     std::optional<FocusTarget> focus_target,
     bool captured_surface_control_active,
     TabSharingUI* ui,
-    TabShareType capture_type,
-    bool favicons_used_for_switch_to_tab_button)
+    TabShareType capture_type)
     : ui_(ui), capture_type_(capture_type) {
   stop_button_ = std::make_unique<StopButton>(ui_, capture_type_);
 

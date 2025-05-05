@@ -11,7 +11,6 @@
 #include "base/memory/raw_ptr.h"
 #include "components/infobars/core/infobar_delegate.h"
 #include "content/public/browser/global_routing_id.h"
-#include "ui/base/models/image_model.h"
 
 namespace content {
 class WebContents;
@@ -42,10 +41,9 @@ class TabSharingUI;
 // "Sharing a tab to |capturer_name_| [Stop] [Share this tab instead]"
 class TabSharingInfoBarDelegate : public infobars::InfoBarDelegate {
  public:
-  // Represents a target to which focus could be switched and its favicon.
+  // Represents a target to which focus could be switched.
   struct FocusTarget {
     content::GlobalRenderFrameHostId id;
-    ui::ImageModel icon;
   };
 
   enum TabSharingInfoBarButton {
@@ -115,8 +113,7 @@ class TabSharingInfoBarDelegate : public infobars::InfoBarDelegate {
       std::optional<FocusTarget> focus_target,
       bool captured_surface_control_active,
       TabSharingUI* ui,
-      TabShareType capture_type,
-      bool favicons_used_for_switch_to_tab_button = false);
+      TabShareType capture_type);
 
   ~TabSharingInfoBarDelegate() override;
 
@@ -147,8 +144,7 @@ class TabSharingInfoBarDelegate : public infobars::InfoBarDelegate {
                             std::optional<FocusTarget> focus_target,
                             bool captured_surface_control_active,
                             TabSharingUI* ui,
-                            TabShareType capture_type,
-                            bool favicons_used_for_switch_to_tab_button);
+                            TabShareType capture_type);
 
   const TabSharingInfoBarDelegateButton& GetButton(
       TabSharingInfoBarButton button) const;

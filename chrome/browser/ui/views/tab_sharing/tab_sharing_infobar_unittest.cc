@@ -148,7 +148,7 @@ class TabSharingInfoBarTest : public testing::TestWithParam<bool> {
         infobar_manager_.get(), nullptr, prefs.shared_tab_id, prefs.capturer_id,
         prefs.shared_tab_name, prefs.capturer_name, /*web_contents=*/nullptr,
         prefs.role, TabSharingInfoBarDelegate::ButtonState::ENABLED,
-        FocusTarget(), true, &mock_ui, prefs.capture_type, false));
+        FocusTarget(), true, &mock_ui, prefs.capture_type));
   }
 
  protected:

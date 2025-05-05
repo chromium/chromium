@@ -7,7 +7,6 @@
 #include <tuple>
 
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/ui/tab_sharing/tab_sharing_ui.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
@@ -19,9 +18,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/models/image_model.h"
-#include "ui/gfx/favicon_size.h"
-#include "ui/gfx/image/image_unittest_util.h"
 #include "ui/gfx/vector_icon_types.h"
 
 namespace {
@@ -57,7 +53,7 @@ class MockTabSharingUIViews : public TabSharingUI {
 
 class TabSharingInfoBarDelegateTest
     : public BrowserWithTestWindowTest,
-      public ::testing::WithParamInterface<std::tuple<bool, bool>> {
+      public ::testing::WithParamInterface<bool> {
  public:
   struct Preferences {
     content::GlobalRenderFrameHostId shared_tab_id;
@@ -73,9 +69,7 @@ class TabSharingInfoBarDelegateTest
   };
 
   TabSharingInfoBarDelegateTest()
-      : captured_surface_control_active_(testing::get<0>(GetParam())),
-        favicons_used_for_switch_to_tab_button_(testing::get<1>(GetParam())) {
-  }
+      : captured_surface_control_active_(GetParam()) {}
 
   infobars::InfoBar* CreateInfobar(const Preferences& prefs) {
     content::WebContents* const web_contents =
@@ -88,8 +82,7 @@ class TabSharingInfoBarDelegateTest
             ? TabSharingInfoBarDelegate::ButtonState::ENABLED
             : TabSharingInfoBarDelegate::ButtonState::NOT_SHOWN,
         prefs.focus_target, captured_surface_control_active_,
-        tab_sharing_mock_ui(), prefs.capture_type,
-        favicons_used_for_switch_to_tab_button_);
+        tab_sharing_mock_ui(), prefs.capture_type);
   }
 
   TabSharingInfoBarDelegate* CreateDelegate(const Preferences& prefs) {
@@ -121,18 +114,14 @@ class TabSharingInfoBarDelegateTest
 
  protected:
   const bool captured_surface_control_active_;
-  const bool favicons_used_for_switch_to_tab_button_;
 
  private:
   MockTabSharingUIViews mock_ui;
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    TabSharingInfoBarDelegateTest,
-    testing::Combine(
-        /*captured_surface_control_active=*/testing::Bool(),
-        /*favicons_used_for_switch_to_tab_button=*/testing::Bool()));
+INSTANTIATE_TEST_SUITE_P(,
+                         TabSharingInfoBarDelegateTest,
+                         /*captured_surface_control_active=*/testing::Bool());
 
 TEST_P(TabSharingInfoBarDelegateTest, StartSharingOnCancel) {
   AddTab(browser(), GURL("about:blank"));
@@ -166,21 +155,13 @@ TEST_P(TabSharingInfoBarDelegateTest, InfobarOnCapturingTab) {
   AddTab(browser(), GURL(kCapturedUrl));   // index = 0.
   AddTab(browser(), GURL(kCapturingUrl));  // index = 1.
 
-  const ui::ImageModel favicon =
-      favicons_used_for_switch_to_tab_button_
-          ? ui::ImageModel::FromImage(
-                gfx::Image::CreateFrom1xBitmap(favicon::GenerateMonogramFavicon(
-                    GURL("https://example.com"), gfx::kFaviconSize,
-                    gfx::kFaviconSize)))
-          : ui::ImageModel();
-
   TabSharingInfoBarDelegate* const delegate =
       CreateDelegate({.shared_tab_name = std::u16string(),
                       .capturer_name = kAppName,
                       .role = TabRole::kCapturingTab,
                       .can_share_instead = false,
                       .tab_index = 1,
-                      .focus_target = FocusTarget{GetGlobalId(0), favicon}});
+                      .focus_target = FocusTarget{GetGlobalId(0)}});
 
   EXPECT_STREQ(delegate->GetVectorIcon().name,
                vector_icons::kScreenShareOldIcon.name);
@@ -195,8 +176,6 @@ TEST_P(TabSharingInfoBarDelegateTest, InfobarOnCapturingTab) {
             l10n_util::GetStringUTF16(IDS_TAB_SHARING_INFOBAR_STOP_BUTTON));
   EXPECT_EQ(delegate->GetButtonLabel(TabSharingInfoBarDelegate::kQuickNav),
             GetExpectedSwitchToMessageForTargetTab(0));
-  EXPECT_EQ(delegate->GetButtonImage(TabSharingInfoBarDelegate::kQuickNav),
-            favicon);
   EXPECT_FALSE(delegate->IsCloseable());
 
   if (captured_surface_control_active_) {
@@ -214,21 +193,13 @@ TEST_P(TabSharingInfoBarDelegateTest, InfobarOnCapturedTab) {
   AddTab(browser(), GURL("about:blank"));  // Captured; index = 0.
   AddTab(browser(), GURL("about:blank"));  // Capturing; index = 1.
 
-  const ui::ImageModel favicon =
-      favicons_used_for_switch_to_tab_button_
-          ? ui::ImageModel::FromImage(
-                gfx::Image::CreateFrom1xBitmap(favicon::GenerateMonogramFavicon(
-                    GURL("https://example.com"), gfx::kFaviconSize,
-                    gfx::kFaviconSize)))
-          : ui::ImageModel();
-
   TabSharingInfoBarDelegate* const delegate =
       CreateDelegate({.shared_tab_name = std::u16string(),
                       .capturer_name = kAppName,
                       .role = TabRole::kCapturedTab,
                       .can_share_instead = false,
                       .tab_index = 0,
-                      .focus_target = FocusTarget{GetGlobalId(1), favicon}});
+                      .focus_target = FocusTarget{GetGlobalId(1)}});
 
   EXPECT_STREQ(delegate->GetVectorIcon().name,
                vector_icons::kScreenShareOldIcon.name);
@@ -238,8 +209,6 @@ TEST_P(TabSharingInfoBarDelegateTest, InfobarOnCapturedTab) {
             l10n_util::GetStringUTF16(IDS_TAB_SHARING_INFOBAR_STOP_BUTTON));
   EXPECT_EQ(delegate->GetButtonLabel(TabSharingInfoBarDelegate::kQuickNav),
             GetExpectedSwitchToMessageForTargetTab(0));
-  EXPECT_EQ(delegate->GetButtonImage(TabSharingInfoBarDelegate::kQuickNav),
-            favicon);
   EXPECT_FALSE(delegate->IsCloseable());
 }
 
@@ -300,14 +269,6 @@ TEST_P(TabSharingInfoBarDelegateTest,
   AddTab(browser(), GURL("about:blank"));  // Captured; index = 0.
   AddTab(browser(), GURL("about:blank"));  // Capturing; index = 1.
 
-  const ui::ImageModel favicon =
-      favicons_used_for_switch_to_tab_button_
-          ? ui::ImageModel::FromImage(
-                gfx::Image::CreateFrom1xBitmap(favicon::GenerateMonogramFavicon(
-                    GURL("https://example.com"), gfx::kFaviconSize,
-                    gfx::kFaviconSize)))
-          : ui::ImageModel();
-
   // The key part of this test, is that both `can_share_instead` as well as
   // `focus_target` are set.
   TabSharingInfoBarDelegate* const delegate =
@@ -316,7 +277,7 @@ TEST_P(TabSharingInfoBarDelegateTest,
                       .role = TabRole::kCapturedTab,
                       .can_share_instead = true,
                       .tab_index = 0,
-                      .focus_target = FocusTarget{GetGlobalId(1), favicon}});
+                      .focus_target = FocusTarget{GetGlobalId(1)}});
 
   EXPECT_STREQ(delegate->GetVectorIcon().name,
                vector_icons::kScreenShareOldIcon.name);
@@ -339,8 +300,6 @@ TEST_P(TabSharingInfoBarDelegateTest,
   // Validate the [Quick-nav] button.
   EXPECT_EQ(delegate->GetButtonLabel(TabSharingInfoBarDelegate::kQuickNav),
             GetExpectedSwitchToMessageForTargetTab(0));
-  EXPECT_EQ(delegate->GetButtonImage(TabSharingInfoBarDelegate::kQuickNav),
-            favicon);
 
   EXPECT_FALSE(delegate->IsCloseable());
 }
