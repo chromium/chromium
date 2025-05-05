@@ -39,6 +39,7 @@ static_library("core") {
     "//components/bookmarks/browser",
     "//components/history/core/browser",
     "//components/password_manager/core/browser",
+    "//components/password_manager/core/browser/features:password_features",
     "//components/pref_registry",
     "//components/prefs",
     "//components/strings",
