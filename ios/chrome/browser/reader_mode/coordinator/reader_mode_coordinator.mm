@@ -30,9 +30,6 @@
   _mediator.consumer = _viewController;
   [self.baseViewController addChildViewController:_viewController];
   [_viewController didMoveToParentViewController:self.baseViewController];
-  // TODO(crbug.com/409941529): Only show options there if this is the first
-  // time Reader mode is triggered.
-  [self showReaderModeOptions];
   // Start handling Reader mode options commands.
   [self.browser->GetCommandDispatcher()
       startDispatchingToTarget:self
