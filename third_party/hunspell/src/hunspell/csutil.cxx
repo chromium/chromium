@@ -75,7 +75,6 @@
 #include <stdio.h>
 #include <ctype.h>
 #include <sstream>
-#include <mutex>
 
 #include "csutil.hxx"
 #include "atypes.hxx"
@@ -91,7 +90,6 @@
 #else
 #ifndef MOZILLA_CLIENT
 #include "utf_info.hxx"
-#define UTF_LST_LEN (sizeof(utf_lst) / (sizeof(unicode_info)))
 #endif
 #endif
 
@@ -102,17 +100,6 @@
 
 using namespace mozilla;
 #endif
-
-struct unicode_info2 {
-  char cletter;
-  unsigned short cupper;
-  unsigned short clower;
-};
-
-static struct unicode_info2* utf_tbl = NULL;
-static int utf_tbl_count =
-    0;  // utf_tbl can be used by multiple Hunspell instances
-static std::mutex utf_tbl_mutex;
 
 void myopen(std::ifstream& stream, const char* path, std::ios_base::openmode mode)
 {
@@ -2417,38 +2404,6 @@ int get_lang_num(const std::string& lang) {
   return LANG_xx;
 }
 
-#ifndef OPENOFFICEORG
-#ifndef MOZILLA_CLIENT
-void initialize_utf_tbl() {
-  std::lock_guard<std::mutex> guard(utf_tbl_mutex);
-  utf_tbl_count++;
-  if (utf_tbl)
-    return;
-  utf_tbl = new unicode_info2[CONTSIZE];
-  for (size_t j = 0; j < CONTSIZE; ++j) {
-    utf_tbl[j].cletter = 0;
-    utf_tbl[j].clower = (unsigned short)j;
-    utf_tbl[j].cupper = (unsigned short)j;
-  }
-  for (size_t j = 0; j < UTF_LST_LEN; ++j) {
-    utf_tbl[utf_lst[j].c].cletter = 1;
-    utf_tbl[utf_lst[j].c].clower = utf_lst[j].clower;
-    utf_tbl[utf_lst[j].c].cupper = utf_lst[j].cupper;
-  }
-}
-#endif
-#endif
-
-void free_utf_tbl() {
-  std::lock_guard<std::mutex> guard(utf_tbl_mutex);
-  if (utf_tbl_count > 0)
-    utf_tbl_count--;
-  if (utf_tbl && (utf_tbl_count == 0)) {
-    delete[] utf_tbl;
-    utf_tbl = NULL;
-  }
-}
-
 unsigned short unicodetoupper(unsigned short c, int langnum) {
   // In Azeri and Turkish, I and i dictinct letters:
   // There are a dotless lower case i pair of upper `I',
@@ -2461,7 +2416,7 @@ unsigned short unicodetoupper(unsigned short c, int langnum) {
 #ifdef MOZILLA_CLIENT
   return ToUpperCase((char16_t)c);
 #else
-  return (utf_tbl) ? utf_tbl[c].cupper : c;
+  return utf_tbl[c].cupper;
 #endif
 #endif
 }
@@ -2478,7 +2433,7 @@ unsigned short unicodetolower(unsigned short c, int langnum) {
 #ifdef MOZILLA_CLIENT
   return ToLowerCase((char16_t)c);
 #else
-  return (utf_tbl) ? utf_tbl[c].clower : c;
+  return utf_tbl[c].clower;
 #endif
 #endif
 }
@@ -2487,7 +2442,7 @@ int unicodeisalpha(unsigned short c) {
 #ifdef OPENOFFICEORG
   return u_isalpha(c);
 #else
-  return (utf_tbl) ? utf_tbl[c].cletter : 0;
+  return utf_tbl[c].cletter;
 #endif
 }
 

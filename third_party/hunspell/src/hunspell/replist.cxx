@@ -205,12 +205,10 @@ bool RepList::conv(const std::string& in_word, std::string& dest) {
 bool RepList::check_against_breaktable(const std::vector<std::string>& breaktable) const {
   for (size_t i = 0, pos = dat.size(); i < pos; ++i) {
     for (int j = 0; j < 4; ++j) {
-      if (dat[i]->outstrings[j].size() > dat[i]->pattern.size()) {
-          for (size_t k = 0; k < breaktable.size(); ++k) {
-              if (dat[i]->outstrings[j].find(breaktable[k]) != std::string::npos) {
-                return false;
-              }
-          }
+      for (size_t k = 0; k < breaktable.size(); ++k) {
+        if (dat[i]->outstrings[j].find(breaktable[k]) != std::string::npos) {
+          return false;
+        }
       }
     }
   }

@@ -271,7 +271,6 @@ AffixMgr::~AffixMgr() {
   pHMgr = NULL;
   cpdmin = 0;
   cpdmaxsyllable = 0;
-  free_utf_tbl();
   checknum = 0;
 #ifdef MOZILLA_CLIENT
   delete[] csconv;
@@ -386,11 +385,6 @@ int AffixMgr::parse_file(const char* affpath, const char* key) {
       }
       if (encoding == "UTF-8") {
         utf8 = 1;
-#ifndef OPENOFFICEORG
-#ifndef MOZILLA_CLIENT
-        initialize_utf_tbl();
-#endif
-#endif
       }
     }
 
@@ -1386,12 +1380,12 @@ int AffixMgr::cpdrep_check(const std::string& in_word, int wl) {
 
 // forbid compound words, if they are in the dictionary as a
 // word pair separated by space
-int AffixMgr::cpdwordpair_check(const char * word, int wl) {
+int AffixMgr::cpdwordpair_check(const std::string& word, int wl) {
   if (wl > 2) {
-    std::string candidate(word);
+    std::string candidate(word, 0, wl);
     for (size_t i = 1; i < candidate.size(); i++) {
       // go to end of the UTF-8 character
-      if (utf8 && ((word[i] & 0xc0) == 0x80))
+      if (utf8 && ((candidate[i] & 0xc0) == 0x80))
           continue;
       candidate.insert(i, 1, ' ');
       if (candidate_check(candidate))
@@ -2043,7 +2037,7 @@ struct hentry* AffixMgr::compound_check(const std::string& word,
               // forbid compound word, if it is a non-compound word with typical
               // fault
               if ((checkcompoundrep && cpdrep_check(word, len)) ||
-                      cpdwordpair_check(word.c_str(), len))
+                      cpdwordpair_check(word, len))
                 return NULL;
               return rv_first;
             }
@@ -2170,7 +2164,7 @@ struct hentry* AffixMgr::compound_check(const std::string& word,
               // forbid compound word, if it is a non-compound word with typical
               // fault
               if ((checkcompoundrep && cpdrep_check(word, len)) ||
-                      cpdwordpair_check(word.c_str(), len))
+                      cpdwordpair_check(word, len))
                 return NULL;
               return rv_first;
             }
@@ -2197,7 +2191,7 @@ struct hentry* AffixMgr::compound_check(const std::string& word,
               // forbid compound word, if it is a non-compound word with typical
               // fault, or a dictionary word pair
 
-              if (cpdwordpair_check(word.c_str(), len))
+              if (cpdwordpair_check(word, len))
                   return NULL;
 
               if (checkcompoundrep || forbiddenword) {
@@ -2211,7 +2205,7 @@ struct hentry* AffixMgr::compound_check(const std::string& word,
                   st[i + rv->blen] = '\0';
 
                   if ((checkcompoundrep && cpdrep_check(st, i + rv->blen)) ||
-                      cpdwordpair_check(st.c_str(), i + rv->blen)) {
+                      cpdwordpair_check(st, i + rv->blen)) {
                     st[ + i + rv->blen] = r;
                     continue;
                   }

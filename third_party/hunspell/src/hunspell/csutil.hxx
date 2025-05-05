@@ -180,8 +180,6 @@ struct cs_info {
   unsigned char cupper;
 };
 
-LIBHUNSPELL_DLL_EXPORTED void initialize_utf_tbl();
-LIBHUNSPELL_DLL_EXPORTED void free_utf_tbl();
 LIBHUNSPELL_DLL_EXPORTED unsigned short unicodetoupper(unsigned short c,
                                                        int langnum);
 LIBHUNSPELL_DLL_EXPORTED w_char upper_utf(w_char u, int langnum);
