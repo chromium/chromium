@@ -302,6 +302,12 @@ void PdfInkModule::OnGotThumbnail(int page_index, Thumbnail thumbnail) {
       /*is_ink=*/false, thumbnail.TakeData(), thumbnail.image_size()));
 }
 
+void PdfInkModule::SendContentFocusedMessage() {
+  base::Value::Dict message;
+  message.Set("type", "contentFocused");
+  client_->PostMessage(std::move(message));
+}
+
 PdfInkModule::PageInkStrokeIterator PdfInkModule::GetVisibleStrokesIterator() {
   return PageInkStrokeIterator(strokes_);
 }
@@ -313,11 +319,7 @@ bool PdfInkModule::HandleInputEvent(const blink::WebInputEvent& event) {
 
   switch (event.GetType()) {
     case blink::WebInputEvent::Type::kMouseDown: {
-      // TODO(crbug.com/377733396): Send a content focused message for certain
-      // non-mouse inputs, too.
-      base::Value::Dict message;
-      message.Set("type", "contentFocused");
-      client_->PostMessage(std::move(message));
+      SendContentFocusedMessage();
       return OnMouseDown(static_cast<const blink::WebMouseEvent&>(event));
     }
     case blink::WebInputEvent::Type::kMouseUp:
@@ -326,6 +328,7 @@ bool PdfInkModule::HandleInputEvent(const blink::WebInputEvent& event) {
       return OnMouseMove(static_cast<const blink::WebMouseEvent&>(event));
     // Touch and pen input events are blink::WebTouchEvent instances.
     case blink::WebInputEvent::Type::kTouchStart:
+      SendContentFocusedMessage();
       return OnTouchStart(static_cast<const blink::WebTouchEvent&>(event));
     case blink::WebInputEvent::Type::kTouchEnd:
       return OnTouchEnd(static_cast<const blink::WebTouchEvent&>(event));
