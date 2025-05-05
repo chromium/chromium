@@ -1038,8 +1038,8 @@ public class CompositorViewHolder extends FrameLayout
 
         onViewportChanged();
 
-        // When scrolling browser controls in viz, don't produce new browser frames unless it's
-        // forced with |needs_animate|
+        // TODO(crbug.com/415825206): Revisit when requestNewFrame is set to true, it currently
+        // depends on the controls' hidden ratio, but I don't think that's right.
         boolean scrollingWithBciv =
                 ChromeFeatureList.sBrowserControlsInViz.isEnabled()
                         && (mInGesture || mContentViewScrolling);
@@ -1925,5 +1925,9 @@ public class CompositorViewHolder extends FrameLayout
             mDragAndDropPermissions = null;
         }
         mDropUri = null;
+    }
+
+    public void setContentViewScrollingStateForTesting(boolean scrolling) {
+        mContentViewScrolling = scrolling;
     }
 }

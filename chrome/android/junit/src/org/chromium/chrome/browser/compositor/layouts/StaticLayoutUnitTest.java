@@ -42,6 +42,7 @@ import org.chromium.base.CallbackUtils;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsOffsetTagsInfo;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.layouts.components.LayoutTab;
 import org.chromium.chrome.browser.compositor.scene_layer.StaticTabSceneLayer;
@@ -171,7 +172,7 @@ public class StaticLayoutUnitTest {
                         mBrowserControlsStateProvider,
                         () -> mTopUiThemeColorProvider,
                         mStaticTabSceneLayer,
-                        false);
+                        true);
         mModel = mStaticLayout.getModelForTesting();
         doReturn(true).when(mUpdateHost).isActiveLayout(mStaticLayout);
 
@@ -239,13 +240,28 @@ public class StaticLayoutUnitTest {
     }
 
     @Test
-    public void testBrowserControlsContentOffsetChanged() {
+    public void testOnControlsOffsetChanged() {
         final int offset = 10;
+        final int height = 150;
         doReturn(offset).when(mBrowserControlsStateProvider).getContentOffset();
+        doReturn(height).when(mBrowserControlsStateProvider).getTopControlsHeight();
+
         mBrowserControlsStateProviderObserverCaptor
                 .getValue()
-                .onControlsOffsetChanged(offset, offset, false, 0, 0, false, true, false);
+                .onControlsOffsetChanged(0, 0, false, 0, 0, false, true, false);
         assertEquals(offset, (int) mModel.get(LayoutTab.CONTENT_OFFSET));
+        mModel.set(LayoutTab.CONTENT_OFFSET, 0);
+
+        mBrowserControlsStateProviderObserverCaptor
+                .getValue()
+                .onControlsOffsetChanged(0, 0, false, 0, 0, false, false, true);
+        assertEquals(offset, (int) mModel.get(LayoutTab.CONTENT_OFFSET));
+        mModel.set(LayoutTab.CONTENT_OFFSET, 0);
+
+        mBrowserControlsStateProviderObserverCaptor
+                .getValue()
+                .onControlsOffsetChanged(0, 0, false, 0, 0, false, false, false);
+        assertEquals(height, (int) mModel.get(LayoutTab.CONTENT_OFFSET));
     }
 
     @Test
@@ -368,5 +384,24 @@ public class StaticLayoutUnitTest {
     public void testTabDoesNotGainFocusOnTabletOnLayoutDoneShowing() {
         mStaticLayout.doneShowing();
         verify(mTabView, never()).requestFocus();
+    }
+
+    @Test
+    public void testOnControlsConstraintsChanged() {
+        final int offset = 10;
+        doReturn(offset).when(mBrowserControlsStateProvider).getContentOffset();
+        BrowserControlsOffsetTagsInfo tagsInfo = new BrowserControlsOffsetTagsInfo();
+        mBrowserControlsStateProviderObserverCaptor
+                .getValue()
+                .onControlsConstraintsChanged(null, tagsInfo, 0, false);
+        assertEquals(tagsInfo.getContentOffsetTag(), mModel.get(LayoutTab.CONTENT_OFFSET_TAG));
+        assertEquals(0, (int) mModel.get(LayoutTab.CONTENT_OFFSET));
+
+        tagsInfo = new BrowserControlsOffsetTagsInfo();
+        mBrowserControlsStateProviderObserverCaptor
+                .getValue()
+                .onControlsConstraintsChanged(null, tagsInfo, 0, true);
+        assertEquals(tagsInfo.getContentOffsetTag(), mModel.get(LayoutTab.CONTENT_OFFSET_TAG));
+        assertEquals(offset, (int) mModel.get(LayoutTab.CONTENT_OFFSET));
     }
 }

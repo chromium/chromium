@@ -53,6 +53,19 @@ public final class OffsetTagConstraints {
         mMaxY = 0;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof OffsetTagConstraints)) {
+            return false;
+        }
+
+        final OffsetTagConstraints other = (OffsetTagConstraints) o;
+        return mMinX == other.minX()
+                && mMaxX == other.maxX()
+                && mMinY == other.minY()
+                && mMaxY == other.maxY();
+    }
+
     @CalledByNative
     public float minX() {
         return mMinX;

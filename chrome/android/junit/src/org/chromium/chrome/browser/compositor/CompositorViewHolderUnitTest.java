@@ -987,6 +987,25 @@ public class CompositorViewHolderUnitTest {
         verify(mCompositorViewHolder).resetKeyboardFocus();
     }
 
+    @Test
+    public void testOnControlsOffsetChanged_NoRequestRenderIfScrolling() {
+        mCompositorViewHolder.dispatchTouchEvent(MOTION_EVENT_DOWN);
+        mCompositorViewHolder.onControlsOffsetChanged(0, 0, false, 0, 0, false, true, false);
+        verify(mCompositorView, never()).requestRender();
+        mCompositorViewHolder.dispatchTouchEvent(MOTION_EVENT_UP);
+
+        mCompositorViewHolder.setContentViewScrollingStateForTesting(true);
+        mCompositorViewHolder.onControlsOffsetChanged(0, 0, false, 0, 0, false, true, false);
+        verify(mCompositorView, never()).requestRender();
+        mCompositorViewHolder.setContentViewScrollingStateForTesting(false);
+    }
+
+    @Test
+    public void testOnControlsOffsetChanged_RequestRender() {
+        mCompositorViewHolder.onControlsOffsetChanged(0, 0, false, 0, 0, false, true, false);
+        verify(mCompositorView, times(1)).requestRender();
+    }
+
     private static void runCurrentTasks() {
         ShadowLooper.runUiThreadTasks();
     }

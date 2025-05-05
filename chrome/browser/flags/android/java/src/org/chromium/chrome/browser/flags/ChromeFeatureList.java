@@ -1002,7 +1002,7 @@ public abstract class ChromeFeatureList {
     public static final MutableFlagWithSafeDefault sAndroidTabDeclutterRescueKillSwitch =
             newMutableFlagWithSafeDefault(ANDROID_TAB_DECLUTTER_RESCUE_KILLSWITCH, true);
     public static final MutableFlagWithSafeDefault sBcivBottomControls =
-            newMutableFlagWithSafeDefault(BCIV_BOTTOM_CONTROLS, false);
+            newMutableFlagWithSafeDefault(BCIV_BOTTOM_CONTROLS, true);
     public static final MutableFlagWithSafeDefault sBottomBrowserControlsRefactor =
             newMutableFlagWithSafeDefault(BOTTOM_BROWSER_CONTROLS_REFACTOR, true);
     public static final MutableFlagWithSafeDefault sBrowserControlsEarlyResize =

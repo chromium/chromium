@@ -1275,6 +1275,10 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
         int minY = 0;
         int maxY = newHeight - newMinHeight;
 
+        // crbug.com/406429149: unlike other browser controls, the height for the custom tabs bottom
+        // controls is inclusive of the shadow's height, so newHeight can be negative.
+        maxY = Math.max(0, maxY);
+
         // See comment in updateTopControlsOffsetTagConstraints(), the logic is similar.
         if (mHasBottomControlsHeightAnimation) {
             if (oldHeight > newHeight) {

@@ -26,10 +26,12 @@ import org.robolectric.shadows.ShadowLooper;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.cc.input.OffsetTag;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerScrollBehavior;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerType;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerVisibility;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.ui.OffsetTagConstraints;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.display.DisplayAndroid;
 
@@ -552,7 +554,7 @@ public class BottomControlsStackerUnitTest {
     // Reposition layer test
 
     @Test
-    public void reposition_ScrollOff_OneLayer() {
+    public void reposition_ScrollOff_OneLayer_AppliedByBrowser() {
         TestLayer layer =
                 new TestLayer(
                         BOTTOM_LAYER,
@@ -565,28 +567,28 @@ public class BottomControlsStackerUnitTest {
         verify(mBrowserControlsSizer).setBottomControlsHeight(100, 0);
 
         // Controls fully visible
-        onBottomControlsOffsetChanged(0, 0, false);
+        onBottomControlsOffsetChanged(0, 0, false, true);
         assertLayerYOffset(layer, 0);
 
         // Scroll down.
-        onBottomControlsOffsetChanged(60, 0, false);
+        onBottomControlsOffsetChanged(60, 0, false, true);
         assertLayerYOffset(layer, 60);
 
         // Controls Full scroll off.
-        onBottomControlsOffsetChanged(100, 0, false);
+        onBottomControlsOffsetChanged(100, 0, false, true);
         assertLayerYOffset(layer, 100);
 
         // Scroll up.
-        onBottomControlsOffsetChanged(30, 0, false);
+        onBottomControlsOffsetChanged(30, 0, false, true);
         assertLayerYOffset(layer, 30);
 
         // Controls fully visible.
-        onBottomControlsOffsetChanged(0, 0, false);
+        onBottomControlsOffsetChanged(0, 0, false, true);
         assertLayerYOffset(layer, 0);
     }
 
     @Test
-    public void reposition_ScrollOff_TwoLayers() {
+    public void reposition_ScrollOff_TwoLayers_AppliedByBrowser() {
         TestLayer top =
                 new TestLayer(
                         TOP_LAYER,
@@ -605,38 +607,38 @@ public class BottomControlsStackerUnitTest {
         verify(mBrowserControlsSizer).setBottomControlsHeight(110, 0);
 
         // Browser controls fully shown.
-        onBottomControlsOffsetChanged(0, 0, false);
+        onBottomControlsOffsetChanged(0, 0, false, true);
         assertLayerYOffset(top, -10);
         assertLayerYOffset(bottom, 0);
 
         // Bottom layer partially scrolled off.
-        onBottomControlsOffsetChanged(5, 0, false);
+        onBottomControlsOffsetChanged(5, 0, false, true);
         assertLayerYOffset(top, -5);
         assertLayerYOffset(bottom, 5);
 
         // Bottom layer scrolled off, top layer partially scrolled off
-        onBottomControlsOffsetChanged(50, 0, false);
+        onBottomControlsOffsetChanged(50, 0, false, true);
         assertLayerYOffset(top, 40);
         assertLayerYOffset(bottom, 10);
 
         // Fully scroll off.
-        onBottomControlsOffsetChanged(110, 0, false);
+        onBottomControlsOffsetChanged(110, 0, false, true);
         assertLayerYOffset(top, 100);
         assertLayerYOffset(bottom, 10);
 
         // Scroll back up. Top layer moves first.
-        onBottomControlsOffsetChanged(40, 0, false);
+        onBottomControlsOffsetChanged(40, 0, false, true);
         assertLayerYOffset(top, 30);
         assertLayerYOffset(bottom, 10);
 
         // Scroll back to browser controls fully shown.
-        onBottomControlsOffsetChanged(0, 0, false);
+        onBottomControlsOffsetChanged(0, 0, false, true);
         assertLayerYOffset(top, -10);
         assertLayerYOffset(bottom, 0);
     }
 
     @Test
-    public void reposition_ScrollOff_ThreeLayers() {
+    public void reposition_ScrollOff_ThreeLayers_AppliedByBrowser() {
         TestLayer top =
                 new TestLayer(
                         TOP_LAYER,
@@ -662,55 +664,55 @@ public class BottomControlsStackerUnitTest {
         verify(mBrowserControlsSizer).setBottomControlsHeight(1110, 0);
 
         // Browser controls fully shown.
-        onBottomControlsOffsetChanged(0, 0, false);
+        onBottomControlsOffsetChanged(0, 0, false, true);
         assertLayerYOffset(top, -110);
         assertLayerYOffset(mid, -10);
         assertLayerYOffset(bottom, 0);
 
         // Bottom layer partially scrolled off.
-        onBottomControlsOffsetChanged(5, 0, false);
+        onBottomControlsOffsetChanged(5, 0, false, true);
         assertLayerYOffset(top, -105);
         assertLayerYOffset(mid, -5);
         assertLayerYOffset(bottom, 5);
 
         // Bottom layer scrolled off, mid layer partially scrolled off.
-        onBottomControlsOffsetChanged(50, 0, false);
+        onBottomControlsOffsetChanged(50, 0, false, true);
         assertLayerYOffset(top, -60);
         assertLayerYOffset(mid, 40);
         assertLayerYOffset(bottom, 10);
 
         // Bottom and min layer both scrolled off, top layer partially scrolled off.
-        onBottomControlsOffsetChanged(500, 0, false);
+        onBottomControlsOffsetChanged(500, 0, false, true);
         assertLayerYOffset(top, 390);
         assertLayerYOffset(mid, 100);
         assertLayerYOffset(bottom, 10);
 
         // All layers fully scroll off.
-        onBottomControlsOffsetChanged(1110, 0, false);
+        onBottomControlsOffsetChanged(1110, 0, false, true);
         assertLayerYOffset(top, 1000);
         assertLayerYOffset(mid, 100);
         assertLayerYOffset(bottom, 10);
 
         // Scroll back up. Top layer moves first.
-        onBottomControlsOffsetChanged(900, 0, false);
+        onBottomControlsOffsetChanged(900, 0, false, true);
         assertLayerYOffset(top, 790);
         assertLayerYOffset(mid, 100);
         assertLayerYOffset(bottom, 10);
 
         // Scroll back the mid layer start showing.
-        onBottomControlsOffsetChanged(90, 0, false);
+        onBottomControlsOffsetChanged(90, 0, false, true);
         assertLayerYOffset(top, -20);
         assertLayerYOffset(mid, 80);
         assertLayerYOffset(bottom, 10);
 
         // Scroll back the bottom layer start showing.
-        onBottomControlsOffsetChanged(9, 0, false);
+        onBottomControlsOffsetChanged(9, 0, false, true);
         assertLayerYOffset(top, -101);
         assertLayerYOffset(mid, -1);
         assertLayerYOffset(bottom, 9);
 
         // Full visible.
-        onBottomControlsOffsetChanged(0, 0, false);
+        onBottomControlsOffsetChanged(0, 0, false, true);
         assertLayerYOffset(top, -110);
         assertLayerYOffset(mid, -10);
         assertLayerYOffset(bottom, 0);
@@ -735,7 +737,7 @@ public class BottomControlsStackerUnitTest {
     }
 
     @Test
-    public void reposition_Mixed_TwoLayers_BottomLayerNoScroll() {
+    public void reposition_Mixed_TwoLayers_BottomLayerNoScroll_AppliedByBrowser() {
         TestLayer top =
                 new TestLayer(
                         TOP_LAYER,
@@ -755,43 +757,43 @@ public class BottomControlsStackerUnitTest {
         verify(mBrowserControlsSizer).setBottomControlsHeight(110, 10);
 
         // Controls fully visible.
-        onBottomControlsOffsetChanged(0, 10, false);
+        onBottomControlsOffsetChanged(0, 10, false, true);
         assertLayerYOffset(top, -10);
         assertLayerYOffset(bottom, 0);
 
         // Starts scrolling down.
-        onBottomControlsOffsetChanged(5, 10, false);
+        onBottomControlsOffsetChanged(5, 10, false, true);
         assertLayerYOffset(top, -5);
         assertLayerYOffset(bottom, 0);
 
         // Keep scrolling down.
-        onBottomControlsOffsetChanged(50, 10, false);
+        onBottomControlsOffsetChanged(50, 10, false, true);
         assertLayerYOffset(top, 40);
         assertLayerYOffset(bottom, 0);
 
         // Top controls fully scroll off.
-        onBottomControlsOffsetChanged(100, 10, false);
+        onBottomControlsOffsetChanged(100, 10, false, true);
         assertLayerYOffset(top, 90);
         assertLayerYOffset(bottom, 0);
 
         // Starts scrolling back up.
-        onBottomControlsOffsetChanged(80, 10, false);
+        onBottomControlsOffsetChanged(80, 10, false, true);
         assertLayerYOffset(top, 70);
         assertLayerYOffset(bottom, 0);
 
         // Keep scrolling up.
-        onBottomControlsOffsetChanged(5, 10, false);
+        onBottomControlsOffsetChanged(5, 10, false, true);
         assertLayerYOffset(top, -5);
         assertLayerYOffset(bottom, 0);
 
         // Controls fully visible.
-        onBottomControlsOffsetChanged(0, 10, false);
+        onBottomControlsOffsetChanged(0, 10, false, true);
         assertLayerYOffset(top, -10);
         assertLayerYOffset(bottom, 0);
     }
 
     @Test
-    public void reposition_Mixed_ThreeLayers_DefaultScrollUnderNeverScroll() {
+    public void reposition_Mixed_ThreeLayers_DefaultScrollUnderNeverScroll_AppliedByBrowser() {
         TestLayer top =
                 new TestLayer(
                         TOP_LAYER,
@@ -818,50 +820,50 @@ public class BottomControlsStackerUnitTest {
         verify(mBrowserControlsSizer).setBottomControlsHeight(160, 60);
 
         // Controls fully visible.
-        onBottomControlsOffsetChanged(0, 60, false);
+        onBottomControlsOffsetChanged(0, 60, false, true);
         assertLayerYOffset(top, -60);
         assertLayerYOffset(mid, -10);
         assertLayerYOffset(bottom, 0);
 
         // Starts scrolling down.
-        onBottomControlsOffsetChanged(5, 60, false);
+        onBottomControlsOffsetChanged(5, 60, false, true);
         assertLayerYOffset(top, -55);
         assertLayerYOffset(mid, -10);
         assertLayerYOffset(bottom, 0);
 
         // Keep scrolling down.
-        onBottomControlsOffsetChanged(50, 60, false);
+        onBottomControlsOffsetChanged(50, 60, false, true);
         assertLayerYOffset(top, -10);
         assertLayerYOffset(mid, -10);
         assertLayerYOffset(bottom, 0);
 
         // Top controls fully scroll off.
-        onBottomControlsOffsetChanged(100, 60, false);
+        onBottomControlsOffsetChanged(100, 60, false, true);
         assertLayerYOffset(top, 40);
         assertLayerYOffset(mid, -10);
         assertLayerYOffset(bottom, 0);
 
         // Starts scrolling back up.
-        onBottomControlsOffsetChanged(80, 60, false);
+        onBottomControlsOffsetChanged(80, 60, false, true);
         assertLayerYOffset(top, 20);
         assertLayerYOffset(mid, -10);
         assertLayerYOffset(bottom, 0);
 
         // Keep scrolling up.
-        onBottomControlsOffsetChanged(5, 60, false);
+        onBottomControlsOffsetChanged(5, 60, false, true);
         assertLayerYOffset(top, -55);
         assertLayerYOffset(mid, -10);
         assertLayerYOffset(bottom, 0);
 
         // Controls fully visible.
-        onBottomControlsOffsetChanged(0, 60, false);
+        onBottomControlsOffsetChanged(0, 60, false, true);
         assertLayerYOffset(top, -60);
         assertLayerYOffset(mid, -10);
         assertLayerYOffset(bottom, 0);
     }
 
     @Test
-    public void reposition_Mixed_ThreeLayers_DefaultScrollAboveNeverScroll() {
+    public void reposition_Mixed_ThreeLayers_DefaultScrollAboveNeverScroll_AppliedByBrowser() {
         TestLayer top =
                 new TestLayer(
                         TOP_LAYER,
@@ -888,43 +890,43 @@ public class BottomControlsStackerUnitTest {
         verify(mBrowserControlsSizer).setBottomControlsHeight(160, 50);
 
         // Controls fully visible.
-        onBottomControlsOffsetChanged(0, 50, false);
+        onBottomControlsOffsetChanged(0, 50, false, true);
         assertLayerYOffset(top, -60);
         assertLayerYOffset(mid, -50);
         assertLayerYOffset(bottom, 0);
 
         // Starts scrolling down.
-        onBottomControlsOffsetChanged(5, 50, false);
+        onBottomControlsOffsetChanged(5, 50, false, true);
         assertLayerYOffset(top, -55);
         assertLayerYOffset(mid, -45);
         assertLayerYOffset(bottom, 0);
 
         // Keep scrolling down.
-        onBottomControlsOffsetChanged(50, 50, false);
+        onBottomControlsOffsetChanged(50, 50, false, true);
         assertLayerYOffset(top, -10);
         assertLayerYOffset(mid, -40);
         assertLayerYOffset(bottom, 0);
 
         // Top controls fully scroll off.
-        onBottomControlsOffsetChanged(110, 50, false);
+        onBottomControlsOffsetChanged(110, 50, false, true);
         assertLayerYOffset(top, 50);
         assertLayerYOffset(mid, -40);
         assertLayerYOffset(bottom, 0);
 
         // Starts scrolling back up.
-        onBottomControlsOffsetChanged(80, 50, false);
+        onBottomControlsOffsetChanged(80, 50, false, true);
         assertLayerYOffset(top, 20);
         assertLayerYOffset(mid, -40);
         assertLayerYOffset(bottom, 0);
 
         // Keep scrolling up.
-        onBottomControlsOffsetChanged(5, 50, false);
+        onBottomControlsOffsetChanged(5, 50, false, true);
         assertLayerYOffset(top, -55);
         assertLayerYOffset(mid, -45);
         assertLayerYOffset(bottom, 0);
 
         // Controls fully visible.
-        onBottomControlsOffsetChanged(0, 50, false);
+        onBottomControlsOffsetChanged(0, 50, false, true);
         assertLayerYOffset(top, -60);
         assertLayerYOffset(mid, -50);
         assertLayerYOffset(bottom, 0);
@@ -1655,25 +1657,82 @@ public class BottomControlsStackerUnitTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.BCIV_BOTTOM_CONTROLS)
-    public void test_bciv_onBottomControlsOffsetChanged() {
+    public void reposition_AppliedByViz() {
         TestLayer top =
                 new TestLayer(
                         TOP_LAYER,
                         150,
                         LayerScrollBehavior.ALWAYS_SCROLL_OFF,
                         LayerVisibility.VISIBLE);
+        TestLayer bottom =
+                new TestLayer(
+                        BOTTOM_LAYER,
+                        20,
+                        LayerScrollBehavior.ALWAYS_SCROLL_OFF,
+                        LayerVisibility.VISIBLE);
         mBottomControlsStacker.addLayer(top);
+        mBottomControlsStacker.addLayer(bottom);
         mBottomControlsStacker.requestLayerUpdate(false);
-        verify(mBrowserControlsSizer).setBottomControlsHeight(150, 0);
+        verify(mBrowserControlsSizer).setBottomControlsHeight(170, 0);
 
         // When visibility isn't forced, BCIV takes over and controls should always be positioned
         // at their fully visible positions.
         onBottomControlsOffsetChanged(10, 0, false, false);
-        assertLayerYOffset(top, 0);
+        assertLayerYOffset(top, -20);
+        assertLayerYOffset(bottom, 0);
 
         // When visibility is forced, behavior is identical to when BCIV is disabled.
         onBottomControlsOffsetChanged(10, 0, false, true);
-        assertLayerYOffset(top, 10);
+        assertLayerYOffset(top, -10);
+        assertLayerYOffset(bottom, 10);
+    }
+
+    @Test
+    public void testOnControlsConstraintsChanged() {
+        TestLayer top =
+                new TestLayer(
+                        TOP_LAYER,
+                        150,
+                        LayerScrollBehavior.ALWAYS_SCROLL_OFF,
+                        LayerVisibility.VISIBLE);
+        TestLayer bottom =
+                new TestLayer(
+                        BOTTOM_LAYER,
+                        20,
+                        LayerScrollBehavior.NEVER_SCROLL_OFF,
+                        LayerVisibility.VISIBLE);
+        mBottomControlsStacker.addLayer(top);
+        mBottomControlsStacker.addLayer(bottom);
+        mBottomControlsStacker.requestLayerUpdate(false);
+        verify(mBrowserControlsSizer).setBottomControlsHeight(170, 20);
+
+        BrowserControlsOffsetTagsInfo tagsInfo = new BrowserControlsOffsetTagsInfo();
+        mBottomControlsStacker.onControlsConstraintsChanged(null, tagsInfo, 0, false);
+        mBottomControlsStacker.updateLayerVisibilitiesAndSizes();
+
+        OffsetTag offsetTag = tagsInfo.getBottomControlsOffsetTag();
+        assertEquals(offsetTag, top.getOffsetTag());
+        assertEquals(null, bottom.getOffsetTag());
+
+        // Nothing has triggered an update of the layer's offset yet.
+        assertLayerYOffset(top, 0);
+        assertLayerYOffset(bottom, 0);
+
+        int additionalHeight = 2 * TestLayer.ADDITIONAL_HEIGHT;
+        verify(mBrowserControlsSizer).setBottomControlsAdditionalHeight(additionalHeight);
+
+        // The OffsetTagsInfo should get updated with the new OffsetTagConstraints.
+        int totalHeight = top.getHeight() + bottom.getHeight();
+        int maxScrollOffset = totalHeight + additionalHeight;
+        OffsetTagConstraints newConstraints =
+                tagsInfo.getConstraints().getBottomControlsConstraints();
+        OffsetTagConstraints expectedConstraints =
+                new OffsetTagConstraints(0, 0, 0, maxScrollOffset);
+        assertTrue(newConstraints.equals(expectedConstraints));
+
+        mBottomControlsStacker.onControlsConstraintsChanged(null, tagsInfo, 0, true);
+        assertLayerYOffset(top, -20);
+        assertLayerYOffset(bottom, 0);
     }
 
     // Test helpers
@@ -1733,11 +1792,13 @@ public class BottomControlsStackerUnitTest {
     }
 
     private static class TestLayer implements BottomControlsLayer {
+        public static final int ADDITIONAL_HEIGHT = 10;
         private final @LayerType int mType;
         private final @LayerScrollBehavior int mScrollBehavior;
         private int mHeight;
         private @LayerVisibility int mVisibility;
         private int mYOffset;
+        private OffsetTag mOffsetTag;
 
         TestLayer(
                 @LayerType int type,
@@ -1763,6 +1824,10 @@ public class BottomControlsStackerUnitTest {
             return mHeight;
         }
 
+        public OffsetTag getOffsetTag() {
+            return mOffsetTag;
+        }
+
         @Override
         public @LayerScrollBehavior int getScrollBehavior() {
             return mScrollBehavior;
@@ -1781,6 +1846,17 @@ public class BottomControlsStackerUnitTest {
         @Override
         public void onBrowserControlsOffsetUpdate(int layerYOffset) {
             mYOffset = layerYOffset;
+        }
+
+        @Override
+        public int updateOffsetTag(BrowserControlsOffsetTagsInfo offsetTagsInfo) {
+            mOffsetTag = offsetTagsInfo.getBottomControlsOffsetTag();
+            return ADDITIONAL_HEIGHT;
+        }
+
+        @Override
+        public void clearOffsetTag() {
+            mOffsetTag = null;
         }
     }
 }

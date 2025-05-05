@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.toolbar.top;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -30,6 +31,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsOffsetTagsInfo;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -352,24 +354,24 @@ public class TopToolbarOverlayMediatorTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.BROWSER_CONTROLS_IN_VIZ)
     public void testBottomToolbarOffset() {
         float height = 700.0f;
         mMediator.setViewportHeight(height);
         mBottomControlsOffsetSupplier.set(-40);
 
-        doReturn(ControlsPosition.TOP).when(mBrowserControlsProvider).getControlsPosition();
+        mBrowserControlsObserverCaptor.getValue().onControlsPositionChanged(ControlsPosition.TOP);
         mBrowserControlsObserverCaptor
                 .getValue()
                 .onControlsOffsetChanged(0, 0, false, 30, 0, false, false, false);
         Assert.assertEquals(
                 0.0f, mModel.get(TopToolbarOverlayProperties.CONTENT_OFFSET), MathUtils.EPSILON);
 
-        doReturn(ControlsPosition.BOTTOM).when(mBrowserControlsProvider).getControlsPosition();
+        mBrowserControlsObserverCaptor
+                .getValue()
+                .onControlsPositionChanged(ControlsPosition.BOTTOM);
         mBrowserControlsObserverCaptor
                 .getValue()
                 .onControlsOffsetChanged(0, 0, false, 30, 0, false, false, false);
-
         Assert.assertEquals(
                 height + mBottomControlsOffsetSupplier.get(),
                 mModel.get(TopToolbarOverlayProperties.CONTENT_OFFSET),
@@ -377,7 +379,6 @@ public class TopToolbarOverlayMediatorTest {
 
         float newHeight = 1700.0f;
         mMediator.setViewportHeight(newHeight);
-
         Assert.assertEquals(
                 newHeight + mBottomControlsOffsetSupplier.get(),
                 mModel.get(TopToolbarOverlayProperties.CONTENT_OFFSET),
@@ -401,5 +402,79 @@ public class TopToolbarOverlayMediatorTest {
         mSuppressToolbarSceneLayerSupplier.set(false);
         Assert.assertTrue(
                 "View should be visible.", mModel.get(TopToolbarOverlayProperties.VISIBLE));
+    }
+
+    @Test
+    public void testTopToolbarOffset() {
+        int offset = -10;
+        int height = 150;
+        doReturn(offset).when(mBrowserControlsProvider).getContentOffset();
+        doReturn(height).when(mBrowserControlsProvider).getTopControlsHeight();
+
+        mBrowserControlsObserverCaptor.getValue().onControlsPositionChanged(ControlsPosition.TOP);
+
+        Assert.assertEquals(
+                0.0f, mModel.get(TopToolbarOverlayProperties.CONTENT_OFFSET), MathUtils.EPSILON);
+
+        mBrowserControlsObserverCaptor
+                .getValue()
+                .onControlsOffsetChanged(0, 0, false, 0, 0, false, true, false);
+        Assert.assertEquals(
+                offset, mModel.get(TopToolbarOverlayProperties.CONTENT_OFFSET), MathUtils.EPSILON);
+        mModel.set(TopToolbarOverlayProperties.CONTENT_OFFSET, 0);
+
+        mBrowserControlsObserverCaptor
+                .getValue()
+                .onControlsOffsetChanged(0, 0, false, 0, 0, false, false, true);
+        Assert.assertEquals(
+                offset, mModel.get(TopToolbarOverlayProperties.CONTENT_OFFSET), MathUtils.EPSILON);
+        mModel.set(TopToolbarOverlayProperties.CONTENT_OFFSET, 0);
+
+        mBrowserControlsObserverCaptor
+                .getValue()
+                .onControlsOffsetChanged(0, 0, false, 0, 0, false, false, false);
+        Assert.assertEquals(
+                height, mModel.get(TopToolbarOverlayProperties.CONTENT_OFFSET), MathUtils.EPSILON);
+    }
+
+    @Test
+    public void testOffsetTagAndConstraintChanges() {
+        BrowserControlsOffsetTagsInfo tagsInfo = new BrowserControlsOffsetTagsInfo();
+        int offset = -10;
+        doReturn(offset).when(mBrowserControlsProvider).getContentOffset();
+
+        mBrowserControlsObserverCaptor.getValue().onControlsPositionChanged(ControlsPosition.TOP);
+        mBrowserControlsObserverCaptor
+                .getValue()
+                .onControlsConstraintsChanged(null, tagsInfo, 0, false);
+        assertEquals(
+                tagsInfo.getTopControlsOffsetTag(),
+                mModel.get(TopToolbarOverlayProperties.TOOLBAR_OFFSET_TAG));
+        assertEquals(0, (int) mModel.get(TopToolbarOverlayProperties.CONTENT_OFFSET));
+        mBrowserControlsObserverCaptor
+                .getValue()
+                .onControlsConstraintsChanged(null, tagsInfo, 0, true);
+        assertEquals(
+                tagsInfo.getTopControlsOffsetTag(),
+                mModel.get(TopToolbarOverlayProperties.TOOLBAR_OFFSET_TAG));
+        assertEquals(offset, (int) mModel.get(TopToolbarOverlayProperties.CONTENT_OFFSET));
+
+        mBrowserControlsObserverCaptor
+                .getValue()
+                .onControlsPositionChanged(ControlsPosition.BOTTOM);
+        mBrowserControlsObserverCaptor
+                .getValue()
+                .onControlsConstraintsChanged(null, tagsInfo, 0, false);
+        assertEquals(
+                tagsInfo.getBottomControlsOffsetTag(),
+                mModel.get(TopToolbarOverlayProperties.TOOLBAR_OFFSET_TAG));
+        assertEquals(offset, (int) mModel.get(TopToolbarOverlayProperties.CONTENT_OFFSET));
+
+        mBrowserControlsObserverCaptor.getValue().onControlsPositionChanged(ControlsPosition.NONE);
+        mBrowserControlsObserverCaptor
+                .getValue()
+                .onControlsConstraintsChanged(null, tagsInfo, 0, true);
+        assertEquals(null, mModel.get(TopToolbarOverlayProperties.TOOLBAR_OFFSET_TAG));
+        assertEquals(offset, (int) mModel.get(TopToolbarOverlayProperties.CONTENT_OFFSET));
     }
 }
