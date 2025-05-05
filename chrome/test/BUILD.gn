@@ -4153,6 +4153,7 @@ if (!is_android) {
         "../browser/signin/signin_ui_util_browsertest.cc",
         "../browser/ui/profiles/signin_intercept_first_run_experience_dialog_browsertest.cc",
         "../browser/ui/views/sync/inline_login_ui_browsertest.cc",
+        "../browser/ui/webui/bookmarks/bookmarks_message_handler_browsertest.cc",
         "../browser/unified_consent/unified_consent_browsertest.cc",
         "../browser/unified_consent/unified_consent_sync_to_signin_browsertest.cc",
       ]
@@ -4848,7 +4849,10 @@ if (!is_android) {
         "../browser/ui/web_applications/pwa_install_page_action_browsertest.cc",
       ]
       if (enable_dice_support) {
-        deps += [ "//chrome/browser/ui/webui/signin/signout_confirmation:signout_confirmation" ]
+        deps += [
+          "//chrome/browser/ui/webui/signin/signout_confirmation:signout_confirmation",
+          "//components/sync_bookmarks:sync_bookmarks",
+        ]
       }
       if (is_win) {
         sources += [
