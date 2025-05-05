@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/memory/scoped_refptr.h"
+#import "base/memory/scoped_refptr.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_manager_view_controller_delegate.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_favicon_data_source.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
