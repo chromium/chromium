@@ -35,6 +35,13 @@ std::unique_ptr<enterprise_management::AntiVirusProduct> TranslateAvProduct(
     device_signals::AvProduct av_product);
 #endif  // BUILDFLAG(IS_WIN)
 
+// Utility function to convert report proto to readable, JSON format that
+// contains security signals-related fields only. Only
+// `ChromeProfileReportRequest` is currently supported.
+std::string GetSecuritySignalsInReport(
+    const enterprise_management::ChromeProfileReportRequest&
+        chrome_profile_report_request);
+
 }  // namespace enterprise_reporting
 
 #endif  // COMPONENTS_ENTERPRISE_BROWSER_REPORTING_REPORT_UTIL_H_
