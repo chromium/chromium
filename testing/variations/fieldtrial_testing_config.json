@@ -2948,12 +2948,13 @@
             ],
             "experiments": [
                 {
-                    "name": "IPHWithFastEtc1EncoderDelayed",
+                    "name": "IPH",
                     "params": {
                         "availability": "any",
                         "compress-screenshot-when-quiet": "true",
                         "event_trigger": "name:rtl_gesture_iph_trigger;comparator:==0;window:365;storage:365",
                         "event_used": "name:rtl_gesture_iph_show;comparator:==0;window:365;storage:365",
+                        "min-required-physical-ram-mb": "3200",
                         "percentage-of-ram-to-use": "0.5",
                         "screenshot-send-result-delay-ms": "400",
                         "session_rate": "<1",
@@ -2964,8 +2965,7 @@
                         "BackForwardTransitions",
                         "IPH_RtlGestureNavigation",
                         "MirrorBackForwardGesturesInRTL",
-                        "NativePageTransitionHardwareCapture",
-                        "UseNewEtc1Encoder"
+                        "NativePageTransitionHardwareCapture"
                     ]
                 }
             ]
