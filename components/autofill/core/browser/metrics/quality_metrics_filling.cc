@@ -53,7 +53,8 @@ void LogAutomationRate(const FormStructure& form) {
       continue;
     }
     // The field value at form submission should have changed since page load.
-    if (!field->initial_value_changed().value_or(true)) {
+    if (field->value(ValueSemantics::kInitial) ==
+        field->value(ValueSemantics::kCurrent)) {
       continue;
     }
     size_t field_size = field->value(ValueSemantics::kCurrent).size();
@@ -102,8 +103,8 @@ void LogDataUtilization(const FormStructure& form) {
   for (const auto& field : form.fields()) {
     // A pre-filled field value should have changed since page load. Otherwise,
     // no reporting is necessary.
-    if (field->initial_value_changed().has_value() &&
-        !field->initial_value_changed().value()) {
+    if (field->value(ValueSemantics::kInitial) ==
+        field->value(ValueSemantics::kCurrent)) {
       continue;
     }
     // Determine fillable possible types.

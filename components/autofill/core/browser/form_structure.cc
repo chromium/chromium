@@ -564,16 +564,6 @@ void FormStructure::RetrieveFromCache(const FormStructure& cached_form,
       case RetrieveFromCacheReason::kFormImport:
         field->set_initial_value(cached_field->value(ValueSemantics::kInitial),
                                  /*pass_key=*/{});
-        const bool same_value_as_on_page_load =
-            field->value(ValueSemantics::kCurrent) ==
-            cached_field->value(ValueSemantics::kInitial);
-        const bool had_type =
-            cached_field->Type().GetStorableType() > FieldType::UNKNOWN_TYPE ||
-            !cached_field->possible_types().empty();
-        if (!cached_field->value(ValueSemantics::kInitial).empty() &&
-            had_type) {
-          field->set_initial_value_changed(!same_value_as_on_page_load);
-        }
         break;
     }
 

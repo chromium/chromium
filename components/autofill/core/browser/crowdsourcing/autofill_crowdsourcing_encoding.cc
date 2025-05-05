@@ -394,9 +394,15 @@ void EncodeFormFieldsForUpload(
       added_field->set_initial_value_hash(field->initial_value_hash().value());
     }
 
-    if (field->initial_value_changed().has_value()) {
+    // TODO(crbug.com/40286837): Understand and document why the type is
+    // relevant.
+    if (!field->value(ValueSemantics::kInitial).empty() &&
+        ((field->Type().GetStorableType() != NO_SERVER_DATA &&
+          field->Type().GetStorableType() != UNKNOWN_TYPE) ||
+         !field->possible_types().empty())) {
       added_field->set_initial_value_changed(
-          field->initial_value_changed().value());
+          field->value(ValueSemantics::kInitial) !=
+          field->value(ValueSemantics::kCurrent));
     }
 
     if (auto it = fields.find(field->global_id()); it != fields.end()) {
