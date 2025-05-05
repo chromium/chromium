@@ -140,8 +140,8 @@ class HashMgr {
 #endif
   ~HashMgr();
 
-  struct hentry* lookup(const char*) const;
-  int hash(const char*) const;
+  struct hentry* lookup(const char* word, size_t len) const;
+  int hash(const char* word, size_t len) const;
   struct hentry* walk_hashtable(int& col, struct hentry* hp) const;
 
   int add(const std::string& word);

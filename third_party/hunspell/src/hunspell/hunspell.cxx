@@ -849,7 +849,7 @@ struct hentry* HunspellImpl::checkword(const std::string& w, int* info, std::str
   // look word in hash table
   struct hentry* he = NULL;
   for (size_t i = 0; (i < m_HMgrs.size()) && !he; ++i) {
-    he = m_HMgrs[i]->lookup(word.c_str());
+    he = m_HMgrs[i]->lookup(word.c_str(), word.size());
 
     // check forbidden and onlyincompound words
     if ((he) && (he->astr) && (pAMgr) &&
@@ -1983,7 +1983,7 @@ std::vector<std::string> HunspellImpl::suffix_suggest(const std::string& root_wo
     return slst;
 
   for (size_t i = 0; (i < m_HMgrs.size()) && !he; ++i) {
-    he = m_HMgrs[i]->lookup(word);
+    he = m_HMgrs[i]->lookup(word, len);
   }
   if (he) {
     slst = pAMgr->get_suffix_words(he->astr, he->alen, root_word);

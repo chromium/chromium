@@ -68,7 +68,7 @@ class AffEntry {
   } c;
   char* morphcode;
   unsigned short* contclass;
-  short contclasslen;
+  unsigned short contclasslen;
 };
 
 #endif

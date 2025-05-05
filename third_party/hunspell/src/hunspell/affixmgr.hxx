@@ -341,7 +341,7 @@ class AffixMgr {
                        int len,
                        const std::string& root_word);
 
-  struct hentry* lookup(const char* word);
+  struct hentry* lookup(const char* word, size_t len);
   const std::vector<replentry>& get_reptable() const;
   RepList* get_iconvtable() const;
   RepList* get_oconvtable() const;
