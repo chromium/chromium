@@ -120,6 +120,7 @@ public class WebAppHeaderLayoutCoordinator implements DesktopWindowStateManager.
                         mDesktopWindowStateManager,
                         mTabSupplier,
                         this::collectNonDraggableAreas,
+                        mThemeColorProvider,
                         headerMinHeight);
         PropertyModelChangeProcessor.create(model, mView, WebAppHeaderLayoutViewBinder::bind);
 

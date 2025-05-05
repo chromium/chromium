@@ -32,6 +32,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -49,6 +50,8 @@ public class WebAppHeaderLayoutMediatorTest {
     private static final int RIGHT_INSET = 60;
     private static final Rect WIDEST_UNOCCLUDED_RECT =
             new Rect(LEFT_INSET, 0, SCREEN_WIDTH - RIGHT_INSET, SYS_APP_HEADER_HEIGHT);
+    private static final int LIGHT_COLOR = 0xfffff;
+    private static final int DARK_COLOR = 0x000000;
 
     @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
 
@@ -57,6 +60,7 @@ public class WebAppHeaderLayoutMediatorTest {
     private ObservableSupplierImpl<Tab> mTabSupplier;
     private ObservableSupplierImpl<List<Rect>> mNonDraggableAreasSupplier;
     @Mock public DesktopWindowStateManager mDesktopWindowStateManager;
+    @Mock public ThemeColorProvider mThemeColorProvider;
     @Mock public Tab mTab;
     private @Nullable AppHeaderState mAppHeaderState;
     private ShadowLooper mShadowLooper;
@@ -65,6 +69,7 @@ public class WebAppHeaderLayoutMediatorTest {
     public void setup() {
         mShadowLooper = shadowOf(Looper.getMainLooper());
         when(mDesktopWindowStateManager.getAppHeaderState()).thenReturn(null);
+        when(mThemeColorProvider.getThemeColor()).thenReturn(LIGHT_COLOR);
 
         mTabSupplier = new ObservableSupplierImpl<>();
         mNonDraggableAreasSupplier = new ObservableSupplierImpl<>();
@@ -75,6 +80,7 @@ public class WebAppHeaderLayoutMediatorTest {
                         mDesktopWindowStateManager,
                         mTabSupplier,
                         mNonDraggableAreasSupplier,
+                        mThemeColorProvider,
                         SYS_APP_HEADER_HEIGHT);
 
         mShadowLooper.idle();
@@ -90,6 +96,12 @@ public class WebAppHeaderLayoutMediatorTest {
     }
 
     @Test
+    public void testInitialization() {
+        verify(mDesktopWindowStateManager).addObserver(mMediator);
+        verify(mThemeColorProvider).addThemeColorObserver(mMediator);
+    }
+
+    @Test
     public void testHasAppHeaderStateOnInit_setPaddingsMatchingInsets() {
         setupDesktopWindowing(/* isInDesktopWindow= */ true, WIDEST_UNOCCLUDED_RECT);
         mMediator =
@@ -98,6 +110,7 @@ public class WebAppHeaderLayoutMediatorTest {
                         mDesktopWindowStateManager,
                         mTabSupplier,
                         mNonDraggableAreasSupplier,
+                        mThemeColorProvider,
                         SYS_APP_HEADER_HEIGHT);
 
         assertEquals(
@@ -142,6 +155,7 @@ public class WebAppHeaderLayoutMediatorTest {
                         mDesktopWindowStateManager,
                         mTabSupplier,
                         mNonDraggableAreasSupplier,
+                        mThemeColorProvider,
                         SYS_APP_HEADER_HEIGHT);
         assertEquals(
                 "Header paddings should match updated system insets",
@@ -282,5 +296,28 @@ public class WebAppHeaderLayoutMediatorTest {
                 "Non draggable areas from supplier should match model areas",
                 areas.toArray(),
                 mModel.get(WebAppHeaderLayoutProperties.NON_DRAGGABLE_AREAS).toArray());
+    }
+
+    @Test
+    public void testSetInitialTheme() {
+        setupDesktopWindowing(/* isInDesktopWindow= */ true, WIDEST_UNOCCLUDED_RECT);
+        assertEquals(
+                "Light color should be set initially",
+                LIGHT_COLOR,
+                mModel.get(WebAppHeaderLayoutProperties.BACKGROUND_COLOR));
+        verify(mDesktopWindowStateManager).updateForegroundColor(LIGHT_COLOR);
+    }
+
+    @Test
+    public void testThemeChanges_SetNewTheme() {
+        setupDesktopWindowing(/* isInDesktopWindow= */ true, WIDEST_UNOCCLUDED_RECT);
+        when(mThemeColorProvider.getThemeColor()).thenReturn(DARK_COLOR);
+
+        mMediator.onThemeColorChanged(DARK_COLOR, /* shouldAnimate= */ false);
+        assertEquals(
+                "Dark color should be set initially",
+                DARK_COLOR,
+                mModel.get(WebAppHeaderLayoutProperties.BACKGROUND_COLOR));
+        verify(mDesktopWindowStateManager).updateForegroundColor(DARK_COLOR);
     }
 }

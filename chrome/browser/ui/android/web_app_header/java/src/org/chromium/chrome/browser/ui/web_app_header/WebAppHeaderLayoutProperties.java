@@ -35,10 +35,18 @@ class WebAppHeaderLayoutProperties {
     static final WritableObjectPropertyKey<Callback<Integer>> WIDTH_CHANGED_CALLBACK =
             new WritableObjectPropertyKey<>();
 
+    /** Background color of the header */
+    static final WritableIntPropertyKey BACKGROUND_COLOR = new WritableIntPropertyKey();
+
     /** The set of all model properties. */
     static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
-                PADDINGS, IS_VISIBLE, MIN_HEIGHT, NON_DRAGGABLE_AREAS, WIDTH_CHANGED_CALLBACK
+                PADDINGS,
+                IS_VISIBLE,
+                MIN_HEIGHT,
+                NON_DRAGGABLE_AREAS,
+                WIDTH_CHANGED_CALLBACK,
+                BACKGROUND_COLOR,
             };
 
     private WebAppHeaderLayoutProperties() {}

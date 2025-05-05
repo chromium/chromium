@@ -42,6 +42,8 @@ class WebAppHeaderLayoutViewBinder {
                     model.get(WebAppHeaderLayoutProperties.NON_DRAGGABLE_AREAS));
         } else if (key == WebAppHeaderLayoutProperties.WIDTH_CHANGED_CALLBACK) {
             view.setOnWidthChanged(model.get(WebAppHeaderLayoutProperties.WIDTH_CHANGED_CALLBACK));
+        } else if (key == WebAppHeaderLayoutProperties.BACKGROUND_COLOR) {
+            view.setBackgroundColor(model.get(WebAppHeaderLayoutProperties.BACKGROUND_COLOR));
         } else {
             assert false : String.format("Unsupported property key %s", key.toString());
         }

@@ -14,6 +14,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -25,7 +26,9 @@ import java.util.List;
  * take the place of caption bar/title bar/app header at the top of the window.
  */
 @NullMarked
-class WebAppHeaderLayoutMediator implements DesktopWindowStateManager.AppHeaderObserver {
+class WebAppHeaderLayoutMediator
+        implements DesktopWindowStateManager.AppHeaderObserver,
+                ThemeColorProvider.ThemeColorObserver {
     @Nullable static Integer sMinHeaderHeightForTesting;
 
     private static final Rect EMPTY_NON_DRAGGABLE_AREA = new Rect(0, 0, 0, 0);
@@ -36,6 +39,7 @@ class WebAppHeaderLayoutMediator implements DesktopWindowStateManager.AppHeaderO
     private final Supplier<List<Rect>> mNonDraggableAreasSupplier;
     private final ObservableSupplierImpl<Integer> mWidthSupplier;
     private final Callback<Integer> mOnWidthChangedCallback;
+    private final ThemeColorProvider mThemeColorProvider;
     private final int mWebAppMinHeaderHeight;
     private @Nullable AppHeaderState mCurrentHeaderState;
     private final ObservableSupplierImpl<Integer> mAppHeaderUnoccludedWidthSupplier;
@@ -46,6 +50,9 @@ class WebAppHeaderLayoutMediator implements DesktopWindowStateManager.AppHeaderO
      * @param model model that encapsulates UI state for the view
      * @param desktopWindowStateManager desktop window state manager that provides updates on window
      *     state
+     * @param tabSupplier supplier current active tab
+     * @param nonDraggableAreasSupplier provides header's non-draggable areas
+     * @param themeColorProvider provides theme for top level controls
      * @param webAppHeaderMinHeightFromResources minimal height from resources in px that web app
      *     header must take
      */
@@ -54,7 +61,9 @@ class WebAppHeaderLayoutMediator implements DesktopWindowStateManager.AppHeaderO
             DesktopWindowStateManager desktopWindowStateManager,
             ObservableSupplier<@Nullable Tab> tabSupplier,
             Supplier<List<Rect>> nonDraggableAreasSupplier,
+            ThemeColorProvider themeColorProvider,
             int webAppHeaderMinHeightFromResources) {
+        mThemeColorProvider = themeColorProvider;
         mWebAppMinHeaderHeight = webAppHeaderMinHeightFromResources;
         mDesktopWindowStateManager = desktopWindowStateManager;
         mTabSupplier = tabSupplier;
@@ -74,6 +83,15 @@ class WebAppHeaderLayoutMediator implements DesktopWindowStateManager.AppHeaderO
             onAppHeaderStateChanged(appHeaderState);
         }
         mDesktopWindowStateManager.addObserver(this);
+
+        onThemeColorChanged(mThemeColorProvider.getThemeColor(), false);
+        mThemeColorProvider.addThemeColorObserver(this);
+    }
+
+    @Override
+    public void onThemeColorChanged(int color, boolean shouldAnimate) {
+        mDesktopWindowStateManager.updateForegroundColor(color);
+        mModel.set(WebAppHeaderLayoutProperties.BACKGROUND_COLOR, color);
     }
 
     @Override
@@ -148,5 +166,6 @@ class WebAppHeaderLayoutMediator implements DesktopWindowStateManager.AppHeaderO
     public void destroy() {
         mDesktopWindowStateManager.removeObserver(this);
         mWidthSupplier.removeObserver(mOnWidthChangedCallback);
+        mThemeColorProvider.removeThemeColorObserver(this);
     }
 }
