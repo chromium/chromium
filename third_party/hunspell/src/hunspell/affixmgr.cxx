@@ -1361,7 +1361,7 @@ int AffixMgr::cpdrep_check(const std::string& in_word, int wl) {
       size_t r = 0;
       const size_t lenp = i.pattern.size();
       // search every occurence of the pattern in the word
-      while (word.find(i.pattern, r) != std::string::npos) {
+      while ((r = word.find(i.pattern, r)) != std::string::npos) {
         std::string candidate(word);
         candidate.replace(r, lenp, i.outstrings[0]);
         if (candidate_check(candidate))
@@ -1905,7 +1905,7 @@ struct hentry* AffixMgr::compound_check(const std::string& word,
                 (((i > 1) && (word[i - 1] == word[i - 2])) ||
                  ((word[i - 1] == word[i + 1]))  // may be word[i+1] == '\0'
                  )) ||
-               (checkcompoundcase && scpd == 0 && !words &&
+               (checkcompoundcase && scpd == 0 && !words && i < word.size() &&
                 cpdcase_check(word, i))))
             // LANG_hu section: spec. Hungarian rule
             || ((!rv) && (langnum == LANG_hu) && hu_mov_rule &&
@@ -2163,7 +2163,7 @@ struct hentry* AffixMgr::compound_check(const std::string& word,
                                   numsyllable, maxwordnum, wnum + 1, words, rwords, 0,
                                   is_sug, info);
 
-              if (rv && !checkcpdtable.empty() &&
+              if (rv && !checkcpdtable.empty() && i < word.size() &&
                   ((scpd == 0 &&
                     cpdpat_check(word, i, rv_first, rv, affixed)) ||
                    (scpd != 0 &&
@@ -2185,7 +2185,7 @@ struct hentry* AffixMgr::compound_check(const std::string& word,
                   return NULL;
 
                 // check first part
-                if (word.compare(i, rv->blen, rv->word, rv->blen) == 0) {
+                if (i < word.size() && word.compare(i, rv->blen, rv->word, rv->blen) == 0) {
                   char r = st[i + rv->blen];
                   st[i + rv->blen] = '\0';
 

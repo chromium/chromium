@@ -1,6 +1,6 @@
 Name: hunspell
 URL: http://hunspell.sourceforge.net/
-Version: 7a254b4
+Version: eaae126
 CPEPrefix: cpe:/a:hunspell_project:hunspell:1.7.1
 License: MPL-1.1
 License File: COPYING.MPL
@@ -8,7 +8,7 @@ Security Critical: yes
 Shipped: yes
 
 Description:
-This is a partial copy of Hunspell 7a254b4 with the following changes:
+This is a partial copy of Hunspell eaae126 with the following changes:
 * Move README.md onto the README symlink.
 * Change src/hunspell/filemgr.hxx and src/hunspell/filemgr.cxx to use
   LineIterator.
@@ -34,9 +34,8 @@ steps.
 2) Checkout hunspell:
    $ git clone https://github.com/hunspell/hunspell.git
    $ cd hunspell
-   $ git checkout 7a254b4
+   $ git checkout eaae126
 3) Apply Hunspell patches and make a throwaway commit:
-   $ patch -p1 --no-backup-if-mismatch -i $CHROMIUM_HUNSPELL/correction-of-a-knowingly-false-condition.patch
    $ patch -p1 --no-backup-if-mismatch -i $CHROMIUM_HUNSPELL/speed-up-hunspell-inner-loop.patch
    $ patch -p1 --no-backup-if-mismatch -i $CHROMIUM_HUNSPELL/WaE-overflow-in-expression.patch
    $ git commit -am "Apply Hunspell-specific patches"

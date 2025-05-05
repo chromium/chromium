@@ -972,7 +972,7 @@ std::vector<std::string> HunspellImpl::suggest(const std::string& word, std::vec
     }
 
   // expand suggestions with dot(s)
-  if (abbv && pAMgr && pAMgr->get_sugswithdots()) {
+  if (abbv && pAMgr && pAMgr->get_sugswithdots() && word.size() >= abbv) {
     for (auto& j : slst) {
 	    j.append(word.substr(word.size() - abbv));
     }
