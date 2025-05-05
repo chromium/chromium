@@ -138,7 +138,6 @@ TEST_F(AIManagerTest, AIContextBoundObjectSet) {
       mock_create_language_model_client.BindNewPipeAndPassRemote(),
       blink::mojom::AILanguageModelCreateOptions::New(
           /*sampling_params=*/nullptr,
-          /*system_prompt=*/std::nullopt,
           /*initial_prompts=*/
           std::vector<blink::mojom::AILanguageModelPromptPtr>(),
           /*expected_inputs=*/std::nullopt));

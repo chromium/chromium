@@ -73,18 +73,13 @@ static_assert(kTestDefaultTemperature <= kTestMaxTemperature);
 
 const char kTestPrompt[] = "Test prompt";
 const char kExpectedFormattedTestPrompt[] = "U: Test prompt\nM: ";
-const char kTestSystemPrompts[] = "Test system prompt";
-const char kExpectedFormattedSystemPrompts[] = "S: Test system prompt\n";
 const char kTestResponse[] = "Test response";
 
+const char kTestInitialPromptSystem1[] = "Test system prompt";
 const char kTestInitialPromptsUser1[] = "How are you?";
-const char kTestInitialPromptsSystem1[] = "I'm fine, thank you, and you?";
+const char kTestInitialPromptsModel1[] = "I'm fine, thank you, and you?";
 const char kTestInitialPromptsUser2[] = "I'm fine too.";
 const char kExpectedFormattedInitialPrompts[] =
-    ("U: How are you?\n"
-     "M: I'm fine, thank you, and you?\n"
-     "U: I'm fine too.\n");
-const char kExpectedFormattedSystemPromptAndInitialPrompts[] =
     ("S: Test system prompt\n"
      "U: How are you?\n"
      "M: I'm fine, thank you, and you?\n"
@@ -119,8 +114,9 @@ std::vector<blink::mojom::AILanguageModelPromptPtr> MakeInput(
 // Build a mojo prompt struct array with a simple set of initial prompts.
 std::vector<blink::mojom::AILanguageModelPromptPtr> GetTestInitialPrompts() {
   std::vector<blink::mojom::AILanguageModelPromptPtr> prompts;
+  prompts.push_back(MakePrompt(Role::kSystem, kTestInitialPromptSystem1));
   prompts.push_back(MakePrompt(Role::kUser, kTestInitialPromptsUser1));
-  prompts.push_back(MakePrompt(Role::kAssistant, kTestInitialPromptsSystem1));
+  prompts.push_back(MakePrompt(Role::kAssistant, kTestInitialPromptsModel1));
   prompts.push_back(MakePrompt(Role::kUser, kTestInitialPromptsUser2));
   return prompts;
 }
@@ -247,7 +243,6 @@ class AILanguageModelTest : public AITestUtils::AITestBase {
  public:
   struct Options {
     blink::mojom::AILanguageModelSamplingParamsPtr sampling_params = nullptr;
-    std::optional<std::string> system_prompt = std::nullopt;
     std::vector<blink::mojom::AILanguageModelPromptPtr> initial_prompts;
     std::string prompt_input = kTestPrompt;
     std::string expected_context = "";
@@ -390,10 +385,7 @@ class AILanguageModelTest : public AITestUtils::AITestBase {
     AITestUtils::MockCreateLanguageModelClient
         mock_create_language_model_client;
     base::RunLoop creation_run_loop;
-    bool is_initial_prompts_or_system_prompt_set =
-        options.initial_prompts.size() > 0 ||
-        (options.system_prompt.has_value() &&
-         options.system_prompt->size() > 0);
+    const bool had_initial_prompts = !options.initial_prompts.empty();
     if (options.should_use_supported_language) {
       EXPECT_CALL(mock_create_language_model_client, OnResult(_, _))
           .WillOnce([&](mojo::PendingRemote<blink::mojom::AILanguageModel>
@@ -402,11 +394,7 @@ class AILanguageModelTest : public AITestUtils::AITestBase {
             EXPECT_TRUE(language_model);
             EXPECT_EQ(info->input_quota,
                       AITestUtils::GetFakeTokenLimits().max_context_tokens);
-            if (is_initial_prompts_or_system_prompt_set) {
-              EXPECT_GT(info->input_usage, 0ul);
-            } else {
-              EXPECT_EQ(info->input_usage, 0ul);
-            }
+            EXPECT_EQ(info->input_usage > 0, had_initial_prompts);
             mock_session = mojo::Remote<blink::mojom::AILanguageModel>(
                 std::move(language_model));
             creation_run_loop.Quit();
@@ -460,7 +448,7 @@ class AILanguageModelTest : public AITestUtils::AITestBase {
     mock_remote->CreateLanguageModel(
         mock_create_language_model_client.BindNewPipeAndPassRemote(),
         blink::mojom::AILanguageModelCreateOptions::New(
-            std::move(options.sampling_params), options.system_prompt,
+            std::move(options.sampling_params),
             std::move(options.initial_prompts), std::move(expected_inputs)));
     creation_run_loop.Run();
 
@@ -803,18 +791,6 @@ TEST_F(AILanguageModelTest,
   });
 }
 
-TEST_F(AILanguageModelTest, PromptSessionWithSystemPrompt) {
-  RunPromptTest(AILanguageModelTest::Options{
-      .system_prompt = kTestSystemPrompts,
-      .prompt_input = kTestPrompt,
-      .expected_context = kExpectedFormattedSystemPrompts,
-      .expected_cloned_context =
-          base::StrCat({kExpectedFormattedSystemPrompts,
-                        kExpectedFormattedTestPrompt, kTestResponse, "\n"}),
-      .expected_prompt = kExpectedFormattedTestPrompt,
-  });
-}
-
 TEST_F(AILanguageModelTest, PromptSessionWithInitialPrompts) {
   RunPromptTest(AILanguageModelTest::Options{
       .initial_prompts = GetTestInitialPrompts(),
@@ -827,22 +803,8 @@ TEST_F(AILanguageModelTest, PromptSessionWithInitialPrompts) {
   });
 }
 
-TEST_F(AILanguageModelTest, PromptSessionWithSystemPromptAndInitialPrompts) {
-  RunPromptTest(AILanguageModelTest::Options{
-      .system_prompt = kTestSystemPrompts,
-      .initial_prompts = GetTestInitialPrompts(),
-      .prompt_input = kTestPrompt,
-      .expected_context = kExpectedFormattedSystemPromptAndInitialPrompts,
-      .expected_cloned_context = base::StrCat(
-          {kExpectedFormattedSystemPrompts, kExpectedFormattedInitialPrompts,
-           kExpectedFormattedTestPrompt, kTestResponse, "\n"}),
-      .expected_prompt = kExpectedFormattedTestPrompt,
-  });
-}
-
 TEST_F(AILanguageModelTest, PromptSessionWithPromptApiRequests) {
   RunPromptTest(AILanguageModelTest::Options{
-      .system_prompt = "Test system prompt",
       .initial_prompts = GetTestInitialPrompts(),
       .prompt_input = "Test prompt",
       .expected_context = ("S: Test system prompt\n"

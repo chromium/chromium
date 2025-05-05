@@ -137,10 +137,12 @@ void EchoAILanguageModel::MeasureInputUsage(
     std::vector<blink::mojom::AILanguageModelPromptPtr> input,
     mojo::PendingRemote<blink::mojom::AILanguageModelMeasureInputUsageClient>
         client) {
-  int total = 0;
+  size_t total = 0;
   for (const auto& prompt : input) {
     if (prompt->content->is_text()) {
       total += prompt->content->get_text().size();
+    } else {
+      total += 100;  // TODO(crbug.com/415304330): Improve estimate.
     }
   }
   mojo::Remote<blink::mojom::AILanguageModelMeasureInputUsageClient>(

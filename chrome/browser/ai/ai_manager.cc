@@ -486,17 +486,10 @@ void AIManager::CreateLanguageModel(
         std::unique_ptr<AILanguageModel> language_model =
             std::move(creation_result.value());
         CHECK(language_model);
-
-        const std::optional<std::string>& system_prompt =
-            options->system_prompt;
-        std::vector<blink::mojom::AILanguageModelPromptPtr>& initial_prompts =
-            options->initial_prompts;
-        if (system_prompt.has_value() || !initial_prompts.empty()) {
-          // If the initial prompt is provided, we need to set it and
-          // invoke the callback after this, because the token counting
-          // happens asynchronously.
+        if (!options->initial_prompts.empty()) {
+          // Set the initial prompts, checking if they fit within token limits.
           language_model->SetInitialPrompts(
-              system_prompt, std::move(initial_prompts),
+              std::move(options->initial_prompts),
               base::BindOnce(
                   [](mojo::Remote<
                          blink::mojom::AIManagerCreateLanguageModelClient>

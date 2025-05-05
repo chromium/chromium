@@ -92,8 +92,6 @@ struct AILanguageModelPrompt {
 // This is used when creating a new AILanguageModel.
 struct AILanguageModelCreateOptions {
   AILanguageModelSamplingParams? sampling_params;
-  // This can be any arbitrary string taken from the JavaScript API.
-  string? system_prompt;
   array<AILanguageModelPrompt> initial_prompts;
   array<AILanguageModelExpectedInput>? expected_inputs;
 };

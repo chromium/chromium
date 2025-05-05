@@ -252,14 +252,9 @@ PromptApiMetadata AILanguageModel::ParseMetadata(
 }
 
 void AILanguageModel::SetInitialPrompts(
-    const std::optional<std::string> system_prompt,
     std::vector<blink::mojom::AILanguageModelPromptPtr> initial_prompts,
     CreateLanguageModelCallback callback) {
   Context::ContextItem item;
-  if (system_prompt) {
-    item.prompts.emplace_back(MakeTextPrompt(
-        blink::mojom::AILanguageModelPromptRole::kSystem, *system_prompt));
-  }
   for (auto& prompt : initial_prompts) {
     item.prompts.emplace_back(std::move(prompt));
   }
@@ -287,8 +282,7 @@ void AILanguageModel::InitializeContextWithInitialPrompts(
   uint32_t size = result.value();
   uint32_t max_token = context_->max_tokens();
   if (size > max_token) {
-    // The session cannot be created if the system prompt contains more tokens
-    // than the limit.
+    // Session creation fails if initial prompts exceed the token limit.
     std::move(callback).Run(
         base::unexpected(
             blink::mojom::AIManagerCreateClientError::kInitialInputTooLarge),

@@ -45,8 +45,11 @@ dictionary LanguageModelCreateCoreOptions {
 dictionary LanguageModelCreateOptions : LanguageModelCreateCoreOptions {
   AbortSignal signal;
   CreateMonitorCallback monitor;
-  DOMString systemPrompt;
   sequence<LanguageModelPrompt> initialPrompts;
+
+  // DEPRECATED: Use `initialPrompts: [{role: 'system', content: ... }, ...]`.
+  // TODO(crbug.com/381974893): Remove this along with the console warning.
+  DOMString systemPrompt;
 };
 
 dictionary LanguageModelExpectedInput {

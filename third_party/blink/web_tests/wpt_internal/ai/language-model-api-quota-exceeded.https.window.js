@@ -8,12 +8,13 @@ promise_test(async t => {
   // Start a new session to get the max tokens.
   const session = await LanguageModel.create();
   const inputQuota = session.inputQuota;
-  // Keep doubling the system prompt until it exceeds the maxTokens.
-  let systemPrompt = "hello ";
-  while (await session.measureInputUsage(systemPrompt) <= inputQuota) {
-    systemPrompt += systemPrompt;
+  // Keep doubling an initial prompt until it exceeds the max tokens.
+  let initialPrompt = "hello ";
+  while (await session.measureInputUsage(initialPrompt) <= inputQuota) {
+    initialPrompt += initialPrompt;
   }
 
-  const promise = LanguageModel.create({ systemPrompt: systemPrompt });
+  const promise = LanguageModel.create(
+      { initialPrompts: [ { role: "system", content: initialPrompt } ] });
   await promise_rejects_dom(t, "QuotaExceededError", promise);
-}, "QuotaExceededError should be thrown if the system prompt is too large.");
+}, "QuotaExceededError is thrown when initial prompts are too large.");

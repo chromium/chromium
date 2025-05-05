@@ -145,7 +145,6 @@ class AILanguageModel : public AIContextBoundObject,
   // Format the initial prompts, gets the token count, updates the session,
   // and passes the session information back through the callback.
   void SetInitialPrompts(
-      const std::optional<std::string> system_prompt,
       std::vector<blink::mojom::AILanguageModelPromptPtr> initial_prompts,
       CreateLanguageModelCallback callback);
   blink::mojom::AILanguageModelInstanceInfoPtr GetLanguageModelInstanceInfo();

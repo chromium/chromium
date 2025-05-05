@@ -56,11 +56,6 @@ promise_test(async t => {
 }, 'Create with fractional topK should be rounded down');
 
 promise_test(async t => {
-  let session = await LanguageModel.create({ systemPrompt: 'you are a robot' });
-  assert_true(!!session);
-}, 'Create with systemPrompt');
-
-promise_test(async t => {
   let session = await LanguageModel.create({
     initialPrompts: [
       {role: 'system', content: 'you are a robot'},
@@ -90,22 +85,12 @@ promise_test(async t => {
 }, 'Create with system role not ordered first should fail');
 
 promise_test(async t => {
-  let session = await LanguageModel.create({
-    systemPrompt: 'you are a robot',
-    initialPrompts: [
-      { role: 'user', content: 'hello' }, { role: 'assistant', content: 'hello' }
-    ]
-  });
-  assert_true(!!session);
-}, 'Create with systemPrompt and non-system initialPrompts');
-
-promise_test(async t => {
   let result = LanguageModel.create({
-    systemPrompt: 'you are a robot',
     initialPrompts: [
       {role: 'system', content: 'you are a robot'},
+      {role: 'system', content: 'you are a kitten'},
       {role: 'user', content: 'hello'}, {role: 'assistant', content: 'hello'}
     ]
   });
   await promise_rejects_js(t, TypeError, result);
-}, 'Create with systemPrompt and system initialPrompts should fail');
+}, 'Create multiple system role entries should fail');
