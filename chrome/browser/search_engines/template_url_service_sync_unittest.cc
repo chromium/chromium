@@ -463,99 +463,6 @@ TEST_F(TemplateURLServiceSyncTest, SerializeDeserialize) {
   AssertEquals(*turl, *deserialized);
 }
 
-TEST_F(TemplateURLServiceSyncTest, GetAllSyncDataBasic) {
-  model()->Add(CreateTestTemplateURL(u"key1", "http://key1.com"));
-  model()->Add(CreateTestTemplateURL(u"key2", "http://key2.com"));
-  model()->Add(CreateTestTemplateURL(u"key3", "http://key3.com"));
-  syncer::SyncDataList all_sync_data =
-      model()->GetAllSyncData(syncer::SEARCH_ENGINES);
-
-  EXPECT_EQ(3U, all_sync_data.size());
-
-  for (syncer::SyncDataList::const_iterator iter = all_sync_data.begin();
-      iter != all_sync_data.end(); ++iter) {
-    std::string guid = GetGUID(*iter);
-    const TemplateURL* service_turl = model()->GetTemplateURLForGUID(guid);
-    std::unique_ptr<TemplateURL> deserialized(Deserialize(*iter));
-    AssertEquals(*service_turl, *deserialized);
-  }
-}
-
-TEST_F(TemplateURLServiceSyncTest, GetAllSyncDataWithOmniboxExtension) {
-  model()->Add(CreateTestTemplateURL(u"key1", "http://key1.com"));
-  model()->Add(CreateTestTemplateURL(u"key2", "http://key2.com"));
-  std::string fake_id("blahblahblah");
-  std::string fake_url = std::string(kOmniboxScheme) + "://" + fake_id;
-  model()->RegisterExtensionControlledTURL(fake_id, "unittest", "key3",
-                                           fake_url, Time(), false);
-  syncer::SyncDataList all_sync_data =
-      model()->GetAllSyncData(syncer::SEARCH_ENGINES);
-
-  EXPECT_EQ(2U, all_sync_data.size());
-
-  for (syncer::SyncDataList::const_iterator iter = all_sync_data.begin();
-      iter != all_sync_data.end(); ++iter) {
-    std::string guid = GetGUID(*iter);
-    const TemplateURL* service_turl = model()->GetTemplateURLForGUID(guid);
-    std::unique_ptr<TemplateURL> deserialized(Deserialize(*iter));
-    AssertEquals(*service_turl, *deserialized);
-  }
-}
-
-TEST_F(TemplateURLServiceSyncTest, GetAllSyncDataWithSearchOverrideExtension) {
-  model()->Add(CreateTestTemplateURL(u"key1", "http://key1.com"));
-  model()->Add(CreateTestTemplateURL(u"key2", "http://key2.com"));
-
-  // Change default search provider to an extension one.
-  std::unique_ptr<TemplateURLData> extension =
-      GenerateDummyTemplateURLData("extension");
-  auto ext_dse = std::make_unique<TemplateURL>(
-      *extension, TemplateURL::NORMAL_CONTROLLED_BY_EXTENSION, "ext", Time(),
-      true);
-  test_util_a_->AddExtensionControlledTURL(std::move(ext_dse));
-
-  const TemplateURL* ext_turl = model()->GetDefaultSearchProvider();
-  EXPECT_TRUE(model()->IsExtensionControlledDefaultSearch());
-
-  // Extension default search must not be synced across browsers.
-  syncer::SyncDataList all_sync_data =
-      model()->GetAllSyncData(syncer::SEARCH_ENGINES);
-  EXPECT_EQ(2U, all_sync_data.size());
-
-  for (auto sync_data : all_sync_data) {
-    std::string guid = GetGUID(sync_data);
-    const TemplateURL* service_turl = model()->GetTemplateURLForGUID(guid);
-    std::unique_ptr<TemplateURL> deserialized = Deserialize(sync_data);
-    AssertEquals(*service_turl, *deserialized);
-    EXPECT_NE(TemplateURL::NORMAL_CONTROLLED_BY_EXTENSION,
-              deserialized->type());
-    EXPECT_NE(ext_turl->keyword(), deserialized->keyword());
-    EXPECT_NE(ext_turl->short_name(), deserialized->short_name());
-    EXPECT_NE(ext_turl->url(), deserialized->url());
-  }
-}
-
-TEST_F(TemplateURLServiceSyncTest, GetAllSyncDataNoManagedEngines) {
-  model()->Add(CreateTestTemplateURL(u"key1", "http://key1.com"));
-  model()->Add(CreateTestTemplateURL(u"key2", "http://key2.com"));
-  model()->Add(CreateTestTemplateURL(
-      u"key3", "http://key3.com", std::string(), base::Time::FromTimeT(100),
-      false, TemplateURLData::PolicyOrigin::kDefaultSearchProvider));
-  syncer::SyncDataList all_sync_data =
-      model()->GetAllSyncData(syncer::SEARCH_ENGINES);
-
-  EXPECT_EQ(2U, all_sync_data.size());
-
-  for (syncer::SyncDataList::const_iterator iter = all_sync_data.begin();
-      iter != all_sync_data.end(); ++iter) {
-    std::string guid = GetGUID(*iter);
-    TemplateURL* service_turl = model()->GetTemplateURLForGUID(guid);
-    std::unique_ptr<TemplateURL> deserialized(Deserialize(*iter));
-    ASSERT_FALSE(service_turl->CreatedByPolicy());
-    AssertEquals(*service_turl, *deserialized);
-  }
-}
-
 TEST_F(TemplateURLServiceSyncTest, StartSyncEmpty) {
   ASSERT_TRUE(model()->GetAllSyncData(syncer::SEARCH_ENGINES).empty());
   MergeAndExpectNotify(syncer::SyncDataList(), 0);
@@ -3505,6 +3412,115 @@ TEST_F(TemplateURLServiceSyncTest,
   EXPECT_FALSE(processor()->contains_guid("guid4"));
 }
 
+class TemplateURLServiceSyncTestWithoutSeparateLocalAndAccountSearchEngines
+    : public TemplateURLServiceSyncTest {
+ public:
+  TemplateURLServiceSyncTestWithoutSeparateLocalAndAccountSearchEngines() {
+    feature_list_.InitAndDisableFeature(
+        syncer::kSeparateLocalAndAccountSearchEngines);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(TemplateURLServiceSyncTestWithoutSeparateLocalAndAccountSearchEngines,
+       GetAllSyncDataBasic) {
+  model()->Add(CreateTestTemplateURL(u"key1", "http://key1.com"));
+  model()->Add(CreateTestTemplateURL(u"key2", "http://key2.com"));
+  model()->Add(CreateTestTemplateURL(u"key3", "http://key3.com"));
+  syncer::SyncDataList all_sync_data =
+      model()->GetAllSyncData(syncer::SEARCH_ENGINES);
+
+  EXPECT_EQ(3U, all_sync_data.size());
+
+  for (syncer::SyncDataList::const_iterator iter = all_sync_data.begin();
+       iter != all_sync_data.end(); ++iter) {
+    std::string guid = GetGUID(*iter);
+    const TemplateURL* service_turl = model()->GetTemplateURLForGUID(guid);
+    std::unique_ptr<TemplateURL> deserialized(Deserialize(*iter));
+    AssertEquals(*service_turl, *deserialized);
+  }
+}
+
+TEST_F(TemplateURLServiceSyncTestWithoutSeparateLocalAndAccountSearchEngines,
+       GetAllSyncDataNoManagedEngines) {
+  model()->Add(CreateTestTemplateURL(u"key1", "http://key1.com"));
+  model()->Add(CreateTestTemplateURL(u"key2", "http://key2.com"));
+  model()->Add(CreateTestTemplateURL(
+      u"key3", "http://key3.com", std::string(), base::Time::FromTimeT(100),
+      false, TemplateURLData::PolicyOrigin::kDefaultSearchProvider));
+  syncer::SyncDataList all_sync_data =
+      model()->GetAllSyncData(syncer::SEARCH_ENGINES);
+
+  EXPECT_EQ(2U, all_sync_data.size());
+
+  for (syncer::SyncDataList::const_iterator iter = all_sync_data.begin();
+       iter != all_sync_data.end(); ++iter) {
+    std::string guid = GetGUID(*iter);
+    TemplateURL* service_turl = model()->GetTemplateURLForGUID(guid);
+    std::unique_ptr<TemplateURL> deserialized(Deserialize(*iter));
+    ASSERT_FALSE(service_turl->CreatedByPolicy());
+    AssertEquals(*service_turl, *deserialized);
+  }
+}
+
+TEST_F(TemplateURLServiceSyncTestWithoutSeparateLocalAndAccountSearchEngines,
+       GetAllSyncDataWithOmniboxExtension) {
+  model()->Add(CreateTestTemplateURL(u"key1", "http://key1.com"));
+  model()->Add(CreateTestTemplateURL(u"key2", "http://key2.com"));
+  std::string fake_id("blahblahblah");
+  std::string fake_url = std::string(kOmniboxScheme) + "://" + fake_id;
+  model()->RegisterExtensionControlledTURL(fake_id, "unittest", "key3",
+                                           fake_url, Time(), false);
+  syncer::SyncDataList all_sync_data =
+      model()->GetAllSyncData(syncer::SEARCH_ENGINES);
+
+  EXPECT_EQ(2U, all_sync_data.size());
+
+  for (syncer::SyncDataList::const_iterator iter = all_sync_data.begin();
+       iter != all_sync_data.end(); ++iter) {
+    std::string guid = GetGUID(*iter);
+    const TemplateURL* service_turl = model()->GetTemplateURLForGUID(guid);
+    std::unique_ptr<TemplateURL> deserialized(Deserialize(*iter));
+    AssertEquals(*service_turl, *deserialized);
+  }
+}
+
+TEST_F(TemplateURLServiceSyncTestWithoutSeparateLocalAndAccountSearchEngines,
+       GetAllSyncDataWithSearchOverrideExtension) {
+  model()->Add(CreateTestTemplateURL(u"key1", "http://key1.com"));
+  model()->Add(CreateTestTemplateURL(u"key2", "http://key2.com"));
+
+  // Change default search provider to an extension one.
+  std::unique_ptr<TemplateURLData> extension =
+      GenerateDummyTemplateURLData("extension");
+  auto ext_dse = std::make_unique<TemplateURL>(
+      *extension, TemplateURL::NORMAL_CONTROLLED_BY_EXTENSION, "ext", Time(),
+      true);
+  test_util_a_->AddExtensionControlledTURL(std::move(ext_dse));
+
+  const TemplateURL* ext_turl = model()->GetDefaultSearchProvider();
+  EXPECT_TRUE(model()->IsExtensionControlledDefaultSearch());
+
+  // Extension default search must not be synced across browsers.
+  syncer::SyncDataList all_sync_data =
+      model()->GetAllSyncData(syncer::SEARCH_ENGINES);
+  EXPECT_EQ(2U, all_sync_data.size());
+
+  for (auto sync_data : all_sync_data) {
+    std::string guid = GetGUID(sync_data);
+    const TemplateURL* service_turl = model()->GetTemplateURLForGUID(guid);
+    std::unique_ptr<TemplateURL> deserialized = Deserialize(sync_data);
+    AssertEquals(*service_turl, *deserialized);
+    EXPECT_NE(TemplateURL::NORMAL_CONTROLLED_BY_EXTENSION,
+              deserialized->type());
+    EXPECT_NE(ext_turl->keyword(), deserialized->keyword());
+    EXPECT_NE(ext_turl->short_name(), deserialized->short_name());
+    EXPECT_NE(ext_turl->url(), deserialized->url());
+  }
+}
+
 class TemplateURLServiceSyncTestWithSeparateLocalAndAccountSearchEngines
     : public TemplateURLServiceSyncTest {
  public:
@@ -3524,6 +3540,126 @@ class TemplateURLServiceSyncTestWithSeparateLocalAndAccountSearchEngines
  private:
   base::test::ScopedFeatureList feature_list_;
 };
+
+TEST_F(TemplateURLServiceSyncTestWithSeparateLocalAndAccountSearchEngines,
+       GetAllSyncDataPriorToSyncStart) {
+  model()->Add(CreateTestTemplateURL(u"key1", "http://key1.com"));
+  model()->Add(CreateTestTemplateURL(u"key2", "http://key2.com"));
+  model()->Add(CreateTestTemplateURL(u"key3", "http://key3.com"));
+  syncer::SyncDataList all_sync_data =
+      model()->GetAllSyncData(syncer::SEARCH_ENGINES);
+
+  EXPECT_TRUE(all_sync_data.empty());
+}
+
+TEST_F(TemplateURLServiceSyncTestWithSeparateLocalAndAccountSearchEngines,
+       GetAllSyncData) {
+  model()->MergeDataAndStartSyncing(syncer::SEARCH_ENGINES,
+                                    syncer::SyncDataList{}, PassProcessor());
+
+  model()->Add(CreateTestTemplateURL(u"key1", "http://key1.com"));
+  model()->Add(CreateTestTemplateURL(u"key2", "http://key2.com"));
+  model()->Add(CreateTestTemplateURL(u"key3", "http://key3.com"));
+  syncer::SyncDataList all_sync_data =
+      model()->GetAllSyncData(syncer::SEARCH_ENGINES);
+
+  EXPECT_EQ(3U, all_sync_data.size());
+
+  for (syncer::SyncDataList::const_iterator iter = all_sync_data.begin();
+       iter != all_sync_data.end(); ++iter) {
+    std::string guid = GetGUID(*iter);
+    const TemplateURL* service_turl = model()->GetTemplateURLForGUID(guid);
+    std::unique_ptr<TemplateURL> deserialized(Deserialize(*iter));
+    AssertEquals(*service_turl, *deserialized);
+  }
+}
+
+TEST_F(TemplateURLServiceSyncTestWithSeparateLocalAndAccountSearchEngines,
+       GetAllSyncDataNoManagedEngines) {
+  model()->MergeDataAndStartSyncing(syncer::SEARCH_ENGINES,
+                                    syncer::SyncDataList{}, PassProcessor());
+
+  model()->Add(CreateTestTemplateURL(u"key1", "http://key1.com"));
+  model()->Add(CreateTestTemplateURL(u"key2", "http://key2.com"));
+  model()->Add(CreateTestTemplateURL(
+      u"key3", "http://key3.com", std::string(), base::Time::FromTimeT(100),
+      false, TemplateURLData::PolicyOrigin::kDefaultSearchProvider));
+  syncer::SyncDataList all_sync_data =
+      model()->GetAllSyncData(syncer::SEARCH_ENGINES);
+
+  EXPECT_EQ(2U, all_sync_data.size());
+
+  for (syncer::SyncDataList::const_iterator iter = all_sync_data.begin();
+       iter != all_sync_data.end(); ++iter) {
+    std::string guid = GetGUID(*iter);
+    TemplateURL* service_turl = model()->GetTemplateURLForGUID(guid);
+    std::unique_ptr<TemplateURL> deserialized(Deserialize(*iter));
+    ASSERT_FALSE(service_turl->CreatedByPolicy());
+    AssertEquals(*service_turl, *deserialized);
+  }
+}
+
+TEST_F(TemplateURLServiceSyncTestWithSeparateLocalAndAccountSearchEngines,
+       GetAllSyncDataWithOmniboxExtension) {
+  model()->MergeDataAndStartSyncing(syncer::SEARCH_ENGINES,
+                                    syncer::SyncDataList{}, PassProcessor());
+
+  model()->Add(CreateTestTemplateURL(u"key1", "http://key1.com"));
+  model()->Add(CreateTestTemplateURL(u"key2", "http://key2.com"));
+  std::string fake_id("blahblahblah");
+  std::string fake_url = std::string(kOmniboxScheme) + "://" + fake_id;
+  model()->RegisterExtensionControlledTURL(fake_id, "unittest", "key3",
+                                           fake_url, Time(), false);
+  syncer::SyncDataList all_sync_data =
+      model()->GetAllSyncData(syncer::SEARCH_ENGINES);
+
+  EXPECT_EQ(2U, all_sync_data.size());
+
+  for (syncer::SyncDataList::const_iterator iter = all_sync_data.begin();
+       iter != all_sync_data.end(); ++iter) {
+    std::string guid = GetGUID(*iter);
+    const TemplateURL* service_turl = model()->GetTemplateURLForGUID(guid);
+    std::unique_ptr<TemplateURL> deserialized(Deserialize(*iter));
+    AssertEquals(*service_turl, *deserialized);
+  }
+}
+
+TEST_F(TemplateURLServiceSyncTestWithSeparateLocalAndAccountSearchEngines,
+       GetAllSyncDataWithSearchOverrideExtension) {
+  model()->MergeDataAndStartSyncing(syncer::SEARCH_ENGINES,
+                                    syncer::SyncDataList{}, PassProcessor());
+
+  model()->Add(CreateTestTemplateURL(u"key1", "http://key1.com"));
+  model()->Add(CreateTestTemplateURL(u"key2", "http://key2.com"));
+
+  // Change default search provider to an extension one.
+  std::unique_ptr<TemplateURLData> extension =
+      GenerateDummyTemplateURLData("extension");
+  auto ext_dse = std::make_unique<TemplateURL>(
+      *extension, TemplateURL::NORMAL_CONTROLLED_BY_EXTENSION, "ext", Time(),
+      true);
+  test_util_a_->AddExtensionControlledTURL(std::move(ext_dse));
+
+  const TemplateURL* ext_turl = model()->GetDefaultSearchProvider();
+  EXPECT_TRUE(model()->IsExtensionControlledDefaultSearch());
+
+  // Extension default search must not be synced across browsers.
+  syncer::SyncDataList all_sync_data =
+      model()->GetAllSyncData(syncer::SEARCH_ENGINES);
+  EXPECT_EQ(2U, all_sync_data.size());
+
+  for (auto sync_data : all_sync_data) {
+    std::string guid = GetGUID(sync_data);
+    const TemplateURL* service_turl = model()->GetTemplateURLForGUID(guid);
+    std::unique_ptr<TemplateURL> deserialized = Deserialize(sync_data);
+    AssertEquals(*service_turl, *deserialized);
+    EXPECT_NE(TemplateURL::NORMAL_CONTROLLED_BY_EXTENSION,
+              deserialized->type());
+    EXPECT_NE(ext_turl->keyword(), deserialized->keyword());
+    EXPECT_NE(ext_turl->short_name(), deserialized->short_name());
+    EXPECT_NE(ext_turl->url(), deserialized->url());
+  }
+}
 
 TEST_F(TemplateURLServiceSyncTestWithSeparateLocalAndAccountSearchEngines,
        MergeIntoEmpty) {
