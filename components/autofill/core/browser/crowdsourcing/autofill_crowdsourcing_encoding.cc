@@ -406,8 +406,9 @@ void EncodeFormFieldsForUpload(
           field->value(ValueSemantics::kCurrent));
     }
 
-    if (auto it = fields.find(field->global_id()); it != fields.end()) {
-      for (const std::u16string& format_string : it->second.format_strings) {
+    if (field_options) {
+      for (const std::u16string& format_string :
+           field_options->format_strings) {
         DCHECK(data_util::IsValidDateFormat(format_string));
         auto* added_format_string = added_field->add_format_string();
         added_format_string->set_type(FormatString_Type_DATE);
