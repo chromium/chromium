@@ -69,7 +69,11 @@ void ScrollButtonPseudoElement::HandleButtonActivation() {
   PaintLayerScrollableArea* scrollable_area =
       scroller->IsDocumentElement() ? scroller->GetFrameView()->LayoutViewport()
                                     : scroller->GetScrollableArea();
-  CHECK(scrollable_area);
+  // Future proof in case of possibility to activate scroll button
+  // without an appropriate scroller via a click event from JS.
+  if (!scrollable_area) {
+    return;
+  }
 
   LogicalToPhysical<bool> mapping(
       scrolling_element.GetComputedStyle()->GetWritingDirection(),
@@ -136,6 +140,15 @@ bool ScrollButtonPseudoElement::UpdateSnapshotInternal() {
       DynamicTo<LayoutBox>(UltimateOriginatingElement().GetLayoutObject());
   if (!scroller ||
       (!scroller->IsScrollContainer() && !scroller->IsDocumentElement())) {
+    // Make sure the scroll button is disabled if the originating element
+    // is not an appropriate scroller.
+    if (enabled_) {
+      enabled_ = false;
+      SetNeedsStyleRecalc(
+          StyleChangeType::kLocalStyleChange,
+          StyleChangeReasonForTracing::Create(style_change_reason::kControl));
+      return false;
+    }
     return true;
   }
   ScrollableArea* scrollable_area =
