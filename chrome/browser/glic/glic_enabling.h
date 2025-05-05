@@ -88,6 +88,49 @@ class GlicEnabling : public signin::IdentityManager::Observer {
   // * The profile has completed the first run experience
   static bool ShouldShowSettingsPage(Profile* profile);
 
+  struct ProfileEnablement {
+    // These conditions are checked first and may prevent following checks from
+    // occurring.
+    bool feature_disabled : 1 = false;
+    bool not_regular_profile : 1 = false;
+
+    // These are checked separately, so may be present in various combinations.
+    bool not_rolled_out : 1 = false;
+    bool primary_account_not_capable : 1 = false;
+    bool disallowed_by_chrome_policy : 1 = false;
+    bool disallowed_by_remote_admin : 1 = false;
+    bool disallowed_by_remote_other : 1 = false;
+    bool not_consented : 1 = false;
+
+    bool IsProfileEligible() const {
+      return !feature_disabled && !not_regular_profile;
+    }
+
+    bool IsEnabled() const {
+      return IsProfileEligible() && !not_rolled_out &&
+             !primary_account_not_capable && !DisallowedByAdmin() &&
+             !disallowed_by_remote_other;
+    }
+
+    bool IsEnabledAndConsented() const { return IsEnabled() && !not_consented; }
+
+    bool ShouldShowSettingsPage() const {
+      // If the feature is disabled by enterprise policy, the settings page
+      // should be shown (it will be shown in a policy-disabled state) only if
+      // all other non-enterprise conditions are met: the account has all
+      // appropriate permissions and has previously completed the FRE before the
+      // policy went into effect.
+      return IsProfileEligible() && !not_rolled_out &&
+             !primary_account_not_capable && !disallowed_by_remote_other &&
+             !not_consented;
+    }
+
+    bool DisallowedByAdmin() const {
+      return disallowed_by_chrome_policy || disallowed_by_remote_admin;
+    }
+  };
+  static ProfileEnablement EnablementForProfile(Profile* profile);
+
   explicit GlicEnabling(Profile* profile,
                         ProfileAttributesStorage* profile_attributes_storage);
   ~GlicEnabling() override;

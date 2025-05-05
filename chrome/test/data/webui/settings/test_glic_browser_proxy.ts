@@ -14,6 +14,7 @@ export class TestGlicBrowserProxy extends TestBrowserProxy implements
     GlicBrowserProxy {
   private glicShortcutResponse_: string = '';
   private glicFocusToggleShortcutResponse_: string = '';
+  private glicDisallowedByAdmin_: boolean = false;
 
   constructor() {
     super([
@@ -23,6 +24,7 @@ export class TestGlicBrowserProxy extends TestBrowserProxy implements
       'getGlicFocusToggleShortcut',
       'setGlicFocusToggleShortcut',
       'setShortcutSuspensionState',
+      'getDisallowedByAdmin',
     ]);
   }
 
@@ -77,5 +79,14 @@ export class TestGlicBrowserProxy extends TestBrowserProxy implements
 
   setShortcutSuspensionState(shouldSuspend: boolean) {
     this.methodCalled('setShortcutSuspensionState', shouldSuspend);
+  }
+
+  getDisallowedByAdmin() {
+    this.methodCalled('getDisallowedByAdmin');
+    return Promise.resolve(this.glicDisallowedByAdmin_);
+  }
+
+  setDisallowedByAdmin(disallowed: boolean) {
+    this.glicDisallowedByAdmin_ = disallowed;
   }
 }

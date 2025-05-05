@@ -16,6 +16,7 @@ import {CrSettingsPrefs} from '/shared/settings/prefs/prefs_types.js';
 import type {CrShortcutInputElement} from 'chrome://resources/cr_components/cr_shortcut_input/cr_shortcut_input.js';
 import {HelpBubbleMixin} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -45,7 +46,7 @@ const OS_WIDGET_KEYBOARD_SHORTCUT_ELEMENT_ID =
     'kGlicOsWidgetKeyboardShortcutElementId';
 
 const SettingsGlicPageElementBase =
-    HelpBubbleMixin(I18nMixin(PrefsMixin(PolymerElement)));
+    HelpBubbleMixin(I18nMixin(WebUiListenerMixin(PrefsMixin(PolymerElement))));
 
 export class SettingsGlicPageElement extends SettingsGlicPageElementBase {
   static get is() {
@@ -58,6 +59,11 @@ export class SettingsGlicPageElement extends SettingsGlicPageElementBase {
 
   static get properties() {
     return {
+      disallowedByAdmin_: {
+        type: Boolean,
+        value: false,
+      },
+
       registeredShortcut_: {
         type: String,
         value: '',
@@ -90,6 +96,7 @@ export class SettingsGlicPageElement extends SettingsGlicPageElementBase {
   private shortcutInput_: string;
   private focusToggleShortcutInput_: string;
   private removedShortcut_: string|null = null;
+  declare private disallowedByAdmin_: boolean;
   declare private registeredShortcut_: string;
   declare private registeredFocusToggleShortcut_: string;
   declare private fakePref_: chrome.settingsPrivate.PrefObject;
@@ -100,6 +107,11 @@ export class SettingsGlicPageElement extends SettingsGlicPageElementBase {
 
   override async connectedCallback() {
     super.connectedCallback();
+    this.browserProxy_.getDisallowedByAdmin().then(
+        this.disallowedByAdminChanged_.bind(this));
+    this.addWebUiListener(
+        'glic-disallowed-by-admin-changed',
+        this.disallowedByAdminChanged_.bind(this));
     this.registeredShortcut_ = await this.browserProxy_.getGlicShortcut();
     this.registeredFocusToggleShortcut_ =
         await this.browserProxy_.getGlicFocusToggleShortcut();
@@ -116,7 +128,7 @@ export class SettingsGlicPageElement extends SettingsGlicPageElementBase {
 
   private async onEnabledTemplateDomChange_() {
     await CrSettingsPrefs.initialized;
-    if (!this.isEnabledByPolicy_()) {
+    if (this.disallowedByAdmin_) {
       return;
     }
 
@@ -209,15 +221,6 @@ export class SettingsGlicPageElement extends SettingsGlicPageElementBase {
     }
   }
 
-  private shouldShowKeyboardShortcut_(launcherEnabled: boolean): boolean {
-    return this.isEnabledByPolicy_() && launcherEnabled;
-  }
-
-  private isEnabledByPolicy_(): boolean {
-    return this.getPref<number>(SettingsGlicPageFeaturePrefName.SETTINGS_POLICY)
-               .value === 0;
-  }
-
   private onTabAccessToggleChange_(event: CustomEvent) {
     const target = event.target as SettingsToggleButtonElement;
     const enabled = target.checked;
@@ -257,6 +260,10 @@ export class SettingsGlicPageElement extends SettingsGlicPageElementBase {
     // Prevent navigation to the Glic page if only the learn more link was
     // clicked.
     event.stopPropagation();
+  }
+
+  private disallowedByAdminChanged_(disallowed: boolean) {
+    this.disallowedByAdmin_ = disallowed;
   }
 }
 
