@@ -105,8 +105,8 @@ content::AllowServiceWorkerResult AllowServiceWorker(
       cookie_settings_metadata;
 
   bool allow_cookies = cookie_settings->IsFullCookieAccessAllowed(
-      scope, site_for_cookies, top_frame_origin,
-      cookie_settings->SettingOverridesForStorage(), &cookie_settings_metadata);
+      scope, site_for_cookies, top_frame_origin, net::CookieSettingOverrides(),
+      &cookie_settings_metadata);
 
   if (!allow_cookies &&
       PartitionedStorageByDefaultAllowed(cookie_settings_metadata)) {
@@ -141,7 +141,7 @@ bool AllowSharedWorker(
 
   bool allow = cookie_settings->IsFullCookieAccessAllowed(
       worker_url, site_for_cookies, top_frame_origin,
-      cookie_settings->SettingOverridesForStorage(), &cookie_settings_metadata);
+      net::CookieSettingOverrides(), &cookie_settings_metadata);
 
   if (!allow && PartitionedStorageByDefaultAllowed(cookie_settings_metadata)) {
     allow = true;

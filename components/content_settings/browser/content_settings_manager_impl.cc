@@ -160,8 +160,8 @@ void ContentSettingsManagerImpl::AllowStorageAccess(
   CookieSettingsBase::CookieSettingWithMetadata cookie_settings;
 
   bool allowed = cookie_settings_->IsFullCookieAccessAllowed(
-      url, site_for_cookies, top_frame_origin,
-      cookie_settings_->SettingOverridesForStorage(), &cookie_settings);
+      url, site_for_cookies, top_frame_origin, net::CookieSettingOverrides(),
+      &cookie_settings);
 
   //  If storage partitioning is active, third-party partitioned storage is
   //  allowed by default, and access is only blocked due to general third-party

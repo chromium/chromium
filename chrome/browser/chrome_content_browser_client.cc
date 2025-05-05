@@ -7823,7 +7823,7 @@ void ChromeContentBrowserClient::GetMediaDeviceIDSalt(
           Profile::FromBrowserContext(browser_context));
   bool allowed = cookie_settings->IsFullCookieAccessAllowed(
                      url, site_for_cookies, top_frame_origin,
-                     cookie_settings->SettingOverridesForStorage()) ||
+                     net::CookieSettingOverrides()) ||
                  (tracking_protection->IsTrackingProtection3pcdEnabled() &&
                   !tracking_protection->AreAllThirdPartyCookiesBlocked());
   ChromeBrowsingDataModelDelegate::BrowsingDataAccessed(
@@ -8546,7 +8546,7 @@ bool ChromeContentBrowserClient::AreDeprecatedAutomaticBeaconCredentialsAllowed(
           Profile::FromBrowserContext(browser_context));
   return cookie_settings->IsFullCookieAccessAllowed(
       destination_url, net::SiteForCookies(), top_frame_origin,
-      cookie_settings->SettingOverridesForStorage());
+      net::CookieSettingOverrides());
 }
 
 bool ChromeContentBrowserClient::

@@ -331,36 +331,5 @@ TEST_F(CookieSettingsBaseTest, IsValidLegacyAccessSetting) {
 // components/content_settings/core/browser/cookie_settings_unittest.cc and
 // services/network/cookie_settings_unittest.cc
 
-class CookieSettingsBaseStorageAccessAPITest
-    : public testing::TestWithParam<bool> {
- public:
-  CookieSettingsBaseStorageAccessAPITest() {
-    CookieSettingsBase::SetStorageAccessAPIGrantsUnpartitionedStorageForTesting(
-        PermissionGrantsUnpartitionedStorage());
-  }
-
-  bool PermissionGrantsUnpartitionedStorage() const { return GetParam(); }
-
- private:
-};
-
-TEST_P(CookieSettingsBaseStorageAccessAPITest,
-       SettingOverridesForStorageAccessAPIs) {
-  CallbackCookieSettings settings(CONTENT_SETTING_ALLOW);
-
-  net::CookieSettingOverrides overrides = settings.SettingOverridesForStorage();
-
-  EXPECT_EQ(
-      overrides.Has(net::CookieSettingOverride::kStorageAccessGrantEligible),
-      PermissionGrantsUnpartitionedStorage());
-  EXPECT_FALSE(overrides.Has(
-      net::CookieSettingOverride::kTopLevelStorageAccessGrantEligible));
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    /* no prefix */,
-    CookieSettingsBaseStorageAccessAPITest,
-    testing::Bool());
-
 }  // namespace
 }  // namespace content_settings

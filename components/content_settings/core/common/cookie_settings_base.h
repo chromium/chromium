@@ -388,18 +388,6 @@ class CookieSettingsBase {
   // access.
   static bool IsValidSettingForLegacyAccess(ContentSetting setting);
 
-  // Returns a set of overrides that includes Storage Access API and Top-Level
-  // Storage Access API overrides iff the config booleans indicate that Storage
-  // Access API and Top-Level Storage Access API should unlock access to DOM
-  // storage.
-  net::CookieSettingOverrides SettingOverridesForStorage() const;
-
-  // Controls whether Storage Access API grants allow access to unpartitioned
-  // *storage*, in addition to unpartitioned cookies. This is static so that all
-  // instances behave consistently.
-  static void SetStorageAccessAPIGrantsUnpartitionedStorageForTesting(
-      bool grants);
-
   // Returns an indication of whether the context given by `url`,
   // `top_frame_origin`, and `site_for_cookies` has storage access,
   // given a particular set of `overrides`. Returns nullopt for same-site
@@ -575,8 +563,6 @@ class CookieSettingsBase {
   // Returns whether |scheme| is always allowed to access 3p cookies.
   virtual bool IsThirdPartyCookiesAllowedScheme(
       const std::string& scheme) const = 0;
-
-  static bool storage_access_api_grants_unpartitioned_storage_;
 };
 
 }  // namespace content_settings
