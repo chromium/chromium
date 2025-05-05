@@ -1540,10 +1540,10 @@ TEST_F(PageInfoTest, ShowInfoBarWhenAllowingThirdPartyCookies) {
   // its call chain.
   EXPECT_CALL(*mock_ui(), SetCookieInfo(_)).Times(2);
 
-  page_info()->OnStatusChanged(
-      /*controls_visible=*/true, /*protections_on=*/true,
-      CookieControlsEnforcement::kNoEnforcement,
-      CookieBlocking3pcdStatus::kNotIn3pcd, base::Time());
+  page_info()->OnStatusChanged(CookieControlsState::k3pcsBlocked,
+                               CookieControlsEnforcement::kNoEnforcement,
+                               CookieBlocking3pcdStatus::kNotIn3pcd,
+                               base::Time());
 
   EXPECT_EQ(0u, infobar_manager()->infobars().size());
   page_info()->OnThirdPartyToggleClicked(/*block_third_party_cookies=*/false);
@@ -1563,10 +1563,10 @@ TEST_F(PageInfoTest, ShowInfoBarWhenBlockingThirdPartyCookies) {
   Mock::VerifyAndClearExpectations(mock_ui());
   EXPECT_CALL(*mock_ui(), SetCookieInfo(_)).Times(2);
 
-  page_info()->OnStatusChanged(
-      /*controls_visible=*/true, /*protections_on=*/false,
-      CookieControlsEnforcement::kNoEnforcement,
-      CookieBlocking3pcdStatus::kNotIn3pcd, base::Time());
+  page_info()->OnStatusChanged(CookieControlsState::k3pcsAllowed,
+                               CookieControlsEnforcement::kNoEnforcement,
+                               CookieBlocking3pcdStatus::kNotIn3pcd,
+                               base::Time());
 
   EXPECT_EQ(0u, infobar_manager()->infobars().size());
   page_info()->OnThirdPartyToggleClicked(/*block_third_party_cookies=*/true);

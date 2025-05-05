@@ -9,6 +9,7 @@
 #include "base/time/time.h"
 #include "components/content_settings/core/common/cookie_blocking_3pcd_status.h"
 #include "components/content_settings/core/common/cookie_controls_enforcement.h"
+#include "components/content_settings/core/common/cookie_controls_state.h"
 
 namespace content_settings {
 
@@ -18,15 +19,12 @@ class CookieControlsObserver : public base::CheckedObserver {
   // Called when the state we display in the cookie controls UI has changed.
   // Also called as part of UI initialization to trigger the update
   virtual void OnStatusChanged(
-      // Whether Tracking Protection controls should be shown.
-      bool controls_visible,
-      // Whether protections (3PC blocking and ACT features) are on for the
-      // current site. NOTE: for the 3PC toggle this is true when the toggle is
-      // off/3PC are blocked.
-      bool protections_on,
+      // The state of the controls for the UI to change.
+      CookieControlsState controls_state,
       // Represents if cookie settings are enforced (ex. by policy).
       CookieControlsEnforcement enforcement,
       // 3PC blocking status for 3PCD: whether 3PC are limited or all blocked.
+      // NOTE: Will be obsolete and removed with the cleanup of Mode B.
       CookieBlocking3pcdStatus blocking_status,
       // The expiration time of the active UB exception if it is present.
       base::Time expiration) {}

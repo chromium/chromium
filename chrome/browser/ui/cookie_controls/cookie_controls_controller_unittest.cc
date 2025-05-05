@@ -21,6 +21,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/cookie_blocking_3pcd_status.h"
 #include "components/content_settings/core/common/cookie_controls_enforcement.h"
+#include "components/content_settings/core/common/cookie_controls_state.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/content_settings/core/common/third_party_site_data_access_type.h"
@@ -66,8 +67,7 @@ class MockCookieControlsObserver
  public:
   MOCK_METHOD(void,
               OnStatusChanged,
-              (/*controls_visible*/ bool,
-               /*protections_on*/ bool,
+              (CookieControlsState,
                CookieControlsEnforcement,
                CookieBlocking3pcdStatus,
                base::Time));
@@ -281,11 +281,11 @@ TEST_F(CookieControlsUserBypassTest, SiteCounts) {
   // Visiting a website should enable the UI.
   NavigateAndCommit(GURL(kUrl));
 
-  EXPECT_CALL(*mock(),
-              OnStatusChanged(
-                  /*controls_visible=*/true, /*protections_on=*/true,
-                  CookieControlsEnforcement::kNoEnforcement,
-                  CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
+  EXPECT_CALL(
+      *mock(),
+      OnStatusChanged(CookieControlsState::k3pcsBlocked,
+                      CookieControlsEnforcement::kNoEnforcement,
+                      CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
   EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
                            /*icon_visible=*/false, /*protections_on=*/true,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
@@ -310,7 +310,7 @@ TEST_F(CookieControlsUserBypassTest, SiteCounts) {
 
   // Enabling third-party cookies records metrics.
   EXPECT_CALL(*mock(), OnStatusChanged(
-                           /*controls_visible=*/true, /*protections_on=*/false,
+                           CookieControlsState::k3pcsAllowed,
                            CookieControlsEnforcement::kNoEnforcement,
                            CookieBlocking3pcdStatus::kNotIn3pcd, expiration()));
   EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
@@ -327,11 +327,11 @@ TEST_F(CookieControlsUserBypassTest, SiteCounts) {
 }
 
 TEST_F(CookieControlsUserBypassTest, NewTabPage) {
-  EXPECT_CALL(*mock(),
-              OnStatusChanged(
-                  /*controls_visible=*/false, /*protections_on=*/false,
-                  CookieControlsEnforcement::kNoEnforcement,
-                  CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
+  EXPECT_CALL(
+      *mock(),
+      OnStatusChanged(CookieControlsState::kHidden,
+                      CookieControlsEnforcement::kNoEnforcement,
+                      CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
   EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
                            /*icon_visible=*/false, /*protections_on=*/false,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
@@ -341,11 +341,11 @@ TEST_F(CookieControlsUserBypassTest, NewTabPage) {
 
 TEST_F(CookieControlsUserBypassTest, PreferenceDisabled) {
   NavigateAndCommit(GURL(kUrl));
-  EXPECT_CALL(*mock(),
-              OnStatusChanged(
-                  /*controls_visible=*/true, /*protections_on=*/true,
-                  CookieControlsEnforcement::kNoEnforcement,
-                  CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
+  EXPECT_CALL(
+      *mock(),
+      OnStatusChanged(CookieControlsState::k3pcsBlocked,
+                      CookieControlsEnforcement::kNoEnforcement,
+                      CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
   EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
                            /*icon_visible=*/false, /*protections_on=*/true,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
@@ -354,11 +354,11 @@ TEST_F(CookieControlsUserBypassTest, PreferenceDisabled) {
   testing::Mock::VerifyAndClearExpectations(mock());
 
   // Disabling the feature should disable the UI.
-  EXPECT_CALL(*mock(),
-              OnStatusChanged(
-                  /*controls_visible=*/false, /*protections_on=*/false,
-                  CookieControlsEnforcement::kNoEnforcement,
-                  CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
+  EXPECT_CALL(
+      *mock(),
+      OnStatusChanged(CookieControlsState::kHidden,
+                      CookieControlsEnforcement::kNoEnforcement,
+                      CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
   EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
                            /*icon_visible=*/false, /*protections_on=*/false,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
@@ -371,11 +371,11 @@ TEST_F(CookieControlsUserBypassTest, PreferenceDisabled) {
 TEST_F(CookieControlsUserBypassTest, AllCookiesBlocked) {
   base::HistogramTester t;
   NavigateAndCommit(GURL(kUrl));
-  EXPECT_CALL(*mock(),
-              OnStatusChanged(
-                  /*controls_visible=*/true, /*protections_on=*/true,
-                  CookieControlsEnforcement::kNoEnforcement,
-                  CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
+  EXPECT_CALL(
+      *mock(),
+      OnStatusChanged(CookieControlsState::k3pcsBlocked,
+                      CookieControlsEnforcement::kNoEnforcement,
+                      CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
   EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
                            /*icon_visible=*/false, /*protections_on=*/true,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
@@ -384,11 +384,11 @@ TEST_F(CookieControlsUserBypassTest, AllCookiesBlocked) {
   testing::Mock::VerifyAndClearExpectations(mock());
 
   // Disable all cookies - an OnStatusCallback should get triggered.
-  EXPECT_CALL(*mock(),
-              OnStatusChanged(
-                  /*controls_visible=*/true, /*protections_on=*/true,
-                  CookieControlsEnforcement::kNoEnforcement,
-                  CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
+  EXPECT_CALL(
+      *mock(),
+      OnStatusChanged(CookieControlsState::k3pcsBlocked,
+                      CookieControlsEnforcement::kNoEnforcement,
+                      CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
   EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
                            /*icon_visible=*/false, /*protections_on=*/true,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
@@ -398,7 +398,7 @@ TEST_F(CookieControlsUserBypassTest, AllCookiesBlocked) {
 
   // Disable cookie blocking for example.com.
   EXPECT_CALL(*mock(), OnStatusChanged(
-                           /*controls_visible=*/true, /*protections_on=*/false,
+                           CookieControlsState::k3pcsAllowed,
                            CookieControlsEnforcement::kNoEnforcement,
                            CookieBlocking3pcdStatus::kNotIn3pcd, expiration()));
   EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
@@ -417,11 +417,11 @@ TEST_F(CookieControlsUserBypassTest, AllCookiesBlocked) {
 
 TEST_F(CookieControlsUserBypassTest, DisableForSite) {
   NavigateAndCommit(GURL(kUrl));
-  EXPECT_CALL(*mock(),
-              OnStatusChanged(
-                  /*controls_visible=*/true, /*protections_on=*/true,
-                  CookieControlsEnforcement::kNoEnforcement,
-                  CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
+  EXPECT_CALL(
+      *mock(),
+      OnStatusChanged(CookieControlsState::k3pcsBlocked,
+                      CookieControlsEnforcement::kNoEnforcement,
+                      CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
   EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
                            /*icon_visible=*/false, /*protections_on=*/true,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
@@ -431,7 +431,7 @@ TEST_F(CookieControlsUserBypassTest, DisableForSite) {
 
   // Disabling cookie blocking for example.com should update the ui.
   EXPECT_CALL(*mock(), OnStatusChanged(
-                           /*controls_visible=*/true, /*protections_on=*/false,
+                           CookieControlsState::k3pcsAllowed,
                            CookieControlsEnforcement::kNoEnforcement,
                            CookieBlocking3pcdStatus::kNotIn3pcd, expiration()));
   EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
@@ -443,11 +443,11 @@ TEST_F(CookieControlsUserBypassTest, DisableForSite) {
 
   // Visiting some other site, should re-enable protections.
   NavigateAndCommit(GURL("https://somethingelse.com"));
-  EXPECT_CALL(*mock(),
-              OnStatusChanged(
-                  /*controls_visible=*/true, /*protections_on=*/true,
-                  CookieControlsEnforcement::kNoEnforcement,
-                  CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
+  EXPECT_CALL(
+      *mock(),
+      OnStatusChanged(CookieControlsState::k3pcsBlocked,
+                      CookieControlsEnforcement::kNoEnforcement,
+                      CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
   EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
                            /*icon_visible=*/false, /*protections_on=*/true,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
@@ -458,7 +458,7 @@ TEST_F(CookieControlsUserBypassTest, DisableForSite) {
   // Visiting example.com should turn protections off.
   NavigateAndCommit(GURL(kUrl));
   EXPECT_CALL(*mock(), OnStatusChanged(
-                           /*controls_visible=*/true, /*protections_on=*/false,
+                           CookieControlsState::k3pcsAllowed,
                            CookieControlsEnforcement::kNoEnforcement,
                            CookieBlocking3pcdStatus::kNotIn3pcd, expiration()));
   EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
@@ -469,11 +469,11 @@ TEST_F(CookieControlsUserBypassTest, DisableForSite) {
   testing::Mock::VerifyAndClearExpectations(mock());
 
   // Enabling example.com again should re-enable protections.
-  EXPECT_CALL(*mock(),
-              OnStatusChanged(
-                  /*controls_visible=*/true, /*protections_on=*/true,
-                  CookieControlsEnforcement::kNoEnforcement,
-                  CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
+  EXPECT_CALL(
+      *mock(),
+      OnStatusChanged(CookieControlsState::k3pcsBlocked,
+                      CookieControlsEnforcement::kNoEnforcement,
+                      CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
   EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
                            /*icon_visible=*/false, /*protections_on=*/true,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
@@ -485,11 +485,11 @@ TEST_F(CookieControlsUserBypassTest, DisableForSite) {
 TEST_F(CookieControlsUserBypassTest, Incognito) {
   NavigateAndCommit(GURL(kUrl));
 
-  EXPECT_CALL(*mock(),
-              OnStatusChanged(
-                  /*controls_visible=*/true, /*protections_on=*/true,
-                  CookieControlsEnforcement::kNoEnforcement,
-                  CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
+  EXPECT_CALL(
+      *mock(),
+      OnStatusChanged(CookieControlsState::k3pcsBlocked,
+                      CookieControlsEnforcement::kNoEnforcement,
+                      CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
   EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
                            /*icon_visible=*/false, /*protections_on=*/true,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
@@ -518,11 +518,11 @@ TEST_F(CookieControlsUserBypassTest, Incognito) {
 
   // Navigate incognito web_contents to the same URL.
   tester->NavigateAndCommit(GURL(kUrl));
-  EXPECT_CALL(incognito_mock,
-              OnStatusChanged(
-                  /*controls_visible=*/true, /*protections_on=*/true,
-                  CookieControlsEnforcement::kNoEnforcement,
-                  CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
+  EXPECT_CALL(
+      incognito_mock,
+      OnStatusChanged(CookieControlsState::k3pcsBlocked,
+                      CookieControlsEnforcement::kNoEnforcement,
+                      CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
   EXPECT_CALL(
       incognito_mock,
       OnCookieControlsIconStatusChanged(
@@ -535,7 +535,7 @@ TEST_F(CookieControlsUserBypassTest, Incognito) {
   // Allow cookies in regular mode should also allow in incognito but enforced
   // through regular mode.
   EXPECT_CALL(*mock(), OnStatusChanged(
-                           /*controls_visible=*/true, /*protections_on=*/false,
+                           CookieControlsState::k3pcsAllowed,
                            CookieControlsEnforcement::kNoEnforcement,
                            CookieBlocking3pcdStatus::kNotIn3pcd, expiration()));
   EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
@@ -543,11 +543,11 @@ TEST_F(CookieControlsUserBypassTest, Incognito) {
                            CookieBlocking3pcdStatus::kNotIn3pcd,
                            /*should_highlight=*/false));
 
-  EXPECT_CALL(incognito_mock,
-              OnStatusChanged(
-                  /*controls_visible=*/true, /*protections_on=*/false,
-                  CookieControlsEnforcement::kEnforcedByCookieSetting,
-                  CookieBlocking3pcdStatus::kNotIn3pcd, expiration()));
+  EXPECT_CALL(
+      incognito_mock,
+      OnStatusChanged(CookieControlsState::k3pcsAllowed,
+                      CookieControlsEnforcement::kEnforcedByCookieSetting,
+                      CookieBlocking3pcdStatus::kNotIn3pcd, expiration()));
   EXPECT_CALL(
       incognito_mock,
       OnCookieControlsIconStatusChanged(
@@ -559,24 +559,24 @@ TEST_F(CookieControlsUserBypassTest, Incognito) {
 
   // This should be enforced regardless of the default cookie setting in the
   // default profile.
-  EXPECT_CALL(*mock(), OnStatusChanged(
-                           /*controls_visible=*/false, /*protections_on=*/false,
-                           CookieControlsEnforcement::kNoEnforcement,
-                           CookieBlocking3pcdStatus::kNotIn3pcd,
-                           // Although there is an allow exception with an
-                           // expiration, because the default allow never
-                           // expires, zero_expiration is correct.
-                           zero_expiration()));
+  EXPECT_CALL(*mock(),
+              OnStatusChanged(CookieControlsState::kHidden,
+                              CookieControlsEnforcement::kNoEnforcement,
+                              CookieBlocking3pcdStatus::kNotIn3pcd,
+                              // Although there is an allow exception with an
+                              // expiration, because the default allow never
+                              // expires, zero_expiration is correct.
+                              zero_expiration()));
   EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
                            /*icon_visible=*/false, /*protections_on=*/false,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
                            /*should_highlight=*/false));
 
-  EXPECT_CALL(incognito_mock,
-              OnStatusChanged(
-                  /*controls_visible=*/true, /*protections_on=*/false,
-                  CookieControlsEnforcement::kEnforcedByCookieSetting,
-                  CookieBlocking3pcdStatus::kNotIn3pcd, expiration()));
+  EXPECT_CALL(
+      incognito_mock,
+      OnStatusChanged(CookieControlsState::k3pcsAllowed,
+                      CookieControlsEnforcement::kEnforcedByCookieSetting,
+                      CookieBlocking3pcdStatus::kNotIn3pcd, expiration()));
   EXPECT_CALL(
       incognito_mock,
       OnCookieControlsIconStatusChanged(
@@ -598,11 +598,11 @@ TEST_F(CookieControlsUserBypassTest, ThirdPartyCookiesException) {
   NavigateAndCommit(GURL(kUrl));
   // Third-party cookie exceptions are handled in the same way as exceptions
   // created for user bypass.
-  EXPECT_CALL(*mock(),
-              OnStatusChanged(
-                  /*controls_visible=*/true, /*protections_on=*/false,
-                  CookieControlsEnforcement::kNoEnforcement,
-                  CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
+  EXPECT_CALL(
+      *mock(),
+      OnStatusChanged(CookieControlsState::k3pcsAllowed,
+                      CookieControlsEnforcement::kNoEnforcement,
+                      CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
   EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
                            /*icon_visible=*/true, /*protections_on=*/false,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
@@ -611,11 +611,11 @@ TEST_F(CookieControlsUserBypassTest, ThirdPartyCookiesException) {
   testing::Mock::VerifyAndClearExpectations(mock());
 
   // Disabling 3PC for example.com again should change status to kEnabled.
-  EXPECT_CALL(*mock(),
-              OnStatusChanged(
-                  /*controls_visible=*/true, /*protections_on=*/true,
-                  CookieControlsEnforcement::kNoEnforcement,
-                  CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
+  EXPECT_CALL(
+      *mock(),
+      OnStatusChanged(CookieControlsState::k3pcsBlocked,
+                      CookieControlsEnforcement::kNoEnforcement,
+                      CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
   EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
                            /*icon_visible=*/false, /*protections_on=*/true,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
@@ -629,11 +629,11 @@ TEST_F(CookieControlsUserBypassTest, FrequentPageReloads) {
   cookie_controls()->Update(web_contents());
   auto* hcsm = HostContentSettingsMapFactory::GetForProfile(profile());
 
-  EXPECT_CALL(*mock(),
-              OnStatusChanged(
-                  /*controls_visible=*/true, /*protections_on=*/true,
-                  CookieControlsEnforcement::kNoEnforcement,
-                  CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
+  EXPECT_CALL(
+      *mock(),
+      OnStatusChanged(CookieControlsState::k3pcsBlocked,
+                      CookieControlsEnforcement::kNoEnforcement,
+                      CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
   EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
                            /*icon_visible=*/false, /*protections_on=*/true,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
@@ -695,11 +695,11 @@ TEST_F(CookieControlsUserBypassTest,
   // Don't call observer when reload count = 0.
   EXPECT_CALL(*mock(), OnReloadThresholdExceeded()).Times(0);
 
-  EXPECT_CALL(*mock(),
-              OnStatusChanged(
-                  /*controls_visible=*/true, /*protections_on=*/true,
-                  CookieControlsEnforcement::kNoEnforcement,
-                  CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
+  EXPECT_CALL(
+      *mock(),
+      OnStatusChanged(CookieControlsState::k3pcsBlocked,
+                      CookieControlsEnforcement::kNoEnforcement,
+                      CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
   EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
                            /*icon_visible=*/false, /*protections_on=*/true,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
@@ -741,11 +741,11 @@ TEST_F(CookieControlsUserBypassTest,
   // Update initial web contents to ensure the tab observer is set up.
   cookie_controls()->Update(web_contents());
 
-  EXPECT_CALL(*mock(),
-              OnStatusChanged(
-                  /*controls_visible=*/false, /*protections_on=*/false,
-                  CookieControlsEnforcement::kNoEnforcement,
-                  CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
+  EXPECT_CALL(
+      *mock(),
+      OnStatusChanged(CookieControlsState::kHidden,
+                      CookieControlsEnforcement::kNoEnforcement,
+                      CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
   EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
                            /*icon_visible=*/false, /*protections_on=*/false,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
@@ -777,11 +777,11 @@ TEST_F(CookieControlsUserBypassTest, FrequentPageReloadsMetrics) {
   cookie_controls()->Update(web_contents());
 
   NavigateAndCommit(GURL(kUrl));
-  EXPECT_CALL(*mock(),
-              OnStatusChanged(
-                  /*controls_visible=*/true, /*protections_on=*/true,
-                  CookieControlsEnforcement::kNoEnforcement,
-                  CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
+  EXPECT_CALL(
+      *mock(),
+      OnStatusChanged(CookieControlsState::k3pcsBlocked,
+                      CookieControlsEnforcement::kNoEnforcement,
+                      CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
   EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
                            /*icon_visible=*/false, /*protections_on=*/true,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
@@ -826,7 +826,7 @@ TEST_F(CookieControlsUserBypassTest, FrequentPageReloadsMetrics) {
 
   // Enabling third-party cookies records metrics.
   EXPECT_CALL(*mock(), OnStatusChanged(
-                           /*controls_visible=*/true, /*protections_on=*/false,
+                           CookieControlsState::k3pcsAllowed,
                            CookieControlsEnforcement::kNoEnforcement,
                            CookieBlocking3pcdStatus::kNotIn3pcd, expiration()));
   EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
@@ -852,11 +852,11 @@ TEST_F(CookieControlsUserBypassTest, FrequentPageReloadsMetrics) {
 TEST_F(CookieControlsUserBypassTest, InfrequentPageReloads) {
   base::HistogramTester t;
   NavigateAndCommit(GURL(kUrl));
-  EXPECT_CALL(*mock(),
-              OnStatusChanged(
-                  /*controls_visible=*/true, /*protections_on=*/true,
-                  CookieControlsEnforcement::kNoEnforcement,
-                  CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
+  EXPECT_CALL(
+      *mock(),
+      OnStatusChanged(CookieControlsState::k3pcsBlocked,
+                      CookieControlsEnforcement::kNoEnforcement,
+                      CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
   EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
                            /*icon_visible=*/false, /*protections_on=*/true,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
@@ -905,7 +905,7 @@ TEST_F(CookieControlsUserBypassTest, InfrequentPageReloads) {
 
   // Enabling third-party cookies records metrics.
   EXPECT_CALL(*mock(), OnStatusChanged(
-                           /*controls_visible=*/true, /*protections_on=*/false,
+                           CookieControlsState::k3pcsAllowed,
                            CookieControlsEnforcement::kNoEnforcement,
                            CookieBlocking3pcdStatus::kNotIn3pcd, expiration()));
   EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
@@ -942,11 +942,11 @@ TEST_F(CookieControlsUserBypassTest, HighSiteEngagement) {
       GURL("https://somethingelse.com"), kLowEngagement);
 
   NavigateAndCommit(GURL("https://highengagement.com"));
-  EXPECT_CALL(*mock(),
-              OnStatusChanged(
-                  /*controls_visible=*/true, /*protections_on=*/true,
-                  CookieControlsEnforcement::kNoEnforcement,
-                  CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
+  EXPECT_CALL(
+      *mock(),
+      OnStatusChanged(CookieControlsState::k3pcsBlocked,
+                      CookieControlsEnforcement::kNoEnforcement,
+                      CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
   EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
                            /*icon_visible=*/false, /*protections_on=*/true,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
@@ -976,11 +976,11 @@ TEST_F(CookieControlsUserBypassTest, HighSiteEngagement) {
 
   // Visiting some other site should reset the state.
   NavigateAndCommit(GURL("https://somethingelse.com"));
-  EXPECT_CALL(*mock(),
-              OnStatusChanged(
-                  /*controls_visible=*/true, /*protections_on=*/true,
-                  CookieControlsEnforcement::kNoEnforcement,
-                  CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
+  EXPECT_CALL(
+      *mock(),
+      OnStatusChanged(CookieControlsState::k3pcsBlocked,
+                      CookieControlsEnforcement::kNoEnforcement,
+                      CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
   EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
                            /*icon_visible=*/false, /*protections_on=*/true,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
@@ -1032,11 +1032,11 @@ TEST_F(CookieControlsUserBypassTest, StorageAccessApiHighSiteEngagement) {
       ContentSettingsType::STORAGE_ACCESS, CONTENT_SETTING_ALLOW);
 
   NavigateAndCommit(GURL("https://highengagement.com"));
-  EXPECT_CALL(*mock(),
-              OnStatusChanged(
-                  /*controls_visible=*/true, /*protections_on=*/true,
-                  CookieControlsEnforcement::kNoEnforcement,
-                  CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
+  EXPECT_CALL(
+      *mock(),
+      OnStatusChanged(CookieControlsState::k3pcsBlocked,
+                      CookieControlsEnforcement::kNoEnforcement,
+                      CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
   EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
                            /*icon_visible=*/false, /*protections_on=*/true,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
@@ -1059,7 +1059,7 @@ TEST_F(CookieControlsUserBypassTest, StorageAccessApiHighSiteEngagement) {
 
   // Enabling third-party cookies records metrics.
   EXPECT_CALL(*mock(), OnStatusChanged(
-                           /*controls_visible=*/true, /*protections_on=*/false,
+                           CookieControlsState::k3pcsAllowed,
                            CookieControlsEnforcement::kNoEnforcement,
                            CookieBlocking3pcdStatus::kNotIn3pcd, expiration()));
   EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
@@ -1087,11 +1087,11 @@ TEST_F(CookieControlsUserBypassTest, CustomExceptionsNoWildcardMatchingDomain) {
   auto* hcsm = HostContentSettingsMapFactory::GetForProfile(profile());
 
   NavigateAndCommit(GURL("https://cool.things.com"));
-  EXPECT_CALL(*mock(),
-              OnStatusChanged(
-                  /*controls_visible=*/true, /*protections_on=*/true,
-                  CookieControlsEnforcement::kNoEnforcement,
-                  CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
+  EXPECT_CALL(
+      *mock(),
+      OnStatusChanged(CookieControlsState::k3pcsBlocked,
+                      CookieControlsEnforcement::kNoEnforcement,
+                      CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
   EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
                            /*icon_visible=*/false, /*protections_on=*/true,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
@@ -1101,11 +1101,11 @@ TEST_F(CookieControlsUserBypassTest, CustomExceptionsNoWildcardMatchingDomain) {
 
   // Creating an exception turns protections off. The exception doesn't contain
   // wildcards in the domain and isn't enforced.
-  EXPECT_CALL(*mock(),
-              OnStatusChanged(
-                  /*controls_visible=*/true, /*protections_on=*/false,
-                  CookieControlsEnforcement::kNoEnforcement,
-                  CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
+  EXPECT_CALL(
+      *mock(),
+      OnStatusChanged(CookieControlsState::k3pcsAllowed,
+                      CookieControlsEnforcement::kNoEnforcement,
+                      CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
   EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
                            /*icon_visible=*/true, /*protections_on=*/false,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
@@ -1121,11 +1121,11 @@ TEST_F(CookieControlsUserBypassTest, CustomExceptionsWildcardMatchingDomain) {
   auto* hcsm = HostContentSettingsMapFactory::GetForProfile(profile());
 
   NavigateAndCommit(GURL("https://cool.things.com"));
-  EXPECT_CALL(*mock(),
-              OnStatusChanged(
-                  /*controls_visible=*/true, /*protections_on=*/true,
-                  CookieControlsEnforcement::kNoEnforcement,
-                  CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
+  EXPECT_CALL(
+      *mock(),
+      OnStatusChanged(CookieControlsState::k3pcsBlocked,
+                      CookieControlsEnforcement::kNoEnforcement,
+                      CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
   EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
                            /*icon_visible=*/false, /*protections_on=*/true,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
@@ -1135,11 +1135,11 @@ TEST_F(CookieControlsUserBypassTest, CustomExceptionsWildcardMatchingDomain) {
 
   // Creating an exception turns protections off. The exception has wildcard in
   // the domain and cannot be reset, it is enforced by cookie setting.
-  EXPECT_CALL(*mock(),
-              OnStatusChanged(
-                  /*controls_visible=*/true, /*protections_on=*/false,
-                  CookieControlsEnforcement::kEnforcedByCookieSetting,
-                  CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
+  EXPECT_CALL(
+      *mock(),
+      OnStatusChanged(CookieControlsState::k3pcsAllowed,
+                      CookieControlsEnforcement::kEnforcedByCookieSetting,
+                      CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
   EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
                            /*icon_visible=*/true, /*protections_on=*/false,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
@@ -1156,11 +1156,11 @@ TEST_F(CookieControlsUserBypassTest,
   auto* hcsm = HostContentSettingsMapFactory::GetForProfile(profile());
 
   NavigateAndCommit(GURL("https://cool.things.com"));
-  EXPECT_CALL(*mock(),
-              OnStatusChanged(
-                  /*controls_visible=*/true, /*protections_on=*/true,
-                  CookieControlsEnforcement::kNoEnforcement,
-                  CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
+  EXPECT_CALL(
+      *mock(),
+      OnStatusChanged(CookieControlsState::k3pcsBlocked,
+                      CookieControlsEnforcement::kNoEnforcement,
+                      CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
   EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
                            /*icon_visible=*/false, /*protections_on=*/true,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
@@ -1171,11 +1171,11 @@ TEST_F(CookieControlsUserBypassTest,
   // Creating an exception changes turns protections off. The exception
   // has wildcard in the domain and cannot be reset, it is enforced by cookie
   // setting.
-  EXPECT_CALL(*mock(),
-              OnStatusChanged(
-                  /*controls_visible=*/true, /*protections_on=*/false,
-                  CookieControlsEnforcement::kEnforcedByCookieSetting,
-                  CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
+  EXPECT_CALL(
+      *mock(),
+      OnStatusChanged(CookieControlsState::k3pcsAllowed,
+                      CookieControlsEnforcement::kEnforcedByCookieSetting,
+                      CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
 
   EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
                            /*icon_visible=*/true, /*protections_on=*/false,
@@ -1192,11 +1192,11 @@ TEST_F(CookieControlsUserBypassTest, CustomExceptionsDotComWildcard) {
   auto* hcsm = HostContentSettingsMapFactory::GetForProfile(profile());
 
   NavigateAndCommit(GURL("https://cool.things.com"));
-  EXPECT_CALL(*mock(),
-              OnStatusChanged(
-                  /*controls_visible=*/true, /*protections_on=*/true,
-                  CookieControlsEnforcement::kNoEnforcement,
-                  CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
+  EXPECT_CALL(
+      *mock(),
+      OnStatusChanged(CookieControlsState::k3pcsBlocked,
+                      CookieControlsEnforcement::kNoEnforcement,
+                      CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
   EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
                            /*icon_visible=*/false, /*protections_on=*/true,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
@@ -1207,11 +1207,11 @@ TEST_F(CookieControlsUserBypassTest, CustomExceptionsDotComWildcard) {
   // Creating an exception turns protections off. The exception
   // is set at the TLD level and cannot be reset, it is enforced by cookie
   // setting.
-  EXPECT_CALL(*mock(),
-              OnStatusChanged(
-                  /*controls_visible=*/true, /*protections_on=*/false,
-                  CookieControlsEnforcement::kEnforcedByCookieSetting,
-                  CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
+  EXPECT_CALL(
+      *mock(),
+      OnStatusChanged(CookieControlsState::k3pcsAllowed,
+                      CookieControlsEnforcement::kEnforcedByCookieSetting,
+                      CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
   EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
                            /*icon_visible=*/true, /*protections_on=*/false,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
@@ -1313,11 +1313,11 @@ TEST_F(CookieControlsUserBypassTest, IconHighlightedAfterExceptionExpires) {
       BrowsingDataModel::StorageType::kQuotaStorage,
       /*blocked=*/true);
 
-  EXPECT_CALL(*mock(),
-              OnStatusChanged(
-                  /*controls_visible=*/true, /*protections_on=*/true,
-                  CookieControlsEnforcement::kNoEnforcement,
-                  CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
+  EXPECT_CALL(
+      *mock(),
+      OnStatusChanged(CookieControlsState::k3pcsBlocked,
+                      CookieControlsEnforcement::kNoEnforcement,
+                      CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
   EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
                            /*icon_visible=*/true, /*protections_on=*/true,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
@@ -1327,7 +1327,7 @@ TEST_F(CookieControlsUserBypassTest, IconHighlightedAfterExceptionExpires) {
 
   // Enable third-party cookies.
   EXPECT_CALL(*mock(), OnStatusChanged(
-                           /*controls_visible=*/true, /*protections_on=*/false,
+                           CookieControlsState::k3pcsAllowed,
                            CookieControlsEnforcement::kNoEnforcement,
                            CookieBlocking3pcdStatus::kNotIn3pcd, expiration()));
   EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
@@ -1354,11 +1354,11 @@ TEST_F(CookieControlsUserBypassTest, IconHighlightedAfterExceptionExpires) {
       CreateUnpartitionedStorageKey(GURL("https://thirdparty.com")),
       BrowsingDataModel::StorageType::kQuotaStorage,
       /*blocked=*/true);
-  EXPECT_CALL(*mock(),
-              OnStatusChanged(
-                  /*controls_visible=*/true, /*protections_on=*/true,
-                  CookieControlsEnforcement::kNoEnforcement,
-                  CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
+  EXPECT_CALL(
+      *mock(),
+      OnStatusChanged(CookieControlsState::k3pcsBlocked,
+                      CookieControlsEnforcement::kNoEnforcement,
+                      CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
   EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
                            /*icon_visible=*/true, /*protections_on=*/true,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
@@ -1373,11 +1373,11 @@ TEST_F(CookieControlsUserBypassTest, IconHighlightedAfterExceptionExpires) {
       CreateUnpartitionedStorageKey(GURL("https://thirdparty.com")),
       BrowsingDataModel::StorageType::kQuotaStorage,
       /*blocked=*/true);
-  EXPECT_CALL(*mock(),
-              OnStatusChanged(
-                  /*controls_visible=*/true, /*protections_on=*/true,
-                  CookieControlsEnforcement::kNoEnforcement,
-                  CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
+  EXPECT_CALL(
+      *mock(),
+      OnStatusChanged(CookieControlsState::k3pcsBlocked,
+                      CookieControlsEnforcement::kNoEnforcement,
+                      CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
   EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
                            /*icon_visible=*/true, /*protections_on=*/true,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
@@ -1390,11 +1390,11 @@ TEST_F(CookieControlsUserBypassTest, StatefulBounce) {
   NavigateAndCommit(GURL(kUrl));
   page_specific_content_settings()->IncrementStatefulBounceCount();
 
-  EXPECT_CALL(*mock(),
-              OnStatusChanged(
-                  /*controls_visible=*/true, /*protections_on=*/true,
-                  CookieControlsEnforcement::kNoEnforcement,
-                  CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
+  EXPECT_CALL(
+      *mock(),
+      OnStatusChanged(CookieControlsState::k3pcsBlocked,
+                      CookieControlsEnforcement::kNoEnforcement,
+                      CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
   EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
                            /*icon_visible=*/true, /*protections_on=*/true,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
@@ -1417,11 +1417,11 @@ TEST_F(CookieControlsUserBypassTest, SubresourceBlocked) {
           ->NotifyOnBlockedSubresource(
               subresource_filter::mojom::ActivationLevel::kEnabled);
 
-  EXPECT_CALL(*mock(),
-              OnStatusChanged(
-                  /*controls_visible=*/true, /*protections_on=*/true,
-                  CookieControlsEnforcement::kNoEnforcement,
-                  CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
+  EXPECT_CALL(
+      *mock(),
+      OnStatusChanged(CookieControlsState::k3pcsBlocked,
+                      CookieControlsEnforcement::kNoEnforcement,
+                      CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
   EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
                            /*icon_visible=*/true, /*protections_on=*/true,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
@@ -1444,11 +1444,11 @@ TEST_F(CookieControlsUserBypassTest, SubresourceBlockedInIncognito) {
           ->NotifyOnBlockedSubresource(
               subresource_filter::mojom::ActivationLevel::kEnabled);
 
-  EXPECT_CALL(*mock(),
-              OnStatusChanged(
-                  /*controls_visible=*/true, /*protections_on=*/true,
-                  CookieControlsEnforcement::kNoEnforcement,
-                  CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
+  EXPECT_CALL(
+      *mock(),
+      OnStatusChanged(CookieControlsState::k3pcsBlocked,
+                      CookieControlsEnforcement::kNoEnforcement,
+                      CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
   EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
                            /*icon_visible=*/true, /*protections_on=*/true,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
@@ -1470,11 +1470,11 @@ TEST_F(CookieControlsUserBypassTest, SubresourceProxied) {
                              content::GlobalRequestID(),
                              *CreateResourceLoadInfoWithIpProtectionChain());
 
-  EXPECT_CALL(*mock(),
-              OnStatusChanged(
-                  /*controls_visible=*/true, /*protections_on=*/true,
-                  CookieControlsEnforcement::kNoEnforcement,
-                  CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
+  EXPECT_CALL(
+      *mock(),
+      OnStatusChanged(CookieControlsState::k3pcsBlocked,
+                      CookieControlsEnforcement::kNoEnforcement,
+                      CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
   EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
                            /*icon_visible=*/true, /*protections_on=*/true,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
@@ -1512,7 +1512,6 @@ TEST_F(CookieControlsUserBypassTest,
   EXPECT_TRUE(stored_value.is_none());
   testing::Mock::VerifyAndClearExpectations(mock());
 }
-
 class CookieControlsUserBypassIncognitoTest
     : public CookieControlsUserBypassTest {
  public:
@@ -1592,11 +1591,11 @@ TEST_F(CookieControlsUserBypassIncognitoTest, ToggleUpdatesUi) {
   incognito_cookie_controls()->Update(web_contents());
   NavigateAndCommit(GURL(kUrl));
 
-  EXPECT_CALL(*mock(),
-              OnStatusChanged(
-                  /*controls_visible=*/true, /*protections_on=*/false,
-                  CookieControlsEnforcement::kNoEnforcement,
-                  CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
+  EXPECT_CALL(
+      *mock(),
+      OnStatusChanged(CookieControlsState::k3pcsAllowed,
+                      CookieControlsEnforcement::kNoEnforcement,
+                      CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
   EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
                            /*icon_visible=*/true, /*protections_on=*/false,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
@@ -1620,11 +1619,11 @@ TEST_F(CookieControlsUserBypassIncognitoTest, SubresourceProxied) {
                              content::GlobalRequestID(),
                              *CreateResourceLoadInfoWithIpProtectionChain());
 
-  EXPECT_CALL(*mock(),
-              OnStatusChanged(
-                  /*controls_visible=*/true, /*protections_on=*/true,
-                  CookieControlsEnforcement::kNoEnforcement,
-                  CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
+  EXPECT_CALL(
+      *mock(),
+      OnStatusChanged(CookieControlsState::k3pcsBlocked,
+                      CookieControlsEnforcement::kNoEnforcement,
+                      CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
   EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
                            /*icon_visible=*/true, /*protections_on=*/true,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
@@ -1651,7 +1650,7 @@ enum class ActFeatureState {
 class CookieControlsUserBypassTrackingProtectionUiTest
     : public CookieControlsUserBypassTest,
       public testing::WithParamInterface<
-          testing::tuple<bool, ActFeatureState>> {
+          testing::tuple<CookieControlsState, ActFeatureState>> {
  public:
   CookieControlsUserBypassTrackingProtectionUiTest() = default;
   ~CookieControlsUserBypassTrackingProtectionUiTest() override = default;
@@ -1754,18 +1753,18 @@ class CookieControlsUserBypassTrackingProtectionUiTest
 };
 
 TEST_P(CookieControlsUserBypassTrackingProtectionUiTest,
-       AddsActFeaturesToVectorInIncognitoBasedOnFeatureAndExceptionStatus) {
+       PauseOrAllowTrackingProtectionsBasedOnCookieControlsState) {
   auto* tester = content::WebContentsTester::For(incognito_web_contents());
   tester->NavigateAndCommit(GURL(kUrl));
   incognito_cookie_controls()->Update(incognito_web_contents());
   incognito_cookie_controls()->OnCookieBlockingEnabledForSite(
-      std::get<0>(GetParam()));
+      std::get<0>(GetParam()) == CookieControlsState::k3pcsBlocked);
 
-  EXPECT_CALL(*incognito_mock(),
-              OnStatusChanged(
-                  /*controls_visible=*/true, std::get<0>(GetParam()),
-                  CookieControlsEnforcement::kNoEnforcement,
-                  CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
+  EXPECT_CALL(
+      *incognito_mock(),
+      OnStatusChanged(std::get<0>(GetParam()),
+                      CookieControlsEnforcement::kNoEnforcement,
+                      CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
   incognito_cookie_controls()->Update(incognito_web_contents());
   testing::Mock::VerifyAndClearExpectations(incognito_mock());
 }
@@ -1777,15 +1776,17 @@ TEST_P(CookieControlsUserBypassTrackingProtectionUiTest,
   auto* tester = content::WebContentsTester::For(incognito_web_contents());
   tester->NavigateAndCommit(GURL(kUrl));
   incognito_cookie_controls()->Update(incognito_web_contents());
-  incognito_cookie_controls()->OnCookieBlockingEnabledForSite(
-      std::get<0>(GetParam()));
+
+  bool protections_on =
+      (std::get<0>(GetParam()) == CookieControlsState::k3pcsBlocked);
+
+  incognito_cookie_controls()->OnCookieBlockingEnabledForSite(protections_on);
 
   // Allowing 3PCs in regular mode should allow & enforce them in incognito.
   // Protections (i.e. the toggle) should still be on iff ACT features are
   // enabled.
   EXPECT_CALL(*mock(), OnStatusChanged(
-                           /*controls_visible=*/true,
-                           /*protections_on=*/false,
+                           CookieControlsState::k3pcsAllowed,
                            CookieControlsEnforcement::kNoEnforcement,
                            CookieBlocking3pcdStatus::kNotIn3pcd, expiration()));
   EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
@@ -1794,13 +1795,12 @@ TEST_P(CookieControlsUserBypassTrackingProtectionUiTest,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
                            /*should_highlight=*/false));
 
-  bool protections_on = std::get<0>(GetParam());
+  EXPECT_CALL(
+      *incognito_mock(),
+      OnStatusChanged(std::get<0>(GetParam()),
+                      CookieControlsEnforcement::kEnforcedByCookieSetting,
+                      CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
 
-  EXPECT_CALL(*incognito_mock(),
-              OnStatusChanged(
-                  /*controls_visible=*/true, protections_on,
-                  CookieControlsEnforcement::kEnforcedByCookieSetting,
-                  CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
   EXPECT_CALL(*incognito_mock(),
               OnCookieControlsIconStatusChanged(
                   /*icon_visible=*/
@@ -1808,7 +1808,6 @@ TEST_P(CookieControlsUserBypassTrackingProtectionUiTest,
                                     // protections are off
                   protections_on, CookieBlocking3pcdStatus::kNotIn3pcd,
                   /*should_highlight=*/false));
-
   cookie_controls()->OnCookieBlockingEnabledForSite(false);
   testing::Mock::VerifyAndClearExpectations(mock());
   testing::Mock::VerifyAndClearExpectations(incognito_mock());
@@ -1816,10 +1815,10 @@ TEST_P(CookieControlsUserBypassTrackingProtectionUiTest,
 
 TEST_P(CookieControlsUserBypassTrackingProtectionUiTest,
        RecordUmaToggleMetricWhenActFeaturesAreActive) {
-  bool protections_on = std::get<0>(GetParam());
+  bool protections_on =
+      std::get<0>(GetParam()) == CookieControlsState::k3pcsBlocked;
   bool ipp_enabled = std::get<1>(GetParam()) != ActFeatureState::kIppDisabled;
   bool fpp_enabled = std::get<1>(GetParam()) != ActFeatureState::kFppDisabled;
-
   incognito_cookie_controls()->Update(web_contents());
 
   // Add site exception when protections are on so toggling UB initiates the
@@ -1847,11 +1846,11 @@ TEST_P(CookieControlsUserBypassTrackingProtectionUiTest,
     BlockFingerprintingSubresource();
   }
 
-  EXPECT_CALL(*incognito_mock(),
-              OnStatusChanged(
-                  /*controls_visible=*/true, protections_on,
-                  CookieControlsEnforcement::kNoEnforcement,
-                  CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
+  EXPECT_CALL(
+      *incognito_mock(),
+      OnStatusChanged(std::get<0>(GetParam()),
+                      CookieControlsEnforcement::kNoEnforcement,
+                      CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
   EXPECT_CALL(*incognito_mock(), OnCookieControlsIconStatusChanged(
                                      /*icon_visible=*/true,
                                      /*protections_on=*/protections_on,
@@ -1874,10 +1873,11 @@ std::string ParamToTestSuffixTrackingProtection(
     const testing::TestParamInfo<
         CookieControlsUserBypassTrackingProtectionUiTest::ParamType>& info) {
   std::stringstream name;
-  if (std::get<0>(info.param)) {
-    name << "ProtectionsOn";
+  // TODO(crbug.com/388294499): Update to use TP specific enums.
+  if (std::get<0>(info.param) == CookieControlsState::k3pcsBlocked) {
+    name << "3pcsBlocked";
   } else {
-    name << "ProtectionsOff";
+    name << "3pcsAllowed";
   }
   switch (std::get<1>(info.param)) {
     case ActFeatureState::kActFeaturesEnabled:
@@ -1897,8 +1897,10 @@ std::string ParamToTestSuffixTrackingProtection(
 INSTANTIATE_TEST_SUITE_P(
     All,
     CookieControlsUserBypassTrackingProtectionUiTest,
-    testing::Combine(/*protections_on*/ testing::Bool(),
-                     testing::Values(ActFeatureState::kActFeaturesEnabled,
-                                     ActFeatureState::kIppDisabled,
-                                     ActFeatureState::kFppDisabled)),
+    testing::Combine(
+        /*controls_state*/ testing::Values(CookieControlsState::k3pcsAllowed,
+                                           CookieControlsState::k3pcsBlocked),
+        testing::Values(ActFeatureState::kActFeaturesEnabled,
+                        ActFeatureState::kIppDisabled,
+                        ActFeatureState::kFppDisabled)),
     &ParamToTestSuffixTrackingProtection);

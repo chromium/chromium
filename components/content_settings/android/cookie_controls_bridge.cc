@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "components/content_settings/core/browser/cookie_settings.h"
+#include "components/content_settings/core/common/cookie_controls_state.h"
 #include "components/permissions/permissions_client.h"
 #include "content/public/browser/android/browser_context_handle.h"
 #include "content/public/browser/browser_context.h"
@@ -60,27 +61,27 @@ void CookieControlsBridge::UpdateWebContents(
 }
 
 void CookieControlsBridge::OnStatusChanged(
-    bool controls_visible,
-    bool protections_on,
+    CookieControlsState controls_state,
     CookieControlsEnforcement enforcement,
     CookieBlocking3pcdStatus blocking_status,
     base::Time expiration) {
   // Only invoke the callback when there is a change.
-  if (controls_visible_ == controls_visible &&
-      protections_on_ == protections_on && enforcement_ == enforcement &&
+  if (controls_state_ == controls_state && enforcement_ == enforcement &&
       expiration_ == expiration) {
     return;
   }
-  controls_visible_ = controls_visible;
-  protections_on_ = protections_on;
+  controls_state_ = controls_state;
   enforcement_ = enforcement;
   expiration_ = expiration;
   JNIEnv* env = base::android::AttachCurrentThread();
 
+  // TODO(crbug.com/388294499): Add support for CookieControlsState on Clank.
   Java_CookieControlsBridge_onStatusChanged(
-      env, jobject_, static_cast<bool>(controls_visible),
-      static_cast<bool>(protections_on), static_cast<int>(enforcement_),
-      static_cast<int>(blocking_status),
+      env, jobject_,
+      static_cast<bool>(controls_state_ != CookieControlsState::kHidden),
+      static_cast<bool>(controls_state_ == CookieControlsState::kTpActive ||
+                        controls_state_ == CookieControlsState::k3pcsBlocked),
+      static_cast<int>(enforcement_), static_cast<int>(blocking_status),
       expiration.InMillisecondsSinceUnixEpoch());
 }
 

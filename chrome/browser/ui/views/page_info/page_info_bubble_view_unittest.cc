@@ -44,6 +44,7 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/cookie_blocking_3pcd_status.h"
+#include "components/content_settings/core/common/cookie_controls_state.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/history/core/browser/history_service.h"
@@ -995,7 +996,6 @@ TEST_F(PageInfoBubbleViewTest, UpdatingSiteDataRetainsLayout) {
   // Create a fake cookies info.
   PageInfoUI::CookiesNewInfo cookies;
   cookies.allowed_sites_count = 10;
-  cookies.protections_on = true;
   cookies.enforcement = CookieControlsEnforcement::kNoEnforcement;
   cookies.blocking_status = CookieBlocking3pcdStatus::kNotIn3pcd;
 
@@ -1232,7 +1232,7 @@ INSTANTIATE_TEST_SUITE_P(All,
 class PageInfoBubbleViewCookiesSubpageTitleTest
     : public PageInfoBubbleViewTest,
       public testing::WithParamInterface<
-          testing::tuple</*protections_on*/ bool,
+          testing::tuple<CookieControlsState,
                          CookieBlocking3pcdStatus,
                          /*is_otr*/ bool>> {
  public:
@@ -1250,7 +1250,7 @@ class PageInfoBubbleViewCookiesSubpageTitleTest
 TEST_P(PageInfoBubbleViewCookiesSubpageTitleTest,
        DisplaysCookiesAndSiteDataTitle) {
   PageInfoUI::CookiesNewInfo cookie_info;
-  cookie_info.protections_on = testing::get<0>(GetParam());
+  cookie_info.controls_state = testing::get<0>(GetParam());
   cookie_info.blocking_status = testing::get<1>(GetParam());
   api_->SetCookieInfo(cookie_info);
   EXPECT_EQ(api_->GetCookiesSubpageTitle(),
@@ -1260,7 +1260,8 @@ TEST_P(PageInfoBubbleViewCookiesSubpageTitleTest,
 INSTANTIATE_TEST_SUITE_P(
     All,
     PageInfoBubbleViewCookiesSubpageTitleTest,
-    testing::Combine(/*protections_on*/ testing::Bool(),
+    testing::Combine(testing::Values(CookieControlsState::k3pcsAllowed,
+                                     CookieControlsState::k3pcsBlocked),
                      testing::Values(CookieBlocking3pcdStatus::kNotIn3pcd,
                                      CookieBlocking3pcdStatus::kAll),
                      /*is_otr*/ testing::Bool()));

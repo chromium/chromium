@@ -11,6 +11,7 @@
 #include "base/scoped_observation.h"
 #include "components/content_settings/browser/ui/cookie_controls_controller.h"
 #include "components/content_settings/browser/ui/cookie_controls_view.h"
+#include "components/content_settings/core/common/cookie_controls_state.h"
 
 namespace content_settings {
 
@@ -52,8 +53,7 @@ class CookieControlsBridge : public CookieControlsObserver {
   void OnEntryPointAnimated(JNIEnv* env);
 
   // CookieControlsObserver:
-  void OnStatusChanged(bool controls_visible,
-                       bool protections_on,
+  void OnStatusChanged(CookieControlsState controls_state,
                        CookieControlsEnforcement enforcement,
                        CookieBlocking3pcdStatus blocking_status,
                        base::Time expiration) override;
@@ -68,8 +68,7 @@ class CookieControlsBridge : public CookieControlsObserver {
 
  private:
   base::android::ScopedJavaGlobalRef<jobject> jobject_;
-  bool controls_visible_ = false;
-  bool protections_on_ = false;
+  CookieControlsState controls_state_ = CookieControlsState::kHidden;
   CookieControlsEnforcement enforcement_ =
       CookieControlsEnforcement::kNoEnforcement;
   std::optional<base::Time> expiration_;

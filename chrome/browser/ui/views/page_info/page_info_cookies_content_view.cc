@@ -13,6 +13,7 @@
 #include "components/content_settings/browser/ui/cookie_controls_util.h"
 #include "components/content_settings/core/common/cookie_blocking_3pcd_status.h"
 #include "components/content_settings/core/common/cookie_controls_enforcement.h"
+#include "components/content_settings/core/common/cookie_controls_state.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/strings/grit/components_strings.h"
@@ -210,10 +211,8 @@ void PageInfoCookiesContentView::SetCookieInfo(
     const CookiesNewInfo& cookie_info) {
   SetDescriptionLabel(cookie_info.blocking_status, cookie_info.enforcement,
                       cookie_info.is_incognito);
-  SetThirdPartyCookiesInfo(cookie_info.protections_on,
-                           cookie_info.controls_visible,
-                           cookie_info.enforcement, cookie_info.blocking_status,
-                           cookie_info.expiration);
+  SetThirdPartyCookiesInfo(cookie_info.controls_state, cookie_info.enforcement,
+                           cookie_info.blocking_status, cookie_info.expiration);
   InitCookiesDialogButton();
   // Update the text displaying the number of allowed sites.
   cookies_dialog_button_->SetSubtitleText(l10n_util::GetPluralStringFUTF16(
@@ -229,13 +228,13 @@ void PageInfoCookiesContentView::SetCookieInfo(
 }
 
 void PageInfoCookiesContentView::SetThirdPartyCookiesTitleAndDescription(
-    bool protections_on,
+    CookieControlsState controls_state,
     CookieControlsEnforcement enforcement,
     CookieBlocking3pcdStatus blocking_status,
     base::Time expiration) {
   std::u16string title_text;
   int description;
-  if (protections_on) {
+  if (controls_state == CookieControlsState::k3pcsBlocked) {
     title_text =
         l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_SITE_NOT_WORKING_TITLE);
     description =
@@ -263,10 +262,10 @@ void PageInfoCookiesContentView::SetThirdPartyCookiesTitleAndDescription(
 }
 
 void PageInfoCookiesContentView::SetThirdPartyCookiesToggle(
-    bool protections_on,
+    CookieControlsState controls_state,
     CookieBlocking3pcdStatus blocking_status) {
   std::u16string subtitle;
-  if (protections_on) {
+  if (controls_state == CookieControlsState::k3pcsBlocked) {
     subtitle = l10n_util::GetStringUTF16(
         blocking_status == CookieBlocking3pcdStatus::kLimited
             ? IDS_TRACKING_PROTECTION_BUBBLE_3PC_LIMITED_SUBTITLE
@@ -275,7 +274,8 @@ void PageInfoCookiesContentView::SetThirdPartyCookiesToggle(
     subtitle = l10n_util::GetStringUTF16(
         IDS_TRACKING_PROTECTION_BUBBLE_3PC_ALLOWED_SUBTITLE);
   }
-  third_party_cookies_toggle_->SetIsOn(!protections_on);
+  third_party_cookies_toggle_->SetIsOn(controls_state ==
+                                       CookieControlsState::k3pcsAllowed);
   third_party_cookies_toggle_->SetID(
       PageInfoViewFactory::VIEW_ID_PAGE_INFO_THIRD_PARTY_COOKIES_TOGGLE);
   third_party_cookies_toggle_->GetViewAccessibility().SetName(subtitle);
@@ -319,19 +319,20 @@ void PageInfoCookiesContentView::SetDescriptionLabel(
 }
 
 void PageInfoCookiesContentView::SetThirdPartyCookiesInfo(
-    bool protections_on,
-    bool controls_visible,
+    CookieControlsState controls_state,
     CookieControlsEnforcement enforcement,
     CookieBlocking3pcdStatus blocking_status,
     base::Time expiration) {
-  third_party_cookies_container_->SetVisible(controls_visible);
-  if (!controls_visible) {
+  if (controls_state == CookieControlsState::kHidden) {
+    third_party_cookies_container_->SetVisible(false);
     return;
   }
-  SetThirdPartyCookiesTitleAndDescription(protections_on, enforcement,
+  third_party_cookies_container_->SetVisible(true);
+  SetThirdPartyCookiesTitleAndDescription(controls_state, enforcement,
                                           blocking_status, expiration);
-  SetThirdPartyCookiesToggle(protections_on, blocking_status);
-  third_party_cookies_row_->SetIcon(GetThirdPartyCookiesIcon(!protections_on));
+  SetThirdPartyCookiesToggle(controls_state, blocking_status);
+  third_party_cookies_row_->SetIcon(GetThirdPartyCookiesIcon(
+      controls_state == CookieControlsState::k3pcsAllowed));
   third_party_cookies_row_->SetID(
       PageInfoViewFactory::VIEW_ID_PAGE_INFO_THIRD_PARTY_COOKIES_ROW);
 

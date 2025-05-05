@@ -24,6 +24,7 @@
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/content_settings/core/common/cookie_blocking_3pcd_status.h"
 #include "components/content_settings/core/common/cookie_controls_enforcement.h"
+#include "components/content_settings/core/common/cookie_controls_state.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/content_settings/core/common/third_party_site_data_access_type.h"
@@ -130,13 +131,11 @@ CookieControlsController::CookieControlsController(
 }
 
 CookieControlsController::Status::Status(
-    bool controls_visible,
-    bool protections_on,
+    CookieControlsState controls_state,
     CookieControlsEnforcement enforcement,
     CookieBlocking3pcdStatus blocking_status,
     base::Time expiration)
-    : controls_visible(controls_visible),
-      protections_on(protections_on),
+    : controls_state(controls_state),
       enforcement(enforcement),
       blocking_status(blocking_status),
       expiration(expiration) {}
@@ -162,17 +161,17 @@ void CookieControlsController::Update(content::WebContents* web_contents) {
     return;
   }
   auto status = GetStatus(web_contents);
-  const bool icon_visible = ShouldUserBypassIconBeVisible(
-      status.protections_on, status.controls_visible);
+  const bool icon_visible =
+      ShouldUserBypassIconBeVisible(status.controls_state);
   const bool should_highlight =
-      ShouldHighlightUserBypass(status.protections_on);
+      ShouldHighlightUserBypass(status.controls_state);
   for (auto& observer : observers_) {
-    observer.OnStatusChanged(status.controls_visible, status.protections_on,
-                             status.enforcement, status.blocking_status,
-                             status.expiration);
+    observer.OnStatusChanged(status.controls_state, status.enforcement,
+                             status.blocking_status, status.expiration);
     observer.OnCookieControlsIconStatusChanged(
-        icon_visible, status.protections_on, status.blocking_status,
-        should_highlight);
+        icon_visible,
+        status.controls_state == CookieControlsState::k3pcsBlocked,
+        status.blocking_status, should_highlight);
   }
 }
 
@@ -189,16 +188,16 @@ void CookieControlsController::OnFirstSubresourceProxiedOnCurrentPrimaryPage() {
 CookieControlsController::Status CookieControlsController::GetStatus(
     content::WebContents* web_contents) {
   if (!cookie_settings_->ShouldBlockThirdPartyCookies()) {
-    return {/*controls_visible=*/false,
-            /*protections_on=*/false, CookieControlsEnforcement::kNoEnforcement,
+    return {CookieControlsState::kHidden,
+            CookieControlsEnforcement::kNoEnforcement,
             CookieBlocking3pcdStatus::kNotIn3pcd, base::Time()};
   }
 
   const GURL& url = web_contents->GetLastCommittedURL();
   if (url.SchemeIs(content::kChromeUIScheme) ||
       url.SchemeIs(kExtensionScheme)) {
-    return {/*controls_visible=*/false,
-            /*protections_on=*/false, CookieControlsEnforcement::kNoEnforcement,
+    return {CookieControlsState::kHidden,
+            CookieControlsEnforcement::kNoEnforcement,
             CookieBlocking3pcdStatus::kNotIn3pcd, base::Time()};
   }
 
@@ -224,10 +223,17 @@ CookieControlsController::Status CookieControlsController::GetStatus(
                                                                           &info)
           : cookies_allowed;
 
-  return {// Hide controls if the exception is from a metadata grant.
-          enforcement != CookieControlsEnforcement::kEnforcedByTpcdGrant,
-          /*protections_on=*/!protections_disabled, enforcement,
-          blocking_status, info.metadata.expiration()};
+  CookieControlsState controls_state;
+  // TODO(crbug.com/388294499): Add support for `kTpPaused` and `kTpActive`.
+  if (enforcement == CookieControlsEnforcement::kEnforcedByTpcdGrant) {
+    controls_state = CookieControlsState::kHidden;
+  } else {
+    controls_state = protections_disabled ? CookieControlsState::k3pcsAllowed
+                                          : CookieControlsState::k3pcsBlocked;
+  }
+
+  return {controls_state, enforcement, blocking_status,
+          info.metadata.expiration()};
 }
 
 void CookieControlsController::RecordActMetrics(bool protections_on) {
@@ -442,14 +448,15 @@ void CookieControlsController::UpdateUserBypass() {
     return;
   }
   auto status = GetStatus(GetWebContents());
-  const bool icon_visible = ShouldUserBypassIconBeVisible(
-      status.protections_on, status.controls_visible);
+  const bool icon_visible =
+      ShouldUserBypassIconBeVisible(status.controls_state);
   const bool should_highlight =
-      ShouldHighlightUserBypass(status.protections_on);
+      ShouldHighlightUserBypass(status.controls_state);
   for (auto& observer : observers_) {
     observer.OnCookieControlsIconStatusChanged(
-        icon_visible, status.protections_on, status.blocking_status,
-        should_highlight);
+        icon_visible,
+        status.controls_state == CookieControlsState::k3pcsBlocked,
+        status.blocking_status, should_highlight);
   }
 }
 
@@ -464,7 +471,7 @@ void CookieControlsController::UpdateLastVisitedSitesMap() {
   // exception, update the last visited time, otherwise clear it.
   base::Value::Dict metadata = GetMetadata(settings_map_, url);
   auto status = GetStatus(GetWebContents());
-  if (status.controls_visible && !status.protections_on) {
+  if (status.controls_state == CookieControlsState::k3pcsAllowed) {
     metadata.Set(kLastVisitedActiveException,
                  base::TimeToValue(base::Time::Now()));
   } else {
@@ -577,9 +584,12 @@ void CookieControlsController::RecordActivationMetrics() {
   // TODO(crbug.com/40064612): Add metrics, related to repeated activations.
 }
 
-bool CookieControlsController::ShouldHighlightUserBypass(bool protections_on) {
-  // Only highlight if 3PCs are blocked on the site.
-  if (!protections_on) {
+bool CookieControlsController::ShouldHighlightUserBypass(
+    CookieControlsState controls_state) {
+  // Highlighting is meant to draw attention to bypassing, so just return if
+  // bypass has already happened.
+  if (controls_state == CookieControlsState::kHidden ||
+      controls_state == CookieControlsState::k3pcsAllowed) {
     return false;
   }
 
@@ -624,9 +634,8 @@ bool CookieControlsController::ShouldHighlightUserBypass(bool protections_on) {
 }
 
 bool CookieControlsController::ShouldUserBypassIconBeVisible(
-    bool protections_on,
-    bool controls_visible) {
-  if (!controls_visible) {
+    CookieControlsState controls_state) {
+  if (controls_state == CookieControlsState::kHidden) {
     return false;
   }
   // 3PCD prevents SameSite=None cookies from being sent when the top-level
@@ -634,7 +643,8 @@ bool CookieControlsController::ShouldUserBypassIconBeVisible(
   // with: `Content-Security-Policy: sandbox`. In that case, we render the UI to
   // allow the user to opt into sending SameSite=None cookies again in those
   // contexts.
-  return HasOriginSandboxedTopLevelDocument() || !protections_on ||
+  return HasOriginSandboxedTopLevelDocument() ||
+         controls_state == CookieControlsState::k3pcsAllowed ||
          // If no 3P sites have attempted to access site data, nor were any
          // stateful bounces recorded, the icon should not be displayed. Take
          // into account both allow and blocked counts, since the breakage might

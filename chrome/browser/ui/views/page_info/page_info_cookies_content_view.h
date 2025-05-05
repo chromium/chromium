@@ -60,7 +60,7 @@ class PageInfoCookiesContentView : public views::View, public PageInfoUI {
 
   // Sets `third_party_cookies_title_` and `third_party_cookies_description_`
   // text using:
-  // `protections_on`: status of the COOKIES/TRACKING_PROTECTION content setting
+  // `controls_state`: state of controls to display
   // `enforcement`: type of enforcement on the protection (e.g. by policy, user
   // setting)
   // `status: current 3PC blocking status
@@ -68,15 +68,15 @@ class PageInfoCookiesContentView : public views::View, public PageInfoUI {
   // limited, blocked)
   // `expiration`: duration of site exception
   void SetThirdPartyCookiesTitleAndDescription(
-      bool protections_on,
+      CookieControlsState controls_state,
       CookieControlsEnforcement enforcement,
       CookieBlocking3pcdStatus blocking_status,
       base::Time expiration);
 
   // Sets properties for `third_party_cookies_toggle_` using:
-  // `protections_on`: status of the COOKIES/TRACKING_PROTECTION content setting
+  // `controls_state`: state of controls to display
   // `status: current 3PC blocking status
-  void SetThirdPartyCookiesToggle(bool protections_on,
+  void SetThirdPartyCookiesToggle(CookieControlsState controls_state,
                                   CookieBlocking3pcdStatus blocking_status);
 
   // Sets `cookie_description_label_` text and style using:
@@ -90,14 +90,12 @@ class PageInfoCookiesContentView : public views::View, public PageInfoUI {
                            bool is_otr);
 
   // Updates the new third-party cookies section using:
-  // `protections_on`: status of the COOKIES/TRACKING_PROTECTION content setting
-  // `controls_visible`: whether toggle is visible
+  // `controls_state`: state of controls to display
   // `blocking_status`: label for the status of the protection (e.g. allowed,
   // limited, blocked)
   // `expiration`: duration of site exception
   // `feature: list of tracking protection features
-  void SetThirdPartyCookiesInfo(bool protections_on,
-                                bool controls_visible,
+  void SetThirdPartyCookiesInfo(CookieControlsState controls_state,
                                 CookieControlsEnforcement enforcement,
                                 CookieBlocking3pcdStatus blocking_status,
                                 base::Time expiration);

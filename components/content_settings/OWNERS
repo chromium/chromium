@@ -10,3 +10,4 @@ per-file ...cookie_settings*=dylancutler@google.com
 per-file ...cookie_controls*=file://components/privacy_sandbox/OWNERS
 per-file core/common/tracking_protection_feature.h=file://components/privacy_sandbox/OWNERS
 per-file core/common/cookie_blocking_3pcd_status.h=file://components/privacy_sandbox/OWNERS
+per-file core/common/cookie_controls_state.h=file://components/privacy_sandbox/OWNERS

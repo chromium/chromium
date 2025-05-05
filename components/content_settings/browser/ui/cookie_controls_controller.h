@@ -17,6 +17,7 @@
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/cookie_blocking_3pcd_status.h"
 #include "components/content_settings/core/common/cookie_controls_enforcement.h"
+#include "components/content_settings/core/common/cookie_controls_state.h"
 #include "components/fingerprinting_protection_filter/browser/fingerprinting_protection_observer.h"
 #include "components/fingerprinting_protection_filter/browser/fingerprinting_protection_web_contents_helper.h"
 #include "components/ip_protection/common/ip_protection_status.h"
@@ -89,14 +90,12 @@ class CookieControlsController final
 
  private:
   struct Status {
-    Status(bool controls_visible,
-           bool protections_on,
+    Status(CookieControlsState controls_state,
            CookieControlsEnforcement enforcement,
            CookieBlocking3pcdStatus blocking_status,
            base::Time expiration);
     ~Status();
-    bool controls_visible;
-    bool protections_on;
+    CookieControlsState controls_state;
     CookieControlsEnforcement enforcement;
     CookieBlocking3pcdStatus blocking_status;
     base::Time expiration;
@@ -217,10 +216,8 @@ class CookieControlsController final
   bool SiteDataAccessed(int third_party_allowed_sites,
                         int third_party_blocked_sites);
 
-  bool ShouldHighlightUserBypass(bool protections_on);
-  bool ShouldUserBypassIconBeVisible(
-      bool protections_on,
-      bool controls_visible);
+  bool ShouldHighlightUserBypass(CookieControlsState controls_state);
+  bool ShouldUserBypassIconBeVisible(CookieControlsState controls_state);
   bool SiteDataAccessAttempted();
   content::WebContents* GetWebContents() const;
 

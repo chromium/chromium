@@ -19,6 +19,7 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/content_settings/core/common/cookie_blocking_3pcd_status.h"
+#include "components/content_settings/core/common/cookie_controls_state.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -225,8 +226,7 @@ IN_PROC_BROWSER_TEST_F(CookieControlsBubbleViewBrowserTest,
   ShowBubble();
   views::test::WidgetDestroyedWaiter waiter(bubble_view()->GetWidget());
   view_controller()->OnStatusChanged(
-      /*controls_visible=*/false,
-      /*protections_on=*/false, CookieControlsEnforcement::kNoEnforcement,
+      CookieControlsState::kHidden, CookieControlsEnforcement::kNoEnforcement,
       CookieBlocking3pcdStatus::kNotIn3pcd, base::Time());
   waiter.Wait();
   EXPECT_EQ(bubble_view(), nullptr);

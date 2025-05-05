@@ -14,6 +14,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/cookie_blocking_3pcd_status.h"
+#include "components/content_settings/core/common/cookie_controls_state.h"
 #include "components/page_info/page_info.h"
 #include "components/permissions/object_permission_context_base.h"
 #include "components/privacy_sandbox/canonical_topic.h"
@@ -95,18 +96,15 @@ class PageInfoUI {
     // The number of sites allowed to access cookies.
     int allowed_sites_count = -1;
 
-    // Whether protections are enabled for the given site.
-    bool protections_on = true;
-
-    // Whether tracking protection controls should be shown.
-    bool controls_visible = true;
-
     // The type of third-party cookie blocking in 3PCD.
     CookieBlocking3pcdStatus blocking_status =
         CookieBlocking3pcdStatus::kNotIn3pcd;
 
     // The status of enforcement of blocking third-party cookies.
     CookieControlsEnforcement enforcement;
+
+    // The state of cookie controls to display.
+    CookieControlsState controls_state;
 
     std::optional<CookiesRwsInfo> rws_info;
 
